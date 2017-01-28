@@ -1,0 +1,20 @@
+{
+  "extends": "airbnb-base",
+  "rules": {
+    "comma-dangle": [0, "never"],
+    "semi": [2, "never"],
+    "linebreak-style": [0, "unix"],
+    "import/extensions": ["error", "never"],
+    "import/no-unresolved": [
+      "error", {
+        "ignore": [ './' ]
+      }
+    ]
+  },
+  "globals": {
+    "document": true
+  },
+  "plugins": [
+    "html"
+  ]
+}

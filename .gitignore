@@ -1,0 +1,10 @@
+node_modules/
+build/
+
+.DS_Store
+
+*.diff
+*.ini
+
+npm-debug.log
+ftp.config.js

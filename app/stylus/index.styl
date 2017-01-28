@@ -1,0 +1,28 @@
+// Frontend template
+// Ilya Komichev
+// github.com/ilkome/frontend
+
+@import "helpers/*"
+@import "variables"
+@import "layout"
+@import "base/*"
+@import "atoms/*"
+
+
+.fade-enter-active, .fade-leave-active {
+  anim-all()
+  opacity 1
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0
+  height 0
+}
+
+.loading
+  position fixed
+  left 0
+  top 0
+  width 100%
+  height 100%
+  text-align center
+  background grey

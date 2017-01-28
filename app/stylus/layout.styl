@@ -1,0 +1,28 @@
+borderbox-all()
+
+html
+  height 100%
+  font-size 16px
+  -ms-text-size-adjust 100%
+  -webkit-text-size-adjust 100%
+  // macos
+  -webkit-font-smoothing antialiased
+  -moz-osx-font-smoothing grayscale
+
+.body
+  height 100%
+  min-width 320px
+  margin 0
+  $font-primary-mixin()
+  color $color-main
+  background #f5f5f5
+
+.app
+  display flex
+  min-height 100%
+  min-width 960px
+  max-width 1300px
+
+.main
+  flex-grow 1
+  padding 50px

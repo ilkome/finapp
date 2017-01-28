@@ -1,0 +1,36 @@
+.div
+  display inline-block
+  padding 30px
+  text-align center
+  background alpha(grey, .1)
+  border 1px solid alpha(grey, .2)
+  border-radius 3px
+
+
+.domain
+  display none
+
+.tick line
+  stroke alpha(black, .3)
+
+
+.svg
+  text
+    $font-primary-mixin()
+    font-size 1rem
+
+  .grid
+    &__top
+    &__bottom
+      text
+        font-size .7rem
+
+  .bar
+    &__value
+      fill orange
+      stroke alpha(black, .4)
+      stroke-width 1
+
+    &__text
+      font-size .9rem
+      fill alpha(black, .7)

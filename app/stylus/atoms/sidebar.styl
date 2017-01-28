@@ -1,0 +1,49 @@
+.sidebar
+  position relative
+  padding 50px 50px
+  min-width 320px
+  background #1d1d1d
+
+  .logo
+    padding-left 40px
+    margin-bottom 60px
+    color $color-orange
+    font-size 24px
+    line-height normal
+    letter-spacing 3px
+    $font-secondary-mixin()
+    text-transform uppercase
+    background url(../img/logo.png) 0 center no-repeat
+    background-size 30px
+    border-bottom none
+
+
+// ==============================================
+.accounts
+  padding-bottom 80px
+  color #ababab
+  &__title
+    padding-bottom 20px
+    font-weight bold
+
+.account-item
+  display flex
+  justify-content space-between
+  align-items center
+  margin-bottom 10px
+  padding-bottom 10px
+  padding-left 3px
+  padding-right 3px
+  border-bottom 1px solid alpha(white, .1)
+
+  &:last-child
+    margin-bottom 0
+    padding-bottom 0
+    border-bottom none
+
+  .name
+    font-size 14px
+
+  .value
+    text-align right
+    line-height 16px

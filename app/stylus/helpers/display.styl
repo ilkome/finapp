@@ -1,0 +1,26 @@
+borderbox-all()
+  *
+    box-sizing border-box
+
+clearfix()
+  &:after
+    display table
+    clear both
+    content ""
+
+table(table-layout-auto = false)
+  display table
+  table-layout fixed
+  width 100%
+  if table-layout-auto
+    table-layout auto
+
+table-cell(vertical-align-middle = false)
+  display table-cell
+  vertical-align top
+  if vertical-align-middle
+    vertical-align middle
+
+flex-ie-height-fix()
+  display flex
+  flex-direction column
