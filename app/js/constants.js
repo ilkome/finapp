@@ -1,7 +1,9 @@
+import apiUrl from './apiUrl'
+
 const APP = {
-  TRANSACTIONS_URL: 'http://api/transactions',
-  ACCOUNTS_URL: 'http://api/accounts',
-  CATEGORIES_URL: 'http://api/categories'
+  TRANSACTIONS_URL: `${apiUrl}/transactions`,
+  ACCOUNTS_URL: `${apiUrl}//accounts`,
+  CATEGORIES_URL: `${apiUrl}//categories`
 }
 
 export default APP
