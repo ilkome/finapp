@@ -6,7 +6,7 @@ div
       mixin input(label, model, name)
         .field
           label=label
-          input(v-model.trim=model type="text" name=name placeholder="0")
+          input(@keyup.enter="createTransaction()" v-model.trim=model type="text" name=name placeholder="0")
 
       +input("Сумма", "values.amount", "amount")
       +input("Описание", "values.description", "description")
@@ -20,9 +20,6 @@ div
             :class="{active: (account.id === values.accountId)}"
           ) {{ account.name }}
 
-        //- select.ui.dropdown(v-model="values.accountId")
-        //-   option(v-for="account in accounts", :value="account.id") {{ account.name }}
-
       .field
         label Категория
         .ui.buttons.mini
@@ -32,12 +29,11 @@ div
             :class="{active: (transaction.categoryId === values.categoryId)}"
           ) {{ transaction.categoryName }}
 
-        //- select.ui.dropdown(v-model="values.categoryId")
+        select.ui.fluid.dropdown(v-model="values.categoryId")
           option(v-for="category in categories", :value="category.id") {{ category.name }}
 
-      .ui.button(@click="createTransactions()") Создать
+      .ui.button(@click="createTransaction()") Создать
     pre {{ values }}
-    pre {{ transactions2 }}
 </template>
 
 <script>
@@ -45,60 +41,38 @@ import axios from 'axios'
 import moment from 'moment'
 import APP from '../js/constants'
 
-console.log(moment().valueOf())
 
 export default {
   data() {
+    const appData = this.$root.$data.appData
     return {
-      transactions: this.$root.$data.appData.allTrns.slice(0,6),
-      accounts: this.$root.$data.appData.accounts,
-      categories: this.$root.$data.appData.categories,
+      transactions: appData.allTrns.slice(0,6),
+      accounts: appData.accounts,
+      categories: appData.categories,
       values: {
-        accountId: this.$root.$data.appData.accounts[0].id,
+        accountId: appData.allTrns[0].accountId,
         amount: '',
-        categoryId: this.$root.$data.appData.allTrns[0].categoryId,
+        categoryId: appData.allTrns[0].categoryId,
         type: 1,
         date: moment().valueOf(),
-        currency: this.$root.$data.appData.accounts[0].currency,
+        currency: appData.allTrns[0].currency,
         description: ''
       }
     }
   },
-
-  computed: {
-    transactions2() {
-      const trns = this.$root.$data.appData.allTrns.slice(0,100)
-      let count = 0
-      let cats = []
-      while (count < 6) {
-        console.log(count)
-        cats = [...cats, trns[count]]
-        count++
-        if (cats.findIndex(x => x.categoryId === trns[count].categoryId)) {
-          console.log('break')
-          break
-        }
-
-      }
-      console.log(cats)
-      return cats
-    }
-  },
-
   methods: {
     setCategory(categoryId) {
       this.values.categoryId = categoryId
     },
     setAccoundId(accountId) {
       this.values.accountId = accountId
+      this.values.currency = this.accounts.find(a => a.id === accountId).currency
     },
-    getCurrency() {
-      this.values.currency = this.accounts.find(a => a.id === this.values.accountId).currency
-    },
-    async createTransactions() {
+    async createTransaction() {
       const request = await axios.post(APP.TRANSACTIONS_URL, this.values)
-      console.log(request.data)
-      return request.data
+      const newTrnId = request.data
+      // this.$router.push({ path: `/trn/${newTrnId}`, query: { alert: 'added' } })
+      this.$router.push({ path: `/trns`, query: { alert: 'added' } })
     }
   }
 }

@@ -1,35 +1,35 @@
 <template lang="pug">
-  .sidebar
-    router-link(to="/").logo FinApp
+.sidebar
+  router-link(to="/").logo FinApp
 
-    .accounts
-      .accounts__title Кошельки
+  .accounts
+    .accounts__title Кошельки
 
-      //- Account item
-      .account-item(v-for="account in accounts")
-        .name {{ account.name }}
-        .value
-          div {{ showAccountTotal(account.totalRub) }}
-          template(v-if="account.currency !== 'RUB'")
-            div {{ showAccountTotal(account.total, account.currency)}}
+    //- Account item
+    .account-item(v-for="account in accounts")
+      .name {{ account.name }}
+      .value
+        div {{ showAccountTotal(account.totalRub) }}
+        template(v-if="account.currency !== 'RUB'")
+          div {{ showAccountTotal(account.total, account.currency)}}
 
-      //- Total amount
-      .account-item
-        .name: strong Всего
-        .value
-          div {{ showSumIn('RUB') }}
-          div {{ showSumIn('USD') }}
-          div {{ showSumIn('EUR') }}
+    //- Total amount
+    .account-item
+      .name: strong Всего
+      .value
+        div {{ showSumIn('RUB') }}
+        div {{ showSumIn('USD') }}
+        div {{ showSumIn('EUR') }}
 
-    //- Rates
-    .accounts
-      .accounts__title Курсы
-      .account-item
-        .name Доллар
-        .value {{ showRateOf('USD') }}
-      .account-item
-        .name Евро
-        .value {{ showRateOf('EUR') }}
+  //- Rates
+  .accounts
+    .accounts__title Курсы
+    .account-item
+      .name Доллар
+      .value {{ showRateOf('USD') }}
+    .account-item
+      .name Евро
+      .value {{ showRateOf('EUR') }}
 </template>
 
 <script>

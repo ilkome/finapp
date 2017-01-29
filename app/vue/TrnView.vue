@@ -1,31 +1,33 @@
 <template lang="pug">
-  div
-    h1 Кошельки
-    table.ui.table.striped.celled.sortable
-      thead: tr
-        th(@click="sortTable('id')") ID
-        th(@click="sortTable('name')") Название
-        th Валюта
-        th.right.aligned(@click="sortTable('totalRub')") Сумма
-        th.right.aligned Ориг. сумма
-      tbody
-        tr(v-for="account in accounts")
-          td {{ account.id }}
-          td {{ account.name }}
-          td {{ account.currency }}
-          td.right.aligned {{ showTotal(account.totalRub) }}
-          td.right.aligned {{ showTotal(account.total, account.currency) }}
+div
+  component(v-if="!$route")
+    div fooo
+  h1 Транзакция {{ trn.id }}
+  table.ui.table.celled
+    thead: tr
+      th ID
+      th Дата
+      th Название
+      th Категория
+      th Кошелек
+    tbody
+        td {{ trn.id }}
+        td {{ trn.date | date }}
+        td {{ showTotal(trn.amount) }}
+        td {{ trn.categoryName }}
+        td {{ trn.accountName }}
 </template>
 
 <script>
 import { money, getSymbol } from '../js/money'
+import moment from 'moment'
 
 export default {
   data() {
     return {
       sortKey: '',
       sortBy: 'asc',
-      accounts: this.$root.$data.appData.accounts
+      trn: this.$root.$data.appData.allTrns.find(t => t.id === +this.$route.params.id)
     }
   },
 
@@ -34,16 +36,11 @@ export default {
       if (!currency || currency === 'RUB') return money(sum)
       const symbol = getSymbol(currency)
       return money(sum, { symbol })
-    },
-    sortTable(queryKey) {
-      this.sortKey = queryKey
-      if (this.sortKey === queryKey && this.sortBy !== 'desc') {
-        this.sortBy = 'desc'
-      } else {
-        this.sortBy = 'asc'
-      }
-
-      this.accounts = _.orderBy(this.accounts, this.sortKey, this.sortBy)
+    }
+  },
+  filters: {
+    date(date) {
+      return moment(date).format('D.MM.YY')
     }
   }
 }
