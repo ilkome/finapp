@@ -13,7 +13,10 @@ gulp.task('stylus', () =>
     .pipe(showToaster('stylus'))
     .pipe($.debug({ title: 'stylus:' }))
     .pipe($.if(isDevelopment, $.sourcemaps.init()))
-    .pipe($.stylus())
+    .pipe($.stylus({
+      paths: ['node_modules'],
+      // 'include css': true
+    }))
     .pipe($.rename({ basename: 'styles' }))
     .pipe($.if(isDevelopment, $.sourcemaps.write('./')))
     .pipe(gulp.dest(paths.stylus.output))

@@ -1,4 +1,4 @@
-app/js/apiUrl.js
+app/api/apiUrl.js
 
 node_modules/
 build/

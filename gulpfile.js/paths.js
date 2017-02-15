@@ -30,14 +30,15 @@ module.exports = {
     src: `${app}/layout/**/*.pug`
   },
   js: {
-    entry: `${app}/js/main.js`,
+    entry: `${app}/main.js`,
     output: `${build}/js`
   },
   stylus: {
     entry: `${app}/stylus/index.styl`,
     src: [
       `${app}/stylus/**/*.styl`,
-      `${app}/atoms/**/*.styl`
+      `${app}/atoms/**/*.styl`,
+      `${app}/components/**/*.styl`
     ],
     output: `${build}/css`
   }
