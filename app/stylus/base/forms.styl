@@ -3,6 +3,7 @@ label, input, button, select, textarea
   border none
   background none
   outline none
+  font-size 16px
 
 
 // Field
@@ -10,10 +11,17 @@ label, input, button, select, textarea
 .input
   width 300px
   margin-bottom 10px
-  padding 15px 15px
+  padding 10px 15px
   background #fff
   border 1px solid #c8d9eb
   anim()
+
+.input.date
+  width inherit
+  padding 0 10px
+  text-align center
+  border none
+  border-bottom 1px solid $color-main
 
 
 // Textarea
@@ -37,7 +45,7 @@ label, input, button, select, textarea
     //
 
   &:focus
-    background #f4f9ff
+    // background #f4f9ff
 
   &.error
     color #e44343
@@ -64,38 +72,51 @@ label, input, button, select, textarea
 
 
 // Radio
+// label.radio > (radio__value + radio__label)
 // ==============================================
 .radio
-  display:none
+  position relative
+  display inline-flex
+  margin-right 20px
+  cursor pointer
 
-  & + label
-    cursor:pointer
-    margin:0px 20px 0px 0
+  &__label
+    display flex
+    align-items center
+    anim()
 
-  & + label::before
-    content " "
-    display inline-block
-    height 18px
-    width 18px
-    margin 0 10px -3px 0px
-    background url("../img/radio.png") no-repeat;
+    &:before
+      content ' '
+      display block
+      width 16px
+      height 16px
+      margin-top -1px
+      margin-right 5px
+      border 1px solid grey
+      border-radius 50%
 
-  &:disabled + label
-    cursor:default
+    &:after
+      content ' '
+      display block
+      position absolute
+      left 0
+      top 0
+      margin-top 5px
+      margin-left 4px
+      width 8px
+      height 8px
+      margin-right 10px
+      border-radius 50%
+      anim()
 
-  & + label:hover::before
-    background-position 0px 0px
+  &__value
+    display none
 
-  &:checked + label::before
-    background-position 0 -18px
+    &:checked + ^[0]__label
+      font-weight bold
 
-  &:disabled + label::before
-    background-position:0px 0px
-    opacity .8
-
-  &:checked:disabled + label::before
-    background-position 0px -18px
-    opacity .8
+      &:after
+        background grey
 
 
 // Checkbox

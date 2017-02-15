@@ -1,10 +1,15 @@
-.panel
-  margin-bottom 50px
-  padding 30px
+.module
+  margin-bottom 30px
+  padding 25px
   background: #fff
   border: 1px solid #e7e7e7
   border-radius 3px
   box-shadow 0 0 20px 0 rgba(42, 63, 84, .1)
+  anim()
+
+  &:hover
+    border-color alpha(black, .2)
+    box-shadow 0 0 20px 0 rgba(42, 63, 84, .2)
 
   &__title
     font-size 22px
@@ -12,3 +17,43 @@
     $font-secondary-mixin()
     text-transform uppercase
     letter-spacing 1.5px
+
+
+.panel
+  &__title
+    display flex
+    justify-content space-between
+    align-items center
+
+    &-name
+      margin-bottom 0
+
+    &-nav
+      display flex
+      align-items center
+      font-size 22px
+      $font-secondary-mixin()
+
+      &__date
+        width 130px
+        text-align center
+
+      &__left
+        margin-right -10px
+        padding 0 15px
+        cursor pointer
+        fa("angle-double-left")
+        anim()
+
+        &:hover
+          opacity .8
+
+      &__right
+        margin-left -10px
+        padding 0 15px
+        cursor pointer
+        fa("angle-double-right")
+        anim()
+
+        &:hover
+          opacity .8

@@ -1,9 +1,9 @@
-import apiUrl from './apiUrl'
+import apiUrl from './api/apiUrl'
 
-const APP = {
+const constants = {
   TRANSACTIONS_URL: `${apiUrl}/transactions`,
   ACCOUNTS_URL: `${apiUrl}/accounts`,
   CATEGORIES_URL: `${apiUrl}/categories`
 }
 
-export default APP
+export default constants

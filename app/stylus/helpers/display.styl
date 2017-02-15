@@ -24,3 +24,8 @@ table-cell(vertical-align-middle = false)
 flex-ie-height-fix()
   display flex
   flex-direction column
+
+flex-space(count)
+  &:after
+    content ""
+    flex-basis (100/count)%
