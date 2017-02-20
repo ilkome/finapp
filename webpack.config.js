@@ -32,7 +32,6 @@ if (!isProd) {
 
 module.exports = {
   devtool: isProd ? false : '#eval-source-map',
-  debug: false,
   stats: {
     colors: true,
     assets: false,
@@ -49,30 +48,32 @@ module.exports = {
     filename: 'bundle.js'
   },
   plugins,
+
   resolve: {
-    extensions: ['', '.js', '.vue'],
+    modules: [
+      path.join(__dirname, 'app'),
+      'node_modules'
+    ],
+    extensions: ['.js', '.vue'],
     alias: {
       vue: 'vue/dist/vue.js'
     }
-
   },
+
   module: {
-    // preLoaders: [{
-    //   test: /\.vue$/,
-    //   loader: 'eslint',
-    //   include: [
-    //     path.resolve(__dirname, 'app')
-    //   ],
-    //   exclude: /node_modules/
-    // }],
-    loaders: [{
+    rules: [{
       test: /\.js$/,
-      loader: 'babel-loader',
-      exclude: /node_modules/
-    },
-    {
+      use: [{
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            ['es2015', { modules: false }]
+          ]
+        }
+      }]
+    }, {
       test: /\.vue$/,
-      loader: 'vue-loader'
+      use: ['vue-loader']
     }]
   }
 }
