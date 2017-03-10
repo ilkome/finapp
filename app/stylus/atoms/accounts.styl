@@ -1,0 +1,131 @@
+.account1
+  color $color-rub
+.account2
+  color $color-tinkoff
+
+.accountPage
+  padding-bottom 0px
+
+.account
+  flex 1 1
+  padding-bottom 25px
+
+  &:last-child
+    padding-bottom 0
+
+.accountTitle
+  display flex
+  align-items center
+  justify-content center
+  margin-top 25px
+  margin-bottom 25px
+  font-size 12px
+  font-weight bold
+  letter-spacing 2px
+  text-transform uppercase
+  // border-bottom 1px solid alpha(white, .06)
+
+.accountContent
+  display flex
+  flex-flow row wrap
+  justify-content space-between
+  flex-space(2)
+
+  @media $laptop
+    flex-flow column nowrap
+
+
+.accountContentItem
+  position relative
+  display flex
+  flex 1 1 45%
+  height 60px
+  padding 0 15px
+  line-height 1
+  justify-content space-between
+  align-items center
+  color $color-main
+  border-bottom 1px solid alpha(white, .06)
+  anim-all()
+
+  &:hover
+    opacity 1
+    color white
+
+  &:last-child
+    margin-bottom 0
+    border none
+
+  @media $laptop
+    flex-basis 100%
+    max-width 100%
+    margin 0 30px
+
+  sup
+    display none
+
+  &.account1
+    &:before
+      content " "
+      position absolute
+      left 0
+      top 50%
+      width 1px
+      height 15px
+      margin-top -7.5px
+      border-radius 0
+      background #2E86C1
+      anim()
+    &:hover:before
+      width 5px
+
+  &.account2
+    &:before
+      content " "
+      position absolute
+      left 0
+      top 50%
+      width 1px
+      height 15px
+      margin-top -7.5px
+      border-radius 0
+      background #ab68da
+      anim()
+    &:hover:before
+      width 5px
+
+// label
+.accountContentItemLabel
+  opacity .5
+  letter-spacing .5px
+
+.accountContentItemTotal
+  display flex
+  $font-numbers()
+  letter-spacing 1px
+  font-size 16px
+  color $color-sum
+  font-weight bold
+
+  @media $laptop
+    flex-flow row wrap
+
+.accountContentItemTotalIn
+  flex 0 1 100%
+  text-align right
+  white-space nowrap
+
+.accountDetails
+  overflow hidden
+  max-width 250px
+  max-height 210px
+  margin-bottom 50px
+  overflow scroll
+
+  .accountContentItem
+    margin 0
+
+  &._small
+    .accountContentItem
+      height auto
+      padding 15px

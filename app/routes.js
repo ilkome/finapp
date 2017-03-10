@@ -1,15 +1,14 @@
-import AccountList from './components/account/AccountList'
-import TrnCreate from './components/trn/TrnCreate'
-import TrnList from './components/trn/TrnList'
-import TrnView from './components/trn/TrnView'
-import TrnEdit from './components/trn/TrnEdit'
+import AccountVeiw from './components/accounts/AccountVeiw.vue'
+import Dashboard from './components/dashboard/Dashboard.vue'
+import TrnCreate from './components/trn/TrnCreate.vue'
+import TrnList from './components/trn/TrnList.vue'
+import TrnEdit from './components/trn/TrnEdit.vue'
 
 const routes = [
-  { path: '/', component: AccountList },
-  { path: '/accounts', component: AccountList },
+  { path: '/', component: Dashboard },
+  { path: '/account/:id', component: AccountVeiw },
   { path: '/create', component: TrnCreate },
   { path: '/trns', component: TrnList },
-  { path: '/trn/:id', component: TrnView },
   { path: '/trn/:id/edit', component: TrnEdit }
 ]
 

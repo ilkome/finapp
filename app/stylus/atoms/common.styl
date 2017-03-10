@@ -1,14 +1,3 @@
-// animations
-.fade-enter-active, .fade-leave-active
-  opacity 1
-  anim-all()
-
-.fade-enter, .fade-leave-to
-  opacity 0
-  height 0
-
-
-//
 .table2
   display flex
   justify-content space-between
@@ -19,13 +8,16 @@
 .items
   display flex
   align-items center
-  margin-bottom 10px
-  padding-bottom 10px
+  margin-bottom 15px
+  // padding-left 15px
+  padding-right 15px
+  padding-bottom 15px
   border-bottom none
   color $color-main
-  border-bottom 1px solid alpha(black, .1)
+  border-bottom 1px solid alpha(white, .1)
 
   &:last-child
+    margin-bottom 0
     padding-bottom 0
     border-bottom none
 
@@ -42,6 +34,7 @@
       padding-right 0
 
 .link
+  display block
   margin-right 10px
   border-bottom none
 
@@ -52,13 +45,19 @@
   font-size 20px
   font-weight bold
   color #1E8449
+  font-family 'Unica One'
 
 .expense
   font-size 20px
   font-weight bold
   color #CB4335
+  font-family 'Unica One'
 
-
+.sum
+  font-size 20px
+  font-weight bold
+  color $color-sum
+  font-family 'Unica One'
 
 .loading
   position fixed

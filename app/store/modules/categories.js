@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { getCategories } from '../../api/api'
 
 const store = {
@@ -8,9 +7,7 @@ const store = {
 
   getters: {
     categories(state) {
-      const categories = state.all
-      const sortedCategories = _.orderBy(categories, 'name', 'asc')
-      return sortedCategories
+      return state.all
     }
   },
 

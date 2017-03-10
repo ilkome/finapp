@@ -8,8 +8,8 @@ const store = {
   getters: {
     accounts(state, getters) {
       let accounts = state.all
-      const incomesTrns = getters.incomes
-      const expensesTrns = getters.expenses
+      const incomesTrns = getters.incomes.slice(0, 100)
+      const expensesTrns = getters.expenses.slice(0, 100)
 
       function getTotal(trns, type) {
         return trns.reduce((sum, current) => sum + current[type], 0)
@@ -40,7 +40,7 @@ const store = {
       })
 
       return accounts
-    },
+    }
   },
 
   actions: {

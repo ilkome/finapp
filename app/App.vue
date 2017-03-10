@@ -8,26 +8,30 @@
     Sidebar
 
     .main
-      .main__menutop
-        MenuTop
+      .mainTop
+        .mainTopLeft
+          MenuTop
+        .mainTopRight
+          FilterTop
 
-      .module
-        h1.module__title
-          template(v-if="$store.state.globalStatus") {{ $store.state.globalStatus }}
-          template(v-else) Привет, Ильюшкин :)
+      //- .panel.small
+        h1.panelTitle
+          template(v-if="$store.state.appStatus") {{ $store.state.appStatus }}
+          template(v-else) Привет, Илюшкин и Никитка
 
-      transition(name="fade")
+      transition(name="slide")
         router-view
 </template>
 
 
 <script>
-import Sidebar from './components/sidebar/Sidebar'
-import MenuTop from './components/menu/MenuTop'
+import Sidebar from './components/sidebar/Sidebar.vue'
+import MenuTop from './components/menu/MenuTop.vue'
+import FilterTop from './components/filter/FilterTop.vue'
 
 export default {
   async created() {
-    // should to be this order because fetchTrns depends on others data
+    // should to be in this order because fetchTrns depends on others data
     await this.$store.dispatch('fetchAccounts')
     await this.$store.dispatch('fetchCategories')
     await this.$store.dispatch('fetchRates')
@@ -35,6 +39,6 @@ export default {
     await this.$store.commit('loading')
   },
 
-  components: { Sidebar, MenuTop }
+  components: { Sidebar, MenuTop, FilterTop }
 }
 </script>

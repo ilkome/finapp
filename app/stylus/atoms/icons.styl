@@ -8,30 +8,65 @@ icon($icon, $bg = #909497)
   width 40px
   height 40px
   color white
-  font-size 22px
+  //font-size 22px
   align-items center
   justify-content center
   background grey
   border-radius 3px
 
-.icon-14
-  icon(cutlery, #e53935)
+.icon-13 // тинькофф
+  icon(credit-card-alt, #1C2833)
+.icon-14 // питание
+  icon(cutlery, #3498DB)
 .icon-15
   icon(car, #6D4C41)
 .icon-19
   icon(television, #3498DB)
 .icon-18
-  icon(pagelines, #4CAF50)
+  icon(pagelines)
+.icon-23
+  icon(phone)
 .icon-25
   icon(shopping-bag)
-.icon-28
-  icon(futbol-o, #81D4FA)
+.icon-28 // спорт
+  icon(futbol-o, #3498DB)
 .icon-32
   icon(internet-explorer)
-.icon-62
+.icon-35 // родственники
+  icon(users)
+.icon-37 // бытовое
+  icon(tachometer)
+.icon-42 // девушки
+  icon(user-md)
+.icon-43 // козачка
+  icon(female, #E67E22)
+.icon-55
+  icon(yelp)
+.icon-59 // развлечения
+  icon(smile-o)
+.icon-62 // трансфер
   icon(exchange)
+.icon-84 // животные
+  icon(paw)
 
 .icons
   display flex
+  flex-flow wrap
+  align-items center
+  justify-content space-between
+  margin -5px
+
   .icon
-    margin 0 5px
+    margin 5px
+    border 2px solid transparent
+
+    &:hover
+      border-color alpha(black, .2)
+      box-shadow 0 0 20px 0 rgba(42, 63, 84, .2)
+
+    &.active
+      border-color alpha(black, .4)
+      // box-shadow 0 0 20px 0 rgba(42, 63, 84, .2)
+
+    &:last-child
+      margin-right auto

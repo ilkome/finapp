@@ -2,7 +2,6 @@ borderbox-all()
 
 html
   height 100%
-  font-size 16px
   -ms-text-size-adjust 100%
   -webkit-text-size-adjust 100%
   // macos
@@ -16,7 +15,8 @@ html
   margin 0
   $font-primary-mixin()
   color $color-main
-  background #f5f5f5
+  background $color-body
+  line-height 1
 
 .app
   min-height 100%
@@ -26,8 +26,30 @@ html
 
 .main
   flex-grow 1
-  padding 30px
+  padding 20px
 
-  &__menutop
-    margin -30px
-    margin-bottom 0
+  @media $laptop
+    padding 50px
+    padding-top 110px
+
+.mainTop
+  z-index 200
+  position fixed
+  top 0
+  width 100%
+  display flex
+  justify-content space-between
+  background $color-body
+  font-size 14px
+  border-bottom 1px solid #2C2C2C
+
+  @media $laptop
+    display flex
+    align-items center
+    margin-left -50px
+    margin-right -50px
+    margin-top 0
+    margin-bottom 50px
+
+.highcharts-container
+  background alpha(black, .1)

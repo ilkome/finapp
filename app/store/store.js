@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import moment from 'moment'
 
 import accounts from './modules/accounts'
 import categories from './modules/categories'
@@ -18,16 +19,31 @@ const store = new Vuex.Store({
 
   state: {
     loading: true,
-    globalStatus: ''
+    appStatus: '',
+    filter: {
+      date: moment()
+    }
+  },
+
+  actions: {
+    setNextPrevDate({ commit, state }, way) {
+      let date
+      if (way === 'prev') date = moment(state.filter.date).subtract(1, 'days')
+      if (way === 'next') date = moment(state.filter.date).add(1, 'days')
+      commit('setFilterDate', date)
+    }
   },
 
   mutations: {
     loading(state) {
       state.loading = false
     },
-    setGlobalStatus(state, status) {
-      state.globalStatus = status
-    }
+    setappStatus(state, status) {
+      state.appStatus = status
+    },
+    setFilterDate(state, date) {
+      state.filter.date = date
+    },
   }
 })
 

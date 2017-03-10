@@ -6,4 +6,8 @@ const constants = {
   CATEGORIES_URL: `${apiUrl}/categories`
 }
 
+export const ACCOUNTS_URL = `${apiUrl}/accounts`
+export const CATEGORIES_URL = `${apiUrl}/categories`
+export const TRANSACTIONS_URL = `${apiUrl}/transactions`
+
 export default constants

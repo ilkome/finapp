@@ -1,21 +1,63 @@
-// Colors
-// ==============================================
-$color-main = #485663
-$color-orange = #ec6f2f
+$theme = "black"
+// $theme = "blue"
 
-$color-link = $color-orange
+
+// Black Theme
+// ==============================================
+if $theme == "black"
+  $color-main = #ababab
+  $color-link = #ec6f2f
+  $color-header = $color-main
+
+  $color-rub = #2E86C1
+  $color-tinkoff = #ab68da
+  $color-sum = #7d7d7d
+  $color-income = #1E8449
+  $color-expense = #CB4335
+
+  $color-body = #1A1A1A
+  $color-layout = #161616
+  $color-panel = #161616
+  $color-trn = #161616
+  $color-trn-hover = #111111
+
+
+// Blue Theme
+// ==============================================
+if $theme == "blue"
+  $color-main = #8A96A0
+  $color-orange = #DD574C
+  $color-main = #8A96A0
+
+  $color-link = $color-orange
+  $color-header = $color-main
+
+  $color-rub = #2E86C1
+  $color-tinkoff = #ab68da
+  $color-income = #4dad85
+  $color-expense = #CB4335
+  $color-sum = #7d7d7d
+
+  $color-body = #272D33
+  $color-layout = #161616
+  $color-panel = #171717
+  $color-trn = #161616
 
 
 // Fonts
 // ==============================================
-$font-primary = 'Open Sans', sans-serif
-$font-secondary = 'Russo One', sans-serif
+$font-primary = 'Robotto', sans-serif
+$font-secondary = 'Robotto', sans-serif
 
 $font-primary-mixin()
   font-family $font-primary
   font-weight 400
 $font-secondary-mixin()
   font-family $font-secondary
+
+$font-numbers()
+  font-family 'Unica One', 'Roboto', sans-serif
+
 
 // Media
 // ==============================================
