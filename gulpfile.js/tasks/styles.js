@@ -43,7 +43,7 @@ gulp.task('css-min', () =>
     .pipe($.debug({ title: 'css-min:' }))
     .pipe($.combineMq({ beautify: false }))
     .pipe($.cleanCss({ keepSpecialComments: 0 }))
-    .pipe($.autoprefixer('last 4 version', 'ie 10'))
+    .pipe($.autoprefixer('last 2 version', 'ie 10'))
     .pipe(gulp.dest(paths.css.output))
     .pipe(browserSync.stream({ match: '**/*.css' }))
 )

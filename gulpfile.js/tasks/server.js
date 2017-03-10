@@ -15,7 +15,7 @@ gulp.task('browserSync', () => browserSync({
   },
   open: false,
   logFileChanges: false,
-  notify: true,
+  notify: false,
   online: true,
   ghostMode: false,
   scrollProportionally: false,
@@ -24,8 +24,7 @@ gulp.task('browserSync', () => browserSync({
       publicPath: webpackConfig.output.publicPath,
       stats: webpackConfig.stats
     }),
-    webpackHotMiddleware(webpackBundler),
-    (req, res, next) => {
+    webpackHotMiddleware(webpackBundler), (req, res, next) => {
       if (req.headers.accept && req.headers.accept.startsWith('text/html')) {
         req.url = '/index.html' // eslint-disable-line no-param-reassign
       }
