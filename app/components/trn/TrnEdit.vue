@@ -59,7 +59,7 @@ div
 
             transition(name="fade")
               .ui.button.disabled(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
-              .ui.button(v-else @click="submit") Создать
+              .ui.button(v-else @click.prevent="submit") Создать
     //- table__cell
 
     .table__cell
@@ -77,6 +77,7 @@ div
               div {{ trn.categoryName }}
               div {{ trn.accountName }}
 </template>
+
 
 <script>
 import moment from 'moment'

@@ -1,0 +1,100 @@
+.form
+  background alpha(black, .1)
+  padding 30px
+  border-radius 3px
+  @media $laptop
+    // max-width 400px
+
+.amount
+  display flex
+  align-items center
+  justify-content space-between
+  width 100px
+  margin 0 auto
+  padding-bottom 20px
+
+  &._income
+    .amountCountText
+      color $color-income
+    .amountValueInput
+      color $color-income
+
+  &._expense
+    .amountCountText
+      color $color-expense
+    .amountValueInput
+      color $color-expense
+
+.amountCount
+  display flex
+  width 40px
+  height 40px
+  justify-content center
+  align-items center
+  font-size 36px
+  font-weight bold
+  cursor pointer
+
+.amountValueInput
+  width 100px
+  font-size 36px
+  text-align right
+  border-bottom 2px solid alpha(black, .1)
+
+.meta
+  position relative
+  display flex
+  align-items center
+  justify-content space-between
+  padding-bottom 30px
+  text-align center
+
+.metaItem
+  width 150px
+  cursor pointer
+  &._left
+    text-align left
+  &._right
+    text-align right
+
+.metaItemLabel
+  font-size 12px
+
+.metaItemDropdown
+  z-index 2
+  position absolute
+  top inherit
+  right -10px
+  width 150px
+  padding 10px
+  background white
+  border 1px solid #e7e7e7
+  border-radius 3px
+  box-shadow 0 0 20px 0 rgba(42, 63, 84, .1)
+
+.desc
+  padding-bottom 20px
+
+.descInput
+  width 100%
+  border-bottom 1px solid alpha(black, .1)
+
+.action
+  text-align center
+
+.actionButton
+  display inline-flex
+  padding 5px 20px
+  color white
+  ////font-size .8rem
+  font-weight bold
+  background $color-orange
+  border-radius 3px
+  cursor pointer
+
+  @media $laptop
+    font-size 1rem
+    padding 10px 35px
+
+.hide
+  display none

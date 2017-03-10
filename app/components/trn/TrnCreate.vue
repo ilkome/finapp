@@ -1,66 +1,80 @@
 <template lang="pug">
 div
-  .table2
-    .table__cell
-      .module
-        h1.module__title Создание транзакции
-        .module__content
-          form.ui.form
-            .field.inline
-              input(
-                v-model.trim="values.amount",
-                @keyup.enter="submit"
-                type="text" name="amount" placeholder="0")
-              label Сумма
+  .flex
+    .flexColumn._minwidth
+      .panel
+        h1.panelTitle Создание транзакции
+        .panelConentent
+          .form
+            .amount(:class="[(values.type === 1) ? '_income' : '_expense']")
+              a.amountCount(
+                @click="setType()",
+              )
+                .amountCountText
+                  template(v-if="values.type === 1") +
+                  template(v-else) -
 
-            .field.inline
-              label.radio
-                input(type="radio" value="0" v-model="values.type").radio__value
-                .radio__label Рассход
+              .amountValue
+                input.amountValueInput(
+                  v-model.number.lazy="values.amount",
+                  @keyup.enter="submit",
+                  type="text" name="amount" placeholder="0")
 
-              label.radio
-                input(type="radio" value="1" v-model="values.type").radio__value
-                .radio__label Приход
+            .meta
+              .metaItem._left(@click="showHideAllCategories()")
+                .metaName {{ values.categoryName }}
+                .metaItemLabel Категория
 
-            .field
-              label Кошелек
-              a(href="#" class="link"
-                v-for="account in accounts",
-                @click="setAccoundId(account.id)",
-                :class="{active: (account.id === values.accountId)}"
-              ) {{ account.name }}
+              .metaItem._right(@click="showHideAllAccounts()")
+                .metaName {{ values.accountName }}
+                .metaItemLabel Кошелек
+                template(v-if="showAllAccounts")
+                  .metaItemDropdown
+                    a.link(href="#"
+                      v-for="account in accounts",
+                      :class="{active: (account.id === values.accountId)}",
+                      @click.prevent="setAccoundId(account.id)"
+                    ) {{ account.name }}
 
-            .field
-              label Категория
+            .categories
+              .meta(v-if="showAllCategories")
+                select(v-model="values.categoryId")
+                  option(v-for="category in categories", :value="category.id") {{ category.name }}
+
               .icons
                 a.icon(
                   href="#"
-                  v-for="trn in trns.slice(0, 8)",
-                  :class="`icon-${trn.categoryId}`",
-                  @click="setCategory(trn.categoryId)",
-                  :title="trn.categoryName"
-                )
+                  v-for="trn in lastCategories.slice(0, 10)",
+                  :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
+                  :title="trn.categoryName",
+                  @click.prevent="setCategory(trn.categoryId)")
                   .icon__pic
 
-              select.ui.fluid.dropdown(v-model="values.categoryId")
-                option(v-for="category in categories", :value="category.id") {{ category.name }}
+                template(v-if="showAllCategories")
+                  transition(name="fade" v-for="trn in lastCategories.slice(10)")
+                    a.icon(
+                      href="#",
+                      :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
+                      :title="trn.categoryName",
+                      @click.prevent="setCategory(trn.categoryId)")
+                      .icon__pic
 
-            .field.inline
-              input(
+
+            .desc
+              input.descInput(
                 v-model.trim="values.description"
-                type="text" name="description" placeholder="")
-              label Описание
+                type="text" name="description" placeholder="Описание")
 
-            transition(name="fade")
-              .ui.button.disabled(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
-              .ui.button(v-else @click="submit") Создать
-    //- table__cell
+            .action
+              transition(name="fade")
+                .actionButton(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
+                .actionButton(v-else @click="submit") Создать
 
-    .table__cell
-      .module
+    .flexColumn
+      .panel
         .module__title
           .panel__title
-            h3.panel__title-name(@click="updateList()") Транзакции
+            h3.panelTitle Транзакции
             .panel__title-nav
               .panel__title-nav__left(@click="setNextPrevDate('prev')")
               .panel__title-nav__date(@click="showDateSelector()")
@@ -73,21 +87,26 @@ div
                 div(v-else) {{ date | date }}
               .panel__title-nav__right(@click="setNextPrevDate('next')")
 
-        .module__content
-          template(v-if="trnsBySelectedDate.length")
-            TrnItem(v-for="trn in trnsBySelectedDate", :trn="trn", :key="trn.id")
+        template(v-if="trnsBySelectedDate.length")
+          TrnItem(
+            v-for="(trn, index) in trnsBySelectedDate",
+            :trns="trnsBySelectedDate", :trn="trn", :index="index", :key="trn.id")
 
-          template(v-else)
-            div Нет транзакций за эту дату
+        template(v-else)
+          div Нет транзакций за эту дату
 
-
+  //- ChartByDate
+  ChartByDate(:date="dateChart")
 </template>
+
 
 <script>
 import moment from 'moment'
+import _ from 'lodash'
 import { mapGetters } from 'vuex'
 import formatMoney from '../../mixins/money'
-import TrnItem from './TrnItem'
+import TrnItem from './TrnItem.vue'
+import ChartByDate from '../chart/ChartByDate.vue'
 
 export default {
   mixins: [formatMoney],
@@ -96,12 +115,15 @@ export default {
     const lastTrn = this.$store.getters.trns[0]
     return {
       editingDate: false,
-      date: moment(),
       tempDate: '',
+      showAllCategories: false,
+      showAllAccounts: false,
       values: {
         accountId: lastTrn.accountId,
+        accountName: lastTrn.accountName,
         amount: '',
         categoryId: lastTrn.categoryId,
+        categoryName: lastTrn.categoryName,
         type: 0,
         currency: lastTrn.currency,
         description: ''
@@ -111,16 +133,36 @@ export default {
 
   computed: {
     ...mapGetters(['trns', 'accounts', 'categories']),
+    date() {
+      return this.$store.state.filter.date
+    },
+    dateChart() {
+      return {
+        start: moment(this.$store.state.filter.date).format('DD.MM.YY'),
+        end: moment(this.$store.state.filter.date).add('1', 'days').format('DD.MM.YY')
+      }
+    },
     trnsBySelectedDate() {
-      return this.$store.getters.trns.filter(t =>
-        moment(t.date).format('D.MM.YY') === moment(this.date).format('D.MM.YY'))
+      const trnsInThisDay = this.$store.getters.trns
+        .filter(t => moment(t.date).format('D.MM.YY') === moment(this.date).format('D.MM.YY'))
+      return trnsInThisDay
+    },
+    lastCategories() {
+      return _.uniqBy(this.trns, 'categoryName').slice(0, 100)
     }
   },
 
   methods: {
+    showHideAllCategories() {
+      this.showAllCategories = !this.showAllCategories
+    },
+
+    showHideAllAccounts() {
+      this.showAllAccounts = !this.showAllAccounts
+    },
+
     setNextPrevDate(way) {
-      if (way === 'prev') this.date = moment(this.date).subtract(1, 'days')
-      if (way === 'next') this.date = moment(this.date).add(1, 'days')
+      this.$store.dispatch('setNextPrevDate', way)
     },
 
     showDateSelector() {
@@ -139,11 +181,18 @@ export default {
 
     setCategory(categoryId) {
       this.values.categoryId = categoryId
+      this.values.categoryName = this.categories.find(category => category.id === categoryId).name
+    },
+
+    setType() {
+      this.values.type = (this.values.type === 1) ? 0 : 1
     },
 
     setAccoundId(accountId) {
       this.values.accountId = accountId
       this.values.currency = this.accounts.find(account => account.id === accountId).currency
+      this.values.accountName = this.accounts.find(account => account.id === accountId).name
+      this.showAllAccounts = false
     },
 
     submit() {
@@ -160,6 +209,12 @@ export default {
     }
   },
 
-  components: { TrnItem }
+  components: { TrnItem, ChartByDate }
 }
 </script>
+
+
+<style lang="stylus" scoped>
+  @import "../../stylus/components"
+  @import "styles/form"
+</style>
