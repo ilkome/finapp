@@ -1,11 +1,10 @@
 import axios from 'axios'
-import _ from 'lodash'
-import APP from '../constants'
+import { ACCOUNTS_URL, CATEGORIES_URL, TRANSACTIONS_URL } from '../constants'
 
 // getAccounts
 // ==============================================
 async function getAccounts() {
-  const request = await axios.get(APP.ACCOUNTS_URL, {
+  const request = await axios.get(ACCOUNTS_URL, {
     params: {
       transform: 1
     }
@@ -16,7 +15,7 @@ async function getAccounts() {
 // getCategories
 // ==============================================
 async function getCategories() {
-  const request = await axios.get(APP.CATEGORIES_URL, {
+  const request = await axios.get(CATEGORIES_URL, {
     params: {
       transform: 1
     }
@@ -35,9 +34,10 @@ async function getRates() {
 // ==============================================
 async function getTransactions() {
   try {
-    const request = await axios.get(APP.TRANSACTIONS_URL, {
+    const request = await axios.get(TRANSACTIONS_URL, {
       params: {
-        transform: 1
+        transform: 1,
+        order: 'date, desc'
       }
     })
     return request.data.transactions
