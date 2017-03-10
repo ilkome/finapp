@@ -3,18 +3,34 @@ label, input, button, select, textarea
   border none
   background none
   outline none
-  font-size 16px
 
 
 // Field
 // ==============================================
 .input
-  width 300px
+  width 150px
+  position relative
   margin-bottom 10px
   padding 10px 15px
+
+.inputField
+  display inline-flex
+  width 100%
+  margin-right 20px
+  padding-bottom 5px
+  margin-bottom 0
+  font-size 33px
+  text-align right
   background #fff
-  border 1px solid #c8d9eb
+  border-bottom 1px solid #c8d9eb
   anim()
+
+.inputLabel
+  text-align right
+  display block
+  padding-left 5px
+  font-size 12px
+
 
 .input.date
   width inherit
@@ -65,7 +81,7 @@ label, input, button, select, textarea
   background #fff
   border 1px solid #c8d9eb
   color #819397
-  font-size 16px
+  //font-size 16px
 
   option
     padding 5px 10px
@@ -138,7 +154,7 @@ label, input, button, select, textarea
       position relative
       display inline-block
       padding 0 0 0 35px
-      font-size 14px
+      //font-size 14px
 
     & + label:after
       content ''

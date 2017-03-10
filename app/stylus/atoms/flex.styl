@@ -1,0 +1,26 @@
+.flex
+  display flex
+  flex-flow wrap row
+  justify-content space-between
+  padding-bottom 10px
+
+  @media $laptop
+    padding-bottom 100px
+
+    ._minwidth
+      // flex-grow 0
+
+  &:last-child
+    padding-bottom 0
+
+.flexColumn
+  flex 1 1 auto
+  padding-bottom 10px
+
+  @media $laptop
+    padding-bottom 0
+    padding-right 100px
+
+  &:last-child
+    padding-bottom 0
+    padding-right 0
