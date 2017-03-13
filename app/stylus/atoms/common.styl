@@ -5,34 +5,6 @@
 .table__cell
   width (calc(50% - 15px))
 
-.items
-  display flex
-  align-items center
-  margin-bottom 15px
-  // padding-left 15px
-  padding-right 15px
-  padding-bottom 15px
-  border-bottom none
-  color $color-main
-  border-bottom 1px solid alpha(white, .1)
-
-  &:last-child
-    margin-bottom 0
-    padding-bottom 0
-    border-bottom none
-
-  > .item
-    flex 0 1 120px
-    white-space nowrap
-    padding-left 30px
-
-    &:first-child
-      flex-basis auto
-      padding-left 0
-
-    &:last-child
-      padding-right 0
-
 .link
   display block
   margin-right 10px
@@ -44,13 +16,13 @@
 .income
   font-size 20px
   font-weight bold
-  color #1E8449
+  color $color-income
   font-family 'Unica One'
 
 .expense
   font-size 20px
   font-weight bold
-  color #CB4335
+  color $color-expense
   font-family 'Unica One'
 
 .sum

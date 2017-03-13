@@ -1,4 +1,10 @@
 .panel
+  margin-bottom 80px
+  padding 30px
+  background $color-panel
+  border 1px solid $color-line
+  border-radius 3px
+
   &__title
     display flex
     flex-flow wrap row
@@ -37,8 +43,6 @@
         &:hover
           opacity .8
 .panel
-  margin-bottom 50px
-
   .panel
     box-shadow none
     border-left none
@@ -54,18 +58,6 @@
       border none
       // padding-bottom 0
 
-.panelTitle
-  margin-bottom 25px
-  $font-secondary-mixin()
-
-  h1&
-    font-size 1.5rem
-
-  &._minus
-    margin-bottom -25px
-
-  span
-    text-transform none
 
 .panelChart
   position relative
@@ -95,3 +87,42 @@
   padding 15px
   margin-bottom 30px
   font-size 14px
+
+
+.infoTable
+  width 400px
+  display flex
+  flex-flow row nowrap
+  margin-bottom 60px
+
+  &__cell
+    flex 0 0 250px
+    margin-right 20px
+
+  &__pie
+    margin -1px 0 0 0
+    opacity .8
+    anim()
+    &:hover
+      opacity 1
+
+
+.panelTitle
+  margin-bottom 50px
+  $font-secondary()
+
+  h1&
+    font-size 1.5rem
+
+  &._sm
+    margin-bottom 25px
+
+  &._minus
+    margin-bottom -15px
+
+  .link
+    display inline-flex
+    cursor pointer
+
+  span
+    text-transform none

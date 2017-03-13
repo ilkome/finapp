@@ -1,30 +1,37 @@
 <template lang="pug">
-.div
-  .accountPage
-    h1.panelTitle
-      | Кошелек:
-      span(:class="`account${account.id}`")  {{ account.name }}
-      span  ({{ account.currency }})
-      sup  {{ account.id }}
+.accountPage
+  h1.panelTitle
+    | Кошелек:
+    span(:class="`account${account.id}`")  {{ account.name }}
+    span  ({{ account.currency }})
+    sup  {{ account.id }}
 
-    .accountDetails._small
-      .accountContentItem
-        .accountContentItemLabel Приход
-        .accountContentItemTotal.income {{ formatMoney(account.totalIncomes, account.currency) }}
-      .accountContentItem
-        .accountContentItemLabel Рассход
-        .accountContentItemTotal.expense {{ formatMoney(account.totalExpenses, account.currency) }}
-      .accountContentItem
-        .accountContentItemLabel Всего
-        .accountContentItemTotal
-          .accountContentItemTotalIn.sum {{ formatMoney(account.totalRub) }}
-          .accountContentItemTotalIn.sum(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
+  .infoTable
+    .infoTable__cell
+      .accountDetails._small
+        .accountContentItem
+          .accountContentItemLabel Приход
+          .accountContentItemTotal.income {{ formatMoney(account.totalIncomes, account.currency) }}
+        .accountContentItem
+          .accountContentItemLabel Рассход
+          .accountContentItemTotal.expense {{ formatMoney(account.totalExpenses, account.currency) }}
+        .accountContentItem
+          .accountContentItemLabel Итого
+          .accountContentItemTotal
+            .accountContentItemTotalIn.sum {{ formatMoney(account.totalRub) }}
+            .accountContentItemTotalIn.sum(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
 
-  h2.panelTitle._minus Транзакции
-  template(v-for="(trn, index) in trnsList")
-    .trnsDay
-      h3(v-if="!isSameDay(index)") {{ trn.date | date}}
-      TrnItem(:trn="trn", :key="trn.id")
+    .infoTable__pie
+      ChartPie(
+        :incomes="account.totalIncomes",
+        :expenses="account.totalExpenses")
+
+  .accountTrns
+    h2.panelTitle._minus Транзакции
+    template(v-for="(trn, index) in trnsList")
+      .trnsDay
+        h3(v-if="!isSameDay(index)") {{ trn.date | date}}
+        TrnItem(:trn="trn", :key="trn.id")
 </template>
 
 <script>
@@ -32,6 +39,7 @@ import { mapGetters } from 'vuex'
 import moment from 'moment'
 import formatMoney from '../../mixins/money'
 import TrnItem from '../trn/TrnItem.vue'
+import ChartPie from '../chart/ChartPie.vue'
 
 export default {
   mixins: [formatMoney],
@@ -48,17 +56,18 @@ export default {
 
   methods: {
     isSameDay(index) {
-      const curDay = moment(this.trns[index].date).startOf('day').format()
-      if (this.trns[index - 1]) {
-        const prevDay = moment(this.trns[index - 1].date).startOf('day').format()
+      const curDay = moment(this.trnsList[index].date).startOf('day').format()
+      if (this.trnsList[index - 1]) {
+        const prevDay = moment(this.trnsList[index - 1].date).startOf('day').format()
         if (curDay === prevDay) {
           return true
         }
       }
+
       return false
     }
   },
 
-  components: { TrnItem }
+  components: { TrnItem, ChartPie }
 }
 </script>

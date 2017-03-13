@@ -76,9 +76,3 @@ export default {
   }
 }
 </script>
-
-
-<style lang="stylus">
-  @import "../../stylus/components"
-  @import "styles/*"
-</style>

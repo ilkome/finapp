@@ -7,6 +7,7 @@
   padding 10px
   padding-left 12px
   background $color-trn
+  border 1px solid $color-line
   border-radius 3px
   anim()
 
@@ -19,12 +20,18 @@
   &.rub
     border-left 3px solid $color-rub
 
+  .items
+    color $color-second
 
 .trnsDay
   h3
     margin-top 50px
     margin-bottom 15px
-    font-size 16px
+    font-size 1rem
     font-weight bold
     letter-spacing 2px
     text-transform uppercase
+    $font-numbers()
+
+.highcharts-point
+  stroke alpha(white, .2)
