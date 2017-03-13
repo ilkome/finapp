@@ -69,6 +69,6 @@ export default {
 
 <style lang="stylus" scoped>
   .chart
-    width 160px
-    height 160px
+    width 200px
+    height 200px
 </style>

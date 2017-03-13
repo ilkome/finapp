@@ -101,12 +101,12 @@
   letter-spacing .5px
 
 .accountContentItemTotal
-  display flex
   $font-numbers()
   letter-spacing 1px
   font-size 16px
   color $color-sum
   font-weight bold
+  text-align right
 
   @media $laptop
     flex-flow row wrap
@@ -116,10 +116,27 @@
   text-align right
   white-space nowrap
 
+.infoTable
+  max-width 500px
+  display flex
+  flex-flow row nowrap
+  margin-bottom 60px
+  align-items center
+
+  &__cell
+    flex 1 1
+    max-width 350px
+    margin-right 20px
+
+  &__pie
+    margin-bottom -13px
+    opacity .8
+    anim()
+    &:hover
+      opacity 1
+
 .accountDetails
   overflow hidden
-  max-width 250px
-  max-height 210px
 
   .accountContentItem
     margin 0

@@ -17,7 +17,7 @@ const renderChart = (options) => {
         dataLabels: {
           enabled: true
         },
-        // enableMouseTracking: false
+        enableMouseTracking: false
       }
     },
     legend: {

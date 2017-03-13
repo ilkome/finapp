@@ -21,11 +21,6 @@
             .accountContentItemTotalIn.sum {{ formatMoney(account.totalRub) }}
             .accountContentItemTotalIn.sum(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
 
-    .infoTable__pie
-      ChartPie(
-        :incomes="account.totalIncomes",
-        :expenses="account.totalExpenses")
-
   .accountTrns
     h2.panelTitle._minus Транзакции
     template(v-for="(trn, index) in trnsList")
@@ -39,7 +34,6 @@ import { mapGetters } from 'vuex'
 import moment from 'moment'
 import formatMoney from '../../mixins/money'
 import TrnItem from '../trn/TrnItem.vue'
-import ChartPie from '../chart/ChartPie.vue'
 
 export default {
   mixins: [formatMoney],
@@ -68,6 +62,6 @@ export default {
     }
   },
 
-  components: { TrnItem, ChartPie }
+  components: { TrnItem }
 }
 </script>

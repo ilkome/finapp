@@ -6,41 +6,44 @@ div
       .infoTable__cell
         .accountDetails._small
           .accountContentItem
-            .accountContentItemLabel Приход
-            .accountContentItemTotal.income {{ formatMoney(dataChart.incomesTotal) }}
-          .accountContentItem
             .accountContentItemLabel Рассход
-            .accountContentItemTotal.expense {{ formatMoney(dataChart.expensesTotal) }}
+            .accountContentItemTotal.expense
+              div {{ formatMoney(dataChart.expensesTotal) }}
+              template(v-if="duration > 1")
+                div {{ formatMoney(dataChart.expensesTotal / duration) }}
+          .accountContentItem
+            .accountContentItemLabel Приход
+            .accountContentItemTotal.income
+              div {{ formatMoney(dataChart.incomesTotal) }}
+              template(v-if="duration > 1")
+                div {{ formatMoney(dataChart.incomesTotal / duration) }}
           .accountContentItem
             .accountContentItemLabel Итого
             .accountContentItemTotal
-              .accountContentItemTotalIn.sum {{ formatMoney(dataChart.incomesTotal - dataChart.expensesTotal) }}
-
+              .accountContentItemTotalIn.sum
+                div {{ formatMoney(dataChart.incomesTotal - dataChart.expensesTotal) }}
+                template(v-if="duration > 1")
+                  div {{ formatMoney((dataChart.incomesTotal - dataChart.expensesTotal) / duration) }}
 
       .infoTable__pie
+        //- pre {{dataChart}}
         ChartPie(
           :incomes="dataChart.incomesTotal",
           :expenses="dataChart.expensesTotal")
 
-    .panel
-      h2.panelTitle Рассходы
+    .panelCol
       template(v-if="dataExpenses.series.length > 0")
-        .panelChart: Chart(:data="dataExpenses")
+        .panel
+          h2.panelTitle Рассходы
+          .panelChart: Chart(:data="dataExpenses")
 
-    .panel
-      h2.panelTitle Поступления
       template(v-if="dataIncomes.series.length > 0")
-        .panelChart: Chart(:data="dataIncomes")
-
-    //- .accountDetails._small
-    //-   .accountDetailsIn
-    //-     .accountContentItem(v-for="(category, index) in dataChart.categories")
-    //-       .accountContentItemLabel {{ category }}
-    //-       .accountContentItemTotal {{ formatMoney(dataChart.series[0] && dataChart.series[0].data[index].y) }}
-    //-       .accountContentItemTotal {{ formatMoney(dataChart.series[1] && dataChart.series[1].data[index].y) }}
+        .panel
+          h2.panelTitle Поступления
+          .panelChart: Chart(:data="dataIncomes")
 
     h2.panelTitle._minus Транзакции
-    template(v-for="(trn, index) in trnsList")
+    template(v-for="(trn, index) in trnsList.slice(0, 10)")
       .trnsDay
         h3(v-if="!isSameDay(index)") {{ trn.date | date}}
         TrnItem(:trn="trn", :key="trn.id")
@@ -78,13 +81,17 @@ export default {
   mixins: [formatMoney],
 
   props: {
-    date: Object
+    date: Object,
+    duration: {
+      type: Number,
+      default: 1
+    }
   },
 
   data() {
     return {
-      dataIncomes: {},
-      dataExpenses: {}
+      dataIncomes: [],
+      dataExpenses: []
     }
   },
 
@@ -128,43 +135,48 @@ export default {
           moment(trn.date) >= this.dateStart &&
           moment(trn.date) <= this.dateEnd
         )
+      let incomesTotal = 0
 
       // total incomes
       const incomesTrns = filteredTrns.filter(trn => trn.type === 1)
-      const incomesTotal = incomesTrns
-        .reduce((sum, current) => sum + current.amountRub, 0)
-      const incomesCatsIds = _.uniqBy(incomesTrns, 'categoryName').map(trn => trn.categoryId)
 
-      const incomesData = incomesCatsIds.map((id) => {
-        const incomesTrnsInCat = incomesTrns.filter(trn => trn.categoryId === id)
-        const incomesTotalInCat = incomesTrnsInCat
+      if (incomesTrns.length > 0) {
+        incomesTotal = incomesTrns
           .reduce((sum, current) => sum + current.amountRub, 0)
-        return {
-          categoryName: this.categories.find(c => c.id === id).name,
-          total: incomesTotalInCat
+        const incomesCatsIds = _.uniqBy(incomesTrns, 'categoryName').map(trn => trn.categoryId)
+
+        const incomesData = incomesCatsIds.map((id) => {
+          const incomesTrnsInCat = incomesTrns.filter(trn => trn.categoryId === id)
+          const incomesTotalInCat = incomesTrnsInCat
+            .reduce((sum, current) => sum + current.amountRub, 0)
+          return {
+            categoryName: this.categories.find(c => c.id === id).name,
+            total: incomesTotalInCat
+          }
+        })
+
+        // sort data by biggest value in category
+        const incomesDataSorted = incomesData.sort((a, b) => {
+          if (a.total > b.total) return -1
+          else if (a.total < b.total) return 1
+          return 0
+        })
+
+        this.dataIncomes = {
+          type: 'column',
+          title: '',
+          categories: incomesDataSorted.map(d => d.categoryName),
+          series: [{
+            name: 'Приход',
+            data: incomesDataSorted.map(d => ({
+              y: d.total,
+              color: getColorByCategory(d.categoryName)
+            }))
+          }],
         }
-      })
-
-      // sort data by biggest value in category
-      const incomesDataSorted = incomesData.sort((a, b) => {
-        if (a.total > b.total) return -1
-        else if (a.total < b.total) return 1
-        return 0
-      })
-
-      this.dataIncomes = {
-        type: 'column',
-        title: '',
-        categories: incomesDataSorted.map(d => d.categoryName),
-        series: [{
-          name: 'Приход',
-          data: incomesDataSorted.map(d => ({
-            y: d.total,
-            color: getColorByCategory(d.categoryName)
-          }))
-        }],
+      } else {
+        this.dataIncomes.series = []
       }
-
 
       // total expenses
       const expensesTrns = filteredTrns.filter(trn => trn.type === 0)

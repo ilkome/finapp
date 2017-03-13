@@ -4,7 +4,7 @@ div
     | Итоги за&nbsp;
     a.link(@click.prevent="changeDuration()") {{ duration }} дней
 
-  ChartByDate(:date="date")
+  ChartByDate(:date="date", :duration="duration")
 </template>
 
 
@@ -20,9 +20,9 @@ export default {
   data() {
     return {
       date: {
-        start: moment().subtract(7, 'days')
+        start: moment().subtract(3, 'days')
       },
-      duration: 7
+      duration: 3
     }
   },
 
@@ -38,6 +38,10 @@ export default {
           this.duration = 14
           break
         case 14:
+          this.date.start = moment().subtract(30, 'days')
+          this.duration = 30
+          break
+        case 30:
           this.date.start = moment().subtract(3, 'days')
           this.duration = 3
           break
