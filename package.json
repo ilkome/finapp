@@ -13,7 +13,8 @@
     "start": "gulp",
     "dev": "gulp",
     "build": "cross-env NODE_ENV=production gulp build && cross-env NODE_ENV=production webpack --progress -p && gulp css && gulp zip",
-    "upload": "cross-env NODE_ENV=production gulp build && cross-env NODE_ENV=production webpack --progress -p && gulp css && gulp upload"
+    "upload": "gulp upload",
+    "build-upload": "cross-env NODE_ENV=production gulp build && cross-env NODE_ENV=production webpack --progress -p && gulp css && gulp upload"
   },
   "devDependencies": {
     "babel-core": "^6.23.1",

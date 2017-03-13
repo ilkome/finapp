@@ -1,4 +1,4 @@
-icon($icon, $bg = #909497)
+icon($icon, $bg = #242424)
   background $bg
   .icon__pic
     fa($icon)
@@ -8,22 +8,24 @@ icon($icon, $bg = #909497)
   width 40px
   height 40px
   color white
-  //font-size 22px
+  font-size 1.2rem
   align-items center
   justify-content center
-  background grey
+  background #444545
   border-radius 3px
+  &__pic
+    fa(industry)
 
 .icon-13 // тинькофф
   icon(credit-card-alt, #1C2833)
 .icon-14 // питание
-  icon(cutlery, #3498DB)
+  icon(cutlery, #6c26b0)
 .icon-15 // бензин
   icon(car, #6D4C41)
 .icon-19
   icon(television, #3498DB)
 .icon-18 // плюшки
-  icon(pagelines, #0E6655)
+  icon(pagelines, #007037)
 .icon-23
   icon(phone)
 .icon-25
@@ -53,7 +55,7 @@ icon($icon, $bg = #909497)
   display flex
   flex-flow wrap
   align-items center
-  justify-content space-between
+  // justify-content space-between
   margin -5px
 
   .icon

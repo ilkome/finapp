@@ -8,8 +8,3 @@
     .prev
       .fa.fa-chevron-right(@click="$store.dispatch('setNextPrevDate', 'next')")
 </template>
-
-<style lang="stylus" scoped>
-  @import "../../stylus/components"
-  @import "filter"
-</style>

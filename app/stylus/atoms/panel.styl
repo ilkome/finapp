@@ -88,25 +88,6 @@
   margin-bottom 30px
   font-size 14px
 
-
-.infoTable
-  width 400px
-  display flex
-  flex-flow row nowrap
-  margin-bottom 60px
-
-  &__cell
-    flex 0 0 250px
-    margin-right 20px
-
-  &__pie
-    margin -1px 0 0 0
-    opacity .8
-    anim()
-    &:hover
-      opacity 1
-
-
 .panelTitle
   margin-bottom 50px
   $font-secondary()
@@ -126,3 +107,17 @@
 
   span
     text-transform none
+
+.panelCol
+  display flex
+  flex-flow row wrap
+  justify-content space-between
+
+  @media $pc
+    flex-flow row nowrap
+
+  .panel
+    flex-basis 100%
+
+    @media $pc
+      flex 0 1 calc(50% - 25px)

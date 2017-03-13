@@ -1,98 +1,92 @@
 <template lang="pug">
-div
-  .flex
-    .flexColumn
-      h1.panelTitle._sm Создание транзакции
-      .panel
-        .panelConentent
-          .form
-            .amount(:class="[(values.type === 1) ? '_income' : '_expense']")
-              a.amountCount(
-                @click="setType()",
-              )
-                .amountCountText
-                  template(v-if="values.type === 1") +
-                  template(v-else) -
+.trnCreate
+  h1.panelTitle._sm Создание транзакции
+  .panel
+    .amount(:class="(values.type === 1) ? '_income' : '_expense'")
+      a.amountCount(
+        @click="setType()",
+      )
+        .amountCountText
+          template(v-if="values.type === 1") +
+          template(v-else) -
 
-              .amountValue
-                input.amountValueInput(
-                  v-model.number.lazy="values.amount",
-                  @keyup.enter="submit",
-                  type="text" name="amount" placeholder="0")
+      .amountValue
+        input.amountValueInput(
+          v-model.number.lazy="values.amount",
+          @keyup.enter="submit",
+          type="text" name="amount" placeholder="0")
 
-            .meta
-              .metaItem._left(@click="showHideAllCategories()")
-                .metaName {{ values.categoryName }}
-                .metaItemLabel Категория
+    .meta
+      .metaItem._left(@click="showHideAllCategories()")
+        .metaName {{ values.categoryName }}
+        .metaItemLabel Категория
 
-              .metaItem._right(@click="showHideAllAccounts()")
-                .metaName {{ values.accountName }}
-                .metaItemLabel Кошелек
-                template(v-if="showAllAccounts")
-                  .metaItemDropdown
-                    a.link(href="#"
-                      v-for="account in accounts",
-                      :class="{active: (account.id === values.accountId)}",
-                      @click.prevent="setAccoundId(account.id)"
-                    ) {{ account.name }}
+      .metaItem._right(@click="showHideAllAccounts()")
+        .metaName {{ values.accountName }}
+        .metaItemLabel Кошелек
+        template(v-if="showAllAccounts")
+          .metaItemDropdown
+            a.link(href="#"
+              v-for="account in accounts",
+              :class="{active: (account.id === values.accountId)}",
+              @click.prevent="setAccoundId(account.id)"
+            ) {{ account.name }}
 
-            .categories
-              .meta(v-if="showAllCategories")
-                select(v-model="values.categoryId")
-                  option(v-for="category in categories", :value="category.id") {{ category.name }}
+    .categories
+      .meta(v-if="showAllCategories")
+        select(v-model="values.categoryId")
+          option(v-for="category in categories", :value="category.id") {{ category.name }}
 
-              .icons
-                a.icon(
-                  href="#"
-                  v-for="trn in lastCategories.slice(0, 10)",
-                  :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
-                  :title="trn.categoryName",
-                  @click.prevent="setCategory(trn.categoryId)")
-                  .icon__pic
+      .icons
+        a.icon(
+          href="#"
+          v-for="trn in lastCategories.slice(0, 10)",
+          :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
+          :title="trn.categoryName",
+          @click.prevent="setCategory(trn.categoryId)")
+          .icon__pic
 
-                template(v-if="showAllCategories")
-                  transition(name="fade" v-for="trn in lastCategories.slice(10)")
-                    a.icon(
-                      href="#",
-                      :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
-                      :title="trn.categoryName",
-                      @click.prevent="setCategory(trn.categoryId)")
-                      .icon__pic
+        template(v-if="showAllCategories")
+          transition(name="fade" v-for="trn in lastCategories.slice(10)")
+            a.icon(
+              href="#",
+              :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
+              :title="trn.categoryName",
+              @click.prevent="setCategory(trn.categoryId)")
+              .icon__pic
 
+    .desc
+      input.descInput(
+        v-model.trim="values.description"
+        type="text" name="description" placeholder="Описание")
 
-            .desc
-              input.descInput(
-                v-model.trim="values.description"
-                type="text" name="description" placeholder="Описание")
+    .action
+      transition(name="fade")
+        .actionButton(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
+        .actionButton(v-else @click.prevent="submit") Создать
 
-            .action
-              transition(name="fade")
-                .actionButton(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
-                .actionButton(v-else @click="submit") Создать
-
-    //- .flexColumn
-      //- .module__title
-      //-   .panel__title
-      //-     h3.panelTitle Транзакции
-      //-     .panel__title-nav
-      //-       .panel__title-nav__left(@click="setNextPrevDate('prev')")
-      //-       .panel__title-nav__date(@click="showDateSelector()")
-      //-         template(v-if="editingDate")
-      //-           input(
-      //-             v-model.trim="tempDate"
-      //-             @keyup.esc="hideDateSelector()"
-      //-             @keyup.enter="setDate()"
-      //-             type="text" name="date" placeholder="31.12.2017").input.date
-      //-         div(v-else) {{ date | date }}
-      //-       .panel__title-nav__right(@click="setNextPrevDate('next')")
-      //-
-      //- template(v-if="trnsBySelectedDate.length")
-      //-   TrnItem(
-      //-     v-for="(trn, index) in trnsBySelectedDate",
-      //-     :trns="trnsBySelectedDate", :trn="trn", :index="index", :key="trn.id")
-      //-
-      //- template(v-else)
-      //-   div Нет транзакций за эту дату
+  //- .div
+  //-   .div
+  //-     h3.panelTitle Транзакции
+  //-     .panel__title-nav
+  //-       .panel__title-nav__left(@click.prevent="setNextPrevDate('prev')")
+  //-       .panel__title-nav__date(@click.prevent="showDateSelector()")
+  //-         template(v-if="editingDate")
+  //-           input(
+  //-             v-model.trim="tempDate"
+  //-             @keyup.esc="hideDateSelector()"
+  //-             @keyup.enter="setDate()"
+  //-             type="text" name="date" placeholder="31.12.2017").input.date
+  //-         div(v-else) {{ date | date }}
+  //-       .panel__title-nav__right(@click.prevent="setNextPrevDate('next')")
+  //-
+  //- template(v-if="trnsBySelectedDate.length")
+  //-   TrnItem(
+  //-     v-for="(trn, index) in trnsBySelectedDate",
+  //-     :trns="trnsBySelectedDate", :trn="trn", :index="index", :key="trn.id")
+  //-
+  //- template(v-else)
+  //-   div Нет транзакций за эту дату
 
   //- ChartByDate
   ChartByDate(:date="dateChart")
