@@ -11,7 +11,7 @@
   padding-bottom 25px
 
   &:last-child
-    padding-bottom 0
+    padding-bottom 10px
 
 .accountTitle
   display flex
@@ -23,7 +23,6 @@
   font-weight bold
   letter-spacing 2px
   text-transform uppercase
-  // border-bottom 1px solid alpha(white, .06)
 
 .accountContent
   display flex
@@ -34,32 +33,29 @@
   @media $laptop
     flex-flow column nowrap
 
-
 .accountContentItem
   position relative
   display flex
   flex 1 1 45%
   height 60px
   padding 0 15px
-  line-height 1
   justify-content space-between
   align-items center
-  color $color-main
-  border-bottom 1px solid alpha(white, .06)
+  color $color-second
+  border-bottom 1px solid $color-line-account
   anim-all()
-
-  &:hover
-    opacity 1
-    color white
-
-  &:last-child
-    margin-bottom 0
-    border none
 
   @media $laptop
     flex-basis 100%
     max-width 100%
     margin 0 30px
+
+  &:hover
+    color $color-main
+
+  &:last-child
+    margin-bottom 0
+    border none
 
   sup
     display none
@@ -94,9 +90,14 @@
     &:hover:before
       width 5px
 
+  &.account1.active
+    color #2E86C1
+
+  &.account2.active
+    color #ab68da
+
 // label
 .accountContentItemLabel
-  opacity .5
   letter-spacing .5px
 
 .accountContentItemTotal
@@ -119,8 +120,6 @@
   overflow hidden
   max-width 250px
   max-height 210px
-  margin-bottom 50px
-  overflow scroll
 
   .accountContentItem
     margin 0
@@ -129,3 +128,18 @@
     .accountContentItem
       height auto
       padding 15px
+
+.accountTrns
+  h3 + .trnItem
+    border-top 1px solid $color-line-layout
+
+  .trnItem
+    padding 15px
+    margin 0
+    background none
+    border none
+    border-top 1px solid $color-line
+    border-left 0 !important
+    border-radius 0
+    &:last-child
+      border-bottom none

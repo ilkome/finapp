@@ -1,6 +1,6 @@
 <template lang="pug">
 .trnItem(:class="trnClassName")
-  router-link.items(:to="`trn/${trn.id}/edit`")
+  router-link.items(:to="`/trn/${trn.id}/edit`")
     .item
       .icon(:class="`icon-${trn.categoryId}`"): .icon__pic
     .item.right.aligned

@@ -10,38 +10,29 @@ const renderChart = (options) => {
   Highcharts.setOptions(chartTheme)
   Highcharts.chart(options.$el, {
     chart: {
-      type: options.data.type,
+      type: 'pie'
     },
     plotOptions: {
-      column: {
+      pie: {
+        allowPointSelect: false,
         dataLabels: {
-          enabled: true
+          enabled: false
         },
-        // enableMouseTracking: false
+        enableMouseTracking: false
       }
-    },
-    legend: {
-      enabled: false
     },
     title: {
-      text: options.data.title
+      text: '',
     },
-    xAxis: {
-      categories: options.data.categories,
-      crosshair: true,
-      labels: {
-        x: 0
-      }
-    },
-    yAxis: {
-      title: {
-        enabled: false
-      },
-    },
-    series: options.data.series,
-    tooltip: {
-      shared: true
-    },
+    series: [{
+      data: [{
+        y: options.incomes,
+        color: '#1e7a45'
+      }, {
+        y: options.expenses,
+        color: '#a73b2f'
+      }]
+    }],
     credits: {
       enabled: false
     }
@@ -50,14 +41,21 @@ const renderChart = (options) => {
 
 export default {
   props: {
-    data: {
-      type: Object,
+    incomes: {
+      type: Number,
+      required: true
+    },
+    expenses: {
+      type: Number,
       required: true
     }
   },
 
   watch: {
-    data() {
+    incomes() {
+      renderChart(this)
+    },
+    expenses() {
       renderChart(this)
     }
   },
@@ -71,8 +69,6 @@ export default {
 
 <style lang="stylus" scoped>
   .chart
-    height 300px
-
-    @media $laptop
-      height 800px
+    width 160px
+    height 160px
 </style>

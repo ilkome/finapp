@@ -1,15 +1,8 @@
-.form
-  background alpha(black, .1)
-  padding 30px
-  border-radius 3px
-  @media $laptop
-    // max-width 400px
-
 .amount
   display flex
   align-items center
-  justify-content space-between
-  width 100px
+  // justify-content space-between
+  width 150px
   margin 0 auto
   padding-bottom 20px
 
@@ -27,19 +20,23 @@
 
 .amountCount
   display flex
-  width 40px
-  height 40px
+  width 150px
+  height 80px
   justify-content center
   align-items center
-  font-size 36px
+  font-size 2rem
+  $font-numbers()
   font-weight bold
+  border 1px solid alpha(white, .1)
   cursor pointer
 
 .amountValueInput
-  width 100px
-  font-size 36px
+  width 150px
+  padding 0 5px
+  font-size 4rem
+  $font-numbers()
   text-align right
-  border-bottom 2px solid alpha(black, .1)
+  border-bottom 2px solid $color-line
 
 .meta
   position relative
@@ -84,17 +81,16 @@
 
 .actionButton
   display inline-flex
-  padding 5px 20px
-  color white
-  ////font-size .8rem
+  padding 15px 50px
+  color $color-main
+  font-size 12px
   font-weight bold
-  background $color-orange
+  text-transform uppercase
+  letter-spacing 2px
+  background $color-line
   border-radius 3px
   cursor pointer
 
-  @media $laptop
-    font-size 1rem
-    padding 10px 35px
-
-.hide
-  display none
+  &:hover
+    color #ababab
+    background $color-link

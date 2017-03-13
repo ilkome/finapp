@@ -1,47 +1,55 @@
 $theme = "black"
-// $theme = "blue"
+$theme = "blue"
 
 
 // Black Theme
 // ==============================================
 if $theme == "black"
   $color-main = #ababab
-  $color-link = #ec6f2f
-  $color-header = $color-main
+  $color-second = #5f5f5f
+  $color-link = #bb5c2c
 
   $color-rub = #2E86C1
   $color-tinkoff = #ab68da
   $color-sum = #7d7d7d
-  $color-income = #1E8449
-  $color-expense = #CB4335
+  $color-income = #1e7a45
+  $color-expense = #a73b2f
 
   $color-body = #1A1A1A
   $color-layout = #161616
   $color-panel = #161616
   $color-trn = #161616
   $color-trn-hover = #111111
+  $color-line = #242424
+  $color-line-layout = #2C2C2C
+  $color-line-account = #272727
+
+  $color-header = $color-main
 
 
 // Blue Theme
 // ==============================================
 if $theme == "blue"
-  $color-main = #8A96A0
-  $color-orange = #DD574C
-  $color-main = #8A96A0
-
-  $color-link = $color-orange
-  $color-header = $color-main
+  $color-main = #666666
+  $color-second = #6c839e
+  $color-link = #bb5c2c
 
   $color-rub = #2E86C1
   $color-tinkoff = #ab68da
-  $color-income = #4dad85
-  $color-expense = #CB4335
   $color-sum = #7d7d7d
+  $color-income = #1e7a45
+  $color-expense = #a73b2f
 
-  $color-body = #272D33
-  $color-layout = #161616
-  $color-panel = #171717
-  $color-trn = #161616
+  $color-body = #edeef0
+  $color-layout = #e2e6ea
+  $color-panel = #e2e6ea
+  $color-trn = #e2e6ea
+  $color-trn-hover = #edf0f5
+  $color-line = #dfe2e8
+  $color-line-layout = #e3e4e8
+  $color-line-account = #dfe2e8
+
+  $color-header = $color-main
 
 
 // Fonts
@@ -53,6 +61,9 @@ $font-primary-mixin()
   font-family $font-primary
   font-weight 400
 $font-secondary-mixin()
+  font-family $font-secondary
+
+$font-secondary()
   font-family $font-secondary
 
 $font-numbers()

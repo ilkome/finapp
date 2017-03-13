@@ -1,9 +1,9 @@
 <template lang="pug">
 div
   .flex
-    .flexColumn._minwidth
+    .flexColumn
+      h1.panelTitle._sm Создание транзакции
       .panel
-        h1.panelTitle Создание транзакции
         .panelConentent
           .form
             .amount(:class="[(values.type === 1) ? '_income' : '_expense']")
@@ -70,30 +70,29 @@ div
                 .actionButton(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
                 .actionButton(v-else @click="submit") Создать
 
-    .flexColumn
-      .panel
-        .module__title
-          .panel__title
-            h3.panelTitle Транзакции
-            .panel__title-nav
-              .panel__title-nav__left(@click="setNextPrevDate('prev')")
-              .panel__title-nav__date(@click="showDateSelector()")
-                template(v-if="editingDate")
-                  input(
-                    v-model.trim="tempDate"
-                    @keyup.esc="hideDateSelector()"
-                    @keyup.enter="setDate()"
-                    type="text" name="date" placeholder="31.12.2017").input.date
-                div(v-else) {{ date | date }}
-              .panel__title-nav__right(@click="setNextPrevDate('next')")
-
-        template(v-if="trnsBySelectedDate.length")
-          TrnItem(
-            v-for="(trn, index) in trnsBySelectedDate",
-            :trns="trnsBySelectedDate", :trn="trn", :index="index", :key="trn.id")
-
-        template(v-else)
-          div Нет транзакций за эту дату
+    //- .flexColumn
+      //- .module__title
+      //-   .panel__title
+      //-     h3.panelTitle Транзакции
+      //-     .panel__title-nav
+      //-       .panel__title-nav__left(@click="setNextPrevDate('prev')")
+      //-       .panel__title-nav__date(@click="showDateSelector()")
+      //-         template(v-if="editingDate")
+      //-           input(
+      //-             v-model.trim="tempDate"
+      //-             @keyup.esc="hideDateSelector()"
+      //-             @keyup.enter="setDate()"
+      //-             type="text" name="date" placeholder="31.12.2017").input.date
+      //-         div(v-else) {{ date | date }}
+      //-       .panel__title-nav__right(@click="setNextPrevDate('next')")
+      //-
+      //- template(v-if="trnsBySelectedDate.length")
+      //-   TrnItem(
+      //-     v-for="(trn, index) in trnsBySelectedDate",
+      //-     :trns="trnsBySelectedDate", :trn="trn", :index="index", :key="trn.id")
+      //-
+      //- template(v-else)
+      //-   div Нет транзакций за эту дату
 
   //- ChartByDate
   ChartByDate(:date="dateChart")
@@ -139,7 +138,7 @@ export default {
     dateChart() {
       return {
         start: moment(this.$store.state.filter.date).format('DD.MM.YY'),
-        end: moment(this.$store.state.filter.date).add('1', 'days').format('DD.MM.YY')
+        end: moment(this.$store.state.filter.date).format('DD.MM.YY')
       }
     },
     trnsBySelectedDate() {

@@ -8,16 +8,13 @@
     Sidebar
 
     .main
-      .mainTop
+      .topBar
         .mainTopLeft
           MenuTop
         .mainTopRight
           FilterTop
 
-      //- .panel.small
-        h1.panelTitle
-          template(v-if="$store.state.appStatus") {{ $store.state.appStatus }}
-          template(v-else) Привет, Илюшкин и Никитка
+      h1(v-if="$store.state.appStatus").panelTitle
 
       transition(name="slide")
         router-view
