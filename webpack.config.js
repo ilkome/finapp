@@ -1,4 +1,5 @@
 const webpack = require('webpack')
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const path = require('path')
 const paths = require('./gulpfile.js/paths')
 
@@ -26,12 +27,13 @@ if (!isProd) {
     'webpack-hot-middleware/client?reload=true'
   )
   plugins.push(
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new FriendlyErrorsPlugin()
   )
 }
 
 module.exports = {
-  devtool: isProd ? false : '#eval-source-map',
+  devtool: isProd ? false : '#cheap-module-eval-source-map',
   stats: {
     colors: true,
     assets: false,
@@ -56,7 +58,7 @@ module.exports = {
     ],
     extensions: ['.js', '.vue'],
     alias: {
-      vue: 'vue/dist/vue.js'
+      vue$: 'vue/dist/vue.esm.js'
     }
   },
 

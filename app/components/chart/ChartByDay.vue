@@ -7,7 +7,7 @@ div
 
 <script>
 import { mapGetters } from 'vuex'
-import _ from 'lodash'
+import uniqBy from 'lodash/uniqBy'
 import moment from 'moment'
 import formatMoney from '../../mixins/money'
 import Chart from '../chart/Chart.vue'
@@ -45,7 +45,7 @@ export default {
         )
 
       // find uniq categories and get ids
-      const uniqCategoriesIds = _.uniqBy(trns, 'categoryName').map(trn => trn.categoryId)
+      const uniqCategoriesIds = uniqBy(trns, 'categoryName').map(trn => trn.categoryId)
 
 
       // create data for series

@@ -1,78 +1,90 @@
 <template lang="pug">
-  .chart loading...
+  .chart(:class="className") loading...
 </template>
 
 <script>
 import Highcharts from 'highcharts'
 import chartTheme from './chartTheme'
 
-const renderChart = (options) => {
-  Highcharts.setOptions(chartTheme)
-  Highcharts.chart(options.$el, {
-    chart: {
-      type: options.data.type,
-    },
-    plotOptions: {
-      column: {
-        dataLabels: {
-          enabled: true
-        },
-        enableMouseTracking: false
-      }
-    },
-    legend: {
-      enabled: false
-    },
-    title: {
-      text: options.data.title
-    },
-    xAxis: {
-      categories: options.data.categories,
-      crosshair: true,
-      labels: {
-        x: 0
-      }
-    },
-    yAxis: {
-      title: {
-        enabled: false
-      },
-    },
-    series: options.data.series,
-    tooltip: {
-      shared: true
-    },
-    credits: {
-      enabled: false
-    }
-  })
-}
-
 export default {
   props: {
+    chartType: {
+      type: String,
+      default: 'column'
+    },
+    chartTitle: {
+      type: String,
+      default: ''
+    },
     data: {
       type: Object,
       required: true
+    },
+  },
+
+  data() {
+    return {
+      chart: null
+    }
+  },
+
+  computed: {
+    className() {
+      if (this.chartType === 'pie') return 'chart__pie'
+      return 'chart__column'
     }
   },
 
   watch: {
     data() {
-      renderChart(this)
+      if (this.chart) {
+        this.chart.series[0].setData(this.data.series[0].data)
+        this.chart.xAxis[0].setCategories(this.data.categories)
+      }
+    }
+  },
+
+  methods: {
+    init() {
+      if (!this.chart) {
+        Highcharts.setOptions(chartTheme)
+        this.chart = new Highcharts.Chart(this.$el, {
+          chart: {
+            type: this.chartType
+          },
+          plotOptions: {
+            column: {
+              dataLabels: { enabled: true },
+              enableMouseTracking: false
+            },
+            pie: {
+              allowPointSelect: false,
+              dataLabels: { enabled: false },
+              enableMouseTracking: false
+            }
+          },
+          legend: { enabled: false },
+          title: { text: this.chartTitle },
+          xAxis: {
+            categories: this.data.categories,
+            crosshair: true,
+            labels: { x: 0 }
+          },
+          yAxis: { title: { enabled: false } },
+          series: this.data.series,
+          tooltip: { shared: true },
+          credits: { enabled: false }
+        })
+      }
     }
   },
 
   mounted() {
-    renderChart(this)
+    this.init()
+  },
+
+  beforeDestroy() {
+    if (this.chart) this.chart.destroy()
   }
 }
 </script>
-
-
-<style lang="stylus" scoped>
-  .chart
-    height 300px
-
-    @media $laptop
-      height 800px
-</style>

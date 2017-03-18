@@ -17,25 +17,31 @@
   font-size 18px
   font-weight bold
   color $color-income
-  font-family 'Unica One'
+  $font-numbers()
 
 .expense
   font-size 18px
   font-weight bold
   color $color-expense
-  font-family 'Unica One'
+  $font-numbers()
 
 .sum
   font-size 18px
   font-weight bold
   color $color-sum
-  font-family 'Unica One'
+  $font-numbers()
 
 .loading
+  z-index 100
+  display flex
+  align-items center
+  justify-content center
   position fixed
   left 0
   top 0
   width 100%
   height 100%
   text-align center
-  background grey
+  font-size 2rem
+  color $color-main
+  background $color-layout

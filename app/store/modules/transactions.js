@@ -1,5 +1,5 @@
 import axios from 'axios'
-import _ from 'lodash'
+import orderBy from 'lodash/orderBy'
 import { getTransactions } from '../../api/api'
 import { TRANSACTIONS_URL } from '../../constants'
 
@@ -22,12 +22,12 @@ const getters = {
 
     // add to trns extra info
     trns = trns.map(trn => ({
-      id: trn.id,
+      id: +trn.id,
       currency: trn.currency,
-      date: trn.date,
-      type: trn.type,
-      accountId: trn.accountId,
-      categoryId: trn.categoryId,
+      date: +trn.date,
+      type: +trn.type,
+      accountId: +trn.accountId,
+      categoryId: +trn.categoryId,
       accountName: accounts.find(a => a.id === trn.accountId).name,
       amount: Math.abs(trn.amount),
       amountRub: trn.currency !== 'RUB'
@@ -37,7 +37,7 @@ const getters = {
       symbol: accounts.find(account => account.id === trn.accountId).symbol
     }))
 
-    const orderedTrns = _.orderBy(trns, 'date', 'desc')
+    const orderedTrns = orderBy(trns, 'date', 'desc')
     return orderedTrns
   },
 
@@ -54,8 +54,9 @@ const getters = {
 // ==============================================
 const actions = {
   // add
-  async addTrn({ commit }, values) {
+  async addTrn({ commit, dispatch }, values) {
     commit('setStatus', 'Создание...')
+    dispatch('setAppStatus', 'Создание...', false)
     try {
       const postTrn = await axios.post(TRANSACTIONS_URL, values)
       const newID = postTrn.data
@@ -64,9 +65,10 @@ const actions = {
       })
       commit('addTrn', getTrn.data)
       commit('setStatus', 'Транзакция создана :)')
+      dispatch('setAppStatus', 'Создано!')
       setTimeout(() => commit('setStatus'), 2000)
     } catch (e) {
-      commit('setappStatus', 'Ошибка создания транзакции')
+      dispatch('setAppStatus', 'Ошибка создания транзакции')
     }
   },
 
@@ -77,7 +79,7 @@ const actions = {
   },
 
   // update
-  async updateTrn({ commit }, trn) {
+  async updateTrn({ commit, dispatch }, trn) {
     try {
       const updatedTrn = await axios.put(`${TRANSACTIONS_URL}/${trn.id}`, trn)
       const result = updatedTrn.data
@@ -91,22 +93,23 @@ const actions = {
         commit('setStatus', 'Транзакция обновлена :)')
         setTimeout(() => commit('setStatus'), 2000)
       } else {
-        commit('setappStatus', 'Ошибка создания транзакции 1')
+        dispatch('setAppStatus', 'Ошибка создания транзакции 1')
       }
     } catch (e) {
-      commit('setappStatus', 'Ошибка создания транзакции 2')
+      dispatch('setAppStatus', 'Ошибка создания транзакции 2')
     }
   },
 
   // delete
-  async deleteTrn({ commit }, id) {
+  async deleteTrn({ commit, dispatch }, id) {
+    dispatch('setAppStatus', `Удаление ${id}...`, false)
     const request = await axios.delete(`${TRANSACTIONS_URL}/${id}`)
     const result = request.data
     if (result === 1) {
-      commit('setappStatus', 'Удалено')
+      dispatch('setAppStatus', `Удалено ${id}`)
       commit('deleteTrn', id)
     } else {
-      commit('setappStatus', 'Не удалено')
+      dispatch('setAppStatus', `Не удалено ${id}`)
     }
   }
 }

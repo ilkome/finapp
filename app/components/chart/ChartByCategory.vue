@@ -4,7 +4,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import _ from 'lodash'
+import uniqBy from 'lodash/uniqBy'
 import moment from 'moment'
 import formatMoney from '../../mixins/money'
 import Chart from '../chart/Chart.vue'
@@ -29,7 +29,7 @@ export default {
         )
 
       // find uniq dates and get ids
-      const uniqDates = _.uniqBy(trns, trn => moment(trn.date).format('MM.YY')).map(trn => moment(trn.date).format('MM.YY'))
+      const uniqDates = uniqBy(trns, trn => moment(trn.date).format('MM.YY')).map(trn => moment(trn.date).format('MM.YY'))
 
       // create data for series
       const data = uniqDates.map((date) => {
