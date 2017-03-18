@@ -9,12 +9,11 @@
 
     .main
       .topBar
-        .mainTopLeft
-          MenuTop
-        .mainTopRight
-          FilterTop
+        transition(name="topBar__anim")
+          .topBar__status(v-if="$store.state.appStatus") {{ $store.state.appStatus }}
 
-      h1(v-if="$store.state.appStatus").panelTitle
+        MenuTop
+        FilterTop
 
       transition(name="slide")
         router-view

@@ -47,12 +47,13 @@
           .icon__pic
 
         template(v-if="showAllCategories")
-          transition(name="fade" v-for="trn in lastCategories.slice(10)")
+          transition(name="fade" v-for="trn in lastCategories.slice(10)", :key="trn.id")
             a.icon(
               href="#",
               :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
               :title="trn.categoryName",
-              @click.prevent="setCategory(trn.categoryId)")
+              @click.prevent="setCategory(trn.categoryId)"
+            )
               .icon__pic
 
     .desc
@@ -95,7 +96,7 @@
 
 <script>
 import moment from 'moment'
-import _ from 'lodash'
+import uniqBy from 'lodash/uniqBy'
 import { mapGetters } from 'vuex'
 import formatMoney from '../../mixins/money'
 import TrnItem from './TrnItem.vue'
@@ -141,7 +142,7 @@ export default {
       return trnsInThisDay
     },
     lastCategories() {
-      return _.uniqBy(this.trns, 'categoryName').slice(0, 100)
+      return uniqBy(this.trns, 'categoryName').slice(0, 100)
     }
   },
 
@@ -205,9 +206,3 @@ export default {
   components: { TrnItem, ChartByDate }
 }
 </script>
-
-
-<style lang="stylus" scoped>
-  @import "../../stylus/components"
-  @import "styles/form"
-</style>

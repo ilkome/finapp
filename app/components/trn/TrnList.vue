@@ -24,7 +24,7 @@ export default {
 
   methods: {
     trnsList() {
-      return this.trns.slice(0, 50)
+      return this.trns.slice(0, 10)
     },
     isSameDay(index) {
       const curDay = moment(this.trns[index].date).startOf('day').format()

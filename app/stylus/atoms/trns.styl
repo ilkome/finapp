@@ -2,23 +2,42 @@
   position relative
 
 .trnItem
+  display flex
+  align-items center
   max-width 500px
-  margin-bottom 15px
+  margin-bottom 5px
   padding 10px
   padding-left 12px
+  color $color-main
   background $color-trn
-  // border 1px solid $color-line
   border-radius 3px
   anim()
+
+  @media $laptop
+    margin-bottom 15px
 
   &:hover
     background $color-trn-hover
 
-  &.tinkoff
-    border-left 3px solid $color-tinkoff
+  &.account
+    &-8
+      border-left 3px solid $color-tinkoff
 
   &.rub
     border-left 3px solid $color-rub
+
+  &__el
+    padding-right 30px
+    &._delete
+    &._category
+      display none
+
+  &__price
+    flex-basis auto
+    min-width 100px
+    max-width 200px
+    padding-right 30px
+    text-align right
 
   .items
     color $color-second

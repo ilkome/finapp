@@ -1,14 +1,14 @@
 <template lang="pug">
-.trnItem(:class="trnClassName")
-  router-link.items(:to="`/trn/${trn.id}/edit`")
-    .item
-      .icon(:class="`icon-${trn.categoryId}`"): .icon__pic
-    .item.right.aligned
-      div(:class="trn.type === 1 ? 'income' : 'expense'") {{ formatMoney(trn.amount) }}
-    .item
-      div(:class="trn.accountId === 1 ? 'c-tinkoff' : 'c-rub'") {{ trn.accountName }}
-    .item
-      div {{ trn.categoryName }}
+router-link.trnItem(:to="`/trn/${trn.id}/edit`", :class="`account-${trn.accountId}`")
+  .trnItem__el
+    .icon(:class="`icon-${trn.categoryId}`"): .icon__pic
+  .trnItem__el.trnItem__price(:class="trn.type === 1 ? 'income' : 'expense'")
+    div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
+    div {{ formatMoney(trn.amountRub) }}
+  .trnItem__el(:class="trn.accountId === 1 ? 'c-tinkoff' : 'c-rub'") {{ trn.accountName }}
+  .trnItem__el._category {{ trn.categoryName }}
+  .trnItem__el._delete
+    a(@click.prevent="deleteTrn(trn.id)") Удалить
 </template>
 
 
@@ -24,13 +24,9 @@ export default {
     }
   },
 
-  computed: {
-    trnClassName() {
-      switch (this.trn.accountId) {
-        case 1: return 'rub'
-        case 2: return 'tinkoff'
-        default: return 'def'
-      }
+  methods: {
+    deleteTrn(id) {
+      this.$store.dispatch('deleteTrn', id)
     }
   }
 }

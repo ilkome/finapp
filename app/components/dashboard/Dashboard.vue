@@ -12,17 +12,19 @@ div
 import moment from 'moment'
 import formatMoney from '../../mixins/money'
 import ChartByDate from '../chart/ChartByDate.vue'
-import ChartPie from '../chart/ChartPie.vue'
+
 
 export default {
   mixins: [formatMoney],
 
   data() {
+    const duration = 10
+
     return {
       date: {
-        start: moment().subtract(3, 'days')
+        start: moment().subtract(duration, 'days')
       },
-      duration: 3
+      duration
     }
   },
 
@@ -49,23 +51,10 @@ export default {
           this.date.start = moment().subtract(7, 'days')
           this.duration = 7
       }
-    },
-
-    showYear() {
-      this.date = {
-        start: '1.01.16',
-        add: [1, 'year']
-      }
-    },
-    showMonth() {
-      this.date = {
-        start: '1.01.17',
-        add: [1, 'month']
-      }
     }
   },
 
 
-  components: { ChartByDate, ChartPie }
+  components: { ChartByDate }
 }
 </script>

@@ -4,6 +4,7 @@
     .account
       .accountTitle Кошельки
       .accountContent
+
         //- Account item
         template(v-for="account in accounts")
           router-link.accountContentItem(
@@ -11,10 +12,12 @@
               :class="`account${account.id}`"
             )
             .accountContentItemLabel {{ account.name }} <sup>{{ account.id }}</sup>
-            .accountContentItemTotal(v-if="account.totalRub")
-              .accountContentItemTotalIn {{ formatMoney(account.totalRub) }}
-              .accountContentItemTotalIn(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
-            .accountTotalValue(v-else) 0
+            .accountContentItemTotal
+              template(v-if="account.total > 0")
+                .accountContentItemTotalIn {{ formatMoney(account.totalRub) }}
+                .accountContentItemTotalIn(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
+              template(v-else)
+                .accountContentItemTotalIn 0 {{account.symbol}}
 
     .account
       .accountTitle Итоги
@@ -29,21 +32,6 @@
           .accountContentItemTotal
             .accountContentItemTotalIn {{ showRateOf('USD') }}
             .accountContentItemTotalIn {{ showRateOf('EUR') }}
-
-      //- //- Total amount
-      //- .accountTotal
-      //-   .accountLabel Всего
-      //-   .accountTotalValue
-      //-     .accountContentItemTotalIn {{ showSumIn('RUB') }}
-      //-     .accountContentItemTotalIn {{ showSumIn('USD') }}
-      //-     .accountContentItemTotalIn {{ showSumIn('EUR') }}
-      //-
-      //- //- Rates
-      //- .accountTotal
-      //-   .accountLabel Курс
-      //-   .accountTotalValue
-      //-     .accountContentItemTotalIn {{ showRateOf('USD') }}
-      //-     //- .accountContentItemTotalIn {{ showRateOf('EUR') }}
 </template>
 
 
@@ -58,9 +46,7 @@ export default {
     ...mapGetters(['accounts', 'rates']),
 
     total() {
-      const accounts = this.accounts.filter(a =>
-        a.id === 1 || a.id === 2
-      )
+      const accounts = this.accounts.filter(a => a.id === 1 || a.id === 2)
       return accounts.reduce((sum, account) => sum + account.totalRub, 0)
     }
   },
