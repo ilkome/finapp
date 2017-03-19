@@ -22,8 +22,6 @@
       .trnItem__el
         .icon(:class="`icon-${category.id}`"): .icon__pic
       .trnItem__el {{ category.name }}
-      .trnItem__el
-        //- a(@click.prevent="deleteTrn(category.id)") Удалить
 </template>
 
 <script>

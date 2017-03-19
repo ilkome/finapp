@@ -4,52 +4,23 @@ div
     | Итоги за&nbsp;
     a.link(@click.prevent="changeDuration()") {{ duration }} дней
 
-  template(v-if="trnsList.length")
-    .infoTable
-      .infoTable__cell
-        .accountDetails._small
-          .accountContentItem
-            .accountContentItemLabel Рассход
-            .accountContentItemTotal.expense
-              div {{ formatMoney(expensesTotal) }}
-              template(v-if="expensesTotal > 0 && duration > 1")
-                div {{ formatMoney(expensesTotal / duration) }}
-          .accountContentItem
-            .accountContentItemLabel Приход
-            .accountContentItemTotal.income
-              div {{ formatMoney(incomesTotal) }}
-              template(v-if="incomesTotal > 0 && duration > 1")
-                div {{ formatMoney(incomesTotal / duration) }}
-          .accountContentItem
-            .accountContentItemLabel Итого
-            .accountContentItemTotal
-              .accountContentItemTotalIn.sum
-                div {{ formatMoney(incomesTotal - expensesTotal) }}
-                template(v-if="duration > 1")
-                  div {{ formatMoney((incomesTotal - expensesTotal) / duration) }}
+  SummaryShort(
+    :duration="duration",
+    :expenses="expensesTotal",
+    :incomes="incomesTotal"
+  )
 
-      .infoTable__pie
-        Chart(chartType="pie", :data="pieDataChart")
+  SummaryCharts(
+    :expenses="expensesDataChart",
+    :incomes="incomesDataChart"
+  )
 
-    .panelCol
-      template(v-if="expensesDataChart")
-        .panel
-          h2.panelTitle Рассходы
-          .panelChart
-            Chart(:data="expensesDataChart")
-
-      template(v-if="incomesDataChart")
-        .panel
-          h2.panelTitle Поступления
-          .panelChart
-            Chart(:data="incomesDataChart")
-
-    .accountTrns
-      h2.panelTitle._minus Транзакции
-      template(v-for="(trn, index) in trnsList.slice(0, 10)")
-        .trnsDay
-          h3(v-if="!isSameDay(index)") {{ trn.date | date}}
-          TrnItem(:trn="trn", :key="trn.id")
+  .accountTrns
+    h2.panelTitle._minus Транзакции
+    template(v-for="(trn, index) in trnsList.slice(0, 10)")
+      .trnsDay
+        h3(v-if="!isSameDay(index)") {{ trn.date | date}}
+        TrnItem(:trn="trn", :key="trn.id")
 
 </template>
 
@@ -58,9 +29,11 @@ div
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 import formatMoney from '../../mixins/formatMoney'
+import formatDataForCharts from '../../mixins/formatDataForCharts'
+import SummaryShort from '../summary/SummaryShort.vue'
+import SummaryCharts from '../summary/SummaryCharts.vue'
 import TrnItem from '../trn/TrnItem.vue'
 import Chart from '../chart/Chart.vue'
-import formatDataForCharts from '../../mixins/formatDataForCharts'
 
 export default {
   mixins: [formatMoney, formatDataForCharts],
@@ -123,19 +96,19 @@ export default {
     // Incomes data
     incomesDataChart() {
       if (this.incomesTrns.length > 0) {
-        const incomesDataSorted = this.dataInCategory(this.incomesTrns)
-        return this.formatDataForChart(incomesDataSorted)
+        const data = this.getCategoriesWithTotal(this.incomesTrns)
+        return this.formatDataForChart(data)
       }
-      return false
+      return {}
     },
 
     // Expenses data
     expensesDataChart() {
       if (this.expensesTrns.length > 0) {
-        const expensesDataSorted = this.dataInCategory(this.expensesTrns)
-        return this.formatDataForChart(expensesDataSorted)
+        const data = this.getCategoriesWithTotal(this.expensesTrns)
+        return this.formatDataForChart(data)
       }
-      return false
+      return {}
     },
 
     // Pie data
@@ -171,6 +144,6 @@ export default {
   },
 
 
-  components: { TrnItem, Chart }
+  components: { SummaryShort, SummaryCharts, TrnItem, Chart }
 }
 </script>

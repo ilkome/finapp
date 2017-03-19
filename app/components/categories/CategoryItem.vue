@@ -19,27 +19,10 @@ export default {
 
   computed: {
     ...mapGetters(['categories']),
-  //   category() {
-  //     return this.categories.find(a => a.id === +this.$route.params.id)
-  //   },
     category() {
       return this.categories.find(a => a.id === +this.$route.params.id)
     }
   },
-
-  // methods: {
-  //   isSameDay(index) {
-  //     const curDay = moment(this.trnsList[index].date).startOf('day').format()
-  //     if (this.trnsList[index - 1]) {
-  //       const prevDay = moment(this.trnsList[index - 1].date).startOf('day').format()
-  //       if (curDay === prevDay) {
-  //         return true
-  //       }
-  //     }
-  //
-  //     return false
-  //   }
-  // },
 
   components: { ChartByCategory }
 }
