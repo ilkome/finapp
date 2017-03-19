@@ -5,6 +5,7 @@ div
     a.link(@click.prevent="changeDuration()") {{ duration }} дней
 
   ChartByDate(:date="date", :duration="duration")
+  ChartByCategory
 </template>
 
 
@@ -12,6 +13,7 @@ div
 import moment from 'moment'
 import formatMoney from '../../mixins/money'
 import ChartByDate from '../chart/ChartByDate.vue'
+import ChartByCategory from '../chart/ChartByCategory.vue'
 
 
 export default {
@@ -55,6 +57,6 @@ export default {
   },
 
 
-  components: { ChartByDate }
+  components: { ChartByDate, ChartByCategory }
 }
 </script>

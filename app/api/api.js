@@ -17,7 +17,8 @@ async function getAccounts() {
 async function getCategories() {
   const request = await axios.get(CATEGORIES_URL, {
     params: {
-      transform: 1
+      transform: 1,
+      order: 'name, asc'
     }
   })
   return request.data.categories
