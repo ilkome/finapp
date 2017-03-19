@@ -53,6 +53,9 @@ export default {
             type: this.chartType
           },
           plotOptions: {
+            area: {
+              // enableMouseTracking: false
+            },
             column: {
               dataLabels: { enabled: true },
               enableMouseTracking: false
@@ -70,7 +73,21 @@ export default {
             crosshair: true,
             labels: { x: 0 }
           },
-          yAxis: { title: { enabled: false } },
+          yAxis: {
+            title: { enabled: false },
+            plotLines: [{
+              className: 'TTTTTT',
+              value: 10620,
+              label: {
+                text: '10 620',
+                align: 'right',
+                x: 0,
+                style: {
+                  // color: 'white'
+                }
+              }
+            }]
+          },
           series: this.data.series,
           tooltip: { shared: true },
           credits: { enabled: false }
