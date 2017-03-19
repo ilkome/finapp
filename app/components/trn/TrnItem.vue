@@ -6,9 +6,8 @@ router-link.trnItem(:to="`/trn/${trn.id}/edit`", :class="`account-${trn.accountI
     div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
     div {{ formatMoney(trn.amountRub) }}
   .trnItem__el(:class="trn.accountId === 1 ? 'c-tinkoff' : 'c-rub'") {{ trn.accountName }}
-  .trnItem__el._category {{ trn.categoryName }}
-  .trnItem__el._delete
-    a(@click.prevent="deleteTrn(trn.id)") Удалить
+  router-link.trnItem__el._category(:to="`/categories/${trn.categoryId}`") {{ trn.categoryName }}
+  a.trnItem__el._delete(@click.prevent="deleteTrn(trn.id)") Удалить
 </template>
 
 
