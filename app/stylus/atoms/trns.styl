@@ -4,7 +4,6 @@
 .trnItem
   display flex
   align-items center
-  max-width 500px
   margin-bottom 5px
   padding 10px
   padding-left 12px
@@ -14,6 +13,7 @@
   anim()
 
   @media $laptop
+    max-width 500px
     margin-bottom 15px
 
   &:hover
@@ -31,6 +31,12 @@
     &._delete
     &._category
       display none
+      @media $laptop
+        display block
+
+    &._delete
+      padding-right 0
+      text-align right
 
   &__price
     flex-basis auto

@@ -7,11 +7,11 @@ icon($icon, $bg = #242424)
   display flex
   width 40px
   height 40px
-  color white
+  color alpha(white, .7)
   font-size 1.2rem
   align-items center
   justify-content center
-  background #444545
+  background $color-layout
   border-radius 3px
   &__pic
     fa(industry)
@@ -19,7 +19,7 @@ icon($icon, $bg = #242424)
 .icon-13 // тинькофф
   icon(credit-card-alt, #1C2833)
 .icon-14 // питание
-  icon(cutlery, #6c26b0)
+  icon(cutlery, $color-14)
 .icon-15 // бензин
   icon(car, #6D4C41)
 .icon-19
@@ -41,7 +41,7 @@ icon($icon, $bg = #242424)
 .icon-42 // девушки
   icon(user-md)
 .icon-43 // козачка
-  icon(female, #E67E22)
+  icon(female, $color-43)
 .icon-55
   icon(yelp)
 .icon-59 // развлечения
@@ -72,3 +72,13 @@ icon($icon, $bg = #242424)
 
     &:last-child
       margin-right auto
+
+
+// .icon-14, .category-14
+//   color $color-14
+//
+// .icon-15, .category-15
+//   color #6D4C41
+//
+// .icon-43, .category-43
+//   color $color-43

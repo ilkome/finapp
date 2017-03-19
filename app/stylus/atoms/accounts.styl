@@ -7,7 +7,6 @@
   padding-bottom 0px
 
 .account
-  flex 1 1
   padding-bottom 25px
 
   &:last-child
@@ -18,7 +17,7 @@
   align-items center
   justify-content center
   padding 15px 0 0 0
-  font-size 12px
+  font-size 14px
   font-weight bold
   letter-spacing 2px
   text-transform uppercase
@@ -33,7 +32,7 @@
   flex-space(2)
 
   @media $laptop
-    flex-flow column nowrap
+    flex-flow row wrap
 
 .accountContentItem
   position relative
@@ -109,7 +108,7 @@
 .accountContentItemTotal
   $font-numbers()
   letter-spacing 1px
-  font-size 16px
+  // font-size 16px
   color $color-sum
   font-weight bold
   text-align right

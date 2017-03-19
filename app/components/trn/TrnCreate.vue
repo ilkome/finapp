@@ -66,30 +66,6 @@
         .actionButton(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
         .actionButton(v-else @click.prevent="submit") Создать
 
-  //- .div
-  //-   .div
-  //-     h3.panelTitle Транзакции
-  //-     .panel__title-nav
-  //-       .panel__title-nav__left(@click.prevent="setNextPrevDate('prev')")
-  //-       .panel__title-nav__date(@click.prevent="showDateSelector()")
-  //-         template(v-if="editingDate")
-  //-           input(
-  //-             v-model.trim="tempDate"
-  //-             @keyup.esc="hideDateSelector()"
-  //-             @keyup.enter="setDate()"
-  //-             type="text" name="date" placeholder="31.12.2017").input.date
-  //-         div(v-else) {{ date | date }}
-  //-       .panel__title-nav__right(@click.prevent="setNextPrevDate('next')")
-  //-
-  //- template(v-if="trnsBySelectedDate.length")
-  //-   TrnItem(
-  //-     v-for="(trn, index) in trnsBySelectedDate",
-  //-     :trns="trnsBySelectedDate", :trn="trn", :index="index", :key="trn.id")
-  //-
-  //- template(v-else)
-  //-   div Нет транзакций за эту дату
-
-  //- ChartByDate
   ChartByDate(:date="dateChart")
 </template>
 
