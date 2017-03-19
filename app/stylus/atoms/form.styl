@@ -1,36 +1,38 @@
+.formPanel
+  max-width 502px
+  @media $pc
+    max-width inherit
+
 .amount
   display flex
   align-items center
-  width 150px
+  justify-content center
   margin 0 auto
-  padding-bottom 30px
+  padding-bottom 40px
 
   &._income
     .amountCountText
-      color $color-income
     .amountValueInput
       color $color-income
 
   &._expense
     .amountCountText
-      color $color-expense
     .amountValueInput
       color $color-expense
 
 .amountCount
   display flex
-  width 150px
+  flex 0 0 50px
   height 80px
   justify-content center
   align-items center
-  font-size 2rem
+  font-size 5rem
   $font-numbers()
-  font-weight bold
-  border 1px solid alpha(white, .1)
   cursor pointer
 
 .amountValueInput
   width 150px
+  height 80px
   padding 0 5px
   font-size 4rem
   $font-numbers()
@@ -42,31 +44,48 @@
   display flex
   align-items center
   justify-content space-between
-  margin-bottom 30px
+  margin-bottom 50px
   text-align center
 
 .metaItem
-  width 150px
+  position relative
+  display flex
+  align-items center
+  font-size 1.2rem
   cursor pointer
+
   &._left
     text-align left
   &._right
     text-align right
 
+  &__el
+    padding-right 20px
+
 .metaItemLabel
-  font-size 12px
+  padding-top 5px
+  font-size .9rem
+  color $color-second
 
 .metaItemDropdown
+  overflow-y scroll
+  max-height 300px
   z-index 2
   position absolute
   top inherit
-  right -10px
-  width 150px
   padding 10px
-  background white
-  border 1px solid #e7e7e7
+  text-align left
+  background $color-layout
+  border 1px solid $color-line
   border-radius 3px
-  box-shadow 0 0 20px 0 rgba(42, 63, 84, .1)
+
+  &__el
+    display block
+    padding 5px
+    font-size 1rem
+    white-space nowrap
+    &:hover
+      color $color-link
 
 .categories
   margin-bottom 30px
@@ -87,14 +106,16 @@
   display inline-flex
   padding 15px 50px
   color $color-main
-  font-size 12px
+  font-size 14px
   font-weight bold
   text-transform uppercase
   letter-spacing 2px
   background $color-line
+  border 1px solid transparent
   border-radius 3px
   cursor pointer
+  anim()
 
   &:hover
-    color #ababab
-    background $color-link
+    color $color-link
+    border-color $color-link

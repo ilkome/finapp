@@ -2,9 +2,9 @@
 .accountPage
   h1.panelTitle
     | Кошелек:
-    span(:class="`account${account.id}`")  {{ account.name }}
-    span  ({{ account.currency }})
-    sup  {{ account.id }}
+    .name(:class="`account${account.id}`")  {{ account.name }}
+    .name {{ account.currency }}
+    .sup {{ account.id }}
 
   .infoTable
     .infoTable__cell
@@ -32,7 +32,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import moment from 'moment'
-import formatMoney from '../../mixins/money'
+import formatMoney from '../../mixins/formatMoney'
 import TrnItem from '../trn/TrnItem.vue'
 
 export default {

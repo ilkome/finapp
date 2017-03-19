@@ -12,7 +12,7 @@ div.trnsPage
 <script>
 import { mapGetters } from 'vuex'
 import moment from 'moment'
-import formatMoney from '../../mixins/money'
+import formatMoney from '../../mixins/formatMoney'
 import TrnItem from './TrnItem.vue'
 
 export default {

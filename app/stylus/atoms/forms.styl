@@ -41,21 +41,28 @@ label, input, button, select, textarea
 
 .input-filter
   display block
-  height 60px
+  width 100%
+  height 15px
   margin-top -15px
-  padding-bottom 10px
+  margin-bottom 30px
+  padding-bottom 0px
   max-width 500px
   color $color-main
-  font-size 12px
+  font-size 14px
   font-weight bold
   text-transform uppercase
   letter-spacing 2px
-  margin-bottom 30px
   border-bottom 2px solid transparent
   cursor pointer
   anim()
 
-  &:focus
+  &._nomargin
+    margin-top 0
+    margin-bottom 0
+
+  &:focus, &:active
+    height 60px
+    padding-bottom 10px
     font-size 2rem
     text-transform none
     font-weight normal

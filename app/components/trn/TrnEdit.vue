@@ -82,7 +82,7 @@ div
 <script>
 import moment from 'moment'
 import { mapGetters } from 'vuex'
-import formatMoney from '../../mixins/money'
+import formatMoney from '../../mixins/formatMoney'
 
 export default {
   mixins: [formatMoney],

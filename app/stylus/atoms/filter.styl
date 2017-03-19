@@ -3,6 +3,7 @@
   position relative
   justify-content space-between
   align-items center
+  font-size 1rem
 
   @media $laptop
     margin-right 30px
@@ -11,9 +12,9 @@
   text-align center
 
   &._date
-    min-width 100px
+    min-width 140px
     text-transform uppercase
-    font-size 14px
+    font-size 1.2rem
     font-weight bold
     $font-numbers()
 
@@ -26,10 +27,14 @@
 
 
 .filter
-  .prev
+  .link
+    padding 10px 15px
     opacity .05
+    border none
+    color $color-main
+    cursor pointer
     anim()
 
   &:hover
-    .prev
+    .link
       opacity 1

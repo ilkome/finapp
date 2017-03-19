@@ -3,9 +3,13 @@ a
   text-decoration none
 
 .link
-  display inline-block
+  display inline-flex
+  padding-bottom 5px
+  margin-bottom -5px
   color $color-link
   font-family $font-primary
-  border-bottom 1px solid $color-link
+  border-bottom 1px solid transparent
   tdn()
   anim()
+  &:hover
+    border-color $color-link

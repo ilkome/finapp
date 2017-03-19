@@ -1,10 +1,10 @@
 <template lang="pug">
   .filter
-    .prev
-      .fa.fa-chevron-left(@click="$store.dispatch('setNextPrevDate', 'prev')")
+    .link(@click="$store.dispatch('setNextPrevDate', 'prev')")
+      .fa.fa-chevron-left
     .filterItem._date
       .fa.fa-clock-o
       .filterItemDate {{ $store.state.filter.date | date }}
-    .prev
-      .fa.fa-chevron-right(@click="$store.dispatch('setNextPrevDate', 'next')")
+    .link(@click="$store.dispatch('setNextPrevDate', 'next')")
+      .fa.fa-chevron-right
 </template>

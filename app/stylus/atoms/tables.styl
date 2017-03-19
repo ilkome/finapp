@@ -1,0 +1,11 @@
+.table
+  display flex
+  flex-flow row wrap
+  justify-content space-between
+
+  @media $pc
+    flex-flow row nowrap
+
+  &__cell
+    @media $pc
+      flex 0 1 calc(50% - 40px)

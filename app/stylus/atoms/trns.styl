@@ -4,6 +4,7 @@
 .trnItem
   display flex
   align-items center
+  justify-content space-between
   margin-bottom 5px
   padding 10px
   padding-left 12px
@@ -13,11 +14,14 @@
   anim()
 
   @media $laptop
-    max-width 500px
+    max-width 550px
     margin-bottom 15px
 
   &:hover
     background $color-trn-hover
+
+  &:last-child
+    margin-bottom 0
 
   &.account
     &-8
@@ -40,11 +44,10 @@
         display block
 
     &._delete
-      padding-right 0
       text-align right
 
   &__price
-    flex-basis auto
+    flex 0 0
     min-width 100px
     max-width 200px
     padding-right 30px
@@ -62,3 +65,8 @@
     letter-spacing 2px
     text-transform uppercase
     $font-numbers()
+
+.trnsList
+  &._fixheight
+    overflow-y scroll
+    height 245px
