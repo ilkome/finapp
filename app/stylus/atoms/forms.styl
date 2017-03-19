@@ -39,6 +39,37 @@ label, input, button, select, textarea
   border none
   border-bottom 1px solid $color-main
 
+.input-filter
+  display block
+  height 60px
+  margin-top -15px
+  padding-bottom 10px
+  max-width 500px
+  color $color-main
+  font-size 12px
+  font-weight bold
+  text-transform uppercase
+  letter-spacing 2px
+  margin-bottom 30px
+  border-bottom 2px solid transparent
+  cursor pointer
+  anim()
+
+  &:focus
+    font-size 2rem
+    text-transform none
+    font-weight normal
+    letter-spacing 1
+    border-color $color-line
+    &::-webkit-input-placeholder
+      opacity 0
+
+  &::-webkit-input-placeholder
+    color $color-link
+    font-size 12px
+    font-weight bold
+    text-transform uppercase
+    letter-spacing 2px
 
 // Textarea
 // ==============================================
