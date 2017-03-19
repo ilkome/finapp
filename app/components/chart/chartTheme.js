@@ -2,7 +2,8 @@ export default {
   chart: {
     backgroundColor: {},
     style: {
-      fontFamily: '\'Unica One\', sans-serif'
+      fontFamily: '\'Unica One\', sans-serif',
+      // fontSize: '16px'
     },
     plotBorderColor: 'blue'
   },
@@ -23,7 +24,8 @@ export default {
     gridLineColor: 'red',
     labels: {
       style: {
-        color: '#ababab'
+        color: '#ababab',
+        fontSize: '.8rem'
       }
     },
     lineColor: '#707073',
@@ -32,7 +34,6 @@ export default {
     title: {
       style: {
         color: '#A0A0A3'
-
       }
     }
   },
@@ -40,7 +41,8 @@ export default {
     gridLineColor: '#242424',
     labels: {
       style: {
-        color: '#ababab'
+        color: '#ababab',
+        fontSize: '.8rem'
       }
     },
     lineColor: '#707073',
@@ -62,7 +64,12 @@ export default {
   plotOptions: {
     series: {
       dataLabels: {
-        color: '#B0B0B3' // price
+        color: '#B0B0B3', // price
+        style: {
+          fontSize: '.9rem',
+          fontWeight: 'bold',
+          textOutline: '1px 1px black'
+        }
       },
       marker: {
         lineColor: 'red'
