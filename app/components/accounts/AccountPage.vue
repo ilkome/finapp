@@ -6,20 +6,10 @@
     .name {{ account.currency }}
     .sup {{ account.id }}
 
-  .infoTable
-    .infoTable__cell
-      .accountDetails._small
-        .accountContentItem
-          .accountContentItemLabel Приход
-          .accountContentItemTotal.income {{ formatMoney(account.totalIncomes, account.currency) }}
-        .accountContentItem
-          .accountContentItemLabel Рассход
-          .accountContentItemTotal.expense {{ formatMoney(account.totalExpenses, account.currency) }}
-        .accountContentItem
-          .accountContentItemLabel Итого
-          .accountContentItemTotal
-            .accountContentItemTotalIn.sum {{ formatMoney(account.totalRub) }}
-            .accountContentItemTotalIn.sum(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
+  SummaryShort(
+    :expenses="account.totalExpenses",
+    :incomes="account.totalIncomes"
+  )
 
   .accountTrns
     h2.panelTitle._minus Транзакции
@@ -29,10 +19,12 @@
         TrnItem(:trn="trn", :key="trn.id")
 </template>
 
+
 <script>
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 import formatMoney from '../../mixins/formatMoney'
+import SummaryShort from '../summary/SummaryShort.vue'
 import TrnItem from '../trn/TrnItem.vue'
 
 export default {
@@ -62,6 +54,6 @@ export default {
     }
   },
 
-  components: { TrnItem }
+  components: { SummaryShort, TrnItem }
 }
 </script>

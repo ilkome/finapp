@@ -28,7 +28,7 @@
             .metaItem__el
               .metaName {{ values.categoryName }}
               .metaItemLabel Категория
-              tamplate(v-if="showAllCategories")
+              template(v-if="showAllCategories")
                 .metaItemDropdown
                   .metaItemDropdown__in
                     a.metaItemDropdown__el(
@@ -37,7 +37,7 @@
                       @click.prevent="setCategory(category.id)"
                     ) {{ category.name }}
 
-          .metaItem._right(@click="showHideAllAccounts()")
+          .metaItem._right(@click.prevent.stop="showHideAllAccounts()")
             .metaItem__el
               .metaName(:class="`account-${values.accountId}`",) {{ values.accountName }}
               .metaItemLabel Кошелек
@@ -47,7 +47,7 @@
                     a.metaItemDropdown__el(
                       v-for="account in accounts",
                       :class="{active: (account.id === values.accountId)}",
-                      @click.prevent="setAccoundId(account.id)"
+                      @click.prevent.stop="setAccoundId(account.id)"
                     ) {{ account.name }}
 
         .categories
@@ -70,44 +70,20 @@
             .actionButton(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
             .actionButton(v-else @click.prevent="submit") Создать
 
-      .infoTable
-        .infoTable__cell
-          .accountDetails._small
-            .accountContentItem
-              .accountContentItemLabel Рассход
-              .accountContentItemTotal.expense
-                div {{ formatMoney(expensesTotal) }}
-            .accountContentItem
-              .accountContentItemLabel Приход
-              .accountContentItemTotal.income
-                div {{ formatMoney(incomesTotal) }}
-            .accountContentItem
-              .accountContentItemLabel Итого
-              .accountContentItemTotal
-                .accountContentItemTotalIn.sum
-                  div {{ formatMoney(incomesTotal - expensesTotal) }}
-
-        .infoTable__pie
-          Chart(chartType="pie", :data="pieDataChart")
+      SummaryShort(
+        :expenses="expensesTotal",
+        :incomes="incomesTotal"
+      )
 
     .table__cell
       h2.panelTitle._sm Транзакции
       template(v-for="trn in trnsList")
         TrnItem(:trn="trn", :key="trn.id")
 
-  template(v-if="trnsList.length")
-    .panelCol
-      template(v-if="expensesDataChart")
-        .panel
-          h2.panelTitle Рассходы
-          .panelChart
-            Chart(:data="expensesDataChart")
-
-      template(v-if="incomesDataChart")
-        .panel
-          h2.panelTitle Поступления
-          .panelChart
-            Chart(:data="incomesDataChart")
+  SummaryCharts(
+    :expenses="expensesDataChart",
+    :incomes="incomesDataChart"
+  )
 </template>
 
 
@@ -117,8 +93,12 @@ import uniqBy from 'lodash/uniqBy'
 import { mapGetters } from 'vuex'
 import formatMoney from '../../mixins/formatMoney'
 import formatDataForCharts from '../../mixins/formatDataForCharts'
+import SummaryShort from '../summary/SummaryShort.vue'
+import SummaryCharts from '../summary/SummaryCharts.vue'
 import TrnItem from './TrnItem.vue'
 import Chart from '../chart/Chart.vue'
+import FilterTop from '../filter/FilterTop.vue'
+
 
 export default {
   mixins: [formatMoney, formatDataForCharts],
@@ -186,19 +166,19 @@ export default {
     // Incomes data
     incomesDataChart() {
       if (this.incomesTrns.length > 0) {
-        const incomesDataSorted = this.dataInCategory(this.incomesTrns)
-        return this.formatDataForChart(incomesDataSorted)
+        const data = this.getCategoriesWithTotal(this.incomesTrns)
+        return this.formatDataForChart(data)
       }
-      return false
+      return {}
     },
 
     // Expenses data
     expensesDataChart() {
       if (this.expensesTrns.length > 0) {
-        const expensesDataSorted = this.dataInCategory(this.expensesTrns)
-        return this.formatDataForChart(expensesDataSorted)
+        const data = this.getCategoriesWithTotal(this.expensesTrns)
+        return this.formatDataForChart(data)
       }
-      return false
+      return {}
     },
   },
 
@@ -259,6 +239,6 @@ export default {
     }
   },
 
-  components: { TrnItem, Chart }
+  components: { SummaryShort, SummaryCharts, TrnItem, Chart, FilterTop }
 }
 </script>

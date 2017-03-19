@@ -1,19 +1,29 @@
 .menu
-  list-inline()
+  display flex
+  flex-flow row wrap
   padding 10px 0px
+  text-align center
 
   @media $laptop
+    flex-flow row nowrap
     padding 25px 25px
+    text-align left
 
 .menuLink
+  flex 1 1 100%
   display block
-  margin-right 30px
+  padding 5px 25px
   color $color-main
   font-size 14px
   font-weight bold
   text-transform uppercase
   letter-spacing 2px
   border-bottom none
+
+  @media $laptop
+    flex-shrink auto
+    margin-right 30px
+    padding 0
 
   &.active
     color $color-link

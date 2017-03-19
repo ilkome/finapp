@@ -50,7 +50,7 @@ const mixin = {
       }
     },
 
-    dataInCategory(trns) {
+    getCategoriesWithTotal(trns) {
       const catsIds = uniqBy(trns, 'categoryName').map(trn => trn.categoryId)
       const data = catsIds.map((id) => {
         const trnsInCat = trns.filter(trn => trn.categoryId === id)

@@ -37,6 +37,7 @@
     flex-flow row wrap
 
 .accountContentItem
+.accountItem
   position relative
   display flex
   flex 1 1 45%
@@ -105,6 +106,7 @@
 
 
 .accountContentItemTotal
+.accountItem__total
   $font-numbers()
   letter-spacing 1px
   color $color-sum
@@ -118,45 +120,6 @@
   flex 0 1 100%
   text-align right
   white-space nowrap
-
-.infoTable
-  display flex
-  flex-flow row wrap
-  align-items center
-  justify-content center
-  margin-bottom 30px
-
-  @media $laptop
-    flex-flow row nowrap
-    justify-content space-between
-    max-width 570px
-    margin-bottom 60px
-
-  &__cell
-    flex-basis 100%
-
-    @media $laptop
-      flex 1 1
-      max-width 290px
-      margin-right 20px
-
-  &__pie
-    margin-bottom -13px
-    opacity .8
-    anim()
-    &:hover
-      opacity 1
-
-.accountDetails
-  overflow hidden
-
-  .accountContentItem
-    margin 0
-
-  &._small
-    .accountContentItem
-      height 60px
-      padding 15px
 
 .accountTrns
   h3 + .trnItem
@@ -172,3 +135,10 @@
     border-radius 0
     &:last-child
       border-bottom none
+
+
+.accountDetails
+  overflow hidden
+
+  .accountItem
+    margin 0
