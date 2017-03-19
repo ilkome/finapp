@@ -28,6 +28,11 @@
 
   &__el
     padding-right 30px
+    color $color-main
+
+    a&:hover
+      color $color-link
+
     &._delete
     &._category
       display none
@@ -45,8 +50,8 @@
     padding-right 30px
     text-align right
 
-  .items
-    color $color-second
+  // .items
+  //   color $color-second
 
 .trnsDay
   h3
@@ -57,6 +62,3 @@
     letter-spacing 2px
     text-transform uppercase
     $font-numbers()
-
-.highcharts-point
-  stroke alpha(white, .2)
