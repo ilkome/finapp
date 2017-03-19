@@ -1,15 +1,22 @@
 <template lang="pug">
 .panel
-  Chart(chartType="area", :chartTitle="chartTitle", :data="chartData")
+  Chart(
+    chartType="area",
+    :chartTitle="chartTitle",
+    :data="chartData"
+  )
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import uniqBy from 'lodash/uniqBy'
 import moment from 'moment'
+import formatDataForCharts from '../../mixins/formatDataForCharts'
 import Chart from '../chart/Chart.vue'
 
 export default {
+  mixins: [formatDataForCharts],
+
   // props
   // ==============================================
   props: {
@@ -30,9 +37,8 @@ export default {
 
     chartData() {
       // trns by period
-      const startDate = moment().subtract(6, 'year').startOf('month').valueOf()
-      const endDate = moment()
-      // console.log('Categories', moment(startDate).format(), moment(endDate).format())
+      const startDate = moment().subtract(6, 'year').startOf('month')
+      const endDate = moment().endOf('month')
 
       const trns = this.trns
         .filter(trn =>
@@ -44,7 +50,7 @@ export default {
       // find uniq dates and get ids
       const uniqDates = uniqBy(trns, trn => moment(trn.date).format('MM.YY')).map(trn => moment(trn.date).format('MM.YY'))
 
-      console.log(moment(startDate).diff(endDate, 'months'))
+      console.log(startDate.diff(endDate, 'months'))
       // const total = this.countTotalTrns(trns) / uniqDates.length
 
       // create data for series
@@ -69,31 +75,16 @@ export default {
       return {
         categories: data.map(d => d.names),
         series: [{
+          name: 'Рассход',
           data: data.map(d => d.expenses),
-          color: 'red'
+          color: this.getColorByCategory(this.categories.find(c => c.id === this.categoryId).name)
         }, {
+          name: 'Приход',
           data: data.map(d => d.incomes),
           color: this.getColorByCategory(this.categories.find(c => c.id === this.categoryId).name)
         }]
       }
     }
-  },
-
-  methods: {
-    countTotalTrns(trns) {
-      return trns.reduce((sum, current) => sum + current.amountRub, 0)
-    },
-
-    getColorByCategory(categoryName) {
-      switch (categoryName) {
-        case 'Козачка': return '#9b5619'
-        case 'Плюшки': return '#007037'
-        case 'Питание': return '#6c26b0'
-        case 'Авто/Бензин': return '#6D4C41'
-        case 'Тинькофф': return '#1c2833'
-        default: return '#242424'
-      }
-    },
   },
 
   components: { Chart }

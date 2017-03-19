@@ -11,7 +11,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import formatMoney from '../../mixins/money'
+import formatMoney from '../../mixins/formatMoney'
 import ChartByCategory from '../chart/ChartByCategory.vue'
 
 export default {

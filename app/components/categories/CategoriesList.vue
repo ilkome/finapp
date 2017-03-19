@@ -5,15 +5,20 @@
   input(type="text", v-model.trim="filter", placeholder="Фильтр").input-filter
 
   .categoriesIcons
-    .categoriesIcons__el(v-for="category in categoriesList")
+    .categoriesIcons__el(v-for="category in categoriesList", :key="category.id")
       router-link.icon(
         :to="`/categories/${category.id}`",
         :class="`icon-${category.id}`",
-        :title="category.name",)
+        :title="category.name"
+      )
         .icon__pic
 
   .categoriesList
-    router-link.trnItem(v-for="category in categoriesList", :to="`/categories/${category.id}`")
+    router-link.trnItem(
+      v-for="category in categoriesList",
+      :to="`/categories/${category.id}`",
+      :key="category.id"
+    )
       .trnItem__el
         .icon(:class="`icon-${category.id}`"): .icon__pic
       .trnItem__el {{ category.name }}

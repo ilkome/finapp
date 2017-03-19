@@ -12,7 +12,7 @@ router-link.trnItem(:to="`/trn/${trn.id}/edit`", :class="`account-${trn.accountI
 
 
 <script>
-import formatMoney from '../../mixins/money'
+import formatMoney from '../../mixins/formatMoney'
 
 export default {
   mixins: [formatMoney],
