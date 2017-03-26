@@ -1,6 +1,6 @@
 <template lang="pug">
 div.trnsPage
-  h1.panelTitle Транзакции
+  h1.title Транзакции
 
   template(v-for="(trn, index) in trnsList()")
     .trnsDay

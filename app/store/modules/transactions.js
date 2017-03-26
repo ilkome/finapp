@@ -53,6 +53,12 @@ const getters = {
 // actions
 // ==============================================
 const actions = {
+  // fetch
+  async fetchTrns({ commit }) {
+    const trns = await getTransactions()
+    commit('fetchTrns', trns)
+  },
+
   // add
   async addTrn({ commit, dispatch }, values) {
     commit('setStatus', 'Создание...')
@@ -70,12 +76,6 @@ const actions = {
     } catch (e) {
       dispatch('setAppStatus', 'Ошибка создания транзакции')
     }
-  },
-
-  // fetch
-  async fetchTrns({ commit }) {
-    const trns = await getTransactions()
-    commit('fetchTrns', trns)
   },
 
   // update
@@ -114,10 +114,12 @@ const actions = {
   }
 }
 
-
 // mutations
 // ==============================================
 const mutations = {
+  fetchTrns(state, trns) {
+    state.all = trns
+  },
   addTrn(state, trn) {
     state.all.push(trn)
   },
@@ -127,9 +129,6 @@ const mutations = {
       trn
     ]
   },
-  fetchTrns(state, trns) {
-    state.all = trns
-  },
   deleteTrn(state, id) {
     state.all = state.all.filter(t => t.id !== id)
   },
@@ -137,7 +136,6 @@ const mutations = {
     state.status = status
   }
 }
-
 
 export default {
   state,

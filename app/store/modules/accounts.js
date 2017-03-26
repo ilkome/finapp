@@ -1,4 +1,4 @@
-import { getAccounts } from '../../api/api'
+import { getAccounts, addAccount, deleteAccount } from '../../api/api'
 
 const store = {
   state: {
@@ -47,12 +47,28 @@ const store = {
     async fetchAccounts({ commit }) {
       const data = await getAccounts()
       commit('fetchAccounts', data)
+    },
+    async addAccount({ commit }, account) {
+      const newAccount = await addAccount(account)
+      commit('addAccount', newAccount)
+    },
+    async deleteAccount({ commit }, accountID) {
+      const deleted = await deleteAccount(accountID)
+      if (deleted) {
+        commit('deleteAccount', accountID)
+      }
     }
   },
 
   mutations: {
     fetchAccounts(state, data) {
       state.all = data
+    },
+    addAccount(state, account) {
+      state.all.unshift(account)
+    },
+    deleteAccount(state, accountId) {
+      state.all = state.all.filter(a => a.id !== accountId)
     }
   }
 }

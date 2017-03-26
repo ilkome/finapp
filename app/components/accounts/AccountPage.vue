@@ -1,6 +1,6 @@
 <template lang="pug">
 .accountPage
-  h1.panelTitle
+  h1.title
     | Кошелек:
     .name(:class="`account${account.id}`")  {{ account.name }}
     .name {{ account.currency }}
@@ -11,8 +11,8 @@
     :incomes="account.totalIncomes"
   )
 
-  .accountTrns
-    h2.panelTitle._minus Транзакции
+  .trnList
+    h2.title._minus Транзакции
     template(v-for="(trn, index) in trnsList")
       .trnsDay
         h3(v-if="!isSameDay(index)") {{ trn.date | date}}

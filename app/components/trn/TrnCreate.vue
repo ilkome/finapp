@@ -1,89 +1,71 @@
 <template lang="pug">
-.trnCreate
-  h1.panelTitle._sm Создание транзакции
+  .panel.formPanel
+    h2.title Создание транзакции
+    .panel__loader(:class="{_visible: loading}"): .fa.fa-spinner
 
-  .table
-    .table__cell
-      .panel.formPanel
-        .amount(:class="(values.type === 1) ? '_income' : '_expense'")
-          a.amountCount(@click="setType()")
-            .amountCountText
-              template(v-if="values.type === 1") +
-              template(v-else) -
+    .amount(:class="(values.type === 1) ? '_income' : '_expense'")
+      a.amountCount(@click="setAccountType()")
+        .amountCountText
+          template(v-if="values.type === 1") +
+          template(v-else) -
 
-          .amountValue
-            input.amountValueInput(
-              v-model.number.lazy="values.amount",
-              @keyup.enter="submit",
-              type="text" name="amount" placeholder="0")
+      .amountValue
+        input.amountValueInput(
+          v-model.number.lazy="values.amount",
+          @keyup.enter="submit",
+          type="text" name="amount" placeholder="0")
 
-        .meta
-          .metaItem._left(@click="showHideAllCategories()")
-            .metaItem__el
-              .icon(
-                :class="`icon-${values.categoryId}`",
-                :title="values.categoryName"
-              )
-                .icon__pic
-            .metaItem__el
-              .metaName {{ values.categoryName }}
-              .metaItemLabel Категория
-              template(v-if="showAllCategories")
-                .metaItemDropdown
-                  .metaItemDropdown__in
-                    a.metaItemDropdown__el(
-                      v-for="category in categories",
-                      :class="{active: (category.id === values.categoryId)}",
-                      @click.prevent="setCategory(category.id)"
-                    ) {{ category.name }}
+    .meta
+      .metaItem._left(@click.prevent.stop="toogleCategoriesDropdown()")
+        .metaItem__el
+          .icon(
+            :class="`icon-${values.categoryId}`",
+            :title="values.categoryName"
+          )
+            .icon__pic
+        .metaItem__el
+          .metaName {{ values.categoryName }}
+          .metaItemLabel Категория
+          template(v-if="show.categories")
+            .metaItemDropdown
+              .metaItemDropdown__in
+                a.metaItemDropdown__el(
+                  v-for="category in categories",
+                  :class="{active: (category.id === values.categoryId)}",
+                  @click.prevent="setCategory(category.id)"
+                ) {{ category.name }}
 
-          .metaItem._right(@click.prevent.stop="showHideAllAccounts()")
-            .metaItem__el
-              .metaName(:class="`account-${values.accountId}`",) {{ values.accountName }}
-              .metaItemLabel Кошелек
-              template(v-if="showAllAccounts")
-                .metaItemDropdown
-                  .metaItemDropdown__in
-                    a.metaItemDropdown__el(
-                      v-for="account in accounts",
-                      :class="{active: (account.id === values.accountId)}",
-                      @click.prevent.stop="setAccoundId(account.id)"
-                    ) {{ account.name }}
+      .metaItem._right(@click.prevent.stop="toogleAccountsDropdown()")
+        .metaItem__el
+          .metaName(:class="`account-${values.accountId}`",) {{ values.accountName }}
+          .metaItemLabel Кошелек
+          template(v-if="show.accounts")
+            .metaItemDropdown
+              .metaItemDropdown__in
+                a.metaItemDropdown__el(
+                  v-for="account in accounts",
+                  :class="{active: (account.id === values.accountId)}",
+                  @click.prevent.stop="setAccoundId(account.id)"
+                ) {{ account.name }}
 
-        .categories
-          .icons
-            a.icon(
-              href="#"
-              v-for="trn in lastCategories.slice(0, 10)",
-              :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
-              :title="trn.categoryName",
-              @click.prevent="setCategory(trn.categoryId)")
-              .icon__pic
+    .categories
+      .icons
+        a.icon(
+          href="#"
+          v-for="trn in lastCategories.slice(0, 10)",
+          :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
+          :title="trn.categoryName",
+          @click.prevent="setCategory(trn.categoryId)")
+          .icon__pic
 
-        .desc
-          input.input-filter._nomargin(
-            v-model.trim="values.description"
-            type="text" name="description" placeholder="Описание")
+    .desc
+      input.input-filter._nomargin(
+        v-model.trim="values.description"
+        type="text" name="description" placeholder="Описание")
 
-        .action
-          transition(name="fade")
-            .actionButton(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
-            .actionButton(v-else @click.prevent="submit") Создать
-
-      SummaryShort(
-        :expenses="expensesTotal",
-        :incomes="incomesTotal"
-      )
-
-    .table__cell
-      h2.panelTitle._sm Транзакции
-      template(v-for="trn in trnsList")
-        TrnItem(:trn="trn", :key="trn.id")
-
-  SummaryCharts(
-    :expenses="expensesDataChart",
-    :incomes="incomesDataChart"
-  )
+    .action
+      .actionButton(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
+      .actionButton(v-else @click.prevent="addTrn") Создать
 </template>
 
 
@@ -91,25 +73,17 @@
 import moment from 'moment'
 import uniqBy from 'lodash/uniqBy'
 import { mapGetters } from 'vuex'
-import formatMoney from '../../mixins/formatMoney'
-import formatDataForCharts from '../../mixins/formatDataForCharts'
-import SummaryShort from '../summary/SummaryShort.vue'
-import SummaryCharts from '../summary/SummaryCharts.vue'
-import TrnItem from './TrnItem.vue'
-import Chart from '../chart/Chart.vue'
-import FilterTop from '../filter/FilterTop.vue'
-
 
 export default {
-  mixins: [formatMoney, formatDataForCharts],
-
   data() {
     const lastTrn = this.$store.getters.trns[0]
     return {
-      editingDate: false,
-      tempDate: '',
-      showAllCategories: false,
-      showAllAccounts: false,
+      loading: false,
+      rootEl: document.querySelector('.app'),
+      show: {
+        accounts: false,
+        categories: false
+      },
       values: {
         accountId: lastTrn.accountId,
         accountName: lastTrn.accountName,
@@ -128,12 +102,6 @@ export default {
     date() {
       return this.$store.state.filter.date
     },
-    dateChart() {
-      return {
-        start: moment(this.$store.state.filter.date).format('DD.MM.YY'),
-        end: moment(this.$store.state.filter.date).format('DD.MM.YY')
-      }
-    },
     trnsList() {
       const trnsInThisDay = this.$store.getters.trns
         .filter(t => moment(t.date).format('D.MM.YY') === moment(this.date).format('D.MM.YY'))
@@ -141,72 +109,18 @@ export default {
     },
     lastCategories() {
       return uniqBy(this.trns, 'categoryName').slice(0, 100)
-    },
-
-    incomesTrns() {
-      return this.trnsList.filter(trn => trn.type === 1)
-    },
-
-    incomesTotal() {
-      return this.countTotalTrns(this.incomesTrns)
-    },
-
-    expensesTrns() {
-      return this.trnsList.filter(trn => trn.type === 0)
-    },
-
-    expensesTotal() {
-      return this.countTotalTrns(this.expensesTrns)
-    },
-
-    pieDataChart() {
-      return this.formatDataForPieChart(this.expensesTotal, this.incomesTotal)
-    },
-
-    // Incomes data
-    incomesDataChart() {
-      if (this.incomesTrns.length > 0) {
-        const data = this.getCategoriesWithTotal(this.incomesTrns)
-        return this.formatDataForChart(data)
-      }
-      return {}
-    },
-
-    // Expenses data
-    expensesDataChart() {
-      if (this.expensesTrns.length > 0) {
-        const data = this.getCategoriesWithTotal(this.expensesTrns)
-        return this.formatDataForChart(data)
-      }
-      return {}
-    },
+    }
   },
 
   methods: {
-    showHideAllCategories() {
-      this.showAllCategories = !this.showAllCategories
+    toogleCategoriesDropdown() {
+      this.show.accounts = false
+      this.show.categories = !this.show.categories
     },
 
-    showHideAllAccounts() {
-      this.showAllAccounts = !this.showAllAccounts
-    },
-
-    setNextPrevDate(way) {
-      this.$store.dispatch('setNextPrevDate', way)
-    },
-
-    showDateSelector() {
-      this.editingDate = true
-      this.tempDate = moment(this.date).format('D.MM.YY')
-    },
-
-    hideDateSelector() {
-      this.editingDate = false
-    },
-
-    setDate() {
-      this.editingDate = false
-      this.date = moment(this.tempDate, 'D.MM.YY')
+    toogleAccountsDropdown() {
+      this.show.categories = false
+      this.show.accounts = !this.show.accounts
     },
 
     setCategory(categoryId) {
@@ -214,7 +128,7 @@ export default {
       this.values.categoryName = this.categories.find(category => category.id === categoryId).name
     },
 
-    setType() {
+    setAccountType() {
       this.values.type = (this.values.type === 1) ? 0 : 1
     },
 
@@ -222,10 +136,11 @@ export default {
       this.values.accountId = accountId
       this.values.currency = this.accounts.find(account => account.id === accountId).currency
       this.values.accountName = this.accounts.find(account => account.id === accountId).name
-      this.showAllAccounts = false
+      this.show.accounts = false
     },
 
-    submit() {
+    async addTrn() {
+      this.loading = true
       const time = moment().format('HH:mm:ss')
       const day = moment(this.date).format('D.MM.YY')
       const date = moment(`${day} ${time}`, 'D.MM.YY HH:mm:ss').valueOf()
@@ -233,12 +148,27 @@ export default {
         ...this.values,
         date
       }
-      this.$store.dispatch('addTrn', values)
+      await this.$store.dispatch('addTrn', values)
       this.values.amount = ''
       this.values.description = ''
+      this.loading = false
+    },
+
+    closeDropdown() {
+      return () => {
+        console.log('click')
+        this.show.accounts = false
+        this.show.categories = false
+      }
     }
   },
 
-  components: { SummaryShort, SummaryCharts, TrnItem, Chart, FilterTop }
+  mounted() {
+    this.rootEl.addEventListener('click', this.closeDropdown())
+  },
+
+  beforeDestroy() {
+    this.rootEl.removeEventListener('click', this.closeDropdown())
+  }
 }
 </script>

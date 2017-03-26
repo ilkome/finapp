@@ -2,13 +2,13 @@
 .panelCol
   template(v-if="!isEmpty(expenses)")
     .panel
-      h2.panelTitle Рассходы
+      h2.title Рассходы
       .panelChart
         Chart(:data="expenses")
 
   template(v-if="!isEmpty(incomes)")
     .panel
-      h2.panelTitle Поступления
+      h2.title Поступления
       .panelChart
         Chart(:data="incomes")
 </template>
