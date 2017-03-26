@@ -5,31 +5,66 @@ label, input, button, select, textarea
   outline none
 
 
+.submit__btn
+  display inline-flex
+  padding 15px 50px
+  color $color-main
+  font-size 14px
+  font-weight bold
+  text-transform uppercase
+  letter-spacing 2px
+  background $color-line
+  border 1px solid transparent
+  border-radius 3px
+  cursor pointer
+  anim()
+
+  &:hover
+    color $color-link
+    border-color $color-link
+
 // Field
 // ==============================================
 .input
-  width 150px
+  display flex
+  flex-flow row wrap
+  align-items flex-start
+  // max-width 550px
   position relative
-  margin-bottom 10px
-  padding 10px 15px
+  padding-bottom 35px
+  &:last-child
+    padding-bottom 0
 
-.inputField
-  display inline-flex
-  width 100%
-  margin-right 20px
-  padding-bottom 5px
-  margin-bottom 0
-  font-size 33px
-  text-align right
-  background #fff
-  border-bottom 1px solid #c8d9eb
-  anim()
+  &__label
+    padding-top 5px
+    padding-left 10px
+    font-size 12px
+    text-transform uppercase
+    color $color-second
+    font-weight bold
+    letter-spacing 1px
 
-.inputLabel
-  text-align right
-  display block
-  padding-left 5px
-  font-size 12px
+  &__field
+    width 100%
+    margin-right 20px
+    padding 0
+    padding-bottom 5px
+    padding-left 10px
+    margin-bottom 0
+    font-size 1.4rem
+    color $color-main
+    background transparent
+    border-bottom 1px solid $color-line-account
+    anim()
+
+    &:focus, &:active
+      &::-webkit-input-placeholder
+        color alpha($color-main, .1)
+
+    &::-webkit-input-placeholder
+      color alpha($color-main, .7)
+      anim()
+
 
 
 .input.date
@@ -42,17 +77,18 @@ label, input, button, select, textarea
 .input-filter
   display block
   width 100%
-  height 15px
-  margin-top -15px
+  height 60px
+  max-width 550px
   margin-bottom 30px
   padding-bottom 0px
-  max-width 500px
   color $color-main
   font-size 14px
   font-weight bold
   text-transform uppercase
   letter-spacing 2px
-  border-bottom 2px solid transparent
+  padding 5px 15px
+  border 1px solid transparent
+  border-radius 3px
   cursor pointer
   anim()
 
@@ -61,13 +97,14 @@ label, input, button, select, textarea
     margin-bottom 0
 
   &:focus, &:active
-    height 60px
+    // height 60px
     padding-bottom 10px
     font-size 2rem
     text-transform none
     font-weight normal
     letter-spacing 1
     border-color $color-line
+    background $color-layout
     &::-webkit-input-placeholder
       opacity 0
 

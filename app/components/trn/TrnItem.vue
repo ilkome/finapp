@@ -1,13 +1,13 @@
 <template lang="pug">
-router-link.trnItem(:to="`/trn/${trn.id}/edit`", :class="`account-${trn.accountId}`")
-  .trnItem__el
+router-link.item(:to="`/trn/${trn.id}/edit`", :class="`account-${trn.accountId}`")
+  .item__el
     .icon(:class="`icon-${trn.categoryId}`"): .icon__pic
-  .trnItem__el.trnItem__price(:class="trn.type === 1 ? 'income' : 'expense'")
+  .item__el.item__price._grow(:class="trn.type === 1 ? 'income' : 'expense'")
     div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
     div {{ formatMoney(trn.amountRub) }}
-  .trnItem__el(:class="trn.accountId === 1 ? 'c-tinkoff' : 'c-rub'") {{ trn.accountName }}
-  router-link.trnItem__el._category(:to="`/categories/${trn.categoryId}`") {{ trn.categoryName }}
-  a.trnItem__el._delete(@click.prevent="deleteTrn(trn.id)") Удалить
+  .item__el._grow(:class="trn.accountId === 1 ? 'c-tinkoff' : 'c-rub'") {{ trn.accountName }}
+  router-link.item__el._category._grow(:to="`/categories/${trn.categoryId}`") {{ trn.categoryName }}
+  .item__el._link(@click.prevent.stop="deleteTrn(trn.id)"): .fa.fa-trash-o
 </template>
 
 

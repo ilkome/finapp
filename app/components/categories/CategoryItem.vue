@@ -1,6 +1,6 @@
 <template lang="pug">
 .categoryPage
-  h1.panelTitle
+  h1.title
     | Категория:
     .name {{ category.name }}
     .icon(:class="`icon-${category.id}`"): .icon__pic

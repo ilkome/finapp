@@ -8,12 +8,6 @@
 .accountPage
   padding-bottom 0px
 
-.account
-  padding-bottom 25px
-
-  &:last-child
-    padding-bottom 10px
-
 .accountTitle
   display flex
   align-items center
@@ -122,23 +116,16 @@
   white-space nowrap
 
 .accountTrns
-  h3 + .trnItem
+  h3 + .item
     border-top 1px solid $color-line-layout
-
-  .trnItem
-    padding 15px
-    margin 0
-    background none
-    border none
-    border-top 1px solid $color-line
-    border-left 0 !important
-    border-radius 0
-    &:last-child
-      border-bottom none
-
 
 .accountDetails
   overflow hidden
 
   .accountItem
     margin 0
+
+
+.accountPage
+  .summaryShort
+    max-width 550px

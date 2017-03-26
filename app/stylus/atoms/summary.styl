@@ -8,7 +8,6 @@
   @media $laptop
     flex-flow row nowrap
     justify-content space-between
-    max-width 570px
     margin-bottom 60px
 
   &__el
@@ -16,11 +15,15 @@
 
     @media $laptop
       flex 1 1
-      max-width 290px
+      // max-width 290px
       margin-right 20px
 
     &._pie
+      display flex
+      align-items center
+      justify-content center
       margin-bottom -13px
+      margin-right 0
       opacity .8
       anim()
       &:hover

@@ -8,7 +8,7 @@
         //- Account item
         template(v-for="account in accounts")
           router-link.accountContentItem(
-              :to="`/account/${account.id}`",
+              :to="`/accounts/${account.id}`",
               :class="`account${account.id}`"
             )
             .accountContentItemLabel {{ account.name }} <sup>{{ account.id }}</sup>

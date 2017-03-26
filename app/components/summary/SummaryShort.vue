@@ -1,5 +1,5 @@
 <template lang="pug">
-.summaryShort
+.summaryShort.panel
   template(v-if="expenses > 0 || incomes > 0")
 
     .summaryShort__el
