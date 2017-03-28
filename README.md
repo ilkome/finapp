@@ -1,20 +1,15 @@
-# Finance App Vue.js
+# Personal finance application
+
+This aplication is the best to show my skils. 
 
 
-# DataBase
-## Transaction
-```javascript
-{
-  "id": Number,
-  "accountId": Number,
-  "type": Number,
-  "categoryId": Number,
-  "date": Number,
-  "amount": Number,
-  "currency": String,
-  "description": String,
-  "gps_accuracy_in_meters": Number,
-  "gps_latitude": Number.float,
-  "gps_longitude": Number.float
-}
-```
+## What inside
+
+- Webpack
+- Gulp
+- BrowserSync
+- ES6 with babel
+- Vue.js
+- Pug (Jade)
+- Stylus
+- Lodash, Axios
