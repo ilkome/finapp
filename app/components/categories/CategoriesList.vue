@@ -6,7 +6,7 @@
     .table__cell
       input(type="text", v-model.trim="filter", placeholder="Фильтр").input-filter
 
-      .trnList
+      .trnsList
         router-link.item(
           v-for="category in categoriesList",
           :to="`/categories/${category.id}`",

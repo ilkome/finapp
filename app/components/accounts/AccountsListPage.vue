@@ -10,28 +10,30 @@
       //-   input(v-model.trim="filter", placeholder="Введите название кошелька" type="text").input__field
       //-   .input__label Фильтр
 
-      .trnList
+      .trnsList
         template(v-for="account in accountsList")
           .loader(:class="{_visible: loading || loadingId === account.id}"): .fa.fa-spinner
 
           .item._alt
-            router-link.item__content(
-              :to="`/accounts/${account.id}`",
-              :key="account.id"
-            )
+            .item__content
               .item__el._name {{ account.name }}
+              .item__el._price
+                div {{ formatMoney(account.totalRub) }}
+                template(v-if="account.currency !== 'RUB'")
+                  div {{ formatMoney(account.total, account.currency) }}
               .item__el._grow._second {{ account.currency }}
               .item__el._grow._second {{ account.symbol }}
-              .item__el._edit._link: .fa.fa-pencil-square-o
+              router-link.item__el._edit._link(:to="`/accounts/${account.id}`"): .fa.fa-list
+              router-link.item__el._edit._link(:to="`/accounts/${account.id}`"): .fa.fa-pencil-square-o
               .item__el._link(@click.prevent.stop="question(account.id)"): .fa.fa-trash-o
 
             .item__question(:class="{_visible: questionId === account.id}")
               .item__el._question._grow Удалить кошелек {{ account.name }}?
-              .item__el._no(@click="close()"): .fa.fa-ban
-              .item__el._yes(@click="deleteAccount(account.id)"): .fa.fa-check
+              .item__el._no(@click.prevent="close()"): .fa.fa-ban
+              .item__el._yes(@clic.preventk="deleteAccount(account.id)"): .fa.fa-check
 
             .item__loader(:class="{_visible: loadingId === account.id}"): .fa.fa-spinner
-      //- trnList
+      //- trnsList
 
     .table__cell
       .panel._smallWidth
@@ -54,9 +56,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import formatMoney from '../../mixins/formatMoney'
 import ChartByCategory from '../chart/ChartByCategory.vue'
 
 export default {
+  mixins: [formatMoney],
+
   data() {
     return {
       account: {

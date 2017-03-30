@@ -64,16 +64,43 @@ const actions = {
     commit('setStatus', 'Создание...')
     dispatch('setAppStatus', 'Создание...', false)
     try {
-      const postTrn = await axios.post(TRANSACTIONS_URL, values)
-      const newID = postTrn.data
-      const getTrn = await axios.get(`${TRANSACTIONS_URL}/${newID}`, {
-        params: { transform: 1 }
-      })
-      commit('addTrn', getTrn.data)
+      const postData = await axios.post(TRANSACTIONS_URL, values)
+
+      if (postData.data) {
+        // few trns
+        if (Array.isArray(postData.data)) {
+          const trns = []
+          for (let trnId of postData.data) {
+            const newTrns = await axios.get(`${TRANSACTIONS_URL}/${trnId}`, {
+              params: { transform: 1 }
+            })
+            if (newTrns.data) {
+              trns.push(newTrns.data)
+            } else {
+              console.error('что-то не так')
+            }
+          }
+          commit('addTrns', trns)
+        }
+
+        // one trn
+        if (Number.isInteger(postData.data)) {
+          const getTrn = await axios.get(`${TRANSACTIONS_URL}/${postData.data}`, {
+            params: { transform: 1 }
+          })
+          commit('addTrn', getTrn.data)
+        }
+      } else {
+        console.error('Ошибка создания транзакции.')
+      }
+
       commit('setStatus', 'Транзакция создана :)')
       dispatch('setAppStatus', 'Создано!')
       setTimeout(() => commit('setStatus'), 2000)
+
+      return true
     } catch (e) {
+      console.error('ошибка создания транзакции 2.')
       dispatch('setAppStatus', 'Ошибка создания транзакции')
     }
   },
@@ -111,6 +138,21 @@ const actions = {
     } else {
       dispatch('setAppStatus', `Не удалено ${id}`)
     }
+  },
+
+  async deleteTrns({ commit, dispatch }, ids) {
+    dispatch('setAppStatus', `Удаление ${ids}...`, false)
+    const request = await axios.delete(`${TRANSACTIONS_URL}/${ids.join()}`)
+    const result = request.data
+    console.log(ids, result)
+
+    result.forEach((res, index) => {
+      if (res > 0) {
+        commit('deleteTrn', ids[index])
+      } else {
+        console.log(`не удалось удалить id: ${ids[index]}`)
+      }
+    })
   }
 }
 
@@ -122,6 +164,9 @@ const mutations = {
   },
   addTrn(state, trn) {
     state.all.push(trn)
+  },
+  addTrns(state, trn) {
+    state.all.push(...trn)
   },
   updateTrn(state, trn) {
     state.all = [

@@ -1,16 +1,19 @@
 <template lang="pug">
-.panelCol
-  template(v-if="!isEmpty(expenses)")
+.table
+  .table__cell
     .panel
+      pre {{expenses}}
       h2.title Рассходы
-      .panelChart
+      .panel__chart(:class="{_hidden: expensesEmpty}")
         Chart(:data="expenses")
+      .panel__empty(:class="{_visible: expensesEmpty}") Рассходов за выбранный период не было
 
-  template(v-if="!isEmpty(incomes)")
+  .table__cell
     .panel
       h2.title Поступления
-      .panelChart
+      .panel__chart(:class="{_hidden: incomesEmpty}")
         Chart(:data="incomes")
+      .panel__empty(:class="{_visible: incomesEmpty}") Поступлений за выбранный период не было
 </template>
 
 
@@ -29,6 +32,15 @@ export default {
     },
     incomes: {
       type: Object
+    }
+  },
+
+  computed: {
+    expensesEmpty() {
+      return isEmpty(this.expenses.series[0].data)
+    },
+    incomesEmpty() {
+      return isEmpty(this.incomes.series[0].data)
     }
   },
 

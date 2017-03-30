@@ -1,3 +1,7 @@
+.limitWidth
+  width 50%
+  // max-width 550px
+
 .panel
   position relative
   margin-bottom 10px
@@ -12,6 +16,27 @@
 
   &._smallWidth
     max-width 550px
+
+  &__chart
+    &._hidden
+      visibility hidden
+      opacity 0
+
+  &__empty
+    visibility hidden
+    opacity 0
+
+    &._visible
+      display flex
+      position absolute
+      left 0
+      top 0
+      width 100%
+      height 100%
+      align-items center
+      justify-content center
+      visibility visible
+      opacity 1
 
 .panelCol
   display flex

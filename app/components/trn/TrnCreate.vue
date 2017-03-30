@@ -1,5 +1,5 @@
 <template lang="pug">
-  .panel.formPanel
+  .panel._limitWidth
     h2.title Создание транзакции
     .panel__loader(:class="{_visible: loading}"): .fa.fa-spinner
 
@@ -11,8 +11,8 @@
 
       .amountValue
         input.amountValueInput(
-          v-model.number.lazy="values.amount",
-          @keyup.enter="submit",
+          v-model.lazy="values.amount",
+          @keyup.enter="addTrn",
           type="text" name="amount" placeholder="0")
 
     .meta
@@ -63,6 +63,7 @@
         v-model.trim="values.description"
         type="text" name="description" placeholder="Описание")
 
+    pre {{errors}}
     .action
       .actionButton(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
       .actionButton(v-else @click.prevent="addTrn") Создать
@@ -70,14 +71,30 @@
 
 
 <script>
+import jQuery from 'jquery'
+import toastr from 'toastr'
 import moment from 'moment'
 import uniqBy from 'lodash/uniqBy'
 import { mapGetters } from 'vuex'
 
 export default {
+  props: {
+    account: {
+      type: Object // NEED FIX for same component
+    }
+  },
+
+  watch: {
+    '$route' (to, from) {
+      this.values.accountId = this.account.id
+      this.values.accountName = this.account.name
+    }
+  },
+
   data() {
     const lastTrn = this.$store.getters.trns[0]
     return {
+      errors: null,
       loading: false,
       rootEl: document.querySelector('.app'),
       show: {
@@ -85,9 +102,9 @@ export default {
         categories: false
       },
       values: {
-        accountId: lastTrn.accountId,
-        accountName: lastTrn.accountName,
-        amount: '',
+        accountId: this.account ? this.account.id : lastTrn.accountId,
+        accountName: this.account ? this.account.name : lastTrn.accountName,
+        amount: '1',
         categoryId: lastTrn.categoryId,
         categoryName: lastTrn.categoryName,
         type: 0,
@@ -141,22 +158,58 @@ export default {
 
     async addTrn() {
       this.loading = true
+      toastr.info('Создание...')
       const time = moment().format('HH:mm:ss')
       const day = moment(this.date).format('D.MM.YY')
       const date = moment(`${day} ${time}`, 'D.MM.YY HH:mm:ss').valueOf()
-      const values = {
-        ...this.values,
-        date
+
+      let values = {}
+
+      if (!this.values.amount) {
+        this.errors = 'Пусто'
+        this.loading = false
+        return false
       }
-      await this.$store.dispatch('addTrn', values)
-      this.values.amount = ''
-      this.values.description = ''
-      this.loading = false
+      else {
+        // Number
+        if (+this.values.amount > 0) {
+          this.errors = 'Меньше нуля'
+          values = {
+            ...this.values,
+            amount: +this.values.amount,
+            date
+          }
+        }
+        // Array
+        else {
+          const amountsArray = this.values.amount.split(',')
+          values = []
+          for (let value of amountsArray) {
+            if (+value.trim() > 0) {
+              values.push({
+                ...this.values,
+                amount: +value.trim(),
+                date
+              })
+            } else {
+              this.errors = 'Есть ошибки в списке'
+            }
+          }
+        }
+      }
+
+      const result = await this.$store.dispatch('addTrn', values)
+      console.log(result)
+      if (result) {
+        toastr.success('Успешно создано!')
+        this.values.amount = ''
+        this.values.description = ''
+        this.loading = false
+      }
     },
 
     closeDropdown() {
       return () => {
-        console.log('click')
         this.show.accounts = false
         this.show.categories = false
       }
@@ -168,7 +221,7 @@ export default {
   },
 
   beforeDestroy() {
-    this.rootEl.removeEventListener('click', this.closeDropdown())
+    // this.rootEl.removeEventListener('click', this.closeDropdown())
   }
 }
 </script>

@@ -1,19 +1,198 @@
-.items
+.item
   display flex
   align-items center
+  justify-content space-between
+  margin-bottom 5px
+  min-height 50px
+  padding 10px
+  padding-left 12px
+  color $color-main
+  background $color-trn
+  border-radius 3px
+  anim()
 
-  &:last-child
-    margin-bottom 0
-    padding-bottom 0
-    border-bottom none
+  @media $laptop
+    max-width 550px
+    margin-bottom 15px
 
-  > .item
+  &:hover
+    background $color-trn-hover
+
+    .item__el.link
+    .item__el._link
+      opacity 1
+
+  &._selected
+    background alpha(white, .04) !important
+
+  &.account
+    &-8
+      border-left 3px solid $color-tinkoff
+
+  &.rub
+    border-left 3px solid $color-rub
+
+.item__el
+  // padding-right 30px
+  color $color-main
+
+  &._price
+    width 130px
+    padding-right 30px
+    text-align right
     white-space nowrap
-    padding-left 30px
+    font-size 18px
+    font-weight bold
+    $font-numbers()
 
-    &:first-child
-      flex-basis auto
-      padding-left 0
+  &._name
+    width 200px
+
+  &._account
+    width 140px
+
+  &._second
+    color $color-second
+    font-size .9rem
+
+  &._grow
+    flex-grow 1
+
+  &._edit
+    font-size 1.5rem
+    padding 0 10px
+    margin-right 30px
+
+  &._question
+    color $color-expense
+
+  &._yes
+    cursor pointer
+    padding-right 15px
+    font-size 1.5rem
+    &:hover
+      color $color-link
+
+  &._no
+    cursor pointer
+    font-size 1.5rem
+    &:hover
+      color $color-link
+
+  &.link, &._link
+    cursor pointer
+    padding-right 0
+    font-size 1.5rem
+    opacity 0
+    anim()
+
+  a&:hover, &.link:hover, &._link:hover
+    color $color-link
+    border-bottom-color transparent
+
+  &._delete
+  &._category
+    display none
+    @media $laptop
+      display block
+
+  &._delete
+    padding-right 10px
+    text-align right
+
+
+.items
+  padding-bottom 80px
+
+.items__list
+  position relative
+  max-width 550px
+
+  .item
+    justify-content flex-start
+    padding 15px
+    margin 0
+    background none
+    border none
+    border-top 1px solid $color-line
+    border-left 0 !important
+    border-radius 0
 
     &:last-child
-      padding-right 0
+      border-bottom none
+
+    &:hover
+      background $color-trn
+
+.item._alt
+  position relative
+
+  .item__content
+    display flex
+    align-items center
+    justify-content flex-start
+    width 100%
+
+
+.item__question
+  opacity 0
+  visibility hidden
+  position absolute
+  left 0
+  top 0
+  width 100%
+  height 100%
+  display flex
+  align-items center
+  justify-content flex-start
+  padding-left 15px
+  background $color-trn
+  border-radius 3px
+  anim()
+
+  &._visible
+    opacity 1
+    visibility visible
+
+.item__loader
+  opacity 0
+  visibility hidden
+  position absolute
+  left 0
+  top 0
+  width 100%
+  height 100%
+  display flex
+  align-items center
+  justify-content flex-start
+  padding 0 15px
+  background $color-trn
+  border-radius 3px
+  anim()
+
+  &._visible
+    opacity 1
+    visibility visible
+
+
+.loader
+  z-index 3
+  opacity 0
+  visibility hidden
+  position absolute
+  left 0
+  top 0
+  width 100%
+  height 100%
+  display flex
+  justify-content center
+  padding 100px 15px 0
+  font-size 5rem
+  background alpha($color-trn, .9)
+  border 1px solid $color-line
+  border-radius 3px
+  anim()
+
+  &._visible
+    opacity 1
+    visibility visible

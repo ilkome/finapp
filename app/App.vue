@@ -8,9 +8,9 @@
     Sidebar
 
     .main
-      .topBar
-        transition(name="topBar__anim")
-          .topBar__status(v-if="$store.state.appStatus") {{ $store.state.appStatus }}
+      .topbar
+        transition(name="topbar__anim")
+          .topbar__status(v-if="$store.state.appStatus") {{ $store.state.appStatus }}
 
         MenuTop
         FilterTop
@@ -28,11 +28,13 @@ import FilterTop from './components/filter/FilterTop.vue'
 export default {
   async created() {
     // should to be in this order because fetchTrns depends on others data
+    console.time('App')
     await this.$store.dispatch('fetchAccounts')
     await this.$store.dispatch('fetchCategories')
     await this.$store.dispatch('fetchRates')
     await this.$store.dispatch('fetchTrns')
     await this.$store.commit('loading')
+    console.timeEnd('App')
   },
 
   components: { Sidebar, MenuTop, FilterTop }

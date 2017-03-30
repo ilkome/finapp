@@ -2,7 +2,6 @@ import { mapGetters } from 'vuex'
 import moment from 'moment'
 import uniqBy from 'lodash/uniqBy'
 
-
 const mixin = {
   computed: {
     ...mapGetters(['categories'])

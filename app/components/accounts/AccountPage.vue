@@ -6,17 +6,16 @@
     .name {{ account.currency }}
     .sup {{ account.id }}
 
-  SummaryShort(
-    :expenses="account.totalExpenses",
-    :incomes="account.totalIncomes"
-  )
+  .table
+    .table__cell
+      SummaryShort(
+        :expenses="account.totalExpenses",
+        :incomes="account.totalIncomes"
+      )
+      TrnsList(:trns="trnsList")
 
-  .trnList
-    h2.title._minus Транзакции
-    template(v-for="(trn, index) in trnsList")
-      .trnsDay
-        h3(v-if="!isSameDay(index)") {{ trn.date | date}}
-        TrnItem(:trn="trn", :key="trn.id")
+    .table__cell
+      TrnCreate(:account="account")
 </template>
 
 
@@ -25,7 +24,8 @@ import { mapGetters } from 'vuex'
 import moment from 'moment'
 import formatMoney from '../../mixins/formatMoney'
 import SummaryShort from '../summary/SummaryShort.vue'
-import TrnItem from '../trn/TrnItem.vue'
+import TrnCreate from '../trn/TrnCreate.vue'
+import TrnsList from '../trn/TrnsList.vue'
 
 export default {
   mixins: [formatMoney],
@@ -40,20 +40,6 @@ export default {
     }
   },
 
-  methods: {
-    isSameDay(index) {
-      const curDay = moment(this.trnsList[index].date).startOf('day').format()
-      if (this.trnsList[index - 1]) {
-        const prevDay = moment(this.trnsList[index - 1].date).startOf('day').format()
-        if (curDay === prevDay) {
-          return true
-        }
-      }
-
-      return false
-    }
-  },
-
-  components: { SummaryShort, TrnItem }
+  components: { SummaryShort, TrnCreate, TrnsList }
 }
 </script>
