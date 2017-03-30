@@ -34,10 +34,12 @@ async function addAccount(account) {
       })
       if (account.data) {
         return account.data
-      } else {
+      }
+      else {
         console.error('api.js: Не возможно получить новый кошелек')
       }
-    } else {
+    }
+    else {
       console.error('api.js: Add account data empty')
       return false
     }

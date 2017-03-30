@@ -22,7 +22,7 @@
 
 .amountCount
   display flex
-  flex 0 0 50px
+  width 100px
   height 80px
   justify-content center
   align-items center
@@ -30,8 +30,11 @@
   $font-numbers()
   cursor pointer
 
+.amountValue
+  flex 1 1
+
 .amountValueInput
-  width 150px
+  width 100%
   height 80px
   padding 0 5px
   font-size 4rem
@@ -63,6 +66,8 @@
 
   &__el
     padding-right 20px
+    &:last-child
+      padding-right 0
 
 .metaItemLabel
   padding-top 5px

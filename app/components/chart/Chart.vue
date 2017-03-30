@@ -76,7 +76,6 @@ export default {
           yAxis: {
             title: { enabled: false },
             plotLines: [{
-              className: 'TTTTTT',
               value: 10620,
               label: {
                 text: '10 620',

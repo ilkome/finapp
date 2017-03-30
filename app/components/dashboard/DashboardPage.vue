@@ -1,36 +1,16 @@
 <template lang="pug">
-div
+.content
   h1.title
     | Итого за:&nbsp;
     .color {{ duration }} дней
-
-  .table
-    .table__cell
-      SummaryShort(
-        :duration="duration",
-        :expenses="expensesTotal",
-        :incomes="incomesTotal"
-      )
-    .table__cell
-      .panel
-        h2.title Количество дней
-        .panel__content
-          a.btn(@click.prevent="setDuration(1)", :class="{_active: duration === 1}") 1
-          a.btn(@click.prevent="setDuration(3)", :class="{_active: duration === 3}") 3
-          a.btn(@click.prevent="setDuration(5)", :class="{_active: duration === 5}") 5
-          a.btn(@click.prevent="setDuration(7)", :class="{_active: duration === 7}") 7
-          a.btn(@click.prevent="setDuration(10)", :class="{_active: duration === 10}") 10
-          a.btn(@click.prevent="setDuration(14)", :class="{_active: duration === 14}") 14
-          a.btn(@click.prevent="setDuration(30)", :class="{_active: duration === 30}") 30
-
-          //- .input
-          //-   input.input__field(
-          //-     ref="input",
-          //-     :value="duration",
-          //-     v-on:input="updateValue($event.target.value)",
-          //-     placeholder="Укажите количество дней" type="text"
-          //-   )
-          //-   .input__label Количество дней
+    .dropdown
+      a.btn(@click.prevent="setDuration(1)", :class="{_active: duration === 1}") 1
+      a.btn(@click.prevent="setDuration(3)", :class="{_active: duration === 3}") 3
+      a.btn(@click.prevent="setDuration(5)", :class="{_active: duration === 5}") 5
+      a.btn(@click.prevent="setDuration(7)", :class="{_active: duration === 7}") 7
+      a.btn(@click.prevent="setDuration(10)", :class="{_active: duration === 10}") 10
+      a.btn(@click.prevent="setDuration(14)", :class="{_active: duration === 14}") 14
+      a.btn(@click.prevent="setDuration(30)", :class="{_active: duration === 30}") 30
 
   SummaryCharts(
     :expenses="expensesDataChart",
@@ -39,12 +19,12 @@ div
 
   .table
     .table__cell
-      .accountTrns.trnList
-        h2.title._minus Транзакции
-        template(v-for="(trn, index) in trnsList.slice(0, 10)")
-          .trnsDay
-            h3(v-if="!isSameDay(index)") {{ trn.date | date}}
-            TrnItem(:trn="trn", :key="trn.id")
+      SummaryShort(
+        :duration="duration",
+        :expenses="expensesTotal",
+        :incomes="incomesTotal"
+      )
+      TrnsList(:trns="trnsList")
 
     .table__cell
       TrnCreate
@@ -58,7 +38,7 @@ import formatMoney from '../../mixins/formatMoney'
 import formatDataForCharts from '../../mixins/formatDataForCharts'
 import SummaryShort from '../summary/SummaryShort.vue'
 import SummaryCharts from '../summary/SummaryCharts.vue'
-import TrnItem from '../trn/TrnItem.vue'
+import TrnsList from '../trn/TrnsList.vue'
 import TrnCreate from '../trn/TrnCreate.vue'
 import Chart from '../chart/Chart.vue'
 
@@ -66,7 +46,7 @@ export default {
   mixins: [formatMoney, formatDataForCharts],
 
   data() {
-    const duration = 10
+    const duration = 30
 
     return {
       date: {
@@ -103,6 +83,10 @@ export default {
       )
     },
 
+    trnsListGrouped() {
+      this.trnsList
+    },
+
     expensesTrns() {
       return this.trnsList.filter(trn => trn.type === 0)
     },
@@ -132,7 +116,12 @@ export default {
         const data = this.getCategoriesWithTotal(this.incomesTrns)
         return this.formatDataForChart(data)
       }
-      return {}
+      return {
+        categories: [],
+        series: [{
+          data: []
+        }]
+      }
     },
 
     pieDataChart() {
@@ -152,7 +141,6 @@ export default {
       }
     },
     setDuration(duration) {
-      console.log(duration)
       this.duration = +duration
       this.date.start = moment().subtract(+duration, 'days')
     },
@@ -181,7 +169,14 @@ export default {
     }
   },
 
+  beforeCreate() {
+    console.time('Dashboard')
+  },
 
-  components: { SummaryShort, SummaryCharts, TrnItem, TrnCreate, Chart }
+  mounted() {
+    console.timeEnd('Dashboard')
+  },
+
+  components: { SummaryShort, SummaryCharts, TrnsList, TrnCreate, Chart }
 }
 </script>

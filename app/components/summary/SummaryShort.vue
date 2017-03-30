@@ -1,30 +1,31 @@
 <template lang="pug">
-.summaryShort.panel
-  template(v-if="expenses > 0 || incomes > 0")
+.panel
+  .summaryShort
+    template(v-if="expenses > 0 || incomes > 0")
 
-    .summaryShort__el
-      .accountDetails
+      .summaryShort__el
+        .accountDetails
 
-        .accountItem
-          .accountItem__label Рассход
-          .accountItem__total.expense
-            div {{ formatMoney(expenses) }}
-            div(v-if="expenses > 0 && duration > 1") {{ formatMoney(expenses / duration) }}
+          .accountItem
+            .accountItem__label Рассход
+            .accountItem__total.expense
+              div {{ formatMoney(expenses) }}
+              div(v-if="expenses > 0 && duration > 1") {{ formatMoney(expenses / duration) }}
 
-        .accountItem
-          .accountItem__label Приход
-          .accountItem__total.income
-            div {{ formatMoney(incomes) }}
-            div(v-if="incomes > 0 && duration > 1") {{ formatMoney(incomes / duration) }}
+          .accountItem
+            .accountItem__label Приход
+            .accountItem__total.income
+              div {{ formatMoney(incomes) }}
+              div(v-if="incomes > 0 && duration > 1") {{ formatMoney(incomes / duration) }}
 
-        .accountItem
-          .accountItem__label Итого
-          .accountItem__total.sum
-            div {{ formatMoney(incomes - expenses) }}
-            div(v-if="duration > 1") {{ formatMoney((incomes - expenses) / duration) }}
+          .accountItem
+            .accountItem__label Итого
+            .accountItem__total.sum
+              div {{ formatMoney(incomes - expenses) }}
+              div(v-if="duration > 1") {{ formatMoney((incomes - expenses) / duration) }}
 
-    .summaryShort__el._pie
-      Chart(chartType="pie", :data="chartData")
+      .summaryShort__el._pie
+        Chart(chartType="pie", :data="chartData")
 </template>
 
 

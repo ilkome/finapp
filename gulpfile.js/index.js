@@ -42,7 +42,6 @@ gulp.task('zip', () => {
     .pipe(gulp.dest('./'))
 })
 
-
 // Watch
 gulp.task('watcher', () => {
   watch(paths.assets.src, () => runSequence('assets', 'browserSync-reload'))
