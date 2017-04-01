@@ -23,16 +23,18 @@ a
   text-transform uppercase
   letter-spacing 2px
   background $color-line
-  border 1px solid $color-line
+  border 1px solid $color-body
   border-radius 3px
   cursor pointer
   anim()
 
   &:hover
-    // color $color-link
     border-color $color-link
 
   &._active
     font-weight bold
     color $color-link
-    // border-color $color-link
+
+  &._big
+    padding 25px 50px
+    background $color-link

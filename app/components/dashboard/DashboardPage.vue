@@ -46,7 +46,7 @@ export default {
   mixins: [formatMoney, formatDataForCharts],
 
   data() {
-    const duration = 30
+    const duration = 10
 
     return {
       date: {
@@ -83,10 +83,6 @@ export default {
       )
     },
 
-    trnsListGrouped() {
-      this.trnsList
-    },
-
     expensesTrns() {
       return this.trnsList.filter(trn => trn.type === 0)
     },
@@ -100,7 +96,12 @@ export default {
         const data = this.getCategoriesWithTotal(this.expensesTrns)
         return this.formatDataForChart(data)
       }
-      return {}
+      return {
+        categories: [],
+        series: [{
+          data: []
+        }]
+      }
     },
 
     incomesTrns() {

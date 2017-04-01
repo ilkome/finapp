@@ -3,7 +3,7 @@
   transition(name="slide")
     template(v-if="trnsIdsForDelete.length > 0")
       div.remove
-        a.btn(@click.prevent="removeSelectedTrns()") Удалить выбранные транзакции {{trnsIdsForDelete.length}}
+        a.btn._big(@click.prevent="removeSelectedTrns()") Удалить выбранные транзакции: {{trnsIdsForDelete.length}}
 
   .items(v-for="(trns, date) of trnsList")
     h3 {{ date | date }}
