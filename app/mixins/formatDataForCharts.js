@@ -9,7 +9,11 @@ const mixin = {
 
   methods: {
     countTotalTrns(trns) {
-      return trns.reduce((sum, current) => sum + current.amountRub, 0)
+      if (trns.length > 0) {
+        return trns.reduce((sum, current) => sum + current.amountRub, 0)
+      }
+      console.log('No trns')
+      return 0
     },
 
     getColorByCategory(categoryName) {
@@ -66,16 +70,6 @@ const mixin = {
         return 0
       })
       return dataSorted
-    },
-
-    isSameDay(index) {
-      const curDay = moment(this.trnsList[index].date).startOf('day').format()
-      if (this.trnsList[index - 1]) {
-        const prevDay = moment(this.trnsList[index - 1].date).startOf('day').format()
-        if (curDay === prevDay)
-          return true
-      }
-      return false
     }
   }
 }

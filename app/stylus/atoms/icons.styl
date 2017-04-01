@@ -15,6 +15,11 @@ icon($icon, $bg = #242424)
   background $color-layout
   border-radius 3px
 
+  &._link
+    anim()
+    &:hover
+      background $color-link
+
   &__pic
     fa(industry)
 
@@ -53,24 +58,3 @@ icon($icon, $bg = #242424)
   icon(exchange)
 .icon-84 // животные
   icon(paw)
-
-
-.icons
-  display flex
-  flex-flow wrap
-  align-items center
-  margin -5px
-
-  .icon
-    margin 5px
-    border 2px solid transparent
-
-    &:hover
-      border-color alpha(black, .2)
-      box-shadow 0 0 20px 0 rgba(42, 63, 84, .2)
-
-    &.active
-      border-color alpha(black, .4)
-
-    &:last-child
-      margin-right auto

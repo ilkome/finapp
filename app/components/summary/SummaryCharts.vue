@@ -2,7 +2,6 @@
 .table
   .table__cell
     .panel
-      pre {{expenses}}
       h2.title Рассходы
       .panel__chart(:class="{_hidden: expensesEmpty}")
         Chart(:data="expenses")
@@ -41,12 +40,6 @@ export default {
     },
     incomesEmpty() {
       return isEmpty(this.incomes.series[0].data)
-    }
-  },
-
-  methods: {
-    isEmpty(obj) {
-      return isEmpty(obj)
     }
   },
 

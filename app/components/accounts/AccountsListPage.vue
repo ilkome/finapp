@@ -10,25 +10,23 @@
       //-   input(v-model.trim="filter", placeholder="Введите название кошелька" type="text").input__field
       //-   .input__label Фильтр
 
-      .trnsList
+      .items
         template(v-for="account in accountsList")
           .loader(:class="{_visible: loading || loadingId === account.id}"): .fa.fa-spinner
 
-          .item._alt
+          .item
             .item__content
               .item__el._name {{ account.name }}
               .item__el._price
                 div {{ formatMoney(account.totalRub) }}
-                template(v-if="account.currency !== 'RUB'")
-                  div {{ formatMoney(account.total, account.currency) }}
-              .item__el._grow._second {{ account.currency }}
-              .item__el._grow._second {{ account.symbol }}
-              router-link.item__el._edit._link(:to="`/accounts/${account.id}`"): .fa.fa-list
-              router-link.item__el._edit._link(:to="`/accounts/${account.id}`"): .fa.fa-pencil-square-o
-              .item__el._link(@click.prevent.stop="question(account.id)"): .fa.fa-trash-o
+                div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
+              .item__el._second {{ account.currency }}
+              router-link.item__el._action(:to="`/accounts/${account.id}`"): .fa.fa-list
+              router-link.item__el._action(:to="`/accounts/${account.id}`"): .fa.fa-pencil-square-o
+              .item__el._action(@click.prevent.stop="question(account.id)"): .fa.fa-trash-o
 
             .item__question(:class="{_visible: questionId === account.id}")
-              .item__el._question._grow Удалить кошелек {{ account.name }}?
+              .item__el._question Удалить кошелек {{ account.name }}?
               .item__el._no(@click.prevent="close()"): .fa.fa-ban
               .item__el._yes(@clic.preventk="deleteAccount(account.id)"): .fa.fa-check
 

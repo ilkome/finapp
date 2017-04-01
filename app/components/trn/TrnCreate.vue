@@ -26,14 +26,13 @@
         .metaItem__el
           .metaName {{ values.categoryName }}
           .metaItemLabel Категория
-          template(v-if="show.categories")
-            .metaItemDropdown
-              .metaItemDropdown__in
-                a.metaItemDropdown__el(
-                  v-for="category in categories",
-                  :class="{active: (category.id === values.categoryId)}",
-                  @click.prevent="setCategory(category.id)"
-                ) {{ category.name }}
+          .metaItemDropdown(v-if="show.categories")
+            .metaItemDropdown__in
+              a.metaItemDropdown__el(
+                v-for="category in categories",
+                :class="{active: (category.id === values.categoryId)}",
+                @click.prevent="setCategory(category.id)"
+              ) {{ category.name }}
 
       .metaItem._right(@click.prevent.stop="toogleAccountsDropdown()")
         .metaItem__el
@@ -49,14 +48,14 @@
                 ) {{ account.name }}
 
     .categories
-      .icons
-        a.icon(
-          href="#"
-          v-for="trn in lastCategories.slice(0, 10)",
-          :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
-          :title="trn.categoryName",
-          @click.prevent="setCategory(trn.categoryId)")
-          .icon__pic
+      .categoriesIcons
+        .categoriesIcons__el(v-for="trn in lastCategories")
+          a.icon(
+            :class="[{active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
+            :title="trn.categoryName",
+            @click.prevent="setCategory(trn.categoryId)"
+          )
+            .icon__pic
 
     .desc
       input.input-filter._nomargin(
@@ -80,7 +79,7 @@ import { mapGetters } from 'vuex'
 export default {
   props: {
     account: {
-      type: Object // NEED FIX for same component
+      type: Object
     }
   },
 
@@ -104,7 +103,7 @@ export default {
       values: {
         accountId: this.account ? this.account.id : lastTrn.accountId,
         accountName: this.account ? this.account.name : lastTrn.accountName,
-        amount: '1',
+        amount: null,
         categoryId: lastTrn.categoryId,
         categoryName: lastTrn.categoryName,
         type: 0,
@@ -125,7 +124,7 @@ export default {
       return trnsInThisDay
     },
     lastCategories() {
-      return uniqBy(this.trns, 'categoryName').slice(0, 100)
+      return uniqBy(this.trns, 'categoryName').slice(0, 10)
     }
   },
 
