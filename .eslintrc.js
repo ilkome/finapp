@@ -1,10 +1,10 @@
 module.exports = {
-    "extends": "standard",
-    "plugins": [
-        "standard",
-        "promise"
-    ],
-    "rules": {
-      "space-before-function-paren": ["error", "never"]
+    'extends': 'vue',
+    'rules': {
+      'space-before-function-paren': ['error', {
+        anonymous: 'always',
+        named: 'never',
+        asyncArrow: 'always'
+      }]
     }
 };
