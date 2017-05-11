@@ -6,19 +6,31 @@ icon($icon, $bg = #242424)
 
 .icon
   display flex
+  min-width 40px
   width 40px
   height 40px
   align-items center
   justify-content center
   color alpha(white, .7)
   font-size 1.2rem
-  background $color-layout
+  background #242424
   border-radius 3px
+  border 2px solid transparent
 
   &._link
     anim()
     &:hover
       background $color-link
+
+  &._small
+    font-size 0.8rem
+    width 30px
+    height 30px
+
+  &._active
+    color white
+    background $color-link
+    border-color $color-main
 
   &__pic
     fa(industry)
@@ -28,8 +40,15 @@ icon($icon, $bg = #242424)
   icon(credit-card-alt, #1C2833)
 .icon-14 // питание
   icon(cutlery, $color-14)
+
+
 .icon-15 // бензин
-  icon(car, #6D4C41)
+  icon("tint", #6D4C41)
+.icon-20 // запчасти
+  icon("ticket", #6D4C41)
+.icon-61 // обслуживание
+  icon("gavel", #6D4C41)
+
 .icon-19
   icon(television)
 .icon-18 // плюшки
@@ -39,17 +58,17 @@ icon($icon, $bg = #242424)
 .icon-25
   icon(shopping-bag)
 .icon-28 // спорт
-  icon(futbol-o, #3498DB)
+  icon(futbol-o, #266e9d)
 .icon-32
   icon(internet-explorer)
-.icon-35 // родственники
+.icon-35, .icon-26 // родственники
   icon(users)
 .icon-37 // бытовое
   icon(tachometer)
 .icon-42 // девушки
   icon(user-md)
 .icon-43 // козачка
-  icon(female, $color-43)
+  icon(female, #b54c4c)
 .icon-55
   icon(yelp)
 .icon-59 // развлечения

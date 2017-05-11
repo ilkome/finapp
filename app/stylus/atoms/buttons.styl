@@ -28,9 +28,6 @@ a
   cursor pointer
   anim()
 
-  &:hover
-    border-color $color-link
-
   &._active
     font-weight bold
     color $color-link
@@ -38,3 +35,14 @@ a
   &._big
     padding 25px 50px
     background $color-link
+    color #dcdcdc
+
+  &._small
+    margin-right 10px
+    padding 5px 10px
+
+  &:hover
+    border-color $color-link
+
+  &:last-child
+    margin-right 0

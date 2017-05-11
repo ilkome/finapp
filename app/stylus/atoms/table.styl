@@ -5,12 +5,24 @@
 
   @media $pc
     flex-flow row nowrap
+    // max-width 1300px
 
   &._midle
+  &._center
     align-items center
+
 
   &__cell
     flex 1 1 100%
 
     @media $pc
       flex 0 1 calc(50% - 40px)
+
+    &._three
+      flex 0 1
+      margin-left 100px
+      flex-basis 100%
+
+    &._grow
+      flex 0 1
+      flex-basis 100%

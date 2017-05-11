@@ -13,9 +13,9 @@ export default function formatDate(date) {
   const tomorrow = moment().add(1, 'days').format('D.MM.YY')
 
   switch (formatedDate) {
-    case today: return 'Сегодня'
-    case yesterday: return 'Вчера'
-    case tomorrow: return 'Завтра'
+    case today: return 'Today'
+    case yesterday: return 'Yesterday'
+    case tomorrow: return 'Tomorrow'
     default: return formatedDate
   }
 }

@@ -20,7 +20,7 @@ const getters = {
     const categories = rootState.categories.all
     const rates = rootState.rates.all
 
-    // add to trns extra info
+    // Add to trn extra info
     trns = trns.map(trn => ({
       id: +trn.id,
       currency: trn.currency,
@@ -34,6 +34,7 @@ const getters = {
         ? Math.floor(Math.abs(trn.amount / rates[trn.currency]))
         : Math.abs(trn.amount),
       categoryName: categories.find(cat => cat.id === trn.categoryId).name,
+      description: trn.description,
       symbol: accounts.find(account => account.id === trn.accountId).symbol
     }))
 
@@ -50,10 +51,10 @@ const getters = {
   }
 }
 
-// actions
+// Actions
 // ==============================================
 const actions = {
-  // fetch
+  // Fetch
   async fetchTrns({ commit }) {
     const trns = await getTransactions()
     commit('fetchTrns', trns)
@@ -108,6 +109,7 @@ const actions = {
   // update
   async updateTrn({ commit, dispatch }, trn) {
     try {
+      commit('setStatus', 'Updating...')
       const updatedTrn = await axios.put(`${TRANSACTIONS_URL}/${trn.id}`, trn)
       const result = updatedTrn.data
 
@@ -116,8 +118,8 @@ const actions = {
         const getTrn = await axios.get(`${TRANSACTIONS_URL}/${trn.id}`, {
           params: { transform: 1 }
         })
-        commit('updateTrn', getTrn.data)
-        commit('setStatus', 'Транзакция обновлена :)')
+        await commit('updateTrn', getTrn.data)
+        await commit('setStatus', 'Updated!')
         setTimeout(() => commit('setStatus'), 2000)
       } else {
         dispatch('setAppStatus', 'Ошибка создания транзакции 1')

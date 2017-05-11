@@ -6,10 +6,6 @@
     .table__cell
       input(type="text", v-model.trim="filter", placeholder="Фильтр").input-filter
 
-      //- .input.panel
-      //-   input(v-model.trim="filter", placeholder="Введите название кошелька" type="text").input__field
-      //-   .input__label Фильтр
-
       .items
         template(v-for="account in accountsList")
           .loader(:class="{_visible: loading || loadingId === account.id}"): .fa.fa-spinner
@@ -54,8 +50,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import formatMoney from '../../mixins/formatMoney'
-import ChartByCategory from '../chart/ChartByCategory.vue'
+import formatMoney from '../mixins/formatMoney'
 
 export default {
   mixins: [formatMoney],
@@ -91,6 +86,7 @@ export default {
       this.account.name = Math.random()
     },
     async deleteAccount(accountId) {
+      console.log('delete account')
       this.loadingId = accountId
       this.$store.dispatch('setAppStatus', 'Удаление...')
       await this.$store.dispatch('deleteAccount', accountId)
@@ -106,8 +102,6 @@ export default {
     },
     log(e) {
     }
-  },
-
-  components: { ChartByCategory }
+  }
 }
 </script>

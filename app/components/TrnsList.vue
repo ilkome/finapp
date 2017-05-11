@@ -4,11 +4,13 @@
     template(v-if="trnsIdsForDelete.length > 0")
       div.remove
         a.btn._big(@click.prevent="removeSelectedTrns()") Удалить выбранные транзакции: {{trnsIdsForDelete.length}}
+        //- a.btn(@click.prevent="clearSelectedTrns()") Отмена
 
   .items(v-for="(trns, date) of trnsList")
-    h3 {{ date | date }}
+    h3.title._border {{ date | date }}
     .items__list
       TrnItem(v-for="trn in trns", :trn="trn", :key="trn.id", v-on:toogleTrn="toogleTrn")
+
 </template>
 
 
@@ -16,7 +18,7 @@
 import groupBy from 'lodash/groupBy'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
-import formatMoney from '../../mixins/formatMoney'
+import formatMoney from '../mixins/formatMoney'
 import TrnItem from './TrnItem.vue'
 
 export default {
@@ -52,6 +54,10 @@ export default {
     },
     removeSelectedTrns() {
       this.$store.dispatch('deleteTrns', this.trnsIdsForDelete)
+      this.trnsIdsForDelete = []
+    },
+
+    clearSelectedTrns() {
       this.trnsIdsForDelete = []
     }
   },

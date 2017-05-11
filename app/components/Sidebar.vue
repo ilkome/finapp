@@ -4,7 +4,7 @@
   .sidebar__wrap
     .sidebar__in
       .account
-        .accountTitle Кошельки
+        .accountTitle Accounts
         .accountContent
 
           //- Account item
@@ -22,15 +22,15 @@
                   .accountContentItemTotalIn 0 {{account.symbol}}
 
       .account
-        .accountTitle Итоги
+        .accountTitle Summary
         .accountContent
           .accountContentItem
-            .accountContentItemLabel Всего
+            .accountContentItemLabel Total
             .accountContentItemTotal
               .accountContentItemTotalIn {{ showSumIn('RUB') }}
               .accountContentItemTotalIn {{ showSumIn('USD') }}
           .accountContentItem
-            .accountContentItemLabel Курс
+            .accountContentItemLabel Rate
             .accountContentItemTotal
               .accountContentItemTotalIn {{ showRateOf('USD') }}
               .accountContentItemTotalIn {{ showRateOf('EUR') }}
@@ -39,7 +39,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import formatMoney from '../../mixins/formatMoney'
+import formatMoney from '../mixins/formatMoney'
 
 export default {
   mixins: [formatMoney],

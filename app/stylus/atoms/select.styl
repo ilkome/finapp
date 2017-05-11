@@ -1,0 +1,88 @@
+.selectItem
+  margin-bottom 40px
+
+  &._active
+    & ^[0]__head
+      padding 10px 10px
+      margin-left -10px
+      margin-right -10px
+      background $color-body
+      border 1px solid $color-line
+
+      &:after
+        right 20px
+
+    & ^[0]__name
+      opacity 0
+
+  &__head
+    padding 10px 0
+    margin 0
+    min-width 150px
+    position relative
+    display flex
+    align-items center
+    padding-bottom 10px
+    font-size 1.2rem
+    cursor pointer
+    border 1px solid transparent
+    border-bottom 1px solid $color-line
+
+    &:after
+      position absolute
+      right 10px
+      top 50%
+      transform translateY(-50%)
+      content ''
+      margin-left 20px
+      width 0
+      height 0
+      border-left 8px solid transparent
+      border-right 8px solid transparent
+      border-top 8px solid $color-line
+
+  &__icon
+    padding-right 20px
+
+  &__label
+    padding-bottom 5px
+    font-size .9rem
+    color $color-second
+
+  &__dropdown
+    z-index 2
+    position absolute
+    top 61px
+    left -10px
+    width calc(100% + 20px)
+    padding 10px
+    text-align left
+    background $color-body
+    border 1px solid $color-line
+    border-top 0
+    border-radius 0 0 3px 3px
+
+    &__scroll
+      overflow-y scroll
+      max-height 220px
+
+    &__filter
+      position absolute
+      left 70px
+      top -34px
+      font-size 1.2rem
+      color $color-main
+
+    &__el
+      cursor pointer
+      display flex
+      align-items center
+      padding 5px
+      font-size 1rem
+      white-space nowrap
+
+      &:hover
+        color $color-link
+
+      &__pic
+        padding-right 20px

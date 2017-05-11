@@ -1,17 +1,21 @@
 .sidebar
+  overflow hidden
+  z-index 6
   flex-shrink 0
   position relative
-  width 280px
-  background $color-layout
-  border-right 1px solid $color-line-layout
+  background alpha(#070707, .95)
   anim()
+
+  @media $laptop
+    width 280px
+    border-right 2px solid $color-line-layout
 
   &__wrap
     @media $laptop
-      position fixed
+      z-index 3
       overflow-x scroll
+      position fixed
       left 0
-      top 0
       width 280px
       height 100%
 
@@ -22,7 +26,14 @@
     align-content space-between
     height 100%
 
+    .account
+      padding 0 10px
+      flex-grow 1
+      &:first-child
+        padding-bottom 20px
+
   &__menu
+    display none
     z-index 2
     position fixed
     left 30px

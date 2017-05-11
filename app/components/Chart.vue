@@ -47,6 +47,8 @@ export default {
   methods: {
     init() {
       if (!this.chart) {
+        const router = this.$router
+
         Highcharts.setOptions(chartTheme)
         this.chart = new Highcharts.Chart(this.$el, {
           chart: {
@@ -54,16 +56,29 @@ export default {
           },
           plotOptions: {
             area: {
-              // enableMouseTracking: false
+              dataLabels: { enabled: true },
+              // enableMouseTracking: true
             },
             column: {
+              allowPointSelect: false,
               dataLabels: { enabled: true },
-              enableMouseTracking: false
+              // enableMouseTracking: false
             },
             pie: {
               allowPointSelect: false,
               dataLabels: { enabled: false },
               enableMouseTracking: false
+            },
+            series: {
+                cursor: 'pointer',
+                point: {
+                    events: {
+                        click: function () {
+                          console.log(router.push(`/categories/${this.options.id}`))
+                          console.log(this.options.id)
+                        }
+                    }
+                }
             }
           },
           legend: { enabled: false },
@@ -88,7 +103,10 @@ export default {
             }]
           },
           series: this.data.series,
-          tooltip: { shared: true },
+          tooltip: {
+            shared: true,
+            enabled: false
+          },
           credits: { enabled: false }
         })
       }

@@ -1,5 +1,5 @@
 <template lang="pug">
-.item(@click="toogleTrn(trn.id)", :class="{_selected: selected}")
+.item(@click.stop="toogleTrn(trn.id)", :class="{_selected: selected, _editable: trn.id === editedTrn}")
   .item__content
     router-link.item__el(
       :to="`/categories/${trn.categoryId}`",
@@ -13,20 +13,26 @@
 
     .item__el._account(:class="trn.accountId === 1 ? 'c-tinkoff' : 'c-rub'") {{ trn.accountName }}
     .item__el._category {{ trn.categoryName }}
-    router-link.item__el._action(:to="`/trn/${trn.id}/edit`"): .fa.fa-pencil-square-o
+    .item__el._action(@click.stop.prevent="setEditTrn(trn.id)"): .fa.fa-pencil-square-o
     .item__el._action(@click.prevent.stop="question(trn.id)"): .fa.fa-trash-o
 
   .item__question(:class="{_visible: questionId === trn.id}")
-    .item__el._question._grow Удалить транзакцию?
+    .item__el._question Удалить транзакцию?
     .item__el._action(@click.prevent.stop="close()"): .fa.fa-ban
     .item__el._action(@click.prevent.stop="deleteTrn(trn.id)"): .fa.fa-check
 
   .item__loader(:class="{_visible: loadingId === trn.id}"): .fa.fa-spinner
+
+  transition(name="slideToTop")
+    .item__edit(v-if="trn.id === editedTrn")
+      TrnEdit(:trn="trn")
+
 </template>
 
 
 <script>
-import formatMoney from '../../mixins/formatMoney'
+import formatMoney from '../mixins/formatMoney'
+import TrnEdit from './TrnEdit2.vue'
 
 export default {
   mixins: [formatMoney],
@@ -42,24 +48,38 @@ export default {
       selected: false,
       loading: false,
       loadingId: null,
-      questionId: null
+      questionId: null,
+      editedTrn: null
     }
   },
 
   methods: {
     toogleTrn(id) {
-      this.selected = !this.selected
-      this.$emit('toogleTrn', id)
+      // this.selected = !this.selected
+      // this.$emit('toogleTrn', id)
     },
+
     deleteTrn(id) {
       this.$store.dispatch('deleteTrn', id)
     },
+
     question(accountId) {
       this.questionId = accountId
     },
+
     close() {
       this.questionId = null
     },
-  }
+
+    setEditTrn(trnId) {
+      if (trnId === this.editedTrn) {
+        this.editedTrn = null
+      } else {
+        this.editedTrn = trnId
+      }
+    }
+  },
+
+  components: { TrnEdit }
 }
 </script>

@@ -1,16 +1,15 @@
 .items
-  padding-bottom 80px
+  margin-bottom 60px
   max-width 550px
+  overflow hidden
 
 
 // Item
 // ===============================================
 .item
-  display flex
   position relative
-  // padding 0 20px 0 10px
   color $color-second
-  border-top 1px solid $color-line
+  border-radius 3px
   anim()
 
   &:hover
@@ -20,107 +19,150 @@
     ._action
       opacity 1
 
+  &:first-child
+    border-top 0
+
   &._selected
     border-top-color $color-body
     background alpha(white, .04) !important
 
+    ._action
+      display none
+
+  &._editable
+    background alpha(#070707, .95)
+    margin-bottom 20px
+
+
+  // item__edit
+  // ===============================================
+  &__edit
+    border-top 2px solid $color-body
+    padding 30px
+
+  // item__el
+  // ===============================================
+  &__el
+    display flex
+    align-items center
+    padding 10px 0
+    flex-shrink 0
+    color $color-second
+
+    &:first-child
+      margin-left 10px
+
+    &:last-child
+      margin-right 10px
+
+    &._account
+      width 130px
+      white-space nowrap
+      overflow hidden
+      text-overflow ellipsis
+
+    &._action
+      opacity 0
+      width 55px
+      justify-content center
+      font-size 1.5rem
+      cursor pointer
+      anim()
+
+      &:hover
+        color $color-link
+
+      &:last-child
+        margin-right 0
+
+    &._category
+      flex 1 1
+      // max-width 130px
+      overflow hidden
+
+    &._delete
+      padding-right 10px
+      text-align right
+
+    &._grow
+      flex-grow 1
+
+    &._name
+      width 200px
+
+    &._nopadding
+      padding 10px 0
+      // margin-bottom 10px
+
+    &._pad
+      padding-right 16px
+
+    &._icon
+      padding-right 16px
+      width 66px
+
+    &._price
+      display flex
+      flex-flow row wrap
+      justify-content flex-end
+      width 130px
+      padding-right 30px
+      text-align right
+      white-space nowrap
+      font-size 18px
+      font-weight bold
+      $font-numbers()
+      color $color-sum
+
+      &:last-child
+        padding-right 0
+
+      div
+        flex 1 1 100%
+
+    &._second
+      color $color-second
+      font-size .9rem
+
+    &._static
+      display block
+      position relative
+
+    &._question
+      flex-grow 1
+      padding-left 5px
+      font-size 1.2rem
+      color $color-expense
+
+    &._yes
+      cursor pointer
+      padding-right 15px
+      font-size 1.5rem
+      &:hover
+        color $color-link
+
+    &._no
+      cursor pointer
+      font-size 1.5rem
+      &:hover
+        color $color-link
+
+    &.link, &._link
+      cursor pointer
+      padding-right 0
+      font-size 1.5rem
+      opacity 0
+      anim()
+
+    a&:hover, &.link:hover, &._link:hover
+      color $color-link
+      border-bottom-color transparent
+
+  // item__content
+  // ===============================================
   &__content
     flex 1 1
     display flex
-
-
-// Item element
-// ===============================================
-.item__el
-  display flex
-  align-items center
-  // border 1px solid red
-  padding 10px 0
-  flex-shrink 0
-  color $color-second
-
-  &:first-child
-    margin-left 10px
-
-  &:last-child
-    margin-right 15px
-
-  &._account
-    width 130px
-    white-space nowrap
-    overflow hidden
-    text-overflow ellipsis
-
-  &._action
-    opacity 0
-    width 55px
-    justify-content center
-    font-size 1.5rem
-    cursor pointer
-    anim()
-
-    &:hover
-      color $color-link
-
-    &:last-child
-      margin-right 0
-
-  &._category
-    flex 1 1
-    // max-width 130px
-    overflow hidden
-
-  &._delete
-    padding-right 10px
-    text-align right
-
-  &._grow
-    flex-grow 1
-
-  &._name
-    width 200px
-
-  &._price
-    justify-content flex-end
-    width 130px
-    padding-right 30px
-    text-align right
-    white-space nowrap
-    font-size 18px
-    font-weight bold
-    $font-numbers()
-
-  &._second
-    color $color-second
-    font-size .9rem
-
-  &._question
-    color $color-expense
-
-  &._yes
-    cursor pointer
-    padding-right 15px
-    font-size 1.5rem
-    &:hover
-      color $color-link
-
-  &._no
-    cursor pointer
-    font-size 1.5rem
-    &:hover
-      color $color-link
-
-  &.link, &._link
-    cursor pointer
-    padding-right 0
-    font-size 1.5rem
-    opacity 0
-    anim()
-
-  a&:hover, &.link:hover, &._link:hover
-    color $color-link
-    border-bottom-color transparent
-
 
 // Loader
 // ===============================================
@@ -136,7 +178,7 @@
   align-items stretch
   justify-content flex-start
   padding 0
-  background $color-trn
+  background $color-trn-hover
   border-radius 3px
   anim()
 
@@ -185,3 +227,67 @@
   &._visible
     opacity 1
     visibility visible
+
+
+
+// itemStat
+// ===============================================
+.itemStat
+  display flex
+  align-items center
+  padding 10px
+  color $color-second
+  border-radius 3px
+  anim()
+
+  &:hover
+    color $color-main
+    background $color-trn-hover
+
+  &__icon
+    padding-right 15px
+
+  &__content
+    display flex
+    flex-flow column nowrap
+    flex-grow 1
+
+  &__text
+    padding 0 5px
+
+  &__graph
+    flex-grow 1
+    // height 4px
+    background #242424
+    border-radius 3px
+
+  &__graph__in
+    height 4px
+    border-radius 3px
+
+    &._expense
+      background $color-expense
+
+    &._income
+      background $color-income
+
+  &__name
+    text-transform capitalize
+
+  &__text
+    display flex
+    justify-content space-between
+    padding-bottom 10px
+
+  &__price
+    display flex
+    text-align right
+    font-size 18px
+    font-weight bold
+    $font-numbers()
+    color $color-sum
+
+    div
+      padding-left 10px
+      &:last-child
+        width 100px
