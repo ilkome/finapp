@@ -12,17 +12,6 @@ async function getAccounts() {
   return request.data.accounts
 }
 
-// Get accounts
-// ==============================================
-// async function getAccount(accountId) {
-//   const request = await axios.get(ACCOUNTS_URL, {
-//     params: {
-//       transform: 1
-//     }
-//   })
-//   return request.data.accounts
-// }
-
 // Create account
 // ==============================================
 async function addAccount(account) {
@@ -47,18 +36,6 @@ async function addAccount(account) {
     console.error('api.js: add account', e.message)
   }
 }
-
-// Update account
-// ==============================================
-// async function updateAccount(accountId) {
-//   try {
-//     console.log(accountId)
-//     const result = await axios.delete(`${ACCOUNTS_URL}/${accountId}`)
-//     console.log(result)
-//   } catch (e) {
-//     console.log('deleteAccount', e.message)
-//   }
-// }
 
 // Delete account
 // ==============================================
