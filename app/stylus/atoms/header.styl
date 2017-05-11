@@ -7,20 +7,29 @@ h1, h2, h3, h4, h5, h6
   font-weight bold
   letter-spacing 2px
   text-transform uppercase
+  text-shadow 3px 3px black
 
 h4
   font-size 1rem
 
 .title
-  display flex
-  align-items center
-
   @media $laptop
+    display flex
+    align-items center
+    justify-content flex-start
     margin-bottom 60px
 
   h1&
     font-size 2rem
     letter-spacing 4px
+
+  h2&
+    margin-bottom 60px
+    font-size 1.6rem
+    letter-spacing 2px
+
+  &._trns
+    color $color-rub
 
   &._sm
     margin-bottom 25px
@@ -37,19 +46,24 @@ h4
   &._number
     margin-top 50px
     margin-bottom 15px
+
+  &._border
+    padding-bottom 10px
+    margin-bottom 10px
+    border-bottom 1px solid $color-line-account
+
+  &._wide
     $font-numbers()
+    letter-spacing 8px
 
   .link
     display inline-flex
     cursor pointer
 
-  .icon
-    padding-left 5px
-    margin 0 10px
-
   .name
-    padding-left 15px
     text-transform none
+    @media $laptop
+      padding-left 15px
 
   .color
     color $color-rub

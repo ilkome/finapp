@@ -2,7 +2,22 @@
   display flex
   flex-flow row wrap
   margin -5px
-  margin-bottom 60px
 
   &__el
-    margin 5px
+    margin 4px
+
+    @media $laptop
+      margin 5px
+
+
+.categoryStat
+  display flex
+
+  &__trns
+    margin-left -10px
+    flex-grow 1
+    max-width 420px
+
+  &__summary
+    margin-top -15px
+    margin-left 100px

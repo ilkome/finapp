@@ -1,7 +1,10 @@
 <template lang="pug">
-div.trnsPage
-  h1.title Транзакции
-  TrnsList(:trns="trns.slice(0, 20)")
+.content
+  .module
+    h1.title Транзакции
+
+  .module._bg
+    TrnsList(:trns="trns.slice(0, 50)")
 </template>
 
 
@@ -9,7 +12,7 @@ div.trnsPage
 import groupBy from 'lodash/groupBy'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
-import formatMoney from '../../mixins/formatMoney'
+import formatMoney from '../mixins/formatMoney'
 import TrnsList from './TrnsList.vue'
 
 export default {

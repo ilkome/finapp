@@ -4,9 +4,7 @@
   justify-content space-between
   align-items center
   font-size 1rem
-
-  @media $laptop
-    margin-right 30px
+  margin-bottom 40px
 
 .filterItem
   text-align center
@@ -14,7 +12,7 @@
   &._date
     min-width 140px
     text-transform uppercase
-    font-size 1.2rem
+    font-size 1.6rem
     font-weight bold
     $font-numbers()
 
@@ -23,18 +21,25 @@
 
 .filterItemDate
   display inline-flex
-  padding-left 5px
+  padding-left 15px
 
 
 .filter
   .link
-    padding 10px 15px
-    opacity .05
+    margin-top -3px
+    padding 15px 20px
+    opacity .5
     border none
     color $color-main
     cursor pointer
     anim()
 
+    @media $laptop
+      padding 15px 50px
+
+
   &:hover
     .link
       opacity 1
+      background alpha(white, .3)
+      border-radius 3px

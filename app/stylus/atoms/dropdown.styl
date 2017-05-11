@@ -1,0 +1,71 @@
+.dropdown
+  display flex
+  position relative
+
+  &__name
+    cursor pointer
+    padding-bottom 3px
+    margin-bottom -3px
+    // border-bottom 1px solid $color-main
+    anim()
+    &:hover
+      // color $color-link
+      // border-bottom 1px solid $color-link
+
+  &:hover
+    .dropdown__content
+      opacity 1
+
+  &__content
+    opacity 0
+    // visibility hidden
+    z-index 2
+    position absolute
+    left 0px
+    // transform translateX(-50%)
+    top 30px
+    // padding 20px
+    padding-bottom 20px
+    white-space nowrap
+    // background $color-panel
+    // border 1px solid $color-line
+    anim()
+
+    &:before
+      // content ''
+      position absolute
+      left calc(50% - 7px)
+      top -12px
+      border-left 12px solid transparent
+      border-right 12px solid transparent
+      border-bottom 12px solid $color-line
+
+    &:after
+      // content ''
+      position absolute
+      left calc(50% - 5px)
+      top -10px
+      border-left 10px solid transparent
+      border-right 10px solid transparent
+      border-bottom 10px solid $color-panel
+
+    &._visible
+      opacity 1
+      visibility visible
+      top 50px
+
+  &__link
+    opacity .8
+    cursor pointer
+    font-size 1.2rem
+    margin-right 10px
+    letter-spacing 1px
+    anim()
+
+    &:hover
+      opacity 1
+      color $color-main
+
+    &._active
+      opacity 1
+      color $color-link
