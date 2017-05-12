@@ -68,8 +68,13 @@ async function getCategories() {
 // Get rates
 // ==============================================
 async function getRates() {
-  const request = await axios.get('http://api.fixer.io/latest?base=RUB')
-  return request.data.rates
+  try {
+    const request = await axios.get('http://api.fixer.io/latest?base=RUB')
+    return request.data.rates
+  } catch (e) {
+    console.error('Get rates: ', e.message)
+    return false
+  }
 }
 
 // Get transactions
