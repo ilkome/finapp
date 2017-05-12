@@ -6,29 +6,68 @@
       .name {{ category.name }}
       .sup  {{ category.id }}
 
-    SummaryShort(
-      :expenses="total.expenses",
-      :incomes="total.incomes")
+    .categoryStat
+      .categoryStat__trns
+        template(v-for="data of dataByYears")
+          .itemStat
+            .itemStat__content
+              .itemStat__text
+                .itemStat__name {{ data.year }}
+                .itemStat__price
+                  .income
+                    template(v-if="data.incomes > 0") {{formatMoney(data.incomes)}}
+                  .expense
+                    template(v-if="data.expenses > 0") {{formatMoney(data.expenses)}}
+              .itemStat__graph
+                template(v-if="data.incomes > 0")
+                  .itemStat__graph__in._income(:style="countWidthYear(data.incomes, 'income')")
+                template(v-if="data.expenses > 0")
+                  .itemStat__graph__in._expense(:style="countWidthYear(data.expenses, 'expense')")
+
+      .categoryStat__summary
+        .summaryShort
+          .summaryShort__content
+            template(v-if="total.expenses > 0 || total.incomes > 0")
+              .summaryShort__el
+                .accountDetails
+
+                  .accountItem(v-if="total.expenses > 0")
+                    .accountItem__label Expenses
+                    .accountItem__total.expense {{ formatMoney(total.expenses) }}
+
+                  .accountItem(v-if="total.incomes > 0")
+                    .accountItem__label Incomes
+                    .accountItem__total.income {{ formatMoney(total.incomes) }}
+
+                  .accountItem
+                    .accountItem__label Average
+                    .accountItem__total {{ formatMoney((total.incomes - total.expenses) / 4) }}
+
+                  .accountItem
+                    .accountItem__label Total
+                    .accountItem__total.sum {{ formatMoney(total.incomes - total.expenses) }}
 
   template(v-for="year of years")
     .module._bg
       h1.title._wide Year {{ year }}
       .categoryStat
         .categoryStat__trns
-          template(v-for="(yearData, index) in trnsData(year)")
-            template(v-if="yearData.expenses > 0 || yearData.incomes > 0")
+          template(v-for="data in dataInYear(year)")
+            template(v-if="data.expenses > 0 || data.incomes > 0")
               .itemStat
                 .itemStat__content
                   .itemStat__text
-                    .itemStat__name {{ yearData.month }}
+                    .itemStat__name {{ data.month }}
                     .itemStat__price
-                      .income(v-if="yearData.incomes > 0") {{formatMoney(yearData.incomes)}}
-                      .expense(v-if="yearData.expenses > 0") {{formatMoney(yearData.expenses)}}
+                      .income
+                        template(v-if="data.incomes > 0") {{formatMoney(data.incomes)}}
+                      .expense
+                        template(v-if="data.expenses > 0") {{formatMoney(data.expenses)}}
                   .itemStat__graph
-                    template(v-if="yearData.incomes > 0")
-                      .itemStat__graph__in._income(:style="countWidthStyleNew(yearData.incomes, 'income')")
-                    template(v-if="yearData.expenses > 0")
-                      .itemStat__graph__in._expense(:style="countWidthStyleNew(yearData.expenses, 'expense')")
+                    template(v-if="data.incomes > 0")
+                      .itemStat__graph__in._income(:style="countWidthMonth(data.incomes, 'income')")
+                    template(v-if="data.expenses > 0")
+                      .itemStat__graph__in._expense(:style="countWidthMonth(data.expenses, 'expense')")
 
         .categoryStat__summary
           .summaryShort
@@ -37,12 +76,12 @@
                 .summaryShort__el
                   .accountDetails
 
-                    .accountItem
-                      .accountItem__label Expense
+                    .accountItem(v-if="total.expenses > 0")
+                      .accountItem__label Expenses
                       .accountItem__total.expense {{ formatMoney(totalInYear(year).expenses) }}
 
-                    .accountItem
-                      .accountItem__label Income
+                    .accountItem(v-if="total.incomes > 0")
+                      .accountItem__label Incomes
                       .accountItem__total.income {{ formatMoney(totalInYear(year).incomes) }}
 
                     .accountItem
@@ -57,6 +96,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import moment from 'moment'
+import orderBy from 'lodash/orderBy'
 import formatDataForCharts from '../mixins/formatDataForCharts'
 import formatMoney from '../mixins/formatMoney'
 import SummaryShort from './SummaryShort.vue'
@@ -68,6 +108,7 @@ export default {
     ...mapGetters(['categories', 'trns']),
 
     category() {
+      console.log(this.categories.find(a => a.id === +this.$route.params.id).id)
       return this.categories.find(a => a.id === +this.$route.params.id)
     },
 
@@ -98,8 +139,8 @@ export default {
       }
     },
 
-    trnsListSorted() {
-      const data = []
+    dataByMonths() {
+      let data = []
 
       for (let year = 2014; year <= 2017; year++) {
         const trnsInYear = this.trnsList.filter(trn => +moment(trn.date).format('Y') === year)
@@ -112,53 +153,106 @@ export default {
             const incomesTotal = trnsInMonth
               .filter(trn => trn.type === 1)
               .reduce((sum, current) => sum + current.amountRub, 0)
-
             const expensesTotal = trnsInMonth
               .filter(trn => trn.type === 0)
               .reduce((sum, current) => sum + current.amountRub, 0)
 
-            data.push({
+            data = [...data, {
               month,
               year,
               incomes: incomesTotal > 0 ? incomesTotal : 0,
               expenses: expensesTotal > 0 ? expensesTotal : 0
-            })
+            }]
           } else {
-            data.push({
+            data = [...data, {
               month,
               year,
               incomes: 0,
               expenses: 0
-            })
+            }]
           }
         }
       }
 
-      const dataSorted = data.sort((a, b) => {
-        const aBiggest = (a.incomes > a.expenses) ? a.incomes : a.expenses
-        const bBiggest = (b.incomes > b.expenses) ? b.incomes : b.expenses
+      return data
+    },
 
-        if (aBiggest > bBiggest) return -1
-        else if (aBiggest < bBiggest) return 1
-        return 0
-      })
+    dataByYears() {
+      const data = []
 
-      return dataSorted
+      for (let year = 2017; year >= 2014; year--) {
+        const trnsInYear = this.trnsList.filter(trn => +moment(trn.date).format('Y') === year)
+        console.log(year)
+
+        if (trnsInYear.length > 0) {
+          const incomesTotal = trnsInYear
+            .filter(trn => trn.type === 1)
+            .reduce((sum, current) => sum + current.amountRub, 0)
+          const expensesTotal = trnsInYear
+            .filter(trn => trn.type === 0)
+            .reduce((sum, current) => sum + current.amountRub, 0)
+          data.push({
+            year,
+            incomes: incomesTotal > 0 ? incomesTotal : 0,
+            expenses: expensesTotal > 0 ? expensesTotal : 0
+          })
+        } else {
+          data.push({
+            year,
+            incomes: 0,
+            expenses: 0
+          })
+        }
+      }
+
+      console.log(data)
+      return data
     }
   },
 
   methods: {
-    countWidthStyleNew(total, type) {
+    countWidthMonth(total, type) {
       let width = 0
+      let dataSorted = []
 
+      // incomes
       if (type === 'income') {
-        width = total / this.trnsListSorted[0].incomes * 100
-      } else {
-        width = total / this.trnsListSorted[0].expenses * 100
+        dataSorted = orderBy(this.dataByMonths, e => e.incomes, 'desc')
+        width = total / dataSorted[0].incomes * 100
+      }
+
+      // expense
+      if (type === 'expense') {
+        dataSorted = orderBy(this.dataByMonths, e => e.expenses, 'desc')
+        width = total / dataSorted[0].expenses * 100
       }
 
       const renderWidth = width > 0 ? width : 0
-      return { width: `calc(${renderWidth}%)` }
+      return {
+        width: `calc(${renderWidth}%)`
+      }
+    },
+
+    countWidthYear(total, type) {
+      let width = 0
+      let dataSorted = []
+
+      // incomes
+      if (type === 'income') {
+        dataSorted = orderBy(this.dataByYears, e => e.incomes, 'desc')
+        width = total / dataSorted[0].incomes * 100
+      }
+
+      // expense
+      if (type === 'expense') {
+        dataSorted = orderBy(this.dataByYears, e => e.expenses, 'desc')
+        width = total / dataSorted[0].expenses * 100
+      }
+
+      const renderWidth = width > 0 ? width : 0
+      return {
+        width: `calc(${renderWidth}%)`
+      }
     },
 
     totalInYear(year) {
@@ -176,7 +270,7 @@ export default {
       }
     },
 
-    trnsData(year) {
+    dataInYear(year) {
       if (!year) {
         console.log('Year is not set.')
         return false
