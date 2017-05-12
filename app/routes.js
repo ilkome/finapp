@@ -4,7 +4,7 @@ import DashboardPage from './components/DashboardPage.vue'
 import TrnsListPage from './components/TrnsListPage.vue'
 import TrnEditPage from './components/TrnEditPage.vue'
 import CategoriesList from './components/CategoriesList.vue'
-import CategoryItem from './components/CategoryItem.vue'
+import CategoryItemPage from './components/CategoryItemPage.vue'
 
 const routes = [
   { path: '/index.html', component: DashboardPage },
@@ -14,7 +14,7 @@ const routes = [
   { path: '/trns', component: TrnsListPage },
   { path: '/trn/:id/edit', component: TrnEditPage },
   { path: '/categories', component: CategoriesList },
-  { path: '/categories/:id', component: CategoryItem }
+  { path: '/categories/:id', component: CategoryItemPage }
 ]
 
 export default routes
