@@ -55,7 +55,7 @@
 
   .module._bg
     h1.title._wide._trns Trns list
-    TrnsList(:trns="trnsList")
+    TrnsList(:trns="trnsList.slice(0, 50)")
 </template>
 
 
@@ -74,7 +74,7 @@ export default {
     return {
       showDropdown: false,
       editTrnId: null,
-      days: [1, 3, 5, 10, 15, 30]
+      days: [1, 3, 5, 10, 15, 30, 99999]
     }
   },
 
