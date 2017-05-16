@@ -159,7 +159,7 @@ export default {
     dataByMonths() {
       let data = []
 
-      for (let year = 2014; year <= 2017; year++) {
+      this.years.forEach((year) => {
         const trnsInYear = this.trnsList.filter(trn => +moment(trn.date).format('Y') === year)
 
         for (let month = 1; month <= 12; month++) {
@@ -189,7 +189,7 @@ export default {
             }]
           }
         }
-      }
+      })
 
       return data
     },
@@ -197,7 +197,7 @@ export default {
     dataByYears() {
       const data = []
 
-      for (let year = 2017; year >= 2014; year--) {
+      this.years.forEach((year) => {
         const trnsInYear = this.trnsList.filter(trn => +moment(trn.date).format('Y') === year)
 
         if (trnsInYear.length > 0) {
@@ -219,7 +219,7 @@ export default {
             expenses: 0
           })
         }
-      }
+      })
 
       return data
     }
