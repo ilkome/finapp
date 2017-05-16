@@ -3,7 +3,7 @@
 This aplication is the best to show my skils. 
 
 
-## What inside
+## What's inside
 
 - Webpack
 - Gulp
