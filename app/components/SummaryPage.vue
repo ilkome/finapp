@@ -87,14 +87,14 @@
                 template(v-if="totalInYear(year).expenses > 0 || totalInYear(year).incomes > 0")
                   .summaryShort__el
                     .accountDetails
-                      .summaryItem(v-if="total.expenses > 0")
-                        .summaryItem__icon._expenses
-                        .summaryItem__label Expenses
-                        .summaryItem__total.expense {{ formatMoney(totalInYear(year).expenses) }}
                       .summaryItem(v-if="total.incomes > 0")
                         .summaryItem__icon._incomes
                         .summaryItem__label Incomes
                         .summaryItem__total.income {{ formatMoney(totalInYear(year).incomes) }}
+                      .summaryItem(v-if="total.expenses > 0")
+                        .summaryItem__icon._expenses
+                        .summaryItem__label Expenses
+                        .summaryItem__total.expense {{ formatMoney(totalInYear(year).expenses) }}
                       .summaryItem
                         .summaryItem__icon._total
                         .summaryItem__label Total

@@ -30,14 +30,15 @@
                     .summaryItem__icon._expenses
                     .summaryItem__label Expenses
                     .summaryItem__total.expense {{ formatMoney(total.expenses) }}
-                  .summaryItem
-                    .summaryItem__icon._year
-                    .summaryItem__label Year average
-                    .summaryItem__total.sum {{ formatMoney(total.expenses / 4) }}
+                    template(v-if="years.length > 1")
+                      .summaryItem
+                        .summaryItem__icon._year
+                        .summaryItem__label Year average
+                        .summaryItem__total.sum {{ formatMoney(total.expenses / years.length) }}
                   .summaryItem
                     .summaryItem__icon._month
                     .summaryItem__label Month average
-                    .summaryItem__total.sum {{ formatMoney(total.expenses / 4 / 12) }}
+                    .summaryItem__total.sum {{ formatMoney(total.expenses / years.length / 12) }}
 
   template(v-for="year of years")
     .module._bg
@@ -101,8 +102,13 @@ export default {
     ...mapGetters(['trns']),
 
     years() {
+      const trns = this.trns.filter(trn => trn.categoryId !== 62)
+      const firstTrn = trns[trns.length - 1]
+      let fromYear = 2017
+      if (firstTrn) fromYear = +moment(firstTrn.date).format('Y')
       const arr = []
-      for (let i = 2017; i >= 2014; i--) {
+
+      for (let i = 2017; i >= fromYear; i--) {
         arr.push(i)
       }
       return arr
@@ -130,7 +136,7 @@ export default {
     dataByYears() {
       const data = []
 
-      for (let year = 2017; year >= 2014; year--) {
+      this.years.forEach((year) => {
         const trnsInYear = this.trnsList
         .filter(t => +moment(t.date).format('Y') === year)
 
@@ -147,7 +153,7 @@ export default {
             expenses: expensesTotal > 0 ? expensesTotal : 0
           })
         }
-      }
+      })
 
       return data
     }
