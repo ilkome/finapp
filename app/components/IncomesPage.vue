@@ -24,21 +24,19 @@
         .summaryShort
           .summaryShort__content
             template(v-if="total.expenses > 0 || total.incomes > 0")
-              .summaryShort__el
-                .accountDetails
-                  .summaryItem
-                    .summaryItem__icon._incomes
-                    .summaryItem__label Incomes
-                    .summaryItem__total.income {{ formatMoney(total.incomes) }}
-                  template(v-if="years.length > 1")
-                    .summaryItem
-                      .summaryItem__icon._year
-                      .summaryItem__label Year average
-                      .summaryItem__total.sum {{ formatMoney((total.incomes - total.expenses) / years.length) }}
-                  .summaryItem
-                    .summaryItem__icon._month
-                    .summaryItem__label Month average
-                    .summaryItem__total.sum {{ formatMoney(total.incomes / 4 / 12) }}
+              .summaryItem
+                .summaryItem__icon._incomes
+                .summaryItem__label Incomes
+                .summaryItem__total.income {{ formatMoney(total.incomes) }}
+              template(v-if="years.length > 1")
+                .summaryItem
+                  .summaryItem__icon._year
+                  .summaryItem__label Year average
+                  .summaryItem__total.sum {{ formatMoney((total.incomes - total.expenses) / years.length) }}
+              .summaryItem
+                .summaryItem__icon._month
+                .summaryItem__label Month average
+                .summaryItem__total.sum {{ formatMoney(total.incomes / 4 / 12) }}
 
   .tabs
     a(@click.prevent="toogleShowAll()", :class="{_active: !showAll}") Net income

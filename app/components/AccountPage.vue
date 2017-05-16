@@ -15,18 +15,13 @@
   .module._bg
     h1.title._wide._trns Trns list
     TrnsList(:trns="trnsList")
-
-    //- .table__cell
-    //-   TrnCreate(:account="account")
 </template>
 
 
 <script>
 import { mapGetters } from 'vuex'
-import moment from 'moment'
 import formatMoney from '../mixins/formatMoney'
 import SummaryShort from './SummaryShort.vue'
-import TrnCreate from './TrnCreate.vue'
 import TrnsList from './TrnsList.vue'
 
 export default {
@@ -34,14 +29,16 @@ export default {
 
   computed: {
     ...mapGetters(['accounts', 'trns']),
+
     account() {
       return this.accounts.find(a => a.id === +this.$route.params.id)
     },
+
     trnsList() {
       return this.trns.filter(trn => trn.accountId === +this.$route.params.id).slice(0, 100)
     }
   },
 
-  components: { SummaryShort, TrnCreate, TrnsList }
+  components: { SummaryShort, TrnsList }
 }
 </script>
