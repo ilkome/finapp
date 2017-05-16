@@ -110,7 +110,14 @@ export default {
   },
 
   data() {
-    const lastTrn = this.$store.getters.trns[0]
+    let lastTrn = this.$store.getters.trns[0]
+    if (!lastTrn) {
+      lastTrn = {
+        accountId: '',
+        accountName: ''
+      }
+    }
+
     return {
       focused: false,
       date: moment(),
@@ -137,9 +144,6 @@ export default {
 
   computed: {
     ...mapGetters(['trns', 'accounts', 'categories']),
-    date() {
-      return this.$store.state.filter.date
-    },
 
     trnsList() {
       const trnsInThisDay = this.$store.getters.trns.filter(t =>
