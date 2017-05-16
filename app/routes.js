@@ -5,16 +5,22 @@ import TrnsListPage from './components/TrnsListPage.vue'
 import TrnEditPage from './components/TrnEditPage.vue'
 import CategoriesList from './components/CategoriesList.vue'
 import CategoryItemPage from './components/CategoryItemPage.vue'
+import SummaryPage from './components/SummaryPage.vue'
+import IncomesPage from './components/IncomesPage.vue'
+import ExpensesPage from './components/ExpensesPage.vue'
 
 const routes = [
   { path: '/index.html', component: DashboardPage },
   { path: '/', component: DashboardPage },
   { path: '/accounts', component: AccountsListPage },
   { path: '/accounts/:id', component: AccountPage },
-  { path: '/trns', component: TrnsListPage },
-  { path: '/trn/:id/edit', component: TrnEditPage },
   { path: '/categories', component: CategoriesList },
-  { path: '/categories/:id', component: CategoryItemPage }
+  { path: '/categories/:id', component: CategoryItemPage },
+  { path: '/incomes', component: IncomesPage },
+  { path: '/expenses', component: ExpensesPage },
+  { path: '/summary', component: SummaryPage },
+  { path: '/trns', component: TrnsListPage },
+  { path: '/trn/:id/edit', component: TrnEditPage }
 ]
 
 export default routes

@@ -13,11 +13,20 @@
 .categoryStat
   display flex
 
+  &In
+    display flex
+
   &__trns
     margin-left -10px
     flex-grow 1
-    max-width 420px
+    max-width 360px
+    max-height 700px
+    overflow-y scroll
+
+    &._long
+      max-width 520px
 
   &__summary
+    width 360px
     margin-top -15px
-    margin-left 100px
+    margin-left 160px

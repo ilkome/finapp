@@ -13,6 +13,9 @@ h4
   font-size 1rem
 
 .title
+  &:last-child
+    margin-bottom 0
+
   @media $laptop
     display flex
     align-items center
@@ -27,6 +30,9 @@ h4
     margin-bottom 60px
     font-size 1.6rem
     letter-spacing 2px
+
+  &._incomes
+    // color $color-income
 
   &._trns
     color $color-rub
