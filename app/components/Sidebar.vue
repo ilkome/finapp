@@ -9,7 +9,7 @@
 
           //- Account item
           template(v-for="account in accounts")
-            router-link.accountContentItem(
+            router-link.accountContentItem._circle(
                 :to="`/accounts/${account.id}`",
                 :class="`account${account.id}`"
               )

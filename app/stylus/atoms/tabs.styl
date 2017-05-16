@@ -1,0 +1,35 @@
+.tabs
+  position relative
+  z-index 2
+  margin-top -5px
+  padding 0 20px
+  padding-bottom 40px
+  background $color-body
+  border-bottom 2px solid alpha(black, .7)
+
+  @media $laptop
+    padding 0 80px
+
+  a
+    cursor pointer
+    display inline-flex
+    margin-bottom -2px
+    padding 20px 30px
+    color $color-second
+    font-size 1.4rem
+    font-weight normal
+    text-transform uppercase
+    $font-numbers()
+    border 2px solid transparent
+    anim()
+
+    &:hover
+      color $color-main
+
+    &._active
+      cursor default
+      color $color-main
+      font-weight bold
+      background $color-layout
+      border 2px solid alpha(black, .7)
+      border-bottom 2px solid $color-layout

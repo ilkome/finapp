@@ -1,5 +1,5 @@
 <template lang="pug">
-.summaryShort
+.summaryShort._limitWidth
   .summaryShort__content
 
     template(v-if="expenses > 0 || incomes > 0")

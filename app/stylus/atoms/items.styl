@@ -30,7 +30,7 @@
       display none
 
   &._editable
-    background alpha(#070707, .95)
+    background $color-sidebar
     margin-bottom 20px
 
 
@@ -230,15 +230,21 @@
 
 
 
-// itemStat
-// ===============================================
+// #is
 .itemStat
+  min-width 300px
   display flex
   align-items center
   padding 10px
   color $color-second
   border-radius 3px
   anim()
+
+  &._mb
+    margin-bottom 20px
+
+  &._mbs
+    margin-bottom 5px
 
   &:hover
     color $color-main
@@ -252,12 +258,8 @@
     flex-flow column nowrap
     flex-grow 1
 
-  &__text
-    padding 0 5px
-
   &__graph
     flex-grow 1
-    // height 4px
     background #242424
     border-radius 3px
 
@@ -272,22 +274,27 @@
       background $color-income
 
   &__name
+    flex-grow 1
     text-transform capitalize
+    font-size 1.1rem
 
   &__text
     display flex
-    justify-content space-between
     padding-bottom 10px
 
   &__price
-    display flex
+    width 130px
     text-align right
     font-size 18px
     font-weight bold
     $font-numbers()
     color $color-sum
 
-    div
-      padding-left 10px
-      &:last-child
-        width 100px
+    &._prev
+      font-weight normal
+
+      &:before
+        fa(history)
+        content "\f1da"
+        padding-right 10px
+        opacity .5

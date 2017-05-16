@@ -1,19 +1,22 @@
+$styles()
+  font-size 1.1rem
+  font-weight bold
+  $font-numbers()
+  white-space nowrap
+
+
 .expense
 .item .expense
-  font-size 18px
-  font-weight bold
+  $styles()
   color $color-expense
-  $font-numbers()
 
 .income
 .item .income
-  font-size 18px
-  font-weight bold
+  $styles()
   color $color-income
-  $font-numbers()
+
+  white-space nowrap
 
 .sum
-  font-size 18px
-  font-weight bold
+  $styles()
   color $color-sum
-  $font-numbers()

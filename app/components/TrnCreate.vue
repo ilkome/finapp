@@ -4,7 +4,7 @@
   .panel__loader(:class="{_visible: loading}"): .fa.fa-spinner
 
   .amount(:class="(values.type === 1) ? '_income' : '_expense'")
-    a.amountCount(@click="setAccountType()")
+    a.amountCount(@click="setTrnType()")
       .amountCountText
         template(v-if="values.type === 1") +
         template(v-else) -
@@ -102,7 +102,6 @@ export default {
 
   watch: {
     '$route' (to, from) {
-      console.log(this.$route)
       if (this.$route.params.id) {
         const accountId = +this.$route.params.id
         this.setAccound(accountId)
@@ -175,15 +174,18 @@ export default {
       this.show.categories = false
     },
 
-    setAccountType() {
+    setTrnType() {
       this.values.type = (this.values.type === 1) ? 0 : 1
     },
 
     setAccound(accountId) {
-      this.values.accountId = accountId
-      this.values.currency = this.accounts.find(account => account.id === accountId).currency
-      this.values.accountName = this.accounts.find(account => account.id === accountId).name
-      this.show.accounts = false
+      const account = this.accounts.find(account => account.id === accountId)
+      if (account) {
+        this.values.accountId = accountId
+        this.values.currency = this.accounts.find(account => account.id === accountId).currency
+        this.values.accountName = this.accounts.find(account => account.id === accountId).name
+        this.show.accounts = false
+      }
     },
 
     setNextPrevDate(way) {

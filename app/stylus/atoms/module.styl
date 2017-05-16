@@ -2,6 +2,8 @@
   padding 35px 20px
   padding-bottom 40px
   border-bottom 3px solid alpha(black, .7)
+  overflow-x scroll
+  max-width calc(100vw - 280px)
 
   @media $laptop
     padding 85px 80px
@@ -9,3 +11,11 @@
 
   &._bg
     background $color-layout
+
+  &__in
+    display flex
+
+  // #mc
+  &__cell
+    padding-right 100px
+    min-width 550px

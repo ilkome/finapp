@@ -1,24 +1,64 @@
-.summaryShort
-  width 250px
-  margin-left -5px
+// #si
+.summaryItem
+  position relative
+  display flex
+  flex 1 1 45%
+  height 45px
+  padding 0 35px
+  align-items center
+  color $color-second
+  border-bottom 1px solid $color-line-account
+  anim-all()
 
-  &__content
-    display flex
-    flex-flow row wrap
-    align-items center
-    justify-content center
-    anim()
-
-    @media $laptop
-      flex-flow row nowrap
-      justify-content space-between
-
-  &__empty
-    padding-left 5px
-
-  &__el
+  @media $laptop
     flex-basis 100%
+    max-width 100%
+    height 60px
+    padding 0 15px
 
-    @media $laptop
-      flex 1 1
-      margin-right 20px
+  a&:hover
+    color $color-main
+
+  &:last-child
+    margin-bottom 0
+    border none
+
+  &__total
+    text-align right
+    width 120px
+
+  &__label
+    flex-grow 1
+    font-weight bold
+    letter-spacing 1px
+
+  // #sii
+  &__icon
+    width 45px
+    $fs = 1.5rem
+
+    &._expenses
+      fa(minus-circle)
+      font-size $fs
+    &._incomes
+      fa(plus-circle)
+      font-size $fs
+    &._total
+      fa(area-chart)
+      font-size $fs
+    &._month
+      fa(cubes)
+      font-size $fs
+    &._year
+      fa(tachometer)
+      font-size $fs
+
+// #ss
+.summaryShort
+  margin-left -15px
+
+  &._limitWidth
+    max-width 360px
+
+  &._year
+    padding-bottom 40px

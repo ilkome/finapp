@@ -43,6 +43,28 @@
   border-bottom 1px solid $color-line-account
   anim-all()
 
+  &._circle
+    margin-left 10px
+    margin-right 10px
+    padding-left 30px
+    border-bottom none
+
+    &:hover:before
+      opacity 1
+
+    &:before
+      content " "
+      position absolute
+      left 0
+      top 50%
+      width 8px
+      height 8px
+      margin-top -6px
+      border-radius 50%
+      background $color-line-account
+      opacity .6
+      anim()
+
   @media $laptop
     flex-basis 100%
     max-width 100%
@@ -67,35 +89,11 @@
 
   &.account1
     &:before
-      content " "
-      position absolute
-      left 0
-      top 50%
-      width 5px
-      height 15px
-      margin-top -7.5px
-      border-radius 0
       background #2E86C1
-      anim()
-      @media $laptop
-        width 1px
-    &:hover:before
-      width 5px
 
   &.account2
     &:before
-      content " "
-      position absolute
-      left 0
-      top 50%
-      width 1px
-      height 15px
-      margin-top -7.5px
-      border-radius 0
       background #ab68da
-      anim()
-    &:hover:before
-      width 5px
 
   &.account1.active
     color #2E86C1

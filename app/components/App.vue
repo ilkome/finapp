@@ -15,11 +15,14 @@
     .main
       .topbar
         nav.menu
-          a.menuLink(@click="back()") ← Back
+          //- a.menuLink(@click="back()") ← Back
           router-link(to="/" exact).menuLink Dashboard
-          router-link(to="/trns").menuLink History
+          router-link(to="/summary").menuLink Summary
+          router-link(to="/incomes").menuLink Incomes
+          router-link(to="/expenses").menuLink Expenses
           router-link(to="/categories").menuLink Categories
           router-link(to="/accounts").menuLink Accounts
+          router-link(to="/trns").menuLink History
 
         a.toogleTrnCreateBtn(@click.prevent="toogleRightSidebar()", :class="{_active: showRightSidebar}")
           .toogleTrnCreateBtn__text Create
