@@ -47,11 +47,11 @@
                   .summaryItem
                     .summaryItem__icon._year
                     .summaryItem__label Year average
-                    .summaryItem__total.sum {{ formatMoney(total.incomes / 4) }}
+                    .summaryItem__total.sum {{ formatMoney(total.incomes / years.length) }}
                   .summaryItem
                     .summaryItem__icon._month
                     .summaryItem__label Month average
-                    .summaryItem__total.sum {{ formatMoney((total.incomes - total.expenses) / 4 / 12) }}
+                    .summaryItem__total.sum {{ formatMoney((total.incomes - total.expenses) / years.length / 12) }}
 
   .tabs
     template(v-for="year of years")
