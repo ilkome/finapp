@@ -24,15 +24,15 @@
     .link(@click="setNextPrevDate('next')")
       .fa.fa-chevron-right
 
-  .categories
-    .categoriesIcons
-      .categoriesIcons__el(v-for="trn in lastCategories")
-        a.icon(
-          :class="[{_active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
-          :title="trn.categoryName",
-          @click.prevent="setCategory(trn.categoryId)"
-        )
-          .icon__pic
+  template(v-if="lastCategories.length > 1")
+    .categories
+      .categoriesIcons
+        .categoriesIcons__el(v-for="trn in lastCategories")
+          a.icon(
+            :class="[{_active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
+            :title="trn.categoryName",
+            @click.prevent="setCategory(trn.categoryId)")
+            .icon__pic
 
   .meta
     .selectItem(:class="{_active: show.categories}")
@@ -42,7 +42,7 @@
             :class="`icon-${values.categoryId}`",
             :title="values.categoryName"): .icon__pic
         .selectItem__el
-          .selectItem__label Категория
+          .selectItem__label Category
           .selectItem__name {{ values.categoryName }}
       .selectItem__dropdown(v-show="show.categories")
         input(type="text", v-model.trim="filter", :placeholder="values.categoryName" v-focus="show.categories").selectItem__dropdown__filter
@@ -62,7 +62,7 @@
       .metaItem__el
         .icon(:class="`bg-${values.accountId}`")
       .metaItem__el
-        .metaItemLabel Кошелек
+        .metaItemLabel Account
         .metaName() {{ values.accountName }}
         template(v-if="show.accounts")
           .metaItemDropdown
@@ -76,11 +76,11 @@
   .desc
     input.input-filter._nomargin(
       v-model.trim="values.description"
-      type="text" name="description" placeholder="Описание")
+      type="text" name="description" placeholder="Description")
 
   .action
     .actionButton(v-if="$store.state.trns.status") {{ $store.state.trns.status }}
-    .actionButton(v-else @click.prevent="addTrn") Создать
+    .actionButton(v-else @click.prevent="addTrn") Create trn
 </template>
 
 

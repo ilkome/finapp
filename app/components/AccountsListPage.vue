@@ -7,7 +7,7 @@
     .module._bg
       .table
         .table__cell
-          input(type="text", v-model.trim="filter", placeholder="Фильтр").input-filter
+          input(type="text", v-model.trim="filter", placeholder="Filter").input-filter
 
           .items
             template(v-for="account in accountsList")
@@ -25,7 +25,7 @@
                   .item__el._action(@click.prevent.stop="question(account.id)"): .fa.fa-trash-o
 
                 .item__question(:class="{_visible: questionId === account.id}")
-                  .item__el._question Удалить кошелек {{ account.name }}?
+                  .item__el._question Delete account {{ account.name }}?
                   .item__el._no(@click.prevent="close()"): .fa.fa-ban
                   .item__el._yes(@click.prevent="deleteAccount(account.id)"): .fa.fa-check
 
@@ -34,20 +34,20 @@
 
         .table__cell
           .panel._smallWidth
-            h4.title Создание кошелька
+            h4.title Create account
             .panel__loader(:class="{_visible: loading}"): .fa.fa-spinner
             .panel__content
               .input
-                input(v-model.trim="account.name", placeholder="Введите название кошелька" type="text").input__field
-                .input__label Название
+                input(v-model.trim="account.name", placeholder="Write account name" type="text").input__field
+                .input__label Name
 
               .input
-                input(v-model.trim="account.currency", placeholder="Укажите валюту" type="text").input__field
-                .input__label Валюта
+                input(v-model.trim="account.currency", placeholder="Write currency" type="text").input__field
+                .input__label Currency
 
               .submit
-                .submit__btn(v-if="loading") Создание...
-                .submit__btn(v-else @click.prevent="addAccount") Создать кошелек
+                .submit__btn(v-if="loading") Creating...
+                .submit__btn(v-else @click.prevent="addAccount") Create account
 </template>
 
 <script>
@@ -60,7 +60,7 @@ export default {
   data() {
     return {
       account: {
-        name: Math.random(),
+        name: '',
         currency: 'RUB',
         symbol: ''
       },

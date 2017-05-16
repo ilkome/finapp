@@ -24,21 +24,19 @@
         .summaryShort
           .summaryShort__content
             template(v-if="total.expenses > 0 || total.incomes > 0")
-              .summaryShort__el
-                .accountDetails
+              .summaryItem
+                .summaryItem__icon._expenses
+                .summaryItem__label Expenses
+                .summaryItem__total.expense {{ formatMoney(total.expenses) }}
+                template(v-if="years.length > 1")
                   .summaryItem
-                    .summaryItem__icon._expenses
-                    .summaryItem__label Expenses
-                    .summaryItem__total.expense {{ formatMoney(total.expenses) }}
-                    template(v-if="years.length > 1")
-                      .summaryItem
-                        .summaryItem__icon._year
-                        .summaryItem__label Year average
-                        .summaryItem__total.sum {{ formatMoney(total.expenses / years.length) }}
-                  .summaryItem
-                    .summaryItem__icon._month
-                    .summaryItem__label Month average
-                    .summaryItem__total.sum {{ formatMoney(total.expenses / years.length / 12) }}
+                    .summaryItem__icon._year
+                    .summaryItem__label Year average
+                    .summaryItem__total.sum {{ formatMoney(total.expenses / years.length) }}
+              .summaryItem
+                .summaryItem__icon._month
+                .summaryItem__label Month average
+                .summaryItem__total.sum {{ formatMoney(total.expenses / years.length / 12) }}
 
   template(v-for="year of years")
     .module._bg
@@ -64,20 +62,18 @@
           .summaryShort
             .summaryShort__content
               template(v-if="totalInYear(year).expenses > 0 || totalInYear(year).expenses > 0")
-                .summaryShort__el
-                  .accountDetails
-                    .summaryItem
-                      .summaryItem__icon._expenses
-                      .summaryItem__label Expenses
-                      .summaryItem__total.expense {{ formatMoney(totalInYear(year).expenses) }}
+                .summaryItem
+                  .summaryItem__icon._expenses
+                  .summaryItem__label Expenses
+                  .summaryItem__total.expense {{ formatMoney(totalInYear(year).expenses) }}
 
-                    .summaryItem
-                      .summaryItem__icon._month
-                      .summaryItem__label Month average
-                      template(v-if="year === 2017")
-                        .summaryItem__total.sum {{ formatMoney(totalInYear(year).expenses / 5) }}
-                      template(v-else)
-                        .summaryItem__total.sum {{ formatMoney(totalInYear(year).expenses / 12) }}
+                .summaryItem
+                  .summaryItem__icon._month
+                  .summaryItem__label Month average
+                  template(v-if="year === 2017")
+                    .summaryItem__total.sum {{ formatMoney(totalInYear(year).expenses / 5) }}
+                  template(v-else)
+                    .summaryItem__total.sum {{ formatMoney(totalInYear(year).expenses / 12) }}
 </template>
 
 <script>

@@ -1,5 +1,6 @@
 .items
   margin-bottom 60px
+  margin-left -15px
   max-width 550px
   overflow hidden
 
@@ -11,6 +12,9 @@
   color $color-second
   border-radius 3px
   anim()
+
+  &:last-child
+    border-bottom none
 
   &:hover
     color $color-main
@@ -45,15 +49,15 @@
   &__el
     display flex
     align-items center
-    padding 10px 0
+    padding 15px 0
     flex-shrink 0
     color $color-second
 
     &:first-child
-      margin-left 10px
+      margin-left 15px
 
     &:last-child
-      margin-right 10px
+      margin-right 15px
 
     &._account
       width 130px
