@@ -45,10 +45,11 @@
                     .summaryItem__icon._total
                     .summaryItem__label Total
                     .summaryItem__total.sum {{ formatMoney(total.incomes - total.expenses) }}
-                  .summaryItem
-                    .summaryItem__icon._year
-                    .summaryItem__label Year average
-                    .summaryItem__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length) }}
+                  template(v-if="years.length > 1")
+                    .summaryItem
+                      .summaryItem__icon._year
+                      .summaryItem__label Year average
+                      .summaryItem__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length) }}
                   .summaryItem
                     .summaryItem__icon._month
                     .summaryItem__label Month average
@@ -135,8 +136,13 @@ export default {
     },
 
     years() {
+      const trns = this.trns.filter(trn => trn.categoryId !== 62)
+      const firstTrn = trns[trns.length - 1]
+      let fromYear = 2017
+      if (firstTrn) fromYear = +moment(firstTrn.date).format('Y')
       const arr = []
-      for (let i = 2017; i >= 2014; i--) {
+
+      for (let i = 2017; i >= fromYear; i--) {
         arr.push(i)
       }
       return arr
@@ -164,7 +170,7 @@ export default {
     dataByMonths() {
       let data = []
 
-      for (let year = 2014; year <= 2017; year++) {
+      this.years.forEach((year) => {
         const trnsInYear = this.trnsList.filter(trn => +moment(trn.date).format('Y') === year)
 
         for (let month = 1; month <= 12; month++) {
@@ -192,7 +198,7 @@ export default {
             }]
           }
         }
-      }
+      })
 
       return data
     },
