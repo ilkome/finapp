@@ -24,7 +24,7 @@
             .item__question(:class="{_visible: questionId === account.id}")
               .item__el._question Удалить кошелек {{ account.name }}?
               .item__el._no(@click.prevent="close()"): .fa.fa-ban
-              .item__el._yes(@clic.preventk="deleteAccount(account.id)"): .fa.fa-check
+              .item__el._yes(@click.prevent="deleteAccount(account.id)"): .fa.fa-check
 
             .item__loader(:class="{_visible: loadingId === account.id}"): .fa.fa-spinner
       //- trnsList
@@ -45,7 +45,6 @@
           .submit
             .submit__btn(v-if="loading") Создание...
             .submit__btn(v-else @click.prevent="addAccount") Создать кошелек
-      //- panel
 </template>
 
 <script>
