@@ -44,10 +44,11 @@
                     .summaryItem__icon._total
                     .summaryItem__label Total
                     .summaryItem__total.sum {{ formatMoney(total.incomes - total.expenses) }}
-                  .summaryItem
-                    .summaryItem__icon._year
-                    .summaryItem__label Year average
-                    .summaryItem__total.sum {{ formatMoney(total.incomes / years.length) }}
+                  template(v-if="years.length > 1")
+                    .summaryItem
+                      .summaryItem__icon._year
+                      .summaryItem__label Year average
+                      .summaryItem__total.sum {{ formatMoney((total.incomes - total.expenses) / years.length) }}
                   .summaryItem
                     .summaryItem__icon._month
                     .summaryItem__label Month average
