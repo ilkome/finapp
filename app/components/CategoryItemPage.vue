@@ -89,6 +89,7 @@
                     .summaryItem__total.sum {{ formatMoney((totalInYear(year).incomes - totalInYear(year).expenses) / 5) }}
                   template(v-else)
                     .summaryItem__total.sum {{ formatMoney((totalInYear(year).incomes - totalInYear(year).expenses) / 12) }}
+
             .trns
               template(v-for="data in dataInYear(year)")
                 .itemStat._mbs
@@ -136,7 +137,7 @@ export default {
     },
 
     years() {
-      const trns = this.trns.filter(trn => trn.categoryId !== 62)
+      const trns = this.trnsList.filter(trn => trn.categoryId !== 62)
       const firstTrn = trns[trns.length - 1]
       let fromYear = 2017
       if (firstTrn) fromYear = +moment(firstTrn.date).format('Y')

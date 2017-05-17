@@ -121,19 +121,6 @@ export default {
   computed: {
     ...mapGetters(['trns']),
 
-    years() {
-      const trns = this.trns.filter(trn => trn.categoryId !== 62)
-      const firstTrn = trns[trns.length - 1]
-      let fromYear = 2017
-      if (firstTrn) fromYear = +moment(firstTrn.date).format('Y')
-      const arr = []
-
-      for (let i = 2017; i >= fromYear; i--) {
-        arr.push(i)
-      }
-      return arr
-    },
-
     trnsList() {
       return this.trns.filter(t => t.categoryId !== 62)
     },
@@ -219,6 +206,19 @@ export default {
       })
 
       return data
+    },
+
+    years() {
+      const trns = this.trnsList.filter(trn => trn.categoryId !== 62)
+      const firstTrn = trns[trns.length - 1]
+      let fromYear = 2017
+      if (firstTrn) fromYear = +moment(firstTrn.date).format('Y')
+      const arr = []
+
+      for (let i = 2017; i >= fromYear; i--) {
+        arr.push(i)
+      }
+      return arr
     }
   },
 
