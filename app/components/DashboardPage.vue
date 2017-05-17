@@ -61,14 +61,13 @@
         .trns
           template(v-for="category in expensesData")
             router-link.itemStat(
-              :to="`/trns/${category.id}`",
-              title="Показать транзакции"
+            :to="`/categories/${category.id}`",
+            title="Перейти в категорию"
             )
               router-link.itemStat__icon(
                 :to="`/categories/${category.id}`",
                 title="Перейти в категорию"
-              )
-                .icon(:class="`icon-${category.id}`"): .icon__pic
+              ): .icon(:class="`icon-${category.id}`"): .icon__pic
               .itemStat__content
                 .itemStat__text
                   .itemStat__name {{ category.name }}

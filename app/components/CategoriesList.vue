@@ -1,20 +1,42 @@
 <template lang="pug">
 .content
   .module
-    h1.title._mid Категории
+    h1.title Categories
+
     .table
       .table__cell
-        input(type="text", v-model.trim="filter", placeholder="Фильтр").input-filter
+        input(type="text", v-model.trim="filter", placeholder="Filter").filterBtn
 
-        .items
-          router-link.item(
+        .categories
+          router-link.categoryItem(
             v-for="category in categoriesList",
             :to="`/categories/${category.id}`",
             :key="category.id"
           )
-            .item__el
-              .icon(:class="`icon-${category.id}`"): .icon__pic
-            .item__el._name._grow {{ category.name }}
+            .categoryItem__content
+              .categoryItem__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
+              .categoryItem__name {{ category.name }}
+              .categoryItem__action(@click.prevent="setEditedCategory(category.id)") Edit
+
+            template(v-if="editedCategory === category.id")
+              CategoryEdit(:category="category")
+
+            template(v-if="category.children.length > 0")
+              .categoryItem__children
+                router-link.categoryItem(
+                  v-for="childrenCategory in category.children",
+                  :to="`/categories/${childrenCategory.id}`",
+                  :key="childrenCategory.id"
+                )
+                  .categoryItem__content
+                    .categoryItem__icon: .icon(:class="`icon-${childrenCategory.id}`"): .icon__pic
+                    .categoryItem__name {{ childrenCategory.name }}
+                    .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)") Edit
+
+                  template(v-if="editedCategory === childrenCategory.id")
+                    CategoryEdit(:category="childrenCategory")
+
+
 
       .table__cell
         .categoriesIcons
@@ -22,26 +44,57 @@
             router-link.icon(
               :to="`/categories/${category.id}`",
               :class="`icon-${category.id}`",
-              :title="category.name"
-            )
-              .icon__pic
+              :title="category.name"): .icon__pic
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import CategoryEdit from './CategoryEdit.vue'
 
 export default {
   data() {
     return {
-      filter: ''
+      filter: '',
+      editedCategory: false
     }
   },
+
   computed: {
     ...mapGetters(['categories']),
+
     categoriesList() {
-      return this.categories.filter(category =>
-        category.name.toLowerCase().search(this.filter.toLowerCase()) !== -1)
+      const categories = this.categories.filter(c =>
+        c.name.toLowerCase().search(this.filter.toLowerCase()) !== -1
+      )
+
+      const sortedCategories = []
+
+      const rootCategories = categories.filter(c => c.parentId === 0)
+
+      rootCategories.forEach((category) => {
+        const childrenCategories = categories.filter(c => c.parentId === category.id)
+
+        if (childrenCategories) {
+          sortedCategories.push({
+            ...category,
+            children: childrenCategories
+          })
+        } else {
+          sortedCategories.push({ ...category })
+        }
+      })
+
+      return sortedCategories
     }
-  }
+  },
+
+  methods: {
+    setEditedCategory(categoryId) {
+      if (this.editedCategory === +categoryId) this.editedCategory = false
+      else this.editedCategory = categoryId
+    }
+  },
+
+  components: { CategoryEdit }
 }
 </script>

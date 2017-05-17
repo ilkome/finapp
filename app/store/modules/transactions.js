@@ -79,6 +79,7 @@ const actions = {
               trns.push(newTrns.data)
             } else {
               console.error('что-то не так')
+              return false
             }
           }
           commit('addTrns', trns)
@@ -93,16 +94,17 @@ const actions = {
         }
       } else {
         console.error('Ошибка создания транзакции.')
+        return false
       }
 
       commit('setStatus', 'Транзакция создана :)')
       dispatch('setAppStatus', 'Создано!')
       setTimeout(() => commit('setStatus'), 2000)
-
       return true
     } catch (e) {
       console.error('ошибка создания транзакции 2.')
       dispatch('setAppStatus', 'Ошибка создания транзакции')
+      return false
     }
   },
 

@@ -47,31 +47,32 @@
       .selectItem__dropdown(v-show="show.categories")
         input(type="text", v-model.trim="filter", :placeholder="values.categoryName" v-focus="show.categories").selectItem__dropdown__filter
         .selectItem__dropdown__in
-          .selectItem__dropdown__scroll
-            a.selectItem__dropdown__el(
-              v-for="category in categoriesList",
-              :class="{active: (category.id === values.categoryId)}",
-              @click.prevent="setCategory(category.id)"
-            )
-              .selectItem__dropdown__el__pic
-                .icon(:class="`icon-${category.id}`", :title="category.name"): .icon__pic
-              .selectItem__dropdown__el__name {{ category.name }}
+          a.selectItem__dropdown__el(
+            v-for="category in categoriesList",
+            :class="{active: (category.id === values.categoryId)}",
+            @click.prevent="setCategory(category.id)"
+          )
+            .selectItem__dropdown__el__pic
+              .icon(:class="`icon-${category.id}`", :title="category.name"): .icon__pic
+            .selectItem__dropdown__el__name {{ category.name }}
 
-
-    .metaItem._right(@click.prevent.stop="toogleAccountsDropdown()", :class="{_active: show.accounts}")
-      .metaItem__el
-        .icon(:class="`bg-${values.accountId}`")
-      .metaItem__el
-        .metaItemLabel Account
-        .metaName() {{ values.accountName }}
-        template(v-if="show.accounts")
-          .metaItemDropdown
-            .metaItemDropdown__in
-              a.metaItemDropdown__el(
-                v-for="account in accounts",
-                :class="{active: (account.id === values.accountId)}",
-                @click.prevent.stop="setAccound(account.id)"
-              ) {{ account.name }}
+    .selectItem(:class="{_active: show.accounts}")
+      .selectItem__head(@click.prevent.stop="toogleAccountsDropdown()")
+        .selectItem__icon
+          .icon(:class="`bg-${values.accountId}`")
+        .selectItem__el
+          .selectItem__label Account
+          .selectItem__name {{ values.accountName }}
+      .selectItem__dropdown(v-show="show.accounts")
+        .selectItem__dropdown__in
+          a.selectItem__dropdown__el(
+            v-for="account in accounts",
+            :class="{active: (account.id === values.accountId)}",
+            @click.prevent="setAccound(category.id)"
+          )
+            .selectItem__dropdown__el__pic
+              .icon(:class="`bg-${account.id}`")
+            .selectItem__dropdown__el__name {{ account.name }}
 
   .desc
     input.input-filter._nomargin(
@@ -145,19 +146,13 @@ export default {
   computed: {
     ...mapGetters(['trns', 'accounts', 'categories']),
 
-    trnsList() {
-      const trnsInThisDay = this.$store.getters.trns.filter(t =>
-        moment(t.date).format('D.MM.YY') === moment(this.date).format('D.MM.YY'))
-      return trnsInThisDay
+    categoriesList() {
+      return this.categories.filter(category =>
+        category.name.toLowerCase().search(this.filter.toLowerCase()) !== -1)
     },
 
     lastCategories() {
       return uniqBy(this.trns, 'categoryName').slice(0, 24)
-    },
-
-    categoriesList() {
-      return this.categories.filter(category =>
-        category.name.toLowerCase().search(this.filter.toLowerCase()) !== -1)
     }
   },
 
@@ -261,11 +256,11 @@ export default {
   },
 
   mounted() {
-    // this.rootEl.addEventListener('click', this.closeDropdown())
+    this.rootEl.addEventListener('click', this.closeDropdown())
   },
 
   beforeDestroy() {
-    // this.rootEl.removeEventListener('click', this.closeDropdown())
+    this.rootEl.removeEventListener('click', this.closeDropdown())
   }
 }
 </script>

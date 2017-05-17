@@ -28,6 +28,37 @@
     margin-top -15px
     margin-left 160px
 
-
+// #c
 .categories
-  //
+  margin-left -10px
+
+// ci
+.categoryItem
+  display block
+  min-width 300px
+  padding 10px
+  color $color-second
+  border-radius 3px
+  anim()
+
+  &:hover
+    color $color-main
+    background $color-trn-hover
+
+  &__icon
+    padding-right 15px
+
+  &__content
+    display flex
+    flex-flow row nowrap
+    flex-grow 1
+    align-items center
+
+  &__name
+    flex-grow 1
+    text-transform capitalize
+    font-size 1.1rem
+
+  &__text
+    display flex
+    padding-bottom 10px

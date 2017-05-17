@@ -49,7 +49,7 @@ export default {
     console.time('App')
     await this.$store.dispatch('fetchRates')
     await this.$store.dispatch('fetchAccounts')
-    await this.$store.dispatch('fetchCategories')
+    await this.$store.dispatch('getCategories')
     await this.$store.dispatch('fetchTrns')
     await this.$store.commit('loading')
     console.timeEnd('App')
