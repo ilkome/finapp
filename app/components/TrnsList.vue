@@ -16,7 +16,6 @@
 
 <script>
 import groupBy from 'lodash/groupBy'
-import { mapGetters } from 'vuex'
 import moment from 'moment'
 import formatMoney from '../mixins/formatMoney'
 import TrnItem from './TrnItem.vue'
@@ -47,8 +46,7 @@ export default {
     toogleTrn(id) {
       if (this.trnsIdsForDelete.indexOf(id) === -1) {
         this.trnsIdsForDelete.push(id)
-      }
-      else {
+      } else {
         this.trnsIdsForDelete.splice(this.trnsIdsForDelete.indexOf(id), 1)
       }
     },
@@ -65,12 +63,3 @@ export default {
   components: { TrnItem }
 }
 </script>
-
-
-<style lang="stylus" scoped>
-  .remove
-    z-index: 3;
-    position: fixed;
-    bottom: 0px;
-    padding-bottom: 50px
-</style>

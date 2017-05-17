@@ -4,7 +4,6 @@
     .module
       h1.title Accounts
 
-    .module._bg
       .table
         .table__cell
           input(type="text", v-model.trim="filter", placeholder="Filter").input-filter

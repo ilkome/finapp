@@ -26,13 +26,12 @@
   transition(name="slideToTop")
     .item__edit(v-if="trn.id === editedTrn")
       TrnEdit(:trn="trn")
-
 </template>
 
 
 <script>
 import formatMoney from '../mixins/formatMoney'
-import TrnEdit from './TrnEdit2.vue'
+import TrnEdit from './TrnEdit.vue'
 
 export default {
   mixins: [formatMoney],
