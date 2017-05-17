@@ -8,14 +8,12 @@
         input(type="text", v-model.trim="filter", placeholder="Filter").filterBtn
 
         .categories
-          router-link.categoryItem(
+          .categoryItem(
             v-for="category in categoriesList",
-            :to="`/categories/${category.id}`",
-            :key="category.id"
-          )
+            :key="category.id")
             .categoryItem__content
-              .categoryItem__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
-              .categoryItem__name {{ category.name }}
+              router-link(:to="`/categories/${category.id}`").categoryItem__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
+              router-link(:to="`/categories/${category.id}`").categoryItem__name {{ category.name }}
               .categoryItem__action(@click.prevent="setEditedCategory(category.id)") Edit
 
             template(v-if="editedCategory === category.id")
@@ -23,20 +21,16 @@
 
             template(v-if="category.children.length > 0")
               .categoryItem__children
-                router-link.categoryItem(
+                .categoryItem(
                   v-for="childrenCategory in category.children",
-                  :to="`/categories/${childrenCategory.id}`",
-                  :key="childrenCategory.id"
-                )
+                  :key="childrenCategory.id")
                   .categoryItem__content
-                    .categoryItem__icon: .icon(:class="`icon-${childrenCategory.id}`"): .icon__pic
-                    .categoryItem__name {{ childrenCategory.name }}
+                    router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon: .icon(:class="`icon-${childrenCategory.id}`"): .icon__pic
+                    router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__name {{ childrenCategory.name }}
                     .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)") Edit
 
                   template(v-if="editedCategory === childrenCategory.id")
                     CategoryEdit(:category="childrenCategory")
-
-
 
       .table__cell
         .categoriesIcons
