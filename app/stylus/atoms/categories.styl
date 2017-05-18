@@ -41,9 +41,20 @@
   border-radius 3px
   anim()
 
-  &:hover
-    color $color-main
+  &._editable
     background $color-trn-hover
+
+  &:hover
+    background $color-trn-hover
+
+  &:hover &__action
+  &._editable &__action
+    opacity 1
+
+  &__edit
+    margin-top 15px
+    border-radius 3px
+    border 1px solid $color-line
 
   &__icon
     padding-right 15px
@@ -63,3 +74,17 @@
   &__text
     display flex
     padding-bottom 10px
+
+  &__action
+    text-align center
+    opacity 0
+    width 55px
+    font-size 1.5rem
+    cursor pointer
+    anim()
+
+    &:hover
+      color $color-link
+
+    &:last-child
+      margin-right 0

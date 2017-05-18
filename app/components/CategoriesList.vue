@@ -5,32 +5,43 @@
 
     .table
       .table__cell
-        input(type="text", v-model.trim="filter", placeholder="Filter").filterBtn
+        input(type="text", v-model.trim="filter", placeholder="Filter" v-focus="true").filterBtn
 
         .categories
           .categoryItem(
             v-for="category in categoriesList",
-            :key="category.id")
+            :key="category.id",
+            :class="{_editable: editedCategory === category.id}")
             .categoryItem__content
               router-link(:to="`/categories/${category.id}`").categoryItem__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
               router-link(:to="`/categories/${category.id}`").categoryItem__name {{ category.name }}
-              .categoryItem__action(@click.prevent="setEditedCategory(category.id)") Edit
+              template(v-if="editedCategory === category.id")
+                .categoryItem__action(@click.prevent="setEditedCategory(category.id)"): .fa.fa-times-circle
+              template(v-else)
+                .categoryItem__action(@click.prevent="setEditedCategory(category.id)"): .fa.fa-pencil-square-o
+              .categoryItem__action(@click.prevent="setEditedCategory(category.id)"): .fa.fa-trash-o
 
             template(v-if="editedCategory === category.id")
-              CategoryEdit(:category="category")
+              .categoryItem__edit
+                .form
+                  .input
+                    input.input__field(
+                      v-model.lazy="values.name = category.name",
+                      type="text" name="name")
+                  .btn(@click="updateCategory(category, values)") Update
 
-            template(v-if="category.children.length > 0")
-              .categoryItem__children
-                .categoryItem(
-                  v-for="childrenCategory in category.children",
-                  :key="childrenCategory.id")
-                  .categoryItem__content
-                    router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon: .icon(:class="`icon-${childrenCategory.id}`"): .icon__pic
-                    router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__name {{ childrenCategory.name }}
-                    .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)") Edit
-
-                  template(v-if="editedCategory === childrenCategory.id")
-                    CategoryEdit(:category="childrenCategory")
+            //- template(v-if="category.children")
+            //-   .categoryItem__children
+            //-     .categoryItem(
+            //-       v-for="childrenCategory in category.children",
+            //-       :key="childrenCategory.id")
+            //-       .categoryItem__content
+            //-         router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon: .icon(:class="`icon-${childrenCategory.id}`"): .icon__pic
+            //-         router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__name {{ childrenCategory.name }}
+            //-         .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-pencil-square-o
+            //-         .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-trash-o
+            //-
+            //-       template(v-if="editedCategory === childrenCategory.id")
 
       .table__cell
         .categoriesIcons
@@ -43,13 +54,19 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import CategoryEdit from './CategoryEdit.vue'
+import { mixin } from 'vue-focus'
 
 export default {
+
+  mixins: [ mixin ],
+
   data() {
     return {
       filter: '',
-      editedCategory: false
+      editedCategory: false,
+      values: {
+        name: null
+      }
     }
   },
 
@@ -57,18 +74,22 @@ export default {
     ...mapGetters(['categories']),
 
     categoriesList() {
-      const categories = this.categories.filter(c =>
-        c.name.toLowerCase().search(this.filter.toLowerCase()) !== -1
-      )
-
       const sortedCategories = []
+      let filteredCategories = []
 
-      const rootCategories = categories.filter(c => c.parentId === 0)
+      if (this.filter !== '') {
+        filteredCategories = this.categories
+          .filter(c => c.name.toLowerCase().search(this.filter.toLowerCase()) !== -1)
+      } else {
+        filteredCategories = this.categories
+      }
+
+      const rootCategories = filteredCategories.filter(c => c.parentId === 0)
 
       rootCategories.forEach((category) => {
-        const childrenCategories = categories.filter(c => c.parentId === category.id)
+        const childrenCategories = filteredCategories.filter(c => c.parentId === category.id)
 
-        if (childrenCategories) {
+        if (childrenCategories && childrenCategories.length > 0) {
           sortedCategories.push({
             ...category,
             children: childrenCategories
@@ -77,7 +98,6 @@ export default {
           sortedCategories.push({ ...category })
         }
       })
-
       return sortedCategories
     }
   },
@@ -86,9 +106,18 @@ export default {
     setEditedCategory(categoryId) {
       if (this.editedCategory === +categoryId) this.editedCategory = false
       else this.editedCategory = categoryId
-    }
-  },
+    },
 
-  components: { CategoryEdit }
+    async updateCategory(category, values) {
+      const updatedCategory = {
+        ...category,
+        ...values
+      }
+      const status = await this.$store.dispatch('updateCategory', updatedCategory)
+      if (status) {
+        this.editedCategory = false
+      }
+    }
+  }
 }
 </script>
