@@ -32,7 +32,7 @@
                 .summaryItem
                   .summaryItem__icon._year
                   .summaryItem__label Year average
-                  .summaryItem__total.sum {{ formatMoney((total.incomes - total.expenses) / years.length) }}
+                  .summaryItem__total.sum {{ formatMoney(total.incomes / years.length) }}
               .summaryItem
                 .summaryItem__icon._month
                 .summaryItem__label Month average
@@ -180,21 +180,6 @@ export default {
       const renderWidth = width > 0 ? width : 0
       return {
         width: `calc(${renderWidth}%)`
-      }
-    },
-
-    totalInYear(year) {
-      const incomes = this.trnsList
-        .filter(trn => trn.type === 1 && +moment(trn.date).format('Y') === +year)
-        .reduce((sum, current) => sum + current.amountRub, 0)
-
-      const expenses = this.trnsList
-        .filter(trn => trn.type === 0 && +moment(trn.date).format('Y') === +year)
-        .reduce((sum, current) => sum + current.amountRub, 0)
-
-      return {
-        expenses,
-        incomes
       }
     },
 
