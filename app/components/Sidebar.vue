@@ -1,6 +1,5 @@
 <template lang="pug">
-.sidebar(:class="{_hidden: !showSidebar}", @click.prevent="toogleMenu()")
-  .sidebar__menu(@click.prevent.stop="toogleMenu(true)")
+.sidebar
   .sidebar__wrap
     .sidebar__in
       .account
@@ -8,18 +7,23 @@
         .accountContent
 
           //- Account item
-          template(v-for="account in accounts")
-            router-link.accountContentItem._circle(
-                :to="`/accounts/${account.id}`",
-                :class="`account${account.id}`"
-              )
-              .accountContentItemLabel {{ account.name }} <sup>{{ account.id }}</sup>
-              .accountContentItemTotal
-                template(v-if="account.total > 0")
-                  .accountContentItemTotalIn {{ formatMoney(account.totalRub) }}
-                  .accountContentItemTotalIn(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
-                template(v-else)
-                  .accountContentItemTotalIn 0 {{account.symbol}}
+          template(v-for="(account, index) in accounts")
+            template(v-if="index < visibleAccounts")
+              router-link.accountContentItem._circle(
+                  :to="`/accounts/${account.id}`",
+                  :class="`account${account.id}`"
+                )
+                .accountContentItemLabel {{ account.name }} <sup>{{ account.id }}</sup>
+                .accountContentItemTotal
+                  template(v-if="account.total > 0")
+                    .accountContentItemTotalIn {{ formatMoney(account.totalRub) }}
+                    .accountContentItemTotalIn(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
+                  template(v-else)
+                    .accountContentItemTotalIn 0 {{account.symbol}}
+        template(v-if="accounts.length > visibleAccounts")
+          .accountSidebar__showAll(@click="setVisibleAccounts('all')") Show all
+        template(v-else)
+          .accountSidebar__showAll(@click="setVisibleAccounts(4)") Show only 4 accounts
 
       .account
         .accountTitle Summary
@@ -46,7 +50,7 @@ export default {
 
   data() {
     return {
-      showSidebar: true
+      visibleAccounts: 4
     }
   },
 
@@ -54,26 +58,27 @@ export default {
     ...mapGetters(['accounts', 'rates']),
 
     total() {
-      const accounts = this.accounts.filter(a => a.id === 1 || a.id === 2)
+      const accounts = this.accounts.filter(a => a.id === 1 || a.id === 2 || a.id === 3 || a.id === 4)
       return accounts.reduce((sum, account) => sum + account.totalRub, 0)
     }
   },
 
   methods: {
-    toogleMenu(fromMenu = false) {
-      if(fromMenu === true) {
-        this.showSidebar = !this.showSidebar
-      }
-      else {
-        this.showSidebar = true
-      }
-    },
     showRateOf(currency) {
       return this.formatMoney(1 / this.rates[currency], currency)
     },
+
     showSumIn(currency) {
       if (!currency || currency === 'RUB') return this.formatMoney(this.total)
       return this.formatMoney(this.total * this.rates[currency], currency)
+    },
+
+    setVisibleAccounts(count) {
+      if (count === 'all') {
+        this.visibleAccounts = this.accounts.length
+      } else {
+        this.visibleAccounts = +count
+      }
     }
   }
 }
