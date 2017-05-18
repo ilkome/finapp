@@ -5,8 +5,6 @@
       .account
         .accountTitle Accounts
         .accountContent
-
-          //- Account item
           template(v-for="(account, index) in accounts")
             template(v-if="index < visibleAccounts")
               router-link.accountContentItem._circle(
@@ -20,9 +18,10 @@
                     .accountContentItemTotalIn(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
                   template(v-else)
                     .accountContentItemTotalIn 0 {{account.symbol}}
+
         template(v-if="accounts.length > visibleAccounts")
           .accountSidebar__showAll(@click="setVisibleAccounts('all')") Show all
-        template(v-else)
+        template(v-if="visibleAccounts > 4")
           .accountSidebar__showAll(@click="setVisibleAccounts(4)") Show only 4 accounts
 
       .account
