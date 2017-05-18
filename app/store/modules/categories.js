@@ -3,9 +3,6 @@ import { getCategories } from '../../api/api'
 import { CATEGORIES_URL } from '../../constants'
 import orderBy from 'lodash/orderBy'
 
-
-// _.orderBy(users, ['user', 'age'], ['asc', 'desc'])
-
 const store = {
   state: {
     all: []
@@ -19,8 +16,21 @@ const store = {
 
   actions: {
     async getCategories({ commit }) {
-      const data = await getCategories()
-      commit('getCategories', data)
+      const categories = await getCategories()
+      const formatedCategories = categories.map(cat => {
+        const id = +cat.id
+        const name = cat.name
+        const parentId = +cat.parentId
+        const description = cat.description
+        return {
+          id,
+          name,
+          parentId,
+          description
+        }
+      })
+
+      commit('getCategories', formatedCategories)
     },
 
     // update
@@ -35,12 +45,15 @@ const store = {
             params: { transform: 1 }
           })
           await commit('updateCategory', getTrn.data)
+          return true
           console.log('Category: edited!', getTrn.data)
         } else {
           console.error('Ошибка создания категории 1')
+          return false
         }
       } catch (e) {
         console.error('Ошибка создания категории 2', e)
+        return false
       }
     },
   },
