@@ -26,6 +26,7 @@ async function addAccount(account) {
       }
       else {
         console.error('api.js: Не возможно получить новый кошелек')
+        return false
       }
     }
     else {
@@ -34,6 +35,7 @@ async function addAccount(account) {
     }
   } catch (e) {
     console.error('api.js: add account', e.message)
+    return false
   }
 }
 
@@ -50,6 +52,34 @@ async function deleteAccount(accountId) {
     }
   } catch (e) {
     console.error('deleteAccount', e.message)
+    return false
+  }
+}
+
+// Create category
+// ==============================================
+async function addCategory(category) {
+  try {
+    const newCategory = await axios.post(`${CATEGORIES_URL}`, category)
+    if (newCategory.data > 0) {
+      const category = await axios.get(`${CATEGORIES_URL}/${newCategory.data}`, {
+        params: { transform: 1 }
+      })
+      if (category.data) {
+        return category.data
+      }
+      else {
+        console.error('api.js: category')
+        return false
+      }
+    }
+    else {
+      console.error('api.js: Add category data empty')
+      return false
+    }
+  } catch (e) {
+    console.error('api.js: add category', e.message)
+    return false
   }
 }
 
@@ -66,6 +96,7 @@ async function getCategories() {
     return request.data.categories
   } catch (e) {
     console.error('getCategories', e.message)
+    return false
   }
 }
 
@@ -100,9 +131,10 @@ async function getTransactions() {
 // Export
 // ==============================================
 export {
-  getAccounts,
   addAccount,
+  getAccounts,
   deleteAccount,
+  addCategory,
   getCategories,
   getRates,
   getTransactions

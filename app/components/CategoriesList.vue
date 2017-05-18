@@ -44,12 +44,25 @@
             //-       template(v-if="editedCategory === childrenCategory.id")
 
       .table__cell
-        .categoriesIcons
+        .categoriesIcons._mb
           .categoriesIcons__el(v-for="category in categoriesList", :key="category.id")
             router-link.icon(
               :to="`/categories/${category.id}`",
               :class="`icon-${category.id}`",
               :title="category.name"): .icon__pic
+
+        .panel._smallWidth
+          h4.title Create category
+          .panel__loader(:class="{_visible: loading}"): .fa.fa-spinner
+          .panel__content
+            .input
+              input(v-model.trim="category.name", placeholder="Write category name" type="text").input__field
+              .input__label Name
+
+            .submit
+              .submit__btn(v-if="loading") Creating...
+              .submit__btn(v-else @click.prevent="addCategory()") Create category
+
 </template>
 
 <script>
@@ -61,11 +74,16 @@ export default {
 
   data() {
     return {
+      loading: false,
       filter: '',
       editedCategory: false,
       values: {
         name: null
-      }
+      },
+      category: {
+        name: '',
+        parentId: 0
+      },
     }
   },
 
@@ -105,6 +123,13 @@ export default {
     setEditedCategory(categoryId) {
       if (this.editedCategory === +categoryId) this.editedCategory = false
       else this.editedCategory = categoryId
+    },
+
+    async addCategory() {
+      this.loading = true
+      await this.$store.dispatch('addCategory', this.category)
+      this.category.name = ''
+      this.loading = false
     },
 
     async updateCategory(category, values) {
