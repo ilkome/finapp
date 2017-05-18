@@ -56,13 +56,17 @@ async function deleteAccount(accountId) {
 // Get categories
 // ==============================================
 async function getCategories() {
-  const request = await axios.get(CATEGORIES_URL, {
-    params: {
-      transform: 1,
-      order: 'name, asc'
-    }
-  })
-  return request.data.categories
+  try {
+    const request = await axios.get(CATEGORIES_URL, {
+      params: {
+        transform: 1,
+        order: 'name, asc'
+      }
+    })
+    return request.data.categories
+  } catch (e) {
+    console.error('getCategories', e.message)
+  }
 }
 
 // Get rates
