@@ -25,7 +25,7 @@
       .fa.fa-chevron-right
 
   template(v-if="lastCategories.length > 1")
-    .categories
+    .formCategories
       .categoriesIcons
         .categoriesIcons__el(v-for="trn in lastCategories")
           a.icon(
