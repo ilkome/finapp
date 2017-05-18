@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getCategories } from '../../api/api'
+import { addCategory, getCategories } from '../../api/api'
 import { CATEGORIES_URL } from '../../constants'
 import orderBy from 'lodash/orderBy'
 
@@ -29,8 +29,12 @@ const store = {
           description
         }
       })
-
       commit('getCategories', formatedCategories)
+    },
+
+    async addCategory({ commit }, category) {
+      const newCategory = await addCategory(category)
+      commit('addCategory', newCategory)
     },
 
     // update
@@ -73,6 +77,12 @@ const store = {
   mutations: {
     getCategories(state, data) {
       state.all = data
+    },
+
+    addCategory(state, category) {
+      const categories = [category, ...state.all]
+      const sortedCategories = orderBy(categories, ['name'], ['asc'])
+      state.all = sortedCategories
     },
 
     updateCategory(state, category) {

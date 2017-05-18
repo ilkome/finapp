@@ -84,8 +84,9 @@ export default {
       await this.$store.dispatch('addAccount', this.account)
       setTimeout(() => this.$store.dispatch('setAppStatus', 'Успешно!'), 2000)
       this.loading = false
-      this.account.name = Math.random()
+      this.account.name = ''
     },
+
     async deleteAccount(accountId) {
       console.log('delete account')
       this.loadingId = accountId
@@ -95,13 +96,13 @@ export default {
       this.questionId = null
       this.loadingId = null
     },
+
     question(accountId) {
       this.questionId = accountId
     },
+
     close() {
       this.questionId = null
-    },
-    log(e) {
     }
   }
 }
