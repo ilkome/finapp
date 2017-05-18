@@ -1,7 +1,7 @@
 <template lang="pug">
 .content
   .module
-    h1.title._incomes
+    h1.title._expenses
       .icon.icon-incomes: .icon__pic
       | Expenses
 
@@ -13,7 +13,7 @@
             .itemStat__content
               .itemStat__text
                 .itemStat__name {{ data.year }}
-                .itemStat__price.expense
+                .itemStat__price.expenses
                   div {{formatMoney(data.expenses)}}
               .itemStat__graph
                 template(v-if="data.expenses > 0")
@@ -28,23 +28,38 @@
                 .summaryItem__icon._expenses
                 .summaryItem__label Expenses
                 .summaryItem__total.expense {{ formatMoney(total.expenses) }}
-                template(v-if="years.length > 1")
-                  .summaryItem
-                    .summaryItem__icon._year
-                    .summaryItem__label Year average
-                    .summaryItem__total.sum {{ formatMoney(total.expenses / years.length) }}
+              template(v-if="years.length > 1")
+                .summaryItem
+                  .summaryItem__icon._year
+                  .summaryItem__label Year average
+                  .summaryItem__total.sum {{ formatMoney(total.expenses / years.length) }}
               .summaryItem
                 .summaryItem__icon._month
                 .summaryItem__label Month average
-                .summaryItem__total.sum {{ formatMoney(total.expenses / years.length / 12) }}
+                .summaryItem__total.sum {{ formatMoney(total.expenses / 4 / 12) }}
 
-  template(v-for="year of years")
-    .module._bg
-      h1.title._wide Year {{ year }}
-      .categoryStat
-        .categoryStat__trns
-          .categoryStat__trnsIn
-            template(v-for="category in expensesData(year)")
+  .module._bg
+    .module__in
+      template(v-for="year of years")
+        .module__cell
+          h1.title._wide Year {{ year }}
+          .summaryShort._year
+            .summaryShort__content
+              template(v-if="dataData(year).total > 0")
+                .summaryItem
+                  .summaryItem__icon._expenses
+                  .summaryItem__label Expenses
+                  .summaryItem__total.expense {{ formatMoney(dataData(year).total) }}
+                .summaryItem
+                  .summaryItem__icon._month
+                  .summaryItem__label Month average
+                  template(v-if="year === 2017")
+                    .summaryItem__total.sum {{ formatMoney(dataData(year).total / 5) }}
+                  template(v-else)
+                    .summaryItem__total.sum {{ formatMoney(dataData(year).total / 12) }}
+
+          .trns._limitHeight
+            template(v-for="category in dataData(year).categories")
               router-link.itemStat(
                 :to="`/categories/${category.id}`",
                 title="Перейти в категорию"
@@ -56,24 +71,7 @@
                     .itemStat__price
                       div {{ formatMoney(category.total) }}
                   .itemStat__graph
-                    .itemStat__graph__in._expense(:style="countWidth(category.total, expensesData(year))")
-
-        .categoryStat__summary
-          .summaryShort
-            .summaryShort__content
-              template(v-if="totalInYear(year).expenses > 0 || totalInYear(year).expenses > 0")
-                .summaryItem
-                  .summaryItem__icon._expenses
-                  .summaryItem__label Expenses
-                  .summaryItem__total.expense {{ formatMoney(totalInYear(year).expenses) }}
-
-                .summaryItem
-                  .summaryItem__icon._month
-                  .summaryItem__label Month average
-                  template(v-if="year === 2017")
-                    .summaryItem__total.sum {{ formatMoney(totalInYear(year).expenses / 5) }}
-                  template(v-else)
-                    .summaryItem__total.sum {{ formatMoney(totalInYear(year).expenses / 12) }}
+                    .itemStat__graph__in._expense(:style="countWidth(category.total, dataData(year).categories)")
 </template>
 
 <script>
@@ -90,7 +88,7 @@ export default {
 
   data() {
     return {
-      slice: 20
+      showedTab: 2017
     }
   },
 
@@ -172,51 +170,35 @@ export default {
       }
     },
 
-    totalInYear(year) {
-      const incomes = this.trnsList
-        .filter(trn => trn.type === 1 && +moment(trn.date).format('Y') === +year)
-        .reduce((sum, current) => sum + current.amountRub, 0)
-
-      const expenses = this.trnsList
-        .filter(trn => trn.type === 0 && +moment(trn.date).format('Y') === +year)
-        .reduce((sum, current) => sum + current.amountRub, 0)
-
-      return {
-        expenses,
-        incomes
-      }
-    },
-
-    expensesData(year) {
+    dataData(year) {
       const trns = this.trnsList
-        .filter(trn => trn.type === 0 && +moment(trn.date).format('Y') === +year)
+        .filter(trn => +moment(trn.date).format('Y') === +year)
 
       if (trns && trns.length > 0) {
-        // Create array of categories ids
         const catsIds = uniqBy(trns, 'categoryName').map(trn => trn.categoryId)
+        const data = []
 
-        // Create array of objects with categories data
-        const data = catsIds.map((id) => {
-          const incomesTotal = trns
-            .filter(t => t.categoryId === id && t.type === 1)
-            .reduce((sum, current) => sum + current.amountRub, 0)
+        catsIds.forEach((id) => {
           const expensesTotal = trns
             .filter(t => t.categoryId === id && t.type === 0)
             .reduce((sum, current) => sum + current.amountRub, 0)
-          const total = incomesTotal - expensesTotal
-          const name = this.categories.find(c => c.id === id).name
-          return { id, name, total }
+          const total = expensesTotal
+
+          if (total > 0) {
+            const name = this.categories.find(c => c.id === id).name
+            data.push({ id, name, total })
+          }
         })
 
-        const dataSorted = orderBy(data, d => d.total, 'asc')
-        return dataSorted
+        if (data.length > 0) {
+          const dataSorted = orderBy(data, d => d.total, 'desc')
+          return {
+            categories: dataSorted,
+            total: data.reduce((sum, current) => sum + current.total, 0)
+          }
+        }
       }
-
       return false
-    },
-
-    showMore() {
-      this.slice = this.slice + 5
     }
   },
 
