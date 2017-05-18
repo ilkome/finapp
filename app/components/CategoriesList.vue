@@ -5,7 +5,7 @@
 
     .table
       .table__cell
-        input(type="text", v-model.trim="filter", placeholder="Filter" v-focus="true").filterBtn
+        input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="true").filterBtn
 
         .categories
           .categoryItem(
@@ -57,7 +57,6 @@ import { mapGetters } from 'vuex'
 import { mixin } from 'vue-focus'
 
 export default {
-
   mixins: [ mixin ],
 
   data() {
