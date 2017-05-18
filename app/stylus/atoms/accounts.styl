@@ -1,5 +1,15 @@
-.accounts
-  //
+.accountSidebar__showAll
+  display block
+  cursor pointer
+  position relative
+  padding 10px 10px
+  font-size .8rem
+  color alpha($color-second, .5)
+  anim-all()
+
+  &:hover
+    color $color-link
+
 
 
 .account-1
@@ -25,6 +35,9 @@
   @media $laptop
     padding 25px 0
 
+  @media $pc
+    padding-top 35px
+
 .accountContent
   display flex
   flex-flow column wrap
@@ -44,14 +57,13 @@
   justify-content space-between
   align-items center
   color $color-second
-  border-bottom 1px solid $color-line-account
+  border-bottom 1px solid alpha($color-line-account, .5)
   anim-all()
 
   &._circle
     margin-left 10px
     margin-right 10px
     padding-left 30px
-    border-bottom none
 
     &:hover:before
       opacity 1
