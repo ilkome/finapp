@@ -6,7 +6,7 @@
 
       .table
         .table__cell
-          input(type="text", v-model.trim="filter", placeholder="Filter").input-filter
+          input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="true").filterBtn
 
           .items
             template(v-for="account in accountsList")
@@ -52,9 +52,10 @@
 <script>
 import { mapGetters } from 'vuex'
 import formatMoney from '../mixins/formatMoney'
+import { mixin } from 'vue-focus'
 
 export default {
-  mixins: [formatMoney],
+  mixins: [formatMoney, mixin],
 
   data() {
     return {
