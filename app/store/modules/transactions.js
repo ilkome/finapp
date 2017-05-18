@@ -15,30 +15,66 @@ const state = {
 // ==============================================
 const getters = {
   trns(state, getters, rootState) {
-    let trns = state.all
+    const trns = state.all
     const accounts = rootState.accounts.all
     const categories = rootState.categories.all
     const rates = rootState.rates.all
 
-    // Add to trn extra info
-    trns = trns.map(trn => ({
-      id: +trn.id,
-      currency: trn.currency,
-      date: +trn.date,
-      type: +trn.type,
-      accountId: +trn.accountId,
-      categoryId: +trn.categoryId,
-      accountName: accounts.find(a => a.id === trn.accountId).name,
-      amount: Math.abs(trn.amount),
-      amountRub: trn.currency !== 'RUB'
-        ? Math.floor(Math.abs(trn.amount / rates[trn.currency]))
-        : Math.abs(trn.amount),
-      categoryName: categories.find(cat => cat.id === trn.categoryId).name,
-      description: trn.description,
-      symbol: accounts.find(account => account.id === trn.accountId).symbol
-    }))
+    if(!categories || categories.length < 0) {
+      console.error('store.transitions.getters.trns.categories')
+      return false
+    }
 
-    const orderedTrns = orderBy(trns, 'date', 'desc')
+    // Add to trn extra info
+    const formatedTrns = trns.map(trn => {
+      const accountId = +trn.accountId
+      const categoryId = +trn.categoryId
+      const currency = trn.currency
+
+      const account = accounts.find(a => a.id === accountId)
+      if (!account) console.error('store.transitions.getters.trns.account')
+
+      const category = categories.find(cat => cat.id === categoryId)
+      if (!category) console.error('store.transitions.getters.trns.category')
+
+      let rate = 0
+      if (currency !== 'RUB') {
+        rate = (rates && rates[currency]) ? rates[currency] : false
+        if (!rate) console.error('store.transitions.getters.trns.rate')
+      }
+
+
+      const accountName = (account && account.name) ? account.name : 'Account name not found'
+      const amount = Math.abs(trn.amount)
+      const amountRub = currency !== 'RUB'
+        ? Math.floor(Math.abs(trn.amount / rate))
+        : Math.abs(trn.amount)
+
+      const categoryName = (category && category.name) ? category.name : 'Category name not found'
+
+      const date = +trn.date
+      const id = +trn.id
+      const type = +trn.type
+      const description = trn.description
+      const symbol = (account && account.symbol) ? account.symbol : 'Symbol not found'
+
+      return {
+        accountId,
+        accountName,
+        amount,
+        amountRub,
+        categoryId,
+        categoryName,
+        currency,
+        date,
+        id,
+        type,
+        description,
+        symbol
+      }
+    })
+
+    const orderedTrns = orderBy(formatedTrns, 'date', 'desc')
     return orderedTrns
   },
 
