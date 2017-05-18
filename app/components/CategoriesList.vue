@@ -19,7 +19,7 @@
                 .categoryItem__action(@click.prevent="setEditedCategory(category.id)"): .fa.fa-times-circle
               template(v-else)
                 .categoryItem__action(@click.prevent="setEditedCategory(category.id)"): .fa.fa-pencil-square-o
-              .categoryItem__action(@click.prevent="setEditedCategory(category.id)"): .fa.fa-trash-o
+              .categoryItem__action(@click.prevent="deleteCategory(category.id)"): .fa.fa-trash-o
 
             template(v-if="editedCategory === category.id")
               .categoryItem__edit
@@ -116,6 +116,10 @@ export default {
       if (status) {
         this.editedCategory = false
       }
+    },
+
+    async deleteCategory(categoryId) {
+      const status = await this.$store.dispatch('deleteCategory', +categoryId)
     }
   }
 }

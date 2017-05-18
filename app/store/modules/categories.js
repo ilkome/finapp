@@ -56,6 +56,18 @@ const store = {
         return false
       }
     },
+
+    async deleteCategory({ commit, dispatch }, id) {
+      dispatch('setAppStatus', `Удаление ${id}...`, false)
+      const request = await axios.delete(`${CATEGORIES_URL}/${id}`)
+      const result = request.data
+      if (result === 1) {
+        dispatch('setAppStatus', `Удалено ${id}`)
+        commit('deleteCategory', id)
+      } else {
+        dispatch('setAppStatus', `Не удалено ${id}`)
+      }
+    }
   },
 
   mutations: {
@@ -67,6 +79,10 @@ const store = {
       const categories = [category, ...state.all.filter(c => c.id !== category.id)]
       const sortedCategories = orderBy(categories, ['name'], ['asc'])
       state.all = sortedCategories
+    },
+
+    deleteCategory(state, id) {
+      state.all = state.all.filter(c => c.id !== id)
     },
   }
 }
