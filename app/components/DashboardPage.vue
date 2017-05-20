@@ -3,6 +3,7 @@
   .module
     h1.title
       | Summary:&nbsp;
+
       .dropdown
         .dropdown__name
           template(v-if="duration === 1") Today
@@ -10,45 +11,52 @@
         .dropdown__content(:class="{_visible: showDropdown}")
           template(v-for="day of days")
             a.dropdown__link(@click.prevent="setDuration(day)", :class="{_active: duration === day}") {{ day }}
+    //- title
 
     .table
       .table__cell
         h2 This days
-        .summaryShort._limitWidth
-          .summaryShort__content
-            template(v-if="total.expenses > 0 || total.incomes > 0")
-              .summaryItem(v-if="total.incomes > 0")
-                .summaryItem__icon._incomes
-                .summaryItem__label Incomes
-                .summaryItem__total.income {{ formatMoney(total.incomes) }}
-              .summaryItem(v-if="total.expenses > 0")
-                .summaryItem__icon._expenses
-                .summaryItem__label Expenses
-                .summaryItem__total.expense {{ formatMoney(total.expenses) }}
-              .summaryItem
-                .summaryItem__icon._total
-                .summaryItem__label Total
-                .summaryItem__total.sum {{ formatMoney(total.incomes - total.expenses) }}
+        .summaryShort._limitWidth(v-if="summary.expenses > 0 || summary.incomes > 0")
+
+          .summaryShort__item(v-if="summary.incomes > 0")
+            .summaryShort__item__icon._incomes
+            .summaryShort__item__label Incomes
+            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
+
+          .summaryShort__item(v-if="summary.expenses > 0")
+            .summaryShort__item__icon._expenses
+            .summaryShort__item__label Expenses
+            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
+
+          .summaryShort__item
+            .summaryShort__item__icon._total
+            .summaryShort__item__label Total
+            .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
+        //- summaryShort
+      //- table__cell
 
       .table__cell
         h2 Prev {{ duration }} days
-        .summaryShort._limitWidth
-          .summaryShort__content
-            template(v-if="total.expenses > 0 || total.incomes > 0")
-              .summaryItem(v-if="total.incomes > 0")
-                .summaryItem__icon._incomes
-                .summaryItem__label Incomes
-                .summaryItem__total.income {{ formatMoney(total.prevIncomes) }}
-              .summaryItem(v-if="total.expenses > 0")
-                .summaryItem__icon._expenses
-                .summaryItem__label Expenses
-                .summaryItem__total.expense {{ formatMoney(total.prevExpenses) }}
-              .summaryItem
-                .summaryItem__icon._total
-                .summaryItem__label Total
-                .summaryItem__total.sum {{ formatMoney(total.prevIncomes - total.prevExpenses) }}
+        .summaryShort._limitWidth(v-if="summary.expenses > 0 || summary.incomes > 0")
 
+          .summaryShort__item(v-if="summary.incomes > 0")
+            .summaryShort__item__icon._incomes
+            .summaryShort__item__label Incomes
+            .summaryShort__item__total.incomes {{ formatMoney(summary.prevIncomes) }}
 
+          .summaryShort__item(v-if="summary.expenses > 0")
+            .summaryShort__item__icon._expenses
+            .summaryShort__item__label Expenses
+            .summaryShort__item__total.expenses {{ formatMoney(summary.prevExpenses) }}
+
+          .summaryShort__item
+            .summaryShort__item__icon._total
+            .summaryShort__item__label Total
+            .summaryShort__item__total.sum {{ formatMoney(summary.prevTotal) }}
+        //- summaryShort
+      //- table__cell
+    //- table
+  //- module
 
   .tabs
     a(@click="changeTab('summary')", :class="{_active: showedTab === 'summary'}") Summary
@@ -57,34 +65,13 @@
   .module._bg(v-show="showedTab === 'summary'")
     .table
       .table__cell
-        h1.title.expense._wide Expenses
-        .trns
-          template(v-for="category in expensesData")
-            router-link.itemStat(
-            :to="`/categories/${category.id}`",
-            title="Перейти в категорию"
-            )
-              router-link.itemStat__icon(
-                :to="`/categories/${category.id}`",
-                title="Перейти в категорию"
-              ): .icon(:class="`icon-${category.id}`"): .icon__pic
-              .itemStat__content
-                .itemStat__text
-                  .itemStat__name {{ category.name }}
-                  .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
-                  .itemStat__price {{ formatMoney(category.total) }}
-                .itemStat__graph
-                  .itemStat__graph__in._expense(:style="countWidth(category.total, geCategoryData(expensesTrns))")
-
-      .table__cell
-        template(v-if="incomesData.length > 0")
-          h1.title.income._wide Incomes
+        template(v-if="expensesCategories.length > 0")
+          h1.title.expense._wide Expenses
           .trns
-            template(v-for="category in incomesData")
+            template(v-for="category in expensesCategories")
               router-link.itemStat(
-                :to="`/categories/${category.id}`",
-                title="Перейти в категорию"
-              )
+              :to="`/categories/${category.id}`",
+              title="Перейти в категорию")
                 .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
                 .itemStat__content
                   .itemStat__text
@@ -92,11 +79,34 @@
                     .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
                     .itemStat__price {{ formatMoney(category.total) }}
                   .itemStat__graph
-                    .itemStat__graph__in._income(:style="countWidth(category.total, geCategoryData(incomesTrns))")
+                    .itemStat__graph__in._expense(:style="countWidth(category.total, expensesCategories)")
+          //- trns
+      //- table__cell
 
+      .table__cell
+        template(v-if="incomesCategories.length > 0")
+          h1.title.income._wide Incomes
+          .trns
+            template(v-for="category in incomesCategories")
+              router-link.itemStat(
+                :to="`/categories/${category.id}`",
+                title="Перейти в категорию")
+                .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
+                .itemStat__content
+                  .itemStat__text
+                    .itemStat__name {{ category.name }}
+                    .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
+                    .itemStat__price {{ formatMoney(category.total) }}
+                  .itemStat__graph
+                    .itemStat__graph__in._income(:style="countWidth(category.total, incomesCategories)")
+          //- trns
+      //- table__cell
+    //- table
+  //- module._bg
   .module._bg(v-show="showedTab === 'trns'")
     h1.title._wide._trns Trns history
     TrnsList(:trns="trnsList.slice(0, 50)")
+  //- module._bg
 </template>
 
 
@@ -106,7 +116,6 @@ import moment from 'moment'
 import uniqBy from 'lodash/uniqBy'
 import orderBy from 'lodash/orderBy'
 import formatMoney from '../mixins/formatMoney'
-import SummaryShort from './SummaryShort.vue'
 import TrnsList from './TrnsList.vue'
 
 export default {
@@ -128,78 +137,62 @@ export default {
       return this.$store.state.filter.duration
     },
 
-    fromDate() {
-      return moment().subtract(this.duration - 1, 'days').startOf('day').valueOf()
-    },
-
-    toDate() {
-      return moment().endOf('day').valueOf()
+    date() {
+      return {
+        from: moment().subtract(this.duration - 1, 'days').startOf('day').valueOf(),
+        to: moment().endOf('day').valueOf()
+      }
     },
 
     trnsList() {
       return this.trns
         .filter(trn =>
           trn.categoryId !== 62 && // disable category 'Перевод'
-          moment(trn.date) >= this.fromDate &&
-          moment(trn.date) <= this.toDate
+          moment(trn.date) >= this.date.from &&
+          moment(trn.date) <= this.date.to
       )
     },
 
-    total() {
+    summary() {
       const incomes = this.trnsList
         .filter(t => t.type === 1)
         .reduce((sum, current) => sum + current.amountRub, 0)
-
       const expenses = this.trnsList
         .filter(t => t.type === 0)
         .reduce((sum, current) => sum + current.amountRub, 0)
+      const total = incomes - expenses
 
-      const fromDate = moment(this.fromDate).subtract(this.duration, 'days').startOf('day').valueOf()
-      const toDate = moment(this.fromDate).subtract(1, 'days').endOf('day').valueOf()
+      const fromDate = moment(this.date.from).subtract(this.duration, 'days').startOf('day').valueOf()
+      const toDate = moment(this.date.from).subtract(1, 'days').endOf('day').valueOf()
       const prevTrns = this.trns
         .filter(t =>
           t.categoryId !== 62 &&
           moment(t.date) >= fromDate &&
           moment(t.date) <= toDate)
-
       const prevIncomes = prevTrns
         .filter(t => t.type === 1)
         .reduce((sum, current) => sum + current.amountRub, 0)
-
       const prevExpenses = prevTrns
         .filter(t => t.type === 0)
         .reduce((sum, current) => sum + current.amountRub, 0)
+      const prevTotal = prevIncomes - prevExpenses
 
       return {
         incomes,
         expenses,
+        total,
         prevIncomes,
-        prevExpenses
+        prevExpenses,
+        prevTotal
       }
     },
 
-    expensesTrns() {
-      return this.trnsList.filter(trn => trn.type === 0)
+    expensesCategories() {
+      return this.geCategoryData('expenses')
     },
 
-    expensesData() {
-      return this.geCategoryData(this.expensesTrns)
-    },
-
-    expensesTotal() {
-      return this.getTotal(this.expensesTrns)
-    },
-
-    incomesTrns() {
-      return this.trnsList.filter(trn => trn.type === 1)
-    },
-
-    incomesData() {
-      return this.geCategoryData(this.incomesTrns)
-    },
-
-    incomesTotal() {
-      return this.getTotal(this.incomesTrns)
+    incomesCategories() {
+      return this.geCategoryData('incomes')
     }
   },
 
@@ -215,10 +208,14 @@ export default {
       return 0
     },
 
-    geCategoryData(trns) {
-      if (trns && trns.length > 0) {
+    geCategoryData(type) {
+      let trns = []
+      if (type === 'incomes') trns = this.trnsList.filter(trn => trn.type === 1)
+      if (type === 'expenses') trns = this.trnsList.filter(trn => trn.type === 0)
+
+      if (trns.length > 0) {
         // Create array of categories ids
-        const catsIds = uniqBy(trns, 'categoryName').map(trn => trn.categoryId)
+        const catsIds = uniqBy(trns, 'categoryId').map(trn => trn.categoryId)
 
         // Create array of objects with categories data
         const data = catsIds.map((id) => {
@@ -232,13 +229,12 @@ export default {
         const dataSorted = orderBy(data, d => d.total, 'desc')
         return dataSorted
       }
-
       return false
     },
 
     getPrevData(categoryId, prevTotal) {
-      const fromDate = moment(this.fromDate).subtract(this.duration, 'days').startOf('day').valueOf()
-      const toDate = moment(this.fromDate).subtract(1, 'days').endOf('day').valueOf()
+      const fromDate = moment(this.date.from).subtract(this.duration, 'days').startOf('day').valueOf()
+      const toDate = moment(this.date.from).subtract(1, 'days').endOf('day').valueOf()
       const trns = this.trns
         .filter(t =>
           t.categoryId !== 62 &&
@@ -263,6 +259,6 @@ export default {
     }
   },
 
-  components: { SummaryShort, TrnsList }
+  components: { TrnsList }
 }
 </script>

@@ -7,24 +7,23 @@ const store = {
 
   getters: {
     accounts(state, getters) {
-      let accounts = state.all
-      const incomesTrns = getters.incomes
-      const expensesTrns = getters.expenses
+      const accounts = state.all
+      const incomesTrns = getters.trns.filter(t => t.type === 1)
+      const expensesTrns = getters.trns.filter(t => t.type === 0)
 
-      function getTotal(trns, type) {
+      function countTotal(trns, type) {
         return trns.reduce((sum, current) => sum + current[type], 0)
       }
 
       // find all trns in this account and sum amount
-      accounts = accounts.map((account) => {
+      const formatedAccounts = accounts.map((account) => {
         const accountIncomes = incomesTrns.filter(trn => trn.accountId === account.id)
         const accountExpenses = expensesTrns.filter(trn => trn.accountId === account.id)
 
-        const totalIncomes = getTotal(accountIncomes, 'amount')
-        const totalIncomesRub = getTotal(accountIncomes, 'amountRub')
-        const totalExpenses = getTotal(accountExpenses, 'amount')
-        const totalExpensesRub = getTotal(accountExpenses, 'amountRub')
-
+        const totalIncomes = countTotal(accountIncomes, 'amount')
+        const totalIncomesRub = countTotal(accountIncomes, 'amountRub')
+        const totalExpenses = countTotal(accountExpenses, 'amount')
+        const totalExpensesRub = countTotal(accountExpenses, 'amountRub')
         const total = totalIncomes - totalExpenses
         const totalRub = totalIncomesRub - totalExpensesRub
 
@@ -39,7 +38,7 @@ const store = {
         }
       })
 
-      return accounts
+      return formatedAccounts
     }
   },
 

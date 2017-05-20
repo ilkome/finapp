@@ -7,10 +7,16 @@
       .name {{ account.currency }}
       .sup {{ account.id }}
 
-    SummaryShort(
-      :expenses="account.totalExpenses",
-      :incomes="account.totalIncomes"
-    )
+    .summaryShort(v-if="account.totalExpenses > 0 || account.totalIncomes > 0")
+      .summaryShort__item(v-if="account.totalIncome > 0")
+        .summaryShort__item__icon._incomes
+        .summaryShort__item__label Incomes
+        .summaryShort__item__total.incomes {{ formatMoney(account.totalIncome) }}
+
+      .summaryShort__item(v-if="account.totalExpense > 0")
+        .summaryShort__item__icon._expenses
+        .summaryShort__item__label Expenes
+        .summaryShort__item__total.expenses {{ formatMoney(account.totalExpense) }}
 
   .module._bg
     h1.title._wide._trns Trns list
@@ -21,7 +27,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import formatMoney from '../mixins/formatMoney'
-import SummaryShort from './SummaryShort.vue'
 import TrnsList from './TrnsList.vue'
 
 export default {
@@ -39,6 +44,6 @@ export default {
     }
   },
 
-  components: { SummaryShort, TrnsList }
+  components: { TrnsList }
 }
 </script>
