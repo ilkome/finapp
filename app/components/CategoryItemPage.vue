@@ -33,27 +33,27 @@
             template(v-if="total.expenses > 0 || total.incomes > 0")
               .summaryShort__el
                 .accountDetails
-                  .summaryItem(v-if="total.expenses > 0")
-                    .summaryItem__icon._expenses
-                    .summaryItem__label Expenses
-                    .summaryItem__total.expense {{ formatMoney(total.expenses) }}
-                  .summaryItem(v-if="total.incomes > 0")
-                    .summaryItem__icon._incomes
-                    .summaryItem__label Incomes
-                    .summaryItem__total.income {{ formatMoney(total.incomes) }}
-                  .summaryItem
-                    .summaryItem__icon._total
-                    .summaryItem__label Total
-                    .summaryItem__total.sum {{ formatMoney(total.incomes - total.expenses) }}
+                  .summaryShort__item(v-if="total.expenses > 0")
+                    .summaryShort__item__icon._expenses
+                    .summaryShort__item__label Expenses
+                    .summaryShort__item__total.expenses {{ formatMoney(total.expenses) }}
+                  .summaryShort__item(v-if="total.incomes > 0")
+                    .summaryShort__item__icon._incomes
+                    .summaryShort__item__label Incomes
+                    .summaryShort__item__total.incomes {{ formatMoney(total.incomes) }}
+                  .summaryShort__item
+                    .summaryShort__item__icon._total
+                    .summaryShort__item__label Total
+                    .summaryShort__item__total.sum {{ formatMoney(total.incomes - total.expenses) }}
                   template(v-if="years.length > 1")
-                    .summaryItem
-                      .summaryItem__icon._year
-                      .summaryItem__label Year average
-                      .summaryItem__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length) }}
-                  .summaryItem
-                    .summaryItem__icon._month
-                    .summaryItem__label Month average
-                    .summaryItem__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length / 12) }}
+                    .summaryShort__item
+                      .summaryShort__item__icon._year
+                      .summaryShort__item__label Year average
+                      .summaryShort__item__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length) }}
+                  .summaryShort__item
+                    .summaryShort__item__icon._month
+                    .summaryShort__item__label Month average
+                    .summaryShort__item__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length / 12) }}
 
   .tabs
     a(@click.prevent="toogleShowAll()", :class="{_active: !showAll}") Months with data
@@ -65,30 +65,30 @@
         template(v-if="totalInYear(year).expenses > 0 || totalInYear(year).incomes > 0")
           .module__cell
             h1.title._wide Year {{ year }}
-            .summaryShort._year
+            .summaryShort._pb
               .summaryShort__content
-                .summaryItem(v-if="total.incomes > 0 && total.expenses > 0")
-                  .summaryItem__icon._expenses
-                  .summaryItem__label Expenses
-                  .summaryItem__total.expense {{ formatMoney(totalInYear(year).expenses) }}
+                .summaryShort__item(v-if="total.incomes > 0 && total.expenses > 0")
+                  .summaryShort__item__icon._expenses
+                  .summaryShort__item__label Expenses
+                  .summaryShort__item__total.expenses {{ formatMoney(totalInYear(year).expenses) }}
 
-                .summaryItem(v-if="total.incomes > 0 && total.expenses > 0")
-                  .summaryItem__icon._incomes
-                  .summaryItem__label Incomes
-                  .summaryItem__total.income {{ formatMoney(totalInYear(year).incomes) }}
+                .summaryShort__item(v-if="total.incomes > 0 && total.expenses > 0")
+                  .summaryShort__item__icon._incomes
+                  .summaryShort__item__label Incomes
+                  .summaryShort__item__total.incomes {{ formatMoney(totalInYear(year).incomes) }}
 
-                .summaryItem(v-if="total.incomes > 0 || total.expenses > 0")
-                  .summaryItem__icon._total
-                  .summaryItem__label Total
-                  .summaryItem__total.sum {{ formatMoney(totalInYear(year).incomes - totalInYear(year).expenses) }}
+                .summaryShort__item(v-if="total.incomes > 0 || total.expenses > 0")
+                  .summaryShort__item__icon._total
+                  .summaryShort__item__label Total
+                  .summaryShort__item__total.sum {{ formatMoney(totalInYear(year).incomes - totalInYear(year).expenses) }}
 
-                .summaryItem
-                  .summaryItem__icon._month
-                  .summaryItem__label Month average
+                .summaryShort__item
+                  .summaryShort__item__icon._month
+                  .summaryShort__item__label Month average
                   template(v-if="year === 2017")
-                    .summaryItem__total.sum {{ formatMoney((totalInYear(year).incomes - totalInYear(year).expenses) / 5) }}
+                    .summaryShort__item__total.sum {{ formatMoney((totalInYear(year).incomes - totalInYear(year).expenses) / 5) }}
                   template(v-else)
-                    .summaryItem__total.sum {{ formatMoney((totalInYear(year).incomes - totalInYear(year).expenses) / 12) }}
+                    .summaryShort__item__total.sum {{ formatMoney((totalInYear(year).incomes - totalInYear(year).expenses) / 12) }}
 
             .trns
               template(v-for="data in dataInYear(year)")
@@ -118,7 +118,6 @@ import { mapGetters } from 'vuex'
 import moment from 'moment'
 import orderBy from 'lodash/orderBy'
 import formatMoney from '../mixins/formatMoney'
-import SummaryShort from './SummaryShort.vue'
 
 export default {
   mixins: [formatMoney],
@@ -309,8 +308,6 @@ export default {
 
       return data
     }
-  },
-
-  components: { SummaryShort }
+  }
 }
 </script>

@@ -32,9 +32,11 @@ const getters = {
       const currency = trn.currency
 
       const account = accounts.find(a => a.id === accountId)
+      const accountName = (account && account.name) ? account.name : 'Account name not found'
       if (!account) console.error('store.transitions.getters.trns.account')
 
       const category = categories.find(cat => cat.id === categoryId)
+      const categoryName = (category && category.name) ? category.name : 'Category name not found'
       if (!category) console.error('store.transitions.getters.trns.category')
 
       let rate = 0
@@ -43,20 +45,14 @@ const getters = {
         if (!rate) console.error('store.transitions.getters.trns.rate')
       }
 
-
-      const accountName = (account && account.name) ? account.name : 'Account name not found'
       const amount = Math.abs(trn.amount)
-      const amountRub = currency !== 'RUB'
-        ? Math.floor(Math.abs(trn.amount / rate))
-        : Math.abs(trn.amount)
-
-      const categoryName = (category && category.name) ? category.name : 'Category name not found'
-
+      const amountRub = currency === 'RUB'
+        ? Math.abs(trn.amount)
+        : Math.floor(Math.abs(trn.amount / rate))
       const date = +trn.date
       const id = +trn.id
       const type = +trn.type
       const description = trn.description
-      const symbol = (account && account.symbol) ? account.symbol : 'Symbol not found'
 
       return {
         accountId,
@@ -69,8 +65,7 @@ const getters = {
         date,
         id,
         type,
-        description,
-        symbol
+        description
       }
     })
 
