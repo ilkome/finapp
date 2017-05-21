@@ -18,7 +18,7 @@
     .table
       .table__cell(v-if="summary.expenses > 0 || summary.incomes > 0")
         h2 This days
-        .summaryShort._limitWidth
+        .summaryShort
           .summaryShort__item
             .summaryShort__item__icon._incomes
             .summaryShort__item__label Incomes
@@ -39,7 +39,7 @@
 
       .table__cell(v-if="summary.prevExpenses > 0 || summary.prevIncomes > 0")
         h2 Prev {{ duration }} days
-        .summaryShort._limitWidth
+        .summaryShort
           .summaryShort__item
             .summaryShort__item__icon._incomes
             .summaryShort__item__label Incomes
