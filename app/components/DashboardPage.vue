@@ -8,105 +8,118 @@
         .dropdown__name
           template(v-if="duration === 1") Today
           template(v-else) {{ duration }} days
+
         .dropdown__content(:class="{_visible: showDropdown}")
           template(v-for="day of days")
             a.dropdown__link(@click.prevent="setDuration(day)", :class="{_active: duration === day}") {{ day }}
     //- title
 
+
     .table
       .table__cell
-        h2 This days
-        .summaryShort._limitWidth(v-if="summary.expenses > 0 || summary.incomes > 0")
+        template(v-if="summary.expenses > 0 || summary.incomes > 0")
+          h2 This days
+          .summaryShort._limitWidth
+            .summaryShort__item
+              .summaryShort__item__icon._incomes
+              .summaryShort__item__label Incomes
+              .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
 
-          .summaryShort__item(v-if="summary.incomes > 0")
-            .summaryShort__item__icon._incomes
-            .summaryShort__item__label Incomes
-            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
+            .summaryShort__item
+              .summaryShort__item__icon._expenses
+              .summaryShort__item__label Expenses
+              .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
 
-          .summaryShort__item(v-if="summary.expenses > 0")
-            .summaryShort__item__icon._expenses
-            .summaryShort__item__label Expenses
-            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
-
-          .summaryShort__item
-            .summaryShort__item__icon._total
-            .summaryShort__item__label Total
-            .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
+            .summaryShort__item
+              .summaryShort__item__icon._total
+              .summaryShort__item__label Total
+              .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
         //- summaryShort
       //- table__cell
 
+
       .table__cell
-        h2 Prev {{ duration }} days
-        .summaryShort._limitWidth(v-if="summary.expenses > 0 || summary.incomes > 0")
+        template(v-if="summary.prevExpenses > 0 || summary.prevIncomes > 0")
+          h2 Prev {{ duration }} days
+          .summaryShort._limitWidth
+            .summaryShort__item
+              .summaryShort__item__icon._incomes
+              .summaryShort__item__label Incomes
+              .summaryShort__item__total.incomes {{ formatMoney(summary.prevIncomes) }}
 
-          .summaryShort__item(v-if="summary.incomes > 0")
-            .summaryShort__item__icon._incomes
-            .summaryShort__item__label Incomes
-            .summaryShort__item__total.incomes {{ formatMoney(summary.prevIncomes) }}
+            .summaryShort__item
+              .summaryShort__item__icon._expenses
+              .summaryShort__item__label Expenses
+              .summaryShort__item__total.expenses {{ formatMoney(summary.prevExpenses) }}
 
-          .summaryShort__item(v-if="summary.expenses > 0")
-            .summaryShort__item__icon._expenses
-            .summaryShort__item__label Expenses
-            .summaryShort__item__total.expenses {{ formatMoney(summary.prevExpenses) }}
-
-          .summaryShort__item
-            .summaryShort__item__icon._total
-            .summaryShort__item__label Total
-            .summaryShort__item__total.sum {{ formatMoney(summary.prevTotal) }}
+            .summaryShort__item
+              .summaryShort__item__icon._total
+              .summaryShort__item__label Total
+              .summaryShort__item__total.sum {{ formatMoney(summary.prevTotal) }}
         //- summaryShort
       //- table__cell
     //- table
   //- module
 
-  .tabs
-    a(@click="changeTab('summary')", :class="{_active: showedTab === 'summary'}") Summary
-    a(@click="changeTab('trns')", :class="{_active: showedTab === 'trns'}") Trns
+  template(v-if="(summary.expenses || summary.incomes) > 0")
+    .tabs
+      a(@click="changeTab('summary')", :class="{_active: showedTab === 'summary'}") Summary
+      a(@click="changeTab('trns')", :class="{_active: showedTab === 'trns'}") Trns
 
-  .module._bg(v-show="showedTab === 'summary'")
-    .table
-      .table__cell
-        template(v-if="expensesCategories.length > 0")
-          h1.title.expense._wide Expenses
-          .trns
-            template(v-for="category in expensesCategories")
-              router-link.itemStat(
-              :to="`/categories/${category.id}`",
-              title="Перейти в категорию")
-                .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
-                .itemStat__content
-                  .itemStat__text
-                    .itemStat__name {{ category.name }}
-                    .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
-                    .itemStat__price {{ formatMoney(category.total) }}
-                  .itemStat__graph
-                    .itemStat__graph__in._expense(:style="countWidth(category.total, expensesCategories)")
-          //- trns
-      //- table__cell
 
-      .table__cell
-        template(v-if="incomesCategories.length > 0")
-          h1.title.income._wide Incomes
-          .trns
-            template(v-for="category in incomesCategories")
-              router-link.itemStat(
+    .module._bg(v-show="showedTab === 'summary'")
+      .table
+        .table__cell
+          template(v-if="expensesCategories.length > 0")
+            h1.title.expense._wide Expenses
+            .trns
+              template(v-for="category in expensesCategories")
+                router-link.itemStat(
                 :to="`/categories/${category.id}`",
                 title="Перейти в категорию")
-                .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
-                .itemStat__content
-                  .itemStat__text
-                    .itemStat__name {{ category.name }}
-                    .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
-                    .itemStat__price {{ formatMoney(category.total) }}
-                  .itemStat__graph
-                    .itemStat__graph__in._income(:style="countWidth(category.total, incomesCategories)")
-          //- trns
-      //- table__cell
-    //- table
-  //- module._bg
-  .module._bg(v-show="showedTab === 'trns'")
-    h1.title._wide._trns Trns history
-    TrnsList(:trns="trnsList.slice(0, 50)")
-  //- module._bg
+                  .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
+                  .itemStat__content
+                    .itemStat__text
+                      .itemStat__name {{ category.name }}
+                      .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
+                      .itemStat__price {{ formatMoney(category.total) }}
+                    .itemStat__graph
+                      .itemStat__graph__in._expense(:style="countWidth(category.total, expensesCategories)")
+            //- trns
+        //- table__cell
+
+
+        .table__cell
+          template(v-if="incomesCategories.length > 0")
+            h1.title.income._wide Incomes
+            .trns
+              template(v-for="category in incomesCategories")
+                router-link.itemStat(
+                  :to="`/categories/${category.id}`",
+                  title="Перейти в категорию")
+                  .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
+                  .itemStat__content
+                    .itemStat__text
+                      .itemStat__name {{ category.name }}
+                      .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
+                      .itemStat__price {{ formatMoney(category.total) }}
+                    .itemStat__graph
+                      .itemStat__graph__in._income(:style="countWidth(category.total, incomesCategories)")
+            //- trns
+        //- table__cell
+      //- table
+    //- module._bg
+
+
+    .module._bg(v-show="showedTab === 'trns'")
+      h1.title._wide._trns Trns history
+      TrnsList(:trns="trnsList.slice(0, 50)")
+    //- module._bg
+
+
+  template(v-else)
+    .module._bg
+      h4 No trnasactions for this days.
 </template>
 
 

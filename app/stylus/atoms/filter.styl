@@ -1,8 +1,21 @@
 .filterBtn
-  @extend .btn
+  display block
   width 100%
-  text-transform none
   margin-bottom 60px
+  padding 15px
+  color $color-main
+  font-size 1rem
+  font-weight bold
+  text-transform none
+  letter-spacing 2px
+  background $color-line
+  border 1px solid $color-body
+  cursor pointer
+  anim()
+
+  &:hover, &:focus
+    border 1px solid $color-link
+
 
 .filter
   display flex
