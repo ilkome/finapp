@@ -1,7 +1,7 @@
 <template lang="pug">
 .content
   .module
-    h1.title._incomes
+    h1.title
       .icon.icon-incomes: .icon__pic
       | Total summary
 
