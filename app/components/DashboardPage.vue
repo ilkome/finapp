@@ -16,46 +16,44 @@
 
 
     .table
-      .table__cell
-        template(v-if="summary.expenses > 0 || summary.incomes > 0")
-          h2 This days
-          .summaryShort._limitWidth
-            .summaryShort__item
-              .summaryShort__item__icon._incomes
-              .summaryShort__item__label Incomes
-              .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
+      .table__cell(v-if="summary.expenses > 0 || summary.incomes > 0")
+        h2 This days
+        .summaryShort._limitWidth
+          .summaryShort__item
+            .summaryShort__item__icon._incomes
+            .summaryShort__item__label Incomes
+            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
 
-            .summaryShort__item
-              .summaryShort__item__icon._expenses
-              .summaryShort__item__label Expenses
-              .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
+          .summaryShort__item
+            .summaryShort__item__icon._expenses
+            .summaryShort__item__label Expenses
+            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
 
-            .summaryShort__item
-              .summaryShort__item__icon._total
-              .summaryShort__item__label Total
-              .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
+          .summaryShort__item
+            .summaryShort__item__icon._total
+            .summaryShort__item__label Total
+            .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
         //- summaryShort
       //- table__cell
 
 
-      .table__cell
-        template(v-if="summary.prevExpenses > 0 || summary.prevIncomes > 0")
-          h2 Prev {{ duration }} days
-          .summaryShort._limitWidth
-            .summaryShort__item
-              .summaryShort__item__icon._incomes
-              .summaryShort__item__label Incomes
-              .summaryShort__item__total.incomes {{ formatMoney(summary.prevIncomes) }}
+      .table__cell(v-if="summary.prevExpenses > 0 || summary.prevIncomes > 0")
+        h2 Prev {{ duration }} days
+        .summaryShort._limitWidth
+          .summaryShort__item
+            .summaryShort__item__icon._incomes
+            .summaryShort__item__label Incomes
+            .summaryShort__item__total.incomes {{ formatMoney(summary.prevIncomes) }}
 
-            .summaryShort__item
-              .summaryShort__item__icon._expenses
-              .summaryShort__item__label Expenses
-              .summaryShort__item__total.expenses {{ formatMoney(summary.prevExpenses) }}
+          .summaryShort__item
+            .summaryShort__item__icon._expenses
+            .summaryShort__item__label Expenses
+            .summaryShort__item__total.expenses {{ formatMoney(summary.prevExpenses) }}
 
-            .summaryShort__item
-              .summaryShort__item__icon._total
-              .summaryShort__item__label Total
-              .summaryShort__item__total.sum {{ formatMoney(summary.prevTotal) }}
+          .summaryShort__item
+            .summaryShort__item__icon._total
+            .summaryShort__item__label Total
+            .summaryShort__item__total.sum {{ formatMoney(summary.prevTotal) }}
         //- summaryShort
       //- table__cell
     //- table
@@ -69,42 +67,40 @@
 
     .module._bg(v-show="showedTab === 'summary'")
       .table
-        .table__cell
-          template(v-if="expensesCategories.length > 0")
-            h1.title.expense._wide Expenses
-            .trns
-              template(v-for="category in expensesCategories")
-                router-link.itemStat(
-                :to="`/categories/${category.id}`",
-                title="Перейти в категорию")
-                  .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
-                  .itemStat__content
-                    .itemStat__text
-                      .itemStat__name {{ category.name }}
-                      .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
-                      .itemStat__price {{ formatMoney(category.total) }}
-                    .itemStat__graph
-                      .itemStat__graph__in._expense(:style="countWidth(category.total, expensesCategories)")
+        .table__cell(v-if="expensesCategories.length > 0")
+          h1.title.expenses._wide Expenses
+          .trns
+            template(v-for="category in expensesCategories")
+              router-link.itemStat(
+              :to="`/categories/${category.id}`",
+              title="Перейти в категорию")
+                .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
+                .itemStat__content
+                  .itemStat__text
+                    .itemStat__name {{ category.name }}
+                    .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
+                    .itemStat__price {{ formatMoney(category.total) }}
+                  .itemStat__graph
+                    .itemStat__graph__in._expense(:style="countWidth(category.total, expensesCategories)")
             //- trns
         //- table__cell
 
 
-        .table__cell
-          template(v-if="incomesCategories.length > 0")
-            h1.title.income._wide Incomes
-            .trns
-              template(v-for="category in incomesCategories")
-                router-link.itemStat(
-                  :to="`/categories/${category.id}`",
-                  title="Перейти в категорию")
-                  .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
-                  .itemStat__content
-                    .itemStat__text
-                      .itemStat__name {{ category.name }}
-                      .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
-                      .itemStat__price {{ formatMoney(category.total) }}
-                    .itemStat__graph
-                      .itemStat__graph__in._income(:style="countWidth(category.total, incomesCategories)")
+        .table__cell(v-if="incomesCategories.length > 0")
+          h1.title.incomes._wide Incomes
+          .trns
+            template(v-for="category in incomesCategories")
+              router-link.itemStat(
+                :to="`/categories/${category.id}`",
+                title="Перейти в категорию")
+                .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
+                .itemStat__content
+                  .itemStat__text
+                    .itemStat__name {{ category.name }}
+                    .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
+                    .itemStat__price {{ formatMoney(category.total) }}
+                  .itemStat__graph
+                    .itemStat__graph__in._income(:style="countWidth(category.total, incomesCategories)")
             //- trns
         //- table__cell
       //- table
