@@ -74,7 +74,7 @@
               router-link.itemStat(
               :to="`/categories/${category.id}`",
               title="Перейти в категорию")
-                .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
+                .itemStat__icon: .icon(:class="`icon-${category.parentId} icon-${category.id}`"): .icon__pic
                 .itemStat__content
                   .itemStat__text
                     .itemStat__name {{ category.name }}
@@ -231,8 +231,13 @@ export default {
           const total = trns
             .filter(trn => trn.categoryId === id)
             .reduce((sum, current) => sum + current.amountRub, 0)
-          const name = this.categories.find(c => c.id === id).name
-          return { id, name, total }
+          const category = this.categories.find(c => c.id === id)
+          return {
+            id,
+            parentId: category.parentId,
+            name: category.name,
+            total
+          }
         })
 
         const dataSorted = orderBy(data, d => d.total, 'desc')

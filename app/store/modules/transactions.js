@@ -20,8 +20,23 @@ const getters = {
     const categories = rootState.categories.all
     const rates = rootState.rates.all
 
+    if(!accounts || accounts.length < 0) {
+      console.error('store.transitions.getters.trns.accounts')
+      return false
+    }
+
     if(!categories || categories.length < 0) {
       console.error('store.transitions.getters.trns.categories')
+      return false
+    }
+
+    if(!trns || trns.length < 0) {
+      console.error('store.transitions.getters.trns.trns')
+      return false
+    }
+
+    if(!rates || rates.length < 0) {
+      console.error('store.transitions.getters.trns.rates')
       return false
     }
 

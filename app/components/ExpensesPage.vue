@@ -57,7 +57,7 @@
               router-link.itemStat(
                 :to="`/categories/${category.id}`",
                 title="Перейти в категорию")
-                .itemStat__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
+                .itemStat__icon: .icon(:class="`icon-${category.parentId} icon-${category.id}`"): .icon__pic
                 .itemStat__content
                   .itemStat__text
                     .itemStat__name {{ category.name }}
@@ -113,6 +113,7 @@ export default {
 
               dataCategories.push({
                 id: category.id,
+                parentId: category.parentId,
                 name: categoryName,
                 total: categoryExpenses
               })

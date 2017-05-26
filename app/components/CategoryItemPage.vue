@@ -6,6 +6,13 @@
       .name {{ category.name }}
       .sup  {{ category.id }}
 
+    .countWithChildren
+      label.checkbox
+        input.checkbox__input(type="checkbox" v-model="showChildren")
+        h1.checkbox__name Count with children categories
+      div(v-for="category in childrenCategories")
+        div {{ category.name }}
+
     .categoryStat
       .categoryStat__trns._long
         h2.ml Years
@@ -95,12 +102,12 @@
                 .itemStat._mbs
                   .itemStat__content
                     .itemStat__text
-                      .itemStat__name {{ data.month }}
+                      .itemStat__name(@click.prevent="showTrns(year, data.month)") {{ data.month }}
                       .itemStat__price
-                        .income
+                        .incomes
                           template(v-if="data.incomes > 0") {{formatMoney(data.incomes)}}
                       .itemStat__price
-                        .expense
+                        .expenses
                           template(v-if="data.expenses > 0") {{formatMoney(data.expenses)}}
 
                     template(v-if="data.incomes > 0 || data.expenses > 0")
@@ -111,6 +118,10 @@
                           .itemStat__graph__in._expense(:style="countWidthMonth(data.expenses)")
                     template(v-else)
                       .itemStat__graph: .itemStat__graph__in
+
+  .module(v-if="selectedTrnList.length > 0")
+    h1.title._wide._trns Trns history
+    TrnsList(:trns="selectedTrnList")
 </template>
 
 <script>
@@ -118,13 +129,16 @@ import { mapGetters } from 'vuex'
 import moment from 'moment'
 import orderBy from 'lodash/orderBy'
 import formatMoney from '../mixins/formatMoney'
+import TrnsList from './TrnsList.vue'
 
 export default {
   mixins: [formatMoney],
 
   data() {
     return {
-      showAll: false
+      showAll: false,
+      showChildren: false,
+      selectedTrnList: []
     }
   },
 
@@ -132,7 +146,13 @@ export default {
     ...mapGetters(['categories', 'trns']),
 
     category() {
-      return this.categories.find(a => a.id === +this.$route.params.id)
+      const categoryId = +this.$route.params.id
+      return this.categories.find(a => a.id === categoryId)
+    },
+
+    childrenCategories() {
+      const categoryId = +this.$route.params.id
+      return this.categories.filter(c => c.parentId === categoryId)
     },
 
     years() {
@@ -149,7 +169,19 @@ export default {
     },
 
     trnsList() {
-      return this.trns.filter(trn => trn.categoryId === this.category.id)
+      const categoryId = +this.$route.params.id
+
+      if (this.showChildren) {
+        const childrenIds = this.categories
+          .filter(c => c.parentId === categoryId)
+          .map(c => c.id)
+
+        return this.trns.filter(trn => {
+          return trn.categoryId === categoryId || childrenIds.indexOf(trn.categoryId) !== -1
+        })
+      } else {
+        return this.trns.filter(trn => trn.categoryId === categoryId)
+      }
     },
 
     total() {
@@ -229,6 +261,14 @@ export default {
   },
 
   methods: {
+    showTrns(year, month) {
+      this.$store.commit('showLoader')
+      const fromDate = moment(`${month}.${year}`, 'MMMM.Y').valueOf()
+      const toDate = moment(fromDate).endOf('month').valueOf()
+      this.selectedTrnList = this.trnsList.filter(t => t.date >= fromDate && t.date <= toDate)
+      this.$store.commit('disableLoader')
+    },
+
     toogleShowAll() {
       this.showAll = !this.showAll
     },
@@ -308,6 +348,8 @@ export default {
 
       return data
     }
-  }
+  },
+
+  components: { TrnsList }
 }
 </script>
