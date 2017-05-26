@@ -39,7 +39,6 @@ const store = {
 
     // update
     async updateCategory({ commit, dispatch }, category) {
-      console.log(category)
       try {
         const updatedTrn = await axios.put(`${CATEGORIES_URL}/${category.id}`, category)
         const result = updatedTrn.data
@@ -52,11 +51,11 @@ const store = {
           return true
           console.log('Category: edited!', getTrn.data)
         } else {
-          console.error('Ошибка создания категории 1')
+          console.error('Ошибка обновления категории 1', category, updatedTrn, result)
           return false
         }
       } catch (e) {
-        console.error('Ошибка создания категории 2', e)
+        console.error('Ошибка обновления категории 2', e)
         return false
       }
     },
