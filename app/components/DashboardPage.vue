@@ -78,8 +78,8 @@
                 .itemStat__content
                   .itemStat__text
                     .itemStat__name {{ category.name }}
-                    .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
-                    .itemStat__price {{ formatMoney(category.total) }}
+                    .itemStat__price._prev.sum(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
+                    .itemStat__price.sum {{ formatMoney(category.total) }}
                   .itemStat__graph
                     .itemStat__graph__in._expense(:style="countWidth(category.total, expensesCategories)")
             //- trns
@@ -97,8 +97,8 @@
                 .itemStat__content
                   .itemStat__text
                     .itemStat__name {{ category.name }}
-                    .itemStat__price._prev(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
-                    .itemStat__price {{ formatMoney(category.total) }}
+                    .itemStat__price._prev.sum(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
+                    .itemStat__price.sum {{ formatMoney(category.total) }}
                   .itemStat__graph
                     .itemStat__graph__in._income(:style="countWidth(category.total, incomesCategories)")
             //- trns

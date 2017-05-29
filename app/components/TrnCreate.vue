@@ -87,7 +87,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import toastr from 'toastr'
 import moment from 'moment'
 import uniqBy from 'lodash/uniqBy'
 import { focus } from 'vue-focus'

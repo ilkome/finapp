@@ -26,22 +26,39 @@
                 .form
                   .input
                     input.input__field(
-                      v-model.lazy="values.name = category.name",
-                      type="text" name="name")
+                      v-model.lazy="values.name = category.name", type="text" name="name")
+                  .input
+                    input.input__field(
+                      v-model.lazy="values.parentId = category.parentId", type="text" name="parentId")
                   .btn(@click="updateCategory(category, values)") Update
 
-            //- template(v-if="category.children")
-            //-   .categoryItem__children
-            //-     .categoryItem(
-            //-       v-for="childrenCategory in category.children",
-            //-       :key="childrenCategory.id")
-            //-       .categoryItem__content
-            //-         router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon: .icon(:class="`icon-${childrenCategory.id}`"): .icon__pic
-            //-         router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__name {{ childrenCategory.name }}
-            //-         .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-pencil-square-o
-            //-         .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-trash-o
-            //-
-            //-       template(v-if="editedCategory === childrenCategory.id")
+            template(v-if="category.children")
+              .categoryItem__children
+                .categoryItem(
+                  v-for="childrenCategory in category.children",
+                  :key="childrenCategory.id",
+                  :class="{_editable: editedCategory === childrenCategory.id}")
+                  .categoryItem__content
+                    router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon: .icon(:class="`icon-${childrenCategory.parentId} icon-${childrenCategory.id}`"): .icon__pic
+                    router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__name {{ childrenCategory.name }}
+                    template(v-if="editedCategory === childrenCategory.id")
+                      .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-times-circle
+                    template(v-else)
+                      .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-pencil-square-o
+                    .categoryItem__action(@click.prevent="deleteCategory(childrenCategory.id)"): .fa.fa-trash-o
+
+
+                  template(v-if="editedCategory === childrenCategory.id")
+                    .categoryItem__edit
+                      .form
+                        .input
+                          input.input__field(
+                            v-model.lazy="values.name = childrenCategory.name", type="text" name="name")
+                        .input
+                          input.input__field(
+                            v-model.lazy="values.parentId = childrenCategory.parentId", type="text" name="parentId")
+                        .btn(@click="updateCategory(editedCategory, values)") Update
+
 
       .table__cell
         .categoriesIcons._mb
@@ -58,6 +75,10 @@
             .input
               input(v-model.trim="category.name", placeholder="Write category name" type="text").input__field
               .input__label Name
+            .input
+              input(v-model.trim="category.parentId", placeholder="Write parent id" type="text").input__field
+              .input__label Parent id
+
 
             .submit
               .submit__btn(v-if="loading") Creating...
@@ -67,6 +88,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import orderBy from 'lodash/orderBy'
 import { mixin } from 'vue-focus'
 
 export default {
@@ -78,7 +100,8 @@ export default {
       filter: '',
       editedCategory: false,
       values: {
-        name: null
+        name: null,
+        parentId: 0
       },
       category: {
         name: '',
@@ -91,9 +114,7 @@ export default {
     ...mapGetters(['categories']),
 
     categoriesList() {
-      const sortedCategories = []
       let filteredCategories = []
-
       if (this.filter !== '') {
         filteredCategories = this.categories
           .filter(c => c.name.toLowerCase().search(this.filter.toLowerCase()) !== -1)
@@ -101,11 +122,10 @@ export default {
         filteredCategories = this.categories
       }
 
+      const sortedCategories = []
       const rootCategories = filteredCategories.filter(c => c.parentId === 0)
-
       rootCategories.forEach((category) => {
         const childrenCategories = filteredCategories.filter(c => c.parentId === category.id)
-
         if (childrenCategories && childrenCategories.length > 0) {
           sortedCategories.push({
             ...category,
@@ -115,7 +135,8 @@ export default {
           sortedCategories.push({ ...category })
         }
       })
-      return sortedCategories
+
+      return orderBy(sortedCategories, c => c.name, 'asc')
     }
   },
 
