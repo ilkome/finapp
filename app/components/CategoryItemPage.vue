@@ -21,11 +21,11 @@
             .itemStat__content
               .itemStat__text
                 .itemStat__name {{ data.year }}
-                .itemStat__price.income(v-if="data.incomes > 0")
+                .itemStat__price.incomes(v-if="data.incomes > 0")
                   div {{formatMoney(data.incomes)}}
-                .itemStat__price.expense
+                .itemStat__price.expenses
                   div {{formatMoney(data.expenses)}}
-                .itemStat__price(v-if="data.incomes > 0 && data.expenses > 0")
+                .itemStat__price.sum
                   div {{formatMoney(data.incomes - data.expenses)}}
               .itemStat__graph
                 template(v-if="data.incomes > 0")
@@ -48,7 +48,7 @@
                     .summaryShort__item__icon._incomes
                     .summaryShort__item__label Incomes
                     .summaryShort__item__total.incomes {{ formatMoney(total.incomes) }}
-                  .summaryShort__item
+                  .summaryShort__item(v-if="total.expenses > 0 && total.incomes > 0")
                     .summaryShort__item__icon._total
                     .summaryShort__item__label Total
                     .summaryShort__item__total.sum {{ formatMoney(total.incomes - total.expenses) }}
@@ -98,11 +98,12 @@
                     .summaryShort__item__total.sum {{ formatMoney((totalInYear(year).incomes - totalInYear(year).expenses) / 12) }}
 
             .trns
+              h1(@click.prevent="showTrns(year)")._pl {{ year }}
               template(v-for="data in dataInYear(year)")
-                .itemStat._mbs
+                .itemStat._mbs._link(@click.prevent.stop="showTrns(year, data.month)")
                   .itemStat__content
                     .itemStat__text
-                      .itemStat__name(@click.prevent="showTrns(year, data.month)") {{ data.month }}
+                      .itemStat__name {{ data.month }}
                       .itemStat__price
                         .incomes
                           template(v-if="data.incomes > 0") {{formatMoney(data.incomes)}}
@@ -119,9 +120,13 @@
                     template(v-else)
                       .itemStat__graph: .itemStat__graph__in
 
+  //- .module
+
   .module(v-if="selectedTrnList.length > 0")
     h1.title._wide._trns Trns history
-    TrnsList(:trns="selectedTrnList")
+    h2.title {{ selectedDateName }}
+    div(style="padding-left: 15px")
+      TrnsList(:trns="selectedTrnList")
 </template>
 
 <script>
@@ -138,7 +143,8 @@ export default {
     return {
       showAll: false,
       showChildren: false,
-      selectedTrnList: []
+      selectedTrnList: [],
+      selectedDateName: ''
     }
   },
 
@@ -262,11 +268,23 @@ export default {
 
   methods: {
     showTrns(year, month) {
-      this.$store.commit('showLoader')
-      const fromDate = moment(`${month}.${year}`, 'MMMM.Y').valueOf()
-      const toDate = moment(fromDate).endOf('month').valueOf()
-      this.selectedTrnList = this.trnsList.filter(t => t.date >= fromDate && t.date <= toDate)
-      this.$store.commit('disableLoader')
+      if (month) {
+        // Trns for one month
+        const fromDate = moment(`${month}.${year}`, 'MMMM.Y').valueOf()
+        const toDate = moment(fromDate).endOf('month').valueOf()
+        this.selectedTrnList = this.trnsList.filter(t => t.date >= fromDate && t.date <= toDate)
+        this.selectedDateName = `${month} ${year}`
+      } else {
+        // Trns for one year
+        const fromDate = moment(year, 'Y').valueOf()
+        const toDate = moment(fromDate).endOf('year').valueOf()
+        this.selectedTrnList = this.trnsList.filter(t => t.date >= fromDate && t.date <= toDate)
+        this.selectedDateName = `Year ${year}`
+      }
+
+      setTimeout(() => {
+        this.$scrollTo('._trns', 400, { easing: 'ease-in-out' })
+      }, 10)
     },
 
     toogleShowAll() {

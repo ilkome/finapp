@@ -22,8 +22,11 @@
           router-link(to="/trns").menuLink History
 
         a.toogleTrnCreateBtn(@click.prevent="toogleRightSidebar()", :class="{_active: showRightSidebar}")
-          .toogleTrnCreateBtn__text Create
           .toogleTrnCreateBtn__icon: .toogleTrnCreateBtn__icon__in +
+
+      transition(name="slideToLeft")
+        .rightBar(v-show="showRightSidebar")
+            TrnCreate
 
       transition(name="slide")
         router-view
