@@ -1,3 +1,66 @@
+.scrollToTop
+  cursor pointer
+  display flex
+  justify-content flex-start
+  align-items flex-start
+  position fixed
+  right 0px
+  bottom 0px
+  width 150px
+  height 150px
+  opacity .3
+  anim()
+  transform translate(100px, 100px)
+
+  &:hover
+    align-items center
+    justify-content center
+    opacity 1
+    background $color-link
+    transform translate(0, 0)
+
+// #fct
+// ===============================================
+.fastCreatTrn
+  &__content
+    padding-bottom 30px
+
+  &__day
+    margin-bottom 80px
+    padding-bottom 0px
+    border-bottom 1px solid $color-line
+    &:last-child
+      margin-bottom 0
+
+  &__addDay
+    display inline-flex
+    padding 15px 30px
+    text-transform uppercase
+    letter-spacing 1px
+    font-weight bold
+    background $color-line
+    border 1px solid $color-line
+    border-radius 3px
+    anim()
+
+    &:hover
+      border-color $color-link
+
+  &__trn
+    display flex
+    align-items center
+
+    &__item
+      flex 1 1
+      padding 0 20px
+
+      &:first-child
+        padding-left 0
+
+      &:last-child
+        padding-right 0
+
+
 .mb
   margin-bottom 60px
 
@@ -18,29 +81,7 @@
   height 100%
   background alpha($color-layout, .8)
 
-.right-bar
-  &._fixed
-    padding 40px 10px
-    border-top 2px solid $color-line
-    border-bottom 2px solid $color-line
 
-    @media $laptop
-      display flex
-      align-items center
-      z-index 5
-      max-width 552px
-      position fixed
-      right 0px
-      padding 0px 80px
-      padding-bottom 46px
-      top 46px
-      height 100%
-      background $color-sidebar
-      border none
-      border-left 2px solid $color-line
-
-    // border-bottom 1px solid $color-line
-    // display none
 
 .bg-1
 .bg-1.icon
@@ -58,22 +99,12 @@
   align-items center
   justify-content center
   position absolute
-  right 20px
+  right 0px
+  padding 0 40px
   color $color-second
 
   &:hover
     color $color-link
-
-  &__text
-    color $color-main
-    font-size 14px
-    font-weight bold
-    text-transform uppercase
-    letter-spacing 2px
-    anim()
-
-    ^[0]._active &
-      opacity 0
 
   &__icon
     display flex
@@ -87,6 +118,9 @@
     border 2px solid transparent
     border-radius 50%
     anim()
+
+    ^[0]:hover &
+      color $color-link
 
     ^[0]._active &
       margin-right 20px

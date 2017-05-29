@@ -109,7 +109,6 @@
       display flex
       flex-flow row wrap
       justify-content flex-end
-      width 130px
       padding-right 30px
       text-align right
       white-space nowrap
@@ -250,6 +249,9 @@
   &._mbs
     margin-bottom 5px
 
+  &._link
+    cursor pointer
+
   &:hover
     color $color-main
     background $color-trn-hover
@@ -279,6 +281,7 @@
 
   &__name
     flex-grow 1
+    padding-left 5px
     text-transform capitalize
     font-size 1.1rem
 
@@ -287,15 +290,14 @@
     padding-bottom 10px
 
   &__price
-    width 130px
+    min-width 115px
+    max-width 125px
+    padding-right 5px
     text-align right
-    font-size 18px
-    font-weight bold
-    $font-numbers()
-    color $color-sum
 
     &._prev
       font-weight normal
+      display none
 
       &:before
         fa(history)

@@ -40,7 +40,11 @@
   padding 10px
   color $color-second
   border-radius 3px
+  border-bottom 1px solid $color-line
   anim()
+
+  .categoryItem
+    border-bottom none
 
   &._editable
     background $color-trn-hover
@@ -66,6 +70,10 @@
     flex-grow 1
     align-items center
 
+  &__children
+    padding 10px 0 0 10px
+    margin-right -10px
+
   &__name
     color $color-second
     flex-grow 1
@@ -89,3 +97,10 @@
 
     &:last-child
       margin-right 0
+
+
+.countWithChildren
+  display inline-block
+  margin-bottom 40px
+  padding 25px
+  background $color-layout

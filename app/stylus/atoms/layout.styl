@@ -20,35 +20,34 @@ html
   letter-spacing .5px
   background $color-body
 
-.app
-  min-height 100%
+  .app
+    min-height 100%
 
-  @media $laptop
-    display flex
-    // zoom 1.1
+    @media $laptop
+      display flex
 
-.main
-  @media $laptop
-    flex-grow 1
-    // padding 130px 80px 80px
+    .main
+      @media $laptop
+        flex-grow 1
 
+    .content
+      @media $laptop
+        padding 0
+        padding-top 45px
 
-.content
-  @media $laptop
-    padding 0
-    padding-top 45px
+    .loading
+      z-index 100
+      display flex
+      align-items center
+      justify-content center
+      position fixed
+      left 0
+      top 0
+      width 100%
+      height 100%
+      color $color-main
+      font-size 2rem
+      background $color-layout
 
-
-.loading
-  z-index 100
-  display flex
-  align-items center
-  justify-content center
-  position fixed
-  left 0
-  top 0
-  width 100%
-  height 100%
-  color $color-main
-  font-size 2rem
-  background $color-layout
+      &._alpha
+        background alpha($color-layout, .6)
