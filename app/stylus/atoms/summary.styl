@@ -1,11 +1,12 @@
 // #ss
 // ===============================================
 .summaryShort
-  max-width 320px
-  margin-left -15px
+  @media $laptop
+    max-width 335px
+    margin-left -10px
 
   &._pb
-    padding-bottom 40px
+    padding-bottom 60px
 
   // #ssi
   // ===============================================
@@ -14,7 +15,7 @@
     display flex
     flex 1 1 45%
     height 45px
-    padding 0 35px
+    padding 0 10px
     align-items center
     color $color-second
     border-bottom 1px solid $color-line-account

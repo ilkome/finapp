@@ -2,7 +2,7 @@
   padding 20px
   background $color-layout
 
-label, input, button, select, textarea
+label, button, input, select, textarea
   font-family $font-primary
   border none
   background none
@@ -215,38 +215,52 @@ label, input, button, select, textarea
 // Checkbox
 // ==============================================
 .checkbox
-  width 21px
-  height 21px
-  margin 0 3px 0 0
-  vertical-align top
+  display flex
+  padding-bottom 10px
 
-  & + label
+  &__name
     cursor pointer
+    padding-left 15px
+    anim()
 
-  &:not(checked)
-    position absolute
-    opacity 0
+    &:hover
+      color $color-link
 
-    & + label
-      position relative
-      display inline-block
-      padding 0 0 0 35px
-      //font-size 14px
-
-    & + label:after
-      content ''
-      position absolute
-      top -3px
-      left 0px
-      width 21px
-      height 21px
-      background url("../img/checkbox-b.png") no-repeat
-
-  &:checked
-    //  checked
-    & + label:after
-      background-position 0 -21px
-
-    //  focus
-    & + label:before
-      position relative
+  &__input:checked
+    & + .checkbox__name
+      color $color-rub
+//   width 21px
+//   height 21px
+//   margin 0 3px 0 0
+//   vertical-align top
+//
+//   & + label
+//     cursor pointer
+//
+//   &:not(checked)
+//     position absolute
+//     opacity 0
+//
+//     & + label
+//       position relative
+//       display inline-block
+//       padding 0 0 0 35px
+//       //font-size 14px
+//
+//     & + label:after
+//       content ''
+//       position absolute
+//       top -3px
+//       left 0px
+//       width 21px
+//       height 21px
+//       background url("../img/checkbox-b.png") no-repeat
+//
+//   &:checked
+//     //  checked
+//     & + label:after
+//       background-position 0 -21px
+//
+//     //  focus
+//     & + label:before
+//       position relative

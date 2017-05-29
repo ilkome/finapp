@@ -15,18 +15,24 @@ h4
     margin-bottom 0
 
 .title
+  display flex
+  align-items center
+  justify-content flex-start
+  margin-bottom 60px
+
   &:last-child
     margin-bottom 0
 
   @media $laptop
-    display flex
-    align-items center
-    justify-content flex-start
     margin-bottom 85px
 
   h1&
-    font-size 2rem
-    letter-spacing 4px
+    font-size 1.5rem
+    letter-spacing 2px
+
+    @media $laptop
+      font-size 2rem
+      letter-spacing 4px
 
   h2&
     margin-bottom 60px
@@ -44,6 +50,9 @@ h4
 
   &._mid
     margin-bottom 45px
+
+  &._pl
+    padding-left 5px
 
   &._minus
     margin-bottom -35px
