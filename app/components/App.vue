@@ -1,16 +1,13 @@
 <template lang="pug">
 .app
-  template(v-if="$store.state.loading")
+  template(v-if="$store.state.pageLoading")
     transition(name="fade")
       h1.loading Loading...
 
   template(v-else)
-    Sidebar
+    .loading._alpha(v-if="$store.state.loader") Loading...
 
-    //- .page-blur
-    transition(name="slideToLeft")
-      .right-bar._fixed(v-show="showRightSidebar")
-          TrnCreate
+    Sidebar
 
     .main
       .topbar
@@ -53,7 +50,7 @@ export default {
     console.time('getCategories')
     await this.$store.dispatch('getCategories')
     console.timeEnd('getCategories')
-    await this.$store.commit('loading')
+    await this.$store.commit('pageLoaded')
     console.timeEnd('App')
   },
 

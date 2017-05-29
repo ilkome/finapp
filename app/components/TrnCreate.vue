@@ -68,7 +68,7 @@
           a.selectItem__dropdown__el(
             v-for="account in accounts",
             :class="{active: (account.id === values.accountId)}",
-            @click.prevent="setAccound(category.id)"
+            @click.prevent="setAccound(account.id)"
           )
             .selectItem__dropdown__el__pic
               .icon(:class="`bg-${account.id}`")
@@ -195,8 +195,7 @@ export default {
     },
 
     async addTrn() {
-      this.loading = true
-      toastr.info('Создание...')
+      this.$store.commit('showLoader')
       const time = moment().format('HH:mm:ss')
       const day = moment(this.date).format('D.MM.YY')
       const date = moment(`${day} ${time}`, 'D.MM.YY HH:mm:ss').valueOf()
@@ -239,11 +238,11 @@ export default {
       const result = await this.$store.dispatch('addTrn', values)
 
       if (result) {
-        toastr.success('Успешно создано!')
         this.values.amount = ''
         this.values.description = ''
         this.filter = ''
         this.loading = false
+        this.$store.commit('disableLoader')
       }
     },
 

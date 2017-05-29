@@ -81,9 +81,7 @@ export default {
   methods: {
     async addAccount() {
       this.loading = true
-      this.$store.commit('setAppStatus', 'Создание...')
       await this.$store.dispatch('addAccount', this.account)
-      setTimeout(() => this.$store.dispatch('setAppStatus', 'Успешно!'), 2000)
       this.loading = false
       this.account.name = ''
     },
@@ -91,9 +89,7 @@ export default {
     async deleteAccount(accountId) {
       console.log('delete account')
       this.loadingId = accountId
-      this.$store.dispatch('setAppStatus', 'Удаление...')
       await this.$store.dispatch('deleteAccount', accountId)
-      setTimeout(() => this.$store.dispatch('setAppStatus', 'Успешно!'), 2000)
       this.questionId = null
       this.loadingId = null
     },

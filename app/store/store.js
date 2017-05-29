@@ -20,8 +20,8 @@ const modules = {
 // state
 // ==============================================
 const state = {
-  loading: true,
-  appStatus: '',
+  loader: false,
+  pageLoading: true,
   filter: {
     duration: 10
   }
@@ -30,22 +30,21 @@ const state = {
 // actions dispatch
 // ==============================================
 const actions = {
-  setAppStatus({ commit }, status, timeout = true) {
-    commit('setAppStatus', status)
-    if (timeout) setTimeout(() => commit('setAppStatus', ''), 3000)
-  }
 }
 
 // mutations commit
 // ==============================================
 const mutations = {
-  loading(state) {
-    state.loading = false
+  pageLoaded() {
+    state.pageLoading = false
   },
 
-  setAppStatus(state, status) {
-    state.appStatus = status
-    console.log(state.appStatus)
+  showLoader() {
+    state.loader = true
+  },
+
+  disableLoader() {
+    state.loader = false
   },
 
   setDuration(state, duration) {

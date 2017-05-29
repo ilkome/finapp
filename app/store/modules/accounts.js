@@ -46,6 +46,7 @@ const store = {
     async fetchAccounts({ commit }) {
       const data = await getAccounts()
       commit('fetchAccounts', data)
+      return true
     },
     async addAccount({ commit }, account) {
       const newAccount = await addAccount(account)

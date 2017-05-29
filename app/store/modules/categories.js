@@ -61,14 +61,13 @@ const store = {
     },
 
     async deleteCategory({ commit, dispatch }, id) {
-      dispatch('setAppStatus', `Удаление ${id}...`, false)
       const request = await axios.delete(`${CATEGORIES_URL}/${id}`)
       const result = request.data
       if (result === 1) {
-        dispatch('setAppStatus', `Удалено ${id}`)
         commit('deleteCategory', id)
+        console.log(`Удалено ${id}`)
       } else {
-        dispatch('setAppStatus', `Не удалено ${id}`)
+        console.error(`Не удалено ${id}`)
       }
     }
   },

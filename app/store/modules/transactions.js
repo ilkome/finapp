@@ -15,6 +15,7 @@ const state = {
 // ==============================================
 const getters = {
   trns(state, getters, rootState) {
+    console.log('Trns getter: starting...')
     const trns = state.all
     const accounts = rootState.accounts.all
     const categories = rootState.categories.all
@@ -69,6 +70,8 @@ const getters = {
       const type = +trn.type
       const description = trn.description
 
+      console.log('Trns getter: finished')
+
       return {
         accountId,
         accountName,
@@ -108,14 +111,13 @@ const actions = {
 
   // add
   async addTrn({ commit, dispatch }, values) {
-    commit('setStatus', 'Создание...')
-    dispatch('setAppStatus', 'Создание...', false)
     try {
+      console.log('addTrn: creating...')
       const postData = await axios.post(TRANSACTIONS_URL, values)
-
+      console.log('addTrn: resived post date')
       if (postData.data) {
-        // few trns
         if (Array.isArray(postData.data)) {
+          // few trns
           const trns = []
           for (let trnId of postData.data) {
             const newTrns = await axios.get(`${TRANSACTIONS_URL}/${trnId}`, {
@@ -131,25 +133,23 @@ const actions = {
           commit('addTrns', trns)
         }
 
-        // one trn
         if (Number.isInteger(postData.data)) {
+          // one trn
+          console.log('addTrn: one trn')
           const getTrn = await axios.get(`${TRANSACTIONS_URL}/${postData.data}`, {
             params: { transform: 1 }
           })
+          console.log('addTrn: resived new trn')
           commit('addTrn', getTrn.data)
         }
       } else {
         console.error('Ошибка создания транзакции.')
         return false
       }
-
-      commit('setStatus', 'Транзакция создана :)')
-      dispatch('setAppStatus', 'Создано!')
-      setTimeout(() => commit('setStatus'), 2000)
+      console.log('Транзакция создана :)')
       return true
     } catch (e) {
       console.error('ошибка создания транзакции 2.')
-      dispatch('setAppStatus', 'Ошибка создания транзакции')
       return false
     }
   },
@@ -157,7 +157,6 @@ const actions = {
   // update
   async updateTrn({ commit, dispatch }, trn) {
     try {
-      commit('setStatus', 'Updating...')
       const updatedTrn = await axios.put(`${TRANSACTIONS_URL}/${trn.id}`, trn)
       const result = updatedTrn.data
 
@@ -167,34 +166,29 @@ const actions = {
           params: { transform: 1 }
         })
         await commit('updateTrn', getTrn.data)
-        await commit('setStatus', 'Updated!')
-        setTimeout(() => commit('setStatus'), 2000)
       } else {
-        dispatch('setAppStatus', 'Ошибка создания транзакции 1')
+        console.error('Ошибка обновления транзакции 1')
       }
     } catch (e) {
-      dispatch('setAppStatus', 'Ошибка создания транзакции 2')
+      console.error('Ошибка обновления транзакции 2')
     }
   },
 
   // delete
   async deleteTrn({ commit, dispatch }, id) {
-    dispatch('setAppStatus', `Удаление ${id}...`, false)
     const request = await axios.delete(`${TRANSACTIONS_URL}/${id}`)
     const result = request.data
     if (result === 1) {
-      dispatch('setAppStatus', `Удалено ${id}`)
+      console.log(`Удалено ${id}`)
       commit('deleteTrn', id)
     } else {
-      dispatch('setAppStatus', `Не удалено ${id}`)
+      console.error(`Не удалено ${id}`)
     }
   },
 
   async deleteTrns({ commit, dispatch }, ids) {
-    dispatch('setAppStatus', `Удаление ${ids}...`, false)
     const request = await axios.delete(`${TRANSACTIONS_URL}/${ids.join()}`)
     const result = request.data
-    console.log(ids, result)
 
     result.forEach((res, index) => {
       if (res > 0) {
@@ -226,9 +220,6 @@ const mutations = {
   },
   deleteTrn(state, id) {
     state.all = state.all.filter(t => t.id !== id)
-  },
-  setStatus(state, status) {
-    state.status = status
   }
 }
 
