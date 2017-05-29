@@ -7,22 +7,26 @@ const isProd = process.env.NODE_ENV === 'production'
 const plugins = []
 const entry = ['babel-polyfill', paths.js.entry] // babel-polyfill for async/await
 
-// Production
 if (isProd) {
+  // Production
   plugins.push(
     new webpack.DefinePlugin({
-      'process.env': { NODE_ENV: JSON.stringify('production') }
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
-      }
+      },
+      output: {
+        comments: false
+      },
+      sourceMap: false
     })
   )
-}
-
-// Development
-if (!isProd) {
+} else {
+  // Development
   entry.push(
     'webpack-hot-middleware/client?reload=true'
   )
@@ -58,7 +62,7 @@ module.exports = {
     ],
     extensions: ['.js', '.vue'],
     alias: {
-      vue$: 'vue/dist/vue.esm.js'
+      vue$: isProd ? 'vue/dist/vue.runtime.esm.js' : 'vue/dist/vue.esm.js'
     }
   },
 
