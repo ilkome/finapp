@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VueScrollTo from 'vue-scrollto'
 import moment from 'moment'
 import store from './store/store'
 import routes from './routes'
@@ -13,6 +14,8 @@ Vue.filter('date', formatDate)
 
 // Router
 Vue.use(VueRouter)
+Vue.use(VueScrollTo)
+
 const router = new VueRouter({
   routes,
   mode: 'history',
