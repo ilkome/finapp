@@ -81,6 +81,7 @@
     "vue": "^2.3.3",
     "vue-focus": "^2.1.0",
     "vue-router": "^2.5.3",
+    "vue-scrollto": "^2.6.8",
     "vuex": "^2.3.1",
     "vuex-router-sync": "^4.1.2"
   }
