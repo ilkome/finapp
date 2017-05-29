@@ -48,8 +48,8 @@ const store = {
             params: { transform: 1 }
           })
           await commit('updateCategory', getTrn.data)
-          return true
           console.log('Category: edited!', getTrn.data)
+          return true
         } else {
           console.error('Ошибка обновления категории 1', category, updatedTrn, result)
           return false
@@ -91,7 +91,7 @@ const store = {
 
     deleteCategory(state, id) {
       state.all = state.all.filter(c => c.id !== id)
-    },
+    }
   }
 }
 
