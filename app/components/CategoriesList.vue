@@ -126,13 +126,16 @@ export default {
     },
 
     async addCategory() {
-      this.loading = true
+      this.$store.commit('showLoader')
       await this.$store.dispatch('addCategory', this.category)
       this.category.name = ''
-      this.loading = false
+      this.category.parentId = ''
+      this.$store.commit('disableLoader')
     },
 
+    // переделать
     async updateCategory(category, values) {
+      this.$store.commit('showLoader')
       const updatedCategory = {
         ...category,
         ...values
@@ -140,6 +143,7 @@ export default {
       const status = await this.$store.dispatch('updateCategory', updatedCategory)
       if (status) {
         this.editedCategory = false
+        this.$store.commit('disableLoader')
       }
     },
 

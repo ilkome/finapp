@@ -58,8 +58,10 @@ export default {
       // this.$emit('toogleTrn', id)
     },
 
-    deleteTrn(id) {
-      this.$store.dispatch('deleteTrn', id)
+    async deleteTrn(id) {
+      this.$store.commit('showLoader')
+      await this.$store.dispatch('deleteTrn', id)
+      this.$store.commit('disableLoader')
     },
 
     question(accountId) {
