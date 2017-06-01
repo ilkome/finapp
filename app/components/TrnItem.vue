@@ -53,15 +53,12 @@ export default {
   },
 
   methods: {
-    toogleTrn(id) {
-      // this.selected = !this.selected
-      // this.$emit('toogleTrn', id)
-    },
-
     async deleteTrn(id) {
+      console.group('TrnItem: deleteTrn')
       this.$store.commit('showLoader')
       await this.$store.dispatch('deleteTrn', id)
       this.$store.commit('disableLoader')
+      console.groupEnd()
     },
 
     question(accountId) {

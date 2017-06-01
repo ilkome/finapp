@@ -6,7 +6,7 @@
       .name {{ category.name }}
       .sup  {{ category.id }}
 
-    .countWithChildren
+    .countWithChildren(v-if="childrenCategories.length > 0")
       label.checkbox
         input.checkbox__input(type="checkbox" v-model="showChildren")
         h1.checkbox__name Count with children categories

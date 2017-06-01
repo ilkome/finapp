@@ -33,41 +33,90 @@ const store = {
     },
 
     async addCategory({ commit }, category) {
-      const newCategory = await addCategory(category)
-      commit('addCategory', newCategory)
+      console.log('category:', category)
+
+      if (!category.name) {
+        console.error('No category name')
+        return false
+      }
+
+      try {
+        const formatedCategory = {
+          name: category.name,
+          parentId: category.parentId ? category.parentId : 0
+        }
+        const postData = await axios.post(`${CATEGORIES_URL}`, formatedCategory)
+        console.log('post:', postData)
+        console.log('post.data:', postData.data)
+
+        if (postData.data > 0) {
+          const getCategory = await axios.get(`${CATEGORIES_URL}/${postData.data}`, {
+            params: { transform: 1 }
+          })
+          console.log('getCategory.data:', getCategory.data)
+
+          if (getCategory.data) {
+            commit('addCategory', getCategory.data)
+            return true
+          } else {
+            console.error('getCategory.data')
+            return false
+          }
+        } else {
+          console.error('postData.data')
+          return false
+        }
+      } catch (error) {
+        console.error(error)
+        return false
+      }
     },
 
     // update
     async updateCategory({ commit, dispatch }, category) {
       try {
-        const updatedTrn = await axios.put(`${CATEGORIES_URL}/${category.id}`, category)
-        const result = updatedTrn.data
-        // if ok
-        if (result === 1) {
-          const getTrn = await axios.get(`${CATEGORIES_URL}/${category.id}`, {
+        console.log(category)
+        const postData = await axios.put(`${CATEGORIES_URL}/${category.id}`, category)
+        console.log('post:', postData)
+        console.log('post.number:', postData.data)
+
+        if (postData.data === 1) {
+          const getCategory = await axios.get(`${CATEGORIES_URL}/${category.id}`, {
             params: { transform: 1 }
           })
-          await commit('updateCategory', getTrn.data)
-          console.log('Category: edited!', getTrn.data)
-          return true
+          console.log('getCategory.data:', getCategory.data)
+
+          if (getCategory.data) {
+            commit('updateCategory', getCategory.data)
+            return true
+          } else {
+            console.error('updateCategory.data')
+            return false
+          }
         } else {
-          console.error('Ошибка обновления категории 1', category, updatedTrn, result)
+          console.error('postData.data')
           return false
         }
-      } catch (e) {
-        console.error('Ошибка обновления категории 2', e)
+      } catch (error) {
+        console.error(error)
         return false
       }
     },
 
     async deleteCategory({ commit, dispatch }, id) {
+      console.log('id:', id)
       const request = await axios.delete(`${CATEGORIES_URL}/${id}`)
+      console.log('delete:', request)
+      console.log('delete.data:', request.data)
+
       const result = request.data
       if (result === 1) {
+        console.log('Ok!')
         commit('deleteCategory', id)
-        console.log(`Удалено ${id}`)
+        return true
       } else {
-        console.error(`Не удалено ${id}`)
+        console.error('Not ok')
+        return false
       }
     }
   },

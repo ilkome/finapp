@@ -194,6 +194,7 @@ export default {
     },
 
     async addTrn() {
+      console.group('TrnCreate: addTrn')
       this.$store.commit('showLoader')
       const time = moment().format('HH:mm:ss')
       const day = moment(this.date).format('D.MM.YY')
@@ -205,8 +206,7 @@ export default {
         this.errors = 'Пусто'
         this.loading = false
         return false
-      }
-      else {
+      } else {
         // Number
         if (+this.values.amount > 0) {
           this.errors = 'Меньше нуля'
@@ -215,12 +215,11 @@ export default {
             amount: +this.values.amount,
             date
           }
-        }
-        // Array
-        else {
+        } else {
+          // Array
           const amountsArray = this.values.amount.split(',')
           values = []
-          for (let value of amountsArray) {
+          for (const value of amountsArray) {
             if (+value.trim() > 0) {
               values.push({
                 ...this.values,
@@ -243,6 +242,7 @@ export default {
         this.loading = false
         this.$store.commit('disableLoader')
       }
+      console.groupEnd()
     },
 
     closeDropdown() {
