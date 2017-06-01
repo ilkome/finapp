@@ -73,17 +73,15 @@
           .panel__loader(:class="{_visible: loading}"): .fa.fa-spinner
           .panel__content
             .input
-              input(v-model.trim="category.name", placeholder="Write category name" type="text").input__field
+              input(v-model.trim="newCategory.name", placeholder="Write category name" type="text").input__field
               .input__label Name
             .input
-              input(v-model.trim="category.parentId", placeholder="Write parent id" type="text").input__field
+              input(v-model.trim="newCategory.parentId", placeholder="Write parent id" type="text").input__field
               .input__label Parent id
-
 
             .submit
               .submit__btn(v-if="loading") Creating...
-              .submit__btn(v-else @click.prevent="addCategory()") Create category
-
+              .submit__btn(v-else @click.prevent="addCategory(newCategory)") Create category
 </template>
 
 <script>
@@ -92,7 +90,7 @@ import orderBy from 'lodash/orderBy'
 import { mixin } from 'vue-focus'
 
 export default {
-  mixins: [ mixin ],
+  mixins: [mixin],
 
   data() {
     return {
@@ -103,10 +101,10 @@ export default {
         name: null,
         parentId: 0
       },
-      category: {
+      newCategory: {
         name: '',
         parentId: 0
-      },
+      }
     }
   },
 
@@ -146,30 +144,39 @@ export default {
       else this.editedCategory = categoryId
     },
 
-    async addCategory() {
+    async addCategory(category) {
+      console.group('CategoriesList: addCategory')
       this.$store.commit('showLoader')
-      await this.$store.dispatch('addCategory', this.category)
-      this.category.name = ''
-      this.category.parentId = ''
-      this.$store.commit('disableLoader')
+      const result = await this.$store.dispatch('addCategory', category)
+      if (result) {
+        this.newCategory.name = ''
+        this.newCategory.parentId = ''
+        this.$store.commit('disableLoader')
+      }
+      console.groupEnd()
     },
 
-    // переделать
     async updateCategory(category, values) {
+      console.group('CategoriesList: updateCategory')
       this.$store.commit('showLoader')
       const updatedCategory = {
         ...category,
         ...values
       }
-      const status = await this.$store.dispatch('updateCategory', updatedCategory)
-      if (status) {
+      const result = await this.$store.dispatch('updateCategory', updatedCategory)
+      if (result) {
         this.editedCategory = false
         this.$store.commit('disableLoader')
       }
+      console.groupEnd()
     },
 
     async deleteCategory(categoryId) {
-      const status = await this.$store.dispatch('deleteCategory', +categoryId)
+      console.group('CategoriesList: deleteCategory')
+      this.$store.commit('showLoader')
+      await this.$store.dispatch('deleteCategory', +categoryId)
+      this.$store.commit('disableLoader')
+      console.groupEnd()
     }
   }
 }
