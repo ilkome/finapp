@@ -1,5 +1,5 @@
 <template lang="pug">
-.item(@click.stop="toogleTrn(trn.id)", :class="{_selected: selected, _editable: trn.id === editedTrn}")
+.item(class="{_selected: selected, _editable: trn.id === editedTrn}")
   .item__content
     router-link.item__el(
       :to="`/categories/${trn.categoryId}`",
