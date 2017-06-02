@@ -5,13 +5,13 @@
       .account
         .accountTitle Accounts
         .accountContent
-          template(v-for="(account, index) in accounts")
+          template(v-for="(account, index) in accountsList")
             template(v-if="index < visibleAccounts")
               router-link.accountContentItem._circle(
                   :to="`/accounts/${account.id}`",
                   :class="`account${account.id}`"
                 )
-                .accountContentItemLabel {{ account.name }} <sup>{{ account.id }}</sup>
+                .accountContentItemLabel {{ account.name }}
                 .accountContentItemTotal
                   template(v-if="account.total > 0")
                     .accountContentItemTotalIn {{ formatMoney(account.totalRub) }}
@@ -21,8 +21,8 @@
 
         template(v-if="accounts.length > visibleAccounts")
           .accountSidebar__showAll(@click="setVisibleAccounts('all')") Show all
-        template(v-if="visibleAccounts > 4")
-          .accountSidebar__showAll(@click="setVisibleAccounts(4)") Show only 4 accounts
+        template(v-if="visibleAccounts > 5")
+          .accountSidebar__showAll(@click="setVisibleAccounts(5)") Show only 5 accounts
 
       .account
         .accountTitle Summary
@@ -42,6 +42,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import orderBy from 'lodash/orderBy'
 import formatMoney from '../mixins/formatMoney'
 
 export default {
@@ -49,15 +50,19 @@ export default {
 
   data() {
     return {
-      visibleAccounts: 4
+      visibleAccounts: 5
     }
   },
 
   computed: {
     ...mapGetters(['accounts', 'rates']),
 
+    accountsList() {
+      return orderBy(this.accounts, a => a.order, 'asc')
+    },
+
     total() {
-      const accounts = this.accounts.filter(a => a.id === 1 || a.id === 2 || a.id === 3 || a.id === 4)
+      const accounts = this.accounts
       return accounts.reduce((sum, account) => sum + account.totalRub, 0)
     }
   },
