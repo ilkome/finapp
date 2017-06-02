@@ -47,14 +47,10 @@ export default {
   async created() {
     // should to be in this order because fetchTrns depends on others data
     await this.$store.dispatch('fetchRates')
-    console.time('App')
     await this.$store.dispatch('fetchAccounts')
-    await this.$store.dispatch('fetchTrns')
-    console.time('getCategories')
     await this.$store.dispatch('getCategories')
-    console.timeEnd('getCategories')
+    await this.$store.dispatch('fetchTrns')
     await this.$store.commit('pageLoaded')
-    console.timeEnd('App')
   },
 
   methods: {
