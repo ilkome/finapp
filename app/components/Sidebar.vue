@@ -62,7 +62,7 @@ export default {
     },
 
     total() {
-      const accounts = this.accounts
+      const accounts = this.accounts.filter(a => a.countTotal === 1)
       return accounts.reduce((sum, account) => sum + account.totalRub, 0)
     }
   },
