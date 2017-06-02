@@ -3,12 +3,53 @@ import orderBy from 'lodash/orderBy'
 import { getTransactions } from '../../api/api'
 import { TRANSACTIONS_URL } from '../../constants'
 
+function formatTrn(trn) {
+  const accountId = +trn.accountId
+  const categoryId = +trn.categoryId
+  const currency = trn.currency
+
+  const account = accounts.find(a => a.id === accountId)
+  const accountName = (account && account.name) ? account.name : 'Account name not found'
+  if (!account) console.error('store.transitions.getters.trns.account')
+
+  const category = categories.find(cat => cat.id === categoryId)
+  const categoryName = (category && category.name) ? category.name : 'Category name not found'
+  if (!category) console.error('store.transitions.getters.trns.category')
+
+  let rate = 0
+  if (currency !== 'RUB') {
+    rate = (rates && rates[currency]) ? rates[currency] : false
+    if (!rate) console.error('store.transitions.getters.trns.rate')
+  }
+
+  const amount = Math.abs(trn.amount)
+  const amountRub = currency === 'RUB'
+    ? Math.abs(trn.amount)
+    : Math.floor(Math.abs(trn.amount / rate))
+  const date = +trn.date
+  const id = +trn.id
+  const type = +trn.type
+  const description = trn.description
+
+  return {
+    accountId,
+    accountName,
+    amount,
+    amountRub,
+    categoryId,
+    categoryName,
+    currency,
+    date,
+    id,
+    type,
+    description
+  }
+}
+
 // state
 // ======================
 const state = {
-  all: [],
-  last: {},
-  status: ''
+  all: []
 }
 
 // getters
@@ -33,7 +74,6 @@ const actions = {
   // Fetch
   async fetchTrns({ commit, state, rootState }) {
     const trns = await getTransactions()
-    console.log('Trns getter: starting...')
     const accounts = rootState.accounts.all
     const categories = rootState.categories.all
     const rates = rootState.rates.all
@@ -87,8 +127,6 @@ const actions = {
       const type = +trn.type
       const description = trn.description
 
-      console.log('Trns getter: finished')
-
       return {
         accountId,
         accountName,
@@ -103,9 +141,7 @@ const actions = {
         description
       }
     })
-
-    const orderedTrns = orderBy(formatedTrns, 'date', 'desc')
-    commit('fetchTrns', orderedTrns)
+    commit('fetchTrns', formatedTrns)
   },
 
   // add
