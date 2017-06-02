@@ -12,7 +12,6 @@
     .main
       .topbar
         nav.menu
-          //- a.menuLink(@click="back()") ← Back
           router-link(to="/" exact).menuLink Dashboard
           router-link(to="/summary").menuLink Summary
           router-link(to="/incomes").menuLink Incomes
@@ -23,7 +22,6 @@
 
         a.toogleTrnCreateBtn(@click.prevent="toogleRightSidebar()", :class="{_active: showRightSidebar}")
           .toogleTrnCreateBtn__icon: .toogleTrnCreateBtn__icon__in +
-
       transition(name="slideToLeft")
         .rightBar(v-show="showRightSidebar")
             TrnCreate

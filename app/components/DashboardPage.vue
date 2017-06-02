@@ -140,7 +140,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['categories', 'trns']),
+    ...mapGetters(['categories']),
 
     duration() {
       return this.$store.state.filter.duration
@@ -154,12 +154,13 @@ export default {
     },
 
     trnsList() {
-      return this.trns
+      const trns = this.$store.state.trns.all
         .filter(trn =>
           trn.categoryId !== 62 && // disable category 'Перевод'
           moment(trn.date) >= this.date.from &&
           moment(trn.date) <= this.date.to
       )
+      return orderBy(trns, 'date', 'desc')
     },
 
     summary() {
@@ -173,7 +174,7 @@ export default {
 
       const fromDate = moment(this.date.from).subtract(this.duration, 'days').startOf('day').valueOf()
       const toDate = moment(this.date.from).subtract(1, 'days').endOf('day').valueOf()
-      const prevTrns = this.trns
+      const prevTrns = this.$store.state.trns.all
         .filter(t =>
           t.categoryId !== 62 &&
           moment(t.date) >= fromDate &&
@@ -249,7 +250,7 @@ export default {
     getPrevData(categoryId, prevTotal) {
       const fromDate = moment(this.date.from).subtract(this.duration, 'days').startOf('day').valueOf()
       const toDate = moment(this.date.from).subtract(1, 'days').endOf('day').valueOf()
-      const trns = this.trns
+      const trns = this.$store.state.trns.all
         .filter(t =>
           t.categoryId !== 62 &&
           moment(t.date) >= fromDate &&
