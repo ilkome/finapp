@@ -109,6 +109,8 @@
       display flex
       flex-flow row wrap
       justify-content flex-end
+      min-width 125px
+      max-width 145px
       padding-right 30px
       text-align right
       white-space nowrap
@@ -294,13 +296,16 @@
     max-width 125px
     padding-right 5px
     text-align right
+    color $color-sum
 
     &._prev
-      font-weight normal
       display none
+
+      @media $laptop
+        display block
+        opacity .6
 
       &:before
         fa(history)
         content "\f1da"
         padding-right 10px
-        opacity .5
