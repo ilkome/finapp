@@ -16,7 +16,7 @@
 
     .table
       .table__cell(v-if="summary.expenses > 0 || summary.incomes > 0")
-        h2 This days
+        h2 Current {{ duration }} days
         .summaryShort
           .summaryShort__item
             .summaryShort__item__icon._incomes
