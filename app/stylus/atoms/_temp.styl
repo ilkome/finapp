@@ -1,3 +1,78 @@
+.stat
+  display flex
+  align-items center
+  justify-content space-between
+  padding-top 80px
+  margin-left -25px
+
+  &__toogleShowGraph
+    margin-top 20px
+    display inline-flex
+    padding 15px 25px
+    margin-right 15px
+    color $color-main
+    font-size .8rem
+    text-transform uppercase
+    letter-spacing 2px
+    background $color-line
+    border 1px solid $color-body
+    border-radius 3px
+    cursor pointer
+    anim()
+
+    &:hover
+      border-color $color-link
+
+  &__item
+    flex 1 0 auto
+    padding 20px 0px
+    anim()
+
+    &._compact
+      padding 0
+
+      .stat__values
+      .stat__graph
+        max-width none
+
+    &:last-child
+      margin-right 0
+
+    &:hover
+      background #111
+
+  &__values
+    max-width 70px
+    margin 0 auto
+    text-align right
+    padding-top 10px
+    .incomes
+    .expenses
+      font-size .9rem
+
+  &__graph
+    max-width 70px
+    margin 0 auto
+    display flex
+    align-items flex-end
+    height 100px
+
+    &__in
+      flex 1 1 auto
+
+      &._incomes
+        margin 0 2px
+        background $color-income
+
+      &._expenses
+        margin 0 2px
+        background $color-expense
+
+      &._empty
+        height 1px
+        margin 0 2px
+        background $color-line
+
 // #fct
 // ===============================================
 .fastCreatTrn
