@@ -14,7 +14,6 @@
             a.dropdown__link(@click.prevent="setDuration(day)", :class="{_active: duration === day}") {{ day }}
     //- title
 
-
     .table
       .table__cell(v-if="summary.expenses > 0 || summary.incomes > 0")
         h2 This days
@@ -57,6 +56,44 @@
         //- summaryShort
       //- table__cell
     //- table
+
+    .stat
+      .stat__item(v-for="data in getPrevData2")
+        .stat__graph
+          template(v-if="data.incomes > 0")
+            .stat__graph__in._incomes(:style="countHeightPeriods(data.incomes)")
+          template(v-else)
+            .stat__graph__in._empty
+
+          template(v-if="data.expenses > 0")
+            .stat__graph__in._expenses(:style="countHeightPeriods(data.expenses)")
+          template(v-else)
+            .stat__graph__in._empty
+
+        .stat__values
+          .incomes {{ formatMoney(data.incomes) }}
+          .expenses {{ formatMoney(data.expenses) }}
+
+    transition(name="slide")
+      div(v-if="showGraph")
+        .stat
+          .stat__item._compact(v-for="data in getPrevData2")
+            .stat__graph
+              template(v-if="data.incomes > 0")
+                .stat__graph__in._incomes(:style="countHeightPeriods(data.incomes)")
+              template(v-else)
+                .stat__graph__in._empty
+
+        .stat
+          .stat__item._compact(v-for="data in getPrevData2")
+            .stat__graph
+              template(v-if="data.expenses > 0")
+                .stat__graph__in._expenses(:style="countHeightPeriods(data.expenses)")
+              template(v-else)
+                .stat__graph__in._empty
+
+    .stat__toogleShowGraph(@click.prevent="toogleShowGraph()") {{ showGraph ? 'Hide graphs' : 'Show more graphs'}}
+
   //- module
 
   template(v-if="(summary.expenses || summary.incomes) > 0")
@@ -78,7 +115,7 @@
                 .itemStat__content
                   .itemStat__text
                     .itemStat__name {{ category.name }}
-                    .itemStat__price._prev.sum(v-if="getPrevData(category.id, category.total) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
+                    .itemStat__price._prev.sum(v-if="getPrevData(category.id) > 0") {{ formatMoney(getPrevData(category.id, category.total)) }}
                     .itemStat__price.sum {{ formatMoney(category.total) }}
                   .itemStat__graph
                     .itemStat__graph__in._expense(:style="countWidth(category.total, expensesCategories)")
@@ -135,7 +172,8 @@ export default {
       showedTab: 'summary',
       showDropdown: false,
       editTrnId: null,
-      days: [1, 3, 5, 10, 15, 30, 99999999]
+      days: [1, 3, 5, 10, 15, 30, 99999999],
+      showGraph: false
     }
   },
 
@@ -203,12 +241,55 @@ export default {
 
     incomesCategories() {
       return this.geCategoryData('incomes')
+    },
+
+    getPrevData2() {
+      const periodData = []
+
+      for (let period = 1; period <= 10; period++) {
+        const fromDuration = this.duration * period - 1
+        const toDuaration = this.duration * period - this.duration
+
+        const fromDate = moment().subtract(fromDuration, 'days').startOf('day').valueOf()
+        const toDate = moment().subtract(toDuaration, 'days').endOf('day').valueOf()
+
+        const prevTrns = this.$store.state.trns.all
+          .filter(t =>
+            t.categoryId !== 62 &&
+            moment(t.date) >= fromDate &&
+            moment(t.date) <= toDate)
+        const incomes = prevTrns
+          .filter(t => t.type === 1)
+          .reduce((sum, current) => sum + current.amountRub, 0)
+        const expenses = prevTrns
+          .filter(t => t.type === 0)
+          .reduce((sum, current) => sum + current.amountRub, 0)
+        const total = incomes - expenses
+
+        periodData.push({
+          period,
+          incomes,
+          expenses,
+          total
+        })
+      }
+
+      const dataSorted = orderBy(periodData, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
+      const biggest = dataSorted[0].incomes > dataSorted[0].expenses ? dataSorted[0].incomes : dataSorted[0].expenses
+      console.log(biggest)
+
+      return periodData
     }
   },
 
   methods: {
     changeTab(tab) {
       this.showedTab = tab
+    },
+
+    toogleShowGraph() {
+      console.log(1);
+      this.showGraph = !this.showGraph
     },
 
     getTotal(trns) {
@@ -247,7 +328,7 @@ export default {
       return false
     },
 
-    getPrevData(categoryId, prevTotal) {
+    getPrevData(categoryId) {
       const fromDate = moment(this.date.from).subtract(this.duration, 'days').startOf('day').valueOf()
       const toDate = moment(this.date.from).subtract(1, 'days').endOf('day').valueOf()
       const trns = this.$store.state.trns.all
@@ -266,6 +347,22 @@ export default {
       const width = total / trns[0].total * 100
       const renderWidth = width > 0 ? width : 0
       return { width: `calc(${renderWidth}%)` }
+    },
+
+    countHeightPeriods(value) {
+      const dataSorted = orderBy(this.getPrevData2, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
+      const biggest = dataSorted[0].incomes > dataSorted[0].expenses ? dataSorted[0].incomes : dataSorted[0].expenses
+
+      const height = value / biggest * 100
+      let renderHeight
+      if (height > 0) {
+        renderHeight = height > 1 ? height : 1
+      } else {
+        renderHeight = 0
+      }
+      return {
+        height: `calc(${renderHeight}%)`
+      }
     },
 
     setDuration(duration) {
