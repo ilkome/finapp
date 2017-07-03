@@ -7,7 +7,10 @@ h1, h2, h3, h4, h5, h6
   font-weight bold
   letter-spacing 2px
   text-transform uppercase
-  text-shadow 3px 3px black
+  // text-shadow 2px 2px $color-header-shaddow
+
+  &._marginBottomSmall
+    margin-bottom 1rem
 
 h4
   font-size 1rem
@@ -16,8 +19,6 @@ h4
 
 .title
   display flex
-  align-items center
-  justify-content flex-start
   margin-bottom 60px
 
   &:last-child
@@ -39,8 +40,17 @@ h4
     font-size 1.6rem
     letter-spacing 2px
 
-  &._incomes
-    // color $color-income
+  &._dashboard
+    margin-bottom 15px
+
+  &._items
+    margin-bottom 10px
+
+  &._mrg
+    margin-bottom 65px
+
+  &._link
+    cursor pointer
 
   &._trns
     color $color-rub
@@ -50,6 +60,12 @@ h4
 
   &._mid
     margin-bottom 45px
+
+  &._mbm
+    margin-bottom 3rem
+
+  &._mbs
+    margin-bottom 2rem
 
   &._pl
     padding-left 5px
@@ -66,7 +82,6 @@ h4
 
   &._border
     padding-bottom 10px
-    margin-bottom 10px
     border-bottom 1px solid $color-line-account
 
   &._wide
@@ -77,8 +92,14 @@ h4
     display inline-flex
     cursor pointer
 
+  &__sub
+    padding-left 10px
+    margin-bottom 0
+    color $color-main
+
   .name
     text-transform none
+
     @media $laptop
       padding-left 15px
 
@@ -86,12 +107,12 @@ h4
     color $color-rub
 
   .sup
-    opacity .1
+    opacity .01
     color $color-second
     font-size 1rem
-    margin-top -15px
+    margin-top -10px
     letter-spacing normal
     anim()
 
     ~/:hover ^[1..-1]
-      opacity 2
+      opacity 1

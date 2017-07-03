@@ -43,9 +43,9 @@ const store = {
   },
 
   actions: {
-    async fetchAccounts({ commit }) {
+    async getAccounts({ commit }) {
       const data = await getAccounts()
-      commit('fetchAccounts', data)
+      commit('getAccounts', data)
     },
     async addAccount({ commit }, account) {
       const newAccount = await addAccount(account)
@@ -60,7 +60,7 @@ const store = {
   },
 
   mutations: {
-    fetchAccounts(state, data) {
+    getAccounts(state, data) {
       state.all = data
     },
     addAccount(state, account) {

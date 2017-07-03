@@ -8,11 +8,15 @@ html
   // macos
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
+  font-size 12px
+
+  @media $laptop
+    font-size 16px
 
 .body
   overflow-y auto
   height 100%
-  min-width 320px
+  min-width 360px
   margin 0
   $font-primary()
   color $color-main
@@ -28,26 +32,42 @@ html
 
     .main
       @media $laptop
+        overflow hidden
         flex-grow 1
 
     .content
       @media $laptop
-        padding 0
         padding-top 45px
 
     .loading
-      z-index 100
       display flex
       align-items center
       justify-content center
       position fixed
+      z-index 100
       left 0
       top 0
       width 100%
       height 100%
       color $color-main
-      font-size 2rem
-      background $color-layout
+      font-size 3rem
+      // background $color-layout
+      background alpha($color-layout, .9)
 
-      &._alpha
-        background alpha($color-layout, .6)
+      &__in
+        display block
+        text-align center
+
+      &__name
+        padding-bottom 4rem
+        &._error
+          color red
+
+      &__update
+        cursor pointer
+        display inline-flex
+        border-bottom 1px solid $color-link
+        anim()
+
+        &:hover
+          color $color-link

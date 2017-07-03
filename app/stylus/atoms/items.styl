@@ -2,7 +2,7 @@
   margin-bottom 60px
   margin-left -15px
   max-width 550px
-  overflow hidden
+  overflow-x auto
 
 
 // Item
@@ -20,23 +20,12 @@
     color $color-main
     background $color-trn-hover
 
-    ._action
-      opacity 1
-
   &:first-child
     border-top 0
 
   &._selected
     border-top-color $color-body
     background alpha(white, .04) !important
-
-    ._action
-      display none
-
-  &._editable
-    background $color-sidebar
-    margin-bottom 20px
-
 
   // item__edit
   // ===============================================
@@ -66,8 +55,7 @@
       text-overflow ellipsis
 
     &._action
-      opacity 0
-      width 55px
+      width 56px
       justify-content center
       font-size 1.5rem
       cursor pointer
@@ -81,8 +69,11 @@
 
     &._category
       flex 1 1
-      // max-width 130px
       overflow hidden
+
+    &._date
+      margin-left 0
+      text-align left
 
     &._delete
       padding-right 10px
@@ -96,7 +87,6 @@
 
     &._nopadding
       padding 10px 0
-      // margin-bottom 10px
 
     &._pad
       padding-right 16px
@@ -109,15 +99,9 @@
       display flex
       flex-flow row wrap
       justify-content flex-end
-      min-width 125px
-      max-width 145px
+      width 145px
       padding-right 30px
       text-align right
-      white-space nowrap
-      font-size 18px
-      font-weight bold
-      $font-numbers()
-      color $color-sum
 
       &:last-child
         padding-right 0
@@ -134,8 +118,11 @@
       position relative
 
     &._question
+      display flex
+      justify-content flex-end
       flex-grow 1
-      padding-left 5px
+      margin 0
+      padding 0
       font-size 1.2rem
       color $color-expense
 
@@ -238,12 +225,18 @@
 // #is
 .itemStat
   min-width 300px
-  display flex
-  align-items center
-  padding 10px
   color $color-second
+  border 2px solid transparent
   border-radius 3px
   anim()
+
+  &._opened
+    margin-bottom 15px
+    background $color-trn-hover
+    border-color $color-line
+
+    &:last-child
+      margin-bottom 0
 
   &._mb
     margin-bottom 20px
@@ -255,16 +248,24 @@
     cursor pointer
 
   &:hover
-    color $color-main
     background $color-trn-hover
+    border-color $color-rub
+
+  &__in
+    display flex
+    align-items center
+    padding 15px
 
   &__icon
     padding-right 15px
+    .icon:hover
+      background $color-link
 
   &__content
     display flex
     flex-flow column nowrap
     flex-grow 1
+    cursor pointer
 
   &__graph
     flex-grow 1
@@ -296,16 +297,7 @@
     max-width 125px
     padding-right 5px
     text-align right
-    color $color-sum
 
-    &._prev
-      display none
-
-      @media $laptop
-        display block
-        opacity .6
-
-      &:before
-        fa(history)
-        content "\f1da"
-        padding-right 10px
+  &__trns
+    cursor default
+    padding 0 15px 0

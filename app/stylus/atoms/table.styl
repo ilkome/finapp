@@ -13,9 +13,33 @@
     @media $laptop
       padding-bottom 80px
 
+    @media $pc
+      flex 1 1
+      padding-bottom 0
+
     &:last-child
       padding-bottom 0
 
-    @media $pc
-      flex 0 1 calc(50% - 80px)
-      padding-bottom 0
+    &._maxWidth
+      @media $pc
+        max-width calc(50% - 60px)
+
+    &._statistic
+      @media $pc
+        max-width inherit
+        padding-left 120px
+        overflow-x hidden
+
+    &._notGrow
+      flex-basis auto
+      flex-grow 1
+
+      @media $pc
+        flex-grow 0
+
+    &._grow
+      flex-basis auto
+      flex-grow 1
+
+      @media $pc
+        flex-grow 1

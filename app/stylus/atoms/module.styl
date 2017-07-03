@@ -1,25 +1,19 @@
 .module
-  padding 35px 20px
+  padding 35px 10px
   padding-bottom 40px
   border-bottom 3px solid alpha(black, .7)
   overflow-x auto
-  max-width 100vw
+
 
   @media $laptop
-    padding 85px 80px
+    padding 65px 60px
     padding-bottom 90px
-    max-width calc(100vw - 280px)
 
-  @media $pc
-    max-width calc(100vw - 300px)
+  &:last-child
+    border-bottom none
 
   &._bg
     background $color-layout
 
   &__in
     display flex
-
-  // #mc
-  &__cell
-    padding-right 100px
-    min-width 550px

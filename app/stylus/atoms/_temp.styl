@@ -1,51 +1,122 @@
+.trnItem
+  position relative
+
+.gridTable
+  display grid
+  grid-template-columns repeat(auto-fit, minmax(320px, 1fr))
+  grid-column-gap 100px
+
+  &__item
+    max-width 500px
+
+.grid
+  display grid
+  grid-template-columns minmax(100px, auto) minmax(65px, auto) 1fr auto auto
+  grid-column-gap 15px
+  padding 0
+  border 1px solid transparent
+  border-top 1px solid $color-line
+  anim()
+
+  &._editable
+    border 1px solid $color-rub
+    border-radius 3px
+
+  &._updated
+    border 1px solid $color-income
+    border-radius 3px
+
+  &__item
+    align-self center
+
+    &._description
+      font-size .8rem
+
+    &._price
+      text-align right
+      padding-right 5px
+      line-height 1.3rem
+
+    &._none
+      display none
+
+    &__date
+      font-size .8rem
+      padding-bottom 5px
+
+    &__account
+      font-size .9rem
+      white-space nowrap
+
+    &._action
+      width 46px
+      opacity .2
+      cursor pointer
+      padding 15px 10px
+      font-size 1.5rem
+      anim()
+
+      &:hover
+        opacity 1
+        color $color-main
+
+.yearStat
+  padding-right 100px
+  width 420px
+
+input.flatpickr-input
+  opacity 0
+  width 0
+  height 0
+  padding 0
+  margin 0
+
+.flatpickr.control
+  margin 0
+
+
 .stat
-  display flex
-  align-items center
-  justify-content space-between
-  padding-top 80px
-  margin-left -25px
   opacity .7
   anim()
+  border 1px solid $color-line-layout
+  overflow-x auto
+
   &:hover
     opacity 1
 
-  &__toogleShowGraph
-    margin-top 20px
-    display inline-flex
-    padding 15px 25px
-    margin-right 15px
-    color $color-main
-    font-size .8rem
-    text-transform uppercase
-    letter-spacing 2px
-    background $color-line
-    border 1px solid $color-body
-    border-radius 3px
-    cursor pointer
-    anim()
+  &__in
+    display flex
+    align-items center
+    justify-content space-between
 
-    &:hover
-      border-color $color-link
+  &__date
+    padding-bottom 20px
+    text-align center
+    font-size .8rem
+    font-weight bold
 
   &__item
+    cursor pointer
+    min-width 10rem
+    height 24rem
     flex 1 0 auto
-    padding 20px 0px
+    padding 30px 0px
+    border-right 1px solid $color-line
     anim()
-
-    &._compact
-      padding 0
-
-      .stat__values
-      .stat__graph
-        max-width none
 
     &:last-child
       margin-right 0
+      border 0
 
     &:hover
-      background #111
+    &._active
+      background $color-trn-hover
+
+    &._active
+      cursor default
 
   &__values
+    display none
     max-width 70px
     margin 0 auto
     text-align right
@@ -60,7 +131,8 @@
     margin 0 auto
     display flex
     align-items flex-end
-    height 100px
+    height 19.5rem
+    padding-bottom 20px
 
     &__in
       flex 1 1 auto
@@ -77,6 +149,10 @@
         height 1px
         margin 0 4px
         background $color-line
+
+  &__empty
+    cursor default
+    text-align center
 
 // #fct
 // ===============================================
@@ -152,18 +228,29 @@
 
 
 // Right menu with create trn
+.no-touch
+  .toogleTrnCreateBtn
+    // &:hover
+    //   background $color-layout
+    //   color $color-link
+    //   border-color $color-line-layout
+
 .toogleTrnCreateBtn
+  z-index 15
+  position fixed
+  width 50px
+  height 100%
+  right 0
+  top 0
   cursor pointer
   display flex
-  align-items center
+  align-items flex-start
   justify-content center
-  position absolute
   right 0px
-  padding 0 40px
+  padding 5px 10px 0 10px
   color $color-second
-
-  &:hover
-    color $color-link
+  border-left 2px solid transparent
+  anim()
 
   &__icon
     display flex

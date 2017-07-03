@@ -5,28 +5,28 @@
   align-items center
   background $color-layout
   border-bottom 2px solid $color-line-layout
+  if $theme == "white"
+    border-bottom-width 1px
 
   @media $laptop
-    flex-flow row nowrap
-    position fixed
     z-index 3
-    left 280px
-    margin 0 -30px
-    margin-bottom 30px
-    padding 10px
+    position fixed
+    left $sidebar-width
     top 0
-    width calc(100% - 280px)
-    margin 0
-    padding 0
+    flex-flow row nowrap
+    width calc(100% - 19rem)
 
     &:after
-      z-index 3
-      content ""
-      position absolute
-      top 46px
-      width 100%
-      height 20px
-      background linear-gradient(to bottom, $color-body 0%, transparent 100%)
+      if $theme == "black"
+        z-index 3
+        content ""
+        position absolute
+        top 46px
+        width 100%
+        height 20px
+        background linear-gradient(to bottom, $color-body 0%, transparent 100%)
 
-  @media $pc
-    left 300px
+
+  &__in
+    overflow-x auto
+    padding-right 100px

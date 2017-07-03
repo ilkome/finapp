@@ -7,11 +7,10 @@
   anim()
 
   @media $laptop
-    width 280px
+    width 19rem
     border-right 2px solid $color-line-layout
-
-  @media $pc
-    width 300px
+    if $theme == "white"
+      border-right-width 1px
 
   &__wrap
     @media $laptop
@@ -19,12 +18,8 @@
       overflow-x auto
       position fixed
       left 0
-      width 280px
+      width 19rem
       height 100%
-
-    @media $pc
-      width 300px
-      padding 0 10px
 
   &__in
     opacity 1
