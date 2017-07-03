@@ -22,7 +22,7 @@
         template(v-if="accounts.length > visibleAccounts")
           .accountSidebar__showAll(@click="setVisibleAccounts('all')") Show all
         template(v-if="visibleAccounts > 5")
-          .accountSidebar__showAll(@click="setVisibleAccounts(5)") Show only 5 accounts
+          .accountSidebar__showAll(@click="setVisibleAccounts(4)") Show only 4 accounts
 
       .account
         .accountTitle Summary
@@ -50,7 +50,7 @@ export default {
 
   data() {
     return {
-      visibleAccounts: 5
+      visibleAccounts: 4
     }
   },
 

@@ -40,8 +40,18 @@
   padding 10px
   color $color-second
   border-radius 3px
+  border 2px solid transparent
   border-bottom 1px solid $color-line
   anim()
+
+  &._opened
+    margin-bottom 15px
+    background $color-trn-hover
+    border 2px solid $color-line
+    border-top 1px solid $color-line
+
+    &:last-child
+      margin-bottom none
 
   .categoryItem
     border-bottom none

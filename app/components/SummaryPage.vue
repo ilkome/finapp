@@ -101,11 +101,10 @@
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 import orderBy from 'lodash/orderBy'
-import formatDataForCharts from '../mixins/formatDataForCharts'
 import formatMoney from '../mixins/formatMoney'
 
 export default {
-  mixins: [formatMoney, formatDataForCharts],
+  mixins: [formatMoney],
 
   data() {
     return {

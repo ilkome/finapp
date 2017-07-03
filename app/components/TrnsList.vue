@@ -4,13 +4,26 @@
     template(v-if="trnsIdsForDelete.length > 0")
       div.remove
         a.btn._big(@click.prevent="removeSelectedTrns()") Удалить выбранные транзакции: {{trnsIdsForDelete.length}}
-        //- a.btn(@click.prevent="clearSelectedTrns()") Отмена
 
-  .items(v-for="(trns, date) of trnsList")
-    h3.title._border {{ date | date }}
-    .items__list
-      TrnItem(v-for="trn in trns", :trn="trn", :key="trn.id", v-on:toogleTrn="toogleTrn")
+  template(v-if="noDates")
+    TrnItem(
+      v-for="trn in trns",
+      :trn="trn",
+      :key="trn.id",
+      :noDates="noDates"
+      v-on:toogleTrn="toogleTrn"
+    )
 
+  template(v-else)
+    .items(v-for="(trns, date) of trnsList")
+      h3.title._border._items {{ date | date }}
+      .items__list
+        TrnItem(
+          v-for="trn in trns",
+          :trn="trn",
+          :key="trn.id",
+          v-on:toogleTrn="toogleTrn"
+        )
 </template>
 
 
@@ -27,6 +40,10 @@ export default {
     trns: {
       type: Array,
       required: true
+    },
+    noDates: {
+      type: Boolean,
+      required: false
     }
   },
 

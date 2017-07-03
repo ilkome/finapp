@@ -1,19 +1,29 @@
 .rightBar
-  padding 40px 10px
-  border-top 2px solid $color-line
-  border-bottom 2px solid $color-line
+  z-index 10
+  position fixed
+  right 0
+  top 0px
+  background $color-body
+  max-height calc(100vh - 46px)
+  overflow-y auto
 
   @media $laptop
+    overflow-y auto
     display flex
-    align-items center
     z-index 5
-    max-width 552px
+    max-width 614px
     position fixed
-    right 0px
-    padding 0px 80px
-    padding-bottom 46px
+    right 0
+    padding 0px 60px
     top 46px
     height 100%
     background $color-sidebar
     border none
     border-left 2px solid $color-line
+
+    &__in
+      position relative
+
+
+    &__form
+      padding 60px 0

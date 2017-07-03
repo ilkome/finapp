@@ -70,8 +70,8 @@
     .module__in
       template(v-for="year of years")
         template(v-if="totalInYear(year).expenses > 0 || totalInYear(year).incomes > 0")
-          .module__cell
-            h1.title._wide Year {{ year }}
+          .yearStat
+            h1.title._wide._mbs(@click.prevent="showTrns(year)") Year {{ year }}
             .summaryShort._pb
               .summaryShort__content
                 .summaryShort__item(v-if="total.incomes > 0 && total.expenses > 0")
@@ -98,7 +98,6 @@
                     .summaryShort__item__total.sum {{ formatMoney((totalInYear(year).incomes - totalInYear(year).expenses) / 12) }}
 
             .trns
-              h1(@click.prevent="showTrns(year)")._pl {{ year }}
               template(v-for="data in dataInYear(year)")
                 .itemStat._mbs._link(@click.prevent.stop="showTrns(year, data.month)")
                   .itemStat__content
@@ -125,8 +124,7 @@
   .module(v-if="selectedTrnList.length > 0")
     h1.title._wide._trns Trns history
     h2.title {{ selectedDateName }}
-    div(style="padding-left: 15px")
-      TrnsList(:trns="selectedTrnList")
+    TrnsList(:trns="selectedTrnList")
 </template>
 
 <script>
@@ -270,15 +268,15 @@ export default {
     showTrns(year, month) {
       if (month) {
         // Trns for one month
-        const fromDate = moment(`${month}.${year}`, 'MMMM.Y').valueOf()
-        const toDate = moment(fromDate).endOf('month').valueOf()
-        this.selectedTrnList = this.trnsList.filter(t => t.date >= fromDate && t.date <= toDate)
+        const startDate = moment(`${month}.${year}`, 'MMMM.Y').valueOf()
+        const endDate = moment(startDate).endOf('month').valueOf()
+        this.selectedTrnList = this.trnsList.filter(t => t.date >= startDate && t.date <= endDate)
         this.selectedDateName = `${month} ${year}`
       } else {
         // Trns for one year
-        const fromDate = moment(year, 'Y').valueOf()
-        const toDate = moment(fromDate).endOf('year').valueOf()
-        this.selectedTrnList = this.trnsList.filter(t => t.date >= fromDate && t.date <= toDate)
+        const startDate = moment(year, 'Y').valueOf()
+        const endDate = moment(startDate).endOf('year').valueOf()
+        this.selectedTrnList = this.trnsList.filter(t => t.date >= startDate && t.date <= endDate)
         this.selectedDateName = `Year ${year}`
       }
 

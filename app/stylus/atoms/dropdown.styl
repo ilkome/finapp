@@ -8,26 +8,22 @@
     margin-bottom -3px
     anim()
 
-  &:hover
-    .dropdown__content
-      opacity 1
-
   &__content
-    opacity 0
-    z-index 2
     position absolute
     left 0px
-    top 30px
-    padding-bottom 20px
+    top 40px !important
     white-space nowrap
-    anim()
 
   &__link
     opacity .8
+    padding 5px 10px
     cursor pointer
+    color white
     font-size 1.2rem
     margin-right 10px
     letter-spacing 1px
+    background #5e7a88
+    border-radius 3px
     anim()
 
     &:hover
@@ -36,4 +32,4 @@
 
     &._active
       opacity 1
-      color $color-link
+      background #ea6151

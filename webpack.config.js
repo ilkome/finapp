@@ -33,23 +33,44 @@ if (isProd) {
   plugins.push(
     new webpack.HotModuleReplacementPlugin(),
     new FriendlyErrorsPlugin()
+
+    // extract vendor chunks for better caching
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: 'vendor',
+    //   minChunks: function (module) {
+    //     // a module is extracted into the vendor chunk if...
+    //     return (
+    //       // it's inside node_modules
+    //       /node_modules/.test(module.context) &&
+    //       // and not a CSS file (due to extract-text-webpack-plugin limitation)
+    //       !/\.css$/.test(module.request)
+    //     )
+    //   }
+    // }),
+    // // extract webpack runtime & manifest to avoid vendor chunk hash changing
+    // // on every build.
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: 'manifest'
+    // })
   )
 }
 
 module.exports = {
-  devtool: isProd ? false : '#cheap-module-eval-source-map',
+  devtool: isProd ? false : '#cheap-module-source-map',
+
   stats: {
+    noInfo: true,
     colors: true,
     assets: false,
     version: false,
     hash: false,
     timings: false,
-    chunks: false,
+    chunks: true,
     chunkModules: false
   },
   entry,
   output: {
-    path: path.join(__dirname, paths.js.output),
+    path: path.resolve(__dirname, paths.js.output),
     publicPath: '/js/',
     filename: 'bundle.js'
   },

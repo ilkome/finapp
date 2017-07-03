@@ -2,7 +2,6 @@ import AccountPage from './components/AccountPage.vue'
 import AccountsListPage from './components/AccountsListPage.vue'
 import DashboardPage from './components/DashboardPage.vue'
 import TrnsListPage from './components/TrnsListPage.vue'
-import TrnEditPage from './components/TrnEditPage.vue'
 import CategoriesList from './components/CategoriesList.vue'
 import CategoryItemPage from './components/CategoryItemPage.vue'
 import SummaryPage from './components/SummaryPage.vue'
@@ -19,8 +18,7 @@ const routes = [
   { path: '/incomes', component: IncomesPage },
   { path: '/expenses', component: ExpensesPage },
   { path: '/summary', component: SummaryPage },
-  { path: '/trns', component: TrnsListPage },
-  { path: '/trn/:id/edit', component: TrnEditPage }
+  { path: '/trns', component: TrnsListPage }
 ]
 
 export default routes

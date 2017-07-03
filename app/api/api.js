@@ -1,5 +1,7 @@
 import axios from 'axios'
-import { ACCOUNTS_URL, CATEGORIES_URL, TRANSACTIONS_URL } from '../constants'
+import { updateTrnasaction, getTrnasaction, addTrnasactions, getAllTransactions, deleteTrnasaction } from './transactions'
+import { getRates } from './rates'
+import { ACCOUNTS_URL, CATEGORIES_URL } from '../constants'
 
 // Get accounts
 // ==============================================
@@ -23,13 +25,11 @@ async function addAccount(account) {
       })
       if (account.data) {
         return account.data
-      }
-      else {
+      } else {
         console.error('api.js: Не возможно получить новый кошелек')
         return false
       }
-    }
-    else {
+    } else {
       console.error('api.js: Add account data empty')
       return false
     }
@@ -67,13 +67,11 @@ async function addCategory(category) {
       })
       if (category.data) {
         return category.data
-      }
-      else {
+      } else {
         console.error('api.js: category')
         return false
       }
-    }
-    else {
+    } else {
       console.error('api.js: Add category data empty')
       return false
     }
@@ -100,42 +98,21 @@ async function getCategories() {
   }
 }
 
-// Get rates
-// ==============================================
-async function getRates() {
-  try {
-    const request = await axios.get('http://api.fixer.io/latest?base=RUB')
-    return request.data.rates
-  } catch (e) {
-    console.error('Get rates: ', e.message)
-    return false
-  }
-}
-
-// Get transactions
-// ==============================================
-async function getTransactions() {
-  try {
-    const request = await axios.get(TRANSACTIONS_URL, {
-      params: {
-        transform: 1,
-        order: 'date, desc'
-      }
-    })
-    return request.data.transactions
-  } catch (e) {
-    console.log('getTransactions', e.message)
-  }
-}
-
 // Export
 // ==============================================
 export {
-  addAccount,
-  getAccounts,
-  deleteAccount,
-  addCategory,
-  getCategories,
   getRates,
-  getTransactions
+
+  getAccounts,
+  addAccount,
+  deleteAccount,
+
+  getCategories,
+  addCategory,
+
+  getAllTransactions,
+  getTrnasaction,
+  addTrnasactions,
+  updateTrnasaction,
+  deleteTrnasaction
 }

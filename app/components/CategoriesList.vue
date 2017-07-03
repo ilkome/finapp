@@ -8,19 +8,32 @@
         input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="true").filterBtn
 
         .categories
+
+          //- Category
+          //------------------------------------------------
           .categoryItem(
             v-for="category in categoriesList",
             :key="category.id",
-            :class="{_editable: editedCategory === category.id}")
+            :class="{_editable: editedCategory === category.id, _opened: showedChildrenCategories.indexOf(category.id) !== -1}",
+            @click.prevent="toogleShowChildrenCategoriess(category.id)"
+          )
             .categoryItem__content
-              router-link(:to="`/categories/${category.id}`").categoryItem__icon: .icon(:class="`icon-${category.id}`"): .icon__pic
-              router-link(:to="`/categories/${category.id}`").categoryItem__name {{ category.name }}
-              template(v-if="editedCategory === category.id")
-                .categoryItem__action(@click.prevent="setEditedCategory(category.id)"): .fa.fa-times-circle
-              template(v-else)
-                .categoryItem__action(@click.prevent="setEditedCategory(category.id)"): .fa.fa-pencil-square-o
-              .categoryItem__action(@click.prevent="deleteCategory(category.id)"): .fa.fa-trash-o
+              router-link(:to="`/categories/${category.id}`").categoryItem__icon
+                .icon(:class="`icon-${category.id}`"): .icon__pic
+              .categoryItem__name {{ category.name }}
 
+              template(v-if="editedCategory === category.id")
+                .categoryItem__action(@click.prevent="setEditedCategory(category.id)")
+                  .fa.fa-times-circle
+              template(v-else)
+                .categoryItem__action(@click.prevent="setEditedCategory(category.id)")
+                  .fa.fa-pencil-square-o
+
+              .categoryItem__action(@click.prevent="deleteCategory(category.id)")
+                .fa.fa-trash-o
+
+            //- Category edit
+            //------------------------------------------------
             template(v-if="editedCategory === category.id")
               .categoryItem__edit
                 .form
@@ -32,32 +45,36 @@
                       v-model.lazy="values.parentId = category.parentId", type="text" name="parentId")
                   .btn(@click="updateCategory(category, values)") Update
 
+            //- Children
+            //------------------------------------------------
             template(v-if="category.children")
-              .categoryItem__children
-                .categoryItem(
-                  v-for="childrenCategory in category.children",
-                  :key="childrenCategory.id",
-                  :class="{_editable: editedCategory === childrenCategory.id}")
-                  .categoryItem__content
-                    router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon: .icon(:class="`icon-${childrenCategory.parentId} icon-${childrenCategory.id}`"): .icon__pic
-                    router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__name {{ childrenCategory.name }}
+              template(v-if="showedChildrenCategories.indexOf(category.id) !== -1")
+                .categoryItem__children
+                  .categoryItem(
+                    v-for="childrenCategory in category.children",
+                    :key="childrenCategory.id",
+                    :class="{_editable: editedCategory === childrenCategory.id}")
+                    .categoryItem__content
+                      router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon: .icon(:class="`icon-${childrenCategory.parentId} icon-${childrenCategory.id}`"): .icon__pic
+                      router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__name {{ childrenCategory.name }}
+                      template(v-if="editedCategory === childrenCategory.id")
+                        .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-times-circle
+                      template(v-else)
+                        .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-pencil-square-o
+                      .categoryItem__action(@click.prevent="deleteCategory(childrenCategory.id)"): .fa.fa-trash-o
+
+                    //- Children edit
+                    //------------------------------------------------
                     template(v-if="editedCategory === childrenCategory.id")
-                      .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-times-circle
-                    template(v-else)
-                      .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-pencil-square-o
-                    .categoryItem__action(@click.prevent="deleteCategory(childrenCategory.id)"): .fa.fa-trash-o
-
-
-                  template(v-if="editedCategory === childrenCategory.id")
-                    .categoryItem__edit
-                      .form
-                        .input
-                          input.input__field(
-                            v-model.lazy="values.name = childrenCategory.name", type="text" name="name")
-                        .input
-                          input.input__field(
-                            v-model.lazy="values.parentId = childrenCategory.parentId", type="text" name="parentId")
-                        .btn(@click="updateCategory(editedCategory, values)") Update
+                      .categoryItem__edit
+                        .form
+                          .input
+                            input.input__field(
+                              v-model.lazy="values.name = childrenCategory.name", type="text" name="name")
+                          .input
+                            input.input__field(
+                              v-model.lazy="values.parentId = childrenCategory.parentId", type="text" name="parentId")
+                          .btn(@click="updateCategory(editedCategory, values)") Update
 
 
       .table__cell
@@ -104,7 +121,8 @@ export default {
       newCategory: {
         name: '',
         parentId: 0
-      }
+      },
+      showedChildrenCategories: []
     }
   },
 
@@ -139,13 +157,21 @@ export default {
   },
 
   methods: {
+    toogleShowChildrenCategoriess(categoryId) {
+      if (this.showedChildrenCategories.indexOf(categoryId) === -1) {
+        this.showedChildrenCategories.push(categoryId)
+      } else {
+        this.showedChildrenCategories = this.showedChildrenCategories.filter(cId => cId !== categoryId)
+      }
+    },
+
     setEditedCategory(categoryId) {
       if (this.editedCategory === +categoryId) this.editedCategory = false
       else this.editedCategory = categoryId
     },
 
     async addCategory(category) {
-      console.group('CategoriesList: addCategory')
+      console.groupCollapsed('CategoriesList: addCategory')
       this.$store.commit('showLoader')
       const result = await this.$store.dispatch('addCategory', category)
       if (result) {
@@ -157,7 +183,7 @@ export default {
     },
 
     async updateCategory(category, values) {
-      console.group('CategoriesList: updateCategory')
+      console.groupCollapsed('CategoriesList: updateCategory')
       this.$store.commit('showLoader')
       const updatedCategory = {
         ...category,
@@ -172,7 +198,7 @@ export default {
     },
 
     async deleteCategory(categoryId) {
-      console.group('CategoriesList: deleteCategory')
+      console.groupCollapsed('CategoriesList: deleteCategory')
       this.$store.commit('showLoader')
       await this.$store.dispatch('deleteCategory', +categoryId)
       this.$store.commit('disableLoader')

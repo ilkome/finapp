@@ -39,7 +39,7 @@
   .module._bg
     .module__in
       template(v-for="year of summaryYears.years")
-        .module__cell
+        .yearStat
           h1.title._wide Year {{ year.year }}
           .summaryShort._pb
             .summaryShort__item

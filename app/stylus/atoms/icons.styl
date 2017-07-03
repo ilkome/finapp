@@ -2,9 +2,12 @@ icon($icon, $bg = #242424)
   background $bg
   .icon__pic
     fa($icon)
+  .icon__label
+    background $bg
 
 
 .icon
+  position relative
   display flex
   min-width 40px
   width 40px
@@ -16,8 +19,20 @@ icon($icon, $bg = #242424)
   background #242424
   border-radius 3px
   border 2px solid transparent
+  anim()
+
+  &:hover
+    .icon__label
+      opacity 1
+      visibility visible
+
+  &._small
+    width 30px
+    height 30px
+    min-width 30px
 
   &._link
+    cursor pointer
     anim()
     &:hover
       background $color-link
@@ -29,11 +44,29 @@ icon($icon, $bg = #242424)
 
   &._active
     color white
-    background $color-link
+    // background $color-link
     border-color $color-main
+
+  &__abbr
+    font-size 1rem
+    font-weight bold
 
   &__pic
     fa(industry)
+
+  &__label
+    z-index 2
+    visibility hidden
+    opacity 0
+    position absolute
+    left 50%
+    top -43px
+    padding 10px 15px
+    background #242424
+    border-radius 3px
+    transform translateX(-50%)
+    white-space nowrap
+    anim()
 
 
 // работа

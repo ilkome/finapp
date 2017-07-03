@@ -1,35 +1,71 @@
-import axios from 'axios'
+import moment from 'moment'
 import orderBy from 'lodash/orderBy'
-import { getTransactions } from '../../api/api'
-import { TRANSACTIONS_URL } from '../../constants'
+import { getTrnasaction, addTrnasactions, updateTrnasaction, deleteTrnasaction } from '../../api/api'
+import { getAllTransactions, getTransactions } from '../../api/transactions'
 
-function formatTrn(trn) {
-  const accountId = +trn.accountId
-  const categoryId = +trn.categoryId
-  const currency = trn.currency
-
-  const account = accounts.find(a => a.id === accountId)
-  const accountName = (account && account.name) ? account.name : 'Account name not found'
-  if (!account) console.error('store.transitions.getters.trns.account')
-
-  const category = categories.find(cat => cat.id === categoryId)
-  const categoryName = (category && category.name) ? category.name : 'Category name not found'
-  if (!category) console.error('store.transitions.getters.trns.category')
-
-  let rate = 0
-  if (currency !== 'RUB') {
-    rate = (rates && rates[currency]) ? rates[currency] : false
-    if (!rate) console.error('store.transitions.getters.trns.rate')
+/**
+ * Format trn.
+ * @param {object} trn - Trn for format.
+ * @param {options} object - Options.
+ * @param {options.accounts} Array - List of accounts.
+ * @param {options.categories} Array - List of categories.
+ * @param {options.rates} Array - List of rates.
+ * @return {object} Formated trn.
+ */
+function formatTrn(trn, options) {
+  if (options) {
+    if (options.accounts.length < 0) {
+      console.error('formatTrn: must to have accounts')
+      return false
+    }
+    if (options.categories.length < 0) {
+      console.error('formatTrn: must to have categories')
+      return false
+    }
+    if (options.rates.length < 0) {
+      console.error('formatTrn: must to have rates')
+      return false
+    }
+  } else {
+    console.error('formatTrn: must to have options')
+    return false
   }
 
+  const accountId = +trn.accountId
+  const account = options.accounts.find(a => a.id === accountId)
+  let accountName
+  if (account) {
+    accountName = account.name
+  } else {
+    console.error('Account not found. Id:', account, trn, accountId, options)
+    return false
+  }
   const amount = Math.abs(trn.amount)
-  const amountRub = currency === 'RUB'
-    ? Math.abs(trn.amount)
-    : Math.floor(Math.abs(trn.amount / rate))
+  const currency = trn.currency
+  let amountRub
+  if (currency === 'RUB') {
+    amountRub = Math.abs(trn.amount)
+  } else {
+    if (options.rates[currency]) {
+      amountRub = Math.floor(Math.abs(trn.amount / options.rates[currency]))
+    } else {
+      console.error('No currency found', currency)
+      return false
+    }
+  }
+  const categoryId = +trn.categoryId
+  const category = options.categories.find(cat => cat.id === categoryId)
+  let categoryName
+  if (category) {
+    categoryName = category.name
+  } else {
+    console.error('Category not found. Id:', categoryId)
+    return false
+  }
   const date = +trn.date
+  const description = trn.description
   const id = +trn.id
   const type = +trn.type
-  const description = trn.description
 
   return {
     accountId,
@@ -38,11 +74,11 @@ function formatTrn(trn) {
     amountRub,
     categoryId,
     categoryName,
-    currency,
     date,
+    description,
+    currency,
     id,
-    type,
-    description
+    type
   }
 }
 
@@ -56,7 +92,26 @@ const state = {
 // ==============================================
 const getters = {
   trns(state, getters, rootState) {
-    return state.all
+    if (state.all.length) {
+      return state.all
+    } else {
+      throw new Error('store/transactions/ No trns')
+    }
+  },
+
+  getTrns: (state, getters) => (startDate, endDate, type = false) => {
+    const trns = getters.trns
+      .filter(trn =>
+        trn.categoryId !== 62 &&
+        trn.date >= moment(startDate).startOf('day').valueOf() &&
+        trn.date <= moment(endDate).endOf('day').valueOf())
+
+    if (type === 'incomes') trns.filter(t => t.type === 1)
+    if (type === 'expenses') trns.filter(t => t.type === 0)
+
+    if (trns) {
+      return orderBy(trns, trn => trn.date, 'desc')
+    }
   },
 
   expenses(state, getters) {
@@ -71,253 +126,142 @@ const getters = {
 // Actions
 // ==============================================
 const actions = {
-  // Fetch
-  async fetchTrns({ commit, state, rootState }) {
-    const trns = await getTransactions()
+  async getTrns({ commit, state, rootState }) {
+    console.groupCollapsed('store/transitions/@getTrns')
+    try {
+      const trns = await getAllTransactions()
+
+      const accounts = rootState.accounts.all
+      const categories = rootState.categories.all
+      const rates = rootState.rates.all
+
+      if (trns.length) {
+        console.groupCollapsed('Format trns')
+        const formatedTrns = trns.map(trn => formatTrn(trn, { accounts, categories, rates }))
+
+        console.log('Before format trns:', trns)
+        console.log('Formated trns:', formatedTrns)
+        console.groupEnd()
+        commit('getTrns', formatedTrns)
+      } else {
+        commit('showError', 'store/transitions/getTrns: no trns')
+        throw new Error('No trns')
+      }
+    } catch (error) {
+      throw new Error(error.message)
+    } finally {
+      console.groupEnd()
+    }
+  },
+
+  async addTrns({ commit, state, rootState }, values) {
+    try {
+      const accounts = rootState.accounts.all
+      const categories = rootState.categories.all
+      const rates = rootState.rates.all
+
+      console.log('Values:', values)
+      const trnsIdsAdded = await addTrnasactions(values)
+
+      if (trnsIdsAdded) {
+        const response = await getTransactions(trnsIdsAdded)
+        console.groupCollapsed('Format trn')
+
+        if (Array.isArray(response)) {
+          console.log('Is Array')
+          const formatedNewTrns = response.map(trn => formatTrn(trn, { accounts, categories, rates }))
+          await commit('addTrns', formatedNewTrns)
+          console.log('Formated:', formatedNewTrns)
+        } else {
+          console.log('Is one Object')
+          const formatedNewTrn = formatTrn(response, { accounts, categories, rates })
+          await commit('addTrn', formatedNewTrn)
+          console.log('Formated:', formatedNewTrn)
+        }
+
+        if (response) {
+          console.log('Updated!')
+          console.groupEnd()
+          return true
+        } else {
+          commit('showError', 'store/transitions/addTrns: newTrn: false')
+          return false
+        }
+      } else {
+        commit('showError', 'store/transitions/addTrns: trnsIdsAdded: false')
+        throw new Error('store/transitions/addTrns: trnsIdsAdded: false')
+      }
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  },
+
+  async updateTrn({ commit, state, rootState }, trn) {
+    console.log('Values:', trn)
+
     const accounts = rootState.accounts.all
     const categories = rootState.categories.all
     const rates = rootState.rates.all
 
-    if (!accounts || accounts.length < 0) {
-      console.error('store.transitions.getters.trns.accounts')
-      return false
-    }
+    if (trn && trn.id) {
+      console.groupCollapsed('Update')
+      const isTrnUpdated = await updateTrnasaction(trn)
+      console.groupEnd()
 
-    if (!categories || categories.length < 0) {
-      console.error('store.transitions.getters.trns.categories')
-      return false
-    }
+      if (isTrnUpdated) {
+        console.groupCollapsed('Get')
+        const newTrn = await getTrnasaction(trn.id)
+        console.groupEnd()
 
-    if (!trns || trns.length < 0) {
-      console.error('store.transitions.getters.trns.trns')
-      return false
-    }
+        if (newTrn) {
+          console.groupCollapsed('Format trn')
+          const formatedNewTrn = formatTrn(newTrn, { accounts, categories, rates })
+          console.log('Formated:', formatedNewTrn)
+          console.groupEnd()
 
-    if (!rates || rates.length < 0) {
-      console.error('store.transitions.getters.trns.rates')
-      return false
-    }
-
-    // Add to trn extra info
-    const formatedTrns = trns.map(trn => {
-      const accountId = +trn.accountId
-      const categoryId = +trn.categoryId
-      const currency = trn.currency
-
-      const account = accounts.find(a => a.id === accountId)
-      const accountName = (account && account.name) ? account.name : 'Account name not found'
-      if (!account) console.error('store.transitions.getters.trns.account')
-
-      const category = categories.find(cat => cat.id === categoryId)
-      const categoryName = (category && category.name) ? category.name : 'Category name not found'
-      if (!category) console.error('store.transitions.getters.trns.category')
-
-      let rate = 0
-      if (currency !== 'RUB') {
-        rate = (rates && rates[currency]) ? rates[currency] : false
-        if (!rate) console.error('store.transitions.getters.trns.rate')
-      }
-
-      const amount = Math.abs(trn.amount)
-      const amountRub = currency === 'RUB'
-        ? Math.abs(trn.amount)
-        : Math.floor(Math.abs(trn.amount / rate))
-      const date = +trn.date
-      const id = +trn.id
-      const type = +trn.type
-      const description = trn.description
-
-      return {
-        accountId,
-        accountName,
-        amount,
-        amountRub,
-        categoryId,
-        categoryName,
-        currency,
-        date,
-        id,
-        type,
-        description
-      }
-    })
-    commit('fetchTrns', formatedTrns)
-  },
-
-  // add
-  async addTrn({ commit, state, rootState }, values) {
-    try {
-      console.log('values:', values)
-      const postData = await axios.post(TRANSACTIONS_URL, values)
-      console.log('post:', postData)
-      console.log('post.data:', postData.data)
-
-      if (postData.data) {
-        // few trns
-        if (Array.isArray(postData.data)) {
-          const trns = []
-          for (const trnId of postData.data) {
-            const newTrns = await axios.get(`${TRANSACTIONS_URL}/${trnId}`, {
-              params: { transform: 1 }
-            })
-            if (newTrns.data) {
-              trns.push(newTrns.data)
-            } else {
-              console.error('что-то не так')
-              return false
-            }
-          }
-          commit('addTrns', trns)
-        }
-
-        // one trn
-        if (Number.isInteger(postData.data)) {
-          const getTrn = await axios.get(`${TRANSACTIONS_URL}/${postData.data}`, {
-            params: { transform: 1 }
-          })
-          console.log('getNewTrn data:', getTrn.data)
-          const trns = state.all
-
-          const accounts = rootState.accounts.all
-          const categories = rootState.categories.all
-          const rates = rootState.rates.all
-
-          if (!accounts || accounts.length < 0) {
-            console.error('store.transitions.getters.trns.accounts')
-            return false
-          }
-
-          if (!categories || categories.length < 0) {
-            console.error('store.transitions.getters.trns.categories')
-            return false
-          }
-
-          if (!trns || trns.length < 0) {
-            console.error('store.transitions.getters.trns.trns')
-            return false
-          }
-
-          if (!rates || rates.length < 0) {
-            console.error('store.transitions.getters.trns.rates')
-            return false
-          }
-
-          const trn = getTrn.data
-          const accountId = +trn.accountId
-          const categoryId = +trn.categoryId
-          const currency = trn.currency
-
-          const account = accounts.find(a => a.id === accountId)
-          const accountName = (account && account.name) ? account.name : 'Account name not found'
-          if (!account) console.error('store.transitions.getters.trns.account')
-
-          const category = categories.find(cat => cat.id === categoryId)
-          const categoryName = (category && category.name) ? category.name : 'Category name not found'
-          if (!category) console.error('store.transitions.getters.trns.category')
-
-          let rate = 0
-          if (currency !== 'RUB') {
-            rate = (rates && rates[currency]) ? rates[currency] : false
-            if (!rate) console.error('store.transitions.getters.trns.rate')
-          }
-
-          const amount = Math.abs(trn.amount)
-          const amountRub = currency === 'RUB'
-            ? Math.abs(trn.amount)
-            : Math.floor(Math.abs(trn.amount / rate))
-          const date = +trn.date
-          const id = +trn.id
-          const type = +trn.type
-          const description = trn.description
-
-          const newTrn = {
-            accountId,
-            accountName,
-            amount,
-            amountRub,
-            categoryId,
-            categoryName,
-            currency,
-            date,
-            id,
-            type,
-            description
-          }
-
-          console.log('formatedNewTrn:', newTrn)
-          commit('addTrn', newTrn)
+          console.log('Updated!')
+          await commit('updateTrn', formatedNewTrn)
+          return true
+        } else {
+          commit('showError', 'store/transitions/updateTrn: newTrn: false')
+          return false
         }
       } else {
-        console.error('No post.data')
+        commit('showError', 'store/transitions/updateTrn: isTrnUpdated: false')
         return false
       }
-      console.log('Ok!')
-      return true
-    } catch (error) {
-      console.error('Error :', error)
+    } else {
+      commit('showError', 'store/transitions/updateTrn: No trn or trn.id is empty!')
       return false
     }
   },
 
-  // update
-  async updateTrn({ commit }, trn) {
-    try {
-      const updatedTrn = await axios.put(`${TRANSACTIONS_URL}/${trn.id}`, trn)
-      const result = updatedTrn.data
-
-      // if ok
-      if (result === 1) {
-        const getTrn = await axios.get(`${TRANSACTIONS_URL}/${trn.id}`, {
-          params: { transform: 1 }
-        })
-        await commit('updateTrn', getTrn.data)
-      } else {
-        console.error('Ошибка обновления транзакции 1')
-      }
-    } catch (e) {
-      console.error('Ошибка обновления транзакции 2')
-    }
-  },
-
-  // delete
   async deleteTrn({ commit }, id) {
-    console.log('id:', id)
-    const request = await axios.delete(`${TRANSACTIONS_URL}/${id}`)
-    console.log('result: ', request.data)
-    const result = request.data
-    if (result === 1) {
-      console.log('Ok!')
+    console.groupCollapsed('Delete')
+    const isTrnDeleted = await deleteTrnasaction(+id)
+    console.groupEnd()
+
+    if (isTrnDeleted) {
       commit('deleteTrn', id)
+      return true
     } else {
-      console.error('Not deleted')
+      commit('showError', 'store/transitions/deleteTrn: isTrnDeleted: false')
+      return false
     }
-  },
-
-  async deleteTrns({ commit }, ids) {
-    const request = await axios.delete(`${TRANSACTIONS_URL}/${ids.join()}`)
-    const result = request.data
-
-    result.forEach((res, index) => {
-      if (res > 0) {
-        commit('deleteTrn', ids[index])
-      } else {
-        console.log(`не удалось удалить id: ${ids[index]}`)
-      }
-    })
   }
 }
 
 // mutations
 // ==============================================
 const mutations = {
-  fetchTrns(state, trns) {
+  getTrns(state, trns) {
     state.all = trns
   },
   addTrn(state, trn) {
     state.all.push(trn)
   },
-  addTrns(state, trn) {
-    state.all.push(...trn)
+  addTrns(state, trns) {
+    state.all.push(...trns)
   },
   updateTrn(state, trn) {
     state.all = [

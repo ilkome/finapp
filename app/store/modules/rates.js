@@ -2,7 +2,7 @@ import { getRates } from '../../api/api'
 
 const store = {
   state: {
-    all: []
+    all: {}
   },
 
   getters: {
@@ -12,15 +12,22 @@ const store = {
   },
 
   actions: {
-    async fetchRates({ commit }) {
-      const data = await getRates()
-      commit('fetchRates', data)
+    async getRates({ commit }) {
+      try {
+        console.groupCollapsed('store/rates/@getRates')
+        const rates = await getRates()
+        commit('getRates', rates)
+      } catch (error) {
+        throw new Error(error.message)
+      } finally {
+        console.groupEnd()
+      }
     }
   },
 
   mutations: {
-    fetchRates(state, data) {
-      state.all = data
+    getRates(state, rates) {
+      state.all = rates
     }
   }
 }
