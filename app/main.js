@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueScrollTo from 'vue-scrollto'
-import vmodal from 'vue-js-modal'
 import moment from 'moment'
 import store from './store/store'
 import routes from './routes'
@@ -17,7 +16,6 @@ Vue.filter('date', formatDate)
 // Plugins
 Vue.use(VueRouter)
 Vue.use(VueScrollTo)
-Vue.use(vmodal)
 
 const router = new VueRouter({
   routes,
