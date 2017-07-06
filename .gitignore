@@ -1,12 +1,11 @@
 app/api/apiUrl.js
 
 node_modules/
-build/
-
-.DS_Store
-
-*.diff
-*.ini
+public/
 
 npm-debug.log
-ftp.config.js
+config/ftp.conf.js
+
+.DS_Store
+*.diff
+*.ini
