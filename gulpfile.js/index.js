@@ -11,7 +11,7 @@ const requireDir = require('require-dir')
 const runSequence = require('run-sequence')
 const $ = require('gulp-load-plugins')()
 const watch = require('gulp-watch')
-const paths = require('./paths')
+const paths = require('../config/paths')
 
 requireDir('./tasks') // Require all tasks
 
@@ -31,7 +31,6 @@ gulp.task('build', (done) => {
   runSequence(
     ['clean'],
     ['images', 'pug', 'stylus', 'assets'],
-    ['html'],
     done
   )
 })

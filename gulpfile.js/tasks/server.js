@@ -3,15 +3,15 @@ const gulp = require('gulp')
 const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
-const paths = require('../paths')
-const webpackConfig = require('../../webpack.config')
+const paths = require('../../config/paths')
+const webpackConfig = require('../../build/webpack.dev.conf')
 
 const webpackBundler = webpack(webpackConfig)
 
 // browserSync
 gulp.task('browserSync', () => browserSync({
   server: {
-    baseDir: paths.build
+    baseDir: paths.dist
   },
   open: false,
   logFileChanges: false,
@@ -22,7 +22,16 @@ gulp.task('browserSync', () => browserSync({
   middleware: [
     webpackDevMiddleware(webpackBundler, {
       publicPath: webpackConfig.output.publicPath,
-      stats: webpackConfig.stats
+      stats: {
+        colors: true,
+        timings: true,
+        assets: true,
+        version: false,
+        hash: false,
+        modules: false,
+        chunks: false,
+        chunkModules: false
+      }
     }),
     webpackHotMiddleware(webpackBundler), (req, res, next) => {
       if (req.headers.accept && req.headers.accept.startsWith('text/html')) {
@@ -30,9 +39,6 @@ gulp.task('browserSync', () => browserSync({
       }
       next()
     }
-  ],
-  files: [
-    paths.js.entry
   ]
 }))
 
