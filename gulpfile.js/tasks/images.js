@@ -1,7 +1,7 @@
 const $ = require('gulp-load-plugins')()
 const gulp = require('gulp')
 const pngquant = require('imagemin-pngquant')
-const paths = require('../paths')
+const paths = require('../../config/paths')
 const showToaster = require('../showToaster')
 
 // Minify images
@@ -14,8 +14,8 @@ gulp.task('images', () =>
     .pipe($.imagemin({
       progressive: true,
       svgoPlugins: [
-          { removeViewBox: false },
-          { cleanupIDs: true }
+        { removeViewBox: false },
+        { cleanupIDs: true }
       ],
       use: [pngquant()]
     }))
