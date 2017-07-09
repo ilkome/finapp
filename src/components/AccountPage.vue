@@ -40,8 +40,9 @@ export default {
     },
 
     trnsList() {
-      moment()
-      return this.getTrns(moment().subtract(1, 'months'), moment()).filter(trn => trn.accountId === +this.$route.params.id).slice(0, 100)
+      return this.$store.state.trns.all
+        .filter(t => t.accountId === this.account.id)
+        .slice(0, 100)
     }
   },
 
