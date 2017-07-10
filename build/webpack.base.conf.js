@@ -7,7 +7,6 @@ module.exports = {
       'vue$': 'vue/dist/vue.esm.js'
     }
   },
-
   module: {
     rules: [{
       test: /\.vue$/,

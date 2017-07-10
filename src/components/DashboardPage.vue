@@ -3,7 +3,7 @@
   .module
     //- Title
     //------------------------------------------------
-    h1.title._dashboard._trns Dashboard22
+    h1.title._dashboard._trns Dashboard
     h2.title._mrg
       .dropdown(v-on:mouseover="calendar.show = false")
         .dropdown__name(v-on:mouseover="showedDurationDropdown = true")

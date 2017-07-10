@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
 const paths = require('../config/paths')
 
-const webpackConfig = merge(baseWebpackConfig, {
+module.exports = merge(baseWebpackConfig, {
   entry: {
     app: paths.js.entry
   },
@@ -65,5 +65,3 @@ const webpackConfig = merge(baseWebpackConfig, {
     })
   ]
 })
-
-module.exports = webpackConfig
