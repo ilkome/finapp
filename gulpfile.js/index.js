@@ -1,6 +1,6 @@
 /*
-  ilkome frontend
-  Version 4.2.2
+  ilkome frontend vue
+  Version 1.0.0
 
   Ilya Komichev
   https://ilko.me
@@ -19,7 +19,7 @@ requireDir('./tasks') // Require all tasks
 gulp.task('default', (done) => {
   runSequence(
     ['clean'],
-    ['images', 'pug', 'stylus', 'assets'],
+    ['images', 'stylus', 'assets'],
     ['browserSync'],
     ['watcher'],
     done
@@ -30,11 +30,12 @@ gulp.task('default', (done) => {
 gulp.task('build', (done) => {
   runSequence(
     ['clean'],
-    ['images', 'pug', 'stylus', 'assets'],
+    ['images', 'stylus', 'assets'],
     done
   )
 })
 
+// Arhicve
 gulp.task('zip', () => {
   gulp.src('build/**/*')
     .pipe($.zip('build.zip'))

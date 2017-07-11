@@ -53,7 +53,7 @@ module.exports = merge(baseWebpackConfig, {
     // Generate dist index.html with correct asset hash for caching.
     new HtmlWebpackPlugin({
       filename: `${paths.dist}/index.html`,
-      template: `${paths.dist}/index.html`,
+      template: '!!pug-loader!src/layout/layout.pug',
       inject: true,
       minify: {
         removeComments: true,
