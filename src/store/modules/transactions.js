@@ -91,12 +91,8 @@ const state = {
 // getters
 // ==============================================
 const getters = {
-  trns(state, getters, rootState) {
-    if (state.all.length) {
-      return state.all
-    } else {
-      throw new Error('store/transactions/ No trns')
-    }
+  trns(state) {
+    return state.all
   },
 
   getTrns: (state, getters) => (startDate, endDate, type = false) => {

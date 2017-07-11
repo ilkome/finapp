@@ -9,14 +9,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import orderBy from 'lodash/orderBy'
-import formatMoney from '../mixins/formatMoney'
 import TrnsList from './TrnsList.vue'
 
 export default {
-  mixins: [formatMoney],
-
   computed: {
-    ...mapGetters(['trns', 'accounts', 'categories']),
+    ...mapGetters(['trns']),
 
     trnsList() {
       const trns = this.$store.state.trns.all.slice(0, 100)
