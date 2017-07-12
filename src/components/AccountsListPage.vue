@@ -4,14 +4,12 @@
     .module
       h1.title Accounts
 
-      .table
-        .table__cell
+      .gridTable
+        .gridTable__item
           input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="true").filterBtn
 
           .items
             template(v-for="account in accountsList")
-              .loader(:class="{_visible: loading || loadingId === account.id}"): .fa.fa-spinner
-
               .item
                 .item__content
                   .item__el._name {{ account.name }}
@@ -20,21 +18,17 @@
                     div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
                   .item__el._second {{ account.currency }}
                   router-link.item__el._action(:to="`/accounts/${account.id}`"): .fa.fa-list
-                  //- router-link.item__el._action(:to="`/accounts/${account.id}`"): .fa.fa-pencil-square-o
-                  .item__el._action(@click.prevent.stop="question(account.id)"): .fa.fa-trash-o
+                  .item__el._action(@click.prevent.stop="askQuestion(account.id)"): .fa.fa-trash-o
 
                 .item__question(:class="{_visible: questionId === account.id}")
                   .item__el._question Delete account {{ account.name }}?
                   .item__el._no(@click.prevent="close()"): .fa.fa-ban
                   .item__el._yes(@click.prevent="deleteAccount(account.id)"): .fa.fa-check
-
-                .item__loader(:class="{_visible: loadingId === account.id}"): .fa.fa-spinner
           //- trnsList
 
-        .table__cell
+        .gridTable__item
           .panel._smallWidth
             h4.title Create account
-            .panel__loader(:class="{_visible: loading}"): .fa.fa-spinner
             .panel__content
               .input
                 input(v-model.trim="account.name", placeholder="Write account name" type="text").input__field
@@ -45,8 +39,7 @@
                 .input__label Currency
 
               .submit
-                .submit__btn(v-if="loading") Creating...
-                .submit__btn(v-else @click.prevent="addAccount") Create account
+                .submit__btn(@click.prevent="addAccount") Create account
 </template>
 
 <script>
@@ -65,8 +58,6 @@ export default {
         symbol: ''
       },
       filter: '',
-      loading: false,
-      loadingId: null,
       questionId: null
     }
   },
@@ -80,21 +71,17 @@ export default {
 
   methods: {
     async addAccount() {
-      this.loading = true
       await this.$store.dispatch('addAccount', this.account)
-      this.loading = false
       this.account.name = ''
     },
 
     async deleteAccount(accountId) {
       console.log('delete account')
-      this.loadingId = accountId
       await this.$store.dispatch('deleteAccount', accountId)
       this.questionId = null
-      this.loadingId = null
     },
 
-    question(accountId) {
+    askQuestion(accountId) {
       this.questionId = accountId
     },
 
