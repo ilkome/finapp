@@ -3,24 +3,24 @@
   .module
     h1.title Categories
 
-    .table
-      .table__cell
+    .gridTable
+      .gridTable__item
         input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="true").filterBtn
 
         .categories
-
           //- Category
           //------------------------------------------------
           .categoryItem(
             v-for="category in categoriesList",
             :key="category.id",
-            :class="{_editable: editedCategory === category.id, _opened: showedChildrenCategories.indexOf(category.id) !== -1}",
-            @click.prevent="toogleShowChildrenCategoriess(category.id)"
+            :class="{_editable: editedCategory === category.id, _opened: showedChildrenCategories.indexOf(category.id) !== -1}"
           )
             .categoryItem__content
               router-link(:to="`/categories/${category.id}`").categoryItem__icon
                 .icon(:class="`icon-${category.id}`"): .icon__pic
               .categoryItem__name {{ category.name }}
+              template(v-if="category.children")
+                .categoryItem__action(@click="toogleShowChildrenCategoriess(category.id)"): .fa.fa-list
 
               template(v-if="editedCategory === category.id")
                 .categoryItem__action(@click.prevent="setEditedCategory(category.id)")
@@ -29,8 +29,14 @@
                 .categoryItem__action(@click.prevent="setEditedCategory(category.id)")
                   .fa.fa-pencil-square-o
 
-              .categoryItem__action(@click.prevent="deleteCategory(category.id)")
+              .categoryItem__action(@click.prevent="askQuestion(category.id)")
                 .fa.fa-trash-o
+
+            .item__question(:class="{_visible: questionId === category.id}")
+              .item__el._question
+                div Удалить транзакцию?
+              .item__el._action(@click.prevent.stop="close()"): .fa.fa-ban
+              .item__el._action(@click.prevent.stop="deleteCategory(category.id)"): .fa.fa-check
 
             //- Category edit
             //------------------------------------------------
@@ -55,7 +61,8 @@
                     :key="childrenCategory.id",
                     :class="{_editable: editedCategory === childrenCategory.id}")
                     .categoryItem__content
-                      router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon: .icon(:class="`icon-${childrenCategory.parentId} icon-${childrenCategory.id}`"): .icon__pic
+                      router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon
+                        .icon(:class="`icon-${childrenCategory.parentId} icon-${childrenCategory.id}`"): .icon__pic
                       router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__name {{ childrenCategory.name }}
                       template(v-if="editedCategory === childrenCategory.id")
                         .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-times-circle
@@ -77,17 +84,9 @@
                           .btn(@click="updateCategory(editedCategory, values)") Update
 
 
-      .table__cell
-        .categoriesIcons._mb
-          .categoriesIcons__el(v-for="category in categoriesList", :key="category.id")
-            router-link.icon(
-              :to="`/categories/${category.id}`",
-              :class="`icon-${category.id}`",
-              :title="category.name"): .icon__pic
-
-        .panel._smallWidth
-          h4.title Create category
-          .panel__loader(:class="{_visible: loading}"): .fa.fa-spinner
+      .gridTable__item
+        .panel._mb
+          h4.title._mbs Create category
           .panel__content
             .input
               input(v-model.trim="newCategory.name", placeholder="Write category name" type="text").input__field
@@ -95,10 +94,16 @@
             .input
               input(v-model.trim="newCategory.parentId", placeholder="Write parent id" type="text").input__field
               .input__label Parent id
-
             .submit
-              .submit__btn(v-if="loading") Creating...
-              .submit__btn(v-else @click.prevent="addCategory(newCategory)") Create category
+              .submit__btn(@click.prevent="addCategory(newCategory)") Create category
+
+        .categoriesIcons._mb
+          .categoriesIcons__el(v-for="category in categoriesList", :key="category.id")
+            router-link.icon(
+              :to="`/categories/${category.id}`",
+              :class="`icon-${category.id}`",
+              :title="category.name"): .icon__pic
+
 </template>
 
 <script>
@@ -111,7 +116,6 @@ export default {
 
   data() {
     return {
-      loading: false,
       filter: '',
       editedCategory: false,
       values: {
@@ -122,6 +126,7 @@ export default {
         name: '',
         parentId: 0
       },
+      questionId: false,
       showedChildrenCategories: []
     }
   },
@@ -157,6 +162,15 @@ export default {
   },
 
   methods: {
+    askQuestion(accountId) {
+      console.log(accountId)
+      this.questionId = accountId
+    },
+
+    close() {
+      this.questionId = false
+    },
+
     toogleShowChildrenCategoriess(categoryId) {
       if (this.showedChildrenCategories.indexOf(categoryId) === -1) {
         this.showedChildrenCategories.push(categoryId)
@@ -198,6 +212,7 @@ export default {
     },
 
     async deleteCategory(categoryId) {
+      this.questionId = false
       console.groupCollapsed('CategoriesList: deleteCategory')
       this.$store.commit('showLoader')
       await this.$store.dispatch('deleteCategory', +categoryId)
