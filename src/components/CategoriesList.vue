@@ -68,7 +68,14 @@
                         .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-times-circle
                       template(v-else)
                         .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-pencil-square-o
-                      .categoryItem__action(@click.prevent="deleteCategory(childrenCategory.id)"): .fa.fa-trash-o
+                      .categoryItem__action(@click.prevent="askQuestion(childrenCategory.id)")
+                        .fa.fa-trash-o
+
+                    .item__question(:class="{_visible: questionId === childrenCategory.id}")
+                      .item__el._question
+                        div Удалить транзакцию?
+                      .item__el._action(@click.prevent.stop="close()"): .fa.fa-ban
+                      .item__el._action(@click.prevent.stop="deleteCategory(childrenCategory.id)"): .fa.fa-check
 
                     //- Children edit
                     //------------------------------------------------
@@ -81,7 +88,7 @@
                           .input
                             input.input__field(
                               v-model.lazy="values.parentId = childrenCategory.parentId", type="text" name="parentId")
-                          .btn(@click="updateCategory(editedCategory, values)") Update
+                          .btn(@click="updateCategory(childrenCategory, values)") Update
 
 
       .gridTable__item
