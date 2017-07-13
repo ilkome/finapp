@@ -96,8 +96,8 @@
 
             .trns
               template(v-for="data in dataInYear(year)")
-                .itemGraph(:class="{_opened: showedTrns.indexOf(data.month + year) !== -1}")
-                  .itemGraph__in(@click.prevent.stop="toogleShowTrns(data.month, year)")
+                .itemGraph(:class="{_opened: showedTrns.indexOf(data.month + year) !== -1, _noCursor: data.trns.length === 0}")
+                  .itemGraph__in(@click.prevent.stop="data.trns.length > 0 ? toogleShowTrns(data.month, year) : null")
                     .itemGraph__content
                       .itemGraph__text
                         .itemGraph__name {{ data.month }}

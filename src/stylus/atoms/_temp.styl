@@ -9,14 +9,13 @@
   max-width 1200px
   display grid
   grid-template-columns repeat(auto-fit, minmax(320px, 1fr))
-  grid-column-gap 1fr
 
   &__item
     max-width 470px
 
 .grid
   display grid
-  grid-template-columns minmax(100px, auto) minmax(65px, auto) 1fr auto auto
+  grid-template-columns minmax(90px, 100px) minmax(65px, 1fr) auto auto
   grid-column-gap 15px
   padding 0
   border 1px solid transparent
@@ -27,18 +26,22 @@
     grid-template-columns 40px minmax(100px, auto) minmax(65px, auto) 1fr auto auto
 
   &._editable
-    border 1px solid $color-rub
-    border-radius 3px
+    z-index 2
+    position relative
+    border-top 1px solid $color-rub
+    border-bottom 1px solid $color-rub
 
   &._updated
-    border 1px solid $color-income
-    border-radius 3px
+    border-top 1px solid $color-income
+    border-bottom 1px solid $color-income
 
   &__item
     align-self center
 
     &._description
+      padding 5px 0 5px 0
       font-size .8rem
+      grid-column 2 / 5
 
     &._price
       text-align right
@@ -62,6 +65,7 @@
       cursor pointer
       padding 15px 10px
       font-size 1.5rem
+      text-align center
       anim()
 
       &:hover
@@ -70,8 +74,7 @@
 
 .yearStat
   padding-right 100px
-  max-width 600px
-  min-width 470px
+  flex 0 0 470px
 
 input.flatpickr-input
   opacity 0

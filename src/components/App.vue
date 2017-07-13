@@ -35,6 +35,7 @@
             router-link(to="/trns").menuLink History
 
           a.toogleTrnCreateBtn(
+            v-shortkey="['alt', 'i']" @shortkey="$store.commit('toogleTrnForm')"
             @click.prevent.stop="$store.commit('toogleTrnForm')",
             :class="{_active: $store.state.trnForm.isShow}")
             .toogleTrnCreateBtn__icon: .toogleTrnCreateBtn__icon__in +

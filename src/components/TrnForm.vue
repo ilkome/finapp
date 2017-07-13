@@ -75,7 +75,8 @@
 
   .desc
     input.input-filter._nomargin(
-      v-model.trim="values.description"
+      v-model.trim="values.description",
+      @keyup.enter="onSubmitForm",
       type="text" name="description" placeholder="Description")
 
   .action

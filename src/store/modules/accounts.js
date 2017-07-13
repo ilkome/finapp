@@ -1,4 +1,5 @@
 import { getAccounts, addAccount, deleteAccount } from '../../api/api'
+import orderBy from 'lodash/orderBy'
 
 const store = {
   state: {
@@ -38,7 +39,7 @@ const store = {
         }
       })
 
-      return formatedAccounts
+      return orderBy(formatedAccounts, a => a.order, 'asc')
     }
   },
 

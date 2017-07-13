@@ -32,9 +32,12 @@
         .grid__item
           .grid__item__date {{ formatDate(trn.date, 'D MMM') }}
           .grid__item__account {{ trn.accountName }}
-        .grid__item._description {{ trn.description }}
-        .grid__item._action(@click.stop.prevent="setEditTrn(trn.id)"): .fa.fa-pencil-square-o
-        .grid__item._action(@click.prevent.stop="askQuestion(trn.id)"): .fa.fa-trash-o
+        template(v-if="editedTrn && trn.id === editedTrn")
+          .grid__item._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
+        template(v-else)
+          .grid__item._action(@click.stop.prevent="setEditTrn(trn.id)").fa.fa-pencil-square-o
+        .grid__item._action(@click.prevent.stop="askQuestion(trn.id)").fa.fa-trash-o
+        .grid__item._description(v-if="trn.description") {{ trn.description }}
 
   //- Trns big
   //------------------------------------------------
@@ -52,7 +55,10 @@
           div {{ formatMoney(trn.amountRub) }}
         .item__el._account(:class="trn.accountId === 1 ? 'c-tinkoff' : 'c-rub'") {{ trn.accountName }}
         .item__el._category {{ trn.categoryName }}
-        .item__el._action(@click.stop.prevent="setEditTrn(trn.id)"): .fa.fa-pencil-square-o
+        template(v-if="editedTrn && trn.id === editedTrn")
+          .item__el._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
+        template(v-else)
+          .item__el._action(@click.stop.prevent="setEditTrn(trn.id)").fa.fa-pencil-square-o
         .item__el._action(@click.prevent.stop="askQuestion(trn.id)"): .fa.fa-trash-o
 
 
@@ -108,14 +114,6 @@ export default {
       this.$store.commit('showLoader')
       await this.$store.dispatch('deleteTrn', Number(id))
       this.questionId = null
-      console.log(this.questionId)
-      console.log(this.$store.trnForm)
-
-      // if (this.$store.trnForm.isUpdateTrn === id) {
-      //   console.log(1)
-      // this.commit('toogleTrnForm')
-      // }
-
       this.$store.commit('disableLoader')
       console.groupEnd()
     },
