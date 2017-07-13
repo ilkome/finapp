@@ -6,32 +6,23 @@
       .name {{ category.name }}
       .sup  {{ category.id }}
 
-    .countWithChildren(v-if="childrenCategories.length > 0")
-      label.checkbox
-        input.checkbox__input(type="checkbox" v-model="showChildren")
-        h1.checkbox__name Count with children categories
-      div(v-for="category in childrenCategories")
-        div {{ category.name }}
-
     .categoryStat
       .categoryStat__trns._long
         h2.ml Years
         template(v-for="data of dataByYears")
-          .itemStat._mb
-            .itemStat__content
-              .itemStat__text
-                .itemStat__name {{ data.year }}
-                .itemStat__price.incomes(v-if="data.incomes > 0")
-                  div {{formatMoney(data.incomes)}}
-                .itemStat__price.expenses
-                  div {{formatMoney(data.expenses)}}
-                .itemStat__price.sum
-                  div {{formatMoney(data.incomes - data.expenses)}}
-              .itemStat__graph
-                template(v-if="data.incomes > 0")
-                  .itemStat__graph__in._income(:style="countWidthYear(data.incomes)")
-                template(v-if="data.expenses > 0")
-                  .itemStat__graph__in._expense(:style="countWidthYear(data.expenses)")
+          .itemStat
+            .itemStat__in
+              .itemStat__content
+                .itemStat__text
+                  .itemStat__name {{ data.year }}
+                  .itemStat__price.incomes(v-if="data.incomes > 0 && Math.abs(data.total) !== data.incomes") {{ formatMoney(data.incomes) }}
+                  .itemStat__price.expenses(v-if="data.expenses > 0 && Math.abs(data.total) !== data.expenses") {{ formatMoney(data.expenses) }}
+                  .itemStat__price.sum {{ formatMoney(data.total) }}
+                .itemStat__graph
+                  template(v-if="data.incomes > 0")
+                    .itemStat__graph__in._income(:style="countWidthYear(data.incomes)")
+                  template(v-if="data.expenses > 0")
+                    .itemStat__graph__in._expense(:style="countWidthYear(data.expenses)")
 
       .categoryStat__summary
         h2 Summary
@@ -61,7 +52,13 @@
                     .summaryShort__item__icon._month
                     .summaryShort__item__label Month average
                     .summaryShort__item__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length / 12) }}
-
+      .categoryStat__children(v-if="childrenCategories.length > 0")
+        .countWithChildren
+          label.checkbox
+            input.checkbox__input(type="checkbox" v-model="showChildren")
+            .checkbox__name Count with children categories
+          div(v-for="category in childrenCategories")
+            div {{ category.name }}
   .tabs
     a(@click.prevent="toogleShowAll()", :class="{_active: !showAll}") Months with data
     a(@click.prevent="toogleShowAll()", :class="{_active: showAll}") All months
@@ -71,7 +68,7 @@
       template(v-for="year of years")
         template(v-if="totalInYear(year).expenses > 0 || totalInYear(year).incomes > 0")
           .yearStat
-            h1.title._wide._mbs(@click.prevent="showTrns(year)") Year {{ year }}
+            h1.title._wide._mbs Year {{ year }}
             .summaryShort._pb
               .summaryShort__content
                 .summaryShort__item(v-if="total.incomes > 0 && total.expenses > 0")
@@ -87,44 +84,37 @@
                 .summaryShort__item(v-if="total.incomes > 0 || total.expenses > 0")
                   .summaryShort__item__icon._total
                   .summaryShort__item__label Total
-                  .summaryShort__item__total.sum {{ formatMoney(totalInYear(year).incomes - totalInYear(year).expenses) }}
+                  .summaryShort__item__total.sum {{ formatMoney(totalInYear(year).total) }}
 
                 .summaryShort__item
                   .summaryShort__item__icon._month
                   .summaryShort__item__label Month average
-                  template(v-if="year === 2017")
-                    .summaryShort__item__total.sum {{ formatMoney((totalInYear(year).incomes - totalInYear(year).expenses) / 5) }}
-                  template(v-else)
-                    .summaryShort__item__total.sum {{ formatMoney((totalInYear(year).incomes - totalInYear(year).expenses) / 12) }}
+                  .summaryShort__item__total.sum {{ formatMoney(totalInYear(year).average) }}
 
             .trns
               template(v-for="data in dataInYear(year)")
-                .itemStat._mbs._link(@click.prevent.stop="showTrns(year, data.month)")
-                  .itemStat__content
-                    .itemStat__text
-                      .itemStat__name {{ data.month }}
-                      .itemStat__price
-                        .incomes
-                          template(v-if="data.incomes > 0") {{formatMoney(data.incomes)}}
-                      .itemStat__price
-                        .expenses
-                          template(v-if="data.expenses > 0") {{formatMoney(data.expenses)}}
+                .itemGraph(:class="{_opened: showedTrns.indexOf(data.month + year) !== -1}")
+                  .itemGraph__in(@click.prevent.stop="toogleShowTrns(data.month, year)")
+                    .itemGraph__content
+                      .itemGraph__text
+                        .itemGraph__name {{ data.month }}
+                        .itemGraph__price.sum {{formatMoney(data.incomes - data.expenses)}}
 
-                    template(v-if="data.incomes > 0 || data.expenses > 0")
-                      .itemStat__graph
-                        template(v-if="data.incomes > 0")
-                          .itemStat__graph__in._income(:style="countWidthMonth(data.incomes)")
-                        template(v-if="data.expenses > 0")
-                          .itemStat__graph__in._expense(:style="countWidthMonth(data.expenses)")
-                    template(v-else)
-                      .itemStat__graph: .itemStat__graph__in
+                      template(v-if="data.incomes > 0 || data.expenses > 0")
+                        .itemGraph__graph
+                          template(v-if="data.incomes < data.expenses")
+                            .itemGraph__graph__in._expense(:style="countWidthMonth(data.expenses)")
+                            .itemGraph__graph__in._income(:style="countWidthMonth(data.incomes)")
+                          template(v-else)
+                            .itemGraph__graph__in._income(:style="countWidthMonth(data.incomes)")
+                            .itemGraph__graph__in._expense(:style="countWidthMonth(data.expenses)")
 
-  //- .module
+                      template(v-else)
+                        .itemGraph__graph: .itemGraph__graph__in
 
-  .module(v-if="selectedTrnList.length > 0")
-    h1.title._wide._trns Trns history
-    h2.title {{ selectedDateName }}
-    TrnsList(:trns="selectedTrnList")
+                  template(v-if="showedTrns.indexOf(data.month + year) !== -1")
+                    .itemGraph__trns
+                      TrnsList(:trns="data.trns", :noDates="true")
 </template>
 
 <script>
@@ -137,12 +127,20 @@ import TrnsList from './TrnsList.vue'
 export default {
   mixins: [formatMoney],
 
+  mounted() {
+    document.addEventListener('keyup', (event) => {
+      if (event.keyCode === 27) { // escape key
+        console.log('document.addEventListener: keyup')
+        this.showedTrns = []
+      }
+    })
+  },
+
   data() {
     return {
       showAll: false,
-      showChildren: false,
-      selectedTrnList: [],
-      selectedDateName: ''
+      showChildren: true,
+      showedTrns: []
     }
   },
 
@@ -204,7 +202,7 @@ export default {
     },
 
     dataByMonths() {
-      let data = []
+      const data = []
 
       this.years.forEach((year) => {
         const trnsInYear = this.trnsList.filter(trn => +moment(trn.date).format('Y') === year)
@@ -221,17 +219,17 @@ export default {
               .filter(trn => trn.type === 0)
               .reduce((sum, current) => sum + current.amountRub, 0)
 
-            data = [...data, {
+            data.push({
               month,
               incomes: incomesTotal > 0 ? incomesTotal : 0,
               expenses: expensesTotal > 0 ? expensesTotal : 0
-            }]
+            })
           } else {
-            data = [...data, {
+            data.push({
               month,
               incomes: 0,
               expenses: 0
-            }]
+            })
           }
         }
       })
@@ -255,7 +253,8 @@ export default {
           data.push({
             year,
             incomes: incomesTotal > 0 ? incomesTotal : 0,
-            expenses: expensesTotal > 0 ? expensesTotal : 0
+            expenses: expensesTotal > 0 ? expensesTotal : 0,
+            total: incomesTotal - expensesTotal
           })
         }
       }
@@ -265,28 +264,14 @@ export default {
   },
 
   methods: {
-    showTrns(year, month) {
-      if (month) {
-        // Trns for one month
-        const startDate = moment(`${month}.${year}`, 'MMMM.Y').valueOf()
-        const endDate = moment(startDate).endOf('month').valueOf()
-        this.selectedTrnList = this.trnsList.filter(t => t.date >= startDate && t.date <= endDate)
-        this.selectedDateName = `${month} ${year}`
-      } else {
-        // Trns for one year
-        const startDate = moment(year, 'Y').valueOf()
-        const endDate = moment(startDate).endOf('year').valueOf()
-        this.selectedTrnList = this.trnsList.filter(t => t.date >= startDate && t.date <= endDate)
-        this.selectedDateName = `Year ${year}`
-      }
-
-      setTimeout(() => {
-        this.$scrollTo('._trns', 400, { easing: 'ease-in-out' })
-      }, 10)
-    },
-
     toogleShowAll() {
       this.showAll = !this.showAll
+    },
+
+    toogleShowTrns(month, year) {
+      this.showedTrns.indexOf(month + year) === -1
+        ? this.showedTrns.push(month + year)
+        : this.showedTrns = this.showedTrns.filter(date => date !== month + year)
     },
 
     countWidthMonth(total) {
@@ -313,14 +298,18 @@ export default {
       const incomes = this.trnsList
         .filter(trn => trn.type === 1 && +moment(trn.date).format('Y') === +year)
         .reduce((sum, current) => sum + current.amountRub, 0)
-
       const expenses = this.trnsList
         .filter(trn => trn.type === 0 && +moment(trn.date).format('Y') === +year)
         .reduce((sum, current) => sum + current.amountRub, 0)
+      const total = incomes - expenses
+
+      const average = (year === 2017) ? total / 7 : total / 12
 
       return {
         expenses,
-        incomes
+        incomes,
+        total,
+        average
       }
     },
 
@@ -348,6 +337,7 @@ export default {
 
           data.push({
             month,
+            trns: trnsInMonth,
             incomes: incomesTotal > 0 ? incomesTotal : 0,
             expenses: expensesTotal > 0 ? expensesTotal : 0
           })
@@ -355,6 +345,7 @@ export default {
           if (this.showAll) {
             data.push({
               month,
+              trns: [],
               incomes: 0,
               expenses: 0
             })

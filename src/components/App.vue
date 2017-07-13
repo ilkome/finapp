@@ -27,7 +27,7 @@
         .topbar__in
           nav.menu
             router-link(to="/" exact).menuLink Dashboard
-            router-link(to="/summary").menuLink Summary
+            router-link(to="/summary").menuLink Total
             router-link(to="/incomes").menuLink Incomes
             router-link(to="/expenses").menuLink Expenses
             router-link(to="/categories").menuLink Categories

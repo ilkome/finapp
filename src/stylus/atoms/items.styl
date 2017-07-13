@@ -1,8 +1,9 @@
 .items
+  max-width 660px
   margin-bottom 60px
-  margin-left -15px
-  max-width 550px
   overflow-x auto
+  &:last-child
+    margin-bottom 0
 
 
 // Item
@@ -20,8 +21,8 @@
     color $color-main
     background $color-trn-hover
 
-  &:first-child
-    border-top 0
+  &:last-child
+    border 0
 
   &._selected
     border-top-color $color-body
@@ -224,10 +225,15 @@
 
 // #is
 .itemStat
+  position relative
+  display block
   min-width 300px
   color $color-second
   border 2px solid transparent
   border-radius 3px
+  background alpha(black, .2)
+  border 1px solid alpha(black, .3)
+  margin-bottom 15px
   anim()
 
   &._opened
@@ -238,18 +244,19 @@
     &:last-child
       margin-bottom 0
 
-  &._mb
-    margin-bottom 20px
-
-  &._mbs
-    margin-bottom 5px
+  // &._mb
+  //   margin-bottom 20px
+  //
+  // &._mbs
+  //   margin-bottom 5px
 
   &._link
     cursor pointer
+    &:hover
+      border-color $color-trn-hover-line
 
   &:hover
     background $color-trn-hover
-    border-color $color-rub
 
   &__in
     display flex
@@ -265,16 +272,16 @@
     display flex
     flex-flow column nowrap
     flex-grow 1
-    cursor pointer
 
   &__graph
     flex-grow 1
     background #242424
     border-radius 3px
+    overflow hidden
 
   &__graph__in
-    height 4px
-    border-radius 3px
+    height .6rem
+    border-radius 0
 
     &._expense
       background $color-expense

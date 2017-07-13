@@ -99,7 +99,6 @@ label, button, input, select, textarea
     margin-bottom 0
 
   &:focus, &:active
-    // height 60px
     padding-bottom 10px
     font-size 2rem
     text-transform none
@@ -220,47 +219,13 @@ label, button, input, select, textarea
 
   &__name
     cursor pointer
-    padding-left 15px
+    padding-left 5px
     anim()
 
     &:hover
       color $color-link
 
-  &__input:checked
-    & + .checkbox__name
-      color $color-rub
-//   width 21px
-//   height 21px
-//   margin 0 3px 0 0
-//   vertical-align top
-//
-//   & + label
-//     cursor pointer
-//
-//   &:not(checked)
-//     position absolute
-//     opacity 0
-//
-//     & + label
-//       position relative
-//       display inline-block
-//       padding 0 0 0 35px
-//       //font-size 14px
-//
-//     & + label:after
-//       content ''
-//       position absolute
-//       top -3px
-//       left 0px
-//       width 21px
-//       height 21px
-//       background url("../img/checkbox-b.png") no-repeat
-//
-//   &:checked
-//     //  checked
-//     & + label:after
-//       background-position 0 -21px
-//
-//     //  focus
-//     & + label:before
-//       position relative
+  &__input
+    &:checked
+      & + .checkbox__name
+        color $color-rub
