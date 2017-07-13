@@ -7,42 +7,24 @@
       .name {{ account.currency }}
       .sup {{ account.id }}
 
-    //- .summaryShort(v-if="account.totalExpenses > 0 || account.totalIncomes > 0")
-    //-   .summaryShort__item(v-if="account.totalIncome > 0")
-    //-     .summaryShort__item__icon._incomes
-    //-     .summaryShort__item__label Incomes
-    //-     .summaryShort__item__total.incomes {{ formatMoney(account.totalIncome) }}
-    //-
-    //-   .summaryShort__item(v-if="account.totalExpense > 0")
-    //-     .summaryShort__item__icon._expenses
-    //-     .summaryShort__item__label Expenes
-    //-     .summaryShort__item__total.expenses {{ formatMoney(account.totalExpense) }}
-
   .module._bg
     TrnsList(:trns="trnsList")
 </template>
 
 
 <script>
-import { mapGetters } from 'vuex'
-import moment from 'moment'
-import formatMoney from '../mixins/formatMoney'
 import TrnsList from './TrnsList.vue'
 
 export default {
-  mixins: [formatMoney],
-
   computed: {
-    ...mapGetters(['accounts', 'getTrns']),
-
     account() {
-      return this.accounts.find(a => a.id === +this.$route.params.id)
+      return this.$store.state.accounts.all.find(a => a.id === +this.$route.params.id)
     },
 
     trnsList() {
       return this.$store.state.trns.all
         .filter(t => t.accountId === this.account.id)
-        .slice(0, 100)
+        .slice(0, 30)
     }
   },
 
