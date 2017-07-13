@@ -161,7 +161,7 @@ const actions = {
 
       if (trnsIdsAdded) {
         const response = await getTransactions(trnsIdsAdded)
-        console.groupCollapsed('Format trn')
+        console.groupCollapsed('store/modules/addTrns: Format trn')
 
         if (Array.isArray(response)) {
           console.log('Is Array')
@@ -217,7 +217,7 @@ const actions = {
 
           console.log('Updated!')
           await commit('updateTrn', formatedNewTrn)
-          return true
+          return formatedNewTrn.id
         } else {
           commit('showError', 'store/transitions/updateTrn: newTrn: false')
           return false

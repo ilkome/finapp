@@ -5,8 +5,8 @@
     //------------------------------------------------
     h1.title._dashboard._trns Dashboard
     h2.title._mrg
-      .dropdown(v-on:mouseover="calendar.show = false")
-        .dropdown__name(v-on:mouseover="showedDurationDropdown = true")
+      .dropdown
+        .dropdown__name(@click="toogleDurationPop()")
           template(v-if="duration === 1") 1 Day.
           template(v-else) {{ duration }} days.
 
@@ -15,7 +15,7 @@
             template(v-for="day of days")
               a.dropdown__link(@click.prevent="setDuration(day)", :class="{_active: duration === day}") {{ day }}
 
-      .title__sub(v-on:mouseover="openPopupCalendar($event)")
+      .title__sub(@click="openPopupCalendar($event)")
         template(v-if="formatDate(startDate) === formatDate(endDate)")
           template(v-if="formatDate(startDate) === formatDate(today)") Today: {{ formatDate(startDate) }}
           template(v-else) {{ formatDate(startDate) }}
@@ -251,15 +251,12 @@ export default {
       ]
     }
 
-    document.addEventListener('click', () => {
-      this.calendar.show = false
-      this.showedDurationDropdown = false
-      document.removeEventListener('click', () => {})
-    })
-    document.addEventListener('keyup', () => {
-      this.calendar.show = false
-      this.showedDurationDropdown = false
-      document.removeEventListener('click', () => {})
+    document.addEventListener('keyup', (event) => {
+      if (event.keyCode === 27) { // escape key
+        console.log('document.addEventListener: keyup')
+        this.calendar.show = false
+        this.showedDurationDropdown = false
+      }
     })
   },
 
@@ -373,9 +370,14 @@ export default {
       this.$store.commit('setDuration', duration)
     },
 
+    toogleDurationPop() {
+      this.calendar.show = false
+      this.showedDurationDropdown = !this.showedDurationDropdown
+    },
+
     openPopupCalendar(event) {
       this.showedDurationDropdown = false
-      this.calendar.show = true
+      this.calendar.show = !this.calendar.show
       this.calendar.left = event.target.offsetLeft
       this.calendar.top = event.target.offsetTop + 40
     },

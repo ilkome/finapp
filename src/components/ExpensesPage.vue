@@ -9,14 +9,15 @@
       .categoryStat__trns
         h2.ml Years
         template(v-for="year of summaryYears.years")
-          .itemStat._mb
-            .itemStat__content
-              .itemStat__text
-                .itemStat__name {{ year.year }}
-                .itemStat__price.expenses {{ formatMoney(year.total) }}
-              .itemStat__graph
-                template(v-if="year.total > 0")
-                  .itemStat__graph__in._expense(:style="countWidth(year.total, summaryYears.biggestYear)")
+          .itemStat
+            .itemStat__in
+              .itemStat__content
+                .itemStat__text
+                  .itemStat__name {{ year.year }}
+                  .itemStat__price.expenses {{ formatMoney(year.total) }}
+                .itemStat__graph
+                  template(v-if="year.total > 0")
+                    .itemStat__graph__in._expense(:style="countWidth(year.total, summaryYears.biggestYear)")
 
       .categoryStat__summary
         h2 Summary
@@ -54,16 +55,19 @@
 
           .trns._limitHeight
             template(v-for="category in year.categories")
-              router-link.itemStat(
-                :to="`/categories/${category.id}`",
-                title="Перейти в категорию")
-                .itemStat__icon: .icon(:class="`icon-${category.parentId} icon-${category.id}`"): .icon__pic
-                .itemStat__content
-                  .itemStat__text
-                    .itemStat__name {{ category.name }}
-                    .itemStat__price {{ formatMoney(category.total) }}
-                  .itemStat__graph
-                    .itemStat__graph__in._expense(:style="countWidth(category.total, year.biggestCategory)")
+              .itemStat
+                .itemStat__in
+                  router-link.itemStat__icon(
+                    :to="`/categories/${category.id}`",
+                    title="Перейти в категорию"
+                  )
+                    .icon(:class="`icon-${category.parentId} icon-${category.id}`"): .icon__pic
+                  .itemStat__content
+                    .itemStat__text
+                      .itemStat__name {{ category.name }}
+                      .itemStat__price {{ formatMoney(category.total) }}
+                    .itemStat__graph
+                      .itemStat__graph__in._expense(:style="countWidth(category.total, year.biggestCategory)")
 </template>
 
 <script>

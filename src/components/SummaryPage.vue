@@ -9,18 +9,19 @@
       .categoryStat__trns._long
         h2.ml Years
         template(v-for="year of summaryYears.years")
-          .itemStat._mb
-            .itemStat__content
-              .itemStat__text
-                .itemStat__name {{ year.year }}
-                .itemStat__price.incomes {{ formatMoney(year.incomes) }}
-                .itemStat__price.expenses {{ formatMoney(year.expenses) }}
-                .itemStat__price.sum {{ formatMoney(year.total) }}
-              .itemStat__graph
-                template(v-if="year.incomes > 0")
-                  .itemStat__graph__in._income(:style="countWidth(year.incomes, summaryYears.biggestYear)")
-                template(v-if="year.expenses > 0")
-                  .itemStat__graph__in._expense(:style="countWidth(year.expenses, summaryYears.biggestYear)")
+          .itemStat
+            .itemStat__in
+              .itemStat__content
+                .itemStat__text
+                  .itemStat__name {{ year.year }}
+                  .itemStat__price.incomes {{ formatMoney(year.incomes) }}
+                  .itemStat__price.expenses {{ formatMoney(year.expenses) }}
+                  .itemStat__price.sum {{ formatMoney(year.total) }}
+                .itemStat__graph
+                  template(v-if="year.incomes > 0")
+                    .itemStat__graph__in._income(:style="countWidth(year.incomes, summaryYears.biggestYear)")
+                  template(v-if="year.expenses > 0")
+                    .itemStat__graph__in._expense(:style="countWidth(year.expenses, summaryYears.biggestYear)")
 
       .categoryStat__summary(v-if="summaryYears.years.length > 1")
         h2 Summary
@@ -62,17 +63,18 @@
             template(v-for="month in year.months")
               template(v-if="month.expenses > 0 || month.incomes > 0")
                 .itemStat
-                  .itemStat__content
-                    .itemStat__text
-                      .itemStat__name {{ month.month }}
-                      .itemStat__price.incomes {{ formatMoney(month.incomes)}}
-                      .itemStat__price.expenses  {{ formatMoney(month.expenses) }}
-                      .itemStat__price {{ formatMoney(month.incomes - month.expenses) }}
-                    .itemStat__graph
-                      template(v-if="month.incomes > 0")
-                        .itemStat__graph__in._income(:style="countWidth(month.incomes, year.biggestMonth)")
-                      template(v-if="month.expenses > 0")
-                        .itemStat__graph__in._expense(:style="countWidth(month.expenses, year.biggestMonth)")
+                  .itemStat__in
+                    .itemStat__content
+                      .itemStat__text
+                        .itemStat__name {{ month.month }}
+                        .itemStat__price.incomes {{ formatMoney(month.incomes)}}
+                        .itemStat__price.expenses  {{ formatMoney(month.expenses) }}
+                        .itemStat__price {{ formatMoney(month.incomes - month.expenses) }}
+                      .itemStat__graph
+                        template(v-if="month.incomes > 0")
+                          .itemStat__graph__in._income(:style="countWidth(month.incomes, year.biggestMonth)")
+                        template(v-if="month.expenses > 0")
+                          .itemStat__graph__in._expense(:style="countWidth(month.expenses, year.biggestMonth)")
 
           .categoryStat__summary
             .summaryShort(v-if="year.expenses > 0 || year.incomes > 0")

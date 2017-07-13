@@ -1,19 +1,40 @@
 <template lang="pug">
 .trnItem
-  template(v-if="noDates")
-    //- Trns small
-    //------------------------------------------------
+  //- pre {{ questionId }}
+  //- Trns for form
+  //------------------------------------------------
+  template(v-if="view === 'form'")
+    .trnItem__content
+      .grid._form
+        router-link.grid__item._icon(
+          :to="`/categories/${trn.categoryId}`",
+          title="Перейти в категорию"
+        )
+          .icon._link(:class="`icon-${trn.categoryId}`"): .icon__pic
+        .grid__item._price(:class="trn.type === 1 ? 'income' : 'expense'")
+          div {{ formatMoney(trn.amountRub) }}
+          div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
+        .grid__item
+          .grid__item__date {{ formatDate(trn.date, 'D MMM') }}
+          .grid__item__account {{ trn.accountName }}
+        .grid__item._description {{ trn.description }}
+        .grid__item._action(@click.prevent.stop="askQuestion(trn.id)"): .fa.fa-trash-o
+
+
+  //- Trns small
+  //------------------------------------------------
+  template(v-else-if="noDates")
     .trnItem__content
       .grid(:class="{_updated: trn.id === wasUpdatedTrn, _editable: trn.id === editedTrn}")
         .grid__item._price(:class="trn.type === 1 ? 'income' : 'expense'")
-          .sum {{ formatMoney(trn.amountRub) }}
-          .sum(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
+          div {{ formatMoney(trn.amountRub) }}
+          div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
         .grid__item
           .grid__item__date {{ formatDate(trn.date, 'D MMM') }}
           .grid__item__account {{ trn.accountName }}
         .grid__item._description {{ trn.description }}
         .grid__item._action(@click.stop.prevent="setEditTrn(trn.id)"): .fa.fa-pencil-square-o
-        .grid__item._action(@click.prevent.stop="question(trn.id)"): .fa.fa-trash-o
+        .grid__item._action(@click.prevent.stop="askQuestion(trn.id)"): .fa.fa-trash-o
 
   //- Trns big
   //------------------------------------------------
@@ -32,7 +53,7 @@
         .item__el._account(:class="trn.accountId === 1 ? 'c-tinkoff' : 'c-rub'") {{ trn.accountName }}
         .item__el._category {{ trn.categoryName }}
         .item__el._action(@click.stop.prevent="setEditTrn(trn.id)"): .fa.fa-pencil-square-o
-        .item__el._action(@click.prevent.stop="question(trn.id)"): .fa.fa-trash-o
+        .item__el._action(@click.prevent.stop="askQuestion(trn.id)"): .fa.fa-trash-o
 
 
   .item__question(:class="{_visible: questionId === trn.id}")
@@ -53,6 +74,10 @@ export default {
     trn: {
       type: Object,
       required: true
+    },
+    view: {
+      type: String,
+      required: false
     },
     noDates: {
       type: Boolean,
@@ -79,15 +104,24 @@ export default {
 
   methods: {
     async deleteTrn(id) {
-      console.groupCollapsed('TrnItem: deleteTrn')
+      console.groupCollapsed('TrnItem: deleteTrn:', Number(id))
       this.$store.commit('showLoader')
-      await this.$store.dispatch('deleteTrn', +id)
+      await this.$store.dispatch('deleteTrn', Number(id))
+      this.questionId = null
+      console.log(this.questionId)
+      console.log(this.$store.trnForm)
+
+      // if (this.$store.trnForm.isUpdateTrn === id) {
+      //   console.log(1)
+      // this.commit('toogleTrnForm')
+      // }
+
       this.$store.commit('disableLoader')
       console.groupEnd()
     },
 
-    question(accountId) {
-      this.questionId = accountId
+    askQuestion(trnId) {
+      this.questionId = trnId
     },
 
     close() {
@@ -95,7 +129,7 @@ export default {
     },
 
     setEditTrn(trnId) {
-      this.$store.commit('settrnForm', { action: 'update', trnId })
+      this.$store.commit('setTrnForm', { action: 'update', trnId })
     }
   }
 }

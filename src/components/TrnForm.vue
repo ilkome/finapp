@@ -24,6 +24,7 @@
       input.amountValueInput(
         v-model.lazy="values.amount",
         @keyup.enter="onSubmitForm",
+        v-focus.lazy="true",
         type="text" name="amount" placeholder="0")
 
   template(v-if="lastCategories.length > 1")
@@ -78,11 +79,17 @@
       type="text" name="description" placeholder="Description")
 
   .action
-    div(v-if="errors") {{ errors }}
+    template(v-if="errors")
+      .trnForm__errors {{ errors }}
     template(v-if="action === 'create'")
       .actionButton(@click.prevent="onSubmitForm()") Create trn
     template(v-if="action === 'update'")
       .actionButton(@click.prevent="onSubmitForm()") Update trn
+
+  //- pre {{ newTrnFormForm }}
+  //- template(v-if="$store.state.trnForm.wasUpdatedTrn")
+  //-   h3.title._mbs Updated trn
+  //-   TrnItem(:trn="newTrnFormForm", view="form")
 </template>
 
 
@@ -92,9 +99,12 @@ import moment from 'moment'
 import uniqBy from 'lodash/uniqBy'
 import { mapGetters } from 'vuex'
 import { focus } from 'vue-focus'
+import TrnItem from './TrnItem.vue'
 
 export default {
   directives: { focus: focus },
+
+  components: { TrnItem },
 
   watch: {
     '$route'(to, from) {
@@ -106,13 +116,25 @@ export default {
     action() {
       this.fillValues()
     },
-    updateTrn() {
-      this.fillValues()
+    isUpdateTrn() {
+      if (this.$store.state.trnForm.isUpdateTrn) {
+        this.fillValues()
+      }
     }
   },
 
   beforeMount() {
     this.fillValues()
+  },
+
+  mounted() {
+    document.addEventListener('click', this.closeDropdown())
+    document.addEventListener('keyup', (event) => {
+      if (event.keyCode === 27) { // escape key
+        console.log('document.addEventListener: keyup')
+        this.$store.commit('closeTrnForm')
+      }
+    })
   },
 
   data() {
@@ -137,8 +159,12 @@ export default {
       return this.$store.state.trnForm.action
     },
 
-    updateTrn() {
+    isUpdateTrn() {
       return this.$store.state.trnForm.isUpdateTrn
+    },
+
+    newTrnFormForm() {
+      return this.trns.find(trn => trn.id === this.$store.state.trnForm.wasUpdatedTrn)
     },
 
     categoriesList() {
@@ -184,7 +210,7 @@ export default {
           ...trn,
           date: moment(trn.date),
           accountId: trn.accountId,
-          amount: trn.amount + '', // Hack for trn update
+          amount: trn.amount,
           categoryId: trn.categoryId,
           type: trn.type,
           currency: trn.currency,
@@ -250,7 +276,7 @@ export default {
         const currentTime = moment().format('HH:mm:ss')
         const day = moment(this.values.date).format('D.MM.YY')
         const date = moment(`${day} ${currentTime}`, 'D.MM.YY HH:mm:ss').valueOf()
-        const amount = this.values.amount
+        const amount = String(this.values.amount)
         const dataFromTrns = []
 
         // Empty
@@ -264,7 +290,7 @@ export default {
         // One amount
         if (amount && amount.indexOf(',') === -1) {
           const calcAmount = calc(amount)
-          console.log('One:', calcAmount)
+          console.log('TrnForm@One amount:', calcAmount)
 
           if (calcAmount && calcAmount > 0) {
             dataFromTrns.push({
@@ -299,35 +325,31 @@ export default {
           }
         }
 
-        let done = false
+        if (!this.errors) {
+          // Create
+          if (this.action === 'create') {
+            const isAddedTrns = await this.$store.dispatch('addTrns', dataFromTrns)
+            console.log(isAddedTrns)
 
-        // Create
-        if (this.action === 'create') {
-          const isAddedTrns = await this.$store.dispatch('addTrns', dataFromTrns)
-          if (isAddedTrns) done = true
-        }
-
-        // Update only one trn
-        if (this.action === 'update') {
-          const isTrnUpdated = await this.$store.dispatch('updateTrn', dataFromTrns[0])
-          console.log(this.values.id)
-          if (isTrnUpdated) {
-            done = true
-            this.$store.commit('setUpdatedTrn', this.values.id)
-            this.$store.commit('toogleTrnForm')
+            if (isAddedTrns) {
+              this.values.amount = ''
+              this.values.description = ''
+              this.filter = ''
+            }
           }
-        }
 
-        // On done
-        if (done) {
-          this.values.amount = ''
-          this.values.description = ''
-          this.filter = ''
-          this.$store.commit('disableLoader')
+          // Update only one trn
+          if (this.action === 'update') {
+            const updatedTrnId = await this.$store.dispatch('updateTrn', dataFromTrns[0])
+            if (updatedTrnId) {
+              this.$store.commit('setUpdatedTrn', updatedTrnId)
+            }
+          }
         }
       } catch (error) {
         console.error(error)
       } finally {
+        this.$store.commit('disableLoader')
         console.groupEnd()
       }
     },
@@ -338,10 +360,6 @@ export default {
         this.show.categories = false
       }
     }
-  },
-
-  mounted() {
-    this.rootEl.addEventListener('click', this.closeDropdown())
   }
 }
 </script>

@@ -1,13 +1,18 @@
 .trnItem
   position relative
+  border-bottom 1px solid alpha($color-line, .5)
+
+  &:last-child
+    border-bottom none
 
 .gridTable
+  max-width 1200px
   display grid
   grid-template-columns repeat(auto-fit, minmax(320px, 1fr))
-  grid-column-gap 100px
+  grid-column-gap 1fr
 
   &__item
-    max-width 500px
+    max-width 470px
 
 .grid
   display grid
@@ -65,7 +70,8 @@
 
 .yearStat
   padding-right 100px
-  width 420px
+  max-width 600px
+  min-width 470px
 
 input.flatpickr-input
   opacity 0
@@ -280,4 +286,4 @@ input.flatpickr-input
 
 
 .ml
-  margin-left 10px
+  margin-left 15px
