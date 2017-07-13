@@ -254,10 +254,10 @@ const mutations = {
     state.all = trns
   },
   addTrn(state, trn) {
-    state.all.push(trn)
+    state.all.unshift(trn)
   },
   addTrns(state, trns) {
-    state.all.push(...trns)
+    state.all.unshift(...trns)
   },
   updateTrn(state, trn) {
     state.all = [
