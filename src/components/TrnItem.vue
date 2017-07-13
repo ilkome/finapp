@@ -113,6 +113,9 @@ export default {
       console.groupCollapsed('TrnItem: deleteTrn:', Number(id))
       this.$store.commit('showLoader')
       await this.$store.dispatch('deleteTrn', Number(id))
+      if (id === this.$store.state.trnForm.isUpdateTrn) {
+        this.$store.commit('closeTrnForm')
+      }
       this.questionId = null
       this.$store.commit('disableLoader')
       console.groupEnd()
