@@ -1,7 +1,8 @@
 .items
-  max-width 660px
+  max-width 570px
   margin-bottom 60px
-  overflow-x auto
+  // overflow-x auto
+
   &:last-child
     margin-bottom 0
 
@@ -46,9 +47,6 @@
     &:first-child
       margin-left 15px
 
-    &:last-child
-      margin-right 15px
-
     &._account
       width 130px
       white-space nowrap
@@ -56,10 +54,12 @@
       text-overflow ellipsis
 
     &._action
+      justify-content center
       width 46px
+      margin-left 15px
       opacity .2
       cursor pointer
-      padding 15px 10px
+      padding 15px 0
       font-size 1.5rem
       anim()
 
@@ -163,9 +163,8 @@
   visibility hidden
   position absolute
   left 0
-  top 0
+  top 1px
   width 100%
-  height 100%
   display flex
   align-items stretch
   justify-content flex-start
@@ -177,133 +176,3 @@
   &._visible
     opacity 1
     visibility visible
-
-.item__loader
-  opacity 0
-  visibility hidden
-  position absolute
-  left 0
-  top 0
-  width 100%
-  height 100%
-  display flex
-  align-items center
-  justify-content flex-start
-  padding 0 15px
-  background $color-trn
-  border-radius 3px
-  anim()
-
-  &._visible
-    opacity 1
-    visibility visible
-
-.loader
-  z-index 3
-  opacity 0
-  visibility hidden
-  position absolute
-  left 0
-  top 0
-  width 100%
-  height 100%
-  display flex
-  justify-content center
-  padding 100px 15px 0
-  font-size 5rem
-  background alpha($color-trn, .9)
-  border 1px solid $color-line
-  border-radius 3px
-  anim()
-
-  &._visible
-    opacity 1
-    visibility visible
-
-
-
-// #is
-.itemStat
-  position relative
-  display block
-  min-width 300px
-  color $color-second
-  border 2px solid transparent
-  border-radius 3px
-  background alpha(black, .2)
-  border 1px solid alpha(black, .3)
-  margin-bottom 15px
-  anim()
-
-  &._opened
-    margin-bottom 15px
-    background $color-trn-hover
-    border-color $color-line
-
-    &:last-child
-      margin-bottom 0
-
-  // &._mb
-  //   margin-bottom 20px
-  //
-  // &._mbs
-  //   margin-bottom 5px
-
-  &._link
-    cursor pointer
-    &:hover
-      border-color $color-trn-hover-line
-
-  &:hover
-    background $color-trn-hover
-
-  &__in
-    display flex
-    align-items center
-    padding 15px
-
-  &__icon
-    padding-right 15px
-    .icon:hover
-      background $color-link
-
-  &__content
-    display flex
-    flex-flow column nowrap
-    flex-grow 1
-
-  &__graph
-    flex-grow 1
-    background #242424
-    border-radius 3px
-    overflow hidden
-
-  &__graph__in
-    height .6rem
-    border-radius 0
-
-    &._expense
-      background $color-expense
-
-    &._income
-      background $color-income
-
-  &__name
-    flex-grow 1
-    padding-left 5px
-    text-transform capitalize
-    font-size 1.1rem
-
-  &__text
-    display flex
-    padding-bottom 10px
-
-  &__price
-    min-width 115px
-    max-width 125px
-    padding-right 5px
-    text-align right
-
-  &__trns
-    cursor default
-    padding 0 15px 0

@@ -1,8 +1,13 @@
-.itemGraph
+.itemStat
+  position relative
+  display block
   min-width 300px
   color $color-second
-  border 1px solid transparent
+  border 2px solid transparent
   border-radius 3px
+  background alpha(black, .2)
+  border 1px solid alpha(black, .3)
+  margin-bottom 15px
   anim()
 
   &._opened
@@ -13,68 +18,53 @@
     &:last-child
       margin-bottom 0
 
-  &._noCursor
-    & ^[0]__in
-      cursor default
-
+  &._link
+    cursor pointer
     &:hover
-      border-color transparent
+      border-color $color-trn-hover-line
 
   &:hover
-    border-color $color-trn-hover-line
+    background $color-trn-hover
 
   &__in
-    cursor pointer
-    position relative
     display flex
     align-items center
-    padding 10px
+    padding 15px
+
+  &__icon
+    padding-right 15px
+    .icon:hover
+      background $color-link
 
   &__content
     display flex
     flex-flow column nowrap
     flex-grow 1
 
-  &__text
-    z-index 2
-    position absolute
-    left 0
-    top 0px
-    width 100%
-    height 100%
-    display flex
-    padding 0 20px
-    align-items center
-
   &__name
     flex-grow 1
-    color alpha(white, .8)
-    font-size 1.1rem
+    padding-left 5px
     text-transform capitalize
+    font-size 1.1rem
+
+  &__text
+    display flex
+    padding-bottom 10px
 
   &__price
-    padding-top 2px
-    min-width 90px
+    min-width 115px
     max-width 125px
+    padding-right 5px
     text-align right
-
-    &.sum
-      color alpha(white, .7)
 
   &__graph
-    position relative
     flex-grow 1
     background #242424
-    border-radius 6px
-    text-align right
-    height 1.8rem
+    border-radius 3px
     overflow hidden
 
   &__graph__in
-    position absolute
-    left 0
-    top 0
-    height 100%
+    height .6rem
     border-radius 0
 
     &._expense
@@ -84,4 +74,5 @@
       background $color-income
 
   &__trns
-    padding 10px
+    cursor default
+    padding 0 15px 10px

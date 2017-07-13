@@ -16,6 +16,7 @@ Vue.filter('date', formatDate)
 // Plugins
 Vue.use(VueRouter)
 Vue.use(VueScrollTo)
+Vue.use(require('vue-shortkey'))
 
 const router = new VueRouter({
   routes,

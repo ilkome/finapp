@@ -10,15 +10,21 @@
 
           .items
             template(v-for="account in accountsList")
-              .item
-                .item__content
-                  .item__el._name {{ account.name }}
-                  .item__el._price
+              .categoryItem
+                .categoryItem__content
+                  router-link(:to="`/accounts/${account.id}`").categoryItem__icon
+                    .icon._link(:class="`bg-${account.id}`")
+                      .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
+                      .icon__label {{ account.name }}
+                  .categoryItem__name {{ account.name }}
+                  .item__el._price.sum
                     div {{ formatMoney(account.totalRub) }}
                     div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
                   .item__el._second {{ account.currency }}
-                  router-link.item__el._action(:to="`/accounts/${account.id}`"): .fa.fa-list
-                  .item__el._action(@click.prevent.stop="askQuestion(account.id)"): .fa.fa-trash-o
+                  router-link.categoryItem__action(:to="`/accounts/${account.id}`")
+                    .fa.fa-list
+                  .categoryItem__action(@click.prevent="askQuestion(account.id)")
+                    .fa.fa-trash-o
 
                 .item__question(:class="{_visible: questionId === account.id}")
                   .item__el._question Delete account {{ account.name }}?
@@ -28,7 +34,7 @@
 
         .gridTable__item
           .panel._smallWidth
-            h4.title Create account
+            h4.title._mbs Create account
             .panel__content
               .input
                 input(v-model.trim="account.name", placeholder="Write account name" type="text").input__field

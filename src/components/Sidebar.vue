@@ -5,7 +5,7 @@
       .account
         .accountTitle Accounts
         .accountContent
-          template(v-for="(account, index) in accountsList")
+          template(v-for="(account, index) in accounts")
             template(v-if="index < visibleAccounts")
               router-link.accountContentItem._circle(
                   :to="`/accounts/${account.id}`",
@@ -42,7 +42,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import orderBy from 'lodash/orderBy'
 import formatMoney from '../mixins/formatMoney'
 
 export default {
@@ -56,10 +55,6 @@ export default {
 
   computed: {
     ...mapGetters(['accounts', 'rates']),
-
-    accountsList() {
-      return orderBy(this.accounts, a => a.order, 'asc')
-    },
 
     total() {
       const accounts = this.accounts.filter(a => a.countTotal === 1)
