@@ -58,7 +58,10 @@
             input.checkbox__input(type="checkbox" v-model="showChildren")
             .checkbox__name Count with children categories
           div(v-for="category in childrenCategories")
-            div {{ category.name }}
+            router-link.link(
+              :to="`/categories/${category.id}`",
+              title="Перейти в категорию"
+            ) {{ category.name }}
   .tabs
     a(@click.prevent="toogleShowAll()", :class="{_active: !showAll}") Months with data
     a(@click.prevent="toogleShowAll()", :class="{_active: showAll}") All months

@@ -113,11 +113,11 @@
   //------------------------------------------------
   template(v-if="(incomesCategoriesData.length || expensesCategoriesData.length) > 0")
     .tabs
-      a(@click="changeTab('summary')", :class="{_active: showedTab === 'summary'}") Summary
+      a(@click="changeTab('statistic')", :class="{_active: showedTab === 'statistic'}") Statistic
       a(@click="changeTab('trns')", :class="{_active: showedTab === 'trns'}") Trns
 
 
-    .module._bg(v-show="showedTab === 'summary'")
+    .module._bg(v-show="showedTab === 'statistic'")
       .gridTable
         //- Expenses
         //------------------------------------------------
@@ -216,7 +216,7 @@ export default {
 
   data() {
     return {
-      showedTab: 'summary',
+      showedTab: 'statistic',
       days: [1, 5, 10, 7, 14, 30, 999],
       selectedPeriodIndex: 0,
       numberOfPeriods: 6,
