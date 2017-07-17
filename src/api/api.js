@@ -66,7 +66,7 @@ async function addCategory(category) {
         params: { transform: 1 }
       })
       if (category.data) {
-        return category.data
+        return category
       } else {
         console.error('api.js: category')
         return false
