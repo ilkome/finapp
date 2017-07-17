@@ -46,6 +46,5 @@ gulp.task('zip', () => {
 gulp.task('watcher', () => {
   watch(paths.assets.src, () => runSequence('assets', 'browserSync-reload'))
   watch(paths.images.src, () => runSequence('images', 'browserSync-reload'))
-  watch(paths.layout.src, () => runSequence('pug', 'browserSync-reload'))
   watch(paths.stylus.src, () => gulp.start('stylus'))
 })
