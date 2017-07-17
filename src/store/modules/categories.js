@@ -45,12 +45,12 @@ const store = {
           name: category.name,
           parentId: category.parentId ? category.parentId : 0
         }
-        const postData = await axios.post(`${CATEGORIES_URL}`, formatedCategory)
+        const postData = await addCategory(formatedCategory)
         console.log('post:', postData)
         console.log('post.data:', postData.data)
 
-        if (postData.data > 0) {
-          const getCategory = await axios.get(`${CATEGORIES_URL}/${postData.data}`, {
+        if (postData.data) {
+          const getCategory = await axios.get(`${CATEGORIES_URL}/${postData.data.id}`, {
             params: { transform: 1 }
           })
           console.log('getCategory.data:', getCategory.data)
@@ -128,14 +128,12 @@ const store = {
 
     addCategory(state, category) {
       const categories = [category, ...state.all]
-      const sortedCategories = orderBy(categories, ['name'], ['asc'])
-      state.all = sortedCategories
+      state.all = orderBy(categories, ['name'], ['asc'])
     },
 
     updateCategory(state, category) {
       const categories = [category, ...state.all.filter(c => c.id !== category.id)]
-      const sortedCategories = orderBy(categories, ['name'], ['asc'])
-      state.all = sortedCategories
+      state.all = orderBy(categories, ['name'], ['asc'])
     },
 
     deleteCategory(state, id) {
