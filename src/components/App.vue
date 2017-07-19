@@ -21,30 +21,39 @@
           .loading__name._error {{ $store.state.error }}
           .loading__update(@click.prevent="updateAppData()") Update Application
 
-    Sidebar
-    .main
-      .topbar
-        .topbar__in
-          nav.menu
-            router-link(to="/" exact).menuLink Dashboard
-            router-link(to="/summary").menuLink Total
-            router-link(to="/incomes").menuLink Incomes
-            router-link(to="/expenses").menuLink Expenses
-            router-link(to="/categories").menuLink Categories
-            router-link(to="/accounts").menuLink Accounts
-            router-link(to="/trns").menuLink History
+    transition(name="leftBarAnimation")
+      .sidebar(v-show="$store.state.leftBar.isShow")
+        Sidebar
 
-          a.toogleTrnCreateBtn(
-            v-shortkey="['alt', 'i']" @shortkey="$store.commit('toogleTrnForm')"
-            @click.prevent.stop="$store.commit('toogleTrnForm')",
-            :class="{_active: $store.state.trnForm.isShow}")
-            .toogleTrnCreateBtn__icon: .toogleTrnCreateBtn__icon__in +
+    .topbar(:class="$store.state.leftBar.isShow && '_withLeftBar'")
+      .fa.fa-bars(
+        v-shortkey="['alt', 'arrowleft']",
+        @shortkey="$store.commit('toogleLeftBar')",
+        @click.prevent="$store.commit('toogleLeftBar')"
+      ).leftBarToogle
+      .topbar__in
+        nav.menu
+          router-link(to="/" exact).menuLink Dashboard
+          router-link(to="/summary").menuLink Total
+          router-link(to="/incomes").menuLink Incomes
+          router-link(to="/expenses").menuLink Expenses
+          router-link(to="/categories").menuLink Categories
+          router-link(to="/accounts").menuLink Accounts
+          router-link(to="/trns").menuLink History
 
-        transition(name="slideToLeft")
-          .rightBar(v-show="$store.state.trnForm.isShow")
-            .rightBar__in
-              TrnForm
+        a(
+          v-shortkey="['alt', 'arrowright']",
+          @shortkey="$store.commit('toogleTrnForm')",
+          @click.prevent.stop="$store.commit('toogleTrnForm')",
+          :class="{_active: $store.state.trnForm.isShow}"
+        ).toogleTrnCreateBtn
+          .toogleTrnCreateBtn__icon: .toogleTrnCreateBtn__icon__in +
 
+    transition(name="slideToLeft")
+      .trnForm(v-show="$store.state.trnForm.isShow")
+        TrnForm
+
+    .main(:class="$store.state.leftBar.isShow && '_withLeftBar'")
       transition(name="slide")
         router-view
 </template>

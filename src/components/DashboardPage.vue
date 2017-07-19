@@ -135,15 +135,14 @@
 
           .trns
             template(v-for="categoryData in expensesCategoriesData")
-              .itemStat._link(
-                :class="{_opened: showedTrnsCategoryId.indexOf(categoryData.id) !== -1}"
-              )
+              .itemStat._link(:class="{_opened: showedTrnsCategoryId.indexOf(categoryData.id) !== -1}")
                 .itemStat__in(@click.prevent.stop="toogleShowTrnsInCategory(categoryData.id)")
                   router-link.itemStat__icon(
                     :to="`/categories/${categoryData.id}`",
-                    title="Перейти в категорию"
+                    title="Go to category"
                   )
-                    .icon(:class="`icon-${categoryData.parentId} icon-${categoryData.id}`"): .icon__pic
+                    .icon(:style="`background: ${categoryData.color}`")
+                      div(:class="categoryData.icon")
                   .itemStat__content
                     .itemStat__text
                       .itemStat__name {{ categoryData.name }}
@@ -171,16 +170,14 @@
 
           .trns
             template(v-for="categoryData in incomesCategoriesData")
-              .itemStat._link(
-                :class="{_opened: showedTrnsCategoryId.indexOf(categoryData.id) !== -1}",
-                @click.prevent="toogleShowTrnsInCategory(categoryData.id)"
-              )
-                .itemStat__in
+              .itemStat._link(:class="{_opened: showedTrnsCategoryId.indexOf(categoryData.id) !== -1}")
+                .itemStat__in(@click.prevent="toogleShowTrnsInCategory(categoryData.id)")
                   router-link.itemStat__icon(
                     :to="`/categories/${categoryData.id}`",
-                    title="Перейти в категорию"
+                    title="Go to category"
                   )
-                    .icon(:class="`icon-${categoryData.id}`"): .icon__pic
+                    .icon(:style="`background: ${categoryData.color}`")
+                      div(:class="categoryData.icon")
                   .itemStat__content
                     .itemStat__text
                       .itemStat__name {{ categoryData.name }}
@@ -475,6 +472,8 @@ export default {
             id,
             name: category.name,
             total,
+            icon: category.icon,
+            color: category.color,
             trns: trnsInCategory
           }
         })

@@ -56,7 +56,20 @@ function formatTrn(trn, options) {
   const categoryId = +trn.categoryId
   const category = options.categories.find(cat => cat.id === categoryId)
   let categoryName
+
+  let categoryColor = category.color
+  const categoryIcon = category.icon
+
   if (category) {
+    if (!categoryColor) {
+      if (category.parentId > 0) {
+        const parent = options.categories.find(cat => cat.id === category.parentId)
+        if (parent && parent.color) {
+          categoryColor = parent.color
+        }
+      }
+    }
+
     categoryName = category.name
   } else {
     console.error('Category not found. Id:', categoryId)
@@ -73,6 +86,8 @@ function formatTrn(trn, options) {
     amount,
     amountRub,
     categoryId,
+    categoryColor,
+    categoryIcon,
     categoryName,
     date,
     description,
@@ -92,7 +107,7 @@ const state = {
 // ==============================================
 const getters = {
   trns(state) {
-    return state.all
+    return orderBy(state.all, trn => trn.date, 'desc')
   },
 
   getTrns: (state, getters) => (startDate, endDate, type = false) => {
@@ -261,8 +276,8 @@ const mutations = {
   },
   updateTrn(state, trn) {
     state.all = [
-      ...state.all.filter(t => t.id !== trn.id),
-      trn
+      trn,
+      ...state.all.filter(t => t.id !== trn.id)
     ]
   },
   deleteTrn(state, id) {

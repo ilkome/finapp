@@ -1,6 +1,114 @@
 .trnForm
+  z-index 2
+  position fixed
+  right 0
+  top 46px
+  height calc(100% - 46px)
+  background $color-sidebar
+  border none
+  border-left 2px solid $color-line
+
+  &__in
+    width 620px
+    height 100%
+
+  &__form
+    overflow hidden
+    overflow-y scroll
+    height 100%
+    padding 58px 60px
+    scrollbar()
+
   &__errors
     font-weight bold
     font-size 1.2rem
     color $color-expense
     margin-bottom 2rem
+
+  &__icons
+    margin-bottom 50px
+
+  &__categories
+    position absolute
+    left 0
+    top 0
+    width 100%
+    height 100%
+    background $color-sidebar
+
+    &__in
+      overflow-y scroll
+      height 100%
+      padding 58px 60px
+      scrollbar()
+
+  &__header
+    display flex
+    align-items center
+    justify-content space-between
+    margin-bottom 30px
+    padding-bottom 7px
+    border-bottom 1px solid $color-line-account
+
+    &__close
+      margin-top -5px
+
+  &__filter
+    display flex
+    margin-bottom 30px
+
+  &__date
+    display flex
+    margin-bottom 30px
+    justify-content space-between
+    align-items center
+    font-size 1rem
+
+    &__value
+      min-width 160px
+      display flex
+      align-items center
+      justify-content center
+      padding-left 15px
+      text-transform uppercase
+      font-size 1.6rem
+      font-weight bold
+      $font-numbers()
+
+      &__in
+        padding-left 10px
+
+    &__link
+      margin-top -3px
+      padding 15px 50px
+      opacity .5
+      border none
+      color $color-main
+      cursor pointer
+      anim()
+
+      ^[1]:hover &
+        opacity 1
+        background alpha(white, .3)
+        border-radius 3px
+
+  &__desc
+    height 70px
+
+  &__actions__btn
+    display inline-flex
+    padding 20px 80px
+    color $color-main
+    font-size 1rem
+    font-weight bold
+    text-transform uppercase
+    letter-spacing 2px
+    background $color-line
+    border 1px solid transparent
+    border-radius 3px
+    cursor pointer
+    anim()
+
+    &:hover
+      color $color-link
+      border-color $color-link

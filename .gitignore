@@ -2,6 +2,7 @@ app/api/apiUrl.js
 
 node_modules/
 dist/
+.vscode
 
 npm-debug.log
 config/ftp.conf.js

@@ -59,15 +59,16 @@
                 .itemStat__in
                   router-link.itemStat__icon(
                     :to="`/categories/${category.id}`",
-                    title="Перейти в категорию"
+                    title="Go to category"
                   )
-                    .icon(:class="`icon-${category.parentId} icon-${category.id}`"): .icon__pic
+                    .icon(:style="`background: ${category.color}`")
+                      div(:class="category.icon")
                   .itemStat__content
                     .itemStat__text
                       .itemStat__name {{ category.name }}
-                      .itemStat__price {{ formatMoney(category.total) }}
+                      .itemStat__price.sum {{ formatMoney(category.total) }}
                     .itemStat__graph
-                      .itemStat__graph__in._expense(:style="countWidth(category.total, year.biggestCategory)")
+                      .itemStat__graph__in._income(:style="countWidth(category.total, year.biggestCategory)")
 </template>
 
 <script>
@@ -119,6 +120,8 @@ export default {
                 id: category.id,
                 parentId: category.parentId,
                 name: categoryName,
+                icon: category.icon,
+                color: category.color,
                 total: categoryExpenses
               })
             }

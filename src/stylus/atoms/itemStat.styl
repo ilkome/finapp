@@ -3,7 +3,6 @@
   display block
   min-width 300px
   color $color-second
-  border 2px solid transparent
   border-radius 3px
   background alpha(black, .2)
   border 1px solid alpha(black, .3)
@@ -20,6 +19,8 @@
 
   &._link
     cursor pointer
+    margin-top 0
+
     &:hover
       border-color $color-trn-hover-line
 
@@ -34,7 +35,7 @@
   &__icon
     padding-right 15px
     .icon:hover
-      background $color-link
+      background $color-link !important
 
   &__content
     display flex

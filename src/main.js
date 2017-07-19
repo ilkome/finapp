@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueScrollTo from 'vue-scrollto'
+import VueShortkey from 'vue-shortkey'
 import moment from 'moment'
 import store from './store/store'
 import routes from './routes'
@@ -16,7 +17,7 @@ Vue.filter('date', formatDate)
 // Plugins
 Vue.use(VueRouter)
 Vue.use(VueScrollTo)
-Vue.use(require('vue-shortkey'))
+Vue.use(VueShortkey)
 
 const router = new VueRouter({
   routes,
@@ -39,10 +40,3 @@ new Vue({
   router,
   render: h => h(App)
 })
-//
-// // Add class depends on  is device touch or not
-// if (!('ontouchstart' in document.documentElement)) {
-//   document.documentElement.className += ' no-touch'
-// } else {
-//   document.documentElement.className += ' touch'
-// }

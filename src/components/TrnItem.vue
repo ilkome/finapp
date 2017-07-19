@@ -8,7 +8,7 @@
       .grid._form
         router-link.grid__item._icon(
           :to="`/categories/${trn.categoryId}`",
-          title="Перейти в категорию"
+          title="Go to category"
         )
           .icon._link(:class="`icon-${trn.categoryId}`"): .icon__pic
         .grid__item._price(:class="trn.type === 1 ? 'income' : 'expense'")
@@ -48,7 +48,8 @@
           :to="`/categories/${trn.categoryId}`",
           title="Перейти в категорию"
         )
-          .icon._link(:class="`icon-${trn.categoryId}`"): .icon__pic
+          .icon._link(:style="`background: ${trn.categoryColor}`")
+            div(:class="trn.categoryIcon")
 
         .item__el._price(:class="trn.type === 1 ? 'income' : 'expense'")
           div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
@@ -64,7 +65,7 @@
 
   .item__question(:class="{_visible: questionId === trn.id}")
     .item__el._question
-      div Удалить транзакцию?
+      div Delete trn?
     .item__el._action(@click.prevent.stop="close()"): .fa.fa-ban
     .item__el._action(@click.prevent.stop="deleteTrn(trn.id)"): .fa.fa-check
 </template>

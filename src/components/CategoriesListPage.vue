@@ -16,11 +16,19 @@
             :class="{_editable: editedCategory === category.id, _opened: showedChildrenCategories.indexOf(category.id) !== -1}"
           )
             .categoryItem__content
-              router-link(:to="`/categories/${category.id}`").categoryItem__icon
-                .icon(:class="`icon-${category.id}`"): .icon__pic
-              .categoryItem__name {{ category.name }}
-              template(v-if="category.children")
+              router-link(
+                :to="`/categories/${category.id}`",
+                title="Перейти в категорию"
+              ).categoryItem__icon
+                .icon(:style="`background: ${category.color}`")
+                  .icon__pic
+                    div(:class="category.icon")
+
+              template(v-if="category.children && editedCategory !== category.id")
+                .categoryItem__name(@click="toogleShowChildrenCategoriess(category.id)") {{ category.name }}
                 .categoryItem__action(@click="toogleShowChildrenCategoriess(category.id)"): .fa.fa-list
+              template(v-else)
+                .categoryItem__name {{ category.name }}
 
               template(v-if="editedCategory === category.id")
                 .categoryItem__action(@click.prevent="setEditedCategory(category.id)")
@@ -34,7 +42,7 @@
 
             .item__question(:class="{_visible: questionId === category.id}")
               .item__el._question
-                div Удалить транзакцию?
+                div Delete category?
               .item__el._action(@click.prevent.stop="close()"): .fa.fa-ban
               .item__el._action(@click.prevent.stop="deleteCategory(category.id)"): .fa.fa-check
 
@@ -46,9 +54,19 @@
                   .input
                     input.input__field(
                       v-model.lazy="values.name = category.name", type="text" name="name")
+                    .input__label Name
+                  .input
+                    input.input__field(
+                      v-model.lazy="values.color = category.color", type="text" name="color")
+                    .input__label Color
+                  .input
+                    input.input__field(
+                      v-model.lazy="values.icon = category.iconValue", type="text" name="icon")
+                    .input__label Icon
                   .input
                     input.input__field(
                       v-model.lazy="values.parentId = category.parentId", type="text" name="parentId")
+                    .input__label Parent id
                   .btn(@click="updateCategory(category, values)") Update
 
             //- Children
@@ -60,9 +78,13 @@
                     v-for="childrenCategory in category.children",
                     :key="childrenCategory.id",
                     :class="{_editable: editedCategory === childrenCategory.id}")
+
                     .categoryItem__content
                       router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon
-                        .icon(:class="`icon-${childrenCategory.parentId} icon-${childrenCategory.id}`"): .icon__pic
+                        .icon(:style="`background: ${childrenCategory.color}`")
+                          .icon__pic
+                            div(:class="childrenCategory.icon")
+
                       router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__name {{ childrenCategory.name }}
                       template(v-if="editedCategory === childrenCategory.id")
                         .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-times-circle
@@ -85,11 +107,20 @@
                           .input
                             input.input__field(
                               v-model.lazy="values.name = childrenCategory.name", type="text" name="name")
+                            .input__label Name
+                          .input
+                            input.input__field(
+                              v-model.lazy="values.color = childrenCategory.color", type="text" name="color")
+                            .input__label Color
+                          .input
+                            input.input__field(
+                              v-model.lazy="values.icon = childrenCategory.iconValue", type="text" name="icon")
+                            .input__label Icon
                           .input
                             input.input__field(
                               v-model.lazy="values.parentId = childrenCategory.parentId", type="text" name="parentId")
+                            .input__label Parent id
                           .btn(@click="updateCategory(childrenCategory, values)") Update
-
 
       .gridTable__item
         .panel._mb
@@ -99,133 +130,35 @@
               input(v-model.trim="newCategory.name", placeholder="Write category name" type="text").input__field
               .input__label Name
             .input
+              input.input__field(
+                v-model.lazy="newCategory.color", type="text" name="color")
+              .input__label Color
+            .input
+              input.input__field(
+                v-model.lazy="newCategory.icon", type="text" name="icon")
+              .input__label Icon
+            .input
               input(v-model.trim="newCategory.parentId", placeholder="Write parent id" type="text").input__field
               .input__label Parent id
             .submit
               .submit__btn(@click.prevent="addCategory(newCategory)") Create category
 
-        .categoriesIcons._mb
-          .categoriesIcons__el(v-for="category in categoriesList", :key="category.id")
-            router-link.icon(
-              :to="`/categories/${category.id}`",
-              :class="`icon-${category.id}`",
-              :title="category.name"): .icon__pic
+        .panel._mb
+          ul
+            li: a.link(href="http://fontawesome.io/icons/", target="_blank") Fontawesome icons
+            li: a.link(href="https://materialdesignicons.com/", target="_blank") Material Design Icons
+
+        .panel._mb
+          .categoriesIcons
+            .categoriesIcons__el(v-for="category in sortedCategories", :key="category.id")
+              router-link(:to="`/categories/${category.id}`").categoryItem__icon
+                .icon(:style="`background: ${category.color}`")
+                  .icon__pic
+                    template(v-if="category.icon")
+                      .fa(:class="category.icon")
+                    template(v-else)
+                      .fa.fa-industry
+                  .icon__label {{ category.name }}
 
 </template>
-
-<script>
-import { mapGetters } from 'vuex'
-import orderBy from 'lodash/orderBy'
-import { mixin } from 'vue-focus'
-
-export default {
-  mixins: [mixin],
-
-  data() {
-    return {
-      filter: '',
-      editedCategory: false,
-      values: {
-        name: null,
-        parentId: 0
-      },
-      newCategory: {
-        name: '',
-        parentId: 0
-      },
-      questionId: false,
-      showedChildrenCategories: []
-    }
-  },
-
-  computed: {
-    ...mapGetters(['categories']),
-
-    categoriesList() {
-      let filteredCategories = []
-      if (this.filter !== '') {
-        filteredCategories = this.categories
-          .filter(c => c.name.toLowerCase().search(this.filter.toLowerCase()) !== -1)
-      } else {
-        filteredCategories = this.categories
-      }
-
-      const sortedCategories = []
-      const rootCategories = filteredCategories.filter(c => c.parentId === 0)
-      rootCategories.forEach((category) => {
-        const childrenCategories = filteredCategories.filter(c => c.parentId === category.id)
-        if (childrenCategories && childrenCategories.length > 0) {
-          sortedCategories.push({
-            ...category,
-            children: childrenCategories
-          })
-        } else {
-          sortedCategories.push({ ...category })
-        }
-      })
-
-      return orderBy(sortedCategories, c => c.name, 'asc')
-    }
-  },
-
-  methods: {
-    askQuestion(accountId) {
-      console.log(accountId)
-      this.questionId = accountId
-    },
-
-    close() {
-      this.questionId = false
-    },
-
-    toogleShowChildrenCategoriess(categoryId) {
-      if (this.showedChildrenCategories.indexOf(categoryId) === -1) {
-        this.showedChildrenCategories.push(categoryId)
-      } else {
-        this.showedChildrenCategories = this.showedChildrenCategories.filter(cId => cId !== categoryId)
-      }
-    },
-
-    setEditedCategory(categoryId) {
-      if (this.editedCategory === +categoryId) this.editedCategory = false
-      else this.editedCategory = categoryId
-    },
-
-    async addCategory(category) {
-      console.groupCollapsed('CategoriesList: addCategory')
-      this.$store.commit('showLoader')
-      const result = await this.$store.dispatch('addCategory', category)
-      if (result) {
-        this.newCategory.name = ''
-        this.newCategory.parentId = ''
-        this.$store.commit('disableLoader')
-      }
-      console.groupEnd()
-    },
-
-    async updateCategory(category, values) {
-      console.groupCollapsed('CategoriesList: updateCategory')
-      this.$store.commit('showLoader')
-      const updatedCategory = {
-        ...category,
-        ...values
-      }
-      const result = await this.$store.dispatch('updateCategory', updatedCategory)
-      if (result) {
-        this.editedCategory = false
-        this.$store.commit('disableLoader')
-      }
-      console.groupEnd()
-    },
-
-    async deleteCategory(categoryId) {
-      this.questionId = false
-      console.groupCollapsed('CategoriesList: deleteCategory')
-      this.$store.commit('showLoader')
-      await this.$store.dispatch('deleteCategory', +categoryId)
-      this.$store.commit('disableLoader')
-      console.groupEnd()
-    }
-  }
-}
-</script>
+<script src="./categoriesListPage.js"></script>

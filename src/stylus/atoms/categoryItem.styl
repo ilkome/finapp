@@ -1,0 +1,124 @@
+// Category Item
+// ===============================================
+.categoryItem
+  overflow hidden
+  position relative
+  display block
+  min-width 300px
+  margin-bottom 15px
+  color $color-second
+  border-radius 3px
+  background $color-layout
+  border 1px solid alpha(white, .05)
+  anim()
+
+  &._link
+    cursor pointer
+
+  &._active
+    & ^[0]__content
+      cursor default
+      opacity .7
+
+  &._opened
+    background $color-trn-hover
+    border-color $color-line
+
+  &:hover
+    border-color $color-trn-hover-line
+
+  &:last-child
+    margin-bottom 0
+
+  &__content
+    display flex
+    flex-flow row nowrap
+    flex-grow 1
+    align-items center
+    padding 10px
+    color $color-second
+    anim()
+
+    &:hover
+      background $color-trn-hover
+
+    &:focus
+      outline 0
+      color $color-white
+      background $color-trn-hover-line
+
+  &__icon
+    padding-right 15px
+
+  &__name
+    flex-grow 1
+    text-transform capitalize
+    font-size 1.1rem
+
+  &__text
+    display flex
+    padding-bottom 10px
+
+  &__action
+    display block
+    text-align center
+    opacity .2
+    width 55px
+    font-size 1.5rem
+    cursor pointer
+    anim()
+
+    ^[0]__content:hover &
+      opacity 1
+
+    &:hover
+      opacity 1
+      color $color-link
+
+    &:last-child
+      margin-right 0
+
+  &__children
+    padding 0 15px 10px
+
+
+// Category Item Child
+// ===============================================
+.categoryItemChild
+  position relative
+  display block
+  min-width 300px
+  margin 0
+  border none
+  color $color-second
+  border-top 1px solid $color-line
+
+  &._link
+    cursor pointer
+
+  &._active
+    & ^[0]__content
+      cursor default
+      opacity .7
+
+  &:hover &__action
+    opacity 1
+
+  &:last-child
+    margin-bottom 0
+    border-bottom none
+
+  &__content
+    @extend .categoryItem__content
+
+  &__icon
+    @extend .categoryItem__icon
+
+  &__name
+    @extend .categoryItem__name
+
+  &__text
+    @extend .categoryItem__text
+
+  &__action
+    @extend .categoryItem__action
