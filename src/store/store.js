@@ -26,6 +26,9 @@ const state = {
   filter: {
     duration: 10
   },
+  leftBar: {
+    isShow: true
+  },
   trnForm: {
     isShow: false,
     action: 'create',
@@ -75,6 +78,10 @@ const mutations = {
       state.trnForm.isUpdateTrn = trnId
       state.trnForm.wasUpdatedTrn = false
     }
+  },
+
+  toogleLeftBar() {
+    state.leftBar.isShow = !state.leftBar.isShow
   },
 
   pageLoaded() {

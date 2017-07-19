@@ -2,7 +2,7 @@ import AccountPage from './components/AccountPage.vue'
 import AccountsListPage from './components/AccountsListPage.vue'
 import DashboardPage from './components/DashboardPage.vue'
 import TrnsListPage from './components/TrnsListPage.vue'
-import CategoriesList from './components/CategoriesList.vue'
+import CategoriesListPage from './components/CategoriesListPage.vue'
 import CategoryItemPage from './components/CategoryItemPage.vue'
 import SummaryPage from './components/SummaryPage.vue'
 import IncomesPage from './components/IncomesPage.vue'
@@ -13,7 +13,7 @@ const routes = [
   { path: '/', component: DashboardPage },
   { path: '/accounts', component: AccountsListPage },
   { path: '/accounts/:id', component: AccountPage },
-  { path: '/categories', component: CategoriesList },
+  { path: '/categories', component: CategoriesListPage },
   { path: '/categories/:id', component: CategoryItemPage },
   { path: '/incomes', component: IncomesPage },
   { path: '/expenses', component: ExpensesPage },

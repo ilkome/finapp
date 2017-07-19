@@ -43,3 +43,29 @@
   &-leave-to
     opacity 0
     transform translateY(-100px)
+
+// Slide to Top
+// ===============================================
+.trnFormAnimation
+  &-enter-active
+  &-leave-active
+    transition all .3s cubic-bezier(0.17, 0.04, 0.03, 0.94)
+
+  &-enter
+  &-leave-to
+    opacity 0
+    transform translateY(30%)
+
+
+// Slide to Top
+// ===============================================
+.leftBarAnimation
+  &-enter-active
+  &-leave-active
+    opacity 1
+    transition all .3s cubic-bezier(0.17, 0.04, 0.03, 0.94)
+
+  &-enter
+  &-leave-to
+    opacity 0
+    transform translateX(-280px)

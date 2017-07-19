@@ -1,60 +1,50 @@
-icon($icon, $bg = #242424)
-  background $bg
-  .icon__pic
-    fa($icon)
-  .icon__label
-    background $bg
-
-
 .icon
   position relative
   display flex
   min-width 40px
   width 40px
   height 40px
+  padding-left 1px
   align-items center
   justify-content center
   color alpha(white, .7)
-  font-size 1.2rem
   background #242424
   border-radius 3px
   border 2px solid transparent
   anim()
 
-  &:hover
-    .icon__label
-      opacity 1
-      visibility visible
+  .fa
+    font-size 1.5rem
 
-  &._small
-    width 30px
-    height 30px
-    min-width 30px
+  .mdi
+    font-size 1.7rem
+
+  &._active
+    color white
+    border-color $color-main
+    background $color-link !important
 
   &._link
     cursor pointer
     anim()
+
     &:hover
-      background $color-link
+      background $color-link !important
+      & ^[0]__label
+        opacity 1
+        visibility visible
+        transform translate(-50%, 0)
 
-  &._small
-    font-size 0.8rem
-    width 30px
-    height 30px
-
-  &._active
-    color white
-    // background $color-link
-    border-color $color-main
+    &:focus
+      outline none
+      border-color $color-rub
 
   &__abbr
     font-size 1rem
     font-weight bold
 
-  &__pic
-    fa(industry)
-
   &__label
+    pointer-events none
     z-index 2
     visibility hidden
     opacity 0
@@ -64,66 +54,12 @@ icon($icon, $bg = #242424)
     padding 10px 15px
     background #242424
     border-radius 3px
-    transform translateX(-50%)
+    transform translate(-50%, 50%)
     white-space nowrap
-    anim()
+    transition all .3s cubic-bezier(0.17, 0.04, 0.03, 0.94)
 
-
-// работа
-.icon-92
-  icon(ravelry, #1c332b)
-.icon-55
-  icon(yelp, #1c332b)
-
-// квартира
-.icon-90
-  icon(home, #586234)
-.icon-32
-  icon(internet-explorer, #586234)
-.icon-37
-  icon(tachometer, #586234)
-
-
-.icon-13 // тинькофф
-  icon(credit-card-alt, #1C2833)
-.icon-14 // питание
-  icon(cutlery, $color-14)
-
-.icon-88 // авто
-  icon("car", #6D4C41)
-.icon-15 // бензин
-  icon("tint", #6D4C41)
-.icon-20 // запчасти
-  icon("ticket", #6D4C41)
-.icon-61 // обслуживание
-  icon("gavel", #6D4C41)
-
-.icon-19
-  icon(television)
-.icon-18 // плюшки
-  icon(pagelines, #007037)
-.icon-23
-  icon(phone)
-.icon-25
-  icon(shopping-bag)
-.icon-28 // спорт
-  icon(futbol-o, #266e9d)
-
-.icon-35, .icon-26 // родственники
-  icon(users)
-.icon-42 // девушки
-  icon(user-md)
-.icon-43 // козачка
-  icon(female, #b54c4c)
-.icon-59 // развлечения
-  icon(smile-o)
-.icon-62 // трансфер
-  icon(exchange)
-.icon-84 // животные
-  icon(paw)
-
-
-.icon-incomes // животные
+.icon-incomes
   font-size 2.5rem
   margin-right 20px
-  icon(pie-chart, transparent)
+  fa(pie-chart)
+  background none

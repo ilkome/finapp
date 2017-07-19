@@ -1,14 +1,9 @@
-.formPanel
-  max-width 502px
-  @media $pc
-    max-width inherit
-
 .amount
   display flex
   align-items center
   justify-content center
   margin 0 auto
-  padding-bottom 40px
+  padding-bottom 50px
 
   &._income
     .amountCount
@@ -27,9 +22,10 @@
       border-color $color-expense
 
 .amountCount
+  overflow hidden
   display flex
-  width 80px
-  height 80px
+  width 60px
+  height 60px
   justify-content center
   align-items center
   font-size 5rem
@@ -44,156 +40,18 @@
 
 .amountValueInput
   width 100%
-  height 80px
+  height 60px
   padding 0 15px
-  font-size 3rem
+  font-size 2rem
   $font-numbers()
   color $color-main
-  // text-align right
   background alpha($color-line, .5)
   border 2px solid $color-line
   anim()
 
-.meta
-  position relative
-  // display flex
-  align-items center
-  justify-content space-between
-  margin-bottom 40px
-  &._center
-    justify-content center
-
-.metaItem
-  min-width 150px
-  position relative
-  display flex
-  align-items center
-  font-size 1.2rem
-  cursor pointer
-  border 1px solid transparent
-  border-bottom 1px solid $color-line
-  padding 10px 0
-  margin 0
-
-  &:after
-    position absolute
-    right 10px
-    top 50%
-    transform translateY(-50%)
-    content ''
-    margin-left 20px
-    width 0
-    height 0
-    border-left 8px solid transparent
-    border-right 8px solid transparent
-    border-top 8px solid $color-line
-
-  &._active
-    padding 10px 10px
-    margin 0 -10px
-    background $color-body
-    border 1px solid $color-line
-
-    &:after
-      right 20px
-
-  &._account-1
-    // border-color $color-rub
-
-  &._account-2
-    // border-color $color-tinkoff
-
-  &._left
-    margin-bottom 40px
-    // text-align left
-  &._right
-    // border-left 2px solid $color-line
-    // text-align right
-
-  &__el
-    padding-right 20px
-
-    &:last-child
-      padding-right 0
-
-.metaItemLabel
-  padding-bottom 5px
-  font-size .9rem
-  color $color-second
-
-.metaItemDropdown
-  z-index 2
-  position absolute
-  top 61px
-  left 0px
-  // width calc(100% + 2px)
-  width calc(100%)
-  padding 10px
-  text-align left
-  background $color-body
-  border 1px solid $color-line
-  border-top 0
-  border-radius 0 0 3px 3px
-
-  &__auto
-    overflow-y auto
-    max-height 220px
-
-  &__filter
-    position absolute
-    left 0
-    top -50px
-
-  &__el
-    display block
-    padding 5px
-    font-size 1rem
-    white-space nowrap
-    &:hover
-      color $color-link
-
-.formCategories
-  margin-bottom 40px
-
-.desc
-  // display none
-  padding-bottom 40px
 
 .descInput
   color $color-main
   font-size 1rem
   width 100%
   border-bottom 1px solid $color-line
-
-.actionButton
-  display inline-flex
-  padding 20px 50px
-  color $color-main
-  font-size 1rem
-  font-weight bold
-  text-transform uppercase
-  letter-spacing 2px
-  background $color-line
-  border 1px solid transparent
-  border-radius 3px
-  cursor pointer
-  anim()
-
-  &:hover
-    color $color-link
-    border-color $color-link
-
-  &._disable
-  &._disable:hover
-    cursor default
-    background none
-    border-color $color-main
-
-
-// Edit trn
-.trnForm
-  .amount
-    padding-bottom 25px
-
-  .metaItem
-    margin-bottom 25px

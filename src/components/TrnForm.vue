@@ -1,366 +1,164 @@
 <template lang="pug">
-.rightBar__form
-  h2.title._border._mbs
-    template(v-if="action === 'create'") Create trn
-    template(v-if="action === 'update'") Update trn
+.trnForm__in
+  .trnForm__form
+    h2.title._border._mbs
+      template(v-if="action === 'create'") Create trn
+      template(v-if="action === 'update'") Update trn
 
-  .filter
-    .link(@click="setNextPrevDate('prev')")
-      .fa.fa-chevron-left
-    .filterItem._date
-      .fa.fa-clock-o
-      .filterItemDate {{ values.date | date }}
-    .link(@click="setNextPrevDate('next')")
-      .fa.fa-chevron-right
+    .trnForm__date
+      .trnForm__date__link(
+        @click="setNextPrevDate('prev')",
+        @keyup.enter.prevent="setNextPrevDate('prev')",
+        aria-checked="true", tabindex="0"
+      ): .fa.fa-chevron-left
+      .trnForm__date__value
+        .fa.fa-clock-o
+        .trnForm__date__value__in {{ values.date | date }}
+      .trnForm__date__link(
+        @click="setNextPrevDate('next')",
+        @keyup.enter.prevent="setNextPrevDate('next')",
+        aria-checked="true", tabindex="0"
+      ): .fa.fa-chevron-right
 
+    .amount(:class="(values.type === 1) ? '_income' : '_expense'")
+      a.amountCount(
+        @click="setTrnType()"
+        @keyup.enter.prevent="setTrnType()",
+        aria-checked="false", tabindex="0"
+      )
+        .amountCountText
+          template(v-if="values.type === 1") +
+          template(v-else) -
 
-  .amount(:class="(values.type === 1) ? '_income' : '_expense'")
-    a.amountCount(@click="setTrnType()")
-      .amountCountText
-        template(v-if="values.type === 1") +
-        template(v-else) -
+      .amountValue
+        input.amountValueInput(
+          v-model.lazy="values.amount",
+          @keyup.enter="onSubmitForm",
+          v-focus.lazy="$store.state.trnForm.isShow && !show.categories",
+          type="text",
+          name="amount",
+          placeholder="0",
+          aria-checked="false", tabindex="0"
+        )
 
-    .amountValue
-      input.amountValueInput(
-        v-model.lazy="values.amount",
-        @keyup.enter="onSubmitForm",
-        v-focus.lazy="true",
-        type="text" name="amount" placeholder="0")
-
-  template(v-if="lastCategories.length > 1")
-    .formCategories
-      h4._marginBottomSmall Categories
+    .trnForm__icons
+      h4._marginBottomSmall Category: {{ values.categoryName }}
       .categoriesIcons
-        .categoriesIcons__el(v-for="trn in lastCategories")
-          a.icon._link(
-            :class="[{_active: (trn.categoryId === values.categoryId)}, `icon-${trn.categoryId}`]",
-            :title="trn.categoryName",
-            @click.prevent="setCategory(trn.categoryId)")
-            .icon__pic
-            .icon__label {{ trn.categoryName }}
-
-  .formCategories
-    h4._marginBottomSmall Accounts
-    .categoriesIcons
-      .categoriesIcons__el(v-for="account in accounts")
-        a.icon._link(
-          :class="[{_active: (account.id === values.accountId)}, `bg-${account.id}`]",
-          :title="account.name",
-          @click.prevent="setAccound(account.id)")
-          .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
-          .icon__label {{ account.name }}
-
-  .meta
-    .selectItem(:class="{_active: show.categories}")
-      .selectItem__head(@click.prevent.stop="toogleCategoriesDropdown()")
-        .selectItem__icon
-          .icon(
-            :class="`icon-${values.categoryId}`",
-            :title="values.categoryName"): .icon__pic
-        .selectItem__el
-          .selectItem__label Category
-          .selectItem__name {{ values.categoryName }}
-
-      .selectItem__dropdown(v-show="show.categories")
-        input(type="text", v-model.trim="filter", :placeholder="values.categoryName" v-focus="show.categories").selectItem__dropdown__filter
-        .selectItem__dropdown__in
-          a.selectItem__dropdown__el(
-            v-for="category in categoriesList",
-            :class="{active: (category.id === values.categoryId)}",
-            @click.prevent="setCategory(category.id)"
+        .categoriesIcons__el(
+          v-if="lastCategories.length"
+          v-for="category in lastCategories"
+        )
+          .icon._link(
+            :class="{_active: (category.id === values.categoryId)}",
+            @click.prevent="setCategory(category.id)",
+            @keyup.enter.prevent="setCategory(category.id)",
+            :style="`background: ${category.color}`",
+            :title="category.name",
+            aria-checked="false", tabindex="0"
           )
-            .selectItem__dropdown__el__pic
-              .icon(:class="`icon-${category.id}`", :title="category.name"): .icon__pic
-            .selectItem__dropdown__el__name {{ category.name }}
+            div(:class="category.icon")
+            .icon__label {{ category.name }}
 
-  .desc
-    input.input-filter._nomargin(
-      v-model.trim="values.description",
-      @keyup.enter="onSubmitForm",
-      type="text" name="description" placeholder="Description")
+        .categoriesIcons__el
+          .icon._link(
+            @click.prevent="toogleCategoriesPop()",
+            @keyup.enter.prevent="toogleCategoriesPop()",
+            v-shortkey="['alt', 'arrowup']",
+            @shortkey="toogleCategoriesPop()",
+            aria-checked="false", tabindex="0",
+            style="background: black"
+          )
+            .mdi.mdi-dots-horizontal
+            .icon__label Show all categories
 
-  .action
-    template(v-if="errors")
-      .trnForm__errors {{ errors }}
-    template(v-if="action === 'create'")
-      .actionButton(@click.prevent="onSubmitForm()") Create trn
-    template(v-if="action === 'update'")
-      .actionButton(@click.prevent="onSubmitForm()") Update trn
+    .trnForm__icons
+      h4._marginBottomSmall Account: {{ values.accountName }}
+      .categoriesIcons
+        .categoriesIcons__el(v-for="account in accounts")
+          a.icon._link(
+            :class="[{_active: (account.id === values.accountId)}, `bg-${account.id}`]",
+            :title="account.name",
+            @click.prevent="setAccound(account.id)",
+            @keyup.enter.prevent="setAccound(account.id)",
+            aria-checked="false", tabindex="0"
+          )
+            .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
+            .icon__label {{ account.name }}
 
-  //- pre {{ newTrnFormForm }}
-  //- template(v-if="$store.state.trnForm.wasUpdatedTrn")
-  //-   h3.title._mbs Updated trn
-  //-   TrnItem(:trn="newTrnFormForm", view="form")
+    .trnForm__desc
+      input.input-filter._nomargin(
+        v-model.trim="values.description",
+        @keyup.enter="onSubmitForm",
+        type="text",
+        name="description",
+        placeholder="Description",
+        aria-checked="false", tabindex="0"
+      )
+
+    .trnForm__actions
+      .trnForm__errors(v-if="errors") {{ errors }}
+      .trnForm__actions__btn(
+        @click.prevent="onSubmitForm()",
+        @keyup.enter.prevent="onSubmitForm()",
+        aria-checked="false", tabindex="0"
+      )
+        template(v-if="action === 'create'") Create trn
+        template(v-if="action === 'update'") Update trn
+
+  //- Categories popup block
+  //------------------------------------------------
+  transition(name="trnFormAnimation")
+    template(v-if="show.categories")
+      .trnForm__categories(
+        v-shortkey="['alt', 'arrowdown']",
+        @shortkey="toogleShowCategories()"
+      )
+        .trnForm__categories__in
+          .trnForm__header
+            h2.title._mbn Select category
+            .trnForm__header__close.btn._mini(@click.prevent="toogleCategoriesPop()") Close
+
+          .trnForm__filter
+            input(
+              type="text",
+              v-model.trim="filter",
+              v-focus.lazy="true",
+              placeholder="Search category"
+            ).filterBtn._mbn
+
+            template(v-if="!filter")
+              .trnForm__filter__toogle.btn._transFix(@click.prevent="toogleShowCategories()")
+                template(v-if="showedChildrenCategories.length") Collapse
+                template(v-else) Show
+            template(v-else)
+              .trnForm__filter__toogle.btn._transFix(@click.prevent="filter = ''") Clear
+
+          template(v-if="filter.length > 0 && filter.length < 2")
+            div Continue typing...
+
+          template(v-if="filter.length >= 2 && searchedCategoriesList.length === 0")
+            div Nothing found
+
+          .categoriesListForm
+            //- Categories list
+            //------------------------------------------------
+            template(v-if="!filter")
+              CategoryList(
+                :categories="categoriesList",
+                :isToogleCategories="showedChildrenCategories",
+                :activeCategory="activeCategory",
+                @setCategory="setCategory",
+                @toogleCategory="toogleCategory")
+
+            //- Searched categories
+            //------------------------------------------------
+            template(v-if="filter.length >= 2 && searchedCategoriesList.length")
+              CategoryList(
+                :categories="searchedCategoriesList",
+                :isToogleCategories="showedChildrenCategories",
+                :isSearch="true",
+                :activeCategory="activeCategory",
+                @setCategory="setCategory",
+                @toogleCategory="toogleCategory")
 </template>
-
-
-<script>
-import mathjs from 'mathjs'
-import moment from 'moment'
-import uniqBy from 'lodash/uniqBy'
-import { mapGetters } from 'vuex'
-import { focus } from 'vue-focus'
-import TrnItem from './TrnItem.vue'
-
-export default {
-  directives: { focus: focus },
-
-  components: { TrnItem },
-
-  watch: {
-    '$route'(to, from) {
-      if (this.$route.params.id) {
-        const accountId = +this.$route.params.id
-        this.setAccound(accountId)
-      }
-    },
-    action() {
-      this.fillValues()
-    },
-    isUpdateTrn() {
-      if (this.$store.state.trnForm.isUpdateTrn) {
-        this.fillValues()
-      }
-    }
-  },
-
-  beforeMount() {
-    this.fillValues()
-  },
-
-  mounted() {
-    document.addEventListener('click', this.closeDropdown())
-    document.addEventListener('keyup', (event) => {
-      if (event.keyCode === 27) { // escape key
-        console.log('document.addEventListener: keyup')
-        this.$store.commit('closeTrnForm')
-      }
-    })
-  },
-
-  data() {
-    return {
-      focused: false,
-      filter: '',
-      errors: false,
-      loading: false,
-      rootEl: document.querySelector('.app'),
-      show: {
-        accounts: false,
-        categories: false
-      },
-      values: {}
-    }
-  },
-
-  computed: {
-    ...mapGetters(['trns', 'accounts', 'categories']),
-
-    action() {
-      return this.$store.state.trnForm.action
-    },
-
-    isUpdateTrn() {
-      return this.$store.state.trnForm.isUpdateTrn
-    },
-
-    newTrnFormForm() {
-      return this.trns.find(trn => trn.id === this.$store.state.trnForm.wasUpdatedTrn)
-    },
-
-    categoriesList() {
-      return this.categories.filter(category =>
-        category.name.toLowerCase().search(this.filter.toLowerCase()) !== -1)
-    },
-
-    lastCategories() {
-      return uniqBy(this.trns, 'categoryName').slice(0, 10)
-    }
-  },
-
-  methods: {
-    fillValues() {
-      let lastTrn = this.$store.getters.trns[0]
-      if (!lastTrn) {
-        lastTrn = {
-          accountId: '',
-          accountName: ''
-        }
-      }
-      let values = {}
-
-      // Create
-      if (this.$store.state.trnForm.action === 'create') {
-        values = {
-          date: moment(),
-          accountId: this.account ? this.account.id : lastTrn.accountId,
-          accountName: this.account ? this.account.name : lastTrn.accountName,
-          amount: null,
-          categoryId: lastTrn.categoryId,
-          categoryName: lastTrn.categoryName,
-          type: 0,
-          currency: lastTrn.currency,
-          description: ''
-        }
-      }
-
-      // Update
-      if (this.$store.state.trnForm.action === 'update') {
-        const trn = this.trns.find(trn => trn.id === this.$store.state.trnForm.isUpdateTrn)
-        values = {
-          ...trn,
-          date: moment(trn.date),
-          accountId: trn.accountId,
-          amount: trn.amount,
-          categoryId: trn.categoryId,
-          type: trn.type,
-          currency: trn.currency,
-          description: trn.description
-        }
-      }
-
-      this.values = values
-    },
-
-    toogleCategoriesDropdown() {
-      this.show.accounts = false
-      this.show.categories = !this.show.categories
-    },
-
-    toogleAccountsDropdown() {
-      this.show.categories = false
-      this.show.accounts = !this.show.accounts
-    },
-
-    setCategory(categoryId) {
-      this.values.categoryId = categoryId
-      this.values.categoryName = this.categories.find(category => category.id === categoryId).name
-      this.show.categories = false
-    },
-
-    setTrnType() {
-      this.values.type = (this.values.type === 1) ? 0 : 1
-    },
-
-    setAccound(accountId) {
-      const account = this.accounts.find(account => account.id === accountId)
-      if (account) {
-        this.values.accountId = accountId
-        this.values.currency = this.accounts.find(account => account.id === accountId).currency
-        this.values.accountName = this.accounts.find(account => account.id === accountId).name
-        this.show.accounts = false
-      }
-    },
-
-    setNextPrevDate(way) {
-      let date
-      if (way === 'prev') date = moment(this.values.date).subtract(1, 'days')
-      if (way === 'next') date = moment(this.values.date).add(1, 'days')
-      this.values.date = date
-    },
-
-    async onSubmitForm() {
-      this.$store.commit('showLoader')
-
-      function calc(number) {
-        try {
-          return mathjs.chain(number.replace(/\s/g, '')).eval().round().value
-        } catch (error) {
-          console.error('calc:', error.message)
-          return false
-        }
-      }
-
-      try {
-        console.group('TrnForm: onSubmitForm')
-        console.log('Action', this.action)
-        const currentTime = moment().format('HH:mm:ss')
-        const day = moment(this.values.date).format('D.MM.YY')
-        const date = moment(`${day} ${currentTime}`, 'D.MM.YY HH:mm:ss').valueOf()
-        const amount = String(this.values.amount)
-        const dataFromTrns = []
-
-        // Empty
-        if (!amount) {
-          console.log('empty amount')
-          this.errors = 'Empty amount'
-          this.$store.commit('showError', 'components/TrnForm: Empty amount')
-          throw new Error('components/TrnForm: Empty amount')
-        }
-
-        // One amount
-        if (amount && amount.indexOf(',') === -1) {
-          const calcAmount = calc(amount)
-          console.log('TrnForm@One amount:', calcAmount)
-
-          if (calcAmount && calcAmount > 0) {
-            dataFromTrns.push({
-              ...this.values,
-              amount: calcAmount,
-              date
-            })
-            this.errors = false
-          } else {
-            this.errors = 'One amount: wrong number or less than 0'
-          }
-        }
-
-        // Few amounts
-        if (amount && amount.indexOf(',') !== -1) {
-          const amountsList = amount.split(',')
-
-          for (const amountItem of amountsList) {
-            const calcAmount = calc(amountItem)
-            console.log('Few:', calcAmount)
-
-            if (calcAmount && calcAmount > 0) {
-              dataFromTrns.push({
-                ...this.values,
-                amount: calcAmount,
-                date
-              })
-              this.errors = false
-            } else {
-              this.errors = 'Few amount: wrong number or less than 0'
-            }
-          }
-        }
-
-        if (!this.errors) {
-          // Create
-          if (this.action === 'create') {
-            const isAddedTrns = await this.$store.dispatch('addTrns', dataFromTrns)
-            console.log(isAddedTrns)
-
-            if (isAddedTrns) {
-              this.values.amount = ''
-              this.values.description = ''
-              this.filter = ''
-            }
-          }
-
-          // Update only one trn
-          if (this.action === 'update') {
-            const updatedTrnId = await this.$store.dispatch('updateTrn', dataFromTrns[0])
-            if (updatedTrnId) {
-              this.$store.commit('setUpdatedTrn', updatedTrnId)
-            }
-          }
-        }
-      } catch (error) {
-        console.error(error)
-      } finally {
-        this.$store.commit('disableLoader')
-        console.groupEnd()
-      }
-    },
-
-    closeDropdown() {
-      return () => {
-        this.show.accounts = false
-        this.show.categories = false
-      }
-    }
-  }
-}
-</script>
+<script src="./trnForm.js"></script>

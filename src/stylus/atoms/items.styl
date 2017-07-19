@@ -1,7 +1,6 @@
 .items
   max-width 570px
   margin-bottom 60px
-  // overflow-x auto
 
   &:last-child
     margin-bottom 0
@@ -9,21 +8,22 @@
 
 // Item
 // ===============================================
+.trnItem
+  position relative
+  border-bottom 1px solid alpha($color-line, .5)
+  anim()
+
+  &:hover
+    background alpha($color-main, .05)
+
+  &:last-child
+    border-bottom none
+
 .item
   position relative
   color $color-second
   border-radius 3px
   anim()
-
-  &:last-child
-    border-bottom none
-
-  &:hover
-    color $color-main
-    background $color-trn-hover
-
-  &:last-child
-    border 0
 
   &._selected
     border-top-color $color-body
@@ -122,7 +122,7 @@
       justify-content flex-end
       flex-grow 1
       margin 0
-      padding 0
+      padding 18px 0
       font-size 1.2rem
       color $color-expense
 
@@ -163,14 +163,14 @@
   opacity 0
   visibility hidden
   position absolute
+  display flex
+  align-items flex-start
+  justify-content flex-start
   left 0
   top 1px
   width 100%
   height calc(100% - 1px)
-  display flex
-  align-items stretch
-  justify-content flex-start
-  padding 0
+  padding 0 15px
   background $color-trn-hover
   border-radius 3px
   anim()

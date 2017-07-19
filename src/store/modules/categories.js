@@ -22,9 +22,40 @@ const store = {
         const name = cat.name
         const parentId = +cat.parentId
         const description = cat.description
+
+        let color = cat.color
+        if (!color) {
+          color = '#242424'
+          if (parentId > 0) {
+            const parent = categories.find(c => c.id === parentId)
+            if (parent && parent.color) {
+              color = parent.color
+            }
+          }
+        }
+        let iconValue = cat.icon
+        let icon = cat.icon
+        if (icon) {
+          if (/(mdi)/g.test(icon)) icon = `mdi ${icon}`
+          if (/(fa)/g.test(icon)) icon = `fa ${icon}`
+        } else {
+          icon = 'fa fa-industry'
+          if (parentId > 0) {
+            const parent = categories.find(c => c.id === parentId)
+            if (parent && parent.icon) {
+              iconValue = parent.icon
+              if (/(mdi)/g.test(icon)) icon = `mdi ${parent.icon}`
+              if (/(fa)/g.test(icon)) icon = `fa ${parent.icon}`
+            }
+          }
+        }
+
         return {
           id,
           name,
+          color,
+          icon,
+          iconValue,
           parentId,
           description
         }
@@ -32,7 +63,7 @@ const store = {
       commit('getCategories', formatedCategories)
     },
 
-    async addCategory({ commit }, category) {
+    async addCategory({ commit, state }, category) {
       console.log('category:', category)
 
       if (!category.name) {
@@ -43,6 +74,8 @@ const store = {
       try {
         const formatedCategory = {
           name: category.name,
+          color: category.color,
+          icon: category.icon,
           parentId: category.parentId ? category.parentId : 0
         }
         const postData = await addCategory(formatedCategory)
@@ -56,7 +89,42 @@ const store = {
           console.log('getCategory.data:', getCategory.data)
 
           if (getCategory.data) {
-            commit('addCategory', getCategory.data)
+            const cat = getCategory.data
+            const parentId = +cat.parentId
+
+            let color = cat.color
+            if (!color) {
+              if (parentId > 0) {
+                const parent = state.all.find(c => c.id === parentId)
+                if (parent && parent.color) {
+                  color = parent.color
+                }
+              }
+            }
+            let iconValue = cat.icon
+            let icon = cat.icon
+            if (icon) {
+              if (/(mdi)/g.test(icon)) icon = `mdi ${icon}`
+              if (/(fa)/g.test(icon)) icon = `fa ${icon}`
+            } else {
+              icon = 'fa fa-industry'
+              if (parentId > 0) {
+                const parent = state.all.find(c => c.id === parentId)
+                if (parent && parent.icon) {
+                  iconValue = parent.icon
+                  if (/(mdi)/g.test(icon)) icon = `mdi ${parent.icon}`
+                  if (/(fa)/g.test(icon)) icon = `fa ${parent.icon}`
+                }
+              }
+            }
+
+            commit('addCategory', {
+              ...cat,
+              iconValue,
+              icon,
+              color
+            })
+
             return true
           } else {
             console.error('getCategory.data')
@@ -73,7 +141,7 @@ const store = {
     },
 
     // update
-    async updateCategory({ commit, dispatch }, category) {
+    async updateCategory({ commit, dispatch, state }, category) {
       try {
         console.log(category)
         const postData = await axios.put(`${CATEGORIES_URL}/${category.id}`, category)
@@ -87,7 +155,45 @@ const store = {
           console.log('getCategory.data:', getCategory.data)
 
           if (getCategory.data) {
-            commit('updateCategory', getCategory.data)
+            const cat = getCategory.data
+            const parentId = +cat.parentId
+
+            let color = cat.color
+            if (!color) {
+              if (parentId > 0) {
+                const parent = state.all.find(c => c.id === parentId)
+                if (parent && parent.color) {
+                  color = parent.color
+                }
+              }
+            }
+            let iconValue = cat.icon
+            let icon = cat.icon
+            if (icon) {
+              console.log(1)
+              if (/(mdi)/g.test(icon)) icon = `mdi ${icon}`
+              if (/(fa)/g.test(icon)) icon = `fa ${icon}`
+            } else {
+              console.log(2)
+              icon = 'fa fa-industry'
+              if (parentId > 0) {
+                console.log(3)
+                const parent = state.all.find(c => c.id === parentId)
+                if (parent && parent.icon) {
+                  console.log(4)
+                  iconValue = parent.icon
+                  if (/(mdi)/g.test(icon)) icon = `mdi ${parent.icon}`
+                  if (/(fa)/g.test(icon)) icon = `fa ${parent.icon}`
+                }
+              }
+            }
+            console.log({ ...cat, iconValue })
+            commit('updateCategory', {
+              ...cat,
+              iconValue,
+              icon,
+              color
+            })
             return true
           } else {
             console.error('updateCategory.data')

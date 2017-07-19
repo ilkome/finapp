@@ -5,16 +5,20 @@
   align-items center
   background $color-layout
   border-bottom 2px solid $color-line-layout
-  if $theme == "white"
-    border-bottom-width 1px
 
   @media $laptop
+    anim()
     z-index 3
     position fixed
     left $sidebar-width
     top 0
+    left 0
     flex-flow row nowrap
-    width calc(100% - 19rem)
+    width 100%
+
+    &._withLeftBar
+      left 19rem
+      width calc(100% - 19rem)
 
     &:after
       if $theme == "black"
@@ -29,4 +33,4 @@
 
   &__in
     overflow-x auto
-    padding-right 100px
+    padding-left 35px

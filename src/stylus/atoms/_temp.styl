@@ -1,14 +1,14 @@
-.trnItem
-  position relative
-  border-bottom 1px solid alpha($color-line, .5)
-
-  &:last-child
-    border-bottom none
+.panel
+  padding 30px
+  background $color-trn
+  border-radius 3px
 
 .gridTable
   max-width 1200px
   display grid
   grid-template-columns repeat(auto-fit, minmax(320px, 1fr))
+  grid-column-gap 100px
+  grid-row-gap 60px
 
   &__item
     max-width 470px
@@ -18,8 +18,6 @@
   grid-template-columns minmax(90px, 100px) minmax(65px, 1fr) auto auto
   grid-column-gap 15px
   padding 0
-  border 1px solid transparent
-  border-top 1px solid $color-line
   anim()
 
   &._form
@@ -39,7 +37,7 @@
     align-self center
 
     &._description
-      padding 5px 0 5px 0
+      padding 5px 0 10px
       font-size .8rem
       grid-column 2 / 5
 
@@ -92,6 +90,7 @@ input.flatpickr-input
   anim()
   border 1px solid $color-line-layout
   overflow-x auto
+  scrollbar()
 
   &:hover
     opacity 1
@@ -100,6 +99,7 @@ input.flatpickr-input
     display flex
     align-items center
     justify-content space-between
+    scrollbar()
 
   &__date
     padding-bottom 20px
@@ -228,8 +228,6 @@ input.flatpickr-input
   height 100%
   background alpha($color-layout, .8)
 
-
-
 .bg-1
 .bg-1.icon
   background $color-rub
@@ -237,15 +235,6 @@ input.flatpickr-input
 .bg-2
 .bg-2.icon
   background $color-tinkoff
-
-
-// Right menu with create trn
-.no-touch
-  .toogleTrnCreateBtn
-    // &:hover
-    //   background $color-layout
-    //   color $color-link
-    //   border-color $color-line-layout
 
 .toogleTrnCreateBtn
   z-index 15

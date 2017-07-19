@@ -1,6 +1,6 @@
 .sidebar
   overflow hidden
-  z-index 6
+  z-index 1
   flex-shrink 0
   position relative
   background $color-sidebar
@@ -15,11 +15,12 @@
   &__wrap
     @media $laptop
       z-index 3
-      overflow-x auto
+      overflow-y auto
       position fixed
       left 0
       width 19rem
       height 100%
+      scrollbar()
 
   &__in
     opacity 1
@@ -73,3 +74,14 @@
     .sidebar__wrap
       opacity 0
       transform translateX(-100px)
+
+.leftBarToogle
+  cursor pointer
+  position fixed
+  left 20px
+  top 10px
+  font-size 1.5rem
+  anim()
+
+  &:hover
+    color $color-link
