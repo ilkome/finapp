@@ -7,22 +7,21 @@
       .gridTable__item
         input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="true").filterBtn
 
-        .categories
+        .categoriesList
           //- Category
           //------------------------------------------------
           .categoryItem(
             v-for="category in categoriesList",
             :key="category.id",
-            :class="{_editable: editedCategory === category.id, _opened: showedChildrenCategories.indexOf(category.id) !== -1}"
+            :class="{_editable: editedCategory === category.id, _link: category.children.lenght}"
           )
             .categoryItem__content
               router-link(
                 :to="`/categories/${category.id}`",
-                title="Перейти в категорию"
+                title="Go to category"
               ).categoryItem__icon
-                .icon(:style="`background: ${category.color}`")
-                  .icon__pic
-                    div(:class="category.icon")
+                .icon._link(:style="`background: ${category.color}`")
+                  .icon__pic: div(:class="category.icon")
 
               template(v-if="category.children && editedCategory !== category.id")
                 .categoryItem__name(@click="toogleShowChildrenCategoriess(category.id)") {{ category.name }}
@@ -73,24 +72,24 @@
             //------------------------------------------------
             template(v-if="category.children")
               template(v-if="showedChildrenCategories.indexOf(category.id) !== -1")
-                .categoryItem__children
-                  .categoryItem(
+                .categoryItem__children._link
+                  .categoryItemChild(
                     v-for="childrenCategory in category.children",
                     :key="childrenCategory.id",
                     :class="{_editable: editedCategory === childrenCategory.id}")
 
-                    .categoryItem__content
-                      router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__icon
+                    .categoryItemChild__content
+                      router-link(:to="`/categories/${childrenCategory.id}`").categoryItemChild__icon
                         .icon(:style="`background: ${childrenCategory.color}`")
                           .icon__pic
                             div(:class="childrenCategory.icon")
 
-                      router-link(:to="`/categories/${childrenCategory.id}`").categoryItem__name {{ childrenCategory.name }}
+                      router-link(:to="`/categories/${childrenCategory.id}`").categoryItemChild__name {{ childrenCategory.name }}
                       template(v-if="editedCategory === childrenCategory.id")
-                        .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-times-circle
+                        .categoryItemChild__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-times-circle
                       template(v-else)
-                        .categoryItem__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-pencil-square-o
-                      .categoryItem__action(@click.prevent="askQuestion(childrenCategory.id)")
+                        .categoryItemChild__action(@click.prevent="setEditedCategory(childrenCategory.id)"): .fa.fa-pencil-square-o
+                      .categoryItemChild__action(@click.prevent="askQuestion(childrenCategory.id)")
                         .fa.fa-trash-o
 
                     .item__question(:class="{_visible: questionId === childrenCategory.id}")

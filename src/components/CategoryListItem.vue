@@ -11,7 +11,6 @@
       .categoryItem__icon(@click.stop="$emit('setCategory', category.id)")
         .icon._link(:style="`background: ${category.color}`")
           .icon__pic: div(:class="category.icon")
-      //- .categoryItem__name {{ category.name }} {{ category.id }} {{ activeCategory.childId }} {{ activeCategory.parentId }}
       .categoryItem__name {{ category.name }}
       .categoryItem__action: .fa.fa-list
 
@@ -25,7 +24,6 @@
       .categoryItem__icon
         .icon(:style="`background: ${category.color}`")
           .icon__pic: div(:class="category.icon")
-      //- .categoryItem__name {{ category.name }} {{ category.id }} {{ activeCategory.childId }} {{ activeCategory.parentId }}
       .categoryItem__name {{ category.name }}
 
   slot

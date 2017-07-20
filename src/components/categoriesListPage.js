@@ -34,29 +34,23 @@ export default {
     },
 
     categoriesList() {
-      let filteredCategories = []
-      if (this.filter !== '') {
-        filteredCategories = this.categories
-          .filter(c => c.name.toLowerCase().search(this.filter.toLowerCase()) !== -1)
-      } else {
-        filteredCategories = this.categories
-      }
-
-      const sortedCategories = []
-      const rootCategories = filteredCategories.filter(c => c.parentId === 0)
+      let categoriesOrganazed = []
+      const rootCategories = this.categories.filter(c => c.parentId === 0)
       rootCategories.forEach((category) => {
-        const childrenCategories = filteredCategories.filter(c => c.parentId === category.id)
+        const childrenCategories = this.categories.filter(c => c.parentId === category.id)
         if (childrenCategories && childrenCategories.length > 0) {
-          sortedCategories.push({
+          categoriesOrganazed.push({
             ...category,
             children: childrenCategories
           })
         } else {
-          sortedCategories.push({ ...category })
+          categoriesOrganazed.push({ ...category })
         }
       })
 
-      return orderBy(sortedCategories, c => c.name, 'asc')
+      categoriesOrganazed = orderBy(categoriesOrganazed, c => c.name, 'asc')
+
+      return categoriesOrganazed
     }
   },
 

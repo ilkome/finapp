@@ -1,7 +1,5 @@
 <template lang="pug">
 .categoriesList
-  //- pre {{ activeCategory }}
-
   CategoryListItem(
     v-for="category in categories",
     :key="category.id",
