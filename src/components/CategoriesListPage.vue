@@ -5,15 +5,24 @@
 
     .gridTable
       .gridTable__item
-        input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="true").filterBtn
+        .trnForm__filter
+          input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="true").filterBtn._mbn
+          template(v-if="filter")
+            .trnForm__filter__toogle.btn._transFix(@click.prevent="filter = ''") Clear
+
+        template(v-if="filter.length > 0 && filter.length < 2")
+          div Continue typing...
+
+        template(v-if="filter.length >= 2 && searchedCategoriesList.length === 0")
+          div Nothing found
 
         .categoriesList
           //- Category
           //------------------------------------------------
-          .categoryItem(
-            v-for="category in categoriesList",
+          .categoryItem._link(
+            v-for="category in cats",
             :key="category.id",
-            :class="{_editable: editedCategory === category.id, _link: category.children.lenght}"
+            :class="{_editable: editedCategory === category.id, _link: category.children.length}"
           )
             .categoryItem__content
               router-link(
@@ -23,7 +32,7 @@
                 .icon._link(:style="`background: ${category.color}`")
                   .icon__pic: div(:class="category.icon")
 
-              template(v-if="category.children && editedCategory !== category.id")
+              template(v-if="category.children.length && editedCategory !== category.id")
                 .categoryItem__name(@click="toogleShowChildrenCategoriess(category.id)") {{ category.name }}
                 .categoryItem__action(@click="toogleShowChildrenCategoriess(category.id)"): .fa.fa-list
               template(v-else)

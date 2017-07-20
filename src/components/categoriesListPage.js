@@ -1,5 +1,6 @@
-import { mapGetters } from 'vuex'
+import Fuse from 'fuse.js'
 import orderBy from 'lodash/orderBy'
+import { mapGetters } from 'vuex'
 import { mixin } from 'vue-focus'
 
 export default {
@@ -33,6 +34,61 @@ export default {
       return orderBy(this.categories, c => c.parentId, 'asc')
     },
 
+    searchedCategoriesList() {
+      const searchOptions = {
+        shouldSort: true,
+        threshold: 0.3,
+        location: 0,
+        distance: 100,
+        maxPatternLength: 32,
+        minMatchCharLength: 1,
+        keys: ['name']
+      }
+
+      const fuse = new Fuse(this.categories, searchOptions)
+      const searchResults = fuse.search(this.filter)
+      const categoriesResult = []
+
+      if (this.filter.length >= 2) {
+        this.showedChildrenCategories = []
+
+        searchResults.map(item => {
+          // Root category
+          if (item.parentId === 0) {
+            if (this.showedChildrenCategories.indexOf(item.id) === -1) {
+              this.showedChildrenCategories.push(item.id)
+            }
+
+            categoriesResult.push({
+              ...item,
+              children: []
+            })
+          }
+          // Children category
+          if (item.parentId > 0) {
+            if (this.showedChildrenCategories.indexOf(item.parentId) === -1) {
+              this.showedChildrenCategories.push(item.parentId)
+            }
+            const parentCategory = categoriesResult.find(category => category.id === item.parentId)
+
+            // Category already exist in result
+            if (parentCategory) {
+              parentCategory.children.push(item)
+            } else {
+              // New category
+              const parent = this.categories.find(category => category.id === item.parentId)
+              categoriesResult.push({
+                ...parent,
+                children: [item]
+              })
+            }
+          }
+        })
+      }
+
+      return categoriesResult
+    },
+
     categoriesList() {
       let categoriesOrganazed = []
       const rootCategories = this.categories.filter(c => c.parentId === 0)
@@ -44,13 +100,24 @@ export default {
             children: childrenCategories
           })
         } else {
-          categoriesOrganazed.push({ ...category })
+          categoriesOrganazed.push({
+            ...category,
+            children: []
+          })
         }
       })
-
       categoriesOrganazed = orderBy(categoriesOrganazed, c => c.name, 'asc')
-
       return categoriesOrganazed
+    },
+
+    cats() {
+      if (!this.filter) {
+        return this.categoriesList
+      }
+
+      if (this.filter.length >= 2 && this.searchedCategoriesList.length) {
+        return this.searchedCategoriesList
+      }
     }
   },
 
