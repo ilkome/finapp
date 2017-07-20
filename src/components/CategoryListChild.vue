@@ -7,7 +7,7 @@
     .categoryItemChild__icon
       .icon(:style="`background: ${category.color}`")
         .icon__pic: div(:class="category.icon")
-    .categoryItemChild__name {{ category.name }}  {{ category.id }} {{ activeCategory.childId }} {{ activeCategory.parentId }}
+    .categoryItemChild__name {{ category.name }}
 </template>
 
 
