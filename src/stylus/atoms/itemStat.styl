@@ -2,27 +2,53 @@
   position relative
   display block
   min-width 300px
+  margin-bottom 15px
   color $color-second
   border-radius 3px
   background alpha(black, .2)
   border 1px solid alpha(black, .3)
-  margin-bottom 15px
   anim()
 
-  &._opened
-    margin-bottom 15px
-    background $color-trn-hover
-    border-color $color-line
+  &._clear
+    margin 0 0px
+    margin-bottom -1px
+    border-radius 0
+    border-color transparent
+    border-bottom 1px solid $color-line
+    background none
 
     &:last-child
-      margin-bottom 0
+      border-color transparent
+
+    & ^[0]__in
+      padding 25px 10px
+
+    &:hover
+      padding 0 10px
+      margin 0 -10px
+      margin-bottom -1px
+
+    &._opened
+      padding 0 10px
+      margin 0 -10px
+      margin-bottom 25px
+      border 1px solid $color-line
+
+  &._opened
+    border-radius 5px
+    background alpha($color-trn-hover, .5) !important
+    border-color $color-line
 
   &._link
     cursor pointer
-    margin-top 0
+    // margin-top 0
 
     &:hover
+      border-radius 5px
       border-color $color-trn-hover-line
+
+  &:last-child
+    margin-bottom 0
 
   &:hover
     background $color-trn-hover
@@ -30,12 +56,10 @@
   &__in
     display flex
     align-items center
-    padding 15px
+    padding 20px
 
   &__icon
-    padding-right 15px
-    .icon:hover
-      background $color-link !important
+    padding-right 25px
 
   &__content
     display flex
@@ -66,6 +90,75 @@
 
   &__graph__in
     height .6rem
+    border-radius 0
+
+    &._expense
+      background $color-expense
+
+    &._income
+      background $color-income
+
+  &__trns
+    cursor default
+    padding 0 15px 10px
+
+
+.itemStatLine
+  opacity .9
+  cursor pointer
+  border-bottom 1px solid alpha(black, .3)
+  anim()
+
+  &._active
+    opacity 1
+    cursor default
+    background #161616 !important
+
+  &:last-child
+    margin-bottom 0
+    border-bottom 0
+
+  &:hover
+    opacity 1
+    background $color-trn-hover
+
+  &__in
+    display flex
+    align-items center
+    padding 35px 20px
+
+  &__icon
+    padding-right 15px
+
+  &__content
+    display flex
+    flex-flow column nowrap
+    flex-grow 1
+
+  &__name
+    flex-grow 1
+    padding-left 5px
+    text-transform capitalize
+    font-size 1.1rem
+
+  &__text
+    @extend .itemStat__text
+    margin-bottom 15px
+
+  &__price
+    min-width 115px
+    max-width 125px
+    padding-right 5px
+    text-align right
+
+  &__graph
+    flex-grow 1
+    background #242424
+    border-radius 3px
+    overflow hidden
+
+  &__graph__in
+    height 1rem
     border-radius 0
 
     &._expense

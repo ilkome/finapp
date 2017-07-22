@@ -1,0 +1,177 @@
+.stat
+  opacity .7
+  overflow-x auto
+  max-width 1200px
+  border 1px solid $color-line-layout
+  scrollbar()
+  anim()
+
+  &:hover
+    opacity 1
+
+  &__in
+    display flex
+    align-items center
+    justify-content space-between
+    scrollbar()
+
+  &__date
+    padding-bottom 20px
+    text-align center
+    font-size .8rem
+    font-weight bold
+
+  &__item
+    cursor pointer
+    min-width 10rem
+    height 24rem
+    flex 1 0 auto
+    padding 30px 0px
+    border-right 1px solid $color-line
+    anim()
+
+    &:last-child
+      margin-right 0
+      border 0
+
+    &:hover
+    &._active
+      background $color-trn-hover
+
+    &._active
+      cursor default
+
+  &__values
+    display none
+    max-width 70px
+    margin 0 auto
+    text-align right
+    padding-top 10px
+    .incomes
+    .expenses
+    .sum
+      font-size 1rem
+
+  &__graph
+    max-width 70px
+    margin 0 auto
+    display flex
+    align-items flex-end
+    height 19.5rem
+    padding-bottom 20px
+
+    &__in
+      flex 1 1 auto
+
+      &._incomes
+        margin 0 4px
+        background $color-income
+
+      &._expenses
+        margin 0 4px
+        background $color-expense
+
+      &._empty
+        height 1px
+        margin 0 4px
+        background $color-line
+
+  &__empty
+    cursor default
+    text-align center
+
+
+.itemStat2
+  overflow-x auto
+  scrollbar()
+  anim()
+
+  &__in
+    opacity .7
+    display inline-grid
+    grid-template-columns repeat(6, 210px)
+    margin 10px
+    border 2px solid $color-line-layout
+    box-shadow 0px 0px 0px $color-layout
+    // scrollbar()
+    anim()
+
+    &:hover
+      opacity 1
+      margin 8px
+      border-width 4px
+      box-shadow 10px 10px 0px $color-layout
+
+  &__date
+    padding-bottom 20px
+    text-align center
+    font-size .8rem
+    font-weight bold
+
+  &__item
+    cursor pointer
+    height 24rem
+    flex 1 0 auto
+    padding 30px 0px
+    border-right 2px solid $color-line
+    anim()
+
+    &:last-child
+      margin-right 0
+      border 0
+
+    &._active
+      cursor default
+      background $color-trn-hover !important
+
+    &:hover
+      background alpha($color-trn-hover, .5)
+
+  &__values
+    display none
+    max-width 70px
+    margin 0 auto
+    text-align right
+    padding-top 10px
+    .incomes
+    .expenses
+    .sum
+      font-size 1rem
+
+  &__graph
+    max-width 160px
+    margin 0 auto
+    display flex
+    align-items flex-end
+    height 19.5rem
+    padding-bottom 20px
+
+    &__in
+      flex 1 1 auto
+      position relative
+
+      &._incomes
+        // margin 0 10px
+        background $color-income
+
+      &._expenses
+        // margin 0 10px
+        background $color-expense
+
+      &._empty
+        height 1px
+        // margin 0 4px
+        background $color-line
+
+    &__text
+      position absolute
+      left 50%
+      top 10px
+      transform translateX(-50%)
+      font-size 1.1rem
+      font-weight normal
+      color white
+
+  &__empty
+    cursor default
+    text-align center

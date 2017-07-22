@@ -15,7 +15,6 @@
     white-space nowrap
 
   &__link
-    opacity .8
     padding 5px 10px
     cursor pointer
     color white
@@ -24,12 +23,18 @@
     letter-spacing 1px
     background #5e7a88
     border-radius 3px
-    anim()
 
     &:hover
-      opacity 1
-      color $color-main
+      background alpha(#ea6151, .5)
 
     &._active
       opacity 1
       background #ea6151
+
+
+.calendar-dropdown
+  display grid
+  grid-template-columns auto auto
+  grid-column-gap 50px
+  width 550px
+  white-space nowrap

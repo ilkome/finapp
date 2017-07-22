@@ -3,8 +3,6 @@
   flex-flow column wrap
   justify-content space-between
   align-items center
-  background $color-layout
-  border-bottom 2px solid $color-line-layout
 
   @media $laptop
     anim()
@@ -15,6 +13,10 @@
     left 0
     flex-flow row nowrap
     width 100%
+    height 90px
+    padding-bottom 10px
+    background $color-layout
+    border-bottom 2px solid $color-line-layout
 
     &._withLeftBar
       left 19rem
@@ -22,10 +24,11 @@
 
     &:after
       if $theme == "black"
+        display none
         z-index 3
         content ""
         position absolute
-        top 46px
+        top 100px
         width 100%
         height 20px
         background linear-gradient(to bottom, $color-body 0%, transparent 100%)

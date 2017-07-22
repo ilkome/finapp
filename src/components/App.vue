@@ -41,13 +41,13 @@
           router-link(to="/accounts").menuLink Accounts
           router-link(to="/trns").menuLink History
 
-        a(
-          v-shortkey="['alt', 'arrowright']",
-          @shortkey="$store.commit('toogleTrnForm')",
-          @click.prevent.stop="$store.commit('toogleTrnForm')",
-          :class="{_active: $store.state.trnForm.isShow}"
-        ).toogleTrnCreateBtn
-          .toogleTrnCreateBtn__icon: .toogleTrnCreateBtn__icon__in +
+    a(
+      v-shortkey="['alt', 'arrowright']",
+      @shortkey="$store.commit('toogleTrnForm')",
+      @click.prevent.stop="$store.commit('toogleTrnForm')",
+      :class="{_active: $store.state.trnForm.isShow}"
+    ).toogleTrnCreateBtn
+      .toogleTrnCreateBtn__icon: .toogleTrnCreateBtn__icon__in +
 
     transition(name="slideToLeft")
       .trnForm(v-show="$store.state.trnForm.isShow")

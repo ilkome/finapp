@@ -114,9 +114,24 @@ h4
     opacity .01
     color $color-second
     font-size 1rem
-    margin-top -10px
+    margin-top -15px
+    margin-left 15px
     letter-spacing normal
     anim()
 
+    &._visible
+      opacity 1
+      color alpha($color-second, 1)
+
     ~/:hover ^[1..-1]
       opacity 1
+
+
+  &__calendar
+    &__name__icon
+      display inline-flex
+      padding-right 10px
+    
+    .sup
+      display inline-flex
+
