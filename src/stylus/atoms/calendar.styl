@@ -1,0 +1,51 @@
+.calendar
+  background none !important
+
+.calendar-dropdown
+  z-index 2
+  background $color-body
+  position absolute
+  left 0
+  top 0px
+  padding 20px
+  background $color-layout
+  border 4px solid $color-sidebar
+  box-shadow 6px 6px 0px alpha(#131313, .5)
+
+  &:before
+    position absolute
+    left 28px
+    top -26px
+    content ""
+    border 12px solid rgba(0, 0, 0, 0)
+    border-bottom-color $color-sidebar
+
+  &:after
+    position absolute
+    left 30px
+    top -19px
+    content ""
+    border 10px solid rgba(0, 0, 0, 0)
+    border-bottom-color $color-layout
+
+.calendar-dialog
+    position absolute
+    left 0
+    top 0
+    right 0
+    bottom 0
+
+.calendar-dialog-mask
+    // background rgba(255,255,255,.5)
+    width 100%
+    height 100%
+
+.calendar-dialog-body
+    // background #fff
+    position absolute
+    left 50%
+    top 50%
+    transform translate(-50%, -50%)
+    padding 0px
+    border 1px solid #eee
+    border-radius 2px

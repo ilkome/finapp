@@ -1,18 +1,3 @@
-.panel
-  padding 30px
-  background $color-trn
-  border-radius 3px
-
-.gridTable
-  max-width 1200px
-  display grid
-  grid-template-columns repeat(auto-fit, minmax(320px, 1fr))
-  grid-column-gap 100px
-  grid-row-gap 60px
-
-  &__item
-    max-width 470px
-
 .grid
   display grid
   grid-template-columns minmax(90px, 100px) minmax(65px, 1fr) auto auto
@@ -70,6 +55,67 @@
         opacity 1
         color $color-main
 
+.hey
+  display grid
+  grid-template-columns repeat(1, 1fr)
+  font-size 1rem
+  align-self flex-start
+
+  .date__period
+    padding-bottom 20px
+    &:last-child
+      padding-bottom 0
+
+  .date__item
+    cursor pointer
+    padding 8px 10px
+    anim()
+    border-radius 3px
+    color #444444
+    text-transform none
+    font-weight normal
+    $font-primary()
+
+    &._active
+      cursor default
+      background #5e7a88 !important
+      color white
+
+    &:hover
+      // color white
+      background #f3f8fa
+
+.panel
+  padding 30px
+  background $color-trn
+  border-radius 3px
+
+.gridTable
+  display grid
+  grid-template-columns minmax(200px, 540px) minmax(200px, 540px)
+  grid-column-gap 160px
+  grid-row-gap 60px
+  @media $pcNew
+    grid-column-gap 150px
+
+  &._fullWidth
+    max-width 2000px
+    grid-template-columns 340px minmax(400px, 1200px)
+    @media $pcNew
+      grid-column-gap 290px
+
+  &._SummaryPeriodHorizontal
+    max-width 2000px
+    grid-template-columns 360px 550px
+    grid-column-gap 60px
+
+    @media $laptopNew
+      grid-column-gap 330px
+
+    @media $pcNew
+      grid-column-gap 325px
+
+
 .yearStat
   padding-right 100px
   flex 0 0 470px
@@ -84,87 +130,6 @@ input.flatpickr-input
 .flatpickr.control
   margin 0
 
-
-.stat
-  opacity .7
-  anim()
-  border 1px solid $color-line-layout
-  overflow-x auto
-  scrollbar()
-
-  &:hover
-    opacity 1
-
-  &__in
-    display flex
-    align-items center
-    justify-content space-between
-    scrollbar()
-
-  &__date
-    padding-bottom 20px
-    text-align center
-    font-size .8rem
-    font-weight bold
-
-  &__item
-    cursor pointer
-    min-width 10rem
-    height 24rem
-    flex 1 0 auto
-    padding 30px 0px
-    border-right 1px solid $color-line
-    anim()
-
-    &:last-child
-      margin-right 0
-      border 0
-
-    &:hover
-    &._active
-      background $color-trn-hover
-
-    &._active
-      cursor default
-
-  &__values
-    display none
-    max-width 70px
-    margin 0 auto
-    text-align right
-    padding-top 10px
-    .incomes
-    .expenses
-    .sum
-      font-size 1rem
-
-  &__graph
-    max-width 70px
-    margin 0 auto
-    display flex
-    align-items flex-end
-    height 19.5rem
-    padding-bottom 20px
-
-    &__in
-      flex 1 1 auto
-
-      &._incomes
-        margin 0 4px
-        background $color-income
-
-      &._expenses
-        margin 0 4px
-        background $color-expense
-
-      &._empty
-        height 1px
-        margin 0 4px
-        background $color-line
-
-  &__empty
-    cursor default
-    text-align center
 
 // #fct
 // ===============================================
@@ -257,10 +222,12 @@ input.flatpickr-input
     display flex
     align-items center
     justify-content center
-    width 30px
-    height 30px
+    width 40px
+    height 40px
+    margin-right 20px
+    margin-top 20px
     color $color-main
-    font-size 2.5rem
+    font-size 4rem
     $font-numbers()
     border 2px solid transparent
     border-radius 50%
@@ -270,9 +237,7 @@ input.flatpickr-input
       color $color-link
 
     ^[0]._active &
-      margin-right 20px
       color $color-link
-      font-size 3.5rem
       transform rotate(45deg)
       border-color $color-link
 

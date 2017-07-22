@@ -126,7 +126,7 @@
 
                     template(v-if="showedTrns.indexOf(data.month + year) !== -1")
                       .itemGraph__trns
-                        TrnsList(:trns="data.trns", :noDates="true")
+                        TrnsList(:trns="data.trns", view="small")
   template(v-else)
     .module
       h1.title Category not found!

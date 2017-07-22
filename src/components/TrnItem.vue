@@ -23,7 +23,7 @@
 
   //- Trns small
   //------------------------------------------------
-  template(v-else-if="noDates")
+  template(v-else-if="view === 'small'")
     .trnItem__content
       .grid(:class="{_updated: trn.id === wasUpdatedTrn, _editable: trn.id === editedTrn}")
         .grid__item._price(:class="trn.type === 1 ? 'income' : 'expense'")
@@ -85,11 +85,6 @@ export default {
     view: {
       type: String,
       required: false
-    },
-    noDates: {
-      type: Boolean,
-      required: false,
-      default: false
     }
   },
 

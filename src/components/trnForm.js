@@ -149,12 +149,13 @@ export default {
             children: childrenCategories
           })
         } else {
-          categoriesOrganazed.push({ ...category })
+          categoriesOrganazed.push({
+            ...category,
+            children: []
+          })
         }
       })
-
       categoriesOrganazed = orderBy(categoriesOrganazed, c => c.name, 'asc')
-
       return categoriesOrganazed
     }
   },

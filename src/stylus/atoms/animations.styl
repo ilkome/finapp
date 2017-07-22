@@ -7,6 +7,14 @@
     opacity 1
     anim-all()
 
+.fade2
+  &-enter-active, &-leave-active
+    anim()
+
+  &-enter, &-leave-active
+    opacity 0
+    transform translateY(-20px)
+
 
 // pages
 .slide
