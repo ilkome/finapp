@@ -1,10 +1,11 @@
+const path = require('path')
 const paths = require('../config/paths')
 
 module.exports = {
   resolve: {
     extensions: ['.js', '.vue'],
     alias: {
-      'vue$': 'vue/dist/vue.esm.js'
+      '@': path.join(__dirname, '../src')
     }
   },
   module: {
