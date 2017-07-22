@@ -71,19 +71,19 @@
     padding 8px 10px
     anim()
     border-radius 3px
-    color #444444
+    color $color-main
     text-transform none
     font-weight normal
     $font-primary()
 
+    &:hover
+      color #444
+      background #f3f8fa
+
     &._active
       cursor default
-      background #5e7a88 !important
+      background #5e7a88
       color white
-
-    &:hover
-      // color white
-      background #f3f8fa
 
 .panel
   padding 30px
