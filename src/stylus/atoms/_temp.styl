@@ -106,11 +106,11 @@
 
   &._SummaryPeriodHorizontal
     max-width 2000px
-    grid-template-columns 360px 550px
+    grid-template-columns 360px minmax(500px, 550px)
     grid-column-gap 60px
 
     @media $laptopNew
-      grid-column-gap 330px
+      grid-column-gap 100px
 
     @media $pcNew
       grid-column-gap 325px
