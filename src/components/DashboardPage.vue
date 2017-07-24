@@ -1,20 +1,17 @@
 <template lang="pug">
 .content
+  pre {{ $store.state.dates }}
   .module._fixHeight
     .gridTable._SummaryPeriodHorizontal
+
         //- Statistic
         //------------------------------------------------
         .gridTable__item
-          h3.title._mbs
+          h3.title._mbs._link
             .title__calendar(@click="openPopupCalendar($event)")
-              .title__calendar__name
-                .title__calendar__name__icon.mdi.mdi-calendar-multiple
-                template(v-if="formatDate(startDate) === formatDate(endDate)")
-                  template(v-if="formatDate(startDate) === formatDate(today)") Today
-                  template(v-else) {{ formatDate(startDate) }}
-                template(v-else) {{ formatDate(startDate) }} - {{ formatDate(endDate) }}
-                sup.sup._visible
-                  template(v-if="duration !== 1") {{ duration }} days
+              .title__calendar__icon.mdi.mdi-calendar-multiple
+              .title__calendar__name {{ showedDate.first }}
+              .title__calendar__sup(v-if="showedDate.second !== 'Today'") {{ showedDate.second }}
 
             transition(name="fade2")
               .calendar-dropdown(
@@ -23,26 +20,37 @@
               )
                 div.hey
                   .date__period
-                    .date__item Today
-                    .date__item Yeasterday
+                    .date__item(
+                      :class="{_active: duration === 1 && selectedPeriodIndex === 0}"
+                      @click.prevent="setDuration(1)"
+                    ) Today
                   .date__period
                     .date__item(
-                      :class="{_active: duration === 10}"
+                      :class="{_active: duration === 10 && selectedPeriodIndex === 0}"
                       @click.prevent="setDuration(10)"
                     ) Last 10 days
                     .date__item(
-                      :class="{_active: duration === 30}"
+                      :class="{_active: duration === 30 && selectedPeriodIndex === 0}"
                       @click.prevent="setDuration(30)"
                     ) Last 30 days
                     .date__item(
-                      :class="{_active: duration === 365}"
+                      :class="{_active: duration === 365 && selectedPeriodIndex === 0}"
                       @click.prevent="setDuration(365)"
-                    ) Last year
+                    ) Last 365 days
                   .date__period
-                    .date__item This Week
-                    .date__item This Month
-                    .date__item This Year
-                calendar(
+                    .date__item(
+                      :class="{_active: selectedCalendarPreset === 'isoweek' && selectedPeriodIndex === 0}",
+                      @click.prevent="setDates('isoweek')"
+                    ) This week
+                    .date__item(
+                      :class="{_active: selectedCalendarPreset === 'month' && selectedPeriodIndex === 0}",
+                      @click.prevent="setDates('month')"
+                    ) This month
+                    .date__item(
+                      :class="{_active: selectedCalendarPreset === 'year' && selectedPeriodIndex === 0}",
+                      @click.prevent="setDates('year')"
+                    ) This year
+                Calendar(
                   :range="calendar.range",
                   :zero="calendar.zero",
                   :value="calendar.value"
@@ -87,14 +95,14 @@
               .summaryShort__item__label Total
               .summaryShort__item__total.sum {{ formatMoney(avSummary.total) }}
 
-        //- Previous days
+        //- Previous
         //------------------------------------------------
         .gridTable__item
-          h3.title._mbs Previous days
+          h3.title._mbs Previous
 
           .itemStatLine(
             v-for="(period, index) in periodsData",
-            @click.prevent="showSelectedPeriodStat(index)",
+            @click.prevent="selectPeriodStat(index)",
             :class="{ _active: selectedPeriodIndex === index }"
           )
             .itemStatLine__in
@@ -176,7 +184,7 @@
 
           .trns
             template(v-for="itemStat in incomesCategoriesData")
-              .itemStat._link(:class="{_opened: showedTrnsCategoryId.indexOf(itemStat.id) !== -1}")
+              .itemStat._link._clear(:class="{_opened: showedTrnsCategoryId.indexOf(itemStat.id) !== -1}")
                 .itemStat__in(@click.prevent="toogleShowTrnsInCategory(itemStat.id)")
                   router-link.itemStat__icon(
                     :to="`/categories/${itemStat.id}`",
@@ -211,55 +219,63 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import calendar from './calendar/calendar.vue'
 import moment from 'moment'
+import date from 'date-fns'
 import uniqBy from 'lodash/uniqBy'
 import orderBy from 'lodash/orderBy'
 import formatMoney from '../mixins/formatMoney'
 import formatDate from '../mixins/formatDate'
+import Calendar from './calendar/calendar.vue'
 import TrnsList from './TrnsList.vue'
 import TrnItem from './TrnItem.vue'
 
 export default {
   mixins: [formatDate, formatMoney],
-  components: { TrnsList, TrnItem, calendar },
+  components: { TrnsList, TrnItem, Calendar },
 
   data() {
     return {
+      showedDate: {},
       showedTab: 'statistic',
       days: [1, 5, 10, 7, 14, 30, 999],
       selectedPeriodIndex: 0,
-      numberOfPeriods: 3,
       showedTrnsCategoryId: [],
-      maxDate: 'today',
-      today: moment(),
       avDays: 180,
-      startDate: '',
-      endDate: '',
-      periodsStartDate: '',
-      periodsEndDate: '',
-      calendar: '',
-      showedDurationDropdown: false
+      globalDate: {
+        start: '',
+        end: ''
+      },
+      trnsDate: {
+        start: '',
+        end: ''
+      },
+      calendar: {},
+      showedDurationDropdown: false,
+      selectedCalendarPreset: null
     }
   },
 
   beforeMount() {
-    const startDate = moment().subtract(this.$store.state.filter.duration - 1, 'days')
-    const endDay = moment()
+    const startDate = moment(this.$store.state.dates.start).startOf('day').valueOf()
+    const endDay = moment(this.$store.state.dates.end).startOf('day').valueOf()
 
-    this.startDate = startDate
-    this.endDate = endDay
-    this.periodsStartDate = startDate
-    this.periodsEndDate = endDay
+    this.selectedCalendarPreset = this.$store.state.dashboard.calendarPreset
+    this.trnsDate.start = startDate
+    this.trnsDate.end = endDay
+    this.globalDate.start = startDate
+    this.globalDate.end = endDay
     this.calendar = {
       show: false,
       range: true,
       zero: true,
       value: [
-        startDate.format('Y.M.D').split('.'),
-        endDay.format('Y.M.D').split('.')
+        moment(startDate).format('Y.M.D').split('.'),
+        moment(endDay).format('Y.M.D').split('.')
       ]
     }
+
+    this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+    this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
 
     document.addEventListener('keyup', (event) => {
       if (event.keyCode === 27) { // escape key
@@ -278,7 +294,7 @@ export default {
     },
 
     trnsList() {
-      return this.getTrns(this.startDate, this.endDate)
+      return this.getTrns(this.trnsDate.start, this.trnsDate.end)
     },
 
     incomesTrns() {
@@ -333,17 +349,37 @@ export default {
     periodsData() {
       const data = []
 
-      for (let period = 1; period <= this.numberOfPeriods; period++) {
-        const periodDuration = this.duration * period - this.duration
-        const periodStartDate = moment(this.periodsStartDate).subtract(periodDuration, 'days')
-        const periodEndDate = moment(this.periodsEndDate).subtract(periodDuration, 'days')
+      for (let period = 0; period <= 2; period++) {
+        const periodDuration = this.duration * period
+        let periodStartDate = moment(this.globalDate.start).subtract(periodDuration, 'days').startOf('day')
+        let periodEndDate = moment(this.globalDate.end).subtract(periodDuration, 'days').endOf('day')
 
-        let periodDate
-        moment(periodStartDate).format('D.M.Y') === moment(periodEndDate).format('D.M.Y')
-          ? periodDate = moment(periodStartDate).format('D MMM')
-          : periodDate = `${moment(periodStartDate).format('D MMM')} - ${moment(periodEndDate).format('D MMM')}`
+        if (this.selectedCalendarPreset) {
+          switch (this.selectedCalendarPreset) {
+            case 'isoweek':
+              periodStartDate = moment(this.globalDate.start).subtract(period, 'weeks').startOf('isoweek')
+              periodEndDate = moment(this.globalDate.start).subtract(period, 'weeks').endOf('isoweek')
+              break
+            case 'month':
+              periodStartDate = moment(this.globalDate.start).subtract(period, 'months').startOf('month')
+              periodEndDate = moment(this.globalDate.start).subtract(period, 'months').endOf('month')
+              break
+            case 'year':
+              periodStartDate = moment(this.globalDate.start).subtract(period, 'years').startOf('year')
+              periodEndDate = moment(this.globalDate.start).subtract(period, 'years').endOf('year')
+              break
+          }
 
-        const periodTrns = this.getTrns(periodStartDate, periodEndDate)
+          if (period === 0) periodEndDate = moment().endOf('day')
+        }
+
+        const isLastDays = moment(this.globalDate.end).endOf('day').valueOf() === moment().endOf('day').valueOf()
+        let periodName = this.formatDates(periodStartDate, periodEndDate, 'date')
+        if ((period === 0 || this.selectedCalendarPreset) && isLastDays) {
+          periodName = this.formatDates(periodStartDate, periodEndDate, 'period')
+        }
+
+        const periodTrns = this.getTrns(moment(periodStartDate).valueOf(), moment(periodEndDate).valueOf())
         const periodIncomes = periodTrns
           .filter(t => t.type === 1)
           .reduce((sum, current) => sum + current.amountRub, 0)
@@ -354,7 +390,7 @@ export default {
 
         data.push({
           period,
-          date: periodDate,
+          date: periodName,
           incomes: periodIncomes,
           expenses: periodExpenses,
           total: periodTotal
@@ -366,18 +402,211 @@ export default {
   },
 
   methods: {
-    selectCalendarDates(startDate, endDate) {
-      this.startDate = moment(startDate.join('.'), 'Y.M.D')
-      this.endDate = moment(endDate.join('.'), 'Y.M.D')
-      this.periodsStartDate = this.startDate
-      this.periodsEndDate = this.endDate
+    setDuration(duration) {
+      // if (this.duration === duration) return
+
+      this.selectedCalendarPreset = false
+      this.showedTrnsCategoryId = []
+      this.selectedPeriodIndex = 0
+
+      const startDate = moment().subtract(duration - 1, 'days').startOf('day')
+      const endDate = moment().endOf('day')
+
+      this.$store.commit('setDuration', duration)
+      this.$store.commit('setDates', { start: startDate, end: endDate })
+      this.$store.commit('setCalendarPreset', null)
+
+      // Trns
+      this.trnsDate.start = startDate
+      this.trnsDate.end = endDate
+
+      // Period
+      this.globalDate.start = startDate
+      this.globalDate.end = endDate
+
+      // Title
+      this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+      this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+
+      // Calendar
+      this.calendar.show = false
+      this.calendar.value = [
+        moment(startDate).format('Y.M.D').split('.'),
+        moment(endDate).format('Y.M.D').split('.')
+      ]
+    },
+
+    setDates(period) {
+      this.selectedCalendarPreset = period
+      this.showedTrnsCategoryId = []
+      this.selectedPeriodIndex = 0
+
+      let duration = 1
+      switch (period) {
+        case 'isoweek':
+          duration = 7
+          break
+        case 'month':
+          duration = 31
+          break
+        case 'year':
+          duration = 365 * 2
+          break
+      }
+
+      const startDate = moment().startOf(period).valueOf()
+      const endDate = moment().endOf('day').valueOf()
+
+      this.$store.commit('setDuration', duration)
+      this.$store.commit('setDates', { start: startDate, end: endDate })
+      this.$store.commit('setCalendarPreset', period)
+
+      // Trns
+      this.trnsDate.start = startDate
+      this.trnsDate.end = endDate
+
+      // Periods
+      this.globalDate.start = this.trnsDate.start
+      this.globalDate.end = this.trnsDate.end
+
+      // Title
+      this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+      this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+
+      // Calendar
+      this.calendar.show = false
+      this.calendar.value = [
+        moment(this.trnsDate.start).format('Y.M.D').split('.'),
+        moment(this.trnsDate.end).format('Y.M.D').split('.')
+      ]
+    },
+
+    formatDates(start, end, type) {
+      const startDate = moment(start).startOf('day')
+      const endDate = moment(end).endOf('day').valueOf()
+      const endOfToday = moment().endOf('day').valueOf()
+
+      // Same day
+      if (moment(startDate).endOf('day').valueOf() === moment(endDate).endOf('day').valueOf()) {
+        // Today
+        if (moment(startDate).endOf('day').valueOf() === endOfToday) {
+          if (type === 'date') {
+            return `${moment(startDate).format('D MMM')}`
+          }
+          return 'Today'
+        }
+        // Yestarday
+        if (moment(startDate).endOf('day').valueOf() === moment(endOfToday).subtract(1, 'day').valueOf()) {
+          if (type === 'date') {
+            return 'Yestarday'
+          }
+          return `${moment(startDate).format('D MMM')}`
+        }
+      }
+
+      // Date
+      if (type === 'date') {
+        // Same yaer
+        if (moment(startDate).format('Y') === moment(endDate).format('Y')) {
+          // Same month
+          if (moment(startDate).format('M') === moment(endDate).format('M')) {
+            // Same day
+            if (moment(startDate).format('D') === moment(endDate).format('D')) {
+              return `${moment(startDate).format('D MMM')}`
+            } else {
+              return `${moment(startDate).format('D')} - ${moment(endDate).format('D')} ${moment(endDate).format('MMM')}`
+            }
+          } else {
+            return `${moment(startDate).format('D MMM')} - ${moment(endDate).format('D MMM')}`
+          }
+        }
+
+        // Differnt year
+        if (moment(startDate).format('Y') !== moment(endDate).format('Y')) {
+          // Same month
+          if (moment(startDate).format('M') === moment(endDate).format('M')) {
+            // Same day
+            if (moment(startDate).format('D') === moment(endDate).format('D')) {
+              return `${moment(startDate).format('D MMM YY')}`
+            } else {
+              return `${moment(startDate).format('D MMM YY')} - ${moment(endDate).format('D MMM YY')}`
+            }
+          } else {
+            return `${moment(startDate).format('D MMM YY')} - ${moment(endDate).format('D MMM YY')}`
+          }
+        }
+      }
+
+      // Period
+      if (type === 'period') {
+        // Calendar Preset
+        if (this.selectedCalendarPreset) {
+          let difference = ''
+
+          switch (this.selectedCalendarPreset) {
+            case 'isoweek':
+              difference = date.differenceInCalendarWeeks(this.globalDate.end, startDate)
+              switch (difference) {
+                case 0: return `This week`
+                case 1: return `Last week`
+                default: return `${difference} weeks ago`
+              }
+            case 'month':
+              difference = date.differenceInCalendarMonths(this.globalDate.end, startDate)
+              switch (difference) {
+                case 0: return `This month`
+                case 1: return `Last month`
+                default: return `${difference} months ago`
+              }
+            case 'year':
+              difference = date.differenceInCalendarYears(this.globalDate.end, startDate)
+              switch (difference) {
+                case 0: return `This year`
+                case 1: return `Last year`
+                default: return `${difference} years ago`
+              }
+            default: return `No date`
+          }
+        }
+
+        // Numbers
+        if (!this.selectedCalendarPreset) {
+          // First period
+          if (endDate === endOfToday) {
+            return `Last ${this.duration} days`
+          }
+
+          // Other periods
+          if (endDate !== endOfToday) {
+            return `${this.duration} days`
+          }
+        }
+      }
+    },
+
+    selectCalendarDates(startCalendar, endCalendar) {
+      const startDate = moment(startCalendar.join('.'), 'Y.M.D').startOf('day')
+      const endDate = moment(endCalendar.join('.'), 'Y.M.D').endOf('day')
+      this.globalDate.start = moment(this.trnsDate.start).valueOf()
+      this.globalDate.end = moment(this.trnsDate.end).valueOf()
 
       this.calendar.show = false
-      this.calendar.value = [startDate, endDate]
+      this.calendar.value = [startCalendar, endCalendar]
 
       this.selectedPeriodIndex = 0
-      const duration = this.endDate.diff(this.startDate, 'days') + 1
+
+      const duration = endDate.diff(startDate, 'days') + 1
       this.$store.commit('setDuration', duration)
+      this.$store.commit('setDates', { start: startDate, end: endDate })
+      this.$store.commit('setCalendarPreset', null)
+
+      // Trns
+      this.trnsDate.start = startDate
+      this.trnsDate.end = endDate
+
+      // Title
+      this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+      this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
     },
 
     toogleDurationPop() {
@@ -392,50 +621,54 @@ export default {
       this.calendar.top = event.target.offsetTop + 45
     },
 
-    showSelectedPeriodStat(index) {
+    selectPeriodStat(index) {
       if (this.selectedPeriodIndex === index) return
 
       this.showedTrnsCategoryId = []
       this.selectedPeriodIndex = index
 
-      const startDate = moment(this.periodsStartDate).subtract(this.duration * index, 'days')
-      const endDate = moment(this.periodsEndDate).subtract(this.duration * index, 'days')
+      let startDate = moment(this.globalDate.start).subtract(this.duration * index, 'days')
+      let endDate = moment(this.globalDate.end).subtract(this.duration * index, 'days')
 
-      this.startDate = startDate
-      this.endDate = endDate
+      // Week
+      if (this.selectedCalendarPreset === 'isoweek') {
+        startDate = moment(this.globalDate.start).subtract(index, 'weeks').startOf('isoweek')
+        if (index === 0) endDate = moment(this.globalDate.end).endOf('day')
+        else endDate = moment(this.globalDate.start).subtract(index, 'weeks').endOf('isoweek')
+      }
 
-      // For calendar
+      // Month
+      if (this.selectedCalendarPreset === 'month') {
+        startDate = moment(this.globalDate.start).subtract(index, 'months').startOf('month')
+        if (index === 0) endDate = moment(this.globalDate.end).endOf('day')
+        else endDate = moment(this.globalDate.end).subtract(index, 'months').endOf('month')
+      }
+
+      // Year
+      if (this.selectedCalendarPreset === 'year') {
+        startDate = moment(this.globalDate.start).subtract(index, 'years').startOf('year')
+        if (index === 0) endDate = moment(this.globalDate.end).endOf('day')
+        else endDate = moment(this.globalDate.end).subtract(index, 'years').endOf('year')
+      }
+
+      // Trns
+      this.trnsDate.start = startDate
+      this.trnsDate.end = endDate
+
+      // Title
+      this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+      this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+      if (index === 0 || this.selectedCalendarPreset) {
+        this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+        this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+      }
+
+      // Calendar
       this.calendar.show = false
       this.calendar.value = [
-        startDate.format('Y.M.D').split('.'),
-        endDate.format('Y.M.D').split('.')
+        moment(startDate).format('Y.M.D').split('.'),
+        moment(endDate).format('Y.M.D').split('.')
       ]
-    },
-
-    setDuration(duration) {
-      if (this.duration === duration) return
-
-      this.showedTrnsCategoryId = []
-      this.selectedPeriodIndex = 0
-      this.$store.commit('setDuration', duration)
-
-      const startDate = moment(this.endDate).subtract(duration - 1, 'days')
-      const endDate = moment(this.endDate)
-
-      // For trns
-      this.startDate = startDate
-      this.endDate = endDate
-
-      // For calendar
-      this.calendar.show = false
-      this.calendar.value = [
-        startDate.format('Y.M.D').split('.'),
-        endDate.format('Y.M.D').split('.')
-      ]
-
-      // For period
-      this.periodsStartDate = startDate
-      this.periodsEndDate = endDate
     },
 
     getCategoryGraphWidth(total, trns) {

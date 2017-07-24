@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import moment from 'moment'
 
 import accounts from './modules/accounts'
 import categories from './modules/categories'
@@ -34,6 +35,13 @@ const state = {
     action: 'create',
     isUpdateTrn: false,
     wasUpdatedTrn: false
+  },
+  dates: {
+    start: moment().subtract(10, 'days').startOf('day').valueOf(),
+    end: moment().endOf('day').valueOf()
+  },
+  dashboard: {
+    calendarPreset: null
   }
 }
 
@@ -45,6 +53,14 @@ const actions = {
 // mutations commit
 // ==============================================
 const mutations = {
+  setDates(state, dates) {
+    state.dates.start = moment(dates.start).startOf('day').valueOf()
+    state.dates.end = moment(dates.end).endOf('day').valueOf()
+  },
+  setCalendarPreset(state, preset) {
+    state.dashboard.calendarPreset = preset
+  },
+
   setUpdatedTrn(state, trnId) {
     state.trnForm.wasUpdatedTrn = trnId
   },
