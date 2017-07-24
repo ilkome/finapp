@@ -60,13 +60,12 @@
             .icon__label {{ category.name }}
 
         .categoriesIcons__el
-          .icon._link(
+          .icon._link._more(
             @click.prevent="toogleCategoriesPop()",
             @keyup.enter.prevent="toogleCategoriesPop()",
             v-shortkey="['alt', 'arrowup']",
             @shortkey="toogleCategoriesPop()",
-            aria-checked="false", tabindex="0",
-            style="background: black"
+            aria-checked="false", tabindex="0"
           )
             .mdi.mdi-dots-horizontal
             .icon__label Show all categories
