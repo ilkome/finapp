@@ -107,6 +107,7 @@
                 .itemStatLine__graph
                   template(v-if="period.incomes > 0")
                     .itemStatLine__graph__in._income(:style="getPeriodGraphWidth(period.incomes)")
+                .itemStatLine__graph
                   template(v-if="period.expenses > 0")
                     .itemStatLine__graph__in._expense(:style="getPeriodGraphWidth(period.expenses)")
   //- Tabs
