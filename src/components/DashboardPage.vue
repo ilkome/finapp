@@ -1,7 +1,7 @@
 <template lang="pug">
 .content
   .module
-    h3.title._mbs._link
+    h3.title._mbs
       .title__calendar(@click="openPopupCalendar($event)")
         .title__calendar__icon.mdi.mdi-calendar-multiple
         .title__calendar__name {{ showedDate.first }}
