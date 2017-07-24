@@ -87,7 +87,8 @@
     background #242424
     border-radius 3px
     overflow hidden
-    margin-bottom 5px
+
+
     &:last-child
       margin-bottom 0
 
@@ -106,7 +107,10 @@
     padding 0 15px 10px
 
 
+// Item Stat Line
+// ===============================================
 .itemStatLine
+  margin-left -20px
   opacity .9
   cursor pointer
   border-bottom 1px solid alpha(black, .3)
@@ -155,10 +159,16 @@
     text-align right
 
   &__graph
+    overflow hidden
     flex-grow 1
     background #242424
     border-radius 3px
-    overflow hidden
+    margin-bottom 5px
+    if $theme == "white"
+      margin-bottom 3px
+
+    &:last-child
+      margin-bottom 0
 
   &__graph__in
     height 1rem
