@@ -25,7 +25,6 @@ const store = {
 
         let color = cat.color
         if (!color) {
-          color = '#242424'
           if (parentId > 0) {
             const parent = categories.find(c => c.id === parentId)
             if (parent && parent.color) {
