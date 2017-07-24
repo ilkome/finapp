@@ -1,6 +1,5 @@
 <template lang="pug">
 .content
-  pre {{ $store.state.dates }}
   .module._fixHeight
     .gridTable._SummaryPeriodHorizontal
 
