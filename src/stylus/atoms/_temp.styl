@@ -90,32 +90,6 @@
   background $color-trn
   border-radius 3px
 
-.gridTable
-  display grid
-  grid-template-columns minmax(200px, 540px) minmax(200px, 540px)
-  grid-column-gap 160px
-  grid-row-gap 60px
-  @media $pcNew
-    grid-column-gap 150px
-
-  &._fullWidth
-    max-width 2000px
-    grid-template-columns 340px minmax(400px, 1200px)
-    @media $pcNew
-      grid-column-gap 290px
-
-  &._SummaryPeriodHorizontal
-    max-width 2000px
-    grid-template-columns 360px minmax(500px, 550px)
-    grid-column-gap 60px
-
-    @media $laptopNew
-      grid-column-gap 100px
-
-    @media $pcNew
-      grid-column-gap 325px
-
-
 .yearStat
   padding-right 100px
   flex 0 0 470px
