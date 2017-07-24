@@ -169,17 +169,13 @@ const store = {
             let iconValue = cat.icon
             let icon = cat.icon
             if (icon) {
-              console.log(1)
               if (/(mdi)/g.test(icon)) icon = `mdi ${icon}`
               if (/(fa)/g.test(icon)) icon = `fa ${icon}`
             } else {
-              console.log(2)
               icon = 'fa fa-industry'
               if (parentId > 0) {
-                console.log(3)
                 const parent = state.all.find(c => c.id === parentId)
                 if (parent && parent.icon) {
-                  console.log(4)
                   iconValue = parent.icon
                   if (/(mdi)/g.test(icon)) icon = `mdi ${parent.icon}`
                   if (/(fa)/g.test(icon)) icon = `fa ${parent.icon}`
