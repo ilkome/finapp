@@ -39,15 +39,6 @@ label, button, input, select, textarea
   &:last-child
     padding-bottom 0
 
-  &__label
-    padding-top 5px
-    padding-left 5px
-    font-size 12px
-    text-transform uppercase
-    color $color-second
-    font-weight bold
-    letter-spacing 1px
-
   &__field
     width 100%
     padding 0
@@ -60,6 +51,12 @@ label, button, input, select, textarea
     border-bottom 1px solid $color-line-account
     anim()
 
+    &._color
+      cursor pointer
+      height 40px
+      padding 0
+      margin 0
+
     &:focus, &:active
       &::-webkit-input-placeholder
         color alpha($color-main, .1)
@@ -67,6 +64,15 @@ label, button, input, select, textarea
     &::-webkit-input-placeholder
       color alpha($color-main, .7)
       anim()
+
+  &__label
+    padding-top 5px
+    padding-left 5px
+    font-size 12px
+    text-transform uppercase
+    color $color-second
+    font-weight bold
+    letter-spacing 1px
 
 
 
