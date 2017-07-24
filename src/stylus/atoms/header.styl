@@ -128,10 +128,20 @@ h4
 
 
   &__calendar
-    &__name__icon
-      display inline-flex
-      padding-right 10px
-    
-    .sup
-      display inline-flex
+    display inline-flex
+    // flex-grow 1
+    align-items center
+    anim()
+    &:hover
+      padding 20px
+      margin -20px
+      background $color-trn-hover
 
+    &__icon
+      padding-right 10px
+
+    &__sup
+      margin -15px 0 0 15px
+      color $color-second
+      font-size 1rem
+      letter-spacing normal
