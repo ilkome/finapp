@@ -5,7 +5,7 @@
   margin-bottom 15px
   color $color-second
   border-radius 3px
-  background alpha(black, .2)
+  background $color-itemStat
   border 1px solid alpha(black, .3)
   anim()
 
@@ -84,7 +84,7 @@
 
   &__graph
     flex-grow 1
-    background #242424
+    background $color-graph
     border-radius 3px
     overflow hidden
 
@@ -161,7 +161,7 @@
   &__graph
     overflow hidden
     flex-grow 1
-    background #242424
+    background $color-graph
     border-radius 3px
     margin-bottom 5px
     if $theme == "white"
