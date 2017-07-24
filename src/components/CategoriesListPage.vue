@@ -64,8 +64,8 @@
                       v-model.lazy="values.name = category.name", type="text" name="name")
                     .input__label Name
                   .input
-                    input.input__field(
-                      v-model.lazy="values.color = category.color", type="text" name="color")
+                    input.input__field._color(
+                      v-model.lazy="values.color = category.color", type="color" name="color")
                     .input__label Color
                   .input
                     input.input__field(
