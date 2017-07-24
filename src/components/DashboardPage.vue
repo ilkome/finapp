@@ -1,61 +1,60 @@
 <template lang="pug">
 .content
-  .module._fixHeight
-    .gridTable._SummaryPeriodHorizontal
+  .module
+    h3.title._mbs._link
+      .title__calendar(@click="openPopupCalendar($event)")
+        .title__calendar__icon.mdi.mdi-calendar-multiple
+        .title__calendar__name {{ showedDate.first }}
+        .title__calendar__sup(v-if="showedDate.second !== 'Today'") {{ showedDate.second }}
 
+      transition(name="fade2")
+        .calendar-dropdown(
+          :style="{'left':calendar.left+'px','top':calendar.top+'px'}",
+          v-if="calendar.show"
+        )
+          div.hey
+            .date__period
+              .date__item(
+                :class="{_active: duration === 1 && selectedPeriodIndex === 0}"
+                @click.prevent="setDuration(1)"
+              ) Today
+            .date__period
+              .date__item(
+                :class="{_active: duration === 10 && selectedPeriodIndex === 0}"
+                @click.prevent="setDuration(10)"
+              ) Last 10 days
+              .date__item(
+                :class="{_active: duration === 30 && selectedPeriodIndex === 0}"
+                @click.prevent="setDuration(30)"
+              ) Last 30 days
+              .date__item(
+                :class="{_active: duration === 365 && selectedPeriodIndex === 0}"
+                @click.prevent="setDuration(365)"
+              ) Last 365 days
+            .date__period
+              .date__item(
+                :class="{_active: selectedCalendarPreset === 'isoweek' && selectedPeriodIndex === 0}",
+                @click.prevent="setDates('isoweek')"
+              ) This week
+              .date__item(
+                :class="{_active: selectedCalendarPreset === 'month' && selectedPeriodIndex === 0}",
+                @click.prevent="setDates('month')"
+              ) This month
+              .date__item(
+                :class="{_active: selectedCalendarPreset === 'year' && selectedPeriodIndex === 0}",
+                @click.prevent="setDates('year')"
+              ) This year
+          Calendar(
+            :range="calendar.range",
+            :zero="calendar.zero",
+            :value="calendar.value"
+            @select="selectCalendarDates"
+          )
+
+    .gridTable._static
         //- Statistic
         //------------------------------------------------
         .gridTable__item
-          h3.title._mbs._link
-            .title__calendar(@click="openPopupCalendar($event)")
-              .title__calendar__icon.mdi.mdi-calendar-multiple
-              .title__calendar__name {{ showedDate.first }}
-              .title__calendar__sup(v-if="showedDate.second !== 'Today'") {{ showedDate.second }}
-
-            transition(name="fade2")
-              .calendar-dropdown(
-                :style="{'left':calendar.left+'px','top':calendar.top+'px'}",
-                v-if="calendar.show"
-              )
-                div.hey
-                  .date__period
-                    .date__item(
-                      :class="{_active: duration === 1 && selectedPeriodIndex === 0}"
-                      @click.prevent="setDuration(1)"
-                    ) Today
-                  .date__period
-                    .date__item(
-                      :class="{_active: duration === 10 && selectedPeriodIndex === 0}"
-                      @click.prevent="setDuration(10)"
-                    ) Last 10 days
-                    .date__item(
-                      :class="{_active: duration === 30 && selectedPeriodIndex === 0}"
-                      @click.prevent="setDuration(30)"
-                    ) Last 30 days
-                    .date__item(
-                      :class="{_active: duration === 365 && selectedPeriodIndex === 0}"
-                      @click.prevent="setDuration(365)"
-                    ) Last 365 days
-                  .date__period
-                    .date__item(
-                      :class="{_active: selectedCalendarPreset === 'isoweek' && selectedPeriodIndex === 0}",
-                      @click.prevent="setDates('isoweek')"
-                    ) This week
-                    .date__item(
-                      :class="{_active: selectedCalendarPreset === 'month' && selectedPeriodIndex === 0}",
-                      @click.prevent="setDates('month')"
-                    ) This month
-                    .date__item(
-                      :class="{_active: selectedCalendarPreset === 'year' && selectedPeriodIndex === 0}",
-                      @click.prevent="setDates('year')"
-                    ) This year
-                Calendar(
-                  :range="calendar.range",
-                  :zero="calendar.zero",
-                  :value="calendar.value"
-                  @select="selectCalendarDates"
-                )
-
           template(v-if="(incomesCategoriesData.length || expensesCategoriesData.length) > 0")
             .summaryShort._pb
               .summaryShort__item
@@ -97,8 +96,6 @@
         //- Previous
         //------------------------------------------------
         .gridTable__item
-          h3.title._mbs Previous
-
           .itemStatLine(
             v-for="(period, index) in periodsData",
             @click.prevent="selectPeriodStat(index)",
@@ -126,7 +123,7 @@
 
 
     .module._bg(v-show="showedTab === 'statistic'")
-      .gridTable
+      .gridTable._statItems
         //- Expenses
         //------------------------------------------------
         .gridTable__item(v-if="expensesCategoriesData.length > 0")
