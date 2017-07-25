@@ -12,4 +12,7 @@
     grid-template-columns minmax(auto, 300px) minmax(auto, 550px)
 
   &._statItems
-    grid-template-columns repeat(2, minmax(auto, 550px))
+    grid-template-columns repeat(2, minmax(auto, 1fr))
+
+    & ^[0]__item
+      max-width 550px

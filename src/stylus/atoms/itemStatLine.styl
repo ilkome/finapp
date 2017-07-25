@@ -2,15 +2,16 @@
   position relative
   opacity .9
   cursor pointer
+  padding 20px 0
   anim()
+  margin-top -1px !important
   border-bottom 1px solid $color-trn-hover
 
   &._active
     opacity 1
+    padding 0
     cursor default
-    margin 0 -20px
-    padding 0 20px
-    background $color-itemStat-active !important
+    border-color transparent
 
   &:last-child
     margin-bottom 0
@@ -18,14 +19,25 @@
 
   &:hover
     opacity 1
-    margin 0 -20px
-    padding 0 20px
-    background $color-trn-hover
+    padding 0px 0px
+    border-color transparent
 
   &__in
     display flex
     align-items center
-    padding 35px 0px
+    padding 15px 0
+    anim()
+
+    ^[0]:hover &
+      padding 35px 20px
+      margin 0 -20px
+      background $color-trn-hover
+
+    ^[0]._active &
+      margin 0 -20px
+      padding 35px 20px
+      border-color transparent
+      background $color-itemStat-active !important
 
   &__icon
     padding-right 15px
