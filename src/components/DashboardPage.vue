@@ -12,35 +12,35 @@
           :style="{'left':calendar.left+'px','top':calendar.top+'px'}",
           v-if="calendar.show"
         )
-          div.hey
-            .date__period
-              .date__item(
+          .calendarPeriod
+            .calendarPeriod__group
+              .calendarPeriod__item(
                 :class="{_active: duration === 1 && isLastDays}"
                 @click.prevent="setDuration(1)"
               ) Today
-            .date__period
-              .date__item(
+            .calendarPeriod__group
+              .calendarPeriod__item(
                 :class="{_active: duration === 10 && isLastDays}"
                 @click.prevent="setDuration(10)"
               ) Last 10 days
-              .date__item(
+              .calendarPeriod__item(
                 :class="{_active: duration === 30 && isLastDays}"
                 @click.prevent="setDuration(30)"
               ) Last 30 days
-              .date__item(
+              .calendarPeriod__item(
                 :class="{_active: duration === 365 && isLastDays}"
                 @click.prevent="setDuration(365)"
               ) Last 365 days
-            .date__period
-              .date__item(
+            .calendarPeriod__group
+              .calendarPeriod__item(
                 :class="{_active: calendarPreset === 'isoweek' && isLastDays}",
                 @click.prevent="setDates('isoweek')"
               ) This week
-              .date__item(
+              .calendarPeriod__item(
                 :class="{_active: calendarPreset === 'month' && isLastDays}",
                 @click.prevent="setDates('month')"
               ) This month
-              .date__item(
+              .calendarPeriod__item(
                 :class="{_active: calendarPreset === 'year' && isLastDays}",
                 @click.prevent="setDates('year')"
               ) This year

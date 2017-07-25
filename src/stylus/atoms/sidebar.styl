@@ -1,0 +1,65 @@
+.sidebar
+  overflow hidden
+  z-index 1
+  flex-shrink 0
+  position relative
+  background $color-sidebar
+  anim()
+
+  @media $laptop
+    width 19rem
+    overflow hidden
+    border-right 2px solid $color-line-layout
+
+  &__wrap
+    @media $laptop
+      z-index 3
+      overflow-y auto
+      position fixed
+      left 0
+      width 19rem
+      height 100%
+      scrollbar()
+
+  &__in
+    overflow hidden
+    opacity 1
+    display flex
+    flex-flow row wrap
+    align-content space-between
+    height 100%
+    padding-bottom 20px
+    margin-right 2px
+
+.sidebarToogle
+  z-index 15
+  position fixed
+  width 20px
+  height 100%
+  left 0px
+  top 0
+  cursor pointer
+  display flex
+  align-items flex-start
+  justify-content center
+  right 0px
+  color $color-second
+  font-size 1.5rem
+  anim()
+
+  &__icon
+    display flex
+    align-items center
+    justify-content center
+    width 40px
+    height 40px
+    margin-left 35px
+    margin-top 25px
+
+    ^[0]:hover &
+      color $color-link
+
+    ^[0]._active &
+      color $color-link
+      transform rotate(45deg)
+      border-color $color-link

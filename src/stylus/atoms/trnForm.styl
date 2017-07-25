@@ -112,3 +112,41 @@
     &:hover
       color $color-link
       border-color $color-link
+
+
+.trnFormToogle
+  cursor pointer
+  z-index 15
+  position fixed
+  width 50px
+  height 100%
+  right 0
+  top 0
+  display flex
+  align-items flex-start
+  justify-content center
+  color $color-second
+  anim()
+
+  &__icon
+    display flex
+    align-items center
+    justify-content center
+    width 40px
+    height 40px
+    margin-right 20px
+    margin-top 25px
+    color $color-main
+    font-size 4rem
+    $font-numbers()
+    border 2px solid transparent
+    border-radius 50%
+    anim()
+
+    ^[0]:hover &
+      color $color-link
+
+    ^[0]._active &
+      color $color-link
+      transform rotate(45deg)
+      border-color $color-link

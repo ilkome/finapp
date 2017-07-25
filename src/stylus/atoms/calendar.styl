@@ -29,23 +29,52 @@
     border-bottom-color $color-layout
 
 .calendar-dialog
-    position absolute
-    left 0
-    top 0
-    right 0
-    bottom 0
+  position absolute
+  left 0
+  top 0
+  right 0
+  bottom 0
 
 .calendar-dialog-mask
-    // background rgba(255,255,255,.5)
-    width 100%
-    height 100%
+  width 100%
+  height 100%
 
 .calendar-dialog-body
-    // background #fff
-    position absolute
-    left 50%
-    top 50%
-    transform translate(-50%, -50%)
-    padding 0px
-    border 1px solid #eee
-    border-radius 2px
+  position absolute
+  left 50%
+  top 50%
+  transform translate(-50%, -50%)
+  padding 0px
+  border 1px solid #eee
+  border-radius 2px
+
+
+.calendarPeriod
+  display grid
+  grid-template-columns repeat(1, 1fr)
+  font-size 1rem
+  align-self flex-start
+
+  &__group
+    padding-bottom 20px
+    &:last-child
+      padding-bottom 0
+
+  &__item
+    cursor pointer
+    padding 8px 10px
+    anim()
+    border-radius 3px
+    color $color-main
+    text-transform none
+    font-weight normal
+    $font-primary()
+
+    &:hover
+      color #444
+      background #f3f8fa
+
+    &._active
+      cursor default
+      background #5e7a88
+      color white
