@@ -246,9 +246,16 @@ export default {
         end: ''
       },
       calendar: {},
-      showedDurationDropdown: false,
       selectedCalendarPreset: null
     }
+  },
+
+  mounted() {
+    this.$el.addEventListener('click', this.closePopCalendar)
+  },
+
+  beforeDestroy() {
+    this.$el.removeEventListener('click', this.closePopCalendar)
   },
 
   beforeMount() {
@@ -277,7 +284,6 @@ export default {
       if (event.keyCode === 27) { // escape key
         console.log('document.addEventListener: keyup')
         this.calendar.show = false
-        this.showedDurationDropdown = false
       }
     })
   },
@@ -399,8 +405,6 @@ export default {
 
   methods: {
     setDuration(duration) {
-      // if (this.duration === duration) return
-
       this.selectedCalendarPreset = false
       this.showedTrnsCategoryId = []
       this.selectedPeriodIndex = 0
@@ -607,14 +611,23 @@ export default {
 
     toogleDurationPop() {
       this.calendar.show = false
-      this.showedDurationDropdown = !this.showedDurationDropdown
     },
 
     openPopupCalendar(event) {
-      this.showedDurationDropdown = false
       this.calendar.show = !this.calendar.show
       this.calendar.left = event.target.offsetLeft - 5
       this.calendar.top = event.target.offsetTop + 45
+    },
+
+    closePopCalendar(event) {
+      const link = this.$el.querySelector('.title._mbs')
+      const target = event.target
+
+      if (target.contains(link)) {
+        if (this.calendar.show) {
+          this.calendar.show = false
+        }
+      }
     },
 
     selectPeriodStat(index) {
