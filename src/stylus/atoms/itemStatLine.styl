@@ -25,17 +25,17 @@
   &__in
     display flex
     align-items center
-    padding 15px 0
+    padding 10px 0
     anim()
 
     ^[0]:hover &
-      padding 35px 20px
+      padding 30px 20px
       margin 0 -20px
       background $color-trn-hover
 
     ^[0]._active &
       margin 0 -20px
-      padding 35px 20px
+      padding 30px 20px
       border-color transparent
       background $color-itemStat-active !important
 
@@ -55,8 +55,8 @@
     white-space nowrap
 
   &__text
-    @extend .itemStat__text
-    margin-bottom 15px
+    display flex
+    padding-bottom 15px
 
   &__price
     min-width 115px
