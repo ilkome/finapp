@@ -25,12 +25,15 @@
       .sidebar(v-show="$store.state.leftBar.isShow")
         Sidebar
 
+    .sidebarToogle(
+      v-shortkey="['alt', 'arrowleft']",
+      @shortkey="$store.commit('toogleLeftBar')",
+      @click.prevent="$store.commit('toogleLeftBar')"
+    )
+      .sidebarToogle__icon
+        .fa.fa-bars
+
     .topbar(:class="$store.state.leftBar.isShow && '_withLeftBar'")
-      .fa.fa-bars(
-        v-shortkey="['alt', 'arrowleft']",
-        @shortkey="$store.commit('toogleLeftBar')",
-        @click.prevent="$store.commit('toogleLeftBar')"
-      ).leftBarToogle
       .topbar__in
         nav.menu
           router-link(to="/" exact).menuLink Dashboard
@@ -46,8 +49,8 @@
       @shortkey="$store.commit('toogleTrnForm')",
       @click.prevent.stop="$store.commit('toogleTrnForm')",
       :class="{_active: $store.state.trnForm.isShow}"
-    ).toogleTrnCreateBtn
-      .toogleTrnCreateBtn__icon: .toogleTrnCreateBtn__icon__in +
+    ).trnFormToogle
+      .trnFormToogle__icon: .trnFormToogle__icon__in +
 
     transition(name="slideToLeft")
       .trnForm(v-show="$store.state.trnForm.isShow")

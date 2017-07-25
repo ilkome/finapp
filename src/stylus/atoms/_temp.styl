@@ -55,36 +55,6 @@
         opacity 1
         color $color-main
 
-.hey
-  display grid
-  grid-template-columns repeat(1, 1fr)
-  font-size 1rem
-  align-self flex-start
-
-  .date__period
-    padding-bottom 20px
-    &:last-child
-      padding-bottom 0
-
-  .date__item
-    cursor pointer
-    padding 8px 10px
-    anim()
-    border-radius 3px
-    color $color-main
-    text-transform none
-    font-weight normal
-    $font-primary()
-
-    &:hover
-      color #444
-      background #f3f8fa
-
-    &._active
-      cursor default
-      background #5e7a88
-      color white
-
 .panel
   padding 30px
   background $color-trn
@@ -94,79 +64,6 @@
   padding-right 100px
   flex 0 0 470px
 
-input.flatpickr-input
-  opacity 0
-  width 0
-  height 0
-  padding 0
-  margin 0
-
-.flatpickr.control
-  margin 0
-
-
-// #fct
-// ===============================================
-.fastCreatTrn
-  &__content
-    padding-bottom 30px
-
-  &__day
-    margin-bottom 80px
-    padding-bottom 0px
-    border-bottom 1px solid $color-line
-    &:last-child
-      margin-bottom 0
-
-  &__addDay
-    display inline-flex
-    padding 15px 30px
-    text-transform uppercase
-    letter-spacing 1px
-    font-weight bold
-    background $color-line
-    border 1px solid $color-line
-    border-radius 3px
-    anim()
-
-    &:hover
-      border-color $color-link
-
-  &__trn
-    display flex
-    align-items center
-
-    &__item
-      flex 1 1
-      padding 0 20px
-
-      &:first-child
-        padding-left 0
-
-      &:last-child
-        padding-right 0
-
-
-.mb
-  margin-bottom 60px
-
-.sl
-  max-width 460px
-  margin -10px
-
-.dark
-  background $color-layout
-
-
-.page-blur
-  z-index 5
-  position fixed
-  left 0
-  top 0
-  width 100%
-  height 100%
-  background alpha($color-layout, .8)
-
 .bg-1
 .bg-1.icon
   background $color-rub
@@ -174,47 +71,6 @@ input.flatpickr-input
 .bg-2
 .bg-2.icon
   background $color-tinkoff
-
-.toogleTrnCreateBtn
-  z-index 15
-  position fixed
-  width 50px
-  height 100%
-  right 0
-  top 0
-  cursor pointer
-  display flex
-  align-items flex-start
-  justify-content center
-  right 0px
-  padding 5px 10px 0 10px
-  color $color-second
-  border-left 2px solid transparent
-  anim()
-
-  &__icon
-    display flex
-    align-items center
-    justify-content center
-    width 40px
-    height 40px
-    margin-right 20px
-    margin-top 20px
-    color $color-main
-    font-size 4rem
-    $font-numbers()
-    border 2px solid transparent
-    border-radius 50%
-    anim()
-
-    ^[0]:hover &
-      color $color-link
-
-    ^[0]._active &
-      color $color-link
-      transform rotate(45deg)
-      border-color $color-link
-
 
 .ml
   margin-left 15px
