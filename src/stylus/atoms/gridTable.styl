@@ -2,7 +2,7 @@
   display grid
   max-width 1200px
   grid-template-columns minmax(200px, 540px) minmax(200px, 540px)
-  grid-column-gap 60px
+  grid-column-gap 70px
   grid-row-gap 60px
 
   @media $pcNew
@@ -11,8 +11,17 @@
   &._static
     grid-template-columns minmax(auto, 300px) minmax(auto, 550px)
 
+    & ^[0]__item:last-child
+      align-items flex-end
+
   &._statItems
-    grid-template-columns repeat(2, minmax(auto, 1fr))
+    max-width 1015px
+    grid-template-columns 1fr
+
+    @media (min-width: 1600px)
+      max-width 1200px
+      grid-column-gap 120px
+      grid-row-gap 120px
 
     & ^[0]__item
-      max-width 550px
+      max-width 1060px

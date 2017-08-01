@@ -5,19 +5,20 @@
   top 0
   height 100%
   background $color-sidebar
-  border none
-  border-left 2px solid $color-line
+  box-shadow 0 0 5px $color-sidebar
 
   &__in
-    width 670px
+    display flex
+    align-items center
+    width 590px
     height 100%
 
   &__form
+    flex-grow 1
     overflow hidden
-    overflow-y scroll
-    height 100%
-    padding 58px 60px
-    scrollbar()
+    // overflow-y scroll
+    padding 0px 80px
+    // scrollbar()
 
   &__errors
     font-weight bold
@@ -113,14 +114,13 @@
       color $color-link
       border-color $color-link
 
-
 .trnFormToogle
   cursor pointer
   z-index 15
   position fixed
-  width 50px
+  width 40px
   height 100%
-  right 0
+  right 6px
   top 0
   display flex
   align-items flex-start
@@ -128,14 +128,17 @@
   color $color-second
   anim()
 
+  &:hover
+    background $color-side-toogle
+
   &__icon
     display flex
     align-items center
     justify-content center
     width 40px
     height 40px
-    margin-right 20px
-    margin-top 25px
+    margin-right 46px
+    margin-top 26px
     color $color-main
     font-size 4rem
     $font-numbers()

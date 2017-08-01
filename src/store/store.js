@@ -96,7 +96,7 @@ const mutations = {
     }
   },
 
-  toogleLeftBar() {
+  toogleLeftbar() {
     state.leftBar.isShow = !state.leftBar.isShow
   },
 

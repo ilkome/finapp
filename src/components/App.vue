@@ -5,7 +5,7 @@
   template(v-if="$store.state.pageLoading")
     transition(name="fade")
       template(v-if="$store.state.error")
-        .loading._alpha._error {{ $store.state.error }}
+        .loading {{ $store.state.error }}
       template(v-else)
         h1.loading Loading...
 
@@ -14,59 +14,55 @@
   //------------------------------------------------
   template(v-else)
     template(v-if="$store.state.loader && !$store.state.error")
-      .loading._alpha Loading...
+      .loading Loading...
     template(v-if="$store.state.error")
-      .loading._alpha._error
+      .loading
         .loading__in
           .loading__name._error {{ $store.state.error }}
           .loading__update(@click.prevent="updateAppData()") Update Application
 
-    transition(name="leftBarAnimation")
-      .sidebar(v-show="$store.state.leftBar.isShow")
-        Sidebar
+    //- Sidebar
+    //------------------------------------------------
+    Sidebar
 
     .sidebarToogle(
       v-shortkey="['alt', 'arrowleft']",
-      @shortkey="$store.commit('toogleLeftBar')",
-      @click.prevent="$store.commit('toogleLeftBar')"
+      @shortkey="$store.commit('toogleLeftbar')",
+      @click.prevent.stop="$store.commit('toogleLeftbar')",
+      @mouseover="(e) => toogleSidebar(e)"
     )
-      .sidebarToogle__icon
-        .fa.fa-bars
 
-    .topbar(:class="$store.state.leftBar.isShow && '_withLeftBar'")
-      .topbar__in
-        nav.menu
-          router-link(to="/" exact).menuLink Dashboard
-          router-link(to="/summary").menuLink Total
-          router-link(to="/incomes").menuLink Incomes
-          router-link(to="/expenses").menuLink Expenses
-          router-link(to="/categories").menuLink Categories
-          router-link(to="/accounts").menuLink Accounts
-          router-link(to="/trns").menuLink History
+    //- main
+    //------------------------------------------------
+    .main(:class="$store.state.leftBar.isShow && '_withLeftBar'")
+      transition(name="slide")
+        router-view
+
+    //- TrnForm
+    //------------------------------------------------
+    transition(name="slideToLeft")
+      .trnForm(v-show="$store.state.trnForm.isShow")
+        TrnForm
 
     a(
       v-shortkey="['alt', 'arrowright']",
       @shortkey="$store.commit('toogleTrnForm')",
       @click.prevent.stop="$store.commit('toogleTrnForm')",
+      @mouseover="(e) => toogleTrnForm(e)",
       :class="{_active: $store.state.trnForm.isShow}"
     ).trnFormToogle
       .trnFormToogle__icon: .trnFormToogle__icon__in +
-
-    transition(name="slideToLeft")
-      .trnForm(v-show="$store.state.trnForm.isShow")
-        TrnForm
-
-    .main(:class="$store.state.leftBar.isShow && '_withLeftBar'")
-      transition(name="slide")
-        router-view
 </template>
 
 
 <script>
+import debounce from 'lodash/debounce'
 import Sidebar from './Sidebar.vue'
 import TrnForm from './TrnForm.vue'
 
 export default {
+  components: { Sidebar, TrnForm },
+
   async created() {
     this.updateAppData()
   },
@@ -85,9 +81,21 @@ export default {
       } catch (error) {
         this.$store.commit('showError', error.message)
       }
-    }
-  },
+    },
 
-  components: { Sidebar, TrnForm }
+    toogleSidebar: debounce(function (mouseEvent) {
+      // const isHovered = this.$el.querySelector('.sidebarToogle:hover')
+      // if (isHovered) {
+      //   this.$store.commit('toogleLeftbar')
+      // }
+    }, 200),
+
+    toogleTrnForm: debounce(function (mouseEvent) {
+      // const isHovered = this.$el.querySelector('.trnFormToogle:hover')
+      // if (isHovered) {
+      //   this.$store.commit('toogleTrnForm')
+      // }
+    }, 200)
+  }
 }
 </script>

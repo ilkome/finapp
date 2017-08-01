@@ -1,215 +1,236 @@
 <template lang="pug">
-.content
+.component
   .module
-    h3.title._mbm
-      .title__calendar(@click="openPopupCalendar($event)")
-        .title__calendar__icon.mdi.mdi-calendar-multiple
-        .title__calendar__name {{ showedDate.first }}
-        .title__calendar__sup(v-if="showedDate.second !== 'Today'") {{ showedDate.second }}
+    .module-in
+      h3.title._mb
+        .title__calendar(@click="openPopupCalendar($event)")
+          .title__calendar__icon.mdi.mdi-calendar-multiple
+          .title__calendar__name {{ showedDate.first }}
+          .title__calendar__sup(v-if="showedDate.second !== 'Today'") {{ showedDate.second }}
 
-      transition(name="fade2")
-        .calendar-dropdown(
-          :style="{'left':calendar.left+'px','top':calendar.top+'px'}",
-          v-if="calendar.show"
-        )
-          .calendarPeriod
-            .calendarPeriod__group
-              .calendarPeriod__item(
-                :class="{_active: duration === 1 && isLastDays}"
-                @click.prevent="setDuration(1)"
-              ) Today
-            .calendarPeriod__group
-              .calendarPeriod__item(
-                :class="{_active: duration === 10 && isLastDays}"
-                @click.prevent="setDuration(10)"
-              ) Last 10 days
-              .calendarPeriod__item(
-                :class="{_active: duration === 30 && isLastDays}"
-                @click.prevent="setDuration(30)"
-              ) Last 30 days
-              .calendarPeriod__item(
-                :class="{_active: duration === 365 && isLastDays}"
-                @click.prevent="setDuration(365)"
-              ) Last 365 days
-            .calendarPeriod__group
-              .calendarPeriod__item(
-                :class="{_active: calendarPreset === 'isoweek' && isLastDays}",
-                @click.prevent="setDates('isoweek')"
-              ) This week
-              .calendarPeriod__item(
-                :class="{_active: calendarPreset === 'month' && isLastDays}",
-                @click.prevent="setDates('month')"
-              ) This month
-              .calendarPeriod__item(
-                :class="{_active: calendarPreset === 'year' && isLastDays}",
-                @click.prevent="setDates('year')"
-              ) This year
-          Calendar(
-            :range="calendar.range",
-            :zero="calendar.zero",
-            :value="calendar.value"
-            @select="selectCalendarDates"
-          )
+        transition(name="fade2")
+          .calendar-dropdown(
+            :style="{'left':calendar.left+'px','top':calendar.top+'px'}",
+            v-if="calendar.show")
+            .calendarPeriod
+              .calendarPeriod__group
+                .calendarPeriod__item(
+                  :class="{_active: duration === 1 && isLastDays}"
+                  @click.prevent="setDuration(1)"
+                ) Today
+              .calendarPeriod__group
+                .calendarPeriod__item(
+                  :class="{_active: duration === 10 && isLastDays}"
+                  @click.prevent="setDuration(10)"
+                ) Last 10 days
+                .calendarPeriod__item(
+                  :class="{_active: duration === 30 && isLastDays}"
+                  @click.prevent="setDuration(30)"
+                ) Last 30 days
+                .calendarPeriod__item(
+                  :class="{_active: duration === 365 && isLastDays}"
+                  @click.prevent="setDuration(365)"
+                ) Last 365 days
+              .calendarPeriod__group
+                .calendarPeriod__item(
+                  :class="{_active: calendarPreset === 'isoweek' && isLastDays}",
+                  @click.prevent="setDates('isoweek')"
+                ) This week
+                .calendarPeriod__item(
+                  :class="{_active: calendarPreset === 'month' && isLastDays}",
+                  @click.prevent="setDates('month')"
+                ) This month
+                .calendarPeriod__item(
+                  :class="{_active: calendarPreset === 'year' && isLastDays}",
+                  @click.prevent="setDates('year')"
+                ) This year
+            Calendar(
+              :range="calendar.range",
+              :zero="calendar.zero",
+              :value="calendar.value"
+              @select="selectCalendarDates"
+            )
 
-    .gridTable._static
+      .viewStat
         //- Statistic
         //------------------------------------------------
-        .gridTable__item
-          template(v-if="(incomesCategoriesData.length || expensesCategoriesData.length) > 0")
-            .summaryShort._pb
-              .summaryShort__item
-                .summaryShort__item__icon._incomes
-                .summaryShort__item__label Incomes
-                .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
-              .summaryShort__item
-                .summaryShort__item__icon._expenses
-                .summaryShort__item__label Expenses
-                .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
-              .summaryShort__item
-                .summaryShort__item__icon._total
-                .summaryShort__item__label Total
-                .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
-
+        .viewStat__item._summary
+          template(v-if="(incomesItemStat.length || expensesItemStat.length) > 0")
+            SummaryShort(:trns="trnsList", view="dashboard-summary")
           template(v-else)
             .summaryShort._pb
               .summaryShort__empty No trns for this period.
 
           //- Average
           //------------------------------------------------
-          h3.title._mbs
-            | Average&nbsp;
-            sup.sup {{ avDays }} days
-          .summaryShort
-            .summaryShort__item
-              .summaryShort__item__icon._incomes
-              .summaryShort__item__label Incomes
-              .summaryShort__item__total.incomes {{ formatMoney(avSummary.incomes) }}
-            .summaryShort__item
-              .summaryShort__item__icon._expenses
-              .summaryShort__item__label Expenses
-              .summaryShort__item__total.expenses {{ formatMoney(avSummary.expenses) }}
-            .summaryShort__item
-              .summaryShort__item__icon._total
-              .summaryShort__item__label Total
-              .summaryShort__item__total.sum {{ formatMoney(avSummary.total) }}
+          SummaryShort(view="dashboard-average")
 
         //- Previous
         //------------------------------------------------
-        .gridTable__item
-          .itemStatLine(
-            v-for="(period, index) in periodsData",
+        .viewStat__item._stat
+          .itemStat._link(
+            v-for="(period, index) in previousData",
             @click.prevent="selectPeriodStat(index)",
-            :class="{ _active: selectedPeriodIndex === index }"
-          )
-            .itemStatLine__in
-              .itemStatLine__content
-                .itemStatLine__text
-                  .itemStatLine__name {{ period.date }}
-                  .itemStatLine__price.incomes {{ formatMoney(period.incomes)}}
-                  .itemStatLine__price.expenses  {{ formatMoney(period.expenses) }}
-                  .itemStatLine__price.sum {{ formatMoney(period.incomes - period.expenses) }}
-                .itemStatLine__graph
+            :class="{ _active: selectedPeriodIndex === index }")
+            .itemStat__in
+              .itemStat__content
+                .itemStat__text
+                  .itemStat__name {{ period.date }}
+                  .itemStat__price.incomes {{ formatMoney(period.incomes)}}
+                  .itemStat__price.expenses  {{ formatMoney(period.expenses) }}
+                  .itemStat__price.sum {{ formatMoney(period.incomes - period.expenses) }}
+                .itemStat__graph
                   template(v-if="period.incomes > 0")
-                    .itemStatLine__graph__in._income(:style="getPeriodGraphWidth(period.incomes)")
-                .itemStatLine__graph
+                    .itemStat__graph__in._income(:style="getPreviousDataGraphWidth(period.incomes)")
+                .itemStat__graph
                   template(v-if="period.expenses > 0")
-                    .itemStatLine__graph__in._expense(:style="getPeriodGraphWidth(period.expenses)")
+                    .itemStat__graph__in._expense(:style="getPreviousDataGraphWidth(period.expenses)")
+
   //- Tabs
   //------------------------------------------------
-  template(v-if="(incomesCategoriesData.length || expensesCategoriesData.length) > 0")
-    .tabs
-      a(@click="changeTab('statistic')", :class="{_active: showedTab === 'statistic'}") Statistic
-      a(@click="changeTab('trns')", :class="{_active: showedTab === 'trns'}") History
+  template(v-if="(incomesItemStat.length || expensesItemStat.length) > 0")
+    .module._bg
+      .module-in
+        .switch
+          .switch__item
+            a._history(@click="changeTab('all')", :class="{_active: showedTab === 'all'}") Together
+          .switch__item
+            a._expenses(@click="changeTab('expenses')", :class="{_active: showedTab === 'expenses'}") Expenses
+          .switch__item
+            a._incomes(@click="changeTab('incomes')", :class="{_active: showedTab === 'incomes'}") Incomes
+          .switch__item
+            a._history(@click="changeTab('history')", :class="{_active: showedTab === 'history'}") History
 
+        //- Together
+        //------------------------------------------------
+        template(v-if="showedTab === 'all'")
+          .gridTable
+            //- Together: expenses
+            //------------------------------------------------
+            .gridTable__item(v-if="expensesItemStat.length > 0")
+              SummaryShort(:trns="trnsList", view="dashboard-expenses")
 
-    .module._bg(v-show="showedTab === 'statistic'")
-      .gridTable._statItems
+              template(v-for="itemStat in expensesItemStat")
+                .itemStat._link._small(:class="{_opened: showedTrnsCategoryId.indexOf(itemStat.id) !== -1}")
+                  .itemStat__in(@click.prevent.stop="toogleShowTrnsInCategory(itemStat.id)")
+                    router-link.itemStat__icon(
+                      :to="`/categories/${itemStat.id}`",
+                      title="Go to category"
+                    )
+                      .icon._link(:style="`background: ${itemStat.color}`")
+                        div(:class="itemStat.icon")
+                    .itemStat__content
+                      .itemStat__text
+                        .itemStat__name {{ itemStat.name }}
+                        .itemStat__price.sum {{ formatMoney(itemStat.total) }}
+                      .itemStat__graph
+                        .itemStat__graph__in._expense(:style="getCategoryGraphWidth(itemStat.total, expensesItemStat)")
+
+                  template(v-if="showedTrnsCategoryId.indexOf(itemStat.id) !== -1")
+                    .itemStat__trns
+                      TrnItem(
+                        v-for="trn in itemStat.trns",
+                        :trn="trn",
+                        :key="trn.id",
+                        view="small")
+
+            //- Together: incomes
+            //------------------------------------------------
+            .gridTable__item(v-if="incomesItemStat.length > 0")
+              SummaryShort(:trns="trnsList", view="dashboard-incomes")
+
+              template(v-for="itemStat in incomesItemStat")
+                .itemStat._link._small(:class="{_opened: showedTrnsCategoryId.indexOf(itemStat.id) !== -1}")
+                  .itemStat__in(@click.prevent="toogleShowTrnsInCategory(itemStat.id)")
+                    router-link.itemStat__icon(
+                      :to="`/categories/${itemStat.id}`",
+                      title="Go to category"
+                    )
+                      .icon(:style="`background: ${itemStat.color}`")
+                        div(:class="itemStat.icon")
+                    .itemStat__content
+                      .itemStat__text
+                        .itemStat__name {{ itemStat.name }}
+                        .itemStat__price.sum {{ formatMoney(itemStat.total) }}
+                      .itemStat__graph
+                        .itemStat__graph__in._income(:style="getCategoryGraphWidth(itemStat.total, incomesItemStat)")
+
+                  template(v-if="showedTrnsCategoryId.indexOf(itemStat.id) !== -1")
+                    .itemStat__trns
+                      TrnItem(
+                        v-for="trn in itemStat.trns",
+                        :trn="trn",
+                        :key="trn.id",
+                        view="small")
+
         //- Expenses
         //------------------------------------------------
-        .gridTable__item(v-if="expensesCategoriesData.length > 0")
-          h1.title.expenses._wide._mbm Expenses
-          .summaryShort._pbs
-            .summaryShort__item
-              .summaryShort__item__icon._expenses
-              .summaryShort__item__label Total
-              .summaryShort__item__total.sum {{ formatMoney(summary.expenses) }}
-            .summaryShort__item(v-if="this.duration > 1")
-              .summaryShort__item__icon._month
-              .summaryShort__item__label Day average
-              .summaryShort__item__total.sum {{ formatMoney(summary.expenses / this.duration) }}
-
-          .trns
-            template(v-for="itemStat in expensesCategoriesData")
-              .itemStat._link._clear(:class="{_opened: showedTrnsCategoryId.indexOf(itemStat.id) !== -1}")
-                .itemStat__in(@click.prevent.stop="toogleShowTrnsInCategory(itemStat.id)")
-                  router-link.itemStat__icon(
-                    :to="`/categories/${itemStat.id}`",
-                    title="Go to category"
-                  )
-                    .icon._link(:style="`background: ${itemStat.color}`")
-                      div(:class="itemStat.icon")
-                  .itemStat__content
-                    .itemStat__text
-                      .itemStat__name {{ itemStat.name }}
-                      .itemStat__price.sum {{ formatMoney(itemStat.total) }}
-                    .itemStat__graph
-                      .itemStat__graph__in._expense(:style="getCategoryGraphWidth(itemStat.total, expensesCategoriesData)")
-
-                template(v-if="showedTrnsCategoryId.indexOf(itemStat.id) !== -1")
-                  .itemStat__trns
-                    TrnItem(
-                      v-for="trn in itemStat.trns",
-                      :trn="trn",
-                      :key="trn.id",
-                      view="small"
+        template(v-if="showedTab === 'expenses'")
+          .CHANGE1(v-if="expensesItemStat.length > 0")
+            .CHANGE1__item
+              template(v-for="itemStat in expensesItemStat")
+                .itemStat._link._small(:class="{_opened: showedTrnsCategoryId.indexOf(itemStat.id) !== -1}")
+                  .itemStat__in(@click.prevent.stop="toogleShowTrnsInCategory(itemStat.id)")
+                    router-link.itemStat__icon(
+                      :to="`/categories/${itemStat.id}`",
+                      title="Go to category"
                     )
+                      .icon._link(:style="`background: ${itemStat.color}`")
+                        div(:class="itemStat.icon")
+                    .itemStat__content
+                      .itemStat__text
+                        .itemStat__name {{ itemStat.name }}
+                        .itemStat__price.sum {{ formatMoney(itemStat.total) }}
+                      .itemStat__graph
+                        .itemStat__graph__in._expense(:style="getCategoryGraphWidth(itemStat.total, expensesItemStat)")
+
+                  template(v-if="showedTrnsCategoryId.indexOf(itemStat.id) !== -1")
+                    .itemStat__trns
+                      TrnItem(
+                        v-for="trn in itemStat.trns",
+                        :trn="trn",
+                        :key="trn.id",
+                        view="small")
+
+            .CHANGE1__item
+              SummaryShort(:trns="trnsList", view="dashboard-expenses")
 
         //- Incomes
         //------------------------------------------------
-        .gridTable__item(v-if="incomesCategoriesData.length > 0")
-          h1.title.incomes._wide._mbm Incomes
-          .summaryShort._pbs
-            .summaryShort__item
-              .summaryShort__item__icon._incomes
-              .summaryShort__item__label Total
-              .summaryShort__item__total.sum {{ formatMoney(summary.incomes) }}
-            .summaryShort__item
-              .summaryShort__item__icon._month
-              .summaryShort__item__label Day average
-              .summaryShort__item__total.sum {{ formatMoney(summary.incomes / this.duration) }}
-
-          .trns
-            template(v-for="itemStat in incomesCategoriesData")
-              .itemStat._link._clear(:class="{_opened: showedTrnsCategoryId.indexOf(itemStat.id) !== -1}")
-                .itemStat__in(@click.prevent="toogleShowTrnsInCategory(itemStat.id)")
-                  router-link.itemStat__icon(
-                    :to="`/categories/${itemStat.id}`",
-                    title="Go to category"
-                  )
-                    .icon(:style="`background: ${itemStat.color}`")
-                      div(:class="itemStat.icon")
-                  .itemStat__content
-                    .itemStat__text
-                      .itemStat__name {{ itemStat.name }}
-                      .itemStat__price.sum {{ formatMoney(itemStat.total) }}
-                    .itemStat__graph
-                      .itemStat__graph__in._income(:style="getCategoryGraphWidth(itemStat.total, incomesCategoriesData)")
-
-                template(v-if="showedTrnsCategoryId.indexOf(itemStat.id) !== -1")
-                  .itemStat__trns
-                    TrnItem(
-                      v-for="trn in itemStat.trns",
-                      :trn="trn",
-                      :key="trn.id",
-                      view="small"
+        template(v-if="showedTab === 'incomes'")
+          .CHANGE1(v-if="incomesItemStat.length > 0")
+            .CHANGE1__item
+              template(v-for="itemStat in incomesItemStat")
+                .itemStat._link._small(:class="{_opened: showedTrnsCategoryId.indexOf(itemStat.id) !== -1}")
+                  .itemStat__in(@click.prevent="toogleShowTrnsInCategory(itemStat.id)")
+                    router-link.itemStat__icon(
+                      :to="`/categories/${itemStat.id}`",
+                      title="Go to category"
                     )
+                      .icon(:style="`background: ${itemStat.color}`")
+                        div(:class="itemStat.icon")
+                    .itemStat__content
+                      .itemStat__text
+                        .itemStat__name {{ itemStat.name }}
+                        .itemStat__price.sum {{ formatMoney(itemStat.total) }}
+                      .itemStat__graph
+                        .itemStat__graph__in._income(:style="getCategoryGraphWidth(itemStat.total, incomesItemStat)")
 
-    //- Trns history
-    //------------------------------------------------
-    .module._bg(v-show="showedTab === 'trns'")
-      h1.title._wide._trns Trns history
-      TrnsList(:trns="trnsList.slice(0, 100)")
+                  template(v-if="showedTrnsCategoryId.indexOf(itemStat.id) !== -1")
+                    .itemStat__trns
+                      TrnItem(
+                        v-for="trn in itemStat.trns",
+                        :trn="trn",
+                        :key="trn.id",
+                        view="small")
 
+            .CHANGE1__item
+              SummaryShort(:trns="trnsList", view="dashboard-incomes")
+
+        //- Trns history
+        //------------------------------------------------
+        template(v-if="showedTab === 'history'")
+          TrnsList(:trns="trnsList.slice(0, 100)")
 </template>
 
 
@@ -224,19 +245,19 @@ import formatDate from '../mixins/formatDate'
 import Calendar from './calendar/calendar.vue'
 import TrnsList from './TrnsList.vue'
 import TrnItem from './TrnItem.vue'
+import SummaryShort from './SummaryShort.vue'
 
 export default {
   mixins: [formatDate, formatMoney],
-  components: { TrnsList, TrnItem, Calendar },
+  components: { TrnsList, TrnItem, Calendar, SummaryShort },
 
   data() {
     return {
       showedDate: {},
-      showedTab: 'statistic',
+      showedTab: 'all',
       days: [1, 5, 10, 7, 14, 30, 999],
       selectedPeriodIndex: 0,
       showedTrnsCategoryId: [],
-      avDays: 180,
       trnsDate: {
         start: '',
         end: ''
@@ -319,48 +340,15 @@ export default {
       return this.trnsList.filter(t => t.type === 0)
     },
 
-    incomesCategoriesData() {
+    incomesItemStat() {
       return this.formatTrnsForStat(this.incomesTrns)
     },
 
-    expensesCategoriesData() {
+    expensesItemStat() {
       return this.formatTrnsForStat(this.expensesTrns)
     },
 
-    summary() {
-      const incomes = this.incomesTrns.reduce((sum, current) => sum + current.amountRub, 0)
-      const expenses = this.expensesTrns.reduce((sum, current) => sum + current.amountRub, 0)
-      const total = incomes - expenses
-
-      return {
-        incomes,
-        expenses,
-        total
-      }
-    },
-
-    avSummary() {
-      const yearTrns = this.getTrns(moment().subtract(6, 'months'), moment())
-      const avStartDate = moment(yearTrns[0].date)
-      const avEndDate = moment(yearTrns[yearTrns.length - 1].date)
-      this.avDays = avStartDate.diff(avEndDate, 'days') + 1
-
-      const avIncomes = yearTrns
-        .filter(t => t.type === 1)
-        .reduce((sum, current) => sum + current.amountRub, 0) / this.avDays * this.duration
-      const avExpenses = yearTrns
-        .filter(t => t.type === 0)
-        .reduce((sum, current) => sum + current.amountRub, 0) / this.avDays * this.duration
-      const total = avIncomes - avExpenses
-
-      return {
-        incomes: avIncomes,
-        expenses: avExpenses,
-        total
-      }
-    },
-
-    periodsData() {
+    previousData() {
       const data = []
 
       for (let period = 0; period <= 2; period++) {
@@ -393,21 +381,26 @@ export default {
         }
 
         const periodTrns = this.getTrns(moment(periodStartDate).valueOf(), moment(periodEndDate).valueOf())
-        const periodIncomes = periodTrns
-          .filter(t => t.type === 1)
-          .reduce((sum, current) => sum + current.amountRub, 0)
-        const periodExpenses = periodTrns
-          .filter(t => t.type === 0)
-          .reduce((sum, current) => sum + current.amountRub, 0)
-        const periodTotal = periodIncomes - periodExpenses
 
-        data.push({
-          period,
-          date: periodName,
-          incomes: periodIncomes,
-          expenses: periodExpenses,
-          total: periodTotal
-        })
+        if (periodTrns.length || period <= 2) {
+          const periodIncomes = periodTrns
+            .filter(t => t.type === 1)
+            .reduce((sum, current) => sum + current.amountRub, 0)
+          const periodExpenses = periodTrns
+            .filter(t => t.type === 0)
+            .reduce((sum, current) => sum + current.amountRub, 0)
+          const periodTotal = periodIncomes - periodExpenses
+
+          data.push({
+            period,
+            date: periodName,
+            incomes: periodIncomes,
+            expenses: periodExpenses,
+            total: periodTotal
+          })
+        } else {
+          break
+        }
       }
 
       return data
@@ -668,7 +661,7 @@ export default {
     openPopupCalendar(event) {
       this.calendar.show = !this.calendar.show
       this.calendar.left = event.target.closest('.title').offsetLeft - 5
-      this.calendar.top = event.target.closest('.title').offsetTop + 45
+      this.calendar.top = event.target.closest('.title').offsetTop + 60
     },
 
     closePopCalendar(event) {
@@ -688,23 +681,8 @@ export default {
       return { width: `calc(${renderWidth}%)` }
     },
 
-    getPeriodGraphHeight(value) {
-      const dataSorted = orderBy(this.periodsData, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
-      const biggest = dataSorted[0].incomes > dataSorted[0].expenses ? dataSorted[0].incomes : dataSorted[0].expenses
-      const height = value / biggest * 100
-
-      let renderHeight
-      height > 0
-        ? renderHeight = height > 1 ? height : 1
-        : renderHeight = 0
-
-      return {
-        height: `calc(${renderHeight}%)`
-      }
-    },
-
-    getPeriodGraphWidth(value) {
-      const dataSorted = orderBy(this.periodsData, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
+    getPreviousDataGraphWidth(value) {
+      const dataSorted = orderBy(this.previousData, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
       const biggest = dataSorted[0].incomes > dataSorted[0].expenses ? dataSorted[0].incomes : dataSorted[0].expenses
       const height = value / biggest * 100
 

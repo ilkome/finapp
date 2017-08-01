@@ -30,10 +30,12 @@ h4
   h1&
     font-size 1.5rem
     letter-spacing 2px
+    $font-numbers()
 
     @media $laptop
-      font-size 2rem
-      letter-spacing 4px
+      font-size 3rem
+      letter-spacing 6px
+      margin-left -5px
 
   h2&
     margin-bottom 60px
@@ -58,6 +60,9 @@ h4
 
   &._sm
     margin-bottom 25px
+
+  &._mb
+    margin-bottom 80px
 
   &._mbn
     margin-bottom 0
@@ -91,6 +96,7 @@ h4
   &._wide
     $font-numbers()
     letter-spacing 8px
+    margin-left -2px
 
   &__sub
     padding-left 10px
@@ -102,9 +108,6 @@ h4
 
     @media $laptop
       padding-left 15px
-
-  .color
-    color $color-rub
 
   .sup
     opacity .01
@@ -128,7 +131,9 @@ h4
     display inline-flex
     align-items center
     white-space nowrap
-    font-size 1.6rem
+    font-size 3rem
+    letter-spacing 4px
+    $font-numbers()
     anim()
 
     &:hover
@@ -140,7 +145,7 @@ h4
       padding-right 20px
 
     &__sup
-      margin -15px 0 0 15px
+      margin -26px 0 0 15px
       color $color-second
       font-size 1.2rem
       letter-spacing normal

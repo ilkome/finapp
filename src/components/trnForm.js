@@ -196,11 +196,11 @@ export default {
         }
       }
 
-      const lastTrnsUnicCategory = uniqBy(this.trns.slice(0, 50), 'categoryId').slice(0, 19)
+      const lastTrnsUnicCategory = uniqBy(this.trns.slice(0, 50), 'categoryId').slice(0, 13)
       const lastCategoriesIdsFromTrns = lastTrnsUnicCategory.map(trn => trn.categoryId)
       this.lastCategories = this.categories
         .filter(category => lastCategoriesIdsFromTrns.indexOf(category.id) >= 0)
-        .slice(0, 19)
+        .slice(0, 13)
 
       const category = this.categories.find(category => category.id === this.values.categoryId)
       this.activeCategory = {
@@ -253,7 +253,7 @@ export default {
 
         // Add selected category if it doesn't exist in lastCategories
         if (!this.lastCategories.find(cat => cat.id === categoryId)) {
-          this.lastCategories = [...this.lastCategories.slice(0, 18), category]
+          this.lastCategories = [...this.lastCategories.slice(0, 13), category]
         }
       }
     },

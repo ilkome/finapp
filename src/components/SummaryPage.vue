@@ -1,15 +1,46 @@
 <template lang="pug">
 .content
   .module
-    h1.title
-      .icon.icon-incomes: .icon__pic
-      | Total summary
+    .module-in
+      h1.title Total
 
-    .categoryStat
-      .categoryStat__trns._long
-        h2.ml Years
-        template(v-for="year of summaryYears.years")
-          .itemStat
+      .viewStat
+        //- Statistic
+        //------------------------------------------------
+        .viewStat__item._summary
+          template(v-if="summaryYears.years.length > 1")
+            h3.title._mbs Summary
+            .summaryShort(v-if="summaryYears.expenses > 0 || summaryYears.incomes > 0")
+              .summaryShort__item(v-if="summaryYears.incomes > 0")
+                .summaryShort__item__icon._incomes
+                .summaryShort__item__label Incomes
+                .summaryShort__item__total.incomes {{ formatMoney(summaryYears.incomes) }}
+
+              .summaryShort__item(v-if="summaryYears.expenses > 0")
+                .summaryShort__item__icon._expenses
+                .summaryShort__item__label Expenses
+                .summaryShort__item__total.expenses {{ formatMoney(summaryYears.expenses) }}
+
+              .summaryShort__item
+                .summaryShort__item__icon._total
+                .summaryShort__item__label Total
+                .summaryShort__item__total.sum {{ formatMoney(summaryYears.total) }}
+
+              .summaryShort__item(v-if="summaryYears.years.length > 1")
+                .summaryShort__item__icon._year
+                .summaryShort__item__label Year average
+                .summaryShort__item__total.sum {{ formatMoney(summaryYears.yearAverageTotal) }}
+
+              .summaryShort__item
+                .summaryShort__item__icon._month
+                .summaryShort__item__label Month average
+                .summaryShort__item__total.sum {{ formatMoney(summaryYears.monthAverageTotal) }}
+
+        //- Previous
+        //------------------------------------------------
+        .viewStat__item._stat
+          h3.title._mbs Years
+          .itemStat(v-for="year of summaryYears.years")
             .itemStat__in
               .itemStat__content
                 .itemStat__text
@@ -20,83 +51,59 @@
                 .itemStat__graph
                   template(v-if="year.incomes > 0")
                     .itemStat__graph__in._income(:style="countWidth(year.incomes, summaryYears.biggestYear)")
+                .itemStat__graph
                   template(v-if="year.expenses > 0")
                     .itemStat__graph__in._expense(:style="countWidth(year.expenses, summaryYears.biggestYear)")
-
-      .categoryStat__summary(v-if="summaryYears.years.length > 1")
-        h2 Summary
-        .summaryShort(v-if="summaryYears.expenses > 0 || summaryYears.incomes > 0")
-          .summaryShort__item(v-if="summaryYears.incomes > 0")
-            .summaryShort__item__icon._incomes
-            .summaryShort__item__label Incomes
-            .summaryShort__item__total.incomes {{ formatMoney(summaryYears.incomes) }}
-
-          .summaryShort__item(v-if="summaryYears.expenses > 0")
-            .summaryShort__item__icon._expenses
-            .summaryShort__item__label Expenses
-            .summaryShort__item__total.expenses {{ formatMoney(summaryYears.expenses) }}
-
-          .summaryShort__item
-            .summaryShort__item__icon._total
-            .summaryShort__item__label Total
-            .summaryShort__item__total.sum {{ formatMoney(summaryYears.total) }}
-
-          .summaryShort__item(v-if="summaryYears.years.length > 1")
-            .summaryShort__item__icon._year
-            .summaryShort__item__label Year average
-            .summaryShort__item__total.sum {{ formatMoney(summaryYears.yearAverageTotal) }}
-
-          .summaryShort__item
-            .summaryShort__item__icon._month
-            .summaryShort__item__label Month average
-            .summaryShort__item__total.sum {{ formatMoney(summaryYears.monthAverageTotal) }}
-
-  .tabs
-    template(v-for="year of summaryYears.years")
-      a(@click="changeYear(year.year)", :class="{_active: showedYear === year.year}") {{ year.year }}
 
   template(v-for="year of summaryYears.years")
     template(v-if="showedYear === year.year")
       .module._bg
-        .categoryStat
-          .categoryStat__trns._long
-            template(v-for="month in year.months")
-              template(v-if="month.expenses > 0 || month.incomes > 0")
-                .itemStat
-                  .itemStat__in
-                    .itemStat__content
-                      .itemStat__text
-                        .itemStat__name {{ month.month }}
-                        .itemStat__price.incomes {{ formatMoney(month.incomes)}}
-                        .itemStat__price.expenses  {{ formatMoney(month.expenses) }}
-                        .itemStat__price {{ formatMoney(month.incomes - month.expenses) }}
-                      .itemStat__graph
-                        template(v-if="month.incomes > 0")
-                          .itemStat__graph__in._income(:style="countWidth(month.incomes, year.biggestMonth)")
-                        template(v-if="month.expenses > 0")
-                          .itemStat__graph__in._expense(:style="countWidth(month.expenses, year.biggestMonth)")
+        .module-in
+          .switch
+            template(v-for="year of summaryYears.years")
+              .switch__item
+                a(@click="changeYear(year.year)", :class="{_active: showedYear === year.year}") {{ year.year }}
 
-          .categoryStat__summary
-            .summaryShort(v-if="year.expenses > 0 || year.incomes > 0")
-              .summaryShort__item(v-if="year.incomes > 0")
-                .summaryShort__item__icon._incomes
-                .summaryShort__item__label Incomes
-                .summaryShort__item__total.incomes {{ formatMoney(year.incomes) }}
+          .CHANGE1
+            .CHANGE1__item
+              template(v-for="month in year.months")
+                template(v-if="month.expenses > 0 || month.incomes > 0")
+                  .itemStat._small
+                    .itemStat__in
+                      .itemStat__content
+                        .itemStat__text
+                          .itemStat__name {{ month.month }}
+                          .itemStat__price.incomes {{ formatMoney(month.incomes)}}
+                          .itemStat__price.expenses  {{ formatMoney(month.expenses) }}
+                          .itemStat__price {{ formatMoney(month.incomes - month.expenses) }}
+                        .itemStat__graph
+                          template(v-if="month.incomes > 0")
+                            .itemStat__graph__in._income(:style="countWidth(month.incomes, year.biggestMonth)")
+                        .itemStat__graph
+                          template(v-if="month.expenses > 0")
+                            .itemStat__graph__in._expense(:style="countWidth(month.expenses, year.biggestMonth)")
 
-              .summaryShort__item(v-if="year.expenses > 0")
-                .summaryShort__item__icon._expenses
-                .summaryShort__item__label Expenses
-                .summaryShort__item__total.expenses {{ formatMoney(year.expenses) }}
+            .CHANGE1__item
+              .summaryShort(v-if="year.expenses > 0 || year.incomes > 0")
+                .summaryShort__item(v-if="year.incomes > 0")
+                  .summaryShort__item__icon._incomes
+                  .summaryShort__item__label Incomes
+                  .summaryShort__item__total.incomes {{ formatMoney(year.incomes) }}
 
-              .summaryShort__item
-                .summaryShort__item__icon._total
-                .summaryShort__item__label Total
-                .summaryShort__item__total.sum {{ formatMoney(year.total) }}
+                .summaryShort__item(v-if="year.expenses > 0")
+                  .summaryShort__item__icon._expenses
+                  .summaryShort__item__label Expenses
+                  .summaryShort__item__total.expenses {{ formatMoney(year.expenses) }}
 
-              .summaryShort__item
-                .summaryShort__item__icon._month
-                .summaryShort__item__label Average
-                .summaryShort__item__total.sum {{ formatMoney(year.average) }}
+                .summaryShort__item
+                  .summaryShort__item__icon._total
+                  .summaryShort__item__label Total
+                  .summaryShort__item__total.sum {{ formatMoney(year.total) }}
+
+                .summaryShort__item
+                  .summaryShort__item__icon._month
+                  .summaryShort__item__label Average
+                  .summaryShort__item__total.sum {{ formatMoney(year.average) }}
 </template>
 
 <script>

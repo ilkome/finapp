@@ -1,18 +1,34 @@
+.CHANGE1
+  display flex
+  justify-content space-between
+  flex-grow 1
+
+  &__item
+    flex-grow 1
+
+    &:last-child
+      display flex
+      justify-content center
+      flex-grow 0
+      padding-left 170px
+      padding-right 80px
+
 .grid
   display grid
   grid-template-columns minmax(90px, 100px) minmax(65px, 1fr) auto auto
   grid-column-gap 15px
-  padding 0
+  border 1px solid transparent
   anim()
 
   &._form
     grid-template-columns 40px minmax(100px, auto) minmax(65px, auto) 1fr auto auto
 
   &._editable
-    z-index 2
-    position relative
-    border-top 1px solid $color-rub
-    border-bottom 1px solid $color-rub
+    border 1px solid $color-rub
+    border-left 10px solid $color-rub
+
+    & ^[0]__item._action
+      opacity 1
 
   &._updated
     border-top 1px solid $color-income
@@ -56,21 +72,10 @@
         color $color-main
 
 .panel
+  margin-top 30px
   padding 30px
   background $color-trn
   border-radius 3px
 
-.yearStat
-  padding-right 100px
-  flex 0 0 470px
-
-.bg-1
-.bg-1.icon
-  background $color-rub
-
-.bg-2
-.bg-2.icon
-  background $color-tinkoff
-
-.ml
-  margin-left 15px
+  .link
+    margin 5px 0px

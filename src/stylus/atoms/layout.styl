@@ -1,3 +1,7 @@
+$width-small = 300px
+$width-medium = 360px
+$width-extra = 460px
+
 *
   boxsizing-borderbox()
 
@@ -28,52 +32,82 @@ html
   min-height 100%
   display flex
 
-.main
+.sidebar
+  z-index 1
+  width $width-small
+  box-shadow 0 0 5px $color-sidebar
+  flex-shrink 0
   position relative
+  background $color-sidebar
+  anim()
+
+  @media (min-width: 1300px)
+    width $width-medium
+
+  @media (min-width: 1500px)
+    width 380px
+
+  @media (min-width: 1900px)
+    width $width-extra
+
+  &__wrap
+    z-index 3
+    overflow-y auto
+    position fixed
+    left 0
+    width $width-small
+    height 100%
+    scrollbar()
+
+    @media (min-width: 1300px)
+      width $width-medium
+
+    @media (min-width: 1500px)
+      width 380px
+
+    @media (min-width: 1900px)
+      width $width-extra
+
+  &__in
+    display flex
+    flex-flow row wrap
+    align-content space-between
+    height 100%
+    padding-top 25px
+    padding-bottom 25px
+
+    @media (min-width: 1300px)
+      padding-top 60px
+      padding 0 10px
+
+    @media (min-width: 1500px)
+      padding 0 50px
+      padding-top 70px
+
+    @media (min-width: 1900px)
+      padding-top 100px
+      padding-bottom 100px
+
+.main
   overflow hidden
   flex-shrink 0
   overflow-y scroll
   position fixed
   left 0rem
-  top 90px
+  top 0px
   width 100%
-  height calc(100% - 90px)
+  height 100%
   scrollbar()
   anim()
 
   &._withLeftBar
-    left 19rem
-    width calc(100% - 19rem)
+    left $width-medium
+    width "calc(100% - %s)" % $width-medium
 
-.loading
-  display flex
-  align-items center
-  justify-content center
-  position fixed
-  z-index 100
-  left 0
-  top 0
-  width 100%
-  height 100%
-  color $color-main
-  font-size 3rem
-  background alpha($color-layout, .9)
+    @media (min-width: 1500px)
+      left 380px
+      width calc(100% - 380px)
 
-  &__in
-    display block
-    text-align center
-
-  &__name
-    padding-bottom 4rem
-
-    &._error
-      color red
-
-  &__update
-    cursor pointer
-    display inline-flex
-    border-bottom 1px solid $color-link
-    anim()
-
-    &:hover
-      color $color-link
+    @media (min-width: 1900px)
+      left $width-extra
+      width "calc(100% - %s)" % $width-extra

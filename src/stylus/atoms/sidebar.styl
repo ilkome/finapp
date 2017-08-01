@@ -1,42 +1,187 @@
 .sidebar
-  overflow hidden
-  z-index 1
-  flex-shrink 0
-  position relative
-  background $color-sidebar
-  anim()
+  &__title
+    padding-bottom 15px
+    font-size 1rem
+    font-weight bold
+    letter-spacing 2px
+    text-transform uppercase
 
-  @media $laptop
-    width 19rem
-    overflow hidden
-    border-right 2px solid $color-line-layout
-    if $theme == "light"
-      border-right-color transparent
+  &__item
+    flex-grow 1
+    padding-bottom 40px
 
-  &__wrap
-    @media $laptop
-      z-index 3
-      overflow-y auto
-      position fixed
-      left 0
-      width 19rem
-      height 100%
-      scrollbar()
+    @media (min-width: 1300px)
+      padding-bottom 80px
 
-  &__in
-    overflow hidden
-    opacity 1
+    &:last-child
+      padding-bottom 20px
+
+  // Menu
+  // ===============================================
+  &__menu
+    &__link
+      cursor pointer
+      margin-bottom 1rem
+      display block
+      color $color-second
+      font-size .8rem
+      font-weight bold
+      text-transform uppercase
+      letter-spacing 2px
+      border-bottom none
+      anim()
+
+      @media (min-width: 1500px)
+        margin-bottom 25px
+
+      @media (min-width: 1900px)
+        font-size 1.2rem
+
+      &.active
+        cursor default
+        font-weight bold
+        font-size 1.2rem
+        margin-left -2px
+        color $color-rub !important
+
+        @media (min-width: 1900px)
+          font-size 1.6rem
+
+      &:last-child
+        margin-bottom 0
+
+      &:hover
+        color $color-main
+
+  // Accounts
+  // ===============================================
+  &__accounts
+    margin 0 -5px
+
+    &__showAll
+      cursor pointer
+      position relative
+      display block
+      width 100%
+      padding 15px 0
+      font-size .8rem
+      color alpha($color-second, .5)
+      anim-all()
+
+      &:hover
+        color $color-link
+
+  &__account
+    position relative
     display flex
-    flex-flow row wrap
-    align-content space-between
-    height 100%
-    padding-bottom 20px
-    margin-right 2px
+    flex 1 1 45%
+    flex-basis 100%
+    height 45px
+    margin-top -1px !important
+    padding-left 30px
+    padding-right 10px
+    justify-content space-between
+    align-items center
+    color $color-second
+    border-bottom 1px solid $color-trn-hover
+    anim()
 
+    @media (min-width: 1300px)
+      height 50px
+
+    @media (min-width: 1600px)
+      height 60px
+
+    &:before
+      content " "
+      position absolute
+      left 10px
+      top 50%
+      width 8px
+      height 8px
+      margin-top -5px
+      border-radius 50%
+      background $color-line-account
+      opacity .6
+      anim()
+
+    &:last-child
+      margin-bottom 0
+      border none
+
+    &.account1
+      &:before
+        background #438259
+
+    &.account2
+      &:before
+        background #ab68da
+
+    &.account1.active
+      color #438259
+
+    &.account2.active
+      color #ab68da
+
+    &:hover
+      margin 0 -25px
+      padding-left 55px
+      padding-right 35px
+      background $color-trn-hover
+
+    &:hover:before
+      opacity 1
+      left 35px
+
+    &__value
+      $font-numbers()
+      letter-spacing 1px
+      color $color-sum
+      font-weight bold
+      text-align right
+
+      @media $laptop
+        flex-flow row wrap
+
+  // Summary
+  // ===============================================
+  &__summary__item
+    position relative
+    display flex
+    height 45px
+    margin-top -1px !important
+    justify-content space-between
+    align-items center
+    color $color-second
+    border-bottom 1px solid $color-trn-hover
+    anim()
+
+    @media (min-width: 1300px)
+      height 50px
+
+    @media (min-width: 1600px)
+      height 60px
+
+    &:last-child
+      margin-bottom 0
+      border none
+
+    &__value
+      $font-numbers()
+      letter-spacing 1px
+      color $color-sum
+      font-weight bold
+      text-align right
+
+      @media $laptop
+        flex-flow row wrap
+
+// Sidebar Toogle
+// ===============================================
 .sidebarToogle
   z-index 15
   position fixed
-  width 20px
+  width 40px
   height 100%
   left 0px
   top 0
@@ -49,19 +194,5 @@
   font-size 1.5rem
   anim()
 
-  &__icon
-    display flex
-    align-items center
-    justify-content center
-    width 40px
-    height 40px
-    margin-left 35px
-    margin-top 25px
-
-    ^[0]:hover &
-      color $color-link
-
-    ^[0]._active &
-      color $color-link
-      transform rotate(45deg)
-      border-color $color-link
+  &:hover
+    background $color-side-toogle

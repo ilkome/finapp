@@ -3,9 +3,8 @@
 $color-main = #ababab
 $color-white = alpha(white, .7)
 $color-second = #5f5f5f
-$color-link = #bb5c2c
-
-$color-rub = #2E86C1
+$color-link = #2E86C1
+$color-rub = $color-link
 $color-tinkoff = #ab68da
 $color-sum = #7d7d7d
 $color-income = #1e7a45
@@ -14,15 +13,17 @@ $color-expense = #922B21
 $color-graph = #242424
 $color-icon = #242424
 
-// Items
+// items
 $color-itemStat = alpha(black, .2)
 $color-itemStat-active = #161616
+$color-itemStat-border = alpha(black, .3)
 
 // layout
 $color-body = #1A1A1A
 $color-layout = #161616
 $color-sidebar = #080808
-$color-panel = #161616
+$color-side-toogle = alpha(white, .1)
+
 $color-trn = #161616
 $color-trn-hover = #111111
 $color-trn-hover-line = #333333
@@ -30,9 +31,6 @@ $color-line = #242424
 $color-line-layout = #2C2C2C
 $color-line-account = #272727
 $color-line-summary = #272727
-
-$color-header = $color-main
-$color-header-shaddow = black
 
 $color-14 = #6c26b0
 $color-43 = #E67E22
@@ -45,35 +43,35 @@ if $theme == "light"
   $color-white = #666666
   $color-second = #7d7d7d
   $color-link = #bb5c2c
-
   $color-rub = #2E86C1
   $color-tinkoff = #ab68da
   $color-sum = #565656
   $color-income = #229954
   $color-expense = #CB4335
 
-  $color-graph = #D0D3D4
+  $color-graph = #afafaf
   $color-icon = #afafaf
 
-  // Items
-  $color-itemStat = #fff
-  $color-itemStat-active = #f3f3f3
+  // items
+  $color-itemStat = #fbfbfb
+  $color-itemStat-active = #eaeaea
+  $color-itemStat-border = alpha(black, .05)
 
+  // layout
   $color-body = #ffffff
-  $color-layout = #ffffff
+  $color-layout = #fbfbfb
   $color-sidebar = #F2F4F4
-  $color-panel = #fff
+  $color-side-toogle = alpha(black, .1)
+
   $color-trn = #e2e6ea
   $color-trn-hover = #e2e6ea
-  $color-trn-hover-line = #333333
+  $color-trn-hover-line = alpha(black, .1)
   $color-line = #e6e6e6
   $color-line-layout = #ededed
   $color-line-account = #c7c7c7
   $color-line-summary = #e7e7e7
 
   $color-header = $color-main
-  $color-header-shaddow = alpha(black, .1)
-  $color-header-shaddow = none
 
   $color-14 = #6c26b0
   $color-43 = #E67E22

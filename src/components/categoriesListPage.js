@@ -8,6 +8,7 @@ export default {
 
   data() {
     return {
+      focus: false,
       filter: '',
       editedCategory: false,
       values: {
@@ -25,6 +26,12 @@ export default {
       questionId: false,
       showedChildrenCategories: []
     }
+  },
+
+  mounted() {
+    setTimeout(function () {
+      this.focus = true
+    }.bind(this), 100)
   },
 
   computed: {

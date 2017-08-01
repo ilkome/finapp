@@ -10,18 +10,19 @@
   color alpha(white, .7)
   background $color-icon
   border-radius 3px
-  border 2px solid transparent
+  border 3px solid transparent
   anim()
 
   .fa
     font-size 1.5rem
+    letter-spacing 0
 
   .mdi
     font-size 1.7rem
 
   &._active
     color white
-    border-color $color-main
+    border-color $color-main !important
     background $color-link !important
 
   &._more
@@ -32,7 +33,8 @@
     anim()
 
     &:hover
-      background $color-link !important
+      border-color $color-main !important
+
       & ^[0]__label
         opacity 1
         visibility visible

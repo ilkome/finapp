@@ -1,8 +1,20 @@
 .module
-  padding 65px 60px
+  padding 50px 40px
+
+  @media (min-width: 1300px)
+    padding 70px
+
+  @media (min-width: 1500px)
+    padding 80px
 
   &:last-child
     border-bottom none
 
   &._bg
     background $color-layout
+    border-top 2px solid $color-sidebar
+
+
+.module-in
+  max-width 1060px
+  margin 0 auto

@@ -1,14 +1,15 @@
 <template lang="pug">
 .content
   .module
-    h1.title
-      | Кошелек:
-      .name(:class="`account${account.id}`")  {{ account.name }}
-      .name {{ account.currency }}
-      .sup {{ account.id }}
+    .module-in
+      h1.title
+        .name(:class="`account${account.id}`")  {{ account.name }}
+        .name {{ account.currency }}
+        .sup {{ account.id }}
 
   .module._bg
-    TrnsList(:trns="trnsList")
+    .module-in
+      TrnsList(:trns="trnsList")
 </template>
 
 
@@ -17,7 +18,7 @@ import { mapGetters } from 'vuex'
 import TrnsList from './TrnsList.vue'
 
 export default {
-  
+
   computed: {
     ...mapGetters(['trns']),
 
