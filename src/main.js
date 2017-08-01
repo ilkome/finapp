@@ -15,8 +15,11 @@ moment.locale('en')
 Vue.filter('date', formatDate)
 
 // Plugins
+Vue.use(VueScrollTo, {
+  container: '.main',
+  offset: 60
+})
 Vue.use(VueRouter)
-Vue.use(VueScrollTo)
 Vue.use(VueShortkey)
 
 const router = new VueRouter({

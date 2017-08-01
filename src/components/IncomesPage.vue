@@ -1,78 +1,79 @@
 <template lang="pug">
 .content
   .module
-    h1.title
-      .icon.icon-incomes: .icon__pic
-      | Incomes
+    .module-in
+      h1.title.incomes Incomes
 
-    .categoryStat(v-if="summaryYears.years.length > 1")
-      .categoryStat__trns
-        h2.ml Years
-        template(v-for="year of summaryYears.years")
-          .itemStat
-            .itemStat__in
-              .itemStat__content
-                .itemStat__text
-                  .itemStat__name {{ year.year }}
-                  .itemStat__price.incomes {{ formatMoney(year.total) }}
-                .itemStat__graph
-                  template(v-if="year.total > 0")
-                    .itemStat__graph__in._income(:style="countWidth(year.total, summaryYears.biggestYear)")
-
-      .categoryStat__summary
-        h2 Summary
-        .summaryShort(v-if="summaryYears.total > 0")
-          .summaryShort__item
-            .summaryShort__item__icon._incomes
-            .summaryShort__item__label Incomes
-            .summaryShort__item__total.incomes {{ formatMoney(summaryYears.total) }}
-
-          .summaryShort__item(v-if="summaryYears.years.length > 1")
-            .summaryShort__item__icon._year
-            .summaryShort__item__label Year average
-            .summaryShort__item__total.sum {{ formatMoney(summaryYears.yearAverage) }}
-
-          .summaryShort__item
-            .summaryShort__item__icon._month
-            .summaryShort__item__label Month average
-            .summaryShort__item__total.sum {{ formatMoney(summaryYears.monthAverage) }}
-
-  .tabs
-    a(@click.prevent="toogleShowAll()", :class="{_active: !showNetStat}") Net income
-    a(@click.prevent="toogleShowAll()", :class="{_active: showNetStat}") Income
-
-  .module._bg
-    .module__in
-      template(v-for="year of summaryYears.years")
-        .yearStat
-          h1.title._wide Year {{ year.year }}
-          .summaryShort._pb
+      .viewStat
+        .viewStat__item._summary
+          h3.title._mbs Summary
+          .summaryShort(v-if="summaryYears.total > 0")
             .summaryShort__item
               .summaryShort__item__icon._incomes
               .summaryShort__item__label Incomes
-              .summaryShort__item__total.incomes {{ formatMoney(year.total) }}
+              .summaryShort__item__total.incomes {{ formatMoney(summaryYears.total) }}
+
+            .summaryShort__item(v-if="summaryYears.years.length > 1")
+              .summaryShort__item__icon._year
+              .summaryShort__item__label Year average
+              .summaryShort__item__total.sum {{ formatMoney(summaryYears.yearAverage) }}
 
             .summaryShort__item
               .summaryShort__item__icon._month
               .summaryShort__item__label Month average
-              .summaryShort__item__total.sum {{ formatMoney(year.average) }}
+              .summaryShort__item__total.sum {{ formatMoney(summaryYears.monthAverage) }}
 
-          .trns
-            template(v-for="category in year.categories")
-              .itemStat
-                .itemStat__in
-                  router-link.itemStat__icon(
-                    :to="`/categories/${category.id}`",
-                    title="Go to category"
-                  )
-                    .icon(:style="`background: ${category.color}`")
-                      div(:class="category.icon")
-                  .itemStat__content
-                    .itemStat__text
-                      .itemStat__name {{ category.name }}
-                      .itemStat__price.sum {{ formatMoney(category.total) }}
-                    .itemStat__graph
-                      .itemStat__graph__in._income(:style="countWidth(category.total, year.biggestCategory)")
+        .viewStat__item._stat
+          h3.title._mbs Years
+          template(v-for="year of summaryYears.years")
+            .itemStat
+              .itemStat__in
+                .itemStat__content
+                  .itemStat__text
+                    .itemStat__name {{ year.year }}
+                    .itemStat__price.incomes {{ formatMoney(year.total) }}
+                  .itemStat__graph
+                    template(v-if="year.total > 0")
+                      .itemStat__graph__in._income(:style="countWidth(year.total, summaryYears.biggestYear)")
+
+  .tabs
+    .tabs-in
+      a(@click.prevent="toogleShowAll()", :class="{_active: !showNetStat}") Net income
+      a(@click.prevent="toogleShowAll()", :class="{_active: showNetStat}") Income
+
+  .module._bg
+    .module-in
+      .slideStat
+        template(v-for="year of summaryYears.years")
+          .slideStat__item
+            h1.title._wide Year {{ year.year }}
+            .summaryShort._pb
+              .summaryShort__item
+                .summaryShort__item__icon._incomes
+                .summaryShort__item__label Incomes
+                .summaryShort__item__total.incomes {{ formatMoney(year.total) }}
+
+              .summaryShort__item
+                .summaryShort__item__icon._month
+                .summaryShort__item__label Month average
+                .summaryShort__item__total.sum {{ formatMoney(year.average) }}
+
+            .trns
+              template(v-for="category in year.categories")
+                .itemStat
+                  .itemStat__in
+                    router-link.itemStat__icon(
+                      :to="`/categories/${category.id}`",
+                      title="Go to category"
+                    )
+                      .icon(:style="`background: ${category.color}`")
+                        div(:class="category.icon")
+                    .itemStat__content
+                      .itemStat__text
+                        .itemStat__name {{ category.name }}
+                        .itemStat__price.sum {{ formatMoney(category.total) }}
+                      .itemStat__graph
+                        .itemStat__graph__in._income(:style="countWidth(category.total, year.biggestCategory)")
 </template>
 
 <script>

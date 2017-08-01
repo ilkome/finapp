@@ -46,7 +46,7 @@
       .item__content
         router-link.item__el.item__pic(
           :to="`/categories/${trn.categoryId}`",
-          title="Перейти в категорию"
+          title="Go to category"
         )
           .icon._link(:style="`background: ${trn.categoryColor}`")
             div(:class="trn.categoryIcon")

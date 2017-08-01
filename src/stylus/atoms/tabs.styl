@@ -2,6 +2,7 @@
   position relative
   z-index 2
   margin-top -5px
+  margin-bottom -2px
   padding 0 20px
   background $color-body
   border-bottom 2px solid $color-line
@@ -9,13 +10,20 @@
   @media $laptop
     padding 0 55px
 
+  &-in
+    display flex
+    flex row wrap
+    align-items center
+    max-width 1060px
+    margin 0 auto
+
   a
     min-width 240px
     cursor pointer
     display inline-flex
     justify-content center
     margin-bottom -2px
-    padding 20px 20px
+    padding 20px 40px
     color $color-second
     font-size 1.4rem
     font-weight normal

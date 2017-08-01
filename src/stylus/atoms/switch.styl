@@ -1,0 +1,47 @@
+.switch
+  @media (min-width: 1600px)
+    padding-bottom 80px
+    display flex
+    flex row wrap
+    align-items center
+    max-width 1060px
+    margin 0 auto
+
+  &__item
+    padding-right 60px
+
+  a
+    opacity .6
+    cursor pointer
+    display inline-flex
+    color $color-second
+    font-size 1.6rem
+    font-weight bold
+    letter-spacing 2px
+    text-transform uppercase
+    $font-numbers()
+
+    &:hover
+      opacity 1
+      padding 20px
+      margin -20px -20px -20px -20px
+      background $color-trn-hover
+
+    &._active
+      padding 0
+      margin 0
+      font-size 3rem
+      letter-spacing 4px
+      opacity 1
+      cursor default
+      color $color-main
+      background none
+
+    &._incomes
+      color $color-income
+
+    &._expenses
+      color $color-expense
+
+    &._history
+      color $color-main

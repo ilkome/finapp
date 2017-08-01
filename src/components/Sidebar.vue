@@ -1,41 +1,51 @@
 <template lang="pug">
-.sidebar__wrap
-  .sidebar__in
-    .account
-      .accountTitle Accounts
-      .accountContent
-        template(v-for="(account, index) in accounts")
-          template(v-if="index < visibleAccounts")
-            router-link.accountContentItem._circle(
-                :to="`/accounts/${account.id}`",
-                :class="`account${account.id}`"
-              )
-              .accountContentItemLabel {{ account.name }}
-              .accountContentItemTotal
-                template(v-if="account.total > 0")
-                  .accountContentItemTotalIn {{ formatMoney(account.totalRub) }}
-                  .accountContentItemTotalIn(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
-                template(v-else)
-                  .accountContentItemTotalIn 0 {{account.symbol}}
+transition(name="leftBarAnimation")
+  .sidebar(v-show="$store.state.leftBar.isShow")
+    .sidebar__wrap
+      .sidebar__in
+        .sidebar__item
+          router-link(to="/" exact).sidebar__menu__link Dashboard
+          router-link(to="/summary").sidebar__menu__link Total
+          router-link(to="/incomes").sidebar__menu__link Incomes
+          router-link(to="/expenses").sidebar__menu__link Expenses
+          router-link(to="/categories").sidebar__menu__link Categories
+          router-link(to="/accounts").sidebar__menu__link Accounts
 
-      template(v-if="accounts.length > visibleAccounts")
-        .accountSidebar__showAll(@click="setVisibleAccounts('all')") Show all
-      template(v-if="visibleAccounts > 5")
-        .accountSidebar__showAll(@click="setVisibleAccounts(4)") Show only 4 accounts
+        .sidebar__item
+          .sidebar__title Accounts
+          .sidebar__accounts
+            template(v-for="(account, index) in accounts")
+              template(v-if="index < visibleAccounts")
+                router-link.sidebar__account(
+                    :to="`/accounts/${account.id}`",
+                    :class="`account${account.id}`"
+                  )
+                  .sidebar__account__label {{ account.name }}
+                  .sidebar__account__value
+                    template(v-if="account.total > 0")
+                      div {{ formatMoney(account.totalRub) }}
+                      div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
+                    template(v-else)
+                      div 0 {{account.symbol}}
 
-    .account
-      .accountTitle Summary
-      .accountContent
-        .accountContentItem
-          .accountContentItemLabel Total
-          .accountContentItemTotal
-            .accountContentItemTotalIn {{ showSumIn('RUB') }}
-            .accountContentItemTotalIn {{ showSumIn('USD') }}
-        .accountContentItem
-          .accountContentItemLabel Rate
-          .accountContentItemTotal
-            .accountContentItemTotalIn {{ showRateOf('USD') }}
-            .accountContentItemTotalIn {{ showRateOf('EUR') }}
+            template(v-if="accounts.length > visibleAccounts")
+              .sidebar__accounts__showAll(@click="setVisibleAccounts('all')") Show all
+            template(v-if="visibleAccounts > 3")
+              .sidebar__accounts__showAll(@click="setVisibleAccounts(3)") Show only 3 accounts
+
+        .sidebar__item
+          .sidebar__title Info
+          .sidebar__summary
+            .sidebar__summary__item
+              .sidebar__summary__item__label Total
+              .sidebar__summary__item__value
+                div {{ showSumIn('RUB') }}
+                div {{ showSumIn('USD') }}
+            .sidebar__summary__item
+              .sidebar__summary__item__label Currency rate
+              .sidebar__summary__item__value
+                div {{ showRateOf('USD') }}
+                div {{ showRateOf('EUR') }}
 </template>
 
 
@@ -48,7 +58,7 @@ export default {
 
   data() {
     return {
-      visibleAccounts: 4
+      visibleAccounts: 3
     }
   },
 

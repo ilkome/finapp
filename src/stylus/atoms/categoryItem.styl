@@ -20,10 +20,6 @@
       cursor default
       opacity .7
 
-  // &._opened
-  //   background $color-trn-hover
-  //   border-color $color-line
-
   &:hover
     border-color $color-trn-hover-line
 
@@ -69,6 +65,9 @@
     font-size 1.5rem
     cursor pointer
     anim()
+
+    a&
+      color $color-second
 
     ^[0]__content:hover &
       opacity 1
