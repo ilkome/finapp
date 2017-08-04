@@ -2,7 +2,7 @@
 .app
   //- Loading
   //------------------------------------------------
-  template(v-if="$store.state.loader && !$store.state.error")
+  template(v-if="$store.state.loader || $store.state.error")
     transition(name="fade")
       template(v-if="$store.state.error")
         .loading
@@ -21,8 +21,7 @@
     .sidebarToogle(
       v-shortkey="['alt', 'arrowleft']",
       @shortkey="$store.commit('toogleLeftbar')",
-      @click.prevent.stop="$store.commit('toogleLeftbar')",
-      @mouseover="(e) => toogleSidebar(e)"
+      @click.prevent.stop="$store.commit('toogleLeftbar')"
     )
 
     //- main
@@ -38,7 +37,6 @@
       v-shortkey="['alt', 'arrowright']",
       @shortkey="$store.commit('toogleTrnForm')",
       @click.prevent.stop="$store.commit('toogleTrnForm')",
-      @mouseover="(e) => toogleTrnForm(e)",
       :class="{_active: $store.state.trnForm.isShow}"
     )
       .trnFormToogle__icon: .trnFormToogle__icon__in +
@@ -46,7 +44,6 @@
 
 
 <script>
-import debounce from 'lodash/debounce'
 import Sidebar from './Sidebar.vue'
 import TrnForm from './TrnForm.vue'
 
@@ -60,7 +57,7 @@ export default {
   methods: {
     async updateAppData() {
       try {
-        this.$store.state.error = false
+        this.$store.commit('showError', false)
         // should to be in this order because getTrns depends on others data
         await this.$store.dispatch('getRates')
         await this.$store.dispatch('getAccounts')
