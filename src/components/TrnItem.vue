@@ -25,7 +25,7 @@
   //------------------------------------------------
   template(v-else-if="view === 'small'")
     .trnItem__content
-      .grid(:class="{_updated: trn.id === wasUpdatedTrn, _editable: trn.id === editedTrn}")
+      .grid(:class="{_editable: trn.id === editedTrn}")
         .grid__item._price(:class="trn.type === 1 ? 'income' : 'expense'")
           div {{ formatMoney(trn.amountRub) }}
           div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
@@ -98,9 +98,6 @@ export default {
   computed: {
     editedTrn() {
       return this.$store.state.trnForm.isUpdateTrn
-    },
-    wasUpdatedTrn() {
-      return this.$store.state.trnForm.wasUpdatedTrn
     }
   },
 
@@ -113,7 +110,7 @@ export default {
         this.$store.commit('closeTrnForm')
       }
       this.questionId = null
-      this.$store.commit('disableLoader')
+      this.$store.commit('closeLoader')
       console.groupEnd()
     },
 

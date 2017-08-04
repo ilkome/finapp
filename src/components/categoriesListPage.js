@@ -158,7 +158,7 @@ export default {
       if (result) {
         this.newCategory.name = ''
         this.newCategory.parentId = ''
-        this.$store.commit('disableLoader')
+        this.$store.commit('closeLoader')
       }
       console.groupEnd()
     },
@@ -173,7 +173,7 @@ export default {
       const result = await this.$store.dispatch('updateCategory', updatedCategory)
       if (result) {
         this.editedCategory = false
-        this.$store.commit('disableLoader')
+        this.$store.commit('closeLoader')
       }
       console.groupEnd()
     },
@@ -183,7 +183,7 @@ export default {
       console.groupCollapsed('CategoriesList: deleteCategory')
       this.$store.commit('showLoader')
       await this.$store.dispatch('deleteCategory', +categoryId)
-      this.$store.commit('disableLoader')
+      this.$store.commit('closeLoader')
       console.groupEnd()
     }
   }

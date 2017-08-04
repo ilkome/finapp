@@ -123,14 +123,6 @@ const getters = {
     if (trns) {
       return orderBy(trns, trn => trn.date, 'desc')
     }
-  },
-
-  expenses(state, getters) {
-    return getters.trns.filter(t => t.type === 0)
-  },
-
-  incomes(state, getters) {
-    return getters.trns.filter(t => t.type === 1)
   }
 }
 

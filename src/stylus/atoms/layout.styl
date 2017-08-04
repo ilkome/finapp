@@ -29,8 +29,8 @@ html
   background $color-body
 
 .app
-  min-height 100%
   display flex
+  min-height 100%
 
 .sidebar
   z-index 1
@@ -70,15 +70,15 @@ html
 
   &__in
     display flex
-    flex-flow row wrap
-    align-content space-between
+    flex-flow column nowrap
+    justify-content space-between
     height 100%
-    padding-top 25px
+    padding 0 30px
+    padding-top 60px
     padding-bottom 25px
 
     @media (min-width: 1300px)
-      padding-top 60px
-      padding 0 10px
+      // padding-top 60px
 
     @media (min-width: 1500px)
       padding 0 50px
@@ -101,8 +101,12 @@ html
   anim()
 
   &._withLeftBar
-    left $width-medium
-    width "calc(100% - %s)" % $width-medium
+    left $width-small
+    width "calc(100% - %s)" % $width-small
+
+    @media (min-width: 1300px)
+      left $width-medium
+      width "calc(100% - %s)" % $width-medium
 
     @media (min-width: 1500px)
       left 380px

@@ -79,10 +79,6 @@ export default {
       return this.$store.state.trnForm.isUpdateTrn
     },
 
-    newTrnFormForm() {
-      return this.trns.find(trn => trn.id === this.$store.state.trnForm.wasUpdatedTrn)
-    },
-
     searchedCategoriesList() {
       const searchOptions = {
         shouldSort: true,
@@ -369,7 +365,7 @@ export default {
       } catch (error) {
         console.error(error)
       } finally {
-        this.$store.commit('disableLoader')
+        this.$store.commit('closeLoader')
         console.groupEnd()
       }
     }

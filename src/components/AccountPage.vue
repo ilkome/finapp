@@ -22,7 +22,7 @@ export default {
   computed: {
     ...mapGetters(['trns']),
 
-account() {
+    account() {
       return this.$store.state.accounts.all.find(a => a.id === +this.$route.params.id)
     },
 
