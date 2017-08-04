@@ -21,9 +21,8 @@ const modules = {
 // state
 // ==============================================
 const state = {
-  loader: false,
+  loader: true,
   error: false,
-  pageLoading: true,
   filter: {
     duration: 10
   },
@@ -100,10 +99,6 @@ const mutations = {
     state.leftBar.isShow = !state.leftBar.isShow
   },
 
-  pageLoaded() {
-    state.pageLoading = false
-  },
-
   showError(state, error) {
     state.error = error
   },
@@ -112,7 +107,7 @@ const mutations = {
     state.loader = true
   },
 
-  disableLoader() {
+  closeLoader() {
     state.loader = false
   },
 

@@ -7,7 +7,6 @@
     text-transform uppercase
 
   &__item
-    flex-grow 1
     padding-bottom 40px
 
     @media (min-width: 1300px)
@@ -32,7 +31,7 @@
       anim()
 
       @media (min-width: 1500px)
-        margin-bottom 25px
+        margin-bottom 20px
 
       @media (min-width: 1900px)
         font-size 1.2rem
@@ -40,7 +39,7 @@
       &.active
         cursor default
         font-weight bold
-        font-size 1.2rem
+        font-size 1.1rem
         margin-left -2px
         color $color-rub !important
 
@@ -134,14 +133,12 @@
       left 35px
 
     &__value
+      flex-flow row wrap
       $font-numbers()
       letter-spacing 1px
       color $color-sum
       font-weight bold
       text-align right
-
-      @media $laptop
-        flex-flow row wrap
 
   // Summary
   // ===============================================
@@ -167,14 +164,12 @@
       border none
 
     &__value
+      flex-flow row wrap
       $font-numbers()
       letter-spacing 1px
       color $color-sum
       font-weight bold
       text-align right
-
-      @media $laptop
-        flex-flow row wrap
 
 // Sidebar Toogle
 // ===============================================
