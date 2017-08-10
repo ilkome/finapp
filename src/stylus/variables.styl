@@ -1,3 +1,6 @@
+$theme = "dark"
+// $theme = "light"
+
 // Dark Theme
 // ===============================================
 $color-main = #ababab
@@ -13,16 +16,20 @@ $color-expense = #922B21
 $color-graph = #242424
 $color-icon = #242424
 
-// items
-$color-itemStat = alpha(black, .2)
-$color-itemStat-active = #161616
-$color-itemStat-border = alpha(black, .3)
-
 // layout
 $color-body = #1A1A1A
 $color-layout = #161616
 $color-sidebar = #080808
 $color-side-toogle = alpha(white, .1)
+
+// items
+$color-itemStat = alpha(black, .2)
+$color-itemStat-active = #161616
+$color-itemStat-border = alpha(black, .3)
+
+// categories
+$color-categoryItem-bg = $color-layout
+$color-categoryItem-border = alpha(white, .05)
 
 $color-trn = #161616
 $color-trn-hover = #111111
@@ -52,16 +59,20 @@ if $theme == "light"
   $color-graph = #afafaf
   $color-icon = #afafaf
 
-  // items
-  $color-itemStat = #fbfbfb
-  $color-itemStat-active = #eaeaea
-  $color-itemStat-border = alpha(black, .05)
-
   // layout
   $color-body = #ffffff
   $color-layout = #fbfbfb
   $color-sidebar = #F2F4F4
   $color-side-toogle = alpha(black, .1)
+
+  // items
+  $color-itemStat = #fbfbfb
+  $color-itemStat-active = #eaeaea
+  $color-itemStat-border = alpha(black, .05)
+
+  // categories
+  $color-categoryItem-bg = $color-layout
+  $color-categoryItem-border = alpha(black, .1)
 
   $color-trn = #e2e6ea
   $color-trn-hover = #e2e6ea
