@@ -21,6 +21,7 @@ const modules = {
 // state
 // ==============================================
 const state = {
+  isPageLoaded: false,
   loader: true,
   error: false,
   filter: {
@@ -33,7 +34,10 @@ const state = {
     isShow: false,
     action: 'create',
     isUpdateTrn: false,
-    wasUpdatedTrn: false
+    wasUpdatedTrn: false,
+    categoryId: null,
+    isShowCategories: false,
+    showedChildIds: []
   },
   dates: {
     start: moment().subtract(10, 'days').startOf('day').valueOf(),
@@ -52,10 +56,19 @@ const actions = {
 // mutations commit
 // ==============================================
 const mutations = {
+  setShowedChildIds(state, ids) {
+    state.trnForm.showedChildIds = ids
+  },
+
+  pageLoaded(state) {
+    state.isPageLoaded = true
+  },
+
   setDates(state, dates) {
     state.dates.start = moment(dates.start).startOf('day').valueOf()
     state.dates.end = moment(dates.end).endOf('day').valueOf()
   },
+
   setCalendarPreset(state, preset) {
     state.dashboard.calendarPreset = preset
   },
@@ -69,6 +82,7 @@ const mutations = {
       state.trnForm.isShow = false
       state.trnForm.isUpdateTrn = false
       state.trnForm.wasUpdatedTrn = false
+      state.trnForm.isShowCategories = false
     }
   },
 
@@ -76,7 +90,23 @@ const mutations = {
     state.trnForm.action = 'create'
     state.trnForm.isShow = !state.trnForm.isShow
     state.trnForm.isUpdateTrn = false
-    if (state.trnForm.isShow) state.trnForm.wasUpdatedTrn = false
+    state.trnForm.isShowCategories = false
+    if (state.trnForm.isShow) {
+      state.trnForm.wasUpdatedTrn = false
+    }
+  },
+
+  toogleCategoriesPop(state, action) {
+    switch (action) {
+      case 'show':
+        state.trnForm.isShowCategories = true
+        break
+      case 'hide':
+        state.trnForm.isShowCategories = false
+        break
+      default:
+        state.trnForm.isShowCategories = !state.trnForm.isShowCategories
+    }
   },
 
   setTrnForm(state, { action, trnId }) {
@@ -93,6 +123,11 @@ const mutations = {
       state.trnForm.isUpdateTrn = trnId
       state.trnForm.wasUpdatedTrn = false
     }
+  },
+
+  setTrnFormCategoryId(state, categoryId) {
+    state.trnForm.categoryId = categoryId
+    state.trnForm.isShowCategories = false
   },
 
   toogleLeftbar() {

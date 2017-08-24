@@ -3,25 +3,39 @@
 .categoryItem
   overflow hidden
   position relative
-  display block
   min-width 300px
-  margin-bottom 15px
+  margin-bottom -1px
   color $color-second
-  border-radius 3px
-  background $color-layout
-  border 1px solid alpha(white, .05)
+  border 1px solid transparent
+  border-top 1px solid $color-categoryItem-border
+  border-bottom 1px solid $color-categoryItem-border
   anim()
+
+  &._editable
+    background $color-layout
+    border 1px solid $color-link
+    border-radius 3px
 
   &._link
     cursor pointer
+
+  &._delete
+    cursor default
+    border-color $color-expense !important
 
   &._active
     & ^[0]__content
       cursor default
       opacity .7
 
-  &:hover
-    border-color $color-trn-hover-line
+  &._open
+    margin 0
+    background $color-categoryItem-bg
+    border 1px solid $color-categoryItem-border
+    border-radius 3px
+
+    &:hover
+      border-color $color-link
 
   &:last-child
     margin-bottom 0
@@ -31,7 +45,7 @@
     flex-flow row nowrap
     flex-grow 1
     align-items center
-    padding 10px
+    padding 15px
     color $color-second
     anim()
 
@@ -40,18 +54,26 @@
 
     &:focus
       outline 0
-      color $color-white
-      background $color-trn-hover-line
 
   &__icon
-    padding-right 15px
+    padding-right 25px
 
   &__name
+    display flex
+    align-items center
     flex-grow 1
     text-transform capitalize
     font-size 1.1rem
-    a&
-      color $color-second
+
+    &__list
+      display flex
+      font-size 1.2rem
+      margin-left 20px
+      margin-bottom -4px
+      opacity .3
+      anim()
+      ^[0]__content:hover &
+        opacity 1
 
   &__text
     display flex
@@ -66,9 +88,6 @@
     cursor pointer
     anim()
 
-    a&
-      color $color-second
-
     ^[0]__content:hover &
       opacity 1
 
@@ -79,8 +98,12 @@
     &:last-child
       margin-right 0
 
-  &__children
-    padding 0 15px 10px
+  &__child
+    padding 0 35px 10px
+    border-top 1px solid $color-categoryItem-border
+
+  &__edit
+    padding 20px
 
 
 // Category Item Child
@@ -92,25 +115,31 @@
   margin 0
   border none
   color $color-second
+  border 1px solid transparent
   border-top 1px solid $color-line
+
+  &:first-child
+    border-top 0
 
   &._link
     cursor pointer
+
+  &._delete
+    cursor default
+    border-color $color-expense !important
 
   &._active
     & ^[0]__content
       cursor default
       opacity .7
 
-  &:hover &__action
-    opacity 1
-
   &:last-child
     margin-bottom 0
-    border-bottom none
+    border-bottom-color transparent
 
   &__content
     @extend .categoryItem__content
+    cursor default
 
   &__icon
     @extend .categoryItem__icon
@@ -123,3 +152,9 @@
 
   &__action
     @extend .categoryItem__action
+    ^[0]__content:hover &
+      opacity 1
+      background red
+
+  &__edit
+    @extend .categoryItem__edit

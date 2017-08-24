@@ -42,14 +42,11 @@
         )
 
     .trnForm__icons
-      h4._marginBottomSmall Category: {{ values.categoryName }}
+      h4._marginBottomSmall Category: {{ selectedCategory.name }}
       .categoriesIcons
-        .categoriesIcons__el(
-          v-if="lastCategories.length"
-          v-for="category in lastCategories"
-        )
+        .categoriesIcons__el(v-for="category in lastUsedCategories")
           .icon._link(
-            :class="{_active: (category.id === values.categoryId)}",
+            :class="{_active: (category.id === selectedCategory.id)}",
             @click.prevent="setCategory(category.id)",
             @keyup.enter.prevent="setCategory(category.id)",
             :style="`background: ${category.color}`",
@@ -107,7 +104,7 @@
   //- Categories popup block
   //------------------------------------------------
   transition(name="trnFormAnimation")
-    template(v-if="show.categories")
+    template(v-if="isShowCategories")
       .trnForm__categories(
         v-shortkey="['alt', 'arrowdown']",
         @shortkey="toogleShowCategories()"
@@ -116,48 +113,7 @@
           .trnForm__header
             h2.title._mbn Select category
             .trnForm__header__close.btn._mini(@click.prevent="toogleCategoriesPop()") Close
-
-          .trnForm__filter
-            input(
-              type="text",
-              v-model.trim="filter",
-              v-focus.lazy="true",
-              placeholder="Search category"
-            ).filterBtn._mbn
-
-            template(v-if="!filter")
-              .trnForm__filter__toogle.btn._transFix(@click.prevent="toogleShowCategories()")
-                template(v-if="showedChildrenCategories.length") Collapse
-                template(v-else) Show
-            template(v-else)
-              .trnForm__filter__toogle.btn._transFix(@click.prevent="filter = ''") Clear
-
-          template(v-if="filter.length > 0 && filter.length < 2")
-            div Continue typing...
-
-          template(v-if="filter.length >= 2 && searchedCategoriesList.length === 0")
-            div Nothing found
-
-          .categoriesListForm
-            //- Categories list
-            //------------------------------------------------
-            template(v-if="!filter")
-              CategoryList(
-                :categories="categoriesList",
-                :isToogleCategories="showedChildrenCategories",
-                :activeCategory="activeCategory",
-                @setCategory="setCategory",
-                @toogleCategory="toogleCategory")
-
-            //- Searched categories
-            //------------------------------------------------
-            template(v-if="filter.length >= 2 && searchedCategoriesList.length")
-              CategoryList(
-                :categories="searchedCategoriesList",
-                :isToogleCategories="showedChildrenCategories",
-                :isSearch="true",
-                :activeCategory="activeCategory",
-                @setCategory="setCategory",
-                @toogleCategory="toogleCategory")
+          CategoryList(:isShowEditActions.sync="isShowEditActions", view="trnForm")
+          CategoryCreate
 </template>
 <script src="./trnForm.js"></script>

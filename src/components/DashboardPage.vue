@@ -68,6 +68,7 @@
         //- Previous
         //------------------------------------------------
         .viewStat__item._stat
+          h3.title._mbs Previous periods
           .itemStat._link(
             v-for="(period, index) in previousData",
             @click.prevent="selectPeriodStat(index)",
@@ -76,20 +77,22 @@
               .itemStat__content
                 .itemStat__text
                   .itemStat__name {{ period.date }}
-                  .itemStat__price.incomes {{ formatMoney(period.incomes)}}
-                  .itemStat__price.expenses  {{ formatMoney(period.expenses) }}
+                  template(v-if="(period.incomes || period.expenses) > 0")
+                    .itemStat__price.incomes {{ formatMoney(period.incomes)}}
+                    .itemStat__price.expenses  {{ formatMoney(period.expenses) }}
                   .itemStat__price.sum {{ formatMoney(period.incomes - period.expenses) }}
-                .itemStat__graph
-                  template(v-if="period.incomes > 0")
-                    .itemStat__graph__in._income(:style="getPreviousDataGraphWidth(period.incomes)")
-                .itemStat__graph
-                  template(v-if="period.expenses > 0")
-                    .itemStat__graph__in._expense(:style="getPreviousDataGraphWidth(period.expenses)")
+                template(v-if="(period.incomes || period.expenses) > 0")
+                  .itemStat__graph
+                    template(v-if="period.incomes > 0")
+                      .itemStat__graph__in._income(:style="getPreviousDataGraphWidth(period.incomes)")
+                  .itemStat__graph
+                    template(v-if="period.expenses > 0")
+                      .itemStat__graph__in._expense(:style="getPreviousDataGraphWidth(period.expenses)")
 
   //- Tabs
   //------------------------------------------------
   template(v-if="(incomesItemStat.length || expensesItemStat.length) > 0")
-    .module._bg
+    .module._bg._minHeight
       .module-in
         .switch
           .switch__item
@@ -100,6 +103,7 @@
             a._incomes(@click="changeTab('incomes')", :class="{_active: showedTab === 'incomes'}") Incomes
           .switch__item
             a._history(@click="changeTab('history')", :class="{_active: showedTab === 'history'}") History
+
 
         //- Together
         //------------------------------------------------
@@ -231,6 +235,14 @@
         //------------------------------------------------
         template(v-if="showedTab === 'history'")
           TrnsList(:trns="trnsList.slice(0, 100)")
+
+  template(v-if="(incomesItemStat.length || expensesItemStat.length) === 0")
+    .module._bg
+      .module-in
+        .switch
+          .switch__item
+            a._history._active Last 100 trns
+        TrnsList(:trns="trns.slice(0, 100)")
 </template>
 
 
@@ -248,6 +260,7 @@ import TrnItem from './TrnItem.vue'
 import SummaryShort from './SummaryShort.vue'
 
 export default {
+  name: 'DashboardPage',
   mixins: [formatDate, formatMoney],
   components: { TrnsList, TrnItem, Calendar, SummaryShort },
 
@@ -304,7 +317,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['categories', 'getTrns']),
+    ...mapGetters(['categories', 'trns', 'getTrns']),
 
     globalDate() {
       return {
