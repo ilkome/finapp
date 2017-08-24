@@ -88,6 +88,10 @@ div(:class="className")
 <script>
 export default {
   props: {
+    view: {
+      type: String,
+      default: 'page'
+    },
     isShowEditActions: {
       type: Boolean,
       default: false
@@ -120,7 +124,7 @@ export default {
         categoryItem: this.category.parentId === 0,
         categoryItemChild: this.category.parentId !== 0,
         _editable: this.editCategoryId === this.category.id,
-        _link: this.category.child && this.category.child.length && this.editCategoryId !== this.category.id,
+        _link: this.view === 'trnForm' || (this.category.child && this.category.child.length && this.editCategoryId !== this.category.id),
         _delete: this.confirmPopCategoryId === this.category.id,
         _open: this.showedChildIds.indexOf(this.category.id) !== -1
       }
