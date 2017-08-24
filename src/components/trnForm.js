@@ -126,10 +126,6 @@ export default {
       this.$store.commit('toogleCategoriesPop')
     },
 
-    onClickCategoryContent(category) {
-      this.setCategory(category.id)
-    },
-
     setCategory(categoryId) {
       this.$store.commit('setTrnFormCategoryId', categoryId)
       // Add selected category if it doesn't exist in lastUsedCategories

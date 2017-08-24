@@ -240,7 +240,7 @@ export default {
         }
       } else {
         if (this.view === 'trnForm') {
-          this.$emit('onClickContent', category)
+          this.$emit('onClickContent', category.id)
         }
       }
     },
