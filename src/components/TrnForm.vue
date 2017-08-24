@@ -113,7 +113,7 @@
           .trnForm__header
             h2.title._mbn Select category
             .trnForm__header__close.btn._mini(@click.prevent="toogleCategoriesPop()") Close
-          CategoryList(:isShowEditActions.sync="isShowEditActions", view="trnForm")
+          CategoryList(v-on:onClickContent="onClickCategoryContent", :isShowEditActions.sync="isShowEditActions", view="trnForm")
           CategoryCreate
 </template>
 <script src="./trnForm.js"></script>

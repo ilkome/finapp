@@ -123,8 +123,11 @@ export default {
     },
 
     toogleCategoriesPop() {
-      console.log(1)
       this.$store.commit('toogleCategoriesPop')
+    },
+
+    onClickCategoryContent(category) {
+      this.setCategory(category.id)
     },
 
     setCategory(categoryId) {

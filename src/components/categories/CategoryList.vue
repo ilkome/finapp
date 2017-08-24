@@ -240,7 +240,7 @@ export default {
         }
       } else {
         if (this.view === 'trnForm') {
-          this.$store.commit('setTrnFormCategoryId', category.id)
+          this.$emit('onClickContent', category)
         }
       }
     },

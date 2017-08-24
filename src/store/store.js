@@ -36,8 +36,7 @@ const state = {
     isUpdateTrn: false,
     wasUpdatedTrn: false,
     categoryId: null,
-    isShowCategories: false,
-    showedChildIds: []
+    isShowCategories: false
   },
   dates: {
     start: moment().subtract(10, 'days').startOf('day').valueOf(),
@@ -56,10 +55,6 @@ const actions = {
 // mutations commit
 // ==============================================
 const mutations = {
-  setShowedChildIds(state, ids) {
-    state.trnForm.showedChildIds = ids
-  },
-
   pageLoaded(state) {
     state.isPageLoaded = true
   },
