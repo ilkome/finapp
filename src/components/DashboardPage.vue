@@ -103,6 +103,9 @@
             a._incomes(@click="changeTab('incomes')", :class="{_active: showedTab === 'incomes'}") Incomes
           .switch__item
             a._history(@click="changeTab('history')", :class="{_active: showedTab === 'history'}") History
+          .switch__item
+            a
+              .fa.fa-object-group(@click.prevent="toogleGroupByParent")
 
 
         //- Together
@@ -268,6 +271,7 @@ export default {
     return {
       showedDate: {},
       showedTab: 'all',
+      groupedByParent: true,
       days: [1, 5, 10, 7, 14, 30, 999],
       selectedPeriodIndex: 0,
       showedTrnsCategoryId: [],
@@ -310,7 +314,6 @@ export default {
 
     document.addEventListener('keyup', (event) => {
       if (event.keyCode === 27) { // escape key
-        console.log('document.addEventListener: keyup')
         this.calendar.show = false
       }
     })
@@ -421,8 +424,11 @@ export default {
   },
 
   methods: {
+    toogleGroupByParent() {
+      this.groupedByParent = !this.groupedByParent
+    },
+
     setDuration(duration) {
-      this.calendarPreset = false
       this.showedTrnsCategoryId = []
       this.selectedPeriodIndex = 0
 
@@ -528,7 +534,6 @@ export default {
     },
 
     setDates(period) {
-      this.calendarPreset = period
       this.showedTrnsCategoryId = []
       this.selectedPeriodIndex = 0
 
@@ -721,24 +726,74 @@ export default {
 
     formatTrnsForStat(trns) {
       if (trns && trns.length > 0) {
-        // Create array of categories ids
-        const catsIds = uniqBy(trns, 'categoryId').map(trn => trn.categoryId)
 
-        // Create array of objects with data in categories
-        const data = catsIds.map((id) => {
-          const trnsInCategory = trns.filter(trn => trn.categoryId === id)
-          const total = trnsInCategory.reduce((sum, current) => sum + current.amountRub, 0)
-          const category = this.categories.find(c => c.id === id)
-          return {
-            id,
-            name: category.name,
-            total,
-            icon: category.icon,
-            color: category.color,
-            trns: trnsInCategory
-          }
-        })
-        return orderBy(data, d => d.total, 'desc')
+        // Grouped by parent category
+        if (this.groupedByParent) {
+          // Create array of categories ids
+          const formatedTrns = trns.map(trn => {
+            const trnCategory = this.categories.find(category => category.id === trn.categoryId)
+            // It's root category
+            if (trnCategory.parentId === 0) {
+              return {
+                ...trn,
+                parentCategory: trnCategory,
+                parentCategoryId: trnCategory.id
+              }
+            }
+
+            // It's child category -> find parent category
+            if (trnCategory.parentId !== 0) {
+              const parentCategory = this.categories.find(category => category.id === trnCategory.parentId)
+              return {
+                ...trn,
+                parentCategory,
+                parentCategoryId: parentCategory.id
+              }
+            }
+          })
+
+          const catsIds = uniqBy(formatedTrns, 'parentCategory.id').map(trn => trn.parentCategory.id)
+
+          // Create array of objects with data in categories
+          const data = catsIds.map((id) => {
+            const trnsInCategory = formatedTrns.filter(trn => trn.parentCategory.id === id)
+            const total = trnsInCategory.reduce((sum, current) => sum + current.amountRub, 0)
+            const category = this.categories.find(c => c.id === id)
+            return {
+              id,
+              category: category,
+              name: category.name,
+              total,
+              icon: category.icon,
+              color: category.color,
+              trns: trnsInCategory
+            }
+          })
+          return orderBy(data, d => d.total, 'desc')
+        }
+
+        // Grouped by child category
+        if (!this.groupedByParent) {
+          // Create array of categories ids
+          const catsIds = uniqBy(trns, 'categoryId').map(trn => trn.categoryId)
+
+          // Create array of objects with data in categories
+          const data = catsIds.map((id) => {
+            const trnsInCategory = trns.filter(trn => trn.categoryId === id)
+            const total = trnsInCategory.reduce((sum, current) => sum + current.amountRub, 0)
+            const category = this.categories.find(c => c.id === id)
+            return {
+              id,
+              category: category,
+              name: category.name,
+              total,
+              icon: category.icon,
+              color: category.color,
+              trns: trnsInCategory
+            }
+          })
+          return orderBy(data, d => d.total, 'desc')
+        }
       }
       return []
     }

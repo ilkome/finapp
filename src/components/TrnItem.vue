@@ -1,6 +1,5 @@
 <template lang="pug">
 .trnItem
-  //- pre {{ questionId }}
   //- Trns for form
   //------------------------------------------------
   template(v-if="view === 'form'")
@@ -31,6 +30,7 @@
           div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
         .grid__item
           .grid__item__date {{ formatDate(trn.date, 'D MMM') }}
+          .grid__item__category {{ trn.categoryName }}
           .grid__item__account {{ trn.accountName }}
         template(v-if="editedTrn && trn.id === editedTrn")
           .grid__item._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
