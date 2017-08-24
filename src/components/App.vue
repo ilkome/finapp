@@ -1,21 +1,22 @@
 <template lang="pug">
 .app
-  //- Loading
-  //------------------------------------------------
-  template(v-if="$store.state.loader || $store.state.error")
-    transition(name="fade")
-      template(v-if="$store.state.error")
+  template(v-if="!$store.state.isPageLoaded")
+    h1.loading Loading...
+
+  template(v-if="$store.state.isPageLoaded")
+
+    //- Loading
+    template(v-if="$store.state.loader")
+      transition(name="fade")
+        h1.loading Loading...
+
+    template(v-if="$store.state.error")
+      transition(name="fade")
         .loading
           .loading__in
             .loading__name._error {{ $store.state.error }}
             .loading__update(@click.prevent="updateAppData()") Update Application
-      template(v-else)
-        h1.loading Loading...
 
-
-  //- Loaded
-  //------------------------------------------------
-  template(v-else)
     //- Sidebar
     Sidebar
     .sidebarToogle(
@@ -27,7 +28,8 @@
     //- main
     .main(:class="$store.state.leftBar.isShow && '_withLeftBar'")
       transition(name="slide")
-        router-view
+        keep-alive(include="DashboardPage")
+          router-view
 
     //- TrnForm
     transition(name="slideToLeft")
@@ -63,6 +65,7 @@ export default {
         await this.$store.dispatch('getAccounts')
         await this.$store.dispatch('getCategories')
         await this.$store.dispatch('getTrns')
+        this.$store.commit('pageLoaded')
         this.$store.commit('closeLoader')
       } catch (error) {
         this.$store.commit('showError', error.message)

@@ -1,3 +1,52 @@
+.categories
+  &__filter
+    display flex
+    align-items center
+    margin-bottom 60px
+
+    &__input
+      display block
+      width 100%
+      padding 15px
+      margin-right 10px
+      color $color-main
+      font-size 1rem
+      font-weight bold
+      text-transform none
+      letter-spacing 2px
+      background $color-line
+      border 1px solid $color-body
+      border-radius 3px
+      cursor pointer
+      anim()
+
+      &:hover, &:focus
+        border 1px solid $color-link
+
+    &__btn
+      flex 0 0 140px
+      display inline-flex
+      justify-content center
+      align-items center
+      height 45px
+      margin-left 15px
+      text-transform uppercase
+      font-size 1rem
+      color $color-white
+      font-weight bold
+      border-radius 3px
+      cursor pointer
+      anim()
+
+      &:hover
+        // background $color-link
+        background alpha($color-link, .8)
+
+      &._edit
+        flex 0 0 45px
+        font-size 1.2rem
+
+
 .categoriesIcons
   display grid
   grid-template-columns repeat(auto-fit, 45px)
@@ -20,6 +69,6 @@
   &__summary
     margin-left 100px
 
-  &__children
+  &__child
     flex 1 0
     margin-left 100px

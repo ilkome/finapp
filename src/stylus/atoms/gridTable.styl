@@ -1,9 +1,12 @@
 .gridTable
   display grid
-  max-width 1200px
-  grid-template-columns minmax(200px, 540px) minmax(200px, 540px)
   grid-column-gap 80px
-  grid-row-gap 60px
+  grid-row-gap 100px
+
+  @media (min-width: 1200px)
+    max-width 1200px
+    grid-template-columns minmax(200px, 540px) minmax(200px, 540px)
+
 
   @media $pcNew
     grid-column-gap 220px

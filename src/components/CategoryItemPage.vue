@@ -50,11 +50,11 @@
                         .summaryShort__item__label Month average
                         .summaryShort__item__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length / 12) }}
 
-            .panel(v-if="childrenCategories.length > 0")
+            .panel(v-if="childCategories.length > 0")
               label.checkbox
-                input.checkbox__input(type="checkbox" v-model="showChildren")
-                .checkbox__name Include children
-              div(v-for="category in childrenCategories")
+                input.checkbox__input(type="checkbox" v-model="showChild")
+                .checkbox__name Include child
+              div(v-for="category in childCategories")
                 router-link.link(
                   :to="`/categories/${category.id}`",
                   title="Go to category"
@@ -162,20 +162,25 @@ export default {
   data() {
     return {
       showAll: false,
-      showChildren: true,
+      showChild: true,
       showedTrns: []
     }
   },
 
   computed: {
-    ...mapGetters(['categories', 'trns']),
+    ...mapGetters(['trns']),
+
+    categories() {
+      return this.$store.state.categories.all
+    },
 
     category() {
-      const categoryId = +this.$route.params.id
-      const category = this.categories.find(a => a.id === categoryId)
-      if (category) {
-        return category
+      if (+this.$route.params.id) {
+        const category = this.categories.find(a => a.id === +this.$route.params.id)
+        if (category) return category
+        return false
       }
+      return false
     },
 
     parentCategory() {
@@ -184,7 +189,7 @@ export default {
       }
     },
 
-    childrenCategories() {
+    childCategories() {
       const categoryId = +this.$route.params.id
       return this.categories.filter(c => c.parentId === categoryId)
     },
@@ -205,13 +210,13 @@ export default {
     trnsList() {
       const categoryId = +this.$route.params.id
 
-      if (this.showChildren) {
-        const childrenIds = this.categories
+      if (this.showChild) {
+        const childIds = this.categories
           .filter(c => c.parentId === categoryId)
           .map(c => c.id)
 
         return this.trns.filter(trn => {
-          return trn.categoryId === categoryId || childrenIds.indexOf(trn.categoryId) !== -1
+          return trn.categoryId === categoryId || childIds.indexOf(trn.categoryId) !== -1
         })
       } else {
         return this.trns.filter(trn => trn.categoryId === categoryId)

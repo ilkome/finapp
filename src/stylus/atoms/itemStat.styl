@@ -4,13 +4,13 @@
   min-width 300px
   margin-bottom 30px
   color $color-second
-  border-radius 3px
+  // border-radius 5px
   background $color-itemStat
   border 1px solid $color-itemStat-border
   anim()
 
   @media (min-width: 1600px)
-    width 490px
+    max-width 490px
 
   &._opened
     background alpha($color-trn-hover, .5) !important
@@ -31,10 +31,10 @@
       border-color $color-trn-hover-line
 
   &._small
-    margin-bottom 15px
+    margin-bottom 0
 
     @media (min-width: 1600px)
-      margin-bottom 25px
+      border-radius 0
 
   &:last-child
     margin-bottom 0
@@ -68,6 +68,8 @@
   &__text
     display flex
     padding-bottom 15px
+    &:last-child
+      padding-bottom 0
 
   &__price
     min-width 105px
@@ -78,7 +80,7 @@
   &__graph
     flex-grow 1
     overflow hidden
-    margin-bottom 6px
+    margin-bottom 8px
     border-radius 3px
     background $color-graph
 

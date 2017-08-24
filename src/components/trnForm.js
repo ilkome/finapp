@@ -1,17 +1,14 @@
 import mathjs from 'mathjs'
-import Fuse from 'fuse.js'
 import moment from 'moment'
 import uniqBy from 'lodash/uniqBy'
-import orderBy from 'lodash/orderBy'
 import { mapGetters } from 'vuex'
 import { focus } from 'vue-focus'
-import TrnItem from './TrnItem.vue'
-import CategoryList from './CategoryList.vue'
+import CategoryCreate from './categories/CategoryCreate.vue'
+import CategoryList from './categories/CategoryList.vue'
 
 export default {
   directives: { focus: focus },
-
-  components: { TrnItem, CategoryList },
+  components: { CategoryCreate, CategoryList },
 
   watch: {
     '$route'(to, from) {
@@ -34,14 +31,11 @@ export default {
     }
   },
 
-  beforeMount() {
-    this.fillValues()
-  },
-
   mounted() {
+    this.fillValues()
+
     document.addEventListener('keyup', (event) => {
       if (event.keyCode === 27) { // escape key
-        console.log('document.addEventListener: keyup')
         this.$store.commit('closeTrnForm')
         this.show.categories = false
       }
@@ -50,21 +44,13 @@ export default {
 
   data() {
     return {
-      focused: false,
-      filter: '',
-      errors: false,
-      loading: false,
+      isShowEditActions: false,
+      errors: null,
       show: {
-        accounts: false,
         categories: false
       },
-      values: {},
-      showedChildrenCategories: [],
-      lastCategories: [],
-      activeCategory: {
-        parent: 0,
-        child: 0
-      }
+      lastUsedCategories: [],
+      values: {}
     }
   },
 
@@ -75,84 +61,20 @@ export default {
       return this.$store.state.trnForm.action
     },
 
-    isUpdateTrn() {
-      return this.$store.state.trnForm.isUpdateTrn
+    categoryId() {
+      return this.$store.state.trnForm.categoryId
     },
 
-    searchedCategoriesList() {
-      const searchOptions = {
-        shouldSort: true,
-        threshold: 0.3,
-        location: 0,
-        distance: 100,
-        maxPatternLength: 32,
-        minMatchCharLength: 1,
-        keys: ['name']
+    selectedCategory() {
+      const category = this.categories.find(category => category.id === this.categoryId)
+      if (category) {
+        return category
       }
-
-      const fuse = new Fuse(this.categories, searchOptions)
-      const searchResults = fuse.search(this.filter)
-      const categoriesResult = []
-
-      if (this.filter.length >= 2) {
-        this.showedChildrenCategories = []
-
-        searchResults.map(item => {
-          // Root category
-          if (item.parentId === 0) {
-            if (this.showedChildrenCategories.indexOf(item.id) === -1) {
-              this.showedChildrenCategories.push(item.id)
-            }
-
-            categoriesResult.push({
-              ...item,
-              children: []
-            })
-          }
-          // Children category
-          if (item.parentId > 0) {
-            if (this.showedChildrenCategories.indexOf(item.parentId) === -1) {
-              this.showedChildrenCategories.push(item.parentId)
-            }
-            const parentCategory = categoriesResult.find(category => category.id === item.parentId)
-
-            // Category already exist in result
-            if (parentCategory) {
-              parentCategory.children.push(item)
-            } else {
-              // New category
-              const parent = this.categories.find(category => category.id === item.parentId)
-              categoriesResult.push({
-                ...parent,
-                children: [item]
-              })
-            }
-          }
-        })
-      }
-
-      return categoriesResult
+      return {}
     },
 
-    categoriesList() {
-      let categoriesOrganazed = []
-      const rootCategories = this.categories.filter(c => c.parentId === 0)
-      rootCategories.forEach((category) => {
-        const childrenCategories = this.categories.filter(c => c.parentId === category.id)
-        if (childrenCategories && childrenCategories.length > 0) {
-          categoriesOrganazed.push({
-            ...category,
-            children: childrenCategories
-          })
-        } else {
-          categoriesOrganazed.push({
-            ...category,
-            children: []
-          })
-        }
-      })
-      categoriesOrganazed = orderBy(categoriesOrganazed, c => c.name, 'asc')
-      return categoriesOrganazed
+    isShowCategories() {
+      return this.$store.state.trnForm.isShowCategories
     }
   },
 
@@ -161,7 +83,7 @@ export default {
       // Create
       if (this.$store.state.trnForm.action === 'create') {
         const lastTrn = this.$store.getters.trns[0]
-
+        this.$store.commit('setTrnFormCategoryId', lastTrn.categoryId)
         this.values = {
           date: moment(),
           accountId: lastTrn.accountId,
@@ -179,6 +101,7 @@ export default {
       // Update
       if (this.$store.state.trnForm.action === 'update') {
         const trn = this.trns.find(trn => trn.id === this.$store.state.trnForm.isUpdateTrn)
+        this.$store.commit('setTrnFormCategoryId', trn.categoryId)
         this.values = {
           id: trn.id,
           date: moment(trn.date),
@@ -193,64 +116,22 @@ export default {
       }
 
       const lastTrnsUnicCategory = uniqBy(this.trns.slice(0, 50), 'categoryId').slice(0, 15)
-      const lastCategoriesIdsFromTrns = lastTrnsUnicCategory.map(trn => trn.categoryId)
-      this.lastCategories = this.categories
-        .filter(category => lastCategoriesIdsFromTrns.indexOf(category.id) >= 0)
+      const lastUsedCategoriesIdsFromTrns = lastTrnsUnicCategory.map(trn => trn.categoryId)
+      this.lastUsedCategories = this.categories
+        .filter(category => lastUsedCategoriesIdsFromTrns.indexOf(category.id) >= 0)
         .slice(0, 15)
-
-      const category = this.categories.find(category => category.id === this.values.categoryId)
-      this.activeCategory = {
-        parentId: category.id,
-        childId: category.parentId
-      }
-    },
-
-    toogleCategory(categoryId) {
-      if (this.showedChildrenCategories.indexOf(categoryId) === -1) {
-        this.showedChildrenCategories.push(categoryId)
-      } else {
-        this.showedChildrenCategories = this.showedChildrenCategories.filter(cId => cId !== categoryId)
-      }
-    },
-
-    toogleShowCategories() {
-      if (this.showedChildrenCategories.length) {
-        this.showedChildrenCategories = []
-      } else {
-        this.categories
-          .filter(category => category.parentId === 0)
-          .forEach(category => this.showedChildrenCategories.push(category.id))
-      }
     },
 
     toogleCategoriesPop() {
-      this.show.accounts = false
-      this.show.categories = !this.show.categories
-    },
-
-    toogleAccountsDropdown() {
-      this.show.categories = false
-      this.show.accounts = !this.show.accounts
+      console.log(1)
+      this.$store.commit('toogleCategoriesPop')
     },
 
     setCategory(categoryId) {
-      const category = this.categories.find(category => category.id === categoryId)
-      if (category) {
-        this.values.categoryId = categoryId
-        this.values.categoryName = category.name
-        this.values.categoryColor = category.color
-        this.values.categoryIcon = category.icon
-        this.show.categories = false
-
-        this.activeCategory = {
-          parentId: category.id,
-          childId: category.parentId
-        }
-
-        // Add selected category if it doesn't exist in lastCategories
-        if (!this.lastCategories.find(cat => cat.id === categoryId)) {
-          this.lastCategories = [...this.lastCategories.slice(0, 14), category]
-        }
+      this.$store.commit('setTrnFormCategoryId', categoryId)
+      // Add selected category if it doesn't exist in lastUsedCategories
+      if (!this.lastUsedCategories.find(cat => cat.id === this.categoryId)) {
+        this.lastUsedCategories = [...this.lastUsedCategories.slice(0, 14), this.selectedCategory]
       }
     },
 
@@ -261,10 +142,10 @@ export default {
     setAccound(accountId) {
       const account = this.accounts.find(account => account.id === accountId)
       if (account) {
-        this.values.accountId = accountId
-        this.values.currency = this.accounts.find(account => account.id === accountId).currency
-        this.values.accountName = this.accounts.find(account => account.id === accountId).name
-        this.show.accounts = false
+        this.values = {
+          ...this.values,
+          ...account
+        }
       }
     },
 

@@ -30,8 +30,8 @@ transition(name="leftBarAnimation")
 
             template(v-if="accounts.length > visibleAccounts")
               .sidebar__accounts__showAll(@click="setVisibleAccounts('all')") Show all
-            template(v-if="visibleAccounts > 3")
-              .sidebar__accounts__showAll(@click="setVisibleAccounts(3)") Show only 3 accounts
+            template(v-if="visibleAccounts > 4")
+              .sidebar__accounts__showAll(@click="setVisibleAccounts(4)") Show only 4 accounts
 
         .sidebar__item
           .sidebar__title Info
@@ -58,7 +58,7 @@ export default {
 
   data() {
     return {
-      visibleAccounts: 3
+      visibleAccounts: 4
     }
   },
 

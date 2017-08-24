@@ -8,11 +8,13 @@ div
         .summaryShort__item__icon._incomes
         .summaryShort__item__label Incomes
         .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
+
       .summaryShort__item
         .summaryShort__item__icon._expenses
         .summaryShort__item__label Expenses
         .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
-      .summaryShort__item
+
+      .summaryShort__item._mb
         .summaryShort__item__icon._total
         .summaryShort__item__label Total
         .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
@@ -25,15 +27,17 @@ div
     .summaryShort
       .summaryShort__item
         .summaryShort__item__icon._incomes
-        .summaryShort__item__label Incomes
+        .summaryShort__item__label Incomes Average
         .summaryShort__item__total.incomes {{ formatMoney(avSummary.incomes) }}
+
       .summaryShort__item
         .summaryShort__item__icon._expenses
-        .summaryShort__item__label Expenses
+        .summaryShort__item__label Expenses Average
         .summaryShort__item__total.expenses {{ formatMoney(avSummary.expenses) }}
+
       .summaryShort__item
         .summaryShort__item__icon._total
-        .summaryShort__item__label Total
+        .summaryShort__item__label Total Average
         .summaryShort__item__total.sum {{ formatMoney(avSummary.total) }}
 
   //- dashboard-expenses
