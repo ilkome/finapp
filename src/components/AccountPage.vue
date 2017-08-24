@@ -23,11 +23,16 @@ export default {
     ...mapGetters(['trns']),
 
     account() {
-      return this.$store.state.accounts.all.find(a => a.id === +this.$route.params.id)
+      if (+this.$route.params.id) {
+        const account = this.$store.state.accounts.all.find(a => a.id === +this.$route.params.id)
+        if (account) return account
+        return false
+      }
+      return false
     },
 
     trnsList() {
-      return this.trns
+      return this.trns.slice(0, 1000)
         .filter(trn => trn.accountId === this.account.id)
         .slice(0, 30)
     }
