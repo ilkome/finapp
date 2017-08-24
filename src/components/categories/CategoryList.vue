@@ -31,6 +31,7 @@
     //- Category Item
     template(v-for="category in showedCategories")
       CategoryItem(
+        :view="view",
         :isShowEditActions="isShowEditActions",
         :category="category",
         :editCategoryId="editCategoryId",
@@ -56,6 +57,7 @@
         template(slot="child")
           template(v-for="childCategory in category.child")
             CategoryItem(
+              :view="view",
               :isShowEditActions="isShowEditActions",
               :category="childCategory",
               :editCategoryId="editCategoryId",
