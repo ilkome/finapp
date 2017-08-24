@@ -126,6 +126,9 @@ export default {
       this.$store.commit('toogleCategoriesPop')
     },
 
+    /**
+     * @param {number} categoryId - Id of selected category.
+     */
     setCategory(categoryId) {
       this.$store.commit('setTrnFormCategoryId', categoryId)
       // Add selected category if it doesn't exist in lastUsedCategories
