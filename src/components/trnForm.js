@@ -24,8 +24,9 @@ export default {
       this.fillValues()
     },
 
+    // Update values then select new trn
     isUpdateTrn() {
-      if (this.$store.state.trnForm.isUpdateTrn) {
+      if (this.isUpdateTrn) {
         this.fillValues()
       }
     }
@@ -75,6 +76,11 @@ export default {
 
     isShowCategories() {
       return this.$store.state.trnForm.isShowCategories
+    },
+
+    // For fill values
+    isUpdateTrn() {
+      return this.$store.state.trnForm.isUpdateTrn
     }
   },
 
@@ -83,18 +89,20 @@ export default {
       // Create
       if (this.$store.state.trnForm.action === 'create') {
         const lastTrn = this.$store.getters.trns[0]
-        this.$store.commit('setTrnFormCategoryId', lastTrn.categoryId)
-        this.values = {
-          date: moment(),
-          accountId: lastTrn.accountId,
-          accountName: lastTrn.accountName,
-          amount: null,
-          categoryId: lastTrn.categoryId,
-          categoryName: lastTrn.categoryName,
-          categoryIcon: lastTrn.categoryIcon,
-          type: 0,
-          currency: lastTrn.currency,
-          description: ''
+        if (lastTrn) {
+          this.$store.commit('setTrnFormCategoryId', lastTrn.categoryId)
+          this.values = {
+            date: moment(),
+            accountId: lastTrn.accountId,
+            accountName: lastTrn.accountName,
+            amount: null,
+            categoryId: lastTrn.categoryId,
+            categoryName: lastTrn.categoryName,
+            categoryIcon: lastTrn.categoryIcon,
+            type: 0,
+            currency: lastTrn.currency,
+            description: ''
+          }
         }
       }
 
@@ -165,69 +173,38 @@ export default {
         try {
           return mathjs.chain(number.replace(/\s/g, '')).eval().round().value
         } catch (error) {
-          console.error('calc:', error.message)
-          return false
+          this.errors = error
         }
       }
 
       try {
-        console.group('TrnForm: onSubmitForm')
-        console.log('Action', this.action)
         const currentTime = moment().format('HH:mm:ss')
         const day = moment(this.values.date).format('D.MM.YY')
         const date = moment(`${day} ${currentTime}`, 'D.MM.YY HH:mm:ss').valueOf()
         const amount = String(this.values.amount)
-        const dataFromTrns = []
+        let formatedValues = {}
 
         // Empty
         if (!amount) {
-          console.log('empty amount')
           this.errors = 'Empty amount'
-          throw new Error('components/TrnForm: Empty amount')
         }
 
-        // One amount
-        if (amount && amount.indexOf(',') === -1) {
-          const calcAmount = calc(amount)
-          console.log('TrnForm@One amount:', calcAmount)
-
-          if (calcAmount && calcAmount > 0) {
-            dataFromTrns.push({
-              ...this.values,
-              amount: calcAmount,
-              date
-            })
-            this.errors = false
-          } else {
-            this.errors = 'One amount: wrong number or less than 0'
+        const calcAmount = calc(amount)
+        if (calcAmount && calcAmount > 0) {
+          formatedValues = {
+            ...this.values,
+            amount: calcAmount,
+            date
           }
-        }
-
-        // Few amounts
-        if (amount && amount.indexOf(',') !== -1) {
-          const amountsList = amount.split(',')
-
-          for (const amountItem of amountsList) {
-            const calcAmount = calc(amountItem)
-            console.log('Few:', calcAmount)
-
-            if (calcAmount && calcAmount > 0) {
-              dataFromTrns.push({
-                ...this.values,
-                amount: calcAmount,
-                date
-              })
-              this.errors = false
-            } else {
-              this.errors = 'Few amount: wrong number or less than 0'
-            }
-          }
+          this.errors = false
+        } else {
+          this.errors = 'One amount: wrong number or less than 0'
         }
 
         if (!this.errors) {
           // Create
           if (this.action === 'create') {
-            const isAddedTrns = await this.$store.dispatch('addTrns', dataFromTrns)
+            const isAddedTrns = await this.$store.dispatch('addTrn', formatedValues)
             console.log(isAddedTrns)
 
             if (isAddedTrns) {
@@ -237,19 +214,16 @@ export default {
             }
           }
 
-          // Update only one trn
+          // Update
           if (this.action === 'update') {
-            const updatedTrnId = await this.$store.dispatch('updateTrn', dataFromTrns[0])
+            const updatedTrnId = await this.$store.dispatch('updateTrn', formatedValues)
             if (updatedTrnId) {
               this.$store.commit('closeTrnForm')
             }
           }
         }
       } catch (error) {
-        console.error(error)
-      } finally {
-        this.$store.commit('closeLoader')
-        console.groupEnd()
+        this.errors = error
       }
     }
   }

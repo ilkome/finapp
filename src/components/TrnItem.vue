@@ -103,15 +103,14 @@ export default {
 
   methods: {
     async deleteTrn(id) {
-      console.groupCollapsed('TrnItem: deleteTrn:', Number(id))
+      console.log('TrnItem: deleteTrn:', id)
       this.$store.commit('showLoader')
-      await this.$store.dispatch('deleteTrn', Number(id))
+      await this.$store.dispatch('deleteTrn', id)
       if (id === this.$store.state.trnForm.isUpdateTrn) {
         this.$store.commit('closeTrnForm')
       }
       this.questionId = null
       this.$store.commit('closeLoader')
-      console.groupEnd()
     },
 
     askQuestion(trnId) {
@@ -123,6 +122,7 @@ export default {
     },
 
     setEditTrn(trnId) {
+      console.log(trnId)
       this.$store.commit('setTrnForm', { action: 'update', trnId })
     }
   }

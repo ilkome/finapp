@@ -67,15 +67,18 @@
 
   &__text
     display flex
+    flex-flow row wrap
     padding-bottom 15px
     &:last-child
       padding-bottom 0
 
   &__price
-    min-width 105px
     max-width 125px
     padding-right 5px
     text-align right
+    @media (min-width: 1300px)
+      min-width 105px
+
 
   &__graph
     flex-grow 1

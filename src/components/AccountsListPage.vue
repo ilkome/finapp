@@ -10,6 +10,7 @@
             input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="focus").filterBtn
 
             .items
+              pre {{ questionId }}
               template(v-for="account in accountsList")
                 .categoryItem
                   .categoryItem__content
@@ -17,13 +18,16 @@
                       .icon(:class="`bg-${account.id}`")
                         .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
                     .categoryItem__name {{ account.name }}
+                      div
+                        pre 1: {{ questionId }}
+                        pre 2: {{ account.id }}
                     .item__el._price.sum
                       div {{ formatMoney(account.totalRub) }}
                       div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
                     .item__el._second {{ account.currency }}
                     router-link.categoryItem__action(:to="`/accounts/${account.id}`")
                       .fa.fa-list
-                    .categoryItem__action(@click.prevent="askQuestion(account.id)")
+                    .categoryItem__action(@click.stop.prevent="askQuestion(account.id)")
                       .fa.fa-trash-o
 
                   .item__question(:class="{_visible: questionId === account.id}")
@@ -65,7 +69,7 @@ export default {
         symbol: ''
       },
       filter: '',
-      questionId: null
+      questionId: 1
     }
   },
 
@@ -96,10 +100,13 @@ export default {
     },
 
     askQuestion(accountId) {
+      console.log(accountId)
       this.questionId = accountId
+      console.log(this.questionId)
     },
 
     close() {
+      console.log('close')
       this.questionId = null
     }
   }

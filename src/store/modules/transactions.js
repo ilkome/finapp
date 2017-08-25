@@ -1,104 +1,10 @@
+import firebase from 'firebase'
 import moment from 'moment'
 import orderBy from 'lodash/orderBy'
-import { getTrnasaction, addTrnasactions, updateTrnasaction, deleteTrnasaction } from '../../api/api'
-import { getAllTransactions, getTransactions } from '../../api/transactions'
-
-/**
- * Format trn.
- * @param {object} trn - Trn for format.
- * @param {options} object - Options.
- * @param {options.accounts} Array - List of accounts.
- * @param {options.categories} Array - List of categories.
- * @param {options.rates} Array - List of rates.
- * @return {object} Formated trn.
- */
-function formatTrn(trn, options) {
-  if (options) {
-    if (options.accounts.length < 0) {
-      console.error('formatTrn: must to have accounts')
-      return false
-    }
-    if (options.categories.length < 0) {
-      console.error('formatTrn: must to have categories')
-      return false
-    }
-    if (options.rates.length < 0) {
-      console.error('formatTrn: must to have rates')
-      return false
-    }
-  } else {
-    console.error('formatTrn: must to have options')
-    return false
-  }
-
-  const accountId = +trn.accountId
-  const account = options.accounts.find(a => a.id === accountId)
-  let accountName
-  if (account) {
-    accountName = account.name
-  } else {
-    console.error('Account not found. Id:', account, trn, accountId, options)
-    return false
-  }
-  const amount = Math.abs(trn.amount)
-  const currency = trn.currency
-  let amountRub
-  if (currency === 'RUB') {
-    amountRub = Math.abs(trn.amount)
-  } else {
-    if (options.rates[currency]) {
-      amountRub = Math.floor(Math.abs(trn.amount / options.rates[currency]))
-    } else {
-      console.error('No currency found', currency)
-      return false
-    }
-  }
-  const categoryId = +trn.categoryId
-  const category = options.categories.find(cat => cat.id === categoryId)
-  let categoryName
-
-  let categoryColor = category.color
-  const categoryIcon = category.icon
-
-  if (category) {
-    if (!categoryColor) {
-      if (category.parentId > 0) {
-        const parent = options.categories.find(cat => cat.id === category.parentId)
-        if (parent && parent.color) {
-          categoryColor = parent.color
-        }
-      }
-    }
-
-    categoryName = category.name
-  } else {
-    console.error('Category not found. Id:', categoryId)
-    return false
-  }
-  const date = +trn.date
-  const description = trn.description
-  const id = +trn.id
-  const type = +trn.type
-
-  return {
-    accountId,
-    accountName,
-    amount,
-    amountRub,
-    categoryId,
-    categoryColor,
-    categoryIcon,
-    categoryName,
-    date,
-    description,
-    currency,
-    id,
-    type
-  }
-}
+import formatTrn from '../helpers/formatTrn'
 
 // state
-// ======================
+// ==============================================
 const state = {
   all: []
 }
@@ -129,127 +35,96 @@ const getters = {
 // Actions
 // ==============================================
 const actions = {
-  async getTrns({ commit, state, rootState }) {
-    console.groupCollapsed('store/transitions/@getTrns')
+  async setTrns({ commit, state, rootState }, trns) {
     try {
-      const trns = await getAllTransactions()
-
-      const accounts = rootState.accounts.all
-      const categories = rootState.categories.all
       const rates = rootState.rates.all
+      const accounts = []
+      const categories = []
+      const formatedTrns = []
 
-      if (trns.length) {
-        console.groupCollapsed('Format trns')
-        const formatedTrns = trns.map(trn => formatTrn(trn, { accounts, categories, rates }))
-
-        console.log('Before format trns:', trns)
-        console.log('Formated trns:', formatedTrns)
-        console.groupEnd()
-        commit('getTrns', formatedTrns)
-      } else {
-        commit('showError', 'store/transitions/getTrns: no trns')
-        throw new Error('No trns')
+      for (const key in trns.accounts) {
+        accounts.push(trns.accounts[key])
       }
-    } catch (error) {
-      throw new Error(error.message)
-    } finally {
-      console.groupEnd()
-    }
-  },
 
-  async addTrns({ commit, state, rootState }, values) {
-    try {
-      const accounts = rootState.accounts.all
-      const categories = rootState.categories.all
-      const rates = rootState.rates.all
-
-      console.log('Values:', values)
-      const trnsIdsAdded = await addTrnasactions(values)
-
-      if (trnsIdsAdded) {
-        const response = await getTransactions(trnsIdsAdded)
-        console.groupCollapsed('store/modules/addTrns: Format trn')
-
-        if (Array.isArray(response)) {
-          console.log('Is Array')
-          const formatedNewTrns = response.map(trn => formatTrn(trn, { accounts, categories, rates }))
-          await commit('addTrns', formatedNewTrns)
-          console.log('Formated:', formatedNewTrns)
-        } else {
-          console.log('Is one Object')
-          const formatedNewTrn = formatTrn(response, { accounts, categories, rates })
-          await commit('addTrn', formatedNewTrn)
-          console.log('Formated:', formatedNewTrn)
-        }
-
-        if (response) {
-          console.log('Updated!')
-          console.groupEnd()
-          return true
-        } else {
-          commit('showError', 'store/transitions/addTrns: newTrn: false')
-          return false
-        }
-      } else {
-        commit('showError', 'store/transitions/addTrns: trnsIdsAdded: false')
-        throw new Error('store/transitions/addTrns: trnsIdsAdded: false')
+      for (const key in trns.categories) {
+        categories.push(trns.categories[key])
       }
+
+      for (const key in trns.trns) {
+        const formatedTrn = formatTrn(trns.trns[key], { accounts, categories, rates })
+        formatedTrns.push({
+          ...formatedTrn,
+          id: formatedTrn.id ? formatedTrn.id : key
+        })
+      }
+
+      commit('setTrns', formatedTrns)
     } catch (error) {
       throw new Error(error.message)
     }
   },
 
-  async updateTrn({ commit, state, rootState }, trn) {
-    console.log('Values:', trn)
+  async addTrn({ commit, state, rootState }, values) {
+    try {
+      const accounts = rootState.accounts.all
+      const categories = rootState.categories.all
+      const rates = rootState.rates.all
 
-    const accounts = rootState.accounts.all
-    const categories = rootState.categories.all
-    const rates = rootState.rates.all
-
-    if (trn && trn.id) {
-      console.groupCollapsed('Update')
-      const isTrnUpdated = await updateTrnasaction(trn)
-      console.groupEnd()
-
-      if (isTrnUpdated) {
-        console.groupCollapsed('Get')
-        const newTrn = await getTrnasaction(trn.id)
-        console.groupEnd()
-
-        if (newTrn) {
-          console.groupCollapsed('Format trn')
+      const db = await firebase.database()
+      const result = await db.ref(`users/${rootState.user.user.uid}/trns`).push(values)
+        .then(async (data) => {
+          const key = data.key
+          const newTrn = {
+            ...values,
+            id: key
+          }
           const formatedNewTrn = formatTrn(newTrn, { accounts, categories, rates })
-          console.log('Formated:', formatedNewTrn)
-          console.groupEnd()
-
-          console.log('Updated!')
-          await commit('updateTrn', formatedNewTrn)
-          return formatedNewTrn.id
-        } else {
-          commit('showError', 'store/transitions/updateTrn: newTrn: false')
-          return false
-        }
-      } else {
-        commit('showError', 'store/transitions/updateTrn: isTrnUpdated: false')
-        return false
-      }
-    } else {
-      commit('showError', 'store/transitions/updateTrn: No trn or trn.id is empty!')
-      return false
+          commit('addTrn', formatedNewTrn)
+          commit('closeLoader')
+          return true
+        })
+        .catch(error => {
+          commit('showError', `store/transitions/addTrn: ${error.message}`)
+        })
+      return result
+    } catch (error) {
+      commit('showError', `store/transitions/addTrn: ${error.message}`)
     }
   },
 
-  async deleteTrn({ commit }, id) {
-    console.groupCollapsed('Delete')
-    const isTrnDeleted = await deleteTrnasaction(+id)
-    console.groupEnd()
+  async updateTrn({ commit, state, rootState }, values) {
+    try {
+      const accounts = rootState.accounts.all
+      const categories = rootState.categories.all
+      const rates = rootState.rates.all
 
-    if (isTrnDeleted) {
+      const db = await firebase.database()
+      db.ref(`users/${rootState.user.user.uid}/trns/${values.id}`)
+        .update(values)
+        .catch(error => {
+          console.error(error)
+          commit('showError', `store/transitions/addTrn: ${error.message}`)
+        })
+      const formatedNewTrn = formatTrn(values, { accounts, categories, rates })
+      commit('updateTrn', formatedNewTrn)
+      commit('closeLoader')
+    } catch (error) {
+      commit('showError', `store/transitions/updateTrn: ${error.message}`)
+    }
+  },
+
+  async deleteTrn({ commit, rootState }, id) {
+    try {
+      const db = await firebase.database()
+      db.ref(`users/${rootState.user.user.uid}/trns/${id}`)
+        .remove()
+        .catch(error => {
+          console.error(error)
+          commit('showError', `store/transitions/addTrn: ${error.message}`)
+        })
       commit('deleteTrn', id)
-      return true
-    } else {
-      commit('showError', 'store/transitions/deleteTrn: isTrnDeleted: false')
-      return false
+    } catch (error) {
+      commit('showError', `store/transitions/updateTrn: ${error.message}`)
     }
   }
 }
@@ -257,14 +132,11 @@ const actions = {
 // mutations
 // ==============================================
 const mutations = {
-  getTrns(state, trns) {
+  setTrns(state, trns) {
     state.all = trns
   },
   addTrn(state, trn) {
     state.all.unshift(trn)
-  },
-  addTrns(state, trns) {
-    state.all.unshift(...trns)
   },
   updateTrn(state, trn) {
     state.all = [
