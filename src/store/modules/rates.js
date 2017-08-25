@@ -1,4 +1,4 @@
-import { getRates } from '../../api/api'
+import { getRates } from '../../api/rates'
 
 const store = {
   state: {
@@ -14,13 +14,10 @@ const store = {
   actions: {
     async getRates({ commit }) {
       try {
-        console.groupCollapsed('store/rates/@getRates')
         const rates = await getRates()
         commit('getRates', rates)
       } catch (error) {
         throw new Error(error.message)
-      } finally {
-        console.groupEnd()
       }
     }
   },

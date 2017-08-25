@@ -6,6 +6,7 @@ import accounts from './modules/accounts'
 import categories from './modules/categories'
 import rates from './modules/rates'
 import trns from './modules/transactions'
+import user from './modules/user'
 
 Vue.use(Vuex)
 
@@ -15,7 +16,8 @@ const modules = {
   accounts,
   categories,
   rates,
-  trns
+  trns,
+  user
 }
 
 // state
@@ -55,7 +57,11 @@ const actions = {
 // mutations commit
 // ==============================================
 const mutations = {
-  pageLoaded(state) {
+  pageLoading() {
+    state.isPageLoaded = false
+  },
+
+  pageLoaded() {
     state.isPageLoaded = true
   },
 
@@ -84,7 +90,7 @@ const mutations = {
   toogleTrnForm() {
     state.trnForm.action = 'create'
     state.trnForm.isShow = !state.trnForm.isShow
-    state.trnForm.isUpdateTrn = false
+    // state.trnForm.isUpdateTrn = false
     state.trnForm.isShowCategories = false
     if (state.trnForm.isShow) {
       state.trnForm.wasUpdatedTrn = false

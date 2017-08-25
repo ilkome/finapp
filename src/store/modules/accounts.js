@@ -1,4 +1,4 @@
-import { getAccounts, addAccount, deleteAccount } from '../../api/api'
+import { addAccount, deleteAccount } from '../../api/api'
 import orderBy from 'lodash/orderBy'
 
 const store = {
@@ -44,8 +44,7 @@ const store = {
   },
 
   actions: {
-    async getAccounts({ commit }) {
-      const data = await getAccounts()
+    async getAccounts({ commit }, data) {
       commit('getAccounts', data)
     },
     async addAccount({ commit }, account) {

@@ -10,6 +10,8 @@ transition(name="leftBarAnimation")
           router-link(to="/expenses").sidebar__menu__link Expenses
           router-link(to="/categories").sidebar__menu__link Categories
           router-link(to="/accounts").sidebar__menu__link Accounts
+          router-link(to="/transfer").sidebar__menu__link Transfer
+          .sidebar__menu__link(@click.prevent="$store.commit('signOut')") LogOut
 
         .sidebar__item
           .sidebar__title Accounts
@@ -22,7 +24,7 @@ transition(name="leftBarAnimation")
                   )
                   .sidebar__account__label {{ account.name }}
                   .sidebar__account__value
-                    template(v-if="account.total > 0")
+                    template(v-if="account.total !== 0")
                       div {{ formatMoney(account.totalRub) }}
                       div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
                     template(v-else)

@@ -79,6 +79,7 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
+    "firebase": "^4.2.0",
     "font-awesome-stylus": "^4.7.1",
     "lodash": "^4.17.4",
     "mathjs": "^3.16.2",
@@ -86,8 +87,10 @@
     "vue": "^2.4.2",
     "vue-focus": "^2.1.0",
     "vue-router": "^2.7.0",
-    "vue-scrollto": "^2.7.4",
-    "vue-shortkey": "^2.2.1",
-    "vuex": "^2.3.1"
+    "vue-scrollto": "^2.7.2",
+    "vue-shortkey": "^2.1.8",
+    "vuefire": "^1.4.3",
+    "vuex": "^2.3.1",
+    "vuexfire": "^2.2.0"
   }
 }

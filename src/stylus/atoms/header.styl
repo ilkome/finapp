@@ -131,10 +131,14 @@ h4
     display inline-flex
     align-items center
     white-space nowrap
-    font-size 3rem
-    letter-spacing 4px
+    font-size 2rem
+    letter-spacing 2px
     $font-numbers()
     anim()
+
+    @media (min-width: 1300px)
+      font-size 3rem
+      letter-spacing 4px
 
     &:hover
       padding 20px
@@ -147,5 +151,8 @@ h4
     &__sup
       margin -26px 0 0 15px
       color $color-second
-      font-size 1.2rem
+      font-size 1rem
       letter-spacing normal
+
+      @media (min-width: 1300px)
+        font-size 1.2rem

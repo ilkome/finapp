@@ -7,8 +7,10 @@ import CategoryItemPage from './components/CategoryItemPage.vue'
 import SummaryPage from './components/SummaryPage.vue'
 import IncomesPage from './components/IncomesPage.vue'
 import ExpensesPage from './components/ExpensesPage.vue'
+import Firebase from './components/Firebase.vue'
 
 const routes = [
+  { path: '/transfer', component: Firebase },
   { path: '/index.html', component: DashboardPage },
   { path: '/', component: DashboardPage },
   { path: '/accounts', component: AccountsListPage },

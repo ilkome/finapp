@@ -1,68 +1,69 @@
 <template lang="pug">
 div
-  //- dashboard-summary
-  template(v-if="view === 'dashboard-summary'")
-    h3.title._mbs Summary
-    .summaryShort._pb
-      .summaryShort__item
-        .summaryShort__item__icon._incomes
-        .summaryShort__item__label Incomes
-        .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
+  template(v-if="trns.length")
+    //- dashboard-summary
+    template(v-if="view === 'dashboard-summary'")
+      h3.title._mbs Summary
+      .summaryShort._pb
+        .summaryShort__item
+          .summaryShort__item__icon._incomes
+          .summaryShort__item__label Incomes
+          .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
 
-      .summaryShort__item
-        .summaryShort__item__icon._expenses
-        .summaryShort__item__label Expenses
-        .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
+        .summaryShort__item
+          .summaryShort__item__icon._expenses
+          .summaryShort__item__label Expenses
+          .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
 
-      .summaryShort__item._mb
-        .summaryShort__item__icon._total
-        .summaryShort__item__label Total
-        .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
+        .summaryShort__item._mb
+          .summaryShort__item__icon._total
+          .summaryShort__item__label Total
+          .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
 
-  //- dashboard-average
-  template(v-if="view === 'dashboard-average'")
-    h3.title._mbs
-      | Average&nbsp;
-      sup.sup {{ avDays }} days
-    .summaryShort
-      .summaryShort__item
-        .summaryShort__item__icon._incomes
-        .summaryShort__item__label Incomes Average
-        .summaryShort__item__total.incomes {{ formatMoney(avSummary.incomes) }}
+    //- dashboard-average
+    template(v-if="view === 'dashboard-average'")
+      h3.title._mbs
+        | Average&nbsp;
+        sup.sup {{ avDays }} days
+      .summaryShort
+        .summaryShort__item
+          .summaryShort__item__icon._incomes
+          .summaryShort__item__label Incomes Average
+          .summaryShort__item__total.incomes {{ formatMoney(avSummary.incomes) }}
 
-      .summaryShort__item
-        .summaryShort__item__icon._expenses
-        .summaryShort__item__label Expenses Average
-        .summaryShort__item__total.expenses {{ formatMoney(avSummary.expenses) }}
+        .summaryShort__item
+          .summaryShort__item__icon._expenses
+          .summaryShort__item__label Expenses Average
+          .summaryShort__item__total.expenses {{ formatMoney(avSummary.expenses) }}
 
-      .summaryShort__item
-        .summaryShort__item__icon._total
-        .summaryShort__item__label Total Average
-        .summaryShort__item__total.sum {{ formatMoney(avSummary.total) }}
+        .summaryShort__item
+          .summaryShort__item__icon._total
+          .summaryShort__item__label Total Average
+          .summaryShort__item__total.sum {{ formatMoney(avSummary.total) }}
 
-  //- dashboard-expenses
-  template(v-if="view === 'dashboard-expenses'")
-    .summaryShort._pbs
-      .summaryShort__item
-        .summaryShort__item__icon._expenses
-        .summaryShort__item__label Expenses
-        .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
-      .summaryShort__item(v-if="duration > 1")
-        .summaryShort__item__icon._month
-        .summaryShort__item__label Day average
-        .summaryShort__item__total.sum {{ formatMoney(summary.expenses / duration) }}
+    //- dashboard-expenses
+    template(v-if="view === 'dashboard-expenses'")
+      .summaryShort._pbs
+        .summaryShort__item
+          .summaryShort__item__icon._expenses
+          .summaryShort__item__label Expenses
+          .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
+        .summaryShort__item(v-if="duration > 1")
+          .summaryShort__item__icon._month
+          .summaryShort__item__label Day average
+          .summaryShort__item__total.sum {{ formatMoney(summary.expenses / duration) }}
 
-  //- dashboard-incomes
-  template(v-if="view === 'dashboard-incomes'")
-    .summaryShort._pbs
-      .summaryShort__item
-        .summaryShort__item__icon._incomes
-        .summaryShort__item__label Incomes
-        .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
-      .summaryShort__item(v-if="duration > 1")
-        .summaryShort__item__icon._month
-        .summaryShort__item__label Day average
-        .summaryShort__item__total.sum {{ formatMoney(summary.incomes / duration) }}
+    //- dashboard-incomes
+    template(v-if="view === 'dashboard-incomes'")
+      .summaryShort._pbs
+        .summaryShort__item
+          .summaryShort__item__icon._incomes
+          .summaryShort__item__label Incomes
+          .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
+        .summaryShort__item(v-if="duration > 1")
+          .summaryShort__item__icon._month
+          .summaryShort__item__label Day average
+          .summaryShort__item__total.sum {{ formatMoney(summary.incomes / duration) }}
 </template>
 
 <script>
