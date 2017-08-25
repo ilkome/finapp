@@ -22,7 +22,7 @@ transition(name="leftBarAnimation")
                   )
                   .sidebar__account__label {{ account.name }}
                   .sidebar__account__value
-                    template(v-if="account.total > 0")
+                    template(v-if="account.total !== 0")
                       div {{ formatMoney(account.totalRub) }}
                       div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
                     template(v-else)
