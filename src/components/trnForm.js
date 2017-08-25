@@ -130,6 +130,7 @@ export default {
      * @param {number} categoryId - Id of selected category.
      */
     setCategory(categoryId) {
+      this.values.categoryId = categoryId
       this.$store.commit('setTrnFormCategoryId', categoryId)
       // Add selected category if it doesn't exist in lastUsedCategories
       if (!this.lastUsedCategories.find(cat => cat.id === this.categoryId)) {
@@ -144,10 +145,7 @@ export default {
     setAccound(accountId) {
       const account = this.accounts.find(account => account.id === accountId)
       if (account) {
-        this.values = {
-          ...this.values,
-          ...account
-        }
+        this.values.accountId = account.id
       }
     },
 
