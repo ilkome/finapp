@@ -27,14 +27,14 @@ export default function formatTrn(trn, options) {
   }
 
   // Account
-  const accountId = +trn.accountId
+  let accountId = trn.accountId
   const account = options.accounts.find(a => a.id === accountId)
   let accountName
   if (account) {
     accountName = account.name
   } else {
-    console.error('Account not found. Id:', account, trn, accountId, options)
-    return false
+    accountId = 'not found'
+    accountName = 'not found'
   }
 
   // Amount
@@ -53,7 +53,7 @@ export default function formatTrn(trn, options) {
   }
 
   // Category
-  const categoryId = +trn.categoryId
+  const categoryId = trn.categoryId
   const category = options.categories.find(cat => cat.id === categoryId)
   let categoryName
   let categoryColor = category.color

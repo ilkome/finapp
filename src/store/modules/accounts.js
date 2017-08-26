@@ -1,5 +1,6 @@
-import { addAccount, deleteAccount } from '../../api/api'
+import firebase from 'firebase'
 import orderBy from 'lodash/orderBy'
+import formatAccount from '../helpers/formatAccount'
 
 const store = {
   state: {
@@ -8,60 +9,70 @@ const store = {
 
   getters: {
     accounts(state, getters) {
-      const accounts = state.all
-      const incomesTrns = getters.trns.filter(t => t.type === 1)
-      const expensesTrns = getters.trns.filter(t => t.type === 0)
-
-      function countTotal(trns, type) {
-        return trns.reduce((sum, current) => sum + current[type], 0)
-      }
-
-      // find all trns in this account and sum amount
-      const formatedAccounts = accounts.map((account) => {
-        const accountIncomes = incomesTrns.filter(trn => trn.accountId === account.id)
-        const accountExpenses = expensesTrns.filter(trn => trn.accountId === account.id)
-
-        const totalIncomes = countTotal(accountIncomes, 'amount')
-        const totalIncomesRub = countTotal(accountIncomes, 'amountRub')
-        const totalExpenses = countTotal(accountExpenses, 'amount')
-        const totalExpensesRub = countTotal(accountExpenses, 'amountRub')
-        const total = totalIncomes - totalExpenses
-        const totalRub = totalIncomesRub - totalExpensesRub
-
-        return {
-          ...account,
-          total,
-          totalRub,
-          totalIncomes,
-          totalIncomesRub,
-          totalExpenses,
-          totalExpensesRub
-        }
+      const trns = getters.trns
+      const formatedAccounts = state.all.map(account => {
+        return formatAccount(account, { trns })
       })
-
       return orderBy(formatedAccounts, a => a.order, 'asc')
     }
   },
 
   actions: {
-    async getAccounts({ commit }, data) {
-      commit('getAccounts', data)
+    async setAccounts({ commit }, data) {
+      const accounts = []
+
+      for (const key in data.accounts) {
+        accounts.push({
+          ...data.accounts[key],
+          id: data.accounts[key].id ? data.accounts[key].id : key
+        })
+      }
+      commit('setAccounts', accounts)
     },
-    async addAccount({ commit }, account) {
-      const newAccount = await addAccount(account)
-      commit('addAccount', newAccount)
+
+    async addAccount({ commit, rootState }, values) {
+      try {
+        commit('showLoader')
+        const db = await firebase.database()
+        const result = await db.ref(`users/${rootState.user.user.uid}/accounts`).push(values)
+          .then(async (data) => {
+            const key = data.key
+            const newAccount = {
+              ...values,
+              id: key
+            }
+            commit('addAccount', newAccount)
+            commit('closeLoader')
+            return true
+          })
+          .catch(error => {
+            commit('showError', `store/accounts/addAccount: ${error.message}`)
+          })
+        return result
+      } catch (error) {
+        commit('showError', `store/accounts/addAccount: ${error.message}`)
+      }
     },
-    async deleteAccount({ commit }, accountID) {
-      const deleted = await deleteAccount(accountID)
-      if (deleted) {
-        commit('deleteAccount', accountID)
+
+    async deleteAccount({ commit, rootState }, id) {
+      try {
+        const db = await firebase.database()
+        db.ref(`users/${rootState.user.user.uid}/accounts/${id}`)
+          .remove()
+          .catch(error => {
+            console.error(error)
+            commit('showError', `store/accounts/deleteAccount: ${error.message}`)
+          })
+        commit('deleteAccount', id)
+      } catch (error) {
+        commit('showError', `store/accounts/deleteAccount: ${error.message}`)
       }
     }
   },
 
   mutations: {
-    getAccounts(state, data) {
-      state.all = data
+    setAccounts(state, accounts) {
+      state.all = accounts
     },
     addAccount(state, account) {
       state.all.unshift(account)

@@ -4,8 +4,6 @@
     .input__label Name
     input.input__field(
       v-model="values.name", type="text", placeholder="Name", name="name")
-  .input
-    .input__label Color
     input.input__field._color(
       v-model="values.color", type="color", placeholder="Color", name="color")
   .input

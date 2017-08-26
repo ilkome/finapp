@@ -1,28 +1,8 @@
 <template lang="pug">
 .trnItem
-  //- Trns for form
-  //------------------------------------------------
-  template(v-if="view === 'form'")
-    .trnItem__content
-      .grid._form
-        router-link.grid__item._icon(
-          :to="`/categories/${trn.categoryId}`",
-          title="Go to category"
-        )
-          .icon._link(:class="`icon-${trn.categoryId}`"): .icon__pic
-        .grid__item._price(:class="trn.type === 1 ? 'income' : 'expense'")
-          div {{ formatMoney(trn.amountRub) }}
-          div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
-        .grid__item
-          .grid__item__date {{ formatDate(trn.date, 'D MMM') }}
-          .grid__item__account {{ trn.accountName }}
-        .grid__item._description {{ trn.description }}
-        .grid__item._action(@click.prevent.stop="askQuestion(trn.id)"): .fa.fa-trash-o
-
-
   //- Trns small
   //------------------------------------------------
-  template(v-else-if="view === 'small'")
+  template(v-if="view === 'small'")
     .trnItem__content
       .grid(:class="{_editable: trn.id === editedTrn}")
         .grid__item._price(:class="trn.type === 1 ? 'income' : 'expense'")
@@ -30,8 +10,14 @@
           div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
         .grid__item
           .grid__item__date {{ formatDate(trn.date, 'D MMM') }}
-          .grid__item__category {{ trn.categoryName }}
-          .grid__item__account {{ trn.accountName }}
+          router-link.grid__item__category(
+            :to="`/categories/${trn.categoryId}`",
+            title="Go to category"
+          ) {{ trn.categoryName }}
+          router-link.grid__item__account(
+            :to="`/accounts/${trn.accountId}`",
+            title="Go to account"
+          ) {{ trn.accountName }}
         template(v-if="editedTrn && trn.id === editedTrn")
           .grid__item._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
         template(v-else)
@@ -54,8 +40,14 @@
         .item__el._price(:class="trn.type === 1 ? 'income' : 'expense'")
           div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
           div {{ formatMoney(trn.amountRub) }}
-        .item__el._account(:class="trn.accountId === 1 ? 'c-tinkoff' : 'c-rub'") {{ trn.accountName }}
-        .item__el._category {{ trn.categoryName }}
+        router-link.item__el._category(
+          :to="`/accounts/${trn.accountId}`",
+          title="Go to account"
+        ) {{ trn.accountName }}
+        router-link.item__el._account(
+          :to="`/categories/${trn.categoryId}`",
+          title="Go to category"
+        ) {{ trn.categoryName }}
         template(v-if="editedTrn && trn.id === editedTrn")
           .item__el._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
         template(v-else)
@@ -97,6 +89,7 @@ export default {
 
   computed: {
     editedTrn() {
+      console.log(this.$store.state.trnForm.isUpdateTrn)
       return this.$store.state.trnForm.isUpdateTrn
     }
   },

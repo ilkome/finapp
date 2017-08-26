@@ -35,29 +35,24 @@ const getters = {
 // Actions
 // ==============================================
 const actions = {
-  async setTrns({ commit, state, rootState }, trns) {
+  async setTrns({ commit, state, rootState }, data) {
+    console.log(1)
     try {
       const rates = rootState.rates.all
-      const accounts = []
-      const categories = []
+      const accounts = rootState.accounts.all
+      const categories = rootState.categories.all
       const formatedTrns = []
+      console.log(2)
 
-      for (const key in trns.accounts) {
-        accounts.push(trns.accounts[key])
-      }
-
-      for (const key in trns.categories) {
-        categories.push(trns.categories[key])
-      }
-
-      for (const key in trns.trns) {
-        const formatedTrn = formatTrn(trns.trns[key], { accounts, categories, rates })
+      for (const key in data.trns) {
+        const formatedTrn = formatTrn(data.trns[key], { accounts, categories, rates })
         formatedTrns.push({
           ...formatedTrn,
           id: formatedTrn.id ? formatedTrn.id : key
         })
       }
 
+      console.log(formatedTrns)
       commit('setTrns', formatedTrns)
     } catch (error) {
       throw new Error(error.message)
@@ -103,7 +98,7 @@ const actions = {
         .update(values)
         .catch(error => {
           console.error(error)
-          commit('showError', `store/transitions/addTrn: ${error.message}`)
+          commit('showError', `store/transitions/updateTrn: ${error.message}`)
         })
       const formatedNewTrn = formatTrn(values, { accounts, categories, rates })
       commit('updateTrn', formatedNewTrn)
@@ -120,11 +115,11 @@ const actions = {
         .remove()
         .catch(error => {
           console.error(error)
-          commit('showError', `store/transitions/addTrn: ${error.message}`)
+          commit('showError', `store/transitions/deleteTrn: ${error.message}`)
         })
       commit('deleteTrn', id)
     } catch (error) {
-      commit('showError', `store/transitions/updateTrn: ${error.message}`)
+      commit('showError', `store/transitions/deleteTrn: ${error.message}`)
     }
   }
 }
