@@ -12,10 +12,10 @@ const store = {
   },
 
   actions: {
-    async getRates({ commit }) {
+    async setRates({ commit }) {
       try {
         const rates = await getRates()
-        commit('getRates', rates)
+        commit('setRates', rates)
       } catch (error) {
         throw new Error(error.message)
       }
@@ -23,7 +23,7 @@ const store = {
   },
 
   mutations: {
-    getRates(state, rates) {
+    setRates(state, rates) {
       state.all = rates
     }
   }
