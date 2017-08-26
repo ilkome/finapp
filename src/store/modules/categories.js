@@ -1,4 +1,6 @@
+import firebase from 'firebase'
 import orderBy from 'lodash/orderBy'
+import formatCategory from '../helpers/formatCategory'
 
 const store = {
   state: {
@@ -12,224 +14,104 @@ const store = {
   },
 
   actions: {
-    async getCategories({ commit }, categories) {
-      const formatedCategories = categories.map(cat => {
-        const id = +cat.id
-        const name = cat.name
-        const parentId = +cat.parentId
-        const description = cat.description
+    async setCategories({ commit }, data) {
+      const categories = data.categories
+      const preparedCategories = []
 
-        let color = cat.color
-        if (!color) {
-          if (parentId > 0) {
-            const parent = categories.find(c => c.id === parentId)
-            if (parent && parent.color) {
-              color = parent.color
-            }
-          }
-        }
-        let iconValue = cat.icon
-        let icon = cat.icon
-        if (icon) {
-          if (/(mdi)/g.test(icon)) icon = `mdi ${icon}`
-          if (/(fa)/g.test(icon)) icon = `fa ${icon}`
-        } else {
-          icon = 'fa fa-industry'
-          if (parentId > 0) {
-            const parent = categories.find(c => c.id === parentId)
-            if (parent && parent.icon) {
-              iconValue = parent.icon
-              if (/(mdi)/g.test(icon)) icon = `mdi ${parent.icon}`
-              if (/(fa)/g.test(icon)) icon = `fa ${parent.icon}`
-            }
-          }
-        }
+      // Create array
+      for (const key in categories) {
+        preparedCategories.push({
+          ...categories[key],
+          id: categories[key].id ? categories[key].id : key
+        })
+      }
 
-        return {
-          id,
-          name,
-          color,
-          icon,
-          iconValue,
-          parentId,
-          description
-        }
+      // Format
+      const formatedCategories = preparedCategories.map(category => {
+        return formatCategory(category, preparedCategories)
       })
-      commit('getCategories', formatedCategories)
+
+      commit('setCategories', formatedCategories)
+    },
+
+    async addCategory({ commit, rootState }, values) {
+      try {
+        commit('showLoader')
+        const db = await firebase.database()
+        const result = await db.ref(`users/${rootState.user.user.uid}/categories`).push(values)
+          .then(async (data) => {
+            const key = data.key
+            const newCategory = {
+              ...values,
+              id: key
+            }
+            commit('addCategory', newCategory)
+            commit('closeLoader')
+            return true
+          })
+          .catch(error => {
+            commit('showError', `store/categories/addCategory: ${error.message}`)
+          })
+        return result
+      } catch (error) {
+        commit('showError', `store/categories/addCategory: ${error.message}`)
+      }
+    },
+
+    async updateCategory({ commit, state, rootState }, values) {
+      try {
+        const categories = rootState.categories.all
+
+        const db = await firebase.database()
+        db.ref(`users/${rootState.user.user.uid}/categories/${values.id}`)
+          .update(values)
+          .catch(error => {
+            console.error(error)
+            commit('showError', `store/transitions/updateCategory: ${error.message}`)
+          })
+        const formatedCategory = formatCategory(values, categories)
+
+        commit('updateCategory', formatedCategory)
+        commit('closeLoader')
+      } catch (error) {
+        commit('showError', `store/transitions/updateCategory: ${error.message}`)
+      }
+    },
+
+    async deleteCategory({ commit, rootState }, id) {
+      try {
+        const db = await firebase.database()
+        db.ref(`users/${rootState.user.user.uid}/categories/${id}`)
+          .remove()
+          .catch(error => {
+            console.error(error)
+            commit('showError', `store/categories/deleteCategory: ${error.message}`)
+          })
+        commit('deleteCategory', id)
+      } catch (error) {
+        commit('showError', `store/categories/deleteCategory: ${error.message}`)
+      }
     }
-
-    // async addCategory({ commit, state }, category) {
-    //   console.log('category:', category)
-    //
-    //   if (!category.name) {
-    //     console.error('No category name')
-    //     return false
-    //   }
-    //
-    //   try {
-    // const formatedCategory = {
-    //   name: category.name,
-    //   color: category.color,
-    //   icon: category.icon,
-    //   parentId: category.parentId ? category.parentId : 0
-    // }
-    // const postData = await addCategory(formatedCategory)
-    // console.log('post:', postData)
-    // console.log('post.data:', postData.data)
-    //
-    // if (postData.data) {
-    //   const getCategory = await axios.get(`${CATEGORIES_URL}/${postData.data.id}`, {
-    //     params: { transform: 1 }
-    //   })
-    //   console.log('getCategory.data:', getCategory.data)
-    //
-    //   if (getCategory.data) {
-    //     const cat = getCategory.data
-    //     const parentId = +cat.parentId
-    //
-    //     let color = cat.color
-    //     if (!color) {
-    //       if (parentId > 0) {
-    //         const parent = state.all.find(c => c.id === parentId)
-    //         if (parent && parent.color) {
-    //           color = parent.color
-    //         }
-    //       }
-    //     }
-    //     let iconValue = cat.icon
-    //     let icon = cat.icon
-    //     if (icon) {
-    //       if (/(mdi)/g.test(icon)) icon = `mdi ${icon}`
-    //       if (/(fa)/g.test(icon)) icon = `fa ${icon}`
-    //     } else {
-    //       icon = 'fa fa-industry'
-    //       if (parentId > 0) {
-    //         const parent = state.all.find(c => c.id === parentId)
-    //         if (parent && parent.icon) {
-    //           iconValue = parent.icon
-    //           if (/(mdi)/g.test(icon)) icon = `mdi ${parent.icon}`
-    //           if (/(fa)/g.test(icon)) icon = `fa ${parent.icon}`
-    //         }
-    //       }
-    //     }
-    //
-    //     commit('addCategory', {
-    //       ...cat,
-    //       iconValue,
-    //       icon,
-    //       color
-    //     })
-    //
-    //     return true
-    //   } else {
-    //     console.error('getCategory.data')
-    //     return false
-    //   }
-    // } else {
-    //   console.error('postData.data')
-    //   return false
-    // }
-    //   } catch (error) {
-    //     console.error(error)
-    //     return false
-    //   }
-    // },
-
-    // update
-    // async updateCategory({ commit, dispatch, state }, category) {
-    // try {
-    // console.log(category)
-    // const postData = await axios.put(`${CATEGORIES_URL}/${category.id}`, category)
-    // console.log('post:', postData)
-    // console.log('post.number:', postData.data)
-    //
-    // if (postData.data === 1) {
-    //   const getCategory = await axios.get(`${CATEGORIES_URL}/${category.id}`, {
-    //     params: { transform: 1 }
-    //   })
-    //   console.log('getCategory.data:', getCategory.data)
-    //
-    //   if (getCategory.data) {
-    //     const cat = getCategory.data
-    //     const parentId = +cat.parentId
-    //
-    //     let color = cat.color
-    //     if (!color) {
-    //       if (parentId > 0) {
-    //         const parent = state.all.find(c => c.id === parentId)
-    //         if (parent && parent.color) {
-    //           color = parent.color
-    //         }
-    //       }
-    //     }
-    //     let iconValue = cat.icon
-    //     let icon = cat.icon
-    //     if (icon) {
-    //       if (/(mdi)/g.test(icon)) icon = `mdi ${icon}`
-    //       if (/(fa)/g.test(icon)) icon = `fa ${icon}`
-    //     } else {
-    //       icon = 'fa fa-industry'
-    //       if (parentId > 0) {
-    //         const parent = state.all.find(c => c.id === parentId)
-    //         if (parent && parent.icon) {
-    //           iconValue = parent.icon
-    //           if (/(mdi)/g.test(icon)) icon = `mdi ${parent.icon}`
-    //           if (/(fa)/g.test(icon)) icon = `fa ${parent.icon}`
-    //         }
-    //       }
-    //     }
-    //     console.log({ ...cat, iconValue })
-    //     commit('updateCategory', {
-    //       ...cat,
-    //       iconValue,
-    //       icon,
-    //       color
-    //     })
-    //     return true
-    //   } else {
-    //     console.error('updateCategory.data')
-    //     return false
-    //   }
-    // } else {
-    //   console.error('postData.data')
-    //   return false
-    // }
-    // } catch (error) {
-    //   console.error(error)
-    //   return false
-    // }
-    // },
-
-    // async deleteCategory({ commit, dispatch }, id) {
-    // console.log('id:', id)
-    // const request = await axios.delete(`${CATEGORIES_URL}/${id}`)
-    // console.log('delete:', request)
-    // console.log('delete.data:', request.data)
-    //
-    // const result = request.data
-    // if (result === 1) {
-    //   console.log('Ok!')
-    //   commit('deleteCategory', id)
-    //   return true
-    // } else {
-    //   console.error('Not ok')
-    //   return false
-    // }
-    // }
   },
 
   mutations: {
-    getCategories(state, data) {
+    setCategories(state, data) {
       state.all = data
     },
 
     addCategory(state, category) {
-      const categories = [category, ...state.all]
+      const categories = [
+        category,
+        ...state.all
+      ]
       state.all = orderBy(categories, ['name'], ['asc'])
     },
 
     updateCategory(state, category) {
-      const categories = [category, ...state.all.filter(c => c.id !== category.id)]
+      const categories = [
+        category,
+        ...state.all.filter(c => c.id !== category.id)
+      ]
       state.all = orderBy(categories, ['name'], ['asc'])
     },
 

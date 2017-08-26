@@ -45,7 +45,7 @@
         template(slot="confirm")
           CategoryItemConfirm(
             :category="category",
-            :isAvaliableForDelete="isAvaliableForDelete",
+            :avaliableForDelete="avaliableForDelete",
             :deleteCategory="deleteCategory",
             :closeConfirmPop="closeConfirmPop"
           )
@@ -71,7 +71,7 @@
               template(slot="confirm")
                 CategoryItemConfirm(
                   :category="childCategory",
-                  :isAvaliableForDelete="isAvaliableForDelete",
+                  :avaliableForDelete="avaliableForDelete",
                   :deleteCategory="deleteCategory",
                   :closeConfirmPop="closeConfirmPop"
                 )
@@ -245,8 +245,8 @@ export default {
       }
     },
 
-    isAvaliableForDelete(categoryId) {
-      const parentCategory = this.categories.filter(c => c.parentId === categoryId)
+    avaliableForDelete(categoryId) {
+      const parentCategory = this.categories.find(c => c.parentId === categoryId)
       const trnsInCategory = this.trns.filter(trn => trn.categoryId === categoryId)
       if (trnsInCategory.length) {
         return {
@@ -254,7 +254,7 @@ export default {
           explain: `You can not delete a category containing trns!`
         }
       }
-      if (parentCategory.length) {
+      if (parentCategory) {
         return {
           allow: false,
           explain: `You can not delete catgory containing child categories!`
@@ -290,7 +290,7 @@ export default {
         this.showedChildIds = this.showedChildIds.filter(cId => cId !== categoryId)
       }
 
-      if (this.editCategoryId === +categoryId) {
+      if (this.editCategoryId === categoryId) {
         this.editCategoryId = false
         this.editCategoryValues = null
       } else {
@@ -322,9 +322,9 @@ export default {
 
     async deleteCategory(categoryId) {
       // Collapse the parent category when last child category is removed
-      const deletedCategory = this.categories.find(category => category.id === categoryId)
-      if (deletedCategory.parentId !== 0) {
-        const parentCategory = this.categories.find(category => category.id === deletedCategory.parentId)
+      const categoryForDelete = this.categories.find(category => category.id === categoryId)
+      if (categoryForDelete.parentId !== 0) {
+        const parentCategory = this.categories.find(category => category.id === categoryForDelete.parentId)
         const childCategories = this.categories.filter(cat => cat.parentId === parentCategory.id)
         if (childCategories.length === 1) {
           if (this.showedChildIds.indexOf(parentCategory.id) !== -1) {
@@ -335,7 +335,7 @@ export default {
 
       this.confirmPopCategoryId = false
       this.$store.commit('showLoader')
-      await this.$store.dispatch('deleteCategory', +categoryId)
+      await this.$store.dispatch('deleteCategory', categoryId)
       this.$store.commit('closeLoader')
     }
   }

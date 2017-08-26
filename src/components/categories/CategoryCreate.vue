@@ -35,7 +35,7 @@ export default {
         name: this.values.name.trim(),
         color: this.values.color.trim(),
         icon: this.values.icon.trim(),
-        parentId: Number(this.values.parentId)
+        parentId: this.values.parentId.trim()
       }
 
       const sameCategory = this.$store.state.categories.all
@@ -50,7 +50,9 @@ export default {
       const result = await this.$store.dispatch('addCategory', formatedValues)
       if (result) {
         this.values.name = ''
-        this.values.parentId = ''
+        this.values.color = '#000000'
+        this.values.icon = ''
+        this.values.parentId = 0
         this.error = null
         this.$store.commit('closeLoader')
       }
