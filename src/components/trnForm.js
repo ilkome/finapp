@@ -51,7 +51,9 @@ export default {
         categories: false
       },
       lastUsedCategories: [],
-      values: {}
+      values: {
+        date: moment()
+      }
     }
   },
 
