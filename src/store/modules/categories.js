@@ -15,23 +15,25 @@ const store = {
 
   actions: {
     async setCategories({ commit }, data) {
-      const categories = data.categories
-      const preparedCategories = []
+      if (data && data.categories) {
+        const categories = data.categories
+        const preparedCategories = []
 
-      // Create array
-      for (const key in categories) {
-        preparedCategories.push({
-          ...categories[key],
-          id: categories[key].id ? categories[key].id : key
+        // Create array
+        for (const key in categories) {
+          preparedCategories.push({
+            ...categories[key],
+            id: categories[key].id ? categories[key].id : key
+          })
+        }
+
+        // Format
+        const formatedCategories = preparedCategories.map(category => {
+          return formatCategory(category, preparedCategories)
         })
+
+        commit('setCategories', formatedCategories)
       }
-
-      // Format
-      const formatedCategories = preparedCategories.map(category => {
-        return formatCategory(category, preparedCategories)
-      })
-
-      commit('setCategories', formatedCategories)
     },
 
     async addCategory({ commit, rootState }, values) {

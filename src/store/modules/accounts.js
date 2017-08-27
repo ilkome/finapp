@@ -19,15 +19,18 @@ const store = {
 
   actions: {
     async setAccounts({ commit }, data) {
-      const accounts = []
+      if (data && data.accounts) {
+        const accounts = data.accounts
+        const preparedAccounts = []
 
-      for (const key in data.accounts) {
-        accounts.push({
-          ...data.accounts[key],
-          id: data.accounts[key].id ? data.accounts[key].id : key
-        })
+        for (const key in accounts) {
+          preparedAccounts.push({
+            ...accounts[key],
+            id: accounts[key].id ? accounts[key].id : key
+          })
+        }
+        commit('setAccounts', preparedAccounts)
       }
-      commit('setAccounts', accounts)
     },
 
     async addAccount({ commit, rootState }, values) {
