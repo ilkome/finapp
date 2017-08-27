@@ -9,7 +9,10 @@
 
   .module._bg
     .module-in
-      TrnsList(:trns="trnsList")
+      template(v-if="trnsList.length")
+        TrnsList(:trns="trnsList")
+      template(v-else)
+        h3 No trns
 </template>
 
 
@@ -23,8 +26,9 @@ export default {
     ...mapGetters(['trns']),
 
     account() {
-      if (+this.$route.params.id) {
-        const account = this.$store.state.accounts.all.find(a => a.id === +this.$route.params.id)
+      if (this.$route.params.id) {
+        // Different Id from bd and firebase
+        const account = this.$store.state.accounts.all.find(a => a.id == this.$route.params.id)
         if (account) return account
         return false
       }
@@ -32,9 +36,9 @@ export default {
     },
 
     trnsList() {
-      return this.trns.slice(0, 1000)
+      return this.trns
         .filter(trn => trn.accountId === this.account.id)
-        .slice(0, 30)
+        .slice(0, 100)
     }
   },
 
