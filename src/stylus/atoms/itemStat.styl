@@ -2,14 +2,16 @@
   position relative
   display block
   min-width 300px
-  margin-bottom 30px
+  margin-bottom 10px
   color $color-second
-  // border-radius 5px
   background $color-itemStat
   border 1px solid $color-itemStat-border
   anim()
 
-  @media (min-width: 1600px)
+  @media (min-width: 1300px)
+    margin-bottom 30px
+
+  @media (min-width: 1900px)
     max-width 490px
 
   &._opened
@@ -33,7 +35,7 @@
   &._small
     margin-bottom 0
 
-    @media (min-width: 1600px)
+    @media (min-width: 1900px)
       border-radius 0
 
   &:last-child

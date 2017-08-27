@@ -1,7 +1,10 @@
 .gridTable
   display grid
   grid-column-gap 80px
-  grid-row-gap 100px
+  grid-row-gap 50px
+
+  @media (min-width: 1300px)
+    grid-row-gap 100px
 
   @media (min-width: 1200px)
     max-width 1200px
@@ -21,7 +24,7 @@
     max-width 1015px
     grid-template-columns 1fr
 
-    @media (min-width: 1600px)
+    @media (min-width: 1900px)
       max-width 1200px
       grid-column-gap 120px
       grid-row-gap 120px

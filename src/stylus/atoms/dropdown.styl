@@ -34,7 +34,12 @@
 
 .calendar-dropdown
   display grid
-  grid-template-columns auto auto
+  grid-template-rows 1fr 1fr
   grid-column-gap 50px
-  width 550px
+  width auto
   white-space nowrap
+
+  @media (min-width: 1300px)
+    grid-template-rows auto
+    grid-template-columns auto auto
+    width 550px

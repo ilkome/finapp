@@ -7,10 +7,13 @@
   position absolute
   left 0
   top 0px
-  padding 20px
+  padding 10px
   background $color-layout
   border 4px solid $color-sidebar
-  box-shadow 6px 6px 0px alpha(#131313, .5)
+
+  @media (min-width: 1300px)
+    padding 20px
+    box-shadow 6px 6px 0px alpha(#131313, .5)
 
   &:before
     position absolute
@@ -50,10 +53,7 @@
 
 
 .calendarPeriod
-  display grid
-  grid-template-columns repeat(1, 1fr)
-  font-size 1rem
-  align-self flex-start
+  display block
 
   &__group
     padding-bottom 20px
