@@ -78,19 +78,19 @@ const mutations = {
     state.trnForm.wasUpdatedTrn = trnId
   },
 
-  closeTrnForm() {
+  closeTrnForm(state) {
     if (state.trnForm.isShow) {
       state.trnForm.isShow = false
-      state.trnForm.isUpdateTrn = false
       state.trnForm.wasUpdatedTrn = false
       state.trnForm.isShowCategories = false
     }
+    state.trnForm.isUpdateTrn = false
   },
 
   toogleTrnForm() {
     state.trnForm.action = 'create'
     state.trnForm.isShow = !state.trnForm.isShow
-    // state.trnForm.isUpdateTrn = false
+    state.trnForm.isUpdateTrn = false
     state.trnForm.isShowCategories = false
     if (state.trnForm.isShow) {
       state.trnForm.wasUpdatedTrn = false

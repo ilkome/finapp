@@ -53,18 +53,12 @@ new Vue({
 
           const formatDataAndDispatchActions = async (snapshot) => {
             const data = snapshot.val()
-            const accounts = []
-            const categories = []
-            for (const key in data.accounts) {
-              accounts.push(data.accounts[key])
-            }
-            for (const key in data.categories) {
-              categories.push(data.categories[key])
-            }
-            await this.$store.dispatch('getRates')
-            this.$store.dispatch('setTrns', data)
-            this.$store.dispatch('getAccounts', accounts)
-            this.$store.dispatch('getCategories', categories)
+
+            await this.$store.dispatch('setRates')
+            await this.$store.dispatch('setCategories', data)
+            await this.$store.dispatch('setAccounts', data)
+            await this.$store.dispatch('setTrns', data)
+
             this.$store.commit('pageLoaded')
             this.$store.commit('closeLoader')
           }
@@ -75,11 +69,10 @@ new Vue({
               await formatDataAndDispatchActions(snapshot)
             })
 
-          // await db.ref(userRef).on('value', async (snapshot) => {
+          // db.ref(userRef).on('value', async (snapshot) => {
           //   await formatDataAndDispatchActions(snapshot)
           // })
         } else {
-          console.log('no user')
           this.$store.commit('closeLoader')
           this.$store.commit('pageLoaded')
           this.$router.push('/')

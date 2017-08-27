@@ -101,11 +101,11 @@ export default {
       required: true
     },
     editCategoryId: {
-      type: [Number, Boolean],
+      type: [Number, Boolean, String],
       required: true
     },
     confirmPopCategoryId: {
-      type: [Number, Boolean],
+      type: [Number, Boolean, String],
       required: true
     },
     showedChildIds: {
