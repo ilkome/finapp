@@ -32,7 +32,7 @@
                         template(v-if="avaliableForDelete(account.id).allow")
                           .confirmPop__text._delete Delete account {{ account.name }}?
                           .confirmPop__actionItem(@click.prevent.stop="closeConfirmPop()"): .fa.fa-ban
-                          .confirmPop__actionItem._delete(@click.prevent.stop="deleteAccount(account.id)"): .fa.fa-check
+                          .confirmPop__actionItem._delete(@click.prevent.stop="deleteAccount(account.key)"): .fa.fa-check
                         template(v-else)
                           .confirmPop__text._delete {{ avaliableForDelete(account.id).explain }}
                           .confirmPop__actionItem(@click.prevent.stop="closeConfirmPop()"): .fa.fa-check
