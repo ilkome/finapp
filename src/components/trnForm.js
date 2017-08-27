@@ -13,7 +13,7 @@ export default {
   watch: {
     '$route'(to, from) {
       if (this.$route.params.id) {
-        const routeId = +this.$route.params.id
+        const routeId = this.$route.params.id
         const routePath = this.$route.path
         if (/(categories)/g.test(routePath)) this.setCategory(routeId)
         if (/(accounts)/g.test(routePath)) this.setAccound(routeId)
@@ -52,7 +52,10 @@ export default {
       },
       lastUsedCategories: [],
       values: {
-        date: moment()
+        date: moment(),
+        currency: '',
+        type: 0,
+        description: ''
       }
     }
   },
@@ -140,7 +143,11 @@ export default {
      * @param {number} categoryId - Id of selected category.
      */
     setCategory(categoryId) {
-      this.values.categoryId = categoryId
+      const category = this.categories.find(category => category.id === categoryId)
+      this.values.categoryId = category.id
+      this.values.categoryName = category.name
+      this.values.categoryIcon = category.icon
+
       this.$store.commit('setTrnFormCategoryId', categoryId)
       // Add selected category if it doesn't exist in lastUsedCategories
       if (!this.lastUsedCategories.find(cat => cat.id === this.categoryId)) {
@@ -156,6 +163,7 @@ export default {
       const account = this.accounts.find(account => account.id === accountId)
       if (account) {
         this.values.accountId = account.id
+        this.values.currency = account.currency
       }
     },
 

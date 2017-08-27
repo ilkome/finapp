@@ -58,6 +58,7 @@ new Vue({
             await this.$store.dispatch('setCategories', data)
             await this.$store.dispatch('setAccounts', data)
             await this.$store.dispatch('setTrns', data)
+
             this.$store.commit('pageLoaded')
             this.$store.commit('closeLoader')
           }
@@ -68,9 +69,9 @@ new Vue({
               await formatDataAndDispatchActions(snapshot)
             })
 
-          db.ref(userRef).on('value', async (snapshot) => {
-            await formatDataAndDispatchActions(snapshot)
-          })
+          // db.ref(userRef).on('value', async (snapshot) => {
+          //   await formatDataAndDispatchActions(snapshot)
+          // })
         } else {
           this.$store.commit('closeLoader')
           this.$store.commit('pageLoaded')
