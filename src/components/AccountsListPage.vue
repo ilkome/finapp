@@ -6,36 +6,36 @@
         h1.title Accounts
 
         .gridTable
-          .gridTable__item
-            input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="focus").filterBtn
+          template(v-if="accountsList.length")
+            .gridTable__item
+              input(type="text", v-model.trim="filter", placeholder="Filter" v-focus.lazy="focus").filterBtn
 
-            .items
-              template(v-for="account in accountsList")
-                .categoryItem
-                  .categoryItem__content
-                    .categoryItem__icon
-                      .icon(:class="`bg-${account.id}`")
-                        .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
-                    .categoryItem__name {{ account.name }}
-                    .item__el._price.sum
-                      div {{ formatMoney(account.totalRub) }}
-                      div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
-                    .item__el._second {{ account.currency }}
-                    router-link.categoryItem__action(:to="`/accounts/${account.id}`")
-                      .fa.fa-list
-                    .categoryItem__action(@click.stop.prevent="askQuestion(account.id)")
-                      .fa.fa-trash-o
+              .items
+                template(v-for="account in accountsList")
+                  .categoryItem
+                    .categoryItem__content
+                      .categoryItem__icon
+                        .icon(:class="`bg-${account.id}`")
+                          .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
+                      .categoryItem__name {{ account.name }}
+                      .item__el._price.sum
+                        div {{ formatMoney(account.totalRub) }}
+                        div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
+                      .item__el._second {{ account.currency }}
+                      router-link.categoryItem__action(:to="`/accounts/${account.id}`")
+                        .fa.fa-list
+                      .categoryItem__action(@click.stop.prevent="askQuestion(account.id)")
+                        .fa.fa-trash-o
 
-                  .confirmPop(v-if="questionId === account.id")
-                    .confirmPop__in
-                      template(v-if="avaliableForDelete(account.id).allow")
-                        .confirmPop__text._delete Delete account {{ account.name }}?
-                        .confirmPop__actionItem(@click.prevent.stop="closeConfirmPop()"): .fa.fa-ban
-                        .confirmPop__actionItem._delete(@click.prevent.stop="deleteAccount(account.id)"): .fa.fa-check
-                      template(v-else)
-                        .confirmPop__text._delete {{ avaliableForDelete(account.id).explain }}
-                        .confirmPop__actionItem(@click.prevent.stop="closeConfirmPop()"): .fa.fa-check
-            //- trnsList
+                    .confirmPop(v-if="questionId === account.id")
+                      .confirmPop__in
+                        template(v-if="avaliableForDelete(account.id).allow")
+                          .confirmPop__text._delete Delete account {{ account.name }}?
+                          .confirmPop__actionItem(@click.prevent.stop="closeConfirmPop()"): .fa.fa-ban
+                          .confirmPop__actionItem._delete(@click.prevent.stop="deleteAccount(account.id)"): .fa.fa-check
+                        template(v-else)
+                          .confirmPop__text._delete {{ avaliableForDelete(account.id).explain }}
+                          .confirmPop__actionItem(@click.prevent.stop="closeConfirmPop()"): .fa.fa-check
 
           .gridTable__item
             .panel._smallWidth
