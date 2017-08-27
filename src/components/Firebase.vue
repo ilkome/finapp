@@ -14,8 +14,10 @@ import { getCategories, getAccounts } from '../api/api'
 import { getAllTransactions } from '../api/transactions'
 
 export default {
-  user() {
-    return this.$store.state.user.user
+  computed: {
+    user() {
+      return this.$store.state.user.user
+    }
   },
 
   methods: {
