@@ -36,26 +36,26 @@ const getters = {
 // ==============================================
 const actions = {
   async setTrns({ commit, state, rootState }, data) {
-    console.log(1)
-    try {
-      const rates = rootState.rates.all
-      const accounts = rootState.accounts.all
-      const categories = rootState.categories.all
-      const formatedTrns = []
-      console.log(2)
+    if (data && data.trns) {
+      try {
+        const trns = data.trns
+        const rates = rootState.rates.all
+        const accounts = rootState.accounts.all
+        const categories = rootState.categories.all
+        const formatedTrns = []
 
-      for (const key in data.trns) {
-        const formatedTrn = formatTrn(data.trns[key], { accounts, categories, rates })
-        formatedTrns.push({
-          ...formatedTrn,
-          id: formatedTrn.id ? formatedTrn.id : key
-        })
+        for (const key in trns) {
+          const formatedTrn = formatTrn(trns[key], { accounts, categories, rates })
+          formatedTrns.push({
+            ...formatedTrn,
+            id: formatedTrn.id ? formatedTrn.id : key
+          })
+        }
+
+        commit('setTrns', formatedTrns)
+      } catch (error) {
+        throw new Error(error.message)
       }
-
-      console.log(formatedTrns)
-      commit('setTrns', formatedTrns)
-    } catch (error) {
-      throw new Error(error.message)
     }
   },
 
@@ -66,7 +66,7 @@ const actions = {
       const rates = rootState.rates.all
 
       const db = await firebase.database()
-      const result = await db.ref(`users/${rootState.user.user.uid}/trns`).push(values)
+      await db.ref(`users/${rootState.user.user.uid}/trns`).push(values)
         .then(async (data) => {
           const key = data.key
           const newTrn = {
@@ -81,7 +81,7 @@ const actions = {
         .catch(error => {
           commit('showError', `store/transitions/addTrn: ${error.message}`)
         })
-      return result
+      return true
     } catch (error) {
       commit('showError', `store/transitions/addTrn: ${error.message}`)
     }
