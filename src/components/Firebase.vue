@@ -14,6 +14,12 @@ import { getCategories, getAccounts } from '../api/api'
 import { getAllTransactions } from '../api/transactions'
 
 export default {
+  computed: {
+    user() {
+      return this.$store.state.user.user
+    }
+  },
+
   methods: {
     async transferData() {
       this.$store.commit('showLoader')

@@ -20,121 +20,125 @@
           .name {{ category.name }}
           .sup  {{ category.id }}
 
-        .viewStat
-          .viewStat__item._summary
-            h3.title._mbs Summary
-            .summaryShort
-              .summaryShort__content
-                template(v-if="total.expenses > 0 || total.incomes > 0")
-                  .summaryShort__el
-                    .accountDetails
-                      .summaryShort__item(v-if="total.expenses > 0")
+        template(v-if="trnsList.length")
+          .viewStat
+            .viewStat__item._summary
+              h3.title._mbs Summary
+              .summaryShort
+                .summaryShort__content
+                  template(v-if="total.expenses > 0 || total.incomes > 0")
+                    .summaryShort__el
+                      .accountDetails
+                        .summaryShort__item(v-if="total.expenses > 0")
+                          .summaryShort__item__icon._expenses
+                          .summaryShort__item__label Expenses
+                          .summaryShort__item__total.expenses {{ formatMoney(total.expenses) }}
+                        .summaryShort__item(v-if="total.incomes > 0")
+                          .summaryShort__item__icon._incomes
+                          .summaryShort__item__label Incomes
+                          .summaryShort__item__total.incomes {{ formatMoney(total.incomes) }}
+                        .summaryShort__item(v-if="total.expenses > 0 && total.incomes > 0")
+                          .summaryShort__item__icon._total
+                          .summaryShort__item__label Total
+                          .summaryShort__item__total.sum {{ formatMoney(total.incomes - total.expenses) }}
+                        template(v-if="years.length > 1")
+                          .summaryShort__item
+                            .summaryShort__item__icon._year
+                            .summaryShort__item__label Year average
+                            .summaryShort__item__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length) }}
+                        .summaryShort__item
+                          .summaryShort__item__icon._month
+                          .summaryShort__item__label Month average
+                          .summaryShort__item__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length / 12) }}
+
+              .panel(v-if="childCategories.length > 0")
+                label.checkbox
+                  input.checkbox__input(type="checkbox" v-model="showChild")
+                  .checkbox__name Include child
+                div(v-for="category in childCategories")
+                  router-link.link(
+                    :to="`/categories/${category.id}`",
+                    title="Go to category"
+                  ) {{ category.name }}
+
+            .viewStat__item._stat
+              h3.title._mbs Years
+              template(v-for="data of dataByYears")
+                .itemStat
+                  .itemStat__in
+                    .itemStat__content
+                      .itemStat__text
+                        .itemStat__name {{ data.year }}
+                        .itemStat__price.incomes(v-if="data.incomes > 0 && Math.abs(data.total) !== data.incomes") {{ formatMoney(data.incomes) }}
+                        .itemStat__price.expenses(v-if="data.expenses > 0 && Math.abs(data.total) !== data.expenses") {{ formatMoney(data.expenses) }}
+                        .itemStat__price.sum {{ formatMoney(data.total) }}
+                      .itemStat__graph
+                        template(v-if="data.incomes > 0")
+                          .itemStat__graph__in._income(:style="countWidthYear(data.incomes)")
+                        template(v-if="data.expenses > 0")
+                          .itemStat__graph__in._expense(:style="countWidthYear(data.expenses)")
+        template(v-else)
+          h3 Category is empty
+
+    template(v-if="trnsList.length")
+      .tabs
+        .tabs-in
+          a(@click.prevent="toogleShowAll()", :class="{_active: !showAll}") Months with data
+          a(@click.prevent="toogleShowAll()", :class="{_active: showAll}") All months
+
+      .module._bg
+        .module-in
+          .slideStat
+            template(v-for="year of years")
+              template(v-if="totalInYear(year).expenses > 0 || totalInYear(year).incomes > 0")
+                .slideStat__item
+                  h1.title._wide Year {{ year }}
+                  .summaryShort._pb
+                    .summaryShort__content
+                      .summaryShort__item(v-if="total.incomes > 0 && total.expenses > 0")
                         .summaryShort__item__icon._expenses
                         .summaryShort__item__label Expenses
-                        .summaryShort__item__total.expenses {{ formatMoney(total.expenses) }}
-                      .summaryShort__item(v-if="total.incomes > 0")
+                        .summaryShort__item__total.expenses {{ formatMoney(totalInYear(year).expenses) }}
+
+                      .summaryShort__item(v-if="total.incomes > 0 && total.expenses > 0")
                         .summaryShort__item__icon._incomes
                         .summaryShort__item__label Incomes
-                        .summaryShort__item__total.incomes {{ formatMoney(total.incomes) }}
-                      .summaryShort__item(v-if="total.expenses > 0 && total.incomes > 0")
+                        .summaryShort__item__total.incomes {{ formatMoney(totalInYear(year).incomes) }}
+
+                      .summaryShort__item(v-if="total.incomes > 0 || total.expenses > 0")
                         .summaryShort__item__icon._total
                         .summaryShort__item__label Total
-                        .summaryShort__item__total.sum {{ formatMoney(total.incomes - total.expenses) }}
-                      template(v-if="years.length > 1")
-                        .summaryShort__item
-                          .summaryShort__item__icon._year
-                          .summaryShort__item__label Year average
-                          .summaryShort__item__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length) }}
+                        .summaryShort__item__total.sum {{ formatMoney(totalInYear(year).total) }}
+
                       .summaryShort__item
                         .summaryShort__item__icon._month
                         .summaryShort__item__label Month average
-                        .summaryShort__item__total.sum {{ formatMoney((total.incomes - total.expenses) / dataByYears.length / 12) }}
+                        .summaryShort__item__total.sum {{ formatMoney(totalInYear(year).average) }}
 
-            .panel(v-if="childCategories.length > 0")
-              label.checkbox
-                input.checkbox__input(type="checkbox" v-model="showChild")
-                .checkbox__name Include child
-              div(v-for="category in childCategories")
-                router-link.link(
-                  :to="`/categories/${category.id}`",
-                  title="Go to category"
-                ) {{ category.name }}
+                  .trns
+                    template(v-for="data in dataInYear(year)")
+                      .itemGraph(:class="{_opened: showedTrns.indexOf(data.month + year) !== -1, _noCursor: data.trns.length === 0}")
+                        .itemGraph__in(@click.prevent.stop="data.trns.length > 0 ? toogleShowTrns(data.month, year) : null")
+                          .itemGraph__content
+                            .itemGraph__text
+                              .itemGraph__name {{ data.month }}
+                              .itemGraph__price.sum {{formatMoney(data.incomes - data.expenses)}}
 
-          .viewStat__item._stat
-            h3.title._mbs Years
-            template(v-for="data of dataByYears")
-              .itemStat
-                .itemStat__in
-                  .itemStat__content
-                    .itemStat__text
-                      .itemStat__name {{ data.year }}
-                      .itemStat__price.incomes(v-if="data.incomes > 0 && Math.abs(data.total) !== data.incomes") {{ formatMoney(data.incomes) }}
-                      .itemStat__price.expenses(v-if="data.expenses > 0 && Math.abs(data.total) !== data.expenses") {{ formatMoney(data.expenses) }}
-                      .itemStat__price.sum {{ formatMoney(data.total) }}
-                    .itemStat__graph
-                      template(v-if="data.incomes > 0")
-                        .itemStat__graph__in._income(:style="countWidthYear(data.incomes)")
-                      template(v-if="data.expenses > 0")
-                        .itemStat__graph__in._expense(:style="countWidthYear(data.expenses)")
+                            template(v-if="data.incomes > 0 || data.expenses > 0")
+                              .itemGraph__graph
+                                template(v-if="data.incomes < data.expenses")
+                                  .itemGraph__graph__in._expense(:style="countWidthMonth(data.expenses)")
+                                  .itemGraph__graph__in._income(:style="countWidthMonth(data.incomes)")
+                                template(v-else)
+                                  .itemGraph__graph__in._income(:style="countWidthMonth(data.incomes)")
+                                  .itemGraph__graph__in._expense(:style="countWidthMonth(data.expenses)")
 
-    .tabs
-      .tabs-in
-        a(@click.prevent="toogleShowAll()", :class="{_active: !showAll}") Months with data
-        a(@click.prevent="toogleShowAll()", :class="{_active: showAll}") All months
+                            template(v-else)
+                              .itemGraph__graph: .itemGraph__graph__in
 
-    .module._bg
-      .module-in
-        .slideStat
-          template(v-for="year of years")
-            template(v-if="totalInYear(year).expenses > 0 || totalInYear(year).incomes > 0")
-              .slideStat__item
-                h1.title._wide Year {{ year }}
-                .summaryShort._pb
-                  .summaryShort__content
-                    .summaryShort__item(v-if="total.incomes > 0 && total.expenses > 0")
-                      .summaryShort__item__icon._expenses
-                      .summaryShort__item__label Expenses
-                      .summaryShort__item__total.expenses {{ formatMoney(totalInYear(year).expenses) }}
-
-                    .summaryShort__item(v-if="total.incomes > 0 && total.expenses > 0")
-                      .summaryShort__item__icon._incomes
-                      .summaryShort__item__label Incomes
-                      .summaryShort__item__total.incomes {{ formatMoney(totalInYear(year).incomes) }}
-
-                    .summaryShort__item(v-if="total.incomes > 0 || total.expenses > 0")
-                      .summaryShort__item__icon._total
-                      .summaryShort__item__label Total
-                      .summaryShort__item__total.sum {{ formatMoney(totalInYear(year).total) }}
-
-                    .summaryShort__item
-                      .summaryShort__item__icon._month
-                      .summaryShort__item__label Month average
-                      .summaryShort__item__total.sum {{ formatMoney(totalInYear(year).average) }}
-
-                .trns
-                  template(v-for="data in dataInYear(year)")
-                    .itemGraph(:class="{_opened: showedTrns.indexOf(data.month + year) !== -1, _noCursor: data.trns.length === 0}")
-                      .itemGraph__in(@click.prevent.stop="data.trns.length > 0 ? toogleShowTrns(data.month, year) : null")
-                        .itemGraph__content
-                          .itemGraph__text
-                            .itemGraph__name {{ data.month }}
-                            .itemGraph__price.sum {{formatMoney(data.incomes - data.expenses)}}
-
-                          template(v-if="data.incomes > 0 || data.expenses > 0")
-                            .itemGraph__graph
-                              template(v-if="data.incomes < data.expenses")
-                                .itemGraph__graph__in._expense(:style="countWidthMonth(data.expenses)")
-                                .itemGraph__graph__in._income(:style="countWidthMonth(data.incomes)")
-                              template(v-else)
-                                .itemGraph__graph__in._income(:style="countWidthMonth(data.incomes)")
-                                .itemGraph__graph__in._expense(:style="countWidthMonth(data.expenses)")
-
-                          template(v-else)
-                            .itemGraph__graph: .itemGraph__graph__in
-
-                      template(v-if="showedTrns.indexOf(data.month + year) !== -1")
-                        .itemGraph__trns
-                          TrnsList(:trns="data.trns", view="small")
+                        template(v-if="showedTrns.indexOf(data.month + year) !== -1")
+                          .itemGraph__trns
+                            TrnsList(:trns="data.trns", view="small")
   template(v-else)
     .module
       h1.title Category not found!
@@ -175,8 +179,9 @@ export default {
     },
 
     category() {
-      if (+this.$route.params.id) {
-        const category = this.categories.find(a => a.id === +this.$route.params.id)
+      if (this.$route.params.id) {
+        // Different Id from bd and firebase
+        const category = this.categories.find(a => a.id == this.$route.params.id)
         if (category) return category
         return false
       }
@@ -190,8 +195,8 @@ export default {
     },
 
     childCategories() {
-      const categoryId = +this.$route.params.id
-      return this.categories.filter(c => c.parentId === categoryId)
+      const categoryId = this.$route.params.id
+      return this.categories.filter(c => c.parentId == categoryId)
     },
 
     years() {
@@ -208,18 +213,18 @@ export default {
     },
 
     trnsList() {
-      const categoryId = +this.$route.params.id
+      const categoryId = this.$route.params.id
 
       if (this.showChild) {
         const childIds = this.categories
-          .filter(c => c.parentId === categoryId)
+          .filter(c => c.parentId == categoryId)
           .map(c => c.id)
 
         return this.trns.filter(trn => {
-          return trn.categoryId === categoryId || childIds.indexOf(trn.categoryId) !== -1
+          return trn.categoryId == categoryId || childIds.indexOf(trn.categoryId) !== -1
         })
       } else {
-        return this.trns.filter(trn => trn.categoryId === categoryId)
+        return this.trns.filter(trn => trn.categoryId == categoryId)
       }
     },
 

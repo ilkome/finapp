@@ -35,32 +35,27 @@ const getters = {
 // Actions
 // ==============================================
 const actions = {
-  async setTrns({ commit, state, rootState }, trns) {
-    try {
-      const rates = rootState.rates.all
-      const accounts = []
-      const categories = []
-      const formatedTrns = []
+  async setTrns({ commit, state, rootState }, data) {
+    if (data && data.trns) {
+      try {
+        const trns = data.trns
+        const rates = rootState.rates.all
+        const accounts = rootState.accounts.all
+        const categories = rootState.categories.all
+        const formatedTrns = []
 
-      for (const key in trns.accounts) {
-        accounts.push(trns.accounts[key])
+        for (const key in trns) {
+          const formatedTrn = formatTrn(trns[key], { accounts, categories, rates })
+          formatedTrns.push({
+            ...formatedTrn,
+            id: formatedTrn.id ? formatedTrn.id : key
+          })
+        }
+
+        commit('setTrns', formatedTrns)
+      } catch (error) {
+        throw new Error(error.message)
       }
-
-      for (const key in trns.categories) {
-        categories.push(trns.categories[key])
-      }
-
-      for (const key in trns.trns) {
-        const formatedTrn = formatTrn(trns.trns[key], { accounts, categories, rates })
-        formatedTrns.push({
-          ...formatedTrn,
-          id: formatedTrn.id ? formatedTrn.id : key
-        })
-      }
-
-      commit('setTrns', formatedTrns)
-    } catch (error) {
-      throw new Error(error.message)
     }
   },
 
@@ -71,7 +66,7 @@ const actions = {
       const rates = rootState.rates.all
 
       const db = await firebase.database()
-      const result = await db.ref(`users/${rootState.user.user.uid}/trns`).push(values)
+      await db.ref(`users/${rootState.user.user.uid}/trns`).push(values)
         .then(async (data) => {
           const key = data.key
           const newTrn = {
@@ -86,7 +81,7 @@ const actions = {
         .catch(error => {
           commit('showError', `store/transitions/addTrn: ${error.message}`)
         })
-      return result
+      return true
     } catch (error) {
       commit('showError', `store/transitions/addTrn: ${error.message}`)
     }
@@ -103,7 +98,7 @@ const actions = {
         .update(values)
         .catch(error => {
           console.error(error)
-          commit('showError', `store/transitions/addTrn: ${error.message}`)
+          commit('showError', `store/transitions/updateTrn: ${error.message}`)
         })
       const formatedNewTrn = formatTrn(values, { accounts, categories, rates })
       commit('updateTrn', formatedNewTrn)
@@ -120,11 +115,11 @@ const actions = {
         .remove()
         .catch(error => {
           console.error(error)
-          commit('showError', `store/transitions/addTrn: ${error.message}`)
+          commit('showError', `store/transitions/deleteTrn: ${error.message}`)
         })
       commit('deleteTrn', id)
     } catch (error) {
-      commit('showError', `store/transitions/updateTrn: ${error.message}`)
+      commit('showError', `store/transitions/deleteTrn: ${error.message}`)
     }
   }
 }
