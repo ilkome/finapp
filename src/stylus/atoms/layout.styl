@@ -38,15 +38,21 @@ html
     flex-flow row nowrap
 
 .sidebar
+  position fixed
+  width 100%
+  height 100%
+  left 0
+  top 0
   z-index 1
-  box-shadow 0 0 5px $color-sidebar
   flex-shrink 0
-  position relative
   background $color-sidebar
+  overflow hidden
+  overflow-y scroll
   anim()
 
   @media (min-width: 1300px)
     width $width-medium
+    box-shadow 0 0 5px $color-sidebar
 
   @media (min-width: 1500px)
     width 380px
@@ -56,6 +62,7 @@ html
 
   &__wrap
     z-index 3
+    min-height 100%
 
     @media (min-width: 1300px)
       width $width-medium
@@ -75,21 +82,15 @@ html
     display flex
     flex-flow column nowrap
     justify-content space-between
-    height 100%
-    padding 0 30px
-    padding-top 60px
-    padding-bottom 25px
-
-    @media (min-width: 1300px)
-      // padding-top 60px
+    padding 30px 30px
 
     @media (min-width: 1500px)
       padding 0 50px
-      padding-top 70px
+      padding-top 50px
 
     @media (min-width: 1900px)
-      padding-top 100px
-      padding-bottom 100px
+      padding 0 50px
+      padding-top 70px
 
 .main
   @media (min-width: 1300px)

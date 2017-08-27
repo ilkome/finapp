@@ -10,6 +10,9 @@
     padding-bottom 50px
 
     @media (min-width: 1300px)
+      padding-bottom 60px
+
+    @media (min-width: 1900px)
       padding-bottom 80px
 
     &:last-child
@@ -20,7 +23,7 @@
   &__menu
     &__link
       cursor pointer
-      margin-bottom 1rem
+      margin-bottom 10px
       display block
       color $color-second
       font-size .8rem
@@ -62,11 +65,13 @@
       position relative
       display block
       width 100%
-      padding 15px 0
-      padding-bottom 5px
+      padding 5px 0
       font-size .8rem
       color alpha($color-second, .5)
       anim-all()
+
+      @media (min-width: 1300px)
+        padding 15px 0
 
       &:hover
         color $color-link
@@ -76,7 +81,7 @@
     display flex
     flex 1 1 45%
     flex-basis 100%
-    height 45px
+    height 35px
     margin-top -1px !important
     padding-left 30px
     padding-right 10px
@@ -89,7 +94,7 @@
     @media (min-width: 1300px)
       height 50px
 
-    @media (min-width: 1600px)
+    @media (min-width: 1900px)
       height 60px
 
     &:before
@@ -146,7 +151,7 @@
   &__summary__item
     position relative
     display flex
-    height 45px
+    height 35px
     margin-top -1px !important
     justify-content space-between
     align-items center
@@ -157,7 +162,7 @@
     @media (min-width: 1300px)
       height 50px
 
-    @media (min-width: 1600px)
+    @media (min-width: 1900px)
       height 60px
 
     &:last-child
@@ -190,5 +195,12 @@
   font-size 1.5rem
   anim()
 
-  &:hover
+  @media (min-width: 1300px)
+    width 40px
+
+  &:active
     background $color-side-toogle
+
+  @media (min-width: 1300px)
+    &:hover
+      background $color-side-toogle
