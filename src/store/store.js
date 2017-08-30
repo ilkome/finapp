@@ -23,6 +23,7 @@ const modules = {
 // state
 // ==============================================
 const state = {
+  isMobile: false,
   isPageLoaded: false,
   loader: true,
   error: false,
@@ -131,8 +132,21 @@ const mutations = {
     state.trnForm.isShowCategories = false
   },
 
-  toogleLeftbar() {
-    state.leftBar.isShow = !state.leftBar.isShow
+  toogleLeftbar(state, action) {
+    switch (action) {
+      case 'show':
+        state.leftBar.isShow = true
+        break
+      case 'hide':
+        state.leftBar.isShow = false
+        break
+      default:
+        state.leftBar.isShow = !state.leftBar.isShow
+    }
+  },
+
+  setMobile(state) {
+    state.isMobile = true
   },
 
   showError(state, error) {
