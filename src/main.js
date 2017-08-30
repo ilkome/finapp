@@ -8,6 +8,7 @@ import { app } from './store/firebase'
 import store from './store/store'
 import routes from './routes'
 import formatDate from './filters/date'
+import isMobile from './utils'
 import App from './components/App.vue'
 
 Vue.config.productionTip = false
@@ -42,6 +43,11 @@ const router = new VueRouter({
 // Init application
 new Vue({
   async created() {
+    if (isMobile) {
+      this.$store.commit('setMobile')
+      this.$store.commit('toogleLeftbar', 'hide')
+    }
+
     try {
       await app.auth().onAuthStateChanged((user) => {
         if (user) {

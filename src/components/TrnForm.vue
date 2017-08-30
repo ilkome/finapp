@@ -34,7 +34,7 @@
         input.amountValueInput(
           v-model.lazy="values.amount",
           @keyup.enter="onSubmitForm",
-          v-focus.lazy="$store.state.trnForm.isShow && !show.categories",
+          v-focus.lazy="$store.state.trnForm.isShow && !show.categories && !$store.state.isMobile",
           type="text",
           name="amount",
           placeholder="0",
