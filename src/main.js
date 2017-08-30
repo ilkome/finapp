@@ -1,7 +1,6 @@
 import firebase from 'firebase'
 import moment from 'moment'
 import Vue from 'vue'
-import VueFire from 'vuefire'
 import VueRouter from 'vue-router'
 import VueScrollTo from 'vue-scrollto'
 import VueShortkey from 'vue-shortkey'
@@ -18,7 +17,6 @@ moment.locale('en')
 Vue.filter('date', formatDate)
 
 // Plugins
-Vue.use(VueFire)
 Vue.use(VueScrollTo, {
   container: '.main',
   offset: 60

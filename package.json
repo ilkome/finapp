@@ -89,8 +89,6 @@
     "vue-router": "^2.7.0",
     "vue-scrollto": "^2.7.2",
     "vue-shortkey": "^2.1.8",
-    "vuefire": "^1.4.3",
-    "vuex": "^2.3.1",
-    "vuexfire": "^2.2.0"
+    "vuex": "^2.3.1"
   }
 }
