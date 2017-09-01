@@ -89,7 +89,6 @@ export default {
 
   computed: {
     editedTrn() {
-      console.log(this.$store.state.trnForm.isUpdateTrn)
       return this.$store.state.trnForm.isUpdateTrn
     }
   },
