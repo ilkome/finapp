@@ -144,14 +144,14 @@ export default {
      * @param {number} categoryId - Id of selected category.
      */
     setCategory(categoryId) {
-      const category = this.categories.find(category => category.id === categoryId)
+      const category = this.categories.find(category => category.id == categoryId)
       this.values.categoryId = category.id
       this.values.categoryName = category.name
       this.values.categoryIcon = category.icon
 
       this.$store.commit('setTrnFormCategoryId', categoryId)
       // Add selected category if it doesn't exist in lastUsedCategories
-      if (!this.lastUsedCategories.find(cat => cat.id === this.categoryId)) {
+      if (!this.lastUsedCategories.find(cat => cat.id == this.categoryId)) {
         this.lastUsedCategories = [...this.lastUsedCategories.slice(0, 14), this.selectedCategory]
       }
     },
