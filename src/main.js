@@ -18,10 +18,7 @@ moment.locale('en')
 Vue.filter('date', formatDate)
 
 // Plugins
-Vue.use(VueScrollTo, {
-  container: '.main',
-  offset: 60
-})
+Vue.use(VueScrollTo)
 Vue.use(VueRouter)
 Vue.use(VueShortkey)
 
@@ -40,12 +37,18 @@ const router = new VueRouter({
   }
 })
 
+router.beforeEach((to, from, next) => {
+  if (isMobile) {
+    store.commit('toogleLeftbar', 'hide')
+  }
+  next()
+})
+
 // Init application
 new Vue({
   async created() {
     if (isMobile) {
       this.$store.commit('setMobile')
-      this.$store.commit('toogleLeftbar', 'hide')
     }
 
     try {

@@ -7,6 +7,7 @@
   height 100%
   overflow hidden
   overflow-y scroll
+  scrollbar()
   background $color-sidebar
 
   @media (min-width: 1300px)
@@ -158,7 +159,6 @@
       background $color-side-toogle
 
   &__icon
-    display flex
     display none
     align-items center
     justify-content center
@@ -172,6 +172,7 @@
     anim()
 
     @media (min-width: 1300px)
+      display flex
       margin-right 46px
       margin-top 26px
 
