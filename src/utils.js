@@ -1,1 +1,1 @@
-export default (window.innerWidth <= 768)
+export default (window.innerWidth <= 600)

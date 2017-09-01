@@ -4,7 +4,7 @@
     input(
       type="text",
       v-model.trim="filter",
-      v-focus.lazy="true",
+      v-focus.lazy="true && !$store.state.isMobile",
       placeholder="Search category"
     ).categories__filter__input
 

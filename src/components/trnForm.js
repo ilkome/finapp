@@ -137,6 +137,7 @@ export default {
 
     toogleCategoriesPop() {
       this.$store.commit('toogleCategoriesPop')
+      this.$scrollTo('.trnForm__form', 300, { container: '.trnForm' })
     },
 
     /**
