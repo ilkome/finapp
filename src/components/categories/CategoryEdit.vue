@@ -33,7 +33,7 @@ export default {
       this.$store.commit('showLoader')
 
       const formatedValues = {
-        id: this.values.id.trim(),
+        id: this.values.id,
         name: this.values.name.trim(),
         color: this.values.color ? this.values.color.trim() : '#000000',
         icon: this.values.icon.trim(),
