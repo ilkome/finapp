@@ -31,6 +31,8 @@ export default {
   methods: {
     async addCategory() {
       this.$store.commit('showLoader')
+      this.error = null
+
       const formatedValues = {
         name: this.values.name.trim(),
         color: this.values.color.trim(),
@@ -53,7 +55,6 @@ export default {
         this.values.color = '#000000'
         this.values.icon = ''
         this.values.parentId = 0
-        this.error = null
         this.$store.commit('closeLoader')
       }
     }

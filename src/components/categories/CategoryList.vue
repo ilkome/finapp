@@ -77,7 +77,7 @@
                 )
               //- Category Item Edit
               template(slot="edit")
-                CategoryEdit(:values="editCategoryValues")
+                CategoryEdit(:values="editCategoryValues", :onSubmit="onEditCategory", :error="error")
 </template>
 
 <script>
@@ -108,6 +108,7 @@ export default {
 
   data() {
     return {
+      error: null,
       focus: false,
       filter: '',
       editCategoryId: false,
@@ -306,37 +307,58 @@ export default {
       this.$emit('update:isShowEditActions', !this.isShowEditActions)
     },
 
-    async editCategory(values) {
+    async deleteCategory(categoryId) {
       this.$store.commit('showLoader')
-      const formatedValues = {
-        ...values,
-        color: values.color ? values.color : '#000000'
+
+      // Collapse the parent category when last child category is removed
+      const categoryForDelete = this.categories.find(category => category.id === categoryId)
+      if (categoryForDelete.parentId !== 0) {
+        const parentCategory = this.categories.find(category => category.id === categoryForDelete.parentId)
+        if (parentCategory) {
+          const childCategories = this.categories.filter(cat => cat.parentId === parentCategory.id)
+          if (childCategories && childCategories.length === 1) {
+            if (this.showedChildIds.indexOf(parentCategory.id) !== -1) {
+              this.showedChildIds = this.showedChildIds.filter(cId => cId !== parentCategory.id)
+            }
+          }
+        }
       }
+
+      this.confirmPopCategoryId = false
+      await this.$store.dispatch('deleteCategory', categoryId)
+      this.$store.commit('closeLoader')
+    },
+
+    async onEditCategory() {
+      this.$store.commit('showLoader')
+      this.error = null
+
+      const formatedValues = {
+        id: this.values.id,
+        name: this.values.name.trim(),
+        color: this.values.color ? this.values.color.trim() : '#000000',
+        icon: this.values.icon.trim(),
+        parentId: this.values.parentId
+      }
+
+      const sameCategory = this.$store.state.categories.all
+        .filter(category =>
+          category.id === formatedValues.id &&
+          category.name === formatedValues.name &&
+          category.parentId === formatedValues.parentId)
+
+      if (sameCategory.length) {
+        this.error = 'Same category already exist!'
+        this.$store.commit('closeLoader')
+        return
+      }
+
       const result = await this.$store.dispatch('updateCategory', formatedValues)
       if (result) {
         this.editCategoryId = false
         this.editCategoryValues = null
         this.$store.commit('closeLoader')
       }
-    },
-
-    async deleteCategory(categoryId) {
-      // Collapse the parent category when last child category is removed
-      const categoryForDelete = this.categories.find(category => category.id === categoryId)
-      if (categoryForDelete.parentId !== 0) {
-        const parentCategory = this.categories.find(category => category.id === categoryForDelete.parentId)
-        const childCategories = this.categories.filter(cat => cat.parentId === parentCategory.id)
-        if (childCategories.length === 1) {
-          if (this.showedChildIds.indexOf(parentCategory.id) !== -1) {
-            this.showedChildIds = this.showedChildIds.filter(cId => cId !== parentCategory.id)
-          }
-        }
-      }
-
-      this.confirmPopCategoryId = false
-      this.$store.commit('showLoader')
-      await this.$store.dispatch('deleteCategory', categoryId)
-      this.$store.commit('closeLoader')
     }
   }
 }
