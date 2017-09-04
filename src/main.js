@@ -76,6 +76,7 @@ new Vue({
             .then(async (snapshot) => {
               await formatDataAndDispatchActions(snapshot)
             })
+            .catch(error => console.log(error))
 
           // db.ref(userRef).on('value', async (snapshot) => {
           //   await formatDataAndDispatchActions(snapshot)
