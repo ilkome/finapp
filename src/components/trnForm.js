@@ -137,21 +137,20 @@ export default {
 
     toogleCategoriesPop() {
       this.$store.commit('toogleCategoriesPop')
-      this.$scrollTo('.trnForm__form', 300, { container: '.trnForm' })
     },
 
     /**
      * @param {number} categoryId - Id of selected category.
      */
     setCategory(categoryId) {
-      const category = this.categories.find(category => category.id == categoryId)
+      const category = this.categories.find(category => category.id === categoryId)
       this.values.categoryId = category.id
       this.values.categoryName = category.name
       this.values.categoryIcon = category.icon
 
       this.$store.commit('setTrnFormCategoryId', categoryId)
       // Add selected category if it doesn't exist in lastUsedCategories
-      if (!this.lastUsedCategories.find(cat => cat.id == this.categoryId)) {
+      if (!this.lastUsedCategories.find(cat => cat.id === this.categoryId)) {
         this.lastUsedCategories = [...this.lastUsedCategories.slice(0, 14), this.selectedCategory]
       }
     },
@@ -214,7 +213,6 @@ export default {
           // Create
           if (this.action === 'create') {
             const isAddedTrns = await this.$store.dispatch('addTrn', formatedValues)
-            console.log(isAddedTrns)
 
             if (isAddedTrns) {
               this.values.amount = ''
@@ -225,14 +223,13 @@ export default {
 
           // Update
           if (this.action === 'update') {
-            const updatedTrnId = await this.$store.dispatch('updateTrn', formatedValues)
-            if (updatedTrnId) {
-              this.$store.commit('closeTrnForm')
-            }
+            await this.$store.dispatch('updateTrn', formatedValues)
           }
         }
+        this.$store.commit('closeLoader')
       } catch (error) {
         this.errors = error
+        this.$store.commit('closeLoader')
       }
     }
   }

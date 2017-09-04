@@ -40,14 +40,17 @@
         .item__el._price(:class="trn.type === 1 ? 'income' : 'expense'")
           div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
           div {{ formatMoney(trn.amountRub) }}
-        router-link.item__el._category(
-          :to="`/accounts/${trn.accountId}`",
-          title="Go to account"
-        ) {{ trn.accountName }}
-        router-link.item__el._account(
-          :to="`/categories/${trn.categoryId}`",
-          title="Go to category"
-        ) {{ trn.categoryName }}
+        .item__meta
+          div
+            router-link(
+              :to="`/accounts/${trn.accountId}`",
+              title="Go to account"
+            ) {{ trn.accountName }}
+          div
+            router-link(
+              :to="`/categories/${trn.categoryId}`",
+              title="Go to category"
+            ) {{ trn.categoryName }}
         template(v-if="editedTrn && trn.id === editedTrn")
           .item__el._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
         template(v-else)
