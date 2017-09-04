@@ -16,15 +16,41 @@ const getters = {
     return orderBy(state.all, trn => trn.date, 'desc')
   },
 
-  getTrns: (state, getters) => (startDate, endDate, type = false) => {
-    const trns = getters.trns
+  getTrns: (state, getters) => (startDate, endDate, options) => {
+    let trns = []
+
+    function getTrnsInCategoryWithChildren(trns, categoryId) {
+      const category = getters.categories.find(category => category.id === categoryId)
+      const childCategories = getters.categories.filter(category => category.parentId === categoryId)
+      let selectedTrns = []
+
+      // Get trns from all child categories
+      if (category.parentId === 0) {
+        selectedTrns = trns.filter(trn => {
+          return childCategories.filter(category => category.id === trn.categoryId).length
+        })
+      }
+
+      // Get trns only from this category
+      if (category.parentId !== 0) {
+        selectedTrns = trns.filter(trn => trn.categoryId === categoryId)
+      }
+      return selectedTrns
+    }
+
+    // Trns for seleted period
+    trns = getters.trns
       .filter(trn =>
         trn.categoryId !== 62 &&
         trn.date >= moment(startDate).startOf('day').valueOf() &&
         trn.date <= moment(endDate).endOf('day').valueOf())
 
-    if (type === 'incomes') trns.filter(t => t.type === 1)
-    if (type === 'expenses') trns.filter(t => t.type === 0)
+    // Trns from seleted category
+    if (options) {
+      if (options.categoryId) {
+        trns = getTrnsInCategoryWithChildren(trns, options.categoryId)
+      }
+    }
 
     if (trns) {
       return orderBy(trns, trn => trn.date, 'desc')
