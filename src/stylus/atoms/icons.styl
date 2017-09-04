@@ -32,13 +32,14 @@
     cursor pointer
     anim()
 
-    &:hover
-      border-color $color-main !important
+    @media (min-width: 1300px)
+      &:hover
+        border-color $color-main !important
 
-      & ^[0]__label
-        opacity 1
-        visibility visible
-        transform translate(-50%, 0)
+        & ^[0]__label
+          opacity 1
+          visibility visible
+          transform translate(-50%, 0)
 
     &:focus
       outline none

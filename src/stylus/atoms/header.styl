@@ -21,9 +21,6 @@ h4
   margin-bottom 60px
   align-items center
 
-  &:last-child
-    margin-bottom 0
-
   @media $laptop
     margin-bottom 85px
 
@@ -64,7 +61,7 @@ h4
   &._mb
     margin-bottom 50px
 
-    @media (min-width: 1300px)
+    @media (min-width: 768px)
       margin-bottom 80px
 
   &._mbn
@@ -74,7 +71,10 @@ h4
     margin-bottom 45px
 
   &._mbm
-    margin-bottom 3rem
+    margin-bottom 20px
+
+    @media (min-width: 768px)
+      margin-bottom 45px
 
   &._mbs
     margin-bottom 2rem
@@ -100,6 +100,9 @@ h4
     $font-numbers()
     letter-spacing 8px
     margin-left -2px
+
+  &:last-child
+    margin-bottom 0
 
   &__sub
     padding-left 10px
@@ -129,35 +132,12 @@ h4
       opacity 1
 
 
-  &__calendar
-    cursor pointer
-    display inline-flex
-    align-items center
-    white-space nowrap
-    padding-top 10px
-    font-size 2rem
-    letter-spacing 2px
-    $font-numbers()
-    anim()
-
-    @media (min-width: 1300px)
-      padding-top 0
-      font-size 3rem
-      letter-spacing 4px
-
-    &:hover
-      padding 20px
-      margin -20px
-      background $color-trn-hover
-
-    &__icon
-      padding-right 20px
-
-    &__sup
-      margin -26px 0 0 15px
-      color $color-second
-      font-size 1rem
-      letter-spacing normal
-
-      @media (min-width: 1300px)
-        font-size 1.2rem
+.numberTitle
+  margin-bottom 50px
+  color $color-second
+  font-size 1.5rem
+  font-weight bold
+  letter-spacing 3px
+  line-height 1rem
+  text-transform uppercase
+  $font-numbers()

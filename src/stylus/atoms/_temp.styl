@@ -1,10 +1,32 @@
+.temp1
+  padding-bottom 50px
+  display flex
+  justify-content space-between
+  flex-flow column wrap
+
+  @media (min-width: 1300px)
+    flex-flow row wrap
+    padding-bottom 80px
+
+  &__item
+    flex-grow 1
+    padding-bottom 10px
+
+    @media (min-width: 1300px)
+      flex-grow 0
+      width 30%
+      padding-bottom 0
+
+    &:last-child
+      padding-bottom 0
+
 .CHANGE1
   display flex
   justify-content space-between
   flex-grow 1
   flex-flow column wrap
 
-  @media (min-width: 1300px)
+  @media (min-width: 768px)
     flex-flow row nowrap
 
   &__item
@@ -17,7 +39,7 @@
       order 1
       flex-grow 0
 
-      @media (min-width: 1300px)
+      @media (min-width: 768px)
         order 2
         padding-top 0
         padding-left 170px
@@ -49,7 +71,7 @@
     align-self center
 
     &._description
-      padding 5px 0 10px
+      padding 10px 0 10px
       font-size .8rem
       grid-column 2 / 5
 
@@ -66,30 +88,37 @@
       padding-bottom 5px
 
     &__category
+      display flex
       font-size .9rem
       white-space nowrap
       padding-bottom 10px
 
       a&
-        display flex
         color $color-main
+        &:hover
+          color $color-link
 
     &__account
+      display flex
       font-size .9rem
       white-space nowrap
 
       a&
-        display flex
         color $color-main
+        &:hover
+          color $color-link
 
     &._action
-      width 46px
+      width 36px
       opacity .2
       cursor pointer
       padding 15px 10px
       font-size 1.5rem
       text-align center
       anim()
+
+      @media (min-width: 768px)
+        width 46px
 
       &:hover
         opacity 1

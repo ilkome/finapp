@@ -1,14 +1,13 @@
 .itemStat
   position relative
   display block
-  min-width 300px
   margin-bottom 10px
   color $color-second
   background $color-itemStat
   border 1px solid $color-itemStat-border
   anim()
 
-  @media (min-width: 1300px)
+  @media (min-width: 768px)
     margin-bottom 30px
 
   @media (min-width: 1900px)
@@ -17,6 +16,9 @@
   &._opened
     background alpha($color-trn-hover, .5) !important
     border-color $color-line
+
+    &:hover
+      border-color alpha($color-rub, .8) !important
 
   &._link
     cursor pointer
@@ -33,10 +35,20 @@
       border-color $color-trn-hover-line
 
   &._small
-    margin-bottom 0
+    margin-bottom 10px
+    border-radius 0
 
-    @media (min-width: 1900px)
-      border-radius 0
+    @media (min-width: 768px)
+      margin-bottom 15px
+
+  &._child
+    margin-bottom 0
+    background alpha($color-trn-hover, .5) !important
+    border-color $color-line
+
+    &:hover
+      background alpha($color-trn-hover, .5) !important
+      border-color $color-line !important
 
   &:last-child
     margin-bottom 0
@@ -47,10 +59,14 @@
   &__in
     display flex
     align-items center
-    padding 20px
+    padding 10px
+
+    @media (min-width: 768px)
+      padding 20px
 
     ^[0]._small &
-      padding 15px
+      @media (min-width: 768px)
+        padding 15px
 
   &__icon
     padding-right 25px
@@ -75,17 +91,18 @@
       padding-bottom 0
 
   &__price
+    min-width 70px
     max-width 125px
     padding-right 5px
     text-align right
-    @media (min-width: 1300px)
+    @media (min-width: 768px)
       min-width 105px
 
 
   &__graph
     flex-grow 1
     overflow hidden
-    margin-bottom 8px
+    margin-bottom 10px
     border-radius 3px
     background $color-graph
 
@@ -93,8 +110,16 @@
       margin-bottom 0
 
   &__graph__in
-    height .8rem
+    min-height .8rem
     border-radius 0
+
+    &__price
+      padding 4px 8px
+      white-space nowrap
+      color $color-white
+      $font-numbers()
+      font-weight bold
+      font-size 1rem
 
     &._expense
       background $color-expense

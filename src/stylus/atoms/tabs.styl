@@ -1,37 +1,48 @@
 .tabs
   position relative
-  z-index 2
-  margin-top -5px
-  margin-bottom -2px
   padding 0 20px
   background $color-body
-  border-bottom 2px solid $color-line
+  margin-bottom 20px
 
-  @media $laptop
-    padding 0 55px
+  @media (min-width: 768px)
+    margin-bottom 0
+    padding 0 70px
+    z-index 1
+    margin-top -5px
+    margin-bottom -2px
+    border-bottom 2px solid $color-line
 
   &-in
     display flex
-    flex row wrap
+    flex-flow column wrap
     align-items center
     max-width 1060px
     margin 0 auto
 
+    @media (min-width: 768px)
+      flex-flow row wrap
+
+    @media (min-width: 2000px)
+      max-width 1400px
+
   a
-    min-width 240px
     cursor pointer
-    display inline-flex
+    display flex
     justify-content center
     margin-bottom -2px
     padding 20px 40px
     color $color-second
-    font-size 1.4rem
+    font-size 1.5rem
     font-weight normal
-    letter-spacing 3px
+    letter-spacing 2px
     text-transform uppercase
     $font-numbers()
-    border 2px solid transparent
     anim()
+
+    @media (min-width: 768px)
+      display inline-flex
+      min-width 240px
+      border 2px solid transparent
 
     &:hover
       color $color-main
@@ -40,6 +51,9 @@
       cursor default
       color $color-main
       font-weight bold
+      letter-spacing 4px
       background $color-layout
-      border 2px solid $color-line
-      border-bottom 2px solid $color-layout
+
+      @media (min-width: 768px)
+        border 2px solid $color-line
+        border-bottom 2px solid $color-layout

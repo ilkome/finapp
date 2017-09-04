@@ -1,7 +1,3 @@
-$width-small = 300px
-$width-medium = 360px
-$width-extra = 460px
-
 *
   boxsizing-borderbox()
 
@@ -37,13 +33,13 @@ html
   flex-flow column wrap
   min-height 100%
 
-  @media (min-width: 1300px)
+  @media (min-width: 768px)
     flex-flow row nowrap
 
 .sidebar
   position fixed
   width 100%
-  height 100%
+  height 100vh
   left 0
   top 0
   z-index 1
@@ -54,50 +50,33 @@ html
   scrollbar()
   anim()
 
-  @media (min-width: 1300px)
-    width $width-medium
+  @media (min-width: 768px)
+    width 340px
     box-shadow 0 0 5px $color-sidebar
 
   @media (min-width: 1500px)
-    width 380px
-
-  @media (min-width: 1900px)
-    width $width-extra
+    width 340px
 
   &__wrap
     z-index 3
-    min-height 100%
+    height 100vh
 
-    @media (min-width: 1300px)
-      width $width-medium
-      overflow-y auto
-      position fixed
-      left 0
-      height 100%
-      scrollbar()
-
-    @media (min-width: 1500px)
-      width 380px
-
-    @media (min-width: 1900px)
-      width $width-extra
+    @media (min-width: 768px)
+      width 340px
 
   &__in
     display flex
     flex-flow column nowrap
     justify-content space-between
-    min-height 100%
+    min-height 100vh
     padding 30px 30px
 
     @media (min-width: 1500px)
-      padding 0 50px
-      padding-top 50px
-
-    @media (min-width: 1900px)
-      //
+      padding 0 40px
+      padding-top 40px
 
 .main
-  @media (min-width: 1300px)
+  @media (min-width: 768px)
     overflow hidden
     flex-shrink 0
     overflow-y scroll
@@ -110,17 +89,13 @@ html
     anim()
 
     &._withLeftBar
-      left $width-small
-      width "calc(100% - %s)" % $width-small
+      left 300px
+      width calc(100% - 300px)
 
-      @media (min-width: 1300px)
-        left $width-medium
-        width "calc(100% - %s)" % $width-medium
+      @media (min-width: 768px)
+        left 340px
+        width calc(100% - 340px)
 
       @media (min-width: 1500px)
-        left 380px
-        width calc(100% - 380px)
-
-      @media (min-width: 1900px)
-        left $width-extra
-        width "calc(100% - %s)" % $width-extra
+        left 340px
+        width calc(100% - 340px)
