@@ -14,7 +14,7 @@ async function getRates() {
         throw new Error('No rates!')
       }
     } else {
-      throw new Error('api/rates/@getRates: Bad response', response)
+      throw new Error('api/api/@getRates: Bad response', response)
     }
   } catch (error) {
     throw new Error(error.message)
