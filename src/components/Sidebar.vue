@@ -5,23 +5,23 @@ transition(name="leftBarAnimation")
       .sidebar__in
         .sidebar__item
           router-link(to="/" exact).sidebar__menu__link Dashboard
+          router-link(to="/alt" exact).sidebar__menu__link Dashboard Alt
           router-link(to="/summary").sidebar__menu__link Total
           router-link(to="/incomes").sidebar__menu__link Incomes
           router-link(to="/expenses").sidebar__menu__link Expenses
           router-link(to="/categories").sidebar__menu__link Categories
           router-link(to="/accounts").sidebar__menu__link Accounts
-          router-link(to="/transfer").sidebar__menu__link Transfer
           .sidebar__menu__link(@click.prevent="$store.commit('signOut')") LogOut
 
         .sidebar__item
           .sidebar__title Accounts
-          .sidebar__accounts
+          //- Have accounts
+          .sidebar__accounts(v-if="accounts.length")
             template(v-for="(account, index) in accounts")
               template(v-if="index < visibleAccounts")
                 router-link.sidebar__account(
-                    :to="`/accounts/${account.id}`",
-                    :class="`account${account.id}`"
-                  )
+                  :to="`/accounts/${account.id}`",
+                  :class="`account${account.id}`")
                   .sidebar__account__label {{ account.name }}
                   .sidebar__account__value
                     template(v-if="account.total !== 0")
@@ -29,11 +29,17 @@ transition(name="leftBarAnimation")
                       div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
                     template(v-else)
                       div 0 {{account.symbol}}
-
             template(v-if="accounts.length > visibleAccounts")
               .sidebar__accounts__showAll(@click="setVisibleAccounts('all')") Show all
             template(v-if="visibleAccounts > 4")
               .sidebar__accounts__showAll(@click="setVisibleAccounts(4)") Show only 4 accounts
+
+          //- No accounts
+          router-link.sidebar__account(
+            v-if="!accounts.length",
+            to="accounts",
+            title="Create new account")
+            .sidebar__account__label Create new account
 
         .sidebar__item
           .sidebar__title Info
