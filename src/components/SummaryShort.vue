@@ -3,67 +3,132 @@ div
   template(v-if="trns.length")
     //- dashboard-summary
     template(v-if="view === 'dashboard-summary'")
-      h3.title._mbs Summary
-      .summaryShort._pb
-        .summaryShort__item
-          .summaryShort__item__icon._incomes
-          .summaryShort__item__label Incomes
-          .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
+      template(v-if="duration > 14")
+        h3.title._mbs Week Average
+        .summaryShort._pb(:class="{_maxWidth: maxwidth}")
+          .summaryShort__item
+            .summaryShort__item__icon._incomes
+            .summaryShort__item__label Incomes
+            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes / 7) }}
+          .summaryShort__item
+            .summaryShort__item__icon._expenses
+            .summaryShort__item__label Expenses
+            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses / 7) }}
 
-        .summaryShort__item
-          .summaryShort__item__icon._expenses
-          .summaryShort__item__label Expenses
-          .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
+          .summaryShort__item
+            .summaryShort__item__icon._total
+            .summaryShort__item__label Total
+            .summaryShort__item__total.sum {{ formatMoney(summary.total / 7) }}
 
-        .summaryShort__item._mb
-          .summaryShort__item__icon._total
-          .summaryShort__item__label Total
-          .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
+      template(v-if="duration > 60")
+        h3.title._mbs Month Average
+        .summaryShort._pb(:class="{_maxWidth: maxwidth}")
+          .summaryShort__item
+            .summaryShort__item__icon._incomes
+            .summaryShort__item__label Incomes
+            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes / 30) }}
+          .summaryShort__item
+            .summaryShort__item__icon._expenses
+            .summaryShort__item__label Expenses
+            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses / 30) }}
+          .summaryShort__item
+            .summaryShort__item__icon._total
+            .summaryShort__item__label Total
+            .summaryShort__item__total.sum {{ formatMoney(summary.total / 30) }}
 
     //- dashboard-average
     template(v-if="view === 'dashboard-average'")
       h3.title._mbs
         | Average&nbsp;
         sup.sup {{ avDays }} days
-      .summaryShort
+      .summaryShort(:class="{_maxWidth: maxwidth}")
         .summaryShort__item
           .summaryShort__item__icon._incomes
-          .summaryShort__item__label Incomes Average
+          .summaryShort__item__label Incomes
           .summaryShort__item__total.incomes {{ formatMoney(avSummary.incomes) }}
 
         .summaryShort__item
           .summaryShort__item__icon._expenses
-          .summaryShort__item__label Expenses Average
+          .summaryShort__item__label Expenses
           .summaryShort__item__total.expenses {{ formatMoney(avSummary.expenses) }}
 
         .summaryShort__item
           .summaryShort__item__icon._total
-          .summaryShort__item__label Total Average
+          .summaryShort__item__label Total
           .summaryShort__item__total.sum {{ formatMoney(avSummary.total) }}
 
     //- dashboard-expenses
     template(v-if="view === 'dashboard-expenses'")
-      .summaryShort._pbs
+      .summaryShort._pbs(:class="{_maxWidth: maxwidth}")
         .summaryShort__item
           .summaryShort__item__icon._expenses
           .summaryShort__item__label Expenses
           .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
-        .summaryShort__item(v-if="duration > 1")
-          .summaryShort__item__icon._month
-          .summaryShort__item__label Day average
-          .summaryShort__item__total.sum {{ formatMoney(summary.expenses / duration) }}
 
     //- dashboard-incomes
     template(v-if="view === 'dashboard-incomes'")
-      .summaryShort._pbs
+      .summaryShort._pbs(:class="{_maxWidth: maxwidth}")
         .summaryShort__item
           .summaryShort__item__icon._incomes
           .summaryShort__item__label Incomes
           .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
-        .summaryShort__item(v-if="duration > 1")
-          .summaryShort__item__icon._month
-          .summaryShort__item__label Day average
-          .summaryShort__item__total.sum {{ formatMoney(summary.incomes / duration) }}
+
+    //- Day
+    template(v-if="view === 'day'")
+      template(v-if="duration > 1")
+        h3.title._mbs Day Average
+        .summaryShort(:class="{_maxWidth: maxwidth}")
+          .summaryShort__item
+            .summaryShort__item__icon._incomes
+            .summaryShort__item__label Incomes
+            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes / duration) }}
+          .summaryShort__item
+            .summaryShort__item__icon._expenses
+            .summaryShort__item__label Expenses
+            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses / duration) }}
+
+          .summaryShort__item
+            .summaryShort__item__icon._total
+            .summaryShort__item__label Total
+            .summaryShort__item__total.sum {{ formatMoney(summary.total / duration) }}
+
+    //- Week
+    template(v-if="view === 'week'")
+      template(v-if="duration > 14")
+        h3.title._mbs Week Average
+        .summaryShort(:class="{_maxWidth: maxwidth}")
+          .summaryShort__item
+            .summaryShort__item__icon._incomes
+            .summaryShort__item__label Incomes
+            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes / 7) }}
+          .summaryShort__item
+            .summaryShort__item__icon._expenses
+            .summaryShort__item__label Expenses
+            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses / 7) }}
+
+          .summaryShort__item
+            .summaryShort__item__icon._total
+            .summaryShort__item__label Total
+            .summaryShort__item__total.sum {{ formatMoney(summary.total / 7) }}
+
+    //- Month
+    template(v-if="view === 'month'")
+      template(v-if="duration > 60")
+        h3.title._mbs Month Average
+        .summaryShort(:class="{_maxWidth: maxwidth}")
+          .summaryShort__item
+            .summaryShort__item__icon._incomes
+            .summaryShort__item__label Incomes
+            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes / 30) }}
+          .summaryShort__item
+            .summaryShort__item__icon._expenses
+            .summaryShort__item__label Expenses
+            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses / 30) }}
+
+          .summaryShort__item
+            .summaryShort__item__icon._total
+            .summaryShort__item__label Total
+            .summaryShort__item__total.sum {{ formatMoney(summary.total / 30) }}
 </template>
 
 <script>
@@ -84,6 +149,9 @@ export default {
     },
     view: {
       type: String
+    },
+    maxwidth: {
+      type: Boolean
     }
   },
 
