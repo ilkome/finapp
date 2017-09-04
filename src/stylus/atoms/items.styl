@@ -34,6 +34,20 @@
   &__edit
     background $color-body
 
+  &__meta
+    flex-grow 1
+    display flex
+    flex-flow column wrap
+    justify-content center
+    a
+      padding 5px 0
+      font-size .9rem
+      letter-spacing 1px
+      color $color-second
+
+      &:hover
+        color $color-link
+
   // item__el
   // ===============================================
   &__el
@@ -111,10 +125,6 @@
     &._second
       color $color-second
       font-size .9rem
-
-    &._static
-      display block
-      position relative
 
     &._question
       display flex

@@ -1,29 +1,45 @@
 .gridTable
   display grid
-  grid-column-gap 80px
+  grid-column-gap 20px
   grid-row-gap 50px
 
-  @media (min-width: 1300px)
+  @media (min-width: 768px)
+    grid-column-gap 50px
     grid-row-gap 100px
 
-  @media (min-width: 1200px)
-    max-width 1200px
-    grid-template-columns minmax(200px, 540px) minmax(200px, 540px)
+  @media (min-width: 1300px)
+    grid-column-gap 100px
+    grid-template-columns minmax(200px, 1fr) minmax(200px, 1fr)
 
-  &._static
-    grid-template-columns minmax(auto, 300px) minmax(auto, 550px)
+  @media (min-width: 1300px)
+    grid-column-gap 140px
 
-    & ^[0]__item:last-child
-      align-items flex-end
+  // Dashboard horizontal periods
+  &._periods
+    grid-row-gap 10px
 
-  &._statItems
-    max-width 1015px
-    grid-template-columns 1fr
+    @media (min-width: 768px)
+      margin-bottom 10px
+      grid-row-gap 0
+      grid-column-gap 40px
+      grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr) minmax(auto, 1fr)
 
-    @media (min-width: 1900px)
-      max-width 1200px
+  // Dashboard horizontal summary
+  &._summary
+    grid-row-gap 40px
+
+    @media (min-width: 768px)
+      grid-row-gap 80px
+      grid-column-gap 100px
+      grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr)
+
+    @media (min-width: 1680px)
+      grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr) minmax(auto, 1fr)
+
+    @media (min-width: 2000px)
+      grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr) minmax(auto, 1fr) minmax(auto, 1fr)
+
+  &._alt
+    @media (min-width: 1300px)
       grid-column-gap 120px
-      grid-row-gap 120px
-
-    & ^[0]__item
-      max-width 1060px
+      grid-template-columns minmax(200px, 1fr) minmax(200px, .8fr)

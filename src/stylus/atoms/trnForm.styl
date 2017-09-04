@@ -4,32 +4,31 @@
   right 0
   top 0
   width 100%
-  height 100%
-  overflow hidden
-  overflow-y scroll
-  scrollbar()
+  height 100vh
   background $color-sidebar
 
-  @media (min-width: 1300px)
-    height 100vh
+  @media (min-width: 768px)
     width auto
-    height 100%
     box-shadow 0 0 5px $color-sidebar
 
   &__in
-    display flex
-    align-items center
-    min-height 100%
+    height 100vh
 
-    @media (min-width: 1300px)
+    @media (min-width: 768px)
       width 590px
 
   &__form
-    flex-grow 1
-    padding 40px 20px
+    overflow hidden
+    overflow-y scroll
+    height 100vh
+    scrollbar()
+    padding-bottom 100px
 
-    @media (min-width: 1300px)
-      padding 40px 80px
+    &__in
+      padding 20px 17px
+
+      @media (min-width: 768px)
+        padding 60px 76px
 
   &__errors
     font-weight bold
@@ -41,19 +40,24 @@
     margin-bottom 50px
 
   &__categories
+    overflow hidden
+    overflow-y scroll
     position absolute
     left 0
     top 0
     width 100%
+    height 100vh
+    padding-bottom 100px
     background $color-sidebar
+    scrollbar()
 
     &__in
       overflow-y scroll
-      height 100%
-      padding 30px 20px
+      height 100vh
+      padding 30px 17px
       scrollbar()
 
-      @media (min-width: 1300px)
+      @media (min-width: 768px)
         padding 58px 60px
 
   &__header
@@ -88,7 +92,7 @@
       font-size 1.6rem
       font-weight bold
       $font-numbers()
-      @media (min-width: 1300px)
+      @media (min-width: 768px)
         min-width 160px
 
       &__in
@@ -103,7 +107,7 @@
       cursor pointer
       anim()
 
-      @media (min-width: 1300px)
+      @media (min-width: 768px)
         padding 15px 50px
 
       ^[1]:hover &
@@ -111,22 +115,41 @@
         background alpha(white, .3)
         border-radius 3px
 
+  &__subTitle
+    display flex
+    align-items flex-end
+    justify-content space-between
+    padding 0 5px
+    font-size .9rem
+    letter-spacing 1px
+    padding-bottom 15px
+    text-transform uppercase
+
+    .name
+      font-weight bold
+      font-size 1.4rem
+      letter-spacing 2px
+
   &__desc
     height 70px
 
   &__actions__btn
-    display inline-flex
+    display block
     padding 20px 80px
     color $color-main
     font-size 1rem
     font-weight bold
     text-transform uppercase
     letter-spacing 2px
+    text-align center
     background $color-line
     border 1px solid transparent
     border-radius 3px
     cursor pointer
     anim()
+
+    @media (min-width: 1300px)
+      display inline-flex
 
     &:hover
       color $color-link
@@ -146,7 +169,7 @@
   color $color-second
   anim()
 
-  @media (min-width: 1300px)
+  @media (min-width: 768px)
     width 40px
     height 100%
     right 6px
@@ -154,7 +177,7 @@
   &:active
     background $color-side-toogle
 
-  @media (min-width: 1300px)
+  @media (min-width: 768px)
     &:hover
       background $color-side-toogle
 
@@ -171,7 +194,7 @@
     border-radius 50%
     anim()
 
-    @media (min-width: 1300px)
+    @media (min-width: 768px)
       display flex
       margin-right 46px
       margin-top 26px

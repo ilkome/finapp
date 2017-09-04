@@ -1,0 +1,97 @@
+.dateTitle
+  position relative
+  display flex
+  justify-content flex-start
+  flex-flow column wrap
+  padding-bottom 40px
+
+  @media (min-width: 768px)
+    justify-content space-between
+    align-items center
+    flex-flow row wrap
+    padding-top 0
+    padding-bottom 90px
+
+  &__item
+    flex-grow 0
+    white-space nowrap
+
+  &__header
+    cursor pointer
+    display inline-flex
+    flex-grow 1
+    align-items center
+    white-space nowrap
+    padding 0
+    margin 0
+    $font-numbers()
+    anim()
+
+    &:hover
+      padding 20px
+      margin -20px
+      background $color-trn-hover
+
+  &__icon
+    padding-right 10px
+    font-size 1.8rem
+
+    @media (min-width: 768px)
+      padding-right 20px
+      font-size 2.4rem
+
+  &__firstDate
+    font-size 2rem
+    letter-spacing 1.5px
+
+    @media (min-width: 768px)
+      font-size 3rem
+      letter-spacing 2px
+
+  &__secondDate
+    margin -26px 0 0 15px
+    color $color-second
+    font-size 1rem
+    letter-spacing normal
+
+    @media (min-width: 768px)
+      font-size 1.2rem
+
+  &__periods
+    display flex
+    flex-flow column
+    font-size 1rem
+    letter-spacing normal
+    padding-top 20px
+
+    @media (min-width: 768px)
+      flex-flow row
+      padding-top 0
+
+    &__item
+      cursor pointer
+      padding 8px 10px
+      anim()
+      border-radius 3px
+      color $color-main
+      font-size 1.2rem
+      letter-spacing 1.5px
+      text-transform uppercase
+      font-weight bold
+      $font-numbers()
+
+      &:hover
+        color #444
+        background #f3f8fa
+
+      &._active
+        cursor default
+        background #5e7a88
+        color $color-white
+
+      @media (min-width: 768px)
+        margin-right 10px
+
+      @media (min-width: 1300px)
+        margin-right 0
+        margin-left 20px
