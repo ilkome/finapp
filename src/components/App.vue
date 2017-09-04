@@ -28,8 +28,8 @@
       Sidebar
       .sidebarToogle(
         v-shortkey="['alt', 'arrowleft']",
-        @shortkey="$store.commit('toogleLeftbar')",
-        @click.prevent.stop="$store.commit('toogleLeftbar')")
+        @shortkey="onSidebarToogle",
+        @click.prevent.stop="onSidebarToogle")
 
       //- main
       .main(:class="$store.state.leftBar.isShow && '_withLeftBar'")
@@ -43,8 +43,8 @@
           TrnForm
       .trnFormToogle(
         v-shortkey="['alt', 'arrowright']",
-        @shortkey="$store.commit('toogleTrnForm')",
-        @click.prevent.stop="$store.commit('toogleTrnForm')",
+        @shortkey="onClickTrnFormToogle",
+        @click.prevent.stop="onClickTrnFormToogle",
         :class="{_active: $store.state.trnForm.isShow}"
       ): .trnFormToogle__icon: .trnFormToogle__icon__in +
 </template>
@@ -62,6 +62,29 @@ export default {
       if (this.$store.state.user.user.uid) {
         return this.$store.state.user.user
       }
+    }
+  },
+
+  methods: {
+    toogleBodyOverflow() {
+      if (this.$store.state.isMobile) {
+        const body = document.querySelector('body')
+        if (this.$store.state.trnForm.isShow || this.$store.state.leftBar.isShow) {
+          body.style.overflow = 'hidden'
+        } else {
+          body.style.overflow = ''
+        }
+      }
+    },
+
+    onClickTrnFormToogle() {
+      this.$store.commit('toogleTrnForm')
+      this.toogleBodyOverflow()
+    },
+
+    onSidebarToogle() {
+      this.$store.commit('toogleLeftbar')
+      this.toogleBodyOverflow()
     }
   }
 }

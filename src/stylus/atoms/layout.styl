@@ -25,7 +25,10 @@ html
   letter-spacing .5px
   background $color-body
 
-  @media (min-width: 1300px)
+  &._overflow
+    overflow hidden
+
+  @media (min-width: 768px)
     overflow hidden
     height 100%
 

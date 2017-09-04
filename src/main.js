@@ -40,6 +40,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   if (isMobile) {
     store.commit('toogleLeftbar', 'hide')
+    document.querySelector('body').style.overflow = ''
   }
   next()
 })
