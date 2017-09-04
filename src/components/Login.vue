@@ -27,9 +27,6 @@ export default {
     signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithRedirect(provider)
-        .then((result) => {
-          this.$store.commit('logIn')
-        })
         .catch(error => {
           this.error = error.message
           console.log(error)
