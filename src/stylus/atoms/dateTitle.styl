@@ -3,14 +3,17 @@
   display flex
   justify-content flex-start
   flex-flow column wrap
-  padding-bottom 40px
+  margin-bottom 40px
+
+  &:last-child
+    margin-bottom 0
 
   @media (min-width: 768px)
     justify-content space-between
     align-items center
     flex-flow row wrap
     padding-top 0
-    padding-bottom 90px
+    margin-bottom 90px
 
   &__item
     flex-grow 0
