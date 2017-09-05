@@ -20,9 +20,12 @@
 
     @media (min-width: 768px)
       margin-bottom 10px
-      grid-row-gap 0
+      grid-row-gap 40px
       grid-column-gap 40px
-      grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr) minmax(auto, 1fr)
+      grid-template-columns repeat(3, 1fr)
+
+    @media (min-width: 1900px)
+      grid-template-columns repeat(4, 1fr)
 
   // Dashboard horizontal summary
   &._summary
