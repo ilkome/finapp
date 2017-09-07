@@ -265,7 +265,6 @@ import date from 'date-fns'
 import uniqBy from 'lodash/uniqBy'
 import orderBy from 'lodash/orderBy'
 import formatMoney from '../mixins/formatMoney'
-import formatDate from '../mixins/formatDate'
 import Calendar from './calendar/calendar.vue'
 import TrnsList from './TrnsList.vue'
 import TrnItem from './TrnItem.vue'
@@ -273,7 +272,7 @@ import SummaryShort from './SummaryShort.vue'
 
 export default {
   name: 'DashboardPage',
-  mixins: [formatDate, formatMoney],
+  mixins: [formatMoney],
   components: { TrnsList, TrnItem, Calendar, SummaryShort },
 
   data() {
@@ -281,7 +280,6 @@ export default {
       showedDate: {},
       showedTab: 'charts',
       groupedByParent: true,
-      days: [1, 5, 10, 7, 14, 30, 999],
       selectedPeriodIndex: 0,
       showedTrnsCategoryId: [],
       trnsDate: {
@@ -354,7 +352,11 @@ export default {
     },
 
     trnsList() {
-      return this.getTrns(this.trnsDate.start, this.trnsDate.end)
+      if (this.calendarPreset === 'all') {
+        return this.getTrns()
+      } else {
+        return this.getTrns({ startDate: this.trnsDate.start, endDate: this.trnsDate.end, accountId: 11 })
+      }
     },
 
     incomesTrns() {

@@ -6,7 +6,7 @@
 
   CategoryItemForm(
     :values="values",
-    :onSubmit="addCategory"
+    v-on:onSubmit="addCategory"
   )
 </template>
 

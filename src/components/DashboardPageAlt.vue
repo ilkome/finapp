@@ -335,7 +335,7 @@ export default {
     },
 
     trnsList() {
-      return this.getTrns(this.trnsDate.start, this.trnsDate.end)
+      return this.getTrns({ startDate: this.trnsDate.start, endDate: this.trnsDate.end })
     },
 
     incomesTrns() {
@@ -386,7 +386,9 @@ export default {
           periodName = this.formatDates(periodStartDate, periodEndDate, 'period')
         }
 
-        const periodTrns = this.getTrns(moment(periodStartDate).valueOf(), moment(periodEndDate).valueOf())
+        const startDate = moment(periodStartDate).valueOf()
+        const endDate = moment(periodEndDate).valueOf()
+        const periodTrns = this.getTrns({ startDate, endDate })
 
         if (periodTrns.length || period <= 2) {
           const periodIncomes = periodTrns
