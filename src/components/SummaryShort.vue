@@ -185,7 +185,10 @@ export default {
     },
 
     avSummary() {
-      const yearTrns = this.getTrns(moment().subtract(6, 'months'), moment())
+      const startDate = moment().subtract(6, 'months')
+      const endDate = moment()
+      const yearTrns = this.getTrns({ startDate, endDate })
+
       const avStartDate = moment(yearTrns[0].date)
       const avEndDate = moment(yearTrns[yearTrns.length - 1].date)
       this.avDays = avStartDate.diff(avEndDate, 'days') + 1

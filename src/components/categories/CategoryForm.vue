@@ -14,7 +14,7 @@
     .input__label Parent category id
     input.input__field(
       v-model="values.parentId", type="text", placeholder="Parent category", name="parentId")
-  .btn(@click="onSubmit") Save
+  .btn(@click.prevent="$emit('onSubmit', values)") Save
 </template>
 
 <script>
@@ -22,10 +22,6 @@ export default {
   props: {
     values: {
       type: Object,
-      required: true
-    },
-    onSubmit: {
-      type: Function,
       required: true
     }
   }
