@@ -1,4 +1,4 @@
-import { getRates } from '../../api/rates'
+import { getRates } from '../../api/'
 
 const store = {
   state: {
