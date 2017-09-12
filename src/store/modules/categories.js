@@ -36,7 +36,7 @@ const store = {
       }
     },
 
-    async addCategory({ commit, rootState }, values) {
+    async addCategory({ commit, state, rootState }, values) {
       try {
         commit('showLoader')
         const db = await firebase.database()
@@ -47,7 +47,7 @@ const store = {
               ...values,
               id: key
             }
-            commit('addCategory', newCategory)
+            commit('addCategory', formatCategory(newCategory, state.all))
             commit('closeLoader')
             return true
           })
