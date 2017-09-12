@@ -29,34 +29,36 @@ export default {
   },
 
   methods: {
-    async addCategory() {
+    async addCategory(values) {
       this.$store.commit('showLoader')
       this.error = null
 
       const formatedValues = {
-        name: this.values.name.trim(),
-        color: this.values.color.trim(),
-        icon: this.values.icon ? this.values.icon.trim() : 'fa fa-industry',
-        parentId: this.values.parentId ? this.values.parentId.trim() : 0
+        name: values.name.trim(),
+        color: values.color.trim(),
+        icon: values.icon ? values.icon.trim() : 'fa fa-industry',
+        parentId: values.parentId ? values.parentId.trim() : 0
       }
 
       const sameCategory = this.$store.state.categories.all
-        .filter(category => category.name === formatedValues.name && category.parentId === formatedValues.parentId)
+        .filter(category =>
+          category.id === formatedValues.id &&
+          category.name === formatedValues.name &&
+          category.icon === formatedValues.icon &&
+          category.parentId === formatedValues.parentId)
 
       if (sameCategory.length) {
-        this.error = 'Same category already exist!'
+        this.error = 'Same category is already exist!'
         this.$store.commit('closeLoader')
         return
       }
 
-      const result = await this.$store.dispatch('addCategory', formatedValues)
-      if (result) {
-        this.values.name = ''
-        this.values.color = '#000000'
-        this.values.icon = ''
-        this.values.parentId = 0
-        this.$store.commit('closeLoader')
-      }
+      await this.$store.dispatch('addCategory', formatedValues)
+      this.values.name = ''
+      this.values.color = '#000000'
+      this.values.icon = ''
+      this.values.parentId = 0
+      this.$store.commit('closeLoader')
     }
   }
 

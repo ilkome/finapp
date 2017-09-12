@@ -8,18 +8,19 @@
       placeholder="Search category"
     ).categories__filter__input
 
-    template(v-if="!filter")
-      .categories__filter__btn._edit(@click.prevent="toogleShowAllChildCategories()")
-        template(v-if="showedChildIds.length")
-          .fa.fa-eye
-        template(v-else)
-          .fa.fa-eye-slash
-    template(v-else)
-      .categories__filter__btn._edit(@click.prevent="filter = ''")
-        .fa.fa-eraser
+    .categories__filter__btns
+      template(v-if="!filter")
+        .categories__filter__btn._toogle(@click.prevent="toogleShowAllChildCategories()")
+          template(v-if="showedChildIds.length")
+            .fa.fa-eye
+          template(v-else)
+            .fa.fa-eye-slash
+      template(v-else)
+        .categories__filter__btn._edit(@click.prevent="filter = ''")
+          .fa.fa-eraser
 
-    .categories__filter__btn._edit(@click.prevent="toogleEditMode()")
-      .fa.fa-pencil-square-o
+      .categories__filter__btn._edit(@click.prevent="toogleEditMode()")
+        .fa.fa-pencil-square-o
 
   template(v-if="filter.length > 0 && filter.length < 2")
     div Continue typing...
@@ -27,7 +28,7 @@
   template(v-if="filter.length >= 2 && searchedCategoriesList.length === 0")
     div Nothing found
 
-  .categories_list
+  .categories__list
     //- Category Item
     template(v-for="category in showedCategories")
       CategoryItem(
@@ -36,8 +37,8 @@
         :category="category",
         :editCategoryId="editCategoryId",
         :showedChildIds="showedChildIds",
-        :toogleEditCategory="toogleEditCategory",
         :confirmPopCategoryId="confirmPopCategoryId",
+        v-on:toogleEditCategory="toogleEditCategory",
         v-on:confirmPop="confirmPop",
         v-on:onClickContent="onClickContent"
       )
@@ -51,33 +52,42 @@
           )
         //- Category Item Edit
         template(slot="edit")
-          CategoryEdit(:values="editCategoryValues")
+          CategoryEdit(
+          :values="category"
+          :error="error"
+          v-on:toogleEditCategory="toogleEditCategory"
+        )
 
         //- Category Item Child
         template(slot="child")
-          template(v-for="childCategory in category.child")
-            CategoryItem(
-              :view="view",
-              :isShowEditActions="isShowEditActions",
-              :category="childCategory",
-              :editCategoryId="editCategoryId",
-              :showedChildIds="showedChildIds",
-              :toogleEditCategory="toogleEditCategory",
-              :confirmPopCategoryId="confirmPopCategoryId",
-              v-on:confirmPop="confirmPop",
-              v-on:onClickContent="onClickContent"
-            )
-              //- Category Item Child Confirm
-              template(slot="confirm")
-                CategoryItemConfirm(
-                  :category="childCategory",
-                  :avaliableForDelete="avaliableForDelete",
-                  :deleteCategory="deleteCategory",
-                  :closeConfirmPop="closeConfirmPop"
-                )
-              //- Category Item Edit
-              template(slot="edit")
-                CategoryEdit(:values="editCategoryValues", :onSubmit="onEditCategory", :error="error")
+          template(v-if="category.child && category.child.length")
+            template(v-for="childCategory in category.child")
+              CategoryItem(
+                :view="view",
+                :isShowEditActions="isShowEditActions",
+                :category="childCategory",
+                :editCategoryId="editCategoryId",
+                :showedChildIds="showedChildIds",
+                :confirmPopCategoryId="confirmPopCategoryId",
+                v-on:toogleEditCategory="toogleEditCategory",
+                v-on:confirmPop="confirmPop",
+                v-on:onClickContent="onClickContent"
+              )
+                //- Category Item Child Confirm
+                template(slot="confirm")
+                  CategoryItemConfirm(
+                    :category="childCategory",
+                    :avaliableForDelete="avaliableForDelete",
+                    :deleteCategory="deleteCategory",
+                    :closeConfirmPop="closeConfirmPop"
+                  )
+                //- Category Item Edit
+                template(slot="edit")
+                  CategoryEdit(
+                    :values="childCategory"
+                    :error="error"
+                    v-on:toogleEditCategory="toogleEditCategory"
+                  )
 </template>
 
 <script>
@@ -112,18 +122,6 @@ export default {
       focus: false,
       filter: '',
       editCategoryId: false,
-      editCategoryValues: {
-        name: null,
-        color: '#000000',
-        icon: null,
-        parentId: 0
-      },
-      newCategory: {
-        name: 'Hello',
-        color: '#000000',
-        icon: null,
-        parentId: 0
-      },
       confirmPopCategoryId: false,
       showedChildIds: []
     }
@@ -218,6 +216,14 @@ export default {
       return categoriesOrganazed
     },
 
+    child() {
+      return this.categories.find(c => c.id === '-Ktma0eY3z7lleD9DyEk')
+    },
+
+    root() {
+      return this.categories.find(c => c.id === '-KtmZz2-fALZU7Z9-Iui')
+    },
+
     showedCategories() {
       if (!this.filter) {
         return this.categoriesList
@@ -287,19 +293,13 @@ export default {
     toogleEditCategory(categoryId) {
       // Collapse the parent category when edit
       if (this.showedChildIds.indexOf(categoryId) !== -1) {
-        this.editCategoryValues = null
         this.showedChildIds = this.showedChildIds.filter(cId => cId !== categoryId)
       }
 
       if (this.editCategoryId === categoryId) {
         this.editCategoryId = false
-        this.editCategoryValues = null
       } else {
         this.editCategoryId = categoryId
-        const category = this.categories.find(c => c.id === categoryId)
-        this.editCategoryValues = {
-          ...category
-        }
       }
     },
 
@@ -327,38 +327,6 @@ export default {
       this.confirmPopCategoryId = false
       await this.$store.dispatch('deleteCategory', categoryId)
       this.$store.commit('closeLoader')
-    },
-
-    async onEditCategory() {
-      this.$store.commit('showLoader')
-      this.error = null
-
-      const formatedValues = {
-        id: this.values.id,
-        name: this.values.name.trim(),
-        color: this.values.color ? this.values.color.trim() : '#000000',
-        icon: this.values.icon.trim(),
-        parentId: this.values.parentId
-      }
-
-      const sameCategory = this.$store.state.categories.all
-        .filter(category =>
-          category.id === formatedValues.id &&
-          category.name === formatedValues.name &&
-          category.parentId === formatedValues.parentId)
-
-      if (sameCategory.length) {
-        this.error = 'Same category already exist!'
-        this.$store.commit('closeLoader')
-        return
-      }
-
-      const result = await this.$store.dispatch('updateCategory', formatedValues)
-      if (result) {
-        this.editCategoryId = false
-        this.editCategoryValues = null
-        this.$store.commit('closeLoader')
-      }
     }
   }
 }
