@@ -44,7 +44,8 @@
 
       .trnForm__icons
         .trnForm__subTitle
-          .name {{ selectedCategory.name }}
+          template(v-if="values.categoryId")
+            .name {{ selectedCategory.name }}
           .label Category
         .categoriesIcons
           .categoriesIcons__el(v-for="category in lastUsedCategories")
