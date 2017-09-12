@@ -48,7 +48,6 @@ export default function formatTrn(trn, options) {
       amountRub = Math.floor(Math.abs(trn.amount / options.rates[currency]))
     } else {
       console.error('No currency found', trn, options.rates, currency)
-      return false
     }
   }
 
