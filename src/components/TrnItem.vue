@@ -9,7 +9,7 @@
           div {{ formatMoney(trn.amountRub) }}
           div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
         .grid__item
-          .grid__item__date {{ formatDate(trn.date, 'D MMM') }}
+          .grid__item__date {{ formatDate(trn.date, 'D MMM YY') }}
           router-link.grid__item__category(
             :to="`/categories/${trn.categoryId}`",
             title="Go to category"
