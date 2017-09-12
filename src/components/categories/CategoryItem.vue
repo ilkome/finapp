@@ -14,17 +14,17 @@ div(:class="className")
 
       .categoryItem__name
         div {{ category.name }}
-        .categoryItem__name__list.fa.fa-list(v-if="category.child.length && editCategoryId !== category.id")
+        .categoryItem__name__list.fa.fa-list(v-if="category.child && category.child.length && editCategoryId !== category.id")
 
       .categoryItem__action(
         v-if="editCategoryId === category.id"
-        @click.prevent.stop="toogleEditCategory(category.id)")
+        @click.prevent.stop="$emit('toogleEditCategory', category.id)")
         .fa.fa-times-circle
 
-      .categoryItem__action(
-        v-if="isShowEditActions && editCategoryId !== category.id"
-        @click.prevent.stop="toogleEditCategory(category.id)")
-        .fa.fa-pencil-square-o
+      template(v-if="isShowEditActions && editCategoryId !== category.id")
+        .categoryItem__action(
+          @click.prevent.stop="$emit('toogleEditCategory', category.id)")
+          .fa.fa-pencil-square-o
 
       .categoryItem__action(
         v-if="isShowEditActions"
@@ -41,7 +41,7 @@ div(:class="className")
       slot(name="confirm")
 
     //- Child
-    template(v-if="category.child.length")
+    template(v-if="category.child && category.child.length")
       template(v-if="showedChildIds.indexOf(category.id) !== -1")
         .categoryItem__child
           slot(name="child")
@@ -63,12 +63,12 @@ div(:class="className")
 
       .categoryItem__action(
         v-if="editCategoryId === category.id"
-        @click.prevent.stop="toogleEditCategory(category.id)")
+        @click.prevent.stop="$emit('toogleEditCategory', category.id)")
         .fa.fa-times-circle
 
       .categoryItem__action(
         v-if="isShowEditActions && editCategoryId !== category.id"
-        @click.prevent.stop="toogleEditCategory(category.id)")
+        @click.prevent.stop="$emit('toogleEditCategory', category.id)")
         .fa.fa-pencil-square-o
 
       .categoryItem__action(
@@ -110,10 +110,6 @@ export default {
     },
     showedChildIds: {
       type: Array,
-      required: true
-    },
-    toogleEditCategory: {
-      type: Function,
       required: true
     }
   },
