@@ -1,9 +1,9 @@
 // Category Item
 // ===============================================
 .categoryItem
+  cursor default
   overflow hidden
   position relative
-  min-width 300px
   margin-bottom -1px
   color $color-second
   border 1px solid transparent
@@ -37,6 +37,9 @@
     &:hover
       border-color $color-link
 
+  &:first-child
+    border-top-color transparent
+
   &:last-child
     margin-bottom 0
 
@@ -63,7 +66,7 @@
     align-items center
     flex-grow 1
     text-transform capitalize
-    font-size 1.1rem
+    font-size 1rem
 
     &__list
       display flex
