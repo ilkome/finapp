@@ -69,6 +69,7 @@ export default {
       newAccount: {
         name: '',
         currency: 'RUB',
+        countTotal: 1,
         symbol: ''
       },
       filter: '',
