@@ -52,6 +52,7 @@ export default {
       },
       lastUsedCategories: [],
       values: {
+        amount: null,
         date: moment(),
         currency: '',
         type: 0,
@@ -178,26 +179,33 @@ export default {
       this.$store.commit('showLoader')
 
       function calc(number) {
-        try {
-          return mathjs.chain(number.replace(/\s/g, '')).eval().round().value
-        } catch (error) {
-          this.errors = error
-        }
+        return mathjs.chain(number.replace(/\s/g, '')).eval().round().value
       }
 
       try {
         const currentTime = moment().format('HH:mm:ss')
         const day = moment(this.values.date).format('D.MM.YY')
         const date = moment(`${day} ${currentTime}`, 'D.MM.YY HH:mm:ss').valueOf()
-        const amount = String(this.values.amount)
         let formatedValues = {}
 
         // Empty
-        if (!amount) {
+        if (!this.values.amount) {
           this.errors = 'Empty amount'
+          this.$store.commit('closeLoader')
+          return
+        }
+        if (!this.values.categoryId) {
+          this.errors = 'Please select category'
+          this.$store.commit('closeLoader')
+          return
+        }
+        if (!this.values.accountId) {
+          this.errors = 'Please select account'
+          this.$store.commit('closeLoader')
+          return
         }
 
-        const calcAmount = calc(amount)
+        const calcAmount = calc(String(this.values.amount))
         if (calcAmount && calcAmount > 0) {
           formatedValues = {
             ...this.values,
@@ -212,23 +220,21 @@ export default {
         if (!this.errors) {
           // Create
           if (this.action === 'create') {
-            const isAddedTrns = await this.$store.dispatch('addTrn', formatedValues)
-
-            if (isAddedTrns) {
-              this.values.amount = ''
-              this.values.description = ''
-              this.filter = ''
-            }
+            await this.$store.dispatch('addTrn', formatedValues)
+            this.values.amount = ''
+            this.values.description = ''
+            this.filter = ''
           }
 
           // Update
           if (this.action === 'update') {
             await this.$store.dispatch('updateTrn', formatedValues)
+            this.$store.commit('closeTrnForm')
           }
         }
         this.$store.commit('closeLoader')
       } catch (error) {
-        this.errors = error
+        this.errors = error.message
         this.$store.commit('closeLoader')
       }
     }
