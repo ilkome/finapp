@@ -1,6 +1,7 @@
 <template lang="pug">
 .trnForm__in
   .trnForm__form
+    .trnForm__form__close(@click="$store.commit('toogleTrnForm')") +
     .trnForm__form__in
       h2.title._border._mbs
         template(v-if="action === 'create'") Create trn
