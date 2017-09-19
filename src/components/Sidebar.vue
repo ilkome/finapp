@@ -3,6 +3,7 @@ transition(name="leftBarAnimation")
   .sidebar(v-show="$store.state.leftBar.isShow")
     .sidebar__wrap
       .sidebar__in
+        .sidebar__close(@click="$store.commit('toogleLeftbar', 'hide')") +
         .sidebar__item
           router-link(to="/" exact).sidebar__menu__link Dashboard
           router-link(to="/alt" exact).sidebar__menu__link Dashboard Alt
