@@ -19,6 +19,9 @@
   .mdi
     font-size 1.7rem
 
+  &._mr
+    margin-right 20px
+
   &._active
     color white
     border-color $color-main !important
@@ -31,14 +34,9 @@
     cursor pointer
     anim()
 
-    @media (min-width: 1300px)
+    @media (min-width: 768px)
       &:hover
         border-color $color-main !important
-
-        & ^[0]__label
-          opacity 1
-          visibility visible
-          transform translate(-50%, 0)
 
     &:focus
       outline none
@@ -57,11 +55,21 @@
     left 50%
     top -43px
     padding 10px 15px
+    font-size 1rem
+    font-weight normal
+    text-transform none
+    letter-spacing 1px
     background #242424
     border-radius 3px
     transform translate(-50%, 50%)
     white-space nowrap
     transition all .3s cubic-bezier(0.17, 0.04, 0.03, 0.94)
+
+    ^[0]:hover &
+      @media (min-width: 768px)
+        opacity 1
+        visibility visible
+        transform translate(-50%, 0)
 
 .icon-incomes
   font-size 2.5rem
