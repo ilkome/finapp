@@ -65,6 +65,11 @@ export default {
     }
   },
 
+  mounted() {
+    this.$store.watch((state) => state.trnForm.isShow, this.toogleBodyOverflow)
+    this.$store.watch((state) => state.trnForm.isShow, this.toogleBodyOverflow)
+  },
+
   methods: {
     toogleBodyOverflow() {
       if (this.$store.state.isMobile) {
@@ -79,12 +84,10 @@ export default {
 
     onClickTrnFormToogle() {
       this.$store.commit('toogleTrnForm')
-      this.toogleBodyOverflow()
     },
 
     onSidebarToogle() {
       this.$store.commit('toogleLeftbar')
-      this.toogleBodyOverflow()
     }
   }
 }
