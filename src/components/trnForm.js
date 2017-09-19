@@ -120,6 +120,7 @@ export default {
           id: trn.id,
           date: moment(trn.date),
           accountId: trn.accountId,
+          accountName: trn.accountName,
           amount: trn.amount,
           categoryId: trn.categoryId,
           categoryIcon: trn.categoryIcon,
@@ -145,14 +146,16 @@ export default {
      */
     setCategory(categoryId) {
       const category = this.categories.find(category => category.id === categoryId)
-      this.values.categoryId = category.id
-      this.values.categoryName = category.name
-      this.values.categoryIcon = category.icon
+      if (category) {
+        this.values.categoryId = category.id
+        this.values.categoryName = category.name
+        this.values.categoryIcon = category.icon
 
-      this.$store.commit('setTrnFormCategoryId', categoryId)
-      // Add selected category if it doesn't exist in lastUsedCategories
-      if (!this.lastUsedCategories.find(cat => cat.id === this.categoryId)) {
-        this.lastUsedCategories = [...this.lastUsedCategories.slice(0, 14), this.selectedCategory]
+        this.$store.commit('setTrnFormCategoryId', categoryId)
+        // Add selected category if it doesn't exist in lastUsedCategories
+        if (!this.lastUsedCategories.find(cat => cat.id === this.categoryId)) {
+          this.lastUsedCategories = [...this.lastUsedCategories.slice(0, 14), this.selectedCategory]
+        }
       }
     },
 
@@ -164,15 +167,14 @@ export default {
       const account = this.accounts.find(account => account.id === accountId)
       if (account) {
         this.values.accountId = account.id
+        this.values.accountName = account.name
         this.values.currency = account.currency
       }
     },
 
     setNextPrevDate(way) {
-      let date
-      if (way === 'prev') date = moment(this.values.date).subtract(1, 'days')
-      if (way === 'next') date = moment(this.values.date).add(1, 'days')
-      this.values.date = date
+      if (way === 'prev') this.values.date = moment(this.values.date).subtract(1, 'days')
+      if (way === 'next') this.values.date = moment(this.values.date).add(1, 'days')
     },
 
     async onSubmitForm() {
