@@ -34,8 +34,7 @@
       //- main
       .main(:class="$store.state.leftBar.isShow && '_withLeftBar'")
         transition(name="slide")
-          keep-alive
-            router-view
+          router-view
 
       //- TrnForm
       transition(name="slideToLeft")
