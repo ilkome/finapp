@@ -27,7 +27,7 @@ export default {
 
   data() {
     return {
-      // Spread values to formValues. It's prevent values to be reacrive
+      // Spread values to formValues. It's prevent values to be reactive
       formValues: {
         ...this.values
       }
