@@ -81,17 +81,19 @@
         color $color-link
 
   &__account
+    cursor pointer
     position relative
     display flex
     flex 1 1 45%
     flex-basis 100%
     height 35px
     margin-top -1px !important
-    padding-left 30px
+    padding-left 10px
     padding-right 10px
     justify-content space-between
     align-items center
     color $color-second
+    border-left 2px solid transparent
     border-bottom 1px solid $color-trn-hover
     anim()
 
@@ -101,46 +103,24 @@
     @media (min-width: 1900px)
       height 60px
 
-    &:before
-      content " "
-      position absolute
-      left 10px
-      top 50%
-      width 8px
-      height 8px
-      margin-top -5px
-      border-radius 50%
-      background $color-line-account
-      opacity .6
-      anim()
-
     &:last-child
       margin-bottom 0
-      border none
-
-    &.account1
-      &:before
-        background #438259
-
-    &.account2
-      &:before
-        background #ab68da
-
-    &.account1.active
-      color #438259
-
-    &.account2.active
-      color #ab68da
+      border-bottom none
 
     &:hover
-      margin 0 -25px
-      padding-left 55px
-      padding-right 35px
+      margin 0 -10px
+      padding-left 20px
+      padding-right 20px
       background $color-trn-hover
 
-    &:hover:before
-      opacity 1
-      left 35px
+    &._active
+      cursor default
+      z-index 2
+      margin 0 -10px
+      padding-left 20px
+      padding-right 20px
+      background $color-trn-hover
+      border-left-color $color-link
 
     &__value
       flex-flow row wrap

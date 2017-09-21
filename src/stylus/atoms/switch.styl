@@ -1,13 +1,14 @@
 .switch
   display flex
   flex-flow column wrap
-  align-items flex-end
-  justify-content space-between
+  align-items center
   padding-bottom 20px
   max-width 490px
 
   @media (min-width: 768px)
     padding-bottom 60px
+    align-items flex-end
+    justify-content space-between
 
   @media (min-width: 768px)
     flex-flow row nowrap
@@ -22,6 +23,7 @@
       padding-bottom 0
 
   a
+    padding-bottom 10px
     white-space nowrap
     opacity .3
     cursor pointer
@@ -32,6 +34,7 @@
     letter-spacing 2px
     line-height 1rem
     text-transform uppercase
+    border-bottom 2px solid transparent
     $font-numbers()
 
     &:hover
@@ -40,8 +43,9 @@
     &._active
       opacity 1
       cursor default
-      font-size 2rem
-      letter-spacing 3px
+      // font-size 2rem
+      // letter-spacing 3px
+      border-bottom-color $color-link
 
     &._incomes
       color $color-income
