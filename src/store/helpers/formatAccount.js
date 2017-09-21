@@ -1,8 +1,7 @@
 /**
  * Format account.
  * @param {object} account - Account for format.
- * @param {options} object - Options.
- * @param {options.trns} Array - List of trns.
+ * @param {object} options  - Options.
  * @return {object} Formated account.
  */
 export default function formatAccount(account, options) {

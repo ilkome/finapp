@@ -171,7 +171,7 @@ export default {
             })
           }
           // Child category
-          if (item.parentId > 0) {
+          if (item.parentId !== 0) {
             if (this.showedChildIds.indexOf(item.parentId) === -1) {
               this.showedChildIds.push(item.parentId)
             }
@@ -214,14 +214,6 @@ export default {
       })
       categoriesOrganazed = orderBy(categoriesOrganazed, c => c.name, 'asc')
       return categoriesOrganazed
-    },
-
-    child() {
-      return this.categories.find(c => c.id === '-Ktma0eY3z7lleD9DyEk')
-    },
-
-    root() {
-      return this.categories.find(c => c.id === '-KtmZz2-fALZU7Z9-Iui')
     },
 
     showedCategories() {
@@ -325,7 +317,7 @@ export default {
       }
 
       this.confirmPopCategoryId = false
-      await this.$store.dispatch('deleteCategory', categoryId)
+      await this.$store.dispatch('deleteCategory', categoryForDelete.id)
       this.$store.commit('closeLoader')
     }
   }

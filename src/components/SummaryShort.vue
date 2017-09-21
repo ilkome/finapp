@@ -62,7 +62,7 @@ div
       .summaryShort._pbs(:class="{_maxWidth: maxwidth}")
         .summaryShort__item
           .summaryShort__item__icon._expenses
-          .summaryShort__item__label Expenses
+          .summaryShort__item__label Total
           .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
 
     //- dashboard-incomes
@@ -70,7 +70,7 @@ div
       .summaryShort._pbs(:class="{_maxWidth: maxwidth}")
         .summaryShort__item
           .summaryShort__item__icon._incomes
-          .summaryShort__item__label Incomes
+          .summaryShort__item__label Total
           .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
 
     //- Day
@@ -100,16 +100,16 @@ div
           .summaryShort__item
             .summaryShort__item__icon._incomes
             .summaryShort__item__label Incomes
-            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes / 7) }}
+            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes / duration * 7) }}
           .summaryShort__item
             .summaryShort__item__icon._expenses
             .summaryShort__item__label Expenses
-            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses / 7) }}
+            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses / duration * 7) }}
 
           .summaryShort__item
             .summaryShort__item__icon._total
             .summaryShort__item__label Total
-            .summaryShort__item__total.sum {{ formatMoney(summary.total / 7) }}
+            .summaryShort__item__total.sum {{ formatMoney(summary.total / duration * 7) }}
 
     //- Month
     template(v-if="view === 'month'")
@@ -119,11 +119,11 @@ div
           .summaryShort__item
             .summaryShort__item__icon._incomes
             .summaryShort__item__label Incomes
-            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes / 30) }}
+            .summaryShort__item__total.incomes {{ formatMoney(summary.incomes / duration * 30) }}
           .summaryShort__item
             .summaryShort__item__icon._expenses
             .summaryShort__item__label Expenses
-            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses / 30) }}
+            .summaryShort__item__total.expenses {{ formatMoney(summary.expenses / duration * 30) }}
 
           .summaryShort__item
             .summaryShort__item__icon._total
@@ -165,7 +165,7 @@ export default {
     ...mapGetters(['getTrns']),
 
     duration() {
-      return this.$store.state.filter.duration
+      return this.$store.getters.getFilter.duration
     },
 
     summary() {
@@ -185,7 +185,7 @@ export default {
     },
 
     avSummary() {
-      const startDate = moment().subtract(6, 'months')
+      const startDate = moment().subtract(12, 'years')
       const endDate = moment()
       const yearTrns = this.getTrns({ startDate, endDate })
 

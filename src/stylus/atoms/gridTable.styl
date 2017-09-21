@@ -8,45 +8,10 @@
     grid-row-gap 100px
 
   @media (min-width: 1300px)
-    grid-column-gap 100px
-    grid-template-columns minmax(200px, 1fr) minmax(200px, 1fr)
-
-  @media (min-width: 1300px)
     grid-column-gap 140px
+    grid-template-columns minmax(200px, 1.5fr) minmax(200px, 1fr)
 
   // Dashboard filter
-  &._filter
-    padding-bottom 60px
-
-  // Dashboard horizontal periods
-  &._periods
-    grid-row-gap 10px
-
-    @media (min-width: 768px)
-      margin-bottom 10px
-      grid-row-gap 40px
-      grid-column-gap 40px
-      grid-template-columns repeat(3, 1fr)
-
-    @media (min-width: 1900px)
-      grid-template-columns repeat(4, 1fr)
-
-  // Dashboard horizontal summary
-  &._summary
-    grid-row-gap 40px
-
-    @media (min-width: 768px)
-      grid-row-gap 80px
-      grid-column-gap 100px
-      grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr)
-
-    @media (min-width: 1680px)
-      grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr) minmax(auto, 1fr)
-
-    @media (min-width: 2000px)
-      grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr) minmax(auto, 1fr) minmax(auto, 1fr)
-
-  &._alt
+  &._dashboard
     @media (min-width: 1300px)
-      grid-column-gap 120px
-      grid-template-columns minmax(200px, 1fr) minmax(200px, .8fr)
+      grid-template-columns minmax(200px, 1.6fr) minmax(200px, 1fr)

@@ -181,7 +181,7 @@ export default {
     category() {
       if (this.$route.params.id) {
         // Different Id from bd and firebase
-        const category = this.categories.find(a => a.id == this.$route.params.id)
+        const category = this.categories.find(a => a.id === this.$route.params.id)
         if (category) return category
         return false
       }
@@ -189,14 +189,14 @@ export default {
     },
 
     parentCategory() {
-      if (this.category.parentId > 0) {
+      if (this.category.parentId !== 0) {
         return this.categories.find(a => a.id === this.category.parentId)
       }
     },
 
     childCategories() {
       const categoryId = this.$route.params.id
-      return this.categories.filter(c => c.parentId == categoryId)
+      return this.categories.filter(c => c.parentId === categoryId)
     },
 
     years() {
@@ -217,14 +217,14 @@ export default {
 
       if (this.showChild) {
         const childIds = this.categories
-          .filter(c => c.parentId == categoryId)
+          .filter(c => c.parentId === categoryId)
           .map(c => c.id)
 
         return this.trns.filter(trn => {
-          return trn.categoryId == categoryId || childIds.indexOf(trn.categoryId) !== -1
+          return trn.categoryId === categoryId || childIds.indexOf(trn.categoryId) !== -1
         })
       } else {
-        return this.trns.filter(trn => trn.categoryId == categoryId)
+        return this.trns.filter(trn => trn.categoryId === categoryId)
       }
     },
 
