@@ -54,12 +54,21 @@ export default function formatTrn(trn, options) {
   // Category
   const categoryId = trn.categoryId
   const category = options.categories.find(cat => cat.id === categoryId)
+  let categoryRoot = 0
+
+  // Find root category
+  if (category.parentId !== 0) {
+    categoryRoot = options.categories.find(cat => cat.id === category.parentId)
+  } else {
+    categoryRoot = category
+  }
+
   let categoryName
   let categoryColor = category.color
   const categoryIcon = category.icon
   if (category) {
     if (!categoryColor) {
-      if (category.parentId > 0) {
+      if (category.parentId !== 0) {
         const parent = options.categories.find(cat => cat.id === category.parentId)
         if (parent && parent.color) {
           categoryColor = parent.color
@@ -75,7 +84,7 @@ export default function formatTrn(trn, options) {
 
   const date = +trn.date
   const description = trn.description
-  const id = trn.id ? trn.id : trn.key
+  const id = trn.id
   const type = +trn.type
 
   return {
@@ -83,6 +92,8 @@ export default function formatTrn(trn, options) {
     accountName,
     amount,
     amountRub,
+    category,
+    categoryRoot,
     categoryId,
     categoryColor,
     categoryIcon,

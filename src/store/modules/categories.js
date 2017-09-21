@@ -23,7 +23,7 @@ const store = {
         for (const key in categories) {
           preparedCategories.push({
             ...categories[key],
-            id: categories[key].id ? categories[key].id : key
+            id: key
           })
         }
 
@@ -69,14 +69,15 @@ const store = {
           .update(values)
           .catch(error => {
             console.error(error)
-            commit('showError', `store/transitions/updateCategory: ${error.message}`)
+            commit('showError', `store/categories/updateCategory: ${error.message}`)
           })
         const formatedCategory = formatCategory(values, categories)
 
         commit('updateCategory', formatedCategory)
         commit('closeLoader')
       } catch (error) {
-        commit('showError', `store/transitions/updateCategory: ${error.message}`)
+        console.error(error)
+        commit('showError', `store/categories/updateCategory: ${error.message}`)
       }
     },
 
