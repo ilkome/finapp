@@ -1,6 +1,6 @@
 import { getRates } from '../../api/'
 
-const store = {
+export default {
   state: {
     all: {}
   },
@@ -28,5 +28,3 @@ const store = {
     }
   }
 }
-
-export default store

@@ -7,6 +7,7 @@ import categories from './modules/categories'
 import rates from './modules/rates'
 import trns from './modules/transactions'
 import user from './modules/user'
+import filter from './modules/filter'
 
 Vue.use(Vuex)
 
@@ -17,26 +18,25 @@ const modules = {
   categories,
   rates,
   trns,
-  user
+  user,
+  filter
 }
 
 // state
 // ==============================================
 const state = {
+  appVersion: '6.2.0',
   isMobile: false,
   isPageLoaded: false,
   loader: true,
   error: false,
-  filter: {
-    duration: 10
-  },
   leftBar: {
     isShow: true
   },
   trnForm: {
     isShow: false,
     action: 'create',
-    isUpdateTrn: false,
+    updateTrnId: false,
     wasUpdatedTrn: false,
     categoryId: null,
     isShowCategories: false
@@ -50,12 +50,7 @@ const state = {
   }
 }
 
-// actions dispatch
-// ==============================================
-const actions = {
-}
-
-// mutations commit
+// mutations (commit)
 // ==============================================
 const mutations = {
   pageLoading() {
@@ -80,7 +75,7 @@ const mutations = {
       state.trnForm.wasUpdatedTrn = false
       state.trnForm.isShowCategories = false
     }
-    state.trnForm.isUpdateTrn = false
+    state.trnForm.updateTrnId = false
   },
   toogleTrnForm(state, action) {
     switch (action) {
@@ -95,7 +90,7 @@ const mutations = {
     }
 
     state.trnForm.action = 'create'
-    state.trnForm.isUpdateTrn = false
+    state.trnForm.updateTrnId = false
     state.trnForm.isShowCategories = false
     if (state.trnForm.isShow) {
       state.trnForm.wasUpdatedTrn = false
@@ -135,14 +130,14 @@ const mutations = {
     if (action === 'create') {
       state.trnForm.action = 'create'
       state.trnForm.isShow = true
-      state.trnForm.isUpdateTrn = false
+      state.trnForm.updateTrnId = false
       state.trnForm.wasUpdatedTrn = false
     }
 
     if (action === 'update') {
       state.trnForm.action = 'update'
       state.trnForm.isShow = true
-      state.trnForm.isUpdateTrn = trnId
+      state.trnForm.updateTrnId = trnId
       state.trnForm.wasUpdatedTrn = false
     }
   },
@@ -172,6 +167,5 @@ const mutations = {
 export default new Vuex.Store({
   modules,
   state,
-  actions,
   mutations
 })

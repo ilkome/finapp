@@ -17,7 +17,7 @@ const getters = {
   },
 
   getTrns: (state, getters) => (options) => {
-    let trns = []
+    let trns = getters.trns
 
     function getTrnsInCategoryWithChildren(trns, categoryId) {
       const category = getters.categories.find(category => category.id === categoryId)
@@ -27,7 +27,7 @@ const getters = {
       // Get trns from all child categories
       if (category.parentId === 0) {
         selectedTrns = trns.filter(trn => {
-          return childCategories.filter(category => category.id === trn.categoryId).length
+          return childCategories.filter(cat => cat.id === trn.categoryId).length || trn.categoryId === category.id
         })
       }
 
@@ -38,13 +38,17 @@ const getters = {
       return selectedTrns
     }
 
-    // Trns for seleted period
-    trns = getters.trns
-      .filter(trn =>
-        trn.categoryId !== 62)
-
-    // Trns from seleted category
+    // With options
     if (options) {
+      // Transfers
+      if (!options.showTransfers) {
+        const transferCategory = getters.categories.find(trn => trn.name === 'Перевод')
+        if (transferCategory) {
+          trns = trns.filter(trn =>
+            trn.categoryId !== transferCategory.id)
+        }
+      }
+
       if (options.startDate && options.endDate) {
         trns = trns.filter(trn =>
           trn.date >= moment(options.startDate).startOf('day').valueOf() &&
@@ -56,6 +60,7 @@ const getters = {
       }
 
       if (options.categoryId) {
+        // trns = trns.filter(trn => trn.categoryId === options.categoryId)
         trns = getTrnsInCategoryWithChildren(trns, options.categoryId)
       }
     }
@@ -82,7 +87,7 @@ const actions = {
           const formatedTrn = formatTrn(trns[key], { accounts, categories, rates })
           formatedTrns.push({
             ...formatedTrn,
-            id: formatedTrn.id ? formatedTrn.id : key
+            id: key
           })
         }
 
@@ -102,10 +107,15 @@ const actions = {
       const db = await firebase.database()
       await db.ref(`users/${rootState.user.user.uid}/trns`).push(values)
         .then(async (data) => {
-          const key = data.key
           const newTrn = {
-            ...values,
-            id: key
+            id: data.key,
+            accountId: values.accountId,
+            amount: values.amount,
+            categoryId: values.categoryId,
+            date: values.date,
+            description: values.description,
+            currency: values.currency,
+            type: values.type
           }
           const formatedNewTrn = formatTrn(newTrn, { accounts, categories, rates })
           commit('addTrn', formatedNewTrn)
@@ -126,15 +136,24 @@ const actions = {
       const accounts = rootState.accounts.all
       const categories = rootState.categories.all
       const rates = rootState.rates.all
-
+      const formatedValues = {
+        id: values.id,
+        accountId: values.accountId,
+        amount: values.amount,
+        categoryId: values.categoryId,
+        date: values.date,
+        description: values.description,
+        currency: values.currency,
+        type: values.type
+      }
       const db = await firebase.database()
-      db.ref(`users/${rootState.user.user.uid}/trns/${values.id}`)
-        .update(values)
+      db.ref(`users/${rootState.user.user.uid}/trns/${formatedValues.id}`)
+        .update(formatedValues)
         .catch(error => {
           console.error(error)
           commit('showError', `store/transitions/updateTrn: ${error.message}`)
         })
-      const formatedNewTrn = formatTrn(values, { accounts, categories, rates })
+      const formatedNewTrn = formatTrn(formatedValues, { accounts, categories, rates })
       commit('updateTrn', formatedNewTrn)
       commit('closeLoader')
     } catch (error) {

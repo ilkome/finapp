@@ -26,8 +26,7 @@ const store = {
         for (const key in accounts) {
           preparedAccounts.push({
             ...accounts[key],
-            id: accounts[key].id ? accounts[key].id : key,
-            key
+            id: key
           })
         }
         commit('setAccounts', preparedAccounts)
