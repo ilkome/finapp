@@ -20,7 +20,7 @@ export default {
     return {
       values: {
         name: '',
-        color: '#000000',
+        color: '#242424',
         icon: '',
         parentId: ''
       },
@@ -40,22 +40,26 @@ export default {
         parentId: values.parentId ? values.parentId.trim() : 0
       }
 
+      if (!formatedValues.name) {
+        this.error = 'Please write category name'
+        this.$store.commit('closeLoader')
+        return
+      }
+
       const sameCategory = this.$store.state.categories.all
         .filter(category =>
-          category.id === formatedValues.id &&
           category.name === formatedValues.name &&
-          category.icon === formatedValues.icon &&
           category.parentId === formatedValues.parentId)
 
       if (sameCategory.length) {
-        this.error = 'Same category is already exist!'
+        this.error = 'Same category name is already exist!'
         this.$store.commit('closeLoader')
         return
       }
 
       await this.$store.dispatch('addCategory', formatedValues)
       this.values.name = ''
-      this.values.color = '#000000'
+      this.values.color = '#242424'
       this.values.icon = ''
       this.values.parentId = 0
       this.$store.commit('closeLoader')
