@@ -70,6 +70,12 @@ export default {
   },
 
   methods: {
+    onClickTrnFormToogle() {
+      this.$store.commit('toogleTrnForm')
+    },
+    onSidebarToogle() {
+      this.$store.commit('toogleLeftbar')
+    },
     toogleBodyOverflow() {
       if (this.$store.state.isMobile) {
         const body = document.querySelector('body')
@@ -79,14 +85,6 @@ export default {
           body.style.overflow = ''
         }
       }
-    },
-
-    onClickTrnFormToogle() {
-      this.$store.commit('toogleTrnForm')
-    },
-
-    onSidebarToogle() {
-      this.$store.commit('toogleLeftbar')
     }
   }
 }
