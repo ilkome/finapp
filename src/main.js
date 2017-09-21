@@ -56,7 +56,6 @@ new Vue({
       await app.auth().onAuthStateChanged((user) => {
         if (user) {
           this.$store.commit('signIn', user)
-
           const userRef = `users/${user.uid}`
 
           const formatDataAndDispatchActions = async (snapshot) => {
@@ -76,7 +75,7 @@ new Vue({
             .then(async (snapshot) => {
               await formatDataAndDispatchActions(snapshot)
             })
-            .catch(error => console.log(error))
+            .catch(error => console.error(error))
 
           // db.ref(userRef).on('value', async (snapshot) => {
           //   await formatDataAndDispatchActions(snapshot)
