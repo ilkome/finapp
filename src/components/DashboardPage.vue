@@ -1,6 +1,7 @@
 <template lang="pug">
 .component
-  .module
+  //- Content
+  .module._minHeight
     .module-in
       //- Page date header
       .dateTitle
@@ -14,27 +15,29 @@
         //- Days
         .dateTitle__item
           .dateTitle__periods
-            .dateTitle__periods__item
-              .fa.fa-object-group(@click.prevent="toogleGroupByParent")
             .dateTitle__periods__item(
               :class="{_active: duration === 10 && isLastDays}"
-              @click.prevent.stop="setDuration(10)"
+              @click.prevent="setDuration(10)"
             ) 10 days
             .dateTitle__periods__item(
-              :class="{_active: duration === 30 && isLastDays}"
-              @click.prevent.stop="setDuration(30)"
-            ) 30 days
-            .dateTitle__periods__item(
               :class="{_active: calendarPreset === 'isoweek' && isLastDays}",
-              @click.prevent.stop="setDates('isoweek')"
+              @click.prevent="setDates('isoweek')"
             ) Week
             .dateTitle__periods__item(
               :class="{_active: calendarPreset === 'month' && isLastDays}",
-              @click.prevent.stop="setDates('month')"
+              @click.prevent="setDates('month')"
             ) Month
+            .dateTitle__periods__item(
+              :class="{_active: calendarPreset === 'year' && isLastDays}",
+              @click.prevent="setDates('year')"
+            ) Year
+            .dateTitle__periods__item(
+              :class="{_active: calendarPreset === 'all' && isLastDays}",
+              @click.prevent="setDates('all')"
+            ) All
 
-        //- Dropdown
-        transition(name="fade2")
+        //- Calendar dropdown
+        transition(name="calendarPopupAnimation")
           .calendar-dropdown(
             :style="{'left':calendar.left+'px','top':calendar.top+'px'}",
             v-if="calendar.show")
@@ -72,6 +75,10 @@
                   :class="{_active: calendarPreset === 'year' && isLastDays}",
                   @click.prevent="setDates('year')"
                 ) This year
+                .calendarPeriod__item(
+                  :class="{_active: calendarPreset === 'all' && isLastDays}",
+                  @click.prevent="setDates('all')"
+                ) All
 
             //- Calendar
             Calendar(
@@ -81,13 +88,146 @@
               @select="selectCalendarDates"
             )
 
+      template(v-if="selectedCategory || getFilter.account")
+        h2.title
+          template(v-if="selectedCategory && getFilter.account")
+            .icon._link._mr(@click.prevent="clearFilter()")
+              .fa.fa-times
+              .icon__label Clear filter
 
-      //- Together
-      //------------------------------------------------
-      template
-        .gridTable._periods
-          .gridTable__item(v-for="(period, index) in previousData")
-            .itemStat._link(
+          template(v-if="getFilter.account")
+            .icon._link._mr._link(@click.prevent="setFilterAccount(null)")
+              .icon__abbr {{ getFilter.account.name.charAt(0) }}{{ getFilter.account.name.charAt(1) }}
+              .icon__label Clear: {{ getFilter.account.name }}
+
+          template(v-if="selectedCategory")
+            .icon._mr._link(@click.prevent="setFilterCategory(null)", :style="`background: ${selectedCategory.color}`")
+              div(:class="selectedCategory.icon")
+              .icon__label Clear: {{ selectedCategory.name }}
+
+      .gridTable._dashboard
+        .gridTable__item
+          .switch
+            .switch__item
+              a._expenses(
+                @click="changeTabMoney('expenses')",
+                :class="{_active: showedTabMoney === 'expenses'}") Expenses
+            .switch__item
+              a._incomes(
+                @click="changeTabMoney('incomes')",
+                :class="{_active: showedTabMoney === 'incomes'}") Incomes
+            .switch__item
+              a._history(
+                @click="changeTabMoney('history')",
+                :class="{_active: showedTabMoney === 'history'}") History
+
+          //- Expenses
+          template(v-if="expensesItemStats.length > 0 && showedTabMoney === 'expenses'")
+            .itemStatGroup
+              //- h2.title.expenses._mbm.moneyTitle Expenses
+              SummaryShort(:trns="trnsList", view="dashboard-expenses")
+
+              ItemStat(
+                v-for="itemStat in expensesItemStats"
+                :key="itemStat.id"
+                :idsOfOpenedCategories="idsOfOpenedCategories"
+                :item="itemStat"
+                :trns="expensesItemStats"
+                type="expenses"
+                v-on:onClickItem="toogleShowTrnsInCategory"
+                v-on:onClickIcon="setFilterCategory"
+              )
+                template(slot="inside")
+                  template(v-if="shouldOpenCategory(itemStat.id)")
+                    template(v-if="getCategoryStat(itemStat.id, 'expenses').length")
+                      ItemStat(
+                        v-for="itemStatChild in getCategoryStat(itemStat.id, 'expenses')"
+                        :key="itemStatChild.id"
+                        :idsOfOpenedCategories="idsOfOpenedCategories"
+                        :item="itemStatChild"
+                        :trns="getCategoryStat(itemStat.id, 'expenses')"
+                        type="expenses"
+                        :isChild="true"
+                        v-on:onClickItem="toogleShowTrnsInCategory"
+                        v-on:onClickIcon="setFilterCategory"
+                      )
+                        template(slot="inside")
+                          template(v-if="shouldOpenCategory(itemStatChild.id)")
+                            .itemStat__trns
+                              TrnItem(
+                                v-for="trn in itemStatChild.trns.filter(trn => trn.type === 0).slice(0, 20)",
+                                :trn="trn",
+                                :key="trn.id"
+                                v-on:onClickAccount="setFilterAccount"
+                                view="small")
+
+                    template(v-else)
+                      .itemStat__trns
+                        TrnItem(
+                          v-for="trn in itemStat.trns.slice(0, 20)",
+                          :trn="trn",
+                          :key="trn.id"
+                          v-on:onClickAccount="setFilterAccount"
+                          view="small")
+
+          //- Incomes
+          template(v-if="incomesItemStats.length > 0 && showedTabMoney === 'incomes'")
+            .itemStatGroup
+              //- h2.title.incomes._wide._mbm.moneyTitle Incomes
+              SummaryShort(:trns="trnsList", view="dashboard-incomes")
+              ItemStat(
+                v-for="itemStat in incomesItemStats"
+                :key="itemStat.id"
+                :idsOfOpenedCategories="idsOfOpenedCategories"
+                :item="itemStat"
+                :trns="incomesItemStats"
+                type="incomes"
+                v-on:onClickItem="toogleShowTrnsInCategory"
+                v-on:onClickIcon="setFilterCategory"
+              )
+                template(slot="inside")
+                  template(v-if="shouldOpenCategory(itemStat.id)")
+                    //- Show child category
+                    template(v-if="getCategoryStat(itemStat.id, 'incomes').length")
+                      ItemStat(
+                        v-for="itemStatChild in getCategoryStat(itemStat.id, 'incomes')"
+                        :key="itemStatChild.id"
+                        :idsOfOpenedCategories="idsOfOpenedCategories"
+                        :item="itemStatChild"
+                        :trns="getCategoryStat(itemStat.id, 'incomes')"
+                        type="incomes"
+                        :isChild="true"
+                        v-on:onClickItem="toogleShowTrnsInCategory"
+                        v-on:onClickIcon="setFilterCategory"
+                      )
+                        template(slot="inside")
+                          template(v-if="shouldOpenCategory(itemStatChild.id)")
+                            .itemStat__trns
+                              TrnItem(
+                                v-for="trn in itemStatChild.trns.filter(trn => trn.type === 1).slice(0, 20)",
+                                :trn="trn",
+                                :key="trn.id"
+                                v-on:onClickAccount="setFilterAccount"
+                                view="small")
+                    //- Show trns
+                    template(v-else)
+                      .itemStat__trns
+                        TrnItem(
+                          v-for="trn in itemStat.trns.slice(0, 20)",
+                          :trn="trn",
+                          :key="trn.id",
+                          v-on:onClickAccount="setFilterAccount"
+                          view="small")
+          template(v-if="showedTabMoney === 'history'")
+            .itemStatGroup
+              TrnsList(:trns="trnsListHistory.slice(0, 100)")
+
+
+        .gridTable__item
+          template(v-if="calendarPreset !== 'all'")
+            h3.numberTitle Periods
+            .itemStat._link._small(
+              v-for="(period, index) in previousData",
               @click.prevent="selectPeriodStat(index)",
               :class="{ _active: selectedPeriodIndex === index }")
               .itemStat__in
@@ -95,198 +235,55 @@
                   .itemStat__text
                     .itemStat__name {{ period.date }}
                     .itemStat__price.sum {{ formatMoney(period.incomes - period.expenses) }}
-                  .itemStat__graph
+                  .itemStat__graph(@click.prevent="changeTabMoney('incomes')")
                     .itemStat__graph__in._income(:style="getPreviousDataGraphWidth(period.incomes)")
                       .itemStat__graph__in__price {{ formatMoney(period.incomes) }}
-                  .itemStat__graph
+                  .itemStat__graph(@click.prevent="changeTabMoney('expenses')")
                     .itemStat__graph__in._expense(:style="getPreviousDataGraphWidth(period.expenses)")
                       .itemStat__graph__in__price {{ formatMoney(period.expenses) }}
-
-  //- Tabs
-  //------------------------------------------------
-  template
-    template(v-if="(incomesItemStat.length || expensesItemStat.length) !== 0")
-      .tabs
-         .tabs-in
-           a(
-             @click="changeTab('charts')",
-             :class="{_active: showedTab === 'charts'}") Charts
-           a(
-             @click="changeTab('stat')",
-             :class="{_active: showedTab === 'stat'}") Statistic
-           a(
-             @click="changeTab('history')",
-             :class="{_active: showedTab === 'history'}") History
-
-      //- Content
-      .module._bg._minHeight
-        .module-in
-          //- Charts
-          template(v-if="showedTab === 'charts'")
-            .gridTable
-              //- Expenses
-              //------------------------------------------------
-              .gridTable__item(v-if="expensesItemStat.length > 0")
-                h2.title.expenses._mbm.moneyTitle Expenses
-                SummaryShort(:trns="trnsList", view="dashboard-expenses")
-
-                template(v-for="itemStat in expensesItemStat")
-                  .itemStat._link._small._categoryStat(:class="{_opened: showedTrnsCategoryId.indexOf(itemStat.id) !== -1}")
-                    .itemStat__in(@click.prevent.stop="toogleShowTrnsInCategory(itemStat.id)")
-                      router-link.itemStat__icon(
-                        :to="`/categories/${itemStat.id}`",
-                        title="Go to category"
-                      )
-                        .icon._link(:style="`background: ${itemStat.color}`")
-                          div(:class="itemStat.icon")
-                      .itemStat__content
-                        .itemStat__text
-                          .itemStat__name {{ itemStat.name }}
-                          .itemStat__price.sum {{ formatMoney(itemStat.total) }}
-                        .itemStat__graph
-                          .itemStat__graph__in._expense(:style="getCategoryGraphWidth(itemStat.total, expensesItemStat)")
-
-                    template(v-if="groupedByParent")
-                      template(v-if="showedTrnsCategoryId.indexOf(itemStat.id) !== -1")
-                        template(v-if="showCategoryStat(itemStat.id, 'expense').length && showCategoryStat(itemStat.id, 'expense').length > 1")
-                          template(v-for="itemStatChild in showCategoryStat(itemStat.id, 'expense')")
-                            .itemStat._link._child(:class="{_opened: showedTrnsCategoryId.indexOf(itemStatChild.id) !== -1}")
-                              .itemStat__in(@click.prevent="toogleShowTrnsInCategory(itemStatChild.id)")
-                                router-link.itemStat__icon(
-                                  :to="`/categories/${itemStatChild.id}`",
-                                  title="Go to category"
-                                )
-                                  .icon(:style="`background: ${itemStatChild.color}`")
-                                    div(:class="itemStatChild.icon")
-                                .itemStat__content
-                                  .itemStat__text
-                                    .itemStat__name {{ itemStatChild.name }}
-                                    .itemStat__price.sum {{ formatMoney(itemStatChild.total) }}
-                                  .itemStat__graph
-                                    .itemStat__graph__in._expense(:style="getCategoryGraphWidth(itemStatChild.total, expensesItemStat)")
-
-                              template(v-if="showedTrnsCategoryId.indexOf(itemStatChild.id) !== -1")
-                                .itemStat__trns
-                                  TrnItem(
-                                    v-for="trn in itemStatChild.trns.filter(trn => trn.type === 0).slice(0, 20)",
-                                    :trn="trn",
-                                    :key="trn.id",
-                                    view="small")
-
-                        template(v-else)
-                          .itemStat__trns
-                            TrnItem(
-                              v-for="trn in itemStat.trns.slice(0, 20)",
-                              :trn="trn",
-                              :key="trn.id",
-                              view="small")
-
-              //- Incomes
-              //------------------------------------------------
-              .gridTable__item(v-if="incomesItemStat.length > 0")
-                h2.title.incomes._wide._mbm.moneyTitle Incomes
-                SummaryShort(:trns="trnsList", view="dashboard-incomes")
-
-                template(v-for="itemStat in incomesItemStat")
-                  .itemStat._link._small._categoryStat(:class="{_opened: showedTrnsCategoryId.indexOf(itemStat.id) !== -1}")
-                    .itemStat__in(@click.prevent="toogleShowTrnsInCategory(itemStat.id)")
-                      router-link.itemStat__icon(
-                        :to="`/categories/${itemStat.id}`",
-                        title="Go to category"
-                      )
-                        .icon(:style="`background: ${itemStat.color}`")
-                          div(:class="itemStat.icon")
-                      .itemStat__content
-                        .itemStat__text
-                          .itemStat__name {{ itemStat.name }}
-                          .itemStat__price.sum {{ formatMoney(itemStat.total) }}
-                        .itemStat__graph
-                          .itemStat__graph__in._income(:style="getCategoryGraphWidth(itemStat.total, incomesItemStat)")
-
-                    template(v-if="showedTrnsCategoryId.indexOf(itemStat.id) !== -1")
-                      template(v-if="showCategoryStat(itemStat.id, 'incomes').length && showCategoryStat(itemStat.id, 'incomes').length > 1")
-                        template(v-for="itemStatChild in showCategoryStat(itemStat.id, 'incomes')")
-                          .itemStat._link._small._child(:class="{_opened: showedTrnsCategoryId.indexOf(itemStatChild.id) !== -1}")
-                            .itemStat__in(@click.prevent="toogleShowTrnsInCategory(itemStatChild.id)")
-                              router-link.itemStat__icon(
-                                :to="`/categories/${itemStatChild.id}`",
-                                title="Go to category"
-                              )
-                                .icon(:style="`background: ${itemStatChild.color}`")
-                                  div(:class="itemStatChild.icon")
-                              .itemStat__content
-                                .itemStat__text
-                                  .itemStat__name {{ itemStatChild.name }}
-                                  .itemStat__price.sum {{ formatMoney(itemStatChild.total) }}
-                                .itemStat__graph
-                                  .itemStat__graph__in._income(:style="getCategoryGraphWidth(itemStatChild.total, incomesItemStat)")
-
-                            template(v-if="showedTrnsCategoryId.indexOf(itemStatChild.id) !== -1")
-                              .itemStat__trns
-                                TrnItem(
-                                  v-for="trn in itemStatChild.trns.slice(0, 20)",
-                                  :trn="trn",
-                                  :key="trn.id",
-                                  view="small")
-
-                      template(v-else)
-                        .itemStat__trns
-                          TrnItem(
-                            v-for="trn in itemStat.trns.slice(0, 20)",
-                            :trn="trn",
-                            :key="trn.id",
-                            view="small")
-
-          //- Statistic
-          template(v-if="showedTab === 'stat'")
-            .gridTable._summary
-              .gridTable__item
-                SummaryShort(:trns="trnsList", view="dashboard-average", :maxwidth="true")
-
-              .gridTable__item
-                SummaryShort(:trns="trnsList", view="day", :maxwidth="true")
-
-              .gridTable__item(v-if="duration > 14")
-                SummaryShort(:trns="trnsList", view="week", :maxwidth="true")
-
-              .gridTable__item(v-if="duration > 60")
-                SummaryShort(:trns="trnsList", view="month", :maxwidth="true")
-
-          //- History
-          template(v-if="showedTab === 'history'")
-              TrnsList(:trns="trnsList.slice(0, 100)")
+            .btn(@click.prevent="showedPeriod++") Show more
 </template>
-
 
 <script>
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 import date from 'date-fns'
-import uniqBy from 'lodash/uniqBy'
 import orderBy from 'lodash/orderBy'
 import formatMoney from '../mixins/formatMoney'
+import getCategoriesStatFromTrns from '../mixins/getCategoriesStatFromTrns'
 import Calendar from './calendar/calendar.vue'
 import TrnsList from './TrnsList.vue'
 import TrnItem from './TrnItem.vue'
 import SummaryShort from './SummaryShort.vue'
+import ItemStat from './ItemStat.vue'
 
 export default {
   name: 'DashboardPage',
-  mixins: [formatMoney],
-  components: { TrnsList, TrnItem, Calendar, SummaryShort },
+  mixins: [formatMoney, getCategoriesStatFromTrns],
+  components: { ItemStat, TrnsList, TrnItem, Calendar, SummaryShort },
 
   data() {
     return {
+      accountId: null,
+      categoryId: null,
       showedDate: {},
-      showedTab: 'charts',
+      showedTab: 'alt',
+      showedTabMoney: 'expenses',
       groupedByParent: true,
+      selectedCategory: null,
+      selectedAccount: null,
       selectedPeriodIndex: 0,
-      showedTrnsCategoryId: [],
+      showedPeriod: 2,
+      idsOfOpenedCategories: [],
       trnsDate: {
         start: '',
         end: ''
       },
-      calendar: {}
+      calendar: {
+        show: false,
+        range: true,
+        zero: true
+      }
     }
   },
 
@@ -299,25 +296,27 @@ export default {
   },
 
   beforeMount() {
-    this.trnsDate.start = this.globalDate.start
-    this.trnsDate.end = this.globalDate.end
-    this.calendar = {
-      show: false,
-      range: true,
-      zero: true,
-      value: [
-        moment(this.globalDate.start).format('Y.M.D').split('.'),
-        moment(this.globalDate.end).format('Y.M.D').split('.')
-      ]
-    }
+    // this.trnsDate.start = this.globalDate.start
+    // this.trnsDate.end = this.globalDate.end
+    // this.calendar = {
+    //   show: false,
+    //   range: true,
+    //   zero: true
+    // value: [
+    //   moment(this.globalDate.start).format('Y.M.D').split('.'),
+    //   moment(this.globalDate.end).format('Y.M.D').split('.')
+    // ]
+    // }
 
-    if (this.isLastDays) {
-      this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
-      this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
-    } else {
-      this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
-      this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
-    }
+    // if (this.isLastDays) {
+    //   this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+    //   this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+    // } else {
+    //   this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+    //   this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+    // }
+
+    this.setDates('isoweek')
 
     document.addEventListener('keyup', (event) => {
       if (event.keyCode === 27) { // escape key
@@ -327,58 +326,77 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['categories', 'trns', 'getTrns']),
-
+    ...mapGetters(['accounts', 'categories', 'trns', 'getTrns', 'getFilter']),
     globalDate() {
       return {
         start: moment(this.$store.state.dates.start).startOf('day').valueOf(),
         end: moment(this.$store.state.dates.end).startOf('day').valueOf()
       }
     },
-
     isLastDays() {
       if (moment(this.globalDate.end).endOf('day').valueOf() === moment().endOf('day').valueOf()) {
         return true
       }
       return false
     },
-
     calendarPreset() {
       return this.$store.state.dashboard.calendarPreset
     },
-
     duration() {
-      return this.$store.state.filter.duration
+      return this.getFilter.duration
     },
-
     trnsList() {
       if (this.calendarPreset === 'all') {
-        return this.getTrns()
+        return this.getTrns({
+          accountId: this.accountId,
+          categoryId: this.categoryId
+        })
       } else {
-        return this.getTrns({ startDate: this.trnsDate.start, endDate: this.trnsDate.end, accountId: 11 })
+        return this.getTrns({
+          startDate: this.trnsDate.start,
+          endDate: this.trnsDate.end,
+          accountId: this.getFilter.account && this.getFilter.account.id,
+          categoryId: this.categoryId
+        })
       }
     },
-
+    trnsListHistory() {
+      if (this.calendarPreset === 'all') {
+        return this.getTrns({
+          showTransfers: true,
+          accountId: this.accountId,
+          categoryId: this.categoryId
+        })
+      } else {
+        return this.getTrns({
+          showTransfers: true,
+          startDate: this.trnsDate.start,
+          endDate: this.trnsDate.end,
+          accountId: this.getFilter.account && this.getFilter.account.id,
+          categoryId: this.categoryId
+        })
+      }
+    },
     incomesTrns() {
       return this.trnsList.filter(t => t.type === 1)
     },
-
     expensesTrns() {
       return this.trnsList.filter(t => t.type === 0)
     },
-
-    incomesItemStat() {
-      return this.formatTrnsForStat(this.incomesTrns)
+    incomesItemStats() {
+      return this.getCategoriesStatFromTrns(this.incomesTrns)
     },
-
-    expensesItemStat() {
-      return this.formatTrnsForStat(this.expensesTrns)
+    expensesItemStats() {
+      return this.getCategoriesStatFromTrns(this.expensesTrns)
     },
-
     previousData() {
       const data = []
 
-      for (let period = 0; period <= 2; period++) {
+      let maxCountOfPeriods = this.showedPeriod
+      if (this.calendarPreset === 'all') return
+      if (this.calendarPreset === 'year') maxCountOfPeriods = 3
+
+      for (let period = 0; period <= maxCountOfPeriods; period++) {
         const periodDuration = this.duration * period
         let periodStartDate = moment(this.globalDate.start).subtract(periodDuration, 'days').startOf('day')
         let periodEndDate = moment(this.globalDate.end).subtract(periodDuration, 'days').endOf('day')
@@ -406,9 +424,16 @@ export default {
           periodName = this.formatDates(periodStartDate, periodEndDate, 'period')
         }
 
-        const periodTrns = this.getTrns(moment(periodStartDate).valueOf(), moment(periodEndDate).valueOf())
+        const startDate = moment(periodStartDate).valueOf()
+        const endDate = moment(periodEndDate).valueOf()
+        const periodTrns = this.getTrns({
+          startDate,
+          endDate,
+          accountId: this.getFilter.account && this.getFilter.account.id,
+          categoryId: this.categoryId
+        })
 
-        if (periodTrns.length || period <= 2) {
+        if (periodTrns.length) {
           const periodIncomes = periodTrns
             .filter(t => t.type === 1)
             .reduce((sum, current) => sum + current.amountRub, 0)
@@ -425,7 +450,13 @@ export default {
             total: periodTotal
           })
         } else {
-          break
+          data.push({
+            period,
+            date: periodName,
+            incomes: 0,
+            expenses: 0,
+            total: 0
+          })
         }
       }
 
@@ -434,7 +465,27 @@ export default {
   },
 
   methods: {
-    getTrnsInCategoryWithChildren(categoryId) {
+    getCategoryGraphWidth(total, trns) {
+      const width = total / trns[0].total * 100
+      const renderWidth = width > 0 ? width : 0
+      return { width: `calc(${renderWidth}%)` }
+    },
+    getPreviousDataGraphWidth(value) {
+      const dataSorted = orderBy(this.previousData, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
+      const biggest = dataSorted[0].incomes > dataSorted[0].expenses ? dataSorted[0].incomes : dataSorted[0].expenses
+      const height = value / biggest * 100
+
+      let renderHeight
+      height > 0
+        ? renderHeight = height > 1 ? height : 1
+        : renderHeight = 0
+
+      return {
+        width: `calc(${renderHeight}%)`
+      }
+    },
+    getCategoryStat(categoryId, type) {
+      const trnType = type === 'incomes' ? 1 : 0
       const category = this.categories.find(category => category.id === categoryId)
       const childCategories = this.categories.filter(category => category.parentId === categoryId)
       let trns = []
@@ -452,14 +503,6 @@ export default {
       if (category.parentId !== 0) {
         trns = this.trnsList.filter(trn => trn.categoryId === categoryId)
       }
-
-      return trns
-    },
-
-    showCategoryStat(categoryId, type) {
-      const trnType = type === 'incomes' ? 1 : 0
-      const trns = this.getTrnsInCategoryWithChildren(categoryId)
-      const childCategories = this.categories.filter(category => category.parentId === categoryId)
 
       // Create array of objects with data in categories
       const data = []
@@ -481,14 +524,12 @@ export default {
       })
       return orderBy(data, d => d.total, 'desc')
     },
-
     toogleGroupByParent() {
       this.groupedByParent = !this.groupedByParent
     },
-
     setDuration(duration) {
       this.$store.commit('showLoader', 'show')
-      this.showedTrnsCategoryId = []
+      this.idsOfOpenedCategories = []
       this.selectedPeriodIndex = 0
 
       const startDate = moment().subtract(duration - 1, 'days').startOf('day')
@@ -515,11 +556,10 @@ export default {
 
       this.$store.commit('closeLoader')
     },
-
     selectPeriodStat(index) {
       if (this.selectedPeriodIndex === index) return
 
-      this.showedTrnsCategoryId = []
+      this.idsOfOpenedCategories = []
       this.selectedPeriodIndex = index
 
       let startDate = moment(this.globalDate.start).subtract(this.duration * index, 'days')
@@ -546,6 +586,13 @@ export default {
         else endDate = moment(this.globalDate.end).subtract(index, 'years').endOf('year')
       }
 
+      // Year
+      if (this.calendarPreset === 'all') {
+        startDate = moment(this.globalDate.start).subtract(index, 'years').startOf('year')
+        if (index === 0) endDate = moment(this.globalDate.end).endOf('day')
+        else endDate = moment(this.globalDate.end).subtract(index, 'years').endOf('year')
+      }
+
       // Trns
       this.trnsDate.start = startDate
       this.trnsDate.end = endDate
@@ -566,7 +613,6 @@ export default {
         moment(endDate).format('Y.M.D').split('.')
       ]
     },
-
     selectCalendarDates(startCalendar, endCalendar) {
       const startDate = moment(startCalendar.join('.'), 'Y.M.D').startOf('day')
       const endDate = moment(endCalendar.join('.'), 'Y.M.D').endOf('day')
@@ -593,9 +639,41 @@ export default {
         this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
       }
     },
-
+    clearFilter() {
+      this.categoryId = null
+      this.selectedCategory = null
+      this.idsOfOpenedCategories = []
+      this.$store.commit('setAccount', null)
+    },
+    setFilterAccount(account) {
+      if (account) {
+        this.$store.commit('setAccount', account)
+      } else {
+        this.$store.commit('setAccount', null)
+      }
+    },
+    setFilterCategory(categoryId) {
+      if (categoryId) {
+        const category = this.categories.find(c => c.id === categoryId)
+        if (category) {
+          this.categoryId = categoryId
+          this.selectedCategory = category
+          if (this.selectedCategory.parentId === 0) {
+            this.idsOfOpenedCategories = []
+            this.idsOfOpenedCategories.push(categoryId)
+          } else {
+            this.groupedByParent = false
+          }
+        }
+      } else {
+        this.categoryId = null
+        this.selectedCategory = null
+        this.idsOfOpenedCategories = []
+        this.groupedByParent = true
+      }
+    },
     setDates(period) {
-      this.showedTrnsCategoryId = []
+      this.idsOfOpenedCategories = []
       this.selectedPeriodIndex = 0
 
       let duration = 1
@@ -607,11 +685,16 @@ export default {
           duration = 31
           break
         case 'year':
-          duration = 365 * 2
+          duration = 365
+          break
+        case 'all':
+          duration = 365 * 4
           break
       }
 
-      const startDate = moment().startOf(period).valueOf()
+      const seletedPeriod = period === 'all' ? 'year' : period
+
+      const startDate = moment().startOf(seletedPeriod).valueOf()
       const endDate = moment().endOf('day').valueOf()
 
       this.$store.commit('setDuration', duration)
@@ -623,8 +706,13 @@ export default {
       this.trnsDate.end = endDate
 
       // Title
-      this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
-      this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+      if (period === 'all') {
+        this.showedDate.first = 'All data'
+        this.showedDate.second = 'is showed'
+      } else {
+        this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+        this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+      }
 
       // Calendar
       this.calendar.show = false
@@ -633,7 +721,9 @@ export default {
         moment(this.trnsDate.end).format('Y.M.D').split('.')
       ]
     },
-
+    shouldOpenCategory(itemId) {
+      return this.idsOfOpenedCategories.indexOf(itemId) !== -1
+    },
     formatDates(start, end, type) {
       const startDate = moment(start).startOf('day')
       const endDate = moment(end).endOf('day').valueOf()
@@ -709,15 +799,16 @@ export default {
               switch (difference) {
                 case 0: return `This month`
                 case 1: return `Last month`
-                default: return `${difference} months ago`
+                default: return moment(startDate).format('MMM Y')
               }
             case 'year':
               difference = date.differenceInCalendarYears(this.globalDate.end, startDate)
               switch (difference) {
                 case 0: return `This year`
-                case 1: return `Last year`
-                default: return `${difference} years ago`
+                default: return moment(startDate).format('Y')
               }
+            case 'all':
+              return moment(startDate).format('Y')
             default: return `No date`
           }
         }
@@ -736,13 +827,11 @@ export default {
         }
       }
     },
-
     openPopupCalendar(event) {
       this.calendar.show = !this.calendar.show
       this.calendar.left = event.target.closest('.dateTitle__header').offsetLeft - 0
       this.calendar.top = event.target.closest('.dateTitle__header').offsetTop + 88
     },
-
     closePopCalendar(event) {
       const link = document.querySelector('.dateTitle__header')
       const target = event.target
@@ -756,109 +845,19 @@ export default {
         this.calendar.show = false
       }
     },
-
-    getCategoryGraphWidth(total, trns) {
-      const width = total / trns[0].total * 100
-      const renderWidth = width > 0 ? width : 0
-      return { width: `calc(${renderWidth}%)` }
-    },
-
-    getPreviousDataGraphWidth(value) {
-      const dataSorted = orderBy(this.previousData, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
-      const biggest = dataSorted[0].incomes > dataSorted[0].expenses ? dataSorted[0].incomes : dataSorted[0].expenses
-      const height = value / biggest * 100
-
-      let renderHeight
-      height > 0
-        ? renderHeight = height > 1 ? height : 1
-        : renderHeight = 0
-
-      return {
-        width: `calc(${renderHeight}%)`
-      }
-    },
-
     toogleShowTrnsInCategory(categoryId) {
-      this.showedTrnsCategoryId.indexOf(categoryId) === -1
-        ? this.showedTrnsCategoryId.push(categoryId)
-        : this.showedTrnsCategoryId = this.showedTrnsCategoryId.filter(cId => cId !== categoryId)
+      this.idsOfOpenedCategories.indexOf(categoryId) === -1
+        ? this.idsOfOpenedCategories.push(categoryId)
+        : this.idsOfOpenedCategories = this.idsOfOpenedCategories.filter(cId => cId !== categoryId)
     },
-
     changeTab(tab) {
       this.showedTab = tab
-    },
-
-    formatTrnsForStat(trns) {
-      if (trns && trns.length > 0) {
-        // Grouped by parent category
-        if (this.groupedByParent) {
-          // Create array of categories ids
-          const formatedTrns = trns.map(trn => {
-            const trnCategory = this.categories.find(category => category.id === trn.categoryId)
-            // It's root category
-            if (trnCategory.parentId === 0) {
-              return {
-                ...trn,
-                parentCategory: trnCategory,
-                parentCategoryId: trnCategory.id
-              }
-            }
-
-            // It's child category -> find parent category
-            if (trnCategory.parentId !== 0) {
-              const parentCategory = this.categories.find(category => category.id === trnCategory.parentId)
-              return {
-                ...trn,
-                parentCategory,
-                parentCategoryId: parentCategory.id
-              }
-            }
-          })
-
-          const catsIds = uniqBy(formatedTrns, 'parentCategory.id').map(trn => trn.parentCategory.id)
-
-          // Create array of objects with data in categories
-          const data = catsIds.map((id) => {
-            const trnsInCategory = formatedTrns.filter(trn => trn.parentCategory.id === id)
-            const total = trnsInCategory.reduce((sum, current) => sum + current.amountRub, 0)
-            const category = this.categories.find(c => c.id === id)
-            return {
-              id,
-              category: category,
-              name: category.name,
-              total,
-              icon: category.icon,
-              color: category.color,
-              trns: trnsInCategory
-            }
-          })
-          return orderBy(data, d => d.total, 'desc')
-        }
-
-        // Grouped by child category
-        if (!this.groupedByParent) {
-          // Create array of categories ids
-          const catsIds = uniqBy(trns, 'categoryId').map(trn => trn.categoryId)
-
-          // Create array of objects with data in categories
-          const data = catsIds.map((id) => {
-            const trnsInCategory = trns.filter(trn => trn.categoryId === id)
-            const total = trnsInCategory.reduce((sum, current) => sum + current.amountRub, 0)
-            const category = this.categories.find(c => c.id === id)
-            return {
-              id,
-              category: category,
-              name: category.name,
-              total,
-              icon: category.icon,
-              color: category.color,
-              trns: trnsInCategory
-            }
-          })
-          return orderBy(data, d => d.total, 'desc')
-        }
+      if (tab !== 'alt') {
+        this.showedPeriod = 2
       }
-      return []
+    },
+    changeTabMoney(tab) {
+      this.showedTabMoney = tab
     }
   }
 }

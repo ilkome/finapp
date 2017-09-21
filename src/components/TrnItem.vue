@@ -14,10 +14,7 @@
             :to="`/categories/${trn.categoryId}`",
             title="Go to category"
           ) {{ trn.categoryName }}
-          router-link.grid__item__account(
-            :to="`/accounts/${trn.accountId}`",
-            title="Go to account"
-          ) {{ trn.accountName }}
+          .grid__item__account(@click.prevent="onClickAccount") {{ trn.accountName }}
         template(v-if="editedTrn && trn.id === editedTrn")
           .grid__item._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
         template(v-else)
@@ -92,16 +89,15 @@ export default {
 
   computed: {
     editedTrn() {
-      return this.$store.state.trnForm.isUpdateTrn
+      return this.$store.state.trnForm.updateTrnId
     }
   },
 
   methods: {
     async deleteTrn(id) {
-      console.log('TrnItem: deleteTrn:', id)
       this.$store.commit('showLoader')
       await this.$store.dispatch('deleteTrn', id)
-      if (id === this.$store.state.trnForm.isUpdateTrn) {
+      if (id === this.$store.state.trnForm.updateTrnId) {
         this.$store.commit('closeTrnForm')
       }
       this.questionId = null
@@ -117,8 +113,11 @@ export default {
     },
 
     setEditTrn(trnId) {
-      console.log(trnId)
       this.$store.commit('setTrnForm', { action: 'update', trnId })
+    },
+
+    onClickAccount() {
+      this.$emit('onClickAccount', this.trn.accountId)
     }
   }
 }
