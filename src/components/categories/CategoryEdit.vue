@@ -44,6 +44,7 @@ export default {
       const sameCategory = this.$store.state.categories.all
         .filter(category =>
           category.name === formatedValues.name &&
+          category.icon === formatedValues.icon &&
           category.parentId === formatedValues.parentId)
 
       if (sameCategory.length) {
