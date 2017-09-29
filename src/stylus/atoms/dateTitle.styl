@@ -30,10 +30,15 @@
     $font-numbers()
     anim()
 
+    &:active
+      @media (max-width: 768px)
+        color $color-white
+
     &:hover
-      padding 20px
-      margin -20px
-      background $color-trn-hover
+      @media (min-width: 768px)
+        padding 20px
+        margin -20px
+        background $color-trn-hover
 
   &__icon
     padding-right 10px
@@ -70,7 +75,7 @@
     @media (min-width: 768px)
       flex-flow row
       padding-top 0
-  
+
     &._mb
       margin-top -6px
       justify-content center
@@ -78,23 +83,28 @@
 
     &__item
       cursor pointer
-      padding 8px 10px
-      anim()
-      border-radius 3px
-      color $color-main
+      padding 8px 5px
+      color $color-second
       font-size 1.2rem
-      letter-spacing 1.5px
+      letter-spacing 2px
       text-transform uppercase
       font-weight bold
+      border-bottom 1px solid transparent
       $font-numbers()
+      anim()
+
+      &:active
+        @media (max-width: 768px)
+          color $color-white
 
       &:hover
-        color #444
-        background #f3f8fa
+        @media (min-width: 768px)
+          color $color-white
 
       &._active
         cursor default
-        background #5e7a88
+        background none
+        border-bottom-color $color-link
         color $color-white
 
       @media (min-width: 768px)

@@ -1,7 +1,10 @@
 scrollbar()
   &::-webkit-scrollbar
-    width 6px
+    width 2px
     height 16px
+
+    @media (min-width: 768px)
+      width 6px
 
   &::-webkit-scrollbar-track
     border-radius 10px

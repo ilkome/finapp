@@ -1,3 +1,27 @@
+.header
+  z-index 3
+  position absolute
+  width 100%
+  left 0
+  top 0
+  padding 0px 0px
+  background alpha(#080808, .8)
+
+  &__in
+    display flex
+    flex-flow row
+    align-items center
+    justify-content space-between
+
+  &__item
+    flex 0 1
+    font-size 2rem
+    padding 10px 10px
+        
+    &:active
+      background $color-body
+
+
 .toogleGroupByParent
   position absolute
   left 25px
@@ -24,7 +48,6 @@
     &:hover
       opacity 1
       border-color $color-trn-hover-line
-
 
 .temp1
   padding-bottom 50px

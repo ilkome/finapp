@@ -1,20 +1,20 @@
 .summaryShort
   min-width 200px
-  margin-left -8px
   color $color-second
   margin-top -15px
+
+  @media (min-width: 768px)
+    margin-left -8px
 
   @media (min-width: 1900px)
     max-width 495px
 
   &._maxWidth
-    max-width 260px
-
     @media (min-width: 768px)
       max-width 320px
 
   &._pb
-    padding-bottom 50px
+    padding-bottom 40px
 
     @media (min-width: 768px)
       padding-bottom 70px
@@ -64,7 +64,7 @@
 
     &__total
       text-align right
-      width 120px
+      // width 120px
 
     &__label
       flex-grow 1
@@ -85,12 +85,14 @@
 
       &._total
         fa(area-chart)
+        fa(bar-chart)
         font-size $fs
 
-      &._month
-        fa(cubes)
-        font-size $fs
-
-      &._year
+      &._average
+        // fa(bar-chart)
         fa(tachometer)
         font-size $fs
+
+    &__spacer
+      display inline-flex
+      padding 0 5px
