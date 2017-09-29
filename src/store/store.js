@@ -25,7 +25,6 @@ const modules = {
 // state
 // ==============================================
 const state = {
-  appVersion: '6.2.0',
   isMobile: false,
   isPageLoaded: false,
   loader: true,
