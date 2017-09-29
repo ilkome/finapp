@@ -42,6 +42,9 @@ router.beforeEach((to, from, next) => {
     store.commit('toogleLeftbar', 'hide')
     document.querySelector('body').style.overflow = ''
   }
+  if (store.state.filter.filter.account && to.path !== '/') {
+    store.commit('setAccount', null)
+  }
   next()
 })
 

@@ -155,9 +155,6 @@ const mutations = {
   },
   closeLoader() {
     state.loader = false
-  },
-  setDuration(state, duration) {
-    state.filter.duration = +duration
   }
 }
 
