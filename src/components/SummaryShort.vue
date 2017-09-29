@@ -1,6 +1,26 @@
 <template lang="pug">
 div
   template(v-if="trns.length")
+    template(v-if="view === 'dashboard-new'")
+      //- h3.title._mbs
+      //-   | Average&nbsp;
+      //-   sup.sup {{ avDays }} days
+      .summaryShort._pb(:class="{_maxWidth: maxwidth}")
+        .summaryShort__item
+          .summaryShort__item__icon._incomes
+          .summaryShort__item__label Incomes
+          .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }} <span class="summaryShort__item__spacer"></span> {{ formatMoney(avSummary.incomes) }}
+
+        .summaryShort__item
+          .summaryShort__item__icon._expenses
+          .summaryShort__item__label Expenses
+          .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }} <span class="summaryShort__item__spacer"></span> {{ formatMoney(avSummary.expenses) }}
+
+        .summaryShort__item
+          .summaryShort__item__icon._total
+          .summaryShort__item__label Total
+          .summaryShort__item__total.sum {{ formatMoney(summary.total) }} <span class="summaryShort__item__spacer"></span> {{ formatMoney(avSummary.total) }}
+
     //- dashboard-summary
     template(v-if="view === 'dashboard-summary'")
       template(v-if="duration > 14")
@@ -36,42 +56,30 @@ div
             .summaryShort__item__label Total
             .summaryShort__item__total.sum {{ formatMoney(summary.total / 30) }}
 
-    //- dashboard-average
-    template(v-if="view === 'dashboard-average'")
-      h3.title._mbs
-        | Average&nbsp;
-        sup.sup {{ avDays }} days
-      .summaryShort(:class="{_maxWidth: maxwidth}")
-        .summaryShort__item
-          .summaryShort__item__icon._incomes
-          .summaryShort__item__label Incomes
-          .summaryShort__item__total.incomes {{ formatMoney(avSummary.incomes) }}
-
-        .summaryShort__item
-          .summaryShort__item__icon._expenses
-          .summaryShort__item__label Expenses
-          .summaryShort__item__total.expenses {{ formatMoney(avSummary.expenses) }}
-
-        .summaryShort__item
-          .summaryShort__item__icon._total
-          .summaryShort__item__label Total
-          .summaryShort__item__total.sum {{ formatMoney(avSummary.total) }}
-
     //- dashboard-expenses
     template(v-if="view === 'dashboard-expenses'")
-      .summaryShort._pbs(:class="{_maxWidth: maxwidth}")
+      .summaryShort._pbs._maxWidth
         .summaryShort__item
           .summaryShort__item__icon._expenses
-          .summaryShort__item__label Total
+          .summaryShort__item__label Actual
           .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
+        .summaryShort__item
+          .summaryShort__item__icon._average
+          .summaryShort__item__label Average
+          .summaryShort__item__total.sum {{ formatMoney(avSummary.expenses) }}
+
 
     //- dashboard-incomes
     template(v-if="view === 'dashboard-incomes'")
-      .summaryShort._pbs(:class="{_maxWidth: maxwidth}")
+      .summaryShort._pbs._maxWidth
         .summaryShort__item
           .summaryShort__item__icon._incomes
-          .summaryShort__item__label Total
+          .summaryShort__item__label Actual
           .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
+        .summaryShort__item
+          .summaryShort__item__icon._average
+          .summaryShort__item__label Average
+          .summaryShort__item__total.sum {{ formatMoney(avSummary.incomes) }}
 
     //- Day
     template(v-if="view === 'day'")
@@ -140,9 +148,6 @@ export default {
   mixins: [formatMoney],
 
   props: {
-    title: {
-      type: String
-    },
     trns: {
       type: Array,
       default: Array
@@ -185,13 +190,13 @@ export default {
     },
 
     avSummary() {
-      const startDate = moment().subtract(12, 'years')
+      const startDate = moment().subtract(6, 'months')
       const endDate = moment()
       const yearTrns = this.getTrns({ startDate, endDate })
 
       const avStartDate = moment(yearTrns[0].date)
       const avEndDate = moment(yearTrns[yearTrns.length - 1].date)
-      this.avDays = avStartDate.diff(avEndDate, 'days') + 1
+      this.avDays = avStartDate.diff(avEndDate, 'days')
 
       const avIncomes = yearTrns
         .filter(t => t.type === 1)

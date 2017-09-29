@@ -6,9 +6,6 @@ transition(name="leftBarAnimation")
         .sidebar__close(@click="$store.commit('toogleLeftbar', 'hide')") +
         .sidebar__item
           router-link(to="/" exact).sidebar__menu__link Dashboard
-          //- router-link(to="/summary").sidebar__menu__link Total
-          //- router-link(to="/incomes").sidebar__menu__link Incomes
-          //- router-link(to="/expenses").sidebar__menu__link Expenses
           router-link(to="/categories").sidebar__menu__link Categories
           router-link(to="/accounts").sidebar__menu__link Accounts
           .sidebar__menu__link(@click.prevent="$store.commit('signOut')") LogOut
@@ -86,6 +83,10 @@ export default {
     },
     onClickAccount(account) {
       this.$store.commit('setAccount', account)
+      if (this.$store.state.isMobile) {
+        this.$store.commit('toogleLeftbar', 'hide')
+      }
+      this.$router.push('/')
     },
     showRateOf(currency) {
       return this.formatMoney(1 / this.rates[currency], currency)

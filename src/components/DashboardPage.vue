@@ -3,93 +3,98 @@
   //- Content
   .module._minHeight
     .module-in
-      //- Page date header
-      .dateTitle
-        //- Current date
-        .dateTitle__item
-          h1.dateTitle__header(@click.prevent.stop="openPopupCalendar($event)")
-            .dateTitle__icon.mdi.mdi-calendar-multiple
-            .dateTitle__firstDate {{ showedDate.first }}
-            .dateTitle__secondDate(v-if="showedDate.second !== 'Today'") {{ showedDate.second }}
+      template
+        //- Page date header
+        .dateTitle
+          //- Current date
+          template(v-if="!$store.state.isMobile")
+            .dateTitle__item
+              h1.dateTitle__header(@click.prevent.stop="openPopupCalendar($event)")
+                .dateTitle__icon.mdi.mdi-calendar-multiple
+                .dateTitle__firstDate {{ $store.state.filter.filter.date.first }}
+                .dateTitle__secondDate(v-if="$store.state.filter.filter.date.second !== 'Today'") {{ $store.state.filter.filter.date.second }}
 
-        //- Days
-        .dateTitle__item
-          .dateTitle__periods
-            .dateTitle__periods__item(
-              :class="{_active: duration === 10 && isLastDays}"
-              @click.prevent="setDuration(10)"
-            ) 10 days
-            .dateTitle__periods__item(
-              :class="{_active: calendarPreset === 'isoweek' && isLastDays}",
-              @click.prevent="setDates('isoweek')"
-            ) Week
-            .dateTitle__periods__item(
-              :class="{_active: calendarPreset === 'month' && isLastDays}",
-              @click.prevent="setDates('month')"
-            ) Month
-            .dateTitle__periods__item(
-              :class="{_active: calendarPreset === 'year' && isLastDays}",
-              @click.prevent="setDates('year')"
-            ) Year
-            .dateTitle__periods__item(
-              :class="{_active: calendarPreset === 'all' && isLastDays}",
-              @click.prevent="setDates('all')"
-            ) All
-
-        //- Calendar dropdown
-        transition(name="calendarPopupAnimation")
-          .calendar-dropdown(
-            :style="{'left':calendar.left+'px','top':calendar.top+'px'}",
-            v-if="calendar.show")
-            .calendarPeriod
-              .calendarPeriod__group
-                .calendarPeriod__item(
-                  :class="{_active: duration === 1 && isLastDays}"
-                  @click.prevent="setDuration(1)"
-                ) Today
-
-              .calendarPeriod__group
-                .calendarPeriod__item(
+            //- Days
+            .dateTitle__item
+              .dateTitle__periods
+                .dateTitle__periods__item(
                   :class="{_active: duration === 10 && isLastDays}"
                   @click.prevent="setDuration(10)"
-                ) Last 10 days
-                .calendarPeriod__item(
-                  :class="{_active: duration === 30 && isLastDays}"
-                  @click.prevent="setDuration(30)"
-                ) Last 30 days
-                .calendarPeriod__item(
-                  :class="{_active: duration === 365 && isLastDays}"
-                  @click.prevent="setDuration(365)"
-                ) Last 365 days
-
-              .calendarPeriod__group
-                .calendarPeriod__item(
+                ) 10 days
+                .dateTitle__periods__item(
                   :class="{_active: calendarPreset === 'isoweek' && isLastDays}",
                   @click.prevent="setDates('isoweek')"
-                ) This week
-                .calendarPeriod__item(
+                ) Week
+                .dateTitle__periods__item(
                   :class="{_active: calendarPreset === 'month' && isLastDays}",
                   @click.prevent="setDates('month')"
-                ) This month
-                .calendarPeriod__item(
+                ) Month
+                .dateTitle__periods__item(
                   :class="{_active: calendarPreset === 'year' && isLastDays}",
                   @click.prevent="setDates('year')"
-                ) This year
-                .calendarPeriod__item(
+                ) Year
+                .dateTitle__periods__item(
                   :class="{_active: calendarPreset === 'all' && isLastDays}",
                   @click.prevent="setDates('all')"
                 ) All
 
-            //- Calendar
-            Calendar(
-              :range="calendar.range",
-              :zero="calendar.zero",
-              :value="calendar.value"
-              @select="selectCalendarDates"
-            )
+          //- Calendar dropdown
+          transition(name="calendarPopupAnimation")
+            .calendar-dropdown(
+              :style="{'left':$store.state.filter.filter.calendar.left+'px','top':$store.state.filter.filter.calendar.top+'px'}",
+              v-if="$store.state.filter.filter.calendar.show")
+              .calendarPeriod
+                .calendarPeriod__group
+                  .calendarPeriod__item(
+                    :class="{_active: duration === 1 && isLastDays}"
+                    @click.prevent="setDuration(1)"
+                  ) Today
+
+                .calendarPeriod__group
+                  .calendarPeriod__item(
+                    :class="{_active: duration === 10 && isLastDays}"
+                    @click.prevent="setDuration(10)"
+                  ) Last 10 days
+                  .calendarPeriod__item(
+                    :class="{_active: duration === 30 && isLastDays}"
+                    @click.prevent="setDuration(30)"
+                  ) Last 30 days
+                  .calendarPeriod__item(
+                    :class="{_active: duration === 365 && isLastDays}"
+                    @click.prevent="setDuration(365)"
+                  ) Last 365 days
+
+                .calendarPeriod__group
+                  .calendarPeriod__item(
+                    :class="{_active: calendarPreset === 'isoweek' && isLastDays}",
+                    @click.prevent="setDates('isoweek')"
+                  ) This week
+                  .calendarPeriod__item(
+                    :class="{_active: calendarPreset === 'month' && isLastDays}",
+                    @click.prevent="setDates('month')"
+                  ) This month
+                  .calendarPeriod__item(
+                    :class="{_active: calendarPreset === 'year' && isLastDays}",
+                    @click.prevent="setDates('year')"
+                  ) This year
+                  .calendarPeriod__item(
+                    :class="{_active: calendarPreset === 'all' && isLastDays}",
+                    @click.prevent="setDates('all')"
+                  ) All
+
+              //- Calendar
+              Calendar(
+                :range="$store.state.filter.filter.calendar.range",
+                :zero="$store.state.filter.filter.calendar.zero",
+                :value="$store.state.filter.filter.calendar.value"
+                @select="selectCalendarDates"
+              )
+
+      template(v-if="$store.state.isMobile")
+        SummaryShort(:trns="trnsList", view="dashboard-new")
 
       template(v-if="selectedCategory || getFilter.account")
-        h2.title
+        .filter
           template(v-if="selectedCategory && getFilter.account")
             .icon._link._mr(@click.prevent="clearFilter()")
               .fa.fa-times
@@ -222,26 +227,28 @@
             .itemStatGroup
               TrnsList(:trns="trnsListHistory.slice(0, 100)")
 
+        template(v-if="!$store.state.isMobile")
+          .gridTable__item
+            SummaryShort(:trns="trnsList", view="dashboard-new")
 
-        .gridTable__item
-          template(v-if="calendarPreset !== 'all'")
-            h3.numberTitle Periods
-            .itemStat._link._small(
-              v-for="(period, index) in previousData",
-              @click.prevent="selectPeriodStat(index)",
-              :class="{ _active: selectedPeriodIndex === index }")
-              .itemStat__in
-                .itemStat__content
-                  .itemStat__text
-                    .itemStat__name {{ period.date }}
-                    .itemStat__price.sum {{ formatMoney(period.incomes - period.expenses) }}
-                  .itemStat__graph(@click.prevent="changeTabMoney('incomes')")
-                    .itemStat__graph__in._income(:style="getPreviousDataGraphWidth(period.incomes)")
-                      .itemStat__graph__in__price {{ formatMoney(period.incomes) }}
-                  .itemStat__graph(@click.prevent="changeTabMoney('expenses')")
-                    .itemStat__graph__in._expense(:style="getPreviousDataGraphWidth(period.expenses)")
-                      .itemStat__graph__in__price {{ formatMoney(period.expenses) }}
-            .btn(@click.prevent="showedPeriod++") Show more
+            template(v-if="calendarPreset !== 'all' && !$store.state.isMobile")
+              //- h3.numberTitle Periods
+              .itemStat._link._small(
+                v-for="(period, index) in previousData",
+                @click.prevent="selectPeriodStat(index)",
+                :class="{ _active: selectedPeriodIndex === index }")
+                .itemStat__in
+                  .itemStat__content
+                    .itemStat__text
+                      .itemStat__name {{ period.date }}
+                      .itemStat__price.sum {{ formatMoney(period.incomes - period.expenses) }}
+                    .itemStat__graph(@click.prevent="changeTabMoney('incomes')")
+                      .itemStat__graph__in._income(:style="getPreviousDataGraphWidth(period.incomes)")
+                        .itemStat__graph__in__price {{ formatMoney(period.incomes) }}
+                    .itemStat__graph(@click.prevent="changeTabMoney('expenses')")
+                      .itemStat__graph__in._expense(:style="getPreviousDataGraphWidth(period.expenses)")
+                        .itemStat__graph__in__price {{ formatMoney(period.expenses) }}
+              .btn(@click.prevent="showedPeriod++") Show more
 </template>
 
 <script>
@@ -266,7 +273,6 @@ export default {
     return {
       accountId: null,
       categoryId: null,
-      showedDate: {},
       showedTab: 'alt',
       showedTabMoney: 'expenses',
       groupedByParent: true,
@@ -278,11 +284,6 @@ export default {
       trnsDate: {
         start: '',
         end: ''
-      },
-      calendar: {
-        show: false,
-        range: true,
-        zero: true
       }
     }
   },
@@ -544,15 +545,19 @@ export default {
       this.trnsDate.end = endDate
 
       // Title
-      this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
-      this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+      this.$store.commit('setFilterDate', {
+        first: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period'),
+        second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+      })
 
       // Calendar
-      this.calendar.show = false
-      this.calendar.value = [
-        moment(startDate).format('Y.M.D').split('.'),
-        moment(endDate).format('Y.M.D').split('.')
-      ]
+      this.$store.commit('setFilterCalendar', {
+        show: false,
+        value: [
+          moment(startDate).format('Y.M.D').split('.'),
+          moment(endDate).format('Y.M.D').split('.')
+        ]
+      })
 
       this.$store.commit('closeLoader')
     },
@@ -599,11 +604,15 @@ export default {
 
       // Title
       if ((index === 0 || this.calendarPreset) && this.isLastDays) {
-        this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
-        this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+        this.$store.commit('setFilterDate', {
+          first: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period'),
+          second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+        })
       } else {
-        this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
-        this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+        this.$store.commit('setFilterDate', {
+          first: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date'),
+          second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+        })
       }
 
       // Calendar
@@ -632,11 +641,15 @@ export default {
       this.trnsDate.end = endDate
 
       if (this.isLastDays) {
-        this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
-        this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+        this.$store.commit('setFilterDate', {
+          first: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period'),
+          second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+        })
       } else {
-        this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
-        this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+        this.$store.commit('setFilterDate', {
+          first: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date'),
+          second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
+        })
       }
     },
     clearFilter() {
@@ -655,14 +668,13 @@ export default {
     setFilterCategory(categoryId) {
       if (categoryId) {
         const category = this.categories.find(c => c.id === categoryId)
+        const childCategories = this.categories.filter(cat => cat.parentId === categoryId)
         if (category) {
           this.categoryId = categoryId
           this.selectedCategory = category
-          if (this.selectedCategory.parentId === 0) {
+          if (childCategories.length) {
             this.idsOfOpenedCategories = []
             this.idsOfOpenedCategories.push(categoryId)
-          } else {
-            this.groupedByParent = false
           }
         }
       } else {
@@ -707,19 +719,25 @@ export default {
 
       // Title
       if (period === 'all') {
-        this.showedDate.first = 'All data'
-        this.showedDate.second = 'is showed'
+        this.$store.commit('setFilterDate', {
+          first: 'is showed',
+          second: 'is showed'
+        })
       } else {
-        this.showedDate.first = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
-        this.showedDate.second = this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+        this.$store.commit('setFilterDate', {
+          first: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period'),
+          second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
+        })
       }
 
       // Calendar
-      this.calendar.show = false
-      this.calendar.value = [
-        moment(this.trnsDate.start).format('Y.M.D').split('.'),
-        moment(this.trnsDate.end).format('Y.M.D').split('.')
-      ]
+      this.$store.commit('setFilterCalendar', {
+        show: false,
+        value: [
+          moment(this.trnsDate.start).format('Y.M.D').split('.'),
+          moment(this.trnsDate.end).format('Y.M.D').split('.')
+        ]
+      })
     },
     shouldOpenCategory(itemId) {
       return this.idsOfOpenedCategories.indexOf(itemId) !== -1
@@ -792,6 +810,8 @@ export default {
               switch (difference) {
                 case 0: return `This week`
                 case 1: return `Last week`
+                // TODO: change dates
+                // default: return `${moment(startDate).format('D MMM YY')} - ${moment(endDate).format('D MMM YY')}`
                 default: return `${difference} weeks ago`
               }
             case 'month':
@@ -828,21 +848,23 @@ export default {
       }
     },
     openPopupCalendar(event) {
-      this.calendar.show = !this.calendar.show
-      this.calendar.left = event.target.closest('.dateTitle__header').offsetLeft - 0
-      this.calendar.top = event.target.closest('.dateTitle__header').offsetTop + 88
+      this.$store.commit('setFilterCalendar', {
+        show: !this.$store.state.filter.filter.calendar.show,
+        left: event.target.closest('.dateTitle__item').offsetLeft,
+        top: event.target.closest('.dateTitle__item').offsetTop + 80
+      })
     },
     closePopCalendar(event) {
-      const link = document.querySelector('.dateTitle__header')
-      const target = event.target
+      if (this.$store.state.filter.filter.calendar.show) {
+        const link = document.querySelector('.dateTitle__header')
+        const target = event.target
 
-      // Clicks inside '.dateTitle__header'
-      if (target.contains(link)) {
-        if (this.calendar.show) {
-          this.calendar.show = false
+        // Clicks inside '.dateTitle__header'
+        if (target.contains(link)) {
+          this.$store.commit('setFilterDate', { show: false })
+        } else {
+          this.$store.commit('setFilterDate', { show: false })
         }
-      } else {
-        this.calendar.show = false
       }
     },
     toogleShowTrnsInCategory(categoryId) {
