@@ -1,5 +1,5 @@
 .module
-  padding 30px 20px
+  padding 30px 10px
   border-top 2px solid $color-sidebar
 
   @media (min-width: 768px)
@@ -10,13 +10,18 @@
 
   &:last-child
     border-bottom none
+    padding-bottom 10px
+  
+  &:first-child
+    border-top none
 
   &._bg
     background $color-layout
     border-top 2px solid $color-sidebar
 
   &._minHeight
-    min-height calc(100vh - 100px)
+    @media (min-width: 768px)
+      min-height calc(100vh - 100px)
 
 
 .module-in
