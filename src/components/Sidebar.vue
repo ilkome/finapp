@@ -38,11 +38,12 @@ transition(name="leftBarAnimation")
           router-link.sidebar__account(
             v-if="!accounts.length",
             to="accounts",
-            title="Create new account")
+            title="Create new account"
+          )
             .sidebar__account__label Create new account
 
         .sidebar__item
-          .sidebar__title Info <sup>{{ $store.state.appVersion }}</sup>
+          .sidebar__title Info
           .sidebar__summary
             .sidebar__summary__item
               .sidebar__summary__item__label Total

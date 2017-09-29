@@ -6,9 +6,7 @@
         .loginForm__error(v-if="error") {{ error }}
         .loginForm__action(@click.prevent="signInWithGoogle") Login with Google
       .loginForm__version
-        div v{{ $store.state.appVersion }}
-        div
-          a(href="http://ilko.me") Created with love by Ilya Komichev ilko.me
+        a(href="http://ilko.me") Created with love by Ilya Komichev ilko.me
 </template>
 
 
