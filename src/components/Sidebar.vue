@@ -82,11 +82,15 @@ export default {
       }
     },
     onClickAccount(account) {
-      this.$store.commit('setAccount', account)
-      if (this.$store.state.isMobile) {
-        this.$store.commit('toogleLeftbar', 'hide')
+      if (this.getFilter.account && this.getFilter.account.id === account.id) {
+        this.$store.commit('setAccount', null)
+      } else {
+        this.$store.commit('setAccount', account)
+        if (this.$store.state.isMobile) {
+          this.$store.commit('toogleLeftbar', 'hide')
+        }
+        this.$router.push('/')
       }
-      this.$router.push('/')
     },
     showRateOf(currency) {
       return this.formatMoney(1 / this.rates[currency], currency)
