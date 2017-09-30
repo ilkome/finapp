@@ -45,6 +45,7 @@ export default {
         .filter(category =>
           category.name === formatedValues.name &&
           category.icon === formatedValues.icon &&
+          category.color === formatedValues.color &&
           category.parentId === formatedValues.parentId)
 
       if (sameCategory.length) {
