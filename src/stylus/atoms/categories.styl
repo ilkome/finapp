@@ -18,7 +18,7 @@
     border 1px solid $color-itemStat-border
 
   &__list
-    padding-top 60px
+    padding-top 30px
 
   &__filter
     position relative
@@ -69,9 +69,11 @@
 
 .categoriesIcons
   display grid
-  grid-template-columns repeat(auto-fit, 45px)
+  grid-template-columns repeat(auto-fit, 35px)
   grid-column-gap 10px
   grid-row-gap 10px
+  @media (min-width: 768px)
+    grid-template-columns repeat(auto-fit, 45px)
 
   &._nowrap
     grid-template-columns repeat(auto-fill, minmax(100px, 1fr))

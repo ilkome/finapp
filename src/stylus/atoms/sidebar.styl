@@ -33,21 +33,23 @@
   &__menu
     &__link
       cursor pointer
-      margin-bottom 10px
-      display block
+      display flex
+      align-items center
+      height 30px
       color $color-second
       font-size .8rem
       font-weight bold
       text-transform uppercase
       letter-spacing 2px
-      border-bottom none
       anim()
 
-      @media (min-width: 1500px)
-        margin-bottom 20px
+      @media (min-width: 768px)
+        height 35px
+
+      @media (min-width: 1900px)
+        height 60px
 
       &.active
-        cursor default
         font-weight bold
         font-size 1.1rem
         margin-left -2px
@@ -98,7 +100,7 @@
     anim()
 
     @media (min-width: 768px)
-      height 50px
+      height 55px
 
     @media (min-width: 1900px)
       height 60px
