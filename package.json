@@ -81,6 +81,7 @@
     "firebase": "^4.3.1",
     "font-awesome-stylus": "^4.7.1",
     "fuse.js": "^3.1.0",
+    "highcharts": "^5.0.14",
     "lodash": "^4.17.4",
     "mathjs": "^3.16.3",
     "moment": "^2.18.1",

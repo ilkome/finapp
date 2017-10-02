@@ -83,9 +83,9 @@ export default {
     },
     onClickAccount(account) {
       if (this.getFilter.account && this.getFilter.account.id === account.id) {
-        this.$store.commit('setAccount', null)
+        this.$store.commit('setFilterAccount', null)
       } else {
-        this.$store.commit('setAccount', account)
+        this.$store.commit('setFilterAccount', account)
         if (this.$store.state.isMobile) {
           this.$store.commit('toogleLeftbar', 'hide')
         }

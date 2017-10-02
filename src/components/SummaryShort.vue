@@ -9,17 +9,22 @@ div
         .summaryShort__item
           .summaryShort__item__icon._incomes
           .summaryShort__item__label Incomes
-          .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }} <span class="summaryShort__item__spacer"></span> {{ formatMoney(avSummary.incomes) }}
+          .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
 
         .summaryShort__item
           .summaryShort__item__icon._expenses
           .summaryShort__item__label Expenses
-          .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }} <span class="summaryShort__item__spacer"></span> {{ formatMoney(avSummary.expenses) }}
+          .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
 
         .summaryShort__item
           .summaryShort__item__icon._total
           .summaryShort__item__label Total
-          .summaryShort__item__total.sum {{ formatMoney(summary.total) }} <span class="summaryShort__item__spacer"></span> {{ formatMoney(avSummary.total) }}
+          .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
+        
+        .summaryShort__item
+          .summaryShort__item__icon._total
+          .summaryShort__item__label Average Total
+          .summaryShort__item__total.sum {{ formatMoney(avSummary.total) }}
 
     //- dashboard-summary
     template(v-if="view === 'dashboard-summary'")

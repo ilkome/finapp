@@ -5,10 +5,7 @@ div(:class="className")
   template(v-if="category.parentId === 0")
     //- content
     .categoryItem__content(@click.prevent="$emit('onClickContent', category)")
-      router-link.categoryItem__icon(
-        :to="`/categories/${category.id}`",
-        title="Go to category"
-      )
+      .categoryItem__icon
         .icon._link(:style="`background: ${category.color}`")
           .icon__pic: div(:class="category.icon")
 
@@ -31,11 +28,6 @@ div(:class="className")
         @click.prevent.stop="$emit('confirmPop', category.id)")
         .fa.fa-trash-o
 
-    //- Edit
-    template(v-if="editCategoryId === category.id")
-      .categoryItem__edit
-        slot(name="edit")
-
     //- Confirm
     template(v-if="confirmPopCategoryId === category.id")
       slot(name="confirm")
@@ -52,10 +44,7 @@ div(:class="className")
   template(v-else)
     //- content
     .categoryItemChild__content(@click.prevent="$emit('onClickContent', category)")
-      router-link.categoryItemChild__icon(
-        :to="`/categories/${category.id}`",
-        title="Go to category"
-      )
+      .categoryItemChild__icon
         .icon._link(:style="`background: ${category.color}`")
           .icon__pic: div(:class="category.icon")
 
@@ -75,10 +64,6 @@ div(:class="className")
         v-if="isShowEditActions"
         @click.prevent.stop="$emit('confirmPop', category.id)")
         .fa.fa-trash-o
-
-    //- Edit
-    .categoryItemChild__edit(v-if="editCategoryId === category.id")
-      slot(name="edit")
 
     //- Confirm
     template(v-if="confirmPopCategoryId === category.id")

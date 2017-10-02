@@ -50,13 +50,6 @@
             :deleteCategory="deleteCategory",
             :closeConfirmPop="closeConfirmPop"
           )
-        //- Category Item Edit
-        template(slot="edit")
-          CategoryEdit(
-          :values="category"
-          :error="error"
-          v-on:toogleEditCategory="toogleEditCategory"
-        )
 
         //- Category Item Child
         template(slot="child")
@@ -81,13 +74,6 @@
                     :deleteCategory="deleteCategory",
                     :closeConfirmPop="closeConfirmPop"
                   )
-                //- Category Item Edit
-                template(slot="edit")
-                  CategoryEdit(
-                    :values="childCategory"
-                    :error="error"
-                    v-on:toogleEditCategory="toogleEditCategory"
-                  )
 </template>
 
 <script>
@@ -96,14 +82,11 @@ import orderBy from 'lodash/orderBy'
 import { mapGetters } from 'vuex'
 import { mixin } from 'vue-focus'
 import CategoryItemConfirm from './CategoryConfirm.vue'
-import CategoryCreate from './CategoryCreate.vue'
-import CategoryItemForm from './CategoryForm.vue'
-import CategoryEdit from './CategoryEdit.vue'
 import CategoryItem from './CategoryItem.vue'
 
 export default {
   mixins: [mixin],
-  components: { CategoryCreate, CategoryEdit, CategoryItem, CategoryItemForm, CategoryItemConfirm },
+  components: { CategoryItem, CategoryItemConfirm },
 
   props: {
     isShowEditActions: {
@@ -241,6 +224,9 @@ export default {
         if (this.view === 'trnForm') {
           this.$emit('onClickContent', category.id)
         }
+        if (this.view === 'categoryCreate') {
+          console.log('categoryCreate')
+        }
       }
     },
 
@@ -283,15 +269,16 @@ export default {
     },
 
     toogleEditCategory(categoryId) {
-      // Collapse the parent category when edit
-      if (this.showedChildIds.indexOf(categoryId) !== -1) {
-        this.showedChildIds = this.showedChildIds.filter(cId => cId !== categoryId)
-      }
+      const category = this.categories.find(cat => cat.id === categoryId)
 
       if (this.editCategoryId === categoryId) {
         this.editCategoryId = false
+        this.$store.commit('toogleCategoryEdit', 'hide')
+        this.$store.commit('setEditCategory', null)
       } else {
         this.editCategoryId = categoryId
+        this.$store.commit('toogleCategoryEdit')
+        this.$store.commit('setEditCategory', category)
       }
     },
 
