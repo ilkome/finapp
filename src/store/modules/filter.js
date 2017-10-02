@@ -25,7 +25,7 @@ export default {
   },
 
   mutations: {
-    setAccount(state, account) {
+    setFilterAccount(state, account) {
       state.filter.account = account
     },
     setFilterCalendar(state, calendar) {

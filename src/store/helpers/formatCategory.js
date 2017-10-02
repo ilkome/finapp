@@ -13,7 +13,6 @@ export default function formatCategory(category, categories) {
   const id = category.id
   const name = category.name
   const parentId = category.parentId
-  const description = category.description
   const parent = categories.find(cat => cat.id === parentId)
 
   if (parentId !== 0 && !parent) {
@@ -53,7 +52,7 @@ export default function formatCategory(category, categories) {
     name,
     color,
     icon,
-    parentId,
-    description
+    parent,
+    parentId
   }
 }

@@ -2,31 +2,21 @@
 .content
   .module
     .module-in
+      .mb40(v-if="$store.state.isMobile")
       h1.title Categories
 
       .gridTable
         .gridTable__item
+          .mb20
+            .btn(@click="$store.commit('toogleCategoryCreate')") Create category
+
           CategoryList(:isShowEditActions.sync="isShowEditActions")
 
         .gridTable__item
-          CategoryCreate
-
           .panel._mb
             ul
               li: a.link(href="http://fontawesome.io/icons/", target="_blank") Fontawesome icons
               li: a.link(href="https://materialdesignicons.com/", target="_blank") Material Design Icons
-
-          .panel._mb
-            .categoriesIcons
-              .categoriesIcons__el(v-for="category in sortedCategories", :key="category.id")
-                router-link(:to="`/categories/${category.id}`").categoryItem__icon
-                  .icon(:style="`background: ${category.color}`")
-                    .icon__pic
-                      template(v-if="category.icon")
-                        .fa(:class="category.icon")
-                      template(v-else)
-                        .fa.fa-industry
-                    .icon__label {{ category.name }}
 </template>
 
 <script>

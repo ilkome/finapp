@@ -47,6 +47,7 @@
 
       //- main
       .main(:class="$store.state.leftBar.isShow && '_withLeftBar'")
+        //- div(@click="$store.commit('toogleCategories')") btn {{ $store.state.categories.show }}
         transition(name="slide")
           router-view
 
@@ -54,23 +55,49 @@
       transition(name="slideToLeft")
         .trnForm(v-show="$store.state.trnForm.isShow")
           TrnForm
-      
-      template(v-if="!$store.state.isMobile")
+
+      //- Create list
+      transition(name="slideToLeft")
+        .trnForm(v-show="$store.state.categories.show")
+          CategoryList(:isShowEditActions.sync="isShowEditActions")
+
+      //- Create category
+      transition(name="slideToLeft")
+        .trnForm(v-if="$store.state.categories.create")
+          CategoryCreate
+
+      //- Edit category
+      transition(name="slideToLeft")
+        .trnForm(v-if="$store.state.categories.edit")
+          CategoryEdit
+
+      //- TrnForm btn
+      template(v-if="!$store.state.isMobile && !$store.state.categories.create && !$store.state.categories.edit")
         .trnFormToogle(
           v-shortkey="['alt', 'arrowright']",
           @shortkey="onClickTrnFormToogle",
           @click.prevent.stop="onClickTrnFormToogle",
           :class="{_active: $store.state.trnForm.isShow}"
         ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+
 </template>
 
 <script>
 import Sidebar from './Sidebar.vue'
 import TrnForm from './TrnForm.vue'
 import Login from './Login.vue'
+import CategoryList from './categories/CategoryList.vue'
+import CategoryCreate from './categories/CategoryCreate.vue'
+import CategoryEdit from './categories/CategoryEdit.vue'
 
 export default {
-  components: { Sidebar, TrnForm, Login },
+  components: { Sidebar, TrnForm, CategoryList, CategoryCreate, CategoryEdit, Login },
+
+  data() {
+    return {
+      isShowEditActions: true
+    }
+  },
 
   computed: {
     user() {

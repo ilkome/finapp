@@ -61,6 +61,12 @@ new Vue({
           this.$store.commit('signIn', user)
           const userRef = `users/${user.uid}`
 
+          // const uid = '8WDRZqvN2AauTXAl4mGwAGyKbbr1' // Сережа
+          // const uid = 'pMaDbZdHwqXGutbTqFYJMsGwO4z2' // Каза
+          // const uid = 'GB5TxVedunVQuNIqBM4vPwndw9N2' // Аня
+          // this.$store.commit('signIn', { uid })
+          // const userRef = `users/${uid}`
+
           const formatDataAndDispatchActions = async (snapshot) => {
             const data = snapshot.val()
 

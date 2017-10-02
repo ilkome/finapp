@@ -3,7 +3,7 @@
   .trnForm__form
     .trnForm__form__close(@click="$store.commit('toogleTrnForm')") +
     .trnForm__form__in
-      h2.title._border._mbs
+      h4.title._border._mbs
         template(v-if="action === 'create'") Create trn
         template(v-if="action === 'update'") Update trn
 
@@ -115,15 +115,13 @@
 
       .trnForm__categories__in
         .trnForm__header
-          h2.title._mbn Select category
-          .trnForm__header__close.btn._mini(@click.prevent="toogleCategoriesPop()") Close
+          h4.title._mbn Select category
+          .trnForm__header__close.btn._mini(@click.prevent="toogleCategoriesPop()") Back
 
         CategoryList(
           v-on:onClickContent="setCategory",
           :isShowEditActions.sync="isShowEditActions",
           view="trnForm")
-
-        CategoryCreate
 </template>
 
 <script>
@@ -132,12 +130,11 @@ import moment from 'moment'
 import uniqBy from 'lodash/uniqBy'
 import { mapGetters } from 'vuex'
 import { focus } from 'vue-focus'
-import CategoryCreate from './categories/CategoryCreate.vue'
 import CategoryList from './categories/CategoryList.vue'
 
 export default {
   directives: { focus: focus },
-  components: { CategoryCreate, CategoryList },
+  components: { CategoryList },
 
   watch: {
     account() {

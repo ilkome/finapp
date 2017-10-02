@@ -64,6 +64,7 @@
 
 
 <script>
+import { mapGetters } from 'vuex'
 import formatDate from '../mixins/formatDate'
 import formatMoney from '../mixins/formatMoney'
 
@@ -88,6 +89,7 @@ export default {
   },
 
   computed: {
+    ...mapGetters(['accounts']),
     editedTrn() {
       return this.$store.state.trnForm.updateTrnId
     }
@@ -103,21 +105,18 @@ export default {
       this.questionId = null
       this.$store.commit('closeLoader')
     },
-
     askQuestion(trnId) {
       this.questionId = trnId
     },
-
     close() {
       this.questionId = null
     },
-
     setEditTrn(trnId) {
       this.$store.commit('setTrnForm', { action: 'update', trnId })
     },
-
     onClickAccount() {
-      this.$emit('onClickAccount', this.trn.accountId)
+      const account = this.accounts.find(account => account.id === this.trn.accountId)
+      this.$emit('onClickAccount', account)
     }
   }
 }
