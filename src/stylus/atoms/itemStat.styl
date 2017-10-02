@@ -76,7 +76,10 @@
         padding 15px
 
   &__icon
-    padding-right 25px
+    padding-right 15px
+
+    @media (min-width: 768px)
+      padding-right 25px
 
   &__content
     display flex
@@ -85,7 +88,6 @@
 
   &__name
     flex-grow 1
-    padding-left 5px
     text-transform capitalize
     font-size 1.1rem
     white-space nowrap
@@ -93,14 +95,18 @@
   &__text
     display flex
     flex-flow row wrap
-    padding-bottom 15px
+    padding-bottom 6px
+    
+    @media (min-width: 768px)
+      padding-bottom 15px
+    
     &:last-child
       padding-bottom 0
 
   &__price
     min-width 70px
     max-width 125px
-    padding-right 5px
+    padding-right 2px
     text-align right
     @media (min-width: 768px)
       min-width 105px

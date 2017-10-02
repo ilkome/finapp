@@ -13,8 +13,7 @@
 
   &._editable
     background $color-layout
-    border 1px solid $color-link
-    border-radius 3px
+    border 1px solid $color-link !important
 
   &._link
     cursor pointer
@@ -31,7 +30,7 @@
   &._open
     margin 0
     background $color-categoryItem-bg
-    border 1px solid $color-categoryItem-border
+    border 1px solid $color-categoryItem-border !important
     border-radius 3px
 
     &:hover
@@ -48,9 +47,12 @@
     flex-flow row nowrap
     flex-grow 1
     align-items center
-    padding 15px
+    padding 10px
     color $color-second
     anim()
+
+    @media (min-width: 768px)
+      padding 15px
 
     &:hover
       background $color-trn-hover
@@ -59,7 +61,10 @@
       outline 0
 
   &__icon
-    padding-right 25px
+    padding-right 10px
+
+    @media (min-width: 768px)
+      padding-right 25px
 
   &__name
     display flex
@@ -86,10 +91,13 @@
     display block
     text-align center
     opacity .2
-    width 55px
+    width 40px
     font-size 1.5rem
     cursor pointer
     anim()
+
+    @media (min-width: 768px)
+      width 55px
 
     a&
       color $color-second
@@ -105,20 +113,18 @@
       margin-right 0
 
   &__child
-    padding 0 35px 10px
+    padding 0 0 10px 10px
     border-top 1px solid $color-categoryItem-border
     cursor default
 
-  &__edit
-    padding 20px
-
+    @media (min-width: 768px)
+      padding 0 0 35px 10px
 
 // Category Item Child
 // ===============================================
 .categoryItemChild
   position relative
   display block
-  min-width 300px
   margin 0
   border none
   color $color-second
@@ -126,7 +132,7 @@
   border-top 1px solid $color-line
 
   &:first-child
-    border-top 0
+    border-top-color transparent
 
   &._link
     cursor pointer
@@ -161,6 +167,3 @@
     ^[0]__content:hover &
       opacity 1
       background red
-
-  &__edit
-    @extend .categoryItem__edit

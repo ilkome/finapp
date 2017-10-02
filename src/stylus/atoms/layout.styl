@@ -20,6 +20,7 @@ html
   line-height 1
   letter-spacing .5px
   background $color-body
+  overflow-y scroll
   scrollbar()
 
   &._overflow
@@ -55,9 +56,6 @@ html
     width 340px
     box-shadow 0 0 5px $color-sidebar
 
-  @media (min-width: 1500px)
-    width 340px
-
   &__wrap
     z-index 3
     height 100vh
@@ -72,9 +70,8 @@ html
     min-height 100vh
     padding 30px 30px
 
-    @media (min-width: 1500px)
-      padding 0 40px
-      padding-top 40px
+    @media (min-width: 768px)
+      padding 40px 40px 30px 40px
 
 .main
   @media (min-width: 768px)
