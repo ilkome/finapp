@@ -8,7 +8,6 @@ import { app } from './store/firebase'
 import store from './store/store'
 import routes from './routes'
 import formatDate from './filters/date'
-import isMobile from './utils'
 import App from './components/App.vue'
 
 Vue.config.productionTip = false
@@ -38,12 +37,12 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (isMobile) {
-    store.commit('toogleLeftbar', 'hide')
+  if (router.app.$store.state.isMobile) {
+    router.app.$store.commit('toogleLeftbar', 'hide')
     document.querySelector('body').style.overflow = ''
   }
-  if (store.state.filter.filter.account && to.path !== '/') {
-    store.commit('setAccount', null)
+  if (router.app.$store.state.filter.filter.account && to.path !== '/') {
+    router.app.$store.commit('setAccount', null)
   }
   next()
 })
@@ -51,7 +50,7 @@ router.beforeEach((to, from, next) => {
 // Init application
 new Vue({
   async created() {
-    if (isMobile) {
+    if (this.$store.state.isMobile) {
       this.$store.commit('setMobile')
     }
 

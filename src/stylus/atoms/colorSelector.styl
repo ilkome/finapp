@@ -1,0 +1,26 @@
+.colorSelector
+  display flex
+  margin-bottom 40px
+
+  &__group
+    flex 1 1
+
+  &__block
+    position relative
+    width 100%
+    height 25px
+
+  &__item
+    position absolute
+    left 0
+    top 0
+    width 100%
+    height 25px
+
+    &:hover
+      z-index 10
+      left -5px
+      top -5px
+      width 35px
+      height 35px
+      border 1px solid #fff

@@ -15,8 +15,12 @@
     align-items center
     justify-content flex-end
     flex-grow 1
-    height 75px
-    padding 0 15px
+    height 55px
+    padding 0 10px
+
+    @media (min-width: 768px)
+      height 75px
+      padding 0 15px
 
   &__text
     flex-grow 1
@@ -29,11 +33,14 @@
       color $color-expense
 
   &__actionItem
-    width 55px
+    width 40px
     text-align center
     font-size 1.5rem
     cursor pointer
     anim()
+
+    @media (min-width: 768px)
+      width 55px
 
     &:hover
       color $color-link

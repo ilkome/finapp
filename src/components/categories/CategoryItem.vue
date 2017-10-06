@@ -85,10 +85,6 @@ export default {
       type: Object,
       required: true
     },
-    editCategoryId: {
-      type: [Number, Boolean, String],
-      required: true
-    },
     confirmPopCategoryId: {
       type: [Number, Boolean, String],
       required: true
@@ -100,11 +96,18 @@ export default {
   },
 
   computed: {
+    editCategoryId() {
+      if (this.$store.state.categories.editCategory) {
+        return this.$store.state.categories.editCategory.id
+      } else {
+        return false
+      }
+    },
     className() {
       return {
         categoryItem: this.category.parentId === 0,
         categoryItemChild: this.category.parentId !== 0,
-        _editable: this.editCategoryId === this.category.id,
+        _editable: this.$store.state.categories.editCategory && this.$store.state.categories.editCategory.id === this.category.id,
         _link: this.view === 'trnForm' || (this.category.child && this.category.child.length && this.editCategoryId !== this.category.id),
         _delete: this.confirmPopCategoryId === this.category.id,
         _open: this.showedChildIds.indexOf(this.category.id) !== -1

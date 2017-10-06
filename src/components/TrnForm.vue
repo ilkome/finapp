@@ -97,13 +97,13 @@
         )
 
       .trnForm__actions
-      .trnForm__errors(v-if="errors") {{ errors }}
-      .trnForm__actions__btn(
-        @click.prevent="onSubmitForm()",
-        @keyup.enter.prevent="onSubmitForm()",
-        aria-checked="false", tabindex="0")
-        template(v-if="action === 'create'") Create trn
-        template(v-if="action === 'update'") Update trn
+        .trnForm__errors(v-if="errors") {{ errors }}
+        .trnForm__actions__btn(
+          @click.prevent="onSubmitForm()",
+          @keyup.enter.prevent="onSubmitForm()",
+          aria-checked="false", tabindex="0")
+          template(v-if="action === 'create'") Create trn
+          template(v-if="action === 'update'") Update trn
 
   //- Categories popup block
   //------------------------------------------------

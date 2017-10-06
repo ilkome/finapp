@@ -6,11 +6,11 @@ import CategoryItemPage from './components/CategoryItemPage.vue'
 import IncomesPage from './components/IncomesPage.vue'
 
 const routes = [
-  { path: '/index.html', component: DashboardPage },
-  { path: '/', component: DashboardPage },
+  { path: '/index.html', component: DashboardPage, name: 'dashboard' },
+  { path: '/', component: DashboardPage, name: 'dashboard' },
   { path: '/accounts', component: AccountsListPage },
   { path: '/accounts/:id', component: AccountPage },
-  { path: '/categories', component: CategoriesListPage },
+  { path: '/categories', component: CategoriesListPage, name: 'categories' },
   { path: '/categories/:id', component: CategoryItemPage },
   { path: '/incomes', component: IncomesPage }
 ]

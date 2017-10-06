@@ -46,9 +46,6 @@
       @media (min-width: 768px)
         height 35px
 
-      @media (min-width: 1900px)
-        height 60px
-
       &.active
         font-weight bold
         font-size 1.1rem
@@ -64,20 +61,20 @@
   // Accounts
   // ===============================================
   &__accounts
-    margin 0 -5px
+    margin 0 -10px
 
     &__showAll
       cursor pointer
       position relative
       display block
       width 100%
-      padding 5px 0
+      padding 5px 10px
       font-size .8rem
       color alpha($color-second, .5)
       anim-all()
 
       @media (min-width: 768px)
-        padding 15px 0
+        padding 15px 10px
 
       &:hover
         color $color-link
@@ -134,11 +131,16 @@
 
   // Summary
   // ===============================================
+  &__summary
+    margin 0 -10px
+
   &__summary__item
     position relative
     display flex
     height 35px
     margin-top -1px !important
+    padding-left 10px
+    padding-right 10px
     justify-content space-between
     align-items center
     color $color-second
@@ -168,7 +170,7 @@
 .sidebarToogle
   z-index 15
   position fixed
-  width 20px
+  width 10px
   height 100%
   left 0px
   top 0

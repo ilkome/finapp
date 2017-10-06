@@ -6,15 +6,15 @@ div
       //-   | Average&nbsp;
       //-   sup.sup {{ avDays }} days
       .summaryShort._pb(:class="{_maxWidth: maxwidth}")
-        .summaryShort__item
-          .summaryShort__item__icon._incomes
-          .summaryShort__item__label Incomes
-          .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
-
-        .summaryShort__item
+        .summaryShort__item._link(@click="$emit('changeTabMoney', 'expenses')")
           .summaryShort__item__icon._expenses
           .summaryShort__item__label Expenses
           .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
+
+        .summaryShort__item._link(@click="$emit('changeTabMoney', 'incomes')")
+          .summaryShort__item__icon._incomes
+          .summaryShort__item__label Incomes
+          .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
 
         .summaryShort__item
           .summaryShort__item__icon._total

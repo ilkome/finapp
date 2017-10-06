@@ -1,22 +1,6 @@
-.highcharts-data-label-box {
-  fill: blue;
-  stroke: gray;
-  stroke-width: 1px;
-}
-.highcharts-data-label {
-  font-weight: normal;
-}
-.highlight .highcharts-data-label-box {
-  fill: red;
-  stroke-width: 2px;
-  stroke: black;
-}
-.highlight.highcharts-data-label text {
-  font-weight: bold;
-  fill: white;
-}
 .mb20
   margin-bottom 20px
+
 .mb40
   margin-bottom 40px
 
@@ -123,9 +107,12 @@
   grid-template-columns minmax(90px, 100px) minmax(65px, 1fr) auto auto
   grid-column-gap 15px
   padding 10px 0
-  padding-right 15px
+
   border 1px solid transparent
   anim()
+
+  @media (min-width: 768px)
+     padding-right 15px
 
   &._form
     grid-template-columns 40px minmax(100px, auto) minmax(65px, auto) 1fr auto auto
@@ -184,7 +171,6 @@
 
     &._action
       width 36px
-      opacity .2
       cursor pointer
       padding 15px 10px
       font-size 1.5rem
@@ -193,6 +179,7 @@
 
       @media (min-width: 768px)
         width 46px
+        opacity .2
 
       &:hover
         opacity 1

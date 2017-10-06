@@ -13,10 +13,6 @@
           CategoryList(:isShowEditActions.sync="isShowEditActions")
 
         .gridTable__item
-          .panel._mb
-            ul
-              li: a.link(href="http://fontawesome.io/icons/", target="_blank") Fontawesome icons
-              li: a.link(href="https://materialdesignicons.com/", target="_blank") Material Design Icons
 </template>
 
 <script>

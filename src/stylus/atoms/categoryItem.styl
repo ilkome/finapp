@@ -4,16 +4,16 @@
   cursor default
   overflow hidden
   position relative
-  margin-bottom -1px
   color $color-second
   border 1px solid transparent
-  border-top 1px solid $color-categoryItem-border
+  border-top 1px solid transparent
   border-bottom 1px solid $color-categoryItem-border
   anim()
 
   &._editable
     background $color-layout
     border 1px solid $color-link !important
+    border-left 10px solid $color-link !important
 
   &._link
     cursor pointer
@@ -34,7 +34,7 @@
     border-radius 3px
 
     &:hover
-      border-color $color-link
+      border-color $color-link !important
 
   &:first-child
     border-top-color transparent
@@ -61,7 +61,7 @@
       outline 0
 
   &__icon
-    padding-right 10px
+    padding-right 15px
 
     @media (min-width: 768px)
       padding-right 25px
@@ -71,7 +71,8 @@
     align-items center
     flex-grow 1
     text-transform capitalize
-    font-size 1rem
+    font-size 1.2rem
+    color $color-sum
 
     &__list
       display flex
@@ -90,7 +91,6 @@
   &__action
     display block
     text-align center
-    opacity .2
     width 40px
     font-size 1.5rem
     cursor pointer
@@ -98,6 +98,7 @@
 
     @media (min-width: 768px)
       width 55px
+      opacity .2
 
     a&
       color $color-second
@@ -118,7 +119,7 @@
     cursor default
 
     @media (min-width: 768px)
-      padding 0 0 35px 10px
+      padding 0 0 0px 10px
 
 // Category Item Child
 // ===============================================
@@ -130,6 +131,12 @@
   color $color-second
   border 1px solid transparent
   border-top 1px solid $color-line
+  anim()
+
+  &._editable
+    background $color-layout
+    border 1px solid $color-link !important
+    border-left 10px solid $color-link !important
 
   &:first-child
     border-top-color transparent
