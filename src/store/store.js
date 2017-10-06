@@ -144,8 +144,8 @@ const mutations = {
     state.trnForm.categoryId = categoryId
     state.trnForm.isShowCategories = false
   },
-  setMobile(state) {
-    state.isMobile = true
+  setMobile(state, action) {
+    state.isMobile = action
   },
   showError(state, error) {
     state.error = error

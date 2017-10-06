@@ -236,12 +236,12 @@
             .itemStatGroup
               TrnsList(:trns="trnsListHistory.slice(0, 100)")
 
-        template(v-if="!$store.state.isMobile")
+        template
           .gridTable__item
-            SummaryShort(:trns="trnsList", view="dashboard-new")
+            template(v-if="!$store.state.isMobile")
+              SummaryShort(:trns="trnsList", view="dashboard-new")
 
-            template(v-if="calendarPreset !== 'all' && !$store.state.isMobile")
-              //- h3.numberTitle Periods
+            template(v-if="!$store.state.isMobile && calendarPreset !== 'all'")
               .itemStat._link._small(
                 v-for="(period, index) in previousData",
                 @click.prevent="selectPeriodStat(index)",

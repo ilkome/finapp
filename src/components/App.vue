@@ -29,25 +29,24 @@
           .header__in
             .header__item.fa.fa-bars(@click.prevent.stop="onSidebarToogle")
 
-            .header__item
-              .dateTitle__item
-                h1.dateTitle__header(@click.prevent.stop="openPopupCalendar($event)")
-                  .dateTitle__icon.mdi.mdi-calendar-multiple
-                  .dateTitle__firstDate {{ $store.state.filter.filter.date.first }}
+            template(v-if="$route.name === 'dashboard'")
+              .header__item
+                .dateTitle__item
+                  h1.dateTitle__header(@click.prevent.stop="openPopupCalendar($event)")
+                    .dateTitle__icon.mdi.mdi-calendar-multiple
+                    .dateTitle__firstDate {{ $store.state.filter.filter.date.first }}
 
             .header__item.fa.fa-plus(@click.prevent.stop="onClickTrnFormToogle")
 
       //- Sidebar
       Sidebar
-      template(v-if="!$store.state.isMobile")
-        .sidebarToogle(
-          v-shortkey="['alt', 'arrowleft']",
-          @shortkey="onSidebarToogle",
-          @click.prevent.stop="onSidebarToogle")
+      .sidebarToogle(
+        v-shortkey="['alt', 'arrowleft']",
+        @shortkey="onSidebarToogle",
+        @click.prevent.stop="onSidebarToogle")
 
       //- main
       .main(:class="$store.state.leftBar.isShow && '_withLeftBar'")
-        //- div(@click="$store.commit('toogleCategories')") btn {{ $store.state.categories.show }}
         transition(name="slide")
           router-view
 
@@ -63,16 +62,14 @@
 
       //- Create category
       transition(name="slideToLeft")
-        .trnForm(v-if="$store.state.categories.create")
-          CategoryCreate
+        CategoryCreate(v-if="$store.state.categories.create")
 
       //- Edit category
       transition(name="slideToLeft")
-        .trnForm(v-if="$store.state.categories.edit")
-          CategoryEdit
+        CategoryEdit(v-if="$store.state.categories.edit")
 
       //- TrnForm btn
-      template(v-if="!$store.state.isMobile && !$store.state.categories.create && !$store.state.categories.edit")
+      template(v-if="!$store.state.categories.create && !$store.state.categories.edit")
         .trnFormToogle(
           v-shortkey="['alt', 'arrowright']",
           @shortkey="onClickTrnFormToogle",
@@ -83,6 +80,7 @@
 </template>
 
 <script>
+import debounce from 'lodash/debounce'
 import Sidebar from './Sidebar.vue'
 import TrnForm from './TrnForm.vue'
 import Login from './Login.vue'
@@ -110,9 +108,23 @@ export default {
   mounted() {
     this.$store.watch((state) => state.trnForm.isShow, this.toogleBodyOverflow)
     this.$store.watch((state) => state.leftBar.isShow, this.toogleBodyOverflow)
+
+    this.$nextTick(() => {
+      window.addEventListener('resize', debounce(this.checkAndSetMobileOrPCVersion, 300))
+      this.checkAndSetMobileOrPCVersion()
+    })
   },
 
   methods: {
+    checkAndSetMobileOrPCVersion(event) {
+      if (document.documentElement.clientWidth > 600) {
+        this.$store.commit('setMobile', false)
+        this.$store.commit('toogleLeftbar', 'show')
+      } else {
+        this.$store.commit('setMobile', true)
+        this.$store.commit('toogleLeftbar', 'hide')
+      }
+    },
     onClickTrnFormToogle() {
       this.$store.commit('toogleTrnForm')
     },

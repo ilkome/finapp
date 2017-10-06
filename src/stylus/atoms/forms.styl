@@ -1,8 +1,9 @@
 label, button, input, select, textarea
-  font-family $font-primary
+  letter-spacing .5px
   border none
   background none
   outline none
+  $font-primary()
 
 
 .submit__btn
@@ -37,51 +38,51 @@ label, button, input, select, textarea
 
   &__field
     width 100%
-    padding 0
-    padding 20px 20px
+    padding 5px 5px
     margin-bottom 0
     font-size 1rem
     color $color-main
     background transparent
-    border 1px solid $color-line-account
+    border-bottom 1px solid $color-line-account
     anim()
 
+    @media (min-width: 768px)
+      padding 10px 10px
+
     &._color
-      position absolute
-      right 15px
-      top -1px
       cursor pointer
       height 40px
       width 40px
       padding 0
       margin 0
-      margin-top 10px
       border none
-
+      border-radius 3px
       @media (min-width: 768px)
-        top 5px
+        height 50px
+        width 50px
 
     &:focus, &:active
       &::-webkit-input-placeholder
         color alpha($color-main, .1)
 
     &::-webkit-input-placeholder
-      color alpha($color-main, .7)
+      color alpha($color-main, .4)
       anim()
 
   &__label
     position relative
-    margin-bottom -8px
-    margin-left 10px
-    padding 0 10px
+    margin-top 4px
+    padding 0 5px
     font-size .8rem
     text-transform uppercase
-    color alpha($color-second, .5)
+    color $color-line-account
     font-weight bold
     letter-spacing 1px
     background $color-sidebar
 
-
+    @media (min-width: 768px)
+      margin-top 8px
+      padding 0 10px
 
 .input.date
   width inherit

@@ -39,6 +39,7 @@
     display flex
     flex-flow column wrap
     justify-content center
+    
     a
       padding 5px 0
       font-size .9rem
@@ -53,12 +54,18 @@
   &__el
     display flex
     align-items center
-    padding 15px 0
+    padding 10px 0
     flex-shrink 0
     color $color-second
 
+    @media (min-width: 768px)
+      padding 15px 0
+
     &:first-child
-      margin-left 15px
+      margin-left 5px
+
+      @media (min-width: 768px)
+        margin-left 15px
 
     &._account
       width 130px
@@ -68,13 +75,15 @@
 
     &._action
       justify-content center
-      width 46px
-      margin-left 15px
-      opacity .2
+      width 40px
       cursor pointer
       padding 15px 0
       font-size 1.5rem
       anim()
+
+      @media (min-width: 768px)
+         width 45px
+         opacity .2
 
       &:hover
         opacity 1
@@ -112,9 +121,12 @@
       display flex
       flex-flow row wrap
       justify-content flex-end
-      width 145px
+      width 110px
       padding-right 30px
       text-align right
+
+      @media (min-width: 768px)
+        width 145px
 
       &:last-child
         padding-right 0

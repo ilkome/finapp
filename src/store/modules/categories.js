@@ -135,6 +135,8 @@ const store = {
       }
     },
     toogleCategoryCreate(state, action) {
+      state.edit = false
+      state.editCategory = null
       switch (action) {
         case 'show':
           state.create = true
@@ -147,6 +149,7 @@ const store = {
       }
     },
     toogleCategoryEdit(state, action) {
+      state.create = false
       switch (action) {
         case 'show':
           state.edit = true

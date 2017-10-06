@@ -1,9 +1,10 @@
 .summaryShort
   min-width 200px
   color $color-second
-  margin-top -15px
+  margin-top -10px
 
   @media (min-width: 768px)
+    margin-top -15px
     margin-left -8px
 
   @media (min-width: 1900px)
@@ -58,6 +59,13 @@
     &:last-child
       margin 0
       border 0
+    
+    &._link
+      &:active
+        background $color-line-summary
+      @media (min-width: 768px)
+        &:hover
+          background $color-line-summary
 
     &._heightNone
       height inherit

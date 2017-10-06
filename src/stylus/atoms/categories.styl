@@ -17,13 +17,14 @@
     background $color-itemStat-active
     border 1px solid $color-itemStat-border
 
-  &__list
-    padding-top 30px
-
   &__filter
     position relative
     display flex
     align-items center
+    margin-bottom 20px
+
+    @media (min-width: 768px)
+      margin-bottom 30px
 
     &__input
       display block
@@ -72,6 +73,7 @@
   grid-template-columns repeat(auto-fit, 35px)
   grid-column-gap 10px
   grid-row-gap 10px
+
   @media (min-width: 768px)
     grid-template-columns repeat(auto-fit, 45px)
 

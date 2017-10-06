@@ -35,7 +35,6 @@
         :view="view",
         :isShowEditActions="isShowEditActions",
         :category="category",
-        :editCategoryId="editCategoryId",
         :showedChildIds="showedChildIds",
         :confirmPopCategoryId="confirmPopCategoryId",
         v-on:toogleEditCategory="toogleEditCategory",
@@ -59,7 +58,6 @@
                 :view="view",
                 :isShowEditActions="isShowEditActions",
                 :category="childCategory",
-                :editCategoryId="editCategoryId",
                 :showedChildIds="showedChildIds",
                 :confirmPopCategoryId="confirmPopCategoryId",
                 v-on:toogleEditCategory="toogleEditCategory",
@@ -104,7 +102,6 @@ export default {
       error: null,
       focus: false,
       filter: '',
-      editCategoryId: false,
       confirmPopCategoryId: false,
       showedChildIds: []
     }
@@ -212,7 +209,7 @@ export default {
 
   methods: {
     onClickContent(category) {
-      if (category.child && category.child.length && this.editCategoryId !== category.id) {
+      if (category.child && category.child.length) {
         if (this.showedChildIds.indexOf(category.id) === -1) {
           const ids = this.showedChildIds.concat(category.id)
           this.showedChildIds = ids
@@ -270,14 +267,13 @@ export default {
 
     toogleEditCategory(categoryId) {
       const category = this.categories.find(cat => cat.id === categoryId)
+      this.showedChildIds = this.showedChildIds.filter(cId => cId !== category.id)
 
-      if (this.editCategoryId === categoryId) {
-        this.editCategoryId = false
+      if (this.$store.state.categories.editCategory && this.$store.state.categories.editCategory.id === categoryId) {
         this.$store.commit('toogleCategoryEdit', 'hide')
         this.$store.commit('setEditCategory', null)
       } else {
-        this.editCategoryId = categoryId
-        this.$store.commit('toogleCategoryEdit')
+        this.$store.commit('toogleCategoryEdit', 'show')
         this.$store.commit('setEditCategory', category)
       }
     },

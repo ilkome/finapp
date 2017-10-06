@@ -1,131 +1,220 @@
 <template lang="pug">
-.trnForm__in
-  .trnForm__form
-    .trnForm__form__close(@click="$store.commit('toogleCategoryEdit', 'hide')") +
-    .trnForm__form__in
-      template(v-if="$store.state.categories.edit")
-        .trnFormToogle(
-          @click.prevent.stop="$store.commit('toogleCategoryEdit', 'hide')",
-          :class="{_active: $store.state.categories.edit}"
-        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+.trnForm
+  .trnForm__in
+    .trnForm__form
+      .trnForm__form__close(@click="closeForm") +
+      .trnForm__form__in
+        template(v-if="$store.state.categories.edit")
+          .trnFormToogle(
+            @click.prevent.stop="closeForm",
+            :class="{_active: $store.state.categories.edit}"
+          ): .trnFormToogle__icon: .trnFormToogle__icon__in +
 
-      h4.title._mbs Edit category
-      .form
-        .input
-          .input__label Name
-          input.input__field(
-            v-model="values.name", type="text", placeholder="Name", name="name")
-          input.input__field._color(
-            v-model="values.color", type="color", placeholder="Color", name="color")
-        .input
-          .input__label Icon
-          input.input__field(
-            v-model="values.icon", type="text", placeholder="Icon", name="icon")
+        h4.title._mbs Edit category
+        .form
+          .form__table
+            .form__table__cell._name
+              .input
+                input.input__field(
+                  v-model="values.name", type="text", placeholder="Write category name", name="name")
+                .input__label Name {{ values.color }}
 
-        template(v-if="isHasChildrenCategories(editedCategory.id)")
-          div.mb20
-            div Category has children categories.
-            div You can not change parent of this category.
-        template(v-else)
-          .trnForm__icons
-            .trnForm__subTitle
-              template(v-if="selectedParent")
-                .name {{ selectedParent.name }}
-              template(v-else)
-                .name Root category
-              .label Parent category
+            .form__table__cell._color
+              input.input__field._color(
+              v-model="values.color" type="color" name="color")
 
-            .categoriesIcons
-              .categoriesIcons__el
-                .icon._link(
-                  :class="{_active: !selectedParent}",
-                  @click.prevent="selectParent(null)",
-                  @keyup.enter.prevent="selectParent(null)",
-                  title="Root category",
-                  aria-checked="false", tabindex="0")
+            .form__table__cell._icon
+              .icon._link(
+                :style="`background: ${values.color}`"
+                @click.prevent="toogleIconsPop()"
+              )
+                template(v-if="selectedIcon")
+                  .icon__i(:class="selectedIcon")
+                template(v-else)
                   .icon__i(class="fa fa-question-circle-o")
-                  .icon__label Root category
+                .icon__label Select icon
 
-              .categoriesIcons__el(v-for="category in showedCategories")
-                .icon._link(
-                  :class="{_active: (selectedParent && selectedParent.id === category.id)}",
-                  @click.prevent="selectParent(category)",
-                  @keyup.enter.prevent="selectParent(category)",
-                  :style="`background: ${category.color}`",
-                  :title="category.name",
-                  aria-checked="false", tabindex="0")
-                  .icon__i(:class="category.icon")
-                  .icon__label {{ category.name }}
+          template(v-if="isHasChildrenCategories(editedCategory.id)")
+            div.mb20
+              div Category has children categories.
+              div You can not change parent of this category.
+          template(v-else)
+            //- Categories
+            .trnForm__icons
+              .trnForm__subTitle
+                template(v-if="values.parentId !== 0")
+                  .name {{ selectedParentCategory.name }}
+                template(v-else)
+                  .name Root category
+                .label Parent category
 
-              .categoriesIcons__el
-                .icon._link._more(
-                  @click.prevent="toogleCategoriesPop()",
-                  @keyup.enter.prevent="toogleCategoriesPop()",
-                  v-shortkey="['alt', 'arrowup']",
-                  @shortkey="toogleCategoriesPop()",
-                  aria-checked="false", tabindex="0")
-                  .mdi.mdi-dots-horizontal
-                  .icon__label Show all categories
+              .categoriesIcons
+                .categoriesIcons__el
+                  .icon._link(
+                    :class="{_active: (values.parentId === 0)}",
+                    @click.prevent="selectParent(null)",
+                    @keyup.enter.prevent="selectParent(null)",
+                    title="Root category",
+                    aria-checked="false", tabindex="0")
+                    .icon__i(class="fa fa-question-circle-o")
+                    .icon__label Root category
 
-        template(v-if="error")
-          .error.mb20 {{ error }}
-        .trnForm__actions__btn.mb20(@click.prevent="onEditCategory") Save
+                .categoriesIcons__el(v-for="category in showedCategories")
+                  .icon._link(
+                    :class="{_active: (selectedParentCategory && selectedParentCategory.id === category.id)}",
+                    @click.prevent="selectParent(category)",
+                    @keyup.enter.prevent="selectParent(category)",
+                    :style="`background: ${category.color}`",
+                    :title="category.name",
+                    aria-checked="false", tabindex="0")
+                    .icon__i(:class="category.icon")
+                    .icon__label {{ category.name }}
 
-    //- Categories popup block
-    //------------------------------------------------
-    transition(name="trnFormAnimation")
-      .trnForm__categories(
-        v-if="show"
-        v-shortkey="['alt', 'arrowdown']",
-        @shortkey="toogleShowCategories()")
+                .categoriesIcons__el
+                  .icon._link._more(
+                    @click.prevent="toogleCategoriesPop()",
+                    @keyup.enter.prevent="toogleCategoriesPop()",
+                    v-shortkey="['alt', 'arrowup']",
+                    @shortkey="toogleCategoriesPop()",
+                    aria-checked="false", tabindex="0")
+                    .mdi.mdi-dots-horizontal
+                    .icon__label Show all categories
 
-        .trnForm__categories__in
-          .trnForm__header
-            h4.title._mbn Select category
-            .trnForm__header__close.btn._mini(@click.prevent="toogleCategoriesPop()") Back
+          template(v-if="error")
+            .error.mb20 {{ error }}
+          .trnForm__actions__btn.mb20(@click.prevent="onEditCategory") Update
 
-          .categories
-            template(v-for="category in showedCategories")
-              .categoryItem
-                .categoryItem__content(@click.prevent="selectParent(category)")
-                  .categoryItem__icon
-                    .icon._link(:style="`background: ${category.color}`")
-                      .icon__pic: div(:class="category.icon")
-                  .categoryItem__name
-                    div {{ category.name }}
+          //- Categories popup block
+          //------------------------------------------------
+          transition(name="trnFormAnimation")
+            .trnForm__categories(
+              v-if="showCategoriesPop"
+              v-shortkey="['alt', 'arrowdown']",
+              @shortkey="toogleShowCategories()")
+
+              .trnForm__categories__in
+                .trnForm__header
+                  h4.title._mbn Select category
+                  .trnForm__header__close.btn._mini(@click.prevent="toogleCategoriesPop()") Back
+
+                .categories
+                  template(v-for="category in showedCategories")
+                    .categoryItem
+                      .categoryItem__content(@click.prevent="selectParent(category)")
+                        .categoryItem__icon
+                          .icon._link(:style="`background: ${category.color}`")
+                            .icon__pic: div(:class="category.icon")
+                        .categoryItem__name
+                          div {{ category.name }}
+
+          //- Icons popup block
+          //------------------------------------------------
+          transition(name="trnFormAnimation")
+            .trnForm__categories(
+              v-if="showIconsPop"
+            )
+              .trnForm__form__in
+                .trnForm__header
+                  h4.title._mbn Select icon
+                  .trnForm__header__close.btn._mini(@click.prevent="toogleIconsPop()") Back
+                .categories__filter
+                  input(
+                    type="text",
+                    v-model.trim="iconFilter",
+                    v-focus.lazy="true && !$store.state.isMobile",
+                    placeholder="Search icon"
+                  ).categories__filter__input
+
+                  .categories__filter__btns
+                    template(v-if="iconFilter")
+                      .categories__filter__btn._edit(@click.prevent="iconFilter = ''")
+                        .fa.fa-eraser
+
+                template(v-if="iconFilter.length >= 2 && searchedIcons.length === 0")
+                  div Nothing found
+                
+                CategoryColor(v-on:setColor="setColor")
+
+                .categoriesIcons
+                  template(v-for="icon in searchedIcons")
+                    .categoriesIcons__el
+                      .icon._link(
+                        @click.prevent="selectIcon(icon)"
+                        :style="`background: ${values.color}`"
+                      )
+                        .icon__i(:class="`fa fa-${icon.id}`")
+                        .icon__label {{ icon.name }}
 </template>
 
 <script>
+import Fuse from 'fuse.js'
+import { mixin } from 'vue-focus'
 import { mapGetters } from 'vuex'
+import icons from '../../libs/icons'
 import CategoryList from './CategoryList.vue'
+import CategoryColor from './CategoryColor.vue'
 
 export default {
-  components: { CategoryList },
+  mixins: [mixin],
+  components: { CategoryList, CategoryColor },
 
   data() {
     return {
-      selectedParent: this.$store.state.categories.editCategory.parent,
-      show: false,
+      iconFilter: '',
+      selectedParentCategory: this.$store.state.categories.editCategory.parent,
+      selectedIcon: this.$store.state.categories.editCategory.icon,
+      showCategoriesPop: false,
+      showedIcons: icons,
+      showIconsPop: false,
+      values: {
+        ...this.$store.state.categories.editCategory
+      },
       error: null
     }
   },
 
-  computed: {
-    ...mapGetters(['trns', 'categories']),
-    showedCategories() {
-      return this.categories.filter(cat => cat.parentId === 0 && cat.id !== this.$store.state.categories.editCategory.id)
-    },
+  watch: {
     editedCategory() {
-      return this.$store.state.categories.editCategory
-    },
-    values() {
-      return {
+      this.values = {
         ...this.$store.state.categories.editCategory
       }
     }
   },
 
+  computed: {
+    ...mapGetters(['trns', 'categories']),
+    editedCategory() {
+      return this.$store.state.categories.editCategory
+    },
+    showedCategories() {
+      return this.categories.filter(cat => cat.parentId === 0 && cat.id !== this.editedCategory.id)
+    },
+    searchedIcons() {
+      if (this.iconFilter.length >= 2) {
+        const searchOptions = {
+          shouldSort: true,
+          threshold: 0.3,
+          location: 0,
+          distance: 100,
+          maxPatternLength: 32,
+          minMatchCharLength: 1,
+          keys: ['name', 'filter', 'categories']
+        }
+
+        const fuse = new Fuse(icons, searchOptions)
+        const searchResults = fuse.search(this.iconFilter)
+        return searchResults
+      }
+      return icons
+    }
+  },
+
   methods: {
+    closeForm() {
+      console.log('close')
+      this.$store.commit('toogleCategoryEdit', 'hide')
+      this.$store.commit('setEditCategory', null)
+    },
     async onEditCategory() {
       this.$store.commit('showLoader')
       this.error = null
@@ -133,9 +222,15 @@ export default {
       const formatedValues = {
         id: this.values.id,
         name: this.values.name.trim(),
-        color: this.values.color ? this.values.color.trim() : '#242424',
-        icon: this.values.icon.trim(),
-        parentId: this.values.parentId
+        color: this.values.color,
+        icon: this.values.icon,
+        parentId: this.values.parentId ? this.values.parentId : 0
+      }
+
+      if (!formatedValues.name) {
+        this.error = 'Please write category name'
+        this.$store.commit('closeLoader')
+        return
       }
 
       const sameCategory = this.$store.state.categories.all
@@ -153,6 +248,7 @@ export default {
 
       await this.$store.dispatch('updateCategory', formatedValues)
       this.$store.commit('toogleCategoryEdit', 'hide')
+      this.$store.commit('setEditCategory', null)
       this.$store.commit('closeLoader')
     },
     isHasChildrenCategories(categoryId) {
@@ -161,17 +257,30 @@ export default {
         return true
       }
     },
+    setColor(color) {
+      this.values.color = color
+    },
     selectParent(category) {
       if (category) {
         this.values.parentId = category.id
       } else {
         this.values.parentId = 0
       }
-      this.selectedParent = category
-      this.show = false
+      this.selectedParentCategory = category
+      this.showCategoriesPop = false
+    },
+    selectIcon(icon) {
+      if (icon) {
+        this.values.icon = `fa fa-${icon.id}`
+        this.selectedIcon = `fa fa-${icon.id}`
+      }
+      this.showIconsPop = false
     },
     toogleCategoriesPop() {
-      this.show = !this.show
+      this.showCategoriesPop = !this.showCategoriesPop
+    },
+    toogleIconsPop() {
+      this.showIconsPop = !this.showIconsPop
     }
   }
 }
