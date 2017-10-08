@@ -25,7 +25,7 @@
     border-color $color-line
 
     &:hover
-      border-color alpha($color-rub, .8) !important
+      border-color alpha($color-link, .8) !important
 
   &._link
     cursor pointer
@@ -35,7 +35,7 @@
       opacity 1
       cursor default
       background alpha($color-trn-hover, .5) !important
-      border-color alpha($color-rub, .8) !important
+      border-color alpha($color-link, .8) !important
 
     &:hover
       opacity 1
@@ -49,9 +49,11 @@
       margin-bottom 15px
 
   &._child
+    padding-left 10px
     margin-bottom 0 !important
     background alpha($color-trn-hover, .5) !important
-    border-color $color-line
+    border-color transparent
+    border-top-color $color-line
 
     &:hover
       background alpha($color-trn-hover, .5) !important
@@ -79,7 +81,7 @@
     padding-right 15px
 
     @media (min-width: 768px)
-      padding-right 25px
+      padding-right 20px
 
   &__content
     display flex
@@ -99,7 +101,7 @@
     padding-bottom 6px
 
     @media (min-width: 768px)
-      padding-bottom 15px
+      padding-bottom 10px
 
     &:last-child
       padding-bottom 0
