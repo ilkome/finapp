@@ -178,6 +178,9 @@
     display flex
     flex-flow row wrap
 
+    @media (min-width: 768px)
+      margin-right 10px
+
 // Loader
 // ===============================================
 .item__question
@@ -194,7 +197,6 @@
   height calc(100% - 1px)
   padding 0 15px
   background $color-trn-hover
-  border-radius 3px
   anim()
 
   &._visible

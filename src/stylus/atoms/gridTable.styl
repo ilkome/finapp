@@ -15,3 +15,13 @@
   &._dashboard
     @media (min-width: 1300px)
       grid-template-columns minmax(200px, 1.6fr) minmax(200px, 1fr)
+
+  // Dashboard horizontal periods
+  &._periods
+    grid-row-gap 10px
+
+    @media (min-width: 768px)
+      margin-bottom 10px
+      grid-row-gap 40px
+      grid-column-gap 40px
+      grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr) minmax(auto, 1fr) minmax(auto, 1fr)
