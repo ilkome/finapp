@@ -2,7 +2,6 @@
 .trnForm
   .trnForm__in
     .trnForm__form
-      pre {{ values }}
       .trnForm__form__close(@click="$store.commit('toogleAccountEdit', 'hide')") +
       .trnForm__form__in
         template(v-if="$store.state.accounts.edit")
@@ -94,7 +93,6 @@ export default {
         return
       }
 
-      console.log(formatedValues)
       await this.$store.dispatch('updateAccount', formatedValues)
       this.$store.commit('toogleAccountEdit', 'hide')
       this.$store.commit('setEditAccount', null)
