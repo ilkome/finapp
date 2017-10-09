@@ -3,6 +3,7 @@
   .content
     .module
       .module-in
+        .mb40(v-if="$store.state.isMobile")
         h1.title Accounts
 
         .accounts
