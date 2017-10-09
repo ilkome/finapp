@@ -21,12 +21,12 @@
                     .icon(:class="`bg-${account.id}`")
                       .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
                   .categoryItem__name {{ account.name }}
-                  .item__el._price.sum
+                  .item__el._price.sum.hideOnMobile
                     div {{ formatMoney(account.totalRub) }}
                     div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency) }}
                   .item__el._second {{ account.currency }}
                   .categoryItem__action(@click.stop.prevent="toogleEditCategory(account)")
-                    .fa.fa-pencil
+                    .fa.fa-pencil-square-o
                   .categoryItem__action(@click.stop.prevent="askQuestion(account.id)")
                     .fa.fa-trash-o
 
