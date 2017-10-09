@@ -4,7 +4,11 @@ import formatAccount from '../helpers/formatAccount'
 
 const store = {
   state: {
-    all: []
+    all: [],
+    show: false,
+    edit: false,
+    editAccount: null,
+    create: false
   },
 
   getters: {
@@ -32,7 +36,6 @@ const store = {
         commit('setAccounts', preparedAccounts)
       }
     },
-
     async addAccount({ commit, rootState }, values) {
       try {
         commit('showLoader')
@@ -56,7 +59,6 @@ const store = {
         commit('showError', `store/accounts/addAccount: ${error.message}`)
       }
     },
-
     async deleteAccount({ commit, rootState }, id) {
       try {
         const db = await firebase.database()
@@ -70,6 +72,26 @@ const store = {
       } catch (error) {
         commit('showError', `store/accounts/deleteAccount: ${error.message}`)
       }
+    },
+    async updateAccount({ commit, state, rootState }, values) {
+      try {
+        const trns = rootState.trns.all
+
+        const db = await firebase.database()
+        db.ref(`users/${rootState.user.user.uid}/accounts/${values.id}`)
+          .update(values)
+          .catch(error => {
+            console.error(error)
+            commit('showError', `store/accounts/updateAccount: ${error.message}`)
+          })
+        const formatedAccount = formatAccount(values, { trns })
+
+        commit('updateAccount', formatedAccount)
+        commit('closeLoader')
+      } catch (error) {
+        console.error(error)
+        commit('showError', `store/accounts/updateAccount: ${error.message}`)
+      }
     }
   },
 
@@ -77,11 +99,53 @@ const store = {
     setAccounts(state, accounts) {
       state.all = accounts
     },
+    setEditAccount(state, account) {
+      state.editAccount = account
+    },
     addAccount(state, account) {
       state.all.unshift(account)
     },
     deleteAccount(state, accountId) {
       state.all = state.all.filter(a => a.id !== accountId)
+    },
+    toogleAccountCreate(state, action) {
+      state.edit = false
+      state.editAccount = null
+      switch (action) {
+        case 'show':
+          state.create = true
+          break
+        case 'hide':
+          state.create = false
+          break
+        default:
+          state.create = !state.create
+      }
+    },
+    toogleAccountEdit(state, action) {
+      state.create = false
+      switch (action) {
+        case 'show':
+          state.edit = true
+          break
+        case 'hide':
+          state.edit = false
+          break
+        default:
+          if (state.edit) {
+            state.edit = false
+            state.editAccount = null
+          } else {
+            state.edit = true
+          }
+      }
+    },
+    updateAccount(state, account) {
+      const accounts = [
+        account,
+        ...state.all.filter(c => c.id !== account.id)
+      ]
+      state.all = accounts
     }
   }
 }
