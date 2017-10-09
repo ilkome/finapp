@@ -1,4 +1,3 @@
-import AccountPage from './components/AccountPage.vue'
 import AccountsListPage from './components/AccountsListPage.vue'
 import DashboardPage from './components/DashboardPage.vue'
 import CategoriesListPage from './components/CategoriesListPage.vue'
@@ -9,7 +8,6 @@ const routes = [
   { path: '/index.html', component: DashboardPage, name: 'dashboard' },
   { path: '/', component: DashboardPage, name: 'dashboard' },
   { path: '/accounts', component: AccountsListPage },
-  { path: '/accounts/:id', component: AccountPage },
   { path: '/categories', component: CategoriesListPage, name: 'categories' },
   { path: '/categories/:id', component: CategoryItemPage },
   { path: '/incomes', component: IncomesPage }
