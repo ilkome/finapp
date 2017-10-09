@@ -4,18 +4,18 @@ import uniqBy from 'lodash/uniqBy'
 import orderBy from 'lodash/orderBy'
 import date from 'date-fns'
 import formatMoney from '../mixins/formatMoney'
-import getCategoriesStatFromTrns from '../mixins/getCategoriesStatFromTrns'
 import Calendar from './calendar/calendar.vue'
 import TrnsList from './TrnsList.vue'
 import TrnItem from './TrnItem.vue'
 import SummaryShort from './SummaryShort.vue'
 import ItemStat from './ItemStat.vue'
 import Chart from './Chart.vue'
+import Slider from './Slider.vue'
 
 export default {
   name: 'DashboardPage',
-  mixins: [formatMoney, getCategoriesStatFromTrns],
-  components: { ItemStat, TrnsList, TrnItem, Calendar, SummaryShort, Chart },
+  mixins: [formatMoney],
+  components: { ItemStat, TrnsList, TrnItem, Calendar, SummaryShort, Chart, Slider },
   data() {
     return {
       accountId: null,
