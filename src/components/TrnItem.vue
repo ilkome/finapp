@@ -10,11 +10,7 @@
           div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
         .grid__item
           .grid__item__date {{ formatDate(trn.date, 'D MMM YY') }}
-          router-link.grid__item__category(
-            :to="`/categories/${trn.categoryId}`",
-            title="Go to category"
-          ) {{ trn.categoryName }}
-          .grid__item__account(@click.prevent="onClickAccount") {{ trn.accountName }}
+          .grid__item__account {{ trn.accountName }}
         template(v-if="editedTrn && trn.id === editedTrn")
           .grid__item._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
         template(v-else)
@@ -27,33 +23,21 @@
   template(v-else)
     .item(:class="{_selected: selected, _editable: trn.id === editedTrn}")
       .item__content
-        router-link.item__el.item__pic(
-          :to="`/categories/${trn.categoryId}`",
-          title="Go to category"
-        )
-          .icon._link(:style="`background: ${trn.categoryColor}`")
+        .item__el.item__pic
+          .icon(:style="`background: ${trn.categoryColor}`")
             div(:class="trn.categoryIcon")
 
         .item__el._price(:class="trn.type === 1 ? 'income' : 'expense'")
           div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
           div {{ formatMoney(trn.amountRub) }}
         .item__meta
-          div
-            router-link(
-              :to="`/accounts/${trn.accountId}`",
-              title="Go to account"
-            ) {{ trn.accountName }}
-          div
-            router-link(
-              :to="`/categories/${trn.categoryId}`",
-              title="Go to category"
-            ) {{ trn.categoryName }}
+          .grid__item__category {{ trn.categoryName }}
+          .grid__item__account {{ trn.accountName }}
         template(v-if="editedTrn && trn.id === editedTrn")
           .item__el._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
         template(v-else)
           .item__el._action(@click.stop.prevent="setEditTrn(trn.id)").fa.fa-pencil-square-o
         .item__el._action(@click.prevent.stop="askQuestion(trn.id)"): .fa.fa-trash-o
-
 
   .item__question(:class="{_visible: questionId === trn.id}")
     .item__el._question
