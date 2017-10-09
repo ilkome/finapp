@@ -24,6 +24,7 @@
               .loading__name._error {{ $store.state.error }}
               .loading__update Please, reload Application
 
+      //- Mobile header
       template(v-if="$store.state.isMobile")
         .header
           .header__in
@@ -54,28 +55,32 @@
       transition(name="slideToLeft")
         .trnForm(v-show="$store.state.trnForm.isShow")
           TrnForm
-
-      //- Create list
-      transition(name="slideToLeft")
-        .trnForm(v-show="$store.state.categories.show")
-          CategoryList(:isShowEditActions.sync="isShowEditActions")
-
-      //- Create category
-      transition(name="slideToLeft")
-        CategoryCreate(v-if="$store.state.categories.create")
-
-      //- Edit category
-      transition(name="slideToLeft")
-        CategoryEdit(v-if="$store.state.categories.edit")
-
       //- TrnForm btn
-      template(v-if="!$store.state.categories.create && !$store.state.categories.edit")
+      template(v-if="!$store.state.categories.create && !$store.state.categories.edit && !$store.state.accounts.create && !$store.state.accounts.edit")
         .trnFormToogle(
           v-shortkey="['alt', 'arrowright']",
           @shortkey="onClickTrnFormToogle",
           @click.prevent.stop="onClickTrnFormToogle",
           :class="{_active: $store.state.trnForm.isShow}"
         ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+
+      //- Create category
+      transition(name="slideToLeft")
+        CategoryCreate(v-if="$store.state.categories.create")
+      //- Edit category
+      transition(name="slideToLeft")
+        CategoryEdit(v-if="$store.state.categories.edit")
+      //- Create / edit category popup list
+      transition(name="slideToLeft")
+        .trnForm(v-show="$store.state.categories.show")
+          CategoryList(:isShowEditActions.sync="isShowEditActions")
+
+      //- Create account
+      transition(name="slideToLeft")
+        AccountCreate(v-if="$store.state.accounts.create")
+      //- Edit account
+      transition(name="slideToLeft")
+        AccountEdit(v-if="$store.state.accounts.edit")
 
 </template>
 
@@ -87,9 +92,11 @@ import Login from './Login.vue'
 import CategoryList from './categories/CategoryList.vue'
 import CategoryCreate from './categories/CategoryCreate.vue'
 import CategoryEdit from './categories/CategoryEdit.vue'
+import AccountCreate from './accounts/AccountCreate.vue'
+import AccountEdit from './accounts/AccountEdit.vue'
 
 export default {
-  components: { Sidebar, TrnForm, CategoryList, CategoryCreate, CategoryEdit, Login },
+  components: { Login, Sidebar, TrnForm, CategoryList, CategoryCreate, CategoryEdit, AccountCreate, AccountEdit },
 
   data() {
     return {

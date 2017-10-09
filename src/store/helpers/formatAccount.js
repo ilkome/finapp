@@ -6,12 +6,12 @@
  */
 export default function formatAccount(account, options) {
   if (options) {
-    if (options.trns.length < 0) {
-      console.error('formatTrn: must to have trns')
+    if (!options.trns || options.trns.length < 0) {
+      console.error('formatAccount: must to have trns')
       return false
     }
   } else {
-    console.error('formatTrn: must to have options')
+    console.error('formatAccount: must to have options')
     return false
   }
 
@@ -22,6 +22,7 @@ export default function formatAccount(account, options) {
     return trns.reduce((sum, current) => sum + current[type], 0)
   }
 
+  const id = account.id
   const accountIncomes = incomesTrns.filter(trn => trn.accountId === account.id)
   const accountExpenses = expensesTrns.filter(trn => trn.accountId === account.id)
 
@@ -34,6 +35,7 @@ export default function formatAccount(account, options) {
 
   return {
     ...account,
+    id,
     total,
     totalRub,
     totalIncomes,
