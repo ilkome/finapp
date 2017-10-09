@@ -38,8 +38,24 @@ export default {
   watch: {
     data() {
       if (this.chart) {
-        this.chart.series[0].setData(this.data.series[0].data)
-        this.chart.xAxis[0].setCategories(this.data.categories.map(cat => cat.name))
+        const categories = this.data.categories
+        
+        this.chart.update({
+          ...this.data,
+          xAxis: {
+            labels: {
+              formatter() {
+                const currentCategory = categories[this.pos]                
+                if (currentCategory) {
+                  return `
+                      <div class="icon" style="background: ${currentCategory.color}">
+                      <div class="${currentCategory.icon}"></div>
+                      </div>`
+                }
+              }
+            }
+          }
+        })
       }
     }
   },
@@ -56,23 +72,27 @@ export default {
           },
 
           plotOptions: {
-            area: {
-              dataLabels: { enabled: true }
-              // enableMouseTracking: true
-            },
+            // area: {
+            //   dataLabels: { enabled: true }
+            //   // enableMouseTracking: true
+            // },
             column: {
-              allowPointSelect: false,
-              dataLabels: { enabled: true }
-              // enableMouseTracking: false
+              pointWidth: 45,
+              maxPointWidth: 100,
+              // allowPointSelect: true,
+              dataLabels: {
+                enabled: true
+              },
+              
             },
-            pie: {
-              allowPointSelect: false,
-              dataLabels: { enabled: false },
-              enableMouseTracking: false
-            },
+            // pie: {
+            //   allowPointSelect: false,
+            //   dataLabels: { enabled: false },
+            //   enableMouseTracking: false
+            // },
 
             series: {
-              cursor: 'pointer',
+              // cursor: 'pointer',
               borderWidth: 0,
               point: {
                 events: {
@@ -83,17 +103,14 @@ export default {
               }
             }
           },
-          legend: { enabled: false },
           title: { text: this.chartTitle },
           xAxis: {
-            categories: this.data.categories.map(cat => cat.name),
-            crosshair: true,
-            // labels: { x: 0 }
+            categories: categories.map(cat => cat.name),
+            // crosshair: true,
             labels: {
               rotation: 0,
               useHTML: true,
               formatter() {
-                console.log(this.value, this.pos, categories[this.pos])
                 const currentCategory = categories[this.pos]
                 if (currentCategory) {
                   return `
@@ -104,26 +121,32 @@ export default {
               }
             }
           },
-          yAxis: {
-            title: { enabled: false },
-            plotLines: [{
-              value: 10620,
-              label: {
-                text: '10 620',
-                align: 'right',
-                x: 0,
-                style: {
-                  // color: 'white'
-                }
-              }
-            }]
-          },
+          // yAxis: {
+          //   title: { enabled: false },
+          //   plotLines: [{
+          //     value: 10620,
+          //     label: {
+          //       text: '10 620',
+          //       align: 'right',
+          //       x: 0,
+          //       style: {
+          //         // color: 'white'
+          //       }
+          //     }
+          //   }]
+          // },
           series: this.data.series,
           tooltip: {
             shared: true,
+            enabled: true
+          },
+          
+          credits: { 
             enabled: false
           },
-          credits: { enabled: false }
+          legend: {
+            enabled: false
+          },
         })
       }
     }
