@@ -91,7 +91,11 @@
               )
 
       template(v-if="$store.state.isMobile")
-        SummaryShort(:trns="trnsList", view="dashboard-new")
+        SummaryShort(
+          :trns="trnsList",
+          view="dashboard-new"
+          v-on:changeTabMoney="changeTabMoney"
+        )
 
       template(v-if="selectedCategory || getFilter.account")
         .filter
@@ -113,8 +117,29 @@
 
       //- Chart(:data="formatTrnsForChart(trnsList)")
 
+      //-template(v-if="!$store.state.isMobile && calendarPreset !== 'all'")
+        .gridTable._periods
+          template(v-for="(period, index) in previousData")
+            .gridTable__item
+              .itemStat._link._small(
+                @click.prevent="selectPeriodStat(index)",
+                :class="{ _active: selectedPeriodIndex === index }")
+                .itemStat__in
+                  .itemStat__content
+                    .itemStat__text
+                      .itemStat__name {{ period.date }}
+                      .itemStat__price.sum {{ formatMoney(period.incomes - period.expenses) }}
+                    .itemStat__graph(@click.prevent="changeTabMoney('expenses')")
+                      .itemStat__graph__in._expense(:style="getPreviousDataGraphWidth(period.expenses)")
+                        .itemStat__graph__in__price {{ formatMoney(period.expenses) }}
+                    .itemStat__graph(@click.prevent="changeTabMoney('incomes')")
+                      .itemStat__graph__in._income(:style="getPreviousDataGraphWidth(period.incomes)")
+                        .itemStat__graph__in__price {{ formatMoney(period.incomes) }}
+          .btn(@click.prevent="showedPeriod++") Show more
+
+
       .gridTable._dashboard
-        .gridTable__item
+        .gridTable__item.sliderFixWidth
           .switch
             .switch__item
               a._expenses(
@@ -129,134 +154,147 @@
                 @click="changeTabMoney('history')",
                 :class="{_active: showedTabMoney === 'history'}") History
 
-          //- Expenses
-          template(v-if="expensesItemStats && expensesItemStats.length > 0 && showedTabMoney === 'expenses'")
-            .itemStatGroup
-              SummaryShort(:trns="trnsList", view="dashboard-expenses")
+          Slider(
+            :activeTab="showedTabMoney"
+            :idsOfOpenedCategories="idsOfOpenedCategories"
+            v-on:onChangeSlide="changeTabMoney"
+          )
+            .swiper-slide
+              //- Expenses
+              //- template(v-if="expensesItemStats && expensesItemStats.length > 0 && showedTabMoney === 'expenses'")
+              template(v-if="expensesItemStats && expensesItemStats.length > 0")
+                .itemStatGroup
+                  SummaryShort(:trns="trnsList", view="dashboard-expenses")
 
-              template(v-if="selectedCategory && expensesItemStats.length === 1")
-                TrnItem(
-                  v-for="trn in expensesItemStats[0].trns.slice(0, 20)",
-                  :trn="trn",
-                  :key="trn.id"
-                  v-on:onClickAccount="setFilterAccount"
-                  view="small")
-              template(v-else)
-                ItemStat(
-                  v-for="itemStat in expensesItemStats"
-                  :key="itemStat.id"
-                  :idsOfOpenedCategories="idsOfOpenedCategories"
-                  :item="itemStat"
-                  :trns="expensesItemStats"
-                  type="expenses"
-                  v-on:onClickItem="toogleShowTrnsInCategory"
-                  v-on:onClickIcon="setFilterCategory"
-                )
-                  template(slot="inside")
-                    template(v-if="shouldOpenCategory(itemStat.id)")
-                      template(v-if="getCategoryStat(itemStat.id, 'expenses').length")
-                        ItemStat(
-                          v-for="itemStatChild in getCategoryStat(itemStat.id, 'expenses')"
-                          :key="itemStatChild.id"
-                          :idsOfOpenedCategories="idsOfOpenedCategories"
-                          :item="itemStatChild"
-                          :trns="getCategoryStat(itemStat.id, 'expenses')"
-                          type="expenses"
-                          :isChild="true"
-                          v-on:onClickItem="toogleShowTrnsInCategory"
-                          v-on:onClickIcon="setFilterCategory"
-                        )
-                          template(slot="inside")
-                            template(v-if="shouldOpenCategory(itemStatChild.id)")
-                              .itemStat__trns
-                                TrnItem(
-                                  v-for="trn in itemStatChild.trns.filter(trn => trn.type === 0).slice(0, 20)",
-                                  :trn="trn",
-                                  :key="trn.id"
-                                  v-on:onClickAccount="setFilterAccount"
-                                  view="small")
+                  template(v-if="selectedCategory && expensesItemStats.length === 1")
+                    TrnItem(
+                      v-for="trn in expensesItemStats[0].trns.slice(0, 20)",
+                      :trn="trn",
+                      :key="trn.id"
+                      v-on:onClickAccount="setFilterAccount"
+                      view="small")
+                  template(v-else)
+                    ItemStat(
+                      v-for="itemStat in expensesItemStats"
+                      :key="itemStat.id"
+                      :idsOfOpenedCategories="idsOfOpenedCategories"
+                      :item="itemStat"
+                      :trns="expensesItemStats"
+                      type="expenses"
+                      v-on:onClickItem="toogleShowTrnsInCategory"
+                      v-on:onClickIcon="setFilterCategory"
+                    )
+                      template(slot="inside")
+                        template(v-if="shouldOpenCategory(itemStat.id)")
+                          template(v-if="getCategoryStat(itemStat.id, 'expenses').length")
+                            ItemStat(
+                              v-for="itemStatChild in getCategoryStat(itemStat.id, 'expenses')"
+                              :key="itemStatChild.id"
+                              :idsOfOpenedCategories="idsOfOpenedCategories"
+                              :item="itemStatChild"
+                              :trns="getCategoryStat(itemStat.id, 'expenses')"
+                              type="expenses"
+                              :isChild="true"
+                              v-on:onClickItem="toogleShowTrnsInCategory"
+                              v-on:onClickIcon="setFilterCategory"
+                            )
+                              template(slot="inside")
+                                template(v-if="shouldOpenCategory(itemStatChild.id)")
+                                  .itemStat__trns
+                                    TrnItem(
+                                      v-for="trn in itemStatChild.trns.filter(trn => trn.type === 0).slice(0, 20)",
+                                      :trn="trn",
+                                      :key="trn.id"
+                                      v-on:onClickAccount="setFilterAccount"
+                                      view="small")
 
-                      template(v-else)
-                        .itemStat__trns
-                          TrnItem(
-                            v-for="trn in itemStat.trns.slice(0, 20)",
-                            :trn="trn",
-                            :key="trn.id"
-                            v-on:onClickAccount="setFilterAccount"
-                            view="small")
-
-          //- Incomes
-          template(v-if="incomesItemStats.length > 0 && showedTabMoney === 'incomes'")
-            .itemStatGroup
-              SummaryShort(:trns="trnsList", view="dashboard-incomes")
-              ItemStat(
-                v-for="itemStat in incomesItemStats"
-                :key="itemStat.id"
-                :idsOfOpenedCategories="idsOfOpenedCategories"
-                :item="itemStat"
-                :trns="incomesItemStats"
-                type="incomes"
-                v-on:onClickItem="toogleShowTrnsInCategory"
-                v-on:onClickIcon="setFilterCategory"
-              )
-                template(slot="inside")
-                  template(v-if="shouldOpenCategory(itemStat.id)")
-                    //- Show child category
-                    template(v-if="getCategoryStat(itemStat.id, 'incomes').length")
-                      ItemStat(
-                        v-for="itemStatChild in getCategoryStat(itemStat.id, 'incomes')"
-                        :key="itemStatChild.id"
-                        :idsOfOpenedCategories="idsOfOpenedCategories"
-                        :item="itemStatChild"
-                        :trns="getCategoryStat(itemStat.id, 'incomes')"
-                        type="incomes"
-                        :isChild="true"
-                        v-on:onClickItem="toogleShowTrnsInCategory"
-                        v-on:onClickIcon="setFilterCategory"
-                      )
-                        template(slot="inside")
-                          template(v-if="shouldOpenCategory(itemStatChild.id)")
+                          template(v-else)
                             .itemStat__trns
                               TrnItem(
-                                v-for="trn in itemStatChild.trns.filter(trn => trn.type === 1).slice(0, 20)",
+                                v-for="trn in itemStat.trns.slice(0, 20)",
                                 :trn="trn",
                                 :key="trn.id"
                                 v-on:onClickAccount="setFilterAccount"
                                 view="small")
-                    //- Show trns
-                    template(v-else)
-                      .itemStat__trns
-                        TrnItem(
-                          v-for="trn in itemStat.trns.slice(0, 20)",
-                          :trn="trn",
-                          :key="trn.id",
-                          v-on:onClickAccount="setFilterAccount"
-                          view="small")
-          template(v-if="showedTabMoney === 'history'")
-            .itemStatGroup
-              TrnsList(:trns="trnsListHistory.slice(0, 100)")
+            .swiper-slide
+              //- Incomes
+              //- template(v-if="incomesItemStats.length > 0 && showedTabMoney === 'incomes'")
+              template(v-if="incomesItemStats && incomesItemStats.length > 0")
+                .itemStatGroup
+                  SummaryShort(:trns="trnsList", view="dashboard-incomes")
+                  ItemStat(
+                    v-for="itemStat in incomesItemStats"
+                    :key="itemStat.id"
+                    :idsOfOpenedCategories="idsOfOpenedCategories"
+                    :item="itemStat"
+                    :trns="incomesItemStats"
+                    type="incomes"
+                    v-on:onClickItem="toogleShowTrnsInCategory"
+                    v-on:onClickIcon="setFilterCategory"
+                  )
+                    template(slot="inside")
+                      template(v-if="shouldOpenCategory(itemStat.id)")
+                        //- Show child category
+                        template(v-if="getCategoryStat(itemStat.id, 'incomes').length")
+                          ItemStat(
+                            v-for="itemStatChild in getCategoryStat(itemStat.id, 'incomes')"
+                            :key="itemStatChild.id"
+                            :idsOfOpenedCategories="idsOfOpenedCategories"
+                            :item="itemStatChild"
+                            :trns="getCategoryStat(itemStat.id, 'incomes')"
+                            type="incomes"
+                            :isChild="true"
+                            v-on:onClickItem="toogleShowTrnsInCategory"
+                            v-on:onClickIcon="setFilterCategory"
+                          )
+                            template(slot="inside")
+                              template(v-if="shouldOpenCategory(itemStatChild.id)")
+                                .itemStat__trns
+                                  TrnItem(
+                                    v-for="trn in itemStatChild.trns.filter(trn => trn.type === 1).slice(0, 20)",
+                                    :trn="trn",
+                                    :key="trn.id"
+                                    v-on:onClickAccount="setFilterAccount"
+                                    view="small")
+                        //- Show trns
+                        template(v-else)
+                          .itemStat__trns
+                            TrnItem(
+                              v-for="trn in itemStat.trns.slice(0, 20)",
+                              :trn="trn",
+                              :key="trn.id",
+                              v-on:onClickAccount="setFilterAccount"
+                              view="small")
+
+            .swiper-slide
+              .itemStatGroup
+                TrnsList(:trns="trnsListHistory.slice(0, 100)")
 
         template
           .gridTable__item
             template(v-if="!$store.state.isMobile")
-              SummaryShort(:trns="trnsList", view="dashboard-new")
+              SummaryShort(
+                :trns="trnsList",
+                view="dashboard-new",
+                v-on:changeTabMoney="changeTabMoney"
+              )
 
             template(v-if="!$store.state.isMobile && calendarPreset !== 'all'")
-              .itemStat._link._small(
-                v-for="(period, index) in previousData",
-                @click.prevent="selectPeriodStat(index)",
-                :class="{ _active: selectedPeriodIndex === index }")
-                .itemStat__in
-                  .itemStat__content
-                    .itemStat__text
-                      .itemStat__name {{ period.date }}
-                      .itemStat__price.sum {{ formatMoney(period.incomes - period.expenses) }}
-                    .itemStat__graph(@click.prevent="changeTabMoney('incomes')")
-                      .itemStat__graph__in._income(:style="getPreviousDataGraphWidth(period.incomes)")
-                        .itemStat__graph__in__price {{ formatMoney(period.incomes) }}
-                    .itemStat__graph(@click.prevent="changeTabMoney('expenses')")
-                      .itemStat__graph__in._expense(:style="getPreviousDataGraphWidth(period.expenses)")
-                        .itemStat__graph__in__price {{ formatMoney(period.expenses) }}
+              template(v-for="(period, index) in previousData")
+                .itemStat._link._small(
+                  @click.prevent="selectPeriodStat(index)",
+                  :class="{ _active: selectedPeriodIndex === index }")
+                  .itemStat__in
+                    .itemStat__content
+                      .itemStat__text
+                        .itemStat__name {{ period.date }}
+                        .itemStat__price.sum {{ formatMoney(period.incomes - period.expenses) }}
+                      .itemStat__graph(@click.prevent="changeTabMoney('expenses')")
+                        .itemStat__graph__in._expense(:style="getPreviousDataGraphWidth(period.expenses)")
+                          .itemStat__graph__in__price {{ formatMoney(period.expenses) }}
+                      .itemStat__graph(@click.prevent="changeTabMoney('incomes')")
+                        .itemStat__graph__in._income(:style="getPreviousDataGraphWidth(period.incomes)")
+                          .itemStat__graph__in__price {{ formatMoney(period.incomes) }}
               .btn(@click.prevent="showedPeriod++") Show more
 </template>
 
