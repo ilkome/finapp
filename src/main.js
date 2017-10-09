@@ -42,7 +42,7 @@ router.beforeEach((to, from, next) => {
     document.querySelector('body').style.overflow = ''
   }
   if (router.app.$store.state.filter.filter.account && to.path !== '/') {
-    router.app.$store.commit('setAccount', null)
+    router.app.$store.commit('setFilterAccount', null)
   }
   next()
 })
