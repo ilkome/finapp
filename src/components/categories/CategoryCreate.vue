@@ -21,7 +21,9 @@
 
             .form__table__cell._color
               input.input__field._color(
-              v-model="values.color" type="color" name="color")
+                v-model="values.color"
+                v-on:input="setColor($event.target.value)"
+                type="color" name="color")
 
             .form__table__cell._icon
               .icon._link(
@@ -43,8 +45,8 @@
                 .name Root category
               .label Parent category
 
-            .categoriesIcons
-              .categoriesIcons__el
+            .iconsGroup
+              .iconsGroup__el
                 .icon._link(
                   :class="{_active: (values.parentId === 0)}",
                   @click.prevent="selectParent(null)",
@@ -54,7 +56,7 @@
                   .icon__i(class="fa fa-question-circle-o")
                   .icon__label Root category
 
-              .categoriesIcons__el(v-for="category in showedCategories")
+              .iconsGroup__el(v-for="category in showedCategories")
                 .icon._link(
                   :class="{_active: (selectedParentCategory && selectedParentCategory.id === category.id)}",
                   @click.prevent="selectParent(category)",
@@ -65,7 +67,7 @@
                   .icon__i(:class="category.icon")
                   .icon__label {{ category.name }}
 
-              .categoriesIcons__el
+              .iconsGroup__el
                 .icon._link._more(
                   @click.prevent="toogleCategoriesPop()",
                   @keyup.enter.prevent="toogleCategoriesPop()",
@@ -129,9 +131,9 @@
               div Nothing found
 
             CategoryColor(v-on:setColor="setColor")
-            .categoriesIcons
+            .iconsGroup
               template(v-for="icon in searchedIcons")
-                .categoriesIcons__el
+                .iconsGroup__el
                   .icon._link(
                     @click.prevent="selectIcon(icon)"
                     :style="`background: ${values.color}`"
@@ -148,6 +150,9 @@ import icons from '../../libs/icons'
 import CategoryList from './CategoryList.vue'
 import CategoryColor from './CategoryColor.vue'
 
+const defaultIcon = 'fa fa-industry'
+const defaultColor = '#242424'
+
 export default {
   mixins: [mixin],
   components: { CategoryList, CategoryColor },
@@ -160,10 +165,11 @@ export default {
       showCategoriesPop: false,
       showedIcons: icons,
       showIconsPop: false,
+      iconOrColorTouched: false,
       values: {
         name: '',
-        color: '#242424',
-        icon: 'fa fa-industry',
+        color: defaultColor,
+        icon: defaultIcon,
         parentId: 0
       },
       error: null
@@ -233,18 +239,31 @@ export default {
     selectParent(category) {
       if (category) {
         this.values.parentId = category.id
+        if (!this.iconOrColorTouched) {
+          this.values.color = category.color
+          this.selectedIcon = category.icon
+        }
       } else {
         this.values.parentId = 0
+        if (!this.iconOrColorTouched) {
+          this.values.color = defaultColor
+          this.selectedIcon = defaultIcon
+        }
       }
       this.selectedParentCategory = category
       this.showCategoriesPop = false
     },
     selectIcon(icon) {
+      this.iconOrColorTouched = true
       if (icon) {
         this.values.icon = `fa fa-${icon.id}`
         this.selectedIcon = `fa fa-${icon.id}`
       }
       this.showIconsPop = false
+    },
+    setColor(color) {
+      this.iconOrColorTouched = true
+      this.values.color = color
     },
     toogleCategoriesPop() {
       this.showCategoriesPop = !this.showCategoriesPop
