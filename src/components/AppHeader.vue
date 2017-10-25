@@ -113,22 +113,6 @@
             :class="{ _active: $timePeriod === 'all' }",
             @click.prevent="$emit('setTimePeriod', 'all')"
           ) All
-          .header__menu__item
-            .fa.fa-ellipsis-v
-            .dropdown
-              .dropdown__in
-                .header__menu__item(
-                  :class="{ _active: $timePeriod === 'isoweek' }",
-                  @click.prevent="$emit('setTimePeriod', 'isoweek')"
-                ) Week
-                .header__menu__item(
-                  :class="{ _active: $timePeriod === 'month' }",
-                  @click.prevent="$emit('setTimePeriod', 'month')"
-                ) Month
-                .header__menu__item(
-                  :class="{ _active: $timePeriod === 'all' }",
-                  @click.prevent="$emit('setTimePeriod', 'all')"
-                ) All
           .header__menu__item._mt(@click.prevent="$emit('selectNextPeriod')")
             .fa.fa-arrow-right
 
