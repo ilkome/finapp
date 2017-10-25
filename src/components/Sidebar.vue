@@ -3,12 +3,24 @@ transition(name="leftBarAnimation")
   .sidebar(v-show="$store.state.leftBar.isShow")
     .sidebar__wrap
       .sidebar__in
-        .sidebar__close(@click="$store.commit('toogleLeftbar', 'hide')") +
-        .sidebar__item
-          router-link(to="/" exact).sidebar__menu__link Dashboard
-          router-link(to="/categories").sidebar__menu__link Categories
-          router-link(to="/accounts").sidebar__menu__link Accounts
-          .sidebar__menu__link(@click.prevent="$store.commit('signOut')") LogOut
+        template(v-if="$store.state.isMobile")
+          .sidebar__close(@click="$store.commit('toogleLeftbar', 'hide')")
+            .sidebar__close__title: .fa.fa-arrow-left
+            .sidebar__close__icon: .fa.fa-plus
+
+        template(v-if="!$store.state.isMobile")
+          .sidebar__item._nav
+            .sidebar__row
+              .sidebar__menu__link(@click="$store.commit('toogleLeftbar')")
+                .logo
+                  svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100")
+                    path(d="M92.48,7.69C117.38,32.6,61.89,32.06,61.89,50s55.49,17.38,30.58,42.28S68.11,61.68,50.19,61.68,32.81,117.17,7.91,92.26,38.49,67.9,38.49,50-17,32.6,7.91,7.69,32.27,38.28,50.19,38.28,67.57-17.22,92.48,7.69Z")
+              .sidebar__menu__link._categories(@click.prevent="$store.commit('toogleCategoriesList')")
+                .fa.fa-list-ul
+              .sidebar__menu__link._accounts(@click.prevent="$store.commit('toogleAccountList')")
+                .fa.fa-credit-card
+
+          //- .sidebar__menu__link(@click.prevent="$store.commit('signOut')") LogOut
 
         .sidebar__item
           .sidebar__title Accounts
@@ -16,40 +28,39 @@ transition(name="leftBarAnimation")
           .sidebar__accounts(v-if="accounts.length")
             template(v-for="(account, index) in accounts")
               template(v-if="index < visibleAccounts")
-                .sidebar__account(
+                .sidebar__account._link(
                   @click.prevent="onClickAccount(account)"
-                  :class="className(account)")
+                  :class="getClassName(account)")
                   .sidebar__account__label {{ account.name }}
-                  .sidebar__account__value
+                  .sidebar__account__value.sum
                     template(v-if="account.total !== 0")
                       div {{ formatMoney(account.totalRub) }}
                       div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
                     template(v-else)
                       div 0 {{account.symbol}}
             template(v-if="accounts.length > visibleAccounts")
-              .sidebar__accounts__showAll(@click="setVisibleAccounts('all')") Show all
+              .sidebar__account._dim._link(@click="setVisibleAccounts('all')")
+                .sidebar__account__label Show all
             template(v-if="visibleAccounts > 4")
-              .sidebar__accounts__showAll(@click="setVisibleAccounts(4)") Show only 4 accounts
+              .sidebar__account._dim._link(@click="setVisibleAccounts(4)")
+                .sidebar__account__label Show only 4 accounts
 
           //- No accounts
-          router-link.sidebar__account(
-            v-if="!accounts.length",
-            to="accounts",
-            title="Create new account"
-          )
-            .sidebar__account__label Create new account
+          template(v-if="!accounts.length")
+            div
+              .trnForm__actions__btn(@click="$store.commit('toogleAccountCreate')") Create account
 
         .sidebar__item
-          .sidebar__title Info
-          .sidebar__summary
-            .sidebar__summary__item
-              .sidebar__summary__item__label Total
-              .sidebar__summary__item__value
-                div {{ showSumIn('RUB') }}
-                div {{ showSumIn('USD') }}
-            .sidebar__summary__item
-              .sidebar__summary__item__label Currency rate
-              .sidebar__summary__item__value
+          .sidebar__accounts
+            .sidebar__account
+              .sidebar__account__label Total
+              .sidebar__account__value.sum
+                div {{ showTotalIn('RUB') }}
+                div {{ showTotalIn('USD') }}
+
+            .sidebar__account
+              .sidebar__account__label Currency rate
+              .sidebar__account__value.sum
                 div {{ showRateOf('USD') }}
                 div {{ showRateOf('EUR') }}
 </template>
@@ -69,14 +80,14 @@ export default {
 
   computed: {
     ...mapGetters(['accounts', 'rates', 'getFilter']),
-    total() {
+    totalInAllAccounts() {
       const accounts = this.accounts.filter(a => a.countTotal === 1)
       return accounts.reduce((sum, account) => sum + account.totalRub, 0)
     }
   },
 
   methods: {
-    className(account) {
+    getClassName(account) {
       return {
         _active: this.getFilter.account && account.id === this.getFilter.account.id
       }
@@ -89,15 +100,16 @@ export default {
         if (this.$store.state.isMobile) {
           this.$store.commit('toogleLeftbar', 'hide')
         }
-        this.$router.push('/')
       }
     },
     showRateOf(currency) {
       return this.formatMoney(1 / this.rates[currency], currency)
     },
-    showSumIn(currency) {
-      if (!currency || currency === 'RUB') return this.formatMoney(this.total)
-      return this.formatMoney(this.total * this.rates[currency], currency)
+    showTotalIn(currency) {
+      if (!currency || currency === 'RUB') {
+        return this.formatMoney(this.totalInAllAccounts)
+      }
+      return this.formatMoney(this.totalInAllAccounts * this.rates[currency], currency)
     },
     setVisibleAccounts(count) {
       if (count === 'all') {

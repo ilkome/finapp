@@ -140,6 +140,18 @@ const store = {
           }
       }
     },
+    toogleAccountList(state, action) {
+      switch (action) {
+        case 'show':
+          state.show = true
+          break
+        case 'hide':
+          state.show = false
+          break
+        default:
+          state.show = !state.show
+      }
+    },
     updateAccount(state, account) {
       const accounts = [
         account,

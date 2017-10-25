@@ -1,0 +1,70 @@
+.trnItem
+  margin-top -1px
+  padding 15px 10px
+  position relative
+  border 1px solid transparent
+  border-bottom 1px solid alpha($color-line, .5)
+
+  &:last-child
+    border-color transparent
+
+  &:hover
+    background alpha($color-main, .05)
+    border-color $color-line
+
+  &__content
+    display flex
+    align-items center
+
+  &__pic
+    width 60px
+
+  &__price
+    width 90px
+    margin-right 20px
+    text-align right
+
+  &__line
+    font-size .8rem
+    padding-bottom 10px
+
+    &._date
+      font-size .7rem
+
+    &:last-child
+      padding-bottom 0
+
+  &__actions
+    // margin-right -10px
+    margin-left auto
+    display flex
+
+  &__action
+    cursor pointer
+    opacity .2
+    display block
+    width 40px
+    color $color-second
+    font-size 1.2rem
+    text-align center
+
+    @media (min-width: 768px)
+      width 45px
+
+    ^[0]:hover &
+      opacity 1
+
+    &:hover
+      opacity 1
+      color $color-link
+
+    &:last-child
+      margin-right 0
+
+  &__description
+    padding-top 15px
+    padding-left 110px
+    font-size .8rem
+
+    &._big
+      padding-left 170px

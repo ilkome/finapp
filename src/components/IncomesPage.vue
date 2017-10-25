@@ -1,7 +1,7 @@
 <template lang="pug">
 .content
   .module
-    .module-in
+    .module__in
       h1.title.incomes Incomes
 
       template(v-if="!trnsList.length")
@@ -47,7 +47,7 @@
         a(@click.prevent="toogleShowAll()", :class="{_active: showNetStat}") Income
 
     .module._bg
-      .module-in
+      .module__in
         .slideStat
           template(v-for="year of summaryYears.years")
             .slideStat__item

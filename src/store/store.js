@@ -40,12 +40,9 @@ const state = {
     categoryId: null,
     isShowCategories: false
   },
-  dates: {
-    start: moment().subtract(10, 'days').startOf('day').valueOf(),
-    end: moment().endOf('day').valueOf()
-  },
+  dates: {},
   dashboard: {
-    calendarPreset: null
+    timePeriod: null
   }
 }
 
@@ -62,8 +59,8 @@ const mutations = {
     state.dates.start = moment(dates.start).startOf('day').valueOf()
     state.dates.end = moment(dates.end).endOf('day').valueOf()
   },
-  setCalendarPreset(state, preset) {
-    state.dashboard.calendarPreset = preset
+  timePeriod(state, preset) {
+    state.dashboard.timePeriod = preset
   },
   setUpdatedTrn(state, trnId) {
     state.trnForm.wasUpdatedTrn = trnId

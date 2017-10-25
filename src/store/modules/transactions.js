@@ -60,8 +60,13 @@ const getters = {
       }
 
       if (options.categoryId) {
-        // trns = trns.filter(trn => trn.categoryId === options.categoryId)
         trns = getTrnsInCategoryWithChildren(trns, options.categoryId)
+      }
+    } else {
+      const transferCategory = getters.categories.find(trn => trn.name === 'Перевод')
+      if (transferCategory) {
+        trns = trns.filter(trn =>
+          trn.categoryId !== transferCategory.id)
       }
     }
 
@@ -123,11 +128,13 @@ const actions = {
           return true
         })
         .catch(error => {
-          commit('showError', `store/transitions/addTrn: ${error.message}`)
+          commit('showError', `store/transitions/addTrn1: ${error.message}`)
+          console.log(error)
         })
       return true
     } catch (error) {
-      commit('showError', `store/transitions/addTrn: ${error.message}`)
+      commit('showError', `store/transitions/addTrn2: ${error.message}`)
+      console.log(error)
     }
   },
 
@@ -136,8 +143,8 @@ const actions = {
       const accounts = rootState.accounts.all
       const categories = rootState.categories.all
       const rates = rootState.rates.all
+      const id = values.id
       const formatedValues = {
-        id: values.id,
         accountId: values.accountId,
         amount: values.amount,
         categoryId: values.categoryId,
@@ -147,13 +154,13 @@ const actions = {
         type: values.type
       }
       const db = await firebase.database()
-      db.ref(`users/${rootState.user.user.uid}/trns/${formatedValues.id}`)
+      db.ref(`users/${rootState.user.user.uid}/trns/${id}`)
         .update(formatedValues)
         .catch(error => {
           console.error(error)
           commit('showError', `store/transitions/updateTrn: ${error.message}`)
         })
-      const formatedNewTrn = formatTrn(formatedValues, { accounts, categories, rates })
+      const formatedNewTrn = formatTrn({ id, ...formatedValues }, { accounts, categories, rates })
       commit('updateTrn', formatedNewTrn)
       commit('closeLoader')
     } catch (error) {

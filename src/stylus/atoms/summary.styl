@@ -1,18 +1,10 @@
 .summaryShort
-  min-width 200px
   color $color-second
+  margin 0 -10px
   margin-top -10px
 
   @media (min-width: 768px)
-    margin-top -15px
-    margin-left -8px
-
-  @media (min-width: 1900px)
-    max-width 495px
-
-  &._maxWidth
-    @media (min-width: 768px)
-      max-width 320px
+    margin 0 -10px
 
   &._pb
     padding-bottom 40px
@@ -24,7 +16,7 @@
     padding-bottom 20px
 
     @media (min-width: 768px)
-      padding-bottom 40px
+      padding-bottom 38px
 
   &__empty
     margin-top 20px
@@ -53,8 +45,7 @@
     @media (min-width: 768px)
       flex-basis 100%
       max-width 100%
-      height 60px
-      padding 0 20px
+      height 45px
 
     a&:hover
       color $color-main
@@ -64,27 +55,19 @@
       border 0
 
     &._link
+      cursor pointer
+
       &:active
-        background $color-line-summary
+        background alpha($color-line-summary, .5)
+
       @media (min-width: 768px)
         &:hover
-          background $color-line-summary
-
-    &._heightNone
-      height inherit
-
-    &__total
-      text-align right
-      // width 120px
-
-    &__label
-      flex-grow 1
-      font-weight bold
-      letter-spacing 1px
+          background alpha($color-line-summary, .5)
 
     &__icon
-      width 45px
-      $fs = 1.5rem
+      width 35px
+      text-align center
+      $fs = 1rem
 
       &._expenses
         fa(minus-circle)
@@ -100,10 +83,30 @@
         font-size $fs
 
       &._average
-        // fa(bar-chart)
-        fa(tachometer)
+        fa(line-chart)
         font-size $fs
 
-    &__spacer
-      display inline-flex
-      padding 0 5px
+      &._left
+        fa(align-left)
+        font-size $fs
+
+      &._day
+        fa(sun-o)
+        font-size $fs
+
+      &._spend
+        fa(calendar-minus-o)
+        font-size $fs
+
+    &__label
+      padding-left 22px
+      flex-grow 1
+      font-size .8rem
+      text-transform uppercase
+      font-weight bold
+      letter-spacing 2px
+      $font-numbers()
+
+    &__total
+      padding-right 2px
+      text-align right

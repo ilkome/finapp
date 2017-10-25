@@ -24,21 +24,6 @@
               .loading__name._error {{ $store.state.error }}
               .loading__update Please, reload Application
 
-      //- Mobile header
-      template(v-if="$store.state.isMobile")
-        .header
-          .header__in
-            .header__item.fa.fa-bars(@click.prevent.stop="onSidebarToogle")
-
-            template(v-if="$route.name === 'dashboard'")
-              .header__item
-                .dateTitle__item
-                  h1.dateTitle__header(@click.prevent.stop="openPopupCalendar($event)")
-                    .dateTitle__icon.mdi.mdi-calendar-multiple
-                    .dateTitle__firstDate {{ $store.state.filter.filter.date.first }}
-
-            .header__item.fa.fa-plus(@click.prevent.stop="onClickTrnFormToogle")
-
       //- Sidebar
       Sidebar
       .sidebarToogle(
@@ -47,16 +32,13 @@
         @click.prevent.stop="onSidebarToogle")
 
       //- main
-      .main(:class="$store.state.leftBar.isShow && '_withLeftBar'")
-        transition(name="slide")
-          router-view
+      Dashboard
 
       //- TrnForm
       transition(name="slideToLeft")
-        .trnForm(v-show="$store.state.trnForm.isShow")
-          TrnForm
+        TrnForm(v-show="$store.state.trnForm.isShow")
       //- TrnForm btn
-      template(v-if="!$store.state.categories.create && !$store.state.categories.edit && !$store.state.accounts.create && !$store.state.accounts.edit")
+      template(v-if="!$store.state.categories.create && !$store.state.categories.edit && !$store.state.accounts.create && !$store.state.accounts.show && !$store.state.accounts.edit && !$store.state.categories.list")
         .trnFormToogle(
           v-shortkey="['alt', 'arrowright']",
           @shortkey="onClickTrnFormToogle",
@@ -64,6 +46,9 @@
           :class="{_active: $store.state.trnForm.isShow}"
         ): .trnFormToogle__icon: .trnFormToogle__icon__in +
 
+      //- Show categories
+      transition(name="slideToLeft")
+        CategoryListBar(v-if="$store.state.categories.list")
       //- Create category
       transition(name="slideToLeft")
         CategoryCreate(v-if="$store.state.categories.create")
@@ -75,6 +60,9 @@
         .trnForm(v-show="$store.state.categories.show")
           CategoryList(:isShowEditActions.sync="isShowEditActions")
 
+      //- Show accounts
+      transition(name="slideToLeft")
+        AccountList(v-if="$store.state.accounts.show")
       //- Create account
       transition(name="slideToLeft")
         AccountCreate(v-if="$store.state.accounts.create")
@@ -85,18 +73,23 @@
 </template>
 
 <script>
+import { mixin } from 'vue-focus'
 import debounce from 'lodash/debounce'
 import Sidebar from './Sidebar.vue'
 import TrnForm from './TrnForm.vue'
 import Login from './Login.vue'
+import Dashboard from './DashboardPage.vue'
 import CategoryList from './categories/CategoryList.vue'
+import CategoryListBar from './categories/CategoryListBar.vue'
 import CategoryCreate from './categories/CategoryCreate.vue'
 import CategoryEdit from './categories/CategoryEdit.vue'
 import AccountCreate from './accounts/AccountCreate.vue'
 import AccountEdit from './accounts/AccountEdit.vue'
+import AccountList from './accounts/AccountList.vue'
 
 export default {
-  components: { Login, Sidebar, TrnForm, CategoryList, CategoryCreate, CategoryEdit, AccountCreate, AccountEdit },
+  mixins: [mixin],
+  components: { Login, Dashboard, Sidebar, TrnForm, CategoryList, CategoryListBar, CategoryCreate, CategoryEdit, AccountCreate, AccountEdit, AccountList },
 
   data() {
     return {
@@ -115,16 +108,25 @@ export default {
   mounted() {
     this.$store.watch((state) => state.trnForm.isShow, this.toogleBodyOverflow)
     this.$store.watch((state) => state.leftBar.isShow, this.toogleBodyOverflow)
+    this.$store.watch((state) => state.categories.list, this.toogleBodyOverflow)
+    this.$store.watch((state) => state.accounts.show, this.toogleBodyOverflow)
 
     this.$nextTick(() => {
       window.addEventListener('resize', debounce(this.checkAndSetMobileOrPCVersion, 300))
       this.checkAndSetMobileOrPCVersion()
     })
+
+    document.addEventListener('keyup', (event) => {
+      if (event.keyCode === 27) { // escape key
+        this.$store.commit('toogleAccountList', 'hide')
+        this.$store.commit('toogleCategoriesList', 'hide')
+      }
+    })
   },
 
   methods: {
     checkAndSetMobileOrPCVersion(event) {
-      if (document.documentElement.clientWidth > 600) {
+      if (document.documentElement.clientWidth > 768) {
         this.$store.commit('setMobile', false)
       } else {
         this.$store.commit('setMobile', true)
@@ -137,17 +139,10 @@ export default {
     onSidebarToogle() {
       this.$store.commit('toogleLeftbar')
     },
-    openPopupCalendar(event) {
-      this.$store.commit('setFilterCalendar', {
-        show: !this.$store.state.filter.filter.calendar.show,
-        left: 0,
-        top: 15
-      })
-    },
     toogleBodyOverflow() {
       if (this.$store.state.isMobile) {
         const body = document.querySelector('body')
-        if (this.$store.state.trnForm.isShow || this.$store.state.leftBar.isShow) {
+        if (this.$store.state.trnForm.isShow || this.$store.state.leftBar.isShow || this.$store.state.accounts.show) {
           body.style.overflow = 'hidden'
         } else {
           body.style.overflow = ''

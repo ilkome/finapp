@@ -1,55 +1,41 @@
 .itemStatGroup
-  max-width 440px
+  padding 0 10px
   margin-bottom 80px
 
   &:last-child
     margin-bottom 0
 
 .itemStat
+  margin 0 -10px
+  opacity .9
   position relative
   display block
-  margin-bottom 10px
   color $color-second
-  background $color-itemStat
-  border 1px solid $color-itemStat-border
-  anim()
+  border 1px solid transparent
+  border-bottom 1px solid $color-line-summary
+  cursor pointer
 
-  @media (min-width: 768px)
-    margin-bottom 30px
-
-  @media (min-width: 1900px)
-    max-width 490px
+  &._active
+    opacity 1
+    cursor default
+    background alpha($color-trn-hover, .5) !important
+    border-color alpha($color-link, .8) !important
 
   &._opened
+    margin 20px -10px
+    padding-bottom 0
     background alpha($color-trn-hover, .5) !important
     border-color $color-line
 
-    &:hover
-      border-color alpha($color-link, .8) !important
-
-  &._link
-    cursor pointer
-    opacity .9
-
-    &._active
-      opacity 1
-      cursor default
-      background alpha($color-trn-hover, .5) !important
-      border-color alpha($color-link, .8) !important
+    &:first-child
+      margin-top 0
 
     &:hover
-      opacity 1
-      border-color $color-trn-hover-line
-
-  &._small
-    margin-bottom 10px
-    border-radius 0
-
-    @media (min-width: 768px)
-      margin-bottom 15px
+      border-color alpha($color-link, .8) !important
 
   &._child
-    padding-left 10px
+    margin 0
+    padding-left 15px
     margin-bottom 0 !important
     background alpha($color-trn-hover, .5) !important
     border-color transparent
@@ -63,7 +49,9 @@
     margin-bottom 0
 
   &:hover
+    opacity 1
     background $color-trn-hover
+    border-color $color-trn-hover-line
 
   &__in
     display flex
@@ -71,11 +59,7 @@
     padding 10px
 
     @media (min-width: 768px)
-      padding 20px
-
-    ^[0]._small &
-      @media (min-width: 768px)
-        padding 15px
+      padding 10px
 
   &__icon
     padding-right 15px
@@ -90,8 +74,10 @@
 
   &__name
     flex-grow 1
-    text-transform capitalize
-    font-size 1.1rem
+    padding-left 2px
+    color $color-white-text
+    font-size .95rem
+    letter-spacing .5px
     white-space nowrap
     $font-secondary()
 
@@ -114,19 +100,18 @@
     @media (min-width: 768px)
       min-width 105px
 
-
   &__graph
     flex-grow 1
     overflow hidden
     margin-bottom 10px
-    border-radius 3px
+    border-radius 2px
     background $color-graph
 
     &:last-child
       margin-bottom 0
 
   &__graph__in
-    min-height .8rem
+    min-height 8px
     border-radius 0
 
     &__price
@@ -145,4 +130,3 @@
 
   &__trns
     cursor default
-    padding 0 10px 10px 10px

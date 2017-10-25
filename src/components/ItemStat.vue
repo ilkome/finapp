@@ -1,5 +1,5 @@
 <template lang="pug">
-.itemStat._link._small._categoryStat(:class="className")
+.itemStat(:class="className")
   .itemStat__in(@click.prevent.stop="onClickItem")
     .itemStat__icon(@click.stop="onClickIcon")
       .icon._link(:style="`background: ${item.color}`")
@@ -39,12 +39,16 @@ export default {
     },
     isChild: {
       type: Boolean
+    },
+    biggestValue: {
+      type: Number,
+      default: 0
     }
   },
 
   computed: {
     grpahWidth() {
-      const width = this.item.total / this.trns[0].total * 100
+      const width = this.item.total / this.biggestValue * 100
       const renderWidth = width > 0 ? width : 0
       return { width: `calc(${renderWidth}%)` }
     },
@@ -58,7 +62,7 @@ export default {
 
   methods: {
     onClickIcon() {
-      this.$emit('onClickIcon', this.item.category.id)
+      this.$emit('setFilterCategory', this.item.category.id)
     },
     onClickItem(id) {
       this.$emit('onClickItem', this.item.id)

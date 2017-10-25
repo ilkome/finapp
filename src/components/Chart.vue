@@ -39,21 +39,11 @@ export default {
     data() {
       if (this.chart) {
         const categories = this.data.categories
-        
+
         this.chart.update({
           ...this.data,
           xAxis: {
-            labels: {
-              formatter() {
-                const currentCategory = categories[this.pos]                
-                if (currentCategory) {
-                  return `
-                      <div class="icon" style="background: ${currentCategory.color}">
-                      <div class="${currentCategory.icon}"></div>
-                      </div>`
-                }
-              }
-            }
+            categories: categories.map(cat => cat)
           }
         })
       }
@@ -62,6 +52,7 @@ export default {
 
   methods: {
     init() {
+      const vm = this
       const categories = this.data.categories
 
       if (!this.chart) {
@@ -70,83 +61,62 @@ export default {
           chart: {
             type: this.chartType
           },
+          legend: {
+            align: 'left',
+            // layout: 'vertical',
+            verticalAlign: 'top',
+            x: 50,
+            y: -10,
+            backgroundColor: 'hsla(0, 0%, 0%, .5)',
+            floating: true,
+            itemStyle: {
+              color: '#ababab'
+            },
+            itemMarginBottom: 3,
+            itemHoverStyle: {
+              color: '#ababab'
+            }
+          },
 
           plotOptions: {
-            // area: {
-            //   dataLabels: { enabled: true }
-            //   // enableMouseTracking: true
-            // },
             column: {
-              pointWidth: 45,
-              maxPointWidth: 100,
-              // allowPointSelect: true,
-              dataLabels: {
-                enabled: true
-              },
-              
+              maxPointWidth: 45
             },
-            // pie: {
-            //   allowPointSelect: false,
-            //   dataLabels: { enabled: false },
-            //   enableMouseTracking: false
-            // },
-
             series: {
-              // cursor: 'pointer',
+              cursor: 'pointer',
               borderWidth: 0,
               point: {
                 events: {
-                  click: function () {
-                    console.log(this.options)
+                  click() {
+                    vm.$emit('selectPeriodStat', this.options.idx)
                   }
                 }
               }
             }
           },
-          title: { text: this.chartTitle },
-          xAxis: {
-            categories: categories.map(cat => cat.name),
-            // crosshair: true,
-            labels: {
-              rotation: 0,
-              useHTML: true,
-              formatter() {
-                const currentCategory = categories[this.pos]
-                if (currentCategory) {
-                  return `
-                  <div class="icon" style="background: ${currentCategory.color}">
-                  <div class="${currentCategory.icon}"></div>
-                  </div>`
-                }
-              }
+          title: {
+            text: '',
+            style: {
+              display: 'none'
             }
           },
-          // yAxis: {
-          //   title: { enabled: false },
-          //   plotLines: [{
-          //     value: 10620,
-          //     label: {
-          //       text: '10 620',
-          //       align: 'right',
-          //       x: 0,
-          //       style: {
-          //         // color: 'white'
-          //       }
-          //     }
-          //   }]
-          // },
+          xAxis: {
+            categories: categories.map(cat => cat),
+            crosshair: true
+          },
+          yAxis: {
+            title: {
+              enabled: false
+            }
+          },
           series: this.data.series,
           tooltip: {
             shared: true,
             enabled: true
           },
-          
-          credits: { 
+          credits: {
             enabled: false
-          },
-          legend: {
-            enabled: false
-          },
+          }
         })
       }
     }

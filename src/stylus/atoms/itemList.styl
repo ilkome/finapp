@@ -1,13 +1,17 @@
-// Category Item
+// List Item
 // ===============================================
-.categoryItem
+.itemList
   cursor default
   overflow hidden
   position relative
+  margin 0 -15px
   color $color-second
+  font-size .9rem
+  letter-spacing .5px
+  $font-secondary()
   border 1px solid transparent
   border-top 1px solid transparent
-  border-bottom 1px solid $color-categoryItem-border
+  border-bottom 1px solid $color-itemList-border
   anim()
 
   &._editable
@@ -28,10 +32,8 @@
       opacity .7
 
   &._open
-    margin 0
-    background $color-categoryItem-bg
-    border 1px solid $color-categoryItem-border !important
-    border-radius 3px
+    background $color-itemList-bg
+    border 1px solid $color-itemList-border !important
 
     &:hover
       border-color $color-link !important
@@ -51,38 +53,25 @@
     color $color-second
     anim()
 
-    @media (min-width: 768px)
-      padding 15px
-
     &:hover
       background $color-trn-hover
-
-    &:focus
-      outline 0
 
   &__icon
     padding-right 15px
 
-    @media (min-width: 768px)
-      padding-right 25px
+    @media (min-width: 1200px)
+      padding-right 20px
 
   &__name
     display flex
     align-items center
     flex-grow 1
-    text-transform capitalize
-    font-size 1.2rem
-    color $color-sum
 
     &__list
       display flex
-      font-size 1.2rem
+      font-size 1rem
       margin-left 20px
-      margin-bottom -4px
-      opacity .3
-      anim()
-      ^[0]__content:hover &
-        opacity 1
+      opacity .5
 
   &__text
     display flex
@@ -92,12 +81,12 @@
     display block
     text-align center
     width 40px
-    font-size 1.5rem
+    font-size 1.2rem
     cursor pointer
     anim()
 
     @media (min-width: 768px)
-      width 55px
+      width 45px
       opacity .2
 
     a&
@@ -113,17 +102,20 @@
     &:last-child
       margin-right 0
 
+  &__currency
+    margin-right 20px
+
   &__child
     padding 0 0 10px 10px
-    border-top 1px solid $color-categoryItem-border
+    border-top 1px solid $color-itemList-border
     cursor default
 
     @media (min-width: 768px)
       padding 0 0 0px 10px
 
-// Category Item Child
+// List Item Child
 // ===============================================
-.categoryItemChild
+.itemListChild
   position relative
   display block
   margin 0
@@ -158,19 +150,19 @@
     border-bottom-color transparent
 
   &__content
-    @extend .categoryItem__content
+    @extend .itemList__content
 
   &__icon
-    @extend .categoryItem__icon
+    @extend .itemList__icon
 
   &__name
-    @extend .categoryItem__name
+    @extend .itemList__name
 
   &__text
-    @extend .categoryItem__text
+    @extend .itemList__text
 
   &__action
-    @extend .categoryItem__action
+    @extend .itemList__action
     ^[0]__content:hover &
       opacity 1
       background red

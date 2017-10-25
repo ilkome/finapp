@@ -56,17 +56,13 @@ label, button, input, select, textarea
       padding 0
       margin 0
       border none
-      border-radius 3px
-      @media (min-width: 768px)
-        height 50px
-        width 50px
 
     &:focus, &:active
       &::-webkit-input-placeholder
-        color alpha($color-main, .1)
+        color alpha($color-main, .3)
 
     &::-webkit-input-placeholder
-      color alpha($color-main, .4)
+      color alpha($color-main, 1)
       anim()
 
   &__label
@@ -99,7 +95,7 @@ label, button, input, select, textarea
   padding-left 0
   padding-bottom 0px
   color $color-main
-  font-size 14px
+  font-size .8rem
   font-weight bold
   text-transform uppercase
   letter-spacing 2px
@@ -113,13 +109,18 @@ label, button, input, select, textarea
     margin-bottom 0
 
   &:focus, &:active
+    padding-left 10px
     padding-bottom 10px
-    font-size 2rem
+    font-size 1rem
     text-transform none
     font-weight normal
     letter-spacing 1
     border-color $color-line
     background $color-layout
+
+    @media (min-width: 768px)
+       font-size 1rem
+
     &::-webkit-input-placeholder
       opacity 0
 
@@ -160,86 +161,3 @@ label, button, input, select, textarea
   &.valid
     color #3ac020
     border-color #3ac020
-
-
-// Select
-// ==============================================
-.select
-  width auto
-  margin-bottom 10px
-  padding 4px 10px
-  background #fff
-  border 1px solid #c8d9eb
-  color #819397
-  //font-size 16px
-
-  option
-    padding 5px 10px
-
-
-// Radio
-// label.radio > (radio__value + radio__label)
-// ==============================================
-.radio
-  position relative
-  display inline-flex
-  margin-right 20px
-  cursor pointer
-
-  &__label
-    display flex
-    align-items center
-    anim()
-
-    &:before
-      content ' '
-      display block
-      width 16px
-      height 16px
-      margin-top -1px
-      margin-right 5px
-      border 1px solid grey
-      border-radius 50%
-
-    &:after
-      content ' '
-      display block
-      position absolute
-      left 0
-      top 0
-      margin-top 5px
-      margin-left 4px
-      width 8px
-      height 8px
-      margin-right 10px
-      border-radius 50%
-      anim()
-
-  &__value
-    display none
-
-    &:checked + ^[0]__label
-      font-weight bold
-
-      &:after
-        background grey
-
-
-// Checkbox
-// ==============================================
-.checkbox
-  display flex
-  padding-bottom 10px
-
-  &__name
-    cursor pointer
-    padding-left 5px
-    anim()
-
-    &:hover
-      color $color-link
-
-  &__input
-    &:checked
-      & + .checkbox__name
-        color $color-rub

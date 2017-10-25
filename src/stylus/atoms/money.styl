@@ -1,5 +1,5 @@
 $styles()
-  font-size 1.2rem
+  font-size 1rem
   font-weight bold
   $font-numbers()
   white-space nowrap
@@ -23,10 +23,17 @@ $styles()
   color $color-sum
 
 
-h2.moneyTitle
-  font-size 2.5rem
-  font-weight normal
-  letter-spacing 5px
-  text-transform uppercase
+.moneyTitle
+  padding-bottom 16px
+  font-size 1.3rem
   font-weight bold
+  letter-spacing 3px
+  line-height 1rem
+  text-transform uppercase
   $font-numbers()
+
+  &._incomes
+    color $color-income
+
+  &._expenses
+    color $color-expense

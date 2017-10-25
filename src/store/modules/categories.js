@@ -5,6 +5,7 @@ import formatCategory from '../helpers/formatCategory'
 const store = {
   state: {
     all: [],
+    list: false,
     show: false,
     edit: false,
     editCategory: null,
@@ -64,11 +65,18 @@ const store = {
     },
     async updateCategory({ commit, state, rootState }, values) {
       try {
+        const id = values.id
         const categories = rootState.categories.all
+        const formatedValues = {
+          name: values.name.trim(),
+          color: values.color,
+          icon: values.icon,
+          parentId: values.parentId ? values.parentId : 0
+        }
 
         const db = await firebase.database()
-        db.ref(`users/${rootState.user.user.uid}/categories/${values.id}`)
-          .update(values)
+        db.ref(`users/${rootState.user.user.uid}/categories/${id}`)
+          .update(formatedValues)
           .catch(error => {
             console.error(error)
             commit('showError', `store/categories/updateCategory: ${error.message}`)
@@ -132,6 +140,18 @@ const store = {
           break
         default:
           state.show = !state.show
+      }
+    },
+    toogleCategoriesList(state, action) {
+      switch (action) {
+        case 'show':
+          state.list = true
+          break
+        case 'hide':
+          state.list = false
+          break
+        default:
+          state.list = !state.list
       }
     },
     toogleCategoryCreate(state, action) {

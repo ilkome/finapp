@@ -1,33 +1,15 @@
 .module
-  padding 30px 10px
-  border-top 2px solid $color-sidebar
-
-  @media (min-width: 768px)
-    padding 70px
-
-  @media (min-width: 1500px)
-    padding 80px
-
-  &:last-child
-    border-bottom none
-    padding-bottom 10px
-
-  &:first-child
-    border-top none
-
-  &._bg
+  &._alt
     background $color-layout
-    border-top 2px solid $color-sidebar
+    border-bottom 2px solid $color-sidebar
 
-
-  &._minHeight
+  &._stat
     @media (min-width: 768px)
-      min-height calc(100vh - 100px)
+      min-height calc(100vh - 50px)
 
+  &__in
+    $max-width()
+    padding 30px 10px
 
-.module-in
-  max-width 1080px
-  margin 0 auto
-
-  @media (min-width: 2000px)
-    max-width 1400px
+    @media (min-width: 768px)
+      padding 60px
