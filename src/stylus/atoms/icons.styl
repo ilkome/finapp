@@ -1,27 +1,18 @@
 .icon
   position relative
   display flex
-  min-width 35px
+  width 35px
   height 35px
   padding-left 1px
   align-items center
   justify-content center
-  color alpha(white, .7)
-  background $color-icon
+  color $color-icon-text
+  font-size 1.2rem
+  letter-spacing 0
+  background $color-icon-bg
   border-radius 3px
   border 3px solid transparent
   anim()
-
-  @media (min-width: 768px)
-    min-width 45px
-    height 45px
-
-  .fa
-    font-size 1.5rem
-    letter-spacing 0
-
-  .mdi
-    font-size 1.7rem
 
   &._mr
     margin-right 20px
@@ -30,9 +21,9 @@
     padding 0 10px
 
   &._active
-    color white
-    border-color $color-main !important
-    background $color-link !important
+    color $color-icon-text-active
+    border-color $color-icon-bg-active !important
+    background $color-icon-bg-active !important
 
   &._more
     background $color-graph
@@ -43,14 +34,14 @@
 
     @media (min-width: 768px)
       &:hover
-        border-color $color-main !important
+        border-color $color-icon-bg-active !important
 
     &:focus
       outline none
-      border-color $color-rub
+      border-color $color-icon-bg-active
 
   &__abbr
-    font-size 1rem
+    font-size .8rem
     font-weight bold
 
   &__label
@@ -62,6 +53,7 @@
     left 50%
     top -43px
     padding 10px 15px
+    color $color-icon-text
     font-size 1rem
     font-weight normal
     text-transform none
@@ -78,13 +70,22 @@
         visibility visible
         transform translate(-50%, 0)
 
-  &__label2
-    padding-left 15px
-    font-size 1.1rem
-    font-weight bold
 
-.icon-incomes
-  font-size 2.5rem
-  margin-right 20px
-  fa(pie-chart)
-  background none
+.iconsGroup
+  display flex
+  flex-flow row wrap
+  display grid
+  grid-template-columns repeat(auto-fit, 35px)
+  grid-column-gap 10px
+  grid-row-gap 10px
+
+  @media (min-width: 768px)
+    grid-column-gap 10px
+    grid-row-gap 10px
+    grid-template-columns repeat(auto-fit, 35px)
+
+  &._nowrap
+    grid-template-columns repeat(auto-fill, minmax(100px, 1fr))
+
+  &._mb
+    padding-bottom 80px

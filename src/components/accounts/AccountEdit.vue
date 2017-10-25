@@ -1,20 +1,28 @@
 <template lang="pug">
-.trnForm
-  .trnForm__in
-    .trnForm__form
-      .trnForm__form__close(@click="$store.commit('toogleAccountEdit', 'hide')") +
-      .trnForm__form__in
-        template(v-if="$store.state.accounts.edit")
-          .trnFormToogle(
-            @click.prevent.stop="$store.commit('toogleAccountEdit', 'hide')",
-            :class="{_active: $store.state.accounts.edit}"
-          ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+.rightBar
+  .rightBar__in
+    .rightBar__main
 
-        h4.title._mbs Edit account
+      template(v-if="$store.state.accounts.edit")
+        .trnFormToogle(
+          @click.prevent.stop="$store.commit('toogleAccountEdit', 'hide')",
+          :class="{_active: $store.state.accounts.edit}"
+        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+
+      .rightBar__main__in
+        .sidebar__close(@click="$store.commit('toogleAccountEdit', 'hide')")
+          .sidebar__close__name Edit account
+          .sidebar__close__icon: .fa.fa-plus
+
         .form
           .input
             input.input__field(
-              v-model="values.name", type="text", placeholder="Write account name", name="name")
+              v-model="values.name"
+              v-focus.lazy="true && !$store.state.isMobile",
+              name="name"
+              type="text"
+              placeholder="Write account name"
+            )
             .input__label Name
           .input
             input.input__field(
@@ -85,7 +93,11 @@ export default {
       }
 
       const sameAccount = this.$store.state.accounts.all
-        .filter(account => account.name === formatedValues.name)
+        .filter(account =>
+          account.name === formatedValues.name &&
+          account.countTotal === formatedValues.countTotal &&
+          account.currency === formatedValues.currency &&
+          account.order === formatedValues.order)
 
       if (sameAccount.length) {
         this.error = 'Same account name is already exist!'

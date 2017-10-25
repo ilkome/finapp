@@ -1,4 +1,4 @@
-.trnForm
+.rightBar
   z-index 3
   position fixed
   right 0
@@ -15,9 +15,9 @@
     height 100%
 
     @media (min-width: 768px)
-      width 590px
+      width 440px
 
-  &__form
+  &__main
     overflow hidden
     overflow-y scroll
     height 100%
@@ -34,24 +34,15 @@
         display none
 
     &__in
-      padding 20px 17px
+      padding 20px 15px
       padding-top 0
 
       @media (min-width: 768px)
-        padding 60px 76px
+        padding 40px 40px
         padding-top 0
 
-  &__errors
-    font-weight bold
-    font-size 1.2rem
-    color $color-expense
-    margin-bottom 2rem
-
   &__icons
-    margin-bottom 30px
-
-    @media (min-width: 768px)
-      margin-bottom 40px
+    margin-bottom 50px
 
   &__categories
     overflow hidden
@@ -65,16 +56,13 @@
     scrollbar()
 
     &__in
-      overflow hidden
       overflow-y scroll
       height 100%
-      padding 30px 15px
-      padding-top 0
+      padding 30px 17px
       scrollbar()
 
       @media (min-width: 768px)
-        padding 40px 40px
-        padding-top 0
+        padding 58px 60px
 
   &__header
     display flex
@@ -93,13 +81,10 @@
 
   &__date
     display flex
-    margin-bottom 20px
+    margin-bottom 30px
     justify-content space-between
     align-items center
     font-size 1rem
-
-    @media (min-width: 768px)
-      margin-bottom 30px
 
     &__value
       min-width 60px
@@ -108,15 +93,18 @@
       justify-content center
       padding-left 15px
       text-transform uppercase
-      font-size 1.2rem
+      font-size 1.6rem
       font-weight bold
       $font-numbers()
+      @media (min-width: 768px)
+        min-width 160px
 
       &__in
         padding-left 10px
 
     &__link
-      padding 10px 20px
+      margin-top -3px
+      padding 10px 30px
       opacity .5
       border none
       color $color-main
@@ -125,37 +113,32 @@
 
       ^[1]:hover &
         opacity 1
-        background alpha(white, .1)
+        background alpha(white, .3)
         border-radius 3px
 
   &__subTitle
     display flex
     align-items flex-end
     justify-content space-between
-    //padding 0 0px
-    font-size .7rem
-    letter-spacing .5px
+    padding 0 5px
+    font-size .8rem
+    font-weight bold
+    letter-spacing 1px
     padding-bottom 15px
+    text-transform uppercase
 
     .name
-      font-size .9rem
-
-    .label
-      font-weight bold
-      text-transform uppercase
-      letter-spacing 1px
+      font-size 1rem
 
   &__desc
     margin-top -20px
-    height 50px
-    @media (min-width: 768px)
-      height 70px
+    height 70px
 
   &__actions__btn
     display block
-    padding 20px 30px
+    padding 20px 80px
     color $color-main
-    font-size .8rem
+    font-size 1rem
     font-weight bold
     text-transform uppercase
     letter-spacing 2px
@@ -213,6 +196,7 @@
     anim()
 
     @media (min-width: 768px)
+      // display flex
       margin-right 46px
       margin-top 26px
 

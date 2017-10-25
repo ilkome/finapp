@@ -61,11 +61,6 @@ export default {
     }
   },
   plotOptions: {
-    column: {
-      pointWidth: 45,
-      maxPointWidth: 100
-    },
-
     series: {
       dataLabels: {
         color: '#B0B0B3',

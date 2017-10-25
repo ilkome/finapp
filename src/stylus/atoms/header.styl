@@ -1,146 +1,156 @@
-h1, h2, h3, h4, h5, h6
-  margin 0
-  margin-bottom 20px
-  color $color-header
+.header
   font-size 1.2rem
-  $font-secondary()
-  font-weight bold
-  letter-spacing 2px
-  text-transform uppercase
-
-  &._marginBottomSmall
-    margin-bottom 1rem
-
-h4
-  font-size 1rem
-  &:last-child
-    margin-bottom 0
-
-.title
-  display flex
-  margin-bottom 30px
-  align-items center
+  background $color-header-bg
+  border-bottom 1px solid $color-itemStat
+  anim()
 
   @media (min-width: 768px)
-    margin-bottom 60px
-
-  @media $laptop
-    margin-bottom 85px
-
-  h1&
-    font-size 1.5rem
-    letter-spacing 2px
-    $font-numbers()
-
-    @media $laptop
-      font-size 3rem
-      letter-spacing 6px
-      margin-left -5px
-
-  h2&
-    margin-bottom 60px
-    font-size 1.6rem
-    letter-spacing 2px
-
-  &._dashboard
-    margin-bottom 15px
-
-  &._items
-    padding-left 6px
-    margin-bottom 0
-
-  &._mrg
-    margin-bottom 66px
-
-  &._link
-    cursor pointer
-
-  &._trns
-    color $color-rub
-
-  &._sm
-    margin-bottom 25px
-
-  &._mb
-    margin-bottom 50px
-
-    @media (min-width: 768px)
-      margin-bottom 80px
-
-  &._mbn
-    margin-bottom 0
-
-  &._mid
-    margin-bottom 45px
-
-  &._mbm
-    margin-bottom 20px
-
-    @media (min-width: 768px)
-      margin-bottom 45px
-
-  &._mbs
-    margin-bottom 2rem
-
-  &._pl
-    padding-left 5px
-
-  &._minus
-    margin-bottom -35px
-
-    @media $laptop
-      margin-bottom -15px
-
-  &._number
-    margin-top 50px
-    margin-bottom 15px
-
-  &._border
-    padding-bottom 10px
-    border-bottom 1px solid $color-line-account
-
-  &._wide
-    $font-numbers()
-    letter-spacing 8px
-    margin-left -2px
+    z-index 3
+    position fixed
+    left 0
+    top 0
+    width 100%
+    font-size 1rem
 
   &:last-child
     margin-bottom 0
 
-  &__sub
-    padding-left 10px
-    margin-bottom 0
-    color $color-main
+  &._withLeftBar
+    width calc(100% - 280px)
+    left 280px
 
-  .name
-    text-transform none
+  &__in
+    display flex
+    justify-content flex-start
+    flex-flow row wrap
+    justify-content space-between
+    align-items center
+    $max-width()
 
-    @media $laptop
-      padding-left 15px
+    @media (max-width: 1200px)
+      padding 5px 20px
+      border-bottom 1px solid $color-body
+      &:last-child
+        border-bottom none
 
-  .sup
-    opacity .01
-    color $color-second
-    font-size 1rem
-    margin-top -15px
-    margin-left 15px
-    letter-spacing normal
+    @media (min-width: 1200px)
+      padding 0 60px
+
+    &._second
+      padding 0px 10px
+
+  &__item
+    flex-grow 0
+    white-space nowrap
+    padding 15px
+    margin -15px -10px
+    @media (max-width: 768px)
+      &:active
+        background $color-body
+
+  &__header
+    cursor pointer
+    display inline-flex
+    flex-grow 1
+    align-items center
+    white-space nowrap
+    padding 10px 20px
+    margin 0px -20px
+    color $color-white
+    $font-numbers()
     anim()
 
-    &._visible
-      opacity 1
-      color alpha($color-second, 1)
+    @media (min-width: 1200px)
+      padding 15px 20px
+      margin 0px -20px
 
-    ~/:hover ^[1..-1]
-      opacity 1
+    &:active
+      @media (max-width: 768px)
+        color $color-white
 
+    &:hover
+      @media (min-width: 768px)
+        background alpha($color-main, .1)
 
-.numberTitle
-  margin-bottom 50px
+  &__icon
+    margin-top -2px
+    padding-right 10px
+    font-size 1rem
+    color alpha($color-main, .9)
+
+    @media (min-width: 768px)
+      margin-top 0
+      padding-right 8px
+      font-size .9rem
+
+  &__firstDate
+    @media (min-width: 768px)
+      font-size 1.1rem
+      letter-spacing 1px
+
+  &__secondDate
+    margin -4px 0 0 15px
+    color $color-second
+    font-size .8rem
+    letter-spacing 0
+
+  &__periods
+    display flex
+    align-items center
+    flex-flow column
+    margin-right -12px
+    margin-left -15px
+    font-size 1rem
+    letter-spacing normal
+
+    @media (min-width: 768px)
+      flex-flow row
+
+    &._mb
+      margin-top -6px
+      justify-content center
+      margin-bottom 60px
+
+.header__menu__item
+  position relative
+  cursor pointer
+  padding 15px
   color $color-second
-  font-size 1.5rem
-  font-weight bold
-  letter-spacing 3px
-  line-height 1rem
+  font-size 1.1rem
+  letter-spacing 1px
   text-transform uppercase
+  font-weight bold
   $font-numbers()
+  anim()
+
+  @media (max-width: 768px)
+    &:active
+      background $color-body
+      color $color-white
+
+  @media (min-width: 768px)
+    font-size 1rem
+    padding 15px
+    &:hover
+      color $color-link
+
+  &._active
+    background none
+    color $color-white
+
+  &._disabled
+    cursor default
+    opacity .1
+
+  &._account
+    font-size .9rem
+    letter-spacing 2px
+    text-transform uppercase
+    $font-numbers()
+
+  &._mt
+    margin-top -2px
+
+
+.header__menu__sep
+  padding 0 10px

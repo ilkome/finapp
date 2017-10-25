@@ -2,7 +2,6 @@
   display flex
   flex-flow row wrap
   justify-content space-between
-  max-width 490px
 
   @media (min-width: 768px)
     align-items flex-end
@@ -17,22 +16,21 @@
     padding-bottom 20px
 
     @media (min-width: 768px)
-      padding-bottom 60px
+      padding-bottom 30px
 
   a
-    padding 0 5px
-    padding-bottom 10px
+    padding-bottom 5px
     white-space nowrap
-    opacity .3
+    opacity .2
     cursor pointer
     display inline-flex
     color $color-second
-    font-size 1.5rem
+    font-size 1.3rem
     font-weight bold
     letter-spacing 3px
     line-height 1rem
     text-transform uppercase
-    border-bottom 2px solid transparent
+    border-bottom 1px solid transparent
     $font-numbers()
     anim()
 
@@ -42,13 +40,18 @@
     &._active
       opacity 1
       cursor default
-      border-bottom-color $color-link
 
     &._incomes
       color $color-income
+      &._active
+        border-color $color-income
 
     &._expenses
       color $color-expense
+      &._active
+        border-color $color-expense
 
     &._history
       color $color-main
+      &._active
+        border-color $color-main

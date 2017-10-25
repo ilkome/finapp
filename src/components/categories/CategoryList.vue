@@ -1,26 +1,29 @@
 <template lang="pug">
-.categories
-  .categories__filter
+div
+  .filter
     input(
       type="text",
       v-model.trim="filter",
       v-focus.lazy="true && !$store.state.isMobile",
-      placeholder="Search category"
-    ).categories__filter__input
+      placeholder="Search"
+    ).filter__input
 
-    .categories__filter__btns
+    .filter__btns
       template(v-if="!filter")
-        .categories__filter__btn._toogle(@click.prevent="toogleShowAllChildCategories()")
+        .filter__btn._toogle(@click.prevent="toogleShowAllChildCategories()")
           template(v-if="showedChildIds.length")
             .fa.fa-eye
           template(v-else)
             .fa.fa-eye-slash
       template(v-else)
-        .categories__filter__btn._edit(@click.prevent="filter = ''")
+        .filter__btn._edit(@click.prevent="filter = ''")
           .fa.fa-eraser
 
-      .categories__filter__btn._edit(@click.prevent="toogleEditMode()")
+      .filter__btn._edit(@click.prevent="toogleEditMode()")
         .fa.fa-pencil-square-o
+
+      .filter__btn._edit(@click="$store.commit('toogleCategoryCreate')")
+        .fa.fa-plus
 
   template(v-if="filter.length > 0 && filter.length < 2")
     div Continue typing...
@@ -28,7 +31,7 @@
   template(v-if="filter.length >= 2 && searchedCategoriesList.length === 0")
     div Nothing found
 
-  .categories__list
+  div
     //- Category Item
     template(v-for="category in showedCategories")
       CategoryItem(
@@ -220,9 +223,6 @@ export default {
       } else {
         if (this.view === 'trnForm') {
           this.$emit('onClickContent', category.id)
-        }
-        if (this.view === 'categoryCreate') {
-          console.log('categoryCreate')
         }
       }
     },

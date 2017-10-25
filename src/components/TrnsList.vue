@@ -9,14 +9,13 @@
     )
 
   template(v-else)
-    .items(v-for="(trns, date) of trnGroupedByDates")
-      h3.title._border._items {{ date | date }}
-      .items__list
+    .trnsList__item(v-for="(trns, date) of trnGroupedByDates")
+      .trnsList__title {{ date | date }}
+      div
         TrnItem(
           v-for="trn in trns",
           :trn="trn",
-          :key="trn.id"
-        )
+          :key="trn.id")
 </template>
 
 

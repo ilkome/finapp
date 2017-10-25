@@ -1,20 +1,28 @@
 <template lang="pug">
-.trnForm
-  .trnForm__in
-    .trnForm__form
-      .trnForm__form__close(@click="$store.commit('toogleAccountCreate', 'hide')") +
-      .trnForm__form__in
-        template(v-if="$store.state.accounts.create")
-          .trnFormToogle(
-            @click.prevent.stop="$store.commit('toogleAccountCreate', 'hide')",
-            :class="{_active: $store.state.accounts.create}"
-          ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+.rightBar
+  .rightBar__in
+    .rightBar__main
 
-        h4.title._mbs Create account
+      template(v-if="$store.state.accounts.show")
+        .trnFormToogle(
+          @click.prevent.stop="$store.commit('toogleAccountCreate', 'hide')",
+          :class="{_active: $store.state.accounts.show}"
+        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+
+      .rightBar__main__in
+        .sidebar__close(@click="$store.commit('toogleAccountCreate', 'hide')")
+          .sidebar__close__name Create account
+          .sidebar__close__icon: .fa.fa-plus
+
         .form
           .input
             input.input__field(
-              v-model="values.name", type="text", placeholder="Write account name", name="name")
+              v-model="values.name"
+              v-focus.lazy="true",
+              name="name"
+              type="text"
+              placeholder="Write account name"
+            )
             .input__label Name
           .input
             input.input__field(
@@ -84,7 +92,6 @@ export default {
         return
       }
 
-      console.log(formatedValues)
       await this.$store.dispatch('addAccount', formatedValues)
       this.$store.commit('toogleAccountCreate', 'hide')
       this.$store.commit('closeLoader')

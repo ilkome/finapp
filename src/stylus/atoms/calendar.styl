@@ -2,20 +2,21 @@
   background none !important
 
 .calendar-dropdown
-  width calc(100% + 20px)
-  z-index 2
+  width 100%
+  z-index 3
   background $color-body
   position absolute
   left 0
   top 0
   padding 10px
   background $color-layout
-  margin 0 -10px
 
   @media (min-width: 768px)
+    width 400px
     padding 20px
-    box-shadow 6px 6px 0px alpha(#131313, .5)
-    border 4px solid $color-sidebar
+    padding-bottom 0
+    box-shadow 2px 2px 0px alpha(#131313, .5)
+    border 2px solid $color-sidebar
 
   &:before
     position absolute

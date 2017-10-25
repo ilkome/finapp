@@ -1,42 +1,12 @@
 .dropdown
-  display flex
-  position relative
+  z-index 10
+  position absolute
+  left 0
+  bottom 10px
+  transform translate(-30%, 100%)
+  background $color-layout
+  box-shadow 2px 2px 0px alpha(#131313, .5)
+  border 2px solid $color-sidebar
 
-  &__name
-    cursor pointer
-    padding-bottom 3px
-    margin-bottom -3px
-    anim()
-
-  &__content
-    position absolute
-    left 0px
-    top 40px !important
-    white-space nowrap
-
-  &__link
-    padding 5px 10px
-    cursor pointer
-    color white
-    font-size 1.2rem
-    margin-right 10px
-    letter-spacing 1px
-    background #5e7a88
-    border-radius 3px
-
-    &:hover
-      background alpha(#ea6151, .5)
-
-    &._active
-      opacity 1
-      background #ea6151
-
-
-.calendar-dropdown
-  white-space nowrap
-
-  @media (min-width: 768px)
-    display grid
-    grid-column-gap 50px
-    grid-template-columns auto auto
-    width 550px
+  &__in
+    padding 5px 15px

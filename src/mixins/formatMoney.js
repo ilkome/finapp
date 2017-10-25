@@ -16,7 +16,7 @@ accounting.settings = {
 }
 
 // Format money method
-const money = accounting.formatMoney
+const accountingFormatMoney = accounting.formatMoney
 
 const getSymbol = (currency) => {
   switch (currency) {
@@ -36,9 +36,11 @@ const getSymbol = (currency) => {
 const mixin = {
   methods: {
     formatMoney(sum, currency) {
-      if (!currency || currency === 'RUB') return money(sum)
+      if (!currency || currency === 'RUB') {
+        return accountingFormatMoney(sum)
+      }
       const symbol = getSymbol(currency)
-      return money(sum, { symbol })
+      return accountingFormatMoney(sum, { symbol })
     }
   }
 }

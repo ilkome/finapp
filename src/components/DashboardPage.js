@@ -2,31 +2,33 @@ import { mapGetters } from 'vuex'
 import moment from 'moment'
 import uniqBy from 'lodash/uniqBy'
 import orderBy from 'lodash/orderBy'
-import date from 'date-fns'
+import formatDateForDashboardTitle from '../mixins/formatDateForDashboardTitle'
 import formatMoney from '../mixins/formatMoney'
 import Calendar from './calendar/calendar.vue'
 import TrnsList from './TrnsList.vue'
 import TrnItem from './TrnItem.vue'
 import SummaryShort from './SummaryShort.vue'
+import ItemStatGroup from './ItemStatGroup.vue'
 import ItemStat from './ItemStat.vue'
 import Chart from './Chart.vue'
 import Slider from './Slider.vue'
+import AppHeader from './AppHeader.vue'
 
 export default {
   name: 'DashboardPage',
   mixins: [formatMoney],
-  components: { ItemStat, TrnsList, TrnItem, Calendar, SummaryShort, Chart, Slider },
+  components: { ItemStatGroup, ItemStat, TrnsList, TrnItem, Calendar, SummaryShort, Chart, Slider, AppHeader },
   data() {
     return {
+      showedHistory: false,
+      showedGraph: false,
       accountId: null,
       categoryId: null,
       showedTab: 'alt',
       showedTabMoney: 'expenses',
-      groupedByParent: true,
       selectedCategory: null,
-      selectedAccount: null,
       selectedPeriodIndex: 0,
-      showedPeriod: 2,
+      showedPeriod: 1,
       idsOfOpenedCategories: [],
       trnsDate: {
         start: '',
@@ -36,23 +38,14 @@ export default {
   },
 
   mounted() {
-    document.querySelector('body').addEventListener('click', this.closePopCalendar)
-  },
-  beforeDestroy() {
-    document.querySelector('body').removeEventListener('click', this.closePopCalendar)
-  },
-  beforeMount() {
-    this.setDates('month')
-    this.setDuration(10)
-    document.addEventListener('keyup', (event) => {
-      if (event.keyCode === 27) { // escape key
-        this.calendar.show = false
-      }
-    })
+    this.setTimePeriod('month')
   },
 
   computed: {
-    ...mapGetters(['accounts', 'categories', 'trns', 'getTrns', 'getFilter']),
+    ...mapGetters(['accounts', 'categories', 'getTrns', 'getFilter']),
+    $timePeriod() {
+      return this.$store.state.dashboard.timePeriod
+    },
     globalDate() {
       return {
         start: moment(this.$store.state.dates.start).startOf('day').valueOf(),
@@ -65,14 +58,11 @@ export default {
       }
       return false
     },
-    calendarPreset() {
-      return this.$store.state.dashboard.calendarPreset
-    },
     duration() {
       return this.getFilter.duration
     },
     trnsList() {
-      if (this.calendarPreset === 'all') {
+      if (this.$timePeriod === 'all') {
         return this.getTrns({
           accountId: this.accountId,
           categoryId: this.categoryId
@@ -87,7 +77,7 @@ export default {
       }
     },
     trnsListHistory() {
-      if (this.calendarPreset === 'all') {
+      if (this.$timePeriod === 'all') {
         return this.getTrns({
           showTransfers: true,
           accountId: this.accountId,
@@ -109,107 +99,69 @@ export default {
     expensesTrns() {
       return this.trnsList.filter(t => t.type === 0)
     },
-    incomesItemStats() {
+    incomesItemsStat() {
       return this.getCategoriesStatFromTrns(this.incomesTrns)
     },
-    expensesItemStats() {
+    expensesItemsStat() {
       return this.getCategoriesStatFromTrns(this.expensesTrns)
     },
-    previousData() {
-      const data = []
+    formatTrnsForChart() {
+      const newData = []
 
-      let maxCountOfPeriods = this.showedPeriod
-      if (this.calendarPreset === 'all') return
-      if (this.calendarPreset === 'year') maxCountOfPeriods = 3
-
-      for (let period = 0; period <= maxCountOfPeriods; period++) {
-        const periodDuration = this.duration * period
-        let periodStartDate = moment(this.globalDate.start).subtract(periodDuration, 'days').startOf('day')
-        let periodEndDate = moment(this.globalDate.end).subtract(periodDuration, 'days').endOf('day')
-
-        if (this.calendarPreset) {
-          switch (this.calendarPreset) {
-            case 'isoweek':
-              periodStartDate = moment(this.globalDate.start).subtract(period, 'weeks').startOf('isoweek')
-              periodEndDate = moment(this.globalDate.start).subtract(period, 'weeks').endOf('isoweek')
-              break
-            case 'month':
-              periodStartDate = moment(this.globalDate.start).subtract(period, 'months').startOf('month')
-              periodEndDate = moment(this.globalDate.start).subtract(period, 'months').endOf('month')
-              break
-            case 'year':
-              periodStartDate = moment(this.globalDate.start).subtract(period, 'years').startOf('year')
-              periodEndDate = moment(this.globalDate.start).subtract(period, 'years').endOf('year')
-              break
-          }
-          if (period === 0) periodEndDate = moment().endOf('day')
-        }
-
-        let periodName = this.formatDates(periodStartDate, periodEndDate, 'date')
-        if ((period === 0 || this.calendarPreset) && this.isLastDays) {
-          periodName = this.formatDates(periodStartDate, periodEndDate, 'period')
-        }
-
-        const startDate = moment(periodStartDate).valueOf()
-        const endDate = moment(periodEndDate).valueOf()
-        const periodTrns = this.getTrns({
-          startDate,
-          endDate,
+      for (let period = 0; period < 7; period++) {
+        const trns = this.getTrns({
           accountId: this.getFilter.account && this.getFilter.account.id,
-          categoryId: this.categoryId
+          categoryId: this.categoryId })
+          .filter(trn =>
+            moment(trn.date).startOf('month').valueOf() === moment().startOf('month').subtract(period, 'months').valueOf())
+
+        const incomes = trns
+          .filter(trn => trn.type === 1)
+          .reduce((sum, current) => sum + current.amountRub, 0)
+
+        const expenses = trns
+          .filter(trn => trn.type === 0)
+          .reduce((sum, current) => sum + current.amountRub, 0)
+
+        newData.push({
+          name: moment().startOf('month').subtract(period, 'months').format('MMM Y'),
+          incomes,
+          expenses,
+          total: incomes - expenses
         })
-
-        if (periodTrns.length) {
-          const periodIncomes = periodTrns
-            .filter(t => t.type === 1)
-            .reduce((sum, current) => sum + current.amountRub, 0)
-          const periodExpenses = periodTrns
-            .filter(t => t.type === 0)
-            .reduce((sum, current) => sum + current.amountRub, 0)
-          const periodTotal = periodIncomes - periodExpenses
-
-          data.push({
-            period,
-            date: periodName,
-            incomes: periodIncomes,
-            expenses: periodExpenses,
-            total: periodTotal
-          })
-        } else {
-          data.push({
-            period,
-            date: periodName,
-            incomes: 0,
-            expenses: 0,
-            total: 0
-          })
-        }
       }
 
-      return data
+      return {
+        categories: newData.map(d => d.name),
+        series: [{
+          name: 'Expences',
+          color: '#922B21',
+          data: newData.map((d, idx) => ({
+            y: d.expenses,
+            idx
+          }))
+        }, {
+          name: 'Incomes',
+          color: '#1e7a45',
+          data: newData.map((d, idx) => ({
+            y: d.incomes,
+            idx
+          }))
+        }]
+        // {
+        //   type: 'spline',
+        //   name: 'Total',
+        //   color: '#7d7d7d',
+        //   data: newData.map((d, idx) => ({
+        //     y: d.total,
+        //     idx
+        //   }))
+        // }
+      }
     }
   },
 
   methods: {
-    getCategoryGraphWidth(total, trns) {
-      const width = total / trns[0].total * 100
-      const renderWidth = width > 0 ? width : 0
-      return { width: `calc(${renderWidth}%)` }
-    },
-    getPreviousDataGraphWidth(value) {
-      const dataSorted = orderBy(this.previousData, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
-      const biggest = dataSorted[0].incomes > dataSorted[0].expenses ? dataSorted[0].incomes : dataSorted[0].expenses
-      const height = value / biggest * 100
-
-      let renderHeight
-      height > 0
-        ? renderHeight = height > 1 ? height : 1
-        : renderHeight = 0
-
-      return {
-        width: `calc(${renderHeight}%)`
-      }
-    },
     getCategoryStat(categoryId, type) {
       const trnType = type === 'incomes' ? 1 : 0
       const category = this.categories.find(category => category.id === categoryId)
@@ -285,99 +237,61 @@ export default {
       }
       return []
     },
-    toogleGroupByParent() {
-      this.groupedByParent = !this.groupedByParent
-    },
-    setDates(period) {
+    setTimePeriod(period) {
       this.idsOfOpenedCategories = []
       this.selectedPeriodIndex = 0
-      this.showedPeriod = 2
+      this.showedPeriod = 1
 
-      let duration = 1
-      switch (period) {
-        case 'isoweek':
-          duration = 7
-          break
-        case 'month':
-          duration = 31
-          break
-        case 'year':
-          duration = 365
-          break
-        case 'all':
-          duration = 365 * 4
-          break
-      }
-
-      const seletedPeriod = period === 'all' ? 'year' : period
-      const startDate = moment().startOf(seletedPeriod).valueOf()
-      const endDate = moment().endOf('day').valueOf()
-
-      this.$store.commit('setDuration', duration)
-      this.$store.commit('setDates', { start: startDate, end: endDate })
-      this.$store.commit('setCalendarPreset', period)
-
-      // Trns
-      this.trnsDate.start = startDate
-      this.trnsDate.end = endDate
-
-      // Title
       if (period === 'all') {
+        this.$store.commit('setDuration', 0)
+        this.$store.commit('timePeriod', 'all')
+
+        // Title
         this.$store.commit('setFilterDate', {
-          first: 'is showed',
-          second: 'is showed'
+          first: 'All data',
+          second: ''
+        })
+
+        // Calendar
+        this.$store.commit('setFilterCalendar', {
+          value: 'all'
         })
       } else {
+        const startDate = moment().startOf(period).valueOf()
+        const endDate = moment().endOf('day').valueOf()
+        const daysDuration = moment(endDate).diff(startDate, 'days') + 1
+
+        this.$store.commit('setDuration', daysDuration)
+        this.$store.commit('setDates', { start: startDate, end: endDate })
+        this.$store.commit('timePeriod', period)
+
+        // Trns
+        this.trnsDate.start = startDate
+        this.trnsDate.end = endDate
+
+        // Title
         this.$store.commit('setFilterDate', {
           first: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period'),
           second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
         })
+
+        // Calendar
+        if (daysDuration <= 31) {
+          this.$store.commit('setFilterCalendar', {
+            value: [
+              moment(this.trnsDate.start).format('Y.M.D').split('.'),
+              moment(this.trnsDate.end).format('Y.M.D').split('.')
+            ]
+          })
+        } else {
+          this.$store.commit('setFilterCalendar', {
+            value: 'all'
+          })
+        }
       }
-
-      // Calendar
-      this.$store.commit('setFilterCalendar', {
-        show: false,
-        value: [
-          moment(this.trnsDate.start).format('Y.M.D').split('.'),
-          moment(this.trnsDate.end).format('Y.M.D').split('.')
-        ]
-      })
-    },
-    setDuration(duration) {
-      this.$store.commit('showLoader', 'show')
-      this.idsOfOpenedCategories = []
-      this.selectedPeriodIndex = 0
-      this.showedPeriod = 2
-
-      const startDate = moment().subtract(duration - 1, 'days').startOf('day')
-      const endDate = moment().endOf('day')
-
-      this.$store.commit('setDuration', duration)
-      this.$store.commit('setDates', { start: startDate, end: endDate })
-      this.$store.commit('setCalendarPreset', null)
-
-      // Trns
-      this.trnsDate.start = startDate
-      this.trnsDate.end = endDate
-
-      // Title
-      this.$store.commit('setFilterDate', {
-        first: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period'),
-        second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
-      })
-
-      // Calendar
-      this.$store.commit('setFilterCalendar', {
-        show: false,
-        value: [
-          moment(startDate).format('Y.M.D').split('.'),
-          moment(endDate).format('Y.M.D').split('.')
-        ]
-      })
-
-      this.$store.commit('closeLoader')
     },
     selectPeriodStat(index) {
+      // const index = ++this.selectedPeriodIndex
       if (this.selectedPeriodIndex === index) return
 
       this.idsOfOpenedCategories = []
@@ -387,28 +301,28 @@ export default {
       let endDate = moment(this.globalDate.end).subtract(this.duration * index, 'days')
 
       // Week
-      if (this.calendarPreset === 'isoweek') {
+      if (this.$timePeriod === 'isoweek') {
         startDate = moment(this.globalDate.start).subtract(index, 'weeks').startOf('isoweek')
         if (index === 0) endDate = moment(this.globalDate.end).endOf('day')
         else endDate = moment(this.globalDate.start).subtract(index, 'weeks').endOf('isoweek')
       }
 
       // Month
-      if (this.calendarPreset === 'month') {
+      if (this.$timePeriod === 'month') {
         startDate = moment(this.globalDate.start).subtract(index, 'months').startOf('month')
         if (index === 0) endDate = moment(this.globalDate.end).endOf('day')
         else endDate = moment(this.globalDate.end).subtract(index, 'months').endOf('month')
       }
 
       // Year
-      if (this.calendarPreset === 'year') {
+      if (this.$timePeriod === 'year') {
         startDate = moment(this.globalDate.start).subtract(index, 'years').startOf('year')
         if (index === 0) endDate = moment(this.globalDate.end).endOf('day')
         else endDate = moment(this.globalDate.end).subtract(index, 'years').endOf('year')
       }
 
       // Year
-      if (this.calendarPreset === 'all') {
+      if (this.$timePeriod === 'all') {
         startDate = moment(this.globalDate.start).subtract(index, 'years').startOf('year')
         if (index === 0) endDate = moment(this.globalDate.end).endOf('day')
         else endDate = moment(this.globalDate.end).subtract(index, 'years').endOf('year')
@@ -419,7 +333,7 @@ export default {
       this.trnsDate.end = endDate
 
       // Title
-      if ((index === 0 || this.calendarPreset) && this.isLastDays) {
+      if ((index === 0 || this.$timePeriod) && this.isLastDays) {
         this.$store.commit('setFilterDate', {
           first: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period'),
           second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
@@ -432,7 +346,6 @@ export default {
       }
 
       // Calendar
-      // Calendar
       this.$store.commit('setFilterCalendar', {
         show: false,
         value: [
@@ -444,16 +357,12 @@ export default {
     selectCalendarDates(startCalendar, endCalendar) {
       const startDate = moment(startCalendar.join('.'), 'Y.M.D').startOf('day')
       const endDate = moment(endCalendar.join('.'), 'Y.M.D').endOf('day')
-
-      this.calendar.show = false
-      this.calendar.value = [startCalendar, endCalendar]
-
+      const duration = endDate.diff(startDate, 'days') + 1
       this.selectedPeriodIndex = 0
 
-      const duration = endDate.diff(startDate, 'days') + 1
       this.$store.commit('setDuration', duration)
       this.$store.commit('setDates', { start: startDate, end: endDate })
-      this.$store.commit('setCalendarPreset', null)
+      this.$store.commit('timePeriod', null)
 
       // Trns
       this.trnsDate.start = startDate
@@ -470,19 +379,18 @@ export default {
           second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'period')
         })
       }
-    },
-    clearFilter() {
-      this.categoryId = null
-      this.selectedCategory = null
-      this.idsOfOpenedCategories = []
-      this.$store.commit('setFilterAccount', null)
+
+      // Calendar
+      this.$store.commit('setFilterCalendar', {
+        show: false,
+        value: [
+          moment(startDate).format('Y.M.D').split('.'),
+          moment(endDate).format('Y.M.D').split('.')
+        ]
+      })
     },
     setFilterAccount(account) {
-      if (account) {
-        this.$store.commit('setFilterAccount', account)
-      } else {
-        this.$store.commit('setFilterAccount', null)
-      }
+      this.$store.commit('setFilterAccount', account)
     },
     setFilterCategory(categoryId) {
       if (categoryId) {
@@ -507,170 +415,14 @@ export default {
       return this.idsOfOpenedCategories.indexOf(itemId) !== -1
     },
     formatDates(start, end, type) {
-      const startDate = moment(start).startOf('day')
-      const endDate = moment(end).endOf('day').valueOf()
-      const endOfToday = moment().endOf('day').valueOf()
-
-      // Same day
-      if (moment(startDate).endOf('day').valueOf() === moment(endDate).endOf('day').valueOf()) {
-        // Today
-        if (moment(startDate).endOf('day').valueOf() === endOfToday) {
-          if (type === 'date') {
-            return `${moment(startDate).format('D MMM')}`
-          }
-          return 'Today'
-        }
-        // Yestarday
-        if (moment(startDate).endOf('day').valueOf() === moment(endOfToday).subtract(1, 'day').valueOf()) {
-          if (type === 'date') {
-            return 'Yestarday'
-          }
-          return `${moment(startDate).format('D MMM')}`
-        }
-      }
-
-      // Date
-      if (type === 'date') {
-        // Same yaer
-        if (moment(startDate).format('Y') === moment(endDate).format('Y')) {
-          // Same month
-          if (moment(startDate).format('M') === moment(endDate).format('M')) {
-            // Same day
-            if (moment(startDate).format('D') === moment(endDate).format('D')) {
-              return `${moment(startDate).format('D MMM')}`
-            } else {
-              return `${moment(startDate).format('D')} - ${moment(endDate).format('D')} ${moment(endDate).format('MMM')}`
-            }
-          } else {
-            return `${moment(startDate).format('D MMM')} - ${moment(endDate).format('D MMM')}`
-          }
-        }
-
-        // Differnt year
-        if (moment(startDate).format('Y') !== moment(endDate).format('Y')) {
-          // Same month
-          if (moment(startDate).format('M') === moment(endDate).format('M')) {
-            // Same day
-            if (moment(startDate).format('D') === moment(endDate).format('D')) {
-              return `${moment(startDate).format('D MMM YY')}`
-            } else {
-              return `${moment(startDate).format('D MMM YY')} - ${moment(endDate).format('D MMM YY')}`
-            }
-          } else {
-            return `${moment(startDate).format('D MMM YY')} - ${moment(endDate).format('D MMM YY')}`
-          }
-        }
-      }
-
-      // Period
-      if (type === 'period') {
-        // Calendar Preset
-        if (this.calendarPreset) {
-          let difference = ''
-
-          switch (this.calendarPreset) {
-            case 'isoweek':
-              difference = date.differenceInWeeks(this.globalDate.end, startDate)
-              switch (difference) {
-                case 0: return `This week`
-                case 1: return `Last week`
-                // TODO: change dates
-                // default: return `${moment(startDate).format('D MMM YY')} - ${moment(endDate).format('D MMM YY')}`
-                default: return `${difference} weeks ago`
-              }
-            case 'month':
-              difference = date.differenceInMonths(this.globalDate.end, startDate)
-              switch (difference) {
-                case 0: return `This month`
-                case 1: return `Last month`
-                default: return moment(startDate).format('MMM Y')
-              }
-            case 'year':
-              difference = date.differenceInCalendarYears(this.globalDate.end, startDate)
-              switch (difference) {
-                case 0: return `This year`
-                default: return moment(startDate).format('Y')
-              }
-            case 'all':
-              return moment(startDate).format('Y')
-            default: return `No date`
-          }
-        }
-
-        // Numbers
-        if (!this.calendarPreset) {
-          // First period
-          if (endDate === endOfToday) {
-            return `Last ${this.duration} days`
-          }
-
-          // Other periods
-          if (endDate !== endOfToday) {
-            return `${this.duration} days`
-          }
-        }
-      }
-    },
-    formatTrnsForChart(trns) {
-      if (trns.length > 0) {
-        // Get ids of cats from trns
-        const catsIds = uniqBy(trns, 'categoryRoot.id').map(trn => trn.categoryRoot.id)
-
-        // Create data for Chart series
-        const data = catsIds.map((id) => {
-          const category = this.categories.find(cat => cat.id === id)
-          const trnsInCat = trns.filter(trn => trn.categoryRoot.id === id && trn.type === 0)
-          const totalInCat = trnsInCat.reduce((sum, current) => sum + current.amountRub, 0)
-          return {
-            categoryId: id,
-            categoryName: category.name,
-            category,
-            total: totalInCat
-          }
-        })
-
-        // sort data by biggest value in category
-        const dataSorted = data.sort((a, b) => {
-          if (a.total > b.total) return -1
-          else if (a.total < b.total) return 1
-          return 0
-        })
-        const dataSortedLimited = dataSorted.slice(0, 10)
-
-        return {
-          categories: dataSortedLimited.map(d => d.category),
-          series: [{
-            data: dataSortedLimited.map(d => ({
-              categoryName: d.categoryName,
-              id: d.categoryId,
-              y: d.total,
-              color: d.category.color
-            }))
-          }]
-        }
-      }
-
-      // If no trns
-      return {
-        categories: [],
-        series: [{
-          data: []
-        }]
-      }
-    },
-    openPopupCalendar(event) {
-      this.$store.commit('setFilterCalendar', {
-        show: !this.$store.state.filter.filter.calendar.show,
-        left: event.target.closest('.dateTitle__item').offsetLeft,
-        top: event.target.closest('.dateTitle__item').offsetTop + 80
-      })
+      return formatDateForDashboardTitle(start, end, type, this.$timePeriod, this.globalDate, this.duration)
     },
     closePopCalendar(event) {
       if (this.$store.state.filter.filter.calendar.show) {
-        const link = document.querySelector('.dateTitle__header')
+        const link = document.querySelector('.header__header')
         const target = event.target
 
-        // Clicks inside '.dateTitle__header'
+        // Clicks inside '.header__header'
         if (target.contains(link)) {
           this.$store.commit('setFilterDate', { show: false })
         } else {
@@ -691,6 +443,35 @@ export default {
     },
     changeTabMoney(tab) {
       this.showedTabMoney = tab
+    },
+    toogleShowGraph() {
+      this.showedHistory = false
+      this.showedGraph = !this.showedGraph
+    },
+    toogleShowHistory() {
+      this.showedGraph = false
+      this.showedHistory = !this.showedHistory
+    },
+    toogleOpenedCategories() {
+      if (this.idsOfOpenedCategories.length) {
+        this.idsOfOpenedCategories = []
+      } else {
+        this.trnsList.map(trn => {
+          if (this.idsOfOpenedCategories.indexOf(trn.categoryRoot.id) === -1) {
+            this.idsOfOpenedCategories.push(trn.categoryRoot.id)
+          }
+        })
+      }
+    },
+    selectNextPeriod() {
+      const index = this.selectedPeriodIndex + 1
+      this.selectPeriodStat(index)
+    },
+    selectPrevPeriod() {
+      const index = this.selectedPeriodIndex - 1
+      if (index >= 0) {
+        this.selectPeriodStat(index)
+      }
     }
   }
 }

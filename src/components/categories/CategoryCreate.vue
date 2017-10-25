@@ -1,22 +1,30 @@
 <template lang="pug">
-.trnForm
-  .trnForm__in
-    .trnForm__form
-      .trnForm__form__close(@click="$store.commit('toogleCategoryCreate', 'hide')") +
-      .trnForm__form__in
-        template(v-if="$store.state.categories.create")
-          .trnFormToogle(
-            @click.prevent.stop="$store.commit('toogleCategoryCreate', 'hide')",
-            :class="{_active: $store.state.categories.create}"
-          ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+.rightBar
+  .rightBar__in
+    .rightBar__main
 
-        h4.title._mbs Create category
+      template(v-if="$store.state.categories.create")
+        .trnFormToogle(
+          @click.prevent.stop="$store.commit('toogleCategoryCreate', 'hide')",
+          :class="{_active: $store.state.categories.create}"
+        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+
+      .rightBar__main__in
+        .sidebar__close(@click="$store.commit('toogleCategoryCreate', 'hide')")
+          .sidebar__close__name Create category
+          .sidebar__close__icon: .fa.fa-plus
+
         .form
           .form__table
             .form__table__cell._name
               .input
                 input.input__field(
-                  v-model="values.name", type="text", placeholder="Write category name", name="name")
+                  v-model="values.name"
+                  v-focus.lazy="true",
+                  name="name"
+                  type="text"
+                  placeholder="Write category name"
+                )
                 .input__label Name
 
             .form__table__cell._color
@@ -90,18 +98,18 @@
           @shortkey="toogleShowCategories()")
 
           .trnForm__categories__in
-            .trnForm__header
-              h4.title._mbn Select category
-              .trnForm__header__close.btn._mini(@click.prevent="toogleCategoriesPop()") Back
+            .sidebar__close(@click="toogleCategoriesPop")
+              .sidebar__close__name Select category
+              .sidebar__close__icon: .fa.fa-plus
 
-            .categories
+            div
               template(v-for="category in showedCategories")
-                .categoryItem
-                  .categoryItem__content(@click.prevent="selectParent(category)")
-                    .categoryItem__icon
+                .itemList
+                  .itemList__content(@click.prevent="selectParent(category)")
+                    .itemList__icon
                       .icon._link(:style="`background: ${category.color}`")
                         .icon__pic: div(:class="category.icon")
-                    .categoryItem__name
+                    .itemList__name
                       div {{ category.name }}
 
       //- Icons popup block
@@ -110,21 +118,21 @@
         .trnForm__categories(
           v-if="showIconsPop"
         )
-          .trnForm__form__in
-            .trnForm__header
-              h4.title._mbn Select icon
-              .trnForm__header__close.btn._mini(@click.prevent="toogleIconsPop()") Back
+          .trnForm__categories__in
+            .sidebar__close(@click="toogleIconsPop")
+              .sidebar__close__name Select icon
+              .sidebar__close__icon: .fa.fa-plus
 
-            .categories__filter
+            .filter
               input(
                 type="text",
                 v-model.trim="iconFilter",
-                v-focus.lazy="true && !$store.state.isMobile",
-                placeholder="Search icon"
-              ).categories__filter__input
-              .categories__filter__btns
-                template(v-if="iconFilter")
-                  .categories__filter__btn._edit(@click.prevent="iconFilter = ''")
+                v-focus.lazy="showIconsPop && !$store.state.isMobile",
+                placeholder="Search"
+              ).filter__input
+              template(v-if="iconFilter !== ''")
+                .filter__btns
+                  .filter__btn._edit(@click.prevent="iconFilter = ''")
                     .fa.fa-eraser
 
             template(v-if="iconFilter.length >= 2 && searchedIcons.length === 0")

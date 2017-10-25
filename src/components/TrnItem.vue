@@ -1,43 +1,49 @@
 <template lang="pug">
-.trnItem
+.trnItem(:class="{_editable: trn.id === editedTrn}")
   //- Trns small
   //------------------------------------------------
   template(v-if="view === 'small'")
     .trnItem__content
-      .grid(:class="{_editable: trn.id === editedTrn}")
-        .grid__item._price(:class="trn.type === 1 ? 'income' : 'expense'")
-          div {{ formatMoney(trn.amountRub) }}
-          div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
-        .grid__item
-          .grid__item__date {{ formatDate(trn.date, 'D MMM YY') }}
-          .grid__item__account {{ trn.accountName }}
+      .trnItem__price(:class="trn.type === 1 ? 'income' : 'expense'")
+        div {{ formatMoney(trn.amountRub) }}
+        div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
+      .trnItem__cell
+        .trnItem__line._date {{ formatDate(trn.date, 'D MMM YY') }}
+        .trnItem__line {{ trn.accountName }}
+
+      .trnItem__actions
         template(v-if="editedTrn && trn.id === editedTrn")
-          .grid__item._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
+          .trnItem__action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
         template(v-else)
-          .grid__item._action(@click.stop.prevent="setEditTrn(trn.id)").fa.fa-pencil-square-o
-        .grid__item._action(@click.prevent.stop="askQuestion(trn.id)").fa.fa-trash-o
-        .grid__item._description(v-if="trn.description") {{ trn.description }}
+          .trnItem__action(@click.stop.prevent="setEditTrn(trn.id)").fa.fa-pencil-square-o
+        .trnItem__action(@click.prevent.stop="askQuestion(trn.id)").fa.fa-trash-o
+
+    .trnItem__description(v-if="trn.description") {{ trn.description }}
 
   //- Trns big
   //------------------------------------------------
   template(v-else)
-    .item(:class="{_selected: selected, _editable: trn.id === editedTrn}")
-      .item__content
-        .item__el.item__pic
-          .icon(:style="`background: ${trn.categoryColor}`")
-            div(:class="trn.categoryIcon")
+    .trnItem__content
+      .trnItem__pic
+        .icon(:style="`background: ${trn.categoryColor}`")
+          div(:class="trn.categoryIcon")
 
-        .item__el._price(:class="trn.type === 1 ? 'income' : 'expense'")
-          div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
-          div {{ formatMoney(trn.amountRub) }}
-        .item__meta
-          .grid__item__category {{ trn.categoryName }}
-          .grid__item__account {{ trn.accountName }}
+      .trnItem__price(:class="trn.type === 1 ? 'income' : 'expense'")
+        div {{ formatMoney(trn.amountRub) }}
+        div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
+      .trnItem__cell
+        .trnItem__line._date {{ formatDate(trn.date, 'D MMM YY') }}
+        .trnItem__line {{ trn.accountName }}
+        .trnItem__line {{ trn.categoryName }}
+
+      .trnItem__actions
         template(v-if="editedTrn && trn.id === editedTrn")
-          .item__el._action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
+          .trnItem__action(@click.stop.prevent="$store.commit('closeTrnForm')").fa.fa-times-circle
         template(v-else)
-          .item__el._action(@click.stop.prevent="setEditTrn(trn.id)").fa.fa-pencil-square-o
-        .item__el._action(@click.prevent.stop="askQuestion(trn.id)"): .fa.fa-trash-o
+          .trnItem__action(@click.stop.prevent="setEditTrn(trn.id)").fa.fa-pencil-square-o
+        .trnItem__action(@click.prevent.stop="askQuestion(trn.id)").fa.fa-trash-o
+
+    .trnItem__description._big(v-if="trn.description") {{ trn.description }}
 
   .item__question(:class="{_visible: questionId === trn.id}")
     .item__el._question
@@ -97,10 +103,6 @@ export default {
     },
     setEditTrn(trnId) {
       this.$store.commit('setTrnForm', { action: 'update', trnId })
-    },
-    onClickAccount() {
-      const account = this.accounts.find(account => account.id === this.trn.accountId)
-      this.$emit('onClickAccount', account)
     }
   }
 }

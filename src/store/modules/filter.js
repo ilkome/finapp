@@ -25,6 +25,9 @@ export default {
   },
 
   mutations: {
+    closeFilterCalendar(state) {
+      state.filter.calendar.show = false
+    },
     setFilterAccount(state, account) {
       state.filter.account = account
     },
@@ -32,8 +35,13 @@ export default {
       if (calendar) {
         state.filter.calendar.show = calendar.show
 
-        if (calendar.value && calendar.value.length > 0) {
-          state.filter.calendar.value = calendar.value
+        if (calendar.value) {
+          if (calendar.value.length === 2) {
+            state.filter.calendar.value = calendar.value
+          }
+          if (calendar.value === 'all') {
+            state.filter.calendar.value = []
+          }
         }
         if (calendar.left) {
           state.filter.calendar.left = calendar.left
@@ -44,11 +52,9 @@ export default {
       }
     },
     setFilterDate(state, dates) {
-      if (dates && dates.first) {
-        state.filter.date.first = dates.first
-      }
-      if (dates && dates.second) {
-        state.filter.date.second = dates.second
+      if (dates) {
+        if (dates.first) state.filter.date.first = dates.first
+        if (dates.second) state.filter.date.second = dates.second
       }
     },
     setDuration(state, duration) {
