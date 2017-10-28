@@ -28,7 +28,6 @@
     "chalk": "^2.1.0",
     "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
-    "date-fns": "^1.29.0",
     "del": "^3.0.0",
     "eslint": "^4.9.0",
     "eslint-config-vue": "^2.0.2",

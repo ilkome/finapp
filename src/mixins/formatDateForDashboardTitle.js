@@ -1,5 +1,4 @@
 import moment from 'moment'
-import date from 'date-fns'
 
 /**
  * Format date.
@@ -12,24 +11,6 @@ export default function formatDateForDashboardTitle(start, end, type, timePeriod
   const startDate = moment(start).startOf('day')
   const endDate = moment(end).endOf('day').valueOf()
   const endOfToday = moment().endOf('day').valueOf()
-
-  // Same day
-  if (moment(startDate).endOf('day').valueOf() === moment(endDate).endOf('day').valueOf()) {
-    // Today
-    if (moment(startDate).endOf('day').valueOf() === endOfToday) {
-      if (type === 'date') {
-        return `${moment(startDate).format('D MMM')}`
-      }
-      return 'Today'
-    }
-    // Yestarday
-    if (moment(startDate).endOf('day').valueOf() === moment(endOfToday).subtract(1, 'day').valueOf()) {
-      if (type === 'date') {
-        return 'Yestarday'
-      }
-      return `${moment(startDate).format('D MMM')}`
-    }
-  }
 
   // Date
   if (type === 'date') {
@@ -72,7 +53,7 @@ export default function formatDateForDashboardTitle(start, end, type, timePeriod
 
       switch (timePeriod) {
         case 'isoweek':
-          difference = date.differenceInWeeks(globalDate.end, startDate)
+          difference = moment(globalDate.end).diff(moment(startDate), 'week')
           switch (difference) {
             case 0: return `This week`
             case 1: return `Last week`
@@ -81,14 +62,14 @@ export default function formatDateForDashboardTitle(start, end, type, timePeriod
             default: return `${difference} weeks ago`
           }
         case 'month':
-          difference = date.differenceInMonths(globalDate.end, startDate)
+          difference = moment(globalDate.end).diff(moment(startDate), 'month')
           switch (difference) {
             case 0: return `This month`
             case 1: return `Last month`
             default: return moment(startDate).format('MMM Y')
           }
         case 'year':
-          difference = date.differenceInCalendarYears(globalDate.end, startDate)
+          difference = moment(globalDate.end).diff(moment(startDate), 'year')
           switch (difference) {
             case 0: return `This year`
             default: return moment(startDate).format('Y')
