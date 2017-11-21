@@ -1,204 +1,386 @@
-.logo
-  display block
-  width 20px
-  fill $color-second
-  anim()
-
 .sidebar
+  z-index 3
   position fixed
   width 100%
   height 100vh
   left 0
   top 0
-  z-index 3
-  flex-shrink 0
   background $color-sidebar
-  overflow hidden
-  overflow-y scroll
-  scrollbar()
+  border-right 1px solid black
   anim()
 
-  @media (min-width: 768px)
-    width 280px
-    box-shadow 0 0 5px $color-sidebar
+  @media $after768
+    z-index 0
+    top 50px
+    width 290px
+    height calc(100vh - 50px)
 
-  &__wrap
-    z-index 3
-    height 100vh
-
-    @media (min-width: 768px)
-      width 280px
 
   &__in
+    overflow hidden
+    overflow-y auto
     display flex
     flex-flow column nowrap
-    justify-content space-between
-    min-height 100vh
-    padding 0px 20px 20px 20px
+    height calc(100vh - 40px)
+    padding 10px 20px 15px 20px
+    scrollbar()
 
-    @media (min-width: 768px)
-      padding 0 30px 20px 30px
+    @media $after768
+      height calc(100vh - 50px)
+      padding 30px
+      padding-bottom 15px
 
-  &__title
-    padding-bottom 20px
-    font-size 1rem
-    font-weight bold
-    letter-spacing 3px
-    line-height 1rem
-    text-transform uppercase
-    $font-numbers()
 
   &__row
-    display flex
-    align-items center
-    justify-content space-between
-    margin 0px -10px 10px -10px
-    padding-bottom 8px
+    padding-bottom 30px
 
-  &__item
-    padding-bottom 50px
-
-    @media (min-width: 768px)
-      padding-bottom 44px
+    @media $after768
+      padding-bottom 60px
 
     &:last-child
       margin-top auto
-      padding-bottom 0px
-
-    &._nav
-      height 105px
-      padding-top 5px
       padding-bottom 0
+
+  &__wrap
+    margin 0 -20px
+
+    @media $after768
+      margin 0 -30px
+
+  &__head
+    display flex
+    justify-content space-between
+    align-items center
+    margin-bottom 10px
+
 
   &__close
     cursor pointer
-    height 41px
-    margin 0 -20px
-    padding 0 20px
-    margin-bottom 20px
     display flex
     align-items center
     justify-content space-between
-    font-size 1rem
+    height 51px
+    margin 0 0px
+    padding 0 20px
+    $typo-title()
     background $color-body
 
-    @media (min-width: 768px)
+    @media (max-width: 768px)
+      &:active
+        color $color-main
+        background $color-sidebar-bg-hover
+
+    @media $after768
       height auto
-      margin 0 -40px
-      margin-bottom 20px
-      padding 15px 40px
-      background none
+      margin 0
+      padding 15px 30px
 
-    &__name
-      font-size 1rem
-      font-weight bold
-      letter-spacing 3px
-      text-transform uppercase
-      $font-numbers()
-
-    &:active
-    &:focus
-    &:hover
-      background $color-body
-
-      @media (min-width: 768px)
-        background $color-layout
+      &:hover
+        color $color-main
+        background $color-sidebar-bg-hover
 
     &__icon
       font-size 1rem
       transform rotate(45deg)
 
-  // Menu
-  // ===============================================
-  &__menu
-    &__link
-      width 40px
-      height 40px
-      cursor pointer
+
+  &__actions
+    display none
+    padding-right 5px
+
+    @media $after768
       display flex
-      align-items center
-      justify-content center
-      color $color-second
-      font-size 1.5rem
-      font-weight bold
-      letter-spacing 3px
-      text-transform uppercase
-      $font-numbers()
+
+
+  &__link
+    display flex
+    align-items center
+    justify-content center
+    cursor pointer
+    padding 10px
+    margin -10px
+    color $color-grey
+    font-size 1rem
+    text-align center
+
+    &:hover .plus:after
+    &:hover .plus:before
+      background $color-main
+
+    &:hover
+      opacity 1
+      background $color-sidebar-bg-hover
+
+    .plus
       anim()
 
-      @media (min-width: 768px)
-        font-size 1.1rem
+    &._active .plus
+      transform rotate(45deg)
 
-      &:hover
-        background $color-body
+    &._active .plus:after
+    &._active .plus:before
+      background $color-main
 
-      &.active
-        color $color-white !important
-        .logo
-          fill $color-white
 
-  // Accounts
-  // ===============================================
-  &__accounts
-    margin 0 -30px
+.sidebarTitle
+  cursor pointer
+  display inline-flex
+  align-items center
+  margin-bottom 10px
+  $typo-title()
 
-  &__account
+  ^[1]:hover &
+    color $color-main
+
+  @media $after768
+    padding 10px
+    margin -10px
+
+  &:hover
+    color $color-main
+    background $color-sidebar-bg-hover
+
+  &__icon
+    opacity 0
+    padding-left 10px
+    font-size .9rem
+    font-weight bold
+
+    ^[1]:hover &
+      opacity 1
+
+  &__icon._mb
+    margin-bottom -2px
+
+  &__icon .close:after
+  &__icon .close:before
+      ^[1]:hover &
+        background $color-main
+
+
+.sidebarItem
+  cursor pointer
+  position relative
+  cursor default
+  margin-bottom -1px
+  padding 0 20px
+  font-size 13px
+
+  @media $after768
+    padding 0 30px
+
+  &._active
+  &._editable
+  &:hover
+    & ^[0]__content
+      margin 0 -30px
+      padding 0 30px
+
+      @media $after768
+        margin 0 -30px
+        padding 0 30px
+
+    & ^[0]__actions
+      right 25px
+
+  &._active
+    & ^[0]__content
+      background $color-sidebar-bg-active
+      border-bottom-color $color-sidebar-bg-active
+
+    & ^[0]__actions
+      background $color-sidebar-bg-active
+
+  &._editable
+    & ^[0]__content
+      background $color-sidebar-bg-edit
+      border-bottom-color $color-sidebar-bg-edit
+
+    & ^[0]__actions
+      background $color-sidebar-bg-edit
+
+  &._delete
+    cursor default
+    border-color $color-expense !important
+
+  &:last-child
+    margin-bottom 0
+
+    & ^[0]__content
+      border-bottom-color transparent
+
+  &:hover
+    & ^[0]__name
+      color $color-sidebar-white-light
+
+    & ^[0]__content
+      border-bottom-color $color-itemList-hover
+
+
+    & ^[0]__content
+    & ^[0]__actions
+      background $color-itemList-hover
+
+    & ^[0]__action
+      opacity .3
+
+    & ^[0]__action:hover
+      opacity 1
+
+  &__content
     position relative
     display flex
-    flex 1 1 45%
-    flex-basis 100%
-    height 45px
-    margin-top -1px !important
-    margin 0 25px
-    padding 0 5px 0 0
-    justify-content space-between
+    flex-flow row nowrap
+    flex-grow 1
     align-items center
+    height 55px
     color $color-second
-    border-left 5px solid transparent
-    border-bottom 1px solid $color-trn-hover
-    anim()
+    border-bottom 1px solid $color-itemList-border
 
-    @media (min-width: 768px)
+    @media $after768
       height 45px
 
-    &._dim
-      opacity .4
+  &__icon
+    margin-right 10px
 
-    &:last-child
-      margin-bottom 0
-      border-bottom none
+  &__name
+    display flex
+    align-items center
+    flex-grow 1
+    color $color-sidebar-white-lighter
+    line-height 13px
 
-    &._link
-      cursor pointer
+  &__money
+    padding-top 2px
+    display flex
+    align-items flex-end
+    flex-flow column wrap
+    $typo-money()
+    font-size 14px
+    line-height 13px
+    text-align right
+
+    ^[0]:hover &
+    ^[0]._active &
+      color $color-sidebar-white-light
+
+    &._two
+      flex-flow row nowrap
+
+    .sub
+      padding-top 2px
+      font-size 12px
+      color $color-sidebar-grey-alpha
+      ^[0]:hover &
+      ^[0]._active &
+        color $color-sidebar-white-lighter
+
+  &__actions
+    position absolute
+    top 1px
+    right -5px
+    display flex
+    align-items center
+    height calc(100% - 2px)
+    padding-left 20px
+    background $color-itemList-bg
+
+  &__action
+    opacity .3
+    cursor pointer
+    display flex
+    justify-content center
+    align-items center
+    width 40px
+    height 100%
+    font-size 20px
+
+    @media $after768
+      width 30px
+      font-size 16px
+
+    &:active
+      @media $before768
+        background $color-sidebar-bg-hover
+
+    &:hover
+      opacity 1
+
+
+.sidebarSummary
+  position relative
+  display flex
+  height 41px
+  margin-bottom -1px !important
+  margin 0 20px
+  justify-content space-between
+  align-items center
+  border-bottom 1px solid $color-sidebar-line
+
+  @media $after768
+    margin 0 30px
+
+  &._toogle
+    cursor pointer
+    height 40px
+
+    @media $after768
+      height 45px
+      border-bottom-color transparent
 
       &:hover
-      &._active
-        opacity 1
-        margin 0 0px
-        padding-left 25px
-        padding-right 30px
-        background $color-trn-hover
-        border-left-color $color-trn-hover
+        margin 0
+        padding 0 30px
+        background $color-itemList-hover
 
-      &._active
-        z-index 2
-        background $color-trn-hover
-        border-left-color $color-link
+        & ^[0]__label
+          color $color-sidebar-white-light
 
-    &__label
+  &:last-child
+    border-bottom none
+
+  &__label
+    user-select none
+    font-size .85rem
+    $font-secondary()
+    color $color-sidebar-white-lighter
+
+    ^[0]._toogle &
       font-size .9rem
-      letter-spacing .5px
-      $font-secondary()
+      color $color-grey
 
-    &__value
-      flex-flow row wrap
-      text-align right
-      font-size .9rem
-      color alpha($color-sum, .8)
+      @media $after768
+        font-size 11px
+
+  &__value
+    display flex
+    align-items flex-end
+    flex-flow column wrap
+    padding-top 3px
+    $typo-money()
+    text-align right
+    font-size .85rem
+
+    &._two
+      flex-flow row nowrap
+
+    div:first-child
+      padding-bottom 2px
+
+    .sub
+      font-weight none
+      font-size .85rem
+      color $color-sidebar-grey-alpha
+      ^[0]:hover &
+      ^[0]._active &
+        color $color-sidebar-white-lighter
+
+    .sep
+      display block
+      padding 0 5px
+      color $color-sidebar-grey-alpha
 
 
-// Sidebar Toogle
-// ===============================================
 .sidebarToogle
   z-index 15
   position fixed
@@ -215,12 +397,12 @@
   font-size 1.5rem
   anim()
 
-  @media (min-width: 768px)
+  @media $after768
     width 30px
 
   &:active
     background $color-side-toogle
 
-  @media (min-width: 768px)
-    &:hover
+  &:hover
+    @media $after768
       background $color-side-toogle

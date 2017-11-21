@@ -88,6 +88,7 @@ export default function formatTrn(trn, options) {
   const type = +trn.type
 
   return {
+    account,
     accountId,
     accountName,
     amount,

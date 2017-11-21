@@ -1,11 +1,11 @@
 .fade
   &-enter, &-leave-to
     opacity 0
-    anim-all()
+    anim-opacity(.05s)
 
   &-enter-to, &-leave-to
     opacity 1
-    anim-all()
+    anim-opacity(.1s)
 
 .calendarPopupAnimation
   &-enter-active, &-leave-active
@@ -38,6 +38,18 @@
   &-leave-to
     opacity 0
     transform translateX(550px)
+
+// Left Sidebar
+// ===============================================
+.slideToRight
+  &-enter-active
+  &-leave-active
+    transition all .3s cubic-bezier(0.17, 0.04, 0.03, 0.94)
+
+  &-enter
+  &-leave-to
+    opacity 0
+    transform translateX(-120%)
 
 
 // Slide to Top
@@ -76,4 +88,4 @@
   &-enter
   &-leave-to
     opacity 0
-    transform translateX(-280px)
+    transform translateX(-300px)

@@ -3,6 +3,9 @@
   grid-column-gap 20px
   grid-row-gap 50px
 
+  &__item
+    position relative
+
   @media (min-width: 768px)
     grid-column-gap 50px
     grid-row-gap 100px
@@ -38,5 +41,15 @@
 
     @media (min-width: 1200px)
       grid-row-gap 60px
-      grid-column-gap 140px
+      grid-column-gap 120px
+      padding-bottom 60px
       grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr)
+
+  &._categeryGraph
+    grid-row-gap 0px
+    max-width 840px
+
+    @media (min-width: 1200px)
+      grid-row-gap 60px
+      grid-column-gap 80px
+      grid-template-columns minmax(auto, 280px) minmax(auto, auto)

@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+.items
   .filter
     input(
       type="text",
@@ -10,71 +10,77 @@ div
 
     .filter__btns
       template(v-if="!filter")
-        .filter__btn._toogle(@click.prevent="toogleShowAllChildCategories()")
+        .filter__btn(
+          @click="toogleShowAllChildCategories"
+          v-tooltip.bottom-center="{ content: showedChildIds.length ? 'Close categories' : 'Open categories' }"
+        )
           template(v-if="showedChildIds.length")
             .fa.fa-eye
           template(v-else)
             .fa.fa-eye-slash
       template(v-else)
-        .filter__btn._edit(@click.prevent="filter = ''")
+        .filter__btn(
+          @click.prevent="filter = ''"
+          v-tooltip.bottom-center="{ content: 'Clear filter' }"
+        )
           .fa.fa-eraser
 
-      .filter__btn._edit(@click.prevent="toogleEditMode()")
-        .fa.fa-pencil-square-o
+      .filter__btn(
+        @click="$store.commit('toogleCategoryCreate')"
+        v-tooltip.bottom-center="{ content: 'Create new category' }"
+      ): .fa.fa-plus
 
-      .filter__btn._edit(@click="$store.commit('toogleCategoryCreate')")
-        .fa.fa-plus
+  .leftBar__main
+    template(v-if="filter.length > 0 && filter.length < 2")
+      div Continue typing...
 
-  template(v-if="filter.length > 0 && filter.length < 2")
-    div Continue typing...
+    template(v-if="filter.length >= 2 && searchedCategoriesList.length === 0")
+      div Nothing found
 
-  template(v-if="filter.length >= 2 && searchedCategoriesList.length === 0")
-    div Nothing found
+    div
+      //- Category Item
+      template(v-for="category in showedCategories")
+        CategoryItem(
+          :view="view",
+          :category="category",
+          :showedChildIds="showedChildIds",
+          :confirmPopCategoryId="confirmPopCategoryId",
+          v-on:toogleEditCategory="toogleEditCategory",
+          v-on:confirmPop="confirmPop",
+          v-on:onClickContent="onClickContent"
+          v-on:onClickIcon="onClickIcon"
+        )
+          //- Category Item Confirm
+          template(slot="confirm")
+            CategoryItemConfirm(
+              :category="category",
+              :avaliableForDelete="avaliableForDelete",
+              :deleteCategory="deleteCategory",
+              :closeConfirmPop="closeConfirmPop"
+            )
 
-  div
-    //- Category Item
-    template(v-for="category in showedCategories")
-      CategoryItem(
-        :view="view",
-        :isShowEditActions="isShowEditActions",
-        :category="category",
-        :showedChildIds="showedChildIds",
-        :confirmPopCategoryId="confirmPopCategoryId",
-        v-on:toogleEditCategory="toogleEditCategory",
-        v-on:confirmPop="confirmPop",
-        v-on:onClickContent="onClickContent"
-      )
-        //- Category Item Confirm
-        template(slot="confirm")
-          CategoryItemConfirm(
-            :category="category",
-            :avaliableForDelete="avaliableForDelete",
-            :deleteCategory="deleteCategory",
-            :closeConfirmPop="closeConfirmPop"
-          )
-
-        //- Category Item Child
-        template(slot="child")
-          template(v-if="category.child && category.child.length")
-            template(v-for="childCategory in category.child")
-              CategoryItem(
-                :view="view",
-                :isShowEditActions="isShowEditActions",
-                :category="childCategory",
-                :showedChildIds="showedChildIds",
-                :confirmPopCategoryId="confirmPopCategoryId",
-                v-on:toogleEditCategory="toogleEditCategory",
-                v-on:confirmPop="confirmPop",
-                v-on:onClickContent="onClickContent"
-              )
-                //- Category Item Child Confirm
-                template(slot="confirm")
-                  CategoryItemConfirm(
-                    :category="childCategory",
-                    :avaliableForDelete="avaliableForDelete",
-                    :deleteCategory="deleteCategory",
-                    :closeConfirmPop="closeConfirmPop"
-                  )
+          //- Category Item Child
+          template(slot="child")
+            template(v-if="category.child && category.child.length")
+              template(v-for="childCategory in category.child")
+                CategoryItem(
+                  :view="view",
+                  :category="childCategory",
+                  :showedChildIds="showedChildIds",
+                  :confirmPopCategoryId="confirmPopCategoryId",
+                  v-on:toogleEditCategory="toogleEditCategory",
+                  v-on:confirmPop="confirmPop",
+                  v-on:onClickContent="onClickContent"
+                  v-on:onClickIcon="onClickIcon"
+                )
+                  //- Category Item Child Confirm
+                  template(slot="confirm")
+                    CategoryItemConfirm(
+                      :category="childCategory",
+                      :avaliableForDelete="avaliableForDelete",
+                      :deleteCategory="deleteCategory",
+                      :closeConfirmPop="closeConfirmPop"
+                    )
 </template>
 
 <script>
@@ -90,10 +96,6 @@ export default {
   components: { CategoryItem, CategoryItemConfirm },
 
   props: {
-    isShowEditActions: {
-      type: Boolean,
-      default: false
-    },
     view: {
       type: String,
       default: 'page'
@@ -118,11 +120,9 @@ export default {
 
   computed: {
     ...mapGetters(['trns', 'categories']),
-
     sortedCategories() {
       return orderBy(this.categories, c => c.parentId, 'asc')
     },
-
     searchedCategoriesList() {
       const searchOptions = {
         shouldSort: true,
@@ -177,7 +177,6 @@ export default {
 
       return categoriesResult
     },
-
     categoriesList() {
       let categoriesOrganazed = []
       const rootCategories = this.categories.filter(c => c.parentId === 0)
@@ -198,7 +197,6 @@ export default {
       categoriesOrganazed = orderBy(categoriesOrganazed, c => c.name, 'asc')
       return categoriesOrganazed
     },
-
     showedCategories() {
       if (!this.filter) {
         return this.categoriesList
@@ -223,10 +221,16 @@ export default {
       } else {
         if (this.view === 'trnForm') {
           this.$emit('onClickContent', category.id)
+          console.log(1)
         }
       }
     },
-
+    onClickIcon(category) {
+      if (this.view !== 'trnForm') {
+        this.$store.commit('setFilterCategory', category)
+        console.log(2)
+      }
+    },
     avaliableForDelete(categoryId) {
       const parentCategory = this.categories.find(c => c.parentId === categoryId)
       const trnsInCategory = this.trns.filter(trn => trn.categoryId === categoryId)
@@ -246,15 +250,12 @@ export default {
         allow: true
       }
     },
-
     confirmPop(categoryId) {
       this.confirmPopCategoryId = categoryId
     },
-
     closeConfirmPop() {
       this.confirmPopCategoryId = false
     },
-
     toogleShowAllChildCategories() {
       if (this.showedChildIds.length) {
         this.showedChildIds = []
@@ -264,10 +265,9 @@ export default {
           .forEach(category => this.showedChildIds.push(category.id))
       }
     },
-
     toogleEditCategory(categoryId) {
       const category = this.categories.find(cat => cat.id === categoryId)
-      this.showedChildIds = this.showedChildIds.filter(cId => cId !== category.id)
+      // this.showedChildIds = this.showedChildIds.filter(cId => cId !== category.id)
 
       if (this.$store.state.categories.editCategory && this.$store.state.categories.editCategory.id === categoryId) {
         this.$store.commit('toogleCategoryEdit', 'hide')
@@ -277,11 +277,6 @@ export default {
         this.$store.commit('setEditCategory', category)
       }
     },
-
-    toogleEditMode() {
-      this.$emit('update:isShowEditActions', !this.isShowEditActions)
-    },
-
     async deleteCategory(categoryId) {
       this.$store.commit('showLoader')
 
@@ -301,7 +296,16 @@ export default {
 
       this.confirmPopCategoryId = false
       await this.$store.dispatch('deleteCategory', categoryForDelete.id)
+      this.$store.commit('toogleCategoryEdit', 'hide')
+
+      this.$store.commit('setEditCategory', null)
       this.$store.commit('closeLoader')
+      this.$notify({
+        group: 'foo',
+        title: 'Succesed',
+        text: 'Category was deleted.',
+        type: 'success'
+      })
     }
   }
 }

@@ -15,7 +15,6 @@ const getters = {
   trns(state) {
     return orderBy(state.all, trn => trn.date, 'desc')
   },
-
   getTrns: (state, getters) => (options) => {
     let trns = getters.trns
 
@@ -50,8 +49,10 @@ const getters = {
       }
 
       if (options.startDate && options.endDate) {
+        const starDateMoment = moment(options.startDate).startOf('day').valueOf()
+        // cons
         trns = trns.filter(trn =>
-          trn.date >= moment(options.startDate).startOf('day').valueOf() &&
+          trn.date >= starDateMoment &&
           trn.date <= moment(options.endDate).endOf('day').valueOf())
       }
 
@@ -102,25 +103,34 @@ const actions = {
       }
     }
   },
-
   async addTrn({ commit, state, rootState }, values) {
     try {
       const accounts = rootState.accounts.all
       const categories = rootState.categories.all
       const rates = rootState.rates.all
 
+      const formatedValues = {
+        accountId: values.accountId,
+        amount: values.amount,
+        categoryId: values.categoryId,
+        date: values.date,
+        description: values.description,
+        currency: values.currency,
+        type: values.type
+      }
+
       const db = await firebase.database()
-      await db.ref(`users/${rootState.user.user.uid}/trns`).push(values)
+      await db.ref(`users/${rootState.user.user.uid}/trns`).push(formatedValues)
         .then(async (data) => {
           const newTrn = {
             id: data.key,
-            accountId: values.accountId,
-            amount: values.amount,
-            categoryId: values.categoryId,
-            date: values.date,
-            description: values.description,
-            currency: values.currency,
-            type: values.type
+            accountId: formatedValues.accountId,
+            amount: formatedValues.amount,
+            categoryId: formatedValues.categoryId,
+            date: formatedValues.date,
+            description: formatedValues.description,
+            currency: formatedValues.currency,
+            type: formatedValues.type
           }
           const formatedNewTrn = formatTrn(newTrn, { accounts, categories, rates })
           commit('addTrn', formatedNewTrn)
@@ -137,7 +147,20 @@ const actions = {
       console.log(error)
     }
   },
-
+  async deleteTrn({ commit, rootState }, id) {
+    try {
+      const db = await firebase.database()
+      await db.ref(`users/${rootState.user.user.uid}/trns/${id}`)
+        .remove()
+        .catch(error => {
+          console.error(error)
+          commit('showError', `store/transitions/deleteTrn: ${error.message}`)
+        })
+      commit('deleteTrn', id)
+    } catch (error) {
+      commit('showError', `store/transitions/deleteTrn: ${error.message}`)
+    }
+  },
   async updateTrn({ commit, state, rootState }, values) {
     try {
       const accounts = rootState.accounts.all
@@ -154,32 +177,27 @@ const actions = {
         type: values.type
       }
       const db = await firebase.database()
-      db.ref(`users/${rootState.user.user.uid}/trns/${id}`)
+      await db.ref(`users/${rootState.user.user.uid}/trns/${id}`)
         .update(formatedValues)
         .catch(error => {
           console.error(error)
           commit('showError', `store/transitions/updateTrn: ${error.message}`)
         })
+
+      // Last edit
+      const currentDate = moment().valueOf()
+      console.log(currentDate)
+      db.ref(`users/${rootState.user.user.uid}/lastEditDate`)
+        .set(currentDate)
+        .then(data => {
+          localStorage.setItem('lastEditDate', currentDate)
+        })
+        .catch(error => console.error(error))
+
       const formatedNewTrn = formatTrn({ id, ...formatedValues }, { accounts, categories, rates })
       commit('updateTrn', formatedNewTrn)
-      commit('closeLoader')
     } catch (error) {
       commit('showError', `store/transitions/updateTrn: ${error.message}`)
-    }
-  },
-
-  async deleteTrn({ commit, rootState }, id) {
-    try {
-      const db = await firebase.database()
-      db.ref(`users/${rootState.user.user.uid}/trns/${id}`)
-        .remove()
-        .catch(error => {
-          console.error(error)
-          commit('showError', `store/transitions/deleteTrn: ${error.message}`)
-        })
-      commit('deleteTrn', id)
-    } catch (error) {
-      commit('showError', `store/transitions/deleteTrn: ${error.message}`)
     }
   }
 }

@@ -1,5 +1,4 @@
 .confirmPop
-  opacity .9
   z-index 2
   overflow hidden
   position absolute
@@ -8,42 +7,50 @@
   width 100%
   height 100%
   background $color-trn-hover
-  border-radius 3px
+  border-top 1px solid $color-expense
+  border-bottom 1px solid $color-expense
 
   &__in
     display flex
     align-items center
     justify-content flex-end
-    flex-grow 1
-    height 55px
+    height 100%
     padding 0 10px
 
     @media (min-width: 768px)
-      height 75px
-      padding 0 15px
+      padding 0 20px
 
   &__text
-    flex-grow 1
-    text-align right
-    font-size 1rem
+    font-size 14px
     padding-right 15px
-    padding-left 5px
+    padding-left 10px
 
     &._delete
       color $color-expense
 
   &__actionItem
-    width 40px
-    text-align center
-    font-size 1.5rem
     cursor pointer
+    display flex
+    align-items center
+    justify-content center
+    width 40px
+    min-width 40px
+    height 100%
+    text-align center
+    font-size 1.2rem
+    color $color-grey
     anim()
 
+    @media (max-width: 768px)
+      &:active
+        background $color-sidebar-bg-hover
+    
     @media (min-width: 768px)
-      width 55px
+      width 40px
+      font-size 1rem
 
     &:hover
-      color $color-link
+      color $color-white
 
     &._delete:hover
       color #c12222

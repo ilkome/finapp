@@ -1,32 +1,50 @@
 .trnItem
-  margin-top -1px
-  padding 15px 10px
   position relative
-  border 1px solid transparent
-  border-bottom 1px solid alpha($color-line, .5)
+  min-height 30px
+  display flex
+  flex-flow column wrap
+  justify-content space-between
+  align-items center
+  margin 0 0
+  margin-bottom -1px
+  padding 10px 0
+  font-size .9rem
+  color $color-grey
 
   &:last-child
+    margin-bottom 0
     border-color transparent
 
+  &._padding:hover
+    margin-left -10px
+    margin-right -10px
+    padding-left 10px
+    padding-right 10px
+    
   &:hover
-    background alpha($color-main, .05)
-    border-color $color-line
+    color $color-main
+    background #222222
+    border-color #292929
 
   &__content
+    width 100%
     display flex
     align-items center
 
   &__pic
     width 60px
 
+  &__cell
+    padding-right 20px
+
   &__price
     width 90px
-    margin-right 20px
+    margin-right 40px
     text-align right
 
   &__line
     font-size .8rem
-    padding-bottom 10px
+    padding-bottom 5px
 
     &._date
       font-size .7rem
@@ -35,36 +53,63 @@
       padding-bottom 0
 
   &__actions
-    // margin-right -10px
-    margin-left auto
+    position absolute
+    top 1px
+    right 0px
     display flex
-
-  &__action
-    cursor pointer
-    opacity .2
-    display block
-    width 40px
-    color $color-second
-    font-size 1.2rem
-    text-align center
+    align-items center
+    height calc(100% - 2px)
+    // background $color-itemList-bg
 
     @media (min-width: 768px)
-      width 45px
+      opacity 0
+
+    ^[0]._open:hover &
+      background #222222
+
+    ^[0]._open &
+      background $color-sidebar-bg-active
 
     ^[0]:hover &
       opacity 1
+      background #222222
+
+    ^[0]._editable &
+      opacity 1
+      background $color-sidebar-bg-edit
+
+    ^[0]._active &
+      background $color-sidebar-bg-active
+
+  &__action
+    display flex
+    justify-content center
+    align-items center
+    width 40px
+    height 100%
+    font-size 1.2rem
+    cursor pointer
+    anim()
+
+    @media (max-width: 768px)
+      &:active
+        background $color-sidebar-bg-hover
+
+    @media (min-width: 768px)
+      opacity .3
+      width 40px
+      font-size 1rem
 
     &:hover
       opacity 1
-      color $color-link
-
-    &:last-child
-      margin-right 0
 
   &__description
-    padding-top 15px
-    padding-left 110px
+    width 100%
+    padding-top 5px
+    padding-right 10px
+    text-align right
     font-size .8rem
 
     &._big
-      padding-left 170px
+      padding-left 190px
+      padding-bottom 5px

@@ -1,22 +1,8 @@
 $max-width()
-  max-width 1050px
+  max-width 960px
 
-// $theme = "dark"
-// $theme = "light"
-// $theme = "youtube"
-
-// Dark Theme
-// ===============================================
-$color-main = #7f7f7f
-$color-white = alpha(white, .7)
-$color-white-text = alpha(white, .7)
-$color-second = #5f5f5f
-$color-link = #2E86C1
-$color-sum = #969696
-$color-income = #1e7a45
-$color-expense = hsla(-3, 70%, 40%, 1)
-
-$color-graph = #242424
+// $color-graph = #585858
+$color-graph = #2e2e2e
 
 // icons
 $color-icon-bg = #242424
@@ -29,88 +15,116 @@ $color-body = #1A1A1A
 $color-layout = #161616
 $color-sidebar = #080808
 $color-header-bg = #0e0e0e
-$color-side-toogle = alpha(white, .1)
+$color-side-toogle = alpha(white, .05)
 
 // items
 $color-itemStat = alpha(black, .2)
+$color-itemStat-name = $color-sidebar-white-light
 $color-itemStat-active = #161616
 $color-itemStat-border = alpha(black, .3)
 
-// categories
-$color-itemList-bg = $color-layout
-$color-itemList-border = alpha(white, .05)
-
 $color-trn = #161616
-$color-trn-hover = #111111
 $color-trn-hover-line = #333333
 $color-line = #242424
 $color-line-layout = #2C2C2C
 $color-line-account = #272727
 $color-line-summary = #232323
 
+// layout
+$color-body = #111111
+$color-layout = $color-body
+$color-line = #888888
+// 202020
 
-if $theme == "youtube"
-  $color-body = #232323
-  $color-layout = #111111
-  $color-sidebar = #1c1c1c
-  $color-header-bg = #111111
+// text
+$color-main = #e3e3e3
+$color-main-dim = alpha(#e3e3e3, .8)
+$color-white = $color-main
+$color-second = #e4e4e4
+$color-grey = #777777
 
-  $color-main = #e3e3e3
-  $color-white = #e3e3e3
-  $color-second = #888888
+// money
+$color-sum = $color-main
+$color-income = #2cad22
+$color-incomes = #2cad22
+$color-expense = #f92134
+$color-expenses = #f92134
 
+// sidebar
+$color-sidebar = #1c1c1c
+$color-sidebar-line = #2e2e2e
+$color-sidebar-white-light = alpha($color-white, .9)
+$color-sidebar-white-lighter = alpha($color-white, .7)
+$color-sidebar-grey-alpha = alpha($color-grey, .8)
+$color-sidebar-bg-hover = #3f3f3f
+$color-sidebar-bg-active = $color-body
 
-  $color-line = #888888
+// Module
+$color-module-bg-alt = #171717
+$color-module-bg-history = #1a1a1a
+$color-module-border = #0b0b0b
 
-// Light Theme
-// ==============================================
-if $theme == "light"
-  $color-main = #666666
-  $color-white = #666666
-  $color-second = #7d7d7d
-  $color-link = #bb5c2c
-  $color-sum = #565656
-  $color-income = #229954
-  $color-expense = #CB4335
+// filter
+$color-filter-bg = #161616
 
-  $color-graph = #afafaf
-  $color-icon = #afafaf
+// header
+$color-header-line = black
+$color-header-bg = #232323
 
-  // layout
-  $color-body = #ffffff
-  $color-layout = #fbfbfb
-  $color-sidebar = #F2F4F4
-  $color-side-toogle = alpha(black, .1)
+// itemList
+$color-itemList-bg = $color-sidebar
+$color-itemList-border = $color-sidebar-line
+$color-itemList-hover = $color-sidebar-bg-hover
+$color-sidebar-bg-edit = #474747
 
-  // items
-  $color-itemStat = #fbfbfb
-  $color-itemStat-active = #eaeaea
-  $color-itemStat-border = alpha(black, .05)
+// trnForm
+$color-amount-input-bg = $color-body
 
-  // categories
-  $color-itemList-bg = $color-layout
-  $color-itemList-border = alpha(black, .1)
+// btn
+$color-btn-bg = $color-sidebar-bg-hover
+$color-btn-bg-hover = $color-sidebar-bg-active
+$color-btn-border = $color-sidebar-line
 
-  $color-trn = #e2e6ea
-  $color-trn-hover = #e2e6ea
-  $color-trn-hover-line = alpha(black, .1)
-  $color-line = #e6e6e6
-  $color-line-layout = #ededed
-  $color-line-account = #c7c7c7
-  $color-line-summary = #e7e7e7
+// itemStat
+$color-trn-hover = $color-sidebar
+$color-trn-border = $color-sidebar-line
 
-  $color-header = $color-main
+// trn
+$color-trnItem-border = $color-sidebar-line
+$color-trnItem-hover = $color-sidebar-bg-active
+
+// trnsList
+$color-trnList-border = $color-sidebar-bg-hover
+
+// trnForm
+$color-trnForm-subTitle-bg = #232323
 
 
 // Fonts
 // ==============================================
 $font-primary()
-  font-family 'Open Sans', sans-serif
+  font-family 'Roboto', sans-serif
 $font-secondary()
   font-family 'Roboto', sans-serif
 $font-numbers()
   font-family 'Unica One', 'Roboto', sans-serif
+  text-transform uppercase
 
+$typo-title()
+  color $color-grey
+  font-size 16px
+  font-weight bold
+  letter-spacing 1px
+  line-height 1rem
+  text-transform uppercase
+  $font-numbers()
+
+$typo-money()
+  font-size 15px
+  font-weight bold
+  white-space nowrap
+  letter-spacing 1px
+  $font-numbers()
 
 // Media
 // ==============================================
@@ -121,6 +135,9 @@ $pc = "(min-width: 1200px)"
 $laptopNew = "(min-width: 1200px)"
 $pcNew = "(min-width: 1900px)"
 
+
+$before768 = "(max-width: 768px)"
+$after768 = "(min-width: 768px)"
 
 // Animation
 // ==============================================
