@@ -1,7 +1,17 @@
+$localFont()
+  $font-numbers()
+  font-size 16px
+  font-weight bold
+  letter-spacing .5px
+  text-transform uppercase
+
+  @media $after768
+    font-size 16px
+    line-height 1.2rem
+
 .header
-  font-size 1.2rem
+  overflow hidden
   background $color-header-bg
-  border-bottom 1px solid $color-itemStat
   anim()
 
   @media (min-width: 768px)
@@ -10,147 +20,128 @@
     left 0
     top 0
     width 100%
-    font-size 1rem
-
-  &:last-child
-    margin-bottom 0
-
-  &._withLeftBar
-    width calc(100% - 280px)
-    left 280px
+    border-bottom 1px solid black
 
   &__in
     display flex
     justify-content flex-start
     flex-flow row wrap
-    justify-content space-between
     align-items center
-    $max-width()
-
-    @media (max-width: 1200px)
-      padding 5px 20px
-      border-bottom 1px solid $color-body
-      &:last-child
-        border-bottom none
-
-    @media (min-width: 1200px)
-      padding 0 60px
-
-    &._second
-      padding 0px 10px
-
-  &__item
-    flex-grow 0
-    white-space nowrap
-    padding 15px
-    margin -15px -10px
-    @media (max-width: 768px)
-      &:active
-        background $color-body
-
-  &__header
-    cursor pointer
-    display inline-flex
-    flex-grow 1
-    align-items center
-    white-space nowrap
-    padding 10px 20px
-    margin 0px -20px
-    color $color-white
-    $font-numbers()
+    min-height 49px
+    max-width 965px
+    padding 0 10px
     anim()
 
-    @media (min-width: 1200px)
-      padding 15px 20px
-      margin 0px -20px
+    @media $before768
+      justify-content space-between
+      padding 5px 20px
+      border-bottom 1px solid $color-body
+
+    @media $after768
+      padding 0 60px 0 60px
+
+    &._mobile
+      padding 0px 5px
+
+      @media $after768
+        padding 0px 10px
+
+    ^[0]._withLeftbar &
+      padding-left 30px
+      max-width 1240px
+
+  &__col
+    display flex
+    align-items center
+    justify-content space-between
+    white-space nowrap
+
+    @media $after768
+      justify-content center
+
+    &._left
+      @media $after768
+        flex 0 0 335px
+        margin-left -15px
+        justify-content space-between
+
+    &._date
+      width 120px
+      justify-content flex-start
+
+    &:last-child
+      @media $after768
+        flex 0 0 200px
+        margin-right -10px
+        justify-content flex-end
+        margin-left auto
+
+
+  &__date
+    color $color-white
+    $localFont()
+
+
+  &__link
+    display flex
+    align-items center
+    position relative
+    cursor pointer
+    padding 15px
+    height 49px
+    color $color-grey
+    $localFont()
+    anim()
+
+    @media $after768
+      padding 15px 10px
 
     &:active
-      @media (max-width: 768px)
+      @media $before768
+        background $color-sidebar-bg-hover
         color $color-white
 
     &:hover
-      @media (min-width: 768px)
-        background alpha($color-main, .1)
+      @media $after768
+        background $color-sidebar-bg-hover
+        color $color-white
 
-  &__icon
-    margin-top -2px
-    padding-right 10px
-    font-size 1rem
-    color alpha($color-main, .9)
-
-    @media (min-width: 768px)
-      margin-top 0
-      padding-right 8px
-      font-size .9rem
-
-  &__firstDate
-    @media (min-width: 768px)
-      font-size 1.1rem
-      letter-spacing 1px
-
-  &__secondDate
-    margin -4px 0 0 15px
-    color $color-second
-    font-size .8rem
-    letter-spacing 0
-
-  &__periods
-    display flex
-    align-items center
-    flex-flow column
-    margin-right -12px
-    margin-left -15px
-    font-size 1rem
-    letter-spacing normal
-
-    @media (min-width: 768px)
-      flex-flow row
-
-    &._mb
-      margin-top -6px
-      justify-content center
-      margin-bottom 60px
-
-.header__menu__item
-  position relative
-  cursor pointer
-  padding 15px
-  color $color-second
-  font-size 1.1rem
-  letter-spacing 1px
-  text-transform uppercase
-  font-weight bold
-  $font-numbers()
-  anim()
-
-  @media (max-width: 768px)
-    &:active
-      background $color-body
+    &._active
       color $color-white
 
-  @media (min-width: 768px)
-    font-size 1rem
-    padding 15px
-    &:hover
-      color $color-link
+    &._categories
+      padding-top 17px
+      font-size 20px
 
-  &._active
-    background none
-    color $color-white
+    &._settings
+      padding-top 17px
+      font-size 18px
 
-  &._disabled
-    cursor default
-    opacity .1
+    &._disabled
+      cursor default
+      opacity .1
 
-  &._account
-    font-size .9rem
-    letter-spacing 2px
-    text-transform uppercase
-    $font-numbers()
+    &._disabled:hover
+      background none
 
-  &._mt
-    margin-top -2px
+    .plus
+      anim()
 
+    .mdi
+      font-size 22px
 
-.header__menu__sep
-  padding 0 10px
+      @media $after768
+        font-size 20px
+
+    .fa
+      font-size 20px
+
+      @media $after768
+        font-size 16px
+
+    &._active .plus
+      transform rotate(45deg)
+
+    &._active .plus:after
+    &._active .plus:before
+      background $color-main

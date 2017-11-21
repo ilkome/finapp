@@ -1,128 +1,136 @@
 <template lang="pug">
 .header(:class="className")
-  //- Mobile header
-  template(v-if="$store.state.isMobile")
-    .header__in
-      .header__item.fa.fa-bars(@click.prevent.stop="$store.commit('toogleLeftbar')")
-
-      .header__item
-        .header__item
-          h1.header__header(@click.prevent.stop="openPopupCalendar($event)")
-            .header__icon.mdi.mdi-calendar-multiple
-            .header__firstDate {{ $store.state.filter.filter.date.first }}
-
-      .header__item.fa.fa-plus(@click.prevent.stop="$store.commit('toogleTrnForm')")
-
-    .header__in._second
-      .header__menu__item._mt(
-        @click.prevent="$emit('selectPrevPeriod')"
-        :class="{ _disabled: selectedPeriodIndex === 0 }"
-      ): .fa.fa-arrow-left
-
-      .header__menu__item(
-        :class="{ _active: $timePeriod === 'month' }",
-        @click.prevent="$emit('setTimePeriod', 'month')"
-      ) Month
-      .header__menu__item(
-        :class="{ _active: $timePeriod === 'year' }",
-        @click.prevent="$emit('setTimePeriod', 'year')"
-      ) Year
-      .header__menu__item(
-        :class="{ _active: $timePeriod === 'all' }",
-        @click.prevent="$emit('setTimePeriod', 'all')"
-      ) All
-      //- .header__menu__item
-        .fa.fa-ellipsis-v
-      .header__menu__item._mt(@click.prevent="$emit('selectNextPeriod')")
-        .fa.fa-arrow-right
-
-    .header__in._second
-      template(v-if="selectedCategory || getFilter.account")
-        .flex
-          template(v-if="getFilter.account")
-            .header__menu__item._account
-              div(@click.prevent="$store.commit('setFilterAccount', null)") {{ getFilter.account.name.charAt(0) }}{{ getFilter.account.name.charAt(1) }}
-
-          template(v-if="selectedCategory")
-            template(v-if="selectedCategory.parent")
-              .header__menu__item
-                div(@click.prevent="$emit('setFilterCategory', selectedCategory.parent.id)", :class="selectedCategory.parent.icon")
-            .header__menu__item
-              div(@click.prevent="$emit('setFilterCategory', null)", :class="selectedCategory.icon")
-        .flex
-          .header__menu__item(:class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')")
-            .fa.fa-bar-chart
-          .header__menu__item._categories(@click.prevent="$store.commit('toogleCategoriesList')")
-            .fa.fa-list-ul
-          .header__menu__item._accounts(@click.prevent="$store.commit('toogleAccountList')")
-            .fa.fa-credit-card
-
-      template(v-else)
-        .header__menu__item(:class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')")
-          .fa.fa-bar-chart
-        .header__menu__item._categories(@click.prevent="$store.commit('toogleCategoriesList')")
-          .fa.fa-list-ul
-        .header__menu__item._accounts(@click.prevent="$store.commit('toogleAccountList')")
-          .fa.fa-credit-card
-
   //- PC
   template(v-if="!$store.state.isMobile")
     .header__in
-      //- Title
-      .header__item
-        h1.header__header(@click.prevent.stop="openPopupCalendar($event)")
-          .header__icon.mdi.mdi-calendar-multiple
-          .header__firstDate {{ $store.state.filter.filter.date.first }}
-          .header__secondDate(v-if="$store.state.filter.filter.date.second !== 'Today'") {{ $store.state.filter.filter.date.second }}
+      .header__col._left
+        .flex
+          .header__link._categories(
+            @click="onClickToogleCategories"
+            :class="{ _active: $store.state.categories.list }"
+            v-tooltip.bottom-center="{ content: 'Show categories' }"
+          ): .mdi.mdi-format-list-bulleted-type
+          //- .header__link._settings(
+          //-   @click="$store.commit('signOut')"
+          //-   v-tooltip.bottom-center="{ content: 'Toogle sidebar icons' }"
+          //- ): .mdi.mdi-exit-to-app
+        //- .header__date(
+        //-   v-tooltip.bottom-center="{ content: $store.state.filter.filter.date.second, classes: 'tooltip _fast' }"
+        //- ) {{ $store.state.filter.filter.date.first }}
 
-      //- Periods
-      .header__item
-        .header__periods
-          template(v-if="selectedCategory || getFilter.account")
-            template(v-if="getFilter.account")
-              .header__menu__item._account
-                div(@click.prevent="$store.commit('setFilterAccount', null)") {{ getFilter.account.name }}
 
-            template(v-if="selectedCategory")
-              template(v-if="selectedCategory.parent")
-                .header__menu__item
-                  div(@click.prevent="$emit('setFilterCategory', selectedCategory.parent.id)", :class="selectedCategory.parent.icon")
-              .header__menu__item._active
-                div(@click.prevent="$emit('setFilterCategory', null)", :class="selectedCategory.icon")
+      .header__col._date
+        .header__date(
+          v-tooltip.bottom-center="{ content: $store.state.filter.filter.date.second, classes: 'tooltip _fast' }"
+        ) {{ $store.state.filter.filter.date.first }}
 
-            .header__menu__sep
+      //- Dates
+      .header__col
+        .header__link(
+          @click.prevent="$emit('selectPrevPeriod')"
+          :class="{ _disabled: selectedPeriodIndex === 0}"
+        ): .arrow._left
 
-          .header__menu__item._mt(
-            @click.prevent="$emit('selectPrevPeriod')"
-            :class="{ _disabled: selectedPeriodIndex === 0}"
-          ): .fa.fa-arrow-left
+        .header__link(
+          :class="{ _active: $timePeriod === 'day' }"
+          @click.prevent="$emit('setTimePeriod', 'day')"
+        ) Day
+        .header__link(
+          :class="{ _active: $timePeriod === 'week' }"
+          @click.prevent="$emit('setTimePeriod', 'week')"
+        ) Week
+        .header__link(
+          :class="{ _active: $timePeriod === 'month' }"
+          @click.prevent="$emit('setTimePeriod', 'month')"
+        ) Month
+        .header__link(
+          :class="{ _active: $timePeriod === 'year' }"
+          @click.prevent="$emit('setTimePeriod', 'year')"
+        ) Year
+        .header__link(
+          :class="{ _active: $timePeriod === 'all' }"
+          @click.prevent="$emit('setTimePeriod', 'all')"
+        ) All
+        .header__link(@click.prevent="$emit('selectNextPeriod')")
+          .arrow._right
 
-          .header__menu__item(
-            :class="{ _active: $timePeriod === 'isoweek' }",
-            @click.prevent="$emit('setTimePeriod', 'isoweek')"
-          ) Week
-          .header__menu__item(
-            :class="{ _active: $timePeriod === 'month' }",
-            @click.prevent="$emit('setTimePeriod', 'month')"
-          ) Month
-          .header__menu__item(
-            :class="{ _active: $timePeriod === 'year' }",
-            @click.prevent="$emit('setTimePeriod', 'year')"
-          ) Year
-          .header__menu__item(
-            :class="{ _active: $timePeriod === 'all' }",
-            @click.prevent="$emit('setTimePeriod', 'all')"
-          ) All
-          .header__menu__item._mt(@click.prevent="$emit('selectNextPeriod')")
-            .fa.fa-arrow-right
+      //- Icons
+      .header__col
+        .header__link(
+          :class="{ _active: showedChartYears }" @click.prevent="$emit('toogleShowsChartYears')"
+          v-tooltip.bottom-center="{ content: showedChartYears ? 'Show years chart' : 'Hide years chart' }"
+        ): .mdi.mdi-chart-bubble
 
-          .header__menu__sep
-          .header__menu__item._withSep(:class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')")
-            .fa.fa-bar-chart
-          .header__menu__item(:class="{ _active: showedHistory }" @click.prevent="$emit('toogleShowHistory')")
-            .fa.fa-history
-          .header__menu__item(@click.prevent="$store.commit('toogleTrnForm')")
-            .fa.fa-plus
+        .header__link(
+          :class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')"
+          v-tooltip.bottom-center="{ content: showedGraph ? 'Show chart' : 'Hide chart' }"
+        ): .fa.fa-bar-chart
+        .header__link(
+          @click.prevent="$emit('toogleShowHistory')"
+          :class="{ _active: showedHistory }"
+          v-tooltip.bottom-center="{ content: showedHistory ? 'Hide hitstory' : 'Show hitstory' }"
+        ): .fa.fa-history
+        .header__link(
+          @click.prevent="$store.commit('toogleTrnForm')"
+          :class="{ _active: $store.state.trnForm.isShow }"
+          v-tooltip.bottom-center="{ content: $store.state.trnForm.isShow ? 'Hide' : 'Create new transaction' }"
+        ): .plus
+
+  //- Mobile header
+  template(v-if="$store.state.isMobile")
+    .header__in._mobile
+      .header__col
+        .header__link(@click.prevent.stop="$store.commit('toogleLeftbar')")
+          .fa.fa-bars
+        .header__link._categories(
+          @click="onClickToogleCategories"
+          v-tooltip.bottom-center="{ content: 'Show categories' }"
+        ): .mdi.mdi-format-list-bulleted-type
+
+      .header__col
+        .header__date(
+          v-tooltip.bottom-center="{ content: $store.state.filter.filter.date.second, classes: 'tooltip _fast' }"
+        ) {{ $store.state.filter.filter.date.first }}
+
+      .header__col
+        .header__link(@click.prevent.stop="$store.commit('toogleTrnForm')")
+          .plus
+
+    .header__in._mobile
+      .header__link(
+        @click.prevent="$emit('selectPrevPeriod')"
+        :class="{ _disabled: selectedPeriodIndex === 0 }"
+      ): .arrow._left
+
+      .header__link(
+        :class="{ _active: $timePeriod === 'day' }"
+        @click.prevent="$emit('setTimePeriod', 'day')"
+      ) Day
+      .header__link(
+        :class="{ _active: $timePeriod === 'week' }"
+        @click.prevent="$emit('setTimePeriod', 'week')"
+      ) Week
+      .header__link(
+        :class="{ _active: $timePeriod === 'month' }"
+        @click.prevent="$emit('setTimePeriod', 'month')"
+      ) Month
+      //- .header__link
+        .fa.fa-ellipsis-v
+      .header__link(@click.prevent="$emit('selectNextPeriod')")
+        .arrow._right
+
+    template(v-if="getFilter.category || getFilter.account")
+      .header__in._mobile
+        .flex
+          template(v-if="getFilter.account")
+            .header__link._account(@click.prevent="$store.commit('setFilterAccount', null)")
+              .icon._small._round(:style="`background: ${getFilter.account.color}`")
+                .icon__abbr {{ getFilter.account.name.charAt(0) }}{{ getFilter.account.name.charAt(1) }}
+
+          template(v-if="getFilter.category")
+            .header__link._active(@click.prevent="$emit('setFilterCategory', null)")
+              .icon._small(:style="`background: ${getFilter.category.color}`")
+                div(:class="getFilter.category.icon")
 </template>
 
 <script>
@@ -134,37 +142,25 @@ export default {
       type: Number,
       required: true
     },
-    isLastDays: {
+    showedGraph: {
       type: Boolean,
       required: true
     },
-    showedGraph: {
+    showedChartYears: {
       type: Boolean,
       required: true
     },
     showedHistory: {
       type: Boolean,
       required: true
-    },
-    selectedCategory: {
-      type: Object
     }
-  },
-
-  mounted() {
-    document.querySelector('body').addEventListener('click', this.$store.commit('closeFilterCalendar'))
-    document.addEventListener('keyup', (event) => {
-      if (event.keyCode === 27) { // escape key
-        this.$store.commit('closeFilterCalendar')
-      }
-    })
   },
 
   computed: {
     ...mapGetters(['accounts', 'categories', 'getFilter']),
     className() {
       return {
-        _withLeftBar: this.$store.state.leftBar.isShow
+        _withLeftbar: this.$store.state.leftBar.isShow && !this.$store.state.isMobile
       }
     },
     $timePeriod() {
@@ -173,6 +169,10 @@ export default {
   },
 
   methods: {
+    onClickToogleCategories() {
+      this.$store.commit('toogleCategoriesList')
+      this.$store.commit('toogleAccountList', 'hide')
+    },
     openPopupCalendar(event) {
       const left = !this.$store.state.isMobile ? event.target.closest('.header__header').offsetLeft + 20 : 0
       const top = !this.$store.state.isMobile ? event.target.closest('.header__header').offsetTop + 47 : 47

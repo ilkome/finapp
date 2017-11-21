@@ -1,15 +1,26 @@
 <template lang="pug">
-.itemStat(:class="className")
-  .itemStat__in(@click.prevent.stop="onClickItem")
+div(
+  :class="className"
+  @click.prevent.stop="onClickItem"
+)
+
+  .itemStat__in
     .itemStat__icon(@click.stop="onClickIcon")
-      .icon._link(:style="`background: ${item.color}`")
-        div(:class="item.icon")
+      .icon._link(
+        :class="{ _small: isChild }"
+        :style="`background: ${item.color}`"
+      ): div(:class="item.icon")
+
     .itemStat__content
       .itemStat__text
         .itemStat__name {{ item.name }}
-        .itemStat__price.sum {{ formatMoney(item.total) }}
+        .itemStat__price(:class="{expense: type === 'expenses', income: type === 'incomes'}") {{ formatMoney(item.total) }}
+
       .itemStat__graph
-        .itemStat__graph__in(:style="grpahWidth", :class="{_expense: type === 'expenses', _income: type === 'incomes'}")
+        .itemStat__graph__in(
+          :class="{_expense: type === 'expenses', _income: type === 'incomes'}"
+          :style="grpahWidth",
+        )
 
   slot(name="inside")
 </template>
@@ -54,7 +65,8 @@ export default {
     },
     className() {
       return {
-        _child: this.isChild,
+        'itemStat': !this.isChild,
+        'itemStatChild': this.isChild,
         _opened: this.idsOfOpenedCategories.indexOf(this.item.id) !== -1
       }
     }
@@ -62,7 +74,7 @@ export default {
 
   methods: {
     onClickIcon() {
-      this.$emit('setFilterCategory', this.item.category.id)
+      this.$emit('setFilterCategory', this.item.category)
     },
     onClickItem(id) {
       this.$emit('onClickItem', this.item.id)

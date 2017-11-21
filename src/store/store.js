@@ -42,7 +42,12 @@ const state = {
   },
   dates: {},
   dashboard: {
-    timePeriod: null
+    timePeriod: 'month'
+  },
+  isShowSidebarAccountsIcons: true,
+  openedCategories: {
+    incomes: [],
+    expenses: []
   }
 }
 
@@ -59,7 +64,7 @@ const mutations = {
     state.dates.start = moment(dates.start).startOf('day').valueOf()
     state.dates.end = moment(dates.end).endOf('day').valueOf()
   },
-  timePeriod(state, preset) {
+  setTimePeriod(state, preset) {
     state.dashboard.timePeriod = preset
   },
   setUpdatedTrn(state, trnId) {
@@ -121,6 +126,9 @@ const mutations = {
     if (state.leftBar.isShow && state.isMobile) {
       state.trnForm.isShow = false
     }
+  },
+  toogleShowSidebarAccountsIcons(state) {
+    state.isShowSidebarAccountsIcons = !state.isShowSidebarAccountsIcons
   },
   setTrnForm(state, { action, trnId }) {
     if (action === 'create') {

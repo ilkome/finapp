@@ -65,12 +65,13 @@
       width 40px
       cursor pointer
       padding 15px 0
-      font-size 1.5rem
+      font-size 1rem
       anim()
 
       @media (min-width: 768px)
-         width 45px
-         opacity .2
+         opacity .3
+        width 40px
+        font-size 1rem
 
       &:hover
         opacity 1
@@ -127,11 +128,11 @@
 
     &._question
       display flex
-      justify-content flex-end
+      justify-content flex-start
       flex-grow 1
       margin 0
-      padding 18px 0
-      font-size 1.2rem
+      padding 0 15px
+      font-size 1rem
       color $color-expense
 
     &._yes
@@ -179,11 +180,12 @@
   align-items center
   justify-content flex-start
   left 0
-  top 1px
+  top 0px
   width 100%
   height calc(100% - 1px)
-  padding 0 15px
+  padding 0 0px
   background $color-trn-hover
+  border 1px solid $color-expense
   anim()
 
   &._visible
@@ -194,5 +196,4 @@
     display flex
     align-items center
     flex-grow 1
-    height 67px
     padding 0 10px

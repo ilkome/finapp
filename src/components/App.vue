@@ -1,7 +1,14 @@
 <template lang="pug">
 .app
+  notifications(group="foo" :duration="3000" position="top left")
+
   template(v-if="!$store.state.isPageLoaded")
-    h1.loading Loading...
+    .loading
+      .loading__spin
+        .logo
+          svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100")
+            path(d="M92.48,7.69C117.38,32.6,61.89,32.06,61.89,50s55.49,17.38,30.58,42.28S68.11,61.68,50.19,61.68,32.81,117.17,7.91,92.26,38.49,67.9,38.49,50-17,32.6,7.91,7.69,32.27,38.28,50.19,38.28,67.57-17.22,92.48,7.69Z")
+
 
   template(v-if="$store.state.isPageLoaded")
     //- Need to login
@@ -15,21 +22,15 @@
       //- Loading
       template(v-if="$store.state.loader")
         transition(name="fade")
-          h1.loading Loading...
-
-      template(v-if="$store.state.error")
-        transition(name="fade")
           .loading
-            .loading__in
-              .loading__name._error {{ $store.state.error }}
-              .loading__update Please, reload Application
+            .loading__spin
+              .logo
+                svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100")
+                  path(d="M92.48,7.69C117.38,32.6,61.89,32.06,61.89,50s55.49,17.38,30.58,42.28S68.11,61.68,50.19,61.68,32.81,117.17,7.91,92.26,38.49,67.9,38.49,50-17,32.6,7.91,7.69,32.27,38.28,50.19,38.28,67.57-17.22,92.48,7.69Z")
 
+      //- Ok, run App
       //- Sidebar
       Sidebar
-      .sidebarToogle(
-        v-shortkey="['alt', 'arrowleft']",
-        @shortkey="onSidebarToogle",
-        @click.prevent.stop="onSidebarToogle")
 
       //- main
       Dashboard
@@ -38,7 +39,7 @@
       transition(name="slideToLeft")
         TrnForm(v-show="$store.state.trnForm.isShow")
       //- TrnForm btn
-      template(v-if="!$store.state.categories.create && !$store.state.categories.edit && !$store.state.accounts.create && !$store.state.accounts.show && !$store.state.accounts.edit && !$store.state.categories.list")
+      template(v-if="!$store.state.categories.create && !$store.state.categories.edit && !$store.state.accounts.create && !$store.state.accounts.edit")
         .trnFormToogle(
           v-shortkey="['alt', 'arrowright']",
           @shortkey="onClickTrnFormToogle",
@@ -47,7 +48,7 @@
         ): .trnFormToogle__icon: .trnFormToogle__icon__in +
 
       //- Show categories
-      transition(name="slideToLeft")
+      transition(name="slideToRight")
         CategoryListBar(v-if="$store.state.categories.list")
       //- Create category
       transition(name="slideToLeft")
@@ -61,7 +62,7 @@
           CategoryList(:isShowEditActions.sync="isShowEditActions")
 
       //- Show accounts
-      transition(name="slideToLeft")
+      transition(name="slideToRight")
         AccountList(v-if="$store.state.accounts.show")
       //- Create account
       transition(name="slideToLeft")
@@ -69,7 +70,6 @@
       //- Edit account
       transition(name="slideToLeft")
         AccountEdit(v-if="$store.state.accounts.edit")
-
 </template>
 
 <script>
@@ -128,6 +128,7 @@ export default {
     checkAndSetMobileOrPCVersion(event) {
       if (document.documentElement.clientWidth > 768) {
         this.$store.commit('setMobile', false)
+        this.$store.commit('toogleLeftbar', 'show')
       } else {
         this.$store.commit('setMobile', true)
         this.$store.commit('toogleLeftbar', 'hide')
@@ -135,9 +136,6 @@ export default {
     },
     onClickTrnFormToogle() {
       this.$store.commit('toogleTrnForm')
-    },
-    onSidebarToogle() {
-      this.$store.commit('toogleLeftbar')
     },
     toogleBodyOverflow() {
       if (this.$store.state.isMobile) {

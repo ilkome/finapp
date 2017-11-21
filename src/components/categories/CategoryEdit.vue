@@ -1,19 +1,12 @@
 <template lang="pug">
 .rightBar
+  .sidebar__close(@click="hideBar")
+    .sidebar__close__title Edit category
+    .sidebar__close__icon: .fa.fa-plus
+
   .rightBar__in
     .rightBar__main
-
-      template(v-if="$store.state.categories.edit")
-        .trnFormToogle(
-          @click.prevent.stop="hideBar",
-          :class="{_active: $store.state.categories.edit}"
-        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
-
       .rightBar__main__in
-        .sidebar__close(@click="hideBar")
-          .sidebar__close__name Edit category
-          .sidebar__close__icon: .fa.fa-plus
-
         .form
           .form__table
             //- Name
@@ -38,7 +31,7 @@
 
             //- Icon
             .form__table__cell._icon
-              .icon._link(
+              .icon._link._small(
                 :style="`background: ${values.color}`"
                 @click.prevent="toogleIconsPop()"
               )
@@ -46,8 +39,13 @@
                   .icon__i(:class="selectedIcon")
                 template(v-else)
                   .icon__i(class="fa fa-question-circle-o")
-                .icon__label Select icon
+                .icon__label
+                  .icon__label__in Select icon
 
+          .checkbox
+            input#showStat.checkbox__none(type="checkbox" v-model="values.showStat")
+            label.checkbox__input(for="showStat")
+            label.checkbox__label(for="showStat") Show stat on Dashboard
 
           //- Has children categories
           template(v-if="isHasChildrenCategories(editedCategory.id)")
@@ -55,23 +53,28 @@
               div Category has children categories.
               div You can not change parent of this category.
 
-          //- Has trns
-          template(v-else-if="isHasTrns(editedCategory.id)")
-            div.mb20
-              div Category has trns.
-              div You can not change parent of this category.
-
           //- Categories
           //- Good to set parent category
           template(v-else)
             .trnForm__icons
               .trnForm__subTitle
-                //- It's parent
-                template(v-if="values.parentId !== 0")
-                  .name {{ selectedParentCategory.name }}
-                template(v-else)
-                  .name Root category
-                .label Parent category
+                .trnForm__subTitle__flex
+                  //- It's parent
+                  template(v-if="values.parentId !== 0")
+                    .icon._link._small(
+                      :style="{ background: selectedParentCategory.color }"
+                      :title="selectedParentCategory.name"
+                    )
+                      .icon__i(:class="selectedParentCategory.icon")
+                      .icon__label
+                        .icon__label__in {{ selectedParentCategory.name }}
+                    .name {{ selectedParentCategory.name }}
+                  template(v-else)
+                    .icon._link._small
+                      .icon__i(class="fa fa-question-circle-o")
+                      .icon__label
+                        .icon__label__in Root category
+                    .name Root category
 
               //- Parents icons
               .iconsGroup
@@ -82,47 +85,57 @@
                     @click.prevent="selectParent(null)"
                   )
                     .icon__i(class="fa fa-question-circle-o")
-                    .icon__label Root category
+                    .icon__label
+                      .icon__label__in Root category
 
                 //- Select
                 .iconsGroup__el(v-for="category in showedCategories")
-                  .icon._link(
+                  .icon._link._small(
                     :class="{_active: (selectedParentCategory && selectedParentCategory.id === category.id)}",
                     @click.prevent="selectParent(category)",
-                    :style="`background: ${category.color}`"
+                    :style="{ background: category.color }"
                   )
+                    //- :style="{ background: category.color, color: selectedParentCategory && (category.id === selectedParentCategory.id ? category.color : '') }"
                     .icon__i(:class="category.icon")
-                    .icon__label {{ category.name }}
+                    .icon__label
+                      .icon__label__in {{ category.name }}
 
                 //- Show all
                 .iconsGroup__el
-                  .icon._link._more(
+                  .icon._link._more._small(
                     @click.prevent="toogleCategoriesPop()",
                     @keyup.enter.prevent="toogleCategoriesPop()",
                     v-shortkey="['alt', 'arrowup']",
                     @shortkey="toogleCategoriesPop()",
                     aria-checked="false", tabindex="0")
                     .mdi.mdi-dots-horizontal
-                    .icon__label Show all categories
+                    .icon__label
+                      .icon__label__in Show all categories
 
-          template(v-if="error")
-            .error.mb20 {{ error }}
-          .trnForm__actions__btn.mb20(@click.prevent="onEditCategory") Update
+          .trnForm__actions__btn(
+            @click.prevent="onEditCategory()"
+            :class="{ _disable: $store.state.loader}"
+          )
+            template Update
+            template(v-if="$store.state.loader")
+              .trnForm__actions__btn__loading
+                .fa.fa-spinner
 
     //- Categories popup block
     //------------------------------------------------
     transition(name="trnFormAnimation")
       .trnForm__categories(
         v-if="showCategoriesPop"
-        v-shortkey="['alt', 'arrowdown']",
-        @shortkey="toogleShowCategories()")
+        v-shortkey="['alt', 'arrowdown']"
+        @shortkey="toogleShowCategories()"
+      )
 
-        .trnForm__categories__in
-          .sidebar__close(@click="toogleCategoriesPop")
-            .sidebar__close__name Select category
-            .sidebar__close__icon: .fa.fa-plus
+        .sidebar__close(@click="toogleCategoriesPop")
+          .sidebar__close__title Select category
+          .sidebar__close__icon: .fa.fa-plus
 
-          div
+        .rightBar__parentCategoryPop
+          .rightBar__main__in
             template(v-for="category in showedCategories")
               .itemList
                 .itemList__content(@click.prevent="selectParent(category)")
@@ -138,37 +151,49 @@
       .trnForm__categories(
         v-if="showIconsPop"
       )
-        .trnForm__categories__in
-          .sidebar__close(@click="toogleIconsPop")
-              .sidebar__close__name Select icon
-              .sidebar__close__icon: .fa.fa-plus
+        .sidebar__close(@click="toogleIconsPop")
+          .sidebar__close__title Select icon
+          .sidebar__close__icon: .fa.fa-plus
 
-          .filter
-            input(
-              type="text",
-              v-model.trim="iconFilter",
-              v-focus.lazy="showIconsPop && !$store.state.isMobile",
-              placeholder="Search"
-            ).filter__input
-            template(v-if="iconFilter !== ''")
-              .filter__btns
-                .filter__btn._edit(@click.prevent="iconFilter = ''")
-                  .fa.fa-eraser
+        .filter
+          input(
+            type="text",
+            v-model.trim="iconFilter",
+            v-focus.lazy="showIconsPop && !$store.state.isMobile",
+            placeholder="Search"
+          ).filter__input
+          template(v-if="iconFilter !== ''")
+            .filter__btns
+              .filter__btn._edit(@click.prevent="iconFilter = ''")
+                .fa.fa-eraser
 
-          template(v-if="iconFilter.length >= 2 && searchedIcons.length === 0")
-            div Nothing found
+        .rightBar__iconsPop
+          .rightBar__main__in
+            template(v-if="iconFilter.length >= 2 && searchedIcons.length === 0")
+              div Nothing found
 
-          CategoryColor(v-on:setColor="setColor")
+            CategoryColor(v-on:setColor="setColor")
 
-          .iconsGroup
-            template(v-for="icon in searchedIcons")
-              .iconsGroup__el
-                .icon._link(
-                  @click.prevent="selectIcon(icon)"
-                  :style="`background: ${values.color}`"
-                )
-                  .icon__i(:class="`fa fa-${icon.id}`")
-                  .icon__label {{ icon.name }}
+            //- .input
+              input.input__field(
+                v-model="values.icon"
+                v-focus.lazy="true",
+                name="icon"
+                type="text"
+                placeholder="Category icon"
+              )
+              .input__label Icon
+
+            .iconsGroup
+              template(v-for="icon in searchedIcons")
+                .iconsGroup__el
+                  .icon._link(
+                    @click.prevent="selectIcon(icon)"
+                    :style="`background: ${values.color}`"
+                  )
+                    .icon__i(:class="`fa fa-${icon.id}`")
+                    .icon__label
+                      .icon__label__in {{ icon.name }}
 </template>
 
 <script>
@@ -193,8 +218,7 @@ export default {
       showIconsPop: false,
       values: {
         ...this.$store.state.categories.editCategory
-      },
-      error: null
+      }
     }
   },
 
@@ -240,20 +264,22 @@ export default {
       this.$store.commit('setEditCategory', null)
     },
     async onEditCategory() {
-      this.$store.commit('showLoader')
-      this.error = null
-
       const formatedValues = {
         id: this.values.id,
         name: this.values.name.trim(),
         color: this.values.color,
         icon: this.values.icon,
-        parentId: this.values.parentId ? this.values.parentId : 0
+        parentId: this.values.parentId ? this.values.parentId : 0,
+        showStat: this.values.showStat ? this.values.showStat : false
       }
 
       if (!formatedValues.name) {
-        this.error = 'Please write category name'
-        this.$store.commit('closeLoader')
+        this.$notify({
+          group: 'foo',
+          title: 'Error',
+          text: 'Please write category name.',
+          type: 'error'
+        })
         return
       }
 
@@ -262,11 +288,16 @@ export default {
           category.name === formatedValues.name &&
           category.icon === formatedValues.icon &&
           category.color === formatedValues.color &&
+          category.showStat === formatedValues.showStat &&
           category.parentId === formatedValues.parentId)
 
       if (sameCategory.length) {
-        this.error = 'Same category name is already exist!'
-        this.$store.commit('closeLoader')
+        this.$notify({
+          group: 'foo',
+          title: 'Error',
+          text: 'Same category name is already exist.',
+          type: 'error'
+        })
         return
       }
 
@@ -274,6 +305,12 @@ export default {
       this.$store.commit('toogleCategoryEdit', 'hide')
       this.$store.commit('setEditCategory', null)
       this.$store.commit('closeLoader')
+      this.$notify({
+        group: 'foo',
+        title: 'Succesed',
+        text: 'Category was updated.',
+        type: 'success'
+      })
     },
     isHasChildrenCategories(categoryId) {
       const childCategories = this.categories.filter(cat => cat.parentId === categoryId)

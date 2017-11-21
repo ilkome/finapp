@@ -1,18 +1,16 @@
 scrollbar()
   &::-webkit-scrollbar
     width 2px
-    height 16px
+    height 2px
 
     @media (min-width: 768px)
       width 6px
+      height 6px
 
   &::-webkit-scrollbar-track
     border-radius 10px
     background transparent
     opacity .5
-
-    &:hover
-      background $color-body
 
   &::-webkit-scrollbar-thumb
     border-radius 10px

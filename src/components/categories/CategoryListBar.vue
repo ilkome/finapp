@@ -1,20 +1,19 @@
 <template lang="pug">
-.rightBar
-  .rightBar__in
-    .rightBar__main
+.leftBar
+  //- PC
+  template(v-if="!$store.state.isMobile")
+    .leftBar__title(@click="$store.commit('toogleCategoriesList')")
+      div Categories
+      .sidebar__close__icon: .fa.fa-plus
 
-      template(v-if="$store.state.categories.list")
-        .trnFormToogle(
-          @click.prevent.stop="$store.commit('toogleCategoriesList', 'hide')",
-          :class="{_active: $store.state.categories.list}"
-        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+  //- Mobile
+  template(v-if="$store.state.isMobile")
+    .sidebar__close(@click="$store.commit('toogleCategoriesList', 'hide')")
+      .sidebar__close__title: .fa.fa-arrow-left
+      .sidebar__close__title Categories
+      .sidebar__close__icon: .fa.fa-plus
 
-      .rightBar__main__in
-        .sidebar__close(@click="$store.commit('toogleCategoriesList', 'hide')")
-          .sidebar__close__name Categories
-          .sidebar__close__icon: .fa.fa-plus
-
-        CategoryList(:isShowEditActions.sync="isShowEditActions")
+  CategoryList(:isShowEditActions.sync="isShowEditActions")
 </template>
 
 <script>

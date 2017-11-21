@@ -10,14 +10,14 @@
   height 100%
   color $color-main
   font-size 3rem
-  background alpha($color-layout, .9)
+  background alpha($color-layout, .4)
 
-  &__in
-    display block
-    text-align center
+  &__spin
+    width 80px
+    height 80px
+    fill $color-main
+    animation spin 3000ms ease-in-out infinite
 
-  &__name
-    padding-bottom 4rem
-
-    &._error
-      color red
+@keyframes spin
+  from {transform:rotate(0deg)}
+  to {transform:rotate(360deg)}

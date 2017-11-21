@@ -1,3 +1,15 @@
+a
+  color $color-main
+
+  &:hover
+    color $color-link
+
+.link
+  padding-bottom 1px
+  border-bottom 1px solid transparent
+  &:hover
+    border-bottom-color $color-link
+
 h1, h2, h3, h4, h5, h6
   margin 0
   margin-bottom 20px
@@ -9,43 +21,18 @@ h1, h2, h3, h4, h5, h6
   text-transform uppercase
 
 .title
-  display flex
-  margin-bottom 30px
-  align-items center
-
-  @media (min-width: 768px)
-    margin-bottom 60px
-
-  @media $laptop
-    margin-bottom 85px
-
-  h1&
-    font-size 1.5rem
-    letter-spacing 2px
-    $font-numbers()
-
-    @media $laptop
-      font-size 3rem
-      letter-spacing 6px
-      margin-left -5px
-
-  h2&
-    margin-bottom 60px
-    font-size 1.6rem
-    letter-spacing 2px
-
-  &:last-child
-    margin-bottom 0
+  margin 0
+  padding 15px 0
 
 .numberTitle
   margin-bottom 50px
   color $color-second
+  $font-numbers()
   font-size 1.5rem
   font-weight bold
   letter-spacing 3px
   line-height 1rem
   text-transform uppercase
-  $font-numbers()
 
 
 // Lists

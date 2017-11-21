@@ -1,15 +1,22 @@
 <template lang="pug">
-.trnItem(:class="{_editable: trn.id === editedTrn}")
+.trnItem(:class="{ _editable: trn.id === editedTrn, _padding: view !== 'small'}")
   //- Trns small
   //------------------------------------------------
   template(v-if="view === 'small'")
     .trnItem__content
+      .trnItem__pic
+        .icon._small._round(
+          :style="{ background: trn.account.color }"
+          :title="trn.account.name"
+        )
+          .icon__abbr {{ trn.account.name.charAt(0) }}{{ trn.account.name.charAt(1) }}
+
       .trnItem__price(:class="trn.type === 1 ? 'income' : 'expense'")
         div {{ formatMoney(trn.amountRub) }}
         div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
+
       .trnItem__cell
         .trnItem__line._date {{ formatDate(trn.date, 'D MMM YY') }}
-        .trnItem__line {{ trn.accountName }}
 
       .trnItem__actions
         template(v-if="editedTrn && trn.id === editedTrn")
@@ -25,16 +32,22 @@
   template(v-else)
     .trnItem__content
       .trnItem__pic
-        .icon(:style="`background: ${trn.categoryColor}`")
+        .icon._small(:style="`background: ${trn.categoryColor}`")
           div(:class="trn.categoryIcon")
 
       .trnItem__price(:class="trn.type === 1 ? 'income' : 'expense'")
         div {{ formatMoney(trn.amountRub) }}
         div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
-      .trnItem__cell
-        .trnItem__line._date {{ formatDate(trn.date, 'D MMM YY') }}
-        .trnItem__line {{ trn.accountName }}
-        .trnItem__line {{ trn.categoryName }}
+
+      template(v-if="!$store.state.isMobile")
+        .trnItem__cell
+          .trnItem__line._date {{ formatDate(trn.date, 'D MMM YY') }}
+        .trnItem__cell
+          .trnItem__line {{ trn.accountName }}
+      template(v-else)
+        .trnItem__cell
+          .trnItem__line._date {{ formatDate(trn.date, 'D MMM YY') }}
+          .trnItem__line {{ trn.accountName }}
 
       .trnItem__actions
         template(v-if="editedTrn && trn.id === editedTrn")
@@ -94,6 +107,13 @@ export default {
       }
       this.questionId = null
       this.$store.commit('closeLoader')
+      this.$notify({
+        group: 'foo',
+        title: 'Succesed',
+        text: 'Trn was deleted.',
+        type: 'success'
+      })
+      return
     },
     askQuestion(trnId) {
       this.questionId = trnId

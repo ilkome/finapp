@@ -1,7 +1,7 @@
 var path = require('path')
 
 const appPath = path.resolve(__dirname, '../src')
-const distPath = path.resolve(__dirname, '../dist')
+const distPath = path.resolve(__dirname, '../next/dist')
 
 module.exports = {
   app: appPath,

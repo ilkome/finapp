@@ -25,19 +25,21 @@ export default {
         autoHeight: true,
         loop: false,
         spaceBetween: 40,
-        onSlideChangeStart(swiper) {
-          switch (swiper.realIndex) {
-            case 0:
-              vm.$emit('onChangeSlide', 'expenses')
-              break
-            case 1:
-              vm.$emit('onChangeSlide', 'incomes')
-              break
-            case 2:
-              vm.$emit('onChangeSlide', 'history')
-              break
-            default:
-              vm.$emit('onChangeSlide', 'expenses')
+        on: {
+          slideChangeTransitionStart() {
+            switch (this.realIndex) {
+              case 0:
+                vm.$emit('onChangeSlide', 'expenses')
+                break
+              case 1:
+                vm.$emit('onChangeSlide', 'incomes')
+                break
+              case 2:
+                vm.$emit('onChangeSlide', 'history')
+                break
+              default:
+                vm.$emit('onChangeSlide', 'expenses')
+            }
           }
         }
       }
@@ -64,14 +66,14 @@ export default {
     },
     idsOfOpenedCategories() {
       this.$nextTick(() => {
-        this.swiper.onResize()
+        this.swiper.update()
       })
     },
     leftBar() {
       this.$nextTick(() => {
         // It's need for complite leftBar animation finish
         setTimeout(() => {
-          this.swiper.onResize()
+          this.swiper.update()
         }, 500)
       })
     }

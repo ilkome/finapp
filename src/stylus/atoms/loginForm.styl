@@ -7,7 +7,7 @@
   padding-top 100px
 
   @media (min-width: 768px)
-      padding-top 0
+    padding-top 0
 
   &__wrap
     display flex
@@ -17,13 +17,20 @@
     padding 60px 30px
     text-align center
     border-radius 3px
-    background $color-itemStat
-    border 1px solid $color-itemStat-border
+    background $color-sidebar
+    border 1px solid $color-header-line
+
+    @media (min-width: 768px)
+      padding 60px
+
+  &__copy
+    text-align center
+    padding-top 30px
 
   &__name
     margin-bottom 40px
     font-size 3rem
-    letter-spacing 6px
+    letter-spacing 3px
     font-weight bold
 
   &__error
@@ -37,7 +44,6 @@
     color $color-main
     font-size 1.2rem
     font-weight bold
-    letter-spacing 2px
     text-align center
     background $color-itemStat
     border 1px solid $color-itemStat

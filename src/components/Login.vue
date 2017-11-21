@@ -3,10 +3,9 @@
     .loginForm__wrap
       .loginForm__in
         .loginForm__name Finapp
-        .loginForm__error(v-if="error") {{ error }}
         .loginForm__action(@click.prevent="signInWithGoogle") Login with Google
-      .loginForm__version
-        a(href="http://ilko.me") Created with love by Ilya Komichev ilko.me
+      .loginForm__copy
+        a(href="http://ilko.me").link Created with love by Ilya Komichev
 </template>
 
 
@@ -14,19 +13,18 @@
 import firebase from 'firebase'
 
 export default {
-  data() {
-    return {
-      error: null
-    }
-  },
-
   methods: {
     signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithRedirect(provider)
         .catch(error => {
-          this.error = error.message
-          console.log(error)
+          this.$notify({
+            group: 'foo',
+            title: 'Error',
+            text: error.message,
+            type: 'error',
+            duration: 10000
+          })
         })
     }
   }
