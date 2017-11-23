@@ -100,7 +100,7 @@
                     .name {{ values.account.name }}
 
               .iconsGroup
-                .iconsGroup__el(v-for="account in accounts.slice(0, 5)")
+                .iconsGroup__el(v-for="account in accounts")
                   .icon._link._round._small(
                     :title="account.name"
                     :style="{ background: account.color }"
@@ -111,11 +111,6 @@
                     .icon__label
                       .icon__label__in {{ account.name }}
 
-                .iconsGroup__el
-                  .icon._link._more._small._round
-                    .mdi.mdi-dots-horizontal
-                    .icon__label
-                      .icon__label__in Show all accounts
             //- No wallets
             template(v-else)
               .trnForm__actions__btn(@click="$store.commit('toogleAccountCreate')") Create wallet

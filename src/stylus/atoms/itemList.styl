@@ -56,7 +56,12 @@
     padding-bottom 30px
 
     & ^[0]__content
-      border-bottom-color $color-itemList-border !important
+      margin 0 -30px
+      padding 0 30px
+      border-bottom-color transparent !important
+    
+    & ^[0]__actions
+      right 25px
 
     & ^[0]__content
     & ^[0]__actions
@@ -231,6 +236,14 @@
 
   &._editable
     & ^[0]__content
+      margin 0 -30px
+      padding 0 30px
+      padding-left 44px
+    
+    & ^[0]__actions
+      right 25px
+
+    & ^[0]__content
     & ^[0]__actions
       background $color-sidebar-bg-edit
 
@@ -238,6 +251,14 @@
       opacity 1
 
   &:hover
+    & ^[0]__content
+      margin 0 -30px
+      padding 0 30px
+      padding-left 44px
+    
+    & ^[0]__actions
+      right 25px
+    
     & ^[0]__name
       color $color-sidebar-white-light
 
@@ -251,7 +272,8 @@
   &__content
     @extend .itemList__content
     height 40px
-    padding-left 40px
+    padding-left 14px
+    border-bottom 0
 
   &__icon
     @extend .itemList__icon

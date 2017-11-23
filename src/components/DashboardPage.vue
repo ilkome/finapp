@@ -15,7 +15,7 @@
     v-on:toogleShowsChartYears="toogleShowsChartYears"
   )
 
-  .main(:class="$store.state.leftBar.isShow && '_withLeftbar'")
+  .main
     template(v-if="!$store.state.isMobile")
       .moduleLinks
         .moduleLinks__item(
