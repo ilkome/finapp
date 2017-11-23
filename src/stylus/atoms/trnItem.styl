@@ -20,11 +20,12 @@
     margin-right -10px
     padding-left 10px
     padding-right 10px
-    
+  
   &:hover
-    color $color-main
-    background #222222
-    border-color #292929
+    @media after768
+      color $color-main
+      background #222222
+      border-color #292929
 
   &__content
     width 100%
@@ -32,15 +33,18 @@
     align-items center
 
   &__pic
-    width 60px
+    //
 
   &__cell
     padding-right 20px
 
   &__price
     width 90px
-    margin-right 40px
+    margin-right 20px
     text-align right
+
+    @media $after768
+      margin-right 30px
 
   &__line
     font-size .8rem
@@ -65,14 +69,16 @@
       opacity 0
 
     ^[0]._open:hover &
-      background #222222
+      @media after768
+        background #222222
 
     ^[0]._open &
       background $color-sidebar-bg-active
 
     ^[0]:hover &
-      opacity 1
-      background #222222
+      @media after768
+        opacity 1
+        background #222222
 
     ^[0]._editable &
       opacity 1
@@ -80,6 +86,9 @@
 
     ^[0]._active &
       background $color-sidebar-bg-active
+    
+    ^[0]._padding:hover &
+      right 10px
 
   &__action
     display flex
@@ -106,10 +115,14 @@
   &__description
     width 100%
     padding-top 5px
+    padding-left 140px
     padding-right 10px
-    text-align right
     font-size .8rem
 
+    @media $after768
+      text-align right
+
     &._big
-      padding-left 190px
-      padding-bottom 5px
+      @media $after768
+        padding-left 190px
+        padding-bottom 5px

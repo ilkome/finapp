@@ -18,7 +18,7 @@ html
   $font-primary()
   color $color-main
   line-height 1
-  letter-spacing 0px
+  letter-spacing 0
   background $color-body
   overflow-y scroll
   scrollbar()
@@ -29,9 +29,6 @@ html
   @media (min-width: 768px)
     overflow hidden
     height 100%
-
-  @media (min-width: 2000px)
-    // zoom 120%
 
 .app
   display flex
@@ -48,21 +45,8 @@ html
     flex-shrink 0
     overflow-y scroll
     position fixed
-    left 0rem
-    top 50px
-    width 100%
+    width calc(100% - 290px)
     height calc(100% - 50px)
+    left 290px
+    top 50px
     scrollbar()
-    anim()
-
-    &._withLeftbar
-      left 290px
-      width calc(100% - 290px)
-
-      @media (min-width: 768px)
-        left 290px
-        width calc(100% - 290px)
-
-      @media (min-width: 1500px)
-        left 290px
-        width calc(100% - 290px)
