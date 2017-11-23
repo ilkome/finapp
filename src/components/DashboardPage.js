@@ -19,10 +19,9 @@ export default {
   components: { ItemStatGroup, ItemStat, TrnsList, TrnItem, SummaryShort, Slider, AppHeader, ChartYears },
   data() {
     return {
-      showedMoreStatInfo: false,
       showedHistory: false,
       showedGraph: true,
-      showedChartYears: true,
+      showedChartYears: false,
       showedTabMoney: 'expenses',
       selectedPeriodIndex: 0,
       showedPeriod: 1,
