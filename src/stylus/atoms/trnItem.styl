@@ -22,7 +22,7 @@
     padding-right 10px
   
   &:hover
-    @media after768
+    @media $after768
       color $color-main
       background #222222
       border-color #292929
@@ -69,14 +69,14 @@
       opacity 0
 
     ^[0]._open:hover &
-      @media after768
+      @media $after768
         background #222222
 
     ^[0]._open &
       background $color-sidebar-bg-active
 
     ^[0]:hover &
-      @media after768
+      @media $after768
         opacity 1
         background #222222
 
