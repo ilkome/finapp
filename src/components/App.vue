@@ -126,7 +126,7 @@ export default {
 
   methods: {
     checkAndSetMobileOrPCVersion(event) {
-      if (document.documentElement.clientWidth > 768) {
+      if (document.documentElement.clientWidth >= 768) {
         this.$store.commit('setMobile', false)
         this.$store.commit('toogleLeftbar', 'show')
       } else {
