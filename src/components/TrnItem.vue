@@ -5,7 +5,7 @@
   template(v-if="view === 'small'")
     .trnItem__content
       .trnItem__pic
-        .icon._small._round(
+        .icon._round(
           :style="{ background: trn.account.color }"
           :title="trn.account.name"
         )
@@ -32,7 +32,7 @@
   template(v-else)
     .trnItem__content
       .trnItem__pic
-        .icon._small(:style="`background: ${trn.categoryColor}`")
+        .icon(:style="`background: ${trn.categoryColor}`")
           div(:class="trn.categoryIcon")
 
       .trnItem__price(:class="trn.type === 1 ? 'income' : 'expense'")

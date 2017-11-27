@@ -53,7 +53,7 @@
               .trnForm__subTitle
                 .trnForm__subTitle__flex
                   template(v-if="values.categoryId")
-                    .icon._small(
+                    .icon(
                       :style="{ background: selectedCategory.color }"
                       :title="selectedCategory.name"
                     )
@@ -62,7 +62,7 @@
 
               .iconsGroup
                 .iconsGroup__el(v-for="category in lastUsedCategories")
-                  .icon._link._small(
+                  .icon._link(
                     @click.prevent="setCategory(category.id)"
                     @keyup.enter.prevent="setCategory(category.id)"
                     :style="{ background: category.color }"
@@ -73,7 +73,7 @@
                       .icon__label__in {{ category.name }}
 
                 .iconsGroup__el
-                  .icon._link._more._small(
+                  .icon._link._more(
                     @click.prevent="toogleCategoriesPop()"
                     @keyup.enter.prevent="toogleCategoriesPop()"
                     v-shortkey="['alt', 'arrowup']"
@@ -92,7 +92,7 @@
               .trnForm__subTitle
                 .trnForm__subTitle__flex
                   template(v-if="values.account")
-                    .icon._small._round(
+                    .icon._round(
                       :style="{ background: values.account.color }"
                       :title="values.account.name"
                     )
@@ -101,7 +101,7 @@
 
               .iconsGroup
                 .iconsGroup__el(v-for="account in accounts")
-                  .icon._link._round._small(
+                  .icon._link._round(
                     :title="account.name"
                     :style="{ background: account.color }"
                     @click.prevent="setAccound(account)"
@@ -129,7 +129,7 @@
           .trnForm__icons
             .trnForm__subTitle
               .trnForm__subTitle__flex
-                .icon._small._round(
+                .icon._round(
                   :style="{ background: values.accountFrom.color }"
                   :title="values.accountFrom.name"
                 )
@@ -139,7 +139,7 @@
 
             .iconsGroup
               .iconsGroup__el(v-for="account in accounts")
-                .icon._small._round._link(
+                .icon._round._link(
                   @click.prevent="setAccound(account, 'from')"
                   :class="[{_active: (account.id === values.accountFrom.id)}]"
                   :style="{ background: account.color, color: account.id === values.accountFrom.id ? account.color : '' }"
@@ -152,7 +152,7 @@
           .trnForm__icons
             .trnForm__subTitle
               .trnForm__subTitle__flex
-                .icon._small._round(
+                .icon._round(
                   :style="{ background: values.accountTo.color }"
                   :title="values.accountTo.name"
                 )
@@ -162,7 +162,7 @@
 
             .iconsGroup
               .iconsGroup__el(v-for="account in accounts")
-               .icon._small._round._link(
+               .icon._round._link(
                   @click.prevent="setAccound(account, 'to')"
                   :class="[{ _active: (account.id === values.accountTo.id) }]"
                   :style="{ background: account.color, color: account.id === values.accountTo.id ? account.color : '' }"
