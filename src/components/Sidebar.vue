@@ -43,7 +43,7 @@ transition(name="leftBarAnimation")
                 .sidebarItem__content
                   template(v-if="$store.state.isShowSidebarAccountsIcons")
                     .sidebarItem__icon
-                      .icon._small._round(:style="`background: ${account.color}`")
+                      .icon._round(:style="`background: ${account.color}`")
                         .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
                   .sidebarItem__name {{ account.name }}
                   .sidebarItem__money
@@ -113,7 +113,7 @@ transition(name="leftBarAnimation")
               )
                 .sidebarItem__content
                   .sidebarItem__icon
-                    .icon._small._round(:style="`background: ${getFilter.account.color}`")
+                    .icon._round(:style="`background: ${getFilter.account.color}`")
                       .icon__abbr {{ getFilter.account.name.charAt(0) }}{{ getFilter.account.name.charAt(1) }}
                   .sidebarItem__name {{ getFilter.account.name }}
 
@@ -123,7 +123,7 @@ transition(name="leftBarAnimation")
               )
                 .sidebarItem__content
                   .sidebarItem__icon
-                    .icon._small(:style="`background: ${getFilter.category.color}`")
+                    .icon(:style="`background: ${getFilter.category.color}`")
                       div(:class="getFilter.category.icon")
                   .sidebarItem__name {{ getFilter.category.name }}
 

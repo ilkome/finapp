@@ -20,7 +20,7 @@
         .itemList
           .itemList__content
             .itemList__icon
-              .icon._small
+              .icon
                 .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
             .itemList__name {{ account.name }}
             .itemList__money

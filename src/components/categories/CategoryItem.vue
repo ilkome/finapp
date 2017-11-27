@@ -6,7 +6,7 @@ div(:class="className" @click.prevent.stop="$emit('onClickContent', category)")
     //- content
     .itemList__content
       .itemList__icon(@click.prevent.stop="$emit('onClickIcon', category)")
-        .icon._small(
+        .icon(
           :class="{ _link: view !== 'trnForm' }"
           :style="`background: ${category.color}`"
         )
@@ -45,7 +45,7 @@ div(:class="className" @click.prevent.stop="$emit('onClickContent', category)")
     //- content
     .itemListChild__content(@click.prevent="$emit('onClickContent', category)")
       .itemListChild__icon(@click.prevent.stop="$emit('onClickIcon', category)")
-        .icon._small(
+        .icon(
           :class="{ _link: view !== 'trnForm' }"
           :style="`background: ${category.color}`"
         )

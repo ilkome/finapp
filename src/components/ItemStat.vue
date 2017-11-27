@@ -6,7 +6,7 @@ div(
 
   .itemStat__in
     .itemStat__icon(@click.stop="onClickIcon")
-      .icon._link(
+      .icon._big._link(
         :class="{ _small: isChild }"
         :style="`background: ${item.color}`"
       ): div(:class="item.icon")

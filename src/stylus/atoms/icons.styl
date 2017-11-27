@@ -1,3 +1,16 @@
+.iconsGroup
+  display flex
+  flex-flow row wrap
+  display grid
+  grid-template-columns repeat(auto-fit, 36px)
+  grid-column-gap 10px
+  grid-row-gap 10px
+
+  @media $after768
+    grid-column-gap 8px
+    grid-row-gap 8px
+    grid-template-columns repeat(auto-fit, 26px)
+
 .plus
   position relative
   display flex
@@ -25,41 +38,24 @@
 
 .icon
   display flex
-  width 30px
-  height 30px
-  padding-left 1px
   align-items center
   justify-content center
+  width 24px
+  height 24px
+  padding-top 1px
+  padding-left 1px
   color $color-icon-text
-  font-size 16px
-  letter-spacing 0
+  font-size 14px
   background $color-icon-bg
 
   .mdi
-    font-size 18px
+    margin-top -1px
+    font-size 15px
 
   &._big
-    width 36px
-    height 36px
+    width 32px
+    height 32px
     font-size 18px
-
-  &._small
-    width 30px
-    height 30px
-    padding-top 1px
-    font-size 18px
-
-    .mdi
-      font-size 20px
-      
-      @media $after768
-        font-size 18px
-
-    @media $after768
-      width 26px
-      height 26px
-      padding-top 1px
-      font-size .9rem
 
   &._round
     border-radius 50%
@@ -75,7 +71,7 @@
     opacity .3
 
   &__abbr
-    font-size 11px
+    font-size 10px
     font-weight bold
 
   &__label
@@ -116,17 +112,3 @@
       .stat__item2:hover &
         transform translate(-50%, 100%)
         top 7px
-
-
-.iconsGroup
-  display flex
-  flex-flow row wrap
-  display grid
-  grid-template-columns repeat(auto-fit, 36px)
-  grid-column-gap 10px
-  grid-row-gap 10px
-
-  @media $after768
-    grid-column-gap 8px
-    grid-row-gap 8px
-    grid-template-columns repeat(auto-fit, 26px)

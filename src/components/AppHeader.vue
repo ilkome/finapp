@@ -117,12 +117,12 @@
         .flex
           template(v-if="getFilter.account")
             .header__link._account(@click.prevent="$store.commit('setFilterAccount', null)")
-              .icon._small._round(:style="`background: ${getFilter.account.color}`")
+              .icon._round(:style="`background: ${getFilter.account.color}`")
                 .icon__abbr {{ getFilter.account.name.charAt(0) }}{{ getFilter.account.name.charAt(1) }}
 
           template(v-if="getFilter.category")
             .header__link._active(@click.prevent="$emit('setFilterCategory', null)")
-              .icon._small(:style="`background: ${getFilter.category.color}`")
+              .icon(:style="`background: ${getFilter.category.color}`")
                 div(:class="getFilter.category.icon")
 </template>
 

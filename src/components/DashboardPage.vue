@@ -144,7 +144,7 @@
                                   .statChartGraph2
                                     .statChartGraph2__in(:style="{ background: period.category.color, height: getPeriodStaticHeight2(period.total, expensesItemsStat[0].total) }")
                                       .statChartGraph2__total.sum {{ period.totalK }}
-                                  .icon._small(
+                                  .icon(
                                     :style="`background: ${period.category.color}`"
                                   ): div(:class="period.category.icon")
                                     .icon__label
@@ -173,7 +173,7 @@
                                   .statChartGraph2
                                     .statChartGraph2__in(:style="{ background: period.category.color, height: getPeriodStaticHeight2(period.total, incomesItemsStat[0].total) }")
                                       .statChartGraph2__total.sum {{ period.totalK }}
-                                  .icon._small(
+                                  .icon(
                                     :style="`background: ${period.category.color}`"
                                   ): div(:class="period.category.icon")
                                     .icon__label
@@ -223,7 +223,7 @@
                                 .statChartGraph2
                                   .statChartGraph2__in(:style="{ background: period.category.color, height: getPeriodStaticHeight2(period.total, expensesItemsStat[0].total) }")
                                     .statChartGraph2__total.sum {{ period.totalK }}
-                                .icon._small(
+                                .icon(
                                   :style="`background: ${period.category.color}`"
                                 )
                                   div(:class="period.category.icon")
@@ -255,7 +255,7 @@
                                 .statChartGraph2
                                   .statChartGraph2__in(:style="{ background: period.category.color, height: getPeriodStaticHeight2(period.total, incomesItemsStat[0].total) }")
                                     .statChartGraph2__total.sum {{ period.totalK }}
-                                .icon._small(
+                                .icon(
                                   :style="`background: ${period.category.color}`"
                                 )
                                   div(:class="period.category.icon")
