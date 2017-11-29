@@ -1,6 +1,11 @@
 <template lang="pug">
 .app
-  notifications(group="foo" :duration="3000" position="top left")
+  notifications(
+    group="foo"
+    :duration="3000"
+    :width="$store.state.isMobile ? '100%' : 300"
+    :position="$store.state.isMobile ? 'bottom left' : 'top left'"
+  )
 
   template(v-if="!$store.state.isPageLoaded")
     .loading
