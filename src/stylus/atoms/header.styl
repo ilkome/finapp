@@ -35,7 +35,7 @@ $localFont()
 
     @media $before768
       justify-content space-between
-      padding 5px 0px
+      padding 0
       border-bottom 1px solid $color-body
 
     @media $after768
@@ -80,12 +80,12 @@ $localFont()
     position relative
     cursor pointer
     padding 15px
-    height 49px
     color $color-grey
     $localFont()
     anim()
 
     @media $after768
+      height 49px
       padding 15px 10px
 
     &:active

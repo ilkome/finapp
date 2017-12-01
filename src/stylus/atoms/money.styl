@@ -33,9 +33,11 @@
 
 
 .moneyBlock
-  margin-bottom 30px
   padding-bottom 10px
-  border-bottom 1px solid #232323
+
+  @media $after768
+    border-bottom 1px solid #232323
+    margin-bottom 30px
 
   &._noMargin
     margin-bottom 0
@@ -44,8 +46,12 @@
 
   &__line
     display flex
-    justify-content space-between
-    padding-bottom 10px
+    justify-content flex-end
+    padding-bottom 5px
+
+    @media $after768
+      justify-content space-between
+      padding-bottom 10px
 
     &:last-child
       padding-bottom 0
@@ -67,7 +73,10 @@
       color $color-grey
 
   &__total
-    font-size 18px
+    font-size 16px
+
+    @media $after768
+      font-size 18px
 
   &__average
     display flex
@@ -76,4 +85,7 @@
 
     .sum
       color $color-sidebar-white-lighter
-      font-size 15px
+      font-size 14px
+
+      @media $after768
+        font-size 15px

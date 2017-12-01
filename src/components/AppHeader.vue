@@ -23,26 +23,22 @@
           v-tooltip.bottom-center="{ content: showedHistory ? 'Hide hitstory' : 'Show hitstory' }"
         ): .fa.fa-history
 
-          //- .header__link._settings(
-          //-   @click="$store.commit('signOut')"
-          //-   v-tooltip.bottom-center="{ content: 'Toogle sidebar icons' }"
-          //- ): .mdi.mdi-exit-to-app
-        //- .header__date(
-        //-   v-tooltip.bottom-center="{ content: $store.state.filter.filter.date.second, classes: 'tooltip _fast' }"
-        //- ) {{ $store.state.filter.filter.date.first }}
-
+        //- .header__link(
+        //-   @click="$store.commit('signOut')"
+        //-   v-tooltip.bottom-center="{ content: 'Toogle sidebar icons' }"
+        //- ): .mdi.mdi-exit-to-app
 
       .header__col._date
         .header__date(
           v-tooltip.bottom-center="{ content: $store.state.filter.filter.date.second, classes: 'tooltip _fast' }"
         ) {{ $store.state.filter.filter.date.first }}
 
-      //- Dates
+      //- Nav
       .header__col
         .header__link(
-          @click.prevent="$emit('selectNextPeriod')"
+          @click.prevent="$emit('selectPrevPeriod')"
+          :class="{ _disabled: checkIsLastDate() }"
         ): .arrow._left
-
         .header__link(
           :class="{ _active: $timePeriod === 'day' }"
           @click.prevent="$emit('setTimePeriod', 'day')"
@@ -64,10 +60,8 @@
           @click.prevent="$emit('setTimePeriod', 'all')"
         ) All
         .header__link(
-          @click.prevent="$emit('selectPrevPeriod')"
-          :class="{ _disabled: selectedPeriodIndex === 0}"
-        )
-          .arrow._right
+          @click.prevent="$emit('selectNextPeriod')"
+        ): .arrow._right
 
       //- Add Trn
       .header__col
@@ -94,9 +88,8 @@
     .header__in
       .header__link(
         @click.prevent="$emit('selectPrevPeriod')"
-        :class="{ _disabled: selectedPeriodIndex === 0 }"
+        :class="{ _disabled: checkIsLastDate() }"
       ): .arrow._left
-
       .header__link(
         :class="{ _active: $timePeriod === 'day' }"
         @click.prevent="$emit('setTimePeriod', 'day')"
@@ -109,11 +102,12 @@
         :class="{ _active: $timePeriod === 'month' }"
         @click.prevent="$emit('setTimePeriod', 'month')"
       ) Month
-      .header__link(@click.prevent="$emit('selectNextPeriod')")
-        .arrow._right
+      .header__link(
+        @click.prevent="$emit('selectNextPeriod')"
+      ): .arrow._right
 
     template(v-if="getFilter.category || getFilter.account")
-      .header__in._mobile
+      .header__in
         .flex
           template(v-if="getFilter.account")
             .header__link._account(@click.prevent="$store.commit('setFilterAccount', null)")
@@ -127,12 +121,13 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { mapGetters } from 'vuex'
 
 export default {
   props: {
-    selectedPeriodIndex: {
-      type: Number,
+    trnsDate: {
+      type: Object,
       required: true
     },
     showedGraph: {
@@ -150,7 +145,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['accounts', 'categories', 'getFilter']),
+    ...mapGetters(['getFilter']),
     $timePeriod() {
       return this.$store.state.dashboard.timePeriod
     }
@@ -161,14 +156,8 @@ export default {
       this.$store.commit('toogleCategoriesList')
       this.$store.commit('toogleAccountList', 'hide')
     },
-    openPopupCalendar(event) {
-      const left = !this.$store.state.isMobile ? event.target.closest('.header__header').offsetLeft + 20 : 0
-      const top = !this.$store.state.isMobile ? event.target.closest('.header__header').offsetTop + 47 : 47
-      this.$store.commit('setFilterCalendar', {
-        show: !this.$store.state.filter.filter.calendar.show,
-        left,
-        top
-      })
+    checkIsLastDate() {
+      return moment(this.trnsDate.start).isSame(this.$store.state.currentDate, this.$timePeriod)
     }
   }
 }

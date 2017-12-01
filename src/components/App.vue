@@ -17,12 +17,10 @@
 
   template(v-if="$store.state.isPageLoaded")
     //- Need to login
-    //------------------------------------------------
     template(v-if="!user && !$store.state.loader")
       Login
 
-    //- Auth user
-    //------------------------------------------------
+    //- Ok, run App
     template(v-else)
       //- Loading
       template(v-if="$store.state.loader")
@@ -33,46 +31,41 @@
                 svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100")
                   path(d="M92.48,7.69C117.38,32.6,61.89,32.06,61.89,50s55.49,17.38,30.58,42.28S68.11,61.68,50.19,61.68,32.81,117.17,7.91,92.26,38.49,67.9,38.49,50-17,32.6,7.91,7.69,32.27,38.28,50.19,38.28,67.57-17.22,92.48,7.69Z")
 
-      //- Ok, run App
-      //- Sidebar
       Sidebar
-
-      //- main
       Dashboard
 
       //- TrnForm
       transition(name="slideToLeft")
         TrnForm(v-show="$store.state.trnForm.isShow")
-      //- TrnForm btn
       template(v-if="!$store.state.categories.create && !$store.state.categories.edit && !$store.state.accounts.create && !$store.state.accounts.edit")
         .trnFormToogle(
           v-shortkey="['alt', 'arrowright']",
-          @shortkey="onClickTrnFormToogle",
-          @click.prevent.stop="onClickTrnFormToogle",
+          @shortkey="$store.commit('toogleTrnForm')",
+          @click.prevent.stop="$store.commit('toogleTrnForm')",
           :class="{_active: $store.state.trnForm.isShow}"
         ): .trnFormToogle__icon: .trnFormToogle__icon__in +
 
-      //- Show categories
+      //- Category: list
       transition(name="slideToRight")
         CategoryListBar(v-if="$store.state.categories.list")
-      //- Create category
+
+      //- Category: create
       transition(name="slideToLeft")
         CategoryCreate(v-if="$store.state.categories.create")
-      //- Edit category
+
+      //- Category: edit
       transition(name="slideToLeft")
         CategoryEdit(v-if="$store.state.categories.edit")
-      //- Create / edit category popup list
-      transition(name="slideToLeft")
-        .trnForm(v-show="$store.state.categories.show")
-          CategoryList(:isShowEditActions.sync="isShowEditActions")
 
-      //- Show accounts
+      //- Accounts: list
       transition(name="slideToRight")
         AccountList(v-if="$store.state.accounts.show")
-      //- Create account
+
+      //- Account: create
       transition(name="slideToLeft")
         AccountCreate(v-if="$store.state.accounts.create")
-      //- Edit account
+
+      //- Account: edit
       transition(name="slideToLeft")
         AccountEdit(v-if="$store.state.accounts.edit")
 </template>
@@ -84,7 +77,6 @@ import Sidebar from './Sidebar.vue'
 import TrnForm from './TrnForm.vue'
 import Login from './Login.vue'
 import Dashboard from './DashboardPage.vue'
-import CategoryList from './categories/CategoryList.vue'
 import CategoryListBar from './categories/CategoryListBar.vue'
 import CategoryCreate from './categories/CategoryCreate.vue'
 import CategoryEdit from './categories/CategoryEdit.vue'
@@ -94,13 +86,7 @@ import AccountList from './accounts/AccountList.vue'
 
 export default {
   mixins: [mixin],
-  components: { Login, Dashboard, Sidebar, TrnForm, CategoryList, CategoryListBar, CategoryCreate, CategoryEdit, AccountCreate, AccountEdit, AccountList },
-
-  data() {
-    return {
-      isShowEditActions: true
-    }
-  },
+  components: { Login, Dashboard, Sidebar, TrnForm, CategoryListBar, CategoryCreate, CategoryEdit, AccountCreate, AccountEdit, AccountList },
 
   computed: {
     user() {
@@ -112,7 +98,7 @@ export default {
 
   mounted() {
     this.$store.watch((state) => state.trnForm.isShow, this.toogleBodyOverflow)
-    this.$store.watch((state) => state.leftBar.isShow, this.toogleBodyOverflow)
+    this.$store.watch((state) => state.showedLeftbar, this.toogleBodyOverflow)
     this.$store.watch((state) => state.categories.list, this.toogleBodyOverflow)
     this.$store.watch((state) => state.accounts.show, this.toogleBodyOverflow)
 
@@ -139,13 +125,10 @@ export default {
         this.$store.commit('toogleLeftbar', 'hide')
       }
     },
-    onClickTrnFormToogle() {
-      this.$store.commit('toogleTrnForm')
-    },
     toogleBodyOverflow() {
       if (this.$store.state.isMobile) {
         const body = document.querySelector('body')
-        if (this.$store.state.trnForm.isShow || this.$store.state.leftBar.isShow || this.$store.state.accounts.show) {
+        if (this.$store.state.trnForm.isShow || this.$store.state.showedLeftbar || this.$store.state.accounts.show || this.$store.state.categories.list) {
           body.style.overflow = 'hidden'
         } else {
           body.style.overflow = ''

@@ -34,7 +34,7 @@
     z-index 2
     left 0px
     top 10px
-    padding 10px 15px
+    padding 15px 20px
     color $color-icon-text
     font-size .9rem
     font-weight normal
@@ -48,6 +48,15 @@
     .statChart__item:hover &
       opacity 1
       transform translate(0, 0%)
+
+  &__name
+    margin-bottom 10px
+    font-size 14px
+    text-transform uppercase
+    font-weight bold
+    text-align right
+    white-space nowrap
+    $font-numbers()
 
   &__incomes
     $typo-money()
@@ -94,7 +103,7 @@
     font-size 11px
     width 100px
     white-space nowrap
-  
+
   &__stat
     @media $before768
       padding-bottom 30px
@@ -169,23 +178,27 @@
     display flex
     align-items center
     opacity .8
-    // overflow hidden
 
-    @media $after768
-      // overflow-x auto
-      // scrollbar()
+    ^[0]._overflow &
+      @media $before768
+        overflow-x auto
+        scrollbar()
 
     &:hover
       opacity 1
 
   &__item
-    min-width 100px
+    min-width 70px
     flex 1 1
     cursor pointer
-    padding 20px 20px
+    padding 15px 10px
     color $color-grey
     text-align center
     border-right 1px solid $color-sidebar
+
+    @media $after768
+      min-width 100px
+      padding 20px
 
     &._active
     &._active:hover
@@ -241,7 +254,7 @@
   display flex
   align-items flex-end
   justify-content center
-  height 57px
+  height 77px
 
   &._bigger
     height 95px

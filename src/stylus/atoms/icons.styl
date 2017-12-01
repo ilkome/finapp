@@ -2,7 +2,7 @@
   display flex
   flex-flow row wrap
   display grid
-  grid-template-columns repeat(auto-fit, 36px)
+  grid-template-columns repeat(auto-fit, 32px)
   grid-column-gap 10px
   grid-row-gap 10px
 
@@ -40,13 +40,17 @@
   display flex
   align-items center
   justify-content center
-  width 24px
-  height 24px
+  width 32px
+  height 32px
   padding-top 1px
   padding-left 1px
   color $color-icon-text
   font-size 14px
   background $color-icon-bg
+
+  @media $after768
+    width 24px
+    height 24px
 
   .mdi
     margin-top -1px

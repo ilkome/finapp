@@ -13,19 +13,13 @@
       .sidebar__close__title Categories
       .sidebar__close__icon: .fa.fa-plus
 
-  CategoryList(:isShowEditActions.sync="isShowEditActions")
+  CategoryList
 </template>
 
 <script>
 import CategoryList from './CategoryList.vue'
 
 export default {
-  components: { CategoryList },
-
-  data() {
-    return {
-      isShowEditActions: true
-    }
-  }
+  components: { CategoryList }
 }
 </script>

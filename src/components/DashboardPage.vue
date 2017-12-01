@@ -1,7 +1,7 @@
 <template lang="pug">
 .dashboard
   AppHeader(
-    :selectedPeriodIndex="selectedPeriodIndex"
+    :trnsDate="trnsDate"
     :showedGraph="showedGraph"
     :showedHistory="showedHistory"
     :showedChartYears="showedChartYears"
@@ -13,11 +13,17 @@
     v-on:toogleShowGraph="toogleShowGraph"
     v-on:toogleShowHistory="toogleShowHistory"
     v-on:toogleShowsChartYears="toogleShowsChartYears"
+    v-on:checkIsSameDate="checkIsSameDate"
   )
 
   .main
     template(v-if="!$store.state.isMobile")
       .moduleLinks
+        .moduleLinks__item(
+          :class="{ _active: showedHistory }"
+          @click.prevent="toogleShowHistory"
+        ): .fa.fa-history
+        .moduleLinks__sep
         .moduleLinks__item(
           :class="{ _active: showedChartYears }"
           @click.prevent="toogleShowsChartYears"
@@ -32,11 +38,6 @@
             @click.prevent="$store.commit('toogleShowGraphValues')"
             :class="{ _active: $store.state.filter.filter.showedGraphValues }"
           ): .fa.fa-sliders
-        .moduleLinks__sep
-        .moduleLinks__item(
-          :class="{ _active: showedHistory }"
-          @click.prevent="toogleShowHistory"
-        ): .fa.fa-history
 
       //- ChartYears
       transition(name="calendarPopupAnimation")
@@ -47,15 +48,15 @@
 
     //- Chart HTML
     transition(name="calendarPopupAnimation")
-      template(v-if="showedGraph && getPeriodStatic && !$store.state.isMobile")
+      template(v-if="showedGraph && getPeriodStatic")
         .module._alt
           .module__in._stat
-            .statChart
+            .statChart._overflow
               .statChart__in
                 template(v-for="(period, index) in getPeriodStatic.periods")
                   .statChart__item(
-                    @click.prevent="selectPeriodStat(index)"
-                    :class="{ _active: selectedPeriodIndex === index }"
+                    @click.prevent="setDashboardDate(period.date)"
+                    :class="{ _active: checkIsSameDate(period.date) }"
                   )
                     template(v-if="!$store.state.isMobile && !$store.state.filter.filter.showedGraphValues")
                       .tooltip
@@ -95,25 +96,27 @@
       .module__in
         //- Mobile
         template(v-if="$store.state.isMobile")
-          SummaryShort(
-            :trns="trnsList",
-            view="mobile"
-            v-on:changeTabMoney="changeTabMoney"
-          )
           .sliderFixWidth
-            .switch
-              .switch__item
-                a._expenses(
+            SummaryShort(
+              :trns="trnsList",
+              view="mobile"
+              v-on:changeTabMoney="changeTabMoney"
+            )
+              template(slot="mobile-expenses")
+                .switch__item._expenses(
                   @click="changeTabMoney('expenses')",
-                  :class="{_active: showedTabMoney === 'expenses'}") Expenses
-              .switch__item
-                a._incomes(
+                  :class="{_active: showedTabMoney === 'expenses'}"
+                ) Expenses
+              template(slot="mobile-incomes")
+                .switch__item._incomes(
                   @click="changeTabMoney('incomes')",
-                  :class="{_active: showedTabMoney === 'incomes'}") Incomes
-              .switch__item
-                a._history(
+                  :class="{_active: showedTabMoney === 'incomes'}"
+                ) Incomes
+              template(slot="mobile-history")
+                .switch__item._history(
                   @click="changeTabMoney('history')",
-                  :class="{_active: showedTabMoney === 'history'}") History
+                  :class="{_active: showedTabMoney === 'history'}"
+                ) History
 
             .slider
               Slider(

@@ -85,48 +85,48 @@ export default {
       return this.getCategoriesStatFromTrns(this.trnsList.filter(t => t.type === 0))
     },
     getPeriodStatic() {
-      if (!this.$store.state.isMobile) {
-        const stat = []
-        const periodMax = 6
-        const trnsListForSelectedPeriods = this.getTrns({
-          accountId: this.getFilter.account && this.getFilter.account.id,
-          categoryId: this.getFilter.category && this.getFilter.category.id
-        })
-          .filter(trn =>
-            moment(trn.date).startOf(this.$timePeriod).valueOf() <= moment().startOf(this.$timePeriod).subtract(0, this.$timePeriod).valueOf() &&
-            moment(trn.date).startOf(this.$timePeriod).valueOf() >= moment().startOf(this.$timePeriod).subtract(periodMax, this.$timePeriod).valueOf())
+      const stat = []
+      const periodMax = 6
+      const trnsListForSelectedPeriods = this.getTrns({
+        accountId: this.getFilter.account && this.getFilter.account.id,
+        categoryId: this.getFilter.category && this.getFilter.category.id
+      })
+        .filter(trn =>
+          moment(trn.date).startOf(this.$timePeriod).valueOf() <= moment().startOf(this.$timePeriod).subtract(0, this.$timePeriod).valueOf() &&
+          moment(trn.date).startOf(this.$timePeriod).valueOf() >= moment().startOf(this.$timePeriod).subtract(periodMax, this.$timePeriod).valueOf())
 
-        if (trnsListForSelectedPeriods.length) {
-          const startDate = moment().startOf(this.$timePeriod)
-          const endDate = moment(trnsListForSelectedPeriods[trnsListForSelectedPeriods.length - 1].date).startOf(this.$timePeriod)
-          let periodSteps = 0
-          periodSteps = startDate.diff(endDate, this.$timePeriod) + 1 // For get 7 in the end
+      if (trnsListForSelectedPeriods.length) {
+        const startDate = moment().startOf(this.$timePeriod)
+        const endDate = moment(trnsListForSelectedPeriods[trnsListForSelectedPeriods.length - 1].date).startOf(this.$timePeriod)
+        let periodSteps = 0
+        periodSteps = startDate.diff(endDate, this.$timePeriod) + 1 // For get 7 in the end
 
-          if (this.$timePeriod !== 'all') {
-            for (let period = 0; period < periodSteps; period++) {
-              const trns = trnsListForSelectedPeriods
-                .filter(trn =>
-                  moment(trn.date).startOf(this.$timePeriod).valueOf() === moment().startOf(this.$timePeriod).subtract(period, this.$timePeriod).valueOf())
-              const incomes = trns
-                .filter(trn => trn.type === 1)
-                .reduce((sum, current) => sum + current.amountRub, 0)
-              const expenses = trns
-                .filter(trn => trn.type === 0)
-                .reduce((sum, current) => sum + current.amountRub, 0)
-              const name = this.formatDateNEW(period)
-              stat.push({
-                name,
-                incomes,
-                expenses
-              })
-            }
-            const dataSorted = orderBy(stat, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
-            const biggest = dataSorted[0].incomes > dataSorted[0].expenses ? dataSorted[0].incomes : dataSorted[0].expenses
+        if (this.$timePeriod !== 'all') {
+          for (let period = 0; period < periodSteps; period++) {
+            const trns = trnsListForSelectedPeriods
+              .filter(trn =>
+                moment(trn.date).startOf(this.$timePeriod).valueOf() === moment().startOf(this.$timePeriod).subtract(period, this.$timePeriod).valueOf())
+            const incomes = trns
+              .filter(trn => trn.type === 1)
+              .reduce((sum, current) => sum + current.amountRub, 0)
+            const expenses = trns
+              .filter(trn => trn.type === 0)
+              .reduce((sum, current) => sum + current.amountRub, 0)
+            const name = this.formatDateNEW(period)
+            const date = moment().startOf(this.$timePeriod).subtract(period, this.$timePeriod).valueOf()
+            stat.push({
+              date,
+              name,
+              incomes,
+              expenses
+            })
+          }
+          const dataSorted = orderBy(stat, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
+          const biggest = dataSorted[0].incomes > dataSorted[0].expenses ? dataSorted[0].incomes : dataSorted[0].expenses
 
-            return {
-              periods: stat,
-              biggest
-            }
+          return {
+            periods: stat,
+            biggest
           }
         }
       }
@@ -134,6 +134,9 @@ export default {
   },
 
   methods: {
+    checkIsSameDate(date) {
+      return moment(date).isSame(this.trnsDate.start, this.$store.state.dashboard.timePeriod)
+    },
     getPeriodStaticHeight(value, biggest) {
       const height = value / biggest * 100
       let renderHeight
@@ -248,11 +251,59 @@ export default {
       return this.idsOfOpenedCategories.indexOf(itemId) !== -1
     },
     formatDates(start, end, type) {
-      return formatDateForDashboardTitle(start, end, type, this.$timePeriod, moment(), this.duration)
+      return formatDateForDashboardTitle(start, end)
     },
     formatDateNEW(period) {
       let name
       const difference = moment().diff(moment().subtract(period, this.$timePeriod), this.$timePeriod)
+
+      switch (this.$timePeriod) {
+        case 'day':
+          switch (difference) {
+            // case 0:
+            //   name = 'Today'
+            //   break
+            // case 1:
+            //   name = 'Yesterday'
+            //   break
+            default:
+              name = moment().subtract(period, this.$timePeriod).format('D MMM YY')
+          }
+          break
+        case 'week':
+          switch (difference) {
+            case 0:
+              name = `This ${this.$timePeriod}`
+              break
+            case 1:
+              name = `Last  ${this.$timePeriod}`
+              break
+            default:
+              name = `${difference} ${this.$timePeriod} ago`
+          }
+          break
+        case 'month':
+          switch (difference) {
+            // case 0:
+            //   name = `This ${this.$timePeriod}`
+            //   break
+            default:
+              name = moment().subtract(period, this.$timePeriod).format('MMM YY')
+          }
+          break
+        case 'year':
+          name = moment().subtract(period, this.$timePeriod).format('Y')
+          break
+        default:
+          name = 'No date'
+      }
+      return name
+    },
+    formatDatePeriod(date) {
+      let name
+      const currentDate = moment().startOf(this.$timePeriod)
+      const selectedDate = moment(date).startOf(this.$timePeriod)
+      const difference = currentDate.diff(selectedDate, this.$timePeriod)
 
       switch (this.$timePeriod) {
         case 'day':
@@ -264,7 +315,7 @@ export default {
               name = 'Yesterday'
               break
             default:
-              name = moment().subtract(period, this.$timePeriod).format('D MMM YY')
+              name = selectedDate.format('D MMM YY')
           }
           break
         case 'week':
@@ -285,14 +336,14 @@ export default {
               name = `This ${this.$timePeriod}`
               break
             default:
-              name = moment().subtract(period, this.$timePeriod).format('MMMM YY')
+              name = selectedDate.format('MMMM YY')
           }
           break
         case 'year':
-          name = moment().subtract(period, this.$timePeriod).format('Y')
+          name = selectedDate.format('Y')
           break
         default:
-          name = 'No date ()'
+          name = 'No date'
       }
       return name
     },
@@ -346,7 +397,6 @@ export default {
         const daysDuration = moment(endDate).diff(startDate, 'days') + 1
 
         this.$store.commit('setDuration', daysDuration)
-        this.$store.commit('setDates', { start: startDate, end: endDate })
         this.$store.commit('setTimePeriod', period)
 
         // Trns
@@ -355,15 +405,15 @@ export default {
 
         // Title
         this.$store.commit('setFilterDate', {
-          first: this.formatDateNEW(0),
+          first: this.formatDatePeriod(startDate),
           second: this.formatDates(this.trnsDate.start, this.trnsDate.end, 'date')
         })
       }
     },
     setDashboardDate(date) {
-      const thisMonth = moment().startOf('month')
-      const startDate = moment(date).startOf('month')
-      const endDate = moment(date).endOf('month')
+      const thisMonth = moment().startOf(this.$timePeriod)
+      const startDate = moment(date).startOf(this.$timePeriod)
+      const endDate = moment(date).endOf(this.$timePeriod)
 
       if (thisMonth.valueOf() >= startDate.valueOf()) {
         // Trns
@@ -372,35 +422,10 @@ export default {
 
         // Title
         this.$store.commit('setFilterDate', {
-          first: startDate.format('MMMM YY'),
+          first: this.formatDatePeriod(startDate),
           second: this.formatDates(startDate, endDate, 'period')
         })
       }
-    },
-    selectPeriodStat(index) {
-      if (this.selectedPeriodIndex === index) return
-
-      this.selectedPeriodIndex = index
-      let startDate
-      let endDate
-
-      if (this.$timePeriod !== 'all') {
-        startDate = moment().subtract(index, this.$timePeriod).startOf(this.$timePeriod)
-        endDate = moment().subtract(index, this.$timePeriod).endOf(this.$timePeriod)
-      } else {
-        startDate = moment().subtract(index, 'year').startOf('year')
-        endDate = moment().subtract(index, 'year').endOf('year')
-      }
-
-      // Trns
-      this.trnsDate.start = startDate
-      this.trnsDate.end = endDate
-
-      // Title
-      this.$store.commit('setFilterDate', {
-        first: this.formatDateNEW(index),
-        second: this.formatDates(startDate, endDate, 'period')
-      })
     },
     setFilterAccount(account) {
       this.$store.commit('setFilterAccount', account)
@@ -420,14 +445,10 @@ export default {
       this.$store.commit('setFilterCategory', category)
     },
     selectNextPeriod() {
-      const index = this.selectedPeriodIndex + 1
-      this.selectPeriodStat(index)
+      this.setDashboardDate(moment(this.trnsDate.start).subtract(1, this.$timePeriod))
     },
     selectPrevPeriod() {
-      const index = this.selectedPeriodIndex - 1
-      if (index >= 0) {
-        this.selectPeriodStat(index)
-      }
+      this.setDashboardDate(moment(this.trnsDate.start).add(1, this.$timePeriod))
     }
   }
 }
