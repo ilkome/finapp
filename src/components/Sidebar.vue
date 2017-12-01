@@ -1,6 +1,6 @@
 <template lang="pug">
 transition(name="leftBarAnimation")
-  .sidebar(v-show="$store.state.leftBar.isShow")
+  .sidebar(v-show="$store.state.showedLeftbar")
 
     //- Mobile header
     template(v-if="$store.state.isMobile")
@@ -41,10 +41,9 @@ transition(name="leftBarAnimation")
                 :class="getClassName(account)"
               )
                 .sidebarItem__content
-                  template(v-if="$store.state.isShowSidebarAccountsIcons")
-                    .sidebarItem__icon
-                      .icon._round(:style="`background: ${account.color}`")
-                        .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
+                  .sidebarItem__icon
+                    .icon._round(:style="`background: ${account.color}`")
+                      .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
                   .sidebarItem__name {{ account.name }}
                   .sidebarItem__money
                     template(v-if="account.total !== 0")

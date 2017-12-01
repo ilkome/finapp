@@ -37,11 +37,34 @@ div
   //- Mobile
   template(v-if="view === 'mobile'")
     .summaryShort._pb(:class="{_maxWidth: maxwidth}")
-      .flex
-        .expenses(@click="$emit('changeTabMoney', 'expenses')") {{ formatMoney(summary.expenses) }}
-        .incomes(@click="$emit('changeTabMoney', 'incomes')") {{ formatMoney(summary.incomes) }}
-        .sum(@click="$emit('changeTabMoney', 'history')") {{ formatMoney(summary.total) }}
+      .summaryShort__flex
+        .summaryShort__flex__col(@click="$emit('changeTabMoney', 'expenses')")
+          slot(name="mobile-expenses")
+          .moneyBlock
+            .moneyBlock__line
+              .moneyBlock__total.expense {{ formatMoney(summary.expenses) }}
+            .moneyBlock__line
+              template(v-if="avSummary.expenses > 0")
+                .moneyBlock__title._average
+                  .mdi.mdi-chart-timeline
+                .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
 
+        .summaryShort__flex__col(@click="$emit('changeTabMoney', 'incomes')")
+          slot(name="mobile-incomes")
+          .moneyBlock
+            .moneyBlock__line
+              .moneyBlock__total.incomes(@click="$emit('changeTabMoney', 'incomes')") {{ formatMoney(summary.incomes) }}
+            .moneyBlock__line
+              template(v-if="avSummary.expenses > 0")
+                .moneyBlock__title._average
+                  .mdi.mdi-chart-timeline
+                .moneyBlock__average: .sum {{ formatMoney(avSummary.incomes) }}
+
+        .summaryShort__flex__col(@click="$emit('changeTabMoney', 'history')")
+          slot(name="mobile-history")
+          .moneyBlock
+            .moneyBlock__line
+              .moneyBlock__total.sum(@click="$emit('changeTabMoney', 'history')") {{ formatMoney(summary.total) }}
 
   //- Dashboard expenses
   template(v-if="view === 'dashboard-expenses'")

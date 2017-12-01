@@ -29,9 +29,7 @@ const state = {
   isPageLoaded: false,
   loader: true,
   error: false,
-  leftBar: {
-    isShow: true
-  },
+  showedLeftbar: false,
   trnForm: {
     isShow: false,
     action: 'create',
@@ -97,7 +95,7 @@ const mutations = {
       state.trnForm.wasUpdatedTrn = false
     }
     if (state.trnForm.isShow && state.isMobile) {
-      state.leftBar.isShow = false
+      state.showedLeftbar = false
     }
   },
   toogleCategoriesPop(state, action) {
@@ -115,20 +113,17 @@ const mutations = {
   toogleLeftbar(state, action) {
     switch (action) {
       case 'show':
-        state.leftBar.isShow = true
+        state.showedLeftbar = true
         break
       case 'hide':
-        state.leftBar.isShow = false
+        state.showedLeftbar = false
         break
       default:
-        state.leftBar.isShow = !state.leftBar.isShow
+        state.showedLeftbar = !state.showedLeftbar
     }
-    if (state.leftBar.isShow && state.isMobile) {
+    if (state.showedLeftbar && state.isMobile) {
       state.trnForm.isShow = false
     }
-  },
-  toogleShowSidebarAccountsIcons(state) {
-    state.isShowSidebarAccountsIcons = !state.isShowSidebarAccountsIcons
   },
   setTrnForm(state, { action, trnId }) {
     if (action === 'create') {
@@ -151,9 +146,6 @@ const mutations = {
   },
   setMobile(state, action) {
     state.isMobile = action
-  },
-  showError(state, error) {
-    state.error = error
   },
   showLoader() {
     state.loader = true

@@ -42,6 +42,16 @@
     & ^[0]__item
       border none
 
+  &__flex
+    display flex
+    justify-content space-between
+
+    @media $after768
+      align-items center
+
+    &__col
+      text-align right
+
 .summaryShort__item
   cursor default
   position relative
