@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const merge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const paths = require('../config/paths')
 
 module.exports = merge(baseWebpackConfig, {
@@ -21,11 +22,6 @@ module.exports = merge(baseWebpackConfig, {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': { NODE_ENV: '"production"' }
-    }),
-
-    new webpack.optimize.UglifyJsPlugin({
-      compress: { warnings: false },
-      sourceMap: false
     }),
 
     // Split vendor js into its own file
@@ -62,6 +58,19 @@ module.exports = merge(baseWebpackConfig, {
       },
       // Necessary to consistently work with multiple chunks via CommonsChunkPlugin
       chunksSortMode: 'dependency'
+    }),
+
+    new UglifyJsPlugin({
+      sourceMap: false,
+      uglifyOptions: {
+        ie8: false,
+        ecma: 8,
+        output: {
+          comments: false,
+          beautify: false
+        },
+        warnings: false
+      }
     })
   ]
 })
