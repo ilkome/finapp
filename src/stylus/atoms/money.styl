@@ -15,7 +15,7 @@
 
 
 .moneyTitle
-  font-size 24px
+  font-size 22px
   font-weight bold
   letter-spacing 2px
   line-height 1rem
@@ -32,12 +32,20 @@
     padding-bottom 30px
 
 
+.moneyBlockSep
+  width 1px
+  height 45px
+  background #232323
+
 .moneyBlock
   padding-bottom 10px
 
   @media $after768
-    border-bottom 1px solid #232323
+    min-width 210px
     margin-bottom 30px
+
+    &:last-child
+      margin-bottom 0
 
   &._noMargin
     margin-bottom 0

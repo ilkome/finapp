@@ -1,13 +1,19 @@
 <template lang="pug">
 .itemStatGroup
   template(v-if="!$store.state.isMobile")
-    SummaryShort(
-      :type="type"
-      :trns="trnsList",
-      :view="type === 'expenses' ? 'dashboard-expenses' : 'dashboard-incomes'"
-      :selectedCategory="selectedCategory"
-      v-on:toogleOpenedCategories="$listeners.toogleOpenedCategories()"
-    )
+    //- .moneyBlock
+    //-   .moneyBlock__line
+    //-     .moneyTitle(:class="type")
+    //-       template(v-if="type === 'expenses'") Expences
+    //-       template(v-else="type === 'incomes'") Incomes
+
+    //- SummaryShort(
+    //-   :type="type"
+    //-   :trns="trnsList",
+    //-   :view="type === 'expenses' ? 'dashboard-expenses' : 'dashboard-incomes'"
+    //-   :selectedCategory="selectedCategory"
+    //-   v-on:toogleOpenedCategories="$listeners.toogleOpenedCategories()"
+    //- )
 
   slot(name="graph2")
 

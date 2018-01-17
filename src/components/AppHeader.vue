@@ -79,6 +79,9 @@
           .fa.fa-bars
         .header__link._categories(@click="onClickToogleCategories")
           .mdi.mdi-format-list-bulleted-type
+        .header__link(
+          :class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')"
+        ): .fa.fa-bar-chart
       .header__col
         .header__date {{ $store.state.filter.filter.date.first }}
       .header__col

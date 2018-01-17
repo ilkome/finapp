@@ -3,6 +3,7 @@ import moment from 'moment'
 import uniqBy from 'lodash/uniqBy'
 import orderBy from 'lodash/orderBy'
 import formatDateForDashboardTitle from '../mixins/formatDateForDashboardTitle'
+import checkIsSameDate from '../mixins/checkIsSameDate'
 import formatMoney from '../mixins/formatMoney'
 import TrnsList from './TrnsList.vue'
 import TrnItem from './TrnItem.vue'
@@ -15,7 +16,7 @@ import ChartYears from './ChartYears.vue'
 
 export default {
   name: 'DashboardPage',
-  mixins: [formatMoney],
+  mixins: [formatMoney, checkIsSameDate],
   components: { ItemStatGroup, ItemStat, TrnsList, TrnItem, SummaryShort, Slider, AppHeader, ChartYears },
   data() {
     return {
@@ -36,6 +37,9 @@ export default {
 
   mounted() {
     this.setTimePeriod('month')
+    if (this.$store.state.isMobile) {
+      this.showedGraph = false
+    }
   },
 
   computed: {
@@ -134,9 +138,6 @@ export default {
   },
 
   methods: {
-    checkIsSameDate(date) {
-      return moment(date).isSame(this.trnsDate.start, this.$store.state.dashboard.timePeriod)
-    },
     getPeriodStaticHeight(value, biggest) {
       const height = value / biggest * 100
       let renderHeight
@@ -414,6 +415,23 @@ export default {
       const thisMonth = moment().startOf(this.$timePeriod)
       const startDate = moment(date).startOf(this.$timePeriod)
       const endDate = moment(date).endOf(this.$timePeriod)
+
+      if (thisMonth.valueOf() >= startDate.valueOf()) {
+        // Trns
+        this.trnsDate.start = startDate
+        this.trnsDate.end = endDate
+
+        // Title
+        this.$store.commit('setFilterDate', {
+          first: this.formatDatePeriod(startDate),
+          second: this.formatDates(startDate, endDate, 'period')
+        })
+      }
+    },
+    setDashboardDateMnoth(date) {
+      const thisMonth = moment().startOf('month')
+      const startDate = moment(date).startOf('month')
+      const endDate = moment(date).endOf('month')
 
       if (thisMonth.valueOf() >= startDate.valueOf()) {
         // Trns

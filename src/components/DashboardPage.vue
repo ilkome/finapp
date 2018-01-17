@@ -13,45 +13,37 @@
     v-on:toogleShowGraph="toogleShowGraph"
     v-on:toogleShowHistory="toogleShowHistory"
     v-on:toogleShowsChartYears="toogleShowsChartYears"
-    v-on:checkIsSameDate="checkIsSameDate"
   )
 
   .main
     template(v-if="!$store.state.isMobile")
-      .moduleLinks
-        .moduleLinks__item(
-          :class="{ _active: showedHistory }"
-          @click.prevent="toogleShowHistory"
-        ): .fa.fa-history
-        .moduleLinks__sep
-        .moduleLinks__item(
-          :class="{ _active: showedChartYears }"
-          @click.prevent="toogleShowsChartYears"
-        ): .mdi.mdi-chart-bubble
-        .moduleLinks__sep
-        .moduleLinks__item(
-          :class="{ _active: showedGraph }"
-          @click.prevent="toogleShowGraph"
-        ): .fa.fa-bar-chart
-        template(v-if="showedGraph")
-          .moduleLinks__item(
-            @click.prevent="$store.commit('toogleShowGraphValues')"
-            :class="{ _active: $store.state.filter.filter.showedGraphValues }"
-          ): .fa.fa-sliders
-
       //- ChartYears
       transition(name="calendarPopupAnimation")
-        .h-relative(v-show="showedChartYears")
-          ChartYears(
-            v-on:setDashboardDate="setDashboardDate"
+        template(v-if="showedChartYears")
+          .h-relative(v-show="showedChartYears")
+            ChartYears(
+              v-on:setDashboardDateMnoth="setDashboardDateMnoth"
+            )
+
+      .module._alt._small(v-show="!showedChartYears")
+        .module__in
+          SummaryShort(
+            :trns="trnsList",
+            view="dashboard-full"
           )
 
-    //- Chart HTML
+    //- Chart last 6 months
     transition(name="calendarPopupAnimation")
       template(v-if="showedGraph && getPeriodStatic")
-        .module._alt
+        .module._alt(v-show="!showedChartYears")
           .module__in._stat
             .statChart._overflow
+              template(v-if="!$store.state.isMobile")
+                .stat__toogle(
+                  @click.prevent="$store.commit('toogleShowGraphValues')"
+                  :class="{ _active: $store.state.filter.filter.showedGraphValues }"
+                ): .fa.fa-sliders
+
               .statChart__in
                 template(v-for="(period, index) in getPeriodStatic.periods")
                   .statChart__item(
@@ -61,7 +53,6 @@
                     template(v-if="!$store.state.isMobile && !$store.state.filter.filter.showedGraphValues")
                       .tooltip
                         .tooltip__in
-                          .tooltip__name {{ period.name }}
                           .tooltip__incomes {{ formatMoney(period.incomes) }}
                           .tooltip__expenses {{ formatMoney(period.expenses) }}
                     template(v-if="$store.state.filter.filter.showedGraphValues")
@@ -179,8 +170,6 @@
                                   .icon(
                                     :style="`background: ${period.category.color}`"
                                   ): div(:class="period.category.icon")
-                                    .icon__label
-                                      .icon__label__in(:style="`background: ${period.category.color}`") {{ period.category.name }}
 
                 //- History
                 .swiper-slide
@@ -222,7 +211,7 @@
                         .statChart2
                           .statChart__in
                             template(v-for="(period, index) in expensesItemsStat.slice(0, 8)")
-                              .statChart__item2(@click.prevent="setFilterCategory(period.category)")
+                              .statChart__item2.tooltip-trigger(@click.prevent="setFilterCategory(period.category)")
                                 .statChartGraph2
                                   .statChartGraph2__in(:style="{ background: period.category.color, height: getPeriodStaticHeight2(period.total, expensesItemsStat[0].total) }")
                                     .statChartGraph2__total.sum {{ period.totalK }}
@@ -230,8 +219,10 @@
                                   :style="`background: ${period.category.color}`"
                                 )
                                   div(:class="period.category.icon")
-                                  .icon__label
-                                    .icon__label__in(:style="`background: ${period.category.color}`") {{ period.category.name }}
+                                  .tooltip
+                                    .tooltip__in
+                                      .tooltip__name-normal {{ period.name }}
+                                      .tooltip__expenses {{ formatMoney(period.total) }}
 
             //- Incomes
             template(v-if="incomesItemsStat.length")
@@ -253,8 +244,8 @@
                       .statChartFix
                         .statChart2
                           .statChart__in
-                            template(v-for="(period, index) in incomesItemsStat.slice(0, 10)")
-                              .statChart__item2(@click.prevent="setFilterCategory(period.category)")
+                            template(v-for="(period, index) in incomesItemsStat.slice(0, 8)")
+                              .statChart__item2.tooltip-trigger(@click.prevent="setFilterCategory(period.category)")
                                 .statChartGraph2
                                   .statChartGraph2__in(:style="{ background: period.category.color, height: getPeriodStaticHeight2(period.total, incomesItemsStat[0].total) }")
                                     .statChartGraph2__total.sum {{ period.totalK }}
@@ -262,8 +253,10 @@
                                   :style="`background: ${period.category.color}`"
                                 )
                                   div(:class="period.category.icon")
-                                  .icon__label
-                                    .icon__label__in(:style="`background: ${period.category.color}`") {{ period.category.name }}
+                                  .tooltip
+                                    .tooltip__in
+                                      .tooltip__name-normal {{ period.name }}
+                                      .tooltip__incomes {{ formatMoney(period.total) }}
             //- end: Incomes
         //- end: PC
 

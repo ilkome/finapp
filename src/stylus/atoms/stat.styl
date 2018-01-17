@@ -1,10 +1,45 @@
+.tooltip-trigger
+  position relative
+  &:hover
+    .tooltip
+      //
+
+.stat__toogle
+  position absolute
+  right -45px
+  top 0
+  width 40px
+  height 100%
+  padding 17px 10px
+  color $color-grey
+  opacity .5
+  text-align center
+
+  &:hover
+    opacity 1
+    background #191919
+
+  &._active
+    color $color-main
+
+
+.chartYearsList
+  background #171717
+
+
+  &__item
+    border-bottom 1px solid #0b0b0b
+    &:nth-child(odd)
+      background #191919
+
+
 .yearChartGraph
   position relative
   display flex
   align-items flex-end
   justify-content center
   max-width 50px
-  height 115px
+  height 130px
   margin 0 auto
 
 .yearChartGraph__text
@@ -24,6 +59,7 @@
   transform translate(-50%, 100%)
 
   .statChart__item:hover &
+  .tooltip-trigger:hover &
     @media (min-width: 768px)
       visibility visible
 
@@ -46,6 +82,7 @@
     white-space nowrap
 
     .statChart__item:hover &
+    .tooltip-trigger:hover &
       opacity 1
       transform translate(0, 0%)
 
@@ -58,6 +95,16 @@
     white-space nowrap
     $font-numbers()
 
+  &__name-normal
+    margin-bottom 10px
+    font-size 14px
+    text-align right
+    white-space nowrap
+
+  &__sum
+    $typo-money()
+    color $color-sum
+
   &__incomes
     $typo-money()
     color $color-incomes
@@ -68,45 +115,22 @@
 
 .yearChartFix
   position relative
-  height 155px
+  height 225px
 
 .chartYears
   padding 20px 10px
-  background #1c1c1c
+  // background #1c1c1c
   border-bottom 1px solid #141414
 
   @media $after768
     padding 30px 60px
 
   &:nth-child(odd)
-    background #202020
+    // background #202020
 
   &:last-child
     //border-bottom 0
 
-
-.yearChart
-  position absolute
-  width 100%
-  margin-bottom 20px
-
-  &__title
-    margin-bottom 20px
-    $typo-title()
-    font-size 20px
-
-  &__name
-    position absolute
-    left 0
-    bottom 100px
-    transform rotate(90deg)
-    font-size 11px
-    width 100px
-    white-space nowrap
-
-  &__stat
-    @media $before768
-      padding-bottom 30px
 
 
 .statChartFix
@@ -142,7 +166,7 @@
     border none
 
     @media $after768
-      padding 10px 10px
+      padding 10px 5px
       padding-top 15px
 
   @media $after768
@@ -160,6 +184,7 @@
   height 70px
 
   &__in
+    z-index 2
     position relative
     flex 1 1 auto
 
@@ -204,14 +229,14 @@
     &._active:hover
       color $color-white
       cursor default
-      background $color-sidebar
+      background #111111
 
     &:last-child
       margin-right 0
       border-right-color transparent
 
     &:hover
-      background #111111
+      background #0b0b0b
 
 
   &__values
