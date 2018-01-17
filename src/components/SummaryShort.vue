@@ -44,7 +44,7 @@ div
             .moneyBlock__line
               .moneyBlock__total.expense {{ formatMoney(summary.expenses) }}
             .moneyBlock__line
-              template(v-if="avSummary.expenses > 0")
+              template(v-if="avSummary.expenses != 0")
                 .moneyBlock__title._average
                   .mdi.mdi-chart-timeline
                 .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
@@ -55,7 +55,7 @@ div
             .moneyBlock__line
               .moneyBlock__total.incomes(@click="$emit('changeTabMoney', 'incomes')") {{ formatMoney(summary.incomes) }}
             .moneyBlock__line
-              template(v-if="avSummary.expenses > 0")
+              template(v-if="avSummary.expenses != 0")
                 .moneyBlock__title._average
                   .mdi.mdi-chart-timeline
                 .moneyBlock__average: .sum {{ formatMoney(avSummary.incomes) }}
@@ -65,6 +65,56 @@ div
           .moneyBlock
             .moneyBlock__line
               .moneyBlock__total.sum(@click="$emit('changeTabMoney', 'history')") {{ formatMoney(summary.total) }}
+            template(v-if="avSummary.sum != 0")
+              .moneyBlock__line
+                .moneyBlock__title._average
+                  .mdi.mdi-chart-timeline
+                .moneyBlock__average: .sum {{ formatMoney(avSummary.sum) }}
+
+  //- Dashboard full
+  template(v-if="view === 'dashboard-full'")
+    .flex
+      .moneyBlock._noMargin
+        .moneyBlock__line
+          .moneyTitle.expenses Expenses
+          .moneyBlock__total.expenses {{ formatMoney(summary.expenses) }}
+
+        template(v-if="avSummary.expenses != 0")
+          .moneyBlock__line
+            .moneyBlock__title
+              .mdi.mdi-chart-timeline
+              div Average
+            .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
+
+      .moneyBlockSep
+
+      .moneyBlock._noMargin
+        .moneyBlock__line
+          .moneyTitle
+            template(v-if="summary.sum > 0") Saved
+            template(v-if="summary.sum < 0") Spent
+          .moneyBlock__total.sum {{ formatMoney(summary.sum) }}
+
+        template(v-if="avSummary.sum != 0")
+          .moneyBlock__line
+            .moneyBlock__title
+              .mdi.mdi-chart-timeline
+              div Average
+            .moneyBlock__average: .sum {{ formatMoney(avSummary.sum) }}
+
+      .moneyBlockSep
+
+      .moneyBlock._noMargin
+        .moneyBlock__line
+          .moneyTitle.incomes Incomes
+          .moneyBlock__total.incomes {{ formatMoney(summary.incomes) }}
+        template(v-if="avSummary.incomes != 0")
+          .moneyBlock__line
+            .moneyBlock__title
+              .mdi.mdi-chart-timeline
+              div Average
+            .moneyBlock__average: .sum {{ formatMoney(avSummary.incomes) }}
+
 
   //- Dashboard expenses
   template(v-if="view === 'dashboard-expenses'")
@@ -75,7 +125,7 @@ div
           .moneyBlock__total.expense(@click="$emit('toogleOpenedCategories')") {{ formatMoney(summary.expenses) }}
 
         .moneyBlock__line
-          template(v-if="avSummary.expenses > 0")
+          template(v-if="avSummary.expenses != 0")
             .moneyBlock__title._average
               .mdi.mdi-chart-timeline
               div Average
@@ -92,7 +142,7 @@ div
           .moneyBlock__total.incomes(@click="$emit('toogleOpenedCategories')") {{ formatMoney(summary.incomes) }}
 
         .moneyBlock__line
-          template(v-if="avSummary.incomes > 0")
+          template(v-if="avSummary.incomes != 0")
             .moneyBlock__title._average
               .mdi.mdi-chart-timeline
               div Average
@@ -162,11 +212,13 @@ export default {
           .filter(t => t.type === 0)
           .reduce((sum, current) => sum + current.amountRub, 0)
         const total = incomes - expenses
+        const sum = incomes - expenses
 
         return {
           incomes,
           expenses,
-          total
+          total,
+          sum
         }
       } else {
         return {
@@ -194,6 +246,7 @@ export default {
           .filter(t => t.type === 0)
           .reduce((sum, current) => sum + current.amountRub, 0)
         const total = incomes - expenses
+        const sum = incomes - expenses
 
         let devider = this.monthsDurationDefault
         // If count of months with data is less then monthsDurationDefault
@@ -203,6 +256,7 @@ export default {
           incomes: incomes / devider,
           expenses: expenses / devider,
           total: total / devider,
+          sum: sum / devider,
           leftToSpend: expenses / devider - this.summary.expenses,
           leftToSpendInDay: (expenses / devider - this.summary.expenses) / daysLeftInThisMonth
         }

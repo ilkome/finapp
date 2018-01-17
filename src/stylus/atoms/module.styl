@@ -10,7 +10,6 @@
     @media (min-width: 768px)
       min-height calc(100vh - 50px)
 
-
   &__in
     position relative
     $max-width()
@@ -19,49 +18,17 @@
     @media (min-width: 768px)
       padding 60px
 
+    ^[0]._small &
+      padding 30px 60px
+
+    ^[0]._stat &
+      padding 30px 20px
+
+      @media (min-width: 768px)
+        padding 30px 60px
+
     &._stat
       padding 0
 
       @media (min-width: 768px)
         padding 0 60px
-
-
-.moduleLinks
-  opacity .3
-  z-index 22
-  position fixed
-  width 20px
-  height auto
-  left 310px
-  top 40%
-
-  &:hover
-    left 300px
-    width 40px
-    opacity 1
-    background #232323
-
-  &__item
-    text-align center
-    cursor pointer
-    opacity .3
-    padding 15px 0px
-    text-align center
-    color $color-main
-    font-size 14px
-
-    &:hover
-      opacity .5
-      background #3f3f3f
-
-    &._active
-      opacity 1
-      color $color-white
-
-    .mdi
-      font-size 20px
-
-
-  &__sep
-    height 1px
-    background #3f3f3f
