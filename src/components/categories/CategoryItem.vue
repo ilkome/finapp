@@ -16,17 +16,18 @@ div(:class="className" @click.prevent.stop="$emit('onClickContent', category)")
         div {{ category.name }}
         .itemList__name__list.fa.fa-list(v-if="category.child && category.child.length")
 
-      .itemList__actions
-        .itemList__action(
-          @click.prevent.stop="$emit('toogleEditCategory', category.id)"
-        )
-          template(v-if="editCategoryId === category.id")
-            .fa.fa-times-circle
-          template(v-else)
-            .fa.fa-pencil-square-o
+      template(v-if="view !== 'trnForm'")
+        .itemList__actions
+          .itemList__action(
+            @click.prevent.stop="$emit('toogleEditCategory', category.id)"
+          )
+            template(v-if="editCategoryId === category.id")
+              .fa.fa-times-circle
+            template(v-else)
+              .fa.fa-pencil-square-o
 
-        .itemList__action(@click.prevent.stop="$emit('confirmPop', category.id)")
-          .fa.fa-trash-o
+          .itemList__action(@click.prevent.stop="$emit('confirmPop', category.id)")
+            .fa.fa-trash-o
 
     //- Confirm
     template(v-if="confirmPopCategoryId === category.id")
@@ -53,19 +54,20 @@ div(:class="className" @click.prevent.stop="$emit('onClickContent', category)")
 
       .itemListChild__name {{ category.name }}
 
-      .itemListChild__actions
-        .itemListChild__action(
-          v-if="editCategoryId === category.id"
-          @click.prevent.stop="$emit('toogleEditCategory', category.id)")
-          .fa.fa-times-circle
+      template(v-if="view !== 'trnForm'")
+        .itemListChild__actions
+          .itemListChild__action(
+            v-if="editCategoryId === category.id"
+            @click.prevent.stop="$emit('toogleEditCategory', category.id)")
+            .fa.fa-times-circle
 
-        .itemListChild__action(
-          v-if="editCategoryId !== category.id"
-          @click.prevent.stop="$emit('toogleEditCategory', category.id)")
-          .fa.fa-pencil-square-o
+          .itemListChild__action(
+            v-if="editCategoryId !== category.id"
+            @click.prevent.stop="$emit('toogleEditCategory', category.id)")
+            .fa.fa-pencil-square-o
 
-        .itemListChild__action(@click.prevent.stop="$emit('confirmPop', category.id)")
-          .fa.fa-trash-o
+          .itemListChild__action(@click.prevent.stop="$emit('confirmPop', category.id)")
+            .fa.fa-trash-o
 
     //- Confirm
     template(v-if="confirmPopCategoryId === category.id")

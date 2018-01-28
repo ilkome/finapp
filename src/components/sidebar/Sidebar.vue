@@ -2,7 +2,11 @@
 transition(name="leftBarAnimation")
   .sidebar(v-show="$store.state.showedLeftbar")
 
-    //- Mobile header
+    //- mobile
+    .sidebar__overlay(
+      :class="{ _active: $store.state.showedLeftbar }"
+      @click="$store.commit('toogleLeftbar', 'hide')"
+    )
     template(v-if="$store.state.isMobile")
       .sidebar__close(@click="$store.commit('toogleLeftbar', 'hide')")
         .sidebar__close__title: .fa.fa-arrow-left
@@ -10,8 +14,8 @@ transition(name="leftBarAnimation")
         .sidebar__close__icon: .fa.fa-plus
 
     .sidebar__in
-      //- Walltes
-      .sidebar__row
+      //- walltes
+      .sidebar__item
         template(v-if="!$store.state.isMobile")
           .sidebar__head
             .sidebarTitle(
@@ -97,13 +101,12 @@ transition(name="leftBarAnimation")
 
       //- Filter
       template(v-if="getFilter.category || getFilter.account")
-        .sidebar__row
+        .sidebar__item
           .sidebar__head
             .sidebarTitle(@click.prevent="clearFilter")
               .sidebarTitle__text
                 .sidebarTitle__text__in Selected
               .sidebarTitle__icon: .close
-
 
           .sidebar__wrap
             template(v-if="getFilter.account")
@@ -126,8 +129,8 @@ transition(name="leftBarAnimation")
                       div(:class="getFilter.category.icon")
                   .sidebarItem__name {{ getFilter.category.name }}
 
-      //- Summary
-      .sidebar__row
+      //- summary
+      .sidebar__item
         .sidebar__wrap
           .sidebarSummary
             .sidebarSummary__label Total in RUB
@@ -142,7 +145,7 @@ transition(name="leftBarAnimation")
 
 <script>
 import { mapGetters } from 'vuex'
-import formatMoney from '../mixins/formatMoney'
+import formatMoney from '@/mixins/formatMoney'
 
 export default {
   mixins: [formatMoney],

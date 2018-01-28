@@ -71,9 +71,11 @@
           v-tooltip.bottom-center="{ content: $store.state.trnForm.isShow ? 'Hide' : 'Create new transaction' }"
         ): .plus
 
-  //- Mobile header
+
+  //- mobile header
+  //----------------------------------------------------------------------------
   template(v-if="$store.state.isMobile")
-    .header__in
+    .header__in._fixed
       .header__col
         .header__link(@click.prevent.stop="$store.commit('toogleLeftbar')")
           .fa.fa-bars
@@ -83,7 +85,9 @@
           :class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')"
         ): .fa.fa-bar-chart
       .header__col
-        .header__date {{ $store.state.filter.filter.date.first }}
+        .header__date(
+          @click="isShowedModalCenter = true"
+        ) {{ $store.state.filter.filter.date.first }}
       .header__col
         .header__link(@click.prevent.stop="$store.commit('toogleTrnForm')")
           .plus
@@ -116,18 +120,50 @@
             .header__link._account(@click.prevent="$store.commit('setFilterAccount', null)")
               .icon._round(:style="`background: ${getFilter.account.color}`")
                 .icon__abbr {{ getFilter.account.name.charAt(0) }}{{ getFilter.account.name.charAt(1) }}
-
+              .moneyBlock__total.sum.ml-mm {{ formatMoney(getFilter.account.total)}}
           template(v-if="getFilter.category")
             .header__link._active(@click.prevent="$emit('setFilterCategory', null)")
               .icon(:style="`background: ${getFilter.category.color}`")
                 div(:class="getFilter.category.icon")
+
+    //- select period
+    ModalCenter(
+      :isShow="isShowedModalCenter"
+      title="Select period"
+      v-on:onClose="isShowedModalCenter = false"
+    )
+      .header__periodItem(
+        :class="{ _active: $timePeriod === 'day' }"
+        @click.prevent="$emit('setTimePeriod', 'day')"
+      ) Day
+      .header__periodItem(
+        :class="{ _active: $timePeriod === 'week' }"
+        @click.prevent="$emit('setTimePeriod', 'week')"
+      ) Week
+      .header__periodItem(
+        :class="{ _active: $timePeriod === 'month' }"
+        @click.prevent="$emit('setTimePeriod', 'month')"
+      ) Month
+      .header__periodItem(
+        :class="{ _active: $timePeriod === 'year' }"
+        @click.prevent="$emit('setTimePeriod', 'year')"
+      ) Year
+      .header__periodItem(
+        :class="{ _active: $timePeriod === 'all' }"
+        @click.prevent="$emit('setTimePeriod', 'all')"
+      ) All
 </template>
 
 <script>
 import moment from 'moment'
 import { mapGetters } from 'vuex'
+import formatMoney from '@/mixins/formatMoney'
+import ModalCenter from '@components/modal/ModalCenter'
 
 export default {
+  mixins: [formatMoney],
+  components: { ModalCenter },
+
   props: {
     trnsDate: {
       type: Object,
@@ -144,6 +180,12 @@ export default {
     showedHistory: {
       type: Boolean,
       required: true
+    }
+  },
+
+  data() {
+    return {
+      isShowedModalCenter: false
     }
   },
 

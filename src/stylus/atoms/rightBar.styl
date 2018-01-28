@@ -7,6 +7,10 @@
   height 100%
   background $color-sidebar
 
+  @media $before768
+    max-width 290px
+    border-left 1px solid #000
+
   @media (min-width: 768px)
     height calc(100% - 50px)
     top 50px
@@ -14,7 +18,10 @@
     border-left 1px solid #000
 
   &__in
+    z-index 2
+    position relative
     height 100%
+    background $color-sidebar
 
     @media (min-width: 768px)
       width 290px

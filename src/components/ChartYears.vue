@@ -2,35 +2,44 @@
 .chartYearsList
   template(
     v-if="selectedCategoryGraph"
-    v-for="year in selectedCategoryGraph.slice(0, maxShowedYears)"
+    v-for="year in selectedCategoryGraph"
   )
-    .chartYears
-      .gridTable._categeryGraph
-        .gridTable__item
-          .yearChart__title {{ year.name }}
+    .chartYearsList__item
+      .chart-year-item__wrap
+        .yearStatNumbers
           .yearChart__stat
-            .moneyBlock._noMargin
+            .moneyBlock
               .moneyBlock__line
-                .moneyBlock__title: .expenses Expenses
-                .moneyBlock__average: .expense {{ formatMoney(year.totalExpensesInYear) }}
-              .moneyBlock__line
-                .moneyBlock__title: .incomes Incomes
-                .moneyBlock__average: .incomes {{ formatMoney(year.totalIncomesInYear) }}
-              .moneyBlock__line
-                .moneyBlock__title Total
-                .moneyBlock__average: .sum {{ formatMoney(year.totalSumInYear) }}
+                .moneyTitle.expenses Expenses
+                .moneyBlock__total.expenses {{ formatMoney(year.totalExpensesInYear) }}
               .moneyBlock__line
                 .moneyBlock__title
                   .mdi.mdi-chart-timeline
-                  div {{ year.monthsLenght }} month average
-                .moneyBlock__average: .sum {{ formatMoney(year.realMonthAverage) }}
-              .moneyBlock__line
-                .moneyBlock__title
-                  .mdi.mdi-chart-timeline
-                  div Year month average
-                .moneyBlock__average: .sum {{ formatMoney(year.monthAverage) }}
+                  div Average
+                .moneyBlock__total: .sum {{ formatMoney(0) }}
 
-        .gridTable__item
+            .moneyBlock
+              .moneyBlock__line
+                .moneyTitle.incomes Incomes
+                .moneyBlock__total.incomes {{ formatMoney(year.totalIncomesInYear) }}
+              .moneyBlock__line
+                .moneyBlock__title
+                  .mdi.mdi-chart-timeline
+                  div Average
+                .moneyBlock__total: .sum {{ formatMoney(0) }}
+
+            .moneyBlock
+              .moneyBlock__line
+                .moneyTitle Total
+                .moneyBlock__total: .sum {{ formatMoney(year.totalSumInYear) }}
+              .moneyBlock__line
+                .moneyBlock__title
+                  .mdi.mdi-chart-timeline
+                  div Average
+                .moneyBlock__total: .sum {{ formatMoney(0) }}
+
+        .yearChart._alt
+          .yearChart__title {{ year.name }}
           .yearChartFix
             .yearChart
               .statChart__in
@@ -41,7 +50,6 @@
                     template(v-if="!$store.state.isMobile")
                       .tooltip
                         .tooltip__in
-                          .tooltip__name {{ period.name }}
                           .tooltip__incomes {{ formatMoney(period.incomes) }}
                           .tooltip__expenses {{ formatMoney(period.expenses) }}
                     .yearChartGraph
@@ -84,13 +92,12 @@ export default {
 
         if (trnSelectedCategory.length) {
           // Get first and last years
-          // const currentYear = moment().startOf('year')
-          // const firstYear = moment(trnSelectedCategory[trnSelectedCategory.length - 1].date).startOf('year')
-          // const allYears = currentYear.diff(firstYear, 'year')
+          const currentYear = moment().startOf('year')
+          const firstYear = moment(trnSelectedCategory[trnSelectedCategory.length - 1].date).startOf('year')
+          const allYears = currentYear.diff(firstYear, 'year')
 
           // For every year
-          // for (let year = 0; year <= allYears; year++) {
-          for (let year = 0; year <= 1; year++) {
+          for (let year = 0; year <= allYears; year++) {
             const months = []
             const name = moment().startOf('year').subtract(year, 'year').format('Y')
 
