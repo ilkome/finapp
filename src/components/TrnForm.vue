@@ -1,5 +1,9 @@
 <template lang="pug">
 .rightBar
+  .sidebar__overlay(
+    @click="$store.commit('toogleTrnForm', 'hide')"
+    :class="{ _active: $store.state.trnForm.isShow }"
+  )
   .sidebar__close(@click="$store.commit('toogleTrnForm', 'hide')")
     .sidebar__close__title
       template(v-if="action === 'create' && values.type !== 2") Create trn
@@ -38,7 +42,6 @@
             input.amountValueInput(
               v-model.lazy="values.amount",
               @keyup.enter="onSubmitForm",
-              v-focus.lazy="focus || ($store.state.trnForm.isShow && !show.categories)",
               type="text"
               name="amount"
               placeholder="0"
@@ -98,6 +101,7 @@
                     )
                       .icon__abbr {{ values.account.name.charAt(0) }}{{ values.account.name.charAt(1) }}
                     .name {{ values.account.name }}
+                    .trnForm__wallet-total {{ formatMoney(values.account.total) }}
 
               .iconsGroup
                 .iconsGroup__el(v-for="account in accounts")
@@ -142,7 +146,7 @@
                 .icon._round._link(
                   @click.prevent="setAccound(account, 'from')"
                   :class="[{_active: (account.id === values.accountFrom.id)}]"
-                  :style="{ background: account.color, color: account.id === values.accountFrom.id ? account.color : '' }"
+                  :style="{ background: account.color }"
                   :title="account.name"
                 )
                   .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
@@ -165,7 +169,7 @@
                .icon._round._link(
                   @click.prevent="setAccound(account, 'to')"
                   :class="[{ _active: (account.id === values.accountTo.id) }]"
-                  :style="{ background: account.color, color: account.id === values.accountTo.id ? account.color : '' }"
+                  :style="{ background: account.color }"
                   :title="account.name"
                 )
                   .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
@@ -215,20 +219,22 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import mathjs from 'mathjs'
 import moment from 'moment'
-import uniqBy from 'lodash/uniqBy'
-import { mapGetters } from 'vuex'
 import { focus } from 'vue-focus'
+import formatMoney from '@/mixins/formatMoney'
 import CategoryList from './categories/CategoryList.vue'
 
 export default {
   directives: { focus: focus },
+  mixins: [formatMoney],
   components: { CategoryList },
 
   watch: {
     account() {
       if (this.account && this.$store.state.trnForm.action === 'create') {
+        this.values.account = this.account
         this.values.accountId = this.account.id
         this.values.accountName = this.account.name
       }
@@ -272,6 +278,7 @@ export default {
       lastUsedCategories: [],
       values: {
         id: null,
+        account: null,
         amount: null,
         date: moment(),
         currency: 'RUB',
@@ -326,11 +333,12 @@ export default {
       // Create
       if (this.$store.state.trnForm.action === 'create') {
         const lastTrn = this.$store.getters.trns[0]
+        const lastAccount = this.accounts.find(a => a.id === lastTrn.accountId)
         if (lastTrn) {
           this.$store.commit('setTrnFormCategoryId', lastTrn.categoryId)
           this.values = {
             date: moment(),
-            account: lastTrn.account,
+            account: lastAccount,
             accountId: lastTrn.accountId,
             accountName: lastTrn.accountName,
             amount: null,
@@ -357,12 +365,13 @@ export default {
       // Update
       if (this.$store.state.trnForm.action === 'update') {
         const trn = this.trns.find(trn => trn.id === this.$store.state.trnForm.updateTrnId)
+        const account = this.accounts.find(a => a.id === trn.accountId)
         if (trn) {
           this.$store.commit('setTrnFormCategoryId', trn.categoryId)
           this.values = {
             id: trn.id,
             date: moment(trn.date),
-            account: trn.account,
+            account: account,
             accountId: trn.accountId,
             accountName: trn.accountName,
             amount: trn.amount,
@@ -385,11 +394,15 @@ export default {
         }
       }
 
-      const lastTrnsUnicCategory = uniqBy(this.trns.slice(0, 50), 'categoryId').slice(0, 13)
-      const lastUsedCategoriesIdsFromTrns = lastTrnsUnicCategory.map(trn => trn.categoryId)
-      this.lastUsedCategories = this.categories
-        .filter(category => lastUsedCategoriesIdsFromTrns.indexOf(category.id) >= 0)
-        .slice(0, 13)
+      const countCategoriesToShow = this.$store.state.isMobile ? 11 : 13
+      const lastTrnsUnicCategory = []
+      for (let i = 0; lastTrnsUnicCategory.length < countCategoriesToShow; i++) {
+        if (lastTrnsUnicCategory.indexOf(this.trns[i].category) === -1) {
+          lastTrnsUnicCategory.push(this.trns[i].category)
+        }
+      }
+
+      this.lastUsedCategories = lastTrnsUnicCategory
     },
     toogleCategoriesPop() {
       this.$store.commit('toogleCategoriesPop')
@@ -406,8 +419,9 @@ export default {
 
         this.$store.commit('setTrnFormCategoryId', categoryId)
         // Add selected category if it doesn't exist in lastUsedCategories
+        const countCategoriesToShow = this.$store.state.isMobile ? 10 : 12
         if (!this.lastUsedCategories.find(cat => cat.id === this.categoryId)) {
-          this.lastUsedCategories = [...this.lastUsedCategories.slice(0, 12), this.selectedCategory]
+          this.lastUsedCategories = [...this.lastUsedCategories.slice(0, countCategoriesToShow), this.selectedCategory]
         }
       }
     },

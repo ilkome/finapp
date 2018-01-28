@@ -73,7 +73,7 @@
 <script>
 import { mixin } from 'vue-focus'
 import debounce from 'lodash/debounce'
-import Sidebar from './Sidebar.vue'
+import Sidebar from './sidebar/Sidebar.vue'
 import TrnForm from './TrnForm.vue'
 import Login from './Login.vue'
 import Dashboard from './DashboardPage.vue'

@@ -14,6 +14,9 @@ $localFont()
   background $color-header-bg
   anim()
 
+  @media $before768
+    padding-top $header-height
+
   @media (min-width: 768px)
     z-index 3
     position fixed
@@ -40,6 +43,17 @@ $localFont()
 
     @media $after768
       padding 0 75px 0 30px
+
+    &._fixed
+      @media $before768
+        z-index 2
+        position fixed
+        width 100%
+        top 0
+        left 0
+        height 0
+        margin-top 0
+        background $color-header-bg
 
   &__col
     display flex
@@ -73,6 +87,26 @@ $localFont()
     color $color-white
     $localFont()
 
+  &__periodItem
+    display flex
+    align-items center
+    position relative
+    justify-content center
+    padding $m $m2xl
+    color $color-grey
+    $localFont()
+    border-bottom 1px solid $color-line-summary
+
+    &:last-child
+      border-bottom none
+
+    &:active
+      @media $before768
+        background $color-sidebar-bg-hover
+        color $color-white
+
+    &._active
+      color $color-white
 
   &__link
     display flex
