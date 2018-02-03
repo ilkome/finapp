@@ -6,45 +6,50 @@
   justify-content space-between
   align-items center
   margin 0 0
-  margin-bottom -1px
+  // margin-bottom -1px
   padding 10px 0
   font-size .9rem
   color $color-grey
+  border-bottom 1px solid $color-line-summary
 
   &:last-child
     margin-bottom 0
     border-color transparent
 
   &._padding:hover
-    margin-left -10px
-    margin-right -10px
-    padding-left 10px
-    padding-right 10px
-  
+    @media $after768
+      margin-left -10px
+      margin-right -10px
+      padding-left 10px
+      padding-right 10px
+
   &:hover
     @media $after768
-      color $color-main
-      background #222222
-      border-color #292929
+      // color $color-main
+      // background #222222
+      // border-color #292929
 
   &__content
     width 100%
-    display flex
-    align-items center
-
-  &__pic
-    //
-
-  &__cell
-    padding-right 20px
-
-  &__price
-    width 90px
-    margin-right 20px
-    text-align right
+    display grid
+    grid-template-columns 30px minmax(auto, 1fr) minmax(60px, 110px)
+    grid-column-gap $mm
+    grid-row-gap $mm
 
     @media $after768
-      margin-right 30px
+      padding-left $mss
+
+  &__cell
+    display flex
+    flex-flow column wrap
+    align-items flex-start
+    justify-content center
+
+  &__price
+    text-align right
+
+    .sub
+      font-size 12px
 
   &__line
     font-size .8rem
@@ -57,13 +62,18 @@
       padding-bottom 0
 
   &__actions
+    z-index 2
     position absolute
-    top 1px
+    top 50%
+    transform translateY(-50%)
     right 0px
     display flex
     align-items center
-    height calc(100% - 2px)
-    // background $color-itemList-bg
+    background alpha(#222222, .9)
+    border 1px solid $color-trn-hover-line
+
+    @media $after768
+      height calc(100% - 2px)
 
     @media (min-width: 768px)
       opacity 0
@@ -86,9 +96,10 @@
 
     ^[0]._active &
       background $color-sidebar-bg-active
-    
+
     ^[0]._padding:hover &
-      right 10px
+      @media $after768
+        right 10px
 
   &__action
     display flex
@@ -100,11 +111,13 @@
     cursor pointer
     anim()
 
-    @media (max-width: 768px)
+    @media $before768
+      height 40px
+
       &:active
         background $color-sidebar-bg-hover
 
-    @media (min-width: 768px)
+    @media $after768
       opacity .3
       width 40px
       font-size 1rem
@@ -115,14 +128,4 @@
   &__description
     width 100%
     padding-top 5px
-    padding-left 140px
-    padding-right 10px
-    font-size .8rem
-
-    @media $after768
-      text-align right
-
-    &._big
-      @media $after768
-        padding-left 190px
-        padding-bottom 5px
+    font-size 12px

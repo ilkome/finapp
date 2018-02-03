@@ -40,6 +40,13 @@
 .moneyBlock
   padding-bottom 10px
 
+  &._mb
+    margin-bottom $m
+    padding-bottom $mss
+    border-bottom 1px solid $color-line-summary
+    &:last-child
+      margin-bottom $mb
+
   @media $after768
     min-width 210px
     margin-bottom 30px
@@ -51,6 +58,11 @@
     margin-bottom 0
     padding-bottom 0
     border-bottom 0
+
+  &__line2
+    display flex
+    justify-content space-between
+    margin-bottom $ms
 
   &__line
     display flex

@@ -30,6 +30,8 @@ export default function formatCategory(category, categories) {
         color = parent.color
       }
     }
+  } else if (color === '#00000') {
+    color = '#242424'
   }
 
   // Icon

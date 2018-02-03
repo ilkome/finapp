@@ -1,5 +1,6 @@
 import firebase from 'firebase'
 import moment from 'moment'
+import localforage from 'localforage'
 import orderBy from 'lodash/orderBy'
 import formatTrn from '../helpers/formatTrn'
 
@@ -101,10 +102,13 @@ const actions = {
       } catch (error) {
         throw new Error(error.message)
       }
+    } else {
+      commit('setTrns', [])
     }
   },
   async addTrn({ commit, state, rootState }, values) {
     try {
+      // const localTrns = await localforage.getItem('trnsCreatedOffline')
       const accounts = rootState.accounts.all
       const categories = rootState.categories.all
       const rates = rootState.rates.all
@@ -119,46 +123,60 @@ const actions = {
         type: values.type
       }
 
-      const db = await firebase.database()
-      await db.ref(`users/${rootState.user.user.uid}/trns`).push(formatedValues)
-        .then(async (data) => {
-          const newTrn = {
-            id: data.key,
-            accountId: formatedValues.accountId,
-            amount: formatedValues.amount,
-            categoryId: formatedValues.categoryId,
-            date: formatedValues.date,
-            description: formatedValues.description,
-            currency: formatedValues.currency,
-            type: formatedValues.type
-          }
-          const formatedNewTrn = formatTrn(newTrn, { accounts, categories, rates })
-          commit('addTrn', formatedNewTrn)
-          commit('closeLoader')
-          return true
-        })
-        .catch(error => {
-          commit('showError', `store/transitions/addTrn1: ${error.message}`)
-          console.log(error)
-        })
-      return true
+      let formatedNewTrn = {}
+      if (rootState.isConnected) {
+        const db = firebase.database()
+        await db.ref(`users/${rootState.user.user.uid}/trns`).push(formatedValues)
+          .then(async (data) => {
+            const newTrn = {
+              ...formatedValues,
+              id: data.key
+            }
+            formatedNewTrn = formatTrn(newTrn, { accounts, categories, rates })
+            commit('addTrn', formatedNewTrn)
+            await localforage.setItem('trns', [...state.all])
+            return true
+          })
+          .catch(error => {
+            console.error(error)
+            return false
+          })
+        return true
+      } else {
+        // offline
+        console.log('addTrn offile')
+        await localforage.getItem('trnsCreatedOffline')
+          .then(async trns => {
+            formatedNewTrn = formatTrn(formatedValues, { accounts, categories, rates })
+            const savedTrns = await localforage.getItem('trnsCreatedOffline')
+            const trnsForSaving = savedTrns && savedTrns.length ? [...savedTrns, formatedNewTrn] : [formatedNewTrn]
+            await localforage.setItem('trnsCreatedOffline', trnsForSaving)
+            commit('addTrn', formatedNewTrn)
+            await localforage.setItem('trns', [...state.all])
+          })
+          .catch(error => {
+            console.error(error)
+            return false
+          })
+        return true
+      }
     } catch (error) {
-      commit('showError', `store/transitions/addTrn2: ${error.message}`)
-      console.log(error)
+      console.error(error)
+      return false
     }
   },
   async deleteTrn({ commit, rootState }, id) {
     try {
-      const db = await firebase.database()
+      const db = firebase.database()
       await db.ref(`users/${rootState.user.user.uid}/trns/${id}`)
         .remove()
         .catch(error => {
           console.error(error)
-          commit('showError', `store/transitions/deleteTrn: ${error.message}`)
         })
       commit('deleteTrn', id)
+      await localforage.setItem('trns', state.all.filter(t => t.id !== id))
     } catch (error) {
-      commit('showError', `store/transitions/deleteTrn: ${error.message}`)
+      console.error(error)
     }
   },
   async updateTrn({ commit, state, rootState }, values) {
@@ -176,17 +194,15 @@ const actions = {
         currency: values.currency,
         type: values.type
       }
-      const db = await firebase.database()
+      const db = firebase.database()
       await db.ref(`users/${rootState.user.user.uid}/trns/${id}`)
         .update(formatedValues)
         .catch(error => {
           console.error(error)
-          commit('showError', `store/transitions/updateTrn: ${error.message}`)
         })
 
       // Last edit
       const currentDate = moment().valueOf()
-      console.log(currentDate)
       db.ref(`users/${rootState.user.user.uid}/lastEditDate`)
         .set(currentDate)
         .then(data => {
@@ -197,12 +213,11 @@ const actions = {
       const formatedNewTrn = formatTrn({ id, ...formatedValues }, { accounts, categories, rates })
       commit('updateTrn', formatedNewTrn)
     } catch (error) {
-      commit('showError', `store/transitions/updateTrn: ${error.message}`)
     }
   }
 }
 
-// mutations
+// mutations (commit)
 // ==============================================
 const mutations = {
   setTrns(state, trns) {

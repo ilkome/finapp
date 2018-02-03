@@ -44,31 +44,32 @@ transition(name="leftBarAnimation")
                 @click.prevent="onClickAccount(account)"
                 :class="getClassName(account)"
               )
-                .sidebarItem__content
+                .sidebarItem__wrap
                   .sidebarItem__icon
                     .icon._round(:style="`background: ${account.color}`")
                       .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
-                  .sidebarItem__name {{ account.name }}
-                  .sidebarItem__money
-                    template(v-if="account.total !== 0")
-                      template(v-if="account.currency !== 'RUB'")
-                        div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
-                        div.sub {{ formatMoney(account.totalRub) }}
-                      template(v-else)
-                        div {{ formatMoney(account.totalRub) }}
-                    template(v-else)
-                      div 0 {{account.symbol}}
-
-                  template(v-if="isShowEditBtns")
-                    .sidebarItem__actions
-                      .sidebarItem__action(@click.stop.prevent="toogleAccountEdit(account)")
-                        template(v-if="$store.state.accounts.editAccount && $store.state.accounts.editAccount.id === account.id")
-                          .fa.fa-times-circle
+                  .sidebarItem__content
+                    .sidebarItem__name {{ account.name }}
+                    .sidebarItem__money
+                      template(v-if="account.total !== 0")
+                        template(v-if="account.currency !== 'RUB'")
+                          div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
+                          div.sub {{ formatMoney(account.totalRub) }}
                         template(v-else)
-                          .fa.fa-pencil-square-o
+                          div {{ formatMoney(account.totalRub) }}
+                      template(v-else)
+                        div 0 {{account.symbol}}
 
-                      .sidebarItem__action(@click.stop.prevent="askQuestion(account.id)")
-                        .fa.fa-trash-o
+                    template(v-if="isShowEditBtns")
+                      .sidebarItem__actions
+                        .sidebarItem__action(@click.stop.prevent="toogleAccountEdit(account)")
+                          template(v-if="$store.state.accounts.editAccount && $store.state.accounts.editAccount.id === account.id")
+                            .fa.fa-times-circle
+                          template(v-else)
+                            .fa.fa-pencil-square-o
+
+                        .sidebarItem__action(@click.stop.prevent="askQuestion(account.id)")
+                          .fa.fa-trash-o
 
                 .confirmPop(v-if="questionId === account.id")
                   .confirmPop__in

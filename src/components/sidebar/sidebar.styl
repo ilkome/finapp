@@ -190,7 +190,7 @@
   &._active
   &._editable
   &:hover
-    & ^[0]__content
+    & ^[0]__wrap
       margin 0 -30px
       padding 0 30px
 
@@ -202,7 +202,7 @@
       right 25px
 
   &._active
-    & ^[0]__content
+    & ^[0]__wrap
       background $color-sidebar-bg-active
       border-bottom-color $color-sidebar-bg-active
 
@@ -210,7 +210,7 @@
       background $color-sidebar-bg-active
 
   &._editable
-    & ^[0]__content
+    & ^[0]__wrap
       background $color-sidebar-bg-edit
       border-bottom-color $color-sidebar-bg-edit
 
@@ -224,7 +224,7 @@
   &:last-child
     margin-bottom 0
 
-    & ^[0]__content
+    & ^[0]__wrap
       border-bottom-color transparent
 
   &:hover
@@ -235,7 +235,7 @@
       border-bottom-color $color-itemList-hover
 
 
-    & ^[0]__content
+    & ^[0]__wrap
     & ^[0]__actions
       background $color-itemList-hover
 
@@ -245,21 +245,28 @@
     & ^[0]__action:hover
       opacity 1
 
-  &__content
+  &__wrap
     position relative
     display flex
     flex-flow row nowrap
     flex-grow 1
     align-items center
-    height 55px
     color $color-second
-    border-bottom 1px solid $color-itemList-border
 
+  &__content
+    display flex
+    flex-flow row nowrap
+    flex-grow 1
+    align-items center
+    max-height 55px
+    padding-top $mm
+    padding-bottom $mm
+    border-bottom 1px solid $color-itemList-border
     @media $after768
-      height 45px
+      max-height 45px
 
   &__icon
-    margin-right 10px
+    margin-right $ms
 
   &__name
     display flex
@@ -268,7 +275,6 @@
     $typo-item-name()
 
   &__money
-    padding-top 2px
     display flex
     align-items flex-end
     flex-flow column wrap

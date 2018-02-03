@@ -25,6 +25,7 @@ export default {
             type: 'error',
             duration: 10000
           })
+          this.$store.commit('addStatus', error.message)
         })
     }
   }

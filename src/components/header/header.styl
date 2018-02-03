@@ -51,7 +51,7 @@ $localFont()
         width 100%
         top 0
         left 0
-        height 0
+        height $header-height
         margin-top 0
         background $color-header-bg
 
@@ -84,21 +84,18 @@ $localFont()
 
 
   &__date
+    min-width 100px
     color $color-white
+    text-align center
     $localFont()
 
   &__periodItem
     display flex
     align-items center
     position relative
-    justify-content center
-    padding $m $m2xl
+    padding $m $m
     color $color-grey
     $localFont()
-    border-bottom 1px solid $color-line-summary
-
-    &:last-child
-      border-bottom none
 
     &:active
       @media $before768
@@ -134,6 +131,9 @@ $localFont()
 
     &._extraPadding
       padding 15px 20px
+
+    &._wide
+      padding $mm $m
 
     &._active
       color $color-white

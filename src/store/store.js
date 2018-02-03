@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import moment from 'moment'
-
 import accounts from './modules/accounts'
 import categories from './modules/categories'
 import rates from './modules/rates'
@@ -25,6 +24,7 @@ const modules = {
 // state
 // ==============================================
 const state = {
+  isConnected: false,
   isMobile: false,
   isPageLoaded: false,
   loader: true,
@@ -52,10 +52,13 @@ const state = {
 // mutations (commit)
 // ==============================================
 const mutations = {
-  pageLoading() {
+  setConnectionStatus(state, status) {
+    state.isConnected = status
+  },
+  pageLoading(state) {
     state.isPageLoaded = false
   },
-  pageLoaded() {
+  pageLoaded(state) {
     state.isPageLoaded = true
   },
   setDates(state, dates) {

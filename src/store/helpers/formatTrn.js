@@ -84,7 +84,7 @@ export default function formatTrn(trn, options) {
 
   const date = +trn.date
   const description = trn.description
-  const id = trn.id
+  const id = trn.id ? trn.id : trn.date
   const type = +trn.type
 
   return {

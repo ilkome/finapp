@@ -3,7 +3,6 @@ div(
   :class="className"
   @click.prevent.stop="onClickItem"
 )
-
   .itemStat__in
     .itemStat__icon(@click.stop="onClickIcon")
       .icon._big._link(
