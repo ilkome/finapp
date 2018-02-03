@@ -21,6 +21,7 @@ gulp.task('default', (done) => {
     ['clean'],
     ['images', 'stylus', 'assets'],
     ['browserSync'],
+    ['generate-service-worker-dist'],
     ['watcher'],
     done
   )

@@ -13,9 +13,9 @@
     "start": "gulp",
     "dev": "gulp",
     "upload": "gulp upload",
-    "build": "cross-env NODE_ENV=production gulp build && node build/build.js && gulp css",
+    "build": "cross-env NODE_ENV=production gulp build && node build/build.js && gulp css && gulp generate-service-worker-dist",
     "build-js": "node build/build.js",
-    "build-upload": "cross-env NODE_ENV=production gulp build && node build/build.js && gulp css && gulp upload",
+    "build-upload": "cross-env NODE_ENV=production gulp build && node build/build.js && gulp css && gulp generate-service-worker-dist && gulp upload",
     "zip": "gulp zip"
   },
   "devDependencies": {
