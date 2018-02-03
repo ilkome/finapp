@@ -3,8 +3,8 @@
   notifications(
     group="foo"
     :duration="3000"
-    :width="$store.state.isMobile ? '100%' : 300"
-    :position="$store.state.isMobile ? 'bottom left' : 'top left'"
+    :width="$store.state.isMobile ? '160' : 289"
+    :position="$store.state.isMobile ? 'bottom left' : 'bottom left'"
   )
 
   template(v-if="!$store.state.isPageLoaded")
@@ -33,6 +33,12 @@
 
       Sidebar
       Dashboard
+
+      //- Create trn
+      template(v-if="$store.state.isMobile")
+        .trnFormButton(
+          @click.prevent.stop="$store.commit('toogleTrnForm')"
+        ): .trnFormButton__icon: .mdi.mdi-plus
 
       //- TrnForm
       transition(name="slideToLeft")

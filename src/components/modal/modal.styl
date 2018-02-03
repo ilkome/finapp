@@ -8,7 +8,7 @@
     bottom 0
     width 100%
     height 100%
-    background alpha(black, .7)
+    background alpha(black, .9)
     transition all 400ms ease
 
     ^[0]._active &
@@ -25,9 +25,53 @@
     background $color-sidebar
 
   &__title
-    padding $m $mb
+    padding $m $m
     $typo-title()
     background $color-body
 
   &__content
     padding $m $m
+
+
+.modalPeriods
+  display grid
+  grid-template-columns repeat(2, 1fr)
+  grid-column-gap $mb
+
+
+.modalBottom
+  &__overlay
+    visibility hidden
+    opacity 0
+    z-index 9
+    position fixed
+    left 0
+    bottom 0
+    width 100%
+    height 100%
+    background alpha(black, .9)
+    transition all 400ms ease
+
+    ^[0]._active &
+      visibility visible
+      opacity 1
+
+  &__wrap
+    overflow hidden
+    overflow-y auto
+    z-index 9
+    position fixed
+    width 100%
+    left 0
+    bottom 0
+    height auto
+    max-height 100%
+    -webkit-overflow-scrolling touch
+    background $color-sidebar
+    $scrollbar()
+
+  &__title
+    padding $m
+
+  &__content
+    padding $m

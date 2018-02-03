@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+.summary
   //- itemStat
   template(v-if="view === 'itemStat'")
       template
@@ -33,6 +33,44 @@ div
               //- .summaryShort__item__label Average
               .summaryShort__item__total._grey.sum {{ formatMoney(avSummary.expenses) }}
 
+  //- Mobile new
+  template(v-if="view === 'mobile-new'")
+    .moneyBlock._mb(@click="$emit('changeTabMoney', 'expenses')")
+      .moneyBlock__line2
+        .moneyTitle.expenses Expenses
+        .moneyBlock__total.expenses {{ formatMoney(summary.expenses) }}
+      template(v-if="avSummary.expenses != 0")
+        .moneyBlock__line2
+          .moneyBlock__title
+            .mdi.mdi-chart-timeline
+            div Average
+          .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
+
+    .moneyBlock._mb(@click="$emit('changeTabMoney', 'incomes')")
+      .moneyBlock__line2
+        .moneyTitle.incomes Incomes
+        .moneyBlock__total.incomes {{ formatMoney(summary.incomes) }}
+      template(v-if="avSummary.incomes != 0")
+        .moneyBlock__line2
+          .moneyBlock__title
+            .mdi.mdi-chart-timeline
+            div Average
+          .moneyBlock__average: .sum {{ formatMoney(avSummary.incomes) }}
+
+    .moneyBlock._mb(@click="$emit('changeTabMoney', 'history')")
+      .moneyBlock__line2
+        .moneyTitle
+          template(v-if="summary.sum > 0") Saved
+          template(v-else-if="summary.sum < 0") Spent
+          template(v-else) Total
+        .moneyBlock__total.sum {{ formatMoney(summary.sum) }}
+      template(v-if="avSummary.sum != 0")
+        .moneyBlock__line2
+          .moneyBlock__title
+            .mdi.mdi-chart-timeline
+            div Average
+          .moneyBlock__average: .sum {{ formatMoney(avSummary.sum) }}
+
 
   //- Mobile
   template(v-if="view === 'mobile'")
@@ -40,36 +78,10 @@ div
       .summaryShort__flex
         .summaryShort__flex__col(@click="$emit('changeTabMoney', 'expenses')")
           slot(name="mobile-expenses")
-          .moneyBlock
-            .moneyBlock__line
-              .moneyBlock__total.expense {{ formatMoney(summary.expenses) }}
-            .moneyBlock__line
-              template(v-if="avSummary.expenses != 0")
-                .moneyBlock__title._average
-                  .mdi.mdi-chart-timeline
-                .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
-
         .summaryShort__flex__col(@click="$emit('changeTabMoney', 'incomes')")
           slot(name="mobile-incomes")
-          .moneyBlock
-            .moneyBlock__line
-              .moneyBlock__total.incomes(@click="$emit('changeTabMoney', 'incomes')") {{ formatMoney(summary.incomes) }}
-            .moneyBlock__line
-              template(v-if="avSummary.expenses != 0")
-                .moneyBlock__title._average
-                  .mdi.mdi-chart-timeline
-                .moneyBlock__average: .sum {{ formatMoney(avSummary.incomes) }}
-
         .summaryShort__flex__col(@click="$emit('changeTabMoney', 'history')")
           slot(name="mobile-history")
-          .moneyBlock
-            .moneyBlock__line
-              .moneyBlock__total.sum(@click="$emit('changeTabMoney', 'history')") {{ formatMoney(summary.total) }}
-            template(v-if="avSummary.sum != 0")
-              .moneyBlock__line
-                .moneyBlock__title._average
-                  .mdi.mdi-chart-timeline
-                .moneyBlock__average: .sum {{ formatMoney(avSummary.sum) }}
 
   //- Dashboard full
   template(v-if="view === 'dashboard-full'")
@@ -92,7 +104,8 @@ div
         .moneyBlock__line
           .moneyTitle
             template(v-if="summary.sum > 0") Saved
-            template(v-if="summary.sum < 0") Spent
+            template(v-else-if="summary.sum < 0") Spent
+            template(v-else) Total
           .moneyBlock__total.sum {{ formatMoney(summary.sum) }}
 
         template(v-if="avSummary.sum != 0")

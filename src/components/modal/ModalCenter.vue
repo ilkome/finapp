@@ -1,6 +1,6 @@
 <template lang="pug">
 .modalCenter(:class="{ _active: isShow }")
-  .modalCenter__overlay(@click.prevent="$listeners.onClose")
+  .modalCenter__overlay(@click.stop="$listeners.onClose")
 
   transition(name="calendarPopupAnimation")
     template(v-if="isShow")

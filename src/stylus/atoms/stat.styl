@@ -5,15 +5,22 @@
       //
 
 .stat__toogle
+  z-index 2
   position absolute
-  right -45px
   top 0
-  width 40px
-  height 100%
-  padding 17px 10px
+  padding $ms
   color $color-grey
   opacity .5
   text-align center
+
+  @media $before768
+    left 0
+
+  @media $after768
+    right -45px
+    width 40px
+    height 100%
+    padding 17px 10px
 
   &:hover
     opacity 1
@@ -206,24 +213,28 @@
 
     ^[0]._overflow &
       @media $before768
+        opacity 1
         overflow-x auto
+        direction rtl
         scrollbar()
 
     &:hover
       opacity 1
 
   &__item
-    min-width 70px
-    flex 1 1
+    direction ltr
+    flex-grow 0
     cursor pointer
-    padding 15px 10px
+    padding $mm $ms
+    min-width 50px
     color $color-grey
     text-align center
     border-right 1px solid $color-sidebar
 
     @media $after768
+      flex-grow 1
       min-width 100px
-      padding 20px
+      padding $m
 
     &._active
     &._active:hover
@@ -231,9 +242,12 @@
       cursor default
       background #111111
 
-    &:last-child
+    &:first-child
       margin-right 0
-      border-right-color transparent
+      // border-left-color transparent
+
+      @media $before768
+        margin-right $m
 
     &:hover
       background #0b0b0b

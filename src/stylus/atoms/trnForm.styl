@@ -83,7 +83,6 @@
     margin-bottom $ms
     justify-content space-between
     align-items center
-    line-height 1.2rem
 
     @media (min-width: 768px)
       margin-bottom 10px
@@ -97,17 +96,7 @@
       font-weight bold
       text-transform uppercase
       color $color-sidebar-white-lighter
-      color $colot-main
       $font-numbers()
-
-      &__text
-        font-size 1rem
-        letter-spacing 1px
-
-      &__icon
-        display none
-        padding-right 10px
-        font-size 1rem
 
     &__link
       width 40px
@@ -253,3 +242,26 @@
     ^[0]._active &
       color $color-link
       transform rotate(45deg)
+
+
+.trnFormButton
+  z-index 1
+  position fixed
+  right 0
+  bottom 0
+  padding $m $ms $ms $m
+
+  &__icon
+    display flex
+    align-items center
+    justify-content center
+    width 40px
+    height 40px
+    font-size 26px
+    background alpha($color-icon-bg, .8)
+    border-radius 50%
+    anim()
+
+    &:hover
+      transform scale(2)
+      opacity 0

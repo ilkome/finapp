@@ -85,46 +85,31 @@
           :class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')"
         ): .fa.fa-bar-chart
       .header__col
+        .header__link._wide(
+          @click.prevent="$emit('selectNextPeriod')"
+        ): .arrow._left
         .header__date(
           @click="isShowedModalCenter = true"
         ) {{ $store.state.filter.filter.date.first }}
-      .header__col
-        .header__link(@click.prevent.stop="$store.commit('toogleTrnForm')")
-          .plus
+        .header__link._wide(
+          @click.prevent="$emit('selectPrevPeriod')"
+          :class="{ _disabled: checkIsLastDate() }"
+        ): .arrow._right
 
-    .header__in
-      .header__link(
-        @click.prevent="$emit('selectPrevPeriod')"
-        :class="{ _disabled: checkIsLastDate() }"
-      ): .arrow._left
-      .header__link(
-        :class="{ _active: $timePeriod === 'day' }"
-        @click.prevent="$emit('setTimePeriod', 'day')"
-      ) Day
-      .header__link(
-        :class="{ _active: $timePeriod === 'week' }"
-        @click.prevent="$emit('setTimePeriod', 'week')"
-      ) Week
-      .header__link(
-        :class="{ _active: $timePeriod === 'month' }"
-        @click.prevent="$emit('setTimePeriod', 'month')"
-      ) Month
-      .header__link(
-        @click.prevent="$emit('selectNextPeriod')"
-      ): .arrow._right
+    //- .header__in
+    //-   .header__link(
+    //-     :class="{ _active: $timePeriod === 'day' }"
+    //-     @click.prevent="$emit('setTimePeriod', 'day')"
+    //-   ) Day
+    //-   .header__link(
+    //-     :class="{ _active: $timePeriod === 'week' }"
+    //-     @click.prevent="$emit('setTimePeriod', 'week')"
+    //-   ) Week
+    //-   .header__link(
+    //-     :class="{ _active: $timePeriod === 'month' }"
+    //-     @click.prevent="$emit('setTimePeriod', 'month')"
+    //-   ) Month
 
-    template(v-if="getFilter.category || getFilter.account")
-      .header__in
-        .flex
-          template(v-if="getFilter.account")
-            .header__link._account(@click.prevent="$store.commit('setFilterAccount', null)")
-              .icon._round(:style="`background: ${getFilter.account.color}`")
-                .icon__abbr {{ getFilter.account.name.charAt(0) }}{{ getFilter.account.name.charAt(1) }}
-              .moneyBlock__total.sum.ml-mm {{ formatMoney(getFilter.account.total)}}
-          template(v-if="getFilter.category")
-            .header__link._active(@click.prevent="$emit('setFilterCategory', null)")
-              .icon(:style="`background: ${getFilter.category.color}`")
-                div(:class="getFilter.category.icon")
 
     //- select period
     ModalCenter(
@@ -132,26 +117,27 @@
       title="Select period"
       v-on:onClose="isShowedModalCenter = false"
     )
-      .header__periodItem(
-        :class="{ _active: $timePeriod === 'day' }"
-        @click.prevent="$emit('setTimePeriod', 'day')"
-      ) Day
-      .header__periodItem(
-        :class="{ _active: $timePeriod === 'week' }"
-        @click.prevent="$emit('setTimePeriod', 'week')"
-      ) Week
-      .header__periodItem(
-        :class="{ _active: $timePeriod === 'month' }"
-        @click.prevent="$emit('setTimePeriod', 'month')"
-      ) Month
-      .header__periodItem(
-        :class="{ _active: $timePeriod === 'year' }"
-        @click.prevent="$emit('setTimePeriod', 'year')"
-      ) Year
-      .header__periodItem(
-        :class="{ _active: $timePeriod === 'all' }"
-        @click.prevent="$emit('setTimePeriod', 'all')"
-      ) All
+      .modalPeriods
+        .header__periodItem(
+          :class="{ _active: $timePeriod === 'day' }"
+          @click.prevent="setTimePeriod('day')"
+        ) Day
+        .header__periodItem(
+          :class="{ _active: $timePeriod === 'week' }"
+          @click.prevent="setTimePeriod('week')"
+        ) Week
+        .header__periodItem(
+          :class="{ _active: $timePeriod === 'month' }"
+          @click.prevent="setTimePeriod('month')"
+        ) Month
+        .header__periodItem(
+          :class="{ _active: $timePeriod === 'year' }"
+          @click.prevent="setTimePeriod('year')"
+        ) Year
+        .header__periodItem(
+          :class="{ _active: $timePeriod === 'all' }"
+          @click.prevent="setTimePeriod('all')"
+        ) Total
 </template>
 
 <script>
@@ -203,6 +189,10 @@ export default {
     },
     checkIsLastDate() {
       return moment(this.trnsDate.start).isSame(this.$store.state.currentDate, this.$timePeriod)
+    },
+    setTimePeriod(period) {
+      this.$emit('setTimePeriod', period)
+      this.isShowedModalCenter = false
     }
   }
 }

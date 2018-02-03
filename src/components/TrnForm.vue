@@ -13,16 +13,13 @@
 
   .rightBar__in
     .rightBar__main
-
       .rightBar__main__in
         .trnForm__date
           .trnForm__date__link(
             @click="setNextPrevDate('prev')"
             @keyup.enter.prevent="setNextPrevDate('prev')"
           ): .arrow._left
-          .trnForm__date__value
-            .trnForm__date__value__icon.fa.fa-clock-o
-            .trnForm__date__value__text {{ values.date | date }}
+          .trnForm__date__value {{ formatDate(values.date) }}
           .trnForm__date__link(
             @click="setNextPrevDate('next')",
             @keyup.enter.prevent="setNextPrevDate('next')"
@@ -40,13 +37,13 @@
 
           .amountValue
             input.amountValueInput(
-              v-model.lazy="values.amount",
-              @keyup.enter="onSubmitForm",
+              v-model.lazy="values.amount"
+              @keyup.enter="onSubmitForm()"
+              v-focus.lazy="focus && !$store.state.isMobile || ($store.state.trnForm.isShow && !show.categories) && !$store.state.isMobile"
               type="text"
               name="amount"
               placeholder="0"
             )
-
 
         //- Regual trn
         template(v-if="values.type !== 2")
@@ -101,7 +98,8 @@
                     )
                       .icon__abbr {{ values.account.name.charAt(0) }}{{ values.account.name.charAt(1) }}
                     .name {{ values.account.name }}
-                    .trnForm__wallet-total {{ formatMoney(values.account.total) }}
+                    template(v-if="selectedAccount")
+                      .trnForm__wallet-total {{ formatMoney(selectedAccount.total, selectedAccount.currency) }}
 
               .iconsGroup
                 .iconsGroup__el(v-for="account in accounts")
@@ -122,7 +120,7 @@
           .trnForm__desc
             input.input-filter._nomargin(
               v-model.trim="values.description"
-              @keyup.enter="onSubmitForm"
+              @keyup.enter="onSubmitForm()"
               type="text"
               name="description"
               placeholder="Description"
@@ -179,7 +177,7 @@
           .trnForm__desc
             input.input-filter._nomargin(
               v-model.trim="values.description"
-              @keyup.enter="onSubmitForm"
+              @keyup.enter="onSubmitForm()"
               type="text"
               name="description"
               placeholder="Description"
@@ -279,6 +277,7 @@ export default {
       values: {
         id: null,
         account: null,
+        category: null,
         amount: null,
         date: moment(),
         currency: 'RUB',
@@ -312,6 +311,11 @@ export default {
     account() {
       return this.getFilter.account
     },
+    selectedAccount() {
+      if (this.values.account) {
+        return this.accounts.find(a => a.id === this.values.account.id)
+      }
+    },
     selectedCategory() {
       const category = this.categories.find(category => category.id === this.categoryId)
       if (category) {
@@ -329,12 +333,32 @@ export default {
   },
 
   methods: {
+    formatDate(date) {
+      const nDate = moment(date).startOf('day').valueOf()
+      let formatedDate = moment(date).startOf('day').valueOf()
+      // same year
+      if (moment(formatedDate).isSame(moment(), 'year')) {
+        formatedDate = moment(formatedDate).format('D MMM ddd')
+      } else {
+        formatedDate = moment(formatedDate).format('D MMM YY')
+      }
+
+      const today = moment().startOf('day').valueOf()
+      const yesterday = moment().startOf('day').subtract(1, 'days').valueOf()
+
+      switch (nDate) {
+        case today: return `Today ${moment(nDate).format('ddd')}`
+        case yesterday: return `Yesterday  ${moment(nDate).format('ddd')}`
+        default: return formatedDate
+      }
+    },
+
     fillValues() {
       // Create
       if (this.$store.state.trnForm.action === 'create') {
         const lastTrn = this.$store.getters.trns[0]
-        const lastAccount = this.accounts.find(a => a.id === lastTrn.accountId)
         if (lastTrn) {
+          const lastAccount = this.accounts.find(a => a.id === lastTrn.accountId)
           this.$store.commit('setTrnFormCategoryId', lastTrn.categoryId)
           this.values = {
             date: moment(),
@@ -395,14 +419,20 @@ export default {
       }
 
       const countCategoriesToShow = this.$store.state.isMobile ? 11 : 13
-      const lastTrnsUnicCategory = []
-      for (let i = 0; lastTrnsUnicCategory.length < countCategoriesToShow; i++) {
-        if (lastTrnsUnicCategory.indexOf(this.trns[i].category) === -1) {
-          lastTrnsUnicCategory.push(this.trns[i].category)
+      const lastUsedCategoriesIds = []
+      const lastUsedCategories = []
+      if (this.trns.length >= countCategoriesToShow) {
+        for (let i = 0; lastUsedCategoriesIds.length < countCategoriesToShow; i++) {
+          if (this.trns[i]) {
+            const categoryId = this.trns[i].category.id
+            if (lastUsedCategoriesIds.indexOf(categoryId) === -1) {
+              lastUsedCategoriesIds.push(categoryId)
+              lastUsedCategories.push(this.categories.find(c => c.id === categoryId))
+            }
+          }
         }
+        this.lastUsedCategories = lastUsedCategories
       }
-
-      this.lastUsedCategories = lastTrnsUnicCategory
     },
     toogleCategoriesPop() {
       this.$store.commit('toogleCategoriesPop')
@@ -477,6 +507,7 @@ export default {
       }
     },
     async onSubmitForm() {
+      let isCreated = false
       this.focus = false
 
       function calc(number) {
@@ -545,8 +576,6 @@ export default {
           }
         }
 
-        this.$store.commit('showLoader')
-
         formatedValues = {
           accountId: this.values.accountId,
           amount: calcAmount,
@@ -579,9 +608,14 @@ export default {
             this.values.type = 0
             this.values.description = ''
           } else {
-            await this.$store.dispatch('addTrn', formatedValues)
-            this.values.amount = ''
-            this.values.description = ''
+            const result = await this.$store.dispatch('addTrn', formatedValues)
+            if (result) {
+              isCreated = true
+              this.values.amount = ''
+              this.values.description = ''
+            } else {
+              console.error('Trn has not created.')
+            }
           }
         }
 
@@ -595,13 +629,14 @@ export default {
           this.$store.commit('closeTrnForm')
         }
 
-        this.$store.commit('closeLoader')
-        this.$notify({
-          group: 'foo',
-          title: 'Succesed',
-          text: 'Trn was created.',
-          type: 'success'
-        })
+        if (isCreated) {
+          this.$notify({
+            group: 'foo',
+            title: 'Succesed',
+            text: 'Trn was created.',
+            type: 'success'
+          })
+        }
       } catch (error) {
         this.errors = error.message
       }

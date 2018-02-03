@@ -284,12 +284,11 @@ export default {
           }
           break
         case 'month':
-          switch (difference) {
-            // case 0:
-            //   name = `This ${this.$timePeriod}`
-            //   break
-            default:
-              name = moment().subtract(period, this.$timePeriod).format('MMM YY')
+          // same year
+          if (moment(moment().subtract(period, this.$timePeriod)).isSame(moment(), 'year')) {
+            name = moment().subtract(period, this.$timePeriod).format('MMM')
+          } else {
+            name = moment().subtract(period, this.$timePeriod).format('MMM YY')
           }
           break
         case 'year':
@@ -337,7 +336,11 @@ export default {
               name = `This ${this.$timePeriod}`
               break
             default:
-              name = selectedDate.format('MMMM YY')
+              if (moment(selectedDate).isSame(moment(), 'year')) {
+                name = selectedDate.format('MMMM')
+              } else {
+                name = selectedDate.format('MMMM YY')
+              }
           }
           break
         case 'year':
