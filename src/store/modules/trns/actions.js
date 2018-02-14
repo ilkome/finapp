@@ -44,10 +44,13 @@ export default {
         await db
           .ref(`users/${rootState.user.user.uid}/trns/${formatedTrn.id}`)
           .set(formatedTrn)
+
         const addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
         if (addedOfflineTrns) {
           delete addedOfflineTrns[formatedTrn.id]
-          await localforage.setItem('addedOfflineTrns', { ...addedOfflineTrns })
+          await localforage.setItem('addedOfflineTrns',
+            addedOfflineTrns ? { ...addedOfflineTrns } : {}
+          )
         }
 
         result.status = 'online'
@@ -61,13 +64,18 @@ export default {
         })
 
         let addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
-        await localforage.setItem('addedOfflineTrns', {
-          [formatedTrn.id]: formatedTrn, ...addedOfflineTrns
-        })
+        await localforage.setItem('addedOfflineTrns',
+          addedOfflineTrns
+            ? { [formatedTrn.id]: formatedTrn, ...addedOfflineTrns }
+            : { [formatedTrn.id]: formatedTrn }
+        )
 
         const localTrns = await localforage.getItem('trns')
-        await localforage.setItem('trns', [formatedTrnForStore, ...localTrns])
-
+        await localforage.setItem('trns',
+          localTrns && localTrns.length
+            ? [formatedTrnForStore, ...localTrns]
+            : [formatedTrnForStore]
+        )
         commit('addTrn', formatedTrnForStore)
         result.status = 'offline'
         result.error = null
@@ -103,7 +111,9 @@ export default {
         const updatedOfflineTrns = await localforage.getItem('updatedOfflineTrns')
         if (updatedOfflineTrns) {
           delete updatedOfflineTrns[formatedTrn.id]
-          await localforage.setItem('updatedOfflineTrns', updatedOfflineTrns)
+          await localforage.setItem('updatedOfflineTrns',
+            updatedOfflineTrns ? { ...updatedOfflineTrns } : {}
+          )
         }
 
         result.status = 'online'
@@ -117,11 +127,18 @@ export default {
         })
 
         let updatedOfflineTrns = await localforage.getItem('updatedOfflineTrns')
-        updatedOfflineTrns = { [formatedTrn.id]: formatedTrn, ...updatedOfflineTrns }
-        await localforage.setItem('updatedOfflineTrns', updatedOfflineTrns)
+        await localforage.setItem('updatedOfflineTrns',
+          updatedOfflineTrns
+            ? { [formatedTrn.id]: formatedTrn, ...updatedOfflineTrns }
+            : { [formatedTrn.id]: formatedTrn }
+        )
 
         const localTrns = await localforage.getItem('trns')
-        await localforage.setItem('trns', [formatedTrnForStore, ...localTrns])
+        await localforage.setItem('trns',
+          localTrns && localTrns.length
+            ? [formatedTrnForStore, ...localTrns.filter(trnId => trnId !== formatedTrnForStore.id)]
+            : [formatedTrnForStore]
+        )
 
         commit('updateTrn', formatedTrnForStore)
         result.status = 'offline'
@@ -162,8 +179,13 @@ export default {
 
       // Offline
       if (!rootState.isConnected) {
+        console.log('offline')
         const deletedOfflineTrns = await localforage.getItem('deletedOfflineTrns')
-        await localforage.setItem('deletedOfflineTrns', [id, ...deletedOfflineTrns])
+        await localforage.setItem('deletedOfflineTrns',
+          (deletedOfflineTrns && deletedOfflineTrns.length)
+            ? [id, ...deletedOfflineTrns]
+            : [id]
+        )
 
         const localTrns = await localforage.getItem('trns')
         if (localTrns && localTrns.length) {

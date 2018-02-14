@@ -48,6 +48,9 @@ new Vue({
       const localTrns = await localforage.getItem('trns')
       if (localData &&
           localTrns && localTrns.length &&
+          localData.accounts && localData.accounts.length &&
+          localData.categories && localData.categories.length &&
+          localData.rates &&
           localData.user && localData.user.uid) {
         this.$store.commit('signIn', localData.user)
         this.$store.commit('setRates', localData.rates)
