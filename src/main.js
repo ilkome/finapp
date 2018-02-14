@@ -54,7 +54,6 @@ new Vue({
           localData.accounts && localData.accounts.length &&
           localData.categories && localData.categories.length &&
           localData.rates) {
-        console.log('cache')
         this.$store.commit('signIn', localUser)
         this.$store.commit('setRates', localData.rates)
         this.$store.commit('setAccounts', localData.accounts)
@@ -81,7 +80,6 @@ new Vue({
           // -------------------------------------------------------------------
           db.ref(`${userRef}`).on('value', async (snapshot) => {
             const val = snapshot.val()
-            console.log('val', val)
             this.$store.dispatch('setRates')
             this.$store.dispatch('setCategories', val)
             this.$store.dispatch('setAccounts', val)
