@@ -44,10 +44,11 @@ export default {
         await db
           .ref(`users/${rootState.user.user.uid}/trns/${formatedTrn.id}`)
           .set(formatedTrn)
-
         const addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
-        delete addedOfflineTrns[formatedTrn.id]
-        await localforage.setItem('addedOfflineTrns', addedOfflineTrns)
+        if (addedOfflineTrns) {
+          delete addedOfflineTrns[formatedTrn.id]
+          await localforage.setItem('addedOfflineTrns', { ...addedOfflineTrns })
+        }
 
         result.status = 'online'
         result.error = null
@@ -100,8 +101,10 @@ export default {
           .update(formatedTrn)
 
         const updatedOfflineTrns = await localforage.getItem('updatedOfflineTrns')
-        delete updatedOfflineTrns[formatedTrn.id]
-        await localforage.setItem('updatedOfflineTrns', updatedOfflineTrns)
+        if (updatedOfflineTrns) {
+          delete updatedOfflineTrns[formatedTrn.id]
+          await localforage.setItem('updatedOfflineTrns', updatedOfflineTrns)
+        }
 
         result.status = 'online'
         result.error = null

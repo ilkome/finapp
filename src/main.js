@@ -64,7 +64,6 @@ new Vue({
         if (user) {
           const db = firebase.database()
           const userRef = `users/${user.uid}`
-
           const formatedUser = {
             displayName: user.displayName,
             email: user.email,
