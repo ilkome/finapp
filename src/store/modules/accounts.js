@@ -38,31 +38,34 @@ const store = {
     },
     async addAccount({ commit, rootState }, values) {
       try {
-        commit('showLoader')
+        const formatedValues = {
+          name: values.name.trim(),
+          countTotal: values.countTotal ? 1 : 0,
+          currency: values.currency ? values.currency : 'RUB',
+          order: values.order ? values.order : 100,
+          color: values.color
+        }
+
         const db = await firebase.database()
-        const result = await db.ref(`users/${rootState.user.user.uid}/accounts`).push(values)
+        const result = await db.ref(`users/${rootState.user.user.uid}/accounts`).push(formatedValues)
           .then(async (data) => {
             const key = data.key
             const newAccount = {
-              ...values,
+              ...formatedValues,
               id: key
             }
             commit('addAccount', newAccount)
-            commit('closeLoader')
             return true
-          })
-          .catch(error => {
-            commit('showError', `store/accounts/addAccount: ${error.message}`)
           })
         return result
       } catch (error) {
-        commit('showError', `store/accounts/addAccount: ${error.message}`)
+        throw error
       }
     },
     async deleteAccount({ commit, rootState }, id) {
       try {
         const db = await firebase.database()
-        db.ref(`users/${rootState.user.user.uid}/accounts/${id}`)
+        await db.ref(`users/${rootState.user.user.uid}/accounts/${id}`)
           .remove()
           .catch(error => {
             console.error(error)
@@ -75,22 +78,27 @@ const store = {
     },
     async updateAccount({ commit, state, rootState }, values) {
       try {
+        const id = values.id
         const trns = rootState.trns.all
+        const formatedValues = {
+          name: values.name,
+          countTotal: values.countTotal,
+          currency: values.currency,
+          order: values.order,
+          color: values.color
+        }
 
         const db = await firebase.database()
-        db.ref(`users/${rootState.user.user.uid}/accounts/${values.id}`)
-          .update(values)
+        await db.ref(`users/${rootState.user.user.uid}/accounts/${id}`)
+          .update(formatedValues)
           .catch(error => {
             console.error(error)
-            commit('showError', `store/accounts/updateAccount: ${error.message}`)
           })
-        const formatedAccount = formatAccount(values, { trns })
+        const formatedAccount = formatAccount({ id, ...formatedValues }, { trns })
 
         commit('updateAccount', formatedAccount)
-        commit('closeLoader')
       } catch (error) {
-        console.error(error)
-        commit('showError', `store/accounts/updateAccount: ${error.message}`)
+        throw error
       }
     }
   },

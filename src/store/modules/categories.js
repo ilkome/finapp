@@ -42,9 +42,16 @@ const store = {
     },
     async addCategory({ commit, state, rootState }, values) {
       try {
-        commit('showLoader')
+        const formatedValues = {
+          name: values.name.trim(),
+          color: values.color,
+          icon: values.icon,
+          parentId: values.parentId ? values.parentId : 0,
+          showStat: values.showStat ? values.showStat : 0
+        }
+
         const db = await firebase.database()
-        const result = await db.ref(`users/${rootState.user.user.uid}/categories`).push(values)
+        const result = await db.ref(`users/${rootState.user.user.uid}/categories`).push(formatedValues)
           .then(async (data) => {
             const key = data.key
             const newCategory = {
@@ -63,37 +70,10 @@ const store = {
         commit('showError', `store/categories/addCategory: ${error.message}`)
       }
     },
-    async updateCategory({ commit, state, rootState }, values) {
-      try {
-        const id = values.id
-        const categories = rootState.categories.all
-        const formatedValues = {
-          name: values.name.trim(),
-          color: values.color,
-          icon: values.icon,
-          parentId: values.parentId ? values.parentId : 0
-        }
-
-        const db = await firebase.database()
-        db.ref(`users/${rootState.user.user.uid}/categories/${id}`)
-          .update(formatedValues)
-          .catch(error => {
-            console.error(error)
-            commit('showError', `store/categories/updateCategory: ${error.message}`)
-          })
-        const formatedCategory = formatCategory(values, categories)
-
-        commit('updateCategory', formatedCategory)
-        commit('closeLoader')
-      } catch (error) {
-        console.error(error)
-        commit('showError', `store/categories/updateCategory: ${error.message}`)
-      }
-    },
     async deleteCategory({ commit, rootState }, id) {
       try {
         const db = await firebase.database()
-        db.ref(`users/${rootState.user.user.uid}/categories/${id}`)
+        await db.ref(`users/${rootState.user.user.uid}/categories/${id}`)
           .remove()
           .catch(error => {
             console.error(error)
@@ -102,6 +82,34 @@ const store = {
         commit('deleteCategory', id)
       } catch (error) {
         commit('showError', `store/categories/deleteCategory: ${error.message}`)
+      }
+    },
+    async updateCategory({ commit, state, rootState }, values) {
+      try {
+        const id = values.id
+        const categories = rootState.categories.all
+        const formatedValues = {
+          name: values.name.trim(),
+          color: values.color,
+          icon: values.icon,
+          parentId: values.parentId ? values.parentId : 0,
+          showStat: values.showStat && values.showStat
+        }
+
+        const db = await firebase.database()
+        await db.ref(`users/${rootState.user.user.uid}/categories/${id}`)
+          .update(formatedValues)
+          .catch(error => {
+            console.error(error)
+            commit('showError', `store/categories/updateCategory: ${error.message}`)
+          })
+        const formatedCategory = formatCategory({ id, ...formatedValues }, categories)
+
+        commit('updateCategory', formatedCategory)
+        commit('closeLoader')
+      } catch (error) {
+        console.error(error)
+        commit('showError', `store/categories/updateCategory: ${error.message}`)
       }
     }
   },

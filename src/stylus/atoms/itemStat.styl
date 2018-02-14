@@ -2,82 +2,101 @@
   padding 0 10px
   margin-bottom 80px
 
+  @media (min-width: 768px)
+    padding 0
+
   &:last-child
     margin-bottom 0
 
 .itemStat
-  margin 0 -10px
-  opacity .9
+  cursor pointer
   position relative
   display block
+  margin 0
+  padding 10px 0
+  margin-bottom -1px
   color $color-second
-  border 1px solid transparent
-  border-bottom 1px solid $color-line-summary
-  cursor pointer
+  //border-bottom 1px solid $color-line-summary
 
   &._active
-    opacity 1
     cursor default
-    background alpha($color-trn-hover, .5) !important
-    border-color alpha($color-link, .8) !important
+    background $color-trn-hover
 
   &._opened
-    margin 20px -10px
-    padding-bottom 0
-    background alpha($color-trn-hover, .5) !important
-    border-color $color-line
+  &._opened:hover
+    margin 0 -15px
+    margin-bottom 20px
+    padding 15px
+    padding-bottom 0px
+    border-bottom 0
+    background #202020
 
-    &:first-child
-      margin-top 0
+    & > ^[0]__in
+      padding-bottom 15px
 
-    &:hover
-      border-color alpha($color-link, .8) !important
-
-  &._child
-    margin 0
-    padding-left 15px
-    margin-bottom 0 !important
-    background alpha($color-trn-hover, .5) !important
-    border-color transparent
-    border-top-color $color-line
-
-    &:hover
-      background alpha($color-trn-hover, .5) !important
-      border-color $color-line !important
+  &._opened:first-child
+    margin-top 0
 
   &:last-child
-    margin-bottom 0
+    border 0
+
+  @media (max-width: 768px)
+    &:active
+      background #292929
 
   &:hover
     opacity 1
-    background $color-trn-hover
-    border-color $color-trn-hover-line
+    margin 0 -10px
+    margin-bottom -1px
+    padding 10px 10px
+
+    @media (min-width: 768px)
+      background #292929
+      border-color transparent
+
+  &._child
+    position relative
+    margin 0 -10px
+    margin-bottom -1px
+    padding 0 10px
+    background alpha($color-trn-hover, .5)
+    border-color transparent
+    border-top-color $color-sidebar-bg-hover
+    border-left 0
+    border-right 0
+
+    & ^[0]__in
+      padding 5px 0
+      margin 0
+
+    &:last-child
+      margin-bottom 0
+      border-bottom 0
+
 
   &__in
     display flex
     align-items center
-    padding 10px
-
-    @media (min-width: 768px)
-      padding 10px
 
   &__icon
-    padding-right 15px
+    display flex
+    justify-content center
+    margin-right 12px
 
     @media (min-width: 768px)
-      padding-right 20px
+      margin-right 12px
 
   &__content
+    position relative
     display flex
     flex-flow column nowrap
     flex-grow 1
 
   &__name
     flex-grow 1
-    padding-left 2px
-    color $color-white-text
-    font-size .95rem
-    letter-spacing .5px
+    color $color-itemStat-name
+    font-size 14px
+    //letter-spacing .5px
     white-space nowrap
     $font-secondary()
 
@@ -87,7 +106,7 @@
     padding-bottom 6px
 
     @media (min-width: 768px)
-      padding-bottom 10px
+      padding-bottom 6px
 
     &:last-child
       padding-bottom 0
@@ -95,8 +114,8 @@
   &__price
     min-width 70px
     max-width 125px
-    padding-right 2px
     text-align right
+    color $color-main
     @media (min-width: 768px)
       min-width 105px
 
@@ -104,15 +123,13 @@
     flex-grow 1
     overflow hidden
     margin-bottom 10px
-    border-radius 2px
     background $color-graph
 
     &:last-child
       margin-bottom 0
 
   &__graph__in
-    min-height 8px
-    border-radius 0
+    height 3px
 
     &__price
       padding 4px 8px
@@ -123,10 +140,70 @@
       font-size 1rem
 
     &._expense
-      background $color-expense
+      background #b71d2c
 
     &._income
-      background $color-income
+      background #26811f
 
   &__trns
+    margin-top 12px
     cursor default
+    //background #171717
+    border-top 1px solid #2a2a2a
+
+    &._padding
+      margin-top -10px
+      margin-bottom 20px
+
+  &__summary
+    padding 0
+
+  &__child
+    margin 0 -15px
+    padding 7px 15px
+    background #1c1c1c
+    border 0
+    border-top 1px solid #111
+
+.itemStatChild
+  padding 8px 0
+  margin-bottom -1px
+  border-bottom 1px solid #232323
+
+  &:last-child
+    border-color transparent
+
+  @media (max-width: 768px)
+    &:active
+      border-color transparent
+      background #292929
+
+  @media (min-width: 768px)
+    &:hover
+      border-color transparent
+      background #292929
+
+  &:hover
+  &._opened
+    margin 0 -8px
+    padding 8px 8px
+    padding-bottom 7px
+
+  &._opened
+    background #171717
+    margin-bottom 20px
+    border-color transparent
+
+  &._opened .itemStat__summary
+    margin-bottom -12px
+
+  &._opened:last-child
+    margin-bottom -10px
+
+  &:hover:last-child
+  &._opened:last-child
+    margin-bottom 0
+   
+  & .itemStat__summary
+    padding-top 12px
+    margin-bottom -8px

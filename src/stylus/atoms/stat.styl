@@ -1,177 +1,318 @@
-.stat
-  opacity .7
-  overflow-x auto
-  max-width 1200px
-  border 1px solid $color-line-layout
-  scrollbar()
-  anim()
+.tooltip-trigger
+  position relative
+  &:hover
+    .tooltip
+      //
+
+.stat__toogle
+  z-index 2
+  position absolute
+  top 0
+  padding $ms
+  color $color-grey
+  opacity .5
+  text-align center
+
+  @media $before768
+    left 0
+
+  @media $after768
+    right -45px
+    width 40px
+    height 100%
+    padding 17px 10px
 
   &:hover
     opacity 1
+    background #191919
+
+  &._active
+    color $color-main
+
+
+.chartYearsList
+  background #171717
+
+
+  &__item
+    border-bottom 1px solid #0b0b0b
+    &:nth-child(odd)
+      background #191919
+
+
+.yearChartGraph
+  position relative
+  display flex
+  align-items flex-end
+  justify-content center
+  max-width 50px
+  height 130px
+  margin 0 auto
+
+.yearChartGraph__text
+  font-size 8px
+  padding-bottom 5px
+
+.tooltip
+  display none
+  pointer-events none
+  z-index 2
+  position absolute
+  visibility hidden
+  text-align left
+  bottom 0
+  left 50%
+  width auto
+  transform translate(-50%, 100%)
+
+  .statChart__item:hover &
+  .tooltip-trigger:hover &
+    @media (min-width: 768px)
+      visibility visible
+
+  &__in
+    opacity 0
+    display block
+    position relative
+    z-index 2
+    left 0px
+    top 10px
+    padding 15px 20px
+    color $color-icon-text
+    font-size .9rem
+    font-weight normal
+    text-transform none
+    letter-spacing 1px
+    background #242424
+    text-align right
+    border-radius 3px
+    white-space nowrap
+
+    .statChart__item:hover &
+    .tooltip-trigger:hover &
+      opacity 1
+      transform translate(0, 0%)
+
+  &__name
+    margin-bottom 10px
+    font-size 14px
+    text-transform uppercase
+    font-weight bold
+    text-align right
+    white-space nowrap
+    $font-numbers()
+
+  &__name-normal
+    margin-bottom 10px
+    font-size 14px
+    text-align right
+    white-space nowrap
+
+  &__sum
+    $typo-money()
+    color $color-sum
+
+  &__incomes
+    $typo-money()
+    color $color-incomes
+
+  &__expenses
+    $typo-money()
+    color $color-expenses
+
+.yearChartFix
+  position relative
+  height 225px
+
+.chartYears
+  padding 20px 10px
+  // background #1c1c1c
+  border-bottom 1px solid #141414
+
+  @media $after768
+    padding 30px 60px
+
+  &:nth-child(odd)
+    // background #202020
+
+  &:last-child
+    //border-bottom 0
+
+
+
+.statChartFix
+  position relative
+  height 121px
+  margin-bottom 20px
+  border-bottom 1px solid #232323
+
+.statChart2
+  position absolute
+  width 100%
+
+  .statChart__in
+    padding-bottom 10px
+    margin 0 -7px
+
+  .icon
+    height 40px
+    width 26px
+    padding 20px 0 10px 0 !important
+
+.statChart__item2
+  cursor pointer
+  padding 0 8px
+
+.statChart__item
+  position relative
+
+  &._small
+    min-width 20px
+    padding 0 2px
+    padding-bottom 10px
+    border none
+
+    @media $after768
+      padding 10px 5px
+      padding-top 15px
+
+  @media $after768
+    max-width 120px
+
+  &:hover
+    @media $after768
+      background #1c1c1c
+
+
+.statChartGraph2
+  display flex
+  align-items flex-end
+  margin 0 auto
+  height 70px
+
+  &__in
+    z-index 2
+    position relative
+    flex 1 1 auto
+
+  &__total
+    position absolute
+    width 100%
+    top 5px
+    font-size .6rem
+    text-align center
+
+
+.statChart
+  position relative
 
   &__in
     display flex
     align-items center
-    justify-content space-between
-    scrollbar()
+    opacity .8
 
-  &__date
-    padding-bottom 20px
-    text-align center
-    font-size .8rem
-    font-weight bold
-
-  &__item
-    cursor pointer
-    min-width 10rem
-    height 24rem
-    flex 1 0 auto
-    padding 30px 0px
-    border-right 1px solid $color-line
-    anim()
-
-    &:last-child
-      margin-right 0
-      border 0
-
-    &:hover
-    &._active
-      background $color-trn-hover
-
-    &._active
-      cursor default
-
-  &__values
-    display none
-    max-width 70px
-    margin 0 auto
-    text-align right
-    padding-top 10px
-    .incomes
-    .expenses
-    .sum
-      font-size 1rem
-
-  &__graph
-    max-width 70px
-    margin 0 auto
-    display flex
-    align-items flex-end
-    height 19.5rem
-    padding-bottom 20px
-
-    &__in
-      flex 1 1 auto
-
-      &._incomes
-        margin 0 4px
-        background $color-income
-
-      &._expenses
-        margin 0 4px
-        background $color-expense
-
-      &._empty
-        height 1px
-        margin 0 4px
-        background $color-line
-
-  &__empty
-    cursor default
-    text-align center
-
-
-.itemStat2
-  overflow-x auto
-  scrollbar()
-  anim()
-
-  &__in
-    opacity .7
-    display inline-grid
-    grid-template-columns repeat(6, 210px)
-    margin 10px
-    border 2px solid $color-line-layout
-    box-shadow 0px 0px 0px $color-layout
-    // scrollbar()
-    anim()
+    ^[0]._overflow &
+      @media $before768
+        opacity 1
+        overflow-x auto
+        direction rtl
+        scrollbar()
 
     &:hover
       opacity 1
-      margin 8px
-      border-width 4px
-      box-shadow 10px 10px 0px $color-layout
-
-  &__date
-    padding-bottom 20px
-    text-align center
-    font-size .8rem
-    font-weight bold
 
   &__item
+    direction ltr
+    flex-grow 0
     cursor pointer
-    height 24rem
-    flex 1 0 auto
-    padding 30px 0px
-    border-right 2px solid $color-line
-    anim()
+    padding $mm $ms
+    min-width 50px
+    color $color-grey
+    text-align center
+    border-right 1px solid $color-sidebar
 
-    &:last-child
-      margin-right 0
-      border 0
+    @media $after768
+      flex-grow 1
+      min-width 100px
+      padding $m
 
     &._active
+    &._active:hover
+      color $color-white
       cursor default
-      background $color-trn-hover !important
+      background #111111
+
+    &:first-child
+      margin-right 0
+      // border-left-color transparent
+
+      @media $before768
+        margin-right $m
 
     &:hover
-      background alpha($color-trn-hover, .5)
+      background #0b0b0b
+
 
   &__values
-    display none
-    max-width 70px
-    margin 0 auto
+    display inline-block
     text-align right
     padding-top 10px
-    .incomes
-    .expenses
-    .sum
-      font-size 1rem
 
-  &__graph
-    max-width 160px
-    margin 0 auto
-    display flex
-    align-items flex-end
-    height 19.5rem
-    padding-bottom 20px
-
-    &__in
-      flex 1 1 auto
-      position relative
-
-      &._incomes
-        // margin 0 10px
-        background $color-income
+    &__row
+      margin-bottom 1px
+      $typo-money()
+      font-size 13px
 
       &._expenses
-        // margin 0 10px
-        background $color-expense
+        color $color-expenses
 
-      &._empty
-        height 1px
-        // margin 0 4px
-        background $color-line
+      &._incomes
+        color $color-incomes
 
-    &__text
-      position absolute
-      left 50%
-      top 10px
-      transform translateX(-50%)
-      font-size 1.1rem
-      font-weight normal
-      color white
+      &:last-child
+        margin-bottom 0
 
-  &__empty
-    cursor default
+
+  &__name
+    font-size .8rem
+    text-transform uppercase
+    font-weight bold
+    letter-spacing 0px
     text-align center
+    white-space nowrap
+    $font-numbers()
+
+    &._padding
+      padding-bottom 15px
+
+
+.statChartGraph
+  position relative
+  max-width 50px
+  margin 0 auto
+  display flex
+  align-items flex-end
+  justify-content center
+  height 77px
+
+  &._bigger
+    height 95px
+
+  &__in
+    position relative
+    display flex
+    align-items flex-end
+    justify-content center
+    flex 1 1 auto
+    max-width 6px
+    margin 0 2px
+
+    &._incomes
+      background $color-income
+
+    &._expenses
+      background $color-expense
+
+    &._empty
+      height 1px
+      background $color-line

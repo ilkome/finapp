@@ -1,0 +1,44 @@
+.notification-wrapper
+  .notification
+    left 0
+    margin 0
+    margin-bottom 6px
+    padding 10px
+    font-size 14px
+    line-height 18px
+    color white
+    letter-spacing 0
+    background #44A4FC
+    border-left 2px solid #187FE7
+    transition all 500ms
+
+    @media $after768
+      padding $m
+      font-size 14px
+      border-left 5px solid #187FE7
+
+    &.warn
+      background #ffb648
+      border-left-color #f48a06
+
+    &.error
+      background #E54D42
+      border-left-color #B82E24
+
+    &.success
+      background #68CD86
+      border-left-color #42A85F
+
+    &-title
+      margin-bottom $ms
+      font-size 18px
+      font-weight bold
+      text-transform uppercase
+      $font-numbers()
+
+      @media $after768
+        padding-bottom 16px
+        font-size 1.3rem
+        font-weight bold
+        letter-spacing 1px
+        line-height 1rem

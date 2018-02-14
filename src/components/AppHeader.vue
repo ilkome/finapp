@@ -1,186 +1,198 @@
 <template lang="pug">
-.header(:class="className")
-  //- Mobile header
-  template(v-if="$store.state.isMobile")
-    .header__in
-      .header__item.fa.fa-bars(@click.prevent.stop="$store.commit('toogleLeftbar')")
-
-      .header__item
-        .header__item
-          h1.header__header(@click.prevent.stop="openPopupCalendar($event)")
-            .header__icon.mdi.mdi-calendar-multiple
-            .header__firstDate {{ $store.state.filter.filter.date.first }}
-
-      .header__item.fa.fa-plus(@click.prevent.stop="$store.commit('toogleTrnForm')")
-
-    .header__in._second
-      .header__menu__item._mt(
-        @click.prevent="$emit('selectPrevPeriod')"
-        :class="{ _disabled: selectedPeriodIndex === 0 }"
-      ): .fa.fa-arrow-left
-
-      .header__menu__item(
-        :class="{ _active: $timePeriod === 'month' }",
-        @click.prevent="$emit('setTimePeriod', 'month')"
-      ) Month
-      .header__menu__item(
-        :class="{ _active: $timePeriod === 'year' }",
-        @click.prevent="$emit('setTimePeriod', 'year')"
-      ) Year
-      .header__menu__item(
-        :class="{ _active: $timePeriod === 'all' }",
-        @click.prevent="$emit('setTimePeriod', 'all')"
-      ) All
-      //- .header__menu__item
-        .fa.fa-ellipsis-v
-      .header__menu__item._mt(@click.prevent="$emit('selectNextPeriod')")
-        .fa.fa-arrow-right
-
-    .header__in._second
-      template(v-if="selectedCategory || getFilter.account")
-        .flex
-          template(v-if="getFilter.account")
-            .header__menu__item._account
-              div(@click.prevent="$store.commit('setFilterAccount', null)") {{ getFilter.account.name.charAt(0) }}{{ getFilter.account.name.charAt(1) }}
-
-          template(v-if="selectedCategory")
-            template(v-if="selectedCategory.parent")
-              .header__menu__item
-                div(@click.prevent="$emit('setFilterCategory', selectedCategory.parent.id)", :class="selectedCategory.parent.icon")
-            .header__menu__item
-              div(@click.prevent="$emit('setFilterCategory', null)", :class="selectedCategory.icon")
-        .flex
-          .header__menu__item(:class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')")
-            .fa.fa-bar-chart
-          .header__menu__item._categories(@click.prevent="$store.commit('toogleCategoriesList')")
-            .fa.fa-list-ul
-          .header__menu__item._accounts(@click.prevent="$store.commit('toogleAccountList')")
-            .fa.fa-credit-card
-
-      template(v-else)
-        .header__menu__item(:class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')")
-          .fa.fa-bar-chart
-        .header__menu__item._categories(@click.prevent="$store.commit('toogleCategoriesList')")
-          .fa.fa-list-ul
-        .header__menu__item._accounts(@click.prevent="$store.commit('toogleAccountList')")
-          .fa.fa-credit-card
-
+.header
   //- PC
   template(v-if="!$store.state.isMobile")
     .header__in
-      //- Title
-      .header__item
-        h1.header__header(@click.prevent.stop="openPopupCalendar($event)")
-          .header__icon.mdi.mdi-calendar-multiple
-          .header__firstDate {{ $store.state.filter.filter.date.first }}
-          .header__secondDate(v-if="$store.state.filter.filter.date.second !== 'Today'") {{ $store.state.filter.filter.date.second }}
+      .header__col._left
+        .header__link._categories._extraPadding(
+          @click="onClickToogleCategories"
+          :class="{ _active: $store.state.categories.list }"
+          v-tooltip.bottom-center="{ content: 'Show categories' }"
+        ): .mdi.mdi-format-list-bulleted-type
+        .header__link._extraPadding(
+          :class="{ _active: showedChartYears }" @click.prevent="$emit('toogleShowsChartYears')"
+          v-tooltip.bottom-center="{ content: showedChartYears ? 'Show years chart' : 'Hide years chart' }"
+        ): .mdi.mdi-chart-bubble
+        .header__link._extraPadding(
+          :class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')"
+          v-tooltip.bottom-center="{ content: showedGraph ? 'Show chart' : 'Hide chart' }"
+        ): .fa.fa-bar-chart
+        .header__link._extraPadding(
+          @click.prevent="$emit('toogleShowHistory')"
+          :class="{ _active: showedHistory }"
+          v-tooltip.bottom-center="{ content: showedHistory ? 'Hide hitstory' : 'Show hitstory' }"
+        ): .fa.fa-history
 
-      //- Periods
-      .header__item
-        .header__periods
-          template(v-if="selectedCategory || getFilter.account")
-            template(v-if="getFilter.account")
-              .header__menu__item._account
-                div(@click.prevent="$store.commit('setFilterAccount', null)") {{ getFilter.account.name }}
+        //- .header__link(
+        //-   @click="$store.commit('signOut')"
+        //-   v-tooltip.bottom-center="{ content: 'Toogle sidebar icons' }"
+        //- ): .mdi.mdi-exit-to-app
 
-            template(v-if="selectedCategory")
-              template(v-if="selectedCategory.parent")
-                .header__menu__item
-                  div(@click.prevent="$emit('setFilterCategory', selectedCategory.parent.id)", :class="selectedCategory.parent.icon")
-              .header__menu__item._active
-                div(@click.prevent="$emit('setFilterCategory', null)", :class="selectedCategory.icon")
+      .header__col._date
+        .header__date(
+          v-tooltip.bottom-center="{ content: $store.state.filter.filter.date.second, classes: 'tooltip _fast' }"
+        ) {{ $store.state.filter.filter.date.first }}
 
-            .header__menu__sep
+      //- Nav
+      .header__col
+        .header__link(
+          @click.prevent="$emit('selectPrevPeriod')"
+          :class="{ _disabled: checkIsLastDate() }"
+        ): .arrow._left
+        .header__link(
+          :class="{ _active: $timePeriod === 'day' }"
+          @click.prevent="$emit('setTimePeriod', 'day')"
+        ) Day
+        .header__link(
+          :class="{ _active: $timePeriod === 'week' }"
+          @click.prevent="$emit('setTimePeriod', 'week')"
+        ) Week
+        .header__link(
+          :class="{ _active: $timePeriod === 'month' }"
+          @click.prevent="$emit('setTimePeriod', 'month')"
+        ) Month
+        .header__link(
+          :class="{ _active: $timePeriod === 'year' }"
+          @click.prevent="$emit('setTimePeriod', 'year')"
+        ) Year
+        .header__link(
+          :class="{ _active: $timePeriod === 'all' }"
+          @click.prevent="$emit('setTimePeriod', 'all')"
+        ) All
+        .header__link(
+          @click.prevent="$emit('selectNextPeriod')"
+        ): .arrow._right
 
-          .header__menu__item._mt(
-            @click.prevent="$emit('selectPrevPeriod')"
-            :class="{ _disabled: selectedPeriodIndex === 0}"
-          ): .fa.fa-arrow-left
+      //- Add Trn
+      .header__col
+        .header__link(
+          @click.prevent="$store.commit('toogleTrnForm')"
+          :class="{ _active: $store.state.trnForm.isShow }"
+          v-tooltip.bottom-center="{ content: $store.state.trnForm.isShow ? 'Hide' : 'Create new transaction' }"
+        ): .plus
 
-          .header__menu__item(
-            :class="{ _active: $timePeriod === 'isoweek' }",
-            @click.prevent="$emit('setTimePeriod', 'isoweek')"
-          ) Week
-          .header__menu__item(
-            :class="{ _active: $timePeriod === 'month' }",
-            @click.prevent="$emit('setTimePeriod', 'month')"
-          ) Month
-          .header__menu__item(
-            :class="{ _active: $timePeriod === 'year' }",
-            @click.prevent="$emit('setTimePeriod', 'year')"
-          ) Year
-          .header__menu__item(
-            :class="{ _active: $timePeriod === 'all' }",
-            @click.prevent="$emit('setTimePeriod', 'all')"
-          ) All
-          .header__menu__item._mt(@click.prevent="$emit('selectNextPeriod')")
-            .fa.fa-arrow-right
 
-          .header__menu__sep
-          .header__menu__item._withSep(:class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')")
-            .fa.fa-bar-chart
-          .header__menu__item(:class="{ _active: showedHistory }" @click.prevent="$emit('toogleShowHistory')")
-            .fa.fa-history
-          .header__menu__item(@click.prevent="$store.commit('toogleTrnForm')")
-            .fa.fa-plus
+  //- mobile header
+  //----------------------------------------------------------------------------
+  template(v-if="$store.state.isMobile")
+    .header__in._fixed
+      .header__col
+        .header__link(@click.prevent.stop="$store.commit('toogleLeftbar')")
+          .fa.fa-bars
+        .header__link._categories(@click="onClickToogleCategories")
+          .mdi.mdi-format-list-bulleted-type
+        .header__link(
+          :class="{ _active: showedGraph }" @click.prevent="$emit('toogleShowGraph')"
+        ): .fa.fa-bar-chart
+      .header__col
+        .header__link._wide(
+          @click.prevent="$emit('selectNextPeriod')"
+        ): .arrow._left
+        .header__date(
+          @click="isShowedModalCenter = true"
+        ) {{ $store.state.filter.filter.date.first }}
+        .header__link._wide(
+          @click.prevent="$emit('selectPrevPeriod')"
+          :class="{ _disabled: checkIsLastDate() }"
+        ): .arrow._right
+
+    //- .header__in
+    //-   .header__link(
+    //-     :class="{ _active: $timePeriod === 'day' }"
+    //-     @click.prevent="$emit('setTimePeriod', 'day')"
+    //-   ) Day
+    //-   .header__link(
+    //-     :class="{ _active: $timePeriod === 'week' }"
+    //-     @click.prevent="$emit('setTimePeriod', 'week')"
+    //-   ) Week
+    //-   .header__link(
+    //-     :class="{ _active: $timePeriod === 'month' }"
+    //-     @click.prevent="$emit('setTimePeriod', 'month')"
+    //-   ) Month
+
+
+    //- select period
+    ModalCenter(
+      :isShow="isShowedModalCenter"
+      title="Select period"
+      v-on:onClose="isShowedModalCenter = false"
+    )
+      .modalPeriods
+        .header__periodItem(
+          :class="{ _active: $timePeriod === 'day' }"
+          @click.prevent="setTimePeriod('day')"
+        ) Day
+        .header__periodItem(
+          :class="{ _active: $timePeriod === 'week' }"
+          @click.prevent="setTimePeriod('week')"
+        ) Week
+        .header__periodItem(
+          :class="{ _active: $timePeriod === 'month' }"
+          @click.prevent="setTimePeriod('month')"
+        ) Month
+        .header__periodItem(
+          :class="{ _active: $timePeriod === 'year' }"
+          @click.prevent="setTimePeriod('year')"
+        ) Year
+        .header__periodItem(
+          :class="{ _active: $timePeriod === 'all' }"
+          @click.prevent="setTimePeriod('all')"
+        ) Total
 </template>
 
 <script>
+import moment from 'moment'
 import { mapGetters } from 'vuex'
+import formatMoney from '@/mixins/formatMoney'
+import ModalCenter from '@components/modal/ModalCenter'
 
 export default {
+  mixins: [formatMoney],
+  components: { ModalCenter },
+
   props: {
-    selectedPeriodIndex: {
-      type: Number,
-      required: true
-    },
-    isLastDays: {
-      type: Boolean,
+    trnsDate: {
+      type: Object,
       required: true
     },
     showedGraph: {
       type: Boolean,
       required: true
     },
-    showedHistory: {
+    showedChartYears: {
       type: Boolean,
       required: true
     },
-    selectedCategory: {
-      type: Object
+    showedHistory: {
+      type: Boolean,
+      required: true
     }
   },
 
-  mounted() {
-    document.querySelector('body').addEventListener('click', this.$store.commit('closeFilterCalendar'))
-    document.addEventListener('keyup', (event) => {
-      if (event.keyCode === 27) { // escape key
-        this.$store.commit('closeFilterCalendar')
-      }
-    })
+  data() {
+    return {
+      isShowedModalCenter: false
+    }
   },
 
   computed: {
-    ...mapGetters(['accounts', 'categories', 'getFilter']),
-    className() {
-      return {
-        _withLeftBar: this.$store.state.leftBar.isShow
-      }
-    },
+    ...mapGetters(['getFilter']),
     $timePeriod() {
       return this.$store.state.dashboard.timePeriod
     }
   },
 
   methods: {
-    openPopupCalendar(event) {
-      const left = !this.$store.state.isMobile ? event.target.closest('.header__header').offsetLeft + 20 : 0
-      const top = !this.$store.state.isMobile ? event.target.closest('.header__header').offsetTop + 47 : 47
-      this.$store.commit('setFilterCalendar', {
-        show: !this.$store.state.filter.filter.calendar.show,
-        left,
-        top
-      })
+    onClickToogleCategories() {
+      this.$store.commit('toogleCategoriesList')
+      this.$store.commit('toogleAccountList', 'hide')
+    },
+    checkIsLastDate() {
+      return moment(this.trnsDate.start).isSame(this.$store.state.currentDate, this.$timePeriod)
+    },
+    setTimePeriod(period) {
+      this.$emit('setTimePeriod', period)
+      this.isShowedModalCenter = false
     }
   }
 }

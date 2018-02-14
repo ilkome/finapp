@@ -1,5 +1,5 @@
 .trnForm
-  z-index 3
+  // z-index 3
   position fixed
   right 0
   top 0
@@ -9,7 +9,7 @@
 
   @media (min-width: 768px)
     width auto
-    box-shadow 0 0 5px $color-sidebar
+    border-left 1px solid #000
 
   &__in
     height 100%
@@ -48,33 +48,19 @@
     margin-bottom 2rem
 
   &__icons
-    margin-bottom 30px
+    margin-bottom $mb
 
     @media (min-width: 768px)
       margin-bottom 40px
 
   &__categories
     overflow hidden
-    overflow-y scroll
     position absolute
     left 0
-    top 0
+    top -49px
     width 100%
     height 100%
     background $color-sidebar
-    scrollbar()
-
-    &__in
-      overflow hidden
-      overflow-y scroll
-      height 100%
-      padding 30px 15px
-      padding-top 0
-      scrollbar()
-
-      @media (min-width: 768px)
-        padding 40px 40px
-        padding-top 0
 
   &__header
     display flex
@@ -93,132 +79,137 @@
 
   &__date
     display flex
-    margin-bottom 20px
+    margin-top (- $ms)
+    margin-bottom $ms
     justify-content space-between
     align-items center
-    font-size 1rem
 
     @media (min-width: 768px)
-      margin-bottom 30px
+      margin-bottom 10px
 
     &__value
+      margin-top -3px
       min-width 60px
       display flex
       align-items center
       justify-content center
-      padding-left 15px
-      text-transform uppercase
-      font-size 1.2rem
       font-weight bold
+      text-transform uppercase
+      color $color-sidebar-white-lighter
       $font-numbers()
 
-      &__in
-        padding-left 10px
-
     &__link
-      padding 10px 20px
+      width 40px
+      padding 10px 15px
       opacity .5
       border none
       color $color-main
       cursor pointer
       anim()
 
-      ^[1]:hover &
+      &:hover
         opacity 1
         background alpha(white, .1)
-        border-radius 3px
 
   &__subTitle
     display flex
-    align-items flex-end
+    align-items center
     justify-content space-between
-    //padding 0 0px
-    font-size .7rem
-    letter-spacing .5px
-    padding-bottom 15px
+    margin-bottom 10px
+    padding-bottom 9px
+    border-bottom 1px solid #2e2e2e
+    $typo-item-name()
 
     .name
-      font-size .9rem
+      padding-left 15px
+
+      @media $after768
+        padding-left 10px
 
     .label
+      text-align right
+      color $color-grey
       font-weight bold
       text-transform uppercase
+      font-size .7rem
+      letter-spacing .5px
       letter-spacing 1px
 
+  &__subTitle__flex
+    display flex
+    align-items center
+    flex-grow 1
+
   &__desc
-    margin-top -20px
+    margin-top -10px
     height 50px
     @media (min-width: 768px)
-      height 70px
+      height 60px
 
   &__actions__btn
-    display block
-    padding 20px 30px
+    overflow hidden
+    position relative
+    display flex
+    min-width 150px
+    justify-content center
+    padding 15px 30px
     color $color-main
-    font-size .8rem
-    font-weight bold
+    font-size .9rem
+    letter-spacing 1px
     text-transform uppercase
-    letter-spacing 2px
-    text-align center
-    background $color-line
+    font-weight bold
+    $font-numbers()
+    background $color-btn-bg
     border 1px solid transparent
     border-radius 3px
     cursor pointer
     anim()
 
-    @media (min-width: 1200px)
-      display inline-flex
-
     &:hover
-      color $color-link
-      border-color $color-link
+      //border-color $color-btn-border
+      background #474747
 
-.trnFormToogle
-  cursor pointer
-  z-index 15
-  position fixed
-  width 10px
-  height 100%
-  right 0
-  top 0
-  display flex
-  align-items flex-start
-  justify-content center
-  color $color-second
-  anim()
+    &._disable
+      cursor default
+      opacity .8
+      color alpha($color-main, .8)
+      background $color-line
+      border 1px solid transparent
 
-  @media (min-width: 768px)
-    width 40px
+  &__actions__btn__loading
+    position absolute
+    left 0
+    top 0
+    width 100%
     height 100%
-    right 0px
-
-  &:active
-    background $color-side-toogle
-
-  @media (min-width: 768px)
-    &:hover
-      background $color-side-toogle
-
-  &__icon
-    display none
+    display flex
     align-items center
     justify-content center
-    margin-right 20px
-    margin-top -10px
-    color $color-main
-    font-size 4rem
-    $font-numbers()
-    border 2px solid transparent
+    background $color-line
+
+  &__wallet
+    &-total
+      margin-left auto
+      $typo-money()
+
+.trnFormButton
+  z-index 1
+  position fixed
+  right 0
+  bottom 0
+  padding $m $ms $ms $m
+
+  &__icon
+    display flex
+    align-items center
+    justify-content center
+    width 40px
+    height 40px
+    font-size 26px
+    background alpha(#b33508, 1)
     border-radius 50%
     anim()
 
-    @media (min-width: 768px)
-      margin-right 46px
-      margin-top 26px
-
-    ^[0]:hover &
-      color $color-link
-
-    ^[0]._active &
-      color $color-link
-      transform rotate(45deg)
+    &:hover
+      transform scale(2)
+      opacity 0

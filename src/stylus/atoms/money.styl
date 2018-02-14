@@ -1,33 +1,23 @@
-$styles()
-  font-size 1rem
-  font-weight bold
-  $font-numbers()
-  white-space nowrap
-
-
 .expenses
 .expense
-.item .expense
-  $styles()
+  $typo-money()
   color $color-expense
 
 .incomes
 .income
-.item .income
-  $styles()
+  $typo-money()
   color $color-income
   white-space nowrap
 
 .sum
-  $styles()
+  $typo-money()
   color $color-sum
 
 
 .moneyTitle
-  padding-bottom 16px
-  font-size 1.3rem
+  font-size 22px
   font-weight bold
-  letter-spacing 3px
+  letter-spacing 2px
   line-height 1rem
   text-transform uppercase
   $font-numbers()
@@ -37,3 +27,85 @@ $styles()
 
   &._expenses
     color $color-expense
+
+  &._pb
+    padding-bottom 30px
+
+
+.moneyBlockSep
+  width 1px
+  height 45px
+  background #232323
+
+.moneyBlock
+  padding-bottom 10px
+
+  &._mb
+    margin-bottom $m
+    padding-bottom $mss
+    border-bottom 1px solid $color-line-summary
+    &:last-child
+      margin-bottom $mb
+
+  @media $after768
+    min-width 210px
+    margin-bottom 30px
+
+    &:last-child
+      margin-bottom 0
+
+  &._noMargin
+    margin-bottom 0
+    padding-bottom 0
+    border-bottom 0
+
+  &__line2
+    display flex
+    justify-content space-between
+    margin-bottom $ms
+
+  &__line
+    display flex
+    justify-content flex-end
+    padding-bottom 5px
+
+    @media $after768
+      justify-content space-between
+      padding-bottom 10px
+
+    &:last-child
+      padding-bottom 0
+
+  &__title
+    display flex
+    justify-content space-between
+    align-items center
+    font-size 14px
+    letter-spacing .5px
+    font-weight bold
+    color $color-sidebar-white-lighter
+    $font-numbers()
+    text-transform uppercase
+
+    .mdi
+      font-size 16px
+      margin-right 8px
+      color $color-grey
+
+  &__total
+    font-size 16px
+
+    @media $after768
+      font-size 18px
+
+  &__average
+    display flex
+    align-items center
+    color $color-grey
+
+    .sum
+      color $color-sidebar-white-lighter
+      font-size 14px
+
+      @media $after768
+        font-size 15px

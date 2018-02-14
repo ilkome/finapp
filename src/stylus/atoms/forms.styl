@@ -38,16 +38,17 @@ label, button, input, select, textarea
 
   &__field
     width 100%
-    padding 5px 5px
+    min-width 50px
+    padding 5px 0
     margin-bottom 0
-    font-size 1rem
     color $color-main
+    font-size .9rem
     background transparent
     border-bottom 1px solid $color-line-account
     anim()
 
     @media (min-width: 768px)
-      padding 10px 10px
+      padding 10px 0
 
     &._color
       cursor pointer
@@ -56,80 +57,56 @@ label, button, input, select, textarea
       padding 0
       margin 0
       border none
+    
+    &::-webkit-input-placeholder
+      font-weight bold
+      font-size .7rem
+      text-transform uppercase
 
     &:focus, &:active
       &::-webkit-input-placeholder
         color alpha($color-main, .3)
 
-    &::-webkit-input-placeholder
-      color alpha($color-main, 1)
-      anim()
-
   &__label
     position relative
-    margin-top 4px
-    padding 0 5px
-    font-size .8rem
+    margin-top 3px
+    font-size .7rem
     text-transform uppercase
-    color $color-line-account
+    color $color-grey
     font-weight bold
     letter-spacing 1px
-    background $color-sidebar
 
     @media (min-width: 768px)
-      margin-top 8px
-      padding 0 10px
-
-.input.date
-  width inherit
-  padding 0 10px
-  text-align center
-  border none
-  border-bottom 1px solid $color-main
+      margin-top 6px
 
 .input-filter
   display block
   width 100%
+  height 35px
   max-width 550px
   padding 5px 15px
   padding-left 0
-  padding-bottom 0px
+  padding-bottom 10px
   color $color-main
   font-size .8rem
-  font-weight bold
-  text-transform uppercase
   letter-spacing 2px
-  border 1px solid transparent
-  border-radius 3px
   cursor pointer
-  anim()
-
-  &._nomargin
-    margin-top 0
-    margin-bottom 0
-
-  &:focus, &:active
-    padding-left 10px
-    padding-bottom 10px
-    font-size 1rem
-    text-transform none
-    font-weight normal
-    letter-spacing 1
-    border-color $color-line
-    background $color-layout
-
-    @media (min-width: 768px)
-       font-size 1rem
-
-    &::-webkit-input-placeholder
-      opacity 0
 
   &::-webkit-input-placeholder
-    color $color-link
-    font-size 12px
-    font-weight bold
-    text-transform uppercase
-    letter-spacing 2px
+    color $color-grey
+    font-size .8rem
+    letter-spacing 1px
+
+  &:focus, &:active
+    text-transform none
+    font-weight normal
+    letter-spacing 0px
+
+
+    &::-webkit-input-placeholder
+      color $color-grey
+
+  
 
 // Textarea
 // ==============================================
@@ -161,3 +138,71 @@ label, button, input, select, textarea
   &.valid
     color #3ac020
     border-color #3ac020
+
+.checkbox
+  display flex
+  padding-bottom 40px
+
+  &__none
+    display none
+
+  &__input
+    position relative
+    top -2px
+    width 16px
+    height 16px
+    border 1px solid $color-grey
+    border-radius 3px
+    vertical-align middle
+    transition background .1s ease
+    cursor pointer
+
+    &:after
+      content ''
+      position absolute
+      top 1px
+      left 5px
+      width 3px
+      height 9px
+      opacity 0
+      transform rotate(45deg) scale(0)
+      border-right 2px solid white
+      border-bottom 2px solid white
+      transition all .3s ease
+      transition-delay .15s
+
+  &__label
+    color $color-grey
+    padding-left 10px
+    font-size .9rem
+    vertical-align middle
+    cursor pointer
+    anim()
+
+.checkbox__none:checked ~ .checkbox__label
+  color $color-main
+
+.checkbox__none:checked ~ .checkbox__input
+  border-color transparent
+  background $color-link
+  animation jelly .6s ease
+
+  &:after
+    opacity 1
+    transform rotate(45deg) scale(1)
+
+@keyframes jelly
+  from
+    transform scale(1, 1)
+  30%
+    transform scale(1.25, 0.75)
+  40%
+    transform scale(0.75, 1.25)
+  50%
+    transform scale(1.15, 0.85)
+  65%
+    transform scale(.95, 1.05)
+  75%
+    transform scale(1.05, .95)
+  to
+    transform scale(1, 1)

@@ -1,15 +1,34 @@
 .module
   &._alt
-    background $color-layout
-    border-bottom 2px solid $color-sidebar
+    background $color-module-bg-alt
+    border-bottom 1px solid $color-module-border
+
+  &._history
+    background $color-module-bg-history
 
   &._stat
     @media (min-width: 768px)
       min-height calc(100vh - 50px)
 
   &__in
+    position relative
     $max-width()
     padding 30px 10px
 
     @media (min-width: 768px)
       padding 60px
+
+    ^[0]._small &
+      padding 30px 60px
+
+    ^[0]._stat &
+      padding 30px 20px
+
+      @media (min-width: 768px)
+        padding 30px 60px
+
+    &._stat
+      padding 0
+
+      @media (min-width: 768px)
+        padding 0 60px

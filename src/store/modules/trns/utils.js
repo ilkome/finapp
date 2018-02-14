@@ -1,5 +1,19 @@
+import moment from 'moment'
+import { uuid } from '@/store/utils'
+
+export const formatTrnForDb = values => ({
+  id: values.id ? values.id : `${moment(values.date).format('YY-MM-DD[_]H:mm:ss')}__${uuid()}`,
+  accountId: values.accountId,
+  amount: values.amount,
+  categoryId: values.categoryId,
+  currency: values.currency,
+  date: values.date,
+  description: values.description,
+  type: values.type
+})
+
 /**
- * Format trn.
+ * Format trn for Store
  * @param {object} trn - Trn for format.
  * @param {options} object - Options.
  * @param {options.accounts} Array - List of accounts.
@@ -7,7 +21,7 @@
  * @param {options.rates} Array - List of rates.
  * @return {object} Formated trn.
  */
-export default function formatTrn(trn, options) {
+export const formatTrnForStore = (trn, options) => {
   if (options) {
     if (options.accounts.length < 0) {
       console.error('formatTrn: must to have accounts')
@@ -55,18 +69,21 @@ export default function formatTrn(trn, options) {
   const categoryId = trn.categoryId
   const category = options.categories.find(cat => cat.id === categoryId)
   let categoryRoot = 0
-
-  // Find root category
-  if (category.parentId !== 0) {
-    categoryRoot = options.categories.find(cat => cat.id === category.parentId)
-  } else {
-    categoryRoot = category
-  }
-
   let categoryName
-  let categoryColor = category.color
-  const categoryIcon = category.icon
+  let categoryColor
+  let categoryIcon
+
   if (category) {
+    categoryColor = category.color
+    categoryIcon = category.icon
+
+    // Find root category
+    if (category.parentId !== 0) {
+      categoryRoot = options.categories.find(cat => cat.id === category.parentId)
+    } else {
+      categoryRoot = category
+    }
+
     if (!categoryColor) {
       if (category.parentId !== 0) {
         const parent = options.categories.find(cat => cat.id === category.parentId)
@@ -78,7 +95,7 @@ export default function formatTrn(trn, options) {
 
     categoryName = category.name
   } else {
-    console.error('Category not found. Id:', categoryId)
+    console.error('Category not found. Id:', categoryId, options.categories)
     return false
   }
 
@@ -88,6 +105,7 @@ export default function formatTrn(trn, options) {
   const type = +trn.type
 
   return {
+    account,
     accountId,
     accountName,
     amount,

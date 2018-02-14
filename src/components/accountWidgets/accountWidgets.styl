@@ -1,0 +1,23 @@
+.accountWidgets
+  display grid
+  grid-template-columns repeat(3, 1fr)
+  grid-column-gap $ms
+  grid-row-gap $ms
+  padding $m
+  background #171717
+  border-bottom 1px solid #232323
+
+  & + .summary
+    margin-top $msb
+
+.accountWidgetItem
+  padding $ms
+  text-align right
+  white-space nowrap
+
+  &__name
+    font-size 12px
+    margin-bottom $mss
+
+  &__price
+    font-size 14px

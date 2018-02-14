@@ -1,113 +1,86 @@
 <template lang="pug">
 .app
+  notifications(
+    group="foo"
+    :duration="3000"
+    :width="$store.state.isMobile ? '289' : 289"
+    :position="$store.state.isMobile ? 'top right' : 'bottom left'"
+  )
+
   template(v-if="!$store.state.isPageLoaded")
-    h1.loading Loading...
+    Loading
 
   template(v-if="$store.state.isPageLoaded")
     //- Need to login
-    //------------------------------------------------
     template(v-if="!user && !$store.state.loader")
       Login
 
-    //- Auth user
-    //------------------------------------------------
+    //- Ok, run App
     template(v-else)
       //- Loading
       template(v-if="$store.state.loader")
         transition(name="fade")
-          h1.loading Loading...
+          Loading(:showName="false")
 
-      template(v-if="$store.state.error")
-        transition(name="fade")
-          .loading
-            .loading__in
-              .loading__name._error {{ $store.state.error }}
-              .loading__update Please, reload Application
-
-      //- Sidebar
       Sidebar
-      .sidebarToogle(
-        v-shortkey="['alt', 'arrowleft']",
-        @shortkey="onSidebarToogle",
-        @click.prevent.stop="onSidebarToogle")
-
-      //- main
       Dashboard
 
-      //- TrnForm
-      transition(name="slideToLeft")
-        TrnForm(v-show="$store.state.trnForm.isShow")
-      //- TrnForm btn
-      template(v-if="!$store.state.categories.create && !$store.state.categories.edit && !$store.state.accounts.create && !$store.state.accounts.show && !$store.state.accounts.edit && !$store.state.categories.list")
+      //- Create trn
+      template(v-if="$store.state.isMobile")
+        .trnFormButton(''
+          @click.prevent.stop="$store.commit('toogleTrnForm')"
+        ): .trnFormButton__icon: .mdi.mdi-plus
+
+      //- Trn form
+      TrnForm
+      template(v-if="!$store.state.categories.create && !$store.state.categories.edit && !$store.state.accounts.create && !$store.state.accounts.edit")
         .trnFormToogle(
           v-shortkey="['alt', 'arrowright']",
-          @shortkey="onClickTrnFormToogle",
-          @click.prevent.stop="onClickTrnFormToogle",
+          @shortkey="$store.commit('toogleTrnForm')",
+          @click.prevent.stop="$store.commit('toogleTrnForm')",
           :class="{_active: $store.state.trnForm.isShow}"
-        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+        )
 
-      //- Show categories
-      transition(name="slideToLeft")
-        CategoryListBar(v-if="$store.state.categories.list")
-      //- Create category
-      transition(name="slideToLeft")
-        CategoryCreate(v-if="$store.state.categories.create")
-      //- Edit category
-      transition(name="slideToLeft")
+      CategoryListBar
+      CategoryCreate
+
+      //- Category: edit
+      transition(name="slideToRight")
         CategoryEdit(v-if="$store.state.categories.edit")
-      //- Create / edit category popup list
-      transition(name="slideToLeft")
-        .trnForm(v-show="$store.state.categories.show")
-          CategoryList(:isShowEditActions.sync="isShowEditActions")
 
-      //- Show accounts
-      transition(name="slideToLeft")
-        AccountList(v-if="$store.state.accounts.show")
-      //- Create account
-      transition(name="slideToLeft")
+      //- Account: create
+      transition(name="slideToRight")
         AccountCreate(v-if="$store.state.accounts.create")
-      //- Edit account
-      transition(name="slideToLeft")
-        AccountEdit(v-if="$store.state.accounts.edit")
 
+      //- Account: edit
+      transition(name="slideToRight")
+        AccountEdit(v-if="$store.state.accounts.edit")
 </template>
 
 <script>
-import { mixin } from 'vue-focus'
+import { mapGetters } from 'vuex'
 import debounce from 'lodash/debounce'
-import Sidebar from './Sidebar.vue'
-import TrnForm from './TrnForm.vue'
-import Login from './Login.vue'
-import Dashboard from './DashboardPage.vue'
-import CategoryList from './categories/CategoryList.vue'
-import CategoryListBar from './categories/CategoryListBar.vue'
-import CategoryCreate from './categories/CategoryCreate.vue'
-import CategoryEdit from './categories/CategoryEdit.vue'
-import AccountCreate from './accounts/AccountCreate.vue'
-import AccountEdit from './accounts/AccountEdit.vue'
-import AccountList from './accounts/AccountList.vue'
+import Sidebar from './sidebar/Sidebar.vue'
+import TrnForm from '@components/trnForm/TrnForm.vue'
+import Login from '@components/login/Login.vue'
+import Loading from '@components/loading/Loading.vue'
+import Dashboard from '@components/DashboardPage.vue'
+import CategoryListBar from '@components/categories/CategoryListBar.vue'
+import CategoryCreate from '@components/categories/CategoryCreate.vue'
+import CategoryEdit from '@components/categories/CategoryEdit.vue'
+import AccountCreate from '@components/accounts/AccountCreate.vue'
+import AccountEdit from '@components/accounts/AccountEdit.vue'
 
 export default {
-  mixins: [mixin],
-  components: { Login, Dashboard, Sidebar, TrnForm, CategoryList, CategoryListBar, CategoryCreate, CategoryEdit, AccountCreate, AccountEdit, AccountList },
-
-  data() {
-    return {
-      isShowEditActions: true
-    }
-  },
+  components: { Loading, Login, Dashboard, Sidebar, TrnForm, CategoryListBar, CategoryCreate, CategoryEdit, AccountCreate, AccountEdit },
 
   computed: {
-    user() {
-      if (this.$store.state.user.user.uid) {
-        return this.$store.state.user.user
-      }
-    }
+    ...mapGetters(['user'])
   },
 
-  mounted() {
+  async mounted() {
     this.$store.watch((state) => state.trnForm.isShow, this.toogleBodyOverflow)
-    this.$store.watch((state) => state.leftBar.isShow, this.toogleBodyOverflow)
+    this.$store.watch((state) => state.showedLeftbar, this.toogleBodyOverflow)
     this.$store.watch((state) => state.categories.list, this.toogleBodyOverflow)
     this.$store.watch((state) => state.accounts.show, this.toogleBodyOverflow)
 
@@ -126,23 +99,18 @@ export default {
 
   methods: {
     checkAndSetMobileOrPCVersion(event) {
-      if (document.documentElement.clientWidth > 768) {
+      if (document.documentElement.clientWidth >= 768) {
         this.$store.commit('setMobile', false)
+        this.$store.commit('toogleLeftbar', 'show')
       } else {
         this.$store.commit('setMobile', true)
         this.$store.commit('toogleLeftbar', 'hide')
       }
     },
-    onClickTrnFormToogle() {
-      this.$store.commit('toogleTrnForm')
-    },
-    onSidebarToogle() {
-      this.$store.commit('toogleLeftbar')
-    },
     toogleBodyOverflow() {
       if (this.$store.state.isMobile) {
         const body = document.querySelector('body')
-        if (this.$store.state.trnForm.isShow || this.$store.state.leftBar.isShow || this.$store.state.accounts.show) {
+        if (this.$store.state.trnForm.isShow || this.$store.state.showedLeftbar || this.$store.state.accounts.show || this.$store.state.categories.list) {
           body.style.overflow = 'hidden'
         } else {
           body.style.overflow = ''

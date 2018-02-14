@@ -1,13 +1,16 @@
 .summaryShort
   color $color-second
-  margin 0 -10px
-  margin-top -10px
+  margin 0
 
   @media (min-width: 768px)
-    margin 0 -10px
+    margin 0
+
+  &._itemStat
+    margin-top -15px
+    padding-left 44px
 
   &._pb
-    padding-bottom 40px
+    padding-bottom 20px
 
     @media (min-width: 768px)
       padding-bottom 70px
@@ -16,7 +19,7 @@
     padding-bottom 20px
 
     @media (min-width: 768px)
-      padding-bottom 38px
+      padding-bottom 30px
 
   &__empty
     margin-top 20px
@@ -25,88 +28,99 @@
     font-weight bold
 
   &:last-child
-    margin-bottom -10px
+    //margin-bottom -10px
 
     @media (min-width:768px)
-      margin-bottom -15px
+      //margin-bottom -15px
 
-  // #ssi
-  // ===============================================
-  &__item
-    position relative
+  &__line
     display flex
-    flex 1 1 45%
-    height 45px
-    padding 0 10px
     align-items center
+    justify-content space-between
     border-bottom 1px solid $color-line-summary
-    anim-all()
+
+    & ^[0]__item
+      border none
+
+  &__flex
+    display flex
+    justify-content space-between
+
+    @media $after768
+      align-items center
+
+    &__col
+      text-align right
+
+.summaryShort__item
+  cursor default
+  position relative
+  display flex
+  padding 12px 0
+  align-items center
+  border-bottom 1px solid $color-line-summary
+
+  &._noPad
+    padding 0
+
+  &._Change
+    border none
+    color $color-grey
+
+    & ^[0]__total
+    & ^[0]__label
+      font-size 14px
+
+  &._link:hover
+    margin 0 -10px
+    padding 0 10px
+    border-bottom-color $color-line-summary
+
+  &:last-child
+    margin 0
+    border 0
+
+  &._link
+    cursor pointer
+
+    &:active
+      background alpha($color-line-summary, .5)
 
     @media (min-width: 768px)
-      flex-basis 100%
-      max-width 100%
-      height 45px
-
-    a&:hover
-      color $color-main
-
-    &:last-child
-      margin 0
-      border 0
-
-    &._link
-      cursor pointer
-
-      &:active
+      &:hover
         background alpha($color-line-summary, .5)
 
-      @media (min-width: 768px)
-        &:hover
-          background alpha($color-line-summary, .5)
+  &__icon
+    width 35px
+    margin-right 17px
+    padding-left 3px
+    text-align center
+    font-size 1rem
+    color $color-sidebar-white-lighter
 
-    &__icon
-      width 35px
-      text-align center
-      $fs = 1rem
+    @media (min-width: 768px)
+      margin-right 20px
 
-      &._expenses
-        fa(minus-circle)
-        font-size $fs
+    &._grey
+      color $color-sidebar-white-lighter
 
-      &._incomes
-        fa(plus-circle)
-        font-size $fs
+    &._small
+      font-size 14px
+      color #777777
+      width inherit
+      margin-right 8px
+      padding 0
 
-      &._total
-        fa(area-chart)
-        fa(bar-chart)
-        font-size $fs
+  &__label
+    flex-grow 1
+    font-size .9rem
+    letter-spacing 0px
+    $font-primary()
+    color $color-sidebar-white-lighter
 
-      &._average
-        fa(line-chart)
-        font-size $fs
+  &__total
+    text-align right
 
-      &._left
-        fa(align-left)
-        font-size $fs
-
-      &._day
-        fa(sun-o)
-        font-size $fs
-
-      &._spend
-        fa(calendar-minus-o)
-        font-size $fs
-
-    &__label
-      padding-left 22px
-      flex-grow 1
-      font-size .8rem
-      text-transform uppercase
-      font-weight bold
-      letter-spacing 2px
-      $font-numbers()
-
-    &__total
-      padding-right 2px
-      text-align right
+    &._grey
+      font-size 14px
+      color $color-sidebar-white-lighter

@@ -1,7 +1,7 @@
 .form__table
   display flex
   align-items center
-  margin-bottom 60px
+  margin-bottom 40px
 
   &__cell
     &._name
@@ -11,21 +11,20 @@
     &._color
       margin-right 20px
 
-
-
 .amount
+  outline none
   display flex
-  align-items center
+  align-items flex-end
   justify-content center
   margin 0 auto
-  padding-bottom 20px
+  padding-bottom $mb
 
   @media (min-width: 768px)
     padding-bottom 30px
 
   .amountCount
     &:focus
-      outline none
+      //outline none
 
   &._income
     .amountCount
@@ -44,13 +43,14 @@
       border-color $color-expense
 
 .amountCount
+  user-select none
   overflow hidden
   display flex
-  width 50px
-  height 50px
+  width 40px
+  height 40px
   justify-content center
   align-items center
-  font-size 5rem
+  font-size 3rem
   color #e4e4e4
   $font-numbers()
   cursor pointer
@@ -62,13 +62,14 @@
 
 .amountValueInput
   width 100%
-  height 50px
-  padding 0 15px
-  font-size 2rem
+  height 40px
+  padding 0 10px
+  padding-right 35px
+  font-size 1.4rem
   $font-numbers()
   color $color-main
-  background alpha($color-line, .5)
-  border 2px solid $color-line
+  background $color-amount-input-bg
+  border 1px solid $color-line
   anim()
 
 

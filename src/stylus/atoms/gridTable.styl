@@ -9,7 +9,7 @@
 
   @media (min-width: 1200px)
     grid-column-gap 140px
-    grid-template-columns minmax(200px, 1.5fr) minmax(200px, 1fr)
+    grid-template-columns minmax(200px, 1fr) minmax(200px, 1fr)
 
   // Dashboard filter
   &._dashboard
@@ -36,7 +36,10 @@
   &._stats
     grid-row-gap 80px
 
-    @media (min-width: 1200px)
+    @media (min-width: 1800px)
       grid-row-gap 60px
       grid-column-gap 140px
       grid-template-columns minmax(auto, 1fr) minmax(auto, 1fr)
+
+  &__item
+    max-width 400px

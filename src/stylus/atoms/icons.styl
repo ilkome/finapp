@@ -1,91 +1,118 @@
-.icon
+.iconsGroup
+  display flex
+  flex-flow row wrap
+  display grid
+  grid-template-columns repeat(auto-fit, 32px)
+  grid-column-gap 10px
+  grid-row-gap 10px
+
+  @media $after768
+    grid-column-gap 8px
+    grid-row-gap 8px
+    grid-template-columns repeat(auto-fit, 26px)
+
+.plus
   position relative
   display flex
-  width 35px
-  height 35px
-  padding-left 1px
+  align-items center
+  height 14px
+
+  &:after
+  &:before
+    content " "
+    display block
+    width 14px
+    height 2px
+    background $color-grey
+
+  &:after
+    position absolute
+    top 6px
+    transform rotate(90deg)
+
+
+.close
+  @extend .plus
+  transform rotate(45deg)
+
+
+.icon
+  display flex
   align-items center
   justify-content center
+  width 32px
+  height 32px
+  padding-top 1px
+  padding-left 1px
   color $color-icon-text
-  font-size 1.2rem
-  letter-spacing 0
+  font-size 14px
   background $color-icon-bg
-  border-radius 3px
-  border 3px solid transparent
-  anim()
 
-  &._mr
-    margin-right 20px
+  @media $after768
+    width 24px
+    height 24px
 
-  &._text
-    padding 0 10px
+  .mdi
+    margin-top -1px
+    font-size 15px
 
-  &._active
-    color $color-icon-text-active
-    border-color $color-icon-bg-active !important
-    background $color-icon-bg-active !important
+  &._big
+    width 32px
+    height 32px
+    font-size 18px
+
+  &._round
+    border-radius 50%
 
   &._more
     background $color-graph
 
   &._link
     cursor pointer
-    anim()
 
-    @media (min-width: 768px)
-      &:hover
-        border-color $color-icon-bg-active !important
-
-    &:focus
-      outline none
-      border-color $color-icon-bg-active
+  &._disabled
+    cursor default
+    opacity .3
 
   &__abbr
-    font-size .8rem
+    font-size 10px
     font-weight bold
 
   &__label
     pointer-events none
     z-index 2
-    visibility hidden
-    opacity 0
     position absolute
-    left 50%
-    top -43px
-    padding 10px 15px
-    color $color-icon-text
-    font-size 1rem
-    font-weight normal
-    text-transform none
-    letter-spacing 1px
-    background #242424
-    border-radius 3px
-    transform translate(-50%, 50%)
-    white-space nowrap
-    transition all .3s cubic-bezier(0.17, 0.04, 0.03, 0.94)
+    visibility hidden
+    text-align left
 
     ^[0]:hover &
+    .stat__item2:hover &
       @media (min-width: 768px)
-        opacity 1
         visibility visible
+
+    &__in
+      opacity 0
+      display block
+      position relative
+      z-index 2
+      left 50%
+      top -43px
+      padding 10px 15px
+      color $color-icon-text
+      font-size .9rem
+      font-weight normal
+      text-transform none
+      letter-spacing 1px
+      background #242424
+      border-radius 3px
+      white-space nowrap
+      transform translate(-50%, 50%)
+
+      ^[0]:hover &
+      .stat__item2:hover &
+        opacity 1
         transform translate(-50%, 0)
 
-
-.iconsGroup
-  display flex
-  flex-flow row wrap
-  display grid
-  grid-template-columns repeat(auto-fit, 35px)
-  grid-column-gap 10px
-  grid-row-gap 10px
-
-  @media (min-width: 768px)
-    grid-column-gap 10px
-    grid-row-gap 10px
-    grid-template-columns repeat(auto-fit, 35px)
-
-  &._nowrap
-    grid-template-columns repeat(auto-fill, minmax(100px, 1fr))
-
-  &._mb
-    padding-bottom 80px
+      .stat__item2:hover &
+        transform translate(-50%, 100%)
+        top 7px
