@@ -28,7 +28,7 @@
       .filter__btn(
         @click="$store.commit('toogleCategoryCreate')"
         v-tooltip.bottom-center="{ content: 'Create new category' }"
-      ): .fa.fa-plus
+      ): .mdi.mdi-plus
 
   .leftBar__main
     template(v-if="filter.length > 0 && filter.length < 2")

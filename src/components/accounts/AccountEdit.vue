@@ -1,44 +1,46 @@
 <template lang="pug">
-.rightBar
-  .sidebar__close(@click="$store.commit('toogleAccountCreate', 'hide')")
-    .sidebar__close__title Edit wallet
-    .sidebar__close__icon: .fa.fa-plus
+.sidebar._active
+  .sidebar__overlay(
+    @click="$store.commit('toogleAccountEdit', 'hide')"
+  )
 
-  .rightBar__in
-    .rightBar__main
+  .sidebar__block
+    .sidebar__close(@click="$store.commit('toogleAccountEdit', 'hide')")
+      .sidebar__close-title Edit wallet
+      .sidebar__close-icon: .mdi.mdi-plus
 
+    .sidebar__in
       template(v-if="$store.state.accounts.edit")
         .trnFormToogle(
           @click.prevent.stop="closeBar",
           :class="{_active: $store.state.accounts.edit}"
         ): .trnFormToogle__icon: .trnFormToogle__icon__in +
 
-      .rightBar__main__in
-        .form
-          .input
-            input.input__field(
-              v-model="values.name"
-              v-focus.lazy="true && !$store.state.isMobile",
-              name="name"
-              type="text"
-              placeholder="Write account name"
-            )
-            .input__label Name
-          .input
-            input.input__field(
-              v-model="values.countTotal", type="number", placeholder="Count in total", name="countTotal")
-            .input__label Count in total
-          .input
-            input.input__field(
-              v-model="values.currency", type="text", placeholder="Write currency", name="currency")
-            .input__label currency
-          .input
-            input.input__field(
-              v-model="values.order", type="number", placeholder="Order", name="order")
-            .input__label order
+      .form
+        .input
+          input.input__field(
+            v-model="values.name"
+            v-focus.lazy="true && !$store.state.isMobile",
+            name="name"
+            type="text"
+            placeholder="Write account name"
+          )
+          .input__label Name
+        .input
+          input.input__field(
+            v-model="values.countTotal", type="number", placeholder="Count in total", name="countTotal")
+          .input__label Count in total
+        .input
+          input.input__field(
+            v-model="values.currency", type="text", placeholder="Write currency", name="currency")
+          .input__label currency
+        .input
+          input.input__field(
+            v-model="values.order", type="number", placeholder="Order", name="order")
+          .input__label order
 
-          CategoryColor(v-on:setColor="setColor")
-          .trnForm__actions__btn.mb20(@click.prevent="onSubmit") Edit
+        CategoryColor(v-on:setColor="setColor")
+        .trnForm__actions__btn.mb20(@click.prevent="onSubmit") Edit
 </template>
 
 <script>

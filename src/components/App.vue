@@ -3,17 +3,12 @@
   notifications(
     group="foo"
     :duration="3000"
-    :width="$store.state.isMobile ? '160' : 289"
-    :position="$store.state.isMobile ? 'bottom left' : 'bottom left'"
+    :width="$store.state.isMobile ? '289' : 289"
+    :position="$store.state.isMobile ? 'top right' : 'bottom left'"
   )
 
   template(v-if="!$store.state.isPageLoaded")
-    .loading
-      .loading__spin
-        .logo
-          svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100")
-            path(d="M92.48,7.69C117.38,32.6,61.89,32.06,61.89,50s55.49,17.38,30.58,42.28S68.11,61.68,50.19,61.68,32.81,117.17,7.91,92.26,38.49,67.9,38.49,50-17,32.6,7.91,7.69,32.27,38.28,50.19,38.28,67.57-17.22,92.48,7.69Z")
-
+    Loading
 
   template(v-if="$store.state.isPageLoaded")
     //- Need to login
@@ -25,84 +20,65 @@
       //- Loading
       template(v-if="$store.state.loader")
         transition(name="fade")
-          .loading
-            .loading__spin
-              .logo
-                svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100")
-                  path(d="M92.48,7.69C117.38,32.6,61.89,32.06,61.89,50s55.49,17.38,30.58,42.28S68.11,61.68,50.19,61.68,32.81,117.17,7.91,92.26,38.49,67.9,38.49,50-17,32.6,7.91,7.69,32.27,38.28,50.19,38.28,67.57-17.22,92.48,7.69Z")
+          Loading(:showName="false")
 
       Sidebar
       Dashboard
 
       //- Create trn
       template(v-if="$store.state.isMobile")
-        .trnFormButton(
+        .trnFormButton(''
           @click.prevent.stop="$store.commit('toogleTrnForm')"
         ): .trnFormButton__icon: .mdi.mdi-plus
 
-      //- TrnForm
-      transition(name="slideToLeft")
-        TrnForm(v-show="$store.state.trnForm.isShow")
+      //- Trn form
+      TrnForm
       template(v-if="!$store.state.categories.create && !$store.state.categories.edit && !$store.state.accounts.create && !$store.state.accounts.edit")
         .trnFormToogle(
           v-shortkey="['alt', 'arrowright']",
           @shortkey="$store.commit('toogleTrnForm')",
           @click.prevent.stop="$store.commit('toogleTrnForm')",
           :class="{_active: $store.state.trnForm.isShow}"
-        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+        )
 
-      //- Category: list
-      transition(name="slideToRight")
-        CategoryListBar(v-if="$store.state.categories.list")
-
-      //- Category: create
-      transition(name="slideToLeft")
-        CategoryCreate(v-if="$store.state.categories.create")
+      CategoryListBar
+      CategoryCreate
 
       //- Category: edit
-      transition(name="slideToLeft")
+      transition(name="slideToRight")
         CategoryEdit(v-if="$store.state.categories.edit")
 
-      //- Accounts: list
-      transition(name="slideToRight")
-        AccountList(v-if="$store.state.accounts.show")
-
       //- Account: create
-      transition(name="slideToLeft")
+      transition(name="slideToRight")
         AccountCreate(v-if="$store.state.accounts.create")
 
       //- Account: edit
-      transition(name="slideToLeft")
+      transition(name="slideToRight")
         AccountEdit(v-if="$store.state.accounts.edit")
 </template>
 
 <script>
-import { mixin } from 'vue-focus'
+import { mapGetters } from 'vuex'
 import debounce from 'lodash/debounce'
 import Sidebar from './sidebar/Sidebar.vue'
-import TrnForm from './TrnForm.vue'
-import Login from './Login.vue'
-import Dashboard from './DashboardPage.vue'
-import CategoryListBar from './categories/CategoryListBar.vue'
-import CategoryCreate from './categories/CategoryCreate.vue'
-import CategoryEdit from './categories/CategoryEdit.vue'
-import AccountCreate from './accounts/AccountCreate.vue'
-import AccountEdit from './accounts/AccountEdit.vue'
-import AccountList from './accounts/AccountList.vue'
+import TrnForm from '@components/trnForm/TrnForm.vue'
+import Login from '@components/login/Login.vue'
+import Loading from '@components/loading/Loading.vue'
+import Dashboard from '@components/DashboardPage.vue'
+import CategoryListBar from '@components/categories/CategoryListBar.vue'
+import CategoryCreate from '@components/categories/CategoryCreate.vue'
+import CategoryEdit from '@components/categories/CategoryEdit.vue'
+import AccountCreate from '@components/accounts/AccountCreate.vue'
+import AccountEdit from '@components/accounts/AccountEdit.vue'
 
 export default {
-  mixins: [mixin],
-  components: { Login, Dashboard, Sidebar, TrnForm, CategoryListBar, CategoryCreate, CategoryEdit, AccountCreate, AccountEdit, AccountList },
+  components: { Loading, Login, Dashboard, Sidebar, TrnForm, CategoryListBar, CategoryCreate, CategoryEdit, AccountCreate, AccountEdit },
 
   computed: {
-    user() {
-      if (this.$store.state.user.user.uid) {
-        return this.$store.state.user.user
-      }
-    }
+    ...mapGetters(['user'])
   },
 
-  mounted() {
+  async mounted() {
     this.$store.watch((state) => state.trnForm.isShow, this.toogleBodyOverflow)
     this.$store.watch((state) => state.showedLeftbar, this.toogleBodyOverflow)
     this.$store.watch((state) => state.categories.list, this.toogleBodyOverflow)

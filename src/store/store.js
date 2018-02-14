@@ -4,7 +4,7 @@ import moment from 'moment'
 import accounts from './modules/accounts'
 import categories from './modules/categories'
 import rates from './modules/rates'
-import trns from './modules/transactions'
+import trns from './modules/trns/'
 import user from './modules/user'
 import filter from './modules/filter'
 
@@ -49,8 +49,14 @@ const state = {
   }
 }
 
-// mutations (commit)
-// ==============================================
+// Getters
+const getters = {
+  isMobile(state) {
+    return state.isMobile
+  }
+}
+
+// Mutations (commit)
 const mutations = {
   setConnectionStatus(state, status) {
     state.isConnected = status
@@ -163,5 +169,6 @@ const mutations = {
 export default new Vuex.Store({
   modules,
   state,
+  getters,
   mutations
 })

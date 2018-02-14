@@ -2,8 +2,10 @@
   .notification
     left 0
     margin 0
+    margin-bottom 6px
     padding 10px
-    font-size 12px
+    font-size 14px
+    line-height 18px
     color white
     letter-spacing 0
     background #44A4FC
@@ -11,8 +13,7 @@
     transition all 500ms
 
     @media $after768
-      margin-bottom 6px
-      padding 20px
+      padding $m
       font-size 14px
       border-left 5px solid #187FE7
 
@@ -29,8 +30,8 @@
       border-left-color #42A85F
 
     &-title
-      padding-bottom 5px
-      font-size 14px
+      margin-bottom $ms
+      font-size 18px
       font-weight bold
       text-transform uppercase
       $font-numbers()

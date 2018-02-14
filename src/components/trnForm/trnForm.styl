@@ -1,21 +1,49 @@
 .rightBar
   z-index 3
   position fixed
-  right 0px
+  right 0
   top 0
-  width 100%
-  height 100%
-  background $color-sidebar
+  width 0
+  height 100vh
 
-  @media $before768
-    max-width 290px
-    border-left 1px solid #000
+  &._active
+    visibility visible
 
-  @media (min-width: 768px)
-    height calc(100% - 50px)
-    top 50px
-    width auto
-    border-left 1px solid #000
+    @media $before768
+      width 100%
+
+  &__wrap
+    z-index 2
+    position fixed
+    top 0
+    right 0
+    width 290px
+    height 100%
+    background $color-sidebar
+    border-left 1px solid black
+    transform translateX(300px)
+    transition all .4s cubic-bezier(0.17, 0.04, 0.03, 0.94)
+    box-shadow 0 0 15px black
+
+    ^[0]._active &
+      transform translateX(0)
+
+  &__overlay
+    @media $before768
+      z-index 1
+      visibility hidden
+      opacity 0
+      position fixed
+      left 0
+      top 0
+      width 100%
+      height 100%
+      background alpha(black, .9)
+      transition all 400ms ease
+
+      ^[0]._active &
+        visibility visible
+        opacity 1
 
   &__in
     z-index 2
@@ -187,7 +215,6 @@
       border-color $color-link
 
 .trnFormToogle
-  cursor pointer
   z-index 15
   position fixed
   width 10px
@@ -200,39 +227,15 @@
   color $color-second
   anim()
 
-  @media (min-width: 768px)
-    width 40px
+  @media $after768
+    cursor pointer
+    width 30px
     height 100%
     right 0px
 
   &:active
     background $color-side-toogle
 
-  @media (min-width: 768px)
-    &:hover
+  &:hover
+    @media $after768
       background $color-side-toogle
-
-  &__icon
-    display none
-    align-items center
-    justify-content center
-    margin-right 20px
-    margin-top -10px
-    color $color-main
-    font-size 4rem
-    $font-numbers()
-    border 2px solid transparent
-    border-radius 50%
-    anim()
-
-    @media (min-width: 768px)
-      // display flex
-      margin-right 46px
-      margin-top 26px
-
-    ^[0]:hover &
-      color $color-link
-
-    ^[0]._active &
-      color $color-link
-      transform rotate(45deg)

@@ -14,6 +14,7 @@ html
     font-size 16px
 
 .body
+  height 100%
   margin 0
   $font-primary()
   color $color-main
@@ -37,13 +38,12 @@ html
 
   @media (min-width: 768px)
     overflow hidden
-    height 100%
 
 .app
   display flex
   flex-flow column wrap
   min-height 100%
-  min-width 320px
+  min-width 360px
 
   @media (min-width: 768px)
     flex-flow row nowrap

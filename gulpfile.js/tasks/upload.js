@@ -19,3 +19,10 @@ gulp.task('upload', () =>
     .pipe(conn.newer('/'))
     .pipe(conn.dest(configFTP.dest))
 )
+
+gulp.task('upload-min', () =>
+  gulp.src(`${paths.dist}/**/*.{css,js,html}`, { buffer: true })
+    .pipe(showToaster('upload'))
+    .pipe(conn.newer('/'))
+    .pipe(conn.dest(configFTP.dest))
+)

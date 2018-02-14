@@ -5,7 +5,7 @@ div(:class="className" @click.prevent.stop="$emit('onClickContent', category)")
   template(v-if="category.parentId === 0")
     //- content
     .itemList__content
-      .itemList__icon(@click.prevent.stop="$emit('onClickIcon', category)")
+      .itemList__icon(@click.prevent.stop="onClickIcon()")
         .icon(
           :class="{ _link: view !== 'trnForm' }"
           :style="`background: ${category.color}`"
@@ -45,7 +45,7 @@ div(:class="className" @click.prevent.stop="$emit('onClickContent', category)")
   template(v-else)
     //- content
     .itemListChild__content(@click.prevent="$emit('onClickContent', category)")
-      .itemListChild__icon(@click.prevent.stop="$emit('onClickIcon', category)")
+      .itemListChild__icon(@click.prevent.stop="onClickIcon()")
         .icon(
           :class="{ _link: view !== 'trnForm' }"
           :style="`background: ${category.color}`"
@@ -97,7 +97,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['getFilter']),
+    ...mapGetters(['getFilter', 'isMobile']),
     editCategoryId() {
       if (this.$store.state.categories.editCategory) {
         return this.$store.state.categories.editCategory.id
@@ -114,6 +114,13 @@ export default {
         _delete: this.confirmPopCategoryId === this.category.id,
         _open: this.showedChildIds.indexOf(this.category.id) !== -1
       }
+    }
+  },
+
+  methods: {
+    onClickIcon() {
+      this.$emit('onClickIcon', this.category)
+      if (this.isMobile) this.$store.commit('toogleCategoriesList', 'hide')
     }
   }
 }

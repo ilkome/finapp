@@ -192,58 +192,6 @@
       margin-left auto
       $typo-money()
 
-// trnFormToogle
-.trnFormToogle
-  cursor pointer
-  z-index 15
-  position fixed
-  width 10px
-  height 100%
-  right 0
-  top 0
-  display flex
-  align-items flex-start
-  justify-content center
-  color $color-second
-  anim()
-
-  @media (min-width: 768px)
-    width 30px
-    height 100%
-    right 0px
-
-  &:active
-    background $color-side-toogle
-
-  @media (min-width: 768px)
-    &:hover
-      background $color-side-toogle
-
-  &__icon
-    display none
-    align-items center
-    justify-content center
-    margin-right 20px
-    margin-top -10px
-    color $color-main
-    font-size 4rem
-    $font-numbers()
-    border 2px solid transparent
-    border-radius 50%
-    anim()
-
-    @media (min-width: 768px)
-      margin-right 46px
-      margin-top 26px
-
-    ^[0]:hover &
-      color $color-link
-
-    ^[0]._active &
-      color $color-link
-      transform rotate(45deg)
-
-
 .trnFormButton
   z-index 1
   position fixed
@@ -258,7 +206,7 @@
     width 40px
     height 40px
     font-size 26px
-    background alpha($color-icon-bg, .8)
+    background alpha(#b33508, 1)
     border-radius 50%
     anim()
 
