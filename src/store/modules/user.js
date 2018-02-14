@@ -2,11 +2,7 @@ import firebase from 'firebase'
 
 const store = {
   state: {
-    user: {
-      displayName: null,
-      email: null,
-      uid: null
-    }
+    user: null
   },
 
   getters: {
