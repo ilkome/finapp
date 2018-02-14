@@ -4,7 +4,7 @@ import { uuid } from '@/store/utils'
 export const formatTrnForDb = values => ({
   id: values.id ? values.id : `${moment(values.date).format('YY-MM-DD[_]H:mm:ss')}__${uuid()}`,
   accountId: values.accountId,
-  amount: values.amount,
+  amount: Math.abs(values.amount),
   categoryId: values.categoryId,
   currency: values.currency,
   date: values.date,
