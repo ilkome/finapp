@@ -63,20 +63,7 @@ new Vue({
       app.auth().onAuthStateChanged(async (user) => {
         if (user) {
           const db = firebase.database()
-          let userRef
-          if (user.uid === 'yMI5IiF3OrQRgywpZIgXvgrGQyw2') {
-            const uid = 'yMI5IiF3OrQRgywpZIgXvgrGQyw2' // Илья
-            // const uid = '8WDRZqvN2AauTXAl4mGwAGyKbbr1' // Сережа
-            // const uid = 'GB5TxVedunVQuNIqBM4vPwndw9N2' // Аня
-            // const uid = '9nFJjMSSPMfmTtp8mzaPRoxDDq82' // Надя
-            // const uid = 'kXVGIN19Mhd7WZUeTtZRqUSo2aJ3' // Женя
-            // const uid = 'pMaDbZdHwqXGutbTqFYJMsGwO4z2' // Каза
-            // const uid = 'x8ChL0AMzGOcCaGP2KsDbMZFZWT2' // Никита
-            // const uid = '146kY50VHyaIRKkg5QMIkSK424x1' // Empty
-            userRef = `users/${uid}`
-          } else {
-            userRef = `users/${user.uid}`
-          }
+          const userRef = `users/${user.uid}`
 
           const formatedUser = {
             displayName: user.displayName,
