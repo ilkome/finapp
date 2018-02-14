@@ -7,8 +7,8 @@ const combineTrnWithSameDayAndCategory = (trns) => {
   // create object with trns in same day, account, category
   const groupedTrnsBySameDay = {}
   for (const trn of trns) {
-    const { date, categoryId, accountId, description } = trn
-    const key = `${moment(date).format('Y.M.D')}__${categoryId}__${accountId}__${description}`
+    const { date, categoryId, accountId, description, type } = trn
+    const key = `${moment(date).format('Y.M.D')}__${categoryId}__${accountId}__${description}__${type}`
     if (groupedTrnsBySameDay[key]) {
       groupedTrnsBySameDay[key] = [...groupedTrnsBySameDay[key], trn]
     } else {
