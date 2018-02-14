@@ -1,4 +1,5 @@
 import firebase from 'firebase'
+import localforage from 'localforage'
 
 const store = {
   state: {
@@ -11,14 +12,21 @@ const store = {
     }
   },
 
+  actions: {
+    async signOut({ commit, state }) {
+      firebase.auth().signOut()
+      await localforage.removeItem('user')
+      commit('signOut')
+    }
+  },
+
   mutations: {
     signIn(state, user) {
       state.user = user
     },
 
     signOut(state) {
-      state.user = {}
-      firebase.auth().signOut()
+      state.user = null
     }
   }
 }
