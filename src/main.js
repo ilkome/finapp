@@ -46,13 +46,16 @@ new Vue({
       // -----------------------------------------------------------------------
       const localData = await localforage.getItem('data')
       const localTrns = await localforage.getItem('trns')
+      const localUser = await localforage.getItem('user')
+
       if (localData &&
           localTrns && localTrns.length &&
+          localUser && localUser.uid &&
           localData.accounts && localData.accounts.length &&
           localData.categories && localData.categories.length &&
-          localData.rates &&
-          localData.user && localData.user.uid) {
-        this.$store.commit('signIn', localData.user)
+          localData.rates) {
+        console.log('cache')
+        this.$store.commit('signIn', localUser)
         this.$store.commit('setRates', localData.rates)
         this.$store.commit('setAccounts', localData.accounts)
         this.$store.commit('setCategories', localData.categories)
@@ -88,11 +91,11 @@ new Vue({
             // Save data from firebase to localStorage
             // -----------------------------------------------------------------
             await localforage.setItem('data', {
-              user: formatedUser,
               rates: this.$store.state.rates.all,
               accounts: this.$store.state.accounts.all,
               categories: this.$store.state.categories.all
             })
+            await localforage.setItem('user', formatedUser)
             await localforage.setItem('trns', this.$store.state.trns.all)
           })
         }
