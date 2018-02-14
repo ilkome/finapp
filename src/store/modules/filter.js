@@ -1,8 +1,10 @@
 export default {
   state: {
     filter: {
+      showedGraphValues: false,
       duration: 10,
       account: null,
+      category: null,
       calendar: {
         show: false,
         range: true,
@@ -30,6 +32,17 @@ export default {
     },
     setFilterAccount(state, account) {
       state.filter.account = account
+    },
+    setFilterCategory(state, category) {
+      if (category) {
+        if (state.filter.category && state.filter.category.id === category.id) {
+          state.filter.category = null
+        } else {
+          state.filter.category = category
+        }
+      } else {
+        state.filter.category = null
+      }
     },
     setFilterCalendar(state, calendar) {
       if (calendar) {
@@ -59,6 +72,18 @@ export default {
     },
     setDuration(state, duration) {
       state.filter.duration = +duration
+    },
+    toogleShowGraphValues(state, action) {
+      switch (action) {
+        case 'show':
+          state.filter.showedGraphValues = true
+          break
+        case 'hide':
+          state.filter.showedGraphValues = false
+          break
+        default:
+          state.filter.showedGraphValues = !state.filter.showedGraphValues
+      }
     }
   }
 }

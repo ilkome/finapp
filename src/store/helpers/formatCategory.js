@@ -14,6 +14,8 @@ export default function formatCategory(category, categories) {
   const name = category.name
   const parentId = category.parentId
   const parent = categories.find(cat => cat.id === parentId)
+  const showStat = category.showStat ? category.showStat : false
+  const children = categories.filter(cat => cat.parentId === id).map(cat => cat.id)
 
   if (parentId !== 0 && !parent) {
     console.error('This category should be deleted', category.name, category.id)
@@ -28,6 +30,8 @@ export default function formatCategory(category, categories) {
         color = parent.color
       }
     }
+  } else if (color === '#00000') {
+    color = '#242424'
   }
 
   // Icon
@@ -53,6 +57,8 @@ export default function formatCategory(category, categories) {
     color,
     icon,
     parent,
-    parentId
+    parentId,
+    showStat,
+    children
   }
 }

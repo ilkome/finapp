@@ -30,20 +30,31 @@ export default {
 
   computed: {
     className() {
-      if (this.chartType === 'pie') return 'chart__pie'
-      return 'chart__column'
+      if (this.chartType === 'pie') return '_pie'
+      return '_column'
     }
   },
 
   watch: {
     data() {
       if (this.chart) {
-        const categories = this.data.categories
+        const categories = this.data.series[0].data
 
         this.chart.update({
           ...this.data,
           xAxis: {
-            categories: categories.map(cat => cat)
+            categories: categories.map(cat => cat),
+            labels: {
+              formatter() {
+                const currentCategory = categories[this.pos]
+                if (currentCategory) {
+                  return `
+                      <div class="icon" style="background: ${currentCategory.color}">
+                      <div class="${currentCategory.icon}"></div>
+                      </div>`
+                }
+              }
+            }
           }
         })
       }
@@ -52,8 +63,7 @@ export default {
 
   methods: {
     init() {
-      const vm = this
-      const categories = this.data.categories
+      const categories = this.data.series[0].data
 
       if (!this.chart) {
         Highcharts.setOptions(chartTheme)
@@ -62,6 +72,7 @@ export default {
             type: this.chartType
           },
           legend: {
+            enabled: false,
             align: 'left',
             // layout: 'vertical',
             verticalAlign: 'top',
@@ -79,19 +90,17 @@ export default {
           },
 
           plotOptions: {
+            pie: {
+              dataLabels: {
+                enabled: false
+              }
+            },
             column: {
-              maxPointWidth: 45
+              pointWidth: 35,
+              maxPointWidth: 35
             },
             series: {
-              cursor: 'pointer',
-              borderWidth: 0,
-              point: {
-                events: {
-                  click() {
-                    vm.$emit('selectPeriodStat', this.options.idx)
-                  }
-                }
-              }
+              borderWidth: 0
             }
           },
           title: {
@@ -102,7 +111,20 @@ export default {
           },
           xAxis: {
             categories: categories.map(cat => cat),
-            crosshair: true
+            crosshair: false,
+            labels: {
+              rotation: 0,
+              useHTML: true,
+              formatter() {
+                const currentCategory = categories[this.pos]
+                if (currentCategory) {
+                  return `
+                  <div class="icon" style="background: ${currentCategory.color}">
+                  <div class="${currentCategory.icon}"></div>
+                  </div>`
+                }
+              }
+            }
           },
           yAxis: {
             title: {

@@ -1,32 +1,30 @@
 <template lang="pug">
-.rightBar
-  .rightBar__in
-    .rightBar__main
+.sidebar(
+  :class="{ _active: $store.state.categories.list }"
+)
+  .sidebar__overlay(
+    @click="$store.commit('toogleCategoriesList', 'hide')"
+  )
 
-      template(v-if="$store.state.categories.list")
-        .trnFormToogle(
-          @click.prevent.stop="$store.commit('toogleCategoriesList', 'hide')",
-          :class="{_active: $store.state.categories.list}"
-        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
+  //- PC
+  .sidebar__block
+    template(v-if="!$store.state.isMobile")
+      .leftBar__title(@click="$store.commit('toogleCategoriesList')")
+        div Categories
+        .sidebar__close-icon: .mdi.mdi-plus
 
-      .rightBar__main__in
-        .sidebar__close(@click="$store.commit('toogleCategoriesList', 'hide')")
-          .sidebar__close__name Categories
-          .sidebar__close__icon: .fa.fa-plus
+    //- Mobile
+    template(v-if="$store.state.isMobile")
+      .sidebar__close(@click="$store.commit('toogleCategoriesList', 'hide')")
+        .sidebar__close-title Categories
 
-        CategoryList(:isShowEditActions.sync="isShowEditActions")
+    CategoryList
 </template>
 
 <script>
 import CategoryList from './CategoryList.vue'
 
 export default {
-  components: { CategoryList },
-
-  data() {
-    return {
-      isShowEditActions: true
-    }
-  }
+  components: { CategoryList }
 }
 </script>

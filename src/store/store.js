@@ -1,11 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import moment from 'moment'
-
 import accounts from './modules/accounts'
 import categories from './modules/categories'
 import rates from './modules/rates'
-import trns from './modules/transactions'
+import trns from './modules/trns/'
 import user from './modules/user'
 import filter from './modules/filter'
 
@@ -25,13 +24,12 @@ const modules = {
 // state
 // ==============================================
 const state = {
+  isConnected: false,
   isMobile: false,
   isPageLoaded: false,
   loader: true,
   error: false,
-  leftBar: {
-    isShow: true
-  },
+  showedLeftbar: false,
   trnForm: {
     isShow: false,
     action: 'create',
@@ -42,24 +40,38 @@ const state = {
   },
   dates: {},
   dashboard: {
-    timePeriod: null
+    timePeriod: 'month'
+  },
+  isShowSidebarAccountsIcons: true,
+  openedCategories: {
+    incomes: [],
+    expenses: []
   }
 }
 
-// mutations (commit)
-// ==============================================
+// Getters
+const getters = {
+  isMobile(state) {
+    return state.isMobile
+  }
+}
+
+// Mutations (commit)
 const mutations = {
-  pageLoading() {
+  setConnectionStatus(state, status) {
+    state.isConnected = status
+  },
+  pageLoading(state) {
     state.isPageLoaded = false
   },
-  pageLoaded() {
+  pageLoaded(state) {
     state.isPageLoaded = true
   },
   setDates(state, dates) {
     state.dates.start = moment(dates.start).startOf('day').valueOf()
     state.dates.end = moment(dates.end).endOf('day').valueOf()
   },
-  timePeriod(state, preset) {
+  setTimePeriod(state, preset) {
     state.dashboard.timePeriod = preset
   },
   setUpdatedTrn(state, trnId) {
@@ -92,7 +104,7 @@ const mutations = {
       state.trnForm.wasUpdatedTrn = false
     }
     if (state.trnForm.isShow && state.isMobile) {
-      state.leftBar.isShow = false
+      state.showedLeftbar = false
     }
   },
   toogleCategoriesPop(state, action) {
@@ -110,15 +122,15 @@ const mutations = {
   toogleLeftbar(state, action) {
     switch (action) {
       case 'show':
-        state.leftBar.isShow = true
+        state.showedLeftbar = true
         break
       case 'hide':
-        state.leftBar.isShow = false
+        state.showedLeftbar = false
         break
       default:
-        state.leftBar.isShow = !state.leftBar.isShow
+        state.showedLeftbar = !state.showedLeftbar
     }
-    if (state.leftBar.isShow && state.isMobile) {
+    if (state.showedLeftbar && state.isMobile) {
       state.trnForm.isShow = false
     }
   },
@@ -144,9 +156,6 @@ const mutations = {
   setMobile(state, action) {
     state.isMobile = action
   },
-  showError(state, error) {
-    state.error = error
-  },
   showLoader() {
     state.loader = true
   },
@@ -160,5 +169,6 @@ const mutations = {
 export default new Vuex.Store({
   modules,
   state,
+  getters,
   mutations
 })

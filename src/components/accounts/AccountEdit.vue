@@ -1,65 +1,69 @@
 <template lang="pug">
-.rightBar
-  .rightBar__in
-    .rightBar__main
+.sidebar._active
+  .sidebar__overlay(
+    @click="$store.commit('toogleAccountEdit', 'hide')"
+  )
 
+  .sidebar__block
+    .sidebar__close(@click="$store.commit('toogleAccountEdit', 'hide')")
+      .sidebar__close-title Edit wallet
+      .sidebar__close-icon: .mdi.mdi-plus
+
+    .sidebar__in
       template(v-if="$store.state.accounts.edit")
         .trnFormToogle(
-          @click.prevent.stop="$store.commit('toogleAccountEdit', 'hide')",
+          @click.prevent.stop="closeBar",
           :class="{_active: $store.state.accounts.edit}"
         ): .trnFormToogle__icon: .trnFormToogle__icon__in +
 
-      .rightBar__main__in
-        .sidebar__close(@click="$store.commit('toogleAccountEdit', 'hide')")
-          .sidebar__close__name Edit account
-          .sidebar__close__icon: .fa.fa-plus
+      .form
+        .input
+          input.input__field(
+            v-model="values.name"
+            v-focus.lazy="true && !$store.state.isMobile",
+            name="name"
+            type="text"
+            placeholder="Write account name"
+          )
+          .input__label Name
+        .input
+          input.input__field(
+            v-model="values.countTotal", type="number", placeholder="Count in total", name="countTotal")
+          .input__label Count in total
+        .input
+          input.input__field(
+            v-model="values.currency", type="text", placeholder="Write currency", name="currency")
+          .input__label currency
+        .input
+          input.input__field(
+            v-model="values.order", type="number", placeholder="Order", name="order")
+          .input__label order
 
-        .form
-          .input
-            input.input__field(
-              v-model="values.name"
-              v-focus.lazy="true && !$store.state.isMobile",
-              name="name"
-              type="text"
-              placeholder="Write account name"
-            )
-            .input__label Name
-          .input
-            input.input__field(
-              v-model="values.countTotal", type="number", placeholder="Count in total", name="countTotal")
-            .input__label Count in total
-          .input
-            input.input__field(
-              v-model="values.currency", type="text", placeholder="Write currency", name="currency")
-            .input__label currency
-          .input
-            input.input__field(
-              v-model="values.order", type="number", placeholder="Order", name="order")
-            .input__label order
-
-          template(v-if="error")
-            .error.mb20 {{ error }}
-          .trnForm__actions__btn.mb20(@click.prevent="addAccount") Edit
+        CategoryColor(v-on:setColor="setColor")
+        .trnForm__actions__btn.mb20(@click.prevent="onSubmit") Edit
 </template>
 
 <script>
 import { mixin } from 'vue-focus'
 import { mapGetters } from 'vuex'
+import CategoryColor from '../categories/CategoryColor.vue'
+
+const defaultColor = '#242424'
 
 export default {
   mixins: [mixin],
+  components: { CategoryColor },
 
   data() {
     return {
       values: {
         ...this.$store.state.accounts.editAccount
-      },
-      error: null
+      }
     }
   },
 
   watch: {
-    editedAccount() {
+    $editedAccount() {
       this.values = {
         ...this.$store.state.accounts.editAccount
       }
@@ -68,27 +72,29 @@ export default {
 
   computed: {
     ...mapGetters(['accounts']),
-    editedAccount() {
+    $editedAccount() {
       return this.$store.state.accounts.editAccount
     }
   },
 
   methods: {
-    async addAccount() {
-      this.$store.commit('showLoader')
-      this.error = null
-
+    async onSubmit() {
       const formatedValues = {
         id: this.values.id,
         name: this.values.name.trim(),
-        countTotal: this.values.countTotal,
-        currency: this.values.currency,
-        order: this.values.order
+        countTotal: this.values.countTotal ? 1 : 0,
+        currency: this.values.currency ? this.values.currency : 'RUB',
+        order: this.values.order ? this.values.order : 100,
+        color: this.values.color ? this.values.color : defaultColor
       }
 
       if (!formatedValues.name) {
-        this.error = 'Please write account name'
-        this.$store.commit('closeLoader')
+        this.$notify({
+          group: 'foo',
+          title: 'Error',
+          text: 'Please write account name.',
+          type: 'error'
+        })
         return
       }
 
@@ -97,18 +103,37 @@ export default {
           account.name === formatedValues.name &&
           account.countTotal === formatedValues.countTotal &&
           account.currency === formatedValues.currency &&
-          account.order === formatedValues.order)
+          account.order === formatedValues.order &&
+          account.color === formatedValues.color)
 
       if (sameAccount.length) {
-        this.error = 'Same account name is already exist!'
-        this.$store.commit('closeLoader')
+        this.$notify({
+          group: 'foo',
+          title: 'Error',
+          text: 'Same account name is already exist.',
+          type: 'error'
+        })
         return
       }
 
+      this.$store.commit('showLoader')
       await this.$store.dispatch('updateAccount', formatedValues)
       this.$store.commit('toogleAccountEdit', 'hide')
       this.$store.commit('setEditAccount', null)
       this.$store.commit('closeLoader')
+      this.$notify({
+        group: 'foo',
+        title: 'Succesed',
+        text: 'Account was edited.',
+        type: 'success'
+      })
+    },
+    setColor(color) {
+      this.values.color = color
+    },
+    closeBar() {
+      this.$store.commit('toogleAccountEdit', 'hide')
+      this.$store.commit('setEditAccount', null)
     }
   }
 }

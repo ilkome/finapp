@@ -1,0 +1,439 @@
+.sidebar
+  visibility hidden
+  z-index 3
+  position fixed
+  width 0
+  height 100vh
+
+  @media $after768
+    z-index 0
+    top $header-height
+    width 290px
+    height calcMinus(100vh, $header-height)
+
+  &._active
+    visibility visible
+
+    @media $before768
+      width 100%
+
+  &__block
+    z-index 2
+    position relative
+    width 290px
+    min-width 290px
+    min-height 100%
+    background $color-sidebar
+    border-right 1px solid black
+    transform translateX(-290px)
+    transition all .4s cubic-bezier(0.17, 0.04, 0.03, 0.94)
+
+    ^[0]._active &
+      transform translateX(0)
+
+  &__overlay
+    @media $before768
+      z-index 1
+      visibility hidden
+      opacity 0
+      position fixed
+      left 0
+      top 0
+      width 100%
+      height 100%
+      background alpha(black, .9)
+      transition all 400ms ease
+
+      ^[0]._active &
+        visibility visible
+        opacity 1
+
+  &__in
+    z-index 2
+    position relative
+    overflow hidden
+    overflow-y auto
+    display flex
+    flex-flow column nowrap
+    height calc(100vh - 49px)
+    padding 10px 20px 10px 20px
+    background $color-sidebar
+    scrollbar()
+
+    @media $after768
+      height calcMinus(100vh, $header-height)
+      padding $mb
+      padding-bottom 15px
+
+  &__item
+    padding-bottom $mb
+
+    @media $after768
+      padding-bottom 60px
+
+    &:last-child
+      margin-top auto
+      padding-bottom 0
+
+  &__wrap
+    margin 0 -20px
+
+    @media $after768
+      margin 0 -30px
+
+  &__head
+    display flex
+    justify-content space-between
+    align-items center
+    margin-bottom 10px
+
+  &__close
+    z-index 2
+    position relative
+    cursor pointer
+    display flex
+    align-items center
+    justify-content space-between
+    height 50px
+    margin 0 0px
+    padding 0 20px
+    $typo-title()
+    background $color-body
+
+    @media $after768
+      height 49px
+      margin 0
+      padding 15px 30px
+
+  &__close:active
+    @media $before768
+      color $color-main
+      background $color-sidebar-bg-hover
+
+  &__close:hover
+    @media $after768
+      color $color-main
+      background $color-sidebar-bg-hover
+
+  &__close-icon
+    font-size 22px
+    transform rotate(45deg)
+
+  &__actions
+    display none
+    padding-right 5px
+
+    @media $after768
+      display flex
+
+  &__link
+    display flex
+    align-items center
+    justify-content center
+    cursor pointer
+    padding 10px
+    margin -10px
+    color $color-grey
+    font-size 1rem
+    text-align center
+
+    &:hover .plus:after
+    &:hover .plus:before
+      background $color-main
+
+    &:hover
+      opacity 1
+      background $color-sidebar-bg-hover
+
+    .plus
+      anim()
+
+    &._active .plus
+      transform rotate(45deg)
+
+    &._active .plus:after
+    &._active .plus:before
+      background $color-main
+
+
+.sidebarTitle
+  cursor pointer
+  display inline-flex
+  align-items center
+  margin-bottom 10px
+  $typo-title()
+
+  ^[1]:hover &
+    color $color-main
+
+  @media $after768
+    padding 10px
+    margin -10px
+
+  &:hover
+    color $color-main
+    background $color-sidebar-bg-hover
+
+  &__icon
+    opacity 0
+    padding-left 10px
+    font-size .9rem
+    font-weight bold
+
+    ^[0]:hover &
+      opacity 1
+
+  &__icon._mb
+    margin-bottom -2px
+
+  &__icon .close:after
+  &__icon .close:before
+      ^[1]:hover &
+        background $color-main
+
+
+.sidebarMenuItem
+  cursor pointer
+  position relative
+  cursor default
+  margin-bottom -1px
+  padding 0 20px
+  font-size 13px
+
+  @media $after768
+    padding 0 30px
+
+  &._active
+  &._editable
+    & ^[0]__wrap
+      margin 0 -30px
+      padding 0 30px
+
+      @media $after768
+        margin 0 -30px
+        padding 0 30px
+
+    & ^[0]__actions
+      right 25px
+
+  &:hover
+    @media $after768
+      & ^[0]__wrap
+        margin 0 -30px
+        padding 0 30px
+
+        @media $after768
+          margin 0 -30px
+          padding 0 30px
+
+      & ^[0]__actions
+        right 25px
+
+  &._active
+    & ^[0]__wrap
+      background $color-sidebar-bg-active
+      border-bottom-color $color-sidebar-bg-active
+
+    & ^[0]__actions
+      background $color-sidebar-bg-active
+
+  &._editable
+    & ^[0]__wrap
+      background $color-sidebar-bg-edit
+      border-bottom-color $color-sidebar-bg-edit
+
+    & ^[0]__actions
+      background $color-sidebar-bg-edit
+
+  &._delete
+    cursor default
+    border-color $color-expense !important
+
+  &:last-child
+    margin-bottom 0
+
+    & ^[0]__wrap
+      border-bottom-color transparent
+
+  &:hover
+    @media $after768
+      & ^[0]__name
+        color $color-sidebar-white-light
+
+      & ^[0]__content
+        border-bottom-color $color-itemList-hover
+
+
+      & ^[0]__wrap
+      & ^[0]__actions
+        background $color-itemList-hover
+
+      & ^[0]__action
+        opacity .3
+
+      & ^[0]__action:hover
+        opacity 1
+
+  &__wrap
+    position relative
+    display flex
+    flex-flow row nowrap
+    flex-grow 1
+    align-items center
+    min-height 55px
+    color $color-second
+    border-bottom 1px solid $color-itemList-border
+
+  &__content
+    display flex
+    flex-flow row nowrap
+    flex-grow 1
+    align-items center
+    max-height 55px
+    padding-top $mm
+    padding-bottom $mm
+    @media $after768
+      max-height 45px
+
+  &__icon
+    margin-right $ms
+
+  &__name
+    display flex
+    align-items center
+    flex-grow 1
+    $typo-item-name()
+
+  &__money
+    display flex
+    align-items flex-end
+    flex-flow column wrap
+    $typo-money()
+    font-size 14px
+    line-height 13px
+    text-align right
+
+    ^[0]:hover &
+      @media $after768
+        color $color-sidebar-white-light
+
+    ^[0]._active &
+      color $color-sidebar-white-light
+
+    &._two
+      flex-flow row nowrap
+
+    .sub
+      padding-top 2px
+      font-size 12px
+      color $color-sidebar-grey-alpha
+      ^[0]:hover &
+        @media $after768
+          color $color-sidebar-white-lighter
+      ^[0]._active &
+        color $color-sidebar-white-lighter
+
+  &__actions
+    position absolute
+    top 1px
+    right -5px
+    display flex
+    align-items center
+    height calc(100% - 2px)
+    padding-left 20px
+    background $color-itemList-bg
+
+  &__action
+    opacity .3
+    cursor pointer
+    display flex
+    justify-content center
+    align-items center
+    width 40px
+    height 100%
+    font-size 20px
+
+    @media $after768
+      width 30px
+      font-size 16px
+
+    &:active
+      @media $before768
+        background $color-sidebar-bg-hover
+
+    &:hover
+      opacity 1
+
+
+.sidebarSummary
+  position relative
+  display flex
+  height 41px
+  margin-bottom -1px !important
+  margin 0 20px
+  justify-content space-between
+  align-items center
+  border-bottom 1px solid $color-sidebar-line
+
+  @media $after768
+    margin 0 30px
+
+  &._toogle
+    cursor pointer
+    height 40px
+
+    @media $after768
+      height 45px
+      border-bottom-color transparent
+
+      &:hover
+        margin 0
+        padding 0 30px
+        background $color-itemList-hover
+
+        & ^[0]__label
+          color $color-sidebar-white-light
+
+  &:last-child
+    border-bottom none
+
+  &__label
+    user-select none
+    font-size .85rem
+    $font-secondary()
+    color $color-sidebar-white-lighter
+
+    ^[0]._toogle &
+      font-size .9rem
+      color $color-grey
+
+      @media $after768
+        font-size 11px
+
+  &__value
+    display flex
+    align-items flex-end
+    flex-flow column wrap
+    padding-top 3px
+    $typo-money()
+    text-align right
+    font-size .85rem
+
+    &._two
+      flex-flow row nowrap
+
+    div:first-child
+      padding-bottom 2px
+
+    .sub
+      font-weight none
+      font-size .85rem
+      color $color-sidebar-grey-alpha
+      ^[0]:hover &
+      ^[0]._active &
+        color $color-sidebar-white-lighter
+
+    .sep
+      display block
+      padding 0 5px
+      color $color-sidebar-grey-alpha

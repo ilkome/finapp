@@ -1,32 +1,59 @@
 .trnItem
-  margin-top -1px
-  padding 15px 10px
   position relative
-  border 1px solid transparent
-  border-bottom 1px solid alpha($color-line, .5)
+  min-height 30px
+  display flex
+  flex-flow column wrap
+  justify-content space-between
+  align-items center
+  margin 0 0
+  // margin-bottom -1px
+  padding 10px 0
+  font-size .9rem
+  color $color-grey
+  border-bottom 1px solid $color-line-summary
 
   &:last-child
+    margin-bottom 0
     border-color transparent
 
+  &._padding:hover
+    @media $after768
+      margin-left -10px
+      margin-right -10px
+      padding-left 10px
+      padding-right 10px
+
   &:hover
-    background alpha($color-main, .05)
-    border-color $color-line
+    @media $after768
+      // color $color-main
+      // background #222222
+      // border-color #292929
 
   &__content
-    display flex
-    align-items center
+    width 100%
+    display grid
+    grid-template-columns 30px minmax(auto, 1fr) minmax(60px, 110px)
+    grid-column-gap $mm
+    grid-row-gap $mm
 
-  &__pic
-    width 60px
+    @media $after768
+      padding-left $mss
+
+  &__cell
+    display flex
+    flex-flow column wrap
+    align-items flex-start
+    justify-content center
 
   &__price
-    width 90px
-    margin-right 20px
     text-align right
+
+    .sub
+      font-size 12px
 
   &__line
     font-size .8rem
-    padding-bottom 10px
+    padding-bottom 5px
 
     &._date
       font-size .7rem
@@ -35,36 +62,70 @@
       padding-bottom 0
 
   &__actions
-    // margin-right -10px
-    margin-left auto
+    z-index 2
+    position absolute
+    top 50%
+    transform translateY(-50%)
+    right 0px
     display flex
+    align-items center
+    background alpha(#222222, .9)
+    border 1px solid $color-trn-hover-line
 
-  &__action
-    cursor pointer
-    opacity .2
-    display block
-    width 40px
-    color $color-second
-    font-size 1.2rem
-    text-align center
+    @media $after768
+      height calc(100% - 2px)
 
     @media (min-width: 768px)
-      width 45px
+      opacity 0
+
+    ^[0]._open:hover &
+      @media $after768
+        background #222222
+
+    ^[0]._open &
+      background $color-sidebar-bg-active
 
     ^[0]:hover &
+      @media $after768
+        opacity 1
+        background #222222
+
+    ^[0]._editable &
       opacity 1
+      background $color-sidebar-bg-edit
+
+    ^[0]._active &
+      background $color-sidebar-bg-active
+
+    ^[0]._padding:hover &
+      @media $after768
+        right 10px
+
+  &__action
+    display flex
+    justify-content center
+    align-items center
+    width 40px
+    height 100%
+    font-size 1.2rem
+    cursor pointer
+    anim()
+
+    @media $before768
+      height 40px
+
+      &:active
+        background $color-sidebar-bg-hover
+
+    @media $after768
+      opacity .3
+      width 40px
+      font-size 1rem
 
     &:hover
       opacity 1
-      color $color-link
-
-    &:last-child
-      margin-right 0
 
   &__description
-    padding-top 15px
-    padding-left 110px
-    font-size .8rem
-
-    &._big
-      padding-left 170px
+    width 100%
+    padding-top 5px
+    font-size 12px

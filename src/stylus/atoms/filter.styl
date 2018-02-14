@@ -1,52 +1,58 @@
 .filter
-  position relative
   display flex
+  height 40px
+  padding 0 20px
+  padding-right 26px
   align-items center
-  margin-bottom 20px
-
+  justify-content space-between
+  background $color-filter-bg
+  
   @media (min-width: 768px)
-    margin-bottom 30px
+    padding 0 30px
 
   &__input
-    flex-grow 1
-    height 40px
-    margin-right 10px
-    padding 0px 5px 0px 5px
-
+    min-width 50px
+    height 30px
+    padding 0
     color $color-main
     font-size .8rem
     font-weight bold
-    letter-spacing 2px
-    border-bottom 1px solid $color-line
     anim()
 
     &:last-child
       margin-right 0
 
-    &:hover, &:focus
-      border-color $color-link
-
     &::-webkit-input-placeholder
-      font-size .6rem
+      font-size .7rem
       text-transform uppercase
 
   &__btns
     display flex
     flex-flow row nowrap
     align-items center
+    margin-right -10px
+    
+    @media $after768
+      margin-right 0
 
   &__btn
+    cursor pointer
     display flex
     justify-content center
     align-items center
-    width 45px
-    height 45px
+    width 40px
+    height 40px
     text-transform uppercase
-    font-size 1rem
-    color $color-white
+    font-size 18px
+    color $color-grey
     font-weight bold
-    cursor pointer
     anim()
 
+    @media $after768
+      width 30px
+      font-size 16px
+
     &:hover
-      background alpha($color-link, .8)
+      @media $after768
+        color $color-main
+        background $color-sidebar-bg-hover

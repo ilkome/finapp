@@ -1,71 +1,165 @@
 <template lang="pug">
-div
+.summary
+  //- itemStat
+  template(v-if="view === 'itemStat'")
+      template
+        .summaryShort._itemStat
+          .flex
+            template(v-if="selectedCategory && selectedCategory.showStat")
+              template(v-if="avSummary.leftToSpend > 0")
+                .summaryShort__item._Change(
+                  v-tooltip.bottom-center="{ content: 'This showed you how much you can spend before end of month. <br />Based on ' + monthsDurationReal + ' months.' }"
+                )
+                  .summaryShort__item__icon._small
+                    .mdi.mdi-av-timer
+                  //- .summaryShort__item__label Could to spend in day
+                  .summaryShort__item__total._grey.sum {{ formatMoney(avSummary.leftToSpendInDay) }}
+
+                .summaryShort__item._Change
+                  .summaryShort__item__icon._small
+                    .mdi.mdi-timetable
+                  //- .summaryShort__item__label Left to spend<br>before end of month
+                  .summaryShort__item__total._grey.sum {{ formatMoney(avSummary.leftToSpend) }}
+              template(v-else)
+                .summaryShort__item._Change
+                  .summaryShort__item__icon._small
+                    .mdi.mdi-database-minus
+                  //- .summaryShort__item__label Overspend
+                  .summaryShort__item__total.sum {{ formatMoney(avSummary.leftToSpend) }}
+
+            .summaryShort__item._Change
+              .summaryShort__item__icon._small
+                .mdi.mdi-chart-timeline
+              //- .summaryShort__item__label Average
+              .summaryShort__item__total._grey.sum {{ formatMoney(avSummary.expenses) }}
+
+  //- Mobile new
+  template(v-if="view === 'mobile-new'")
+    .moneyBlock._mb(@click="$emit('changeTabMoney', 'expenses')")
+      .moneyBlock__line2
+        .moneyTitle.expenses Expenses
+        .moneyBlock__total.expenses {{ formatMoney(summary.expenses) }}
+      template(v-if="avSummary.expenses != 0")
+        .moneyBlock__line2
+          .moneyBlock__title
+            .mdi.mdi-chart-timeline
+            div Average
+          .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
+
+    .moneyBlock._mb(@click="$emit('changeTabMoney', 'incomes')")
+      .moneyBlock__line2
+        .moneyTitle.incomes Incomes
+        .moneyBlock__total.incomes {{ formatMoney(summary.incomes) }}
+      template(v-if="avSummary.incomes != 0")
+        .moneyBlock__line2
+          .moneyBlock__title
+            .mdi.mdi-chart-timeline
+            div Average
+          .moneyBlock__average: .sum {{ formatMoney(avSummary.incomes) }}
+
+    .moneyBlock._mb(@click="$emit('changeTabMoney', 'history')")
+      .moneyBlock__line2
+        .moneyTitle
+          template(v-if="summary.sum > 0") Saved
+          template(v-else-if="summary.sum < 0") Spent
+          template(v-else) Total
+        .moneyBlock__total.sum {{ formatMoney(summary.sum) }}
+      template(v-if="avSummary.sum != 0")
+        .moneyBlock__line2
+          .moneyBlock__title
+            .mdi.mdi-chart-timeline
+            div Average
+          .moneyBlock__average: .sum {{ formatMoney(avSummary.sum) }}
+
+
+  //- Mobile
   template(v-if="view === 'mobile'")
     .summaryShort._pb(:class="{_maxWidth: maxwidth}")
-      .summaryShort__item._link(@click="$emit('changeTabMoney', 'expenses')")
-        .summaryShort__item__icon._expenses
-        .summaryShort__item__label Expenses
-        .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
+      .summaryShort__flex
+        .summaryShort__flex__col(@click="$emit('changeTabMoney', 'expenses')")
+          slot(name="mobile-expenses")
+        .summaryShort__flex__col(@click="$emit('changeTabMoney', 'incomes')")
+          slot(name="mobile-incomes")
+        .summaryShort__flex__col(@click="$emit('changeTabMoney', 'history')")
+          slot(name="mobile-history")
 
-      .summaryShort__item._link(@click="$emit('changeTabMoney', 'incomes')")
-        .summaryShort__item__icon._incomes
-        .summaryShort__item__label Incomes
-        .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
+  //- Dashboard full
+  template(v-if="view === 'dashboard-full'")
+    .flex
+      .moneyBlock._noMargin
+        .moneyBlock__line
+          .moneyTitle.expenses Expenses
+          .moneyBlock__total.expenses {{ formatMoney(summary.expenses) }}
 
-      .summaryShort__item._link(@click="$emit('changeTabMoney', 'history')")
-        .summaryShort__item__icon._total
-        .summaryShort__item__label Total
-        .summaryShort__item__total.sum {{ formatMoney(summary.total) }}
+        template(v-if="avSummary.expenses != 0")
+          .moneyBlock__line
+            .moneyBlock__title
+              .mdi.mdi-chart-timeline
+              div Average
+            .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
 
-      template(v-if="$store.state.dashboard.timePeriod === 'month'")
-        .summaryShort__item
-          .summaryShort__item__icon._average
-          .summaryShort__item__label Average Total
-          .summaryShort__item__total.sum {{ formatMoney(avSummary.total) }}
+      .moneyBlockSep
 
-  //- dashboard-expenses
+      .moneyBlock._noMargin
+        .moneyBlock__line
+          .moneyTitle
+            template(v-if="summary.sum > 0") Saved
+            template(v-else-if="summary.sum < 0") Spent
+            template(v-else) Total
+          .moneyBlock__total.sum {{ formatMoney(summary.sum) }}
+
+        template(v-if="avSummary.sum != 0")
+          .moneyBlock__line
+            .moneyBlock__title
+              .mdi.mdi-chart-timeline
+              div Average
+            .moneyBlock__average: .sum {{ formatMoney(avSummary.sum) }}
+
+      .moneyBlockSep
+
+      .moneyBlock._noMargin
+        .moneyBlock__line
+          .moneyTitle.incomes Incomes
+          .moneyBlock__total.incomes {{ formatMoney(summary.incomes) }}
+        template(v-if="avSummary.incomes != 0")
+          .moneyBlock__line
+            .moneyBlock__title
+              .mdi.mdi-chart-timeline
+              div Average
+            .moneyBlock__average: .sum {{ formatMoney(avSummary.incomes) }}
+
+
+  //- Dashboard expenses
   template(v-if="view === 'dashboard-expenses'")
-    .summaryShort._pbs
-      .summaryShort__item._link(@click="$emit('toogleOpenedCategories')")
-        .summaryShort__item__icon._expenses
-        .summaryShort__item__label Actual
-        .summaryShort__item__total.expenses {{ formatMoney(summary.expenses) }}
+    template(v-if="!this.getFilter.category")
+      .moneyBlock
+        .moneyBlock__line
+          .moneyTitle.expenses Expenses
+          .moneyBlock__total.expense(@click="$emit('toogleOpenedCategories')") {{ formatMoney(summary.expenses) }}
 
-      template(v-if="$store.state.dashboard.timePeriod === 'month'")
-        .summaryShort__item
-          .summaryShort__item__icon._average
-          .summaryShort__item__label Average
-          .summaryShort__item__total.sum {{ formatMoney(avSummary.expenses) }}
+        .moneyBlock__line
+          template(v-if="avSummary.expenses != 0")
+            .moneyBlock__title._average
+              .mdi.mdi-chart-timeline
+              div Average
+            .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
 
-      template(v-if="selectedCategory && $store.state.dashboard.timePeriod === 'month'")
-        template(v-if="avSummary.leftToSpend > 0")
-          .summaryShort__item
-            .summaryShort__item__icon._spend
-            .summaryShort__item__label Left to spend<br>before end of month
-            .summaryShort__item__total.sum {{ formatMoney(avSummary.leftToSpend) }}
 
-          .summaryShort__item
-            .summaryShort__item__icon._day
-            .summaryShort__item__label Could to spend in day
-            .summaryShort__item__total.sum {{ formatMoney(avSummary.leftToSpendInDay) }}
-        template(v-else)
-          .summaryShort__item
-            .summaryShort__item__icon._left
-            .summaryShort__item__label Overspend
-            .summaryShort__item__total.sum {{ formatMoney(avSummary.leftToSpend) }}
-
-  //- dashboard-incomes
+  //- Dashboard incomes
   template(v-if="view === 'dashboard-incomes'")
-    .summaryShort._pbs
-      .summaryShort__item
-        .summaryShort__item__icon._incomes
-        .summaryShort__item__label Actual
-        .summaryShort__item__total.incomes {{ formatMoney(summary.incomes) }}
-      template(v-if="$store.state.dashboard.timePeriod === 'month'")
-        .summaryShort__item
-          .summaryShort__item__icon._average
-          .summaryShort__item__label Average
-          .summaryShort__item__total.sum {{ formatMoney(avSummary.incomes) }}
+    template(v-if="!this.getFilter.category")
+
+      .moneyBlock
+        .moneyBlock__line
+          .moneyTitle.incomes Incomes
+          .moneyBlock__total.incomes(@click="$emit('toogleOpenedCategories')") {{ formatMoney(summary.incomes) }}
+
+        .moneyBlock__line
+          template(v-if="avSummary.incomes != 0")
+            .moneyBlock__title._average
+              .mdi.mdi-chart-timeline
+              div Average
+            .moneyBlock__average: .sum {{ formatMoney(avSummary.incomes) }}
 </template>
 
 <script>
@@ -86,6 +180,9 @@ export default {
     view: {
       type: String
     },
+    type: {
+      type: String
+    },
     maxwidth: {
       type: Boolean
     },
@@ -96,18 +193,27 @@ export default {
 
   data() {
     return {
-      monthsDurationDefault: 6
+      monthsDurationDefault: 6,
+      monthsDurationReal: 0
     }
   },
 
   computed: {
-    ...mapGetters(['getTrns']),
+    ...mapGetters(['getTrns', 'getFilter']),
+
+    $timePeriod() {
+      return this.$store.state.dashboard.timePeriod
+    },
 
     trnsList() {
-      const startDate = moment().subtract(this.monthsDurationDefault, 'months').startOf('month')
-      const endDate = moment().subtract(1, 'months').endOf('month')
-      const categoryId = this.selectedCategory && this.selectedCategory.id
-      return this.getTrns({ startDate, endDate, categoryId: categoryId })
+      const startDate = moment().subtract(this.monthsDurationDefault, this.$timePeriod).startOf(this.$timePeriod)
+      const endDate = moment().subtract(1, this.$timePeriod).endOf(this.$timePeriod)
+      let categoryId = this.getFilter.category && this.getFilter.category.id
+      const accountId = this.getFilter.account && this.getFilter.account.id
+      if (this.selectedCategory) {
+        categoryId = this.selectedCategory.id
+      }
+      return this.getTrns({ startDate, endDate, accountId, categoryId })
     },
 
     summary() {
@@ -119,11 +225,13 @@ export default {
           .filter(t => t.type === 0)
           .reduce((sum, current) => sum + current.amountRub, 0)
         const total = incomes - expenses
+        const sum = incomes - expenses
 
         return {
           incomes,
           expenses,
-          total
+          total,
+          sum
         }
       } else {
         return {
@@ -136,12 +244,13 @@ export default {
 
     avSummary() {
       if (this.trnsList.length) {
-        const startDate = moment(this.trnsList[0].date).endOf('month')
-        const endDate = moment(this.trnsList[this.trnsList.length - 1].date).startOf('month')
-        const monthsDuration = startDate.diff(endDate, 'months') + 1
+        const startDate = moment(this.trnsList[0].date).endOf(this.$timePeriod)
+        const endDate = moment(this.trnsList[this.trnsList.length - 1].date).startOf(this.$timePeriod)
+        const monthsDuration = startDate.diff(endDate, this.$timePeriod) + 1
         const currentDay = moment().startOf('day')
-        const endOfMonth = moment().endOf('month')
+        const endOfMonth = moment().endOf(this.$timePeriod)
         const daysLeftInThisMonth = endOfMonth.diff(currentDay, 'days') + 1
+        this.monthsDurationReal = monthsDuration
 
         const incomes = this.trnsList
           .filter(t => t.type === 1)
@@ -150,6 +259,7 @@ export default {
           .filter(t => t.type === 0)
           .reduce((sum, current) => sum + current.amountRub, 0)
         const total = incomes - expenses
+        const sum = incomes - expenses
 
         let devider = this.monthsDurationDefault
         // If count of months with data is less then monthsDurationDefault
@@ -159,6 +269,7 @@ export default {
           incomes: incomes / devider,
           expenses: expenses / devider,
           total: total / devider,
+          sum: sum / devider,
           leftToSpend: expenses / devider - this.summary.expenses,
           leftToSpendInDay: (expenses / devider - this.summary.expenses) / daysLeftInThisMonth
         }

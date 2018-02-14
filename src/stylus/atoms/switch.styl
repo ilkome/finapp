@@ -3,23 +3,17 @@
   flex-flow row wrap
   justify-content space-between
 
-  @media (min-width: 768px)
+  @media $after768
     align-items flex-end
 
-  @media (min-width: 768px)
+  @media $after768
     flex-flow row nowrap
 
   &:last-child
     padding-bottom 0
 
   &__item
-    padding-bottom 20px
-
-    @media (min-width: 768px)
-      padding-bottom 30px
-
-  a
-    padding-bottom 5px
+    padding-bottom 15px
     white-space nowrap
     opacity .2
     cursor pointer
@@ -30,9 +24,7 @@
     letter-spacing 3px
     line-height 1rem
     text-transform uppercase
-    border-bottom 1px solid transparent
     $font-numbers()
-    anim()
 
     &:hover
       opacity 1
@@ -43,15 +35,9 @@
 
     &._incomes
       color $color-income
-      &._active
-        border-color $color-income
 
     &._expenses
       color $color-expense
-      &._active
-        border-color $color-expense
 
     &._history
       color $color-main
-      &._active
-        border-color $color-main
