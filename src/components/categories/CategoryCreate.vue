@@ -1,179 +1,185 @@
 <template lang="pug">
-.rightBar
-  .sidebar__close(@click="$store.commit('toogleCategoryCreate', 'hide')")
-    .sidebar__close__title Create category
-    .sidebar__close__icon: .fa.fa-plus
+.rightBar(
+  :class="{ _active: $store.state.categories.create }"
+)
+  .rightBar__overlay(
+    @click="$store.commit('toogleCategoryCreate', 'hide')"
+  )
 
-  .rightBar__in
-    .rightBar__main
-      .rightBar__main__in
-        .form
-          .form__table
-            .form__table__cell._name
-              .input
-                input.input__field(
-                  v-model="values.name"
-                  v-focus.lazy="true",
-                  name="name"
-                  type="text"
-                  placeholder="Write category name"
-                )
-                .input__label Name
+  .rightBar__wrap
+    .sidebar__close(@click="$store.commit('toogleCategoryCreate', 'hide')")
+      .sidebar__close-title Create category
 
-            .form__table__cell._color
-              input.input__field._color(
-                v-model="values.color"
-                v-on:input="setColor($event.target.value)"
-                type="color" name="color")
-
-            .form__table__cell._icon
-              .icon._link._small(
-                :style="`background: ${values.color}`"
-                @click.prevent="toogleIconsPop()"
-              )
-                template(v-if="selectedIcon")
-                  .icon__i(:class="selectedIcon")
-                template(v-else)
-                  .icon__i(class="fa fa-question-circle-o")
-                .icon__label
-                  .icon__label__in Select icon
-
-          .checkbox
-            input#showStat.checkbox__none(type="checkbox" v-model="values.showStat")
-            label.checkbox__input(for="showStat")
-            label.checkbox__label(for="showStat") Show stat on Dashboard
-
-          //- Categories
-          .trnForm__icons
-            .trnForm__subTitle
-              .trnForm__subTitle__flex
-                //- It's parent
-                template(v-if="values.parentId !== 0")
-                  .icon._link._small(
-                    :style="{ background: selectedParentCategory.color }"
-                    :title="selectedParentCategory.name"
+    .rightBar__in
+      .rightBar__main
+        .rightBar__main__in
+          .form
+            .form__table
+              .form__table__cell._name
+                .input
+                  input.input__field(
+                    v-model="values.name"
+                    v-focus.lazy="true",
+                    name="name"
+                    type="text"
+                    placeholder="Write category name"
                   )
-                    .icon__i(:class="selectedParentCategory.icon")
-                    .icon__label
-                      .icon__label__in {{ selectedParentCategory.name }}
-                  .name {{ selectedParentCategory.name }}
-                template(v-else)
-                  .icon._link._small
+                  .input__label Name
+
+              .form__table__cell._color
+                input.input__field._color(
+                  v-model="values.color"
+                  v-on:input="setColor($event.target.value)"
+                  type="color" name="color")
+
+              .form__table__cell._icon
+                .icon._link._small(
+                  :style="`background: ${values.color}`"
+                  @click.prevent="toogleIconsPop()"
+                )
+                  template(v-if="selectedIcon")
+                    .icon__i(:class="selectedIcon")
+                  template(v-else)
+                    .icon__i(class="fa fa-question-circle-o")
+                  .icon__label
+                    .icon__label__in Select icon
+
+            .checkbox
+              input#showStat.checkbox__none(type="checkbox" v-model="values.showStat")
+              label.checkbox__input(for="showStat")
+              label.checkbox__label(for="showStat") Show stat on Dashboard
+
+            //- Categories
+            .trnForm__icons
+              .trnForm__subTitle
+                .trnForm__subTitle__flex
+                  //- It's parent
+                  template(v-if="values.parentId !== 0")
+                    .icon._link._small(
+                      :style="{ background: selectedParentCategory.color }"
+                      :title="selectedParentCategory.name"
+                    )
+                      .icon__i(:class="selectedParentCategory.icon")
+                      .icon__label
+                        .icon__label__in {{ selectedParentCategory.name }}
+                    .name {{ selectedParentCategory.name }}
+                  template(v-else)
+                    .icon._link._small
+                      .icon__i(class="fa fa-question-circle-o")
+                      .icon__label
+                        .icon__label__in Root category
+                    .name Root category
+
+              .iconsGroup
+                .iconsGroup__el
+                  .icon._link(
+                    :class="{_active: (values.parentId === 0)}",
+                    @click.prevent="selectParent(null)",
+                    @keyup.enter.prevent="selectParent(null)",
+                    title="Root category",
+                    aria-checked="false", tabindex="0")
                     .icon__i(class="fa fa-question-circle-o")
                     .icon__label
                       .icon__label__in Root category
-                  .name Root category
 
-            .iconsGroup
-              .iconsGroup__el
-                .icon._link(
-                  :class="{_active: (values.parentId === 0)}",
-                  @click.prevent="selectParent(null)",
-                  @keyup.enter.prevent="selectParent(null)",
-                  title="Root category",
-                  aria-checked="false", tabindex="0")
-                  .icon__i(class="fa fa-question-circle-o")
-                  .icon__label
-                    .icon__label__in Root category
+                template(v-if="showedCategories.length")
+                  .iconsGroup__el(v-for="category in showedCategories")
+                    .icon._link._small(
+                      @click.prevent="selectParent(category)"
+                      @keyup.enter.prevent="selectParent(category)"
+                      :style="{ background: category.color }"
+                      :title="category.name"
+                    )
+                      .icon__i(:class="category.icon")
+                      .icon__label
+                        .icon__label__in {{ category.name }}
 
-              template(v-if="showedCategories.length")
-                .iconsGroup__el(v-for="category in showedCategories")
-                  .icon._link._small(
-                    @click.prevent="selectParent(category)"
-                    @keyup.enter.prevent="selectParent(category)"
-                    :style="{ background: category.color }"
-                    :title="category.name"
-                  )
-                    .icon__i(:class="category.icon")
-                    .icon__label
-                      .icon__label__in {{ category.name }}
+                  .iconsGroup__el
+                    .icon._link._more._small(
+                      @click.prevent="toogleCategoriesPop()",
+                      @keyup.enter.prevent="toogleCategoriesPop()",
+                      v-shortkey="['alt', 'arrowup']",
+                      @shortkey="toogleCategoriesPop()",
+                      aria-checked="false", tabindex="0")
+                      .mdi.mdi-dots-horizontal
+                      .icon__label
+                        .icon__label__in Show all categories
 
-                .iconsGroup__el
-                  .icon._link._more._small(
-                    @click.prevent="toogleCategoriesPop()",
-                    @keyup.enter.prevent="toogleCategoriesPop()",
-                    v-shortkey="['alt', 'arrowup']",
-                    @shortkey="toogleCategoriesPop()",
-                    aria-checked="false", tabindex="0")
-                    .mdi.mdi-dots-horizontal
-                    .icon__label
-                      .icon__label__in Show all categories
+            .trnForm__actions__btn.mb20(@click.prevent="addCategory") Create
 
-          .trnForm__actions__btn.mb20(@click.prevent="addCategory") Create
+      //- Categories popup block
+      //------------------------------------------------
+      transition(name="trnFormAnimation")
+        .trnForm__categories(
+          v-if="showCategoriesPop"
+          v-shortkey="['alt', 'arrowdown']"
+          @shortkey="toogleShowCategories()"
+        )
 
-    //- Categories popup block
-    //------------------------------------------------
-    transition(name="trnFormAnimation")
-      .trnForm__categories(
-        v-if="showCategoriesPop"
-        v-shortkey="['alt', 'arrowdown']"
-        @shortkey="toogleShowCategories()"
-      )
+          .sidebar__close(@click="toogleCategoriesPop")
+            .sidebar__close-title Select category
+            .sidebar__close-icon: .mdi.mdi-plus
 
-        .sidebar__close(@click="toogleCategoriesPop")
-          .sidebar__close__title Select category
-          .sidebar__close__icon: .fa.fa-plus
+          .rightBar__parentCategoryPop
+            .rightBar__main__in
+              template(v-for="category in showedCategories")
+                .itemList
+                  .itemList__content(@click.prevent="selectParent(category)")
+                    .itemList__icon
+                      .icon._link(:style="`background: ${category.color}`")
+                        .icon__pic: div(:class="category.icon")
+                    .itemList__name
+                      div {{ category.name }}
 
-        .rightBar__parentCategoryPop
-          .rightBar__main__in
-            template(v-for="category in showedCategories")
-              .itemList
-                .itemList__content(@click.prevent="selectParent(category)")
-                  .itemList__icon
-                    .icon._link(:style="`background: ${category.color}`")
-                      .icon__pic: div(:class="category.icon")
-                  .itemList__name
-                    div {{ category.name }}
+      //- Icons popup block
+      //------------------------------------------------
+      transition(name="trnFormAnimation")
+        .trnForm__categories(
+          v-if="showIconsPop"
+        )
+          .sidebar__close(@click="toogleIconsPop")
+            .sidebar__close-title Select icon
+            .sidebar__close-icon: .mdi.mdi-plus
 
-    //- Icons popup block
-    //------------------------------------------------
-    transition(name="trnFormAnimation")
-      .trnForm__categories(
-        v-if="showIconsPop"
-      )
-        .sidebar__close(@click="toogleIconsPop")
-          .sidebar__close__title Select icon
-          .sidebar__close__icon: .fa.fa-plus
+          .filter
+            input(
+              type="text",
+              v-model.trim="iconFilter",
+              v-focus.lazy="showIconsPop && !$store.state.isMobile",
+              placeholder="Search"
+            ).filter__input
+            template(v-if="iconFilter !== ''")
+              .filter__btns
+                .filter__btn._edit(@click.prevent="iconFilter = ''")
+                  .fa.fa-eraser
 
-        .filter
-          input(
-            type="text",
-            v-model.trim="iconFilter",
-            v-focus.lazy="showIconsPop && !$store.state.isMobile",
-            placeholder="Search"
-          ).filter__input
-          template(v-if="iconFilter !== ''")
-            .filter__btns
-              .filter__btn._edit(@click.prevent="iconFilter = ''")
-                .fa.fa-eraser
+          .rightBar__iconsPop
+            .rightBar__main__in
+              template(v-if="iconFilter.length >= 2 && searchedIcons.length === 0")
+                div Nothing found
 
-        .rightBar__iconsPop
-          .rightBar__main__in
-            template(v-if="iconFilter.length >= 2 && searchedIcons.length === 0")
-              div Nothing found
+              CategoryColor(v-on:setColor="setColor")
 
-            CategoryColor(v-on:setColor="setColor")
+              //- .input
+                input.input__field(
+                  v-model="values.icon"
+                  v-focus.lazy="true",
+                  name="icon"
+                  type="text"
+                  placeholder="Category icon"
+                )
+                .input__label Icon
 
-            //- .input
-              input.input__field(
-                v-model="values.icon"
-                v-focus.lazy="true",
-                name="icon"
-                type="text"
-                placeholder="Category icon"
-              )
-              .input__label Icon
-
-            .iconsGroup
-              template(v-for="icon in searchedIcons")
-                .iconsGroup__el
-                  .icon._link(
-                    @click.prevent="selectIcon(icon)"
-                    :style="`background: ${values.color}`"
-                  )
-                    .icon__i(:class="`fa fa-${icon.id}`")
-                    .icon__label
-                      .icon__label__in {{ icon.name }}
+              .iconsGroup
+                template(v-for="icon in searchedIcons")
+                  .iconsGroup__el
+                    .icon._link(
+                      @click.prevent="selectIcon(icon)"
+                      :style="`background: ${values.color}`"
+                    )
+                      .icon__i(:class="`fa fa-${icon.id}`")
+                      .icon__label
+                        .icon__label__in {{ icon.name }}
 </template>
 
 <script>

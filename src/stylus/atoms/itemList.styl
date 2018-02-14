@@ -59,7 +59,7 @@
       margin 0 -30px
       padding 0 30px
       border-bottom-color transparent !important
-    
+
     & ^[0]__actions
       right 25px
 
@@ -151,8 +151,9 @@
     flex-grow 1
     padding-top 1px
     line-height normal
-    color $color-sidebar-white-lighter
-    font-size 16px
+    // color $color-sidebar-white-lighter
+    // font-size 16px
+    $typo-item-name()
 
     @media $after768
       font-size 14px
@@ -206,15 +207,15 @@
     display flex
     justify-content center
     align-items center
-    width 40px
+    width 35px
     height 100%
-    font-size 20px
+    font-size 18px
     cursor pointer
 
     @media $after768
       width 30px
       font-size 1rem
-    
+
     &:active
       @media (max-width: 768px)
         background $color-sidebar-bg-hover
@@ -239,7 +240,7 @@
       margin 0 -30px
       padding 0 30px
       padding-left 44px
-    
+
     & ^[0]__actions
       right 25px
 
@@ -255,10 +256,10 @@
       margin 0 -30px
       padding 0 30px
       padding-left 44px
-    
+
     & ^[0]__actions
       right 25px
-    
+
     & ^[0]__name
       color $color-sidebar-white-light
 

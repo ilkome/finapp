@@ -1,18 +1,35 @@
 .sidebar
+  visibility hidden
   z-index 3
   position fixed
-  width 100%
-  max-width 290px
+  width 0
   height 100vh
-  background $color-sidebar
-  border-right 1px solid black
-  anim()
 
   @media $after768
     z-index 0
     top $header-height
     width 290px
     height calcMinus(100vh, $header-height)
+
+  &._active
+    visibility visible
+
+    @media $before768
+      width 100%
+
+  &__block
+    z-index 2
+    position relative
+    width 290px
+    min-width 290px
+    min-height 100%
+    background $color-sidebar
+    border-right 1px solid black
+    transform translateX(-290px)
+    transition all .4s cubic-bezier(0.17, 0.04, 0.03, 0.94)
+
+    ^[0]._active &
+      transform translateX(0)
 
   &__overlay
     @media $before768
@@ -27,7 +44,7 @@
       background alpha(black, .9)
       transition all 400ms ease
 
-      &._active
+      ^[0]._active &
         visibility visible
         opacity 1
 
@@ -38,8 +55,8 @@
     overflow-y auto
     display flex
     flex-flow column nowrap
-    height calc(100vh - 35px)
-    padding 10px 20px 15px 20px
+    height calc(100vh - 49px)
+    padding 10px 20px 10px 20px
     background $color-sidebar
     scrollbar()
 
@@ -77,30 +94,30 @@
     display flex
     align-items center
     justify-content space-between
-    height 49px
+    height 50px
     margin 0 0px
     padding 0 20px
     $typo-title()
     background $color-body
 
-    @media (max-width: 768px)
-      &:active
-        color $color-main
-        background $color-sidebar-bg-hover
-
     @media $after768
-      height auto
+      height 49px
       margin 0
       padding 15px 30px
 
-      &:hover
-        color $color-main
-        background $color-sidebar-bg-hover
+  &__close:active
+    @media $before768
+      color $color-main
+      background $color-sidebar-bg-hover
 
-    &__icon
-      font-size 1rem
-      transform rotate(45deg)
+  &__close:hover
+    @media $after768
+      color $color-main
+      background $color-sidebar-bg-hover
 
+  &__close-icon
+    font-size 22px
+    transform rotate(45deg)
 
   &__actions
     display none
@@ -108,7 +125,6 @@
 
     @media $after768
       display flex
-
 
   &__link
     display flex
@@ -176,7 +192,7 @@
         background $color-main
 
 
-.sidebarItem
+.sidebarMenuItem
   cursor pointer
   position relative
   cursor default
@@ -189,7 +205,6 @@
 
   &._active
   &._editable
-  &:hover
     & ^[0]__wrap
       margin 0 -30px
       padding 0 30px
@@ -200,6 +215,19 @@
 
     & ^[0]__actions
       right 25px
+
+  &:hover
+    @media $after768
+      & ^[0]__wrap
+        margin 0 -30px
+        padding 0 30px
+
+        @media $after768
+          margin 0 -30px
+          padding 0 30px
+
+      & ^[0]__actions
+        right 25px
 
   &._active
     & ^[0]__wrap
@@ -228,22 +256,23 @@
       border-bottom-color transparent
 
   &:hover
-    & ^[0]__name
-      color $color-sidebar-white-light
+    @media $after768
+      & ^[0]__name
+        color $color-sidebar-white-light
 
-    & ^[0]__content
-      border-bottom-color $color-itemList-hover
+      & ^[0]__content
+        border-bottom-color $color-itemList-hover
 
 
-    & ^[0]__wrap
-    & ^[0]__actions
-      background $color-itemList-hover
+      & ^[0]__wrap
+      & ^[0]__actions
+        background $color-itemList-hover
 
-    & ^[0]__action
-      opacity .3
+      & ^[0]__action
+        opacity .3
 
-    & ^[0]__action:hover
-      opacity 1
+      & ^[0]__action:hover
+        opacity 1
 
   &__wrap
     position relative
@@ -251,7 +280,9 @@
     flex-flow row nowrap
     flex-grow 1
     align-items center
+    min-height 55px
     color $color-second
+    border-bottom 1px solid $color-itemList-border
 
   &__content
     display flex
@@ -261,7 +292,6 @@
     max-height 55px
     padding-top $mm
     padding-bottom $mm
-    border-bottom 1px solid $color-itemList-border
     @media $after768
       max-height 45px
 
@@ -284,6 +314,9 @@
     text-align right
 
     ^[0]:hover &
+      @media $after768
+        color $color-sidebar-white-light
+
     ^[0]._active &
       color $color-sidebar-white-light
 
@@ -295,6 +328,8 @@
       font-size 12px
       color $color-sidebar-grey-alpha
       ^[0]:hover &
+        @media $after768
+          color $color-sidebar-white-lighter
       ^[0]._active &
         color $color-sidebar-white-lighter
 
@@ -402,30 +437,3 @@
       display block
       padding 0 5px
       color $color-sidebar-grey-alpha
-
-
-.sidebarToogle
-  z-index 15
-  position fixed
-  width 10px
-  height 100%
-  left 0px
-  top 0
-  cursor pointer
-  display flex
-  align-items flex-start
-  justify-content center
-  right 0px
-  color $color-second
-  font-size 1.5rem
-  anim()
-
-  @media $after768
-    width 30px
-
-  &:active
-    background $color-side-toogle
-
-  &:hover
-    @media $after768
-      background $color-side-toogle

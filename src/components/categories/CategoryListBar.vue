@@ -1,19 +1,24 @@
 <template lang="pug">
-.leftBar
+.sidebar(
+  :class="{ _active: $store.state.categories.list }"
+)
+  .sidebar__overlay(
+    @click="$store.commit('toogleCategoriesList', 'hide')"
+  )
+
   //- PC
-  template(v-if="!$store.state.isMobile")
-    .leftBar__title(@click="$store.commit('toogleCategoriesList')")
-      div Categories
-      .sidebar__close__icon: .fa.fa-plus
+  .sidebar__block
+    template(v-if="!$store.state.isMobile")
+      .leftBar__title(@click="$store.commit('toogleCategoriesList')")
+        div Categories
+        .sidebar__close-icon: .mdi.mdi-plus
 
-  //- Mobile
-  template(v-if="$store.state.isMobile")
-    .sidebar__close(@click="$store.commit('toogleCategoriesList', 'hide')")
-      .sidebar__close__title: .fa.fa-arrow-left
-      .sidebar__close__title Categories
-      .sidebar__close__icon: .fa.fa-plus
+    //- Mobile
+    template(v-if="$store.state.isMobile")
+      .sidebar__close(@click="$store.commit('toogleCategoriesList', 'hide')")
+        .sidebar__close-title Categories
 
-  CategoryList
+    CategoryList
 </template>
 
 <script>

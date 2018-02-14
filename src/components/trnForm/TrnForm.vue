@@ -1,219 +1,218 @@
 <template lang="pug">
-.rightBar
-  .sidebar__overlay(
+.rightBar(:class="{ _active: $store.state.trnForm.isShow }")
+
+  .rightBar__overlay(
     @click="$store.commit('toogleTrnForm', 'hide')"
-    :class="{ _active: $store.state.trnForm.isShow }"
   )
-  .sidebar__close(@click="$store.commit('toogleTrnForm', 'hide')")
-    .sidebar__close__title
-      template(v-if="action === 'create' && values.type !== 2") Create trn
-      template(v-if="action === 'update'") Update trn
-      template(v-if="values.type === 2") Create transfer
-    .sidebar__close__icon: .fa.fa-plus
 
-  .rightBar__in
-    .rightBar__main
-      .rightBar__main__in
-        .trnForm__date
-          .trnForm__date__link(
-            @click="setNextPrevDate('prev')"
-            @keyup.enter.prevent="setNextPrevDate('prev')"
-          ): .arrow._left
-          .trnForm__date__value {{ formatDate(values.date) }}
-          .trnForm__date__link(
-            @click="setNextPrevDate('next')",
-            @keyup.enter.prevent="setNextPrevDate('next')"
-          ): .arrow._right
+  .rightBar__wrap
+    .sidebar__close(@click="$store.commit('toogleTrnForm', 'hide')")
+      .sidebar__close-title
+        template(v-if="action === 'create' && values.type !== 2") Create trn
+        template(v-if="action === 'update'") Update trn
+        template(v-if="values.type === 2") Create transfer
 
-        .amount(:class="amountClass")
-          .amountCount(
-            @click="setFormType()"
-            @keyup.enter.prevent="setFormType()"
-          )
-            .amountCountText
-              template(v-if="values.type === 1") +
-              template(v-else-if="values.type === 0") -
-              template(v-else) =
+    .rightBar__in
+      .rightBar__main
+        .rightBar__main__in
+          .trnForm__date
+            .trnForm__date__link(
+              @click="setNextPrevDate('prev')"
+              @keyup.enter.prevent="setNextPrevDate('prev')"
+            ): .arrow._left
+            .trnForm__date__value {{ formatDate(values.date) }}
+            .trnForm__date__link(
+              @click="setNextPrevDate('next')",
+              @keyup.enter.prevent="setNextPrevDate('next')"
+            ): .arrow._right
 
-          .amountValue
-            input.amountValueInput(
-              v-model.lazy="values.amount"
-              @keyup.enter="onSubmitForm()"
-              v-focus.lazy="focus && !$store.state.isMobile || ($store.state.trnForm.isShow && !show.categories) && !$store.state.isMobile"
-              type="text"
-              name="amount"
-              placeholder="0"
+          .amount(:class="amountClass")
+            .amountCount(
+              @click="setFormType()"
+              @keyup.enter.prevent="setFormType()"
             )
+              .amountCountText
+                template(v-if="values.type === 1") +
+                template(v-else-if="values.type === 0") -
+                template(v-else) =
 
-        //- Regual trn
-        template(v-if="values.type !== 2")
-          //- Categories
-          .trnForm__icons
-            template(v-if="lastUsedCategories.length || categories.length")
+            .amountValue
+              input.amountValueInput(
+                v-model.lazy="values.amount"
+                @keyup.enter="onSubmitForm()"
+                v-focus.lazy="focus && !$store.state.isMobile || ($store.state.trnForm.isShow && !show.categories) && !$store.state.isMobile"
+                type="text"
+                name="amount"
+                placeholder="0"
+              )
+
+          //- Regual trn
+          template(v-if="values.type !== 2")
+            //- Categories
+            .trnForm__icons
+              template(v-if="lastUsedCategories.length || categories.length")
+                .trnForm__subTitle
+                  .trnForm__subTitle__flex
+                    template(v-if="values.categoryId")
+                      .icon(
+                        :style="{ background: selectedCategory.color }"
+                        :title="selectedCategory.name"
+                      )
+                        .icon__i(:class="selectedCategory.icon")
+                      .name {{ selectedCategory.name }}
+
+                .iconsGroup
+                  .iconsGroup__el(v-for="category in lastUsedCategories")
+                    .icon._link(
+                      @click.prevent="setCategory(category.id)"
+                      @keyup.enter.prevent="setCategory(category.id)"
+                      :style="{ background: category.color }"
+                      :title="category.name"
+                    )
+                      .icon__i(:class="category.icon")
+                      .icon__label
+                        .icon__label__in {{ category.name }}
+
+                  .iconsGroup__el
+                    .icon._link._more(
+                      @click.prevent="toogleCategoriesPop()"
+                      @keyup.enter.prevent="toogleCategoriesPop()"
+                      v-shortkey="['alt', 'arrowup']"
+                      @shortkey="toogleCategoriesPop()"
+                    )
+                      .mdi.mdi-dots-horizontal
+                      .icon__label
+                        .icon__label__in Show all categories
+              //- No categories
+              template(v-else)
+                .trnForm__actions__btn(@click="$store.commit('toogleCategoryCreate')") Create category
+
+            //- Wallets
+            .trnForm__icons
+              template(v-if="accounts.length")
+                .trnForm__subTitle
+                  .trnForm__subTitle__flex
+                    template(v-if="values.account")
+                      .icon._round(
+                        :style="{ background: values.account.color }"
+                        :title="values.account.name"
+                      )
+                        .icon__abbr {{ values.account.name.charAt(0) }}{{ values.account.name.charAt(1) }}
+                      .name {{ values.account.name }}
+                      template(v-if="selectedAccount")
+                        .trnForm__wallet-total {{ formatMoney(selectedAccount.total, selectedAccount.currency) }}
+
+                .iconsGroup
+                  .iconsGroup__el(v-for="account in accounts")
+                    .icon._link._round(
+                      :title="account.name"
+                      :style="{ background: account.color }"
+                      @click.prevent="setAccound(account)"
+                      @keyup.enter.prevent="setAccound(account)"
+                    )
+                      .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
+                      .icon__label
+                        .icon__label__in {{ account.name }}
+
+              //- No wallets
+              template(v-else)
+                .trnForm__actions__btn(@click="$store.commit('toogleAccountCreate')") Create wallet
+
+            .trnForm__desc
+              input.input-filter._nomargin(
+                v-model.trim="values.description"
+                @keyup.enter="onSubmitForm()"
+                type="text"
+                name="description"
+                placeholder="Description"
+              )
+
+          //- Transfer
+          template(v-if="values.type === 2")
+            .trnForm__icons
               .trnForm__subTitle
                 .trnForm__subTitle__flex
-                  template(v-if="values.categoryId")
-                    .icon(
-                      :style="{ background: selectedCategory.color }"
-                      :title="selectedCategory.name"
-                    )
-                      .icon__i(:class="selectedCategory.icon")
-                    .name {{ selectedCategory.name }}
-
-              .iconsGroup
-                .iconsGroup__el(v-for="category in lastUsedCategories")
-                  .icon._link(
-                    @click.prevent="setCategory(category.id)"
-                    @keyup.enter.prevent="setCategory(category.id)"
-                    :style="{ background: category.color }"
-                    :title="category.name"
+                  .icon._round(
+                    :style="{ background: values.accountFrom.color }"
+                    :title="values.accountFrom.name"
                   )
-                    .icon__i(:class="category.icon")
-                    .icon__label
-                      .icon__label__in {{ category.name }}
-
-                .iconsGroup__el
-                  .icon._link._more(
-                    @click.prevent="toogleCategoriesPop()"
-                    @keyup.enter.prevent="toogleCategoriesPop()"
-                    v-shortkey="['alt', 'arrowup']"
-                    @shortkey="toogleCategoriesPop()"
-                  )
-                    .mdi.mdi-dots-horizontal
-                    .icon__label
-                      .icon__label__in Show all categories
-            //- No categories
-            template(v-else)
-              .trnForm__actions__btn(@click="$store.commit('toogleCategoryCreate')") Create category
-
-          //- Wallets
-          .trnForm__icons
-            template(v-if="accounts.length")
-              .trnForm__subTitle
-                .trnForm__subTitle__flex
-                  template(v-if="values.account")
-                    .icon._round(
-                      :style="{ background: values.account.color }"
-                      :title="values.account.name"
-                    )
-                      .icon__abbr {{ values.account.name.charAt(0) }}{{ values.account.name.charAt(1) }}
-                    .name {{ values.account.name }}
-                    template(v-if="selectedAccount")
-                      .trnForm__wallet-total {{ formatMoney(selectedAccount.total, selectedAccount.currency) }}
+                    .icon__abbr {{ values.accountFrom.name.charAt(0) }}{{ values.accountFrom.name.charAt(1) }}
+                  .name {{ values.accountFrom.name }}
+                .label From
 
               .iconsGroup
                 .iconsGroup__el(v-for="account in accounts")
-                  .icon._link._round(
-                    :title="account.name"
+                  .icon._round._link(
+                    @click.prevent="setAccound(account, 'from')"
+                    :class="[{_active: (account.id === values.accountFrom.id)}]"
                     :style="{ background: account.color }"
-                    @click.prevent="setAccound(account)"
-                    @keyup.enter.prevent="setAccound(account)"
+                    :title="account.name"
                   )
                     .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
                     .icon__label
                       .icon__label__in {{ account.name }}
 
-            //- No wallets
-            template(v-else)
-              .trnForm__actions__btn(@click="$store.commit('toogleAccountCreate')") Create wallet
+            .trnForm__icons
+              .trnForm__subTitle
+                .trnForm__subTitle__flex
+                  .icon._round(
+                    :style="{ background: values.accountTo.color }"
+                    :title="values.accountTo.name"
+                  )
+                    .icon__abbr {{ values.accountTo.name.charAt(0) }}{{ values.accountTo.name.charAt(1) }}
+                  .name {{ values.accountTo.name }}
+                .label To
 
-          .trnForm__desc
-            input.input-filter._nomargin(
-              v-model.trim="values.description"
-              @keyup.enter="onSubmitForm()"
-              type="text"
-              name="description"
-              placeholder="Description"
+              .iconsGroup
+                .iconsGroup__el(v-for="account in accounts")
+                 .icon._round._link(
+                    @click.prevent="setAccound(account, 'to')"
+                    :class="[{ _active: (account.id === values.accountTo.id) }]"
+                    :style="{ background: account.color }"
+                    :title="account.name"
+                  )
+                    .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
+                    .icon__label
+                      .icon__label__in {{ account.name }}
+
+            .trnForm__desc
+              input.input-filter._nomargin(
+                v-model.trim="values.description"
+                @keyup.enter="onSubmitForm()"
+                type="text"
+                name="description"
+                placeholder="Description"
+              )
+
+          .trnForm__actions
+            .trnForm__actions__btn(
+              @click.prevent="onSubmitForm()"
+              @keyup.enter.prevent="onSubmitForm()"
+              :class="{ _disable: $store.state.loader }"
             )
+              template(v-if="$store.state.loader")
+                .trnForm__actions__btn__loading
+                  .fa.fa-spinner
+              template(v-if="action === 'create' && values.type !== 2") Create trn
+              template(v-if="action === 'update'") Update trn
+              template(v-if="values.type === 2") Create transfer
 
-        //- Transfer
-        template(v-if="values.type === 2")
-          .trnForm__icons
-            .trnForm__subTitle
-              .trnForm__subTitle__flex
-                .icon._round(
-                  :style="{ background: values.accountFrom.color }"
-                  :title="values.accountFrom.name"
-                )
-                  .icon__abbr {{ values.accountFrom.name.charAt(0) }}{{ values.accountFrom.name.charAt(1) }}
-                .name {{ values.accountFrom.name }}
-              .label From
+      //- Categories popup block
+      //------------------------------------------------
+      transition(name="trnFormAnimation")
+        .trnForm__categories(
+          v-if="isShowCategories"
+          v-shortkey="['alt', 'arrowdown']",
+          @shortkey="toogleShowCategories()")
 
-            .iconsGroup
-              .iconsGroup__el(v-for="account in accounts")
-                .icon._round._link(
-                  @click.prevent="setAccound(account, 'from')"
-                  :class="[{_active: (account.id === values.accountFrom.id)}]"
-                  :style="{ background: account.color }"
-                  :title="account.name"
-                )
-                  .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
-                  .icon__label
-                    .icon__label__in {{ account.name }}
+          .sidebar__close(@click="toogleCategoriesPop")
+            .sidebar__close-title Select category
+            .sidebar__close-icon: .mdi.mdi-plus
 
-          .trnForm__icons
-            .trnForm__subTitle
-              .trnForm__subTitle__flex
-                .icon._round(
-                  :style="{ background: values.accountTo.color }"
-                  :title="values.accountTo.name"
-                )
-                  .icon__abbr {{ values.accountTo.name.charAt(0) }}{{ values.accountTo.name.charAt(1) }}
-                .name {{ values.accountTo.name }}
-              .label To
-
-            .iconsGroup
-              .iconsGroup__el(v-for="account in accounts")
-               .icon._round._link(
-                  @click.prevent="setAccound(account, 'to')"
-                  :class="[{ _active: (account.id === values.accountTo.id) }]"
-                  :style="{ background: account.color }"
-                  :title="account.name"
-                )
-                  .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
-                  .icon__label
-                    .icon__label__in {{ account.name }}
-
-          .trnForm__desc
-            input.input-filter._nomargin(
-              v-model.trim="values.description"
-              @keyup.enter="onSubmitForm()"
-              type="text"
-              name="description"
-              placeholder="Description"
-            )
-
-        .trnForm__actions
-          .trnForm__actions__btn(
-            @click.prevent="onSubmitForm()"
-            @keyup.enter.prevent="onSubmitForm()"
-            :class="{ _disable: $store.state.loader }"
-          )
-            template(v-if="$store.state.loader")
-              .trnForm__actions__btn__loading
-                .fa.fa-spinner
-            template(v-if="action === 'create' && values.type !== 2") Create trn
-            template(v-if="action === 'update'") Update trn
-            template(v-if="values.type === 2") Create transfer
-
-
-
-    //- Categories popup block
-    //------------------------------------------------
-    transition(name="trnFormAnimation")
-      .trnForm__categories(
-        v-if="isShowCategories"
-        v-shortkey="['alt', 'arrowdown']",
-        @shortkey="toogleShowCategories()")
-
-        .sidebar__close(@click="toogleCategoriesPop")
-          .sidebar__close__title Select category
-          .sidebar__close__icon: .fa.fa-plus
-
-        CategoryList(
-          v-on:onClickContent="setCategory",
-          :isShowEditActions.sync="isShowEditActions",
-          view="trnForm")
+          CategoryList(
+            v-on:onClickContent="setCategory",
+            :isShowEditActions.sync="isShowEditActions",
+            view="trnForm")
 </template>
 
 <script>
@@ -222,48 +221,12 @@ import mathjs from 'mathjs'
 import moment from 'moment'
 import { focus } from 'vue-focus'
 import formatMoney from '@/mixins/formatMoney'
-import CategoryList from './categories/CategoryList.vue'
+import CategoryList from '@components/categories/CategoryList.vue'
 
 export default {
   directives: { focus: focus },
-  mixins: [formatMoney],
   components: { CategoryList },
-
-  watch: {
-    account() {
-      if (this.account && this.$store.state.trnForm.action === 'create') {
-        this.values.account = this.account
-        this.values.accountId = this.account.id
-        this.values.accountName = this.account.name
-      }
-    },
-    isShowTrnForm() {
-      if (this.$store.state.trnForm.show) {
-        this.focus = true
-      } else {
-        this.focus = false
-      }
-    },
-    action() {
-      this.fillValues()
-    },
-    updateTrnId() {
-      if (this.updateTrnId) {
-        this.fillValues()
-      }
-    }
-  },
-
-  mounted() {
-    this.fillValues()
-
-    document.addEventListener('keyup', (event) => {
-      if (event.keyCode === 27) { // escape key
-        this.$store.commit('closeTrnForm')
-        this.show.categories = false
-      }
-    })
-  },
+  mixins: [formatMoney],
 
   data() {
     return {
@@ -299,11 +262,7 @@ export default {
       return this.$store.state.trnForm.action
     },
     amountClass() {
-      switch (this.values.type) {
-        case 0: return '_expense'
-        case 1: return '_income'
-        default: return
-      }
+      return this.values.type === 0 ? '_expense' : '_income'
     },
     categoryId() {
       return this.$store.state.trnForm.categoryId
@@ -330,6 +289,42 @@ export default {
     updateTrnId() {
       return this.$store.state.trnForm.updateTrnId
     }
+  },
+
+  watch: {
+    account() {
+      if (this.account && this.$store.state.trnForm.action === 'create') {
+        this.values.account = this.account
+        this.values.accountId = this.account.id
+        this.values.accountName = this.account.name
+      }
+    },
+    isShowTrnForm() {
+      if (this.$store.state.trnForm.show) {
+        this.focus = true
+      } else {
+        this.focus = false
+      }
+    },
+    action() {
+      this.fillValues()
+    },
+    updateTrnId() {
+      if (this.updateTrnId) {
+        this.fillValues()
+      }
+    }
+  },
+
+  mounted() {
+    this.fillValues()
+
+    document.addEventListener('keyup', (event) => {
+      if (event.keyCode === 27) { // escape key
+        this.$store.commit('closeTrnForm')
+        this.show.categories = false
+      }
+    })
   },
 
   methods: {
@@ -507,6 +502,7 @@ export default {
       }
     },
     async onSubmitForm() {
+      console.log('onSubmitForm')
       let isCreated = false
       this.focus = false
 
@@ -609,12 +605,23 @@ export default {
             this.values.description = ''
           } else {
             const result = await this.$store.dispatch('addTrn', formatedValues)
-            if (result) {
-              isCreated = true
+            if (!result.error) {
+              this.$notify({
+                group: 'foo',
+                title: 'Succesed',
+                text: `Trn was created ${result.status}`,
+                type: 'success'
+              })
               this.values.amount = ''
               this.values.description = ''
             } else {
-              console.error('Trn has not created.')
+              this.$notify({
+                group: 'foo',
+                title: 'Error',
+                text: result.error,
+                type: 'error'
+              })
+              return
             }
           }
         }
@@ -627,15 +634,6 @@ export default {
           })
 
           this.$store.commit('closeTrnForm')
-        }
-
-        if (isCreated) {
-          this.$notify({
-            group: 'foo',
-            title: 'Succesed',
-            text: 'Trn was created.',
-            type: 'success'
-          })
         }
       } catch (error) {
         this.errors = error.message

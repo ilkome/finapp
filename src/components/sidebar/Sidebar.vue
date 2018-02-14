@@ -1,20 +1,21 @@
 <template lang="pug">
-transition(name="leftBarAnimation")
-  .sidebar(v-show="$store.state.showedLeftbar")
+.sidebar(
+  :class="{ _active: $store.state.showedLeftbar }"
+  v-shortkey="['alt', 'arrowleft']",
+  @shortkey="$store.commit('toogleLeftbar')",
+)
 
-    //- mobile
-    .sidebar__overlay(
-      :class="{ _active: $store.state.showedLeftbar }"
-      @click="$store.commit('toogleLeftbar', 'hide')"
-    )
+  .sidebar__overlay(
+    @click="$store.commit('toogleLeftbar', 'hide')"
+  )
+
+  .sidebar__block
     template(v-if="$store.state.isMobile")
-      .sidebar__close(@click="$store.commit('toogleLeftbar', 'hide')")
-        .sidebar__close__title: .fa.fa-arrow-left
-        .sidebar__close__title Wallets
-        .sidebar__close__icon: .fa.fa-plus
+      .sidebar__close(@click="$store.commit('toogleLeftbar')")
+        .sidebar__close-title Wallets
 
     .sidebar__in
-      //- walltes
+      //- Walltes
       .sidebar__item
         template(v-if="!$store.state.isMobile")
           .sidebar__head
@@ -39,18 +40,18 @@ transition(name="leftBarAnimation")
         .sidebar__wrap(v-if="accounts.length")
           template(v-for="(account, index) in accounts")
             template(v-if="index < visibleAccounts")
-              .sidebarItem(
+              .sidebarMenuItem(
                 :key="index"
                 @click.prevent="onClickAccount(account)"
                 :class="getClassName(account)"
               )
-                .sidebarItem__wrap
-                  .sidebarItem__icon
+                .sidebarMenuItem__wrap
+                  .sidebarMenuItem__icon
                     .icon._round(:style="`background: ${account.color}`")
                       .icon__abbr {{ account.name.charAt(0) }}{{ account.name.charAt(1) }}
-                  .sidebarItem__content
-                    .sidebarItem__name {{ account.name }}
-                    .sidebarItem__money
+                  .sidebarMenuItem__content
+                    .sidebarMenuItem__name {{ account.name }}
+                    .sidebarMenuItem__money
                       template(v-if="account.total !== 0")
                         template(v-if="account.currency !== 'RUB'")
                           div(v-if="account.currency !== 'RUB'") {{ formatMoney(account.total, account.currency)}}
@@ -61,14 +62,14 @@ transition(name="leftBarAnimation")
                         div 0 {{account.symbol}}
 
                     template(v-if="isShowEditBtns")
-                      .sidebarItem__actions
-                        .sidebarItem__action(@click.stop.prevent="toogleAccountEdit(account)")
+                      .sidebarMenuItem__actions
+                        .sidebarMenuItem__action(@click.stop.prevent="toogleAccountEdit(account)")
                           template(v-if="$store.state.accounts.editAccount && $store.state.accounts.editAccount.id === account.id")
                             .fa.fa-times-circle
                           template(v-else)
                             .fa.fa-pencil-square-o
 
-                        .sidebarItem__action(@click.stop.prevent="askQuestion(account.id)")
+                        .sidebarMenuItem__action(@click.stop.prevent="askQuestion(account.id)")
                           .fa.fa-trash-o
 
                 .confirmPop(v-if="questionId === account.id")
@@ -93,7 +94,9 @@ transition(name="leftBarAnimation")
             .sidebarSummary._toogle._link(@click="toogleShowEditBtns")
               .sidebarSummary__label {{ isShowEditBtns ? 'Hide edit buttons' : 'Show edit buttons' }}
             .sidebarSummary._toogle._link(@click="$store.commit('toogleAccountCreate')")
-              .sidebarSummary__label Create new walliet
+              .sidebarSummary__label Create new wallet
+            .sidebarSummary._toogle._link(@click="$store.commit('signOut')")
+              .sidebarSummary__label LogOut
 
         //- No accounts
         template(v-if="!accounts.length")
@@ -111,24 +114,24 @@ transition(name="leftBarAnimation")
 
           .sidebar__wrap
             template(v-if="getFilter.account")
-              .sidebarItem(
+              .sidebarMenuItem(
                 @click.prevent="$store.commit('setFilterAccount', null)"
               )
-                .sidebarItem__content
-                  .sidebarItem__icon
+                .sidebarMenuItem__content
+                  .sidebarMenuItem__icon
                     .icon._round(:style="`background: ${getFilter.account.color}`")
                       .icon__abbr {{ getFilter.account.name.charAt(0) }}{{ getFilter.account.name.charAt(1) }}
-                  .sidebarItem__name {{ getFilter.account.name }}
+                  .sidebarMenuItem__name {{ getFilter.account.name }}
 
             template(v-if="getFilter.category")
-              .sidebarItem(
+              .sidebarMenuItem(
                 @click.prevent="$store.commit('setFilterCategory', null)"
               )
-                .sidebarItem__content
-                  .sidebarItem__icon
+                .sidebarMenuItem__content
+                  .sidebarMenuItem__icon
                     .icon(:style="`background: ${getFilter.category.color}`")
                       div(:class="getFilter.category.icon")
-                  .sidebarItem__name {{ getFilter.category.name }}
+                  .sidebarMenuItem__name {{ getFilter.category.name }}
 
       //- summary
       .sidebar__item

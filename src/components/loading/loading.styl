@@ -1,9 +1,10 @@
 .loading
+  z-index 100
+  position fixed
   display flex
   align-items center
   justify-content center
-  position fixed
-  z-index 100
+  flex-flow column wrap
   left 0
   top 0
   width 100%
@@ -12,11 +13,20 @@
   font-size 3rem
   background alpha($color-layout, .4)
 
-  &__spin
+  &__logo
     width 80px
     height 80px
     fill $color-main
-    animation spin 3000ms ease-in-out infinite
+
+    &._spin
+      animation spin 3000ms ease-in-out infinite
+
+  &__name
+    margin 0
+    margin-top $msb
+    color $color-main
+    font-size 3rem
+    letter-spacing 1px
 
 @keyframes spin
   from {transform:rotate(0deg)}

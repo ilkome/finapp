@@ -2,7 +2,17 @@ import firebase from 'firebase'
 
 const store = {
   state: {
-    user: {}
+    user: {
+      displayName: null,
+      email: null,
+      uid: null
+    }
+  },
+
+  getters: {
+    user(state) {
+      return state.user
+    }
   },
 
   mutations: {
