@@ -95,6 +95,8 @@
               .sidebarSummary__label {{ isShowEditBtns ? 'Hide edit buttons' : 'Show edit buttons' }}
             .sidebarSummary._toogle._link(@click="$store.commit('toogleAccountCreate')")
               .sidebarSummary__label Create new wallet
+
+          template(v-if="isShowEditBtns")
             .sidebarSummary._toogle._link(@click="$store.dispatch('signOut')")
               .sidebarSummary__label LogOut
 
