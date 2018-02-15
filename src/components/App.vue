@@ -26,10 +26,7 @@
       Dashboard
 
       //- Create trn
-      template(v-if="$store.state.isMobile")
-        .trnFormButton(''
-          @click.prevent.stop="$store.commit('toogleTrnForm')"
-        ): .trnFormButton__icon: .mdi.mdi-plus
+
 
       //- Trn form
       TrnForm
@@ -40,6 +37,10 @@
           @click.prevent.stop="$store.commit('toogleTrnForm')",
           :class="{_active: $store.state.trnForm.isShow}"
         )
+      template(v-if="$store.state.isMobile")
+        .trnFormButton(
+          @click.prevent.stop="$store.commit('toogleTrnForm')"
+        ): .trnFormButton__icon: .mdi.mdi-plus
 
       CategoryListBar
       CategoryCreate
@@ -59,7 +60,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import firebase from 'firebase'
+import localforage from 'localforage'
 import debounce from 'lodash/debounce'
+import { app } from '@/store/firebase'
 import Sidebar from './sidebar/Sidebar.vue'
 import TrnForm from '@components/trnForm/TrnForm.vue'
 import Login from '@components/login/Login.vue'
@@ -79,22 +83,124 @@ export default {
   },
 
   async mounted() {
-    this.$store.watch((state) => state.trnForm.isShow, this.toogleBodyOverflow)
-    this.$store.watch((state) => state.showedLeftbar, this.toogleBodyOverflow)
-    this.$store.watch((state) => state.categories.list, this.toogleBodyOverflow)
-    this.$store.watch((state) => state.accounts.show, this.toogleBodyOverflow)
+    try {
+      const addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
+      const updatedOfflineTrns = await localforage.getItem('updatedOfflineTrns')
+      const deletedOfflineTrns = await localforage.getItem('deletedOfflineTrns')
+      console.log('addedOfflineTrns', addedOfflineTrns)
+      console.log('updatedOfflineTrns', updatedOfflineTrns)
+      console.log('deletedOfflineTrns', deletedOfflineTrns)
 
-    this.$nextTick(() => {
-      window.addEventListener('resize', debounce(this.checkAndSetMobileOrPCVersion, 300))
-      this.checkAndSetMobileOrPCVersion()
-    })
+      // Initialize the App from localStorage
+      // -----------------------------------------------------------------------
+      const localData = await localforage.getItem('data')
+      const localTrns = await localforage.getItem('trns')
+      const localUser = await localforage.getItem('user')
 
-    document.addEventListener('keyup', (event) => {
-      if (event.keyCode === 27) { // escape key
-        this.$store.commit('toogleAccountList', 'hide')
-        this.$store.commit('toogleCategoriesList', 'hide')
+      if (localData &&
+          localTrns && localTrns.length &&
+          localUser && localUser.uid &&
+          localData.accounts && localData.accounts.length &&
+          localData.categories && localData.categories.length &&
+          localData.rates) {
+        this.$store.commit('signIn', localUser)
+        this.$store.commit('setRates', localData.rates)
+        this.$store.commit('setAccounts', localData.accounts)
+        this.$store.commit('setCategories', localData.categories)
+        this.$store.commit('setTrns', localTrns)
+        this.$store.commit('closeLoader')
+        this.$store.commit('pageLoaded')
       }
-    })
+
+      // Auth
+      // -----------------------------------------------------------------------
+      app.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+          const db = firebase.database()
+          const userRef = `users/${user.uid}`
+          const formatedUser = {
+            displayName: user.displayName,
+            email: user.email,
+            uid: user.uid
+          }
+          this.$store.commit('signIn', formatedUser)
+
+          // Get data from firebase and dispatch to store
+          // -------------------------------------------------------------------
+          db.ref(`${userRef}`).on('value', async (snapshot) => {
+            const val = snapshot.val()
+            this.$store.dispatch('setRates')
+            this.$store.dispatch('setCategories', val)
+            this.$store.dispatch('setAccounts', val)
+            this.$store.dispatch('setTrns', val)
+            this.$store.commit('pageLoaded')
+
+            // Save data from firebase to localStorage
+            // -----------------------------------------------------------------
+            await localforage.setItem('data', {
+              rates: this.$store.state.rates.all,
+              accounts: this.$store.state.accounts.all,
+              categories: this.$store.state.categories.all
+            })
+            await localforage.setItem('user', formatedUser)
+            await localforage.setItem('trns', this.$store.state.trns.all)
+          })
+        }
+        this.$store.commit('closeLoader')
+        this.$store.commit('pageLoaded')
+      })
+
+      // Add offline trns to firebase when connected
+      // -----------------------------------------------------------------------
+      let isConnected = false
+      const connectionRef = firebase.database().ref('.info/connected')
+      connectionRef.on('value', async snap => {
+        isConnected = snap.val()
+        this.$store.commit('setConnectionStatus', isConnected)
+        if (isConnected) {
+          const addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
+          for (const key in addedOfflineTrns) {
+            await this.$store.dispatch('addTrn', addedOfflineTrns[key])
+          }
+
+          const updatedOfflineTrns = await localforage.getItem('updatedOfflineTrns')
+          for (const key in updatedOfflineTrns) {
+            await this.$store.dispatch('updateTrn', updatedOfflineTrns[key])
+          }
+
+          const deletedOfflineTrns = await localforage.getItem('deletedOfflineTrns')
+          for (const key in deletedOfflineTrns) {
+            await this.$store.dispatch('deleteTrn', deletedOfflineTrns[key])
+          }
+        }
+      })
+
+      this.$store.watch((state) => state.trnForm.isShow, this.toogleBodyOverflow)
+      this.$store.watch((state) => state.showedLeftbar, this.toogleBodyOverflow)
+      this.$store.watch((state) => state.categories.list, this.toogleBodyOverflow)
+      this.$store.watch((state) => state.accounts.show, this.toogleBodyOverflow)
+
+      this.$nextTick(() => {
+        window.addEventListener('resize', debounce(this.checkAndSetMobileOrPCVersion, 300))
+        this.checkAndSetMobileOrPCVersion()
+      })
+
+      document.addEventListener('keyup', (event) => {
+        if (event.keyCode === 27) { // escape key
+          this.$store.commit('toogleAccountList', 'hide')
+          this.$store.commit('toogleCategoriesList', 'hide')
+        }
+      })
+    } catch (error) {
+      console.error(error)
+      this.$notify({
+        group: 'foo',
+        title: 'Error',
+        text: error.message,
+        type: 'error',
+        duration: 30000
+      })
+    }
   },
 
   methods: {
