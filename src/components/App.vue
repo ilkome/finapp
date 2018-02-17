@@ -25,9 +25,6 @@
       Sidebar
       Dashboard
 
-      //- Create trn
-
-
       //- Trn form
       TrnForm
       template(v-if="!$store.state.categories.create && !$store.state.categories.edit && !$store.state.accounts.create && !$store.state.accounts.edit")
@@ -37,7 +34,6 @@
           @click.prevent.stop="$store.commit('toogleTrnForm')",
           :class="{_active: $store.state.trnForm.isShow}"
         )
-      template(v-if="$store.state.isMobile")
         .trnFormButton(
           @click.prevent.stop="$store.commit('toogleTrnForm')"
         ): .trnFormButton__icon: .mdi.mdi-plus
