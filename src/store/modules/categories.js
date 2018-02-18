@@ -52,22 +52,9 @@ const store = {
 
         const db = await firebase.database()
         const result = await db.ref(`users/${rootState.user.user.uid}/categories`).push(formatedValues)
-          .then(async (data) => {
-            const key = data.key
-            const newCategory = {
-              ...values,
-              id: key
-            }
-            commit('addCategory', formatCategory(newCategory, state.all))
-            commit('closeLoader')
-            return true
-          })
-          .catch(error => {
-            commit('showError', `store/categories/addCategory: ${error.message}`)
-          })
         return result
       } catch (error) {
-        commit('showError', `store/categories/addCategory: ${error.message}`)
+        console.error(error)
       }
     },
     async deleteCategory({ commit, rootState }, id) {

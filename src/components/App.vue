@@ -113,11 +113,12 @@ export default {
       app.auth().onAuthStateChanged(async (user) => {
         if (user) {
           const db = firebase.database()
-          const userRef = `users/${user.uid}`
+          const uid = user.uid
+          const userRef = `users/${uid}`
           const formatedUser = {
             displayName: user.displayName,
             email: user.email,
-            uid: user.uid
+            uid
           }
           this.$store.commit('signIn', formatedUser)
 

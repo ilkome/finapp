@@ -49,12 +49,6 @@ const store = {
         const db = await firebase.database()
         const result = await db.ref(`users/${rootState.user.user.uid}/accounts`).push(formatedValues)
           .then(async (data) => {
-            const key = data.key
-            const newAccount = {
-              ...formatedValues,
-              id: key
-            }
-            commit('addAccount', newAccount)
             return true
           })
         return result

@@ -10,8 +10,7 @@ import filter from './modules/filter'
 
 Vue.use(Vuex)
 
-// modules
-// ==============================================
+// Modules
 const modules = {
   accounts,
   categories,
@@ -21,9 +20,9 @@ const modules = {
   filter
 }
 
-// state
-// ==============================================
+// State
 const state = {
+  theme: 'dark',
   isConnected: false,
   isMobile: false,
   isPageLoaded: false,
@@ -56,8 +55,27 @@ const getters = {
   }
 }
 
+// Actions (dispatch)
+const actions = {
+  changeTheme({ commit, state }) {
+    const body = document.querySelector('body')
+    if (state.theme === 'dark') {
+      body.classList.add('_light')
+      body.classList.remove('_dark')
+      commit('changeTheme', 'light')
+    } else {
+      body.classList.add('_dark')
+      body.classList.remove('_light')
+      commit('changeTheme', 'dark')
+    }
+  }
+}
+
 // Mutations (commit)
 const mutations = {
+  changeTheme(state, theme) {
+    state.theme = theme
+  },
   setConnectionStatus(state, status) {
     state.isConnected = status
   },
@@ -170,5 +188,6 @@ export default new Vuex.Store({
   modules,
   state,
   getters,
+  actions,
   mutations
 })

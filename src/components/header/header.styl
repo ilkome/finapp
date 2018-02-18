@@ -10,50 +10,34 @@ $localFont()
     line-height 1.2rem
 
 .header
+  overflow hidden
+  z-index 3
+  position fixed
+  left 0
+  top 0
+  width 100%
+  height $header-height-mobile
+  border-bottom 1px solid black
   background $color-header-bg
-  anim()
 
-  @media $before768
-    padding-top $header-height
-
-  @media (min-width: 768px)
-    z-index 3
-    position fixed
-    left 0
-    top 0
-    width 100%
-    border-bottom 1px solid black
+  @media $after768
+    height $header-height
 
   &__in
     overflow hidden
     display flex
     justify-content flex-start
-    flex-flow row wrap
+    flex-flow row nowrap
     align-items center
     min-height 49px
     max-width 1255px
-    padding 0 10px
-    padding-left 30px
-    anim()
+    padding 0 $mss
 
     @media $before768
       justify-content space-between
-      padding 0
-      border-bottom 1px solid $color-body
 
     @media $after768
       padding 0 75px 0 30px
-
-    &._fixed
-      @media $before768
-        z-index 2
-        position fixed
-        width 100%
-        top 0
-        left 0
-        height $header-height
-        margin-top 0
-        background $color-header-bg
 
   &__col
     display flex
@@ -73,15 +57,15 @@ $localFont()
         justify-content space-between
 
     &._date
-      width 120px
-      justify-content flex-start
+      @media $after768
+        width 120px
+        justify-content flex-start
 
     &:last-child
       @media $after768
         margin-right -10px
         justify-content flex-end
         margin-left auto
-
 
   &__date
     min-width 100px
@@ -110,14 +94,18 @@ $localFont()
     align-items center
     position relative
     cursor pointer
-    padding 15px
+    height 56px
+    padding $mm $ms
     color $color-grey
     $localFont()
     anim()
 
+    @media $after400
+      padding $mm $mm
+
     @media $after768
       height 49px
-      padding 15px 10px
+      padding $m $mm
 
     &:active
       @media $before768
@@ -133,14 +121,11 @@ $localFont()
       padding 15px 20px
 
     &._wide
-      padding $mm $m
+      @media $after768
+        padding $m $m
 
     &._active
       color $color-white
-
-    &._categories
-      padding-top 17px
-      font-size 20px
 
     &._disabled
       cursor default
@@ -149,8 +134,9 @@ $localFont()
     &._disabled:hover
       background none
 
-    .plus
-      anim()
+    &._plus
+      padding $mm
+      color white
 
     .mdi
       font-size 22px
@@ -163,10 +149,3 @@ $localFont()
 
       @media $after768
         font-size 16px
-
-    &._active .plus
-      transform rotate(45deg)
-
-    &._active .plus:after
-    &._active .plus:before
-      background $color-main

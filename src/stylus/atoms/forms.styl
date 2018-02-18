@@ -57,7 +57,7 @@ label, button, input, select, textarea
       padding 0
       margin 0
       border none
-    
+
     &::-webkit-input-placeholder
       font-weight bold
       font-size .7rem
@@ -106,7 +106,7 @@ label, button, input, select, textarea
     &::-webkit-input-placeholder
       color $color-grey
 
-  
+
 
 // Textarea
 // ==============================================
@@ -119,90 +119,3 @@ label, button, input, select, textarea
   background #fff
   border 1px solid #c8d9eb
   anim()
-
-
-// Field, Textarea Hover
-// ==============================================
-.input
-.textarea
-  &:hover
-    //
-
-  &:focus
-    // background #f4f9ff
-
-  &.error
-    color #e44343
-    border-color #e44343
-
-  &.valid
-    color #3ac020
-    border-color #3ac020
-
-.checkbox
-  display flex
-  padding-bottom 40px
-
-  &__none
-    display none
-
-  &__input
-    position relative
-    top -2px
-    width 16px
-    height 16px
-    border 1px solid $color-grey
-    border-radius 3px
-    vertical-align middle
-    transition background .1s ease
-    cursor pointer
-
-    &:after
-      content ''
-      position absolute
-      top 1px
-      left 5px
-      width 3px
-      height 9px
-      opacity 0
-      transform rotate(45deg) scale(0)
-      border-right 2px solid white
-      border-bottom 2px solid white
-      transition all .3s ease
-      transition-delay .15s
-
-  &__label
-    color $color-grey
-    padding-left 10px
-    font-size .9rem
-    vertical-align middle
-    cursor pointer
-    anim()
-
-.checkbox__none:checked ~ .checkbox__label
-  color $color-main
-
-.checkbox__none:checked ~ .checkbox__input
-  border-color transparent
-  background $color-link
-  animation jelly .6s ease
-
-  &:after
-    opacity 1
-    transform rotate(45deg) scale(1)
-
-@keyframes jelly
-  from
-    transform scale(1, 1)
-  30%
-    transform scale(1.25, 0.75)
-  40%
-    transform scale(0.75, 1.25)
-  50%
-    transform scale(1.15, 0.85)
-  65%
-    transform scale(.95, 1.05)
-  75%
-    transform scale(1.05, .95)
-  to
-    transform scale(1, 1)

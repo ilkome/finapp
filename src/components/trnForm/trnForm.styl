@@ -61,7 +61,7 @@
     scrollbar()
 
     @media (min-width: 768px)
-      height calc(100% - 90px)
+      height calc(100% - 138px)
 
   &__parentCategoryPop
     overflow hidden
@@ -213,29 +213,3 @@
     &:hover
       color $color-link
       border-color $color-link
-
-.trnFormToogle
-  z-index 15
-  position fixed
-  width 15px
-  height 100%
-  right 0
-  top 0
-  display flex
-  align-items flex-start
-  justify-content center
-  color $color-second
-  anim()
-
-  @media $after768
-    cursor pointer
-    width 30px
-    height 100%
-    right 0px
-
-  &:active
-    background $color-side-toogle
-
-  &:hover
-    @media $after768
-      background $color-side-toogle

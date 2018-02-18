@@ -9,13 +9,7 @@
       .sidebar__close-title Create wallet
       .sidebar__close-icon: .mdi.mdi-plus
 
-    .sidebar__in
-      template(v-if="$store.state.accounts.show")
-        .trnFormToogle(
-          @click.prevent.stop="$store.commit('toogleAccountCreate', 'hide')",
-          :class="{_active: $store.state.accounts.show}"
-        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
-
+    .sidebar__in._inside
       .form
         .input
           input.input__field(
