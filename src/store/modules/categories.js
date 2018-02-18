@@ -64,11 +64,9 @@ const store = {
           .remove()
           .catch(error => {
             console.error(error)
-            commit('showError', `store/categories/deleteCategory: ${error.message}`)
           })
         commit('deleteCategory', id)
       } catch (error) {
-        commit('showError', `store/categories/deleteCategory: ${error.message}`)
       }
     },
     async updateCategory({ commit, state, rootState }, values) {
@@ -80,7 +78,7 @@ const store = {
           color: values.color,
           icon: values.icon,
           parentId: values.parentId ? values.parentId : 0,
-          showStat: values.showStat && values.showStat
+          showStat: values.showStat ? values.showStat : false
         }
 
         const db = await firebase.database()
@@ -88,15 +86,11 @@ const store = {
           .update(formatedValues)
           .catch(error => {
             console.error(error)
-            commit('showError', `store/categories/updateCategory: ${error.message}`)
           })
         const formatedCategory = formatCategory({ id, ...formatedValues }, categories)
-
         commit('updateCategory', formatedCategory)
-        commit('closeLoader')
       } catch (error) {
         console.error(error)
-        commit('showError', `store/categories/updateCategory: ${error.message}`)
       }
     }
   },

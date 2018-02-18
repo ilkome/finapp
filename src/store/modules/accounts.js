@@ -61,13 +61,8 @@ const store = {
         const db = await firebase.database()
         await db.ref(`users/${rootState.user.user.uid}/accounts/${id}`)
           .remove()
-          .catch(error => {
-            console.error(error)
-            commit('showError', `store/accounts/deleteAccount: ${error.message}`)
-          })
         commit('deleteAccount', id)
       } catch (error) {
-        commit('showError', `store/accounts/deleteAccount: ${error.message}`)
       }
     },
     async updateAccount({ commit, state, rootState }, values) {
