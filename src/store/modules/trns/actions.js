@@ -52,6 +52,10 @@ export default {
             addedOfflineTrns ? { ...addedOfflineTrns } : {}
           )
         }
+        const formatedTrnForStore = formatTrnForStore(formatedTrn, {
+          accounts, categories, rates
+        })
+        commit('addTrn', formatedTrnForStore)
 
         result.status = 'online'
         result.error = null

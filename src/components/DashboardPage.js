@@ -5,19 +5,19 @@ import orderBy from 'lodash/orderBy'
 import formatDateForDashboardTitle from '../mixins/formatDateForDashboardTitle'
 import checkIsSameDate from '../mixins/checkIsSameDate'
 import formatMoney from '../mixins/formatMoney'
+import AppHeader from './header/Header.vue'
 import TrnsList from './TrnsList.vue'
 import TrnItem from './TrnItem.vue'
 import SummaryShort from './SummaryShort.vue'
 import ItemStatGroup from './ItemStatGroup.vue'
 import ItemStat from './ItemStat.vue'
 import Slider from './Slider.vue'
-import AppHeader from './AppHeader.vue'
 import ChartYears from './ChartYears.vue'
 
 export default {
   name: 'DashboardPage',
   mixins: [formatMoney, checkIsSameDate],
-  components: { ItemStatGroup, ItemStat, TrnsList, TrnItem, SummaryShort, Slider, AppHeader, ChartYears },
+  components: { AppHeader, ItemStatGroup, ItemStat, TrnsList, TrnItem, SummaryShort, Slider, ChartYears },
   data() {
     return {
       showedHistory: false,

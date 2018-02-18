@@ -1,6 +1,6 @@
 .sidebar
   visibility hidden
-  z-index 3
+  z-index 4
   position fixed
   width 0
   height 100vh
@@ -64,6 +64,9 @@
       height calcMinus(100vh, $header-height)
       padding $mb
       padding-bottom 15px
+
+    &._inside
+      height calc(100vh - 98px)
 
   &__item
     padding-bottom $mb

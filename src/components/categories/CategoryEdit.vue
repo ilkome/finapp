@@ -9,122 +9,121 @@
       .sidebar__close-title Edit category
       .sidebar__close-icon: .mdi.mdi-plus
 
-    .rightBar__in
+    .sidebar__in
       .rightBar__main
-        .rightBar__main__in
-          .form
-            .form__table
-              //- Name
-              .form__table__cell._name
-                .input
-                  input.input__field(
-                    v-model="values.name"
-                    v-focus.lazy="true && !$store.state.isMobile",
-                    type="text"
-                    placeholder="Write category name"
-                    name="name"
-                  )
-                  .input__label Name
-
-              //- Color
-              .form__table__cell._color
-                input.input__field._color(
-                  v-model="values.color"
-                  type="color"
-                  name="color"
+        .form
+          .form__table
+            //- Name
+            .form__table__cell._name
+              .input
+                input.input__field(
+                  v-model="values.name"
+                  v-focus.lazy="true && !$store.state.isMobile",
+                  type="text"
+                  placeholder="Write category name"
+                  name="name"
                 )
+                .input__label Name
 
-              //- Icon
-              .form__table__cell._icon
-                .icon._link._small(
-                  :style="`background: ${values.color}`"
-                  @click.prevent="toogleIconsPop()"
-                )
-                  template(v-if="selectedIcon")
-                    .icon__i(:class="selectedIcon")
-                  template(v-else)
-                    .icon__i(class="fa fa-question-circle-o")
-                  .icon__label
-                    .icon__label__in Select icon
+            //- Color
+            .form__table__cell._color
+              input.input__field._color(
+                v-model="values.color"
+                type="color"
+                name="color"
+              )
 
-            .checkbox
-              input#showStat.checkbox__none(type="checkbox" v-model="values.showStat")
-              label.checkbox__input(for="showStat")
-              label.checkbox__label(for="showStat") Show stat on Dashboard
+            //- Icon
+            .form__table__cell._icon
+              .icon._link._small(
+                :style="`background: ${values.color}`"
+                @click.prevent="toogleIconsPop()"
+              )
+                template(v-if="selectedIcon")
+                  .icon__i(:class="selectedIcon")
+                template(v-else)
+                  .icon__i(class="fa fa-question-circle-o")
+                .icon__label
+                  .icon__label__in Select icon
 
-            //- Has children categories
-            template(v-if="isHasChildrenCategories(editedCategory.id)")
-              div.mb20
-                div Category has children categories.
-                div You can not change parent of this category.
+          .checkbox
+            label
+              input(type="checkbox" v-model="values.showStat")
+              div Show stat on Dashboard
 
-            //- Categories
-            //- Good to set parent category
-            template(v-else)
-              .trnForm__icons
-                .trnForm__subTitle
-                  .trnForm__subTitle__flex
-                    //- It's parent
-                    template(v-if="values.parentId !== 0")
-                      .icon._link._small(
-                        :style="{ background: selectedParentCategory.color }"
-                        :title="selectedParentCategory.name"
-                      )
-                        .icon__i(:class="selectedParentCategory.icon")
-                        .icon__label
-                          .icon__label__in {{ selectedParentCategory.name }}
-                      .name {{ selectedParentCategory.name }}
-                    template(v-else)
-                      .icon._link._small
-                        .icon__i(class="fa fa-question-circle-o")
-                        .icon__label
-                          .icon__label__in Root category
-                      .name Root category
+          //- Has children categories
+          template(v-if="isHasChildrenCategories(editedCategory.id)")
+            div.mb20
+              div Category has children categories.
+              div You can not change parent of this category.
 
-                //- Parents icons
-                .iconsGroup
-                  //- Set root
-                  .iconsGroup__el
-                    .icon._link(
-                      :class="{_active: (values.parentId === 0)}"
-                      @click.prevent="selectParent(null)"
+          //- Categories
+          //- Good to set parent category
+          template(v-else)
+            .trnForm__icons
+              .trnForm__subTitle
+                .trnForm__subTitle__flex
+                  //- It's parent
+                  template(v-if="values.parentId !== 0")
+                    .icon._link._small(
+                      :style="{ background: selectedParentCategory.color }"
+                      :title="selectedParentCategory.name"
                     )
+                      .icon__i(:class="selectedParentCategory.icon")
+                      .icon__label
+                        .icon__label__in {{ selectedParentCategory.name }}
+                    .name {{ selectedParentCategory.name }}
+                  template(v-else)
+                    .icon._link._small
                       .icon__i(class="fa fa-question-circle-o")
                       .icon__label
                         .icon__label__in Root category
+                    .name Root category
 
-                  //- Select
-                  .iconsGroup__el(v-for="category in showedCategories")
-                    .icon._link._small(
-                      :class="{_active: (selectedParentCategory && selectedParentCategory.id === category.id)}",
-                      @click.prevent="selectParent(category)",
-                      :style="{ background: category.color }"
-                    )
-                      //- :style="{ background: category.color, color: selectedParentCategory && (category.id === selectedParentCategory.id ? category.color : '') }"
-                      .icon__i(:class="category.icon")
-                      .icon__label
-                        .icon__label__in {{ category.name }}
+              //- Parents icons
+              .iconsGroup
+                //- Set root
+                .iconsGroup__el
+                  .icon._link(
+                    :class="{_active: (values.parentId === 0)}"
+                    @click.prevent="selectParent(null)"
+                  )
+                    .icon__i(class="fa fa-question-circle-o")
+                    .icon__label
+                      .icon__label__in Root category
 
-                  //- Show all
-                  .iconsGroup__el
-                    .icon._link._more._small(
-                      @click.prevent="toogleCategoriesPop()",
-                      @keyup.enter.prevent="toogleCategoriesPop()",
-                      v-shortkey="['alt', 'arrowup']",
-                      @shortkey="toogleCategoriesPop()",
-                      aria-checked="false", tabindex="0")
-                      .mdi.mdi-dots-horizontal
-                      .icon__label
-                        .icon__label__in Show all categories
+                //- Select
+                .iconsGroup__el(v-for="category in showedCategories")
+                  .icon._link._small(
+                    :class="{_active: (selectedParentCategory && selectedParentCategory.id === category.id)}",
+                    @click.prevent="selectParent(category)",
+                    :style="{ background: category.color }"
+                  )
+                    //- :style="{ background: category.color, color: selectedParentCategory && (category.id === selectedParentCategory.id ? category.color : '') }"
+                    .icon__i(:class="category.icon")
+                    .icon__label
+                      .icon__label__in {{ category.name }}
 
-            .trnForm__actions__btn(
-              @click.prevent="onEditCategory()"
-              :class="{ _disable: $store.state.loader}"
-            )
-              template Update
-              template(v-if="$store.state.loader")
-                .trnForm__actions__btn__loading
-                  .fa.fa-spinner
+                //- Show all
+                .iconsGroup__el
+                  .icon._link._more._small(
+                    @click.prevent="toogleCategoriesPop()",
+                    @keyup.enter.prevent="toogleCategoriesPop()",
+                    v-shortkey="['alt', 'arrowup']",
+                    @shortkey="toogleCategoriesPop()",
+                    aria-checked="false", tabindex="0")
+                    .mdi.mdi-dots-horizontal
+                    .icon__label
+                      .icon__label__in Show all categories
+
+          .trnForm__actions__btn(
+            @click.prevent="onEditCategory()"
+            :class="{ _disable: $store.state.loader}"
+          )
+            template Update
+            template(v-if="$store.state.loader")
+              .trnForm__actions__btn__loading
+                .fa.fa-spinner
 
       //- Categories popup block
       //------------------------------------------------

@@ -148,17 +148,21 @@
   &__name
     display flex
     align-items center
+    justify-content flex-start
     flex-grow 1
     padding-top 1px
+    padding-right 70px
     line-height normal
     // color $color-sidebar-white-lighter
     // font-size 16px
     $typo-item-name()
 
     @media $after768
+      padding-right 60px
       font-size 14px
 
     &__list
+      flex-grow 1
       display flex
       font-size 1rem
       margin-left 20px

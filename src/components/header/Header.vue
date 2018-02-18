@@ -1,5 +1,7 @@
 <template lang="pug">
-.header
+.header(
+  :class="{ _fixed: $store.state.isMobile }"
+)
   //- PC
   template(v-if="!$store.state.isMobile")
     .header__in
@@ -23,11 +25,6 @@
           v-tooltip.bottom-center="{ content: showedHistory ? 'Hide hitstory' : 'Show hitstory' }"
         ): .fa.fa-history
 
-        //- .header__link(
-        //-   @click="$store.commit('signOut')"
-        //-   v-tooltip.bottom-center="{ content: 'Toogle sidebar icons' }"
-        //- ): .mdi.mdi-exit-to-app
-
       .header__col._date
         .header__date(
           v-tooltip.bottom-center="{ content: $store.state.filter.filter.date.second, classes: 'tooltip _fast' }"
@@ -35,7 +32,7 @@
 
       //- Nav
       .header__col
-        .header__link(
+        .header__link._wide(
           @click.prevent="$emit('selectPrevPeriod')"
           :class="{ _disabled: checkIsLastDate() }"
         ): .arrow._left
@@ -65,17 +62,17 @@
 
       //- Add Trn
       .header__col
-        .header__link(
+        .header__link._plus(
           @click.prevent="$store.commit('toogleTrnForm')"
           :class="{ _active: $store.state.trnForm.isShow }"
           v-tooltip.bottom-center="{ content: $store.state.trnForm.isShow ? 'Hide' : 'Create new transaction' }"
-        ): .plus
+        ): .mdi.mdi-plus
 
 
   //- mobile header
   //----------------------------------------------------------------------------
   template(v-if="$store.state.isMobile")
-    .header__in._fixed
+    .header__in
       .header__col
         .header__link(@click.prevent.stop="$store.commit('toogleLeftbar')")
           .fa.fa-bars

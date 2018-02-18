@@ -1,21 +1,15 @@
 <template lang="pug">
 .sidebar._active
   .sidebar__overlay(
-    @click="$store.commit('toogleAccountEdit', 'hide')"
+    @click="closeBar()"
   )
 
   .sidebar__block
-    .sidebar__close(@click="$store.commit('toogleAccountEdit', 'hide')")
+    .sidebar__close(@click="closeBar()")
       .sidebar__close-title Edit wallet
       .sidebar__close-icon: .mdi.mdi-plus
 
-    .sidebar__in
-      template(v-if="$store.state.accounts.edit")
-        .trnFormToogle(
-          @click.prevent.stop="closeBar",
-          :class="{_active: $store.state.accounts.edit}"
-        ): .trnFormToogle__icon: .trnFormToogle__icon__in +
-
+    .sidebar__in._inside
       .form
         .input
           input.input__field(
@@ -27,16 +21,21 @@
           )
           .input__label Name
         .input
-          input.input__field(
-            v-model="values.countTotal", type="number", placeholder="Count in total", name="countTotal")
-          .input__label Count in total
+          label.checkbox
+            input.checkbox__value(
+              v-model="values.countTotal"
+              type="checkbox"
+              name="countTotal"
+            )
+            .checkbox__text Count in total
+
         .input
           input.input__field(
-            v-model="values.currency", type="text", placeholder="Write currency", name="currency")
+            v-model="values.currency" type="text" placeholder="Write currency" name="currency")
           .input__label currency
         .input
           input.input__field(
-            v-model="values.order", type="number", placeholder="Order", name="order")
+            v-model="values.order" type="number" placeholder="Order" name="order")
           .input__label order
 
         CategoryColor(v-on:setColor="setColor")
