@@ -46,16 +46,36 @@
                 .icon__label
                   .icon__label__in Select icon
 
-          .checkbox
-            label
-              input(type="checkbox" v-model="values.showStat")
-              div Show stat on Dashboard
+          .input
+            label.checkbox
+              input.checkbox__value(
+                v-model="values.showStat"
+                type="checkbox"
+                name="showStat"
+              )
+              .checkbox__text Show stat on Dashboard
 
           //- Has children categories
           template(v-if="isHasChildrenCategories(editedCategory.id)")
+            .input
+              label.checkbox
+                input.checkbox__value(
+                  v-model="isUpdateChildCategoriesColors"
+                  type="checkbox"
+                  name="childColors"
+                )
+                .checkbox__text Update child categories colors
+            .input
+              label.checkbox
+                input.checkbox__value(
+                  v-model="isUpdateChildCategoriesIcons"
+                  type="checkbox"
+                  name="childColors"
+                )
+                .checkbox__text Update child categories icons
+
             div.mb20
-              div Category has children categories.
-              div You can not change parent of this category.
+              div Has children categories
 
           //- Categories
           //- Good to set parent category
@@ -99,7 +119,6 @@
                     @click.prevent="selectParent(category)",
                     :style="{ background: category.color }"
                   )
-                    //- :style="{ background: category.color, color: selectedParentCategory && (category.id === selectedParentCategory.id ? category.color : '') }"
                     .icon__i(:class="category.icon")
                     .icon__label
                       .icon__label__in {{ category.name }}
@@ -214,6 +233,8 @@ export default {
 
   data() {
     return {
+      isUpdateChildCategoriesColors: false,
+      isUpdateChildCategoriesIcons: false,
       iconFilter: '',
       selectedParentCategory: this.$store.state.categories.editCategory.parent,
       selectedIcon: this.$store.state.categories.editCategory.icon,
@@ -221,14 +242,6 @@ export default {
       showedIcons: icons,
       showIconsPop: false,
       values: {
-        ...this.$store.state.categories.editCategory
-      }
-    }
-  },
-
-  watch: {
-    editedCategory() {
-      this.values = {
         ...this.$store.state.categories.editCategory
       }
     }
@@ -262,22 +275,57 @@ export default {
     }
   },
 
+  watch: {
+    editedCategory() {
+      this.values = {
+        ...this.$store.state.categories.editCategory
+      }
+    }
+  },
+
   methods: {
     hideBar() {
       this.$store.commit('toogleCategoryEdit', 'hide')
       this.$store.commit('setEditCategory', null)
     },
-    async onEditCategory() {
-      const formatedValues = {
-        id: this.values.id,
-        name: this.values.name.trim(),
-        color: this.values.color,
-        icon: this.values.icon,
-        parentId: this.values.parentId ? this.values.parentId : 0,
-        showStat: this.values.showStat ? this.values.showStat : false
-      }
 
-      if (!formatedValues.name) {
+    formatCategory(category) {
+      return {
+        id: category.id,
+        name: category.name.trim(),
+        color: category.color,
+        icon: category.icon,
+        parentId: category.parentId ? category.parentId : 0,
+        showStat: category.showStat ? category.showStat : false
+      }
+    },
+
+    async updateChildCategoriesColors(categoryId, color) {
+      const childCategories = this.categories.filter(c => c.parentId === categoryId)
+      for (const category of childCategories) {
+        const formatedCategory = this.formatCategory(category)
+        await this.$store.dispatch('updateCategory', {
+          ...formatedCategory,
+          color
+        })
+      }
+    },
+
+    async updateChildCategoriesIcons(categoryId, icon) {
+      const childCategories = this.categories.filter(c => c.parentId === categoryId)
+      for (const category of childCategories) {
+        const formatedCategory = this.formatCategory(category)
+        await this.$store.dispatch('updateCategory', {
+          ...formatedCategory,
+          icon
+        })
+      }
+    },
+
+    async onEditCategory() {
+      const formatedCategory = this.formatCategory(this.values)
+
+      if (!formatedCategory.name) {
         this.$notify({
           group: 'foo',
           title: 'Error',
@@ -289,11 +337,13 @@ export default {
 
       const sameCategory = this.$store.state.categories.all
         .filter(category =>
-          category.name === formatedValues.name &&
-          category.icon === formatedValues.icon &&
-          category.color === formatedValues.color &&
-          category.showStat === formatedValues.showStat &&
-          category.parentId === formatedValues.parentId)
+          this.isUpdateChildCategoriesColors === false &&
+          this.isUpdateChildCategoriesIcons === false &&
+          category.name === formatedCategory.name &&
+          category.icon === formatedCategory.icon &&
+          category.color === formatedCategory.color &&
+          category.showStat === formatedCategory.showStat &&
+          category.parentId === formatedCategory.parentId)
 
       if (sameCategory.length) {
         this.$notify({
@@ -305,16 +355,22 @@ export default {
         return
       }
 
-      await this.$store.dispatch('updateCategory', formatedValues)
-      this.$store.commit('toogleCategoryEdit', 'hide')
-      this.$store.commit('setEditCategory', null)
-      this.$store.commit('closeLoader')
+      this.$store.commit('showLoader')
+      await this.$store.dispatch('updateCategory', formatedCategory)
+      if (this.isUpdateChildCategoriesColors) {
+        await this.updateChildCategoriesColors(formatedCategory.id, formatedCategory.color)
+      }
+      if (this.isUpdateChildCategoriesIcons) {
+        await this.updateChildCategoriesIcons(formatedCategory.id, formatedCategory.icon)
+      }
+      this.hideBar()
       this.$notify({
         group: 'foo',
         title: 'Succesed',
         text: 'Category was updated.',
         type: 'success'
       })
+      this.$store.commit('closeLoader')
     },
     isHasChildrenCategories(categoryId) {
       const childCategories = this.categories.filter(cat => cat.parentId === categoryId)
