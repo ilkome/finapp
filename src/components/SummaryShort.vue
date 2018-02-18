@@ -39,7 +39,7 @@
       .moneyBlock__line2
         .moneyTitle.expenses Expenses
         .moneyBlock__total.expenses {{ formatMoney(summary.expenses) }}
-      template(v-if="avSummary.expenses != 0")
+      template(v-if="avSummary.expenses !== 0")
         .moneyBlock__line2
           .moneyBlock__title
             .mdi.mdi-chart-timeline
@@ -50,7 +50,7 @@
       .moneyBlock__line2
         .moneyTitle.incomes Incomes
         .moneyBlock__total.incomes {{ formatMoney(summary.incomes) }}
-      template(v-if="avSummary.incomes != 0")
+      template(v-if="avSummary.incomes !== 0")
         .moneyBlock__line2
           .moneyBlock__title
             .mdi.mdi-chart-timeline
@@ -64,13 +64,12 @@
           template(v-else-if="summary.sum < 0") Spent
           template(v-else) Total
         .moneyBlock__total.sum {{ formatMoney(summary.sum) }}
-      template(v-if="avSummary.sum != 0")
+      template(v-if="avSummary.sum !== 0")
         .moneyBlock__line2
           .moneyBlock__title
             .mdi.mdi-chart-timeline
             div Average
           .moneyBlock__average: .sum {{ formatMoney(avSummary.sum) }}
-
 
   //- Mobile
   template(v-if="view === 'mobile'")
@@ -91,7 +90,7 @@
           .moneyTitle.expenses Expenses
           .moneyBlock__total.expenses {{ formatMoney(summary.expenses) }}
 
-        template(v-if="avSummary.expenses != 0")
+        template(v-if="avSummary.expenses !== 0")
           .moneyBlock__line
             .moneyBlock__title
               .mdi.mdi-chart-timeline
@@ -108,7 +107,7 @@
             template(v-else) Total
           .moneyBlock__total.sum {{ formatMoney(summary.sum) }}
 
-        template(v-if="avSummary.sum != 0")
+        template(v-if="avSummary.sum !== 0")
           .moneyBlock__line
             .moneyBlock__title
               .mdi.mdi-chart-timeline
@@ -121,7 +120,7 @@
         .moneyBlock__line
           .moneyTitle.incomes Incomes
           .moneyBlock__total.incomes {{ formatMoney(summary.incomes) }}
-        template(v-if="avSummary.incomes != 0")
+        template(v-if="avSummary.incomes !== 0")
           .moneyBlock__line
             .moneyBlock__title
               .mdi.mdi-chart-timeline
@@ -138,7 +137,7 @@
           .moneyBlock__total.expense(@click="$emit('toogleOpenedCategories')") {{ formatMoney(summary.expenses) }}
 
         .moneyBlock__line
-          template(v-if="avSummary.expenses != 0")
+          template(v-if="avSummary.expenses !== 0")
             .moneyBlock__title._average
               .mdi.mdi-chart-timeline
               div Average
@@ -155,7 +154,7 @@
           .moneyBlock__total.incomes(@click="$emit('toogleOpenedCategories')") {{ formatMoney(summary.incomes) }}
 
         .moneyBlock__line
-          template(v-if="avSummary.incomes != 0")
+          template(v-if="avSummary.incomes !== 0")
             .moneyBlock__title._average
               .mdi.mdi-chart-timeline
               div Average
@@ -237,7 +236,8 @@ export default {
         return {
           incomes: 0,
           expenses: 0,
-          total: 0
+          total: 0,
+          sum: 0
         }
       }
     },
@@ -277,7 +277,8 @@ export default {
         return {
           incomes: 0,
           expenses: 0,
-          total: 0
+          total: 0,
+          sum: 0
         }
       }
     }
