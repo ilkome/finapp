@@ -83,9 +83,11 @@ export default {
       const addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
       const updatedOfflineTrns = await localforage.getItem('updatedOfflineTrns')
       const deletedOfflineTrns = await localforage.getItem('deletedOfflineTrns')
+      console.groupCollapsed('Offline trns')
       console.log('addedOfflineTrns', addedOfflineTrns)
       console.log('updatedOfflineTrns', updatedOfflineTrns)
       console.log('deletedOfflineTrns', deletedOfflineTrns)
+      console.groupEnd()
 
       // Initialize the App from localStorage
       // -----------------------------------------------------------------------
@@ -106,6 +108,17 @@ export default {
         this.$store.commit('setTrns', localTrns)
         this.$store.commit('closeLoader')
         this.$store.commit('pageLoaded')
+
+        console.groupCollapsed('Data from cache')
+        console.log('User', localUser)
+        console.log('Accounts', localData.accounts)
+        console.log('Categories', localData.categories)
+        console.log('Rates', localData.rates)
+        console.log('Trns', localTrns)
+        console.groupEnd()
+
+        this.$store.commit('closeLoader')
+        this.$store.commit('pageLoaded')
       }
 
       // Auth
@@ -121,30 +134,42 @@ export default {
             uid
           }
           this.$store.commit('signIn', formatedUser)
+          console.log('User', formatedUser)
 
           // Get data from firebase and dispatch to store
           // -------------------------------------------------------------------
           db.ref(`${userRef}`).on('value', async (snapshot) => {
             const val = snapshot.val()
-            this.$store.dispatch('setRates')
-            this.$store.dispatch('setCategories', val)
-            this.$store.dispatch('setAccounts', val)
-            this.$store.dispatch('setTrns', val)
-            this.$store.commit('pageLoaded')
+
+            console.groupCollapsed('Data from firebase')
+            console.log(val.categories)
+            console.log(val.accounts)
+            console.log(val.trns)
+            console.groupEnd()
+
+            await this.$store.dispatch('setRates')
+            await this.$store.dispatch('setCategories', val)
+            await this.$store.dispatch('setAccounts', val)
+            await this.$store.dispatch('setTrns', val)
 
             // Save data from firebase to localStorage
             // -----------------------------------------------------------------
             await localforage.setItem('data', {
-              rates: this.$store.state.rates.all,
               accounts: this.$store.state.accounts.all,
-              categories: this.$store.state.categories.all
+              categories: this.$store.state.categories.all,
+              rates: this.$store.state.rates.all
             })
             await localforage.setItem('user', formatedUser)
             await localforage.setItem('trns', this.$store.state.trns.all)
+
+            this.$store.commit('closeLoader')
+            this.$store.commit('pageLoaded')
           })
+        } else {
+          this.$store.commit('signIn', null)
+          this.$store.commit('closeLoader')
+          this.$store.commit('pageLoaded')
         }
-        this.$store.commit('closeLoader')
-        this.$store.commit('pageLoaded')
       })
 
       // Add offline trns to firebase when connected
