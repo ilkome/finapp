@@ -14,7 +14,7 @@ const store = {
 
   getters: {
     categories(state) {
-      return state.all
+      return state.all && state.all.length ? state.all : []
     }
   },
 
