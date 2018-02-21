@@ -433,7 +433,7 @@ export default {
         }
 
         if (this.trns && this.trns.length) {
-          for (let i = 0; i <= lastUsedCategories.length; i++) {
+          for (let i = 0; lastUsedCategories.length < countCategoriesToShow; i++) {
             if (i > this.trns.length) {
               break
             }
