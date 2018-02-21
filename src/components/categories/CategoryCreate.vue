@@ -19,7 +19,6 @@
                 .input
                   input.input__field(
                     v-model="values.name"
-                    v-focus.lazy="true",
                     name="name"
                     type="text"
                     placeholder="Write category name"
@@ -145,7 +144,6 @@
             input(
               type="text",
               v-model.trim="iconFilter",
-              v-focus.lazy="showIconsPop && !$store.state.isMobile",
               placeholder="Search"
             ).filter__input
             template(v-if="iconFilter !== ''")
@@ -184,7 +182,6 @@
 
 <script>
 import Fuse from 'fuse.js'
-import { mixin } from 'vue-focus'
 import { mapGetters } from 'vuex'
 import icons from '../../libs/icons'
 import CategoryList from './CategoryList.vue'
@@ -194,7 +191,6 @@ const defaultIcon = 'fa fa-industry'
 const defaultColor = '#242424'
 
 export default {
-  mixins: [mixin],
   components: { CategoryList, CategoryColor },
 
   data() {
@@ -220,7 +216,15 @@ export default {
   computed: {
     ...mapGetters(['trns', 'categories']),
     showedCategories() {
-      return this.categories.filter(cat => cat.parentId === 0)
+      const rootCategories = this.categories.filter(cat => cat.parentId === 0)
+      const showedCategories = []
+      for (const cat of rootCategories) {
+        const hasTrns = this.trns.find(t => t.categoryId === cat.id)
+        if (!hasTrns) {
+          showedCategories.push(cat)
+        }
+      }
+      return showedCategories
     },
     searchedIcons() {
       if (this.iconFilter.length >= 2) {
@@ -277,6 +281,13 @@ export default {
       // Ready to go
       this.$store.commit('showLoader')
       await this.$store.dispatch('addCategory', formatedValues)
+      this.values = {
+        name: '',
+        color: defaultColor,
+        icon: defaultIcon,
+        parentId: 0,
+        showStat: false
+      }
       this.$store.commit('toogleCategoryCreate', 'hide')
       this.$store.commit('closeLoader')
       this.$notify({

@@ -92,8 +92,8 @@ import CategoryItemConfirm from './CategoryConfirm.vue'
 import CategoryItem from './CategoryItem.vue'
 
 export default {
-  mixins: [mixin],
   components: { CategoryItem, CategoryItemConfirm },
+  mixins: [mixin],
 
   props: {
     view: {
@@ -110,12 +110,6 @@ export default {
       confirmPopCategoryId: false,
       showedChildIds: []
     }
-  },
-
-  mounted() {
-    setTimeout(function () {
-      this.focus = true
-    }.bind(this), 100)
   },
 
   computed: {
@@ -208,6 +202,12 @@ export default {
     }
   },
 
+  mounted() {
+    setTimeout(function () {
+      this.focus = true
+    }.bind(this), 100)
+  },
+
   methods: {
     onClickContent(category) {
       if (category.child && category.child.length) {
@@ -221,7 +221,6 @@ export default {
       } else {
         if (this.view === 'trnForm') {
           this.$emit('onClickContent', category.id)
-          console.log(1)
         }
       }
     },
