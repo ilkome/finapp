@@ -349,86 +349,113 @@ export default {
     },
 
     fillValues() {
-      // Create
-      if (this.$store.state.trnForm.action === 'create') {
-        const lastTrn = this.$store.getters.trns[0]
-        if (lastTrn) {
-          const lastAccount = this.accounts.find(a => a.id === lastTrn.accountId)
-          this.$store.commit('setTrnFormCategoryId', lastTrn.categoryId)
-          this.values = {
-            date: moment(),
-            account: lastAccount,
-            accountId: lastTrn.accountId,
-            accountName: lastTrn.accountName,
-            amount: null,
-            categoryId: lastTrn.categoryId,
-            categoryName: lastTrn.categoryName,
-            categoryIcon: lastTrn.categoryIcon,
-            type: 0,
-            currency: lastTrn.currency,
-            description: '',
-            accountFrom: {
-              ...lastTrn.account,
-              id: lastTrn.accountId,
-              name: lastTrn.accountName
-            },
-            accountTo: {
-              ...lastTrn.account,
-              id: lastTrn.accountId,
-              name: lastTrn.accountName
+      if (this.categories && this.categories.length &&
+          this.accounts && this.accounts.length
+      ) {
+        if (this.trns && this.trns.length) {
+          // Create
+          if (this.$store.state.trnForm.action === 'create') {
+            const lastTrn = this.$store.getters.trns[0]
+            const lastAccount = this.accounts.find(a => a.id === lastTrn.accountId)
+            this.$store.commit('setTrnFormCategoryId', lastTrn.categoryId)
+            this.values = {
+              date: moment(),
+              account: lastAccount,
+              accountId: lastTrn.accountId,
+              accountName: lastTrn.accountName,
+              amount: null,
+              categoryId: lastTrn.categoryId,
+              categoryName: lastTrn.categoryName,
+              categoryIcon: lastTrn.categoryIcon,
+              type: 0,
+              currency: lastTrn.currency,
+              description: '',
+              accountFrom: {
+                ...lastTrn.account,
+                id: lastTrn.accountId,
+                name: lastTrn.accountName
+              },
+              accountTo: {
+                ...lastTrn.account,
+                id: lastTrn.accountId,
+                name: lastTrn.accountName
+              }
             }
           }
-        }
-      }
 
-      // Update
-      if (this.$store.state.trnForm.action === 'update') {
-        const trn = this.trns.find(trn => trn.id === this.$store.state.trnForm.updateTrnId)
-        const account = this.accounts.find(a => a.id === trn.accountId)
-        if (trn) {
-          this.$store.commit('setTrnFormCategoryId', trn.categoryId)
-          this.values = {
-            id: trn.id,
-            date: moment(trn.date),
-            account: account,
-            accountId: trn.accountId,
-            accountName: trn.accountName,
-            amount: trn.amount,
-            categoryId: trn.categoryId,
-            categoryIcon: trn.categoryIcon,
-            type: trn.type,
-            currency: trn.currency,
-            description: trn.description,
-            accountFrom: {
-              ...trn.account,
-              id: trn.accountId,
-              name: trn.accountName
-            },
-            accountTo: {
-              ...trn.account,
-              id: trn.accountId,
-              name: trn.accountName
+          // Update
+          if (this.$store.state.trnForm.action === 'update') {
+            const trn = this.trns.find(trn => trn.id === this.$store.state.trnForm.updateTrnId)
+            const account = this.accounts.find(a => a.id === trn.accountId)
+            if (trn) {
+              this.$store.commit('setTrnFormCategoryId', trn.categoryId)
+              this.values = {
+                id: trn.id,
+                date: moment(trn.date),
+                account: account,
+                accountId: trn.accountId,
+                accountName: trn.accountName,
+                amount: trn.amount,
+                categoryId: trn.categoryId,
+                categoryIcon: trn.categoryIcon,
+                type: trn.type,
+                currency: trn.currency,
+                description: trn.description,
+                accountFrom: {
+                  ...trn.account,
+                  id: trn.accountId,
+                  name: trn.accountName
+                },
+                accountTo: {
+                  ...trn.account,
+                  id: trn.accountId,
+                  name: trn.accountName
+                }
+              }
+            } else {
+              console.error('Trn not found')
             }
           }
         }
-      }
 
-      const countCategoriesToShow = this.$store.state.isMobile ? 11 : 13
-      const lastUsedCategoriesIds = []
-      const lastUsedCategories = []
-      if (this.trns.length >= countCategoriesToShow) {
-        for (let i = 0; lastUsedCategoriesIds.length < countCategoriesToShow; i++) {
-          if (this.trns[i]) {
-            const categoryId = this.trns[i].category.id
-            if (lastUsedCategoriesIds.indexOf(categoryId) === -1) {
-              lastUsedCategoriesIds.push(categoryId)
-              lastUsedCategories.push(this.categories.find(c => c.id === categoryId))
-            }
-          }
-        }
-        this.lastUsedCategories = lastUsedCategories
+        this.lastUsedCategories = this.createListOfLastUsedCategories()
       }
     },
+
+    createListOfLastUsedCategories() {
+      if (this.categories && this.categories.length) {
+        const categoriesWithotChildren = this.categories.filter(c => !c.children.length)
+        const countCategoriesToShow = this.$store.state.isMobile ? 11 : 13
+        const lastUsedCategories = []
+
+        if (categoriesWithotChildren && categoriesWithotChildren.length <= countCategoriesToShow) {
+          return categoriesWithotChildren.slice(0, countCategoriesToShow)
+        }
+
+        if (this.trns && this.trns.length) {
+          for (let i = 0; i <= lastUsedCategories.length; i++) {
+            if (i > this.trns.length) {
+              break
+            }
+            if (this.trns[i]) {
+              const categoryId = this.trns[i].categoryId
+              const category = this.categories.find(c => c.id === categoryId)
+              if (!lastUsedCategories.find(c => c.id === category.id)) {
+                lastUsedCategories.push(category)
+              }
+            }
+          }
+          return lastUsedCategories && lastUsedCategories.length ? lastUsedCategories : []
+        } else {
+          return this.categories
+            .filter(c => !c.children.length)
+            .slice(0, countCategoriesToShow)
+        }
+      } else {
+        return []
+      }
+    },
+
     toogleCategoriesPop() {
       this.$store.commit('toogleCategoriesPop')
     },
@@ -503,7 +530,6 @@ export default {
     },
     async onSubmitForm() {
       console.log('onSubmitForm')
-      let isCreated = false
       this.focus = false
 
       function calc(number) {
