@@ -253,7 +253,16 @@ export default {
       return this.$store.state.categories.editCategory
     },
     showedCategories() {
-      return this.categories.filter(cat => cat.parentId === 0 && cat.id !== this.editedCategory.id)
+      const rootCategories = this.categories
+        .filter(cat => cat.parentId === 0 && cat.id !== this.editedCategory.id)
+      const showedCategories = []
+      for (const cat of rootCategories) {
+        const hasTrns = this.trns.find(t => t.categoryId === cat.id)
+        if (!hasTrns) {
+          showedCategories.push(cat)
+        }
+      }
+      return showedCategories
     },
     searchedIcons() {
       if (this.iconFilter.length >= 2) {
