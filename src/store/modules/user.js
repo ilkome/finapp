@@ -15,6 +15,8 @@ const store = {
   actions: {
     async signOut({ commit, state }) {
       firebase.auth().signOut()
+      await localforage.removeItem('data')
+      await localforage.removeItem('trns')
       await localforage.removeItem('user')
       commit('signOut')
     }
