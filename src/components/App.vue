@@ -106,8 +106,6 @@ export default {
         this.$store.commit('setAccounts', localData.accounts)
         this.$store.commit('setCategories', localData.categories)
         this.$store.commit('setTrns', localTrns)
-        this.$store.commit('closeLoader')
-        this.$store.commit('pageLoaded')
 
         console.groupCollapsed('Data from cache')
         console.log('User', localUser)
@@ -159,8 +157,8 @@ export default {
               categories: this.$store.state.categories.all,
               rates: this.$store.state.rates.all
             })
-            await localforage.setItem('user', formatedUser)
             await localforage.setItem('trns', this.$store.state.trns.all)
+            await localforage.setItem('user', formatedUser)
 
             this.$store.commit('closeLoader')
             this.$store.commit('pageLoaded')
