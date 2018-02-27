@@ -6,24 +6,24 @@ import formatDateForDashboardTitle from '../mixins/formatDateForDashboardTitle'
 import checkIsSameDate from '../mixins/checkIsSameDate'
 import formatMoney from '../mixins/formatMoney'
 import AppHeader from './header/Header.vue'
+import BottomFixedLinks from './bottomFixedLinks/BottomFixedLinks.vue'
 import TrnsList from './TrnsList.vue'
 import TrnItem from './TrnItem.vue'
 import SummaryShort from './SummaryShort.vue'
 import ItemStatGroup from './ItemStatGroup.vue'
 import ItemStat from './ItemStat.vue'
-import Slider from './Slider.vue'
 import ChartYears from './ChartYears.vue'
 
 export default {
   name: 'DashboardPage',
   mixins: [formatMoney, checkIsSameDate],
-  components: { AppHeader, ItemStatGroup, ItemStat, TrnsList, TrnItem, SummaryShort, Slider, ChartYears },
+  components: { AppHeader, BottomFixedLinks, ItemStatGroup, ItemStat, TrnsList, TrnItem, SummaryShort, ChartYears },
+
   data() {
     return {
       showedHistory: false,
       showedGraph: true,
       showedChartYears: false,
-      showedTabMoney: 'expenses',
       selectedPeriodIndex: 0,
       showedPeriod: 1,
       idsOfOpenedCategories: [],
@@ -43,7 +43,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['accounts', 'categories', 'getTrns', 'getFilter']),
+    ...mapGetters(['accounts', 'categories', 'getTrns', 'getFilter', 'mobileDashboardActiveTab']),
     $timePeriod() {
       return this.$store.state.dashboard.timePeriod
     },
@@ -90,7 +90,7 @@ export default {
     },
     getPeriodStatic() {
       const stat = []
-      const periodMax = 6
+      const periodMax = 12
       const trnsListForSelectedPeriods = this.getTrns({
         accountId: this.getFilter.account && this.getFilter.account.id,
         categoryId: this.getFilter.category && this.getFilter.category.id
@@ -355,9 +355,6 @@ export default {
       this.idsOfOpenedCategories.indexOf(categoryId) === -1
         ? this.idsOfOpenedCategories.push(categoryId)
         : this.idsOfOpenedCategories = this.idsOfOpenedCategories.filter(cId => cId !== categoryId)
-    },
-    changeTabMoney(tab) {
-      this.showedTabMoney = tab
     },
     toogleShowGraph() {
       this.showedGraph = !this.showedGraph

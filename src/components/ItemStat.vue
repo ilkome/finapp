@@ -13,12 +13,15 @@ div(
     .itemStat__content
       .itemStat__text
         .itemStat__name {{ item.name }}
-        .itemStat__price(:class="{expense: type === 'expenses', income: type === 'incomes'}") {{ formatMoney(item.total) }}
+        //- .itemStat__price(:class="{expense: type === 'expenses', income: type === 'incomes'}") {{ formatMoney(item.total) }}
+        .itemStat__price.sum {{ formatMoney(item.total) }}
 
-      .itemStat__graph
+      .itemStat__graph(
+        :class="{_expenses: type === 'expenses', _incomes: type === 'incomes'}"
+      )
         .itemStat__graph__in(
           :class="{_expense: type === 'expenses', _income: type === 'incomes'}"
-          :style="grpahWidth",
+          :style="{ width: grpahWidth }"
         )
 
   slot(name="inside")
@@ -60,7 +63,7 @@ export default {
     grpahWidth() {
       const width = this.item.total / this.biggestValue * 100
       const renderWidth = width > 0 ? width : 0
-      return { width: `calc(${renderWidth}%)` }
+      return `calc(${renderWidth}%)`
     },
     className() {
       return {

@@ -1,0 +1,27 @@
+.bottomFixedLinks
+  z-index 2
+  position fixed
+  left 0
+  bottom 0
+  display-flex(center, center)
+  width 100%
+  padding 0
+  background $color-header-bg
+  border-top 1px solid black
+  color $color-grey
+
+  &__item
+    display-flex(center)
+    flex-grow 1
+    flex-flow column
+    padding $ms 0 $ms 0
+
+  &__item._active
+    color $color-main
+
+  &__item-icon
+    margin-bottom $msss
+    font-size 26px
+
+  &__item-text
+    font-size 12px

@@ -34,19 +34,8 @@
               .summaryShort__item__total._grey.sum {{ formatMoney(avSummary.expenses) }}
 
   //- Mobile new
-  template(v-if="view === 'mobile-new'")
-    .moneyBlock._mb(@click="$emit('changeTabMoney', 'expenses')")
-      .moneyBlock__line2
-        .moneyTitle.expenses Expenses
-        .moneyBlock__total.expenses {{ formatMoney(summary.expenses) }}
-      template(v-if="avSummary.expenses !== 0")
-        .moneyBlock__line2
-          .moneyBlock__title
-            .mdi.mdi-chart-timeline
-            div Average
-          .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
-
-    .moneyBlock._mb(@click="$emit('changeTabMoney', 'incomes')")
+  template(v-if="view === 'mobile-incomes'")
+    .moneyBlock._mb(@click="$store.dispatch('setMobileDashboardActiveTab', 'incomes')")
       .moneyBlock__line2
         .moneyTitle.incomes Incomes
         .moneyBlock__total.incomes {{ formatMoney(summary.incomes) }}
@@ -57,7 +46,42 @@
             div Average
           .moneyBlock__average: .sum {{ formatMoney(avSummary.incomes) }}
 
-    .moneyBlock._mb(@click="$emit('changeTabMoney', 'history')")
+  template(v-if="view === 'mobile-expenses'")
+    .moneyBlock._mb(@click="$store.dispatch('setMobileDashboardActiveTab', 'expenses')")
+      .moneyBlock__line2
+        .moneyTitle.expenses Expenses
+        .moneyBlock__total.expenses {{ formatMoney(summary.expenses) }}
+      template(v-if="avSummary.expenses !== 0")
+        .moneyBlock__line2
+          .moneyBlock__title
+            .mdi.mdi-chart-timeline
+            div Average
+          .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
+
+  template(v-if="view === 'mobile-new'")
+    .moneyBlock._mb(@click="$store.dispatch('setMobileDashboardActiveTab', 'expenses')")
+      .moneyBlock__line2
+        .moneyTitle.expenses Expenses
+        .moneyBlock__total.expenses {{ formatMoney(summary.expenses) }}
+      template(v-if="avSummary.expenses !== 0")
+        .moneyBlock__line2
+          .moneyBlock__title
+            .mdi.mdi-chart-timeline
+            div Average
+          .moneyBlock__average: .sum {{ formatMoney(avSummary.expenses) }}
+
+    .moneyBlock._mb(@click="$store.dispatch('setMobileDashboardActiveTab', 'incomes')")
+      .moneyBlock__line2
+        .moneyTitle.incomes Incomes
+        .moneyBlock__total.incomes {{ formatMoney(summary.incomes) }}
+      template(v-if="avSummary.incomes !== 0")
+        .moneyBlock__line2
+          .moneyBlock__title
+            .mdi.mdi-chart-timeline
+            div Average
+          .moneyBlock__average: .sum {{ formatMoney(avSummary.incomes) }}
+
+    .moneyBlock._mb(@click="$store.dispatch('setMobileDashboardActiveTab', 'history')")
       .moneyBlock__line2
         .moneyTitle
           template(v-if="summary.sum > 0") Saved
@@ -70,17 +94,6 @@
             .mdi.mdi-chart-timeline
             div Average
           .moneyBlock__average: .sum {{ formatMoney(avSummary.sum) }}
-
-  //- Mobile
-  template(v-if="view === 'mobile'")
-    .summaryShort._pb(:class="{_maxWidth: maxwidth}")
-      .summaryShort__flex
-        .summaryShort__flex__col(@click="$emit('changeTabMoney', 'expenses')")
-          slot(name="mobile-expenses")
-        .summaryShort__flex__col(@click="$emit('changeTabMoney', 'incomes')")
-          slot(name="mobile-incomes")
-        .summaryShort__flex__col(@click="$emit('changeTabMoney', 'history')")
-          slot(name="mobile-history")
 
   //- Dashboard full
   template(v-if="view === 'dashboard-full'")
@@ -192,13 +205,13 @@ export default {
 
   data() {
     return {
-      monthsDurationDefault: 6,
+      monthsDurationDefault: 12,
       monthsDurationReal: 0
     }
   },
 
   computed: {
-    ...mapGetters(['getTrns', 'getFilter']),
+    ...mapGetters(['getTrns', 'getFilter', 'mobileDashboardActiveTab']),
 
     $timePeriod() {
       return this.$store.state.dashboard.timePeriod

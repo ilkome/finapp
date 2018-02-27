@@ -7,6 +7,7 @@ import rates from './modules/rates'
 import trns from './modules/trns/'
 import user from './modules/user'
 import filter from './modules/filter'
+import views from './modules/views'
 
 Vue.use(Vuex)
 
@@ -17,7 +18,8 @@ const modules = {
   rates,
   trns,
   user,
-  filter
+  filter,
+  views
 }
 
 // State

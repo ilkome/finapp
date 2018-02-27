@@ -2,6 +2,34 @@ import localforage from 'localforage'
 import { db } from '@/store/firebase'
 import { formatTrnForDb, formatTrnForStore } from '@/store/modules/trns/utils'
 
+const saveTrnToOfflineList = async (trn) => {
+  let addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
+  await localforage.setItem('addedOfflineTrns',
+    addedOfflineTrns
+      ? { [trn.id]: trn, ...addedOfflineTrns }
+      : { [trn.id]: trn }
+  )
+}
+
+const saveTrnToLocalCache = async (trn) => {
+  const localTrns = await localforage.getItem('trns')
+  await localforage.setItem('trns',
+    localTrns && localTrns.length
+      ? [trn, ...localTrns]
+      : [trn]
+  )
+}
+
+const removeTrnFromOfflineList = async (trn) => {
+  const addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
+  if (addedOfflineTrns) {
+    delete addedOfflineTrns[trn.id]
+    await localforage.setItem('addedOfflineTrns',
+      addedOfflineTrns ? { ...addedOfflineTrns } : {}
+    )
+  }
+}
+
 export default {
   // Put all trns to store
   // ---------------------------------------------------------------------------
@@ -39,48 +67,26 @@ export default {
       const categories = rootState.categories.all
       const rates = rootState.rates.all
 
+      // Save to local storage
+      const formatedTrnForStore = formatTrnForStore(formatedTrn, {
+        accounts, categories, rates
+      })
+      saveTrnToOfflineList(formatedTrn)
+      saveTrnToLocalCache(formatedTrn)
+      commit('addTrn', formatedTrnForStore)
+
       // Online
       if (rootState.isConnected) {
-        await db
-          .ref(`users/${rootState.user.user.uid}/trns/${formatedTrn.id}`)
-          .set(formatedTrn)
-
-        const addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
-        if (addedOfflineTrns) {
-          delete addedOfflineTrns[formatedTrn.id]
-          await localforage.setItem('addedOfflineTrns',
-            addedOfflineTrns ? { ...addedOfflineTrns } : {}
-          )
-        }
-        const formatedTrnForStore = formatTrnForStore(formatedTrn, {
-          accounts, categories, rates
-        })
-        commit('addTrn', formatedTrnForStore)
-
         result.status = 'online'
         result.error = null
+        db
+          .ref(`users/${rootState.user.user.uid}/trns/${formatedTrn.id}`)
+          .set(formatedTrn)
+          .then(removeTrnFromOfflineList(formatedTrn))
       }
 
       // Offline
       if (!rootState.isConnected) {
-        const formatedTrnForStore = formatTrnForStore(formatedTrn, {
-          accounts, categories, rates
-        })
-
-        let addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
-        await localforage.setItem('addedOfflineTrns',
-          addedOfflineTrns
-            ? { [formatedTrn.id]: formatedTrn, ...addedOfflineTrns }
-            : { [formatedTrn.id]: formatedTrn }
-        )
-
-        const localTrns = await localforage.getItem('trns')
-        await localforage.setItem('trns',
-          localTrns && localTrns.length
-            ? [formatedTrnForStore, ...localTrns]
-            : [formatedTrnForStore]
-        )
-        commit('addTrn', formatedTrnForStore)
         result.status = 'offline'
         result.error = null
       }

@@ -7,9 +7,7 @@ import velocity from 'velocity-animate'
 import store from '@/store/store'
 import formatDate from '@/filters/date'
 import App from '@/components/App.vue'
-if (process.env.NODE_ENV === 'production') {
-  require('@/sw.js')
-}
+import '@/sw.js'
 
 Vue.config.productionTip = false
 moment.locale('en')

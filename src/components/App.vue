@@ -91,9 +91,14 @@ export default {
 
       // Initialize the App from localStorage
       // -----------------------------------------------------------------------
+      const localViews = await localforage.getItem('views')
       const localData = await localforage.getItem('data')
       const localTrns = await localforage.getItem('trns')
       const localUser = await localforage.getItem('user')
+
+      if (localViews && localViews.mobileDashboardActiveTab) {
+        this.$store.commit('setMobileDashboardActiveTab', localViews.mobileDashboardActiveTab)
+      }
 
       if (localData &&
           localTrns && localTrns.length &&
@@ -139,26 +144,28 @@ export default {
           db.ref(`${userRef}`).on('value', async (snapshot) => {
             const val = snapshot.val()
 
-            console.groupCollapsed('Data from firebase')
-            console.log(val.categories)
-            console.log(val.accounts)
-            console.log(val.trns)
-            console.groupEnd()
+            if (val) {
+              console.groupCollapsed('Data from firebase')
+              console.log(val.categories)
+              console.log(val.accounts)
+              console.log(val.trns)
+              console.groupEnd()
 
-            await this.$store.dispatch('setRates')
-            await this.$store.dispatch('setCategories', val)
-            await this.$store.dispatch('setAccounts', val)
-            await this.$store.dispatch('setTrns', val)
+              await this.$store.dispatch('setRates')
+              await this.$store.dispatch('setCategories', val)
+              await this.$store.dispatch('setAccounts', val)
+              await this.$store.dispatch('setTrns', val)
 
-            // Save data from firebase to localStorage
-            // -----------------------------------------------------------------
-            await localforage.setItem('data', {
-              accounts: this.$store.state.accounts.all,
-              categories: this.$store.state.categories.all,
-              rates: this.$store.state.rates.all
-            })
-            await localforage.setItem('trns', this.$store.state.trns.all)
-            await localforage.setItem('user', formatedUser)
+              // Save data from firebase to localStorage
+              // -----------------------------------------------------------------
+              await localforage.setItem('data', {
+                accounts: this.$store.state.accounts.all,
+                categories: this.$store.state.categories.all,
+                rates: this.$store.state.rates.all
+              })
+              await localforage.setItem('trns', this.$store.state.trns.all)
+              await localforage.setItem('user', formatedUser)
+            }
 
             this.$store.commit('closeLoader')
             this.$store.commit('pageLoaded')

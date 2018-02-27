@@ -43,9 +43,13 @@
   &._mb
     margin-bottom $m
     padding-bottom $mss
-    border-bottom 1px solid $color-line-summary
+
     &:last-child
-      margin-bottom $mb
+      margin-bottom 0
+      padding-bottom 0
+
+      @media $after768
+        margin-bottom $mb
 
   @media $after768
     min-width 210px

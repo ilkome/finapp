@@ -1,14 +1,19 @@
 .module
   &._alt
+    z-index 3
     background $color-module-bg-alt
     border-bottom 1px solid $color-module-border
-
-  &._history
-    background $color-module-bg-history
 
   &._stat
     @media (min-width: 768px)
       min-height calc(100vh - 50px)
+
+  &._mobileFixed
+    @media $before768
+      position fixed
+      width 100%
+      left 0
+      top 56px
 
   &__in
     position relative
@@ -22,7 +27,8 @@
       padding 30px 60px
 
     ^[0]._stat &
-      padding 30px 20px
+      padding 30px 0
+      padding-top 0
 
       @media (min-width: 768px)
         padding 30px 60px
@@ -32,3 +38,7 @@
 
       @media (min-width: 768px)
         padding 0 60px
+
+    ^[0]._stat &._mobileFixed
+      @media $before768
+        padding-top 130px

@@ -120,7 +120,7 @@ $typo-title()
   $font-numbers()
 
 $typo-money()
-  font-size 15px
+  font-size 16px
   font-weight bold
   white-space nowrap
   $font-numbers()
@@ -128,8 +128,11 @@ $typo-money()
 // Item
 $typo-item-name()
   color $color-sidebar-white-lighter
-  line-height 13px
-  font-size 13px
+  font-size 16px
+  line-height normal
+
+  @media $after768
+    font-size 14px
 
 // Media
 // ==============================================
