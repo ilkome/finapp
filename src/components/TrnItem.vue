@@ -20,8 +20,8 @@
         .trnItem__description(v-if="trn.description") {{ trn.description }}
 
       .trnItem__price(:class="trn.type === 1 ? 'income' : 'expense'")
-        div.sub(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
-        div {{ formatMoney(trn.amountRub) }}
+        div.sub {{ formatMoney(trn.amountRub) }}
+        div(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
 
     template(v-if="showActions")
       .trnItem__actions
@@ -45,8 +45,8 @@
         .trnItem__description(v-if="trn.description") {{ trn.description }}
 
       .trnItem__price(:class="trn.type === 1 ? 'income' : 'expense'")
-        div.sub(v-if="trn.currency != 'RUB'") {{ formatMoney(trn.amount, trn.currency) }}
-        div {{ formatMoney(trn.amountRub) }}
+        div.sub(v-if="trn.currency !== 'RUB'") {{ formatMoney(trn.amountRub) }}
+        div {{ formatMoney(trn.amount, trn.currency) }}
 
     template(v-if="showActions")
       .trnItem__actions

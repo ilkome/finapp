@@ -4,7 +4,7 @@
     input(
       type="text",
       v-model.trim="filter",
-      v-focus.lazy="true && !$store.state.isMobile",
+      v-focus.lazy="focus && !$store.state.isMobile",
       placeholder="Search"
     ).filter__input
 
@@ -130,43 +130,10 @@ export default {
 
       const fuse = new Fuse(this.categories, searchOptions)
       const searchResults = fuse.search(this.filter)
-      const categoriesResult = []
+      let categoriesResult = []
 
       if (this.filter.length >= 2) {
-        this.showedChildIds = []
-
-        searchResults.map(item => {
-          // Root category
-          if (item.parentId === 0) {
-            if (this.showedChildIds.indexOf(item.id) === -1) {
-              this.showedChildIds.push(item.id)
-            }
-
-            categoriesResult.push({
-              ...item,
-              child: []
-            })
-          }
-          // Child category
-          if (item.parentId !== 0) {
-            if (this.showedChildIds.indexOf(item.parentId) === -1) {
-              this.showedChildIds.push(item.parentId)
-            }
-            const parentCategory = categoriesResult.find(category => category.id === item.parentId)
-
-            // Category already exist in result
-            if (parentCategory) {
-              parentCategory.child.push(item)
-            } else {
-              // New category
-              const parent = this.categories.find(category => category.id === item.parentId)
-              categoriesResult.push({
-                ...parent,
-                child: [item]
-              })
-            }
-          }
-        })
+        categoriesResult = this.searching(searchResults)
       }
 
       return categoriesResult
@@ -198,17 +165,50 @@ export default {
 
       if (this.filter.length >= 2 && this.searchedCategoriesList.length) {
         return this.searchedCategoriesList
+      } else {
+        this.closeAllCategories()
       }
     }
   },
 
   mounted() {
-    setTimeout(function () {
+    setTimeout(() => {
       this.focus = true
-    }.bind(this), 100)
+    }, 100)
   },
 
   methods: {
+    closeAllCategories() {
+      this.showedChildIds = []
+    },
+
+    searching(searchResults) {
+      const categoriesResult = []
+      for (const category of searchResults) {
+        if (category.parentId === 0) {
+          if (!categoriesResult.find(c => c.id === category.id)) {
+            categoriesResult.push({
+              ...category,
+              child: this.categories.filter(c => c.parentId === category.id)
+            })
+          }
+        }
+
+        // Child category
+        if (category.parentId !== 0) {
+          const rootCategory = this.categories.find(c => c.id === category.parentId)
+          if (!categoriesResult.find(c => c.id === rootCategory.id)) {
+            categoriesResult.push({
+              ...rootCategory,
+              child: this.categories.filter(c => c.parentId === rootCategory.id)
+            })
+          }
+        }
+      }
+
+      this.showedChildIds = categoriesResult.map(c => c.id)
+      return categoriesResult
+    },
     onClickContent(category) {
       if (category.child && category.child.length) {
         if (this.showedChildIds.indexOf(category.id) === -1) {
@@ -227,7 +227,6 @@ export default {
     onClickIcon(category) {
       if (this.view !== 'trnForm') {
         this.$store.commit('setFilterCategory', category)
-        console.log(2)
       }
     },
     avaliableForDelete(categoryId) {

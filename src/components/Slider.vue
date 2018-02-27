@@ -22,23 +22,26 @@ export default {
     return {
       swiper: null,
       options: {
-        autoHeight: true,
+        autoHeight: false,
         loop: false,
         spaceBetween: 40,
         on: {
           slideChangeTransitionStart() {
             switch (this.realIndex) {
               case 0:
-                vm.$emit('onChangeSlide', 'expenses')
+                vm.$emit('onChangeSlide', 'summary')
                 break
               case 1:
-                vm.$emit('onChangeSlide', 'incomes')
+                vm.$emit('onChangeSlide', 'expenses')
                 break
               case 2:
+                vm.$emit('onChangeSlide', 'incomes')
+                break
+              case 3:
                 vm.$emit('onChangeSlide', 'history')
                 break
               default:
-                vm.$emit('onChangeSlide', 'expenses')
+                vm.$emit('onChangeSlide', 'summary')
             }
           }
         }
@@ -82,14 +85,17 @@ export default {
   methods: {
     changeSlide() {
       switch (this.activeTab) {
-        case 'expenses':
+        case 'summary':
           this.swiper.slideTo(0)
           break
-        case 'incomes':
+        case 'expenses':
           this.swiper.slideTo(1)
           break
-        case 'history':
+        case 'incomes':
           this.swiper.slideTo(2)
+          break
+        case 'history':
+          this.swiper.slideTo(3)
           break
         default:
           this.swiper.slideTo(0)

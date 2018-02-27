@@ -16,6 +16,9 @@
   )
 
   .main
+    template(v-if="$store.state.isMobile")
+      BottomFixedLinks
+
     template(v-if="!$store.state.isMobile")
       //- ChartYears
       transition(name="calendarPopupAnimation")
@@ -27,15 +30,6 @@
 
     //- mobile
     template(v-if="$store.state.isMobile")
-      .accountWidgets
-        template(v-for="accountItem in accounts.slice(0, 6)")
-          .accountWidgetItem(
-            @click="$store.commit('setFilterAccount', accountItem)"
-            :style="{ background: accountItem.color }"
-          )
-            .accountWidgetItem__name {{ accountItem.name }}
-            .accountWidgetItem__price.sum {{ formatMoney(accountItem.total, accountItem.currency) }}
-
       template(v-if="getFilter.category || getFilter.account")
         .selectedBox
           .flex
@@ -54,7 +48,7 @@
     //- Chart last 6 months
     transition(name="calendarPopupAnimation")
       template(v-if="showedGraph && getPeriodStatic")
-        .module._alt(v-show="!showedChartYears")
+        .module._alt._mobileFixed(v-show="!showedChartYears")
           .module__in._stat
             .statChart._overflow
               .stat__toogle(
@@ -109,110 +103,110 @@
           .moneyTitle._pb History
           TrnsList(:trns="trnsListHistory.slice(0, 500)")
 
+
     .module._stat
-      .module__in
+      .module__in(
+        :class="{ _mobileFixed: showedGraph && $store.state.isMobile}"
+      )
         //- Mobile
         //----------------------------------------------------------------------
         template(v-if="$store.state.isMobile")
-          SummaryShort(
-            :trns="trnsList",
-            view="mobile-new"
-            v-on:changeTabMoney="changeTabMoney"
-          )
-
           template(v-if="expensesItemsStat.length <= 0 && incomesItemsStat.length <= 0")
-            .moneyTitle.mb-sb No trns for selected period
+            .panel
+              .summaryShort__wrap
+                .moneyTitle.mb-sb No trns for selected period
 
           template(v-else)
-            .sliderFixWidth
-              SummaryShort(
-                :trns="trnsList",
-                view="mobile"
-                v-on:changeTabMoney="changeTabMoney"
-              )
-                template(slot="mobile-expenses")
-                  .switch__item._expenses(
-                    @click="changeTabMoney('expenses')",
-                    :class="{_active: showedTabMoney === 'expenses'}"
-                  ) Expenses
-                template(slot="mobile-incomes")
-                  .switch__item._incomes(
-                    @click="changeTabMoney('incomes')",
-                    :class="{_active: showedTabMoney === 'incomes'}"
-                  ) Incomes
-                template(slot="mobile-history")
-                  .switch__item._history(
-                    @click="changeTabMoney('history')",
-                    :class="{_active: showedTabMoney === 'history'}"
-                  ) History
+            transition(name="anim-router" mode="out-in")
+              .panel(v-show="mobileDashboardActiveTab === 'summary'")
+                .div
+                  .accountWidgets
+                    template(v-for="accountItem in accounts.slice(0, 6)")
+                      .accountWidgetItem(
+                        @click="$store.commit('setFilterAccount', accountItem)"
+                        :style="{ background: accountItem.color }"
+                      )
+                        .accountWidgetItem__name {{ accountItem.name }}
+                        .accountWidgetItem__price.sum {{ formatMoney(accountItem.total, accountItem.currency) }}
 
-              .slider
-                Slider(
-                  :activeTab="showedTabMoney"
+                  SummaryShort(
+                    :trns="trnsList",
+                    view="mobile-new"
+                  )
+
+            transition(name="anim-router" mode="out-in")
+              .panel(v-show="mobileDashboardActiveTab === 'expenses'")
+                .div
+                  .summaryShort__wrap
+                    SummaryShort(
+                      :trns="trnsList",
+                      view="mobile-expenses"
+                    )
+
+                  ItemStatGroup(
+                    type="expenses"
+                    :trnsList="trnsList"
+                    :itemsStatList="expensesItemsStat"
+                    :idsOfOpenedCategories="idsOfOpenedCategories"
+                    v-on:toogleOpenedCategories="toogleOpenedCategories"
+                    v-on:shouldOpenCategory="shouldOpenCategory"
+                    v-on:getCategoryStat="getCategoryStat"
+                    v-on:toogleShowTrnsInCategory="toogleShowTrnsInCategory"
+                    v-on:setFilterCategory="setFilterCategory"
+                  )
+                    template(slot="graph2")
+                      template(v-if="!getFilter.category && expensesItemsStat.length")
+                        .statChartFix
+                          .statChart2
+                            .statChart__in
+                              template(v-for="(period, index) in expensesItemsStat.slice(0, 8)")
+                                .statChart__item2(@click.prevent="setFilterCategory(period.category)")
+                                  .statChartGraph2
+                                    .statChartGraph2__in(:style="{ background: period.category.color, height: getPeriodStaticHeight2(period.total, expensesItemsStat[0].total) }")
+                                      .statChartGraph2__total.sum {{ period.totalK }}
+                                  .icon(
+                                    :style="`background: ${period.category.color}`"
+                                  ): div(:class="period.category.icon")
+                                    .icon__label
+                                      .icon__label__in(:style="`background: ${period.category.color}`") {{ period.category.name }}
+
+            transition(name="anim-router" mode="out-in")
+              .panel(v-show="mobileDashboardActiveTab === 'incomes'")
+                .summaryShort__wrap
+                  SummaryShort(
+                    :trns="trnsList",
+                    view="mobile-incomes"
+                  )
+
+                ItemStatGroup(
+                  type="incomes"
+                  :trnsList="trnsList"
+                  :itemsStatList="incomesItemsStat"
                   :idsOfOpenedCategories="idsOfOpenedCategories"
-                  v-on:onChangeSlide="changeTabMoney"
+                  v-on:toogleOpenedCategories="toogleOpenedCategories"
+                  v-on:shouldOpenCategory="shouldOpenCategory"
+                  v-on:getCategoryStat="getCategoryStat"
+                  v-on:toogleShowTrnsInCategory="toogleShowTrnsInCategory"
+                  v-on:setFilterCategory="setFilterCategory"
                 )
-                  //- Expenses
-                  .swiper-slide
-                    ItemStatGroup(
-                      type="expenses"
-                      :trnsList="trnsList"
-                      :itemsStatList="expensesItemsStat"
-                      :idsOfOpenedCategories="idsOfOpenedCategories"
-                      v-on:toogleOpenedCategories="toogleOpenedCategories"
-                      v-on:shouldOpenCategory="shouldOpenCategory"
-                      v-on:getCategoryStat="getCategoryStat"
-                      v-on:toogleShowTrnsInCategory="toogleShowTrnsInCategory"
-                      v-on:setFilterCategory="setFilterCategory"
-                    )
-                      template(slot="graph2")
-                        template(v-if="!getFilter.category && expensesItemsStat.length")
-                          .statChartFix
-                            .statChart2
-                              .statChart__in
-                                template(v-for="(period, index) in expensesItemsStat.slice(0, 8)")
-                                  .statChart__item2(@click.prevent="setFilterCategory(period.category)")
-                                    .statChartGraph2
-                                      .statChartGraph2__in(:style="{ background: period.category.color, height: getPeriodStaticHeight2(period.total, expensesItemsStat[0].total) }")
-                                        .statChartGraph2__total.sum {{ period.totalK }}
-                                    .icon(
-                                      :style="`background: ${period.category.color}`"
-                                    ): div(:class="period.category.icon")
-                                      .icon__label
-                                        .icon__label__in(:style="`background: ${period.category.color}`") {{ period.category.name }}
+                  template(slot="graph2")
+                    template(v-if="!getFilter.category && incomesItemsStat.length")
+                      .statChartFix
+                        .statChart2
+                          .statChart__in
+                            template(v-for="(period, index) in incomesItemsStat.slice(0, 8)")
+                              .statChart__item2(@click.prevent="setFilterCategory(period.category)")
+                                .statChartGraph2
+                                  .statChartGraph2__in(:style="{ background: period.category.color, height: getPeriodStaticHeight2(period.total, incomesItemsStat[0].total) }")
+                                    .statChartGraph2__total.sum {{ period.totalK }}
+                                .icon(
+                                  :style="`background: ${period.category.color}`"
+                                ): div(:class="period.category.icon")
 
-                  //- Incomes
-                  .swiper-slide
-                    ItemStatGroup(
-                      type="incomes"
-                      :trnsList="trnsList"
-                      :itemsStatList="incomesItemsStat"
-                      :idsOfOpenedCategories="idsOfOpenedCategories"
-                      v-on:toogleOpenedCategories="toogleOpenedCategories"
-                      v-on:shouldOpenCategory="shouldOpenCategory"
-                      v-on:getCategoryStat="getCategoryStat"
-                      v-on:toogleShowTrnsInCategory="toogleShowTrnsInCategory"
-                      v-on:setFilterCategory="setFilterCategory"
-                    )
-                      template(slot="graph2")
-                        template(v-if="!getFilter.category && incomesItemsStat.length")
-                          .statChartFix
-                            .statChart2
-                              .statChart__in
-                                template(v-for="(period, index) in incomesItemsStat.slice(0, 8)")
-                                  .statChart__item2(@click.prevent="setFilterCategory(period.category)")
-                                    .statChartGraph2
-                                      .statChartGraph2__in(:style="{ background: period.category.color, height: getPeriodStaticHeight2(period.total, incomesItemsStat[0].total) }")
-                                        .statChartGraph2__total.sum {{ period.totalK }}
-                                    .icon(
-                                      :style="`background: ${period.category.color}`"
-                                    ): div(:class="period.category.icon")
-
-                  //- History
-                  .swiper-slide
-                    .itemStatGroup
-                      TrnsList(:trns="trnsListHistory.slice(0, 100)")
-        //- end: Mobile
+            transition(name="anim-router" mode="out-in")
+              .panel(v-show="mobileDashboardActiveTab === 'history'")
+                .itemStatGroup
+                  TrnsList(:trns="trnsListHistory.slice(0, 100)")
 
 
         //- PC
