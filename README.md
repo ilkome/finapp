@@ -1,19 +1,12 @@
 # Personal finance application
 
-This aplication is the best to show my skils. 
+Finapp helps you to control your personal finances easily and efficiently.
 
+# Demo
+https://themerise.com/promo
 
-## What's inside
+## Demo mobile
+![PC](https://user-images.githubusercontent.com/1069998/36832824-18fe290a-1d68-11e8-87fa-ac715badac7d.gif)
 
-- Webpack
-- Gulp
-- BrowserSync
-- ES6 with babel
-- Vue.js
-- Pug (Jade)
-- Stylus
-- Lodash, Axios
-
-
-### Screenshots
-https://www.dropbox.com/sh/y56jlpimprba81u/AABI5jjylRLtY67zhvHM8PXea?dl=0
+## Demo PC
+![Mobile](https://user-images.githubusercontent.com/1069998/36832823-18c76492-1d68-11e8-8acc-e113dd86645e.gif)
