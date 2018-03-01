@@ -1,6 +1,9 @@
-# Personal finance application
+# Open source personal finance application
 
 Finapp helps you to control your personal finances easily and efficiently.
+
+* Written with vuejs and firebase.
+* Works offline.
 
 # Demo
 https://themerise.com/promo
