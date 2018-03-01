@@ -6,7 +6,7 @@ Finapp helps you to control your personal finances easily and efficiently.
 * Works offline.
 
 # Demo
-https://themerise.com/promo
+https://ilko.me/finapp/
 
 ## Demo PC
 <img src="https://user-images.githubusercontent.com/1069998/36832824-18fe290a-1d68-11e8-87fa-ac715badac7d.gif" width="800">
