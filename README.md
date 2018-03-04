@@ -1,19 +1,15 @@
-# Personal finance application
+# Open source personal finance application
 
-This aplication is the best to show my skils. 
+Finapp helps you to control your personal finances easily and efficiently.
 
+* Written with vuejs and firebase.
+* Works offline.
 
-## What's inside
+# Demo
+https://ilko.me/finapp/
 
-- Webpack
-- Gulp
-- BrowserSync
-- ES6 with babel
-- Vue.js
-- Pug (Jade)
-- Stylus
-- Lodash, Axios
+## Demo PC
+<img src="https://user-images.githubusercontent.com/1069998/36832824-18fe290a-1d68-11e8-87fa-ac715badac7d.gif" width="800">
 
-
-### Screenshots
-https://www.dropbox.com/sh/y56jlpimprba81u/AABI5jjylRLtY67zhvHM8PXea?dl=0
+## Demo mobile
+<img src="https://user-images.githubusercontent.com/1069998/36832823-18c76492-1d68-11e8-8acc-e113dd86645e.gif" height="600">
