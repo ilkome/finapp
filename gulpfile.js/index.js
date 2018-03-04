@@ -1,10 +1,8 @@
 /*
   ilkome frontend vue
-  Version 1.0.0
 
   Ilya Komichev
   https://ilko.me
-  https://github.com/ilkome/frontend
 */
 const gulp = require('gulp')
 const requireDir = require('require-dir')
