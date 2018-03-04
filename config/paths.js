@@ -1,7 +1,7 @@
 var path = require('path')
 
 const appPath = path.resolve(__dirname, '../src')
-const distPath = path.resolve(__dirname, '../prev/dist')
+const distPath = path.resolve(__dirname, '../dist')
 
 module.exports = {
   app: appPath,
@@ -9,7 +9,8 @@ module.exports = {
   assets: {
     src: [
       `${appPath}/assets/**/*`,
-      `!${appPath}/assets/img`
+      `!${appPath}/assets/img`,
+      `!${appPath}/assets/img/**`
     ]
   },
   css: {

@@ -4,7 +4,7 @@ const paths = require('../../config/paths')
 
 function writeServiceWorkerFile(handleFetch, callback) {
   swPrecache.write(`${paths.dist}/service-worker.js`, {
-    staticFileGlobs: [paths.dist + '/**/*.{js,html,css,png,jpg,gif,svg,eot,ttf,woff}'],
+    staticFileGlobs: [paths.dist + '/**/*.{js,css,png,jpg,gif,svg,eot,ttf,woff}'],
     stripPrefix: paths.dist,
     // If handleFetch is false (i.e. because this is called from generate-service-worker-dev), then
     // the service worker will precache resources but won't actually serve them.
