@@ -169,6 +169,18 @@ export default {
 
             this.$store.commit('closeLoader')
             this.$store.commit('pageLoaded')
+          }, (e) => {
+            // Authed user but do not have permissions to firebase
+            if (this.user) {
+              this.$notify({
+                group: 'foo',
+                title: 'Access error',
+                text: 'You do not have permissions to database',
+                type: 'error',
+                duration: 30000
+              })
+              this.$store.dispatch('signOut')
+            }
           })
         } else {
           this.$store.commit('signIn', null)
