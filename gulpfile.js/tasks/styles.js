@@ -16,6 +16,7 @@ gulp.task('stylus', () =>
       paths: ['node_modules']
     }))
     .pipe($.rename({ basename: 'styles' }))
+    .pipe($.if(!isDevelopment, $.hashFilename()))
     .pipe($.if(isDevelopment, $.sourcemaps.write('./')))
     .pipe(gulp.dest(paths.stylus.output))
     .pipe(browserSync.stream({ match: '**/*.css' }))
