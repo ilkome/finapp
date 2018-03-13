@@ -36,8 +36,8 @@ gulp.task('build', (done) => {
 
 // Arhicve
 gulp.task('zip', () => {
-  gulp.src('build/**/*')
-    .pipe($.zip('build.zip'))
+  gulp.src('dist/**/*')
+    .pipe($.zip('dist.zip'))
     .pipe(gulp.dest('./'))
 })
 
