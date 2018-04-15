@@ -42,8 +42,15 @@ export default {
         const categories = rootState.categories.all
         const formatedTrns = []
         for (const key in trns) {
-          const formatedTrn = formatTrnForStore(trns[key], { accounts, categories, rates })
-          formatedTrns.push(formatedTrn)
+          const trn = {
+            id: key,
+            ...trns[key]
+          }
+          const formatedTrn = formatTrnForStore(trn, { accounts, categories, rates })
+          formatedTrns.push({
+            ...formatedTrn,
+            id: key
+          })
         }
         commit('setTrns', formatedTrns)
       } catch (error) {
