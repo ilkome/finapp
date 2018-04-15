@@ -444,8 +444,10 @@ export default {
             if (this.trns[i]) {
               const categoryId = this.trns[i].categoryId
               const category = this.categories.find(c => c.id === categoryId)
-              if (!lastUsedCategories.find(c => c.id === category.id)) {
-                lastUsedCategories.push(category)
+              if (category) {
+                if (!lastUsedCategories.find(c => c.id === category.id)) {
+                  lastUsedCategories.push(category)
+                }
               }
             }
           }
