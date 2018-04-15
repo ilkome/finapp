@@ -158,7 +158,7 @@
 
               CategoryColor(v-on:setColor="setColor")
 
-              //- .input
+              .input
                 input.input__field(
                   v-model="values.icon"
                   v-focus.lazy="true",
