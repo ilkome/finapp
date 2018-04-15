@@ -75,7 +75,7 @@ export default {
           countTotal: this.values.countTotal ? 1 : 0,
           currency: this.values.currency ? this.values.currency : 'RUB',
           order: this.values.order ? this.values.order : 100,
-          color: this.values.color ? this.values.color : defaultColor
+          color: this.values.color || defaultColor
         }
 
         if (!formatedValues.name) {
