@@ -61,16 +61,7 @@
       div Delete trn?
     .item__el._action(@click.prevent.stop="close()"): .fa.fa-ban
     .item__el._action(@click.prevent.stop="deleteTrn(trn.id)"): .fa.fa-check
-
-
-  //- ModalBottom(
-  //-   :isShow="questionId"
-  //-   title="Actions"
-  //-   v-on:onClose="questionId = false"
-  //- )
 </template>
-
-
 <script>
 import { mapGetters } from 'vuex'
 import formatDate from '../mixins/formatDate'
@@ -78,8 +69,8 @@ import formatMoney from '../mixins/formatMoney'
 import ModalBottom from '@components/modal/ModalBottom'
 
 export default {
-  mixins: [formatDate, formatMoney],
   components: { ModalBottom },
+  mixins: [formatDate, formatMoney],
 
   props: {
     trn: {
@@ -88,7 +79,7 @@ export default {
     },
     view: {
       type: String,
-      required: false
+      default: null
     }
   },
 
@@ -103,6 +94,7 @@ export default {
   computed: {
     ...mapGetters(['accounts']),
     editedTrn() {
+      console.log('editedTrn')
       return this.$store.state.trnForm.updateTrnId
     }
   },
@@ -122,7 +114,6 @@ export default {
         text: 'Trn was deleted.',
         type: 'success'
       })
-      return
     },
     askQuestion(trnId) {
       this.questionId = trnId
