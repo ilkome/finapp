@@ -8,7 +8,7 @@ export const formatTrnForDb = values => ({
   categoryId: values.categoryId,
   currency: values.currency,
   date: values.date,
-  description: values.description,
+  description: values.description || null,
   type: values.type
 })
 
@@ -42,11 +42,17 @@ export const formatTrnForStore = (trn, options) => {
 
   // Account
   let accountId = trn.accountId
-  const account = options.accounts.find(a => a.id === accountId)
+  let account = options.accounts.find(a => a.id === accountId)
   let accountName
   if (account) {
     accountName = account.name
   } else {
+    console.error(`Account for trn not found`, trn)
+    account = {
+      id: 'empty',
+      name: 'not found',
+      currency: 'RUB'
+    }
     accountId = 'not found'
     accountName = 'not found'
   }
@@ -54,7 +60,7 @@ export const formatTrnForStore = (trn, options) => {
   // Amount
   const amount = Math.abs(trn.amount)
   let amountRub
-  const currency = trn.currency
+  const currency = trn.currency || account.currency
   if (currency === 'RUB') {
     amountRub = Math.abs(trn.amount)
   } else {
