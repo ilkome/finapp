@@ -26,7 +26,7 @@
           .fa.fa-eraser
 
       .filter__btn(
-        @click="$store.commit('toogleCategoryCreate')"
+        @click="onClickCreateNewCategory"
         v-tooltip.bottom-center="{ content: 'Create new category' }"
       ): .mdi.mdi-plus
 
@@ -180,6 +180,13 @@ export default {
   methods: {
     closeAllCategories() {
       this.showedChildIds = []
+    },
+
+    onClickCreateNewCategory() {
+      if (this.$store.state.isMobile) {
+        this.$store.commit('toogleCategoriesList', 'hide')
+      }
+      this.$store.commit('toogleCategoryCreate')
     },
 
     searching(searchResults) {
