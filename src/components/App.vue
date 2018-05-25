@@ -80,21 +80,21 @@ export default {
 
   async mounted() {
     try {
-      const addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
-      const updatedOfflineTrns = await localforage.getItem('updatedOfflineTrns')
-      const deletedOfflineTrns = await localforage.getItem('deletedOfflineTrns')
+      const addedOfflineTrns = await localforage.getItem('old:addedOfflineTrns')
+      const updatedOfflineTrns = await localforage.getItem('old:updatedOfflineTrns')
+      const deletedOfflineTrns = await localforage.getItem('old:deletedOfflineTrns')
       console.groupCollapsed('Offline trns')
-      console.log('addedOfflineTrns', addedOfflineTrns)
-      console.log('updatedOfflineTrns', updatedOfflineTrns)
-      console.log('deletedOfflineTrns', deletedOfflineTrns)
+      console.log('old:addedOfflineTrns', addedOfflineTrns)
+      console.log('old:updatedOfflineTrns', updatedOfflineTrns)
+      console.log('old:deletedOfflineTrns', deletedOfflineTrns)
       console.groupEnd()
 
       // Initialize the App from localStorage
       // -----------------------------------------------------------------------
-      const localViews = await localforage.getItem('views')
-      const localData = await localforage.getItem('data')
-      const localTrns = await localforage.getItem('trns')
-      const localUser = await localforage.getItem('user')
+      const localViews = await localforage.getItem('old:views')
+      const localData = await localforage.getItem('old:data')
+      const localTrns = await localforage.getItem('old:trns')
+      const localUser = await localforage.getItem('old:user')
 
       if (localViews && localViews.mobileDashboardActiveTab) {
         this.$store.commit('setMobileDashboardActiveTab', localViews.mobileDashboardActiveTab)
@@ -158,13 +158,13 @@ export default {
 
               // Save data from firebase to localStorage
               // -----------------------------------------------------------------
-              await localforage.setItem('data', {
+              await localforage.setItem('old:data', {
                 accounts: this.$store.state.accounts.all,
                 categories: this.$store.state.categories.all,
                 rates: this.$store.state.rates.all
               })
-              await localforage.setItem('trns', this.$store.state.trns.all)
-              await localforage.setItem('user', formatedUser)
+              await localforage.setItem('old:trns', this.$store.state.trns.all)
+              await localforage.setItem('old:user', formatedUser)
             }
 
             this.$store.commit('closeLoader')
@@ -197,17 +197,17 @@ export default {
         isConnected = snap.val()
         this.$store.commit('setConnectionStatus', isConnected)
         if (isConnected) {
-          const addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
+          const addedOfflineTrns = await localforage.getItem('old:addedOfflineTrns')
           for (const key in addedOfflineTrns) {
             await this.$store.dispatch('addTrn', addedOfflineTrns[key])
           }
 
-          const updatedOfflineTrns = await localforage.getItem('updatedOfflineTrns')
+          const updatedOfflineTrns = await localforage.getItem('old:updatedOfflineTrns')
           for (const key in updatedOfflineTrns) {
             await this.$store.dispatch('updateTrn', updatedOfflineTrns[key])
           }
 
-          const deletedOfflineTrns = await localforage.getItem('deletedOfflineTrns')
+          const deletedOfflineTrns = await localforage.getItem('old:deletedOfflineTrns')
           for (const key in deletedOfflineTrns) {
             await this.$store.dispatch('deleteTrn', deletedOfflineTrns[key])
           }

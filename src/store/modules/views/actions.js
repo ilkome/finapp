@@ -4,14 +4,14 @@ export default {
   async setMobileDashboardActiveTab({ commit, state }, tabName) {
     if (state.mobileDashboardActiveTab === tabName) return
 
-    const localViews = await localforage.getItem('views')
+    const localViews = await localforage.getItem('old:views')
     if (localViews) {
-      await localforage.setItem('views', {
+      await localforage.setItem('old:views', {
         ...localViews,
         mobileDashboardActiveTab: tabName
       })
     } else {
-      await localforage.setItem('views', {
+      await localforage.setItem('old:views', {
         mobileDashboardActiveTab: tabName
       })
     }
