@@ -3,8 +3,8 @@ import { db } from '@/store/firebase'
 import { formatTrnForDb, formatTrnForStore } from '@/store/modules/trns/utils'
 
 const saveTrnToOfflineList = async (trn) => {
-  let addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
-  await localforage.setItem('addedOfflineTrns',
+  let addedOfflineTrns = await localforage.getItem('old:addedOfflineTrns')
+  await localforage.setItem('old:addedOfflineTrns',
     addedOfflineTrns
       ? { [trn.id]: trn, ...addedOfflineTrns }
       : { [trn.id]: trn }
@@ -12,8 +12,8 @@ const saveTrnToOfflineList = async (trn) => {
 }
 
 const saveTrnToLocalCache = async (trn) => {
-  const localTrns = await localforage.getItem('trns')
-  await localforage.setItem('trns',
+  const localTrns = await localforage.getItem('old:trns')
+  await localforage.setItem('old:trns',
     localTrns && localTrns.length
       ? [trn, ...localTrns]
       : [trn]
@@ -21,10 +21,10 @@ const saveTrnToLocalCache = async (trn) => {
 }
 
 const removeTrnFromOfflineList = async (trn) => {
-  const addedOfflineTrns = await localforage.getItem('addedOfflineTrns')
+  const addedOfflineTrns = await localforage.getItem('old:addedOfflineTrns')
   if (addedOfflineTrns) {
     delete addedOfflineTrns[trn.id]
-    await localforage.setItem('addedOfflineTrns',
+    await localforage.setItem('old:addedOfflineTrns',
       addedOfflineTrns ? { ...addedOfflineTrns } : {}
     )
   }
@@ -125,10 +125,10 @@ export default {
           .ref(`users/${rootState.user.user.uid}/trns/${formatedTrn.id}`)
           .update(formatedTrn)
 
-        const updatedOfflineTrns = await localforage.getItem('updatedOfflineTrns')
+        const updatedOfflineTrns = await localforage.getItem('old:updatedOfflineTrns')
         if (updatedOfflineTrns) {
           delete updatedOfflineTrns[formatedTrn.id]
-          await localforage.setItem('updatedOfflineTrns',
+          await localforage.setItem('old:updatedOfflineTrns',
             updatedOfflineTrns ? { ...updatedOfflineTrns } : {}
           )
         }
@@ -143,15 +143,15 @@ export default {
           accounts, categories, rates
         })
 
-        let updatedOfflineTrns = await localforage.getItem('updatedOfflineTrns')
-        await localforage.setItem('updatedOfflineTrns',
+        let updatedOfflineTrns = await localforage.getItem('old:updatedOfflineTrns')
+        await localforage.setItem('old:updatedOfflineTrns',
           updatedOfflineTrns
             ? { [formatedTrn.id]: formatedTrn, ...updatedOfflineTrns }
             : { [formatedTrn.id]: formatedTrn }
         )
 
-        const localTrns = await localforage.getItem('trns')
-        await localforage.setItem('trns',
+        const localTrns = await localforage.getItem('old:trns')
+        await localforage.setItem('old:trns',
           localTrns && localTrns.length
             ? [formatedTrnForStore, ...localTrns.filter(trnId => trnId !== formatedTrnForStore.id)]
             : [formatedTrnForStore]
@@ -183,9 +183,9 @@ export default {
         const trnRef = db.ref(`users/${rootState.user.user.uid}/trns/${id}`)
         await trnRef.remove()
 
-        const deletedOfflineTrns = await localforage.getItem('deletedOfflineTrns')
+        const deletedOfflineTrns = await localforage.getItem('old:deletedOfflineTrns')
         if (deletedOfflineTrns && deletedOfflineTrns.length) {
-          await localforage.setItem('deletedOfflineTrns',
+          await localforage.setItem('old:deletedOfflineTrns',
             deletedOfflineTrns.filter(trnId => trnId !== id)
           )
         }
@@ -197,16 +197,16 @@ export default {
       // Offline
       if (!rootState.isConnected) {
         console.log('offline')
-        const deletedOfflineTrns = await localforage.getItem('deletedOfflineTrns')
-        await localforage.setItem('deletedOfflineTrns',
+        const deletedOfflineTrns = await localforage.getItem('old:deletedOfflineTrns')
+        await localforage.setItem('old:deletedOfflineTrns',
           (deletedOfflineTrns && deletedOfflineTrns.length)
             ? [id, ...deletedOfflineTrns]
             : [id]
         )
 
-        const localTrns = await localforage.getItem('trns')
+        const localTrns = await localforage.getItem('old:trns')
         if (localTrns && localTrns.length) {
-          await localforage.setItem('trns',
+          await localforage.setItem('old:trns',
             localTrns.filter(trn => trn.id !== id)
           )
         }
