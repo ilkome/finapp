@@ -94,7 +94,6 @@ export default {
   computed: {
     ...mapGetters(['accounts']),
     editedTrn() {
-      console.log('editedTrn')
       return this.$store.state.trnForm.updateTrnId
     }
   },

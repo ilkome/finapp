@@ -48,7 +48,7 @@
 
           .input
             label.checkbox
-              input.checkbox__value(
+              input.checkbox__input(
                 v-model="values.showStat"
                 type="checkbox"
                 name="showStat"
