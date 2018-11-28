@@ -1,0 +1,40 @@
+.body
+  // Notification
+  --noti-color var(--c-white)
+  --noti-default-background #44A4FC
+  --noti-default-border #187FE7
+  --noti-error-background #E54D42
+  --noti-error-border #B82E24
+  --noti-success-background #68CD86
+  --noti-success-border #42A85F
+  --noti-warm-background #ffb648
+  --noti-warm-border #f48a06
+
+
+.notification-wrapper
+  .notification
+    min-width 100%
+    margin 0
+    margin-bottom $m6
+    padding $m7
+    color var(--noti-color)
+    typo-notification()
+    border-color var(--noti-success-border)
+    background var(--noti-default-background)
+    border-color var(--noti-default-border)
+
+    &.warn
+      background var(--noti-warm-background)
+      border-color var(--noti-warm-border)
+
+    &.error
+      background var(--noti-error-background)
+      border-color var(--noti-error-border)
+
+    &.success
+      background var(--noti-success-background)
+      border-color var(--noti-success-border)
+
+    &-title
+      margin-bottom $m6
+      typo-notification-title()

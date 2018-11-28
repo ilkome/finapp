@@ -1,0 +1,43 @@
+.amount
+  typo-money()
+
+  @media $media-laptop
+    font-size 16px
+
+  &._big
+    font-size 22px
+    font-weight 600
+
+  &._small
+    font-size 14px
+    font-weight 600
+
+  &__wrap
+    display flex
+    flex-flow row nowrap
+    justify-content flex-end
+    align-items flex-end
+
+    ^[0]._center &
+      justify-content center
+
+  &._expenses
+    color var(--c-expenses-1)
+
+  &._incomes
+    color var(--c-incomes-1)
+
+  &__price
+    &:first-child
+      margin-right $m3
+
+    &:last-child
+      margin-left $m3
+
+  &__symbol
+    font-primary()
+    font-size 14px
+    font-weight normal
+
+    ^[0]._small &
+      font-size 11px

@@ -1,0 +1,48 @@
+{
+  "name": "finapp",
+  "version": "2.0.0",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "dev": "vue-cli-service serve",
+    "test:unit": "vue-cli-service test:unit",
+    "build-upload": "npm run build && npm run upload",
+    "build-upload-min": "npm run build && npm run upload-min",
+    "upload": "NODE_ENV=production node_modules/gulp/bin/gulp.js upload",
+    "upload-min": "NODE_ENV=production node_modules/gulp/bin/gulp.js upload-min"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "firebase": "^5.4.2",
+    "highcharts": "^6.1.3",
+    "highcharts-vue": "^1.2.0",
+    "localforage": "^1.7.2",
+    "lodash": "^4.17.10",
+    "mathjs": "^5.1.1",
+    "moment": "^2.22.2",
+    "register-service-worker": "^1.5.2",
+    "style-loader": "^0.23.0",
+    "stylus-loader": "^3.0.2",
+    "swiper": "^4.3.5",
+    "vue": "^2.5.17",
+    "vue-focus": "^2.1.0",
+    "vue-notification": "^1.3.13",
+    "vuejs-datepicker": "^1.5.3",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.0.1",
+    "@vue/cli-plugin-eslint": "^3.0.1",
+    "@vue/cli-plugin-pwa": "^3.0.1",
+    "@vue/cli-plugin-unit-jest": "^3.0.1",
+    "@vue/cli-service": "^3.0.1",
+    "@vue/eslint-config-standard": "^3.0.1",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.8",
+    "pug": "^2.0.3",
+    "pug-plain-loader": "^1.0.0",
+    "stylus": "^0.54.5",
+    "vinyl-ftp": "^0.6.1",
+    "vue-template-compiler": "^2.5.17"
+  }
+}

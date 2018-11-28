@@ -1,0 +1,21 @@
+.themeChanger
+  display flex
+  align-items center
+  padding $m7
+  border-radius 3px
+  border 1px solid transparent
+  color var(--c-main)
+
+  @media $media-phone
+    &:active
+      border-color var(--c-red-1)
+
+  @media $media-laptop
+    &:hover
+      cursor pointer
+      border-color var(--c-red-1)
+
+  &__icon
+    margin-right $m5
+    font-size 18px
+    opacity .8

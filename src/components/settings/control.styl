@@ -1,0 +1,25 @@
+.control
+  display flex
+  align-items center
+  padding 0 $m8
+  width 100%
+  margin-top -1px
+
+  &:active
+    background var(--c-bg-6)
+
+  &__icon
+    width 38px
+    font-size $font-size-icon
+    color var(--c-font-4)
+
+  &__text
+    flex-grow 1
+    padding $m8 0
+    border-bottom 1px solid var(--c-bg-6)
+
+    ^[0]:active &
+      border-bottom-color transparent
+
+    ^[0]:last-child &
+      border-bottom 0

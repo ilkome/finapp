@@ -1,0 +1,61 @@
+.walletsList
+  margin-bottom 0
+
+  &__title
+    padding $m9 $m7
+    padding-top 0
+    typo-money()
+    font-size 20px
+    letter-spacing 1.4px
+    color var(--c-font-4)
+
+    @media $media-laptop
+     padding $m5 40px
+     padding-top 0
+     margin-left -40px
+     margin-right -40px
+     font-size 20px
+     letter-spacing 2px
+
+  &__toogle
+    opacity .6
+    margin-top -1px
+    margin-left $m7
+    margin-right $m7
+    padding $m7 0
+    font-size 13px
+    color var(--c-font-4)
+    border 1px solid transparent
+
+    @media $media-phone
+      text-align center
+      border-top 1px solid var(--c-bg-6)
+
+    @media $media-laptop
+      padding $m6 0
+
+    &:hover
+      cursor pointer
+
+      @media $media-laptop
+        color var(--c-font-2)
+
+.walletsWidget
+  z-index 2
+  position relative
+  overflow hidden
+  display flex
+
+.walletsTiles
+  display grid
+  grid-template-columns repeat(3, 1fr)
+  grid-column-gap $m6
+  grid-row-gap $m6
+  padding 0 $m7
+
+.walletsLine
+  scrollbar()
+  display flex
+  overflow hidden
+  overflow-x auto
+  padding 0 $m7

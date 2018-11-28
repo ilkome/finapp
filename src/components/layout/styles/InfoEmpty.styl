@@ -1,0 +1,29 @@
+.emptyInfo
+  display flex
+  flex-flow row wrap
+  align-items center
+  justify-content center
+  min-height 50vh
+
+  &__wrap
+    flex-grow 1
+    display flex
+    flex-flow column nowrap
+    align-items center
+
+  &__logo
+    margin-bottom 32px
+
+  &__image
+    margin-bottom 32px
+    font-size 66px
+    color var(--c-incomes-1)
+
+    @media $media-laptop
+      font-size @font-size * 1.5
+
+  &__text
+    margin-bottom $m8
+
+    &:last-child
+      margin-bottom 0

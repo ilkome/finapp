@@ -1,0 +1,147 @@
+.walletItem
+  position relative
+  padding 0 $m7
+  padding-top $m6
+  margin-top -1px
+
+  @media $media-laptop
+    padding 0 $m8
+    padding-top $m6
+
+  &:active
+    background var(--c-bg-6)
+
+  &:hover
+    @media $media-laptop
+      background var(--c-bg-6)
+
+  &__grid
+    display grid
+    grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
+    grid-template-rows repeat(2, 1fr)
+    grid-column-gap $m9
+
+    @media $media-laptop
+      grid-column-gap $m8
+
+  &__amount
+    grid-column 3 / 4
+    grid-row 1 / 3
+    align-self center
+    justify-self end
+
+  &__icon
+    grid-column 1 / 2
+    grid-row 1 / -1
+    align-self center
+
+    @media $media-laptop
+      .icon
+        width 24px
+        height 24px
+
+      .icon__abbr
+        font-size 11px
+
+  &__line
+    grid-column 2 / 4
+    grid-row -1 / -1
+    padding-bottom $m6
+    border-bottom 1px solid var(--c-bg-6)
+
+    @media $media-laptop
+      padding-bottom $m6
+
+    ^[0]:last-child &
+      border-color transparent
+
+  &__name
+    grid-column 2 / 3
+    grid-row 1 / 3
+    align-self center
+    color var(--c-font-4)
+    fs-m()
+
+.walletItemWidget
+  flex 1 1 0
+  padding $m7 $m7
+  text-align right
+
+  &__name
+    padding-bottom $m4
+    font-size 14px
+    color var(--c-font-1)
+
+  &__amount
+    .amount
+      font-size 16px
+      color var(--c-font-1)
+
+    .amount__symbol
+      margin-top $m1
+
+    .amount__wrap._small
+      display none
+
+.walletItemTile
+  overflow hidden
+  position relative
+  display flex
+  flex-flow column nowrap
+  align-items flex-end
+  justify-content center
+  min-height 61px
+  padding $m7
+  color var(--c-font-1)
+  border-radius $m3
+
+  @media $media-laptop
+    min-height 66px
+
+  &__name
+    min-height 16px
+    overflow hidden
+    text-overflow ellipsis
+    white-space nowrap
+    padding-bottom $m5
+    fs-m()
+
+  .amount
+    color var(--c-font-1)
+    opacity .8
+
+  .amount__wrap._small
+    display none
+
+.walletItemLine
+  flex 1 1
+  display flex
+  flex-flow column nowrap
+  align-items flex-end
+  justify-content center
+  min-height 91px
+  padding $m7
+  margin-right $m6
+  color var(--c-font-1)
+  border-radius $m3
+
+  &:last-child
+    margin-right 0
+
+  @media $media-laptop
+    min-height 66px
+
+  &__name
+    min-height 16px
+    overflow hidden
+    text-overflow ellipsis
+    white-space nowrap
+    padding-bottom $m5
+    fs-m()
+
+  .amount
+    color var(--c-font-1)
+    opacity .8
+
+  .amount__wrap._small
+    display none

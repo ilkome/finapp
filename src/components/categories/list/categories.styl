@@ -1,0 +1,39 @@
+.categories
+  padding-bottom $m7
+
+  &._noPadding
+    padding 0
+
+  &._noPaddingBottom
+    padding 0
+
+  &__title
+    padding 0 $m7
+    padding-bottom $m7
+    color var(--c-font-4)
+    font-size 22px
+
+  &__list
+    display grid
+    grid-template-columns repeat(3, 1fr)
+    grid-column-gap $m6
+    grid-row-gap $m6
+    padding 0 $m7
+
+    ^[0]._noPadding &
+      padding 0
+
+    &:last-child
+      padding-bottom 0
+
+    ^[0]._borderTop &
+      margin-top $m7
+      padding-top $m7
+      border-top 1px solid var(--c-bg-6)
+
+  &__desc
+    padding $m7
+    padding-bottom 0
+    font-size 12px
+    color var(--c-font-4)
+    text-align center

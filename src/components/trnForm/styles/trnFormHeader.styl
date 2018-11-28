@@ -1,0 +1,55 @@
+.trnFormHeader
+  display flex
+  justify-content space-between
+  min-height 75px
+  background var(--c-bg-8)
+
+  @media $media-laptop
+    min-height 81px
+
+  &__item
+    position relative
+    display flex
+    align-items center
+    flex-grow 1
+    width 50%
+    padding $m8 $m8
+    color var(--c-bg-5)
+    //border-bottom 1px solid var(--c-bg-5)
+    //border-left 1px solid transparent
+
+    @media $media-laptop
+      min-height 81px
+
+    &:last-child
+      border-left-color var(--c-bg-5)
+
+  &__icon
+    z-index 2
+    position absolute
+    right $m7
+    top - (48/2)px
+
+  &__total
+    padding-top $m5
+
+    .amount__wrap
+      justify-content flex-start
+      color var(--c-font-1)
+
+    .amount__wrap._small
+      display none
+
+  &__name
+    font-size 18px
+    color var(--c-font-1)
+
+  &__transfer
+    display flex
+    align-items center
+    justify-content center
+    padding 0 $m6
+    font-size 22px
+    border 1px solid var(--c-bg-5)
+    border-right-color transparent
+    border-top-color transparent

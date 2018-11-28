@@ -1,0 +1,63 @@
+input, textarea
+  font-primary()
+  font-size 16px
+
+.inputText
+  margin-bottom $m9
+
+  &:last-child
+    margin-bottom 0
+
+  &__value
+    width 100% !important
+    padding-bottom $m5
+    font-size 18px
+    color var(--c-font-2)
+    background transparent
+    border 0
+
+    &._color
+      width 100px
+      min-height 60px
+
+  &__label
+    text-align left
+    opacity .6
+    padding-top $m5
+    font-size 10px
+    font-weight 500
+    color var(--c-font-4)
+    text-transform uppercase
+    border-top 1px solid var(--c-bg-6)
+
+.colors
+  display flex
+  flex-flow row wrap
+  margin-bottom $m5
+
+.colorItem
+  flex 0 1 45px
+  width 45px
+  height 45px
+  border 2px solid transparent
+
+  &._active
+    border 3px solid var(--c-bg-1)
+
+.inputIcons
+  overflow hidden
+  display flex
+  flex-flow row wrap
+  margin-bottom $m5
+
+  &__item
+    flex 1
+    display flex
+    align-items center
+    justify-content center
+    padding $m6
+    font-size 30px
+    border 2px solid transparent
+
+    &._active
+      border-color var(--c-bg-2)

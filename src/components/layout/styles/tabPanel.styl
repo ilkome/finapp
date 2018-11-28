@@ -1,0 +1,23 @@
+.tabPanel
+  display grid
+  grid-template-columns 1fr
+  grid-template-rows minmax(auto, auto) 1fr minmax(auto, auto)
+  height 100%
+
+  &._disableFix
+    display block
+
+.tabPanel__fix
+  @media $media-phone
+    overflow hidden
+
+.tabPanel__scroll
+  scrollbar()
+  overflow hidden
+  overflow-y auto
+
+.tabPanel._disableFix
+  .tabPanel__scroll
+    display block
+    height auto
+    overflow hidden

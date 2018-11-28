@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "src"
+		},
+		{
+			"path": "src/components"
+		}
+	],
+	"settings": {}
+}

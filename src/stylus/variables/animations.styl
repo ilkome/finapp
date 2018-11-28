@@ -1,0 +1,17 @@
+$transition-time = 300ms
+$transition-style = cubic-bezier(0.17, 0.04, 0.03, 1)
+
+anim()
+  transition $transition-time $transition-style
+
+anim-all($time = $transition-time)
+  transition all $time $transition-style
+
+anim-background($time = $transition-time)
+  transition background $time $transition-style
+
+anim-opacity($time = $transition-time)
+  transition opacity $time $transition-style
+
+anim-none()
+  transition none

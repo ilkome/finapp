@@ -1,0 +1,68 @@
+.fadeIn
+  &-enter-active
+  &-leave-active
+    opacity 1
+    transition all 150ms ease-out
+
+    &._slow
+      transition all 600ms ease
+
+  &-enter
+  &-leave-to
+    opacity 0
+
+.fadeInSlow
+  &-enter-active
+  &-leave-active
+    opacity 1
+    transform translate(0, 0)
+    transition opacity 600ms ease-out, transform 500ms ease-out
+
+  &-enter
+  &-leave-to
+    opacity 0
+    transform translate(0, 10px)
+
+.slide
+  &-enter-active
+  &-leave-active
+    opacity 1
+    transform translate(0, 0)
+    transition opacity 100ms ease-out, transform 200ms ease-out
+
+  &-enter
+  &-leave-to
+    opacity 0
+    transform translate(0, 10px)
+    transition opacity 100ms ease-out, transform 200ms ease-out
+
+  &-leave-to
+    transform translate(0, 100px)
+
+.slide2
+  &-enter-active
+  &-leave-active
+    opacity 1
+    transform translate(0, 0)
+    transition opacity 100ms ease-out, transform 150ms ease-out
+
+  &-enter
+  &-leave-to
+    opacity 0
+    transform translate(0, 5px)
+    transition opacity 100ms ease-out, transform 150ms ease-out
+
+// Tabs
+.animation-tab
+  &-enter-active
+  &-leave-active
+    transform translate(0, 0)
+    transition opacity 150ms ease-in, transform 200ms ease-out
+
+  &-enter
+    transform translate(0, 5px)
+
+  &-leave-to
+  &-leave-active
+    visibility hidden
+    transform translate(0, 0)

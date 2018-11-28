@@ -1,0 +1,101 @@
+fs-m()
+  font-size 16px
+  @media $media-laptop
+    font-size 14px
+
+// Fonts
+font-primary()
+  font-family 'Roboto', sans-serif
+
+font-secondary()
+  font-family 'Unica One', 'Roboto', sans-serif
+
+font-medium()
+  font-weight 500
+
+// Sizes
+$font-size-icon = 22px
+$font-size-nb = 28px
+$font-size-biggest = 38px
+
+// Types
+typo-appName()
+  font-primary()
+  color var(--c-font-2)
+  font-size $font-size-biggest
+  font-weight 500
+  line-height $font-size-biggest
+
+typo-btn($color = var(--c-font-2))
+  color $color
+  font-size 16px
+  font-weight bold
+
+typo-money()
+  color var(--c-font-2)
+  font-size 18px
+  font-weight bold
+  white-space nowrap
+  text-transform uppercase
+  font-secondary()
+
+typo-notification()
+  color var(--c-font-1)
+  font-size 14px
+  line-height 18px
+
+typo-notification-title()
+  typo-notification()
+  font-weight 600
+
+typo-small-upper($fs = 11px, $color = var(--c-font-4))
+  color $color
+  font-size $fs
+  font-weight 500
+  letter-spacing .5px
+  text-transform uppercase
+  font-secondary()
+
+typo-header()
+  margin 0
+  color var(--c-font-2)
+  font-size $font-size-nb
+  font-weight 600
+  letter-spacing 1px
+  text-transform uppercase
+  font-secondary()
+
+typo-header-normal()
+  margin 0
+  color var(--c-font-2)
+  font-size 24px
+  font-weight 500
+  text-transform uppercase
+  font-secondary()
+
+
+font-header-1()
+  color var(--c-font-2)
+  font-size 18px
+  font-weight 600
+  white-space nowrap
+  text-transform uppercase
+  letter-spacing .5px
+  font-secondary()
+
+font-header-2()
+  font-header-1()
+  font-size 22px
+  font-weight 600
+  letter-spacing .5px
+
+font-header-3()
+  font-header-1()
+  font-size 34px
+  font-weight 500
+  letter-spacing 0
+
+font-header-4()
+  font-header-1()
+  font-size 22px
+  letter-spacing 1.2px
