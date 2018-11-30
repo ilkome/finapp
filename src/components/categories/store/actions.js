@@ -14,5 +14,10 @@ export default {
   setCategories ({ commit }, items) {
     commit('setCategories', items)
     localforage.setItem('next.categories', items)
+  },
+
+  unsubcribeCategories ({ rootState }) {
+    const uid = rootState.user.user.uid
+    db.ref(`users/${uid}/categories`).off()
   }
 }

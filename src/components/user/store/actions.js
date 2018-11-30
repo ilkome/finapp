@@ -15,6 +15,8 @@ export default {
     dispatch('setUser', user)
     dispatch('saveUserInfo', user)
     dispatch('saveLastLoginDate', user)
+    dispatch('saveUserInfo', user)
+    dispatch('saveLastLoginDate', user)
   },
 
   setUser ({ commit }, user) {
@@ -22,9 +24,12 @@ export default {
     localforage.setItem('next.user', user)
   },
 
-  signOut ({ commit, dispatch }) {
+  async signOut ({ rootState, commit, dispatch }) {
     commit('setAppStatus', 'login')
-    dispatch('setUser', null)
+    dispatch('unsubcribeCategories')
+    dispatch('unsubcribeTrns')
+    dispatch('unsubcribeWallets')
+    dispatch('clearUserData')
     firebase.auth().signOut()
   },
 

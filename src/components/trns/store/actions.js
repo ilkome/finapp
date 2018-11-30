@@ -59,19 +59,24 @@ export default {
   },
 
   // init
-  initTrns ({ rootState, dispatch }) {
+  initTrns ({ rootState, dispatch, commit }) {
     const uid = rootState.user.user.uid
 
     db.ref(`users/${uid}/trns`).on('value', snapshot => {
       const items = Object.freeze(snapshot.val())
       dispatch('setTrns', items)
+      commit('setAppStatus', 'ready')
     }, e => console.error(e))
   },
 
   setTrns ({ commit }, items) {
     commit('setTrns', items)
-    commit('setAppStatus', 'ready')
     localforage.setItem('next.trns', items)
+  },
+
+  unsubcribeTrns ({ rootState }) {
+    const uid = rootState.user.user.uid
+    db.ref(`users/${uid}/trns`).off()
   },
 
   async iniOfflineTrns ({ dispatch }) {

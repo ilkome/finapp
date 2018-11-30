@@ -1,14 +1,6 @@
 import localforage from 'localforage'
 import { app } from '@/firebase'
 
-async function clearUserData ({ dispatch }) {
-  dispatch('setActiveTab', 'stat')
-  dispatch('setUser', null)
-  dispatch('setCategories', {})
-  dispatch('setWallets', {})
-  dispatch('setTrns', {})
-}
-
 export default {
   async initApp ({ rootState, commit, dispatch }) {
     await dispatch('initAppFromCache')
@@ -17,12 +9,14 @@ export default {
     app.auth().onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          if (!rootState.user.user.uid || rootState.user.user.uid !== user.uid) await clearUserData({ dispatch })
-          dispatch('initUser', user)
-          dispatch('initCurrencies')
-          dispatch('initCategories')
-          dispatch('initWallets')
-          dispatch('initTrns')
+          if (rootState.user.user.uid && rootState.user.user.uid !== user.uid) {
+            dispatch('clearUserData')
+          }
+          await dispatch('initUser', user)
+          await dispatch('initCurrencies')
+          await dispatch('initCategories')
+          await dispatch('initWallets')
+          await dispatch('initTrns')
         } catch (e) {
           console.error(e)
         }
@@ -65,5 +59,14 @@ export default {
     if (categories && user && trns && wallets) {
       commit('setAppStatus', 'ready')
     }
+  },
+
+  async clearUserData ({ commit, dispatch }) {
+    commit('setAppStatus', 'loading')
+    dispatch('setActiveTab', 'stat')
+    dispatch('setUser', null)
+    dispatch('setCategories', null)
+    dispatch('setWallets', null)
+    dispatch('setTrns', null)
   }
 }

@@ -14,5 +14,10 @@ export default {
   setWallets ({ commit }, items) {
     commit('setWallets', items)
     localforage.setItem('next.wallets', items)
+  },
+
+  unsubcribeWallets ({ rootState }) {
+    const uid = rootState.user.user.uid
+    db.ref(`users/${uid}/accounts`).off()
   }
 }
