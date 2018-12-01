@@ -20,44 +20,44 @@ export default {
 </script>
 
 <template lang="pug">
-.welcome
-  .login__themeChanger(v-if="!showWalletForm && !showCategoryForm")
-    .themeChanger(@click="$store.dispatch('changeTheme')")
-      .themeChanger__icon: .mdi.mdi-palette
-      .themeChanger__text Change theme
-
-  .welcome__content
-    //- wallet
+.tabs
+  //- wallet
+  transition(name="fadeInSlow")
     template(v-if="!showWalletForm && !$store.getters.hasWallets")
-      .welcome__header
-        .welcome__header__title Welcome to Finapp
-        .welcome__header__desc Powerfull personal finance application
-      .welcome__text Let's start with create first Wallet
-      .welcome__btn
-        Button._blue(
-          title="Create wallet"
-          v-on:onClick="showWalletForm = true")
+      .tab
+        .tab__content
+          .welcome__header
+            .welcome__header__title Welcome to Finapp
+            .welcome__header__desc Powerfull personal finance application
+          .welcome__text Let's start with create first Wallet
+          .welcome__btn
+            Button._blue(
+              title="Create wallet"
+              v-on:onClick="showWalletForm = true")
 
-    //- category
-    template(v-else-if="!showWalletForm && !showCategoryForm && !$store.getters.hasCategories")
-      .welcome__header
-        .welcome__header__title Welcome to Finapp
-        .welcome__header__desc Powerfull personal finance application
-      .welcome__text Great! Now Let's create first category
-      .welcome__btn
-        Button._blue(
-          title="Create category"
-          v-on:onClick="showCategoryForm = true")
+  //- category
+  transition(name="fadeInSlow")
+    template(v-if="!showWalletForm && !showCategoryForm && $store.getters.hasWallets && !$store.getters.hasCategories")
+      .tab
+        .tab__content
+          .welcome__icon: .mdi.mdi-chart-bubble
+          .welcome__text Great! Now Let's create first category
+          .welcome__btn
+            Button._blue(
+              title="Create category"
+              v-on:onClick="showCategoryForm = true")
 
-    transition(name="animation-tab")
-      WalletForm(
-        v-if="showWalletForm"
-        v-on:callback="showWalletForm = false")
+  transition(name="fadeInSlow")
+    .tab(v-if="showWalletForm")
+      .tab__content
+        WalletForm(
+          v-on:callback="showWalletForm = false")
 
-    transition(name="animation-tab")
-      CategoryForm(
-        v-if="showCategoryForm"
-        v-on:callback="showCategoryForm = false")
+  transition(name="fadeInSlow")
+    .tab(v-if="showCategoryForm")
+      .tab__content
+        CategoryForm(
+          v-on:callback="showCategoryForm = false")
 
   a(href="https://ilko.me").welcome__copy.login__copy
     | Made with
@@ -67,18 +67,40 @@ export default {
 
 <style lang="stylus" scoped>
 @import "~@/stylus/variables/margins"
+@import "~@/stylus/variables/flex"
 @import "~@/stylus/variables/media"
 @import "~@/stylus/variables/fonts"
+@import "~@/stylus/variables/scrollbar"
+
+.tabs
+  overflow hidden
+  position absolute
+  width 100%
+  height 100%
+
+.tab
+  display grid
+  overflow-x hidden
+  overflow-y scroll
+  scrollbar()
+  position absolute
+  left 0
+  top 0
+  width 100%
+  height 100%
+  padding-bottom $m10
+
+  &__content
+    display-flex(column, grow)
+    align-self center
+    margin 0 auto
+    padding $m9
+    padding-bottom 100px
+
+    .component
+      padding 0
 
 .welcome
-  display flex
-  flex-flow column nowrap
-  flex-grow 1
-  align-items center
-  justify-content center
-  margin 0 auto
-  max-width 460px
-  min-height 100%
 
   .login__copy
     color var(--c-font-4)
@@ -86,29 +108,25 @@ export default {
   .login__heart
     opacity .8
 
-  &__content
-    display flex
-    flex-flow column
-    justify-content center
-    flex-grow 1
-    width 100%
-    min-height 100%
-    text-align center
-    padding $m7 $m9
+  &__themeChanger
+    padding-top $m9
 
   &__copy
-    position relative
+    margin 0
+    padding $m9 0
+    bottom 0
+    background var(--c-bg-1)
 
   &__header
     padding-bottom $mb2
 
     &__title
-      font-size 26px
+      font-size 28px
       font-weight 500
       letter-spacing 1px
 
       @media $media-laptop
-        font-size 36px
+        font-size 28px
         letter-spacing 3px
 
     &__desc
@@ -119,6 +137,15 @@ export default {
       @media $media-laptop
         padding-top $m7
         font-size 14px
+
+  &__icon
+    padding-bottom $m5
+    text-align center
+    color var(--c-font-4)
+    font-size 96px
+
+    @media $media-laptop
+      padding-bottom $m7
 
   &__text
     padding-bottom $m9

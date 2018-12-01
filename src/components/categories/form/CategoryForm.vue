@@ -157,11 +157,11 @@ export default {
 
 <template lang="pug">
 .component
-  h1.component__title
-    template(v-if="!categoryId") Create new category
-    template(v-else) Edit category
-
   .form
+    h1.component__title
+      template(v-if="!categoryId") Create new category
+      template(v-else) Edit category
+
     .form-line._text
       .inputText
         input(
@@ -308,12 +308,9 @@ export default {
   &__title
     padding-bottom $m10
 
-    @media $media-phone
-      text-align center
-
 .form
   @media $media-laptop
-    max-width 320px
+    max-width 380px
 
 .form__actions
   @media $media-phone
@@ -325,6 +322,11 @@ export default {
   grid-column-gap $m9
   grid-row-gap $m9
   padding-bottom $m9
+
+  @media $media-laptop
+    grid-column-gap $m10
+    grid-row-gap $m10
+    padding-bottom $m10
 
   &__i._full
     grid-column 1 / -1

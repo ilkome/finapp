@@ -129,6 +129,7 @@ export default {
     width 100%
     padding $m7 50px
     font-size 12px
+    border-left 2px solid var(-c-expenses)
 
   &__button
     position relative

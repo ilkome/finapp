@@ -136,29 +136,22 @@ export default {
   padding-top $m5
 
 .tabs
+  overflow hidden
   position relative
   width 100%
-  display flex
-  flex-flow column
-  min-height 100vh
+  height 100%
   background var(--c-bg-2)
 
 .tab
+  overflow-x hidden
+  overflow-y scroll
+  scrollbar()
   position absolute
   left 0
   top 0
   width 100%
-  overflow-y scroll
-  scrollbar()
   height calc(100vh - 120px)
 
   &._padding-top
     padding-top $m7
-
-  &__scroll
-    position relative
-    flex-flow column wrap
-    flex-grow 1
-    padding-bottom $m8
-    min-height 50vh
 </style>
