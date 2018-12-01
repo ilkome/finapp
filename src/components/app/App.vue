@@ -87,6 +87,7 @@ export default {
   notifications(
     group="main"
     :position="$store.state.ui.mobile ? 'top right' : 'top left'"
+    :width="$store.state.ui.mobile ? '100%' : '320'"
   )
 </template>
 
