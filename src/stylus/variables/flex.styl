@@ -1,0 +1,10 @@
+display-flex($flow = null, $grow = null)
+  display flex
+
+  if $flow == 'column'
+    flex-flow column nowrap
+  else
+    flex-flow row nowrap
+
+  if $grow == 'grow'
+    flex-grow 1
