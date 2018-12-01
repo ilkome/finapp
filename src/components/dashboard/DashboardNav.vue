@@ -14,8 +14,7 @@ export default {
 
   data () {
     return {
-      visibleContextMenu: false,
-      visiblePeriodMenu: false
+      visibleContextMenu: false
     }
   }
 }
@@ -27,25 +26,16 @@ export default {
     .period-nav__item(@click="$store.dispatch('setPeriod', $store.state.filter.period)")
       .date: Date
 
-  .period-nav__group._center
-    .period-nav__item
-      .d-button-cirle._nav(
-        @click="$store.dispatch('setPeriodPrev')"
-        :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isFirstPeriodSelected }"
-      ): .mdi.mdi-chevron-left
-
-    .period-nav__item
-      .d-button-cirle._nav(
-        @click="$store.commit('toogleDashboardTrnsHistory')"
-        :class="{ _active: $store.state.dashboard.showTrnsHistory }"
-      ): .mdi.mdi-history
-
+  .period-nav__group
+    ._align-right
       ContextMenu(
         :position="{ right: true, top: true }"
         :visible="visibleContextMenu"
         v-on:onClickOpener="visibleContextMenu = !visibleContextMenu")
         template(slot="opener")
-          .d-button-cirle._nav: .mdi.mdi-dots-horizontal
+          Dropdown(
+            :active="visibleContextMenu"
+            title="Customize")
         template(slot="content")
           ContextMenuItem(
             icon="mdi mdi-chart-bar-stacked"
@@ -59,58 +49,17 @@ export default {
             :checkValue="$store.state.ui.catsChart === 'visible'"
             v-on:onClick="$store.dispatch('toogleVisibleCatsChart')"
             v-on:onClose="visibleContextMenu = !visibleContextMenu")
+          ContextMenuItem(
+            icon="mdi mdi-chart-gantt"
+            title="Cats stat"
+            :checkValue="$store.state.ui.statItems === 'visible'"
+            v-on:onClick="$store.dispatch('toogleVisibilityStatItems')"
+            v-on:onClose="visibleContextMenu = !visibleContextMenu")
           .context-menu-sep
           ContextMenuItem(
             icon="mdi mdi-palette"
             title="Change theme"
             v-on:onClick="$store.dispatch('changeTheme')")
-    .period-nav__item
-      .d-button-cirle._nav(
-        @click="$store.dispatch('setPeriodNext')"
-        :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isLastPeriodSelected }"
-      ): .mdi.mdi-chevron-right
-
-  .period-nav__group
-    ._align-right
-      ContextMenu(
-        :position="{ right: true, top: true }"
-        :visible="visiblePeriodMenu"
-        v-on:onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
-        template(slot="opener")
-          Dropdown(
-            :active="visiblePeriodMenu"
-            :title="$store.state.filter.period")
-        template(slot="content")
-          ContextMenuItem(
-            icon="mdi mdi-weather-sunset-up"
-            title="Day"
-            :selected="$store.state.filter.period === 'day'"
-            v-on:onClick="$store.dispatch('setPeriod', 'day')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
-          ContextMenuItem(
-            icon="mdi mdi-calendar-week"
-            title="Week"
-            :selected="$store.state.filter.period === 'week'"
-            v-on:onClick="$store.dispatch('setPeriod', 'week')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
-          ContextMenuItem(
-            icon="mdi mdi-calendar"
-            title="Month"
-            :selected="$store.state.filter.period === 'month'"
-            v-on:onClick="$store.dispatch('setPeriod', 'month')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
-          ContextMenuItem(
-            icon="mdi mdi-calendar-star"
-            title="Year"
-            :selected="$store.state.filter.period === 'year'"
-            v-on:onClick="$store.dispatch('setPeriod', 'year')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
-          ContextMenuItem(
-            icon="mdi mdi-database"
-            title="Show all"
-            :selected="$store.state.filter.period === 'all'"
-            v-on:onClick="$store.dispatch('setPeriod', 'all')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
 </template>
 
 <style lang="stylus" scoped>
@@ -154,11 +103,6 @@ export default {
     display flex
     flex 1 1
     justify-content space-between
-    max-width 264px
-
-    &._center
-      max-width inherit
-      justify-content center
 
   &__item
     display flex

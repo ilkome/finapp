@@ -30,7 +30,7 @@ export default {
         .stat__chart(v-if="$store.state.ui.catsChart === 'visible'")
           PeriodCatsChart(type="expenses")
 
-        .stat__cats
+        .stat__cats(v-if="$store.state.ui.statItems === 'visible'")
           StatItem(
             v-for="categoryId in stat.expenses.categoriesIds"
             :biggest="stat.expenses.biggest"
@@ -49,7 +49,7 @@ export default {
         .stat__chart(v-if="$store.state.ui.catsChart === 'visible'")
           PeriodCatsChart(type="incomes")
 
-        .stat__cats
+        .stat__cats(v-if="$store.state.ui.statItems === 'visible'")
           StatItem(
             v-for="categoryId in stat.incomes.categoriesIds"
             :biggest="stat.incomes.biggest"
@@ -87,10 +87,9 @@ export default {
       grid-column-gap $mb2
 
   &__item
-    overflow hidden
     flex 1 1 450px
     padding 0 24px
-    padding-top $m10
+    padding-top $m9
 
   &__chart
     @media $media-laptop

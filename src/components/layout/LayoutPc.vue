@@ -10,7 +10,6 @@ import LayoutPcSidebar from '@/components/layout/LayoutPcSidebar'
 import Settings from '@/components/settings/Settings'
 import TrnForm from '@/components/trnForm/TrnForm'
 import TrnModal from '@/components/trns/modal/TrnModal'
-import TrnsList from '@/components/trns/list/TrnsList'
 import WalletForm from '@/components/wallets/form/WalletForm'
 import WalletModal from '@/components/wallets/modal/WalletModal'
 import WalletsList from '@/components/wallets/list/WalletsList'
@@ -28,7 +27,6 @@ export default {
     Settings,
     TrnForm,
     TrnModal,
-    TrnsList,
     WalletForm,
     WalletModal,
     WalletsList
@@ -70,10 +68,6 @@ export default {
 
     .layout__item
       Dashboard
-        transition(name="slide")
-          .trnsHistory(v-if="$store.state.dashboard.showTrnsHistory")
-            .dashboard__title History
-            TrnsList
 
       LayoutPcTab(:show="activeTab === 'categories'")
         .dashboard__title Categories
@@ -168,17 +162,6 @@ export default {
   position absolute
   width 100%
   height 100%
-
-.trnsHistory
-  padding 0 $mb2
-  padding-top $mb2
-  padding-bottom $mn2
-
-  .trnsList
-    display grid
-    grid-template-columns repeat(3, 1fr)
-    grid-column-gap $m7
-    grid-row-gap $m7
 
 .createTrnBtn
   z-index 5

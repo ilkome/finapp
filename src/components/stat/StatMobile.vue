@@ -227,6 +227,11 @@ export default {
           :checkValue="$store.state.ui.statItems === 'visible'"
           v-on:onClick="$store.dispatch('toogleVisibilityStatItems')"
           v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
+        .context-menu-sep
+        ContextMenuItem(
+          icon="mdi mdi-palette"
+          title="Change theme"
+          v-on:onClick="$store.dispatch('changeTheme')")
 </template>
 
 <style lang="stylus" scoped>
