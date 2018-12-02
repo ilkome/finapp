@@ -74,7 +74,6 @@ export default {
 
     handleSubmit () {
       if (this.validateForm()) {
-        const uid = this.$store.state.user.user.uid
         const id = this.walletId || createId()
 
         const walletsValues = {
@@ -82,11 +81,10 @@ export default {
           countTotal: this.wallet.countTotal,
           currency: this.wallet.currency,
           name: this.wallet.name,
-          order: parseInt(this.wallet.order) || 1
+          order: this.wallet.order
         }
 
-        db.ref(`users/${uid}/accounts/${id}`).set(walletsValues)
-
+        this.$store.dispatch('addWallet', { id, values: walletsValues })
         this.$store.commit('setWalletEditId', null)
         this.$store.dispatch('setActiveTab', 'wallets')
 

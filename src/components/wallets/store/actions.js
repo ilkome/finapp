@@ -2,6 +2,26 @@ import localforage from 'localforage'
 import { db } from '@/firebase'
 
 export default {
+  addWallet ({ dispatch, rootState, getters }, { id, values }) {
+    const uid = rootState.user.user.uid
+
+    const formatedValues = {
+      color: values.color,
+      countTotal: values.countTotal,
+      currency: values.currency,
+      name: values.name,
+      order: parseInt(values.order) || 1
+    }
+
+    // set default currency based on first created wallet
+    if (!getters.hasWallets) {
+      db.ref(`users/${uid}/settings/baseCurrency`).set(values.currency)
+      dispatch('initCurrencies')
+    }
+
+    db.ref(`users/${uid}/accounts/${id}`).set(formatedValues)
+  },
+
   initWallets ({ dispatch, rootState }) {
     const uid = rootState.user.user.uid
 

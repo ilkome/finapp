@@ -15,6 +15,13 @@ export default {
       showCategoryForm: false,
       showWalletForm: false
     }
+  },
+
+  methods: {
+    categoryCreatedCallback () {
+      this.showCategoryForm = false
+      this.$store.dispatch('setActiveTab', 'stat')
+    }
   }
 }
 </script>
@@ -57,7 +64,7 @@ export default {
     .tab(v-if="showCategoryForm")
       .tab__content
         CategoryForm(
-          v-on:callback="showCategoryForm = false")
+          v-on:callback="categoryCreatedCallback")
 
   a(href="https://ilko.me").welcome__copy.login__copy
     | Made with
@@ -101,7 +108,6 @@ export default {
       padding 0
 
 .welcome
-
   .login__copy
     color var(--c-font-4)
 
