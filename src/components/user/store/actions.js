@@ -15,8 +15,6 @@ export default {
     dispatch('setUser', user)
     dispatch('saveUserInfo', user)
     dispatch('saveLastLoginDate', user)
-    dispatch('saveUserInfo', user)
-    dispatch('saveLastLoginDate', user)
   },
 
   setUser ({ commit }, user) {
