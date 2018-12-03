@@ -80,7 +80,7 @@ export default {
   //- empty
   //------------------------------------------------
   EmptyData(
-    v-if="stat.incomes.categoriesIds.length === 0 && stat.expenses.categoriesIds.length === 0"
+    v-if="stat.incomes.categoriesIds.length === 0 && stat.expenses.categoriesIds.length === 0 && $store.getters.selectedTrnsIdsWithDate.length === 0"
     text="No stat for this period")
 
   //- history

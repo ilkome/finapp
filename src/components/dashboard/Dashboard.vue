@@ -4,6 +4,7 @@ import ContextMenuItem from '@/components/shared/contextMenu/ContextMenuItem'
 import Dropdown from '@/components/shared/dropdown/Dropdown'
 import DashboardFilter from '@/components/dashboard/DashboardFilter'
 import DashboardNav from '@/components/dashboard/DashboardNav'
+import EmptyData from '@/components/shared/emptyData/EmptyData'
 import StatChartsLine from '@/components/stat/StatChartsLine'
 import StatSummaryPc from '@/components/stat/StatSummaryPc'
 import StatPc from '@/components/stat/StatPc'
@@ -13,6 +14,7 @@ export default {
   components: {
     ContextMenu,
     ContextMenuItem,
+    EmptyData,
     Dropdown,
     DashboardFilter,
     DashboardNav,
@@ -108,13 +110,20 @@ export default {
         ): .mdi.mdi-chevron-right
 
   .statMain__content
-    transition(name="animation-tab")
-      .statMain__tab(v-show="!$store.state.dashboard.showTrnsHistory")
-        StatPc
+    //- empty
+    //------------------------------------------------
+    template(v-if="$store.getters.stat.incomes.categoriesIds.length === 0 && $store.getters.stat.expenses.categoriesIds.length === 0 && $store.getters.selectedTrnsIdsWithDate.length === 0")
+      EmptyData(text="No stat for this period")
 
-    transition(name="animation-tab")
-      .statMain__tab._trns(v-show="$store.state.dashboard.showTrnsHistory")
-        TrnsList
+    //- stat & history
+    template(v-else)
+      transition(name="animation-tab")
+        .statMain__tab(v-show="!$store.state.dashboard.showTrnsHistory")
+          StatPc
+
+      transition(name="animation-tab")
+        .statMain__tab._trns(v-show="$store.state.dashboard.showTrnsHistory")
+          TrnsList
 </template>
 
 <style lang="stylus" scoped>

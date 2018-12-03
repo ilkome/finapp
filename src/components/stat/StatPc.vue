@@ -1,13 +1,11 @@
 <script>
 import Amount from '@/components/amount/Amount'
-import EmptyData from '@/components/shared/emptyData/EmptyData'
 import StatItem from '@/components/stat/StatItem'
 import PeriodCatsChart from '@/components/stat/cats/PeriodCatsChart'
 
 export default {
   components: {
     Amount,
-    EmptyData,
     PeriodCatsChart,
     StatItem
   },
@@ -22,7 +20,7 @@ export default {
 
 <template lang="pug">
 .stat
-  .stat__content(v-if="stat.expenses.categoriesIds.length > 0 || stat.incomes.categoriesIds.length > 0")
+  .stat__content
     //- expenses
     //------------------------------------------------
     .stat__item
@@ -60,12 +58,6 @@ export default {
             :key="categoryId"
             :total="stat.categories[categoryId].incomes")
       .stat__empty(v-else) No incomes
-
-  //- empty
-  //------------------------------------------------
-  EmptyData(
-    v-else
-    text="No stat for this period")
 </template>
 
 <style lang="stylus" scoped>

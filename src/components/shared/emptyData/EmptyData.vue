@@ -11,7 +11,7 @@ export default {
 
 <template lang="pug">
 .empty
-  .empty__icon: .mdi.mdi-flask-empty-outline
+  .empty__icon: .mdi.mdi-cat
   .empty__text {{ text }}
 </template>
 
