@@ -73,6 +73,7 @@ npm run build
 ```
 
 ## Stay In Touch
+I would like to speak with you about Finapp. I'm interesting to work in interesting modern projects.
 - [Telegram](https://t.me/ilkome)
 - [VK](https://www.vk.com/ilkome)
 - [Facebook](https://www.facebook.com/ilkome)
