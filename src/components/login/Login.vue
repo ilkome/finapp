@@ -1,11 +1,15 @@
 <script>
 import { auth } from 'firebase/app'
 import AppName from '@/components/shared/appName/AppName'
+import Button from '@/components/shared/button/Button'
+import Copyright from '@/components/shared/copyright/Copyright'
 import Spiner from '@/components/shared/spiner/Spiner'
 
 export default {
   components: {
     AppName,
+    Button,
+    Copyright,
     Spiner
   },
 
@@ -44,32 +48,29 @@ export default {
 </script>
 
 <template lang="pug">
-.login
-  //- theme changer
-  .login__themeChanger
-    .themeChanger(@click="$store.dispatch('changeTheme')")
-      .themeChanger__icon: .mdi.mdi-palette
-      .themeChanger__text Change theme
+.tab
+  .themeChanger
+    Button(
+      icon="mdi mdi-palette"
+      title="Change theme"
+      v-on:onClick="$store.dispatch('changeTheme')")
 
-  .login__wrap
+  .tab__content
     AppName
 
-    //- button
-    .login__button(
+    .loginButton(
       @click.prevent="signInWithGoogle"
       :class="{ _loading: loading }")
       transition(name="fadeIn")
-        .login__button-spiner(v-if="loading"): Spiner
-      .login__button-text Login with Google
+        .loginButton__spiner(v-if="loading")
+          Spiner
+      .loginButton__text Login with Google
 
     transition(name="slide")
-      .login__error(v-if="error") {{ error }}
+      .loginError(v-if="error") {{ error }}
 
-  //- copy
-  a(href="https://ilko.me").login__copy
-    | Made with
-    .login__heart.mdi.mdi-heart
-    | by Ilya Komichev
+  .copyright
+    Copyright
 </template>
 
 <style lang="stylus" scoped>
@@ -77,104 +78,85 @@ export default {
 @import "~@/stylus/variables/fonts"
 @import "~@/stylus/variables/margins"
 @import "~@/stylus/variables/media"
+@import "~@/stylus/variables/scrollbar"
 
-.login
-  position relative
-  display flex
-  flex-flow column
+.tab
+  display grid
+  overflow-x hidden
+  overflow-y scroll
+  scrollbar()
+  position absolute
+  left 0
+  top 0
   width 100%
-  height 100vh
-  min-height 300px
-  align-items center
-  justify-content center
-  padding 0 $m7
+  height 100%
+  padding-bottom $m10
 
-  &__themeChanger
+  &__content
+    display-flex(column, grow)
+    align-self center
+    margin 0 auto
+    padding 100px $m9
+
+.themeChanger
+  position absolute
+  right $m7
+  top $m7
+
+  @media $media-laptop
+    right $m9
+    top $m9
+
+.loginButton
+  position relative
+  overflow hidden
+  cursor pointer
+  margin-top $mb1
+  padding $m7 $m9
+  typo-btn(var(--c-font-1))
+  background var(--c-red-1)
+  border-radius 3px
+  text-align center
+
+  @media $media-laptop
+    margin-top $mb2
+
+  &._loading
+    cursor default
+    background var(--c-red-2)
+
+  &__text
+    anim()
+    ^[0]._loading &
+      opacity 0
+
+  &__spiner
     position absolute
-    right $m7
-    top $m7
-
-  &__wrap
-    display flex
-    flex-flow column wrap
-    align-items center
-
-  &__copy
-    position fixed
+    left 0
+    top 0
+    width 100%
+    height 100%
     display flex
     align-items center
     justify-content center
-    left 0
-    bottom 0
-    width 100%
-    margin-top auto
-    padding $mn1
-    color var(--c-font-2)
-    text-decoration none
 
-    @media $media-laptop
-      bottom $mn2
+.loginError
+  position absolute
+  left 0
+  bottom 150px
+  width 100%
+  padding $m7 50px
+  font-size 12px
+  border-left 2px solid var(-c-expenses)
 
-  &__heart
-    display inline-flex
-    margin 0 $m5
-    color rgba(210, 0, 20, 1)
-    font-size $font-size-nb
-    animation heartbeat 3s ease-in-out infinite
+.copyright
+  position fixed
+  left 0
+  bottom 0
+  width 100%
+  padding-bottom $m7
+  background var(--c-bg-1)
 
-  &__error
-    position absolute
-    left 0
-    bottom 150px
-    width 100%
-    padding $m7 50px
-    font-size 12px
-    border-left 2px solid var(-c-expenses)
-
-  &__button
-    position relative
-    overflow hidden
-    cursor pointer
-    margin-top $mb1
-    padding $m7 $m9
-    typo-btn(var(--c-font-1))
-    background var(--c-red-1)
-    border-radius 3px
-
-    @media $media-laptop
-      margin-top $mb2
-
-    &._loading
-      cursor default
-      background var(--c-red-2)
-
-    &-text
-      anim()
-
-      ^[1]._loading &
-        opacity 0
-
-    &-spiner
-      position absolute
-      left 0
-      top 0
-      width 100%
-      height 100%
-      display flex
-      align-items center
-      justify-content center
-
-@keyframes heartbeat
-  0%
-    transform:scale(.75)
-  20%
-    transform:scale(1)
-  40%
-    transform:scale(.75)
-  60%
-    transform:scale(1.1)
-  80%
-    transform:scale(.75)
-  100%
-    transform:scale(.75)
+  @media $media-laptop
+    padding-bottom $m9
 </style>
