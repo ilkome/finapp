@@ -49,7 +49,7 @@ $ npm install
 ```
 - Go to the Project Overviw and click Add Firebase to your web app.
 - You need to replace config in app's directory `/src/firebase.js` with your properties.
-```
+``` bash
 apiKey: 'YOUR_CONFIG',
 authDomain: 'YOUR_CONFIG',
 databaseURL: 'YOUR_CONFIG',
@@ -62,13 +62,13 @@ messagingSenderId: 'YOUR_CONFIG'
 ## Development
 
 #### Compiles and hot-reloads
-```
+``` bash
 npm run dev
 ```
 
 ## Production
 #### Compiles and minifies for production
-```
+``` bash
 npm run build
 ```
 
