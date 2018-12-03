@@ -7,7 +7,10 @@ import mutations from './mutations'
 const state = {
   base: 'RUB',
   date: moment().valueOf(),
-  items: {}
+  items: {},
+  modal: {
+    show: false
+  }
 }
 
 export default {

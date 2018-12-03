@@ -11,5 +11,13 @@ export default {
     if (!isEqual(state.items, items)) {
       state.items = items
     }
+  },
+
+  showBaseCurrenciesModal (state) {
+    state.modal.show = true
+  },
+
+  hideBaseCurrenciesModal (state) {
+    state.modal.show = false
   }
 }

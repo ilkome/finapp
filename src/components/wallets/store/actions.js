@@ -15,8 +15,7 @@ export default {
 
     // set default currency based on first created wallet
     if (!getters.hasWallets) {
-      db.ref(`users/${uid}/settings/baseCurrency`).set(values.currency)
-      dispatch('initCurrencies')
+      dispatch('setBaseCurrency', values.currency)
     }
 
     db.ref(`users/${uid}/accounts/${id}`).set(formatedValues)

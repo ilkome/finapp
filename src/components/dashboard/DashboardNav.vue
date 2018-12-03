@@ -57,6 +57,11 @@ export default {
             v-on:onClose="visibleContextMenu = !visibleContextMenu")
           .context-menu-sep
           ContextMenuItem(
+            icon="mdi mdi-currency-usd"
+            title="Change base currency"
+            v-on:onClick="$store.commit('showBaseCurrenciesModal')"
+            v-on:onClose="visibleContextMenu = !visibleContextMenu")
+          ContextMenuItem(
             icon="mdi mdi-palette"
             title="Change theme"
             v-on:onClick="$store.dispatch('changeTheme')")

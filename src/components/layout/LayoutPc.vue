@@ -3,10 +3,11 @@ import Button from '@/components/shared/button/Button'
 import CategoriesList from '@/components/categories/list/CategoriesList'
 import CategoryForm from '@/components/categories/form/CategoryForm'
 import CategoryModal from '@/components/categories/modal/CategoryModal'
+import CurrencyModal from '@/components/currencies/CurrencyModal'
 import Dashboard from '@/components/dashboard/Dashboard'
 import DashboardNav from '@/components/dashboard/DashboardNav'
-import LayoutPcTab from '@/components/layout/LayoutPcTab'
 import LayoutPcSidebar from '@/components/layout/LayoutPcSidebar'
+import LayoutPcTab from '@/components/layout/LayoutPcTab'
 import Settings from '@/components/settings/Settings'
 import TrnForm from '@/components/trnForm/TrnForm'
 import TrnModal from '@/components/trns/modal/TrnModal'
@@ -20,6 +21,7 @@ export default {
     CategoriesList,
     CategoryForm,
     CategoryModal,
+    CurrencyModal,
     Dashboard,
     DashboardNav,
     LayoutPcTab,
@@ -58,6 +60,7 @@ export default {
 
   //- modals
   CategoryModal
+  CurrencyModal
   TrnForm
   TrnModal
   WalletModal
