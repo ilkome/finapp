@@ -1,26 +1,41 @@
 <script>
+import Button from '@/components/shared/button/Button'
+
 export default {
+  components: {
+    Button
+  }
 }
 </script>
 
 <template lang="pug">
-div
-  .settings
-    .control(@click="$store.dispatch('changeTheme')")
-      .control__icon: .mdi.mdi-palette
-      .control__text Change theme
+.settings
+  .settings__header Settings
 
-    .control(@click="$store.dispatch('signOut')")
-      .control__icon: .mdi.mdi-logout
-      .control__text Sign Out
+  .settings__item
+    Button._grey._inline(
+      icon="mdi mdi-palette"
+      title="Change theme"
+      v-on:onClick="$store.dispatch('changeTheme')")
+
+  .settings__item
+    Button._grey._inline(
+      icon="mdi mdi-logout"
+      title="Sign Out"
+      v-on:onClick="$store.dispatch('signOut')")
 </template>
 
 <style lang="stylus" scoped>
+@import "~@/stylus/variables/fonts"
 @import "~@/stylus/variables/margins"
 
 .settings
   padding-top $m6
 
-.settingItem
-  padding-top 20px
+  &__header
+    font-header-4()
+    padding-bottom $m9
+
+  &__item
+    padding-bottom $m8
 </style>
