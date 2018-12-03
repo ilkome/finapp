@@ -45,6 +45,7 @@ export default {
       Amount(
         :currency="$store.state.currencies.base"
         :value="totalInWallets.counted"
+        :alwaysShowSymbol="true"
       )
   .wallets-total__item(v-if="totalInWallets.all > 0")
     .wallets-total__title Also
