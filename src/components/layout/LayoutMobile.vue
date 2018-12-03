@@ -123,6 +123,7 @@ export default {
 
 <style lang="stylus" scoped>
 @import "~@/stylus/variables/margins"
+@import "~@/stylus/variables/scrollbar"
 
 .showDonut
   margin $m7
