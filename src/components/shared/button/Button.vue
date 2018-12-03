@@ -85,7 +85,7 @@ export default {
   padding $m7 $m9
   color var(--c-font-2)
   cursor pointer
-  anim()
+  anim-background()
 
   &:active
     transform scale(0.96)
@@ -102,7 +102,6 @@ export default {
     letter-spacing 1.6px
     background var(--c-blue-1)
     border-radius $m3
-    anim-background()
 
     &:hover
       @media $media-laptop
