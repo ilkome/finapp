@@ -72,6 +72,17 @@ $ npm run dev
 $ npm run build
 ```
 
+## Upload to server
+You can add your FTP config in app's directory `/src/ftp.config.js`
+
+``` bash
+# upload all files from dist folder
+$ npm run upload
+
+# upload only css, js, html files from dist folder
+$ npm run upload-min
+```
+
 ## Stay In Touch
 I would like to speak with you about Finapp. I'm interesting to work in interesting modern projects.
 - [Telegram](https://t.me/ilkome)
