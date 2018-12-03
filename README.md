@@ -63,13 +63,13 @@ messagingSenderId: 'YOUR_CONFIG'
 
 #### Compiles and hot-reloads
 ``` bash
-npm run dev
+$ npm run dev
 ```
 
 ## Production
 #### Compiles and minifies for production
 ``` bash
-npm run build
+$ npm run build
 ```
 
 ## Stay In Touch
