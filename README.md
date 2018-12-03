@@ -31,7 +31,7 @@ $ npm install
 - Go to the Database tab and enable Firestore.
 - Select Realtime Database and go to Rules tab.
 - Change rules to:
-```
+``` javascript
 {
   "rules": {
     "users": {
