@@ -1,6 +1,5 @@
 <script>
 import { focus } from 'vue-focus'
-import { db } from '@/firebase'
 import { createId } from '@/utils/id'
 import colors from '@/components/ui/store/colors'
 
@@ -224,11 +223,6 @@ export default {
     .inputText
       .currencies
         .currencies__item(
-          :class="{ _active: wallet.currency === $store.state.currencies.base }"
-          @click="handleCurrencySelect($store.state.currencies.base)"
-        ) {{ $store.state.currencies.base }}
-
-        .currencies__item(
           :class="{ _active: wallet.currency === currency }"
           @click="handleCurrencySelect(currency)"
           v-for="(item, currency) in $store.state.currencies.items"
@@ -311,23 +305,4 @@ export default {
     margin 0
     padding 0
     font-size 10px
-
-.currencies
-  display flex
-  flex-wrap wrap
-
-  &__item
-    flex 1
-    text-align center
-    margin 0 -1px -1px 0
-    padding $m7 $m7
-    border 1px solid var(--c-bg-6)
-
-    &:hover
-      @media $media-laptop
-        background var(--c-bg-6)
-
-    &._active
-      color var(--c-font-1)
-      background var(--c-bg-8)
 </style>
