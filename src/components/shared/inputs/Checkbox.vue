@@ -32,7 +32,6 @@ $left = 1.8em
 $color-rail = var(--c-font-2)
 
 .checkbox
-  z-index -1
   position relative
   display flex
   align-items center
