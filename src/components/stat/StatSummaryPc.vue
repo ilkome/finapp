@@ -102,9 +102,9 @@ export default {
   padding $m9 0
 
   @media $media-pc
-    flex-flow row
-    align-items stretch
-    justify-content space-between
+    display grid
+    grid-template-columns repeat(3, 1fr)
+    grid-column-gap $m9
     padding 0
 
   &__item
@@ -112,7 +112,7 @@ export default {
     display flex
     flex-flow column
     justify-content center
-    margin 0 $m7
+    margin $m5 $m7
     padding $m3 $m8
     padding-right 0
     @media $media-phone

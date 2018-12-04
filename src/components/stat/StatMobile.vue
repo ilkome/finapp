@@ -77,6 +77,26 @@ export default {
 .stat
   StatSummaryMobile
 
+  .stat__filter(v-if="$store.state.filter.categoryId || $store.state.filter.walletId")
+    template(v-if="$store.state.filter.walletId")
+      FilterItem(
+        :color="filterWallet.color || $store.state.ui.defaultBgColor"
+        :name="filterWallet.name"
+        icon="mdi mdi-credit-card-multiple"
+        v-on:onClick="clearWalletFilter")
+    template(v-if="$store.state.filter.categoryId")
+      template(v-if="filterCategory.parentId !== 0")
+        FilterItem(
+          :color="filterCategoryParent.color || $store.state.ui.defaultBgColor"
+          :icon="filterCategoryParent.icon"
+          :name="filterCategoryParent.name"
+          v-on:onClick="clearParentCategoryFilter")
+      FilterItem(
+        :color="filterCategory.color || $store.state.ui.defaultBgColor"
+        :icon="filterCategory.icon"
+        :name="filterCategory.name"
+        v-on:onClick="clearCategoryFilter")
+
   //- empty
   //------------------------------------------------
   EmptyData(
@@ -93,27 +113,6 @@ export default {
   div(v-show="activeTabStat === 'stat'")
     .stat__lastTrns(v-if="$store.state.ui.lastTrns === 'visible'")
       TrnsListViewEasy
-
-    .stat__filter(v-if="$store.state.filter.categoryId || $store.state.filter.walletId")
-      .filter
-        template(v-if="$store.state.filter.walletId")
-          FilterItem(
-            :color="filterWallet.color || $store.state.ui.defaultBgColor"
-            :name="filterWallet.name"
-            icon="mdi mdi-credit-card-multiple"
-            v-on:onClick="clearWalletFilter")
-        template(v-if="$store.state.filter.categoryId")
-          template(v-if="filterCategory.parentId !== 0")
-            FilterItem(
-              :color="filterCategoryParent.color || $store.state.ui.defaultBgColor"
-              :icon="filterCategoryParent.icon"
-              :name="filterCategoryParent.name"
-              v-on:onClick="clearParentCategoryFilter")
-          FilterItem(
-            :color="filterCategory.color || $store.state.ui.defaultBgColor"
-            :icon="filterCategory.icon"
-            :name="filterCategory.name"
-            v-on:onClick="clearCategoryFilter")
 
     .stat__content
       //- incomes
@@ -236,6 +235,7 @@ export default {
 
 <style lang="stylus" scoped>
 @import "~@/stylus/variables/margins"
+@import "~@/stylus/variables/flex"
 @import "~@/stylus/variables/fonts"
 @import "~@/stylus/variables/scrollbar"
 
@@ -247,6 +247,7 @@ export default {
 .stat
   &__filter
     padding $m8 $m7
+    background var(--c-bg-4)
 
   &__charts
     padding-bottom $m7
