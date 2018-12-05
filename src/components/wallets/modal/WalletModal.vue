@@ -21,8 +21,21 @@ export default {
   },
 
   computed: {
+    deleteInfo () {
+      if (this.trnsIds.length > 0) {
+        return `It's also will delete ${this.trnsIds.length} trns in this wallet`
+      }
+    },
     walletId () {
       return this.$store.state.wallets.modal.id
+    },
+    trnsIds () {
+      const trns = this.$store.state.trns.items
+      let trnsIds = []
+      for (const trnId in trns) {
+        if (trns[trnId].accountId === this.walletId) trnsIds.push(trnId)
+      }
+      return trnsIds
     }
   },
 
@@ -42,37 +55,24 @@ export default {
     },
 
     handleDeleteClick () {
-      const trns = this.$store.state.trns.items
-      const id = this.walletId
-
-      let isTrns = false
-      for (const trnId in trns) {
-        if (trns[trnId].accountId === id) {
-          this.$notify({
-            group: 'main',
-            title: '👆',
-            text: 'You can not delete wallet with trns'
-          })
-          isTrns = true
-          break
-        }
-      }
-
-      if (!isTrns) this.showModalConfirm = true
+      this.showModalConfirm = true
     },
 
     handleDeleteConfirm () {
+      const trnsIds = this.trnsIds
       const uid = this.$store.state.user.user.uid
       const id = this.walletId
 
       this.showModalConfirm = false
       this.$store.commit('hideWalletModal')
       this.$store.commit('setWalletModalId', null)
-      setTimeout(() => {
+
+      setTimeout(async () => {
+        await this.$store.dispatch('deleteTrnsByIds', trnsIds)
         db.ref(`users/${uid}/accounts/${id}`)
           .remove()
-          .then(() => console.log('removed'))
-      }, 100)
+          .then(() => console.log('wallet deleted'))
+      }, 200)
     }
   }
 }
@@ -104,6 +104,7 @@ ModalBottom(
 
   ModalBottomConfirm(
     :show="showModalConfirm"
+    :description="deleteInfo"
     v-on:onClose="showModalConfirm = false"
     v-on:onConfirm="handleDeleteConfirm")
 </template>
