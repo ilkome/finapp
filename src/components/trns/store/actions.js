@@ -58,6 +58,18 @@ export default {
       .then(() => removeTrnToDeleteLaterLocal(id))
   },
 
+  async deleteTrnsByIds ({ commit, rootState }, trnsIds) {
+    const uid = rootState.user.user.uid
+    const trnsForDelete = {}
+    for (const trnId of trnsIds) {
+      trnsForDelete[trnId] = null
+    }
+
+    await db.ref(`users/${uid}/trns`)
+      .update(trnsForDelete)
+      .then(() => console.log('trns deleted'))
+  },
+
   // init
   initTrns ({ rootState, dispatch, commit }) {
     const uid = rootState.user.user.uid
