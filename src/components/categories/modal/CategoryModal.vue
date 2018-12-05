@@ -28,28 +28,23 @@ export default {
     categoryId () {
       return this.$store.state.categories.modal.id
     },
-
     category () {
       return this.$store.state.categories.items[this.categoryId]
     },
-
     deleteInfo () {
       if (this.trnsIds.length > 0) {
         return `It's also will delete ${this.trnsIds.length} trns in this category`
       }
     },
-
     childCategoriesIds () {
       return this.$store.getters.getChildCategoriesIds(this.categoryId)
     },
-
     trnsIds () {
       const trns = this.$store.state.trns.items
       let trnsIds = []
       for (const trnId in trns) {
         if (trns[trnId].categoryId === this.categoryId) trnsIds.push(trnId)
       }
-
       return trnsIds
     }
   },
@@ -76,8 +71,6 @@ export default {
     handleDeleteClick () {
       const categories = this.$store.state.categories.items
       const id = this.categoryId
-
-      let isTrns = false
       let isChildCategories = false
 
       for (const categoryId in categories) {
@@ -92,7 +85,7 @@ export default {
         }
       }
 
-      if (!isTrns && !isChildCategories) this.showModalConfirm = true
+      if (!isChildCategories) this.showModalConfirm = true
     },
 
     handleDeleteConfirm () {
@@ -132,8 +125,7 @@ ModalBottom(
   v-if="$store.state.categories.modal.id"
   :show="$store.state.categories.modal.show"
   v-on:onClose="$store.commit('hideCategoryModal')"
-  v-on:afterClose="$store.commit('setCategoryModalId', null)"
-)
+  v-on:afterClose="$store.commit('setCategoryModalId', null)")
   template(slot="header")
     .modalBottom__header__back: .mdi.mdi-chevron-left
     .modalBottom__header__title {{ category.name }}
@@ -143,25 +135,21 @@ ModalBottom(
         :icon="category.icon"
         :background="category.color || $store.state.ui.defaultBgColor"
         :round="true"
-        :big="true"
-      )
+        :big="true")
 
   template(slot="btns")
     ModalButton(
       name="Delete"
       icon="mdi mdi-delete"
-      v-on:onClick="handleDeleteClick"
-    )
+      v-on:onClick="handleDeleteClick")
     ModalButton(
       name="Edit"
       icon="mdi mdi-pencil"
-      v-on:onClick="handleEditClick"
-    )
+      v-on:onClick="handleEditClick")
     ModalButton(
       name="Set filter"
       icon="mdi mdi-filter-outline"
-      v-on:onClick="handleSetFilterCategory"
-    )
+      v-on:onClick="handleSetFilterCategory")
 
   template(v-if="childCategoriesIds.length > 0 && trnsIds.length > 0")
     TrnItem(
@@ -170,21 +158,18 @@ ModalBottom(
       :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
       :trnId="trnId"
       :trn="$store.state.trns.items[trnId]"
-      :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].accountId]"
-    )
+      :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].accountId]")
 
   template(v-if="childCategoriesIds.length")
     CategoriesView(
       :borderTop="true"
       :ids="childCategoriesIds"
       :noPadding="true"
-      v-on:onClick="handleCategoryClick"
-    )
+      v-on:onClick="handleCategoryClick")
 
   ModalBottomConfirm(
     :show="showModalConfirm"
     :description="deleteInfo"
     v-on:onClose="showModalConfirm = false"
-    v-on:onConfirm="handleDeleteConfirm"
-  )
+    v-on:onConfirm="handleDeleteConfirm")
 </template>
