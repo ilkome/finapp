@@ -15,33 +15,40 @@ export default {
 
   data: () => ({
     error: null,
-    loading: false
+    loading: {
+      google: false,
+      demo: false
+    }
   }),
 
   methods: {
     signInWithGoogle () {
       this.error = null
-      this.loading = true
+      this.loading.google = true
       const provider = new auth.GoogleAuthProvider()
       auth().signInWithRedirect(provider)
-        .catch(e => {
-          this.$notify({
-            title: 'Error',
-            text: e.message,
-            type: 'error'
-          })
-          this.error = e.message
-          this.loading = false
-
-          console.log(e)
-        })
+        .catch(e => this.notifyAboutError(e, 'google'))
     },
 
-    async signInWithEmail () {
-      const email = ''
-      const password = ''
-      const user = await auth().signInWithEmailAndPassword(email, password)
-      console.log(user)
+    async signInDemo () {
+      this.error = null
+      this.loading.demo = true
+      const email = 'demo@themerise.com'
+      const password = 'demothemerise'
+      auth().signInWithEmailAndPassword(email, password)
+        .catch(e => this.notifyAboutError(e, 'demo'))
+    },
+
+    notifyAboutError (e, loginType) {
+      this.$notify({
+        group: 'main',
+        title: 'Error',
+        text: e.message,
+        type: 'error'
+      })
+      this.error = e.message
+      this.loading[loginType] = false
+      console.log(e)
     }
   }
 }
@@ -60,14 +67,19 @@ export default {
 
     .loginButton(
       @click.prevent="signInWithGoogle"
-      :class="{ _loading: loading }")
+      :class="{ _loading: loading.google }")
       transition(name="fadeIn")
-        .loginButton__spiner(v-if="loading")
+        .loginButton__spiner(v-if="loading.google")
           Spiner
       .loginButton__text Login with Google
 
-    transition(name="slide")
-      .loginError(v-if="error") {{ error }}
+    .loginButton._grey(
+      @click.prevent="signInDemo"
+      :class="{ _loading: loading.demo }")
+      transition(name="fadeIn")
+        .loginButton__spiner(v-if="loading.demo")
+          Spiner
+      .loginButton__text Login demo
 
   .copyright
     Copyright
@@ -117,13 +129,16 @@ export default {
   background var(--c-red-1)
   border-radius 3px
   text-align center
-
   @media $media-laptop
     margin-top $mb2
-
   &._loading
     cursor default
     background var(--c-red-2)
+  &._grey
+    margin-top $m9
+    background var(--c-bg-5)
+    /.theme-light &
+      background var(--c-bg-12)
 
   &__text
     anim()
@@ -143,11 +158,11 @@ export default {
 .loginError
   position absolute
   left 0
-  bottom 150px
+  top 0
   width 100%
-  padding $m7 50px
-  font-size 12px
-  border-left 2px solid var(-c-expenses)
+  padding $m7 $m9
+  border-left 3px solid var(--c-expenses-1)
+  background var(--noti-error-background)
 
 .copyright
   position fixed
