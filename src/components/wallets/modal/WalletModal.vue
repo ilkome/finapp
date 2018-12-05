@@ -83,8 +83,7 @@ ModalBottom(
   v-if="$store.state.wallets.modal.id"
   :show="$store.state.wallets.modal.show"
   v-on:onClose="$store.commit('hideWalletModal')"
-  v-on:afterClose="$store.commit('setWalletModalId', null)"
-)
+  v-on:afterClose="$store.commit('setWalletModalId', null)")
   template(v-if="walletId")
     template(slot="header")
       WalletItem(:id="walletId")
@@ -93,22 +92,18 @@ ModalBottom(
       ModalButton(
         name="Delete"
         icon="mdi mdi-delete"
-        v-on:onClick="handleDeleteClick"
-      )
+        v-on:onClick="handleDeleteClick")
       ModalButton(
         name="Edit"
         icon="mdi mdi-pencil"
-        v-on:onClick="handleEditClick"
-      )
+        v-on:onClick="handleEditClick")
       ModalButton(
         name="Set filter"
         icon="mdi mdi-filter-outline"
-        v-on:onClick="handleSetFilterWallet"
-      )
+        v-on:onClick="handleSetFilterWallet")
 
   ModalBottomConfirm(
     :show="showModalConfirm"
     v-on:onClose="showModalConfirm = false"
-    v-on:onConfirm="handleDeleteConfirm"
-  )
+    v-on:onConfirm="handleDeleteConfirm")
 </template>
