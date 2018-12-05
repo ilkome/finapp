@@ -98,23 +98,11 @@ export default {
       this.$store.commit('setCategoryModalId', null)
 
       setTimeout(async () => {
-        await this.deleteAllTrns(trnsIds)
+        await this.$store.dispatch('deleteTrnsByIds', trnsIds)
         db.ref(`users/${uid}/categories/${id}`)
           .remove()
-          .then(() => { console.log('removed category') })
+          .then(() => { console.log('category deleted') })
       }, 200)
-    },
-
-    async deleteAllTrns (trnsIds) {
-      const uid = this.$store.state.user.user.uid
-      const removeTrnsIds = {}
-      for (const trnId of trnsIds) {
-        removeTrnsIds[trnId] = null
-      }
-
-      await db.ref(`users/${uid}/trns`)
-        .update(removeTrnsIds)
-        .then(() => console.log('removed all'))
     }
   }
 }
