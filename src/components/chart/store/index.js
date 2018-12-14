@@ -12,25 +12,25 @@ const state = {
     day: {
       groupedBy: 'month',
       showedGroups: 2,
-      showedPeriods: 5,
+      showedPeriods: 14,
       grouped: true
     },
     week: {
       groupedBy: 'month',
-      showedGroups: 6,
-      showedPeriods: 5,
+      showedGroups: 5,
+      showedPeriods: 8,
       grouped: true
     },
     month: {
       groupedBy: 'year',
       showedGroups: 2,
-      showedPeriods: 5,
-      grouped: false
+      showedPeriods: 8,
+      grouped: true
     },
     year: {
       groupedBy: 'year',
-      showedGroups: 5,
-      showedPeriods: 5,
+      showedGroups: 3,
+      showedPeriods: 3,
       grouped: false
     }
   }
