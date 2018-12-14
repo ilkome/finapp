@@ -8,7 +8,7 @@ const state = {
   categoryId: null,
   walletId: null,
   date: moment().valueOf(),
-  period: 'month',
+  period: 'week',
   showFilterModal: false
 }
 
