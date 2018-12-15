@@ -12,15 +12,17 @@ module.exports = {
       }
     }
   },
-
+  productionSourceMap: false,
   css: {
-    sourceMap: process.env.NODE_ENV !== 'production' && true
+    sourceMap: process.env.NODE_ENV !== 'production'
   },
 
   pwa: {
     themeColor: '#1c1d21',
     workboxPluginMode: 'GenerateSW',
     workboxOptions: {
+      skipWaiting: true,
+
       runtimeCaching: [{
         urlPattern: new RegExp('^https://fonts.googleapis.com/'),
         handler: 'cacheFirst'
