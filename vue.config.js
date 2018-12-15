@@ -31,9 +31,6 @@ module.exports = {
         urlPattern: new RegExp('^https://maxcdn.bootstrapcdn.com/'),
         handler: 'cacheFirst'
       }, {
-        urlPattern: new RegExp('^https://maxcdn.bootstrapcdn.com/'),
-        handler: 'cacheFirst'
-      }, {
         urlPattern: new RegExp('^https://cdnjs.cloudflare.com/'),
         handler: 'cacheFirst'
       }, {
