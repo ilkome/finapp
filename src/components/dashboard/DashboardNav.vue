@@ -14,7 +14,8 @@ export default {
 
   data () {
     return {
-      visibleContextMenu: false
+      visibleContextMenu: false,
+      visiblePeriodMenu: false
     }
   }
 }
@@ -23,8 +24,46 @@ export default {
 <template lang="pug">
 .period-nav
   .period-nav__group
-    .period-nav__item(@click="$store.dispatch('setPeriod', $store.state.filter.period)")
-      .date: Date
+    .period-nav__item
+      ContextMenu._dark(
+        :position="{ left: true, top: true }"
+        :visible="visiblePeriodMenu"
+        v-on:onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
+        template(slot="opener")
+          .dateSelecror
+            .dateSelecror__date: Date
+            .dateSelecror__arrow: .mdi.mdi-chevron-down
+        template(slot="content")
+          ContextMenuItem(
+            icon="mdi mdi-weather-sunset-up"
+            title="Day"
+            :selected="$store.state.filter.period === 'day'"
+            v-on:onClick="$store.dispatch('setPeriod', 'day')"
+            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+          ContextMenuItem(
+            icon="mdi mdi-calendar-week"
+            title="Week"
+            :selected="$store.state.filter.period === 'week'"
+            v-on:onClick="$store.dispatch('setPeriod', 'week')"
+            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+          ContextMenuItem(
+            icon="mdi mdi-calendar"
+            title="Month"
+            :selected="$store.state.filter.period === 'month'"
+            v-on:onClick="$store.dispatch('setPeriod', 'month')"
+            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+          ContextMenuItem(
+            icon="mdi mdi-calendar-star"
+            title="Year"
+            :selected="$store.state.filter.period === 'year'"
+            v-on:onClick="$store.dispatch('setPeriod', 'year')"
+            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+          ContextMenuItem(
+            icon="mdi mdi-database"
+            title="Show all"
+            :selected="$store.state.filter.period === 'all'"
+            v-on:onClick="$store.dispatch('setPeriod', 'all')"
+            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
 
   .period-nav__group
     ._align-right
@@ -82,14 +121,23 @@ export default {
   &:last-child
     margin-right 0
 
-.date
-  flex-grow 0
+.dateSelecror
   display flex
-  justify-content center
   align-items center
-  font-header-1()
-  color var(--c-font-4)
-  font-size 28px
+
+  &__date
+    flex-grow 0
+    display flex
+    justify-content center
+    align-items center
+    font-header-1()
+    color var(--c-font-4)
+    font-size 28px
+
+  &__arrow
+    margin-left $m5
+    color var(--c-font-5)
+    font-size 32px
 
 .d-button
   display inline-flex
