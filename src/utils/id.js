@@ -1,7 +1,13 @@
 import moment from 'moment'
 
-function uuid (a, b) { for (b = a = ''; a++ < 36; b += a * 51 & 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-');return b }
+export const generateDateId = (date) => {
+  const string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+  if (date) {
+    return `${moment(date).format('YYMMDD[-]HH:mm:ss')}-${string.substring(1, 5)}`
+  }
+  return `${moment().format('YYMMDD[-]HH:mm:ss')}-${string.substring(1, 5)}`
+}
 
-export const createId = () => {
-  return `${moment().format('YY-MM-DD[_]H:mm:ss')}__${uuid()}`
+export const generateSimpleId = () => {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }

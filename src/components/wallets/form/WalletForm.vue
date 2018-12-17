@@ -1,6 +1,6 @@
 <script>
 import { focus } from 'vue-focus'
-import { createId } from '@/utils/id'
+import { generateSimpleId } from '@/utils/id'
 import colors from '@/components/ui/store/colors'
 
 import Button from '@/components/shared/button/Button'
@@ -73,7 +73,7 @@ export default {
 
     handleSubmit () {
       if (this.validateForm()) {
-        const id = this.walletId || createId()
+        const id = this.walletId || generateSimpleId()
 
         const walletsValues = {
           color: this.wallet.color,

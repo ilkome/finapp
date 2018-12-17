@@ -1,7 +1,7 @@
 <script>
 import { focus } from 'vue-focus'
 import { db } from '@/firebase'
-import { createId } from '@/utils/id'
+import { generateSimpleId } from '@/utils/id'
 import colors from '@/components/ui/store/colors'
 import icons from '@/components/ui/store/icons'
 
@@ -96,7 +96,7 @@ export default {
     handleSubmit () {
       if (this.validateForm()) {
         const uid = this.$store.state.user.user.uid
-        const id = this.categoryId || createId()
+        const id = this.categoryId || generateSimpleId()
 
         const categoriesValues = {
           color: this.category.color,
