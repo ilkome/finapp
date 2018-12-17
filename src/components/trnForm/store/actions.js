@@ -3,6 +3,9 @@ import moment from 'moment'
 export default {
   closeTrnForm ({ commit }) {
     commit('closeTrnForm')
+    commit('setTrnFormValues', {
+      trnId: null
+    })
   },
 
   openTrnForm ({ rootState, rootGetters, commit }, { action, trnId }) {
