@@ -23,7 +23,7 @@ export default {
       date: moment(values.date).valueOf(),
       description: values.description || null,
       editDate: moment().valueOf(),
-      type: values.amountType
+      type: values.amountType || 0
     }
 
     localforage.setItem('next.trns', { ...trns, [id]: formatedTrnValues })
