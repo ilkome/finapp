@@ -106,9 +106,9 @@ export default {
             title="Options")
         template(slot="content")
           ContextMenuItem(
-            icon="mdi mdi-logout"
-            title="Sign Out"
-            v-on:onClick="$store.dispatch('signOut')"
+            icon="mdi mdi-settings"
+            title="Go to settings"
+            v-on:onClick="$store.dispatch('setActiveTab', 'settings')"
             v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
           .context-menu-sep
           ContextMenuItem(
@@ -120,12 +120,6 @@ export default {
             icon="mdi mdi-palette"
             title="Change theme"
             v-on:onClick="$store.dispatch('changeTheme')"
-            v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
-          ContextMenuItem(
-            icon="mdi mdi-chart-bubble"
-            title="Last cats in TrnForm"
-            :checkValue="$store.state.ui.lastUsedCatsInTrnForm === 'visible'"
-            v-on:onClick="$store.dispatch('toogleLastUsedCatsInTrnForm')"
             v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
 
   .menu__row
