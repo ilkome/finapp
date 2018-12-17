@@ -14,6 +14,7 @@ export default {
 
   data () {
     return {
+      step: 1,
       showCategoryForm: false,
       showWalletForm: false
     }
@@ -30,19 +31,45 @@ export default {
 
 <template lang="pug">
 .tabs
-  //- wallet
+  //- welcome
   transition(name="fadeInSlow")
-    template(v-if="!showWalletForm && !$store.getters.hasWallets")
+    template(v-if="step === 1")
       .tab
         .tab__content
-          .header
+          .header(@click="$store.dispatch('changeTheme')")
             .header__title Welcome to Finapp
             .header__desc Powerfull personal finance application
-          .text Let's start with create first Wallet
-          .button
-            Button._blue(
-              title="Create wallet"
-              v-on:onClick="showWalletForm = true")
+          .options
+            .options__item
+              .options__desc Start creating your own wallets, categories
+              Button._blue(
+                title="Start"
+                v-on:onClick="step = 2")
+
+            template(v-if="$store.state.demo.hasDemo")
+              .options__or
+                .options__or__border
+                .options__or__text or
+              .options__item
+                .options__desc Load app with created wallets, categories and transactions
+                Button._grey._center(
+                  title="Open demo"
+                  v-on:onClick="$store.dispatch('createDemo')")
+
+  //- wallet
+  transition(name="fadeInSlow")
+    template(v-if="step !== 1 && !showWalletForm && !$store.getters.hasWallets")
+      .tab
+        .tab__content
+          .tab__wrap
+            .header
+              .header__title Welcome to Finapp
+              .header__desc Powerfull personal finance application
+            .text Let's start with create first Wallet
+            .button
+              Button._blue(
+                title="Create wallet"
+                v-on:onClick="showWalletForm = true")
 
   //- category
   transition(name="fadeInSlow")
@@ -101,6 +128,10 @@ export default {
     margin 0 auto
     padding $m9
     padding-bottom 100px
+
+    @media $media-laptop
+      width 400px
+
     .component
       padding 0
 
@@ -123,10 +154,37 @@ export default {
       padding-top $m7
       font-size 14px
 
+.options
+  &__or
+    display flex
+    align-items center
+    justify-content center
+    position relative
+    padding $m9 0
+    text-align center
+    color var(--c-font-4)
+    &__text
+      position relative
+      padding $m7
+      background var(--c-bg-1)
+    &__border
+      position absolute
+      left 0
+      top 50%
+      width 100%
+      height 1px
+      background var(--c-bg-6)
+
+  &__desc
+    padding-bottom $m7
+    color var(--c-font-4)
+    line-height 20px
+
 .text
-  padding-bottom $m9
+  line-height 20px
+  padding-bottom $m8
   @media $media-laptop
-    padding-bottom $m10
+    padding-bottom $m9
 
 .icon
   padding-bottom $m5

@@ -30,15 +30,6 @@ export default {
         .catch(e => this.notifyAboutError(e, 'google'))
     },
 
-    async signInDemo () {
-      this.error = null
-      this.loading.demo = true
-      const email = 'demo@themerise.com'
-      const password = 'demothemerise'
-      auth().signInWithEmailAndPassword(email, password)
-        .catch(e => this.notifyAboutError(e, 'demo'))
-    },
-
     notifyAboutError (e, loginType) {
       this.$notify({
         group: 'main',
@@ -57,7 +48,7 @@ export default {
 <template lang="pug">
 .tab
   .themeChanger
-    Button(
+    Button._grey(
       icon="mdi mdi-palette"
       title="Change theme"
       v-on:onClick="$store.dispatch('changeTheme')")
@@ -74,12 +65,12 @@ export default {
       .loginButton__text Login with Google
 
     .loginButton._grey(
-      @click.prevent="signInDemo"
+      @click.prevent="signInWithGoogle"
       :class="{ _loading: loading.demo }")
       transition(name="fadeIn")
         .loginButton__spiner(v-if="loading.demo")
           Spiner
-      .loginButton__text Login demo
+      .loginButton__text Open demo
 
   .copyright
     Copyright
@@ -129,8 +120,11 @@ export default {
   background var(--c-red-1)
   border-radius 3px
   text-align center
+  anim()
   @media $media-laptop
     margin-top $mb2
+  &:hover
+    background var(--c-red-2)
   &._loading
     cursor default
     background var(--c-red-2)

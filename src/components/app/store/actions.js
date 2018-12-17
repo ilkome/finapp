@@ -12,6 +12,7 @@ export default {
           if (rootState.user.user && rootState.user.user.uid && rootState.user.user.uid !== user.uid) {
             dispatch('clearUserData')
           }
+          await dispatch('getDemoDataStatus')
           await dispatch('initUser', user)
           await dispatch('initCurrencies')
           await dispatch('initCategories')
