@@ -10,7 +10,7 @@ const state = {
   prevTab: null,
   statGraphsVisible: true,
   lastUsedCatsInTrnForm: 'hidden',
-  lastTrns: 'visible',
+  lastTrns: 'hidden',
   catsChart: 'visible',
   statItems: 'visible',
   stat: {

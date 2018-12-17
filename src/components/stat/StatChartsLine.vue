@@ -179,43 +179,46 @@ export default {
 </script>
 
 <template lang="pug">
-.charts(v-if="$store.state.ui.statGraphsVisible && $store.state.filter.period !== 'all'")
-  .charts__nav
-    ChartMenu
+.charts(v-if="$store.state.ui.statGraphsVisible")
+  template(v-if="$store.state.filter.period === 'all'")
+    .charts__allData Change period to see chart
+  template(v-if="$store.state.filter.period !== 'all'")
+    .charts__nav
+      ChartMenu
 
-  .charts__content
-    //- grouped
-    template(v-if="periods[filterPeriod].grouped")
-      .charts__items._grouped
-        template(v-for="(periodGroups, groupDate) in periodsGroupedValues")
-          .chart-group(:class="{ _grouped: periods[filterPeriod].grouped }")
-            .chart-group__name(v-show="periods[filterPeriod].grouped")
-              template(v-if="periods[filterPeriod].grouped") {{ formatGroupName(groupDate, periods[filterPeriod].groupedBy) }}
+    .charts__content
+      //- grouped
+      template(v-if="periods[filterPeriod].grouped")
+        .charts__items._grouped
+          template(v-for="(periodGroups, groupDate) in periodsGroupedValues")
+            .chart-group(:class="{ _grouped: periods[filterPeriod].grouped }")
+              .chart-group__name(v-show="periods[filterPeriod].grouped")
+                template(v-if="periods[filterPeriod].grouped") {{ formatGroupName(groupDate, periods[filterPeriod].groupedBy) }}
 
-            .chart-group__content
-              template(v-for="period in periodGroups")
-                ChartItem(
-                  :key="period.date"
-                  :maxAmountValue="maxAmountValue"
-                  :period="period"
-                  parentClassName=".charts__items"
-                )
-        .chart-space
+              .chart-group__content
+                template(v-for="period in periodGroups")
+                  ChartItem(
+                    :key="period.date"
+                    :maxAmountValue="maxAmountValue"
+                    :period="period"
+                    parentClassName=".charts__items"
+                  )
+          .chart-space
 
-    //- simple
-    template(v-else)
-      .charts__items
-        template(v-for="period in periodsValues")
-          ChartItem(
-            :key="period.date"
-            :maxAmountValue="maxAmountValue"
-            :period="period"
-            parentClassName=".charts__items"
-          )
+      //- simple
+      template(v-else)
+        .charts__items
+          template(v-for="period in periodsValues")
+            ChartItem(
+              :key="period.date"
+              :maxAmountValue="maxAmountValue"
+              :period="period"
+              parentClassName=".charts__items"
+            )
 
-    //- popup
-    template(v-if="$store.state.ui.pc && $store.state.chart.hoveredPeriod.values")
-      ChartPopup(v-if="")
+      //- popup
+      template(v-if="$store.state.ui.pc && $store.state.chart.hoveredPeriod.values")
+        ChartPopup(v-if="")
 </template>
 
 <style lang="stylus" scoped>
@@ -232,7 +235,17 @@ export default {
   border-bottom 1px solid var(--c-bg-1)
 
   @media $media-laptop
-    min-height 160px
+    min-height 178px
+
+  &__allData
+    display flex
+    align-items center
+    justify-content center
+    font-size 14px
+    opacity .7
+
+    @media $media-laptop
+      min-height 178px
 
   &__items
     scrollbar()

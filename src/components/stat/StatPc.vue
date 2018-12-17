@@ -66,7 +66,7 @@ export default {
 
 .stat
   position relative
-  padding 0 $m10
+  padding 0 $mb2
 
   &__content
     display grid
@@ -76,11 +76,10 @@ export default {
       grid-column-gap $mb1
 
     @media $media-xl
-      grid-column-gap $mb2
+      grid-column-gap 150px
 
   &__item
     flex 1 1 450px
-    padding 0 24px
     padding-top $m9
 
   &__chart

@@ -81,8 +81,8 @@ export default {
   width 100%
   display flex
   align-items center
-  min-height 40px
-  padding $m7 $m9
+  // min-height 40px
+  padding $m7 $m8
   color var(--c-font-2)
   cursor pointer
   anim-background()
@@ -94,7 +94,7 @@ export default {
     display inline-flex
     align-items center
     justify-content center
-    height 52px
+    // height 52px
     font-header-2()
     font-size 16px
     color var(--c-font-1)
@@ -107,9 +107,21 @@ export default {
       @media $media-laptop
         background var(--c-blue-2)
 
+  &._bdb
+    border-bottom 1px solid var(--c-bg-5)
+    &:hover
+      @media $media-laptop
+        background var(--c-bg-5)
+    &:active
+      background var(--c-bg-5)
+
   &._inline
     display inline-flex
     width auto
+
+  &._center
+    align-items center
+    justify-content center
 
   &._grey
     background var(--c-bg-5)
@@ -117,11 +129,14 @@ export default {
     border-radius $m3
 
     /.theme-light &
-      background var(--c-bg-1)
+      color var(--c-font-1)
+      background var(--c-bg-12)
 
     &:hover
       @media $media-laptop
         background var(--c-bg-6)
+        /.theme-light &
+          background var(--c-bg-13)
 
   &._small
     height 40px
@@ -146,10 +161,10 @@ export default {
         border-color var(--c-bg-8)
 
   &__icon
-    display flex
-    align-items center
-    justify-content center
-    font-size 22px
-    padding-right $m6
-    opacity .8
+    width 24px
+    margin-left (- $m4)
+    margin-right $m6
+    font-size 20px
+    text-align center
+    opacity .85
 </style>

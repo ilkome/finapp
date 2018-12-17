@@ -45,15 +45,14 @@ export default {
       Amount(
         :currency="$store.state.currencies.base"
         :value="totalInWallets.counted"
-        :alwaysShowSymbol="true"
-      )
+        :alwaysShowSymbol="true")
+
   .wallets-total__item(v-if="totalInWallets.all > 0")
     .wallets-total__title Also
     .wallets-total__value
       Amount(
         :currency="$store.state.currencies.base"
-        :value="totalInWallets.all"
-      )
+        :value="totalInWallets.all")
 </template>
 
 <style lang="stylus" scoped>

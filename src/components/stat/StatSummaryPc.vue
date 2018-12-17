@@ -104,22 +104,22 @@ export default {
   @media $media-pc
     display grid
     grid-template-columns repeat(3, 1fr)
-    grid-column-gap $m9
+    grid-column-gap 120px
     padding 0
 
   &__item
-    flex 1
+    flex-grow 0
     display flex
     flex-flow column
     justify-content center
     margin $m5 $m7
-    padding $m3 $m8
+    padding $m3 $m9
     padding-right 0
     @media $media-phone
       border-bottom 1px solid var(--c-bg-5)
 
     @media $media-pc
-      max-width 280px
+      // max-width 280px
       margin 0
 
     &._expenses
@@ -127,17 +127,20 @@ export default {
       @media $media-phone
         order 1
 
-    &._incomes
-      border-left 2px solid rgba(44, 173, 34, .5)
-      @media $media-phone
-        order 2
-
     &._total
+      align-self center
       border-left 2px solid var(--c-bg-5)
       @media $media-phone
         order 3
 
+    &._incomes
+      align-self end
+      border-left 2px solid rgba(44, 173, 34, .5)
+      @media $media-phone
+        order 2
+
   &__row
+    flex-grow 0
     display flex
     align-items center
     justify-content space-between
