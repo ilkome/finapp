@@ -32,7 +32,6 @@ $left = 1.8em
 $color-rail = var(--c-font-2)
 
 .checkbox
-  z-index -1
   position relative
   display flex
   align-items center
@@ -50,7 +49,6 @@ $color-rail = var(--c-font-2)
       + .checkbox__helper:before
         background var(--c-incomes-1)
         box-shadow inset 0px 1px 1px rgba(84, 152, 140, 0.5)
-
       + .checkbox__helper:after
         animation switch .2s ease-out
         left $left
@@ -61,7 +59,6 @@ $color-rail = var(--c-font-2)
     width $width
     height $height
     cursor pointer
-
     &:before
       content ''
       position absolute
@@ -85,7 +82,6 @@ $color-rail = var(--c-font-2)
       background $color-rail
       animation switch .2s ease-out
       box-shadow 0px 2px 5px 0px rgba(0, 0, 0, 0.3)
-
       /.theme-light &
         background var(--c-bg-1)
 
@@ -109,10 +105,8 @@ $color-rail = var(--c-font-2)
       text-transform uppercase
       /.theme-light &
         color var(--c-font-1)
-
     &:before
       content 'on'
-
     &:after
       content 'off'
 

@@ -56,8 +56,7 @@ export default {
           template(v-if="$store.getters.walletsTotal[values.walletId]")
             Amount(
               :value="$store.getters.walletsTotal[values.walletId].base"
-              :currency="$store.state.currencies.base"
-            )
+              :currency="wallet.currency")
           template(v-else)
             Amount(
               :value="0"

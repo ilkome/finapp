@@ -1,8 +1,7 @@
 <script>
-import { focus } from "vue-focus";
-import { db } from "@/firebase";
-import { createId } from "@/utils/id";
-import colors from "@/components/ui/store/colors";
+import { focus } from 'vue-focus'
+import { generateSimpleId } from '@/utils/id'
+import colors from '@/components/ui/store/colors'
 
 import Button from "@/components/shared/button/Button";
 import Checkbox from "@/components/shared/inputs/Checkbox";
@@ -74,7 +73,7 @@ export default {
 
     handleSubmit() {
       if (this.validateForm()) {
-        const id = this.walletId || createId();
+        const id = this.walletId || generateSimpleId()
 
         const walletsValues = {
           color: this.wallet.color,
@@ -224,11 +223,6 @@ export default {
     .inputText
       .currencies
         .currencies__item(
-          :class="{ _active: wallet.currency === $store.state.currencies.base }"
-          @click="handleCurrencySelect($store.state.currencies.base)"
-        ) {{ $store.state.currencies.base }}
-
-        .currencies__item(
           :class="{ _active: wallet.currency === currency }"
           @click="handleCurrencySelect(currency)"
           v-for="(item, currency) in $store.state.currencies.items"
@@ -250,107 +244,59 @@ export default {
     color: var(--c-font-4);
   }
 
-  &__value {
-    width: 100%;
-    height: 40px;
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-}
+.component
+  width 100%
 
-.component {
-  width: 100%;
+  @media $media-phone
+    margin 0 auto
+    padding $m9
 
-  @media $media-phone {
-    margin: 0 auto;
-    padding: $m9;
-  }
+  &__title
+    padding-bottom $m10
 
-  &__title {
-    padding-bottom: $m10;
-  }
-}
+.form
+  @media $media-laptop
+    max-width 380px
 
-.form {
-  @media $media-laptop {
-    max-width: 380px;
-  }
-}
+.form__actions
+  @media $media-phone
+    text-align center
 
-.form__actions {
-  @media $media-phone {
-    text-align: center;
-  }
-}
+.form__btns
+  display grid
+  grid-template-columns repeat(2, 1fr)
+  grid-column-gap $m9
+  grid-row-gap $m9
+  padding-bottom $m9
 
-.form__btns {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-column-gap: $m9;
-  grid-row-gap: $m9;
-  padding-bottom: $m9;
+  @media $media-laptop
+    grid-column-gap $m10
+    grid-row-gap $m10
+    padding-bottom $m10
 
-  @media $media-laptop {
-    grid-column-gap: $m10;
-    grid-row-gap: $m10;
-    padding-bottom: $m10;
-  }
+  &__i._full
+    grid-column 1 / -1
 
-  &__i._full {
-    grid-column: 1 / -1;
-  }
+  .form-line
+    display flex
+    align-items center
+    justify-content center
+    height 100%
+    height 56px
+    margin-bottom 0
 
-  .form-line {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    height: 56px;
-    margin-bottom: 0;
-  }
-}
+.inputModal
+  &._flex
+    flex 1
+    display flex
+    align-items center
+    justify-content space-between
 
-.inputModal {
-  &._flex {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+  &__content
+    display flex
 
-  &__content {
-    display: flex;
-  }
-
-  &__label {
-    margin: 0;
-    padding: 0;
-    font-size: 10px;
-  }
-}
-
-.currencies {
-  display: flex;
-  flex-wrap: wrap;
-
-  &__item {
-    flex: 1;
-    text-align: center;
-    margin: 0 -1px -1px 0;
-    padding: $m7 $m7;
-    border: 1px solid var(--c-bg-6);
-
-    &:hover {
-      @media $media-laptop {
-        background: var(--c-bg-6);
-      }
-    }
-
-    &._active {
-      color: var(--c-font-1);
-      background: var(--c-bg-8);
-    }
-  }
-}
+  &__label
+    margin 0
+    padding 0
+    font-size 10px
 </style>

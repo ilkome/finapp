@@ -15,8 +15,6 @@ export default {
     dispatch('setUser', user)
     dispatch('saveUserInfo', user)
     dispatch('saveLastLoginDate', user)
-    dispatch('saveUserInfo', user)
-    dispatch('saveLastLoginDate', user)
   },
 
   setUser ({ commit }, user) {
@@ -43,5 +41,16 @@ export default {
     const user = rootState.user.user
     const lastLoginDate = moment().format('YYYY-MM-DD:HH:mm')
     db.ref(`users/${user.uid}/lastLoginDate`).set(lastLoginDate)
+  },
+
+  async removeUserData ({ rootState, commit, dispatch }) {
+    commit('setAppStatus', 'loading')
+    dispatch('setActiveTab', 'stat')
+    const uid = rootState.user.user.uid
+
+    db.ref(`users/${uid}/accounts/`).set(null)
+    db.ref(`users/${uid}/categories/`).set(null)
+    db.ref(`users/${uid}/trns/`).set(null)
+    commit('setAppStatus', 'ready')
   }
 }

@@ -9,9 +9,10 @@ export default {
     app.auth().onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          if (rootState.user.user.uid && rootState.user.user.uid !== user.uid) {
+          if (rootState.user.user && rootState.user.user.uid && rootState.user.user.uid !== user.uid) {
             dispatch('clearUserData')
           }
+          await dispatch('getDemoDataStatus')
           await dispatch('initUser', user)
           await dispatch('initCurrencies')
           await dispatch('initCategories')

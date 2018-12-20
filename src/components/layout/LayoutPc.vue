@@ -3,10 +3,11 @@ import Button from '@/components/shared/button/Button'
 import CategoriesList from '@/components/categories/list/CategoriesList'
 import CategoryForm from '@/components/categories/form/CategoryForm'
 import CategoryModal from '@/components/categories/modal/CategoryModal'
+import CurrencyModal from '@/components/currencies/CurrencyModal'
 import Dashboard from '@/components/dashboard/Dashboard'
 import DashboardNav from '@/components/dashboard/DashboardNav'
-import LayoutPcTab from '@/components/layout/LayoutPcTab'
 import LayoutPcSidebar from '@/components/layout/LayoutPcSidebar'
+import LayoutPcTab from '@/components/layout/LayoutPcTab'
 import Settings from '@/components/settings/Settings'
 import TrnForm from '@/components/trnForm/TrnForm'
 import TrnModal from '@/components/trns/modal/TrnModal'
@@ -20,6 +21,7 @@ export default {
     CategoriesList,
     CategoryForm,
     CategoryModal,
+    CurrencyModal,
     Dashboard,
     DashboardNav,
     LayoutPcTab,
@@ -58,6 +60,7 @@ export default {
 
   //- modals
   CategoryModal
+  CurrencyModal
   TrnForm
   TrnModal
   WalletModal
@@ -69,6 +72,8 @@ export default {
     .layout__item
       Dashboard
 
+      //- categories
+      //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'categories'")
         .dashboard__title Categories
         CategoriesList.dashboardItems(v-on:onClick="(id) => handleShowCategoryModal(id)")
@@ -78,9 +83,11 @@ export default {
           title="New category"
           v-on:onClick="$store.dispatch('setActiveTab', 'createCategory')")
 
+      //- wallets
+      //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'wallets'")
         .dashboard__title Wallets
-        WalletsList(
+        WalletsList.dashboardItems(
           ui="tile"
           v-on:onClick="(id) => handleShowWalletModal(id)")
         Button(
@@ -89,15 +96,29 @@ export default {
           title="New wallet"
           v-on:onClick="$store.dispatch('setActiveTab', 'createWallet')")
 
+      //- add category
+      //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'createCategory'")
         CategoryForm(v-if="activeTab === 'createCategory'")
 
+      //- add wallet
+      //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'createWallet'")
         WalletForm(v-if="activeTab === 'createWallet'")
 
+      //- settings
+      //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'settings'")
         Settings
 </template>
+
+<style lang="stylus">
+@import "~@/stylus/variables/margins"
+
+.dashboardItems .categoryItem
+.dashboardItems .walletItemTile
+  padding $m8
+</style>
 
 <style lang="stylus" scoped>
 @import "~@/stylus/variables/fonts"
@@ -128,7 +149,7 @@ export default {
   position relative
   overflow hidden
   height 100%
-  max-width 1500px
+  max-width 1527px
 
   &__wrap
     overflow hidden
@@ -137,7 +158,6 @@ export default {
     height 100%
     display grid
     grid-template-columns minMax(280px, 320px) 1fr
-    max-width 1500px
     min-width 600px
     background var(--c-bg-2)
 

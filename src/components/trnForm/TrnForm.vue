@@ -1,4 +1,5 @@
 <script>
+<<<<<<< HEAD
 import moment from "moment";
 import { createId } from "@/utils/id";
 
@@ -18,6 +19,27 @@ import TrnFormModalWallets from "@/components/trnForm/TrnFormModalWallets";
 import TrnFormModalTransferFrom from "@/components/trnForm/TrnFormModalTransferFrom";
 import TrnFormModalTransferTo from "@/components/trnForm/TrnFormModalTransferTo";
 import WalletsList from "@/components/wallets/list/WalletsList";
+=======
+import moment from 'moment'
+import { generateDateId } from '@/utils/id'
+
+import Amount from '@/components/amount/Amount'
+import CategoriesView from '@/components/categories/list/CategoriesView'
+import Icon from '@/components/icon/Icon'
+import TrnFormAmount from '@/components/trnForm/TrnFormAmount'
+import TrnFormCalculator from '@/components/trnForm/TrnFormCalculator'
+import TrnFormCalendar from '@/components/trnForm/TrnFormCalendar'
+import TrnFormModalDescription from '@/components/trnForm/TrnFormModalDescription'
+import TrnFormHeader from '@/components/trnForm/TrnFormHeader'
+import TrnFormHeaderTransfer from '@/components/trnForm/TrnFormHeaderTransfer'
+import TrnFormModalCalendar from '@/components/trnForm/TrnFormModalCalendar'
+import TrnFormModalCats from '@/components/trnForm/TrnFormModalCats'
+import TrnFormModalCatsChild from '@/components/trnForm/TrnFormModalCatsChild'
+import TrnFormModalWallets from '@/components/trnForm/TrnFormModalWallets'
+import TrnFormModalTransferFrom from '@/components/trnForm/TrnFormModalTransferFrom'
+import TrnFormModalTransferTo from '@/components/trnForm/TrnFormModalTransferTo'
+import WalletsList from '@/components/wallets/list/WalletsList'
+>>>>>>> master
 
 export default {
   components: {
@@ -90,9 +112,15 @@ export default {
       }
     },
 
+<<<<<<< HEAD
     handleSubmitTrn() {
       const values = { ...this.$store.state.trnForm.values };
       const id = values.trnId || createId();
+=======
+    handleSubmitTrn () {
+      const values = { ...this.$store.state.trnForm.values }
+      const id = values.trnId || generateDateId()
+>>>>>>> master
 
       this.$store.dispatch("addTrn", {
         id,
@@ -100,6 +128,7 @@ export default {
       });
     },
 
+<<<<<<< HEAD
     handleSubmitTrnasfer() {
       // TODO: add support for different currencies
       // if wallets are of different currencies then trnForm should
@@ -108,14 +137,22 @@ export default {
       const amountFrom = this.$store.state.trnForm.values.amount;
       const amountTo = amountFrom;
 
+=======
+    handleSubmitTrnasfer () {
+>>>>>>> master
       const values = {
         categoryId: this.$store.getters.transferCategoryId,
         date: moment(this.$store.state.trnForm.values.date).valueOf()
       };
 
       // Income
+<<<<<<< HEAD
       this.$store.dispatch("addTrn", {
         id: `${newId}-to`,
+=======
+      this.$store.dispatch('addTrn', {
+        id: generateDateId(),
+>>>>>>> master
         values: {
           ...values,
           amount: amountTo,
@@ -125,8 +162,13 @@ export default {
       });
 
       // Expense
+<<<<<<< HEAD
       this.$store.dispatch("addTrn", {
         id: `${newId}-from`,
+=======
+      this.$store.dispatch('addTrn', {
+        id: generateDateId(),
+>>>>>>> master
         values: {
           ...values,
           amount: amountFrom,

@@ -25,7 +25,7 @@ export default {
       date: moment(values.date).valueOf(),
       description: values.description || null,
       editDate: moment().valueOf(),
-      type: values.amountType
+      type: values.amountType || 0
     }
 
     localforage.setItem('next.trns', { ...trns, [id]: formatedTrnValues })
@@ -58,6 +58,18 @@ export default {
     db.ref(`trns/${id}`)
       .remove()
       .then(() => removeTrnToDeleteLaterLocal(id))
+  },
+
+  async deleteTrnsByIds ({ commit, rootState }, trnsIds) {
+    const uid = rootState.user.user.uid
+    const trnsForDelete = {}
+    for (const trnId of trnsIds) {
+      trnsForDelete[trnId] = null
+    }
+
+    await db.ref(`users/${uid}/trns`)
+      .update(trnsForDelete)
+      .then(() => console.log('trns deleted'))
   },
 
   // init

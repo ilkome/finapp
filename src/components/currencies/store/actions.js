@@ -4,7 +4,7 @@ import { db } from '@/firebase'
 import { getCurrencies } from './api'
 
 export default {
-  async initCurrencies({ commit, rootState }) {
+  async initCurrencies({ rootState, commit }) {
     const uid = rootState.user.user.uid
 
     // base currency
@@ -17,7 +17,7 @@ export default {
     let currenciesValue = currenciesSnapshot.val()
     let isTodayCurrencies = true
 
-    // check date of currencies
+    // have currencies for today?
     if (currenciesValue) isTodayCurrencies = moment().isSame(currenciesValue.date, 'day')
 
     // get currencies from rest api
@@ -41,5 +41,11 @@ export default {
 
     commit('setCurrencies', currenciesValue)
     localforage.setItem('next.currencies', currenciesValue)
+  },
+
+  setBaseCurrency({ rootState, dispatch }, baseCurrency) {
+    const uid = rootState.user.user.uid
+    db.ref(`users/${uid}/settings/baseCurrency`).set(baseCurrency)
+    dispatch('initCurrencies')
   }
 }

@@ -12,23 +12,22 @@ module.exports = {
       }
     }
   },
-
+  productionSourceMap: false,
   css: {
-    sourceMap: true
+    sourceMap: process.env.NODE_ENV !== 'production'
   },
 
   pwa: {
     themeColor: '#1c1d21',
     workboxPluginMode: 'GenerateSW',
     workboxOptions: {
+      skipWaiting: true,
+
       runtimeCaching: [{
         urlPattern: new RegExp('^https://fonts.googleapis.com/'),
         handler: 'cacheFirst'
       }, {
         urlPattern: new RegExp('^https://fonts.gstatic.com/'),
-        handler: 'cacheFirst'
-      }, {
-        urlPattern: new RegExp('^https://maxcdn.bootstrapcdn.com/'),
         handler: 'cacheFirst'
       }, {
         urlPattern: new RegExp('^https://maxcdn.bootstrapcdn.com/'),

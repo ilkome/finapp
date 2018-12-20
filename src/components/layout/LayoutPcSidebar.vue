@@ -1,12 +1,23 @@
 <script>
+import ContextMenu from '@/components/shared/contextMenu/ContextMenu'
+import ContextMenuItem from '@/components/shared/contextMenu/ContextMenuItem'
 import WalletsList from '@/components/wallets/list/WalletsList'
 import WalletsTotal from '@/components/wallets/total/WalletsTotal'
 
 export default {
   components: {
+    ContextMenu,
+    ContextMenuItem,
     WalletsList,
     WalletsTotal
   },
+
+  data () {
+    return {
+      visibleSettingsMenu: false
+    }
+  },
+
   computed: {
     activeTab () {
       return this.$store.state.ui.activeTab
@@ -26,10 +37,29 @@ export default {
 .sidebar
   .sidebar__top
     .sidebar__menu
-      .sidebar__menu__item(
-        :class="{ _active: activeTab === 'settings'}"
-        @click="$store.dispatch('setActiveTab', 'settings')"
-      ): .mdi.mdi-settings-outline
+      ContextMenu(
+        :position="{ left: true, top: true }"
+        :visible="visibleSettingsMenu"
+        v-on:onClickOpener="visibleSettingsMenu = !visibleSettingsMenu")
+        template(slot="opener")
+          .link(:class="{ _active: visibleSettingsMenu }"): .mdi.mdi-settings-outline
+
+        template(slot="content")
+          ContextMenuItem(
+            icon="mdi mdi-palette"
+            title="Change theme"
+            v-on:onClick="$store.dispatch('changeTheme')")
+          ContextMenuItem(
+            icon="mdi mdi-settings"
+            title="Go to settings"
+            v-on:onClick="$store.dispatch('setActiveTab', 'settings')"
+            v-on:onClose="visibleSettingsMenu = !visibleSettingsMenu")
+          .context-menu-sep
+          ContextMenuItem(
+            icon="mdi mdi-logout"
+            title="Sign Out"
+            v-on:onClick="$store.dispatch('signOut')"
+            v-on:onClose="visibleSettingsMenu = !visibleSettingsMenu")
 
       .sidebar__menu__item(
         :class="{ _active: activeTab === 'wallets'}"
@@ -52,8 +82,7 @@ export default {
     WalletsList(
       :showToogle="true"
       :limit="6"
-      v-on:onClick="(id) => handleShowWalletModal(id)"
-    )
+      v-on:onClick="(id) => handleShowWalletModal(id)")
 </template>
 
 <style lang="stylus" scoped>
@@ -75,12 +104,13 @@ export default {
     padding 0 $m7
 
     &__item
+      position relative
       display inline-flex
       align-items center
       justify-content center
       padding $m7 $m8
       font-header-1()
-      font-size 18px
+      font-size 22px
       color var(--c-font-4)
 
       &:hover
@@ -94,4 +124,15 @@ export default {
     overflow-y auto
     padding $m5 0
     scrollbar()
+
+.link
+  z-index 1
+  padding $m7 $m8
+  font-header-1()
+  font-size 22px
+  color var(--c-font-4)
+
+  &:hover:not(._active)
+    @media $media-laptop
+      background var(--c-bg-6)
 </style>

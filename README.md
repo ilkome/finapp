@@ -11,6 +11,13 @@ This is Finapp 2.0. For the 1.x see the [classic branch](https://github.com/ilko
 
 ![Finapp 2.0.0](https://firebasestorage.googleapis.com/v0/b/finapp-17474.appspot.com/o/2.0.0%2Ffinapp-2.0.0-promo.png?alt=media&token=bce821da-f5fa-4e8a-be7a-8fc0ebfaf260)
 
+## Futures and Technologies
+- Works offline on all devices (Service Worker): you can see all your data. Create, edit and delete transactions. (iOS is not supported yet)
+- Optimised for mobile and PC.
+- Themes: dark and white.
+- Support multiple currencies with auto conversion.
+- Instant synchronisation between all device (Firebase).
+
 ## Setup
 
 ### Project setup
@@ -31,7 +38,7 @@ $ npm install
 - Go to the Database tab and enable Firestore.
 - Select Realtime Database and go to Rules tab.
 - Change rules to:
-```
+``` javascript
 {
   "rules": {
     "users": {
@@ -47,9 +54,9 @@ $ npm install
   }
 }
 ```
-- Go to the Project Overviw and click Add Firebase to your web app.
+- Go to the Project Overview and click Add Firebase to your web app.
 - You need to replace config in app's directory `/src/firebase.js` with your properties.
-```
+``` bash
 apiKey: 'YOUR_CONFIG',
 authDomain: 'YOUR_CONFIG',
 databaseURL: 'YOUR_CONFIG',
@@ -62,17 +69,29 @@ messagingSenderId: 'YOUR_CONFIG'
 ## Development
 
 #### Compiles and hot-reloads
-```
-npm run dev
+``` bash
+$ npm run dev
 ```
 
 ## Production
 #### Compiles and minifies for production
-```
-npm run build
+``` bash
+$ npm run build
 ```
 
-## Stay In Touch
+## Upload to server
+You can add your FTP config in app's directory `/src/ftp.config.js`
+
+``` bash
+# upload all files from dist folder
+$ npm run upload
+
+# upload only css, js, html files from dist folder
+$ npm run upload-min
+```
+
+## Stay In Touch 🤪
+I would like to speak with you about Finapp. I'm interesting to work in interesting modern projects.
 - [Telegram](https://t.me/ilkome)
 - [VK](https://www.vk.com/ilkome)
 - [Facebook](https://www.facebook.com/ilkome)

@@ -133,12 +133,6 @@ export default {
     &._small
       margin-top $m3
 
-    // ^[0]._center &
-    //   justify-content center
-
-    // ^[0]._left &
-    //   justify-content flex-start
-
   &._expenses
     color var(--c-expenses-1)
 
@@ -157,4 +151,5 @@ export default {
 
     &._small
       font-size 12px
+      color var(--c-font-4)
 </style>
