@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "firebase": "^5.4.2",
+    "firebase": "^5.7.0",
     "highcharts": "^6.1.3",
     "highcharts-vue": "^1.2.0",
     "localforage": "^1.7.2",
