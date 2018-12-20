@@ -1,12 +1,12 @@
 <script>
-import { focus } from 'vue-focus'
-import { db } from '@/firebase'
-import { createId } from '@/utils/id'
-import colors from '@/components/ui/store/colors'
+import { focus } from "vue-focus";
+import { db } from "@/firebase";
+import { createId } from "@/utils/id";
+import colors from "@/components/ui/store/colors";
 
-import Button from '@/components/shared/button/Button'
-import Checkbox from '@/components/shared/inputs/Checkbox'
-import ModalBottom from '@/components/modal/ModalBottom'
+import Button from "@/components/shared/button/Button";
+import Checkbox from "@/components/shared/inputs/Checkbox";
+import ModalBottom from "@/components/modal/ModalBottom";
 
 export default {
   components: {
@@ -17,7 +17,7 @@ export default {
 
   directives: { focus },
 
-  data () {
+  data() {
     return {
       showColors: false,
       showCurrencies: false,
@@ -25,56 +25,56 @@ export default {
         name: null,
         order: 1,
         countTotal: true,
-        currency: 'RUB',
+        currency: "RUB",
         color: this.$store.state.ui.defaultBgColor
       }
-    }
+    };
   },
 
   computed: {
-    walletId () {
-      return this.$store.state.wallets.editId
+    walletId() {
+      return this.$store.state.wallets.editId;
     }
   },
 
   watch: {
     walletId: {
-      handler (walletId) {
+      handler(walletId) {
         if (walletId) {
           this.wallet = {
             ...this.wallet,
             ...this.$store.state.wallets.items[this.walletId]
-          }
+          };
         }
       },
       immediate: true
     }
   },
 
-  created () {
-    this.colors = colors
+  created() {
+    this.colors = colors;
     if (!this.$store.state.wallets.editId) {
-      this.wallet.color = colors[Math.floor(Math.random() * colors.length)]
+      this.wallet.color = colors[Math.floor(Math.random() * colors.length)];
     }
   },
 
-  beforeDestroy () {
-    this.$store.commit('setWalletEditId', null)
+  beforeDestroy() {
+    this.$store.commit("setWalletEditId", null);
   },
 
   methods: {
-    handleColorSelect (color) {
-      this.wallet.color = color
-      this.showColors = false
+    handleColorSelect(color) {
+      this.wallet.color = color;
+      this.showColors = false;
     },
-    handleCurrencySelect (currency) {
-      this.wallet.currency = currency
-      this.showCurrencies = false
+    handleCurrencySelect(currency) {
+      this.wallet.currency = currency;
+      this.showCurrencies = false;
     },
 
-    handleSubmit () {
+    handleSubmit() {
       if (this.validateForm()) {
-        const id = this.walletId || createId()
+        const id = this.walletId || createId();
 
         const walletsValues = {
           color: this.wallet.color,
@@ -82,36 +82,36 @@ export default {
           currency: this.wallet.currency,
           name: this.wallet.name,
           order: this.wallet.order
-        }
+        };
 
-        this.$store.dispatch('addWallet', { id, values: walletsValues })
-        this.$store.commit('setWalletEditId', null)
-        this.$store.dispatch('setActiveTab', 'wallets')
+        this.$store.dispatch("addWallet", { id, values: walletsValues });
+        this.$store.commit("setWalletEditId", null);
+        this.$store.dispatch("setActiveTab", "wallets");
 
-        if (this.$listeners.callback) this.$listeners.callback()
+        if (this.$listeners.callback) this.$listeners.callback();
       }
     },
 
-    validateForm () {
-      const wallets = this.$store.state.wallets.items
+    validateForm() {
+      const wallets = this.$store.state.wallets.items;
       // name
       if (!this.wallet.name) {
         this.$notify({
-          group: 'main',
-          title: '😮',
-          text: 'Write wallet name'
-        })
-        return false
+          group: "main",
+          title: "😮",
+          text: "Write wallet name"
+        });
+        return false;
       }
 
       // currency
       if (!this.wallet.currency) {
         this.$notify({
-          group: 'main',
-          title: '😮',
-          text: 'Write wallet currency'
-        })
-        return false
+          group: "main",
+          title: "😮",
+          text: "Write wallet currency"
+        });
+        return false;
       }
 
       for (const walletId in wallets) {
@@ -119,27 +119,27 @@ export default {
           if (this.walletId) {
             if (this.walletId !== walletId) {
               this.$notify({
-                group: 'main',
-                title: '😮',
-                text: 'Wallet with same name is exist'
-              })
-              return false
+                group: "main",
+                title: "😮",
+                text: "Wallet with same name is exist"
+              });
+              return false;
             }
           } else {
             this.$notify({
-              group: 'main',
-              title: '😮',
-              text: 'Wallet with same name is exist'
-            })
-            return false
+              group: "main",
+              title: "😮",
+              text: "Wallet with same name is exist"
+            });
+            return false;
           }
         }
       }
 
-      return true
+      return true;
     }
   }
-}
+};
 </script>
 
 <template lang="pug">
@@ -236,98 +236,121 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~@/stylus/variables/margins"
-@import "~@/stylus/variables/media"
+@import '~@/stylus/variables/margins';
+@import '~@/stylus/variables/media';
 
-.customColor
-  margin (- $m7)
-  margin-top 0
-  padding $m7
-  background var(--c-bg-1)
+.customColor {
+  margin: (- $m7);
+  margin-top: 0;
+  padding: $m7;
+  background: var(--c-bg-1);
 
-  &__title
-    padding-bottom $m6
-    color var(--c-font-4)
+  &__title {
+    padding-bottom: $m6;
+    color: var(--c-font-4);
+  }
 
-  &__value
-    width 100%
-    height 40px
-    margin 0
-    padding 0
-    border 0
+  &__value {
+    width: 100%;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+}
 
-.component
-  width 100%
+.component {
+  width: 100%;
 
-  @media $media-phone
-    margin 0 auto
-    padding $m9
+  @media $media-phone {
+    margin: 0 auto;
+    padding: $m9;
+  }
 
-  &__title
-    padding-bottom $m10
+  &__title {
+    padding-bottom: $m10;
+  }
+}
 
-.form
-  @media $media-laptop
-    max-width 380px
+.form {
+  @media $media-laptop {
+    max-width: 380px;
+  }
+}
 
-.form__actions
-  @media $media-phone
-    text-align center
+.form__actions {
+  @media $media-phone {
+    text-align: center;
+  }
+}
 
-.form__btns
-  display grid
-  grid-template-columns repeat(2, 1fr)
-  grid-column-gap $m9
-  grid-row-gap $m9
-  padding-bottom $m9
+.form__btns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: $m9;
+  grid-row-gap: $m9;
+  padding-bottom: $m9;
 
-  @media $media-laptop
-    grid-column-gap $m10
-    grid-row-gap $m10
-    padding-bottom $m10
+  @media $media-laptop {
+    grid-column-gap: $m10;
+    grid-row-gap: $m10;
+    padding-bottom: $m10;
+  }
 
-  &__i._full
-    grid-column 1 / -1
+  &__i._full {
+    grid-column: 1 / -1;
+  }
 
-  .form-line
-    display flex
-    align-items center
-    justify-content center
-    height 100%
-    height 56px
-    margin-bottom 0
+  .form-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    height: 56px;
+    margin-bottom: 0;
+  }
+}
 
-.inputModal
-  &._flex
-    flex 1
-    display flex
-    align-items center
-    justify-content space-between
+.inputModal {
+  &._flex {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-  &__content
-    display flex
+  &__content {
+    display: flex;
+  }
 
-  &__label
-    margin 0
-    padding 0
-    font-size 10px
+  &__label {
+    margin: 0;
+    padding: 0;
+    font-size: 10px;
+  }
+}
 
-.currencies
-  display flex
-  flex-wrap wrap
+.currencies {
+  display: flex;
+  flex-wrap: wrap;
 
-  &__item
-    flex 1
-    text-align center
-    margin 0 -1px -1px 0
-    padding $m7 $m7
-    border 1px solid var(--c-bg-6)
+  &__item {
+    flex: 1;
+    text-align: center;
+    margin: 0 -1px -1px 0;
+    padding: $m7 $m7;
+    border: 1px solid var(--c-bg-6);
 
-    &:hover
-      @media $media-laptop
-        background var(--c-bg-6)
+    &:hover {
+      @media $media-laptop {
+        background: var(--c-bg-6);
+      }
+    }
 
-    &._active
-      color var(--c-font-1)
-      background var(--c-bg-8)
+    &._active {
+      color: var(--c-font-1);
+      background: var(--c-bg-8);
+    }
+  }
+}
 </style>

@@ -106,7 +106,7 @@ export default {
 
       setTimeout(async () => {
         await this.deleteAllTrns(trnsIds)
-        db.ref(`users/${uid}/categories/${id}`)
+        db.ref(`categories/${id}`)
           .remove()
           .then(() => { console.log('removed category') })
       }, 200)

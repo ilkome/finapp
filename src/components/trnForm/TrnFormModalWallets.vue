@@ -1,7 +1,7 @@
 <script>
-import Icon from '@/components/icon/Icon'
-import TrnFormModal from '@/components/trnForm/TrnFormModal'
-import WalletsList from '@/components/wallets/list/WalletsList'
+import Icon from "@/components/icon/Icon";
+import TrnFormModal from "@/components/trnForm/TrnFormModal";
+import WalletsList from "@/components/wallets/list/WalletsList";
 
 export default {
   components: {
@@ -11,12 +11,12 @@ export default {
   },
 
   methods: {
-    handleSetWallet (walletId) {
-      this.$store.commit('toogleTrnFormModal', 'wallets')
-      this.$store.commit('setTrnFormValues', { walletId })
+    handleSetWallet(walletId) {
+      this.$store.commit("toogleTrnFormModal", "wallets");
+      this.$store.commit("setTrnFormValues", { walletId });
     }
   }
-}
+};
 </script>
 
 <template lang="pug">

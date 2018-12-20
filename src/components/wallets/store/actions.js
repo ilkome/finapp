@@ -2,42 +2,41 @@ import localforage from 'localforage'
 import { db } from '@/firebase'
 
 export default {
-  addWallet ({ dispatch, rootState, getters }, { id, values }) {
+  addWallet({ dispatch, rootState, getters }, { id, values }) {
     const uid = rootState.user.user.uid
-
     const formatedValues = {
+      shared: values.shared !== undefined ? values.shared : false,
       color: values.color,
       countTotal: values.countTotal,
       currency: values.currency,
       name: values.name,
-      order: parseInt(values.order) || 1
+      order: parseInt(values.order) || 1,
+      users: values.users || [uid]
     }
-
     // set default currency based on first created wallet
     if (!getters.hasWallets) {
       db.ref(`users/${uid}/settings/baseCurrency`).set(values.currency)
       dispatch('initCurrencies')
     }
-
-    db.ref(`users/${uid}/accounts/${id}`).set(formatedValues)
+    db.ref(`accounts/${id}`).set(formatedValues)
   },
 
-  initWallets ({ dispatch, rootState }) {
+  initWallets({ dispatch, rootState }) {
     const uid = rootState.user.user.uid
 
-    db.ref(`users/${uid}/accounts`).on('value', snapshot => {
-      const items = Object.freeze(snapshot.val())
-      dispatch('setWallets', items)
+    db.ref(`accounts`).on('value', snapshot => {
+      const accounts = Object.freeze(snapshot.val())
+      dispatch('setWallets', accounts)
     }, e => console.error(e))
   },
 
-  setWallets ({ commit }, items) {
+  setWallets({ commit }, items) {
     commit('setWallets', items)
     localforage.setItem('next.wallets', items)
   },
 
-  unsubcribeWallets ({ rootState }) {
+  unsubcribeWallets({ rootState }) {
     const uid = rootState.user.user.uid
-    db.ref(`users/${uid}/accounts`).off()
+    db.ref(`/accounts`).off()
   }
 }

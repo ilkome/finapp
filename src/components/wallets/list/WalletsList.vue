@@ -1,5 +1,5 @@
 <script>
-import WalletItem from '@/components/wallets/item/WalletItem'
+import WalletItem from "@/components/wallets/item/WalletItem";
 
 export default {
   components: {
@@ -21,43 +21,49 @@ export default {
     }
   },
 
-  data () {
+  data() {
     return {
       stateLimit: 0
-    }
+    };
   },
 
   computed: {
-    className () {
+    className() {
       return {
         walletsList: !this.ui,
-        walletsWidget: this.ui === 'widget',
-        walletsTiles: this.ui === 'tile',
-        walletsLine: this.ui === 'line'
-      }
+        walletsWidget: this.ui === "widget",
+        walletsTiles: this.ui === "tile",
+        walletsLine: this.ui === "line"
+      };
     },
 
-    walletsIds () {
-      const walletsIds = this.$store.getters.walletsSortedIds
-      if (this.stateLimit) return walletsIds.slice(0, this.stateLimit)
-      return walletsIds
+    walletsIds() {
+      //const walletsIds = this.$store.getters.walletsSortedIds
+      // show only relevant wallets
+      const uid = this.$store.state.user.user.uid;
+      const wallets = this.$store.state.wallets.items;
+      const walletsIds = Object.keys(wallets).filter(
+        key => wallets[key].users && wallets[key].users.includes(uid)
+      );
+      if (this.stateLimit) return walletsIds.slice(0, this.stateLimit);
+      return walletsIds;
     }
   },
 
-  created () {
-    this.stateLimit = this.limit
+  created() {
+    this.stateLimit = this.limit;
   },
 
   methods: {
-    toogleWallets () {
+    toogleWallets() {
       if (this.stateLimit > 0) {
-        this.stateLimit = 0
+        this.stateLimit = 0;
       } else {
-        this.stateLimit = this.limit
+        this.stateLimit = this.limit;
       }
     }
   }
-}
+};
 </script>
 
 <template lang="pug">

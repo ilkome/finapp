@@ -4,7 +4,7 @@ import { db } from '@/firebase'
 import { getCurrencies } from './api'
 
 export default {
-  async initCurrencies ({ commit, rootState }) {
+  async initCurrencies({ commit, rootState }) {
     const uid = rootState.user.user.uid
 
     // base currency

@@ -1,10 +1,10 @@
 <script>
-import { db } from '@/firebase'
+import { db } from "@/firebase";
 
-import ModalBottom from '@/components/modal/ModalBottom'
-import ModalBottomConfirm from '@/components/modal/ModalBottomConfirm'
-import ModalButton from '@/components/modal/ModalButton'
-import WalletItem from '@/components/wallets/item/WalletItem'
+import ModalBottom from "@/components/modal/ModalBottom";
+import ModalBottomConfirm from "@/components/modal/ModalBottomConfirm";
+import ModalButton from "@/components/modal/ModalButton";
+import WalletItem from "@/components/wallets/item/WalletItem";
 
 export default {
   components: {
@@ -14,68 +14,68 @@ export default {
     WalletItem
   },
 
-  data () {
+  data() {
     return {
       showModalConfirm: false
-    }
+    };
   },
 
   computed: {
-    walletId () {
-      return this.$store.state.wallets.modal.id
+    walletId() {
+      return this.$store.state.wallets.modal.id;
     }
   },
 
   methods: {
-    handleSetFilterWallet (id) {
-      this.$store.commit('hideWalletModal')
-      this.$store.dispatch('setActiveTab', 'stat')
-      this.$store.commit('setFilterDateNow')
-      this.$store.dispatch('setFilterWalletId', this.walletId)
+    handleSetFilterWallet(id) {
+      this.$store.commit("hideWalletModal");
+      this.$store.dispatch("setActiveTab", "stat");
+      this.$store.commit("setFilterDateNow");
+      this.$store.dispatch("setFilterWalletId", this.walletId);
     },
 
-    handleEditClick () {
-      const walletId = this.walletId
-      this.$store.commit('hideWalletModal')
-      this.$store.commit('setWalletEditId', walletId)
-      this.$store.dispatch('setActiveTab', 'createWallet')
+    handleEditClick() {
+      const walletId = this.walletId;
+      this.$store.commit("hideWalletModal");
+      this.$store.commit("setWalletEditId", walletId);
+      this.$store.dispatch("setActiveTab", "createWallet");
     },
 
-    handleDeleteClick () {
-      const trns = this.$store.state.trns.items
-      const id = this.walletId
+    handleDeleteClick() {
+      const trns = this.$store.state.trns.items;
+      const id = this.walletId;
 
-      let isTrns = false
+      let isTrns = false;
       for (const trnId in trns) {
         if (trns[trnId].accountId === id) {
           this.$notify({
-            group: 'main',
-            title: '👆',
-            text: 'You can not delete wallet with trns'
-          })
-          isTrns = true
-          break
+            group: "main",
+            title: "👆",
+            text: "You can not delete wallet with trns"
+          });
+          isTrns = true;
+          break;
         }
       }
 
-      if (!isTrns) this.showModalConfirm = true
+      if (!isTrns) this.showModalConfirm = true;
     },
 
-    handleDeleteConfirm () {
-      const uid = this.$store.state.user.user.uid
-      const id = this.walletId
+    handleDeleteConfirm() {
+      const uid = this.$store.state.user.user.uid;
+      const id = this.walletId;
 
-      this.showModalConfirm = false
-      this.$store.commit('hideWalletModal')
-      this.$store.commit('setWalletModalId', null)
+      this.showModalConfirm = false;
+      this.$store.commit("hideWalletModal");
+      this.$store.commit("setWalletModalId", null);
       setTimeout(() => {
-        db.ref(`users/${uid}/accounts/${id}`)
+        db.ref(`accounts/${id}`)
           .remove()
-          .then(() => console.log('removed'))
-      }, 100)
+          .then(() => console.log("removed"));
+      }, 100);
     }
   }
-}
+};
 </script>
 
 <template lang="pug">

@@ -107,7 +107,7 @@ export default {
           showStat: true
         }
 
-        db.ref(`users/${uid}/categories/${id}`).set(categoriesValues)
+        db.ref(`categories/${id}`).set(categoriesValues)
 
         this.$store.commit('setCategoryEditId', null)
         this.$store.dispatch('setActiveTab', 'categories')

@@ -1,23 +1,23 @@
 <script>
-import moment from 'moment'
-import { createId } from '@/utils/id'
+import moment from "moment";
+import { createId } from "@/utils/id";
 
-import Amount from '@/components/amount/Amount'
-import CategoriesView from '@/components/categories/list/CategoriesView'
-import Icon from '@/components/icon/Icon'
-import TrnFormAmount from '@/components/trnForm/TrnFormAmount'
-import TrnFormCalculator from '@/components/trnForm/TrnFormCalculator'
-import TrnFormCalendar from '@/components/trnForm/TrnFormCalendar'
-import TrnFormModalDescription from '@/components/trnForm/TrnFormModalDescription'
-import TrnFormHeader from '@/components/trnForm/TrnFormHeader'
-import TrnFormHeaderTransfer from '@/components/trnForm/TrnFormHeaderTransfer'
-import TrnFormModalCalendar from '@/components/trnForm/TrnFormModalCalendar'
-import TrnFormModalCats from '@/components/trnForm/TrnFormModalCats'
-import TrnFormModalCatsChild from '@/components/trnForm/TrnFormModalCatsChild'
-import TrnFormModalWallets from '@/components/trnForm/TrnFormModalWallets'
-import TrnFormModalTransferFrom from '@/components/trnForm/TrnFormModalTransferFrom'
-import TrnFormModalTransferTo from '@/components/trnForm/TrnFormModalTransferTo'
-import WalletsList from '@/components/wallets/list/WalletsList'
+import Amount from "@/components/amount/Amount";
+import CategoriesView from "@/components/categories/list/CategoriesView";
+import Icon from "@/components/icon/Icon";
+import TrnFormAmount from "@/components/trnForm/TrnFormAmount";
+import TrnFormCalculator from "@/components/trnForm/TrnFormCalculator";
+import TrnFormCalendar from "@/components/trnForm/TrnFormCalendar";
+import TrnFormModalDescription from "@/components/trnForm/TrnFormModalDescription";
+import TrnFormHeader from "@/components/trnForm/TrnFormHeader";
+import TrnFormHeaderTransfer from "@/components/trnForm/TrnFormHeaderTransfer";
+import TrnFormModalCalendar from "@/components/trnForm/TrnFormModalCalendar";
+import TrnFormModalCats from "@/components/trnForm/TrnFormModalCats";
+import TrnFormModalCatsChild from "@/components/trnForm/TrnFormModalCatsChild";
+import TrnFormModalWallets from "@/components/trnForm/TrnFormModalWallets";
+import TrnFormModalTransferFrom from "@/components/trnForm/TrnFormModalTransferFrom";
+import TrnFormModalTransferTo from "@/components/trnForm/TrnFormModalTransferTo";
+import WalletsList from "@/components/wallets/list/WalletsList";
 
 export default {
   components: {
@@ -40,21 +40,21 @@ export default {
   },
 
   computed: {
-    show () {
-      return this.$store.state.trnForm.show
+    show() {
+      return this.$store.state.trnForm.show;
     },
-    isTransfer () {
-      return this.$store.state.trnForm.values.amountType === 2
+    isTransfer() {
+      return this.$store.state.trnForm.values.amountType === 2;
     }
   },
 
   watch: {
     show: {
-      handler (show) {
+      handler(show) {
         if (show) {
           this.$nextTick(() => {
-            this.setTrnFormHeight()
-          })
+            this.setTrnFormHeight();
+          });
         }
       },
       immediate: true
@@ -62,166 +62,173 @@ export default {
   },
 
   methods: {
-    handleSubmitForm () {
+    handleSubmitForm() {
       try {
-        const isFormValid = this.validateForm()
+        const isFormValid = this.validateForm();
         if (isFormValid) {
           if (this.$store.state.ui.mobile) {
-            this.$store.commit('closeTrnForm')
+            this.$store.commit("closeTrnForm");
           } else {
             setTimeout(() => {
               this.$notify({
-                group: 'main',
-                type: 'success',
-                title: 'Added',
-                text: 'Cool :)'
-              })
-            }, 200)
+                group: "main",
+                type: "success",
+                title: "Added",
+                text: "Cool :)"
+              });
+            }, 200);
           }
 
           setTimeout(() => {
             this.isTransfer
               ? this.handleSubmitTrnasfer()
-              : this.handleSubmitTrn()
-          }, 100)
+              : this.handleSubmitTrn();
+          }, 100);
         }
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     },
 
-    handleSubmitTrn () {
-      const values = { ...this.$store.state.trnForm.values }
-      const id = values.trnId || createId()
+    handleSubmitTrn() {
+      const values = { ...this.$store.state.trnForm.values };
+      const id = values.trnId || createId();
 
-      this.$store.dispatch('addTrn', {
+      this.$store.dispatch("addTrn", {
         id,
         values
-      })
+      });
     },
 
-    handleSubmitTrnasfer () {
-      const newId = createId()
+    handleSubmitTrnasfer() {
+      // TODO: add support for different currencies
+      // if wallets are of different currencies then trnForm should
+      // show two values for user to enter
+      const newId = createId();
+      const amountFrom = this.$store.state.trnForm.values.amount;
+      const amountTo = amountFrom;
+
       const values = {
-        amount: this.$store.state.trnForm.values.amount,
         categoryId: this.$store.getters.transferCategoryId,
         date: moment(this.$store.state.trnForm.values.date).valueOf()
-      }
+      };
 
       // Income
-      this.$store.dispatch('addTrn', {
+      this.$store.dispatch("addTrn", {
         id: `${newId}-to`,
         values: {
           ...values,
+          amount: amountTo,
           walletId: this.$store.state.trnForm.transfer.to,
           amountType: 1
         }
-      })
+      });
 
       // Expense
-      this.$store.dispatch('addTrn', {
+      this.$store.dispatch("addTrn", {
         id: `${newId}-from`,
         values: {
           ...values,
+          amount: amountFrom,
           walletId: this.$store.state.trnForm.transfer.from,
           amountType: 0
         }
-      })
+      });
     },
 
-    setTrnFormHeight () {
-      const trnFormHeight = this.$store.state.trnForm.height
+    setTrnFormHeight() {
+      const trnFormHeight = this.$store.state.trnForm.height;
 
-      const height = this.$refs.trnFormWrapRef.clientHeight
-      const trnFormHeaderHeight = 0
-      const newTrnFormHeight = height - trnFormHeaderHeight
+      const height = this.$refs.trnFormWrapRef.clientHeight;
+      const trnFormHeaderHeight = 0;
+      const newTrnFormHeight = height - trnFormHeaderHeight;
 
       if (trnFormHeight !== newTrnFormHeight) {
-        this.$store.commit('setTrnFormHeight', newTrnFormHeight)
+        this.$store.commit("setTrnFormHeight", newTrnFormHeight);
       }
     },
 
-    validateForm () {
-      const formValues = this.$store.state.trnForm.values
-      const formTransferValues = this.$store.state.trnForm.transfer
-      const wallets = this.$store.state.wallets.items
+    validateForm() {
+      const formValues = this.$store.state.trnForm.values;
+      const formTransferValues = this.$store.state.trnForm.transfer;
+      const wallets = this.$store.state.wallets.items;
 
       if (!formValues.amount) {
         this.$notify({
-          group: 'main',
-          type: 'error',
-          title: '😮',
-          text: 'Amount can not be empty'
-        })
-        return false
+          group: "main",
+          type: "error",
+          title: "😮",
+          text: "Amount can not be empty"
+        });
+        return false;
       }
       if (formValues.amount < 0) {
         this.$notify({
-          group: 'main',
-          type: 'error',
-          title: '😮',
-          text: 'Amount can not be negative number'
-        })
-        return false
+          group: "main",
+          type: "error",
+          title: "😮",
+          text: "Amount can not be negative number"
+        });
+        return false;
       }
       if (formValues.amount === 0) {
         this.$notify({
-          group: 'main',
-          type: 'error',
-          title: '😮',
-          text: 'Amount can not be equal Zero'
-        })
-        return false
+          group: "main",
+          type: "error",
+          title: "😮",
+          text: "Amount can not be equal Zero"
+        });
+        return false;
       }
 
       if (!formValues.walletId) {
         this.$notify({
-          group: 'main',
-          type: 'error',
-          title: '😮',
-          text: 'Please select wallet'
-        })
-        return false
+          group: "main",
+          type: "error",
+          title: "😮",
+          text: "Please select wallet"
+        });
+        return false;
       }
 
       if (!formValues.categoryId) {
         this.$notify({
-          group: 'main',
-          type: 'error',
-          title: '😮',
-          text: 'Please select category'
-        })
-        return false
+          group: "main",
+          type: "error",
+          title: "😮",
+          text: "Please select category"
+        });
+        return false;
       }
 
       if (formValues.amountType === 2) {
         if (formTransferValues.from === formTransferValues.to) {
           this.$notify({
-            group: 'main',
-            type: 'error',
-            title: '😮',
-            text: 'Transfer in same wallet'
-          })
-          return false
+            group: "main",
+            type: "error",
+            title: "😮",
+            text: "Transfer in same wallet"
+          });
+          return false;
         }
 
-        const walletFrom = wallets[formTransferValues.from]
-        const walletTo = wallets[formTransferValues.to]
+        const walletFrom = wallets[formTransferValues.from];
+        const walletTo = wallets[formTransferValues.to];
 
-        if (walletFrom.currency !== walletTo.currency) {
-          this.$notify({
-            group: 'main',
-            type: 'error',
-            title: '🤷',
-            text: 'Sorry, transfer between wallets with different currency in development'
-          })
-          return false
-        }
+        // if (walletFrom.currency !== walletTo.currency) {
+        //   this.$notify({
+        //     group: 'main',
+        //     type: 'error',
+        //     title: '🤷',
+        //     text: 'Sorry, transfer between wallets with different currency in development'
+        //   })
+        //   return false
+        // }
       }
-      return true
+      return true;
     }
   }
-}
+};
 </script>
 
 <template lang="pug">
@@ -310,38 +317,46 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~@/stylus/variables/margins"
-@import "~@/stylus/variables/media"
+@import '~@/stylus/variables/margins';
+@import '~@/stylus/variables/media';
 
-.trnForm__dateAndDesc
-  display flex
-  align-items stretch
+.trnForm__dateAndDesc {
+  display: flex;
+  align-items: stretch;
 
-  @media $media-phone
-    border-top 1px solid var(--c-bg-1)
+  @media $media-phone {
+    border-top: 1px solid var(--c-bg-1);
+  }
 
-  @media $media-laptop
-    min-height 54px
-    color var(--c-font-4)
-    background var(--c-bg-4)
+  @media $media-laptop {
+    min-height: 54px;
+    color: var(--c-font-4);
+    background: var(--c-bg-4);
+  }
 
-  &-date
-    flex-grow 1
+  &-date {
+    flex-grow: 1;
+  }
 
-  &-desc
-    padding $m7 $m9
-    width calc(100%/5)
-    font-size 20px
-    color var(--c-font-4)
-    text-align center
-    border-left 1px solid var(--c-bg-1)
+  &-desc {
+    padding: $m7 $m9;
+    width: calc((100% / 5));
+    font-size: 20px;
+    color: var(--c-font-4);
+    text-align: center;
+    border-left: 1px solid var(--c-bg-1);
+  }
 
-  &-date
-  &-desc
-    &:hover
-      @media $media-laptop
-        background var(--c-bg-5)
+  &-date, &-desc {
+    &:hover {
+      @media $media-laptop {
+        background: var(--c-bg-5);
+      }
+    }
 
-    &:active
-      background var(--c-bg-5)
+    &:active {
+      background: var(--c-bg-5);
+    }
+  }
+}
 </style>

@@ -17,6 +17,8 @@ export default {
     let isTrnSavedOnline = false
 
     const formatedTrnValues = {
+      createdBy: values.createdBy !== undefined ? values.createdBy : uid,
+      updatedBy: uid,
       accountId: values.walletId,
       amount: values.amount,
       categoryId: values.categoryId,
@@ -29,7 +31,7 @@ export default {
     localforage.setItem('next.trns', { ...trns, [id]: formatedTrnValues })
     commit('setTrns', Object.freeze({ ...trns, [id]: formatedTrnValues }))
 
-    db.ref(`users/${uid}/trns/${id}`)
+    db.ref(`trns/${id}`)
       .set(formatedTrnValues)
       .then(() => {
         isTrnSavedOnline = true
@@ -53,7 +55,7 @@ export default {
     localforage.setItem('next.trns', trns)
     saveTrnToDeleteLaterLocal(id)
 
-    db.ref(`users/${uid}/trns/${id}`)
+    db.ref(`trns/${id}`)
       .remove()
       .then(() => removeTrnToDeleteLaterLocal(id))
   },
@@ -62,7 +64,7 @@ export default {
   initTrns ({ rootState, dispatch, commit }) {
     const uid = rootState.user.user.uid
 
-    db.ref(`users/${uid}/trns`).on('value', snapshot => {
+    db.ref(`trns`).on('value', snapshot => {
       const items = Object.freeze(snapshot.val())
       dispatch('setTrns', items)
       commit('setAppStatus', 'ready')
@@ -76,7 +78,7 @@ export default {
 
   unsubcribeTrns ({ rootState }) {
     const uid = rootState.user.user.uid
-    db.ref(`users/${uid}/trns`).off()
+    db.ref(`trns`).off()
   },
 
   async iniOfflineTrns ({ dispatch }) {

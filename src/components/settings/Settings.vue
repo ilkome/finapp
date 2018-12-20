@@ -6,6 +6,10 @@ export default {
 <template lang="pug">
 div
   .settings
+    .control(@click="$store.dispatch('uploadStatement')")
+      .control__icon: .mdi.mdi-palette
+      .control__text Upload Prior Statement
+  .settings
     .control(@click="$store.dispatch('changeTheme')")
       .control__icon: .mdi.mdi-palette
       .control__text Change theme
