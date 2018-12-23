@@ -3,7 +3,7 @@ export default {
   props: {
     icon: {
       type: String,
-      required: true
+      default: null
     },
     title: {
       type: String,
@@ -32,7 +32,7 @@ export default {
 .item(
   @click="handleClick"
   :class="{ _selected: selected }")
-  .item__icon: div(:class="icon")
+  .item__icon(v-if="icon"): div(:class="icon")
   .item__title {{ title }}
   .item__check(v-if="checkValue"): .mdi.mdi-check-circle-outline
 </template>
