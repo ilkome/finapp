@@ -26,10 +26,6 @@ export default {
     if (uiLocalStore) {
       if (uiLocalStore.statItems) commit('setVisibilityStatItems', uiLocalStore.statItems)
 
-      uiLocalStore.lastTrns === 'visible'
-        ? commit('setVisibleLastTrns', 'visible')
-        : commit('setVisibleLastTrns', 'hidden')
-
       if (uiLocalStore.stat) {
         uiLocalStore.stat.walletsVisibility === 'visible'
           ? commit('setStatWalletsVisibility', 'visible')
@@ -127,17 +123,6 @@ export default {
 
     localforage.setItem('ui.lastUsedCatsInTrnForm', nextStatus)
     commit('setLastUsedCatsInTrnForm', nextStatus)
-  },
-
-  // visible last trns in mobile stat
-  tooglevisibleLastTrns ({ commit, state }) {
-    let nextStatus
-    state.lastTrns === 'visible'
-      ? nextStatus = 'hidden'
-      : nextStatus = 'visible'
-
-    localforage.setItem('uiLocalStore', state)
-    commit('setVisibleLastTrns', nextStatus)
   },
 
   // visible cats chart

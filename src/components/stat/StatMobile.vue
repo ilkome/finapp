@@ -111,13 +111,10 @@ export default {
   //- stat
   //------------------------------------------------
   div(v-show="activeTabStat === 'stat'")
-    .stat__lastTrns(v-if="$store.state.ui.lastTrns === 'visible'")
-      TrnsListViewEasy
-
     .stat__content
       //- incomes
       .statGroup(v-if="stat.incomes.categoriesIds.length")
-        .statItem-header(@click="$store.dispatch('tooglevisibleLastTrns')")
+        .statItem-header
           .statItem-total
             .statItem-total__title._incomes Incomes
             .statItem-total__amount
@@ -152,7 +149,7 @@ export default {
 
       //- expenses
       .statGroup(v-if="stat.expenses.categoriesIds.length")
-        .statItem-header(@click="$store.dispatch('tooglevisibleLastTrns')")
+        .statItem-header
           .statItem-total
             .statItem-total__title._expenses Expenses
             .statItem-total__amount
@@ -207,12 +204,6 @@ export default {
           title="Periods chart"
           :checkValue="$store.state.ui.statGraphsVisible"
           v-on:onClick="$store.dispatch('toogleShowStatGraphs')"
-          v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
-        ContextMenuItem(
-          icon="mdi mdi-history"
-          title="Last trns"
-          :checkValue="$store.state.ui.lastTrns === 'visible'"
-          v-on:onClick="$store.dispatch('tooglevisibleLastTrns')"
           v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
         ContextMenuItem(
           icon="mdi mdi-chart-bubble"

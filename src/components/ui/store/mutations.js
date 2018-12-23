@@ -34,11 +34,6 @@ export default {
     state.lastUsedCatsInTrnForm = status
   },
 
-  // visible last trns in mobile stat
-  setVisibleLastTrns (state, status) {
-    state.lastTrns = status
-  },
-
   // visible cats charts
   setVisibleCatsChart (state, status) {
     state.catsChart = status
