@@ -82,7 +82,7 @@ export default {
     },
 
     formatToAmountWithSpaces (value) {
-      return Number(Math.abs(value)).toLocaleString('ru-RU')
+      return Number(Math.abs(value)).toLocaleString()
     },
 
     handleMath () {

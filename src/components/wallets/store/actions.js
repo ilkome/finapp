@@ -5,18 +5,20 @@ export default {
   addWallet({ dispatch, rootState, getters }, { id, values }) {
     const uid = rootState.user.user.uid
     const formatedValues = {
-      shared: values.shared !== undefined ? values.shared : false,
       color: values.color,
       countTotal: values.countTotal,
       currency: values.currency,
       name: values.name,
       order: parseInt(values.order) || 1,
-      users: values.users || [uid]
+      users: values.users || [uid],
+      atm: values.atm
     }
     // set default currency based on first created wallet
     if (!getters.hasWallets) {
       dispatch('setBaseCurrency', values.currency)
     }
+    console.log(values)
+    console.log(formatedValues)
     db.ref(`accounts/${id}`).set(formatedValues)
   },
 

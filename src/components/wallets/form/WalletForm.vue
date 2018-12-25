@@ -24,7 +24,8 @@ export default {
         name: null,
         order: 1,
         countTotal: true,
-        currency: "RUB",
+        currency: "BYN",
+        atm: [],
         color: this.$store.state.ui.defaultBgColor
       }
     };
@@ -80,7 +81,9 @@ export default {
           countTotal: this.wallet.countTotal,
           currency: this.wallet.currency,
           name: this.wallet.name,
-          order: this.wallet.order
+          order: this.wallet.order,
+          atm: this.wallet.atm,
+          users: this.wallet.users
         };
 
         this.$store.dispatch("addWallet", { id, values: walletsValues });
@@ -233,16 +236,15 @@ export default {
 @import '~@/stylus/variables/margins';
 @import '~@/stylus/variables/media';
 
-.customColor {
+.customColor 
   margin: (- $m7);
   margin-top: 0;
   padding: $m7;
   background: var(--c-bg-1);
 
-  &__title {
+  &__title 
     padding-bottom: $m6;
     color: var(--c-font-4);
-  }
 
 .component
   width 100%
@@ -299,4 +301,5 @@ export default {
     margin 0
     padding 0
     font-size 10px
+    
 </style>

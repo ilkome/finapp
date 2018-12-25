@@ -104,7 +104,6 @@ export default {
       // TODO: add support for different currencies
       // if wallets are of different currencies then trnForm should
       // show two values for user to enter
-      const newId = createId();
       const amountFrom = this.$store.state.trnForm.values.amount;
       const amountTo = amountFrom;
 
