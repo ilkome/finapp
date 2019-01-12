@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { db } from '@/firebase'
 
-const demoUid = '9yrjuIeeOKNj5TxwoPhQobxbE153'
+const demoUid = '9yrjuIeeOKNj5TxwoPhQobxbE153' // demo@themerise.com
 
 export default {
   async getDemoDataStatus ({ commit }) {
@@ -18,7 +18,7 @@ export default {
     dispatch('setActiveTab', 'stat')
     const uid = rootState.user.user.uid
 
-    await db.ref(`users/${demoUid}/isDemo`).once('value')
+    await db.ref(`users/${demoUid}`).once('value')
       .then(demo => {
         const demoData = demo.val()
         db.ref(`users/${uid}/accounts`).set(demoData.accounts)
