@@ -106,18 +106,29 @@ export default {
     max-width 380px
 
   &__group
-    padding-bottom $m10
+    padding-bottom 48px
+    &._paddingTop
+      padding-top 48px
+
+  &__item
+    padding-bottom $m7
+    &:last-child
+      padding-bottom 0
 
   &__desc
-    padding-bottom $m5
+    padding-bottom 8px
     font-size 14px
     color var(--c-red-1)
 
   &__header
     font-header-4()
+    font-weight 500
+    font-size 24px
     padding-bottom $mn2
 
   &__subHeader
     font-header-1()
-    padding-bottom $m7
+    font-size 16px
+    font-weight 500
+    padding-bottom 16px
 </style>

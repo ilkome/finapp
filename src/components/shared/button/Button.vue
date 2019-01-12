@@ -1,9 +1,11 @@
 <script>
 import Icon from '@/components/icon/Icon'
+import Checkbox from '@/components/shared/inputs/Checkbox'
 
 export default {
   components: {
-    Icon
+    Icon,
+    Checkbox
   },
 
   props: {
@@ -22,6 +24,14 @@ export default {
     title: {
       type: String,
       default: null
+    },
+    showCheckbox: {
+      type: Boolean,
+      default: false
+    },
+    checkboxValue: {
+      type: Boolean,
+      default: false
     }
   }
 }
@@ -36,6 +46,9 @@ export default {
   .d-button__icon(v-if="icon")
     div(:class="icon")
   .d-button__title {{ title }}
+  .d-button__check(v-if="showCheckbox" @click.prevent="")
+    Checkbox._small(v-model="checkboxValue")
+
 </template>
 
 <style lang="stylus">
@@ -81,10 +94,11 @@ export default {
   width 100%
   display flex
   align-items center
-  // min-height 40px
   padding $m7 $m8
   color var(--c-font-2)
   cursor pointer
+  border-radius $m3
+  font-size 15px
   anim-background()
 
   &:active
@@ -94,7 +108,6 @@ export default {
     display inline-flex
     align-items center
     justify-content center
-    // height 52px
     font-header-2()
     font-size 16px
     color var(--c-font-1)
@@ -108,7 +121,8 @@ export default {
         background var(--c-blue-2)
 
   &._bdb
-    border-bottom 1px solid var(--c-bg-5)
+    padding 12px $m7
+    border 1px solid var(--c-bg-5)
     &:hover
       @media $media-laptop
         background var(--c-bg-5)
@@ -167,4 +181,8 @@ export default {
     font-size 20px
     text-align center
     opacity .85
+
+  &__check
+    margin-left auto
+    padding-left 32px
 </style>

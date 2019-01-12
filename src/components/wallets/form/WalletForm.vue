@@ -185,15 +185,13 @@ export default {
     .form-line._p0._clean
       Checkbox(
         v-model="wallet.countTotal"
-        title="Count amount of this wallet in total"
-      )
+        title="Count amount of this wallet in total")
 
     .form__actions
       Button(
         className="_blue"
         title="Save wallet"
-        v-on:onClick="handleSubmit"
-      )
+        v-on:onClick="handleSubmit")
 
   //- colors
   ModalBottom(
@@ -218,8 +216,7 @@ export default {
     :center="true"
     :show="showCurrencies"
     title="Select currency"
-    v-on:onClose="showCurrencies = false"
-  )
+    v-on:onClose="showCurrencies = false")
     .inputText
       .currencies
         .currencies__item(

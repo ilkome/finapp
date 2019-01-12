@@ -8,7 +8,7 @@ export default {
     },
     title: {
       type: String,
-      required: true
+      default: null
     }
   }
 }
@@ -21,21 +21,29 @@ label.checkbox
     :checked="value"
     v-on:input="$emit('input', $event.target.checked)"
   )
-  .checkbox__helper: .checkbox__toogle
-  .checkbox__title {{ title }}
+  .checkbox__helper
+    .checkbox__toogle
+      .checkbox__toogle__item._on on
+      .checkbox__toogle__item._off off
+  .checkbox__title(v-if="title") {{ title }}
 </template>
 
 <style lang="stylus" scoped>
-$width = 3.4em
-$height = 1.6em
-$left = 1.8em
-$color-rail = var(--c-font-2)
-
 .checkbox
   position relative
   display flex
   align-items center
   font-size 16px
+
+  --width 3.4em
+  --height 1.6em
+  --left 1.8em
+  $color-rail = var(--c-font-2)
+
+  &._small
+    --width 2.6em
+    --height 1.2em
+    --left 1.5em
 
   &__title
     padding 0 1em
@@ -47,35 +55,38 @@ $color-rail = var(--c-font-2)
 
     &:checked
       + .checkbox__helper:before
-        background var(--c-incomes-1)
-        box-shadow inset 0px 1px 1px rgba(84, 152, 140, 0.5)
+        background var(--c-bg-1)
+        box-shadow inset 0px 1px 1px background var(--c-bg-12)
+        /.theme-light &
+          background var(--c-bg-13)
       + .checkbox__helper:after
         animation switch .2s ease-out
-        left $left
+        left var(--left)
 
   &__helper
     flex-shrink 0
     position relative
-    width $width
-    height $height
+    width var(--width)
+    height var(--height)
     cursor pointer
     &:before
       content ''
       position absolute
-      width $width
-      height $height
+      width var(--width)
+      height var(--height)
       left 0
       transition background 0.1s ease
       background var(--c-bg-8)
       border-radius 50px
+      top .5px
 
     // trail
     &:after
       z-index 1
       content ''
       position absolute
-      width $height
-      height $height
+      width var(--height)
+      height var(--height)
       border-radius 50px
       left 0em
       transition all 0.2s ease
@@ -91,23 +102,27 @@ $color-rail = var(--c-font-2)
     top 0
     display flex
     align-items center
-    width $width
-    height $height
+    width var(--width)
+    height var(--height)
     padding 0 .3em
     padding-top .1em
+    ^[0]._small &
+      padding-left .02em
+      padding-right .02em
 
-    &:before
-    &:after
+    &__item
       flex 1 1
       color var(--c-font-2)
       font-size .7em
       text-align center
       text-transform uppercase
+      ^[0]._small &
+        font-size .5em
       /.theme-light &
         color var(--c-font-1)
-    &:before
+    &._on
       content 'on'
-    &:after
+    &._off
       content 'off'
 
 @keyframes switch

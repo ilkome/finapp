@@ -1,5 +1,11 @@
 <script>
+import Checkbox from '@/components/shared/inputs/Checkbox'
+
 export default {
+  components: {
+    Checkbox
+  },
+
   props: {
     icon: {
       type: String,
@@ -14,6 +20,14 @@ export default {
       default: false
     },
     selected: {
+      type: Boolean,
+      default: false
+    },
+    showCheckbox: {
+      type: Boolean,
+      default: false
+    },
+    checkboxValue: {
       type: Boolean,
       default: false
     }
@@ -35,6 +49,8 @@ export default {
   .item__icon(v-if="icon"): div(:class="icon")
   .item__title {{ title }}
   .item__check(v-if="checkValue"): .mdi.mdi-check-circle-outline
+  .item__check(v-if="showCheckbox" @click.prevent="")
+    Checkbox._small(v-model="checkboxValue")
 </template>
 
 <style lang="stylus" scoped>
@@ -81,9 +97,6 @@ export default {
     color var(--c-font-3)
 
   &__check
-    opacity .80
     margin-left auto
-    padding-left $m7
-    color var(--c-incomes-1)
-    font-size 20px
+    padding-left 32px
 </style>

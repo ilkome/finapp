@@ -38,7 +38,6 @@ export default {
   margin-left auto
   border-radius $m3
   font-size 16px
-  text-transform capitalize
 
   &._inline
     display inline-flex
