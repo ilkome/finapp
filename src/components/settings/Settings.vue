@@ -1,11 +1,13 @@
 <script>
 import Button from '@/components/shared/button/Button'
 import ModalBottomConfirm from '@/components/modal/ModalBottomConfirm'
+import LangDropdown from '@/components/lang/LangDropdown'
 
 export default {
   components: {
     Button,
-    ModalBottomConfirm
+    ModalBottomConfirm,
+    LangDropdown
   },
 
   data () {
@@ -31,18 +33,25 @@ export default {
 
 <template lang="pug">
 .settings
-  .settings__header Settings
+  .settings__header {{ $lang.settings.title }}
 
   .settings__group(v-if="$store.state.ui.mobile")
-    .settings__subHeader Transaction form
+    .settings__subHeader {{ $lang.trnForm.title }}
     .settings__item
       Button._bdb(
+        :checkboxValue="$store.state.ui.lastUsedCatsInTrnForm === 'visible'"
+        :showCheckbox="true"
+        :title="$lang.trnForm.lastUsedCats"
         icon="mdi mdi-chart-bubble"
-        :title="$store.state.ui.lastUsedCatsInTrnForm === 'visible' ? 'Show last used categories' : 'Hide last used categories'"
         v-on:onClick="$store.dispatch('toogleLastUsedCatsInTrnForm')")
 
   .settings__group
-    .settings__subHeader Application
+    .settings__subHeader {{ $lang.settings.lang }}
+    .settings__item
+      LangDropdown
+
+  .settings__group
+    .settings__subHeader {{ $lang.settings.app }}
     .settings__item
       Button._bdb(
         icon="mdi mdi-palette"
@@ -54,9 +63,9 @@ export default {
         title="Sign Out"
         v-on:onClick="$store.dispatch('signOut')")
 
-  .settings__group
-    .settings__subHeader Delete
-    .settings__desc This will delete all your wallets, categories and trns
+  .settings__group._paddingTop
+    .settings__subHeader {{ $lang.settings.delete }}
+    .settings__desc {{ $lang.alerts.willDeleteEverything }}
     .settings__item
       Button._bdb(
         icon="mdi mdi-delete"
@@ -64,8 +73,8 @@ export default {
         v-on:onClick="confirmRemoveUserData = true")
 
   .settings__group(v-if="$store.state.demo.hasDemo")
-    .settings__subHeader Demo
-    .settings__desc This will delete all your wallets, categories and trns
+    .settings__subHeader {{ $lang.settings.demo }}
+    .settings__desc {{ $lang.alerts.willDeleteEverything }}
     .settings__item
       Button._bdb(
         icon="mdi mdi-test-tube"

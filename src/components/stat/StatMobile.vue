@@ -101,7 +101,7 @@ export default {
   //------------------------------------------------
   EmptyData(
     v-if="stat.incomes.categoriesIds.length === 0 && stat.expenses.categoriesIds.length === 0 && $store.getters.selectedTrnsIdsWithDate.length === 0"
-    text="No stat for this period")
+    :text="$lang.stat.empty")
 
   //- history
   //------------------------------------------------
@@ -116,7 +116,7 @@ export default {
       .statGroup(v-if="stat.incomes.categoriesIds.length")
         .statItem-header
           .statItem-total
-            .statItem-total__title._incomes Incomes
+            .statItem-total__title._incomes {{ $lang.money.incomes }}
             .statItem-total__amount
               Amount(
                 :currency="$store.state.currencies.base"
@@ -125,7 +125,7 @@ export default {
           .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
             .statItem-average__title
               .statItem-average__title-icon: .mdi.mdi-chart-timeline
-              .statItem-average__title-text Average
+              .statItem-average__title-text {{ $lang.money.average }}
             .statItem-average__amount
               Amount(
                 :currency="$store.state.currencies.base"
@@ -151,7 +151,7 @@ export default {
       .statGroup(v-if="stat.expenses.categoriesIds.length")
         .statItem-header
           .statItem-total
-            .statItem-total__title._expenses Expenses
+            .statItem-total__title._expenses {{ $lang.money.expenses }}
             .statItem-total__amount
               Amount(
                 :currency="$store.state.currencies.base"
@@ -160,7 +160,7 @@ export default {
           .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
             .statItem-average__title
               .statItem-average__title-icon: .mdi.mdi-chart-timeline
-              .statItem-average__title-text Average
+              .statItem-average__title-text {{ $lang.money.average }}
             .statItem-average__amount
               Amount(
                 :currency="$store.state.currencies.base"
@@ -191,32 +191,32 @@ export default {
       template(slot="opener")
         Dropdown._inline(
           :active="visibleCustomizeMenu"
-          title="Customize")
+          :title="$lang.settings.customize")
       template(slot="content")
         ContextMenuItem(
           icon="mdi mdi-credit-card-multiple"
           title="Wallets"
-          :checkValue="$store.state.ui.stat.walletsVisibility === 'visible'"
-          v-on:onClick="$store.dispatch('setStatWalletsVisibility')"
-          v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
+          :showCheckbox="true"
+          :checkboxValue="$store.state.ui.stat.walletsVisibility === 'visible'"
+          v-on:onClick="$store.dispatch('setStatWalletsVisibility')")
         ContextMenuItem(
           icon="mdi mdi-chart-bar-stacked"
           title="Periods chart"
-          :checkValue="$store.state.ui.statGraphsVisible"
-          v-on:onClick="$store.dispatch('toogleShowStatGraphs')"
-          v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
+          :showCheckbox="true"
+          :checkboxValue="$store.state.ui.statGraphsVisible"
+          v-on:onClick="$store.dispatch('toogleShowStatGraphs')")
         ContextMenuItem(
           icon="mdi mdi-chart-bubble"
           title="Cats chart"
-          :checkValue="$store.state.ui.catsChart === 'visible'"
-          v-on:onClick="$store.dispatch('toogleVisibleCatsChart')"
-          v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
+          :showCheckbox="true"
+          :checkboxValue="$store.state.ui.catsChart === 'visible'"
+          v-on:onClick="$store.dispatch('toogleVisibleCatsChart')")
         ContextMenuItem(
           icon="mdi mdi-chart-gantt"
           title="Cats stat"
-          :checkValue="$store.state.ui.statItems === 'visible'"
-          v-on:onClick="$store.dispatch('toogleVisibilityStatItems')"
-          v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
+          :showCheckbox="true"
+          :checkboxValue="$store.state.ui.statItems === 'visible'"
+          v-on:onClick="$store.dispatch('toogleVisibilityStatItems')")
         .context-menu-sep
         ContextMenuItem(
           icon="mdi mdi-palette"

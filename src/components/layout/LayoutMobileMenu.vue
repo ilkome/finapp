@@ -16,30 +16,32 @@ export default {
 
   data () {
     return {
-      visibleCustomizeMenu: false,
-      menu: [{
-        icon: 'mdi mdi-credit-card-multiple',
-        id: 'wallets',
-        name: 'Wallets'
-      }, {
-        icon: 'mdi mdi-chart-bubble',
-        id: 'categories',
-        name: 'Cats'
-      }, {
-        icon: 'mdi mdi-poll',
-        id: 'stat',
-        name: 'Stat'
-      }, {
-        icon: 'mdi mdi-history',
-        id: 'history',
-        name: 'Trns'
-      }]
+      visibleCustomizeMenu: false
     }
   },
 
   computed: {
     activeTab () {
       return this.$store.state.ui.activeTab
+    },
+    menu () {
+      return [{
+        icon: 'mdi mdi-credit-card-multiple',
+        id: 'wallets',
+        name: this.$lang.wallets.title
+      }, {
+        icon: 'mdi mdi-chart-bubble',
+        id: 'categories',
+        name: this.$lang.categories.shortTitle
+      }, {
+        icon: 'mdi mdi-poll',
+        id: 'stat',
+        name: this.$lang.stat.shortTitle
+      }, {
+        icon: 'mdi mdi-history',
+        id: 'history',
+        name: this.$lang.trns.shortTitle
+      }]
     }
   },
 
@@ -85,16 +87,16 @@ export default {
     .create-btn(v-show="activeTab === 'categories'")
       Button(
         className="_inline _small"
-        title="New category"
+        :title="$lang.categories.new"
         v-on:onClick="$store.dispatch('setActiveTab', 'createCategory')")
 
     .create-btn(v-show="activeTab === 'wallets'")
       Button(
         className="_inline _small"
-        title="New wallet"
+        :title="$lang.wallets.new"
         v-on:onClick="$store.dispatch('setActiveTab', 'createWallet')")
 
-    .customize(v-show="activeTab !== 'stat' && activeTab !== 'trns'")
+    .customize(v-show="activeTab === 'wallets' || activeTab === 'categories'")
       ContextMenu(
         :position="{ right: true, bottom: true }"
         :visible="visibleCustomizeMenu"
@@ -103,11 +105,11 @@ export default {
           Dropdown(
             :active="visibleCustomizeMenu"
             icon="mdi mdi-tune"
-            title="Options")
+            :title="$lang.settings.options")
         template(slot="content")
           ContextMenuItem(
             icon="mdi mdi-settings"
-            title="Go to settings"
+            :title="$lang.settings.open"
             v-on:onClick="$store.dispatch('setActiveTab', 'settings')"
             v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
           .context-menu-sep
@@ -133,7 +135,7 @@ export default {
 
     .menu__item._hightlight(@click="$store.dispatch('openTrnForm', { action: 'create' })")
       .menu__item__icon: .mdi.mdi-library-plus
-      .menu__item__text Create
+      .menu__item__text {{ this.$lang.create.title }}
 </template>
 
 <style lang="stylus" scoped>

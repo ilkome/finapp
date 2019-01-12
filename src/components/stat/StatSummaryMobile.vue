@@ -24,7 +24,7 @@ export default {
 .summary
   .summary__item._incomes(@click="$store.dispatch('toogleVisibleCatsChart')")
     template(v-if="statAverage.incomes > 0 || period === 'all'")
-      .summary__item__title._incomes Incomes
+      .summary__item__title._incomes {{ $lang.money.incomes }}
       .summary__item__amount
         Amount(
           :center="true"
@@ -36,7 +36,7 @@ export default {
   .summary__item._total(@click="$store.dispatch('toogleVisibilityStatItems')")
     template(v-if="statAverage.total !== 0")
       template(v-if="stat.incomes.total.incomes > 0 || stat.expenses.total.expenses > 0")
-        .summary__item__title Total
+        .summary__item__title {{ $lang.money.total }}
         .summary__item__amount
           Amount(
             :center="true"
@@ -46,7 +46,7 @@ export default {
 
   .summary__item._expenses(@click="$store.dispatch('toogleShowStatGraphs')")
     template(v-if="statAverage.expenses > 0 || period === 'all'")
-      .summary__item__title._expenses Expenses
+      .summary__item__title._expenses {{ $lang.money.expenses }}
       .summary__item__amount
         Amount(
           :center="true"

@@ -40,7 +40,7 @@ export default {
 <template lang="pug">
 .wallets-total(v-if="$store.getters.hasWallets")
   .wallets-total__item
-    .wallets-total__title Total
+    .wallets-total__title {{ $lang.money.total }}
     .wallets-total__value
       Amount(
         :currency="$store.state.currencies.base"

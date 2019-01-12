@@ -21,11 +21,22 @@ export default {
   computed: {
     layoutStyles () {
       return { height: `${this.$store.state.ui.height}px` }
+    },
+    lang () {
+      return this.$store.state.lang.lang
     }
   },
 
-  created () {
-    this.$store.dispatch('initApp')
+  watch: {
+    lang (newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.$setLang(newValue)
+      }
+    }
+  },
+
+  async created () {
+    await this.$store.dispatch('initApp')
     this.handleWindowHistory()
     this.getPageDimensions()
     window.addEventListener('resize', debounce(this.getPageDimensions, 1000))

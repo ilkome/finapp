@@ -8,6 +8,7 @@ import currencies from '@/components/currencies/store'
 import dashboard from '@/components/dashboard/store'
 import demo from '@/components/demo/store'
 import filter from '@/components/filter/store'
+import lang from '@/components/lang/store'
 import stat from '@/components/stat/store'
 import trnForm from '@/components/trnForm/store'
 import trns from '@/components/trns/store'
@@ -26,6 +27,7 @@ export default new Vuex.Store({
     dashboard,
     demo,
     filter,
+    lang,
     stat,
     trnForm,
     trns,

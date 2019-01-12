@@ -41,31 +41,31 @@ export default {
       template(slot="content")
         ContextMenuItem(
           icon="mdi mdi-weather-sunset-up"
-          title="Day"
+          :title="$lang.dates.day.simple"
           :selected="$store.state.filter.period === 'day'"
           v-on:onClick="$store.dispatch('setPeriod', 'day')"
           v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
         ContextMenuItem(
           icon="mdi mdi-calendar-week"
-          title="Week"
+          :title="$lang.dates.week.simple"
           :selected="$store.state.filter.period === 'week'"
           v-on:onClick="$store.dispatch('setPeriod', 'week')"
           v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
         ContextMenuItem(
           icon="mdi mdi-calendar"
-          title="Month"
+          :title="$lang.dates.month.simple"
           :selected="$store.state.filter.period === 'month'"
           v-on:onClick="$store.dispatch('setPeriod', 'month')"
           v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
         ContextMenuItem(
           icon="mdi mdi-calendar-star"
-          title="Year"
+          :title="$lang.dates.year.simple"
           :selected="$store.state.filter.period === 'year'"
           v-on:onClick="$store.dispatch('setPeriod', 'year')"
           v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
         ContextMenuItem(
           icon="mdi mdi-database"
-          title="Show all"
+          :title="$store.state.lang.lang === 'ru' ? 'Показать всё' : 'Show all'"
           :selected="$store.state.filter.period === 'all'"
           v-on:onClick="$store.dispatch('setPeriod', 'all')"
           v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")

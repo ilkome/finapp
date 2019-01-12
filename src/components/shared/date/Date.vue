@@ -12,7 +12,7 @@ export default {
       switch (filterPeriod) {
         case 'day':
           if (today.isSame(filterDate, 'day')) {
-            return 'Today'
+            return this.$lang.dates.day.current
           } else if (today.subtract(1, filterPeriod).isSame(filterDate, 'day')) {
             return 'Yesterday'
           }
@@ -21,7 +21,7 @@ export default {
 
         case 'week':
           if (today.isSame(filterDate, 'week')) {
-            return 'This week'
+            return this.$lang.dates.week.current
           } else if (today.subtract(1, filterPeriod).isSame(filterDate, 'week')) {
             return 'Last week'
           }
@@ -32,7 +32,7 @@ export default {
 
         case 'month':
           if (today.isSame(filterDate, 'month')) {
-            return 'This month'
+            return this.$lang.dates.month.current
           } else if (today.subtract(1, filterPeriod).isSame(filterDate, 'month')) {
             return 'Last month'
           }

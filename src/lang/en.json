@@ -1,0 +1,72 @@
+{
+  "settings": {
+    "title": "Settings",
+    "lang": "Language",
+    "options": "Options",
+    "open": "Open settings",
+    "customize": "Сustomize",
+    "app": "Application",
+    "delete": "Delete",
+    "demo": "Demo"
+  },
+
+  "wallets": {
+    "title": "Wallets",
+    "new": "New wallet"
+  },
+
+  "categories": {
+    "title": "Categories",
+    "shortTitle": "Cats",
+    "new": "New category"
+  },
+
+  "stat": {
+    "shortTitle": "Stat",
+    "empty": "No stat for this period"
+  },
+
+  "trns": {
+    "shortTitle": "Trns"
+  },
+
+  "create": {
+    "title": "Create"
+  },
+
+  "trnForm": {
+    "title": "Transaction form",
+    "lastUsedCats": "Last used categories"
+  },
+
+  "money": {
+    "incomes": "Incomes",
+    "expenses": "Expenses",
+    "transfer": "Transfer",
+    "total": "Total",
+    "average": "Average"
+  },
+
+  "dates": {
+    "day": {
+      "current": "Today",
+      "simple": "Day"
+    },
+    "week": {
+      "current": "This week",
+      "simple": "Week"
+    },
+    "month": {
+      "current": "This month",
+      "simple": "Month"
+    },
+    "year": {
+      "current": "This year",
+      "simple": "Year"
+    }
+  },
+
+  "alerts": {
+    "willDeleteEverything": "This will delete all your wallets, categories and trns"
+  }
+}

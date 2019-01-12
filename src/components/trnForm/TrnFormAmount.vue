@@ -120,16 +120,13 @@ export default {
 
 <template lang="pug">
 .trnFormAmount(:class="className")
-  //- pre {{ this.$store.state.trnForm.values.amountArray }}
-  //- pre {{ amountString }}
-  //- pre {{ amountValue }}
   //- mobile
   template(v-if="$store.state.ui.mobile")
     .trnFormAmount__in(@click="handleChangeAmountType")
       .trnFormAmount__type
-        template(v-if="amountType === 0") Expense
-        template(v-if="amountType === 1") Incomes
-        template(v-if="amountType === 2 && $store.getters.walletsSortedIds.length > 1") Transfer
+        template(v-if="amountType === 0") {{ $lang.money.expenses }}
+        template(v-if="amountType === 1") {{ $lang.money.incomes }}
+        template(v-if="amountType === 2 && $store.getters.walletsSortedIds.length > 1") {{ $lang.money.transfer }}
 
       .trnFormAmount__value {{ amountString }}
 
@@ -140,11 +137,11 @@ export default {
         .trnFormAmountPc__type._expenses(
           @click="() => setAmountType(0)"
           :class="{ _active: amountType === 0 }"
-        ) Expenses
+        ) {{ $lang.money.expenses }}
         .trnFormAmountPc__type._incomes(
           @click="() => setAmountType(1)"
           :class="{ _active: amountType === 1 }"
-        ) Incomes
+        ) {{ $lang.money.incomes }}
         .trnFormAmountPc__type(
           v-if="$store.getters.walletsSortedIds.length > 1"
           @click="() => setAmountType(2)"

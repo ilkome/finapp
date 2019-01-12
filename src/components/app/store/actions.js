@@ -18,6 +18,7 @@ export default {
           await dispatch('initCategories')
           await dispatch('initWallets')
           await dispatch('initTrns')
+          await dispatch('initDbLang')
         } catch (e) {
           console.error(e)
         }
@@ -29,6 +30,7 @@ export default {
 
   async initAppFromCache ({ commit, dispatch }) {
     dispatch('initStat')
+    dispatch('initLocalLang')
     dispatch('initUi')
     dispatch('initChart')
 

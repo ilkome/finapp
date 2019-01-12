@@ -51,7 +51,7 @@ TrnFormModal(
 )
   template(slot="header")
     .trnFormModal__header__back: .mdi.mdi-chevron-left
-    .trnFormModal__header__title Categories
+    .trnFormModal__header__title  {{ $lang.categories.title }}
     .trnFormModal__icon
       Icon(
         icon="mdi mdi-chart-bubble"
