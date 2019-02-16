@@ -82,8 +82,8 @@ export default {
     //------------------------------------------------
     template(v-if="ui === 'group'")
       .trnsList__day(
-        v-for="(trnsIds, date) in groupedTrns")
-        .trnsList__header: TrnsListDate(:date="date")
+        v-for="(trnsIds, date, subtotal) in groupedTrns")
+        .trnsList__header: TrnsListDate(:date="date", :subtotal="subtotal")
         .trnsList__trns
           TrnItem(
             v-for="trnId in trnsIds"

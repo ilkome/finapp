@@ -38,7 +38,7 @@ export default {
     },
 
     walletsIds() {
-      //const walletsIds = this.$store.getters.walletsSortedIds
+      //const walletsIds = this.$store.getters.walletsedIds
       // show only relevant wallets
       const uid = this.$store.state.user.user.uid;
       const wallets = this.$store.state.wallets.items;

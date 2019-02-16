@@ -87,7 +87,7 @@ export default {
 
     handleMath () {
       function calc (number) {
-        return mathjs.chain(number.replace(/\s/g, '')).eval().round().value
+        return mathjs.chain(number.replace(/\s/g, '')).eval().round(2).value
       }
 
       try {

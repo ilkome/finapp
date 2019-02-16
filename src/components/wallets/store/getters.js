@@ -1,3 +1,5 @@
+import { conditionalExpression } from "babel-types";
+
 // getWalletAmount
 // walletsTotal
 // walletsSortedIds
@@ -49,7 +51,7 @@ export default {
 
     Object.keys(wallets).forEach(id => {
       walletsTotal[id] = {
-        base: getWalletAmount(id),
+        base: getWalletAmount(id) - (wallets[id].blocked || 0),
         currency: wallets[id].currency
       }
     })

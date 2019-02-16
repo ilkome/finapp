@@ -9,22 +9,19 @@ export default {
       countTotal: values.countTotal,
       currency: values.currency,
       name: values.name,
-      order: parseInt(values.order) || 1,
+      order: values.order || '1',
       users: values.users || [uid],
-      atm: values.atm
+      atm: values.atm,
+      blocked: values.blocked || 0
     }
     // set default currency based on first created wallet
     if (!getters.hasWallets) {
       dispatch('setBaseCurrency', values.currency)
     }
-    console.log(values)
-    console.log(formatedValues)
     db.ref(`accounts/${id}`).set(formatedValues)
   },
 
   initWallets({ dispatch, rootState }) {
-    const uid = rootState.user.user.uid
-
     db.ref(`accounts`).on('value', snapshot => {
       const accounts = Object.freeze(snapshot.val())
       dispatch('setWallets', accounts)
@@ -37,7 +34,6 @@ export default {
   },
 
   unsubcribeWallets({ rootState }) {
-    const uid = rootState.user.user.uid
     db.ref(`/accounts`).off()
   }
 }

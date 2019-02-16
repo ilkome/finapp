@@ -9,6 +9,10 @@ export default {
     date: {
       type: String,
       required: true
+    },
+    subtotal: {
+      type: String,
+      required: false
     }
   },
 

@@ -10,7 +10,7 @@ export default {
     amounIsNumber () {
       const amountString = this.$store.state.trnForm.values.amountArray.join('')
       const amount = String(amountString).replace(/\s/g, '')
-      if (Number.isInteger(Number(amount))) {
+      if (Number.isFinite(Number(amount))) {
         return true
       }
     }
