@@ -284,6 +284,11 @@ export default {
   padding $m7
   background var(--c-bg-1)
 
+  @media $media-laptop
+    margin (- $m9)
+    margin-top 0
+    padding $m9
+
   &__title
     padding-bottom $m6
     color var(--c-font-4)
