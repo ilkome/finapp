@@ -148,6 +148,7 @@ export default {
 .layout
   position relative
   overflow hidden
+  min-height 100%
   max-width 1527px
 
   &__wrap
