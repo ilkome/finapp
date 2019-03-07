@@ -79,21 +79,21 @@ export default {
           ContextMenuItem(
             icon="mdi mdi-chart-bar-stacked"
             title="Periods chart"
-            :checkValue="$store.state.ui.statGraphsVisible"
-            v-on:onClick="$store.dispatch('toogleShowStatGraphs')"
-            v-on:onClose="visibleContextMenu = !visibleContextMenu")
+            :showCheckbox="true"
+            :checkboxValue="$store.state.ui.statGraphsVisible"
+            v-on:onClick="$store.dispatch('toogleShowStatGraphs')")
           ContextMenuItem(
             icon="mdi mdi-chart-bubble"
             title="Cats chart"
-            :checkValue="$store.state.ui.catsChart === 'visible'"
-            v-on:onClick="$store.dispatch('toogleVisibleCatsChart')"
-            v-on:onClose="visibleContextMenu = !visibleContextMenu")
+            :showCheckbox="true"
+            :checkboxValue="$store.state.ui.catsChart === 'visible'"
+            v-on:onClick="$store.dispatch('toogleVisibleCatsChart')")
           ContextMenuItem(
             icon="mdi mdi-chart-gantt"
             title="Cats stat"
-            :checkValue="$store.state.ui.statItems === 'visible'"
-            v-on:onClick="$store.dispatch('toogleVisibilityStatItems')"
-            v-on:onClose="visibleContextMenu = !visibleContextMenu")
+            :showCheckbox="true"
+            :checkboxValue="$store.state.ui.statItems === 'visible'"
+            v-on:onClick="$store.dispatch('toogleVisibilityStatItems')")
           .context-menu-sep
           ContextMenuItem(
             icon="mdi mdi-currency-usd"
