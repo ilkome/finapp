@@ -4,7 +4,9 @@ const baseUrl = require('./baseUrl.config')
 module.exports = {
   lintOnSave: false,
 
-  baseUrl: process.env.NODE_ENV === 'production' ? `${baseUrl}` : '/',
+  publicPath: process.env.NODE_ENV === 'production'
+    ? `${baseUrl}`
+    : '/',
   configureWebpack: {
     resolve: {
       alias: {
