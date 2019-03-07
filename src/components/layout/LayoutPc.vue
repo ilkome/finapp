@@ -148,14 +148,13 @@ export default {
 .layout
   position relative
   overflow hidden
-  height 100%
   max-width 1527px
 
   &__wrap
     overflow hidden
     position relative
     z-index 2
-    height 100%
+    min-height 100vh
     display grid
     grid-template-columns minMax(280px, 320px) 1fr
     min-width 600px
