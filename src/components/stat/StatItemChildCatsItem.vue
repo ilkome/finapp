@@ -80,7 +80,6 @@ export default {
       :grouped="false"
       :incomes="type === 1"
       :expenses="type === 0"
-      :limit="3"
       :categoryId="categoryId")
 </template>
 
