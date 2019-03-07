@@ -9,13 +9,17 @@ export default {
     title: {
       type: String,
       default: null
+    },
+    alt: {
+      type: Boolean,
+      default: false
     }
   }
 }
 </script>
 
 <template lang="pug">
-label.checkbox
+label.checkbox(:class="{ _alt: alt }")
   input.checkbox__input(
     type="checkbox"
     :checked="value"
@@ -34,6 +38,7 @@ label.checkbox
   display flex
   align-items center
   font-size 16px
+  cursor pointer
 
   --width 3.4em
   --height 1.6em
@@ -57,6 +62,8 @@ label.checkbox
       + .checkbox__helper:before
         background var(--c-bg-1)
         box-shadow inset 0px 1px 1px background var(--c-bg-12)
+        ^[0]._alt &
+          background var(--c-bg-7)
         /.theme-light &
           background var(--c-bg-13)
       + .checkbox__helper:after

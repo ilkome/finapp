@@ -208,7 +208,7 @@ export default {
         Checkbox(
           v-model="category.showInLastUsed"
           title="Show in last used categories"
-        )
+          :alt="true")
 
     .form__actions
       Button(
