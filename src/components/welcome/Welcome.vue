@@ -37,38 +37,38 @@ export default {
       .tab
         .tab__content
           .header(@click="$store.dispatch('changeTheme')")
-            .header__title Welcome to Finapp
-            .header__desc Powerfull personal finance application
+            .header__title {{ $lang.app.welcome }}
+            .header__desc {{ $lang.app.desc }}
           .options
             .options__item
-              .options__desc Start creating your own wallets, categories
+              .options__desc {{ $lang.welcome.create.text }}
               Button._blue(
-                title="Start"
+                :title="$lang.welcome.create.btn"
                 v-on:onClick="step = 2")
 
             template(v-if="$store.state.demo.hasDemo")
               .options__or
                 .options__or__border
-                .options__or__text or
+                .options__or__text {{ $lang.welcome.or }}
               .options__item
-                .options__desc Load app with created wallets, categories and transactions
+                .options__desc {{ $lang.welcome.demo.text }}
                 Button._grey._center(
-                  title="Open demo"
+                  :title="$lang.welcome.demo.btn"
                   v-on:onClick="$store.dispatch('createDemo')")
 
   //- wallet
   transition(name="fadeInSlow")
-    template(v-if="step !== 1 && !showWalletForm && !$store.getters.hasWallets")
+    template(v-if="(step !== 0 && step !== 1) && !showWalletForm && !$store.getters.hasWallets")
       .tab
         .tab__content
           .tab__wrap
             .header
-              .header__title Welcome to Finapp
-              .header__desc Powerfull personal finance application
-            .text Let's start with create first Wallet
+              .header__title {{ $lang.app.welcome }}
+              .header__desc {{ $lang.app.desc }}
+            .text {{ $lang.welcome.createFirstWallet.text }}
             .button
               Button._blue(
-                title="Create wallet"
+                :title="$lang.welcome.createFirstWallet.btn"
                 v-on:onClick="showWalletForm = true")
 
   //- category
@@ -77,10 +77,10 @@ export default {
       .tab
         .tab__content
           .icon: .mdi.mdi-chart-bubble
-          .text Great! Now Let's create first category
+          .text {{ $lang.welcome.createFirstCategory.text }}
           .button
             Button._blue(
-              title="Create category"
+              :title="$lang.welcome.createFirstCategory.btn"
               v-on:onClick="showCategoryForm = true")
 
   transition(name="fadeInSlow")

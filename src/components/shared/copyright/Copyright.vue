@@ -6,9 +6,9 @@ export default {
 
 <template lang="pug">
 a(href="https://ilko.me").copyright
-  | Made with
+  | {{ $lang.app.madeBy.text }}
   .copyright__heart.mdi.mdi-heart
-  | by Ilya Komichev
+  | {{ $lang.app.madeBy.name }}
 </template>
 
 <style lang="stylus" scoped>

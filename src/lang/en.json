@@ -1,4 +1,43 @@
 {
+  "app": {
+    "desc": "Powerful personal finance application",
+    "welcome": "Welcome to Finapp",
+    "lang": {
+      "select": "Select lang",
+      "en": "English",
+      "ru": "Русский"
+    },
+    "theme": {
+      "select": "Select theme",
+      "dark": "Dark",
+      "light": "Light"
+    },
+    "madeBy": {
+      "text": "Made with",
+      "name": "by Ilya Komichev"
+    }
+  },
+
+  "welcome": {
+    "create": {
+      "text": "Start creating your own wallets, categories",
+      "btn": "Create"
+    },
+    "or": "or",
+    "demo": {
+      "text": "Load app with created wallets, categories and transactions",
+      "btn": "Open demo"
+    },
+    "createFirstWallet": {
+      "text": "Let's start with create first Wallet",
+      "btn": "Create wallet"
+    },
+    "createFirstCategory":{
+      "text": "Great! Now Let's create first category",
+      "btn": "Create category"
+    }
+  },
+
   "settings": {
     "title": "Settings",
     "lang": "Language",
@@ -68,5 +107,9 @@
 
   "alerts": {
     "willDeleteEverything": "This will delete all your wallets, categories and trns"
+  },
+
+  "buttons": {
+    "nextStep": "Next step"
   }
 }
