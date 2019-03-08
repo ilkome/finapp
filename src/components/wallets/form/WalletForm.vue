@@ -186,7 +186,7 @@ export default {
       Checkbox(
         v-model="wallet.countTotal"
         title="Count amount of this wallet in total"
-        alt="true")
+        :alt="true")
 
     .form__actions
       Button(
