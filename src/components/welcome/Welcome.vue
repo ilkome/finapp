@@ -3,18 +3,22 @@ import Button from '@/components/shared/button/Button'
 import CategoryForm from '@/components/categories/form/CategoryForm'
 import Copyright from '@/components/shared/copyright/Copyright'
 import WalletForm from '@/components/wallets/form/WalletForm'
+import ThemeSelector from '@/components/welcome/ThemeSelector'
+import LangSelector from '@/components/welcome/LangSelector'
 
 export default {
   components: {
     Button,
     CategoryForm,
     Copyright,
+    LangSelector,
+    ThemeSelector,
     WalletForm
   },
 
   data () {
     return {
-      step: 1,
+      step: 0,
       showCategoryForm: false,
       showWalletForm: false
     }
@@ -32,6 +36,23 @@ export default {
 <template lang="pug">
 .tabs
   //- welcome
+  transition(name="fadeInSlow")
+    template(v-if="step === 0")
+      .tab
+        .tab__content
+          .header
+            .header__title {{ $lang.app.welcome }}
+            .header__desc {{ $lang.app.desc }}
+          .options
+            .options__item
+              .options__desc {{ $lang.app.lang.select }}
+              LangSelector
+              .options__desc {{ $lang.app.theme.select }}
+              ThemeSelector
+              Button._blue(
+                :title="$lang.buttons.nextStep"
+                v-on:onClick="step = 1")
+
   transition(name="fadeInSlow")
     template(v-if="step === 1")
       .tab
