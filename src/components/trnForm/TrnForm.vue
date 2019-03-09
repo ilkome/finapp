@@ -253,7 +253,16 @@ export default {
                 TrnFormCalendar
               .trnForm__dateAndDesc-desc(@click="$store.commit('toogleTrnFormModal', 'description')")
                 .mdi.mdi-comment-text-outline
+
+          template(v-if="$store.state.ui.mobile && $store.getters.quickSelectorCategoriesIds.length")
+            .trnForm__quickCats
+              CategoriesView(
+                :ids="$store.getters.quickSelectorCategoriesIds"
+                ui="_flat"
+                v-on:onClick="categoryId => $store.commit('setTrnFormValues', { categoryId })")
+
           TrnFormAmount(v-on:onFormSubmit="handleSubmitForm")
+
           template(v-if="$store.state.ui.mobile")
             .trnForm__dateAndDesc
               .trnForm__dateAndDesc-date
@@ -287,10 +296,10 @@ export default {
                   ui="line"
                   v-on:onClick="walletId => $store.commit('setTrnFormValues', { walletId })")
 
-              .formCategories(v-if="$store.getters.lastUsedCategoriesIds && $store.getters.lastUsedCategoriesIds.length > 0")
+              .formCategories(v-if="$store.getters.quickSelectorCategoriesIds && $store.getters.quickSelectorCategoriesIds.length > 0")
                 .formTitle(@click="$store.commit('toogleTrnFormModal', 'categories')") Categories
                 CategoriesView(
-                  :ids="$store.getters.lastUsedCategoriesIds"
+                  :ids="$store.getters.quickSelectorCategoriesIds"
                   :noPaddingBottom="true"
                   v-on:onClick="categoryId => $store.commit('setTrnFormValues', { categoryId })")
           //- pc: end
@@ -311,6 +320,11 @@ export default {
 <style lang="stylus" scoped>
 @import "~@/stylus/variables/margins"
 @import "~@/stylus/variables/media"
+
+.trnForm
+  &__quickCats
+    padding 12px 0
+    border-bottom 1px solid var(--c-bg-1)
 
 .trnForm__dateAndDesc
   display flex

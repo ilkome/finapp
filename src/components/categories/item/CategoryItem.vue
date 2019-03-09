@@ -14,6 +14,10 @@ export default {
     category: {
       type: Object,
       required: true
+    },
+    ui: {
+      type: String,
+      default: null
     }
   },
 
@@ -41,6 +45,7 @@ export default {
 
 <template lang="pug">
 .categoryItem(
+  :class="{ [ui]: ui }"
   :style="{ background: category.color || $store.state.ui.defaultBgColor }"
   @click="handleClick"
 )
@@ -48,6 +53,7 @@ export default {
     Icon(
       @click="handleIconClick"
       :icon="category.icon"
+      :small="ui === '_flat'"
       :background="category.color || $store.state.ui.defaultBgColor"
       :category="true"
     )
@@ -72,6 +78,12 @@ export default {
   color var(--c-font-1)
   border-radius $m3
 
+  &._flat
+    flex-flow row nowrap
+    margin-right 20px
+    flex 1 0 auto
+    padding 10px 10px
+
   @media $media-laptop
     padding $m6 0
 
@@ -80,6 +92,8 @@ export default {
 
   &__icon
     padding-bottom $m4
+    ^[0]._flat &
+      padding-bottom 0
 
   &__name
     min-height 16px

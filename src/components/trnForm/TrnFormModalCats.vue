@@ -79,7 +79,7 @@ TrnFormModal(
       template(v-if="$store.state.ui.lastUsedCatsInTrnForm === 'visible'")
         .swiper-slide
           CategoriesView(
-            :ids="$store.getters.lastUsedCategoriesIds"
+            :ids="$store.getters.lastUsedCategoriesIdsByDate"
             :noPaddingBottom="true"
             v-on:onClick="handleCategoryClick"
           )

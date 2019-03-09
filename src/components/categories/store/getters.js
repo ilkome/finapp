@@ -66,7 +66,7 @@ export default {
     return childIds
   },
 
-  lastUsedCategoriesIds (state, getters, rootState, rootGetters) {
+  lastUsedCategoriesIdsByDate (state, getters, rootState, rootGetters) {
     const categories = rootState.categories.items
     const trns = rootState.trns.items
     const sortedTrnsIds = rootGetters.sortedTrnsIds
@@ -87,6 +87,15 @@ export default {
       }
 
       return lastCategoriesIds
+    }
+  },
+
+  lastUsedCategoriesIds (state, getters, rootState, rootGetters) {
+    const lastUsedCategoriesIds = rootGetters.lastUsedCategoriesIdsByDate
+    const categories = rootState.categories.items
+
+    if (lastUsedCategoriesIds) {
+      return lastUsedCategoriesIds
         .sort((a, b) => {
           if (categories[a] && categories[b]) {
             if (categories[a].name < categories[b].name) return -1
@@ -95,6 +104,19 @@ export default {
           }
         })
     }
+  },
+
+  quickSelectorCategoriesIds (state, getters, rootState, rootGetters) {
+    const categories = rootState.categories.items
+    if (!rootGetters.hasCategories) return []
+
+    return Object.keys(categories)
+      .filter(key => categories[key].parentId !== 0 && categories[key].showInQuickSelector)
+      .sort((a, b) => {
+        if (categories[a].name < categories[b].name) return -1
+        if (categories[a].name > categories[b].name) return 1
+        return 0
+      })
   },
 
   transferCategoryId (state, getters, rootState, rootGetters) {

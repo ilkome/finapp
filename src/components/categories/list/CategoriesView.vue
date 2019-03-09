@@ -30,6 +30,10 @@ export default {
     borderTop: {
       type: Boolean,
       default: false
+    },
+    ui: {
+      type: String,
+      default: null
     }
   },
 
@@ -43,15 +47,31 @@ export default {
 </script>
 
 <template lang="pug">
-.categories(:class="{ _noPadding: noPadding, _noPaddingBottom: noPaddingBottom, _borderTop: borderTop }")
+.categories(:class="{ _noPadding: noPadding, _noPaddingBottom: noPaddingBottom, _borderTop: borderTop, [ui]: ui }")
   .categories__title(v-if="title") {{ title }}
 
   .categories__list
     CategoryItem(
       v-for="categoryId in categoresIds"
       :id="categoryId"
+      :ui="ui"
       :key="categoryId"
       :category="$store.state.categories.items[categoryId]"
       v-on="$listeners"
     )
 </template>
+
+<style lang="stylus" scoped>
+.categories._flat
+  padding 0
+  overflow hidden
+  overflow-x auto
+
+  .categories__list
+    display flex
+    &:after
+      content ""
+      flex 1 0 1px
+      display block
+      width 1px
+</style>

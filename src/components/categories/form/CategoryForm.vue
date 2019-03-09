@@ -34,6 +34,7 @@ export default {
         name: null,
         parentId: 0,
         showInLastUsed: true,
+        showInQuickSelector: false,
         showStat: true
       }
     }
@@ -104,6 +105,7 @@ export default {
           name: this.category.name,
           parentId: this.category.parentId,
           showInLastUsed: this.category.showInLastUsed,
+          showInQuickSelector: this.category.showInQuickSelector,
           showStat: true
         }
 
@@ -208,6 +210,11 @@ export default {
         Checkbox(
           v-model="category.showInLastUsed"
           title="Show in last used categories"
+          :alt="true")
+      .form-line._p0._clean
+        Checkbox(
+          v-model="category.showInQuickSelector"
+          :title="$lang.categories.form.quickSelector"
           :alt="true")
 
     .form__actions

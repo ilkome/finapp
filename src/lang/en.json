@@ -57,7 +57,11 @@
   "categories": {
     "title": "Categories",
     "shortTitle": "Cats",
-    "new": "New category"
+    "new": "New category",
+    "form": {
+      "quickSelector": "Show in trnForm quick selector",
+      "save": "Save category"
+    }
   },
 
   "stat": {

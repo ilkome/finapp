@@ -105,12 +105,16 @@ export default {
     width auto
     height auto
     padding-bottom $m5
+  &._category._small
+    padding-bottom 0
 
   &__image
     font-size 20px
 
     ^[0]._category &
       font-size 32px
+    ^[0]._category._small &
+      font-size 18px
 
     ^[0]._big &
         font-size 24px
