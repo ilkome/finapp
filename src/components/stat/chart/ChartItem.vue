@@ -125,7 +125,8 @@ export default {
 .chart-item
   padding $m5 $m5
   flex-grow 1
-  border-left 1px solid var(--c-bg-1)
+  max-width 80px
+  border-left 1px solid transparent
   border-right 1px solid transparent
 
   @media $media-laptop
@@ -168,7 +169,7 @@ export default {
     color var(--c-font-2)
     background var(--c-bg-3)
     border-left 1px solid var(--c-bg-1)
-    border-right 1px solid transparent
+    border-right 1px solid var(--c-bg-1)
 
    &._active._grouped
       border-right 1px solid var(--c-bg-1)

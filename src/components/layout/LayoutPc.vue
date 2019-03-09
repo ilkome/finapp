@@ -149,7 +149,7 @@ export default {
   position relative
   overflow hidden
   min-height 100%
-  max-width 1527px
+  // max-width 1527px
 
   &__wrap
     overflow hidden

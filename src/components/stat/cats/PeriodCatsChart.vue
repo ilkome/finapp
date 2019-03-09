@@ -1,13 +1,11 @@
 <script>
 import PeriodCatsChartItem from '@/components/stat/cats/PeriodCatsChartItem'
 import PeriodCatsChartPopup from '@/components/stat/cats/PeriodCatsChartPopup'
-import Slider from '@/components/slider/Slider'
 
 export default {
   components: {
     PeriodCatsChartItem,
-    PeriodCatsChartPopup,
-    Slider
+    PeriodCatsChartPopup
   },
 
   props: {

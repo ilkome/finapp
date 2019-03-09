@@ -83,7 +83,6 @@ export default {
   firstCreatedTrnId (state, getters, rootState, rootGetters) {
     if (rootGetters.hasTrns) {
       const trnsIds = [...getters.sortedTrnsIds].reverse()
-      // const trns = rootState.trns.items
       return trnsIds[0]
     }
   },

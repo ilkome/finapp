@@ -7,7 +7,6 @@ import EmptyData from '@/components/shared/emptyData/EmptyData'
 import FilterItem from '@/components/filter/FilterItem'
 import Icon from '@/components/icon/Icon'
 import PeriodCatsChart from '@/components/stat/cats/PeriodCatsChart'
-import Slider from '@/components/slider/Slider'
 import StatItem from '@/components/stat/StatItem'
 import StatSummaryMobile from '@/components/stat/StatSummaryMobile'
 import TrnsList from '@/components/trns/list/TrnsList'
@@ -23,7 +22,6 @@ export default {
     FilterItem,
     Icon,
     PeriodCatsChart,
-    Slider,
     StatItem,
     StatSummaryMobile,
     TrnsList,
@@ -55,10 +53,6 @@ export default {
   },
 
   methods: {
-    onSlideChange (slideIndex) {
-      this.$store.commit('setStatSliderIndex', slideIndex)
-    },
-
     clearCategoryFilter () {
       const nextCategory = this.filterCategory.parentId !== 0 ? this.filterCategory.parentId : null
       this.$store.dispatch('setFilterCategoryId', nextCategory)

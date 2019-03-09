@@ -1,10 +1,4 @@
 export default {
-  setAllPeriodValues (state, { values }) {
-    state.periods = {
-      ...state.periods,
-      ...values
-    }
-  },
   setPeriodValues (state, { periodName, values }) {
     state.periods[periodName] = {
       ...state.periods[periodName],

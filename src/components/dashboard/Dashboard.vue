@@ -43,49 +43,51 @@ export default {
   StatChartsLine
 
   .statMain__info
-    DashboardNav
-    StatSummaryPc
+    .statMain__info__in
+      DashboardNav
+      StatSummaryPc
   DashboardFilter
 
-  .statMain__header
-    .statMain__header__group
-      .statMain__header__item._tabName(
-        @click="$store.commit('toogleDashboardTrnsHistory')"
-        :class="{ _active: !$store.state.dashboard.showTrnsHistory }") Stat
-      .statMain__header__item._tabName(
-        @click="$store.commit('toogleDashboardTrnsHistory')"
-        :class="{ _active: $store.state.dashboard.showTrnsHistory }") History
+  .statMain__box
+    .statMain__header
+      .statMain__header__group
+        .statMain__header__item._tabName(
+          @click="$store.commit('toogleDashboardTrnsHistory')"
+          :class="{ _active: !$store.state.dashboard.showTrnsHistory }") Stat
+        .statMain__header__item._tabName(
+          @click="$store.commit('toogleDashboardTrnsHistory')"
+          :class="{ _active: $store.state.dashboard.showTrnsHistory }") History
 
-    .statMain__header__group._center
-      .statMain__header__item._monthNav(
-        @click="$store.dispatch('setPeriodPrev')"
-        :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isFirstPeriodSelected }")
-          .mdi.mdi-chevron-left
-          | &nbsp; Next {{ $store.state.filter.period }}
+      .statMain__header__group._center
+        .statMain__header__item._monthNav(
+          @click="$store.dispatch('setPeriodPrev')"
+          :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isFirstPeriodSelected }")
+            .mdi.mdi-chevron-left
+            | &nbsp; Next {{ $store.state.filter.period }}
 
-      .statMain__header__item._monthNav(
-        @click="$store.dispatch('setPeriodNext')"
-        :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isLastPeriodSelected }")
-          | Prev {{ $store.state.filter.period }}&nbsp;
-          .mdi.mdi-chevron-right
+        .statMain__header__item._monthNav(
+          @click="$store.dispatch('setPeriodNext')"
+          :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isLastPeriodSelected }")
+            | Prev {{ $store.state.filter.period }}&nbsp;
+            .mdi.mdi-chevron-right
 
-    .statMain__header__group
+      .statMain__header__group
 
-  .statMain__content
-    //- empty
-    //------------------------------------------------
-    template(v-if="$store.getters.stat.incomes.categoriesIds.length === 0 && $store.getters.stat.expenses.categoriesIds.length === 0 && $store.getters.selectedTrnsIdsWithDate.length === 0")
-      EmptyData(text="No stat for this period")
+    .statMain__content
+      //- empty
+      //------------------------------------------------
+      template(v-if="$store.getters.stat.incomes.categoriesIds.length === 0 && $store.getters.stat.expenses.categoriesIds.length === 0 && $store.getters.selectedTrnsIdsWithDate.length === 0")
+        EmptyData(text="No stat for this period")
 
-    //- stat & history
-    template(v-else)
-      transition(name="animation-tab")
-        .statMain__tab(v-show="!$store.state.dashboard.showTrnsHistory")
-          StatPc
+      //- stat & history
+      template(v-else)
+        transition(name="animation-tab")
+          .statMain__tab(v-show="!$store.state.dashboard.showTrnsHistory")
+            StatPc
 
-      transition(name="animation-tab")
-        .statMain__tab._trns(v-show="$store.state.dashboard.showTrnsHistory")
-          TrnsList
+        transition(name="animation-tab")
+          .statMain__tab._trns(v-show="$store.state.dashboard.showTrnsHistory")
+            TrnsList
 </template>
 
 <style lang="stylus" scoped>
@@ -110,16 +112,22 @@ export default {
   overflow-y scroll
 
   &__info
-    position relative
-    padding $m9 $mb2
-    background var(--c-bg-3)
     border-bottom 1px solid var(--c-bg-1)
+    background var(--c-bg-3)
 
-    @media $media-laptop
+    &__in
+      position relative
+      max-width 1200px
       padding $m9 $mb2
 
-    @media $media-xl
-      padding $m9 $mb2
+      @media $media-laptop
+        padding $m9 $mb2
+
+      @media $media-xl
+        padding $m9 $mb2
+
+  &__box
+    max-width 1200px
 
   &__header
     display grid
