@@ -9,7 +9,7 @@ const state = {
   pc: false,
   prevTab: null,
   statGraphsVisible: true,
-  lastUsedCatsInTrnForm: 'hidden',
+  lastUsedCatsInTrnForm: 'visible',
   catsChart: 'visible',
   statItems: 'visible',
   stat: {
