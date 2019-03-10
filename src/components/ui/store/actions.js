@@ -8,7 +8,7 @@ export default {
   async initUi ({ commit, dispatch }) {
     const uiLocalStore = await localforage.getItem('uiLocalStore')
 
-    // stat chats
+    // stat periods graph
     const statGraphsVisible = await localforage.getItem('next.statGraphsVisible')
     if (statGraphsVisible === 'visible') commit('showStatGraphs')
     if (statGraphsVisible === 'hidden') commit('hideStatGraphs')
@@ -23,13 +23,20 @@ export default {
     if (catsChart === 'visible') commit('setVisibleCatsChart', 'visible')
     if (catsChart === 'hidden') commit('setVisibleCatsChart', 'hidden')
 
+    // ui
     if (uiLocalStore) {
       if (uiLocalStore.statItems) commit('setVisibilityStatItems', uiLocalStore.statItems)
 
+      // stat
       if (uiLocalStore.stat) {
+        // wallets
         uiLocalStore.stat.walletsVisibility === 'visible'
           ? commit('setStatWalletsVisibility', 'visible')
           : commit('setStatWalletsVisibility', 'hidden')
+
+        // stat tab
+        uiLocalStore.stat.activeTab &&
+          dispatch('setActiveTabStat', uiLocalStore.stat.activeTab)
       }
     }
   },
