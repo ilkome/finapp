@@ -81,7 +81,7 @@ export default {
       .trnFormHeader__name {{ category.name }}
 </template>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 @import "~@/stylus/variables/margins"
 @import "~@/stylus/variables/media"
 
@@ -117,6 +117,12 @@ export default {
 
   &__total
     padding-top $m5
+    .amount__wrap
+      justify-content flex-start
+      color var(--c-font-1)
+
+    .amount__wrap._small
+      display none
 
   &__name
     font-size 18px
@@ -131,14 +137,4 @@ export default {
     border 1px solid var(--c-bg-5)
     border-right-color transparent
     border-top-color transparent
-</style>
-
-<style lang="stylus">
-.trnFormHeader__total
-  .amount__wrap
-    justify-content flex-start
-    color var(--c-font-1)
-
-  .amount__wrap._small
-    display none
 </style>
