@@ -1,6 +1,7 @@
 <script>
 import ContextMenu from '@/components/shared/contextMenu/ContextMenu'
 import ContextMenuItem from '@/components/shared/contextMenu/ContextMenuItem'
+import DashboardFilter from '@/components/dashboard/DashboardFilter'
 import WalletsList from '@/components/wallets/list/WalletsList'
 import WalletsTotal from '@/components/wallets/total/WalletsTotal'
 
@@ -8,6 +9,7 @@ export default {
   components: {
     ContextMenu,
     ContextMenuItem,
+    DashboardFilter,
     WalletsList,
     WalletsTotal
   },
@@ -51,7 +53,7 @@ export default {
             v-on:onClick="$store.dispatch('changeTheme')")
           ContextMenuItem(
             icon="mdi mdi-settings"
-            title="Go to settings"
+            :title="$lang.settings.open"
             v-on:onClick="$store.dispatch('setActiveTab', 'settings')"
             v-on:onClose="visibleSettingsMenu = !visibleSettingsMenu")
           .context-menu-sep
@@ -83,6 +85,9 @@ export default {
       :showToogle="true"
       :limit="6"
       v-on:onClick="(id) => handleShowWalletModal(id)")
+
+    .sidebar__filter
+      DashboardFilter._sidebar(:showTittle="true")
 </template>
 
 <style lang="stylus" scoped>
@@ -110,7 +115,7 @@ export default {
       justify-content center
       padding $m7 $m8
       font-header-1()
-      font-size 22px
+      font-size 18px
       color var(--c-font-4)
 
       &:hover
@@ -122,14 +127,20 @@ export default {
 
   &__content
     overflow-y auto
-    padding $m5 0
+    padding-top 10px
+    height calc(100vh - 130px)
     scrollbar()
+
+  &__filter
+    margin-top auto
+    margin-bottom auto
+    margin-top 100px
 
 .link
   z-index 1
   padding $m7 $m8
   font-header-1()
-  font-size 22px
+  font-size 18px
   color var(--c-font-4)
 
   &:hover:not(._active)
