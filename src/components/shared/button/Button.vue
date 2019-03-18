@@ -110,6 +110,7 @@ export default {
     justify-content center
     font-header-2()
     font-size 14px
+    height 47px
     color var(--c-font-1)
     font-weight 600
     letter-spacing 1.6px

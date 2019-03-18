@@ -21,14 +21,14 @@ export default {
 </script>
 
 <template lang="pug">
-.period-nav
-  .period-nav__link
+.periodNav
+  .periodNav__link
     .d-button-cirle(
       @click="$store.dispatch('setPeriodPrev')"
       :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isFirstPeriodSelected }")
       .mdi.mdi-chevron-left
 
-  .period-nav__link._grow
+  .periodNav__link._grow
     ContextMenu(
       :position="{ left: true, bottom: true }"
       :visible="visiblePeriodMenu"
@@ -65,12 +65,12 @@ export default {
           v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
         ContextMenuItem(
           icon="mdi mdi-database"
-          :title="$store.state.lang.lang === 'ru' ? 'Показать всё' : 'Show all'"
+          :title="$lang.dates.all"
           :selected="$store.state.filter.period === 'all'"
           v-on:onClick="$store.dispatch('setPeriod', 'all')"
           v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
 
-  .period-nav__link
+  .periodNav__link
     .d-button-cirle(
       @click="$store.dispatch('setPeriodNext')"
       :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isLastPeriodSelected }")
@@ -81,7 +81,7 @@ export default {
 @import "~@/stylus/variables/margins"
 @import "~@/stylus/variables/media"
 
-.period-nav
+.periodNav
   display flex
   align-items stretch
   justify-content space-between

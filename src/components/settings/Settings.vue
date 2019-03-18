@@ -35,7 +35,7 @@ export default {
 .settings
   .settings__header {{ $lang.settings.title }}
 
-  .settings__group(v-if="$store.state.ui.mobile")
+  .settings__group
     .settings__subHeader {{ $lang.trnForm.title }}
     .settings__item
       Button._bdb(
