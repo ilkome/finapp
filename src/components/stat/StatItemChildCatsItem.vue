@@ -1,7 +1,7 @@
 <script>
 import Amount from '@/components/amount/Amount'
 import Icon from '@/components/icon/Icon'
-import TrnsListView from '@/components/trns/list/TrnsListView'
+import TrnsList from '@/components/trns/list/TrnsList'
 import StatItemChildCats from '@/components/stat/StatItemChildCats'
 
 export default {
@@ -9,7 +9,7 @@ export default {
     Amount,
     Icon,
     StatItemChildCats,
-    TrnsListView
+    TrnsList
   },
 
   props: {
@@ -69,15 +69,17 @@ export default {
       @click.stop="() => $store.dispatch('handleSetFilterCategory', categoryId)")
       Icon(
         :background="category.color"
-        :icon="category.icon")
+        :icon="category.icon"
+        :round="true"
+        :medium="true")
     .statItemChild__name {{ category.name }}
     .statItemChild__amount
       Amount(
         :currency="$store.state.currencies.base"
         :value="total")
   .statItemChild__trns(@click.stop="" v-if="showTrns")
-    TrnsListView(
-      :grouped="false"
+    TrnsList(
+      ui="stat"
       :incomes="type === 1"
       :expenses="type === 0"
       :categoryId="categoryId")

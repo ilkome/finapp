@@ -1,7 +1,7 @@
 <script>
 import Amount from '@/components/amount/Amount'
 import Icon from '@/components/icon/Icon'
-import TrnsListView from '@/components/trns/list/TrnsListView'
+import TrnsList from '@/components/trns/list/TrnsList'
 import StatItemChildCats from '@/components/stat/StatItemChildCats'
 
 export default {
@@ -9,7 +9,7 @@ export default {
     Amount,
     Icon,
     StatItemChildCats,
-    TrnsListView
+    TrnsList
   },
 
   props: {
@@ -94,18 +94,17 @@ export default {
         :value="total")
 
   template(v-if="showTrns")
-    .statItem__cats(
-      v-if="showChildCategories"
-      @click.stop="")
-      StatItemChildCats(:categoryId="categoryId", :type="type")
-    .statItem__trns(
-      v-else
-      @click.stop="")
-      TrnsListView(
-        :grouped="false"
-        :incomes="type === 1"
-        :expenses="type === 0"
-        :categoryId="categoryId")
+    template(v-if="showChildCategories")
+      .statItem__cats(@click.stop="")
+        StatItemChildCats(:categoryId="categoryId", :type="type")
+
+    template(v-else)
+      .statItem__trns(@click.stop="")
+        TrnsList(
+          ui="stat"
+          :incomes="type === 1"
+          :expenses="type === 0"
+          :categoryId="categoryId")
 </template>
 
 <style lang="stylus" scoped>

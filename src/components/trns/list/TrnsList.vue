@@ -3,6 +3,8 @@ import moment from 'moment'
 
 import TrnItem from '@/components/trns/item/TrnItem'
 import TrnsListDate from '@/components/trns/list/TrnsListDate'
+// import { generateDateId } from '@/utils/id'
+// import { db } from '@/firebase'
 
 export default {
   components: {
@@ -13,11 +15,15 @@ export default {
   props: {
     ui: {
       type: String,
-      default: 'group'
+      default: 'history'
     },
     limit: {
       type: Number,
       default: 0
+    },
+    categoryId: {
+      type: String,
+      default: null
     },
     expenses: {
       type: Boolean,
@@ -32,14 +38,19 @@ export default {
   computed: {
     trnsIds () {
       const trns = this.$store.state.trns.items
-      let trnsIds = this.$store.getters.selectedTrnsIdsWithDate.slice(0, 100) // slice
+      let trnsIds = this.$store.getters.selectedTrnsIdsWithDate
 
+      // from category
+      if (this.categoryId) {
+        trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === this.categoryId)
+      }
+
+      // filter type
       if (this.incomes) trnsIds = trnsIds.filter(id => trns[id].type === 1)
       if (this.expenses) trnsIds = trnsIds.filter(id => trns[id].type === 0)
 
-      if (this.limit > 0) {
-        return trnsIds.slice(0, this.limit)
-      }
+      // limit
+      if (this.limit > 0) return trnsIds.slice(0, this.limit)
       return trnsIds
     },
 
@@ -65,24 +76,9 @@ export default {
 <template lang="pug">
 .trnsList
   template(v-if="trnsIds.length > 0")
-    //- simple
-    //------------------------------------------------
-    template(v-if="ui === 'simple'")
-      .trnsList__trns
-        TrnItem(
-          v-for="trnId of trns"
-          :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
-          :key="trnId"
-          :showDate="true"
-          :trn="$store.state.trns.items[trnId]"
-          :trnId="trnId"
-          :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].accountId]")
-
-    //- group
-    //------------------------------------------------
-    template(v-if="ui === 'group'")
-      .trnsList__day(
-        v-for="(trnsIds, date) in groupedTrns")
+    //- history view
+    template(v-if="ui === 'history'")
+      .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
         .trnsList__header: TrnsListDate(:date="date")
         .trnsList__trns
           TrnItem(
@@ -92,6 +88,17 @@ export default {
             :trn="$store.state.trns.items[trnId]"
             :trnId="trnId"
             :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].accountId]")
+
+    //- stat view
+    template(v-else)
+      template(v-for="trnId of trnsIds")
+        TrnItem(
+          :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
+          :key="trnId"
+          :trn="$store.state.trns.items[trnId]"
+          :trnId="trnId"
+          :ui="ui"
+          :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].accountId]")
 </template>
 
 <style lang="stylus" scoped>

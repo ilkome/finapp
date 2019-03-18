@@ -75,70 +75,62 @@ export default {
 ModalBottom(
   :show="$store.state.trns.modal.show"
   v-on:onClose="$store.commit('hideTrnModal')"
-  v-on:afterClose="$store.commit('setTrnModalId', null)"
-)
+  v-on:afterClose="$store.commit('setTrnModalId', null)")
+
   template(v-if="trnId")
     template(slot="header")
       //- trn
-      TrnItem.disable-hover(
+      TrnItem(
         :category="category"
-        :trnId="trnId"
         :trn="$store.state.trns.items[trnId]"
+        :trnId="trnId"
         :wallet="wallet"
-        :fullInfo="true"
-      )
+        ui="detailed")
 
     //- btns
     template(slot="btns")
       ModalButton(
         name="Delete"
         icon="mdi mdi-delete"
-        v-on:onClick="handleDeleteClick"
-      )
+        v-on:onClick="handleDeleteClick")
+
       ModalButton(
         name="Edit"
         icon="mdi mdi-pencil"
-        v-on:onClick="handleEditClick"
-      )
+        v-on:onClick="handleEditClick")
+
       ModalButton(
         name="Dublicate"
         icon="mdi mdi-content-copy"
-        v-on:onClick="handleDublicateTrn"
-      )
+        v-on:onClick="handleDublicateTrn")
 
-    .actions-extra
-      Button.margin(
+    .moreActions
+      Button.marginBottom(
         className="_grey"
         title="Set category filter"
         icon="mdi mdi-chart-bubble"
-        v-on:onClick="handleSetFilterCategory"
-      )
+        v-on:onClick="handleSetFilterCategory")
+
       Button(
         className="_grey"
         title="Set wallet filter"
         icon="mdi mdi-credit-card-multiple"
-        v-on:onClick="handleSetFilterWallet"
-      )
+        v-on:onClick="handleSetFilterWallet")
 
   //- confirm
   ModalBottomConfirm(
     :show="showModalConfirm"
     v-on:onClose="showModalConfirm = false"
-    v-on:onConfirm="handleDeleteConfirm"
-  )
+    v-on:onConfirm="handleDeleteConfirm")
 </template>
 
 <style lang="stylus" scoped>
 @import "~@/stylus/variables/margins"
 @import "~@/stylus/variables/scrollbar"
 
-.disable-hover:hover
-.disable-hover:active
-  background 0
-
-.margin
+.marginBottom
   margin-bottom $m7
 
-.actions-extra
+.moreActions
   padding-top $m8
 </style>

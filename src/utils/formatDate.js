@@ -8,7 +8,7 @@ export const formatDate = (value, type) => {
     case 'full':
       return {
         day: date.format('D'),
-        weekDay: date.calendar(null, {
+        weekday: date.calendar(null, {
           sameDay: '[Today] ddd',
           nextDay: '[Tomorrow] ddd',
           nextWeek: 'dddd',
@@ -22,6 +22,9 @@ export const formatDate = (value, type) => {
 
     case 'number':
       return date.format('DD.MM.YY')
+
+    case 'numberDay':
+      return date.format('DD.MM')
 
     case 'trnItem':
       if (today.isSame(date, 'year')) {
