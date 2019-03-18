@@ -3,7 +3,6 @@ import CategoriesList from '@/components/categories/list/CategoriesList'
 import CategoryForm from '@/components/categories/form/CategoryForm'
 import CategoryModal from '@/components/categories/modal/CategoryModal'
 import CurrencyModal from '@/components/currencies/CurrencyModal'
-import FilterModal from '@/components/filter/FilterModal'
 import LayoutMobileMenu from '@/components/layout/LayoutMobileMenu'
 import Settings from '@/components/settings/Settings'
 import StatChartDonut from '@/components/stat/StatChartDonut'
@@ -23,7 +22,6 @@ export default {
     CategoryForm,
     CategoryModal,
     CurrencyModal,
-    FilterModal,
     LayoutMobileMenu,
     Settings,
     StatChartDonut,
@@ -118,7 +116,6 @@ export default {
   //- modals
   CategoryModal
   CurrencyModal
-  FilterModal
   TrnForm
   TrnModal
   WalletModal

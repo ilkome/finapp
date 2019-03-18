@@ -9,7 +9,6 @@ const state = {
   walletId: null,
   date: moment().valueOf(),
   period: 'week',
-  showFilterModal: false
 }
 
 export default {

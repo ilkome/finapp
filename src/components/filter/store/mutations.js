@@ -8,10 +8,6 @@ import moment from 'moment'
 // setPeriodNext
 // setPeriodPrev
 export default {
-  toogleFilterModal (state) {
-    state.showFilterModal = !state.showFilterModal
-  },
-
   setDate (state, date) {
     state.date = moment(date).valueOf()
   },
