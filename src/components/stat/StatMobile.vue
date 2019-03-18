@@ -182,8 +182,18 @@ export default {
 
 .stat
   &__filter
-    padding 10px $m7
+    display flex
+    overflow hidden
+    overflow auto
+    padding 16px 16px
+    padding-right 0
     background var(--c-bg-4)
+    scrollbar()
+    &:after
+      display block
+      content ""
+      width 1px
+      flex 0 0 16px
 
   &__charts
     padding-bottom $m7

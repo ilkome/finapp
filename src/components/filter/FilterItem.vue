@@ -64,17 +64,19 @@ export default {
   align-items center
   padding 8px 12px
   color var(--c-font-1)
+  white-space nowrap
   border-radius $m3
   cursor pointer
 
   &._pc
-    margin-right $m7
+    margin-right 20px
 
   &._mobile
-    margin-bottom $m7
+    flex 1 1 50%
+    margin-right 10px
 
   &:last-child
-    margin-bottom 0
+    margin-right 0
 
   &._clear
     margin-left auto
@@ -107,6 +109,7 @@ export default {
 
   &__close
     margin-left auto
+    padding-left 10px
     color var(--c-font-1)
 
     @media $media-laptop
