@@ -23,7 +23,7 @@ export default {
   .dropdown__title
     template(v-if="$slots.title"): slot(name="title")
     template(v-else) {{ title }}
-  .dropdown__toogle: .mdi.mdi-chevron-down
+  .dropdown__toogle: .mdi.mdi-dots-vertical
 </template>
 
 <style lang="stylus" scoped>
@@ -35,9 +35,23 @@ export default {
   display flex
   align-items stretch
   width auto
+  padding 0 12px
   margin-left auto
   border-radius $m3
   font-size 16px
+
+  &._noBd
+    padding 0 12px
+    margin 0 -12px
+    background transparent
+    border-color transparent
+    box-shadow none
+
+    &:hover:not(._disable)
+      @media $media-laptop
+        color var(--c-font-3)
+        background var(--c-bg-1)
+        border-color var(--c-bg-8)
 
   &._inline
     display inline-flex
@@ -50,30 +64,24 @@ export default {
     display flex
     align-items center
     justify-content center
-    font-size 22px
-    margin-right (- $m4)
-    padding-left $m6
+    font-size 18px
+    margin-right 6px
     opacity .8
 
   &__title
     flex-grow 1
-    padding 0 $m7
     white-space nowrap
     justify-content flex-start
+    padding-right 12px
 
     @media $media-phone-sm
       padding 0 $m6
 
   &__toogle
+    width 4px
     flex-grow 0
-    padding 0 $m6
     font-size 18px
-    border-left 1px solid var(--c-bg-7)
     justify-content center
-
-    ^[0]:hover &
-      @media $media-laptop
-        border-left 1px solid var(--c-bg-8)
 
     div
       anim-all()

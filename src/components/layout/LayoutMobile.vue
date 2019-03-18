@@ -85,7 +85,7 @@ export default {
         ui="widget"
         v-on:onClick="(id) => handleShowWalletModal(id)")
       StatChartsLine(
-        v-if="$store.state.ui.statGraphsVisible && ($store.state.filter.period !== 'all')")
+        v-if="$store.state.ui.statGraphsVisibility === 'visible' && ($store.state.filter.period !== 'all')")
       StatMobile
 
   //- trns

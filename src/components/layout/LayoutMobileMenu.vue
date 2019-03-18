@@ -81,61 +81,62 @@ export default {
 
 <template lang="pug">
 .menu
-  .menu__row
-    PeriodNavMobile(v-show="activeTab === 'stat' || activeTab === 'trns'")
+  .menu__wrap
+    .menu__row
+      PeriodNavMobile(v-show="activeTab === 'stat' || activeTab === 'trns'")
 
-    .create-btn(v-show="activeTab === 'categories'")
-      Button(
-        className="_inline _small"
-        :title="$lang.categories.new"
-        v-on:onClick="$store.dispatch('setActiveTab', 'createCategory')")
+      .create-btn(v-show="activeTab === 'categories'")
+        Button(
+          className="_inline _small"
+          :title="$lang.categories.new"
+          v-on:onClick="$store.dispatch('setActiveTab', 'createCategory')")
 
-    .create-btn(v-show="activeTab === 'wallets'")
-      Button(
-        className="_inline _small"
-        :title="$lang.wallets.new"
-        v-on:onClick="$store.dispatch('setActiveTab', 'createWallet')")
+      .create-btn(v-show="activeTab === 'wallets'")
+        Button(
+          className="_inline _small"
+          :title="$lang.wallets.new"
+          v-on:onClick="$store.dispatch('setActiveTab', 'createWallet')")
 
-    .customize(v-show="activeTab === 'wallets' || activeTab === 'categories'")
-      ContextMenu(
-        :position="{ right: true, bottom: true }"
-        :visible="visibleCustomizeMenu"
-        v-on:onClickOpener="visibleCustomizeMenu = !visibleCustomizeMenu")
-        template(slot="opener")
-          Dropdown(
-            :active="visibleCustomizeMenu"
-            icon="mdi mdi-tune"
-            :title="$lang.settings.options")
-        template(slot="content")
-          ContextMenuItem(
-            icon="mdi mdi-settings"
-            :title="$lang.settings.open"
-            v-on:onClick="$store.dispatch('setActiveTab', 'settings')"
-            v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
-          .context-menu-sep
-          ContextMenuItem(
-            icon="mdi mdi-currency-usd"
-            title="Change base currency"
-            v-on:onClick="$store.commit('showBaseCurrenciesModal')"
-            v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
-          ContextMenuItem(
-            icon="mdi mdi-palette"
-            title="Change theme"
-            v-on:onClick="$store.dispatch('changeTheme')"
-            v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
+      .customize(v-show="activeTab === 'wallets' || activeTab === 'categories'")
+        ContextMenu(
+          :position="{ right: true, bottom: true }"
+          :visible="visibleCustomizeMenu"
+          v-on:onClickOpener="visibleCustomizeMenu = !visibleCustomizeMenu")
+          template(slot="opener")
+            Dropdown(
+              :active="visibleCustomizeMenu"
+              icon="mdi mdi-tune"
+              :title="$lang.settings.options")
+          template(slot="content")
+            ContextMenuItem(
+              icon="mdi mdi-settings"
+              :title="$lang.settings.open"
+              v-on:onClick="$store.dispatch('setActiveTab', 'settings')"
+              v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
+            .context-menu-sep
+            ContextMenuItem(
+              icon="mdi mdi-currency-usd"
+              title="Change base currency"
+              v-on:onClick="$store.commit('showBaseCurrenciesModal')"
+              v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
+            ContextMenuItem(
+              icon="mdi mdi-palette"
+              title="Change theme"
+              v-on:onClick="$store.dispatch('changeTheme')"
+              v-on:onClose="visibleCustomizeMenu = !visibleCustomizeMenu")
 
-  .menu__row
-    template(v-for="menuItem of menu")
-      .menu__item(
-        :key="menuItem.id"
-        :class="getClassName(menuItem.id)"
-        @click="handleSetActiveTab(menuItem.id)")
-        .menu__item__icon: div(:class="menuItem.icon")
-        .menu__item__text {{ menuItem.name }}
+    .menu__row
+      template(v-for="menuItem of menu")
+        .menu__item(
+          :key="menuItem.id"
+          :class="getClassName(menuItem.id)"
+          @click="handleSetActiveTab(menuItem.id)")
+          .menu__item__icon: div(:class="menuItem.icon")
+          .menu__item__text {{ menuItem.name }}
 
-    .menu__item._hightlight(@click="$store.dispatch('openTrnForm', { action: 'create' })")
-      .menu__item__icon: .mdi.mdi-library-plus
-      .menu__item__text {{ this.$lang.create.title }}
+      .menu__item._hightlight(@click="$store.dispatch('openTrnForm', { action: 'create' })")
+        .menu__item__icon: .mdi.mdi-library-plus
+        .menu__item__text {{ this.$lang.create.title }}
 </template>
 
 <style lang="stylus" scoped>
@@ -156,12 +157,16 @@ export default {
   position fixed
   left 0
   bottom 0
-  display grid
-  grid-row-gap $m5
   padding-top $m6
   width 100%
   background var(--c-bg-3)
   border-top 1px solid var(--c-bg-1)
+
+  &__wrap
+    display grid
+    grid-row-gap $m5
+    max-width 620px
+    margin 0 auto
 
   /.theme-light &
     background var(--c-bg-4)

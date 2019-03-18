@@ -27,9 +27,9 @@ export default {
 
 <template lang="pug">
 .modalBottom(
-  :style="{ maxHeight: `${$store.state.ui.height - 0}px`}"
-  :class="{ _center: center }"
-)
+  :style="{ maxHeight: `${$store.state.ui.height}px`}"
+  :class="{ _center: center }")
+
   transition(name="fadeIn" appear)
     .modalBottom__overflow(@click="$listeners.onClose" v-show="show")
 
@@ -38,8 +38,7 @@ export default {
       //- Header
       .modalBottom__header(
         @click="$listeners.onClose"
-        ref="header"
-      )
+        ref="header")
         template(v-if="$slots.header")
           slot(name="header")
         template(v-else)
@@ -62,14 +61,8 @@ export default {
 @import "~@/stylus/variables/media"
 
 .modalBottom
-  &._center
-    @media $media-laptop
-      // height 100%
-
   &__wrap
     ^[0]._center &
       @media $media-laptop
-        // top 50%
-        // transform translateY(-50%)
         margin 0 auto
 </style>

@@ -55,7 +55,6 @@ export default {
 
 <template lang="pug">
 .layout
-  .layout-formSideOpener(@click="$store.dispatch('openTrnForm', { action: 'create' })")
   .createTrnBtn(@click="$store.dispatch('openTrnForm', { action: 'create' })"): .mdi.mdi-library-plus
 
   //- modals
@@ -75,25 +74,25 @@ export default {
       //- categories
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'categories'")
-        .dashboard__title Categories
+        .dashboard__title {{ $lang.categories.title }}
         CategoriesList.dashboardItems(v-on:onClick="(id) => handleShowCategoryModal(id)")
         Button(
           className="_blue _inline"
           icon="mdi mdi-plus"
-          title="New category"
+          :title="$lang.categories.new"
           v-on:onClick="$store.dispatch('setActiveTab', 'createCategory')")
 
       //- wallets
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'wallets'")
-        .dashboard__title Wallets
+        .dashboard__title {{ $lang.wallets.title }}
         WalletsList.dashboardItems(
           ui="tile"
           v-on:onClick="(id) => handleShowWalletModal(id)")
         Button(
           className="_blue _inline"
           icon="mdi mdi-plus"
-          title="New wallet"
+          :title="$lang.wallets.new"
           v-on:onClick="$store.dispatch('setActiveTab', 'createWallet')")
 
       //- add category
@@ -110,6 +109,8 @@ export default {
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'settings'")
         Settings
+
+    .layout-formSideOpener(@click="$store.dispatch('openTrnForm', { action: 'create' })")
 </template>
 
 <style lang="stylus">
@@ -129,18 +130,20 @@ export default {
 @import "~@/stylus/variables/scrollbar"
 
 .layout-formSideOpener
+  cursor pointer
   opacity .3
-  z-index 3
+  z-index 2
   position fixed
   right 0
   top 0
-  width 30px
+  width 50px
   height 100%
   anim-all()
 
   @media $media-xl
-    z-index 2
-    width 100%
+    width 180px
+  @media $media-xl2
+    width 400px
 
   &:hover
     background var(--c-bg-8)
@@ -149,7 +152,6 @@ export default {
   position relative
   overflow hidden
   min-height 100%
-  // max-width 1527px
 
   &__wrap
     overflow hidden
@@ -157,7 +159,7 @@ export default {
     z-index 2
     min-height 100vh
     display grid
-    grid-template-columns minMax(280px, 320px) 1fr
+    grid-template-columns 280px 1fr
     min-width 600px
     background var(--c-bg-2)
 

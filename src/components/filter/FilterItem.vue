@@ -46,6 +46,7 @@ export default {
   .filterItem__icon
     Icon(
       :icon="icon"
+      :medium="true"
       :background="color")
   .filterItem__name {{ name }}
   .filterItem__close: .mdi.mdi-close
@@ -61,8 +62,7 @@ export default {
   display flex
   flex-flow row
   align-items center
-  padding 0 $m7
-  height 40px
+  padding 8px 12px
   color var(--c-font-1)
   border-radius $m3
   cursor pointer
@@ -79,33 +79,31 @@ export default {
   &._clear
     margin-left auto
     margin-right 0
-    color var(--c-font-1)
-    background var(--c-bg-8)
-
-    /.theme-light &
-      background var(--c-bg-9)
+    color var(--c-font-4)
 
     &:hover
       @media $media-laptop
+        color var(--c-font-1)
         background var(--c-blue-1)
-
-    @media $media-phone
-      color var(--c-font-1)
-      background var(--c-blue-1)
-      border-radius $m3
 
   &__icon
     opacity .8
     padding-right $m6
     color var(--c-font-1)
+
     .icon
       width auto
       height auto
+      ^[0]._clear &
+        color var(--c-font-4)
+      ^[0]:hover &
+        color var(--c-font-1)
 
   &__name
     overflow hidden
     text-overflow ellipsis
     text-align center
+    font-size 14px
 
   &__close
     margin-left auto
