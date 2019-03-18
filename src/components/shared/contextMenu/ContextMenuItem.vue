@@ -60,15 +60,16 @@ export default {
 .item
   display flex
   align-items center
-  padding 0 $m7
-  font-size 14px
+  padding 0 $m6
+  font-size 13px
   white-space nowrap
+  cursor pointer
 
   @media $media-phone
     height 46px
 
   @media $media-laptop
-    height 40px
+    height 38px
 
   &:active
     background var(--c-bg-2)
@@ -89,7 +90,7 @@ export default {
   &__icon
     width 24px
     margin-right $m6
-    font-size 20px
+    font-size 18px
     text-align center
     opacity .85
 

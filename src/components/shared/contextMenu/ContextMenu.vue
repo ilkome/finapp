@@ -28,6 +28,19 @@ export default {
         _right: this.position && this.position.right,
         _top: this.position && this.position.top
       }
+    },
+
+    positionStyles () {
+      if (this.position && this.position.left && typeof this.position.left === 'string') {
+        return {
+          left: this.position.left
+        }
+      }
+      if (this.position && this.position.right && typeof this.position.right === 'string') {
+        return {
+          right: this.position.right
+        }
+      }
     }
   }
 }
@@ -36,7 +49,7 @@ export default {
 <template lang="pug">
 .context-menu
   transition(name="slide2")
-    .context-menu__popup(:class="className" v-show="visible")
+    .context-menu__popup(:class="className", :style="positionStyles" v-show="visible")
       .context-menu__overflow(@click="$emit('onClickOpener')")
       .context-menu__content
         slot(name="content")
