@@ -2,7 +2,7 @@ import moment from 'moment'
 import localforage from 'localforage'
 
 export default {
-  handleSetFilterCategory ({ rootState, dispatch }, categoryId) {
+  async handleSetFilterCategory ({ rootState, dispatch }, categoryId) {
     const filterCategoryId = rootState.filter.categoryId
     const filterCategory = rootState.categories.items[filterCategoryId]
 
@@ -18,22 +18,25 @@ export default {
     }
   },
 
-  setFilterCategoryId ({ state, commit }, categoryId) {
+  setFilterCategoryId ({ state, commit, dispatch }, categoryId) {
     state.categoryId === categoryId
       ? commit('setFilterCategoryId', null)
       : commit('setFilterCategoryId', categoryId)
+    dispatch('setUiView')
   },
 
-  setFilterWalletId ({ state, commit }, walletId) {
-    state.categoryId === walletId
+  setFilterWalletId ({ state, commit, dispatch }, walletId) {
+    state.walletId === walletId
       ? commit('setFilterWalletId', null)
       : commit('setFilterWalletId', walletId)
+    dispatch('setUiView')
   },
 
-  setPeriod ({ commit }, period) {
+  setPeriod ({ commit, dispatch }, period) {
     commit('setPeriod', period)
     commit('setDate', moment().valueOf())
     localforage.setItem('next.filter.period', period)
+    dispatch('saveUiView')
   },
 
   setDate ({ commit }, date) {
