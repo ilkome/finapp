@@ -6,7 +6,6 @@ import Icon from '@/components/icon/Icon'
 import ModalBottom from '@/components/modal/ModalBottom'
 import ModalBottomConfirm from '@/components/modal/ModalBottomConfirm'
 import ModalButton from '@/components/modal/ModalButton'
-import TrnItem from '@/components/trns/item/TrnItem'
 
 export default {
   components: {
@@ -14,8 +13,7 @@ export default {
     Icon,
     ModalBottom,
     ModalBottomConfirm,
-    ModalButton,
-    TrnItem
+    ModalButton
   },
 
   data () {
@@ -138,15 +136,6 @@ ModalBottom(
       name="Set filter"
       icon="mdi mdi-filter-outline"
       v-on:onClick="handleSetFilterCategory")
-
-  template(v-if="childCategoriesIds.length > 0 && trnsIds.length > 0")
-    TrnItem(
-      v-for="trnId in trnsIds"
-      :key="trnId"
-      :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
-      :trnId="trnId"
-      :trn="$store.state.trns.items[trnId]"
-      :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].accountId]")
 
   template(v-if="childCategoriesIds.length")
     CategoriesView(

@@ -122,7 +122,7 @@ export default {
   typo-money()
 
   @media $media-laptop
-    font-size 16px
+    font-size 15px
 
   &__wrap
     display flex

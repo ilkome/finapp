@@ -119,6 +119,7 @@ html
   margin 0
   color var(--c-font-2)
   font-primary()
+  font-size 14px
   line-height 1
   letter-spacing 0
   user-select none

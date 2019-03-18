@@ -111,8 +111,8 @@ export default {
   &__desc
     display flex
     align-items center
-    padding $m7 $m7
-    font-size 12px
+    padding 10px 12px
+    font-size 11px
     color var(--c-font-4)
     background var(--c-bg-8)
 

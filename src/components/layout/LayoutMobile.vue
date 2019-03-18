@@ -143,7 +143,9 @@ export default {
   overflow hidden
   position relative
   width 100%
+  max-width 620px
   height 100%
+  margin 0 auto
   background var(--c-bg-2)
 
 .tab

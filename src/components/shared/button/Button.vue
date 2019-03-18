@@ -109,7 +109,7 @@ export default {
     align-items center
     justify-content center
     font-header-2()
-    font-size 16px
+    font-size 14px
     color var(--c-font-1)
     font-weight 600
     letter-spacing 1.6px
@@ -175,10 +175,10 @@ export default {
         border-color var(--c-bg-8)
 
   &__icon
-    width 24px
+    width 22px
     margin-left (- $m4)
     margin-right $m6
-    font-size 20px
+    font-size 18px
     text-align center
     opacity .85
 

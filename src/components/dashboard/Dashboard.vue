@@ -43,10 +43,11 @@ export default {
   StatChartsLine
 
   .statMain__info
-    .statMain__info__in
-      DashboardNav
-      StatSummaryPc
-  DashboardFilter
+    DashboardNav
+    DashboardFilter
+    .statMain__info__wrap
+      .statMain__info__in
+        StatSummaryPc
 
   .statMain__box
     .statMain__header
@@ -58,18 +59,18 @@ export default {
           @click="$store.commit('toogleDashboardTrnsHistory')"
           :class="{ _active: $store.state.dashboard.showTrnsHistory }") History
 
-      .statMain__header__group._center
+      .statMain__header__group
         .statMain__header__item._monthNav(
           @click="$store.dispatch('setPeriodPrev')"
           :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isFirstPeriodSelected }")
-            .mdi.mdi-chevron-left
+            .mdi.mdi-chevron-double-left
             | &nbsp; Next {{ $store.state.filter.period }}
 
         .statMain__header__item._monthNav(
           @click="$store.dispatch('setPeriodNext')"
           :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isLastPeriodSelected }")
             | Prev {{ $store.state.filter.period }}&nbsp;
-            .mdi.mdi-chevron-right
+            .mdi.mdi-chevron-double-right
 
       .statMain__header__group
 
@@ -115,19 +116,22 @@ export default {
     border-bottom 1px solid var(--c-bg-1)
     background var(--c-bg-3)
 
+    &__wrap
+      border-top 1px solid var(--c-bg-2)
+
     &__in
       position relative
-      max-width 1200px
+      max-width 1100px
       padding $m9 $mb2
 
       @media $media-laptop
-        padding $m9 $mb2
+        padding $m9 $m9
 
-      @media $media-xl
+      @media $media-pc
         padding $m9 $mb2
 
   &__box
-    max-width 1200px
+    max-width 1100px
 
   &__header
     display grid
@@ -139,8 +143,6 @@ export default {
     &__group
       display-flex()
       flex 1 1 450px
-      &._center
-        justify-self center
 
     &__item
       display flex
@@ -156,9 +158,26 @@ export default {
         color var(--c-font-3)
         border-bottom 2px solid var(--c-font-3)
       &._monthNav
-        font-header-1()
         color var(--c-font-5)
         white-space nowrap
+        padding 5px 12px
+        margin -5px 5px
+        border-radius $m3
+        font-size 16px
+        background transparent
+        border-color transparent
+        box-shadow none
+        color var(--c-font-4)
+        background transparent
+        border 1px solid transparent
+        border-radius 3px
+
+        &:hover:not(._disable)
+          @media $media-laptop
+            color var(--c-font-3)
+            background var(--c-bg-1)
+            border-color var(--c-bg-8)
+
       &._disable
         opacity .5
       &:hover:not(._active):not(._disable):not(._spacer)
