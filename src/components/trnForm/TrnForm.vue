@@ -297,7 +297,7 @@ export default {
                   v-on:onClick="walletId => $store.commit('setTrnFormValues', { walletId })")
 
               .formCategories(v-if="$store.getters.quickSelectorCategoriesIds && $store.getters.quickSelectorCategoriesIds.length > 0")
-                .formTitle(@click="$store.commit('toogleTrnFormModal', 'categories')") Categories
+                .formTitle(@click="$store.commit('toogleTrnFormModal', 'categories')") Favorite Categories
                 CategoriesView(
                   :ids="$store.getters.quickSelectorCategoriesIds"
                   :noPaddingBottom="true"

@@ -62,6 +62,17 @@ TrnFormModal(
 
   //- pc
   template(v-if="$store.state.ui.pc")
+    template(v-if="$store.state.ui.lastUsedCatsInTrnForm === 'visible'")
+      .marginBottom
+        .formTitle Last used categories
+        CategoriesView(
+          :ids="$store.getters.lastUsedCategoriesIdsByDate"
+          :noPaddingBottom="true"
+          v-on:onClick="handleCategoryClick"
+        )
+
+    template(v-if="$store.state.ui.lastUsedCatsInTrnForm === 'visible'")
+      .formTitle All categories
     CategoriesView(
       :ids="$store.getters.categoriesRootIds"
       :noPaddingBottom="true"
@@ -94,3 +105,8 @@ TrnFormModal(
 
     .categories__desc Slide left or right
 </template>
+
+<style lang="stylus" scoped>
+.marginBottom
+  margin-bottom 30px
+</style>

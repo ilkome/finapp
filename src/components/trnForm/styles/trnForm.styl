@@ -12,7 +12,7 @@
     right 10%
     top 10%
     bottom inherit
-    height 100%
+    height calc(100% - 20%)
 
   &__overflow
     position fixed
@@ -31,6 +31,8 @@
     flex-grow 1
     flex-flow column nowrap
     background var(--c-bg-4)
+    max-width 400px
+    margin 0 auto
 
     /.theme-light &
       background var(--c-bg-2)
@@ -42,12 +44,14 @@
     @media $media-laptop
       width 400px
       max-height calc(100vh - 100px)
-      border 1px solid var(--c-bg-1)
+      background 0
 
   &__scroll
     overflow hidden
     overflow-y auto
     scrollbar()
+    @media $media-laptop
+      background var(--c-bg-4)
 
   &__calendar
     padding $m7 0

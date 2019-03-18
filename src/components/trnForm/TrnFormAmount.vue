@@ -157,7 +157,7 @@ export default {
     .action
       template(v-if="!amountValue")
         Button(
-          className="_blue"
+          className="_grey _center"
           title="Write amount"
           v-on:onClick="handleMath")
       template(v-else-if="amounIsNumber")

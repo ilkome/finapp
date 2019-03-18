@@ -5,7 +5,7 @@ export default {
   computed: {
     formatedDate () {
       const date = formatDate(this.$store.state.trnForm.values.date, 'full')
-      return `${date.weekDay}, ${date.day} ${date.month}`
+      return `${date.weekday}, ${date.day} ${date.month}`
     }
   },
 
