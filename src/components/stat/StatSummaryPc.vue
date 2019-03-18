@@ -127,22 +127,15 @@ export default {
     &._expenses
       @media $media-pc
         border-left 2px solid rgba(200, 30, 50, .3)
-      @media $media-phone
-        order 1
-
     &._total
       align-self center
       @media $media-pc
         border-left 2px solid var(--c-bg-5)
-      @media $media-phone
-        order 3
 
     &._incomes
       align-self end
       @media $media-pc
         border-left 2px solid rgba(44, 173, 34, .5)
-      @media $media-phone
-        order 2
 
   &__row
     flex-grow 0
