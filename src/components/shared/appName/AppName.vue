@@ -1,5 +1,5 @@
 <template lang="pug" functional>
-.appName Finapp Next
+.appName Finapp
 </template>
 
 <style lang="stylus" scoped>
