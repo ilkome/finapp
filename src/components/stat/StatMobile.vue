@@ -1,37 +1,25 @@
 <script>
 import Amount from '@/components/amount/Amount'
-import ContextMenu from '@/components/shared/contextMenu/ContextMenu'
-import ContextMenuItem from '@/components/shared/contextMenu/ContextMenuItem'
-import Dropdown from '@/components/shared/dropdown/Dropdown'
 import EmptyData from '@/components/shared/emptyData/EmptyData'
 import FilterItem from '@/components/filter/FilterItem'
 import Icon from '@/components/icon/Icon'
 import PeriodCatsChart from '@/components/stat/cats/PeriodCatsChart'
+import StatCustomizeMenuMobile from '@/components/stat/StatCustomizeMenuMobile'
 import StatItem from '@/components/stat/StatItem'
 import StatSummaryMobile from '@/components/stat/StatSummaryMobile'
 import TrnsList from '@/components/trns/list/TrnsList'
-import TrnsListViewEasy from '@/components/trns/list/TrnsListViewEasy'
 
 export default {
   components: {
     Amount,
-    ContextMenu,
-    ContextMenuItem,
-    Dropdown,
     EmptyData,
     FilterItem,
     Icon,
     PeriodCatsChart,
+    StatCustomizeMenuMobile,
     StatItem,
     StatSummaryMobile,
-    TrnsList,
-    TrnsListViewEasy
-  },
-
-  data () {
-    return {
-      visibleCustomizeMenu: false
-    }
+    TrnsList
   },
 
   computed: {
@@ -69,7 +57,7 @@ export default {
 
 <template lang="pug">
 .stat
-  StatSummaryMobile
+  StatSummaryMobile(v-if="$store.state.ui.statSummuryVisibility === 'visible'")
 
   .stat__filter(v-if="$store.state.filter.categoryId || $store.state.filter.walletId")
     template(v-if="$store.state.filter.walletId")
@@ -178,44 +166,7 @@ export default {
             :total="stat.categories[categoryId].expenses")
 
   .customize
-    ContextMenu(
-      :position="{ left: true, bottom: true }"
-      :visible="visibleCustomizeMenu"
-      v-on:onClickOpener="visibleCustomizeMenu = !visibleCustomizeMenu")
-      template(slot="opener")
-        Dropdown._inline(
-          :active="visibleCustomizeMenu"
-          :title="$lang.settings.customize")
-      template(slot="content")
-        ContextMenuItem(
-          icon="mdi mdi-credit-card-multiple"
-          title="Wallets"
-          :showCheckbox="true"
-          :checkboxValue="$store.state.ui.stat.walletsVisibility === 'visible'"
-          v-on:onClick="$store.dispatch('setStatWalletsVisibility')")
-        ContextMenuItem(
-          icon="mdi mdi-chart-bar-stacked"
-          title="Periods chart"
-          :showCheckbox="true"
-          :checkboxValue="$store.state.ui.statGraphsVisible"
-          v-on:onClick="$store.dispatch('toogleShowStatGraphs')")
-        ContextMenuItem(
-          icon="mdi mdi-chart-bubble"
-          title="Cats chart"
-          :showCheckbox="true"
-          :checkboxValue="$store.state.ui.catsChart === 'visible'"
-          v-on:onClick="$store.dispatch('toogleVisibleCatsChart')")
-        ContextMenuItem(
-          icon="mdi mdi-chart-gantt"
-          title="Cats stat"
-          :showCheckbox="true"
-          :checkboxValue="$store.state.ui.statItems === 'visible'"
-          v-on:onClick="$store.dispatch('toogleVisibilityStatItems')")
-        .context-menu-sep
-        ContextMenuItem(
-          icon="mdi mdi-palette"
-          title="Change theme"
-          v-on:onClick="$store.dispatch('changeTheme')")
+    StatCustomizeMenuMobile
 </template>
 
 <style lang="stylus" scoped>
@@ -231,16 +182,20 @@ export default {
 
 .stat
   &__filter
-    padding $m8 $m7
+    padding 10px $m7
     background var(--c-bg-4)
 
   &__charts
     padding-bottom $m7
     &:last-child
-      padding-bottom $m5
+      padding-bottom 0
 
 .statGroup
   padding-top $m9
+  padding-bottom 10px
+
+  & + &
+    border-top 1px solid var(--c-bg-6)
 
 .statItem-header
   padding-bottom $m8

@@ -101,7 +101,7 @@ export default {
           : diff = this.periods[filterPeriod].showedPeriods
       }
       if (diff <= 0) diff = 1
-      this.$store.commit('setDiffPeriods', diff)
+      this.$store.dispatch('setDiffPeriods', diff)
 
       return diff
     },
@@ -179,11 +179,11 @@ export default {
 </script>
 
 <template lang="pug">
-.charts(v-if="$store.state.ui.statGraphsVisible")
+.charts(v-if="$store.state.ui.statGraphsVisibility === 'visible'")
   template(v-if="$store.state.filter.period === 'all'")
     .charts__allData Change period to see chart
   template(v-if="$store.state.filter.period !== 'all'")
-    .charts__nav
+    .charts__nav(v-if="$store.state.ui.mobile")
       ChartMenu
 
     .charts__content
@@ -218,7 +218,7 @@ export default {
 
       //- popup
       template(v-if="$store.state.ui.pc && $store.state.chart.hoveredPeriod.values")
-        ChartPopup(v-if="")
+        ChartPopup
 </template>
 
 <style lang="stylus" scoped>
@@ -229,13 +229,19 @@ export default {
 @import "~@/stylus/variables/scrollbar"
 
 .charts
-  z-index 2
   position relative
   background var(--c-bg-2)
   border-bottom 1px solid var(--c-bg-1)
 
   @media $media-laptop
-    min-height 178px
+    z-index 3
+    min-height 163px
+    opacity .7
+    anim-all()
+
+  &:hover
+    @media $media-laptop
+      opacity 1
 
   &__allData
     display flex

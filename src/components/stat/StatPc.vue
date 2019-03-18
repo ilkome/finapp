@@ -69,22 +69,21 @@ export default {
   padding 0 $mb2
 
   &__content
-    display grid
-    grid-template-columns repeat(auto-fit, minMax(450px, 1fr))
-
-    @media $media-pc
-      grid-column-gap $mb1
-
-    @media $media-xl
-      grid-column-gap 150px
+    display flex
+    justify-content space-between
 
   &__item
-    flex 1 1 450px
+    flex 1
+    max-width 400px
     padding-top $m9
+    &:first-child
+      align-self start
+    &:last-child
+      align-self start
 
   &__chart
     @media $media-laptop
-      padding-bottom $m7
+      padding-bottom 12px
 
   &__cats
     max-width 470px

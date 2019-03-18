@@ -80,13 +80,17 @@ export default {
 <template lang="pug">
 .statItem(
   @click="toogleShowTrnsInCategory(categoryId)"
-  :class="{ _active: showTrns }"
-)
+  :class="{ _active: showTrns }")
+
   .statItem__content
     .statItem__graph: .statItem__graph__in(:style="styles")
     .statItem__icon(
       @click.stop="() => $store.dispatch('handleSetFilterCategory', categoryId)")
-      Icon(:background="category.color", :icon="category.icon")
+      Icon(
+        :background="category.color"
+        :icon="category.icon"
+        :round="true")
+
     .statItem__name {{ category.name }}
     .statItem__amount
       Amount(
@@ -120,13 +124,16 @@ export default {
   border 1px solid transparent
 
   @media $media-laptop
-    padding $m7 $m8
+    padding 10px 10px
+    margin (- 8px) 0px
 
   &:last-child
     margin-bottom 0
 
   &:hover
     @media $media-laptop
+      padding 10px 10px
+      margin -8px 0px
       background var(--c-bg-1)
       border 1px solid var(--c-bg-5)
 
@@ -139,14 +146,20 @@ export default {
     background var(--c-bg-3)
     border 1px solid var(--c-bg-7)
 
+    @media $media-laptop
+      padding 0
+      margin 10px 0px
+
     &:first-child
       margin-top (- $m7)
+      @media $media-laptop
+        margin-top -10px
 
   &__content
     display grid
     grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
     grid-template-rows repeat(2, minmax(10px, max-content))
-    grid-column-gap $m9
+    grid-column-gap 20px
 
     ^[0]._active &
       padding $m7 $m7
@@ -154,7 +167,7 @@ export default {
       border-bottom 1px solid var(--c-bg-1)
 
       @media $media-laptop
-        padding $m7 $m8
+        padding 12px 10px
 
       /.theme-light &
         background var(--c-bg-10)
@@ -185,6 +198,7 @@ export default {
       color var(--c-font-2)
 
   &__icon
+    width 32px
     grid-column 1 / 2
     grid-row 1 / -1
 

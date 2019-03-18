@@ -2,11 +2,20 @@
 import localforage from 'localforage'
 import ContextMenu from '@/components/shared/contextMenu/ContextMenu'
 import ContextMenuItem from '@/components/shared/contextMenu/ContextMenuItem'
+import Dropdown from '@/components/shared/dropdown/Dropdown'
 
 export default {
   components: {
     ContextMenu,
-    ContextMenuItem
+    ContextMenuItem,
+    Dropdown
+  },
+
+  props: {
+    showDropdown: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data () {
@@ -29,12 +38,6 @@ export default {
       this.periods[this.filterPeriod].grouped
         ? this.$store.commit('addElementsToChart', { periodName: this.filterPeriod, periodType: 'showedGroups' })
         : this.$store.commit('addElementsToChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
-
-      // Should remove?
-      // this.$nextTick(() => {
-      //   const box = document.querySelector('.charts__items')
-      //   if (box) box.scrollLeft = box.clientWidth
-      // })
       this.saveChartsPeriodsToLocalStorage()
     },
 
@@ -53,6 +56,7 @@ export default {
 
     saveChartsPeriodsToLocalStorage () {
       localforage.setItem('next.chart.periods', this.periods)
+      this.$store.dispatch('saveUiView')
     }
   }
 }
@@ -60,29 +64,34 @@ export default {
 
 <template lang="pug">
 ContextMenu(
-  :position="{ right: true }"
+  :position="{ right: showDropdown ? '-12px' : true }"
   :visible="visibleContextMenu"
   :openerCircle="true"
-  v-on:onClickOpener="visibleContextMenu = !visibleContextMenu"
-)
+  v-on:onClickOpener="visibleContextMenu = !visibleContextMenu")
+
+  template(v-if="showDropdown")
+    template(slot="opener")
+      Dropdown._noBd(
+        :active="visibleContextMenu"
+        title="Chart")
+
   template(slot="content")
     template(v-if="filterPeriod !== 'year'")
       ContextMenuItem(
         icon="mdi mdi-ungroup"
         :title="periods[filterPeriod].grouped ? 'Simple charts' : 'Grouped charts'"
-        v-on:onClick="toogleChartsView"
-      )
+        v-on:onClick="toogleChartsView")
+
     ContextMenuItem(
       icon="mdi mdi-plus"
       :title="periods[filterPeriod].grouped ? 'Add group' : 'Add period'"
-      v-on:onClick="addPeriodOrGroup"
-    )
+      v-on:onClick="addPeriodOrGroup")
+
     ContextMenuItem(
       v-if="(periods[filterPeriod].grouped && periods[filterPeriod].showedGroups > 1) || (!periods[filterPeriod].grouped && periods[filterPeriod].showedPeriods > 1)"
       icon="mdi mdi-minus"
       :title="periods[filterPeriod].grouped ? 'Remove group' : 'Remove period'"
-      v-on:onClick="removePeriodOrGroup"
-    )
+      v-on:onClick="removePeriodOrGroup")
 
   template(slot="desc")
     template(v-if="periods[filterPeriod].grouped") Showed {{ periods[filterPeriod].showedGroups }} groups

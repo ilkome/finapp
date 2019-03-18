@@ -23,10 +23,14 @@ export default {
 
   computed: {
     amount () {
-      return this.$store.getters.stat.categories[this.categoryId][this.type]
+      if (this.$store.getters.stat.categories[this.categoryId]) {
+        return this.$store.getters.stat.categories[this.categoryId][this.type]
+      }
     },
     categoryName () {
-      return this.$store.state.categories.items[this.categoryId].name
+      if (this.$store.state.categories.items[this.categoryId]) {
+        return this.$store.state.categories.items[this.categoryId].name
+      }
     }
   }
 }
@@ -34,7 +38,7 @@ export default {
 
 <template lang="pug">
 .chart-popup(
-  v-if="categoryId"
+  v-if="categoryId && amount && categoryName"
   :style="{ left: `${offset}px` }"
 )
   .chart-popup__name {{ categoryName }}
@@ -42,8 +46,7 @@ export default {
     Amount(
       :value="amount"
       :currency="$store.state.currencies.base"
-      :type="type === 'incomes' ? 1 : 0"
-    )
+      :type="type === 'incomes' ? 1 : 0")
 </template>
 
 <style lang="stylus" scoped>
@@ -61,7 +64,7 @@ export default {
   white-space nowrap
   background var(--c-bg-6)
   border-radius $m4
-  transform translate(-50%, calc(100% + 26px))
+  transform translate(-50%, calc(100% + 40px))
 
   &:after
     position absolute

@@ -98,7 +98,8 @@ export default {
   border-bottom 1px solid transparent
 
   @media $media-laptop
-    padding $m7 $m8
+    padding 10px 10px
+    margin (- 8px) 0
 
   &:hover
     @media $media-laptop
@@ -129,14 +130,17 @@ export default {
     display grid
     grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
     grid-template-rows repeat(2, minmax(10px, max-content))
-    grid-column-gap $m9
+    grid-column-gap 20px
+
+    @media $media-laptop
+      grid-column-gap 20px
 
     ^[0]._active &
-      padding $m6 $m7
+      padding $m7 $m7
       background var(--c-bg-4)
 
       @media $media-laptop
-        padding $m7 $m8
+        padding 10px
 
   &__graph
     overflow hidden
@@ -163,6 +167,9 @@ export default {
       color var(--c-font-3)
 
   &__icon
+    display flex
+    justify-content center
+    width 32px
     grid-column 1 / 2
     grid-row 1 / -1
 

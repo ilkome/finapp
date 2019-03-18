@@ -38,7 +38,7 @@ export default {
       .summary__row(v-if="period !== 'all' && statAverage.expenses > 0")
         .summary__average
           .summary__average__icon: .mdi.mdi-chart-timeline
-          .summary__average__title Average
+          .summary__average__title {{ $lang.money.average }}
         .summary__amount._average
           Amount(
             :currency="$store.state.currencies.base"
@@ -49,7 +49,7 @@ export default {
   .summary__item(:class="{ _total: statAverage.total !== 0 || period === 'all' }")
     template(v-if="statAverage.total !== 0 || period === 'all'")
       .summary__row
-        .summary__title Total
+        .summary__title {{ $lang.money.total }}
         .summary__amount
           Amount(
             :big="true"
@@ -60,7 +60,7 @@ export default {
         .summary__row
           .summary__average
             .summary__average__icon: .mdi.mdi-chart-timeline
-            .summary__average__title Average
+            .summary__average__title {{ $lang.money.average }}
           .summary__amount._average
             Amount(
               :currency="$store.state.currencies.base"
@@ -98,14 +98,11 @@ export default {
 .summary
   overflow hidden
   display flex
-  flex-flow column
-  padding $m9 0
+  flex-flow row
+  justify-content space-between
 
-  @media $media-pc
-    display grid
-    grid-template-columns repeat(3, 1fr)
-    grid-column-gap 120px
-    padding 0
+  @media $media-laptop
+    display flex
 
   &__item
     flex-grow 0
@@ -118,24 +115,32 @@ export default {
     @media $media-phone
       border-bottom 1px solid var(--c-bg-5)
 
-    @media $media-pc
-      // max-width 280px
+    @media $media-laptop
+      min-width 250px
+      padding 0
       margin 0
 
+    @media $media-pc
+      padding $m3 $m9
+      padding-right 0
+
     &._expenses
-      border-left 2px solid rgba(200, 30, 50, .3)
+      @media $media-pc
+        border-left 2px solid rgba(200, 30, 50, .3)
       @media $media-phone
         order 1
 
     &._total
       align-self center
-      border-left 2px solid var(--c-bg-5)
+      @media $media-pc
+        border-left 2px solid var(--c-bg-5)
       @media $media-phone
         order 3
 
     &._incomes
       align-self end
-      border-left 2px solid rgba(44, 173, 34, .5)
+      @media $media-pc
+        border-left 2px solid rgba(44, 173, 34, .5)
       @media $media-phone
         order 2
 

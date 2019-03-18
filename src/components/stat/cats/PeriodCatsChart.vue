@@ -23,6 +23,14 @@ export default {
   },
 
   computed: {
+    className () {
+      return {
+        _mobile: this.$store.state.ui.mobile,
+        _pc: this.$store.state.ui.pc,
+        _incomes: this.type === 'incomes',
+        _expenses: this.type === 'expenses'
+      }
+    },
     biggestAmount () {
       return this.$store.getters.stat[this.type].biggest
     },
@@ -46,7 +54,7 @@ export default {
 </script>
 
 <template lang="pug">
-.cats-chart
+.cats-chart(:class="className")
   .cats-chart__items(
     v-if="stat[type].categoriesIds.length > 0")
     PeriodCatsChartItem(
@@ -56,35 +64,40 @@ export default {
       :categoryId="categoryId"
       :key="`charts-${categoryId}`"
       :total="stat.categories[categoryId][type]"
-      v-on:onActiveCategoryChange="handleActiveCategoryChange"
-    )
+      v-on:onActiveCategoryChange="handleActiveCategoryChange")
+
   .cats-chart__popup(
     v-if="this.$store.state.ui.pc"
-    v-show="activeCategoryId"
-  )
+    v-show="activeCategoryId")
     PeriodCatsChartPopup(
       :offset="offset"
       :categoryId="activeCategoryId"
-      :type="type"
-    )
+      :type="type")
 </template>
 
-<style lang="stylus">
-.stat__item:first-child .cats-chart
-  border-left 2px solid rgba(200, 30, 50, .3)
-
-.stat__item:last-child .cats-chart
-  border-left 2px solid rgba(44, 173, 34, .3)
-</style>
-
 <style lang="stylus" scoped>
+@import "~@/stylus/variables/animations"
 @import "~@/stylus/variables/margins"
 @import "~@/stylus/variables/media"
 @import "~@/stylus/variables/scrollbar"
 
 .cats-chart
   position relative
-  background var(--c-bg-3)
+  @media $media-laptop
+    opacity .7
+    anim-all(100)
+
+  &:hover
+    @media $media-laptop
+      opacity 1
+
+  &._incomes
+    @media $media-laptop
+      border-bottom 2px solid rgba(44, 173, 34, .5)
+
+  &._expenses
+    @media $media-laptop
+      border-bottom 2px solid rgba(200, 30, 50, .3)
 
   &__items
     overflow hidden
@@ -94,7 +107,7 @@ export default {
     padding $m7
 
     @media $media-laptop
-      padding $m8 $m8
+      padding 10px 10px
 
     &:after
       content ""

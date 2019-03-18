@@ -62,7 +62,7 @@ export default {
 .summary
   display flex
   padding $m7 0
-  background var(--c-bg-3)
+  background var(--c-bg-4)
   border-bottom 1px solid var(--c-bg-1)
 
   &__item

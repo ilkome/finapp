@@ -130,7 +130,7 @@ export default {
   border-right 1px solid transparent
 
   @media $media-laptop
-    padding $m8 $m5
+    padding 12px $m5
 
   &._week
     min-width 50px
@@ -149,6 +149,10 @@ export default {
     border-color transparent
     min-width 0
 
+  &._grouped._day
+    padding-left 4px
+    padding-right 4px
+
   &._grouped._week
     padding-left $m6
     padding-right $m6
@@ -158,8 +162,8 @@ export default {
     padding-right $m5
 
     @media $media-laptop
-      padding-left $m6
-      padding-right $m6
+      padding-left 6px
+      padding-right 6px
 
   &:hover
     background var(--c-bg-1)
@@ -167,12 +171,12 @@ export default {
 
   &._active
     color var(--c-font-2)
-    background var(--c-bg-3)
+    background var(--c-bg-4)
     border-left 1px solid var(--c-bg-1)
     border-right 1px solid var(--c-bg-1)
 
    &._active._grouped
-      border-right 1px solid var(--c-bg-1)
+    border-right 1px solid var(--c-bg-1)
 
   &__name
     text-align center

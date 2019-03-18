@@ -85,8 +85,15 @@ export default {
 @import "~@/stylus/variables/margins"
 
 .statCatsItem
-  padding-top $m6
-  padding-right $m4
+  padding-top 12px
+  margin-right 10px
+
+  &:hover
+    @media $media-laptop
+      @media (hover: hover)
+        padding 32px 10px 20px 10px
+        margin -20px 0px -20px -10px
+        background var(--c-bg-6)
 
   &__graph
     position relative
@@ -113,16 +120,12 @@ export default {
 
   &__icon
     display none
-    transform scale(0.8)
     display flex
     align-items center
     justify-content center
-    font-size 18px
-    width 32px
-    height 32px
+    font-size 16px
+    width 28px
+    height 28px
     margin 0 auto
-    margin-top $m5
-    margin-bottom (- $m5)
     color var(--c-font-1)
-    border-radius 50%
 </style>
