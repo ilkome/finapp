@@ -38,7 +38,8 @@ export default {
       return {
         _detailed: this.ui === 'detailed',
         _history: this.ui === 'history',
-        _stat: this.ui === 'stat'
+        _stat: this.ui === 'stat',
+        _lastTrns: this.ui === 'lastTrns'
       }
     },
     formatedDate () {
@@ -47,6 +48,9 @@ export default {
     },
     formatedDateDay () {
       return formatDate(this.trn.date, 'numberDay')
+    },
+    formatedDateDay2 () {
+      return formatDate(this.trn.date, 'trnItem')
     }
   },
 
@@ -112,6 +116,69 @@ export default {
           :value="trn.amount"
           :type="trn.type")
 
+  //- lasr trns. shows category and wallet based on active filters
+  template(v-else-if="ui === 'lastTrns'")
+    .trnItem__statWrap
+      .trnItem__date {{ formatedDateDay2 }}
+
+      //- category selected
+      template(v-if="$store.state.filter.categoryId")
+        //- category with children
+        template(v-if="$store.getters.isCategoryHasChildren($store.state.filter.categoryId)")
+          .trnItem__wallet
+            Icon(
+              :abbr="wallet.name"
+              :background="wallet.color"
+              :medium="true"
+              :small="true")
+          .trnItem__categoryIcon
+            Icon(
+              :background="category.color"
+              :icon="category.icon"
+              :medium="true"
+              :round="true")
+          .trnItem__categoryName {{ category.name }}
+        template(v-else)
+          .trnItem__wallet
+            .walletIcon
+              Icon(
+                :abbr="wallet.name"
+                :background="wallet.color"
+                :small="true")
+            .walletName {{ wallet.name }}
+
+      //- wallet selected
+      template(v-else-if="$store.state.filter.walletId")
+        .trnItem__categoryIcon
+          Icon(
+            :background="category.color"
+            :icon="category.icon"
+            :medium="true"
+            :round="true")
+        .trnItem__categoryName {{ category.name }}
+
+      //- base
+      template(v-else)
+        .trnItem__wallet
+          Icon(
+            :abbr="wallet.name"
+            :background="wallet.color"
+            :medium="true"
+            :small="true")
+        .trnItem__categoryIcon
+          Icon(
+            :background="category.color"
+            :icon="category.icon"
+            :medium="true"
+            :round="true")
+        .trnItem__categoryName {{ category.name }}
+      .trnItem__desc(v-if="trn.description") {{ trn.description }}
+      .trnItem__amount(@click.stop="setTrnEdit")
+        Amount(
+          :currency="wallet.currency"
+          :value="trn.amount"
+          :type="trn.type")
+
   //- history view
   template(v-else)
     .trnItem__categoryIcon(@click.stop="setTrnEdit")
@@ -159,6 +226,7 @@ export default {
       margin-top 0
 
   &._stat
+  &._lastTrns
     margin-top -1px
     padding-top 10px
     padding-left 68px
@@ -166,9 +234,13 @@ export default {
     @media $media-laptop
       padding-left 62px
 
+  &._lastTrns
+    padding-left 10px
+
   &:hover
     &._history
     &._stat
+    &._lastTrns
       @media $media-laptop
         background var(--c-bg-7)
         /.theme-light &
@@ -186,6 +258,7 @@ export default {
       grid-row 1 / 2
 
     ^[0]._stat &
+    ^[0]._lastTrns &
       margin-left auto
 
   &__categoryIcon
@@ -193,6 +266,10 @@ export default {
       grid-column 1 / 2
       grid-row 1 / 3
       align-self center
+
+    ^[0]._lastTrns &
+      flex 0 0 24px
+      padding-right 10px
 
   &__categoryName
     white-space nowrap
@@ -209,6 +286,9 @@ export default {
       grid-row 1 / 2
       align-self center
 
+    ^[0]._lastTrns &
+      padding-right 20px
+
   &__date
     font-size 13px
 
@@ -216,7 +296,11 @@ export default {
       grid-row 1 / 2
 
     ^[0]._stat &
+    ^[0]._lastTrns &
       padding-right 20px
+
+    ^[0]._lastTrns &
+      flex 0 0 80px
 
   &__desc
     color var(--c-font-2)
@@ -236,6 +320,7 @@ export default {
       padding-bottom 5px
 
     ^[0]._stat &
+    ^[0]._lastTrns &
       padding-right 10px
 
   &__line
@@ -259,15 +344,18 @@ export default {
     border-bottom 1px solid var(--c-bg-6)
 
     ^[0]._stat:hover &
+    ^[0]._lastTrns:hover &
       @media $media-laptop
         border-color transparent
 
     ^[0]._stat:last-child &
+    ^[0]._lastTrns:last-child &
       border-color transparent
 
   &__wallet
     ^[0]._detailed &
     ^[0]._stat &
+    ^[0]._lastTrns &
       display flex
       align-items center
       .walletIcon
@@ -281,6 +369,8 @@ export default {
       grid-row 3 / 4
 
     ^[0]._stat &
+      padding-right 20px
+    ^[0]._lastTrns &
       padding-right 20px
 
   &__walletFloatIcon

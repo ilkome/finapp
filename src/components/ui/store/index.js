@@ -7,10 +7,11 @@ const state = {
   height: 0,
   mobile: true,
   pc: false,
-  statGraphsVisibility: 'visible',
-  lastUsedCatsInTrnForm: 'visible',
   catsChart: 'visible',
+  lastUsedCatsInTrnForm: 'visible',
+  statGraphsVisibility: 'visible',
   statItems: 'visible',
+  statLastTrnsVisibility: 'visible',
   statSummuryVisibility: 'visible',
   stat: {
     activeTab: 'stat',

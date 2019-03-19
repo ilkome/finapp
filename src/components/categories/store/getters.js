@@ -47,6 +47,18 @@ export default {
     return categoriesForBeParent
   },
 
+  isCategoryHasChildren: (state, getters, rootState, rootGetters) => (categoryId) => {
+    if (!rootGetters.hasCategories) return []
+    const parentCategoriesIds = rootGetters.categoriesForBeParent
+    let isCategoryHasChildren
+
+    parentCategoriesIds.find(c => c === categoryId)
+      ? isCategoryHasChildren = true
+      : isCategoryHasChildren = false
+
+    return isCategoryHasChildren
+  },
+
   getChildCategoriesIds: (state, getters, rootState, rootGetters) => (categoryId) => {
     if (!rootGetters.hasCategories) return []
 

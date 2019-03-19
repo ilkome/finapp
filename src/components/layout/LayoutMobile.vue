@@ -78,12 +78,12 @@ export default {
   transition(name="animation-tab")
     .tab(v-show="activeTab === 'stat'")
       WalletsList(
-        v-if="$store.state.ui.stat.walletsVisibility === 'visible'"
+        v-show="$store.state.ui.stat.walletsVisibility === 'visible'"
         :limit="3"
         ui="widget"
         v-on:onClick="(id) => handleShowWalletModal(id)")
       StatChartsLine(
-        v-if="$store.state.ui.statGraphsVisibility === 'visible' && ($store.state.filter.period !== 'all')")
+        v-show="$store.state.ui.statGraphsVisibility === 'visible' && ($store.state.filter.period !== 'all')")
       StatMobile
 
   //- trns

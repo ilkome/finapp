@@ -57,7 +57,7 @@ export default {
 
 <template lang="pug">
 .stat
-  StatSummaryMobile(v-if="$store.state.ui.statSummuryVisibility === 'visible'")
+  StatSummaryMobile(v-show="$store.state.ui.statSummuryVisibility === 'visible'")
 
   .stat__filter(v-if="$store.state.filter.categoryId || $store.state.filter.walletId")
     template(v-if="$store.state.filter.walletId")
@@ -114,11 +114,11 @@ export default {
                 :small="true"
                 :value="$store.getters.statAverage.incomes")
         //- incomes: cats charts
-        .stat__charts(v-if="$store.state.ui.catsChart === 'visible'")
+        .stat__charts(v-show="$store.state.ui.catsChart === 'visible'")
           PeriodCatsChart(type="incomes")
 
         //- incomes: cats stat item
-        .stat__cats(v-if="$store.state.ui.statItems === 'visible'")
+        .stat__cats(v-show="$store.state.ui.statItems === 'visible'")
           StatItem(
             v-for="categoryId in stat.incomes.categoriesIds"
             :biggest="stat.incomes.biggest"
@@ -150,11 +150,11 @@ export default {
                 :value="$store.getters.statAverage.expenses"
               )
         //- expenses: cats charts
-        .stat__charts(v-if="$store.state.ui.catsChart === 'visible'")
+        .stat__charts(v-show="$store.state.ui.catsChart === 'visible'")
           PeriodCatsChart(type="expenses")
 
         //- expenses: cats stat item
-        .stat__cats(v-if="$store.state.ui.statItems === 'visible'")
+        .stat__cats(v-show="$store.state.ui.statItems === 'visible'")
           StatItem(
             v-for="categoryId in stat.expenses.categoriesIds"
             :biggest="stat.expenses.biggest"
@@ -165,20 +165,28 @@ export default {
             :type="0"
             :total="stat.categories[categoryId].expenses")
 
+      .stat__trns(v-if="$store.state.ui.statLastTrnsVisibility === 'visible' && $store.getters.selectedTrnsIdsWithDate.length > 0")
+        .stat__name Last transactions
+        TrnsList(:limit="6", ui="lastTrns")
+
   .customize
     StatCustomizeMenuMobile
 </template>
 
 <style lang="stylus" scoped>
 @import "~@/stylus/variables/margins"
+@import "~@/stylus/variables/media"
 @import "~@/stylus/variables/flex"
 @import "~@/stylus/variables/fonts"
 @import "~@/stylus/variables/scrollbar"
 
 .customize
-  padding 0 $m7
-  padding-bottom $m9
-  margin-top $m9
+  display none
+  @media $media-phone-sm
+    display block
+    padding 0 $m7
+    padding-bottom $m9
+    margin-top $m9
 
 .stat
   &__filter
@@ -199,6 +207,15 @@ export default {
     padding-bottom $m7
     &:last-child
       padding-bottom 0
+
+  &__name
+    padding 0 10px
+    padding-bottom 10px
+    font-header-1()
+
+  &__trns
+    padding 0 10px
+    padding-bottom 20px
 
 .statGroup
   padding-top $m9

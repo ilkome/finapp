@@ -179,7 +179,7 @@ export default {
 </script>
 
 <template lang="pug">
-.charts(v-if="$store.state.ui.statGraphsVisibility === 'visible'")
+.charts(v-show="$store.state.ui.statGraphsVisibility === 'visible'")
   template(v-if="$store.state.filter.period === 'all'")
     .charts__allData Change period to see chart
   template(v-if="$store.state.filter.period !== 'all'")

@@ -8,11 +8,12 @@ import localforage from 'localforage'
   setActiveTab
   setActiveTabStat
 
-  toogleShowStatGraphs
   toogleLastUsedCatsInTrnForm
+  toogleShowStatGraphs
+  toogleStatLastTrns
+  toogleStatWalletsVisibility
+  toogleStatWalletsVisibility
   toogleVisibilityStatItems
-  toogleStatWalletsVisibility
-  toogleStatWalletsVisibility
 
   saveUiView
   setUiView
@@ -163,6 +164,19 @@ export default {
   },
 
   /**
+    * Toggle stat last trns
+  */
+  toogleStatLastTrnsVisibility ({ commit, dispatch, state }) {
+    let nextStatus
+    state.statLastTrnsVisibility === 'visible'
+      ? nextStatus = 'hidden'
+      : nextStatus = 'visible'
+
+    commit('setStatLastTrnsVisibility', nextStatus)
+    dispatch('saveUiView')
+  },
+
+  /**
     * Toggle stat wallets
   */
   toogleStatWalletsVisibility ({ commit, dispatch, state }) {
@@ -205,6 +219,7 @@ export default {
         period: rootState.filter.period,
         statGraphsVisibility: rootState.ui.statGraphsVisibility,
         statItems: rootState.ui.statItems,
+        statLastTrnsVisibility: rootState.ui.statLastTrnsVisibility,
         statSummuryVisibility: rootState.ui.statSummuryVisibility,
         totalChartPeriods: rootState.chart.periods,
         walletsVisibility: rootState.ui.stat.walletsVisibility
@@ -244,6 +259,11 @@ export default {
       localFilterUiItem.statItems === 'visible'
         ? commit('setVisibilityStatItems', 'visible')
         : commit('setVisibilityStatItems', 'hidden')
+
+      // stat last trns
+      localFilterUiItem.statLastTrnsVisibility === 'visible'
+        ? commit('setStatLastTrnsVisibility', 'visible')
+        : commit('setStatLastTrnsVisibility', 'hidden')
 
       // stat summury
       localFilterUiItem.statSummuryVisibility === 'visible'

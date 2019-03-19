@@ -43,5 +43,9 @@ export default {
 
   setStatSummuryVisibility (state, status) {
     state.statSummuryVisibility = status
+  },
+
+  setStatLastTrnsVisibility (state, status) {
+    state.statLastTrnsVisibility = status
   }
 }

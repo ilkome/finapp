@@ -45,7 +45,7 @@ export default {
 )
   .d-button__icon(v-if="icon")
     div(:class="icon")
-  .d-button__title {{ title }}
+  .d-button__title(v-if="title") {{ title }}
   .d-button__check(v-if="showCheckbox" @click.prevent="")
     Checkbox._small(v-model="checkboxValue")
 
@@ -103,6 +103,27 @@ export default {
 
   &:active
     transform scale(0.96)
+
+  &._border
+    display flex
+    align-items center
+    justify-content center
+    padding 10px 10px
+    background var(--c-bg-2)
+    border 1px solid var(--c-bg-7)
+    box-shadow 2px 2px 6px 0px var(--c-bg-2)
+    border-radius 3px
+
+    /.theme-light &
+      box-shadow 2px 2px 6px 0px var(--c-bg-11)
+
+    &:active:not(._disable)
+      color var(--c-font-3)
+      transform scale(0.96)
+
+  &._square
+      width 40px
+      height 40px
 
   &._blue
     display inline-flex
@@ -177,11 +198,15 @@ export default {
 
   &__icon
     width 22px
-    margin-left (- $m4)
+    margin-left -5px
     margin-right $m6
     font-size 18px
     text-align center
     opacity .85
+
+    &:last-child
+      margin-right 0
+      margin-right -5px
 
   &__check
     margin-left auto

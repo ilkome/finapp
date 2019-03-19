@@ -27,10 +27,16 @@ export const formatDate = (value, type) => {
       return date.format('DD.MM')
 
     case 'trnItem':
-      if (today.isSame(date, 'year')) {
-        return date.format('DD MMM')
+      if (today.isSame(date, 'day')) {
+        return 'Today'
       }
-      return date.format('DD MMM YY')
+      if (today.isSame(moment(date).add(1, 'day'), 'day')) {
+        return 'Yesterday'
+      }
+      if (today.isSame(date, 'year')) {
+        return date.format('DD.MM')
+      }
+      return date.format('DD.MM.YY')
 
     default:
       return date.format('D MMMM YY')

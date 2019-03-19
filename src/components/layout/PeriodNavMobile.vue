@@ -3,13 +3,15 @@ import ContextMenu from '@/components/shared/contextMenu/ContextMenu'
 import ContextMenuItem from '@/components/shared/contextMenu/ContextMenuItem'
 import Date from '@/components/shared/date/Date'
 import Dropdown from '@/components/shared/dropdown/Dropdown'
+import StatCustomizeMenuMobile from '@/components/stat/StatCustomizeMenuMobile'
 
 export default {
   components: {
     ContextMenu,
     ContextMenuItem,
     Date,
-    Dropdown
+    Dropdown,
+    StatCustomizeMenuMobile
   },
 
   data () {
@@ -32,8 +34,7 @@ export default {
     ContextMenu(
       :position="{ left: true, bottom: true }"
       :visible="visiblePeriodMenu"
-      v-on:onClickOpener="visiblePeriodMenu = !visiblePeriodMenu"
-    )
+      v-on:onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
       template(slot="opener")
         Dropdown(:active="visiblePeriodMenu")
           template(slot="title"): Date
@@ -70,6 +71,11 @@ export default {
           v-on:onClick="$store.dispatch('setPeriod', 'all')"
           v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
 
+    .customize
+      StatCustomizeMenuMobile(
+        icon="mdi mdi-tune"
+        :position="{ right: true, bottom: true }")
+
   .periodNav__link
     .d-button-cirle(
       @click="$store.dispatch('setPeriodNext')"
@@ -97,4 +103,9 @@ export default {
 
     @media $media-phone
       padding 0
+
+.customize
+  margin-left 20px
+  @media $media-phone-sm
+    display none
 </style>
