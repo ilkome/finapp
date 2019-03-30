@@ -8,7 +8,8 @@ export default {
       amount: 0,
       amountArray: [0],
       amountType: 0,
-      date: moment().valueOf()
+      date: moment().valueOf(),
+      description: null
     }
   },
 

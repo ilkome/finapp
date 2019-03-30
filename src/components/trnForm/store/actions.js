@@ -67,7 +67,7 @@ export default {
             amountType: trn.type,
             categoryId: trn.categoryId,
             date: moment().valueOf(),
-            description: null,
+            description: trn.description || null,
             trnId: null,
             walletId: trn.accountId
           })

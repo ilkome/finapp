@@ -40,7 +40,7 @@ export default {
       if (!isTrnSavedOnline) saveTrnToAddLaterLocal({ id, values })
     }, 100)
 
-    commit('setTrnFormValues', { trnId: null })
+    commit('setTrnFormValues', { trnId: null, description: null })
   },
 
   // delete
