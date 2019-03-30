@@ -83,6 +83,7 @@ export default {
 
 <style lang="stylus" scoped>
 @import "~@/stylus/variables/margins"
+@import "~@/stylus/variables/media"
 
 .statCatsItem
   padding-top 12px

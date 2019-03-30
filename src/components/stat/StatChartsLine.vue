@@ -309,6 +309,8 @@ export default {
     display flex
 
 .chart-space
-  @media $media-laptop
-    min-width $m10
+  &:last-child
+    min-width 40px
+    @media $media-laptop
+      min-width $m10
 </style>

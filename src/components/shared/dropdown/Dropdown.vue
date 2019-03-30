@@ -74,9 +74,6 @@ export default {
     justify-content flex-start
     padding-right 12px
 
-    @media $media-phone-sm
-      padding 0 $m6
-
   &__toogle
     width 4px
     flex-grow 0

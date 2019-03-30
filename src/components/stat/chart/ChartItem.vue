@@ -132,6 +132,9 @@ export default {
   @media $media-laptop
     padding 12px $m5
 
+  &._empty
+    display none
+
   &._week
     min-width 50px
     padding-left $m5
@@ -150,20 +153,14 @@ export default {
     min-width 0
 
   &._grouped._day
-    padding-left 4px
-    padding-right 4px
-
   &._grouped._week
-    padding-left $m6
-    padding-right $m6
-
   &._grouped._month
-    padding-left $m5
-    padding-right $m5
+    padding-left 2px
+    padding-right 2px
 
     @media $media-laptop
-      padding-left 6px
-      padding-right 6px
+      padding-left 4px
+      padding-right 4px
 
   &:hover
     background var(--c-bg-1)
@@ -180,11 +177,12 @@ export default {
 
   &__name
     text-align center
-    typo-small-upper(12px)
-    padding-top $m5
+    typo-small-upper(10px)
+    padding-top 4px
     white-space nowrap
 
     @media $media-laptop
+      padding-top $m5
       typo-small-upper(12px)
 
   &__graph
