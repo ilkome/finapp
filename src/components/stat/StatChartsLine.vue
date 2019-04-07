@@ -213,8 +213,7 @@ export default {
               :key="period.date"
               :maxAmountValue="maxAmountValue"
               :period="period"
-              parentClassName=".charts__items"
-            )
+              parentClassName=".charts__items")
 
       //- popup
       template(v-if="$store.state.ui.pc && $store.state.chart.hoveredPeriod.values")
@@ -229,13 +228,13 @@ export default {
 @import "~@/stylus/variables/scrollbar"
 
 .charts
+  z-index 3
   position relative
   background var(--c-bg-2)
   border-bottom 1px solid var(--c-bg-1)
 
   @media $media-laptop
-    z-index 3
-    min-height 163px
+    min-height 120px
     opacity .7
     anim-all()
 
@@ -260,13 +259,13 @@ export default {
     margin-bottom -1px
 
     @media $media-laptop
-      padding 0 $mb2
+      padding 0 60px
 
     &._grouped
       padding 0 $m7
 
       @media $media-laptop
-        padding 0 $mb2
+        padding 0 60px
 
   &__nav
     z-index 2

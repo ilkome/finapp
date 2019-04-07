@@ -22,72 +22,73 @@ export default {
 
 <template lang="pug">
 .summary
-  //- expenses
-  //------------------------------------------------
-  .summary__item(:class="{ _expenses: statAverage.expenses > 0 || period === 'all' }")
-    template(v-if="statAverage.expenses > 0 || period === 'all'")
-      .summary__row
-        .summary__title._expenses {{ $lang.money.expenses }}
-        .summary__amount
-          Amount(
-            :big="true"
-            :currency="$store.state.currencies.base"
-            :value="stat.expenses.total.expenses"
-            :type="0")
-
-      .summary__row(v-if="period !== 'all' && statAverage.expenses > 0")
-        .summary__average
-          .summary__average__icon: .mdi.mdi-chart-timeline
-          .summary__average__title {{ $lang.money.average }}
-        .summary__amount._average
-          Amount(
-            :currency="$store.state.currencies.base"
-            :value="statAverage.expenses")
-
-  //- total
-  //------------------------------------------------
-  .summary__item(:class="{ _total: statAverage.total !== 0 || period === 'all' }")
-    template(v-if="statAverage.total !== 0 || period === 'all'")
-      .summary__row
-        .summary__title {{ $lang.money.total }}
-        .summary__amount
-          Amount(
-            :big="true"
-            :currency="$store.state.currencies.base"
-            :value="stat.incomes.total.incomes - stat.expenses.total.expenses")
-
-      template(v-if="period !== 'all' && statAverage.total !== 0")
+  .summary__wrap
+    //- expenses
+    //------------------------------------------------
+    .summary__item(:class="{ _expenses: statAverage.expenses > 0 || period === 'all' }")
+      template(v-if="statAverage.expenses > 0 || period === 'all'")
         .summary__row
+          .summary__title._expenses {{ $lang.money.expenses }}
+          .summary__amount
+            Amount(
+              :big="true"
+              :currency="$store.state.currencies.base"
+              :value="stat.expenses.total.expenses"
+              :type="0")
+
+        .summary__row(v-if="period !== 'all' && statAverage.expenses > 0")
           .summary__average
             .summary__average__icon: .mdi.mdi-chart-timeline
             .summary__average__title {{ $lang.money.average }}
           .summary__amount._average
             Amount(
               :currency="$store.state.currencies.base"
-              :value="statAverage.total")
+              :value="statAverage.expenses")
 
-  //- incomes
-  //------------------------------------------------
-  .summary__item(:class="{ _incomes: statAverage.incomes > 0 || period === 'all' }")
-    template(v-if="statAverage.incomes > 0 || period === 'all'")
-      .summary__row
-        .summary__title._incomes {{ $lang.money.incomes }}
-        .summary__amount
-          Amount(
-            :big="true"
-            :currency="$store.state.currencies.base"
-            :value="stat.incomes.total.incomes"
-            :type="1")
-
-      template(v-if="period !== 'all' && statAverage.incomes !== 0")
+    //- total
+    //------------------------------------------------
+    .summary__item(:class="{ _total: statAverage.total !== 0 || period === 'all' }")
+      template(v-if="statAverage.total !== 0 || period === 'all'")
         .summary__row
-          .summary__average
-            .summary__average__icon: .mdi.mdi-chart-timeline
-            .summary__average__title {{ $lang.money.average }}
-          .summary__amount._average
+          .summary__title {{ $lang.money.total }}
+          .summary__amount
             Amount(
+              :big="true"
               :currency="$store.state.currencies.base"
-              :value="statAverage.incomes")
+              :value="stat.incomes.total.incomes - stat.expenses.total.expenses")
+
+        template(v-if="period !== 'all' && statAverage.total !== 0")
+          .summary__row
+            .summary__average
+              .summary__average__icon: .mdi.mdi-chart-timeline
+              .summary__average__title {{ $lang.money.average }}
+            .summary__amount._average
+              Amount(
+                :currency="$store.state.currencies.base"
+                :value="statAverage.total")
+
+    //- incomes
+    //------------------------------------------------
+    .summary__item(:class="{ _incomes: statAverage.incomes > 0 || period === 'all' }")
+      template(v-if="statAverage.incomes > 0 || period === 'all'")
+        .summary__row
+          .summary__title._incomes {{ $lang.money.incomes }}
+          .summary__amount
+            Amount(
+              :big="true"
+              :currency="$store.state.currencies.base"
+              :value="stat.incomes.total.incomes"
+              :type="1")
+
+        template(v-if="period !== 'all' && statAverage.incomes !== 0")
+          .summary__row
+            .summary__average
+              .summary__average__icon: .mdi.mdi-chart-timeline
+              .summary__average__title {{ $lang.money.average }}
+            .summary__amount._average
+              Amount(
+                :currency="$store.state.currencies.base"
+                :value="statAverage.incomes")
 </template>
 
 <style lang="stylus" scoped>
@@ -97,12 +98,16 @@ export default {
 
 .summary
   overflow hidden
-  display flex
-  flex-flow row
-  justify-content space-between
+  background var(--c-bg-3)
+  border-top 1px solid var(--c-bg-1)
+  border-bottom 1px solid var(--c-bg-1)
 
-  @media $media-laptop
+  &__wrap
     display flex
+    flex-flow row
+    justify-content space-between
+    max-width 1100px
+    padding 20px 60px
 
   &__item
     flex-grow 0

@@ -75,7 +75,7 @@ export default {
   &__item
     flex 1
     max-width 400px
-    padding-top $m9
+    padding-top 20px
     &:first-child
       align-self start
     &:last-child

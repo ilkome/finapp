@@ -103,16 +103,18 @@ export default {
                 :showCheckbox="true"
                 :checkboxValue="$store.state.ui.statItems === 'visible'"
                 v-on:onClick="$store.dispatch('toogleVisibilityStatItems')")
+
               .context-menu-sep
+
+              ContextMenuItem(
+                icon="mdi mdi-palette"
+                title="Change theme"
+                v-on:onClick="$store.dispatch('changeTheme')")
               ContextMenuItem(
                 icon="mdi mdi-currency-usd"
                 title="Change base currency"
                 v-on:onClick="$store.commit('showBaseCurrenciesModal')"
                 v-on:onClose="visibleContextMenu = !visibleContextMenu")
-              ContextMenuItem(
-                icon="mdi mdi-palette"
-                title="Change theme"
-                v-on:onClick="$store.dispatch('changeTheme')")
 </template>
 
 <style lang="stylus" scoped>

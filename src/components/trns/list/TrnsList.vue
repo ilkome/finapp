@@ -3,8 +3,6 @@ import moment from 'moment'
 
 import TrnItem from '@/components/trns/item/TrnItem'
 import TrnsListDate from '@/components/trns/list/TrnsListDate'
-// import { generateDateId } from '@/utils/id'
-// import { db } from '@/firebase'
 
 export default {
   components: {

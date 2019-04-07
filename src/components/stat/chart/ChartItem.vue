@@ -29,10 +29,13 @@ export default {
       const filterDate = this.$store.state.filter.date
       const filterPeriod = this.$store.state.filter.period
       const currentPeriodDate = this.period.date
+      const hasTrns = this.period.expenses > 0 || this.period.incomes > 0
+
       return {
         _active: moment(parseInt(currentPeriodDate)).isSame(filterDate, filterPeriod),
         [`_${filterPeriod}`]: true,
-        _grouped: this.$store.state.chart.periods[filterPeriod].grouped
+        _grouped: this.$store.state.chart.periods[filterPeriod].grouped,
+        _empty: !hasTrns && this.$store.state.chart.periods[filterPeriod].hideEmpty
       }
     },
     formatedPeriodName () {
@@ -104,8 +107,7 @@ export default {
   :class="className"
   @click="handlePerioSelect"
   @mouseenter="onMouseEnterChartItem"
-  @mouseleave="$store.commit('clearHoveredPeriodValues')"
-)
+  @mouseleave="$store.commit('clearHoveredPeriodValues')")
   .chart-item__graph
     .chart-item__graph-box(v-if="period.expenses <= 0 && period.incomes <= 0")
       .chart-item__graph-line._empty
@@ -196,7 +198,7 @@ export default {
       height 90px
 
       @media $media-laptop
-        height 121px
+        height 90px
 
       ^[0]._grouped &
         height calc(62px + 28px)
