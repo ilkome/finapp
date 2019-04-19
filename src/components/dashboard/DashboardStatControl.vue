@@ -20,14 +20,6 @@ export default {
         :class="{ _active: $store.state.dashboard.activeTab === 'stat' }") Stat
 
       .tabItem(
-        @click="$store.commit('setDashboardActiveTab', 'balance')"
-        :class="{ _active: $store.state.dashboard.activeTab === 'balance' }") Balance
-
-      .tabItem(
-        @click="$store.commit('setDashboardActiveTab', 'compare')"
-        :class="{ _active: $store.state.dashboard.activeTab === 'compare' }") Compare
-
-      .tabItem(
         @click="$store.commit('setDashboardActiveTab', 'history')"
         :class="{ _active: $store.state.dashboard.activeTab === 'history' }") History
 </template>
