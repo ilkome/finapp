@@ -9,7 +9,6 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "dev": "vue-cli-service serve",
-    "test:unit": "vue-cli-service test:unit",
     "build-upload": "npm run build && npm run upload",
     "build-upload-min": "npm run build && npm run upload-min",
     "upload": "NODE_ENV=production node_modules/gulp/bin/gulp.js upload",
