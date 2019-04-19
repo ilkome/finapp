@@ -1,5 +1,5 @@
 export default {
-  toogleDashboardTrnsHistory (state) {
-    state.showTrnsHistory = !state.showTrnsHistory
+  setDashboardActiveTab (state, nextTab) {
+    state.activeTab = nextTab
   }
 }

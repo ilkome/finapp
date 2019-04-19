@@ -9,27 +9,25 @@ export default {
 </script>
 
 <template lang="pug">
-.chart-popup(
-  :style="{ left: $store.state.chart.hoveredPeriod.offset }"
-)
+.chart-popup(:style="{ left: $store.state.chart.hoveredPeriod.offset }")
+
   .chart-popup__item
     Amount(
       :value="$store.state.chart.hoveredPeriod.values.incomes"
       :currency="$store.state.currencies.base"
-      :type="1"
-    )
+      :type="1")
+
   .chart-popup__item
     Amount(
       :value="$store.state.chart.hoveredPeriod.values.expenses"
       :currency="$store.state.currencies.base"
-      :type="0"
-    )
+      :type="0")
+
   template(v-if="$store.state.chart.hoveredPeriod.values.incomes !== 0 && $store.state.chart.hoveredPeriod.values.expenses !== 0")
     .chart-popup__item
       Amount(
         :value="$store.state.chart.hoveredPeriod.values.incomes - $store.state.chart.hoveredPeriod.values.expenses"
-        :currency="$store.state.currencies.base"
-      )
+        :currency="$store.state.currencies.base")
 </template>
 
 <style lang="stylus" scoped>

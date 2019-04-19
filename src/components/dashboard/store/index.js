@@ -3,7 +3,7 @@ import getters from './getters'
 import mutations from './mutations'
 
 const state = {
-  showTrnsHistory: false
+  activeTab: 'stat'
 }
 
 export default {

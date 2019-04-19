@@ -13,9 +13,23 @@ export default {
       .tabItem(
         @click="$store.dispatch('setPeriodNext')"
         :class="{ _disable: $store.state.filter.period === 'all' || $store.getters.isLastPeriodSelected }") Last {{ this.$store.state.filter.period }}
-    .tabs(@click="$store.commit('toogleDashboardTrnsHistory')")
-      .tabItem(:class="{ _active: !$store.state.dashboard.showTrnsHistory }") Stat
-      .tabItem(:class="{ _active: $store.state.dashboard.showTrnsHistory }") History
+
+    .tabs
+      .tabItem(
+        @click="$store.commit('setDashboardActiveTab', 'stat')"
+        :class="{ _active: $store.state.dashboard.activeTab === 'stat' }") Stat
+
+      .tabItem(
+        @click="$store.commit('setDashboardActiveTab', 'balance')"
+        :class="{ _active: $store.state.dashboard.activeTab === 'balance' }") Balance
+
+      .tabItem(
+        @click="$store.commit('setDashboardActiveTab', 'compare')"
+        :class="{ _active: $store.state.dashboard.activeTab === 'compare' }") Compare
+
+      .tabItem(
+        @click="$store.commit('setDashboardActiveTab', 'history')"
+        :class="{ _active: $store.state.dashboard.activeTab === 'history' }") History
 </template>
 
 <style lang="stylus" scoped>

@@ -4,8 +4,8 @@ import DashboardNav from '@/components/dashboard/DashboardNav'
 import DashboardStatControl from '@/components/dashboard/DashboardStatControl'
 import EmptyData from '@/components/shared/emptyData/EmptyData'
 import StatChartsLine from '@/components/stat/StatChartsLine'
-import StatSummaryPc from '@/components/stat/StatSummaryPc'
 import StatPc from '@/components/stat/StatPc'
+import StatSummaryPc from '@/components/stat/StatSummaryPc'
 import TrnsList from '@/components/trns/list/TrnsList'
 
 export default {
@@ -24,6 +24,17 @@ export default {
     return {
       visiblePeriodMenu: false
     }
+  },
+
+  computed: {
+    isEmptyData () {
+      const statCurrentPeriod = this.$store.getters.statCurrentPeriod
+      if (statCurrentPeriod.incomes.categoriesIds.length === 0 &&
+          statCurrentPeriod.expenses.categoriesIds.length === 0 &&
+          this.$store.getters.selectedTrnsIdsWithDate.length === 0) {
+        return true
+      }
+    }
   }
 }
 </script>
@@ -37,20 +48,24 @@ export default {
   DashboardStatControl
 
   .dashboard__content
-    .dashboard__wrap
-      //- empty
-      //------------------------------------------------
-      template(v-if="$store.getters.stat.incomes.categoriesIds.length === 0 && $store.getters.stat.expenses.categoriesIds.length === 0 && $store.getters.selectedTrnsIdsWithDate.length === 0")
-        EmptyData(text="No stat for this period")
+    //- empty
+    //------------------------------------------------
+    template(v-if="isEmptyData")
+      transition(name="animation-tab")
+        .dashboard__wrap
+          .dashboard__tab(v-show="$store.state.dashboard.activeTab === 'stat'")
+            EmptyData(text="No stat for this period")
 
-      //- stat & history
-      template(v-else)
-        transition(name="animation-tab")
-          .dashboard__tab(v-show="!$store.state.dashboard.showTrnsHistory")
+    //- stat & history
+    template(v-else)
+      transition(name="animation-tab")
+        .dashboard__wrap
+          .dashboard__tab(v-show="$store.state.dashboard.activeTab === 'stat'")
             StatPc
 
-        transition(name="animation-tab")
-          .dashboard__tab._trns(v-show="$store.state.dashboard.showTrnsHistory")
+      transition(name="animation-tab")
+        .dashboard__wrap
+          .dashboard__tab._trns(v-show="$store.state.dashboard.activeTab === 'history'")
             TrnsList
 </template>
 
