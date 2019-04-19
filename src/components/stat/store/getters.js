@@ -1,15 +1,4 @@
 import moment from 'moment'
-import orderBy from 'lodash/orderBy'
-
-function sortAndFilterCategories ({ categories, type }) {
-  return Object.keys(categories)
-    .filter(categoryId => categories[categoryId][type] > 0)
-    .sort((a, b) => {
-      if (categories[a][type] > categories[b][type]) return -1
-      if (categories[a][type] < categories[b][type]) return 1
-      return 0
-    })
-}
 
 export default {
   /**
@@ -76,98 +65,6 @@ export default {
     return stat
   },
 
-  /**
-    * Biggest period value.
-    *
-    * @returns {Number}
-  */
-  statByPeriodsBiggestPeriod (state, getters, rootState, rootGetters) {
-    const stat = rootGetters.statByPeriods
-    if (stat) {
-      const statSortedByBiggesValues = orderBy(stat, e => e.incomes > e.expenses ? e.incomes : e.expenses, 'desc')
-
-      let biggestValues
-      if (statSortedByBiggesValues[0].incomes > statSortedByBiggesValues[0].expenses) {
-        biggestValues = statSortedByBiggesValues[0].incomes
-      } else {
-        biggestValues = statSortedByBiggesValues[0].expenses
-      }
-
-      return parseInt(biggestValues)
-    }
-  },
-
-  stat (state, getters, rootState, rootGetters) {
-    const selectedCategoryId = rootState.filter.categoryId
-    const trns = rootState.trns.items
-    const categories = rootState.categories.items
-    const transferCategoryId = rootGetters.transferCategoryId
-
-    const categoriesWithTrnsIds = {}
-
-    // Selected trns
-    if (rootGetters.selectedTrnsIdsWithDate.length) {
-      for (const trnId of rootGetters.selectedTrnsIdsWithDate) {
-        if (trns[trnId]) {
-          const trnCategoryId = trns[trnId].categoryId
-          if (!trnCategoryId) break
-          if (!categories[trnCategoryId]) break
-
-          // Get root category
-          let trnCategoryParentId = categories[trnCategoryId].parentId
-          let categoryId = trnCategoryParentId || trnCategoryId
-          if (selectedCategoryId) categoryId = trnCategoryId
-
-          // Push trns ids to categories object. Exclude transfer category
-          if (categoryId !== transferCategoryId) {
-            if (!categoriesWithTrnsIds[categoryId]) {
-              categoriesWithTrnsIds[categoryId] = [trnId]
-            } else {
-              categoriesWithTrnsIds[categoryId].push(trnId)
-            }
-          }
-        }
-      }
-    }
-
-    const categoriesTotal = {}
-    for (const categoryId in categoriesWithTrnsIds) {
-      const trnsIds = categoriesWithTrnsIds[categoryId]
-      categoriesTotal[categoryId] = rootGetters.getTotalOfTrnsIds(trnsIds)
-    }
-
-    const sortedExpensesCategoriesIdsBySum = sortAndFilterCategories({
-      categories: categoriesTotal, type: 'expenses'
-    })
-    const sortedIncomesCategoriesIdsBySum = sortAndFilterCategories({
-      categories: categoriesTotal, type: 'incomes'
-    })
-
-    const sortedIncomesCategories = {}
-    for (const categoryId of sortedExpensesCategoriesIdsBySum) {
-      sortedIncomesCategories[categoryId] = categoriesTotal[categoryId]
-    }
-
-    const sortedExpensesCategories = {}
-    for (const categoryId of sortedIncomesCategoriesIdsBySum) {
-      sortedExpensesCategories[categoryId] = categoriesTotal[categoryId]
-    }
-
-    return {
-      categories: categoriesTotal,
-      expenses: {
-        biggest: categoriesTotal[sortedExpensesCategoriesIdsBySum[0]] && Math.abs(categoriesTotal[sortedExpensesCategoriesIdsBySum[0]].expenses),
-        categoriesIds: sortedExpensesCategoriesIdsBySum,
-        total: rootGetters.getTotalOfTrnsIds(rootGetters.selectedTrnsIdsWithDate.filter(trnId => rootState.trns.items[trnId].type === 0))
-      },
-      incomes: {
-        biggest: categoriesTotal[sortedIncomesCategoriesIdsBySum[0]] && Math.abs(categoriesTotal[sortedIncomesCategoriesIdsBySum[0]].incomes),
-        categoriesIds: sortedIncomesCategoriesIdsBySum,
-        total: rootGetters.getTotalOfTrnsIds(rootGetters.selectedTrnsIdsWithDate.filter(trnId => rootState.trns.items[trnId].type === 1))
-      }
-    }
-  },
-
   isFirstPeriodSelected (state, getters, rootState, rootGetters) {
     if (rootGetters.hasTrns) {
       // -----------------------------------------------
@@ -186,6 +83,7 @@ export default {
       return true
     }
   },
+
   isLastPeriodSelected (state, getters, rootState, rootGetters) {
     if (rootGetters.hasTrns) {
       const firstCreatedTrnId = rootGetters.firstCreatedTrnId
@@ -196,5 +94,145 @@ export default {
     } else {
       return true
     }
+  },
+
+  /**
+    * Return root category ID from trnId
+    *
+    * @param {String} trnId
+    * @return {String} root categoryId
+  */
+  getRootCategoryIdFromTrnId: (state, getters, rootState) => (trnId) => {
+    const trns = rootState.trns.items
+    const categories = rootState.categories.items
+    const trnCategoryId = trns[trnId].categoryId
+    const trnCategoryParentId = categories[trnCategoryId].parentId
+    return trnCategoryParentId || trnCategoryId
+  },
+
+  /**
+    * Create categories with trnsIds from list of trnsIds
+    *
+    * @param {Array} trnsIds
+    * @return {Object} categoryId - categoryId with trnsIDs
+    * @return {Array} categoryId[] - trnsIds
+    * @return {String} categoryId[] - trnId
+    * { categiryId: [...trnId, trnId] }
+  */
+  getCategoriesIdsWithTrnsIds: (state, getters, rootState, rootGetters) => ({ trnsIds }) => {
+    const filterCategoryId = rootState.filter.categoryId
+    const trns = rootState.trns.items
+    const transferCategoryId = rootGetters.transferCategoryId
+
+    let categoriesWithTrnsIds = {}
+
+    for (const trnId of trnsIds) {
+      if (trns[trnId]) {
+        let categoryId
+        filterCategoryId
+          ? categoryId = trns[trnId].categoryId
+          : categoryId = rootGetters.getRootCategoryIdFromTrnId(trnId)
+
+        // Push trnId to categoriey. Exclude transfer category
+        if (categoryId !== transferCategoryId) {
+          if (!categoriesWithTrnsIds[categoryId]) {
+            categoriesWithTrnsIds[categoryId] = [trnId]
+          } else {
+            categoriesWithTrnsIds[categoryId].push(trnId)
+          }
+        }
+      }
+    }
+
+    return categoriesWithTrnsIds
+  },
+
+  /**
+    * Stat by periods with period name and total.
+    *
+    * @return {Object}
+    * @return {Object} categories
+    * @return {Number} expensesBiggest
+    * @return {Array} expensesCategoriesIds - categories ids
+    * @return {Number} incomesBiggest
+    * @return {Array} incomesCategoriesIds - categories ids
+    * @return {Object} total
+    * @return {Number} total.expenses
+    * @return {Number} total.incomes
+    * @return {Number} total.total
+    *
+  */
+  getStat: (state, getters, rootState, rootGetters) => ({ date }) => {
+    const selectedTrns = rootGetters.getTrns({ date })
+    const categoriesWithTrnsIds = rootGetters.getCategoriesIdsWithTrnsIds({ trnsIds: selectedTrns })
+    const totalAllTrns = rootGetters.getTotalOfTrnsIds(selectedTrns)
+
+    // count total in categories
+    const categoriesTotal = {}
+    for (const categoryId in categoriesWithTrnsIds) {
+      categoriesTotal[categoryId] = rootGetters.getTotalOfTrnsIds(categoriesWithTrnsIds[categoryId])
+    }
+
+    // separate catgories by incomes and expenses
+    const statIncomes = {}
+    const statExpenses = {}
+    for (const categoryId in categoriesWithTrnsIds) {
+      const total = categoriesTotal[categoryId]
+      if (total.incomes > 0) statIncomes[categoryId] = total
+      if (total.expenses > 0) statExpenses[categoryId] = total
+    }
+
+    // sort categories amount
+    function sortCategoriesByTotal (categories, typeName) {
+      const categoriesIds = Object.keys(categories)
+      let sortedCategoriesIds = []
+
+      if (categoriesIds.length) {
+        sortedCategoriesIds = categoriesIds.sort((a, b) => {
+          if (categories[a][typeName] > categories[b][typeName]) return -1
+          if (categories[a][typeName] < categories[b][typeName]) return 1
+          return 0
+        })
+      }
+
+      return sortedCategoriesIds
+    }
+
+    // sorted
+    const incomesCategoriesIds = sortCategoriesByTotal(statIncomes, 'incomes')
+    const expensesCategoriesIds = sortCategoriesByTotal(statExpenses, 'expenses')
+
+    // get first item in sorted catgories
+    function getBiggestAmount (categoriesTotal, categoriesIds, typeName) {
+      const biggestAmount = categoriesIds[0]
+      return categoriesTotal[biggestAmount] && Math.abs(categoriesTotal[biggestAmount][typeName])
+    }
+
+    // biggest
+    const expensesBiggest = getBiggestAmount(categoriesTotal, expensesCategoriesIds, 'expenses')
+    const incomesBiggest = getBiggestAmount(categoriesTotal, incomesCategoriesIds, 'incomes')
+
+    const stat = {
+      categories: categoriesTotal,
+      total: totalAllTrns.total,
+      expenses: {
+        biggest: expensesBiggest,
+        categoriesIds: expensesCategoriesIds,
+        total: totalAllTrns.expenses
+      },
+      incomes: {
+        biggest: incomesBiggest,
+        categoriesIds: incomesCategoriesIds,
+        total: totalAllTrns.incomes
+      }
+    }
+
+    return stat
+  },
+
+  statCurrentPeriod (state, getters, rootState, rootGetters) {
+    const date = rootState.filter.date
+    const stat = rootGetters.getStat({ date })
+    return stat
   }
 }

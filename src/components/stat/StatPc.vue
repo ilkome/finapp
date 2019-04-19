@@ -1,18 +1,16 @@
 <script>
-import Amount from '@/components/amount/Amount'
 import StatItem from '@/components/stat/StatItem'
 import PeriodCatsChart from '@/components/stat/cats/PeriodCatsChart'
 
 export default {
   components: {
-    Amount,
     PeriodCatsChart,
     StatItem
   },
 
   computed: {
-    stat () {
-      return this.$store.getters.stat
+    statCurrentPeriod () {
+      return this.$store.getters.statCurrentPeriod
     }
   }
 }
@@ -21,42 +19,44 @@ export default {
 <template lang="pug">
 .stat
   .stat__content
+    //------------------------------------------------
     //- expenses
     //------------------------------------------------
     .stat__item
-      template(v-if="stat.expenses.categoriesIds.length")
+      template(v-if="statCurrentPeriod.expenses.categoriesIds.length")
         .stat__chart(v-if="$store.state.ui.catsChart === 'visible'")
           PeriodCatsChart(type="expenses")
 
         .stat__cats(v-if="$store.state.ui.statItems === 'visible'")
           StatItem(
-            v-for="categoryId in stat.expenses.categoriesIds"
-            :biggest="stat.expenses.biggest"
+            v-for="categoryId in statCurrentPeriod.expenses.categoriesIds"
+            :biggest="statCurrentPeriod.expenses.biggest"
             :category="$store.state.categories.items[categoryId]"
             :categoryId="categoryId"
             :currency="$store.state.currencies.base"
             :type="0"
             :key="categoryId"
-            :total="stat.categories[categoryId].expenses")
+            :total="statCurrentPeriod.categories[categoryId].expenses")
       .stat__empty(v-else) No expenses
 
+    //------------------------------------------------
     //- incomes
     //------------------------------------------------
     .stat__item
-      template(v-if="stat.incomes.categoriesIds.length")
+      template(v-if="statCurrentPeriod.incomes.categoriesIds.length")
         .stat__chart(v-if="$store.state.ui.catsChart === 'visible'")
           PeriodCatsChart(type="incomes")
 
         .stat__cats(v-if="$store.state.ui.statItems === 'visible'")
           StatItem(
-            v-for="categoryId in stat.incomes.categoriesIds"
-            :biggest="stat.incomes.biggest"
+            v-for="categoryId in statCurrentPeriod.incomes.categoriesIds"
+            :biggest="statCurrentPeriod.incomes.biggest"
             :category="$store.state.categories.items[categoryId]"
             :categoryId="categoryId"
             :currency="$store.state.currencies.base"
             :type="1"
             :key="categoryId"
-            :total="stat.categories[categoryId].incomes")
+            :total="statCurrentPeriod.categories[categoryId].incomes")
       .stat__empty(v-else) No incomes
 </template>
 

@@ -68,7 +68,7 @@ export default {
 .items
   template(v-for="category in statCategories")
     StatItemChildCatsItem(
-      :biggest="$store.getters.stat[typeName].biggest"
+      :biggest="$store.getters.statCurrentPeriod[typeName].biggest"
       :category="$store.state.categories.items[category.categoryId]"
       :categoryId="category.categoryId"
       :key="category.categoryId"

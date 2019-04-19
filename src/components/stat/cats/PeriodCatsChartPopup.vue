@@ -23,8 +23,8 @@ export default {
 
   computed: {
     amount () {
-      if (this.$store.getters.stat.categories[this.categoryId]) {
-        return this.$store.getters.stat.categories[this.categoryId][this.type]
+      if (this.$store.getters.statCurrentPeriod.categories[this.categoryId]) {
+        return this.$store.getters.statCurrentPeriod.categories[this.categoryId][this.type]
       }
     },
     categoryName () {
@@ -39,9 +39,10 @@ export default {
 <template lang="pug">
 .chart-popup(
   v-if="categoryId && amount && categoryName"
-  :style="{ left: `${offset}px` }"
-)
+  :style="{ left: `${offset}px` }")
+
   .chart-popup__name {{ categoryName }}
+
   .chart-popup__item
     Amount(
       :value="amount"

@@ -7,8 +7,8 @@ export default {
   },
 
   computed: {
-    stat () {
-      return this.$store.getters.stat
+    statCurrentPeriod () {
+      return this.$store.getters.statCurrentPeriod
     },
     statAverage () {
       return this.$store.getters.statAverage
@@ -33,7 +33,7 @@ export default {
             Amount(
               :big="true"
               :currency="$store.state.currencies.base"
-              :value="stat.expenses.total.expenses"
+              :value="statCurrentPeriod.expenses.total"
               :type="0")
 
         .summary__row(v-if="period !== 'all' && statAverage.expenses > 0")
@@ -55,7 +55,7 @@ export default {
             Amount(
               :big="true"
               :currency="$store.state.currencies.base"
-              :value="stat.incomes.total.incomes - stat.expenses.total.expenses")
+              :value="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total")
 
         template(v-if="period !== 'all' && statAverage.total !== 0")
           .summary__row
@@ -77,7 +77,7 @@ export default {
             Amount(
               :big="true"
               :currency="$store.state.currencies.base"
-              :value="stat.incomes.total.incomes"
+              :value="statCurrentPeriod.incomes.total"
               :type="1")
 
         template(v-if="period !== 'all' && statAverage.incomes !== 0")

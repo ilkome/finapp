@@ -26,6 +26,11 @@ export default {
     activeTabStat () {
       return this.$store.state.ui.stat.activeTab
     },
+    isEmptyData () {
+      return this.statCurrentPeriod.incomes.categoriesIds.length === 0 &&
+              this.statCurrentPeriod.expenses.categoriesIds.length === 0 &&
+              this.$store.getters.selectedTrnsIdsWithDate.length === 0
+    },
     filterCategory () {
       return this.$store.state.categories.items[this.$store.state.filter.categoryId]
     },
@@ -35,8 +40,8 @@ export default {
     filterWallet () {
       return this.$store.state.wallets.items[this.$store.state.filter.walletId]
     },
-    stat () {
-      return this.$store.getters.stat
+    statCurrentPeriod () {
+      return this.$store.getters.statCurrentPeriod
     }
   },
 
@@ -66,6 +71,7 @@ export default {
         :name="filterWallet.name"
         icon="mdi mdi-credit-card-multiple"
         v-on:onClick="clearWalletFilter")
+
     template(v-if="$store.state.filter.categoryId")
       template(v-if="filterCategory.parentId !== 0")
         FilterItem(
@@ -82,8 +88,8 @@ export default {
   //- empty
   //------------------------------------------------
   EmptyData(
-    v-if="stat.incomes.categoriesIds.length === 0 && stat.expenses.categoriesIds.length === 0 && $store.getters.selectedTrnsIdsWithDate.length === 0"
-    :text="$lang.stat.empty")
+    v-if="isEmptyData"
+    :text="$lang.statCurrentPeriod.empty")
 
   //- history
   //------------------------------------------------
@@ -95,7 +101,7 @@ export default {
   div(v-show="activeTabStat === 'stat'")
     .stat__content
       //- incomes
-      .statGroup(v-if="stat.incomes.categoriesIds.length")
+      .statGroup(v-if="statCurrentPeriod.incomes.categoriesIds.length")
         .statItem-header
           .statItem-total
             .statItem-total__title._incomes {{ $lang.money.incomes }}
@@ -103,7 +109,7 @@ export default {
               Amount(
                 :currency="$store.state.currencies.base"
                 :type="1"
-                :value="stat.incomes.total.incomes")
+                :value="statCurrentPeriod.incomes.total")
           .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
             .statItem-average__title
               .statItem-average__title-icon: .mdi.mdi-chart-timeline
@@ -120,17 +126,17 @@ export default {
         //- incomes: cats stat item
         .stat__cats(v-show="$store.state.ui.statItems === 'visible'")
           StatItem(
-            v-for="categoryId in stat.incomes.categoriesIds"
-            :biggest="stat.incomes.biggest"
+            v-for="categoryId in statCurrentPeriod.incomes.categoriesIds"
+            :biggest="statCurrentPeriod.incomes.biggest"
             :category="$store.state.categories.items[categoryId]"
             :categoryId="categoryId"
             :currency="$store.state.currencies.base"
             :key="categoryId"
             :type="1"
-            :total="stat.categories[categoryId].incomes")
+            :total="statCurrentPeriod.categories[categoryId].incomes")
 
       //- expenses
-      .statGroup(v-if="stat.expenses.categoriesIds.length")
+      .statGroup(v-if="statCurrentPeriod.expenses.categoriesIds.length")
         .statItem-header
           .statItem-total
             .statItem-total__title._expenses {{ $lang.money.expenses }}
@@ -138,7 +144,7 @@ export default {
               Amount(
                 :currency="$store.state.currencies.base"
                 :type="0"
-                :value="stat.expenses.total.expenses")
+                :value="statCurrentPeriod.expenses.total")
           .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
             .statItem-average__title
               .statItem-average__title-icon: .mdi.mdi-chart-timeline
@@ -156,14 +162,14 @@ export default {
         //- expenses: cats stat item
         .stat__cats(v-show="$store.state.ui.statItems === 'visible'")
           StatItem(
-            v-for="categoryId in stat.expenses.categoriesIds"
-            :biggest="stat.expenses.biggest"
+            v-for="categoryId in statCurrentPeriod.expenses.categoriesIds"
+            :biggest="statCurrentPeriod.expenses.biggest"
             :category="$store.state.categories.items[categoryId]"
             :categoryId="categoryId"
             :currency="$store.state.currencies.base"
             :key="categoryId"
             :type="0"
-            :total="stat.categories[categoryId].expenses")
+            :total="statCurrentPeriod.categories[categoryId].expenses")
 
       .stat__trns(v-if="$store.state.ui.statLastTrnsVisibility === 'visible' && $store.getters.selectedTrnsIdsWithDate.length > 0")
         .stat__name Last transactions
@@ -182,6 +188,7 @@ export default {
 
 .customize
   display none
+
   @media $media-phone-sm
     display block
     padding 0 $m7

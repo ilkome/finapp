@@ -8,7 +8,7 @@ export default {
 
   computed: {
     stat () {
-      return this.$store.getters.stat
+      return this.$store.getters.statCurrentPeriod
     },
     statAverage () {
       return this.$store.getters.statAverage
@@ -30,18 +30,18 @@ export default {
           :center="true"
           :currency="$store.state.currencies.base"
           :type="1"
-          :value="stat.incomes.total.incomes")
+          :value="stat.incomes.total")
     template(v-else) .
 
   .summary__item._total(@click="$store.dispatch('toogleVisibilityStatItems')")
     template(v-if="statAverage.total !== 0")
-      template(v-if="stat.incomes.total.incomes > 0 || stat.expenses.total.expenses > 0")
+      template(v-if="stat.incomes.total > 0 || stat.expenses.total > 0")
         .summary__item__title {{ $lang.money.total }}
         .summary__item__amount
           Amount(
             :center="true"
             :currency="$store.state.currencies.base"
-            :value="stat.incomes.total.incomes - stat.expenses.total.expenses")
+            :value="stat.incomes.total - stat.expenses.total")
     template(v-else) .
 
   .summary__item._expenses(@click="$store.dispatch('toogleShowStatGraphs')")
@@ -51,7 +51,7 @@ export default {
         Amount(
           :center="true"
           :currency="$store.state.currencies.base"
-          :value="stat.expenses.total.expenses"
+          :value="stat.expenses.total"
           :type="0")
     template(v-else) .
 </template>

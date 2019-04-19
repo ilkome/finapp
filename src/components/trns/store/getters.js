@@ -17,20 +17,28 @@ export default {
     return false
   },
 
-  // getTotalOfTrnsIds
-  getTotalOfTrnsIds: (state, getters, rootState, rootGetters) => (trnsIds) => {
+  /**
+    * Return total amounts of trnsIds
+    *
+    * @param {Array} trnsIds
+    * @return {Object} return
+    * @return {String} return.expenses
+    * @return {String} return.incomes
+    * @return {String} return.total
+  */
+  getTotalOfTrnsIds: (state, getters, rootState, rootGetters) => (trnsIds, inculdeTrnasfers = false) => {
     const trns = rootState.trns.items
     const currencies = rootState.currencies.items
     const wallets = rootState.wallets.items
     const baseCurrency = rootState.currencies.base
     const transferCategoryId = rootGetters.transferCategoryId
 
-    let incomes = 0
     let expenses = 0
+    let incomes = 0
 
     for (const key of trnsIds) {
       const trn = trns[key]
-      if (trn && (trn.categoryId !== transferCategoryId)) {
+      if (trn && (inculdeTrnasfers || trn.categoryId !== transferCategoryId)) {
         const wallet = wallets[trn.accountId]
         if (wallet && currencies) {
           let amount = 0
@@ -45,8 +53,8 @@ export default {
       }
     }
     return {
-      incomes: Math.abs(incomes),
       expenses: Math.abs(expenses),
+      incomes: Math.abs(incomes),
       total: parseInt(incomes - expenses)
     }
   },
@@ -189,6 +197,57 @@ export default {
     let trnsIds = rootGetters.selectedTrnsIdsWithDate
     if (categoryId) trnsIds = trnsIds.filter(id => trns[id].categoryId === categoryId)
     if (type) trnsIds = trnsIds.filter(id => trns[id].type === type)
+
+    return trnsIds
+  },
+
+  getTrns: (state, getters, rootState, rootGetters) => ({ date, periodName }) => {
+    if (!rootGetters.hasTrns) return []
+
+    const categories = rootState.categories.items
+    const categoriesIds = Object.keys(categories)
+    const filterCategoryId = rootState.filter.categoryId
+    const filterWalletId = rootState.filter.walletId
+    const trns = rootState.trns.items
+    let trnsIds = Object.keys(trns)
+
+    const filterDate = moment(date)
+    const filterPeriod = periodName || rootState.filter.period
+    const startDateValue = filterDate.startOf(filterPeriod).valueOf()
+    const endDateValue = filterDate.endOf(filterPeriod).valueOf()
+
+    // filter date
+    if (filterPeriod !== 'all') {
+      trnsIds = trnsIds
+        .filter(trnId => (trns[trnId].date >= startDateValue) && (trns[trnId].date <= endDateValue))
+    }
+
+    // filter wallet
+    if (filterWalletId) {
+      trnsIds = trnsIds.filter(trnId => trns[trnId].accountId === filterWalletId)
+    }
+
+    // filter category
+    if (filterCategoryId) {
+      const childCategoriesIds = categoriesIds.filter(id => categories[id].parentId === filterCategoryId)
+      if (childCategoriesIds.length) {
+        trnsIds = trnsIds.filter(trnId => {
+          const trnCategoryId = trns[trnId].categoryId
+          for (const categoryId of childCategoriesIds) {
+            if (trnCategoryId === categoryId) return true
+          }
+        })
+      } else {
+        trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === filterCategoryId)
+      }
+    }
+
+    trnsIds = trnsIds
+      .sort((a, b) => {
+        if (trns[a].date > trns[b].date) return -1
+        if (trns[a].date < trns[b].date) return 1
+        return 0
+      })
 
     return trnsIds
   }

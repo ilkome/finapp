@@ -11,7 +11,10 @@ export default {
   props: {
     type: {
       type: String,
-      required: true
+      required: true,
+      validator: function (value) {
+        return value === 'incomes' || value === 'expenses'
+      }
     }
   },
 
@@ -32,13 +35,13 @@ export default {
       }
     },
     biggestAmount () {
-      return this.$store.getters.stat[this.type].biggest
+      return this.$store.getters.statCurrentPeriod[this.type].biggest
     },
     categories () {
       return this.$store.state.categories.items
     },
-    stat () {
-      return this.$store.getters.stat
+    statCurrentPeriod () {
+      return this.$store.getters.statCurrentPeriod
     }
   },
 
@@ -56,14 +59,14 @@ export default {
 <template lang="pug">
 .cats-chart(:class="className")
   .cats-chart__items(
-    v-if="stat[type].categoriesIds.length > 0")
+    v-if="statCurrentPeriod[type].categoriesIds.length > 0")
     PeriodCatsChartItem(
-      v-for="categoryId in stat[type].categoriesIds"
+      v-for="categoryId in statCurrentPeriod[type].categoriesIds"
       :biggest="biggestAmount"
       :category="categories[categoryId]"
       :categoryId="categoryId"
       :key="`charts-${categoryId}`"
-      :total="stat.categories[categoryId][type]"
+      :total="statCurrentPeriod.categories[categoryId][type]"
       v-on:onActiveCategoryChange="handleActiveCategoryChange")
 
   .cats-chart__popup(
