@@ -39,7 +39,6 @@ export default {
 @import "~@/stylus/variables/scrollbar"
 
 .chart-popup
-  z-index 2
   display block
   position absolute
   bottom 0px

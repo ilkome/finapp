@@ -121,7 +121,7 @@ export default {
       border-bottom 1px solid var(--c-bg-5)
 
     @media $media-laptop
-      min-width 250px
+      flex 0 1 250px
       padding 0
       margin 0
 

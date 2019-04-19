@@ -228,7 +228,7 @@ export default {
 @import "~@/stylus/variables/scrollbar"
 
 .charts
-  z-index 3
+  z-index 5
   position relative
   background var(--c-bg-2)
   border-bottom 1px solid var(--c-bg-1)

@@ -76,7 +76,7 @@ export default {
 @import "~@/stylus/variables/margins"
 
 .context-menu
-  z-index 1
+  z-index 4
   position relative
 
   &__opener

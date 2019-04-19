@@ -61,22 +61,25 @@ export default {
 <template lang="pug">
 .statItemChild(
   @click="toogleShowTrnsInCategory(categoryId)"
-  :class="{ _active: showTrns }"
-)
+  :class="{ _active: showTrns }")
+
   .statItemChild__content
     .statItemChild__graph: .statItemChild__graph__in(:style="styles")
+
     .statItemChild__icon(
       @click.stop="() => $store.dispatch('handleSetFilterCategory', categoryId)")
       Icon(
         :background="category.color"
         :icon="category.icon"
-        :round="true"
-        :medium="true")
+        :round="true")
+
     .statItemChild__name {{ category.name }}
+
     .statItemChild__amount
       Amount(
         :currency="$store.state.currencies.base"
         :value="total")
+
   .statItemChild__trns(@click.stop="" v-if="showTrns")
     TrnsList(
       ui="stat"
@@ -92,62 +95,23 @@ export default {
 @import "~@/stylus/variables/scrollbar"
 
 .statItemChild
-  margin (- $m6) 0
-  padding $m6 $m7
-  border-top 1px solid transparent
-  border-bottom 1px solid transparent
-
-  @media $media-laptop
-    padding 10px 10px
-    margin (- 8px) 0
-
-  &:hover
-    @media $media-laptop
-      background var(--c-bg-7)
-
-      /.theme-light &
-        background var(--c-bg-5)
-
-  &._active
-    margin $m6 0
-    padding 0
-    background var(--c-bg-4)
-    border-top 1px solid var(--c-bg-1)
-    border-bottom-color var(--c-bg-1)
-
-    /.theme-light &
-      background var(--c-bg-4)
-
-  &:first-child
-    margin-top 0
-    border-top 0
-
+  border-bottom 1px solid var(--c-bg-5)
   &:last-child
-    margin-bottom 0
-    border-bottom 0
+    border 0
 
   &__content
     display grid
     grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
     grid-template-rows repeat(2, minmax(10px, max-content))
     grid-column-gap 20px
-
-    @media $media-laptop
-      grid-column-gap 20px
-
-    ^[0]._active &
-      padding $m7 $m7
-      background var(--c-bg-4)
-
-      @media $media-laptop
-        padding 10px
+    padding 10px 10px
 
   &__graph
     overflow hidden
     grid-column 2 / -1
     grid-row 2 / -1
     align-self center
-    margin-top $m5
+    margin-top 6px
     background var(--c-bg-6)
     border-radius 2px
 
@@ -163,9 +127,6 @@ export default {
     white-space nowrap
     text-overflow ellipsis
 
-    ^[0]._active &
-      color var(--c-font-3)
-
   &__icon
     display flex
     justify-content center
@@ -173,15 +134,6 @@ export default {
     grid-column 1 / 2
     grid-row 1 / -1
 
-    &:active
-      opacity .8
-
   &__amount
     align-self center
-
-  &__trns
-    border-top 1px solid var(--c-bg-3)
-
-    /.theme-light &
-      border-top 1px solid var(--c-bg-1)
 </style>

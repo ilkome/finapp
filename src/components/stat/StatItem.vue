@@ -118,22 +118,16 @@ export default {
 @import "~@/stylus/variables/scrollbar"
 
 .statItem
+  cursor pointer
   position relative
-  margin (- $m7) 0
-  padding $m7 $m7
+  margin (- 10px) 0
+  margin-bottom 10px
+  padding 10px
   border 1px solid transparent
-
-  @media $media-laptop
-    padding 10px 10px
-    margin (- 8px) 0px
-
-  &:last-child
-    margin-bottom 0
 
   &:hover
     @media $media-laptop
-      padding 10px 10px
-      margin -8px 0px
+      z-index 2
       background var(--c-bg-1)
       border 1px solid var(--c-bg-5)
 
@@ -141,19 +135,13 @@ export default {
         background var(--c-bg-3)
 
   &._active
-    margin $m7 0
     padding 0
+    margin-bottom 30px
     background var(--c-bg-3)
     border 1px solid var(--c-bg-7)
 
-    @media $media-laptop
-      padding 0
-      margin 10px 0px
-
     &:first-child
-      margin-top (- $m7)
-      @media $media-laptop
-        margin-top -10px
+      margin-top (- 10px)
 
   &__content
     display grid
@@ -162,12 +150,9 @@ export default {
     grid-column-gap 20px
 
     ^[0]._active &
-      padding $m7 $m7
+      padding 10px 10px
       background var(--c-bg-5)
-      border-bottom 1px solid var(--c-bg-1)
-
-      @media $media-laptop
-        padding 12px 10px
+      border-bottom 1px solid var(--c-bg-7)
 
       /.theme-light &
         background var(--c-bg-10)

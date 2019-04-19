@@ -5,7 +5,6 @@ import CategoryModal from '@/components/categories/modal/CategoryModal'
 import CurrencyModal from '@/components/currencies/CurrencyModal'
 import LayoutMobileMenu from '@/components/layout/LayoutMobileMenu'
 import Settings from '@/components/settings/Settings'
-import StatChartDonut from '@/components/stat/StatChartDonut'
 import StatChartsLine from '@/components/stat/StatChartsLine'
 import StatMobile from '@/components/stat/StatMobile'
 import TrnForm from '@/components/trnForm/TrnForm'
@@ -24,7 +23,6 @@ export default {
     CurrencyModal,
     LayoutMobileMenu,
     Settings,
-    StatChartDonut,
     StatChartsLine,
     StatMobile,
     TrnForm,
@@ -105,11 +103,6 @@ export default {
   transition(name="animation-tab")
     .tab(v-if="activeTab === 'createWallet'")
       WalletForm
-
-  //- donut
-  transition(name="animation-tab")
-    .tab(v-if="activeTab === 'chart'")
-      StatChartDonut
 
   LayoutMobileMenu
 

@@ -16,6 +16,7 @@ export const formatDate = (value, type) => {
           lastWeek: 'dddd',
           sameElse: 'dddd'
         }),
+        week: date.format('DD.MM'),
         month: date.format('MMM'),
         year: date.format('YYYY')
       }

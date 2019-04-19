@@ -242,7 +242,7 @@ export default {
     &._stat
     &._lastTrns
       @media $media-laptop
-        background var(--c-bg-7)
+        background var(--c-bg-5)
         /.theme-light &
           background var(--c-bg-5)
 

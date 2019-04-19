@@ -27,7 +27,7 @@ export default {
 .periodNav
   .periodNav__wrap
     .periodNav__group
-      ContextMenu._dark(
+      ContextMenu(
         :position="{ left: '-12px', top: true }"
         :visible="visiblePeriodMenu"
         v-on:onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
@@ -159,8 +159,7 @@ export default {
     display flex
     align-items center
     max-width 1100px
-    padding 5px $mb2
-    padding-bottom 6px
+    padding 5px 60px
 
   &__group
     display flex
