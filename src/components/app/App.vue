@@ -122,9 +122,9 @@ html
   font-size 14px
   line-height 1
   letter-spacing 0
-  user-select none
   overscroll-behavior-y contain
   background var(--c-bg-1)
+  user-select none
 </style>
 
 <style lang="stylus" scoped>

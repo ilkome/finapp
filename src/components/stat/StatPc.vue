@@ -66,7 +66,7 @@ export default {
 
 .stat
   position relative
-  padding 0 $mb2
+  padding 0 60px
 
   &__content
     display flex

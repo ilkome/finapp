@@ -30,6 +30,7 @@ export default {
   },
 
   walletsTotal (state, getters, rootState, rootGetters) {
+    if (!rootGetters.hasWallets) return {}
     const walletsTotal = {}
     const wallets = rootState.wallets.items
 

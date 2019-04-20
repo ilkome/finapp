@@ -41,7 +41,7 @@ export default {
 
   data () {
     return {
-      showTrns: false
+      showInside: false
     }
   },
 
@@ -51,16 +51,17 @@ export default {
 
       const childCatsIdsWithTrns = []
       for (const childCategoryId of childCategoriesIds) {
-        const trnsIds = this.$store.getters.getSelectedTrnsIdsByFilter({
+        const trnsIds = this.$store.getters.getTrnsIdsByFilter({
           categoryId: childCategoryId,
           type: this.type
         })
         if (trnsIds.length > 0) childCatsIdsWithTrns.push(childCategoryId)
       }
-      if (childCatsIdsWithTrns.length > 0) return true
 
+      if (childCatsIdsWithTrns.length > 0) return true
       return false
     },
+
     styles () {
       return {
         width: `${Math.abs(this.total) / Math.abs(this.biggest) * 100}%`,
@@ -70,8 +71,8 @@ export default {
   },
 
   methods: {
-    toogleShowTrnsInCategory (categoryId) {
-      this.showTrns = !this.showTrns
+    toogleShowInside (categoryId) {
+      this.showInside = !this.showInside
     }
   }
 }
@@ -79,13 +80,12 @@ export default {
 
 <template lang="pug">
 .statItem(
-  @click="toogleShowTrnsInCategory(categoryId)"
-  :class="{ _active: showTrns }")
+  @click="toogleShowInside(categoryId)"
+  :class="{ _active: showInside }")
 
   .statItem__content
     .statItem__graph: .statItem__graph__in(:style="styles")
-    .statItem__icon(
-      @click.stop="() => $store.dispatch('handleSetFilterCategory', categoryId)")
+    .statItem__icon(@click.stop="() => $store.dispatch('handleSetFilterCategory', categoryId)")
       Icon(
         :background="category.color"
         :icon="category.icon"
@@ -97,13 +97,12 @@ export default {
         :currency="currency"
         :value="total")
 
-  template(v-if="showTrns")
-    template(v-if="showChildCategories")
-      .statItem__cats(@click.stop="")
+  template(v-if="showInside")
+    .statItem__inside(@click.stop="")
+      template(v-if="showChildCategories")
         StatItemChildCats(:categoryId="categoryId", :type="type")
 
-    template(v-else)
-      .statItem__trns(@click.stop="")
+      template(v-else)
         TrnsList(
           ui="stat"
           :incomes="type === 1"
@@ -112,10 +111,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~@/stylus/variables/margins"
-@import "~@/stylus/variables/fonts"
 @import "~@/stylus/variables/media"
-@import "~@/stylus/variables/scrollbar"
 
 .statItem
   cursor pointer
@@ -163,7 +159,7 @@ export default {
     grid-column 2 / -1
     grid-row 2 / -1
     align-self center
-    margin-top $m5
+    margin-top 6px
     background var(--c-bg-8)
     border-radius 2px
 
@@ -192,7 +188,4 @@ export default {
 
   &__amount
     align-self center
-
-  &__trns
-    padding 0
 </style>

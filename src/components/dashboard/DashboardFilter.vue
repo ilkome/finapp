@@ -95,13 +95,7 @@ export default {
     display flex
     position relative
     max-width 1100px
-    padding 12px $mb2
-
-    @media $media-laptop
-      padding 12px $m9
-
-    @media $media-pc
-      padding 12px $mb2
+    padding 10px 60px
 
     ^[0]._sidebar &
       padding 20px

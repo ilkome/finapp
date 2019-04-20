@@ -125,6 +125,7 @@ export default {
 @import "~@/stylus/variables/scrollbar"
 
 .chart-item
+  cursor pointer
   padding $m5 $m5
   flex-grow 1
   max-width 80px
