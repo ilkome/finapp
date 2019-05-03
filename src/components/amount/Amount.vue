@@ -7,7 +7,8 @@ export default {
     },
     value: {
       type: Number,
-      required: true
+      required: true,
+      default: 0
     },
 
     alwaysShowSymbol: {
