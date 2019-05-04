@@ -1,8 +1,7 @@
 <script>
 import debounce from 'lodash/debounce'
 
-import LayoutMobile from '@/components/layout/LayoutMobile'
-import LayoutPc from '@/components/layout/LayoutPc'
+import Layout from '@/components/layout/Layout'
 import Loader from '@/components/shared/loader/Loader'
 import Login from '@/components/login/Login'
 import Welcome from '@/components/welcome/Welcome'
@@ -12,8 +11,7 @@ import '@/stylus/index.styl'
 export default {
   components: {
     Loader,
-    LayoutMobile,
-    LayoutPc,
+    Layout,
     Welcome,
     Login
   },
@@ -90,16 +88,14 @@ export default {
   transition(name="fadeInSlow")
     template(v-if="$store.state.app.status.ready")
       template(v-if="$store.getters.hasWallets && $store.getters.hasCategories")
-        LayoutMobile(v-if="$store.state.ui.mobile")
-        LayoutPc(v-else)
+        Layout
       Welcome(v-else)
 
   //- notifications
   notifications(
     group="main"
     :position="$store.state.ui.mobile ? 'top right' : 'top left'"
-    :width="$store.state.ui.mobile ? '100%' : '320'"
-  )
+    :width="$store.state.ui.mobile ? '100%' : '280'")
 </template>
 
 <style lang="stylus">
