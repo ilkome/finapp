@@ -19,5 +19,10 @@ export default {
   unsubcribeCategories ({ rootState }) {
     const uid = rootState.user.user.uid
     db.ref(`users/${uid}/categories`).off()
+  },
+
+  showCategoryModal ({ commit }, id) {
+    commit('showCategoryModal')
+    commit('setCategoryModalId', id)
   }
 }

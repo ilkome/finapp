@@ -54,10 +54,6 @@ export default {
       this.$store.commit('setFilterDateNow')
       this.$store.dispatch('setFilterCategoryId', this.categoryId)
     },
-    handleCategoryClick (id) {
-      this.$store.commit('showCategoryModal')
-      this.$store.commit('setCategoryModalId', id)
-    },
 
     handleEditClick () {
       const categoryId = this.categoryId
@@ -142,7 +138,7 @@ ModalBottom(
       :borderTop="true"
       :ids="childCategoriesIds"
       :noPadding="true"
-      v-on:onClick="handleCategoryClick")
+      v-on:onClick="id => $store.dispatch('showCategoryModal', id)")
 
   ModalBottomConfirm(
     :show="showModalConfirm"

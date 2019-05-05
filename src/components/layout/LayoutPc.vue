@@ -41,10 +41,6 @@ export default {
   },
 
   methods: {
-    handleShowCategoryModal (id) {
-      this.$store.commit('showCategoryModal')
-      this.$store.commit('setCategoryModalId', id)
-    },
     handleShowWalletModal (id) {
       this.$store.commit('showWalletModal')
       this.$store.commit('setWalletModalId', id)
@@ -75,7 +71,8 @@ export default {
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'categories'")
         .dashboard__title {{ $lang.categories.title }}
-        CategoriesList.dashboardItems(v-on:onClick="(id) => handleShowCategoryModal(id)")
+        CategoriesList.dashboardItems(
+          v-on:onClick="id => $store.dispatch('showCategoryModal', id)")
         Button(
           className="_blue _inline"
           icon="mdi mdi-plus"
