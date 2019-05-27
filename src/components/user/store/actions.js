@@ -1,4 +1,4 @@
-import firebase from 'firebase/app'
+import { auth } from 'firebase/app'
 import localforage from 'localforage'
 import moment from 'moment'
 
@@ -28,7 +28,7 @@ export default {
     dispatch('unsubcribeTrns')
     dispatch('unsubcribeWallets')
     dispatch('clearUserData')
-    firebase.auth().signOut()
+    auth().signOut()
   },
 
   saveUserInfo ({ rootState }) {
