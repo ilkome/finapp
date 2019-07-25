@@ -123,7 +123,7 @@ export default {
     if (!rootGetters.hasCategories) return []
 
     return Object.keys(categories)
-      .filter(key => categories[key].parentId !== 0 && categories[key].showInQuickSelector)
+      .filter(key => categories[key].showInQuickSelector)
       .sort((a, b) => {
         if (categories[a].name < categories[b].name) return -1
         if (categories[a].name > categories[b].name) return 1
