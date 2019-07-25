@@ -91,7 +91,7 @@ export default {
     db.ref(`users/${uid}/trns`).off()
   },
 
-  async iniOfflineTrns ({ dispatch }) {
+  async initOfflineTrns ({ dispatch }) {
     db.ref('.info/connected').on('value', async snap => {
       const isConnected = snap.val()
       if (isConnected) {
