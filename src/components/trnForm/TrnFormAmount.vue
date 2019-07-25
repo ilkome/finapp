@@ -157,12 +157,12 @@ export default {
     .action
       template(v-if="!amountValue")
         Button(
-          className="_grey _center"
+          className="_grey _text-center"
           title="Write amount"
           v-on:onClick="handleMath")
       template(v-else-if="amounIsNumber")
         Button(
-          className="_blue"
+          className="_blue _text-center"
           :title="$store.state.trnForm.values.amountType === 2 ? 'Create transfer' : 'Create transaction'"
           v-on:onClick="handleSubmit")
       template(v-else)

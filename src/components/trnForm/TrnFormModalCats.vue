@@ -12,23 +12,6 @@ export default {
     Slider
   },
 
-  data () {
-    return {
-      slideTo: 0
-    }
-  },
-
-  computed: {
-    catsCount () {
-      return this.$store.getters.categoriesRootIds.length
-    },
-
-    slidesCount () {
-      if (this.catsCount > 12) return Math.ceil(this.catsCount / 12)
-      return 1
-    }
-  },
-
   methods: {
     handleCategoryClick (categoryId) {
       if (this.$store.getters.getChildCategoriesIds(categoryId).length > 0) {
@@ -51,7 +34,7 @@ TrnFormModal(
 )
   template(slot="header")
     .trnFormModal__header__back: .mdi.mdi-chevron-left
-    .trnFormModal__header__title  {{ $lang.categories.title }}
+    .trnFormModal__header__title  {{ $lang.categories.name }}
     .trnFormModal__icon
       Icon(
         icon="mdi mdi-chart-bubble"
@@ -84,26 +67,20 @@ TrnFormModal(
     Slider(
       :slidesPerColumn="1"
       :slidesPerView="1"
-      :autoHeight="false"
-      :slideTo="slideTo"
-    )
+      :autoHeight="true")
       template(v-if="$store.state.ui.lastUsedCatsInTrnForm === 'visible'")
-        .swiper-slide
-          CategoriesView(
-            :ids="$store.getters.lastUsedCategoriesIdsByDate"
-            :noPaddingBottom="true"
-            v-on:onClick="handleCategoryClick"
-          )
+        template(v-if="$store.getters.lastUsedCategoriesIdsByDate.length > 0")
+          .swiper-slide
+            CategoriesView(
+              :ids="$store.getters.lastUsedCategoriesIdsByDate"
+              :noPaddingBottom="true"
+              v-on:onClick="handleCategoryClick")
 
-      template(v-for="index in slidesCount")
-        .swiper-slide
-          CategoriesView(
-            :ids="$store.getters.categoriesRootIds.slice((index - 1) * 12, (index - 1) * 12 + 12)"
-            :noPaddingBottom="true"
-            v-on:onClick="handleCategoryClick"
-          )
-
-    .categories__desc Slide left or right
+      .swiper-slide
+        CategoriesView(
+          :ids="$store.getters.categoriesRootIds"
+          :noPaddingBottom="true"
+          v-on:onClick="handleCategoryClick")
 </template>
 
 <style lang="stylus" scoped>

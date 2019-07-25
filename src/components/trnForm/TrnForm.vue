@@ -348,13 +348,4 @@ export default {
     color var(--c-font-4)
     text-align center
     border-left 1px solid var(--c-bg-1)
-
-  &-date
-  &-desc
-    &:hover
-      @media $media-laptop
-        background var(--c-bg-5)
-
-    &:active
-      background var(--c-bg-5)
 </style>
