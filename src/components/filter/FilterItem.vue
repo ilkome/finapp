@@ -1,12 +1,10 @@
 <script>
 import Icon from '@/components/icon/Icon'
-import ModalBottom from '@/components/modal/ModalBottom'
 import ModalButton from '@/components/modal/ModalButton'
 
 export default {
   components: {
     Icon,
-    ModalBottom,
     ModalButton
   },
 

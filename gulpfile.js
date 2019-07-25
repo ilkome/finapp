@@ -1,30 +1,61 @@
-/*
-  ilkome frontend vue
-
-  Ilya Komichev
-  https://ilko.me
-*/
-const gulp = require('gulp')
+const { src } = require('gulp')
+const fs = require('fs')
 const ftp = require('vinyl-ftp')
+const notifier = require('node-notifier')
 const util = require('gulp-util')
-const configFTP = require('./ftp.conf.js')
+const notify = require('gulp-notify')
+const plumber = require('gulp-plumber')
 
-const conn = ftp.create({
-  host: configFTP.host,
-  user: configFTP.user,
-  password: configFTP.password,
-  log: util.log,
-  parallel: 1
-})
+function toaster (name, cb) {
+  return plumber({
+    errorHandler: (error) => {
+      notify.onError({
+        title: name,
+        message: '<%= error.message %>'
+      })(error)
+      cb()
+    }
+  })
+}
 
-gulp.task('upload', () =>
-  gulp.src(`dist/**/*`, { buffer: true })
-    .pipe(conn.newer('/'))
-    .pipe(conn.dest(configFTP.dest))
-)
+function uploadTask (path, cb) {
+  if (fs.existsSync('./ftp.config.js')) {
+    const configFTP = require('./ftp.config.js')
+    const conn = ftp.create({
+      host: configFTP.host,
+      user: configFTP.user,
+      password: configFTP.password,
+      log: util.log,
+      buffer: false
+    })
 
-gulp.task('upload-min', () =>
-  gulp.src(`dist/**/*.{css,js,html}`, { buffer: true })
-    .pipe(conn.newer('/'))
-    .pipe(conn.dest(configFTP.dest))
-)
+    return src(path)
+      .pipe(toaster('Upload', cb))
+      .pipe(conn.newer(configFTP.dest))
+      .pipe(conn.dest(configFTP.dest))
+      .pipe(conn.clean([
+        '/css/**',
+        '/img/**',
+        '/js/**',
+        '/**.js'
+      ], './dist', { base: '/' }))
+  } else {
+    notifier.notify({
+      title: 'No ftp config',
+      message: 'Read Readme "Setup upload task" section'
+    })
+    cb()
+  }
+}
+
+function uploadAll (cb) {
+  return uploadTask('dist/**/*.*', cb)
+}
+
+function uploadMin (cb) {
+  return uploadTask('dist/**/*.{css,js,html}', cb)
+}
+
+// upload task
+exports.uploadAll = uploadAll
+exports.uploadMin = uploadMin

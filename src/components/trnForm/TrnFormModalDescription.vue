@@ -51,24 +51,26 @@ export default {
 <template lang="pug">
 TrnFormModal(
   :show="show"
-  title="Description"
-  v-on:onClose="$store.commit('toogleTrnFormModal', 'description')"
-)
+  :title="$lang.trnForm.description.title"
+  v-on:onClose="$store.commit('toogleTrnFormModal', 'description')")
   .description
     .description__filed
-      textarea.textarea(v-focus="show" v-model="description" placeholder="Write trn description")
+      textarea.textarea(
+        v-focus="$store.state.ui.pc && show"
+        v-model="description"
+        :placeholder="$lang.trnForm.description.placeholder")
 
     .description__action
       .description__action-ok
         Button(
           className="_blue _inline"
-          title="Save"
+          :title="$lang.base.save"
           v-on:onClick="handleSave"
         )
       .description__action-cancel
         Button(
           className="_grey _inline"
-          title="Cancel"
+          :title="$lang.base.cancel"
           v-on:onClick="handleCancel"
         )
 </template>

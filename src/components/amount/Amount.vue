@@ -121,6 +121,7 @@ export default {
 
 .amount
   typo-money()
+  font-size 16px
 
   @media $media-laptop
     font-size 15px

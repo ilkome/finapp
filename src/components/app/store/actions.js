@@ -4,7 +4,7 @@ import { app } from '@/firebase'
 export default {
   async initApp ({ rootState, commit, dispatch }) {
     await dispatch('initAppFromCache')
-    dispatch('iniOfflineTrns')
+    dispatch('initOfflineTrns')
 
     app.auth().onAuthStateChanged(async (user) => {
       if (user) {
