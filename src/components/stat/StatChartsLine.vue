@@ -5,6 +5,7 @@ import Amount from '@/components/amount/Amount'
 import ChartItem from '@/components/stat/chart/ChartItem'
 import ChartMenu from '@/components/stat/chart/ChartMenu'
 import ChartPopup from '@/components/stat/chart/ChartPopup'
+import { dragscroll } from 'vue-dragscroll'
 
 export default {
   components: {
@@ -12,6 +13,10 @@ export default {
     ChartItem,
     ChartMenu,
     ChartPopup
+  },
+
+  directives: {
+    dragscroll
   },
 
   computed: {
@@ -192,7 +197,7 @@ export default {
         .charts__items._grouped
           template(v-for="(periodGroups, groupDate) in periodsGroupedValues")
             .chart-group(:class="{ _grouped: periods[filterPeriod].grouped }")
-              .chart-group__name(v-show="periods[filterPeriod].grouped")
+              .chart-group__name(data-dragscroll v-show="periods[filterPeriod].grouped")
                 template(v-if="periods[filterPeriod].grouped") {{ formatGroupName(groupDate, periods[filterPeriod].groupedBy) }}
 
               .chart-group__content
@@ -201,8 +206,7 @@ export default {
                     :key="period.date"
                     :maxAmountValue="maxAmountValue"
                     :period="period"
-                    parentClassName=".charts__items"
-                  )
+                    parentClassName=".charts__items")
           .chart-space
 
       //- simple
@@ -253,7 +257,9 @@ export default {
       min-height 178px
 
   &__items
+    cursor grab
     scrollbar()
+    overflow hidden
     overflow-x auto
     display flex
     margin-bottom -1px
@@ -279,8 +285,7 @@ export default {
 .chart-group
   position relative
   flex-grow 0
-  margin-right $m8
-  padding-right $m8
+  margin-right 40px
 
   &:last-child
     margin-right 0

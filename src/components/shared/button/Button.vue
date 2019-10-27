@@ -100,6 +100,11 @@ export default {
   border-radius $m3
   font-size 15px
   anim-background()
+  border 1px solid transparent
+
+  +media-laptop()
+    font-size 14px
+    padding 12px 20px
 
   &:active
     transform scale(0.96)
@@ -108,11 +113,11 @@ export default {
     display flex
     align-items center
     justify-content center
-    padding 10px 10px
     background var(--c-bg-2)
     border 1px solid var(--c-bg-7)
     box-shadow 2px 2px 6px 0px var(--c-bg-2)
     border-radius 3px
+    anim()
 
     /.theme-light &
       box-shadow 2px 2px 6px 0px var(--c-bg-11)
@@ -121,26 +126,13 @@ export default {
       color var(--c-font-3)
       transform scale(0.96)
 
+    +media-laptop()
+      &:hover
+        border-color var(--c-bg-9)
+
   &._square
-      width 40px
-      height 40px
-
-  &._blue
-    display inline-flex
-    align-items center
-    justify-content center
-    font-header-2()
-    font-size 14px
-    height 47px
-    color var(--c-font-1)
-    font-weight 600
-    letter-spacing 1.6px
-    background var(--c-blue-1)
-    border-radius $m3
-
-    &:hover
-      @media $media-laptop
-        background var(--c-blue-2)
+    width 40px
+    height 40px
 
   &._bdb
     padding 12px $m7
@@ -196,6 +188,15 @@ export default {
         background var(--c-bg-1)
         border-color var(--c-bg-8)
 
+  &._blue
+    color var(--c-font-1)
+    background var(--c-blue-1)
+    // border 1px solid transparent
+
+    &:hover
+      @media $media-laptop
+        background var(--c-blue-2)
+
   &__icon
     width 22px
     margin-left -5px
@@ -208,7 +209,17 @@ export default {
       margin-right 0
       margin-right -5px
 
+    +media-laptop()
+      margin-left -8px
+      margin-right 10px
+      font-size 14px
+
   &__check
     margin-left auto
     padding-left 32px
+
+  &__title
+    ~/._text-center &
+      flex-grow 1
+      text-align center
 </style>

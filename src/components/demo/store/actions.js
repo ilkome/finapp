@@ -1,7 +1,6 @@
 import moment from 'moment'
 import { db } from '@/firebase'
-
-const demoUid = '9yrjuIeeOKNj5TxwoPhQobxbE153' // demo@themerise.com
+import { demoUid } from '@/config'
 
 export default {
   async getDemoDataStatus ({ commit }) {

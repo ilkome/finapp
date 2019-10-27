@@ -5,12 +5,14 @@ import colors from '@/components/ui/store/colors'
 
 import Button from '@/components/shared/button/Button'
 import Checkbox from '@/components/shared/inputs/Checkbox'
+import ComponentWrap from '@/components/layout/component/Component'
 import ModalBottom from '@/components/modal/ModalBottom'
 
 export default {
   components: {
     Button,
     Checkbox,
+    ComponentWrap,
     ModalBottom
   },
 
@@ -98,7 +100,7 @@ export default {
         this.$notify({
           group: 'main',
           title: '😮',
-          text: 'Write wallet name'
+          text: this.$lang.wallets.form.name.error
         })
         return false
       }
@@ -108,7 +110,7 @@ export default {
         this.$notify({
           group: 'main',
           title: '😮',
-          text: 'Write wallet currency'
+          text: this.$lang.wallets.form.currency.error
         })
         return false
       }
@@ -120,7 +122,7 @@ export default {
               this.$notify({
                 group: 'main',
                 title: '😮',
-                text: 'Wallet with same name is exist'
+                text: this.$lang.wallets.form.name.exist
               })
               return false
             }
@@ -128,7 +130,7 @@ export default {
             this.$notify({
               group: 'main',
               title: '😮',
-              text: 'Wallet with same name is exist'
+              text: this.$lang.wallets.form.name.exist
             })
             return false
           }
@@ -142,94 +144,85 @@ export default {
 </script>
 
 <template lang="pug">
-.component
-  .form
-    h1.component__title
-      template(v-if="!walletId") Create new wallet
-      template(v-else) Edit wallet
+ComponentWrap
+  template(slot="headerLeft")
+    template(v-if="!walletId") {{ $lang.wallets.createNewTitle }}
+    template(v-else) {{ $lang.wallets.editTitle }}
 
-    .form-line._text
+  template(slot="content")
+    .form
+      .form-line._text
+        .inputText
+          input(
+            type="text"
+            :placeholder="$lang.wallets.form.name.placeholder"
+            v-model="wallet.name"
+            v-focus.lazy="$store.state.ui.pc"
+          ).inputText__value
+          .inputText__label {{ $lang.wallets.form.name.label }}
+
+      .form__btns
+        .form__btns__i
+          .form-line(@click="showCurrencies = true")
+            .inputModal._flex
+              .inputModal__value {{ wallet.currency }}
+              .inputModal__content
+              .inputModal__label {{ $lang.wallets.form.currency.label }}
+
+        .form__btns__i
+          .form-line(@click="showColors = true")
+            .inputModal._flex
+              .inputModal__value: .inputModal__color(:style="{ background: wallet.color }")
+              .inputModal__label {{ $lang.wallets.form.color.label }}
+
+      .form-line._p0._clean
+        Checkbox(
+          v-model="wallet.countTotal"
+          :title="$lang.wallets.form.total.placeholder"
+          :alt="true")
+
+    //- colors
+    ModalBottom(
+      :center="true"
+      :show="showColors"
+      :title="$lang.wallets.form.color.placeholder"
+      v-on:onClose="showColors = false")
       .inputText
-        input(
-          type="text"
-          placeholder="Write wallet name..."
-          v-model="wallet.name"
-          v-focus.lazy="$store.state.ui.pc"
-        ).inputText__value
-        .inputText__label Wallet name
+        .inputText__colors
+          .colors
+            .colorItem(
+              :class="{ _active: wallet.color === color }"
+              :style="{ background: color }"
+              @click="handleColorSelect(color)"
+              v-for="color in colors")
+      .customColor
+        .customColor__title {{ $lang.wallets.form.color.custom }}
+        input.customColor__value(v-model="wallet.color" type="color")
 
-    .form-line._text(v-if="$store.getters.hasCategories")
+    //- currencies
+    ModalBottom(
+      :center="true"
+      :show="showCurrencies"
+      :title="$lang.wallets.form.currency.placeholder"
+      v-on:onClose="showCurrencies = false")
       .inputText
-        input(
-          type="number"
-          placeholder="Wallet order..."
-          value="1"
-          v-model="wallet.order"
-        ).inputText__value
-        .inputText__label Wallet order
+        .currencies
+          .currencies__item(
+            :class="{ _active: wallet.currency === currency }"
+            @click="handleCurrencySelect(currency)"
+            v-for="(item, currency) in $store.state.currencies.items"
+          ) {{ currency }}
 
-    .form__btns
-      .form__btns__i
-        .form-line(@click="showCurrencies = true")
-          .inputModal._flex
-            .inputModal__value {{ wallet.currency }}
-            .inputModal__content
-            .inputModal__label Currency
-
-      .form__btns__i
-        .form-line(@click="showColors = true")
-          .inputModal._flex
-            .inputModal__value: .inputModal__color(:style="{ background: wallet.color }")
-            .inputModal__label Color
-
-    .form-line._p0._clean
-      Checkbox(
-        v-model="wallet.countTotal"
-        title="Count amount of this wallet in total"
-        :alt="true")
-
-    .form__actions
-      Button(
-        className="_blue"
-        title="Save wallet"
-        v-on:onClick="handleSubmit")
-
-  //- colors
-  ModalBottom(
-    :center="true"
-    :show="showColors"
-    title="Select color"
-    v-on:onClose="showColors = false")
-    .inputText
-      .inputText__colors
-        .colors
-          .colorItem(
-            :class="{ _active: wallet.color === color }"
-            :style="{ background: color }"
-            @click="handleColorSelect(color)"
-            v-for="color in colors")
-    .customColor
-      .customColor__title Select your color
-      input.customColor__value(v-model="wallet.color" type="color")
-
-  //- currencies
-  ModalBottom(
-    :center="true"
-    :show="showCurrencies"
-    title="Select currency"
-    v-on:onClose="showCurrencies = false")
-    .inputText
-      .currencies
-        .currencies__item(
-          :class="{ _active: wallet.currency === currency }"
-          @click="handleCurrencySelect(currency)"
-          v-for="(item, currency) in $store.state.currencies.items"
-        ) {{ currency }}
+  template(slot="bottom")
+    .col
+        Button(
+          :class="['_text-center _blue', { _inline: $store.state.ui.pc }]"
+          :title="$lang.wallets.form.save"
+          v-on:onClick="handleSubmit")
 </template>
 
 <style lang="stylus" scoped>
-@import "~@/stylus/variables/margins"
-@import "~@/stylus/variables/media"
+@import "~@/stylus/variables"
 
 .customColor
   margin (- $m7)
@@ -253,16 +246,6 @@ export default {
     padding 0
     border 0
 
-.component
-  width 100%
-
-  @media $media-phone
-    margin 0 auto
-    padding $m9
-
-  &__title
-    padding-bottom $m10
-
 .form
   @media $media-laptop
     max-width 380px
@@ -278,10 +261,10 @@ export default {
   grid-row-gap $m9
   padding-bottom $m9
 
-  @media $media-laptop
+  +media-laptop()
     grid-column-gap $m10
     grid-row-gap $m10
-    padding-bottom $m10
+    padding-bottom 24px
 
   &__i._full
     grid-column 1 / -1
@@ -293,6 +276,9 @@ export default {
     height 100%
     height 56px
     margin-bottom 0
+
+    +media-laptop()
+      height auto
 
 .inputModal
   &._flex

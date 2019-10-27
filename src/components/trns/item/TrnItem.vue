@@ -73,7 +73,8 @@ export default {
 .trnItem(
   v-if="category && wallet"
   @click="handleClick"
-  :class="className")
+  :class="className"
+)
 
   //- detailed view
   template(v-if="ui === 'detailed'")
@@ -186,7 +187,11 @@ export default {
         :background="category.color"
         :icon="category.icon"
         :round="true")
-    .trnItem__categoryName {{ category.name }}
+    .trnItem__categoryName
+      | {{ category.name }}
+      .trnItem__groups(v-if="trn.groups") In group
+      .trnItem__budgets(v-if="trn.budgets") In budget
+
     .trnItem__walletFloatIcon
       Icon(
         :abbr="wallet.name"
@@ -305,9 +310,6 @@ export default {
   &__desc
     color var(--c-font-2)
     font-size 14px
-    white-space nowrap
-    overflow hidden
-    text-overflow ellipsis
 
     ^[0]._detailed &
       grid-column 2
@@ -322,6 +324,9 @@ export default {
     ^[0]._stat &
     ^[0]._lastTrns &
       padding-right 10px
+      white-space nowrap
+      overflow hidden
+      text-overflow ellipsis
 
   &__line
     ^[0]._history &
@@ -377,4 +382,10 @@ export default {
     position absolute
     left 35px
     top 24px
+
+  &__groups
+  &__budgest
+    display inline-block
+    padding-left 10px
+    font-size 10px
 </style>

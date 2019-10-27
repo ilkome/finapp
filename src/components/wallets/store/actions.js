@@ -35,8 +35,32 @@ export default {
     localforage.setItem('next.wallets', items)
   },
 
-  unsubcribeWallets ({ rootState }) {
-    const uid = rootState.user.user.uid
+  unsubcribeWallets ({ rootGetters }) {
+    const uid = rootGetters.userUid
     db.ref(`users/${uid}/accounts`).off()
+  },
+
+  /**
+    * Get object of wallets with order value
+    * Create object with path to order field in DB
+    * Update only order field for each wallet
+    *
+  */
+  async saveWalletsOrder ({ rootGetters }, wallets) {
+    const updates = {}
+    const result = {}
+
+    for (const walletId in wallets) {
+      updates[`${walletId}/order`] = wallets[walletId]
+    }
+
+    await db.ref(`users/${rootGetters.userUid}/accounts`)
+      .update(updates, (error) => {
+        error
+          ? result.error = error
+          : result.succsess = 'Updated'
+      })
+
+    return result
   }
 }

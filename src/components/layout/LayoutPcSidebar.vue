@@ -1,15 +1,15 @@
 <script>
 import ContextMenu from '@/components/shared/contextMenu/ContextMenu'
 import ContextMenuItem from '@/components/shared/contextMenu/ContextMenuItem'
-import DashboardFilter from '@/components/dashboard/DashboardFilter'
 import WalletsList from '@/components/wallets/list/WalletsList'
 import WalletsTotal from '@/components/wallets/total/WalletsTotal'
+import Menu from '@/components/layout/sidebar/Menu'
 
 export default {
   components: {
+    Menu,
     ContextMenu,
     ContextMenuItem,
-    DashboardFilter,
     WalletsList,
     WalletsTotal
   },
@@ -77,36 +77,35 @@ export default {
         :class="{ _active: activeTab === 'stat'}"
         @click="$store.dispatch('setActiveTab', 'stat')"
       ): .mdi.mdi-poll
-
-    WalletsTotal
+  Menu
 
   .sidebar__content
+    WalletsTotal
+
     WalletsList(
+      :style="{ paddingTop: '8px' }"
       :showToogle="true"
       :limit="6"
       v-on:onClick="(id) => handleShowWalletModal(id)")
-
-    .sidebar__filter
-      DashboardFilter._sidebar(:showTittle="true")
 </template>
 
 <style lang="stylus" scoped>
-@import "~@/stylus/variables/margins"
-@import "~@/stylus/variables/media"
-@import "~@/stylus/variables/scrollbar"
+@import "~@/stylus/variables"
 
 .sidebar
-  overflow hidden
-  display flex
-  flex-flow column
+  display grid
+  grid-template-columns 1fr
+  grid-template-rows minmax(auto, auto) minmax(auto, auto) 1fr
+  height 100vh
   background var(--c-bg-4)
   border-right 1px solid var(--c-bg-1)
-  scrollbar()
 
   &__menu
     display flex
     justify-content space-between
     padding 0 $m7
+    background var(--c-bg-5)
+    border-bottom 1px solid var(--c-bg-1)
 
     &__item
       position relative
@@ -118,6 +117,9 @@ export default {
       font-size 18px
       color var(--c-font-4)
 
+      +media-laptop()
+        padding 10px 20px
+
       &:hover
         @media $media-laptop
           background var(--c-bg-6)
@@ -126,15 +128,10 @@ export default {
         color var(--c-font-2)
 
   &__content
-    overflow-y auto
-    padding-top 10px
-    height calc(100vh - 130px)
     scrollbar()
-
-  &__filter
-    margin-top auto
-    margin-bottom auto
-    margin-top 100px
+    overflow hidden
+    overflow-y auto
+    height 100%
 
 .link
   z-index 1

@@ -111,7 +111,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~@/stylus/variables/media"
+@import "~@/stylus/variables"
 
 .statItem
   cursor pointer

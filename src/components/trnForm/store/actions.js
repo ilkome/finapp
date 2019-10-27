@@ -46,6 +46,7 @@ export default {
         if (trnId && rootGetters.hasTrns) {
           const trn = rootState.trns.items[trnId]
           commit('setTrnFormValues', {
+            ...trn,
             amount: trn.amount,
             amountArray: [trn.amount],
             amountType: trn.type,
@@ -62,6 +63,7 @@ export default {
         if (trnId && rootGetters.hasTrns) {
           const trn = rootState.trns.items[trnId]
           commit('setTrnFormValues', {
+            ...trn,
             amount: 0,
             amountArray: [0],
             amountType: trn.type,

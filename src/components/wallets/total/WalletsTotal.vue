@@ -39,6 +39,13 @@ export default {
 
 <template lang="pug">
 .wallets-total(v-if="$store.getters.hasWallets")
+  .wallets-total__item(v-if="totalInWallets.all > 0")
+    .wallets-total__title {{ $lang.money.also }}
+    .wallets-total__value
+      Amount(
+        :currency="$store.state.currencies.base"
+        :value="totalInWallets.all")
+
   .wallets-total__item
     .wallets-total__title {{ $lang.money.total }}
     .wallets-total__value
@@ -47,12 +54,6 @@ export default {
         :value="totalInWallets.counted"
         :alwaysShowSymbol="true")
 
-  .wallets-total__item(v-if="totalInWallets.all > 0")
-    .wallets-total__title Also
-    .wallets-total__value
-      Amount(
-        :currency="$store.state.currencies.base"
-        :value="totalInWallets.all")
 </template>
 
 <style lang="stylus" scoped>
@@ -62,19 +63,20 @@ export default {
 .wallets-total
   display flex
   justify-content space-between
-  padding $m8
-  background var(--c-bg-6)
 
   @media $media-laptop
-    background var(--c-bg-3)
-    border-top 1px solid var(--c-bg-1)
-    border-bottom 1px solid var(--c-bg-6)
+    padding $m8
+    background var(--c-bg-5)
+    border-bottom 1px solid var(--c-bg-1)
 
   &__item
     margin-right $m9
 
     &:last-child
       margin-right 0
+
+    &:nth-child(2)
+      text-align right
 
   &__title
     padding-bottom $m5

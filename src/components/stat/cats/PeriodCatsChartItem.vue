@@ -86,8 +86,9 @@ export default {
 @import "~@/stylus/variables/media"
 
 .statCatsItem
-  padding-top 12px
+  margin-top 12px
   margin-right 10px
+  background var(--c-bg-4)
 
   &:hover
     @media $media-laptop

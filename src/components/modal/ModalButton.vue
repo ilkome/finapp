@@ -26,8 +26,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~@/stylus/variables/margins"
-@import "~@/stylus/variables/media"
+@import "~@/stylus/variables"
 
 .button-link
   width auto
@@ -54,4 +53,7 @@ export default {
 
   &:active
     background var(--c-bg-6)
+
+  &__name
+    font-size 12px
 </style>

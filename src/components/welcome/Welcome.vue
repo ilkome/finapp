@@ -43,6 +43,7 @@ export default {
           .header
             .header__title {{ $lang.app.welcome }}
             .header__desc {{ $lang.app.desc }}
+            .header__user(@click="$store.dispatch('signOut')") Logout {{ $store.state.user.user.email }}
           .options
             .options__item
               .options__desc {{ $lang.app.lang.select }}
@@ -60,6 +61,7 @@ export default {
           .header(@click="$store.dispatch('changeTheme')")
             .header__title {{ $lang.app.welcome }}
             .header__desc {{ $lang.app.desc }}
+            .header__user(@click="$store.dispatch('signOut')") Logout {{ $store.state.user.user.email }}
           .options
             .options__item
               .options__desc {{ $lang.welcome.create.text }}
@@ -86,6 +88,7 @@ export default {
             .header
               .header__title {{ $lang.app.welcome }}
               .header__desc {{ $lang.app.desc }}
+              .header__user(@click="$store.dispatch('signOut')") Logout {{ $store.state.user.user.email }}
             .text {{ $lang.welcome.createFirstWallet.text }}
             .button
               Button._blue(
@@ -171,6 +174,15 @@ export default {
     padding-top $m5
     font-size 12px
     color var(--c-font-4)
+    @media $media-laptop
+      padding-top $m7
+      font-size 14px
+
+  &__user
+    cursor pointer
+    padding-top $m5
+    font-size 12px
+
     @media $media-laptop
       padding-top $m7
       font-size 14px

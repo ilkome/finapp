@@ -18,6 +18,8 @@ export default {
           await dispatch('initCategories')
           await dispatch('initWallets')
           await dispatch('initTrns')
+          await dispatch('initGroups')
+          await dispatch('initBudgets')
           await dispatch('initDbLang')
         } catch (e) {
           console.error(e)

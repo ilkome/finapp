@@ -84,32 +84,17 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~@/stylus/variables/fonts"
-@import "~@/stylus/variables/margins"
-@import "~@/stylus/variables/media"
+@import "~@/stylus/variables"
 
 .filter
   background var(--c-bg-4)
+  border-bottom 1px solid var(--c-bg-2)
 
   &__in
     display flex
     position relative
     max-width 1100px
     padding 10px 60px
-
-    ^[0]._sidebar &
-      padding 20px
-      display block
-      background var(--c-bg-3)
-      border-top 1px solid var(--c-bg-6)
-      border-bottom 1px solid var(--c-bg-6)
-
-      .filterItem
-        margin 0
-        margin-bottom 10px
-        &._clear
-          margin-top 20px
-          margin-bottom 0
 
   &__title
     font-header-1()

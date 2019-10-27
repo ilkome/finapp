@@ -3,6 +3,7 @@ import DashboardFilter from '@/components/dashboard/DashboardFilter'
 import DashboardNav from '@/components/dashboard/DashboardNav'
 import DashboardStatControl from '@/components/dashboard/DashboardStatControl'
 import EmptyData from '@/components/shared/emptyData/EmptyData'
+import StatChartDonut from '@/components/stat/StatChartDonut'
 import StatChartsLine from '@/components/stat/StatChartsLine'
 import StatPc from '@/components/stat/StatPc'
 import StatSummaryPc from '@/components/stat/StatSummaryPc'
@@ -10,10 +11,11 @@ import TrnsList from '@/components/trns/list/TrnsList'
 
 export default {
   components: {
-    EmptyData,
     DashboardFilter,
     DashboardNav,
     DashboardStatControl,
+    EmptyData,
+    StatChartDonut,
     StatChartsLine,
     StatPc,
     StatSummaryPc,
@@ -41,7 +43,7 @@ export default {
 
 <template lang="pug">
 .dashboard(v-show="$store.state.ui.activeTab === 'stat'")
-  StatChartsLine
+  StatChartsLine(v-show="$store.state.dashboard.activeTab !== 'balance'")
   DashboardNav
   StatSummaryPc
   DashboardFilter
@@ -66,19 +68,17 @@ export default {
       transition(name="animation-tab")
         .dashboard__wrap
           .dashboard__tab._trns(v-show="$store.state.dashboard.activeTab === 'history'")
-            TrnsList
+            TrnsList(:size="50" :key="$store.state.filter.date")
+
+    transition(name="animation-tab")
+      .dashboard__tab(v-show="$store.state.dashboard.activeTab === 'balance'")
+        StatChartDonut
 </template>
 
 <style lang="stylus" scoped>
 @import "~@/stylus/variables/margins"
 @import "~@/stylus/variables/media"
 @import "~@/stylus/variables/scrollbar"
-
-.trnsList
-  display grid
-  grid-template-columns repeat(3, 1fr)
-  grid-column-gap $m7
-  grid-row-gap $m7
 
 .dashboard
   overflow hidden

@@ -1,12 +1,20 @@
 <script>
+import { Swiper } from 'swiper/dist/js/swiper.esm.js'
+import 'swiper/dist/css/swiper.min.css'
+
+import Budgets from '@/components/budgets/Budgets'
+import Button from '@/components/shared/button/Button'
 import CategoriesList from '@/components/categories/list/CategoriesList'
 import CategoryForm from '@/components/categories/form/CategoryForm'
 import CategoryModal from '@/components/categories/modal/CategoryModal'
+import ComponentWrap from '@/components/layout/component/Component'
 import CurrencyModal from '@/components/currencies/CurrencyModal'
+import Groups from '@/components/groups/Groups'
 import LayoutMobileMenu from '@/components/layout/LayoutMobileMenu'
+import LayoutMobileStat from '@/components/layout/LayoutMobileStat'
+import Menu from '@/components/layout/sidebar/Menu'
 import Settings from '@/components/settings/Settings'
-import StatChartsLine from '@/components/stat/StatChartsLine'
-import StatMobile from '@/components/stat/StatMobile'
+import StatNew from '@/components/stat/StatNew'
 import TrnForm from '@/components/trnForm/TrnForm'
 import TrnModal from '@/components/trns/modal/TrnModal'
 import TrnsList from '@/components/trns/list/TrnsList'
@@ -14,24 +22,37 @@ import WalletForm from '@/components/wallets/form/WalletForm'
 import WalletModal from '@/components/wallets/modal/WalletModal'
 import WalletsList from '@/components/wallets/list/WalletsList'
 import WalletsTotal from '@/components/wallets/total/WalletsTotal'
+import WalletsSort from '@/components/wallets/sort/WalletsSort'
 
 export default {
   components: {
+    Budgets,
+    Button,
     CategoriesList,
     CategoryForm,
     CategoryModal,
+    ComponentWrap,
     CurrencyModal,
+    Groups,
     LayoutMobileMenu,
+    LayoutMobileStat,
+    Menu,
     Settings,
-    StatChartsLine,
-    StatMobile,
+    StatNew,
     TrnForm,
     TrnModal,
     TrnsList,
     WalletForm,
     WalletModal,
     WalletsList,
+    WalletsSort,
     WalletsTotal
+  },
+
+  data () {
+    return {
+      slider: null
+    }
   },
 
   computed: {
@@ -40,71 +61,138 @@ export default {
     }
   },
 
+  mounted () {
+    this.slider = this.slider = new Swiper(this.$refs.slider, {
+      slidesPerView: 'auto',
+      initialSlide: 1,
+      resistanceRatio: 0,
+      touchReleaseOnEdges: true
+    })
+  },
+
   methods: {
-    handleShowCategoryModal (id) {
-      this.$store.commit('showCategoryModal')
-      this.$store.commit('setCategoryModalId', id)
-    },
     handleShowWalletModal (id) {
       this.$store.commit('showWalletModal')
       this.$store.commit('setWalletModalId', id)
+    },
+
+    clickHandler () {
+      const index = this.slider.activeIndex
+      index === 0 && this.slider.slideNext()
     }
   }
 }
 </script>
 
 <template lang="pug">
-.tabs
-  //- wallets
-  transition(name="animation-tab")
-    .tab(v-show="activeTab === 'wallets'")
-      .tabPanel
-        .tabPanel__top: WalletsTotal
-        .tabPanel__scroll
-          .wallets-list
-            WalletsList(
-              :showToogle="true"
-              :limit="6"
-              v-on:onClick="(id) => handleShowWalletModal(id)")
+.wrap
+  .swiper-container(ref="slider")
+    .swiper-wrapper
+      .swiper-slide._sidebar
+        .block
+          WalletsTotal
+        Menu(v-on:onClickMenuCalback="() => this.slider.slideNext()")
 
-  //- categories
-  transition(name="animation-tab")
-    .tab._padding-top(v-show="activeTab === 'categories'")
-      CategoriesList(v-on:onClick="(id) => handleShowCategoryModal(id)")
+      .swiper-slide._static
+        .handler(@click="clickHandler")
 
-  //- stat
-  transition(name="animation-tab")
-    .tab(v-show="activeTab === 'stat'")
-      WalletsList(
-        v-show="$store.state.ui.stat.walletsVisibility === 'visible'"
-        :limit="3"
-        ui="widget"
-        v-on:onClick="(id) => handleShowWalletModal(id)")
-      StatChartsLine(
-        v-show="$store.state.ui.statGraphsVisibility === 'visible' && ($store.state.filter.period !== 'all')")
-      StatMobile
+        .layoutMobile
+          //------------------------------------------------
+          //- content
+          //------------------------------------------------
+          .layoutMobile__content
+            .tabs.swiper-no-swiping
+              //- wallets
+              transition(name="animation-tab")
+                .tab(v-show="activeTab === 'wallets'")
+                  ComponentWrap(:contentPadding="false")
+                    template(slot="header")
+                      WalletsTotal
 
-  //- trns
-  transition(name="animation-tab")
-    .tab(v-if="activeTab === 'trns'")
-      TrnsList
+                    template(slot="content")
+                      WalletsList(
+                        :limit="6"
+                        :showToogle="true"
+                        :style="{ paddingTop: '8px' }"
+                        v-on:onClick="(id) => handleShowWalletModal(id)")
 
-  //- Settings
-  transition(name="animation-tab")
-    .tab(v-if="activeTab === 'settings'")
-      Settings
+                    template(slot="bottom")
+                      .flex
+                        .col
+                          Button(
+                            className="_inline _small"
+                            :title="$lang.wallets.new"
+                            v-on:onClick="$store.dispatch('setActiveTab', 'createWallet')")
+                        .col
+                          Button(
+                            className="_inline _small"
+                            :title="$lang.base.sort"
+                            v-on:onClick="$store.dispatch('setActiveTab', 'walletsSort')")
 
-  //- create category
-  transition(name="animation-tab")
-    .tab(v-if="activeTab === 'createCategory'")
-      CategoryForm
+              //- wallets sort
+              transition(name="animation-tab")
+                .tab(v-if="activeTab === 'walletsSort'")
+                  walletsSort
 
-  //- create wallet
-  transition(name="animation-tab")
-    .tab(v-if="activeTab === 'createWallet'")
-      WalletForm
+              //- categories
+              transition(name="animation-tab")
+                .tab(v-show="activeTab === 'categories'")
+                  ComponentWrap(:contentPadding="false")
+                    template(slot="headerLeft") {{ $lang.categories.name }}
 
-  LayoutMobileMenu
+                    template(slot="content")
+                      CategoriesList(
+                        :style="{ paddingTop: '16px' }"
+                        v-on:onClick="(id) => $store.dispatch('showCategoryModal', id)")
+
+                    template(slot="bottom")
+                      Button(
+                        className="_inline _small"
+                        :title="$lang.categories.new"
+                        v-on:onClick="$store.dispatch('setActiveTab', 'createCategory')")
+
+              //- stat
+              transition(name="animation-tab")
+                .tab(v-show="activeTab === 'stat'")
+                  LayoutMobileStat
+
+              //- trns
+              transition(name="animation-tab")
+                .tab(v-if="activeTab === 'trns'")
+                  TrnsList
+
+              //- Settings
+              transition(name="animation-tab")
+                .tab(v-if="activeTab === 'settings'")
+                  Settings
+
+              //- create category
+              transition(name="animation-tab")
+                .tab(v-if="activeTab === 'createCategory'")
+                  CategoryForm
+
+              //- create wallet
+              transition(name="animation-tab")
+                .tab(v-if="activeTab === 'createWallet'")
+                  WalletForm
+
+              transition(name="animation-tab")
+                .tab(v-if="activeTab === 'groups'")
+                  Groups
+
+              transition(name="animation-tab")
+                .tab(v-if="activeTab === 'budgets'")
+                  Budgets
+
+              transition(name="animation-tab")
+                .tab(v-if="activeTab === 'statNew'")
+                  StatNew
+
+          //------------------------------------------------
+          //- menu
+          //------------------------------------------------
+          .layoutMobile__menu
+            LayoutMobileMenu
 
   //- modals
   CategoryModal
@@ -115,19 +203,59 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
+@import "~@/stylus/variables/animations"
 @import "~@/stylus/variables/margins"
+@import "~@/stylus/variables/media"
+@import "~@/stylus/variables/fonts"
 @import "~@/stylus/variables/scrollbar"
 
-.showDonut
-  margin $m7
-  padding $m7
-  padding $m7 $m9
-  color var(--c-font-1)
-  background var(--c-blue-1)
-  border-radius $m3
+.block
+  padding 16px
+  margin-bottom 8px
+  background var(--c-bg-3)
+  border-bottom 1px solid var(--c-bg-2)
 
-.wallets-list
-  padding-top $m5
+.layoutMobile
+  display grid
+  grid-template-rows 1fr minmax(30px, min-content)
+  height 100%
+
+.handler
+  z-index 200
+  position absolute
+  left 0
+  top 0
+  width 100%
+  height 100%
+  background alpha(#000, .9)
+  transition background 250ms
+
+.swiper-slide-active
+  .handler
+    width 16px
+    background none
+    transition background 0ms
+
+.swiper-container
+  height 100%
+
+._sidebar
+  overflow hidden
+  overflow-y auto
+  scrollbar()
+  z-index 10
+  max-width 70vw
+  height 100%
+  background var(--c-bg-4)
+  border-right 1px solid var(--c-bg-1)
+
+.wrap
+  position absolute
+  left 0
+  top 0
+  width 100%
+  height 100%
+  overflow hidden
 
 .tabs
   overflow hidden
@@ -146,8 +274,8 @@ export default {
   left 0
   top 0
   width 100%
-  height calc(100vh - 120px)
+  height 100%
 
   &._padding-top
-    padding-top $m7
+    // padding-top $m7
 </style>

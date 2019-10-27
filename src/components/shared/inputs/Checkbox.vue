@@ -27,12 +27,14 @@ label.checkbox(:class="{ _alt: alt }")
   )
   .checkbox__helper
     .checkbox__toogle
-      .checkbox__toogle__item._on on
-      .checkbox__toogle__item._off off
+      .checkbox__toogle__item._on {{ $lang.base.on }}
+      .checkbox__toogle__item._off {{ $lang.base.off }}
   .checkbox__title(v-if="title") {{ title }}
 </template>
 
 <style lang="stylus" scoped>
+@import "~@/stylus/variables"
+
 .checkbox
   position relative
   display flex
@@ -40,10 +42,13 @@ label.checkbox(:class="{ _alt: alt }")
   font-size 16px
   cursor pointer
 
-  --width 3.4em
-  --height 1.6em
-  --left 1.8em
+  --width 3.3em
+  --height 1.5em
+  --left 1.7em
   $color-rail = var(--c-font-2)
+
+  +media-laptop()
+    font-size 14px
 
   &._small
     --width 2.6em

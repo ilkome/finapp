@@ -35,18 +35,18 @@ transition(name="animation-tab")
 </style>
 
 <style lang="stylus" scoped>
-@import "~@/stylus/variables/margins"
 @import "~@/stylus/variables/scrollbar"
 
 .layout-tab
-  scrollbar()
+  z-index 2
   overflow hidden
   overflow-y auto
-  z-index 2
   position absolute
   left 0
   top 0
   width 100%
   height 100%
-  padding $m10 $mb2
+  padding 0
+  background var(--c-bg-2)
+  scrollbar()
 </style>

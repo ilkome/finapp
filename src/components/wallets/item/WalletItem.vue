@@ -84,6 +84,7 @@ div(
       .walletItem__icon(
         @click.stop="handleIconClick")
         Icon(
+          :medium="true"
           :abbr="wallet.name"
           :background="wallet.color || $store.state.ui.defaultBgColor")
       .walletItem__name {{ wallet.name }}

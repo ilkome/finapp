@@ -6,16 +6,18 @@ import colors from '@/components/ui/store/colors'
 import icons from '@/components/ui/store/icons'
 
 import Button from '@/components/shared/button/Button'
-import Checkbox from '@/components/shared/inputs/Checkbox'
 import CategoriesView from '@/components/categories/list/CategoriesView'
+import Checkbox from '@/components/shared/inputs/Checkbox'
+import ComponentWrap from '@/components/layout/component/Component'
 import ModalBottom from '@/components/modal/ModalBottom'
 import ModalButton from '@/components/modal/ModalButton'
 
 export default {
   components: {
     Button,
-    Checkbox,
     CategoriesView,
+    Checkbox,
+    ComponentWrap,
     ModalBottom,
     ModalButton
   },
@@ -90,6 +92,10 @@ export default {
     },
 
     handleParenCategorySelect (categoryId) {
+      const parentCategory = this.$store.state.categories.items[categoryId]
+      if (parentCategory) {
+        this.category.color = parentCategory.color
+      }
       this.category.parentId = categoryId
       this.showParents = false
     },
@@ -124,7 +130,7 @@ export default {
         this.$notify({
           group: 'main',
           title: '😮',
-          text: 'Write category name'
+          text: this.$lang.categories.form.name.error
         })
         return false
       }
@@ -136,7 +142,7 @@ export default {
               this.$notify({
                 group: 'main',
                 title: '😮',
-                text: 'Category with same name is exist'
+                text: this.$lang.categories.form.name.exist
               })
               return false
             }
@@ -144,7 +150,7 @@ export default {
             this.$notify({
               group: 'main',
               title: '😮',
-              text: 'Category with same name is exist'
+              text: this.$lang.categories.form.name.exist
             })
             return false
           }
@@ -158,34 +164,24 @@ export default {
 </script>
 
 <template lang="pug">
-.component
-  .form
-    h1.component__title
-      template(v-if="!categoryId") Create new category
-      template(v-else) Edit category
+ComponentWrap
+  template(slot="headerLeft")
+    template(v-if="!categoryId")
+      div Categories
+      div {{ $lang.categories.createNewTitle }}
+    template(v-else) Categories __ {{ $lang.categories.editTitle }}
 
-    .form-line._text
-      .inputText
-        input(
-          type="text"
-          placeholder="Write category name..."
-          v-model="category.name"
-          v-focus.lazy="$store.state.ui.pc"
-        ).inputText__value
-        .inputText__label Category name
-
-    .form__btns
-      .form__btns__i
-        .form-line(@click="showColors = true")
-          .inputModal._flex
-            .inputModal__value: .inputModal__color(:style="{ background: category.color }")
-            .inputModal__label Color
-
-      .form__btns__i
-        .form-line(@click="showIcons = true")
-          .inputModal._flex
-            .inputModal__icon: div(:class="category.icon", :style="{ color: category.color }")
-            .inputModal__label Icon
+  template(slot="content")
+    .form
+      .form-line._text
+        .inputText
+          input(
+            type="text"
+            :placeholder="$lang.categories.form.name.placeholder"
+            v-model="category.name"
+            v-focus.lazy="$store.state.ui.pc"
+          ).inputText__value
+          .inputText__label {{ $lang.categories.form.name.label }}
 
       //- can not change root category if inside this category already has some categories
       template(v-if="$store.getters.getChildCategoriesIds(categoryId).length === 0 && $store.getters.hasCategories")
@@ -202,83 +198,96 @@ export default {
                   .inputModal__name {{ $store.state.categories.items[category.parentId].name }}
                 template(v-else)
                   .inputModal__icon: .mdi.mdi-chart-bubble
-                  .inputModal__name No parent
-              .inputModal__label Parent category
+                  .inputModal__name {{ $lang.categories.form.parent.no }}
+              .inputModal__label {{ $lang.categories.form.parent.label }}
 
-    template(v-if="$store.getters.getChildCategoriesIds(categoryId).length === 0")
-      .form-line._p0._clean
-        Checkbox(
-          v-model="category.showInLastUsed"
-          title="Show in last used categories"
-          :alt="true")
-      .form-line._p0._clean
-        Checkbox(
-          v-model="category.showInQuickSelector"
-          :title="$lang.categories.form.quickSelector"
-          :alt="true")
+      .form__btns
+        .form__btns__i
+          .form-line(@click="showColors = true")
+            .inputModal._flex
+              .inputModal__value: .inputModal__color(:style="{ background: category.color }")
+              .inputModal__label {{ $lang.categories.form.color.label }}
 
-    .form__actions
-      Button(
-        className="_blue"
-        title="Save category"
-        v-on:onClick="handleSubmit"
-      )
+        .form__btns__i
+          .form-line(@click="showIcons = true")
+            .inputModal._flex
+              .inputModal__icon: div(:class="category.icon", :style="{ color: category.color }")
+              .inputModal__label {{ $lang.categories.form.icon.label }}
 
-  //- colors
-  ModalBottom(
-    :center="true"
-    :show="showColors"
-    title="Category color"
-    v-on:onClose="showColors = false")
-    .inputText
-      .inputText__colors
-        .colors
-          .colorItem(
-            :class="{ _active: category.color === color }"
-            :style="{ background: color }"
-            @click="handleColorSelect(color)"
-            v-for="color in colors"
-          )
-    .customColor
-      .customColor__title Select your color
-      input.customColor__value(v-model="category.color" type="color")
+      template(v-if="$store.getters.getChildCategoriesIds(categoryId).length === 0")
+        .form-line._p0._clean
+          Checkbox(
+            v-model="category.showInLastUsed"
+            :title="$lang.categories.form.lastUsed"
+            :alt="true")
+        .form-line._p0._clean
+          Checkbox(
+            v-model="category.showInQuickSelector"
+            :title="$lang.categories.form.quickSelector"
+            :alt="true")
 
-  //- parents
-  ModalBottom(
-    :center="true"
-    :show="showParents"
-    title="Parent category"
-    v-on:onClose="showParents = false")
-    .padding-bottom
-      ModalButton(
-        name="No parent"
-        icon="mdi mdi-chart-bubble"
-        v-on:onClick="() => handleParenCategorySelect(0)")
-    CategoriesView(
-      :noPadding="true"
-      :ids="$store.getters.categoriesForBeParent.filter(cId => cId !== categoryId)"
-      v-on:onClick="handleParenCategorySelect")
-
-  //- icons
-  ModalBottom(
-    :center="true"
-    :show="showIcons"
-    title="Category icon"
-    v-on:onClose="showIcons = false")
-    .form-line._text
+    //- colors
+    ModalBottom(
+      :center="true"
+      :show="showColors"
+      :title="$lang.categories.form.color.placeholder"
+      v-on:onClose="showColors = false")
       .inputText
-        input.inputText__value(
-          type="text"
-          placeholder="Filter icons..."
-          v-model="filter"
-          v-focus.lazy="showIcons")
-        .inputText__label Filter
-    .inputIcons
-      .inputIcons__item(
-        :class="{ _active: category.icon === `mdi ${icon}` }"
-        @click="handleIconSelect(icon)"
-        v-for="icon in selectedIcons")
-        div(:class="`mdi ${icon}`")
+        .inputText__colors
+          .colors
+            .colorItem(
+              :class="{ _active: category.color === color }"
+              :style="{ background: color }"
+              @click="handleColorSelect(color)"
+              v-for="color in colors"
+            )
+      .customColor
+        .customColor__title {{ $lang.categories.form.color.custom }}
+        input.customColor__value(v-model="category.color" type="color")
+
+    //- parent
+    ModalBottom(
+      :center="true"
+      :show="showParents"
+      :title="$lang.categories.form.parent.label"
+      v-on:onClose="showParents = false")
+      .padding-bottom
+        ModalButton(
+          :name="$lang.categories.form.parent.no"
+          icon="mdi mdi-chart-bubble"
+          v-on:onClick="() => handleParenCategorySelect(0)")
+      CategoriesView(
+        :noPadding="true"
+        :ids="$store.getters.categoriesForBeParent.filter(cId => cId !== categoryId)"
+        v-on:onClick="handleParenCategorySelect")
+
+    //- icons
+    ModalBottom(
+      :center="true"
+      :show="showIcons"
+      :title="$lang.categories.form.color.placeholder"
+      v-on:onClose="showIcons = false")
+      .form-line._text
+        .inputText
+          input.inputText__value(
+            type="text"
+            placeholder="Filter icons..."
+            v-model="filter"
+            v-focus.lazy="showIcons")
+          .inputText__label Filter
+      .inputIcons
+        .inputIcons__item(
+          :class="{ _active: category.icon === `mdi ${icon}` }"
+          @click="handleIconSelect(icon)"
+          v-for="icon in selectedIcons")
+          div(:class="`mdi ${icon}`")
+
+  template(slot="bottom")
+    .col
+        Button(
+          :class="['_text-center _blue _ml-big', { _inline: $store.state.ui.pc }]"
+          :title="$lang.categories.form.save"
+          v-on:onClick="handleSubmit")
 </template>
 
 <style lang="stylus" scoped>
@@ -309,16 +318,6 @@ export default {
 
 .padding-bottom
   padding-bottom $m8
-
-.component
-  width 100%
-  padding $m9
-
-  @media $media-phone
-    margin 0 auto
-
-  &__title
-    padding-bottom $m10
 
 .form
   @media $media-laptop

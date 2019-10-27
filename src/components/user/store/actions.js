@@ -10,11 +10,11 @@ export default {
       displayName: userParams.displayName,
       email: userParams.email,
       uid: userParams.uid
+      // uid: 'kXVGIN19Mhd7WZUeTtZRqUSo2aJ3'
     }
 
     dispatch('setUser', user)
     dispatch('saveUserInfo', user)
-    dispatch('saveLastLoginDate', user)
   },
 
   setUser ({ commit }, user) {
@@ -23,6 +23,9 @@ export default {
   },
 
   async signOut ({ rootState, commit, dispatch }) {
+    const uid = rootState.user.user.uid
+    db.ref(`users-info/${uid}/actions/${moment().valueOf()}`).set('signOut')
+
     commit('setAppStatus', 'login')
     dispatch('unsubcribeCategories')
     dispatch('unsubcribeTrns')
@@ -31,16 +34,31 @@ export default {
     auth().signOut()
   },
 
-  saveUserInfo ({ rootState }) {
+  async saveUserInfo ({ rootState }) {
     const user = rootState.user.user
-    db.ref(`users/${user.uid}/user`).set(user)
-    db.ref(`users/${user.uid}/displayName`).set(user.displayName)
-  },
+    const todayValueOf = moment().valueOf()
 
-  saveLastLoginDate ({ rootState }) {
-    const user = rootState.user.user
-    const lastLoginDate = moment().format('YYYY-MM-DD:HH:mm')
-    db.ref(`users/${user.uid}/lastLoginDate`).set(lastLoginDate)
+    // add to user list
+    const usersInfo = await db.ref(`users-info/${user.uid}/`).once('value')
+    const usersInfoVal = usersInfo.val()
+    const userData = {
+      displayName: user.displayName,
+      email: user.email,
+      uid: user.uid,
+      loginDate: todayValueOf
+    }
+
+    db.ref(`users/${user.uid}/user`).set(userData)
+
+    db.ref(`users-info/${user.uid}/name`).set(user.displayName)
+    db.ref(`users-info/${user.uid}/email`).set(user.email)
+    db.ref(`users-info/${user.uid}/uid`).set(user.uid)
+    db.ref(`users-info/${user.uid}/loginDate`).set(todayValueOf)
+
+    // set creation date once
+    if (!usersInfoVal || (usersInfoVal && !usersInfoVal.creationDate)) {
+      db.ref(`users-info/${user.uid}/creationDate`).set(todayValueOf)
+    }
   },
 
   async removeUserData ({ rootState, commit, dispatch }) {
@@ -51,6 +69,7 @@ export default {
     db.ref(`users/${uid}/accounts/`).set(null)
     db.ref(`users/${uid}/categories/`).set(null)
     db.ref(`users/${uid}/trns/`).set(null)
+    db.ref(`users-info/${uid}/actions/${moment().valueOf()}`).set('removeUserData')
     commit('setAppStatus', 'ready')
   }
 }

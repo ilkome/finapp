@@ -1,0 +1,98 @@
+//------------------------------------------------
+// sum
+//------------------------------------------------
+.sum
+  &__title
+    opacity .6
+    padding-bottom 5px
+    font-size 10px
+    color var(--c-font-4)
+
+    +media-laptop()
+      font-size 11px
+
+  &._right
+    text-align right
+
+
+//------------------------------------------------
+// budgetItem
+//------------------------------------------------
+.budgetItem
+  max-width 600px
+  position relative
+  overflow hidden
+  font-size 14px
+  background var(--c-bg-4)
+  border 1px solid var(--c-bg-5)
+  border-radius 3px
+
+  &._total
+    margin-bottom 24px
+    background var(--c-bg-1)
+    border-color var(--c-bg-6)
+
+    +media-laptop()
+      margin-bottom 32px
+
+  &__countTotal
+    position absolute
+    left 12px
+    top 0px
+    width 12px
+    height 2px
+    background var(--c-blue-1)
+    border-radius 2px
+
+    +media-laptop()
+      width 16px
+      left 16px
+
+  &__top
+    display flex
+    align-items center
+    justify-content space-between
+    padding 12px
+    padding-bottom 0
+
+    +media-laptop()
+      padding 16px
+      padding-bottom 0
+
+  &__name
+    font-size 14px
+
+  &__description
+    padding-top 5px
+    font-size 11px
+    color var(--c-font-4)
+
+  &__info
+    padding 16px
+
+    +media-laptop()
+      padding 16px
+
+  &__amounts
+    display flex
+    justify-content space-between
+    padding-bottom 8px
+
+  &__graph
+    overflow hidden
+    background var(--c-bg-7)
+    border-radius 3px
+
+    &__in
+      height 6px
+      min-width 0px
+      background rgba(44, 173, 34, 0.7)
+
+  &__trns
+    margin-top 1px
+    padding 0 12px
+    border-top 1px solid var(--c-bg-2)
+    background var(--c-bg-3)
+
+    +media-laptop()
+      padding 0 16px

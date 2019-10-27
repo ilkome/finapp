@@ -12,6 +12,10 @@ export default {
     show: {
       type: Boolean,
       required: true
+    },
+    paddingless: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -28,7 +32,7 @@ export default {
 <template lang="pug">
 .modalBottom(
   :style="{ maxHeight: `${$store.state.ui.height}px`}"
-  :class="{ _center: center }")
+  :class="{ _center: center, _paddingless: paddingless }")
 
   transition(name="fadeIn" appear)
     .modalBottom__overflow(@click="$listeners.onClose" v-show="show")

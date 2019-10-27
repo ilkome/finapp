@@ -121,15 +121,15 @@ ModalBottom(
 
   template(slot="btns")
     ModalButton(
-      name="Delete"
+      :name="$lang.base.delete"
       icon="mdi mdi-delete"
       v-on:onClick="handleDeleteClick")
     ModalButton(
-      name="Edit"
+      :name="$lang.base.edit"
       icon="mdi mdi-pencil"
       v-on:onClick="handleEditClick")
     ModalButton(
-      name="Set filter"
+      :name="$lang.base.filter"
       icon="mdi mdi-filter-outline"
       v-on:onClick="handleSetFilterCategory")
 

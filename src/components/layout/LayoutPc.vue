@@ -1,11 +1,14 @@
 <script>
+import Budgets from '@/components/budgets/Budgets'
 import Button from '@/components/shared/button/Button'
 import CategoriesList from '@/components/categories/list/CategoriesList'
 import CategoryForm from '@/components/categories/form/CategoryForm'
 import CategoryModal from '@/components/categories/modal/CategoryModal'
+import ComponentWrap from '@/components/layout/component/Component'
 import CurrencyModal from '@/components/currencies/CurrencyModal'
 import Dashboard from '@/components/dashboard/Dashboard'
 import DashboardNav from '@/components/dashboard/DashboardNav'
+import Groups from '@/components/groups/Groups'
 import LayoutPcSidebar from '@/components/layout/LayoutPcSidebar'
 import LayoutPcTab from '@/components/layout/LayoutPcTab'
 import Settings from '@/components/settings/Settings'
@@ -14,24 +17,29 @@ import TrnModal from '@/components/trns/modal/TrnModal'
 import WalletForm from '@/components/wallets/form/WalletForm'
 import WalletModal from '@/components/wallets/modal/WalletModal'
 import WalletsList from '@/components/wallets/list/WalletsList'
+import WalletsSort from '@/components/wallets/sort/WalletsSort'
 
 export default {
   components: {
+    Budgets,
     Button,
     CategoriesList,
     CategoryForm,
     CategoryModal,
+    ComponentWrap,
     CurrencyModal,
     Dashboard,
     DashboardNav,
-    LayoutPcTab,
+    Groups,
     LayoutPcSidebar,
+    LayoutPcTab,
     Settings,
     TrnForm,
     TrnModal,
     WalletForm,
     WalletModal,
-    WalletsList
+    WalletsList,
+    WalletsSort
   },
 
   computed: {
@@ -51,7 +59,7 @@ export default {
 
 <template lang="pug">
 .layout
-  .createTrnBtn(@click="$store.dispatch('openTrnForm', { action: 'create' })"): .mdi.mdi-library-plus
+  .createTrnBtn(@click="$store.dispatch('openTrnForm', { action: 'create' })"): .mdi.mdi-plus-box-multiple-outline
 
   //- modals
   CategoryModal
@@ -65,32 +73,62 @@ export default {
       LayoutPcSidebar
 
     .layout__item
-      Dashboard
+      transition(name="animation-tab")
+        Dashboard
+
+      //- Budgets
+      //------------------------------------------------
+      LayoutPcTab(:show="activeTab === 'budgets'")
+        Budgets
+
+      //- Groups
+      //------------------------------------------------
+      LayoutPcTab(:show="activeTab === 'groups'")
+        Groups
 
       //- categories
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'categories'")
-        .dashboard__title {{ $lang.categories.title }}
-        CategoriesList.dashboardItems(
-          v-on:onClick="id => $store.dispatch('showCategoryModal', id)")
-        Button(
-          className="_blue _inline"
-          icon="mdi mdi-plus"
-          :title="$lang.categories.new"
-          v-on:onClick="$store.dispatch('setActiveTab', 'createCategory')")
+        ComponentWrap
+          template(slot="headerLeft") {{ $lang.categories.title }}
+
+          template(slot="content")
+            CategoriesList.dashboardItems(
+              v-on:onClick="id => $store.dispatch('showCategoryModal', id)")
+
+          template(slot="bottom")
+            .col
+              Button(
+                className="_blue _inline"
+                icon="mdi mdi-plus"
+                :title="$lang.categories.new"
+                v-on:onClick="$store.dispatch('setActiveTab', 'createCategory')")
 
       //- wallets
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'wallets'")
-        .dashboard__title {{ $lang.wallets.title }}
-        WalletsList.dashboardItems(
-          ui="tile"
-          v-on:onClick="(id) => handleShowWalletModal(id)")
-        Button(
-          className="_blue _inline"
-          icon="mdi mdi-plus"
-          :title="$lang.wallets.new"
-          v-on:onClick="$store.dispatch('setActiveTab', 'createWallet')")
+        ComponentWrap
+          template(slot="headerLeft") {{ $lang.wallets.title }}
+
+          template(slot="content")
+            WalletsList.dashboardItems(
+              ui="tile"
+              v-on:onClick="(id) => handleShowWalletModal(id)")
+
+          template(slot="bottom")
+            .flex
+              .col
+                Button(
+                  className="_inline _blue"
+                  icon="mdi mdi-plus"
+                  :title="$lang.wallets.new"
+                  v-on:onClick="$store.dispatch('setActiveTab', 'createWallet')")
+              .col
+                Button(
+                  className="_inline _blue"
+                  :title="$lang.base.sort"
+                  icon="mdi mdi-arrow-split-horizontal"
+                  v-on:onClick="$store.dispatch('setActiveTab', 'walletsSort')")
 
       //- add category
       //------------------------------------------------
@@ -101,6 +139,11 @@ export default {
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'createWallet'")
         WalletForm(v-if="activeTab === 'createWallet'")
+
+      //- wallets sort
+      //------------------------------------------------
+      LayoutPcTab(:show="activeTab === 'walletsSort'")
+        WalletsSort(v-if="activeTab === 'walletsSort'")
 
       //- settings
       //------------------------------------------------
@@ -119,12 +162,19 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-@import "~@/stylus/variables/fonts"
-@import "~@/stylus/variables/margins"
-@import "~@/stylus/variables/media"
-@import "~@/stylus/variables/animations"
-@import "~@/stylus/mixins/animations"
-@import "~@/stylus/variables/scrollbar"
+@import "~@/stylus/variables"
+
+.layoutBg
+  z-index 1
+  position absolute
+  top 0
+  right 0
+  opacity .05
+  font-size 1000px
+  height 100%
+  display flex
+  align-items center
+  justify-content center
 
 .layout-formSideOpener
   cursor pointer
@@ -193,14 +243,20 @@ export default {
   padding $m7 $m8
   width 60px
   height 60px
+  font-size 22px
   color var(--c-font-1)
-  background var(--c-bg-4)
+  background var(--c-blue-1)
   border-radius 50%
-  font-size 18px
-  color var(--c-font-4)
   anim()
 
   &:hover
-    color var(--c-font-1)
-    background var(--c-blue-1)
+    transform scale(1.2)
+
+.position
+  display grid
+  position absolute
+  left 0
+  top 0
+  width 100%
+  height 100%
 </style>

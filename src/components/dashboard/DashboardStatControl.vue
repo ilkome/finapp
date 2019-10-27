@@ -16,6 +16,10 @@ export default {
 
     .tabs
       .tabItem(
+        @click="$store.commit('setDashboardActiveTab', 'balance')"
+        :class="{ _active: $store.state.dashboard.activeTab === 'balance' }") Balance
+
+      .tabItem(
         @click="$store.commit('setDashboardActiveTab', 'stat')"
         :class="{ _active: $store.state.dashboard.activeTab === 'stat' }") Stat
 
@@ -41,7 +45,7 @@ $text-disable = var(--c-font-5)
     display grid
     grid-template-columns repeat(2, 1fr)
     max-width 1100px
-    padding 15px 60px
+    padding 16px 60px
 
 .tabs
   display flex

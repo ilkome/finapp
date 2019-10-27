@@ -1,12 +1,5 @@
 import moment from 'moment'
 
-// getTotalOfTrnsIds
-// getTrnsIdsInWallet
-// lastCreatedTrnId
-// firstCreatedTrnIdFromSelectedTrns
-// selectedTrnsIds
-// selectedTrnsIdsWithDate
-// sortedTrnsIds
 export default {
   hasTrns (state, getters, rootState) {
     if (rootState.trns.items) {
@@ -151,7 +144,6 @@ export default {
     return trnsIds
   },
 
-  // selectedTrnsIdsWithDate
   selectedTrnsIdsWithDate (state, getters, rootState, rootGetters) {
     if (!rootGetters.hasTrns) return []
 
@@ -192,22 +184,24 @@ export default {
     })
   },
 
-  getSelectedTrnsIdsByFilter: (state, getters, rootState, rootGetters) => ({ categoryId, type }) => {
+  getTrnsIdsByFilter: (state, getters, rootState, rootGetters) => ({ categoryId, type }) => {
     const trns = rootState.trns.items
-    let trnsIds = rootGetters.selectedTrnsIdsWithDate
+    let trnsIds = rootGetters.sortedTrnsIds
     if (categoryId) trnsIds = trnsIds.filter(id => trns[id].categoryId === categoryId)
     if (type) trnsIds = trnsIds.filter(id => trns[id].type === type)
 
     return trnsIds
   },
 
-  getTrns: (state, getters, rootState, rootGetters) => ({ date, periodName }) => {
+  getTrns: (state, getters, rootState, rootGetters) => (props) => {
     if (!rootGetters.hasTrns) return []
 
+    const { date, periodName, description } = props
     const categories = rootState.categories.items
     const categoriesIds = Object.keys(categories)
     const filterCategoryId = rootState.filter.categoryId
     const filterWalletId = rootState.filter.walletId
+
     const trns = rootState.trns.items
     let trnsIds = Object.keys(trns)
 
@@ -217,7 +211,7 @@ export default {
     const endDateValue = filterDate.endOf(filterPeriod).valueOf()
 
     // filter date
-    if (filterPeriod !== 'all') {
+    if (date && filterPeriod !== 'all') {
       trnsIds = trnsIds
         .filter(trnId => (trns[trnId].date >= startDateValue) && (trns[trnId].date <= endDateValue))
     }
@@ -240,6 +234,14 @@ export default {
       } else {
         trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === filterCategoryId)
       }
+    }
+
+    // description
+    if (description) {
+      trnsIds = trnsIds
+        .filter(trnId =>
+          trns[trnId].description &&
+          trns[trnId].description.includes(description))
     }
 
     trnsIds = trnsIds

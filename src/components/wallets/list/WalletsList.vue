@@ -68,9 +68,9 @@ export default {
       :key="walletId"
       :id="walletId"
       :ui="ui"
-      v-on="$listeners"
-    )
+      v-on="$listeners")
+
   .walletsList__toogle(v-if="showToogle && $store.getters.walletsSortedIds.length > limit" @click="toogleWallets")
-    template(v-if="stateLimit > 0") show all wallets
-    template(v-else) show only {{ limit }} wallet
+    template(v-if="stateLimit > 0") {{ this.$lang.wallets.showAll }}
+    template(v-else) {{ this.$lang.wallets.showOnly }} {{ limit }}
 </template>

@@ -1,6 +1,6 @@
 {
   "name": "finapp",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ilkome/finapp.git"
@@ -9,10 +9,10 @@
     "serve": "vue-cli-service serve --modern",
     "build": "vue-cli-service build --modern",
     "dev": "npm run serve",
-    "build-upload": "npm run build && npm run upload-all",
-    "build-upload-min": "npm run build && npm run upload-min",
-    "upload": "NODE_ENV=production node_modules/gulp/bin/gulp.js uploadAll",
-    "upload-min": "NODE_ENV=production node_modules/gulp/bin/gulp.js uploadMin"
+    "upload-all": "NODE_ENV=production node node_modules/gulp/bin/gulp.js uploadAll",
+    "upload-min": "NODE_ENV=production node node_modules/gulp/bin/gulp.js uploadMin",
+    "build-upload-all": "npm run build && npm run upload-all",
+    "build-upload-min": "npm run build && npm run upload-min"
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.4",

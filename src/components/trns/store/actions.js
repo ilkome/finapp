@@ -17,7 +17,9 @@ export default {
     let isTrnSavedOnline = false
 
     const formatedTrnValues = {
+      ...values,
       accountId: values.walletId,
+      walletId: values.walletId,
       amount: values.amount,
       categoryId: values.categoryId,
       date: moment(values.date).valueOf(),
@@ -58,7 +60,7 @@ export default {
       .then(() => removeTrnToDeleteLaterLocal(id))
   },
 
-  async deleteTrnsByIds ({ commit, rootState }, trnsIds) {
+  async deleteTrnsByIds ({ rootState }, trnsIds) {
     const uid = rootState.user.user.uid
     const trnsForDelete = {}
     for (const trnId of trnsIds) {

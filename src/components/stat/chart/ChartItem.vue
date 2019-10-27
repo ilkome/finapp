@@ -127,7 +127,7 @@ export default {
 .chart-item
   cursor pointer
   padding $m5 $m5
-  flex-grow 1
+  flex-grow 0
   max-width 80px
   border-left 1px solid transparent
   border-right 1px solid transparent
@@ -144,8 +144,10 @@ export default {
     padding-right $m5
 
   &._month
+    padding-left 10px
+    padding-right 10px
     @media $media-laptop
-      min-width 70px
+      min-width 20px
 
   &._year
     padding-left $m8
@@ -156,6 +158,9 @@ export default {
     min-width 0
 
   &._grouped._day
+    padding-left 2px
+    padding-right 2px
+
   &._grouped._week
   &._grouped._month
     padding-left 2px
@@ -211,7 +216,7 @@ export default {
 
     &-line
       width 6px
-      margin 0 2px
+      margin 0 1px
       min-height 1px
 
       &._expenses

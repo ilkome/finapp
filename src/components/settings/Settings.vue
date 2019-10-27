@@ -1,11 +1,13 @@
 <script>
 import Button from '@/components/shared/button/Button'
+import ComponentWrap from '@/components/layout/component/Component'
 import ModalBottomConfirm from '@/components/modal/ModalBottomConfirm'
 import LangDropdown from '@/components/lang/LangDropdown'
 
 export default {
   components: {
     Button,
+    ComponentWrap,
     ModalBottomConfirm,
     LangDropdown
   },
@@ -32,65 +34,68 @@ export default {
 </script>
 
 <template lang="pug">
-.settings
-  .settings__header {{ $lang.settings.title }}
+ComponentWrap(:contentPadding="false")
+  template(slot="headerLeft") {{ $lang.settings.title }}
 
-  .settings__group
-    .settings__subHeader {{ $lang.trnForm.title }}
-    .settings__item
-      Button._bdb(
-        :checkboxValue="$store.state.ui.lastUsedCatsInTrnForm === 'visible'"
-        :showCheckbox="true"
-        :title="$lang.trnForm.lastUsedCats"
-        icon="mdi mdi-chart-bubble"
-        v-on:onClick="$store.dispatch('toogleLastUsedCatsInTrnForm')")
+  template(slot="content")
+    .settings
+      .settings__group
+        .settings__subHeader {{ $lang.trnForm.title }}
+        .settings__item
+          Button._bdb(
+            :checkboxValue="$store.state.ui.lastUsedCatsInTrnForm === 'visible'"
+            :showCheckbox="true"
+            :title="$lang.trnForm.lastUsedCats"
+            icon="mdi mdi-chart-bubble"
+            v-on:onClick="$store.dispatch('toogleLastUsedCatsInTrnForm')")
 
-  .settings__group
-    .settings__subHeader {{ $lang.settings.lang }}
-    .settings__item
-      LangDropdown
+      .settings__group
+        .settings__subHeader {{ $lang.settings.lang }}
+        .settings__item
+          LangDropdown
 
-  .settings__group
-    .settings__subHeader {{ $lang.settings.app }}
-    .settings__item
-      Button._bdb(
-        icon="mdi mdi-palette"
-        title="Change theme"
-        v-on:onClick="$store.dispatch('changeTheme')")
-    .settings__item
-      Button._bdb(
-        icon="mdi mdi-logout"
-        title="Sign Out"
-        v-on:onClick="$store.dispatch('signOut')")
+      .settings__group
+        .settings__subHeader {{ $lang.settings.app }}
+        .settings__item
+          Button._bdb(
+            icon="mdi mdi-palette"
+            title="Change theme"
+            v-on:onClick="$store.dispatch('changeTheme')")
+        .settings__item
+          Button._bdb(
+            icon="mdi mdi-logout"
+            title="Sign Out"
+            v-on:onClick="$store.dispatch('signOut')")
 
-  .settings__group._paddingTop
-    .settings__subHeader {{ $lang.settings.delete }}
-    .settings__desc {{ $lang.alerts.willDeleteEverything }}
-    .settings__item
-      Button._bdb(
-        icon="mdi mdi-delete"
-        title="Delete my data"
-        v-on:onClick="confirmRemoveUserData = true")
+      .settings__group._paddingTop
+        .settings__subHeader {{ $lang.settings.delete }}
+        .settings__desc {{ $lang.alerts.willDeleteEverything }}
+        .settings__item
+          Button._bdb(
+            icon="mdi mdi-delete"
+            title="Delete my data"
+            v-on:onClick="confirmRemoveUserData = true")
 
-  .settings__group(v-if="$store.state.demo.hasDemo")
-    .settings__subHeader {{ $lang.settings.demo }}
-    .settings__desc {{ $lang.alerts.willDeleteEverything }}
-    .settings__item
-      Button._bdb(
-        icon="mdi mdi-test-tube"
-        title="Load demo"
-        v-on:onClick="confirmCreateDemo = true")
+      .settings__group(v-if="$store.state.demo.hasDemo")
+        .settings__subHeader {{ $lang.settings.demo }}
+        .settings__desc {{ $lang.alerts.willDeleteEverything }}
+        .settings__item
+          Button._bdb(
+            icon="mdi mdi-test-tube"
+            title="Load demo"
+            v-on:onClick="confirmCreateDemo = true")
 
-  ModalBottomConfirm(
-    description="This will delete all your wallets, categories and trns"
-    :show="confirmCreateDemo"
-    v-on:onClose="confirmCreateDemo = false"
-    v-on:onConfirm="generateDemo")
-  ModalBottomConfirm(
-    description="This will delete all your wallets, categories and trns"
-    :show="confirmRemoveUserData"
-    v-on:onClose="confirmRemoveUserData = false"
-    v-on:onConfirm="removeUserData")
+      ModalBottomConfirm(
+        description="This will delete all your wallets, categories and trns"
+        :show="confirmCreateDemo"
+        v-on:onClose="confirmCreateDemo = false"
+        v-on:onConfirm="generateDemo")
+
+      ModalBottomConfirm(
+        description="This will delete all your wallets, categories and trns"
+        :show="confirmRemoveUserData"
+        v-on:onClose="confirmRemoveUserData = false"
+        v-on:onConfirm="removeUserData")
 </template>
 
 <style lang="stylus" scoped>
@@ -99,11 +104,11 @@ export default {
 @import "~@/stylus/variables/media"
 
 .settings
-  @media $media-phone
-    padding $m7
+  padding 16px
 
-  @media $media-laptop
-    max-width 380px
+  +media-laptop()
+    max-width 480px
+    padding 32px 60px
 
   &__group
     padding-bottom 48px
