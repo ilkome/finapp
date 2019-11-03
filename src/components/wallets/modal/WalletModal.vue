@@ -88,6 +88,10 @@ ModalBottom(
     template(slot="header")
       WalletItem(:id="walletId")
 
+    template(slot="description")
+      template(v-if="$store.state.wallets.items[walletId].desc")
+        div(style="padding-bottom:20px") {{ $store.state.wallets.items[walletId].desc }}
+
     template(slot="btns")
       ModalButton(
         :name="$lang.base.delete"
