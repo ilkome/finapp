@@ -39,7 +39,8 @@ function uploadTask (path, cb) {
         '/js/**',
         '/**.js'
       ], './dist', { base: '/' }))
-  } else {
+  }
+  else {
     notifier.notify({
       title: 'No ftp config',
       message: 'Read Readme "Setup upload task" section'

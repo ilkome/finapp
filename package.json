@@ -1,18 +1,15 @@
 {
   "name": "finapp",
   "version": "2.2.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ilkome/finapp.git"
-  },
   "scripts": {
     "serve": "vue-cli-service serve --modern",
     "build": "vue-cli-service build --modern",
+    "lint": "vue-cli-service lint",
+    "build-upload-all": "npm run build && npm run upload-all",
+    "build-upload-min": "npm run build && npm run upload-min",
     "dev": "npm run serve",
     "upload-all": "NODE_ENV=production node node_modules/gulp/bin/gulp.js uploadAll",
-    "upload-min": "NODE_ENV=production node node_modules/gulp/bin/gulp.js uploadMin",
-    "build-upload-all": "npm run build && npm run upload-all",
-    "build-upload-min": "npm run build && npm run upload-min"
+    "upload-min": "NODE_ENV=production node node_modules/gulp/bin/gulp.js uploadMin"
   },
   "dependencies": {
     "@babel/polyfill": "^7.8.3",
@@ -35,25 +32,37 @@
     "vue-dragscroll": "^2.0.1",
     "vue-focus": "^2.1.0",
     "vue-lang": "^0.2.5",
-    "vue-nestable": "^2.5.1",
     "vue-notification": "^1.3.20",
     "vuedraggable": "^2.23.2",
     "vuejs-datepicker": "^1.6.2",
     "vuex": "^3.1.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.2.2",
-    "@vue/cli-plugin-eslint": "^4.2.2",
-    "@vue/cli-plugin-pwa": "^4.2.2",
-    "@vue/cli-plugin-unit-jest": "^4.2.2",
-    "@vue/cli-service": "^4.2.2",
-    "@vue/eslint-config-standard": "^5.1.2",
+    "@vue/cli-plugin-babel": "~4.2.0",
+    "@vue/cli-plugin-eslint": "~4.2.0",
+    "@vue/cli-plugin-pwa": "~4.2.0",
+    "@vue/cli-plugin-router": "~4.2.0",
+    "@vue/cli-plugin-vuex": "~4.2.0",
+    "@vue/cli-service": "~4.2.0",
+    "@vue/eslint-config-standard": "^5.1.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^6.2.1",
     "gulp": "^4.0.2",
     "gulp-util": "^3.0.8",
     "pug": "^2.0.4",
     "pug-plain-loader": "^1.0.0",
     "stylus": "^0.54.7",
+    "stylus-loader": "^3.0.2",
     "vinyl-ftp": "^0.6.1",
     "vue-template-compiler": "^2.6.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilkome/finapp.git"
   }
 }
