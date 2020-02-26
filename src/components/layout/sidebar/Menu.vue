@@ -40,11 +40,6 @@ export default {
           name: this.$lang.categories.name,
           isOpen: false
         },
-        projects: {
-          icon: 'mdi mdi-notebook-outline',
-          name: this.$lang.projects.name,
-          isOpen: false
-        },
         settings: {
           icon: 'mdi mdi-settings',
           name: this.$lang.settings.title,

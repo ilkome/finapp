@@ -21,7 +21,6 @@ export default {
           await dispatch('initGroups')
           await dispatch('initBudgets')
           await dispatch('initDbLang')
-          await dispatch('initProjects')
         } catch (e) {
           console.error(e)
         }

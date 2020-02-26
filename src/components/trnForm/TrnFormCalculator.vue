@@ -1,5 +1,5 @@
 <script>
-import mathjs from 'mathjs'
+import { chain } from 'mathjs'
 
 export default {
   computed: {
@@ -29,7 +29,7 @@ export default {
 
     handleMath () {
       function calc (number) {
-        return mathjs.chain(number.replace(/\s/g, '')).eval().round().value
+        return chain(number.replace(/\s/g, '')).eval().round().value
       }
 
       try {

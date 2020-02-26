@@ -11,7 +11,6 @@ import DashboardNav from '@/components/dashboard/DashboardNav'
 import Groups from '@/components/groups/Groups'
 import LayoutPcSidebar from '@/components/layout/LayoutPcSidebar'
 import LayoutPcTab from '@/components/layout/LayoutPcTab'
-import Projects from '@/components/projects/Projects'
 import Settings from '@/components/settings/Settings'
 import TrnForm from '@/components/trnForm/TrnForm'
 import TrnModal from '@/components/trns/modal/TrnModal'
@@ -34,7 +33,6 @@ export default {
     Groups,
     LayoutPcSidebar,
     LayoutPcTab,
-    Projects,
     Settings,
     TrnForm,
     TrnModal,
@@ -87,11 +85,6 @@ export default {
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'groups'")
         Groups
-
-      //- Projects
-      //------------------------------------------------
-      LayoutPcTab(:show="activeTab === 'projects'")
-        Projects
 
       //- categories
       //------------------------------------------------

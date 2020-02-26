@@ -1,6 +1,6 @@
 <script>
 import Swiper from 'swiper'
-import 'swiper/dist/css/swiper.min.css'
+import 'swiper/css/swiper.min.css'
 
 import Amount from '@/components/amount/Amount'
 import EmptyData from '@/components/shared/emptyData/EmptyData'

@@ -1,6 +1,6 @@
 <script>
-import { Swiper } from 'swiper/dist/js/swiper.esm.js'
-import 'swiper/dist/css/swiper.min.css'
+import Swiper from 'swiper'
+import 'swiper/css/swiper.min.css'
 
 import Budgets from '@/components/budgets/Budgets'
 import Button from '@/components/shared/button/Button'
@@ -13,7 +13,6 @@ import Groups from '@/components/groups/Groups'
 import LayoutMobileMenu from '@/components/layout/LayoutMobileMenu'
 import LayoutMobileStat from '@/components/layout/LayoutMobileStat'
 import Menu from '@/components/layout/sidebar/Menu'
-import Projects from '@/components/projects/Projects'
 import Settings from '@/components/settings/Settings'
 import TrnForm from '@/components/trnForm/TrnForm'
 import TrnModal from '@/components/trns/modal/TrnModal'
@@ -37,7 +36,6 @@ export default {
     LayoutMobileMenu,
     LayoutMobileStat,
     Menu,
-    Projects,
     Settings,
     TrnForm,
     TrnModal,
@@ -183,10 +181,6 @@ export default {
               transition(name="animation-tab")
                 .tab(v-if="activeTab === 'budgets'")
                   Budgets
-
-              transition(name="animation-tab")
-                .tab(v-if="activeTab === 'projects'")
-                  Projects
 
           //------------------------------------------------
           //- menu
