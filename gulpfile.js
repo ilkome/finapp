@@ -2,7 +2,7 @@ const { src } = require('gulp')
 const fs = require('fs')
 const ftp = require('vinyl-ftp')
 const notifier = require('node-notifier')
-const util = require('gulp-util')
+const log = require('fancy-log')
 const notify = require('gulp-notify')
 const plumber = require('gulp-plumber')
 
@@ -25,7 +25,7 @@ function uploadTask (path, cb) {
       host: configFTP.host,
       user: configFTP.user,
       password: configFTP.password,
-      log: util.log,
+      log,
       buffer: false
     })
 
