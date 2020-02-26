@@ -96,7 +96,8 @@ export default {
         this.$store.commit('setTrnFormValues', {
           amount: Number(amountResult)
         })
-      } catch (e) {
+      }
+      catch (e) {
         this.$notify({
           group: 'main',
           title: '😮',

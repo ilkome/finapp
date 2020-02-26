@@ -24,7 +24,8 @@ export default {
             trnId: null,
             walletId: lastTrn.accountId
           })
-        } else {
+        }
+        else {
           const categoriesIds = Object.keys(rootState.categories.items)
           const categoryId = categoriesIds[0]
           const walletsIds = Object.keys(rootState.wallets.items)

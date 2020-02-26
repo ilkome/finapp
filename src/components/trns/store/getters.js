@@ -37,7 +37,8 @@ export default {
           let amount = 0
           if (wallet.currency !== baseCurrency) {
             amount = Math.abs(trn.amount / currencies[wallet.currency])
-          } else {
+          }
+          else {
             amount = trn.amount
           }
           if (trn.type === 1) incomes = incomes + amount
@@ -129,7 +130,8 @@ export default {
             if (trnCategoryId === categoryId) return true
           }
         })
-      } else {
+      }
+      else {
         trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === filterCategoryId)
       }
     }
@@ -231,7 +233,8 @@ export default {
             if (trnCategoryId === categoryId) return true
           }
         })
-      } else {
+      }
+      else {
         trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === filterCategoryId)
       }
     }

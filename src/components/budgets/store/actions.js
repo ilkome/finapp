@@ -76,7 +76,8 @@ export default {
 
     if (trn.budgets && trn.budgets[budgetId]) {
       dispatch('removeTrnFromBudget', { budgetId, trnId })
-    } else {
+    }
+    else {
       dispatch('addTrnToBudget', { budgetId, trnId })
     }
   }

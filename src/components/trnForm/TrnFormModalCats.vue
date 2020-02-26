@@ -17,7 +17,8 @@ export default {
       if (this.$store.getters.getChildCategoriesIds(categoryId).length > 0) {
         this.$store.commit('setTrnFormModalCategoryId', categoryId)
         this.$store.commit('showTrnFormModal', 'categoriesChild')
-      } else {
+      }
+      else {
         this.$store.commit('closeTrnFormModal', 'categories')
         this.$store.commit('closeTrnFormModal', 'categoriesChild')
         this.$store.commit('setTrnFormValues', { categoryId })

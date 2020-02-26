@@ -40,7 +40,8 @@ export default {
           amount: Number(amountResult),
           amountArray: [amountSum]
         })
-      } catch (e) {
+      }
+      catch (e) {
         this.$notify({
           group: 'main',
           title: '😮',
@@ -56,7 +57,7 @@ export default {
       let newAmountArray = amountArray
       const lastIndex = newAmountArray.length - 1
       let lastValue = String(amountArray[lastIndex]).replace(/\s/g, '')
-      let isLatValueNumber = Number.isInteger(Number(lastValue))
+      const isLatValueNumber = Number.isInteger(Number(lastValue))
       if (isLatValueNumber) lastValue = Number(lastValue)
 
       if (lastValue === 0) {
@@ -66,12 +67,14 @@ export default {
         if (eventType === 'remove' && newAmountArray.length > 1) {
           newAmountArray = newAmountArray.slice(0, lastIndex)
         }
-      } else {
+      }
+      else {
         switch (eventType) {
           case 'number':
             if (isLatValueNumber) {
               newAmountArray[lastIndex] = this.formatToAmountWithSpaces(`${lastValue}${value}`)
-            } else {
+            }
+            else {
               if (value !== 0) {
                 newAmountArray.push(value)
               }
@@ -81,7 +84,8 @@ export default {
           case 'action':
             if (isLatValueNumber && value !== 0) {
               newAmountArray.push(value)
-            } else {
+            }
+            else {
               newAmountArray[lastIndex] = value
             }
             break
@@ -89,10 +93,12 @@ export default {
           case 'remove':
             if (newAmountArray.length <= 1) {
               newAmountArray = [this.formatToAmountWithSpaces(`${String(lastValue).substring(0, String(lastValue).length - 1)}`)]
-            } else {
+            }
+            else {
               if (isLatValueNumber && lastValue >= 10) {
                 newAmountArray[lastIndex] = this.formatToAmountWithSpaces(`${String(lastValue).substring(0, String(lastValue).length - 1)}`)
-              } else {
+              }
+              else {
                 newAmountArray = newAmountArray.slice(0, lastIndex)
               }
             }

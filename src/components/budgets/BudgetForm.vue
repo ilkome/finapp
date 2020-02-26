@@ -75,7 +75,8 @@ export default {
       console.log(trnId)
       if (this.budgetTrnsIds.includes(trnId)) {
         this.budgetTrnsIds = this.budgetTrnsIds.filter(item => item !== trnId)
-      } else {
+      }
+      else {
         this.budgetTrnsIds.push(trnId)
       }
     }

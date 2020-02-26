@@ -38,13 +38,14 @@ export default {
       if (this.$store.state.ui.activeTab === 'stat') {
         if (tab === this.$store.state.ui.stat.activeTab) {
           return {
-            '_active': true
+            _active: true
           }
         }
-      } else {
+      }
+      else {
         if (this.$store.state.ui.activeTab === tab) {
           return {
-            '_active': true
+            _active: true
           }
         }
       }

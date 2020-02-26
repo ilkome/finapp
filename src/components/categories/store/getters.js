@@ -83,7 +83,7 @@ export default {
     const trns = rootState.trns.items
     const sortedTrnsIds = rootGetters.sortedTrnsIds
     const transferCategoryId = rootGetters.transferCategoryId
-    let lastCategoriesIds = []
+    const lastCategoriesIds = []
 
     if (categories && rootGetters.hasTrns) {
       for (const trnId of sortedTrnsIds.slice(0, 50)) {

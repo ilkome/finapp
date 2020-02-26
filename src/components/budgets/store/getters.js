@@ -18,7 +18,7 @@ export default {
     const formatedBudgets = {}
 
     for (const key in budgets) {
-      let trnsInBudget = budgets[key].trnsIds || {}
+      const trnsInBudget = budgets[key].trnsIds || {}
       const trnsIds = Object.keys(trnsInBudget)
       const total = rootGetters.getTotalOfTrnsIds(trnsIds)
 

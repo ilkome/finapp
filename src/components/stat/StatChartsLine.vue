@@ -1,11 +1,11 @@
 <script>
 import moment from 'moment'
+import { dragscroll } from 'vue-dragscroll'
 
 import Amount from '@/components/amount/Amount'
 import ChartItem from '@/components/stat/chart/ChartItem'
 import ChartMenu from '@/components/stat/chart/ChartMenu'
 import ChartPopup from '@/components/stat/chart/ChartPopup'
-import { dragscroll } from 'vue-dragscroll'
 
 export default {
   components: {
@@ -33,16 +33,16 @@ export default {
     periodsValues () {
       const trns = this.$store.state.trns.items
       const transferCategoryId = this.$store.getters.transferCategoryId
-      let trnsIds = this.$store.getters.selectedTrnsIds
+      const trnsIds = this.$store.getters.selectedTrnsIds
       const filterPeriod = this.$store.state.filter.period
       const diff = this.getNumberShowedPeriods()
 
       const values = {}
       for (let period = 0; period < diff; period++) {
-        let periodStartDate = moment().subtract(period, filterPeriod).startOf(filterPeriod)
-        let periodEndDate = moment().subtract(period, filterPeriod).endOf(filterPeriod)
+        const periodStartDate = moment().subtract(period, filterPeriod).startOf(filterPeriod)
+        const periodEndDate = moment().subtract(period, filterPeriod).endOf(filterPeriod)
         const ids = trnsIds
-          .filter(trnId => {
+          .filter((trnId) => {
             return trns[trnId].date >= periodStartDate &&
               trns[trnId].date <= periodEndDate &&
               trns[trnId].categoryId !== transferCategoryId
@@ -63,8 +63,8 @@ export default {
       const groupedValues = {}
 
       for (const date in periodsValues) {
-        let periodStartDateValue = moment(parseInt(date)).startOf(groupedBy).valueOf()
-        let periodEndDateValue = moment(parseInt(date)).endOf(groupedBy).valueOf()
+        const periodStartDateValue = moment(parseInt(date)).startOf(groupedBy).valueOf()
+        const periodEndDateValue = moment(parseInt(date)).endOf(groupedBy).valueOf()
 
         if (date >= periodStartDateValue && date <= periodEndDateValue) {
           groupedValues[periodStartDateValue]
@@ -82,8 +82,8 @@ export default {
       for (const date in periodsValues) {
         const incomes = periodsValues[date].incomes
         const expenses = periodsValues[date].expenses
-        if (incomes > biggest) biggest = incomes
-        if (expenses > biggest) biggest = expenses
+        if (incomes > biggest) { biggest = incomes }
+        if (expenses > biggest) { biggest = expenses }
       }
       return biggest
     }
@@ -100,12 +100,13 @@ export default {
 
       if (this.periods[filterPeriod].grouped) {
         diff = this.getGroupedPeriods()
-      } else {
+      }
+      else {
         this.activePeriodNumber > this.periods[filterPeriod].showedPeriods
           ? diff = this.activePeriodNumber
           : diff = this.periods[filterPeriod].showedPeriods
       }
-      if (diff <= 0) diff = 1
+      if (diff <= 0) { diff = 1 }
       this.$store.dispatch('setDiffPeriods', diff)
 
       return diff
@@ -120,9 +121,9 @@ export default {
       // periods in current group
       const getPeriodsInCurrentGroup = () => {
         let currentGroupPeriods
-        if (filterPeriod === 'day') currentGroupPeriods = parseInt(moment().format('D'))
-        if (filterPeriod === 'week') currentGroupPeriods = moment().week() - moment().startOf('month').week() + 1
-        if (filterPeriod === 'month') currentGroupPeriods = parseInt(moment().format('MM'))
+        if (filterPeriod === 'day') { currentGroupPeriods = parseInt(moment().format('D')) }
+        if (filterPeriod === 'week') { currentGroupPeriods = moment().week() - moment().startOf('month').week() + 1 }
+        if (filterPeriod === 'month') { currentGroupPeriods = parseInt(moment().format('MM')) }
         return currentGroupPeriods
       }
 

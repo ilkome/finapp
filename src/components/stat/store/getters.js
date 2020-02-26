@@ -46,7 +46,7 @@ export default {
     const trns = rootState.trns.items
     const transferCategoryId = rootGetters.transferCategoryId
     const diff = rootState.stat.showedPeriods
-    let trnsIds = rootGetters.selectedTrnsIds
+    const trnsIds = rootGetters.selectedTrnsIds
 
     const periodGroup = rootState.filter.period
 
@@ -79,7 +79,8 @@ export default {
       if (moment(rootState.filter.date).isSame(moment(), rootState.filter.period)) {
         return true
       }
-    } else {
+    }
+    else {
       return true
     }
   },
@@ -91,7 +92,8 @@ export default {
       if (moment(rootState.filter.date).isSame(firstCreatedTrnDate, rootState.filter.period)) {
         return true
       }
-    } else {
+    }
+    else {
       return true
     }
   },
@@ -124,7 +126,7 @@ export default {
     const trns = rootState.trns.items
     const transferCategoryId = rootGetters.transferCategoryId
 
-    let categoriesWithTrnsIds = {}
+    const categoriesWithTrnsIds = {}
 
     for (const trnId of trnsIds) {
       if (trns[trnId]) {
@@ -137,7 +139,8 @@ export default {
         if (categoryId !== transferCategoryId) {
           if (!categoriesWithTrnsIds[categoryId]) {
             categoriesWithTrnsIds[categoryId] = [trnId]
-          } else {
+          }
+          else {
             categoriesWithTrnsIds[categoryId].push(trnId)
           }
         }

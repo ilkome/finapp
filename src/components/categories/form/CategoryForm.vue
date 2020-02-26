@@ -146,7 +146,8 @@ export default {
               })
               return false
             }
-          } else {
+          }
+          else {
             this.$notify({
               group: 'main',
               title: '😮',

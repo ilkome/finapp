@@ -68,7 +68,8 @@ export default {
         if (isFormValid) {
           if (this.$store.state.ui.mobile) {
             this.$store.commit('closeTrnForm')
-          } else {
+          }
+          else {
             setTimeout(() => {
               this.$notify({
                 group: 'main',
@@ -85,7 +86,8 @@ export default {
               : this.handleSubmitTrn()
           }, 100)
         }
-      } catch (e) {
+      }
+      catch (e) {
         console.log(e)
       }
     },

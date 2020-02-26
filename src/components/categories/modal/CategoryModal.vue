@@ -39,7 +39,7 @@ export default {
     },
     trnsIds () {
       const trns = this.$store.state.trns.items
-      let trnsIds = []
+      const trnsIds = []
       for (const trnId in trns) {
         if (trns[trnId].categoryId === this.categoryId) trnsIds.push(trnId)
       }

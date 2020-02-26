@@ -52,7 +52,8 @@ export default {
     toogleWallets () {
       if (this.stateLimit > 0) {
         this.stateLimit = 0
-      } else {
+      }
+      else {
         this.stateLimit = this.limit
       }
     }

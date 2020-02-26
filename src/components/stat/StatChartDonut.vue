@@ -74,7 +74,7 @@ export default {
 
       // diff periods from oldest trn and today
       const oldestTrnDate = moment(trns[this.$store.getters.firstCreatedTrnId].date).endOf(periodName)
-      let periodsToShow = moment().endOf(periodName).diff(oldestTrnDate, periodName) + 1
+      const periodsToShow = moment().endOf(periodName).diff(oldestTrnDate, periodName) + 1
       // periodsToShow = 12
 
       // get balance for first period
@@ -82,10 +82,10 @@ export default {
       const trnsIdsBeforeDate = allTrnsIds.filter(id => trns[id].date < dateStart)
       const totalStart = this.$store.getters.getTotalOfTrnsIds(trnsIdsBeforeDate, true)
 
-      let categories = []
-      let incomesData = []
-      let expensesData = []
-      let totalData = []
+      const categories = []
+      const incomesData = []
+      const expensesData = []
+      const totalData = []
 
       for (let index = 0; index < periodsToShow; index++) {
         // count balance

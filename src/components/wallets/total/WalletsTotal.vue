@@ -9,7 +9,7 @@ export default {
     totalInWallets () {
       const walletsItems = this.$store.state.wallets.items
       const walletsTotal = this.$store.getters.walletsTotal
-      let total = {
+      const total = {
         counted: 0,
         all: 0
       }
@@ -18,7 +18,8 @@ export default {
         let walletTotal = 0
         if (walletsItems[walletId].currency === this.$store.state.currencies.base) {
           walletTotal = walletsTotal[walletId].base
-        } else {
+        }
+        else {
           walletTotal = this.$store.getters.getAmountInBaseCurrency({
             amount: walletsTotal[walletId].base,
             currency: walletsItems[walletId].currency
@@ -27,7 +28,8 @@ export default {
 
         if (walletsItems[walletId].countTotal) {
           total.counted = total.counted + walletTotal
-        } else {
+        }
+        else {
           total.all = total.all + walletTotal
         }
       }

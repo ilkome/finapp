@@ -13,7 +13,8 @@ export default {
         case 'day':
           if (today.isSame(filterDate, 'day')) {
             return this.$lang.dates.day.current
-          } else if (today.subtract(1, filterPeriod).isSame(filterDate, 'day')) {
+          }
+          else if (today.subtract(1, filterPeriod).isSame(filterDate, 'day')) {
             return 'Yesterday'
           }
           format = 'DD MMMM YYYY'
@@ -22,7 +23,8 @@ export default {
         case 'week':
           if (today.isSame(filterDate, 'week')) {
             return this.$lang.dates.week.current
-          } else if (today.subtract(1, filterPeriod).isSame(filterDate, 'week')) {
+          }
+          else if (today.subtract(1, filterPeriod).isSame(filterDate, 'week')) {
             return 'Last week'
           }
           const date = moment(filterDate)
@@ -33,7 +35,8 @@ export default {
         case 'month':
           if (today.isSame(filterDate, 'month')) {
             return this.$lang.dates.month.current
-          } else if (today.subtract(1, filterPeriod).isSame(filterDate, 'month')) {
+          }
+          else if (today.subtract(1, filterPeriod).isSame(filterDate, 'month')) {
             return 'Last month'
           }
           format = 'MMMM YYYY'

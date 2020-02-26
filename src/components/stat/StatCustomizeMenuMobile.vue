@@ -34,7 +34,7 @@ export default {
 
   computed: {
     positionStyles () {
-      let styles = { ...this.position }
+      const styles = { ...this.position }
       return styles
     }
   }

@@ -88,7 +88,8 @@ export default {
 
         if (!trnsList[dayDate]) {
           trnsList[dayDate] = [trnId]
-        } else {
+        }
+        else {
           trnsList[dayDate].push(trnId)
         }
       }

@@ -21,10 +21,12 @@ export default {
           await dispatch('initGroups')
           await dispatch('initBudgets')
           await dispatch('initDbLang')
-        } catch (e) {
+        }
+        catch (e) {
           console.error(e)
         }
-      } else {
+      }
+      else {
         commit('setAppStatus', 'login')
       }
     })

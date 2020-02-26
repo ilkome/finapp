@@ -10,10 +10,12 @@ export default {
       if (filterCategory.parentId !== 0) {
         dispatch('setFilterCategoryId', null)
         dispatch('setFilterCategoryId', filterCategory.parentId)
-      } else {
+      }
+      else {
         dispatch('setFilterCategoryId', null)
       }
-    } else {
+    }
+    else {
       dispatch('setFilterCategoryId', categoryId)
     }
   },

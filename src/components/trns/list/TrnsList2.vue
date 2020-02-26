@@ -9,8 +9,8 @@ export default {
 
   computed: {
     trns () {
-      let trns = {}
-      let trnsIds = this.ids
+      const trns = {}
+      const trnsIds = this.ids
 
       for (const trnId of trnsIds) {
         const trn = this.$store.state.trns.items[trnId]

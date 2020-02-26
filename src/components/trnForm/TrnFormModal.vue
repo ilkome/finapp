@@ -23,7 +23,8 @@ export default {
         return {
           height: `${this.$store.state.trnForm.height - this.headerHeight}px`
         }
-      } else {
+      }
+      else {
         return {
           height: `${this.$store.state.ui.height - this.headerHeight}px`
         }

@@ -18,7 +18,8 @@ export default {
   setWalletModalId (state, id) {
     if (state.modal.id === id) {
       state.modal.id = null
-    } else {
+    }
+    else {
       state.modal.id = id
     }
   },
@@ -26,7 +27,8 @@ export default {
   setWalletEditId (state, id) {
     if (state.editId === id) {
       state.editId = null
-    } else {
+    }
+    else {
       state.editId = id
     }
   }

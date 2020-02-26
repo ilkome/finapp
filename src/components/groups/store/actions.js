@@ -74,7 +74,8 @@ export default {
 
     if (trn.groups && trn.groups[groupId]) {
       dispatch('removeTrnFromGroup', { groupId, trnId })
-    } else {
+    }
+    else {
       dispatch('addTrnToGroup', { groupId, trnId })
     }
   }

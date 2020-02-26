@@ -16,8 +16,8 @@ Vue.use(HighchartsVue)
 Vue.use(Notifications)
 
 const locales = {
-  'en': require('@/lang/en.json'),
-  'ru': require('@/lang/ru.json')
+  en: require('@/lang/en.json'),
+  ru: require('@/lang/ru.json')
 }
 Vue.use(Lang, { lang: 'en', locales })
 

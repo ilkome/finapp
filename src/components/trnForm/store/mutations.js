@@ -33,7 +33,8 @@ export default {
   setTrnFormModalCategoryId (state, id) {
     if (state.showModalCategoryId === id) {
       state.showModalCategoryId = null
-    } else {
+    }
+    else {
       state.showModalCategoryId = id
     }
   },

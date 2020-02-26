@@ -18,7 +18,8 @@ export default {
   setCategoryModalId (state, id) {
     if (state.modal.id === id) {
       state.modal.id = null
-    } else {
+    }
+    else {
       state.modal.id = id
     }
   },
@@ -26,7 +27,8 @@ export default {
   setCategoryEditId (state, id) {
     if (state.editId === id) {
       state.editId = null
-    } else {
+    }
+    else {
       state.editId = id
     }
   }

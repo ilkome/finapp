@@ -21,7 +21,8 @@ export default {
       if (trns[trnId]) {
         if (trns[trnId].type === 0) {
           amount = amount - trns[trnId].amount
-        } else {
+        }
+        else {
           amount = amount + trns[trnId].amount
         }
       }
@@ -41,7 +42,8 @@ export default {
       for (const trnId of trnsIds) {
         if (trns[trnId].type === 0) {
           amount = amount - trns[trnId].amount
-        } else {
+        }
+        else {
           amount = amount + trns[trnId].amount
         }
       }

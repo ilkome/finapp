@@ -18,7 +18,8 @@ export default {
   setTrnModalId (state, id) {
     if (state.modal.id === id) {
       state.modal.id = null
-    } else {
+    }
+    else {
       state.modal.id = id
     }
   }

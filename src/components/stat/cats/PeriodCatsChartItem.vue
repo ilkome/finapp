@@ -37,9 +37,11 @@ export default {
     amount () {
       if (this.total >= 1000000) {
         return (this.total / 1000000).toFixed(2) + 'm'
-      } else if (this.total >= 10000) {
+      }
+      else if (this.total >= 10000) {
         return (this.total / 1000).toFixed() + 'k'
-      } else if (this.total > 999) {
+      }
+      else if (this.total > 999) {
         return (this.total / 1000).toFixed(1) + 'k'
       }
 
