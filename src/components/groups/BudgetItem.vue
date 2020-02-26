@@ -37,8 +37,8 @@ export default {
       if (this.budget.trnsIds) {
         return Object.keys(this.budget.trnsIds)
           .sort((a, b) => {
-            if (this.$store.state.trns.items[a].date > this.$store.state.trns.items[b].date) return -1
-            if (this.$store.state.trns.items[a].date < this.$store.state.trns.items[b].date) return 1
+            if (this.$store.state.trns.items[a].date > this.$store.state.trns.items[b].date) { return -1 }
+            if (this.$store.state.trns.items[a].date < this.$store.state.trns.items[b].date) { return 1 }
             return 0
           })
       }

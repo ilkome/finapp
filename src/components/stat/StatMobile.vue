@@ -55,9 +55,7 @@ export default {
   },
 
   mounted () {
-    this.slider = new Swiper(this.$refs.slider, {
-      // autoHeight: true
-    })
+    this.slider = new Swiper(this.$refs.slider, {})
   },
 
   methods: {

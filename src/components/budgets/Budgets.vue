@@ -31,8 +31,8 @@ export default {
 
     styles () {
       return {
-        width: '60%'
-        // width: `${Math.abs(this.gotAmount) / Math.abs(this.budget.amount) * 100}%`
+        // width: '60%'
+        width: `${Math.abs(this.gotAmount) / Math.abs(this.budget.amount) * 100}%`
       }
     }
   },

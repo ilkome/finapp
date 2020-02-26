@@ -129,6 +129,20 @@
     }
   },
 
+  "projects": {
+    "title": "Projects",
+    "name": "Projects",
+    "create": "Save project",
+    "form": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Write name...",
+        "error": "Write name",
+        "exist": "Project with same name is exist"
+      }
+    }
+  },
+
   "stat": {
     "shortTitle": "Stat",
     "empty": "No stat for this period"
