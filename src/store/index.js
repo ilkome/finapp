@@ -11,6 +11,7 @@ import demo from '@/components/demo/store'
 import filter from '@/components/filter/store'
 import groups from '@/components/groups/store'
 import lang from '@/components/lang/store'
+import projects from '@/components/projects/store'
 import stat from '@/components/stat/store'
 import trnForm from '@/components/trnForm/store'
 import trns from '@/components/trns/store'
@@ -32,6 +33,7 @@ export default new Vuex.Store({
     filter,
     groups,
     lang,
+    projects,
     stat,
     trnForm,
     trns,

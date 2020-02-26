@@ -13,16 +13,16 @@ import Groups from '@/components/groups/Groups'
 import LayoutMobileMenu from '@/components/layout/LayoutMobileMenu'
 import LayoutMobileStat from '@/components/layout/LayoutMobileStat'
 import Menu from '@/components/layout/sidebar/Menu'
+import Projects from '@/components/projects/Projects'
 import Settings from '@/components/settings/Settings'
-import StatNew from '@/components/stat/StatNew'
 import TrnForm from '@/components/trnForm/TrnForm'
 import TrnModal from '@/components/trns/modal/TrnModal'
 import TrnsList from '@/components/trns/list/TrnsList'
 import WalletForm from '@/components/wallets/form/WalletForm'
 import WalletModal from '@/components/wallets/modal/WalletModal'
 import WalletsList from '@/components/wallets/list/WalletsList'
-import WalletsTotal from '@/components/wallets/total/WalletsTotal'
 import WalletsSort from '@/components/wallets/sort/WalletsSort'
+import WalletsTotal from '@/components/wallets/total/WalletsTotal'
 
 export default {
   components: {
@@ -37,8 +37,8 @@ export default {
     LayoutMobileMenu,
     LayoutMobileStat,
     Menu,
+    Projects,
     Settings,
-    StatNew,
     TrnForm,
     TrnModal,
     TrnsList,
@@ -185,8 +185,8 @@ export default {
                   Budgets
 
               transition(name="animation-tab")
-                .tab(v-if="activeTab === 'statNew'")
-                  StatNew
+                .tab(v-if="activeTab === 'projects'")
+                  Projects
 
           //------------------------------------------------
           //- menu
