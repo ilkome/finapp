@@ -56,7 +56,6 @@ TrnFormModal(
   .description
     .description__filed
       textarea.textarea(
-        v-focus="$store.state.ui.pc && show"
         v-model="description"
         :placeholder="$lang.trnForm.description.placeholder")
 
