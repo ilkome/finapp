@@ -285,10 +285,10 @@ ComponentWrap
 
   template(slot="bottom")
     .col
-        Button(
-          :class="['_text-center _blue _ml-big', { _inline: $store.state.ui.pc }]"
-          :title="$lang.categories.form.save"
-          v-on:onClick="handleSubmit")
+      Button(
+        :class="['_text-center _blue _ml-big', { _inline: $store.state.ui.pc }]"
+        :title="$lang.categories.form.save"
+        v-on:onClick="handleSubmit")
 </template>
 
 <style lang="stylus" scoped>
