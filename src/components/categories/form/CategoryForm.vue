@@ -29,6 +29,7 @@ export default {
       showParents: false,
       showColors: false,
       showIcons: false,
+      applyChildColor: true,
       filter: null,
       category: {
         color: '',
@@ -116,6 +117,18 @@ export default {
         }
 
         db.ref(`users/${uid}/categories/${id}`).set(categoriesValues)
+
+        if (this.applyChildColor) {
+          const childIds = this.$store.getters.getChildCategoriesIds(id)
+          const categories = this.$store.state.categories.items
+          for (const childId of childIds) {
+            const category = categories[childId]
+            db.ref(`users/${uid}/categories/${childId}`).set({
+              ...category,
+              color: categoriesValues.color
+            })
+          }
+        }
 
         this.$store.commit('setCategoryEditId', null)
         this.$store.dispatch('setActiveTab', 'categories')
@@ -214,6 +227,14 @@ ComponentWrap
             .inputModal._flex
               .inputModal__icon: div(:class="category.icon", :style="{ color: category.color }")
               .inputModal__label {{ $lang.categories.form.icon.label }}
+
+      template(v-if="$store.getters.getChildCategoriesIds(categoryId).length")
+        .form-line._p0._clean
+          Checkbox(
+            v-model="applyChildColor"
+            :title="$lang.categories.form.childColor"
+            :alt="true"
+          )
 
       template(v-if="$store.getters.getChildCategoriesIds(categoryId).length === 0")
         .form-line._p0._clean

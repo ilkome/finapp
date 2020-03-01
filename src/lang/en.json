@@ -125,6 +125,7 @@
       },
       "lastUsed": "Show in last used categories",
       "quickSelector": "Show in trnForm quick selector",
+      "childColor": "Apply color to all child categories",
       "save": "Save"
     }
   },
