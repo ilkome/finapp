@@ -1,46 +1,36 @@
 import localforage from 'localforage'
 import moment from 'moment'
 import { db } from '@/firebase'
-import { getCurrencies } from './api'
+import { getRatesOf } from './api'
 
 export default {
   async initCurrencies ({ rootState, commit }) {
     const uid = rootState.user.user.uid
+    const today = moment().valueOf()
 
-    // base currency
-    const userBaseCurrency = await db.ref(`users/${uid}/settings/baseCurrency`).once('value')
-    const baseCurrency = userBaseCurrency.val() || 'RUB'
-    const currenciesRef = `currencies/${baseCurrency}`
+    // user base currency in DB
+    const userCurrencyReq = await db.ref(`users/${uid}/settings/baseCurrency`).once('value')
+    const userCurrency = userCurrencyReq.val() || 'RUB'
 
-    // currencies
-    const currenciesSnapshot = await db.ref(currenciesRef).once('value')
-    let currenciesValue = currenciesSnapshot.val()
-    let isTodayCurrencies = true
+    // rates of base currency
+    const currencyRateReq = await db.ref(`currencies/${userCurrency}`).once('value')
+    const currencyRate = currencyRateReq.val() || {}
 
-    // have currencies for today?
-    if (currenciesValue) isTodayCurrencies = moment().isSame(currenciesValue.date, 'day')
+    let rates = currencyRate.rates
+    const isCurrencyUpdatedToday = moment(today).isSame(currencyRate.date, 'day')
 
-    // get currencies from rest api
-    if (!currenciesValue || !isTodayCurrencies) {
-      const currenciesResponse = await getCurrencies(baseCurrency)
-      if (currenciesResponse.data) {
-        currenciesValue = {
-          ...currenciesValue,
-          date: moment().valueOf(),
-          items: currenciesResponse.data.rates
-        }
-        db.ref(currenciesRef).set(currenciesValue)
-      }
+    // get new rates
+    if (!currencyRate.rates || !isCurrencyUpdatedToday) {
+      rates = await getRatesOf(userCurrency)
+      db.ref(`currencies/${userCurrency}`).set({
+        rates,
+        date: today
+      })
     }
 
-    currenciesValue = {
-      base: baseCurrency,
-      date: currenciesValue.date,
-      items: currenciesValue.items
-    }
-
-    commit('setCurrencies', currenciesValue)
-    localforage.setItem('next.currencies', currenciesValue)
+    const currencies = { base: userCurrency, rates }
+    commit('setCurrencies', currencies)
+    localforage.setItem('next.currencies', currencies)
   },
 
   setBaseCurrency ({ rootState, dispatch }, baseCurrency) {

@@ -24,7 +24,7 @@ export default {
     .inputText
       .currencies
         .currencies__item(
-          v-for="(item, currency) in $store.state.currencies.items"
+          v-for="(item, currency) in $store.state.currencies.rates"
           :class="{ _active: $store.state.currencies.base === currency }"
           @click="handleCurrencySelect(currency)"
         ) {{ currency }}

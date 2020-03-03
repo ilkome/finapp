@@ -21,7 +21,7 @@ export default {
   */
   getTotalOfTrnsIds: (state, getters, rootState, rootGetters) => (trnsIds, inculdeTrnasfers = false) => {
     const trns = rootState.trns.items
-    const currencies = rootState.currencies.items
+    const currencies = rootState.currencies.rates
     const wallets = rootState.wallets.items
     const baseCurrency = rootState.currencies.base
     const transferCategoryId = rootGetters.transferCategoryId

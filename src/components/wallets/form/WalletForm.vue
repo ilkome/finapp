@@ -211,7 +211,7 @@ ComponentWrap
           .currencies__item(
             :class="{ _active: wallet.currency === currency }"
             @click="handleCurrencySelect(currency)"
-            v-for="(item, currency) in $store.state.currencies.items"
+            v-for="(item, currency) in $store.state.currencies.rates"
           ) {{ currency }}
 
   template(slot="bottom")

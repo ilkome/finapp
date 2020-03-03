@@ -47,7 +47,7 @@ export default {
     },
 
     amountValueBaseCurrency () {
-      const currencies = this.$store.state.currencies.items
+      const currencies = this.$store.state.currencies.rates
       const baseValue = this.value / currencies[this.currency]
       return this.formatAmount(baseValue)
     },
