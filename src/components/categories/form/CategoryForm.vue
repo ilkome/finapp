@@ -287,7 +287,7 @@ ComponentWrap
     ModalBottom(
       :center="true"
       :show="showIcons"
-      :title="$lang.categories.form.color.placeholder"
+      :title="$lang.categories.form.icon.placeholder"
       v-on:onClose="showIcons = false")
       .form-line._text
         .inputText
@@ -295,7 +295,7 @@ ComponentWrap
             type="text"
             placeholder="Filter icons..."
             v-model="filter"
-            v-focus.lazy="showIcons")
+          )
           .inputText__label Filter
       .inputIcons
         .inputIcons__item(
