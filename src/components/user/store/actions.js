@@ -3,6 +3,7 @@ import localforage from 'localforage'
 import moment from 'moment'
 
 import { db } from '@/firebase'
+import pkg from '~/package'
 
 export default {
   initUser ({ dispatch }, userParams) {
@@ -60,6 +61,8 @@ export default {
     if (!usersInfoVal || (usersInfoVal && !usersInfoVal.creationDate)) {
       db.ref(`users-info/${user.uid}/creationDate`).set(todayValueOf)
     }
+    // set date of open app
+    db.ref(`users-info/${user.uid}/opensApp/${pkg.version.split('.').join('')}`).set(moment().valueOf())
   },
 
   async removeUserData ({ rootState, commit, dispatch }) {
