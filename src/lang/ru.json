@@ -22,6 +22,7 @@
   "userLogout": "Выход",
   "loginWithGoogle": "Войти через Google",
   "changeTheme": "Сменить оформление",
+  "createTrn": "Создать транзакцию",
 
   "base": {
     "sort": "Сортировка",

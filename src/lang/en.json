@@ -22,6 +22,7 @@
   "userLogout": "Logout",
   "loginWithGoogle": "Login with Google",
   "changeTheme": "Change theme",
+  "createTrn": "Create transaction",
 
   "base": {
     "sort": "Sort",

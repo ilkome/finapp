@@ -1,4 +1,5 @@
 <script>
+import Button from '@/components/shared/button/Button'
 import DashboardFilter from '@/components/dashboard/DashboardFilter'
 import DashboardNav from '@/components/dashboard/DashboardNav'
 import DashboardStatControl from '@/components/dashboard/DashboardStatControl'
@@ -11,6 +12,7 @@ import TrnsList from '@/components/trns/list/TrnsList'
 
 export default {
   components: {
+    Button,
     DashboardFilter,
     DashboardNav,
     DashboardStatControl,
@@ -36,6 +38,7 @@ export default {
           this.$store.getters.selectedTrnsIdsWithDate.length === 0) {
         return true
       }
+      return false
     }
   }
 }
@@ -49,7 +52,19 @@ export default {
   DashboardFilter
   DashboardStatControl
 
-  .dashboard__content
+  template(v-if="!$store.getters.hasTrns")
+    .startSomething
+      .options__item
+        Button._grey._center(
+          :title="$lang.createTrn"
+          v-on:onClick="$store.dispatch('openTrnForm', { action: 'create' })")
+
+      .options__item(v-if="$store.state.demo.hasDemo")
+        Button._grey._center(
+          :title="$lang.welcome.demo.btn"
+          v-on:onClick="$store.dispatch('createDemo')")
+
+  .dashboard__content(v-if="$store.getters.hasTrns")
     //- empty
     //------------------------------------------------
     template(v-if="isEmptyData")
@@ -72,7 +87,7 @@ export default {
 
     transition(name="animation-tab")
       .dashboard__tab(v-show="$store.state.dashboard.activeTab === 'balance'")
-        StatChartDonut
+        StatChartDonut(v-if="$store.getters.hasTrns")
 </template>
 
 <style lang="stylus" scoped>
@@ -103,4 +118,14 @@ export default {
     &._trns
       padding 60px 60px
       padding-top 30px
+
+.startSomething
+  padding 20px
+  display flex
+  flex-flow column
+  align-items center
+  justify-content center
+
+  .options__item
+    margin-bottom 40px
 </style>

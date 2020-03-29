@@ -1,4 +1,5 @@
 <script>
+import Button from '@/components/shared/button/Button'
 import Amount from '@/components/amount/Amount'
 import EmptyData from '@/components/shared/emptyData/EmptyData'
 import FilterItem from '@/components/filter/FilterItem'
@@ -11,6 +12,7 @@ import TrnsList from '@/components/trns/list/TrnsList'
 
 export default {
   components: {
+    Button,
     Amount,
     EmptyData,
     FilterItem,
@@ -86,10 +88,22 @@ export default {
   .block
     StatSummaryMobile(v-show="$store.state.ui.statSummuryVisibility === 'visible'")
 
+    template(v-if="!$store.getters.hasTrns")
+      .startSomething
+        .options__item
+          Button._grey._center(
+            :title="$lang.createTrn"
+            v-on:onClick="$store.dispatch('openTrnForm', { action: 'create' })")
+
+        .options__item(v-if="$store.state.demo.hasDemo")
+          Button._grey._center(
+            :title="$lang.welcome.demo.btn"
+            v-on:onClick="$store.dispatch('createDemo')")
+
     //- empty
     //------------------------------------------------
     EmptyData(
-      v-if="isEmptyData"
+      v-if="isEmptyData && $store.getters.hasTrns"
       :text="$lang.stat.empty")
 
     //- history
@@ -283,4 +297,14 @@ export default {
 .statItem
   &__trns
     padding-bottom $m8
+
+.startSomething
+  padding 20px
+  display flex
+  flex-flow column
+  align-items center
+  justify-content center
+
+  .options__item
+    margin-bottom 40px
 </style>
