@@ -8,8 +8,5 @@ moment.updateLocale('rus', {
   }
 })
 
-// demo
-export const demoUid = '9yrjuIeeOKNj5TxwoPhQobxbE153'
-
 // tester
 export const testerEmail = 'ilya.komichev@gmail.com'

@@ -1,5 +1,5 @@
-<template lang="pug" functional>
-.appName Finapp
+<template lang="pug">
+.appName {{ $lang.appName }}
 </template>
 
 <style lang="stylus" scoped>
@@ -7,6 +7,7 @@
 @import "~@/stylus/variables/fonts"
 
 .appName
+  text-align center
   typo-appName()
 
   &:first-letter

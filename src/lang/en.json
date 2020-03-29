@@ -1,4 +1,5 @@
 {
+  "appName": "Finapp",
   "app": {
     "desc": "Powerful personal finance application",
     "welcome": "Welcome to Finapp",
@@ -17,6 +18,10 @@
       "name": "by Ilya Komichev"
     }
   },
+
+  "userLogout": "Logout",
+  "loginWithGoogle": "Login with Google",
+  "changeTheme": "Change theme",
 
   "base": {
     "sort": "Sort",

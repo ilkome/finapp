@@ -1,15 +1,15 @@
 import moment from 'moment'
 import { db } from '@/firebase'
-import { demoUid } from '@/config'
 
 export default {
   async getDemoDataStatus ({ commit }) {
-    await db.ref(`users/${demoUid}/isDemo`).once('value').then((isDemo) => {
-      isDemo.val()
-        ? commit('setDemoDataStatus', true)
-        : commit('setDemoDataStatus', false)
-    },
-    () => { commit('setDemoDataStatus', false) })
+    try {
+      const damoReq = await db.ref('demo-data/isDemo').once('value')
+      if (damoReq.val()) {
+        commit('setDemoDataStatus', true)
+      }
+    }
+    catch (error) {}
   },
 
   async createDemo ({ rootState, commit, dispatch }) {
@@ -17,7 +17,7 @@ export default {
     dispatch('setActiveTab', 'stat')
     const uid = rootState.user.user.uid
 
-    await db.ref(`users/${demoUid}`).once('value')
+    await db.ref('demo-data').once('value')
       .then(demo => {
         const demoData = demo.val()
         db.ref(`users/${uid}/accounts`).set(demoData.accounts)

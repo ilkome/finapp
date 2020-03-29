@@ -37,7 +37,7 @@ export default {
     await this.$store.dispatch('initApp')
     this.handleWindowHistory()
     this.getPageDimensions()
-    window.addEventListener('resize', debounce(this.getPageDimensions, 1000))
+    window.addEventListener('resize', debounce(this.getPageDimensions, 600))
   },
 
   methods: {

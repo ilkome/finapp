@@ -40,6 +40,11 @@ export default {
       this.error = e.message
       this.loading[loginType] = false
       console.log(e)
+    },
+
+    changeLang (lang) {
+      this.$store.dispatch('setLang', lang)
+      this.$setLang(lang)
     }
   }
 }
@@ -47,11 +52,11 @@ export default {
 
 <template lang="pug">
 .tab
-  .themeChanger
-    Button._grey(
-      icon="mdi mdi-palette"
-      title="Change theme"
-      v-on:onClick="$store.dispatch('changeTheme')")
+  .langChanger
+    .langChanger__item(@click="changeLang('ru')") RU
+    .langChanger__item(@click="changeLang('en')") EN
+
+  .themeChanger(@click="$store.dispatch('changeTheme')") {{ $lang.changeTheme }}
 
   .tab__content
     AppName
@@ -62,7 +67,7 @@ export default {
       transition(name="fadeIn")
         .loginButton__spiner(v-if="loading.google")
           Spiner
-      .loginButton__text Login with Google
+      .loginButton__text {{ $lang.loginWithGoogle }}
 
   .copyright
     Copyright
@@ -93,10 +98,24 @@ export default {
     margin 0 auto
     padding 100px $m9
 
+.langChanger
+  display flex
+  position absolute
+  left $m7
+  top $m7
+
+  @media $media-laptop
+    left $m9
+    top $m9
+
+  &__item
+    padding 10px
+
 .themeChanger
   position absolute
   right $m7
   top $m7
+  padding 10px
 
   @media $media-laptop
     right $m9

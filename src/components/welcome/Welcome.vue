@@ -43,14 +43,14 @@ export default {
           .header
             .header__title {{ $lang.app.welcome }}
             .header__desc {{ $lang.app.desc }}
-            .header__user(@click="$store.dispatch('signOut')") Logout {{ $store.state.user.user.email }}
+            .header__user(@click="$store.dispatch('signOut')") {{ $lang.userLogout }} {{ $store.state.user.user.email }}
           .options
             .options__item
               .options__desc {{ $lang.app.lang.select }}
               LangSelector
               .options__desc {{ $lang.app.theme.select }}
               ThemeSelector
-              Button._blue(
+              Button._blue._center(
                 :title="$lang.buttons.nextStep"
                 v-on:onClick="step = 1")
 
@@ -61,11 +61,11 @@ export default {
           .header(@click="$store.dispatch('changeTheme')")
             .header__title {{ $lang.app.welcome }}
             .header__desc {{ $lang.app.desc }}
-            .header__user(@click="$store.dispatch('signOut')") Logout {{ $store.state.user.user.email }}
+            .header__user(@click="$store.dispatch('signOut')") {{ $lang.userLogout }} {{ $store.state.user.user.email }}
           .options
             .options__item
               .options__desc {{ $lang.welcome.create.text }}
-              Button._blue(
+              Button._blue._center(
                 :title="$lang.welcome.create.btn"
                 v-on:onClick="step = 2")
 
@@ -88,10 +88,10 @@ export default {
             .header
               .header__title {{ $lang.app.welcome }}
               .header__desc {{ $lang.app.desc }}
-              .header__user(@click="$store.dispatch('signOut')") Logout {{ $store.state.user.user.email }}
+              .header__user(@click="$store.dispatch('signOut')") {{ $lang.userLogout }} {{ $store.state.user.user.email }}
             .text {{ $lang.welcome.createFirstWallet.text }}
             .button
-              Button._blue(
+              Button._blue._center(
                 :title="$lang.welcome.createFirstWallet.btn"
                 v-on:onClick="showWalletForm = true")
 
@@ -103,7 +103,7 @@ export default {
           .icon: .mdi.mdi-chart-bubble
           .text {{ $lang.welcome.createFirstCategory.text }}
           .button
-            Button._blue(
+            Button._blue._center(
               :title="$lang.welcome.createFirstCategory.btn"
               v-on:onClick="showCategoryForm = true")
 
@@ -154,7 +154,7 @@ export default {
     padding-bottom 100px
 
     @media $media-laptop
-      width 400px
+      width 550px
 
     .component
       padding 0
@@ -166,25 +166,23 @@ export default {
     font-size 28px
     font-weight 500
     letter-spacing 1px
-    @media $media-laptop
-      font-size 28px
-      letter-spacing 3px
 
   &__desc
-    padding-top $m5
+    padding-top 20px
     font-size 12px
     color var(--c-font-4)
+
     @media $media-laptop
-      padding-top $m7
+      padding-top 30px
       font-size 14px
 
   &__user
     cursor pointer
-    padding-top $m5
+    padding-top 30px
     font-size 12px
 
     @media $media-laptop
-      padding-top $m7
+      padding-top 30px
       font-size 14px
 
 .options

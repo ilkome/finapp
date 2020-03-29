@@ -109,6 +109,9 @@ export default {
   &:active
     transform scale(0.96)
 
+  &._center
+    text-align center
+
   &._border
     display flex
     align-items center
