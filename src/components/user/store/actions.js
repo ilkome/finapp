@@ -55,7 +55,6 @@ export default {
     db.ref(`users-info/${user.uid}/email`).set(user.email)
     db.ref(`users-info/${user.uid}/uid`).set(user.uid)
     db.ref(`users-info/${user.uid}/loginDate`).set(todayValueOf)
-    db.ref(`users-info/${user.uid}/opens`).set(usersInfoVal.opens ? usersInfoVal.opens + 1 : 1)
 
     // set creation date once
     if (!usersInfoVal || (usersInfoVal && !usersInfoVal.creationDate)) {
