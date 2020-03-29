@@ -44,7 +44,7 @@ export default {
         :visible="visibleSettingsMenu"
         v-on:onClickOpener="visibleSettingsMenu = !visibleSettingsMenu")
         template(slot="opener")
-          .link(:class="{ _active: visibleSettingsMenu }"): .mdi.mdi-settings-outline
+          .link(:class="{ _active: visibleSettingsMenu }"): .mdi.mdi-tune
 
         template(slot="content")
           ContextMenuItem(
@@ -52,7 +52,7 @@ export default {
             title="Change theme"
             v-on:onClick="$store.dispatch('changeTheme')")
           ContextMenuItem(
-            icon="mdi mdi-settings"
+            icon="mdi mdi-cog-outline"
             :title="$lang.settings.open"
             v-on:onClick="$store.dispatch('setActiveTab', 'settings')"
             v-on:onClose="visibleSettingsMenu = !visibleSettingsMenu")

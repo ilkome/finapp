@@ -1,5 +1,4 @@
 <script>
-import { focus } from 'vue-focus'
 import { db } from '@/firebase'
 import { generateSimpleId } from '@/utils/id'
 import colors from '@/components/ui/store/colors'
@@ -12,6 +11,10 @@ import ComponentWrap from '@/components/layout/component/Component'
 import ModalBottom from '@/components/modal/ModalBottom'
 import ModalButton from '@/components/modal/ModalButton'
 
+function random (icons) {
+  return icons[Math.floor(Math.random() * icons.length)]
+}
+
 export default {
   components: {
     Button,
@@ -22,15 +25,12 @@ export default {
     ModalButton
   },
 
-  directives: { focus },
-
   data () {
     return {
       showParents: false,
       showColors: false,
       showIcons: false,
       applyChildColor: true,
-      filter: null,
       category: {
         color: '',
         icon: '',
@@ -46,11 +46,6 @@ export default {
   computed: {
     categoryId () {
       return this.$store.state.categories.editId
-    },
-
-    selectedIcons () {
-      if (this.filter) return icons.filter(icon => icon.includes(this.filter.toLowerCase()))
-      return icons
     }
   },
 
@@ -72,7 +67,7 @@ export default {
     this.colors = colors
     this.icons = icons
     if (!this.$store.state.categories.editId) {
-      this.category.icon = `mdi ${icons[Math.floor(Math.random() * icons.length)]}`
+      this.category.icon = random(random(icons))
       this.category.color = colors[Math.floor(Math.random() * colors.length)]
     }
   },
@@ -88,7 +83,7 @@ export default {
     },
 
     handleIconSelect (icon) {
-      this.category.icon = `mdi ${icon}`
+      this.category.icon = icon
       this.showIcons = false
     },
 
@@ -193,7 +188,6 @@ ComponentWrap
             type="text"
             :placeholder="$lang.categories.form.name.placeholder"
             v-model="category.name"
-            v-focus.lazy="$store.state.ui.pc"
           ).inputText__value
           .inputText__label {{ $lang.categories.form.name.label }}
 
@@ -260,8 +254,8 @@ ComponentWrap
             .colorItem(
               :class="{ _active: category.color === color }"
               :style="{ background: color }"
-              @click="handleColorSelect(color)"
               v-for="color in colors"
+              @click="handleColorSelect(color)"
             )
       .customColor
         .customColor__title {{ $lang.categories.form.color.custom }}
@@ -288,21 +282,19 @@ ComponentWrap
       :center="true"
       :show="showIcons"
       :title="$lang.categories.form.icon.placeholder"
-      v-on:onClose="showIcons = false")
-      .form-line._text
-        .inputText
-          input.inputText__value(
-            type="text"
-            placeholder="Filter icons..."
-            v-model="filter"
+      @onClose="showIcons = false"
+    )
+      .icons
+        .icons__group(
+          v-for="iconGroup in icons"
+        )
+          .iconItem(
+            v-for="icon in iconGroup"
+            :class="{ _active: category.icon === icon }"
+            :style="{ color: category.color }"
+            @click="handleIconSelect(icon)"
           )
-          .inputText__label Filter
-      .inputIcons
-        .inputIcons__item(
-          :class="{ _active: category.icon === `mdi ${icon}` }"
-          @click="handleIconSelect(icon)"
-          v-for="icon in selectedIcons")
-          div(:class="`mdi ${icon}`")
+            div(:class="icon")
 
   template(slot="bottom")
     .col
@@ -315,6 +307,25 @@ ComponentWrap
 <style lang="stylus" scoped>
 @import "~@/stylus/variables/margins"
 @import "~@/stylus/variables/media"
+
+.icons
+  &__group
+    display grid
+    grid-template-columns repeat(auto-fill, minmax(50px, 1fr))
+    padding-bottom 20px
+
+.iconItem
+  display flex
+  align-items center
+  justify-content center
+  padding 8px
+  font-size 30px
+  min-height 50px
+
+  &._active
+    background var(--c-bg-2)
+    border-radius 4px
+    box-shadow 0 2px 10px 0 var(--shaddow)
 
 .customColor
   margin (- $m7)

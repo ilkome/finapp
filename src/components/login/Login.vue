@@ -64,14 +64,6 @@ export default {
           Spiner
       .loginButton__text Login with Google
 
-    .loginButton._grey(
-      @click.prevent="signInWithGoogle"
-      :class="{ _loading: loading.demo }")
-      transition(name="fadeIn")
-        .loginButton__spiner(v-if="loading.demo")
-          Spiner
-      .loginButton__text Open demo
-
   .copyright
     Copyright
 </template>

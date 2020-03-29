@@ -41,7 +41,7 @@ export default {
           isOpen: false
         },
         settings: {
-          icon: 'mdi mdi-settings',
+          icon: 'mdi mdi-cog-outline',
           name: this.$lang.settings.title,
           isOpen: true
         }

@@ -108,6 +108,10 @@ export default {
     const trns = rootState.trns.items
     const categories = rootState.categories.items
     const trnCategoryId = trns[trnId].categoryId
+    if (!categories[trnCategoryId]) {
+      console.log('no category', trnId, trns[trnId], categories[trnCategoryId])
+      return trnCategoryId
+    }
     const trnCategoryParentId = categories[trnCategoryId].parentId
     return trnCategoryParentId || trnCategoryId
   },
