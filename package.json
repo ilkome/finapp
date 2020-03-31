@@ -1,6 +1,6 @@
 {
   "name": "finapp",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "scripts": {
     "build": "vue-cli-service build --modern",
     "dev": "npm run serve",
