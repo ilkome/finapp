@@ -25,7 +25,7 @@ export default {
         db.ref(`users/${uid}/trns`).set(demoData.trns)
 
         db.ref(`users/${uid}/settings/baseCurrency`).set('USD')
-        db.ref(`users/${uid}/settings/demo/${moment().format()}`).set(true)
+        db.ref(`users-info/${uid}/actions/${moment().valueOf()}`).set('demo')
 
         dispatch('initCurrencies')
         commit('setAppStatus', 'ready')
