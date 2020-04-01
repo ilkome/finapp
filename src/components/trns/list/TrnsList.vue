@@ -125,7 +125,7 @@ export default {
                 :key="trnId"
                 :trn="$store.state.trns.items[trnId]"
                 :trnId="trnId"
-                :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].accountId]")
+                :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]")
 
       //- stat view
       template(v-else)
@@ -136,7 +136,7 @@ export default {
             :trn="$store.state.trns.items[trnId]"
             :trnId="trnId"
             :ui="ui"
-            :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].accountId]")
+            :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]")
 
   .trnsList__pages(v-if="!isShowAllTrns")
     Button(

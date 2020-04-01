@@ -1,6 +1,6 @@
 import moment from 'moment'
 import { db } from '@/firebase'
-import { generateDateId } from '@/utils/id'
+import generateId from '@/utils/id'
 
 export default {
   initGroups ({ dispatch, rootGetters }) {
@@ -18,7 +18,7 @@ export default {
   },
 
   async createGroup ({ rootGetters }, values) {
-    const id = generateDateId()
+    const id = generateId(moment().valueOf())
     const uid = rootGetters.userUid
     const path = `users/${uid}/groups/${id}`
 
@@ -55,16 +55,16 @@ export default {
       .then(() => { return true })
   },
 
-  async removeTrnFromGroup ({ dispatch, rootGetters }, { groupId, trnId }) {
+  removeTrnFromGroup ({ dispatch, rootGetters }, { groupId, trnId }) {
     const uid = rootGetters.userUid
 
     // remove from group
-    await db.ref(`users/${uid}/groups/${groupId}/trnsIds/${trnId}`)
-      .remove()
+    console.log(`users/${uid}/groups/${groupId}/trnsIds/${trnId}`)
+    db.ref(`users/${uid}/groups/${groupId}/trnsIds/${trnId}`).set(null)
       .then(() => { return true })
 
     // remove from trn
-    await db.ref(`users/${uid}/trns/${trnId}/groups/${groupId}`)
+    db.ref(`users/${uid}/trns/${trnId}/groups/${groupId}`)
       .remove()
       .then(() => { return true })
   },

@@ -22,7 +22,7 @@ export default {
             date: moment().valueOf(),
             description: null,
             trnId: null,
-            walletId: lastTrn.accountId
+            walletId: lastTrn.walletId
           })
         }
         else {
@@ -55,7 +55,7 @@ export default {
             date: trn.date,
             description: trn.description || null,
             trnId,
-            walletId: trn.accountId
+            walletId: trn.walletId
           })
         }
         break
@@ -72,7 +72,7 @@ export default {
             date: moment().valueOf(),
             description: trn.description || null,
             trnId: null,
-            walletId: trn.accountId
+            walletId: trn.walletId
           })
         }
         break

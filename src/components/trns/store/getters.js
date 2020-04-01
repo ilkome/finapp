@@ -32,7 +32,7 @@ export default {
     for (const key of trnsIds) {
       const trn = trns[key]
       if (trn && (inculdeTrnasfers || trn.categoryId !== transferCategoryId)) {
-        const wallet = wallets[trn.accountId]
+        const wallet = wallets[trn.walletId]
         if (wallet && currencies) {
           let amount = 0
           if (wallet.currency !== baseCurrency) {
@@ -58,7 +58,7 @@ export default {
     const trns = rootState.trns.items
     const trnsIds = []
     for (const trnId in trns) {
-      if (trns[trnId] && trns[trnId].accountId === walletId) {
+      if (trns[trnId] && trns[trnId].walletId === walletId) {
         trnsIds.push(trnId)
       }
     }
@@ -117,7 +117,7 @@ export default {
 
     // filter wallet
     if (filterWalletId) {
-      trnsIds = trnsIds.filter(trnId => trns[trnId].accountId === filterWalletId)
+      trnsIds = trnsIds.filter(trnId => trns[trnId].walletId === filterWalletId)
     }
 
     // filter category
@@ -220,7 +220,7 @@ export default {
 
     // filter wallet
     if (filterWalletId) {
-      trnsIds = trnsIds.filter(trnId => trns[trnId].accountId === filterWalletId)
+      trnsIds = trnsIds.filter(trnId => trns[trnId].walletId === filterWalletId)
     }
 
     // filter category

@@ -1,6 +1,6 @@
 import moment from 'moment'
 import { db } from '@/firebase'
-import { generateDateId } from '@/utils/id'
+import generateId from '@/utils/id'
 
 export default {
   initBudgets ({ dispatch, rootGetters }) {
@@ -18,7 +18,7 @@ export default {
   },
 
   async createBudget ({ rootGetters }, values) {
-    const id = generateDateId()
+    const id = generateId(moment().valueOf())
     const uid = rootGetters.userUid
     const path = `users/${uid}/budgets/${id}`
 
@@ -57,18 +57,21 @@ export default {
       .then(() => { return true })
   },
 
-  async removeTrnFromBudget ({ rootGetters }, { budgetId, trnId }) {
+  removeTrnFromBudget ({ rootGetters }, { budgetId, trnId }) {
     const uid = rootGetters.userUid
+    console.log('hey')
 
     // remove from budget
-    await db.ref(`users/${uid}/budgets/${budgetId}/trnsIds/${trnId}`)
+    db.ref(`users/${uid}/budgets/${budgetId}/trnsIds/${trnId}`)
       .remove()
       .then(() => { return true })
 
     // remove from trn
-    await db.ref(`users/${uid}/trns/${trnId}/budgets/${budgetId}`)
+    db.ref(`users/${uid}/trns/${trnId}/budgets/${budgetId}`)
       .remove()
       .then(() => { return true })
+
+    console.log('hey2')
   },
 
   toogleAddToBudget ({ dispatch, rootState, rootGetters }, { budgetId, trnId }) {

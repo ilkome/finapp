@@ -14,7 +14,7 @@ export default {
 
       for (const trnId of trnsIds) {
         const trn = this.$store.state.trns.items[trnId]
-        const wallet = this.$store.state.wallets.items[trn.accountId]
+        const wallet = this.$store.state.wallets.items[trn.walletId]
         const category = this.$store.state.categories.items[trn.categoryId]
 
         trns[trnId] = {

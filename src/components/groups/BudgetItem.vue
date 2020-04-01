@@ -26,6 +26,7 @@ export default {
 
   computed: {
     formatedDate () {
+      console.log(this.budget)
       return formatDate(this.budget.date, 'number')
     },
 
@@ -42,6 +43,7 @@ export default {
             return 0
           })
       }
+      return []
     },
 
     gotAmount () {
@@ -54,6 +56,17 @@ export default {
     styles () {
       return {
         width: `${Math.abs(this.gotAmount.incomes - this.gotAmount.expenses) / Math.abs(this.gotAmount.incomes) * 100}%`
+      }
+    }
+  },
+
+  async mounted () {
+    if (this.budget.trnsIds) {
+      for (const trnId of Object.keys(this.budget.trnsIds)) {
+        if (!this.$store.state.trns.items[trnId]) {
+          console.log('remove', this.budget.id, trnId)
+          await this.$store.dispatch('removeTrnFromGroup', { groupId: this.budget.id, trnId })
+        }
       }
     }
   },

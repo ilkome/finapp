@@ -35,7 +35,7 @@ export default {
       return this.$store.state.categories.items[this.$store.state.trns.items[this.trnId].categoryId]
     },
     wallet () {
-      return this.$store.state.wallets.items[this.$store.state.trns.items[this.trnId].accountId]
+      return this.$store.state.wallets.items[this.$store.state.trns.items[this.trnId].walletId]
     },
     budgets () {
       return this.$store.getters.budgets
@@ -56,7 +56,7 @@ export default {
       this.$store.commit('hideTrnModal')
       this.$store.dispatch('setActiveTab', 'stat')
       this.$store.commit('setFilterDateNow')
-      this.$store.dispatch('setFilterWalletId', this.$store.state.trns.items[this.trnId].accountId)
+      this.$store.dispatch('setFilterWalletId', this.$store.state.trns.items[this.trnId].walletId)
     },
     handleDublicateTrn () {
       const trnId = this.trnId
@@ -132,7 +132,7 @@ ModalBottom(
         icon="mdi mdi-chart-bubble"
         v-on:onClick="handleSetFilterCategory")
 
-      Button(
+      Button.marginBottom(
         :class="{ marginBottom: budgets }"
         className="_grey"
         title="Set wallet filter"
@@ -140,6 +140,7 @@ ModalBottom(
         v-on:onClick="handleSetFilterWallet")
 
       Button(
+        v-if="budgets && $store.getters.isTester"
         :class="{ marginBottom: groups }"
         className="_grey"
         title="Show budgets"
@@ -147,13 +148,14 @@ ModalBottom(
         v-on:onClick="showModalBudgets = true")
 
       Button(
+        v-if="groups && $store.getters.isTester"
         className="_grey"
         title="Show groups"
         icon="mdi mdi-folder-multiple-outline"
         v-on:onClick="showModalGroups = true")
 
   //- budgets
-  template(v-if="budgets")
+  template(v-if="groups && $store.getters.isTester")
     ModalBottom(
       :show="showModalBudgets"
       title="Budgets"
@@ -171,7 +173,7 @@ ModalBottom(
           .item__amount
             Amount(:currency="budget.currency" :value="budget.amount")
 
-  template(v-if="groups")
+  template(v-if="groups && $store.getters.isTester")
     ModalBottom(
       :show="showModalGroups"
       title="groups"

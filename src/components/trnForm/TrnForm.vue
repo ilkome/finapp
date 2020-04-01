@@ -1,6 +1,6 @@
 <script>
 import moment from 'moment'
-import { generateDateId } from '@/utils/id'
+import generateId from '@/utils/id'
 
 import Amount from '@/components/amount/Amount'
 import CategoriesView from '@/components/categories/list/CategoriesView'
@@ -94,7 +94,7 @@ export default {
 
     handleSubmitTrn () {
       const values = { ...this.$store.state.trnForm.values }
-      const id = values.trnId || generateDateId()
+      const id = values.trnId || generateId(moment().valueOf())
 
       this.$store.dispatch('addTrn', {
         id,
@@ -111,7 +111,7 @@ export default {
 
       // Income
       this.$store.dispatch('addTrn', {
-        id: generateDateId(),
+        id: generateId(moment().valueOf()),
         values: {
           ...values,
           walletId: this.$store.state.trnForm.transfer.to,
@@ -121,7 +121,7 @@ export default {
 
       // Expense
       this.$store.dispatch('addTrn', {
-        id: generateDateId(),
+        id: generateId(moment().valueOf()),
         values: {
           ...values,
           walletId: this.$store.state.trnForm.transfer.from,

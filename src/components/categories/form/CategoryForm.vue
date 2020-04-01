@@ -1,6 +1,6 @@
 <script>
 import { db } from '@/firebase'
-import { generateSimpleId } from '@/utils/id'
+import generateId from '@/utils/id'
 import colors from '@/components/ui/store/colors'
 import icons from '@/components/ui/store/icons'
 
@@ -99,7 +99,7 @@ export default {
     handleSubmit () {
       if (this.validateForm()) {
         const uid = this.$store.state.user.user.uid
-        const id = this.categoryId || generateSimpleId()
+        const id = this.categoryId || generateId()
 
         const categoriesValues = {
           color: this.category.color,

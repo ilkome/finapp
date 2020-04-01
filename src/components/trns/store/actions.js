@@ -15,17 +15,15 @@ export default {
     const uid = rootState.user.user.uid
     const trns = rootState.trns.items
     let isTrnSavedOnline = false
-
     const formatedTrnValues = {
-      ...values,
-      accountId: values.walletId,
-      walletId: values.walletId,
       amount: values.amount,
       categoryId: values.categoryId,
       date: moment(values.date).valueOf(),
       description: values.description || null,
-      editDate: moment().valueOf(),
-      type: values.amountType || 0
+      edited: moment().valueOf(),
+      groups: values.groups || null,
+      type: Number(values.amountType) || 0,
+      walletId: values.walletId
     }
 
     localforage.setItem('next.trns', { ...trns, [id]: formatedTrnValues })
@@ -73,13 +71,32 @@ export default {
   },
 
   // init
-  initTrns ({ rootState, dispatch, commit }) {
+  async initTrns ({ rootState, dispatch, commit }) {
     const uid = rootState.user.user.uid
 
-    db.ref(`users/${uid}/trns`).on('value', snapshot => {
+    await db.ref(`users/${uid}/trns`).on('value', snapshot => {
       const items = Object.freeze(snapshot.val())
-      dispatch('setTrns', items)
+
+      for (const trnId of Object.keys(items)) {
+        if (!items[trnId].walletId || items[trnId].accountId) {
+          commit('setAppStatus', 'loading')
+          const trn = items[trnId]
+          console.log(trnId)
+          db.ref(`users/${uid}/trns/${trnId}`)
+            .set({
+              amount: trn.amount,
+              categoryId: trn.categoryId,
+              date: Number(trn.date),
+              description: trn.description || null,
+              edited: moment().valueOf(),
+              groups: trn.groups || null,
+              type: Number(trn.type),
+              walletId: trn.accountId || trn.walletId
+            })
+        }
+      }
       commit('setAppStatus', 'ready')
+      dispatch('setTrns', items)
     }, e => console.error(e))
   },
 
