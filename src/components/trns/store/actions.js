@@ -76,23 +76,23 @@ export default {
 
     await db.ref(`users/${uid}/trns`).on('value', snapshot => {
       const items = Object.freeze(snapshot.val())
-
-      for (const trnId of Object.keys(items)) {
-        if (!items[trnId].walletId || items[trnId].accountId) {
-          commit('setAppStatus', 'loading')
-          const trn = items[trnId]
-          console.log(trnId)
-          db.ref(`users/${uid}/trns/${trnId}`)
-            .set({
-              amount: trn.amount,
-              categoryId: trn.categoryId,
-              date: Number(trn.date),
-              description: trn.description || null,
-              edited: moment().valueOf(),
-              groups: trn.groups || null,
-              type: Number(trn.type),
-              walletId: trn.accountId || trn.walletId
-            })
+      if (items) {
+        for (const trnId of Object.keys(items)) {
+          if (!items[trnId].walletId || items[trnId].accountId) {
+            commit('setAppStatus', 'loading')
+            const trn = items[trnId]
+            db.ref(`users/${uid}/trns/${trnId}`)
+              .set({
+                amount: trn.amount,
+                categoryId: trn.categoryId,
+                date: Number(trn.date),
+                description: trn.description || null,
+                edited: moment().valueOf(),
+                groups: trn.groups || null,
+                type: Number(trn.type),
+                walletId: trn.accountId || trn.walletId
+              })
+          }
         }
       }
       commit('setAppStatus', 'ready')
