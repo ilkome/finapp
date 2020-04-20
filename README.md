@@ -51,6 +51,12 @@ $ npm install
     "currencies": {
       ".read": "auth != null",
       ".write": "auth != null"
+    },
+    "users-info": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
     }
   }
 }
