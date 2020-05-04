@@ -10,9 +10,10 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "gulp",
-    "dev": "gulp",
-    "upload": "gulp upload",
+    "gulp": "node node_modules/gulp/bin/gulp.js",
+    "start": "npm run gulp",
+    "dev": "npm run gulp",
+    "upload": "node build/build.js upload",
     "build": "cross-env NODE_ENV=production gulp build && node build/build.js && gulp css && gulp generate-service-worker-dist",
     "build-js": "node build/build.js",
     "build-upload": "cross-env NODE_ENV=production gulp build && node build/build.js && gulp css && gulp generate-service-worker-dist && gulp upload",
@@ -84,21 +85,21 @@
     "webpack-merge": "^4.1.1"
   },
   "dependencies": {
-    "axios": "^0.17.1",
-    "firebase": "^4.9.1",
+    "axios": "^0.19.2",
+    "firebase": "^7.14.2",
     "font-awesome-stylus": "^4.7.1",
     "fuse.js": "^3.2.0",
-    "localforage": "^1.5.6",
+    "localforage": "^1.7.3",
     "lodash": "^4.17.4",
     "mathjs": "^3.20.1",
     "moment": "^2.20.1",
     "swiper": "^4.1.0",
-    "v-tooltip": "^2.0.0-rc.30",
+    "v-tooltip": "^2.0.3",
     "velocity-animate": "^1.5.1",
     "vue": "^2.5.13",
     "vue-focus": "^2.1.0",
-    "vue-notification": "^1.3.6",
-    "vue-shortkey": "^3.0.4",
-    "vuex": "^3.0.1"
+    "vue-notification": "^1.3.20",
+    "vue-shortkey": "^3.1.7",
+    "vuex": "^3.3.0"
   }
 }
