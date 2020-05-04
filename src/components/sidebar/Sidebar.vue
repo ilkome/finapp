@@ -214,9 +214,9 @@ export default {
         this.visibleAccounts = +count
       }
     },
-    avaliableForDelete(accountId) {
-      const account = this.accounts.find(account => account.id === accountId)
-      const trnsInAccount = this.trns.find(trn => trn.accountId === account.id)
+    avaliableForDelete(walletId) {
+      const account = this.accounts.find(account => account.id === walletId)
+      const trnsInAccount = this.trns.find(trn => trn.walletId === account.id)
 
       if (trnsInAccount) {
         return {
@@ -228,9 +228,9 @@ export default {
         allow: true
       }
     },
-    async deleteAccount(accountId) {
+    async deleteAccount(walletId) {
       this.$store.commit('showLoader')
-      await this.$store.dispatch('deleteAccount', accountId)
+      await this.$store.dispatch('deleteAccount', walletId)
       this.questionId = null
       this.$store.commit('closeLoader')
       this.$notify({
@@ -240,8 +240,8 @@ export default {
         type: 'success'
       })
     },
-    askQuestion(accountId) {
-      this.questionId = accountId
+    askQuestion(walletId) {
+      this.questionId = walletId
     },
     closeConfirmPop() {
       this.questionId = null

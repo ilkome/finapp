@@ -47,8 +47,8 @@ export default {
           trn.date <= moment(options.endDate).endOf('day').valueOf())
       }
 
-      if (options.accountId) {
-        trns = trns.filter(trn => trn.accountId === options.accountId)
+      if (options.walletId) {
+        trns = trns.filter(trn => trn.walletId === options.walletId)
       }
 
       if (options.categoryId) {

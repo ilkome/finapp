@@ -299,7 +299,7 @@ export default {
     account() {
       if (this.account && this.$store.state.trnForm.action === 'create') {
         this.values.account = this.account
-        this.values.accountId = this.account.id
+        this.values.walletId = this.account.id
         this.values.accountName = this.account.name
       }
     },
@@ -360,12 +360,12 @@ export default {
           // Create
           if (this.$store.state.trnForm.action === 'create') {
             const lastTrn = this.$store.getters.trns[0]
-            const lastAccount = this.accounts.find(a => a.id === lastTrn.accountId)
+            const lastAccount = this.accounts.find(a => a.id === lastTrn.walletId)
             this.$store.commit('setTrnFormCategoryId', lastTrn.categoryId)
             this.values = {
               date: moment(),
               account: lastAccount,
-              accountId: lastTrn.accountId,
+              walletId: lastTrn.walletId,
               accountName: lastTrn.accountName,
               amount: null,
               categoryId: lastTrn.categoryId,
@@ -376,12 +376,12 @@ export default {
               description: '',
               accountFrom: {
                 ...lastTrn.account,
-                id: lastTrn.accountId,
+                id: lastTrn.walletId,
                 name: lastTrn.accountName
               },
               accountTo: {
                 ...lastTrn.account,
-                id: lastTrn.accountId,
+                id: lastTrn.walletId,
                 name: lastTrn.accountName
               }
             }
@@ -390,14 +390,14 @@ export default {
           // Update
           if (this.$store.state.trnForm.action === 'update') {
             const trn = this.trns.find(trn => trn.id === this.$store.state.trnForm.updateTrnId)
-            const account = this.accounts.find(a => a.id === trn.accountId)
+            const account = this.accounts.find(a => a.id === trn.walletId)
             if (trn) {
               this.$store.commit('setTrnFormCategoryId', trn.categoryId)
               this.values = {
                 id: trn.id,
                 date: moment(trn.date),
                 account: account,
-                accountId: trn.accountId,
+                walletId: trn.walletId,
                 accountName: trn.accountName,
                 amount: trn.amount,
                 categoryId: trn.categoryId,
@@ -407,12 +407,12 @@ export default {
                 description: trn.description,
                 accountFrom: {
                   ...trn.account,
-                  id: trn.accountId,
+                  id: trn.walletId,
                   name: trn.accountName
                 },
                 accountTo: {
                   ...trn.account,
-                  id: trn.accountId,
+                  id: trn.walletId,
                   name: trn.accountName
                 }
               }
@@ -520,7 +520,7 @@ export default {
             break
           default:
             this.values.account = account
-            this.values.accountId = account.id
+            this.values.walletId = account.id
             this.values.accountName = account.name
             this.values.currency = account.currency
         }
@@ -568,7 +568,7 @@ export default {
           })
           return
         }
-        if (!this.values.accountId && this.values.type !== 2) {
+        if (!this.values.walletId && this.values.type !== 2) {
           this.$notify({
             group: 'foo',
             title: 'Error',
@@ -605,7 +605,7 @@ export default {
         }
 
         formatedValues = {
-          accountId: this.values.accountId,
+          walletId: this.values.walletId,
           amount: calcAmount,
           categoryId: this.values.categoryId,
           currency: this.values.currency,
@@ -621,13 +621,13 @@ export default {
             // Expence
             const accountFromValues = {
               ...formatedValues,
-              accountId: this.values.accountFrom.id,
+              walletId: this.values.accountFrom.id,
               type: 0
             }
             // Incomes
             const accountToValues = {
               ...formatedValues,
-              accountId: this.values.accountTo.id,
+              walletId: this.values.accountTo.id,
               type: 1
             }
             await this.$store.dispatch('addTrn', accountFromValues)

@@ -86,7 +86,7 @@ export default {
       if (!this.$store.state.isMobile) {
         const stat = []
         const trnSelectedCategory = this.getTrns({
-          accountId: this.getFilter.account && this.getFilter.account.id,
+          walletId: this.getFilter.account && this.getFilter.account.id,
           categoryId: this.getFilter.category && this.getFilter.category.id
         })
 
