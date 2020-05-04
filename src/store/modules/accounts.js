@@ -102,8 +102,8 @@ const store = {
     addAccount(state, account) {
       state.all.unshift(account)
     },
-    deleteAccount(state, accountId) {
-      state.all = state.all.filter(a => a.id !== accountId)
+    deleteAccount(state, walletId) {
+      state.all = state.all.filter(a => a.id !== walletId)
     },
     toogleAccountCreate(state, action) {
       state.edit = false

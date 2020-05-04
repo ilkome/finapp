@@ -24,8 +24,8 @@ export default function formatAccount(account, options) {
 
   const id = account.id
   const color = account.color ? account.color : '#242424'
-  const accountIncomes = incomesTrns.filter(trn => trn.accountId === account.id)
-  const accountExpenses = expensesTrns.filter(trn => trn.accountId === account.id)
+  const accountIncomes = incomesTrns.filter(trn => trn.walletId === account.id)
+  const accountExpenses = expensesTrns.filter(trn => trn.walletId === account.id)
 
   const totalIncomes = countTotal(accountIncomes, 'amount')
   const totalIncomesRub = countTotal(accountIncomes, 'amountRub')

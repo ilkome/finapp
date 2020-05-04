@@ -3,7 +3,7 @@ import { uuid } from '@/store/utils'
 
 export const formatTrnForDb = values => ({
   id: values.id ? values.id : `${moment(values.date).format('YY-MM-DD[_]H:mm:ss')}__${uuid()}`,
-  accountId: values.accountId,
+  walletId: values.walletId,
   amount: Math.abs(values.amount),
   categoryId: values.categoryId,
   currency: values.currency,
@@ -41,8 +41,8 @@ export const formatTrnForStore = (trn, options) => {
   }
 
   // Account
-  let accountId = trn.accountId
-  let account = options.accounts.find(a => a.id === accountId)
+  let walletId = trn.walletId
+  let account = options.accounts.find(a => a.id === walletId)
   let accountName
   if (account) {
     accountName = account.name
@@ -53,7 +53,7 @@ export const formatTrnForStore = (trn, options) => {
       name: 'not found',
       currency: 'RUB'
     }
-    accountId = 'not found'
+    walletId = 'not found'
     accountName = 'not found'
   }
 
@@ -112,7 +112,7 @@ export const formatTrnForStore = (trn, options) => {
 
   return {
     account,
-    accountId,
+    walletId,
     accountName,
     amount,
     amountRub,

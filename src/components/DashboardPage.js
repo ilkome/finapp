@@ -53,14 +53,14 @@ export default {
     trnsList() {
       if (this.$timePeriod === 'all') {
         return this.getTrns({
-          accountId: this.getFilter.account && this.getFilter.account.id,
+          walletId: this.getFilter.account && this.getFilter.account.id,
           categoryId: this.getFilter.category && this.getFilter.category.id
         })
       } else {
         return this.getTrns({
           startDate: this.trnsDate.start,
           endDate: this.trnsDate.end,
-          accountId: this.getFilter.account && this.getFilter.account.id,
+          walletId: this.getFilter.account && this.getFilter.account.id,
           categoryId: this.getFilter.category && this.getFilter.category.id
         })
       }
@@ -69,7 +69,7 @@ export default {
       if (this.$timePeriod === 'all') {
         return this.getTrns({
           showTransfers: true,
-          accountId: this.getFilter.account && this.getFilter.account.id,
+          walletId: this.getFilter.account && this.getFilter.account.id,
           categoryId: this.getFilter.category && this.getFilter.category.id
         })
       } else {
@@ -77,7 +77,7 @@ export default {
           showTransfers: true,
           startDate: this.trnsDate.start,
           endDate: this.trnsDate.end,
-          accountId: this.getFilter.account && this.getFilter.account.id,
+          walletId: this.getFilter.account && this.getFilter.account.id,
           categoryId: this.getFilter.category && this.getFilter.category.id
         })
       }
@@ -92,7 +92,7 @@ export default {
       const stat = []
       const periodMax = 12
       const trnsListForSelectedPeriods = this.getTrns({
-        accountId: this.getFilter.account && this.getFilter.account.id,
+        walletId: this.getFilter.account && this.getFilter.account.id,
         categoryId: this.getFilter.category && this.getFilter.category.id
       })
         .filter(trn =>

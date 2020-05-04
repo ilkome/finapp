@@ -221,11 +221,11 @@ export default {
       const startDate = moment().subtract(this.monthsDurationDefault, this.$timePeriod).startOf(this.$timePeriod)
       const endDate = moment().subtract(1, this.$timePeriod).endOf(this.$timePeriod)
       let categoryId = this.getFilter.category && this.getFilter.category.id
-      const accountId = this.getFilter.account && this.getFilter.account.id
+      const walletId = this.getFilter.account && this.getFilter.account.id
       if (this.selectedCategory) {
         categoryId = this.selectedCategory.id
       }
-      return this.getTrns({ startDate, endDate, accountId, categoryId })
+      return this.getTrns({ startDate, endDate, walletId, categoryId })
     },
 
     summary() {
