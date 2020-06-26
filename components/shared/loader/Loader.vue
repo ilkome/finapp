@@ -1,0 +1,45 @@
+<script>
+import AppName from '~/components/shared/appName/AppName'
+import Spiner from '~/components/shared/spiner/Spiner'
+
+export default {
+  components: {
+    AppName,
+    Spiner
+  }
+}
+</script>
+
+<template lang="pug">
+.loader
+  .loader__wrap
+    AppName
+    .loader__spiner
+      Spiner(theme="dark" size="lg")
+</template>
+
+<style lang="stylus" scoped>
+@import "~assets/stylus/variables/margins"
+
+.loader
+  z-index 100
+  position fixed
+  top 0
+  left 0
+  display flex
+  align-items center
+  justify-content center
+  width 100%
+  height 100%
+  flex-flow column wrap
+  background var(--c-bg-1)
+
+  &__wrap
+    display flex
+    flex-flow column nowrap
+    align-items center
+
+  &__spiner
+    height 48px
+    margin-top 40px
+</style>

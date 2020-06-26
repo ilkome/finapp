@@ -1,0 +1,35 @@
+{
+	"folders": [
+    {
+      "name": "components",
+      "path": "components"
+    },
+    {
+      "name": "pages",
+      "path": "pages"
+    },
+    {
+      "name": "layouts",
+      "path": "layouts"
+    },
+    {
+      "name": "store",
+      "path": "store"
+    },
+    {
+      "name": "assets",
+      "path": "assets"
+    },
+    {
+      "name": "finapp2",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "stylelint.customSyntax": "stylelint-plugin-stylus/custom-syntax",
+    "stylelint.validate": [
+      "vue",
+      "stylus"
+    ]
+  }
+}

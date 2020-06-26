@@ -1,0 +1,92 @@
+<script>
+import Amount from '~/components/amount/Amount'
+import Icon from '~/components/icon/Icon'
+
+export default {
+  components: { Amount, Icon },
+
+  computed: {
+    totalInWallets () {
+      const walletsItems = this.$store.state.wallets.items
+      const walletsTotal = this.$store.getters['wallets/walletsTotal']
+      const total = {
+        counted: 0,
+        all: 0
+      }
+
+      for (const walletId in walletsItems) {
+        let walletTotal = 0
+        if (walletsItems[walletId].currency === this.$store.state.currencies.base) {
+          walletTotal = walletsTotal[walletId].base
+        }
+        else {
+          walletTotal = this.$store.getters['currencies/getAmountInBaseCurrency']({
+            amount: walletsTotal[walletId].base,
+            currency: walletsItems[walletId].currency
+          })
+        }
+
+        if (walletsItems[walletId].countTotal) {
+          total.counted = total.counted + walletTotal
+        }
+        else {
+          total.all = total.all + walletTotal
+        }
+      }
+      return total
+    }
+  }
+}
+</script>
+
+<template lang="pug">
+.walletsTotal(
+  v-if="$store.getters['wallets/hasWallets']"
+)
+  .walletsTotal__item(v-if="totalInWallets.all !== 0")
+    .walletsTotal__title {{ $lang.money.also }}
+    .walletsTotal__value
+      Amount(
+        :currency="$store.state.currencies.base"
+        :value="totalInWallets.all"
+        size="lg"
+        vertical="center"
+      )
+
+  .walletsTotal__item
+    .walletsTotal__title {{ $lang.money.total }}
+    .walletsTotal__value
+      Amount(
+        :currency="$store.state.currencies.base"
+        :value="totalInWallets.counted"
+        size="lg"
+        vertical="center"
+      )
+</template>
+
+<style lang="stylus" scoped>
+@import "~assets/stylus/variables/margins"
+@import "~assets/stylus/variables/media"
+
+.walletsTotal
+  display flex
+  flex-wrap wrap
+  align-items center
+  justify-content center
+  padding 22px 0
+  padding-bottom 16px
+
+  &__item
+    flex 1 0 0
+    align-self start
+    justify-self start
+    padding 0 16px
+    padding-bottom 16px
+
+  &__title
+    padding-right 6px
+    padding-bottom 6px
+    opacity .6
+    font-size 12px
+    text-align center
+</style>

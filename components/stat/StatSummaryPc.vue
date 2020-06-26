@@ -1,0 +1,181 @@
+<script>
+import Amount from '~/components/amount/Amount'
+
+export default {
+  components: {
+    Amount
+  },
+
+  computed: {
+    statCurrentPeriod () {
+      return this.$store.getters['stat/statCurrentPeriod']
+    },
+    statAverage () {
+      return this.$store.getters['stat/statAverage']
+    },
+    period () {
+      return this.$store.state.filter.period
+    }
+  }
+}
+</script>
+
+<template lang="pug">
+.summary
+  .summary__wrap
+    //- expenses
+    //------------------------------------------------
+    .summary__item(:class="{ _expenses: statAverage.expenses > 0 || period === 'all' }")
+      template(v-if="statAverage.expenses > 0 || period === 'all'")
+        .summary__row
+          .summary__title._expenses {{ $lang.money.expenses }}
+          .summary__amount
+            Amount(
+              :big="true"
+              :currency="$store.state.currencies.base"
+              :value="statCurrentPeriod.expenses.total"
+              :type="0")
+
+        .summary__row(v-if="period !== 'all' && statAverage.expenses > 0")
+          .summary__average
+            .summary__average__icon: .mdi.mdi-chart-timeline
+            .summary__average__title {{ $lang.money.average }}
+          .summary__amount._average
+            Amount(
+              :currency="$store.state.currencies.base"
+              :value="statAverage.expenses")
+
+    //- total
+    //------------------------------------------------
+    .summary__item(:class="{ _total: statAverage.total !== 0 || period === 'all' }")
+      template(v-if="statAverage.total !== 0 || period === 'all'")
+        .summary__row
+          .summary__title {{ $lang.money.total }}
+          .summary__amount
+            Amount(
+              :big="true"
+              :currency="$store.state.currencies.base"
+              :value="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total")
+
+        template(v-if="period !== 'all' && statAverage.total !== 0")
+          .summary__row
+            .summary__average
+              .summary__average__icon: .mdi.mdi-chart-timeline
+              .summary__average__title {{ $lang.money.average }}
+            .summary__amount._average
+              Amount(
+                :currency="$store.state.currencies.base"
+                :value="statAverage.total")
+
+    //- incomes
+    //------------------------------------------------
+    .summary__item(:class="{ _incomes: statAverage.incomes > 0 || period === 'all' }")
+      template(v-if="statAverage.incomes > 0 || period === 'all'")
+        .summary__row
+          .summary__title._incomes {{ $lang.money.incomes }}
+          .summary__amount
+            Amount(
+              :big="true"
+              :currency="$store.state.currencies.base"
+              :value="statCurrentPeriod.incomes.total"
+              :type="1")
+
+        template(v-if="period !== 'all' && statAverage.incomes !== 0")
+          .summary__row
+            .summary__average
+              .summary__average__icon: .mdi.mdi-chart-timeline
+              .summary__average__title {{ $lang.money.average }}
+            .summary__amount._average
+              Amount(
+                :currency="$store.state.currencies.base"
+                :value="statAverage.incomes")
+</template>
+
+<style lang="stylus" scoped>
+@import "~assets/stylus/variables/margins"
+@import "~assets/stylus/variables/fonts"
+@import "~assets/stylus/variables/media"
+
+.summary
+  overflow hidden
+  background var(--c-bg-3)
+  border-top 1px solid var(--c-bg-2)
+  border-bottom 1px solid var(--c-bg-2)
+
+  &__wrap
+    display flex
+    flex-flow row
+    justify-content space-between
+    max-width 1100px
+    padding 20px 60px
+
+  &__item
+    flex-grow 0
+    display flex
+    flex-flow column
+    justify-content center
+    margin $m5 $m7
+    padding $m3 $m9
+    padding-right 0
+
+    @media $media-phone
+      border-bottom 1px solid var(--c-bg-5)
+
+    @media $media-laptop
+      flex 0 1 250px
+      padding 0
+      margin 0
+
+    @media $media-pc
+      padding $m3 $m9
+      padding-right 0
+
+    &._expenses
+      @media $media-pc
+        border-left 2px solid rgba(200, 30, 50, .3)
+    &._total
+      align-self center
+      @media $media-pc
+        border-left 2px solid var(--c-bg-5)
+
+    &._incomes
+      align-self end
+      @media $media-pc
+        border-left 2px solid rgba(44, 173, 34, .5)
+
+  &__row
+    flex-grow 0
+    display flex
+    align-items center
+    justify-content space-between
+    padding-bottom $m6
+    &:last-child
+      padding-bottom 0
+
+  &__title
+    font-header-4()
+    padding-right $m8
+    &._incomes
+      color var(--c-incomes-1)
+    &._expenses
+      color var(--c-expenses-1)
+
+  &__amount
+    &._average
+      opacity .7
+      .amount
+        font-size 15px
+
+  &__average
+    display flex
+    opacity .7
+
+    &__icon
+      font-size 15px
+      margin-right $m5
+
+    &__title
+      font-header-4()
+      font-size 16px
+      padding-right $m8
+</style>

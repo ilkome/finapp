@@ -1,0 +1,79 @@
+$media-phone = "(max-width: 767px)"
+$media-phone-sm = "(max-width: 360px)"
+$media-phone-normal = "(min-width: 360px)"
+$media-laptop = "(min-width: 1000px)"
+$media-pc = "(min-width: 1024px)"
+$media-xl = "(min-width: 1500px)"
+$media-xl2 = "(min-width: 1800px)"
+
+
+$ipad = 768px
+$laptop = 1000px
+$pc = 1300px
+
+media-ipad()
+  @media (min-width: $ipad)
+    {block}
+
+media-laptop()
+  @media (min-width: $laptop)
+    {block}
+
+media-pc()
+  @media (min-width: $pc)
+    {block}
+
+$tablet = 800px
+// $laptop = 1200px
+
+$w360 = 360px
+$w400 = 400px
+$w440 = 440px
+
+//
+// custom width
+//
+media($width, $less = false)
+  if $less
+    @media (max-width: $width)
+      {block}
+  else
+    @media (min-width: $width)
+      {block}
+
+//
+// tablet
+//
+media-tablet($less = false)
+  if $less
+    @media (max-width: $tablet - 1)
+      {block}
+  else
+    @media (min-width: $tablet)
+      {block}
+
+//
+// laptop
+//
+media-laptop($less = false)
+  if $less
+    @media (max-width: $laptop - 1)
+      {block}
+  else
+    @media (min-width: $laptop)
+      {block}
+
+//
+// hover
+//
+media-hover(active = true, hoverOnTouchDevice = false)
+  .isNotTouchDevice &:hover
+    {block}
+
+  if active
+    &:active
+      {block}
+
+  if hoverOnTouchDevice
+    &:hover
+      {block}

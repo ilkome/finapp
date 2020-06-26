@@ -1,0 +1,80 @@
+html
+  --font-secondary "Unica One", "Roboto Condensed", sans-serif
+
+fs-m()
+  font-size 16px
+  @media $media-laptop
+    font-size 14px
+
+// fonts
+font-primary()
+  font-family "Roboto", sans-serif
+
+font-secondary()
+  font-family "Unica One", "Roboto Condensed", sans-serif
+
+// sizes
+$font-size-nb = 28px
+
+typo-money()
+  color var(--c-font-2)
+  font-size 18px
+  font-weight bold
+  white-space nowrap
+  text-transform uppercase
+  font-secondary()
+
+typo-small-upper($fs = 11px, $color = var(--c-font-4))
+  color $color
+  font-size $fs
+  font-weight 500
+  letter-spacing .5px
+  text-transform uppercase
+  font-secondary()
+
+typo-header()
+  margin 0
+  color var(--c-font-2)
+  font-size $font-size-nb
+  font-weight 600
+  letter-spacing 1px
+  text-transform uppercase
+  font-secondary()
+
+typo-header-normal()
+  margin 0
+  color var(--c-font-2)
+  font-size 24px
+  font-weight 500
+  text-transform uppercase
+  font-secondary()
+
+font-header-1()
+  color var(--c-font-2)
+  font-size 18px
+  font-weight 600
+  white-space nowrap
+  text-transform uppercase
+  letter-spacing .5px
+  font-secondary()
+
+font-header-2()
+  font-header-1()
+  font-size 22px
+  font-weight 600
+  letter-spacing .5px
+
+font-header-3()
+  font-header-1()
+  font-size 34px
+  font-weight 500
+  letter-spacing 0
+
+font-header-4()
+  font-header-1()
+  font-size 22px
+  letter-spacing 1.2px
+
+font-h1()
+  font-header-1()
+  font-size 18px

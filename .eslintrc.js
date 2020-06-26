@@ -1,29 +1,24 @@
 module.exports = {
   root: true,
-
   env: {
+    browser: true,
     node: true
   },
-
   parserOptions: {
-    parser: 'babel-eslint',
-    sourceType: 'module'
+    parser: 'babel-eslint'
   },
-
   extends: [
-    'plugin:vue/recommended',
-    '@vue/standard'
+    '@nuxtjs',
+    'plugin:nuxt/recommended'
   ],
-
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-console': 'off',
+    'no-throw-literal': 'off',
     'brace-style': [
       'error',
-      'stroustrup',
-      {
+      'stroustrup', {
         allowSingleLine: true
       }
-    ],
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    ]
   }
 }

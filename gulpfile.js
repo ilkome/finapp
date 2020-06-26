@@ -1,7 +1,7 @@
-const { src } = require('gulp')
 const fs = require('fs')
 const ftp = require('vinyl-ftp')
 const notifier = require('node-notifier')
+const { src } = require('gulp')
 const log = require('fancy-log')
 const notify = require('gulp-notify')
 const plumber = require('gulp-plumber')
@@ -33,12 +33,6 @@ function uploadTask (path, cb) {
       .pipe(toaster('Upload', cb))
       .pipe(conn.newer(configFTP.dest))
       .pipe(conn.dest(configFTP.dest))
-      .pipe(conn.clean([
-        '/css/**',
-        '/img/**',
-        '/js/**',
-        '/**.js'
-      ], './dist', { base: '/' }))
   }
   else {
     notifier.notify({

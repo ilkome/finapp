@@ -1,0 +1,238 @@
+{
+  "appName": "Finapp",
+  "app": {
+    "desc": "Powerful personal finance application",
+    "welcome": "Welcome to Finapp",
+    "lang": {
+      "select": "Select lang",
+      "en": "English",
+      "ru": "Русский"
+    },
+    "theme": {
+      "select": "Select theme",
+      "dark": "Dark",
+      "light": "Light"
+    },
+    "madeBy": {
+      "text": "Made with",
+      "name": "by Ilya Komichev"
+    }
+  },
+
+  "userLogout": "Logout",
+  "loginWithGoogle": "Login with Google",
+  "changeTheme": "Change theme",
+  "createTrn": "Create transaction",
+
+  "base": {
+    "sort": "Sort",
+    "save": "Save",
+    "cancel": "Cancel",
+    "on": "On",
+    "off": "Off",
+    "edit": "Edit",
+    "delete": "Delete",
+    "filter": "Filter"
+  },
+
+  "welcome": {
+    "create": {
+      "text": "Start creating your own wallets, categories",
+      "btn": "Create"
+    },
+    "or": "or",
+    "demo": {
+      "text": "Load app with created wallets, categories and transactions",
+      "btn": "Start demo"
+    },
+    "createFirstWallet": {
+      "text": "Let's start with create first Wallet",
+      "btn": "Create wallet"
+    },
+    "createFirstCategory":{
+      "text": "Great! Now Let's create first category",
+      "btn": "Create category"
+    }
+  },
+
+  "settings": {
+    "title": "Settings",
+    "lang": "Language",
+    "options": "Options",
+    "open": "Open settings",
+    "customize": "Сustomize",
+    "app": "Application",
+    "delete": "Delete",
+    "demo": "Demo"
+  },
+
+  "wallets": {
+    "title": "Wallets",
+    "name": "Wallets",
+    "new": "New wallet",
+    "showAll": "show all wallets",
+    "showOnly": "show only",
+    "sortTitle": "Sort wallets",
+    "createNewTitle": "Create new wallet",
+    "editTitle": "Edit wallet",
+    "form": {
+      "name": {
+        "label": "Wallet name",
+        "placeholder": "Write wallet name...",
+        "error": "Write wallet name",
+        "exist": "Wallet with same name is exist"
+      },
+      "color": {
+        "label": "Color",
+        "placeholder": "Select color",
+        "error": "Select color",
+        "custom": "Custom color"
+      },
+      "currency": {
+        "label": "Currency",
+        "placeholder": "Select currency",
+        "error": "Select currency"
+      },
+      "total": {
+        "placeholder": "Count amount in total balance"
+      },
+      "save": "Save"
+    }
+  },
+
+  "categories": {
+    "title": "Categories",
+    "name": "Categories",
+    "shortTitle": "Cats",
+    "new": "New category",
+    "createNewTitle": "Create new category",
+    "editTitle": "Edit category",
+    "form": {
+      "name": {
+        "label": "Category name",
+        "placeholder": "Write category name...",
+        "error": "Write category name",
+        "exist": "Category with same name is exist"
+      },
+      "parent": {
+        "no": "No parent",
+        "label": "Parent category",
+        "placeholder": "Select parent category"
+      },
+      "color": {
+        "label": "Color",
+        "placeholder": "Select color",
+        "error": "Select color",
+        "custom": "Custom color"
+      },
+      "icon": {
+        "label": "Icon",
+        "placeholder": "Select icon"
+      },
+      "lastUsed": "Show in last used categories",
+      "quickSelector": "Show in trnForm quick selector",
+      "childColor": "Apply color to all child categories",
+      "save": "Save"
+    }
+  },
+
+  "stat": {
+    "shortTitle": "Stat",
+    "empty": "No stat for this period"
+  },
+
+  "trns": {
+    "shortTitle": "Trns",
+    "history": "History",
+    "more": "Show more"
+  },
+
+  "create": {
+    "title": "Create"
+  },
+
+  "trnForm": {
+    "title": "Transaction form",
+    "lastUsedCats": "Last used categories",
+    "description": {
+      "title": "Description",
+      "placeholder": "Write description..."
+    }
+  },
+
+  "money": {
+    "incomes": "Incomes",
+    "expenses": "Expenses",
+    "transfer": "Transfer",
+    "total": "Total",
+    "average": "Average",
+    "also": "Also"
+  },
+
+  "dates": {
+    "day": {
+      "current": "Today",
+      "simple": "Day"
+    },
+    "week": {
+      "current": "This week",
+      "simple": "Week"
+    },
+    "month": {
+      "current": "This month",
+      "simple": "Month"
+    },
+    "year": {
+      "current": "This year",
+      "simple": "Year"
+    },
+    "all": "Show all"
+  },
+
+  "alerts": {
+    "willDeleteEverything": "This will delete all your wallets, categories and trns"
+  },
+
+  "buttons": {
+    "nextStep": "Next step"
+  },
+
+
+  "budgets": {
+    "id": "budgets",
+    "name": "Budgets",
+    "form": {
+      "title": "Create new budget",
+      "name": "Budget name",
+      "amount": "Budget amount",
+      "button": "Create"
+    },
+    "trns": {
+      "name": "Budget transactions"
+    },
+    "stat": {
+      "left": "Left",
+      "got": "Got",
+      "total": "Total"
+    }
+  },
+
+  "groups": {
+    "id": "groups",
+    "name": "Groups",
+    "form": {
+      "title": "Create new budget",
+      "name": "Budget name",
+      "amount": "Budget amount",
+      "button": "Create"
+    },
+    "trns": {
+      "name": "Budget transactions"
+    },
+    "stat": {
+      "expenses": "Epenses",
+      "incomes": "Incomes",
+      "total": "Total"
+    }
+  }
+}

@@ -1,23 +1,32 @@
+<p align="center"><img align="center" style="width:320px" src="https://finapp3.ilko.me/icon.png"/></p><br/>
+
 # Open source finance application
-> Written with Vue.js and Firebase.
+> Written with Vue and Firebase.
 
 Finapp helps you to control personal finances easily and efficiently.
 
-This is Finapp 2.0. For the 1.x see the [classic branch](https://github.com/ilkome/finapp/tree/classic).
+This is Finapp 3. For the 2.x see the [2 branch](https://github.com/ilkome/finapp).
 
 ## Demo
-[finapp.ilko.me](https://finapp.ilko.me/)
+[finapp3.ilko.me](https://finapp3.ilko.me/)
 
 
 ## Screenshots
 ![Finapp 2.0.0](https://firebasestorage.googleapis.com/v0/b/finapp-17474.appspot.com/o/2.0.0%2Ffinapp-2.0.0-promo.png?alt=media&token=bce821da-f5fa-4e8a-be7a-8fc0ebfaf260)
 
-## Futures and Technologies
-- Works offline on all devices (Service Worker): you can see all your data. Create, edit and delete transactions. (iOS is not supported yet)
+## Futures
+- Works offline on all devices (Service Worker): you can see all your data. Create, edit and delete transactions.
+- Instant synchronisation between all device (Firebase).
 - Optimised for mobile and PC.
 - Themes: dark and white.
 - Support multiple currencies with auto conversion.
-- Instant synchronisation between all device (Firebase).
+
+## Technologies
+- Vue
+- Nuxt
+- Stylus
+- Pug
+- Firebase
 
 ## Setup
 
@@ -98,7 +107,7 @@ $ npm run upload-min
 ```
 
 ## Stay In Touch 🤪
-I would like to speak with you about Finapp. I'm interesting to work in modern projects.
+I would like to speak with you about Finapp. I'm interested in working on awesome projects.
 - [Telegram](https://t.me/ilkome)
 - [VK](https://www.vk.com/ilkome)
 - [Facebook](https://www.facebook.com/ilkome)

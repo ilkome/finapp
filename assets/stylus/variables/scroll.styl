@@ -1,0 +1,24 @@
+scrollbar()
+  &::-webkit-scrollbar
+    width 0px
+    height 0px
+
+    @media (min-width 768px)
+      width 6px
+      height 6px
+
+  &::-webkit-scrollbar-track
+    background transparent
+    border-radius 10px
+
+  &::-webkit-scrollbar-thumb
+    background grey
+    border-radius 10px
+
+    &:hover
+      background darkgrey
+
+overflowScrollY()
+  overflow hidden
+  overflow-y auto
+  -webkit-overflow-scrolling touch // fix iOS scroll in blocks

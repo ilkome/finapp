@@ -1,0 +1,49 @@
+@import "../variables"
+
+.vue-notification-group
+  text-align center
+
+  .notifications
+    position relative
+    display flex
+    align-items center
+    justify-content center
+    min-height 52px
+    min-width 120px
+    flex-flow column
+    text-align center
+    margin-top 16px
+    padding 8px 16px
+    color white
+    font-size 14px
+    line-height 18px
+    background #0094FF
+    border-radius 8px
+
+    +media-tablet()
+      margin-top 16px
+      margin-left 16px
+      padding 16px
+
+    &:after
+      opacity .8
+      content "+"
+      position absolute
+      right 8px
+      top 8px
+      font-size 32px
+      transform rotate(45deg)
+
+    &.success
+      color var(--c-font-base)
+      background var(--c-incomes-1)
+
+    &.error
+      color var(--c-font-base)
+      background var(--c-expenses-1)
+
+    .notification-title
+      display block
+      font-size 42px
+      line-height 1
+      padding-bottom 8px
