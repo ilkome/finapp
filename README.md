@@ -8,7 +8,7 @@ Finapp helps you to control personal finances easily and efficiently.
 This is Finapp 3. For the 2.x see the [2 branch](https://github.com/ilkome/finapp).
 
 ## Demo
-[finapp3.ilko.me](https://finapp3.ilko.me/)
+[finapp.ilko.me](https://finapp.ilko.me/)
 
 
 ## Screenshots
