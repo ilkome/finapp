@@ -1,7 +1,7 @@
 export default {
-  hasCategories (state, getters, rootState) {
-    if (rootState.categories.items) {
-      if (Object.keys(rootState.categories.items).length > 0) {
+  hasCategories (state) {
+    if (state.items) {
+      if (Object.keys(state.items).length > 0) {
         return true
       }
     }
@@ -11,17 +11,16 @@ export default {
   categoriesRootIds (state, getters, rootState) {
     if (!getters.hasCategories) { return [] }
 
-    const categories = rootState.categories.items
-    return Object.keys(categories)
-      .filter(key => categories[key].parentId === 0)
+    return Object.keys(state.items)
+      .filter(key => state.items[key].parentId === 0)
       .sort((a, b) => {
-        if (categories[a].order < categories[b].order) { return -1 }
-        if (categories[a].order > categories[b].order) { return 1 }
+        if (state.items[a].order < state.items[b].order) { return -1 }
+        if (state.items[a].order > state.items[b].order) { return 1 }
         return 0
       })
   },
 
-  categoriesForBeParent (state, getters, rootState, rootGetters) {
+  categoriesForBeParent (state, getters, rootState) {
     const categoriesRootIds = getters.categoriesRootIds
     const trns = rootState.trns.items
     const categoriesForBeParent = []
@@ -57,16 +56,15 @@ export default {
   getChildCategoriesIds: (state, getters, rootState) => (categoryId) => {
     if (!getters.hasCategories) { return [] }
 
-    const categories = rootState.categories.items
-    const category = categories[categoryId]
+    const category = state.items[categoryId]
     let childIds = []
 
-    if (category && categories[categoryId].parentId === 0) {
-      childIds = Object.keys(categories)
-        .filter(key => categories[key].parentId === categoryId)
+    if (category && state.items[categoryId].parentId === 0) {
+      childIds = Object.keys(state.items)
+        .filter(key => state.items[key].parentId === categoryId)
         .sort((a, b) => {
-          if (categories[a].order < categories[b].order) { return -1 }
-          if (categories[a].order > categories[b].order) { return 1 }
+          if (state.items[a].order < state.items[b].order) { return -1 }
+          if (state.items[a].order > state.items[b].order) { return 1 }
           return 0
         })
     }
@@ -74,17 +72,16 @@ export default {
   },
 
   lastUsedCategoriesIdsByDate (state, getters, rootState, rootGetters) {
-    const categories = rootState.categories.items
     const trns = rootState.trns.items
     const sortedTrnsIds = rootGetters['trns/sortedTrnsIds']
     const transferCategoryId = getters.transferCategoryId
     const lastCategoriesIds = []
 
-    if (categories && rootGetters['trns/hasTrns']) {
+    if (state.items && rootGetters['trns/hasTrns']) {
       for (const trnId of sortedTrnsIds.slice(0, 50)) {
         if (lastCategoriesIds.length < 12) {
           const categoryId = trns[trnId].categoryId
-          const category = categories[categoryId]
+          const category = state.items[categoryId]
           if (category && (category.showInLastUsed || category.showInLastUsed === undefined)) {
             if (categoryId !== transferCategoryId) {
               if (!lastCategoriesIds.includes(categoryId)) { lastCategoriesIds.push(categoryId) }
@@ -94,34 +91,32 @@ export default {
       }
 
       return lastCategoriesIds.sort((a, b) => {
-        if (categories[a] && categories[b]) {
-          if (categories[a].order < categories[b].order) { return -1 }
-          if (categories[a].order > categories[b].order) { return 1 }
+        if (state.items[a] && state.items[b]) {
+          if (state.items[a].order < state.items[b].order) { return -1 }
+          if (state.items[a].order > state.items[b].order) { return 1 }
           return 0
         }
       })
     }
   },
 
-  quickSelectorCategoriesIds (state, getters, rootState) {
+  quickSelectorCategoriesIds (state, getters) {
     if (!getters.hasCategories) { return [] }
 
-    const categories = rootState.categories.items
-    return Object.keys(categories)
-      .filter(key => categories[key].showInQuickSelector)
+    return Object.keys(state.items)
+      .filter(key => state.items[key].showInQuickSelector)
       .sort((a, b) => {
-        if (categories[a].order < categories[b].order) { return -1 }
-        if (categories[a].order > categories[b].order) { return 1 }
+        if (state.items[a].order < state.items[b].order) { return -1 }
+        if (state.items[a].order > state.items[b].order) { return 1 }
         return 0
       })
   },
 
-  transferCategoryId (state, getters, rootState) {
+  transferCategoryId (state, getters,) {
     if (!getters.hasCategories) { return null }
 
-    const categories = rootState.categories.items
-    return Object.keys(categories)
-      .find(id => categories[id].name === 'Перевод' ||
-                  categories[id].name === 'Transfer')
+    return Object.keys(state.items)
+      .find(id => state.items[id].name === 'Перевод' ||
+                  state.items[id].name === 'Transfer')
   }
 }

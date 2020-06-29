@@ -113,6 +113,8 @@ export default {
 
 *
   box-sizing border-box
+  -webkit-tap-highlight-color transparent
+
   &:focus
     outline 0
 

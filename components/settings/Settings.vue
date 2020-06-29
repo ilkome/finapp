@@ -1,4 +1,5 @@
 <script>
+import pkg from '~/package'
 import Button from '~/components/shared/button/Button'
 import ComponentWrap from '~/components/layout/component/Component'
 import ModalBottomConfirm from '~/components/modal/ModalBottomConfirm'
@@ -15,7 +16,8 @@ export default {
   data () {
     return {
       confirmCreateDemo: false,
-      confirmRemoveUserData: false
+      confirmRemoveUserData: false,
+      version: pkg.version
     }
   },
 
@@ -47,7 +49,8 @@ ComponentWrap(:contentPadding="false")
             :showCheckbox="true"
             :title="$lang.trnForm.lastUsedCats"
             icon="mdi mdi-folder-star"
-            v-on:onClick="$store.dispatch('ui/toogleLastUsedCatsInTrnForm')")
+            @onClick="$store.dispatch('ui/toogleLastUsedCatsInTrnForm')"
+          )
 
       .settings__group
         .settings__subHeader {{ $lang.settings.lang }}
@@ -60,12 +63,12 @@ ComponentWrap(:contentPadding="false")
           Button._bdb(
             icon="mdi mdi-palette"
             title="Change theme"
-            v-on:onClick="$store.dispatch('ui/changeTheme')")
+            @onClick="$store.dispatch('ui/changeTheme')")
         .settings__item
           Button._bdb(
             icon="mdi mdi-logout"
             title="Sign Out"
-            v-on:onClick="$store.dispatch('user/signOut')")
+            @onClick="$store.dispatch('user/signOut')")
 
       .settings__group._paddingTop
         .settings__subHeader {{ $lang.settings.delete }}
@@ -74,7 +77,7 @@ ComponentWrap(:contentPadding="false")
           Button._bdb(
             icon="mdi mdi-delete"
             title="Delete my data"
-            v-on:onClick="confirmRemoveUserData = true")
+            @onClick="confirmRemoveUserData = true")
 
       .settings__group(v-if="$store.state.demo.hasDemo")
         .settings__subHeader {{ $lang.settings.demo }}
@@ -83,19 +86,22 @@ ComponentWrap(:contentPadding="false")
           Button._bdb(
             icon="mdi mdi-test-tube"
             title="Load demo"
-            v-on:onClick="confirmCreateDemo = true")
+            @onClick="confirmCreateDemo = true")
+
+      .settings__group
+        .appVersion Version {{ version }}
 
       ModalBottomConfirm(
         description="This will delete all your wallets, categories and trns"
         :show="confirmCreateDemo"
-        v-on:onClose="confirmCreateDemo = false"
-        v-on:onConfirm="generateDemo")
+        @onClose="confirmCreateDemo = false"
+        @onConfirm="generateDemo")
 
       ModalBottomConfirm(
         description="This will delete all your wallets, categories and trns"
         :show="confirmRemoveUserData"
-        v-on:onClose="confirmRemoveUserData = false"
-        v-on:onConfirm="removeUserData"
+        @onClose="confirmRemoveUserData = false"
+        @onConfirm="removeUserData"
       )
 </template>
 
@@ -137,4 +143,8 @@ ComponentWrap(:contentPadding="false")
     font-size 16px
     font-weight 500
     padding-bottom 16px
+
+.appVersion
+  color var(--c-font-3)
+  font-size 14px
 </style>

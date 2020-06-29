@@ -24,6 +24,10 @@ export default {
   computed: {
     childCategoriesIds () {
       return this.$store.getters['categories/getChildCategoriesIds'](this.id)
+    },
+
+    parentCategory () {
+      return this.$store.state.categories.items[this.category.parentId]
     }
   },
 
@@ -57,13 +61,16 @@ export default {
       :category="true"
     )
 
-  .categoryItem__name {{ category.name }}
+  .categoryItem__name
+    .parent(v-if="ui === '_flat' && parentCategory") {{ parentCategory.name }}
+    .child {{ category.name }}
   .categoryItem__childNum(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
 </template>
 
 <style lang="stylus" scoped>
 @import "~assets/stylus/variables/margins"
 @import "~assets/stylus/variables/media"
+@import "~assets/stylus/variables/fonts"
 
 .categoryItem
   overflow hidden
@@ -110,6 +117,14 @@ export default {
       padding-top 1px
       color var(--c-font-3)
       font-size 12px
+      text-align left
+
+      .parent
+        padding-bottom $m1
+        font-size 10px
+
+      .child
+        font-size 12px
 
     &:last-child
       padding-bottom 0
@@ -121,6 +136,8 @@ export default {
     display flex
     align-items center
     justify-content center
+    font-secondary()
+    color var(--c-font-4)
     font-size 18px
     font-weight 500
 </style>

@@ -8,7 +8,7 @@
 
 .appName
   color var(--c-font-3)
-  font-family "Nunito", "Roboto", sans-serif
+  fontFamilyNunito()
   font-size 66px
   font-weight 800
   letter-spacing 2px
