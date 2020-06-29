@@ -21,8 +21,8 @@
       .next
         margin 0
         padding $m6 $m9
-        border 1px solid var(--c-bg-5)
         background none
+        border 1px solid var(--c-bg-5)
         border-radius 3px
         anim()
 
@@ -41,39 +41,40 @@
       .day__month_btn
       .month__year_btn.up
       span
-        padding $m6 0
         margin 0 $m7
+        padding $m6 0
         font-header-1()
         border-radius $m3
 
         &:hover
           background none !important
+
           @media $media-laptop
             background var(--c-bg-6) !important
 
     .cell
-      height 42px
+      height 46px
 
     .cell.day-header
       height auto
-      padding-bottom $m3
-      line-height 1
+      padding-bottom $m5
       color rgb(117, 117, 117)
+      line-height 1
 
     .day
-      position relative
-      padding 0
-      text-align center
-      border 1px solid alpha(grey, .1)
       cursor pointer
+      position relative
+      padding-top $m2
+      text-align center
+      border-radius $m5
 
     .today
-      background var(--c-bg-5)
       color var(--c-font-1)
+      background var(--c-bg-5)
 
     .disabled
       color var(--c-font-4)
 
     .selected
-      background var(--c-blue-1)
       color var(--c-font-1)
+      background var(--c-blue-1)

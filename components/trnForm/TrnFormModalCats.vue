@@ -30,33 +30,33 @@ export default {
 
 <template lang="pug">
 TrnFormModal(
+  v-if="$store.state.trnForm.modal.categories"
   :show="$store.state.trnForm.modal.categories"
-  v-on:onClose="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
+  :title="$lang.categories.name"
+  :position="$store.state.ui.mobile ? 'bottom' : null"
+  @onClose="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
 )
-  template(slot="header")
-    .trnFormModal__header__back: .mdi.mdi-chevron-left
-    .trnFormModal__header__title  {{ $lang.categories.name }}
-
-  //- pc
-  template(v-if="$store.state.ui.lastUsedCatsInTrnForm === 'visible'")
+  template(v-if="$store.state.ui.lastUsedCatsInTrnForm === 'visible' && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0")
     .marginBottom
       .formTitle Last used categories
       CategoriesView(
         :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
         :noPaddingBottom="true"
-        v-on:onClick="handleCategoryClick"
+        @onClick="handleCategoryClick"
       )
-
-  template(v-if="$store.state.ui.lastUsedCatsInTrnForm === 'visible'")
     .formTitle All categories
+
   CategoriesView(
     :ids="$store.getters['categories/categoriesRootIds']"
     :noPaddingBottom="true"
-    v-on:onClick="handleCategoryClick"
+    @onClick="handleCategoryClick"
   )
 </template>
 
 <style lang="stylus" scoped>
+@import "~assets/stylus/variables/margins"
+
 .marginBottom
-  margin-bottom 30px
+  margin-top (- $m8)
+  margin-bottom $m9
 </style>

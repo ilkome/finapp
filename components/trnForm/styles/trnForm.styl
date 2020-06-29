@@ -60,18 +60,22 @@
       padding-bottom 0
 
 .formTitle
-  padding 0 $m7
-  padding-bottom $m7
-  font-header-1()
+  padding $m7
+  fontFamilyNunito()
+  font-weight 700
+  font-size 18px
   color var(--c-font-4)
 
+  &:active
+  &:hover
+    background var(--c-bg-5)
+
 .formCategories
-  padding 0 $m6
-  padding-bottom $m9
+  padding 0
+  padding-bottom $m7
 
 .formWallets
-  padding 0 $m6
-  padding-bottom $m10
+  padding-bottom $m4
 
   &__input
     position relative

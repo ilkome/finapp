@@ -22,14 +22,11 @@ export default {
 
 <template lang="pug">
 TrnFormModal(
+  v-if="$store.state.trnForm.modal.transferTo"
   :show="$store.state.trnForm.modal.transferTo"
-  title=""
+  title="Transfer to wallet"
   v-on:onClose="$store.commit('trnForm/toogleTrnFormModal', 'transferTo')"
 )
-  template(slot="header")
-    .trnFormModal__header__back: .mdi.mdi-chevron-left
-    .trnFormModal__header__title Transfer to wallet
-
   WalletsList(
     ui="tile"
     v-on:onClick="handleSetWallet"

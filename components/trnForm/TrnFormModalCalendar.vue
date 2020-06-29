@@ -48,9 +48,11 @@ export default {
 
 <template lang="pug">
 TrnFormModal(
+  v-if="$store.state.trnForm.modal.calendar"
   :show="$store.state.trnForm.modal.calendar"
   title="Date"
-  v-on:onClose="$store.commit('trnForm/toogleTrnFormModal', 'calendar')"
+  :position="$store.state.ui.mobile ? 'bottom' : null"
+  @onClose="$store.commit('trnForm/toogleTrnFormModal', 'calendar')"
 )
   Datepicker(
     :inline="true"
@@ -65,16 +67,16 @@ TrnFormModal(
     ModalButton(
       name="2 days ago"
       icon="mdi mdi-calendar-clock"
-      v-on:onClick="() => handleSelectDateDaysAgo(2)"
+      @onClick="() => handleSelectDateDaysAgo(2)"
     )
     ModalButton(
       name="Yesterday"
       icon="mdi mdi-weather-night"
-      v-on:onClick="() => handleSelectDateDaysAgo(1)"
+      @onClick="() => handleSelectDateDaysAgo(1)"
     )
     ModalButton(
       name="Today"
       icon="mdi mdi-weather-sunset-up"
-      v-on:onClick="() => handleSelectDateDaysAgo(0)"
+      @onClick="() => handleSelectDateDaysAgo(0)"
     )
 </template>

@@ -53,17 +53,15 @@ export default {
 
 <template lang="pug">
 .trnFormAmount(:class="className")
-  //- mobile
-  template(v-if="$store.state.ui.mobile")
-    .trnFormAmount__in(@click="handleChangeAmountType")
-      .trnFormAmount__type
-        template(v-if="amountType === 0") {{ $lang.money.expenses }}
-        template(v-if="amountType === 1") {{ $lang.money.incomes }}
-        template(v-if="amountType === 2 && $store.getters['wallets/walletsSortedIds'].length > 1") {{ $lang.money.transfer }}
+  .trnFormAmount__in(@click="handleChangeAmountType")
+    .trnFormAmount__type
+      template(v-if="amountType === 0") {{ $lang.money.expenses }}
+      template(v-if="amountType === 1") {{ $lang.money.incomes }}
+      template(v-if="amountType === 2 && $store.getters['wallets/walletsSortedIds'].length > 1") {{ $lang.money.transfer }}
 
-      .trnFormAmount__content
-        .trnFormAmount__value {{ amountString }}
-        .trnFormAmount__evaluation {{ $store.state.trnForm.values.amountEvaluation }}
+    .trnFormAmount__content
+      .trnFormAmount__value {{ amountString }}
+      .trnFormAmount__evaluation {{ $store.state.trnForm.values.amountEvaluation }}
 </template>
 
 <style lang="stylus" scoped>

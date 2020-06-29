@@ -10,7 +10,7 @@ export default {
   },
 
   computed: {
-    amountValue () {
+    amountString () {
       return this.$store.state.trnForm.values.amount
     },
 
@@ -24,7 +24,7 @@ export default {
 
     amounIsNumber () {
       if (!this.amountString || this.amountString == 0) { return true }
-      const amountString = String(this.amountValue).replace(/\s/g, '')
+      const amountString = String(this.amountString).replace(/\s/g, '')
       if (Number(amountString)) {
         return true
       }
@@ -66,18 +66,17 @@ export default {
       const value = event.target.value
       if (value) {
         const lastItem = value.length > 0 ? value.slice(-1) : value
-        console.log(lastItem)
         if (/[\d*+\-*/]/g.test(Number(lastItem))) {
           this.$store.commit('trnForm/setTrnFormValues', {
             amount: value,
-            evaluateAmount: this.evaluateAmount(value)
+            amountEvaluation: this.evaluateAmount(value)
           })
         }
       }
       else {
         this.$store.commit('trnForm/setTrnFormValues', {
           amount: '',
-          evaluateAmount: null
+          amountEvaluation: null
         })
       }
     },
@@ -128,10 +127,12 @@ export default {
         @click="() => setAmountType(0)"
         :class="{ _active: amountType === 0 }"
       ) {{ $lang.money.expenses }}
+
       .trnFormAmountPc__type._incomes(
         @click="() => setAmountType(1)"
         :class="{ _active: amountType === 1 }"
       ) {{ $lang.money.incomes }}
+
       .trnFormAmountPc__type(
         v-if="$store.getters['wallets/walletsSortedIds'].length > 1"
         @click="() => setAmountType(2)"
@@ -142,16 +143,16 @@ export default {
       input.trnFormAmountPc__input__value(
         placeholder="0"
         ref="amountInput"
-        :value="amountValue == 0 ? '' : amountValue"
+        :value="amountString == 0 ? '' : amountString"
         @input="changeValue"
         @focus="setCaretPosition"
       )
 
     .amountInputLaptop__evaluation
-      template(v-if="$store.state.trnForm.values.amount != 0 && $store.state.trnForm.values.amount != $store.state.trnForm.values.evaluateAmount") {{ $store.state.trnForm.values.evaluateAmount }}
+      template(v-if="$store.state.trnForm.values.amount != 0 && $store.state.trnForm.values.amount != $store.state.trnForm.values.amountEvaluation") {{ $store.state.trnForm.values.amountEvaluation }}
 
   .action
-    template(v-if="!amountValue")
+    template(v-if="!amountString")
       Button(
         className="_grey _text-center"
         size="lg"
@@ -175,7 +176,7 @@ export default {
         @onClick="$emit('onFormSubmit')"
       )
 
-    template(v-if="amountValue && !amounIsNumber")
+    template(v-if="amountString && !amounIsNumber")
       Button(
         className="_blue _text-center"
         size="lg"
@@ -206,7 +207,8 @@ export default {
       color var(--c-incomes-1)
 
 .action
-  padding $m9
+  padding $m7
+  padding-bottom $m7
 
 .trnFormAmountPc
   background var(--c-bg-2)

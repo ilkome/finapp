@@ -11,16 +11,20 @@ export default {
   computed: {
     category () {
       const categoryId = this.$store.state.trnForm.values.categoryId
-      const categories = this.$store.state.categories.items
-      return categories[categoryId]
+      return this.$store.state.categories.items[categoryId]
     },
+
+    parentCategory () {
+      return this.$store.state.categories.items[this.category.parentId]
+    },
+
     values () {
       return this.$store.state.trnForm.values
     },
+
     wallet () {
       const walletId = this.$store.state.trnForm.values.walletId
-      const wallets = this.$store.state.wallets.items
-      return wallets[walletId]
+      return this.$store.state.wallets.items[walletId]
     }
   }
 }
@@ -28,16 +32,16 @@ export default {
 
 <template lang="pug">
 .trnFormHeader
-  //- Wallet
+  //- wallet
   transition(name="fadeIn")
     template(v-if="wallet")
-      .trnFormHeader__item(
+      .trnFormHeaderItem(
         :style="{ background: wallet.color || $store.state.ui.defaultBgColor }"
-        @click="$store.commit('trnForm/toogleTrnFormModal', 'wallets')")
-
-        div
-          .trnFormHeader__name {{ wallet.name }}
-          .trnFormHeader__total
+        @click="$store.commit('trnForm/toogleTrnFormModal', 'wallets')"
+      )
+        .trnFormHeaderItem__in
+          .trnFormHeaderItem__name {{ wallet.name }}
+          .trnFormHeaderItem__total
             template(v-if="$store.getters['wallets/walletsTotal'][values.walletId]")
               Amount(
                 :value="$store.getters['wallets/walletsTotal'][values.walletId].base"
@@ -49,21 +53,26 @@ export default {
                 :value="0"
                 :currency="$store.state.currencies.base"
                 vertical="left"
-              )
+            )
+        .trnFormHeaderItem__dots: .mdi.mdi-dots-vertical
 
-  //- Category
+  //- category
   template(v-if="category")
-    .trnFormHeader__item(
+    .trnFormHeaderItem._category(
       :style="{ background: category.color || $store.state.ui.defaultBgColor }"
-      @click="$store.commit('trnForm/toogleTrnFormModal', 'categories')")
-
-      transition(name="slide")
-        .trnFormHeader__icon(v-show="true" :key="category.icon")
-          Icon(
-            :icon="category.icon"
+      @click="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
+    )
+      .trnFormHeaderItem__in
+        transition(name="slide")
+          .trnFormHeaderItem__icon(
+            v-show="true"
+            :key="category.icon"
           )
-
-      .trnFormHeader__name {{ category.name }}
+            Icon(:icon="category.icon")
+        .trnFormHeaderItem__name
+          .parent(v-if="parentCategory") {{ parentCategory.name }}
+          .child {{ category.name }}
+      .trnFormHeaderItem__dots: .mdi.mdi-dots-vertical
 </template>
 
 <style lang="stylus">
@@ -73,43 +82,57 @@ export default {
 .trnFormHeader
   display grid
   grid-template-columns repeat(2, 1fr)
-  grid-column-gap 8px
-  grid-row-gap 2px
-  // padding 8px
+  // grid-column-gap 1px
+  // padding 16px
   background var(--c-bg-4)
 
+  @media $media-phone
+    // padding-bottom $m5
+
   @media $media-laptop
-    min-height 81px
+    // padding-top 8px
+    // min-height 81px
 
-  &__item
-    position relative
-    display flex
-    align-items center
-    flex-grow 1
-    padding 16px 16px
-    color var(--c-bg-5)
-    border-radius 0 16px 16px 0
+  /.theme-light &
+    background var(--c-bg-2)
 
-    @media $media-laptop
-      min-height 61px
+.trnFormHeaderItem
+  position relative
+  flex-grow 1
+  padding $m7 $m7
+  color var(--c-bg-5)
+  // border-radius $m6 $m6 0 0
 
-    &:last-child
-      border-left-color var(--c-bg-5)
-      border-radius 16px 0 0 16px
+  @media $media-laptop
+    min-height 61px
+
+  &__in
+    ~/._category &
+      display flex
+      align-items center
 
   &__icon
     z-index 2
+    margin-left -8px
+    padding-right 4px
 
   &__total
     padding-top $m5
-    .amount__wrap
-      justify-content flex-start
-      color var(--c-font-1)
-
-    .amount__wrap._small
-      display none
 
   &__name
-    font-size 14px
     color var(--c-font-1)
+
+    .parent
+      font-size 12px
+      padding-bottom $m2
+
+    .child
+      font-size 16px
+
+  &__dots
+    position absolute
+    top $m6
+    right $m4
+    color var(--c-font-2)
+    font-size 16px
 </style>

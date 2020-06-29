@@ -27,6 +27,13 @@ export default {
       this.$store.commit('trnForm/closeTrnFormModal', 'categories')
       this.$store.commit('trnForm/closeTrnFormModal', 'categoriesChild')
       this.$store.commit('trnForm/setTrnFormValues', { categoryId })
+    },
+
+    onClose () {
+      this.$store.commit('trnForm/closeTrnFormModal', 'categoriesChild')
+      setTimeout(() => {
+        this.$store.commit('trnForm/setTrnFormModalCategoryId', null)
+      }, 100)
     }
   }
 }
@@ -34,18 +41,16 @@ export default {
 
 <template lang="pug">
 TrnFormModal(
+  v-if="$store.state.trnForm.modal.categoriesChild"
   :show="$store.state.trnForm.modal.categoriesChild"
-  v-on:afterClose="$store.commit('trnForm/setTrnFormModalCategoryId', null)"
-  v-on:onClose="$store.commit('trnForm/closeTrnFormModal', 'categoriesChild')"
+  :title="id && category && category.name"
+  :position="$store.state.ui.mobile ? 'bottom' : null"
+  @onClose="onClose"
 )
   template(v-if="id && category")
-    template(slot="header")
-      .trnFormModal__header__back: .mdi.mdi-chevron-left
-      .trnFormModal__header__title {{ category.name }}
-
     CategoriesView(
       :ids="childCategoriesIds"
       :noPaddingBottom="true"
-      v-on:onClick="handleCategoryClick"
+      @onClick="handleCategoryClick"
     )
 </template>

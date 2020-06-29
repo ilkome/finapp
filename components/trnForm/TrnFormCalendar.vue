@@ -1,6 +1,5 @@
 <script>
 import dayjs from 'dayjs'
-
 import { formatDate } from '~/utils/formatDate'
 
 export default {
@@ -33,14 +32,62 @@ export default {
 </script>
 
 <template lang="pug">
-.trnFormDate
-  .trnFormDate__item._icon(@click="setPrevDay()"): .mdi.mdi-chevron-left
-  .trnFormDate__item(@click="$store.commit('trnForm/toogleTrnFormModal', 'calendar')") {{ formatedDate }}
-  .trnFormDate__item._icon(:class="{ _disable: isToday }" @click="setNextDay()"):  .mdi.mdi-chevron-right
+.trnFormMeta
+  .trnFormMeta__date
+    .trnFormDate
+      .trnFormDate__item._icon(@click="setPrevDay()"): .mdi.mdi-chevron-left
+      .trnFormDate__item(@click="$store.commit('trnForm/toogleTrnFormModal', 'calendar')") {{ formatedDate }}
+      .trnFormDate__item._icon(:class="{ _disable: isToday }" @click="setNextDay()"):  .mdi.mdi-chevron-right
+
+  .trnFormMeta__desc(
+    @click="$store.commit('trnForm/toogleTrnFormModal', 'description')"
+  )
+    .mdi.mdi-comment-text-outline
+    .dot(v-if="$store.state.trnForm.values.description")
 </template>
 
 <style lang="stylus" scoped>
 @import "~assets/stylus/variables"
+
+.trnFormMeta
+  display flex
+  align-items stretch
+  border-top 1px solid var(--c-bg-5)
+
+  @media $media-laptop
+    color var(--c-font-4)
+    background var(--c-bg-4)
+    border-top 0
+
+  &__date
+    flex-grow 1
+
+  &__desc
+    position relative
+    width calc(100%/5)
+    padding $m7 $m9
+    color var(--c-font-4)
+    font-size 20px
+    text-align center
+
+    &:hover
+      @media $media-laptop
+        background var(--c-bg-5)
+
+    &:active
+      background var(--c-bg-5)
+
+    &._active
+      color var(--c-font-1)
+
+    .dot
+      position absolute
+      top $m7
+      right $m7
+      width 6px
+      height 6px
+      background var(--c-bg-9)
+      border-radius 50%
 
 .trnFormDate
   display flex
@@ -69,5 +116,9 @@ export default {
       font-size 28px
 
     &._disable
-      opacity 0
+      opacity .4
+
+      &:hover
+      &:active
+        background none
 </style>

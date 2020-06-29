@@ -50,14 +50,18 @@ export default {
 
 <template lang="pug">
 TrnFormModal(
+  v-if="show"
   :show="show"
   :title="$lang.trnForm.description.title"
-  v-on:onClose="$store.commit('trnForm/toogleTrnFormModal', 'description')")
+  :position="$store.state.ui.mobile ? 'bottom' : null"
+  @onClose="$store.commit('trnForm/toogleTrnFormModal', 'description')"
+)
   .description
     .description__filed
       textarea.textarea(
         v-model="description"
-        :placeholder="$lang.trnForm.description.placeholder")
+        :placeholder="$lang.trnForm.description.placeholder"
+      )
 
     .description__action
       .description__action-ok
