@@ -200,7 +200,7 @@ export default {
   margin-bottom 32px
 
   &__name
-    font-family "Nunito", "Roboto", sans-serif
+    fontFamilyNunito()
     font-size 2em
     font-weight bold
 
@@ -237,7 +237,7 @@ export default {
   h2
     font-size 24px
     padding-bottom 24px
-    font-family "Nunito", "Roboto", sans-serif
+    fontFamilyNunito()
     text-transform none
 
     &:first-letter

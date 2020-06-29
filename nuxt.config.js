@@ -23,7 +23,7 @@ export default {
       href: '/init.css'
     }, {
       rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css?family=Roboto:400,500,700|Unica+One|Nunito:400,800&display=swap&subset=cyrillic'
+      href: 'https://fonts.googleapis.com/css?family=Roboto:400,500,700|Unica+One|Nunito:400,700,800&display=swap&subset=cyrillic'
     }, {
       rel: 'stylesheet',
       href: 'https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css'
