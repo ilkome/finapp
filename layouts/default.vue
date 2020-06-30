@@ -69,11 +69,11 @@ export default {
 
 <template lang="pug">
 .finapp(:style="layoutStyles")
-  //- loading
+  //- Loading
   template(v-if="$fetchState.pending || $store.state.app.status.loading")
     Loader
 
-  //- Continue to page
+  //- Continue to app
   transition(name="fadeInSlow")
     template(v-if="!$fetchState.pending && $store.state.app.status.ready")
       Nuxt

@@ -36,6 +36,10 @@
   },
 
   "welcome": {
+    "firstRun": {
+      "text": "Start with create base configuration of application",
+      "btn": "Start"
+    },
     "create": {
       "text": "Start creating your own wallets, categories",
       "btn": "Create"

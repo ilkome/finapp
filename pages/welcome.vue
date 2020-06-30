@@ -1,16 +1,18 @@
 <script>
-import Welcome from '~/components/welcome/Welcome'
-
 export default {
   name: 'WelcomePage',
 
-  components: {
-    Welcome
+  data () {
+    return {
+      step: 1,
+      showCategoryForm: false,
+      showWalletForm: false
+    }
   },
 
   computed: {
     newUserData () {
-      if (!this.$store.getters['wallets/hasWallets'] && !this.$store.getters['categories/hasCategories']) {
+      if (!this.$store.getters['wallets/hasWallets'] || !this.$store.getters['categories/hasCategories']) {
         return true
       }
       return false
@@ -29,14 +31,311 @@ export default {
     if (!this.newUserData) {
       this.$router.push('/')
     }
+  },
+
+  methods: {
+    categoryCreatedCallback () {
+      this.showCategoryForm = false
+      this.$store.dispatch('ui/setActiveTab', 'stat')
+    },
+
+    changeLang (lang) {
+      this.$store.dispatch('lang/setLang', lang)
+      this.$setLang(lang)
+    }
   }
 }
 </script>
 
 <template lang="pug">
-Welcome(v-if="newUserData")
+.tabs(v-if="newUserData")
+
+  //- welcome
+  transition(name="fadeIn")
+    template(v-if="step === 1")
+      .tab
+        .tab__content
+          .header
+            .header__title {{ $lang.app.welcome }}
+            .header__desc {{ $lang.app.desc }}
+            .header__user(@click="$store.dispatch('user/signOut')") {{ $lang.userLogout }} {{ $store.state.user.user.email }}
+
+          .options
+            .options__item
+              .options__desc {{ $lang.app.lang.select }}
+              .themeSelector
+                .themeSelector__item(
+                  :class="{ _active: $store.state.lang.lang === 'ru' }"
+                  @click="changeLang('ru')"
+                ) {{ $lang.app.lang.ru }}
+
+                .themeSelector__item(
+                  :class="{ _active: $store.state.lang.lang === 'en' }"
+                  @click="changeLang('en')"
+                ) {{ $lang.app.lang.en }}
+              .options__desc {{ $lang.app.theme.select }}
+
+              .themeSelector
+                .themeSelector__item._dark(
+                  :class="{ _active: $colorMode.value === 'dark' }"
+                  @click="$store.dispatch('ui/changeTheme', 'dark')"
+                )
+                  .themeSelector__icon
+                    template(v-if="$colorMode.value === 'dark'")
+                      .mdi.mdi-lightbulb-on
+                    template(v-else)
+                      .mdi.mdi-lightbulb-outline
+                  .themeSelector__title {{ $lang.app.theme.dark }}
+
+                .themeSelector__item._light(
+                  :class="{ _active: $colorMode.value === 'light' }"
+                  @click="$store.dispatch('ui/changeTheme', 'light')"
+                )
+                  .themeSelector__icon
+                    template(v-if="$colorMode.value === 'light'")
+                      .mdi.mdi-lightbulb-on
+                    template(v-else)
+                      .mdi.mdi-lightbulb-outline
+                  .themeSelector__title {{ $lang.app.theme.light }}
+
+              Button._blue._center(
+                :title="$lang.buttons.nextStep"
+                @onClick="step = 2")
+
+  transition(name="fadeIn")
+    template(v-if="step === 2")
+      .tab
+        .tab__content
+          .header
+            .header__title {{ $lang.app.welcome }}
+            .header__desc {{ $lang.app.desc }}
+            .header__user(@click="$store.dispatch('user/signOut')") {{ $lang.userLogout }} {{ $store.state.user.user.email }}
+
+          .options
+            .options__item
+              .options__desc {{ $lang.welcome.create.text }}
+              Button._blue._center(
+                :title="$lang.welcome.create.btn"
+                @onClick="step = 3")
+
+            template(v-if="$store.state.demo.hasDemo")
+              .options__or
+                .options__or__border
+                .options__or__text {{ $lang.welcome.or }}
+              .options__item
+                .options__desc {{ $lang.welcome.demo.text }}
+                Button._grey._center(
+                  :title="$lang.welcome.demo.btn"
+                  @onClick="$store.dispatch('demo/createDemo')")
+
+  //- wallet
+  transition(name="fadeIn")
+    template(v-if="(step !== 1 && step !== 2) && !showWalletForm && !$store.getters['wallets/hasWallets']")
+      .tab
+        .tab__content
+          .tab__wrap
+            .header
+              .header__title {{ $lang.app.welcome }}
+              .header__desc {{ $lang.app.desc }}
+              .header__user(@click="$store.dispatch('user/signOut')") {{ $lang.userLogout }} {{ $store.state.user.user.email }}
+
+            .text {{ $lang.welcome.createFirstWallet.text }}
+            .button
+              Button._blue._center(
+                :title="$lang.welcome.createFirstWallet.btn"
+                @onClick="showWalletForm = true")
+
+  //- category
+  transition(name="fadeIn")
+    template(v-if="(step !== 1 && step !== 2) && !showWalletForm && !showCategoryForm && $store.getters['wallets/hasWallets'] && !$store.getters['categories/hasCategories']")
+      .tab
+        .tab__content
+          .icon: .mdi.mdi-folder-star
+          .text {{ $lang.welcome.createFirstCategory.text }}
+          .button
+            Button._blue._center(
+              :title="$lang.welcome.createFirstCategory.btn"
+              @onClick="showCategoryForm = true")
+
+  transition(name="fadeIn")
+    .tab(v-if="showWalletForm")
+      .tab__content
+        WalletForm(@callback="showWalletForm = false")
+
+  transition(name="fadeIn")
+    .tab(v-if="showCategoryForm")
+      .tab__content
+        CategoryForm(@callback="categoryCreatedCallback")
+
+  .copyright
+    Copyright
 </template>
 
 <style lang="stylus" scoped>
-// style here
+@import "~assets/stylus/variables/margins"
+@import "~assets/stylus/variables/flex"
+@import "~assets/stylus/variables/media"
+@import "~assets/stylus/variables/fonts"
+@import "~assets/stylus/variables/scroll"
+
+.steps
+  display flex
+  width 100%
+  border-radius $m4
+  padding-bottom $m10
+
+.stepItem
+  flex-grow 1
+  padding $m6
+  text-align center
+  background var(--c-bg-2)
+
+  &._active
+    background var(--c-bg-5)
+    border-radius $m4
+
+.tabs
+  overflow hidden
+  position absolute
+  width 100%
+  height 100%
+
+.tab
+  display grid
+  overflow-x hidden
+  overflow-y scroll
+  scrollbar()
+  position absolute
+  left 0
+  top 0
+  width 100%
+  height 100%
+  padding-bottom $m10
+
+  &__content
+    display-flex(column, grow)
+    align-self center
+    margin 0 auto
+    padding $m9
+    padding-bottom 100px
+
+    @media $media-laptop
+      width 550px
+
+    .component
+      padding 0
+
+.header
+  padding-bottom $m9
+
+  &__title
+    font-size 28px
+    font-weight 500
+    letter-spacing 1px
+
+  &__desc
+    padding-top $m6
+    font-size 12px
+    color var(--c-font-4)
+
+    @media $media-laptop
+      padding-top $m6
+      font-size 14px
+
+  &__user
+    cursor pointer
+    padding-top $m7
+    font-size 12px
+
+    @media $media-laptop
+      padding-top $m7
+      font-size 14px
+
+.options
+  &__or
+    display flex
+    align-items center
+    justify-content center
+    position relative
+    padding $m9 0
+    text-align center
+    color var(--c-font-4)
+    &__text
+      position relative
+      padding $m7
+      background var(--c-bg-1)
+    &__border
+      position absolute
+      left 0
+      top 50%
+      width 100%
+      height 1px
+      background var(--c-bg-6)
+
+  &__desc
+    padding-bottom $m7
+    color var(--c-font-4)
+    line-height 20px
+
+.text
+  line-height 20px
+  padding-bottom $m8
+  @media $media-laptop
+    padding-bottom $m9
+
+.icon
+  padding-bottom $m5
+  text-align center
+  color var(--c-font-4)
+  font-size 96px
+  @media $media-laptop
+    padding-bottom $m7
+
+.copyright
+  position fixed
+  left 0
+  bottom 0
+  width 100%
+  padding-bottom $m7
+  background var(--c-bg-1)
+
+  @media $media-laptop
+    padding-bottom $m9
+
+.themeSelector
+  position relative
+  display grid
+  grid-template-columns 1fr 1fr
+  grid-column-gap 40px
+  padding-bottom $m10
+
+  &__item
+    flex-grow 1
+    cursor pointer
+    padding 25px 30px
+    text-align center
+    border 1px solid rgba(63, 63, 63, 1)
+    border-radius 3px
+
+    &._dark
+      color rgba(150, 150, 150, 1)
+      background rgba(10, 10, 10, 1)
+      border-color rgba(63, 63, 63, 1)
+
+    &._light
+      color rgba(50, 50, 50, 1)
+      background rgba(229, 229, 229, 1)
+      border-color rgba(190, 190, 190, 1)
+
+    &._active
+      border-color rgba(44, 173, 34, 1)
+
+  &__icon
+    opacity .5
+    padding-bottom 20px
+    font-size 32px
+
+    .themeSelector__item._active &
+      opacity 1
+      color rgba(44, 173, 34, 1)
 </style>

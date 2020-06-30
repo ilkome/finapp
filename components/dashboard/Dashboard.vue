@@ -60,11 +60,24 @@ export default {
           @onClick="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
         )
 
+      .options__item(v-if="!$store.getters['wallets/hasWallets'] && !$store.getters['categories/hasCategories']")
+        h4 {{ $lang.welcome.firstRun.text }}
+        Button._blue._center(
+          size="xl"
+          :title="$lang.welcome.firstRun.btn"
+          @onClick="$router.push('/welcome')"
+        )
+
       .options__item(v-if="$store.state.demo.hasDemo")
+        .options__or
+          .options__or__border
+          .options__or__text {{ $lang.welcome.or }}
+
+        h4 {{ $lang.welcome.demo.text }}
         Button._blue._center(
           size="xl"
           :title="$lang.welcome.demo.btn"
-          @onClick="$router.push('/welcome')"
+          @onClick="$store.dispatch('demo/createDemo')"
         )
 
   .dashboard__content(v-if="$store.getters['trns/hasTrns']")
@@ -131,4 +144,24 @@ export default {
 
   .options__item
     margin-bottom 40px
+
+  .options__or
+    display flex
+    align-items center
+    justify-content center
+    position relative
+    padding $m9 0
+    text-align center
+    color var(--c-font-4)
+    &__text
+      position relative
+      padding $m7
+      background var(--c-bg-2)
+    &__border
+      position absolute
+      left 0
+      top 50%
+      width 100%
+      height 1px
+      background var(--c-bg-6)
 </style>
