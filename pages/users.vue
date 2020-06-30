@@ -76,6 +76,13 @@ export default {
         db.ref(`users-info/${uid}/opensApp/${version}`).set(null)
         this.getUsers()
       }
+    },
+
+    deleteUserAction (action, uid) {
+      if (window.confirm('?')) {
+        db.ref(`users-info/${uid}/actions/${action}`).set(null)
+        this.getUsers()
+      }
     }
   },
 
@@ -141,7 +148,10 @@ export default {
 
         .pb_base(v-if="user.actions")
           .item__info._noPad Actions
-          .item__info._noPad(v-for="(action, date) in user.actions")
+          .item__info._noPad(
+            v-for="(action, date) in user.actions"
+            @click="deleteUserAction(date, user.uid)"
+          )
             .item__title {{ action }}
             .item__date {{ $day(date).format('D MMMM YYYY HH:mm') }}
 
