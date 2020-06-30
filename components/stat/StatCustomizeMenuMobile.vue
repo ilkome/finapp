@@ -45,7 +45,7 @@ export default {
 ContextMenu(
   :position="position"
   :visible="visibleCustomizeMenu"
-  v-on:onClickOpener="visibleCustomizeMenu = !visibleCustomizeMenu")
+  @onClickOpener="visibleCustomizeMenu = !visibleCustomizeMenu")
 
   template(slot="opener")
     template(v-if="icon")
@@ -62,47 +62,47 @@ ContextMenu(
       title="Wallets"
       :showCheckbox="true"
       :checkboxValue="$store.state.ui.stat.walletsVisibility === 'visible'"
-      v-on:onClick="$store.dispatch('ui/toogleStatWalletsVisibility')")
+      @onClick="$store.dispatch('ui/toogleStatWalletsVisibility')")
 
     ContextMenuItem(
       icon="mdi mdi-chart-bar-stacked"
       title="Periods chart"
       :showCheckbox="true"
       :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
-      v-on:onClick="$store.dispatch('ui/toogleShowStatGraphs')")
+      @onClick="$store.dispatch('ui/toogleShowStatGraphs')")
 
     ContextMenuItem(
       icon="mdi mdi-numeric"
       title="Summary"
       :showCheckbox="true"
       :checkboxValue="$store.state.ui.statSummuryVisibility === 'visible'"
-      v-on:onClick="$store.dispatch('ui/toogleStatSummuryVisibility')")
+      @onClick="$store.dispatch('ui/toogleStatSummuryVisibility')")
 
     ContextMenuItem(
       icon="mdi mdi-folder-star"
       title="Stat categories chart"
       :showCheckbox="true"
       :checkboxValue="$store.state.ui.catsChart === 'visible'"
-      v-on:onClick="$store.dispatch('ui/toogleVisibleCatsChart')")
+      @onClick="$store.dispatch('ui/toogleVisibleCatsChart')")
 
     ContextMenuItem(
       icon="mdi mdi-history"
       title="Stat categories list"
       :showCheckbox="true"
       :checkboxValue="$store.state.ui.statItems === 'visible'"
-      v-on:onClick="$store.dispatch('ui/toogleVisibilityStatItems')")
+      @onClick="$store.dispatch('ui/toogleVisibilityStatItems')")
 
     ContextMenuItem(
       icon="mdi mdi-history"
       title="Last trns"
       :showCheckbox="true"
       :checkboxValue="$store.state.ui.statLastTrnsVisibility === 'visible'"
-      v-on:onClick="$store.dispatch('ui/toogleStatLastTrnsVisibility')")
+      @onClick="$store.dispatch('ui/toogleStatLastTrnsVisibility')")
 
     .context-menu-sep
 
     ContextMenuItem(
       icon="mdi mdi-palette"
       title="Change theme"
-      v-on:onClick="$store.dispatch('ui/changeTheme')")
+      @onClick="$store.dispatch('ui/changeTheme')")
 </template>

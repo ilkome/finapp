@@ -25,7 +25,7 @@ export default {
 ModalBottom(
   :show="show"
   title="Are you sure?"
-  v-on:onClose="$emit('onClose')"
+  @onClose="$emit('onClose')"
 )
   template(v-if="description")
     template(slot="description")
@@ -35,12 +35,12 @@ ModalBottom(
     ModalButton(
       name="Yes"
       icon="mdi mdi-check"
-      v-on:onClick="$emit('onConfirm')"
+      @onClick="$emit('onConfirm')"
     )
     ModalButton(
       name="Cancel"
       icon="mdi mdi-close-circle"
-      v-on:onClick="$emit('onClose')"
+      @onClick="$emit('onClose')"
     )
 </template>
 

@@ -142,7 +142,7 @@ export default {
     Button(
       :class="['_text-center _border _inline']"
       :title="$lang.trns.more"
-      v-on:onClick="showMoreTrns")
+      @onClick="showMoreTrns")
 </template>
 
 <style lang="stylus" scoped>

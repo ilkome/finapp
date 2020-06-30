@@ -67,7 +67,7 @@ export default {
       :categoryId="categoryId"
       :key="`charts-${categoryId}`"
       :total="statCurrentPeriod.categories[categoryId][type]"
-      v-on:onActiveCategoryChange="handleActiveCategoryChange")
+      @onActiveCategoryChange="handleActiveCategoryChange")
 
   .cats-chart__popup(
     v-if="this.$store.state.ui.pc"

@@ -96,8 +96,8 @@ export default {
 ModalBottom(
   v-if="$store.getters['trns/hasTrns']"
   :show="$store.state.trns.modal.show"
-  v-on:onClose="$store.commit('trns/hideTrnModal')"
-  v-on:afterClose="$store.commit('trns/setTrnModalId', null)")
+  @onClose="$store.commit('trns/hideTrnModal')"
+  @afterClose="$store.commit('trns/setTrnModalId', null)")
 
   template(v-if="trnId")
     template(slot="header")
@@ -114,31 +114,31 @@ ModalBottom(
       ModalButton(
         name="Delete"
         icon="mdi mdi-delete"
-        v-on:onClick="handleDeleteClick")
+        @onClick="handleDeleteClick")
 
       ModalButton(
         name="Edit"
         icon="mdi mdi-pencil"
-        v-on:onClick="handleEditClick")
+        @onClick="handleEditClick")
 
       ModalButton(
         name="Dublicate"
         icon="mdi mdi-content-copy"
-        v-on:onClick="handleDublicateTrn")
+        @onClick="handleDublicateTrn")
 
     .moreActions
       Button.marginBottom(
         className="_grey"
         title="Set category filter"
         icon="mdi mdi-folder-star"
-        v-on:onClick="handleSetFilterCategory")
+        @onClick="handleSetFilterCategory")
 
       Button.marginBottom(
         :class="{ marginBottom: budgets }"
         className="_grey"
         title="Set wallet filter"
         icon="mdi mdi-credit-card-multiple"
-        v-on:onClick="handleSetFilterWallet")
+        @onClick="handleSetFilterWallet")
 
       Button(
         v-if="budgets && $store.getters['user/isTester']"
@@ -146,21 +146,21 @@ ModalBottom(
         className="_grey"
         title="Show budgets"
         icon="mdi mdi-hand-saw"
-        v-on:onClick="showModalBudgets = true")
+        @onClick="showModalBudgets = true")
 
       Button(
         v-if="groups && $store.getters['user/isTester']"
         className="_grey"
         title="Show groups"
         icon="mdi mdi-folder-multiple-outline"
-        v-on:onClick="showModalGroups = true")
+        @onClick="showModalGroups = true")
 
   //- budgets
   template(v-if="groups && $store.getters['user/isTester']")
     ModalBottom(
       :show="showModalBudgets"
       title="Budgets"
-      v-on:onClose="showModalBudgets = false"
+      @onClose="showModalBudgets = false"
       paddingless
     )
       template(v-for="(budget, budgetId) in budgets")
@@ -178,7 +178,7 @@ ModalBottom(
     ModalBottom(
       :show="showModalGroups"
       title="groups"
-      v-on:onClose="showModalGroups = false"
+      @onClose="showModalGroups = false"
       paddingless
     )
       template(v-for="(group, groupId) in groups")
@@ -195,8 +195,8 @@ ModalBottom(
   //- confirm
   ModalBottomConfirm(
     :show="showModalConfirm"
-    v-on:onClose="showModalConfirm = false"
-    v-on:onConfirm="handleDeleteConfirm")
+    @onClose="showModalConfirm = false"
+    @onConfirm="handleDeleteConfirm")
 </template>
 
 <style lang="stylus" scoped>

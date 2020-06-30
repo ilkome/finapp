@@ -52,7 +52,7 @@ export default {
               ThemeSelector
               Button._blue._center(
                 :title="$lang.buttons.nextStep"
-                v-on:onClick="step = 1")
+                @onClick="step = 1")
 
   transition(name="fadeIn")
     template(v-if="step === 1")
@@ -67,7 +67,7 @@ export default {
               .options__desc {{ $lang.welcome.create.text }}
               Button._blue._center(
                 :title="$lang.welcome.create.btn"
-                v-on:onClick="step = 2")
+                @onClick="step = 2")
 
             template(v-if="$store.state.demo.hasDemo")
               .options__or
@@ -77,7 +77,7 @@ export default {
                 .options__desc {{ $lang.welcome.demo.text }}
                 Button._grey._center(
                   :title="$lang.welcome.demo.btn"
-                  v-on:onClick="$store.dispatch('demo/createDemo')")
+                  @onClick="$store.dispatch('demo/createDemo')")
 
   //- wallet
   transition(name="fadeIn")
@@ -93,7 +93,7 @@ export default {
             .button
               Button._blue._center(
                 :title="$lang.welcome.createFirstWallet.btn"
-                v-on:onClick="showWalletForm = true")
+                @onClick="showWalletForm = true")
 
   //- category
   transition(name="fadeIn")
@@ -105,17 +105,17 @@ export default {
           .button
             Button._blue._center(
               :title="$lang.welcome.createFirstCategory.btn"
-              v-on:onClick="showCategoryForm = true")
+              @onClick="showCategoryForm = true")
 
   transition(name="fadeIn")
     .tab(v-if="showWalletForm")
       .tab__content
-        WalletForm(v-on:callback="showWalletForm = false")
+        WalletForm(@callback="showWalletForm = false")
 
   transition(name="fadeIn")
     .tab(v-if="showCategoryForm")
       .tab__content
-        CategoryForm(v-on:callback="categoryCreatedCallback")
+        CategoryForm(@callback="categoryCreatedCallback")
 
   .copyright
     Copyright

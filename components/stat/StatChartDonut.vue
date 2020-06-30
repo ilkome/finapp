@@ -149,7 +149,7 @@ export default {
       ContextMenu(
         :position="{ left: '-12px', top: true }"
         :visible="visiblePeriodMenu"
-        v-on:onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
+        @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
         template(slot="opener")
           Dropdown._noBd(
             :active="visiblePeriodMenu")
@@ -159,14 +159,14 @@ export default {
           ContextMenuItem(
             icon="mdi mdi-calendar"
             title="Month"
-            v-on:onClick="changePeriod('month')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClick="changePeriod('month')"
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
 
           ContextMenuItem(
             icon="mdi mdi-calendar-star"
             title="Year"
-            v-on:onClick="changePeriod('year')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClick="changePeriod('year')"
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
 
       //- .div(@click="toogleModal") Modal
 

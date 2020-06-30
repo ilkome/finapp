@@ -421,7 +421,7 @@ export default {
               WalletsList(
                 :limit="3"
                 ui="widget"
-                v-on:onClick="walletId => $store.commit('trnForm/setTrnFormValues', { walletId })"
+                @onClick="walletId => $store.commit('trnForm/setTrnFormValues', { walletId })"
               )
             .trnForm__quickCats
               CategoriesView(
@@ -451,7 +451,7 @@ export default {
                   WalletsList(
                     :limit="3"
                     ui="widget"
-                    v-on:onClick="walletId => $store.commit('trnForm/setTrnFormValues', { walletId })")
+                    @onClick="walletId => $store.commit('trnForm/setTrnFormValues', { walletId })")
 
               .formCategories(v-if="$store.getters['categories/quickSelectorCategoriesIds'].length > 0")
                 .formTitle(@click="$store.commit('trnForm/toogleTrnFormModal', 'categories')") Favorite Categories
@@ -459,12 +459,12 @@ export default {
                   ui="_flat"
                   :ids="$store.getters['categories/quickSelectorCategoriesIds']"
                   :noPaddingBottom="true"
-                  v-on:onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })")
+                  @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })")
           //- pc: end
 
           //- mobile
           template(v-if="$store.state.ui.mobile")
-            TrnFormCalculator(v-on:onFormSubmit="handleSubmitForm")
+            TrnFormCalculator(@onFormSubmit="handleSubmitForm")
 
             //- header
             TrnFormHeaderTransfer(

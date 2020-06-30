@@ -199,7 +199,7 @@ export default {
       @click="onClose"
     )
 
-  transition(name="slide" appear v-on:after-leave="afterClose")
+  transition(name="slide" appear @after-leave="afterClose")
     .trnFormModal__wrap(v-show="show")
       .trnFormModal__header(
         @click="onClose"

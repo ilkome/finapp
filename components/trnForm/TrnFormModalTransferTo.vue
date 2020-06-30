@@ -25,10 +25,10 @@ TrnFormModal(
   v-if="$store.state.trnForm.modal.transferTo"
   :show="$store.state.trnForm.modal.transferTo"
   title="Transfer to wallet"
-  v-on:onClose="$store.commit('trnForm/toogleTrnFormModal', 'transferTo')"
+  @onClose="$store.commit('trnForm/toogleTrnFormModal', 'transferTo')"
 )
   WalletsList(
     ui="tile"
-    v-on:onClick="handleSetWallet"
+    @onClick="handleSetWallet"
   )
 </template>

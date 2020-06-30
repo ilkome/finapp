@@ -72,7 +72,7 @@ export default {
         :color="filterWallet.color || $store.state.ui.defaultBgColor"
         :name="filterWallet.name"
         icon="mdi mdi-credit-card-multiple"
-        v-on:onClick="clearWalletFilter")
+        @onClick="clearWalletFilter")
 
     template(v-if="$store.state.filter.categoryId")
       template(v-if="filterCategory.parentId !== 0")
@@ -80,12 +80,12 @@ export default {
           :color="filterCategoryParent.color || $store.state.ui.defaultBgColor"
           :icon="filterCategoryParent.icon"
           :name="filterCategoryParent.name"
-          v-on:onClick="clearParentCategoryFilter")
+          @onClick="clearParentCategoryFilter")
       FilterItem(
         :color="filterCategory.color || $store.state.ui.defaultBgColor"
         :icon="filterCategory.icon"
         :name="filterCategory.name"
-        v-on:onClick="clearCategoryFilter")
+        @onClick="clearCategoryFilter")
 
   .block
     StatSummaryMobile(v-show="$store.state.ui.statSummuryVisibility === 'visible'")
@@ -95,7 +95,7 @@ export default {
         .options__item(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
           Button._grey._center(
             :title="$lang.createTrn"
-            v-on:onClick="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
+            @onClick="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
           )
 
         .options__item(v-if="$store.state.demo.hasDemo")

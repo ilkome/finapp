@@ -67,7 +67,7 @@ ContextMenu(
   :position="{ right: showDropdown ? '-12px' : true }"
   :visible="visibleContextMenu"
   :openerCircle="true"
-  v-on:onClickOpener="visibleContextMenu = !visibleContextMenu")
+  @onClickOpener="visibleContextMenu = !visibleContextMenu")
 
   template(v-if="showDropdown")
     template(slot="opener")
@@ -80,18 +80,18 @@ ContextMenu(
       ContextMenuItem(
         icon="mdi mdi-ungroup"
         :title="periods[filterPeriod].grouped ? 'Simple charts' : 'Grouped charts'"
-        v-on:onClick="toogleChartsView")
+        @onClick="toogleChartsView")
 
     ContextMenuItem(
       icon="mdi mdi-plus"
       :title="periods[filterPeriod].grouped ? 'Add group' : 'Add period'"
-      v-on:onClick="addPeriodOrGroup")
+      @onClick="addPeriodOrGroup")
 
     ContextMenuItem(
       v-if="(periods[filterPeriod].grouped && periods[filterPeriod].showedGroups > 1) || (!periods[filterPeriod].grouped && periods[filterPeriod].showedPeriods > 1)"
       icon="mdi mdi-minus"
       :title="periods[filterPeriod].grouped ? 'Remove group' : 'Remove period'"
-      v-on:onClick="removePeriodOrGroup")
+      @onClick="removePeriodOrGroup")
 
   template(slot="desc")
     template(v-if="periods[filterPeriod].grouped") Showed {{ periods[filterPeriod].showedGroups }} groups

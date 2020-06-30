@@ -183,7 +183,7 @@ ComponentWrap
       :center="true"
       :show="showColors"
       :title="$lang.wallets.form.color.placeholder"
-      v-on:onClose="showColors = false")
+      @onClose="showColors = false")
       .inputText
         .inputText__colors
           .colors
@@ -201,7 +201,7 @@ ComponentWrap
       :center="true"
       :show="showCurrencies"
       :title="$lang.wallets.form.currency.placeholder"
-      v-on:onClose="showCurrencies = false")
+      @onClose="showCurrencies = false")
       .inputText
         .currencies
           .currencies__item(
@@ -215,7 +215,7 @@ ComponentWrap
       Button(
         :class="['_text-center _blue', { _inline: $store.state.ui.pc }]"
         :title="$lang.wallets.form.save"
-        v-on:onClick="handleSubmit")
+        @onClick="handleSubmit")
 </template>
 
 <style lang="stylus" scoped>

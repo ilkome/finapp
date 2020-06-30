@@ -25,7 +25,7 @@ export default {
     WalletsList(
       :limit="3"
       ui="widget"
-      v-on:onClick="id => handleShowWalletModal(id)")
+      @onClick="id => handleShowWalletModal(id)")
 
   .layoutStat__chart(v-show="$store.state.ui.statGraphsVisibility === 'visible' && ($store.state.filter.period !== 'all')")
     StatChartsLine

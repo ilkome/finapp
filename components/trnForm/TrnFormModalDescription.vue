@@ -68,13 +68,13 @@ TrnFormModal(
         Button(
           className="_blue _inline"
           :title="$lang.base.save"
-          v-on:onClick="handleSave"
+          @onClick="handleSave"
         )
       .description__action-cancel
         Button(
           className="_grey _inline"
           :title="$lang.base.cancel"
-          v-on:onClick="handleCancel"
+          @onClick="handleCancel"
         )
 </template>
 

@@ -94,7 +94,7 @@ export default {
 
           template(slot="content")
             CategoriesList.dashboardItems(
-              v-on:onClick="id => $store.dispatch('categories/showCategoryModal', id)")
+              @onClick="id => $store.dispatch('categories/showCategoryModal', id)")
 
           template(slot="bottom")
             .col
@@ -102,7 +102,7 @@ export default {
                 className="_blue _inline"
                 icon="mdi mdi-plus"
                 :title="$lang.categories.new"
-                v-on:onClick="$store.dispatch('ui/setActiveTab', 'createCategory')")
+                @onClick="$store.dispatch('ui/setActiveTab', 'createCategory')")
 
       //- wallets
       //------------------------------------------------
@@ -113,7 +113,7 @@ export default {
           template(slot="content")
             WalletsList.dashboardItems(
               ui="tile"
-              v-on:onClick="(id) => handleShowWalletModal(id)")
+              @onClick="(id) => handleShowWalletModal(id)")
 
           template(slot="bottom")
             .flex
@@ -122,13 +122,13 @@ export default {
                   className="_inline _blue"
                   icon="mdi mdi-plus"
                   :title="$lang.wallets.new"
-                  v-on:onClick="$store.dispatch('ui/setActiveTab', 'createWallet')")
+                  @onClick="$store.dispatch('ui/setActiveTab', 'createWallet')")
               .col
                 Button(
                   className="_inline _blue"
                   :title="$lang.base.sort"
                   icon="mdi mdi-arrow-split-horizontal"
-                  v-on:onClick="$store.dispatch('ui/setActiveTab', 'walletsSort')")
+                  @onClick="$store.dispatch('ui/setActiveTab', 'walletsSort')")
 
       //- add category
       //------------------------------------------------

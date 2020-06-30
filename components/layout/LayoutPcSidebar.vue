@@ -42,7 +42,7 @@ export default {
       ContextMenu(
         :position="{ left: true, top: true }"
         :visible="visibleSettingsMenu"
-        v-on:onClickOpener="visibleSettingsMenu = !visibleSettingsMenu")
+        @onClickOpener="visibleSettingsMenu = !visibleSettingsMenu")
         template(slot="opener")
           .link(:class="{ _active: visibleSettingsMenu }"): .mdi.mdi-tune
 
@@ -50,18 +50,18 @@ export default {
           ContextMenuItem(
             icon="mdi mdi-palette"
             title="Change theme"
-            v-on:onClick="$store.dispatch('ui/changeTheme')")
+            @onClick="$store.dispatch('ui/changeTheme')")
           ContextMenuItem(
             icon="mdi mdi-cog-outline"
             :title="$lang.settings.open"
-            v-on:onClick="$store.dispatch('ui/setActiveTab', 'settings')"
-            v-on:onClose="visibleSettingsMenu = !visibleSettingsMenu")
+            @onClick="$store.dispatch('ui/setActiveTab', 'settings')"
+            @onClose="visibleSettingsMenu = !visibleSettingsMenu")
           .context-menu-sep
           ContextMenuItem(
             icon="mdi mdi-logout"
             title="Sign Out"
-            v-on:onClick="$store.dispatch('user/signOut')"
-            v-on:onClose="visibleSettingsMenu = !visibleSettingsMenu")
+            @onClick="$store.dispatch('user/signOut')"
+            @onClose="visibleSettingsMenu = !visibleSettingsMenu")
 
       .sidebar__menu__item(
         :class="{ _active: activeTab === 'wallets'}"
@@ -85,7 +85,7 @@ export default {
     WalletsList(
       :showToogle="true"
       :limit="6"
-      v-on:onClick="(id) => handleShowWalletModal(id)")
+      @onClick="(id) => handleShowWalletModal(id)")
 </template>
 
 <style lang="stylus" scoped>

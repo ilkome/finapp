@@ -30,7 +30,7 @@ export default {
       ContextMenu(
         :position="{ left: '-12px', top: true }"
         :visible="visiblePeriodMenu"
-        v-on:onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
+        @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
         template(slot="opener")
           Dropdown._noBd(
             :active="visiblePeriodMenu")
@@ -41,32 +41,32 @@ export default {
             icon="mdi mdi-weather-sunset-up"
             :title="$lang.dates.day.simple"
             :selected="$store.state.filter.period === 'day'"
-            v-on:onClick="$store.dispatch('filter/setPeriod', 'day')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClick="$store.dispatch('filter/setPeriod', 'day')"
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
           ContextMenuItem(
             icon="mdi mdi-calendar-week"
             :title="$lang.dates.week.simple"
             :selected="$store.state.filter.period === 'week'"
-            v-on:onClick="$store.dispatch('filter/setPeriod', 'week')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClick="$store.dispatch('filter/setPeriod', 'week')"
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
           ContextMenuItem(
             icon="mdi mdi-calendar"
             :title="$lang.dates.month.simple"
             :selected="$store.state.filter.period === 'month'"
-            v-on:onClick="$store.dispatch('filter/setPeriod', 'month')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClick="$store.dispatch('filter/setPeriod', 'month')"
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
           ContextMenuItem(
             icon="mdi mdi-calendar-star"
             :title="$lang.dates.year.simple"
             :selected="$store.state.filter.period === 'year'"
-            v-on:onClick="$store.dispatch('filter/setPeriod', 'year')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClick="$store.dispatch('filter/setPeriod', 'year')"
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
           ContextMenuItem(
             icon="mdi mdi-database"
             :title="$lang.dates.all"
             :selected="$store.state.filter.period === 'all'"
-            v-on:onClick="$store.dispatch('filter/setPeriod', 'all')"
-            v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClick="$store.dispatch('filter/setPeriod', 'all')"
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
 
     .periodNav__group
       ._align-right
@@ -79,7 +79,7 @@ export default {
           ContextMenu(
             :position="{ right: '-12px', top: true }"
             :visible="visibleContextMenu"
-            v-on:onClickOpener="visibleContextMenu = !visibleContextMenu")
+            @onClickOpener="visibleContextMenu = !visibleContextMenu")
 
             template(slot="opener")
               Dropdown._noBd(
@@ -92,33 +92,33 @@ export default {
                 title="Periods chart"
                 :showCheckbox="true"
                 :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
-                v-on:onClick="$store.dispatch('ui/toogleShowStatGraphs')")
+                @onClick="$store.dispatch('ui/toogleShowStatGraphs')")
 
               ContextMenuItem(
                 icon="mdi mdi-folder-star"
                 title="Cats chart"
                 :showCheckbox="true"
                 :checkboxValue="$store.state.ui.catsChart === 'visible'"
-                v-on:onClick="$store.dispatch('ui/toogleVisibleCatsChart')")
+                @onClick="$store.dispatch('ui/toogleVisibleCatsChart')")
 
               ContextMenuItem(
                 icon="mdi mdi-chart-gantt"
                 title="Cats stat"
                 :showCheckbox="true"
                 :checkboxValue="$store.state.ui.statItems === 'visible'"
-                v-on:onClick="$store.dispatch('ui/toogleVisibilityStatItems')")
+                @onClick="$store.dispatch('ui/toogleVisibilityStatItems')")
 
               .context-menu-sep
 
               ContextMenuItem(
                 icon="mdi mdi-palette"
                 title="Change theme"
-                v-on:onClick="$store.dispatch('ui/changeTheme')")
+                @onClick="$store.dispatch('ui/changeTheme')")
               ContextMenuItem(
                 icon="mdi mdi-currency-usd"
                 title="Change base currency"
-                v-on:onClick="$store.commit('showBaseCurrenciesModal')"
-                v-on:onClose="visibleContextMenu = !visibleContextMenu")
+                @onClick="$store.commit('showBaseCurrenciesModal')"
+                @onClose="visibleContextMenu = !visibleContextMenu")
 </template>
 
 <style lang="stylus" scoped>

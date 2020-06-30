@@ -20,7 +20,7 @@ export default {
     :center="true"
     :show="$store.state.currencies.modal.show"
     title="Select base currency"
-    v-on:onClose="$store.commit('currencies/hideBaseCurrenciesModal')")
+    @onClose="$store.commit('currencies/hideBaseCurrenciesModal')")
     .inputText
       .currencies
         .currencies__item(

@@ -115,7 +115,7 @@ export default {
     TrnsList(:ids="trnsIds" v-slot="{ trns }")
       TrnItem(
         v-for="trnId in trnsIds"
-        v-on:onClick="handleTrnItemClick"
+        @onClick="handleTrnItemClick"
         :category="trns[trnId].category"
         :id="trns[trnId].id"
         :key="trns[trnId].id"

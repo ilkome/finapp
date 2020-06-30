@@ -44,7 +44,7 @@ div
   ContextMenu(
     :position="{ left: true, top: true }"
     :visible="visibleDropdown"
-    v-on:onClickOpener="visibleDropdown = !visibleDropdown")
+    @onClickOpener="visibleDropdown = !visibleDropdown")
     template(slot="opener")
       Dropdown(
         :active="visibleDropdown"
@@ -52,11 +52,11 @@ div
     template(slot="content")
       ContextMenuItem(
         title="🇷🇺 Russian - Русский (Не полный)"
-        v-on:onClick="changeLang('ru')")
+        @onClick="changeLang('ru')")
       .context-menu-sep
       ContextMenuItem(
         title="🇺🇸 English - Английский"
-        v-on:onClick="changeLang('en')")
+        @onClick="changeLang('en')")
 </template>
 
 <style lang="stylus" scoped>

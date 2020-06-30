@@ -83,7 +83,7 @@ export default {
   Button(
     className="_new"
     :title="$lang.budgets.form.button"
-    v-on:onClick="handleCreateGroup")
+    @onClick="handleCreateGroup")
 </template>
 
 <style lang="stylus" scoped>

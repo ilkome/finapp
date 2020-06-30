@@ -244,7 +244,7 @@ ComponentWrap
       :center="true"
       :show="showColors"
       :title="$lang.categories.form.color.placeholder"
-      v-on:onClose="showColors = false")
+      @onClose="showColors = false")
       .inputText
         .inputText__colors
           .colors
@@ -263,16 +263,16 @@ ComponentWrap
       :center="true"
       :show="showParents"
       :title="$lang.categories.form.parent.label"
-      v-on:onClose="showParents = false")
+      @onClose="showParents = false")
       .padding-bottom
         ModalButton(
           :name="$lang.categories.form.parent.no"
           icon="mdi mdi-folder-star"
-          v-on:onClick="() => handleParenCategorySelect(0)")
+          @onClick="() => handleParenCategorySelect(0)")
       CategoriesView(
         :noPadding="true"
         :ids="$store.getters['categories/categoriesForBeParent'].filter(cId => cId !== categoryId)"
-        v-on:onClick="handleParenCategorySelect")
+        @onClick="handleParenCategorySelect")
 
     //- icons
     ModalBottom(
@@ -298,7 +298,7 @@ ComponentWrap
       Button(
         :class="['_text-center _blue _ml-big', { _inline: $store.state.ui.pc }]"
         :title="$lang.categories.form.save"
-        v-on:onClick="handleSubmit")
+        @onClick="handleSubmit")
 </template>
 
 <style lang="stylus" scoped>

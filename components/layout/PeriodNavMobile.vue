@@ -34,7 +34,7 @@ export default {
     ContextMenu(
       :position="{ left: true, bottom: true }"
       :visible="visiblePeriodMenu"
-      v-on:onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
+      @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
       template(slot="opener")
         Dropdown(:active="visiblePeriodMenu")
           template(slot="title"): Date
@@ -44,32 +44,32 @@ export default {
           icon="mdi mdi-weather-sunset-up"
           :title="$lang.dates.day.simple"
           :selected="$store.state.filter.period === 'day'"
-          v-on:onClick="$store.dispatch('filter/setPeriod', 'day')"
-          v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+          @onClick="$store.dispatch('filter/setPeriod', 'day')"
+          @onClose="visiblePeriodMenu = !visiblePeriodMenu")
         ContextMenuItem(
           icon="mdi mdi-calendar-week"
           :title="$lang.dates.week.simple"
           :selected="$store.state.filter.period === 'week'"
-          v-on:onClick="$store.dispatch('filter/setPeriod', 'week')"
-          v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+          @onClick="$store.dispatch('filter/setPeriod', 'week')"
+          @onClose="visiblePeriodMenu = !visiblePeriodMenu")
         ContextMenuItem(
           icon="mdi mdi-calendar"
           :title="$lang.dates.month.simple"
           :selected="$store.state.filter.period === 'month'"
-          v-on:onClick="$store.dispatch('filter/setPeriod', 'month')"
-          v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+          @onClick="$store.dispatch('filter/setPeriod', 'month')"
+          @onClose="visiblePeriodMenu = !visiblePeriodMenu")
         ContextMenuItem(
           icon="mdi mdi-calendar-star"
           :title="$lang.dates.year.simple"
           :selected="$store.state.filter.period === 'year'"
-          v-on:onClick="$store.dispatch('filter/setPeriod', 'year')"
-          v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+          @onClick="$store.dispatch('filter/setPeriod', 'year')"
+          @onClose="visiblePeriodMenu = !visiblePeriodMenu")
         ContextMenuItem(
           icon="mdi mdi-database"
           :title="$lang.dates.all"
           :selected="$store.state.filter.period === 'all'"
-          v-on:onClick="$store.dispatch('filter/setPeriod', 'all')"
-          v-on:onClose="visiblePeriodMenu = !visiblePeriodMenu")
+          @onClick="$store.dispatch('filter/setPeriod', 'all')"
+          @onClose="visiblePeriodMenu = !visiblePeriodMenu")
 
     .customize
       StatCustomizeMenuMobile(

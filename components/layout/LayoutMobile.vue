@@ -119,12 +119,12 @@ export default {
                           Button(
                             className="_inline _small"
                             :title="$lang.wallets.new"
-                            v-on:onClick="$store.dispatch('ui/setActiveTab', 'createWallet')")
+                            @onClick="$store.dispatch('ui/setActiveTab', 'createWallet')")
                         .col
                           Button(
                             className="_inline _small"
                             :title="$lang.base.sort"
-                            v-on:onClick="$store.dispatch('ui/setActiveTab', 'walletsSort')")
+                            @onClick="$store.dispatch('ui/setActiveTab', 'walletsSort')")
 
               //- wallets sort
               transition(name="animation-tab")
@@ -140,13 +140,13 @@ export default {
                     template(slot="content")
                       CategoriesList(
                         :style="{ paddingTop: '16px' }"
-                        v-on:onClick="(id) => $store.dispatch('categories/showCategoryModal', id)")
+                        @onClick="(id) => $store.dispatch('categories/showCategoryModal', id)")
 
                     template(slot="bottom")
                       Button(
                         className="_inline _small"
                         :title="$lang.categories.new"
-                        v-on:onClick="$store.dispatch('ui/setActiveTab', 'createCategory')")
+                        @onClick="$store.dispatch('ui/setActiveTab', 'createCategory')")
 
               //- stat
               transition(name="animation-tab")

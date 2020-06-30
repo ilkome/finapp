@@ -80,7 +80,7 @@ ComponentWrap(:contentPadding="$store.state.ui.pc")
       Button(
         className="_small _blue _text-center"
         :title="$lang.base.save"
-        v-on:onClick="saveWalletsOrder")
+        @onClick="saveWalletsOrder")
 </template>
 
 <style lang="stylus" scoped>

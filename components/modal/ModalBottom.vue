@@ -37,7 +37,7 @@ export default {
   transition(name="fadeIn" appear)
     .modalBottom__overflow(@click="$listeners.onClose" v-show="show")
 
-  transition(name="slide" appear v-on:after-leave="afterClose")
+  transition(name="slide" appear @after-leave="afterClose")
     .modalBottom__wrap(v-show="show")
       //- Header
       .modalBottom__header(

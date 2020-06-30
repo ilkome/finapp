@@ -57,7 +57,7 @@ export default {
       .options__item(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
         Button._grey._center(
           :title="$lang.createTrn"
-          v-on:onClick="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
+          @onClick="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
         )
 
       .options__item(v-if="$store.state.demo.hasDemo")

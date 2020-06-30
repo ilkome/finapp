@@ -23,7 +23,7 @@ label.checkbox(:class="{ _alt: alt }")
   input.checkbox__input(
     type="checkbox"
     :checked="value"
-    v-on:input="$emit('input', $event.target.checked)"
+    @input="$emit('input', $event.target.checked)"
   )
   .checkbox__helper
     .checkbox__toogle

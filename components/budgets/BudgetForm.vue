@@ -110,7 +110,7 @@ export default {
     TrnsList(v-slot="{ trns }")
       TrnItem(
         v-for="trnItem in trns"
-        v-on:onClick="handleSelectTrn(trnItem.id)"
+        @onClick="handleSelectTrn(trnItem.id)"
         :category="trnItem.category"
         :className="{ _selected: isSelectedTrn(trnItem.id) }"
         :id="trnItem.id"
@@ -121,7 +121,7 @@ export default {
   Button(
     className="_blue _inline _text-center"
     :title="$lang.budgets.form.button"
-    v-on:onClick="handleCreateBudget")
+    @onClick="handleCreateBudget")
 </template>
 
 <style lang="stylus" scoped>
