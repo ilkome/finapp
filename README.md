@@ -1,4 +1,4 @@
-<p align="center"><img align="center" style="width:320px" src="https://finapp3.ilko.me/icon.png"/></p><br/>
+<p align="center"><img align="center" style="width:320px" src="https://finapp.ilko.me/icon.png"/></p><br/>
 
 # Open source finance application
 > Written with Vue and Firebase.
