@@ -46,7 +46,7 @@ export default {
     color rgba(150, 150, 150, 1)
     background rgba(10, 10, 10, 1)
 
-    /.theme-light &
+    /.light-mode &
       color rgba(50, 50, 50, 1)
       background rgba(229, 229, 229, 1)
       border-color rgba(190, 190, 190, 1)

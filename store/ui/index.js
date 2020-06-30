@@ -17,7 +17,6 @@ const state = () => ({
     activeTab: 'stat',
     walletsVisibility: 'visible'
   },
-  theme: 'dark',
   width: 0
 })
 

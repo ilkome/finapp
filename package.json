@@ -1,6 +1,6 @@
 {
   "name": "finapp",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "scripts": {
     "dev": "cross-env NUXT_HOST=0.0.0.0 nuxt",
     "build": "nuxt build --modern",
@@ -31,6 +31,7 @@
     "vuejs-datepicker": "^1.6.2"
   },
   "devDependencies": {
+    "@nuxtjs/color-mode": "^1.0.0",
     "@nuxtjs/eslint-config": "^3.0.0",
     "@nuxtjs/pwa": "^2.6.0",
     "babel-eslint": "^10.1.0",

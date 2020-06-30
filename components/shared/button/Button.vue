@@ -82,7 +82,7 @@ export default {
   box-shadow 2px 2px 6px 0px var(--c-bg-2)
   border-radius 50px
 
-  /.theme-light &
+  /.light-mode &
     box-shadow 2px 2px 6px 0px var(--c-bg-11)
 
   &:active:not(._disable)
@@ -137,7 +137,7 @@ export default {
     border-radius 3px
     anim()
 
-    /.theme-light &
+    /.light-mode &
       box-shadow 2px 2px 6px 0px var(--c-bg-11)
 
     &:active:not(._disable)
@@ -174,14 +174,14 @@ export default {
     color var(--c-font-2)
     border-radius $m3
 
-    /.theme-light &
+    /.light-mode &
       color var(--c-font-1)
       background var(--c-bg-12)
 
     &:hover
       @media $media-laptop
         background var(--c-bg-6)
-        /.theme-light &
+        /.light-mode &
           background var(--c-bg-13)
 
   &._small
@@ -193,7 +193,7 @@ export default {
     box-shadow 2px 2px 6px 0px var(--c-bg-2)
     border-radius $m3
 
-    /.theme-light &
+    /.light-mode &
       box-shadow 2px 2px 6px 0px var(--c-bg-11)
 
     ^[0]:active &

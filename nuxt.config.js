@@ -2,15 +2,17 @@ export default {
   publicRuntimeConfig: {
     testerEmail: 'ilya.komichev@gmail.com'
   },
-  /*
-  ** Nuxt rendering mode
-  ** See https://nuxtjs.org/api/configuration-mode
-  */
+
+  /**
+   * Nuxt rendering mode
+   * See https://nuxtjs.org/api/configuration-mode
+   */
   mode: 'spa',
-  /*
-  ** Headers of the page
-  ** See https://nuxtjs.org/api/configuration-head
-  */
+
+  /**
+   * Headers of the page
+   * See https://nuxtjs.org/api/configuration-head
+   */
   head: {
     title: 'Finapp',
     meta: [
@@ -19,9 +21,6 @@ export default {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
     link: [{
-      rel: 'stylesheet',
-      href: '/init.css'
-    }, {
       rel: 'stylesheet',
       href: 'https://fonts.googleapis.com/css?family=Roboto:400,500,700|Unica+One|Nunito:400,700,800&display=swap&subset=cyrillic'
     }, {
@@ -32,40 +31,55 @@ export default {
       href: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
     }]
   },
-  /*
-  ** Global CSS
-  */
+
+  /**
+   * Global CSS
+   */
   css: [
+    { src: '~/assets/stylus/index.styl' }
   ],
-  /*
-  ** Plugins to load before mounting the App
-  ** https://nuxtjs.org/guide/plugins
-  */
+
+  /**
+   * Plugins to load before mounting the App
+   * https://nuxtjs.org/guide/plugins
+   */
   plugins: [
     { src: '~/plugins/dayjs' },
     { src: '~/plugins/notifications' },
     { src: '~/plugins/vueLang' }
   ],
-  /*
-  ** Nuxt.js dev-modules
-  */
+
+  /**
+   * Nuxt.js dev-modules
+   */
   buildModules: [
+    '@nuxtjs/color-mode'
   ],
-  /*
-  ** Nuxt.js modules
-  */
+
+  /**
+   * Color mode
+   */
+  colorMode: {
+    preference: 'system', // default value of $colorMode.preference
+    fallback: 'dark' // fallback value if not system preference found
+  },
+
+  /**
+   * Nuxt.js modules
+   */
   modules: [
     '@nuxtjs/pwa'
   ],
-  /*
-  ** Axios module configuration
-  ** See https://axios.nuxtjs.org/options
-  */
+
+  /**
+   * Axios module configuration
+   * See https://axios.nuxtjs.org/options
+   */
   axios: {},
 
-  /*
-  ** Manifest
-  */
+  /**
+   * Manifest
+   */
   manifest: {
     name: 'Finapp',
     short_name: 'Finapp',
@@ -76,12 +90,5 @@ export default {
       size: '64x64',
       type: 'image/png'
     }]
-  },
-
-  /*
-  ** Build configuration
-  ** See https://nuxtjs.org/api/configuration-build/
-  */
-  build: {
   }
 }

@@ -252,7 +252,7 @@ export default {
       @media $media-laptop
         background var(--c-bg-5)
 
-        /.theme-light &
+        /.light-mode &
           background var(--c-bg-5)
 
   &__amount

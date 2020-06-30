@@ -73,18 +73,18 @@ export default {
 
   &:active
     background var(--c-bg-2)
-    /.theme-light &
+    /.light-mode &
       background var(--c-bg-7)
 
   &:hover
     @media $media-laptop
       background var(--c-bg-2)
-      /.theme-light &
+      /.light-mode &
         background var(--c-bg-7)
 
   &._selected
     background var(--c-bg-4)
-    /.theme-light &
+    /.light-mode &
       background var(--c-bg-4)
 
   &__icon

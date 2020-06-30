@@ -93,7 +93,7 @@ export default {
     // padding-top 8px
     // min-height 81px
 
-  /.theme-light &
+  /.light-mode &
     background var(--c-bg-2)
 
 .trnFormHeaderItem

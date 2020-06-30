@@ -63,23 +63,12 @@ export default {
       const height = document.documentElement.clientHeight
       this.$store.dispatch('ui/setAppDimensions', { width, height })
     }
-  },
-
-  head () {
-    const classes = [`theme-${this.$store.state.ui.theme}`]
-
-    return {
-      htmlAttrs: {
-        class: classes
-      }
-    }
   }
 }
 </script>
 
 <template lang="pug">
 .finapp(:style="layoutStyles")
-
   //- loading
   template(v-if="$fetchState.pending || $store.state.app.status.loading")
     Loader
@@ -109,7 +98,6 @@ export default {
 <style lang="stylus">
 @import "~assets/stylus/variables/fonts"
 @import "~assets/stylus/common/notifications"
-@import "~assets/stylus/index"
 
 *
   box-sizing border-box

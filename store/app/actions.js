@@ -38,9 +38,6 @@ export default {
     dispatch('ui/initUi', null, { root: true })
     dispatch('chart/initChart', null, { root: true })
 
-    const theme = await localforage.getItem('next.theme')
-    if (theme) { dispatch('ui/changeTheme', theme, { root: true }) }
-
     const ativeTab = await localforage.getItem('next.activeTab')
     if (ativeTab) { dispatch('ui/setActiveTab', ativeTab, { root: true }) }
 

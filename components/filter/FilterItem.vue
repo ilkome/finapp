@@ -123,7 +123,7 @@ export default {
       border-radius $m3
       anim()
 
-      /.theme-light &
+      /.light-mode &
         color var(--c-font-2)
         background var(--c-bg-10)
 

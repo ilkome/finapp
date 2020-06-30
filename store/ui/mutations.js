@@ -13,10 +13,6 @@ export default {
     state.width = props.width
   },
 
-  setTheme (state, theme) {
-    state.theme = theme
-  },
-
   showStatGraphs (state) {
     state.statGraphsVisibility = 'visible'
   },

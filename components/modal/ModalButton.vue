@@ -37,7 +37,7 @@ export default {
   background var(--c-bg-5)
   border-radius $m3
 
-  /.theme-light &
+  /.light-mode &
     background var(--c-bg-1)
     color var(--c-font-2)
 

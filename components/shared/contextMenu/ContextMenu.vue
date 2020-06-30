@@ -105,7 +105,7 @@ export default {
     border-radius $m3
     box-shadow 0 10px 20px -5px var(--c-bg-1)
 
-    /.theme-light &
+    /.light-mode &
       background var(--c-bg-7)
 
     &._right
@@ -120,7 +120,7 @@ export default {
     position relative
     background var(--c-bg-7)
 
-    /.theme-light &
+    /.light-mode &
       background var(--c-bg-7-a)
 
   &__desc
@@ -131,6 +131,6 @@ export default {
     color var(--c-font-4)
     background var(--c-bg-8)
 
-    /.theme-light &
+    /.light-mode &
       background var(--c-bg-1)
 </style>

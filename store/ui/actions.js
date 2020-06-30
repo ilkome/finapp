@@ -23,28 +23,22 @@ export default {
   },
 
   /**
-    * Change theme
-    * Commit new theme and save to localStorage
-    *
-    * @param {string} theme - New theme value (light, dark).
-  */
+   * Change theme
+   * Commit new theme and save to localStorage
+   *
+   * @param {string} theme - New theme value (light, dark).
+   */
   changeTheme ({ commit, rootState }, theme) {
+    // eslint-disable-next-line no-undef
+    const currentTheme = $nuxt.$colorMode.value
     let newTheme
 
-    const changeToDark = () => {
-      newTheme = 'dark'
-    }
-
-    const changeToLight = () => {
-      newTheme = 'light'
-    }
-
     theme
-      ? theme === 'dark' ? changeToDark() : changeToLight()
-      : rootState.ui.theme === 'dark' ? changeToLight() : changeToDark()
+      ? newTheme = theme
+      : currentTheme === 'dark' ? newTheme = 'light' : newTheme = 'dark'
 
-    commit('setTheme', newTheme)
-    localforage.setItem('next.theme', newTheme)
+    // eslint-disable-next-line no-undef
+    $nuxt.$colorMode.preference = newTheme
   },
 
   /**

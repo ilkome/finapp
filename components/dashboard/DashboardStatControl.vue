@@ -67,7 +67,7 @@ $text-disable = var(--c-font-5)
   &._active
   &:hover
     color $text-active
-    /.theme-light &
+    /.light-mode &
       color $text-active_light
 
   &._disable

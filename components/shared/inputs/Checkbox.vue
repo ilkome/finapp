@@ -69,7 +69,7 @@ label.checkbox(:class="{ _alt: alt }")
         box-shadow inset 0px 1px 1px background var(--c-bg-12)
         ^[0]._alt &
           background var(--c-bg-7)
-        /.theme-light &
+        /.light-mode &
           background var(--c-bg-13)
       + .checkbox__helper:after
         animation switch .2s ease-out
@@ -105,7 +105,7 @@ label.checkbox(:class="{ _alt: alt }")
       background $color-rail
       animation switch .2s ease-out
       box-shadow 0px 2px 5px 0px rgba(0, 0, 0, 0.3)
-      /.theme-light &
+      /.light-mode &
         background var(--c-bg-1)
 
   &__toogle
@@ -130,7 +130,7 @@ label.checkbox(:class="{ _alt: alt }")
       text-transform uppercase
       ^[0]._small &
         font-size .5em
-      /.theme-light &
+      /.light-mode &
         color var(--c-font-1)
     &._on
       content 'on'

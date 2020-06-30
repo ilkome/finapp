@@ -222,7 +222,7 @@ ModalBottom(
 
   &:hover
     background var(--c-bg-5)
-    /.theme-light &
+    /.light-mode &
       background var(--c-bg-5)
 
   &__active

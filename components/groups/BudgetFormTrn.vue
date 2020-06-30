@@ -88,7 +88,7 @@ export default {
       background var(--c-bg-5)
       border-color transparent
 
-      /.theme-light &
+      /.light-mode &
         background var(--c-bg-5)
 
   &:last-child

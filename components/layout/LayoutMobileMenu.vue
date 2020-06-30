@@ -155,7 +155,7 @@ export default {
     max-width 620px
     margin 0 auto
 
-  /.theme-light &
+  /.light-mode &
     background var(--c-bg-4)
 
   &__row
@@ -179,7 +179,7 @@ export default {
     &._active
       color var(--c-font-1)
 
-    /.theme-light &
+    /.light-mode &
       color var(--c-font-5)
 
     &__icon

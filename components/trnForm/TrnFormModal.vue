@@ -258,7 +258,7 @@ export default {
     @media $media-phone
       border-radius $m6 $m6 0 0
 
-    /.theme-light &
+    /.light-mode &
       background var(--c-bg-2)
 
   &__scroll
@@ -281,7 +281,7 @@ export default {
     letter-spacing 1px
     fontFamilyNunito()
 
-    /.theme-light &
+    /.light-mode &
       color var(--c-font-4)
 
     &:hover

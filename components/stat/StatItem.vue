@@ -127,7 +127,7 @@ export default {
       background var(--c-bg-1)
       border 1px solid var(--c-bg-5)
 
-      /.theme-light &
+      /.light-mode &
         background var(--c-bg-3)
 
   &._active
@@ -150,7 +150,7 @@ export default {
       background var(--c-bg-5)
       border-bottom 1px solid var(--c-bg-7)
 
-      /.theme-light &
+      /.light-mode &
         background var(--c-bg-10)
         border-bottom 1px solid var(--c-bg-5)
 
