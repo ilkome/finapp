@@ -1,13 +1,5 @@
 <script>
-import Icon from '~/components/icon/Icon'
-import Checkbox from '~/components/shared/inputs/Checkbox'
-
 export default {
-  components: {
-    Icon,
-    Checkbox
-  },
-
   props: {
     background: {
       type: String,

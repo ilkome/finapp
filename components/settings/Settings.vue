@@ -1,18 +1,7 @@
 <script>
 import pkg from '~/package'
-import Button from '~/components/shared/button/Button'
-import ComponentWrap from '~/components/layout/component/Component'
-import ModalBottomConfirm from '~/components/modal/ModalBottomConfirm'
-import LangDropdown from '~/components/lang/LangDropdown'
 
 export default {
-  components: {
-    Button,
-    ComponentWrap,
-    ModalBottomConfirm,
-    LangDropdown
-  },
-
   data () {
     return {
       confirmCreateDemo: false,

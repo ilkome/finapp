@@ -2,51 +2,7 @@
 import Swiper from 'swiper'
 import 'swiper/css/swiper.min.css'
 
-import Budgets from '~/components/budgets/Budgets'
-import Button from '~/components/shared/button/Button'
-import CategoriesList from '~/components/categories/list/CategoriesList'
-import CategoryForm from '~/components/categories/form/CategoryForm'
-import CategoryModal from '~/components/categories/modal/CategoryModal'
-import ComponentWrap from '~/components/layout/component/Component'
-import CurrencyModal from '~/components/currencies/CurrencyModal'
-import Groups from '~/components/groups/Groups'
-import LayoutMobileMenu from '~/components/layout/LayoutMobileMenu'
-import LayoutMobileStat from '~/components/layout/LayoutMobileStat'
-import Menu from '~/components/layout/sidebar/Menu'
-import Settings from '~/components/settings/Settings'
-import TrnForm from '~/components/trnForm/TrnForm'
-import TrnModal from '~/components/trns/modal/TrnModal'
-import TrnsList from '~/components/trns/list/TrnsList'
-import WalletForm from '~/components/wallets/form/WalletForm'
-import WalletModal from '~/components/wallets/modal/WalletModal'
-import WalletsList from '~/components/wallets/list/WalletsList'
-import WalletsSort from '~/components/wallets/sort/WalletsSort'
-import WalletsTotal from '~/components/wallets/total/WalletsTotal'
-
 export default {
-  components: {
-    Budgets,
-    Button,
-    CategoriesList,
-    CategoryForm,
-    CategoryModal,
-    ComponentWrap,
-    CurrencyModal,
-    Groups,
-    LayoutMobileMenu,
-    LayoutMobileStat,
-    Menu,
-    Settings,
-    TrnForm,
-    TrnModal,
-    TrnsList,
-    WalletForm,
-    WalletModal,
-    WalletsList,
-    WalletsSort,
-    WalletsTotal
-  },
-
   data () {
     return {
       slider: null

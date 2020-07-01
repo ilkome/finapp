@@ -1,17 +1,5 @@
 <script>
-import Icon from '~/components/icon/Icon'
-import CategoriesView from '~/components/categories/list/CategoriesView'
-import TrnFormModal from '~/components/trnForm/TrnFormModal'
-import Slider from '~/components/slider/Slider'
-
 export default {
-  components: {
-    Icon,
-    CategoriesView,
-    TrnFormModal,
-    Slider
-  },
-
   methods: {
     handleCategoryClick (categoryId) {
       if (this.$store.getters['categories/getChildCategoriesIds'](categoryId).length > 0) {
@@ -29,7 +17,7 @@ export default {
 </script>
 
 <template lang="pug">
-TrnFormModal(
+LazyTrnFormModal(
   v-if="$store.state.trnForm.modal.categories"
   :show="$store.state.trnForm.modal.categories"
   :title="$lang.categories.name"

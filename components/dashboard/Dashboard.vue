@@ -1,29 +1,5 @@
 <script>
-import Button from '~/components/shared/button/Button'
-import DashboardFilter from '~/components/dashboard/DashboardFilter'
-import DashboardNav from '~/components/dashboard/DashboardNav'
-import DashboardStatControl from '~/components/dashboard/DashboardStatControl'
-import EmptyData from '~/components/shared/emptyData/EmptyData'
-import StatChartDonut from '~/components/stat/StatChartDonut'
-import StatChartsLine from '~/components/stat/StatChartsLine'
-import StatPc from '~/components/stat/StatPc'
-import StatSummaryPc from '~/components/stat/StatSummaryPc'
-import TrnsList from '~/components/trns/list/TrnsList'
-
 export default {
-  components: {
-    Button,
-    DashboardFilter,
-    DashboardNav,
-    DashboardStatControl,
-    EmptyData,
-    StatChartDonut,
-    StatChartsLine,
-    StatPc,
-    StatSummaryPc,
-    TrnsList
-  },
-
   data () {
     return {
       visiblePeriodMenu: false

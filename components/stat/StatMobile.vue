@@ -1,29 +1,5 @@
 <script>
-import Button from '~/components/shared/button/Button'
-import Amount from '~/components/amount/Amount'
-import EmptyData from '~/components/shared/emptyData/EmptyData'
-import FilterItem from '~/components/filter/FilterItem'
-import Icon from '~/components/icon/Icon'
-import PeriodCatsChart from '~/components/stat/cats/PeriodCatsChart'
-import StatCustomizeMenuMobile from '~/components/stat/StatCustomizeMenuMobile'
-import StatItem from '~/components/stat/StatItem'
-import StatSummaryMobile from '~/components/stat/StatSummaryMobile'
-import TrnsList from '~/components/trns/list/TrnsList'
-
 export default {
-  components: {
-    Button,
-    Amount,
-    EmptyData,
-    FilterItem,
-    Icon,
-    PeriodCatsChart,
-    StatCustomizeMenuMobile,
-    StatItem,
-    StatSummaryMobile,
-    TrnsList
-  },
-
   computed: {
     activeTabStat () {
       return this.$store.state.ui.stat.activeTab
@@ -38,12 +14,15 @@ export default {
               this.statCurrentPeriod.expenses.categoriesIds.length === 0 &&
               this.$store.getters['trns/selectedTrnsIdsWithDate'].length === 0
     },
+
     filterCategory () {
       return this.$store.state.categories.items[this.$store.state.filter.categoryId]
     },
+
     filterCategoryParent () {
       return this.$store.state.categories.items[this.filterCategory.parentId]
     },
+
     filterWallet () {
       return this.$store.state.wallets.items[this.$store.state.filter.walletId]
     }
@@ -54,9 +33,11 @@ export default {
       const nextCategory = this.filterCategory.parentId !== 0 ? this.filterCategory.parentId : null
       this.$store.dispatch('filter/setFilterCategoryId', nextCategory)
     },
+
     clearParentCategoryFilter () {
       this.$store.dispatch('filter/setFilterCategoryId', null)
     },
+
     clearWalletFilter () {
       this.$store.dispatch('filter/setFilterWalletId', null)
     }

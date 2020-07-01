@@ -1,19 +1,5 @@
 <script>
-import ChartMenu from '~/components/stat/chart/ChartMenu'
-import ContextMenu from '~/components/shared/contextMenu/ContextMenu'
-import ContextMenuItem from '~/components/shared/contextMenu/ContextMenuItem'
-import Date from '~/components/shared/date/Date'
-import Dropdown from '~/components/shared/dropdown/Dropdown'
-
 export default {
-  components: {
-    ChartMenu,
-    ContextMenu,
-    ContextMenuItem,
-    Date,
-    Dropdown
-  },
-
   data () {
     return {
       visibleContextMenu: false,

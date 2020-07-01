@@ -1,18 +1,10 @@
 <script>
-import Amount from '~/components/amount/Amount'
-import TrnItem from '~/components/groups/BudgetItemTrn'
-import TrnsList from '~/components/trns/list/TrnsList2'
 import { formatDate } from '~/utils/formatDate'
+import { db } from '~/services/firebaseConfig'
 
 export default {
-  components: {
-    Amount,
-    TrnItem,
-    TrnsList
-  },
-
   props: {
-    budget: {
+    group: {
       type: Object,
       required: true
     }
@@ -26,7 +18,7 @@ export default {
 
   computed: {
     formatedDate () {
-      return formatDate(this.budget.date, 'number')
+      return formatDate(this.group.date, 'number')
     },
 
     totalAmount () {
@@ -34,8 +26,8 @@ export default {
     },
 
     trnsIds () {
-      if (this.budget.trnsIds) {
-        return Object.keys(this.budget.trnsIds)
+      if (this.group.trnsIds) {
+        return Object.keys(this.group.trnsIds)
           .sort((a, b) => {
             if (this.$store.state.trns.items[a].date > this.$store.state.trns.items[b].date) { return -1 }
             if (this.$store.state.trns.items[a].date < this.$store.state.trns.items[b].date) { return 1 }
@@ -60,11 +52,14 @@ export default {
   },
 
   async mounted () {
-    if (this.budget.trnsIds) {
-      for (const trnId of Object.keys(this.budget.trnsIds)) {
+    if (this.group.trnsIds) {
+      for (const trnId of Object.keys(this.group.trnsIds)) {
         if (!this.$store.state.trns.items[trnId]) {
-          console.log('remove', this.budget.id, trnId)
-          await this.$store.dispatch('groups/removeTrnFromGroup', { groupId: this.budget.id, trnId })
+          await this.$store.dispatch('groups/removeTrnFromGroup', { groupId: this.group.id, trnId })
+        }
+
+        if (!this.$store.state.trns.items[trnId].groups) {
+          db.ref(`users/${this.$store.state.user.user.uid}/trns/${trnId}/groups/${this.group.id}`).set(this.group.id)
         }
       }
     }
@@ -81,52 +76,53 @@ export default {
 </script>
 
 <template lang="pug">
-.budgetItem
-  .budgetItem__top
-    .budgetItem__meta
-      .budgetItem__name {{ budget.name }}
-      .budgetItem__description(v-if="budget.description") {{ budget.description }}
+.groupItem
+  .groupItem__top
+    .groupItem__meta
+      .groupItem__name {{ group.name }}
+      .groupItem__description(v-if="group.description") {{ group.description }}
 
     //- total
-    .budgetItem__total
+    .groupItem__total
       .sum._right
         .sum__title {{ $lang.groups.stat.total }}
         .sum__amount
-          Amount(:currency="budget.currency" :value="totalAmount")
+          Amount(:currency="group.currency" :value="totalAmount")
 
   //- info
-  .budgetItem__info(@click="isTrnsVisible = !isTrnsVisible")
-    .budgetItem__amounts
+  .groupItem__info(@click="isTrnsVisible = !isTrnsVisible")
+    .groupItem__amounts
       //- expenses
       .sum
         .sum__title {{ $lang.groups.stat.expenses }}
         .sum__amount
-          Amount(:currency="budget.currency" :type="0" :value="gotAmount.expenses")
+          Amount(:currency="group.currency" :type="0" :value="gotAmount.expenses")
 
       //- incomes
       .sum._right
         .sum__title {{ $lang.groups.stat.incomes }}
         .sum__amount
-          Amount(:currency="budget.currency" :type="1" :value="gotAmount.incomes")
+          Amount(:currency="group.currency" :type="1" :value="gotAmount.incomes")
 
-    .budgetItem__graph: .budgetItem__graph__in(:style="styles")
+    .groupItem__graph: .groupItem__graph__in(:style="styles")
 
-  .budgetItem__trns(v-if="budget.trnsIds" v-show="isTrnsVisible")
-    TrnsList(:ids="trnsIds" v-slot="{ trns }")
-      TrnItem(
+  .groupItem__trns(v-if="group.trnsIds" v-show="isTrnsVisible")
+    TrnsList2(:ids="trnsIds" v-slot="{ trns }")
+      GroupItemTrn(
         v-for="trnId in trnsIds"
         @onClick="handleTrnItemClick"
         :category="trns[trnId].category"
         :id="trns[trnId].id"
         :key="trns[trnId].id"
         :trn="trns[trnId].trn"
-        :wallet="trns[trnId].wallet")
+        :wallet="trns[trnId].wallet"
+      )
 </template>
 
 <style lang="stylus" scoped>
 @import "~assets/stylus/variables/media"
 
-.budgetItem
+.groupItem
   overflow hidden
   font-size 14px
   background var(--c-bg-4)

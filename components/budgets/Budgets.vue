@@ -1,19 +1,5 @@
 <script>
-import Amount from '~/components/amount/Amount'
-import BudgetForm from '~/components/budgets/BudgetForm'
-import BudgetItem from '~/components/budgets/BudgetItem'
-import Button from '~/components/shared/button/Button'
-import ComponentWrap from '~/components/layout/component/Component'
-
 export default {
-  components: {
-    Amount,
-    BudgetForm,
-    BudgetItem,
-    Button,
-    ComponentWrap
-  },
-
   data () {
     return {
       isShowForm: false
@@ -27,13 +13,6 @@ export default {
 
     budgetsCount () {
       return Object.keys(this.$store.getters['budgets/budgets']).length
-    },
-
-    styles () {
-      return {
-        // width: '60%'
-        width: `${Math.abs(this.gotAmount) / Math.abs(this.budget.amount) * 100}%`
-      }
     }
   },
 
@@ -78,7 +57,7 @@ ComponentWrap
                 :type="1"
                 :value="$store.getters['budgets/budgetsTotal'].incomes")
 
-        .budgetItem__graph: .budgetItem__graph__in(:style="styles")
+        .budgetItem__graph: .budgetItem__graph__in
 
     template(v-if="budgetsCount")
       .list

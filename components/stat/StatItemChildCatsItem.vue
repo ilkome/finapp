@@ -1,17 +1,5 @@
 <script>
-import Amount from '~/components/amount/Amount'
-import Icon from '~/components/icon/Icon'
-import TrnsList from '~/components/trns/list/TrnsList'
-import StatItemChildCats from '~/components/stat/StatItemChildCats'
-
 export default {
-  components: {
-    Amount,
-    Icon,
-    StatItemChildCats,
-    TrnsList
-  },
-
   props: {
     category: {
       type: Object,

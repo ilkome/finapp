@@ -94,6 +94,7 @@ export default {
                 description: trn.description || null,
                 edited: dayjs().valueOf(),
                 groups: trn.groups || null,
+                budgets: trn.budgets || null,
                 type: Number(trn.type),
                 walletId: trn.accountId || trn.walletId
               })

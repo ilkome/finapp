@@ -1,17 +1,5 @@
 <script>
-import BudgetForm from '~/components/groups/BudgetForm'
-import BudgetItem from '~/components/groups/BudgetItem'
-import Button from '~/components/shared/button/Button'
-import ComponentWrap from '~/components/layout/component/Component'
-
 export default {
-  components: {
-    BudgetForm,
-    BudgetItem,
-    Button,
-    ComponentWrap
-  },
-
   data () {
     return {
       isShowForm: false
@@ -44,14 +32,16 @@ ComponentWrap
     div {{ $lang.groups.name }}
 
   template(slot="contentLeft")
+    //- pre {{ groups }}
     .list
-      BudgetItem(
+      GroupItem(
         v-for="group in groups"
-        :budget="group"
-        :key="group.id")
+        :group="group"
+        :key="group.id"
+      )
 
   template(slot="contentRight")
-    BudgetForm
+    GroupForm
 </template>
 
 <style lang="stylus" scoped>

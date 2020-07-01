@@ -1,14 +1,7 @@
 <script>
 import { formatDate } from '~/utils/formatDate'
-import Amount from '~/components/amount/Amount'
-import Icon from '~/components/icon/Icon'
 
 export default {
-  components: {
-    Amount,
-    Icon
-  },
-
   props: {
     category: {
       type: Object,

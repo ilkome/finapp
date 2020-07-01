@@ -1,13 +1,5 @@
 <script>
-import Button from '~/components/shared/button/Button'
-import WalletsList from '~/components/wallets/list/WalletsList'
-
 export default {
-  components: {
-    Button,
-    WalletsList
-  },
-
   data () {
     return {
       menu: {

@@ -1,11 +1,6 @@
 <script>
-import WalletItem from '~/components/wallets/item/WalletItem'
 
 export default {
-  components: {
-    WalletItem
-  },
-
   props: {
     ui: {
       type: String,

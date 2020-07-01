@@ -1,16 +1,7 @@
 <script>
 import { formatDate } from '~/utils/formatDate'
-import Amount from '~/components/amount/Amount'
-import TrnItem from '~/components/budgets/BudgetItemTrn'
-import TrnsList from '~/components/trns/list/TrnsList2'
 
 export default {
-  components: {
-    Amount,
-    TrnItem,
-    TrnsList
-  },
-
   props: {
     id: {
       type: String,
@@ -108,8 +99,8 @@ export default {
     .budgetItem__graph: .budgetItem__graph__in(:style="styles")
 
   .budgetItem__trns(v-if="budget.trnsIds" v-show="isTrnsVisible")
-    TrnsList(:ids="trnsIds" v-slot="{ trns }")
-      TrnItem(
+    TrnsList2(:ids="trnsIds" v-slot="{ trns }")
+      BudgetItemTrn(
         v-for="trnItem in trns"
         :category="trnItem.category"
         :id="trnItem.id"

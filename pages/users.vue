@@ -1,12 +1,7 @@
 <script>
 import { db } from '~/services/firebaseConfig'
-import Button from '~/components/shared/button/Button'
 
 export default {
-  components: {
-    Button
-  },
-
   data () {
     return {
       users: null,
@@ -71,8 +66,6 @@ export default {
       await this.$store.dispatch('categories/initCategories', null, { root: true })
       await this.$store.dispatch('wallets/initWallets', null, { root: true })
       await this.$store.dispatch('trns/initTrns', null, { root: true })
-      await this.$store.dispatch('groups/initGroups', null, { root: true })
-      await this.$store.dispatch('budgets/initBudgets', null, { root: true })
       await this.$store.dispatch('lang/initDbLang', null, { root: true })
 
       this.$router.push('/')
@@ -165,6 +158,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
+@import "~assets/stylus/variables/fonts"
 @import "~assets/stylus/variables/media"
 @import "~assets/stylus/variables/scroll"
 

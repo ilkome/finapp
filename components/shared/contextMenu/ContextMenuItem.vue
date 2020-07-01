@@ -1,11 +1,5 @@
 <script>
-import Checkbox from '~/components/shared/inputs/Checkbox'
-
 export default {
-  components: {
-    Checkbox
-  },
-
   props: {
     icon: {
       type: String,

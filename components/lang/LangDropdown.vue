@@ -1,15 +1,5 @@
 <script>
-import ContextMenu from '~/components/shared/contextMenu/ContextMenu'
-import ContextMenuItem from '~/components/shared/contextMenu/ContextMenuItem'
-import Dropdown from '~/components/shared/dropdown/Dropdown'
-
 export default {
-  components: {
-    ContextMenu,
-    ContextMenuItem,
-    Dropdown
-  },
-
   data () {
     return {
       visibleDropdown: false

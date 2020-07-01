@@ -1,11 +1,5 @@
 <script>
-import Amount from '~/components/amount/Amount'
-
 export default {
-  components: {
-    Amount
-  },
-
   computed: {
     walletFromId () {
       return this.$store.state.trnForm.transfer.from || this.$store.getters['wallets/walletsSortedIds'][0]

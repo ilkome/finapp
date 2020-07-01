@@ -1,11 +1,5 @@
 <script>
-import Icon from '~/components/icon/Icon'
-
 export default {
-  components: {
-    Icon
-  },
-
   props: {
     id: {
       type: String,

@@ -1,13 +1,8 @@
 <script>
 import { evaluate } from 'mathjs'
-import Button from '~/components/shared/button/Button'
 
 export default {
   name: 'TrnFormAmountInput',
-
-  components: {
-    Button
-  },
 
   computed: {
     amountString () {

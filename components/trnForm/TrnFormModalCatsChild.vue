@@ -1,15 +1,5 @@
 <script>
-import CategoriesView from '~/components/categories/list/CategoriesView'
-import Icon from '~/components/icon/Icon'
-import TrnFormModal from '~/components/trnForm/TrnFormModal'
-
 export default {
-  components: {
-    Icon,
-    CategoriesView,
-    TrnFormModal
-  },
-
   computed: {
     id () {
       return this.$store.state.trnForm.showModalCategoryId

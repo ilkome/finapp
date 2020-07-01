@@ -1,13 +1,5 @@
 <script>
-import ModalBottom from '~/components/modal/ModalBottom'
-import ModalButton from '~/components/modal/ModalButton'
-
 export default {
-  components: {
-    ModalBottom,
-    ModalButton
-  },
-
   props: {
     description: {
       type: String,

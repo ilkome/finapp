@@ -3,45 +3,7 @@ import dayjs from 'dayjs'
 import generateId from '~/utils/id'
 import { successEmo, random } from '~/assets/js/emo'
 
-import Amount from '~/components/amount/Amount'
-import CategoriesView from '~/components/categories/list/CategoriesView'
-import Icon from '~/components/icon/Icon'
-import TrnFormAmount from '~/components/trnForm/TrnFormAmount'
-import TrnFormAmountInput from '~/components/trnForm/TrnFormAmountInput'
-import TrnFormCalculator from '~/components/trnForm/TrnFormCalculator'
-import TrnFormCalendar from '~/components/trnForm/TrnFormCalendar'
-import TrnFormHeader from '~/components/trnForm/TrnFormHeader'
-import TrnFormHeaderTransfer from '~/components/trnForm/TrnFormHeaderTransfer'
-import TrnFormModalCalendar from '~/components/trnForm/TrnFormModalCalendar'
-import TrnFormModalCats from '~/components/trnForm/TrnFormModalCats'
-import TrnFormModalCatsChild from '~/components/trnForm/TrnFormModalCatsChild'
-import TrnFormModalDescription from '~/components/trnForm/TrnFormModalDescription'
-import TrnFormModalTransferFrom from '~/components/trnForm/TrnFormModalTransferFrom'
-import TrnFormModalTransferTo from '~/components/trnForm/TrnFormModalTransferTo'
-import TrnFormModalWallets from '~/components/trnForm/TrnFormModalWallets'
-import WalletsList from '~/components/wallets/list/WalletsList'
-
 export default {
-  components: {
-    Amount,
-    CategoriesView,
-    Icon,
-    TrnFormAmount,
-    TrnFormAmountInput,
-    TrnFormCalculator,
-    TrnFormCalendar,
-    TrnFormHeader,
-    TrnFormHeaderTransfer,
-    TrnFormModalCalendar,
-    TrnFormModalCats,
-    TrnFormModalCatsChild,
-    TrnFormModalDescription,
-    TrnFormModalTransferFrom,
-    TrnFormModalTransferTo,
-    TrnFormModalWallets,
-    WalletsList
-  },
-
   data () {
     return {
       initialY: 0,

@@ -1,11 +1,5 @@
 <script>
-import CategoryItem from '~/components/categories/item/CategoryItem'
-
 export default {
-  components: {
-    CategoryItem
-  },
-
   props: {
     ids: {
       type: Array,

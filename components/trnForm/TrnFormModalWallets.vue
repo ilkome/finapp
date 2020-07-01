@@ -1,15 +1,5 @@
 <script>
-import Icon from '~/components/icon/Icon'
-import TrnFormModal from '~/components/trnForm/TrnFormModal'
-import WalletsList from '~/components/wallets/list/WalletsList'
-
 export default {
-  components: {
-    Icon,
-    TrnFormModal,
-    WalletsList
-  },
-
   methods: {
     handleSetWallet (walletId) {
       this.$store.commit('trnForm/toogleTrnFormModal', 'wallets')

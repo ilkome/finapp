@@ -1,17 +1,5 @@
 <script>
-import Button from '~/components/shared/button/Button'
-import ContextMenu from '~/components/shared/contextMenu/ContextMenu'
-import ContextMenuItem from '~/components/shared/contextMenu/ContextMenuItem'
-import Dropdown from '~/components/shared/dropdown/Dropdown'
-
 export default {
-  components: {
-    Button,
-    ContextMenu,
-    ContextMenuItem,
-    Dropdown
-  },
-
   props: {
     icon: {
       type: String,

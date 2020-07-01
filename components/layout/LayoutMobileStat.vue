@@ -1,15 +1,5 @@
 <script>
-import StatChartsLine from '~/components/stat/StatChartsLine'
-import StatMobile from '~/components/stat/StatMobile'
-import WalletsList from '~/components/wallets/list/WalletsList'
-
 export default {
-  components: {
-    StatChartsLine,
-    StatMobile,
-    WalletsList
-  },
-
   methods: {
     handleShowWalletModal (id) {
       this.$store.commit('wallets/showWalletModal')
@@ -36,7 +26,7 @@ export default {
 
 <style lang="stylus" scoped>
 .layoutStat
-  height 100%
   overflow hidden
+  height 100%
   overflow-y auto
 </style>

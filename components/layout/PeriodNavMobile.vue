@@ -1,19 +1,5 @@
 <script>
-import ContextMenu from '~/components/shared/contextMenu/ContextMenu'
-import ContextMenuItem from '~/components/shared/contextMenu/ContextMenuItem'
-import Date from '~/components/shared/date/Date'
-import Dropdown from '~/components/shared/dropdown/Dropdown'
-import StatCustomizeMenuMobile from '~/components/stat/StatCustomizeMenuMobile'
-
 export default {
-  components: {
-    ContextMenu,
-    ContextMenuItem,
-    Date,
-    Dropdown,
-    StatCustomizeMenuMobile
-  },
-
   data () {
     return {
       visiblePeriodMenu: false

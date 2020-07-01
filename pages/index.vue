@@ -1,12 +1,6 @@
 <script>
-import Layout from '~/components/layout/Layout'
-
 export default {
-  name: 'IndexPage',
-
-  components: {
-    Layout
-  }
+  name: 'IndexPage'
 }
 </script>
 

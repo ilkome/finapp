@@ -1,10 +1,5 @@
 <script>
-import Amount from '~/components/amount/Amount'
-
 export default {
-  components: {
-    Amount
-  }
 }
 </script>
 

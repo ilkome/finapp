@@ -1,21 +1,7 @@
 <script>
 import { db } from '~/services/firebaseConfig'
 
-import CategoriesView from '~/components/categories/list/CategoriesView'
-import Icon from '~/components/icon/Icon'
-import ModalBottom from '~/components/modal/ModalBottom'
-import ModalBottomConfirm from '~/components/modal/ModalBottomConfirm'
-import ModalButton from '~/components/modal/ModalButton'
-
 export default {
-  components: {
-    CategoriesView,
-    Icon,
-    ModalBottom,
-    ModalBottomConfirm,
-    ModalButton
-  },
-
   data () {
     return {
       showModalConfirm: false

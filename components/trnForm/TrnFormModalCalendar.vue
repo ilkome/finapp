@@ -2,8 +2,6 @@
 import dayjs from 'dayjs'
 
 import Datepicker from 'vuejs-datepicker'
-import ModalButton from '~/components/modal/ModalButton'
-import TrnFormModal from '~/components/trnForm/TrnFormModal'
 
 const calendarOptions = {
   'use-utc': true,
@@ -14,9 +12,7 @@ const calendarOptions = {
 
 export default {
   components: {
-    Datepicker,
-    ModalButton,
-    TrnFormModal
+    Datepicker
   },
 
   computed: {

@@ -1,21 +1,5 @@
 <script>
-import Amount from '~/components/amount/Amount'
-import ModalBottom from '~/components/modal/ModalBottom'
-import ModalBottomConfirm from '~/components/modal/ModalBottomConfirm'
-import ModalButton from '~/components/modal/ModalButton'
-import TrnItem from '~/components/trns/item/TrnItem'
-import Button from '~/components/shared/button/Button'
-
 export default {
-  components: {
-    Amount,
-    Button,
-    ModalBottom,
-    ModalBottomConfirm,
-    ModalButton,
-    TrnItem
-  },
-
   data () {
     return {
       showModalConfirm: false,

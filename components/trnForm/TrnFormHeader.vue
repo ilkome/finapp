@@ -1,13 +1,5 @@
 <script>
-import Amount from '~/components/amount/Amount'
-import Icon from '~/components/icon/Icon'
-
 export default {
-  components: {
-    Amount,
-    Icon
-  },
-
   computed: {
     category () {
       const categoryId = this.$store.state.trnForm.values.categoryId

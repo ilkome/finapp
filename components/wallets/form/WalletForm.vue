@@ -3,19 +3,7 @@ import { focus } from 'vue-focus'
 import generateId from '~/utils/id'
 import colors from '~/assets/js/colors'
 
-import Button from '~/components/shared/button/Button'
-import Checkbox from '~/components/shared/inputs/Checkbox'
-import ComponentWrap from '~/components/layout/component/Component'
-import ModalBottom from '~/components/modal/ModalBottom'
-
 export default {
-  components: {
-    Button,
-    Checkbox,
-    ComponentWrap,
-    ModalBottom
-  },
-
   directives: { focus },
 
   data () {

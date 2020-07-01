@@ -1,11 +1,5 @@
 <script>
-import ContextMenuItem from '~/components/shared/contextMenu/ContextMenuItem'
-
 export default {
-  components: {
-    ContextMenuItem
-  },
-
   props: {
     visible: {
       type: Boolean,

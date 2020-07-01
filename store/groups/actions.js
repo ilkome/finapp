@@ -61,7 +61,6 @@ export default {
     const uid = rootGetters['user/userUid']
 
     // remove from group
-    console.log(`users/${uid}/groups/${groupId}/trnsIds/${trnId}`)
     db.ref(`users/${uid}/groups/${groupId}/trnsIds/${trnId}`).set(null)
       .then(() => { return true })
 

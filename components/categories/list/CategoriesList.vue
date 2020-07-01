@@ -1,9 +1,5 @@
 <script>
-import CategoriesView from '~/components/categories/list/CategoriesView'
 export default {
-  components: {
-    CategoriesView
-  }
 }
 </script>
 

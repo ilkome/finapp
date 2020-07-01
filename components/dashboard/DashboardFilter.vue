@@ -1,11 +1,5 @@
 <script>
-import FilterItem from '~/components/filter/FilterItem'
-
 export default {
-  components: {
-    FilterItem
-  },
-
   props: {
     showTittle: {
       type: Boolean,

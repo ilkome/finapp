@@ -1,19 +1,7 @@
 <script>
 import dayjs from 'dayjs'
 
-import Amount from '~/components/amount/Amount'
-import ChartItem from '~/components/stat/chart/ChartItem'
-import ChartMenu from '~/components/stat/chart/ChartMenu'
-import ChartPopup from '~/components/stat/chart/ChartPopup'
-
 export default {
-  components: {
-    Amount,
-    ChartItem,
-    ChartMenu,
-    ChartPopup
-  },
-
   computed: {
     periods () {
       return this.$store.state.chart.periods

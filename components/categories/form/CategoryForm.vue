@@ -4,27 +4,11 @@ import generateId from '~/utils/id'
 import colors from '~/assets/js/colors'
 import icons from '~/assets/js/icons'
 
-import Button from '~/components/shared/button/Button'
-import CategoriesView from '~/components/categories/list/CategoriesView'
-import Checkbox from '~/components/shared/inputs/Checkbox'
-import ComponentWrap from '~/components/layout/component/Component'
-import ModalBottom from '~/components/modal/ModalBottom'
-import ModalButton from '~/components/modal/ModalButton'
-
 function random (icons) {
   return icons[Math.floor(Math.random() * icons.length)]
 }
 
 export default {
-  components: {
-    Button,
-    CategoriesView,
-    Checkbox,
-    ComponentWrap,
-    ModalBottom,
-    ModalButton
-  },
-
   data () {
     return {
       showParents: false,

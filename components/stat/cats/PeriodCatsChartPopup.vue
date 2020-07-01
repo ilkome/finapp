@@ -1,11 +1,5 @@
 <script>
-import Amount from '~/components/amount/Amount'
-
 export default {
-  components: {
-    Amount
-  },
-
   props: {
     categoryId: {
       type: String,
@@ -26,11 +20,14 @@ export default {
       if (this.$store.getters['stat/statCurrentPeriod'].categories[this.categoryId]) {
         return this.$store.getters['stat/statCurrentPeriod'].categories[this.categoryId][this.type]
       }
+      return null
     },
+
     categoryName () {
       if (this.$store.state.categories.items[this.categoryId]) {
         return this.$store.state.categories.items[this.categoryId].name
       }
+      return null
     }
   }
 }

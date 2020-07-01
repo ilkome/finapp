@@ -1,19 +1,7 @@
 <script>
 import { db } from '~/services/firebaseConfig'
 
-import ModalBottom from '~/components/modal/ModalBottom'
-import ModalBottomConfirm from '~/components/modal/ModalBottomConfirm'
-import ModalButton from '~/components/modal/ModalButton'
-import WalletItem from '~/components/wallets/item/WalletItem'
-
 export default {
-  components: {
-    ModalBottom,
-    ModalBottomConfirm,
-    ModalButton,
-    WalletItem
-  },
-
   data () {
     return {
       showModalConfirm: false

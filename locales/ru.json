@@ -224,13 +224,13 @@
     "id": "groups",
     "name": "Группы",
     "form": {
-      "title": "Create new budget",
-      "name": "Budget name",
-      "amount": "Budget amount",
+      "title": "Create new group",
+      "name": "Group name",
+      "amount": "Group amount",
       "button": "Create"
     },
     "trns": {
-      "name": "Budget transactions"
+      "name": "Group transactions"
     },
     "stat": {
       "expenses": "Рассход",

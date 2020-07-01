@@ -1,16 +1,8 @@
 <script>
 import debounce from '~/utils/debounce'
 
-import Loader from '~/components/shared/loader/Loader'
-import Metrica from '~/components/Metrica'
-
 export default {
   name: 'DefaultLayout',
-
-  components: {
-    Loader,
-    Metrica
-  },
 
   async fetch () {
     try {
@@ -78,17 +70,10 @@ export default {
     template(v-if="!$fetchState.pending && $store.state.app.status.ready")
       Nuxt
 
-  //- //- app
-  //- transition(name="fadeInSlow")
-  //-   template(v-if="$store.state.app.status.ready")
-  //-     template(v-if="$store.getters.hasWallets && $store.getters.hasCategories")
-  //-       Layout
-  //-     Welcome(v-else)
-
-  //- notifications
+  //- Notifications
   Notifications(
     :position="$store.state.ui.mobile ? 'top center' : 'top left'"
-      :width="$store.state.ui.mobile ? '94%' : '380px'"
+    :width="$store.state.ui.mobile ? '94%' : '380px'"
     classes="notifications"
   )
 

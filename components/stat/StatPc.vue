@@ -1,13 +1,5 @@
 <script>
-import StatItem from '~/components/stat/StatItem'
-import PeriodCatsChart from '~/components/stat/cats/PeriodCatsChart'
-
 export default {
-  components: {
-    PeriodCatsChart,
-    StatItem
-  },
-
   computed: {
     statCurrentPeriod () {
       return this.$store.getters['stat/statCurrentPeriod']

@@ -1,12 +1,5 @@
 <script>
-import AppName from '~/components/shared/appName/AppName'
-import Spiner from '~/components/shared/spiner/Spiner'
-
 export default {
-  components: {
-    AppName,
-    Spiner
-  }
 }
 </script>
 

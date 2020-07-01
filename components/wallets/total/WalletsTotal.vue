@@ -1,10 +1,5 @@
 <script>
-import Amount from '~/components/amount/Amount'
-import Icon from '~/components/icon/Icon'
-
 export default {
-  components: { Amount, Icon },
-
   computed: {
     totalInWallets () {
       const walletsItems = this.$store.state.wallets.items

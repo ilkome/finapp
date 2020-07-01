@@ -40,6 +40,12 @@ export default {
   ],
 
   /**
+   * Auto import components
+   * See https://nuxtjs.org/api/configuration-components
+   */
+  components: true,
+
+  /**
    * Plugins to load before mounting the App
    * https://nuxtjs.org/guide/plugins
    */

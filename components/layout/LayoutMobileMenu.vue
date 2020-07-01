@@ -1,13 +1,5 @@
 <script>
-import Button from '~/components/shared/button/Button'
-import PeriodNavMobile from '~/components/layout/PeriodNavMobile'
-
 export default {
-  components: {
-    Button,
-    PeriodNavMobile
-  },
-
   computed: {
     activeTab () {
       return this.$store.state.ui.activeTab

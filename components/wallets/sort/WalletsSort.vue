@@ -1,22 +1,9 @@
 <script>
 import draggable from 'vuedraggable'
-import Button from '~/components/shared/button/Button'
-import ComponentWrap from '~/components/layout/component/Component'
-import WalletsList from '~/components/wallets/list/WalletsList2'
-import WalletsTotal from '~/components/wallets/total/WalletsTotal'
-
-import Amount from '~/components/amount/Amount'
-import Icon from '~/components/icon/Icon'
 
 export default {
   components: {
-    Amount,
-    draggable,
-    Button,
-    Icon,
-    ComponentWrap,
-    WalletsList,
-    WalletsTotal
+    draggable
   },
 
   data () {

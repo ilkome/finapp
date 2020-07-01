@@ -1,12 +1,6 @@
 
 <script>
-import StatItemChildCatsItem from '~/components/stat/StatItemChildCatsItem'
-
 export default {
-  components: {
-    StatItemChildCatsItem
-  },
-
   props: {
     categoryId: {
       type: String,

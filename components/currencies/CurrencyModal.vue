@@ -1,11 +1,5 @@
 <script>
-import ModalBottom from '~/components/modal/ModalBottom'
-
 export default {
-  components: {
-    ModalBottom
-  },
-
   methods: {
     handleCurrencySelect (currency) {
       this.$store.commit('currencies/hideBaseCurrenciesModal')

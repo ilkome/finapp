@@ -1,47 +1,5 @@
 <script>
-import Budgets from '~/components/budgets/Budgets'
-import Button from '~/components/shared/button/Button'
-import CategoriesList from '~/components/categories/list/CategoriesList'
-import CategoryForm from '~/components/categories/form/CategoryForm'
-import CategoryModal from '~/components/categories/modal/CategoryModal'
-import ComponentWrap from '~/components/layout/component/Component'
-import CurrencyModal from '~/components/currencies/CurrencyModal'
-import Dashboard from '~/components/dashboard/Dashboard'
-import DashboardNav from '~/components/dashboard/DashboardNav'
-import Groups from '~/components/groups/Groups'
-import LayoutPcSidebar from '~/components/layout/LayoutPcSidebar'
-import LayoutPcTab from '~/components/layout/LayoutPcTab'
-import Settings from '~/components/settings/Settings'
-import TrnForm from '~/components/trnForm/TrnForm'
-import TrnModal from '~/components/trns/modal/TrnModal'
-import WalletForm from '~/components/wallets/form/WalletForm'
-import WalletModal from '~/components/wallets/modal/WalletModal'
-import WalletsList from '~/components/wallets/list/WalletsList'
-import WalletsSort from '~/components/wallets/sort/WalletsSort'
-
 export default {
-  components: {
-    Budgets,
-    Button,
-    CategoriesList,
-    CategoryForm,
-    CategoryModal,
-    ComponentWrap,
-    CurrencyModal,
-    Dashboard,
-    DashboardNav,
-    Groups,
-    LayoutPcSidebar,
-    LayoutPcTab,
-    Settings,
-    TrnForm,
-    TrnModal,
-    WalletForm,
-    WalletModal,
-    WalletsList,
-    WalletsSort
-  },
-
   computed: {
     activeTab () {
       return this.$store.state.ui.activeTab
@@ -79,12 +37,12 @@ export default {
       //- Budgets
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'budgets'")
-        Budgets
+        LazyBudgets(v-if="activeTab === 'budgets'")
 
       //- Groups
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'groups'")
-        Groups
+        LazyGroups(v-if="activeTab === 'groups'")
 
       //- categories
       //------------------------------------------------

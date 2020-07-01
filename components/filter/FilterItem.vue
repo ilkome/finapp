@@ -1,13 +1,5 @@
 <script>
-import Icon from '~/components/icon/Icon'
-import ModalButton from '~/components/modal/ModalButton'
-
 export default {
-  components: {
-    Icon,
-    ModalButton
-  },
-
   props: {
     color: {
       type: String,

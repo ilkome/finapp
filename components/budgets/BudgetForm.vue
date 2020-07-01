@@ -1,15 +1,9 @@
 <script>
 import Cleave from 'vue-cleave-component'
-import Button from '~/components/shared/button/Button'
-import TrnItem from '~/components/budgets/BudgetFormTrn'
-import TrnsList from '~/components/trns/list/TrnsList2'
 
 export default {
   components: {
-    Button,
-    Cleave,
-    TrnItem,
-    TrnsList
+    Cleave
   },
 
   data () {
@@ -37,7 +31,7 @@ export default {
           trnsIds: this.budgetTrnsIds
         }
 
-        await this.$store.dispatch('createBudget', values)
+        await this.$store.dispatch('budgets/createBudget', values)
         this.budgetName = null
         this.budgetAmount = null
       }

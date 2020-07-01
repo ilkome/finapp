@@ -1,22 +1,16 @@
 <script>
 import Cleave from 'vue-cleave-component'
-import Button from '~/components/shared/button/Button'
-import TrnItem from '~/components/budgets/BudgetFormTrn'
-import TrnsList from '~/components/trns/list/TrnsList2'
 
 export default {
   components: {
-    Button,
-    Cleave,
-    TrnItem,
-    TrnsList
+    Cleave
   },
 
   data () {
     return {
-      budgetName: '',
-      budgetAmount: null,
-      budgetTrnsIds: []
+      groupName: '',
+      groupAmount: null,
+      groupTrnsIds: []
     }
   },
 
@@ -25,24 +19,24 @@ export default {
       const isFormValid = this.validateForm()
       if (isFormValid) {
         const values = {
-          amount: this.budgetAmount,
+          amount: this.groupAmount,
           currency: this.$store.state.currencies.base,
-          name: this.budgetName,
-          trnsIds: this.budgetTrnsIds
+          name: this.groupName,
+          trnsIds: this.groupTrnsIds
         }
 
-        await this.$store.dispatch('createGroup', values)
-        this.budgetName = null
-        this.budgetAmount = null
+        await this.$store.dispatch('groups/createGroup', values)
+        this.groupName = null
+        this.groupAmount = null
       }
     },
 
     validateForm () {
-      if (!this.budgetName) {
-        const budgetNameRef = this.$refs.budgetNameRef
-        this.focusInputName(budgetNameRef)
-        budgetNameRef.classList.remove('_error')
-        setTimeout(() => { budgetNameRef.classList.add('_error') }, 10)
+      if (!this.groupName) {
+        const groupNameRef = this.$refs.groupNameRef
+        this.focusInputName(groupNameRef)
+        groupNameRef.classList.remove('_error')
+        setTimeout(() => { groupNameRef.classList.add('_error') }, 10)
         return false
       }
 
@@ -54,15 +48,15 @@ export default {
     },
 
     isSelectedTrn (trnId) {
-      return this.budgetTrnsIds.includes(trnId)
+      return this.groupTrnsIds.includes(trnId)
     },
 
     handleSelectTrn (trnId) {
-      if (this.budgetTrnsIds.includes(trnId)) {
-        this.budgetTrnsIds = this.budgetTrnsIds.filter(item => item !== trnId)
+      if (this.groupTrnsIds.includes(trnId)) {
+        this.groupTrnsIds = this.groupTrnsIds.filter(item => item !== trnId)
       }
       else {
-        this.budgetTrnsIds.push(trnId)
+        this.groupTrnsIds.push(trnId)
       }
     }
   }
@@ -71,18 +65,18 @@ export default {
 
 <template lang="pug">
 .form
-  .form__title {{ $lang.budgets.form.title }}
-  .form__group(ref="budgetNameRef")
-    .inputText__label {{ $lang.budgets.form.name }}
+  .form__title {{ $lang.groups.form.title }}
+  .form__group(ref="groupNameRef")
+    .inputText__label {{ $lang.groups.form.name }}
     .inputText
       input.inputText__value(
         type="text"
-        :placeholder="`${$lang.budgets.form.name}...`"
-        v-model="budgetName")
+        :placeholder="`${$lang.groups.form.name}...`"
+        v-model="groupName")
 
   Button(
     className="_new"
-    :title="$lang.budgets.form.button"
+    :title="$lang.groups.form.button"
     @onClick="handleCreateGroup")
 </template>
 

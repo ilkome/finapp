@@ -1,19 +1,5 @@
 <script>
-import ContextMenu from '@/components/shared/contextMenu/ContextMenu'
-import ContextMenuItem from '@/components/shared/contextMenu/ContextMenuItem'
-import WalletsList from '@/components/wallets/list/WalletsList'
-import WalletsTotal from '@/components/wallets/total/WalletsTotal'
-import Menu from '@/components/layout/sidebar/Menu'
-
 export default {
-  components: {
-    Menu,
-    ContextMenu,
-    ContextMenuItem,
-    WalletsList,
-    WalletsTotal
-  },
-
   data () {
     return {
       visibleSettingsMenu: false

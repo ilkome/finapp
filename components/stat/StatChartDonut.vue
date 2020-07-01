@@ -2,16 +2,10 @@
 import dayjs from 'dayjs'
 import { Chart } from 'highcharts-vue'
 import chartOptions from './chartOptions'
-import ContextMenu from '~/components/shared/contextMenu/ContextMenu'
-import ContextMenuItem from '~/components/shared/contextMenu/ContextMenuItem'
-import Dropdown from '~/components/shared/dropdown/Dropdown'
 
 export default {
   components: {
-    Chart,
-    ContextMenu,
-    ContextMenuItem,
-    Dropdown
+    Chart
   },
 
   data () {

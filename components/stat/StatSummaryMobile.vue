@@ -1,11 +1,5 @@
 <script>
-import Amount from '~/components/amount/Amount'
-
 export default {
-  components: {
-    Amount
-  },
-
   computed: {
     stat () {
       return this.$store.getters['stat/statCurrentPeriod']

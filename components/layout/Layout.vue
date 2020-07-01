@@ -1,12 +1,5 @@
 <script>
-import LayoutMobile from '~/components/layout/LayoutMobile'
-import LayoutPc from '~/components/layout/LayoutPc'
-
 export default {
-  components: {
-    LayoutMobile,
-    LayoutPc
-  }
 }
 </script>
 

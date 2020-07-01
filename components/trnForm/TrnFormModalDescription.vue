@@ -1,15 +1,7 @@
 <script>
 import { focus } from 'vue-focus'
 
-import Button from '~/components/shared/button/Button'
-import TrnFormModal from '~/components/trnForm/TrnFormModal'
-
 export default {
-  components: {
-    Button,
-    TrnFormModal
-  },
-
   directives: { focus },
 
   data () {

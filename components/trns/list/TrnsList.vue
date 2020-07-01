@@ -1,17 +1,7 @@
 <script>
 import dayjs from 'dayjs'
 
-import Button from '~/components/shared/button/Button'
-import TrnItem from '~/components/trns/item/TrnItem'
-import TrnsListDate from '~/components/trns/list/TrnsListDate'
-
 export default {
-  components: {
-    Button,
-    TrnItem,
-    TrnsListDate
-  },
-
   props: {
     ui: {
       type: String,
