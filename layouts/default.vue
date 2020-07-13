@@ -77,6 +77,8 @@ export default {
     classes="notifications"
   )
 
+  PortalTarget(name="default")
+
   Metrica
 </template>
 

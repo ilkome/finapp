@@ -59,7 +59,8 @@ export default {
    * Nuxt.js dev-modules
    */
   buildModules: [
-    '@nuxtjs/color-mode'
+    '@nuxtjs/color-mode',
+    'nuxt-composition-api'
   ],
 
   /**
@@ -74,7 +75,8 @@ export default {
    * Nuxt.js modules
    */
   modules: [
-    '@nuxtjs/pwa'
+    '@nuxtjs/pwa',
+    'portal-vue/nuxt'
   ],
 
   /**

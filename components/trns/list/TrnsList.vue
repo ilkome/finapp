@@ -38,7 +38,7 @@ export default {
   },
 
   computed: {
-    isShowAllTrns () {
+    isShowedAllTrns () {
       return this.paginatedTrnsIds.length === this.trnsIds.length
     },
 
@@ -73,7 +73,7 @@ export default {
       for (const trnId of trnsIds) {
         let dayDate
         this.sortByEditDate
-          ? dayDate = dayjs(trns[trnId].editDate).startOf('day').valueOf()
+          ? dayDate = dayjs(trns[trnId].edited).startOf('day').valueOf()
           : dayDate = dayjs(trns[trnId].date).startOf('day').valueOf()
 
         if (!trnsList[dayDate]) {
@@ -97,9 +97,12 @@ export default {
 
 <template lang="pug">
 .trnsList
-  //- div(@click="sortByEditDate = !sortByEditDate" style="padding-bottom: 20px")
-  //-   template(v-if="sortByEditDate") Sort by transaction date
-  //-   template(v-else) Sort by edit date
+  .trnsList__sort(
+    v-if="$store.getters['user/isTester']"
+    @click="sortByEditDate = !sortByEditDate"
+  )
+    template(v-if="sortByEditDate") Sort by transaction date
+    template(v-else) Sort by edit date
 
   .trnsList__content
     template(v-if="trnsIds.length > 0")
@@ -115,7 +118,8 @@ export default {
                 :key="trnId"
                 :trn="$store.state.trns.items[trnId]"
                 :trnId="trnId"
-                :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]")
+                :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
+              )
 
       //- stat view
       template(v-else)
@@ -126,13 +130,15 @@ export default {
             :trn="$store.state.trns.items[trnId]"
             :trnId="trnId"
             :ui="ui"
-            :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]")
+            :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
+          )
 
-  .trnsList__pages(v-if="!isShowAllTrns")
+  .trnsList__pages(v-if="!isShowedAllTrns")
     Button(
       :class="['_text-center _border _inline']"
       :title="$lang.trns.more"
-      @onClick="showMoreTrns")
+      @onClick="showMoreTrns"
+    )
 </template>
 
 <style lang="stylus" scoped>
@@ -186,11 +192,11 @@ export default {
       padding 0
       padding-top 20px
 
-.statItem
-  .trnsList__pages
-    padding-top 10px
-    padding-left 68px
-    padding-bottom 20px
-    +media-laptop()
-      padding-left 62px
+  &__sort
+    padding 0
+    padding-bottom $m8
+
+    +media-laptop("less")
+      padding $m7
+      padding-bottom $m6
 </style>

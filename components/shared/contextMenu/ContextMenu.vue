@@ -45,7 +45,7 @@ export default {
 <template lang="pug">
 .context-menu
   transition(name="slide2")
-    .context-menu__popup(:class="className", :style="positionStyles" v-show="visible")
+    .context-menu__popup(v-if="$slots.content" :class="className", :style="positionStyles" v-show="visible")
       .context-menu__overflow(@click="$emit('onClickOpener')")
       .context-menu__content
         slot(name="content")

@@ -48,28 +48,7 @@ export default {
 
   computed: {
     modalStyle () {
-      if (this.$store.state.trnForm.height < this.$store.state.ui.height) {
-        if (this.position === 'bottom') {
-          return {
-            maxHeight: `${this.$store.state.trnForm.height - this.headerHeight}px`
-          }
-        }
-        return {
-          height: `${this.$store.state.trnForm.height - this.headerHeight}px`
-        }
-      }
-      else {
-        return {
-          height: `${this.$store.state.ui.height - this.headerHeight}px`
-        }
-      }
-    }
-  },
-
-  watch: {
-    show: {
-      handler: 'updateHeight',
-      immediate: true
+      return {}
     }
   },
 
@@ -80,47 +59,43 @@ export default {
       }
     },
 
-    updateHeight () {
-      this.$nextTick(() => {
-        this.headerHeight = this.$refs.header.clientHeight
-      })
-    },
-
     onClose () {
-      if (this.$listeners.onClose) {
-        this.$listeners.onClose()
-      }
+      this.$listeners.onClose()
     }
   }
 }
 </script>
 
 <template lang="pug">
-.trnFormModal.noDrag(ref="scrollContainer")
-  transition(name="fadeIn" appear)
-    .trnFormModal__overflow(
-      v-show="show"
-      ref="scrollOverflow"
-      @click="onClose"
-    )
-
-  transition(name="slide" appear @after-leave="afterClose")
-    .trnFormModal__wrap(
-      ref="scrollDragger"
-      v-show="show"
-    )
-      .trnFormModal__header(
+portal(to="default" v-if="show")
+  .baseModal(
+    ref="scrollContainer"
+    :class="{ _opened: show }"
+  )
+    transition(name="fadeIn" appear)
+      .baseModal__overflow(
+        v-show="show"
+        ref="scrollOverflow"
         @click="onClose"
-        ref="header"
       )
-        .trnFormModal__header__title(v-if="title") {{ title }}
-        .trnFormModal__header__close: .mdi.mdi-close
 
-      .trnFormModal__scroll(
-        :style="modalStyle"
-        ref="scrollContent"
+    transition(name="slide" appear @after-leave="afterClose")
+      .baseModal__wrap(
+        ref="scrollDragger"
+        v-show="show"
       )
-        slot()
+        .baseModal__header(
+          @click="onClose"
+          ref="header"
+        )
+          .baseModal__header__title(v-if="title") {{ title }}
+          .baseModal__header__close: .mdi.mdi-close
+
+        .baseModal__scroll(
+          :style="modalStyle"
+          ref="scrollContent"
+        )
+          slot()
 </template>
 
 <style lang="stylus" scoped>
@@ -129,11 +104,14 @@ export default {
 @import "~assets/stylus/variables/media"
 @import "~assets/stylus/variables/margins"
 
-.trnFormModal
+.baseModal
   z-index 3
-  position absolute
+  position fixed
   left 0
-  width 100%
+
+  &._opened
+    width 100%
+    height 100%
 
   @media $media-phone
     bottom 0
@@ -143,7 +121,7 @@ export default {
     left 0px
 
   &__overflow
-    position fixed
+    position absolute
     left 0
     bottom 0
     width 100%
@@ -155,8 +133,12 @@ export default {
       display none
 
   &__wrap
+    z-index 2
     overflow hidden
-    position relative
+    position absolute
+    left 0
+    bottom 0
+    width 100%
     display flex
     flex-grow 1
     flex-flow column nowrap

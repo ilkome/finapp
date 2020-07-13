@@ -53,40 +53,47 @@ export default {
 div(
   :class="className"
   :style="styles"
-  @click="handleClick")
+  @click="handleClick"
+)
 
   //- widget
-  template(v-if="ui === 'widget'")
+  template(v-if="ui === 'widget'"
+)
     .walletItemWidget__name {{ wallet.name }}
     .walletItemWidget__amount
       Amount(
         :alwaysShowSymbol="true"
+        :currency="wallet.currency"
+        :showBase="false"
         :value="wallet.total"
-        :currency="wallet.currency")
+      )
 
   //- tile
-  template(v-else-if="ui === 'tile' || ui === 'line'")
+  template(v-else-if="ui === 'tile' || ui === 'line'"
+)
     .walletItemTile__name {{ wallet.name }}
     .walletItemTile__amount
       Amount(
         :alwaysShowSymbol="true"
+        :currency="wallet.currency"
         :value="wallet.total"
-        :currency="wallet.currency")
+      )
 
   //- list
   template(v-else)
     .walletItem__grid
-      .walletItem__icon(
-        @click.stop="handleIconClick")
+      .walletItem__icon(@click.stop="handleIconClick")
         Icon(
-          :medium="true"
           :abbr="wallet.name"
-          :background="wallet.color || $store.state.ui.defaultBgColor")
+          :background="wallet.color || $store.state.ui.defaultBgColor"
+          :medium="true"
+        )
       .walletItem__name {{ wallet.name }}
       .walletItem__amount
         Amount(
           :alwaysShowSymbol="true"
+          :currency="wallet.currency"
           :value="wallet.total"
-          :currency="wallet.currency")
+        )
       .walletItem__line
 </template>

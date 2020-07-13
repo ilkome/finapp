@@ -15,8 +15,8 @@ export default {
   methods: {
     handleCategoryClick (categoryId) {
       this.$store.commit('trnForm/closeTrnFormModal', 'categories')
-      this.$store.commit('trnForm/closeTrnFormModal', 'categoriesChild')
       this.$store.commit('trnForm/setTrnFormValues', { categoryId })
+      this.onClose()
     },
 
     onClose () {

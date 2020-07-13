@@ -20,42 +20,11 @@ export default {
     ContextMenu(
       :position="{ left: true, bottom: true }"
       :visible="visiblePeriodMenu"
-      @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
+      @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu"
+    )
       template(slot="opener")
         Dropdown(:active="visiblePeriodMenu")
           template(slot="title"): Date
-
-      template(slot="content")
-        ContextMenuItem(
-          icon="mdi mdi-weather-sunset-up"
-          :title="$lang.dates.day.simple"
-          :selected="$store.state.filter.period === 'day'"
-          @onClick="$store.dispatch('filter/setPeriod', 'day')"
-          @onClose="visiblePeriodMenu = !visiblePeriodMenu")
-        ContextMenuItem(
-          icon="mdi mdi-calendar-week"
-          :title="$lang.dates.week.simple"
-          :selected="$store.state.filter.period === 'week'"
-          @onClick="$store.dispatch('filter/setPeriod', 'week')"
-          @onClose="visiblePeriodMenu = !visiblePeriodMenu")
-        ContextMenuItem(
-          icon="mdi mdi-calendar"
-          :title="$lang.dates.month.simple"
-          :selected="$store.state.filter.period === 'month'"
-          @onClick="$store.dispatch('filter/setPeriod', 'month')"
-          @onClose="visiblePeriodMenu = !visiblePeriodMenu")
-        ContextMenuItem(
-          icon="mdi mdi-calendar-star"
-          :title="$lang.dates.year.simple"
-          :selected="$store.state.filter.period === 'year'"
-          @onClick="$store.dispatch('filter/setPeriod', 'year')"
-          @onClose="visiblePeriodMenu = !visiblePeriodMenu")
-        ContextMenuItem(
-          icon="mdi mdi-database"
-          :title="$lang.dates.all"
-          :selected="$store.state.filter.period === 'all'"
-          @onClick="$store.dispatch('filter/setPeriod', 'all')"
-          @onClose="visiblePeriodMenu = !visiblePeriodMenu")
 
     .customize
       StatCustomizeMenuMobile(
@@ -67,6 +36,42 @@ export default {
     :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
   )
     .mdi.mdi-chevron-right
+
+  BaseModal(
+    :show="visiblePeriodMenu"
+    title="Select period"
+    @onClose="visiblePeriodMenu = false"
+  )
+    ContextMenuItem(
+      icon="mdi mdi-weather-sunset-up"
+      :title="$lang.dates.day.simple"
+      :selected="$store.state.filter.period === 'day'"
+      @onClick="$store.dispatch('filter/setPeriod', 'day')"
+      @onClose="visiblePeriodMenu = !visiblePeriodMenu")
+    ContextMenuItem(
+      icon="mdi mdi-calendar-week"
+      :title="$lang.dates.week.simple"
+      :selected="$store.state.filter.period === 'week'"
+      @onClick="$store.dispatch('filter/setPeriod', 'week')"
+      @onClose="visiblePeriodMenu = !visiblePeriodMenu")
+    ContextMenuItem(
+      icon="mdi mdi-calendar"
+      :title="$lang.dates.month.simple"
+      :selected="$store.state.filter.period === 'month'"
+      @onClick="$store.dispatch('filter/setPeriod', 'month')"
+      @onClose="visiblePeriodMenu = !visiblePeriodMenu")
+    ContextMenuItem(
+      icon="mdi mdi-calendar-star"
+      :title="$lang.dates.year.simple"
+      :selected="$store.state.filter.period === 'year'"
+      @onClick="$store.dispatch('filter/setPeriod', 'year')"
+      @onClose="visiblePeriodMenu = !visiblePeriodMenu")
+    ContextMenuItem(
+      icon="mdi mdi-database"
+      :title="$lang.dates.all"
+      :selected="$store.state.filter.period === 'all'"
+      @onClick="$store.dispatch('filter/setPeriod', 'all')"
+      @onClose="visiblePeriodMenu = !visiblePeriodMenu")
 </template>
 
 <style lang="stylus" scoped>

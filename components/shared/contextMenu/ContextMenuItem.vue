@@ -52,15 +52,15 @@ export default {
 @import "~assets/stylus/variables/media"
 
 .item
+  cursor pointer
   display flex
   align-items center
   padding 0 $m6
   font-size 13px
   white-space nowrap
-  cursor pointer
 
   @media $media-phone
-    height 46px
+    height 56px
 
   @media $media-laptop
     height 38px

@@ -6,10 +6,12 @@ export default {
       type: String,
       default: null
     },
+
     limit: {
       type: [Number, Boolean],
       default: null
     },
+
     showToogle: {
       type: Boolean,
       default: false
@@ -39,7 +41,7 @@ export default {
     }
   },
 
-  created () {
+  mounted () {
     this.stateLimit = this.limit
   },
 
@@ -61,10 +63,11 @@ export default {
   div(:class="className")
     WalletItem(
       v-for="walletId in walletsIds"
-      :key="walletId"
       :id="walletId"
+      :key="walletId"
       :ui="ui"
-      v-on="$listeners")
+      v-on="$listeners"
+    )
 
   .walletsList__toogle(v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit" @click="toogleWallets")
     template(v-if="stateLimit > 0") {{ this.$lang.wallets.showAll }}
