@@ -89,6 +89,9 @@ item-bg-active()
   &:last-child
     border-bottom 0
 
+  &__wallets
+    padding-top $m8
+
 .menuItem
   display grid
   grid-template-columns 24px 1fr 24px

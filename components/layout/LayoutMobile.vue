@@ -43,12 +43,11 @@ export default {
   .swiper-container(ref="slider")
     .swiper-wrapper
       .swiper-slide._sidebar
+        Menu(@onClickMenuCalback="slider.slideNext()")
         .block
           WalletsTotal
-
-        Menu(
-          @onClickMenuCalback="slider.slideNext()"
-        )
+        .menu__wallets
+          WalletsList(:limit="6")
 
       .swiper-slide._static
         .handler(@click="clickHandler")
@@ -159,7 +158,6 @@ export default {
 @import "~assets/stylus/variables/scroll"
 
 .block
-  padding 16px
   margin-bottom 8px
   background var(--c-bg-3)
   border-bottom 1px solid var(--c-bg-2)
