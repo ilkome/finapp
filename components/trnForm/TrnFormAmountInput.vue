@@ -136,11 +136,12 @@ export default {
 
     .trnFormAmountPc__input
       input.trnFormAmountPc__input__value(
+        :class="{ _incomes: amountType === 1, _expenses: amountType === 0 }"
+        :value="amountString == 0 ? '' : amountString"
+        @focus="setCaretPosition"
+        @input="changeValue"
         placeholder="0"
         ref="amountInput"
-        :value="amountString == 0 ? '' : amountString"
-        @input="changeValue"
-        @focus="setCaretPosition"
       )
 
     .amountInputLaptop__evaluation
@@ -217,8 +218,8 @@ export default {
     padding-bottom $m5
 
   &__type
-    padding $m6 $m7
     margin (- $m6) (- $m7)
+    padding $m6 $m7
     font-header-1()
     color var(--c-font-4)
 
@@ -256,6 +257,12 @@ export default {
       text-align right
       background 0
       border 0
+
+      &._incomes
+        color var(--c-incomes-1)
+
+      &._expenses
+        color var(--c-expenses-1)
 
 .trnFormAmount._incomes .trnFormAmountPc__input__value
   color var(--c-incomes-1)
