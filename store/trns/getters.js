@@ -47,8 +47,8 @@ export default {
       }
     }
     return {
-      expenses: Math.abs(expenses),
-      incomes: Math.abs(incomes),
+      expenses: Math.abs(+expenses.toFixed(0)),
+      incomes: Math.abs(+incomes.toFixed(0)),
       total: parseInt(incomes - expenses)
     }
   },
