@@ -25,7 +25,7 @@ export default {
 
   methods: {
     async getUsers () {
-      const monthAgo = this.$day().subtract(1, 'month').valueOf()
+      const monthAgo = this.$day().subtract(2, 'month').valueOf()
       const firebaseItemsReq = await db.ref('users-info')
         .orderByChild('loginDate')
         .startAt(monthAgo)
@@ -119,6 +119,7 @@ export default {
         .tags
           .tagItem._one(v-if="$day(user.creationDate).isSame(user.loginDate, 'day')") once
           .tagItem._one(v-if="$day(user.creationDate).isSame($day(), 'week')") new
+          .tagItem._one(v-if="!$day(user.creationDate).isSame(user.loginDate, 'day')") {{ $day(user.loginDate).from(user.creationDate, true) }}
 
         h2(@click="getCustomUserData(user.uid)") {{ user.name }}
         .pb_base {{ user.uid }}
@@ -241,6 +242,7 @@ export default {
   h2
     font-size 24px
     padding-bottom 24px
+    padding-right 40px
     fontFamilyNunito()
     text-transform none
 
