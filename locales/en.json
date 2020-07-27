@@ -170,7 +170,9 @@
     "transfer": "Transfer",
     "total": "Total",
     "average": "Average",
-    "also": "Also"
+    "also": "Also",
+    "wallets": "Wallets",
+    "all": "Total"
   },
 
   "dates": {

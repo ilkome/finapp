@@ -1,5 +1,6 @@
 <script>
 import draggable from 'vuedraggable'
+import { successEmo, random } from '~/assets/js/emo'
 
 export default {
   components: {
@@ -14,11 +15,10 @@ export default {
 
   methods: {
     /**
-      * Get array of wallets IDs
-      * Convert them to objects with order value
-      * Push object with wallets to DB
-      *
-    */
+     * Get array of wallets IDs
+     * Convert them to objects with order value
+     * Push object with wallets to DB
+     */
     async saveWalletsOrder () {
       const sortedWallets = {}
 
@@ -31,7 +31,7 @@ export default {
         this.$store.dispatch('ui/setActiveTab', 'wallets')
         this.$notify({
           type: 'success',
-          title: 'OK',
+          title: random(successEmo),
           text: 'Saved'
         })
       }
@@ -45,7 +45,7 @@ ComponentWrap(:contentPadding="$store.state.ui.pc")
   template(slot="headerLeft") {{ $lang.wallets.sortTitle }}
 
   template(slot="content")
-    WalletsList(
+    WalletsList2(
       :style="{ paddingTop: '10px' }"
       v-slot="{ wallets }")
       draggable(

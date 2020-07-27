@@ -84,7 +84,7 @@ export default {
               //- wallets sort
               transition(name="animation-tab")
                 .tab(v-if="activeTab === 'walletsSort'")
-                  walletsSort
+                  WalletsSort
 
               //- categories
               transition(name="animation-tab")

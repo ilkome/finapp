@@ -6,7 +6,7 @@ export default {
       const walletsTotal = this.$store.getters['wallets/walletsTotal']
       const total = {
         counted: 0,
-        all: 0
+        other: 0
       }
 
       for (const walletId in walletsItems) {
@@ -25,7 +25,7 @@ export default {
           total.counted = total.counted + walletTotal
         }
         else {
-          total.all = total.all + walletTotal
+          total.other = total.other + walletTotal
         }
       }
       return total
@@ -38,18 +38,18 @@ export default {
 .walletsTotal(
   v-if="$store.getters['wallets/hasWallets']"
 )
-  .walletsTotal__item(v-if="totalInWallets.all !== 0")
-    .walletsTotal__title {{ $lang.money.also }}
+  .walletsTotal__item(v-if="totalInWallets.other !== 0")
+    .walletsTotal__title {{ $lang.money.all }}
     .walletsTotal__value
       Amount(
         :currency="$store.state.currencies.base"
-        :value="totalInWallets.all"
+        :value="totalInWallets.other + totalInWallets.counted"
         size="lg"
         vertical="center"
       )
 
   .walletsTotal__item
-    .walletsTotal__title {{ $lang.money.total }}
+    .walletsTotal__title {{ $lang.money.wallets }}
     .walletsTotal__value
       Amount(
         :currency="$store.state.currencies.base"
