@@ -19,6 +19,10 @@ export default {
         @click="$store.commit('dashboard/setDashboardActiveTab', 'balance')"
         :class="{ _active: $store.state.dashboard.activeTab === 'balance' }") Balance
 
+      //- .tabItem(
+      //-   @click="$store.commit('dashboard/setDashboardActiveTab', 'overview')"
+      //-   :class="{ _active: $store.state.dashboard.activeTab === 'overview' }") Overview
+
     .tabs
       .tabItem(
         @click="$store.dispatch('filter/setPeriodPrev')"

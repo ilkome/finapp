@@ -56,17 +56,17 @@ TrnFormModal(
       )
 
     .description__action
-      .description__action-ok
-        Button(
-          className="_blue _inline"
-          :title="$lang.base.save"
-          @onClick="handleSave"
-        )
       .description__action-cancel
         Button(
           className="_grey _inline"
           :title="$lang.base.cancel"
           @onClick="handleCancel"
+        )
+      .description__action-ok
+        Button(
+          className="_blue _inline"
+          :title="$lang.base.save"
+          @onClick="handleSave"
         )
 </template>
 
@@ -85,7 +85,7 @@ TrnFormModal(
     align-items center
 
     &-ok
-      margin-right $m9
+      margin-left $m9
 
 .btnTrans
   padding $m7 $m9

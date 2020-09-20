@@ -3,6 +3,11 @@ export default {
   data () {
     return {
       menu: {
+        trnForm: {
+          icon: 'mdi mdi-plus',
+          name: this.$lang.createTrn,
+          isOpen: false
+        },
         stat: {
           icon: 'mdi mdi-poll',
           name: this.$lang.stat.shortTitle,
@@ -56,8 +61,12 @@ export default {
       if (this.$listeners.onClickMenuCalback) {
         this.$listeners.onClickMenuCalback()
       }
-      if (menuId === 'users') {
+      else if (menuId === 'users') {
         this.$router.push('/users')
+        return
+      }
+      else if (menuId === 'trnForm') {
+        this.$store.dispatch('trnForm/openTrnForm', { action: 'create' })
         return
       }
       this.$store.dispatch('ui/setActiveTab', menuId)
@@ -93,6 +102,7 @@ item-bg-active()
     padding-top $m8
 
 .menuItem
+  cursor pointer
   display grid
   grid-template-columns 24px 1fr 24px
   grid-column-gap 20px

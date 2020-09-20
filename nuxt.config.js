@@ -5,13 +5,39 @@ export default {
 
   /**
    * Nuxt rendering mode
-   * See https://nuxtjs.org/api/configuration-mode
+   * https://nuxtjs.org/guides/features/rendering-modes
    */
-  mode: 'spa',
+  ssr: false,
+
+  /**
+   * Nuxt rendering mode
+   * https://nuxtjs.org/guides/configuration-glossary/configuration-target
+   */
+  modern: 'client',
+
+  /**
+   * https://nuxtjs.org/guides/configuration-glossary/configuration-target
+   */
+  // target: 'static',
+
+  /**
+   * Nuxt rendering mode
+   * https://nuxtjs.org/guides/configuration-glossary/configuration-telemetry
+   */
+  telemetry: false,
+
+  vue: {
+    config: {
+      silent: true,
+      performance: false,
+      productionTip: false,
+      devtools: false
+    }
+  },
 
   /**
    * Headers of the page
-   * See https://nuxtjs.org/api/configuration-head
+   * https://nuxtjs.org/api/configuration-head
    */
   head: {
     title: 'Finapp',
@@ -41,7 +67,7 @@ export default {
 
   /**
    * Auto import components
-   * See https://nuxtjs.org/api/configuration-components
+   * https://nuxtjs.org/api/configuration-components
    */
   components: true,
 
@@ -50,16 +76,20 @@ export default {
    * https://nuxtjs.org/guide/plugins
    */
   plugins: [
+    { src: '~/plugins/initAppFromCache' },
     { src: '~/plugins/dayjs' },
     { src: '~/plugins/notifications' },
     { src: '~/plugins/vueLang' }
   ],
+
+  loading: false,
 
   /**
    * Nuxt.js dev-modules
    */
   buildModules: [
     '@nuxtjs/color-mode',
+    '@nuxtjs/pwa',
     'nuxt-composition-api'
   ],
 
@@ -76,27 +106,75 @@ export default {
    */
   modules: [
     '@nuxtjs/pwa',
-    'portal-vue/nuxt'
+    'portal-vue/nuxt',
+    'nuxt-i18n'
   ],
 
   /**
    * Axios module configuration
-   * See https://axios.nuxtjs.org/options
+   * https://axios.nuxtjs.org/options
    */
   axios: {},
+
+  /*
+  ** Router middleware
+  */
+  router: {
+    middleware: [
+      'auth'
+    ]
+  },
+
+  /**
+   * nuxt-i18n module configuration
+   * https://i18n.nuxtjs.org/
+   */
+  i18n: {
+    defaultLocale: 'en',
+    strategy: 'no_prefix',
+    locales: [{
+      code: 'en',
+      file: 'en-US.js'
+    }, {
+      code: 'ru',
+      file: 'ru-RU.js'
+    }],
+    lazy: true,
+    langDir: 'locales/'
+  },
 
   /**
    * Manifest
    */
-  manifest: {
-    name: 'Finapp',
-    short_name: 'Finapp',
-    background_color: '#121212',
-    theme_color: '#121212',
-    icons: [{
-      src: '/icon64.png',
-      size: '64x64',
-      type: 'image/png'
-    }]
+  pwa: {
+    manifest: {
+      name: 'Finapp',
+      short_name: 'Finapp',
+      background_color: '#121212',
+      theme_color: '#121212'
+    },
+
+    workbox: {
+      offlineStrategy: 'cacheFirst',
+      runtimeCaching: [{
+        urlPattern: 'https://fonts.googleapis.com/',
+        handler: 'cacheFirst'
+      }, {
+        urlPattern: 'https://fonts.gstatic.com/',
+        handler: 'cacheFirst'
+      }, {
+        urlPattern: 'https://maxcdn.bootstrapcdn.com/',
+        handler: 'cacheFirst'
+      }, {
+        urlPattern: 'https://cdnjs.cloudflare.com/',
+        handler: 'cacheFirst'
+      }, {
+        urlPattern: 'https://netdna.bootstrapcdn.com/',
+        handler: 'cacheFirst'
+      }, {
+        urlPattern: 'https://cdn.materialdesignicons.com/',
+        handler: 'cacheFirst'
+      }]
+    }
   }
 }

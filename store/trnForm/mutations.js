@@ -39,6 +39,15 @@ export default {
     }
   },
 
+  setTrnFormModalTrnId (state, id) {
+    if (state.showModalTrnId === id) {
+      state.showModalTrnId = null
+    }
+    else {
+      state.showModalTrnId = id
+    }
+  },
+
   toogleTrnFormModal (state, modalName) {
     state.modal = {
       ...baseModalState,

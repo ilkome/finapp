@@ -3,17 +3,24 @@ import { app } from '~/services/firebaseConfig'
 
 export default {
   async initApp ({ rootState, commit, dispatch }) {
+    if (this.$router.currentRoute.name === 'login') {
+      commit('setAppStatus', 'loading')
+    }
+
     await dispatch('demo/getDemoDataStatus', null, { root: true })
-    await dispatch('initAppFromCache')
-    dispatch('trns/initOfflineTrns', null, { root: true })
 
     app.auth().onAuthStateChanged(async (user) => {
+      if (this.$router.currentRoute.name === 'login') {
+        commit('setAppStatus', 'loading')
+      }
+
       if (user) {
         try {
           if (rootState.user.user && rootState.user.user.uid && rootState.user.user.uid !== user.uid) {
-            commit('setAppStatus', 'loading')
             dispatch('clearUserData')
           }
+          // commit('setAppStatus', 'loading')
+          dispatch('trns/initOfflineTrns', null, { root: true })
           await dispatch('user/initUser', user, { root: true })
           await dispatch('currencies/initCurrencies', null, { root: true })
           await dispatch('categories/initCategories', null, { root: true })
@@ -22,6 +29,12 @@ export default {
           await dispatch('groups/initGroups', null, { root: true })
           await dispatch('budgets/initBudgets', null, { root: true })
           await dispatch('lang/initDbLang', null, { root: true })
+          if (this.$router.currentRoute.name === 'login') {
+            this.app.context.redirect('/')
+            setTimeout(() => {
+              commit('setAppStatus', 'ready')
+            }, 100)
+          }
         }
         catch (e) {
           console.error(e)
@@ -33,45 +46,54 @@ export default {
     })
   },
 
-  async initAppFromCache ({ commit, dispatch }) {
+  async initAppFromCache ({ commit, dispatch }, resolve) {
     dispatch('lang/initLocalLang', null, { root: true })
     dispatch('ui/initUi', null, { root: true })
     dispatch('chart/initChart', null, { root: true })
 
-    const ativeTab = await localforage.getItem('next.activeTab')
+    const [ativeTab, user, currencies, categories, wallets, trns, filterPeriod] = await Promise.all([
+      localforage.getItem('next.activeTab'),
+      localforage.getItem('next.user'),
+      localforage.getItem('next.currencies'),
+      localforage.getItem('next.categories'),
+      localforage.getItem('next.wallets'),
+      localforage.getItem('next.trns'),
+      localforage.getItem('next.filter.period')
+    ])
+
     if (ativeTab) { dispatch('ui/setActiveTab', ativeTab, { root: true }) }
-
-    const user = await localforage.getItem('next.user')
-    if (user) { dispatch('user/setUser', user, { root: true }) }
-
-    const currencies = await localforage.getItem('next.currencies')
+    if (user) { commit('user/setUser', user, { root: true }) }
     if (currencies) { commit('currencies/setCurrencies', currencies, { root: true }) }
-
-    const categories = await localforage.getItem('next.categories')
     if (categories) { commit('categories/setCategories', categories, { root: true }) }
-
-    const wallets = await localforage.getItem('next.wallets')
     if (wallets) { commit('wallets/setWallets', wallets, { root: true }) }
-
-    const trns = await localforage.getItem('next.trns')
     if (trns) { commit('trns/setTrns', trns, { root: true }) }
-
-    const filterPeriod = await localforage.getItem('next.filter.period')
     if (filterPeriod) { dispatch('filter/setPeriod', filterPeriod, { root: true }) }
 
     // ready
     if (categories && user && trns && wallets) {
-      commit('setAppStatus', 'ready')
+      if (this.$router.currentRoute.name === 'login') {
+        this.app.context.redirect('/')
+      }
+      resolve()
+      console.log('resolve')
+    }
+    else {
+      if (this.$router.currentRoute.name !== 'login') {
+        // this.app.context.redirect('/login')
+      }
+      // commit('setAppStatus', 'ready')
+      resolve()
+      console.log('resolve')
     }
   },
 
-  clearUserData ({ commit, dispatch }) {
+  async clearUserData ({ commit, dispatch }) {
     commit('setAppStatus', 'loading')
     dispatch('ui/setActiveTab', 'stat', { root: true })
-    dispatch('user/setUser', null, { root: true })
-    dispatch('categories/setCategories', null, { root: true })
-    dispatch('wallets/setWallets', null, { root: true })
-    dispatch('trns/setTrns', null, { root: true })
+    await dispatch('user/setUser', null, { root: true })
+    await dispatch('categories/setCategories', null, { root: true })
+    await dispatch('wallets/setWallets', null, { root: true })
+    await dispatch('trns/setTrns', null, { root: true })
     commit('setAppStatus', 'ready')
   }
 }

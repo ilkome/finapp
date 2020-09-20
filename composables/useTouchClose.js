@@ -19,8 +19,12 @@ export default function useOnTouch ({ container, overflow, dragger, content, onC
       const diff = (containerHeight - currentY.value) / (containerHeight / 100)
       const diffTrunc = Math.trunc(diff)
 
-      dragger.value.style.transform = `translate3d(0, ${currentY.value}px, 0)`
-      overflow.value.style.opacity = diffTrunc === 100 ? 1 : `0.${diffTrunc}`
+      if (dragger.value) {
+        dragger.value.style.transform = `translate3d(0, ${currentY.value}px, 0)`
+      }
+      if (overflow.value) {
+        overflow.value.style.opacity = diffTrunc === 100 ? 1 : `0.${diffTrunc}`
+      }
     }
   }
 

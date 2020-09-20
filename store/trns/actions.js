@@ -101,12 +101,13 @@ export default {
           }
         }
       }
-      commit('app/setAppStatus', 'ready', { root: true })
+      // commit('app/setAppStatus', 'ready', { root: true })
       dispatch('setTrns', items)
     }, e => console.error(e))
   },
 
   setTrns ({ commit }, items) {
+    const newTrns =
     commit('setTrns', items)
     localforage.setItem('next.trns', items)
   },

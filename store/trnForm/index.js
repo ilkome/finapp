@@ -9,7 +9,8 @@ export const baseModalState = {
   description: false,
   transferFrom: false,
   transferTo: false,
-  wallets: false
+  wallets: false,
+  trn: false
 }
 
 const state = () => ({
@@ -25,6 +26,7 @@ const state = () => ({
 
   show: false,
   showModalCategoryId: null,
+  showModalTrnId: null,
 
   values: {
     amount: '0',

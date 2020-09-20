@@ -59,11 +59,10 @@ export default {
 .categories._flat
   overflow hidden
   padding 0
-  // overflow-x auto
 
   .categories__list
     display grid
-    grid-template-columns repeat(auto-fit, minmax(100px, 1fr))
+    grid-template-columns repeat(auto-fit, minmax(160px, 1fr))
     grid-column-gap $m7
     grid-row-gap $m7
 </style>

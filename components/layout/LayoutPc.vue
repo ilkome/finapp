@@ -17,7 +17,7 @@ export default {
 
 <template lang="pug">
 .layout
-  .createTrnBtn(@click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"): .mdi.mdi-plus-box-multiple-outline
+  .createTrnBtn(@click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"): .mdi.mdi-plus
 
   //- modals
   CategoryModal
@@ -194,6 +194,7 @@ export default {
   height 100%
 
 .createTrnBtn
+  cursor pointer
   z-index 5
   display flex
   align-items center
@@ -204,7 +205,7 @@ export default {
   padding $m7 $m8
   width 60px
   height 60px
-  font-size 22px
+  font-size 44px
   color var(--c-font-1)
   background var(--c-blue-1)
   border-radius 50%

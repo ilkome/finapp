@@ -69,9 +69,9 @@ export default {
   height 40px
   font-size 16px
   color var(--c-font-4)
-  background var(--c-bg-2)
-  border 1px solid var(--c-bg-7)
-  box-shadow 2px 2px 6px 0px var(--c-bg-2)
+  // background var(--c-bg-2)
+  // border 1px solid var(--c-bg-7)
+  // box-shadow 2px 2px 6px 0px var(--c-bg-2)
   border-radius 50px
 
   /.light-mode &
@@ -79,7 +79,9 @@ export default {
 
   &:active:not(._disable)
     color var(--c-font-3)
-    transform scale(0.96)
+    background var(--c-bg-2)
+    border 1px solid var(--c-bg-7)
+    box-shadow 2px 2px 6px 0px var(--c-bg-2)
 
   &:hover:not(._disable)
     @media $media-laptop
@@ -118,6 +120,14 @@ export default {
 
   &._center
     text-align center
+
+  &._borderBottom
+    margin-bottom 0
+    padding-left $m6
+    padding-right $m6
+    border-bottom 1px solid var(--c-bg-7)
+    &:last-child
+      border-bottom 0
 
   &._border
     display flex

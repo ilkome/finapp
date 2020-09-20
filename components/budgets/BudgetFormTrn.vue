@@ -43,7 +43,8 @@ export default {
       Icon(
         :abbr="wallet.name"
         :background="wallet.color"
-        :small="true")
+        :small="true"
+      )
     .walletName {{ wallet.name }}
 
   .trnItem__wallet
@@ -51,7 +52,8 @@ export default {
       Icon(
         :abbr="category.name"
         :background="category.color"
-        :small="true")
+        :small="true"
+      )
     .walletName {{ category.name }}
 
   //- .trnItem__desc(v-if="trn.description") {{ trn.description }}

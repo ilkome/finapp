@@ -22,7 +22,7 @@ export default {
 
 <template lang="pug">
 .dashboard(v-show="$store.state.ui.activeTab === 'stat'")
-  StatChartsLine(v-show="$store.state.dashboard.activeTab !== 'balance'")
+  StatChartsLine
   DashboardNav
   StatSummaryPc
   DashboardFilter
@@ -77,9 +77,16 @@ export default {
           .dashboard__tab._trns(v-show="$store.state.dashboard.activeTab === 'history'")
             TrnsList(:size="50" :key="$store.state.filter.date")
 
+      //- Dashboard Overview
+      transition(name="animation-tab")
+        .dashboard__wrap
+          .dashboard__tab._trns(v-show="$store.state.dashboard.activeTab === 'overview'")
+            DashboardOverview
+
     transition(name="animation-tab")
-      .dashboard__tab(v-show="$store.state.dashboard.activeTab === 'balance'")
+      .dashboard__tab(v-if="$store.state.dashboard.activeTab === 'balance'")
         StatChartDonut(v-if="$store.getters['trns/hasTrns']")
+        StatPc
 </template>
 
 <style lang="stylus" scoped>
@@ -105,6 +112,7 @@ export default {
     left 0
     top 0
     width 100%
+    max-width 1100px
     padding-bottom 60px
 
     &._trns

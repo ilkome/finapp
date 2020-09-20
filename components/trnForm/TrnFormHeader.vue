@@ -1,99 +1,29 @@
 <script>
 export default {
-  computed: {
-    category () {
-      const categoryId = this.$store.state.trnForm.values.categoryId
-      return this.$store.state.categories.items[categoryId]
-    },
-
-    parentCategory () {
-      return this.$store.state.categories.items[this.category.parentId]
-    },
-
-    values () {
-      return this.$store.state.trnForm.values
-    },
-
-    wallet () {
-      const walletId = this.$store.state.trnForm.values.walletId
-      return this.$store.state.wallets.items[walletId]
-    }
-  }
+  name: 'TrnFormHeader'
 }
 </script>
 
 <template lang="pug">
-.trnFormHeader
-  //- wallet
-  transition(name="fadeIn")
-    template(v-if="wallet")
-      .trnFormHeaderItem(
-        :style="{ background: wallet.color || $store.state.ui.defaultBgColor }"
-        @click="$store.commit('trnForm/toogleTrnFormModal', 'wallets')"
-      )
-        .trnFormHeaderItem__in
-          .trnFormHeaderItem__name {{ wallet.name }}
-          .trnFormHeaderItem__total
-            template(v-if="$store.getters['wallets/walletsTotal'][values.walletId]")
-              Amount(
-                :value="$store.getters['wallets/walletsTotal'][values.walletId].base"
-                :currency="wallet.currency"
-                vertical="left"
-              )
-            template(v-else)
-              Amount(
-                :value="0"
-                :currency="$store.state.currencies.base"
-                vertical="left"
-            )
-        .trnFormHeaderItem__dots: .mdi.mdi-dots-vertical
-
-  //- category
-  template(v-if="category")
-    .trnFormHeaderItem._category(
-      :style="{ background: category.color || $store.state.ui.defaultBgColor }"
-      @click="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
-    )
-      .trnFormHeaderItem__in
-        transition(name="slide")
-          .trnFormHeaderItem__icon(
-            v-show="true"
-            :key="category.icon"
-          )
-            Icon(:icon="category.icon")
-        .trnFormHeaderItem__name
-          .parent(v-if="parentCategory") {{ parentCategory.name }}
-          .child {{ category.name }}
-      .trnFormHeaderItem__dots: .mdi.mdi-dots-vertical
+.trnFormHeader(
+  v-show="this.$store.state.trnForm.values.amountType !== 2"
+)
+  TrnFormHeaderItemWallet
+  TrnFormHeaderItemCategory
 </template>
 
 <style lang="stylus">
 @import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
-
-.trnFormHeader
-  display grid
-  grid-template-columns repeat(2, 1fr)
-  // grid-column-gap 1px
-  // padding 16px
-  background var(--c-bg-4)
-
-  @media $media-phone
-    // padding-bottom $m5
-
-  @media $media-laptop
-    // padding-top 8px
-    // min-height 81px
-
-  /.light-mode &
-    background var(--c-bg-2)
+@import "~assets/stylus/variables/animations"
 
 .trnFormHeaderItem
   position relative
+  display flex
   flex-grow 1
   padding $m7 $m7
   color var(--c-bg-5)
-  // border-radius $m6 $m6 0 0
+  border-radius $m5
+  anim()
 
   @media $media-laptop
     min-height 61px
@@ -127,4 +57,20 @@ export default {
     right $m4
     color var(--c-font-2)
     font-size 16px
+</style>
+
+<style lang="stylus">
+@import "~assets/stylus/variables/margins"
+@import "~assets/stylus/variables/media"
+
+.trnFormHeader
+  display grid
+  grid-template-columns repeat(2, 1fr)
+  grid-column-gap $m7
+  grid-row-gap $m7
+  padding $m7
+  padding-top 0
+
+  /.light-mode &
+    background var(--c-bg-2)
 </style>

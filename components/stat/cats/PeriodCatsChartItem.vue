@@ -80,6 +80,7 @@ export default {
 @import "~assets/stylus/variables/media"
 
 .statCatsItem
+  cursor pointer
   margin-top 12px
   margin-right 10px
   background var(--c-bg-4)

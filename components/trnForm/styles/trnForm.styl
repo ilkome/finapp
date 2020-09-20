@@ -1,5 +1,5 @@
 .trnForm
-  z-index 5
+  z-index 100
   position fixed
   bottom 0
   height auto
@@ -9,8 +9,8 @@
     width 100%
 
   @media $media-laptop
-    right 10%
     top 10%
+    right 10%
     bottom inherit
     height calc(100% - 20%)
 
@@ -21,9 +21,6 @@
     width 100%
     height 100%
     background var(--c-bg-overflow)
-
-    @media $media-laptop
-      opacity .8
 
   &__wrap
     position relative
@@ -62,13 +59,9 @@
 .formTitle
   padding $m7
   fontFamilyNunito()
-  font-weight 700
-  font-size 18px
   color var(--c-font-4)
-
-  &:active
-  &:hover
-    background var(--c-bg-5)
+  font-size 18px
+  font-weight 700
 
 .formCategories
   padding 0
@@ -101,21 +94,21 @@
 
     @media $media-phone
       transform translate(0, 0)
-      transition opacity 100ms ease-out, transform 200ms ease-out
+      transition opacity 200ms ease-out, transform 250ms ease-out
 
     @media $media-laptop
       transform translate(0, 0)
 
   &-enter
   &-leave-to
-    transition opacity 100ms ease-out, transform 200ms ease-out
     opacity 0
+    transition opacity 200ms ease-out, transform 250ms ease-out
 
     @media $media-phone
       transform translate(0, 10px)
 
     @media $media-laptop
-      transform translate(300px, 0)
+      transform translate(10px, 0)
 
   &-leave-to
     @media $media-phone

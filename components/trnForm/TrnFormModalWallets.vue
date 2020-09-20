@@ -11,7 +11,6 @@ export default {
 
 <template lang="pug">
 TrnFormModal(
-  v-if="$store.state.trnForm.modal.wallets"
   :show="$store.state.trnForm.modal.wallets"
   :title="$lang.wallets.title"
   :position="$store.state.ui.mobile ? 'bottom' : null"
@@ -32,7 +31,7 @@ TrnFormModal(
 .trnFormWalletsList
   .walletsWidget
     display grid
-    grid-template-columns repeat(3, minmax(auto, 1fr))
+    grid-template-columns repeat(2, minmax(auto, 1fr))
     grid-column-gap 12px
     grid-row-gap 12px
     padding 0 16px

@@ -82,7 +82,7 @@ export default {
         if (lastCategoriesIds.length < 12) {
           const categoryId = trns[trnId].categoryId
           const category = state.items[categoryId]
-          if (category && (category.showInLastUsed || category.showInLastUsed === undefined)) {
+          if (category && (category.showInLastUsed || category.showInLastUsed === undefined) && !category.showInQuickSelector) {
             if (categoryId !== transferCategoryId) {
               if (!lastCategoriesIds.includes(categoryId)) { lastCategoriesIds.push(categoryId) }
             }

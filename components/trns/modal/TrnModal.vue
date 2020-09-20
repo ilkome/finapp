@@ -112,40 +112,44 @@ ModalBottom(
 
     .moreActions
       Button.marginBottom(
-        className="_grey"
+        className="_borderBottom"
         title="Set category filter"
         icon="mdi mdi-folder-star"
-        @onClick="handleSetFilterCategory")
+        @onClick="handleSetFilterCategory"
+      )
 
       Button.marginBottom(
         :class="{ marginBottom: budgets }"
-        className="_grey"
-        title="Set wallet filter"
+        className="_borderBottom"
         icon="mdi mdi-credit-card-multiple"
-        @onClick="handleSetFilterWallet")
+        title="Set wallet filter"
+        @onClick="handleSetFilterWallet"
+      )
 
       Button(
         v-if="budgets && $store.getters['user/isTester']"
         :class="{ marginBottom: groups }"
-        className="_grey"
-        title="Show budgets"
+        className="_borderBottom"
         icon="mdi mdi-hand-saw"
-        @onClick="showModalBudgets = true")
+        title="Show budgets"
+        @onClick="showModalBudgets = true"
+      )
 
       Button(
         v-if="groups && $store.getters['user/isTester']"
-        className="_grey"
-        title="Show groups"
+        className="_borderBottom"
         icon="mdi mdi-folder-multiple-outline"
-        @onClick="showModalGroups = true")
+        title="Show groups"
+        @onClick="showModalGroups = true"
+      )
 
   //- budgets
   template(v-if="groups && $store.getters['user/isTester']")
     ModalBottom(
       :show="showModalBudgets"
+      paddingless
       title="Budgets"
       @onClose="showModalBudgets = false"
-      paddingless
     )
       template(v-for="(budget, budgetId) in budgets")
         .item(@click="toogleAddToBudget(budgetId)")
@@ -173,8 +177,6 @@ ModalBottom(
             template(v-else)
               .mdi.mdi-plus
           .item__name {{ group.name }}
-          //- .item__amount
-          //-   Amount(:currency="group.currency" :value="group.amount")
 
   //- confirm
   ModalBottomConfirm(

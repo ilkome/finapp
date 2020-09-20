@@ -106,12 +106,12 @@ export default {
 
   transition(name="slide" appear @after-leave="afterClose")
     .trnFormModal__wrap(
-      ref="scrollDragger"
       v-show="show"
+      ref="scrollDragger"
     )
       .trnFormModal__header(
-        @click="onClose"
         ref="header"
+        @click="onClose"
       )
         .trnFormModal__header__title(v-if="title") {{ title }}
         .trnFormModal__header__close: .mdi.mdi-close
@@ -186,6 +186,7 @@ export default {
     align-items center
     justify-content space-between
     padding $m7
+    padding-bottom $m6
     color var(--c-font-3)
     font-size 22px
     font-weight 700

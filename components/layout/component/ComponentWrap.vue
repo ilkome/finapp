@@ -53,8 +53,8 @@ export default {
   height 100%
 
   &__header
-    background var(--c-bg-4)
-    border-bottom 1px solid var(--c-bg-1)
+    // background var(--c-bg-4)
+    // border-bottom 1px solid var(--c-bg-1)
 
     +media-laptop()
       background 0

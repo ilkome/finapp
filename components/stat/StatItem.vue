@@ -174,6 +174,10 @@ export default {
     &:active
       opacity .8
 
+    @media $media-laptop
+      &:hover
+        transform scale(1.3)
+
   &__amount
     align-self center
 </style>

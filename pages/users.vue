@@ -69,6 +69,7 @@ export default {
       await this.$store.dispatch('lang/initDbLang', null, { root: true })
 
       this.$router.push('/')
+      this.$store.commit('app/setAppStatus', 'ready')
     },
 
     deleteUserOpened (version, uid) {

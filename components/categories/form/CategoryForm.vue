@@ -280,6 +280,11 @@ ComponentWrap
   template(slot="bottom")
     .col
       Button(
+        :class="['_text-center _ml-big', { _inline: $store.state.ui.pc }]"
+        :title="$lang.base.cancel"
+        @onClick="$router.push('/cool')")
+    .col
+      Button(
         :class="['_text-center _blue _ml-big', { _inline: $store.state.ui.pc }]"
         :title="$lang.categories.form.save"
         @onClick="handleSubmit")

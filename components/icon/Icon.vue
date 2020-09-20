@@ -118,7 +118,7 @@ export default {
     ^[0]._category &
       font-size 32px
     ^[0]._category._small &
-      font-size 18px
+      font-size 22px
 
   &__abbr
     font-size 12px

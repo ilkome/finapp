@@ -4,6 +4,14 @@ import { auth } from 'firebase/app'
 export default {
   name: 'LoginPage',
 
+  fetch ({ store, redirect }) {
+    console.log('fetch', store.state.user)
+    if (store.state.user && store.state.user.user) {
+      console.log('store.state.user.user', store.state.user.user)
+      redirect('/')
+    }
+  },
+
   data () {
     return {
       loading: false
@@ -96,6 +104,7 @@ export default {
     display flex
     align-items center
     justify-content center
+    flex-flow column
     padding $mn1
 
     @media $media-laptop

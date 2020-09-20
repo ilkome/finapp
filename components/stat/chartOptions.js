@@ -1,7 +1,8 @@
 export default {
   chart: {
     backgroundColor: 'transparent',
-    // height: '40%',
+    with: '100%',
+    height: '40%',
     spacing: [5, 0, 0, 0],
     type: 'column',
     zoomType: 'x',
@@ -55,6 +56,7 @@ export default {
   series: [],
   title: { text: null },
   tooltip: {
+    shared: true,
     animation: true,
     backgroundColor: 'var(--c-bg-3)',
     borderColor: 'var(--c-bg-7)',
@@ -64,8 +66,7 @@ export default {
     style: {
       color: 'var(--c-font-2)',
       fontSize: '12px'
-    },
-    shared: true
+    }
   },
   xAxis: {
     categories: [],

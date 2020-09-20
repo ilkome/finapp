@@ -1,5 +1,5 @@
 <template lang="pug">
-.appName {{ $lang.appName }}
+.appName {{ $t('appName') }}
 </template>
 
 <style lang="stylus" scoped>

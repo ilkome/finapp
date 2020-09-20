@@ -1,10 +1,10 @@
-import isEqual from 'lodash/isEqual'
-
 export default {
   setWallets (state, items) {
-    if (!isEqual(state.items, items)) {
-      state.items = items
+    const freezedItems = {}
+    for (const itemId of Object.keys(items)) {
+      freezedItems[itemId] = Object.freeze(items[itemId])
     }
+    state.items = freezedItems
   },
 
   showWalletModal (state) {

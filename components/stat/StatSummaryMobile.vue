@@ -16,7 +16,7 @@ export default {
 
 <template lang="pug">
 .summary
-  .summary__item._incomes(@click="$store.dispatch('ui/toogleVisibleCatsChart')")
+  .summary__item._incomes(@click="$store.dispatch('ui/setActiveTabStat', 'incomes')")
     template(v-if="statAverage.incomes > 0 || period === 'all'")
       .summary__item__title._incomes {{ $lang.money.incomes }}
       .summary__item__amount
@@ -27,7 +27,7 @@ export default {
           :value="stat.incomes.total")
     template(v-else) .
 
-  .summary__item._total(@click="$store.dispatch('ui/toogleVisibilityStatItems')")
+  .summary__item._total(@click="$store.dispatch('ui/setActiveTabStat', 'stat')")
     template(v-if="statAverage.total !== 0")
       template(v-if="stat.incomes.total > 0 || stat.expenses.total > 0")
         .summary__item__title {{ $lang.money.total }}
@@ -38,7 +38,7 @@ export default {
             :value="stat.incomes.total - stat.expenses.total")
     template(v-else) .
 
-  .summary__item._expenses(@click="$store.dispatch('ui/toogleShowStatGraphs')")
+  .summary__item._expenses(@click="$store.dispatch('ui/setActiveTabStat', 'expenses')")
     template(v-if="statAverage.expenses > 0 || period === 'all'")
       .summary__item__title._expenses {{ $lang.money.expenses }}
       .summary__item__amount
@@ -55,9 +55,12 @@ export default {
 
 .summary
   display flex
-  padding $m7 0
+  margin $m6
+  margin-bottom 0
+  padding $m6 0
   background var(--c-bg-4)
-  border-bottom 1px solid var(--c-bg-1)
+  // border-bottom 1px solid var(--c-bg-1)
+  border-radius $m5
 
   &__item
     flex 1

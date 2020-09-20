@@ -1,16 +1,8 @@
-import isEqual from 'lodash/isEqual'
-
 export default {
   setCurrencies (state, { base, date, rates }) {
-    if (!isEqual(state.base, base)) {
-      state.base = base
-    }
-    if (!isEqual(state.date, date)) {
-      state.date = date
-    }
-    if (!isEqual(state.rates, rates)) {
-      state.rates = rates
-    }
+    state.base = base
+    state.date = date
+    state.rates = rates
   },
 
   showBaseCurrenciesModal (state) {

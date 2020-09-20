@@ -4,16 +4,6 @@ import debounce from '~/utils/debounce'
 export default {
   name: 'DefaultLayout',
 
-  async fetch () {
-    try {
-      await this.$store.dispatch('app/initApp')
-      this.isAuth()
-    }
-    catch (error) {
-      console.log('error', error)
-    }
-  },
-
   computed: {
     layoutStyles () {
       return { height: `${this.$store.state.ui.height}px` }
@@ -21,6 +11,10 @@ export default {
 
     lang () {
       return this.$store.state.lang.lang
+    },
+
+    isProduction () {
+      return process.env.NODE_ENV === 'production'
     }
   },
 
@@ -32,24 +26,25 @@ export default {
     }
   },
 
-  mounted () {
+  async mounted () {
+    this.$nextTick(() => {
+      this.$store.commit('app/setAppStatus', 'ready')
+    })
     this.getPageDimensions()
     window.addEventListener('resize', debounce(this.getPageDimensions, 600))
+
+    const workbox = await window.$workbox
+    if (workbox) {
+      workbox.addEventListener('installed', (event) => {
+        // If we don't do this we'll be displaying the notification after the initial installation, which isn't perferred.
+        if (event.isUpdate) {
+          console.log('whatever logic you want to use to notify the user that they need to refresh the page.')
+        }
+      })
+    }
   },
 
   methods: {
-    isAuth () {
-      const routeName = this.$route.name
-      const user = this.$store.state.user.user
-
-      if (routeName === 'login' && user !== null) {
-        this.$router.replace('/')
-      }
-      else if (routeName !== 'login' && user === null) {
-        this.$router.replace('login')
-      }
-    },
-
     getPageDimensions () {
       const width = document.documentElement.clientWidth
       const height = document.documentElement.clientHeight
@@ -62,13 +57,16 @@ export default {
 <template lang="pug">
 .finapp(:style="layoutStyles")
   //- Loading
-  template(v-if="$fetchState.pending || $store.state.app.status.loading")
+  template(v-if="!$store.state.app.status.ready")
     Loader
 
   //- Continue to app
   transition(name="fadeInSlow")
-    template(v-if="!$fetchState.pending && $store.state.app.status.ready")
+    template(v-if="$store.state.app.status.ready")
       Nuxt
+
+  //- template(v-if="$store.state.app.status.ready")
+  //-   TrnForm
 
   //- Notifications
   Notifications(
@@ -79,7 +77,7 @@ export default {
 
   PortalTarget(name="default")
 
-  Metrica
+  LazyMetrica(v-if="isProduction")
 </template>
 
 <style lang="stylus">
@@ -106,6 +104,7 @@ body
   line-height 1
   letter-spacing 0
   overscroll-behavior-y contain
+  // background var(--c-bg-1)
   background var(--c-bg-1)
   user-select none
 </style>

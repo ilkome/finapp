@@ -253,5 +253,53 @@ export default {
       })
 
     return trnsIds
+  },
+
+  getTrnsIds: (state, getters, rootState) => (props) => {
+    if (!getters.hasTrns) { return [] }
+
+    // const { date, periodName, description } = props
+    const categories = rootState.categories.items
+    const categoriesIds = Object.keys(categories)
+    const filterCategoryId = props.categoryId
+    const filterWalletId = props.walletId
+
+    const trns = rootState.trns.items
+    let trnsIds = Object.keys(trns)
+
+    // const filterDate = dayjs(date)
+    // const filterPeriod = periodName || rootState.filter.period
+    // const startDateValue = filterDate.startOf(filterPeriod).valueOf()
+    // const endDateValue = filterDate.endOf(filterPeriod).valueOf()
+
+    // filter wallet
+    if (filterWalletId) {
+      trnsIds = trnsIds.filter(trnId => trns[trnId].walletId === filterWalletId)
+    }
+
+    // filter category
+    if (filterCategoryId) {
+      const childCategoriesIds = categoriesIds.filter(id => categories[id].parentId === filterCategoryId)
+      if (childCategoriesIds.length) {
+        trnsIds = trnsIds.filter((trnId) => {
+          const trnCategoryId = trns[trnId].categoryId
+          for (const categoryId of childCategoriesIds) {
+            if (trnCategoryId === categoryId) { return true }
+          }
+        })
+      }
+      else {
+        trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === filterCategoryId)
+      }
+    }
+
+    trnsIds = trnsIds
+      .sort((a, b) => {
+        if (trns[a].date > trns[b].date) { return -1 }
+        if (trns[a].date < trns[b].date) { return 1 }
+        return 0
+      })
+
+    return trnsIds || []
   }
 }

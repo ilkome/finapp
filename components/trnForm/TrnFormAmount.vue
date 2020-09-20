@@ -53,15 +53,21 @@ export default {
 
 <template lang="pug">
 .trnFormAmount(:class="className")
-  .trnFormAmount__in(@click="handleChangeAmountType")
-    .trnFormAmount__type
-      template(v-if="amountType === 0") {{ $lang.money.expenses }}
-      template(v-if="amountType === 1") {{ $lang.money.incomes }}
-      template(v-if="amountType === 2 && $store.getters['wallets/walletsSortedIds'].length > 1") {{ $lang.money.transfer }}
+  .trnFormAmount__wrap(@click="handleChangeAmountType")
+    .trnFormAmount__in
+      .trnFormAmount__icon
+        .mdi.mdi-minus(v-if="amountType === 0")
+        .mdi.mdi-plus(v-if="amountType === 1")
+        .mdi.mdi-swap-horizontal(v-if="amountType === 2")
 
-    .trnFormAmount__content
-      .trnFormAmount__value {{ amountString }}
-      .trnFormAmount__evaluation {{ $store.state.trnForm.values.amountEvaluation }}
+      .trnFormAmount__content
+        .trnFormAmount__type
+          template(v-if="amountType === 0") {{ $lang.money.expenses }}
+          template(v-if="amountType === 1") {{ $lang.money.incomes }}
+          template(v-if="amountType === 2 && $store.getters['wallets/walletsSortedIds'].length > 1") {{ $lang.money.transfer }}
+
+        .trnFormAmount__value {{ amountString }}
+        .trnFormAmount__evaluation {{ $store.state.trnForm.values.amountEvaluation }}
 </template>
 
 <style lang="stylus" scoped>
@@ -70,7 +76,7 @@ export default {
 @import "~assets/stylus/variables/media"
 
 .trnFormAmount
-  &__in
+  &__wrap
     padding $m7 $m7
     text-align right
 
@@ -80,12 +86,22 @@ export default {
     ^[0]._incomes &
       color var(--c-incomes-1)
 
+  &__in
+    display flex
+    align-items center
+    justify-content center
+
+  &__icon
+    font-size 32px
+    padding-right $m6
+
   &__type
     align-self center
     padding-bottom $m6
+    color var(--c-font-3)
 
   &__content
-    //
+    flex-grow 1
 
   &__value
     typo-money()

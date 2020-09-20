@@ -39,20 +39,20 @@ export default {
     grid-row 1 / 3
     padding-right 10px
     align-self center
-    font-size 28px
+    font-size 32px
 
   &__weekday
+    padding-top 2px
     grid-column 2 / 3
     grid-row 1 / 2
-    font-size 14px
+    font-size 13px
 
   &__details
     grid-column 2 / 3
     grid-row 2 / 3
     display flex
-    padding-top 4px
     color var(--c-font-4)
-    font-size 13px
+    font-size 12px
 
   &__month
     margin-right $m4

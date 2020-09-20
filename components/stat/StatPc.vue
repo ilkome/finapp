@@ -61,32 +61,24 @@ export default {
   padding 0 60px
 
   &__content
-    display flex
-    justify-content space-between
-
-  &__item
-    flex 1
-    max-width 400px
-    padding-top 20px
-    &:first-child
-      align-self start
-    &:last-child
-      align-self start
+    display grid
+    grid-template-columns repeat(2, 1fr)
+    grid-column-gap $m10
 
   &__chart
+    display flex
     @media $media-laptop
       padding-bottom 12px
 
   &__cats
-    max-width 470px
+    max-width 380px
 
     @media $media-laptop
       padding-top $m7
 
   &__empty
-    padding $m9
+    padding $m10
     color var(--c-font-4)
-    background var(--c-bg-3)
 
     @media $media-laptop
       text-align center

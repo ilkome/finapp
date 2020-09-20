@@ -8,7 +8,6 @@ export const initStatus = {
 }
 
 const state = () => ({
-  theme: '',
   status: {
     ...initStatus,
     loading: true

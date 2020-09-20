@@ -26,7 +26,7 @@ export default {
     size: {
       type: Number,
       required: false,
-      default: 30
+      default: 10
     }
   },
 
@@ -97,12 +97,12 @@ export default {
 
 <template lang="pug">
 .trnsList
-  .trnsList__sort(
-    v-if="$store.getters['user/isTester'] && ui === 'history'"
-    @click="sortByEditDate = !sortByEditDate"
-  )
-    template(v-if="sortByEditDate") Sort by transaction date
-    template(v-else) Sort by edit date
+  //- .trnsList__sort(
+  //-   v-if="$store.getters['user/isTester'] && ui === 'history'"
+  //-   @click="sortByEditDate = !sortByEditDate"
+  //- )
+  //-   template(v-if="sortByEditDate") Sort by transaction date
+  //-   template(v-else) Sort by edit date
 
   .trnsList__content
     template(v-if="trnsIds.length > 0")
@@ -167,9 +167,12 @@ export default {
 
   &__day
     overflow hidden
-    background var(--c-bg-3)
-    border 1px solid var(--c-bg-1)
-    border-radius 16px
+    border-bottom 1px solid var(--c-bg-3)
+    margin-bottom 16px
+    padding-bottom 16px
+
+    &:first-child
+      margin-top $m9
 
     +media-laptop()
       margin 0
@@ -181,9 +184,10 @@ export default {
     display flex
     align-items center
     justify-content space-between
-    padding 12px 12px
-    background var(--c-bg-4)
-    border-bottom 1px solid var(--c-bg-2)
+    padding 0 12px
+    padding-bottom 12px
+    // background var(--c-bg-4)
+    // border-bottom 1px solid var(--c-bg-2)
 
   &__pages
     padding 16px 8px

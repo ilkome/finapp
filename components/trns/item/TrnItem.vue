@@ -89,6 +89,7 @@ export default {
       Amount(
         :currency="wallet.currency"
         :value="trn.amount"
+        size="lg"
         :type="trn.type")
     .trnItem__desc(v-if="trn.description") {{ trn.description }}
 
@@ -213,6 +214,7 @@ export default {
     grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
     grid-column-gap 20px
     grid-row-gap 10px
+    width 100%
 
   &._history
     display grid
@@ -330,7 +332,7 @@ export default {
       grid-column 2 / 4
       grid-row 4 / 5
       padding-top 9px
-      border-bottom 1px solid var(--c-bg-6)
+      // border-bottom 1px solid var(--c-bg-6)
 
     ^[0]._history:hover &
       @media $media-laptop

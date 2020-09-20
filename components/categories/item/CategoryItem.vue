@@ -83,7 +83,7 @@ export default {
     align-items center
     justify-content flex-start
     flex 1 1 auto
-    padding 8px 10px
+    padding 10px 12px
 
   @media $media-laptop
     padding $m6 0
@@ -96,7 +96,7 @@ export default {
 
     ^[0]._flat &
       padding-bottom 0
-      padding-right $m3
+      padding-right $m5
 
   &__name
     overflow hidden
@@ -110,15 +110,14 @@ export default {
       min-height inherit
       padding-top 1px
       color var(--c-font-3)
-      font-size 12px
       text-align left
 
       .parent
-        padding-bottom $m1
-        font-size 10px
+        padding-bottom $m2
+        font-size 12px
 
       .child
-        font-size 12px
+        font-size 16px
 
     &:last-child
       padding-bottom 0

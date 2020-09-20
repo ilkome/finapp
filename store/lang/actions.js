@@ -2,13 +2,23 @@ import localforage from 'localforage'
 import { db } from '~/services/firebaseConfig'
 
 export default {
-  setLang ({ rootState, commit, rootGetters }, lang) {
+  toogleLocale ({ dispatch }) {
+
+  },
+
+  setLang ({ commit, rootGetters }, lang) {
     const uid = rootGetters['user/userUid']
     if (uid) {
       db.ref(`users/${uid}/settings/lang`).set(lang)
     }
     commit('setLang', lang)
     localforage.setItem('finapp.lang', lang)
+
+    if (this.$i18n.locales.find(i => i.code !== this.$i18n.locale)) {
+      if (this.app.i18n.locale !== lang) {
+        this.app.i18n.setLocale(lang)
+      }
+    }
   },
 
   async initLocalLang ({ rootState, commit }) {

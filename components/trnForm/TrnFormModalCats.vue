@@ -18,17 +18,27 @@ export default {
 
 <template lang="pug">
 LazyTrnFormModal(
-  v-if="$store.state.trnForm.modal.categories"
   :show="$store.state.trnForm.modal.categories"
   :title="$lang.categories.name"
   :position="$store.state.ui.mobile ? 'bottom' : null"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
 )
+  template(v-if="$store.getters['categories/quickSelectorCategoriesIds'].length")
+    .marginBottom
+      .formTitle Favorite categories
+      CategoriesView(
+        :ids="$store.getters['categories/quickSelectorCategoriesIds']"
+        ui="_flat"
+        :noPaddingBottom="true"
+        @onClick="handleCategoryClick"
+      )
+
   template(v-if="$store.state.ui.lastUsedCatsInTrnForm === 'visible' && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0")
     .marginBottom
       .formTitle Last used categories
       CategoriesView(
         :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
+        ui="_flat"
         :noPaddingBottom="true"
         @onClick="handleCategoryClick"
       )
@@ -46,5 +56,5 @@ LazyTrnFormModal(
 
 .marginBottom
   margin-top (- $m8)
-  margin-bottom $m9
+  margin-bottom $m10
 </style>

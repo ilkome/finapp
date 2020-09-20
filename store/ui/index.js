@@ -5,17 +5,17 @@ const state = () => ({
   activeTab: 'stat',
   defaultBgColor: '#455a64',
   height: 0,
-  mobile: true,
+  mobile: false,
   pc: false,
   catsChart: 'visible',
   lastUsedCatsInTrnForm: 'hidden',
   statGraphsVisibility: 'visible',
   statItems: 'visible',
-  statLastTrnsVisibility: 'visible',
+  statLastTrnsVisibility: 'hidden',
   statSummuryVisibility: 'visible',
   stat: {
     activeTab: 'stat',
-    walletsVisibility: 'visible'
+    walletsVisibility: 'hidden'
   },
   width: 0
 })

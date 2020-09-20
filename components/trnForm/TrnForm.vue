@@ -1,4 +1,6 @@
 <script>
+import Swiper from 'swiper'
+import 'swiper/swiper-bundle.css'
 import dayjs from 'dayjs'
 import { ref, useContext } from 'nuxt-composition-api'
 import generateId from '~/utils/id'
@@ -6,13 +8,15 @@ import useTouchClose from '~/composables/useTouchClose'
 import { successEmo, random } from '~/assets/js/emo'
 
 export default {
+  name: 'TrnForm',
+
   setup () {
+    const { store } = useContext()
+
     const scrollContainer = ref(null)
     const scrollContent = ref(null)
     const scrollOverflow = ref(null)
     const scrollDragger = ref(null)
-
-    const { store } = useContext()
 
     useTouchClose({
       container: scrollContainer,
@@ -31,13 +35,15 @@ export default {
     }
   },
 
+  data () {
+    return {
+      slider: null
+    }
+  },
+
   computed: {
     show () {
       return this.$store.state.trnForm.show
-    },
-
-    trnFormHeader () {
-      return 'hey'
     },
 
     isTransfer () {
@@ -61,6 +67,17 @@ export default {
         if (show) {
           this.$nextTick(() => {
             this.setTrnFormHeight()
+            if (this.slider) {
+              this.slider.update()
+            }
+            else {
+              this.slider = new Swiper(this.$refs.slider, {
+                slidesPerView: 1,
+                autoHeight: true,
+                initialSlide: 0,
+                resistanceRatio: 0
+              })
+            }
           })
         }
       },
@@ -70,8 +87,15 @@ export default {
     amountType () {
       this.$nextTick(() => {
         this.setTrnFormHeight()
+        setTimeout(() => {
+          this.slider.update()
+        }, 1)
       })
     }
+  },
+
+  mounted () {
+    //
   },
 
   methods: {
@@ -79,9 +103,9 @@ export default {
       try {
         const isFormValid = this.validateForm()
         if (isFormValid) {
-          if (this.$store.state.trnForm.values.trnId) {
-            this.$store.commit('trnForm/closeTrnForm')
-          }
+          // if (this.$store.state.trnForm.values.trnId) {
+          //   this.$store.commit('trnForm/closeTrnForm')
+          // }
 
           setTimeout(() => {
             this.showSuccess()
@@ -140,7 +164,7 @@ export default {
     setTrnFormHeight () {
       const trnFormHeight = this.$store.state.trnForm.height
 
-      const height = this.$refs.scrollContainer.clientHeight
+      const height = this.$refs.getHeight.clientHeight
       const trnFormHeaderHeight = 0
       const newTrnFormHeight = height - trnFormHeaderHeight
 
@@ -163,7 +187,6 @@ export default {
       const formValues = this.$store.state.trnForm.values
       const formTransferValues = this.$store.state.trnForm.transfer
       const wallets = this.$store.state.wallets.items
-      console.log(formValues.amount)
       if (!formValues.amount) {
         this.$notify({
           type: 'error',
@@ -243,6 +266,7 @@ export default {
 
     onClose () {
       this.$store.dispatch('trnForm/closeTrnForm')
+      this.slider.slideTo(0, 0)
     }
   }
 }
@@ -253,11 +277,11 @@ export default {
   v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
   ref="scrollContainer"
 )
-  //- overflow
-  transition(name="fadeIn")
+  //- Overflow
+  transition(name="hey")
     .trnForm__overflow(
       ref="scrollOverflow"
-      v-show="show"
+      v-if="show"
       @click.prevent="onClose"
     )
 
@@ -266,83 +290,50 @@ export default {
     .trnForm__wrap(
       v-show="show"
       ref="scrollDragger"
+      :style="{ maxHeight: `${$store.state.trnForm.height}px` }"
     )
 
-      //- content
+      //- Content
       .trnForm__scroll(ref="scrollContent")
         .trnForm__content
-          //- .trnForm__header.noDrag {{ trnFormHeader }}
+          .swiper-container(ref="slider")
+            .swiper-wrapper
+              .swiper-slide(ref="getHeight")
+                .trnForm__title(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
+                .trnForm__title(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
 
-          //- laptop
-          template(v-if="$store.state.ui.pc")
-            TrnFormCalendar
+                //- Laptop
+                template(v-if="$store.state.ui.pc")
+                  TrnFormHeader
+                  TrnFormHeaderTransfer
+                  TrnFormCalendar
+                  TrnFormAmountInput(@onFormSubmit="handleSubmitForm")
+                  template(v-if="$store.getters['categories/quickSelectorCategoriesIds'].length")
+                    .trnForm__quickCats
+                      .formTitle Favorite categories
+                      CategoriesView(
+                        :ids="$store.getters['categories/quickSelectorCategoriesIds']"
+                        ui="_flat"
+                        :noPaddingBottom="true"
+                        @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })"
+                      )
 
-            //- header
-            TrnFormHeaderTransfer(
-              v-if="$store.getters['wallets/walletsSortedIds'].length > 1"
-              v-show="isTransfer"
-            )
-            TrnFormHeader(v-show="!isTransfer")
+                template(v-if="$store.state.ui.mobile")
+                  TrnFormAmount(
+                    @handleMath="handleMath"
+                    @onFormSubmit="handleSubmitForm"
+                  )
+                  TrnFormCalendar
+                  LazyTrnFormCalculator(
+                    v-if="$store.state.ui.mobile"
+                    @onFormSubmit="handleSubmitForm"
+                  )
+                  TrnFormHeader
+                  TrnFormHeaderTransfer(v-if="$store.getters['wallets/walletsSortedIds'].length > 1")
 
-          template(v-if="$store.state.ui.mobile && !isTransfer && $store.getters['categories/quickSelectorCategoriesIds'].length")
-            .trnForm__quickWallets(v-if="isShowFirstWallets")
-              WalletsList(
-                :limit="3"
-                ui="widget"
-                @onClick="walletId => $store.commit('trnForm/setTrnFormValues', { walletId })"
-              )
-            .trnForm__quickCats
-              CategoriesView(
-                :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-                ui="_flat"
-                @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })")
-
-          TrnFormAmount(
-            v-if="$store.state.ui.mobile"
-            @handleMath="handleMath"
-            @onFormSubmit="handleSubmitForm"
-          )
-          TrnFormAmountInput(
-            v-if="$store.state.ui.pc"
-            @onFormSubmit="handleSubmitForm"
-          )
-
-          TrnFormCalendar(
-            v-if="$store.state.ui.mobile"
-          )
-          LazyTrnFormCalculator(
-            v-if="$store.state.ui.mobile"
-            @onFormSubmit="handleSubmitForm"
-          )
-
-          //- pc
-          template(v-if="$store.state.ui.pc")
-            div(v-show="!isTransfer")
-              .formWallets
-                .formTitle(@click="$store.commit('trnForm/toogleTrnFormModal', 'wallets')") Favorite Wallets
-                .trnForm__quickWallets
-                  WalletsList(
-                    :limit="3"
-                    ui="widget"
-                    @onClick="walletId => $store.commit('trnForm/setTrnFormValues', { walletId })")
-
-              .formCategories(v-if="$store.getters['categories/quickSelectorCategoriesIds'].length > 0")
-                .formTitle(@click="$store.commit('trnForm/toogleTrnFormModal', 'categories')") Favorite Categories
-                CategoriesView(
-                  ui="_flat"
-                  :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-                  :noPaddingBottom="true"
-                  @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })")
-
-          //- Header
-          TrnFormHeaderTransfer(
-            v-if="$store.state.ui.mobile && $store.getters['wallets/walletsSortedIds'].length > 1"
-            v-show="isTransfer"
-          )
-          TrnFormHeader(
-            v-if="$store.state.ui.mobile"
-            v-show="!isTransfer"
-          )
+              .swiper-slide(:style="{ minHeight: `${$store.state.trnForm.height}px` }")
+                template(v-if="slider")
+                  TrnFormTrns(:slider="slider")
 
       //- Modals
       TrnFormModalCats
@@ -352,6 +343,7 @@ export default {
       TrnFormModalWallets
       TrnFormModalTransferFrom
       TrnFormModalTransferTo
+      TrnFormModalTrn
 </template>
 
 <style lang="stylus">
@@ -386,8 +378,25 @@ export default {
 @import "~assets/stylus/variables/media"
 
 .trnForm
+  &__title
+    padding $m8
+    padding-bottom 0
+    color var(--c-font-3)
+    font-size 16px
+    font-weight 700
+    letter-spacing .5px
+    text-align center
+    fontFamilyNunito()
+
+    @media $media-laptop
+      padding-bottom $m7
+
   &__quickCats
     opacity .8
+    padding-bottom $m7
+
+    &:hover
+      opacity 1
 
   &__wrap
     overflow hidden
@@ -398,4 +407,8 @@ export default {
 
     @media $media-laptop
       border-radius 16px
+
+  // &__scroll
+  //   @media $media-laptop
+  //     min-height 600px
 </style>
