@@ -24,7 +24,8 @@ export default {
           :center="true"
           :currency="$store.state.currencies.base"
           :type="1"
-          :value="stat.incomes.total")
+          :value="stat.incomes.total"
+        )
     template(v-else) .
 
   .summary__item._total(@click="$store.dispatch('ui/setActiveTabStat', 'stat')")
@@ -35,7 +36,8 @@ export default {
           Amount(
             :center="true"
             :currency="$store.state.currencies.base"
-            :value="stat.incomes.total - stat.expenses.total")
+            :value="stat.incomes.total - stat.expenses.total"
+          )
     template(v-else) .
 
   .summary__item._expenses(@click="$store.dispatch('ui/setActiveTabStat', 'expenses')")
@@ -46,7 +48,8 @@ export default {
           :center="true"
           :currency="$store.state.currencies.base"
           :value="stat.expenses.total"
-          :type="0")
+          :type="0"
+        )
     template(v-else) .
 </template>
 

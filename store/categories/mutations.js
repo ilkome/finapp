@@ -1,8 +1,10 @@
 export default {
   setCategories (state, items) {
     const freezedItems = {}
-    for (const itemId of Object.keys(items)) {
-      freezedItems[itemId] = Object.freeze(items[itemId])
+    if (items) {
+      for (const itemId of Object.keys(items)) {
+        freezedItems[itemId] = Object.freeze(items[itemId])
+      }
     }
     state.items = freezedItems
   },

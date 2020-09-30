@@ -5,9 +5,7 @@ export default {
   name: 'LoginPage',
 
   fetch ({ store, redirect }) {
-    console.log('fetch', store.state.user)
     if (store.state.user && store.state.user.user) {
-      console.log('store.state.user.user', store.state.user.user)
       redirect('/')
     }
   },
@@ -23,7 +21,7 @@ export default {
       this.loading = true
       const provider = new auth.GoogleAuthProvider()
       auth()
-        .signInWithRedirect(provider)
+        .signInWithPopup(provider)
         .catch(e => this.notifyAboutError(e))
     },
 

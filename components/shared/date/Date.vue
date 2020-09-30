@@ -17,7 +17,12 @@ export default {
           else if (today.subtract(1, filterPeriod).isSame(filterDate, 'day')) {
             return 'Yesterday'
           }
-          format = 'DD MMMM YYYY'
+          if (today.isSame(filterDate, 'year')) {
+            format = 'DD MMMM'
+          }
+          else {
+            format = 'DD MMMM YYYY'
+          }
           break
 
         case 'week':

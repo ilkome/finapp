@@ -20,8 +20,6 @@ export default {
   computed: {
     className () {
       return {
-        _mobile: this.$store.state.ui.mobile,
-        _pc: this.$store.state.ui.pc,
         _incomes: this.type === 'incomes',
         _expenses: this.type === 'expenses'
       }
@@ -78,6 +76,8 @@ export default {
 
 .cats-chart
   position relative
+  width 100%
+
   @media $media-laptop
     opacity .7
     anim-all(100)

@@ -171,14 +171,18 @@ export default {
     margin-bottom 16px
     padding-bottom 16px
 
+    +media-laptop()
+      padding 16px 0px
+      background var(--c-bg-4)
+      border-bottom 1px solid var(--c-bg-2)
+      border-radius 12px
+
     &:first-child
       margin-top $m9
-
-    +media-laptop()
-      margin 0
-
-    &:first-child
       border-top 0
+
+      +media-laptop()
+        margin 0
 
   &__header
     display flex

@@ -127,9 +127,8 @@ export default {
       font-size 12px
 
     ^[0]._size_md &
-      font-size 15px
+      font-size 16px
       font-weight 600
-      background red
 
   &__symbol
     padding-bottom 0px

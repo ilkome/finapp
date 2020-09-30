@@ -75,7 +75,7 @@ export default {
         this.app.context.redirect('/')
       }
       resolve()
-      console.log('resolve')
+      // console.log('resolve')
     }
     else {
       if (this.$router.currentRoute.name !== 'login') {
@@ -83,7 +83,7 @@ export default {
       }
       // commit('setAppStatus', 'ready')
       resolve()
-      console.log('resolve')
+      // console.log('resolve')
     }
   },
 

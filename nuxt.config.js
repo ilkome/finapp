@@ -4,34 +4,34 @@ export default {
   },
 
   /**
-   * Nuxt rendering mode
-   * https://nuxtjs.org/guides/features/rendering-modes
+   * https://nuxtjs.org/guides/configuration-glossary/configuration-ssr
    */
   ssr: false,
 
   /**
-   * Nuxt rendering mode
-   * https://nuxtjs.org/guides/configuration-glossary/configuration-target
+   * https://nuxtjs.org/guides/configuration-glossary/configuration-modern
    */
   modern: 'client',
 
   /**
    * https://nuxtjs.org/guides/configuration-glossary/configuration-target
    */
-  // target: 'static',
+  target: 'server',
 
   /**
-   * Nuxt rendering mode
    * https://nuxtjs.org/guides/configuration-glossary/configuration-telemetry
    */
   telemetry: false,
 
+  /**
+   * https://nuxtjs.org/guides/configuration-glossary/configuration-vue-config
+   */
   vue: {
     config: {
       silent: true,
       performance: false,
       productionTip: false,
-      devtools: false
+      devtools: true
     }
   },
 

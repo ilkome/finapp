@@ -7,7 +7,12 @@ export default {
     type: 'column',
     zoomType: 'x',
     panning: true,
-    panKey: 'shift'
+    panKey: 'shift',
+    events: {
+      click (e) {
+        console.log(this.series[0].searchPoint(e, true))
+      }
+    }
   },
   credits: { enabled: false },
   legend: {
