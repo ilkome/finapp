@@ -107,7 +107,6 @@ export default {
   },
 
   setTrns ({ commit }, items) {
-    const newTrns =
     commit('setTrns', items)
     localforage.setItem('next.trns', items)
   },
