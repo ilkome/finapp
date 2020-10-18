@@ -2,6 +2,13 @@
 import { db } from '~/services/firebaseConfig'
 
 export default {
+  props: {
+    slider: {
+      type: Object,
+      default: () => {}
+    }
+  },
+
   data () {
     return {
       showModalConfirm: false
@@ -34,6 +41,11 @@ export default {
       this.$store.dispatch('ui/setActiveTab', 'stat')
       this.$store.commit('filter/setFilterDateNow')
       this.$store.dispatch('filter/setFilterWalletId', this.walletId)
+      this.$store.commit('wallets/setWalletModalId', null)
+
+      if (this.slider) {
+        this.slider.slideTo(1)
+      }
     },
 
     handleEditClick () {
@@ -68,32 +80,35 @@ export default {
 </script>
 
 <template lang="pug">
-ModalBottom(
+Portal(
   v-if="$store.state.wallets.modal.id"
-  :show="$store.state.wallets.modal.show"
-  @onClose="$store.commit('wallets/hideWalletModal')"
-  @afterClose="$store.commit('wallets/setWalletModalId', null)")
-  template(v-if="walletId")
-    template(slot="header")
-      WalletItem(:id="walletId")
+  to="modal"
+)
+  ModalBottom(
+    @onClose="$store.commit('wallets/hideWalletModal')"
+    @afterClose="$store.commit('wallets/setWalletModalId', null)"
+  )
+    template(v-if="walletId")
+      template(slot="emptyHeader")
+        WalletItem2(:id="walletId")
 
-    template(slot="description")
-      template(v-if="$store.state.wallets.items[walletId].desc")
-        div(style="padding-bottom:20px") {{ $store.state.wallets.items[walletId].desc }}
+      template(slot="description")
+        template(v-if="$store.state.wallets.items[walletId].desc")
+          div(style="padding-bottom:20px") {{ $store.state.wallets.items[walletId].desc }}
 
-    template(slot="btns")
-      ModalButton(
-        :name="$lang.base.delete"
-        icon="mdi mdi-delete"
-        @onClick="handleDeleteClick")
-      ModalButton(
-        :name="$lang.base.edit"
-        icon="mdi mdi-pencil"
-        @onClick="handleEditClick")
-      ModalButton(
-        :name="$lang.base.filter"
-        icon="mdi mdi-filter-outline"
-        @onClick="handleSetFilterWallet")
+      template(slot="btns")
+        ModalButton(
+          :name="$lang.base.delete"
+          icon="mdi mdi-delete"
+          @onClick="handleDeleteClick")
+        ModalButton(
+          :name="$lang.base.edit"
+          icon="mdi mdi-pencil"
+          @onClick="handleEditClick")
+        ModalButton(
+          :name="$lang.base.filter"
+          icon="mdi mdi-filter-outline"
+          @onClick="handleSetFilterWallet")
 
   ModalBottomConfirm(
     :show="showModalConfirm"
@@ -101,3 +116,24 @@ ModalBottom(
     @onClose="showModalConfirm = false"
     @onConfirm="handleDeleteConfirm")
 </template>
+
+<style lang="stylus">
+@import "~assets/stylus/variables"
+
+.modalBottom
+  .walletItemGrid
+    width 100%
+    padding $m8
+    padding-top 0
+    border-radius $m6 $m6 0 0
+
+    &__name
+      padding-bottom $m7
+      font-size 22px
+
+    &__line
+      height 6px
+      margin-right (- $m8)
+      margin-bottom $m8
+      margin-left (- $m8)
+</style>>

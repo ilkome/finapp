@@ -16,7 +16,7 @@ module.exports = {
     'rule-empty-line-before': [
       'always', {
         except: ['first-nested'],
-        ignore: ['after-comment']
+        ignore: ['after-comment', 'inside-block']
       }],
     'selector-attribute-brackets-space-inside': 'never',
     'selector-attribute-operator-space-after': 'never',
@@ -26,7 +26,7 @@ module.exports = {
     'stylus/at-rule-empty-line-before': [
       'always', {
         except: ['blockless-after-same-name-blockless'],
-        ignore: ['after-comment']
+        ignore: ['after-comment', 'inside-block']
       }],
     'stylus/at-rule-no-unknown': true,
     'stylus/declaration-colon': 'never',
@@ -36,7 +36,6 @@ module.exports = {
     'stylus/selector-list-comma': 'never',
     'stylus/selector-type-no-unknown': true,
     'stylus/semicolon': 'never',
-    'stylus/single-line-comment-no-empty': true,
     'stylus/single-line-comment': 'always',
 
     'order/order': [
@@ -67,7 +66,15 @@ module.exports = {
       'min-height',
       'min-width',
       'margin',
+      'margin-top',
+      'margin-right',
+      'margin-bottom',
+      'margin-left',
       'padding',
+      'padding-top',
+      'padding-right',
+      'padding-bottom',
+      'padding-left',
       'color',
       'font-family',
       'font-size',

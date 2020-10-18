@@ -15,6 +15,11 @@ export default {
     position: {
       type: String,
       default: null
+    },
+
+    noPadding: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -24,7 +29,7 @@ export default {
     const scrollOverflow = ref(null)
     const scrollDragger = ref(null)
 
-    useTouchClose({
+    const { onCloseModal } = useTouchClose({
       container: scrollContainer,
       content: scrollContent,
       overflow: scrollOverflow,
@@ -36,7 +41,8 @@ export default {
       scrollContainer,
       scrollContent,
       scrollOverflow,
-      scrollDragger
+      scrollDragger,
+      onCloseModal
     }
   },
 
@@ -101,7 +107,7 @@ export default {
     .trnFormModal__overflow(
       v-show="show"
       ref="scrollOverflow"
-      @click="onClose"
+      @click="onCloseModal"
     )
 
   transition(name="slide" appear @after-leave="afterClose")
@@ -111,13 +117,14 @@ export default {
     )
       .trnFormModal__header(
         ref="header"
-        @click="onClose"
+        @click="onCloseModal"
       )
         .trnFormModal__header__title(v-if="title") {{ title }}
         .trnFormModal__header__close: .mdi.mdi-close
 
       .trnFormModal__scroll(
         :style="modalStyle"
+        :class="{ _noPadding: noPadding }"
         ref="scrollContent"
       )
         slot()
@@ -160,7 +167,7 @@ export default {
     display flex
     flex-grow 1
     flex-flow column nowrap
-    background var(--c-bg-4)
+    background var(--c-bg-2)
     border-radius $m6
 
     &._anim
@@ -178,6 +185,10 @@ export default {
     max-height 100%
     padding $m7 0
     scrollbar()
+
+    &._noPadding
+      overflow hidden
+      padding-bottom 0
 
   &__header
     cursor pointer

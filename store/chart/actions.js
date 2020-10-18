@@ -5,7 +5,11 @@ export default {
     const localPeriods = await localforage.getItem('next.chart.periods')
     let showedGroups, showedPeriods
 
+    if (!localPeriods) { return }
+
     for (const periodName in localPeriods) {
+      if (!localPeriods[periodName] || localPeriods[periodName].showedGroups) { return }
+
       Number.isInteger(localPeriods[periodName].showedGroups)
         ? showedGroups = localPeriods[periodName].showedGroups
         : showedGroups = rootState.chart.periods[periodName].showedGroups

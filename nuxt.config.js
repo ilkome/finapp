@@ -31,7 +31,7 @@ export default {
       silent: true,
       performance: false,
       productionTip: false,
-      devtools: true
+      devtools: process.env.NODE_ENV !== 'production'
     }
   },
 

@@ -1,7 +1,11 @@
 <script>
 import dayjs from 'dayjs'
 import { Chart } from 'highcharts-vue'
+import Highcharts from 'highcharts'
+import borderRadius from 'highcharts-border-radius'
 import chartOptions from './chartOptions'
+
+borderRadius(Highcharts)
 
 export default {
   components: {
@@ -149,13 +153,13 @@ export default {
           data: totalData
         }, {
           visible: true,
-          type: 'spline',
+          // type: 'spline',
           name: 'Incomes',
           color: 'var(--c-incomes-1)',
           data: incomesData
         }, {
           visible: true,
-          type: 'spline',
+          // type: 'spline',
           name: 'Expenses',
           color: 'var(--c-expenses-1)',
           data: expensesData

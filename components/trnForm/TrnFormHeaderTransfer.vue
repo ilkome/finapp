@@ -35,37 +35,27 @@ export default {
 )
   //- Wallet from
   template(v-if="walletFrom")
-    .trnFormHeaderItem(
-      :style="{ background: walletFrom.color || $store.state.ui.defaultBgColor }"
-      @click="$store.commit('trnForm/toogleTrnFormModal', 'transferFrom')"
-    )
-      .trnFormHeaderItem__in
-        .trnFormHeaderItem__desc From wallet
-        .trnFormHeaderItem__name {{ walletFrom.name }}
-        .trnFormHeaderItem__total
-          Amount(
-            :value="$store.getters['wallets/walletsTotal'][walletFromId].base"
-            :currency="$store.state.currencies.base"
-            vertical="left"
-          )
+    .trnFormHeaderItem
+      .trnFormHeaderItem__desc From wallet
+      WalletItem(
+        :id="walletFromId"
+        :showBase="false"
+        ui="tile"
+        @onClick="$store.commit('trnForm/toogleTrnFormModal', 'transferFrom')"
+      )
 
   .trnFormHeaderSeparator: .mdi.mdi-chevron-right
 
   //- Wallet to
   template(v-if="walletTo")
-    .trnFormHeaderItem(
-      :style="{ background: walletTo.color || $store.state.ui.defaultBgColor }"
-      @click="$store.commit('trnForm/toogleTrnFormModal', 'transferTo')"
-    )
-      .trnFormHeaderItem__in
-        .trnFormHeaderItem__desc To wallet
-        .trnFormHeaderItem__name {{ walletTo.name }}
-        .trnFormHeaderItem__total
-          Amount(
-            :value="$store.getters['wallets/walletsTotal'][walletToId].base"
-            :currency="$store.state.currencies.base"
-            vertical="left"
-          )
+    .trnFormHeaderItem
+      .trnFormHeaderItem__desc To wallet
+      WalletItem(
+        :id="walletToId"
+        :showBase="false"
+        ui="tile"
+        @onClick="$store.commit('trnForm/toogleTrnFormModal', 'transferTo')"
+      )
 </template>
 
 <style lang="stylus" scoped>
@@ -75,7 +65,7 @@ export default {
 .trnFormHeaderSeparator
   z-index 2
   position absolute
-  top 19px
+  top 28px
   left 50%
   color var(--c-font-1)
   font-size 32px
@@ -83,9 +73,10 @@ export default {
 
 .trnFormHeaderItem
   &__desc
+    margin-bottom 2px
     color var(--c-font-2)
     font-size 12px
-    margin-bottom 12px
-    padding-bottom 6px
-    border-bottom 1px solid var(--c-bg-10)
+
+  .walletItemGrid
+    width 100%
 </style>

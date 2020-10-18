@@ -105,5 +105,4 @@ div
       icon="mdi mdi-palette"
       @onClick="$store.dispatch('ui/changeTheme')"
     )
-    LangDropdown
 </template>

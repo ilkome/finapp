@@ -10,11 +10,15 @@ export default {
 </script>
 
 <template lang="pug">
+Portal(
+  v-if="$store.state.currencies.modal.show"
+  to="modal"
+)
   ModalBottom(
     :center="true"
-    :show="$store.state.currencies.modal.show"
     title="Select base currency"
-    @onClose="$store.commit('currencies/hideBaseCurrenciesModal')")
+    @onClose="$store.commit('currencies/hideBaseCurrenciesModal')"
+  )
     .inputText
       .currencies
         .currencies__item(

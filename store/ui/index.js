@@ -8,7 +8,7 @@ const state = () => ({
   mobile: false,
   pc: false,
   catsChart: 'visible',
-  lastUsedCatsInTrnForm: 'hidden',
+  lastUsedCatsInTrnForm: 'visible',
   statGraphsVisibility: 'visible',
   statItems: 'visible',
   statLastTrnsVisibility: 'hidden',

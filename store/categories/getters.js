@@ -82,7 +82,7 @@ export default {
         if (lastCategoriesIds.length < 12) {
           const categoryId = trns[trnId].categoryId
           const category = state.items[categoryId]
-          if (category && (category.showInLastUsed || category.showInLastUsed === undefined) && !category.showInQuickSelector) {
+          if (category && (category.showInLastUsed || category.showInLastUsed === undefined)) {
             if (categoryId !== transferCategoryId) {
               if (!lastCategoriesIds.includes(categoryId)) { lastCategoriesIds.push(categoryId) }
             }
@@ -92,8 +92,8 @@ export default {
 
       return lastCategoriesIds.sort((a, b) => {
         if (state.items[a] && state.items[b]) {
-          if (state.items[a].order < state.items[b].order) { return -1 }
-          if (state.items[a].order > state.items[b].order) { return 1 }
+          if (state.items[a].name < state.items[b].name) { return -1 }
+          if (state.items[a].name > state.items[b].name) { return 1 }
           return 0
         }
       })
@@ -106,8 +106,8 @@ export default {
     return Object.keys(state.items)
       .filter(key => state.items[key].showInQuickSelector)
       .sort((a, b) => {
-        if (state.items[a].order < state.items[b].order) { return -1 }
-        if (state.items[a].order > state.items[b].order) { return 1 }
+        if (state.items[a].name < state.items[b].name) { return -1 }
+        if (state.items[a].name > state.items[b].name) { return 1 }
         return 0
       })
   },

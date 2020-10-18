@@ -18,7 +18,7 @@ export default {
     const scrollOverflow = ref(null)
     const scrollDragger = ref(null)
 
-    useTouchClose({
+    const { onCloseModal } = useTouchClose({
       container: scrollContainer,
       content: scrollContent,
       overflow: scrollOverflow,
@@ -31,7 +31,8 @@ export default {
       scrollContainer,
       scrollContent,
       scrollOverflow,
-      scrollDragger
+      scrollDragger,
+      onCloseModal
     }
   },
 
@@ -75,7 +76,9 @@ export default {
                 slidesPerView: 1,
                 autoHeight: true,
                 initialSlide: 0,
-                resistanceRatio: 0
+                shortSwipes: false,
+                longSwipesRatio: 0.1,
+                longSwipesMs: 60
               })
             }
           })
@@ -107,9 +110,9 @@ export default {
           //   this.$store.commit('trnForm/closeTrnForm')
           // }
 
-          setTimeout(() => {
-            this.showSuccess()
-          }, 200)
+          this.showSuccess()
+          // setTimeout(() => {
+          // }, 200)
 
           setTimeout(() => {
             this.isTransfer
@@ -262,11 +265,6 @@ export default {
         text: 'Excellent transaction!',
         title: emo
       })
-    },
-
-    onClose () {
-      this.$store.dispatch('trnForm/closeTrnForm')
-      this.slider.slideTo(0, 0)
     }
   }
 }
@@ -282,7 +280,7 @@ export default {
     .trnForm__overflow(
       ref="scrollOverflow"
       v-if="show"
-      @click.prevent="onClose"
+      @click.prevent="onCloseModal"
     )
 
   //- wrap
@@ -333,7 +331,10 @@ export default {
 
               .swiper-slide(:style="{ minHeight: `${$store.state.trnForm.height}px` }")
                 template(v-if="slider")
-                  TrnFormTrns(:slider="slider")
+                  TrnFormTrns(
+                    :slider="slider"
+                    onlyList
+                  )
 
       //- Modals
       TrnFormModalCats

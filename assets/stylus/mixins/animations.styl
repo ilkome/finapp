@@ -1,6 +1,8 @@
-// TODO: move to variables
-anim()
-  transition $transition-time $transition-style
+$transition-time = 350ms
+$transition-style = cubic-bezier(.17, .04, .03, 1)
+
+anim($time = $transition-time, $style = $transition-style)
+  transition $time $style
 
 anim-all($time = $transition-time)
   transition all $time $transition-style

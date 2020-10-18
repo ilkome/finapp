@@ -92,20 +92,21 @@
   position relative
   display flex
   flex-flow column nowrap
-  align-items flex-end
+  align-items flex-start
   justify-content center
   min-height 61px
-  padding $m7
+  padding $m6 $m7
   color var(--c-font-1)
-  border-radius $m4
+  border-radius $m5
 
   @media $media-laptop
     min-height 66px
 
   &__name
-    min-height 16px
     overflow hidden
+    min-height 16px
     padding-bottom $m5
+    text-align left
     fs-m()
 
   .amount

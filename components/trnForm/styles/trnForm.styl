@@ -29,7 +29,7 @@
     flex-flow column nowrap
     max-width 500px
     margin 0 auto
-    background var(--c-bg-4)
+    background var(--c-bg-2)
 
     /.light-mode &
       background var(--c-bg-2)
@@ -74,21 +74,20 @@
     position relative
 
     &__value
-      position relative
       z-index 2
+      position relative
       width 100%
       padding $m8 $m9
       color var(--c-font-2)
       font-header-1()
-      font-weight 500
       font-size 36px
+      font-weight 500
       text-align right
       background 0
       border 0
 
 .trnFormAnimation
   &-enter-active
-  &-leave-active
     opacity 1
     anim()
 
@@ -100,7 +99,6 @@
       transform translate(0, 0)
 
   &-enter
-  &-leave-to
     opacity 0
     transition opacity 200ms ease-out, transform 250ms ease-out
 
@@ -110,6 +108,7 @@
     @media $media-laptop
       transform translate(10px, 0)
 
+  &-leave-active
   &-leave-to
-    @media $media-phone
-      transform translate(0, 100px)
+    opacity 0
+    transition none

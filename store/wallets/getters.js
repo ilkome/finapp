@@ -60,7 +60,7 @@ export default {
     return walletsTotal
   },
 
-  walletsSortedIds (state, getters, rootState, rootGetters) {
+  walletsSortedIds (state, getters) {
     if (!getters.hasWallets) { return [] }
     return Object.keys(state.items).sort((a, b) => {
       if (parseInt(state.items[a].order) < parseInt(state.items[b].order)) { return -1 }

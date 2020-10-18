@@ -32,7 +32,8 @@ export default {
 .filterItem(
   :class="className"
   :style="{ background: color }"
-  @click="$emit('onClick')")
+  @click="$emit('onClick')"
+)
   .filterItem__icon
     Icon(
       :icon="icon"
@@ -53,10 +54,10 @@ export default {
   display flex
   flex-flow row
   align-items center
-  padding 8px 12px
+  padding 6px 12px
   color var(--c-font-1)
   white-space nowrap
-  border-radius $m3
+  border-radius $m5
 
   &._pc
     margin-right 20px
@@ -69,8 +70,8 @@ export default {
     margin-right 0
 
   &._clear
-    margin-left auto
     margin-right 0
+    margin-left auto
     color var(--c-font-4)
 
     &:hover

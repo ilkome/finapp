@@ -167,36 +167,44 @@ ComponentWrap
           :alt="true")
 
     //- colors
-    ModalBottom(
-      :center="true"
-      :show="showColors"
-      :title="$lang.wallets.form.color.placeholder"
-      @onClose="showColors = false")
-      .inputText
-        .inputText__colors
-          .colors
-            .colorItem(
-              :class="{ _active: wallet.color === color }"
-              :style="{ background: color }"
-              @click="handleColorSelect(color)"
-              v-for="color in colors")
-      .customColor
-        .customColor__title {{ $lang.wallets.form.color.custom }}
-        input.customColor__value(v-model="wallet.color" type="color")
+    Portal(
+      v-if="showColors"
+      to="modal"
+    )
+      ModalBottom(
+        :center="true"
+        :title="$lang.wallets.form.color.placeholder"
+        @onClose="showColors = false"
+      )
+        .inputText
+          .inputText__colors
+            .colors
+              .colorItem(
+                :class="{ _active: wallet.color === color }"
+                :style="{ background: color }"
+                @click="handleColorSelect(color)"
+                v-for="color in colors")
+        .customColor
+          .customColor__title {{ $lang.wallets.form.color.custom }}
+          input.customColor__value(v-model="wallet.color" type="color")
 
     //- currencies
-    ModalBottom(
-      :center="true"
-      :show="showCurrencies"
-      :title="$lang.wallets.form.currency.placeholder"
-      @onClose="showCurrencies = false")
-      .inputText
-        .currencies
-          .currencies__item(
-            :class="{ _active: wallet.currency === currency }"
-            @click="handleCurrencySelect(currency)"
-            v-for="(item, currency) in $store.state.currencies.rates"
-          ) {{ currency }}
+    Portal(
+      v-if="showCurrencies"
+      to="modal"
+    )
+      ModalBottom(
+        :center="true"
+        :title="$lang.wallets.form.currency.placeholder"
+        @onClose="showCurrencies = false"
+      )
+        .inputText
+          .currencies
+            .currencies__item(
+              :class="{ _active: wallet.currency === currency }"
+              @click="handleCurrencySelect(currency)"
+              v-for="(item, currency) in $store.state.currencies.rates"
+            ) {{ currency }}
 
   template(slot="bottom")
     .col

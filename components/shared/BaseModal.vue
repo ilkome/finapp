@@ -67,7 +67,7 @@ export default {
 </script>
 
 <template lang="pug">
-portal(to="default" v-if="show")
+portal(to="modal" v-if="show")
   .baseModal(
     ref="scrollContainer"
     :class="{ _opened: show }"

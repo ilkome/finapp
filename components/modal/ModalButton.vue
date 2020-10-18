@@ -23,23 +23,23 @@ export default {
 @import "~assets/stylus/variables"
 
 .button-link
+  cursor pointer
   width auto
   max-width 100%
   padding $m7 0
   white-space nowrap
   text-align center
-  background var(--c-bg-5)
   border-radius $m3
 
   /.light-mode &
-    background var(--c-bg-1)
     color var(--c-font-2)
+    background var(--c-bg-1)
 
   &__icon
-    font-size 32px
-    padding-bottom $m6
-    color var(--c-font-4)
     opacity .8
+    padding-bottom $m6
+    color var(--c-font-2)
+    font-size 32px
 
   &:hover
     @media $media-laptop
@@ -49,5 +49,6 @@ export default {
     background var(--c-bg-6)
 
   &__name
+    color var(--c-font-3)
     font-size 12px
 </style>

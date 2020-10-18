@@ -29,7 +29,8 @@ export default {
     .customize
       StatCustomizeMenuMobile(
         icon="mdi mdi-tune"
-        :position="{ right: true, bottom: true }")
+        :position="{ right: true, bottom: true }"
+      )
 
   .periodNav__link(
     @click="$store.dispatch('filter/setPeriodNext')"

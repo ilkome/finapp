@@ -43,8 +43,12 @@ export default {
     },
     column: {
       groupPadding: 0.2,
-      pointPadding: 0.2,
-      borderWidth: 0
+      pointPadding: 0.1,
+      borderWidth: 0,
+      column: {
+        borderRadiusTopLeft: 5,
+        borderRadiusTopRight: 5
+      }
     },
     spline: {
       lineWidth: 2,

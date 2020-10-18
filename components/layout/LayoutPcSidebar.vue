@@ -63,6 +63,7 @@ export default {
         :class="{ _active: activeTab === 'stat'}"
         @click="$store.dispatch('ui/setActiveTab', 'stat')"
       ): .mdi.mdi-poll
+
   Menu
 
   .sidebar__content

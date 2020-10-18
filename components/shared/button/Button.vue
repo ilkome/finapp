@@ -52,7 +52,10 @@ export default {
   .d-button__icon(v-if="icon")
     div(:class="icon")
   .d-button__title(v-if="title") {{ title }}
-  .d-button__check(v-if="showCheckbox" @click.prevent="")
+  .d-button__check(
+    v-if="showCheckbox"
+    @click.prevent=""
+  )
     Checkbox._small(v-model="checkboxValue")
 
 </template>
@@ -67,11 +70,8 @@ export default {
   justify-content center
   width 40px
   height 40px
-  font-size 16px
   color var(--c-font-4)
-  // background var(--c-bg-2)
-  // border 1px solid var(--c-bg-7)
-  // box-shadow 2px 2px 6px 0px var(--c-bg-2)
+  font-size 16px
   border-radius 50px
 
   /.light-mode &
@@ -123,9 +123,10 @@ export default {
 
   &._borderBottom
     margin-bottom 0
-    padding-left $m6
     padding-right $m6
+    padding-left $m6
     border-bottom 1px solid var(--c-bg-7)
+
     &:last-child
       border-bottom 0
 
@@ -133,10 +134,10 @@ export default {
     display flex
     align-items center
     justify-content center
-    background var(--c-bg-2)
-    border 1px solid var(--c-bg-7)
-    box-shadow 2px 2px 6px 0px var(--c-bg-2)
+    background var(--c-bg-3)
+    border 1px solid var(--c-bg-4)
     border-radius 3px
+    box-shadow 2px 2px 6px 0px var(--c-bg-2)
     anim()
 
     /.light-mode &
@@ -144,7 +145,7 @@ export default {
 
     &:active:not(._disable)
       color var(--c-font-3)
-      transform scale(0.96)
+      transform scale(.96)
 
     +media-laptop()
       &:hover
@@ -164,16 +165,21 @@ export default {
       background var(--c-bg-5)
 
   &._inline
-    display inline-flex
-    width auto
+    display flex
+    width 100%
+    max-width 400px
+    margin 0 auto
+
+    @media $media-laptop
+      width auto
 
   &._center
     align-items center
     justify-content center
 
   &._grey
-    background var(--c-bg-5)
     color var(--c-font-2)
+    background var(--c-bg-5)
     border-radius $m3
 
     /.light-mode &
@@ -192,15 +198,15 @@ export default {
     color var(--c-font-4)
     background var(--c-bg-2)
     border 1px solid var(--c-bg-7)
-    box-shadow 2px 2px 6px 0px var(--c-bg-2)
     border-radius $m3
+    box-shadow 2px 2px 6px 0px var(--c-bg-2)
 
     /.light-mode &
       box-shadow 2px 2px 6px 0px var(--c-bg-11)
 
     ^[0]:active &
       color var(--c-font-3)
-      transform scale(0.96)
+      transform scale(.96)
 
     ^[0]:hover &
       @media $media-laptop
@@ -211,7 +217,6 @@ export default {
   &._blue
     color var(--c-font-1)
     background var(--c-blue-1)
-    // border 1px solid transparent
 
     &:hover
       @media $media-laptop
@@ -228,20 +233,20 @@ export default {
     border-radius 6px
 
   &__icon
+    opacity .85
     width 22px
-    margin-left -5px
     margin-right $m6
+    margin-left -5px
     font-size 18px
     text-align center
-    opacity .85
 
     &:last-child
       margin-right 0
       margin-right -5px
 
     +media-laptop()
-      margin-left -8px
       margin-right 10px
+      margin-left -8px
       font-size 14px
 
   &__check

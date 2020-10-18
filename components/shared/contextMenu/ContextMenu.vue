@@ -94,8 +94,8 @@ export default {
     top 48px
     min-width 200px
     padding $m3
-    background var(--c-bg-2)
-    border 1px solid var(--c-bg-8)
+    background var(--c-bg-3)
+    border 1px solid var(--c-bg-4)
     border-radius $m3
     box-shadow 0 10px 20px -5px var(--c-bg-1)
 

@@ -99,7 +99,7 @@ export default {
     overflow-x auto
     scrollbar()
     display flex
-    padding $m7
+    padding $m7 $m6
 
     @media $media-laptop
       padding 10px 10px

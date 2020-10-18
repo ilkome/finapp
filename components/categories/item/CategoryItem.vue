@@ -50,15 +50,16 @@ export default {
     Icon(
       @click="handleIconClick"
       :icon="category.icon"
-      :small="ui === '_flat'"
       :color="category.color || $store.state.ui.defaultBgColor"
       :category="true"
     )
 
   .categoryItem__name
+    .parent(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
     .parent(v-if="ui === '_flat' && parentCategory") {{ parentCategory.name }}
     .child {{ category.name }}
-  .categoryItem__childNum(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
+
+  .categoryItem__dots(v-if="childCategoriesIds.length > 0"): .mdi.mdi-dots-vertical
 </template>
 
 <style lang="stylus" scoped>
@@ -68,22 +69,23 @@ export default {
 
 .categoryItem
   overflow hidden
+  cursor pointer
   position relative
   display flex
   flex-flow column nowrap
   align-items center
   justify-content center
-  padding $m7 0
+  padding $m6
   color var(--c-font-1)
-  background var(--c-bg-6)
-  border-radius $m4
+  background var(--c-bg-3)
+  border-radius $m5
 
   &._flat
-    flex-flow row nowrap
+    flex-flow column
     align-items center
-    justify-content flex-start
+    justify-content center
     flex 1 1 auto
-    padding 10px 12px
+    padding $m6
 
   @media $media-laptop
     padding $m6 0
@@ -95,8 +97,7 @@ export default {
     padding-bottom $m4
 
     ^[0]._flat &
-      padding-bottom 0
-      padding-right $m5
+      padding-bottom $m3
 
   &__name
     overflow hidden
@@ -108,29 +109,29 @@ export default {
 
     ^[0]._flat &
       min-height inherit
-      padding-top 1px
-      color var(--c-font-3)
-      text-align left
-
-      .parent
-        padding-bottom $m2
-        font-size 12px
-
-      .child
-        font-size 16px
 
     &:last-child
       padding-bottom 0
 
-  &__childNum
+  .parent
+    padding-bottom $m3
+    color var(--c-font-4)
+    font-size 12px
+    text-align center
+
+  .child
+    color var(--c-font-1)
+    font-size 14px
+    text-align center
+
+    /.light-mode &
+      color var(--c-font-2)
+
+
+  &__dots
     position absolute
     top $m5
-    right $m6
-    display flex
-    align-items center
-    justify-content center
-    font-secondary()
-    color var(--c-font-4)
+    right $m4
+    color var(--c-font-5)
     font-size 18px
-    font-weight 500
 </style>

@@ -77,112 +77,121 @@ export default {
 </script>
 
 <template lang="pug">
-ModalBottom(
-  v-if="$store.getters['trns/hasTrns']"
-  :show="$store.state.trns.modal.show"
-  @onClose="$store.commit('trns/hideTrnModal')"
-  @afterClose="$store.commit('trns/setTrnModalId', null)")
+Portal(
+  v-if="$store.getters['trns/hasTrns'] && $store.state.trns.modal.show"
+  to="modal"
+)
+  ModalBottom(
+    :key="trnId"
+    @onClose="$store.commit('trns/hideTrnModal')"
+    @afterClose="$store.commit('trns/setTrnModalId', null)"
+  )
+    template(v-if="trnId")
+      template(slot="header")
+        //- trn
+        TrnItem(
+          :category="category"
+          :trn="$store.state.trns.items[trnId]"
+          :trnId="trnId"
+          :wallet="wallet"
+          ui="detailed")
 
-  template(v-if="trnId")
-    template(slot="header")
-      //- trn
-      TrnItem(
-        :category="category"
-        :trn="$store.state.trns.items[trnId]"
-        :trnId="trnId"
-        :wallet="wallet"
-        ui="detailed")
+      //- btns
+      template(slot="btns")
+        ModalButton(
+          name="Delete"
+          icon="mdi mdi-delete"
+          @onClick="handleDeleteClick")
 
-    //- btns
-    template(slot="btns")
-      ModalButton(
-        name="Delete"
-        icon="mdi mdi-delete"
-        @onClick="handleDeleteClick")
+        ModalButton(
+          name="Edit"
+          icon="mdi mdi-pencil"
+          @onClick="handleEditClick")
 
-      ModalButton(
-        name="Edit"
-        icon="mdi mdi-pencil"
-        @onClick="handleEditClick")
+        ModalButton(
+          name="Dublicate"
+          icon="mdi mdi-content-copy"
+          @onClick="handleDublicateTrn")
 
-      ModalButton(
-        name="Dublicate"
-        icon="mdi mdi-content-copy"
-        @onClick="handleDublicateTrn")
+      .moreActions
+        Button.marginBottom(
+          className="_borderBottom"
+          title="Set category filter"
+          icon="mdi mdi-folder-star"
+          @onClick="handleSetFilterCategory"
+        )
 
-    .moreActions
-      Button.marginBottom(
-        className="_borderBottom"
-        title="Set category filter"
-        icon="mdi mdi-folder-star"
-        @onClick="handleSetFilterCategory"
+        Button.marginBottom(
+          :class="{ marginBottom: budgets }"
+          className="_borderBottom"
+          icon="mdi mdi-credit-card-multiple"
+          title="Set wallet filter"
+          @onClick="handleSetFilterWallet"
+        )
+
+        Button(
+          v-if="budgets && $store.getters['user/isTester']"
+          :class="{ marginBottom: groups }"
+          className="_borderBottom"
+          icon="mdi mdi-hand-saw"
+          title="Show budgets"
+          @onClick="showModalBudgets = true"
+        )
+
+        Button(
+          v-if="groups && $store.getters['user/isTester']"
+          className="_borderBottom"
+          icon="mdi mdi-folder-multiple-outline"
+          title="Show groups"
+          @onClick="showModalGroups = true"
+        )
+
+    //- budgets
+    template(v-if="groups && $store.getters['user/isTester']")
+      Portal(
+        v-if="showModalBudgets"
+        to="modal"
       )
+        ModalBottom(
+          paddingless
+          title="Budgets"
+          @onClose="showModalBudgets = false"
+        )
+          template(v-for="(budget, budgetId) in budgets")
+            .item(@click="toogleAddToBudget(budgetId)")
+              .item__active
+                template(v-if="trn && trn.budgets && trn.budgets[budgetId]")
+                  .mdi.mdi-check
+                template(v-else)
+                  .mdi.mdi-plus
+              .item__name {{ budget.name }}
+              .item__amount
+                Amount(:currency="budget.currency" :value="budget.amount")
 
-      Button.marginBottom(
-        :class="{ marginBottom: budgets }"
-        className="_borderBottom"
-        icon="mdi mdi-credit-card-multiple"
-        title="Set wallet filter"
-        @onClick="handleSetFilterWallet"
+    template(v-if="groups && $store.getters['user/isTester']")
+      Portal(
+        v-if="showModalGroups"
+        to="modal"
       )
+        ModalBottom(
+          paddingless
+          title="groups"
+          @onClose="showModalGroups = false"
+        )
+          template(v-for="(group, groupId) in groups")
+            .item(@click="toogleAddToGroup(groupId)")
+              .item__active
+                template(v-if="trn && trn.groups && trn.groups[groupId]")
+                  .mdi.mdi-check
+                template(v-else)
+                  .mdi.mdi-plus
+              .item__name {{ group.name }}
 
-      Button(
-        v-if="budgets && $store.getters['user/isTester']"
-        :class="{ marginBottom: groups }"
-        className="_borderBottom"
-        icon="mdi mdi-hand-saw"
-        title="Show budgets"
-        @onClick="showModalBudgets = true"
-      )
-
-      Button(
-        v-if="groups && $store.getters['user/isTester']"
-        className="_borderBottom"
-        icon="mdi mdi-folder-multiple-outline"
-        title="Show groups"
-        @onClick="showModalGroups = true"
-      )
-
-  //- budgets
-  template(v-if="groups && $store.getters['user/isTester']")
-    ModalBottom(
-      :show="showModalBudgets"
-      paddingless
-      title="Budgets"
-      @onClose="showModalBudgets = false"
-    )
-      template(v-for="(budget, budgetId) in budgets")
-        .item(@click="toogleAddToBudget(budgetId)")
-          .item__active
-            template(v-if="trn && trn.budgets && trn.budgets[budgetId]")
-              .mdi.mdi-check
-            template(v-else)
-              .mdi.mdi-plus
-          .item__name {{ budget.name }}
-          .item__amount
-            Amount(:currency="budget.currency" :value="budget.amount")
-
-  template(v-if="groups && $store.getters['user/isTester']")
-    ModalBottom(
-      :show="showModalGroups"
-      title="groups"
-      @onClose="showModalGroups = false"
-      paddingless
-    )
-      template(v-for="(group, groupId) in groups")
-        .item(@click="toogleAddToGroup(groupId)")
-          .item__active
-            template(v-if="trn && trn.groups && trn.groups[groupId]")
-              .mdi.mdi-check
-            template(v-else)
-              .mdi.mdi-plus
-          .item__name {{ group.name }}
-
-  //- confirm
-  ModalBottomConfirm(
-    :show="showModalConfirm"
-    @onClose="showModalConfirm = false"
-    @onConfirm="handleDeleteConfirm")
+    //- confirm
+    ModalBottomConfirm(
+      :show="showModalConfirm"
+      @onClose="showModalConfirm = false"
+      @onConfirm="handleDeleteConfirm")
 </template>
 
 <style lang="stylus" scoped>

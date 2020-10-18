@@ -29,6 +29,7 @@ export default {
       if (this.group.trnsIds) {
         return Object.keys(this.group.trnsIds)
           .sort((a, b) => {
+            if (!this.$store.state.trns.items[a]) { return }
             if (this.$store.state.trns.items[a].date > this.$store.state.trns.items[b].date) { return -1 }
             if (this.$store.state.trns.items[a].date < this.$store.state.trns.items[b].date) { return 1 }
             return 0
@@ -55,11 +56,16 @@ export default {
     if (this.group.trnsIds) {
       for (const trnId of Object.keys(this.group.trnsIds)) {
         if (!this.$store.state.trns.items[trnId]) {
-          await this.$store.dispatch('groups/removeTrnFromGroup', { groupId: this.group.id, trnId })
+          await this.$store.dispatch('groups/removeTrnFromGroup', {
+            groupId: this.group.id,
+            trnId
+          })
         }
 
         if (!this.$store.state.trns.items[trnId].groups) {
-          db.ref(`users/${this.$store.state.user.user.uid}/trns/${trnId}/groups/${this.group.id}`).set(this.group.id)
+          db
+            .ref(`users/${this.$store.state.user.user.uid}/trns/${trnId}/groups/${this.group.id}`)
+            .set(this.group.id)
         }
       }
     }

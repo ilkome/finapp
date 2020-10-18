@@ -14,26 +14,29 @@ export default {
 </script>
 
 <template lang="pug">
-ModalBottom(
-  :show="show"
-  title="Are you sure?"
-  @onClose="$emit('onClose')"
+Portal(
+  v-if="show"
+  to="modal"
 )
-  template(v-if="description")
-    template(slot="description")
-      .descError {{ description }}
+  ModalBottom(
+    :title="$t('base.sure')"
+    @onClose="$emit('onClose')"
+  )
+    template(v-if="description")
+      template(slot="description")
+        .descError {{ description }}
 
-  template(slot="btns")
-    ModalButton(
-      name="Yes"
-      icon="mdi mdi-check"
-      @onClick="$emit('onConfirm')"
-    )
-    ModalButton(
-      name="Cancel"
-      icon="mdi mdi-close-circle"
-      @onClick="$emit('onClose')"
-    )
+    template(#btnsTwo="{ closeModal }")
+      ModalButton(
+        :name="$t('base.no')"
+        icon="mdi mdi-close"
+        @onClick="closeModal"
+      )
+      ModalButton(
+        :name="$t('base.yes')"
+        icon="mdi mdi-check"
+        @onClick="$emit('onConfirm')"
+      )
 </template>
 
 <style lang="stylus">

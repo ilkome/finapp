@@ -12,7 +12,9 @@ export default function useOnTouch ({ container, overflow, dragger, content, onC
 
     if (currentY.value === 0) {
       dragger.value.style.transform = ''
-      overflow.value.style.opacity = ''
+      if (overflow.value) {
+        overflow.value.style.opacity = ''
+      }
     }
     else if (currentY.value > 0) {
       const containerHeight = container.value.clientHeight
@@ -33,6 +35,18 @@ export default function useOnTouch ({ container, overflow, dragger, content, onC
     // stop trnFormModal drag when content has scroll
     // wait until content scroll up to top
     if (content.value && content.value.scrollTop > 0) { return }
+
+    if (event.target.closest('.doNotCloseModal')) {
+      this.isDragging = false
+      return
+    }
+
+    // wait
+    const waitForScrollSlider = content.value.querySelector('.swiper-slide-active .waitForScroll')
+    if (waitForScrollSlider && waitForScrollSlider.scrollTop > 0) { return }
+
+    const waitForScroll = content.value.querySelector('.waitForScroll')
+    if (waitForScroll && waitForScroll.scrollTop > 0) { return }
 
     if (dragger.value) {
       dragger.value.classList.remove('_anim')
@@ -94,16 +108,28 @@ export default function useOnTouch ({ container, overflow, dragger, content, onC
   })
 
   const resetPosition = () => {
-    isDragging.value = false
-    initialY.value = 0
-    currentY.value = 0
-    currentX.value = 0
-    onClose && onClose()
+    onCloseModal()
+  }
 
-    dragger.value.ontransitionend = () => {
-      if (initialY.value === 0 && currentY.value === 0 && dragger.value.style.transform) {
+  const onCloseModal = () => {
+    isDragging.value = false
+    dragger.value.classList.add('_anim')
+    currentY.value = container.value.clientHeight
+    setTranslate()
+
+    if (onClose) {
+      setTimeout(() => {
+        onClose()
+        dragger.value.classList.remove('_anim')
+        initialY.value = 0
+        currentY.value = 0
+        currentX.value = 0
         setTranslate()
-      }
+      }, 300)
     }
+  }
+
+  return {
+    onCloseModal
   }
 }

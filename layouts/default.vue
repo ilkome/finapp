@@ -27,9 +27,6 @@ export default {
   },
 
   async mounted () {
-    this.$nextTick(() => {
-      this.$store.commit('app/setAppStatus', 'ready')
-    })
     this.getPageDimensions()
     window.addEventListener('resize', debounce(this.getPageDimensions, 600))
 
@@ -38,7 +35,11 @@ export default {
       workbox.addEventListener('installed', (event) => {
         // If we don't do this we'll be displaying the notification after the initial installation, which isn't perferred.
         if (event.isUpdate) {
-          console.log('whatever logic you want to use to notify the user that they need to refresh the page.')
+          this.$notify({
+            title: 'New version available',
+            text: 'Please reload the app'
+          })
+          console.log('whatever logic you want to use to notify the user that they need to refresh the page.2')
         }
       })
     }
@@ -61,12 +62,9 @@ export default {
     Loader
 
   //- Continue to app
-  transition(name="fadeInSlow")
+  transition(name="fadeInSlow" appear)
     template(v-if="$store.state.app.status.ready")
       Nuxt
-
-  //- template(v-if="$store.state.app.status.ready")
-  //-   TrnForm
 
   //- Notifications
   Notifications(
@@ -75,7 +73,11 @@ export default {
     classes="notifications"
   )
 
-  PortalTarget(name="default")
+  //- Modals
+  PortalTarget(
+    multiple
+    name="modal"
+  )
 
   LazyMetrica(v-if="isProduction")
 </template>

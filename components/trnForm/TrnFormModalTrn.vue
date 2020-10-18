@@ -84,7 +84,7 @@ TrnFormModal(
   :position="$store.state.ui.mobile ? 'bottom' : null"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'trn')"
 )
-  .modalLinks._noPadding
+  .modalLinks
     ModalButton(
       name="Delete"
       icon="mdi mdi-delete"

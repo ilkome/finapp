@@ -17,39 +17,12 @@ export default {
 @import "~assets/stylus/variables/animations"
 
 .trnFormHeaderItem
+  cursor pointer
   position relative
-  display flex
   flex-grow 1
-  padding $m7 $m7
   color var(--c-bg-5)
   border-radius $m5
   anim()
-
-  @media $media-laptop
-    min-height 61px
-
-  &__in
-    ~/._category &
-      display flex
-      align-items center
-
-  &__icon
-    z-index 2
-    margin-left -8px
-    padding-right 4px
-
-  &__total
-    padding-top $m5
-
-  &__name
-    color var(--c-font-1)
-
-    .parent
-      font-size 12px
-      padding-bottom $m2
-
-    .child
-      font-size 16px
 
   &__dots
     position absolute

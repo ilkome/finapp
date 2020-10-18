@@ -19,7 +19,6 @@ export default {
           if (rootState.user.user && rootState.user.user.uid && rootState.user.user.uid !== user.uid) {
             dispatch('clearUserData')
           }
-          // commit('setAppStatus', 'loading')
           dispatch('trns/initOfflineTrns', null, { root: true })
           await dispatch('user/initUser', user, { root: true })
           await dispatch('currencies/initCurrencies', null, { root: true })
@@ -75,16 +74,11 @@ export default {
         this.app.context.redirect('/')
       }
       resolve()
-      // console.log('resolve')
     }
     else {
-      if (this.$router.currentRoute.name !== 'login') {
-        // this.app.context.redirect('/login')
-      }
-      // commit('setAppStatus', 'ready')
       resolve()
-      // console.log('resolve')
     }
+    commit('setAppStatus', 'ready')
   },
 
   async clearUserData ({ commit, dispatch }) {
@@ -94,6 +88,8 @@ export default {
     await dispatch('categories/setCategories', null, { root: true })
     await dispatch('wallets/setWallets', null, { root: true })
     await dispatch('trns/setTrns', null, { root: true })
-    commit('setAppStatus', 'ready')
+    setTimeout(() => {
+      commit('setAppStatus', 'ready')
+    }, 100)
   }
 }

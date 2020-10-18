@@ -3,6 +3,8 @@ import Swiper from 'swiper'
 import 'swiper/swiper-bundle.min.css'
 
 export default {
+  name: 'LayoutMobile',
+
   data () {
     return {
       slider: null
@@ -20,7 +22,10 @@ export default {
       slidesPerView: 'auto',
       initialSlide: 1,
       resistanceRatio: 0,
-      touchReleaseOnEdges: true
+      touchReleaseOnEdges: true,
+      shortSwipes: false,
+      longSwipesRatio: 0.1,
+      longSwipesMs: 60
     })
   },
 
@@ -106,7 +111,7 @@ export default {
               //- stat
               transition(name="animation-tab")
                 .tab(v-show="activeTab === 'stat'")
-                  LayoutMobileStat
+                  LayoutMobile2
 
               //- trns
               transition(name="animation-tab")

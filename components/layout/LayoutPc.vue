@@ -69,9 +69,9 @@ export default {
           template(slot="headerLeft") {{ $lang.wallets.title }}
 
           template(slot="content")
-            WalletsList.dashboardItems(
-              ui="tile"
-              @onClick="(id) => handleShowWalletModal(id)")
+            WalletsList3.dashboardItems(
+              @onClick="(id) => handleShowWalletModal(id)"
+            )
 
           template(slot="bottom")
             .flex
@@ -116,6 +116,31 @@ export default {
 
 <style lang="stylus">
 @import "~assets/stylus/variables/margins"
+
+.component__content-main
+  .walllets.dashboardItems
+    padding 0
+
+    .walllets__grid
+      grid-template-columns repeat(3, 1fr)
+      grid-column-gap $m8
+      grid-row-gap $m8
+
+    .walletItemGrid
+      width 100%
+      padding $m8
+      padding-top 0
+      border-radius $m6 $m6 0 0
+
+      &__name
+        padding-bottom $m6
+        font-size 18px
+
+      &__line
+        height 6px
+        margin-right (- $m8)
+        margin-bottom $m8
+        margin-left (- $m8)
 
 .dashboardItems .categoryItem
 .dashboardItems .walletItemTile

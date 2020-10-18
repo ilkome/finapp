@@ -47,6 +47,9 @@ export default {
         loop: this.loop,
         slidesPerColumn: this.slidesPerColumn,
         slidesPerView: this.slidesPerView,
+        shortSwipes: false,
+        longSwipesRatio: 0.1,
+        longSwipesMs: 60,
         on: {
           slideChange: () => {
             if (this.onSlideChange) {

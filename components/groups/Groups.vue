@@ -9,6 +9,7 @@ export default {
   computed: {
     groups () {
       const formatedGroups = {}
+      if (!this.$store.state.groups) { return }
       for (const id in this.$store.state.groups.items) {
         formatedGroups[id] = {
           id,

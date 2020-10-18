@@ -157,9 +157,8 @@ export default {
 ComponentWrap
   template(slot="headerLeft")
     template(v-if="!categoryId")
-      div Categories
       div {{ $lang.categories.createNewTitle }}
-    template(v-else) Categories __ {{ $lang.categories.editTitle }}
+    template(v-else) {{ $lang.categories.editTitle }}
 
   template(slot="content")
     .form
@@ -224,65 +223,72 @@ ComponentWrap
             :alt="true")
 
     //- colors
-    ModalBottom(
-      :center="true"
-      :show="showColors"
-      :title="$lang.categories.form.color.placeholder"
-      @onClose="showColors = false")
-      .inputText
-        .inputText__colors
-          .colors
-            .colorItem(
-              :class="{ _active: category.color === color }"
-              :style="{ background: color }"
-              v-for="color in colors"
-              @click="handleColorSelect(color)"
-            )
-      .customColor
-        .customColor__title {{ $lang.categories.form.color.custom }}
-        input.customColor__value(v-model="category.color" type="color")
+    Portal(
+      v-if="showColors"
+      to="modal"
+    )
+      ModalBottom(
+        :center="true"
+        :title="$lang.categories.form.color.placeholder"
+        @onClose="showColors = false"
+      )
+        .inputText
+          .inputText__colors
+            .colors
+              .colorItem(
+                :class="{ _active: category.color === color }"
+                :style="{ background: color }"
+                v-for="color in colors"
+                @click="handleColorSelect(color)"
+              )
+        .customColor
+          .customColor__title {{ $lang.categories.form.color.custom }}
+          input.customColor__value(v-model="category.color" type="color")
 
     //- parent
-    ModalBottom(
-      :center="true"
-      :show="showParents"
-      :title="$lang.categories.form.parent.label"
-      @onClose="showParents = false")
-      .padding-bottom
-        ModalButton(
-          :name="$lang.categories.form.parent.no"
-          icon="mdi mdi-folder-star"
-          @onClick="() => handleParenCategorySelect(0)")
-      CategoriesView(
-        :noPadding="true"
-        :ids="$store.getters['categories/categoriesForBeParent'].filter(cId => cId !== categoryId)"
-        @onClick="handleParenCategorySelect")
+    Portal(
+      v-if="showParents"
+      to="modal"
+    )
+      ModalBottom(
+        key="parent"
+        :center="true"
+        :title="$lang.categories.form.parent.label"
+        @onClose="showParents = false"
+      )
+        .padding-bottom
+          ModalButton(
+            :name="$lang.categories.form.parent.no"
+            icon="mdi mdi-folder-star"
+            @onClick="() => handleParenCategorySelect(0)")
+        CategoriesView(
+          :noPadding="true"
+          :ids="$store.getters['categories/categoriesForBeParent'].filter(cId => cId !== categoryId)"
+          @onClick="handleParenCategorySelect")
 
     //- icons
-    ModalBottom(
-      :center="true"
-      :show="showIcons"
-      :title="$lang.categories.form.icon.placeholder"
-      @onClose="showIcons = false"
+    Portal(
+      v-if="showIcons"
+      to="modal"
     )
-      .icons
-        .icons__group(
-          v-for="iconGroup in icons"
-        )
-          .iconItem(
-            v-for="icon in iconGroup"
-            :class="{ _active: category.icon === icon }"
-            :style="{ color: category.color }"
-            @click="handleIconSelect(icon)"
+      ModalBottom(
+        :center="true"
+        :title="$lang.categories.form.icon.placeholder"
+        @onClose="showIcons = false"
+      )
+        .icons
+          .icons__group(
+            v-for="iconGroup in icons"
           )
-            div(:class="icon")
+            .iconItem(
+              v-for="icon in iconGroup"
+              :class="{ _active: category.icon === icon }"
+              :style="{ color: category.color }"
+              @click="handleIconSelect(icon)"
+            )
+              div(:class="icon")
 
   template(slot="bottom")
-    .col
-      Button(
-        :class="['_text-center _ml-big', { _inline: $store.state.ui.pc }]"
-        :title="$lang.base.cancel"
-        @onClick="$router.push('/cool')")
     .col
       Button(
         :class="['_text-center _blue _ml-big', { _inline: $store.state.ui.pc }]"

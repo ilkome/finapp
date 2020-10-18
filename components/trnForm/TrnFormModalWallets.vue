@@ -11,14 +11,16 @@ export default {
 
 <template lang="pug">
 TrnFormModal(
+  v-if="$store.state.trnForm.modal.wallets"
   :show="$store.state.trnForm.modal.wallets"
   :title="$lang.wallets.title"
   :position="$store.state.ui.mobile ? 'bottom' : null"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'wallets')"
 )
   .trnFormWalletsList
-    WalletsList(
+    WalletsList3(
       :limit="6"
+      :showBase="false"
       showToogle
       ui="widget"
       @onClick="handleSetWallet"
@@ -45,4 +47,6 @@ TrnFormModal(
   .walletsList__toogle
     border-top 0
     padding-bottom 0
+    margin 0
+    text-align center
 </style>

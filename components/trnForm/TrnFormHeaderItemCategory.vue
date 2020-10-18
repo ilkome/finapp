@@ -18,22 +18,45 @@ export default {
 <template lang="pug">
 .trnFormHeaderItem._category(
   v-if="category"
-  :style="{ background: category.color || $store.state.ui.defaultBgColor }"
+  :style="{ background: category.color }"
   @click="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
 )
-  .trnFormHeaderItem__in
-    transition(name="slide")
-      .trnFormHeaderItem__icon(
-        v-show="true"
-        :key="category.icon"
-      )
-        Icon(:icon="category.icon")
-    .trnFormHeaderItem__name
-      .parent(v-if="parentCategory") {{ parentCategory.name }}
-      .child {{ category.name }}
+  transition(name="slide")
+    .trnFormHeaderItem__icon(
+      v-show="true"
+      :key="category.icon"
+    )
+      Icon(:icon="category.icon")
+  .trnFormHeaderItem__name
+    .parent(v-if="parentCategory") {{ parentCategory.name }}
+    .child {{ category.name }}
+
   .trnFormHeaderItem__dots: .mdi.mdi-dots-vertical
 </template>
 
 <style lang="stylus" scoped>
-//
+@import "~assets/stylus/variables"
+
+.trnFormHeaderItem
+  &._category
+    display flex
+    align-items center
+    padding $m5 $m6
+    background var(--c-bg-3)
+
+  .trnFormHeaderItem__icon
+    padding-right $m4
+
+  .trnFormHeaderItem__name
+    flex-grow 1
+    color var(--c-font-1)
+    text-align left
+
+    .parent
+      padding-bottom $m2
+      color var(--c-font-2)
+      font-size 12px
+
+    .child
+      font-size 16px
 </style>

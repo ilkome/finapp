@@ -103,7 +103,7 @@ export default {
               ContextMenuItem(
                 icon="mdi mdi-currency-usd"
                 title="Change base currency"
-                @onClick="$store.commit('showBaseCurrenciesModal')"
+                @onClick="$store.commit('currencies/showBaseCurrenciesModal')"
                 @onClose="visibleContextMenu = !visibleContextMenu")
 </template>
 

@@ -58,6 +58,7 @@ export default {
         default:
           this.$store.dispatch('ui/setActiveTab', tab)
       }
+      this.$router.push('/')
     }
   }
 }
@@ -66,8 +67,8 @@ export default {
 <template lang="pug">
 .menu
   .menu__wrap
-    .menu__row(v-show="activeTab === 'stat'")
-      PeriodNavMobile
+    //- .menu__row(v-show="activeTab === 'stat'")
+    //-   PeriodNavMobile
 
     .menu__row
       .menu__item(

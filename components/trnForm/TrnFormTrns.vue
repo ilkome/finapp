@@ -1,9 +1,15 @@
 <script>
+import dayjs from 'dayjs'
+
 export default {
   props: {
     ui: {
       type: String,
       default: 'history'
+    },
+    onlyList: {
+      type: Boolean,
+      default: false
     },
     limit: {
       type: Number,
@@ -80,6 +86,27 @@ export default {
       // limit
       if (this.limit > 0) { return trnsIds.slice(0, this.limit) }
       return trnsIds
+    },
+
+    groupedTrns () {
+      const trns = this.$store.state.trns.items
+      const trnsIds = this.paginatedTrnsIds
+      const trnsList = {}
+
+      for (const trnId of trnsIds) {
+        let dayDate
+        this.sortByEditDate
+          ? dayDate = dayjs(trns[trnId].edited).startOf('day').valueOf()
+          : dayDate = dayjs(trns[trnId].date).startOf('day').valueOf()
+
+        if (!trnsList[dayDate]) {
+          trnsList[dayDate] = [trnId]
+        }
+        else {
+          trnsList[dayDate].push(trnId)
+        }
+      }
+      return trnsList
     }
   },
 
@@ -125,16 +152,18 @@ export default {
   .container(v-if="trnsIds.length === 0") No transactions
 
   .trnsList__content
-    template(v-if="trnsIds.length > 0")
-      template(v-for="trnId of paginatedTrnsIds")
-        TrnItemForm(
-          :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
-          :key="trnId"
-          :trn="$store.state.trns.items[trnId]"
-          :trnId="trnId"
-          :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
-          @onClickValue="onClickValue"
-        )
+    .trnsList__grid(:class={ _onlyList: onlyList })
+      .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
+        .trnsList__header: TrnsListDate(:date="date")
+        .trnsList__trns
+          TrnItem(
+            v-for="trnId in trnsIds"
+            :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
+            :key="trnId"
+            :trn="$store.state.trns.items[trnId]"
+            :trnId="trnId"
+            :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
+          )
 
   .trnsList__pages(v-if="!isShowedAllTrns")
     Button(
@@ -151,8 +180,8 @@ export default {
   display flex
   align-items center
   justify-content center
-  min-height 100%
   height 100%
+  min-height 100%
   padding $m10 $m7
   color var(--c-font-3)
   font-size 26px
@@ -206,6 +235,8 @@ export default {
         opacity 1
 
 .trnsList
+  padding-bottom 8px
+
   +media-laptop()
     padding 0
 
@@ -215,18 +246,41 @@ export default {
     grid-template-columns 1fr
     grid-column-gap 8px
     grid-row-gap 8px
+    padding 8px
     padding-bottom 0
 
   &__day
     overflow hidden
+    border-bottom 1px solid var(--c-bg-3)
+    margin-bottom 16px
+    padding-bottom 16px
+
+    &:first-child
+      margin-top $m9
+      border-top 0
+
+      +media-laptop()
+        margin 0
 
   &__header
     display flex
     align-items center
     justify-content space-between
-    padding 12px 12px
+    padding 0 12px
+    padding-bottom 12px
 
   &__pages
-    padding $m9
-    text-align center
+    padding 16px 8px
+
+    +media-laptop()
+      padding 0
+      padding-top 20px
+
+  &__sort
+    padding 0
+    padding-bottom $m8
+
+    +media-laptop("less")
+      padding $m7
+      padding-bottom $m6
 </style>

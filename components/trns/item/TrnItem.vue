@@ -44,6 +44,18 @@ export default {
     },
     formatedDateDay2 () {
       return formatDate(this.trn.date, 'trnItem')
+    },
+
+    filterTrnsDate () {
+      const date = this.trn.date
+      const walletId = this.trn.walletId
+
+      const trns = this.$store.state.trns.items
+      const trnsIds = Object.keys(trns)
+        .filter(id => trns[id].date <= date && trns[id].walletId === walletId)
+
+      const total = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds, true)
+      return total
     }
   },
 
@@ -197,7 +209,17 @@ export default {
         :value="trn.amount"
         :type="trn.type"
       )
-    .trnItem__desc(v-if="trn.description") {{ trn.description }}
+    .trnItem__desc
+      div(v-if="trn.description") {{ trn.description }}
+      //- div
+      //-   span Баланс
+      //-   Amount(
+      //-     :currency="wallet.currency"
+      //-     :value="filterTrnsDate.total"
+      //-     :type="3"
+      //-     size="sm"
+      //-     vertical="left"
+      //-   )
     .trnItem__line
 </template>
 

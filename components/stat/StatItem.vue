@@ -102,12 +102,14 @@ export default {
 @import "~assets/stylus/variables"
 
 .statItem
+  overflow hidden
   cursor pointer
   position relative
   margin (- 10px) 0
   margin-bottom 10px
   padding 10px
   border 1px solid transparent
+  border-radius $m5
 
   &:hover
     @media $media-laptop

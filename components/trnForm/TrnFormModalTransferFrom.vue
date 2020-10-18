@@ -19,8 +19,7 @@ TrnFormModal(
   title="Transfer from wallet"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'transferFrom')"
 )
-  WalletsList(
-    ui="tile"
+  WalletsList3(
     @onClick="handleSetWallet"
   )
 </template>

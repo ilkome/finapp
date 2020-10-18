@@ -1,3 +1,5 @@
+$transition-style = cubic-bezier(.17, .04, .03, 1)
+
 .fadeIn
   &-enter-active
   &-leave-active
@@ -25,19 +27,30 @@
 
 .slide
   &-enter-active
-  &-leave-active
     opacity 1
-    transform translate(0, 0)
-    transition opacity 100ms ease-out, transform 200ms ease-out
+    anim()
+
+    @media $media-phone
+      transform translate(0, 0)
+      transition opacity 200ms ease-out, transform 250ms ease-out
+
+    @media $media-laptop
+      transform translate(0, 0)
 
   &-enter
+    opacity 0
+    transition opacity 200ms ease-out, transform 250ms ease-out
+
+    @media $media-phone
+      transform translate(0, 10px)
+
+    @media $media-laptop
+      transform translate(10px, 0)
+
+  &-leave-active
   &-leave-to
     opacity 0
-    transform translate(0, 10px)
-    transition opacity 100ms ease-out, transform 200ms ease-out
-
-  &-leave-to
-    transform translate(0, 100px)
+    transition none
 
 .slide2
   &-enter-active

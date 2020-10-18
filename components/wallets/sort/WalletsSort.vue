@@ -28,7 +28,8 @@ export default {
 
       const result = await this.$store.dispatch('wallets/saveWalletsOrder', sortedWallets)
       if (result.succsess) {
-        this.$store.dispatch('ui/setActiveTab', 'wallets')
+        if (this.$listeners.closeModal) { this.$listeners.closeModal() }
+        // this.$store.dispatch('ui/setActiveTab', 'wallets')
         this.$notify({
           type: 'success',
           title: random(successEmo),
@@ -51,7 +52,8 @@ ComponentWrap(:contentPadding="$store.state.ui.pc")
       draggable(
         v-model="sortedWalletsIds"
         handle=".handle"
-        ghost-class="_draggable")
+        ghost-class="_draggable"
+      )
         template(v-for="walletId in sortedWalletsIds")
           .walletItem2(:key="walletId")
             .walletItem2__icon.handle
@@ -60,14 +62,15 @@ ComponentWrap(:contentPadding="$store.state.ui.pc")
                 :background="$store.state.wallets.items[walletId].color || $store.state.ui.defaultBgColor")
 
             .walletItem2__name {{ $store.state.wallets.items[walletId].name }}
-            .walletItem2__drag.handle: .mdi.mdi-arrow-split-horizontal
+            .walletItem2__drag.handle.doNotCloseModal: .mdi.mdi-arrow-split-horizontal
 
   template(slot="bottom")
     .col
       Button(
         className="_small _blue _text-center"
         :title="$lang.base.save"
-        @onClick="saveWalletsOrder")
+        @onClick="saveWalletsOrder"
+      )
 </template>
 
 <style lang="stylus" scoped>

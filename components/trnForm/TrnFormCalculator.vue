@@ -249,7 +249,7 @@ export default {
 
     ~/._num &
       color var(--c-font-3)
-      background var(--c-bg-5)
+      background var(--c-bg-3)
 
     ~/._act &
       color var(--c-font-4)

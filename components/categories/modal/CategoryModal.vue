@@ -2,6 +2,13 @@
 import { db } from '~/services/firebaseConfig'
 
 export default {
+  props: {
+    slider: {
+      type: Object,
+      default: () => {}
+    }
+  },
+
   data () {
     return {
       showModalConfirm: false
@@ -40,6 +47,12 @@ export default {
       this.$store.dispatch('ui/setActiveTab', 'stat')
       this.$store.commit('filter/setFilterDateNow')
       this.$store.dispatch('filter/setFilterCategoryId', this.categoryId)
+      this.$store.commit('categories/hideCategoryModal')
+      this.$store.commit('categories/setCategoryModalId', null)
+
+      if (this.slider) {
+        this.slider.slideTo(1)
+      }
     },
 
     handleEditClick () {
@@ -78,7 +91,7 @@ export default {
       this.$store.commit('categories/setCategoryModalId', null)
 
       setTimeout(async () => {
-        await this.$store.dispatch('deleteTrnsByIds', trnsIds)
+        await this.$store.dispatch('trns/deleteTrnsByIds', trnsIds)
         db.ref(`users/${uid}/categories/${id}`)
           .remove()
           .then(() => { console.log('category deleted') })
@@ -89,42 +102,46 @@ export default {
 </script>
 
 <template lang="pug">
-ModalBottom(
-  v-if="$store.state.categories.modal.id"
-  :show="$store.state.categories.modal.show"
-  @onClose="$store.commit('categories/hideCategoryModal')"
-  @afterClose="$store.commit('categories/setCategoryModalId', null)")
-  template(slot="header")
-    .modalBottom__header__back: .mdi.mdi-chevron-left
-    .modalBottom__header__title {{ category.name }}
-    .modalBottom__child(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
-    .modalBottom__icon
-      Icon(
-        :icon="category.icon"
-        :background="category.color || $store.state.ui.defaultBgColor"
-        :round="true"
-        :big="true")
+div
+  Portal(
+    v-if="$store.state.categories.modal.id"
+    to="modal"
+  )
+    ModalBottom(
+      :key="$store.state.categories.modal.id"
+      @onClose="$store.commit('categories/hideCategoryModal')"
+      @afterClose="$store.commit('categories/setCategoryModalId', null)"
+    )
+      template(slot="header")
+        .modalBottom__header__title {{ category.name }}
+        .modalBottom__child(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
+        .modalBottom__icon
+          Icon(
+            :icon="category.icon"
+            :background="category.color || $store.state.ui.defaultBgColor"
+            :round="true"
+            :big="true")
 
-  template(slot="btns")
-    ModalButton(
-      :name="$lang.base.delete"
-      icon="mdi mdi-delete"
-      @onClick="handleDeleteClick")
-    ModalButton(
-      :name="$lang.base.edit"
-      icon="mdi mdi-pencil"
-      @onClick="handleEditClick")
-    ModalButton(
-      :name="$lang.base.filter"
-      icon="mdi mdi-filter-outline"
-      @onClick="handleSetFilterCategory")
+      template(slot="btns")
+        ModalButton(
+          :name="$lang.base.delete"
+          icon="mdi mdi-delete"
+          @onClick="handleDeleteClick")
+        ModalButton(
+          :name="$lang.base.edit"
+          icon="mdi mdi-pencil"
+          @onClick="handleEditClick")
+        ModalButton(
+          :name="$lang.base.filter"
+          icon="mdi mdi-filter-outline"
+          @onClick="handleSetFilterCategory")
 
-  template(v-if="childCategoriesIds.length")
-    CategoriesView(
-      :borderTop="true"
-      :ids="childCategoriesIds"
-      :noPadding="true"
-      @onClick="id => $store.dispatch('categories/showCategoryModal', id)")
+      template(v-if="childCategoriesIds.length")
+        CategoriesView(
+          :borderTop="true"
+          :ids="childCategoriesIds"
+          :noPadding="true"
+          @onClick="id => $store.dispatch('categories/showCategoryModal', id)")
 
   ModalBottomConfirm(
     :show="showModalConfirm"

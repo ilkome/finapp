@@ -1,8 +1,19 @@
 <script>
 export default {
-  data () {
-    return {
-      menu: {
+  props: {
+    slider: {
+      type: Object,
+      default: () => {}
+    }
+  },
+
+  computed: {
+    activeTab () {
+      return this.$store.state.ui.activeTab
+    },
+
+    menu () {
+      return {
         trnForm: {
           icon: 'mdi mdi-plus',
           name: this.$lang.createTrn,
@@ -50,18 +61,9 @@ export default {
     }
   },
 
-  computed: {
-    activeTab () {
-      return this.$store.state.ui.activeTab
-    }
-  },
-
   methods: {
     handleClickMenu (menuId) {
-      if (this.$listeners.onClickMenuCalback) {
-        this.$listeners.onClickMenuCalback()
-      }
-      else if (menuId === 'users') {
+      if (menuId === 'users') {
         this.$router.push('/users')
         return
       }
@@ -69,6 +71,36 @@ export default {
         this.$store.dispatch('trnForm/openTrnForm', { action: 'create' })
         return
       }
+      else if (menuId === 'groups') {
+        this.$store.dispatch('ui/setActiveTab', 'groups')
+      }
+      else {
+        this.$router.push('/')
+      }
+
+      if (this.$listeners.onClickMenuCalback) {
+        this.$listeners.onClickMenuCalback()
+      }
+
+      if (this.slider) {
+        switch (menuId) {
+          case 'wallets':
+            this.slider.slideTo(0)
+            break
+          case 'stat':
+            this.slider.slideTo(1)
+            break
+          case 'history':
+            this.slider.slideTo(3)
+            break
+          case 'categories':
+            this.slider.slideTo(2)
+            break
+          default:
+            this.slider.slideTo(0)
+        }
+      }
+
       this.$store.dispatch('ui/setActiveTab', menuId)
     }
   }
@@ -80,8 +112,9 @@ export default {
   template(v-for="(menuItem, menuId) in menu")
     .menuItem(
       v-if="$store.getters['user/isTester'] || !menuItem.private"
+      :class="{ _active: activeTab === menuId, [`_${menuId}`]: true }"
       @click="handleClickMenu(menuId)"
-      :class="{ _active: activeTab === menuId, [`_${menuId}`]: true }")
+    )
       .menuItem__icon: div(:class="menuItem.icon")
       .menuItem__text {{ menuItem.name }}
 </template>

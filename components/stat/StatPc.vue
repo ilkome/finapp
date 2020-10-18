@@ -59,6 +59,7 @@ export default {
 .stat
   position relative
   padding 0 60px
+  padding-top $m9
 
   &__content
     display grid

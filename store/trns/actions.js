@@ -101,7 +101,6 @@ export default {
           }
         }
       }
-      // commit('app/setAppStatus', 'ready', { root: true })
       dispatch('setTrns', items)
     }, e => console.error(e))
   },

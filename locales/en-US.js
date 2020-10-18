@@ -15,5 +15,11 @@ export default {
     filterWalletAndCategory: 'Wallet & Category',
     filterWallet: 'Wallet only',
     filterAll: 'Everything'
+  },
+
+  base: {
+    sure: 'Are you sure?',
+    yes: 'Yes',
+    no: 'No'
   }
 }

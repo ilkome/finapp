@@ -63,7 +63,7 @@ export default {
 </script>
 
 <template lang="pug">
-.statCatsItem(
+.statCatsItem.statCatsItem.swiper-no-swiping(
   @click="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)"
   @mouseenter="handleMouseEnter"
   @mouseleave="handleMouseLeave")

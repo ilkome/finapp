@@ -77,6 +77,7 @@ div(
         :alwaysShowSymbol="true"
         :currency="wallet.currency"
         :value="wallet.total"
+        vertical="left"
       )
 
   //- list

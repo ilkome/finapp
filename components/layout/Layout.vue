@@ -5,8 +5,8 @@ export default {
 
 <template lang="pug">
 .layout
-  LayoutMobile(v-if="$store.state.ui.mobile")
-  LayoutPc(v-if="$store.state.ui.pc")
+  LazyLayoutMobile2(v-if="$store.state.ui.mobile")
+  LazyLayoutPc(v-if="$store.state.ui.pc")
 </template>
 
 <style lang="stylus" scoped>

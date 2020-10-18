@@ -16,5 +16,11 @@ export default {
     filterWalletAndCategory: 'Кошелек и Категория',
     filterWallet: 'Только Кошелек',
     filterAll: 'Все'
+  },
+
+  base: {
+    sure: 'Ты уверен?',
+    yes: 'Да',
+    no: 'Нет'
   }
 }
