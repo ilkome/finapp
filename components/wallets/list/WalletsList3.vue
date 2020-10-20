@@ -62,7 +62,7 @@ export default {
       v-on="$listeners"
     )
 
-  .walletsList__toogle(v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit" @click="toogleWallets")
+  .walletsList__toogle._alt(v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit" @click="toogleWallets")
     template(v-if="stateLimit > 0") {{ this.$t('wallets.showAll') }}
     template(v-else) {{ this.$t('wallets.showOnly') }} {{ limit }}
 </template>
@@ -78,4 +78,9 @@ export default {
   grid-template-columns repeat(2, 1fr)
   grid-column-gap $m7
   grid-row-gap $m7
+
+.walletsList__toogle._alt
+  margin-right 0
+  margin-left 0
+  border-top 0
 </style>

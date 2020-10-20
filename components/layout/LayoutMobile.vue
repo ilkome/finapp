@@ -88,6 +88,8 @@ export default {
               template(slot="content")
                 WalletsTotal
                 WalletsList3(
+                  :limit="6"
+                  showToogle
                   @onClick="(id) => handleShowWalletModal(id)"
                 )
 
