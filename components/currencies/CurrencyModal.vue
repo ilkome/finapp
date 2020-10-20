@@ -16,7 +16,7 @@ Portal(
 )
   ModalBottom(
     :center="true"
-    title="Select base currency"
+    :title="$t('currency.selectBaseTitle')"
     @onClose="$store.commit('currencies/hideBaseCurrenciesModal')"
   )
     .inputText

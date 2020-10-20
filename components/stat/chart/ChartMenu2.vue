@@ -65,8 +65,8 @@ export default {
 <template lang="pug">
 .switcher
   .switcher__name(@click="toogleView")
-    template(v-if="periods[filterPeriod].grouped") {{ periods[filterPeriod].showedGroups }} groups
-    template(v-else) {{ periods[filterPeriod].showedPeriods }} {{ periodName }}
+    template(v-if="periods[filterPeriod].grouped") {{ periods[filterPeriod].showedGroups }} {{ $t('chart.view.groupsName') }}
+    template(v-else) {{ periods[filterPeriod].showedPeriods }} {{ $t(`dates.${periodName}.simple`) }}
 
   .switcher__content(:class="{ _active: visibleContextMenu}")
     .switcher__item(
@@ -75,12 +75,12 @@ export default {
     ): .mdi.mdi-dots-horizontal
 
     template(v-if="visibleContextMenu")
-      .switcher__item(@click="toogleView") View
+      .switcher__item(@click="toogleView") {{ $t('chart.view.toogle') }}
       .switcher__item(
         v-if="(periods[filterPeriod].grouped && periods[filterPeriod].showedGroups > 1) || (!periods[filterPeriod].grouped && periods[filterPeriod].showedPeriods > 1)"
         @click="removePeriodOrGroup"
-      ) Remove
-      .switcher__item(@click="addPeriodOrGroup") Add
+      ) {{ $t('chart.view.remove') }}
+      .switcher__item(@click="addPeriodOrGroup") {{ $t('chart.view.add') }}
       .switcher__item(
         @click="visibleContextMenu = !visibleContextMenu"
       ): .mdi.mdi-close

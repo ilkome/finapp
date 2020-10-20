@@ -7,13 +7,42 @@ export default {
 
   data () {
     return {
-      slider: null
+      slider: null,
+      visibleContextMenu: false,
+
+      selectedPeriodAmount: {
+        label: '',
+        incomes: '',
+        expenses: ''
+      },
+
+      periods: [{
+        slug: 'day',
+        name: this.$t('dates.day.simple')
+      }, {
+        slug: 'week',
+        name: this.$t('dates.week.simple')
+      }, {
+        slug: 'month',
+        name: this.$t('dates.month.simple')
+      }, {
+        slug: 'year',
+        name: this.$t('dates.year.simple')
+      }]
     }
   },
 
   computed: {
     activeTab () {
       return this.$store.state.ui.activeTab
+    },
+
+    stat () {
+      return this.$store.getters['stat/statCurrentPeriod']
+    },
+
+    periodName () {
+      return this.$store.state.filter.period
     }
   },
 
@@ -30,14 +59,18 @@ export default {
   },
 
   methods: {
+    clickHandler () {
+      const index = this.slider.activeIndex
+      index === 0 && this.slider.slideNext()
+    },
+
     handleShowWalletModal (id) {
       this.$store.commit('wallets/showWalletModal')
       this.$store.commit('wallets/setWalletModalId', id)
     },
 
-    clickHandler () {
-      const index = this.slider.activeIndex
-      index === 0 && this.slider.slideNext()
+    changePeriod (period) {
+      this.$store.dispatch('filter/setPeriod', period)
     }
   }
 }
@@ -45,114 +78,202 @@ export default {
 
 <template lang="pug">
 .wrap
-  .swiper-container(ref="slider")
-    .swiper-wrapper
-      .swiper-slide._sidebar
-        Menu(@onClickMenuCalback="slider.slideNext()")
-        .block
-          WalletsTotal
-        .menu__wallets
-          WalletsList(:limit="6")
+  .layoutMobile
+    .layoutMobile__content
+      .swiper-container(ref="slider")
+        .swiper-wrapper
+          //- Wallets
+          .swiper-slide
+            ComponentWrap(:contentPadding="false")
+              template(slot="content")
+                WalletsTotal
+                WalletsList3(
+                  @onClick="(id) => handleShowWalletModal(id)"
+                )
 
-      .swiper-slide._static
-        .handler(@click="clickHandler")
+              template(slot="bottom")
+                .flex
+                  .col
+                    Button(
+                      :title="$t('wallets.new')"
+                      className="_inline _small"
+                      @onClick="$store.dispatch('ui/setActiveTab', 'createWallet')"
+                    )
+                  .col
+                    Button(
+                      :title="$t('base.sort')"
+                      className="_inline _small"
+                      @onClick="$store.dispatch('ui/setActiveTab', 'walletsSort')"
+                    )
 
-        .layoutMobile
-          //------------------------------------------------
-          //- content
-          //------------------------------------------------
-          .layoutMobile__content
-            .tabs.swiper-no-swiping
-              //- wallets
-              transition(name="animation-tab")
-                .tab(v-show="activeTab === 'wallets'")
-                  ComponentWrap(:contentPadding="false")
-                    template(slot="content")
-                      WalletsTotal
-                      WalletsList(
-                        @onClick="(id) => handleShowWalletModal(id)"
-                      )
+          //- Stat
+          //------------------------------------------------------------------------------
+          .swiper-slide
+            .page
+              .page__wrap
+                .page__nav
+                  h1: Date
+                  .page__customize
+                    ContextMenu(
+                      :position="{ right: '0px', top: '0px' }"
+                      :visible="visibleContextMenu"
+                      @onClickOpener="visibleContextMenu = !visibleContextMenu")
 
-                    template(slot="bottom")
-                      .flex
-                        .col
-                          Button(
-                            className="_inline _small"
-                            :title="$lang.wallets.new"
-                            @onClick="$store.dispatch('ui/setActiveTab', 'createWallet')")
-                        .col
-                          Button(
-                            className="_inline _small"
-                            :title="$lang.base.sort"
-                            @onClick="$store.dispatch('ui/setActiveTab', 'walletsSort')")
+                      template(slot="opener")
+                        .opener
+                          .mdi.mdi-tune
 
-              //- wallets sort
-              transition(name="animation-tab")
-                .tab(v-if="activeTab === 'walletsSort'")
-                  WalletsSort
+                      template(slot="content")
+                        ContextMenuItem(
+                          :title="$t('stat.customize.showPeriodsChart')"
+                          :showCheckbox="true"
+                          :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
+                          icon="mdi mdi-chart-bar-stacked"
+                          @onClick="$store.dispatch('ui/toogleShowStatGraphs')"
+                        )
 
-              //- categories
-              transition(name="animation-tab")
-                .tab(v-show="activeTab === 'categories'")
-                  ComponentWrap(:contentPadding="false")
-                    template(slot="headerLeft") {{ $lang.categories.name }}
+                        ContextMenuItem(
+                          :title="$t('stat.customize.showCategorisChart')"
+                          :showCheckbox="true"
+                          :checkboxValue="$store.state.ui.catsChart === 'visible'"
+                          icon="mdi mdi-folder-star"
+                          @onClick="$store.dispatch('ui/toogleVisibleCatsChart')"
+                        )
 
-                    template(slot="content")
-                      CategoriesList(
-                        :style="{ paddingTop: '16px' }"
-                        @onClick="(id) => $store.dispatch('categories/showCategoryModal', id)")
+                        ContextMenuItem(
+                          :title="$t('stat.customize.showCategorisList')"
+                          :showCheckbox="true"
+                          :checkboxValue="$store.state.ui.statItems === 'visible'"
+                          icon="mdi mdi-chart-gantt"
+                          @onClick="$store.dispatch('ui/toogleVisibilityStatItems')"
+                        )
 
-                    template(slot="bottom")
-                      Button(
-                        className="_inline _small"
-                        :title="$lang.categories.new"
-                        @onClick="$store.dispatch('ui/setActiveTab', 'createCategory')")
+                        .context-menu-sep
 
-              //- stat
-              transition(name="animation-tab")
-                .tab(v-show="activeTab === 'stat'")
-                  LayoutMobile2
+                        ContextMenuItem(
+                          :title="$t('theme.change')"
+                          icon="mdi mdi-palette"
+                          @onClick="$store.dispatch('ui/changeTheme')"
+                        )
 
-              //- trns
-              transition(name="animation-tab")
-                .tab(v-if="activeTab === 'trns'")
-                  TrnsList
+                .page__content
+                  .chartBar(v-show="$store.state.ui.statGraphsVisibility === 'visible'")
+                    ChartMenu2
+                    StatChartsLine2
 
-              //- Settings
-              transition(name="animation-tab")
-                .tab(v-if="activeTab === 'settings'")
-                  Settings
+                  .switcher(:class="{ _round: $store.state.ui.statGraphsVisibility === 'hidden' }")
+                    .switcher__content
+                      .switcher__item._arrow(
+                        v-if="$store.state.ui.statGraphsVisibility === 'hidden'"
+                        :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
+                        @click="$store.dispatch('filter/setPeriodNext')"
+                      ): .mdi.mdi-chevron-left
 
-              //- create category
-              transition(name="animation-tab")
-                .tab(v-if="activeTab === 'createCategory'")
-                  CategoryForm
+                      .switcher__item(
+                        v-for="periodItem in periods"
+                        :key="periodItem.slug"
+                        :class="{ _active: $store.state.filter.period === periodItem.slug }"
+                        @click="changePeriod(periodItem.slug)"
+                      ) {{ periodItem.name }}
 
-              //- create wallet
-              transition(name="animation-tab")
-                .tab(v-if="activeTab === 'createWallet'")
-                  WalletForm
+                      .switcher__item._arrow(
+                        v-if="$store.state.ui.statGraphsVisibility === 'hidden'"
+                        :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isFirstPeriodSelected'] }"
+                        @click="$store.dispatch('filter/setPeriodPrev')"
+                      ): .mdi.mdi-chevron-right
 
-              transition(name="animation-tab")
-                .tab(v-if="activeTab === 'groups'")
-                  Groups
+                  StatMobile2
 
-              transition(name="animation-tab")
-                .tab(v-if="activeTab === 'budgets'")
-                  Budgets
+          //- Categories
+          .swiper-slide
+            ComponentWrap(:contentPadding="false")
+              template(slot="headerLeft") {{ $t('categories.name') }}
 
-          //------------------------------------------------
-          //- menu
-          //------------------------------------------------
-          .layoutMobile__menu
-            LayoutMobileMenu
+              template(slot="content")
+                CategoriesList(
+                  :style="{ paddingTop: '16px' }"
+                  @onClick="(id) => $store.dispatch('categories/showCategoryModal', id)"
+                )
 
-  //- modals
-  CategoryModal
+              template(slot="bottom")
+                .flex
+                  .col
+                    Button(
+                      :title="$t('categories.new')"
+                      className="_inline _small"
+                      @onClick="$store.dispatch('ui/setActiveTab', 'createCategory')"
+                    )
+
+    .layoutMobile__menu
+      LayoutMobileMenu(:slider="slider")
+
+  //- Modals
+  CategoryModal(:slider="slider")
   CurrencyModal
   TrnForm
   TrnModal
-  WalletModal
+  WalletModal(:slider="slider")
+  CategoryStatModal
+
+  //- Caegory Form: create or edit
+  //------------------------------------------------------------------------------
+  Portal(
+    v-if="activeTab === 'menu'"
+    to="modal"
+  )
+    ModalBottom(
+      key="menu"
+      @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
+    )
+      Menu
+
+  //- Caegory Form: create or edit
+  //------------------------------------------------------------------------------
+  Portal(
+    v-if="activeTab === 'createCategory'"
+    to="modal"
+  )
+    ModalBottom(
+      key="createCategory"
+      @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
+    )
+      CategoryForm
+
+  //- Settings
+  //------------------------------------------------------------------------------
+  Portal(
+    v-if="activeTab === 'settings'"
+    to="modal"
+  )
+    ModalBottom(@onClose="$store.dispatch('ui/setActiveTab', 'stat')")
+      Settings(v-if="activeTab === 'settings'")
+
+  //- Wallet Form: create or edit
+  //------------------------------------------------------------------------------
+  Portal(
+    v-if="activeTab === 'createWallet'"
+    to="modal"
+  )
+    ModalBottom(
+      :key="$store.state.wallets.editId"
+      @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
+    )
+      WalletForm
+
+  //- Wallet Sort
+  //------------------------------------------------------------------------------
+  Portal(
+    v-if="activeTab === 'walletsSort'"
+    to="modal"
+  )
+    ModalBottom(
+      @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
+    )
+      template(#default="{ closeModal }")
+        WalletsSort(
+          v-if="activeTab === 'walletsSort'"
+          @closeModal="closeModal"
+        )
 </template>
 
 <style lang="stylus" scoped>
@@ -161,6 +282,110 @@ export default {
 @import "~assets/stylus/variables/media"
 @import "~assets/stylus/variables/fonts"
 @import "~assets/stylus/variables/scroll"
+
+.opener
+  opacity .6
+  padding 8px 0 0 0
+  font-size 20px
+
+.page
+  overflow hidden
+  position relative
+  width 100%
+  height 100%
+
+  &__nav
+    z-index 100
+    opacity .95
+    position sticky
+    top 0
+    padding $m7
+    background var(--c-bg-2)
+
+  &__wrap
+    overflow hidden
+    overflow-y auto
+    scrollbar()
+    position relative
+    height 100%
+
+    h1
+      padding-bottom 0
+      font-size 18px
+
+  &__content
+    padding 0 $m7
+
+  &__customize
+    z-index 20
+    position absolute
+    top $m5
+    right $m7
+
+.chartBar
+  position relative
+  margin 0 -8px
+  padding 8px
+  padding-top 0
+  background var(--c-bg-3)
+  border-left 1px solid var(--c-bg-4)
+  border-right 1px solid var(--c-bg-4)
+  border-radius 8px 8px 0 0
+
+.switcher
+  position relative
+  display flex
+  align-items center
+  margin 0 -8px
+
+  &._round
+    overflow hidden
+    border-radius 8px
+
+  &._sb
+    z-index 15
+    justify-content space-between
+
+  &__name
+    flex-grow 1
+    color var(--c-font-3)
+    font-size 10px
+    text-transform uppercase
+
+  &__content
+    overflow hidden
+    display flex
+    align-items stretch
+    justify-content space-between
+    background var(--c-bg-4)
+    border-radius 0 0 8px 8px
+    flex-grow 1
+
+  &__item
+    opacity .6
+    flex-grow 1
+    display flex
+    align-items center
+    justify-content center
+    min-width 48px
+    padding $m6 $m7
+    font-size 12px
+    text-align center
+    border-radius $m9
+
+    +media-hover()
+      background var(--c-bg-3)
+
+    &._arrow
+      padding $m5 $m6
+      font-size 18px
+
+    &._active
+      opacity 1
+      background var(--c-bg-8)
+
+    &._disable
+      opacity .3
 
 .block
   margin-bottom 8px
@@ -171,16 +396,10 @@ export default {
   display grid
   grid-template-rows 1fr minmax(30px, min-content)
   height 100%
+  background var(--c-bg-2)
 
-.handler
-  z-index 200
-  position absolute
-  left 0
-  top 0
-  width 100%
-  height 100%
-  background alpha(#000, .9)
-  transition background 250ms
+  &__content
+    overflow hidden
 
 .swiper-slide-active
   .handler
@@ -194,40 +413,18 @@ export default {
 ._sidebar
   overflow hidden
   overflow-y auto
-  scrollbar()
   z-index 10
-  max-width 70vw
   height 100%
+  max-width 70vw
   background var(--c-bg-4)
   border-right 1px solid var(--c-bg-1)
+  scrollbar()
 
 .wrap
-  position absolute
-  left 0
-  top 0
-  width 100%
-  height 100%
   overflow hidden
-
-.tabs
-  overflow hidden
-  position relative
-  width 100%
-  max-width 620px
-  height 100%
-  margin 0 auto
-  background var(--c-bg-2)
-
-.tab
-  overflow-x hidden
-  overflow-y scroll
-  scrollbar()
   position absolute
-  left 0
   top 0
+  left 0
   width 100%
   height 100%
-
-  &._padding-top
-    // padding-top $m7
 </style>

@@ -8,7 +8,9 @@ export default {
 
   computed: {
     currentLanguageName () {
-      switch (this.$store.state.lang.lang) {
+      console.log(this.$i18n.locale)
+
+      switch (this.$i18n.locale) {
         case 'ru':
           return '🇷🇺 Russian - Русский'
         default:
@@ -20,10 +22,7 @@ export default {
   methods: {
     changeLang (lang) {
       this.visibleDropdown = false
-      setTimeout(() => {
-        this.$store.dispatch('lang/setLang', lang)
-        this.$setLang(lang)
-      }, 100)
+      this.$store.dispatch('lang/setLang', lang)
     }
   }
 }
@@ -34,11 +33,14 @@ div
   ContextMenu(
     :position="{ left: true, top: true }"
     :visible="visibleDropdown"
-    @onClickOpener="visibleDropdown = !visibleDropdown")
+    @onClickOpener="visibleDropdown = !visibleDropdown"
+  )
+
     template(slot="opener")
       Dropdown(
         :active="visibleDropdown"
-        :title="currentLanguageName")
+        :title="currentLanguageName"
+      )
     template(slot="content")
       ContextMenuItem(
         title="🇷🇺 Russian - Русский (Не полный)"

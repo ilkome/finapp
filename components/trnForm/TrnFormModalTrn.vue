@@ -111,19 +111,6 @@ TrnFormModal(
 @import "~assets/stylus/variables/margins"
 
 .trnFormWalletsList
-  .walletsWidget
-    display grid
-    grid-template-columns repeat(2, minmax(auto, 1fr))
-    grid-column-gap 12px
-    grid-row-gap 12px
-    padding 0 16px
-
-  .walletItemWidget
-    overflow hidden
-    cursor pointer
-    padding $m6
-    border-radius $m4
-
   .walletsList__toogle
     border-top 0
     padding-bottom 0

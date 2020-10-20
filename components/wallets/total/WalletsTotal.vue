@@ -39,7 +39,7 @@ export default {
   v-if="$store.getters['wallets/hasWallets']"
 )
   .walletsTotal__item(v-if="totalInWallets.other !== 0")
-    .walletsTotal__title {{ $lang.money.all }}
+    .walletsTotal__title {{ $t('money.all') }}
     .walletsTotal__value
       Amount(
         :currency="$store.state.currencies.base"
@@ -49,7 +49,7 @@ export default {
       )
 
   .walletsTotal__item
-    .walletsTotal__title {{ $lang.money.wallets }}
+    .walletsTotal__title {{ $t('money.wallets') }}
     .walletsTotal__value
       Amount(
         :currency="$store.state.currencies.base"

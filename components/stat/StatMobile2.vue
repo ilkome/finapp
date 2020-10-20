@@ -94,7 +94,7 @@ export default {
       @click="view = 'incomes'"
     )
       .statItem-total
-        .statItem-total__title {{ $lang.money.incomes }}
+        .statItem-total__title {{ $t('money.incomes') }}
         .statItem-total__amount
           Amount(
             size="md"
@@ -107,7 +107,7 @@ export default {
       @click="view = 'expenses'"
     )
       .statItem-total
-        .statItem-total__title {{ $lang.money.expenses }}
+        .statItem-total__title {{ $t('money.expenses') }}
         .statItem-total__amount
           Amount(
             size="md"
@@ -120,7 +120,7 @@ export default {
       @click="view = 'trns'"
     )
       .statItem-total
-        .statItem-total__title {{ $lang.trns.shortTitle }}
+        .statItem-total__title {{ $t('trns.shortTitle') }}
         .statItem-total__amount
           Amount(
             size="md"
@@ -175,7 +175,7 @@ export default {
   //------------------------------------------------
   EmptyData(
     v-if="isEmptyData && $store.getters['trns/hasTrns']"
-    :text="$lang.stat.empty"
+    :text="$t('stat.empty')"
   )
 </template>
 

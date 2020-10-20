@@ -121,18 +121,18 @@ export default {
       .trnFormAmountPc__type._expenses(
         @click="() => setAmountType(0)"
         :class="{ _active: amountType === 0 }"
-      ) {{ $lang.money.expenses }}
+      ) {{ $t('money.expenses') }}
 
       .trnFormAmountPc__type._incomes(
         @click="() => setAmountType(1)"
         :class="{ _active: amountType === 1 }"
-      ) {{ $lang.money.incomes }}
+      ) {{ $t('money.incomes') }}
 
       .trnFormAmountPc__type(
         v-if="$store.getters['wallets/walletsSortedIds'].length > 1"
         @click="() => setAmountType(2)"
         :class="{ _active: amountType === 2 }"
-      ) Transfer
+      ) {{ $t('trnForm.transferTitle') }}
 
     .trnFormAmountPc__input
       input.trnFormAmountPc__input__value(
@@ -166,7 +166,7 @@ export default {
       )
       Button(
         v-else
-        :title="$store.state.trnForm.values.amountType === 2 ? 'Create transfer' : 'Create transaction'"
+        :title="$store.state.trnForm.values.amountType === 2 ? $t('trnForm.createTransferButton') : $t('trnForm.createTrnButton')"
         className="_blue _text-center"
         size="lg"
         @onClick="$emit('onFormSubmit')"

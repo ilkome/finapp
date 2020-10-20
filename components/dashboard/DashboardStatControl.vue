@@ -9,27 +9,27 @@ export default {
     .tabs
       .tabItem(
         @click="$store.commit('dashboard/setDashboardActiveTab', 'stat')"
-        :class="{ _active: $store.state.dashboard.activeTab === 'stat' }") Stat
+        :class="{ _active: $store.state.dashboard.activeTab === 'stat' }") {{ $t('stat.shortTitle') }}
 
       .tabItem(
         @click="$store.commit('dashboard/setDashboardActiveTab', 'history')"
-        :class="{ _active: $store.state.dashboard.activeTab === 'history' }") History
+        :class="{ _active: $store.state.dashboard.activeTab === 'history' }") {{ $t('trns.history') }}
 
       .tabItem(
         @click="$store.commit('dashboard/setDashboardActiveTab', 'balance')"
-        :class="{ _active: $store.state.dashboard.activeTab === 'balance' }") Balance
-
-      //- .tabItem(
-      //-   @click="$store.commit('dashboard/setDashboardActiveTab', 'overview')"
-      //-   :class="{ _active: $store.state.dashboard.activeTab === 'overview' }") Overview
+        :class="{ _active: $store.state.dashboard.activeTab === 'balance' }") {{ $t('stat.balanceTitle') }}
 
     .tabs
       .tabItem(
-        @click="$store.dispatch('filter/setPeriodPrev')"
-        :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isFirstPeriodSelected'] }") Next {{ this.$store.state.filter.period }}
-      .tabItem(
+        :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
         @click="$store.dispatch('filter/setPeriodNext')"
-        :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }") Last {{ this.$store.state.filter.period }}
+      ) {{ $t('buttons.prevTitle') }} {{ $t(`dates.${$store.state.filter.period}.simple`) }}
+
+      .tabItem(
+        :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isFirstPeriodSelected'] }"
+        @click="$store.dispatch('filter/setPeriodPrev')"
+      ) {{ $t('buttons.nextTitle') }} {{ $t(`dates.${$store.state.filter.period}.simple`) }}
+
 </template>
 
 <style lang="stylus" scoped>

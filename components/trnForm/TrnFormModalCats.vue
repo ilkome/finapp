@@ -61,7 +61,7 @@ export default {
 <template lang="pug">
 TrnFormModal(
   :show="$store.state.trnForm.modal.categories"
-  :title="$lang.categories.name"
+  :title="$t('categories.name')"
   :position="$store.state.ui.mobile ? 'bottom' : null"
   noPadding
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
@@ -71,22 +71,22 @@ TrnFormModal(
       .switcher__item(
         :class="{ _active: slider.activeIndex === 0 }"
         @click="slider.slideTo(0)"
-      ) Last used
+      ) {{ $t('categories.lastUsedTitle') }}
       .switcher__item(
         :class="{ _active: slider.activeIndex === 1 }"
         @click="slider.slideTo(1)"
-      ) Favorites
+      ) {{ $t('categories.favoriteTitle') }}
       .switcher__item(
         :class="{ _active: slider.activeIndex === 2 }"
         @click="slider.slideTo(2)"
-      ) All
+      ) {{ $t('categories.allTitle') }}
 
   .swiper-container(ref="slider")
     .swiper-wrapper
 
       .swiper-slide
         .scrollBlock.waitForScroll(
-          v-if="$store.state.ui.lastUsedCatsInTrnForm === 'visible' && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
+          v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
           :style="modalStyle"
         )
           .marginBottom

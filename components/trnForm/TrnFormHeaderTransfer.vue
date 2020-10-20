@@ -1,8 +1,19 @@
 <script>
 export default {
+  fetch () {
+    this.$store.commit('trnForm/setTrnFormTransfer', {
+      tranferType: 'from',
+      walletId: this.walletFromId
+    })
+    this.$store.commit('trnForm/setTrnFormTransfer', {
+      tranferType: 'to',
+      walletId: this.walletToId
+    })
+  },
+
   computed: {
     walletFromId () {
-      return this.$store.state.trnForm.transfer.from || this.$store.getters['wallets/walletsSortedIds'][0]
+      return this.$store.state.trnForm.values.walletId || this.$store.getters['wallets/walletsSortedIds'][0]
     },
     walletFrom () {
       return this.$store.state.wallets.items[this.walletFromId]
@@ -13,17 +24,6 @@ export default {
     walletTo () {
       return this.$store.state.wallets.items[this.walletToId]
     }
-  },
-
-  created () {
-    this.$store.commit('trnForm/setTrnFormTransfer', {
-      tranferType: 'from',
-      walletId: this.walletFromId
-    })
-    this.$store.commit('trnForm/setTrnFormTransfer', {
-      tranferType: 'to',
-      walletId: this.walletToId
-    })
   }
 }
 </script>
@@ -31,7 +31,6 @@ export default {
 <template lang="pug">
 .trnFormHeader(
   v-if="$store.getters['wallets/walletsSortedIds'].length > 1"
-  v-show="this.$store.state.trnForm.values.amountType === 2"
 )
   //- Wallet from
   template(v-if="walletFrom")

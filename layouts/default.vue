@@ -9,20 +9,8 @@ export default {
       return { height: `${this.$store.state.ui.height}px` }
     },
 
-    lang () {
-      return this.$store.state.lang.lang
-    },
-
     isProduction () {
       return process.env.NODE_ENV === 'production'
-    }
-  },
-
-  watch: {
-    lang (newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.$setLang(newValue)
-      }
     }
   },
 
@@ -83,8 +71,7 @@ export default {
 </template>
 
 <style lang="stylus">
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/common/notifications"
+@import "~assets/stylus/variables"
 
 *
   box-sizing border-box
@@ -99,14 +86,13 @@ html
 
 body
   overflow hidden
+  overscroll-behavior-y contain
   margin 0
   color var(--c-font-2)
   font-primary()
   font-size 14px
   line-height 1
   letter-spacing 0
-  overscroll-behavior-y contain
-  // background var(--c-bg-1)
   background var(--c-bg-1)
   user-select none
 </style>

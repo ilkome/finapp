@@ -17,7 +17,7 @@ export default {
 .summary
   //- Incomes
   .summary__item._incomes
-    .summary__item__title._incomes {{ $lang.money.incomes }}
+    .summary__item__title._incomes {{ $t('money.incomes') }}
     .summary__item__amount
       Amount(
         :center="true"
@@ -29,7 +29,7 @@ export default {
 
   //- Expenses
   .summary__item._expenses
-    .summary__item__title._expenses {{ $lang.money.expenses }}
+    .summary__item__title._expenses {{ $t('money.expenses') }}
     .summary__item__amount
       Amount(
         :center="true"
@@ -42,7 +42,7 @@ export default {
   //- Total
   .summary__item._total
     template(v-if="(incomesAmount - expensesAmount) !== 0")
-      .summary__item__title {{ $lang.money.total }}
+      .summary__item__title {{ $t('money.total') }}
       .summary__item__amount
         Amount(
           v-if="incomesAmount > 0 || expensesAmount > 0"

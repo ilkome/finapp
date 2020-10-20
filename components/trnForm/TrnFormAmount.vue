@@ -62,9 +62,9 @@ export default {
 
       .trnFormAmount__content
         .trnFormAmount__type
-          template(v-if="amountType === 0") {{ $lang.money.expenses }}
-          template(v-if="amountType === 1") {{ $lang.money.incomes }}
-          template(v-if="amountType === 2 && $store.getters['wallets/walletsSortedIds'].length > 1") {{ $lang.money.transfer }}
+          template(v-if="amountType === 0") {{ $t('money.expenses') }}
+          template(v-if="amountType === 1") {{ $t('money.incomes') }}
+          template(v-if="amountType === 2 && $store.getters['wallets/walletsSortedIds'].length > 1") {{ $t('money.transfer') }}
 
         .trnFormAmount__value {{ amountString }}
         .trnFormAmount__evaluation {{ $store.state.trnForm.values.amountEvaluation }}

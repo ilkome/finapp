@@ -37,7 +37,6 @@ export default {
 
     changeLang (lang) {
       this.$store.dispatch('lang/setLang', lang)
-      this.$setLang(lang)
     }
   }
 }
@@ -56,7 +55,7 @@ export default {
         :class="{ _active: $store.state.lang.lang === 'en' }"
       ) EN
 
-    .themeChanger(@click="$store.dispatch('ui/changeTheme')") {{ $lang.changeTheme }}
+    .themeChanger(@click="$store.dispatch('ui/changeTheme')") {{ $t('changeTheme') }}
 
   .tab__content
     AppName
@@ -69,7 +68,7 @@ export default {
     )
       transition(name="fadeIn")
         .loginButton__spiner(v-if="loading"): Spiner
-      .loginButton__text {{ $lang.loginWithGoogle }}
+      .loginButton__text {{ $t('loginWithGoogle') }}
 </template>
 
 <style lang="stylus" scoped>

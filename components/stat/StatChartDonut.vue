@@ -129,19 +129,19 @@ export default {
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
         // return
-        incomesData.push({
+        incomesData.unshift({
           date: periodDate,
           y: Number(`${periodTotal.incomes.toFixed()}`)
         })
-        expensesData.push({
+        expensesData.unshift({
           date: periodDate,
           y: Number(`${periodTotal.expenses.toFixed()}`)
         })
-        totalData.push({
+        totalData.unshift({
           date: periodDate,
           y: Number(`${(totalStart.total + balanceTotal.total).toFixed()}`)
         })
-        categories.push(name)
+        categories.unshift(name)
       }
 
       return {
@@ -153,13 +153,13 @@ export default {
           data: totalData
         }, {
           visible: true,
-          // type: 'spline',
+          type: 'spline',
           name: 'Incomes',
           color: 'var(--c-incomes-1)',
           data: incomesData
         }, {
           visible: true,
-          // type: 'spline',
+          type: 'spline',
           name: 'Expenses',
           color: 'var(--c-expenses-1)',
           data: expensesData

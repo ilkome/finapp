@@ -115,8 +115,8 @@ export default {
     font-size 16px
 
   &._base
-    padding-top 5px
     opacity .6
+    padding-top 5px
 
   &__value
     font-size 15px
@@ -135,8 +135,8 @@ export default {
     padding-left 2px
 
     ~/._original &
-      font-size 12px
       padding-bottom 1px
+      font-size 12px
 
     ~/._base &
       font-size 10px

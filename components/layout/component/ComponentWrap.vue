@@ -96,10 +96,15 @@ export default {
       grid-template-rows minmax(min-content, auto) minmax(50px, min-content)
 
     &-main
-      height 100%
-      scrollbar()
       overflow hidden
+      height 100%
       overflow-y auto
+      scrollbar()
+
+      +media-tablet("less")
+        display flex
+        flex-flow column
+        justify-content center
 
     &-left
       margin-bottom 16px

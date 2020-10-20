@@ -65,18 +65,18 @@ export default {
 
 <template lang="pug">
 .form
-  .form__title {{ $lang.groups.form.title }}
+  .form__title {{ $t('groups.form.title') }}
   .form__group(ref="groupNameRef")
-    .inputText__label {{ $lang.groups.form.name }}
+    .inputText__label {{ $t('groups.form.name') }}
     .inputText
       input.inputText__value(
         type="text"
-        :placeholder="`${$lang.groups.form.name}...`"
+        :placeholder="`${$t('groups.form.name')}...`"
         v-model="groupName")
 
   Button(
     className="_new"
-    :title="$lang.groups.form.button"
+    :title="$t('groups.form.button')"
     @onClick="handleCreateGroup")
 </template>
 

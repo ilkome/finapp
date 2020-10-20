@@ -186,17 +186,18 @@ export default {
 
               .chart-group__content
                 template(v-for="period in periodGroups")
-                  ChartItem2(
+                  ChartItem(
                     :key="period.date"
                     :maxAmountValue="maxAmountValue"
                     :period="period"
-                    parentClassName=".charts__items")
+                    parentClassName=".charts__items"
+                  )
 
       //- simple
       template(v-else)
         .charts__items
           template(v-for="period in periodsValues")
-            ChartItem2(
+            ChartItem(
               :key="period.date"
               :maxAmountValue="maxAmountValue"
               :period="period"

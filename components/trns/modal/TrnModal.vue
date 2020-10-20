@@ -201,9 +201,6 @@ Portal(
 .marginBottom
   margin-bottom $m7
 
-.moreActions
-  padding-top $m8
-
 .item
   display flex
   width 100%

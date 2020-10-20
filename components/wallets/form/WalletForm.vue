@@ -87,7 +87,7 @@ export default {
       if (!this.wallet.name) {
         this.$notify({
           title: '😮',
-          text: this.$lang.wallets.form.name.error
+          text: this.$t('wallets.form.name.error')
         })
         return false
       }
@@ -96,7 +96,7 @@ export default {
       if (!this.wallet.currency) {
         this.$notify({
           title: '😮',
-          text: this.$lang.wallets.form.currency.error
+          text: this.$t('wallets.form.currency.error')
         })
         return false
       }
@@ -107,7 +107,7 @@ export default {
             if (this.walletId !== walletId) {
               this.$notify({
                 title: '😮',
-                text: this.$lang.wallets.form.name.exist
+                text: this.$t('wallets.form.name.exist')
               })
               return false
             }
@@ -115,7 +115,7 @@ export default {
           else {
             this.$notify({
               title: '😮',
-              text: this.$lang.wallets.form.name.exist
+              text: this.$t('wallets.form.name.exist')
             })
             return false
           }
@@ -131,8 +131,8 @@ export default {
 <template lang="pug">
 ComponentWrap
   template(slot="headerLeft")
-    template(v-if="!walletId") {{ $lang.wallets.createNewTitle }}
-    template(v-else) {{ $lang.wallets.editTitle }}
+    template(v-if="!walletId") {{ $t('wallets.createNewTitle') }}
+    template(v-else) {{ $t('wallets.editTitle') }}
 
   template(slot="content")
     .form
@@ -140,11 +140,11 @@ ComponentWrap
         .inputText
           input(
             type="text"
-            :placeholder="$lang.wallets.form.name.placeholder"
+            :placeholder="$t('wallets.form.name.placeholder')"
             v-model="wallet.name"
             v-focus.lazy="$store.state.ui.pc"
           ).inputText__value
-          .inputText__label {{ $lang.wallets.form.name.label }}
+          .inputText__label {{ $t('wallets.form.name.label') }}
 
       .form__btns
         .form__btns__i
@@ -152,18 +152,18 @@ ComponentWrap
             .inputModal._flex
               .inputModal__value {{ wallet.currency }}
               .inputModal__content
-              .inputModal__label {{ $lang.wallets.form.currency.label }}
+              .inputModal__label {{ $t('wallets.form.currency.label') }}
 
         .form__btns__i
           .form-line(@click="showColors = true")
             .inputModal._flex
               .inputModal__value: .inputModal__color(:style="{ background: wallet.color }")
-              .inputModal__label {{ $lang.wallets.form.color.label }}
+              .inputModal__label {{ $t('wallets.form.color.label') }}
 
       .form-line._p0._clean
         Checkbox(
           v-model="wallet.countTotal"
-          :title="$lang.wallets.form.total.placeholder"
+          :title="$t('wallets.form.total.placeholder')"
           :alt="true")
 
     //- colors
@@ -173,7 +173,7 @@ ComponentWrap
     )
       ModalBottom(
         :center="true"
-        :title="$lang.wallets.form.color.placeholder"
+        :title="$t('wallets.form.color.placeholder')"
         @onClose="showColors = false"
       )
         .inputText
@@ -185,7 +185,7 @@ ComponentWrap
                 @click="handleColorSelect(color)"
                 v-for="color in colors")
         .customColor
-          .customColor__title {{ $lang.wallets.form.color.custom }}
+          .customColor__title {{ $t('wallets.form.color.custom') }}
           input.customColor__value(v-model="wallet.color" type="color")
 
     //- currencies
@@ -195,7 +195,7 @@ ComponentWrap
     )
       ModalBottom(
         :center="true"
-        :title="$lang.wallets.form.currency.placeholder"
+        :title="$t('wallets.form.currency.placeholder')"
         @onClose="showCurrencies = false"
       )
         .inputText
@@ -210,7 +210,7 @@ ComponentWrap
     .col
       Button(
         :class="['_text-center _blue', { _inline: $store.state.ui.pc }]"
-        :title="$lang.wallets.form.save"
+        :title="$t('wallets.form.save')"
         @onClick="handleSubmit")
 </template>
 

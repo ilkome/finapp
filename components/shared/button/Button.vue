@@ -123,12 +123,7 @@ export default {
 
   &._borderBottom
     margin-bottom 0
-    padding-right $m6
-    padding-left $m6
-    border-bottom 1px solid var(--c-bg-7)
-
-    &:last-child
-      border-bottom 0
+    padding $m7 0
 
   &._border
     display flex
@@ -171,7 +166,9 @@ export default {
     margin 0 auto
 
     @media $media-laptop
+      display inline-flex
       width auto
+      margin 0
 
   &._center
     align-items center

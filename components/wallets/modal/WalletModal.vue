@@ -81,7 +81,7 @@ export default {
 
 <template lang="pug">
 Portal(
-  v-if="$store.state.wallets.modal.id"
+  v-if="$store.state.wallets.modal.show"
   to="modal"
 )
   ModalBottom(
@@ -98,15 +98,15 @@ Portal(
 
       template(slot="btns")
         ModalButton(
-          :name="$lang.base.delete"
+          :name="$t('base.delete')"
           icon="mdi mdi-delete"
           @onClick="handleDeleteClick")
         ModalButton(
-          :name="$lang.base.edit"
+          :name="$t('base.edit')"
           icon="mdi mdi-pencil"
           @onClick="handleEditClick")
         ModalButton(
-          :name="$lang.base.filter"
+          :name="$t('base.filter')"
           icon="mdi mdi-filter-outline"
           @onClick="handleSetFilterWallet")
 

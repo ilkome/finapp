@@ -48,7 +48,7 @@ export default {
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'categories'")
         ComponentWrap
-          template(slot="headerLeft") {{ $lang.categories.title }}
+          template(slot="headerLeft") {{ $t('categories.title') }}
 
           template(slot="content")
             CategoriesList.dashboardItems(
@@ -59,14 +59,14 @@ export default {
               Button(
                 className="_blue _inline"
                 icon="mdi mdi-plus"
-                :title="$lang.categories.new"
+                :title="$t('categories.new')"
                 @onClick="$store.dispatch('ui/setActiveTab', 'createCategory')")
 
       //- wallets
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'wallets'")
         ComponentWrap
-          template(slot="headerLeft") {{ $lang.wallets.title }}
+          template(slot="headerLeft") {{ $t('wallets.title') }}
 
           template(slot="content")
             WalletsList3.dashboardItems(
@@ -79,12 +79,12 @@ export default {
                 Button(
                   className="_inline _blue"
                   icon="mdi mdi-plus"
-                  :title="$lang.wallets.new"
+                  :title="$t('wallets.new')"
                   @onClick="$store.dispatch('ui/setActiveTab', 'createWallet')")
               .col
                 Button(
                   className="_inline _blue"
-                  :title="$lang.base.sort"
+                  :title="$t('base.sort')"
                   icon="mdi mdi-arrow-split-horizontal"
                   @onClick="$store.dispatch('ui/setActiveTab', 'walletsSort')")
 

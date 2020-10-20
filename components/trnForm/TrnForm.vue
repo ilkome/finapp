@@ -106,13 +106,7 @@ export default {
       try {
         const isFormValid = this.validateForm()
         if (isFormValid) {
-          // if (this.$store.state.trnForm.values.trnId) {
-          //   this.$store.commit('trnForm/closeTrnForm')
-          // }
-
           this.showSuccess()
-          // setTimeout(() => {
-          // }, 200)
 
           setTimeout(() => {
             this.isTransfer
@@ -303,12 +297,12 @@ export default {
                 //- Laptop
                 template(v-if="$store.state.ui.pc")
                   TrnFormHeader
-                  TrnFormHeaderTransfer
+                  TrnFormHeaderTransfer(v-if="isTransfer")
                   TrnFormCalendar
                   TrnFormAmountInput(@onFormSubmit="handleSubmitForm")
                   template(v-if="$store.getters['categories/quickSelectorCategoriesIds'].length")
                     .trnForm__quickCats
-                      .formTitle Favorite categories
+                      .formTitle {{ $t('categories.favoriteTitle') }}
                       CategoriesView(
                         :ids="$store.getters['categories/quickSelectorCategoriesIds']"
                         ui="_flat"
@@ -316,6 +310,7 @@ export default {
                         @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })"
                       )
 
+                //- Mobile
                 template(v-if="$store.state.ui.mobile")
                   TrnFormAmount(
                     @handleMath="handleMath"
@@ -327,7 +322,7 @@ export default {
                     @onFormSubmit="handleSubmitForm"
                   )
                   TrnFormHeader
-                  TrnFormHeaderTransfer(v-if="$store.getters['wallets/walletsSortedIds'].length > 1")
+                  TrnFormHeaderTransfer(v-if="isTransfer")
 
               .swiper-slide(:style="{ minHeight: `${$store.state.trnForm.height}px` }")
                 template(v-if="slider")
@@ -346,32 +341,6 @@ export default {
       TrnFormModalTransferTo
       TrnFormModalTrn
 </template>
-
-<style lang="stylus">
-@import "~assets/stylus/variables/margins"
-
-.trnForm
-  &__quickWallets
-    padding-bottom 16px
-
-    .walletsWidget
-      opacity .6
-      display grid
-      grid-template-columns repeat(3, minmax(auto, 1fr))
-      grid-column-gap 12px
-      grid-row-gap 12px
-      padding 0 16px
-      padding-top 12px
-
-    .walletItemWidget
-      overflow hidden
-      border-radius $m4
-
-.formWallets
-  .walletsWidget
-    padding-top 0
-
-</style>
 
 <style lang="stylus" scoped>
 @import "~assets/stylus/variables/animations"
@@ -408,8 +377,4 @@ export default {
 
     @media $media-laptop
       border-radius 16px
-
-  // &__scroll
-  //   @media $media-laptop
-  //     min-height 600px
 </style>

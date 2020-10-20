@@ -34,20 +34,22 @@ export default {
 
         template(slot="content")
           ContextMenuItem(
+            :title="$t('theme.change')"
             icon="mdi mdi-palette"
-            title="Change theme"
-            @onClick="$store.dispatch('ui/changeTheme')")
+            @onClick="$store.dispatch('ui/changeTheme')"
+          )
           ContextMenuItem(
             icon="mdi mdi-cog-outline"
-            :title="$lang.settings.open"
+            :title="$t('settings.open')"
             @onClick="$store.dispatch('ui/setActiveTab', 'settings')"
             @onClose="visibleSettingsMenu = !visibleSettingsMenu")
           .context-menu-sep
           ContextMenuItem(
+            :title="$t('userLogout')"
             icon="mdi mdi-logout"
-            title="Sign Out"
             @onClick="$store.dispatch('user/signOut')"
-            @onClose="visibleSettingsMenu = !visibleSettingsMenu")
+            @onClose="visibleSettingsMenu = !visibleSettingsMenu"
+          )
 
       .sidebar__menu__item(
         :class="{ _active: activeTab === 'wallets'}"

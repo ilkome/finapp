@@ -27,8 +27,8 @@ label.checkbox(:class="{ _alt: alt }")
   )
   .checkbox__helper
     .checkbox__toogle
-      .checkbox__toogle__item._on {{ $lang.base.on }}
-      .checkbox__toogle__item._off {{ $lang.base.off }}
+      .checkbox__toogle__item._on {{ $t('base.on') }}
+      .checkbox__toogle__item._off {{ $t('base.off') }}
   .checkbox__title(v-if="title") {{ title }}
 </template>
 

@@ -1,5 +1,7 @@
 <script>
 export default {
+  name: 'StatItem2',
+
   props: {
     category: {
       type: Object,
@@ -60,7 +62,9 @@ export default {
 
   methods: {
     toogleShowInside (categoryId) {
-      this.showInside = !this.showInside
+      this.$store.commit('stat/setCategoryModalId', categoryId)
+      this.$store.commit('stat/setCategoryModalShow', true)
+      // this.showInside = !this.showInside
     }
   }
 }
@@ -73,7 +77,7 @@ export default {
 
   .statItem__content
     .statItem__graph: .statItem__graph__in(:style="styles")
-    .statItem__icon(@click.stop="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)")
+    .statItem__icon(@click.stop="showInside = !showInside")
       Icon(
         :background="category.color"
         :icon="category.icon"
@@ -88,7 +92,7 @@ export default {
   template(v-if="showInside")
     .statItem__inside(@click.stop="")
       template(v-if="showChildCategories")
-        StatItemChildCats(:categoryId="categoryId", :type="type")
+        StatItemChildCats2(:categoryId="categoryId", :type="type")
 
       template(v-else)
         TrnsList(
@@ -123,7 +127,7 @@ export default {
   &._active
     padding 0
     margin-bottom 30px
-    background var(--c-bg-3)
+    background var(--c-bg-2)
     border 1px solid var(--c-bg-7)
 
     &:first-child

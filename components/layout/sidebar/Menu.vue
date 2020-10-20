@@ -1,12 +1,5 @@
 <script>
 export default {
-  props: {
-    slider: {
-      type: Object,
-      default: () => {}
-    }
-  },
-
   computed: {
     activeTab () {
       return this.$store.state.ui.activeTab
@@ -16,45 +9,49 @@ export default {
       return {
         trnForm: {
           icon: 'mdi mdi-plus',
-          name: this.$lang.createTrn,
-          isOpen: false
+          name: this.$t('createTrn'),
+          isOpen: false,
+          private: this.$store.state.ui.mobile
         },
         stat: {
           icon: 'mdi mdi-poll',
-          name: this.$lang.stat.shortTitle,
-          isOpen: false
+          name: this.$t('stat.shortTitle'),
+          isOpen: false,
+          private: this.$store.state.ui.mobile
         },
         wallets: {
           icon: 'mdi mdi-credit-card-multiple',
-          name: this.$lang.wallets.name,
-          isOpen: true
+          name: this.$t('wallets.name'),
+          isOpen: true,
+          private: this.$store.state.ui.mobile
         },
         categories: {
           icon: 'mdi mdi-folder-star',
-          name: this.$lang.categories.name,
-          isOpen: false
+          name: this.$t('categories.name'),
+          isOpen: false,
+          private: this.$store.state.ui.mobile
         },
         budgets: {
           icon: 'mdi mdi-hand-saw',
-          name: this.$lang.budgets.name,
+          name: this.$t('budgets.name'),
           isOpen: false,
           private: true
         },
         groups: {
           icon: 'mdi mdi-folder-multiple-outline',
-          name: this.$lang.groups.name,
+          name: this.$t('groups.name'),
           isOpen: false,
           private: true
         },
         users: {
           icon: 'mdi mdi-account-multiple',
-          name: 'Users',
+          name: this.$t('users.title'),
           isOpen: false,
           private: true
         },
         settings: {
           icon: 'mdi mdi-cog-outline',
-          name: this.$lang.settings.title,
+          name: this.$t('settings.title'),
           isOpen: true
         }
       }
@@ -65,6 +62,7 @@ export default {
     handleClickMenu (menuId) {
       if (menuId === 'users') {
         this.$router.push('/users')
+        this.$store.dispatch('ui/setActiveTab', 'stat')
         return
       }
       else if (menuId === 'trnForm') {
@@ -80,25 +78,6 @@ export default {
 
       if (this.$listeners.onClickMenuCalback) {
         this.$listeners.onClickMenuCalback()
-      }
-
-      if (this.slider) {
-        switch (menuId) {
-          case 'wallets':
-            this.slider.slideTo(0)
-            break
-          case 'stat':
-            this.slider.slideTo(1)
-            break
-          case 'history':
-            this.slider.slideTo(3)
-            break
-          case 'categories':
-            this.slider.slideTo(2)
-            break
-          default:
-            this.slider.slideTo(0)
-        }
       }
 
       this.$store.dispatch('ui/setActiveTab', menuId)
@@ -139,8 +118,8 @@ item-bg-active()
   display grid
   grid-template-columns 24px 1fr 24px
   grid-column-gap 20px
-  padding 16px 16px
   align-items center
+  padding 16px 16px
 
   +media-laptop()
     padding 16px 20px
@@ -159,9 +138,9 @@ item-bg-active()
   &__icon
     align-self center
     justify-self center
+    color var(--c-font-3)
     font-size 20px
     grid-column 1 / 2
-    color var(--c-font-3)
 
   &__text
     grid-column 2 / 3
@@ -175,11 +154,11 @@ item-bg-active()
     display flex
     align-items center
     justify-content center
-    margin -10px 0
     width 40px
     height 40px
+    margin -10px 0
     margin-right -14px
     justify-self end
-    font-size 22px
     color var(--c-font-4)
+    font-size 22px
 </style>

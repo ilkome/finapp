@@ -39,12 +39,6 @@
       @media $media-laptop
         color var(--c-font-2)
 
-.walletsWidget
-  z-index 2
-  position relative
-  overflow hidden
-  display flex
-
 .walletsTiles
   display grid
   grid-template-columns repeat(3, 1fr)
@@ -53,8 +47,8 @@
   padding 0 $m7
 
 .walletsLine
-  scrollbar()
-  display flex
   overflow hidden
+  display flex
   overflow-x auto
   padding 0 $m7
+  scrollbar()

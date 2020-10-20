@@ -2,7 +2,7 @@
 import dayjs from 'dayjs'
 
 export default {
-  name: 'ChartItem2',
+  name: 'ChartItem',
 
   props: {
     period: {
@@ -138,28 +138,25 @@ export default {
     display none
 
   &._week
-    padding-left $m4
     padding-right $m4
+    padding-left $m4
 
   &._month
-    padding-left $m4
     padding-right $m4
+    padding-left $m4
 
   &._year
-    padding-left $m4
     padding-right $m4
-
-  &._grouped
-    // min-width 0
+    padding-left $m4
 
   &._grouped._day
-    padding-left 2px
     padding-right 2px
+    padding-left 2px
 
   &._grouped._week
   &._grouped._month
-    padding-left 2px
     padding-right 2px
+    padding-left 2px
 
   &:hover
     background var(--c-bg-3)
@@ -169,9 +166,9 @@ export default {
     background var(--c-bg-4)
 
   &__name
+    padding-top 4px
     text-align center
     typo-small-upper(10px)
-    padding-top 4px
     white-space nowrap
 
   &__graph
@@ -184,13 +181,19 @@ export default {
       justify-content flex-end
       height 78px
 
+      +media-ipad()
+        height 98px
+
       ^[0]._grouped &
         height 58px
 
+        +media-ipad()
+          height 78px
+
     &-line
       width 6px
-      margin 0 1px
       min-height 1px
+      margin 0 1px
       border-radius 6px
 
       &._expenses

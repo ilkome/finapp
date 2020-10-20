@@ -5,7 +5,7 @@ export default {
 
 <template lang="pug">
 .layout
-  LazyLayoutMobile2(v-if="$store.state.ui.mobile")
+  LazyLayoutMobile(v-if="$store.state.ui.mobile")
   LazyLayoutPc(v-if="$store.state.ui.pc")
 </template>
 

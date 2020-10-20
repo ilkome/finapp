@@ -43,7 +43,7 @@ export default {
 
 <template lang="pug">
 ComponentWrap(:contentPadding="$store.state.ui.pc")
-  template(slot="headerLeft") {{ $lang.wallets.sortTitle }}
+  template(slot="headerLeft") {{ $t('wallets.sortTitle') }}
 
   template(slot="content")
     WalletsList2(
@@ -68,7 +68,7 @@ ComponentWrap(:contentPadding="$store.state.ui.pc")
     .col
       Button(
         className="_small _blue _text-center"
-        :title="$lang.base.save"
+        :title="$t('base.save')"
         @onClick="saveWalletsOrder"
       )
 </template>
@@ -84,8 +84,8 @@ item-main-text()
   fs-m()
 
 item-icon()
-  font-size 22px
   color var(--c-font-5)
+  font-size 22px
 
   &:active
     item-bg-active()

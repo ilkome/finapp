@@ -121,7 +121,7 @@ export default {
       if (!this.category.name) {
         this.$notify({
           title: '😮',
-          text: this.$lang.categories.form.name.error
+          text: this.$t('categories.form.name.error')
         })
         return false
       }
@@ -132,7 +132,7 @@ export default {
             if (this.categoryId !== categoryId) {
               this.$notify({
                 title: '😮',
-                text: this.$lang.categories.form.name.exist
+                text: this.$t('categories.form.name.exist')
               })
               return false
             }
@@ -140,7 +140,7 @@ export default {
           else {
             this.$notify({
               title: '😮',
-              text: this.$lang.categories.form.name.exist
+              text: this.$t('categories.form.name.exist')
             })
             return false
           }
@@ -157,8 +157,8 @@ export default {
 ComponentWrap
   template(slot="headerLeft")
     template(v-if="!categoryId")
-      div {{ $lang.categories.createNewTitle }}
-    template(v-else) {{ $lang.categories.editTitle }}
+      div {{ $t('categories.createNewTitle') }}
+    template(v-else) {{ $t('categories.editTitle') }}
 
   template(slot="content")
     .form
@@ -166,10 +166,10 @@ ComponentWrap
         .inputText
           input(
             type="text"
-            :placeholder="$lang.categories.form.name.placeholder"
+            :placeholder="$t('categories.form.name.placeholder')"
             v-model="category.name"
           ).inputText__value
-          .inputText__label {{ $lang.categories.form.name.label }}
+          .inputText__label {{ $t('categories.form.name.label') }}
 
       //- can not change root category if inside this category already has some categories
       template(v-if="this.$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0 && $store.getters['categories/hasCategories']")
@@ -186,27 +186,27 @@ ComponentWrap
                   .inputModal__name {{ $store.state.categories.items[category.parentId].name }}
                 template(v-else)
                   .inputModal__icon: .mdi.mdi-folder-star
-                  .inputModal__name {{ $lang.categories.form.parent.no }}
-              .inputModal__label {{ $lang.categories.form.parent.label }}
+                  .inputModal__name {{ $t('categories.form.parent.no') }}
+              .inputModal__label {{ $t('categories.form.parent.label') }}
 
       .form__btns
         .form__btns__i
           .form-line(@click="showColors = true")
             .inputModal._flex
               .inputModal__value: .inputModal__color(:style="{ background: category.color }")
-              .inputModal__label {{ $lang.categories.form.color.label }}
+              .inputModal__label {{ $t('categories.form.color.label') }}
 
         .form__btns__i
           .form-line(@click="showIcons = true")
             .inputModal._flex
               .inputModal__icon: div(:class="category.icon", :style="{ color: category.color }")
-              .inputModal__label {{ $lang.categories.form.icon.label }}
+              .inputModal__label {{ $t('categories.form.icon.label') }}
 
       template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length")
         .form-line._p0._clean
           Checkbox(
             v-model="applyChildColor"
-            :title="$lang.categories.form.childColor"
+            :title="$t('categories.form.childColor')"
             :alt="true"
           )
 
@@ -214,12 +214,12 @@ ComponentWrap
         .form-line._p0._clean
           Checkbox(
             v-model="category.showInLastUsed"
-            :title="$lang.categories.form.lastUsed"
+            :title="$t('categories.form.lastUsed')"
             :alt="true")
         .form-line._p0._clean
           Checkbox(
             v-model="category.showInQuickSelector"
-            :title="$lang.categories.form.quickSelector"
+            :title="$t('categories.form.quickSelector')"
             :alt="true")
 
     //- colors
@@ -229,7 +229,7 @@ ComponentWrap
     )
       ModalBottom(
         :center="true"
-        :title="$lang.categories.form.color.placeholder"
+        :title="$t('categories.form.color.placeholder')"
         @onClose="showColors = false"
       )
         .inputText
@@ -242,7 +242,7 @@ ComponentWrap
                 @click="handleColorSelect(color)"
               )
         .customColor
-          .customColor__title {{ $lang.categories.form.color.custom }}
+          .customColor__title {{ $t('categories.form.color.custom') }}
           input.customColor__value(v-model="category.color" type="color")
 
     //- parent
@@ -253,12 +253,12 @@ ComponentWrap
       ModalBottom(
         key="parent"
         :center="true"
-        :title="$lang.categories.form.parent.label"
+        :title="$t('categories.form.parent.label')"
         @onClose="showParents = false"
       )
         .padding-bottom
           ModalButton(
-            :name="$lang.categories.form.parent.no"
+            :name="$t('categories.form.parent.no')"
             icon="mdi mdi-folder-star"
             @onClick="() => handleParenCategorySelect(0)")
         CategoriesView(
@@ -273,7 +273,7 @@ ComponentWrap
     )
       ModalBottom(
         :center="true"
-        :title="$lang.categories.form.icon.placeholder"
+        :title="$t('categories.form.icon.placeholder')"
         @onClose="showIcons = false"
       )
         .icons
@@ -292,7 +292,7 @@ ComponentWrap
     .col
       Button(
         :class="['_text-center _blue _ml-big', { _inline: $store.state.ui.pc }]"
-        :title="$lang.categories.form.save"
+        :title="$t('categories.form.save')"
         @onClick="handleSubmit")
 </template>
 

@@ -78,7 +78,7 @@ export default {
 
     .budgetItem__total
       .sum._right
-        .sum__title {{ $lang.budgets.stat.total }}
+        .sum__title {{ $t('budgets.stat.total') }}
         .sum__amount
           Amount(:currency="budget.currency" :value="budget.amount")
 
@@ -88,11 +88,11 @@ export default {
   .budgetItem__info(@click="isTrnsVisible = !isTrnsVisible")
     .budgetItem__amounts
       .sum
-        .sum__title {{ $lang.budgets.stat.left }}
+        .sum__title {{ $t('budgets.stat.left') }}
         .sum__amount
           Amount(:currency="budget.currency" :value="budget.amount - gotAmount")
       .sum._right
-        .sum__title {{ $lang.budgets.stat.got }}
+        .sum__title {{ $t('budgets.stat.got') }}
         .sum__amount
           Amount(:currency="budget.currency" :type="1" :value="gotAmount")
 

@@ -41,7 +41,6 @@ export default {
 
     changeLang (lang) {
       this.$store.dispatch('lang/setLang', lang)
-      this.$setLang(lang)
     }
   }
 }
@@ -56,24 +55,24 @@ export default {
       .tab
         .tab__content
           .header
-            .header__title {{ $lang.app.welcome }}
-            .header__desc {{ $lang.app.desc }}
-            .header__user(@click="$store.dispatch('user/signOut')") {{ $lang.userLogout }} {{ $store.state.user.user.email }}
+            .header__title {{ $t('app.welcome') }}
+            .header__desc {{ $t('app.desc') }}
+            .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout }} {{ $store.state.user.user.email') }}
 
           .options
             .options__item
-              .options__desc {{ $lang.app.lang.select }}
+              .options__desc {{ $t('app.lang.select') }}
               .themeSelector
                 .themeSelector__item(
                   :class="{ _active: $store.state.lang.lang === 'ru' }"
                   @click="changeLang('ru')"
-                ) {{ $lang.app.lang.ru }}
+                ) {{ $t('app.lang.ru') }}
 
                 .themeSelector__item(
                   :class="{ _active: $store.state.lang.lang === 'en' }"
                   @click="changeLang('en')"
-                ) {{ $lang.app.lang.en }}
-              .options__desc {{ $lang.app.theme.select }}
+                ) {{ $t('app.lang.en') }}
+              .options__desc {{ $t('app.theme.select') }}
 
               .themeSelector
                 .themeSelector__item._dark(
@@ -85,7 +84,7 @@ export default {
                       .mdi.mdi-lightbulb-on
                     template(v-else)
                       .mdi.mdi-lightbulb-outline
-                  .themeSelector__title {{ $lang.app.theme.dark }}
+                  .themeSelector__title {{ $t('app.theme.dark') }}
 
                 .themeSelector__item._light(
                   :class="{ _active: $colorMode.value === 'light' }"
@@ -96,10 +95,10 @@ export default {
                       .mdi.mdi-lightbulb-on
                     template(v-else)
                       .mdi.mdi-lightbulb-outline
-                  .themeSelector__title {{ $lang.app.theme.light }}
+                  .themeSelector__title {{ $t('app.theme.light') }}
 
               Button._blue._center(
-                :title="$lang.buttons.nextStep"
+                :title="$t('buttons.nextStep')"
                 @onClick="step = 2")
 
   transition(name="fadeIn")
@@ -107,25 +106,25 @@ export default {
       .tab
         .tab__content
           .header
-            .header__title {{ $lang.app.welcome }}
-            .header__desc {{ $lang.app.desc }}
-            .header__user(@click="$store.dispatch('user/signOut')") {{ $lang.userLogout }} {{ $store.state.user.user.email }}
+            .header__title {{ $t('app.welcome') }}
+            .header__desc {{ $t('app.desc') }}
+            .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout }} {{ $store.state.user.user.email') }}
 
           .options
             .options__item
-              .options__desc {{ $lang.welcome.create.text }}
+              .options__desc {{ $t('welcome.create.text') }}
               Button._blue._center(
-                :title="$lang.welcome.create.btn"
+                :title="$t('welcome.create.btn')"
                 @onClick="step = 3")
 
             template(v-if="$store.state.demo.hasDemo")
               .options__or
                 .options__or__border
-                .options__or__text {{ $lang.welcome.or }}
+                .options__or__text {{ $t('welcome.or') }}
               .options__item
-                .options__desc {{ $lang.welcome.demo.text }}
+                .options__desc {{ $t('welcome.demo.text') }}
                 Button._grey._center(
-                  :title="$lang.welcome.demo.btn"
+                  :title="$t('welcome.demo.btn')"
                   @onClick="$store.dispatch('demo/createDemo')")
 
   //- wallet
@@ -135,14 +134,14 @@ export default {
         .tab__content
           .tab__wrap
             .header
-              .header__title {{ $lang.app.welcome }}
-              .header__desc {{ $lang.app.desc }}
-              .header__user(@click="$store.dispatch('user/signOut')") {{ $lang.userLogout }} {{ $store.state.user.user.email }}
+              .header__title {{ $t('app.welcome') }}
+              .header__desc {{ $t('app.desc') }}
+              .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout }} {{ $store.state.user.user.email') }}
 
-            .text {{ $lang.welcome.createFirstWallet.text }}
+            .text {{ $t('welcome.createFirstWallet.text') }}
             .button
               Button._blue._center(
-                :title="$lang.welcome.createFirstWallet.btn"
+                :title="$t('welcome.createFirstWallet.btn')"
                 @onClick="showWalletForm = true")
 
   //- category
@@ -151,10 +150,10 @@ export default {
       .tab
         .tab__content
           .icon: .mdi.mdi-folder-star
-          .text {{ $lang.welcome.createFirstCategory.text }}
+          .text {{ $t('welcome.createFirstCategory.text') }}
           .button
             Button._blue._center(
-              :title="$lang.welcome.createFirstCategory.btn"
+              :title="$t('welcome.createFirstCategory.btn')"
               @onClick="showCategoryForm = true")
 
   transition(name="fadeIn")
@@ -181,8 +180,8 @@ export default {
 .steps
   display flex
   width 100%
-  border-radius $m4
   padding-bottom $m10
+  border-radius $m4
 
 .stepItem
   flex-grow 1

@@ -43,12 +43,12 @@ div
       template(v-else)
         Dropdown._inline(
           :active="visibleCustomizeMenu"
-          :title="$lang.settings.customize"
+          :title="$t('settings.customize')"
         )
 
   BaseModal(
     :show="visibleCustomizeMenu"
-    :title="$lang.settings.customize"
+    :title="$t('settings.customize')"
     @onClose="visibleCustomizeMenu = !visibleCustomizeMenu"
   )
     ContextMenuItem(
@@ -62,8 +62,8 @@ div
     ContextMenuItem(
       :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
       :showCheckbox="true"
+      :title="$t('stat.customize.showPeriodsChart')"
       icon="mdi mdi-chart-bar-stacked"
-      title="Periods chart"
       @onClick="$store.dispatch('ui/toogleShowStatGraphs')"
     )
 
@@ -101,7 +101,7 @@ div
     .context-menu-sep
 
     ContextMenuItem(
-      :title="$t('theme.toogle')"
+      :title="$t('theme.change')"
       icon="mdi mdi-palette"
       @onClick="$store.dispatch('ui/changeTheme')"
     )

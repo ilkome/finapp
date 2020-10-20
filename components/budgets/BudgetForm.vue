@@ -79,42 +79,29 @@ export default {
 
 <template lang="pug">
 .form
-  .form__title {{ $lang.budgets.form.title }}
+  .form__title {{ $t('budgets.form.title') }}
 
   .form__group(ref="budgetNameRef")
-    .inputText__label {{ $lang.budgets.form.name }}
+    .inputText__label {{ $t('budgets.form.name') }}
     .inputText
       input.inputText__value(
+        v-model="budgetName"
+        :placeholder="`${$t('budgets.form.name')}...`"
         type="text"
-        :placeholder="`${$lang.budgets.form.name}...`"
-        v-model="budgetName")
+      )
 
   .form__group(ref="budgetAmountRef")
-    .inputText__label {{ $lang.budgets.form.amount }}
+    .inputText__label {{ $t('budgets.form.amount') }}
     .inputText
       cleave(
         v-model="budgetAmount"
-        :placeholder="`${$lang.budgets.form.amount} ${$store.state.currencies.base}...`"
+        :placeholder="`${$t('budgets.form.amount')} ${$store.state.currencies.base}...`"
         class="inputText__value _number"
         :options="amountInputOptions")
 
-  //- .form__group
-    .inputText__label {{ $lang.budgets.trns.name }}
-
-    TrnsList(v-slot="{ trns }")
-      TrnItem(
-        v-for="trnItem in trns"
-        @onClick="handleSelectTrn(trnItem.id)"
-        :category="trnItem.category"
-        :className="{ _selected: isSelectedTrn(trnItem.id) }"
-        :id="trnItem.id"
-        :key="trnItem.id"
-        :trn="trnItem.trn"
-        :wallet="trnItem.wallet")
-
   Button(
     className="_blue _inline _text-center"
-    :title="$lang.budgets.form.button"
+    :title="$t('budgets.form.button')"
     @onClick="handleCreateBudget")
 </template>
 
@@ -138,8 +125,8 @@ export default {
 
 .inputText__value
   height 40px
-  font-size 16px
   padding 0 16px
+  font-size 16px
   background var(--c-bg-1)
   border 1px solid var(--c-bg-7)
   border-radius 3px

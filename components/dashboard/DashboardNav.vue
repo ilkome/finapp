@@ -25,34 +25,39 @@ export default {
         template(slot="content")
           ContextMenuItem(
             icon="mdi mdi-weather-sunset-up"
-            :title="$lang.dates.day.simple"
+            :title="$t('dates.day.simple')"
             :selected="$store.state.filter.period === 'day'"
             @onClick="$store.dispatch('filter/setPeriod', 'day')"
-            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu"
+          )
           ContextMenuItem(
             icon="mdi mdi-calendar-week"
-            :title="$lang.dates.week.simple"
+            :title="$t('dates.week.simple')"
             :selected="$store.state.filter.period === 'week'"
             @onClick="$store.dispatch('filter/setPeriod', 'week')"
-            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu"
+          )
           ContextMenuItem(
             icon="mdi mdi-calendar"
-            :title="$lang.dates.month.simple"
+            :title="$t('dates.month.simple')"
             :selected="$store.state.filter.period === 'month'"
             @onClick="$store.dispatch('filter/setPeriod', 'month')"
-            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu"
+          )
           ContextMenuItem(
             icon="mdi mdi-calendar-star"
-            :title="$lang.dates.year.simple"
+            :title="$t('dates.year.simple')"
             :selected="$store.state.filter.period === 'year'"
             @onClick="$store.dispatch('filter/setPeriod', 'year')"
-            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu"
+          )
           ContextMenuItem(
             icon="mdi mdi-database"
-            :title="$lang.dates.all"
+            :title="$t('dates.all')"
             :selected="$store.state.filter.period === 'all'"
             @onClick="$store.dispatch('filter/setPeriod', 'all')"
-            @onClose="visiblePeriodMenu = !visiblePeriodMenu")
+            @onClose="visiblePeriodMenu = !visiblePeriodMenu"
+          )
 
     .periodNav__group
       ._align-right
@@ -70,41 +75,46 @@ export default {
             template(slot="opener")
               Dropdown._noBd(
                 :active="visibleContextMenu"
-                :title="$lang.settings.customize")
+                :title="$t('settings.customize')"
+              )
 
             template(slot="content")
               ContextMenuItem(
-                icon="mdi mdi-chart-bar-stacked"
-                title="Periods chart"
+                :title="$t('stat.customize.showPeriodsChart')"
                 :showCheckbox="true"
                 :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
-                @onClick="$store.dispatch('ui/toogleShowStatGraphs')")
+                icon="mdi mdi-chart-bar-stacked"
+                @onClick="$store.dispatch('ui/toogleShowStatGraphs')"
+              )
 
               ContextMenuItem(
                 icon="mdi mdi-folder-star"
-                title="Cats chart"
+                :title="$t('stat.customize.showCategorisChart')"
                 :showCheckbox="true"
                 :checkboxValue="$store.state.ui.catsChart === 'visible'"
                 @onClick="$store.dispatch('ui/toogleVisibleCatsChart')")
 
               ContextMenuItem(
-                icon="mdi mdi-chart-gantt"
-                title="Cats stat"
+                :title="$t('stat.customize.showCategorisList')"
                 :showCheckbox="true"
                 :checkboxValue="$store.state.ui.statItems === 'visible'"
-                @onClick="$store.dispatch('ui/toogleVisibilityStatItems')")
+                icon="mdi mdi-chart-gantt"
+                @onClick="$store.dispatch('ui/toogleVisibilityStatItems')"
+              )
 
               .context-menu-sep
 
               ContextMenuItem(
+                :title="$t('theme.change')"
                 icon="mdi mdi-palette"
-                title="Change theme"
-                @onClick="$store.dispatch('ui/changeTheme')")
+                @onClick="$store.dispatch('ui/changeTheme')"
+              )
               ContextMenuItem(
+                :title="$t('currency.selectBaseTitle')"
                 icon="mdi mdi-currency-usd"
-                title="Change base currency"
                 @onClick="$store.commit('currencies/showBaseCurrenciesModal')"
-                @onClose="visibleContextMenu = !visibleContextMenu")
+                @onClose="visibleContextMenu = !visibleContextMenu"
+              )
 </template>
 
 <style lang="stylus" scoped>

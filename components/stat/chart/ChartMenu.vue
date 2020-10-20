@@ -64,27 +64,30 @@ ContextMenu(
     template(slot="opener")
       Dropdown._noBd(
         :active="visibleContextMenu"
-        title="Chart")
+        :title="$t('chart.title')"
+      )
 
   template(slot="content")
     template(v-if="filterPeriod !== 'year'")
       ContextMenuItem(
         icon="mdi mdi-ungroup"
-        :title="periods[filterPeriod].grouped ? 'Simple charts' : 'Grouped charts'"
+        :title="periods[filterPeriod].grouped ? $t('chart.view.groupedTitle') : $t('chart.view.simpleTitle')"
         @onClick="toogleChartsView")
 
     ContextMenuItem(
       icon="mdi mdi-plus"
-      :title="periods[filterPeriod].grouped ? 'Add group' : 'Add period'"
-      @onClick="addPeriodOrGroup")
+      :title="periods[filterPeriod].grouped ? $t('chart.view.addGroupButton') : $t('chart.view.addPeriodButton')"
+      @onClick="addPeriodOrGroup"
+    )
 
     ContextMenuItem(
       v-if="(periods[filterPeriod].grouped && periods[filterPeriod].showedGroups > 1) || (!periods[filterPeriod].grouped && periods[filterPeriod].showedPeriods > 1)"
       icon="mdi mdi-minus"
-      :title="periods[filterPeriod].grouped ? 'Remove group' : 'Remove period'"
-      @onClick="removePeriodOrGroup")
+      :title="periods[filterPeriod].grouped ? $t('chart.view.removeGroupButton') : $t('chart.view.removePeriodButton')"
+      @onClick="removePeriodOrGroup"
+    )
 
   template(slot="desc")
-    template(v-if="periods[filterPeriod].grouped") Showed {{ periods[filterPeriod].showedGroups }} groups
-    template(v-else) Showed {{ periods[filterPeriod].showedPeriods }} periods
+    template(v-if="periods[filterPeriod].grouped") {{ $t('chart.view.showed') }} {{ periods[filterPeriod].showedGroups }} {{ $t('chart.view.groupsName') }}
+    template(v-else) {{ $t('chart.view.showed') }} {{ periods[filterPeriod].showedPeriods }}  {{ $t('chart.view.periodsName') }}
 </template>

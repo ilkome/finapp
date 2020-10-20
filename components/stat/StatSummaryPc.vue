@@ -24,7 +24,7 @@ export default {
     .summary__item(:class="{ _expenses: statAverage.expenses > 0 || period === 'all' }")
       template(v-if="statAverage.expenses > 0 || period === 'all'")
         .summary__row
-          .summary__title._expenses {{ $lang.money.expenses }}
+          .summary__title._expenses {{ $t('money.expenses') }}
           .summary__amount
             Amount(
               :big="true"
@@ -35,7 +35,7 @@ export default {
         .summary__row(v-if="period !== 'all' && statAverage.expenses > 0")
           .summary__average
             .summary__average__icon: .mdi.mdi-chart-timeline
-            .summary__average__title {{ $lang.money.average }}
+            .summary__average__title {{ $t('money.average') }}
           .summary__amount._average
             Amount(
               :currency="$store.state.currencies.base"
@@ -46,7 +46,7 @@ export default {
     .summary__item(:class="{ _total: statAverage.total !== 0 || period === 'all' }")
       template(v-if="statAverage.total !== 0 || period === 'all'")
         .summary__row
-          .summary__title {{ $lang.money.total }}
+          .summary__title {{ $t('money.total') }}
           .summary__amount
             Amount(
               :big="true"
@@ -57,7 +57,7 @@ export default {
           .summary__row
             .summary__average
               .summary__average__icon: .mdi.mdi-chart-timeline
-              .summary__average__title {{ $lang.money.average }}
+              .summary__average__title {{ $t('money.average') }}
             .summary__amount._average
               Amount(
                 :currency="$store.state.currencies.base"
@@ -68,7 +68,7 @@ export default {
     .summary__item(:class="{ _incomes: statAverage.incomes > 0 || period === 'all' }")
       template(v-if="statAverage.incomes > 0 || period === 'all'")
         .summary__row
-          .summary__title._incomes {{ $lang.money.incomes }}
+          .summary__title._incomes {{ $t('money.incomes') }}
           .summary__amount
             Amount(
               :big="true"
@@ -80,7 +80,7 @@ export default {
           .summary__row
             .summary__average
               .summary__average__icon: .mdi.mdi-chart-timeline
-              .summary__average__title {{ $lang.money.average }}
+              .summary__average__title {{ $t('money.average') }}
             .summary__amount._average
               Amount(
                 :currency="$store.state.currencies.base"

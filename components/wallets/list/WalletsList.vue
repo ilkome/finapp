@@ -28,7 +28,6 @@ export default {
     className () {
       return {
         walletsList: !this.ui,
-        walletsWidget: this.ui === 'widget',
         walletsTiles: this.ui === 'tile',
         walletsLine: this.ui === 'line'
       }
@@ -70,6 +69,6 @@ export default {
     )
 
   .walletsList__toogle(v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit" @click="toogleWallets")
-    template(v-if="stateLimit > 0") {{ this.$lang.wallets.showAll }}
-    template(v-else) {{ this.$lang.wallets.showOnly }} {{ limit }}
+    template(v-if="stateLimit > 0") {{ $t('wallets.showAll') }}
+    template(v-else) {{ $t('wallets.showOnly') }} {{ limit }}
 </template>

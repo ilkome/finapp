@@ -75,14 +75,14 @@ export default {
       .startSomething
         .options__item(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
           Button._grey._center(
-            :title="$lang.createTrn"
+            :title="$t('createTrn')"
             @onClick="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
           )
 
         .options__item(v-if="$store.state.demo.hasDemo")
           Button._blue._center(
           size="xl"
-          :title="$lang.welcome.demo.btn"
+          :title="$t('welcome.demo.btn')"
           @onClick="$router.push('/welcome')"
         )
 
@@ -90,7 +90,8 @@ export default {
     //------------------------------------------------
     EmptyData(
       v-if="isEmptyData && $store.getters['trns/hasTrns']"
-      :text="$lang.stat.empty")
+      :text="$t('stat.empty')"
+    )
 
     //- history
     //------------------------------------------------
@@ -103,7 +104,7 @@ export default {
         .statGroup(v-if="statCurrentPeriod.incomes.categoriesIds.length")
           .statItem-header
             .statItem-total
-              .statItem-total__title._incomes {{ $lang.money.incomes }}
+              .statItem-total__title._incomes {{ $t('money.incomes') }}
               .statItem-total__amount
                 Amount(
                   :currency="$store.state.currencies.base"
@@ -112,12 +113,13 @@ export default {
             .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
               .statItem-average__title
                 .statItem-average__title-icon: .mdi.mdi-chart-timeline
-                .statItem-average__title-text {{ $lang.money.average }}
+                .statItem-average__title-text {{ $t('money.average') }}
               .statItem-average__amount
                 Amount(
                   :currency="$store.state.currencies.base"
                   :small="true"
                   :value="$store.getters['stat/statAverage'].incomes")
+
           //- incomes: cats charts
           .stat__charts(v-show="$store.state.ui.catsChart === 'visible'")
             PeriodCatsChart(type="incomes")
@@ -139,7 +141,7 @@ export default {
         .statGroup(v-if="statCurrentPeriod.expenses.categoriesIds.length")
           .statItem-header
             .statItem-total
-              .statItem-total__title._expenses {{ $lang.money.expenses }}
+              .statItem-total__title._expenses {{ $t('money.expenses') }}
               .statItem-total__amount
                 Amount(
                   :currency="$store.state.currencies.base"
@@ -148,7 +150,7 @@ export default {
             .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
               .statItem-average__title
                 .statItem-average__title-icon: .mdi.mdi-chart-timeline
-                .statItem-average__title-text {{ $lang.money.average }}
+                .statItem-average__title-text {{ $t('money.average') }}
               .statItem-average__amount
                 Amount(
                   :currency="$store.state.currencies.base"
@@ -179,7 +181,7 @@ export default {
         .statGroup(v-if="statCurrentPeriod.incomes.categoriesIds.length")
           .statItem-header
             .statItem-total
-              .statItem-total__title._incomes {{ $lang.money.incomes }}
+              .statItem-total__title._incomes {{ $t('money.incomes') }}
               .statItem-total__amount
                 Amount(
                   :currency="$store.state.currencies.base"
@@ -188,7 +190,7 @@ export default {
             .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
               .statItem-average__title
                 .statItem-average__title-icon: .mdi.mdi-chart-timeline
-                .statItem-average__title-text {{ $lang.money.average }}
+                .statItem-average__title-text {{ $t('money.average') }}
               .statItem-average__amount
                 Amount(
                   :currency="$store.state.currencies.base"
@@ -214,7 +216,7 @@ export default {
         .statGroup(v-if="statCurrentPeriod.expenses.categoriesIds.length")
           .statItem-header
             .statItem-total
-              .statItem-total__title._expenses {{ $lang.money.expenses }}
+              .statItem-total__title._expenses {{ $t('money.expenses') }}
               .statItem-total__amount
                 Amount(
                   :currency="$store.state.currencies.base"
@@ -223,7 +225,7 @@ export default {
             .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
               .statItem-average__title
                 .statItem-average__title-icon: .mdi.mdi-chart-timeline
-                .statItem-average__title-text {{ $lang.money.average }}
+                .statItem-average__title-text {{ $t('money.average') }}
               .statItem-average__amount
                 Amount(
                   :currency="$store.state.currencies.base"

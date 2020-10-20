@@ -2,6 +2,8 @@
 import dayjs from 'dayjs'
 
 export default {
+  name: 'StatChartsLine2',
+
   computed: {
     periods () {
       return this.$store.state.chart.periods
@@ -168,13 +170,11 @@ export default {
 </script>
 
 <template lang="pug">
-.charts(v-show="$store.state.ui.statGraphsVisibility === 'visible'")
+.charts.swiper-no-swiping
   template(v-if="$store.state.filter.period === 'all'")
     .charts__allData Change period to see chart
-  template(v-if="$store.state.filter.period !== 'all'")
-    .charts__nav(v-if="$store.state.ui.mobile")
-      ChartMenu
 
+  template(v-if="$store.state.filter.period !== 'all'")
     .charts__content
       //- grouped
       template(v-if="periods[filterPeriod].grouped")
@@ -191,7 +191,6 @@ export default {
                     :maxAmountValue="maxAmountValue"
                     :period="period"
                     parentClassName=".charts__items")
-          .chart-space
 
       //- simple
       template(v-else)
@@ -218,44 +217,24 @@ export default {
 .charts
   z-index 5
   position relative
-  background var(--c-bg-2)
-  border-bottom 1px solid var(--c-bg-1)
-
-  @media $media-laptop
-    opacity .7
-    min-height 120px
-    anim-all()
-
-  &:hover
-    @media $media-laptop
-      opacity 1
+  padding $m6
 
   &__allData
+    opacity .7
     display flex
     align-items center
     justify-content center
     font-size 14px
-    opacity .7
-
-    @media $media-laptop
-      min-height 178px
 
   &__items
-    cursor grab
-    scrollbar()
     overflow hidden
     overflow-x auto
     display flex
-    margin-bottom -1px
-
-    @media $media-laptop
-      padding 0 60px
+    flex-direction row-reverse
+    scrollbar()
 
     &._grouped
-      padding 0 $m7
-
-      @media $media-laptop
-        padding 0 60px
+      padding 0 $m4
 
   &__nav
     z-index 2
@@ -263,41 +242,39 @@ export default {
     right $m7
     bottom $m7
 
-    @media $media-laptop
-      right $mb2
-
 .chart-group
   position relative
-  flex-grow 0
-  margin-right 40px
+  flex-grow 1
+  margin-left 20px
+  padding-left 20px
+  border-left 1px solid var(--c-bg-4)
 
   &:last-child
-    margin-right 0
+    margin-left 0
+    padding-left 0
     border 0
 
   &__name
     opacity .7
     position absolute
+    right 0
     width 100%
     height 42px
-    padding-top $m7
+    padding-top 0
     padding-bottom $m4
     font-secondary()
     font-size 14px
+    text-align center
     text-transform uppercase
     white-space nowrap
     letter-spacing .5px
 
-    @media $media-laptop
-      padding-top $m8
-      font-size 18px
-
   &__content
     display flex
+    flex-direction row-reverse
+    padding-top 20px
 
 .chart-space
   &:last-child
     min-width 40px
-    @media $media-laptop
-      min-width $m10
 </style>

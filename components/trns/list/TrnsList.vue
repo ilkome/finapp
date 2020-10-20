@@ -136,7 +136,7 @@ export default {
   .trnsList__pages(v-if="!isShowedAllTrns")
     Button(
       :class="['_text-center _border _inline']"
-      :title="$lang.trns.more"
+      :title="$t('trns.more')"
       @onClick="showMoreTrns"
     )
 </template>

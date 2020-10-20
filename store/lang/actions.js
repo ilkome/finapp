@@ -21,7 +21,7 @@ export default {
     }
   },
 
-  async initLocalLang ({ rootState, commit }) {
+  async initLocalLang ({ commit }) {
     const localLang = await localforage.getItem('finapp.lang')
     if (localLang) { commit('setLang', localLang) }
   },

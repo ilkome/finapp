@@ -6,9 +6,9 @@ export default {
 
 <template lang="pug">
 a(href="https://ilko.me").copyright
-  | {{ $lang.app.madeBy.text }}
+  | {{ $t('app.madeBy.text') }}
   .copyright__heart.mdi.mdi-heart
-  | {{ $lang.app.madeBy.name }}
+  | {{ $t('app.madeBy.name') }}
 </template>
 
 <style lang="stylus" scoped>

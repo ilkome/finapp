@@ -48,7 +48,7 @@ export default {
     ],
     link: [{
       rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css?family=Roboto:400,500,700|Unica+One|Nunito:400,700,800&display=swap&subset=cyrillic'
+      href: 'https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Unica+One|Nunito:400,700,800&display=swap&subset=cyrillic'
     }, {
       rel: 'stylesheet',
       href: 'https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css'
@@ -78,8 +78,7 @@ export default {
   plugins: [
     { src: '~/plugins/initAppFromCache' },
     { src: '~/plugins/dayjs' },
-    { src: '~/plugins/notifications' },
-    { src: '~/plugins/vueLang' }
+    { src: '~/plugins/notifications' }
   ],
 
   loading: false,
@@ -130,8 +129,6 @@ export default {
    * https://i18n.nuxtjs.org/
    */
   i18n: {
-    defaultLocale: 'en',
-    strategy: 'no_prefix',
     locales: [{
       code: 'en',
       file: 'en-US.js'
@@ -139,6 +136,14 @@ export default {
       code: 'ru',
       file: 'ru-RU.js'
     }],
+    strategy: 'no_prefix',
+    defaultLocale: 'en',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      alwaysRedirect: false
+    },
+    seo: false,
     lazy: true,
     langDir: 'locales/'
   },

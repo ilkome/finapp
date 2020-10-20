@@ -44,7 +44,7 @@ export default {
 TrnFormModal(
   v-if="show"
   :show="show"
-  :title="$lang.trnForm.description.title"
+  :title="$t('trnForm.description.title')"
   :position="$store.state.ui.mobile ? 'bottom' : null"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'description')"
 )
@@ -52,20 +52,20 @@ TrnFormModal(
     .description__filed
       textarea.textarea(
         v-model="description"
-        :placeholder="$lang.trnForm.description.placeholder"
+        :placeholder="$t('trnForm.description.placeholder')"
       )
 
     .description__action
       .description__action-cancel
         Button(
           className="_grey _inline"
-          :title="$lang.base.cancel"
+          :title="$t('base.cancel')"
           @onClick="handleCancel"
         )
       .description__action-ok
         Button(
           className="_blue _inline"
-          :title="$lang.base.save"
+          :title="$t('base.save')"
           @onClick="handleSave"
         )
 </template>

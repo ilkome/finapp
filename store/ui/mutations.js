@@ -21,10 +21,6 @@ export default {
     state.statGraphsVisibility = 'hidden'
   },
 
-  setLastUsedCatsInTrnForm (state, status) {
-    state.lastUsedCatsInTrnForm = status
-  },
-
   setVisibleCatsChart (state, status) {
     state.catsChart = status
   },

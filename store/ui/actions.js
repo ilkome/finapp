@@ -4,11 +4,6 @@ export default {
   async initUi ({ commit, dispatch }) {
     const uiLocalStore = await localforage.getItem('uiLocalStore')
 
-    // visible trnForm last used categories
-    const lastUsedCatsInTrnForm = await localforage.getItem('ui.lastUsedCatsInTrnForm')
-    if (lastUsedCatsInTrnForm === 'visible') { commit('setLastUsedCatsInTrnForm', 'visible') }
-    if (lastUsedCatsInTrnForm === 'hidden') { commit('setLastUsedCatsInTrnForm', 'hidden') }
-
     // ui
     if (uiLocalStore) {
       // stat
@@ -93,19 +88,6 @@ export default {
       ? commit('hideStatGraphs')
       : commit('showStatGraphs')
     dispatch('ui/saveUiView', null, { root: true })
-  },
-
-  /**
-    * Toggle last used categories in trnForm on Mobile
-  */
-  toogleLastUsedCatsInTrnForm ({ commit, state }) {
-    let nextStatus
-    state.lastUsedCatsInTrnForm === 'visible'
-      ? nextStatus = 'hidden'
-      : nextStatus = 'visible'
-
-    localforage.setItem('ui.lastUsedCatsInTrnForm', nextStatus)
-    commit('setLastUsedCatsInTrnForm', nextStatus)
   },
 
   /**

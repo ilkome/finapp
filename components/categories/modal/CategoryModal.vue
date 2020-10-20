@@ -104,7 +104,7 @@ export default {
 <template lang="pug">
 div
   Portal(
-    v-if="$store.state.categories.modal.id"
+    v-if="$store.state.categories.modal.show"
     to="modal"
   )
     ModalBottom(
@@ -113,26 +113,27 @@ div
       @afterClose="$store.commit('categories/setCategoryModalId', null)"
     )
       template(slot="header")
-        .modalBottom__header__title {{ category.name }}
-        .modalBottom__child(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
-        .modalBottom__icon
-          Icon(
-            :icon="category.icon"
-            :background="category.color || $store.state.ui.defaultBgColor"
-            :round="true"
-            :big="true")
+        .categoryWrap
+          .categoryIcon
+            Icon(
+              :icon="category.icon"
+              :background="category.color || $store.state.ui.defaultBgColor"
+              :round="true"
+              :big="true"
+            )
+          .modalBottom__header__title {{ category.name }}
 
       template(slot="btns")
         ModalButton(
-          :name="$lang.base.delete"
+          :name="$t('base.delete')"
           icon="mdi mdi-delete"
           @onClick="handleDeleteClick")
         ModalButton(
-          :name="$lang.base.edit"
+          :name="$t('base.edit')"
           icon="mdi mdi-pencil"
           @onClick="handleEditClick")
         ModalButton(
-          :name="$lang.base.filter"
+          :name="$t('base.filter')"
           icon="mdi mdi-filter-outline"
           @onClick="handleSetFilterCategory")
 
@@ -149,3 +150,21 @@ div
     @onClose="showModalConfirm = false"
     @onConfirm="handleDeleteConfirm")
 </template>
+
+<style lang="stylus" scoped>
+.categoryWrap
+  flex-grow 1
+  display flex
+  align-items center
+  justify-content center
+  flex-flow column
+  margin-top -38px
+  margin-bottom -10px
+
+.categoryIcon
+  flex-grow 1
+  display flex
+  align-items center
+  justify-content center
+  padding-bottom 12px
+</style>

@@ -30,9 +30,8 @@ $w360 = 360px
 $w400 = 400px
 $w440 = 440px
 
-//
 // custom width
-//
+// -----------------------------------------------------------------------------
 media($width, $less = false)
   if $less
     @media (max-width: $width)
@@ -41,9 +40,8 @@ media($width, $less = false)
     @media (min-width: $width)
       {block}
 
-//
 // tablet
-//
+// -----------------------------------------------------------------------------
 media-tablet($less = false)
   if $less
     @media (max-width: $tablet - 1)
@@ -52,9 +50,8 @@ media-tablet($less = false)
     @media (min-width: $tablet)
       {block}
 
-//
 // laptop
-//
+// -----------------------------------------------------------------------------
 media-laptop($less = false)
   if $less
     @media (max-width: $laptop - 1)

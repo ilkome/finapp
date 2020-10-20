@@ -26,68 +26,64 @@ export default {
 
 <template lang="pug">
 ComponentWrap(:contentPadding="false")
-  template(slot="headerLeft") {{ $lang.settings.title }}
+  template(slot="headerLeft") {{ $t('settings.title') }}
 
   template(slot="content")
     .settings
       .settings__group
-        .settings__subHeader {{ $lang.trnForm.title }}
-        .settings__item
-          Button._bdb(
-            :checkboxValue="$store.state.ui.lastUsedCatsInTrnForm === 'visible'"
-            :showCheckbox="true"
-            :title="$lang.trnForm.lastUsedCats"
-            icon="mdi mdi-folder-star"
-            @onClick="$store.dispatch('ui/toogleLastUsedCatsInTrnForm')"
-          )
-
-      .settings__group
-        .settings__subHeader {{ $lang.settings.lang }}
+        .settings__subHeader {{ $t('settings.lang') }}
         .settings__item
           LangDropdown
 
       .settings__group
-        .settings__subHeader {{ $lang.settings.app }}
+        .settings__subHeader {{ $t('settings.app') }}
         .settings__item
           Button._bdb(
             icon="mdi mdi-palette"
-            title="Change theme"
-            @onClick="$store.dispatch('ui/changeTheme')")
+            :title="$t('theme.change')"
+            @onClick="$store.dispatch('ui/changeTheme')"
+          )
+
         .settings__item
           Button._bdb(
+            :title="$t('userLogout')"
             icon="mdi mdi-logout"
-            title="Sign Out"
-            @onClick="$store.dispatch('user/signOut')")
+            @onClick="$store.dispatch('user/signOut')"
+          )
 
       .settings__group._paddingTop
-        .settings__subHeader {{ $lang.settings.delete }}
-        .settings__desc {{ $lang.alerts.willDeleteEverything }}
+        .settings__subHeader {{ $t('settings.delete') }}
+        .settings__desc {{ $t('alerts.willDeleteEverything') }}
         .settings__item
           Button._bdb(
+            :title="$t('settings.deleteButton')"
             icon="mdi mdi-delete"
-            title="Delete my data"
-            @onClick="confirmRemoveUserData = true")
+            @onClick="confirmRemoveUserData = true"
+          )
 
       .settings__group(v-if="$store.state.demo.hasDemo")
-        .settings__subHeader {{ $lang.settings.demo }}
-        .settings__desc {{ $lang.alerts.willDeleteEverything }}
+        .settings__subHeader {{ $t('settings.demo') }}
+        .settings__desc {{ $t('alerts.willDeleteEverything') }}
         .settings__item
           Button._bdb(
+            :title="$t('settings.loadDemoButton')"
             icon="mdi mdi-test-tube"
-            title="Load demo"
-            @onClick="confirmCreateDemo = true")
+            @onClick="confirmCreateDemo = true"
+          )
 
       .settings__group
-        .appVersion Version {{ version }}
+        .thanksTo {{ $t('app.thanks') }}
+        .appVersion {{ $t('app.version') }} {{ version }}
 
       ModalBottomConfirm(
-        description="This will delete all your wallets, categories and trns"
+        :description="$t('alerts.willDeleteEverything')"
         :show="confirmCreateDemo"
         @onClose="confirmCreateDemo = false"
-        @onConfirm="generateDemo")
+        @onConfirm="generateDemo"
+      )
 
       ModalBottomConfirm(
-        description="This will delete all your wallets, categories and trns"
+        :description="$t('alerts.willDeleteEverything')"
         :show="confirmRemoveUserData"
         @onClose="confirmRemoveUserData = false"
         @onConfirm="removeUserData"
@@ -133,7 +129,12 @@ ComponentWrap(:contentPadding="false")
     font-weight 500
     padding-bottom 16px
 
+.thanksTo
+  padding-bottom $m5
+  color var(--c-font-2)
+  font-size 14px
+
 .appVersion
   color var(--c-font-3)
-  font-size 14px
+  font-size 10px
 </style>

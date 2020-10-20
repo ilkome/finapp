@@ -8,13 +8,14 @@ export default {
       usersUid: {
         wK0dbJDL8xTdfQiyTOhK5dx11nC2: 'ilkome',
         empty: 'Empty',
+        demoru: 'demoru',
         nd9fycmgEfMiWKq6cBoui9pszjN2: 'Lesya',
         kXVGIN19Mhd7WZUeTtZRqUSo2aJ3: 'Jenya',
         '8WDRZqvN2AauTXAl4mGwAGyKbbr1': 'Senya',
         tDJ0Bozi9iXh51BWZXzPnE2SnrG3: 'Solves',
-        GB5TxVedunVQuNIqBM4vPwndw9N2: 'Anya',
-        Z44Qw7tRHVcBUhd6pTDZxW9oWok2: 'Dev',
-        '9nFJjMSSPMfmTtp8mzaPRoxDDq82': 'Nadya'
+        // GB5TxVedunVQuNIqBM4vPwndw9N2: 'Anya',
+        Z44Qw7tRHVcBUhd6pTDZxW9oWok2: 'Dev'
+        // '9nFJjMSSPMfmTtp8mzaPRoxDDq82': 'Nadya'
       }
     }
   },

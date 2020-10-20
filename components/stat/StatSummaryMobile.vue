@@ -18,7 +18,7 @@ export default {
 .summary
   .summary__item._incomes(@click="$store.dispatch('ui/setActiveTabStat', 'incomes')")
     template(v-if="statAverage.incomes > 0 || period === 'all'")
-      .summary__item__title._incomes {{ $lang.money.incomes }}
+      .summary__item__title._incomes {{ $t('money.incomes') }}
       .summary__item__amount
         Amount(
           :center="true"
@@ -31,7 +31,7 @@ export default {
   .summary__item._total(@click="$store.dispatch('ui/setActiveTabStat', 'stat')")
     template(v-if="statAverage.total !== 0")
       template(v-if="stat.incomes.total > 0 || stat.expenses.total > 0")
-        .summary__item__title {{ $lang.money.total }}
+        .summary__item__title {{ $t('money.total') }}
         .summary__item__amount
           Amount(
             :center="true"
@@ -42,7 +42,7 @@ export default {
 
   .summary__item._expenses(@click="$store.dispatch('ui/setActiveTabStat', 'expenses')")
     template(v-if="statAverage.expenses > 0 || period === 'all'")
-      .summary__item__title._expenses {{ $lang.money.expenses }}
+      .summary__item__title._expenses {{ $t('money.expenses') }}
       .summary__item__amount
         Amount(
           :center="true"

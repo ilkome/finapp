@@ -24,7 +24,7 @@ export default {
 
 <template lang="pug">
 ComponentWrap
-  template(slot="headerLeft") {{ $lang.budgets.name }}
+  template(slot="headerLeft") {{ $t('budgets.name') }}
 
   template(slot="contentLeft" v-if="$store.getters['budgets/budgetsTotal']")
     .budgetItem._total
@@ -34,7 +34,7 @@ ComponentWrap
 
         .budgetItem__total
           .sum._right
-            .sum__title {{ $lang.budgets.stat.total }}
+            .sum__title {{ $t('budgets.stat.total') }}
             .sum__amount
               Amount(
                 :currency="$store.state.currencies.base"
@@ -43,14 +43,14 @@ ComponentWrap
       .budgetItem__info
         .budgetItem__amounts
           .sum
-            .sum__title {{ $lang.budgets.stat.left }}
+            .sum__title {{ $t('budgets.stat.left') }}
             .sum__amount
               Amount(
                 :currency="$store.state.currencies.base"
                 :value="$store.getters['budgets/budgetsTotal'].total - $store.getters['budgets/budgetsTotal'].incomes")
 
           .sum._right
-            .sum__title {{ $lang.budgets.stat.got }}
+            .sum__title {{ $t('budgets.stat.got') }}
             .sum__amount
               Amount(
                 :currency="$store.state.currencies.base"

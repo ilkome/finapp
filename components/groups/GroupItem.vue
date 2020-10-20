@@ -91,7 +91,7 @@ export default {
     //- total
     .groupItem__total
       .sum._right
-        .sum__title {{ $lang.groups.stat.total }}
+        .sum__title {{ $t('groups.stat.total') }}
         .sum__amount
           Amount(:currency="group.currency" :value="totalAmount")
 
@@ -100,13 +100,13 @@ export default {
     .groupItem__amounts
       //- expenses
       .sum
-        .sum__title {{ $lang.groups.stat.expenses }}
+        .sum__title {{ $t('groups.stat.expenses') }}
         .sum__amount
           Amount(:currency="group.currency" :type="0" :value="gotAmount.expenses")
 
       //- incomes
       .sum._right
-        .sum__title {{ $lang.groups.stat.incomes }}
+        .sum__title {{ $t('groups.stat.incomes') }}
         .sum__amount
           Amount(:currency="group.currency" :type="1" :value="gotAmount.incomes")
 

@@ -30,7 +30,7 @@ export default {
 <template lang="pug">
 ComponentWrap
   template(slot="headerLeft")
-    div {{ $lang.groups.name }}
+    div {{ $t('groups.name') }}
 
   template(slot="contentLeft")
     //- pre {{ groups }}

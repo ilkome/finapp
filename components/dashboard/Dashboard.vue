@@ -22,7 +22,9 @@ export default {
 
 <template lang="pug">
 .dashboard(v-show="$store.state.ui.activeTab === 'stat'")
-  StatChartsLine
+  .dashboard__wrap
+    StatChartsLine
+
   DashboardNav
   StatSummaryPc
   DashboardFilter
@@ -32,27 +34,27 @@ export default {
     .startSomething
       .options__item(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
         Button._grey._center(
-          :title="$lang.createTrn"
+          :title="$t('createTrn')"
           @onClick="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
         )
 
       .options__item(v-if="!$store.getters['wallets/hasWallets'] && !$store.getters['categories/hasCategories']")
-        h4 {{ $lang.welcome.firstRun.text }}
+        h4 {{ $t('welcome.firstRun.text') }}
         Button._blue._center(
           size="xl"
-          :title="$lang.welcome.firstRun.btn"
+          :title="$t('welcome.firstRun.btn')"
           @onClick="$router.push('/welcome')"
         )
 
       .options__item(v-if="$store.state.demo.hasDemo")
         .options__or
           .options__or__border
-          .options__or__text {{ $lang.welcome.or }}
+          .options__or__text {{ $t('welcome.or') }}
 
-        h4 {{ $lang.welcome.demo.text }}
+        h4 {{ $t('welcome.demo.text') }}
         Button._blue._center(
           size="xl"
-          :title="$lang.welcome.demo.btn"
+          :title="$t('welcome.demo.btn')"
           @onClick="$store.dispatch('demo/createDemo')"
         )
 

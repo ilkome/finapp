@@ -86,7 +86,6 @@ export default {
       v-if="isShowed"
       ref="scrollDragger"
     )
-      .modalBottom__line
       //- Empty Header
       //--------------------------------------
       div(
@@ -145,8 +144,7 @@ export default {
 </style>
 
 <style lang="stylus">
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import "~assets/stylus/variables"
 
 .modalBottom
   z-index 4
@@ -177,16 +175,7 @@ export default {
     @media $media-laptop
       max-width 460px
       margin 100px
-
-  &__line
-    position absolute
-    top -12px
-    left 50%
-    width 60px
-    height 6px
-    background var(--c-bg-8)
-    border-radius 4px
-    transform translateX(-50%)
+      border-radius $m7
 
   &__scroll
     overflow hidden
@@ -198,6 +187,7 @@ export default {
 
     @media $media-laptop
       padding $m9
+      border-radius 0 0 $m7 $m7
 
     ^[0]._paddingless &
       padding 0
@@ -206,13 +196,15 @@ export default {
       background var(--c-bg-2)
 
   &__header
+    flex-grow 1
     position relative
     display flex
     align-items center
     padding $m7
-    color var(--c-font-1)
+    color var(--c-font-2)
+    fontFamilyNunito()
     background var(--c-bg-2)
-    border-radius $m6 $m6 0 0
+    border-radius $m7 $m7 0 0
 
     /.light-mode &
       color var(--c-font-4)
@@ -239,7 +231,10 @@ export default {
       padding 0
 
     &__title
-      font-size 18px
+      font-size 28px
+      font-weight 700
+      text-align center
+      flex-grow 1
 
   &__icon
     position absolute

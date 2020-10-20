@@ -8,6 +8,10 @@ export default {
     id: {
       type: String,
       required: true
+    },
+    showBase: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -15,14 +19,13 @@ export default {
     className () {
       return {
         walletItem: !this.ui,
-        walletItemWidget: this.ui === 'widget',
         walletItemTile: this.ui === 'tile',
         walletItemLine: this.ui === 'line'
       }
     },
     styles () {
       return {
-        background: (this.ui === 'widget' || this.ui === 'tile' || this.ui === 'line') && (this.wallet.color || this.$store.state.ui.defaultBgColor)
+        background: (this.ui === 'tile' || this.ui === 'line') && (this.wallet.color || this.$store.state.ui.defaultBgColor)
       }
     },
 
@@ -56,27 +59,15 @@ div(
   @click="handleClick"
 )
 
-  //- widget
-  template(v-if="ui === 'widget'"
-)
-    .walletItemWidget__name {{ wallet.name }}
-    .walletItemWidget__amount
-      Amount(
-        :alwaysShowSymbol="true"
-        :currency="wallet.currency"
-        :showBase="false"
-        :value="wallet.total"
-      )
-
   //- tile
-  template(v-else-if="ui === 'tile' || ui === 'line'"
-)
+  template(v-if="ui === 'tile' || ui === 'line'")
     .walletItemTile__name {{ wallet.name }}
     .walletItemTile__amount
       Amount(
-        :alwaysShowSymbol="true"
         :currency="wallet.currency"
+        :showBase="showBase"
         :value="wallet.total"
+        alwaysShowSymbol
         vertical="left"
       )
 
@@ -87,14 +78,14 @@ div(
         Icon(
           :abbr="wallet.name"
           :background="wallet.color || $store.state.ui.defaultBgColor"
-          :medium="true"
+          medium
         )
       .walletItem__name {{ wallet.name }}
       .walletItem__amount
         Amount(
-          :alwaysShowSymbol="true"
           :currency="wallet.currency"
           :value="wallet.total"
+          alwaysShowSymbol
         )
       .walletItem__line
 </template>

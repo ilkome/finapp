@@ -63,8 +63,8 @@ export default {
     )
 
   .walletsList__toogle(v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit" @click="toogleWallets")
-    template(v-if="stateLimit > 0") {{ this.$lang.wallets.showAll }}
-    template(v-else) {{ this.$lang.wallets.showOnly }} {{ limit }}
+    template(v-if="stateLimit > 0") {{ this.$t('wallets.showAll') }}
+    template(v-else) {{ this.$t('wallets.showOnly') }} {{ limit }}
 </template>
 
 <style lang="stylus" scoped>
