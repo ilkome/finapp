@@ -25,7 +25,7 @@ export default {
 
   data () {
     return {
-      showTrns: false
+      isShowInside: false
     }
   },
 
@@ -39,9 +39,8 @@ export default {
   },
 
   methods: {
-    toogleShowTrnsInCategory (categoryId) {
-      this.$store.commit('stat/setCategoryModalId', categoryId)
-      this.$store.commit('stat/setCategoryModalShow', true)
+    toogleShowInside () {
+      this.isShowInside = !this.isShowInside
     }
   }
 }
@@ -49,14 +48,13 @@ export default {
 
 <template lang="pug">
 .statItemChild(
-  @click="toogleShowTrnsInCategory(categoryId)"
-  :class="{ _active: showTrns }")
-
+  @click="toogleShowInside(categoryId)"
+  :class="{ _active: isShowInside }"
+)
   .statItemChild__content
     .statItemChild__graph: .statItemChild__graph__in(:style="styles")
 
-    .statItemChild__icon(
-      @click.stop="showTrns = !showTrns")
+    .statItemChild__icon(@click.stop="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)")
       Icon(
         :background="category.color"
         :icon="category.icon"
@@ -69,7 +67,7 @@ export default {
         :currency="$store.state.currencies.base"
         :value="total")
 
-  .statItemChild__trns(@click.stop="" v-if="showTrns")
+  .statItemChild__trns(@click.stop="" v-if="isShowInside")
     TrnsList(
       ui="stat"
       :incomes="type === 1"

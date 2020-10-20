@@ -11,6 +11,16 @@ export default {
     showBase: {
       type: Boolean,
       default: true
+    },
+
+    vertical: {
+      type: String,
+      default: 'left'
+    },
+
+    size: {
+      type: String,
+      default: null
     }
   },
 
@@ -48,9 +58,10 @@ export default {
     Amount(
       :alwaysShowSymbol="true"
       :currency="wallet.currency"
-      :value="wallet.total"
       :showBase="showBase"
-      vertical="left"
+      :size="size"
+      :value="wallet.total"
+      :vertical="vertical"
     )
 </template>
 

@@ -97,6 +97,7 @@ export default {
 
   &._incomes
     color var(--c-incomes-1)
+
   &._expenses
     color var(--c-expenses-1)
 
@@ -123,12 +124,20 @@ export default {
     font-weight bold
     font-secondary()
 
-    ^[0]._base &
+    ~/._base &
       font-size 12px
 
-    ^[0]._size_md &
+    ~/._size_md &
       font-size 16px
       font-weight 600
+
+    ~/._size_xl &
+      font-size 36px
+      font-weight 500
+
+    ~/._size_xl._base &
+      padding-top $m6
+      font-size 18px
 
   &__symbol
     padding-bottom 0px
@@ -143,6 +152,15 @@ export default {
 
     ~/._size_lg &
       padding-bottom 3px
+
+    ~/._size_xl &
+      padding-bottom 4px
+      font-size 18px
+      font-weight 300
+
+    ~/._size_xl._base &
+      padding-bottom 0
+      font-size 14px
 
 .amount._size_lg
   .amountItem__value

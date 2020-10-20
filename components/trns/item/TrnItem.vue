@@ -82,27 +82,36 @@ export default {
 )
 
   //- detailed view
+  //---------------------------------------------------------------------------
   template(v-if="ui === 'detailed'")
     .trnItem__categoryIcon(@click.stop="setTrnEdit")
       Icon(
         :background="category.color"
+        :big="true"
         :icon="category.icon"
-        :round="true")
-    .trnItem__date {{ formatedDate }}
+        :round="true"
+      )
     .trnItem__categoryName {{ category.name }}
     .trnItem__wallet
       .walletIcon
         Icon(
           :abbr="wallet.name"
           :background="wallet.color"
-          :small="true")
+          small
+        )
+
       .walletName {{ wallet.name }}
+
+    .trnItem__date {{ formatedDate }}
     .trnItem__amount(@click.stop="setTrnEdit")
       Amount(
         :currency="wallet.currency"
+        :type="trn.type"
         :value="trn.amount"
-        size="lg"
-        :type="trn.type")
+        vertical="center"
+        size="xl"
+      )
+
     .trnItem__desc(v-if="trn.description") {{ trn.description }}
 
   //- stat view
@@ -211,15 +220,7 @@ export default {
       )
     .trnItem__desc
       div(v-if="trn.description") {{ trn.description }}
-      //- div
-      //-   span Баланс
-      //-   Amount(
-      //-     :currency="wallet.currency"
-      //-     :value="filterTrnsDate.total"
-      //-     :type="3"
-      //-     size="sm"
-      //-     vertical="left"
-      //-   )
+
     .trnItem__line
 </template>
 
@@ -232,19 +233,21 @@ export default {
   color var(--c-font-4)
 
   &._detailed
-    display grid
-    grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
-    grid-column-gap 20px
-    grid-row-gap 10px
-    width 100%
+    display flex
+    flex-flow column
+    align-items center
+    justify-content center
+    margin-top -38px
+    margin-bottom -10px
+    text-align center
 
   &._history
     display grid
     grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
     grid-column-gap 28px
+    margin-top -1px
     padding 0 16px
     padding-top 10px
-    margin-top -1px
 
     &:first-child
       margin-top 0
@@ -253,8 +256,8 @@ export default {
   &._lastTrns
     margin-top -1px
     padding-top 10px
-    padding-left 68px
     padding-right 10px
+    padding-left 68px
 
     @media $media-laptop
       padding-left 62px
@@ -276,8 +279,7 @@ export default {
     align-self center
 
     ^[0]._detailed &
-      grid-column 3 / 4
-      grid-row 1 / 3
+      //
 
     ^[0]._history &
       grid-column 3 / 4
@@ -289,9 +291,7 @@ export default {
 
   &__categoryIcon
     ^[0]._detailed &
-      grid-column 1 / 2
-      grid-row 1 / 3
-      align-self center
+      padding-bottom 12px
 
     ^[0]._lastTrns &
       flex 0 0 24px
@@ -303,9 +303,10 @@ export default {
     text-overflow ellipsis
 
     ^[0]._detailed &
-      grid-column 2 / 3
-      grid-row 2 / 3
-      font-size 16px
+      padding-bottom $m6
+      color var(--c-font-2)
+      font-size 22px
+      fontFamilyNunito()
 
     ^[0]._history &
       grid-column 2 / 3
@@ -319,7 +320,8 @@ export default {
     font-size 13px
 
     ^[0]._detailed &
-      grid-row 1 / 2
+      padding-bottom $m8
+      font-size 14px
 
     ^[0]._stat &
     ^[0]._lastTrns &
@@ -333,8 +335,7 @@ export default {
     font-size 14px
 
     ^[0]._detailed &
-      grid-column 2
-      grid-row 4
+      padding-top $m7
 
     ^[0]._history &
       grid-column 2 / 4
@@ -344,9 +345,9 @@ export default {
 
     ^[0]._stat &
     ^[0]._lastTrns &
+      overflow hidden
       padding-right 10px
       white-space nowrap
-      overflow hidden
       text-overflow ellipsis
 
   &__line
@@ -354,7 +355,6 @@ export default {
       grid-column 2 / 4
       grid-row 4 / 5
       padding-top 9px
-      // border-bottom 1px solid var(--c-bg-6)
 
     ^[0]._history:hover &
       @media $media-laptop
@@ -384,15 +384,19 @@ export default {
     ^[0]._lastTrns &
       display flex
       align-items center
+
       .walletIcon
         margin-right 8px
+
       .walletName
         font-size 14px
         white-space nowrap
 
     ^[0]._detailed &
-      grid-column 2 / 3
-      grid-row 3 / 4
+      padding-bottom $m6
+
+      .walletName
+        font-size 16px
 
     ^[0]._stat &
       padding-right 20px
@@ -401,8 +405,8 @@ export default {
 
   &__walletFloatIcon
     position absolute
-    left 35px
     top 24px
+    left 35px
 
   &__groups
   &__budgest

@@ -51,6 +51,7 @@ export default {
     handleEditClick () {
       const walletId = this.walletId
       this.$store.commit('wallets/hideWalletModal')
+      this.$store.commit('wallets/setWalletModalId', null)
       this.$store.commit('wallets/setWalletEditId', walletId)
       this.$store.dispatch('ui/setActiveTab', 'createWallet')
     },
@@ -90,7 +91,11 @@ Portal(
   )
     template(v-if="walletId")
       template(slot="emptyHeader")
-        WalletItem2(:id="walletId")
+        WalletItem2(
+          :id="walletId"
+          vertical="center"
+          size="xl"
+        )
 
       template(slot="description")
         template(v-if="$store.state.wallets.items[walletId].desc")
@@ -100,21 +105,25 @@ Portal(
         ModalButton(
           :name="$t('base.delete')"
           icon="mdi mdi-delete"
-          @onClick="handleDeleteClick")
+          @onClick="handleDeleteClick"
+        )
         ModalButton(
           :name="$t('base.edit')"
           icon="mdi mdi-pencil"
-          @onClick="handleEditClick")
+          @onClick="handleEditClick"
+        )
         ModalButton(
           :name="$t('base.filter')"
           icon="mdi mdi-filter-outline"
-          @onClick="handleSetFilterWallet")
+          @onClick="handleSetFilterWallet"
+        )
 
   ModalBottomConfirm(
     :show="showModalConfirm"
     :description="deleteInfo"
     @onClose="showModalConfirm = false"
-    @onConfirm="handleDeleteConfirm")
+    @onConfirm="handleDeleteConfirm"
+  )
 </template>
 
 <style lang="stylus">
@@ -125,11 +134,16 @@ Portal(
     width 100%
     padding $m8
     padding-top 0
+    padding-bottom $m6
+    background var(--c-bg-2)
     border-radius $m6 $m6 0 0
 
     &__name
       padding-bottom $m7
+      color var(--c-font-2)
       font-size 22px
+      text-align center
+      fontFamilyNunito()
 
     &__line
       height 6px

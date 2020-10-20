@@ -58,6 +58,7 @@ export default {
     handleEditClick () {
       const categoryId = this.categoryId
       this.$store.commit('categories/hideCategoryModal')
+      this.$store.commit('categories/setCategoryModalId', null)
       this.$store.commit('categories/setCategoryEditId', categoryId)
       this.$store.dispatch('ui/setActiveTab', 'createCategory')
     },
@@ -127,22 +128,26 @@ div
         ModalButton(
           :name="$t('base.delete')"
           icon="mdi mdi-delete"
-          @onClick="handleDeleteClick")
+          @onClick="handleDeleteClick"
+        )
         ModalButton(
           :name="$t('base.edit')"
           icon="mdi mdi-pencil"
-          @onClick="handleEditClick")
+          @onClick="handleEditClick"
+        )
         ModalButton(
           :name="$t('base.filter')"
           icon="mdi mdi-filter-outline"
-          @onClick="handleSetFilterCategory")
+          @onClick="handleSetFilterCategory"
+        )
 
       template(v-if="childCategoriesIds.length")
         CategoriesView(
           :borderTop="true"
           :ids="childCategoriesIds"
           :noPadding="true"
-          @onClick="id => $store.dispatch('categories/showCategoryModal', id)")
+          @onClick="id => $store.dispatch('categories/showCategoryModal', id)"
+        )
 
   ModalBottomConfirm(
     :show="showModalConfirm"

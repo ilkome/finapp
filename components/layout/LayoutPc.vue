@@ -52,7 +52,8 @@ export default {
 
           template(slot="content")
             CategoriesList.dashboardItems(
-              @onClick="id => $store.dispatch('categories/showCategoryModal', id)")
+              @onClick="id => $store.dispatch('categories/showCategoryModal', id)"
+            )
 
           template(slot="bottom")
             .col

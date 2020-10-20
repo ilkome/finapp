@@ -32,12 +32,14 @@ export default {
   methods: {
     handleSetFilterCategory (id) {
       this.$store.commit('trns/hideTrnModal')
+      this.$store.commit('trns/setTrnModalId', null)
       this.$store.dispatch('ui/setActiveTab', 'stat')
       this.$store.commit('filter/setFilterDateNow')
       this.$store.dispatch('filter/setFilterCategoryId', this.$store.state.trns.items[this.trnId].categoryId)
     },
     handleSetFilterWallet (id) {
       this.$store.commit('trns/hideTrnModal')
+      this.$store.commit('trns/setTrnModalId', null)
       this.$store.dispatch('ui/setActiveTab', 'stat')
       this.$store.commit('filter/setFilterDateNow')
       this.$store.dispatch('filter/setFilterWalletId', this.$store.state.trns.items[this.trnId].walletId)
@@ -45,11 +47,13 @@ export default {
     handleDublicateTrn () {
       const trnId = this.trnId
       this.$store.commit('trns/hideTrnModal')
+      this.$store.commit('trns/setTrnModalId', null)
       this.$store.dispatch('trnForm/openTrnForm', { action: 'duplicate', trnId })
     },
     handleEditClick () {
       const trnId = this.trnId
       this.$store.commit('trns/hideTrnModal')
+      this.$store.commit('trns/setTrnModalId', null)
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
     },
     handleDeleteClick () {
@@ -94,24 +98,28 @@ Portal(
           :trn="$store.state.trns.items[trnId]"
           :trnId="trnId"
           :wallet="wallet"
-          ui="detailed")
+          ui="detailed"
+        )
 
       //- btns
       template(slot="btns")
         ModalButton(
           name="Delete"
           icon="mdi mdi-delete"
-          @onClick="handleDeleteClick")
+          @onClick="handleDeleteClick"
+        )
 
         ModalButton(
           name="Edit"
           icon="mdi mdi-pencil"
-          @onClick="handleEditClick")
+          @onClick="handleEditClick"
+        )
 
         ModalButton(
           name="Dublicate"
           icon="mdi mdi-content-copy"
-          @onClick="handleDublicateTrn")
+          @onClick="handleDublicateTrn"
+        )
 
       .moreActions
         Button.marginBottom(
@@ -174,8 +182,8 @@ Portal(
         to="modal"
       )
         ModalBottom(
-          paddingless
           title="groups"
+          paddingless
           @onClose="showModalGroups = false"
         )
           template(v-for="(group, groupId) in groups")
@@ -191,7 +199,8 @@ Portal(
     ModalBottomConfirm(
       :show="showModalConfirm"
       @onClose="showModalConfirm = false"
-      @onConfirm="handleDeleteConfirm")
+      @onConfirm="handleDeleteConfirm"
+    )
 </template>
 
 <style lang="stylus" scoped>
@@ -202,10 +211,10 @@ Portal(
   margin-bottom $m7
 
 .item
+  cursor pointer
   display flex
   width 100%
   flex-grow 1
-  cursor pointer
   padding $m7 $m8
   border-bottom 1px solid var(--c-bg-6)
 

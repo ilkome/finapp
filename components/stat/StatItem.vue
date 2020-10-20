@@ -62,9 +62,7 @@ export default {
 
   methods: {
     toogleShowInside (categoryId) {
-      this.$store.commit('stat/setCategoryModalId', categoryId)
-      this.$store.commit('stat/setCategoryModalShow', true)
-      // this.showInside = !this.showInside
+      this.showInside = !this.showInside
     }
   }
 }
@@ -73,15 +71,17 @@ export default {
 <template lang="pug">
 .statItem(
   @click="toogleShowInside(categoryId)"
-  :class="{ _active: showInside }")
+  :class="{ _active: showInside }"
+)
 
   .statItem__content
     .statItem__graph: .statItem__graph__in(:style="styles")
-    .statItem__icon(@click.stop="showInside = !showInside")
+    .statItem__icon(@click.stop="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)")
       Icon(
         :background="category.color"
         :icon="category.icon"
-        :round="true")
+        :round="true"
+      )
 
     .statItem__name {{ category.name }}
     .statItem__amount
