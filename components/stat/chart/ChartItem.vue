@@ -2,6 +2,8 @@
 import dayjs from 'dayjs'
 
 export default {
+  name: 'ChartItem',
+
   props: {
     period: {
       type: Object,
@@ -126,72 +128,48 @@ export default {
 
 .chartItem
   cursor pointer
+  min-width 30px
   padding $m5 $m5
-  flex-grow 0
-  max-width 80px
-  border-left 1px solid transparent
-  border-right 1px solid transparent
-
-  @media $media-laptop
-    padding 12px $m5
+  padding-top $m6
+  flex-grow 1
+  border-radius 4px
 
   &._empty
     display none
 
   &._week
-    min-width 50px
-    padding-left $m5
-    padding-right $m5
+    padding-right $m4
+    padding-left $m4
 
   &._month
-    padding-left 10px
-    padding-right 10px
-    @media $media-laptop
-      min-width 20px
+    padding-right $m4
+    padding-left $m4
 
   &._year
-    padding-left $m8
-    padding-right $m8
-
-  &._grouped
-    border-color transparent
-    min-width 0
+    padding-right $m4
+    padding-left $m4
 
   &._grouped._day
-    padding-left 2px
     padding-right 2px
+    padding-left 2px
 
   &._grouped._week
   &._grouped._month
-    padding-left 2px
     padding-right 2px
-
-    @media $media-laptop
-      padding-left 4px
-      padding-right 4px
+    padding-left 2px
 
   &:hover
-    background var(--c-bg-1)
-    border-color transparent
+    background var(--c-bg-3)
 
   &._active
     color var(--c-font-2)
     background var(--c-bg-4)
-    border-left 1px solid var(--c-bg-1)
-    border-right 1px solid var(--c-bg-1)
-
-   &._active._grouped
-    border-right 1px solid var(--c-bg-1)
 
   &__name
+    padding-top 4px
     text-align center
     typo-small-upper(10px)
-    padding-top 4px
     white-space nowrap
-
-    @media $media-laptop
-      padding-top $m5
-      typo-small-upper(12px)
 
   &__graph
     display flex
@@ -201,23 +179,21 @@ export default {
       display flex
       flex-flow column
       justify-content flex-end
-      height 90px
+      height 78px
 
-      @media $media-laptop
-        height 90px
+      +media-ipad()
+        height 98px
 
       ^[0]._grouped &
-        height calc(62px + 28px)
-        padding-top 28px
+        height 58px
 
-        @media $media-laptop
-          height calc(79px + 42px)
-          padding-top 42px
+        +media-ipad()
+          height 78px
 
     &-line
       width 6px
-      margin 0 1px
       min-height 1px
+      margin 0 1px
       border-radius 6px
 
       &._expenses
