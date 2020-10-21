@@ -59,11 +59,17 @@ export default {
     sort: 'Sort',
     save: 'Save',
     cancel: 'Cancel',
+    dublicate: 'Dublicate',
+    setFilter: 'Set filter by',
     on: 'On',
     off: 'Off',
     edit: 'Edit',
     delete: 'Delete',
     filter: 'Filter'
+  },
+
+  filter: {
+    clear: 'Clear filter'
   },
 
   welcome: {
@@ -265,6 +271,7 @@ export default {
   budgets: {
     id: 'budgets',
     name: 'Budgets',
+    show: 'Show budgets',
     form: {
       title: 'Create new budget',
       name: 'Budget name',
@@ -284,6 +291,7 @@ export default {
   groups: {
     id: 'groups',
     name: 'Groups',
+    show: 'Show groups',
     form: {
       title: 'Create new group',
       name: 'Group name',

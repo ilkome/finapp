@@ -62,10 +62,16 @@ export default {
     save: 'Сохранить',
     cancel: 'Отмена',
     on: 'Да',
+    dublicate: 'Дублировать',
+    setFilter: 'Применить фильтр по',
     off: 'Нет',
     edit: 'Редактировать',
     delete: 'Удалить',
     filter: 'Фильтровать'
+  },
+
+  filter: {
+    clear: 'Очистить фильтр'
   },
 
   welcome: {
@@ -267,6 +273,7 @@ export default {
   budgets: {
     id: 'budgets',
     name: 'Проекты',
+    show: 'Показать проекты',
     form: {
       title: 'Создать новый проект',
       name: 'Имя проекта',
@@ -286,6 +293,7 @@ export default {
   groups: {
     id: 'groups',
     name: 'Группы',
+    show: 'Показать группы',
     form: {
       title: 'Create new group',
       name: 'Group name',

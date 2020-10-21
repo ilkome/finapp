@@ -57,7 +57,7 @@ export default {
   padding 6px 12px
   color var(--c-font-1)
   white-space nowrap
-  border-radius $m5
+  border-radius $m4
 
   &._pc
     margin-right 20px

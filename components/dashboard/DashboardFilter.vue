@@ -51,7 +51,8 @@ export default {
         :color="filterWallet.color || $store.state.ui.defaultBgColor"
         :name="filterWallet.name"
         icon="mdi mdi-credit-card-multiple"
-        @onClick="clearWalletFilter")
+        @onClick="clearWalletFilter"
+      )
 
     //- categories
     template(v-if="$store.state.filter.categoryId")
@@ -61,20 +62,23 @@ export default {
           :color="filterCategoryParent.color || $store.state.ui.defaultBgColor"
           :icon="filterCategoryParent.icon"
           :name="filterCategoryParent.name"
-          @onClick="clearParentCategoryFilter")
+          @onClick="clearParentCategoryFilter"
+        )
 
       //- category
       FilterItem(
         :color="filterCategory.color || $store.state.ui.defaultBgColor"
         :icon="filterCategory.icon"
         :name="filterCategory.name"
-        @onClick="clearCategoryFilter")
+        @onClick="clearCategoryFilter"
+      )
 
     //- clear
     FilterItem._clear(
+      :name="$t('filter.clear')"
       icon="mdi mdi-filter-remove-outline"
-      name="Clear filter"
-      @onClick="clearAllFilters")
+      @onClick="clearAllFilters"
+    )
 </template>
 
 <style lang="stylus" scoped>

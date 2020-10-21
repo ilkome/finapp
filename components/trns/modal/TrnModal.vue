@@ -104,45 +104,45 @@ Portal(
       //- btns
       template(slot="btns")
         ModalButton(
-          name="Delete"
+          :name="$t('base.delete')"
           icon="mdi mdi-delete"
           @onClick="handleDeleteClick"
         )
 
         ModalButton(
-          name="Edit"
+          :name="$t('base.edit')"
           icon="mdi mdi-pencil"
           @onClick="handleEditClick"
         )
 
         ModalButton(
-          name="Dublicate"
+          :name="$t('base.dublicate')"
           icon="mdi mdi-content-copy"
           @onClick="handleDublicateTrn"
         )
 
       .moreActions
         Button.marginBottom(
+          :title="`${$t('base.setFilter')} ${this.category.name}`"
           className="_borderBottom"
-          title="Set category filter"
           icon="mdi mdi-folder-star"
           @onClick="handleSetFilterCategory"
         )
 
         Button.marginBottom(
           :class="{ marginBottom: budgets }"
+          :title="`${$t('base.setFilter')} ${this.wallet.name}`"
           className="_borderBottom"
           icon="mdi mdi-credit-card-multiple"
-          title="Set wallet filter"
           @onClick="handleSetFilterWallet"
         )
 
         Button(
           v-if="budgets && $store.getters['user/isTester']"
           :class="{ marginBottom: groups }"
+          :title="$t('budgets.show')"
           className="_borderBottom"
           icon="mdi mdi-hand-saw"
-          title="Show budgets"
           @onClick="showModalBudgets = true"
         )
 
@@ -150,7 +150,7 @@ Portal(
           v-if="groups && $store.getters['user/isTester']"
           className="_borderBottom"
           icon="mdi mdi-folder-multiple-outline"
-          title="Show groups"
+          :title="$t('groups.show')"
           @onClick="showModalGroups = true"
         )
 
@@ -161,8 +161,8 @@ Portal(
         to="modal"
       )
         ModalBottom(
+          :title="$t('budgets.name')"
           paddingless
-          title="Budgets"
           @onClose="showModalBudgets = false"
         )
           template(v-for="(budget, budgetId) in budgets")
@@ -182,7 +182,7 @@ Portal(
         to="modal"
       )
         ModalBottom(
-          title="groups"
+          :title="$t('groups.name')"
           paddingless
           @onClose="showModalGroups = false"
         )
