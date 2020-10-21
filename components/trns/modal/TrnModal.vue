@@ -31,42 +31,41 @@ export default {
 
   methods: {
     handleSetFilterCategory (id) {
-      this.$store.commit('trns/hideTrnModal')
-      this.$store.commit('trns/setTrnModalId', null)
-      this.$store.dispatch('ui/setActiveTab', 'stat')
       this.$store.commit('filter/setFilterDateNow')
       this.$store.dispatch('filter/setFilterCategoryId', this.$store.state.trns.items[this.trnId].categoryId)
-    },
-    handleSetFilterWallet (id) {
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
       this.$store.dispatch('ui/setActiveTab', 'stat')
+    },
+    handleSetFilterWallet (id) {
       this.$store.commit('filter/setFilterDateNow')
       this.$store.dispatch('filter/setFilterWalletId', this.$store.state.trns.items[this.trnId].walletId)
+      this.$store.commit('trns/hideTrnModal')
+      this.$store.commit('trns/setTrnModalId', null)
+      this.$store.dispatch('ui/setActiveTab', 'stat')
     },
     handleDublicateTrn () {
       const trnId = this.trnId
+      this.$store.dispatch('trnForm/openTrnForm', { action: 'duplicate', trnId })
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-      this.$store.dispatch('trnForm/openTrnForm', { action: 'duplicate', trnId })
     },
     handleEditClick () {
       const trnId = this.trnId
+      this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-      this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
     },
     handleDeleteClick () {
       this.showModalConfirm = true
     },
     handleDeleteConfirm () {
       const trnId = this.trnId
+      setTimeout(() => { this.$store.dispatch('trns/deleteTrn', trnId) }, 100)
+
       this.showModalConfirm = false
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-      setTimeout(() => {
-        this.$store.dispatch('trns/deleteTrn', trnId)
-      }, 100)
     },
     toogleAddToBudget (budgetId) {
       this.$store.dispatch('budgets/toogleAddToBudget', { budgetId, trnId: this.trnId })
