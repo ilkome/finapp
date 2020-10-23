@@ -8,8 +8,6 @@ export default {
 
   computed: {
     currentLanguageName () {
-      console.log(this.$i18n.locale)
-
       switch (this.$i18n.locale) {
         case 'ru':
           return '🇷🇺 Russian - Русский'

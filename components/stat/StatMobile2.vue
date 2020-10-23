@@ -165,7 +165,8 @@ export default {
           :currency="$store.state.currencies.base"
           :key="categoryId"
           :type="0"
-          :total="statCurrentPeriod.categories[categoryId].expenses")
+          :total="statCurrentPeriod.categories[categoryId].expenses"
+        )
 
     //- expenses
     .statGroup(v-show="isShowHistory")

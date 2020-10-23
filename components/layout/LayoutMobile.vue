@@ -116,47 +116,8 @@ export default {
                 .page__nav
                   h1: Date
                   .page__customize
-                    ContextMenu(
-                      :position="{ right: '0px', top: '0px' }"
-                      :visible="visibleContextMenu"
-                      @onClickOpener="visibleContextMenu = !visibleContextMenu")
-
-                      template(slot="opener")
-                        .opener
-                          .mdi.mdi-tune
-
-                      template(slot="content")
-                        ContextMenuItem(
-                          :title="$t('stat.customize.showPeriodsChart')"
-                          :showCheckbox="true"
-                          :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
-                          icon="mdi mdi-chart-bar-stacked"
-                          @onClick="$store.dispatch('ui/toogleShowStatGraphs')"
-                        )
-
-                        ContextMenuItem(
-                          :title="$t('stat.customize.showCategorisChart')"
-                          :showCheckbox="true"
-                          :checkboxValue="$store.state.ui.catsChart === 'visible'"
-                          icon="mdi mdi-folder-star"
-                          @onClick="$store.dispatch('ui/toogleVisibleCatsChart')"
-                        )
-
-                        ContextMenuItem(
-                          :title="$t('stat.customize.showCategorisList')"
-                          :showCheckbox="true"
-                          :checkboxValue="$store.state.ui.statItems === 'visible'"
-                          icon="mdi mdi-chart-gantt"
-                          @onClick="$store.dispatch('ui/toogleVisibilityStatItems')"
-                        )
-
-                        .context-menu-sep
-
-                        ContextMenuItem(
-                          :title="$t('theme.change')"
-                          icon="mdi mdi-palette"
-                          @onClick="$store.dispatch('ui/changeTheme')"
-                        )
+                    .opener(@click="$store.dispatch('ui/setActiveTab', 'customize')")
+                      .mdi.mdi-tune
 
                 .page__content
                   .chartBar(v-show="$store.state.ui.statGraphsVisibility === 'visible'")
@@ -217,8 +178,6 @@ export default {
   WalletModal(:slider="slider")
   CategoryStatModal
 
-  //- Caegory Form: create or edit
-  //------------------------------------------------------------------------------
   Portal(
     v-if="activeTab === 'menu'"
     to="modal"
@@ -228,6 +187,55 @@ export default {
       @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
     )
       Menu
+
+  //- Caegory Form: create or edit
+  //------------------------------------------------------------------------------
+  Portal(
+    v-if="activeTab === 'customize'"
+    to="modal"
+  )
+    ModalBottom(
+      key="customize"
+      @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
+    )
+      ContextMenuItem(
+        :title="$t('stat.customize.showPeriodsChart')"
+        :showCheckbox="true"
+        :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
+        icon="mdi mdi-chart-bar-stacked"
+        @onClick="$store.dispatch('ui/toogleShowStatGraphs')"
+      )
+
+      ContextMenuItem(
+        :title="$t('stat.customize.showCategorisChart')"
+        :showCheckbox="true"
+        :checkboxValue="$store.state.ui.catsChart === 'visible'"
+        icon="mdi mdi-folder-star"
+        @onClick="$store.dispatch('ui/toogleVisibleCatsChart')"
+      )
+
+      ContextMenuItem(
+        :title="$t('stat.customize.showCategorisList')"
+        :showCheckbox="true"
+        :checkboxValue="$store.state.ui.statItems === 'visible'"
+        icon="mdi mdi-chart-gantt"
+        @onClick="$store.dispatch('ui/toogleVisibilityStatItems')"
+      )
+
+      ContextMenuItem(
+        :title="$t('stat.customize.showCategorisList')"
+        :showCheckbox="true"
+        :checkboxValue="$store.state.ui.stat.analyticsVisibility === 'visible'"
+        icon="mdi mdi-chart-gantt"
+        @onClick="$store.dispatch('ui/toogleStat', 'analyticsVisibility')"
+      )
+      .context-menu-sep
+
+      ContextMenuItem(
+        :title="$t('theme.change')"
+        icon="mdi mdi-palette"
+        @onClick="$store.dispatch('ui/changeTheme')"
+      )
 
   //- Caegory Form: create or edit
   //------------------------------------------------------------------------------

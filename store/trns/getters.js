@@ -196,10 +196,10 @@ export default {
   getTrns: (state, getters, rootState) => (props) => {
     if (!getters.hasTrns) { return [] }
 
-    const { date, periodName, description } = props
+    const { date, periodName, description, categoryId } = props
     const categories = rootState.categories.items
     const categoriesIds = Object.keys(categories)
-    const filterCategoryId = rootState.filter.categoryId
+    const filterCategoryId = rootState.filter.categoryId || categoryId
     const filterWalletId = rootState.filter.walletId
 
     const trns = rootState.trns.items

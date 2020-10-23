@@ -155,6 +155,16 @@ export default {
     dispatch('ui/saveUiView', null, { root: true })
   },
 
+  toogleStat ({ commit, dispatch, state }, id) {
+    let value
+    state.stat[id] === 'visible'
+      ? value = 'hidden'
+      : value = 'visible'
+
+    commit('ui/setShow', { id, value }, { root: true })
+    dispatch('ui/saveUiView', null, { root: true })
+  },
+
   /**
     * Save ui view state to localStorage for selected filter
   */
@@ -175,7 +185,8 @@ export default {
         statLastTrnsVisibility: rootState.ui.statLastTrnsVisibility,
         statSummuryVisibility: rootState.ui.statSummuryVisibility,
         totalChartPeriods: rootState.chart.periods,
-        walletsVisibility: rootState.ui.stat.walletsVisibility
+        walletsVisibility: rootState.ui.stat.walletsVisibility,
+        analyticsVisibility: rootState.ui.stat.analyticsVisibility
       }
     })
   },
@@ -223,10 +234,18 @@ export default {
         ? commit('setStatSummuryVisibility', 'visible')
         : commit('setStatSummuryVisibility', 'hidden')
 
+      // Analytics
+      localFilterUiItem.analyticsVisibility === 'visible'
+        ? commit('setShow', { id: 'analyticsVisibility', value: 'visible' })
+        : commit('setShow', { id: 'analyticsVisibility', value: 'hidden' })
+
       // periods in total chart
       const currentPeriodName = rootState.filter.period
       const localPeriodValues = localFilterUiItem.totalChartPeriods[currentPeriodName]
-      commit('chart/setPeriodValues', { periodName: currentPeriodName, values: localPeriodValues }, { root: true })
+      commit('chart/setPeriodValues', {
+        periodName: currentPeriodName,
+        values: localPeriodValues
+      }, { root: true })
     }
   }
 }

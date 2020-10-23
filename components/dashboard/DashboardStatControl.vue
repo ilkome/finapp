@@ -9,15 +9,18 @@ export default {
     .tabs
       .tabItem(
         @click="$store.commit('dashboard/setDashboardActiveTab', 'stat')"
-        :class="{ _active: $store.state.dashboard.activeTab === 'stat' }") {{ $t('stat.shortTitle') }}
+        :class="{ _active: $store.state.dashboard.activeTab === 'stat' }"
+      ) {{ $t('stat.shortTitle') }}
 
       .tabItem(
         @click="$store.commit('dashboard/setDashboardActiveTab', 'history')"
-        :class="{ _active: $store.state.dashboard.activeTab === 'history' }") {{ $t('trns.history') }}
+        :class="{ _active: $store.state.dashboard.activeTab === 'history' }"
+      ) {{ $t('trns.history') }}
 
       .tabItem(
         @click="$store.commit('dashboard/setDashboardActiveTab', 'balance')"
-        :class="{ _active: $store.state.dashboard.activeTab === 'balance' }") {{ $t('stat.balanceTitle') }}
+        :class="{ _active: $store.state.dashboard.activeTab === 'balance' }"
+      ) {{ $t('stat.balanceTitle') }}
 
     .tabs
       .tabItem(
@@ -53,11 +56,11 @@ $text-disable = var(--c-font-5)
 
 .tabs
   display flex
-  cursor pointer
   &:last-child
     justify-self end
 
 .tabItem
+  cursor pointer
   display flex
   align-items center
   color $text

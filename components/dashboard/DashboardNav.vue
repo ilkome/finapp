@@ -16,45 +16,45 @@ export default {
       ContextMenu(
         :position="{ left: '-12px', top: true }"
         :visible="visiblePeriodMenu"
-        @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu")
+        @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu"
+      )
         template(slot="opener")
-          Dropdown._noBd(
-            :active="visiblePeriodMenu")
+          Dropdown._noBd(:active="visiblePeriodMenu")
             template(slot="title"): Date.dateSelecror
 
         template(slot="content")
           ContextMenuItem(
-            icon="mdi mdi-weather-sunset-up"
-            :title="$t('dates.day.simple')"
             :selected="$store.state.filter.period === 'day'"
+            :title="$t('dates.day.simple')"
+            icon="mdi mdi-weather-sunset-up"
             @onClick="$store.dispatch('filter/setPeriod', 'day')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )
           ContextMenuItem(
-            icon="mdi mdi-calendar-week"
-            :title="$t('dates.week.simple')"
             :selected="$store.state.filter.period === 'week'"
+            :title="$t('dates.week.simple')"
+            icon="mdi mdi-calendar-week"
             @onClick="$store.dispatch('filter/setPeriod', 'week')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )
           ContextMenuItem(
-            icon="mdi mdi-calendar"
-            :title="$t('dates.month.simple')"
             :selected="$store.state.filter.period === 'month'"
+            :title="$t('dates.month.simple')"
+            icon="mdi mdi-calendar"
             @onClick="$store.dispatch('filter/setPeriod', 'month')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )
           ContextMenuItem(
-            icon="mdi mdi-calendar-star"
-            :title="$t('dates.year.simple')"
             :selected="$store.state.filter.period === 'year'"
+            :title="$t('dates.year.simple')"
+            icon="mdi mdi-calendar-star"
             @onClick="$store.dispatch('filter/setPeriod', 'year')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )
           ContextMenuItem(
-            icon="mdi mdi-database"
-            :title="$t('dates.all')"
             :selected="$store.state.filter.period === 'all'"
+            :title="$t('dates.all')"
+            icon="mdi mdi-database"
             @onClick="$store.dispatch('filter/setPeriod', 'all')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )

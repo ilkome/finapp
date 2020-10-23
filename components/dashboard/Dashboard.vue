@@ -22,12 +22,14 @@ export default {
 
 <template lang="pug">
 .dashboard(v-show="$store.state.ui.activeTab === 'stat'")
-  .dashboard__wrap
-    StatChartsLine
+  .chartBlock
+    .dashboard__wrap
+      StatChartsLine
 
-  DashboardNav
-  StatSummaryPc
-  DashboardFilter
+    DashboardNav
+    StatSummaryPc
+    DashboardFilter
+
   DashboardStatControl
 
   template(v-if="!$store.getters['trns/hasTrns']")
@@ -40,9 +42,10 @@ export default {
 
       .options__item(v-if="!$store.getters['wallets/hasWallets'] && !$store.getters['categories/hasCategories']")
         h4 {{ $t('welcome.firstRun.text') }}
+
         Button._blue._center(
-          size="xl"
           :title="$t('welcome.firstRun.btn')"
+          size="xl"
           @onClick="$router.push('/welcome')"
         )
 
@@ -92,9 +95,13 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/scroll"
+@import "~assets/stylus/variables"
+
+.chartBlock
+  z-index 10
+  position sticky
+  top 0
+  background var(--c-bg-2)
 
 .dashboard
   overflow hidden
@@ -102,7 +109,6 @@ export default {
   scrollbar()
 
   &__wrap
-    position relative
     max-width 1100px
     padding 0px 60px
 
