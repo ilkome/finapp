@@ -1,4 +1,8 @@
 export default {
+  analytics: {
+    title: 'Analytics'
+  },
+
   appName: 'Finapp',
 
   for: 'for',

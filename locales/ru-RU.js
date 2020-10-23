@@ -1,5 +1,9 @@
 
 export default {
+  analytics: {
+    title: 'Аналитика'
+  },
+
   appName: 'Финапка',
 
   for: 'за',

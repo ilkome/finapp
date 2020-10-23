@@ -22,6 +22,11 @@ export default {
         :class="{ _active: $store.state.dashboard.activeTab === 'balance' }"
       ) {{ $t('stat.balanceTitle') }}
 
+      .tabItem(
+        @click="$store.commit('dashboard/setDashboardActiveTab', 'analytics')"
+        :class="{ _active: $store.state.dashboard.activeTab === 'analytics' }"
+      ) &nbsp;
+
     .tabs
       .tabItem(
         :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
