@@ -86,7 +86,7 @@ TrnFormModal(
 
       .swiper-slide
         .scrollBlock.waitForScroll(
-          v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
+          v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'] && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
           :style="modalStyle"
         )
           .marginBottom
@@ -99,7 +99,7 @@ TrnFormModal(
 
       .swiper-slide
         .scrollBlock.waitForScroll(
-          v-if="$store.getters['categories/quickSelectorCategoriesIds'].length"
+          v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length"
           :style="modalStyle"
         )
           .marginBottom

@@ -72,6 +72,8 @@ export default {
   },
 
   lastUsedCategoriesIdsByDate (state, getters, rootState, rootGetters) {
+    if (!getters.hasCategories) { return [] }
+
     const trns = rootState.trns.items
     const sortedTrnsIds = rootGetters['trns/sortedTrnsIds']
     const transferCategoryId = getters.transferCategoryId
@@ -112,11 +114,10 @@ export default {
       })
   },
 
-  transferCategoryId (state, getters,) {
+  transferCategoryId (state, getters) {
     if (!getters.hasCategories) { return null }
 
     return Object.keys(state.items)
-      .find(id => state.items[id].name === 'Перевод' ||
-                  state.items[id].name === 'Transfer')
+      .find(id => state.items[id].name === 'Перевод' || state.items[id].name === 'Transfer') || false
   }
 }

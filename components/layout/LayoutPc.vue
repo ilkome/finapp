@@ -17,12 +17,15 @@ export default {
 
 <template lang="pug">
 .layout
-  .createTrnBtn(@click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"): .mdi.mdi-plus
+  .createTrnBtn(
+    v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
+    @click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
+  ): .mdi.mdi-plus
 
   //- modals
   CategoryModal
   CurrencyModal
-  TrnForm
+  TrnForm(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
   TrnModal
   WalletModal
 

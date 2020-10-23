@@ -100,7 +100,8 @@ export default {
     const categories = rootState.categories.items
     const trnCategoryId = trns[trnId].categoryId
     if (!categories[trnCategoryId]) {
-      console.log('no category', trnId, trns[trnId], categories[trnCategoryId])
+      console.log('no category for trn', trnId, trns[trnId], categories[trnCategoryId])
+      console.log(`https://finapp-17474.firebaseio.com/users/${rootState.user.user.uid}/trns/${trnId}`)
       return trnCategoryId
     }
     const trnCategoryParentId = categories[trnCategoryId].parentId

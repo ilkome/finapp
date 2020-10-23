@@ -13,7 +13,7 @@ export default {
     commit('openTrnForm')
     switch (action) {
       case 'create':
-        if (rootGetters['trns/hasTrns']) {
+        if (rootGetters['trns/hasTrns'] && rootState.trns.items[rootGetters['trns/lastCreatedTrnId']]) {
           const lastTrn = rootState.trns.items[rootGetters['trns/lastCreatedTrnId']]
           commit('setTrnFormValues', {
             amount: '0',
