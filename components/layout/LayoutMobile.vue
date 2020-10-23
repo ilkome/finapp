@@ -222,13 +222,6 @@ export default {
         @onClick="$store.dispatch('ui/toogleVisibilityStatItems')"
       )
 
-      ContextMenuItem(
-        :title="$t('stat.customize.showCategorisList')"
-        :showCheckbox="true"
-        :checkboxValue="$store.state.ui.stat.analyticsVisibility === 'visible'"
-        icon="mdi mdi-chart-gantt"
-        @onClick="$store.dispatch('ui/toogleStat', 'analyticsVisibility')"
-      )
       .context-menu-sep
 
       ContextMenuItem(

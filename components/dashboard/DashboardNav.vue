@@ -5,6 +5,21 @@ export default {
       visibleContextMenu: false,
       visiblePeriodMenu: false
     }
+  },
+
+  methods: {
+    toogleShowStatGraphs () {
+      this.$store.commit('dashboard/setDashboardActiveTab', 'stat')
+      this.$store.dispatch('ui/toogleShowStatGraphs')
+    },
+    toogleVisibilityStatItems () {
+      this.$store.commit('dashboard/setDashboardActiveTab', 'stat')
+      this.$store.dispatch('ui/toogleVisibilityStatItems')
+    },
+    toogleVisibleCatsChart () {
+      this.$store.commit('dashboard/setDashboardActiveTab', 'stat')
+      this.$store.dispatch('ui/toogleVisibleCatsChart')
+    }
   }
 }
 </script>
@@ -84,7 +99,7 @@ export default {
                 :showCheckbox="true"
                 :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
                 icon="mdi mdi-chart-bar-stacked"
-                @onClick="$store.dispatch('ui/toogleShowStatGraphs')"
+                @onClick="toogleShowStatGraphs"
               )
 
               ContextMenuItem(
@@ -92,14 +107,15 @@ export default {
                 :title="$t('stat.customize.showCategorisChart')"
                 :showCheckbox="true"
                 :checkboxValue="$store.state.ui.catsChart === 'visible'"
-                @onClick="$store.dispatch('ui/toogleVisibleCatsChart')")
+                @onClick="toogleVisibleCatsChart"
+              )
 
               ContextMenuItem(
                 :title="$t('stat.customize.showCategorisList')"
                 :showCheckbox="true"
                 :checkboxValue="$store.state.ui.statItems === 'visible'"
                 icon="mdi mdi-chart-gantt"
-                @onClick="$store.dispatch('ui/toogleVisibilityStatItems')"
+                @onClick="toogleVisibilityStatItems"
               )
 
               .context-menu-sep

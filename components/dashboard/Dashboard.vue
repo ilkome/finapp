@@ -22,15 +22,14 @@ export default {
 
 <template lang="pug">
 .dashboard(v-show="$store.state.ui.activeTab === 'stat'")
-  .chartBlock
-    .dashboard__wrap
-      StatChartsLine
+  .dashboard__wrap(v-if="$store.state.ui.statGraphsVisibility === 'visible'")
+    StatChartsLine
 
+  .chartBlock
     DashboardNav
     StatSummaryPc
     DashboardFilter
-
-  DashboardStatControl
+    DashboardStatControl
 
   template(v-if="!$store.getters['trns/hasTrns']")
     .startSomething
