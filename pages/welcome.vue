@@ -57,7 +57,7 @@ export default {
           .header
             .header__title {{ $t('app.welcome') }}
             .header__desc {{ $t('app.desc') }}
-            .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout }} {{ $store.state.user.user.email') }}
+            .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout') }} {{ $store.state.user.user.email }}
 
           .options
             .options__item
@@ -108,7 +108,7 @@ export default {
           .header
             .header__title {{ $t('app.welcome') }}
             .header__desc {{ $t('app.desc') }}
-            .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout }} {{ $store.state.user.user.email') }}
+            .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout') }} {{ $store.state.user.user.email }}
 
           .options
             .options__item
@@ -136,7 +136,7 @@ export default {
             .header
               .header__title {{ $t('app.welcome') }}
               .header__desc {{ $t('app.desc') }}
-              .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout }} {{ $store.state.user.user.email') }}
+              .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout') }} {{ $store.state.user.user.email }}
 
             .text {{ $t('welcome.createFirstWallet.text') }}
             .button
