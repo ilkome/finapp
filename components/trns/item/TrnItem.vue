@@ -31,8 +31,7 @@ export default {
       return {
         _detailed: this.ui === 'detailed',
         _history: this.ui === 'history',
-        _stat: this.ui === 'stat',
-        _lastTrns: this.ui === 'lastTrns'
+        _stat: this.ui === 'stat'
       }
     },
     formatedDate () {
@@ -61,9 +60,11 @@ export default {
 
   methods: {
     handleClick () {
-      this.$store.commit('categories/hideCategoryModal')
-      this.$store.commit('trns/showTrnModal')
-      this.$store.commit('trns/setTrnModalId', this.trnId)
+      if (!this.$store.state.trns.modal.show) {
+        this.$store.commit('categories/hideCategoryModal')
+        this.$store.commit('trns/showTrnModal')
+        this.$store.commit('trns/setTrnModalId', this.trnId)
+      }
     },
 
     setTrnEdit () {
@@ -76,157 +77,186 @@ export default {
 
 <template lang="pug">
 .trnItem(
-  v-if="category && wallet"
+  v-if="(category && wallet) || trn.type === 2"
   @click="handleClick"
   :class="className"
 )
-
-  //- detailed view
+  //- Transfer
   //---------------------------------------------------------------------------
-  template(v-if="ui === 'detailed'")
-    .trnItem__categoryIcon(@click.stop="setTrnEdit")
-      Icon(
-        :background="category.color"
-        :big="true"
-        :icon="category.icon"
-        :round="true"
-      )
-    .trnItem__categoryName {{ category.name }}
-    .trnItem__wallet
-      .walletIcon
+  template(v-if="trn.type === 2")
+    //- Transfer: Detailed
+    //---------------------------------------------------------------------------
+    template(v-if="ui === 'detailed'")
+      .trnItem__categoryIcon
         Icon(
-          :abbr="wallet.name"
-          :background="wallet.color"
-          small
+          background="var(--c-bg-3)"
+          icon="mdi mdi-repeat"
+          big
+          round
+        )
+      .trnItem__categoryName {{ $t('trnForm.transferTitle') }}
+      .trnItem__date {{ formatedDate }}
+      .trnItem__wallet
+        WalletItem(
+          :id="trn.fromWalletId"
+          ui="tile"
+        )
+        .trnFormHeaderSeparator: .mdi.mdi-chevron-right
+        WalletItem(
+          :id="trn.toWalletId"
+          ui="tile"
         )
 
-      .walletName {{ wallet.name }}
+      .trnItem__desc(v-if="trn.description") {{ trn.description }}
 
-    .trnItem__date {{ formatedDate }}
-    .trnItem__amount(@click.stop="setTrnEdit")
-      Amount(
-        :currency="wallet.currency"
-        :type="trn.type"
-        :value="trn.amount"
-        vertical="center"
-        size="xl"
-      )
+      .trnItem__amount(@click.stop="setTrnEdit")
+        Amount(
+          :currency="$store.state.wallets.items[trn.fromWalletId].currency"
+          :value="trn.fromAmount"
+          :type="trn.type"
+          vertical="center"
+          size="xl"
+        )
 
-    .trnItem__desc(v-if="trn.description") {{ trn.description }}
+    //- Transfer: History
+    //-------------------------------------------------------------------------
+    template(v-else)
+      .trnItem__categoryIcon
+        Icon(
+          background="var(--c-bg-3)"
+          icon="mdi mdi-repeat"
+          round
+        )
 
-  //- stat view
-  template(v-else-if="ui === 'stat'")
-    .trnItem__statWrap
-      .trnItem__date {{ formatedDateDay }}
+      .trnItem__categoryName
+        div {{ $t('trnForm.transferTitle') }}
+        .transfer
+          div {{ $t('trnForm.transfer.fromShort') }}: {{ $store.state.wallets.items[trn.fromWalletId].name }}
+          div {{ $t('trnForm.transfer.toShort') }}: {{ $store.state.wallets.items[trn.toWalletId].name }}
+
+      .trnItem__amount(@click.stop="setTrnEdit")
+        Amount(
+          :currency="$store.state.wallets.items[trn.fromWalletId].currency"
+          :isColorize="false"
+          :type="0"
+          :value="trn.fromAmount"
+          isShowPrefix
+        )
+        Amount(
+          :currency="$store.state.wallets.items[trn.toWalletId].currency"
+          :isColorize="false"
+          :type="1"
+          :value="trn.toAmount"
+          isShowPrefix
+        )
+
+      .trnItem__desc
+        div(v-if="trn.description") {{ trn.description }}
+
+  //- Transaction
+  //---------------------------------------------------------------------------
+  template(v-else)
+    //- Detailed
+    //-------------------------------------------------------------------------
+    template(v-if="ui === 'detailed'")
+      .trnItem__categoryIcon
+        Icon(
+          :background="category.color"
+          big
+          :icon="category.icon"
+          round
+        )
+      .trnItem__categoryName {{ category.name }}
       .trnItem__wallet
         .walletIcon
           Icon(
             :abbr="wallet.name"
             :background="wallet.color"
-            :small="true")
+            small
+          )
+
         .walletName {{ wallet.name }}
-      .trnItem__desc(v-if="trn.description") {{ trn.description }}
+
+      .trnItem__date {{ formatedDate }}
       .trnItem__amount(@click.stop="setTrnEdit")
         Amount(
           :currency="wallet.currency"
+          :type="trn.type"
           :value="trn.amount"
-          :type="trn.type")
+          vertical="center"
+          size="xl"
+          isShowPrefix
+        )
 
-  //- last trns. shows category and wallet based on active filters
-  template(v-else-if="ui === 'lastTrns'")
-    .trnItem__statWrap
-      .trnItem__date {{ formatedDateDay2 }}
+      .trnItem__desc(v-if="trn.description") {{ trn.description }}
 
-      //- category selected
-      template(v-if="$store.state.filter.categoryId")
-        //- category with children
-        template(v-if="$store.getters['categories/isCategoryHasChildren']($store.state.filter.categoryId)")
-          .trnItem__wallet
+    //- Stat
+    //-------------------------------------------------------------------------
+    template(v-else-if="ui === 'stat'")
+      .trnItem__statWrap
+        .trnItem__date {{ formatedDateDay }}
+        .trnItem__wallet
+          .walletIcon
             Icon(
               :abbr="wallet.name"
               :background="wallet.color"
-              :medium="true"
               :small="true")
-          .trnItem__categoryIcon
-            Icon(
-              :background="category.color"
-              :icon="category.icon"
-              :medium="true"
-              :round="true")
-          .trnItem__categoryName {{ category.name }}
-        template(v-else)
-          .trnItem__wallet
-            .walletIcon
-              Icon(
-                :abbr="wallet.name"
-                :background="wallet.color"
-                :small="true")
-            .walletName {{ wallet.name }}
+          .walletName {{ wallet.name }}
+        .trnItem__desc(v-if="trn.description") {{ trn.description }}
+        .trnItem__amount(@click.stop="setTrnEdit")
+          Amount(
+            :currency="wallet.currency"
+            :value="trn.amount"
+            :type="trn.type"
+            isShowPrefix
+          )
 
-      //- wallet selected
-      template(v-else-if="$store.state.filter.walletId")
-        .trnItem__categoryIcon
-          Icon(
-            :background="category.color"
-            :icon="category.icon"
-            :medium="true"
-            :round="true")
-        .trnItem__categoryName {{ category.name }}
+    //- History
+    //-------------------------------------------------------------------------
+    template(v-else)
+      .trnItem__categoryIcon
+        Icon(
+          :background="category.color"
+          :icon="category.icon"
+          round
+        )
 
-      //- base
-      template(v-else)
-        .trnItem__wallet
-          Icon(
-            :abbr="wallet.name"
-            :background="wallet.color"
-            :medium="true"
-            :small="true")
-        .trnItem__categoryIcon
-          Icon(
-            :background="category.color"
-            :icon="category.icon"
-            :medium="true"
-            :round="true")
-        .trnItem__categoryName {{ category.name }}
-      .trnItem__desc(v-if="trn.description") {{ trn.description }}
+      .trnItem__categoryName
+        | {{ category.name }}
+        .trnItem__groups(v-if="trn.groups") In group
+        .trnItem__budgets(v-if="trn.budgets") In budget
+
+      .trnItem__walletFloatIcon
+        Icon(
+          :abbr="wallet.name"
+          :background="wallet.color"
+          :small="true"
+        )
+
       .trnItem__amount(@click.stop="setTrnEdit")
         Amount(
           :currency="wallet.currency"
           :value="trn.amount"
-          :type="trn.type")
+          :type="trn.type"
+          :isColorize="trn.type === 1"
+          isShowPrefix
+        )
 
-  //- history view
-  template(v-else)
-    .trnItem__categoryIcon(@click.stop="setTrnEdit")
-      Icon(
-        :background="category.color"
-        :icon="category.icon"
-        :round="true")
-    .trnItem__categoryName
-      | {{ category.name }}
-      .trnItem__groups(v-if="trn.groups") In group
-      .trnItem__budgets(v-if="trn.budgets") In budget
-
-    .trnItem__walletFloatIcon
-      Icon(
-        :abbr="wallet.name"
-        :background="wallet.color"
-        :small="true")
-    .trnItem__amount(@click.stop="setTrnEdit")
-      Amount(
-        :currency="wallet.currency"
-        :value="trn.amount"
-        :type="trn.type"
-      )
-    .trnItem__desc
-      div(v-if="trn.description") {{ trn.description }}
-
-    .trnItem__line
+      .trnItem__desc
+        div(v-if="trn.description") {{ trn.description }}
 </template>
 
 <style lang="stylus" scoped>
 @import "~assets/stylus/variables/margins"
 @import "~assets/stylus/variables/media"
+
+.transfer
+  padding-top $m5
+  font-size 14px
+
+.trnFormHeaderSeparator
+  color var(--c-font-1)
+  font-size 32px
 
 .trnItem
   position relative
@@ -253,7 +283,6 @@ export default {
       margin-top 0
 
   &._stat
-  &._lastTrns
     margin-top -1px
     padding-top 10px
     padding-right 10px
@@ -262,13 +291,9 @@ export default {
     @media $media-laptop
       padding-left 62px
 
-  &._lastTrns
-    padding-left 10px
-
   &:hover
     &._history
     &._stat
-    &._lastTrns
       @media $media-laptop
         background var(--c-bg-5)
 
@@ -278,24 +303,16 @@ export default {
   &__amount
     align-self center
 
-    ^[0]._detailed &
-      //
-
     ^[0]._history &
       grid-column 3 / 4
       grid-row 1 / 2
 
     ^[0]._stat &
-    ^[0]._lastTrns &
       margin-left auto
 
   &__categoryIcon
     ^[0]._detailed &
       padding-bottom 12px
-
-    ^[0]._lastTrns &
-      flex 0 0 24px
-      padding-right 10px
 
   &__categoryName
     white-space nowrap
@@ -313,9 +330,6 @@ export default {
       grid-row 1 / 2
       align-self center
 
-    ^[0]._lastTrns &
-      padding-right 20px
-
   &__date
     font-size 13px
 
@@ -324,11 +338,7 @@ export default {
       font-size 14px
 
     ^[0]._stat &
-    ^[0]._lastTrns &
       padding-right 20px
-
-    ^[0]._lastTrns &
-      flex 0 0 80px
 
   &__desc
     color var(--c-font-2)
@@ -344,24 +354,10 @@ export default {
       padding-bottom 5px
 
     ^[0]._stat &
-    ^[0]._lastTrns &
       overflow hidden
       padding-right 10px
       white-space nowrap
       text-overflow ellipsis
-
-  &__line
-    ^[0]._history &
-      grid-column 2 / 4
-      grid-row 4 / 5
-      padding-top 9px
-
-    ^[0]._history:hover &
-      @media $media-laptop
-        border-color transparent
-
-    ^[0]._history:last-child &
-      border-color transparent
 
   &__statWrap
     display flex
@@ -370,18 +366,15 @@ export default {
     border-bottom 1px solid var(--c-bg-6)
 
     ^[0]._stat:hover &
-    ^[0]._lastTrns:hover &
       @media $media-laptop
         border-color transparent
 
     ^[0]._stat:last-child &
-    ^[0]._lastTrns:last-child &
       border-color transparent
 
   &__wallet
     ^[0]._detailed &
     ^[0]._stat &
-    ^[0]._lastTrns &
       display flex
       align-items center
 
@@ -399,8 +392,6 @@ export default {
         font-size 16px
 
     ^[0]._stat &
-      padding-right 20px
-    ^[0]._lastTrns &
       padding-right 20px
 
   &__walletFloatIcon
