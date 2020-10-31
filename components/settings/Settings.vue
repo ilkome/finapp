@@ -72,7 +72,7 @@ ComponentWrap(:contentPadding="false")
           )
 
       .settings__group
-        .thanksTo {{ $t('app.thanks') }}
+        About
         .appVersion {{ $t('app.version') }} {{ version }}
 
       ModalBottomConfirm(
@@ -130,11 +130,11 @@ ComponentWrap(:contentPadding="false")
     padding-bottom 16px
 
 .thanksTo
-  padding-bottom $m5
   color var(--c-font-2)
   font-size 14px
 
 .appVersion
+  padding-top $m10
   color var(--c-font-3)
   font-size 10px
 </style>

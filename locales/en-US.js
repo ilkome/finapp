@@ -26,8 +26,15 @@ export default {
     }
   },
 
+  about: {
+    creators: {
+      title: 'Creators',
+      author: 'Author',
+      ideas: 'Ideas & testing'
+    }
+  },
+
   app: {
-    thanks: 'Trnaks to @TheCarolissy and @TihomirovPro 🚀🤘',
     version: 'Version',
     desc: 'Powerful personal finance application',
     welcome: 'Welcome to Finapp',
