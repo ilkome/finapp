@@ -77,7 +77,7 @@ export default {
       font-h1()
 
       +media-laptop()
-        font-size 24px
+        font-size 28px
 
   &__content
     overflow hidden
