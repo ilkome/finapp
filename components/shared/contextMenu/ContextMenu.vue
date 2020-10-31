@@ -65,7 +65,7 @@ export default {
 <style lang="stylus">
 .context-menu-sep
   height 1px
-  background var(--c-bg-8)
+  background var(--c-bg-4)
 </style>
 
 <style lang="stylus" scoped>
@@ -82,8 +82,8 @@ export default {
   &__overflow
     z-index 11
     position fixed
-    left 0
     top 0
+    left 0
     width 100%
     height 100%
 
@@ -121,8 +121,8 @@ export default {
     display flex
     align-items center
     padding 10px 12px
-    font-size 11px
     color var(--c-font-4)
+    font-size 11px
     background var(--c-bg-8)
 
     /.light-mode &

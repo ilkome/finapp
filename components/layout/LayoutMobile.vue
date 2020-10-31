@@ -115,9 +115,9 @@ export default {
               .page__wrap
                 .page__nav
                   h1: Date
-                  .page__customize
-                    .opener(@click="$store.dispatch('ui/setActiveTab', 'customize')")
-                      .mdi.mdi-tune
+                  //- .page__customize
+                  //-   .opener(@click="$store.dispatch('ui/setActiveTab', 'customize')")
+                  //-     .mdi.mdi-tune
 
                 .page__content
                   .chartBar(v-show="$store.state.ui.statGraphsVisibility === 'visible'")
@@ -188,16 +188,8 @@ export default {
     )
       Menu
 
-  //- Caegory Form: create or edit
-  //------------------------------------------------------------------------------
-  Portal(
-    v-if="activeTab === 'customize'"
-    to="modal"
-  )
-    ModalBottom(
-      key="customize"
-      @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
-    )
+      .context-menu-sep
+
       ContextMenuItem(
         :title="$t('stat.customize.showPeriodsChart')"
         :showCheckbox="true"

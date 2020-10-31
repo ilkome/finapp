@@ -66,7 +66,6 @@ export default {
           this.slider.slideTo(2)
           break
         case 'menu':
-          console.log('menu')
           this.$store.dispatch('ui/setActiveTab', 'menu')
           break
         default:
