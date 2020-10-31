@@ -29,6 +29,16 @@ export default {
     vertical: {
       type: String,
       default: null
+    },
+
+    isShowPrefix: {
+      type: Boolean,
+      default: false
+    },
+
+    isColorize: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -36,8 +46,8 @@ export default {
     className () {
       return {
         [`_${this.vertical}`]: this.vertical,
-        _expenses: this.type === 0,
-        _incomes: this.type === 1,
+        _expenses: this.isColorize && this.type === 0,
+        _incomes: this.isColorize && this.type === 1,
         [`_size_${this.size}`]: this.size
       }
     }
@@ -62,7 +72,6 @@ export default {
     },
 
     formatAmount (amount, fixedNumber = false) {
-      // const number = Number.isInteger(amount) ? amount : 0
       const number = amount
       const fixed = fixedNumber || 2
       return Number(`${number.toFixed(fixed)}`).toLocaleString('ru-RU')
@@ -81,16 +90,19 @@ export default {
 <template lang="pug">
 .amount(:class="className")
   .amountItem._original(:class="className")
+    .amountItem__prefix(v-if="isShowPrefix") {{ type === 0 ? '-' : '+' }}
     .amountItem__value {{ formatAmount(value) }}
     .amountItem__symbol {{ getCurrencySymbol(currency) }}
 
-  template(v-if="showBase && (value !== 0) && ($store.state.currencies.base && currency !== $store.state.currencies.base)")
+  template(v-if="showBase && (value !== 0) && (currency !== $store.state.currencies.base)")
     .amountItem._base(:class="className")
+      .amountItem__prefix(v-if="isShowPrefix") {{ type === 0 ? '-' : '+' }}
       .amountItem__value {{ convertToBaseCurrency() }}
       .amountItem__symbol {{ getCurrencySymbol($store.state.currencies.base) }}
 </template>
 
 <style lang="stylus" scoped>
+@import "~assets/stylus/variables"
 
 .amount
   color var(--c-font-base)
@@ -118,6 +130,14 @@ export default {
   &._base
     opacity .6
     padding-top 5px
+
+  &__prefix
+    align-self center
+    padding-right $m2
+
+    ~/._size_xl &
+      padding-right $m4
+      font-size 26px
 
   &__value
     font-size 15px
