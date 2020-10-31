@@ -19,15 +19,16 @@ export default {
     window.addEventListener('resize', debounce(this.getPageDimensions, 600))
 
     const workbox = await window.$workbox
+
     if (workbox) {
       workbox.addEventListener('installed', (event) => {
         // If we don't do this we'll be displaying the notification after the initial installation, which isn't perferred.
         if (event.isUpdate) {
           this.$notify({
-            title: 'New version available',
-            text: 'Please reload the app'
+            title: this.$t('app.update.title'),
+            text: this.$t('app.update.text'),
+            duration: 10000
           })
-          console.log('whatever logic you want to use to notify the user that they need to refresh the page.2')
         }
       })
     }

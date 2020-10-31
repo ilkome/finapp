@@ -35,6 +35,10 @@ export default {
   },
 
   app: {
+    update: {
+      title: 'New version available',
+      text: 'Reload the app. Sometimes you need to reload few times. Don\'t worry you can still use the App'
+    },
     version: 'Version',
     desc: 'Powerful personal finance application',
     welcome: 'Welcome to Finapp',
