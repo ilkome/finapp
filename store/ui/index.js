@@ -14,8 +14,7 @@ const state = () => ({
   statSummuryVisibility: 'visible',
   stat: {
     analyticsVisibility: 'hidden',
-    activeTab: 'stat',
-    walletsVisibility: 'hidden'
+    activeTab: 'stat'
   },
   width: 0
 })

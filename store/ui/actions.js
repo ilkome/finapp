@@ -117,32 +117,6 @@ export default {
   },
 
   /**
-    * Toggle stat last trns
-  */
-  toogleStatLastTrnsVisibility ({ commit, dispatch, state }) {
-    let nextStatus
-    state.statLastTrnsVisibility === 'visible'
-      ? nextStatus = 'hidden'
-      : nextStatus = 'visible'
-
-    commit('setStatLastTrnsVisibility', nextStatus)
-    dispatch('ui/saveUiView', null, { root: true })
-  },
-
-  /**
-    * Toggle stat wallets
-  */
-  toogleStatWalletsVisibility ({ commit, dispatch, state }) {
-    let nextStatus
-    state.stat.walletsVisibility === 'visible'
-      ? nextStatus = 'hidden'
-      : nextStatus = 'visible'
-
-    commit('setStatWalletsVisibility', nextStatus)
-    dispatch('ui/saveUiView', null, { root: true })
-  },
-
-  /**
     * Toggle stat summary
   */
   toogleStatSummuryVisibility ({ commit, dispatch, state }) {
@@ -185,7 +159,6 @@ export default {
         statLastTrnsVisibility: rootState.ui.statLastTrnsVisibility,
         statSummuryVisibility: rootState.ui.statSummuryVisibility,
         totalChartPeriods: rootState.chart.periods,
-        walletsVisibility: rootState.ui.stat.walletsVisibility,
         analyticsVisibility: rootState.ui.stat.analyticsVisibility
       }
     })
@@ -204,11 +177,6 @@ export default {
     if (localFilterUi && localFilterUi[uiItemName]) {
       const localFilterUiItem = localFilterUi[uiItemName]
 
-      // wallets visibility
-      localFilterUiItem.walletsVisibility === 'visible'
-        ? commit('setStatWalletsVisibility', 'visible')
-        : commit('setStatWalletsVisibility', 'hidden')
-
       // stat periods graph
       localFilterUiItem.statGraphsVisibility === 'visible'
         ? commit('showStatGraphs')
@@ -223,11 +191,6 @@ export default {
       localFilterUiItem.statItems === 'visible'
         ? commit('setVisibilityStatItems', 'visible')
         : commit('setVisibilityStatItems', 'hidden')
-
-      // stat last trns
-      localFilterUiItem.statLastTrnsVisibility === 'visible'
-        ? commit('setStatLastTrnsVisibility', 'visible')
-        : commit('setStatLastTrnsVisibility', 'hidden')
 
       // stat summury
       localFilterUiItem.statSummuryVisibility === 'visible'

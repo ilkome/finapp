@@ -29,16 +29,8 @@ export default {
     state.statItems = status
   },
 
-  setStatWalletsVisibility (state, status) {
-    state.stat.walletsVisibility = status
-  },
-
   setStatSummuryVisibility (state, status) {
     state.statSummuryVisibility = status
-  },
-
-  setStatLastTrnsVisibility (state, status) {
-    state.statLastTrnsVisibility = status
   },
 
   setShow (state, { id, value }) {
