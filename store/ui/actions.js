@@ -156,7 +156,6 @@ export default {
         period: rootState.filter.period,
         statGraphsVisibility: rootState.ui.statGraphsVisibility,
         statItems: rootState.ui.statItems,
-        statLastTrnsVisibility: rootState.ui.statLastTrnsVisibility,
         statSummuryVisibility: rootState.ui.statSummuryVisibility,
         totalChartPeriods: rootState.chart.periods
       }

@@ -91,13 +91,6 @@ div
       @onClick="$store.dispatch('ui/toogleVisibilityStatItems')"
     )
 
-    ContextMenuItem(
-      icon="mdi mdi-history"
-      title="Last trns"
-      :showCheckbox="true"
-      :checkboxValue="$store.state.ui.statLastTrnsVisibility === 'visible'"
-      @onClick="$store.dispatch('ui/toogleStatLastTrnsVisibility')")
-
     .context-menu-sep
 
     ContextMenuItem(

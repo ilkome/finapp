@@ -10,7 +10,6 @@ const state = () => ({
   catsChart: 'visible',
   statGraphsVisibility: 'visible',
   statItems: 'visible',
-  statLastTrnsVisibility: 'hidden',
   statSummuryVisibility: 'visible',
   stat: {
     activeTab: 'stat'

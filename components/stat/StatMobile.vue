@@ -246,11 +246,8 @@ export default {
               :currency="$store.state.currencies.base"
               :key="categoryId"
               :type="0"
-              :total="statCurrentPeriod.categories[categoryId].expenses")
-
-        .stat__trns(v-if="$store.state.ui.statLastTrnsVisibility === 'visible' && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
-          .stat__name Last transactions
-          TrnsList(:limit="6", ui="lastTrns")
+              :total="statCurrentPeriod.categories[categoryId].expenses"
+            )
 
   .customize
     StatCustomizeMenuMobile
