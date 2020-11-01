@@ -92,7 +92,7 @@ export default {
   template(v-if="showInside")
     .statItem__inside(@click.stop="")
       template(v-if="showChildCategories")
-        StatItemChildCats2(:categoryId="categoryId", :type="type")
+        StatItemChildCats(:categoryId="categoryId", :type="type")
 
       template(v-else)
         TrnsList(

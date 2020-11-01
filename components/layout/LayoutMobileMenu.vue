@@ -51,28 +51,20 @@ export default {
     handleSetActiveTab (tab) {
       switch (tab) {
         case 'wallets':
-          // this.$store.dispatch('ui/setActiveTab', 'stat')
-          // this.$store.dispatch('ui/setActiveTabStat', 'stat')
           this.slider.slideTo(0)
           break
         case 'stat':
-          // this.$store.dispatch('ui/setActiveTab', 'stat')
-          // this.$store.dispatch('ui/setActiveTabStat', 'stat')
           this.slider.slideTo(1)
           break
         case 'categories':
-          // this.$store.dispatch('ui/setActiveTab', 'stat')
-          // this.$store.dispatch('ui/setActiveTabStat', 'history')
           this.slider.slideTo(2)
           break
         case 'menu':
           this.$store.dispatch('ui/setActiveTab', 'menu')
           break
         default:
-          // this.$store.dispatch('ui/setActiveTab', tab)
           this.slider.slideTo(0)
       }
-      // this.$router.push('/')
     }
   }
 }

@@ -56,8 +56,8 @@ Portal(
         )
 
     template(v-if="showChildCategories")
-      StatItemChildCats2(:categoryId="categoryId", :type="0")
-      StatItemChildCats2(:categoryId="categoryId", :type="1")
+      StatItemChildCats(:categoryId="categoryId", :type="0")
+      StatItemChildCats(:categoryId="categoryId", :type="1")
 
     template(v-else)
       TrnsList(
@@ -69,5 +69,5 @@ Portal(
 </template>
 
 <style lang="stylus" scoped>
-//
+// styles here...
 </style>

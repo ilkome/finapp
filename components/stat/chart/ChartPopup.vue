@@ -1,11 +1,12 @@
 <script>
 export default {
+  name: 'ChartPopup'
 }
 </script>
 
 <template lang="pug">
 .chart-popup(:style="{ left: $store.state.chart.hoveredPeriod.offset }")
-  SummaryRow2(
+  SummaryRow(
     :incomesAmount="$store.state.chart.hoveredPeriod.values.incomes"
     :expensesAmount="$store.state.chart.hoveredPeriod.values.expenses"
   )

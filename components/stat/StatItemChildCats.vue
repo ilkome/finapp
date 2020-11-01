@@ -1,6 +1,8 @@
 
 <script>
 export default {
+  name: 'StatItemChildCats',
+
   props: {
     categoryId: {
       type: String,

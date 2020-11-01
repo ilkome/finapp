@@ -31,7 +31,9 @@ export default {
 
   methods: {
     toogleView () {
-      this.$store.commit('chart/toogleChartPeriodView', { periodName: this.periodName })
+      if (this.periodName !== 'year') {
+        this.$store.commit('chart/toogleChartPeriodView', { periodName: this.periodName })
+      }
     },
 
     addPeriodOrGroup () {
@@ -75,7 +77,10 @@ export default {
     ): .mdi.mdi-dots-horizontal
 
     template(v-if="visibleContextMenu")
-      .switcher__item(@click="toogleView") {{ $t('chart.view.toogle') }}
+      .switcher__item(
+        v-if="periodName !== 'year'"
+        @click="toogleView"
+      ) {{ $t('chart.view.toogle') }}
       .switcher__item(
         v-if="(periods[filterPeriod].grouped && periods[filterPeriod].showedGroups > 1) || (!periods[filterPeriod].grouped && periods[filterPeriod].showedPeriods > 1)"
         @click="removePeriodOrGroup"

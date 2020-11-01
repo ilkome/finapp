@@ -11,7 +11,7 @@ export default {
 
 <template lang="pug">
 .empty
-  .empty__icon: .mdi.mdi-cat
+  .empty__icon: .mdi.mdi-palm-tree
   .empty__text {{ text }}
 </template>
 
@@ -25,9 +25,10 @@ export default {
   &__icon
     padding-bottom $m8
     color var(--c-font-4)
-    font-size 160px
+    font-size 100px
 
   &__text
     color var(--c-font-4)
-    font-size 18px
+    font-size 16px
+    line-height 22px
 </style>

@@ -202,7 +202,7 @@ export default {
   stat: {
     shortTitle: 'Статистика',
     balanceTitle: 'Баланс',
-    empty: 'Статистики за выбранный период нетю :)',
+    empty: 'Статистики по выбранным параметрам нет :)',
     customize: {
       showPeriodsChart: 'Показывать график периодов',
       showCategorisChart: 'Показывать график категорий',

@@ -8,13 +8,6 @@ export default {
   data () {
     return {
       slider: null,
-      visibleContextMenu: false,
-
-      selectedPeriodAmount: {
-        label: '',
-        incomes: '',
-        expenses: ''
-      },
 
       periods: [{
         slug: 'day',
@@ -115,14 +108,11 @@ export default {
               .page__wrap
                 .page__nav
                   h1: Date
-                  //- .page__customize
-                  //-   .opener(@click="$store.dispatch('ui/setActiveTab', 'customize')")
-                  //-     .mdi.mdi-tune
 
                 .page__content
                   .chartBar(v-show="$store.state.ui.statGraphsVisibility === 'visible'")
                     ChartMenu2
-                    StatChartsLine2
+                    StatChartsLine
 
                   .switcher(:class="{ _round: $store.state.ui.statGraphsVisibility === 'hidden' }")
                     .switcher__content
@@ -145,7 +135,7 @@ export default {
                         @click="$store.dispatch('filter/setPeriodPrev')"
                       ): .mdi.mdi-chevron-right
 
-                  StatMobile2
+                  StatMobile
 
           //- Categories
           .swiper-slide

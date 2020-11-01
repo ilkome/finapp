@@ -1,5 +1,7 @@
 <script>
 export default {
+  name: 'StatSummaryMobile',
+
   computed: {
     stat () {
       return this.$store.getters['stat/statCurrentPeriod']

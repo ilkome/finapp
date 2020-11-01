@@ -1,5 +1,13 @@
 <script>
 export default {
+  name: 'StatMobile',
+
+  data () {
+    return {
+      view: 'expenses'
+    }
+  },
+
   computed: {
     activeTabStat () {
       return this.$store.state.ui.stat.activeTab
@@ -7,12 +15,6 @@ export default {
 
     statCurrentPeriod () {
       return this.$store.getters['stat/statCurrentPeriod']
-    },
-
-    isEmptyData () {
-      return this.statCurrentPeriod.incomes.categoriesIds.length === 0 &&
-              this.statCurrentPeriod.expenses.categoriesIds.length === 0 &&
-              this.$store.getters['trns/selectedTrnsIdsWithDate'].length === 0
     },
 
     filterCategory () {
@@ -47,211 +49,163 @@ export default {
 
 <template lang="pug">
 .stat
+  //- Filter
+  //---------------------------------------------------------------------------
   .stat__filter.swiper-no-swiping(v-if="$store.state.filter.categoryId || $store.state.filter.walletId")
+    //- Wallet
     template(v-if="$store.state.filter.walletId")
       FilterItem(
         :color="filterWallet.color || $store.state.ui.defaultBgColor"
         :name="filterWallet.name"
         icon="mdi mdi-credit-card-multiple"
-        @onClick="clearWalletFilter")
+        @onClick="clearWalletFilter"
+      )
 
+    //- Category
     template(v-if="$store.state.filter.categoryId")
+      //- Parent
       template(v-if="filterCategory.parentId !== 0")
         FilterItem(
           :color="filterCategoryParent.color || $store.state.ui.defaultBgColor"
           :icon="filterCategoryParent.icon"
           :name="filterCategoryParent.name"
-          @onClick="clearParentCategoryFilter")
+          @onClick="clearParentCategoryFilter"
+        )
+      //- Child
       FilterItem(
         :color="filterCategory.color || $store.state.ui.defaultBgColor"
         :icon="filterCategory.icon"
         :name="filterCategory.name"
-        @onClick="clearCategoryFilter")
+        @onClick="clearCategoryFilter"
+      )
 
-  .block
-    StatSummaryMobile
-
-    template(v-if="!$store.getters['trns/hasTrns']")
-      .startSomething
-        .options__item(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
-          Button._grey._center(
-            :title="$t('createTrn')"
-            @onClick="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
+  //- Header
+  //---------------------------------------------------------------------------
+  .stat__header(:class="{ _withFilter: ($store.state.filter.categoryId || $store.state.filter.walletId) }")
+    .statItem-header(
+      :class="{ _active: activeTabStat === 'incomes' }"
+      @click="$store.dispatch('ui/setActiveTabStat', 'incomes')"
+    )
+      .statItem-total
+        .statItem-total__title {{ $t('money.incomes') }}
+        .statItem-total__amount
+          Amount(
+            :currency="$store.state.currencies.base"
+            :type="1"
+            :value="statCurrentPeriod.incomes.total"
+            size="md"
           )
 
-        .options__item(v-if="$store.state.demo.hasDemo")
-          Button._blue._center(
-          size="xl"
-          :title="$t('welcome.demo.btn')"
-          @onClick="$router.push('/welcome')"
+    .statItem-header(
+      :class="{ _active: activeTabStat === 'expenses' }"
+      @click="$store.dispatch('ui/setActiveTabStat', 'expenses')"
+    )
+      .statItem-total
+        .statItem-total__title {{ $t('money.expenses') }}
+        .statItem-total__amount
+          Amount(
+            :currency="$store.state.currencies.base"
+            :type="0"
+            :value="statCurrentPeriod.expenses.total"
+            size="md"
+          )
+
+    .statItem-header(
+      :class="{ _active: activeTabStat === 'history' }"
+      @click="$store.dispatch('ui/setActiveTabStat', 'history')"
+    )
+      .statItem-total
+        .statItem-total__title {{ $t('trns.shortTitle') }}
+        .statItem-total__amount
+          Amount(
+            :currency="$store.state.currencies.base"
+            :type="3"
+            :value="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total"
+            size="md"
+          )
+
+  //- Content
+  //---------------------------------------------------------------------------
+  .stat__content
+    //- Incomes
+    //-------------------------------------------------------------------------
+    .statGroup(v-show="activeTabStat === 'incomes'")
+      EmptyData(
+        v-if="$store.getters['trns/hasTrns'] && statCurrentPeriod.incomes.categoriesIds.length === 0"
+        :text="$t('stat.empty')"
+      )
+
+      //- Categories charts
+      .stat__charts(v-show="$store.state.ui.catsChart === 'visible'")
+        PeriodCatsChart(type="incomes")
+
+      //- Categories list
+      .stat__cats(v-show="$store.state.ui.statItems === 'visible'")
+        StatItem(
+          v-for="categoryId in statCurrentPeriod.incomes.categoriesIds"
+          :biggest="statCurrentPeriod.incomes.biggest"
+          :category="$store.state.categories.items[categoryId]"
+          :categoryId="categoryId"
+          :currency="$store.state.currencies.base"
+          :key="categoryId"
+          :total="statCurrentPeriod.categories[categoryId].incomes"
+          :type="1"
         )
 
-    //- empty
-    //------------------------------------------------
-    EmptyData(
-      v-if="isEmptyData && $store.getters['trns/hasTrns']"
-      :text="$t('stat.empty')"
-    )
+    //- Expenses
+    //-------------------------------------------------------------------------
+    .statGroup(v-show="activeTabStat === 'expenses'")
+      EmptyData(
+        v-if="$store.getters['trns/hasTrns'] && statCurrentPeriod.expenses.categoriesIds.length === 0"
+        :text="$t('stat.empty')"
+      )
 
-    //- history
-    //------------------------------------------------
-    div(v-if="activeTabStat === 'history'")
+      //- Categories charts
+      .stat__charts(v-show="$store.state.ui.catsChart === 'visible'")
+        PeriodCatsChart(type="expenses")
+
+      //- Categories list
+      .stat__cats(v-show="$store.state.ui.statItems === 'visible'")
+        StatItem(
+          v-for="categoryId in statCurrentPeriod.expenses.categoriesIds"
+          :biggest="statCurrentPeriod.expenses.biggest"
+          :category="$store.state.categories.items[categoryId]"
+          :categoryId="categoryId"
+          :currency="$store.state.currencies.base"
+          :key="categoryId"
+          :total="statCurrentPeriod.categories[categoryId].expenses"
+          :type="0"
+        )
+
+    //- History
+    //-------------------------------------------------------------------------
+    .statGroup(v-show="activeTabStat === 'history'")
+      EmptyData(
+        v-if="$store.getters['trns/hasTrns'] && $store.getters['trns/selectedTrnsIdsWithDate'].length === 0"
+        :text="$t('stat.empty')"
+      )
+
       TrnsList
-
-    div(v-if="activeTabStat === 'incomes'")
-      .stat__content
-        //- incomes
-        .statGroup(v-if="statCurrentPeriod.incomes.categoriesIds.length")
-          .statItem-header
-            .statItem-total
-              .statItem-total__title._incomes {{ $t('money.incomes') }}
-              .statItem-total__amount
-                Amount(
-                  :currency="$store.state.currencies.base"
-                  :type="1"
-                  :value="statCurrentPeriod.incomes.total")
-            .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
-              .statItem-average__title
-                .statItem-average__title-icon: .mdi.mdi-chart-timeline
-                .statItem-average__title-text {{ $t('money.average') }}
-              .statItem-average__amount
-                Amount(
-                  :currency="$store.state.currencies.base"
-                  :small="true"
-                  :value="$store.getters['stat/statAverage'].incomes")
-
-          //- incomes: cats charts
-          .stat__charts(v-show="$store.state.ui.catsChart === 'visible'")
-            PeriodCatsChart(type="incomes")
-
-          //- incomes: cats stat item
-          .stat__cats(v-show="$store.state.ui.statItems === 'visible'")
-            StatItem(
-              v-for="categoryId in statCurrentPeriod.incomes.categoriesIds"
-              :biggest="statCurrentPeriod.incomes.biggest"
-              :category="$store.state.categories.items[categoryId]"
-              :categoryId="categoryId"
-              :currency="$store.state.currencies.base"
-              :key="categoryId"
-              :type="1"
-              :total="statCurrentPeriod.categories[categoryId].incomes")
-
-    div(v-if="activeTabStat === 'expenses'")
-      .stat__content
-        .statGroup(v-if="statCurrentPeriod.expenses.categoriesIds.length")
-          .statItem-header
-            .statItem-total
-              .statItem-total__title._expenses {{ $t('money.expenses') }}
-              .statItem-total__amount
-                Amount(
-                  :currency="$store.state.currencies.base"
-                  :type="0"
-                  :value="statCurrentPeriod.expenses.total")
-            .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
-              .statItem-average__title
-                .statItem-average__title-icon: .mdi.mdi-chart-timeline
-                .statItem-average__title-text {{ $t('money.average') }}
-              .statItem-average__amount
-                Amount(
-                  :currency="$store.state.currencies.base"
-                  :small="true"
-                  :value="$store.getters['stat/statAverage'].expenses"
-                )
-          //- expenses: cats charts
-          .stat__charts(v-show="$store.state.ui.catsChart === 'visible'")
-            PeriodCatsChart(type="expenses")
-
-          //- expenses: cats stat item
-          .stat__cats(v-show="$store.state.ui.statItems === 'visible'")
-            StatItem(
-              v-for="categoryId in statCurrentPeriod.expenses.categoriesIds"
-              :biggest="statCurrentPeriod.expenses.biggest"
-              :category="$store.state.categories.items[categoryId]"
-              :categoryId="categoryId"
-              :currency="$store.state.currencies.base"
-              :key="categoryId"
-              :type="0"
-              :total="statCurrentPeriod.categories[categoryId].expenses")
-
-    //- stat
-    //------------------------------------------------
-    div(v-show="activeTabStat === 'stat'")
-      .stat__content
-        //- incomes
-        .statGroup(v-if="statCurrentPeriod.incomes.categoriesIds.length")
-          .statItem-header
-            .statItem-total
-              .statItem-total__title._incomes {{ $t('money.incomes') }}
-              .statItem-total__amount
-                Amount(
-                  :currency="$store.state.currencies.base"
-                  :type="1"
-                  :value="statCurrentPeriod.incomes.total")
-            .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
-              .statItem-average__title
-                .statItem-average__title-icon: .mdi.mdi-chart-timeline
-                .statItem-average__title-text {{ $t('money.average') }}
-              .statItem-average__amount
-                Amount(
-                  :currency="$store.state.currencies.base"
-                  :small="true"
-                  :value="$store.getters['stat/statAverage'].incomes")
-          //- incomes: cats charts
-          .stat__charts(v-show="$store.state.ui.catsChart === 'visible'")
-            PeriodCatsChart(type="incomes")
-
-          //- incomes: cats stat item
-          .stat__cats(v-show="$store.state.ui.statItems === 'visible'")
-            StatItem(
-              v-for="categoryId in statCurrentPeriod.incomes.categoriesIds"
-              :biggest="statCurrentPeriod.incomes.biggest"
-              :category="$store.state.categories.items[categoryId]"
-              :categoryId="categoryId"
-              :currency="$store.state.currencies.base"
-              :key="categoryId"
-              :type="1"
-              :total="statCurrentPeriod.categories[categoryId].incomes")
-
-        //- expenses
-        .statGroup(v-if="statCurrentPeriod.expenses.categoriesIds.length")
-          .statItem-header
-            .statItem-total
-              .statItem-total__title._expenses {{ $t('money.expenses') }}
-              .statItem-total__amount
-                Amount(
-                  :currency="$store.state.currencies.base"
-                  :type="0"
-                  :value="statCurrentPeriod.expenses.total")
-            .statItem-average(v-if="$store.state.stat.showedPeriods > 1")
-              .statItem-average__title
-                .statItem-average__title-icon: .mdi.mdi-chart-timeline
-                .statItem-average__title-text {{ $t('money.average') }}
-              .statItem-average__amount
-                Amount(
-                  :currency="$store.state.currencies.base"
-                  :small="true"
-                  :value="$store.getters['stat/statAverage'].expenses"
-                )
-          //- expenses: cats charts
-          .stat__charts(v-show="$store.state.ui.catsChart === 'visible'")
-            PeriodCatsChart(type="expenses")
-
-          //- expenses: cats stat item
-          .stat__cats(v-show="$store.state.ui.statItems === 'visible'")
-            StatItem(
-              v-for="categoryId in statCurrentPeriod.expenses.categoriesIds"
-              :biggest="statCurrentPeriod.expenses.biggest"
-              :category="$store.state.categories.items[categoryId]"
-              :categoryId="categoryId"
-              :currency="$store.state.currencies.base"
-              :key="categoryId"
-              :type="0"
-              :total="statCurrentPeriod.categories[categoryId].expenses"
-            )
-
-  .customize
-    StatCustomizeMenuMobile
 </template>
+
+<style lang="stylus">
+.stat
+  .cats-chart__items
+    padding-right 8px
+    padding-left 8px
+
+  .trnsList
+    .trnsList__grid
+      padding 0
+
+      .trnsList__day
+        margin-top 0
+
+        &:last-child
+          margin-bottom 0
+          padding-bottom 0
+          border-bottom 0
+</style>
 
 <style lang="stylus" scoped>
 @import "~assets/stylus/variables/margins"
@@ -261,35 +215,38 @@ export default {
 @import "~assets/stylus/variables/scroll"
 
 .swiper-slide
-  height 100%
   overflow hidden
   overflow-y auto
-
-.customize
-  display none
-
-  @media $media-phone-sm
-    display block
-    padding 0 $m7
-    padding-bottom $m9
-    margin-top $m9
+  height 100%
 
 .stat
   position relative
+  margin 0 -8px
 
   &__filter
-    display flex
-    overflow hidden
     overflow auto
-    padding 16px 16px
-    padding-right 0
-    background var(--c-bg-4)
+    z-index 10
+    opacity .95
+    position sticky
+    top 34px
+    display flex
+    padding-top 16px
+    background var(--c-bg-2)
     scrollbar()
-    &:after
-      display block
-      content ""
-      width 1px
-      flex 0 0 16px
+
+  &__header
+    z-index 10
+    opacity .95
+    position sticky
+    top 50px
+    display flex
+    align-items center
+    justify-content space-between
+    margin-top $m5
+    background var(--c-bg-2)
+
+    &._withFilter
+      top 86px
 
   &__charts
     padding-bottom $m7
@@ -306,27 +263,33 @@ export default {
     padding-bottom 20px
 
 .statGroup
-  padding-top $m9
-  padding-bottom 10px
-
-  & + &
-    border-top 1px solid var(--c-bg-6)
+  padding-top $m7
 
 .statItem-header
-  padding-bottom $m8
+  flex-grow 1
+  padding $m3
+  padding-top $m6
+  padding-bottom $m6
+  border-bottom 2px solid transparent
 
-  &:last-child
-    padding-bottom 0
+  &._active
+    opacity 1
+    border-bottom 2px solid var(--c-bg-9)
 
 .statItem-total
-  padding 0 $m7
   display flex
   align-items center
+  flex-flow column
   flex-grow 1
+  padding 0 $m2
+
+  &__amount
+    padding-top $m5
 
   &__title
     flex-grow 1
-    font-header-4()
+    font-size 12px
+    color var(--c-font-3)
 
     &._incomes
       color var(--c-incomes-1)
@@ -334,36 +297,7 @@ export default {
     &._expenses
       color var(--c-expenses-1)
 
-.statItem-average
-  display flex
-  align-items center
-  padding 0 $m7
-  padding-top $m5
-
-  &__title
-    flex-grow 1
-    display flex
-    align-items center
-    color var(--c-font-4)
-
-    &-icon
-      opacity .8
-      margin-right $m6
-
-  &__amount
-    opacity .6
-
 .statItem
   &__trns
     padding-bottom $m8
-
-.startSomething
-  padding 100px 20px
-  display flex
-  flex-flow column
-  align-items center
-  justify-content center
-
-  .options__item
-    margin-bottom 40px
 </style>
