@@ -63,7 +63,7 @@ export default {
   setActiveTab ({ commit, state }, nextTab) {
     if (state.activeTab !== nextTab) {
       commit('setActiveTab', nextTab)
-      localforage.setItem('next.activeTab', nextTab)
+      localforage.setItem('finapp.activeTab', nextTab)
     }
   },
 
@@ -143,7 +143,7 @@ export default {
     * Save ui view state to localStorage for selected filter
   */
   async saveUiView ({ commit, dispatch, state, rootState }) {
-    const localName = 'finappUiView'
+    const localName = 'finapp.statViewConfig'
     const localFilterUi = await localforage.getItem(localName)
     const walletName = rootState.filter.walletId || 'root'
     const categoryName = rootState.filter.categoryId || 'root'
@@ -168,7 +168,7 @@ export default {
     * Set ui view params for selected filter
   */
   async setUiView ({ commit, dispatch, state, rootState }) {
-    const localName = 'finappUiView'
+    const localName = 'finapp.statViewConfig'
     const localFilterUi = await localforage.getItem(localName)
     const walletName = rootState.filter.walletId || 'root'
     const categoryName = rootState.filter.categoryId || 'root'

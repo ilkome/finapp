@@ -20,7 +20,7 @@ export default {
 
   setUser ({ commit }, user) {
     commit('setUser', user)
-    localforage.setItem('next.user', user)
+    localforage.setItem('finapp.user', user)
   },
 
   async signOut ({ rootState, commit, dispatch }) {

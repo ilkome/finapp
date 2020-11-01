@@ -13,7 +13,7 @@ export default {
 
   setCategories ({ commit }, items) {
     commit('setCategories', items)
-    localforage.setItem('next.categories', items)
+    localforage.setItem('finapp.categories', items)
   },
 
   unsubcribeCategories ({ rootState }) {

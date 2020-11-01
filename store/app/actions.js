@@ -51,13 +51,13 @@ export default {
     dispatch('chart/initChart', null, { root: true })
 
     const [ativeTab, user, currencies, categories, wallets, trns, filterPeriod] = await Promise.all([
-      localforage.getItem('next.activeTab'),
-      localforage.getItem('next.user'),
-      localforage.getItem('next.currencies'),
-      localforage.getItem('next.categories'),
-      localforage.getItem('next.wallets'),
-      localforage.getItem('next.trns'),
-      localforage.getItem('next.filter.period')
+      localforage.getItem('finapp.activeTab'),
+      localforage.getItem('finapp.user'),
+      localforage.getItem('finapp.currencies'),
+      localforage.getItem('finapp.categories'),
+      localforage.getItem('finapp.wallets'),
+      localforage.getItem('finapp.trns'),
+      localforage.getItem('finapp.filter.period')
     ])
 
     if (ativeTab) { dispatch('ui/setActiveTab', ativeTab, { root: true }) }

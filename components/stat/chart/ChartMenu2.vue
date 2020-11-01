@@ -55,7 +55,7 @@ export default {
     },
 
     saveChartsPeriodsToLocalStorage () {
-      localforage.setItem('next.chart.periods', this.periods)
+      localforage.setItem('finapp.chart.periods', this.periods)
       this.$store.dispatch('ui/saveUiView')
     }
   }

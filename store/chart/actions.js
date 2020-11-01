@@ -2,7 +2,7 @@ import localforage from 'localforage'
 
 export default {
   async initChart ({ rootState, commit }) {
-    const localPeriods = await localforage.getItem('next.chart.periods')
+    const localPeriods = await localforage.getItem('finapp.chart.periods')
     let showedGroups, showedPeriods
 
     if (!localPeriods) { return }

@@ -26,7 +26,7 @@ export default {
       walletId: values.walletId
     }
 
-    localforage.setItem('next.trns', { ...trns, [id]: formatedTrnValues })
+    localforage.setItem('finapp.trns', { ...trns, [id]: formatedTrnValues })
     commit('setTrns', Object.freeze({ ...trns, [id]: formatedTrnValues }))
 
     db.ref(`users/${uid}/trns/${id}`)
@@ -55,7 +55,7 @@ export default {
 
     delete trns[id]
     commit('setTrns', Object.freeze(trns))
-    localforage.setItem('next.trns', trns)
+    localforage.setItem('finapp.trns', trns)
     saveTrnToDeleteLaterLocal(id)
 
     db.ref(`users/${uid}/trns/${id}`)
@@ -107,7 +107,7 @@ export default {
 
   setTrns ({ commit }, items) {
     commit('setTrns', items)
-    localforage.setItem('next.trns', items)
+    localforage.setItem('finapp.trns', items)
   },
 
   unsubcribeTrns ({ rootState }) {
@@ -120,7 +120,7 @@ export default {
       const isConnected = snap.val()
       if (isConnected) {
         // add
-        const trnsOfflineUpdate = await localforage.getItem('next.trns.offline.update') || {}
+        const trnsOfflineUpdate = await localforage.getItem('finapp.trns.offline.update') || {}
         for (const trnId in trnsOfflineUpdate) {
           if (trnsOfflineUpdate[trnId] && trnsOfflineUpdate[trnId].amount) {
             dispatch('addTrn', {
@@ -130,7 +130,7 @@ export default {
           }
         }
         // delete
-        const trnsOfflineDelete = await localforage.getItem('next.trns.offline.delete') || []
+        const trnsOfflineDelete = await localforage.getItem('finapp.trns.offline.delete') || []
         for (const trnId of trnsOfflineDelete) {
           dispatch('deleteTrn', trnId)
         }

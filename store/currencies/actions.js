@@ -30,7 +30,7 @@ export default {
 
     const currencies = { base: userCurrency, rates }
     commit('setCurrencies', currencies)
-    localforage.setItem('next.currencies', currencies)
+    localforage.setItem('finapp.currencies', currencies)
   },
 
   setBaseCurrency ({ rootState, dispatch }, baseCurrency) {
