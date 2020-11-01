@@ -68,14 +68,6 @@ div
     )
 
     ContextMenuItem(
-      :checkboxValue="$store.state.ui.statSummuryVisibility === 'visible'"
-      :showCheckbox="true"
-      icon="mdi mdi-numeric"
-      title="Summary"
-      @onClick="$store.dispatch('ui/toogleStatSummuryVisibility')"
-    )
-
-    ContextMenuItem(
       :checkboxValue="$store.state.ui.catsChart === 'visible'"
       :showCheckbox="true"
       icon="mdi mdi-folder-star"

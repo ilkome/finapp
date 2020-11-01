@@ -29,10 +29,6 @@ export default {
     state.statItems = status
   },
 
-  setStatSummuryVisibility (state, status) {
-    state.statSummuryVisibility = status
-  },
-
   setShow (state, { id, value }) {
     state.stat[id] = value
   }

@@ -69,7 +69,7 @@ export default {
         @onClick="clearCategoryFilter")
 
   .block
-    StatSummaryMobile(v-show="$store.state.ui.statSummuryVisibility === 'visible'")
+    StatSummaryMobile
 
     template(v-if="!$store.getters['trns/hasTrns']")
       .startSomething

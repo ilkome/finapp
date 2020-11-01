@@ -116,19 +116,6 @@ export default {
     dispatch('ui/saveUiView', null, { root: true })
   },
 
-  /**
-    * Toggle stat summary
-  */
-  toogleStatSummuryVisibility ({ commit, dispatch, state }) {
-    let nextStatus
-    state.statSummuryVisibility === 'visible'
-      ? nextStatus = 'hidden'
-      : nextStatus = 'visible'
-
-    commit('setStatSummuryVisibility', nextStatus)
-    dispatch('ui/saveUiView', null, { root: true })
-  },
-
   toogleStat ({ commit, dispatch, state }, id) {
     let value
     state.stat[id] === 'visible'
@@ -156,7 +143,6 @@ export default {
         period: rootState.filter.period,
         statGraphsVisibility: rootState.ui.statGraphsVisibility,
         statItems: rootState.ui.statItems,
-        statSummuryVisibility: rootState.ui.statSummuryVisibility,
         totalChartPeriods: rootState.chart.periods
       }
     })
@@ -189,11 +175,6 @@ export default {
       localFilterUiItem.statItems === 'visible'
         ? commit('setVisibilityStatItems', 'visible')
         : commit('setVisibilityStatItems', 'hidden')
-
-      // stat summury
-      localFilterUiItem.statSummuryVisibility === 'visible'
-        ? commit('setStatSummuryVisibility', 'visible')
-        : commit('setStatSummuryVisibility', 'hidden')
 
       // periods in total chart
       const currentPeriodName = rootState.filter.period
