@@ -158,8 +158,7 @@ export default {
         statItems: rootState.ui.statItems,
         statLastTrnsVisibility: rootState.ui.statLastTrnsVisibility,
         statSummuryVisibility: rootState.ui.statSummuryVisibility,
-        totalChartPeriods: rootState.chart.periods,
-        analyticsVisibility: rootState.ui.stat.analyticsVisibility
+        totalChartPeriods: rootState.chart.periods
       }
     })
   },
@@ -196,11 +195,6 @@ export default {
       localFilterUiItem.statSummuryVisibility === 'visible'
         ? commit('setStatSummuryVisibility', 'visible')
         : commit('setStatSummuryVisibility', 'hidden')
-
-      // Analytics
-      localFilterUiItem.analyticsVisibility === 'visible'
-        ? commit('setShow', { id: 'analyticsVisibility', value: 'visible' })
-        : commit('setShow', { id: 'analyticsVisibility', value: 'hidden' })
 
       // periods in total chart
       const currentPeriodName = rootState.filter.period

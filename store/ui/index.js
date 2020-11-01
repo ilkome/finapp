@@ -13,7 +13,6 @@ const state = () => ({
   statLastTrnsVisibility: 'hidden',
   statSummuryVisibility: 'visible',
   stat: {
-    analyticsVisibility: 'hidden',
     activeTab: 'stat'
   },
   width: 0
