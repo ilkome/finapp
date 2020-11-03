@@ -4,19 +4,19 @@ export default {
   },
 
   /**
-   * https://nuxtjs.org/guides/configuration-glossary/configuration-ssr
-   */
-  ssr: false,
-
-  /**
    * https://nuxtjs.org/guides/configuration-glossary/configuration-modern
    */
   modern: 'client',
 
   /**
+   * https://nuxtjs.org/guides/configuration-glossary/configuration-ssr
+   */
+  ssr: false,
+
+  /**
    * https://nuxtjs.org/guides/configuration-glossary/configuration-target
    */
-  target: 'server',
+  target: 'static',
 
   /**
    * https://nuxtjs.org/guides/configuration-glossary/configuration-telemetry
@@ -89,7 +89,6 @@ export default {
    * Nuxt.js dev-modules
    */
   buildModules: [
-    '@nuxtjs/color-mode',
     '@nuxtjs/pwa',
     'nuxt-composition-api'
   ],
@@ -106,9 +105,10 @@ export default {
    * Nuxt.js modules
    */
   modules: [
+    '@nuxtjs/color-mode',
     '@nuxtjs/pwa',
-    'portal-vue/nuxt',
-    'nuxt-i18n'
+    'nuxt-i18n',
+    'portal-vue/nuxt'
   ],
 
   /**

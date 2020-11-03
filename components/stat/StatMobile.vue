@@ -17,6 +17,14 @@ export default {
       return this.$store.getters['stat/statCurrentPeriod']
     },
 
+    statAverage () {
+      return this.$store.getters['stat/statAverage']
+    },
+
+    periods () {
+      return this.$store.state.chart.periods
+    },
+
     filterCategory () {
       return this.$store.state.categories.items[this.$store.state.filter.categoryId]
     },
@@ -82,47 +90,44 @@ export default {
   //- Header
   //---------------------------------------------------------------------------
   .stat__header(:class="{ _withFilter: ($store.state.filter.categoryId || $store.state.filter.walletId) }")
-    .statItem-header(
+    .statItemHeader(
       :class="{ _active: activeTabStat === 'incomes' }"
       @click="$store.dispatch('ui/setActiveTabStat', 'incomes')"
     )
-      .statItem-total
-        .statItem-total__title {{ $t('money.incomes') }}
-        .statItem-total__amount
-          Amount(
-            :currency="$store.state.currencies.base"
-            :type="1"
-            :value="statCurrentPeriod.incomes.total"
-            size="md"
-          )
+      .statItemHeader__title {{ $t('money.incomes') }}
+      //- .statItemHeader__amount
+      //-   Amount(
+      //-     :currency="$store.state.currencies.base"
+      //-     :type="1"
+      //-     :value="statCurrentPeriod.incomes.total"
+      //-     size="md"
+      //-   )
 
-    .statItem-header(
+    .statItemHeader(
       :class="{ _active: activeTabStat === 'expenses' }"
       @click="$store.dispatch('ui/setActiveTabStat', 'expenses')"
     )
-      .statItem-total
-        .statItem-total__title {{ $t('money.expenses') }}
-        .statItem-total__amount
-          Amount(
-            :currency="$store.state.currencies.base"
-            :type="0"
-            :value="statCurrentPeriod.expenses.total"
-            size="md"
-          )
+      .statItemHeader__title {{ $t('money.expenses') }}
+      //- .statItemHeader__amount
+      //-   Amount(
+      //-     :currency="$store.state.currencies.base"
+      //-     :type="0"
+      //-     :value="statCurrentPeriod.expenses.total"
+      //-     size="md"
+      //-   )
 
-    .statItem-header(
+    .statItemHeader(
       :class="{ _active: activeTabStat === 'history' }"
       @click="$store.dispatch('ui/setActiveTabStat', 'history')"
     )
-      .statItem-total
-        .statItem-total__title {{ $t('trns.shortTitle') }}
-        .statItem-total__amount
-          Amount(
-            :currency="$store.state.currencies.base"
-            :type="3"
-            :value="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total"
-            size="md"
-          )
+      .statItemHeader__title {{ $t('trns.history') }}
+      //- .statItemHeader__amount
+      //-   Amount(
+      //-     :currency="$store.state.currencies.base"
+      //-     :type="3"
+      //-     :value="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total"
+      //-     size="md"
+      //-   )
 
   //- Content
   //---------------------------------------------------------------------------
@@ -208,11 +213,7 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/flex"
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/scroll"
+@import "~assets/stylus/variables"
 
 .swiper-slide
   overflow hidden
@@ -222,31 +223,31 @@ export default {
 .stat
   position relative
   margin 0 -8px
+  padding-top $m7
 
   &__filter
     overflow auto
     z-index 10
-    opacity .95
     position sticky
-    top 34px
+    top 94px
     display flex
-    padding-top 16px
+    padding-bottom $m8
     background var(--c-bg-2)
     scrollbar()
 
   &__header
     z-index 10
-    opacity .95
     position sticky
-    top 50px
+    top 93px
     display flex
     align-items center
-    justify-content space-between
-    margin-top $m5
+    justify-content space-around
+    margin-bottom $m7
+    padding-bottom $m5
     background var(--c-bg-2)
 
     &._withFilter
-      top 86px
+      top 138px
 
   &__charts
     padding-bottom $m7
@@ -262,40 +263,26 @@ export default {
     padding 0 10px
     padding-bottom 20px
 
-.statGroup
-  padding-top $m7
-
-.statItem-header
-  flex-grow 1
-  padding $m3
-  padding-top $m6
-  padding-bottom $m6
+.statItemHeader
+  padding $m6
+  padding-top 0
+  padding-bottom $m5
   border-bottom 2px solid transparent
 
   &._active
     opacity 1
     border-bottom 2px solid var(--c-bg-9)
 
-.statItem-total
-  display flex
-  align-items center
-  flex-flow column
-  flex-grow 1
-  padding 0 $m2
+  &__title
+    padding 0 $m2
+    color var(--c-font-5)
+    font-size 14px
+
+    ~/._active &
+      color var(--c-font-2)
 
   &__amount
     padding-top $m5
-
-  &__title
-    flex-grow 1
-    font-size 12px
-    color var(--c-font-3)
-
-    &._incomes
-      color var(--c-incomes-1)
-
-    &._expenses
-      color var(--c-expenses-1)
 
 .statItem
   &__trns

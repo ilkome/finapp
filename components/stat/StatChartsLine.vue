@@ -208,16 +208,14 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/scroll"
+@import "~assets/stylus/variables"
 
 .charts
   z-index 5
   position relative
-  padding $m6
+
+  +media-tablet()
+    padding $m6
 
   &__allData
     opacity .7

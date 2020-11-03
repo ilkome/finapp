@@ -119,8 +119,8 @@ export default {
 
     @media $media-laptop
       flex 0 1 250px
-      padding 0
       margin 0
+      padding 0
 
     @media $media-pc
       padding $m3 $m9
@@ -163,15 +163,15 @@ export default {
         font-size 15px
 
   &__average
-    display flex
     opacity .7
+    display flex
 
     &__icon
-      font-size 15px
       margin-right $m5
+      font-size 15px
 
     &__title
+      padding-right $m8
       font-header-4()
       font-size 16px
-      padding-right $m8
 </style>

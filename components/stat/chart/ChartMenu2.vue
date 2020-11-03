@@ -66,9 +66,7 @@ export default {
 
 <template lang="pug">
 .switcher
-  .switcher__name(@click="toogleView")
-    template(v-if="periods[filterPeriod].grouped") {{ periods[filterPeriod].showedGroups }} {{ $t('chart.view.groupsName') }}
-    template(v-else) {{ periods[filterPeriod].showedPeriods }} {{ $t(`dates.${periodName}.simple`) }}
+  .switcher__name(@click="toogleView") {{ Object.keys($store.getters['stat/statByPeriods']).length }} {{ $t(`dates.${periodName}.simple`) }}
 
   .switcher__content(:class="{ _active: visibleContextMenu}")
     .switcher__item(
@@ -95,23 +93,23 @@ export default {
 @import "~assets/stylus/variables"
 
 .switcher
+  overflow hidden
+  z-index 15
   position relative
   display flex
   align-items center
   justify-content space-between
-  z-index 15
   // padding 0 $m5
   margin-bottom $m6
   border-radius 8px 8px 0 0
-  overflow hidden
   border-bottom 1px solid var(--c-bg-4)
 
   &__name
     flex-grow 1
+    padding-left $m6
+    color var(--c-font-5)
     font-size 10px
     text-transform uppercase
-    color var(--c-font-5)
-    padding-left $m6
 
   &__content
     display flex
@@ -126,14 +124,14 @@ export default {
       justify-content space-between
 
   &__item
+    opacity .6
     display flex
     align-items center
     justify-content center
-    text-align center
-    opacity .6
     min-width 48px
     padding $m5 $m7
     font-size 12px
+    text-align center
 
     .mdi
       font-size 16px

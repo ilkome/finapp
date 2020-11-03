@@ -2,6 +2,8 @@
 export default {
   appName: 'Финапка',
 
+  for: 'за',
+
   locale: {
     toogle: 'Сменить язык'
   },
@@ -200,11 +202,13 @@ export default {
   },
 
   stat: {
+    title: 'Статистика',
     shortTitle: 'Статистика',
     balanceTitle: 'Баланс',
     empty: 'Статистики по выбранным параметрам нет :)',
     customize: {
       showPeriodsChart: 'Показывать график периодов',
+      averageStatVisibility: 'Показывать средниюю статистику',
       showCategorisChart: 'Показывать график категорий',
       showCategorisList: 'Показывать список категорий'
     }
@@ -244,6 +248,9 @@ export default {
     transfer: 'Перевод',
     total: 'Итого',
     average: 'Среднее',
+    averageIncomes: 'Средний доход',
+    averageExpenses: 'Средний расход',
+    averageTotal: 'Средний баланс',
     also: 'Еще',
     wallets: 'Кошельки',
     all: 'Всего'

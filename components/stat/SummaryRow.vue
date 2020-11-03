@@ -9,6 +9,12 @@ export default {
       type: Number,
       default: 0
     }
+  },
+
+  computed: {
+    statAverage () {
+      return this.$store.getters['stat/statAverage']
+    }
   }
 }
 </script>
@@ -16,40 +22,40 @@ export default {
 <template lang="pug">
 .summary
   //- Incomes
-  .summary__item._incomes
+  .summary__item._incomes(v-if="statAverage.incomes !== 0")
     .summary__item__title._incomes {{ $t('money.incomes') }}
     .summary__item__amount
       Amount(
-        :center="true"
         :currency="$store.state.currencies.base"
         :type="1"
         :value="incomesAmount || 0"
         size="md"
+        vertical="left"
       )
 
   //- Expenses
-  .summary__item._expenses
+  .summary__item._expenses(v-if="statAverage.expenses !== 0")
     .summary__item__title._expenses {{ $t('money.expenses') }}
     .summary__item__amount
       Amount(
-        :center="true"
         :currency="$store.state.currencies.base"
-        :value="expensesAmount || 0"
         :type="0"
+        :value="expensesAmount || 0"
         size="md"
+        vertical="left"
       )
 
   //- Total
-  .summary__item._total
+  .summary__item._total(v-if="statAverage.total !== 0")
     template(v-if="(incomesAmount - expensesAmount) !== 0")
       .summary__item__title {{ $t('money.total') }}
       .summary__item__amount
         Amount(
-          v-if="incomesAmount > 0 || expensesAmount > 0"
           :center="true"
           :currency="$store.state.currencies.base"
           :value="incomesAmount - expensesAmount"
           size="md"
+          vertical="left"
         )
 </template>
 
@@ -58,31 +64,29 @@ export default {
 
 .summary
   display flex
-  // padding $m6 0
-  // background var(--c-bg-4)
-  // border-radius $m5
 
   &__item
+    flex 1 0 0
     position relative
-    padding-right 32px
     display flex
-    flex-flow column
     justify-content center
+    flex-flow column
+    // padding-right 32px
 
-    &:after
-      position absolute
-      right 16px
-      top 50%
-      content ""
-      width 1px
-      height 32px
-      background var(--c-bg-7)
-      transform translateY(-50%)
+    // &:after
+    //   position absolute
+    //   top 50%
+    //   right 16px
+    //   content ""
+    //   width 1px
+    //   height 32px
+    //   background var(--c-bg-7)
+    //   transform translateY(-50%)
 
-    &:last-child
-      padding-right 0
-      &:after
-        display none
+    // &:last-child
+    //   padding-right 0
+    //   &:after
+    //     display none
 
     &__title
       padding-bottom $m5

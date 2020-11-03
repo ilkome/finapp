@@ -58,7 +58,8 @@ ContextMenu(
   :position="{ right: showDropdown ? '-12px' : true }"
   :visible="visibleContextMenu"
   :openerCircle="true"
-  @onClickOpener="visibleContextMenu = !visibleContextMenu")
+  @onClickOpener="visibleContextMenu = !visibleContextMenu"
+)
 
   template(v-if="showDropdown")
     template(slot="opener")

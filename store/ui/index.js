@@ -11,7 +11,8 @@ const state = () => ({
   statGraphsVisibility: 'visible',
   statItems: 'visible',
   stat: {
-    activeTab: 'stat'
+    activeTab: 'incomes',
+    averageStatVisibility: 'visible'
   },
   width: 0
 })

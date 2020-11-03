@@ -22,7 +22,12 @@ export default {
   },
 
   setVisibleCatsChart (state, status) {
+    console.log('setVisibleCatsChart', status)
     state.catsChart = status
+  },
+
+  setAverageStatVisibility (state, status) {
+    state.stat.averageStatVisibility = status
   },
 
   setVisibilityStatItems (state, status) {

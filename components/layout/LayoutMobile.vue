@@ -30,7 +30,7 @@ export default {
       return this.$store.state.ui.activeTab
     },
 
-    stat () {
+    statCurrentPeriod () {
       return this.$store.getters['stat/statCurrentPeriod']
     },
 
@@ -109,6 +109,17 @@ export default {
                 .page__nav
                   h1: Date
 
+                  .page__summary
+                    SummaryRow(
+                      :incomesAmount="statCurrentPeriod.incomes.total"
+                      :expensesAmount="statCurrentPeriod.expenses.total"
+                    )
+
+                .page__summary
+                  //- Summary
+                  //-----------------------------------------------------------
+                  LazySummaryAverage(v-if="$store.state.ui.stat.averageStatVisibility === 'visible'")
+
                 .page__content
                   .chartBar(v-show="$store.state.ui.statGraphsVisibility === 'visible'")
                     ChartMenu2
@@ -186,6 +197,14 @@ export default {
         :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
         icon="mdi mdi-chart-bar-stacked"
         @onClick="$store.dispatch('ui/toogleShowStatGraphs')"
+      )
+
+      ContextMenuItem(
+        :title="$t('stat.customize.averageStatVisibility')"
+        :showCheckbox="true"
+        :checkboxValue="$store.state.ui.stat.averageStatVisibility === 'visible'"
+        icon="mdi mdi-chart-timeline"
+        @onClick="$store.dispatch('ui/toogleAverageStatVisibility')"
       )
 
       ContextMenuItem(
@@ -268,11 +287,6 @@ export default {
 @import "~assets/stylus/variables/fonts"
 @import "~assets/stylus/variables/scroll"
 
-.opener
-  opacity .6
-  padding 8px 0 0 0
-  font-size 20px
-
 .page
   overflow hidden
   position relative
@@ -280,12 +294,17 @@ export default {
   height 100%
 
   &__nav
+    overflow hidden
     z-index 100
     opacity .95
     position sticky
     top 0
+    height 94px
     padding $m7
     background var(--c-bg-2)
+
+  &__summary
+    padding-top $m6
 
   &__wrap
     overflow hidden

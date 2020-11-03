@@ -1,6 +1,8 @@
 export default {
   appName: 'Finapp',
 
+  for: 'for',
+
   locale: {
     toogle: 'Toogle locale'
   },
@@ -198,12 +200,14 @@ export default {
   },
 
   stat: {
+    title: 'Statistics',
     shortTitle: 'Stat',
     balanceTitle: 'Balance',
     empty: 'No stat for this period',
     customize: {
       showPeriodsChart: 'Show periods chart',
       showCategorisChart: 'Show categories chart',
+      averageStatVisibility: 'Show average statistics',
       showCategorisList: 'Show categories list'
     }
   },
@@ -242,6 +246,9 @@ export default {
     transfer: 'Transfer',
     total: 'Total',
     average: 'Average',
+    averageIncomes: 'Average incomes',
+    averageExpenses: 'Average expenses',
+    averageTotal: 'Average total',
     also: 'Also',
     wallets: 'Wallets',
     all: 'Total'

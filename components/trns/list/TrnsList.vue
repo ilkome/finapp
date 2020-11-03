@@ -97,13 +97,6 @@ export default {
 
 <template lang="pug">
 .trnsList
-  //- .trnsList__sort(
-  //-   v-if="$store.getters['user/isTester'] && ui === 'history'"
-  //-   @click="sortByEditDate = !sortByEditDate"
-  //- )
-  //-   template(v-if="sortByEditDate") Sort by transaction date
-  //-   template(v-else) Sort by edit date
-
   .trnsList__content
     template(v-if="trnsIds.length > 0")
       //- history view
@@ -146,6 +139,9 @@ export default {
 
 .trnsList
   padding-bottom 8px
+
+  &:last-child
+    padding-bottom 0
 
   +media-laptop()
     padding 0

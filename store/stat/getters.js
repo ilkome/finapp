@@ -11,7 +11,11 @@ export default {
   */
   statAverage (state, getters, rootState) {
     const statPeriods = getters.statByPeriods
-    const numberOfPeriods = rootState.stat.showedPeriods
+
+    let notEmptyPeriods = 0
+    if (statPeriods) {
+      notEmptyPeriods = Object.keys(statPeriods).filter(id => statPeriods[id].total !== 0).length
+    }
 
     let incomes = 0
     let expenses = 0
@@ -27,9 +31,9 @@ export default {
     }
 
     return {
-      incomes: Math.ceil(incomes / numberOfPeriods),
-      expenses: Math.ceil(expenses / numberOfPeriods),
-      total: Math.ceil(total / numberOfPeriods)
+      incomes: Math.ceil(incomes / notEmptyPeriods),
+      expenses: Math.ceil(expenses / notEmptyPeriods),
+      total: Math.ceil(total / notEmptyPeriods)
     }
   },
 
@@ -177,8 +181,8 @@ export default {
     const statExpenses = {}
     for (const categoryId in categoriesWithTrnsIds) {
       const total = categoriesTotal[categoryId]
-      if (total.incomes > 0) statIncomes[categoryId] = total
-      if (total.expenses > 0) statExpenses[categoryId] = total
+      if (total.incomes > 0) { statIncomes[categoryId] = total }
+      if (total.expenses > 0) { statExpenses[categoryId] = total }
     }
 
     // sort categories amount
@@ -188,8 +192,8 @@ export default {
 
       if (categoriesIds.length) {
         sortedCategoriesIds = categoriesIds.sort((a, b) => {
-          if (categories[a][typeName] > categories[b][typeName]) return -1
-          if (categories[a][typeName] < categories[b][typeName]) return 1
+          if (categories[a][typeName] > categories[b][typeName]) { return -1 }
+          if (categories[a][typeName] < categories[b][typeName]) { return 1 }
           return 0
         })
       }

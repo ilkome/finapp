@@ -2,7 +2,7 @@ import localforage from 'localforage'
 
 export default {
   async initUi ({ commit, dispatch }) {
-    const uiLocalStore = await localforage.getItem('uiLocalStore')
+    const uiLocalStore = await localforage.getItem('finapp.statActiveTab')
 
     // ui
     if (uiLocalStore) {
@@ -76,7 +76,7 @@ export default {
   setActiveTabStat ({ commit, state }, nextTab) {
     if (state.stat.activeTab !== nextTab) {
       commit('setActiveTabStat', nextTab)
-      localforage.setItem('uiLocalStore', state)
+      localforage.setItem('finapp.statActiveTab', state)
     }
   },
 
@@ -100,6 +100,19 @@ export default {
       : nextStatus = 'visible'
 
     commit('setVisibleCatsChart', nextStatus)
+    dispatch('ui/saveUiView', null, { root: true })
+  },
+
+  /**
+    * toogleAverageStatVisibility
+  */
+  toogleAverageStatVisibility ({ commit, dispatch, state }) {
+    let nextStatus
+    state.stat.averageStatVisibility === 'visible'
+      ? nextStatus = 'hidden'
+      : nextStatus = 'visible'
+
+    commit('setAverageStatVisibility', nextStatus)
     dispatch('ui/saveUiView', null, { root: true })
   },
 
@@ -143,7 +156,10 @@ export default {
         period: rootState.filter.period,
         statGraphsVisibility: rootState.ui.statGraphsVisibility,
         statItems: rootState.ui.statItems,
-        totalChartPeriods: rootState.chart.periods
+        totalChartPeriods: rootState.chart.periods,
+        stat: {
+          averageStatVisibility: rootState.ui.stat.averageStatVisibility
+        }
       }
     })
   },
@@ -175,6 +191,11 @@ export default {
       localFilterUiItem.statItems === 'visible'
         ? commit('setVisibilityStatItems', 'visible')
         : commit('setVisibilityStatItems', 'hidden')
+
+      // Average statistics
+      localFilterUiItem.stat.averageStatVisibility === 'visible'
+        ? commit('setAverageStatVisibility', 'visible')
+        : commit('setAverageStatVisibility', 'hidden')
 
       // periods in total chart
       const currentPeriodName = rootState.filter.period
