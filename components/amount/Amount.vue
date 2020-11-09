@@ -45,11 +45,19 @@ export default {
   computed: {
     className () {
       return {
-        [`_${this.vertical}`]: this.vertical,
         _expenses: this.isColorize && this.type === 0,
         _incomes: this.isColorize && this.type === 1,
+        [`_${this.vertical}`]: this.vertical,
         [`_size_${this.size}`]: this.size
       }
+    },
+
+    amountInBaseCurrency () {
+      const baseValue = this.$store.getters['currencies/getAmountInBaseCurrency']({ amount: this.value, currency: this.currency })
+      if (baseValue) {
+        return this.formatAmount(baseValue, '0')
+      }
+      return null
     }
   },
 
@@ -75,13 +83,6 @@ export default {
       const number = amount
       const fixed = fixedNumber || 2
       return Number(`${number.toFixed(fixed)}`).toLocaleString('ru-RU')
-    },
-
-    convertToBaseCurrency () {
-      const baseValue = this.$store.getters['currencies/getAmountInBaseCurrency']({ amount: this.value, currency: this.currency })
-      if (baseValue) {
-        return this.formatAmount(baseValue, '0')
-      }
     }
   }
 }
@@ -97,12 +98,12 @@ export default {
   template(v-if="showBase && (value !== 0) && (currency !== $store.state.currencies.base)")
     .amountItem._base(:class="className")
       .amountItem__prefix(v-if="isShowPrefix") {{ type === 0 ? '-' : '+' }}
-      .amountItem__value {{ convertToBaseCurrency() }}
+      .amountItem__value {{ amountInBaseCurrency }}
       .amountItem__symbol {{ getCurrencySymbol($store.state.currencies.base) }}
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .amount
   color var(--c-font-base)
@@ -112,6 +113,43 @@ export default {
 
   &._expenses
     color var(--c-expenses-1)
+
+  typo-money()
+
+  @media $media-laptop
+    font-size 16px
+
+  &._big
+    font-size 20px
+    font-weight 600
+
+  &._small
+    font-size 14px
+    font-weight 600
+
+  &__wrap
+    display flex
+    flex-flow row nowrap
+    align-items flex-end
+    justify-content flex-end
+
+    ^[0]._center &
+      justify-content center
+
+  &__price
+    &:first-child
+      margin-right $m3
+
+    &:last-child
+      margin-left $m3
+
+  &__symbol
+    font-primary()
+    font-size 14px
+    font-weight normal
+
+    ^[0]._small &
+      font-size 11px
 
 .amountItem
   display flex
@@ -141,7 +179,7 @@ export default {
 
   &__value
     font-size 15px
-    font-weight bold
+    font-weight 400
     font-secondary()
 
     ~/._base &

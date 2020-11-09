@@ -207,6 +207,7 @@ export default {
 
   stat: {
     title: 'Статистика',
+    selectedPeriod: 'Выбранный период',
     shortTitle: 'Статистика',
     balanceTitle: 'Баланс',
     empty: 'Статистики по выбранным параметрам нет :)',

@@ -48,7 +48,7 @@ export default {
     ],
     link: [{
       rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Unica+One|Nunito:400,700,800&display=swap&subset=cyrillic'
+      href: 'https://fonts.googleapis.com/css?family=Roboto:400,500,600,700|Roboto+Condensed:400,500,600,700|Unica+One|Nunito:400,700,800&display=swap&subset=cyrillic'
     }, {
       rel: 'stylesheet',
       href: 'https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css'
@@ -99,6 +99,13 @@ export default {
   colorMode: {
     preference: 'system', // default value of $colorMode.preference
     fallback: 'dark' // fallback value if not system preference found
+  },
+
+  /**
+   * Style resources
+   */
+  styleResources: {
+    stylus: ['~/assets/stylus/variables']
   },
 
   /**

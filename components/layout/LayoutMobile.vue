@@ -118,7 +118,7 @@ export default {
                 .page__summary
                   //- Summary
                   //-----------------------------------------------------------
-                  LazySummaryAverage(v-if="$store.state.ui.stat.averageStatVisibility === 'visible'")
+                  //- LazySummaryAverage(v-if="$store.state.ui.stat.averageStatVisibility === 'visible'")
 
                 .page__content
                   .chartBar(v-show="$store.state.ui.statGraphsVisibility === 'visible'")

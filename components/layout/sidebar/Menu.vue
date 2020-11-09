@@ -119,9 +119,11 @@ item-bg-active()
   grid-template-columns 24px 1fr 24px
   grid-column-gap 20px
   align-items center
+  height 50px
   padding 16px 16px
 
   +media-laptop()
+    height auto
     padding 16px 20px
 
   &:hover

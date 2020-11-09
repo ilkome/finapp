@@ -25,13 +25,13 @@ export default {
     return {
       average: 0,
       date: dayjs().valueOf(),
-      periodName: 'month',
       visiblePeriodMenu: false,
       dateStart: null,
       dateEnd: null,
       chartOptions: {
         ...chartOptions,
-        legend: false
+        legend: false,
+        tooltip: false
       }
     }
   },
@@ -51,6 +51,10 @@ export default {
 
     filterDate () {
       return this.$store.state.filter.date
+    },
+
+    periodName () {
+      return this.$store.state.filter.period
     }
   },
 
@@ -86,6 +90,7 @@ export default {
 
       this.chartOptions = {
         ...this.chartOptions,
+        tooltip: false,
         xAxis: {
           categories: data.categories
         },
@@ -128,10 +133,17 @@ export default {
       const categories = []
       const incomesData = []
 
+      let format = 'MMM'
+      console.log(periodName)
+      if (periodName === 'day') { format = 'D.MM' }
+      if (periodName === 'week') { format = 'D.MM' }
+      if (periodName === 'month') { format = 'MMMM' }
+      if (periodName === 'year') { format = 'YYYY' }
+
       for (let index = 0; index < periodsToShow; index++) {
         // count total period
         const periodDate = dayjs().endOf(periodName).subtract(index, periodName).valueOf()
-        const name = dayjs(periodDate).format('MMM')
+        const name = dayjs(periodDate).format(format)
         const trnsIds = this.$store.getters['trns/getTrns']({
           categoryId: this.categoryId,
           date: periodDate,
@@ -182,18 +194,18 @@ export default {
 .chart(ref="chart")
   .columns
     .item
-      .item__name Выбранный период
+      .item__name {{ $t('stat.selectedPeriod') }}
       .item__price
         Amount(
           :currency="$store.state.currencies.base"
           :type="3"
-          :value="statCurrentPeriod.categories[categoryId].total"
+          :value="statCurrentPeriod.total"
           size="xl"
           vertical="center"
         )
 
     .item
-      .item__name Среднее
+      .item__name {{ $t('money.average') }}
       .item__price
         Amount(
           :currency="$store.state.currencies.base"

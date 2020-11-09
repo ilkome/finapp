@@ -205,6 +205,7 @@ export default {
 
   stat: {
     title: 'Statistics',
+    selectedPeriod: 'Selected period',
     shortTitle: 'Stat',
     balanceTitle: 'Balance',
     empty: 'No stat for this period',

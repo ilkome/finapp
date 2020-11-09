@@ -22,7 +22,7 @@ module.exports = {
     'selector-attribute-operator-space-after': 'never',
     'selector-attribute-operator-space-before': 'never',
     'selector-attribute-quotes': 'always',
-    'string-quotes': 'double',
+    'string-quotes': 'single',
     'stylus/at-rule-empty-line-before': [
       'always', {
         except: ['blockless-after-same-name-blockless'],

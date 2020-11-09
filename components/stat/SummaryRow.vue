@@ -69,24 +69,25 @@ export default {
     flex 1 0 0
     position relative
     display flex
+    align-items center
     justify-content center
     flex-flow column
-    // padding-right 32px
+    padding-right 32px
 
-    // &:after
-    //   position absolute
-    //   top 50%
-    //   right 16px
-    //   content ""
-    //   width 1px
-    //   height 32px
-    //   background var(--c-bg-7)
-    //   transform translateY(-50%)
+    &:after
+      position absolute
+      top 50%
+      right 16px
+      content ""
+      width 1px
+      height 32px
+      background var(--c-bg-7)
+      transform translateY(-50%)
 
-    // &:last-child
-    //   padding-right 0
-    //   &:after
-    //     display none
+    &:last-child
+      padding-right 0
+      &:after
+        display none
 
     &__title
       padding-bottom $m5

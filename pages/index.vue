@@ -5,9 +5,12 @@ export default {
 </script>
 
 <template lang="pug">
-Layout(v-if="$store.getters['user/userUid']")
+.layout(v-if="$store.getters['user/userUid']")
+  LazyLayoutMobile(v-if="$store.state.ui.mobile")
+  LazyLayoutPc(v-if="$store.state.ui.pc")
 </template>
 
 <style lang="stylus" scoped>
-// styles here
+.layout
+  height 100%
 </style>

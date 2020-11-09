@@ -109,9 +109,9 @@ export default {
   overflow hidden
   cursor pointer
   position relative
-  margin (- 10px) 0
+  // margin (- 10px) 0
   margin-bottom 10px
-  padding 10px
+  padding 8px 0
   border 1px solid transparent
   border-radius $m5
 
@@ -130,8 +130,8 @@ export default {
     background var(--c-bg-2)
     border 1px solid var(--c-bg-7)
 
-    &:first-child
-      margin-top (- 10px)
+    // &:first-child
+    //   margin-top (- 10px)
 
   &__content
     display grid

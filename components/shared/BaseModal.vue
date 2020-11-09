@@ -133,16 +133,16 @@ portal(to="modal" v-if="show")
       display none
 
   &__wrap
-    z-index 2
     overflow hidden
+    z-index 2
     position absolute
     left 0
     bottom 0
-    width 100%
     display flex
+    width 100%
     flex-grow 1
     flex-flow column nowrap
-    background var(--c-bg-4)
+    background var(--c-bg-2)
     border-radius $m6
 
     &._anim

@@ -40,6 +40,7 @@ export default {
     padding-right 10px
     align-self center
     font-size 32px
+    font-weight 500
 
   &__weekday
     padding-top 2px

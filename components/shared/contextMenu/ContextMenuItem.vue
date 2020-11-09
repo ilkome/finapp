@@ -55,12 +55,10 @@ export default {
   cursor pointer
   display flex
   align-items center
+  height 50px
   padding 0 $m6
   font-size 13px
   white-space nowrap
-
-  @media $media-phone
-    height 56px
 
   @media $media-laptop
     height 38px

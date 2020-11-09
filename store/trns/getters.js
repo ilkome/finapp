@@ -258,7 +258,7 @@ export default {
   getTrnsIds: (state, getters, rootState) => (props) => {
     if (!getters.hasTrns) { return [] }
 
-    // const { date, periodName, description } = props
+    const { startDate, endDate, periodName } = props
     const categories = rootState.categories.items
     const categoriesIds = Object.keys(categories)
     const filterCategoryId = props.categoryId
@@ -267,10 +267,16 @@ export default {
     const trns = rootState.trns.items
     let trnsIds = Object.keys(trns)
 
-    // const filterDate = dayjs(date)
-    // const filterPeriod = periodName || rootState.filter.period
-    // const startDateValue = filterDate.startOf(filterPeriod).valueOf()
-    // const endDateValue = filterDate.endOf(filterPeriod).valueOf()
+    // filter date
+    if (startDate && endDate && periodName) {
+      // const filterDate = dayjs(startDate)
+      // const filterPeriod = periodName || rootState.filter.period
+      const startDateValue = dayjs(startDate).startOf('day').valueOf()
+      const endDateValue = dayjs(endDate).endOf('day').valueOf()
+
+      trnsIds = trnsIds
+        .filter(trnId => (trns[trnId].date >= startDateValue) && (trns[trnId].date <= endDateValue))
+    }
 
     // filter wallet
     if (filterWalletId) {
