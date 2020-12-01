@@ -23,6 +23,7 @@ export default {
 .container
   h1 Error
   pre {{ error }}
+  h1(@click="$router.push('/')") Index
 </template>
 
 <style lang="stylus">

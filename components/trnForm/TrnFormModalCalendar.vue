@@ -1,6 +1,4 @@
 <script>
-import dayjs from 'dayjs'
-
 import Datepicker from 'vuejs-datepicker'
 
 const calendarOptions = {
@@ -28,13 +26,13 @@ export default {
   methods: {
     handleSelectDate (date) {
       this.$store.commit('trnForm/setTrnFormValues', {
-        date: dayjs(date).valueOf()
+        date: this.$day(date).valueOf()
       })
       this.$store.commit('trnForm/toogleTrnFormModal', 'calendar')
     },
     handleSelectDateDaysAgo (daysAgo) {
       this.$store.commit('trnForm/setTrnFormValues', {
-        date: dayjs().subtract(daysAgo, 'day').valueOf()
+        date: this.$day().subtract(daysAgo, 'day').valueOf()
       })
       this.$store.commit('trnForm/toogleTrnFormModal', 'calendar')
     }

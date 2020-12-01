@@ -6,6 +6,10 @@ export default {
     slider: {
       type: Object,
       required: true
+    },
+    stat2: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -17,7 +21,7 @@ export default {
       return {
         stat: {
           icon: 'mdi mdi-poll',
-          id: 'stat',
+          id: 'chart',
           name: this.$t('stat.shortTitle')
         },
         wallets: {
@@ -48,23 +52,14 @@ export default {
         if (tab === 'categories' && index === 2) { return true }
       }
     },
+
     handleSetActiveTab (tab) {
-      switch (tab) {
-        case 'wallets':
-          this.slider.slideTo(0)
-          break
-        case 'stat':
-          this.slider.slideTo(1)
-          break
-        case 'categories':
-          this.slider.slideTo(2)
-          break
-        case 'menu':
-          this.$store.dispatch('ui/setActiveTab', 'menu')
-          break
-        default:
-          this.slider.slideTo(0)
+      if (tab === 'menu') {
+        this.$store.dispatch('ui/setActiveTab', 'menu')
+        return
       }
+
+      this.$store.dispatch('ui/setActiveTabViewName', tab)
     }
   }
 }
@@ -81,12 +76,12 @@ export default {
       )
         .menu__item__icon: div(:class="menu.wallets.icon")
 
-      //- Stat
+      //- Categories
       .menu__item(
-        :class="{ _active: getClassName(menu.stat.id) }"
-        @click="handleSetActiveTab(menu.stat.id)"
+        :class="{ _active: getClassName(menu.categories.id) }"
+        @click="handleSetActiveTab(menu.categories.id)"
       )
-        .menu__item__icon: div(:class="menu.stat.icon")
+        .menu__item__icon: div(:class="menu.categories.icon")
 
       .openTrnForm(@click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })")
         svg(
@@ -95,12 +90,12 @@ export default {
         )
           path(d='M0,12a1.5,1.5,0,0,0,1.5,1.5h8.75a.25.25,0,0,1,.25.25V22.5a1.5,1.5,0,0,0,3,0V13.75a.25.25,0,0,1,.25-.25H22.5a1.5,1.5,0,0,0,0-3H13.75a.25.25,0,0,1-.25-.25V1.5a1.5,1.5,0,0,0-3,0v8.75a.25.25,0,0,1-.25.25H1.5A1.5,1.5,0,0,0,0,12Z')
 
-      //- Categories
+      //- Stat
       .menu__item(
-        :class="{ _active: getClassName(menu.categories.id) }"
-        @click="handleSetActiveTab(menu.categories.id)"
+        :class="{ _active: getClassName(menu.stat.id) }"
+        @click="handleSetActiveTab(menu.stat.id)"
       )
-        .menu__item__icon: div(:class="menu.categories.icon")
+        .menu__item__icon: div(:class="menu.stat.icon")
 
       //- History
       .menu__item(
@@ -111,9 +106,9 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/animations'
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .create-btn
   flex-grow 1
@@ -131,7 +126,7 @@ export default {
   display flex
   align-items center
   justify-content center
-  padding 17px 0 16px 0
+  padding $m6 0
   border-radius 8px
   anim()
 
@@ -141,7 +136,7 @@ export default {
   svg
     width 24px
     height 24px
-    fill #0094FF
+    fill var(--c-blue-1)
 
 .menu
   background var(--c-bg-3)
@@ -165,7 +160,7 @@ export default {
     justify-content center
     flex-grow 1
     flex-flow column
-    padding 16px 0
+    padding $m6 0
     color var(--c-font-4)
     anim()
 
@@ -179,9 +174,5 @@ export default {
       color var(--c-font-5)
 
     &__icon
-      font-size 26px
-
-    &__text
-      margin-top $m5
-      font-size 12px
+      font-size 22px
 </style>

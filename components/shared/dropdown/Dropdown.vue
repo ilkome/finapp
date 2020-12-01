@@ -32,6 +32,7 @@ export default {
 
 .dropdown
 .dropdown.d-button-cirle
+  cursor pointer
   display flex
   align-items stretch
   width auto
@@ -66,7 +67,7 @@ export default {
     justify-content center
     font-size 18px
     margin-right 6px
-    opacity .8
+    opacity .6
 
   &__title
     flex-grow 1
@@ -75,10 +76,12 @@ export default {
     padding-right 12px
 
   &__toogle
-    width 4px
-    flex-grow 0
-    font-size 18px
+    opacity .8
     justify-content center
+    width 2px
+    flex-grow 0
+    font-size 15px
+    transform translateY(1px)
 
     div
       anim-all()

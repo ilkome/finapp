@@ -18,12 +18,6 @@ export default {
     }
   },
 
-  data () {
-    return {
-      isShowed: false
-    }
-  },
-
   setup (props, ctx) {
     const scrollContainer = ref(null)
     const scrollContent = ref(null)
@@ -54,6 +48,12 @@ export default {
     }
   },
 
+  data () {
+    return {
+      isShowed: false
+    }
+  },
+
   mounted () {
     this.isShowed = true
   }
@@ -79,7 +79,7 @@ export default {
   //--------------------------------------
   transition(
     appear
-    name="slide"
+    name="slide2"
     @after-leave="afterClose"
   )
     .modalBottom__wrap(
@@ -96,10 +96,7 @@ export default {
 
       //- Header
       //--------------------------------------
-      .modalBottom__header(
-        v-if="$slots.header || title"
-        @click="onCloseModal"
-      )
+      .modalBottom__header(v-if="$slots.header || title")
         //- Slot
         template(v-if="$slots.header")
           slot(name="header")
@@ -131,7 +128,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .modalBottom
   &__wrap
@@ -144,10 +141,10 @@ export default {
 </style>
 
 <style lang="stylus">
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .modalBottom
-  z-index 4
+  z-index 10
   position fixed
   left 0
   bottom 0
@@ -161,7 +158,7 @@ export default {
     bottom 0
     width 100%
     height 100%
-    background var(--c-bg-overflow)
+    background var(--c-bg-14)
 
   &__wrap
     position relative
@@ -182,7 +179,7 @@ export default {
     overflow-y auto
     max-height calc(90vh - 80px)
     padding $m7
-    background var(--c-bg-2)
+    background var(--c-bg-4)
     scrollbar()
 
     @media $media-laptop
@@ -192,9 +189,6 @@ export default {
     ^[0]._paddingless &
       padding 0
 
-    /.light-mode &
-      background var(--c-bg-2)
-
   &__header
     flex-grow 1
     position relative
@@ -203,12 +197,8 @@ export default {
     padding $m7
     color var(--c-font-2)
     fontFamilyNunito()
-    background var(--c-bg-2)
+    background var(--c-bg-4)
     border-radius $m7 $m7 0 0
-
-    /.light-mode &
-      color var(--c-font-4)
-      background var(--c-bg-1)
 
     &._alt
       background var(--c-bg-1)

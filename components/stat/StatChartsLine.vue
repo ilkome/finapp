@@ -1,6 +1,4 @@
 <script>
-import dayjs from 'dayjs'
-
 export default {
   name: 'StatChartsLine2',
 
@@ -12,7 +10,7 @@ export default {
       return this.$store.state.filter.period
     },
     activePeriodNumber () {
-      const statFromDate = dayjs().startOf(this.$store.state.filter.period)
+      const statFromDate = this.$day().startOf(this.$store.state.filter.period)
       return statFromDate.diff(this.$store.state.filter.date, this.$store.state.filter.period) + 1
     },
     periodsValues () {
@@ -24,8 +22,8 @@ export default {
 
       const values = {}
       for (let period = 0; period < diff; period++) {
-        const periodStartDate = dayjs().subtract(period, filterPeriod).startOf(filterPeriod)
-        const periodEndDate = dayjs().subtract(period, filterPeriod).endOf(filterPeriod)
+        const periodStartDate = this.$day().subtract(period, filterPeriod).startOf(filterPeriod)
+        const periodEndDate = this.$day().subtract(period, filterPeriod).endOf(filterPeriod)
         const ids = trnsIds
           .filter((trnId) => {
             return trns[trnId].date >= periodStartDate &&
@@ -48,8 +46,8 @@ export default {
       const groupedValues = {}
 
       for (const date in periodsValues) {
-        const periodStartDateValue = dayjs(parseInt(date)).startOf(groupedBy).valueOf()
-        const periodEndDateValue = dayjs(parseInt(date)).endOf(groupedBy).valueOf()
+        const periodStartDateValue = this.$day(parseInt(date)).startOf(groupedBy).valueOf()
+        const periodEndDateValue = this.$day(parseInt(date)).endOf(groupedBy).valueOf()
 
         if (date >= periodStartDateValue && date <= periodEndDateValue) {
           groupedValues[periodStartDateValue]
@@ -106,9 +104,9 @@ export default {
       // periods in current group
       const getPeriodsInCurrentGroup = () => {
         let currentGroupPeriods
-        if (filterPeriod === 'day') { currentGroupPeriods = parseInt(dayjs().format('D')) }
-        if (filterPeriod === 'week') { currentGroupPeriods = dayjs().week() - dayjs().startOf('month').week() + 1 }
-        if (filterPeriod === 'month') { currentGroupPeriods = parseInt(dayjs().format('MM')) }
+        if (filterPeriod === 'day') { currentGroupPeriods = parseInt(this.$day().format('D')) }
+        if (filterPeriod === 'week') { currentGroupPeriods = this.$day().week() - this.$day().startOf('month').week() + 1 }
+        if (filterPeriod === 'month') { currentGroupPeriods = parseInt(this.$day().format('MM')) }
         return currentGroupPeriods
       }
 
@@ -122,8 +120,8 @@ export default {
       }
 
       const getPeriodsInPrevGroup2 = (hey) => {
-        const groupDateStart = dayjs().subtract(hey, groupedBy).startOf(groupedBy)
-        const groupDateEnd = dayjs().subtract(hey, groupedBy).endOf(groupedBy)
+        const groupDateStart = this.$day().subtract(hey, groupedBy).startOf(groupedBy)
+        const groupDateEnd = this.$day().subtract(hey, groupedBy).endOf(groupedBy)
 
         let periodsInGroup = 0
         filterPeriod === 'week'
@@ -163,7 +161,7 @@ export default {
           format = 'YYYY'
           break
       }
-      return dayjs(dateValueOf).format(format)
+      return this.$day(dateValueOf).format(format)
     }
   }
 }

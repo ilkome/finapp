@@ -41,13 +41,12 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
+@import '~assets/stylus/variables'
 
 $background = var(--c-bg-3)
 $border = var(--c-bg-1)
 $text = var(--c-font-4)
 $text-active = var(--c-font-1)
-$text-active_light = var(--c-font-2)
 $text-disable = var(--c-font-5)
 
 .component
@@ -68,9 +67,9 @@ $text-disable = var(--c-font-5)
   cursor pointer
   display flex
   align-items center
+  margin-right 30px
   color $text
   font-size 16px
-  margin-right 30px
   anim()
 
   &:last-child
@@ -79,8 +78,6 @@ $text-disable = var(--c-font-5)
   &._active
   &:hover
     color $text-active
-    /.light-mode &
-      color $text-active_light
 
   &._disable
     color $text-disable

@@ -4,11 +4,8 @@ export default {
     state.showedPeriods = number
   },
 
-  setCategoryModalId (state, id) {
+  setCategoryModal (state, { id, type }) {
     state.categoryModal.id = id
-  },
-
-  setCategoryModalShow (state, value) {
-    state.categoryModal.show = value
+    state.categoryModal.type = type
   }
 }

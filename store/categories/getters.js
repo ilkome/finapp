@@ -8,7 +8,12 @@ export default {
     return false
   },
 
-  categoriesRootIds (state, getters, rootState) {
+  categoriesIds (state, getters) {
+    if (!getters.hasCategories) { return [] }
+    return Object.keys(state.items)
+  },
+
+  categoriesRootIds (state, getters) {
     if (!getters.hasCategories) { return [] }
 
     return Object.keys(state.items)

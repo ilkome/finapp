@@ -13,6 +13,7 @@ export default {
   },
 
   theme: {
+    title: 'Тема',
     change: 'Сменить цвет оформления'
   },
 
@@ -210,6 +211,7 @@ export default {
     selectedPeriod: 'Выбранный период',
     shortTitle: 'Статистика',
     balanceTitle: 'Баланс',
+    periods: 'Общее',
     empty: 'Статистики по выбранным параметрам нет :)',
     customize: {
       showPeriodsChart: 'Показывать график периодов',
@@ -270,17 +272,21 @@ export default {
     },
     week: {
       current: 'Текущая неделя',
+      last: 'Прошлая неделя',
       simple: 'Неделя'
     },
     month: {
       current: 'Текущий месяц',
+      last: 'Прошлый месяц',
       simple: 'Месяц'
     },
     year: {
       current: 'Текущий год',
       simple: 'Год'
     },
-    all: 'Показать всё'
+    all: {
+      simple: 'Все транзакции'
+    }
   },
 
   alerts: {
@@ -289,7 +295,7 @@ export default {
 
   buttons: {
     nextTitle: 'Следующий',
-    prevTitle: 'Предыдущий',
+    prevTitle: 'Прошлый',
     nextStep: 'Далее'
   },
 

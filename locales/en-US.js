@@ -12,6 +12,7 @@ export default {
   },
 
   theme: {
+    title: 'Theme',
     change: 'Change theme'
   },
 
@@ -207,6 +208,7 @@ export default {
     title: 'Statistics',
     selectedPeriod: 'Selected period',
     shortTitle: 'Stat',
+    periods: 'Detail',
     balanceTitle: 'Balance',
     empty: 'No stat for this period',
     customize: {
@@ -268,17 +270,21 @@ export default {
     },
     week: {
       current: 'This week',
+      last: 'Last week',
       simple: 'Week'
     },
     month: {
       current: 'This month',
+      last: 'Last month',
       simple: 'Month'
     },
     year: {
       current: 'This year',
       simple: 'Year'
     },
-    all: 'Show all'
+    all: {
+      simple: 'All trns'
+    }
   },
 
   alerts: {

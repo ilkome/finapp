@@ -23,6 +23,11 @@ export default {
     ui: {
       type: String,
       default: 'history'
+    },
+
+    showCategory: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -30,7 +35,7 @@ export default {
     className () {
       return {
         _detailed: this.ui === 'detailed',
-        _history: this.ui === 'history',
+        _history: this.ui === 'history' || (this.ui === 'stat' && this.showCategory),
         _stat: this.ui === 'stat'
       }
     },
@@ -39,7 +44,7 @@ export default {
       return `${date.weekday}, ${date.day} ${date.month} ${date.year}`
     },
     formatedDateDay () {
-      return formatDate(this.trn.date, 'numberDay')
+      return formatDate(this.trn.date, 'trnItem')
     },
     formatedDateDay2 () {
       return formatDate(this.trn.date, 'trnItem')
@@ -70,6 +75,7 @@ export default {
     setTrnEdit () {
       const trnId = this.trnId
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
+      this.$store.commit('stat/setCategoryModal', { id: null, type: null })
     }
   }
 }
@@ -190,17 +196,19 @@ export default {
 
       .trnItem__desc(v-if="trn.description") {{ trn.description }}
 
-    //- Stat
+    //- Stat no category
     //-------------------------------------------------------------------------
-    template(v-else-if="ui === 'stat'")
+    template(v-else-if="ui === 'stat' && !showCategory")
       .trnItem__statWrap
-        .trnItem__date {{ formatedDateDay }}
+        .trnItem__date {{ $t(formatedDateDay) }}
+
         .trnItem__wallet
           .walletIcon
             Icon(
               :abbr="wallet.name"
               :background="wallet.color"
-              :small="true")
+              small
+            )
           .walletName {{ wallet.name }}
         .trnItem__desc(v-if="trn.description") {{ trn.description }}
         .trnItem__amount(@click.stop="setTrnEdit")
@@ -214,41 +222,45 @@ export default {
     //- History
     //-------------------------------------------------------------------------
     template(v-else)
-      .trnItem__categoryIcon
-        Icon(
-          :background="category.color"
-          :icon="category.icon"
-          round
-        )
+      .trnItem__left
+        .trnItem__categoryIcon
+          Icon(
+            :background="category.color"
+            :icon="category.icon"
+            round
+          )
 
-      .trnItem__categoryName
-        | {{ category.name }}
-        .trnItem__groups(v-if="trn.groups") In group
-        .trnItem__budgets(v-if="trn.budgets") In budget
+      .trnItem__center
+        .trnItem__categoryName
+          | {{ category.name }}
+          .trnItem__groups(v-if="trn.groups") In group
+          .trnItem__budgets(v-if="trn.budgets") In budget
 
-      .trnItem__walletFloatIcon
-        Icon(
-          :abbr="wallet.name"
-          :background="wallet.color"
-          :small="true"
-        )
+        .trnItem__wallet
+          .trnItem__walletIcon
+            Icon(
+              :abbr="wallet.name"
+              :background="wallet.color"
+              :small="true"
+            )
+          .trnItem__walletName {{ wallet.name }}
 
-      .trnItem__amount(@click.stop="setTrnEdit")
-        Amount(
-          :currency="wallet.currency"
-          :value="trn.amount"
-          :type="trn.type"
-          :isColorize="trn.type === 1"
-          isShowPrefix
-        )
+        .trnItem__desc(v-if="trn.description") {{ trn.description }}
 
-      .trnItem__desc
-        div(v-if="trn.description") {{ trn.description }}
+      .trnItem__right
+        .trnItem__amount(@click.stop="setTrnEdit")
+          Amount(
+            :currency="wallet.currency"
+            :value="trn.amount"
+            :type="trn.type"
+            :isColorize="trn.type === 1"
+            isShowPrefix
+          )
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .transfer
   padding-top $m5
@@ -271,25 +283,16 @@ export default {
     margin-bottom -10px
     text-align center
 
-  &._history
-    display grid
-    grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
-    grid-column-gap 28px
-    margin-top -1px
-    padding 0 16px
-    padding-top 10px
-
-    &:first-child
-      margin-top 0
-
   &._stat
     margin-top -1px
-    padding-top 10px
-    padding-right 10px
-    padding-left 68px
+    padding-top $m6
+    padding-right 0
+    border-bottom $m2
 
-    @media $media-laptop
-      padding-left 62px
+  &:active
+    &._history
+    &._stat
+      background var(--c-bg-5)
 
   &:hover
     &._history
@@ -297,15 +300,8 @@ export default {
       @media $media-laptop
         background var(--c-bg-5)
 
-        /.light-mode &
-          background var(--c-bg-5)
-
   &__amount
     align-self center
-
-    ^[0]._history &
-      grid-column 3 / 4
-      grid-row 1 / 2
 
     ^[0]._stat &
       margin-left auto
@@ -325,11 +321,6 @@ export default {
       font-size 22px
       fontFamilyNunito()
 
-    ^[0]._history &
-      grid-column 2 / 3
-      grid-row 1 / 2
-      align-self center
-
   &__date
     font-size 13px
 
@@ -338,7 +329,7 @@ export default {
       font-size 14px
 
     ^[0]._stat &
-      padding-right 20px
+      padding-right $m7
 
   &__desc
     color var(--c-font-2)
@@ -347,15 +338,9 @@ export default {
     ^[0]._detailed &
       padding-top $m7
 
-    ^[0]._history &
-      grid-column 2 / 4
-      grid-row 2 / 3
-      padding-top 5px
-      padding-bottom 5px
-
     ^[0]._stat &
       overflow hidden
-      padding-right 10px
+      padding-right 0
       white-space nowrap
       text-overflow ellipsis
 
@@ -394,14 +379,54 @@ export default {
     ^[0]._stat &
       padding-right 20px
 
-  &__walletFloatIcon
-    position absolute
-    top 24px
-    left 35px
-
   &__groups
   &__budgest
     display inline-block
     padding-left 10px
     font-size 10px
+
+// Stat
+// ----------------------------------------------------------------------------
+.trnItem._stat._history
+  padding 0
+
+// History
+// ----------------------------------------------------------------------------
+.trnItem
+  &._history
+    display grid
+    grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
+    grid-column-gap $m7
+    margin-top -1px
+    padding $m6 $m7
+
+    &:first-child
+      margin-top 0
+
+  &__wallet
+    display flex
+    align-items center
+    font-size 12px
+
+  &__walletIcon
+    padding-right $m4
+
+  &__walletName
+    font-size 12px
+
+  &__desc
+    ^[0]._history &
+      padding-top $m6
+      color var(--c-font-3)
+      font-size 11px
+
+  &__categoryName
+    ^[0]._history &
+      padding-bottom $m4
+      color var(--c-font-2)
+      font-size 14px
+
+  &__amount
+    ^[0]._history &
+      //
 </style>

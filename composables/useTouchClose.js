@@ -37,7 +37,7 @@ export default function useOnTouch ({ container, overflow, dragger, content, onC
     if (content.value && content.value.scrollTop > 0) { return }
 
     if (event.target.closest('.doNotCloseModal')) {
-      this.isDragging = false
+      isDragging.value = false
       return
     }
 

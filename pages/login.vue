@@ -21,7 +21,7 @@ export default {
       this.loading = true
       const provider = new auth.GoogleAuthProvider()
       auth()
-        .signInWithPopup(provider)
+        .signInWithRedirect(provider)
         .catch(e => this.notifyAboutError(e))
     },
 

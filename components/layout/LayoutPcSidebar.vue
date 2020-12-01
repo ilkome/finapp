@@ -86,13 +86,13 @@ export default {
   grid-template-rows minmax(auto, auto) minmax(auto, auto) 1fr
   height 100vh
   background var(--c-bg-4)
-  border-right 1px solid var(--c-bg-1)
+  border-right 1px solid var(--c-bg-2)
 
   &__menu
     display flex
     justify-content space-between
     padding 0 $m7
-    background var(--c-bg-5)
+    background var(--c-bg-3)
     border-bottom 1px solid var(--c-bg-2)
 
     &__item
@@ -102,8 +102,8 @@ export default {
       justify-content center
       padding $m7 $m8
       font-header-1()
-      font-size 18px
       color var(--c-font-4)
+      font-size 18px
 
       +media-laptop()
         padding 10px 20px
@@ -125,8 +125,8 @@ export default {
   z-index 1
   padding $m7 $m8
   font-header-1()
-  font-size 18px
   color var(--c-font-4)
+  font-size 18px
 
   &:hover:not(._active)
     @media $media-laptop

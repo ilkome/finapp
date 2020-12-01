@@ -1,11 +1,6 @@
 <script>
-import dayjs from 'dayjs'
 import { Chart } from 'highcharts-vue'
-import Highcharts from 'highcharts'
-import borderRadius from 'highcharts-border-radius'
 import chartOptions from '~/components/stat/chartOptions'
-
-borderRadius(Highcharts)
 
 export default {
   name: 'AnalyticsChart',
@@ -24,7 +19,7 @@ export default {
   data () {
     return {
       average: 0,
-      date: dayjs().valueOf(),
+      date: this.$day().valueOf(),
       visiblePeriodMenu: false,
       dateStart: null,
       dateEnd: null,
@@ -126,8 +121,8 @@ export default {
       const trns = this.$store.state.trns.items
 
       // diff periods from oldest trn and today
-      const oldestTrnDate = dayjs(trns[this.$store.getters['trns/firstCreatedTrnId']].date).endOf(periodName)
-      let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
+      const oldestTrnDate = this.$day(trns[this.$store.getters['trns/firstCreatedTrnId']].date).endOf(periodName)
+      let periodsToShow = this.$day().endOf(periodName).diff(oldestTrnDate, periodName) + 1
       periodsToShow = periodsToShow > this.showedPeriods ? this.showedPeriods : periodsToShow
 
       const categories = []
@@ -142,8 +137,8 @@ export default {
 
       for (let index = 0; index < periodsToShow; index++) {
         // count total period
-        const periodDate = dayjs().endOf(periodName).subtract(index, periodName).valueOf()
-        const name = dayjs(periodDate).format(format)
+        const periodDate = this.$day().endOf(periodName).subtract(index, periodName).valueOf()
+        const name = this.$day(periodDate).format(format)
         const trnsIds = this.$store.getters['trns/getTrns']({
           categoryId: this.categoryId,
           date: periodDate,
@@ -158,7 +153,7 @@ export default {
           color: 'var(--c-font-1)',
           marker: {
             radius: 6,
-            enabled: dayjs(periodDate).isSame(this.$store.state.filter.date, periodName)
+            enabled: this.$day(periodDate).isSame(this.$store.state.filter.date, periodName)
           }
         })
         categories.unshift(name)
@@ -180,7 +175,7 @@ export default {
           visible: true,
           type: 'spline',
           name: 'Data',
-          color: '#c1c1c1',
+          color: 'var(--c-blue-1)',
           data: incomesData
         }],
         categories
@@ -218,7 +213,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .chart
   z-index 3

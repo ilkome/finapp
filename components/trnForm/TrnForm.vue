@@ -1,7 +1,6 @@
 <script>
 import Swiper from 'swiper'
 import 'swiper/swiper-bundle.css'
-import dayjs from 'dayjs'
 import { ref, useContext } from 'nuxt-composition-api'
 import generateId from '~/utils/id'
 import useTouchClose from '~/composables/useTouchClose'
@@ -122,7 +121,7 @@ export default {
 
     handleSubmitTrn () {
       const values = { ...this.$store.state.trnForm.values }
-      const id = values.trnId || generateId(dayjs().valueOf())
+      const id = values.trnId || generateId(this.$day().valueOf())
 
       this.$store.dispatch('trns/addTrn', {
         id,
@@ -134,12 +133,12 @@ export default {
       const values = {
         amount: this.$store.state.trnForm.values.amount,
         categoryId: this.$store.getters['categories/transferCategoryId'],
-        date: dayjs(this.$store.state.trnForm.values.date).valueOf()
+        date: this.$day(this.$store.state.trnForm.values.date).valueOf()
       }
 
       // Income
       this.$store.dispatch('trns/addTrn', {
-        id: generateId(dayjs().valueOf()),
+        id: generateId(this.$day().valueOf()),
         values: {
           ...values,
           walletId: this.$store.state.trnForm.transfer.to,
@@ -149,7 +148,7 @@ export default {
 
       // Expense
       this.$store.dispatch('trns/addTrn', {
-        id: generateId(dayjs().valueOf()),
+        id: generateId(this.$day().valueOf()),
         values: {
           ...values,
           walletId: this.$store.state.trnForm.transfer.from,
@@ -343,9 +342,9 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/animations'
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .trnForm
   &__title
@@ -373,7 +372,7 @@ export default {
     border-radius 16px 16px 0 0
 
     &._anim
-      anim(300ms)
+      anim(200ms)
 
     @media $media-laptop
       border-radius 16px

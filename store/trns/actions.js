@@ -4,13 +4,22 @@ import dayjs from 'dayjs'
 import {
   removeTrnToAddLaterLocal,
   saveTrnToAddLaterLocal,
-  saveTrnToDeleteLaterLocal,
+  saveTrnIDforDeleteWhenClientOnline,
   removeTrnToDeleteLaterLocal
 } from './helpers'
 import { db } from '~/services/firebaseConfig'
 
 export default {
-  // create new trn and save it to offline
+  /**
+    * Create new trn
+    * and save it to local storage when Client offline
+    *
+    * @param {object}
+    * @param {string} {}.id
+    * @param {object} {}.values
+    * @param {string} {}.values.amount
+    * @param {string} {}.values.category
+  */
   addTrn ({ commit, rootState }, { id, values }) {
     const uid = rootState.user.user.uid
     const trns = rootState.trns.items
@@ -56,7 +65,7 @@ export default {
     delete trns[id]
     commit('setTrns', Object.freeze(trns))
     localforage.setItem('finapp.trns', trns)
-    saveTrnToDeleteLaterLocal(id)
+    saveTrnIDforDeleteWhenClientOnline(id)
 
     db.ref(`users/${uid}/trns/${id}`)
       .remove()
@@ -115,24 +124,50 @@ export default {
     db.ref(`users/${uid}/trns`).off()
   },
 
-  initOfflineTrns ({ dispatch }) {
+  /**
+    * Add and delete trns with had been created in offline mode
+    *
+    * When user online
+    * get trns from local storage
+    * and add them to database
+  */
+  uploadOfflineTrns ({ dispatch, rootState }) {
+    console.log('uploadOfflineTrns')
     db.ref('.info/connected').on('value', async (snap) => {
-      const isConnected = snap.val()
+      // const isConnected = snap.val()
+      const isConnected = true
       if (isConnected) {
-        // add
-        const trnsOfflineUpdate = await localforage.getItem('finapp.trns.offline.update') || {}
-        for (const trnId in trnsOfflineUpdate) {
-          if (trnsOfflineUpdate[trnId] && trnsOfflineUpdate[trnId].amount) {
+        console.log('isConnected')
+        const trnsArrayForDelete = await localforage.getItem('finapp.trns.offline.delete') || []
+        const trnsItemsForUpdate = await localforage.getItem('finapp.trns.offline.update') || {}
+
+        // delete trns
+        for (const trnId of trnsArrayForDelete) {
+          dispatch('deleteTrn', trnId)
+          delete trnsItemsForUpdate[trnId]
+        }
+
+        await localforage.setItem('finapp.trns.offline.update', trnsItemsForUpdate)
+
+        // add trns
+        for (const trnId in trnsItemsForUpdate) {
+          const wallet = rootState.wallets.items[trnsItemsForUpdate[trnId].walletId]
+          const category = rootState.categories.items[trnsItemsForUpdate[trnId].categoryId]
+
+          // delete trn from local storage if no wallet or category
+          if (!wallet || !category) {
+            delete trnsItemsForUpdate[trnId]
+            await localforage.setItem('finapp.trns.offline.update', trnsItemsForUpdate)
+          }
+
+          // add
+          else if (trnsItemsForUpdate[trnId] && trnsItemsForUpdate[trnId].amount) {
+            console.log('update', trnsItemsForUpdate[trnId])
             dispatch('addTrn', {
               id: trnId,
-              values: trnsOfflineUpdate[trnId]
+              values: trnsItemsForUpdate[trnId]
             })
           }
-        }
-        // delete
-        const trnsOfflineDelete = await localforage.getItem('finapp.trns.offline.delete') || []
-        for (const trnId of trnsOfflineDelete) {
-          dispatch('deleteTrn', trnId)
         }
       }
     })

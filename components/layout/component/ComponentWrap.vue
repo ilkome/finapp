@@ -53,9 +53,6 @@ export default {
   height 100%
 
   &__header
-    // background var(--c-bg-4)
-    // border-bottom 1px solid var(--c-bg-1)
-
     +media-laptop()
       background 0
       border-bottom 0
@@ -75,6 +72,8 @@ export default {
 
     &-left
       font-h1()
+      font-size 22px
+      font-weight 600
 
       +media-laptop()
         font-size 28px

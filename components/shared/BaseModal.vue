@@ -79,7 +79,7 @@ portal(to="modal" v-if="show")
         @click="onClose"
       )
 
-    transition(name="slide" appear @after-leave="afterClose")
+    transition(name="hey" appear @after-leave="afterClose")
       .baseModal__wrap(
         ref="scrollDragger"
         v-show="show"
@@ -105,7 +105,7 @@ portal(to="modal" v-if="show")
 @import "~assets/stylus/variables/margins"
 
 .baseModal
-  z-index 3
+  z-index 10
   position fixed
   left 0
 
@@ -126,7 +126,7 @@ portal(to="modal" v-if="show")
     bottom 0
     width 100%
     height 100%
-    background var(--c-bg-overflow)
+    background var(--c-bg-14)
     anim()
 
     @media $media-laptop

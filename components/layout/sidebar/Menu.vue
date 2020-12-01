@@ -65,6 +65,11 @@ export default {
         this.$store.dispatch('ui/setActiveTab', 'stat')
         return
       }
+      if (menuId === 'history') {
+        this.$router.push('/history')
+        this.$store.dispatch('ui/setActiveTab', 'stat')
+        return
+      }
       else if (menuId === 'trnForm') {
         this.$store.dispatch('trnForm/openTrnForm', { action: 'create' })
         return
@@ -99,7 +104,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 item-bg-active()
   background var(--c-bg-6)

@@ -8,7 +8,7 @@ export default {
     if (!localPeriods) { return }
 
     for (const periodName in localPeriods) {
-      if (!localPeriods[periodName] || localPeriods[periodName].showedGroups) { return }
+      if (!localPeriods[periodName]) { return }
 
       Number.isInteger(localPeriods[periodName].showedGroups)
         ? showedGroups = localPeriods[periodName].showedGroups

@@ -1,5 +1,7 @@
 <script>
 export default {
+  // TODO: add check for valid category
+
   name: 'TrnFormHeaderItemCategory',
 
   computed: {

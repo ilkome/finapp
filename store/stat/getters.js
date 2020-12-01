@@ -12,28 +12,33 @@ export default {
   statAverage (state, getters, rootState) {
     const statPeriods = getters.statByPeriods
 
-    let notEmptyPeriods = 0
-    if (statPeriods) {
-      notEmptyPeriods = Object.keys(statPeriods).filter(id => statPeriods[id].total !== 0).length
-    }
-
     let incomes = 0
     let expenses = 0
     let total = 0
+    const periodsCounter = {
+      incomes: 0,
+      expenses: 0,
+      total: 0
+    }
 
     for (const idx in statPeriods) {
       const period = statPeriods[idx]
       incomes = incomes + period.incomes
+      periodsCounter.incomes = periodsCounter.incomes + 1
+
       expenses = expenses + period.expenses
+      periodsCounter.expenses = periodsCounter.expenses + 1
+
       if (incomes > 0 && expenses > 0) {
         total = incomes - expenses
+        periodsCounter.total = periodsCounter.total + 1
       }
     }
 
     return {
-      incomes: Math.ceil(incomes / notEmptyPeriods),
-      expenses: Math.ceil(expenses / notEmptyPeriods),
-      total: Math.ceil(total / notEmptyPeriods)
+      incomes: incomes !== 0 ? Math.ceil(incomes / periodsCounter.incomes) : 0,
+      expenses: expenses !== 0 ? Math.ceil(expenses / periodsCounter.expenses) : 0,
+      total: total !== 0 ? Math.ceil(total / periodsCounter.total) : 0
     }
   },
 
@@ -49,23 +54,32 @@ export default {
   statByPeriods (state, getters, rootState, rootGetters) {
     const trns = rootState.trns.items
     const transferCategoryId = rootGetters['categories/transferCategoryId']
-    const diff = rootState.stat.showedPeriods
     const trnsIds = rootGetters['trns/selectedTrnsIds']
+    const periodName = rootState.filter.period
+    if (periodName === 'all') { return }
 
-    const periodGroup = rootState.filter.period
+    const oldestTrnDate = dayjs(trns[rootGetters['trns/firstCreatedTrnId']].date).endOf(periodName)
+    let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
+    periodsToShow = rootState.chart.periods[periodName].showedPeriods >= periodsToShow ? periodsToShow : rootState.chart.periods[periodName].showedPeriods
 
     const stat = {}
-    for (let period = 0; period < diff; period++) {
-      const dateStartOfPeriod = dayjs().subtract(period, periodGroup).startOf(periodGroup)
-      const dateEndOfPeriod = dayjs().subtract(period, periodGroup).endOf(periodGroup)
+    // Start from 1 to remove last period from average
+    for (let period = 1; period < periodsToShow; period++) {
+      const dateStartOfPeriod = dayjs().subtract(period, periodName).startOf(periodName)
+      const dateEndOfPeriod = dayjs().subtract(period, periodName).endOf(periodName)
       const ids = trnsIds
-        .filter(trnId => (trns[trnId].date >= dateStartOfPeriod) && (trns[trnId].date <= dateEndOfPeriod) && (trns[trnId].categoryId !== transferCategoryId))
+        .filter(trnId =>
+          trns[trnId].date >= dateStartOfPeriod &&
+          trns[trnId].date <= dateEndOfPeriod &&
+          trns[trnId].categoryId !== transferCategoryId
+        )
 
       stat[dateStartOfPeriod.valueOf()] = {
         date: dateStartOfPeriod.valueOf(),
         ...rootGetters['trns/getTotalOfTrnsIds'](ids)
       }
     }
+
     return stat
   },
 
@@ -102,12 +116,21 @@ export default {
   getRootCategoryIdFromTrnId: (state, getters, rootState) => (trnId) => {
     const trns = rootState.trns.items
     const categories = rootState.categories.items
+    const wallets = rootState.wallets.items
     const trnCategoryId = trns[trnId].categoryId
+
+    if (!wallets[trns[trnId].walletId]) {
+      console.log('no wallet for trn', trnId, trns[trnId])
+      console.log('walletId', trns[trnId].walletId)
+      console.log(`https://finapp-17474.firebaseio.com/users/${rootState.user.user.uid}/trns/${trnId}`)
+    }
+
     if (!categories[trnCategoryId]) {
       console.log('no category for trn', trnId, trns[trnId], categories[trnCategoryId])
       console.log(`https://finapp-17474.firebaseio.com/users/${rootState.user.user.uid}/trns/${trnId}`)
       return trnCategoryId
     }
+
     const trnCategoryParentId = categories[trnCategoryId].parentId
     return trnCategoryParentId || trnCategoryId
   },

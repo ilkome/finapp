@@ -207,9 +207,9 @@ export default {
   padding-bottom $m7
 
 .trnFormAmountPc
-  background var(--c-bg-2)
-  border-top 1px solid var(--c-bg-1)
-  border-bottom 1px solid var(--c-bg-1)
+  background var(--c-bg-3)
+  border-top 1px solid var(--c-bg-2)
+  border-bottom 1px solid var(--c-bg-2)
 
   &__types
     display flex

@@ -129,10 +129,11 @@ export default {
     &._expenses
       @media $media-pc
         border-left 2px solid rgba(200, 30, 50, .3)
+
     &._total
       align-self center
       @media $media-pc
-        border-left 2px solid var(--c-bg-5)
+        border-left 2px solid var(--c-bg-6)
 
     &._incomes
       align-self end

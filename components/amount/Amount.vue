@@ -91,13 +91,13 @@ export default {
 <template lang="pug">
 .amount(:class="className")
   .amountItem._original(:class="className")
-    .amountItem__prefix(v-if="isShowPrefix") {{ type === 0 ? '-' : '+' }}
+    .amountItem__prefix(v-if="isShowPrefix && value !== 0") {{ type === 0 ? '-' : '+' }}
     .amountItem__value {{ formatAmount(value) }}
     .amountItem__symbol {{ getCurrencySymbol(currency) }}
 
   template(v-if="showBase && (value !== 0) && (currency !== $store.state.currencies.base)")
     .amountItem._base(:class="className")
-      .amountItem__prefix(v-if="isShowPrefix") {{ type === 0 ? '-' : '+' }}
+      .amountItem__prefix(v-if="isShowPrefix && value !== 0") {{ type === 0 ? '-' : '+' }}
       .amountItem__value {{ amountInBaseCurrency }}
       .amountItem__symbol {{ getCurrencySymbol($store.state.currencies.base) }}
 </template>
@@ -167,20 +167,21 @@ export default {
 
   &._base
     opacity .6
-    padding-top 5px
+    padding-top 0px
 
   &__prefix
     align-self center
     padding-right $m2
+    font-weight 400
 
     ~/._size_xl &
       padding-right $m4
       font-size 26px
 
   &__value
-    font-size 15px
-    font-weight 400
     font-secondary()
+    font-size 14px
+    font-weight 400
 
     ~/._base &
       font-size 12px
@@ -200,6 +201,7 @@ export default {
   &__symbol
     padding-bottom 0px
     padding-left 2px
+    font-weight 400
 
     ~/._original &
       padding-bottom 1px

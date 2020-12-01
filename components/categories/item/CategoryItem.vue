@@ -78,6 +78,7 @@ export default {
   padding $m6
   color var(--c-font-1)
   background var(--c-bg-3)
+  border 1px solid var(--c-bg-5)
   border-radius $m5
 
   &._flat
@@ -125,8 +126,7 @@ export default {
     text-align center
 
     /.light-mode &
-      color var(--c-font-2)
-
+      color var(--c-font-4)
 
   &__dots
     position absolute

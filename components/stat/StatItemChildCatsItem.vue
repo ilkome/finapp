@@ -48,50 +48,66 @@ export default {
 
 <template lang="pug">
 .statItemChild(
-  @click="toogleShowInside(categoryId)"
   :class="{ _active: isShowInside }"
+  @click="toogleShowInside(categoryId)"
 )
   .statItemChild__content
-    .statItemChild__graph: .statItemChild__graph__in(:style="styles")
+    .statItemChild__graph
+      .statItemChild__graph__in(:style="styles")
 
-    .statItemChild__icon(@click.stop="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)")
+    .statItemChild__icon(
+      @click.stop="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)"
+    )
       Icon(
-        :background="category.color"
+        :color="$store.state.ui.pc ? category.color : null"
+        :background="$store.state.ui.mobile ? category.color : null"
         :icon="category.icon"
-        :round="true")
+      )
 
     .statItemChild__name {{ category.name }}
 
     .statItemChild__amount
       Amount(
         :currency="$store.state.currencies.base"
-        :value="total")
+        :value="total"
+        :type="type"
+        :isColorize="false"
+        isShowPrefix
+      )
 
-  .statItemChild__trns(@click.stop="" v-if="isShowInside")
+  .statItemChild__trns(
+    v-if="isShowInside"
+    @click.stop=""
+  )
     TrnsList(
-      ui="stat"
       :incomes="type === 1"
       :expenses="type === 0"
-      :categoryId="categoryId")
+      :categoryId="categoryId"
+      ui="stat"
+    )
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/scroll"
+@import '~assets/stylus/variables'
 
 .statItemChild
-  border-bottom 1px solid var(--c-bg-5)
-  &:last-child
-    border 0
+
+  &._active
+    padding-bottom $m6
 
   &__content
     display grid
     grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
     grid-template-rows repeat(2, minmax(10px, max-content))
     grid-column-gap 20px
-    padding 10px 10px
+    margin 0 0px
+    padding $m6 0
+
+    +media-tablet()
+      padding $m6 $m6
+
+  &__trns
+    padding 0 $m6 0 $m7
 
   &__graph
     overflow hidden
@@ -110,9 +126,13 @@ export default {
     overflow hidden
     align-self center
     color var(--c-font-4)
-    font-size 16px
+    font-size 14px
     white-space nowrap
     text-overflow ellipsis
+
+    ^[0]._active &
+      color var(--c-font-2)
+      font-weight 500
 
   &__icon
     display flex
@@ -123,4 +143,8 @@ export default {
 
   &__amount
     align-self center
+
+  &__trns
+    ^[0]._active &
+      padding-bottom $m6
 </style>

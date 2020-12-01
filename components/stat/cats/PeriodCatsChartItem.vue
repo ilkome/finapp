@@ -63,10 +63,11 @@ export default {
 </script>
 
 <template lang="pug">
-.statCatsItem.statCatsItem.swiper-no-swiping(
+.statCatsItem.swiper-no-swiping(
   @click="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)"
   @mouseenter="handleMouseEnter"
-  @mouseleave="handleMouseLeave")
+  @mouseleave="handleMouseLeave"
+)
   .statCatsItem__graph
     .statCatsItem__graph__in(:style="styles")
       .statCatsItem__graph__amount {{ amount }}
@@ -76,14 +77,14 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .statCatsItem
   cursor pointer
   margin-top 12px
   margin-right 10px
-  background var(--c-bg-4)
+  background var(--c-bg-5)
   border-radius 3px
 
   &:hover
@@ -98,8 +99,8 @@ export default {
     width 28px
     height 80px
     margin 0 auto
-    border-radius 3px
     margin-bottom -3px
+    border-radius 3px
 
     &__amount
       position absolute

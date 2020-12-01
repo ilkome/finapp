@@ -1,6 +1,4 @@
 <script>
-import dayjs from 'dayjs'
-
 export default {
   props: {
     ui: {
@@ -96,8 +94,8 @@ export default {
       for (const trnId of trnsIds) {
         let dayDate
         this.sortByEditDate
-          ? dayDate = dayjs(trns[trnId].edited).startOf('day').valueOf()
-          : dayDate = dayjs(trns[trnId].date).startOf('day').valueOf()
+          ? dayDate = this.$day(trns[trnId].edited).startOf('day').valueOf()
+          : dayDate = this.$day(trns[trnId].date).startOf('day').valueOf()
 
         if (!trnsList[dayDate]) {
           trnsList[dayDate] = [trnId]

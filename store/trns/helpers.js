@@ -19,8 +19,11 @@ export const removeTrnToAddLaterLocal = async (id) => {
 }
 
 // save deleted trn to local
-export const saveTrnToDeleteLaterLocal = async (id) => {
+export const saveTrnIDforDeleteWhenClientOnline = async (id) => {
   const trnsIds = await localforage.getItem('finapp.trns.offline.delete') || []
+
+  if (trnsIds.includes(id)) { return }
+
   await localforage.setItem('finapp.trns.offline.delete', [
     ...trnsIds,
     id

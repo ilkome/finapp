@@ -85,7 +85,7 @@ export default {
   width 32px
   height 32px
   color var(--c-font-1)
-  border-radius 3px
+  border-radius $m5
   &._invert
     color var(--c-font-5)
     background var(--c-bg-10)
@@ -122,7 +122,8 @@ export default {
 
   &__abbr
     font-size 12px
-    font-weight 500
+    font-weight 400
+
     ^[0]._small &
-      font-size 11px
+      font-size 10px
 </style>

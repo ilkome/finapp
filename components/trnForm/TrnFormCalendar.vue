@@ -1,5 +1,4 @@
 <script>
-import dayjs from 'dayjs'
 import { formatDate } from '~/utils/formatDate'
 
 export default {
@@ -10,20 +9,20 @@ export default {
     },
 
     isToday () {
-      return dayjs().isSame(this.$store.state.trnForm.values.date, 'day')
+      return this.$day().isSame(this.$store.state.trnForm.values.date, 'day')
     }
   },
 
   methods: {
     setPrevDay () {
       this.$store.commit('trnForm/setTrnFormValues', {
-        date: dayjs(this.$store.state.trnForm.values.date).subtract(1, 'day').valueOf()
+        date: this.$day(this.$store.state.trnForm.values.date).subtract(1, 'day').valueOf()
       })
     },
     setNextDay () {
       if (!this.isToday) {
         this.$store.commit('trnForm/setTrnFormValues', {
-          date: dayjs(this.$store.state.trnForm.values.date).add(1, 'day').valueOf()
+          date: this.$day(this.$store.state.trnForm.values.date).add(1, 'day').valueOf()
         })
       }
     }
@@ -52,7 +51,7 @@ export default {
 .trnFormMeta
   display flex
   align-items stretch
-  border-top 1px solid var(--c-bg-5)
+  border-top 1px solid var(--c-bg-3)
 
   @media $media-laptop
     color var(--c-font-4)

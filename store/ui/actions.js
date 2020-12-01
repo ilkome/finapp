@@ -3,6 +3,11 @@ import localforage from 'localforage'
 export default {
   async initUi ({ commit, dispatch }) {
     const uiLocalStore = await localforage.getItem('finapp.statActiveTab')
+    const activeTabViewName = await localforage.getItem('finapp.activeTabViewName')
+
+    if (activeTabViewName) {
+      commit('setActiveTabViewName', activeTabViewName)
+    }
 
     // ui
     if (uiLocalStore) {
@@ -15,6 +20,14 @@ export default {
     }
 
     dispatch('setUiView')
+  },
+
+  setActiveTabViewName ({ state, commit, dispatch }, value) {
+    if (state.activeTab !== value) {
+      commit('setActiveTabViewName', value)
+      localforage.setItem('finapp.activeTabViewName', value)
+      dispatch('ui/setUiView', null, { root: true })
+    }
   },
 
   /**
@@ -146,8 +159,10 @@ export default {
     const localName = 'finapp.statViewConfig'
     const localFilterUi = await localforage.getItem(localName)
     const walletName = rootState.filter.walletId || 'root'
+    const periodName = rootState.filter.period || 'month'
     const categoryName = rootState.filter.categoryId || 'root'
-    const uiItemName = `${walletName}${categoryName}`
+    const activeTabViewName = rootState.ui.activeTabViewName || 'expenses'
+    const uiItemName = `${walletName}${categoryName}${periodName}${activeTabViewName}`
 
     await localforage.setItem(localName, {
       ...localFilterUi,
@@ -162,6 +177,9 @@ export default {
         }
       }
     })
+
+    const periods = rootState.chart.periods
+    localforage.setItem('finapp.chart.periods', periods)
   },
 
   /**
@@ -171,8 +189,10 @@ export default {
     const localName = 'finapp.statViewConfig'
     const localFilterUi = await localforage.getItem(localName)
     const walletName = rootState.filter.walletId || 'root'
+    const periodName = rootState.filter.period || 'month'
     const categoryName = rootState.filter.categoryId || 'root'
-    const uiItemName = `${walletName}${categoryName}`
+    const activeTabViewName = rootState.ui.activeTabViewName || 'expenses'
+    const uiItemName = `${walletName}${categoryName}${periodName}${activeTabViewName}`
 
     if (localFilterUi && localFilterUi[uiItemName]) {
       const localFilterUiItem = localFilterUi[uiItemName]

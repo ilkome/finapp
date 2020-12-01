@@ -83,7 +83,6 @@ TrnFormModal(
 
   .swiper-container(ref="slider")
     .swiper-wrapper
-
       .swiper-slide
         .scrollBlock.waitForScroll(
           v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'] && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
@@ -121,9 +120,9 @@ TrnFormModal(
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/scroll"
+@import '~assets/stylus/variables'
+
+$border = 1px
 
 .scrollBlock
   overflow hidden
@@ -131,40 +130,42 @@ TrnFormModal(
   scrollbar()
 
 .marginBottom
-  margin-bottom 80px
+  margin-top 40px
+  margin-bottom 36px
 
 .bottomNav
   z-index 10
   position absolute
+  top 50px
   left 0
-  bottom 0
   width 100%
   padding 0
-
-.switcher
-  overflow hidden
-  opacity .96
-  position relative
-  display flex
-  align-items stretch
-  justify-content stretch
   background var(--c-bg-4)
 
-  &__item
-    opacity .6
-    flex-grow 1
-    display flex
-    align-items center
-    justify-content center
-    min-width 48px
-    padding $m7 $m7
-    font-size 14px
-    border-radius 4px
+.switcher
+  display flex
+  align-items center
+  padding 0 $m7
 
-    +media-hover()
-      background var(--c-bg-3)
+.switcher__item
+  cursor pointer
+  flex-grow 1
+  padding $m6 $m7
+  color var(--c-font-5)
+  font-size 12px
+  font-weight 500
+  font-roboto()
+  text-align center
+  border-bottom $border solid var(--c-bg-2)
 
-    &._active
-      opacity 1
-      background var(--c-bg-8)
+  &:active
+    background var(--c-bg-5)
+    border-radius $m6 $m6 0 0
+    border-bottom $border solid var(--c-bg-2)
+
+  &._active
+    cursor default
+    color var(--c-font-3)
+    background none
+    border-bottom $border solid var(--c-blue-1)
 </style>

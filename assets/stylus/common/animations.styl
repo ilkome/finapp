@@ -50,7 +50,8 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
   &-leave-active
   &-leave-to
     opacity 0
-    transition none
+    transition opacity 200ms ease-out, transform 250ms ease-out
+    // transition none
 
 .slide2
   &-enter-active

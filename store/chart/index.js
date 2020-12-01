@@ -18,7 +18,7 @@ const state = () => ({
       groupedBy: 'month',
       showedGroups: 3,
       showedPeriods: 6,
-      grouped: true
+      grouped: false
     },
     month: {
       groupedBy: 'year',
@@ -29,7 +29,7 @@ const state = () => ({
     year: {
       groupedBy: 'year',
       showedGroups: 2,
-      showedPeriods: 2,
+      showedPeriods: 3,
       grouped: false
     }
   }

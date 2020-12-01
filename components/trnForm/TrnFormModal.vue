@@ -131,10 +131,10 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/margins"
+@import '~assets/stylus/variables/animations'
+@import '~assets/stylus/variables/fonts'
+@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables/margins'
 
 .trnFormModal
   z-index 3
@@ -155,7 +155,7 @@ export default {
     bottom 0
     width 100%
     height 100%
-    background var(--c-bg-overflow)
+    background var(--c-bg-14)
     anim()
 
     @media $media-laptop
@@ -167,7 +167,7 @@ export default {
     display flex
     flex-grow 1
     flex-flow column nowrap
-    background var(--c-bg-2)
+    background var(--c-bg-4)
     border-radius $m6
 
     &._anim

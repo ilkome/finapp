@@ -1,6 +1,4 @@
 <script>
-import dayjs from 'dayjs'
-
 export default {
   name: 'ChartItem',
 
@@ -34,7 +32,7 @@ export default {
       const hasTrns = this.period.expenses > 0 || this.period.incomes > 0
 
       return {
-        _active: dayjs(parseInt(currentPeriodDate)).isSame(filterDate, filterPeriod),
+        _active: this.$day(parseInt(currentPeriodDate)).isSame(filterDate, filterPeriod),
         [`_${filterPeriod}`]: true,
         _grouped: this.$store.state.chart.periods[filterPeriod].grouped,
         _empty: !hasTrns && this.$store.state.chart.periods[filterPeriod].hideEmpty
@@ -47,28 +45,28 @@ export default {
 
       switch (filterPeriod) {
         case 'day':
-          formatedDate = dayjs(dateValueOf).format('D')
+          formatedDate = this.$day(dateValueOf).format('D')
           if (!this.$store.state.chart.periods[filterPeriod].grouped) {
-            dayjs().isSame(dateValueOf, 'year')
-              ? formatedDate = dayjs(dateValueOf).format('D.MM')
-              : formatedDate = dayjs(dateValueOf).format('D.MM.YY')
+            this.$day().isSame(dateValueOf, 'year')
+              ? formatedDate = this.$day(dateValueOf).format('D.MM')
+              : formatedDate = this.$day(dateValueOf).format('D.MM.YY')
           }
           return formatedDate
 
         case 'week':
-          return dayjs(parseInt(dateValueOf)).week()
+          return this.$day(parseInt(dateValueOf)).week()
 
         case 'month':
-          formatedDate = dayjs(dateValueOf).format('MMM')
+          formatedDate = this.$day(dateValueOf).format('MMM')
           if (!this.$store.state.chart.periods[filterPeriod].grouped) {
-            dayjs().isSame(dateValueOf, 'year')
-              ? formatedDate = dayjs(dateValueOf).format('MMM')
-              : formatedDate = dayjs(dateValueOf).format('MMM YY')
+            this.$day().isSame(dateValueOf, 'year')
+              ? formatedDate = this.$day(dateValueOf).format('MMM')
+              : formatedDate = this.$day(dateValueOf).format('MMM YY')
           }
           return formatedDate
 
         case 'year':
-          return dayjs(dateValueOf).format('YYYY')
+          return this.$day(dateValueOf).format('YYYY')
       }
     },
     periods () {
@@ -132,7 +130,7 @@ export default {
   padding $m5 $m5
   padding-top $m6
   flex-grow 1
-  border-radius 4px
+  border-radius $m6
 
   &._empty
     display none
@@ -163,7 +161,7 @@ export default {
 
   &._active
     color var(--c-font-2)
-    background var(--c-bg-4)
+    background var(--c-bg-5)
 
   &__name
     padding-top 4px

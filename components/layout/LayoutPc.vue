@@ -34,6 +34,7 @@ export default {
       LayoutPcSidebar
 
     .layout__item
+      //- ThemeEditor
       transition(name="animation-tab")
         Dashboard
 
@@ -132,9 +133,8 @@ export default {
 
     .walletItemGrid
       width 100%
-      padding $m8
-      padding-top 0
-      border-radius $m6 $m6 0 0
+      // padding $m8
+      // padding-top 0
 
       &__name
         padding-bottom $m6
@@ -143,7 +143,7 @@ export default {
       &__line
         height 6px
         margin-right (- $m8)
-        margin-bottom $m8
+        // margin-bottom $m8
         margin-left (- $m8)
 
 .dashboardItems .categoryItem

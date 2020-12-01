@@ -19,7 +19,6 @@ export default {
           if (rootState.user.user && rootState.user.user.uid && rootState.user.user.uid !== user.uid) {
             dispatch('clearUserData')
           }
-          dispatch('trns/initOfflineTrns', null, { root: true })
           await dispatch('user/initUser', user, { root: true })
           await dispatch('currencies/initCurrencies', null, { root: true })
           await dispatch('categories/initCategories', null, { root: true })
@@ -28,6 +27,8 @@ export default {
           await dispatch('groups/initGroups', null, { root: true })
           await dispatch('budgets/initBudgets', null, { root: true })
           await dispatch('lang/initDbLang', null, { root: true })
+          dispatch('trns/uploadOfflineTrns', null, { root: true })
+
           if (this.$router.currentRoute.name === 'login') {
             this.app.context.redirect('/')
             setTimeout(() => {

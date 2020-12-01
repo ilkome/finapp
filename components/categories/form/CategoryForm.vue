@@ -323,7 +323,7 @@ ComponentWrap
   margin (- $m7)
   margin-top 0
   padding $m7
-  background var(--c-bg-1)
+  background var(--c-bg-3)
 
   @media $media-laptop
     margin (- $m9)

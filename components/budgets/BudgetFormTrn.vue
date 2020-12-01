@@ -82,8 +82,7 @@ export default {
       padding 11px 20px 10px 20px
       background var(--c-bg-5)
       border-color transparent
-      /.light-mode &
-        background var(--c-bg-5)
+
   &:last-child
     border-color transparent
 

@@ -12,6 +12,7 @@ export default {
 
   /**
     * Return total amounts of trnsIds
+    * * Refactor params should be Object
     *
     * @param {Array} trnsIds
     * @return {Object} return
@@ -196,7 +197,7 @@ export default {
   getTrns: (state, getters, rootState) => (props) => {
     if (!getters.hasTrns) { return [] }
 
-    const { date, periodName, description, categoryId } = props
+    const { date, periodName, description, categoryId, type } = props
     const categories = rootState.categories.items
     const categoriesIds = Object.keys(categories)
     const filterCategoryId = rootState.filter.categoryId || categoryId
@@ -209,6 +210,12 @@ export default {
     const filterPeriod = periodName || rootState.filter.period
     const startDateValue = filterDate.startOf(filterPeriod).valueOf()
     const endDateValue = filterDate.endOf(filterPeriod).valueOf()
+
+    // filter type
+    if (type) {
+      trnsIds = trnsIds
+        .filter(trnId => (trns[trnId].type === type))
+    }
 
     // filter date
     if (date && filterPeriod !== 'all') {
@@ -292,6 +299,7 @@ export default {
           for (const categoryId of childCategoriesIds) {
             if (trnCategoryId === categoryId) { return true }
           }
+          return false
         })
       }
       else {

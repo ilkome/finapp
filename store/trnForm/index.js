@@ -1,6 +1,4 @@
 import dayjs from 'dayjs'
-import actions from './actions'
-import mutations from './mutations'
 
 export const baseModalState = {
   calendar: false,
@@ -13,7 +11,7 @@ export const baseModalState = {
   trn: false
 }
 
-const state = () => ({
+export const state = () => ({
   action: 'create',
 
   height: 0,
@@ -39,9 +37,3 @@ const state = () => ({
     walletId: null
   }
 })
-
-export default {
-  state,
-  actions,
-  mutations
-}

@@ -1,11 +1,6 @@
 <script>
-import dayjs from 'dayjs'
 import { Chart } from 'highcharts-vue'
-import Highcharts from 'highcharts'
-import borderRadius from 'highcharts-border-radius'
-import chartOptions from './chartOptions'
-
-borderRadius(Highcharts)
+import chartOptions from '~/components/stat/chartOptions'
 
 export default {
   components: {
@@ -15,18 +10,19 @@ export default {
   data () {
     const vm = this
     return {
-      date: dayjs().valueOf(),
+      date: this.$day().valueOf(),
       periodName: 'month',
       visiblePeriodMenu: false,
       dateStart: null,
       dateEnd: null,
       chartOptions: {
         ...chartOptions,
+        tooltip: false,
         chart: {
           events: {
             click (e) {
-              const date = this.series[0].searchPoint(e, true).date
-              vm.$store.dispatch('filter/setDate', parseInt(date))
+              const value = this.series[0].searchPoint(e, true) || this.series[1].searchPoint(e, true)
+              vm.$store.dispatch('filter/setDate', parseInt(value.date))
             }
           }
         }
@@ -70,6 +66,7 @@ export default {
       },
 
       chart: {
+        tooltip: false,
         backgroundColor: 'transparent',
         with: '100%',
         height: '40%',
@@ -102,12 +99,12 @@ export default {
       const allTrnsIds = Object.keys(trns)
 
       // diff periods from oldest trn and today
-      const oldestTrnDate = dayjs(trns[this.$store.getters['trns/firstCreatedTrnId']].date).endOf(periodName)
-      let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
+      const oldestTrnDate = this.$day(trns[this.$store.getters['trns/firstCreatedTrnId']].date).endOf(periodName)
+      let periodsToShow = this.$day().endOf(periodName).diff(oldestTrnDate, periodName) + 1
       periodsToShow = periodsToShow > 24 ? 24 : periodsToShow
 
       // get balance for first period
-      const dateStart = dayjs().endOf(periodName).subtract(periodsToShow, periodName).valueOf()
+      const dateStart = this.$day().endOf(periodName).subtract(periodsToShow, periodName).valueOf()
       const trnsIdsBeforeDate = allTrnsIds.filter(id => trns[id].date < dateStart)
       const totalStart = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIdsBeforeDate, true)
 
@@ -118,13 +115,13 @@ export default {
 
       for (let index = 0; index < periodsToShow; index++) {
         // count balance
-        const balanceDateStart = dayjs().endOf(periodName).subtract(index, periodName).valueOf()
+        const balanceDateStart = this.$day().endOf(periodName).subtract(index, periodName).valueOf()
         const balanceTrnsIds = allTrnsIds.filter(id => trns[id].date > dateStart && trns[id].date < balanceDateStart)
         const balanceTotal = this.$store.getters['trns/getTotalOfTrnsIds'](balanceTrnsIds, true)
 
         // count total period
-        const periodDate = dayjs().endOf(periodName).subtract(index, periodName).valueOf()
-        const name = dayjs(periodDate).format('MMM YY')
+        const periodDate = this.$day().endOf(periodName).subtract(index, periodName).valueOf()
+        const name = this.$day(periodDate).format('MMM YY')
         const trnsIds = this.$store.getters['trns/getTrns']({ date: periodDate, periodName })
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 

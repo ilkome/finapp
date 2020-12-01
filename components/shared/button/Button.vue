@@ -74,13 +74,9 @@ export default {
   font-size 16px
   border-radius 50px
 
-  /.light-mode &
-    box-shadow 2px 2px 6px 0px var(--c-bg-11)
-
   &:active:not(._disable)
     color var(--c-font-3)
     background var(--c-bg-2)
-    border 1px solid var(--c-bg-7)
     box-shadow 2px 2px 6px 0px var(--c-bg-2)
 
   &:hover:not(._disable)
@@ -91,6 +87,9 @@ export default {
 
   &._disable
     opacity .6
+
+  &:active
+    background var(--c-bg-3)
 </style>
 
 <style lang="stylus" scoped>
@@ -116,31 +115,32 @@ export default {
     font-size 14px
 
   &:active
-    transform scale(1.02)
+    background var(--c-bg-3)
 
   &._center
     text-align center
 
   &._borderBottom
+    width 100%
     margin-bottom 0
-    padding $m7 0
+    padding $m7 $m7
+    border-radius $m5
 
   &._border
     display flex
     align-items center
     justify-content center
-    background var(--c-bg-3)
-    border 1px solid var(--c-bg-4)
-    border-radius 3px
-    box-shadow 2px 2px 6px 0px var(--c-bg-2)
+    margin 0 auto
+    padding $m6 $m6
+    color var(--c-font-4)
+    font-size 13px
+    background var(--c-bg-4)
+    border 1px solid var(--c-bg-5)
+    border-radius $m5
     anim()
-
-    /.light-mode &
-      box-shadow 2px 2px 6px 0px var(--c-bg-11)
 
     &:active:not(._disable)
       color var(--c-font-3)
-      transform scale(.96)
 
     +media-laptop()
       &:hover
@@ -162,7 +162,7 @@ export default {
   &._inline
     display flex
     width 100%
-    max-width 400px
+    max-width 220px
     margin 0 auto
 
     @media $media-laptop
@@ -191,19 +191,15 @@ export default {
 
   &._small
     height 40px
-    padding 0 $m7
+    padding 0 $m8
     color var(--c-font-4)
-    background var(--c-bg-2)
-    border 1px solid var(--c-bg-7)
-    border-radius $m3
-    box-shadow 2px 2px 6px 0px var(--c-bg-2)
-
-    /.light-mode &
-      box-shadow 2px 2px 6px 0px var(--c-bg-11)
+    font-size 12px
+    background var(--c-bg-3)
+    border 1px solid var(--c-bg-5)
+    border-radius $m4
 
     ^[0]:active &
       color var(--c-font-3)
-      transform scale(.96)
 
     ^[0]:hover &
       @media $media-laptop

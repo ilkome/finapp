@@ -2,13 +2,6 @@
 import { db } from '~/services/firebaseConfig'
 
 export default {
-  props: {
-    slider: {
-      type: Object,
-      default: () => {}
-    }
-  },
-
   data () {
     return {
       showModalConfirm: false
@@ -22,15 +15,18 @@ export default {
     category () {
       return this.$store.state.categories.items[this.categoryId]
     },
+
     deleteInfo () {
       if (this.trnsIds.length > 0) {
         return `It's also will delete ${this.trnsIds.length} trns in this category`
       }
       return null
     },
+
     childCategoriesIds () {
       return this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
     },
+
     trnsIds () {
       const trns = this.$store.state.trns.items
       const trnsIds = []
@@ -50,8 +46,8 @@ export default {
       this.$store.commit('categories/hideCategoryModal')
       this.$store.commit('categories/setCategoryModalId', null)
 
-      if (this.slider) {
-        this.slider.slideTo(1)
+      if (this.$store.state.ui.mobile) {
+        this.$store.dispatch('ui/setActiveTabViewName', 'chart')
       }
     },
 

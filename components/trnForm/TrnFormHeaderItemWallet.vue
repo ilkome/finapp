@@ -1,4 +1,5 @@
 <script>
+// TODO: add check for valid wallet
 export default {
   name: 'TrnFormHeaderItemWallet',
 

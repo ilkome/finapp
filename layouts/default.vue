@@ -72,7 +72,7 @@ export default {
 </template>
 
 <style lang="stylus">
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 *
   box-sizing border-box
@@ -83,11 +83,11 @@ export default {
 
 html
   font-size 16px
-  overscroll-behavior-y contain
+// overscroll-behavior-y contain
 
 body
   overflow hidden
-  overscroll-behavior-y contain
+  // overscroll-behavior-y contain
   margin 0
   color var(--c-font-2)
   font-primary()
@@ -99,7 +99,7 @@ body
 </style>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/index"
+@import '~assets/stylus/index'
 
 .finapp
   display flex

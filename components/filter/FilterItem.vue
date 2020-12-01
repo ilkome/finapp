@@ -8,10 +8,15 @@ export default {
 
     icon: {
       type: String,
-      required: true
+      default: null
     },
 
     name: {
+      type: String,
+      default: null
+    },
+
+    walletId: {
       type: String,
       default: null
     }
@@ -23,6 +28,10 @@ export default {
         _mobile: this.$store.state.ui.mobile,
         _pc: this.$store.state.ui.pc
       }
+    },
+
+    wallet () {
+      return this.$store.state.wallets.items[this.walletId]
     }
   }
 }
@@ -31,43 +40,89 @@ export default {
 <template lang="pug">
 .filterItem(
   :class="className"
-  :style="{ background: color }"
   @click="$emit('onClick')"
 )
-  .filterItem__icon
-    Icon(
-      :icon="icon"
-      :medium="true"
-      :background="color")
-  .filterItem__name {{ name }}
-  .filterItem__close: .mdi.mdi-close
+  //- Wallet
+  template(v-if="walletId && wallet")
+    .filterItemWallet__line(:style="{ background: wallet.color || $store.state.ui.defaultBgColor }")
+    .filterItemWallet
+      .filterItemWallet__amount
+        Amount(
+          :alwaysShowSymbol="false"
+          :currency="wallet.currency"
+          :showBase="false"
+          :value="$store.getters['wallets/walletsTotal'][walletId].base"
+          vertical="center"
+        )
+      .filterItem__name {{ wallet.name }}
+
+  //- Category
+  template(v-if="!walletId")
+    .filterItem__icon
+      Icon(
+        :color="color"
+        :icon="icon"
+      )
+    .filterItem__name {{ name }}
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/animations'
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
+
+.filterItemWallet
+  display flex
+  display flex
+  flex-flow column
+  justify-content center
+  padding-bottom $m3
+
+  &__amount
+    padding-top $m3
+    padding-bottom $m3
+
+  &__line
+    position absolute
+    top 0
+    left 0
+    width 100%
+    height 2px
 
 .filterItem
+  overflow hidden
   cursor pointer
   position relative
   display flex
-  flex-flow row
-  align-items center
-  padding 6px 12px
+  flex-flow column
+  justify-content center
+  flex-grow 0
+  margin 0 $m4
+  padding $m5 $m7
   color var(--c-font-1)
   white-space nowrap
-  border-radius $m4
+  background var(--c-bg-6)
+  border-radius $m5
+
+  +media-tablet()
+    background var(--c-bg-5)
 
   &._pc
-    margin-right 20px
+    margin-right $m6
 
-  &._mobile
-    flex 1 1 50%
-    margin-right 10px
+  &:active
+    background var(--c-bg-5)
 
   &:last-child
-    margin-right 0
+    +media-tablet('less')
+      margin-right auto
+
+  &:first-child
+    +media-tablet('less')
+      margin-left auto
+
+  &:last-child&:after
+    display none
 
   &._clear
     margin-right 0
@@ -81,7 +136,7 @@ export default {
 
   &__icon
     opacity .8
-    padding-right $m6
+    padding-bottom $m4
     color var(--c-font-1)
 
     .icon
@@ -97,8 +152,12 @@ export default {
   &__name
     overflow hidden
     text-overflow ellipsis
-    font-size 14px
+    color var(--c-font-4)
+    font-size 13px
     text-align center
+
+    ~/:hover &
+      color var(--c-font-2)
 
   &__close
     margin-left auto
@@ -115,10 +174,6 @@ export default {
       border 1px solid var(--c-bg-1)
       border-radius $m3
       anim()
-
-      /.light-mode &
-        color var(--c-font-2)
-        background var(--c-bg-10)
 
     ^[0]:hover:not(._clear) &
       @media $media-laptop

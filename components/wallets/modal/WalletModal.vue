@@ -2,13 +2,6 @@
 import { db } from '~/services/firebaseConfig'
 
 export default {
-  props: {
-    slider: {
-      type: Object,
-      default: () => {}
-    }
-  },
-
   data () {
     return {
       showModalConfirm: false
@@ -43,8 +36,8 @@ export default {
       this.$store.dispatch('filter/setFilterWalletId', this.walletId)
       this.$store.commit('wallets/setWalletModalId', null)
 
-      if (this.slider) {
-        this.slider.slideTo(1)
+      if (this.$store.state.ui.mobile) {
+        this.$store.dispatch('ui/setActiveTabViewName', 'chart')
       }
     },
 
@@ -135,7 +128,8 @@ Portal(
     padding $m8
     padding-top 0
     padding-bottom $m6
-    background var(--c-bg-2)
+    background var(--c-bg-4)
+    border-bottom 0
     border-radius $m6 $m6 0 0
 
     &__name

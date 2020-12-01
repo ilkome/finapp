@@ -1,7 +1,13 @@
 export default {
+  // Active Tab in stat v2
+  setActiveTabViewName (state, tabViewName) {
+    state.activeTabViewName = tabViewName
+  },
+
   setActiveTab (state, tabName) {
     state.activeTab = tabName
   },
+
   setActiveTabStat (state, tabName) {
     state.stat.activeTab = tabName
   },
@@ -22,7 +28,6 @@ export default {
   },
 
   setVisibleCatsChart (state, status) {
-    console.log('setVisibleCatsChart', status)
     state.catsChart = status
   },
 

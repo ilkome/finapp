@@ -68,7 +68,7 @@ export default {
           )
           ContextMenuItem(
             :selected="$store.state.filter.period === 'all'"
-            :title="$t('dates.all')"
+            :title="$t('dates.all.simple')"
             icon="mdi mdi-database"
             @onClick="$store.dispatch('filter/setPeriod', 'all')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"

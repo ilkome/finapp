@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'StatItem2',
+  name: 'StatItem',
 
   props: {
     category: {
@@ -70,68 +70,66 @@ export default {
 
 <template lang="pug">
 .statItem(
-  @click="toogleShowInside(categoryId)"
   :class="{ _active: showInside }"
+  @click="toogleShowInside(categoryId)"
 )
-
   .statItem__content
     .statItem__graph: .statItem__graph__in(:style="styles")
     .statItem__icon(@click.stop="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)")
       Icon(
         :background="category.color"
         :icon="category.icon"
-        :round="true"
       )
 
     .statItem__name {{ category.name }}
     .statItem__amount
       Amount(
         :currency="currency"
-        :value="total")
+        :value="total"
+      )
 
   template(v-if="showInside")
     .statItem__inside(@click.stop="")
       template(v-if="showChildCategories")
-        StatItemChildCats(:categoryId="categoryId", :type="type")
+        StatItemChildCats(
+          :categoryId="categoryId"
+          :type="type"
+        )
 
       template(v-else)
-        TrnsList(
-          ui="stat"
-          :incomes="type === 1"
-          :expenses="type === 0"
-          :categoryId="categoryId")
+        .statItem__trns
+          TrnsList(
+            ui="stat"
+            :incomes="type === 1"
+            :expenses="type === 0"
+            :categoryId="categoryId"
+          )
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .statItem
-  overflow hidden
+  // overflow hidden
   cursor pointer
   position relative
-  // margin (- 10px) 0
-  margin-bottom 10px
-  padding 8px 0
+  padding $m5 0
   border 1px solid transparent
   border-radius $m5
 
   &:hover
     @media $media-laptop
       z-index 2
+      margin 0 (- $m5)
+      padding $m5 $m5
       background var(--c-bg-1)
       border 1px solid var(--c-bg-5)
 
-      /.light-mode &
-        background var(--c-bg-3)
-
   &._active
+    margin $m6 (- $m6)
     padding 0
-    margin-bottom 30px
-    background var(--c-bg-2)
-    border 1px solid var(--c-bg-7)
-
-    // &:first-child
-    //   margin-top (- 10px)
+    background var(--c-bg-3)
+    border 1px solid var(--c-bg-6)
 
   &__content
     display grid
@@ -140,20 +138,22 @@ export default {
     grid-column-gap 20px
 
     ^[0]._active &
-      padding 10px 10px
-      background var(--c-bg-5)
-      border-bottom 1px solid var(--c-bg-7)
+      margin 0 $m6
+      padding $m6 0
+      border-bottom 1px solid var(--c-bg-5)
 
-      /.light-mode &
-        background var(--c-bg-10)
-        border-bottom 1px solid var(--c-bg-5)
+  &__inside
+    padding 0
+
+  &__trns
+    padding 0 $m6
 
   &__graph
     overflow hidden
     grid-column 2 / -1
     grid-row 2 / -1
     align-self center
-    margin-top 6px
+    margin-top $m3
     background var(--c-bg-8)
     border-radius 2px
 
@@ -165,7 +165,7 @@ export default {
     overflow hidden
     align-self center
     color var(--c-font-4)
-    font-size 16px
+    font-size 14px
     white-space nowrap
     text-overflow ellipsis
 
@@ -186,4 +186,10 @@ export default {
 
   &__amount
     align-self center
+
+  &__arrow
+    padding-top $m2
+    color var(--c-font-5)
+    grid-column 4 / 5
+    grid-row 1 / 2
 </style>

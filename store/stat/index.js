@@ -1,18 +1,7 @@
-import actions from './actions'
-import getters from './getters'
-import mutations from './mutations'
-
-const state = () => ({
+export const state = () => ({
   showedPeriods: 10,
   categoryModal: {
     id: null,
-    show: false
+    type: null
   }
 })
-
-export default {
-  state,
-  actions,
-  getters,
-  mutations
-}

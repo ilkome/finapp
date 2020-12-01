@@ -35,6 +35,7 @@ export default {
       this.$store.dispatch('filter/setFilterCategoryId', this.$store.state.trns.items[this.trnId].categoryId)
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
+      this.$store.commit('stat/setCategoryModal', { id: null, type: null })
       this.$store.dispatch('ui/setActiveTab', 'stat')
     },
     handleSetFilterWallet (id) {
@@ -42,6 +43,7 @@ export default {
       this.$store.dispatch('filter/setFilterWalletId', this.$store.state.trns.items[this.trnId].walletId)
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
+      this.$store.commit('stat/setCategoryModal', { id: null, type: null })
       this.$store.dispatch('ui/setActiveTab', 'stat')
     },
     handleDublicateTrn () {
@@ -49,12 +51,14 @@ export default {
       this.$store.dispatch('trnForm/openTrnForm', { action: 'duplicate', trnId })
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
+      this.$store.commit('stat/setCategoryModal', { id: null, type: null })
     },
     handleEditClick () {
       const trnId = this.trnId
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
+      this.$store.commit('stat/setCategoryModal', { id: null, type: null })
     },
     handleDeleteClick () {
       this.showModalConfirm = true

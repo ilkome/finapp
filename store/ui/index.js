@@ -14,7 +14,9 @@ const state = () => ({
     activeTab: 'incomes',
     averageStatVisibility: 'visible'
   },
-  width: 0
+
+  // Active tab for stat v2
+  activeTabViewName: 'incomes'
 })
 
 export default {

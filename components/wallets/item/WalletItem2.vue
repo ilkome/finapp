@@ -66,21 +66,23 @@ export default {
 </template>
 
 <style lang="stylus">
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .walletItemGrid
   overflow hidden
   cursor pointer
-  padding $m6 $m6
+  padding 14px $m7
   padding-top 0
   background var(--c-bg-3)
+  border 1px solid var(--c-bg-6)
+  border-top 0
   border-radius $m5
 
   &__line
     opacity 1
     height 4px
-    margin 0 (- $m6)
-    margin-bottom $m6
+    margin 0 (- $m7)
+    margin-bottom 14px
 
   &__name
     padding-bottom $m5

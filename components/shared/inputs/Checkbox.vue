@@ -60,8 +60,8 @@ label.checkbox(:class="{ _alt: alt }")
     font-size 1em
 
   &__input[type=checkbox]
-    position absolute
     opacity 0
+    position absolute
 
     &:checked
       + .checkbox__helper:before
@@ -69,8 +69,7 @@ label.checkbox(:class="{ _alt: alt }")
         box-shadow inset 0px 1px 1px background var(--c-bg-12)
         ^[0]._alt &
           background var(--c-bg-7)
-        /.light-mode &
-          background var(--c-bg-13)
+
       + .checkbox__helper:after
         animation switch .2s ease-out
         left var(--left)

@@ -37,6 +37,10 @@ export default {
     },
 
     addPeriodOrGroup () {
+      if (this.periods[this.filterPeriod].grouped) {
+        this.$store.commit('chart/toogleChartPeriodView', { periodName: this.filterPeriod })
+      }
+
       this.periods[this.filterPeriod].grouped
         ? this.$store.commit('chart/addElementsToChart', { periodName: this.filterPeriod, periodType: 'showedGroups' })
         : this.$store.commit('chart/addElementsToChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
@@ -44,6 +48,10 @@ export default {
     },
 
     removePeriodOrGroup () {
+      if (this.periods[this.filterPeriod].grouped) {
+        this.$store.commit('chart/toogleChartPeriodView', { periodName: this.filterPeriod })
+      }
+
       this.periods[this.filterPeriod].grouped
         ? this.$store.commit('chart/removeElementsFromChart', { periodName: this.filterPeriod, periodType: 'showedGroups' })
         : this.$store.commit('chart/removeElementsFromChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
@@ -57,7 +65,7 @@ export default {
     },
 
     saveChartsPeriodsToLocalStorage () {
-      localforage.setItem('finapp.chart.periods', this.periods)
+      localforage.setItem('finapp.chart.periods', this.$store.state.chart.periods)
       this.$store.dispatch('ui/saveUiView')
     }
   }
@@ -65,56 +73,67 @@ export default {
 </script>
 
 <template lang="pug">
-.switcher
-  .switcher__name(@click="toogleView") {{ Object.keys($store.getters['stat/statByPeriods']).length }} {{ $t(`dates.${periodName}.simple`) }}
+.chartMenu
+  //- .chartMenu__name(
+  //-   v-if="filterPeriod !== 'all'"
+  //-   @click="toogleView"
+  //- )
+  //- ) {{ $store.state.chart.periods[filterPeriod].showedPeriods }} {{ $t(`dates.${periodName}.simple`) }}
 
-  .switcher__content(:class="{ _active: visibleContextMenu}")
-    .switcher__item(
-      v-if="!visibleContextMenu"
-      @click="visibleContextMenu = !visibleContextMenu"
-    ): .mdi.mdi-dots-horizontal
+  .chartMenu__content
+    ContextMenu(
+      :position="{ right: '0px', top: '38px' }"
+      :visible="visibleContextMenu"
+      @onClickOpener="visibleContextMenu = !visibleContextMenu"
+    )
+      template(slot="opener")
+        Dropdown._noBd.date(:active="visibleContextMenu")
+          template(slot="title")
+            //- Date
+            //- .activrPeriodName {{ $t(`dates.${$store.state.filter.period}.simple`) }}
+      template(
+        slot="desc"
+        v-if="filterPeriod !== 'all'"
+      ) {{ $store.state.chart.periods[filterPeriod].showedPeriods }} {{ $t(`dates.${periodName}.simple`) }}
 
-    template(v-if="visibleContextMenu")
-      .switcher__item(
-        v-if="periodName !== 'year'"
-        @click="toogleView"
-      ) {{ $t('chart.view.toogle') }}
-      .switcher__item(
-        v-if="(periods[filterPeriod].grouped && periods[filterPeriod].showedGroups > 1) || (!periods[filterPeriod].grouped && periods[filterPeriod].showedPeriods > 1)"
-        @click="removePeriodOrGroup"
-      ) {{ $t('chart.view.remove') }}
-      .switcher__item(@click="addPeriodOrGroup") {{ $t('chart.view.add') }}
-      .switcher__item(
-        @click="visibleContextMenu = !visibleContextMenu"
-      ): .mdi.mdi-close
+      template(slot="content")
+        ContextMenuItem(
+          :title="$t('chart.view.remove')"
+          icon="mdi mdi-minus"
+          @onClick="removePeriodOrGroup"
+        )
+        ContextMenuItem(
+          :title="$t('chart.view.add')"
+          icon="mdi mdi-plus"
+          @onClick="addPeriodOrGroup"
+        )
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
-.switcher
-  overflow hidden
-  z-index 15
-  position relative
+.chartMenu
+  z-index 11
+  position absolute
+  right 0
+  bottom 8px
   display flex
   align-items center
   justify-content space-between
-  // padding 0 $m5
-  margin-bottom $m6
-  border-radius 8px 8px 0 0
-  border-bottom 1px solid var(--c-bg-4)
+  margin 0
+  padding 0 $m7
 
   &__name
     flex-grow 1
-    padding-left $m6
     color var(--c-font-5)
-    font-size 10px
+    font-size 8px
     text-transform uppercase
 
   &__content
     display flex
     align-items stretch
     justify-content stretch
+    width 32px
 
     &._active
       border-left 1px solid var(--c-bg-4)
@@ -128,8 +147,7 @@ export default {
     display flex
     align-items center
     justify-content center
-    min-width 48px
-    padding $m5 $m7
+    padding 0 $m6
     font-size 12px
     text-align center
 

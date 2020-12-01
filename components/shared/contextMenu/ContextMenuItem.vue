@@ -55,36 +55,32 @@ export default {
   cursor pointer
   display flex
   align-items center
-  height 50px
+  height 42px
+  margin $m4 $m4
   padding 0 $m6
   font-size 13px
   white-space nowrap
+  border-radius $m5
 
   @media $media-laptop
     height 38px
 
   &:active
-    background var(--c-bg-2)
-    /.light-mode &
-      background var(--c-bg-7)
+    background var(--c-bg-1)
 
   &:hover
     @media $media-laptop
       background var(--c-bg-2)
-      /.light-mode &
-        background var(--c-bg-7)
 
   &._selected
-    background var(--c-bg-4)
-    /.light-mode &
-      background var(--c-bg-4)
+    background var(--c-bg-5)
 
   &__icon
+    opacity .85
     width 24px
     margin-right $m6
     font-size 18px
     text-align center
-    opacity .85
 
   &__title
     color var(--c-font-3)

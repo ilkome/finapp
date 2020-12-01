@@ -13,8 +13,8 @@ export default {
 </template>
 
 <style lang="stylus">
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/animations"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/animations'
 
 .trnFormHeaderItem
   cursor pointer
@@ -33,8 +33,8 @@ export default {
 </style>
 
 <style lang="stylus">
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .trnFormHeader
   display grid
@@ -43,7 +43,4 @@ export default {
   grid-row-gap $m7
   padding $m7
   padding-top 0
-
-  /.light-mode &
-    background var(--c-bg-2)
 </style>
