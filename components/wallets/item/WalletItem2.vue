@@ -73,8 +73,7 @@ export default {
   cursor pointer
   padding 14px $m7
   padding-top 0
-  background var(--c-bg-3)
-  border 1px solid var(--c-bg-6)
+  background var(--c-bg-6)
   border-top 0
   border-radius $m5
 

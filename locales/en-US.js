@@ -44,7 +44,7 @@ export default {
   app: {
     update: {
       title: 'New version available',
-      text: 'Reload the app. Sometimes you need to reload few times. Don\'t worry you can still use the App'
+      text: 'Reload the app. Sometimes you need to reload few times.'
     },
     version: 'Version',
     desc: 'Powerful personal finance application',

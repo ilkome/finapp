@@ -63,9 +63,9 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/fonts"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables/fonts'
 
 .categoryItem
   overflow hidden
@@ -77,8 +77,7 @@ export default {
   justify-content center
   padding $m6
   color var(--c-font-1)
-  background var(--c-bg-3)
-  border 1px solid var(--c-bg-5)
+  background var(--c-bg-5)
   border-radius $m5
 
   &._flat

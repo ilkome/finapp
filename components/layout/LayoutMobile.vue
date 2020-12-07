@@ -289,7 +289,7 @@ export default {
             :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'chart'"
             :key="activeTabViewName + period + filterPeriod + $store.state.chart.periods[filterPeriod].showedPeriods + this.$store.state.filter.categoryId + this.$store.state.filter.walletId"
           )
-          ChartMenu2
+          //- ChartMenu2
 
         //- History
         //-----------------------------
@@ -305,7 +305,7 @@ export default {
               v-if="filterPeriod !== 'all'"
               v-show="activeTabViewName !== 'history'"
             )
-              ChartMenu2
+              //- ChartMenu2
               StatChartDonut2(
                 v-if="filterPeriod !== 'all'"
                 :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'chart'"
@@ -319,13 +319,9 @@ export default {
               .boxFlew2Item
                 PeriodCatsChart2(type="expenses")
 
-              .box._line(
-                v-if="statCurrentPeriod.expenses.categoriesIds.length > 1 && !this.$store.state.filter.categoryId"
-              )
-
             //- Period Selector
             //---------------------------
-            .box__nav._noMargin
+            .box__nav
               .menuDots(@click="isShowPeriodsNames = true")
                 .menuDots__name: Date(:type="2")
                 .menuDots__dots: .mdi.mdi-dots-vertical
@@ -443,7 +439,7 @@ export default {
           .page__wrap
             //- Color Line Chart
             //---------------------------
-            .box._line(
+            .statLine(
               v-if="statCurrentPeriod[activeTabStat].categoriesIds.length > 1 && !this.$store.state.filter.categoryId"
             )
               PeriodCatsChart2(:type="activeTabStat")
@@ -626,23 +622,26 @@ export default {
     width $m7
     height 100%
 
-.finapp .page__header
-  .filterRow
-    padding $m6
+// .finapp .page__header
+//   .filterRow
+//     padding $m6
 
-  .filterItem
-    padding $m6 $m5
+//   .filterItem
+//     padding $m6 $m5
+
+//   .trnItem._history
+//     margin-right (- $m6)
+//     margin-left (- $m6)
+//     padding-right $m7
+//     padding-left $m7
+
+// .finapp .page__content .dropdown._noBd
+//   margin 0 $m2 !important
+//   border-radius $m6
 
 .finapp .page__content .trnsList
-  .trnItem._history
-    margin-right (- $m6)
-    margin-left (- $m6)
-    padding-right $m7
-    padding-left $m7
-
-.finapp .page__content .dropdown._noBd
-  margin 0 $m2 !important
-  border-radius $m6
+  .trnsList__header
+    top 60px
 </style>
 
 <style lang="stylus" scoped>
@@ -659,6 +658,9 @@ export default {
     padding-left 4px
     color var(--c-font-2)
     font-size 16px
+
+.statLine
+  padding 0 $m7
 
 .boxFlew2
   display grid
@@ -847,9 +849,6 @@ $border = 1px
     ~/._header &
       font-weight 500
 
-  &:last-child
-    // padding-bottom 0
-
 .box2
   position relative
   margin $m7
@@ -870,9 +869,6 @@ $border = 1px
 
   &._disable
     opacity .2
-
-  &._last
-    //
 
 .activrPeriodName
   font-size 14px
@@ -929,7 +925,6 @@ $border = 1px
   &__title
   &__title2
     display flex
-    // display none
     align-items center
     padding-top $m5
     padding-bottom $m8
@@ -958,7 +953,8 @@ $border = 1px
     display flex
     justify-content center
     height 38px
-    margin-bottom $m3
+    margin-top $m4
+    margin-bottom $m4
     background var(--c-bg-4)
 
     &._noMargin

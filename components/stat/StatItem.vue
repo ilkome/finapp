@@ -99,7 +99,6 @@ export default {
       template(v-else)
         .statItem__trns
           TrnsList(
-            ui="stat"
             :incomes="type === 1"
             :expenses="type === 0"
             :categoryId="categoryId"

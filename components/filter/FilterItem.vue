@@ -76,11 +76,10 @@ export default {
   display flex
   flex-flow column
   justify-content center
-  padding-bottom $m3
 
   &__amount
     padding-top $m3
-    padding-bottom $m3
+    padding-bottom $m5
 
   &__line
     position absolute

@@ -28,12 +28,18 @@ export default {
     showCategory: {
       type: Boolean,
       default: false
+    },
+
+    isActive: {
+      type: Boolean,
+      default: false
     }
   },
 
   computed: {
     className () {
       return {
+        _active: this.isActive,
         _detailed: this.ui === 'detailed',
         _history: this.ui === 'history' || (this.ui === 'stat' && this.showCategory),
         _stat: this.ui === 'stat'
@@ -76,6 +82,7 @@ export default {
       const trnId = this.trnId
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
+      this.$emit('onClickEdit', this.trnId)
     }
   }
 }
@@ -84,8 +91,8 @@ export default {
 <template lang="pug">
 .trnItem(
   v-if="(category && wallet) || trn.type === 2"
-  @click="handleClick"
   :class="className"
+  @click="handleClick"
 )
   //- Transfer
   //---------------------------------------------------------------------------
@@ -289,16 +296,13 @@ export default {
     padding-right 0
     border-bottom $m2
 
-  &:active
+  +media-hover(true)
     &._history
     &._stat
       background var(--c-bg-5)
 
-  &:hover
-    &._history
-    &._stat
-      @media $media-laptop
-        background var(--c-bg-5)
+  &._active
+    background var(--c-bg-1)
 
   &__amount
     align-self center
@@ -398,7 +402,10 @@ export default {
     grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
     grid-column-gap $m7
     margin-top -1px
-    padding $m6 $m7
+    padding $m6 0
+
+    @media $media-laptop
+      padding $m6 $m7
 
     &:first-child
       margin-top 0

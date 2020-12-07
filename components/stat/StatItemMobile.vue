@@ -156,7 +156,6 @@ export default {
             :incomes="type === 1"
             :showCategory="showChildCategories"
             :size="5"
-            ui="stat"
           )
 </template>
 

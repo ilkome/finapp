@@ -38,9 +38,10 @@ export default {
 
   data () {
     return {
+      editedTrnId: null,
       pageNumber: 1,
       sortByEditDate: false,
-      filterBy: 'walletAndCategory'
+      filterBy: 'wallet'
     }
   },
 
@@ -126,7 +127,8 @@ export default {
       }, 100)
     },
 
-    onClickValue (slide) {
+    onClickEditTrn (id) {
+      this.editedTrnId = id
       this.slider.slideTo(0)
     }
   }
@@ -136,15 +138,10 @@ export default {
 <template lang="pug">
 .trnsList
   .switcherList
-    //- .switcher
-    //-   .switcher__content
-    //-     .switcher__item._icon(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }"): .mdi.mdi-history
-    //-     .switcher__item._icon(@click="changeFilter('wallet')" :class="{ _active: filterBy === 'wallet' }"): .mdi.mdi-poll
-
     .switcher
       .switcher__content
-        .switcher__item._text(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
         .switcher__item._text(@click="changeFilter('wallet')" :class="{ _active: filterBy === 'wallet' }") {{ $t('trnForm.filterWallet') }}
+        .switcher__item._text(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
         .switcher__item._text(@click="changeFilter('all')" :class="{ _active: filterBy === 'all' }") {{ $t('trnForm.filterAll') }}
 
   .container(v-if="trnsIds.length === 0") No transactions
@@ -156,11 +153,13 @@ export default {
         .trnsList__trns
           TrnItem(
             v-for="trnId in trnsIds"
+            :isActive="$store.state.trnForm.values.trnId && editedTrnId === trnId"
             :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
             :key="trnId"
             :trn="$store.state.trns.items[trnId]"
             :trnId="trnId"
             :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
+            @onClickEdit="onClickEditTrn"
           )
 
   .trnsList__pages(v-if="!isShowedAllTrns")
@@ -172,7 +171,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .container
   display flex
@@ -192,10 +191,13 @@ export default {
   align-items center
   justify-content center
   margin $m7
+  margin-bottom (- $m5)
   border-radius 12px
 
 .switcher
   position relative
+  position sticky
+  top 0
 
   &__content
     display flex
@@ -244,8 +246,6 @@ export default {
     grid-template-columns 1fr
     grid-column-gap 8px
     grid-row-gap 8px
-    padding 8px
-    padding-bottom 0
 
   &__day
     overflow hidden
@@ -278,7 +278,7 @@ export default {
     padding 0
     padding-bottom $m8
 
-    +media-laptop("less")
+    +media-laptop('less')
       padding $m7
       padding-bottom $m6
 </style>

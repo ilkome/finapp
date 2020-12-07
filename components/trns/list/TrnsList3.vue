@@ -163,7 +163,6 @@ export default {
 
   &__day
     padding $m7 0
-    // border-bottom 1px solid var(--c-bg-5)
 
     &:first-child
       padding-top 0
@@ -173,14 +172,14 @@ export default {
       border-bottom 0
 
   &__header
-    z-index 2
+    z-index 9
     opacity .95
     position sticky
     top 37px
     display flex
     align-items center
     justify-content space-between
-    padding $m3 $m3
+    padding $m3 0
     background var(--c-bg-4)
 
   &__pages

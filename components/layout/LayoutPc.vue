@@ -147,7 +147,6 @@ export default {
         margin-left (- $m8)
 
 .dashboardItems .categoryItem
-.dashboardItems .walletItemTile
   padding $m8
 </style>
 

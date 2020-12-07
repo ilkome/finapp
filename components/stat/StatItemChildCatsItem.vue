@@ -107,7 +107,10 @@ export default {
       padding $m6 $m6
 
   &__trns
-    padding 0 $m6 0 $m7
+    padding 0
+
+    @media $media-laptop
+      padding 0 $m6 0 $m7
 
   &__graph
     overflow hidden

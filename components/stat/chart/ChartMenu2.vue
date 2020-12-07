@@ -113,7 +113,7 @@ export default {
 @import '~assets/stylus/variables'
 
 .chartMenu
-  z-index 11
+  z-index 8
   position absolute
   right 0
   bottom 8px
