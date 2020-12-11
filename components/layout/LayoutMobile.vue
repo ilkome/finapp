@@ -101,13 +101,6 @@ export default {
     }
   },
 
-  mounted () {
-    const headerBlock = document.querySelector('.pageScrollerJsHeader')
-    if (headerBlock) {
-      this.headerBlockHeight = `${headerBlock.clientHeight}px`
-    }
-  },
-
   methods: {
     onClickTopMenu (tabViewName) {
       this.$store.dispatch('ui/setActiveTabViewName', tabViewName)
@@ -230,7 +223,7 @@ export default {
 
         //- Daily & History
         //-----------------------------------------------------------------------
-        .page__block.pageScrollerJsHeader
+        .page__block
           .box._nobd.boxSwitcher
             .switcher2._bg
               .switcher2__item(
@@ -417,7 +410,7 @@ export default {
 
             template(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
               .boxTitle {{ $t('trns.history') }}
-              .box(style="paddingTop: 0")
+              .box.boxStatTrns(style="paddingTop: 0")
                 TrnsList3(:size="10")
 
             //- Customize
@@ -494,7 +487,7 @@ export default {
 
             template(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
               .boxTitle {{ $t('trns.history') }}
-              .box(style="paddingTop: 0")
+              .box.boxStatTrns(style="paddingTop: 0")
                 TrnsList3(
                   :incomes="activeTabStat === 'incomes'"
                   :expenses="activeTabStat === 'expenses'"
@@ -622,24 +615,7 @@ export default {
     width $m7
     height 100%
 
-// .finapp .page__header
-//   .filterRow
-//     padding $m6
-
-//   .filterItem
-//     padding $m6 $m5
-
-//   .trnItem._history
-//     margin-right (- $m6)
-//     margin-left (- $m6)
-//     padding-right $m7
-//     padding-left $m7
-
-// .finapp .page__content .dropdown._noBd
-//   margin 0 $m2 !important
-//   border-radius $m6
-
-.finapp .page__content .trnsList
+.finapp .page__content .boxStatTrns .trnsList
   .trnsList__header
     top 60px
 </style>
@@ -746,7 +722,6 @@ $border = 1px
   position relative
   display flex
   align-items center
-  margin-bottom (- $m7)
   padding-top $m5
 
 .periodItem
@@ -758,7 +733,7 @@ $border = 1px
   min-width 50px
   padding 12px $m6
   color var(--c-font-5)
-  font-size 12px
+  font-size 10px
 
   &:active
     background var(--c-bg-5)
