@@ -1,4 +1,4 @@
-import { auth } from 'firebase/app'
+import firebase from 'firebase/app'
 import localforage from 'localforage'
 import dayjs from 'dayjs'
 
@@ -37,7 +37,7 @@ export default {
     if (this.$router.currentRoute.name !== 'login') {
       this.app.context.redirect('/login')
     }
-    auth().signOut()
+    firebase.auth().signOut()
   },
 
   async saveUserInfo ({ rootState }) {

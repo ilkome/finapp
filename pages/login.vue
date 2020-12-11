@@ -1,14 +1,8 @@
 <script>
-import { auth } from 'firebase/app'
+import firebase from 'firebase/app'
 
 export default {
   name: 'LoginPage',
-
-  fetch ({ store, redirect }) {
-    if (store.state.user && store.state.user.user) {
-      redirect('/')
-    }
-  },
 
   data () {
     return {
@@ -16,11 +10,17 @@ export default {
     }
   },
 
+  fetch ({ store, redirect }) {
+    if (store.state.user && store.state.user.user) {
+      redirect('/')
+    }
+  },
+
   methods: {
     signInWithGoogle () {
       this.loading = true
-      const provider = new auth.GoogleAuthProvider()
-      auth()
+      const provider = new firebase.auth.GoogleAuthProvider()
+      firebase.auth()
         .signInWithRedirect(provider)
         .catch(e => this.notifyAboutError(e))
     },

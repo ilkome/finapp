@@ -17,5 +17,4 @@ export const app = firebase.apps.length
   : firebase.initializeApp(config)
 
 export const db = app.database()
-export const auth = firebase.auth()
 export const TIMESTAMP = firebase.database.ServerValue.TIMESTAMP
