@@ -89,7 +89,7 @@ export default {
 
     transition(name="animation-tab")
       .dashboard__tab(v-if="$store.state.dashboard.activeTab === 'balance'")
-        StatChartDonut(v-if="$store.getters['trns/hasTrns']")
+        StatChartBalance(v-if="$store.getters['trns/hasTrns']")
         StatPc
 
     transition(name="animation-tab")

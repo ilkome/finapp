@@ -7,14 +7,12 @@ export default {
     type: 'column',
     zoomType: 'x',
     panning: true,
-    panKey: 'shift',
-    events: {
-      click (e) {
-        // console.log(this.series[0].searchPoint(e, true))
-      }
-    }
+    panKey: 'shift'
   },
+
+  title: { text: null },
   credits: { enabled: false },
+
   legend: {
     itemHiddenStyle: {
       fontWeight: 'normal',
@@ -29,21 +27,13 @@ export default {
       color: 'var(--c-font-4)'
     }
   },
+
   plotOptions: {
-    // series: {
-    //   allowPointSelect: true,
-    //   marker: {
-    //     states: {
-    //       select: {
-    //         enabled: true
-    //       }
-    //     }
-    //   }
-    // },
     areaspline: {
       fillOpacity: 0.3,
       borderWidth: 2
     },
+
     column: {
       groupPadding: 0.2,
       pointPadding: 0.1,
@@ -53,20 +43,83 @@ export default {
         borderRadiusTopRight: 5
       }
     },
+
     spline: {
       lineWidth: 2,
       states: {
         hover: {
           lineWidth: 2
         }
-      },
+      }
+    },
+
+    series: {
       marker: {
-        // enabled: false
+        radius: 3,
+        fillColor: 'var(--c-bg-4)',
+        lineWidth: 2,
+        lineColor: 'var(--c-incomes-1)',
+        symbol: 'circle'
+      },
+
+      dataLabels: {
+        enabled: true,
+        allowOverlap: false,
+        shadow: false,
+        color: 'var(--c-font-3)',
+        backgroundColor: 'var(--c-bg-15)',
+        align: 'center',
+        borderRadius: 3,
+        padding: 3,
+        y: -8,
+        style: {
+          textOutline: 'var(--c-bg-1)',
+          color: 'var(--c-bg-7)',
+          fontSize: '10px',
+          fontFamily: 'var(--font-secondary)',
+          fontWeight: 400,
+          textTransform: 'uppercase'
+        }
       }
     }
   },
-  series: [],
-  title: { text: null },
+
+  xAxis: {
+    categories: [],
+    lineColor: 'var(--c-bg-7)',
+    tickColor: 'var(--c-bg-7)',
+    tickmarkPlacement: 'on',
+    labels: {
+      padding: 15,
+      rotation: false,
+      style: {
+        cursor: 'pointer',
+        color: 'var(--c-font-5)',
+        fontSize: '10px',
+        fontFamily: 'var(--font-secondary)',
+        textTransform: 'uppercase'
+      }
+    },
+
+    crosshair: true
+  },
+
+  yAxis: {
+    cursor: 'pointer',
+    alternateGridColor: '',
+    gridLineColor: 'var(--c-bg-5)',
+    title: { text: null },
+    labels: {
+      style: {
+        cursor: 'pointer',
+        color: 'var(--c-font-5)',
+        fontSize: '12px',
+        fontFamily: 'var(--font-secondary)',
+        textTransform: 'uppercase'
+      }
+    }
+  },
+
   tooltip: {
     shared: true,
     animation: true,
@@ -87,47 +140,5 @@ export default {
         y: topHalf ? this.chart.plotTop + this.chart.plotHeight - labelHeight : this.chart.plotTop
       }
     }
-  },
-  xAxis: {
-    categories: [],
-    lineColor: 'var(--c-bg-7)',
-    tickColor: 'var(--c-bg-7)',
-    tickmarkPlacement: 'on',
-    labels: {
-      style: {
-        cursor: 'pointer',
-        color: 'var(--c-font-5)',
-        fontSize: '10px',
-        fontFamily: 'var(--font-secondary)',
-        textTransform: 'uppercase'
-      }
-    },
-    crosshair: true
-      // color: 'green'
-    // }
-    // plotBands: [{
-    //   color: 'orange', // Color value
-    //   from: 3.5, // Start of the plot band
-    //   to: 4.5 // End of the plot band
-    // }]
-  },
-  yAxis: {
-    cursor: 'pointer',
-    alternateGridColor: '',
-    gridLineColor: 'var(--c-bg-5)',
-    title: { text: null },
-    labels: {
-      style: {
-        cursor: 'pointer',
-        color: 'var(--c-font-5)',
-        fontSize: '12px',
-        fontFamily: 'var(--font-secondary)',
-        textTransform: 'uppercase'
-      }
-    },
-    // opposite: true,
-    // labels: {
-    //   align: 'left'
-    // }
   }
 }

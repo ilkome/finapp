@@ -4,11 +4,6 @@ export default {
 
   data () {
     return {
-      isShowModalMenu: false,
-      isScrollInited: false,
-      key: 0,
-      headerBlockHeight: 0,
-      period: 'daily',
       isShowPeriodsNames: false,
 
       periodsNames: [{
@@ -276,11 +271,10 @@ export default {
           v-if="filterPeriod !== 'all'"
           v-show="activeTabViewName !== 'history' && activeTabViewName !== 'chart'"
         )
-          StatChartDonut2(
+          StatChartLines(
             v-if="filterPeriod !== 'all'"
             :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'chart'"
             :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'chart'"
-            :key="activeTabViewName + period + filterPeriod + $store.state.chart.periods[filterPeriod].showedPeriods + this.$store.state.filter.categoryId + this.$store.state.filter.walletId"
           )
           //- ChartMenu2
 
@@ -299,11 +293,10 @@ export default {
               v-show="activeTabViewName !== 'history'"
             )
               //- ChartMenu2
-              StatChartDonut2(
+              StatChartLines(
                 v-if="filterPeriod !== 'all'"
                 :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'chart'"
                 :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'chart'"
-                :key="activeTabViewName + period + filterPeriod + $store.state.chart.periods[filterPeriod].showedPeriods + this.$store.state.filter.categoryId + this.$store.state.filter.walletId"
               )
 
             .boxFlew2

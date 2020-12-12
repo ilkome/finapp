@@ -120,12 +120,13 @@ export default {
 
       .statItem__inside(@click.stop="")
         .statItem__chart
-          StatChartDonut3(
+          StatChartLines(
             v-if="filterPeriod !== 'all'"
             :categoryId="categoryId"
-            :color="category.color"
-            :type="type"
-            :key="filterPeriod + $store.state.chart.periods[filterPeriod].showedPeriods + this.$store.state.filter.categoryId + this.$store.state.filter.walletId"
+            :chartColor="category.color"
+            :isShowExpenses="type === 0"
+            :isShowIncomes="type === 1"
+            chartType="column"
           )
 
         .statItem__date
@@ -168,7 +169,6 @@ export default {
   align-items center
   justify-content center
   flex-flow column
-  margin-top -38px
   margin-bottom -10px
 
 .categoryIcon
@@ -176,6 +176,7 @@ export default {
   display flex
   align-items center
   justify-content center
+  margin-top -38px
   padding-bottom 12px
 
 .statItem
@@ -233,7 +234,7 @@ export default {
   &__chart
     height 180px
     margin-bottom $m9
-    margin-left (- $m7)
+    // margin-left (- $m7)
 
   &__graph
     overflow hidden

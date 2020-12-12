@@ -3,6 +3,8 @@ import { Chart } from 'highcharts-vue'
 import chartOptions from '~/components/stat/chartOptions'
 
 export default {
+  name: 'StatChartBalance',
+
   components: {
     Chart
   },
