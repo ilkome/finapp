@@ -173,7 +173,6 @@ export default {
 
   &__header
     z-index 9
-    opacity .95
     position sticky
     top 37px
     display flex

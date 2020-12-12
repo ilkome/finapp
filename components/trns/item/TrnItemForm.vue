@@ -93,11 +93,11 @@ export default {
 
 .trnItem
   position relative
-  color var(--c-font-4)
   margin-top -1px
   padding-top 10px
   padding-right $m9
   padding-left $m9
+  color var(--c-font-4)
 
   &._active
     background var(--c-bg-1)

@@ -120,7 +120,7 @@ export default {
 </template>
 
 <style lang="stylus">
-@import "~assets/stylus/variables/margins"
+@import '~assets/stylus/variables/margins'
 
 .component__content-main
   .walllets.dashboardItems
@@ -133,8 +133,6 @@ export default {
 
     .walletItemGrid
       width 100%
-      // padding $m8
-      // padding-top 0
 
       &__name
         padding-bottom $m6
@@ -151,27 +149,27 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .layoutBg
   z-index 1
+  opacity .05
   position absolute
   top 0
   right 0
-  opacity .05
-  font-size 1000px
-  height 100%
   display flex
   align-items center
   justify-content center
+  height 100%
+  font-size 1000px
 
 .layout-formSideOpener
+  z-index 2
   cursor pointer
   opacity .3
-  z-index 2
   position fixed
-  right 0
   top 0
+  right 0
   width 50px
   height 100%
   anim-all()
@@ -185,27 +183,27 @@ export default {
     background var(--c-bg-8)
 
 .layout
-  position relative
   overflow hidden
+  position relative
   min-height 100%
 
   &__wrap
     overflow hidden
-    position relative
     z-index 2
-    min-height 100vh
+    position relative
     display grid
-    grid-template-columns 280px 1fr
+    min-height 100vh
     min-width 600px
     background var(--c-bg-2)
+    grid-template-columns 280px 1fr
 
     @media $media-xl
       border-right 1px solid var(--c-bg-1)
 
   &__item
+    overflow hidden
     position relative
     display grid
-    overflow hidden
 
 .dashboard
   &__title
@@ -222,19 +220,19 @@ export default {
   height 100%
 
 .createTrnBtn
-  cursor pointer
   z-index 5
-  display flex
-  align-items center
-  justify-content center
+  cursor pointer
   position absolute
   right $m8
   bottom $m8
-  padding $m7 $m8
+  display flex
+  align-items center
+  justify-content center
   width 60px
   height 60px
-  font-size 44px
+  padding $m7 $m8
   color var(--c-font-1)
+  font-size 44px
   background var(--c-blue-1)
   border-radius 50%
   anim()
@@ -243,10 +241,10 @@ export default {
     transform scale(1.2)
 
 .position
-  display grid
   position absolute
-  left 0
   top 0
+  left 0
+  display grid
   width 100%
   height 100%
 </style>

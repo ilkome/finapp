@@ -286,7 +286,6 @@ export default {
     flex-flow column
     align-items center
     justify-content center
-    margin-top -38px
     margin-bottom -10px
     text-align center
 
@@ -312,6 +311,7 @@ export default {
 
   &__categoryIcon
     ^[0]._detailed &
+      margin-top -38px
       padding-bottom 12px
 
   &__categoryName

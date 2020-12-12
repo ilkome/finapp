@@ -154,7 +154,6 @@ export default {
   align-items center
   justify-content center
   flex-flow column
-  margin-top -38px
   padding-bottom $m5
 
 .categoryIcon
@@ -162,5 +161,6 @@ export default {
   display flex
   align-items center
   justify-content center
+  margin-top -38px
   padding-bottom 12px
 </style>

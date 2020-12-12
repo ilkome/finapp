@@ -159,7 +159,6 @@ div
   align-items center
   justify-content center
   flex-flow column
-  margin-top -38px
   margin-bottom -10px
 
 .categoryIcon
@@ -167,5 +166,6 @@ div
   display flex
   align-items center
   justify-content center
+  margin-top -38px
   padding-bottom 12px
 </style>
