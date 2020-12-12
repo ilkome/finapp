@@ -15,6 +15,14 @@ export default {
         return true
       }
       return false
+    },
+
+    periods () {
+      return this.$store.state.chart.periods
+    },
+
+    filterPeriod () {
+      return this.$store.state.filter.period
     }
   }
 }
@@ -23,7 +31,11 @@ export default {
 <template lang="pug">
 .dashboard(v-show="$store.state.ui.activeTab === 'stat'")
   .dashboard__wrap(v-if="$store.state.ui.statGraphsVisibility === 'visible'")
-    StatChartsLine
+    .dashboard__chart
+      StatChartLines(
+        v-if="filterPeriod !== 'all'"
+        :chartType="periods[filterPeriod].grouped ? 'column' : 'line'"
+      )
 
   .chartBlock
     DashboardNav
@@ -98,7 +110,14 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
+
+.dashboard__chart
+  opacity .8
+  padding $m7 0
+
+  &:hover
+    opacity 1
 
 .chartBlock
   z-index 10
@@ -120,8 +139,8 @@ export default {
 
   &__tab
     position absolute
-    left 0
     top 0
+    left 0
     width 100%
     max-width 1100px
     padding-bottom 60px
@@ -131,31 +150,31 @@ export default {
       padding-top 30px
 
 .startSomething
-  padding 100px 0
   display flex
-  flex-flow column
   align-items center
   justify-content center
+  padding 100px 0
+  flex-flow column
 
   .options__item
     margin-bottom 40px
 
   .options__or
+    position relative
     display flex
     align-items center
     justify-content center
-    position relative
     padding $m9 0
-    text-align center
     color var(--c-font-4)
+    text-align center
     &__text
       position relative
       padding $m7
       background var(--c-bg-2)
     &__border
       position absolute
-      left 0
       top 50%
+      left 0
       width 100%
       height 1px
       background var(--c-bg-6)

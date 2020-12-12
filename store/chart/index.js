@@ -10,25 +10,25 @@ const state = () => ({
   periods: {
     day: {
       groupedBy: 'month',
-      showedGroups: 1,
+      showedGroups: 14,
       showedPeriods: 14,
       grouped: false
     },
     week: {
       groupedBy: 'month',
-      showedGroups: 3,
+      showedGroups: 6,
       showedPeriods: 6,
       grouped: false
     },
     month: {
       groupedBy: 'year',
-      showedGroups: 1,
+      showedGroups: 6,
       showedPeriods: 6,
       grouped: false
     },
     year: {
       groupedBy: 'year',
-      showedGroups: 2,
+      showedGroups: 3,
       showedPeriods: 3,
       grouped: false
     }

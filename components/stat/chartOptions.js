@@ -38,10 +38,7 @@ export default {
       groupPadding: 0.2,
       pointPadding: 0.1,
       borderWidth: 0,
-      column: {
-        borderRadiusTopLeft: 5,
-        borderRadiusTopRight: 5
-      }
+      maxPointWidth: 10
     },
 
     spline: {
@@ -130,15 +127,16 @@ export default {
     shadow: false,
     style: {
       color: 'var(--c-font-2)',
-      fontSize: '10px'
-    },
-    positioner (labelWidth, labelHeight, point) {
-      const leftHalf = point.plotX < (this.chart.plotWidth / 2)
-      const topHalf = point.plotY < (this.chart.plotHeight / 2)
-      return {
-        x: leftHalf ? this.chart.plotLeft + this.chart.plotWidth - labelWidth - 2 : this.chart.plotLeft,
-        y: topHalf ? this.chart.plotTop + this.chart.plotHeight - labelHeight : this.chart.plotTop
-      }
+      fontSize: '12px',
+      fontFamily: 'var(--font-roboto)'
     }
+    // positioner (labelWidth, labelHeight, point) {
+    //   const leftHalf = point.plotX < (this.chart.plotWidth / 2)
+    //   const topHalf = point.plotY < (this.chart.plotHeight / 2)
+    //   return {
+    //     x: leftHalf ? this.chart.plotLeft + this.chart.plotWidth - labelWidth - 2 : this.chart.plotLeft,
+    //     y: topHalf ? this.chart.plotTop + this.chart.plotHeight - labelHeight : this.chart.plotTop
+    //   }
+    // }
   }
 }

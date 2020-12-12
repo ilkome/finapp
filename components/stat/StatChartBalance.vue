@@ -68,7 +68,6 @@ export default {
       },
 
       chart: {
-        tooltip: false,
         backgroundColor: 'transparent',
         with: '100%',
         height: '40%',
@@ -146,22 +145,31 @@ export default {
       return {
         series: [{
           visible: true,
-          type: 'areaspline',
-          name: 'Balance',
-          color: '#c1c1c1',
-          data: totalData
-        }, {
-          visible: true,
           type: 'spline',
           name: 'Incomes',
           color: 'var(--c-incomes-1)',
-          data: incomesData
+          data: incomesData,
+          marker: {
+            lineColor: 'var(--c-incomes-1)'
+          }
         }, {
           visible: true,
           type: 'spline',
           name: 'Expenses',
           color: 'var(--c-expenses-1)',
-          data: expensesData
+          data: expensesData,
+          marker: {
+            lineColor: 'var(--c-expenses-1)'
+          }
+        }, {
+          visible: true,
+          type: 'areaspline',
+          name: 'Balance',
+          color: '#c1c1c1',
+          data: totalData,
+          marker: {
+            lineColor: '#c1c1c1'
+          }
         }],
         categories
       }

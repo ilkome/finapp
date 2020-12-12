@@ -34,7 +34,8 @@ export default {
       LayoutPcSidebar
 
     .layout__item
-      //- ThemeEditor
+      //- Dashboard
+      //------------------------------------------------
       transition(name="animation-tab")
         Dashboard
 
