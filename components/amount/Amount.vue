@@ -39,12 +39,18 @@ export default {
     isColorize: {
       type: Boolean,
       default: true
+    },
+
+    isAltColor: {
+      type: Boolean,
+      default: false
     }
   },
 
   computed: {
     className () {
       return {
+        _altColor: this.isAltColor,
         _expenses: this.isColorize && this.type === 0,
         _incomes: this.isColorize && this.type === 1,
         [`_${this.vertical}`]: this.vertical,
@@ -107,14 +113,17 @@ export default {
 
 .amount
   color var(--c-font-base)
+  typo-money()
+
+  &._altColor
+    /.light-mode &
+      color var(--c-font-1)
 
   &._incomes
     color var(--c-incomes-1)
 
   &._expenses
     color var(--c-expenses-1)
-
-  typo-money()
 
   @media $media-laptop
     font-size 16px

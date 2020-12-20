@@ -77,7 +77,7 @@ export default {
   justify-content center
   padding $m6
   color var(--c-font-1)
-  background var(--c-bg-5)
+  background var(--c-bg-6)
   border-radius $m5
 
   &._flat

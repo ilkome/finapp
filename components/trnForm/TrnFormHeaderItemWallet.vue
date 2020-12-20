@@ -18,9 +18,10 @@ export default {
   @click="$store.commit('trnForm/toogleTrnFormModal', 'wallets')"
 )
   WalletItem(
-    ui="tile"
     :id="$store.state.trnForm.values.walletId"
     :showBase="false"
+    :isAltColor="true"
+    ui="tile"
   )
 
   .trnFormHeaderItem__dots: .mdi.mdi-dots-vertical

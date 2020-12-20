@@ -264,11 +264,15 @@ export default {
     display flex
     align-items center
     justify-content space-between
-    padding 0 12px
-    padding-bottom 12px
+    padding 0 $m7
+    padding-bottom $m7
+
+  &__trns
+    padding 0 $m7
 
   &__pages
     padding 16px 8px
+    padding-top 0
 
     +media-laptop()
       padding 0

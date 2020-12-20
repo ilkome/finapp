@@ -19,7 +19,6 @@ export default {
       dateEnd: null,
       chartOptions: {
         ...chartOptions,
-        tooltip: false,
         chart: {
           events: {
             click (e) {
@@ -28,20 +27,6 @@ export default {
             }
           }
         }
-      }
-    }
-  },
-
-  computed: {
-    activeTab () {
-      return this.$store.state.dashboard.activeTab === 'balance'
-    }
-  },
-
-  watch: {
-    activeTab (isShow) {
-      if (isShow) {
-        // this.chartOptions.chart.redraw()
       }
     }
   },
@@ -144,7 +129,7 @@ export default {
 
       return {
         series: [{
-          visible: true,
+          visible: false,
           type: 'spline',
           name: 'Incomes',
           color: 'var(--c-incomes-1)',
@@ -153,7 +138,7 @@ export default {
             lineColor: 'var(--c-incomes-1)'
           }
         }, {
-          visible: true,
+          visible: false,
           type: 'spline',
           name: 'Expenses',
           color: 'var(--c-expenses-1)',

@@ -58,13 +58,13 @@ div(
   :style="styles"
   @click="handleClick"
 )
-
   //- tile
   template(v-if="ui === 'tile' || ui === 'line'")
     .walletItemTile__name {{ wallet.name }}
     .walletItemTile__amount
       Amount(
         :currency="wallet.currency"
+        :isAltColor="$attrs.isAltColor"
         :showBase="showBase"
         :value="wallet.total"
         alwaysShowSymbol
@@ -84,6 +84,7 @@ div(
       .walletItem__amount
         Amount(
           :currency="wallet.currency"
+          :isAltColor="$attrs.isAltColor"
           :value="wallet.total"
           alwaysShowSymbol
         )

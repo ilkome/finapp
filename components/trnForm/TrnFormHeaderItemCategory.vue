@@ -55,8 +55,9 @@ export default {
     text-align left
 
     .parent
+      opacity .8
       padding-bottom $m2
-      color var(--c-font-2)
+      color var(--c-font-1)
       font-size 12px
 
     .child

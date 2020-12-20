@@ -21,7 +21,7 @@ export default {
       this.loading = true
       const provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth()
-        .signInWithRedirect(provider)
+        .signInWithPopup(provider)
         .catch(e => this.notifyAboutError(e))
     },
 
