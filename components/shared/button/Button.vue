@@ -61,8 +61,8 @@ export default {
 </template>
 
 <style lang="stylus">
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/animations'
+@import '~assets/stylus/variables/media'
 
 .d-button-cirle
   display flex
@@ -93,10 +93,10 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/fonts"
+@import '~assets/stylus/variables/animations'
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables/fonts'
 
 .d-button
   cursor pointer
@@ -155,9 +155,9 @@ export default {
     border 1px solid var(--c-bg-5)
     &:hover
       @media $media-laptop
-        background var(--c-bg-5)
+        background var(--c-bg-4)
     &:active
-      background var(--c-bg-5)
+      background var(--c-bg-4)
 
   &._inline
     display flex

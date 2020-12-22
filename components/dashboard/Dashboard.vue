@@ -9,6 +9,7 @@ export default {
   computed: {
     isEmptyData () {
       const statCurrentPeriod = this.$store.getters['stat/statCurrentPeriod']
+      console.log(statCurrentPeriod)
       if (statCurrentPeriod.incomes.categoriesIds.length === 0 &&
           statCurrentPeriod.expenses.categoriesIds.length === 0 &&
           this.$store.getters['trns/selectedTrnsIdsWithDate'].length === 0) {
@@ -18,6 +19,7 @@ export default {
     },
 
     periods () {
+      console.log(this.$store.state.chart.periods)
       return this.$store.state.chart.periods
     },
 

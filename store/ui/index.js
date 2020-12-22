@@ -8,14 +8,13 @@ const state = () => ({
   mobile: false,
   pc: false,
   catsChart: 'visible',
+  catsChartPie: 'visible',
   statGraphsVisibility: 'visible',
   statItems: 'visible',
   stat: {
-    activeTab: 'incomes',
-    averageStatVisibility: 'visible'
+    activeTab: 'incomes'
   },
 
-  // Active tab for stat v2
   activeTabViewName: 'incomes'
 })
 

@@ -214,10 +214,10 @@ export default {
     periods: 'Общее',
     empty: 'Статистики по выбранным параметрам нет :)',
     customize: {
-      showPeriodsChart: 'Показывать график периодов',
-      averageStatVisibility: 'Показывать средниюю статистику',
       showCategorisChart: 'Показывать график категорий',
-      showCategorisList: 'Показывать список категорий'
+      showCategorisList: 'Показывать список категорий',
+      showcatsChartPie: 'Показывать статистику "пирог"',
+      showPeriodsChart: 'Показывать график периодов'
     }
   },
 

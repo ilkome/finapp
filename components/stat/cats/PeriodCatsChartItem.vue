@@ -85,7 +85,7 @@ export default {
   margin-top 12px
   margin-right 10px
   background var(--c-bg-5)
-  border-radius 3px
+  border-radius $m3
 
   &:hover
     @media $media-laptop
@@ -93,6 +93,9 @@ export default {
         margin -20px 0px -20px -10px
         padding 32px 10px 20px 10px
         background var(--c-bg-6)
+
+        /.light-mode &
+          background var(--c-bg-1)
 
   &__graph
     position relative

@@ -1,7 +1,4 @@
-import actions from './actions'
-import mutations from './mutations'
-
-const state = () => ({
+export const state = () => ({
   hoveredPeriod: {
     values: null,
     position: null
@@ -34,9 +31,3 @@ const state = () => ({
     }
   }
 })
-
-export default {
-  state,
-  actions,
-  mutations
-}

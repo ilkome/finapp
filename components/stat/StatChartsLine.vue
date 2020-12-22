@@ -199,10 +199,6 @@ export default {
               :maxAmountValue="maxAmountValue"
               :period="period"
               parentClassName=".charts__items")
-
-      //- popup
-      template(v-if="$store.state.ui.pc && $store.state.chart.hoveredPeriod.values")
-        ChartPopup
 </template>
 
 <style lang="stylus" scoped>

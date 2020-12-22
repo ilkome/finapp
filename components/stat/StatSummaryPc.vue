@@ -114,31 +114,25 @@ export default {
     padding $m3 $m9
     padding-right 0
 
-    @media $media-phone
-      border-bottom 1px solid var(--c-bg-5)
-
     @media $media-laptop
       flex 0 1 250px
       margin 0
       padding 0
 
     @media $media-pc
-      padding $m3 $m9
+      padding $m3 $m8
       padding-right 0
 
     &._expenses
-      @media $media-pc
-        border-left 2px solid rgba(200, 30, 50, .3)
+      border-left 2px solid rgba(200, 30, 50, .3)
 
     &._total
       align-self center
-      @media $media-pc
-        border-left 2px solid var(--c-bg-6)
+      border-left 2px solid var(--c-bg-6)
 
     &._incomes
       align-self end
-      @media $media-pc
-        border-left 2px solid rgba(44, 173, 34, .5)
+      border-left 2px solid rgba(44, 173, 34, .5)
 
   &__row
     flex-grow 0

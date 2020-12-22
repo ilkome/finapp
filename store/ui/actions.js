@@ -117,15 +117,15 @@ export default {
   },
 
   /**
-    * toogleAverageStatVisibility
+    * Toggle cats chart pie
   */
-  toogleAverageStatVisibility ({ commit, dispatch, state }) {
+  toogleVisibleCatsChartPie ({ commit, dispatch, state }) {
     let nextStatus
-    state.stat.averageStatVisibility === 'visible'
+    state.catsChartPie === 'visible'
       ? nextStatus = 'hidden'
       : nextStatus = 'visible'
 
-    commit('setAverageStatVisibility', nextStatus)
+    commit('setVisibleCatsChartPie', nextStatus)
     dispatch('ui/saveUiView', null, { root: true })
   },
 
@@ -170,11 +170,9 @@ export default {
         catsChart: rootState.ui.catsChart,
         period: rootState.filter.period,
         statGraphsVisibility: rootState.ui.statGraphsVisibility,
+        catsChartPie: rootState.ui.catsChartPie,
         statItems: rootState.ui.statItems,
-        totalChartPeriods: rootState.chart.periods,
-        stat: {
-          averageStatVisibility: rootState.ui.stat.averageStatVisibility
-        }
+        totalChartPeriods: rootState.chart.periods
       }
     })
 
@@ -207,23 +205,15 @@ export default {
         ? commit('setVisibleCatsChart', 'visible')
         : commit('setVisibleCatsChart', 'hidden')
 
+      // cats chart pie
+      localFilterUiItem.catsChartPie === 'visible'
+        ? commit('setVisibleCatsChartPie', 'visible')
+        : commit('setVisibleCatsChartPie', 'hidden')
+
       // cats items
       localFilterUiItem.statItems === 'visible'
         ? commit('setVisibilityStatItems', 'visible')
         : commit('setVisibilityStatItems', 'hidden')
-
-      // Average statistics
-      localFilterUiItem.stat.averageStatVisibility === 'visible'
-        ? commit('setAverageStatVisibility', 'visible')
-        : commit('setAverageStatVisibility', 'hidden')
-
-      // periods in total chart
-      const currentPeriodName = rootState.filter.period
-      const localPeriodValues = localFilterUiItem.totalChartPeriods[currentPeriodName]
-      commit('chart/setPeriodValues', {
-        periodName: currentPeriodName,
-        values: localPeriodValues
-      }, { root: true })
     }
   }
 }

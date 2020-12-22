@@ -87,7 +87,7 @@ export default {
       // diff periods from oldest trn and today
       const oldestTrnDate = this.$day(trns[this.$store.getters['trns/firstCreatedTrnId']].date).endOf(periodName)
       let periodsToShow = this.$day().endOf(periodName).diff(oldestTrnDate, periodName) + 1
-      periodsToShow = periodsToShow > 24 ? 24 : periodsToShow
+      periodsToShow = periodsToShow > 12 ? 12 : periodsToShow
 
       // get balance for first period
       const dateStart = this.$day().endOf(periodName).subtract(periodsToShow, periodName).valueOf()

@@ -50,9 +50,23 @@ export default {
       }
     },
 
+    pie: {
+      dataLabels: {
+        enabled: true,
+        distance: -30,
+        format: '<b>{point.name}</b><br>{point.y}',
+        filter: {
+          property: 'percentage',
+          operator: '>',
+          value: 4
+        }
+      },
+      startAngle: 270
+    },
+
     series: {
       marker: {
-        radius: 3,
+        radius: 2,
         fillColor: 'var(--c-bg-4)',
         lineWidth: 2,
         lineColor: 'var(--c-incomes-1)',

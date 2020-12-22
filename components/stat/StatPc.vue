@@ -16,8 +16,11 @@ export default {
     //------------------------------------------------
     .stat__item
       template(v-if="statCurrentPeriod.expenses.categoriesIds.length")
-        .stat__chart(v-if="$store.state.ui.catsChart === 'visible'")
+        .stat__chart(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
           PeriodCatsChart(type="expenses")
+
+        .stat__pie(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
+          StatChartPie(amountType="expenses")
 
         .stat__cats(v-if="$store.state.ui.statItems === 'visible'")
           StatItem(
@@ -36,8 +39,11 @@ export default {
     //------------------------------------------------
     .stat__item
       template(v-if="statCurrentPeriod.incomes.categoriesIds.length")
-        .stat__chart(v-if="$store.state.ui.catsChart === 'visible'")
+        .stat__chart(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
           PeriodCatsChart(type="incomes")
+
+        .stat__pie(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
+          StatChartPie(amountType="incomes")
 
         .stat__cats(v-if="$store.state.ui.statItems === 'visible'")
           StatItem(

@@ -9,10 +9,6 @@ export default {
       type: String,
       required: true
     },
-    checkValue: {
-      type: Boolean,
-      default: false
-    },
     selected: {
       type: Boolean,
       default: false
@@ -42,14 +38,13 @@ export default {
   :class="{ _selected: selected }")
   .item__icon(v-if="icon"): div(:class="icon")
   .item__title {{ title }}
-  .item__check(v-if="checkValue"): .mdi.mdi-check-circle-outline
   .item__check(v-if="showCheckbox" @click.prevent="")
     Checkbox._small(v-model="checkboxValue")
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .item
   cursor pointer

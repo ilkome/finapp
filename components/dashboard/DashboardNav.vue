@@ -96,8 +96,8 @@ export default {
             template(slot="content")
               ContextMenuItem(
                 :title="$t('stat.customize.showPeriodsChart')"
-                :showCheckbox="true"
                 :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
+                showCheckbox
                 icon="mdi mdi-chart-bar-stacked"
                 @onClick="toogleShowStatGraphs"
               )
@@ -105,17 +105,25 @@ export default {
               ContextMenuItem(
                 icon="mdi mdi-folder-star"
                 :title="$t('stat.customize.showCategorisChart')"
-                :showCheckbox="true"
                 :checkboxValue="$store.state.ui.catsChart === 'visible'"
+                showCheckbox
                 @onClick="toogleVisibleCatsChart"
               )
 
               ContextMenuItem(
                 :title="$t('stat.customize.showCategorisList')"
-                :showCheckbox="true"
                 :checkboxValue="$store.state.ui.statItems === 'visible'"
+                showCheckbox
                 icon="mdi mdi-chart-gantt"
                 @onClick="toogleVisibilityStatItems"
+              )
+
+              ContextMenuItem(
+                :checkboxValue="$store.state.ui.catsChartPie === 'visible'"
+                :title="$t('stat.customize.showcatsChartPie')"
+                showCheckbox
+                icon="mdi mdi-chart-pie"
+                @onClick="$store.dispatch('ui/toogleVisibleCatsChartPie')"
               )
 
               .context-menu-sep

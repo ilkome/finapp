@@ -77,6 +77,9 @@ export default {
 .context-menu-sep
   height 1px
   background var(--c-bg-4)
+
+  /.light-mode &
+    background var(--c-bg-6)
 </style>
 
 <style lang="stylus" scoped>
@@ -108,6 +111,10 @@ export default {
     border 1px solid var(--c-bg-6)
     border-radius $m6
     box-shadow 0 10px 20px -5px var(--c-bg-1)
+
+    /.light-mode &
+      background var(--c-bg-3)
+      border 1px solid var(--c-bg-5)
 
     &._right
       right 0

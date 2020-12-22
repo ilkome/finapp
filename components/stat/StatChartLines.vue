@@ -38,6 +38,11 @@ export default {
     amountType: {
       type: String,
       default: null
+    },
+
+    isShowDataLabels: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -195,6 +200,10 @@ export default {
           ...chartOptions.plotOptions,
           series: {
             ...chartOptions.plotOptions.series,
+            dataLabels: {
+              ...chartOptions.plotOptions.series.dataLabels,
+              enabled: this.isShowDataLabels
+            },
             cursor: 'pointer',
             point: {
               events: {
@@ -219,11 +228,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/animations'
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/fonts'
-@import '~assets/stylus/variables/media'
-
 .chart
   z-index 3
   position relative

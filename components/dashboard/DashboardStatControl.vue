@@ -43,20 +43,14 @@ export default {
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
-$background = var(--c-bg-3)
-$border = var(--c-bg-1)
-$text = var(--c-font-4)
-$text-active = var(--c-font-1)
-$text-disable = var(--c-font-5)
-
 .component
-  background $background
+  background var(--c-bg-3)
 
   &__wrap
     display grid
     grid-template-columns repeat(2, 1fr)
     max-width 1100px
-    padding 16px 60px
+    padding 0 60px
 
 .tabs
   display flex
@@ -67,18 +61,25 @@ $text-disable = var(--c-font-5)
   cursor pointer
   display flex
   align-items center
-  margin-right 30px
-  color $text
+  margin-right $m7
+  padding $m6
+  color var(--c-font-4)
   font-size 16px
+  border-bottom 1px solid transparent
   anim()
 
   &:last-child
     margin-right 0
 
   &._active
+    border-bottom-color var(--c-blue-1)
+
+  &._active
   &:hover
-    color $text-active
+    color var(--c-font-2)
 
   &._disable
-    color $text-disable
+    cursor default
+    opacity .3
+    color var(--c-font-5)
 </style>

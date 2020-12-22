@@ -192,7 +192,7 @@ export default {
 
     //- Categories
     //---------------------------------------------------------------------------
-    template(v-if="activeTabViewName === 'wallets'")
+    template(v-if="activeTabViewName === 'categories'")
       ComponentWrap(:contentPadding="false")
         template(slot="headerLeft") {{ $t('categories.name') }}
 
@@ -242,7 +242,9 @@ export default {
 
         //- Chart Nav
         //-----------------------------
-        .box._periods
+        .box._periods(
+          v-if="activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses'"
+        )
           .periods
             .periodItem(
               v-if="filterPeriod !== 'all'"
@@ -276,11 +278,25 @@ export default {
             :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'chart'"
             :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'chart'"
           )
-          //- ChartMenu2
 
         //- History
         //-----------------------------
         template(v-if="activeTabViewName === 'history'")
+          .box__nav
+            .tabItem(
+              :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
+              @click="$store.dispatch('filter/setPeriodNext')"
+            ): .mdi.mdi-chevron-left
+
+            .menuDots(@click="isShowPeriodsNames = true")
+              .menuDots__name: Date(:type="2")
+              .menuDots__dots: .mdi.mdi-dots-vertical
+
+            .tabItem(
+              :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isFirstPeriodSelected'] }"
+              @click="$store.dispatch('filter/setPeriodPrev')"
+            ): .mdi.mdi-chevron-right
+
           .box
             TrnsList3
 
@@ -292,7 +308,6 @@ export default {
               v-if="filterPeriod !== 'all'"
               v-show="activeTabViewName !== 'history'"
             )
-              //- ChartMenu2
               StatChartLines(
                 v-if="filterPeriod !== 'all'"
                 :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'chart'"
@@ -301,16 +316,26 @@ export default {
 
             .boxFlew2
               .boxFlew2Item
-                PeriodCatsChart2(type="incomes")
+                PeriodCatsChartMobile(type="incomes")
               .boxFlew2Item
-                PeriodCatsChart2(type="expenses")
+                PeriodCatsChartMobile(type="expenses")
 
             //- Period Selector
             //---------------------------
             .box__nav
+              .tabItem(
+                :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
+                @click="$store.dispatch('filter/setPeriodNext')"
+              ): .mdi.mdi-chevron-left
+
               .menuDots(@click="isShowPeriodsNames = true")
                 .menuDots__name: Date(:type="2")
                 .menuDots__dots: .mdi.mdi-dots-vertical
+
+              .tabItem(
+                :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isFirstPeriodSelected'] }"
+                @click="$store.dispatch('filter/setPeriodPrev')"
+              ): .mdi.mdi-chevron-right
 
             //- Filter
             //---------------------------
@@ -341,9 +366,14 @@ export default {
 
               //- Cats incomes
               //---------------------------
-              .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 0")
+              .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
                 .box__content
                   PeriodCatsChart(type="incomes")
+
+              //- Pie chart
+              .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
+                .box__content
+                  StatChartPie(amountType="incomes")
 
               //- Stat incomes
               //---------------------------
@@ -383,9 +413,14 @@ export default {
               .boxEmpty(v-if="statCurrentPeriod.expenses.categoriesIds.length === 0") {{ $t('stat.empty') }}
 
               //---------------------------
-              .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 0")
+              .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
                 .box__content
                   PeriodCatsChart(type="expenses")
+
+              //- Pie chart
+              .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
+                .box__content
+                  StatChartPie(amountType="expenses")
 
               //---------------------------
               .box._stat(v-if="$store.state.ui.statItems === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 0")
@@ -406,19 +441,6 @@ export default {
               .box.boxStatTrns(style="paddingTop: 0")
                 TrnsList3(:size="10")
 
-            //- Customize
-            //---------------------------
-            .box._periods
-              .periods
-                .periodItem(
-                  @click="$store.dispatch('ui/toogleVisibleCatsChart')"
-                  :class="{ _active: $store.state.ui.catsChart === 'visible' }"
-                ) {{ $t('stat.customize.showCategorisChart') }}
-                .periodItem(
-                  :class="{ _active: $store.state.ui.statItems === 'visible' }"
-                  @click="$store.dispatch('ui/toogleVisibilityStatItems')"
-                ) {{ $t('stat.customize.showCategorisList') }}
-
         //- Stat
         //-----------------------------------------------------------------------
         template(v-if="activeTabViewName === 'incomes' || activeTabViewName === 'expenses'")
@@ -428,7 +450,7 @@ export default {
             .statLine(
               v-if="statCurrentPeriod[activeTabStat].categoriesIds.length > 1 && !this.$store.state.filter.categoryId"
             )
-              PeriodCatsChart2(:type="activeTabStat")
+              PeriodCatsChartMobile(:type="activeTabStat")
 
             //- Period Selector
             //---------------------------
@@ -461,9 +483,14 @@ export default {
 
             .boxEmpty(v-if="statCurrentPeriod[activeTabStat].categoriesIds.length === 0") {{ $t('stat.empty') }}
 
-            .box(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod[activeTabStat].categoriesIds.length > 0")
+            .box(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod[activeTabStat].categoriesIds.length > 1")
               .box__content
                 PeriodCatsChart(:type="activeTabStat")
+
+            //- Pie chart
+            .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod[activeTabStat].categoriesIds.length > 1")
+              .box__content
+                StatChartPie(:amountType="activeTabStat")
 
             .box(v-if="$store.state.ui.statItems === 'visible' && statCurrentPeriod[activeTabStat].categoriesIds.length > 0")
               .box__content
@@ -478,7 +505,7 @@ export default {
                   :type="activeTabStat === 'incomes' ? 1 : 0"
                 )
 
-            template(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
+            template(v-if="statCurrentPeriod[activeTabStat].categoriesIds.length > 0")
               .boxTitle {{ $t('trns.history') }}
               .box.boxStatTrns(style="paddingTop: 0")
                 TrnsList3(
@@ -486,17 +513,6 @@ export default {
                   :expenses="activeTabStat === 'expenses'"
                   :size="10"
                 )
-
-            .box._periods
-              .periods
-                .periodItem(
-                  @click="$store.dispatch('ui/toogleVisibleCatsChart')"
-                  :class="{ _active: $store.state.ui.catsChart === 'visible' }"
-                ) {{ $t('stat.customize.showCategorisChart') }}
-                .periodItem(
-                  :class="{ _active: $store.state.ui.statItems === 'visible' }"
-                  @click="$store.dispatch('ui/toogleVisibilityStatItems')"
-                ) {{ $t('stat.customize.showCategorisList') }}
 
   .layoutMobile__menu.pageScrollerJsMenu
     LayoutMobileMenu
@@ -514,6 +530,8 @@ export default {
     @onClose="isShowPeriodsNames = false"
   )
 
+  //- Base Menu
+  //-----------------------------------
   Portal(
     v-if="activeTab === 'menu'"
     to="modal"
@@ -522,9 +540,29 @@ export default {
       key="menu"
       @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
     )
-      Menu
-
+      BaseMenu
       .context-menu-sep
+
+      template(v-if="activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses'")
+        ContextMenuItem(
+          :checkboxValue="$store.state.ui.catsChart === 'visible'"
+          :title="$t('stat.customize.showCategorisChart')"
+          showCheckbox
+          @onClick="$store.dispatch('ui/toogleVisibleCatsChart')"
+        )
+        ContextMenuItem(
+          :checkboxValue="$store.state.ui.statItems === 'visible'"
+          :title="$t('stat.customize.showCategorisList')"
+          showCheckbox
+          @onClick="$store.dispatch('ui/toogleVisibilityStatItems')"
+        )
+        ContextMenuItem(
+          :checkboxValue="$store.state.ui.catsChartPie === 'visible'"
+          :title="$t('stat.customize.showcatsChartPie')"
+          showCheckbox
+          @onClick="$store.dispatch('ui/toogleVisibleCatsChartPie')"
+        )
+        .context-menu-sep
 
       ContextMenuItem(
         :title="$t('theme.change')"
@@ -616,6 +654,9 @@ export default {
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
+.context-menu-sep
+  background var(--c-bg-1)
+
 .menuDots
   cursor pointer
   display flex
@@ -700,13 +741,6 @@ export default {
 .boxSwitcher
   max-width 640px
   margin 0 auto
-
-  .switcher2
-    .switcher2__item
-      +media-tablet()
-        padding $m7 $m6
-        font-size 14px
-        font-weight 400
 
 $border = 1px
 
@@ -862,9 +896,6 @@ $border = 1px
   padding-bottom $m9
   background var(--c-bg-4)
 
-  +media-tablet()
-    border-bottom 0
-
   &._stat
     padding-top $m6
 
@@ -919,10 +950,12 @@ $border = 1px
     position sticky
     top 0
     display flex
-    justify-content center
+    align-items center
+    justify-content space-between
     height 38px
     margin-top $m4
     margin-bottom $m4
+    padding 0 $m7
     background var(--c-bg-4)
 
     &._noMargin
@@ -956,14 +989,6 @@ $border = 1px
     overflow-y auto
     scrollbar()
     height 100%
-
-  &__grid
-    +media-tablet()
-      display grid
-      grid-template-columns repeat(auto-fill, minmax(300px, 1fr))
-      grid-column-gap 40px
-      grid-row-gap 40px
-      padding 40px
 
   &__block
     z-index 10
@@ -1007,11 +1032,6 @@ $border = 1px
     padding-bottom $m5
     background var(--c-bg-3)
 
-    +media-tablet()
-      max-width 500px
-      margin 0 auto
-      padding $m8 0
-
   &__nav
     border-top 1px solid var(--c-bg-6)
     border-bottom 1px solid var(--c-bg-6)
@@ -1051,4 +1071,33 @@ $border = 1px
     color var(--c-font-3)
     background none
     border-bottom $border solid var(--c-blue-1)
+
+.tabItem
+  cursor pointer
+  display flex
+  align-items center
+  margin-right $m7
+  padding $m6
+  color var(--c-font-4)
+  font-size 16px
+  border-bottom 1px solid transparent
+  border-radius $m5
+  anim()
+
+  &:last-child
+    margin-right 0
+
+  &._active
+    color var(--c-font-2)
+    border-bottom-color var(--c-blue-1)
+
+  +media-hover()
+    &:not(._disable)
+      color var(--c-font-2)
+      background var(--c-bg-6)
+
+  &._disable
+    cursor default
+    opacity .3
+    color var(--c-font-5)
 </style>

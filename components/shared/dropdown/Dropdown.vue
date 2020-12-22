@@ -27,8 +27,8 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .dropdown
 .dropdown.d-button-cirle
@@ -36,17 +36,28 @@ export default {
   display flex
   align-items stretch
   width auto
-  padding 0 12px
   margin-left auto
-  border-radius $m3
-  font-size 16px
+  padding 0 12px
+  color var(--c-font-4)
+  font-size 13px
+  background transparent
+  border 1px solid var(--c-bg-5)
+  border-radius $m5
+
+  &:active:not(._disable)
+    color var(--c-font-3)
+
+  +media-laptop()
+    &:hover
+      background var(--c-bg-4)
 
   &._noBd
-    padding 0 12px
     margin 0 -12px
+    padding 0 12px
+    font-size 16px
     background transparent
-    border-color transparent
     box-shadow none
+    border-color transparent
 
     &:hover:not(._disable)
       @media $media-laptop
@@ -62,26 +73,26 @@ export default {
     align-items center
 
   &__icon
+    opacity .6
     display flex
     align-items center
     justify-content center
-    font-size 18px
     margin-right 6px
-    opacity .6
+    font-size 18px
 
   &__title
-    flex-grow 1
-    white-space nowrap
     justify-content flex-start
     padding-right 12px
+    flex-grow 1
+    white-space nowrap
 
   &__toogle
     opacity .8
     justify-content center
     width 2px
-    flex-grow 0
     font-size 15px
     transform translateY(1px)
+    flex-grow 0
 
     div
       anim-all()

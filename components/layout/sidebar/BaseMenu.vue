@@ -1,5 +1,7 @@
 <script>
 export default {
+  name: 'BaseMenu',
+
   computed: {
     activeTab () {
       return this.$store.state.ui.activeTab
@@ -110,11 +112,6 @@ item-bg-active()
   background var(--c-bg-6)
 
 .menu
-  border-bottom 1px solid var(--c-bg-2)
-
-  &:last-child
-    border-bottom 0
-
   &__wallets
     padding-top $m8
 

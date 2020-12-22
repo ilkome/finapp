@@ -58,7 +58,10 @@ export default {
     const periodName = rootState.filter.period
     if (periodName === 'all') { return }
 
-    const oldestTrnDate = dayjs(trns[rootGetters['trns/firstCreatedTrnId']].date).endOf(periodName)
+    const oldestTrn = trns[rootGetters['trns/firstCreatedTrnId']]
+    if (!oldestTrn) { return }
+
+    const oldestTrnDate = dayjs(oldestTrn.date).endOf(periodName)
     let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
     periodsToShow = rootState.chart.periods[periodName].showedPeriods >= periodsToShow ? periodsToShow : rootState.chart.periods[periodName].showedPeriods
 

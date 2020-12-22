@@ -212,10 +212,10 @@ export default {
     balanceTitle: 'Balance',
     empty: 'No stat for this period',
     customize: {
-      showPeriodsChart: 'Show periods chart',
       showCategorisChart: 'Show categories chart',
-      averageStatVisibility: 'Show average statistics',
-      showCategorisList: 'Show categories list'
+      showCategorisList: 'Show categories list',
+      showcatsChartPie: 'Show categories pie chart',
+      showPeriodsChart: 'Show periods chart'
     }
   },
 

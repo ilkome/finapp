@@ -102,6 +102,7 @@ export default {
             :incomes="type === 1"
             :expenses="type === 0"
             :categoryId="categoryId"
+            ui="stat"
           )
 </template>
 

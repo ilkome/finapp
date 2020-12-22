@@ -132,12 +132,9 @@ export default {
     * and add them to database
   */
   uploadOfflineTrns ({ dispatch, rootState }) {
-    console.log('uploadOfflineTrns')
     db.ref('.info/connected').on('value', async (snap) => {
-      // const isConnected = snap.val()
-      const isConnected = true
+      const isConnected = snap.val()
       if (isConnected) {
-        console.log('isConnected')
         const trnsArrayForDelete = await localforage.getItem('finapp.trns.offline.delete') || []
         const trnsItemsForUpdate = await localforage.getItem('finapp.trns.offline.update') || {}
 

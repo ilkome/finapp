@@ -48,31 +48,38 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/scroll"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/fonts'
+@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables/scroll'
 
 .chart-popup
   z-index 2
-  display block
   position absolute
   bottom 0px
+  display block
   padding $m6 $m8
-  white-space nowrap
   background var(--c-bg-6)
   border-radius $m4
   transform translate(-50%, calc(100% + 40px))
+  white-space nowrap
+
+  /.light-mode &
+    background var(--c-bg-1)
+    border 1px solid var(--c-bg-5)
 
   &:after
     position absolute
-    left 50%
     top -8px
-    content ""
+    left 50%
+    transform translateX(-50%)
+    content ''
     border-left 8px solid transparent
     border-right 8px solid transparent
     border-bottom 8px solid var(--c-bg-6)
-    transform translateX(-50%)
+
+    /.light-mode &
+      border-bottom-color var(--c-bg-5)
 
   &__name
     padding-bottom $m5

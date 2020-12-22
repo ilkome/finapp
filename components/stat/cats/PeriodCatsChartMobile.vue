@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'PeriodCatsChart2',
+  name: 'PeriodCatsChartMobile',
 
   props: {
     type: {

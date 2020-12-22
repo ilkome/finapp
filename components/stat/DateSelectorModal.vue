@@ -72,6 +72,8 @@ Portal(
 </template>
 
 <style lang="stylus" scoped>
+@import '~assets/stylus/variables'
+
 .ta_center
   display flex
   align-items center
@@ -80,7 +82,7 @@ Portal(
 
 .grid
   display grid
-  grid-template-columns repeat(auto-fit, minmax(75px, 1fr))
-  grid-column-gap 0
+  grid-template-columns repeat(auto-fit, minmax(100px, 1fr))
+  grid-column-gap $m7
   grid-row-gap $m7
 </style>

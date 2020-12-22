@@ -32,8 +32,6 @@ export default {
       </script>
       <noscript><div><img src="https://mc.yandex.ru/watch/49428823" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
       <!-- /Yandex.Metrika counter -->
-
-      <!-- Hotjar Tracking Code for https://finapp.ilko.me -->
     </client-only>
   </div>
 </template>

@@ -31,8 +31,8 @@ export default {
     state.catsChart = status
   },
 
-  setAverageStatVisibility (state, status) {
-    state.stat.averageStatVisibility = status
+  setVisibleCatsChartPie (state, status) {
+    state.catsChartPie = status
   },
 
   setVisibilityStatItems (state, status) {

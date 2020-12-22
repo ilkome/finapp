@@ -1,8 +1,15 @@
 <script>
 import debounce from '~/utils/debounce'
+import isTouchDevice from '~/assets/js/isTouchDevice'
 
 export default {
   name: 'DefaultLayout',
+
+  data () {
+    return {
+      isTouchDevice: false
+    }
+  },
 
   computed: {
     layoutStyles () {
@@ -15,6 +22,8 @@ export default {
   },
 
   async mounted () {
+    this.isTouchDevice = isTouchDevice()
+
     this.getPageDimensions()
     window.addEventListener('resize', debounce(this.getPageDimensions, 600))
 
@@ -45,7 +54,10 @@ export default {
 </script>
 
 <template lang="pug">
-.finapp(:style="layoutStyles")
+.finapp(
+  :class="{ isNotTouchDevice: !isTouchDevice }"
+  :style="layoutStyles"
+)
   //- Loading
   template(v-if="!$store.state.app.status.ready")
     Loader
