@@ -9,13 +9,6 @@ export default {
 
     statAverage () {
       return this.$store.getters['stat/statAverage']
-    },
-
-    daysLeft () {
-      const filterDate = this.$store.state.filter.date
-      const filterPeriod = this.$store.state.filter.period
-      console.log(filterDate, filterPeriod)
-      return null
     }
   }
 }
@@ -42,12 +35,6 @@ export default {
       :amount="statAverage.total"
       :name="$t('money.averageTotal')"
     )
-
-    //- SummaryRowItem(
-    //-   v-if="statAverage.expenses !== 0"
-    //-   :amount="statAverage.expenses - statCurrentPeriod.expenses.total"
-    //-   :name="(statAverage.expenses - statCurrentPeriod.expenses.total) > 0 ? 'Сохранено' : 'Перерасход'"
-    //- )
 </template>
 
 <style lang="stylus" scoped>

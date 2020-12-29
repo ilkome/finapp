@@ -115,6 +115,7 @@ export default {
         min-width $m9
 
   &__popup
+    z-index 5
     position absolute
     left 0
     bottom $m9

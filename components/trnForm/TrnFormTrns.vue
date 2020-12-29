@@ -194,6 +194,9 @@ export default {
   margin-bottom (- $m5)
   border-radius 12px
 
+  +media-laptop()
+    margin-bottom $m7
+
 .switcher
   position relative
   position sticky

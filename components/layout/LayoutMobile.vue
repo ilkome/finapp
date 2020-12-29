@@ -130,24 +130,12 @@ export default {
     },
 
     addPeriodOrGroup () {
-      if (this.periods[this.filterPeriod].grouped) {
-        this.$store.commit('chart/toogleChartPeriodView', { periodName: this.filterPeriod })
-      }
-
-      this.periods[this.filterPeriod].grouped
-        ? this.$store.commit('chart/addElementsToChart', { periodName: this.filterPeriod, periodType: 'showedGroups' })
-        : this.$store.commit('chart/addElementsToChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
+      this.$store.commit('chart/addElementsToChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
       this.saveChartsPeriodsToLocalStorage()
     },
 
     removePeriodOrGroup () {
-      if (this.periods[this.filterPeriod].grouped) {
-        this.$store.commit('chart/toogleChartPeriodView', { periodName: this.filterPeriod })
-      }
-
-      this.periods[this.filterPeriod].grouped
-        ? this.$store.commit('chart/removeElementsFromChart', { periodName: this.filterPeriod, periodType: 'showedGroups' })
-        : this.$store.commit('chart/removeElementsFromChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
+      this.$store.commit('chart/removeElementsFromChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
       this.saveChartsPeriodsToLocalStorage()
     },
 
@@ -455,9 +443,19 @@ export default {
             //- Period Selector
             //---------------------------
             .box__nav
+              .tabItem(
+                :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
+                @click="$store.dispatch('filter/setPeriodNext')"
+              ): .mdi.mdi-chevron-left
+
               .menuDots(@click="isShowPeriodsNames = true")
                 .menuDots__name: Date(:type="2")
                 .menuDots__dots: .mdi.mdi-dots-vertical
+
+              .tabItem(
+                :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isFirstPeriodSelected'] }"
+                @click="$store.dispatch('filter/setPeriodPrev')"
+              ): .mdi.mdi-chevron-right
 
             //- Filter
             //---------------------------
@@ -658,6 +656,7 @@ export default {
   background var(--c-bg-1)
 
 .menuDots
+  flex-grow 1
   cursor pointer
   display flex
   align-items center

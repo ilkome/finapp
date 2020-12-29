@@ -9,7 +9,7 @@ export default {
     * @return {Number} return[date].expenses
     * @return {Number} return[date].total
   */
-  statAverage (state, getters, rootState) {
+  statAverage (state, getters) {
     const statPeriods = getters.statByPeriods
 
     let incomes = 0

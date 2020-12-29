@@ -26,16 +26,12 @@ export default {
 
   methods: {
     addPeriodOrGroup () {
-      this.periods[this.filterPeriod].grouped
-        ? this.$store.commit('chart/addElementsToChart', { periodName: this.filterPeriod, periodType: 'showedGroups' })
-        : this.$store.commit('chart/addElementsToChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
+      this.$store.commit('chart/addElementsToChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
       this.saveChartsPeriodsToLocalStorage()
     },
 
     removePeriodOrGroup () {
-      this.periods[this.filterPeriod].grouped
-        ? this.$store.commit('chart/removeElementsFromChart', { periodName: this.filterPeriod, periodType: 'showedGroups' })
-        : this.$store.commit('chart/removeElementsFromChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
+      this.$store.commit('chart/removeElementsFromChart', { periodName: this.filterPeriod, periodType: 'showedPeriods' })
       this.saveChartsPeriodsToLocalStorage()
     },
 
@@ -82,13 +78,11 @@ ContextMenu(
     )
 
     ContextMenuItem(
-      v-if="(periods[filterPeriod].grouped && periods[filterPeriod].showedGroups > 1) || (!periods[filterPeriod].grouped && periods[filterPeriod].showedPeriods > 1)"
+      v-if="periods[filterPeriod].showedPeriods > 1"
       icon="mdi mdi-minus"
       :title="$t('chart.view.removePeriodButton')"
       @onClick="removePeriodOrGroup"
     )
 
-  template(slot="desc")
-    template(v-if="periods[filterPeriod].grouped") {{ $t('chart.view.showed') }} {{ periods[filterPeriod].showedGroups }} {{ $t('chart.view.periodsName') }}
-    template(v-else) {{ $t('chart.view.showed') }} {{ periods[filterPeriod].showedPeriods }}  {{ $t('chart.view.periodsName') }}
+  template(slot="desc") {{ $t('chart.view.showed') }} {{ periods[filterPeriod].showedPeriods }}  {{ $t('chart.view.periodsName') }}
 </template>
