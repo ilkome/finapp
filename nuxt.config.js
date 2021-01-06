@@ -186,5 +186,9 @@ export default {
         handler: 'cacheFirst'
       }]
     }
+  },
+
+  build: {
+    extractCSS: true
   }
 }
