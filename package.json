@@ -6,6 +6,7 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
+    "deploy": "npm run generate && firebase deploy",
     "build-upload-all": "npm run generate && npm run upload-all",
     "build-upload-min": "npm run generate && npm run upload-min",
     "upload-all": "NODE_ENV=production node node_modules/gulp/bin/gulp.js uploadAll",
