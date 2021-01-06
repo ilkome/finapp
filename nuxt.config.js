@@ -3,20 +3,16 @@ export default {
     testerEmail: 'ilya.komichev@gmail.com'
   },
 
+  // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
+  ssr: false,
+
+  // Target (https://go.nuxtjs.dev/config-target)
+  target: 'static',
+
   /**
    * https://nuxtjs.org/guides/configuration-glossary/configuration-modern
    */
   modern: 'client',
-
-  /**
-   * https://nuxtjs.org/guides/configuration-glossary/configuration-ssr
-   */
-  ssr: false,
-
-  /**
-   * https://nuxtjs.org/guides/configuration-glossary/configuration-target
-   */
-  target: 'static',
 
   /**
    * https://nuxtjs.org/guides/configuration-glossary/configuration-telemetry
