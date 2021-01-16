@@ -22,6 +22,7 @@ export default {
   watch: {
     show: {
       handler (isShow) {
+        const initialSlide = this.$store.getters['categories/quickSelectorCategoriesIds'] && this.$store.getters['categories/quickSelectorCategoriesIds'].length > 0 ? 1 : 2
         this.$nextTick(() => {
           if (this.slider) {
             this.slider.update()
@@ -30,7 +31,7 @@ export default {
             this.slider = new Swiper(this.$refs.slider, {
               slidesPerView: 1,
               autoHeight: false,
-              initialSlide: 1,
+              initialSlide,
               shortSwipes: false,
               longSwipesRatio: 0.1,
               longSwipesMs: 60

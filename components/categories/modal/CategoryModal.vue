@@ -99,51 +99,50 @@ export default {
 </script>
 
 <template lang="pug">
-div
-  Portal(
-    v-if="$store.state.categories.modal.show"
-    to="modal"
+Portal(
+  v-if="$store.state.categories.modal.show"
+  to="modal"
+)
+  ModalBottom(
+    :key="$store.state.categories.modal.id"
+    @onClose="$store.commit('categories/hideCategoryModal')"
+    @afterClose="$store.commit('categories/setCategoryModalId', null)"
   )
-    ModalBottom(
-      :key="$store.state.categories.modal.id"
-      @onClose="$store.commit('categories/hideCategoryModal')"
-      @afterClose="$store.commit('categories/setCategoryModalId', null)"
-    )
-      template(slot="header")
-        .categoryWrap
-          .categoryIcon
-            Icon(
-              :icon="category.icon"
-              :background="category.color || $store.state.ui.defaultBgColor"
-              :round="true"
-              :big="true"
-            )
-          .modalBottom__header__title {{ category.name }}
+    template(slot="header")
+      .categoryWrap
+        .categoryIcon
+          Icon(
+            :icon="category.icon"
+            :background="category.color || $store.state.ui.defaultBgColor"
+            :round="true"
+            :big="true"
+          )
+        .modalBottom__header__title {{ category.name }}
 
-      template(slot="btns")
-        ModalButton(
-          :name="$t('base.delete')"
-          icon="mdi mdi-delete"
-          @onClick="handleDeleteClick"
-        )
-        ModalButton(
-          :name="$t('base.edit')"
-          icon="mdi mdi-pencil"
-          @onClick="handleEditClick"
-        )
-        ModalButton(
-          :name="$t('base.filter')"
-          icon="mdi mdi-filter-outline"
-          @onClick="handleSetFilterCategory"
-        )
+    template(slot="btns")
+      ModalButton(
+        :name="$t('base.delete')"
+        icon="mdi mdi-delete"
+        @onClick="handleDeleteClick"
+      )
+      ModalButton(
+        :name="$t('base.edit')"
+        icon="mdi mdi-pencil"
+        @onClick="handleEditClick"
+      )
+      ModalButton(
+        :name="$t('base.filter')"
+        icon="mdi mdi-filter-outline"
+        @onClick="handleSetFilterCategory"
+      )
 
-      template(v-if="childCategoriesIds.length")
-        CategoriesView(
-          :borderTop="true"
-          :ids="childCategoriesIds"
-          :noPadding="true"
-          @onClick="id => $store.dispatch('categories/showCategoryModal', id)"
-        )
+    template(v-if="childCategoriesIds.length")
+      CategoriesView(
+        :borderTop="true"
+        :ids="childCategoriesIds"
+        :noPadding="true"
+        @onClick="id => $store.dispatch('categories/showCategoryModal', id)"
+      )
 
   ModalBottomConfirm(
     :show="showModalConfirm"

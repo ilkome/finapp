@@ -44,7 +44,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .component
   display grid
@@ -100,7 +100,7 @@ export default {
       overflow-y auto
       scrollbar()
 
-      +media-tablet("less")
+      +media-tablet('less')
         display flex
         flex-flow column
         justify-content center

@@ -154,7 +154,10 @@ export default {
   .layoutMobile__content(ref="scroll")
     //- Categories
     //---------------------------------------------------------------------------
-    template(v-if="activeTabViewName === 'categories'")
+    .h100(
+      v-show="activeTabViewName === 'categories'"
+      :style="{ zIndex: activeTabViewName === 'categories' ? 10 : 0 }"
+    )
       ComponentWrap(:contentPadding="false")
         template(slot="headerLeft") {{ $t('categories.name') }}
 
@@ -175,33 +178,28 @@ export default {
 
     //- Wallets
     //---------------------------------------------------------------------------
-    template(v-if="activeTabViewName === 'wallets'")
+    .h100(
+      v-show="activeTabViewName === 'wallets'"
+      :style="{ zIndex: activeTabViewName === 'wallets' ? 10 : 0 }"
+    )
       WalletsPageMobile
 
-    //- Categories
+    //- No trns
     //---------------------------------------------------------------------------
-    template(v-if="activeTabViewName === 'categories'")
-      ComponentWrap(:contentPadding="false")
-        template(slot="headerLeft") {{ $t('categories.name') }}
+    .page(
+      v-if="!$store.getters['trns/hasTrns']"
+      v-show="activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses' || activeTabViewName === 'history'"
+    )
+      .page__content
+        .box
+          NoStatActions
 
-        template(slot="content")
-          CategoriesList(
-            :style="{ paddingTop: '16px' }"
-            @onClick="(id) => $store.dispatch('categories/showCategoryModal', id)"
-          )
-
-        template(slot="bottom")
-          .flex
-            .col
-              Button(
-                :title="$t('categories.new')"
-                className="_inline _small"
-                @onClick="$store.dispatch('ui/setActiveTab', 'createCategory')"
-              )
-
-    //- Stat
+    //- Stat: has trns
     //---------------------------------------------------------------------------
-    .page(v-show="activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses' || activeTabViewName === 'history'")
+    .page(
+      v-if="$store.getters['trns/hasTrns']"
+      v-show="activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses' || activeTabViewName === 'history'"
+    )
       .page__content
 
         //- Daily & History
@@ -258,7 +256,7 @@ export default {
         //- Chart Content
         //-----------------------------
         .box._h272(
-          v-if="filterPeriod !== 'all'"
+          v-if="$store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
           v-show="activeTabViewName !== 'history' && activeTabViewName !== 'chart'"
         )
           StatChartLines(
@@ -293,7 +291,7 @@ export default {
         template(v-if="activeTabViewName === 'chart'")
           .page__grid
             .box._h272(
-              v-if="filterPeriod !== 'all'"
+              v-if="$store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
               v-show="activeTabViewName !== 'history'"
             )
               StatChartLines(
@@ -651,6 +649,9 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
+.h100
+  height 100%
 
 .context-menu-sep
   background var(--c-bg-1)

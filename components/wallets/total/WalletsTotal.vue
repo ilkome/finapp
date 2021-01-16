@@ -79,9 +79,9 @@ export default {
     padding-bottom 16px
 
   &__title
-    padding-right 6px
-    padding-bottom 6px
     opacity .6
+    padding-right 0
+    padding-bottom 6px
     font-size 12px
     text-align center
 </style>

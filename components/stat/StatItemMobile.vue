@@ -121,7 +121,7 @@ export default {
       .statItem__inside(@click.stop="")
         .statItem__chart
           StatChartLines(
-            v-if="filterPeriod !== 'all'"
+            v-if="$store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
             :categoryId="categoryId"
             :chartColor="category.color"
             :isShowExpenses="type === 0"
