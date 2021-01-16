@@ -6,7 +6,7 @@ export default {
 
 <template lang="pug">
 .trnFormHeader(
-  v-show="this.$store.state.trnForm.values.amountType !== 2"
+  v-show="$store.state.trnForm.values.amountType !== 2"
 )
   TrnFormHeaderItemWallet
   TrnFormHeaderItemCategory
