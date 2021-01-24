@@ -89,17 +89,10 @@ export default {
     }
   },
 
-  firstCreatedTrnIdFromSelectedTrns (state, getters, rootState, rootGetters) {
+  firstCreatedTrnIdFromSelectedTrns (state, getters) {
     const trnsIds = [...getters.selectedTrnsIds].reverse()
-    const trns = rootState.trns.items
-    const transferCategoryId = rootGetters['categories/transferCategoryId']
-
     if (trnsIds.length) {
-      for (const trnId of trnsIds) {
-        if (trns[trnId].categoryId !== transferCategoryId) {
-          return trnId
-        }
-      }
+      return trnsIds[0]
     }
   },
 

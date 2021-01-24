@@ -51,6 +51,7 @@ export default {
 
 <template lang="pug">
 ContextMenu(
+  v-if="filterPeriod !== 'all'"
   :position="{ right: showDropdown ? '-12px' : true }"
   :visible="visibleContextMenu"
   :openerCircle="true"

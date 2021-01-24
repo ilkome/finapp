@@ -1,11 +1,8 @@
 <script>
-import { focus } from 'vue-focus'
 import generateId from '~/utils/id'
 import colors from '~/assets/js/colors'
 
 export default {
-  directives: { focus },
-
   data () {
     return {
       showColors: false,
@@ -142,7 +139,6 @@ ComponentWrap
             type="text"
             :placeholder="$t('wallets.form.name.placeholder')"
             v-model="wallet.name"
-            v-focus.lazy="$store.state.ui.pc"
           ).inputText__value
           .inputText__label {{ $t('wallets.form.name.label') }}
 

@@ -1,9 +1,28 @@
 <script>
+import { ref, onMounted } from 'nuxt-composition-api'
 import debounce from '~/utils/debounce'
 import isTouchDevice from '~/assets/js/isTouchDevice'
 
 export default {
   name: 'DefaultLayout',
+
+  setup (props, ctx) {
+    const isShowUpdateApp = ref(false)
+
+    onMounted(async () => {
+      const workbox = await window.$workbox
+
+      if (workbox) {
+        workbox.addEventListener('installed', (event) => {
+          isShowUpdateApp.value = event.isUpdate
+        })
+      }
+    })
+
+    return {
+      isShowUpdateApp
+    }
+  },
 
   data () {
     return {
@@ -21,26 +40,10 @@ export default {
     }
   },
 
-  async mounted () {
+  mounted () {
     this.isTouchDevice = isTouchDevice()
-
     this.getPageDimensions()
     window.addEventListener('resize', debounce(this.getPageDimensions, 600))
-
-    const workbox = await window.$workbox
-
-    if (workbox) {
-      workbox.addEventListener('installed', (event) => {
-        // If we don't do this we'll be displaying the notification after the initial installation, which isn't perferred.
-        if (event.isUpdate) {
-          this.$notify({
-            title: this.$t('app.update.title'),
-            text: this.$t('app.update.text'),
-            duration: 10000
-          })
-        }
-      })
-    }
   },
 
   methods: {
@@ -78,6 +81,11 @@ export default {
   PortalTarget(
     multiple
     name="modal"
+  )
+
+  LazyUpdateAppModal(
+    v-if="isShowUpdateApp"
+    @onClose="isShowUpdateApp = false"
   )
 
   LazyMetrica(v-if="isProduction")

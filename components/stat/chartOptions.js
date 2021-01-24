@@ -112,7 +112,9 @@ export default {
       }
     },
 
-    crosshair: true
+    crosshair: {
+      enabled: true
+    }
   },
 
   yAxis: {

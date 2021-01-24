@@ -198,6 +198,7 @@ export default {
   position absolute
   width 100%
   height 100%
+  background var(--c-bg-3)
 
 .tab
   display grid
@@ -262,7 +263,7 @@ export default {
     &__text
       position relative
       padding $m7
-      background var(--c-bg-1)
+      background var(--c-bg-3)
     &__border
       position absolute
       left 0
@@ -296,7 +297,7 @@ export default {
   bottom 0
   width 100%
   padding-bottom $m7
-  background var(--c-bg-1)
+  background var(--c-bg-3)
 
   @media $media-laptop
     padding-bottom $m9

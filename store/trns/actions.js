@@ -21,6 +21,7 @@ export default {
     * @param {string} {}.values.category
   */
   addTrn ({ commit, rootState }, { id, values }) {
+    console.log('addTrn', id, values)
     const uid = rootState.user.user.uid
     const trns = rootState.trns.items
     let isTrnSavedOnline = false
@@ -42,12 +43,13 @@ export default {
       .set(formatedTrnValues)
       .then(() => {
         isTrnSavedOnline = true
+        console.log('isTrnSavedOnline')
         removeTrnToAddLaterLocal(id)
       })
 
     setTimeout(() => {
       if (!isTrnSavedOnline) { saveTrnToAddLaterLocal({ id, values }) }
-    }, 100)
+    }, 300)
 
     commit('trnForm/setTrnFormValues', {
       trnId: null,
@@ -55,6 +57,8 @@ export default {
       amountEvaluation: null,
       description: null
     }, { root: true })
+
+    return true
   },
 
   // delete
@@ -159,7 +163,7 @@ export default {
 
           // add
           else if (trnsItemsForUpdate[trnId] && trnsItemsForUpdate[trnId].amount) {
-            console.log('update', trnsItemsForUpdate[trnId])
+            console.log('update', trnId, trnsItemsForUpdate[trnId])
             dispatch('addTrn', {
               id: trnId,
               values: trnsItemsForUpdate[trnId]

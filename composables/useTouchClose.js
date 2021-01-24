@@ -28,25 +28,34 @@ export default function useOnTouch ({ container, overflow, dragger, content, onC
         overflow.value.style.opacity = diffTrunc === 100 ? 1 : `0.${diffTrunc}`
       }
     }
+    // else if (currentY.value < 0) {
+    //   const swiperWrapper = dragger.value.querySelector('.swiper-wrapper')
+    //   dragger.value.style.maxHeight = '700px'
+    //   swiperWrapper.style.height = '700px'
+    // }
   }
 
   // onDragStart
   const onDragStart = (event) => {
-    // stop trnFormModal drag when content has scroll
-    // wait until content scroll up to top
-    if (content.value && content.value.scrollTop > 0) { return }
-
-    if (event.target.closest('.doNotCloseModal')) {
-      isDragging.value = false
-      return
-    }
+    const isDrugByHandler = event.target.classList.contains('trnForm__handler')
 
     // wait
-    const waitForScrollSlider = content.value.querySelector('.swiper-slide-active .waitForScroll')
-    if (waitForScrollSlider && waitForScrollSlider.scrollTop > 0) { return }
+    if (!isDrugByHandler) {
+      // stop trnFormModal drag when content has scroll
+      // wait until content scroll up to top
+      if (content.value && content.value.scrollTop > 0) { return }
 
-    const waitForScroll = content.value.querySelector('.waitForScroll')
-    if (waitForScroll && waitForScroll.scrollTop > 0) { return }
+      if (event.target.closest('.doNotCloseModal')) {
+        isDragging.value = false
+        return
+      }
+
+      const waitForScrollSlider = content.value.querySelector('.swiper-slide-active .waitForScroll')
+      if (waitForScrollSlider && waitForScrollSlider.scrollTop > 0) { return }
+
+      const waitForScroll = content.value.querySelector('.waitForScroll')
+      if (waitForScroll && waitForScroll.scrollTop > 0) { return }
+    }
 
     if (dragger.value) {
       dragger.value.classList.remove('_anim')

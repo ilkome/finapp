@@ -1,6 +1,13 @@
 <script>
 export default {
-  name: 'IndexPage'
+  name: 'IndexPage',
+
+  fetch () {
+    if (!this.$store.getters['wallets/hasWallets'] ||
+        !this.$store.getters['categories/hasCategories']) {
+      this.$router.replace('/welcome')
+    }
+  }
 }
 </script>
 

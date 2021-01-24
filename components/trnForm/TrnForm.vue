@@ -160,7 +160,7 @@ export default {
     setTrnFormHeight () {
       const trnFormHeight = this.$store.state.trnForm.height
 
-      const height = this.$refs.getHeight.clientHeight
+      const height = this.$refs.getHeight.clientHeight + 8
       const trnFormHeaderHeight = 0
       const newTrnFormHeight = height - trnFormHeaderHeight
 
@@ -283,6 +283,7 @@ export default {
       ref="scrollDragger"
       :style="{ maxHeight: `${$store.state.trnForm.height}px` }"
     )
+      .trnForm__handler
 
       //- Content
       .trnForm__scroll(ref="scrollContent")
@@ -369,6 +370,7 @@ export default {
 
   &__wrap
     overflow hidden
+    position relative
     border-radius 16px 16px 0 0
 
     &._anim
@@ -376,4 +378,26 @@ export default {
 
     @media $media-laptop
       border-radius 16px
+
+  &__content
+    padding-top 8px
+
+  &__handler
+    z-index 2
+    position absolute
+    top 0
+    left 0
+    display flex
+    align-items center
+    justify-content center
+    width 100%
+    height 16px
+
+    &:after
+      content ''
+      display block
+      width 32px
+      height 4px
+      background var(--c-bg-8)
+      border-radius 4px
 </style>

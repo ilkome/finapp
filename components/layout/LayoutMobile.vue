@@ -1,9 +1,90 @@
 <script>
+import Swiper from 'swiper'
+import 'swiper/swiper-bundle.css'
+import { ref, computed, watch, onMounted, useContext } from 'nuxt-composition-api'
+
 export default {
   name: 'LayoutMobileWrap',
 
+  setup (props, ctx) {
+    const { store, $day } = useContext()
+
+    // Periods dates
+    const periodDates = computed(() => {
+      const { period } = store.state.filter
+      const showedPeriodsCount = store.state.chart.periods[period].showedPeriods
+
+      const dates = []
+      for (let step = 0; step < showedPeriodsCount; step++) {
+        const periodDate = $day().startOf(period).subtract(step, period).valueOf()
+        dates.unshift(periodDate)
+      }
+      return dates
+    })
+
+    // Slider
+    const periodDatesSliderValue = ref({})
+    const periodDatesSliderRef = ref(null)
+
+    const activeTabViewName = computed(() => { return store.state.ui.activeTabViewName })
+    const filterPeriod = computed(() => { return store.state.filter.period })
+    const filterDate = computed(() => { return store.state.filter.date })
+
+    const initSlder = () => {
+      if (activeTabViewName.value === 'summary2' && periodDatesSliderRef.value) {
+        periodDatesSliderValue.value = new Swiper(periodDatesSliderRef.value, {
+          slidesPerView: 'auto',
+          initialSlide: periodDates.value.length,
+          autoHeight: true,
+          centeredSlides: true,
+          shortSwipes: false,
+          longSwipesRatio: 0.1,
+          longSwipesMs: 60,
+          on: {
+            slideChange: (swiper) => {
+              const activeIndex = swiper.activeIndex
+              const periodDate = periodDates.value[activeIndex]
+              store.dispatch('filter/setDate', periodDate)
+            }
+          }
+        })
+      }
+    }
+
+    onMounted(initSlder)
+    watch(activeTabViewName, initSlder)
+    watch(filterPeriod, () => {
+      if (activeTabViewName.value === 'summary2' && periodDatesSliderValue.value) {
+        periodDatesSliderValue.value.update()
+        setTimeout(() => {
+          periodDatesSliderValue.value.slideTo(periodDates.value.length, 0)
+        }, 10)
+      }
+    })
+    watch(filterDate, () => {
+      if (activeTabViewName.value === 'summary2' && periodDatesSliderValue.value) {
+        const date = periodDates.value.find(i => $day(i).isSame(filterDate.value, store.state.filter.period))
+        const index = periodDates.value.findIndex(i => i === date)
+        periodDatesSliderValue.value.slideTo(index)
+      }
+    })
+
+    const onClickDatePeriodSliderItem = (slideIdx) => {
+      periodDatesSliderValue.value.slideTo(slideIdx)
+    }
+
+    return {
+      periodDates,
+      periodDatesSliderRef,
+      periodDatesSliderValue,
+      onClickDatePeriodSliderItem
+    }
+  },
+
   data () {
     return {
+      slider: null,
+      isShowDataLabels: true,
       isShowPeriodsNames: false,
 
       periodsNames: [{
@@ -37,6 +118,10 @@ export default {
 
     activeTabStat () {
       return this.$store.state.ui.stat.activeTab
+    },
+
+    statPage () {
+      return this.activeTabViewName === 'summary2' || this.activeTabViewName === 'chart' || this.activeTabViewName === 'incomes' || this.activeTabViewName === 'expenses' || this.activeTabViewName === 'history'
     },
 
     statCurrentPeriod () {
@@ -96,6 +181,25 @@ export default {
     }
   },
 
+  watch: {
+    activeTabViewName: {
+      handler (value) {
+        this.$nextTick(() => {
+          if (value === 'summary2' && this.$refs.slider) {
+            this.slider = new Swiper(this.$refs.slider, {
+              slidesPerView: 1,
+              autoHeight: true,
+              shortSwipes: false,
+              longSwipesRatio: 0.1,
+              longSwipesMs: 60
+            })
+          }
+        })
+      },
+      immediate: true
+    }
+  },
+
   methods: {
     onClickTopMenu (tabViewName) {
       this.$store.dispatch('ui/setActiveTabViewName', tabViewName)
@@ -150,7 +254,7 @@ export default {
 </script>
 
 <template lang="pug">
-.layoutMobile
+.layoutMobile(:class="{ _stat: statPage }")
   .layoutMobile__content(ref="scroll")
     //- Categories
     //---------------------------------------------------------------------------
@@ -188,7 +292,7 @@ export default {
     //---------------------------------------------------------------------------
     .page(
       v-if="!$store.getters['trns/hasTrns']"
-      v-show="activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses' || activeTabViewName === 'history'"
+      v-show="statPage"
     )
       .page__content
         .box
@@ -198,33 +302,200 @@ export default {
     //---------------------------------------------------------------------------
     .page(
       v-if="$store.getters['trns/hasTrns']"
-      v-show="activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses' || activeTabViewName === 'history'"
+      v-show="statPage"
     )
       .page__content
+        //- Summary2
+        //-----------------------------
+        .page__grid(
+          v-if="activeTabViewName === 'summary2'"
+        )
+          .blockWrapBg._chart(v-if="$store.getters['trns/hasTrns'] && filterPeriod !== 'all'")
+            .blockWrapBg__top
+              //- Period Selector
+              //--------------------------
+              .periods
+                .periodItem(
+                  v-if="filterPeriod !== 'all'"
+                  @click="removePeriodOrGroup"
+                ): .mdi.mdi-minus
 
-        //- Daily & History
-        //-----------------------------------------------------------------------
-        .page__block
-          .box._nobd.boxSwitcher
-            .switcher2._bg
-              .switcher2__item(
-                :class="{ _active: activeTabViewName === 'chart' }"
-                @click="onClickTopMenu('chart')"
-              ) {{ $t('stat.periods') }}
-              .switcher2__item(
-                v-if="statAverage.incomes !== 0 || statCurrentPeriod.incomes.total !== 0"
-                :class="{ _active: activeTabViewName === 'incomes' }"
-                @click="onClickTopMenu('incomes')"
-              ) {{ $t('money.incomes') }}
-              .switcher2__item(
-                v-if="statAverage.expenses !== 0 || statCurrentPeriod.expenses.total !== 0"
-                :class="{ _active: activeTabViewName === 'expenses' }"
-                @click="onClickTopMenu('expenses')"
-              ) {{ $t('money.expenses') }}
-              .switcher2__item(
-                :class="{ _active: activeTabViewName === 'history' }"
-                @click="onClickTopMenu('history')"
-              ) {{ $t('trns.history') }}
+                .periodItem(
+                  v-for="periodItem in periodsNames"
+                  :key="periodItem.slug"
+                  :class="{ _active: $store.state.filter.period === periodItem.slug }"
+                  @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
+                )
+                  .periodItem__name {{ periodItem.name }}
+                  .periodItem__count(
+                    v-if="filterPeriod !== 'all'"
+                  ) {{ $store.state.chart.periods[periodItem.slug].showedPeriods }}
+
+                .periodItem(
+                  v-if="filterPeriod !== 'all'"
+                  @click="addPeriodOrGroup"
+                ): .mdi.mdi-plus
+
+                .periodItem(
+                  @click="isShowDataLabels = !isShowDataLabels"
+                ): .mdi.mdi-subtitles-outline
+
+            .box._h272(style="height: 220px; padding: 10px 8px 0 8px")
+              StatChartLines(
+                :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'summary2'"
+                :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'summary2'"
+                :isShowDataLabels="isShowDataLabels"
+              )
+
+          .box__nav(style="padding: 24px 0 18px 0")
+            .flexCenter(v-if="filterPeriod === 'all'")
+              .dateItem._active(
+                @click="isShowPeriodsNames = true"
+              )
+                .menuDots
+                  .menuDots__name
+                    DateFormated(
+                      :date="periodDate"
+                      periodName="all"
+                    )
+                .menuDots__dots: .mdi.mdi-dots-vertical
+
+            .swiper-container(
+              v-if="filterPeriod !== 'all'"
+              ref="periodDatesSliderRef"
+            )
+              .swiper-wrapper
+                .swiper-slide._widthAuto(
+                  v-for="(periodDate, slideIdx) in periodDates"
+                  :key="periodDate"
+                  @click="onClickDatePeriodSliderItem(slideIdx)"
+                )
+                  .dateItem(
+                    :class="{ _active: periodDatesSliderValue && periodDatesSliderValue.activeIndex === slideIdx }"
+                    @click="periodDatesSliderValue && periodDatesSliderValue.activeIndex === slideIdx ? isShowPeriodsNames = true : false"
+                  )
+                    .menuDots
+                      .menuDots__name
+                        DateFormated(
+                          :date="periodDate"
+                          :periodName="$store.state.filter.period"
+                        )
+                    .menuDots__dots(v-if="periodDatesSliderValue && periodDatesSliderValue.activeIndex === slideIdx"): .mdi.mdi-dots-vertical
+
+          //- Filter
+          //---------------------------
+          .page__filter(v-if="isShowFilter")
+            FilterRow
+
+          .swiper-container2(ref="slider2")
+            .swiper-wrapper2
+              //- Incomes
+              //---------------------------
+              template(v-if="statAverage.incomes !== 0 || statCurrentPeriod.incomes.total !== 0")
+                .swiper-slide
+                  .blockWrapBg
+                    .boxTitle {{ $t('money.incomes') }}
+
+                    .boxSummary2
+                      .boxSummary2__item
+                        Amount(
+                          :currency="$store.state.currencies.base"
+                          :type="1"
+                          :value="statCurrentPeriod.incomes.total"
+                          size="xl"
+                          vertical="left"
+                        )
+                      SummaryRowItemView(
+                        :type="1"
+                        :amount="statAverage.incomes"
+                        :title="$t('money.averageIncomes')"
+                      )
+
+                    .boxEmpty(v-if="statCurrentPeriod.incomes.categoriesIds.length === 0") {{ $t('stat.empty') }}
+
+                    //- Pie chart
+                    //---------------------------
+                    .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
+                      .box__content
+                        StatChartPie(amountType="incomes")
+
+                    //- Cats incomes
+                    //---------------------------
+                    .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
+                      .box__content
+                        PeriodCatsChart(type="incomes")
+
+                    //- Stat incomes
+                    //---------------------------
+                    .box._grid(v-if="$store.state.ui.statItems === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 0")
+                      .box__content
+                        .statItemsTiles
+                          StatItemMobile2(
+                            v-for="categoryId in statCurrentPeriod.incomes.categoriesIds"
+                            :biggest="statCurrentPeriod.incomes.biggest"
+                            :category="$store.state.categories.items[categoryId]"
+                            :categoryId="categoryId"
+                            :currency="$store.state.currencies.base"
+                            :key="categoryId"
+                            :total="statCurrentPeriod.categories[categoryId].incomes"
+                            :type="1"
+                          )
+
+              //- Expenses
+              //---------------------------
+              template(v-if="statAverage.expenses !== 0 || statCurrentPeriod.expenses.total !== 0")
+                .swiper-slide
+                  .blockWrapBg
+                    .boxTitle {{ $t('money.expenses') }}
+
+                    .boxSummary2
+                      .boxSummary2__item
+                        Amount(
+                          :currency="$store.state.currencies.base"
+                          :type="0"
+                          :value="statCurrentPeriod.expenses.total"
+                          size="xl"
+                          vertical="left"
+                        )
+                      SummaryRowItemView(
+                        :type="0"
+                        :amount="statAverage.expenses"
+                        :title="$t('money.averageExpenses')"
+                      )
+
+                    .boxEmpty(v-if="statCurrentPeriod.expenses.categoriesIds.length === 0") {{ $t('stat.empty') }}
+
+                    //- Pie chart
+                    //---------------------------
+                    .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
+                      .box__content
+                        StatChartPie(amountType="expenses")
+
+                    //- PeriodCatsChart
+                    //---------------------------
+                    .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
+                      .box__content
+                        PeriodCatsChart(type="expenses")
+
+                    //---------------------------
+                    .box._grid(v-if="$store.state.ui.statItems === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 0")
+                      .box__content
+                        .statItemsTiles
+                          StatItemMobile2(
+                            v-for="categoryId in statCurrentPeriod.expenses.categoriesIds"
+                            :biggest="statCurrentPeriod.expenses.biggest"
+                            :category="$store.state.categories.items[categoryId]"
+                            :categoryId="categoryId"
+                            :currency="$store.state.currencies.base"
+                            :key="categoryId"
+                            :total="statCurrentPeriod.categories[categoryId].expenses"
+                            :type="0"
+                          )
+
+          template(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
+            .boxTitle {{ $t('trns.history') }}
+            .box.boxStatTrns(style="paddingTop: 0")
+              TrnsList3(:size="16")
 
         //- Chart Nav
         //-----------------------------
@@ -255,15 +526,15 @@ export default {
 
         //- Chart Content
         //-----------------------------
-        .box._h272(
-          v-if="$store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
-          v-show="activeTabViewName !== 'history' && activeTabViewName !== 'chart'"
-        )
-          StatChartLines(
-            v-if="filterPeriod !== 'all'"
-            :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'chart'"
-            :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'chart'"
+        template(v-if="activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses'")
+          .box._h272(
+            v-if="$store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
           )
+            StatChartLines(
+              v-if="$store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
+              :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'chart'"
+              :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'chart'"
+            )
 
         //- History
         //-----------------------------
@@ -283,6 +554,9 @@ export default {
               @click="$store.dispatch('filter/setPeriodPrev')"
             ): .mdi.mdi-chevron-right
 
+          .page__filter(v-if="isShowFilter")
+            FilterRow
+
           .box
             TrnsList3
 
@@ -290,16 +564,6 @@ export default {
         //-----------------------------
         template(v-if="activeTabViewName === 'chart'")
           .page__grid
-            .box._h272(
-              v-if="$store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
-              v-show="activeTabViewName !== 'history'"
-            )
-              StatChartLines(
-                v-if="filterPeriod !== 'all'"
-                :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'chart'"
-                :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'chart'"
-              )
-
             .boxFlew2
               .boxFlew2Item
                 PeriodCatsChartMobile(type="incomes")
@@ -350,16 +614,17 @@ export default {
 
               .boxEmpty(v-if="statCurrentPeriod.incomes.categoriesIds.length === 0") {{ $t('stat.empty') }}
 
+              //- Pie chart
+              //---------------------------
+              .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
+                .box__content
+                  StatChartPie(amountType="incomes")
+
               //- Cats incomes
               //---------------------------
               .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
                 .box__content
                   PeriodCatsChart(type="incomes")
-
-              //- Pie chart
-              .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
-                .box__content
-                  StatChartPie(amountType="incomes")
 
               //- Stat incomes
               //---------------------------
@@ -398,15 +663,17 @@ export default {
 
               .boxEmpty(v-if="statCurrentPeriod.expenses.categoriesIds.length === 0") {{ $t('stat.empty') }}
 
+              //- Pie chart
+              //---------------------------
+              .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
+                .box__content
+                  StatChartPie(amountType="expenses")
+
+              //- PeriodCatsChart
               //---------------------------
               .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
                 .box__content
                   PeriodCatsChart(type="expenses")
-
-              //- Pie chart
-              .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
-                .box__content
-                  StatChartPie(amountType="expenses")
 
               //---------------------------
               .box._stat(v-if="$store.state.ui.statItems === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 0")
@@ -511,6 +778,30 @@ export default {
                 )
 
   .layoutMobile__menu.pageScrollerJsMenu
+    .box._nobd.boxSwitcher(v-if="statPage")
+      .switcher2._bg
+        .switcher2__item(
+          :class="{ _active: activeTabViewName === 'summary2' }"
+          @click="onClickTopMenu('summary2')"
+        ) {{ $t('stat.summary2') }}
+        .switcher2__item(
+          :class="{ _active: activeTabViewName === 'chart' }"
+          @click="onClickTopMenu('chart')"
+        ) {{ $t('stat.periods') }}
+        .switcher2__item(
+          v-if="statAverage.incomes !== 0 || statCurrentPeriod.incomes.total !== 0"
+          :class="{ _active: activeTabViewName === 'incomes' }"
+          @click="onClickTopMenu('incomes')"
+        ) {{ $t('money.incomes') }}
+        .switcher2__item(
+          v-if="statAverage.expenses !== 0 || statCurrentPeriod.expenses.total !== 0"
+          :class="{ _active: activeTabViewName === 'expenses' }"
+          @click="onClickTopMenu('expenses')"
+        ) {{ $t('money.expenses') }}
+        .switcher2__item(
+          :class="{ _active: activeTabViewName === 'history' }"
+          @click="onClickTopMenu('history')"
+        ) {{ $t('trns.history') }}
     LayoutMobileMenu
 
   //- Modals
@@ -539,7 +830,13 @@ export default {
       BaseMenu
       .context-menu-sep
 
-      template(v-if="activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses'")
+      template(v-if="activeTabViewName === 'summary2' || activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses'")
+        ContextMenuItem(
+          :checkboxValue="$store.state.ui.catsChartPie === 'visible'"
+          :title="$t('stat.customize.showcatsChartPie')"
+          showCheckbox
+          @onClick="$store.dispatch('ui/toogleVisibleCatsChartPie')"
+        )
         ContextMenuItem(
           :checkboxValue="$store.state.ui.catsChart === 'visible'"
           :title="$t('stat.customize.showCategorisChart')"
@@ -551,12 +848,6 @@ export default {
           :title="$t('stat.customize.showCategorisList')"
           showCheckbox
           @onClick="$store.dispatch('ui/toogleVisibilityStatItems')"
-        )
-        ContextMenuItem(
-          :checkboxValue="$store.state.ui.catsChartPie === 'visible'"
-          :title="$t('stat.customize.showcatsChartPie')"
-          showCheckbox
-          @onClick="$store.dispatch('ui/toogleVisibleCatsChartPie')"
         )
         .context-menu-sep
 
@@ -645,6 +936,10 @@ export default {
 .finapp .page__content .boxStatTrns .trnsList
   .trnsList__header
     top 60px
+
+.finapp .blockWrapBg
+  .statLineCategories
+    border-radius 6px
 </style>
 
 <style lang="stylus" scoped>
@@ -652,6 +947,71 @@ export default {
 
 .h100
   height 100%
+
+._widthAuto
+  display flex
+  width auto
+
+.flexCenter
+  display flex
+  align-items center
+  justify-content center
+  width 100%
+
+.dateItem
+  cursor pointer
+  opacity .3
+  display flex
+  align-items center
+  justify-content center
+  height 28px
+  padding $m5 $m7
+  color var(--c-font-4)
+  font-size 12px
+  font-size 12px
+  anim()
+
+  &._active
+    opacity 1
+    color var(--c-font-3)
+    font-size 16px
+    font-weight 600
+
+.blockWrapBg
+  overflow hidden
+  position relative
+  margin $m4
+  padding 0 0
+  padding-top 6px
+  padding-bottom 0
+  background var(--c-bg-5)
+  border 1px solid var(--c-bg-3)
+  border-radius $m6
+
+  &._chart
+    padding-top 0
+
+  &__top
+    .periods
+      margin-bottom -10px
+      padding 0
+
+  .box
+  .boxTitle
+  .boxSummary2
+    background none
+    background var(--c-bg-5)
+
+  .boxTitle
+  .boxSummary2
+    position relative
+    top 0
+
+.statItemsTiles
+  display grid
+  grid-template-columns repeat(auto-fill, minmax(80px, 1fr))
+  grid-column-gap 0
+  grid-row-gap 0
 
 .context-menu-sep
   background var(--c-bg-1)
@@ -689,10 +1049,14 @@ export default {
   padding-bottom 44px
   background var(--c-bg-4)
 
+  &._stat
+    padding-bottom 80px
+
   &__content
     overflow hidden
 
   &__menu
+    z-index 10
     position fixed
     left 0
     bottom 0
@@ -770,11 +1134,6 @@ $border = 1px
 
   &__count
     padding-left $m4
-
-.date
-  color var(--c-font-3)
-  font-size 18px
-  font-weight 600
 
 .switcher
   overflow hidden
@@ -899,6 +1258,9 @@ $border = 1px
   &._stat
     padding-top $m6
 
+  &._grid
+    padding 0
+
   &._h272
     height 232px
     padding-bottom 0
@@ -918,8 +1280,8 @@ $border = 1px
     border-bottom 0
 
   &._periods
+    margin-bottom (- $m5)
     padding 0
-    padding-bottom $m6
 
   &__title
   &__title2
@@ -957,6 +1319,10 @@ $border = 1px
     margin-bottom $m4
     padding 0 $m7
     background var(--c-bg-4)
+
+    .swiper-container
+      width 100%
+      margin 0
 
     &._noMargin
       margin-bottom 0
@@ -1041,6 +1407,7 @@ $border = 1px
     border-bottom 2px solid var(--c-bg-9)
 
 .switcher2
+  z-index 10
   display flex
   align-items center
 
@@ -1063,7 +1430,6 @@ $border = 1px
 
   &:active
     background var(--c-bg-5)
-    border-radius $m6 $m6 0 0
     border-bottom $border solid var(--c-bg-5)
 
   &._active

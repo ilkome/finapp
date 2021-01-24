@@ -1,17 +1,24 @@
 <script>
 export default {
+  name: 'DateFormated',
+
   props: {
-    type: {
+    date: {
       type: Number,
-      default: 3
+      required: true
+    },
+
+    periodName: {
+      type: String,
+      required: true
     }
   },
 
   computed: {
     formatedDate () {
       const today = this.$day()
-      const filterDate = this.$store.state.filter.date
-      const filterPeriod = this.$store.state.filter.period
+      const filterDate = this.$day(this.date)
+      const filterPeriod = this.periodName
       let format = 'MMMM'
 
       switch (filterPeriod) {
@@ -25,16 +32,24 @@ export default {
           break
 
         case 'week':
+          const startDate = this.$day(filterDate).startOf('week')
+          const endDate = this.$day(filterDate).endOf('week')
+
+          // this week
           if (today.isSame(filterDate, 'week')) {
             return this.$t('dates.week.current')
           }
+          // last week
           else if (today.subtract(1, filterPeriod).isSame(filterDate, 'week')) {
             return this.$t('dates.week.last')
           }
-          const date = this.$day(filterDate)
-          const startDate = date.startOf('week').format('D MMMM')
-          const endDate = date.endOf('week').format('D MMMM')
-          return `${startDate} - ${endDate}`
+          // same month in week
+          else if (this.$day(startDate).isSame(endDate, 'month')) {
+            return `${this.$day(startDate).format('D')}-${this.$day(endDate).format('D MMMM')}`
+          }
+          else {
+            return `${this.$day(startDate).format('D MMMM')} - ${this.$day(endDate).format('D MMMM')}`
+          }
 
         case 'month':
           if (today.isSame(filterDate, 'year')) {

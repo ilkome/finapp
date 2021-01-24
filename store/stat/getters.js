@@ -99,11 +99,13 @@ export default {
 
   isLastPeriodSelected (state, getters, rootState, rootGetters) {
     if (rootGetters['trns/hasTrns']) {
-      const firstCreatedTrnId = rootGetters['trns/firstCreatedTrnId']
-      const firstCreatedTrnDate = rootState.trns.items[firstCreatedTrnId].date
-      if (dayjs(rootState.filter.date).isSame(firstCreatedTrnDate, rootState.filter.period)) {
-        return true
-      }
+      const trns = rootState.trns.items
+      const firstCreatedTrnIdFromSelectedTrns = rootGetters['trns/firstCreatedTrnIdFromSelectedTrns']
+      const firstCreatedTrn = trns[firstCreatedTrnIdFromSelectedTrns]
+      const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(state.period).valueOf()
+      const filterDate = dayjs(rootState.filter.date).startOf(state.period).valueOf()
+
+      if (filterDate <= firstCreatedTrnDate) { return true }
     }
     else {
       return true

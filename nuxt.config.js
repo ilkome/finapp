@@ -9,19 +9,13 @@ export default {
   // Target (https://go.nuxtjs.dev/config-target)
   target: 'static',
 
-  /**
-   * https://nuxtjs.org/guides/configuration-glossary/configuration-modern
-   */
+  // https://nuxtjs.org/guides/configuration-glossary/configuration-modern
   modern: 'client',
 
-  /**
-   * https://nuxtjs.org/guides/configuration-glossary/configuration-telemetry
-   */
+  // https://nuxtjs.org/guides/configuration-glossary/configuration-telemetry
   telemetry: false,
 
-  /**
-   * https://nuxtjs.org/guides/configuration-glossary/configuration-vue-config
-   */
+  // https://nuxtjs.org/guides/configuration-glossary/configuration-vue-config
   vue: {
     config: {
       silent: true,
@@ -31,10 +25,7 @@ export default {
     }
   },
 
-  /**
-   * Headers of the page
-   * https://nuxtjs.org/api/configuration-head
-   */
+  // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
     title: 'Finapp',
     meta: [
@@ -42,6 +33,7 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
+
     link: [{
       rel: 'stylesheet',
       href: 'https://fonts.googleapis.com/css?family=Roboto:400,500,600,700|Roboto+Condensed:400,500,600,700|Unica+One|Nunito:400,700,800&display=swap&subset=cyrillic'
@@ -53,57 +45,42 @@ export default {
     noscript: [{ innerHTML: 'This website requires JavaScript.' }]
   },
 
-  /**
-   * Global CSS
-   */
+  // Global CSS (https://go.nuxtjs.dev/config-css)
   css: [
     { src: '~/assets/stylus/index.styl' }
   ],
 
-  /**
-   * Auto import components
-   * https://nuxtjs.org/api/configuration-components
-   */
+  // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,
 
-  /**
-   * Plugins to load before mounting the App
-   * https://nuxtjs.org/guide/plugins
-   */
+  // Loading
+  loading: false,
+
+  // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
     { src: '~/plugins/initAppFromCache' },
     { src: '~/plugins/dayjs' },
     { src: '~/plugins/notifications' }
   ],
 
-  loading: false,
-
-  /**
-   * Nuxt.js dev-modules
-   */
+  // Modules for dev and build (recommended) (https://go.nuxtjs.dev/config-modules)
   buildModules: [
     '@nuxtjs/pwa',
     'nuxt-composition-api'
   ],
 
-  /**
-   * Color mode
-   */
+  // Color mode
   colorMode: {
     preference: 'system', // default value of $colorMode.preference
     fallback: 'dark' // fallback value if not system preference found
   },
 
-  /**
-   * Style resources
-   */
+  // Style resources
   styleResources: {
     stylus: ['~/assets/stylus/variables']
   },
 
-  /**
-   * Nuxt.js modules
-   */
+  // Nuxt.js modules
   modules: [
     '@nuxtjs/color-mode',
     '@nuxtjs/pwa',
@@ -111,25 +88,14 @@ export default {
     'portal-vue/nuxt'
   ],
 
-  /**
-   * Axios module configuration
-   * https://axios.nuxtjs.org/options
-   */
-  axios: {},
-
-  /*
-  ** Router middleware
-  */
+  // Router middleware
   router: {
     middleware: [
       'auth'
     ]
   },
 
-  /**
-   * nuxt-i18n module configuration
-   * https://i18n.nuxtjs.org/
-   */
+  // Nuxt-i18n module configuration (https://i18n.nuxtjs.org)
   i18n: {
     locales: [{
       code: 'en',
@@ -150,9 +116,7 @@ export default {
     langDir: 'locales/'
   },
 
-  /**
-   * Manifest
-   */
+  // Manifest
   pwa: {
     manifest: {
       name: 'Finapp',
@@ -174,9 +138,5 @@ export default {
         handler: 'cacheFirst'
       }]
     }
-  },
-
-  build: {
-    extractCSS: false
   }
 }

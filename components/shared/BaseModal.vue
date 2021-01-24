@@ -3,6 +3,8 @@ import { ref } from 'nuxt-composition-api'
 import useTouchClose from '~/composables/useTouchClose'
 
 export default {
+  name: 'BaseModal',
+
   props: {
     title: {
       type: String,

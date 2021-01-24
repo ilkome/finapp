@@ -68,6 +68,7 @@ export default {
 .statCatsItem.statCatsItem.swiper-no-swiping(
   :style="styles"
 )
+  .statCatsItem__text(v-if="total / biggest * 100 > 20") {{ category.name }}
 </template>
 
 <style lang="stylus" scoped>
@@ -76,4 +77,8 @@ export default {
 
 .statCatsItem
   height 12px
+
+  &__text
+  &__count
+    display none
 </style>

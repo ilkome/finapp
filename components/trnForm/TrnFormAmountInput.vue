@@ -103,11 +103,6 @@ export default {
       }
       catch (error) {
         console.log(error)
-        // this.$notify({
-        //   type: 'error',
-        //   text: this.$t('trnForm.empty'),
-        //   title: random(errorEmo)
-        // })
       }
     }
   }

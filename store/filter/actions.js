@@ -51,16 +51,16 @@ export default {
       const firstCreatedTrnIdFromSelectedTrns = rootGetters['trns/firstCreatedTrnIdFromSelectedTrns']
       const firstCreatedTrn = trns[firstCreatedTrnIdFromSelectedTrns]
       const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(state.period).valueOf()
-      const selectedMonth = state.date
-      const nextDate = dayjs(selectedMonth).subtract(1, state.period).startOf(state.period).valueOf()
+      const filterDate = state.date
+      const nextDate = dayjs(filterDate).subtract(1, state.period).startOf(state.period).valueOf()
       if (nextDate >= firstCreatedTrnDate) { commit('setPeriodNext', nextDate) }
     }
   },
 
   setPeriodPrev ({ state, commit, rootGetters }) {
     if (rootGetters['trns/hasTrns']) {
-      const selectedMonth = state.date
-      const nextDate = dayjs(selectedMonth).add(1, state.period).startOf(state.period).valueOf()
+      const filterDate = state.date
+      const nextDate = dayjs(filterDate).add(1, state.period).startOf(state.period).valueOf()
       if (nextDate < dayjs().valueOf()) { commit('setPeriodPrev', nextDate) }
     }
   }

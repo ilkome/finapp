@@ -156,6 +156,7 @@ export default {
 @import "~assets/stylus/variables"
 
 .trnsList
+  background var(--c-bg-4)
   &__grid
     display grid
     grid-template-rows 1fr
@@ -163,6 +164,7 @@ export default {
 
   &__day
     padding $m7 0
+    background var(--c-bg-4)
 
     &:first-child
       padding-top 0

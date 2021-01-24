@@ -145,10 +145,11 @@ Portal(
       )
 
   ModalBottomConfirm(
-    :show="showModalConfirm"
     :description="deleteInfo"
+    :show="showModalConfirm"
     @onClose="showModalConfirm = false"
-    @onConfirm="handleDeleteConfirm")
+    @onConfirm="handleDeleteConfirm"
+  )
 </template>
 
 <style lang="stylus" scoped>

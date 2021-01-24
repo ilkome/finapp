@@ -203,16 +203,4 @@ export default {
       margin-left auto
       padding-right 0
       margin-left (- $m6)
-
-    .headerLink._periods
-      display flex
-      align-items center
-      height 40px
-      padding 0 $m7
-      margin-right (- $m5)
-      font-size 16px
-
-      &._active
-        color var(--c-font-2)
-        background none
 </style>

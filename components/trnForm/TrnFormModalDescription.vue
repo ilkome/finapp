@@ -1,9 +1,5 @@
 <script>
-import { focus } from 'vue-focus'
-
 export default {
-  directives: { focus },
-
   data () {
     return {
       description: null

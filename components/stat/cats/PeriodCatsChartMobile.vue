@@ -69,7 +69,6 @@ export default {
 
 .statLineCategories
   overflow hidden
-  // opacity .8
   display flex
   border-radius $m4
 </style>
