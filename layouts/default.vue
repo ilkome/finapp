@@ -1,5 +1,5 @@
 <script>
-import { ref, onMounted } from 'nuxt-composition-api'
+import { ref, onMounted } from '@nuxtjs/composition-api'
 import debounce from '~/utils/debounce'
 import isTouchDevice from '~/assets/js/isTouchDevice'
 

@@ -1,7 +1,7 @@
 <script>
 import Swiper from 'swiper'
 import 'swiper/swiper-bundle.css'
-import { ref, useContext } from 'nuxt-composition-api'
+import { ref, useContext } from '@nuxtjs/composition-api'
 import generateId from '~/utils/id'
 import useTouchClose from '~/composables/useTouchClose'
 import { successEmo, random } from '~/assets/js/emo'

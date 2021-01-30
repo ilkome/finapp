@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'nuxt-composition-api'
+import { ref, onMounted, onUnmounted } from '@nuxtjs/composition-api'
 
 export default function useOnTouch ({ container, overflow, dragger, content, onClose, noDragClasss }) {
   const isDragging = ref(false)

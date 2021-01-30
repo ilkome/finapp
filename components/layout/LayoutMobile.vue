@@ -1,7 +1,7 @@
 <script>
 import Swiper from 'swiper'
 import 'swiper/swiper-bundle.css'
-import { ref, computed, watch, onMounted, useContext } from 'nuxt-composition-api'
+import { ref, computed, watch, onMounted, useContext } from '@nuxtjs/composition-api'
 
 export default {
   name: 'LayoutMobileWrap',

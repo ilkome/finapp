@@ -1,5 +1,5 @@
 <script>
-import { ref } from 'nuxt-composition-api'
+import { ref } from '@nuxtjs/composition-api'
 import useTouchClose from '~/composables/useTouchClose'
 
 export default {
