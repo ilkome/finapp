@@ -1,5 +1,9 @@
 <script>
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
+
 export default {
+  name: 'TrnFormTrns',
+
   props: {
     ui: {
       type: String,
@@ -38,7 +42,6 @@ export default {
 
   data () {
     return {
-      editedTrnId: null,
       pageNumber: 1,
       sortByEditDate: false,
       filterBy: 'wallet'
@@ -127,8 +130,9 @@ export default {
       }, 100)
     },
 
-    onClickEditTrn (id) {
-      this.editedTrnId = id
+    onClickEditTrn (id, amount) {
+      const { setExpression } = useCalculator()
+      setExpression(amount)
       this.slider.slideTo(0)
     }
   }
@@ -153,13 +157,13 @@ export default {
         .trnsList__trns
           TrnItem(
             v-for="trnId in trnsIds"
-            :isActive="$store.state.trnForm.values.trnId && editedTrnId === trnId"
+            :isActive="$store.state.trnForm.values.trnId === trnId"
             :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
             :key="trnId"
             :trn="$store.state.trns.items[trnId]"
             :trnId="trnId"
             :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
-            @onClickEdit="onClickEditTrn"
+            @onClickEdit="(trnId) => onClickEditTrn(trnId, $store.state.trns.items[trnId].amount)"
           )
 
   .trnsList__pages(v-if="!isShowedAllTrns")
@@ -276,16 +280,4 @@ export default {
   &__pages
     padding 16px 8px
     padding-top 0
-
-    +media-laptop()
-      padding 0
-      padding-top 20px
-
-  &__sort
-    padding 0
-    padding-bottom $m8
-
-    +media-laptop('less')
-      padding $m7
-      padding-bottom $m6
 </style>

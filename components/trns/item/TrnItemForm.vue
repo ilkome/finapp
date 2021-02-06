@@ -40,7 +40,6 @@ export default {
     setTrnEdit () {
       const trnId = this.trnId
       this.$store.commit('trnForm/setTrnFormModalTrnId', trnId)
-      // this.$store.commit('trnForm/toogleTrnFormModal', 'trn')
 
       if (this.trnId === this.$store.state.trnForm.values.trnId) {
         this.$store.commit('trnForm/setTrnFormValues', { trnId: null, amountEvaluation: null, amount: '0' })

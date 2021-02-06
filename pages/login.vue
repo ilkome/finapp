@@ -1,12 +1,24 @@
 <script>
 import firebase from 'firebase/app'
+import { ref, useContext } from '@nuxtjs/composition-api'
 
 export default {
   name: 'LoginPage',
 
-  data () {
+  setup () {
+    const { query } = useContext()
+    const isLoading = ref(false)
+
+    if (query.value && query.value.loading) {
+      isLoading.value = true
+    }
+
+    setTimeout(() => {
+      isLoading.value = false
+    }, 5000)
+
     return {
-      loading: false
+      isLoading
     }
   },
 
@@ -18,10 +30,12 @@ export default {
 
   methods: {
     signInWithGoogle () {
-      this.loading = true
+      this.$router.push({ query: { loading: true } })
+      this.isLoading = true
+
       const provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth()
-        .signInWithPopup(provider)
+        .signInWithRedirect(provider)
         .catch(e => this.notifyAboutError(e))
     },
 
@@ -32,7 +46,7 @@ export default {
         title: 'Error',
         type: 'error'
       })
-      this.loading = false
+      this.isLoading = false
     },
 
     changeLang (lang) {
@@ -63,20 +77,30 @@ export default {
 
   .tab__bottom
     .loginButton(
-      :class="{ _loading: loading }"
+      :class="{ _loading: isLoading }"
       @click.prevent="signInWithGoogle"
     )
       transition(name="fadeIn")
-        .loginButton__spiner(v-if="loading"): Spiner
+        .loginButton__spiner(v-if="isLoading"): Spiner
       .loginButton__text {{ $t('loginWithGoogle') }}
 </template>
 
+<style lang="stylus">
+html
+  --link-active var(--c-font-2)
+  --link var(--c-blue-1)
+
+  &.dark-mode
+    --link-active var(--c-font-2)
+    --link var(--c-blue-1)
+</style>
+
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/scroll"
+@import '~assets/stylus/variables/animations'
+@import '~assets/stylus/variables/fonts'
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables/scroll'
 
 .tab
   overflow-x hidden
@@ -119,12 +143,18 @@ export default {
 
   &__item
     cursor pointer
-    opacity .6
     padding 10px
-    color var(--c-font-4)
+    color var(--link)
+
+    +media-hover()
+      text-decoration underline
 
     &._active
-      color var(--c-font-1)
+      cursor default
+      color var(--link-active)
+
+      +media-hover()
+        text-decoration none
 
 .themeChanger
   cursor pointer
@@ -132,6 +162,10 @@ export default {
   top $m7
   right $m7
   padding 10px
+  color var(--c-blue-1)
+
+  +media-hover()
+    text-decoration underline
 
   @media $media-laptop
     top $mn1
@@ -146,7 +180,7 @@ export default {
   color var(--c-font-1)
   font-size 16px
   text-align center
-  background #0094FF
+  background #0094ff
   border-radius 36px
   anim()
 
@@ -154,6 +188,7 @@ export default {
     background #067ab4
 
   &._loading
+    pointer-events none
     cursor default
 
   &__text

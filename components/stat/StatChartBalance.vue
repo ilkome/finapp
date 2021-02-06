@@ -1,6 +1,9 @@
 <script>
+import currency from 'currency.js'
 import { Chart } from 'highcharts-vue'
 import chartOptions from '~/components/stat/chartOptions'
+
+const baseAmountFormat = (value, separator, precision) => currency(value, { symbol: null, precision, pattern: '#', separator }).format()
 
 export default {
   name: 'StatChartBalance',
@@ -77,7 +80,7 @@ export default {
 
     formatAmount (amount) {
       const fixed = this.$store.state.currencies.base === 'RUB' ? 0 : 2
-      return Number(`${amount.toFixed(fixed)}`).toLocaleString('ru-RU')
+      return baseAmountFormat(amount, ' ', fixed)
     },
 
     generateData (periodName, oldSeries) {

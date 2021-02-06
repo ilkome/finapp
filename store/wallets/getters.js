@@ -67,5 +67,12 @@ export default {
       if (parseInt(state.items[a].order) > parseInt(state.items[b].order)) { return 1 }
       return 0
     })
+  },
+
+  getWalletWithId: (state, getters, rootState, rootGetters) => (walletId) => {
+    return {
+      id: walletId,
+      ...rootState.wallets.items[walletId]
+    }
   }
 }

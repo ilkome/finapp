@@ -2,7 +2,7 @@ import actions from './actions'
 import mutations from './mutations'
 
 export const initStatus = {
-  loading: false,
+  loading: true,
   login: false,
   ready: false
 }

@@ -1,5 +1,11 @@
 <script>
+import currency from 'currency.js'
+
+const baseAmountFormat = (value, separator) => currency(value, { symbol: '', precision: 0, pattern: '#', separator }).format()
+
 export default {
+  name: 'Amount',
+
   props: {
     value: {
       type: Number,
@@ -59,9 +65,13 @@ export default {
     },
 
     amountInBaseCurrency () {
-      const baseValue = this.$store.getters['currencies/getAmountInBaseCurrency']({ amount: this.value, currency: this.currency })
+      const baseValue = this.$store.getters['currencies/getAmountInBaseCurrency']({
+        amount: this.value,
+        currency: this.currency
+      })
+
       if (baseValue) {
-        return this.formatAmount(baseValue, '0')
+        return this.formatAmount(baseValue)
       }
       return null
     }
@@ -85,10 +95,8 @@ export default {
       }
     },
 
-    formatAmount (amount, fixedNumber = false) {
-      const number = amount
-      const fixed = fixedNumber || 2
-      return Number(`${number.toFixed(fixed)}`).toLocaleString('ru-RU')
+    formatAmount (amount) {
+      return baseAmountFormat(amount, ' ')
     }
   }
 }

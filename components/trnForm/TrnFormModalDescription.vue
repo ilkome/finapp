@@ -1,25 +1,30 @@
 <script>
+import { ref, computed, watch, useContext } from '@nuxtjs/composition-api'
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
+
 export default {
-  data () {
+  name: 'TrnFormModalDescription',
+
+  setup () {
+    const { store } = useContext()
+    const { setKeysActive } = useCalculator()
+    const description = ref('')
+
+    const isShow = computed(() => store.state.trnForm.modal.description)
+
+    watch(isShow, (value) => {
+      if (value) {
+        description.value = store.state.trnForm.values.description
+        setKeysActive(false)
+      }
+      else {
+        setKeysActive(true)
+      }
+    })
+
     return {
-      description: null
-    }
-  },
-
-  computed: {
-    show () {
-      return this.$store.state.trnForm.modal.description
-    }
-  },
-
-  watch: {
-    show: {
-      handler (newValue, oldValue) {
-        if (newValue) {
-          this.description = this.$store.state.trnForm.values.description
-        }
-      },
-      immediate: true
+      description,
+      isShow
     }
   },
 
@@ -38,8 +43,8 @@ export default {
 
 <template lang="pug">
 TrnFormModal(
-  v-if="show"
-  :show="show"
+  v-if="isShow"
+  :show="isShow"
   :title="$t('trnForm.description.title')"
   :position="$store.state.ui.mobile ? 'bottom' : null"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'description')"

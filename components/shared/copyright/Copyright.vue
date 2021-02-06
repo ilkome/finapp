@@ -1,6 +1,6 @@
 <script>
 export default {
-
+  name: 'Copyright'
 }
 </script>
 
@@ -12,10 +12,10 @@ a(href="https://ilko.me").copyright
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/scroll"
+@import '~assets/stylus/variables/animations'
+@import '~assets/stylus/variables/fonts'
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .copyright
   display flex
@@ -24,6 +24,10 @@ a(href="https://ilko.me").copyright
   padding 10px $m6
   color var(--c-font-4)
   text-decoration none
+  anim()
+
+  +media-hover()
+    color var(--c-font-2)
 
   &__heart
     display inline-flex

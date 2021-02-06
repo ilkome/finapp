@@ -28,7 +28,6 @@ export const state = () => ({
 
   values: {
     amount: '0',
-    amountEvaluation: null,
     amountType: 0,
     categoryId: null,
     date: dayjs().valueOf(),

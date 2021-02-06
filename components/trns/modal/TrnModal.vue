@@ -1,5 +1,9 @@
 <script>
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
+
 export default {
+  name: 'TrnModal',
+
   data () {
     return {
       showModalConfirm: false,
@@ -54,11 +58,15 @@ export default {
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
     },
     handleEditClick () {
+      const trn = this.trn
       const trnId = this.trnId
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
+
+      const { setExpression } = useCalculator()
+      setExpression(trn.amount)
     },
     handleDeleteClick () {
       this.showModalConfirm = true

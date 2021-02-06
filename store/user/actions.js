@@ -23,16 +23,18 @@ export default {
     localforage.setItem('finapp.user', user)
   },
 
-  async signOut ({ rootState, commit, dispatch }) {
-    const uid = rootState.user.user.uid
-    db.ref(`users-info/${uid}/actions/${dayjs().valueOf()}`).set('signOut')
+  async signOut ({ rootState, dispatch }) {
+    const uid = rootState.user.user ? rootState.user.user.uid : null
 
-    await dispatch('categories/unsubcribeCategories', null, { root: true })
-    await dispatch('trns/unsubcribeTrns', null, { root: true })
-    await dispatch('wallets/unsubcribeWallets', null, { root: true })
-    await dispatch('app/clearUserData', null, { root: true })
-    db.ref(`users/${uid}/budgets`).off()
-    db.ref(`users/${uid}/groups`).off()
+    if (uid) {
+      db.ref(`users-info/${uid}/actions/${dayjs().valueOf()}`).set('signOut')
+      await dispatch('categories/unsubcribeCategories', null, { root: true })
+      await dispatch('trns/unsubcribeTrns', null, { root: true })
+      await dispatch('wallets/unsubcribeWallets', null, { root: true })
+      await dispatch('app/clearUserData', null, { root: true })
+      db.ref(`users/${uid}/budgets`).off()
+      db.ref(`users/${uid}/groups`).off()
+    }
 
     if (this.$router.currentRoute.name !== 'login') {
       this.app.context.redirect('/login')

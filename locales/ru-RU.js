@@ -19,6 +19,8 @@ export default {
 
   trnForm: {
     transferTitle: 'Перевод',
+    saveTrnButton: 'Сохранить',
+    calcTrnButton: 'Посчитать результат',
     createTrnButton: 'Создать транзакцию',
     createTransferButton: 'Создать перевод',
     titleEditTrn: 'Редактирование транзакции',

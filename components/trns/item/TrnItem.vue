@@ -1,4 +1,5 @@
 <script>
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import { formatDate } from '~/utils/formatDate'
 
 export default {
@@ -80,6 +81,8 @@ export default {
 
     setTrnEdit () {
       const trnId = this.trnId
+      const { setExpression } = useCalculator()
+      setExpression(this.trn.amount)
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
       this.$emit('onClickEdit', this.trnId)

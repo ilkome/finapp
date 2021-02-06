@@ -1,34 +1,29 @@
 <script>
+import { computed, useContext } from '@nuxtjs/composition-api'
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
+
 export default {
-  computed: {
-    amountString () {
-      return this.$store.state.trnForm.values.amount
-    },
+  setup () {
+    const { store } = useContext()
+    const { isSum, getResult, expression } = useCalculator()
+    const amountType = computed(() => store.state.trnForm.values.amountType)
 
-    amountType () {
-      return this.$store.state.trnForm.values.amountType
-    },
-
-    className () {
-      return {
-        _expenses: this.amountType === 0,
-        _incomes: this.amountType === 1
-      }
-    }
-  },
-
-  watch: {
-    amountString: {
-      handler (newValue, oldValue) {
-        this.amountValue = newValue !== '0' ? newValue : null
-      },
-      immediate: true
+    return {
+      amountType,
+      isSum,
+      getResult,
+      expression,
+      className: computed(() => ({
+        _expenses: amountType.value === 0,
+        _incomes: amountType.value === 1
+      }))
     }
   },
 
   methods: {
     handleChangeAmountType () {
       let nextAmountType = 0
+
       switch (this.amountType) {
         case 0:
           nextAmountType = 1
@@ -66,14 +61,14 @@ export default {
           template(v-if="amountType === 1") {{ $t('money.incomes') }}
           template(v-if="amountType === 2 && $store.getters['wallets/walletsSortedIds'].length > 1") {{ $t('money.transfer') }}
 
-        .trnFormAmount__value {{ amountString }}
-        .trnFormAmount__evaluation {{ $store.state.trnForm.values.amountEvaluation }}
+        .trnFormAmount__value {{ expression }}
+        .trnFormAmount__evaluation {{ isSum ? null : getResult }}
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/fonts'
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .trnFormAmount
   &__wrap
@@ -92,8 +87,8 @@ export default {
     justify-content center
 
   &__icon
-    font-size 32px
     padding-right $m6
+    font-size 32px
 
   &__type
     align-self center

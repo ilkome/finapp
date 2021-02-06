@@ -249,5 +249,6 @@ export default {
   &__title
     ~/._text-center &
       flex-grow 1
+      font-size 16px
       text-align center
 </style>

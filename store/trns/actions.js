@@ -1,12 +1,12 @@
 import localforage from 'localforage'
 import dayjs from 'dayjs'
-
 import {
   removeTrnToAddLaterLocal,
   saveTrnToAddLaterLocal,
   saveTrnIDforDeleteWhenClientOnline,
   removeTrnToDeleteLaterLocal
 } from './helpers'
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import { db } from '~/services/firebaseConfig'
 
 export default {
@@ -21,12 +21,12 @@ export default {
     * @param {string} {}.values.category
   */
   addTrn ({ commit, rootState }, { id, values }) {
-    console.log('addTrn', id, values)
     const uid = rootState.user.user.uid
     const trns = rootState.trns.items
     let isTrnSavedOnline = false
+
     const formatedTrnValues = {
-      amount: Number(String(values.amount).replace(/\s+/g, '')),
+      amount: values.amount,
       categoryId: values.categoryId,
       date: dayjs(values.date).valueOf(),
       description: values.description || null,
@@ -43,18 +43,19 @@ export default {
       .set(formatedTrnValues)
       .then(() => {
         isTrnSavedOnline = true
-        console.log('isTrnSavedOnline')
         removeTrnToAddLaterLocal(id)
       })
 
     setTimeout(() => {
       if (!isTrnSavedOnline) { saveTrnToAddLaterLocal({ id, values }) }
-    }, 300)
+    }, 1000)
+
+    const { clearExpression } = useCalculator()
+    clearExpression()
 
     commit('trnForm/setTrnFormValues', {
       trnId: null,
       amount: '0',
-      amountEvaluation: null,
       description: null
     }, { root: true })
 

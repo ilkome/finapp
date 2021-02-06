@@ -48,16 +48,17 @@ export default {
 )
   .categoryItem__icon
     Icon(
-      @click="handleIconClick"
       :icon="category.icon"
       :color="category.color || $store.state.ui.defaultBgColor"
       :category="true"
+      small
+      @click="handleIconClick"
     )
 
   .categoryItem__name
-    .parent(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
-    .parent(v-if="ui === '_flat' && parentCategory") {{ parentCategory.name }}
-    .child {{ category.name }}
+    .categoryItem__parent(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
+    .categoryItem__parent(v-if="ui === '_flat' && parentCategory") {{ parentCategory.name }}
+    .categoryItem__child {{ category.name }}
 
   .categoryItem__dots(v-if="childCategoriesIds.length > 0"): .mdi.mdi-dots-vertical
 </template>
@@ -81,9 +82,9 @@ export default {
   border-radius $m5
 
   &._flat
-    flex-flow column
+    flex-flow row
     align-items center
-    justify-content center
+    justify-content flex-start
     flex 1 1 auto
     padding $m6
 
@@ -97,7 +98,8 @@ export default {
     padding-bottom $m4
 
     ^[0]._flat &
-      padding-bottom $m3
+      padding-right $m3
+      padding-bottom 0
 
   &__name
     overflow hidden
@@ -105,27 +107,33 @@ export default {
     text-overflow ellipsis
     padding 0 $m4
     font-size 14px
-    text-align center
 
     ^[0]._flat &
+      flex-grow 1
       min-height inherit
 
     &:last-child
       padding-bottom 0
 
-  .parent
+  &__parent
     padding-bottom $m3
     color var(--c-font-4)
     font-size 12px
     text-align center
 
-  .child
+    ^[0]._flat &
+      text-align left
+
+  &__child
     color var(--c-font-1)
     font-size 14px
     text-align center
 
     /.light-mode &
       color var(--c-font-4)
+
+    ^[0]._flat &
+      text-align left
 
   &__dots
     position absolute

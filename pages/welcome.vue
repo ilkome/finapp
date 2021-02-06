@@ -31,6 +31,10 @@ export default {
     if (!this.newUserData) {
       this.$router.push('/')
     }
+
+    if (!this.$store.state.user.user) {
+      this.$store.dispatch('user/signOut')
+    }
   },
 
   methods: {
@@ -47,7 +51,7 @@ export default {
 </script>
 
 <template lang="pug">
-.tabs(v-if="newUserData")
+.tabs(v-if="newUserData && $store.state.user.user")
 
   //- welcome
   transition(name="fadeIn")
@@ -171,11 +175,11 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/flex"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/scroll"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/flex'
+@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables/fonts'
+@import '~assets/stylus/variables/scroll'
 
 .steps
   display flex
@@ -201,23 +205,23 @@ export default {
   background var(--c-bg-3)
 
 .tab
-  display grid
-  overflow-x hidden
-  overflow-y scroll
-  scrollbar()
   position absolute
-  left 0
   top 0
+  left 0
+  display grid
   width 100%
   height 100%
   padding-bottom $m10
+  overflow-x hidden
+  overflow-y scroll
+  scrollbar()
 
   &__content
     display-flex(column, grow)
-    align-self center
     margin 0 auto
     padding $m9
     padding-bottom 100px
+    align-self center
 
     @media $media-laptop
       width 550px
@@ -235,8 +239,8 @@ export default {
 
   &__desc
     padding-top $m6
-    font-size 12px
     color var(--c-font-4)
+    font-size 12px
 
     @media $media-laptop
       padding-top $m6
@@ -253,21 +257,21 @@ export default {
 
 .options
   &__or
+    position relative
     display flex
     align-items center
     justify-content center
-    position relative
     padding $m9 0
-    text-align center
     color var(--c-font-4)
+    text-align center
     &__text
       position relative
       padding $m7
       background var(--c-bg-3)
     &__border
       position absolute
-      left 0
       top 50%
+      left 0
       width 100%
       height 1px
       background var(--c-bg-6)
@@ -278,16 +282,16 @@ export default {
     line-height 20px
 
 .text
-  line-height 20px
   padding-bottom $m8
+  line-height 20px
   @media $media-laptop
     padding-bottom $m9
 
 .icon
   padding-bottom $m5
-  text-align center
   color var(--c-font-4)
   font-size 96px
+  text-align center
   @media $media-laptop
     padding-bottom $m7
 

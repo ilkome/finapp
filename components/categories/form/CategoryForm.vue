@@ -297,8 +297,8 @@ ComponentWrap
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .icons
   &__group
@@ -310,9 +310,9 @@ ComponentWrap
   display flex
   align-items center
   justify-content center
+  min-height 50px
   padding 8px
   font-size 30px
-  min-height 50px
 
   &._active
     background var(--c-bg-2)
@@ -392,7 +392,7 @@ ComponentWrap
 </style>
 
 <style lang="stylus">
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/media'
 
 .dashboard .component
   .categories__list

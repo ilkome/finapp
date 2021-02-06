@@ -1,18 +1,6 @@
-import dayjs from 'dayjs'
 import { baseModalState } from './'
 
 export default {
-  closeAndCleanTrnForm (state) {
-    state.show = false
-    state.values = {
-      amount: 0,
-      amountEvaluation: null,
-      amountType: 0,
-      date: dayjs().valueOf(),
-      description: null
-    }
-  },
-
   setTrnFormValues (state, values) {
     state.values = {
       ...state.values,

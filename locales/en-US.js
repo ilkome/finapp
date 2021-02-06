@@ -18,6 +18,8 @@ export default {
 
   trnForm: {
     transferTitle: 'Transfer',
+    saveTrnButton: 'Save transaction',
+    calcTrnButton: 'Calculate',
     createTrnButton: 'Create transaction',
     createTransferButton: 'Create transfer',
     titleEditTrn: 'Edit transaction',

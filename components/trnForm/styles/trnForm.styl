@@ -1,4 +1,5 @@
 .trnForm
+  overflow hidden
   z-index 10
   position fixed
   bottom 0
@@ -10,19 +11,25 @@
 
   @media $media-laptop
     top 10%
-    right 10%
+    right 20px
     bottom inherit
     height calc(100% - 20%)
+    border-radius 16px
 
   &__overflow
     position fixed
-    left 0
+    right 0
     bottom 0
     width 100%
     height 100%
     background var(--c-bg-14)
 
+    @media $media-laptop
+      width 440px
+
   &__wrap
+    overflow hidden
+    overflow-y auto
     position relative
     display flex
     flex-grow 1
@@ -36,8 +43,9 @@
       margin-left auto
 
     @media $media-laptop
+      // overflow hidden
       width 400px
-      max-height calc(100vh - 100px)
+      // max-height calc(100vh - 100px)
       background 0
 
   &__scroll

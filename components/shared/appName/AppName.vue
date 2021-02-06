@@ -3,20 +3,20 @@
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/fonts"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/fonts'
 
 .appName
-  color var(--c-font-3)
+  margin-bottom 20px
+  color var(--c-font-2)
   fontFamilyNunito()
   font-size 66px
   font-weight 800
   letter-spacing 2px
   text-align center
-  margin-bottom 20px
 
   &:first-letter
-    color #067ab4
+    color var(--c-blue-1)
 
   &:not(:first-child)
     margin-top $m9

@@ -168,6 +168,7 @@ export default {
     padding-bottom 16px
 
     +media-laptop()
+      margin 0
       padding 16px 0px
       background var(--c-bg-4)
       border-bottom 1px solid var(--c-bg-2)

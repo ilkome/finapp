@@ -125,4 +125,5 @@ body
   display flex
   flex-flow column
   min-width 320px
+  anim()
 </style>
