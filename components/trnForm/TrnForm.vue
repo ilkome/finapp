@@ -156,7 +156,12 @@ export default {
           return
         }
 
-        this.showSuccess()
+        // @ts-ignore
+        this.$notify({
+          type: 'success',
+          text: 'Excellent transaction!',
+          title: random(successEmo)
+        })
         // @ts-ignore
         this.$store.dispatch('trns/addTrn', { id, values })
       }
@@ -178,16 +183,6 @@ export default {
         // @ts-ignore
         this.$store.commit('trnForm/setTrnFormHeight', newTrnFormHeight)
       }
-    },
-
-    showSuccess () {
-      const emo = random(successEmo)
-      // @ts-ignore
-      this.$notify({
-        type: 'success',
-        text: 'Excellent transaction!',
-        title: emo
-      })
     },
 
     prepeareValues (isTransfer: boolean): any {
@@ -216,7 +211,7 @@ export default {
           // @ts-ignore
           type: Number(this.$store.state.trnForm.values.amountType) || 0,
           // @ts-ignore
-          walletId: this.$store.state.trnForm.values.walletFromId
+          walletId: this.$store.state.trnForm.values.walletId
         }
       }
 
@@ -236,9 +231,9 @@ export default {
           // @ts-ignore
           walletId: this.$store.state.trnForm.values.walletFromId,
           // @ts-ignore
-          walletToId: this.$store.state.trnForm.values.walletToId,
-          // @ts-ignore
           walletFromId: this.$store.state.trnForm.values.walletFromId,
+          // @ts-ignore
+          walletToId: this.$store.state.trnForm.values.walletToId,
           type: 2,
           // @ts-ignore
           description: this.$store.state.trnForm.values.description || null,
