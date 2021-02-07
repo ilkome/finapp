@@ -6,7 +6,19 @@ export default {
         freezedItems[itemId] = Object.freeze(items[itemId])
       }
     }
-    state.items = freezedItems
+    state.items = {
+      ...freezedItems,
+      transfer: {
+        color: 'var(--c-blue-1)',
+        icon: 'mdi mdi-mdi mdi-repeat',
+        name: 'Transfer',
+        order: 0,
+        parentId: 0,
+        showInLastUsed: false,
+        showInQuickSelector: false,
+        showStat: false
+      }
+    }
   },
 
   showCategoryModal (state) {

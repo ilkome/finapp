@@ -32,6 +32,10 @@ export default {
     description: {
       title: 'Description',
       placeholder: 'Write description...'
+    },
+    transfer: {
+      from: 'From',
+      to: 'To'
     }
   },
 

@@ -1,25 +1,33 @@
 <script>
 export default {
   fetch () {
-    this.$store.commit('trnForm/setTrnFormTransfer', {
-      tranferType: 'from',
-      walletId: this.walletFromId
-    })
-    this.$store.commit('trnForm/setTrnFormTransfer', {
-      tranferType: 'to',
-      walletId: this.walletToId
-    })
+    if (this.$store.state.trnForm.values.amountType === 2) {
+      this.$store.commit('trnForm/setTrnFormValues', {
+        walletFromId: this.walletFromId,
+        walletToId: this.walletToId
+      })
+    }
+    else {
+      this.$store.commit('trnForm/setTrnFormTransfer', {
+        tranferType: 'from',
+        walletId: this.walletFromId
+      })
+      this.$store.commit('trnForm/setTrnFormTransfer', {
+        tranferType: 'to',
+        walletId: this.walletToId
+      })
+    }
   },
 
   computed: {
     walletFromId () {
-      return this.$store.state.trnForm.transfer.from || this.$store.state.trnForm.values.walletId || this.$store.getters['wallets/walletsSortedIds'][0]
+      return this.$store.state.trnForm.values.walletFromId || this.$store.state.trnForm.values.walletId || this.$store.getters['wallets/walletsSortedIds'][0]
     },
     walletFrom () {
       return this.$store.state.wallets.items[this.walletFromId]
     },
     walletToId () {
-      return this.$store.state.trnForm.transfer.to || this.$store.getters['wallets/walletsSortedIds'][1] || this.$store.state.trnForm.values.walletId
+      return this.$store.state.trnForm.values.walletToId || this.$store.getters['wallets/walletsSortedIds'][1] || this.$store.state.trnForm.values.walletId
     },
     walletTo () {
       return this.$store.state.wallets.items[this.walletToId]

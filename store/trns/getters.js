@@ -20,7 +20,7 @@ export default {
     * @return {String} return.incomes
     * @return {String} return.total
   */
-  getTotalOfTrnsIds: (state, getters, rootState, rootGetters) => (trnsIds, inculdeTrnasfers = false) => {
+  getTotalOfTrnsIds: (state, getters, rootState, rootGetters) => (trnsIds, inculdeTrnasfers = false, isConvertToBase = true, walletId) => {
     const trns = rootState.trns.items
     const currencies = rootState.currencies.rates
     const wallets = rootState.wallets.items
@@ -33,17 +33,29 @@ export default {
     for (const key of trnsIds) {
       const trn = trns[key]
       if (trn && (inculdeTrnasfers || trn.categoryId !== transferCategoryId)) {
-        const wallet = wallets[trn.walletId]
-        if (wallet && currencies) {
-          let amount = 0
-          if (wallet.currency !== baseCurrency) {
-            amount = Math.abs(trn.amount / currencies[wallet.currency])
+        // Simple
+        if (trn.type !== 2) {
+          const wallet = wallets[trn.walletId]
+          if (wallet && currencies) {
+            let amount = 0
+            if (isConvertToBase && wallet.currency !== baseCurrency) {
+              amount = Math.abs(trn.amount / currencies[wallet.currency])
+            }
+            else {
+              amount = trn.amount
+            }
+            if (trn.type === 1) { incomes = incomes + amount }
+            else { expenses = expenses + amount }
           }
-          else {
-            amount = trn.amount
+        }
+
+        if (trn.type === 2 && inculdeTrnasfers) {
+          if (walletId === trn.walletFromId) {
+            expenses = expenses + trn.amountFrom
           }
-          if (trn.type === 1) { incomes = incomes + amount }
-          else { expenses = expenses + amount }
+          if (walletId === trn.walletToId) {
+            incomes = incomes + trn.amountTo
+          }
         }
       }
     }
@@ -59,7 +71,7 @@ export default {
     const trns = rootState.trns.items
     const trnsIds = []
     for (const trnId in trns) {
-      if (trns[trnId] && trns[trnId].walletId === walletId) {
+      if (trns[trnId] && (trns[trnId].walletId === walletId || trns[trnId].walletFromId === walletId || trns[trnId].walletToId === walletId)) {
         trnsIds.push(trnId)
       }
     }
@@ -109,7 +121,7 @@ export default {
 
     // filter wallet
     if (filterWalletId) {
-      trnsIds = trnsIds.filter(trnId => trns[trnId].walletId === filterWalletId)
+      trnsIds = trnsIds.filter(trnId => trns[trnId].walletId === filterWalletId || trns[trnId].walletToId === filterWalletId || trns[trnId].walletFromId === filterWalletId)
     }
 
     // filter category
@@ -218,7 +230,7 @@ export default {
 
     // filter wallet
     if (filterWalletId) {
-      trnsIds = trnsIds.filter(trnId => trns[trnId].walletId === filterWalletId)
+      trnsIds = trnsIds.filter(trnId => trns[trnId].walletId === filterWalletId || trns[trnId].walletToId === filterWalletId || trns[trnId].walletFromId === filterWalletId)
     }
 
     // filter category
@@ -230,6 +242,7 @@ export default {
           for (const categoryId of childCategoriesIds) {
             if (trnCategoryId === categoryId) { return true }
           }
+          return false
         })
       }
       else {
@@ -280,7 +293,7 @@ export default {
 
     // filter wallet
     if (filterWalletId) {
-      trnsIds = trnsIds.filter(trnId => trns[trnId].walletId === filterWalletId)
+      trnsIds = trnsIds.filter(trnId => trns[trnId].walletId === filterWalletId || trns[trnId].walletToId === filterWalletId || trns[trnId].walletFromId === filterWalletId)
     }
 
     // filter category

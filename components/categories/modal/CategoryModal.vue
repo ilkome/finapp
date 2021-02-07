@@ -121,6 +121,7 @@ Portal(
 
     template(slot="btns")
       ModalButton(
+        v-if="categoryId !== 'transfer'"
         :name="$t('base.delete')"
         icon="mdi mdi-delete"
         @onClick="handleDeleteClick"

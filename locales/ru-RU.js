@@ -33,6 +33,10 @@ export default {
     description: {
       title: 'Описание',
       placeholder: 'Напишите описание...'
+    },
+    transfer: {
+      from: 'Из',
+      to: 'В'
     }
   },
 

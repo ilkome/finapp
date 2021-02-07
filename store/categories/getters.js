@@ -17,7 +17,7 @@ export default {
     if (!getters.hasCategories) { return [] }
 
     return Object.keys(state.items)
-      .filter(key => state.items[key].parentId === 0)
+      .filter(id => state.items[id].parentId === 0)
       .sort((a, b) => {
         if (state.items[a].order < state.items[b].order) { return -1 }
         if (state.items[a].order > state.items[b].order) { return 1 }
@@ -31,6 +31,7 @@ export default {
     const categoriesForBeParent = []
 
     for (const categoryId of categoriesRootIds) {
+      if (categoryId === 'transfer') { break }
       let isTrns = false
       for (const trnId in trns) {
         if (trns[trnId].categoryId === categoryId) {
@@ -101,8 +102,8 @@ export default {
         if (state.items[a] && state.items[b]) {
           if (state.items[a].name < state.items[b].name) { return -1 }
           if (state.items[a].name > state.items[b].name) { return 1 }
-          return 0
         }
+        return 0
       })
     }
   },
@@ -123,6 +124,6 @@ export default {
     if (!getters.hasCategories) { return null }
 
     return Object.keys(state.items)
-      .find(id => state.items[id].name === 'Перевод' || state.items[id].name === 'Transfer') || false
+      .find(id => state.items[id].name === 'Перевод' || state.items[id].name === 'Transfer') || state.items.transfer || false
   }
 }

@@ -14,20 +14,9 @@ export default {
 
   // getWalletAmount
   getWalletAmount: (state, getters, rootState, rootGetters) => (walletId) => {
-    const trns = rootState.trns.items
-    let amount = 0
     const trnsIds = rootGetters['trns/getTrnsIdsInWallet'](walletId)
-    for (const trnId of trnsIds) {
-      if (trns[trnId]) {
-        if (trns[trnId].type === 0) {
-          amount = amount - trns[trnId].amount
-        }
-        else {
-          amount = amount + trns[trnId].amount
-        }
-      }
-    }
-    return amount
+    const { total } = rootGetters['trns/getTotalOfTrnsIds'](trnsIds, true, false, walletId)
+    return total || 0
   },
 
   walletsTotal (state, getters, rootState, rootGetters) {
@@ -36,18 +25,9 @@ export default {
     const wallets = rootState.wallets.items
 
     const getWalletAmount = (walletId) => {
-      const trns = rootState.trns.items
-      let amount = 0
       const trnsIds = rootGetters['trns/getTrnsIdsInWallet'](walletId)
-      for (const trnId of trnsIds) {
-        if (trns[trnId].type === 0) {
-          amount = amount - trns[trnId].amount
-        }
-        else {
-          amount = amount + trns[trnId].amount
-        }
-      }
-      return amount || 0
+      const { total } = rootGetters['trns/getTotalOfTrnsIds'](trnsIds, true, false, walletId)
+      return total || 0
     }
 
     Object.keys(wallets).forEach((id) => {

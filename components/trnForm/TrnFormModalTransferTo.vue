@@ -3,8 +3,8 @@ export default {
   methods: {
     handleSetWallet (walletId) {
       this.$store.commit('trnForm/toogleTrnFormModal', 'transferTo')
-      this.$store.commit('trnForm/setTrnFormTransfer', {
-        tranferType: 'to',
+      this.$store.commit('trnForm/setTrnFormValues', {
+        walletToId: walletId,
         walletId
       })
     }

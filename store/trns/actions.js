@@ -23,24 +23,17 @@ export default {
   addTrn ({ commit, rootState }, { id, values }) {
     const uid = rootState.user.user.uid
     const trns = rootState.trns.items
+    const valuesWithEditDate = {
+      ...values,
+      edited: dayjs().valueOf()
+    }
     let isTrnSavedOnline = false
 
-    const formatedTrnValues = {
-      amount: values.amount,
-      categoryId: values.categoryId,
-      date: dayjs(values.date).valueOf(),
-      description: values.description || null,
-      edited: dayjs().valueOf(),
-      groups: values.groups || null,
-      type: Number(values.amountType) || 0,
-      walletId: values.walletId
-    }
-
-    localforage.setItem('finapp.trns', { ...trns, [id]: formatedTrnValues })
-    commit('setTrns', Object.freeze({ ...trns, [id]: formatedTrnValues }))
+    localforage.setItem('finapp.trns', { ...trns, [id]: valuesWithEditDate })
+    commit('setTrns', Object.freeze({ ...trns, [id]: valuesWithEditDate }))
 
     db.ref(`users/${uid}/trns/${id}`)
-      .set(formatedTrnValues)
+      .set(valuesWithEditDate)
       .then(() => {
         isTrnSavedOnline = true
         removeTrnToAddLaterLocal(id)

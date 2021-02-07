@@ -105,8 +105,8 @@ export default {
     template(v-if="ui === 'detailed'")
       .trnItem__categoryIcon
         Icon(
-          background="var(--c-bg-3)"
-          icon="mdi mdi-repeat"
+          :background="category.color"
+          :icon="category.icon"
           big
           round
         )
@@ -114,60 +114,57 @@ export default {
       .trnItem__date {{ formatedDate }}
       .trnItem__wallet
         WalletItem(
-          :id="trn.fromWalletId"
+          :id="trn.walletFromId"
           ui="tile"
         )
         .trnFormHeaderSeparator: .mdi.mdi-chevron-right
         WalletItem(
-          :id="trn.toWalletId"
+          :id="trn.walletToId"
           ui="tile"
         )
-
-      .trnItem__desc(v-if="trn.description") {{ trn.description }}
-
       .trnItem__amount(@click.stop="setTrnEdit")
         Amount(
-          :currency="$store.state.wallets.items[trn.fromWalletId].currency"
-          :value="trn.fromAmount"
-          :type="trn.type"
+          :currency="$store.state.wallets.items[trn.walletFromId].currency"
+          :value="trn.amountFrom"
+          :type="2"
           vertical="center"
           size="xl"
         )
 
+      .trnItem__desc(v-if="trn.description") {{ trn.description }}
+
     //- Transfer: History
     //-------------------------------------------------------------------------
     template(v-else)
-      .trnItem__categoryIcon
-        Icon(
-          background="var(--c-bg-3)"
-          icon="mdi mdi-repeat"
-          round
-        )
+      .trnItem__left
+        .trnItem__categoryIcon
+          Icon(
+            :background="category.color"
+            :icon="category.icon"
+            round
+          )
 
-      .trnItem__categoryName
-        div {{ $t('trnForm.transferTitle') }}
-        .transfer
-          div {{ $t('trnForm.transfer.fromShort') }}: {{ $store.state.wallets.items[trn.fromWalletId].name }}
-          div {{ $t('trnForm.transfer.toShort') }}: {{ $store.state.wallets.items[trn.toWalletId].name }}
+      .trnItem__center
+        .trnItem__categoryName
+          div {{ $t('trnForm.transferTitle') }}
+          .transfer
+            div
+              span {{ $t('trnForm.transfer.from') }}:
+              | {{ $store.state.wallets.items[trn.walletFromId].name }}
+            div
+              span {{ $t('trnForm.transfer.to') }}:
+              | {{ $store.state.wallets.items[trn.walletToId].name }}
 
-      .trnItem__amount(@click.stop="setTrnEdit")
-        Amount(
-          :currency="$store.state.wallets.items[trn.fromWalletId].currency"
-          :isColorize="false"
-          :type="0"
-          :value="trn.fromAmount"
-          isShowPrefix
-        )
-        Amount(
-          :currency="$store.state.wallets.items[trn.toWalletId].currency"
-          :isColorize="false"
-          :type="1"
-          :value="trn.toAmount"
-          isShowPrefix
-        )
+        .trnItem__desc(v-if="trn.description") {{ trn.description }}
 
-      .trnItem__desc
-        div(v-if="trn.description") {{ trn.description }}
+      .trnItem__right
+        .trnItem__amount(@click.stop="setTrnEdit")
+          Amount(
+            :currency="$store.state.wallets.items[trn.walletFromId].currency"
+            :isColorize="false"
+            :type="2"
+            :value="trn.amountFrom"
+          )
 
   //- Transaction
   //---------------------------------------------------------------------------
@@ -178,8 +175,8 @@ export default {
       .trnItem__categoryIcon
         Icon(
           :background="category.color"
-          big
           :icon="category.icon"
+          big
           round
         )
       .trnItem__categoryName {{ category.name }}
@@ -275,6 +272,11 @@ export default {
 .transfer
   padding-top $m5
   font-size 14px
+
+  span
+    padding-right 2px
+    color var(--c-font-3)
+    font-size 11px
 
 .trnFormHeaderSeparator
   color var(--c-font-1)

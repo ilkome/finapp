@@ -80,6 +80,8 @@ export default {
     show: {
       // @ts-ignore
       handler (show) {
+        const { clearExpression } = useCalculator()
+
         if (show) {
           // @ts-ignore
           this.$nextTick(() => {
@@ -106,6 +108,9 @@ export default {
             }
           })
         }
+        else {
+          clearExpression()
+        }
       },
       immediate: true
     },
@@ -127,16 +132,15 @@ export default {
     handleSubmitForm () {
       try {
         const { validate } = useTrnFormValidate()
-        const { getResult } = useCalculator()
+        // @ts-ignore
+        const { id, values } = this.prepeareValues(this.isTransfer)
 
         const validateStatus = validate({
+          ...values,
           // @ts-ignore
-          ...this.$store.state.trnForm.values,
-          amount: getResult.value,
+          walletFrom: this.$store.getters['wallets/getWalletWithId'](this.$store.state.trnForm.values.walletFromId),
           // @ts-ignore
-          walletFrom: this.$store.getters['wallets/getWalletWithId'](this.$store.state.trnForm.transfer.from),
-          // @ts-ignore
-          walletTo: this.$store.getters['wallets/getWalletWithId'](this.$store.state.trnForm.transfer.to)
+          walletTo: this.$store.getters['wallets/getWalletWithId'](this.$store.state.trnForm.values.walletToId)
         })
 
         // @ts-ignore
@@ -149,84 +153,16 @@ export default {
             // @ts-ignore
             text: validateStatus.error.text
           })
-
           return
         }
-        else {
-          this.showSuccess()
-          // @ts-ignore
-          this.isTransfer
-            // @ts-ignore
-            ? this.handleSubmitTrnasfer()
-            // @ts-ignore
-            : this.handleSubmitTrn()
-        }
+
+        this.showSuccess()
+        // @ts-ignore
+        this.$store.dispatch('trns/addTrn', { id, values })
       }
       catch (e) {
         console.log(e)
       }
-    },
-
-    handleSubmitTrn () {
-      const { getResult } = useCalculator()
-
-      // @ts-ignore
-      const values = {
-        // @ts-ignore
-        ...this.$store.state.trnForm.values,
-        amount: getResult.value
-      }
-
-      // @ts-ignore
-      const id = values.trnId || generateId(this.$day().valueOf())
-
-      // @ts-ignore
-      this.$store.dispatch('trns/addTrn', {
-        id,
-        values
-      })
-    },
-
-    handleSubmitTrnasfer () {
-      const { getResult } = useCalculator()
-
-      const values = {
-        // @ts-ignore
-        amount: getResult.value,
-        // @ts-ignore
-        categoryId: this.$store.getters['categories/transferCategoryId'],
-        // @ts-ignore
-        date: this.$day(this.$store.state.trnForm.values.date).valueOf()
-      }
-
-      // @ts-ignore
-      const id = generateId(this.$day().valueOf())
-
-      // Income
-      // @ts-ignore
-      this.$store.dispatch('trns/addTrn', {
-        // @ts-ignore
-        id: id + 'incomes',
-        values: {
-          ...values,
-          // @ts-ignore
-          walletId: this.$store.state.trnForm.transfer.to,
-          amountType: 1
-        }
-      })
-
-      // Expense
-      // @ts-ignore
-      this.$store.dispatch('trns/addTrn', {
-        // @ts-ignore
-        id: id + 'expenses',
-        values: {
-          ...values,
-          // @ts-ignore
-          walletId: this.$store.state.trnForm.transfer.from,
-          amountType: 0
-        }
-      })
     },
 
     setTrnFormHeight () {
@@ -252,6 +188,69 @@ export default {
         text: 'Excellent transaction!',
         title: emo
       })
+    },
+
+    prepeareValues (isTransfer: boolean): any {
+      let normalizedValues
+      // @ts-ignore
+      const id = this.$store.state.trnForm.values.trnId || generateId(this.$day().valueOf())
+      const { getResult } = useCalculator()
+
+      // Simple
+      if (!isTransfer) {
+        normalizedValues = {
+          // @ts-ignore
+          amount: getResult.value,
+          // @ts-ignore
+          amountFrom: getResult.value,
+          // @ts-ignore
+          amountTo: getResult.value,
+          // @ts-ignore
+          categoryId: this.$store.state.trnForm.values.categoryId,
+          // @ts-ignore
+          date: this.$day(this.$store.state.trnForm.values.date).valueOf(),
+          // @ts-ignore
+          description: this.$store.state.trnForm.values.description || null,
+          // @ts-ignore
+          groups: this.$store.state.trnForm.values.groups || null,
+          // @ts-ignore
+          type: Number(this.$store.state.trnForm.values.amountType) || 0,
+          // @ts-ignore
+          walletId: this.$store.state.trnForm.values.walletFromId
+        }
+      }
+
+      // Transfer
+      if (isTransfer) {
+        normalizedValues = {
+          // @ts-ignore
+          amount: getResult.value,
+          // @ts-ignore
+          // @ts-ignore
+          amountFrom: getResult.value,
+          // @ts-ignore
+          amountTo: getResult.value,
+          categoryId: 'transfer',
+          // @ts-ignore
+          date: this.$day(this.$store.state.trnForm.values.date).valueOf(),
+          // @ts-ignore
+          walletId: this.$store.state.trnForm.values.walletFromId,
+          // @ts-ignore
+          walletToId: this.$store.state.trnForm.values.walletToId,
+          // @ts-ignore
+          walletFromId: this.$store.state.trnForm.values.walletFromId,
+          type: 2,
+          // @ts-ignore
+          description: this.$store.state.trnForm.values.description || null,
+          // @ts-ignore
+          groups: this.$store.state.trnForm.values.groups || null
+        }
+      }
+
+      return {
+        id,
+        values: normalizedValues
+      }
     }
   }
 }

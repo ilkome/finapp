@@ -49,7 +49,7 @@ export default function useTrnFormValidate () {
 
     // Transfer
     if (values.amountType === 2) {
-      if (values.walletFrom.id === values.walletTo.id) {
+      if (values.walletFromId === values.walletToId) {
         return {
           error: {
             title: errorTitle,
