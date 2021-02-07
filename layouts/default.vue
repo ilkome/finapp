@@ -33,10 +33,6 @@ export default {
   computed: {
     layoutStyles () {
       return { height: `${this.$store.state.ui.height}px` }
-    },
-
-    isProduction () {
-      return process.env.NODE_ENV === 'production'
     }
   },
 
@@ -87,8 +83,6 @@ export default {
     v-if="isShowUpdateApp"
     @onClose="isShowUpdateApp = false"
   )
-
-  LazyMetrica(v-if="isProduction")
 </template>
 
 <style lang="stylus">
