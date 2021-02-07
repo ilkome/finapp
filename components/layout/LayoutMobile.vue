@@ -1,85 +1,6 @@
 <script>
-import Swiper from 'swiper'
-import 'swiper/swiper-bundle.css'
-import { ref, computed, watch, onMounted, useContext } from '@nuxtjs/composition-api'
-
 export default {
   name: 'LayoutMobileWrap',
-
-  setup (props, ctx) {
-    const { store, $day } = useContext()
-
-    // Periods dates
-    const periodDates = computed(() => {
-      const { period } = store.state.filter
-      const showedPeriodsCount = store.state.chart.periods[period].showedPeriods
-
-      const dates = []
-      for (let step = 0; step < showedPeriodsCount; step++) {
-        const periodDate = $day().startOf(period).subtract(step, period).valueOf()
-        dates.unshift(periodDate)
-      }
-      return dates
-    })
-
-    // Slider
-    const periodDatesSliderValue = ref({})
-    const periodDatesSliderRef = ref(null)
-
-    const activeTabViewName = computed(() => { return store.state.ui.activeTabViewName })
-    const filterPeriod = computed(() => { return store.state.filter.period })
-    const filterDate = computed(() => { return store.state.filter.date })
-
-    const initSlder = () => {
-      if (activeTabViewName.value === 'summary2' && periodDatesSliderRef.value) {
-        periodDatesSliderValue.value = new Swiper(periodDatesSliderRef.value, {
-          slidesPerView: 'auto',
-          initialSlide: periodDates.value.length,
-          autoHeight: true,
-          centeredSlides: true,
-          shortSwipes: false,
-          longSwipesRatio: 0.1,
-          longSwipesMs: 60,
-          on: {
-            slideChange: (swiper) => {
-              const activeIndex = swiper.activeIndex
-              const periodDate = periodDates.value[activeIndex]
-              store.dispatch('filter/setDate', periodDate)
-            }
-          }
-        })
-      }
-    }
-
-    onMounted(initSlder)
-    watch(activeTabViewName, initSlder)
-    watch(filterPeriod, () => {
-      if (activeTabViewName.value === 'summary2' && periodDatesSliderValue.value) {
-        periodDatesSliderValue.value.update()
-        setTimeout(() => {
-          periodDatesSliderValue.value.slideTo(periodDates.value.length, 0)
-        }, 10)
-      }
-    })
-    watch(filterDate, () => {
-      if (activeTabViewName.value === 'summary2' && periodDatesSliderValue.value) {
-        const date = periodDates.value.find(i => $day(i).isSame(filterDate.value, store.state.filter.period))
-        const index = periodDates.value.findIndex(i => i === date)
-        periodDatesSliderValue.value.slideTo(index)
-      }
-    })
-
-    const onClickDatePeriodSliderItem = (slideIdx) => {
-      periodDatesSliderValue.value.slideTo(slideIdx)
-    }
-
-    return {
-      periodDates,
-      periodDatesSliderRef,
-      periodDatesSliderValue,
-      onClickDatePeriodSliderItem
-    }
-  },
 
   data () {
     return {
@@ -178,25 +99,6 @@ export default {
       }
 
       return total
-    }
-  },
-
-  watch: {
-    activeTabViewName: {
-      handler (value) {
-        this.$nextTick(() => {
-          if (value === 'summary2' && this.$refs.slider) {
-            this.slider = new Swiper(this.$refs.slider, {
-              slidesPerView: 1,
-              autoHeight: true,
-              shortSwipes: false,
-              longSwipesRatio: 0.1,
-              longSwipesMs: 60
-            })
-          }
-        })
-      },
-      immediate: true
     }
   },
 
@@ -360,27 +262,7 @@ export default {
                     )
                 .menuDots__dots: .mdi.mdi-dots-vertical
 
-            .swiper-container(
-              v-if="filterPeriod !== 'all'"
-              ref="periodDatesSliderRef"
-            )
-              .swiper-wrapper
-                .swiper-slide._widthAuto(
-                  v-for="(periodDate, slideIdx) in periodDates"
-                  :key="periodDate"
-                  @click="onClickDatePeriodSliderItem(slideIdx)"
-                )
-                  .dateItem(
-                    :class="{ _active: periodDatesSliderValue && periodDatesSliderValue.activeIndex === slideIdx }"
-                    @click="periodDatesSliderValue && periodDatesSliderValue.activeIndex === slideIdx ? isShowPeriodsNames = true : false"
-                  )
-                    .menuDots
-                      .menuDots__name
-                        DateFormated(
-                          :date="periodDate"
-                          :periodName="$store.state.filter.period"
-                        )
-                    .menuDots__dots(v-if="periodDatesSliderValue && periodDatesSliderValue.activeIndex === slideIdx"): .mdi.mdi-dots-vertical
+            LazyLayoutMobileDatesSlider(v-if="activeTabViewName === 'summary2' && filterPeriod !== 'all'")
 
           //- Filter
           //---------------------------
@@ -948,10 +830,6 @@ export default {
 .h100
   height 100%
 
-._widthAuto
-  display flex
-  width auto
-
 .flexCenter
   display flex
   align-items center
@@ -967,15 +845,12 @@ export default {
   height 28px
   padding $m5 $m7
   color var(--c-font-4)
-  font-size 12px
-  font-size 12px
+  font-size 14px
   anim()
 
   &._active
     opacity 1
     color var(--c-font-3)
-    font-size 16px
-    font-weight 600
 
 .blockWrapBg
   overflow hidden
@@ -1022,6 +897,9 @@ export default {
   display flex
   align-items center
   justify-content center
+  color var(--c-font-3)
+  font-size 16px
+  font-weight bold
 
   &__dots
     padding-top 3px
