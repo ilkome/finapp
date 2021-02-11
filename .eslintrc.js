@@ -9,7 +9,8 @@ module.exports = {
   },
   extends: [
     '@nuxtjs',
-    'plugin:nuxt/recommended'
+    'plugin:nuxt/recommended',
+    '@nuxtjs/eslint-config-typescript'
   ],
   rules: {
     'no-console': 'off',

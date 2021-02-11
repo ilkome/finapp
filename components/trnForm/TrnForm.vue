@@ -25,6 +25,7 @@ export default {
     const scrollOverflow = ref(null)
     const scrollDragger = ref(null)
 
+    // @ts-ignore
     const { onCloseModal } = useTouchClose({
       container: scrollContainer,
       content: scrollContent,
