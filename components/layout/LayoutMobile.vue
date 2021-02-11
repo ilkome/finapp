@@ -262,7 +262,9 @@ export default {
                     )
                 .menuDots__dots: .mdi.mdi-dots-vertical
 
-            LazyLayoutMobileDatesSlider(v-if="activeTabViewName === 'summary2' && filterPeriod !== 'all'")
+            LazyLayoutMobileDatesSlider(
+              v-if="activeTabViewName === 'summary2' && filterPeriod !== 'all'"
+            )
 
           //- Filter
           //---------------------------

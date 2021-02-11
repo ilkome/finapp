@@ -27,6 +27,7 @@ export default {
     const periodDatesSliderRef = ref(null)
 
     const filterPeriod = computed(() => { return store.state.filter.period })
+    const filterPeriodCount = computed(() => { return store.state.chart.periods[filterPeriod.value].showedPeriods})
 
     const initSlder = () => {
       if (periodDatesSliderRef.value) {
@@ -54,6 +55,13 @@ export default {
     const onClickDatePeriodSliderItem = (slideIdx) => {
       periodDatesSliderValue.value.slideTo(slideIdx)
     }
+
+    watch([filterPeriod, filterPeriodCount], () => {
+      setTimeout(() => {
+        periodDatesSliderValue.value.update()
+        periodDatesSliderValue.value.slideTo(periodDatesSliderValue.value.slides.length, false)
+      }, 10)
+    })
 
     return {
       filterPeriod,
