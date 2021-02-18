@@ -108,7 +108,7 @@ body
   font-size 14px
   line-height 1
   letter-spacing 0
-  background var(--c-bg-1)
+  background var(--color-bg-canvas)
   user-select none
 </style>
 
@@ -118,6 +118,7 @@ body
 .finapp
   display flex
   flex-flow column
+  min-height 100vh
   min-width 320px
   anim()
 </style>

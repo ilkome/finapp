@@ -16,7 +16,7 @@
   text-align center
 
   &:first-letter
-    color var(--c-blue-1)
+    color var(--c-blue-3)
 
   &:not(:first-child)
     margin-top $m9

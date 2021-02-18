@@ -15,7 +15,7 @@ export default {
 
     setTimeout(() => {
       isLoading.value = false
-    }, 5000)
+    }, 6000)
 
     return {
       isLoading
@@ -60,16 +60,17 @@ export default {
 .tab
   .tab__top
     .langChanger
-      .langChanger__item(
+      .linkItem(
         @click="changeLang('ru')"
         :class="{ _active: $store.state.lang.lang === 'ru' }"
       ) RU
-      .langChanger__item(
+      .linkItem(
         @click="changeLang('en')"
         :class="{ _active: $store.state.lang.lang === 'en' }"
       ) EN
 
-    .themeChanger(@click="$store.dispatch('ui/changeTheme')") {{ $t('changeTheme') }}
+    .themeChanger
+      .linkItem(@click="$store.dispatch('ui/changeTheme')") {{ $t('changeTheme') }}
 
   .tab__content
     AppName
@@ -84,16 +85,6 @@ export default {
         .loginButton__spiner(v-if="isLoading"): Spiner
       .loginButton__text {{ $t('loginWithGoogle') }}
 </template>
-
-<style lang="stylus">
-html
-  --link-active var(--c-font-2)
-  --link var(--c-blue-1)
-
-  &.dark-mode
-    --link-active var(--c-font-2)
-    --link var(--c-blue-1)
-</style>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables/animations'
@@ -141,35 +132,33 @@ html
     top $mn1
     left $m9
 
-  &__item
-    cursor pointer
-    padding 10px
-    color var(--link)
-
-    +media-hover()
-      text-decoration underline
-
-    &._active
-      cursor default
-      color var(--link-active)
-
-      +media-hover()
-        text-decoration none
-
 .themeChanger
   cursor pointer
   position absolute
   top $m7
   right $m7
-  padding 10px
-  color var(--c-blue-1)
-
-  +media-hover()
-    text-decoration underline
 
   @media $media-laptop
     top $mn1
     right $m9
+
+.linkItem
+  cursor pointer
+  padding 8px 10px
+  color var(--color-text-link)
+  text-decoration none
+
+  +media-hover()
+    &:not(._active)
+      background var(--color-link-bg)
+      border-radius 4px
+
+  &._active
+    cursor default
+    color var(--color-text-link-active)
+
+    +media-hover()
+      text-decoration none
 
 .loginButton
   overflow hidden
@@ -180,12 +169,12 @@ html
   color var(--c-font-1)
   font-size 16px
   text-align center
-  background #0094ff
+  background var(--c-blue-3)
   border-radius 36px
   anim()
 
   &:hover
-    background #067ab4
+    background var(--c-blue-4)
 
   &._loading
     pointer-events none

@@ -692,7 +692,9 @@ export default {
   //---------------------------------------------------------------------------
   CategoryModal(:slider="slider")
   CurrencyModal
-  TrnForm(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
+  TrnForm(
+    v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
+  )
   TrnModal
   WalletModal(:slider="slider")
 
