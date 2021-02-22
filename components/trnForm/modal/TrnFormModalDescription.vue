@@ -42,11 +42,11 @@ export default {
 </script>
 
 <template lang="pug">
-TrnFormModal(
+LazyTrnFormModal.doNotCloseTrnModal(
   v-if="isShow"
-  :show="isShow"
-  :title="$t('trnForm.description.title')"
+  :isShow="isShow"
   :position="$store.state.ui.mobile ? 'bottom' : null"
+  :title="$t('trnForm.description.title')"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'description')"
 )
   .description

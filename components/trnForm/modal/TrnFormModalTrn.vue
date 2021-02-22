@@ -78,7 +78,7 @@ export default {
 </script>
 
 <template lang="pug">
-TrnFormModal(
+TrnFormModal.doNotCloseTrnModal(
   v-if="trnId"
   :show="$store.state.trnForm.modal.trn"
   :position="$store.state.ui.mobile ? 'bottom' : null"

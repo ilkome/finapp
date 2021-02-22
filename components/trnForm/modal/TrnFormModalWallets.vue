@@ -10,11 +10,10 @@ export default {
 </script>
 
 <template lang="pug">
-TrnFormModal(
-  v-if="$store.state.trnForm.modal.wallets"
-  :show="$store.state.trnForm.modal.wallets"
-  :title="$t('wallets.title')"
+TrnFormModal.doNotCloseTrnModal(
+  :isShow="$store.state.trnForm.modal.wallets"
   :position="$store.state.ui.mobile ? 'bottom' : null"
+  :title="$t('wallets.title')"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'wallets')"
 )
   .trnFormWalletsList
@@ -28,7 +27,7 @@ TrnFormModal(
 </template>
 
 <style lang="stylus">
-@import "~assets/stylus/variables/margins"
+@import '~assets/stylus/variables/margins'
 
 .trnFormWalletsList
   .walletsList__toogle

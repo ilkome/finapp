@@ -1,6 +1,6 @@
-<script>
-import { ref } from '@nuxtjs/composition-api'
-import useTouchClose from '~/composables/useTouchClose'
+<script lang="ts">
+import { ref, watch, reactive, toRefs } from '@nuxtjs/composition-api'
+import useTouchClose from '~/components/base/modal/useTouchClose.ts'
 
 export default {
   props: {
@@ -8,11 +8,18 @@ export default {
       type: String,
       default: null
     },
-    show: {
+
+    isShow: {
       type: Boolean,
-      required: true
+      required: false
     },
+
     position: {
+      type: String,
+      default: null
+    },
+
+    doNotTouchClassName: {
       type: String,
       default: null
     },
@@ -23,26 +30,38 @@ export default {
     }
   },
 
-  setup (props, ctx) {
-    const scrollContainer = ref(null)
-    const scrollContent = ref(null)
-    const scrollOverflow = ref(null)
-    const scrollDragger = ref(null)
+  // @ts-ignore
+  setup (props: any, { listeners }) {
+    const { isShow, doNotTouchClassName } = toRefs(props)
+    const { initTouchModal, closeModal } = useTouchClose()
 
-    const { onCloseModal } = useTouchClose({
-      container: scrollContainer,
-      content: scrollContent,
-      overflow: scrollOverflow,
-      dragger: scrollDragger,
-      onClose: () => ctx.listeners.onClose && ctx.listeners.onClose()
+    console.log('doNotTouchClassName', doNotTouchClassName.value)
+
+    const wrappers = reactive({
+      container: ref(null),
+      content: ref(null),
+      handler: ref(null),
+      overflow: ref(null),
+      wrap: ref(null),
+      config: {
+        doNotTouchClassName: doNotTouchClassName.value ? doNotTouchClassName.value : 'doNotCloseTrnModalInside'
+      }
     })
 
+    watch(isShow, (value) => {
+      if (value) {
+        setTimeout(() => {
+          initTouchModal({
+            ...toRefs(wrappers),
+            onClose: listeners.onClose
+          })
+        }, 10)
+      }
+    }, { immediate: true })
+
     return {
-      scrollContainer,
-      scrollContent,
-      scrollOverflow,
-      scrollDragger,
-      onCloseModal
+      ...toRefs(wrappers),
+      closeModal
     }
   },
 
@@ -53,19 +72,24 @@ export default {
   },
 
   computed: {
-    modalStyle () {
+    modalStyle (): any {
+      // @ts-ignore
       if (this.$store.state.trnForm.height < this.$store.state.ui.height) {
+        // @ts-ignore
         if (this.position === 'bottom') {
           return {
+            // @ts-ignore
             maxHeight: `${this.$store.state.trnForm.height - this.headerHeight}px`
           }
         }
         return {
+          // @ts-ignore
           height: `${this.$store.state.trnForm.height - this.headerHeight}px`
         }
       }
       else {
         return {
+          // @ts-ignore
           height: `${this.$store.state.ui.height - this.headerHeight}px`
         }
       }
@@ -81,19 +105,25 @@ export default {
 
   methods: {
     afterClose () {
+      // @ts-ignore
       if (this.$listeners.afterClose) {
+        // @ts-ignore
         this.$listeners.afterClose()
       }
     },
 
     updateHeight () {
+      // @ts-ignore
       this.$nextTick(() => {
+        // @ts-ignore
         this.headerHeight = this.$refs.header.clientHeight
       })
     },
 
     onClose () {
+      // @ts-ignore
       if (this.$listeners.onClose) {
+        // @ts-ignore
         this.$listeners.onClose()
       }
     }
@@ -102,22 +132,25 @@ export default {
 </script>
 
 <template lang="pug">
-.trnFormModal.noDrag(ref="scrollContainer")
-  transition(name="fadeIn" appear)
+.trnFormModal(
+  ref="container"
+  v-show="isShow"
+)
+  transition(name="baseModalOveflowAnim" appear)
     .trnFormModal__overflow(
-      v-show="show"
-      ref="scrollOverflow"
-      @click="onCloseModal"
+      v-show="isShow"
+      ref="overflow"
+      @click="closeModal"
     )
 
-  transition(name="slide" appear @after-leave="afterClose")
+  transition(name="baseModalWrapAnim" appear)
     .trnFormModal__wrap(
-      v-show="show"
-      ref="scrollDragger"
+      v-show="isShow"
+      ref="wrap"
     )
       .trnFormModal__header(
         ref="header"
-        @click="onCloseModal"
+        @click="closeModal"
       )
         .trnFormModal__header__title(v-if="title") {{ title }}
         .trnFormModal__header__close: .mdi.mdi-close
@@ -125,9 +158,9 @@ export default {
       .trnFormModal__scroll(
         :style="modalStyle"
         :class="{ _noPadding: noPadding }"
-        ref="scrollContent"
+        ref="content"
       )
-        slot()
+        slot
 </template>
 
 <style lang="stylus" scoped>
@@ -136,8 +169,36 @@ export default {
 @import '~assets/stylus/variables/media'
 @import '~assets/stylus/variables/margins'
 
+.baseModalOveflowAnim
+  &-enter-active
+  &-leave-active
+    transition opacity 350ms ease
+
+  &-enter
+  &-leave-to
+    opacity 0
+
+.baseModalWrapAnim
+  &-enter-active
+  &-leave-active
+    opacity 0
+    transform translate3d(0, 50px, 0)
+    transition opacity 300ms $transition-style, transform 250ms $transition-style
+
+  &-enter-to
+    transform translate3d(0, 0, 0)
+
+  &-leave
+  &-enter-to
+  &-leave-to
+    opacity 1
+
+  &-leave-to
+    transform translate3d(0, 200%, 0)
+    transition opacity 400ms $transition-style, transform 400ms $transition-style
+
 .trnFormModal
-  z-index 3
+  z-index 100
   position absolute
   left 0
   width 100%
@@ -171,7 +232,7 @@ export default {
     border-radius $m6
 
     &._anim
-      anim(400ms)
+      anim(200ms)
 
     @media $media-phone
       border-radius $m6 $m6 0 0
@@ -188,6 +249,7 @@ export default {
 
     &._noPadding
       overflow hidden
+      margin-bottom (- $m7)
       padding-bottom 0
 
   &__header

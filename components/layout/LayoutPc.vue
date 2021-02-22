@@ -25,7 +25,10 @@ export default {
   //- modals
   CategoryModal
   CurrencyModal
-  TrnForm(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
+  TrnForm(
+    v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
+    :isShow="$store.state.trnForm.show"
+  )
   TrnModal
   WalletModal
 

@@ -1,98 +1,96 @@
 <script>
-import { ref } from '@nuxtjs/composition-api'
-import useTouchClose from '~/composables/useTouchClose'
+import { ref, watch, reactive, toRefs } from '@nuxtjs/composition-api'
+import useTouchClose from '~/components/base/modal/useTouchClose.ts'
 
 export default {
   name: 'ModalBottom',
 
   props: {
+    isShow: {
+      type: Boolean,
+      default: true
+    },
+
     center: {
       type: Boolean,
       default: false
     },
+
     title: {
       type: String,
       default: null
     },
+
     paddingless: {
       type: Boolean,
       default: false
     }
   },
 
-  setup (props, ctx) {
-    const scrollContainer = ref(null)
-    const scrollContent = ref(null)
-    const scrollOverflow = ref(null)
-    const scrollDragger = ref(null)
+  setup (props, { listeners }) {
+    const { isShow } = toRefs(props)
+    const { initTouchModal, closeModal } = useTouchClose()
 
-    const { onCloseModal } = useTouchClose({
-      container: scrollContainer,
-      content: scrollContent,
-      overflow: scrollOverflow,
-      dragger: scrollDragger,
-      onClose: () => {
-        if (ctx.listeners.onClose) {
-          ctx.listeners.onClose()
-        }
-        if (ctx.listeners && ctx.listeners.afterClose) {
-          ctx.listeners.afterClose()
-        }
-      }
+    const wrappers = reactive({
+      container: ref(null),
+      content: ref(null),
+      handler: ref(null),
+      overflow: ref(null),
+      wrap: ref(null)
     })
 
-    return {
-      scrollContainer,
-      scrollContent,
-      scrollOverflow,
-      scrollDragger,
-      onCloseModal
-    }
-  },
+    watch(isShow, (value) => {
+      value && setTimeout(() => {
+        initTouchModal({
+          ...toRefs(wrappers),
+          onClose: () => {
+            if (listeners.onClose) {
+              listeners.onClose()
+            }
+            if (listeners && listeners.afterClose) {
+              listeners.afterClose()
+            }
+          }
+        })
+      }, 10)
+    }, { immediate: true })
 
-  data () {
     return {
-      isShowed: false
+      ...toRefs(wrappers),
+      closeModal
     }
-  },
-
-  mounted () {
-    this.isShowed = true
   }
 }
 </script>
 
 <template lang="pug">
-.modalBottom.noDrag(
+.modalBottom(
   :style="{ maxHeight: `${$store.state.ui.height}px`}"
   :class="{ _center: center, _paddingless: paddingless }"
-  ref="scrollContainer"
+  v-show="isShow"
+  ref="container"
 )
   //- Overflow
   //--------------------------------------
-  transition(name="fadeIn" appear)
+  transition(name="baseModalOveflowAnim" appear)
     .modalBottom__overflow(
-      v-if="isShowed"
-      ref="scrollOverflow"
-      @click="onCloseModal"
+      v-show="isShow"
+      ref="overflow"
+      @click="closeModal"
     )
 
   //- Wrap
   //--------------------------------------
-  transition(
-    appear
-    name="slide2"
-    @after-leave="afterClose"
-  )
+  transition(name="baseModalWrapAnim" appear)
     .modalBottom__wrap(
-      v-if="isShowed"
-      ref="scrollDragger"
+      v-show="isShow"
+      ref="wrap"
     )
       //- Empty Header
       //--------------------------------------
       div(
         v-if="$slots.emptyHeader"
-        @click="onCloseModal"
+        @click="closeModal"
       )
         slot(name="emptyHeader")
 
@@ -111,7 +109,7 @@ export default {
       //--------------------------------------
       .modalBottom__scroll(
         :style="{ maxHeight: `${$store.state.ui.height - 100}px`}"
-        ref="scrollContent"
+        ref="content"
       )
         //- Description
         slot(name="description")
@@ -123,14 +121,45 @@ export default {
 
         //- Buttons 2 collumns
         .modalLinks._two
-          slot(name="btnsTwo" :closeModal="onCloseModal")
+          slot(name="btnsTwo" :closeModal="closeModal")
 
         //- Default
-        slot(:closeModal="onCloseModal")
+        slot(:closeModal="closeModal")
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
+$transition-style = cubic-bezier(.17, .04, .03, 1)
+
+.baseModalOveflowAnim
+  &-enter-active
+  &-leave-active
+    opacity 1
+    transition all 250ms $transition-style
+
+  &-enter
+  &-leave-to
+    opacity 0
+
+.baseModalWrapAnim
+  &-enter-active
+  &-leave-active
+    opacity 0
+    transform translate3d(0, 50px, 0)
+    transition opacity 300ms $transition-style, transform 250ms $transition-style
+
+  &-enter-to
+    transform translate3d(0, 0, 0)
+
+  &-leave
+  &-enter-to
+  &-leave-to
+    opacity 1
+
+  &-leave-to
+    transform translate3d(0, 200%, 0)
+    transition opacity 400ms $transition-style, transform 400ms $transition-style
 
 .modalBottom
   &__wrap
@@ -146,7 +175,7 @@ export default {
 @import '~assets/stylus/variables'
 
 .modalBottom
-  z-index 10
+  z-index 100
   position fixed
   left 0
   bottom 0
@@ -161,15 +190,18 @@ export default {
     width 100%
     height 100%
     background var(--c-bg-14)
+    anim()
 
   &__wrap
+    // overflow hidden
     position relative
     display flex
     flex-grow 1
     flex-flow column nowrap
     max-width 440px
     margin-right auto
-    border-radius 0 0 $m7 $m7
+    background var(--c-bg-4)
+    border-radius $m7 $m7 0 0
 
     @media $media-laptop
       max-width 460px
@@ -182,11 +214,12 @@ export default {
     max-height calc(90vh - 80px)
     padding $m7
     background var(--c-bg-4)
+    border-radius $m7 $m7 0 0
     scrollbar()
 
     @media $media-laptop
       padding $m9
-      border-radius 0 0 $m7 $m7
+      border-radius $m7
 
     ^[0]._paddingless &
       padding 0

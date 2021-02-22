@@ -1,11 +1,6 @@
 <script>
 export default {
-  name: 'UpdateAppModal',
-
-  setup () {
-    const reload = () => { location.reload() }
-    return { reload }
-  }
+  name: 'UpdateAppModal'
 }
 </script>
 
@@ -21,7 +16,7 @@ ModalBottom(
   Button(
     className="_blue _text-center"
     :title="$t('base.ok')"
-    @onClick="reload"
+    @onClick="$emit('onClose')"
   )
 </template>
 

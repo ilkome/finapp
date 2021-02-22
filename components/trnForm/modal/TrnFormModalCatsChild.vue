@@ -30,11 +30,11 @@ export default {
 </script>
 
 <template lang="pug">
-TrnFormModal(
-  v-if="$store.state.trnForm.modal.categoriesChild"
-  :show="$store.state.trnForm.modal.categoriesChild"
-  :title="id && category && category.name"
+TrnFormModal.doNotCloseTrnModal(
+  :isShow="$store.state.trnForm.modal.categoriesChild"
   :position="$store.state.ui.mobile ? 'bottom' : null"
+  :title="id && category && category.name"
+  doNotTouchClassName="doNotCloseTrnModalInside"
   @onClose="onClose"
 )
   template(v-if="id && category")

@@ -2,11 +2,12 @@
 // @ts-ignore
 import Swiper from 'swiper'
 import 'swiper/swiper-bundle.css'
-import { ref, useContext } from '@nuxtjs/composition-api'
+import { ref, computed, watch, reactive, toRefs, useContext } from '@nuxtjs/composition-api'
 // @ts-ignore
 import generateId from '~/utils/id'
 // @ts-ignore
-import useTouchClose from '~/composables/useTouchClose'
+import useTouchClose from '~/components/base/modal/useTouchClose.ts'
+
 // @ts-ignore
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 // @ts-ignore
@@ -17,115 +18,118 @@ import { successEmo, random } from '~/assets/js/emo'
 export default {
   name: 'TrnForm',
 
-  setup () {
-    const { store } = useContext()
-
-    const scrollContainer = ref(null)
-    const scrollContent = ref(null)
-    const scrollOverflow = ref(null)
-    const scrollDragger = ref(null)
-
-    // @ts-ignore
-    const { onCloseModal } = useTouchClose({
-      container: scrollContainer,
-      content: scrollContent,
-      overflow: scrollOverflow,
-      dragger: scrollDragger,
-      noDragClasss: '.noDrag',
-      onClose: () => store.dispatch('trnForm/closeTrnForm')
-    })
-
-    return {
-      scrollContainer,
-      scrollContent,
-      scrollOverflow,
-      scrollDragger,
-      onCloseModal
+  props: {
+    isShow: {
+      type: Boolean,
+      default: false
     }
   },
 
-  data () {
+  setup (props: any) {
+    const { store } = useContext()
+
+    const { isShow } = toRefs(props)
+    const { initTouchModal, closeModal } = useTouchClose()
+
+    const wrappers = reactive({
+      container: ref(null),
+      content: ref(null),
+      handler: ref(null),
+      overflow: ref(null),
+      wrap: ref(null),
+      config: {
+        doNotTouchClassName: 'doNotCloseTrnModal'
+      }
+    })
+
+    const slider = ref<any>(null)
+    const getHeight = ref<any>(null)
+    const sliderObj = ref<any>(null)
+    const { clearExpression } = useCalculator()
+
+    function setTrnFormHeight () {
+      const trnFormHeight = store.state.trnForm.height
+      const height = getHeight.value.clientHeight + 8
+      const trnFormHeaderHeight = 0
+      const newTrnFormHeight = height - trnFormHeaderHeight
+
+      if (trnFormHeight !== newTrnFormHeight) {
+        store.commit('trnForm/setTrnFormHeight', newTrnFormHeight)
+      }
+    }
+
+    /**
+     * Watch isShow
+     */
+    watch(isShow, (value) => {
+      if (value) {
+        setTimeout(() => {
+          initTouchModal({
+            ...toRefs(wrappers),
+            onClose: () => store.dispatch('trnForm/closeTrnForm')
+          })
+
+          setTrnFormHeight()
+          if (sliderObj.value) {
+            sliderObj.value.update()
+            sliderObj.value.slideTo(0, 0)
+          }
+          else {
+            sliderObj.value = new Swiper(slider.value, {
+              slidesPerView: 1,
+              autoHeight: true,
+              initialSlide: 0,
+              noSwipingClass: 'trnFormNoSwiping',
+              shortSwipes: false,
+              longSwipesRatio: 0.1,
+              longSwipesMs: 60
+            })
+          }
+        }, 10)
+      }
+      else {
+        clearExpression()
+      }
+    }, { immediate: true })
+
+    /**
+     * Watch amountType
+     */
+    const amountType = computed(() => store.state.trnForm.values.amountType)
+    watch(amountType, () => {
+      setTimeout(() => {
+        setTrnFormHeight()
+        sliderObj.value.update()
+      }, 10)
+    })
+
     return {
-      slider: null
+      ...toRefs(wrappers),
+      closeModal,
+
+      sliderObj,
+      slider,
+      getHeight,
+
+      amountType
     }
   },
 
   computed: {
-    // @ts-ignore
-    show () {
+    show (): any {
       // @ts-ignore
       return this.$store.state.trnForm.show
     },
 
-    // @ts-ignore
-    isTransfer () {
+    isTransfer (): any {
       // @ts-ignore
       return this.$store.state.trnForm.values.amountType === 2
     },
 
-    // @ts-ignore
-    amountType () {
-      // @ts-ignore
-      return this.$store.state.trnForm.values.amountType
-    },
-
-    isShowFirstWallets () {
+    isShowFirstWallets (): any {
       // @ts-ignore
       if (this.$store.getters['wallets/walletsSortedIds'].length >= 3) { return true }
       return false
-    }
-  },
-
-  watch: {
-    // @ts-ignore
-    show: {
-      // @ts-ignore
-      handler (show) {
-        const { clearExpression } = useCalculator()
-
-        if (show) {
-          // @ts-ignore
-          this.$nextTick(() => {
-            // @ts-ignore
-            this.setTrnFormHeight()
-            // @ts-ignore
-            if (this.slider) {
-              // @ts-ignore
-              this.slider.update()
-              // @ts-ignore
-              this.slider.slideTo(0, 0)
-            }
-            else {
-              // @ts-ignore
-              this.slider = new Swiper(this.$refs.slider, {
-                slidesPerView: 1,
-                autoHeight: true,
-                initialSlide: 0,
-                noSwipingClass: 'trnFormNoSwiping',
-                shortSwipes: false,
-                longSwipesRatio: 0.1,
-                longSwipesMs: 60
-              })
-            }
-          })
-        }
-        else {
-          clearExpression()
-        }
-      },
-      immediate: true
-    },
-
-    amountType () {
-      // @ts-ignore
-      this.$nextTick(() => {
-        // @ts-ignore
-        this.setTrnFormHeight()
-        setTimeout(() => {
-          // @ts-ignore
-          this.slider.update()
-        }, 1)
-      })
     }
   },
 
@@ -255,27 +259,31 @@ export default {
 <template lang="pug">
 .trnForm(
   v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
-  ref="scrollContainer"
+  v-show="isShow"
+  ref="container"
 )
   //- Overflow
-  transition(name="hey")
+  transition(name="baseModalOveflowAnim" appear)
     .trnForm__overflow(
-      ref="scrollOverflow"
-      v-if="show"
-      @click.prevent="onCloseModal"
+      ref="overflow"
+      v-show="isShow"
+      @click="closeModal"
     )
 
   //- wrap
-  transition(name="trnFormAnimation")
+  transition(name="baseModalWrapAnim" appear)
     .trnForm__wrap(
-      v-show="show"
+      v-show="isShow"
       :style="{ maxHeight: `${$store.state.trnForm.height}px` }"
-      ref="scrollDragger"
+      ref="wrap"
     )
-      .trnForm__handler
+      .trnForm__handler(
+        @click="closeModal"
+        ref="handler"
+      )
 
       //- Content
-      .trnForm__scroll(ref="scrollContent")
+      .trnForm__scroll(ref="content")
         .trnForm__content
           .swiper-container(ref="slider")
             .swiper-wrapper
@@ -313,9 +321,9 @@ export default {
                   TrnFormHeaderTransfer(v-if="isTransfer")
 
               .swiper-slide(:style="{ minHeight: `${$store.state.trnForm.height}px` }")
-                div(v-if="slider")
+                div(v-if="sliderObj")
                   TrnFormTrns(
-                    :slider="slider"
+                    :slider="sliderObj"
                     onlyList
                   )
 
@@ -335,7 +343,49 @@ export default {
 @import '~assets/stylus/variables/margins'
 @import '~assets/stylus/variables/media'
 
+$transition-style = cubic-bezier(.17, .04, .03, 1)
+
+.baseModalOveflowAnim
+  &-enter-active
+  &-leave-active
+    opacity 1
+    transition all 250ms $transition-style
+
+  &-enter
+  &-leave-to
+    opacity 0
+
+.baseModalWrapAnim
+  &-enter-active
+  &-leave-active
+    opacity 0
+    transform translate3d(0, 50px, 0)
+    transition opacity 300ms $transition-style, transform 250ms $transition-style
+
+  &-enter-to
+    transform translate3d(0, 0, 0)
+
+  &-leave
+  &-enter-to
+  &-leave-to
+    opacity 1
+
+  &-leave-to
+    transform translate3d(0, 200%, 0)
+    transition opacity 400ms $transition-style, transform 400ms $transition-style
+
 .trnForm
+  &__overflow
+    position fixed
+    top 0
+    right 0
+    width 100%
+    height 100%
+    anim()
+
+    @media $media-laptop
+      width 440px
+
   &__title
     padding $m8
     padding-bottom 0

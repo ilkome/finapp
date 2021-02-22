@@ -694,6 +694,7 @@ export default {
   CurrencyModal
   TrnForm(
     v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
+    :isShow="$store.state.trnForm.show"
   )
   TrnModal
   WalletModal(:slider="slider")
@@ -781,8 +782,11 @@ export default {
   Portal(
     v-if="activeTab === 'walletsSort'"
     to="modal"
+    key="walletsSort"
   )
     ModalBottom(
+      isShow
+      key="walletsSort"
       @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
     )
       template(#default="{ closeModal }")

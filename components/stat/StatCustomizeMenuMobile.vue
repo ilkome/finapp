@@ -46,7 +46,7 @@ div
           :title="$t('settings.customize')"
         )
 
-  BaseModal(
+  ModalBottom(
     :show="visibleCustomizeMenu"
     :title="$t('settings.customize')"
     @onClose="visibleCustomizeMenu = !visibleCustomizeMenu"

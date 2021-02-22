@@ -1,7 +1,7 @@
 <script>
 export default {
   computed: {
-    show () {
+    isShow () {
       return this.$store.state.trnForm.modal.categories
     }
   }
@@ -9,13 +9,12 @@ export default {
 </script>
 
 <template lang="pug">
-TrnFormModal(
-  v-if="$store.state.trnForm.modal.categories"
-  :show="$store.state.trnForm.modal.categories"
-  :title="$t('categories.name')"
+TrnFormModal.doNotCloseTrnModal(
+  :isShow="isShow"
   :position="$store.state.ui.mobile ? 'bottom' : null"
-  noPadding
+  :title="$t('categories.name')"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
+  noPadding
 )
-  TrnFormCategories(:show="show")
+  TrnFormCategories(:show="isShow")
 </template>

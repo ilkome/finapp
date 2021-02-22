@@ -3,6 +3,8 @@ import draggable from 'vuedraggable'
 import { successEmo, random } from '~/assets/js/emo'
 
 export default {
+  name: 'WalletsSort',
+
   components: {
     draggable
   },

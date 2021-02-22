@@ -14,6 +14,10 @@ export default {
   },
 
   computed: {
+    isShow () {
+      return this.$store.state.trnForm.modal.calendar
+    },
+
     date () {
       return this.$store.state.trnForm.values.date
     }
@@ -41,11 +45,11 @@ export default {
 </script>
 
 <template lang="pug">
-TrnFormModal(
-  v-if="$store.state.trnForm.modal.calendar"
-  :show="$store.state.trnForm.modal.calendar"
-  title="Date"
+LazyTrnFormModal.doNotCloseTrnModal(
+  v-if="isShow"
+  :isShow="isShow"
   :position="$store.state.ui.mobile ? 'bottom' : null"
+  title="Date"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'calendar')"
 )
   Datepicker(
