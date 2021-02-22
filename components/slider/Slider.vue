@@ -1,6 +1,6 @@
 <script>
 import Swiper from 'swiper'
-import 'swiper/css/swiper.min.css'
+import 'swiper/swiper-bundle.css'
 
 export default {
   props: {
