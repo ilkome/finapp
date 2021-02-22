@@ -31,7 +31,6 @@ export default {
     const categoriesForBeParent = []
 
     for (const categoryId of categoriesRootIds) {
-      if (categoryId === 'transfer') { break }
       let isTrns = false
       for (const trnId in trns) {
         if (trns[trnId].categoryId === categoryId) {
@@ -39,7 +38,7 @@ export default {
           break
         }
       }
-      if (!isTrns) {
+      if (!isTrns && categoryId !== 'transfer') {
         categoriesForBeParent.push(categoryId)
       }
     }
