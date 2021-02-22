@@ -930,6 +930,7 @@ export default {
   border-radius $m6
 
 .layoutMobile
+  flex-grow 1
   display grid
   height 100%
   padding-bottom 44px

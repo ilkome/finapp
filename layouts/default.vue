@@ -6,7 +6,7 @@ import isTouchDevice from '~/assets/js/isTouchDevice'
 export default {
   name: 'DefaultLayout',
 
-  setup (props, ctx) {
+  setup () {
     const isShowUpdateApp = ref(false)
 
     onMounted(async () => {
@@ -30,22 +30,17 @@ export default {
     }
   },
 
-  computed: {
-    layoutStyles () {
-      return { height: `${this.$store.state.ui.height}px` }
-    }
-  },
-
   mounted () {
-    this.isTouchDevice = isTouchDevice()
     this.getPageDimensions()
-    window.addEventListener('resize', debounce(this.getPageDimensions, 600))
+    this.isTouchDevice = isTouchDevice()
+    window.addEventListener('resize', debounce(this.getPageDimensions, 300))
   },
 
   methods: {
     getPageDimensions () {
       const width = document.documentElement.clientWidth
       const height = document.documentElement.clientHeight
+      document.documentElement.style.setProperty('--height', height + 'px')
       this.$store.dispatch('ui/setAppDimensions', { width, height })
     }
   }
@@ -53,9 +48,8 @@ export default {
 </script>
 
 <template lang="pug">
-.finapp(
-  :class="{ isNotTouchDevice: !isTouchDevice }"
-  :style="layoutStyles"
+.layout(
+  :class="{ isNotTouchDevice: !isTouchDevice, isTouchDevice: isTouchDevice }"
 )
   //- Loading
   template(v-if="!$store.state.app.status.ready")
@@ -85,6 +79,12 @@ export default {
   )
 </template>
 
+<style lang="css">
+:root {
+  --height: 100vh
+}
+</style>
+
 <style lang="stylus">
 @import '~assets/stylus/variables'
 
@@ -96,12 +96,18 @@ export default {
     outline 0
 
 html
+body
+#__nuxt
+#__layout
+  height 100%
+
+html
   font-size 16px
-// overscroll-behavior-y contain
+  overscroll-behavior-y contain
 
 body
   overflow hidden
-  // overscroll-behavior-y contain
+  overscroll-behavior-y contain
   margin 0
   color var(--c-font-2)
   font-primary()
@@ -110,15 +116,13 @@ body
   letter-spacing 0
   background var(--color-bg-canvas)
   user-select none
-</style>
 
-<style lang="stylus" scoped>
-@import '~assets/stylus/index'
-
-.finapp
+.layout
   display flex
-  flex-flow column
-  min-height 100vh
+  height 100%
   min-width 320px
-  anim()
+
+  &__wrap
+    flex-grow 1
+    position relative
 </style>
