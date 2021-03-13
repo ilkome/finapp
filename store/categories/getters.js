@@ -1,7 +1,8 @@
 export default {
   hasCategories (state) {
     if (state.items) {
-      if (Object.keys(state.items).length > 0) {
+      // More than 1 because categories has 1 static category "Transfer"
+      if (Object.keys(state.items).length > 1) {
         return true
       }
     }

@@ -230,7 +230,7 @@ export default {
                 )
                   .periodItem__name {{ periodItem.name }}
                   .periodItem__count(
-                    v-if="filterPeriod !== 'all'"
+                    v-if="$store.state.filter.period === periodItem.slug && filterPeriod !== 'all'"
                   ) {{ $store.state.chart.periods[periodItem.slug].showedPeriods }}
 
                 .periodItem(
@@ -400,13 +400,17 @@ export default {
             )
               .periodItem__name {{ periodItem.name }}
               .periodItem__count(
-                v-if="filterPeriod !== 'all'"
+                v-if="$store.state.filter.period === periodItem.slug && filterPeriod !== 'all'"
               ) {{ $store.state.chart.periods[periodItem.slug].showedPeriods }}
 
             .periodItem(
               v-if="filterPeriod !== 'all'"
               @click="addPeriodOrGroup"
             ): .mdi.mdi-plus
+
+            .periodItem(
+              @click="isShowDataLabels = !isShowDataLabels"
+            ): .mdi.mdi-subtitles-outline
 
         //- Chart Content
         //-----------------------------
@@ -418,6 +422,7 @@ export default {
               v-if="$store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
               :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'chart'"
               :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'chart'"
+              :isShowDataLabels="isShowDataLabels"
             )
 
         //- History

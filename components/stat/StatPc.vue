@@ -69,8 +69,9 @@ export default {
 
   &__content
     display grid
-    grid-template-columns repeat(2,minmax(280px, 50%))
+    grid-template-columns repeat(auto-fill, minmax(280px, 47%))
     grid-column-gap $m10
+    grid-row-gap $m10
 
   &__chart
     display flex

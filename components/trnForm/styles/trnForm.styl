@@ -1,31 +1,35 @@
 .trnForm
-  overflow hidden
-  z-index 10
-  position fixed
-  bottom 0
-  height auto
-
   @media $media-phone
+    overflow hidden
+    z-index 10
+    position fixed
     left 0
+    bottom 0
     width 100%
+    height auto
 
   @media $media-laptop
-    top 10%
-    right 20px
-    bottom inherit
-    height calc(100% - 20%)
+    display grid
+    margin $m7
     border-radius 16px
 
   &__overflow
-    position fixed
-    right 0
+    position absolute
+    left 0
     bottom 0
     width 100%
     height 100%
     background var(--c-bg-14)
 
+    @media $media-phone
+      position fixed
+      right 0
+      bottom 0
+      width 100%
+      height 100%
+
     @media $media-laptop
-      width 440px
+      opacity .3
 
   &__wrap
     overflow hidden
@@ -43,9 +47,8 @@
       margin-left auto
 
     @media $media-laptop
-      // overflow hidden
+      align-self center
       width 400px
-      // max-height calc(100vh - 100px)
       background 0
 
   &__scroll

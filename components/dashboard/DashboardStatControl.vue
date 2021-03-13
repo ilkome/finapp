@@ -1,5 +1,18 @@
 <script>
 export default {
+  name: 'DashboardStatControl',
+
+  computed: {
+    isEmptyData () {
+      const statCurrentPeriod = this.$store.getters['stat/statCurrentPeriod']
+      if (statCurrentPeriod.incomes.categoriesIds.length === 0 &&
+          statCurrentPeriod.expenses.categoriesIds.length === 0 &&
+          this.$store.getters['trns/selectedTrnsIdsWithDate'].length === 0) {
+        return true
+      }
+      return false
+    }
+  }
 }
 </script>
 
@@ -17,15 +30,16 @@ export default {
         :class="{ _active: $store.state.dashboard.activeTab === 'history' }"
       ) {{ $t('trns.history') }}
 
-      .tabItem(
-        @click="$store.commit('dashboard/setDashboardActiveTab', 'balance')"
-        :class="{ _active: $store.state.dashboard.activeTab === 'balance' }"
-      ) {{ $t('stat.balanceTitle') }}
+      template(v-if="!isEmptyData")
+        .tabItem(
+          @click="$store.commit('dashboard/setDashboardActiveTab', 'balance')"
+          :class="{ _active: $store.state.dashboard.activeTab === 'balance' }"
+        ) {{ $t('stat.balanceTitle') }}
 
-      .tabItem(
-        @click="$store.commit('dashboard/setDashboardActiveTab', 'analytics')"
-        :class="{ _active: $store.state.dashboard.activeTab === 'analytics' }"
-      ) &nbsp;
+        .tabItem(
+          @click="$store.commit('dashboard/setDashboardActiveTab', 'analytics')"
+          :class="{ _active: $store.state.dashboard.activeTab === 'analytics' }"
+        ) &nbsp;
 
     .tabs
       .tabItem(

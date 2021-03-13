@@ -7,6 +7,18 @@ export default {
     }
   },
 
+  computed: {
+    isEmptyData () {
+      const statCurrentPeriod = this.$store.getters['stat/statCurrentPeriod']
+      if (statCurrentPeriod.incomes.categoriesIds.length === 0 &&
+          statCurrentPeriod.expenses.categoriesIds.length === 0 &&
+          this.$store.getters['trns/selectedTrnsIdsWithDate'].length === 0) {
+        return true
+      }
+      return false
+    }
+  },
+
   methods: {
     toogleShowStatGraphs () {
       this.$store.commit('dashboard/setDashboardActiveTab', 'stat')
@@ -77,7 +89,10 @@ export default {
     .periodNav__group
       ._align-right
         //- all stat chart
-        .periodNav__item(v-show="$store.state.ui.statGraphsVisibility === 'visible'")
+        .periodNav__item(
+          v-if="!isEmptyData"
+          v-show="$store.state.ui.statGraphsVisibility === 'visible'"
+        )
           ChartMenu(:showDropdown="true")
 
         //- customize
@@ -94,39 +109,40 @@ export default {
               )
 
             template(slot="content")
-              ContextMenuItem(
-                :title="$t('stat.customize.showPeriodsChart')"
-                :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
-                showCheckbox
-                icon="mdi mdi-chart-bar-stacked"
-                @onClick="toogleShowStatGraphs"
-              )
+              template(v-if="!isEmptyData")
+                ContextMenuItem(
+                  :title="$t('stat.customize.showPeriodsChart')"
+                  :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
+                  showCheckbox
+                  icon="mdi mdi-chart-bar-stacked"
+                  @onClick="toogleShowStatGraphs"
+                )
 
-              ContextMenuItem(
-                icon="mdi mdi-folder-star"
-                :title="$t('stat.customize.showCategorisChart')"
-                :checkboxValue="$store.state.ui.catsChart === 'visible'"
-                showCheckbox
-                @onClick="toogleVisibleCatsChart"
-              )
+                ContextMenuItem(
+                  icon="mdi mdi-folder-star"
+                  :title="$t('stat.customize.showCategorisChart')"
+                  :checkboxValue="$store.state.ui.catsChart === 'visible'"
+                  showCheckbox
+                  @onClick="toogleVisibleCatsChart"
+                )
 
-              ContextMenuItem(
-                :title="$t('stat.customize.showCategorisList')"
-                :checkboxValue="$store.state.ui.statItems === 'visible'"
-                showCheckbox
-                icon="mdi mdi-chart-gantt"
-                @onClick="toogleVisibilityStatItems"
-              )
+                ContextMenuItem(
+                  :title="$t('stat.customize.showCategorisList')"
+                  :checkboxValue="$store.state.ui.statItems === 'visible'"
+                  showCheckbox
+                  icon="mdi mdi-chart-gantt"
+                  @onClick="toogleVisibilityStatItems"
+                )
 
-              ContextMenuItem(
-                :checkboxValue="$store.state.ui.catsChartPie === 'visible'"
-                :title="$t('stat.customize.showcatsChartPie')"
-                showCheckbox
-                icon="mdi mdi-chart-pie"
-                @onClick="$store.dispatch('ui/toogleVisibleCatsChartPie')"
-              )
+                ContextMenuItem(
+                  :checkboxValue="$store.state.ui.catsChartPie === 'visible'"
+                  :title="$t('stat.customize.showcatsChartPie')"
+                  showCheckbox
+                  icon="mdi mdi-chart-pie"
+                  @onClick="$store.dispatch('ui/toogleVisibleCatsChartPie')"
+                )
 
-              .context-menu-sep
+                .context-menu-sep
 
               ContextMenuItem(
                 :title="$t('theme.change')"

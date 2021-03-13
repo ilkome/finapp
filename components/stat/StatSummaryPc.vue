@@ -88,9 +88,9 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/fonts'
+@import '~assets/stylus/variables/media'
 
 .summary
   overflow hidden
@@ -99,9 +99,11 @@ export default {
   border-bottom 1px solid var(--c-bg-2)
 
   &__wrap
-    display flex
+    display grid
     flex-flow row
-    justify-content space-between
+    grid-template-columns repeat(auto-fill, minmax(200px, 1fr))
+    grid-column-gap $m9
+    grid-row-gap $m9
     max-width 1100px
     padding 20px 60px
 
@@ -115,11 +117,6 @@ export default {
     padding-right 0
 
     @media $media-laptop
-      flex 0 1 250px
-      margin 0
-      padding 0
-
-    @media $media-pc
       padding $m3 $m8
       padding-right 0
 

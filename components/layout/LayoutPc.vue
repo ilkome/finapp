@@ -17,18 +17,9 @@ export default {
 
 <template lang="pug">
 .layout
-  .createTrnBtn(
-    v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
-    @click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
-  ): .mdi.mdi-plus
-
   //- modals
   CategoryModal
   CurrencyModal
-  TrnForm(
-    v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
-    :isShow="$store.state.trnForm.show"
-  )
   TrnModal
   WalletModal
 
@@ -117,10 +108,18 @@ export default {
       LayoutPcTab(:show="activeTab === 'settings'")
         Settings
 
-    .layout-formSideOpener(
-      v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
-      @click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
-    )
+    .layout__item(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
+      TrnForm(
+        :isShow="$store.state.trnForm.show"
+      )
+
+    template(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
+      .sideOpener(
+        v-show="!$store.state.trnForm.show"
+        @click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
+      )
+        .sideOpener__bg
+        .sideOpener__btn: .mdi.mdi-plus
 </template>
 
 <style lang="stylus">
@@ -145,7 +144,6 @@ export default {
       &__line
         height 6px
         margin-right (- $m8)
-        // margin-bottom $m8
         margin-left (- $m8)
 
 .dashboardItems .categoryItem
@@ -154,37 +152,6 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
-
-.layoutBg
-  z-index 1
-  opacity .05
-  position absolute
-  top 0
-  right 0
-  display flex
-  align-items center
-  justify-content center
-  height 100%
-  font-size 1000px
-
-.layout-formSideOpener
-  z-index 2
-  cursor pointer
-  opacity .3
-  position fixed
-  top 0
-  right 0
-  width 50px
-  height 100%
-  anim-all()
-
-  @media $media-xl
-    width 180px
-  @media $media-xl2
-    width 400px
-
-  &:hover
-    background var(--c-bg-8)
 
 .layout
   overflow hidden
@@ -199,7 +166,7 @@ export default {
     min-height 100vh
     min-width 600px
     background var(--c-bg-2)
-    grid-template-columns 280px 1fr
+    grid-template-columns 280px 1fr auto
 
     @media $media-xl
       border-right 1px solid var(--c-bg-1)
@@ -223,32 +190,59 @@ export default {
   width 100%
   height 100%
 
-.createTrnBtn
-  z-index 5
+.sideOpener
+  z-index 10
   cursor pointer
-  position absolute
-  right $m8
-  bottom $m8
-  display flex
-  align-items center
-  justify-content center
-  width 60px
-  height 60px
-  padding $m7 $m8
-  color var(--c-font-1)
-  font-size 44px
-  background var(--c-blue-1)
-  border-radius 50%
-  anim()
-
-  &:hover
-    transform scale(1.2)
-
-.position
-  position absolute
+  opacity 1
+  position fixed
   top 0
-  left 0
-  display grid
-  width 100%
+  right 0
+  width 50px
   height 100%
+
+  @media $media-xl
+    width 180px
+
+  @media $media-xl2
+    width 400px
+
+  +media-hover()
+    .sideOpener__bg
+      background var(--c-bg-8)
+
+    .sideOpener__btn
+      transform scale(1.2)
+
+  &__bg
+    opacity .5
+    position absolute
+    top 0
+    left 0
+    width 100%
+    height 100%
+    anim-all()
+
+    +media-hover()
+      background var(--c-bg-8)
+
+  &__btn
+    z-index 5
+    cursor pointer
+    position absolute
+    right $m8
+    bottom $m8
+    display flex
+    align-items center
+    justify-content center
+    width 60px
+    height 60px
+    padding $m7 $m8
+    color var(--c-font-1)
+    font-size 44px
+    background var(--c-blue-1)
+    border-radius 50%
+    anim()
+
+    +media-hover()
+      transform scale(1.2)
 </style>

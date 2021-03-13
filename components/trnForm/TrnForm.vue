@@ -375,19 +375,15 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
 
 .trnForm
   &__overflow
-    position fixed
-    top 0
-    right 0
-    width 100%
-    height 100%
-    anim()
-
-    +media-ipad()
-      width 440px
+    @media $media-phone
+      position fixed
+      top 0
+      right 0
+      width 100%
+      height 100%
+      anim()
 
   &__wrap
-    // width 700px
-    // max-width 760px
     border 1px solid var(--c-bg-1)
     box-shadow 0 0 10px 5px var(--c-bg-1)
 

@@ -131,6 +131,9 @@ export default {
   align-items center
   justify-content center
 
+  &__name
+    text-transform capitalize
+
   &__dots
     padding-top 3px
     padding-left 4px
