@@ -66,7 +66,15 @@ export default function useOnTouch () {
       const diffTrunc = Math.trunc(diff)
       const opacity = diffTrunc === 100 ? 1 : diffTrunc >= 10 ? `0.${diffTrunc}` : `0.0${diffTrunc}`
 
-      wrap.value.style.transform = `translate3d(0, ${currentY - offset}px, 0)`
+      const width = document.documentElement.clientWidth
+      console.log('width', width)
+
+      if (width >= 768) {
+        wrap.value.style.transform = `translate3d(${currentY - offset}px, 0, 0)`
+      } else {
+        wrap.value.style.transform = `translate3d(0, ${currentY - offset}px, 0)`
+      }
+
       overflow.value.style.opacity = opacity
     }
   }

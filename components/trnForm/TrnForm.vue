@@ -362,6 +362,9 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     transform translate3d(0, 50px, 0)
     transition opacity 300ms $transition-style, transform 250ms $transition-style
 
+    +media-ipad()
+      transform translate3d(50px, 0, 0)
+
   &-enter-to
     transform translate3d(0, 0, 0)
 
@@ -369,10 +372,6 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
   &-enter-to
   &-leave-to
     opacity 1
-
-  &-leave-to
-    transform translate3d(0, 200%, 0)
-    transition opacity 400ms $transition-style, transform 400ms $transition-style
 
 .trnForm
   &__overflow
@@ -383,8 +382,14 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     height 100%
     anim()
 
-    @media $media-laptop
+    +media-ipad()
       width 440px
+
+  &__wrap
+    // width 700px
+    // max-width 760px
+    border 1px solid var(--c-bg-1)
+    box-shadow 0 0 10px 5px var(--c-bg-1)
 
   &__title
     padding $m8
