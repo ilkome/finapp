@@ -1,17 +1,18 @@
 <script>
-import { ref, onMounted } from '@nuxtjs/composition-api'
+import { ref, computed, useContext, onMounted } from '@nuxtjs/composition-api'
 import debounce from '~/utils/debounce'
-import isTouchDevice from '~/assets/js/isTouchDevice'
+import detectTouch from '~/assets/js/isTouchDevice'
 
 export default {
   name: 'DefaultLayout',
 
   setup () {
+    /**
+     * Update modal
+     */
     const isShowUpdateApp = ref(false)
-
     onMounted(async () => {
       const workbox = await window.$workbox
-
       if (workbox) {
         workbox.addEventListener('installed', (event) => {
           isShowUpdateApp.value = event.isUpdate
@@ -19,38 +20,50 @@ export default {
       }
     })
 
-    return {
-      isShowUpdateApp
-    }
-  },
+    /**
+     * Detect touch device
+     */
+    const isTouchDevice = ref(false)
+    onMounted(() => { isTouchDevice.value = detectTouch() })
 
-  data () {
-    return {
-      isTouchDevice: false
-    }
-  },
+    const className = computed(() => ({
+      isNotTouchDevice: !isTouchDevice.value,
+      isTouchDevice: isTouchDevice.value
+    }))
 
-  mounted () {
-    this.getPageDimensions()
-    this.isTouchDevice = isTouchDevice()
-    window.addEventListener('resize', debounce(this.getPageDimensions, 300))
-  },
+    /**
+     * Is production
+     */
+    const isProduction = process.env.NODE_ENV === 'production'
 
-  methods: {
-    getPageDimensions () {
+    /**
+     * Page dimensions
+     */
+    const { store } = useContext()
+
+    function getPageDimensions () {
       const width = document.documentElement.clientWidth
       const height = document.documentElement.clientHeight
       document.documentElement.style.setProperty('--height', height + 'px')
-      this.$store.dispatch('ui/setAppDimensions', { width, height })
+      store.dispatch('ui/setAppDimensions', { width, height })
+    }
+
+    onMounted(() => {
+      getPageDimensions()
+      window.addEventListener('resize', debounce(getPageDimensions, 300))
+    })
+
+    return {
+      isShowUpdateApp,
+      className,
+      isProduction
     }
   }
 }
 </script>
 
 <template lang="pug">
-.layout(
-  :class="{ isNotTouchDevice: !isTouchDevice, isTouchDevice: isTouchDevice }"
-)
+.layout(:class="className")
   //- Loading
   template(v-if="!$store.state.app.status.ready")
     Loader
@@ -73,6 +86,7 @@ export default {
     name="modal"
   )
 
+  //- Update modal
   LazyUpdateAppModal(
     v-if="isShowUpdateApp"
     @onClose="isShowUpdateApp = false"
