@@ -29,12 +29,12 @@ export default {
   },
 
   methods: {
-    handleSetFilterWallet (id) {
-      this.$store.commit('wallets/hideWalletModal')
+    handleSetFilterWallet () {
+      this.$store.commit('wallets/hideWalletsModalWalletModal')
       this.$store.dispatch('ui/setActiveTab', 'stat')
       this.$store.commit('filter/setFilterDateNow')
       this.$store.dispatch('filter/setFilterWalletId', this.walletId)
-      this.$store.commit('wallets/setWalletModalId', null)
+      this.$store.commit('wallets/setWalletsModalWalletModalId', null)
 
       if (this.$store.state.ui.mobile) {
         this.$store.dispatch('ui/setActiveTabViewName', 'chart')
@@ -43,8 +43,8 @@ export default {
 
     handleEditClick () {
       const walletId = this.walletId
-      this.$store.commit('wallets/hideWalletModal')
-      this.$store.commit('wallets/setWalletModalId', null)
+      this.$store.commit('wallets/hideWalletsModalWalletModal')
+      this.$store.commit('wallets/setWalletsModalWalletModalId', null)
       this.$store.commit('wallets/setWalletEditId', walletId)
       this.$store.dispatch('ui/setActiveTab', 'createWallet')
     },
@@ -59,8 +59,8 @@ export default {
       const id = this.walletId
 
       this.showModalConfirm = false
-      this.$store.commit('wallets/hideWalletModal')
-      this.$store.commit('wallets/setWalletModalId', null)
+      this.$store.commit('wallets/hideWalletsModalWalletModal')
+      this.$store.commit('wallets/setWalletsModalWalletModalId', null)
 
       setTimeout(async () => {
         await this.$store.dispatch('trns/deleteTrnsByIds', trnsIds)
@@ -79,12 +79,12 @@ Portal(
   to="modal"
 )
   ModalBottom(
-    @onClose="$store.commit('wallets/hideWalletModal')"
-    @afterClose="$store.commit('wallets/setWalletModalId', null)"
+    @onClose="$store.commit('wallets/hideWalletsModalWalletModal')"
+    @afterClose="$store.commit('wallets/setWalletsModalWalletModalId', null)"
   )
     template(v-if="walletId")
       template(slot="emptyHeader")
-        WalletItem2(
+        WalletsItemWalletItem2(
           :id="walletId"
           vertical="center"
           size="xl"

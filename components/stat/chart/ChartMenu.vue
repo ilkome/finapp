@@ -50,7 +50,7 @@ export default {
 </script>
 
 <template lang="pug">
-ContextMenu(
+SharedContextMenu(
   v-if="filterPeriod !== 'all'"
   :position="{ right: showDropdown ? '-12px' : true }"
   :visible="visibleContextMenu"
@@ -60,25 +60,26 @@ ContextMenu(
 
   template(v-if="showDropdown")
     template(slot="opener")
-      Dropdown._noBd(
+      SharedDropdown._noBd(
         :active="visibleContextMenu"
         :title="$t('chart.title')"
       )
 
   template(slot="content")
     template(v-if="filterPeriod !== 'year'")
-      ContextMenuItem(
+      SharedContextMenuItem(
         :icon="periods[filterPeriod].grouped ? 'mdi mdi-chart-bar' : 'mdi mdi-chart-line'"
         :title="periods[filterPeriod].grouped ? $t('chart.view.groupedTitle') : $t('chart.view.simpleTitle')"
-        @onClick="toogleChartsView")
+        @onClick="toogleChartsView"
+      )
 
-    ContextMenuItem(
+    SharedContextMenuItem(
       icon="mdi mdi-plus"
       :title="$t('chart.view.addPeriodButton')"
       @onClick="addPeriodOrGroup"
     )
 
-    ContextMenuItem(
+    SharedContextMenuItem(
       v-if="periods[filterPeriod].showedPeriods > 1"
       icon="mdi mdi-minus"
       :title="$t('chart.view.removePeriodButton')"

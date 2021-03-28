@@ -99,7 +99,7 @@ export default {
         class="inputText__value _number"
         :options="amountInputOptions")
 
-  Button(
+  SharedButton(
     className="_blue _inline _text-center"
     :title="$t('budgets.form.button')"
     @onClick="handleCreateBudget")

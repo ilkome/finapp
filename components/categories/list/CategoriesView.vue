@@ -41,7 +41,7 @@ export default {
   .categories__title(v-if="title") {{ title }}
 
   .categories__list
-    CategoryItem(
+    CategoriesItemCategoryItem(
       v-for="categoryId in categoresIds"
       :category="$store.state.categories.items[categoryId]"
       :id="categoryId"

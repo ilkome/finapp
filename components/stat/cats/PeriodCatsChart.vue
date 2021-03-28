@@ -49,7 +49,7 @@ export default {
 <template lang="pug">
 .cats-chart(:class="className")
   .cats-chart__items(v-if="statCurrentPeriod[type].categoriesIds.length > 0")
-    PeriodCatsChartItem(
+    StatCatsPeriodCatsChartItem(
       v-for="categoryId in statCurrentPeriod[type].categoriesIds"
       :biggest="biggestAmount"
       :category="categories[categoryId]"
@@ -64,7 +64,7 @@ export default {
     v-show="activeCategoryId"
   )
 
-    PeriodCatsChartPopup(
+    StatCatsPeriodCatsChartPopup(
       :offset="offset"
       :categoryId="activeCategoryId"
       :type="type"

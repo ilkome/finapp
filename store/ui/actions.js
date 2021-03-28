@@ -155,7 +155,7 @@ export default {
   /**
     * Save ui view state to localStorage for selected filter
   */
-  async saveUiView ({ commit, dispatch, state, rootState }) {
+  async saveUiView ({ rootState }) {
     const localName = 'finapp.statViewConfig'
     const localFilterUi = await localforage.getItem(localName)
     const walletName = rootState.filter.walletId || 'root'
@@ -183,7 +183,7 @@ export default {
   /**
     * Set ui view params for selected filter
   */
-  async setUiView ({ commit, dispatch, state, rootState }) {
+  async setUiView ({ commit, rootState }) {
     const localName = 'finapp.statViewConfig'
     const localFilterUi = await localforage.getItem(localName)
     const walletName = rootState.filter.walletId || 'root'

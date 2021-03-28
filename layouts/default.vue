@@ -66,7 +66,7 @@ export default {
 .layout(:class="className")
   //- Loading
   template(v-if="!$store.state.app.status.ready")
-    Loader
+    LoaderSharedLoader
 
   //- Continue to app
   transition(name="fadeInSlow" appear)
@@ -87,10 +87,13 @@ export default {
   )
 
   //- Update modal
-  LazyUpdateAppModal(
+  LazyAppUpdateAppModal(
     v-if="isShowUpdateApp"
     @onClose="isShowUpdateApp = false"
   )
+
+  //- Metrica
+  LazyMetrica(v-if="isProduction")
 </template>
 
 <style lang="css">

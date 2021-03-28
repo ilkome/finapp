@@ -15,9 +15,9 @@ export default {
   },
 
   methods: {
-    handleShowWalletModal (id) {
-      this.$store.commit('wallets/showWalletModal')
-      this.$store.commit('wallets/setWalletModalId', id)
+    handleShowWalletsModalWalletModal (id) {
+      this.$store.commit('wallets/showWalletsModalWalletModal')
+      this.$store.commit('wallets/setWalletsModalWalletModalId', id)
     }
   }
 }
@@ -25,7 +25,7 @@ export default {
 
 <template lang="pug" scoped>
 .sidebar
-  BaseMenu
+  LayoutSidebarBaseMenu
 
   .sidebar__content
     WalletsTotal
@@ -33,7 +33,7 @@ export default {
     WalletsList(
       :showToogle="true"
       :limit="6"
-      @onClick="(id) => handleShowWalletModal(id)")
+      @onClick="(id) => handleShowWalletsModalWalletModal(id)")
 </template>
 
 <style lang="stylus" scoped>

@@ -23,7 +23,7 @@ export default {
 </script>
 
 <template lang="pug">
-ComponentWrap
+LayoutComponentWrap
   template(slot="headerLeft") {{ $t('budgets.name') }}
 
   template(slot="contentLeft" v-if="$store.getters['budgets/budgetsTotal']")

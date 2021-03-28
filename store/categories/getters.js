@@ -86,8 +86,8 @@ export default {
     const lastCategoriesIds = []
 
     if (state.items && rootGetters['trns/hasTrns']) {
-      for (const trnId of sortedTrnsIds.slice(0, 50)) {
-        if (lastCategoriesIds.length < 12) {
+      for (const trnId of sortedTrnsIds.slice(0, 500)) {
+        if (lastCategoriesIds.length < 18) {
           const categoryId = trns[trnId].categoryId
           const category = state.items[categoryId]
           if (category && (category.showInLastUsed || category.showInLastUsed === undefined)) {

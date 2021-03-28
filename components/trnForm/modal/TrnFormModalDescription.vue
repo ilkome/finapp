@@ -58,13 +58,13 @@ LazyTrnFormModal.doNotCloseTrnModal(
 
     .description__action
       .description__action-cancel
-        Button(
+        SharedButton(
           className="_grey _inline"
           :title="$t('base.cancel')"
           @onClick="handleCancel"
         )
       .description__action-ok
-        Button(
+        SharedButton(
           className="_blue _inline"
           :title="$t('base.save')"
           @onClick="handleSave"

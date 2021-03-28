@@ -1,8 +1,15 @@
 <script>
+import { computed, useContext } from '@nuxtjs/composition-api'
+
 export default {
-  computed: {
-    isShow () {
-      return this.$store.state.trnForm.modal.categories
+  name: 'TrnFormModalCats',
+
+  setup () {
+    const { store } = useContext()
+    const isShow = computed(() => store.state.trnForm.modal.categories)
+
+    return {
+      isShow
     }
   }
 }

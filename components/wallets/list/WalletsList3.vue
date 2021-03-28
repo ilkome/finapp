@@ -54,7 +54,7 @@ export default {
 <template lang="pug">
 .walllets
   .walllets__grid
-    WalletItem2(
+    WalletsItemWalletItem2(
       v-for="walletId in walletsIds"
       :id="walletId"
       :key="walletId"

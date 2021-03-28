@@ -1,6 +1,23 @@
 <script>
+import { useContext } from '@nuxtjs/composition-api'
+
 export default {
   name: 'LayoutMobileWrap',
+
+  setup () {
+    const { store } = useContext()
+
+    function toogleChartsView () {
+      store.commit('chart/toogleChartPeriodView', {
+        periodName: store.state.filter.period
+      })
+      store.dispatch('ui/saveUiView')
+    }
+
+    return {
+      toogleChartsView
+    }
+  },
 
   data () {
     return {
@@ -42,7 +59,7 @@ export default {
     },
 
     statPage () {
-      return this.activeTabViewName === 'summary2' || this.activeTabViewName === 'chart' || this.activeTabViewName === 'incomes' || this.activeTabViewName === 'expenses' || this.activeTabViewName === 'history'
+      return this.activeTabViewName === 'analytics' || this.activeTabViewName === 'summary2' || this.activeTabViewName === 'chart' || this.activeTabViewName === 'incomes' || this.activeTabViewName === 'expenses' || this.activeTabViewName === 'history'
     },
 
     statCurrentPeriod () {
@@ -156,31 +173,15 @@ export default {
 </script>
 
 <template lang="pug">
-.layoutMobile(:class="{ _stat: statPage }")
-  .layoutMobile__content(ref="scroll")
+.layoutMobile(:class="{ _stat: statPage, [`_${activeTabViewName}`]: true }")
+  .layoutMobile__content
     //- Categories
     //---------------------------------------------------------------------------
     .h100(
       v-show="activeTabViewName === 'categories'"
       :style="{ zIndex: activeTabViewName === 'categories' ? 10 : 0 }"
     )
-      ComponentWrap(:contentPadding="false")
-        template(slot="headerLeft") {{ $t('categories.name') }}
-
-        template(slot="content")
-          CategoriesList(
-            :style="{ paddingTop: '16px' }"
-            @onClick="(id) => $store.dispatch('categories/showCategoryModal', id)"
-          )
-
-        template(slot="bottom")
-          .flex
-            .col
-              Button(
-                :title="$t('categories.new')"
-                className="_inline _small"
-                @onClick="$store.dispatch('ui/setActiveTab', 'createCategory')"
-              )
+      LayoutIndexCategories
 
     //- Wallets
     //---------------------------------------------------------------------------
@@ -238,6 +239,10 @@ export default {
                   @click="addPeriodOrGroup"
                 ): .mdi.mdi-plus
 
+                .periodItem(@click="toogleChartsView")
+                  .mdi.mdi-chart-bar(v-if="periods[filterPeriod].grouped")
+                  .mdi.mdi-chart-line(v-else)
+
                 .periodItem(
                   @click="isShowDataLabels = !isShowDataLabels"
                 ): .mdi.mdi-subtitles-outline
@@ -247,134 +252,129 @@ export default {
                 :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'summary2'"
                 :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'summary2'"
                 :isShowDataLabels="isShowDataLabels"
+                :chartType="periods[filterPeriod].grouped ? 'column' : 'line'"
               )
 
-          .box__nav(style="padding: 24px 0 18px 0")
-            .flexCenter(v-if="filterPeriod === 'all'")
-              .dateItem._active(
-                @click="isShowPeriodsNames = true"
-              )
-                .menuDots
-                  .menuDots__name
-                    DateFormated(
-                      :date="periodDate"
-                      periodName="all"
-                    )
-                .menuDots__dots: .mdi.mdi-dots-vertical
+          .box__nav
+            .tabItem(
+              :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
+              @click="$store.dispatch('filter/setPeriodNext')"
+            ): .mdi.mdi-chevron-left
 
-            LazyLayoutMobileDatesSlider(
-              v-if="activeTabViewName === 'summary2' && filterPeriod !== 'all'"
-            )
+            .menuDots(@click="isShowPeriodsNames = true")
+              .menuDots__name: SharedDate(:type="2")
+              .menuDots__dots: .mdi.mdi-dots-vertical
+
+            .tabItem(
+              :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isFirstPeriodSelected'] }"
+              @click="$store.dispatch('filter/setPeriodPrev')"
+            ): .mdi.mdi-chevron-right
 
           //- Filter
           //---------------------------
           .page__filter(v-if="isShowFilter")
             FilterRow
 
-          .swiper-container2(ref="slider2")
-            .swiper-wrapper2
-              //- Incomes
+          //- Incomes
+          //---------------------------
+          template(v-if="statAverage.incomes !== 0 || statCurrentPeriod.incomes.total !== 0")
+            .blockWrapBg
+              .boxTitle {{ $t('money.incomes') }}
+
+              .boxSummary2
+                .boxSummary2__item
+                  Amount(
+                    :currency="$store.state.currencies.base"
+                    :type="1"
+                    :value="statCurrentPeriod.incomes.total"
+                    size="xl"
+                    vertical="left"
+                  )
+                SummaryRowItemView(
+                  :type="1"
+                  :amount="statAverage.incomes"
+                  :title="$t('money.averageIncomes')"
+                )
+
+              .boxEmpty(v-if="statCurrentPeriod.incomes.categoriesIds.length === 0") {{ $t('stat.empty') }}
+
+              //- Pie chart
               //---------------------------
-              template(v-if="statAverage.incomes !== 0 || statCurrentPeriod.incomes.total !== 0")
-                .swiper-slide
-                  .blockWrapBg
-                    .boxTitle {{ $t('money.incomes') }}
+              .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
+                .box__content
+                  StatChartPie(amountType="incomes")
 
-                    .boxSummary2
-                      .boxSummary2__item
-                        Amount(
-                          :currency="$store.state.currencies.base"
-                          :type="1"
-                          :value="statCurrentPeriod.incomes.total"
-                          size="xl"
-                          vertical="left"
-                        )
-                      SummaryRowItemView(
-                        :type="1"
-                        :amount="statAverage.incomes"
-                        :title="$t('money.averageIncomes')"
-                      )
-
-                    .boxEmpty(v-if="statCurrentPeriod.incomes.categoriesIds.length === 0") {{ $t('stat.empty') }}
-
-                    //- Pie chart
-                    //---------------------------
-                    .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
-                      .box__content
-                        StatChartPie(amountType="incomes")
-
-                    //- Cats incomes
-                    //---------------------------
-                    .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
-                      .box__content
-                        PeriodCatsChart(type="incomes")
-
-                    //- Stat incomes
-                    //---------------------------
-                    .box._grid(v-if="$store.state.ui.statItems === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 0")
-                      .box__content
-                        .statItemsTiles
-                          StatItemMobile2(
-                            v-for="categoryId in statCurrentPeriod.incomes.categoriesIds"
-                            :biggest="statCurrentPeriod.incomes.biggest"
-                            :category="$store.state.categories.items[categoryId]"
-                            :categoryId="categoryId"
-                            :currency="$store.state.currencies.base"
-                            :key="categoryId"
-                            :total="statCurrentPeriod.categories[categoryId].incomes"
-                            :type="1"
-                          )
-
-              //- Expenses
+              //- Cats incomes
               //---------------------------
-              template(v-if="statAverage.expenses !== 0 || statCurrentPeriod.expenses.total !== 0")
-                .swiper-slide
-                  .blockWrapBg
-                    .boxTitle {{ $t('money.expenses') }}
+              .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
+                .box__content
+                  StatCatsPeriodCatsChart(type="incomes")
 
-                    .boxSummary2
-                      .boxSummary2__item
-                        Amount(
-                          :currency="$store.state.currencies.base"
-                          :type="0"
-                          :value="statCurrentPeriod.expenses.total"
-                          size="xl"
-                          vertical="left"
-                        )
-                      SummaryRowItemView(
+              //- Stat incomes
+              //---------------------------
+              .box._grid(v-if="$store.state.ui.statItems === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 0")
+                .box__content
+                  .statItemsTiles
+                    StatItemMobile2(
+                      v-for="categoryId in statCurrentPeriod.incomes.categoriesIds"
+                      :biggest="statCurrentPeriod.incomes.biggest"
+                      :category="$store.state.categories.items[categoryId]"
+                      :categoryId="categoryId"
+                      :currency="$store.state.currencies.base"
+                      :key="categoryId"
+                      :total="statCurrentPeriod.categories[categoryId].incomes"
+                      :type="1"
+                    )
+
+            //- Expenses
+            //---------------------------
+            template(v-if="statAverage.expenses !== 0 || statCurrentPeriod.expenses.total !== 0")
+              .blockWrapBg._mb
+                .boxTitle {{ $t('money.expenses') }}
+
+                .boxSummary2
+                  .boxSummary2__item
+                    Amount(
+                      :currency="$store.state.currencies.base"
+                      :type="0"
+                      :value="statCurrentPeriod.expenses.total"
+                      size="xl"
+                      vertical="left"
+                    )
+                  SummaryRowItemView(
+                    :type="0"
+                    :amount="statAverage.expenses"
+                    :title="$t('money.averageExpenses')"
+                  )
+
+                .boxEmpty(v-if="statCurrentPeriod.expenses.categoriesIds.length === 0") {{ $t('stat.empty') }}
+
+                //- Pie chart
+                //---------------------------
+                .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
+                  .box__content
+                    StatChartPie(amountType="expenses")
+
+                //- StatCatsPeriodCatsChart
+                //---------------------------
+                .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
+                  .box__content
+                    StatCatsPeriodCatsChart(type="expenses")
+
+                //---------------------------
+                .box._grid(v-if="$store.state.ui.statItems === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 0")
+                  .box__content
+                    .statItemsTiles
+                      StatItemMobile2(
+                        v-for="categoryId in statCurrentPeriod.expenses.categoriesIds"
+                        :biggest="statCurrentPeriod.expenses.biggest"
+                        :category="$store.state.categories.items[categoryId]"
+                        :categoryId="categoryId"
+                        :currency="$store.state.currencies.base"
+                        :key="categoryId"
+                        :total="statCurrentPeriod.categories[categoryId].expenses"
                         :type="0"
-                        :amount="statAverage.expenses"
-                        :title="$t('money.averageExpenses')"
                       )
-
-                    .boxEmpty(v-if="statCurrentPeriod.expenses.categoriesIds.length === 0") {{ $t('stat.empty') }}
-
-                    //- Pie chart
-                    //---------------------------
-                    .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
-                      .box__content
-                        StatChartPie(amountType="expenses")
-
-                    //- PeriodCatsChart
-                    //---------------------------
-                    .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
-                      .box__content
-                        PeriodCatsChart(type="expenses")
-
-                    //---------------------------
-                    .box._grid(v-if="$store.state.ui.statItems === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 0")
-                      .box__content
-                        .statItemsTiles
-                          StatItemMobile2(
-                            v-for="categoryId in statCurrentPeriod.expenses.categoriesIds"
-                            :biggest="statCurrentPeriod.expenses.biggest"
-                            :category="$store.state.categories.items[categoryId]"
-                            :categoryId="categoryId"
-                            :currency="$store.state.currencies.base"
-                            :key="categoryId"
-                            :total="statCurrentPeriod.categories[categoryId].expenses"
-                            :type="0"
-                          )
 
           template(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
             .boxTitle {{ $t('trns.history') }}
@@ -423,10 +423,70 @@ export default {
               :isShowIncomes="activeTabViewName === 'incomes' || activeTabViewName === 'chart'"
               :isShowExpenses="activeTabViewName === 'expenses' || activeTabViewName === 'chart'"
               :isShowDataLabels="isShowDataLabels"
+              :chartType="periods[filterPeriod].grouped ? 'column' : 'line'"
             )
 
-        //- History
+        //- Analytics
         //-----------------------------
+        template(v-if="activeTabViewName === 'analytics'")
+          .box__nav
+            .tabItem(
+              :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
+              @click="$store.dispatch('filter/setPeriodNext')"
+            ): .mdi.mdi-chevron-left
+
+            .menuDots(@click="isShowPeriodsNames = true")
+              .menuDots__name: SharedDate(:type="2")
+              .menuDots__dots: .mdi.mdi-dots-vertical
+
+            .tabItem(
+              :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isFirstPeriodSelected'] }"
+              @click="$store.dispatch('filter/setPeriodPrev')"
+            ): .mdi.mdi-chevron-right
+
+          //- Filter
+          //---------------------------
+          .page__filter(v-if="isShowFilter")
+            FilterRow
+
+          .pageAnalytics
+            Analytics
+              template(#incomes)
+                .boxTitle {{ $t('money.incomes') }}
+
+                .boxSummary2
+                  .boxSummary2__item
+                    Amount(
+                      :currency="$store.state.currencies.base"
+                      :type="1"
+                      :value="statCurrentPeriod.incomes.total"
+                      size="xl"
+                      vertical="left"
+                    )
+                  SummaryRowItemView(
+                    :type="1"
+                    :amount="statAverage.incomes"
+                    :title="$t('money.averageIncomes')"
+                  )
+
+              template(#expenses)
+                .boxTitle {{ $t('money.expenses') }}
+
+                .boxSummary2
+                  .boxSummary2__item
+                    Amount(
+                      :currency="$store.state.currencies.base"
+                      :type="0"
+                      :value="statCurrentPeriod.expenses.total"
+                      size="xl"
+                      vertical="left"
+                    )
+                  SummaryRowItemView(
+                    :type="0"
+                    :amount="statAverage.expenses"
+                    :title="$t('money.averageExpenses')"
+                  )
+
         template(v-if="activeTabViewName === 'history'")
           .box__nav
             .tabItem(
@@ -435,7 +495,7 @@ export default {
             ): .mdi.mdi-chevron-left
 
             .menuDots(@click="isShowPeriodsNames = true")
-              .menuDots__name: Date(:type="2")
+              .menuDots__name: SharedDate(:type="2")
               .menuDots__dots: .mdi.mdi-dots-vertical
 
             .tabItem(
@@ -455,9 +515,9 @@ export default {
           .page__grid
             .boxFlew2
               .boxFlew2Item
-                PeriodCatsChartMobile(type="incomes")
+                StatCatsPeriodCatsChartMobile(type="incomes")
               .boxFlew2Item
-                PeriodCatsChartMobile(type="expenses")
+                StatCatsPeriodCatsChartMobile(type="expenses")
 
             //- Period Selector
             //---------------------------
@@ -468,7 +528,7 @@ export default {
               ): .mdi.mdi-chevron-left
 
               .menuDots(@click="isShowPeriodsNames = true")
-                .menuDots__name: Date(:type="2")
+                .menuDots__name: SharedDate(:type="2")
                 .menuDots__dots: .mdi.mdi-dots-vertical
 
               .tabItem(
@@ -513,7 +573,7 @@ export default {
               //---------------------------
               .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
                 .box__content
-                  PeriodCatsChart(type="incomes")
+                  StatCatsPeriodCatsChart(type="incomes")
 
               //- Stat incomes
               //---------------------------
@@ -558,11 +618,11 @@ export default {
                 .box__content
                   StatChartPie(amountType="expenses")
 
-              //- PeriodCatsChart
+              //- StatCatsPeriodCatsChart
               //---------------------------
               .box._stat(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
                 .box__content
-                  PeriodCatsChart(type="expenses")
+                  StatCatsPeriodCatsChart(type="expenses")
 
               //---------------------------
               .box._stat(v-if="$store.state.ui.statItems === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 0")
@@ -592,7 +652,7 @@ export default {
             .statLine(
               v-if="statCurrentPeriod[activeTabStat].categoriesIds.length > 1 && !this.$store.state.filter.categoryId"
             )
-              PeriodCatsChartMobile(:type="activeTabStat")
+              StatCatsPeriodCatsChartMobile(:type="activeTabStat")
 
             //- Period Selector
             //---------------------------
@@ -603,7 +663,7 @@ export default {
               ): .mdi.mdi-chevron-left
 
               .menuDots(@click="isShowPeriodsNames = true")
-                .menuDots__name: Date(:type="2")
+                .menuDots__name: SharedDate(:type="2")
                 .menuDots__dots: .mdi.mdi-dots-vertical
 
               .tabItem(
@@ -637,7 +697,7 @@ export default {
 
             .box(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod[activeTabStat].categoriesIds.length > 1")
               .box__content
-                PeriodCatsChart(:type="activeTabStat")
+                StatCatsPeriodCatsChart(:type="activeTabStat")
 
             //- Pie chart
             .box._stat(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod[activeTabStat].categoriesIds.length > 1")
@@ -691,20 +751,24 @@ export default {
           :class="{ _active: activeTabViewName === 'history' }"
           @click="onClickTopMenu('history')"
         ) {{ $t('trns.history') }}
+        .switcher2__item(
+          :class="{ _active: activeTabViewName === 'analytics' }"
+          @click="onClickTopMenu('analytics')"
+        ) {{ $t('analytics.title') }}
     LayoutMobileMenu
 
   //- Modals
   //---------------------------------------------------------------------------
-  CategoryModal(:slider="slider")
-  CurrencyModal
+  CategoriesModalCategoryModal(:slider="slider")
+  CurrenciesCurrencyModal
   TrnForm(
     v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
     :isShow="$store.state.trnForm.show"
   )
-  TrnModal
-  WalletModal(:slider="slider")
+  TrnsModalTrnModal
+  WalletsModalWalletModal(:slider="slider")
 
-  LazyDateSelectorModal(
+  LazyStatDateSelectorModal(
     v-if="isShowPeriodsNames"
     @onClose="isShowPeriodsNames = false"
   )
@@ -719,23 +783,23 @@ export default {
       key="menu"
       @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
     )
-      BaseMenu
+      LayoutSidebarBaseMenu
       .context-menu-sep
 
       template(v-if="activeTabViewName === 'summary2' || activeTabViewName === 'chart' || activeTabViewName === 'incomes' || activeTabViewName === 'expenses'")
-        ContextMenuItem(
+        SharedContextMenuItem(
           :checkboxValue="$store.state.ui.catsChartPie === 'visible'"
           :title="$t('stat.customize.showcatsChartPie')"
           showCheckbox
           @onClick="$store.dispatch('ui/toogleVisibleCatsChartPie')"
         )
-        ContextMenuItem(
+        SharedContextMenuItem(
           :checkboxValue="$store.state.ui.catsChart === 'visible'"
           :title="$t('stat.customize.showCategorisChart')"
           showCheckbox
           @onClick="$store.dispatch('ui/toogleVisibleCatsChart')"
         )
-        ContextMenuItem(
+        SharedContextMenuItem(
           :checkboxValue="$store.state.ui.statItems === 'visible'"
           :title="$t('stat.customize.showCategorisList')"
           showCheckbox
@@ -743,7 +807,7 @@ export default {
         )
         .context-menu-sep
 
-      ContextMenuItem(
+      SharedContextMenuItem(
         :title="$t('theme.change')"
         icon="mdi mdi-palette"
         @onClick="$store.dispatch('ui/changeTheme')"
@@ -759,7 +823,7 @@ export default {
       key="createCategory"
       @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
     )
-      CategoryForm
+      CategoriesFormCategoryForm
 
   //- Settings
   //------------------------------------------------------------------------------
@@ -780,7 +844,7 @@ export default {
       :key="$store.state.wallets.editId"
       @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
     )
-      WalletForm
+      WalletsFormWalletForm
 
   //- Wallet Sort
   //------------------------------------------------------------------------------
@@ -835,10 +899,47 @@ export default {
 .finapp .blockWrapBg
   .statLineCategories
     border-radius 6px
+
+.layoutMobile._summary2
+  background var(--color-bg-canvas)
+
+  .trnsList
+  .box
+  .trnsList__day
+  .trnsList__header
+  .switcher2._bg
+  .menu
+  .page
+  .blockWrapBg
+  .boxTitle
+  .blockWrapBg .boxTitle
+  .blockWrapBg .boxSummary2
+  .box._grid
+  .box._stat
+  .box__nav
+  .box._h272
+  .periodItem
+    // margin 0
+    background var(--color-bg-canvas)
+    border none
+    border-radius 0
+
+  .blockWrapBg
+    // margin 0
+    border none
+    &._mb
+      margin-bottom $m9
+
+  .trnForm
+    .trnsList
+      background var(--c-bg-4)
 </style>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
+.pageAnalytics
+  padding $m7 $m5
 
 .h100
   height 100%

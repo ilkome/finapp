@@ -153,18 +153,23 @@ export default {
         averageExpenses: periodsTotalExpenses / periodsExpenses
       }
 
+      const tooltip = this.$store.state.ui.pc ? { ...chartOptions.tooltip } : { enabled: false }
+
       return {
         ...chartOptions,
+        legend: false,
+        tooltip,
+
         series: data.series,
 
         xAxis: {
           ...chartOptions.xAxis,
-          categories: data.categories
-          // plotBands: [{
-          //   color: 'orange', // Color value
-          //   from: `${this.selectedIndex}.5`, // Start of the plot band
-          //   to: `${this.selectedIndex + 1}.5` // End of the plot band
-          // }]
+          categories: data.categories,
+          plotBands: [{
+            color: 'var(--c-bg-5)',
+            from: data.categories.length - 1.5,
+            to: data.categories.length - 0.5
+          }]
         },
 
         yAxis: {
@@ -191,6 +196,13 @@ export default {
           events: {
             click (e) {
               const value = this.series[0].searchPoint(e, true) || this.series[1].searchPoint(e, true)
+              this.xAxis[0].update({
+                plotBands: [{
+                  color: 'var(--c-bg-5)',
+                  from: value.index + 0.5,
+                  to: value.index - 0.5
+                }]
+              })
               vm.$store.dispatch('filter/setDate', parseInt(value.date))
             }
           }
@@ -208,16 +220,25 @@ export default {
             point: {
               events: {
                 click () {
+                  this.series.xAxis.update({
+                    plotBands: [{
+                      color: 'var(--c-bg-5)',
+                      from: this.index + 0.5,
+                      to: this.index - 0.5
+                    }]
+                  })
                   vm.$store.dispatch('filter/setDate', parseInt(this.date))
                 }
               }
             }
           }
-        },
-
-        tooltip: this.$store.state.ui.pc ? chartOptions.tooltip : false
+        }
       }
     }
+  },
+
+  mounted () {
+    console.log(this.chartData)
   }
 }
 </script>

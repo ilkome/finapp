@@ -44,7 +44,7 @@ export default {
   template(v-if="walletFrom")
     .trnFormHeaderItem
       .trnFormHeaderItem__desc From wallet
-      WalletItem(
+      WalletsItemWalletItem(
         :id="walletFromId"
         :showBase="false"
         ui="tile"
@@ -57,7 +57,7 @@ export default {
   template(v-if="walletTo")
     .trnFormHeaderItem
       .trnFormHeaderItem__desc To wallet
-      WalletItem(
+      WalletsItemWalletItem(
         :id="walletToId"
         :showBase="false"
         ui="tile"

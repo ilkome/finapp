@@ -122,7 +122,7 @@ export default {
           .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
             .trnsList__header: TrnsListDate(:date="date")
             .trnsList__trns
-              TrnItem(
+              TrnsItemTrnItem(
                 v-for="trnId in trnsIds"
                 :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
                 :key="trnId"
@@ -134,7 +134,7 @@ export default {
       //- stat view
       template(v-else)
         template(v-for="trnId of paginatedTrnsIds")
-          TrnItem(
+          TrnsItemTrnItem(
             :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
             :key="trnId"
             :trn="$store.state.trns.items[trnId]"
@@ -145,7 +145,7 @@ export default {
           )
 
   .trnsList__pages(v-if="!isShowedAllTrns")
-    Button(
+    SharedButton(
       :class="['_text-center _border _inline']"
       :title="$t('trns.more')"
       @onClick="showMoreTrns"

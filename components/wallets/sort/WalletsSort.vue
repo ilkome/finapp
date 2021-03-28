@@ -44,7 +44,7 @@ export default {
 </script>
 
 <template lang="pug">
-ComponentWrap(:contentPadding="$store.state.ui.pc")
+LayoutComponentWrap(:contentPadding="$store.state.ui.pc")
   template(slot="headerLeft") {{ $t('wallets.sortTitle') }}
 
   template(slot="content")
@@ -68,7 +68,7 @@ ComponentWrap(:contentPadding="$store.state.ui.pc")
 
   template(slot="bottom")
     .col
-      Button(
+      SharedButton(
         className="_small _blue _text-center"
         :title="$t('base.save')"
         @onClick="saveWalletsOrder"

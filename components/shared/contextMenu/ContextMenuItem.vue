@@ -39,7 +39,7 @@ export default {
   .item__icon(v-if="icon"): div(:class="icon")
   .item__title {{ title }}
   .item__check(v-if="showCheckbox" @click.prevent="")
-    Checkbox._small(v-model="checkboxValue")
+    SharedInputsCheckbox._small(v-model="checkboxValue")
 </template>
 
 <style lang="stylus" scoped>

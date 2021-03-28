@@ -32,14 +32,14 @@ export default {
 
       template(v-if="!isEmptyData")
         .tabItem(
+          @click="$store.commit('dashboard/setDashboardActiveTab', 'analytics')"
+          :class="{ _active: $store.state.dashboard.activeTab === 'analytics' }"
+        ) {{ $t('analytics.title') }}
+
+        .tabItem(
           @click="$store.commit('dashboard/setDashboardActiveTab', 'balance')"
           :class="{ _active: $store.state.dashboard.activeTab === 'balance' }"
         ) {{ $t('stat.balanceTitle') }}
-
-        .tabItem(
-          @click="$store.commit('dashboard/setDashboardActiveTab', 'analytics')"
-          :class="{ _active: $store.state.dashboard.activeTab === 'analytics' }"
-        ) &nbsp;
 
     .tabs
       .tabItem(

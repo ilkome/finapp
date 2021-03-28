@@ -50,11 +50,11 @@ export default {
 
 <template lang="pug">
 div
-  .trnFormButton(v-if="pc")
+  .trnFormSharedButton(v-if="pc")
     .calcItem._sum(
       @click="isSum ? $emit('onSubmit') : handleTouch('=')"
     )
-      Button(
+      SharedButton(
         :title="isSum ? $t('trnForm.saveTrnButton') : $t('trnForm.calcTrnButton')"
         className="_blue _text-center"
       )

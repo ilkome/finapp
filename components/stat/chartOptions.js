@@ -5,7 +5,6 @@ export default {
     height: '40%',
     spacing: [5, 0, 0, 0],
     type: 'column',
-    zoomType: 'x',
     panning: true,
     panKey: 'shift'
   },
@@ -135,7 +134,7 @@ export default {
 
   tooltip: {
     shared: true,
-    animation: true,
+    animation: false,
     backgroundColor: 'var(--c-bg-3)',
     borderColor: 'var(--c-bg-7)',
     borderRadius: 8,
@@ -146,13 +145,5 @@ export default {
       fontSize: '12px',
       fontFamily: 'var(--font-roboto)'
     }
-    // positioner (labelWidth, labelHeight, point) {
-    //   const leftHalf = point.plotX < (this.chart.plotWidth / 2)
-    //   const topHalf = point.plotY < (this.chart.plotHeight / 2)
-    //   return {
-    //     x: leftHalf ? this.chart.plotLeft + this.chart.plotWidth - labelWidth - 2 : this.chart.plotLeft,
-    //     y: topHalf ? this.chart.plotTop + this.chart.plotHeight - labelHeight : this.chart.plotTop
-    //   }
-    // }
   }
 }

@@ -7,7 +7,7 @@ export default {
 <template lang="pug">
 .startSomething
   .options__item(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
-    Button._grey._center(
+    SharedButton._grey._center(
       :title="$t('createTrn')"
       @onClick="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
     )
@@ -15,7 +15,7 @@ export default {
   .options__item(v-if="!$store.getters['wallets/hasWallets'] && !$store.getters['categories/hasCategories']")
     h4 {{ $t('welcome.firstRun.text') }}
 
-    Button._blue._center(
+    SharedButton._blue._center(
       :title="$t('welcome.firstRun.btn')"
       size="xl"
       @onClick="$router.push('/welcome')"
@@ -27,7 +27,7 @@ export default {
       .options__or__text {{ $t('welcome.or') }}
 
     h4 {{ $t('welcome.demo.text') }}
-    Button._blue._center(
+    SharedButton._blue._center(
       size="xl"
       :title="$t('welcome.demo.btn')"
       @onClick="$store.dispatch('demo/createDemo')"

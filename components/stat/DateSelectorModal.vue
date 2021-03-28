@@ -52,7 +52,7 @@ Portal(
     template(slot="header")
       .modalBottom__header__title
         .ta_center
-          Date
+          SharedDate
 
     .grid
       ModalButton(

@@ -126,7 +126,7 @@ export default {
 </script>
 
 <template lang="pug">
-ComponentWrap
+LayoutComponentWrap
   template(slot="headerLeft")
     template(v-if="!walletId") {{ $t('wallets.createNewTitle') }}
     template(v-else) {{ $t('wallets.editTitle') }}
@@ -157,7 +157,7 @@ ComponentWrap
               .inputModal__label {{ $t('wallets.form.color.label') }}
 
       .form-line._p0._clean
-        Checkbox(
+        SharedInputsCheckbox(
           v-model="wallet.countTotal"
           :title="$t('wallets.form.total.placeholder')"
           :alt="true")
@@ -204,8 +204,8 @@ ComponentWrap
 
   template(slot="bottom")
     .col
-      Button(
-        :class="['_text-center _blue', { _inline: $store.state.ui.pc }]"
+      SharedButton(
+        :class="['_text-center _blue2', { _inline: $store.state.ui.pc }]"
         :title="$t('wallets.form.save')"
         @onClick="handleSubmit")
 </template>

@@ -155,7 +155,7 @@ export default {
       .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
         .trnsList__header: TrnsListDate(:date="date")
         .trnsList__trns
-          TrnItem(
+          TrnsItemTrnItem(
             v-for="trnId in trnsIds"
             :isActive="$store.state.trnForm.values.trnId === trnId"
             :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
@@ -167,7 +167,7 @@ export default {
           )
 
   .trnsList__pages(v-if="!isShowedAllTrns")
-    Button(
+    SharedButton(
       :class="['_text-center _border _inline']"
       :title="$t('trns.more')"
       @onClick="showMoreTrns"

@@ -7,9 +7,9 @@ export default {
   },
 
   methods: {
-    handleShowWalletModal (id) {
-      this.$store.commit('wallets/showWalletModal')
-      this.$store.commit('wallets/setWalletModalId', id)
+    handleShowWalletsModalWalletModal (id) {
+      this.$store.commit('wallets/showWalletsModalWalletModal')
+      this.$store.commit('wallets/setWalletsModalWalletModalId', id)
     }
   }
 }
@@ -18,10 +18,10 @@ export default {
 <template lang="pug">
 .layout
   //- modals
-  CategoryModal
-  CurrencyModal
-  TrnModal
-  WalletModal
+  CategoriesModalCategoryModal
+  CurrenciesCurrencyModal
+  TrnsModalTrnModal
+  WalletsModalWalletModal
 
   .layout__wrap
     .layout__item
@@ -46,7 +46,7 @@ export default {
       //- categories
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'categories'")
-        ComponentWrap
+        LayoutComponentWrap
           template(slot="headerLeft") {{ $t('categories.title') }}
 
           template(slot="content")
@@ -56,7 +56,7 @@ export default {
 
           template(slot="bottom")
             .col
-              Button(
+              SharedButton(
                 className="_blue _inline"
                 icon="mdi mdi-plus"
                 :title="$t('categories.new')"
@@ -65,24 +65,24 @@ export default {
       //- wallets
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'wallets'")
-        ComponentWrap
+        LayoutComponentWrap
           template(slot="headerLeft") {{ $t('wallets.title') }}
 
           template(slot="content")
             WalletsList3.dashboardItems(
-              @onClick="(id) => handleShowWalletModal(id)"
+              @onClick="(id) => handleShowWalletsModalWalletModal(id)"
             )
 
           template(slot="bottom")
             .flex
               .col
-                Button(
+                SharedButton(
                   className="_inline _blue"
                   icon="mdi mdi-plus"
                   :title="$t('wallets.new')"
                   @onClick="$store.dispatch('ui/setActiveTab', 'createWallet')")
               .col
-                Button(
+                SharedButton(
                   className="_inline _blue"
                   :title="$t('base.sort')"
                   icon="mdi mdi-arrow-split-horizontal"
@@ -91,12 +91,12 @@ export default {
       //- add category
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'createCategory'")
-        CategoryForm(v-if="activeTab === 'createCategory'")
+        CategoriesFormCategoryForm(v-if="activeTab === 'createCategory'")
 
       //- add wallet
       //------------------------------------------------
       LayoutPcTab(:show="activeTab === 'createWallet'")
-        WalletForm(v-if="activeTab === 'createWallet'")
+        WalletsFormWalletForm(v-if="activeTab === 'createWallet'")
 
       //- wallets sort
       //------------------------------------------------

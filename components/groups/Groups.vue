@@ -28,21 +28,21 @@ export default {
 </script>
 
 <template lang="pug">
-ComponentWrap
+LayoutComponentWrap
   template(slot="headerLeft")
     div {{ $t('groups.name') }}
 
   template(slot="contentLeft")
     //- pre {{ groups }}
     .list
-      GroupItem(
+      GroupsGroupItem(
         v-for="group in groups"
         :group="group"
         :key="group.id"
       )
 
   template(slot="contentRight")
-    GroupForm
+    GroupsGroupForm
 </template>
 
 <style lang="stylus" scoped>

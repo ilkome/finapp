@@ -25,8 +25,11 @@ export default {
 .wrap
 
   .block
-    PeriodCatsChart(
+    slot(name="expenses")
+
+    StatCatsPeriodCatsChart(
       v-if="showCategoriesCharts"
+      :key="categoryId"
       type="expenses"
     )
     .columns
@@ -59,8 +62,11 @@ export default {
           )
 
   .block
-    PeriodCatsChart(
+    slot(name="incomes")
+
+    StatCatsPeriodCatsChart(
       v-if="showCategoriesCharts"
+      :key="categoryId"
       type="incomes"
     )
     .columns
@@ -93,22 +99,20 @@ export default {
           )
 </template>
 
-<style lang="stylus">
-@import "~assets/stylus/variables"
-
-.item
-  .item__inside
-    .statItem
-    .statItem._active
-      margin 0 (- $m6)
-      margin-bottom (- $m6)
-</style>
-
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .block
   padding-bottom $m10
+
+.title
+  padding-bottom $m8
+  font-h1()
+  font-size 22px
+  font-weight 600
+
+  +media-laptop()
+    font-size 28px
 
 .wrap
   position relative
@@ -126,7 +130,7 @@ export default {
   padding-bottom $m9
 
   +media-tablet()
-    grid-template-columns repeat(2, 1fr)
+    grid-template-columns repeat(auto-fill, minmax(360px, 47%))
 
 .item
   padding $m6

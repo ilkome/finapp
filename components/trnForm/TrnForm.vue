@@ -6,7 +6,7 @@ import { ref, computed, watch, reactive, toRefs, useContext } from '@nuxtjs/comp
 // @ts-ignore
 import generateId from '~/utils/id'
 // @ts-ignore
-import useTouchClose from '~/components/base/modal/useTouchClose.ts'
+import useTouchClose from '~/components/base/modal/useTouchClose'
 
 // @ts-ignore
 import useCalculator from '~/components/trnForm/calculator/useCalculator'

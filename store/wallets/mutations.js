@@ -9,15 +9,15 @@ export default {
     state.items = freezedItems
   },
 
-  showWalletModal (state) {
+  showWalletsModalWalletModal (state) {
     state.modal.show = true
   },
 
-  hideWalletModal (state) {
+  hideWalletsModalWalletModal (state) {
     state.modal.show = false
   },
 
-  setWalletModalId (state, id) {
+  setWalletsModalWalletModalId (state, id) {
     if (state.modal.id === id) {
       state.modal.id = null
     }

@@ -17,7 +17,7 @@ export default {
   v-if="wallet"
   @click="$store.commit('trnForm/toogleTrnFormModal', 'wallets')"
 )
-  WalletItem(
+  WalletsItemWalletItem(
     :id="$store.state.trnForm.values.walletId"
     :showBase="false"
     :isAltColor="true"

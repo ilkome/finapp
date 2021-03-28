@@ -16,21 +16,22 @@ export default {
     categoryId: {
       type: String,
       required: true
+    },
+
+    chartType: {
+      type: String,
+      default: 'column'
     }
   },
 
   data () {
     return {
       average: 0,
+      total: 0,
       date: this.$day().valueOf(),
       visiblePeriodMenu: false,
       dateStart: null,
-      dateEnd: null,
-      chartOptions: {
-        ...chartOptions,
-        legend: false,
-        tooltip: false
-      }
+      dateEnd: null
     }
   },
 
@@ -53,75 +54,12 @@ export default {
 
     periodName () {
       return this.$store.state.filter.period
-    }
-  },
-
-  watch: {
-    showedPeriods (newValue) {
-      this.init()
     },
 
-    filterDate (newValue) {
-      this.init()
-    }
-  },
-
-  mounted () {
-    this.init()
-  },
-
-  methods: {
-    init () {
-      const data = this.generateData(this.periodName)
-      const handlePerioSelect = date => this.$store.dispatch('filter/setDate', parseInt(date))
-      this.chartOptions.series = data.series
-      this.chartOptions.plotOptions.series = {
-        cursor: 'pointer',
-        point: {
-          events: {
-            click () {
-              handlePerioSelect(this.date)
-            }
-          }
-        }
-      }
-
-      this.chartOptions = {
-        ...this.chartOptions,
-        tooltip: false,
-        xAxis: {
-          categories: data.categories
-        },
-
-        yAxis: {
-          plotLines: [{
-            color: 'var(--c-font-5)',
-            value: this.average, // Insert your average here
-            width: '2',
-            zIndex: 1
-          }]
-        },
-
-        chart: {
-          backgroundColor: 'transparent',
-          with: '100%',
-          height: 160,
-          spacing: [5, 0, 0, 0],
-          type: 'column',
-          zoomType: 'x',
-          panning: true,
-          panKey: 'shift'
-        }
-      }
-    },
-
-    formatAmount (amount) {
-      const fixed = this.$store.state.currencies.base === 'RUB' ? 0 : 2
-      return baseAmountFormat(amount, ' ', fixed)
-    },
-
-    generateData (periodName, oldSeries) {
+    chartData () {
+      const vm = this
       const trns = this.$store.state.trns.items
+      const periodName = this.periodName
 
       // diff periods from oldest trn and today
       const oldestTrnDate = this.$day(trns[this.$store.getters['trns/firstCreatedTrnId']].date).endOf(periodName)
@@ -129,10 +67,9 @@ export default {
       periodsToShow = periodsToShow > this.showedPeriods ? this.showedPeriods : periodsToShow
 
       const categories = []
-      const incomesData = []
+      const categoryData = []
 
       let format = 'MMM'
-      console.log(periodName)
       if (periodName === 'day') { format = 'D.MM' }
       if (periodName === 'week') { format = 'D.MM' }
       if (periodName === 'month') { format = 'MMMM' }
@@ -150,7 +87,7 @@ export default {
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
         // return
-        incomesData.unshift({
+        categoryData.unshift({
           date: periodDate,
           y: Math.abs(Number(`${periodTotal.incomes.toFixed() - periodTotal.expenses.toFixed()}`)),
           color: 'var(--c-font-1)',
@@ -164,7 +101,7 @@ export default {
 
       let periods = 0
       let periodsTotal = 0
-      for (const iterator of incomesData) {
+      for (const iterator of categoryData) {
         if (iterator.y !== 0) {
           periods = periods + 1
           periodsTotal = periodsTotal + iterator.y
@@ -172,17 +109,92 @@ export default {
       }
 
       this.average = Math.abs(Number(periodsTotal / periods).toFixed())
+      this.total = categoryData[categoryData.length - 1].y
 
-      return {
+      const data = {
         series: [{
           visible: true,
-          type: 'spline',
-          name: 'Data',
-          color: 'var(--c-blue-1)',
-          data: incomesData
+          type: this.chartType,
+          data: categoryData
         }],
         categories
       }
+
+      return {
+        ...chartOptions,
+        legend: false,
+        tooltip: {
+          shared: true,
+          animation: false,
+          outside: true,
+          positioner () {
+            return { x: -1000, y: -1000 }
+          }
+        },
+
+        series: data.series,
+
+        xAxis: {
+          ...chartOptions.xAxis,
+          categories: data.categories
+        },
+
+        yAxis: {
+          ...chartOptions.yAxis,
+          plotLines: [{
+            color: 'var(--c-font-5)',
+            value: this.average, // Insert your average here
+            width: '2',
+            height: 160,
+            zIndex: 1
+          }]
+        },
+
+        chart: {
+          ...chartOptions.chart,
+          height: '120',
+
+          events: {
+            click (e) {
+              const value = this.series[0].searchPoint(e, true) || this.series[1].searchPoint(e, true)
+              vm.$store.dispatch('filter/setDate', parseInt(value.date))
+            }
+          }
+        },
+
+        plotOptions: {
+          ...chartOptions.plotOptions,
+          series: {
+            ...chartOptions.plotOptions.series,
+            dataLabels: {
+              ...chartOptions.plotOptions.series.dataLabels,
+              enabled: true
+            },
+            cursor: 'pointer',
+            point: {
+              events: {
+                click () {
+                  vm.$store.dispatch('filter/setDate', parseInt(this.date))
+                }
+              }
+            },
+            allowPointSelect: true,
+            states: {
+              select: {
+                color: 'green',
+                backgroundColor: 'var(--c-bg-15)'
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  methods: {
+    formatAmount (amount) {
+      const fixed = this.$store.state.currencies.base === 'RUB' ? 0 : 2
+      return baseAmountFormat(amount, ' ', fixed)
     }
   }
 }
@@ -197,7 +209,7 @@ export default {
         Amount(
           :currency="$store.state.currencies.base"
           :type="3"
-          :value="statCurrentPeriod.total"
+          :value="total || 0"
           size="xl"
           vertical="center"
         )
@@ -212,7 +224,7 @@ export default {
           vertical="center"
         )
 
-  Chart.swiper-no-swiping(:options="chartOptions")
+  Chart.swiper-no-swiping(:options="chartData")
 </template>
 
 <style lang="stylus" scoped>

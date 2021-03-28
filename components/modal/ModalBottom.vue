@@ -1,6 +1,6 @@
 <script>
 import { ref, watch, reactive, toRefs } from '@nuxtjs/composition-api'
-import useTouchClose from '~/components/base/modal/useTouchClose.ts'
+import useTouchClose from '~/components/base/modal/useTouchClose'
 
 export default {
   name: 'ModalBottom',

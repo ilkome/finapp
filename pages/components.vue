@@ -22,7 +22,7 @@ export default {
     .pageSection._modal
       .pageSection__title Modal
 
-  ContextMenuItem(
+  SharedContextMenuItem(
     :title="$t('theme.change')"
     icon="mdi mdi-palette"
     @onClick="$store.dispatch('ui/changeTheme')"

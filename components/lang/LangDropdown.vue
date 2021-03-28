@@ -21,6 +21,11 @@ export default {
     changeLang (lang) {
       this.visibleDropdown = false
       this.$store.dispatch('lang/setLang', lang)
+    },
+
+    onClickOpener () {
+      console.log('onClickOpener')
+      this.visibleDropdown = !this.visibleDropdown
     }
   }
 }
@@ -28,23 +33,23 @@ export default {
 
 <template lang="pug">
 div
-  ContextMenu(
+  SharedContextMenu(
     :position="{ left: true, top: true }"
     :visible="visibleDropdown"
-    @onClickOpener="visibleDropdown = !visibleDropdown"
+    @onClickOpener="onClickOpener"
   )
 
     template(slot="opener")
-      Dropdown(
+      SharedDropdown(
         :active="visibleDropdown"
         :title="currentLanguageName"
       )
     template(slot="content")
-      ContextMenuItem(
+      SharedContextMenuItem(
         title="🇷🇺 Russian - Русский (Не полный)"
         @onClick="changeLang('ru')")
       .context-menu-sep
-      ContextMenuItem(
+      SharedContextMenuItem(
         title="🇺🇸 English - Английский"
         @onClick="changeLang('en')")
 </template>

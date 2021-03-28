@@ -57,12 +57,12 @@ export default {
     desc: 'Powerful personal finance application',
     welcome: 'Welcome to Finapp',
     lang: {
-      select: 'Select lang',
+      select: 'Choose language',
       en: 'English',
       ru: 'Русский'
     },
     theme: {
-      select: 'Select theme',
+      select: 'Choose style',
       dark: 'Dark',
       light: 'Light'
     },
@@ -105,7 +105,7 @@ export default {
     },
     create: {
       text: 'Start creating your own wallets, categories',
-      btn: 'Create'
+      btn: 'Let\'s go'
     },
     or: 'or',
     demo: {

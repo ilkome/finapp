@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'UpdateAppModal'
+  name: 'AppUpdateAppModal'
 }
 </script>
 
@@ -13,7 +13,7 @@ ModalBottom(
   h3 {{ $t('app.update.title') }}
   p {{ $t('app.update.text') }}
 
-  Button(
+  SharedButton(
     className="_blue _text-center"
     :title="$t('base.ok')"
     @onClick="$emit('onClose')"

@@ -134,7 +134,7 @@ export default {
           )
 
         .statItem__date
-          Date
+          SharedDate
 
         .statItem__summary
           Amount(

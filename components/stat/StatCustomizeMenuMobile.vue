@@ -32,16 +32,16 @@ export default {
 
 <template lang="pug">
 div
-  ContextMenu(
+  SharedContextMenu(
     :position="position"
     :visible="visibleCustomizeMenu"
     @onClickOpener="visibleCustomizeMenu = !visibleCustomizeMenu"
   )
     template(slot="opener")
       template(v-if="icon")
-        Button._border._square(:icon="icon")
+        SharedButton._border._square(:icon="icon")
       template(v-else)
-        Dropdown._inline(
+        SharedDropdown._inline(
           :active="visibleCustomizeMenu"
           :title="$t('settings.customize')"
         )
@@ -51,7 +51,7 @@ div
     :title="$t('settings.customize')"
     @onClose="visibleCustomizeMenu = !visibleCustomizeMenu"
   )
-    ContextMenuItem(
+    SharedContextMenuItem(
       icon="mdi mdi-credit-card-multiple"
       title="Wallets"
       :showCheckbox="true"
@@ -59,7 +59,7 @@ div
       @onClick="$store.dispatch('ui/toogleStatWalletsVisibility')"
     )
 
-    ContextMenuItem(
+    SharedContextMenuItem(
       :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
       :showCheckbox="true"
       :title="$t('stat.customize.showPeriodsChart')"
@@ -67,7 +67,7 @@ div
       @onClick="$store.dispatch('ui/toogleShowStatGraphs')"
     )
 
-    ContextMenuItem(
+    SharedContextMenuItem(
       :checkboxValue="$store.state.ui.catsChart === 'visible'"
       :showCheckbox="true"
       icon="mdi mdi-folder-star"
@@ -75,7 +75,7 @@ div
       @onClick="$store.dispatch('ui/toogleVisibleCatsChart')"
     )
 
-    ContextMenuItem(
+    SharedContextMenuItem(
       :checkboxValue="$store.state.ui.statItems === 'visible'"
       :showCheckbox="true"
       icon="mdi mdi-history"
@@ -85,7 +85,7 @@ div
 
     .context-menu-sep
 
-    ContextMenuItem(
+    SharedContextMenuItem(
       :title="$t('theme.change')"
       icon="mdi mdi-palette"
       @onClick="$store.dispatch('ui/changeTheme')"

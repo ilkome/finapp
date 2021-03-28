@@ -56,7 +56,7 @@ export default {
     v-if="showCheckbox"
     @click.prevent=""
   )
-    Checkbox._small(v-model="checkboxValue")
+    SharedInputsCheckbox._small(v-model="checkboxValue")
 
 </template>
 
@@ -117,9 +117,6 @@ export default {
   &:active
     background var(--c-bg-3)
 
-  &._center
-    text-align center
-
   &._borderBottom
     width 100%
     margin-bottom 0
@@ -173,6 +170,7 @@ export default {
   &._center
     align-items center
     justify-content center
+    text-align center
 
   &._grey
     color var(--c-font-2)
@@ -214,6 +212,19 @@ export default {
     &:hover
       @media $media-laptop
         background var(--c-blue-2)
+
+  &._blue2
+    cursor pointer
+    max-width 320px
+    min-width 200px
+    margin 0 auto
+    padding $m7 $m7
+    color var(--c-font-1)
+    font-size 16px
+    text-align center
+    background var(--c-blue-3)
+    border-radius 36px
+    anim()
 
   &._size_lg
     padding 16px

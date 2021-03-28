@@ -1,6 +1,6 @@
 <script lang="ts">
 import { ref, watch, reactive, toRefs } from '@nuxtjs/composition-api'
-import useTouchClose from '~/components/base/modal/useTouchClose.ts'
+import useTouchClose from '~/components/base/modal/useTouchClose'
 
 export default {
   props: {
@@ -34,8 +34,6 @@ export default {
   setup (props: any, { listeners }) {
     const { isShow, doNotTouchClassName } = toRefs(props)
     const { initTouchModal, closeModal } = useTouchClose()
-
-    console.log('doNotTouchClassName', doNotTouchClassName.value)
 
     const wrappers = reactive({
       container: ref(null),

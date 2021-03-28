@@ -61,7 +61,6 @@ export default {
         height: '40%',
         spacing: [5, 0, 0, 0],
         type: 'column',
-        zoomType: 'x',
         panning: true,
         panKey: 'shift'
       }

@@ -15,7 +15,7 @@ export default {
 
     setTimeout(() => {
       isLoading.value = false
-    }, 6000)
+    }, 10000)
 
     return {
       isLoading
@@ -73,8 +73,8 @@ export default {
       .linkItem(@click="$store.dispatch('ui/changeTheme')") {{ $t('changeTheme') }}
 
   .tab__content
-    AppName
-    Copyright
+    SharedAppName
+    SharedCopyright
 
   .tab__bottom
     .loginButton(
@@ -82,7 +82,7 @@ export default {
       @click.prevent="signInWithGoogle"
     )
       transition(name="fadeIn")
-        .loginButton__spiner(v-if="isLoading"): Spiner
+        .loginButton__spiner(v-if="isLoading"): SharedSpiner
       .loginButton__text {{ $t('loginWithGoogle') }}
 </template>
 
@@ -165,7 +165,7 @@ export default {
   cursor pointer
   position relative
   min-width 260px
-  padding $m8 $mb1
+  padding $m7 $mb1
   color var(--c-font-1)
   font-size 16px
   text-align center

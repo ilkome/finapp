@@ -1,17 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "lib": [
-      "ESNext",
-      "ESNext.AsyncIterable",
-      "DOM"
-    ],
+    "target": "esnext",
+    "module": "esnext",
+    // this enables stricter inference for data properties on `this`
+    // "strict": true,
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "strict": false,
     "esModuleInterop": true,
     "allowJs": true,
     "sourceMap": true,
-    "strict": true,
     "noEmit": true,
     "baseUrl": ".",
     "paths": {

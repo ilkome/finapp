@@ -40,45 +40,45 @@ export default {
 .periodNav
   .periodNav__wrap
     .periodNav__group
-      ContextMenu(
+      SharedContextMenu(
         :position="{ left: '-12px', top: true }"
         :visible="visiblePeriodMenu"
         @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu"
       )
         template(slot="opener")
-          Dropdown._noBd(:active="visiblePeriodMenu")
-            template(slot="title"): Date.dateSelecror
+          SharedDropdown._noBd(:active="visiblePeriodMenu")
+            template(slot="title"): SharedDate.dateSelecror
 
         template(slot="content")
-          ContextMenuItem(
+          SharedContextMenuItem(
             :selected="$store.state.filter.period === 'day'"
             :title="$t('dates.day.simple')"
             icon="mdi mdi-weather-sunset-up"
             @onClick="$store.dispatch('filter/setPeriod', 'day')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )
-          ContextMenuItem(
+          SharedContextMenuItem(
             :selected="$store.state.filter.period === 'week'"
             :title="$t('dates.week.simple')"
             icon="mdi mdi-calendar-week"
             @onClick="$store.dispatch('filter/setPeriod', 'week')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )
-          ContextMenuItem(
+          SharedContextMenuItem(
             :selected="$store.state.filter.period === 'month'"
             :title="$t('dates.month.simple')"
             icon="mdi mdi-calendar"
             @onClick="$store.dispatch('filter/setPeriod', 'month')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )
-          ContextMenuItem(
+          SharedContextMenuItem(
             :selected="$store.state.filter.period === 'year'"
             :title="$t('dates.year.simple')"
             icon="mdi mdi-calendar-star"
             @onClick="$store.dispatch('filter/setPeriod', 'year')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )
-          ContextMenuItem(
+          SharedContextMenuItem(
             :selected="$store.state.filter.period === 'all'"
             :title="$t('dates.all.simple')"
             icon="mdi mdi-database"
@@ -93,24 +93,24 @@ export default {
           v-if="!isEmptyData"
           v-show="$store.state.ui.statGraphsVisibility === 'visible'"
         )
-          ChartMenu(:showDropdown="true")
+          StatChartMenu(:showDropdown="true")
 
         //- customize
         .periodNav__item
-          ContextMenu(
+          SharedContextMenu(
             :position="{ right: '-12px', top: true }"
             :visible="visibleContextMenu"
             @onClickOpener="visibleContextMenu = !visibleContextMenu")
 
             template(slot="opener")
-              Dropdown._noBd(
+              SharedDropdown._noBd(
                 :active="visibleContextMenu"
                 :title="$t('settings.customize')"
               )
 
             template(slot="content")
               template(v-if="!isEmptyData")
-                ContextMenuItem(
+                SharedContextMenuItem(
                   :title="$t('stat.customize.showPeriodsChart')"
                   :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
                   showCheckbox
@@ -118,7 +118,7 @@ export default {
                   @onClick="toogleShowStatGraphs"
                 )
 
-                ContextMenuItem(
+                SharedContextMenuItem(
                   icon="mdi mdi-folder-star"
                   :title="$t('stat.customize.showCategorisChart')"
                   :checkboxValue="$store.state.ui.catsChart === 'visible'"
@@ -126,7 +126,7 @@ export default {
                   @onClick="toogleVisibleCatsChart"
                 )
 
-                ContextMenuItem(
+                SharedContextMenuItem(
                   :title="$t('stat.customize.showCategorisList')"
                   :checkboxValue="$store.state.ui.statItems === 'visible'"
                   showCheckbox
@@ -134,7 +134,7 @@ export default {
                   @onClick="toogleVisibilityStatItems"
                 )
 
-                ContextMenuItem(
+                SharedContextMenuItem(
                   :checkboxValue="$store.state.ui.catsChartPie === 'visible'"
                   :title="$t('stat.customize.showcatsChartPie')"
                   showCheckbox
@@ -144,12 +144,12 @@ export default {
 
                 .context-menu-sep
 
-              ContextMenuItem(
+              SharedContextMenuItem(
                 :title="$t('theme.change')"
                 icon="mdi mdi-palette"
                 @onClick="$store.dispatch('ui/changeTheme')"
               )
-              ContextMenuItem(
+              SharedContextMenuItem(
                 :title="$t('currency.selectBaseTitle')"
                 icon="mdi mdi-currency-usd"
                 @onClick="$store.commit('currencies/showBaseCurrenciesModal')"

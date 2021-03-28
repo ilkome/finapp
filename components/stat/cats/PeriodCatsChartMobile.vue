@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'PeriodCatsChartMobile',
+  name: 'StatCatsPeriodCatsChartMobile',
 
   props: {
     type: {
@@ -53,7 +53,7 @@ export default {
   v-if="statCurrentPeriod[type].categoriesIds.length > 0"
   :class="className"
 )
-  PeriodCatsChartItem2(
+  StatCatsPeriodCatsChartItem2(
     v-for="categoryId in statCurrentPeriod[type].categoriesIds"
     :biggest="biggestAmount"
     :category="categories[categoryId]"

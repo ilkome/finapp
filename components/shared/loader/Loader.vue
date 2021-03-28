@@ -6,9 +6,9 @@ export default {
 <template lang="pug">
 .loader
   .loader__wrap
-    AppName
+    SharedAppName
     .loader__spiner
-      Spiner(theme="dark" size="lg")
+      SharedSpiner(theme="dark" size="lg")
 </template>
 
 <style lang="stylus" scoped>

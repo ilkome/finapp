@@ -25,7 +25,7 @@ export default {
 </script>
 
 <template lang="pug">
-ComponentWrap(:contentPadding="false")
+LayoutComponentWrap(:contentPadding="false")
   template(slot="headerLeft") {{ $t('settings.title') }}
 
   template(slot="content")
@@ -38,14 +38,14 @@ ComponentWrap(:contentPadding="false")
       .settings__group
         .settings__subHeader {{ $t('settings.app') }}
         .settings__item
-          Button._bdb(
+          SharedButton._bdb(
             icon="mdi mdi-palette"
             :title="$t('theme.change')"
             @onClick="$store.dispatch('ui/changeTheme')"
           )
 
         .settings__item
-          Button._bdb(
+          SharedButton._bdb(
             :title="$t('userLogout')"
             icon="mdi mdi-logout"
             @onClick="$store.dispatch('user/signOut')"
@@ -55,7 +55,7 @@ ComponentWrap(:contentPadding="false")
         .settings__subHeader {{ $t('settings.delete') }}
         .settings__desc {{ $t('alerts.willDeleteEverything') }}
         .settings__item
-          Button._bdb(
+          SharedButton._bdb(
             :title="$t('settings.deleteButton')"
             icon="mdi mdi-delete"
             @onClick="confirmRemoveUserData = true"
@@ -65,7 +65,7 @@ ComponentWrap(:contentPadding="false")
         .settings__subHeader {{ $t('settings.demo') }}
         .settings__desc {{ $t('alerts.willDeleteEverything') }}
         .settings__item
-          Button._bdb(
+          SharedButton._bdb(
             :title="$t('settings.loadDemoButton')"
             icon="mdi mdi-test-tube"
             @onClick="confirmCreateDemo = true"

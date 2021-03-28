@@ -40,9 +40,10 @@ Portal(
 </template>
 
 <style lang="stylus">
-@import "~assets/stylus/variables/margins"
+@import '~assets/stylus/variables/margins'
 
 .descError
-  padding-bottom $m7
+  padding-bottom $m8
   color var(--c-expenses-1)
+  text-align center
 </style>

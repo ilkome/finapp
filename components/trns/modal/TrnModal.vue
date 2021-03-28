@@ -104,7 +104,7 @@ Portal(
     template(v-if="trnId")
       template(slot="header")
         //- trn
-        TrnItem(
+        TrnsItemTrnItem(
           :category="category"
           :trn="$store.state.trns.items[trnId]"
           :trnId="trnId"
@@ -133,14 +133,14 @@ Portal(
         )
 
       .moreActions
-        Button.marginBottom(
+        SharedButton.marginBottom(
           :title="`${$t('base.setFilter')} ${this.category.name}`"
           className="_borderBottom"
           icon="mdi mdi-folder-star"
           @onClick="handleSetFilterCategory"
         )
 
-        Button.marginBottom(
+        SharedButton.marginBottom(
           :class="{ marginBottom: budgets }"
           :title="`${$t('base.setFilter')} ${this.wallet.name}`"
           className="_borderBottom"
@@ -148,7 +148,7 @@ Portal(
           @onClick="handleSetFilterWallet"
         )
 
-        Button(
+        SharedButton(
           v-if="budgets && $store.getters['user/isTester']"
           :class="{ marginBottom: groups }"
           :title="$t('budgets.show')"
@@ -157,7 +157,7 @@ Portal(
           @onClick="showModalBudgets = true"
         )
 
-        Button(
+        SharedButton(
           v-if="groups && $store.getters['user/isTester']"
           className="_borderBottom"
           icon="mdi mdi-folder-multiple-outline"

@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'BaseMenu',
+  name: 'LayoutSidebarBaseMenu',
 
   computed: {
     activeTab () {

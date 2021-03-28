@@ -60,7 +60,7 @@ export default {
 <template lang="pug">
 .walllets
   div(:class="className")
-    WalletItem(
+    WalletsItemWalletItem(
       v-for="walletId in walletsIds"
       :id="walletId"
       :key="walletId"

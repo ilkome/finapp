@@ -74,7 +74,7 @@ export default {
         :placeholder="`${$t('groups.form.name')}...`"
         v-model="groupName")
 
-  Button(
+  SharedButton(
     className="_new"
     :title="$t('groups.form.button')"
     @onClick="handleCreateGroup")

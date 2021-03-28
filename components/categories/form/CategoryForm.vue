@@ -154,7 +154,7 @@ export default {
 </script>
 
 <template lang="pug">
-ComponentWrap
+LayoutComponentWrap
   template(slot="headerLeft")
     template(v-if="!categoryId")
       div {{ $t('categories.createNewTitle') }}
@@ -204,7 +204,7 @@ ComponentWrap
 
       template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length")
         .form-line._p0._clean
-          Checkbox(
+          SharedInputsCheckbox(
             v-model="applyChildColor"
             :title="$t('categories.form.childColor')"
             :alt="true"
@@ -212,12 +212,12 @@ ComponentWrap
 
       template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0")
         .form-line._p0._clean
-          Checkbox(
+          SharedInputsCheckbox(
             v-model="category.showInLastUsed"
             :title="$t('categories.form.lastUsed')"
             :alt="true")
         .form-line._p0._clean
-          Checkbox(
+          SharedInputsCheckbox(
             v-model="category.showInQuickSelector"
             :title="$t('categories.form.quickSelector')"
             :alt="true")
@@ -290,10 +290,11 @@ ComponentWrap
 
   template(slot="bottom")
     .col
-      Button(
-        :class="['_text-center _blue _ml-big', { _inline: $store.state.ui.pc }]"
+      SharedButton(
+        :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
         :title="$t('categories.form.save')"
-        @onClick="handleSubmit")
+        @onClick="handleSubmit"
+      )
 </template>
 
 <style lang="stylus" scoped>

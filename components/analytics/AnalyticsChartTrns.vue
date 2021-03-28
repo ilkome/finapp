@@ -134,13 +134,11 @@ export default {
           height: 160,
           spacing: [5, 0, 0, 0],
           type: 'column',
-          zoomType: 'x',
           panning: true,
           panKey: 'shift',
 
           events: {
             click (e) {
-              console.log('hy')
               // console.log(this.series[0].searchPoint(e, true))
             }
           }

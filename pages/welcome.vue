@@ -101,9 +101,10 @@ export default {
                       .mdi.mdi-lightbulb-outline
                   .themeSelector__title {{ $t('app.theme.light') }}
 
-              Button._blue._center(
+              SharedButton._blue2._center(
                 :title="$t('buttons.nextStep')"
-                @onClick="step = 2")
+                @onClick="step = 2"
+              )
 
   transition(name="fadeIn")
     template(v-if="step === 2")
@@ -117,9 +118,10 @@ export default {
           .options
             .options__item
               .options__desc {{ $t('welcome.create.text') }}
-              Button._blue._center(
+              SharedButton._blue2._center(
                 :title="$t('welcome.create.btn')"
-                @onClick="step = 3")
+                @onClick="step = 3"
+              )
 
             template(v-if="$store.state.demo.hasDemo")
               .options__or
@@ -127,9 +129,10 @@ export default {
                 .options__or__text {{ $t('welcome.or') }}
               .options__item
                 .options__desc {{ $t('welcome.demo.text') }}
-                Button._grey._center(
+                SharedButton._blue2._center(
                   :title="$t('welcome.demo.btn')"
-                  @onClick="$store.dispatch('demo/createDemo')")
+                  @onClick="$store.dispatch('demo/createDemo')"
+                )
 
   //- wallet
   transition(name="fadeIn")
@@ -142,9 +145,9 @@ export default {
               .header__desc {{ $t('app.desc') }}
               .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout') }} {{ $store.state.user.user.email }}
 
-            .text {{ $t('welcome.createFirstWallet.text') }}
+            .options__desc {{ $t('welcome.createFirstWallet.text') }}
             .button
-              Button._blue._center(
+              SharedButton._center._blue2(
                 :title="$t('welcome.createFirstWallet.btn')"
                 @onClick="showWalletForm = true")
 
@@ -154,24 +157,24 @@ export default {
       .tab
         .tab__content
           .icon: .mdi.mdi-folder-star
-          .text {{ $t('welcome.createFirstCategory.text') }}
+          .options__desc {{ $t('welcome.createFirstCategory.text') }}
           .button
-            Button._blue._center(
+            SharedButton._blue2._center(
               :title="$t('welcome.createFirstCategory.btn')"
               @onClick="showCategoryForm = true")
 
   transition(name="fadeIn")
     .tab(v-if="showWalletForm")
       .tab__content
-        WalletForm(@callback="showWalletForm = false")
+        WalletsFormWalletForm(@callback="showWalletsFormWalletForm = false")
 
   transition(name="fadeIn")
     .tab(v-if="showCategoryForm")
       .tab__content
-        CategoryForm(@callback="categoryCreatedCallback")
+        CategoriesFormCategoryForm(@callback="categoryCreatedCallback")
 
   .copyright
-    Copyright
+    SharedCopyright
 </template>
 
 <style lang="stylus" scoped>
@@ -202,7 +205,6 @@ export default {
   position absolute
   width 100%
   height 100%
-  background var(--c-bg-3)
 
 .tab
   position absolute
@@ -217,11 +219,13 @@ export default {
   scrollbar()
 
   &__content
+    width 100%
+    flex-grow 1
     display-flex(column, grow)
-    margin 0 auto
     padding $m9
     padding-bottom 100px
     align-self center
+    justify-self center
 
     @media $media-laptop
       width 550px
@@ -230,7 +234,7 @@ export default {
       padding 0
 
 .header
-  padding-bottom $m9
+  padding-bottom $mb1
 
   &__title
     font-size 28px
@@ -248,11 +252,11 @@ export default {
 
   &__user
     cursor pointer
-    padding-top $m7
+    padding-top $m9
     font-size 12px
 
     @media $media-laptop
-      padding-top $m7
+      padding-top $m9
       font-size 14px
 
 .options
@@ -267,7 +271,7 @@ export default {
     &__text
       position relative
       padding $m7
-      background var(--c-bg-3)
+      background var(--color-bg-canvas)
     &__border
       position absolute
       top 50%
@@ -280,6 +284,7 @@ export default {
     padding-bottom $m7
     color var(--c-font-4)
     line-height 20px
+    text-align center
 
 .text
   padding-bottom $m8
@@ -301,7 +306,6 @@ export default {
   bottom 0
   width 100%
   padding-bottom $m7
-  background var(--c-bg-3)
 
   @media $media-laptop
     padding-bottom $m9
@@ -316,23 +320,19 @@ export default {
   &__item
     flex-grow 1
     cursor pointer
-    padding 25px 30px
+    padding 16px 16px
     text-align center
     border 1px solid rgba(63, 63, 63, 1)
-    border-radius 3px
+    border-radius 8px
 
     &._dark
-      color rgba(150, 150, 150, 1)
-      background rgba(10, 10, 10, 1)
       border-color rgba(63, 63, 63, 1)
 
     &._light
-      color rgba(50, 50, 50, 1)
-      background rgba(229, 229, 229, 1)
       border-color rgba(190, 190, 190, 1)
 
     &._active
-      border-color rgba(44, 173, 34, 1)
+      border 1px solid var(--c-blue-3)
 
   &__icon
     opacity .5
@@ -341,5 +341,5 @@ export default {
 
     .themeSelector__item._active &
       opacity 1
-      color rgba(44, 173, 34, 1)
+      color var(--c-blue-3)
 </style>

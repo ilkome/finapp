@@ -3,34 +3,34 @@ export default {
   name: 'WalletsPageMobile',
 
   methods: {
-    handleShowWalletModal (id) {
-      this.$store.commit('wallets/showWalletModal')
-      this.$store.commit('wallets/setWalletModalId', id)
+    handleShowWalletsModalWalletModal (id) {
+      this.$store.commit('wallets/showWalletsModalWalletModal')
+      this.$store.commit('wallets/setWalletsModalWalletModalId', id)
     }
   }
 }
 </script>
 
 <template lang="pug">
-ComponentWrap(:contentPadding="false")
+LayoutComponentWrap(:contentPadding="false")
   template(slot="content")
     WalletsTotal
     WalletsList3(
       :limit="6"
       showToogle
-      @onClick="(id) => handleShowWalletModal(id)"
+      @onClick="(id) => handleShowWalletsModalWalletModal(id)"
     )
 
   template(slot="bottom")
     .flex
       .col
-        Button(
+        SharedButton(
           :title="$t('wallets.new')"
           className="_inline _small"
           @onClick="$store.dispatch('ui/setActiveTab', 'createWallet')"
         )
       .col
-        Button(
+        SharedButton(
           :title="$t('base.sort')"
           className="_inline _small"
           @onClick="$store.dispatch('ui/setActiveTab', 'walletsSort')"

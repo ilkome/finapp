@@ -197,6 +197,7 @@ export default {
     const selectedTrns = rootGetters['trns/getTrns']({ date })
     const categoriesWithTrnsIds = getters.getCategoriesIdsWithTrnsIds({ trnsIds: selectedTrns })
     const totalAllTrns = rootGetters['trns/getTotalOfTrnsIds'](selectedTrns)
+    console.log(categoriesWithTrnsIds)
 
     // count total in categories
     const categoriesTotal = {}
@@ -261,7 +262,7 @@ export default {
     return stat
   },
 
-  statCurrentPeriod (state, getters, rootState, rootGetters) {
+  statCurrentPeriod (state, getters, rootState) {
     const date = rootState.filter.date
     const stat = getters.getStat({ date })
     return stat

@@ -113,12 +113,12 @@ export default {
       .trnItem__categoryName {{ $t('trnForm.transferTitle') }}
       .trnItem__date {{ formatedDate }}
       .trnItem__wallet
-        WalletItem(
+        WalletsItemWalletItem(
           :id="trn.walletFromId"
           ui="tile"
         )
         .trnFormHeaderSeparator: .mdi.mdi-chevron-right
-        WalletItem(
+        WalletsItemWalletItem(
           :id="trn.walletToId"
           ui="tile"
         )

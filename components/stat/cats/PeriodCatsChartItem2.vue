@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'PeriodCatsChartItem2',
+  name: 'StatCatsPeriodCatsChartItem2',
 
   props: {
     category: {
