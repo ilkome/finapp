@@ -8,7 +8,7 @@ const state = () => ({
   mobile: false,
   pc: false,
   catsChart: 'visible',
-  catsChartPie: 'visible',
+  catsChartPie: 'hidden',
   statGraphsVisibility: 'visible',
   statItems: 'visible',
   stat: {
