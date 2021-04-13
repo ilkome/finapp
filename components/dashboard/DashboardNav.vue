@@ -47,7 +47,7 @@ export default {
       )
         template(slot="opener")
           SharedDropdown._noBd(:active="visiblePeriodMenu")
-            template(slot="title"): SharedDate.dateSelecror
+            template(slot="title"): SharedDate.dateSelector
 
         template(slot="content")
           SharedContextMenuItem(
@@ -158,31 +158,31 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/fonts"
+@import '~assets/stylus/variables/animations'
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables/fonts'
 
 ._align-right
+  display flex;
   margin-left auto
   flex 0
-  display flex
 
 ._nav
   margin-right $m7
   &:last-child
     margin-right 0
 
-.dateSelecror
+.dateSelector
+  cursor pointer
   display flex
   align-items center
-  cursor pointer
-  border 1px solid transparent
   height 40px
-  padding 8px 12px
   margin -8px -12px
-  font-header-1()
+  padding 8px 12px
   font-size 22px
+  border 1px solid transparent
+  font-header-1()
 
 .d-button
   display inline-flex
@@ -217,6 +217,6 @@ export default {
       display flex
       align-items flex-start
       margin-left auto
+      margin-left (- $m6);
       padding-right 0
-      margin-left (- $m6)
 </style>

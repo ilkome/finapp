@@ -51,7 +51,8 @@ export default {
 
         chart: {
           ...chartOptions.chart,
-          height: '300',
+          spacing: [0, 0, 0, 0],
+          height: '100',
 
           events: {
             click (e) {
@@ -92,4 +93,5 @@ export default {
 .chart
   z-index 3
   position relative
+  padding 0
 </style>

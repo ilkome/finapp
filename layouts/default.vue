@@ -32,11 +32,6 @@ export default {
     }))
 
     /**
-     * Is production
-     */
-    const isProduction = process.env.NODE_ENV === 'production'
-
-    /**
      * Page dimensions
      */
     const { store } = useContext()
@@ -55,8 +50,7 @@ export default {
 
     return {
       isShowUpdateApp,
-      className,
-      isProduction
+      className
     }
   }
 }
@@ -91,9 +85,6 @@ export default {
     v-if="isShowUpdateApp"
     @onClose="isShowUpdateApp = false"
   )
-
-  //- Metrica
-  LazyMetrica(v-if="isProduction")
 </template>
 
 <style lang="css">

@@ -38,7 +38,7 @@ export default {
   },
 
   methods: {
-    handleSetFilterCategory (id) {
+    handleSetFilterCategory () {
       this.$store.commit('categories/hideCategoryModal')
       this.$store.dispatch('ui/setActiveTab', 'stat')
       this.$store.commit('filter/setFilterDateNow')
@@ -47,7 +47,8 @@ export default {
       this.$store.commit('categories/setCategoryModalId', null)
 
       if (this.$store.state.ui.mobile) {
-        this.$store.dispatch('ui/setActiveTabViewName', 'chart')
+        this.$store.dispatch('ui/setActiveTabViewName', 'stat')
+        this.$store.dispatch('ui/setActiveTabStat', 'details')
       }
     },
 

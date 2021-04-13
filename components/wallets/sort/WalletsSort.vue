@@ -69,7 +69,7 @@ LayoutComponentWrap(:contentPadding="$store.state.ui.pc")
   template(slot="bottom")
     .col
       SharedButton(
-        className="_small _blue _text-center"
+        className="_blue2 _text-center"
         :title="$t('base.save')"
         @onClick="saveWalletsOrder"
       )

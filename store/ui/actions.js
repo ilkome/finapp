@@ -2,7 +2,7 @@ import localforage from 'localforage'
 
 export default {
   async initUi ({ commit, dispatch }) {
-    const uiLocalStore = await localforage.getItem('finapp.statActiveTab')
+    const uiLocalStore = await localforage.getItem('finapp.stat')
     const activeTabViewName = await localforage.getItem('finapp.activeTabViewName')
 
     if (activeTabViewName) {
@@ -13,9 +13,14 @@ export default {
     if (uiLocalStore) {
       // stat
       if (uiLocalStore.stat) {
-        // stat tab
         uiLocalStore.stat.activeTab &&
-          dispatch('setActiveTabStat', uiLocalStore.stat.activeTab)
+          dispatch('setActiveTab', uiLocalStore.stat.activeTab)
+
+        uiLocalStore.stat.activeTabViewName &&
+          dispatch('setActiveTabViewName', uiLocalStore.stat.activeTabViewName)
+
+        uiLocalStore.stat.activeTabStat &&
+          dispatch('setActiveTabStat', uiLocalStore.stat.activeTabStat)
       }
     }
 
@@ -23,7 +28,7 @@ export default {
   },
 
   setActiveTabViewName ({ state, commit, dispatch }, value) {
-    if (state.activeTab !== value) {
+    if (state.activeTabViewName !== value) {
       commit('setActiveTabViewName', value)
       localforage.setItem('finapp.activeTabViewName', value)
       dispatch('ui/setUiView', null, { root: true })
@@ -36,7 +41,7 @@ export default {
    *
    * @param {string} theme - New theme value (light, dark).
    */
-  changeTheme ({ commit, rootState }, theme) {
+  changeTheme (props, theme) {
     // eslint-disable-next-line no-undef
     const currentTheme = $nuxt.$colorMode.value
     let newTheme
@@ -76,7 +81,7 @@ export default {
   setActiveTab ({ commit, state }, nextTab) {
     if (state.activeTab !== nextTab) {
       commit('setActiveTab', nextTab)
-      localforage.setItem('finapp.activeTab', nextTab)
+      localforage.setItem('finapp.stat', state)
     }
   },
 
@@ -87,10 +92,8 @@ export default {
     * @param {string} nextTab - Next tab name.
   */
   setActiveTabStat ({ commit, state }, nextTab) {
-    if (state.stat.activeTab !== nextTab) {
-      commit('setActiveTabStat', nextTab)
-      localforage.setItem('finapp.statActiveTab', state)
-    }
+    commit('setActiveTabStat', nextTab)
+    localforage.setItem('finapp.stat', state)
   },
 
   /**

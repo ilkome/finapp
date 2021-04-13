@@ -87,10 +87,11 @@ export default {
         )
           .marginBottom
             CategoriesView(
+              :activeItemId="$store.state.trnForm.values.categoryId"
               :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
-              ui="_flat"
               :noPaddingBottom="true"
               @onClick="handleCategoryClick"
+              ui="_flat"
             )
 
       .swiper-slide
@@ -100,10 +101,11 @@ export default {
         )
           .marginBottom
             CategoriesView(
+              :activeItemId="$store.state.trnForm.values.categoryId"
               :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-              ui="_flat"
               :noPaddingBottom="true"
               @onClick="handleCategoryClick"
+              ui="_flat"
             )
 
       .swiper-slide
@@ -140,7 +142,7 @@ $border = 1px
   left 0
   width 100%
   padding 0
-  background var(--c-bg-4)
+  background var(--color-bg-canvas)
 
 .switcher
   display flex

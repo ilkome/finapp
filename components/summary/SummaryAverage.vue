@@ -22,13 +22,13 @@ export default {
       v-if="statAverage.incomes !== 0"
       :amount="statAverage.incomes"
       :type="1"
-      :name="$t('money.averageIncomes')"
+      :name="$t('money.average.incomes')"
     )
     SummaryRowItem(
       v-if="statAverage.expenses !== 0"
       :amount="statAverage.expenses"
       :type="0"
-      :name="$t('money.averageExpenses')"
+      :name="$t('money.average.expenses')"
     )
     SummaryRowItem(
       v-if="statAverage.total !== 0"

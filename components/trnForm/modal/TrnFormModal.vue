@@ -30,7 +30,6 @@ export default {
     }
   },
 
-  // @ts-ignore
   setup (props: any, { listeners }) {
     const { isShow, doNotTouchClassName } = toRefs(props)
     const { initTouchModal, closeModal } = useTouchClose()
@@ -71,23 +70,18 @@ export default {
 
   computed: {
     modalStyle (): any {
-      // @ts-ignore
       if (this.$store.state.trnForm.height < this.$store.state.ui.height) {
-        // @ts-ignore
         if (this.position === 'bottom') {
           return {
-            // @ts-ignore
             maxHeight: `${this.$store.state.trnForm.height - this.headerHeight}px`
           }
         }
         return {
-          // @ts-ignore
           height: `${this.$store.state.trnForm.height - this.headerHeight}px`
         }
       }
       else {
         return {
-          // @ts-ignore
           height: `${this.$store.state.ui.height - this.headerHeight}px`
         }
       }
@@ -103,25 +97,19 @@ export default {
 
   methods: {
     afterClose () {
-      // @ts-ignore
       if (this.$listeners.afterClose) {
-        // @ts-ignore
         this.$listeners.afterClose()
       }
     },
 
     updateHeight () {
-      // @ts-ignore
       this.$nextTick(() => {
-        // @ts-ignore
         this.headerHeight = this.$refs.header.clientHeight
       })
     },
 
     onClose () {
-      // @ts-ignore
       if (this.$listeners.onClose) {
-        // @ts-ignore
         this.$listeners.onClose()
       }
     }
@@ -226,7 +214,7 @@ export default {
     display flex
     flex-grow 1
     flex-flow column nowrap
-    background var(--c-bg-4)
+    background var(--color-bg-canvas)
     border-radius $m6
 
     &._anim

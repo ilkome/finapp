@@ -1,6 +1,8 @@
 <script>
+import { computed, useContext } from '@nuxtjs/composition-api'
+
 export default {
-  name: 'LayoutMobileMenu2',
+  name: 'LayoutMobileBottomMenu',
 
   props: {
     slider: {
@@ -13,53 +15,50 @@ export default {
     }
   },
 
-  computed: {
-    activeTab () {
-      return this.$store.state.ui.activeTab
-    },
-    menu () {
-      return {
-        stat: {
-          icon: 'mdi mdi-poll',
-          id: 'chart',
-          name: this.$t('stat.shortTitle')
-        },
-        wallets: {
-          icon: 'mdi mdi-credit-card-multiple',
-          id: 'wallets',
-          name: this.$t('wallets.name')
-        },
-        categories: {
-          icon: 'mdi mdi-folder-star',
-          id: 'categories',
-          name: this.$t('categories.shortTitle')
-        },
-        menu: {
-          icon: 'mdi mdi-menu',
-          id: 'menu',
-          name: this.$t('trns.shortTitle')
-        }
-      }
-    }
-  },
+  setup () {
+    const { store, app: { i18n } } = useContext()
+    const activeTabViewName = computed(() => store.state.ui.activeTabViewName)
 
-  methods: {
-    getClassName (tab) {
-      if (this.slider) {
-        const index = this.slider.activeIndex
-        if (tab === 'wallets' && index === 0) { return true }
-        if (tab === 'stat' && index === 1) { return true }
-        if (tab === 'categories' && index === 2) { return true }
+    const menu = computed(() => ({
+      stat: {
+        icon: 'mdi mdi-poll',
+        id: 'stat',
+        name: i18n.t('stat.shortTitle')
+      },
+      wallets: {
+        icon: 'mdi mdi-credit-card-multiple',
+        id: 'wallets',
+        name: i18n.t('wallets.name')
+      },
+      categories: {
+        icon: 'mdi mdi-folder-star',
+        id: 'categories',
+        name: i18n.t('categories.shortTitle')
+      },
+      menu: {
+        icon: 'mdi mdi-menu',
+        id: 'menu',
+        name: i18n.t('trns.shortTitle')
       }
-    },
+    }))
 
-    handleSetActiveTab (tab) {
-      if (tab === 'menu') {
-        this.$store.dispatch('ui/setActiveTab', 'menu')
+    function handleSetActiveTab (tabName) {
+      console.log(tabName)
+      if (tabName === 'menu') {
+        store.dispatch('ui/setActiveTab', 'menu')
         return
       }
+      store.dispatch('ui/setActiveTabViewName', tabName)
+    }
 
-      this.$store.dispatch('ui/setActiveTabViewName', tab)
+    function getClassName (tabName) {
+      return activeTabViewName.value === tabName
+    }
+
+    return {
+      menu,
+      handleSetActiveTab,
+      getClassName
     }
   }
 }
@@ -162,13 +161,15 @@ export default {
     flex-flow column
     padding $m6 0
     color var(--c-font-4)
+    border-radius $m3
     anim()
 
     &:active
-      background var(--c-bg-1)
+      color var(--c-font-2)
+      background var(--c-blue-1)
 
     &._active
-      color var(--c-font-1)
+      color var(--c-font-2)
 
     /.light-mode &
       color var(--c-font-5)

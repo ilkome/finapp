@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'SummaryRowItemView',
+  name: 'StatSummaryRowItemView',
 
   props: {
     amount: {

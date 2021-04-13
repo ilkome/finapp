@@ -68,7 +68,9 @@ export default function useTrnFormValidate () {
       }
     }
 
-    return true
+    return {
+      valid: true
+    }
   }
 
   return {

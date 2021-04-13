@@ -218,12 +218,13 @@ export default {
     title: 'Статистика',
     selectedPeriod: 'Выбранный период',
     shortTitle: 'Статистика',
-    summary2: 'Стат2',
     balanceTitle: 'Баланс',
     periods: 'Общее',
     empty: 'Статистики по выбранным параметрам нет :)',
     customize: {
-      showCategorisChart: 'Показывать график категорий',
+      showHistory: 'Показывать историю',
+      showRoundCats: 'Показывать список круглых иконок',
+      showCategorisChart: 'Показывать вертикальный график категорий',
       showCategorisList: 'Показывать список категорий',
       showcatsChartPie: 'Показывать статистику "пирог"',
       showPeriodsChart: 'Показывать график периодов'
@@ -232,6 +233,7 @@ export default {
 
   chart: {
     title: 'График',
+    showMain: 'Показывать основной график',
     view: {
       add: 'Добавить',
       remove: 'Удалить',
@@ -263,9 +265,11 @@ export default {
     expenses: 'Расход',
     transfer: 'Перевод',
     total: 'Итого',
-    average: 'Среднее',
-    averageIncomes: 'Средний доход',
-    averageExpenses: 'Средний расход',
+    average: {
+      base: 'Среднее',
+      incomes: 'Средний доход',
+      expenses: 'Средний расход'
+    },
     averageTotal: 'Средний баланс',
     also: 'Еще',
     wallets: 'Кошельки',

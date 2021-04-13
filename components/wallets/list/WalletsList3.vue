@@ -17,6 +17,11 @@ export default {
     showBase: {
       type: Boolean,
       default: true
+    },
+
+    activeItemId: {
+      type: String,
+      default: null
     }
   },
 
@@ -55,6 +60,7 @@ export default {
 .walllets
   .walllets__grid
     WalletsItemWalletItem2(
+      :activeItemId="activeItemId"
       v-for="walletId in walletsIds"
       :id="walletId"
       :key="walletId"
@@ -68,7 +74,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .walllets
   padding 0 $m7

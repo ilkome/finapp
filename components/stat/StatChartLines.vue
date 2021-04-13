@@ -1,6 +1,7 @@
 <script>
 import { Chart } from 'highcharts-vue'
 import chartOptions from '~/components/stat/chartOptions'
+import useChart from '~/components/chart/useChart'
 
 export default {
   name: 'StatChartLines',
@@ -38,11 +39,14 @@ export default {
     amountType: {
       type: String,
       default: null
-    },
+    }
+  },
 
-    isShowDataLabels: {
-      type: Boolean,
-      default: true
+  setup () {
+    const { isShowDataLabels } = useChart()
+
+    return {
+      isShowDataLabels
     }
   },
 
@@ -195,15 +199,17 @@ export default {
 
           events: {
             click (e) {
-              const value = this.series[0].searchPoint(e, true) || this.series[1].searchPoint(e, true)
-              this.xAxis[0].update({
-                plotBands: [{
-                  color: 'var(--c-bg-5)',
-                  from: value.index + 0.5,
-                  to: value.index - 0.5
-                }]
-              })
-              vm.$store.dispatch('filter/setDate', parseInt(value.date))
+              const value = this.series[0].searchPoint(e, false) || this.series[1].searchPoint(e, false)
+              if (value) {
+                this.xAxis[0].update({
+                  plotBands: [{
+                    color: 'var(--c-bg-5)',
+                    from: value.index + 0.5,
+                    to: value.index - 0.5
+                  }]
+                })
+                vm.$store.dispatch('filter/setDate', parseInt(value.date))
+              }
             }
           }
         },
@@ -235,10 +241,6 @@ export default {
         }
       }
     }
-  },
-
-  mounted () {
-    console.log(this.chartData)
   }
 }
 </script>

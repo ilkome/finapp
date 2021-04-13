@@ -70,7 +70,7 @@ export default {
   buildModules: [
     '@nuxtjs/pwa',
     // https://composition-api.nuxtjs.org/
-    '@nuxtjs/composition-api',
+    '@nuxtjs/composition-api/module',
     // https://typescript.nuxtjs.org/
     '@nuxt/typescript-build'
   ],

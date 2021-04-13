@@ -21,6 +21,11 @@ export default {
     size: {
       type: String,
       default: null
+    },
+
+    activeItemId: {
+      type: String,
+      default: null
     }
   },
 
@@ -51,7 +56,9 @@ export default {
 <template lang="pug">
 .walletItemGrid(
   @click="handleClick"
+  :class="{ _active: activeItemId === id }"
 )
+  .walletItemGrid__active(v-if="activeItemId === id")
   .walletItemGrid__line(:style="{ background: wallet.color || $store.state.ui.defaultBgColor }")
   .walletItemGrid__name {{ wallet.name }}
   .walletItemGrid__amount
@@ -71,9 +78,10 @@ export default {
 .walletItemGrid
   overflow hidden
   cursor pointer
+  position relative
   padding 14px $m7
   padding-top 0
-  background var(--c-bg-6)
+  background var(--color-item-bg)
   border-top 0
   border-radius $m5
 
@@ -87,4 +95,16 @@ export default {
     padding-bottom $m5
     color var(--c-font-2)
     font-size 16px
+
+  &__active
+    position absolute
+    top $m6
+    right $m5
+    display flex
+    align-items center
+    justify-content center
+    width 8px
+    height 8px
+    background var(--c-blue-1)
+    border-radius 50%
 </style>

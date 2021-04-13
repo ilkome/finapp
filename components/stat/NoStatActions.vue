@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'NoStatActions'
+  name: 'StatNoStatActions'
 }
 </script>
 
@@ -15,9 +15,8 @@ export default {
   .options__item(v-if="!$store.getters['wallets/hasWallets'] && !$store.getters['categories/hasCategories']")
     h4 {{ $t('welcome.firstRun.text') }}
 
-    SharedButton._blue._center(
+    SharedButton._text-center._blue2(
       :title="$t('welcome.firstRun.btn')"
-      size="xl"
       @onClick="$router.push('/welcome')"
     )
 
@@ -27,8 +26,7 @@ export default {
       .options__or__text {{ $t('welcome.or') }}
 
     h4 {{ $t('welcome.demo.text') }}
-    SharedButton._blue._center(
-      size="xl"
+    SharedButton._text-center._blue2(
       :title="$t('welcome.demo.btn')"
       @onClick="$store.dispatch('demo/createDemo')"
     )

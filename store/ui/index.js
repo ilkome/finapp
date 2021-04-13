@@ -14,8 +14,8 @@ const state = () => ({
   stat: {
     activeTab: 'incomes'
   },
-
-  activeTabViewName: 'incomes'
+  activeTabStat: 'details',
+  activeTabViewName: 'stat'
 })
 
 export default {

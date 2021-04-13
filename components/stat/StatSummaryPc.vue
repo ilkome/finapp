@@ -35,7 +35,7 @@ export default {
         .summary__row(v-if="period !== 'all' && statAverage.expenses > 0")
           .summary__average
             .summary__average__icon: .mdi.mdi-chart-timeline
-            .summary__average__title {{ $t('money.average') }}
+            .summary__average__title {{ $t('money.average.base') }}
           .summary__amount._average
             Amount(
               :currency="$store.state.currencies.base"
@@ -57,7 +57,7 @@ export default {
           .summary__row
             .summary__average
               .summary__average__icon: .mdi.mdi-chart-timeline
-              .summary__average__title {{ $t('money.average') }}
+              .summary__average__title {{ $t('money.average.base') }}
             .summary__amount._average
               Amount(
                 :currency="$store.state.currencies.base"
@@ -80,7 +80,7 @@ export default {
           .summary__row
             .summary__average
               .summary__average__icon: .mdi.mdi-chart-timeline
-              .summary__average__title {{ $t('money.average') }}
+              .summary__average__title {{ $t('money.average.base') }}
             .summary__amount._average
               Amount(
                 :currency="$store.state.currencies.base"

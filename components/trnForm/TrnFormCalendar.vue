@@ -55,7 +55,6 @@ export default {
 
   @media $media-laptop
     color var(--c-font-4)
-    background var(--c-bg-4)
     border-top 0
 
   &__date

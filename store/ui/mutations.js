@@ -9,7 +9,7 @@ export default {
   },
 
   setActiveTabStat (state, tabName) {
-    state.stat.activeTab = tabName
+    state.activeTabStat = tabName
   },
 
   setAppDimensions (state, props) {

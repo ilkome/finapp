@@ -100,88 +100,10 @@ export default {
         isShowPrefix
         size="md"
       )
-
-  //- Modal
-  //---------------------------------------------------------------------------
-  Portal(
-    v-if="$store.state.stat.categoryModal.id === categoryId && $store.state.stat.categoryModal.type === type"
-    to="modal"
-  )
-    ModalBottom(
-      center
-      @onClose="$store.commit('stat/setCategoryModal', { id: null, type: null })"
-    )
-      template(slot="header")
-        .categoryWrap
-          .categoryIcon
-            Icon(
-              :icon="category.icon"
-              :background="category.color || $store.state.ui.defaultBgColor"
-              :round="true"
-              :big="true"
-            )
-          .modalBottom__header__title {{ category.name }}
-
-      .statItem__inside(@click.stop="")
-        .statItem__chart
-          StatChartLines(
-            v-if="$store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
-            :categoryId="categoryId"
-            :chartColor="category.color"
-            :isShowExpenses="type === 0"
-            :isShowIncomes="type === 1"
-            chartType="column"
-          )
-
-        .statItem__date
-          SharedDate
-
-        .statItem__summary
-          Amount(
-            :currency="currency"
-            :value="total"
-            :type="type"
-            size="xl"
-            vertical="center"
-            :isColorize="false"
-            isShowPrefix
-          )
-
-        template(v-if="showChildCategories")
-          StatItemChildCats(
-            :categoryId="categoryId"
-            :type="type"
-          )
-
-        .statItem__trns
-          h2 {{ $t('trns.history') }}
-          TrnsList3(
-            :categoryId="categoryId"
-            :expenses="type === 0"
-            :incomes="type === 1"
-            :showCategory="showChildCategories"
-            :size="5"
-          )
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
-
-.categoryWrap
-  flex-grow 1
-  display flex
-  align-items center
-  justify-content center
-  flex-flow column
-  margin-bottom -10px
-
-.categoryIcon
-  flex-grow 1
-  display flex
-  align-items center
-  justify-content center
-  margin-top -38px
-  padding-bottom 12px
 
 .statItem
   overflow hidden
@@ -213,23 +135,6 @@ export default {
     justify-content center
     flex-flow column
 
-  &__inside
-    cursor default
-
-  &__trns
-    padding-top $m8
-
-    h2
-      padding-bottom $m6
-
-  &__date
-    display flex
-    justify-content center
-    padding-top $m7
-    padding-bottom $m5
-    color var(--c-font-4)
-    text-align center
-
   &__summary
     z-index 10
     position sticky
@@ -241,7 +146,6 @@ export default {
   &__chart
     height 180px
     margin-bottom $m9
-    // margin-left (- $m7)
 
   &__graph
     overflow hidden

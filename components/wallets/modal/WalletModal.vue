@@ -37,7 +37,8 @@ export default {
       this.$store.commit('wallets/setWalletsModalWalletModalId', null)
 
       if (this.$store.state.ui.mobile) {
-        this.$store.dispatch('ui/setActiveTabViewName', 'chart')
+        this.$store.dispatch('ui/setActiveTabViewName', 'stat')
+        this.$store.dispatch('ui/setActiveTabStat', 'details')
       }
     },
 

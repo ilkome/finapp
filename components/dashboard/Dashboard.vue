@@ -43,7 +43,7 @@ export default {
     DashboardFilter
     DashboardStatControl
 
-  LazyNoStatActions(v-if="!$store.getters['trns/hasTrns']")
+  LazyStatNoStatActions(v-if="!$store.getters['trns/hasTrns']")
 
   .dashboard__content(v-if="$store.getters['trns/hasTrns']")
     //- empty

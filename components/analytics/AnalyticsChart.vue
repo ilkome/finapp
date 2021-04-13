@@ -215,7 +215,7 @@ export default {
         )
 
     .item
-      .item__name {{ $t('money.average') }}
+      .item__name {{ $t('money.average.base') }}
       .item__price
         Amount(
           :currency="$store.state.currencies.base"

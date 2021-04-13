@@ -12,6 +12,11 @@ export default {
     ui: {
       type: String,
       default: null
+    },
+
+    activeItemId: {
+      type: String,
+      default: null
     }
   },
 
@@ -43,9 +48,10 @@ export default {
 
 <template lang="pug">
 .categoryItem(
-  :class="{ [ui]: ui }"
+  :class="{ [ui]: ui, _active: activeItemId === id }"
   @click="handleClick"
 )
+  .categoryItem__active(v-if="activeItemId === id")
   .categoryItem__icon
     Icon(
       :icon="category.icon"
@@ -78,7 +84,7 @@ export default {
   justify-content center
   padding $m6
   color var(--c-font-1)
-  background var(--c-bg-6)
+  background var(--color-item-bg)
   border-radius $m5
 
   &._flat
@@ -141,4 +147,16 @@ export default {
     right $m4
     color var(--c-font-5)
     font-size 18px
+
+  &__active
+    position absolute
+    top $m5
+    right $m5
+    display flex
+    align-items center
+    justify-content center
+    width 8px
+    height 8px
+    background var(--c-blue-1)
+    border-radius 50%
 </style>

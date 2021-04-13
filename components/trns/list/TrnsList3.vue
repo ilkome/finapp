@@ -122,7 +122,7 @@ export default {
           .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
             .trnsList__header: TrnsListDate(:date="date")
             .trnsList__trns
-              TrnsItemTrnItem(
+              TrnsItemTrnItem.item(
                 v-for="trnId in trnsIds"
                 :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
                 :key="trnId"
@@ -134,7 +134,7 @@ export default {
       //- stat view
       template(v-else)
         template(v-for="trnId of paginatedTrnsIds")
-          TrnsItemTrnItem(
+          TrnsItemTrnItem.item(
             :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
             :key="trnId"
             :trn="$store.state.trns.items[trnId]"
@@ -153,10 +153,11 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .trnsList
-  background var(--c-bg-4)
+  padding 0 $m6
+
   &__grid
     display grid
     grid-template-rows 1fr
@@ -164,7 +165,6 @@ export default {
 
   &__day
     padding $m7 0
-    background var(--c-bg-4)
 
     &:first-child
       padding-top 0
@@ -180,8 +180,7 @@ export default {
     display flex
     align-items center
     justify-content space-between
-    padding $m3 0
-    background var(--c-bg-4)
+    padding-bottom $m6
 
   &__pages
     padding 16px 8px
@@ -189,4 +188,10 @@ export default {
     +media-laptop()
       padding 0
       padding-top 20px
+
+  .item
+    margin-right - ($m6 + $m3)
+    margin-left - ($m6 + $m3)
+    padding-right ($m6 + $m3)
+    padding-left ($m6 + $m3)
 </style>

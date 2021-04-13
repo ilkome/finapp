@@ -1,4 +1,4 @@
-import { ref, computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useContext } from '@nuxtjs/composition-api'
 import currency from 'currency.js'
 
 export default function useAmount () {

@@ -216,11 +216,12 @@ export default {
     title: 'Statistics',
     selectedPeriod: 'Selected period',
     shortTitle: 'Stat',
-    summary2: 'Stat2',
     periods: 'Detail',
     balanceTitle: 'Balance',
     empty: 'No stat for this period',
     customize: {
+      showHistory: 'Show history',
+      showRoundCats: 'Show round categories list',
       showCategorisChart: 'Show categories chart',
       showCategorisList: 'Show categories list',
       showcatsChartPie: 'Show categories pie chart',
@@ -230,6 +231,7 @@ export default {
 
   chart: {
     title: 'Chart',
+    showMain: 'Show main chart',
     view: {
       add: 'Add',
       remove: 'Remove',
@@ -261,9 +263,11 @@ export default {
     expenses: 'Expenses',
     transfer: 'Transfer',
     total: 'Total',
-    average: 'Average',
-    averageIncomes: 'Average incomes',
-    averageExpenses: 'Average expenses',
+    average: {
+      base: 'Average',
+      incomes: 'Average incomes',
+      expenses: 'Average expenses'
+    },
     averageTotal: 'Average total',
     also: 'Also',
     wallets: 'Wallets',

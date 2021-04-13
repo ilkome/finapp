@@ -133,7 +133,7 @@ export default {
     onClickEditTrn (id, amount) {
       const { setExpression } = useCalculator()
       setExpression(amount)
-      this.slider.slideTo(0)
+      this.slider.slideTo(1)
     }
   }
 }

@@ -24,6 +24,11 @@ export default {
     ui: {
       type: String,
       default: null
+    },
+
+    activeItemId: {
+      type: String,
+      default: null
     }
   },
 
@@ -44,6 +49,7 @@ export default {
     CategoriesItemCategoryItem(
       v-for="categoryId in categoresIds"
       :category="$store.state.categories.items[categoryId]"
+      :activeItemId="activeItemId"
       :id="categoryId"
       :key="categoryId"
       :ui="ui"

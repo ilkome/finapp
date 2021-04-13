@@ -51,7 +51,7 @@ export default {
 
     pie: {
       dataLabels: {
-        enabled: true,
+        enabled: false,
         distance: -30,
         format: '<b>{point.name}</b><br>{point.y}',
         filter: {
@@ -64,6 +64,12 @@ export default {
     },
 
     series: {
+      states: {
+        inactive: {
+          opacity: 1
+        }
+      },
+
       marker: {
         radius: 2,
         fillColor: 'var(--c-bg-4)',

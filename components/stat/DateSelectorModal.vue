@@ -1,54 +1,45 @@
 <script>
+import { computed, useContext } from '@nuxtjs/composition-api'
+import useMobileLayout from '~/components/layout/useMobileLayout'
+import usePeriods from '~/components/periods/usePeriods'
+
 export default {
   name: 'DateSelectorModal',
 
-  data () {
+  setup () {
+    const { store } = useContext()
+
+    const {
+      isShowPeriodsNamesModal,
+      showPeriodsNamesModal,
+      hidePeriodsNamesModal
+    } = useMobileLayout()
+
+    const { periodsNames } = usePeriods()
+    function onSelectPeriod (period) {
+      hidePeriodsNamesModal()
+      store.dispatch('filter/setPeriod', period)
+    }
+
+    const filterPeriod = computed(() => store.state.filter.period)
+
     return {
-      isShow: true,
-      periodsNames: [{
-        slug: 'day',
-        icon: 'mdi mdi-weather-sunset-up',
-        name: this.$t('dates.day.simple')
-      }, {
-        slug: 'week',
-        icon: 'mdi mdi-calendar-week',
-        name: this.$t('dates.week.simple')
-      }, {
-        slug: 'month',
-        icon: 'mdi mdi-calendar',
-        name: this.$t('dates.month.simple')
-      }, {
-        slug: 'year',
-        icon: 'mdi mdi-calendar-star',
-        name: this.$t('dates.year.simple')
-      }]
-    }
-  },
+      isShowPeriodsNamesModal,
+      showPeriodsNamesModal,
+      hidePeriodsNamesModal,
 
-  computed: {
-    activePriodName () {
-      return this.$store.state.filter.period
-    }
-  },
+      periodsNames,
+      onSelectPeriod,
 
-  methods: {
-    onSelectPeriod (period) {
-      this.$store.dispatch('filter/setPeriod', period)
-      this.$emit('onClose')
+      filterPeriod
     }
   }
 }
 </script>
 
 <template lang="pug">
-Portal(
-  v-if="isShow"
-  to="modal"
-)
-  ModalBottom(
-    @onClose="$emit('onClose')"
-    @afterClose="$emit('afterClose')"
-  )
+Portal(to="modal")
+  ModalBottom(@onClose="hidePeriodsNamesModal")
     template(slot="header")
       .modalBottom__header__title
         .ta_center
@@ -58,13 +49,13 @@ Portal(
       ModalButton(
         v-for="periodItem in periodsNames"
         :icon="periodItem.icon"
-        :isActive="activePriodName === periodItem.slug"
+        :isActive="filterPeriod === periodItem.slug"
         :key="periodItem.slug"
         :name="$t(`dates.${periodItem.slug}.simple`)"
         @onClick="onSelectPeriod(periodItem.slug)"
       )
       ModalButton(
-        :isActive="activePriodName === 'all'"
+        :isActive="filterPeriod === 'all'"
         :name="$t('dates.all.simple')"
         icon="mdi mdi-database"
         @onClick="onSelectPeriod('all')"
