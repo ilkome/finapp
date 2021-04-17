@@ -5,13 +5,9 @@ export default {
   name: 'DateMobileSelector',
 
   setup () {
-    const {
-      isShowPeriodsNamesModal,
-      showPeriodsNamesModal
-    } = useMobileLayout()
+    const { showPeriodsNamesModal } = useMobileLayout()
 
     return {
-      isShowPeriodsNamesModal,
       showPeriodsNamesModal
     }
   }

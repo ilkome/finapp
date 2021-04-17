@@ -2,6 +2,7 @@
 import dayjs from 'dayjs'
 import { computed, useContext } from '@nuxtjs/composition-api'
 import useUIView from '~/components/layout/useUIView'
+import useStat from '~/modules/stat/useStat'
 
 export default {
   name: 'StatMobile',
@@ -23,14 +24,8 @@ export default {
     // UI
     const { ui, setUI } = useUIView()
 
-    // Incomes Expenses
-    const moneyTypes = [{
-      id: 'expenses',
-      type: 0
-    }, {
-      id: 'incomes',
-      type: 1
-    }]
+    // Stat
+    const { moneyTypes } = useStat()
 
     const statToday = computed(() => {
       return store.getters['stat/getStat']({
@@ -128,7 +123,7 @@ export default {
 
           //- Round cats list
           .statItemsTiles(v-if="ui.showRoundCats && statCurrentPeriod[item.id].categoriesIds.length > 0")
-            LazyStatItemMobile2(
+            LazyStatItemRound(
               v-if="ui.showRoundCats && statCurrentPeriod[item.id].categoriesIds.length > 0"
               v-for="categoryId in statCurrentPeriod[item.id].categoriesIds"
               :biggest="statCurrentPeriod[item.id].biggest"

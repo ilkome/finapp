@@ -133,4 +133,10 @@ body
   &__wrap
     flex-grow 1
     position relative
+
+// Base
+// ------------------------------------
+.context-menu-sep
+  height 1px
+  background var(--c-bg-4)
 </style>

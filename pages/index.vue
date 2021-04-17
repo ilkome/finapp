@@ -1,4 +1,6 @@
 <script>
+import useUIView from '~/components/layout/useUIView'
+
 export default {
   name: 'IndexPage',
 
@@ -7,6 +9,8 @@ export default {
         !this.$store.getters['categories/hasCategories']) {
       this.$router.replace('/welcome')
     }
+    const { initUI } = useUIView()
+    initUI()
   }
 }
 </script>

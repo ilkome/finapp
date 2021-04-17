@@ -63,12 +63,12 @@ export default {
   .periodItem(
     v-for="periodItem in periodsNames"
     :key="periodItem.slug"
-    :class="{ _active: $store.state.filter.period === periodItem.slug }"
+    :class="{ _active: filterPeriod === periodItem.slug }"
     @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
   )
     .periodItem__name {{ periodItem.name }}
     .periodItem__count(
-      v-if="$store.state.filter.period === periodItem.slug && filterPeriod !== 'all'"
+      v-if="filterPeriod === periodItem.slug && filterPeriod !== 'all'"
     ) {{ $store.state.chart.periods[periodItem.slug].showedPeriods }}
 
   .periodItem(
@@ -80,9 +80,8 @@ export default {
     .mdi.mdi-chart-bar(v-if="periods[filterPeriod].grouped")
     .mdi.mdi-chart-line(v-else)
 
-  .periodItem(
-    @click="isShowDataLabels = !isShowDataLabels"
-  ): .mdi.mdi-subtitles-outline
+  .periodItem(@click="isShowDataLabels = !isShowDataLabels")
+    .mdi.mdi-subtitles-outline
 </template>
 
 <style lang="stylus" scoped>

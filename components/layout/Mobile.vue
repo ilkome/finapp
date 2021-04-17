@@ -13,8 +13,7 @@ export default {
     const { isShowPeriodsNamesModal } = useMobileLayout()
 
     // UI
-    const { ui, initUI } = useUIView()
-    initUI()
+    const { ui } = useUIView()
 
     // Computed
     const activeTabViewName = computed(() => store.state.ui.activeTabViewName)

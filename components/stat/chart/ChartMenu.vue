@@ -1,11 +1,21 @@
 <script>
 import localforage from 'localforage'
+import useChart from '~/components/chart/useChart'
 
 export default {
   props: {
     showDropdown: {
       type: Boolean,
       default: false
+    }
+  },
+
+  setup () {
+    // Chart
+    const { isShowDataLabels } = useChart()
+
+    return {
+      isShowDataLabels
     }
   },
 
@@ -36,7 +46,6 @@ export default {
     },
 
     toogleChartsView () {
-      this.visibleContextMenu = !this.visibleContextMenu
       this.$store.commit('chart/toogleChartPeriodView', { periodName: this.filterPeriod })
       this.saveChartsPeriodsToLocalStorage()
     },
@@ -66,12 +75,20 @@ SharedContextMenu(
       )
 
   template(slot="content")
-    template(v-if="filterPeriod !== 'year'")
-      SharedContextMenuItem(
-        :icon="periods[filterPeriod].grouped ? 'mdi mdi-chart-bar' : 'mdi mdi-chart-line'"
-        :title="periods[filterPeriod].grouped ? $t('chart.view.groupedTitle') : $t('chart.view.simpleTitle')"
-        @onClick="toogleChartsView"
-      )
+    SharedContextMenuItem(
+      icon="mdi mdi-subtitles-outline"
+      :selected="isShowDataLabels"
+      title="Show labels"
+      @onClick="isShowDataLabels = !isShowDataLabels"
+    )
+
+    SharedContextMenuItem(
+      :icon="periods[filterPeriod].grouped ? 'mdi mdi-chart-bar' : 'mdi mdi-chart-line'"
+      :title="periods[filterPeriod].grouped ? $t('chart.view.groupedTitle') : $t('chart.view.simpleTitle')"
+      @onClick="toogleChartsView"
+    )
+
+    .context-menu-sep
 
     SharedContextMenuItem(
       icon="mdi mdi-plus"

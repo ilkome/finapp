@@ -1,6 +1,6 @@
 {
   "name": "finapp",
-  "version": "3.10.2",
+  "version": "3.10.3",
   "scripts": {
     "dev": "cross-env NUXT_HOST=0.0.0.0 nuxt",
     "build": "nuxt build",

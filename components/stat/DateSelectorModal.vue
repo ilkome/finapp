@@ -9,11 +9,7 @@ export default {
   setup () {
     const { store } = useContext()
 
-    const {
-      isShowPeriodsNamesModal,
-      showPeriodsNamesModal,
-      hidePeriodsNamesModal
-    } = useMobileLayout()
+    const { hidePeriodsNamesModal } = useMobileLayout()
 
     const { periodsNames } = usePeriods()
     function onSelectPeriod (period) {
@@ -24,8 +20,6 @@ export default {
     const filterPeriod = computed(() => store.state.filter.period)
 
     return {
-      isShowPeriodsNamesModal,
-      showPeriodsNamesModal,
       hidePeriodsNamesModal,
 
       periodsNames,
@@ -48,9 +42,9 @@ Portal(to="modal")
     .grid
       ModalButton(
         v-for="periodItem in periodsNames"
+        :key="periodItem.slug"
         :icon="periodItem.icon"
         :isActive="filterPeriod === periodItem.slug"
-        :key="periodItem.slug"
         :name="$t(`dates.${periodItem.slug}.simple`)"
         @onClick="onSelectPeriod(periodItem.slug)"
       )

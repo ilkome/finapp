@@ -60,12 +60,9 @@ export default {
   @media $media-laptop
     height 38px
 
-  &:active
-    background var(--c-bg-1)
-
-  &:hover
-    @media $media-laptop
-      background var(--c-bg-2)
+  +media-hover()
+    &:not(._selected)
+      background var(--c-bg-3)
 
   &._selected
     background var(--c-bg-5)

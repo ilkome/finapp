@@ -52,7 +52,7 @@ export default {
       transition(name="animation-tab")
         .dashboard__wrap
           .dashboard__tab(v-show="$store.state.dashboard.activeTab === 'stat' || $store.state.dashboard.activeTab === 'history'")
-          EmptyData(text="No stat for this period")
+          SharedEmptyData(text="No stat for this period")
 
     //- stat & history
     template(v-else)

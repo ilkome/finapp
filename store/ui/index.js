@@ -12,7 +12,7 @@ const state = () => ({
   statGraphsVisibility: 'visible',
   statItems: 'visible',
   stat: {
-    activeTab: 'incomes'
+    activeTab: 'stat'
   },
   activeTabStat: 'details',
   activeTabViewName: 'stat'

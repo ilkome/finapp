@@ -1,8 +1,22 @@
 <script>
+import { computed, useContext } from '@nuxtjs/composition-api'
+import useUIView from '~/components/layout/useUIView'
+import useStat from '~/modules/stat/useStat'
+
 export default {
-  computed: {
-    statCurrentPeriod () {
-      return this.$store.getters['stat/statCurrentPeriod']
+  setup () {
+    const { store } = useContext()
+    const { ui } = useUIView()
+
+    // Stat
+    const statCurrentPeriod = computed(() => store.getters['stat/statCurrentPeriod'])
+    const { moneyTypes } = useStat()
+
+    return {
+      ui,
+
+      statCurrentPeriod,
+      moneyTypes
     }
   }
 }
@@ -11,56 +25,58 @@ export default {
 <template lang="pug">
 .stat
   .stat__content
-    //------------------------------------------------
-    //- expenses
-    //------------------------------------------------
-    .stat__item
-      template(v-if="statCurrentPeriod.expenses.categoriesIds.length")
-        .stat__chart(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
-          StatCatsPeriodCatsChart(type="expenses")
+    //- Loop throw incomes / expenses
+    .statItemPc(
+      v-for="item in moneyTypes"
+      :key="item.type"
+    )
+      .stat__empty(v-if="!statCurrentPeriod[item.id].categoriesIds.length") No data
 
-        .stat__pie(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.expenses.categoriesIds.length > 1")
-          StatChartPie(amountType="expenses")
+      template(v-if="statCurrentPeriod[item.id].categoriesIds.length")
+        //- Pie chart
+        .statChartPie(v-if="ui.showPieChart")
+          LazyStatChartPie(
+            v-if="ui.showPieChart && statCurrentPeriod[item.id].categoriesIds.length"
+            :amountType="item.id"
+          )
 
-        .stat__cats(v-if="$store.state.ui.statItems === 'visible'")
+        //- Cats vertical chart
+        .statCatsPeriodCatsChart(v-if="ui.showCatsVerticalChart")
+          LazyStatCatsPeriodCatsChart(
+            v-if="ui.showCatsVerticalChart"
+            :type="item.id"
+          )
+
+        //- Round cats list
+        .statItemsTiles(v-if="ui.showRoundCats && statCurrentPeriod[item.id].categoriesIds.length > 0")
+          LazyStatItemRound(
+            v-if="ui.showRoundCats && statCurrentPeriod[item.id].categoriesIds.length > 0"
+            v-for="categoryId in statCurrentPeriod[item.id].categoriesIds"
+            :biggest="statCurrentPeriod[item.id].biggest"
+            :category="$store.state.categories.items[categoryId]"
+            :categoryId="categoryId"
+            :currency="$store.state.currencies.base"
+            :key="categoryId"
+            :total="statCurrentPeriod.categories[categoryId][item.id]"
+            :type="item.type"
+          )
+
+        //- Cats horizontal list
+        .stat__cats(v-if="ui.showCatsHorizontalList")
           StatItem(
-            v-for="categoryId in statCurrentPeriod.expenses.categoriesIds"
-            :biggest="statCurrentPeriod.expenses.biggest"
+            v-for="categoryId in statCurrentPeriod[item.id].categoriesIds"
+            :biggest="statCurrentPeriod[item.id].biggest"
             :category="$store.state.categories.items[categoryId]"
             :categoryId="categoryId"
             :currency="$store.state.currencies.base"
             :type="0"
             :key="categoryId"
-            :total="statCurrentPeriod.categories[categoryId].expenses")
-      .stat__empty(v-else) No expenses
-
-    //------------------------------------------------
-    //- incomes
-    //------------------------------------------------
-    .stat__item
-      template(v-if="statCurrentPeriod.incomes.categoriesIds.length")
-        .stat__chart(v-if="$store.state.ui.catsChart === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
-          StatCatsPeriodCatsChart(type="incomes")
-
-        .stat__pie(v-if="$store.state.ui.catsChartPie === 'visible' && statCurrentPeriod.incomes.categoriesIds.length > 1")
-          StatChartPie(amountType="incomes")
-
-        .stat__cats(v-if="$store.state.ui.statItems === 'visible'")
-          StatItem(
-            v-for="categoryId in statCurrentPeriod.incomes.categoriesIds"
-            :biggest="statCurrentPeriod.incomes.biggest"
-            :category="$store.state.categories.items[categoryId]"
-            :categoryId="categoryId"
-            :currency="$store.state.currencies.base"
-            :type="1"
-            :key="categoryId"
-            :total="statCurrentPeriod.categories[categoryId].incomes")
-      .stat__empty(v-else) No incomes
+            :total="statCurrentPeriod.categories[categoryId][item.id]")
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables/media'
 
 .stat
   position relative
@@ -90,4 +106,15 @@ export default {
 
     @media $media-laptop
       text-align center
+
+// ------------------------------------
+.statItemsTiles
+  display grid
+  grid-template-columns repeat(auto-fill, minmax(80px, 1fr))
+  grid-column-gap 0
+  grid-row-gap 0
+
+// ------------------------------------
+.statCatsPeriodCatsChart
+  padding-bottom $m7
 </style>

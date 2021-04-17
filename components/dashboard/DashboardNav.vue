@@ -1,39 +1,60 @@
-<script>
-export default {
-  data () {
-    return {
-      visibleContextMenu: false,
-      visiblePeriodMenu: false
-    }
-  },
+<script lang="ts">
+import { ref, computed, useContext, defineComponent } from '@nuxtjs/composition-api'
+import usePeriods from '~/components/periods/usePeriods'
 
-  computed: {
-    isEmptyData () {
-      const statCurrentPeriod = this.$store.getters['stat/statCurrentPeriod']
-      if (statCurrentPeriod.incomes.categoriesIds.length === 0 &&
-          statCurrentPeriod.expenses.categoriesIds.length === 0 &&
-          this.$store.getters['trns/selectedTrnsIdsWithDate'].length === 0) {
+export default defineComponent({
+  name: 'DashboardNav',
+
+  setup () {
+    const { store } = useContext()
+
+    const visibleContextMenu = ref(false)
+    const visiblePeriodMenu = ref(false)
+
+    const isEmptyData = computed(() => {
+      if (store.getters['trns/hasTrns'] &&
+          store.getters['trns/selectedTrnsIdsWithDate'].length === 0) {
         return true
       }
       return false
-    }
-  },
+    })
 
-  methods: {
-    toogleShowStatGraphs () {
-      this.$store.commit('dashboard/setDashboardActiveTab', 'stat')
-      this.$store.dispatch('ui/toogleShowStatGraphs')
-    },
-    toogleVisibilityStatItems () {
-      this.$store.commit('dashboard/setDashboardActiveTab', 'stat')
-      this.$store.dispatch('ui/toogleVisibilityStatItems')
-    },
-    toogleVisibleCatsChart () {
-      this.$store.commit('dashboard/setDashboardActiveTab', 'stat')
-      this.$store.dispatch('ui/toogleVisibleCatsChart')
+    function toogleShowStatGraphs () {
+      store.commit('dashboard/setDashboardActiveTab', 'stat')
+      store.dispatch('ui/toogleShowStatGraphs')
+    }
+
+    function toogleVisibilityStatItems () {
+      store.commit('dashboard/setDashboardActiveTab', 'stat')
+      store.dispatch('ui/toogleVisibilityStatItems')
+    }
+
+    function toogleVisibleCatsChart () {
+      store.commit('dashboard/setDashboardActiveTab', 'stat')
+      store.dispatch('ui/toogleVisibleCatsChart')
+    }
+
+    const filterPeriod = computed(() => store.state.filter.period)
+    const { periodsNames } = usePeriods()
+    function onSelectPeriod (period) {
+      store.dispatch('filter/setPeriod', period)
+    }
+
+    return {
+      visibleContextMenu,
+      visiblePeriodMenu,
+
+      isEmptyData,
+      toogleShowStatGraphs,
+      toogleVisibilityStatItems,
+      toogleVisibleCatsChart,
+
+      filterPeriod,
+      periodsNames,
+      onSelectPeriod
     }
   }
-}
+})
 </script>
 
 <template lang="pug">
@@ -51,38 +72,19 @@ export default {
 
         template(slot="content")
           SharedContextMenuItem(
-            :selected="$store.state.filter.period === 'day'"
-            :title="$t('dates.day.simple')"
-            icon="mdi mdi-weather-sunset-up"
-            @onClick="$store.dispatch('filter/setPeriod', 'day')"
+            v-for="periodItem in periodsNames"
+            :key="periodItem.slug"
+            :icon="periodItem.icon"
+            :selected="filterPeriod === periodItem.slug"
+            :title="$t(`dates.${periodItem.slug}.simple`)"
+            @onClick="onSelectPeriod(periodItem.slug)"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )
           SharedContextMenuItem(
-            :selected="$store.state.filter.period === 'week'"
-            :title="$t('dates.week.simple')"
-            icon="mdi mdi-calendar-week"
-            @onClick="$store.dispatch('filter/setPeriod', 'week')"
-            @onClose="visiblePeriodMenu = !visiblePeriodMenu"
-          )
-          SharedContextMenuItem(
-            :selected="$store.state.filter.period === 'month'"
-            :title="$t('dates.month.simple')"
-            icon="mdi mdi-calendar"
-            @onClick="$store.dispatch('filter/setPeriod', 'month')"
-            @onClose="visiblePeriodMenu = !visiblePeriodMenu"
-          )
-          SharedContextMenuItem(
-            :selected="$store.state.filter.period === 'year'"
-            :title="$t('dates.year.simple')"
-            icon="mdi mdi-calendar-star"
-            @onClick="$store.dispatch('filter/setPeriod', 'year')"
-            @onClose="visiblePeriodMenu = !visiblePeriodMenu"
-          )
-          SharedContextMenuItem(
-            :selected="$store.state.filter.period === 'all'"
+            :selected="filterPeriod === 'all'"
             :title="$t('dates.all.simple')"
             icon="mdi mdi-database"
-            @onClick="$store.dispatch('filter/setPeriod', 'all')"
+            @onClick="onSelectPeriod('all')"
             @onClose="visiblePeriodMenu = !visiblePeriodMenu"
           )
 
@@ -100,7 +102,8 @@ export default {
           SharedContextMenu(
             :position="{ right: '-12px', top: true }"
             :visible="visibleContextMenu"
-            @onClickOpener="visibleContextMenu = !visibleContextMenu")
+            @onClickOpener="visibleContextMenu = !visibleContextMenu"
+          )
 
             template(slot="opener")
               SharedDropdown._noBd(
@@ -110,38 +113,10 @@ export default {
 
             template(slot="content")
               template(v-if="!isEmptyData")
-                SharedContextMenuItem(
-                  :title="$t('stat.customize.showPeriodsChart')"
-                  :checkboxValue="$store.state.ui.statGraphsVisibility === 'visible'"
-                  showCheckbox
-                  icon="mdi mdi-chart-bar-stacked"
-                  @onClick="toogleShowStatGraphs"
+                CustomizeMenu(
+                  :isShowMainChart="false"
+                  :isShowHistory="false"
                 )
-
-                SharedContextMenuItem(
-                  icon="mdi mdi-folder-star"
-                  :title="$t('stat.customize.showCategorisChart')"
-                  :checkboxValue="$store.state.ui.catsChart === 'visible'"
-                  showCheckbox
-                  @onClick="toogleVisibleCatsChart"
-                )
-
-                SharedContextMenuItem(
-                  :title="$t('stat.customize.showCategorisList')"
-                  :checkboxValue="$store.state.ui.statItems === 'visible'"
-                  showCheckbox
-                  icon="mdi mdi-chart-gantt"
-                  @onClick="toogleVisibilityStatItems"
-                )
-
-                SharedContextMenuItem(
-                  :checkboxValue="$store.state.ui.catsChartPie === 'visible'"
-                  :title="$t('stat.customize.showcatsChartPie')"
-                  showCheckbox
-                  icon="mdi mdi-chart-pie"
-                  @onClick="$store.dispatch('ui/toogleVisibleCatsChartPie')"
-                )
-
                 .context-menu-sep
 
               SharedContextMenuItem(
@@ -164,7 +139,7 @@ export default {
 @import '~assets/stylus/variables/fonts'
 
 ._align-right
-  display flex;
+  display flex
   margin-left auto
   flex 0
 

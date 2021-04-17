@@ -73,15 +73,6 @@ export default {
         .d-button._noPadding._grey: .mdi.mdi-tune
 </template>
 
-<style lang="stylus">
-.context-menu-sep
-  height 1px
-  background var(--c-bg-4)
-
-  /.light-mode &
-    background var(--c-bg-6)
-</style>
-
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables/margins'
 

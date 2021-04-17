@@ -1,5 +1,7 @@
 <script>
 export default {
+  name: 'EmptyData',
+
   props: {
     text: {
       type: String,
@@ -16,7 +18,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
+@import '~assets/stylus/variables/margins'
 
 .empty
   padding $m10
