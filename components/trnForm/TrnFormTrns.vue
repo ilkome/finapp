@@ -117,7 +117,7 @@ export default {
       this.pageNumber = this.pageNumber + 1
       setTimeout(() => {
         this.slider.update()
-        this.slider.slideTo(1, 0)
+        this.slider.slideTo(2, 0)
       }, 100)
     },
 
@@ -126,11 +126,11 @@ export default {
       this.pageNumber = 1
       setTimeout(() => {
         this.slider.update()
-        this.slider.slideTo(1, 0)
+        this.slider.slideTo(2, 0)
       }, 100)
     },
 
-    onClickEditTrn (id, amount) {
+    onClickEditTrn (amount) {
       const { setExpression } = useCalculator()
       setExpression(amount)
       this.slider.slideTo(1)
@@ -163,7 +163,7 @@ export default {
             :trn="$store.state.trns.items[trnId]"
             :trnId="trnId"
             :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
-            @onClickEdit="(trnId) => onClickEditTrn(trnId, $store.state.trns.items[trnId].amount)"
+            @onClickEdit="onClickEditTrn($store.state.trns.items[trnId].amount)"
           )
 
   .trnsList__pages(v-if="!isShowedAllTrns")
