@@ -50,6 +50,7 @@ export default {
       const trns = rootState.trns.items
       const firstCreatedTrnIdFromSelectedTrns = rootGetters['trns/firstCreatedTrnIdFromSelectedTrns']
       const firstCreatedTrn = trns[firstCreatedTrnIdFromSelectedTrns]
+      if (!firstCreatedTrn) { return }
       const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(state.period).valueOf()
       const filterDate = state.date
       const nextDate = dayjs(filterDate).subtract(1, state.period).startOf(state.period).valueOf()

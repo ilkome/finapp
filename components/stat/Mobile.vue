@@ -87,7 +87,7 @@ export default {
       v-for="item in moneyTypes"
       v-if="activeTabStat === 'details' || (activeTabStat === 'incomes' && item.id === 'incomes') || (activeTabStat === 'expenses' && item.id === 'expenses')"
     )
-      template(v-if="statAverage && statAverage[item.id] !== 0")
+      template(v-if="(statAverage && statAverage[item.id] !== 0) || $store.state.filter.period === 'all'")
         .baseBox
           .baseBox__title {{ $t(`money.${item.id}`) }}
           .boxSummary2

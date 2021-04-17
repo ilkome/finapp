@@ -66,15 +66,6 @@ export default {
     { src: '~/plugins/notifications' }
   ],
 
-  // Modules for dev and build (recommended) (https://go.nuxtjs.dev/config-modules)
-  buildModules: [
-    '@nuxtjs/pwa',
-    // https://composition-api.nuxtjs.org/
-    '@nuxtjs/composition-api/module',
-    // https://typescript.nuxtjs.org/
-    '@nuxt/typescript-build'
-  ],
-
   // Color mode
   colorMode: {
     preference: 'system', // default value of $colorMode.preference
@@ -92,6 +83,15 @@ export default {
     '@nuxtjs/pwa',
     'nuxt-i18n',
     'portal-vue/nuxt'
+  ],
+
+  // Modules for dev and build (https://go.nuxtjs.dev/config-modules)
+  buildModules: [
+    '@nuxtjs/pwa',
+    // https://composition-api.nuxtjs.org/
+    '@nuxtjs/composition-api/module',
+    // https://typescript.nuxtjs.org/
+    '@nuxt/typescript-build'
   ],
 
   // Router middleware
@@ -127,8 +127,8 @@ export default {
     manifest: {
       name: 'Finapp',
       short_name: 'Finapp',
-      background_color: '#121212',
-      theme_color: '#121212'
+      background_color: '#171717',
+      theme_color: '#171717'
     },
 
     workbox: {
