@@ -189,9 +189,9 @@ export default {
       padding 0
       padding-top 20px
 
-  .item
+  .item._history
     margin-right - ($m6 + $m3)
     margin-left - ($m6 + $m3)
     padding-right ($m6 + $m3)
     padding-left ($m6 + $m3)
-</style>
+  </style>
