@@ -117,6 +117,9 @@ export default {
   &:active
     background var(--c-bg-3)
 
+  &._ttu
+    text-transform uppercase
+
   &._borderBottom
     width 100%
     margin-bottom 0
@@ -225,6 +228,9 @@ export default {
     background var(--c-blue-3)
     border-radius 36px
     anim()
+
+    +media-hover()
+      background var(--c-blue-1)
 
   &._size_lg
     padding 16px

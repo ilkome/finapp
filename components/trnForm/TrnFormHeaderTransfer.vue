@@ -81,7 +81,7 @@ export default {
 .trnFormHeaderItem
   &__desc
     margin-bottom 2px
-    color var(--c-font-2)
+    color var(--c-font-4)
     font-size 12px
 
   .walletItemGrid

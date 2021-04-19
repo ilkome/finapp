@@ -51,12 +51,12 @@ export default {
 <template lang="pug">
 div
   .trnFormSharedButton(v-if="pc")
-    .calcItem._sum(
+    .calcItem._sum._pc(
       @click="isSum ? $emit('onSubmit') : handleTouch('=')"
     )
       SharedButton(
         :title="isSum ? $t('trnForm.saveTrnButton') : $t('trnForm.calcTrnButton')"
-        className="_blue _text-center"
+        className="_blue2 _text-center _ttu"
       )
 
   .trnFormCalculator(v-if="!pc")
@@ -111,10 +111,7 @@ div
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/animations'
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/fonts'
-@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables'
 
 .trnFormButton
   padding $m7
@@ -141,15 +138,19 @@ div
     padding-left 4px
     color var(--c-font-1)
 
+  ~/._pc
+    padding 0 $m7
+
   &__in
     display flex
     align-items center
     justify-content center
     width 40px
     height 40px
-    font-size 22px
+    font-size 26px
     border-bottom 0
     border-right 0
+    background var(--c-bg-4)
     border-radius 50%
 
     @media $media-phone-normal
@@ -157,6 +158,7 @@ div
 
     ~/._num &
       color var(--c-font-3)
+      font-size 22px
       background var(--c-bg-5)
 
     ~/._act &

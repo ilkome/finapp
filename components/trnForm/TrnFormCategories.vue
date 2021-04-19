@@ -18,26 +18,26 @@ export default {
     }
   },
 
-  computed: {
-    modalStyle () {
-      return { height: `${this.$store.state.trnForm.height - 48}px` }
-    }
-  },
-
   watch: {
     show: {
       handler (isShow) {
         const initialSlide = this.$store.getters['categories/quickSelectorCategoriesIds'] && this.$store.getters['categories/quickSelectorCategoriesIds'].length > 0 ? 1 : 2
         this.$nextTick(() => {
           if (isShow && this.$refs.trnFormCategories) {
-            this.slider = new Swiper(this.$refs.trnFormCategories, {
-              slidesPerView: 1,
-              autoHeight: true,
-              initialSlide,
-              shortSwipes: false,
-              longSwipesRatio: 0.1,
-              longSwipesMs: 60
-            })
+            if (this.slider) {
+              this.slider.update()
+            }
+            else {
+              this.slider = new Swiper(this.$refs.trnFormCategories, {
+                observer: true,
+                slidesPerView: 1,
+                autoHeight: false,
+                initialSlide,
+                shortSwipes: false,
+                longSwipesRatio: 0.1,
+                longSwipesMs: 60
+              })
+            }
           }
         })
       },
@@ -62,44 +62,40 @@ export default {
 </script>
 
 <template lang="pug">
-.trnFormCategories
-  .bottomNav
-    .switcher(v-if="slider")
-      .switcher__item(
-        :class="{ _active: slider.activeIndex === 0 }"
-        @click="slider.slideTo(0)"
-      ) {{ $t('categories.lastUsedTitle') }}
-      .switcher__item(
-        :class="{ _active: slider.activeIndex === 1 }"
-        @click="slider.slideTo(1)"
-      ) {{ $t('categories.favoriteTitle') }}
-      .switcher__item(
-        :class="{ _active: slider.activeIndex === 2 }"
-        @click="slider.slideTo(2)"
-      ) {{ $t('categories.allTitle') }}
+.contentWrap
+  .switcherList(v-if="slider")
+    .menuItem(
+      :class="{ _active: slider.activeIndex === 0 }"
+      @click="slider.slideTo(0)"
+    ) {{ $t('categories.lastUsedTitle') }}
+    .menuItem(
+      :class="{ _active: slider.activeIndex === 1 }"
+      @click="slider.slideTo(1)"
+    ) {{ $t('categories.favoriteTitle') }}
+    .menuItem(
+      :class="{ _active: slider.activeIndex === 2 }"
+      @click="slider.slideTo(2)"
+    ) {{ $t('categories.allTitle') }}
 
-  .swiper-container(ref="trnFormCategories")
-    .swiper-wrapper
-      .swiper-slide
-        .scrollBlock.waitForScroll(
-          v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'] && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
-          :style="modalStyle"
-        )
-          .marginBottom
+  .contentWrap__box
+    .swiper-container(ref="trnFormCategories")
+      .swiper-wrapper
+        .swiper-slide
+          .scrollBlock.waitForScrollSlider(
+            v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'] && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
+          )
             CategoriesView(
               :activeItemId="$store.state.trnForm.values.categoryId"
               :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
               :noPaddingBottom="true"
               @onClick="handleCategoryClick"
               ui="_flat"
-            )
+          )
 
-      .swiper-slide
-        .scrollBlock.waitForScroll(
-          v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length"
-          :style="modalStyle"
-        )
-          .marginBottom
+        .swiper-slide
+          .scrollBlock.waitForScrollSlider(
+            v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length"
+          )
             CategoriesView(
               :activeItemId="$store.state.trnForm.values.categoryId"
               :ids="$store.getters['categories/quickSelectorCategoriesIds']"
@@ -108,9 +104,8 @@ export default {
               ui="_flat"
             )
 
-      .swiper-slide
-        .scrollBlock.waitForScroll(:style="modalStyle")
-          .marginBottom
+        .swiper-slide
+          .scrollBlock.waitForScrollSlider
             CategoriesView(
               :ids="$store.getters['categories/categoriesRootIds']"
               :noPaddingBottom="true"
@@ -121,53 +116,51 @@ export default {
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
-$border = 1px
-
-.trnFormCategories
+.contentWrap
+  overflow hidden
   position relative
+  display grid
+  grid-template-rows auto 1fr
+
+  &__box
+    overflow hidden
+    height 100%
+
+  .swiper-container
+  .swiper-container .swiper-slide
+    height 100%
 
 .scrollBlock
   overflow hidden
-  overflow-y auto
-  scrollbar()
+  overflowScrollY()
+  height 100%
+  padding-top $m6
+  padding-bottom $m8
 
-.marginBottom
-  margin-top 50px
-  margin-bottom 36px
-
-.bottomNav
-  z-index 10
-  position absolute
-  top 0
-  left 0
-  width 100%
-  padding 0
-  background var(--color-bg-canvas)
-
-.switcher
+.switcherList
   display flex
-  align-items center
-  padding 0 $m7
+  justify-content center
+  padding $m6
 
-.switcher__item
+.menuItem
   cursor pointer
-  flex-grow 1
-  padding $m6 $m7
+  margin 0 $m5
+  padding $m6 $m8
   color var(--c-font-5)
   font-size 12px
   font-weight 500
   font-roboto()
   text-align center
-  border-bottom $border solid var(--c-bg-2)
+  border 1px solid transparent
+  border-radius 50px
 
   &:active
-    background var(--c-bg-5)
-    border-radius $m6 $m6 0 0
-    border-bottom $border solid var(--c-bg-2)
+    color var(--c-font-2)
+    background var(--c-blue-1)
 
   &._active
     cursor default
     color var(--c-font-3)
-    background none
-    border-bottom $border solid var(--c-blue-1)
+    background var(--c-bg-5)
+    border 1px solid var(--c-bg-5)
 </style>

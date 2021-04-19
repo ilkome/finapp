@@ -73,25 +73,18 @@ export default {
       if (this.$store.state.trnForm.height < this.$store.state.ui.height) {
         if (this.position === 'bottom') {
           return {
-            maxHeight: `${this.$store.state.trnForm.height - this.headerHeight}px`
+            maxHeight: `${this.$store.state.trnForm.height}px`
           }
         }
         return {
-          height: `${this.$store.state.trnForm.height - this.headerHeight}px`
+          height: `${this.$store.state.trnForm.height}px`
         }
       }
       else {
         return {
-          height: `${this.$store.state.ui.height - this.headerHeight}px`
+          height: `${this.$store.state.ui.height}px`
         }
       }
-    }
-  },
-
-  watch: {
-    show: {
-      handler: 'updateHeight',
-      immediate: true
     }
   },
 
@@ -100,12 +93,6 @@ export default {
       if (this.$listeners.afterClose) {
         this.$listeners.afterClose()
       }
-    },
-
-    updateHeight () {
-      this.$nextTick(() => {
-        this.headerHeight = this.$refs.header.clientHeight
-      })
     },
 
     onClose () {
@@ -132,28 +119,35 @@ export default {
   transition(name="baseModalWrapAnim" appear)
     .trnFormModal__wrap(
       v-show="isShow"
+      :style="modalStyle"
       ref="wrap"
     )
-      .trnFormModal__header(
-        ref="header"
+      .trnForm__handler(
+        ref="handler"
         @click="closeModal"
       )
-        .trnFormModal__header__title(v-if="title") {{ title }}
-        .trnFormModal__header__close: .mdi.mdi-close
+      .trnForm__closure(@click="closeModal")
+        svg(
+          viewBox='0 0 24 24'
+          fill='none'
+          stroke='#000'
+          stroke-linecap='round'
+          stroke-linejoin='round'
+          stroke-width='1.5'
+        )
+          path(d='M.75 23.249l22.5-22.5')
+          path(d='M23.25 23.249L.75.749')
 
       .trnFormModal__scroll(
-        :style="modalStyle"
         :class="{ _noPadding: noPadding }"
         ref="content"
       )
+        .trnForm__title(v-if="title") {{ title }}
         slot
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/animations'
-@import '~assets/stylus/variables/fonts'
-@import '~assets/stylus/variables/media'
-@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables'
 
 .baseModalOveflowAnim
   &-enter-active
@@ -230,12 +224,15 @@ export default {
     overflow hidden
     overflow-y auto
     max-height 100%
-    padding $m7 0
+    padding-bottom $m7
     scrollbar()
 
     &._noPadding
       overflow hidden
-      margin-bottom (- $m7)
+      display grid
+      grid-template-rows auto 1fr
+      display grid
+      flex-grow 1
       padding-bottom 0
 
   &__header
@@ -261,6 +258,7 @@ export default {
 
     &__title
       flex-grow 1
+      text-align center
 
     &__close
       color var(--c-font-4)

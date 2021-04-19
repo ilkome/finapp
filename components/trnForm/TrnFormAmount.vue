@@ -30,11 +30,8 @@ export default {
           break
         case 1:
           if (this.$store.getters['wallets/walletsSortedIds'].length > 1) {
-            nextAmountType = 2
+            nextAmountType = 0
           }
-          break
-        case 2:
-          nextAmountType = 0
           break
       }
 
@@ -50,29 +47,18 @@ export default {
 .trnFormAmount(:class="className")
   .trnFormAmount__wrap(@click="handleChangeAmountType")
     .trnFormAmount__in
-      .trnFormAmount__icon
-        .mdi.mdi-minus(v-if="amountType === 0")
-        .mdi.mdi-plus(v-if="amountType === 1")
-        .mdi.mdi-swap-horizontal(v-if="amountType === 2")
-
       .trnFormAmount__content
-        .trnFormAmount__type
-          template(v-if="amountType === 0") {{ $t('money.expenses') }}
-          template(v-if="amountType === 1") {{ $t('money.incomes') }}
-          template(v-if="amountType === 2 && $store.getters['wallets/walletsSortedIds'].length > 1") {{ $t('money.transfer') }}
-
-        .trnFormAmount__value {{ expression }}
         .trnFormAmount__evaluation {{ isSum ? null : getResult }}
+        .trnFormAmount__value {{ expression }}
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/fonts'
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables'
 
 .trnFormAmount
   &__wrap
     padding $m7 $m7
+    padding-top $m6
     text-align right
 
     ^[0]._expenses &
@@ -83,17 +69,7 @@ export default {
 
   &__in
     display flex
-    align-items center
     justify-content center
-
-  &__icon
-    padding-right $m6
-    font-size 32px
-
-  &__type
-    align-self center
-    padding-bottom $m6
-    color var(--c-font-3)
 
   &__content
     flex-grow 1
@@ -118,6 +94,6 @@ export default {
 
   &__evaluation
     opacity .8
-    height 12px
+    height 14px
     font-size 14px
 </style>

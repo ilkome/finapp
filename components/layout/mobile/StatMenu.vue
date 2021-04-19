@@ -64,7 +64,7 @@ export default {
 .menuItem
   cursor pointer
   flex-grow 1
-  padding $m6 $m5
+  padding $m6 $m8
   color var(--c-font-5)
   font-size 12px
   font-weight 500

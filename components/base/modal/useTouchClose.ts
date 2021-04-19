@@ -9,6 +9,7 @@ export default function useOnTouch () {
   let config = {
     dragOffset: 16,
     whaitForScrollClassName: 'waitForScroll',
+    whaitForScrollSliderClassName: 'waitForScrollSlider',
     doNotTouchClassName: 'doNotCloseModal',
     animClassName: '_anim'
   }
@@ -103,11 +104,14 @@ export default function useOnTouch () {
 
         // wait until content scroll up inside
         const waitForScroll = content.value.querySelector(`.${config.whaitForScrollClassName}`)
-        if (waitForScroll && waitForScroll.scrollTop > 0) { return }
+        console.log('waitForScroll', waitForScroll)
 
         // wait until content scroll up inside Swiper
         const waitForScrollSlider = content.value.querySelector(`.swiper-slide-active .${config.whaitForScrollClassName}`)
         if (waitForScrollSlider && waitForScrollSlider.scrollTop > 0) { return }
+
+        const waitForScrollSlider2 = content.value.querySelector(`.swiper-slide-active .${config.whaitForScrollSliderClassName}`)
+        if (waitForScrollSlider2 && waitForScrollSlider2.scrollTop > 0) { return }
       }
     }
 

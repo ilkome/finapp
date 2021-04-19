@@ -70,13 +70,6 @@ export default {
     LazyFilterRow(v-if="isShowFilter")
 
   template(v-if="activeTabStat !== 'history'")
-    .baseBox._noBd
-      .boxFlew2(:class="{ _double: statAverage.incomes !== 0 && statAverage.expenses !== 0 }")
-        .boxFlew2Item(v-if="statAverage.incomes !== 0")
-          StatCatsPeriodCatsChartMobile(type="incomes")
-        .boxFlew2Item(v-if="statAverage.expenses !== 0")
-          StatCatsPeriodCatsChartMobile(type="expenses")
-
     //- Loop throw incomes / expenses
     template(
       v-for="item in moneyTypes"

@@ -48,7 +48,6 @@ export default {
 LazyTrnFormModal.doNotCloseTrnModal(
   v-if="isShow"
   :isShow="isShow"
-  :position="$store.state.ui.mobile ? 'bottom' : null"
   title="Date"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'calendar')"
 )

@@ -23,7 +23,7 @@ export default {
     createTrnButton: 'Create transaction',
     createTransferButton: 'Create transfer',
     titleEditTrn: 'Edit transaction',
-    titleCreateTrn: 'Create new transaction',
+    titleCreateTrn: 'Add transaction',
     filterWalletAndCategory: 'Wallet & Category',
     filterWallet: 'Wallet only',
     filterAll: 'Everything',

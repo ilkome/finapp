@@ -123,6 +123,7 @@ export default {
   },
 
   yAxis: {
+    endOnTick: false,
     cursor: 'pointer',
     alternateGridColor: '',
     gridLineColor: 'var(--c-bg-5)',

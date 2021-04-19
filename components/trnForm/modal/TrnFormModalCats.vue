@@ -18,7 +18,6 @@ export default {
 <template lang="pug">
 TrnFormModal.doNotCloseTrnModal(
   :isShow="isShow"
-  :position="$store.state.ui.mobile ? 'bottom' : null"
   :title="$t('categories.name')"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
   noPadding

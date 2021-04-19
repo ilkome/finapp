@@ -41,6 +41,7 @@ export default {
   grid-template-columns repeat(2, 1fr)
   grid-column-gap $m7
   grid-row-gap $m7
-  padding $m7
+  padding 0 $m7
   padding-top 0
+  padding-bottom $m9
 </style>

@@ -266,8 +266,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables'
 
 .transfer
   padding-top $m5
@@ -304,9 +303,6 @@ export default {
     &._history
     &._stat
       background var(--c-bg-5)
-
-  &._active
-    background var(--c-bg-1)
 
   &__amount
     align-self center
@@ -441,4 +437,17 @@ export default {
   &__amount
     ^[0]._history &
       //
+
+  &._active
+  &._history
+  &._trnForm
+    margin-right - ($m7)
+    margin-left - ($m7)
+    padding-right ($m7)
+    padding-left ($m7)
+
+  &._active
+    background var(--c-bg-1)
+    border-top 1px solid var(--c-blue-1)
+    border-bottom 1px solid var(--c-blue-1)
 </style>

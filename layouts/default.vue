@@ -1,12 +1,20 @@
 <script>
-import { ref, computed, useContext, onMounted } from '@nuxtjs/composition-api'
+import { ref, computed, useContext, useFetch, onMounted } from '@nuxtjs/composition-api'
 import debounce from '~/utils/debounce'
 import detectTouch from '~/assets/js/isTouchDevice'
+import useUIView from '~/components/layout/useUIView'
 
 export default {
   name: 'DefaultLayout',
 
   setup () {
+    const { store } = useContext()
+
+    useFetch(async () => {
+      const { initUI } = useUIView()
+      await initUI()
+    })
+
     /**
      * Update modal
      */
@@ -34,8 +42,6 @@ export default {
     /**
      * Page dimensions
      */
-    const { store } = useContext()
-
     function getPageDimensions () {
       const width = document.documentElement.clientWidth
       const height = document.documentElement.clientHeight
@@ -64,7 +70,7 @@ export default {
 
   //- Continue to app
   transition(name="fadeInSlow" appear)
-    template(v-if="$store.state.app.status.ready")
+    template(v-show="$store.state.app.status.ready && !$fetchState.pending")
       Nuxt
 
   //- Notifications

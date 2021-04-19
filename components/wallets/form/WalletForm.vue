@@ -160,7 +160,8 @@ LayoutComponentWrap
         SharedInputsCheckbox(
           v-model="wallet.countTotal"
           :title="$t('wallets.form.total.placeholder')"
-          :alt="true")
+          :alt="true"
+        )
 
     //- colors
     Portal(

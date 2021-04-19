@@ -35,7 +35,7 @@ export default {
   .trnFormMeta__date
     .trnFormDate
       .trnFormDate__item._icon(@click="setPrevDay()"): .mdi.mdi-chevron-left
-      .trnFormDate__item(@click="$store.commit('trnForm/toogleTrnFormModal', 'calendar')") {{ formatedDate }}
+      .trnFormDate__item._date(@click="$store.commit('trnForm/toogleTrnFormModal', 'calendar')") {{ formatedDate }}
       .trnFormDate__item._icon(:class="{ _disable: isToday }" @click="setNextDay()"):  .mdi.mdi-chevron-right
 
   .trnFormMeta__desc(
@@ -49,8 +49,9 @@ export default {
 @import '~assets/stylus/variables'
 
 .trnFormMeta
-  display flex
-  align-items stretch
+  display grid
+  grid-template-columns repeat(5, minmax(10px, 1fr))
+  padding 0 $m6
   border-top 1px solid var(--c-bg-3)
 
   @media $media-laptop
@@ -58,21 +59,18 @@ export default {
     border-top 0
 
   &__date
-    flex-grow 1
+    grid-column 1/5
+    grid-row 1/-1
 
   &__desc
     position relative
-    width calc(100%/5)
-    padding $m7 $m9
+    padding $m6
     color var(--c-font-4)
-    font-size 20px
+    font-size 22px
     text-align center
+    border-radius $m7
 
-    &:hover
-      @media $media-laptop
-        background var(--c-bg-5)
-
-    &:active
+    +media-hover()
       background var(--c-bg-5)
 
     &._active
@@ -88,10 +86,10 @@ export default {
       border-radius 50%
 
 .trnFormDate
-  display flex
-  align-items center
-  flex-grow 1
+  display grid
   height 100%
+  grid-template-columns repeat(4, minmax(10px, 1fr))
+  font-size 12px
   font-weight 500
   text-align center
 
@@ -101,12 +99,13 @@ export default {
     justify-content center
     flex-grow 1
     height 100%
+    border-radius $m7
 
-    &:hover
-      @media $media-laptop
-        background var(--c-bg-5)
+    &._date
+      grid-column 2/4
+      color var(--c-font-3)
 
-    &:active
+    +media-hover()
       background var(--c-bg-5)
 
     &._icon

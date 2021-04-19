@@ -22,15 +22,14 @@ export default {
 
 <template lang="pug">
 .chart
-  .chart__name
-    ChartPeriods
-
   .chart__content
     StatChartLines(
       :isShowIncomes="activeTabStat === 'incomes' || activeTabStat === 'details' || activeTabStat === 'history'"
       :isShowExpenses="activeTabStat === 'expenses' || activeTabStat === 'details' || activeTabStat === 'history'"
       :chartType="periods[filterPeriod].grouped ? 'column' : 'spline'"
     )
+
+  ChartPeriods
 </template>
 
 <style lang="stylus" scoped>
@@ -38,6 +37,6 @@ export default {
 
 .chart
   &__content
-    height 220px
-    padding 10px 0 0 4px
+    height 190px
+    padding 0 0 0 4px
 </style>

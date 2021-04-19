@@ -195,7 +195,7 @@ export default {
 
         chart: {
           ...chartOptions.chart,
-          height: '200',
+          height: '180',
 
           events: {
             click (e) {

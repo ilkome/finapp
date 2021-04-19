@@ -14,7 +14,7 @@ export const baseModalState = {
 export const state = () => ({
   action: 'create',
 
-  height: 0,
+  height: '100%',
   modal: baseModalState,
 
   transfer: {

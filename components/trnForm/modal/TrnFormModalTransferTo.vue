@@ -29,6 +29,7 @@ LazyTrnFormModal.doNotCloseTrnModal(
   v-if="isShow"
   :isShow="isShow"
   title="Transfer to wallet"
+  position="bottom"
   @onClose="$store.commit('trnForm/toogleTrnFormModal', 'transferTo')"
 )
   WalletsList3(@onClick="setWalletToId")

@@ -1,5 +1,6 @@
 <script lang="ts">
-import Swiper from 'swiper'
+import dayjs from 'dayjs'
+import Swiper, { Pagination } from 'swiper'
 import 'swiper/swiper-bundle.css'
 import { ref, computed, watch, reactive, toRefs, useContext } from '@nuxtjs/composition-api'
 import generateId from '~/utils/id'
@@ -8,6 +9,8 @@ import useTouchClose from '~/components/base/modal/useTouchClose'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import useTrnFormValidate from '~/components/trnForm/useTrnFormValidate'
 import { successEmo, random } from '~/assets/js/emo'
+
+Swiper.use([Pagination])
 
 export default {
   name: 'TrnForm',
@@ -22,9 +25,11 @@ export default {
   setup (props: any) {
     const { store } = useContext()
 
-    const { isShow } = toRefs(props)
     const { initTouchModal, closeModal } = useTouchClose()
 
+    /**
+     * Wrappers
+     */
     const wrappers = reactive({
       container: ref(null),
       content: ref(null),
@@ -36,48 +41,60 @@ export default {
       }
     })
 
+    /**
+     * Slider
+     */
     const slider = ref<any>(null)
-    const getHeight = ref<any>(null)
     const sliderObj = ref<any>(null)
     const { clearExpression } = useCalculator()
 
-    function setTrnFormHeight () {
-      const trnFormHeight = store.state.trnForm.height
-      const height = getHeight.value.clientHeight + 8
-      const trnFormHeaderHeight = 0
-      const newTrnFormHeight = height - trnFormHeaderHeight
+    const maxHeight = ref('550px')
 
-      if (trnFormHeight !== newTrnFormHeight) {
-        store.commit('trnForm/setTrnFormHeight', newTrnFormHeight)
-      }
+    function setTrnFormHeight () {
+      const el = document.querySelector('.getHeight')
+      const height = el.clientHeight
+
+      store.commit('trnForm/setTrnFormHeight', height)
+      maxHeight.value = `${height}px`
+
+      const observer = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const height = entry.contentRect.height
+          store.commit('trnForm/setTrnFormHeight', height)
+          maxHeight.value = `${height}px`
+        }
+      })
+      observer.observe(el)
     }
 
     /**
-     * Watch isShow
+     * isShow
      */
+    const { isShow } = toRefs(props)
     watch(isShow, (value) => {
       if (value) {
         setTimeout(() => {
-          initTouchModal({
-            ...toRefs(wrappers),
-            onClose: () => store.dispatch('trnForm/closeTrnForm')
-          })
-
-          setTrnFormHeight()
-          if (sliderObj.value) {
-            sliderObj.value.update()
-            sliderObj.value.slideTo(1, 0)
-          }
-          else {
+          if (!sliderObj.value) {
+            initTouchModal({
+              ...toRefs(wrappers),
+              onClose: () => store.dispatch('trnForm/closeTrnForm')
+            })
             sliderObj.value = new Swiper(slider.value, {
+              observer: true,
+              observeParents: true,
               slidesPerView: 1,
               autoHeight: true,
               initialSlide: 1,
               noSwipingClass: 'trnFormNoSwiping',
               shortSwipes: false,
               longSwipesRatio: 0.1,
-              longSwipesMs: 60
+              longSwipesMs: 60,
+              pagination: {
+                el: '.trnForm__pagination',
+                clickable: true
+              }
             })
+            setTrnFormHeight()
           }
         }, 10)
       }
@@ -87,135 +104,63 @@ export default {
     }, { immediate: true })
 
     /**
-     * Watch amountType
+     * Amounts
      */
     const amountType = computed(() => store.state.trnForm.values.amountType)
-    watch(amountType, () => {
-      setTimeout(() => {
-        setTrnFormHeight()
-        sliderObj.value.update()
-      }, 10)
-    })
+    const isTransfer = computed(() => store.state.trnForm.values.amountType === 2)
 
+    /**
+     * Click on category
+     */
     function onCategoryClick (categoryId) {
       store.commit('trnForm/setTrnFormValues', { categoryId })
     }
 
+    /**
+     * Click on wallet
+     */
     function onClickWallet (walletId) {
       store.commit('trnForm/setTrnFormValues', { walletId })
     }
 
-    return {
-      ...toRefs(wrappers),
-      closeModal,
-
-      sliderObj,
-      slider,
-      getHeight,
-
-      amountType,
-
-      onCategoryClick,
-      onClickWallet
-    }
-  },
-
-  computed: {
-    show (): any {
-      return this.$store.state.trnForm.show
-    },
-
-    isTransfer (): any {
-      return this.$store.state.trnForm.values.amountType === 2
-    },
-
-    isShowFirstWallets (): any {
-      if (this.$store.getters['wallets/walletsSortedIds'].length >= 3) { return true }
-      return false
-    }
-  },
-
-  methods: {
-    handleSubmitForm () {
-      try {
-        const { validate } = useTrnFormValidate()
-        const { id, values } = this.prepeareValues(this.isTransfer)
-
-        const validateStatus = validate({
-          ...values,
-          walletFrom: this.$store.getters['wallets/getWalletWithId'](this.$store.state.trnForm.values.walletFromId),
-          walletTo: this.$store.getters['wallets/getWalletWithId'](this.$store.state.trnForm.values.walletToId)
-        })
-
-        if (validateStatus.error) {
-          this.$notify({
-            type: 'error',
-            title: validateStatus.error.title,
-            text: validateStatus.error.text
-          })
-          return
-        }
-
-        this.$notify({
-          type: 'success',
-          text: 'Excellent transaction!',
-          title: random(successEmo)
-        })
-
-        this.$store.dispatch('trns/addTrn', { id, values })
-      }
-      catch (e) {
-        console.log(e)
-      }
-    },
-
-    setTrnFormHeight () {
-      const trnFormHeight = this.$store.state.trnForm.height
-
-      const height = this.$refs.getHeight.clientHeight
-      const trnFormHeaderHeight = 0
-      const newTrnFormHeight = height - trnFormHeaderHeight - 10
-
-      if (trnFormHeight !== newTrnFormHeight) {
-        this.$store.commit('trnForm/setTrnFormHeight', newTrnFormHeight)
-      }
-    },
-
-    prepeareValues (isTransfer: boolean): any {
+    /**
+     * Prepare values
+     */
+    function prepeareValues (): any {
       let normalizedValues
 
-      const id = this.$store.state.trnForm.values.trnId || generateId(this.$day().valueOf())
+      const id = store.state.trnForm.values.trnId || generateId(dayjs().valueOf())
       const { getResult } = useCalculator()
 
       // Simple
-      if (!isTransfer) {
+      if (!isTransfer.value) {
         normalizedValues = {
           amount: getResult.value,
           amountFrom: getResult.value,
           amountTo: getResult.value,
-          categoryId: this.$store.state.trnForm.values.categoryId,
-          date: this.$day(this.$store.state.trnForm.values.date).valueOf(),
-          description: this.$store.state.trnForm.values.description || null,
-          groups: this.$store.state.trnForm.values.groups || null,
-          type: Number(this.$store.state.trnForm.values.amountType) || 0,
-          walletId: this.$store.state.trnForm.values.walletId
+          categoryId: store.state.trnForm.values.categoryId,
+          date: dayjs(store.state.trnForm.values.date).valueOf(),
+          description: store.state.trnForm.values.description || null,
+          groups: store.state.trnForm.values.groups || null,
+          type: Number(store.state.trnForm.values.amountType) || 0,
+          walletId: store.state.trnForm.values.walletId
         }
       }
 
       // Transfer
-      if (isTransfer) {
+      if (isTransfer.value) {
         normalizedValues = {
           amount: getResult.value,
           amountFrom: getResult.value,
           amountTo: getResult.value,
           categoryId: 'transfer',
-          date: this.$day(this.$store.state.trnForm.values.date).valueOf(),
-          walletId: this.$store.state.trnForm.values.walletFromId,
-          walletFromId: this.$store.state.trnForm.values.walletFromId,
-          walletToId: this.$store.state.trnForm.values.walletToId,
+          date: dayjs(store.state.trnForm.values.date).valueOf(),
+          walletId: store.state.trnForm.values.walletFromId,
+          walletFromId: store.state.trnForm.values.walletFromId,
+          walletToId: store.state.trnForm.values.walletToId,
           type: 2,
-          description: this.$store.state.trnForm.values.description || null,
-          groups: this.$store.state.trnForm.values.groups || null
+          description: store.state.trnForm.values.description || null,
+          groups: store.state.trnForm.values.groups || null
         }
       }
 
@@ -223,6 +168,61 @@ export default {
         id,
         values: normalizedValues
       }
+    }
+
+    /**
+     * Submit form
+     */
+    function handleSubmitForm () {
+      try {
+        const { validate } = useTrnFormValidate()
+        const { id, values } = prepeareValues()
+
+        const validateStatus = validate({
+          ...values,
+          walletFrom: store.getters['wallets/getWalletWithId'](store.state.trnForm.values.walletFromId),
+          walletTo: store.getters['wallets/getWalletWithId'](store.state.trnForm.values.walletToId)
+        })
+
+        if (validateStatus.error) {
+          // this.$notify({
+          //   type: 'error',
+          //   title: validateStatus.error.title,
+          //   text: validateStatus.error.text
+          // })
+          return
+        }
+
+        // this.$notify({
+        //   type: 'success',
+        //   text: 'Excellent transaction!',
+        //   title: random(successEmo)
+        // })
+
+        store.dispatch('trns/addTrn', { id, values })
+      }
+      catch (e) {
+        console.log(e)
+      }
+    }
+
+    return {
+      closeModal,
+
+      ...toRefs(wrappers),
+
+      maxHeight,
+      slider,
+      sliderObj,
+      setTrnFormHeight,
+
+      amountType,
+      isTransfer,
+
+      onCategoryClick,
+      onClickWallet,
+
+      handleSubmitForm
     }
   }
 }
@@ -246,39 +246,52 @@ export default {
   transition(name="baseModalWrapAnim" appear)
     .trnForm__wrap(
       v-show="isShow"
-      :style="{ maxHeight: `${$store.state.trnForm.height}px` }"
+      :style="{ maxHeight: maxHeight }"
       ref="wrap"
     )
       .trnForm__handler(
-        @click="closeModal"
         ref="handler"
+        @click="closeModal"
       )
+      .trnForm__closure(@click="closeModal")
+        svg(
+          viewBox='0 0 24 24'
+          fill='none'
+          stroke='#000'
+          stroke-linecap='round'
+          stroke-linejoin='round'
+          stroke-width='1.5'
+        )
+          path(d='M.75 23.249l22.5-22.5')
+          path(d='M23.25 23.249L.75.749')
 
       //- Content
       .trnForm__scroll(ref="content")
         .trnForm__content
           .swiper-container(ref="slider")
             .swiper-wrapper
-              .swiper-slide(:style="{ minHeight: `${$store.state.trnForm.height}px` }")
-                div(style="padding: 10px 0 10px 0")
-                  WalletsList3(
-                    :activeItemId="$store.state.trnForm.values.walletId"
-                    :limit="4"
-                    :showBase="false"
-                    ui="widget"
-                    @onClick="onClickWallet"
-                  )
+              .swiper-slide(:style="{ height: maxHeight }")
+                .scroll.waitForScrollSlider
+                  div(style="paddingBottom: 16px")
+                    div(style="padding: 20px 0 10px 0")
+                      WalletsList3(
+                        :activeItemId="$store.state.trnForm.values.walletId"
+                        :limit="4"
+                        :showBase="false"
+                        ui="widget"
+                        @onClick="onClickWallet"
+                      )
 
-                div(style="padding: 0 0 10px 0")
-                  CategoriesView(
-                    :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
-                    :activeItemId="$store.state.trnForm.values.categoryId"
-                    ui="_flat"
-                    :noPaddingBottom="true"
-                    @onClick="onCategoryClick"
-                  )
+                    div(style="padding: 0 0 10px 0")
+                      CategoriesView(
+                        :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
+                        :activeItemId="$store.state.trnForm.values.categoryId"
+                        ui="_flat"
+                        :noPaddingBottom="true"
+                        @onClick="onCategoryClick"
+                      )
 
-              .swiper-slide(ref="getHeight")
+              .swiper-slide.getHeight
                 .trnForm__title(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
                 .trnForm__title(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
 
@@ -293,42 +306,35 @@ export default {
                     @onSubmit="handleSubmitForm"
                   )
 
-                  template(v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'] && $store.getters['categories/lastUsedCategoriesIdsByDate'].length")
-                    .trnFormNoSwiping2
-                      .trnForm__quickCats
-                        .formTitle {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
-                        CategoriesView(
-                          :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
-                          :noPaddingBottom="true"
-                          ui="_flat"
-                          @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })"
-                        )
-                  template(v-else)
-                    .trnFormNoSwiping2(v-if="$store.getters['categories/quickSelectorCategoriesIds'].length")
-                      //- TrnFormCategories(:show="show")
-                      .trnForm__quickCats
-                        .formTitle {{ $t('categories.favoriteTitle') }}
-                        CategoriesView(
-                          :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-                          :noPaddingBottom="true"
-                          ui="_flat"
-                          @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })"
-                        )
+                  .trnFormNoSwiping2(
+                    v-if="$store.getters['categories/quickSelectorCategoriesIds'].length"
+                    style="paddingBottom: 12px"
+                  )
+                    //- TrnFormCategories(:show="show")
+                    .trnForm__quickCats
+                      .formTitle {{ $t('categories.favoriteTitle') }}
+                      CategoriesView(
+                        :ids="$store.getters['categories/quickSelectorCategoriesIds']"
+                        :noPaddingBottom="true"
+                        ui="_flat"
+                        @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })"
+                      )
 
                 //- Mobile
                 template(v-if="$store.state.ui.mobile")
+                  TrnFormTypes
                   TrnFormAmount
                   TrnFormCalendar
                   TrnFormCalculator(@onSubmit="handleSubmitForm")
                   TrnFormHeader
-                  TrnFormHeaderTransfer(v-if="isTransfer")
+                  TrnFormHeaderTransfer(v-show="isTransfer")
 
-              .swiper-slide(:style="{ minHeight: `${$store.state.trnForm.height}px` }")
-                div(v-if="sliderObj")
-                  TrnFormTrns(
-                    :slider="sliderObj"
-                    onlyList
-                  )
+              .swiper-slide(:style="{ height: maxHeight }")
+                TrnFormTrns(
+                  v-if="sliderObj"
+                  :slider="sliderObj"
+                )
+      .trnForm__pagination
 
       //- Modals
       TrnFormModalCats
@@ -341,10 +347,91 @@ export default {
       TrnFormModalTrn
 </template>
 
+<style lang="stylus">
+@import '~assets/stylus/variables'
+
+.trnForm
+  &__handler
+    z-index 2
+    position absolute
+    top 0
+    left 0
+    display flex
+    align-items center
+    justify-content center
+    width 100%
+    height 16px
+
+    &:after
+      content ''
+      display block
+      width 32px
+      height 4px
+      background var(--c-bg-8)
+      border-radius 4px
+
+  &__closure
+    z-index 3
+    cursor pointer
+    position absolute
+    top 4px
+    right 4px
+    display flex
+    align-items center
+    justify-content center
+    width 40px
+    height 40px
+    border-radius 50%
+    anim()
+
+    +media-hover()
+      background var(--c-blue-1)
+
+    svg
+      anim()
+      width 12px
+      height 12px
+      stroke var(--c-font-4)
+
+    +media-hover()
+      svg
+        width 18px
+        height 18px
+        stroke var(--c-font-1)
+
+  &__title
+    padding 0 $m8
+    padding-top $m9
+    padding-bottom $m7
+    color var(--c-font-3)
+    font-size 22px
+    font-weight 700
+    letter-spacing 1px
+    text-align center
+    fontFamilyNunito()
+
+    @media $media-laptop
+      padding-bottom $m7
+      border-radius 16px
+
+  &__pagination
+    .swiper-pagination-bullet
+      opacity 1
+      width 6px
+      height 6px
+      margin 0 4px
+      background var(--c-bg-9)
+      border-radius 50%
+      anim()
+
+      &-active
+        width 10px
+        background var(--c-bg-10)
+        border-radius 4px
+</style>
+
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/animations'
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables'
 
 $transition-style = cubic-bezier(.17, .04, .03, 1)
 
@@ -376,6 +463,12 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
   &-leave-to
     opacity 1
 
+.scroll
+  overflow hidden
+  overflow-y auto
+  height 100%
+  scrollbar()
+
 .trnForm
   &__overflow
     @media $media-phone
@@ -385,20 +478,6 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
       width 100%
       height 100%
       anim()
-
-  &__title
-    padding $m8
-    padding-bottom 0
-    color var(--c-font-3)
-    font-size 16px
-    font-weight 700
-    letter-spacing .5px
-    text-align center
-    fontFamilyNunito()
-
-    @media $media-laptop
-      padding-bottom $m7
-      border-radius 16px
 
   &__quickCats
     opacity .8
@@ -411,7 +490,6 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     overflow hidden
     position relative
     background var(--color-bg-canvas)
-    border 1px solid var(--c-bg-1)
     border-radius 16px 16px 0 0
     box-shadow 0 0 10px 5px var(--c-bg-1)
 
@@ -419,30 +497,24 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
       anim(200ms)
 
     @media $media-laptop
+      border 1px solid var(--c-bg-1)
       border-radius 16px
-
-  &__content
-    padding-top 8px
-
-  &__handler
-    z-index 2
-    position absolute
-    top 0
-    left 0
-    display flex
-    align-items center
-    justify-content center
-    width 100%
-    height 16px
-
-    &:after
-      content ''
-      display block
-      width 32px
-      height 4px
-      background var(--c-bg-8)
-      border-radius 4px
 
   &__scroll
     background var(--color-bg-canvas)
+
+  &__pagination
+    z-index 2
+    position absolute
+    left 50%
+    bottom 0
+    display flex
+    align-items center
+    justify-content center
+    width auto
+    padding $m5
+    background alpha(#171717, .9)
+    border-radius $m5
+    backdrop-filter blur(12px)
+    transform translateX(-50%)
 </style>

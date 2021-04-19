@@ -5,7 +5,7 @@ const localName = 'finapp.ui'
 
 const ui = reactive({
   showMainChart: true,
-  showPieChart: true,
+  showPieChart: false,
   showCatsVerticalChart: true,
   showRoundCats: true,
   showCatsHorizontalList: true,

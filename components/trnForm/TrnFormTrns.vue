@@ -122,10 +122,13 @@ export default {
     },
 
     changeFilter (filterBy) {
+      const trnForm = document.querySelector('.trnForm')
+      const trnsListScroll = trnForm.querySelector('.trnsListScroll')
+      trnsListScroll.scrollTop = 0
+
       this.filterBy = filterBy
       this.pageNumber = 1
       setTimeout(() => {
-        this.slider.update()
         this.slider.slideTo(2, 0)
       }, 100)
     },
@@ -140,38 +143,37 @@ export default {
 </script>
 
 <template lang="pug">
-.trnsList
+.contentWrap
   .switcherList
-    .switcher
-      .switcher__content
-        .switcher__item._text(@click="changeFilter('wallet')" :class="{ _active: filterBy === 'wallet' }") {{ $t('trnForm.filterWallet') }}
-        .switcher__item._text(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
-        .switcher__item._text(@click="changeFilter('all')" :class="{ _active: filterBy === 'all' }") {{ $t('trnForm.filterAll') }}
+    .menuItem(@click="changeFilter('wallet')" :class="{ _active: filterBy === 'wallet' }") {{ $t('trnForm.filterWallet') }}
+    .menuItem(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
+    .menuItem(@click="changeFilter('all')" :class="{ _active: filterBy === 'all' }") {{ $t('trnForm.filterAll') }}
 
-  .container(v-if="trnsIds.length === 0") No transactions
+  .contentWrap__box.waitForScroll.trnsListScroll
+    .container(v-if="trnsIds.length === 0") No transactions
 
-  .trnsList__content
-    .trnsList__grid(:class={ _onlyList: onlyList })
-      .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
-        .trnsList__header: TrnsListDate(:date="date")
-        .trnsList__trns
-          TrnsItemTrnItem(
-            v-for="trnId in trnsIds"
-            :isActive="$store.state.trnForm.values.trnId === trnId"
-            :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
-            :key="trnId"
-            :trn="$store.state.trns.items[trnId]"
-            :trnId="trnId"
-            :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
-            @onClickEdit="onClickEditTrn($store.state.trns.items[trnId].amount)"
-          )
+    .scrollBlock
+      .trnsList__content
+        .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
+          .trnsList__header: TrnsListDate(:date="date")
+          .trnsList__trns
+            TrnsItemTrnItem._trnForm(
+              v-for="trnId in trnsIds"
+              :isActive="$store.state.trnForm.values.trnId === trnId"
+              :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
+              :key="trnId"
+              :trn="$store.state.trns.items[trnId]"
+              :trnId="trnId"
+              :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
+              @onClickEdit="onClickEditTrn($store.state.trns.items[trnId].amount)"
+            )
 
-  .trnsList__pages(v-if="!isShowedAllTrns")
-    SharedButton(
-      :class="['_text-center _border _inline']"
-      :title="$t('trns.more')"
-      @onClick="showMoreTrns"
-    )
+      .trnsList__pages(v-if="!isShowedAllTrns")
+        SharedButton(
+          :class="['_text-center _border _inline']"
+          :title="$t('trns.more')"
+          @onClick="showMoreTrns"
+        )
 </template>
 
 <style lang="stylus" scoped>
@@ -190,70 +192,7 @@ export default {
   text-align center
   fontFamilyNunito()
 
-.switcherList
-  display flex
-  align-items center
-  justify-content center
-  margin $m7
-  margin-bottom (- $m5)
-  border-radius 12px
-
-  +media-laptop()
-    margin-bottom $m7
-
-.switcher
-  position relative
-  position sticky
-  top 0
-
-  &__content
-    display flex
-    align-items stretch
-    justify-content stretch
-
-  &__item
-    display flex
-    align-items center
-    justify-content center
-    text-align center
-    border-radius 12px
-
-    +media-hover()
-      background var(--c-bg-3)
-
-    &._text
-      opacity .6
-      min-width 48px
-      padding $m5 $m7
-      font-size 12px
-      border-radius 12px
-
-      &._active
-        opacity 1
-        background var(--c-bg-1)
-
-    &._icon
-      opacity .6
-      padding $m6 $m6
-      font-size 22px
-      border-radius 8px
-
-      &._active
-        opacity 1
-
 .trnsList
-  padding-bottom 8px
-
-  +media-laptop()
-    padding 0
-
-  &__grid
-    display grid
-    grid-template-rows 1fr
-    grid-template-columns 1fr
-    grid-column-gap 8px
-    grid-row-gap 8px
-
   &__day
     overflow hidden
     border-bottom 1px solid var(--c-bg-3)
@@ -261,7 +200,6 @@ export default {
     padding-bottom 16px
 
     &:first-child
-      margin-top $m9
       border-top 0
 
       +media-laptop()
@@ -280,4 +218,50 @@ export default {
   &__pages
     padding 16px 8px
     padding-top 0
+
+.contentWrap
+  position relative
+  display grid
+  grid-template-rows auto 1fr
+  height 100%
+
+  &__box
+    overflow hidden
+    overflow-y auto
+    scrollbar()
+
+.scrollBlock
+  padding-top $m6
+  padding-bottom $m8
+
+.switcherList
+  display flex
+  justify-content center
+  width 100%
+  padding $m6
+  padding-top $m8
+  background alpha(#171717, .9)
+  backdrop-filter blur(12px)
+
+.menuItem
+  cursor pointer
+  margin 0 $m5
+  padding $m6 $m8
+  color var(--c-font-5)
+  font-size 12px
+  font-weight 500
+  font-roboto()
+  text-align center
+  border 1px solid transparent
+  border-radius 50px
+
+  &:active
+    color var(--c-font-2)
+    background var(--c-blue-1)
+
+  &._active
+    cursor default
+    color var(--c-font-3)
+    background var(--c-bg-5)
+    border 1px solid var(--c-bg-5)
 </style>
