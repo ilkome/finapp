@@ -61,7 +61,7 @@ export default {
   },
 
   methods: {
-    toogleShowInside (categoryId) {
+    toogleShowInside () {
       this.showInside = !this.showInside
     }
   }
@@ -71,7 +71,7 @@ export default {
 <template lang="pug">
 .statItem(
   :class="{ _active: showInside }"
-  @click="toogleShowInside(categoryId)"
+  @click="toogleShowInside"
 )
   .statItem__content
     .statItem__graph: .statItem__graph__in(:style="styles")

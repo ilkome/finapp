@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { computed, useContext } from '@nuxtjs/composition-api'
 import useUIView from '~/components/layout/useUIView'
 import useStat from '~/modules/stat/useStat'
+import useFilter from '~/modules/filter/useFilter'
 
 export default {
   name: 'StatMobile',
@@ -59,7 +60,7 @@ export default {
 </script>
 
 <template lang="pug">
-.pageWrap
+.pageWrapScroll
   .baseBox(v-if="ui.showMainChart && isShowChart")
     LazyChartMobileStatLines(v-if="ui.showMainChart && isShowChart")
 
@@ -196,7 +197,7 @@ export default {
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
-.pageWrap
+.pageWrapScroll
   overflow hidden
   overflow-y auto
   scrollbar()

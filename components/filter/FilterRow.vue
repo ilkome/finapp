@@ -1,6 +1,17 @@
 <script>
+import useFilter from '~/modules/filter/useFilter'
+
 export default {
   name: 'FilterRow',
+
+  setup () {
+    const { setCategoryFilter, setWalletFilter } = useFilter()
+
+    return {
+      setCategoryFilter,
+      setWalletFilter
+    }
+  },
 
   computed: {
     filterCategory () {
@@ -18,16 +29,16 @@ export default {
 
   methods: {
     clearCategoryFilter () {
-      const nextCategory = this.filterCategory.parentId !== 0 ? this.filterCategory.parentId : null
-      this.$store.dispatch('filter/setFilterCategoryId', nextCategory)
+      const nextCategoryId = this.filterCategory.parentId !== 0 ? this.filterCategory.parentId : null
+      this.setCategoryFilter(nextCategoryId)
     },
 
     clearParentCategoryFilter () {
-      this.$store.dispatch('filter/setFilterCategoryId', null)
+      this.setCategoryFilter(null)
     },
 
     clearWalletFilter () {
-      this.$store.dispatch('filter/setFilterWalletId', null)
+      this.setWalletFilter(null)
     }
   }
 }

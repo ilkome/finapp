@@ -1,12 +1,5 @@
 import dayjs from 'dayjs'
 
-// setDate
-// setFilterCategoryId
-// setFilterDateNow
-// setFilterWalletId
-// setPeriod
-// setPeriodNext
-// setPeriodPrev
 export default {
   setDate (state, date) {
     state.date = dayjs(date).valueOf()

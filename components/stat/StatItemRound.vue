@@ -1,4 +1,6 @@
 <script>
+import useFilter from '~/modules/filter/useFilter'
+
 export default {
   name: 'StatItemRound',
 
@@ -29,6 +31,14 @@ export default {
     }
   },
 
+  setup () {
+    const { setCategoryFilter } = useFilter()
+
+    return {
+      setCategoryFilter
+    }
+  },
+
   computed: {
     trnsIds () {
       return this.$store.getters['trns/getTrns']({
@@ -50,7 +60,7 @@ export default {
 
 <template lang="pug">
 .statItemRound(
-  @click="$store.dispatch('filter/handleSetFilterCategory', categoryId)"
+  @click="setCategoryFilter(categoryId)"
 )
   .statItemRound__icon
     Icon(
