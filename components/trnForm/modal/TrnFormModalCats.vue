@@ -19,7 +19,7 @@ export default {
 TrnFormModal.doNotCloseTrnModal(
   :isShow="isShow"
   :title="$t('categories.name')"
-  @onClose="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
+  @onClose="$store.commit('trnForm/closeTrnFormModal', 'categories')"
   noPadding
 )
   TrnFormCategories(:show="isShow")

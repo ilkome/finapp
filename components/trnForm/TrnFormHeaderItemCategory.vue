@@ -21,7 +21,7 @@ export default {
 .trnFormHeaderItem._category(
   v-if="category"
   :style="{ background: category.color }"
-  @click="$store.commit('trnForm/toogleTrnFormModal', 'categories')"
+  @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
 )
   transition(name="slide")
     .trnFormHeaderItem__icon(

@@ -117,11 +117,11 @@ body
 
 html
   font-size 16px
-  overscroll-behavior-y contain
+  overscroll-behavior-y none
 
 body
   overflow hidden
-  overscroll-behavior-y contain
+  overscroll-behavior-y none
   margin 0
   color var(--c-font-2)
   font-primary()
@@ -144,5 +144,5 @@ body
 // ------------------------------------
 .context-menu-sep
   height 1px
-  background var(--c-bg-4)
+  background var(--c-bg-2)
 </style>

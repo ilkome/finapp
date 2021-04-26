@@ -60,6 +60,8 @@ export default {
       const observer = new ResizeObserver((entries) => {
         for (const entry of entries) {
           const height = entry.contentRect.height
+          console.log('height', height)
+
           store.commit('trnForm/setTrnFormHeight', height)
           maxHeight.value = `${height}px`
         }
@@ -73,32 +75,36 @@ export default {
     const { isShow } = toRefs(props)
     watch(isShow, (value) => {
       if (value) {
+        if (!sliderObj.value) {
+          sliderObj.value = new Swiper(slider.value, {
+            observer: true,
+            observeParents: true,
+            slidesPerView: 1,
+            autoHeight: true,
+            initialSlide: 1,
+            noSwipingClass: 'trnFormNoSwiping',
+            shortSwipes: false,
+            longSwipesRatio: 0.1,
+            longSwipesMs: 60,
+            pagination: {
+              el: '.trnForm__pagination',
+              clickable: true
+            }
+          })
+          setTrnFormHeight()
+        }
+
         setTimeout(() => {
-          if (!sliderObj.value) {
-            initTouchModal({
-              ...toRefs(wrappers),
-              onClose: () => store.dispatch('trnForm/closeTrnForm')
-            })
-            sliderObj.value = new Swiper(slider.value, {
-              observer: true,
-              observeParents: true,
-              slidesPerView: 1,
-              autoHeight: true,
-              initialSlide: 1,
-              noSwipingClass: 'trnFormNoSwiping',
-              shortSwipes: false,
-              longSwipesRatio: 0.1,
-              longSwipesMs: 60,
-              pagination: {
-                el: '.trnForm__pagination',
-                clickable: true
-              }
-            })
-            setTrnFormHeight()
-          }
+          initTouchModal({
+            ...toRefs(wrappers),
+            onClose: () => store.dispatch('trnForm/closeTrnForm')
+          })
         }, 10)
       }
       else {
+        if (sliderObj.value) {
+          sliderObj.value.slideTo(1, 0)
+        }
         clearExpression()
       }
     }, { immediate: true })
@@ -114,6 +120,7 @@ export default {
      */
     function onCategoryClick (categoryId) {
       store.commit('trnForm/setTrnFormValues', { categoryId })
+      sliderObj.value.slideTo(1, 300)
     }
 
     /**
@@ -121,6 +128,7 @@ export default {
      */
     function onClickWallet (walletId) {
       store.commit('trnForm/setTrnFormValues', { walletId })
+      sliderObj.value.slideTo(1, 300)
     }
 
     /**
@@ -229,122 +237,123 @@ export default {
 </script>
 
 <template lang="pug">
-.trnForm(
-  v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
-  v-show="isShow"
-  ref="container"
-)
-  //- Overflow
-  transition(name="baseModalOveflowAnim" appear)
-    .trnForm__overflow(
-      ref="overflow"
-      v-show="isShow"
-      @click="closeModal"
-    )
-
-  //- wrap
-  transition(name="baseModalWrapAnim" appear)
-    .trnForm__wrap(
-      v-show="isShow"
-      :style="{ maxHeight: maxHeight }"
-      ref="wrap"
-    )
-      .trnForm__handler(
-        ref="handler"
+Portal(to="modal")
+  .trnForm(
+    v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
+    v-show="isShow"
+    ref="container"
+  )
+    //- Overflow
+    transition(name="baseModalOveflowAnim" appear)
+      .trnForm__overflow(
+        ref="overflow"
+        v-show="isShow"
         @click="closeModal"
       )
-      .trnForm__closure(@click="closeModal")
-        svg(
-          viewBox='0 0 24 24'
-          fill='none'
-          stroke='#000'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-          stroke-width='1.5'
+
+    //- wrap
+    transition(name="baseModalWrapAnim" appear)
+      .trnForm__wrap(
+        v-show="isShow"
+        :style="{ maxHeight: maxHeight }"
+        ref="wrap"
+      )
+        .trnForm__handler(
+          ref="handler"
+          @click="closeModal"
         )
-          path(d='M.75 23.249l22.5-22.5')
-          path(d='M23.25 23.249L.75.749')
+        .trnForm__closure(@click="closeModal")
+          svg(
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='#000'
+            stroke-linecap='round'
+            stroke-linejoin='round'
+            stroke-width='1.5'
+          )
+            path(d='M.75 23.249l22.5-22.5')
+            path(d='M23.25 23.249L.75.749')
 
-      //- Content
-      .trnForm__scroll(ref="content")
-        .trnForm__content
-          .swiper-container(ref="slider")
-            .swiper-wrapper
-              .swiper-slide(:style="{ height: maxHeight }")
-                .scroll.waitForScrollSlider
-                  div(style="paddingBottom: 16px")
-                    div(style="padding: 20px 0 10px 0")
-                      WalletsList3(
-                        :activeItemId="$store.state.trnForm.values.walletId"
-                        :limit="4"
-                        :showBase="false"
-                        ui="widget"
-                        @onClick="onClickWallet"
-                      )
+        //- Content
+        .trnForm__scroll(ref="content")
+          .trnForm__content
+            .swiper-container(ref="slider")
+              .swiper-wrapper
+                .swiper-slide(:style="{ height: maxHeight }")
+                  .scroll.waitForScrollSlider
+                    div(style="paddingBottom: 16px")
+                      div(style="padding: 20px 0 10px 0")
+                        WalletsList3(
+                          :activeItemId="$store.state.trnForm.values.walletId"
+                          :limit="4"
+                          :showBase="false"
+                          ui="widget"
+                          @onClick="onClickWallet"
+                        )
 
-                    div(style="padding: 0 0 10px 0")
-                      CategoriesView(
-                        :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
-                        :activeItemId="$store.state.trnForm.values.categoryId"
-                        ui="_flat"
-                        :noPaddingBottom="true"
-                        @onClick="onCategoryClick"
-                      )
+                      div(style="padding: 0 0 10px 0")
+                        CategoriesView(
+                          :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
+                          :activeItemId="$store.state.trnForm.values.categoryId"
+                          ui="_flat"
+                          :noPaddingBottom="true"
+                          @onClick="onCategoryClick"
+                        )
 
-              .swiper-slide.getHeight
-                .trnForm__title(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
-                .trnForm__title(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
+                .swiper-slide.getHeight
+                  .trnForm__title(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
+                  .trnForm__title(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
 
-                //- Laptop
-                template(v-if="$store.state.ui.pc")
-                  TrnFormHeader
-                  TrnFormHeaderTransfer(v-if="isTransfer")
-                  TrnFormCalendar
-                  TrnFormAmountPc
-                  TrnFormCalculator(
-                    pc
-                    @onSubmit="handleSubmitForm"
+                  //- Laptop
+                  template(v-if="$store.state.ui.pc")
+                    TrnFormHeader
+                    TrnFormHeaderTransfer(v-if="isTransfer")
+                    TrnFormCalendar
+                    TrnFormAmountPc
+                    TrnFormCalculator(
+                      pc
+                      @onSubmit="handleSubmitForm"
+                    )
+
+                    .trnFormNoSwiping2(
+                      v-if="$store.getters['categories/quickSelectorCategoriesIds'].length"
+                      style="paddingBottom: 12px"
+                    )
+                      //- TrnFormCategories(:show="show")
+                      .trnForm__quickCats
+                        .formTitle {{ $t('categories.favoriteTitle') }}
+                        CategoriesView(
+                          :ids="$store.getters['categories/quickSelectorCategoriesIds']"
+                          :noPaddingBottom="true"
+                          ui="_flat"
+                          @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })"
+                        )
+
+                  //- Mobile
+                  template(v-if="$store.state.ui.mobile")
+                    TrnFormTypes
+                    TrnFormAmount
+                    TrnFormCalendar
+                    TrnFormCalculator(@onSubmit="handleSubmitForm")
+                    TrnFormHeader
+                    TrnFormHeaderTransfer(v-show="isTransfer")
+
+                .swiper-slide(:style="{ height: maxHeight }")
+                  TrnFormTrns(
+                    v-if="sliderObj"
+                    :slider="sliderObj"
                   )
+        .trnForm__pagination
 
-                  .trnFormNoSwiping2(
-                    v-if="$store.getters['categories/quickSelectorCategoriesIds'].length"
-                    style="paddingBottom: 12px"
-                  )
-                    //- TrnFormCategories(:show="show")
-                    .trnForm__quickCats
-                      .formTitle {{ $t('categories.favoriteTitle') }}
-                      CategoriesView(
-                        :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-                        :noPaddingBottom="true"
-                        ui="_flat"
-                        @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })"
-                      )
-
-                //- Mobile
-                template(v-if="$store.state.ui.mobile")
-                  TrnFormTypes
-                  TrnFormAmount
-                  TrnFormCalendar
-                  TrnFormCalculator(@onSubmit="handleSubmitForm")
-                  TrnFormHeader
-                  TrnFormHeaderTransfer(v-show="isTransfer")
-
-              .swiper-slide(:style="{ height: maxHeight }")
-                TrnFormTrns(
-                  v-if="sliderObj"
-                  :slider="sliderObj"
-                )
-      .trnForm__pagination
-
-      //- Modals
-      TrnFormModalCats
-      TrnFormModalCatsChild
-      TrnFormModalCalendar
-      TrnFormModalDescription
-      TrnFormModalWallets
-      TrnFormModalTransferFrom
-      TrnFormModalTransferTo
-      TrnFormModalTrn
+        //- Modals
+        TrnFormModalCats
+        TrnFormModalCatsChild
+        TrnFormModalCalendar
+        TrnFormModalDescription
+        TrnFormModalWallets
+        TrnFormModalTransferFrom
+        TrnFormModalTransferTo
+        TrnFormModalTrn
 </template>
 
 <style lang="stylus">

@@ -32,13 +32,13 @@ export default {
       this.$store.commit('trnForm/setTrnFormValues', {
         date: this.$day(date).valueOf()
       })
-      this.$store.commit('trnForm/toogleTrnFormModal', 'calendar')
+      this.$store.commit('trnForm/closeTrnFormModal', 'calendar')
     },
     handleSelectDateDaysAgo (daysAgo) {
       this.$store.commit('trnForm/setTrnFormValues', {
         date: this.$day().subtract(daysAgo, 'day').valueOf()
       })
-      this.$store.commit('trnForm/toogleTrnFormModal', 'calendar')
+      this.$store.commit('trnForm/closeTrnFormModal', 'calendar')
     }
   }
 }
@@ -49,7 +49,7 @@ LazyTrnFormModal.doNotCloseTrnModal(
   v-if="isShow"
   :isShow="isShow"
   title="Date"
-  @onClose="$store.commit('trnForm/toogleTrnFormModal', 'calendar')"
+  @onClose="$store.commit('trnForm/closeTrnFormModal', 'calendar')"
 )
   Datepicker(
     :inline="true"

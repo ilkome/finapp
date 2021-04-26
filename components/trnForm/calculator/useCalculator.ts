@@ -10,13 +10,12 @@ const separator = ref(' ')
 const isKeysActive = ref(true)
 
 export default function useCalculator () {
-
   /**
    * Set separator
    *
    * @param {string} sep
    */
-  function setSeparator(sep: string): void {
+  function setSeparator (sep: string): void {
     separator.value = sep
     expression.value = formatInput(expression.value)
   }
@@ -57,7 +56,7 @@ export default function useCalculator () {
    * @param {string} value
    * @return {string}
    */
-  function removeSpaces(value:string): string {
+  function removeSpaces (value:string): string {
     return String(value).replace(/[ ,]/g, '')
   }
 
@@ -84,7 +83,8 @@ export default function useCalculator () {
         return String(Math.abs(math))
       }
       return '0'
-    } catch (error) {
+    }
+    catch (error) {
       console.log(error)
       return value
     }
@@ -139,7 +139,8 @@ export default function useCalculator () {
           return clearedExpression + '0.'
         }
         return expression
-      } else {
+      }
+      else {
         return clearedExpression + value
       }
     }
@@ -185,7 +186,7 @@ export default function useCalculator () {
    * @param {boolean} [isTrimFloatSpaces]
    * @return {string} expression string
    */
-  function formatInput(value: string, isTrimFloatSpaces?: boolean): string{
+  function formatInput (value: string, isTrimFloatSpaces?: boolean): string {
     const formatedArray = separateExpression(String(value))
       .map((item) => {
         let formatedItem = ''
@@ -193,7 +194,8 @@ export default function useCalculator () {
 
         if (isAction) {
           formatedItem = ` ${item} `
-        } else {
+        }
+        else {
           let clearedValue = removeSpaces(String(item))
 
           // Remove ended zero after dot
@@ -206,14 +208,15 @@ export default function useCalculator () {
 
           if (isInteger) {
             formatedItem = baseAmountFormat(item, separator.value)
-          } else {
+          }
+          else {
             formatedItem = baseAmountFormat(splitFloatValue[0], separator.value) + '.' + splitFloatValue[1]
           }
         }
         return formatedItem
       })
 
-      return formatedArray.join('')
+    return formatedArray.join('')
   }
 
   function clearExpression (): void {
@@ -225,7 +228,7 @@ export default function useCalculator () {
     expression.value = formatInput(expressionValue)
   }
 
-  function keyboardHandler(event: KeyboardEvent): void {
+  function keyboardHandler (event: KeyboardEvent): void {
     if (!isKeysActive.value) { return }
 
     const allowValue = (event.key).match(/[0-9%/*\-+=.,]|Backspace|Enter/)
@@ -242,7 +245,7 @@ export default function useCalculator () {
 
   const getExpression = computed(() => expression.value)
   const getResult = computed(() => {
-    const result =  makeCalculation(getExpression.value)
+    const result = makeCalculation(getExpression.value)
     return Number(result)
   })
   const getFormatedResult = computed(() => { return formatInput(expression.value) })

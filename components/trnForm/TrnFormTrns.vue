@@ -149,7 +149,7 @@ export default {
     .menuItem(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
     .menuItem(@click="changeFilter('all')" :class="{ _active: filterBy === 'all' }") {{ $t('trnForm.filterAll') }}
 
-  .contentWrap__box.waitForScroll.trnsListScroll
+  .contentWrap__box.trnsListScroll.waitForScrollSlider
     .container(v-if="trnsIds.length === 0") No transactions
 
     .scrollBlock

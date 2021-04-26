@@ -6,7 +6,10 @@ export default {
     const uid = rootState.user.user.uid
 
     db.ref(`users/${uid}/categories`).on('value', (snapshot) => {
-      const items = Object.freeze(snapshot.val())
+      const items = snapshot.val()
+      for (const id in items) {
+        items[id] = Object.freeze(items[id])
+      }
       dispatch('setCategories', items)
     }, e => console.error(e))
   },

@@ -48,7 +48,7 @@ export default {
         :id="walletFromId"
         :showBase="false"
         ui="tile"
-        @onClick="$store.commit('trnForm/toogleTrnFormModal', 'transferFrom')"
+        @onClick="$store.commit('trnForm/showTrnFormModal', 'transferFrom')"
       )
 
   .trnFormHeaderSeparator: .mdi.mdi-chevron-right
@@ -61,7 +61,7 @@ export default {
         :id="walletToId"
         :showBase="false"
         ui="tile"
-        @onClick="$store.commit('trnForm/toogleTrnFormModal', 'transferTo')"
+        @onClick="$store.commit('trnForm/showTrnFormModal', 'transferTo')"
       )
 </template>
 

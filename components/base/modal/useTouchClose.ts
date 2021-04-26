@@ -42,11 +42,12 @@ export default function useOnTouch () {
     }
 
     if (!isInit) {
+      if (!container.value) { return }
       isInit = true
-      container.value.addEventListener('touchstart', onDragStart)
-      container.value.addEventListener('touchmove', onDragging)
-      container.value.addEventListener('touchend', onDragEnd)
-      container.value.addEventListener('mouseup', onDragEnd)
+      container.value.addEventListener('touchstart', onDragStart, { passive: true })
+      container.value.addEventListener('touchmove', onDragging, { passive: true })
+      container.value.addEventListener('touchend', onDragEnd, { passive: true })
+      container.value.addEventListener('mouseup', onDragEnd, { passive: true })
     }
   }
 
@@ -59,9 +60,10 @@ export default function useOnTouch () {
 
     if (currentY === 0) {
       wrap.value.style.transform = ''
+      wrap.value.style.opacity = ''
       overflow.value.style.opacity = ''
     }
-    else if (currentY > offset) {
+    else if (currentY >= offset) {
       const containerHeight = container.value.clientHeight
       const diff = (containerHeight - currentY) / (containerHeight / 100)
       const diffTrunc = Math.trunc(diff)
@@ -69,11 +71,13 @@ export default function useOnTouch () {
 
       const width = document.documentElement.clientWidth
       if (width >= 768) {
-        wrap.value.style.transform = `translate3d(${currentY - offset}px, 0, 0)`
-      } else {
-        wrap.value.style.transform = `translate3d(0, ${currentY - offset}px, 0)`
+        wrap.value.style.transform = `translate3d(${currentY + offset}px, 0, 0)`
+      }
+      else {
+        wrap.value.style.transform = `translate3d(0, ${currentY + offset}px, 0)`
       }
 
+      wrap.value.style.opacity = +opacity * 1.6
       overflow.value.style.opacity = opacity
     }
   }
@@ -102,16 +106,16 @@ export default function useOnTouch () {
       if (content.value) {
         if (content.value.scrollTop > 0) { return }
 
-        // wait until content scroll up inside
-        const waitForScroll = content.value.querySelector(`.${config.whaitForScrollClassName}`)
-        console.log('waitForScroll', waitForScroll)
-
         // wait until content scroll up inside Swiper
         const waitForScrollSlider = content.value.querySelector(`.swiper-slide-active .${config.whaitForScrollClassName}`)
         if (waitForScrollSlider && waitForScrollSlider.scrollTop > 0) { return }
 
         const waitForScrollSlider2 = content.value.querySelector(`.swiper-slide-active .${config.whaitForScrollSliderClassName}`)
         if (waitForScrollSlider2 && waitForScrollSlider2.scrollTop > 0) { return }
+
+        // wait until content scroll up inside
+        const waitForScroll = content.value.querySelector(`.${config.whaitForScrollClassName}`)
+        if (waitForScroll && waitForScroll.scrollTop > 0) { return }
       }
     }
 
@@ -160,6 +164,7 @@ export default function useOnTouch () {
     wrap.value.removeEventListener('transitionend', onTransitionEnd)
     currentY = 0
     wrap.value.style.transform = ''
+    wrap.value.style.opacity = ''
     overflow.value.style.opacity = ''
     if (onClose) { onClose() }
   }
@@ -173,10 +178,17 @@ export default function useOnTouch () {
 
     currentY = container.value.clientHeight
     wrap.value.classList.add(config.animClassName)
+    wrap.value.style.opacity = 0
     overflow.value.style.opacity = 0
     setTranslate()
 
-    wrap.value.addEventListener('transitionend', onTransitionEnd)
+    wrap.value.addEventListener('transitionend', onTransitionEnd, { passive: true })
+    setTimeout(() => {
+      currentY = 0
+      wrap.value.style.transform = ''
+      wrap.value.style.opacity = ''
+      overflow.value.style.opacity = ''
+    }, 2000)
   }
 
   /**

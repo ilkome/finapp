@@ -24,7 +24,6 @@ export default {
     },
 
     onClickOpener () {
-      console.log('onClickOpener')
       this.visibleDropdown = !this.visibleDropdown
     }
   }

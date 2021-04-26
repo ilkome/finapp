@@ -282,8 +282,6 @@ export default {
 
     // filter date
     if (startDate && endDate && periodName) {
-      // const filterDate = dayjs(startDate)
-      // const filterPeriod = periodName || rootState.filter.period
       const startDateValue = dayjs(startDate).startOf('day').valueOf()
       const endDateValue = dayjs(endDate).endOf('day').valueOf()
 

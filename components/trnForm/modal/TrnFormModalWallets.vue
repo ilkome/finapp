@@ -2,7 +2,7 @@
 export default {
   methods: {
     handleSetWallet (walletId) {
-      this.$store.commit('trnForm/toogleTrnFormModal', 'wallets')
+      this.$store.commit('trnForm/closeTrnFormModal', 'wallets')
       this.$store.commit('trnForm/setTrnFormValues', { walletId })
     }
   }
@@ -14,7 +14,7 @@ TrnFormModal.doNotCloseTrnModal(
   :isShow="$store.state.trnForm.modal.wallets"
   :position="$store.state.ui.mobile ? 'bottom' : null"
   :title="$t('wallets.title')"
-  @onClose="$store.commit('trnForm/toogleTrnFormModal', 'wallets')"
+  @onClose="$store.commit('trnForm/closeTrnFormModal', 'wallets')"
 )
   .trnFormWalletsList
     WalletsList3(

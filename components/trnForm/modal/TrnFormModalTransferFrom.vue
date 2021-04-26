@@ -9,7 +9,7 @@ export default {
     const isShow = computed(() => store.state.trnForm.modal.transferFrom)
 
     function setWalletFromId (walletId) {
-      store.commit('trnForm/toogleTrnFormModal', 'transferFrom')
+      store.commit('trnForm/closeTrnFormModal', 'transferFrom')
       store.commit('trnForm/setTrnFormValues', {
         walletFromId: walletId,
         walletId
@@ -30,7 +30,7 @@ LazyTrnFormModal.doNotCloseTrnModal(
   :isShow="isShow"
   title="Transfer from wallet"
   position="bottom"
-  @onClose="$store.commit('trnForm/toogleTrnFormModal', 'transferFrom')"
+  @onClose="$store.commit('trnForm/closeTrnFormModal', 'transferFrom')"
 )
   WalletsList3(@onClick="setWalletFromId")
 </template>

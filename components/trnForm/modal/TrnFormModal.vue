@@ -105,45 +105,46 @@ export default {
 </script>
 
 <template lang="pug">
-.trnFormModal(
-  ref="container"
-  v-show="isShow"
-)
-  transition(name="baseModalOveflowAnim" appear)
-    .trnFormModal__overflow(
-      v-show="isShow"
-      ref="overflow"
-      @click="closeModal"
-    )
-
-  transition(name="baseModalWrapAnim" appear)
-    .trnFormModal__wrap(
-      v-show="isShow"
-      :style="modalStyle"
-      ref="wrap"
-    )
-      .trnForm__handler(
-        ref="handler"
+Portal(to="modal")
+  .trnFormModal(
+    ref="container"
+    v-show="isShow"
+  )
+    transition(name="baseModalOveflowAnim" appear)
+      .trnFormModal__overflow(
+        v-show="isShow"
+        ref="overflow"
         @click="closeModal"
       )
-      .trnForm__closure(@click="closeModal")
-        svg(
-          viewBox='0 0 24 24'
-          fill='none'
-          stroke='#000'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-          stroke-width='1.5'
-        )
-          path(d='M.75 23.249l22.5-22.5')
-          path(d='M23.25 23.249L.75.749')
 
-      .trnFormModal__scroll(
-        :class="{ _noPadding: noPadding }"
-        ref="content"
+    transition(name="baseModalWrapAnim" appear)
+      .trnFormModal__wrap(
+        v-show="isShow"
+        :style="modalStyle"
+        ref="wrap"
       )
-        .trnForm__title(v-if="title") {{ title }}
-        slot
+        .trnForm__handler(
+          ref="handler"
+          @click="closeModal"
+        )
+        .trnForm__closure(@click="closeModal")
+          svg(
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='#000'
+            stroke-linecap='round'
+            stroke-linejoin='round'
+            stroke-width='1.5'
+          )
+            path(d='M.75 23.249l22.5-22.5')
+            path(d='M23.25 23.249L.75.749')
+
+        .trnFormModal__scroll(
+          :class="{ _noPadding: noPadding }"
+          ref="content"
+        )
+          .trnForm__title(v-if="title") {{ title }}
+          slot
 </template>
 
 <style lang="stylus" scoped>
@@ -179,7 +180,7 @@ export default {
 
 .trnFormModal
   z-index 100
-  position absolute
+  position fixed
   left 0
   width 100%
 

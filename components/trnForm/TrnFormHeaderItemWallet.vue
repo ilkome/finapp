@@ -15,7 +15,7 @@ export default {
 <template lang="pug">
 .trnFormHeaderItem(
   v-if="wallet"
-  @click="$store.commit('trnForm/toogleTrnFormModal', 'wallets')"
+  @click="$store.commit('trnForm/showTrnFormModal', 'wallets')"
 )
   WalletsItemWalletItem(
     :id="$store.state.trnForm.values.walletId"

@@ -2,6 +2,7 @@
 import { computed, useContext } from '@nuxtjs/composition-api'
 import useChart from '~/components/chart/useChart'
 import usePeriods from '~/components/periods/usePeriods'
+import useFilter from '~/modules/filter/useFilter'
 
 export default {
   name: 'ChartPeriods',
@@ -10,7 +11,7 @@ export default {
     const { store } = useContext()
 
     // Filter
-    const filterPeriod = computed(() => store.state.filter.period)
+    const { filterPeriodNameAllReplacedToYear } = useFilter()
 
     // Chart
     const { isShowDataLabels, toogleChartsView } = useChart()
@@ -20,7 +21,7 @@ export default {
 
     function addPeriodOrGroup () {
       store.commit('chart/addElementsToChart', {
-        periodName: filterPeriod.value,
+        periodName: filterPeriodNameAllReplacedToYear.value,
         periodType: 'showedPeriods'
       })
       saveChartsPeriodsToLocalStorage()
@@ -28,7 +29,7 @@ export default {
 
     function removePeriodOrGroup () {
       store.commit('chart/removeElementsFromChart', {
-        periodName: filterPeriod.value,
+        periodName: filterPeriodNameAllReplacedToYear.value,
         periodType: 'showedPeriods'
       })
       saveChartsPeriodsToLocalStorage()
@@ -47,7 +48,7 @@ export default {
       periods,
       periodsNames,
 
-      filterPeriod
+      filterPeriodNameAllReplacedToYear
     }
   }
 }
@@ -56,28 +57,26 @@ export default {
 <template lang="pug">
 .periods
   .periodItem(
-    v-if="filterPeriod !== 'all'"
     @click="removePeriodOrGroup"
   ): .mdi.mdi-minus
 
   .periodItem(
     v-for="periodItem in periodsNames"
     :key="periodItem.slug"
-    :class="{ _active: filterPeriod === periodItem.slug }"
+    :class="{ _active: filterPeriodNameAllReplacedToYear === periodItem.slug }"
     @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
   )
     .periodItem__name {{ periodItem.name }}
     .periodItem__count(
-      v-if="filterPeriod === periodItem.slug && filterPeriod !== 'all'"
+      v-if="filterPeriodNameAllReplacedToYear === periodItem.slug"
     ) {{ $store.state.chart.periods[periodItem.slug].showedPeriods }}
 
   .periodItem(
-    v-if="filterPeriod !== 'all'"
     @click="addPeriodOrGroup"
   ): .mdi.mdi-plus
 
   .periodItem(@click="toogleChartsView")
-    .mdi.mdi-chart-bar(v-if="periods[filterPeriod].grouped")
+    .mdi.mdi-chart-bar(v-if="periods[filterPeriodNameAllReplacedToYear].grouped")
     .mdi.mdi-chart-line(v-else)
 
   .periodItem(@click="isShowDataLabels = !isShowDataLabels")

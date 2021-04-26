@@ -38,7 +38,6 @@ export default {
       for (const colorItem of this.colors) {
         const colorIdx = this.colors.indexOf(colorItem)
         const element = document.querySelector([`.initPickElement${colorIdx}`])
-        console.log(element)
 
         Pickr.create({
           el: element,

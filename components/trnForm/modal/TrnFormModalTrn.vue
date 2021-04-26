@@ -82,7 +82,7 @@ TrnFormModal.doNotCloseTrnModal(
   v-if="trnId"
   :show="$store.state.trnForm.modal.trn"
   :position="$store.state.ui.mobile ? 'bottom' : null"
-  @onClose="$store.commit('trnForm/toogleTrnFormModal', 'trn')"
+  @onClose="$store.commit('trnForm/closeTrnFormModal', 'trn')"
 )
   .modalLinks
     ModalButton(

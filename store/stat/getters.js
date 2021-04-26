@@ -150,7 +150,9 @@ export default {
     * @return {String} categoryId[] - trnId
     * { categiryId: [...trnId, trnId] }
   */
-  getCategoriesIdsWithTrnsIds: (state, getters, rootState, rootGetters) => ({ trnsIds }) => {
+  getCategoriesIdsWithTrnsIds: (state, getters, rootState, rootGetters) => ({
+    trnsIds
+  }) => {
     const filterCategoryId = rootState.filter.categoryId
     const trns = rootState.trns.items
     const transferCategoryId = rootGetters['categories/transferCategoryId']
@@ -164,7 +166,7 @@ export default {
           ? categoryId = trns[trnId].categoryId
           : categoryId = getters.getRootCategoryIdFromTrnId(trnId)
 
-        // Push trnId to categoriey. Exclude transfer category
+        // Push trnId to category. Exclude transfer category
         if (categoryId !== transferCategoryId) {
           if (!categoriesWithTrnsIds[categoryId]) {
             categoriesWithTrnsIds[categoryId] = [trnId]

@@ -2,6 +2,7 @@
 import { Chart } from 'highcharts-vue'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
+import useFilter from '~/modules/filter/useFilter'
 
 export default {
   name: 'StatChartLines',
@@ -44,15 +45,17 @@ export default {
 
   setup () {
     const { isShowDataLabels } = useChart()
+    const { filterPeriodNameAllReplacedToYear } = useFilter()
 
     return {
-      isShowDataLabels
+      isShowDataLabels,
+      filterPeriodNameAllReplacedToYear
     }
   },
 
   computed: {
     chartData () {
-      const periodName = this.$store.state.filter.period
+      const periodName = this.filterPeriodNameAllReplacedToYear
       const chartPeriods = this.$store.state.chart.periods
       const trns = this.$store.state.trns.items
       const vm = this
@@ -208,6 +211,9 @@ export default {
                     to: value.index - 0.5
                   }]
                 })
+                if (vm.$store.state.filter.period === 'all') {
+                  vm.$store.dispatch('filter/setPeriod', 'year')
+                }
                 vm.$store.dispatch('filter/setDate', parseInt(value.date))
               }
             }
@@ -233,6 +239,9 @@ export default {
                       to: this.index - 0.5
                     }]
                   })
+                  if (vm.$store.state.filter.period === 'all') {
+                    vm.$store.dispatch('filter/setPeriod', 'year')
+                  }
                   vm.$store.dispatch('filter/setDate', parseInt(this.date))
                 }
               }

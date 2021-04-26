@@ -36,13 +36,6 @@ export default {
     }
   },
 
-  toogleTrnFormModal (state, modalName) {
-    state.modal = {
-      ...baseModalState,
-      [modalName]: !state.modal[modalName]
-    }
-  },
-
   closeTrnFormModal (state, modalName) {
     state.modal[modalName] = false
   },

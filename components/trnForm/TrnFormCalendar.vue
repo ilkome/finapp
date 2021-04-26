@@ -35,11 +35,11 @@ export default {
   .trnFormMeta__date
     .trnFormDate
       .trnFormDate__item._icon(@click="setPrevDay()"): .mdi.mdi-chevron-left
-      .trnFormDate__item._date(@click="$store.commit('trnForm/toogleTrnFormModal', 'calendar')") {{ formatedDate }}
+      .trnFormDate__item._date(@click="$store.commit('trnForm/showTrnFormModal', 'calendar')") {{ formatedDate }}
       .trnFormDate__item._icon(:class="{ _disable: isToday }" @click="setNextDay()"):  .mdi.mdi-chevron-right
 
   .trnFormMeta__desc(
-    @click="$store.commit('trnForm/toogleTrnFormModal', 'description')"
+    @click="$store.commit('trnForm/showTrnFormModal', 'description')"
   )
     .mdi.mdi-comment-text-outline
     .dot(v-if="$store.state.trnForm.values.description")

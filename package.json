@@ -1,6 +1,6 @@
 {
   "name": "finapp",
-  "version": "3.10.3",
+  "version": "3.11.1",
   "scripts": {
     "dev": "cross-env NUXT_HOST=0.0.0.0 nuxt",
     "build": "nuxt build",
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@simonwep/pickr": "^1.8.0",
+    "@webzlodimir/vue-bottom-sheet": "^1.2.0",
     "axios": "^0.21.1",
     "core-js": "^3.10.1",
     "currency.js": "^2.0.3",

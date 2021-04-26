@@ -43,7 +43,6 @@ export default {
     }))
 
     function handleSetActiveTab (tabName) {
-      console.log(tabName)
       if (tabName === 'menu') {
         store.dispatch('ui/setActiveTab', 'menu')
         return

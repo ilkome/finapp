@@ -1,7 +1,8 @@
-import { useContext } from '@nuxtjs/composition-api'
+import { computed, useContext } from '@nuxtjs/composition-api'
 
 export default function useFilter () {
   const { store } = useContext()
+  const filterPeriodNameAllReplacedToYear = computed(() => store.state.filter.period === 'all' ? 'year' : store.state.filter.period)
 
   function scrollTop () {
     const page = document.querySelector('.pageWrapScroll')
@@ -14,12 +15,13 @@ export default function useFilter () {
   }
 
   function setWalletFilter (id) {
-    store.dispatch('filter/handleSetFilterWallet', id)
+    store.dispatch('filter/setFilterWalletId', id)
     scrollTop()
   }
 
   return {
     setCategoryFilter,
-    setWalletFilter
+    setWalletFilter,
+    filterPeriodNameAllReplacedToYear
   }
 }

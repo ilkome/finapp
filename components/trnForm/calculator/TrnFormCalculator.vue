@@ -15,7 +15,6 @@ export default {
 
   setup () {
     const deleteRef = ref(document.createElement('div'))
-    const longPresDelay = 500
 
     const {
       clearExpression,
@@ -41,8 +40,7 @@ export default {
     return {
       isSum,
       deleteRef,
-      handleTouch,
-      longPresDelay
+      handleTouch
     }
   }
 }
@@ -89,13 +87,13 @@ div
 
     .calcItem._act(@click="handleTouch('/')")
       .calcItem__in /
-    .calcItem._clear(@click="handleTouch('.')")
+    .calcItem._dot(@click="handleTouch('.')")
       .calcItem__in .
     .calcItem._num(@click="handleTouch('0')")
       .calcItem__in 0
     .calcItem._clear(
       ref="deleteRef"
-      :data-long-press-delay="longPresDelay"
+      data-long-press-delay="300"
       @click="handleTouch('delete')"
     )
       .calcItem__in <
@@ -152,6 +150,7 @@ div
     border-right 0
     background var(--c-bg-4)
     border-radius 50%
+    user-select none
 
     @media $media-phone-normal
       padding $m8
@@ -165,6 +164,7 @@ div
       color var(--c-font-4)
 
     ~/._clear &
+    ~/._dot &
       color var(--c-font-5)
 
     ~/._sum &

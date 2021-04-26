@@ -22,24 +22,22 @@ export default {
     show: {
       handler (isShow) {
         const initialSlide = this.$store.getters['categories/quickSelectorCategoriesIds'] && this.$store.getters['categories/quickSelectorCategoriesIds'].length > 0 ? 1 : 2
-        this.$nextTick(() => {
-          if (isShow && this.$refs.trnFormCategories) {
-            if (this.slider) {
-              this.slider.update()
-            }
-            else {
-              this.slider = new Swiper(this.$refs.trnFormCategories, {
-                observer: true,
-                slidesPerView: 1,
-                autoHeight: false,
-                initialSlide,
-                shortSwipes: false,
-                longSwipesRatio: 0.1,
-                longSwipesMs: 60
-              })
-            }
+        if (isShow && this.$refs.trnFormCategories) {
+          if (!this.slider) {
+            this.slider = new Swiper(this.$refs.trnFormCategories, {
+              observer: true,
+              slidesPerView: 1,
+              autoHeight: false,
+              initialSlide,
+              shortSwipes: false,
+              longSwipesRatio: 0.1,
+              longSwipesMs: 60
+            })
           }
-        })
+          else {
+            this.slider.update()
+          }
+        }
       },
       immediate: true
     }
@@ -47,7 +45,7 @@ export default {
 
   methods: {
     handleCategoryClick (categoryId) {
-      if (this.$store.getters['categories/getChildCategoriesIds'](categoryId).length > 0) {
+      if (this.$store.getters['categories/isCategoryHasChildren'](categoryId)) {
         this.$store.commit('trnForm/setTrnFormModalCategoryId', categoryId)
         this.$store.commit('trnForm/showTrnFormModal', 'categoriesChild')
       }
@@ -71,11 +69,11 @@ export default {
     .menuItem(
       :class="{ _active: slider.activeIndex === 1 }"
       @click="slider.slideTo(1)"
-    ) {{ $t('categories.favoriteTitle') }}
+    ) {{ $t('categories.allTitle') }}
     .menuItem(
       :class="{ _active: slider.activeIndex === 2 }"
       @click="slider.slideTo(2)"
-    ) {{ $t('categories.allTitle') }}
+    ) {{ $t('categories.favoriteTitle') }}
 
   .contentWrap__box
     .swiper-container(ref="trnFormCategories")
@@ -93,6 +91,14 @@ export default {
           )
 
         .swiper-slide
+          .scrollBlock.waitForScrollSlider
+            CategoriesView(
+              :ids="$store.getters['categories/categoriesRootIds']"
+              :noPaddingBottom="true"
+              @onClick="handleCategoryClick"
+            )
+
+        .swiper-slide
           .scrollBlock.waitForScrollSlider(
             v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length"
           )
@@ -102,14 +108,6 @@ export default {
               :noPaddingBottom="true"
               @onClick="handleCategoryClick"
               ui="_flat"
-            )
-
-        .swiper-slide
-          .scrollBlock.waitForScrollSlider
-            CategoriesView(
-              :ids="$store.getters['categories/categoriesRootIds']"
-              :noPaddingBottom="true"
-              @onClick="handleCategoryClick"
             )
 </template>
 

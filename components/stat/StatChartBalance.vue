@@ -179,10 +179,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/fonts"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables'
 
 $background = var(--c-bg-4)
 $border = var(--c-bg-1)

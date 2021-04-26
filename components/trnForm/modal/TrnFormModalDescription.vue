@@ -31,23 +31,22 @@ export default {
   methods: {
     handleCancel () {
       this.description = null
-      this.$store.commit('trnForm/toogleTrnFormModal', 'description')
+      this.$store.commit('trnForm/closeTrnFormModal', 'description')
     },
     handleSave () {
       this.$store.commit('trnForm/setTrnFormValues', { description: this.description })
-      this.$store.commit('trnForm/toogleTrnFormModal', 'description')
+      this.$store.commit('trnForm/closeTrnFormModal', 'description')
     }
   }
 }
 </script>
 
 <template lang="pug">
-LazyTrnFormModal.doNotCloseTrnModal(
-  v-if="isShow"
+TrnFormModal(
   :isShow="isShow"
   :position="$store.state.ui.mobile ? 'bottom' : null"
   :title="$t('trnForm.description.title')"
-  @onClose="$store.commit('trnForm/toogleTrnFormModal', 'description')"
+  @onClose="$store.commit('trnForm/closeTrnFormModal', 'description')"
 )
   .description
     .description__filed
