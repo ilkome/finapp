@@ -45,8 +45,7 @@ export default {
 </script>
 
 <template lang="pug">
-LazyTrnFormModal.doNotCloseTrnModal(
-  v-if="isShow"
+TrnFormModal.doNotCloseTrnModal(
   :isShow="isShow"
   title="Date"
   @onClose="$store.commit('trnForm/closeTrnFormModal', 'calendar')"
