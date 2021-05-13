@@ -69,7 +69,7 @@ export default {
             :category="$store.state.categories.items[categoryId]"
             :categoryId="categoryId"
             :currency="$store.state.currencies.base"
-            :type="0"
+            :type="item.type"
             :key="categoryId"
             :total="statCurrentPeriod.categories[categoryId][item.id]")
 </template>
