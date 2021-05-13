@@ -180,16 +180,21 @@ Portal(to="modal")
 
 .trnFormModal
   z-index 100
-  position fixed
-  left 0
-  width 100%
+  position absolute
+
+  @media $media-laptop
+    position absolute
+    display grid
+    margin $m7
+    border-radius 16px
 
   @media $media-phone
+    left 0
     bottom 0
 
   @media $media-laptop
     top 0
-    left 0px
+    right 0
 
   &__overflow
     position fixed
@@ -210,16 +215,18 @@ Portal(to="modal")
     flex-grow 1
     flex-flow column nowrap
     background var(--color-bg-canvas)
-    border-radius $m6
+
+    @media $media-phone
+      border-radius $m7 $m7 0 0
+
+    @media $media-laptop
+      align-self center
+      width 400px
+      margin 0 auto
+      border-radius $m7
 
     &._anim
       anim(200ms)
-
-    @media $media-phone
-      border-radius $m6 $m6 0 0
-
-    /.light-mode &
-      background var(--c-bg-2)
 
   &__scroll
     overflow hidden
