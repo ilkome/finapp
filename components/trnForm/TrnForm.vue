@@ -46,9 +46,8 @@ export default {
      */
     const slider = ref<any>(null)
     const sliderObj = ref<any>(null)
-    const { clearExpression } = useCalculator()
-
     const maxHeight = ref('550px')
+    const { clearExpression } = useCalculator()
 
     function setTrnFormHeight () {
       const el = document.querySelector('.getHeight')
@@ -60,8 +59,6 @@ export default {
       const observer = new ResizeObserver((entries) => {
         for (const entry of entries) {
           const height = entry.contentRect.height
-          console.log('height', height)
-
           store.commit('trnForm/setTrnFormHeight', height)
           maxHeight.value = `${height}px`
         }
@@ -75,30 +72,31 @@ export default {
     const { isShow } = toRefs(props)
     watch(isShow, (value) => {
       if (value) {
-        if (!sliderObj.value) {
-          sliderObj.value = new Swiper(slider.value, {
-            observer: true,
-            observeParents: true,
-            slidesPerView: 1,
-            autoHeight: true,
-            initialSlide: 1,
-            noSwipingClass: 'trnFormNoSwiping',
-            shortSwipes: false,
-            longSwipesRatio: 0.1,
-            longSwipesMs: 60,
-            pagination: {
-              el: '.trnForm__pagination',
-              clickable: true
-            }
-          })
-          setTrnFormHeight()
-        }
-
         setTimeout(() => {
-          initTouchModal({
-            ...toRefs(wrappers),
-            onClose: () => store.dispatch('trnForm/closeTrnForm')
-          })
+          if (!sliderObj.value) {
+            sliderObj.value = new Swiper(slider.value, {
+              init: false,
+              observer: true,
+              observeParents: true,
+              slidesPerView: 1,
+              autoHeight: true,
+              initialSlide: 1,
+              noSwipingClass: 'trnFormNoSwiping',
+              shortSwipes: false,
+              longSwipesRatio: 0.1,
+              longSwipesMs: 60,
+              pagination: {
+                el: '.trnForm__pagination',
+                clickable: true
+              }
+            })
+            setTrnFormHeight()
+            sliderObj.value.init()
+            initTouchModal({
+              ...toRefs(wrappers),
+              onClose: () => store.dispatch('trnForm/closeTrnForm')
+            })
+          }
         }, 10)
       }
       else {
