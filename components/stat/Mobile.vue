@@ -1,6 +1,6 @@
 <script lang="ts">
 import dayjs from 'dayjs'
-import { computed, reactive, watch, useContext } from '@nuxtjs/composition-api'
+import { computed, useContext } from '@nuxtjs/composition-api'
 import useUIView from '~/components/layout/useUIView'
 import useStat from '~/modules/stat/useStat'
 import getStat from '~/modules/stat/getStat'
@@ -65,7 +65,7 @@ export default {
       }
 
       const cats = computed(() => store.state.categories.items)
-      let ddddd = JSON.parse(JSON.stringify(statCurrentPeriod.value))
+      let stat = JSON.parse(JSON.stringify(statCurrentPeriod.value))
 
       let incomesIDs = []
       let expensesIDs = []
@@ -73,7 +73,7 @@ export default {
       for (const catId in currentAndLastPeriodStat.value.categories) {
         if (filter.value.categoryId) { break }
         if (!statCurrentPeriod.value.categories[catId]) {
-          ddddd.categories[catId] = {
+          stat.categories[catId] = {
             expenses: 0,
             incomes: 0,
             total: 0
@@ -98,19 +98,19 @@ export default {
         return 0
       })
 
-      ddddd = {
-        ...ddddd,
+      stat = {
+        ...stat,
         incomes: {
-          ...ddddd.incomes,
-          categoriesIds: [...ddddd.incomes.categoriesIds, ...incomesIDs]
+          ...stat.incomes,
+          categoriesIds: [...stat.incomes.categoriesIds, ...incomesIDs]
         },
         expenses: {
-          ...ddddd.expenses,
-          categoriesIds: [...ddddd.expenses.categoriesIds, ...expensesIDs]
+          ...stat.expenses,
+          categoriesIds: [...stat.expenses.categoriesIds, ...expensesIDs]
         }
       }
 
-      return ddddd
+      return stat
     })
 
     return {
@@ -344,7 +344,7 @@ export default {
     display flex
     align-items center
     padding $m6 $m6
-    color var(--c-font-4)
+    color var(--c-font-3)
     font-size 10px
     letter-spacing 1px
     font-weight 600

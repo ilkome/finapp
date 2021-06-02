@@ -176,6 +176,15 @@ export default function useOnTouch () {
     isDragging = false
     isDrugByHandler = false
 
+    if (!container.value) {
+      currentY = 0
+      wrap.value.style.transform = ''
+      wrap.value.style.opacity = ''
+      overflow.value.style.opacity = ''
+      if (onClose) { onClose() }
+      return
+    }
+
     currentY = container.value.clientHeight
     wrap.value.classList.add(config.animClassName)
     wrap.value.style.opacity = 0
