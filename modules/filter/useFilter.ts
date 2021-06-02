@@ -6,7 +6,7 @@ export default function useFilter () {
 
   function scrollTop () {
     const page = document.querySelector('.pageWrapScroll')
-    page.scrollTop = 0
+    if (page) page.scrollTop = 0
   }
 
   function setCategoryFilter (id) {
