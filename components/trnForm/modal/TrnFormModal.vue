@@ -181,6 +181,7 @@ Portal(to="modal")
 .trnFormModal
   z-index 100
   position absolute
+  width 100%
 
   @media $media-laptop
     position absolute
@@ -206,7 +207,7 @@ Portal(to="modal")
     anim()
 
     @media $media-laptop
-      display none
+      opacity .1
 
   &__wrap
     overflow hidden

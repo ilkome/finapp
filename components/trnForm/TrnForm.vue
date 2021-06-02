@@ -66,38 +66,42 @@ export default {
       observer.observe(el)
     }
 
+    function init () {
+      if (!sliderObj.value) {
+        setTimeout(() => {
+          sliderObj.value = new Swiper(slider.value, {
+            init: false,
+            observer: true,
+            observeParents: true,
+            slidesPerView: 1,
+            autoHeight: true,
+            initialSlide: 1,
+            noSwipingClass: 'trnFormNoSwiping',
+            shortSwipes: false,
+            longSwipesRatio: 0.1,
+            longSwipesMs: 60,
+            pagination: {
+              el: '.trnForm__pagination',
+              clickable: true
+            }
+          })
+          setTrnFormHeight()
+          sliderObj.value.init()
+          initTouchModal({
+            ...toRefs(wrappers),
+            onClose: () => store.dispatch('trnForm/closeTrnForm')
+          })
+        }, 10)
+      }
+    }
+
     /**
      * isShow
      */
     const { isShow } = toRefs(props)
     watch(isShow, (value) => {
       if (value) {
-        setTimeout(() => {
-          if (!sliderObj.value) {
-            sliderObj.value = new Swiper(slider.value, {
-              init: false,
-              observer: true,
-              observeParents: true,
-              slidesPerView: 1,
-              autoHeight: true,
-              initialSlide: 1,
-              noSwipingClass: 'trnFormNoSwiping',
-              shortSwipes: false,
-              longSwipesRatio: 0.1,
-              longSwipesMs: 60,
-              pagination: {
-                el: '.trnForm__pagination',
-                clickable: true
-              }
-            })
-            setTrnFormHeight()
-            sliderObj.value.init()
-            initTouchModal({
-              ...toRefs(wrappers),
-              onClose: () => store.dispatch('trnForm/closeTrnForm')
-            })
-          }
-        }, 10)
+        init()
       }
       else {
         if (sliderObj.value) {

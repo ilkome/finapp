@@ -1,5 +1,5 @@
 .trnForm
-  @media $media-phone
+  @media (max-width 999px)
     overflow hidden
     z-index 10
     position fixed
@@ -21,7 +21,7 @@
     height 100%
     background var(--c-bg-14)
 
-    @media $media-phone
+    @media (max-width 999px)
       position fixed
       right 0
       bottom 0
@@ -41,9 +41,10 @@
     margin 0 auto
     background var(--c-bg-4)
 
-    @media $media-phone
+    @media (max-width 999px)
+      max-width 500px
       max-height calc(100vh - 24px)
-      margin-left auto
+      margin 0 auto
 
     @media $media-laptop
       align-self center
