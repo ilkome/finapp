@@ -19,6 +19,7 @@ module.exports = {
       'stroustrup', {
         allowSingleLine: true
       }
-    ]
+    ],
+    curly: ['error', 'multi-line']
   }
 }
