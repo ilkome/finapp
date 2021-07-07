@@ -4,9 +4,6 @@ module.exports = {
     browser: true,
     node: true
   },
-  parserOptions: {
-    parser: '@typescript-eslint/parser'
-  },
   extends: [
     'plugin:nuxt/recommended',
     '@nuxtjs/eslint-config-typescript'
@@ -20,6 +17,8 @@ module.exports = {
         allowSingleLine: true
       }
     ],
-    curly: ['error', 'multi-line']
+    curly: ['error', 'multi-or-nest', 'consistent'],
+    'object-curly-spacing': ['error', 'always'],
+    'template-curly-spacing': 'error'
   }
 }
