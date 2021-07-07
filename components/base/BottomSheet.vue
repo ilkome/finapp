@@ -1,0 +1,433 @@
+<script lang="ts">
+import { ref, computed, watch, defineComponent, nextTick } from '@nuxtjs/composition-api'
+import { useEventListener } from '@vueuse/core'
+
+export default defineComponent({
+  props: {
+    keepAlive: { type: Boolean, default: false },
+    show: { type: Boolean, default: false }
+  },
+
+  setup (props, { emit }) {
+    // settings
+    const settings = {
+      moveToCloseOffset: 50,
+      debounceOffset: 10
+    }
+
+    // elements
+    const drug = ref<Element | null>(null)
+    const container = ref<HTMLElement | null>(null)
+    const handler = ref<HTMLElement | null>(null)
+
+    // state
+    const initialY = ref(0)
+    const clientY = ref(0)
+    const isDraging = ref(true)
+    const direction = ref('up')
+    const isHandler = ref(false)
+
+    const disabled = ref(true)
+    const opened = ref(false)
+    const isEventsInited = ref(false)
+
+    const debug = ref({
+      status: 'standby',
+      direction: computed(() => direction.value),
+      diffHeight: computed(() => diffHeight.value),
+      diffHeightWithDebounce: computed(() => diffHeightWithDebounce.value),
+      nextCurrentY: computed(() => nextCurrentY.value)
+    })
+
+    /**
+     * Next current y
+     */
+    const nextCurrentY = computed(() => clientY.value - initialY.value)
+
+    /**
+     * Debounce drug
+     */
+    const debounce = computed(() => disabled.value || isHandler.value ? 0 : settings.debounceOffset)
+
+    /**
+     * Drug styles
+     */
+    const drugStyles = computed(() => {
+      const modalHeightBase = drug.value?.querySelector('.modalHeightBase')
+      if (nextCurrentY.value <= debounce.value) {
+        return {
+          maxHeight: modalHeightBase ? `${modalHeightBase.clientHeight}px` : 'auto'
+        }
+      }
+
+      return {
+        transform: `translateY(${nextCurrentY.value - debounce.value}px)`,
+        maxHeight: modalHeightBase ? `${modalHeightBase.clientHeight}px` : 'auto'
+      }
+    })
+
+    /**
+     * Diff height
+     */
+    const diffHeight = computed(() => {
+      const containerHeight = drug.value?.clientHeight
+      const handlerHeight = handler.value?.clientHeight
+      return Math.round((containerHeight + handlerHeight - nextCurrentY.value) / (containerHeight / 100))
+    })
+
+    /**
+     * Diff height with debounce
+     */
+    const diffHeightWithDebounce = computed(() => {
+      const containerHeight = drug.value?.clientHeight
+      const handlerHeight = handler.value?.clientHeight
+      return Math.round((containerHeight + handlerHeight - nextCurrentY.value + debounce.value) / (containerHeight / 100))
+    })
+
+    /**
+     * Overlay Opacity
+     */
+    const overlayStyles = computed(() => {
+      let opacity = 1
+
+      if (nextCurrentY.value <= debounce.value)
+        return
+
+      if (diffHeight.value < 0 || diffHeight.value > 100) {
+        opacity = nextCurrentY.value <= 100 ? 1 : 0
+      }
+      else {
+        opacity = Number(diffHeightWithDebounce.value >= 100
+          ? 1
+          : diffHeightWithDebounce.value >= 10
+            ? `0.${diffHeightWithDebounce.value}`
+            : `0.0${diffHeightWithDebounce.value}`
+        )
+      }
+
+      return {
+        opacity
+      }
+    })
+
+    /**
+     * Get client Y
+     */
+    function getClientY (event): number {
+      return event.type.includes('touch')
+        ? Math.round(event.touches[0].clientY)
+        : event.clientY
+    }
+
+    /**
+     * Content has scroll
+     */
+    function contentHasScroll (event): boolean {
+      // Handle scroll inside slider
+      const swiperSlideActive = drug.value?.querySelector('.swiper-slide-active')
+      if (swiperSlideActive) {
+        const scrollerBlock = swiperSlideActive.querySelector('.scrollerBlock')
+        if (scrollerBlock)
+          return scrollerBlock.scrollTop > 0 && event.type.includes('touch')
+      }
+
+      const scrollerBlock = drug.value?.querySelector('.scrollerBlock')
+      if (!swiperSlideActive && scrollerBlock)
+        return scrollerBlock.scrollTop > 0 && event.type.includes('touch')
+    }
+
+    /**
+     * Drag start
+     */
+    function onDragStart (event): void {
+      if (disabled.value)
+        return
+
+      isHandler.value = event.target.classList.contains('handler')
+      const isTarget = event.target.closest('.drug')
+      const isHasScroll = contentHasScroll(event)
+
+      if ((!isTarget || isHasScroll) && !isHandler.value) {
+        isDraging.value = false
+        return
+      }
+
+      clientY.value = getClientY(event)
+      initialY.value = clientY.value + initialY.value
+      isDraging.value = true
+    }
+
+    /**
+     * Dragging
+     */
+    function onDragging (event): void {
+      if (disabled.value)
+        return
+
+      const isHasScroll = contentHasScroll(event)
+
+      if (isHasScroll && !isHandler.value) {
+        isDraging.value = false
+        initialY.value = 0
+        clientY.value = 0
+        return
+      }
+
+      // drug on pc only by nadler drug on mobile everywhere
+      // if (isDraging.value && ((!isHandler.value && event.type.includes('touch') || isHandler.value)))
+      //   clientY.value = getClientY(event)
+
+      if (isDraging.value)
+        clientY.value = getClientY(event)
+
+      nextCurrentY.value >= settings.moveToCloseOffset && direction.value === 'down'
+        ? debug.value.status = 'will close'
+        : debug.value.status = 'will open'
+    }
+
+    /**
+     * Drag end
+     */
+    function onDragEnd (): void {
+      if (disabled.value || !isDraging.value)
+        return
+
+      nextCurrentY.value >= settings.moveToCloseOffset && direction.value === 'down'
+        ? close()
+        : open()
+    }
+
+    /**
+     * Clear
+     */
+    function clear () {
+      clientY.value = 0
+      isDraging.value = false
+    }
+
+    /**
+     * Close modal
+     */
+    function close () {
+      clear()
+      initialY.value = -(drug.value.clientHeight + handler.value.clientHeight)
+    }
+
+    /**
+     * Open modal
+     */
+    function open () {
+      clear()
+      opened.value = true
+      initialY.value = 0
+    }
+
+    /**
+     * Scroll up all scroller blocks
+     */
+    function scrollUpAllScrollers () {
+      const scrollerBlocks = drug.value?.querySelectorAll('.scrollerBlock')
+      if (scrollerBlocks) {
+        scrollerBlocks.forEach((el) => {
+          el.scrollTop = 0
+        })
+      }
+    }
+
+    /**
+     * On close modal
+     */
+    function onClose () {
+      scrollUpAllScrollers()
+      drug.value.removeEventListener('transitionend', onClose)
+      opened.value = false
+      emit('closed')
+    }
+
+    /**
+     * Add events listeners
+     */
+    function addEvents () {
+      isEventsInited.value = true
+
+      // Touch
+      useEventListener(container, 'touchstart', onDragStart, { passive: true })
+      useEventListener(container, 'touchmove', onDragging, { passive: true })
+      useEventListener(container, 'touchend', onDragEnd, { passive: true })
+
+      // Mouse
+      useEventListener(container, 'mousedown', onDragStart, { passive: true })
+      useEventListener(document, 'mousemove', onDragging, { passive: true })
+
+      // Mouse: Finish drag event only when mouse released
+      useEventListener(container, 'mouseup', onDragEnd, { passive: true })
+      useEventListener(document, 'mouseleave', onDragEnd, { passive: true })
+    }
+
+    /**
+     * Init modal
+     */
+    async function init () {
+      await nextTick()
+      initialY.value = -(drug.value.clientHeight + handler.value.clientHeight)
+
+      if (!isEventsInited.value)
+        addEvents()
+
+      disabled.value = false
+      await nextTick()
+      open()
+    }
+
+    /**
+     * Watch for diff height
+     */
+    watch(diffHeight, () => {
+      if (isDraging.value)
+        return
+
+      if (diffHeight.value === 0) {
+        disabled.value = true
+        useEventListener(drug, 'transitionend', onClose, { passive: true })
+      }
+      else {
+        disabled.value = false
+      }
+    })
+
+    /**
+     * Watch for nextCurrent Y
+     */
+    watch(() => nextCurrentY.value, (current, prev) => {
+      current > prev
+        ? direction.value = 'down'
+        : direction.value = 'up'
+    })
+
+    /**
+     * Run init when mounted or show changed
+     */
+    watch(() => props.show, async (show) => {
+      if ((props.keepAlive && show) || !props.keepAlive)
+        await init()
+    }, { immediate: true })
+
+    return {
+      opened,
+      debug,
+      isDraging,
+      open,
+      close,
+      overlayStyles,
+      drugStyles,
+      drug,
+      handler,
+      container
+    }
+  }
+})
+</script>
+
+<template lang="pug">
+.container(
+  ref="container"
+  :class="{ _hidden: !opened }"
+)
+  .overflow(
+    @click="close()"
+    :class="{ _anim: !isDraging && opened, _hidden: !opened }"
+    :style="overlayStyles"
+  )
+
+  .drug(
+    ref="drug"
+    :class="{ _anim: !isDraging && opened }"
+    :style="drugStyles"
+  )
+    .handler(ref="handler")
+      slot(name="handler") Handler
+
+    .scroll
+      slot(:close="close")
+      //- .info
+      //-   .info__item Status: {{ debug.status }}
+      //-   .info__item Direction: {{ debug.direction }}
+      //-   .info__item DiffHeight: {{ debug.diffHeight }}
+      //-   .info__item DiffHeightWithDebounce: {{ debug.diffHeightWithDebounce }}
+      //-   .info__item NextCurrentY: {{ debug.nextCurrentY }}
+</template>
+
+<style lang="stylus" scoped>
+.info
+  padding 20px
+
+  &__item
+    padding-bottom 10px
+
+    &:last-child
+      padding-bottom 0
+
+.container
+  overflow hidden
+  position absolute
+  top 0
+  left 0
+  width 100%
+  height 100%
+  height 100%
+  user-select none
+
+  &._hidden
+    visibility hidden
+    opacity 0
+    pointer-events none
+
+.overflow
+  overflow hidden
+  position absolute
+  left 0
+  bottom 0
+  width 100%
+  height 100%
+  background rgba(0, 0, 0, .8)
+  backdrop-filter blur(6px)
+
+  &._anim
+    transition opacity 250ms ease
+
+  &._hidden
+    opacity 0
+    pointer-events none
+
+.drug
+  z-index 2
+  position absolute
+  left 0
+  bottom 0
+  width 100%
+  height 100%
+  max-height 90vh
+
+  &._anim
+    transition transform 150ms ease-out
+
+.scroll
+  overflow hidden
+  height 100%
+  background #fff
+  user-select none
+
+.handler
+  position absolute
+  top 0
+  left 0
+  display flex
+  align-items center
+  justify-content center
+  width 100%
+  height 30px
+  color #fff
+  background #b81414ff
+  transform translateY(-100%)
+  user-select none
+</style>
