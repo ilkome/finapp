@@ -179,8 +179,8 @@ export default {
     shortTitle: 'Cats',
     new: 'New category',
     allTitle: 'All',
-    lastUsedTitle: 'Last used',
-    favoriteTitle: 'Favorite categories',
+    lastUsedTitle: 'Recent',
+    favoriteTitle: 'Favorite',
     createNewTitle: 'Create new category',
     editTitle: 'Edit category',
     form: {
