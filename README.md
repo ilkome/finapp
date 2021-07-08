@@ -1,34 +1,32 @@
 <p align="center"><img align="center" style="width:320px" src="https://finapp.ilko.me/icon.png"/></p><br/>
 
 # Open source finance application
-> Written with Vue and Firebase.
-
 Finapp helps you to control personal finances easily and efficiently.
 
 This is Finapp 3. For the 2.x see the [2 branch](https://github.com/ilkome/finapp).
 
-## Demo
+# 🕹 Demo
 [finapp.ilko.me](https://finapp.ilko.me/)
 
 
-## Screenshots
+# 🏞 Screenshots
 ![Finapp 2.0.0](https://firebasestorage.googleapis.com/v0/b/finapp-17474.appspot.com/o/2.0.0%2Ffinapp-2.0.0-promo.png?alt=media&token=bce821da-f5fa-4e8a-be7a-8fc0ebfaf260)
 
-## Futures
+# 🚀 Features
 - Works offline on all devices (Service Worker): you can see all your data. Create, edit and delete transactions.
 - Instant synchronisation between all device (Firebase).
 - Optimised for mobile and PC.
 - Themes: dark and white.
 - Support multiple currencies with auto conversion.
 
-## Technologies
+# 🦄 Technologies
 - Vue
 - Nuxt
 - Stylus
 - Pug
 - Firebase
 
-## Setup
+# 📦 Setup
 
 ### Project setup
 ``` bash
@@ -71,7 +69,7 @@ $ npm install
 }
 ```
 - Go to the Project Overview and click Add Firebase to your web app.
-- You need to replace config in app's directory `/src/firebase.js` with your properties.
+- You need to replace config in app's directory `/src/firebase.js` with your config.
 ``` bash
 apiKey: 'YOUR_CONFIG',
 authDomain: 'YOUR_CONFIG',
@@ -106,8 +104,9 @@ $ npm run upload
 $ npm run upload-min
 ```
 
-## Stay In Touch 🤪
-I would like to speak with you about Finapp. I'm interested in working on awesome projects.
-- [Telegram](https://t.me/ilkome)
-- [VK](https://www.vk.com/ilkome)
-- [Facebook](https://www.facebook.com/ilkome)
+# 🤪 Stay In Touch
+I would like to speak with you about Finapp. I'm looking for awesome projects.
+- [My Telegram](https://t.me/ilkome)
+
+# 📄 License
+[MIT License](https://github.com/ilkome/finapp/blob/main/LICENSE)
