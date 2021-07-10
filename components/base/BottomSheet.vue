@@ -11,8 +11,8 @@ export default defineComponent({
   setup (props, { emit }) {
     // settings
     const settings = {
-      moveToCloseOffset: 50,
-      debounceOffset: 10
+      moveToCloseOffset: 100,
+      debounceOffset: 20
     }
 
     // elements
@@ -53,16 +53,15 @@ export default defineComponent({
      * Drug styles
      */
     const drugStyles = computed(() => {
-      const modalHeightBase = drug.value?.querySelector('.modalHeightBase')
       if (nextCurrentY.value <= debounce.value) {
         return {
-          maxHeight: modalHeightBase ? `${modalHeightBase.clientHeight}px` : 'auto'
+          opacity: 1
         }
       }
 
       return {
-        transform: `translateY(${nextCurrentY.value - debounce.value}px)`,
-        maxHeight: modalHeightBase ? `${modalHeightBase.clientHeight}px` : 'auto'
+        transform: `translateX(-50%) translateY(${nextCurrentY.value - debounce.value}px)`,
+        ...overlayStyles.value
       }
     })
 
@@ -270,11 +269,11 @@ export default defineComponent({
     async function init () {
       await nextTick()
       initialY.value = -(drug.value.clientHeight + handler.value.clientHeight)
+      disabled.value = false
 
       if (!isEventsInited.value)
         addEvents()
 
-      disabled.value = false
       await nextTick()
       open()
     }
@@ -307,22 +306,26 @@ export default defineComponent({
     /**
      * Run init when mounted or show changed
      */
-    watch(() => props.show, async (show) => {
-      if ((props.keepAlive && show) || !props.keepAlive)
+    watch(() => props.show, async () => {
+      if (!props.keepAlive || (props.keepAlive && props.show))
         await init()
+
+      if (props.keepAlive && !props.show && opened.value)
+        close()
     }, { immediate: true })
 
     return {
+      container,
+      drug,
+      handler,
+
       opened,
       debug,
       isDraging,
       open,
       close,
       overlayStyles,
-      drugStyles,
-      drug,
-      handler,
-      container
+      drugStyles
     }
   }
 })
@@ -341,20 +344,21 @@ export default defineComponent({
 
   .drug(
     ref="drug"
-    :class="{ _anim: !isDraging && opened }"
+    :class="{ _anim: !isDraging && opened, _drug: isDraging && drugStyles.transform }"
     :style="drugStyles"
   )
     .handler(ref="handler")
-      slot(name="handler") Handler
+      slot(name="handler" :close="close")
 
     .scroll
       slot(:close="close")
-      //- .info
-      //-   .info__item Status: {{ debug.status }}
-      //-   .info__item Direction: {{ debug.direction }}
-      //-   .info__item DiffHeight: {{ debug.diffHeight }}
-      //-   .info__item DiffHeightWithDebounce: {{ debug.diffHeightWithDebounce }}
-      //-   .info__item NextCurrentY: {{ debug.nextCurrentY }}
+        .info
+          .info__item Status: {{ debug.status }}
+          .info__item Direction: {{ debug.direction }}
+          .info__item DiffHeight: {{ debug.diffHeight }}
+          .info__item DiffHeightWithDebounce: {{ debug.diffHeightWithDebounce }}
+          .info__item NextCurrentY: {{ debug.nextCurrentY }}
+          .info__item drugStyles: {{ drugStyles.transform }}
 </template>
 
 <style lang="stylus" scoped>
@@ -369,6 +373,7 @@ export default defineComponent({
 
 .container
   overflow hidden
+  z-index 1000
   position absolute
   top 0
   left 0
@@ -384,6 +389,7 @@ export default defineComponent({
 
 .overflow
   overflow hidden
+  z-index 10
   position absolute
   left 0
   bottom 0
@@ -400,34 +406,29 @@ export default defineComponent({
     pointer-events none
 
 .drug
-  z-index 2
+  z-index 20
   position absolute
-  left 0
   bottom 0
   width 100%
-  height 100%
-  max-height 90vh
+  height auto
+  max-width 600px
+  left 50%
+  transform translateX(-50%)
+  // max-height 90vh
 
   &._anim
-    transition transform 150ms ease-out
+    transition transform 150ms ease-out, opacity 150ms ease-out
+
+  &._drug
+    user-select none
+    pointer-events none
 
 .scroll
   overflow hidden
+  display grid
   height 100%
-  background #fff
   user-select none
 
 .handler
-  position absolute
-  top 0
-  left 0
-  display flex
-  align-items center
-  justify-content center
-  width 100%
-  height 30px
-  color #fff
-  background #b81414ff
-  transform translateY(-100%)
   user-select none
 </style>
