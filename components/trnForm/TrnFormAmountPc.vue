@@ -55,8 +55,6 @@ export default {
 
 .trnFormAmountPc
   background var(--c-bg-3)
-  border-top 1px solid var(--c-bg-2)
-  border-bottom 1px solid var(--c-bg-2)
 
 .trnFormAmount._incomes .trnFormAmountPc__input__value
   color var(--c-incomes-1)

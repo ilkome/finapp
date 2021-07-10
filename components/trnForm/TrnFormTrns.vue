@@ -77,16 +77,15 @@ export default {
       })
 
       // from category
-      if (this.categoryId) {
+      if (this.categoryId)
         trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === this.categoryId)
-      }
 
       // filter type
-      if (this.incomes) { trnsIds = trnsIds.filter(id => trns[id].type === 1) }
-      if (this.expenses) { trnsIds = trnsIds.filter(id => trns[id].type === 0) }
+      if (this.incomes) trnsIds = trnsIds.filter(id => trns[id].type === 1)
+      if (this.expenses) trnsIds = trnsIds.filter(id => trns[id].type === 0)
 
       // limit
-      if (this.limit > 0) { return trnsIds.slice(0, this.limit) }
+      if (this.limit > 0) return trnsIds.slice(0, this.limit)
       return trnsIds
     },
 
@@ -101,12 +100,11 @@ export default {
           ? dayDate = this.$day(trns[trnId].edited).startOf('day').valueOf()
           : dayDate = this.$day(trns[trnId].date).startOf('day').valueOf()
 
-        if (!trnsList[dayDate]) {
+        if (!trnsList[dayDate])
           trnsList[dayDate] = [trnId]
-        }
-        else {
+
+        else
           trnsList[dayDate].push(trnId)
-        }
       }
       return trnsList
     }
@@ -149,7 +147,7 @@ export default {
     .menuItem(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
     .menuItem(@click="changeFilter('all')" :class="{ _active: filterBy === 'all' }") {{ $t('trnForm.filterAll') }}
 
-  .contentWrap__box.trnsListScroll.waitForScrollSlider
+  .contentWrap__box.trnsListScroll.scrollerBlock
     .container(v-if="trnsIds.length === 0") No transactions
 
     .scrollBlock

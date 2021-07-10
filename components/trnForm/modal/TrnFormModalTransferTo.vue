@@ -1,36 +1,48 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { useContext } from '@nuxtjs/composition-api'
 
 export default {
   name: 'TrnFormModalTransferTo',
 
   setup () {
     const { store } = useContext()
-    const isShow = computed(() => store.state.trnForm.modal.transferTo)
 
-    function setWalletToId (walletId) {
-      store.commit('trnForm/closeTrnFormModal', 'transferTo')
+    function onClickWallet (walletId, close) {
       store.commit('trnForm/setTrnFormValues', {
         walletToId: walletId,
         walletId
       })
+      close()
+    }
+
+    function afterClose () {
+      store.commit('trnForm/closeTrnFormModal', 'transferTo')
     }
 
     return {
-      isShow,
-      setWalletToId
+      onClickWallet,
+      afterClose
     }
   }
 }
 </script>
 
 <template lang="pug">
-LazyTrnFormModal.doNotCloseTrnModal(
-  v-if="isShow"
-  :isShow="isShow"
-  title="Transfer to wallet"
-  position="bottom"
-  @onClose="$store.commit('trnForm/closeTrnFormModal', 'transferTo')"
-)
-  WalletsList3(@onClick="setWalletToId")
+TrnFormModal(@closed="afterClose")
+  template(#header)
+    template Transfer to wallet
+
+  template(#default="{ close }")
+    .trnFormWalletsList.scrollerBlock
+      WalletsList3(@onClick="walletId => onClickWallet(walletId, close)")
 </template>
+
+<style lang="stylus">
+@import '~assets/stylus/variables'
+
+.trnFormWalletsList
+  overflow hidden
+  overflow-y auto
+  height 100%
+  padding-bottom 16px
+</style>

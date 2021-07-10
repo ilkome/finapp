@@ -60,15 +60,14 @@ export default {
   font-roboto()
   text-align center
   border 1px solid transparent
-  border-radius 50px
+  anim()
 
-  &:active
+  +media-hover()
     color var(--c-font-2)
-    background var(--c-blue-1)
+    background var(--c-bg-5)
+    border-radius 50px
 
   &._active
     cursor default
-    color var(--c-font-3)
-    background var(--c-bg-5)
-    border 1px solid var(--c-bg-5)
+    color var(--c-blue-1)
 </style>

@@ -87,12 +87,14 @@ export default {
 
     if (state.items && rootGetters['trns/hasTrns']) {
       for (const trnId of sortedTrnsIds.slice(0, 500)) {
-        if (lastCategoriesIds.length < 21) {
+        if (lastCategoriesIds.length < 12) {
           const categoryId = trns[trnId].categoryId
           const category = state.items[categoryId]
           if (category && (category.showInLastUsed || category.showInLastUsed === undefined)) {
             if (categoryId !== transferCategoryId) {
-              if (!lastCategoriesIds.includes(categoryId)) { lastCategoriesIds.push(categoryId) }
+              if (!lastCategoriesIds.includes(categoryId) && !getters.quickSelectorCategoriesIds.includes(categoryId)) {
+                lastCategoriesIds.push(categoryId)
+              }
             }
           }
         }

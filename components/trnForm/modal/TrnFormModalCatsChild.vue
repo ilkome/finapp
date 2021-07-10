@@ -1,5 +1,11 @@
 <script>
 export default {
+  data () {
+    return {
+      childSelected: false
+    }
+  },
+
   computed: {
     id () {
       return this.$store.state.trnForm.showModalCategoryId
@@ -13,34 +19,39 @@ export default {
   },
 
   methods: {
-    handleCategoryClick (categoryId) {
-      this.$store.commit('trnForm/closeTrnFormModal', 'categories')
+    handleCategoryClick (categoryId, close) {
+      this.childSelected = true
       this.$store.commit('trnForm/setTrnFormValues', { categoryId })
-      this.onClose()
+      close()
     },
 
-    onClose () {
+    afterClose () {
+      if (this.childSelected)
+        this.$store.commit('trnForm/closeTrnFormModal', 'categories')
+
       this.$store.commit('trnForm/closeTrnFormModal', 'categoriesChild')
-      setTimeout(() => {
-        this.$store.commit('trnForm/setTrnFormModalCategoryId', null)
-      }, 100)
+      this.$store.commit('trnForm/setTrnFormModalCategoryId', null)
     }
   }
 }
 </script>
 
 <template lang="pug">
-TrnFormModal.doNotCloseTrnModal(
-  :isShow="$store.state.trnForm.modal.categoriesChild"
-  :position="$store.state.ui.mobile ? 'bottom' : null"
-  :title="id && category && category.name"
-  doNotTouchClassName="doNotCloseTrnModalInside"
-  @onClose="onClose"
-)
-  template(v-if="id && category")
-    CategoriesView(
-      :ids="childCategoriesIds"
-      :noPaddingBottom="true"
-      @onClick="handleCategoryClick"
-    )
+TrnFormModal(@closed="afterClose")
+  template(#header)
+    template {{ $t('categories.title') }}
+
+  template(#default="{ close }")
+    template(v-if="id && category")
+      .pb_base
+        CategoriesView(
+          :ids="childCategoriesIds"
+          :noPaddingBottom="true"
+          @onClick="catId => handleCategoryClick(catId, close)"
+        )
 </template>
+
+<style lang="stylus">
+.pb_base
+  padding-bottom 16px
+</style>

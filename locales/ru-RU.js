@@ -1,5 +1,9 @@
 
 export default {
+  common: {
+    date: 'Дата'
+  },
+
   analytics: {
     title: 'Аналитика'
   },
@@ -182,7 +186,7 @@ export default {
     new: 'Новая категория',
     allTitle: 'Все',
     lastUsedTitle: 'Недавние',
-    favoriteTitle: 'Любимые категории',
+    favoriteTitle: 'Любимые',
     createNewTitle: 'Создание категории',
     editTitle: 'Редактирование категории',
     form: {
@@ -277,6 +281,7 @@ export default {
   },
 
   dates: {
+    twoDaysAgo: '2 дня назад',
     day: {
       current: 'Сегодня',
       today: 'Сегодня',

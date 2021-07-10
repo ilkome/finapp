@@ -13,8 +13,16 @@ export default {
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/animations'
+@import '~assets/stylus/variables'
+
+.trnFormHeader
+  display grid
+  grid-template-columns repeat(2, 1fr)
+  grid-column-gap $m7
+  grid-row-gap $m7
+  padding 0 $m7
+  padding-top 0
+  padding-bottom $m9
 
 .trnFormHeaderItem
   cursor pointer
@@ -30,18 +38,4 @@ export default {
     right $m4
     color var(--c-font-2)
     font-size 16px
-</style>
-
-<style lang="stylus">
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
-
-.trnFormHeader
-  display grid
-  grid-template-columns repeat(2, 1fr)
-  grid-column-gap $m7
-  grid-row-gap $m7
-  padding 0 $m7
-  padding-top 0
-  padding-bottom $m9
 </style>

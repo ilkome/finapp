@@ -104,9 +104,6 @@ export default {
   font-size 10px
   border-radius $m3
 
-  &:active
-    background var(--c-bg-5)
-
   +media-hover()
     color var(--c-font-2)
     background var(--c-blue-1)

@@ -1,36 +1,44 @@
 <script>
 export default {
   methods: {
-    handleSetWallet (walletId) {
-      this.$store.commit('trnForm/closeTrnFormModal', 'wallets')
+    handleSetWallet (walletId, close) {
       this.$store.commit('trnForm/setTrnFormValues', { walletId })
+      close()
+    },
+
+    afterClose () {
+      this.$store.commit('trnForm/closeTrnFormModal', 'wallets')
     }
   }
 }
 </script>
 
 <template lang="pug">
-TrnFormModal.doNotCloseTrnModal(
-  :isShow="$store.state.trnForm.modal.wallets"
-  :position="$store.state.ui.mobile ? 'bottom' : null"
-  :title="$t('wallets.title')"
-  @onClose="$store.commit('trnForm/closeTrnFormModal', 'wallets')"
-)
-  .trnFormWalletsList
-    WalletsList3(
-      :activeItemId="$store.state.trnForm.values.walletId"
-      :limit="6"
-      :showBase="false"
-      showToogle
-      ui="widget"
-      @onClick="handleSetWallet"
-    )
+TrnFormModal(@closed="afterClose")
+  template(#header)
+    template {{ $t('wallets.title') }}
+
+  template(#default="{ close }")
+    .trnFormWalletsList.scrollerBlock
+      WalletsList3(
+        :activeItemId="$store.state.trnForm.values.walletId"
+        :limit="6"
+        :showBase="false"
+        showToogle
+        ui="widget"
+        @onClick="walletId => handleSetWallet(walletId, close)"
+      )
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables'
 
 .trnFormWalletsList
+  overflow hidden
+  overflow-y auto
+  height 100%
+  padding-bottom 16px
+
   .walletsList__toogle
     margin 0
     padding-bottom 0

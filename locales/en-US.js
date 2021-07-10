@@ -1,4 +1,8 @@
 export default {
+  common: {
+    date: 'Date'
+  },
+
   analytics: {
     title: 'Analytics'
   },
@@ -275,6 +279,7 @@ export default {
   },
 
   dates: {
+    twoDaysAgo: '2 days ago',
     day: {
       current: 'Today',
       today: 'Today',

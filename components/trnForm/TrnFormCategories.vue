@@ -5,42 +5,25 @@ import 'swiper/swiper-bundle.css'
 export default {
   name: 'TrnFormCategories',
 
-  props: {
-    show: {
-      type: Boolean,
-      default: false
-    }
-  },
-
   data () {
     return {
       slider: null
     }
   },
 
-  watch: {
-    show: {
-      handler (isShow) {
-        const initialSlide = this.$store.getters['categories/quickSelectorCategoriesIds'] && this.$store.getters['categories/quickSelectorCategoriesIds'].length > 0 ? 1 : 2
-        if (isShow && this.$refs.trnFormCategories) {
-          if (!this.slider) {
-            this.slider = new Swiper(this.$refs.trnFormCategories, {
-              observer: true,
-              slidesPerView: 1,
-              autoHeight: false,
-              initialSlide,
-              shortSwipes: false,
-              longSwipesRatio: 0.1,
-              longSwipesMs: 60
-            })
-          }
-          else {
-            this.slider.update()
-          }
-        }
-      },
-      immediate: true
-    }
+  mounted () {
+    const initialSlide = this.$store.getters['categories/quickSelectorCategoriesIds'] && this.$store.getters['categories/quickSelectorCategoriesIds'].length > 0 ? 1 : 2
+
+    this.slider = new Swiper(this.$refs.trnFormCategories, {
+      observer: true,
+      slidesPerView: 1,
+      touchStartPreventDefault: false,
+      autoHeight: false,
+      initialSlide,
+      shortSwipes: false,
+      longSwipesRatio: 0.1,
+      longSwipesMs: 60
+    })
   },
 
   methods: {
@@ -50,8 +33,7 @@ export default {
         this.$store.commit('trnForm/showTrnFormModal', 'categoriesChild')
       }
       else {
-        this.$store.commit('trnForm/closeTrnFormModal', 'categories')
-        this.$store.commit('trnForm/closeTrnFormModal', 'categoriesChild')
+        this.$emit('closeModal')
         this.$store.commit('trnForm/setTrnFormValues', { categoryId })
       }
     }
@@ -61,6 +43,44 @@ export default {
 
 <template lang="pug">
 .contentWrap
+  .contentWrap__box
+    .swiper-container(ref="trnFormCategories")
+      .swiper-wrapper
+        .swiper-slide
+          .scrollBlock.scrollerBlock(
+            v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'] && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
+          )
+            .pb_base
+              CategoriesView(
+                :activeItemId="$store.state.trnForm.values.categoryId"
+                :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
+                :noPaddingBottom="true"
+                @onClick="handleCategoryClick"
+                ui="_flat"
+              )
+
+        .swiper-slide
+          .scrollBlock.scrollerBlock
+            .pb_base
+              CategoriesView(
+                :ids="$store.getters['categories/categoriesRootIds']"
+                :noPaddingBottom="true"
+                @onClick="handleCategoryClick"
+              )
+
+        .swiper-slide
+          .scrollBlock.scrollerBlock(
+            v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length"
+          )
+            .pb_base
+              CategoriesView(
+                :activeItemId="$store.state.trnForm.values.categoryId"
+                :ids="$store.getters['categories/quickSelectorCategoriesIds']"
+                :noPaddingBottom="true"
+                @onClick="handleCategoryClick"
+                ui="_flat"
+              )
+
   .switcherList(v-if="slider")
     .menuItem(
       :class="{ _active: slider.activeIndex === 0 }"
@@ -74,51 +94,20 @@ export default {
       :class="{ _active: slider.activeIndex === 2 }"
       @click="slider.slideTo(2)"
     ) {{ $t('categories.favoriteTitle') }}
-
-  .contentWrap__box
-    .swiper-container(ref="trnFormCategories")
-      .swiper-wrapper
-        .swiper-slide
-          .scrollBlock.waitForScrollSlider(
-            v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'] && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
-          )
-            CategoriesView(
-              :activeItemId="$store.state.trnForm.values.categoryId"
-              :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
-              :noPaddingBottom="true"
-              @onClick="handleCategoryClick"
-              ui="_flat"
-          )
-
-        .swiper-slide
-          .scrollBlock.waitForScrollSlider
-            CategoriesView(
-              :ids="$store.getters['categories/categoriesRootIds']"
-              :noPaddingBottom="true"
-              @onClick="handleCategoryClick"
-            )
-
-        .swiper-slide
-          .scrollBlock.waitForScrollSlider(
-            v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length"
-          )
-            CategoriesView(
-              :activeItemId="$store.state.trnForm.values.categoryId"
-              :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-              :noPaddingBottom="true"
-              @onClick="handleCategoryClick"
-              ui="_flat"
-            )
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
+.pb_base
+  padding-bottom 16px
+
 .contentWrap
   overflow hidden
   position relative
   display grid
-  grid-template-rows auto 1fr
+  grid-template-rows 1fr auto
+  height 100%
 
   &__box
     overflow hidden
@@ -130,13 +119,18 @@ export default {
 
 .scrollBlock
   overflow hidden
+  display grid
+  align-items flex-end
   overflowScrollY()
+  width 100%
   height 100%
-  padding-top $m6
-  padding-bottom $m8
+
+  +media-laptop()
+    align-items center
 
 .switcherList
   display flex
+  align-items center
   justify-content center
   padding $m6
 
@@ -149,16 +143,14 @@ export default {
   font-weight 500
   font-roboto()
   text-align center
-  border 1px solid transparent
-  border-radius 50px
+  anim()
 
-  &:active
+  +media-hover()
     color var(--c-font-2)
-    background var(--c-blue-1)
+    background var(--c-bg-5)
+    border-radius 50px
 
   &._active
     cursor default
-    color var(--c-font-3)
-    background var(--c-bg-5)
-    border 1px solid var(--c-bg-5)
+    color var(--c-blue-1)
 </style>

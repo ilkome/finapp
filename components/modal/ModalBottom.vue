@@ -175,7 +175,7 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
 @import '~assets/stylus/variables'
 
 .modalBottom
-  z-index 100
+  z-index 1000
   position fixed
   left 0
   bottom 0

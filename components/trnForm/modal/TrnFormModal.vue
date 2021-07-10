@@ -1,280 +1,120 @@
 <script lang="ts">
-import { ref, watch, reactive, toRefs } from '@nuxtjs/composition-api'
-import useTouchClose from '~/components/base/modal/useTouchClose'
+import { ref, onMounted, defineComponent } from '@nuxtjs/composition-api'
 
-export default {
-  props: {
-    title: {
-      type: String,
-      default: null
-    },
-
-    isShow: {
-      type: Boolean,
-      required: false
-    },
-
-    position: {
-      type: String,
-      default: null
-    },
-
-    doNotTouchClassName: {
-      type: String,
-      default: null
-    },
-
-    noPadding: {
-      type: Boolean,
-      default: false
-    }
-  },
-
-  setup (props: any, { listeners }) {
-    const { isShow, doNotTouchClassName } = toRefs(props)
-    const { initTouchModal, closeModal } = useTouchClose()
-
-    const wrappers = reactive({
-      container: ref(null),
-      content: ref(null),
-      handler: ref(null),
-      overflow: ref(null),
-      wrap: ref(null),
-      config: {
-        doNotTouchClassName: doNotTouchClassName.value ? doNotTouchClassName.value : 'doNotCloseTrnModalInside'
-      }
+export default defineComponent({
+  setup () {
+    const documentHeight = ref('100%')
+    onMounted(() => {
+      documentHeight.value = `${document.documentElement.clientHeight}px`
     })
-
-    watch(isShow, (value) => {
-      if (value) {
-        setTimeout(() => {
-          initTouchModal({
-            ...toRefs(wrappers),
-            onClose: listeners.onClose
-          })
-        }, 10)
-      }
-    }, { immediate: true })
-
     return {
-      ...toRefs(wrappers),
-      closeModal
-    }
-  },
-
-  data () {
-    return {
-      headerHeight: 0
-    }
-  },
-
-  computed: {
-    modalStyle (): any {
-      if (this.$store.state.trnForm.height < this.$store.state.ui.height) {
-        if (this.position === 'bottom') {
-          return {
-            maxHeight: `${this.$store.state.trnForm.height}px`
-          }
-        }
-        return {
-          height: `${this.$store.state.trnForm.height}px`
-        }
-      }
-      else {
-        return {
-          height: `${this.$store.state.ui.height}px`
-        }
-      }
-    }
-  },
-
-  methods: {
-    afterClose () {
-      if (this.$listeners.afterClose) {
-        this.$listeners.afterClose()
-      }
-    },
-
-    onClose () {
-      if (this.$listeners.onClose) {
-        this.$listeners.onClose()
-      }
+      documentHeight
     }
   }
-}
+})
 </script>
 
 <template lang="pug">
 Portal(to="modal")
-  .trnFormModal(
-    ref="container"
-    v-show="isShow"
+  BaseBottomSheet(
+    :show="true"
+    @closed="$emit('closed')"
   )
-    transition(name="baseModalOveflowAnim" appear)
-      .trnFormModal__overflow(
-        v-show="isShow"
-        ref="overflow"
-        @click="closeModal"
-      )
+    template(#handler="{ close }")
+      .handler
 
-    transition(name="baseModalWrapAnim" appear)
-      .trnFormModal__wrap(
-        v-show="isShow"
-        :style="modalStyle"
-        ref="wrap"
-      )
-        .trnForm__handler(
-          ref="handler"
-          @click="closeModal"
+      .handler__close(@click="close")
+        svg(
+          viewBox='0 0 24 24'
+          fill='none'
+          stroke='#000'
+          stroke-linecap='round'
+          stroke-linejoin='round'
+          stroke-width='1.5'
         )
-        .trnForm__closure(@click="closeModal")
-          svg(
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='#000'
-            stroke-linecap='round'
-            stroke-linejoin='round'
-            stroke-width='1.5'
-          )
-            path(d='M.75 23.249l22.5-22.5')
-            path(d='M23.25 23.249L.75.749')
+          path(d='M.75 23.249l22.5-22.5')
+          path(d='M23.25 23.249L.75.749')
 
-        .trnFormModal__scroll(
-          :class="{ _noPadding: noPadding }"
-          ref="content"
-        )
-          .trnForm__title(v-if="title") {{ title }}
-          slot
+    template(#default="{ close }")
+      .content(:style="{ maxHeight: documentHeight }")
+        .header(@click="close")
+          slot(name="header")
+
+        slot(name="default" :close="close")
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
-.baseModalOveflowAnim
-  &-enter-active
-  &-leave-active
-    transition opacity 350ms ease
-
-  &-enter
-  &-leave-to
-    opacity 0
-
-.baseModalWrapAnim
-  &-enter-active
-  &-leave-active
-    opacity 0
-    transform translate3d(0, 50px, 0)
-    transition opacity 300ms $transition-style, transform 250ms $transition-style
-
-  &-enter-to
-    transform translate3d(0, 0, 0)
-
-  &-leave
-  &-enter-to
-  &-leave-to
-    opacity 1
-
-  &-leave-to
-    transform translate3d(0, 200%, 0)
-    transition opacity 400ms $transition-style, transform 400ms $transition-style
-
-.trnFormModal
-  z-index 100
+.handler
+  z-index 2
   position absolute
+  top 0
+  left 0
+  display flex
+  align-items center
+  justify-content center
   width 100%
+  height 16px
 
-  @media $media-laptop
-    position absolute
-    display grid
-    margin $m7
-    border-radius 16px
+  &:after
+    content ''
+    display block
+    width 32px
+    height 4px
+    background var(--c-bg-8)
+    border-radius 4px
 
-  @media $media-phone
-    left 0
-    bottom 0
-
-  @media $media-laptop
-    top 0
-    right 0
-
-  &__overflow
-    position fixed
-    left 0
-    bottom 0
-    width 100%
-    height 100%
-    background var(--c-bg-14)
-    anim()
-
-    @media $media-laptop
-      opacity .1
-
-  &__wrap
-    overflow hidden
-    position relative
-    display flex
-    flex-grow 1
-    flex-flow column nowrap
-    background var(--color-bg-canvas)
-
-    @media $media-phone
-      border-radius $m7 $m7 0 0
-
-    @media $media-laptop
-      align-self center
-      width 400px
-      margin 0 auto
-      border-radius $m7
-
-    &._anim
-      anim(200ms)
-
-  &__scroll
-    overflow hidden
-    overflow-y auto
-    max-height 100%
-    padding-bottom $m7
-    scrollbar()
-
-    &._noPadding
-      overflow hidden
-      display grid
-      grid-template-rows auto 1fr
-      display grid
-      flex-grow 1
-      padding-bottom 0
-
-  &__header
+  &__close
+    z-index 3
     cursor pointer
-    position relative
+    position absolute
+    top 4px
+    right 4px
     display flex
     align-items center
-    justify-content space-between
-    padding $m7
-    padding-bottom $m6
-    color var(--c-font-3)
-    font-size 22px
-    font-weight 700
-    letter-spacing 1px
-    fontFamilyNunito()
+    justify-content center
+    width 40px
+    height 40px
+    border-radius 50%
+    anim()
 
-    /.light-mode &
-      color var(--c-font-4)
+    +media-hover()
+      background var(--c-blue-1)
 
-    &:hover
-    &:active
-      background var(--c-bg-5)
+    svg
+      anim()
+      width 12px
+      height 12px
+      stroke var(--c-font-4)
 
-    &__title
-      flex-grow 1
-      text-align center
+    +media-hover()
+      svg
+        width 12px
+        height 12px
+        stroke var(--c-font-1)
 
-    &__close
-      color var(--c-font-4)
-      font-size 20px
+.content
+  overflow hidden
+  display grid
+  grid-template-rows minmax(min-content, auto) minmax(50px, min-content)
+  padding-top $m7
+  background var(--color-bg-canvas)
+  border-radius $m8 $m8 0 0
 
-  &__icon
-    position absolute
-    top -24px
-    right $m7
+.header
+  position relative
+  display flex
+  align-items center
+  justify-content center
+  padding $m7
+  padding-bottom $m7
+  color var(--c-font-3)
+  font-size 22px
+  font-weight 700
+  letter-spacing 1px
+  fontFamilyNunito()
+
+  /.light-mode &
+    color var(--c-font-4)
 </style>

@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, watch, useContext } from '@nuxtjs/composition-api'
+import { ref, computed, onMounted, useContext } from '@nuxtjs/composition-api'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
 export default {
@@ -10,31 +10,30 @@ export default {
     const { setKeysActive } = useCalculator()
     const description = ref('')
 
-    const isShow = computed(() => store.state.trnForm.modal.description)
-
-    watch(isShow, (value) => {
-      if (value) {
-        description.value = store.state.trnForm.values.description
-        setKeysActive(false)
-      }
-      else {
-        setKeysActive(true)
-      }
+    onMounted(() => {
+      description.value = store.state.trnForm.values.description
+      setKeysActive(false)
     })
 
     return {
       description,
-      isShow
+      setKeysActive
     }
   },
 
   methods: {
-    handleCancel () {
+    handleCancel (close) {
       this.description = null
-      this.$store.commit('trnForm/closeTrnFormModal', 'description')
+      close()
     },
-    handleSave () {
+
+    handleSave (close) {
       this.$store.commit('trnForm/setTrnFormValues', { description: this.description })
+      close()
+    },
+
+    afterClose () {
+      this.setKeysActive(true)
       this.$store.commit('trnForm/closeTrnFormModal', 'description')
     }
   }
@@ -42,32 +41,31 @@ export default {
 </script>
 
 <template lang="pug">
-TrnFormModal(
-  :isShow="isShow"
-  :position="$store.state.ui.mobile ? 'bottom' : null"
-  :title="$t('trnForm.description.title')"
-  @onClose="$store.commit('trnForm/closeTrnFormModal', 'description')"
-)
-  .description
-    .description__filed
-      textarea.textarea(
-        v-model="description"
-        :placeholder="$t('trnForm.description.placeholder')"
-      )
+TrnFormModal(@closed="afterClose")
+  template(#header)
+    template {{ $t('trnForm.description.title') }}
 
-    .description__action
-      .description__action-cancel
-        SharedButton(
-          className="_grey _inline"
-          :title="$t('base.cancel')"
-          @onClick="handleCancel"
+  template(#default="{ close }")
+    .description
+      .description__filed
+        textarea.textarea(
+          v-model="description"
+          :placeholder="$t('trnForm.description.placeholder')"
         )
-      .description__action-ok
-        SharedButton(
-          className="_blue _inline"
-          :title="$t('base.save')"
-          @onClick="handleSave"
-        )
+
+      .description__action
+        .description__action-cancel
+          SharedButton(
+            className="_grey _inline"
+            :title="$t('base.cancel')"
+            @onClick="handleCancel(close)"
+          )
+        .description__action-ok
+          SharedButton(
+            className="_blue _inline"
+            :title="$t('base.save')"
+            @onClick="handleSave(close)"
+          )
 </template>
 
 <style lang="stylus" scoped>
@@ -76,6 +74,7 @@ TrnFormModal(
 
 .description
   padding 0 $m7
+  padding-bottom 16px
 
   &__filed
     padding-bottom $m9

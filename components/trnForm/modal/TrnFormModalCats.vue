@@ -1,26 +1,20 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
-
 export default {
   name: 'TrnFormModalCats',
 
-  setup () {
-    const { store } = useContext()
-    const isShow = computed(() => store.state.trnForm.modal.categories)
-
-    return {
-      isShow
+  methods: {
+    afterClose () {
+      this.$store.commit('trnForm/closeTrnFormModal', 'categories')
     }
   }
 }
 </script>
 
 <template lang="pug">
-TrnFormModal.doNotCloseTrnModal(
-  :isShow="isShow"
-  :title="$t('categories.name')"
-  @onClose="$store.commit('trnForm/closeTrnFormModal', 'categories')"
-  noPadding
-)
-  TrnFormCategories(:show="isShow")
+TrnFormModal(@closed="afterClose")
+  template(#header)
+    template {{ $t('categories.title') }}
+
+  template(#default="{ close }")
+    TrnFormCategories(@closeModal="close")
 </template>
