@@ -64,22 +64,21 @@ export default {
 .menuItem
   cursor pointer
   flex-grow 1
+  margin 0 $m5
   padding $m6 $m8
   color var(--c-font-5)
   font-size 12px
   font-weight 500
   font-roboto()
   text-align center
-  border 1px solid transparent
-  border-radius 50px
+  anim()
 
-  &:active
-    color var(--c-font-2)
-    background var(--c-blue-1)
+  +media-hover()
+    cursor pointer
+    color var(--c-blue-1)
 
   &._active
-    cursor default
     color var(--c-font-3)
     background var(--c-bg-5)
-    border 1px solid var(--c-bg-5)
+    border-radius 50px
 </style>

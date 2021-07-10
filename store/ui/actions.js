@@ -5,9 +5,8 @@ export default {
     const uiLocalStore = await localforage.getItem('finapp.stat')
     const activeTabViewName = await localforage.getItem('finapp.activeTabViewName')
 
-    if (activeTabViewName) {
+    if (activeTabViewName)
       commit('setActiveTabViewName', activeTabViewName)
-    }
 
     // ui
     if (uiLocalStore) {
@@ -41,7 +40,7 @@ export default {
    *
    * @param {string} theme - New theme value (light, dark).
    */
-  changeTheme (props, theme) {
+  changeTheme (_, theme) {
     // eslint-disable-next-line no-undef
     const currentTheme = $nuxt.$colorMode.value
     let newTheme
@@ -62,7 +61,7 @@ export default {
   */
   setAppDimensions ({ commit }, { height, width }) {
     let view = 'mobile'
-    if (width >= 1000) { view = 'pc' }
+    if (width >= 1300) view = 'pc'
 
     commit('setAppDimensions', {
       mobile: view === 'mobile',

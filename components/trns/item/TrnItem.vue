@@ -439,7 +439,7 @@ export default {
       //
 
   &._active
-  &._history
+  // &._history
   &._trnForm
     margin-right - ($m7)
     margin-left - ($m7)

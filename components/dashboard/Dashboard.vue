@@ -11,9 +11,9 @@ export default {
       const statCurrentPeriod = this.$store.getters['stat/statCurrentPeriod']
       if (statCurrentPeriod.incomes.categoriesIds.length === 0 &&
           statCurrentPeriod.expenses.categoriesIds.length === 0 &&
-          this.$store.getters['trns/selectedTrnsIdsWithDate'].length === 0) {
+          this.$store.getters['trns/selectedTrnsIdsWithDate'].length === 0)
         return true
-      }
+
       return false
     },
 
@@ -65,12 +65,6 @@ export default {
         .dashboard__wrap
           .dashboard__tab._trns(v-show="$store.state.dashboard.activeTab === 'history'")
             TrnsList(:size="50" :key="$store.state.filter.date")
-
-      //- Dashboard Overview
-      transition(name="animation-tab")
-        .dashboard__wrap
-          .dashboard__tab._trns(v-show="$store.state.dashboard.activeTab === 'overview'")
-            DashboardOverview
 
     transition(name="animation-tab")
       .dashboard__tab(v-if="$store.state.dashboard.activeTab === 'balance'")
