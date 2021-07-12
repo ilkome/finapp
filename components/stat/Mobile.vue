@@ -120,6 +120,7 @@ export default {
       statPage,
       statCurrentPeriod,
       statAverage,
+      filter,
       filterPeriod,
       isShowFilter,
       periods,
@@ -144,6 +145,8 @@ export default {
   .baseBox._noBg
     DateMobilePrevNextArrow
     DateMobileSelector
+
+    LayoutMobileStatMenu
 
   .baseBox._noBg(v-if="isShowFilter")
     LazyFilterRow(v-if="isShowFilter")
@@ -213,9 +216,18 @@ export default {
               :type="item.id"
             )
 
+            StatChartLines(
+              v-if="filter.categoryId && $store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
+              :categoryId="filter.categoryId"
+              :chartColor="$store.state.categories.items[filter.categoryId].color"
+              :isShowExpenses="item.type === 0"
+              :isShowIncomes="item.type === 1"
+              chartType="column"
+            )
+
             //- Cats horizontal list
             .statCategories(v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0")
-              LazyStatItemMobile(
+              LazyStatItem(
                 v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0"
                 v-for="categoryId in statCurrentPeriod[item.id].categoriesIds"
                 :key="categoryId"
@@ -241,16 +253,20 @@ export default {
                 :type="item.type"
               )
 
+      template(v-if="statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)")
+        .baseBox(v-if="ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
+          .baseBox__title {{ $t('trns.history') }}
+          .baseBox__content
+            TrnsList3(
+              :incomes="activeTabStat === 'incomes'"
+              :expenses="activeTabStat === 'expenses'"
+              :size="activeTabStat === 'history' ? 30 : 8"
+            )
+
   //- history
-  .statMoneyTypes
-    .baseBox(v-if="ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
-      .baseBox__title {{ $t('trns.history') }}
-      .baseBox__content
-        TrnsList3(
-          :incomes="activeTabStat === 'incomes'"
-          :expenses="activeTabStat === 'expenses'"
-          :size="activeTabStat === 'history' ? 30 : 8"
-        )
+  .history(v-if="statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
+    .baseBox__title {{ $t('trns.history') }}
+    TrnsList(:size="50")
 
   //- Analytics
   //-----------------------------
@@ -294,6 +310,19 @@ export default {
             )
 </template>
 
+<style lang="stylus">
+@import '~assets/stylus/variables'
+// ------------------------------------
+.history
+  .trnsList__day
+    //
+
+  .trnItem._history
+    margin 0
+    padding-right $m7 !important
+    padding-left $m7 !important
+</style>
+
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
@@ -334,6 +363,7 @@ export default {
 
   +media(700px)
     padding $m8 $m8
+    border-bottom 1px solid var(--c-bg-5)
 
   &._mw
     max-width 480px

@@ -39,6 +39,7 @@ export default {
       :isShowIncomes="activeTabStat === 'incomes' || activeTabStat === 'details' || activeTabStat === 'history'"
       :isShowExpenses="activeTabStat === 'expenses' || activeTabStat === 'details' || activeTabStat === 'history'"
       :chartType="chartType"
+      :disableCategoryFilter="true"
     )
 
   ChartPeriods

@@ -87,11 +87,17 @@ export default {
     )
 </template>
 
+<style lang="stylus">
+.statItemChild
+  .trnItem._stat
+    padding-right 16px
+    padding-left 16px
+</style>
+
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
 .statItemChild
-
   &._active
     padding-bottom $m6
 
@@ -101,10 +107,7 @@ export default {
     grid-template-rows repeat(2, minmax(10px, max-content))
     grid-column-gap 20px
     margin 0 0px
-    padding $m6 0
-
-    +media-tablet()
-      padding $m6 $m6
+    padding $m6 $m6
 
   &__trns
     padding 0

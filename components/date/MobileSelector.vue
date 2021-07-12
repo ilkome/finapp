@@ -46,10 +46,20 @@ export default {
   font-weight bold
   background var(--c-bg-4)
   border-radius $m4
+  anim()
+
+  +media(600px)
+    font-size 26px
+    font-weight 600
+    fontFamilyNunito()
+    background none
 
   +media-hover()
     color var(--c-font-2)
     background var(--c-blue-1)
+    +media(600px)
+      color var(--c-blue-1)
+      background none
 
   &__dots
     margin-top -2px
@@ -58,4 +68,8 @@ export default {
     padding-left 4px
     color var(--c-font-2)
     font-size 16px
+
+    +media(600px)
+      padding-left 6px
+      font-size 22px
 </style>

@@ -74,7 +74,7 @@ export default {
   //- Menu
   //-----------------------------------
   .layoutMobile__menu
-    LayoutMobileStatMenu
+    LayoutMobileStatMenu._bottom
     LayoutMobileBottomMenu
 
   //- Modals
@@ -215,30 +215,33 @@ export default {
 .layoutMobile
   flex-grow 1
   display grid
+  grid-template-columns 1fr
+  grid-template-rows 1fr minmax(auto, auto)
   height 100%
-  padding-bottom 44px
-
-  &._stat
-    padding-bottom 80px
+  background var(--c-bg-2)
 
   &__content
     overflow hidden
 
   &__menu
-    z-index 10
-    position fixed
-    left 0
-    bottom 0
-    width 100%
-    transition all .3s ease
+    background var(--c-bg-3)
+
+    +media(600px)
+      background var(--c-bg-2)
 
 .page
   overflow hidden
   overflowScrollY()
   display grid
   height 100%
-  max-width 900px
+  max-width 1100px
   margin 0 auto
   padding 0
   background var(--color-bg-canvas)
+
+  +media(800px)
+    padding 32px
+
+  +media(1000px)
+    padding 0 64px
 </style>

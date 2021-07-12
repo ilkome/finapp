@@ -56,10 +56,19 @@ export default {
   z-index 10
   display flex
   align-items center
+  max-width 640px
   overflow-x auto
+  margin 0 auto
   padding 0 $m6
   padding-top $m6
   background var(--c-bg-3)
+
+  &._bottom
+    +media(600px)
+      background var(--c-bg-2)
+
+  +media(600px)
+    justify-content center
 
 .menuItem
   cursor pointer
@@ -71,14 +80,19 @@ export default {
   font-weight 500
   font-roboto()
   text-align center
+  border-radius 50px
   anim()
+
+  +media(600px)
+    flex-grow 0
 
   +media-hover()
     cursor pointer
-    color var(--c-blue-1)
-
-  &._active
     color var(--c-font-3)
     background var(--c-bg-5)
-    border-radius 50px
+
+  &._active
+    color var(--c-blue-1)
+    +media-hover()
+      background none
 </style>

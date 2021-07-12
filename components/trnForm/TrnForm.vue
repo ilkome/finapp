@@ -424,6 +424,9 @@ export default {
   background var(--color-bg-canvas)
   border-radius $m8 $m8 0 0
 
+  +media(600px)
+    border-radius 16px
+
   &__quickCats
     opacity .8
     padding-bottom $m7

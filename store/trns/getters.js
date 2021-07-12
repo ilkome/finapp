@@ -202,7 +202,7 @@ export default {
   getTrns: (state, getters, rootState) => (props) => {
     if (!getters.hasTrns) { return [] }
 
-    const { date, periodName, description, categoryId, type } = props
+    const { date, periodName, description, categoryId, type, disableCategoryFilter } = props
     const categories = rootState.categories.items
     const categoriesIds = Object.keys(categories)
     const filterCategoryId = rootState.filter.categoryId || categoryId
@@ -234,7 +234,7 @@ export default {
     }
 
     // filter category
-    if (filterCategoryId) {
+    if (filterCategoryId && !disableCategoryFilter) {
       const childCategoriesIds = categoriesIds.filter(id => categories[id].parentId === filterCategoryId)
       if (childCategoriesIds.length) {
         trnsIds = trnsIds.filter((trnId) => {

@@ -129,19 +129,33 @@ export default {
   anim()
 
   +media-hover()
-    background var(--c-bg-1)
+    background var(--c-blue-1)
+
+    svg
+      fill var(--c-font-1)
+
+  +media(600px)
+    padding $m9 0
 
   svg
     width 24px
     height 24px
     fill var(--c-blue-1)
+    anim()
+
+    +media(600px)
+      width 34px
+      height 34px
 
 .menu
   background var(--c-bg-3)
 
+  +media(600px)
+    background var(--c-bg-2)
+
   &__wrap
     display grid
-    max-width 620px
+    max-width 680px
     margin 0 auto
 
   /.light-mode &
@@ -153,6 +167,7 @@ export default {
     justify-content center
 
   &__item
+    cursor pointer
     display flex
     align-items center
     justify-content center
@@ -160,8 +175,16 @@ export default {
     flex-flow column
     padding $m6 0
     color var(--c-font-4)
-    border-radius $m3
+    border-radius 8px
     anim()
+
+    +media(600px)
+      padding $m9 0
+      border-radius 8px
+
+    +media-hover()
+      color var(--c-font-1)
+      background var(--c-blue-1)
 
     &:active
       color var(--c-font-2)
@@ -175,4 +198,7 @@ export default {
 
     &__icon
       font-size 22px
+
+      +media(800px)
+        font-size 36px
 </style>

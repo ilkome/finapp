@@ -17,6 +17,11 @@ export default {
       default: true
     },
 
+    disableCategoryFilter: {
+      type: Boolean,
+      default: false
+    },
+
     isShowExpenses: {
       type: Boolean,
       default: true
@@ -77,7 +82,8 @@ export default {
         const trnsIds = this.$store.getters['trns/getTrns']({
           date: periodDate,
           periodName,
-          categoryId: this.categoryId
+          categoryId: null,
+          disableCategoryFilter: this.disableCategoryFilter
         })
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 

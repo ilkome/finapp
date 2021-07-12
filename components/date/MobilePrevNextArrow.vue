@@ -64,11 +64,13 @@ div
   &._right
     right 0px
     justify-content flex-end
+    padding-right 4px
     border-radius 32px 0 0 32px
 
     +media(950px)
       right 16px
       justify-content center
+      padding-left 4px
       border-radius 32px
 
     svg

@@ -408,12 +408,12 @@ export default defineComponent({
 .drug
   z-index 20
   position absolute
-  bottom 0
+  top 50%
   width 100%
   height auto
   max-width 600px
   left 50%
-  transform translateX(-50%)
+  transform translateX(-50%) translateY(-50%)
   // max-height 90vh
 
   &._anim

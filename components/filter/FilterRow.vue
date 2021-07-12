@@ -85,4 +85,7 @@ export default {
 
   +media-tablet('less')
     justify-content safe center
+
+  +media(600px)
+    justify-content center
 </style>
