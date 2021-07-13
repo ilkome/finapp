@@ -56,25 +56,21 @@ export default {
   z-index 10
   display flex
   align-items center
+  justify-content center
   max-width 640px
   overflow-x auto
   margin 0 auto
   padding 0 $m6
-  padding-top $m6
   background var(--c-bg-3)
-
-  &._bottom
-    +media(600px)
-      background var(--c-bg-2)
-
-  +media(600px)
-    justify-content center
 
 .menuItem
   cursor pointer
-  flex-grow 1
+  display flex
+  align-items center
+  justify-content center
+  min-height 38px
   margin 0 $m5
-  padding $m6 $m8
+  padding $m6 $m6
   color var(--c-font-5)
   font-size 12px
   font-weight 500
@@ -83,16 +79,21 @@ export default {
   border-radius 50px
   anim()
 
+  +media(400px)
+    padding-right $m7
+    padding-left $m7
+
   +media(600px)
-    flex-grow 0
+    padding-right $m9
+    padding-left $m9
 
   +media-hover()
-    cursor pointer
-    color var(--c-font-3)
-    background var(--c-bg-5)
+    &:not(._active)
+      cursor pointer
+      color var(--c-font-3)
+      background var(--c-bg-5)
 
   &._active
+    cursor default
     color var(--c-blue-1)
-    +media-hover()
-      background none
 </style>

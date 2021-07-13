@@ -27,7 +27,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
+@import '~assets/stylus/variables'
 
 .trnsListDate
   display grid
@@ -39,8 +39,9 @@ export default {
     grid-row 1 / 3
     padding-right 10px
     align-self center
+    font-secondary()
     font-size 32px
-    font-weight 500
+    font-weight 400
 
   &__weekday
     padding-top 2px

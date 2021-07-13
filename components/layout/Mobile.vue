@@ -74,7 +74,6 @@ export default {
   //- Menu
   //-----------------------------------
   .layoutMobile__menu
-    LayoutMobileStatMenu._bottom
     LayoutMobileBottomMenu
 
   //- Modals
@@ -240,7 +239,7 @@ export default {
   background var(--color-bg-canvas)
 
   +media(800px)
-    padding 32px
+    padding 0 32px
 
   +media(1000px)
     padding 0 64px

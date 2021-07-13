@@ -65,7 +65,7 @@ export default {
 
 <template lang="pug">
 .periods
-  .periods__group
+  .periods__group._custom
     .periodItem(
       @click="toogleView('showPieChart')"
     ): .mdi.mdi-chart-pie
@@ -119,7 +119,6 @@ export default {
   display grid
   grid-template-columns auto 1fr auto
   grid-column-gap $m9
-  grid-row-gap 60px
   align-items center
 
   +media(600px)
@@ -138,7 +137,7 @@ export default {
   align-items center
   justify-content center
   min-width 20px
-  padding 10px $m6
+  padding 10px $m5
   color var(--c-font-5)
   font-size 10px
   border-radius $m3

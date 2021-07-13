@@ -31,21 +31,17 @@ export default {
   display flex
   align-items center
   justify-content center
-  padding 0 $m4
-  background var(--color-bg-canvas)
 
 .menuDots
   cursor pointer
   display flex
   align-items center
   justify-content center
-  padding $m5 $m8
-  padding-right $m7
+  padding $m6 $m8
   color var(--c-font-3)
-  font-size 16px
-  font-weight bold
-  background var(--c-bg-4)
-  border-radius $m4
+  font-size 22px
+  font-weight 500
+  border-radius $m8
   anim()
 
   +media(600px)
@@ -55,11 +51,7 @@ export default {
     background none
 
   +media-hover()
-    color var(--c-font-2)
-    background var(--c-blue-1)
-    +media(600px)
-      color var(--c-blue-1)
-      background none
+    color var(--c-blue-1)
 
   &__dots
     margin-top -2px

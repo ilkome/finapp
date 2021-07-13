@@ -85,7 +85,7 @@ export default {
   margin-top 12px
   margin-right 10px
   background var(--c-bg-5)
-  border-radius $m3
+  border-radius $m4
 
   &:hover
     @media $media-laptop
@@ -103,7 +103,7 @@ export default {
     height 80px
     margin 0 auto
     margin-bottom -3px
-    border-radius 3px
+    border-radius $m4
 
     &__amount
       position absolute
@@ -121,7 +121,7 @@ export default {
       bottom 0px
       width 100%
       min-height 1px
-      border-radius 3px 3px 0 0
+      border-radius $m4 $m4 0 0
 
   &__icon
     display none

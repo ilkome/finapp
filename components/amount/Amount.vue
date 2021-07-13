@@ -205,7 +205,7 @@ export default {
 
     ~/._size_md &
       font-size 16px
-      font-weight 600
+      font-weight 500
 
     ~/._size_xl &
       font-size 36px

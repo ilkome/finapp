@@ -362,6 +362,8 @@ export default defineComponent({
 </template>
 
 <style lang="stylus" scoped>
+@import '~assets/stylus/variables'
+
 .info
   padding 20px
 
@@ -408,13 +410,17 @@ export default defineComponent({
 .drug
   z-index 20
   position absolute
-  top 50%
+  left 50%
+  bottom 0
   width 100%
   height auto
-  max-width 600px
-  left 50%
-  transform translateX(-50%) translateY(-50%)
-  // max-height 90vh
+  max-width 480px
+  transform translateX(-50%) translateY(0)
+
+  +media(600px)
+    top 50%
+    bottom inherit
+    transform translateX(-50%) translateY(-50%)
 
   &._anim
     transition transform 150ms ease-out, opacity 150ms ease-out

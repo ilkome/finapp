@@ -139,10 +139,10 @@ export default {
 
 <template lang="pug">
 .pageWrapScroll
-  .baseBox(v-if="ui.showMainChart && isShowChart")
+  .baseBox._chart(v-if="ui.showMainChart && isShowChart")
     LazyChartMobileStatLines(v-if="ui.showMainChart && isShowChart")
 
-  .baseBox._noBg
+  .baseBox._date
     DateMobilePrevNextArrow
     DateMobileSelector
 
@@ -154,7 +154,7 @@ export default {
   template(v-if="activeTabStat !== 'history'")
     //- Total
     template(v-if="activeTabStat === 'details' && statAverage.incomes !== 0 && statAverage.expenses !== 0 && $store.state.filter.period !== 'all'")
-      .baseBox
+      .baseBox._total
         .baseBox__title {{ $t('money.total') }}
         .boxSummary2
           .boxSummary2__item
@@ -225,20 +225,6 @@ export default {
               chartType="column"
             )
 
-            //- Cats horizontal list
-            .statCategories(v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0")
-              LazyStatItem(
-                v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0"
-                v-for="categoryId in statCurrentPeriod[item.id].categoriesIds"
-                :key="categoryId"
-                :biggest="statCurrentPeriod[item.id].biggest"
-                :category="$store.state.categories.items[categoryId]"
-                :categoryId="categoryId"
-                :currency="$store.state.currencies.base"
-                :total="statCurrentPeriod.categories[categoryId][item.id]"
-                :type="item.type"
-              )
-
             //- Round cats list
             .statItemsTiles(v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0")
               LazyStatItemRound(
@@ -253,18 +239,32 @@ export default {
                 :type="item.type"
               )
 
-      template(v-if="statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)")
-        .baseBox(v-if="ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
+            //- Cats horizontal list
+            .statCategories(v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0")
+              LazyStatItem(
+                v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0"
+                v-for="categoryId in statCurrentPeriod[item.id].categoriesIds"
+                :key="categoryId"
+                :biggest="statCurrentPeriod[item.id].biggest"
+                :category="$store.state.categories.items[categoryId]"
+                :categoryId="categoryId"
+                :currency="$store.state.currencies.base"
+                :total="statCurrentPeriod.categories[categoryId][item.id]"
+                :type="item.type"
+              )
+
+      template(v-if="(statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)) || (activeTabStat === 'incomes' || activeTabStat === 'expenses')")
+        .baseBox._mw(v-if="ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
           .baseBox__title {{ $t('trns.history') }}
           .baseBox__content
             TrnsList3(
               :incomes="activeTabStat === 'incomes'"
               :expenses="activeTabStat === 'expenses'"
-              :size="activeTabStat === 'history' ? 30 : 8"
+              :size="12"
             )
 
   //- history
-  .history(v-if="statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
+  .history(v-if="statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0 && (activeTabStat !== 'incomes' && activeTabStat !== 'expenses')")
     .baseBox__title {{ $t('trns.history') }}
     TrnsList(:size="50")
 
@@ -314,8 +314,24 @@ export default {
 @import '~assets/stylus/variables'
 // ------------------------------------
 .history
-  .trnsList__day
-    //
+  margin $m5 0
+  padding $m5 $m7
+  border-bottom 1px solid var(--c-bg-7)
+
+  +media(700px)
+    padding $m8 $m8
+    border-bottom 1px solid var(--c-bg-5)
+
+  .trnsList__content
+    .trnsList__grid
+      padding 0
+
+      .trnsList__day
+        padding-bottom 0
+
+        &:first-child
+          margin-top 0
+          padding-top $m5
 
   .trnItem._history
     margin 0
@@ -334,11 +350,16 @@ export default {
 
 // ------------------------------------
 .statMoneyTypes
+  align-items start
+
   +media(700px)
     display grid
     grid-template-columns 1fr 1fr
-    grid-column-gap 96px
+    grid-column-gap 0px
     grid-row-gap 64px
+
+    +media(800px)
+      grid-column-gap 32px
 
   .baseBox:last-child
     border none
@@ -367,9 +388,12 @@ export default {
 
   &._mw
     max-width 480px
+    margin-top 0
 
   &._noBdMedia
     +media(700px)
+      position sticky
+      top 0
       border none
 
   &._noBg
@@ -388,6 +412,36 @@ export default {
     +media(700px)
       padding $m8 $m5
 
+  &._date
+    margin-top 0
+    margin-bottom 0
+    padding-top 0
+    padding-bottom $m5
+    background none
+    border none
+
+    +media(800px)
+      padding-bottom 0
+
+  &._chart
+    margin-top 0
+    margin-bottom 0
+    padding-top 0
+    padding-bottom 0
+    background none
+    border none
+
+  &._total
+    margin-top 0
+    padding-top $m4
+    background none
+
+    +media(800px)
+      margin-top 0
+      margin-bottom 0
+      padding-top 0
+      padding-bottom $m6
+
   &__title
     z-index 9
     display flex
@@ -400,7 +454,8 @@ export default {
     text-transform uppercase
 
     +media(700px)
-      padding-bottom $m7
+      padding-bottom $m6
+      padding-left $m5
       font-secondary()
       font-size 18px
 
@@ -433,6 +488,7 @@ export default {
   grid-row-gap 0
 
 .statCategories
+  max-width 400px
   padding $m7 $m5
 
 // ------------------------------------

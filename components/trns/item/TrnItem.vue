@@ -260,6 +260,7 @@ export default {
             :currency="wallet.currency"
             :value="trn.amount"
             :type="trn.type"
+            size="md"
             :isColorize="trn.type === 1"
             isShowPrefix
           )
