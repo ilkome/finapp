@@ -11,7 +11,6 @@ export default {
       displayName: userParams.displayName,
       email: userParams.email,
       uid: userParams.uid
-      // uid: 'kXVGIN19Mhd7WZUeTtZRqUSo2aJ3'
     }
 
     dispatch('setUser', user)
@@ -32,13 +31,12 @@ export default {
       await dispatch('trns/unsubcribeTrns', null, { root: true })
       await dispatch('wallets/unsubcribeWallets', null, { root: true })
       await dispatch('app/clearUserData', null, { root: true })
-      db.ref(`users/${uid}/budgets`).off()
       db.ref(`users/${uid}/groups`).off()
     }
 
-    if (this.$router.currentRoute.name !== 'login') {
+    if (this.$router.currentRoute.name !== 'login')
       this.app.context.redirect('/login')
-    }
+
     firebase.auth().signOut()
   },
 
@@ -64,9 +62,9 @@ export default {
     db.ref(`users-info/${user.uid}/loginDate`).set(todayValueOf)
 
     // set creation date once
-    if (!usersInfoVal || (usersInfoVal && !usersInfoVal.creationDate)) {
+    if (!usersInfoVal || (usersInfoVal && !usersInfoVal.creationDate))
       db.ref(`users-info/${user.uid}/creationDate`).set(todayValueOf)
-    }
+
     // set date of open app
     db.ref(`users-info/${user.uid}/opensApp/${pkg.version.split('.').join('')}`).set(dayjs().valueOf())
   },

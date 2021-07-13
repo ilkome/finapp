@@ -47,7 +47,6 @@ export default {
 
     function init () {
       if (!sliderObj.value) {
-        // setTimeout(() => {
         sliderObj.value = new Swiper(slider.value, {
           init: false,
           observer: true,
@@ -65,7 +64,6 @@ export default {
         })
         setTrnFormHeight()
         sliderObj.value.init()
-        // }, 10)
       }
     }
 
@@ -212,6 +210,24 @@ export default {
   .swiper-container(ref="slider")
     .swiper-wrapper
       .swiper-slide(:style="{ height: maxHeight }")
+        TrnFormTrns(
+          v-if="sliderObj"
+          :slider="sliderObj"
+        )
+
+      .swiper-slide.getHeight
+        .modalHeightBase
+          .trnForm__title(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
+          .trnForm__title(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
+
+          TrnFormTypes
+          TrnFormAmount
+          TrnFormCalendar
+          TrnFormCalculator(@onSubmit="handleSubmitForm")
+          TrnFormHeader
+          TrnFormHeaderTransfer(v-show="isTransfer")
+
+      .swiper-slide(:style="{ height: maxHeight }")
         .scroll.scrollerBlock
           div(style="paddingBottom: 16px")
             div(style="padding: 20px 0 20px 0")
@@ -241,51 +257,6 @@ export default {
                 @onClick="onCategoryClick"
               )
 
-      .swiper-slide.getHeight
-        .modalHeightBase
-          .trnForm__title(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
-          .trnForm__title(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
-
-          //- Laptop
-          template(v-if="$store.state.ui.pc")
-            TrnFormHeader
-            TrnFormHeaderTransfer(v-if="isTransfer")
-            TrnFormCalendar
-            TrnFormAmountPc
-            TrnFormCalculator(
-              pc
-              @onSubmit="handleSubmitForm"
-            )
-
-            .div(
-              v-if="$store.getters['categories/quickSelectorCategoriesIds'].length"
-              style="paddingBottom: 12px"
-            )
-              //- TrnFormCategories(:show="show")
-              .trnForm__quickCats
-                .formTitle {{ $t('categories.favoriteTitle') }}
-                CategoriesView(
-                  :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-                  :noPaddingBottom="true"
-                  ui="_flat"
-                  @onClick="categoryId => $store.commit('trnForm/setTrnFormValues', { categoryId })"
-                )
-
-          //- Mobile
-          template(v-if="$store.state.ui.mobile")
-            TrnFormTypes
-            TrnFormAmount
-            TrnFormCalendar
-            TrnFormCalculator(@onSubmit="handleSubmitForm")
-            TrnFormHeader
-            TrnFormHeaderTransfer(v-show="isTransfer")
-
-      .swiper-slide(:style="{ height: maxHeight }")
-        TrnFormTrns(
-          v-if="sliderObj"
-          :slider="sliderObj"
-        )
-
   .trnForm__pagination
 
   //- Modals
@@ -300,6 +271,12 @@ export default {
 
 <style lang="stylus">
 @import '~assets/stylus/variables'
+
+.trnFormWalletsList .walllets__grid
+.trnForm .walllets__grid
+  grid-template-columns repeat(2, 1fr) !important
+  grid-column-gap $m6 !important
+  grid-row-gap $m6 !important
 
 .formTitle
   padding $m7

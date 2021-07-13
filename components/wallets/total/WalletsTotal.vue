@@ -21,12 +21,9 @@ export default {
           })
         }
 
-        if (walletsItems[walletId].countTotal) {
-          total.counted = total.counted + walletTotal
-        }
-        else {
-          total.other = total.other + walletTotal
-        }
+        walletsItems[walletId].countTotal
+          ? total.counted = total.counted + walletTotal
+          : total.other = total.other + walletTotal
       }
       return total
     }
@@ -60,8 +57,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables'
 
 .walletsTotal
   display flex
@@ -72,11 +68,15 @@ export default {
   padding-bottom 16px
 
   &__item
-    flex 1 0 0
+    flex 0 0 0
     align-self start
     justify-self start
     padding 0 16px
     padding-bottom 16px
+
+    +media(600px)
+      padding 0 $m9
+      padding-bottom $m9
 
   &__title
     opacity .6

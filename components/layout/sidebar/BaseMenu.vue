@@ -10,65 +10,58 @@ export default {
     menu () {
       return {
         trnForm: {
+          id: 'trnForm',
           icon: 'mdi mdi-plus',
-          name: this.$t('createTrn'),
-          isOpen: false,
-          private: this.$store.state.ui.mobile
+          name: this.$t('createTrn')
         },
         stat: {
           icon: 'mdi mdi-poll',
-          name: this.$t('stat.shortTitle'),
-          isOpen: false,
-          private: this.$store.state.ui.mobile
+          name: this.$t('stat.shortTitle')
         },
         wallets: {
+          id: 'wallets',
           icon: 'mdi mdi-credit-card-multiple',
-          name: this.$t('wallets.name'),
-          isOpen: true,
-          private: this.$store.state.ui.mobile
+          name: this.$t('wallets.name')
         },
         categories: {
+          id: 'categories',
           icon: 'mdi mdi-folder-star',
-          name: this.$t('categories.name'),
-          isOpen: false,
-          private: this.$store.state.ui.mobile
-        },
-        budgets: {
-          icon: 'mdi mdi-hand-saw',
-          name: this.$t('budgets.name'),
-          isOpen: false,
-          private: true
-        },
-        groups: {
-          icon: 'mdi mdi-folder-multiple-outline',
-          name: this.$t('groups.name'),
-          isOpen: false,
-          private: true
+          name: this.$t('categories.name')
         },
         users: {
           icon: 'mdi mdi-account-multiple',
           name: this.$t('users.title'),
-          isOpen: false,
           private: true
         },
         settings: {
           icon: 'mdi mdi-cog-outline',
-          name: this.$t('settings.title'),
-          isOpen: true
+          name: this.$t('settings.title')
         }
       }
     }
   },
 
   methods: {
-    handleClickMenu (menuId) {
-      if (menuId === 'users') {
-        this.$router.push('/users')
-        this.$store.dispatch('ui/setActiveTab', 'stat')
+    handleSetActiveTab (tabName) {
+      if (tabName === 'menu') {
+        store.dispatch('ui/setActiveTab', 'menu')
         return
       }
-      if (menuId === 'history') {
-        this.$router.push('/history')
+      store.dispatch('ui/setActiveTabViewName', tabName)
+    },
+
+    handleClickMenu (menuId) {
+      if (menuId === 'stat')
+        this.$store.dispatch('ui/setActiveTabViewName', 'stat')
+
+      if (menuId === 'wallets')
+        this.$store.dispatch('ui/setActiveTabViewName', 'wallets')
+
+      if (menuId === 'categories')
+        this.$store.dispatch('ui/setActiveTabViewName', 'categories')
+
+      if (menuId === 'users') {
+        this.$router.push('/users')
         this.$store.dispatch('ui/setActiveTab', 'stat')
         return
       }
@@ -76,16 +69,12 @@ export default {
         this.$store.dispatch('trnForm/openTrnForm', { action: 'create' })
         return
       }
-      else if (menuId === 'groups') {
-        this.$store.dispatch('ui/setActiveTab', 'groups')
-      }
       else {
         this.$router.push('/')
       }
 
-      if (this.$listeners.onClickMenuCalback) {
+      if (this.$listeners.onClickMenuCalback)
         this.$listeners.onClickMenuCalback()
-      }
 
       this.$store.dispatch('ui/setActiveTab', menuId)
     }

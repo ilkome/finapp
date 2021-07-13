@@ -64,7 +64,7 @@ LayoutComponentWrap(:contentPadding="$store.state.ui.pc")
                 :background="$store.state.wallets.items[walletId].color || $store.state.ui.defaultBgColor")
 
             .walletItem2__name {{ $store.state.wallets.items[walletId].name }}
-            .walletItem2__drag.handle.doNotCloseModal: .mdi.mdi-arrow-split-horizontal
+            .walletItem2__drag.handle.doNotCloseModal: .mdi.mdi-drag-horizontal-variant
 
   template(slot="bottom")
     .col
@@ -97,10 +97,12 @@ item-icon()
   grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
   grid-template-rows repeat(2, 1fr)
   grid-column-gap 20px
-  padding 0px 16px
+  padding-left $m5
+  border-radius $m4
+  border-bottom 1px solid var(--c-bg-6)
 
-  +media-laptop()
-    padding 0
+  +media-hover()
+    item-bg-active()
 
   &._draggable
     item-bg-active()
@@ -117,6 +119,7 @@ item-icon()
     item-main-text()
 
   &__drag
+    cursor pointer
     grid-column 3 / 4
     grid-row 1 / 3
     align-self center

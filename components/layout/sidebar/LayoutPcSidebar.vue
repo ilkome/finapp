@@ -34,6 +34,10 @@ export default {
       :showToogle="true"
       :limit="6"
       @onClick="(id) => handleShowWalletsModalWalletModal(id)")
+
+  .sidebar__trn(@click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })")
+    .btn
+      .mdi.mdi-plus
 </template>
 
 <style lang="stylus" scoped>
@@ -52,4 +56,30 @@ export default {
     overflow hidden
     overflow-y auto
     height 100%
+    padding-bottom $m9
+
+  &__trn
+    cursor pointer
+    display flex
+    align-items flex-end
+    justify-content center
+    padding-bottom $m10
+    anim()
+
+    +media-hover()
+      background var(--c-bg-5)
+
+      .btn
+        transform scale(1.3)
+
+    .btn
+      display flex
+      align-items center
+      justify-content center
+      width 48px
+      height 48px
+      font-size 32px
+      background var(--c-blue-1)
+      border-radius 50%
+      anim()
 </style>

@@ -12,7 +12,7 @@ export default {
   },
 
   mounted () {
-    const initialSlide = this.$store.getters['categories/quickSelectorCategoriesIds'] && this.$store.getters['categories/quickSelectorCategoriesIds'].length > 0 ? 1 : 2
+    const initialSlide = 1
 
     this.slider = new Swiper(this.$refs.trnFormCategories, {
       observer: true,

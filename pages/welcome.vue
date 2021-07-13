@@ -12,29 +12,26 @@ export default {
 
   computed: {
     newUserData () {
-      if (!this.$store.getters['wallets/hasWallets'] || !this.$store.getters['categories/hasCategories']) {
+      if (!this.$store.getters['wallets/hasWallets'] || !this.$store.getters['categories/hasCategories'])
         return true
-      }
+
       return false
     }
   },
 
   watch: {
     newUserData (newUserData) {
-      if (!newUserData) {
+      if (!newUserData)
         this.$router.push('/')
-      }
     }
   },
 
   mounted () {
-    if (!this.newUserData) {
+    if (!this.newUserData)
       this.$router.push('/')
-    }
 
-    if (!this.$store.state.user.user) {
+    if (!this.$store.state.user.user)
       this.$store.dispatch('user/signOut')
-    }
   },
 
   methods: {
@@ -111,9 +108,15 @@ export default {
       .tab
         .tab__content
           .header
-            .header__title {{ $t('app.welcome') }}
-            .header__desc {{ $t('app.desc') }}
-            .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout') }} {{ $store.state.user.user.email }}
+            .header__title
+              template(v-if="step === 1") {{ $t('app.welcome') }}
+              template(v-else) {{ $t('appName') }}
+
+            .header__desc(v-if="step === 1") {{ $t('app.desc') }}
+            .header__user(
+              v-if="step === 1"
+              @click="$store.dispatch('user/signOut')"
+            ) {{ $t('userLogout') }} {{ $store.state.user.user.email }}
 
           .options
             .options__item
@@ -141,15 +144,13 @@ export default {
         .tab__content
           .tab__wrap
             .header
-              .header__title {{ $t('app.welcome') }}
-              .header__desc {{ $t('app.desc') }}
-              .header__user(@click="$store.dispatch('user/signOut')") {{ $t('userLogout') }} {{ $store.state.user.user.email }}
-
+              .header__title {{ $t('appName') }}
             .options__desc {{ $t('welcome.createFirstWallet.text') }}
             .button
               SharedButton._center._blue2(
                 :title="$t('welcome.createFirstWallet.btn')"
-                @onClick="showWalletForm = true")
+                @onClick="showWalletForm = true"
+              )
 
   //- category
   transition(name="fadeIn")
@@ -166,7 +167,7 @@ export default {
   transition(name="fadeIn")
     .tab(v-if="showWalletForm")
       .tab__content
-        WalletsFormWalletForm(@callback="showWalletsFormWalletForm = false")
+        WalletsFormWalletForm(@callback="showWalletForm = false")
 
   transition(name="fadeIn")
     .tab(v-if="showCategoryForm")
@@ -178,11 +179,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/flex'
-@import '~assets/stylus/variables/media'
-@import '~assets/stylus/variables/fonts'
-@import '~assets/stylus/variables/scroll'
+@import '~assets/stylus/variables'
 
 .steps
   display flex
@@ -227,7 +224,7 @@ export default {
     align-self center
     justify-self center
 
-    @media $media-laptop
+    +media(600px)
       width 550px
 
     .component
@@ -237,23 +234,26 @@ export default {
   padding-bottom $mb1
 
   &__title
+    padding-bottom $m8
     font-size 28px
     font-weight 500
     letter-spacing 1px
+    text-align center
 
   &__desc
-    padding-top $m6
+    padding-bottom $m5
     color var(--c-font-4)
     font-size 12px
+    text-align center
 
     @media $media-laptop
-      padding-top $m6
       font-size 14px
 
   &__user
     cursor pointer
     padding-top $m9
     font-size 12px
+    text-align center
 
     @media $media-laptop
       padding-top $m9

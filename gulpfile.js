@@ -26,7 +26,7 @@ function uploadTask (path, cb) {
       user: configFTP.user,
       password: configFTP.password,
       log,
-      buffer: false
+      parallel: 10
     })
 
     return src(path)

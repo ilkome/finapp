@@ -9,9 +9,8 @@ export default {
     const { query } = useContext()
     const isLoading = ref(false)
 
-    if (query.value && query.value.loading) {
+    if (query.value && query.value.loading)
       isLoading.value = true
-    }
 
     setTimeout(() => {
       isLoading.value = false
@@ -23,9 +22,8 @@ export default {
   },
 
   fetch ({ store, redirect }) {
-    if (store.state.user && store.state.user.user) {
+    if (store.state.user && store.state.user.user)
       redirect('/')
-    }
   },
 
   methods: {
@@ -87,11 +85,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/animations'
-@import '~assets/stylus/variables/fonts'
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
-@import '~assets/stylus/variables/scroll'
+@import '~assets/stylus/variables'
 
 .tab
   overflow-x hidden
@@ -104,6 +98,9 @@ export default {
   height 100%
   max-width 1000px
   margin 0 auto
+
+  +media(600px)
+    grid-template-rows auto auto auto
 
   &__content
     display flex
@@ -119,8 +116,10 @@ export default {
     flex-flow column
     padding $mn1
 
-    @media $media-laptop
+    +media(600px)
+      justify-content flex-start
       padding $mb2
+      padding-top 0
 
 .langChanger
   position absolute

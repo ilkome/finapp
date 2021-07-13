@@ -63,6 +63,9 @@ export default {
   padding 0 $m6
   background var(--c-bg-3)
 
+  +media(600px)
+    overflow initial
+
 .menuItem
   cursor pointer
   display flex

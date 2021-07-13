@@ -67,14 +67,14 @@ export default {
 .menu
   .menu__wrap
     .menu__row
-      //- Wallets
+      //- wallets
       .menu__item(
         :class="{ _active: getClassName(menu.wallets.id) }"
         @click="handleSetActiveTab(menu.wallets.id)"
       )
         .menu__item__icon: div(:class="menu.wallets.icon")
 
-      //- Categories
+      //- categories
       .menu__item(
         :class="{ _active: getClassName(menu.categories.id) }"
         @click="handleSetActiveTab(menu.categories.id)"
@@ -88,14 +88,14 @@ export default {
         )
           path(d='M0,12a1.5,1.5,0,0,0,1.5,1.5h8.75a.25.25,0,0,1,.25.25V22.5a1.5,1.5,0,0,0,3,0V13.75a.25.25,0,0,1,.25-.25H22.5a1.5,1.5,0,0,0,0-3H13.75a.25.25,0,0,1-.25-.25V1.5a1.5,1.5,0,0,0-3,0v8.75a.25.25,0,0,1-.25.25H1.5A1.5,1.5,0,0,0,0,12Z')
 
-      //- Stat
+      //- stat
       .menu__item(
         :class="{ _active: getClassName(menu.stat.id) }"
         @click="handleSetActiveTab(menu.stat.id)"
       )
         .menu__item__icon: div(:class="menu.stat.icon")
 
-      //- History
+      //- menu
       .menu__item(
         :class="{ _active: getClassName(menu.menu.id) }"
         @click="handleSetActiveTab(menu.menu.id)"

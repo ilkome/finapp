@@ -85,6 +85,11 @@ export default {
   grid-column-gap $m7
   grid-row-gap $m7
 
+  +media(600px)
+    grid-template-columns repeat(auto-fill, minmax(220px, 1fr))
+    grid-column-gap $m7
+    grid-row-gap $m7
+
 .walletsList__toogle._alt
   margin-right 0
   margin-left 0

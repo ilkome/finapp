@@ -4,7 +4,7 @@ import useMobileLayout from '~/components/layout/useMobileLayout'
 import useUIView from '~/components/layout/useUIView'
 
 export default {
-  name: 'LayoutMobileWrap',
+  name: 'LayoutWrap',
 
   setup () {
     const { store } = useContext()
@@ -47,8 +47,11 @@ export default {
 </script>
 
 <template lang="pug">
-.layoutMobile(:class="className")
-  .layoutMobile__content
+.layout(:class="className")
+  .layout__sidebar
+    LayoutPcSidebar
+
+  .layout__content
     //- Stat
     .page(
       v-if="isStatPage && $store.getters['trns/hasTrns']"
@@ -71,9 +74,50 @@ export default {
       :style="{ zIndex: activeTabViewName === 'wallets' ? 10 : 0 }"
     ): WalletsPageMobile
 
+    //- Analytics
+    //-----------------------------
+    template(v-if="activeTabViewName === 'analytics'")
+      .pageAnalytics
+        Analytics
+          template(#incomes)
+            .boxTitle {{ $t('money.incomes') }}
+
+            .boxSummary2
+              .boxSummary2__item
+                Amount(
+                  :currency="$store.state.currencies.base"
+                  :type="1"
+                  :value="statCurrentPeriod.incomes.total"
+                  size="xl"
+                  vertical="left"
+                )
+              StatSummaryRowItemView(
+                :type="1"
+                :amount="statAverage.incomes"
+                :title="$t('money.average.incomes')"
+              )
+
+          template(#expenses)
+            .boxTitle {{ $t('money.expenses') }}
+
+            .boxSummary2
+              .boxSummary2__item
+                Amount(
+                  :currency="$store.state.currencies.base"
+                  :type="0"
+                  :value="statCurrentPeriod.expenses.total"
+                  size="xl"
+                  vertical="left"
+                )
+              StatSummaryRowItemView(
+                :type="0"
+                :amount="statAverage.expenses"
+                :title="$t('money.average.expenses')"
+              )
+
   //- Menu
   //-----------------------------------
-  .layoutMobile__menu
+  .layout__menu
     LayoutMobileBottomMenu
 
   //- Modals
@@ -105,9 +149,6 @@ export default {
 
   TrnsModalTrnModal
   WalletsModalWalletModal
-
-  //- Dates
-  LazyStatDateSelectorModal(v-if="isShowPeriodsNamesModal")
 
   //- Base Menu
   LazyLayoutMobileMenuModal(v-if="activeTab === 'menu'")
@@ -163,6 +204,34 @@ export default {
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
+.layout
+  flex-grow 1
+  display grid
+  grid-template-columns 1fr
+  grid-template-rows 1fr minmax(auto, auto)
+  height 100%
+  background var(--c-bg-2)
+
+  +media(1200px)
+    grid-template-rows 1fr auto
+    grid-template-columns minmax(auto, auto) 1fr
+
+  &__sidebar
+    display none
+
+    +media(1200px)
+      display block
+
+  &__content
+    overflow hidden
+    position relative
+
+  &__menu
+    background var(--c-bg-3)
+
+    +media(600px)
+      background var(--c-bg-2)
+
 .handler
   z-index 2
   position absolute
@@ -211,30 +280,12 @@ export default {
         height 12px
         stroke var(--c-font-1)
 
-.layoutMobile
-  flex-grow 1
-  display grid
-  grid-template-columns 1fr
-  grid-template-rows 1fr minmax(auto, auto)
-  height 100%
-  background var(--c-bg-2)
-
-  &__content
-    overflow hidden
-
-  &__menu
-    background var(--c-bg-3)
-
-    +media(600px)
-      background var(--c-bg-2)
-
 .page
   overflow hidden
   overflowScrollY()
   display grid
   height 100%
   max-width 1100px
-  margin 0 auto
   padding 0
   background var(--color-bg-canvas)
 

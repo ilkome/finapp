@@ -57,7 +57,12 @@ export default {
       :class="className"
       :style="positionStyles"
     )
-      .context-menu__overflow(@click="$emit('onClickOpener')")
+      transition(name="slide2")
+        .context-menu__overflow(
+          v-if="$slots.content"
+          @click="$emit('onClickOpener')"
+        )
+
       .context-menu__content
         slot(name="content")
       .context-menu__desc(v-if="$slots.desc")
@@ -91,6 +96,9 @@ export default {
     left 0
     width 100%
     height 100%
+    anim()
+    // background rgba(0, 0, 0, .2)
+    // backdrop-filter blur(2px)
 
   &__popup
     overflow hidden

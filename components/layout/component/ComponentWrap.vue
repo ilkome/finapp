@@ -57,6 +57,9 @@ export default {
       background 0
       border-bottom 0
 
+    +media(600px)
+      padding-top $m8
+
     &-wrap
       max-width 1100px
       padding 12px 16px
@@ -96,14 +99,12 @@ export default {
 
     &-main
       overflow hidden
-      height 100%
       overflow-y auto
+      display flex
+      flex-flow column
+      justify-content center
+      height 100%
       scrollbar()
-
-      +media-tablet('less')
-        display flex
-        flex-flow column
-        justify-content center
 
     &-left
       margin-bottom 16px

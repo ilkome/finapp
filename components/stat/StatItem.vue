@@ -106,6 +106,15 @@ export default {
           )
 </template>
 
+<style lang="stylus">
+@import '~assets/stylus/variables'
+
+.statItem
+  .trnItem._stat
+    padding-right $m6
+    padding-left $m6
+</style>
+
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
@@ -113,23 +122,24 @@ export default {
   // overflow hidden
   cursor pointer
   position relative
-  padding $m5 0
+  margin 0 (- $m5)
+  padding $m5 $m5
   border 1px solid transparent
   border-radius $m5
 
-  &:hover
-    @media $media-laptop
+  +media-hover()
+    &:not(._active)
       z-index 2
       margin 0 (- $m5)
       padding $m5 $m5
-      background var(--c-bg-1)
+      background var(--c-bg-4)
       border 1px solid var(--c-bg-5)
 
   &._active
     margin $m6 (- $m6)
     padding 0
-    background var(--c-bg-3)
-    border 1px solid var(--c-bg-6)
+    background var(--c-bg-4)
+    border 1px solid var(--c-bg-5)
 
   &__content
     display grid
@@ -144,9 +154,6 @@ export default {
 
   &__inside
     padding 0
-
-  &__trns
-    padding 0 $m6
 
   &__graph
     overflow hidden

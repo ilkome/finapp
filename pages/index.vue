@@ -13,6 +13,5 @@ export default {
 
 <template lang="pug">
 .layout__wrap(v-if="$store.getters['user/userUid']")
-  LazyLayoutMobile(v-if="$store.state.ui.mobile")
-  LazyLayoutPc(v-if="$store.state.ui.pc")
+  LayoutMobile
 </template>

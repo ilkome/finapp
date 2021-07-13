@@ -176,6 +176,7 @@ export default {
   },
 
   currency: {
+    title: 'Валюта',
     selectBaseTitle: 'Выбрать основную валюту'
   },
 
@@ -315,26 +316,6 @@ export default {
     nextTitle: 'Следующий',
     prevTitle: 'Прошлый',
     nextStep: 'Далее'
-  },
-
-  budgets: {
-    id: 'budgets',
-    name: 'Проекты',
-    show: 'Показать проекты',
-    form: {
-      title: 'Создать новый проект',
-      name: 'Имя проекта',
-      amount: 'Стоимость проекта',
-      button: 'Создать проект'
-    },
-    trns: {
-      name: 'Транзакции проекта'
-    },
-    stat: {
-      left: 'Осталось',
-      got: 'Получено',
-      total: 'Всего'
-    }
   },
 
   groups: {

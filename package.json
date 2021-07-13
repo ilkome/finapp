@@ -1,6 +1,6 @@
 {
   "name": "finapp",
-  "version": "3.12.0",
+  "version": "3.13.0",
   "scripts": {
     "dev": "cross-env NUXT_HOST=0.0.0.0 nuxt",
     "build": "nuxt build",
@@ -27,7 +27,6 @@
     "nuxt-i18n": "6.27.3",
     "portal-vue": "2.1.7",
     "swiper": "6.7.5",
-    "vue-cleave-component": "2.1.3",
     "vue-notification": "1.3.20",
     "vuedraggable": "2.24.3",
     "vuejs-datepicker": "1.6.2"

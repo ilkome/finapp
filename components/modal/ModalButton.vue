@@ -37,6 +37,7 @@ export default {
   white-space nowrap
   text-align center
   border-radius $m5
+  anim()
 
   &__icon
     opacity .8
@@ -44,12 +45,10 @@ export default {
     color var(--c-font-2)
     font-size 32px
 
-  &:hover
-    @media $media-laptop
-      background var(--c-bg-3)
-
-  &:active
-    background var(--c-bg-3)
+  +media-hover()
+    &:not(._active)
+      color var(--c-font-3)
+      background var(--c-bg-5)
 
   &._active
     background var(--c-bg-3)

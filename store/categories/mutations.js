@@ -14,6 +14,7 @@ export default {
         name: 'Transfer',
         order: 0,
         parentId: 0,
+        childIds: [],
         showInLastUsed: false,
         showInQuickSelector: false,
         showStat: false

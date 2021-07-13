@@ -1,4 +1,5 @@
 <script>
+import { computed, useContext } from '@nuxtjs/composition-api'
 import { Chart } from 'highcharts-vue'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
@@ -32,11 +33,6 @@ export default {
       default: null
     },
 
-    chartType: {
-      type: String,
-      default: 'line'
-    },
-
     categoryId: {
       type: String,
       default: null
@@ -49,12 +45,24 @@ export default {
   },
 
   setup () {
+    const { store } = useContext()
     const { isShowDataLabels } = useChart()
     const { filterPeriodNameAllReplacedToYear } = useFilter()
 
+    const periods = computed(() => store.state.chart.periods)
+    const chartType = computed(() => {
+      let type = null
+      periods.value[filterPeriodNameAllReplacedToYear.value].grouped
+        ? type = 'column'
+        : type = 'spline'
+
+      return type
+    })
+
     return {
       isShowDataLabels,
-      filterPeriodNameAllReplacedToYear
+      filterPeriodNameAllReplacedToYear,
+      chartType
     }
   },
 
@@ -88,10 +96,10 @@ export default {
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
         let format = 'MM'
-        if (periodName === 'day') { format = 'D.MM' }
-        if (periodName === 'week') { format = 'D MMM' }
-        if (periodName === 'month') { format = 'MMM' }
-        if (periodName === 'year') { format = 'YYYY' }
+        if (periodName === 'day') format = 'D.MM'
+        if (periodName === 'week') format = 'D MMM'
+        if (periodName === 'month') format = 'MMM'
+        if (periodName === 'year') format = 'YYYY'
         const name = this.$day().startOf(periodName).subtract(index, periodName).format(format)
 
         // Incomes
@@ -138,7 +146,7 @@ export default {
           color: this.chartColor || 'var(--c-incomes-1)',
           data: incomesData,
           marker: {
-            lineColor: 'var(--c-incomes-1)'
+            lineColor: this.categoryId ? this.$store.state.categories.items[this.categoryId].color : 'var(--c-incomes-1)'
           }
         }, {
           zIndex: 2,
@@ -148,7 +156,7 @@ export default {
           color: this.chartColor || 'var(--c-expenses-1)',
           data: expensesData,
           marker: {
-            lineColor: 'var(--c-expenses-1)'
+            lineColor: this.categoryId ? this.$store.state.categories.items[this.categoryId].color : 'var(--c-expenses-1)'
           }
         }, {
           zIndex: 1,
@@ -217,9 +225,9 @@ export default {
                     to: value.index - 0.5
                   }]
                 })
-                if (vm.$store.state.filter.period === 'all') {
+                if (vm.$store.state.filter.period === 'all')
                   vm.$store.dispatch('filter/setPeriod', 'year')
-                }
+
                 vm.$store.dispatch('filter/setDate', parseInt(value.date))
               }
             }
@@ -245,9 +253,9 @@ export default {
                       to: this.index - 0.5
                     }]
                   })
-                  if (vm.$store.state.filter.period === 'all') {
+                  if (vm.$store.state.filter.period === 'all')
                     vm.$store.dispatch('filter/setPeriod', 'year')
-                  }
+
                   vm.$store.dispatch('filter/setDate', parseInt(this.date))
                 }
               }

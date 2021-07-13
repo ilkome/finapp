@@ -113,7 +113,7 @@ export default {
     },
     or: 'or',
     demo: {
-      text: 'Load app with created wallets, categories and transactions',
+      text: 'Load app in demo mode with created wallets, categories and transactions',
       btn: 'Start demo'
     },
     createFirstWallet: {
@@ -174,6 +174,7 @@ export default {
   },
 
   currency: {
+    title: 'Currency',
     selectBaseTitle: 'Select base currency'
   },
 
@@ -313,26 +314,6 @@ export default {
     nextTitle: 'Next',
     prevTitle: 'Prev',
     nextStep: 'Next step'
-  },
-
-  budgets: {
-    id: 'budgets',
-    name: 'Budgets',
-    show: 'Show budgets',
-    form: {
-      title: 'Create new budget',
-      name: 'Budget name',
-      amount: 'Budget amount',
-      button: 'Create'
-    },
-    trns: {
-      name: 'Budget transactions'
-    },
-    stat: {
-      left: 'Left',
-      got: 'Got',
-      total: 'Total'
-    }
   },
 
   groups: {

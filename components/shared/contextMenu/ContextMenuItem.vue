@@ -26,7 +26,8 @@ export default {
   methods: {
     handleClick () {
       this.$emit('onClick')
-      if (this.$listeners.onClose) { this.$listeners.onClose() }
+      if (this.$listeners.onClose)
+        this.$listeners.onClose()
     }
   }
 }
@@ -50,10 +51,10 @@ export default {
   cursor pointer
   display flex
   align-items center
-  height 42px
+  height 44px
   margin $m4 $m4
   padding 0 $m6
-  font-size 13px
+  font-size 14px
   white-space nowrap
   border-radius $m5
 
@@ -69,9 +70,8 @@ export default {
 
   &__icon
     opacity .85
-    width 24px
-    margin-right $m6
-    font-size 18px
+    margin-right $m7
+    font-size 22px
     text-align center
 
   &__title

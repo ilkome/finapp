@@ -114,7 +114,7 @@ export default {
 
   .groupItem__trns(v-if="group.trnsIds" v-show="isTrnsVisible")
     TrnsList2(:ids="trnsIds" v-slot="{ trns }")
-      GroupItemTrn(
+      GroupsGroupItemTrn(
         v-for="trnId in trnsIds"
         @onClick="handleTrnItemClick"
         :category="trns[trnId].category"

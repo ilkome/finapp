@@ -22,10 +22,6 @@ export default {
       type: Number,
       required: true
     },
-    biggest: {
-      type: Number,
-      required: true
-    },
     type: {
       type: Number,
       required: true
@@ -58,7 +54,6 @@ export default {
         })
 
         const isCategoryHasChildren = computed(() => store.getters['categories/isCategoryHasChildren'](categoryId.value))
-        console.log('isCategoryHasChildren', isCategoryHasChildren)
 
         if (isCategoryHasChildren.value) {
           store.commit('trnForm/showTrnFormModal', 'categories')
@@ -135,10 +130,10 @@ export default {
   justify-content center
   flex-flow column
   padding $m6
-  border-radius $m6
+  border-radius $m5
 
   +media-hover()
-    background var(--c-bg-3)
+    background var(--c-bg-4)
 
   &._prevStat
     opacity .5
@@ -156,12 +151,6 @@ export default {
     ^[0]._active &
       color var(--c-font-2)
       font-weight 500
-
-  &__icon
-    +media-hover()
-      opacity .8
-      +media-laptop()
-        transform scale(1.3)
 
   &__amount
     align-self center

@@ -7,7 +7,6 @@ export default {
   data () {
     return {
       showModalConfirm: false,
-      showModalBudgets: false,
       showModalGroups: false
     }
   },
@@ -24,9 +23,6 @@ export default {
     },
     wallet () {
       return this.$store.state.wallets.items[this.$store.state.trns.items[this.trnId].walletId]
-    },
-    budgets () {
-      return this.$store.getters['budgets/budgets']
     },
     groups () {
       return this.$store.getters['groups/groups']
@@ -79,10 +75,6 @@ export default {
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
     },
-    toogleAddToBudget (budgetId) {
-      this.$store.dispatch('budgets/toogleAddToBudget', { budgetId, trnId: this.trnId })
-      this.showModalBudgets = false
-    },
     toogleAddToGroup (groupId) {
       this.$store.dispatch('groups/toogleAddToGroup', { groupId, trnId: this.trnId })
       this.showModalGroups = false
@@ -116,13 +108,13 @@ Portal(
       template(slot="btns")
         ModalButton(
           :name="$t('base.delete')"
-          icon="mdi mdi-delete"
+          icon="mdi mdi-delete-empty-outline"
           @onClick="handleDeleteClick"
         )
 
         ModalButton(
           :name="$t('base.edit')"
-          icon="mdi mdi-pencil"
+          icon="mdi mdi-pencil-outline"
           @onClick="handleEditClick"
         )
 
@@ -141,20 +133,10 @@ Portal(
         )
 
         SharedButton.marginBottom(
-          :class="{ marginBottom: budgets }"
           :title="`${$t('base.setFilter')} ${this.wallet.name}`"
           className="_borderBottom"
           icon="mdi mdi-credit-card-multiple"
           @onClick="handleSetFilterWallet"
-        )
-
-        SharedButton(
-          v-if="budgets && $store.getters['user/isTester']"
-          :class="{ marginBottom: groups }"
-          :title="$t('budgets.show')"
-          className="_borderBottom"
-          icon="mdi mdi-hand-saw"
-          @onClick="showModalBudgets = true"
         )
 
         SharedButton(
@@ -164,28 +146,6 @@ Portal(
           :title="$t('groups.show')"
           @onClick="showModalGroups = true"
         )
-
-    //- budgets
-    template(v-if="groups && $store.getters['user/isTester']")
-      Portal(
-        v-if="showModalBudgets"
-        to="modal"
-      )
-        ModalBottom(
-          :title="$t('budgets.name')"
-          paddingless
-          @onClose="showModalBudgets = false"
-        )
-          template(v-for="(budget, budgetId) in budgets")
-            .item(@click="toogleAddToBudget(budgetId)")
-              .item__active
-                template(v-if="trn && trn.budgets && trn.budgets[budgetId]")
-                  .mdi.mdi-check
-                template(v-else)
-                  .mdi.mdi-plus
-              .item__name {{ budget.name }}
-              .item__amount
-                Amount(:currency="budget.currency" :value="budget.amount")
 
     template(v-if="groups && $store.getters['user/isTester']")
       Portal(

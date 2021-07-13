@@ -200,7 +200,7 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     flex-flow column nowrap
     max-width 440px
     margin-right auto
-    background var(--c-bg-4)
+    background var(--c-bg-3)
     border-radius $m7 $m7 0 0
 
     @media $media-laptop
@@ -213,7 +213,7 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     overflow-y auto
     max-height calc(90vh - 80px)
     padding $m7
-    background var(--c-bg-4)
+    background var(--c-bg-3)
     border-radius $m7 $m7 0 0
     scrollbar()
 
@@ -232,7 +232,7 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     padding $m7
     color var(--c-font-2)
     fontFamilyNunito()
-    background var(--c-bg-4)
+    background var(--c-bg-3)
     border-radius $m7 $m7 0 0
 
     &._alt

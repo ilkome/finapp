@@ -39,9 +39,8 @@ export default {
 
   created () {
     this.colors = colors
-    if (!this.$store.state.wallets.editId) {
+    if (!this.$store.state.wallets.editId)
       this.wallet.color = colors[Math.floor(Math.random() * colors.length)]
-    }
   },
 
   beforeDestroy () {
@@ -74,7 +73,7 @@ export default {
         this.$store.commit('wallets/setWalletEditId', null)
         this.$store.dispatch('ui/setActiveTab', 'wallets')
 
-        if (this.$listeners.callback) { this.$listeners.callback() }
+        if (this.$listeners.callback) this.$listeners.callback()
       }
     },
 

@@ -25,8 +25,9 @@ export default {
           })
         }
         else {
-          const categoriesIds = Object.keys(rootState.categories.items)
-          const categoryId = categoriesIds[0]
+          const categoriesIds = rootGetters['categories/categoriesIds']
+          const childs = categoriesIds.filter(cId => cId !== 'transfer' && (!rootState.categories.items[cId].childIds || rootState.categories.items[cId].childIds.length === 0))
+          const categoryId = childs[0]
           const walletsIds = Object.keys(rootState.wallets.items)
           const walletId = walletsIds[0]
           commit('setTrnFormValues', {

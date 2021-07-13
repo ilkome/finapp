@@ -98,12 +98,12 @@ Portal(
       template(slot="btns")
         ModalButton(
           :name="$t('base.delete')"
-          icon="mdi mdi-delete"
+          icon="mdi mdi-delete-empty-outline"
           @onClick="handleDeleteClick"
         )
         ModalButton(
           :name="$t('base.edit')"
-          icon="mdi mdi-pencil"
+          icon="mdi mdi-pencil-outline"
           @onClick="handleEditClick"
         )
         ModalButton(
@@ -129,7 +129,7 @@ Portal(
     padding $m8
     padding-top 0
     padding-bottom $m6
-    background var(--c-bg-4)
+    background var(--c-bg-3)
     border-bottom 0
     border-radius $m6 $m6 0 0
 

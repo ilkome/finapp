@@ -11,6 +11,7 @@ function random (icons) {
 export default {
   data () {
     return {
+      originalParentId: null,
       showParents: false,
       showColors: false,
       showIcons: false,
@@ -41,6 +42,8 @@ export default {
             ...this.category,
             ...this.$store.state.categories.items[this.categoryId]
           }
+
+          this.originalParentId = this.category.parentId
         }
       },
       immediate: true
@@ -73,9 +76,9 @@ export default {
 
     handleParenCategorySelect (categoryId) {
       const parentCategory = this.$store.state.categories.items[categoryId]
-      if (parentCategory) {
+      if (parentCategory)
         this.category.color = parentCategory.color
-      }
+
       this.category.parentId = categoryId
       this.showParents = false
     },
@@ -84,22 +87,57 @@ export default {
       if (this.validateForm()) {
         const uid = this.$store.state.user.user.uid
         const id = this.categoryId || generateId()
+        const categories = this.$store.state.categories.items
 
         const categoriesValues = {
+          order: this.category.order,
           color: this.category.color,
           icon: this.category.icon,
           name: this.category.name,
+          childIds: this.category.childIds || [],
           parentId: this.category.parentId,
           showInLastUsed: this.category.showInLastUsed,
           showInQuickSelector: this.category.showInQuickSelector,
           showStat: true
         }
 
-        db.ref(`users/${uid}/categories/${id}`).set(categoriesValues)
+        // ad or remove from parent
+        if (this.originalParentId !== this.category.parentId) {
+          // remove from old parent
+          if (this.originalParentId !== 0) {
+            const originalParent = categories[this.originalParentId]
+            if (originalParent) {
+              db.ref(`users/${uid}/categories/${this.originalParentId}`).set({
+                ...originalParent,
+                childIds: originalParent.childIds.filter(cId => cId !== id)
+              })
+            }
+          }
 
+          // add to new parent
+          if (this.category.parentId !== 0) {
+            const parenCategory = categories[this.category.parentId]
+            const childIds = parenCategory.childIds
+              ? [...parenCategory.childIds.filter(cId => cId !== id), id]
+              : [id]
+
+            db.ref(`users/${uid}/categories/${this.category.parentId}`).set({
+              ...parenCategory,
+              childIds
+            })
+          }
+        }
+
+        const childIds = this.$store.getters['categories/getChildCategoriesIds'](id)
+
+        // update category
+        db.ref(`users/${uid}/categories/${id}`).set({
+          ...categoriesValues,
+          childIds
+        })
+
+        // update child categories colors
         if (this.applyChildColor) {
-          const childIds = this.$store.getters['categories/getChildCategoriesIds'](id)
-          const categories = this.$store.state.categories.items
           for (const childId of childIds) {
             const category = categories[childId]
             db.ref(`users/${uid}/categories/${childId}`).set({
@@ -112,7 +150,8 @@ export default {
         this.$store.commit('categories/setCategoryEditId', null)
         this.$store.dispatch('ui/setActiveTab', 'categories')
 
-        if (this.$listeners.callback) { this.$listeners.callback() }
+        if (this.$listeners.callback)
+          this.$listeners.callback()
       }
     },
 

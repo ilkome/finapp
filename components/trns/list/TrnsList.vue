@@ -138,12 +138,14 @@ export default {
 @import '~assets/stylus/variables'
 
 .trnsList
+  max-width 400px
   padding-bottom 8px
 
   &:last-child
     padding-bottom 0
 
-  +media-laptop()
+  +media(600px)
+    max-width 100%
     padding 0
 
   &__grid
@@ -155,10 +157,10 @@ export default {
     padding 8px
     padding-bottom 0
 
-    +media-laptop()
+    +media(600px)
       grid-column-gap 20px
       grid-row-gap 20px
-      grid-template-columns repeat(3, 1fr)
+      grid-template-columns repeat(auto-fill, minmax(260px, 1fr))
       padding 0
 
   &__day
@@ -167,7 +169,7 @@ export default {
     margin-bottom 16px
     padding-bottom 16px
 
-    +media-laptop()
+    +media(600px)
       margin 0
       padding 16px 0px
       background var(--c-bg-4)
@@ -178,7 +180,7 @@ export default {
       margin-top $m9
       border-top 0
 
-      +media-laptop()
+      +media(600px)
         margin 0
 
   &__header
@@ -191,7 +193,7 @@ export default {
   &__pages
     padding 16px 8px
 
-    +media-laptop()
+    +media(600px)
       padding 0
       padding-top 20px
 

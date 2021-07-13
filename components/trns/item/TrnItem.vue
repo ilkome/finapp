@@ -241,7 +241,6 @@ export default {
         .trnItem__categoryName
           | {{ category.name }}
           .trnItem__groups(v-if="trn.groups") In group
-          .trnItem__budgets(v-if="trn.budgets") In budget
 
         .trnItem__wallet
           .trnItem__walletIcon
@@ -297,7 +296,6 @@ export default {
   &._stat
     margin-top -1px
     padding-top $m6
-    padding-right 0
     border-bottom $m2
 
   +media-hover(true)
@@ -307,9 +305,11 @@ export default {
 
   &__amount
     align-self center
+    padding-top $m5
 
     ^[0]._stat &
       margin-left auto
+      padding-top 0
 
   &__categoryIcon
     ^[0]._detailed &
@@ -354,7 +354,7 @@ export default {
     display flex
     align-items center
     padding-bottom 10px
-    border-bottom 1px solid var(--c-bg-6)
+    // border-bottom 1px solid var(--c-bg-6)
 
     ^[0]._stat:hover &
       @media $media-laptop

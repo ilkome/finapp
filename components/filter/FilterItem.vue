@@ -100,11 +100,12 @@ export default {
   padding $m5 $m7
   color var(--c-font-1)
   white-space nowrap
-  background var(--c-bg-6)
+  background var(--c-bg-5)
   border-radius $m5
 
-  +media-tablet()
-    background var(--c-bg-5)
+  +media(600px)
+    margin-right $m5
+    margin-left $m5
 
   &._pc
     margin-right $m6

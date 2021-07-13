@@ -17,9 +17,9 @@ export default {
     },
 
     deleteInfo () {
-      if (this.trnsIds.length > 0) {
+      if (this.trnsIds.length > 0)
         return `It's also will delete ${this.trnsIds.length} trns in this category`
-      }
+
       return null
     },
 
@@ -30,9 +30,9 @@ export default {
     trnsIds () {
       const trns = this.$store.state.trns.items
       const trnsIds = []
-      for (const trnId in trns) {
-        if (trns[trnId].categoryId === this.categoryId) { trnsIds.push(trnId) }
-      }
+      for (const trnId in trns)
+        if (trns[trnId].categoryId === this.categoryId) trnsIds.push(trnId)
+
       return trnsIds
     }
   },
@@ -76,7 +76,7 @@ export default {
         }
       }
 
-      if (!isChildCategories) { this.showModalConfirm = true }
+      if (!isChildCategories) this.showModalConfirm = true
     },
 
     handleDeleteConfirm () {
@@ -92,7 +92,7 @@ export default {
         await this.$store.dispatch('trns/deleteTrnsByIds', trnsIds)
         db.ref(`users/${uid}/categories/${id}`)
           .remove()
-          .then(() => { console.log('category deleted') })
+          // .then(() => { console.log('category deleted') })
       }, 200)
     }
   }
@@ -124,12 +124,12 @@ Portal(
       ModalButton(
         v-if="categoryId !== 'transfer'"
         :name="$t('base.delete')"
-        icon="mdi mdi-delete"
+        icon="mdi mdi-delete-empty-outline"
         @onClick="handleDeleteClick"
       )
       ModalButton(
         :name="$t('base.edit')"
-        icon="mdi mdi-pencil"
+        icon="mdi mdi-pencil-outline"
         @onClick="handleEditClick"
       )
       ModalButton(

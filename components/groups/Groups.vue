@@ -33,7 +33,6 @@ LayoutComponentWrap
     div {{ $t('groups.name') }}
 
   template(slot="contentLeft")
-    //- pre {{ groups }}
     .list
       GroupsGroupItem(
         v-for="group in groups"

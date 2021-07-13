@@ -6,13 +6,6 @@ import './long-press-event'
 export default {
   name: 'TrnFormCalculator',
 
-  props: {
-    pc: {
-      type: Boolean,
-      default: false
-    }
-  },
-
   setup () {
     const deleteRef = ref(document.createElement('div'))
 
@@ -47,72 +40,62 @@ export default {
 </script>
 
 <template lang="pug">
-div
-  .trnFormSharedButton(v-if="pc")
-    .calcItem._sum._pc(
-      @click="isSum ? $emit('onSubmit') : handleTouch('=')"
-    )
-      SharedButton(
-        :title="isSum ? $t('trnForm.saveTrnButton') : $t('trnForm.calcTrnButton')"
-        className="_blue2 _text-center _ttu"
+.trnFormCalculator
+  .trnFormCalculator__group
+    .trnFormCalculator__acts
+      .calcItem._act(@click="handleTouch('+')")
+        .calcItem__in: .mdi.mdi-plus
+      .calcItem._act(@click="handleTouch('-')")
+        .calcItem__in: .mdi.mdi-minus
+      .calcItem._act(@click="handleTouch('*')")
+        .calcItem__in: .mdi.mdi-plus(style="transform: rotate(45deg)")
+      .calcItem._act(@click="handleTouch('/')")
+        .calcItem__in: .mdi.mdi-slash-forward
+
+  .trnFormCalculator__group
+    .trnFormCalculator__numbers
+      .calcItem._num(@click="handleTouch('7')")
+        .calcItem__in 7
+      .calcItem._num(@click="handleTouch('8')")
+        .calcItem__in 8
+      .calcItem._num(@click="handleTouch('9')")
+        .calcItem__in 9
+
+      .calcItem._num(@click="handleTouch('4')")
+        .calcItem__in 4
+      .calcItem._num(@click="handleTouch('5')")
+        .calcItem__in 5
+      .calcItem._num(@click="handleTouch('6')")
+        .calcItem__in 6
+
+      .calcItem._num(@click="handleTouch('1')")
+        .calcItem__in 1
+      .calcItem._num(@click="handleTouch('2')")
+        .calcItem__in 2
+      .calcItem._num(@click="handleTouch('3')")
+        .calcItem__in 3
+
+      .calcItem._num._grey(@click="handleTouch('.')")
+        .calcItem__in .
+      .calcItem._num(@click="handleTouch('0')")
+        .calcItem__in 0
+      .calcItem._clear(
+        ref="deleteRef"
+        data-long-press-delay="300"
+        @click="handleTouch('delete')"
       )
+        .calcItem__in C
 
-  .trnFormCalculator(v-if="!pc")
-    .trnFormCalculator__group
-      .trnFormCalculator__acts
-        .calcItem._act(@click="handleTouch('+')")
-          .calcItem__in: .mdi.mdi-plus
-        .calcItem._act(@click="handleTouch('-')")
-          .calcItem__in: .mdi.mdi-minus
-        .calcItem._act(@click="handleTouch('*')")
-          .calcItem__in: .mdi.mdi-plus(style="transform: rotate(45deg)")
-        .calcItem._act(@click="handleTouch('/')")
-          .calcItem__in: .mdi.mdi-slash-forward
-
-    .trnFormCalculator__group
-      .trnFormCalculator__numbers
-        .calcItem._num(@click="handleTouch('7')")
-          .calcItem__in 7
-        .calcItem._num(@click="handleTouch('8')")
-          .calcItem__in 8
-        .calcItem._num(@click="handleTouch('9')")
-          .calcItem__in 9
-
-        .calcItem._num(@click="handleTouch('4')")
-          .calcItem__in 4
-        .calcItem._num(@click="handleTouch('5')")
-          .calcItem__in 5
-        .calcItem._num(@click="handleTouch('6')")
-          .calcItem__in 6
-
-        .calcItem._num(@click="handleTouch('1')")
-          .calcItem__in 1
-        .calcItem._num(@click="handleTouch('2')")
-          .calcItem__in 2
-        .calcItem._num(@click="handleTouch('3')")
-          .calcItem__in 3
-
-        .calcItem._num._grey(@click="handleTouch('.')")
-          .calcItem__in .
-        .calcItem._num(@click="handleTouch('0')")
-          .calcItem__in 0
-        .calcItem._clear(
-          ref="deleteRef"
-          data-long-press-delay="300"
-          @click="handleTouch('delete')"
-        )
-          .calcItem__in C
-
-    .trnFormCalculator__group
-      .trnFormCalculator__action
-        .calcItem._sum(
-          @click="isSum ? $emit('onSubmit') : handleTouch('=')"
-        )
-          .calcItem__in
-            template(v-if="isSum")
-              .mdi.mdi-check
-            template(v-else)
-              .mdi.mdi-equal
+  .trnFormCalculator__group
+    .trnFormCalculator__action
+      .calcItem._sum(
+        @click="isSum ? $emit('onSubmit') : handleTouch('=')"
+      )
+        .calcItem__in
+          template(v-if="isSum")
+            .mdi.mdi-check
+          template(v-else)
+            .mdi.mdi-equal
 </template>
 
 <style lang="stylus" scoped>
@@ -159,15 +142,12 @@ div
   justify-content center
   font-secondary()
 
-  ~/._pc
-    padding 0 $m7
-
   &__in
     display flex
     align-items center
     justify-content center
-    width 58px
-    height 58px
+    width 44px
+    height 44px
     padding $m7
     color var(--c-font-3)
     font-size 22px
@@ -177,6 +157,10 @@ div
     border-radius 50%
     user-select none
     anim()
+
+    +media(400px)
+      width 58px
+      height 58px
 
     ~/._num &
       background var(--c-bg-5)

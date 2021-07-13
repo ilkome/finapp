@@ -1,5 +1,5 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { ref, computed, useContext } from '@nuxtjs/composition-api'
 import useChart from '~/components/chart/useChart'
 import usePeriods from '~/components/periods/usePeriods'
 import useFilter from '~/modules/filter/useFilter'
@@ -45,6 +45,8 @@ export default {
       setUI({ name, value: !ui[name] })
     }
 
+    const visibleContextMenu = ref(false)
+
     return {
       isShowDataLabels,
       toogleChartsView,
@@ -57,7 +59,9 @@ export default {
       filterPeriodNameAllReplacedToYear,
 
       ui,
-      toogleView
+      toogleView,
+
+      visibleContextMenu
     }
   }
 }
@@ -65,22 +69,31 @@ export default {
 
 <template lang="pug">
 .periods
-  .periods__group._custom
-    .periodItem(
-      @click="toogleView('showPieChart')"
-    ): .mdi.mdi-chart-pie
-    .periodItem(
-      @click="toogleView('showCatsVerticalChart')"
-    ): .mdi.mdi-poll
-    .periodItem(
-      @click="toogleView('showCatsHorizontalList')"
-    ): .mdi.mdi-chart-timeline
-    .periodItem(
-      @click="toogleView('showRoundCats')"
-    ): .mdi.mdi-chart-bubble
-    //- .periodItem(
-    //-   @click="toogleView('showHistory')"
-    //- ): .mdi.mdi-jellyfish-outline
+  .periods__custom
+    SharedContextMenu(
+      :position="{ left: '-12px', top: true }"
+      :visible="visibleContextMenu"
+      @onClickOpener="visibleContextMenu = !visibleContextMenu"
+    )
+      template(slot="opener")
+        .periodItem {{ $t('settings.customize') }}
+
+      template(slot="content")
+        template(v-if="!isEmptyData")
+          CustomizeMenu
+          .context-menu-sep
+
+        SharedContextMenuItem(
+          :title="$t('theme.change')"
+          icon="mdi mdi-palette"
+          @onClick="$store.dispatch('ui/changeTheme')"
+        )
+        SharedContextMenuItem(
+          :title="$t('currency.selectBaseTitle')"
+          icon="mdi mdi-currency-usd"
+          @onClick="$store.commit('currencies/showBaseCurrenciesModal')"
+          @onClose="visibleContextMenu = !visibleContextMenu"
+        )
 
   .periods__group
     .periodItem(
@@ -114,15 +127,16 @@ export default {
 @import '~assets/stylus/variables'
 
 .periods
-  z-index 2
+  z-index 10
   position relative
   display grid
   grid-template-columns auto 1fr auto
-  grid-column-gap $m9
+  grid-column-gap $m5
   align-items center
 
   +media(600px)
     padding-top 8px
+    grid-column-gap $m9
 
   &__group
     display flex
@@ -132,6 +146,7 @@ export default {
 
 .periodItem
   cursor pointer
+  position relative
   flex-grow 1
   display flex
   align-items center
@@ -143,8 +158,8 @@ export default {
   border-radius $m3
   anim()
 
-  +media(600px)
-    padding 10px 16px
+  +media(800px)
+    padding $m6 $m6
     font-size 12px
 
   +media-hover()
@@ -161,5 +176,11 @@ export default {
 
   .mdi
     +media(600px)
-      font-size 22px
+      font-size 18px
+
+  &._history
+    display none
+
+    +media(800px)
+      display flex
 </style>

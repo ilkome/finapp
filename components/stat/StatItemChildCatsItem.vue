@@ -88,10 +88,12 @@ export default {
 </template>
 
 <style lang="stylus">
+@import '~assets/stylus/variables'
+
 .statItemChild
   .trnItem._stat
-    padding-right 16px
-    padding-left 16px
+    padding-right $m6
+    padding-left $m6
 </style>
 
 <style lang="stylus" scoped>

@@ -148,7 +148,7 @@ export default {
 
     LayoutMobileStatMenu
 
-  .baseBox._noBg(v-if="isShowFilter")
+  .baseBox._filter(v-if="isShowFilter")
     LazyFilterRow(v-if="isShowFilter")
 
   template(v-if="activeTabStat !== 'history'")
@@ -177,7 +177,7 @@ export default {
         v-for="item in moneyTypes"
         v-if="activeTabStat === 'details' || (activeTabStat === 'incomes' && item.id === 'incomes') || (activeTabStat === 'expenses' && item.id === 'expenses')"
       )
-        template(v-if="(statAverage && statAverage[item.id] !== 0) || $store.state.filter.period === 'all'")
+        template(v-if="statCurrentPeriod[item.id].total > 0 || (statAverage && statAverage[item.id] !== 0) || $store.state.filter.period === 'all'")
           .baseBox._noBdMedia._mw
             .baseBox__title {{ $t(`money.${item.id}`) }}
             .boxSummary2
@@ -203,6 +203,15 @@ export default {
 
             .boxEmpty(v-if="statCurrentPeriod[item.id].categoriesIds.length === 0") {{ $t('stat.empty') }}
 
+            .statChartLines(v-if="filter.categoryId")
+              StatChartLines(
+                v-if="filter.categoryId && $store.getters['trns/hasTrns']"
+                :categoryId="filter.categoryId"
+                :chartColor="$store.state.categories.items[filter.categoryId].color"
+                :isShowExpenses="item.type === 0"
+                :isShowIncomes="item.type === 1"
+              )
+
             //- Pie chart
             .statChartPie(v-if="ui.showPieChart")
               LazyStatChartPie(
@@ -212,17 +221,8 @@ export default {
 
             //- Cats vertical chart
             StatCatsPeriodCatsChart(
-              v-if="ui.showCatsVerticalChart && $store.state.ui.catsChart === 'visible' && statCurrentPeriod[item.id].categoriesIds.length > 1"
+              v-if="ui.showCatsVerticalChart && !filter.categoryId && $store.state.ui.catsChart === 'visible' && statCurrentPeriod[item.id].categoriesIds.length > 1"
               :type="item.id"
-            )
-
-            StatChartLines(
-              v-if="filter.categoryId && $store.getters['trns/hasTrns'] && filterPeriod !== 'all'"
-              :categoryId="filter.categoryId"
-              :chartColor="$store.state.categories.items[filter.categoryId].color"
-              :isShowExpenses="item.type === 0"
-              :isShowIncomes="item.type === 1"
-              chartType="column"
             )
 
             //- Round cats list
@@ -230,7 +230,6 @@ export default {
               LazyStatItemRound(
                 v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0"
                 v-for="categoryId in statWithLastPeriods[item.id].categoriesIds"
-                :biggest="statWithLastPeriods[item.id].biggest"
                 :category="$store.state.categories.items[categoryId]"
                 :categoryId="categoryId"
                 :currency="$store.state.currencies.base"
@@ -238,6 +237,18 @@ export default {
                 :total="statWithLastPeriods.categories[categoryId][item.id]"
                 :type="item.type"
               )
+              template(v-if="filter.categoryId")
+                template(v-for="categoryId in $store.getters['categories/getChildCategoriesIds'](filter.categoryId)")
+                  template(v-if="!statWithLastPeriods[item.id].categoriesIds.includes(categoryId)")
+                    LazyStatItemRound(
+                      v-if="filter.categoryId"
+                      :category="$store.state.categories.items[categoryId]"
+                      :categoryId="categoryId"
+                      :currency="$store.state.currencies.base"
+                      :key="categoryId"
+                      :total="0"
+                      :type="item.type"
+                    )
 
             //- Cats horizontal list
             .statCategories(v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0")
@@ -254,7 +265,7 @@ export default {
               )
 
       template(v-if="(statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)) || (activeTabStat === 'incomes' || activeTabStat === 'expenses')")
-        .baseBox._mw(v-if="ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
+        .baseBox._mw(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
           .baseBox__title {{ $t('trns.history') }}
           .baseBox__content
             TrnsList3(
@@ -264,63 +275,25 @@ export default {
             )
 
   //- history
-  .history(v-if="statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0 && (activeTabStat !== 'incomes' && activeTabStat !== 'expenses')")
-    .baseBox__title {{ $t('trns.history') }}
+  .history(v-if="activeTabStat === 'history' || statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0 && (activeTabStat !== 'incomes' && activeTabStat !== 'expenses')")
+    .baseBox__title(v-if="activeTabStat !== 'history'") {{ $t('trns.history') }}
     TrnsList(:size="50")
-
-  //- Analytics
-  //-----------------------------
-  template(v-if="activeTabViewName === 'analytics'")
-    .pageAnalytics
-      Analytics
-        template(#incomes)
-          .boxTitle {{ $t('money.incomes') }}
-
-          .boxSummary2
-            .boxSummary2__item
-              Amount(
-                :currency="$store.state.currencies.base"
-                :type="1"
-                :value="statCurrentPeriod.incomes.total"
-                size="xl"
-                vertical="left"
-              )
-            StatSummaryRowItemView(
-              :type="1"
-              :amount="statAverage.incomes"
-              :title="$t('money.average.incomes')"
-            )
-
-        template(#expenses)
-          .boxTitle {{ $t('money.expenses') }}
-
-          .boxSummary2
-            .boxSummary2__item
-              Amount(
-                :currency="$store.state.currencies.base"
-                :type="0"
-                :value="statCurrentPeriod.expenses.total"
-                size="xl"
-                vertical="left"
-              )
-            StatSummaryRowItemView(
-              :type="0"
-              :amount="statAverage.expenses"
-              :title="$t('money.average.expenses')"
-            )
 </template>
 
 <style lang="stylus">
 @import '~assets/stylus/variables'
+
+.statChartLines
+  padding-top $m6
+  padding-bottom $m7
+
 // ------------------------------------
 .history
   margin $m5 0
   padding $m5 $m7
-  border-bottom 1px solid var(--c-bg-7)
 
   +media(700px)
     padding $m8 $m8
-    border-bottom 1px solid var(--c-bg-5)
 
   .trnsList__content
     .trnsList__grid
@@ -413,6 +386,7 @@ export default {
       padding $m8 $m5
 
   &._date
+    overflow initial
     margin-top 0
     margin-bottom 0
     padding-top 0
@@ -424,10 +398,22 @@ export default {
       padding-bottom 0
 
   &._chart
+    overflow initial
     margin-top 0
     margin-bottom 0
     padding-top 0
     padding-bottom 0
+    background none
+    border none
+
+    +media(600px)
+      padding-bottom $m5
+
+  &._filter
+    margin-top 0
+    margin-bottom 0
+    padding-top $m6
+    padding-bottom $m6
     background none
     border none
 

@@ -144,5 +144,5 @@ body
 // ------------------------------------
 .context-menu-sep
   height 1px
-  background var(--c-bg-2)
+  background var(--c-bg-5)
 </style>

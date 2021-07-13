@@ -114,8 +114,9 @@ export default {
     padding 12px 20px
     font-size 14px
 
-  &:active
-    background var(--c-bg-3)
+  +media-hover()
+    color var(--c-font-3)
+    background var(--c-bg-5)
 
   &._ttu
     text-transform uppercase
@@ -151,13 +152,15 @@ export default {
     height 40px
 
   &._bdb
-    padding 12px $m7
+    height 44px
+    padding $m6 $m7
+    background var(--c-bg-4)
     border 1px solid var(--c-bg-5)
-    &:hover
-      @media $media-laptop
-        background var(--c-bg-4)
-    &:active
-      background var(--c-bg-4)
+    border-radius $m5
+
+    +media-hover()
+      color var(--c-font-3)
+      background var(--c-bg-5)
 
   &._inline
     display flex
@@ -191,13 +194,13 @@ export default {
           background var(--c-bg-13)
 
   &._small
-    height 40px
-    padding 0 $m8
+    height 44px
+    padding 0 $m9
     color var(--c-font-4)
     font-size 12px
     background var(--c-bg-3)
-    border 1px solid var(--c-bg-5)
-    border-radius $m4
+    border 1px solid var(--c-bg-7)
+    border-radius $m5
 
     ^[0]:active &
       color var(--c-font-3)
@@ -244,7 +247,6 @@ export default {
 
   &__icon
     opacity .85
-    width 22px
     margin-right $m6
     margin-left -5px
     font-size 18px
@@ -257,7 +259,6 @@ export default {
     +media-laptop()
       margin-right 10px
       margin-left -8px
-      font-size 14px
 
   &__check
     margin-left auto

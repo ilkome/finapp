@@ -7,9 +7,17 @@ export default {
 
     db.ref(`users/${uid}/categories`).on('value', (snapshot) => {
       const items = snapshot.val()
-      for (const id in items) {
-        items[id] = Object.freeze(items[id])
+
+      // add child categories to root categories
+      for (const categoryId in items) {
+        const parentCategoryId = items[categoryId].parentId
+        if (parentCategoryId !== 0) {
+          items[parentCategoryId].childIds
+            ? !items[parentCategoryId].childIds.includes(categoryId) && items[parentCategoryId].childIds.push(categoryId)
+            : items[parentCategoryId].childIds = [categoryId]
+        }
       }
+
       dispatch('setCategories', items)
     }, e => console.error(e))
   },

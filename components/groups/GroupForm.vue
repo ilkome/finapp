@@ -1,11 +1,5 @@
 <script>
-import Cleave from 'vue-cleave-component'
-
 export default {
-  components: {
-    Cleave
-  },
-
   data () {
     return {
       groupName: '',
@@ -52,12 +46,9 @@ export default {
     },
 
     handleSelectTrn (trnId) {
-      if (this.groupTrnsIds.includes(trnId)) {
-        this.groupTrnsIds = this.groupTrnsIds.filter(item => item !== trnId)
-      }
-      else {
-        this.groupTrnsIds.push(trnId)
-      }
+      this.groupTrnsIds.includes(trnId)
+        ? this.groupTrnsIds = this.groupTrnsIds.filter(item => item !== trnId)
+        : this.groupTrnsIds.push(trnId)
     }
   }
 }
@@ -81,7 +72,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .form
   overflow hidden
@@ -100,8 +91,8 @@ export default {
 
 .inputText__value
   height 40px
-  font-size 16px
   padding 0 16px
+  font-size 16px
   background var(--c-bg-1)
   border 1px solid var(--c-bg-7)
   border-radius 3px
@@ -117,21 +108,24 @@ export default {
     border-color var(--c-bg-9)
 
 .inputText__label
-  border 0
   margin 0
   padding 0
   padding-bottom 10px
-  font-size 11px
+  font-size 11px;
+  border 0
 
 @keyframes shake
-  8%, 41%
+  8%
+  41%
     transform translateX(-10px)
-  25%, 58%
+  25%
+  58%
     transform translateX(10px)
   75%
     transform translateX(-5px)
   92%
     transform translateX(5px)
-  0%, 100%
+  0%
+  100%
     transform translateX(0)
 </style>

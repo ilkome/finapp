@@ -31,6 +31,15 @@ LayoutComponentWrap(:contentPadding="false")
   template(slot="content")
     .settings
       .settings__group
+        .settings__subHeader {{ $t('currency.title') }}
+        .settings__item
+          SharedButton._bdb(
+            :title="$t('currency.selectBaseTitle')"
+            icon="mdi mdi-currency-usd"
+            @onClick="$store.commit('currencies/showBaseCurrenciesModal')"
+          )
+
+      .settings__group
         .settings__subHeader {{ $t('settings.lang') }}
         .settings__item
           LangDropdown
@@ -57,7 +66,7 @@ LayoutComponentWrap(:contentPadding="false")
         .settings__item
           SharedButton._bdb(
             :title="$t('settings.deleteButton')"
-            icon="mdi mdi-delete"
+            icon="mdi mdi-delete-empty-outline"
             @onClick="confirmRemoveUserData = true"
           )
 
@@ -67,7 +76,7 @@ LayoutComponentWrap(:contentPadding="false")
         .settings__item
           SharedButton._bdb(
             :title="$t('settings.loadDemoButton')"
-            icon="mdi mdi-test-tube"
+            icon="mdi mdi-gamepad-variant-outline"
             @onClick="confirmCreateDemo = true"
           )
 

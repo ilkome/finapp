@@ -27,90 +27,87 @@ label.checkbox(:class="{ _alt: alt }")
   )
   .checkbox__helper
     .checkbox__toogle
-      .checkbox__toogle__item._on {{ $t('base.on') }}
-      .checkbox__toogle__item._off {{ $t('base.off') }}
   .checkbox__title(v-if="title") {{ title }}
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .checkbox
+  --width 3.3em
+  --height 1.5em
+  --left 1.7em
+  cursor pointer
   position relative
   display flex
   align-items center
   font-size 16px
-  cursor pointer
-
-  --width 3.3em
-  --height 1.5em
-  --left 1.7em
   $color-rail = var(--c-font-2)
 
   +media-laptop()
     font-size 14px
 
   &._small
-    --width 2.6em
-    --height 1.2em
-    --left 1.5em
+    --width 2.4em
+    --height 1.4em
+    --left 1.2em
 
   &__title
     padding 0 1em
     font-size 1em
 
-  &__input[type=checkbox]
+  &__input[type='checkbox']
     opacity 0
     position absolute
 
     &:checked
       + .checkbox__helper:before
-        background var(--c-bg-1)
+        background var(--c-blue-1)
         box-shadow inset 0px 1px 1px background var(--c-bg-12)
         ^[0]._alt &
           background var(--c-bg-7)
 
       + .checkbox__helper:after
-        animation switch .2s ease-out
         left var(--left)
+        animation switch .2s ease-out
 
   &__helper
-    flex-shrink 0
+    cursor pointer
     position relative
     width var(--width)
     height var(--height)
-    cursor pointer
+    flex-shrink 0
     &:before
-      content ''
       position absolute
+      top .5px
+      left 0
       width var(--width)
       height var(--height)
-      left 0
-      transition background 0.1s ease
       background var(--c-bg-8)
       border-radius 50px
-      top .5px
+      transition background .1s ease
+      content ''
 
     // trail
     &:after
       z-index 1
-      content ''
       position absolute
+      left 0em
       width var(--height)
       height var(--height)
-      border-radius 50px
-      left 0em
-      transition all 0.2s ease
       background $color-rail
+      border-radius 50px
+      box-shadow 0px 2px 5px 0px rgba(0, 0, 0, .3)
+      transition all .2s ease
+      content ''
       animation switch .2s ease-out
-      box-shadow 0px 2px 5px 0px rgba(0, 0, 0, 0.3)
       /.light-mode &
         background var(--c-bg-1)
 
   &__toogle
     position absolute
-    right 0
     top 0
+    right 0
     display flex
     align-items center
     width var(--width)
@@ -118,15 +115,15 @@ label.checkbox(:class="{ _alt: alt }")
     padding 0 .3em
     padding-top .1em
     ^[0]._small &
-      padding-left .02em
       padding-right .02em
+      padding-left .02em
 
     &__item
-      flex 1 1
       color var(--c-font-2)
       font-size .7em
       text-align center
       text-transform uppercase
+      flex 1 1
       ^[0]._small &
         font-size .5em
       /.light-mode &

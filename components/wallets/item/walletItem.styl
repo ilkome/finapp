@@ -8,12 +8,8 @@
     padding 0 $m8
     padding-top $m6
 
-  &:active
+  +media-hover()
     background var(--c-bg-6)
-
-  &:hover
-    @media $media-laptop
-      background var(--c-bg-6)
 
   &__grid
     display grid

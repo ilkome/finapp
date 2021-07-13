@@ -37,7 +37,7 @@ Portal(to="modal")
 
     template(#default="{ close }")
       .content(:style="{ maxHeight: documentHeight }")
-        .header(@click="close")
+        .header
           slot(name="header")
 
         slot(name="default" :close="close")

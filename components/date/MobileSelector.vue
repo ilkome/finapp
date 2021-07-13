@@ -1,14 +1,22 @@
 <script>
-import useMobileLayout from '~/components/layout/useMobileLayout'
+import { ref, useContext } from '@nuxtjs/composition-api'
+import usePeriods from '~/components/periods/usePeriods'
 
 export default {
   name: 'DateMobileSelector',
 
   setup () {
-    const { showPeriodsNamesModal } = useMobileLayout()
+    const { store } = useContext()
+    const { periodsNames } = usePeriods()
+
+    const visiblePeriodMenu = ref(false)
+
+    const onSelectPeriod = period => store.dispatch('filter/setPeriod', period)
 
     return {
-      showPeriodsNamesModal
+      visiblePeriodMenu,
+      periodsNames,
+      onSelectPeriod
     }
   }
 }
@@ -16,18 +24,39 @@ export default {
 
 <template lang="pug">
 .dateSelector
-  .menuDots(@click="showPeriodsNamesModal")
-    .menuDots__name: SharedDate(:type="2")
-    .menuDots__dots: .mdi.mdi-dots-vertical
+  SharedContextMenu(
+    :position="{ left: '-24px', top: true }"
+    :visible="visiblePeriodMenu"
+    @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu"
+  )
+    template(slot="opener")
+      .menuDots
+        .menuDots__name: SharedDate(:type="2")
+        .menuDots__dots: .mdi.mdi-dots-vertical
+
+    template(slot="content")
+      SharedContextMenuItem(
+        v-for="periodItem in periodsNames"
+        :key="periodItem.slug"
+        :icon="periodItem.icon"
+        :selected="filterPeriod === periodItem.slug"
+        :title="$t(`dates.${periodItem.slug}.simple`)"
+        @onClick="onSelectPeriod(periodItem.slug)"
+        @onClose="visiblePeriodMenu = !visiblePeriodMenu"
+      )
+      SharedContextMenuItem(
+        :selected="filterPeriod === 'all'"
+        :title="$t('dates.all.simple')"
+        icon="mdi mdi-database"
+        @onClick="onSelectPeriod('all')"
+        @onClose="visiblePeriodMenu = !visiblePeriodMenu"
+      )
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
 .dateSelector
-  z-index 9
-  position sticky
-  top 0
   display flex
   align-items center
   justify-content center

@@ -29,10 +29,6 @@ Portal(
     LayoutSidebarBaseMenu
     .context-menu-sep
 
-    template(v-if="activeTabStat === 'details' || activeTabStat === 'incomes' || activeTabStat === 'expenses'")
-      CustomizeMenu
-      .context-menu-sep
-
     SharedContextMenuItem(
       :title="$t('theme.change')"
       icon="mdi mdi-palette"

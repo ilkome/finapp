@@ -56,10 +56,10 @@ export default {
     const transferCategoryId = rootGetters['categories/transferCategoryId']
     const trnsIds = rootGetters['trns/selectedTrnsIds']
     const periodName = rootState.filter.period
-    if (periodName === 'all') { return }
+    if (periodName === 'all') return
 
     const oldestTrn = trns[rootGetters['trns/firstCreatedTrnId']]
-    if (!oldestTrn) { return }
+    if (!oldestTrn) return
 
     const oldestTrnDate = dayjs(oldestTrn.date).endOf(periodName)
     let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
@@ -88,9 +88,8 @@ export default {
 
   isFirstPeriodSelected (state, getters, rootState, rootGetters) {
     if (rootGetters['trns/hasTrns']) {
-      if (dayjs(rootState.filter.date).isSame(dayjs(), rootState.filter.period)) {
+      if (dayjs(rootState.filter.date).isSame(dayjs(), rootState.filter.period))
         return true
-      }
     }
     else {
       return true
@@ -102,11 +101,11 @@ export default {
       const trns = rootState.trns.items
       const firstCreatedTrnIdFromSelectedTrns = rootGetters['trns/firstCreatedTrnIdFromSelectedTrns']
       const firstCreatedTrn = trns[firstCreatedTrnIdFromSelectedTrns]
-      if (!firstCreatedTrn) { return }
+      if (!firstCreatedTrn) return
       const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(state.period).valueOf()
       const filterDate = dayjs(rootState.filter.date).startOf(state.period).valueOf()
 
-      if (filterDate <= firstCreatedTrnDate) { return true }
+      if (filterDate <= firstCreatedTrnDate) return true
     }
     else {
       return true
@@ -168,12 +167,11 @@ export default {
 
         // Push trnId to category. Exclude transfer category
         if (categoryId !== transferCategoryId) {
-          if (!categoriesWithTrnsIds[categoryId]) {
+          if (!categoriesWithTrnsIds[categoryId])
             categoriesWithTrnsIds[categoryId] = [trnId]
-          }
-          else {
+
+          else
             categoriesWithTrnsIds[categoryId].push(trnId)
-          }
         }
       }
     }
@@ -196,24 +194,23 @@ export default {
     * @return {Number} total.total
     *
   */
-  getStat: (state, getters, rootState, rootGetters) => ({ date, periodName }) => {
+  getStat: (_state, getters, _rootState, rootGetters) => ({ date, periodName }) => {
     const selectedTrns = rootGetters['trns/getTrns']({ date, periodName })
     const categoriesWithTrnsIds = getters.getCategoriesIdsWithTrnsIds({ trnsIds: selectedTrns })
     const totalAllTrns = rootGetters['trns/getTotalOfTrnsIds'](selectedTrns)
 
     // count total in categories
     const categoriesTotal = {}
-    for (const categoryId in categoriesWithTrnsIds) {
+    for (const categoryId in categoriesWithTrnsIds)
       categoriesTotal[categoryId] = rootGetters['trns/getTotalOfTrnsIds'](categoriesWithTrnsIds[categoryId])
-    }
 
     // separate catgories by incomes and expenses
     const statIncomes = {}
     const statExpenses = {}
     for (const categoryId in categoriesWithTrnsIds) {
       const total = categoriesTotal[categoryId]
-      if (total.incomes > 0) { statIncomes[categoryId] = total }
-      if (total.expenses > 0) { statExpenses[categoryId] = total }
+      if (total.incomes > 0) statIncomes[categoryId] = total
+      if (total.expenses > 0) statExpenses[categoryId] = total
     }
 
     // sort categories amount
@@ -223,8 +220,8 @@ export default {
 
       if (categoriesIds.length) {
         sortedCategoriesIds = categoriesIds.sort((a, b) => {
-          if (categories[a][typeName] > categories[b][typeName]) { return -1 }
-          if (categories[a][typeName] < categories[b][typeName]) { return 1 }
+          if (categories[a][typeName] > categories[b][typeName]) return -1
+          if (categories[a][typeName] < categories[b][typeName]) return 1
           return 0
         })
       }
@@ -264,7 +261,7 @@ export default {
     return stat
   },
 
-  statCurrentPeriod (state, getters, rootState) {
+  statCurrentPeriod (_state, getters, rootState) {
     const date = rootState.filter.date
     const stat = getters.getStat({ date })
     return stat
