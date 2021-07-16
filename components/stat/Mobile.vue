@@ -201,8 +201,6 @@ export default {
                 :title="$t('dates.day.today')"
               )
 
-            .boxEmpty(v-if="statCurrentPeriod[item.id].categoriesIds.length === 0") {{ $t('stat.empty') }}
-
             .statChartLines(v-if="filter.categoryId")
               StatChartLines(
                 v-if="filter.categoryId && $store.getters['trns/hasTrns']"
@@ -211,6 +209,8 @@ export default {
                 :isShowExpenses="item.type === 0"
                 :isShowIncomes="item.type === 1"
               )
+
+            .boxEmpty(v-if="statCurrentPeriod[item.id].categoriesIds.length === 0") {{ $t('stat.empty') }}
 
             //- Pie chart
             .statChartPie(v-if="ui.showPieChart")
@@ -221,12 +221,12 @@ export default {
 
             //- Cats vertical chart
             StatCatsPeriodCatsChart(
-              v-if="ui.showCatsVerticalChart && !filter.categoryId && $store.state.ui.catsChart === 'visible' && statCurrentPeriod[item.id].categoriesIds.length > 1"
+              v-if="ui.showCatsVerticalChart && !filter.categoryId && $store.state.ui.catsChart === 'visible' && statCurrentPeriod[item.id].categoriesIds.length > 1 && (!filter.categoryId || filter.categoryId && $store.getters['categories/getChildCategoriesIds'](filter.categoryId).length !== 0)"
               :type="item.id"
             )
 
             //- Round cats list
-            .statItemsTiles(v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0")
+            .statItemsTiles(v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0 && (!filter.categoryId || filter.categoryId && $store.getters['categories/getChildCategoriesIds'](filter.categoryId).length !== 0)")
               LazyStatItemRound(
                 v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0"
                 v-for="categoryId in statWithLastPeriods[item.id].categoriesIds"
@@ -251,7 +251,7 @@ export default {
                     )
 
             //- Cats horizontal list
-            .statCategories(v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0")
+            .statCategories(v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0 ")
               LazyStatItem(
                 v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0"
                 v-for="categoryId in statCurrentPeriod[item.id].categoriesIds"
@@ -447,11 +447,11 @@ export default {
 
 // ------------------------------------
 .boxEmpty
-  padding 0 $m7
-  padding-top $m6
+  padding 0
+  padding-top $m7
   padding-bottom $m10
   color var(--c-font-5)
-  font-size 10px
+  font-size 14px
 
 // ------------------------------------
 .boxSummary2
