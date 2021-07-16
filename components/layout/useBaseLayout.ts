@@ -2,7 +2,7 @@ import { ref } from '@nuxtjs/composition-api'
 
 const isShowPeriodsNamesModal = ref(false)
 
-export default function useMobileLayout () {
+export default function useBaseLayout () {
   function showPeriodsNamesModal () {
     isShowPeriodsNamesModal.value = true
   }

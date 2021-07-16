@@ -1,20 +1,15 @@
 <script>
 import { computed, useContext } from '@nuxtjs/composition-api'
 import useFilter from '~/modules/filter/useFilter'
+import useStat from '~/modules/stat/useStat'
 
 export default {
   name: 'ChartMobileStatLines',
 
-  props: {
-    isEmptyStat: {
-      type: Boolean,
-      default: false
-    }
-  },
-
   setup () {
     const { store } = useContext()
     const { filterPeriodNameAllReplacedToYear } = useFilter()
+    const { isEmptyStat } = useStat()
 
     const activeTabStat = computed(() => store.state.ui.activeTabStat)
     const periods = computed(() => store.state.chart.periods)
@@ -30,6 +25,7 @@ export default {
     })
 
     return {
+      isEmptyStat,
       activeTabStat,
       periods,
       filterPeriod,

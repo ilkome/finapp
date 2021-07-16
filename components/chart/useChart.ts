@@ -3,7 +3,7 @@ import useFilter from '~/modules/filter/useFilter'
 
 const isShowDataLabels = ref(false)
 
-export default function useMobileLayout () {
+export default function useChart () {
   const { store } = useContext()
   const { filterPeriodNameAllReplacedToYear } = useFilter()
 

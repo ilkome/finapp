@@ -127,7 +127,7 @@ export default {
       this.filterBy = filterBy
       this.pageNumber = 1
       setTimeout(() => {
-        this.slider.slideTo(2, 0)
+        this.slider.slideTo(0, 0)
       }, 100)
     },
 
@@ -239,7 +239,9 @@ export default {
   padding $m6
   padding-top $m8
   background alpha(#171717, .9)
-  backdrop-filter blur(12px)
+
+  /.light-mode &
+    background var(--color-bg-canvas)
 
 .menuItem
   cursor pointer

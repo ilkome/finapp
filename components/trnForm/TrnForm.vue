@@ -382,6 +382,9 @@ export default {
         width 10px
         background var(--c-bg-10)
         border-radius 4px
+
+        /.light-mode &
+          background var(--c-blue-1)
 </style>
 
 <style lang="stylus" scoped>
@@ -428,7 +431,7 @@ export default {
     z-index 2
     position absolute
     left 50%
-    bottom 0
+    bottom 1px
     display flex
     align-items center
     justify-content center
@@ -438,4 +441,7 @@ export default {
     border-radius $m5
     backdrop-filter blur(12px)
     transform translateX(-50%)
+
+    /.light-mode &
+      background var(--color-bg-canvas)
 </style>

@@ -29,17 +29,16 @@ export default function getStat () {
 
     // count total in categories
     const categoriesTotal = {}
-    for (const categoryId in categoriesWithTrnsIds) {
+    for (const categoryId in categoriesWithTrnsIds)
       categoriesTotal[categoryId] = store.getters['trns/getTotalOfTrnsIds'](categoriesWithTrnsIds[categoryId])
-    }
 
     // separate catgories by incomes and expenses
     const statIncomes = {}
     const statExpenses = {}
     for (const categoryId in categoriesWithTrnsIds) {
       const total = categoriesTotal[categoryId]
-      if (total.incomes > 0) { statIncomes[categoryId] = total }
-      if (total.expenses > 0) { statExpenses[categoryId] = total }
+      if (total.incomes > 0) statIncomes[categoryId] = total
+      if (total.expenses > 0) statExpenses[categoryId] = total
     }
 
     // sorted

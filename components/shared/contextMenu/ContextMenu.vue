@@ -79,7 +79,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/margins'
+@import '~assets/stylus/variables'
 
 .context-menu
   z-index 6
@@ -96,23 +96,21 @@ export default {
     left 0
     width 100%
     height 100%
-    anim()
-    // background rgba(0, 0, 0, .2)
-    // backdrop-filter blur(2px)
+    // anim()
+    // background rgba(0, 0, 0, .4)
 
   &__popup
     overflow hidden
-    z-index 20
+    z-index 10
     position absolute
     top 48px
     min-width 200px
-    background var(--c-bg-2)
-    border 1px solid var(--c-bg-6)
+    background var(--c-bg-5)
+    border 1px solid var(--c-bg-1)
     border-radius $m6
-    box-shadow 0 10px 20px -5px var(--c-bg-1)
 
     /.light-mode &
-      background var(--c-bg-3)
+      background var(--c-bg-1)
       border 1px solid var(--c-bg-5)
 
     &._right
@@ -123,7 +121,7 @@ export default {
       bottom 48px
 
   &__content
-    z-index 12
+    z-index 200
     position relative
 
   &__desc

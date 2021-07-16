@@ -61,7 +61,6 @@ export default {
   overflow-x auto
   margin 0 auto
   padding 0 $m6
-  background var(--c-bg-3)
 
   +media(600px)
     overflow initial

@@ -31,7 +31,7 @@ export default {
     const { ui, setUI } = useUIView()
 
     // Stat
-    const { moneyTypes } = useStat()
+    const { moneyTypes, isEmptyStat } = useStat()
 
     // Last selected period
     const isFirstPeriodSelected = computed(() => store.getters['stat/isFirstPeriodSelected'])
@@ -111,9 +111,6 @@ export default {
       return stat
     })
 
-    // is empty stat
-    const isEmptyStat = computed(() => statAverage.value.total === 0 && store.getters['trns/selectedTrnsIdsWithDate'].length === 0)
-
     return {
       isShowChart,
 
@@ -145,10 +142,7 @@ export default {
 <template lang="pug">
 .pageWrapScroll
   .baseBox._chart(v-if="ui.showMainChart && isShowChart")
-    LazyChartMobileStatLines(
-      v-if="ui.showMainChart && isShowChart"
-      :isEmptyStat="isEmptyStat"
-    )
+    LazyChartMobileStatLines(v-if="ui.showMainChart && isShowChart")
 
   .baseBox._date
     DateMobilePrevNextArrow

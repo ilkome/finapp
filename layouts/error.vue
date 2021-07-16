@@ -6,9 +6,8 @@ export default {
   props: ['error'],
 
   fetch () {
-    if (Object.keys(this.$route.query).length > 0) {
+    if (Object.keys(this.$route.query).length > 0)
       this.$router.replace({ query: null })
-    }
   },
 
   computed: {
@@ -23,7 +22,7 @@ export default {
 .container
   h1 Error
   pre {{ error }}
-  h1(@click="$router.push('/')") Index
+  h1(@click="$router.push('/')") Go to home
 </template>
 
 <style lang="stylus">

@@ -63,10 +63,10 @@ export default {
 
   +media-hover()
     &:not(._selected)
-      background var(--c-bg-3)
+      background var(--c-bg-5)
 
   &._selected
-    background var(--c-bg-5)
+    background var(--c-bg-2)
 
   &__icon
     opacity .85

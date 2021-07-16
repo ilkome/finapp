@@ -1,6 +1,6 @@
 <script>
 import { computed, useContext } from '@nuxtjs/composition-api'
-import useMobileLayout from '~/components/layout/useMobileLayout'
+import useBaseLayout from '~/components/layout/useBaseLayout'
 import useUIView from '~/components/layout/useUIView'
 
 export default {
@@ -10,7 +10,7 @@ export default {
     const { store } = useContext()
 
     // Layout
-    const { isShowPeriodsNamesModal } = useMobileLayout()
+    const { isShowPeriodsNamesModal } = useBaseLayout()
 
     // UI
     const { ui } = useUIView()
@@ -55,7 +55,7 @@ export default {
     //- Stat
     .page(
       v-if="isStatPage && $store.getters['trns/hasTrns']"
-    ): StatMobile
+    ): StatDashboard
 
     //- No trns
     .page(

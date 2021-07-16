@@ -4,12 +4,14 @@ import useChart from '~/components/chart/useChart'
 import usePeriods from '~/components/periods/usePeriods'
 import useFilter from '~/modules/filter/useFilter'
 import useUIView from '~/components/layout/useUIView'
+import useStat from '~/modules/stat/useStat'
 
 export default {
   name: 'ChartPeriods',
 
   setup () {
     const { store } = useContext()
+    const { isEmptyStat } = useStat()
 
     // Filter
     const { filterPeriodNameAllReplacedToYear } = useFilter()
@@ -48,6 +50,7 @@ export default {
     const visibleContextMenu = ref(false)
 
     return {
+      isEmptyStat,
       isShowDataLabels,
       toogleChartsView,
       addPeriodOrGroup,
@@ -76,10 +79,12 @@ export default {
       @onClickOpener="visibleContextMenu = !visibleContextMenu"
     )
       template(slot="opener")
-        .periodItem {{ $t('settings.customize') }}
+        .periodItem._tune
+          .periodItem__icon: .mdi.mdi-tune
+          .periodItem__text {{ $t('settings.customize') }}
 
       template(slot="content")
-        template(v-if="!isEmptyData")
+        template(v-if="!isEmptyStat")
           CustomizeMenu
           .context-menu-sep
 
@@ -114,7 +119,7 @@ export default {
       @click="addPeriodOrGroup"
     ): .mdi.mdi-plus
 
-  .periods__group
+  .periods__group(v-if="!isEmptyStat")
     .periodItem(@click="toogleChartsView")
       .mdi.mdi-chart-line(v-if="periods[filterPeriodNameAllReplacedToYear].grouped")
       .mdi.mdi-chart-bar(v-else)
@@ -158,7 +163,10 @@ export default {
   border-radius $m3
   anim()
 
-  +media(800px)
+  +media(400px)
+    font-size 12px
+
+  +media(600px)
     padding $m6 $m6
     font-size 12px
 
@@ -183,4 +191,12 @@ export default {
 
     +media(800px)
       display flex
+
+  &._tune
+    color var(--c-font-3)
+
+  &__icon
+    padding-right $m5
+    .mdi
+      font-size 18px
 </style>
