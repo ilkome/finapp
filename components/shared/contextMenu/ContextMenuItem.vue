@@ -63,6 +63,9 @@ export default {
 
   +media-hover()
     &:not(._selected)
+      background var(--c-bg-3)
+
+    /.light-mode &
       background var(--c-bg-5)
 
   &._selected
