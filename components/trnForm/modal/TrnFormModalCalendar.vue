@@ -32,7 +32,6 @@ export default {
 
   methods: {
     handleSelectDate (date, close) {
-      console.log(close)
       this.$store.commit('trnForm/setTrnFormValues', {
         date: this.$day(date).valueOf()
       })
