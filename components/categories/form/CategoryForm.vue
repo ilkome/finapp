@@ -90,7 +90,7 @@ export default {
         const categories = this.$store.state.categories.items
 
         const categoriesValues = {
-          order: this.category.order,
+          order: this.category.order || null,
           color: this.category.color,
           icon: this.category.icon,
           name: this.category.name,
