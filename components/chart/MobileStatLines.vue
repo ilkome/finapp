@@ -5,6 +5,13 @@ import useFilter from '~/modules/filter/useFilter'
 export default {
   name: 'ChartMobileStatLines',
 
+  props: {
+    isEmptyStat: {
+      type: Boolean,
+      default: false
+    }
+  },
+
   setup () {
     const { store } = useContext()
     const { filterPeriodNameAllReplacedToYear } = useFilter()
@@ -34,8 +41,9 @@ export default {
 
 <template lang="pug">
 .chart
-  .chart__content
-    StatChartLines(
+  .chart__content(v-if="!isEmptyStat")
+    LazyStatChartLines(
+      v-if="!isEmptyStat"
       :isShowIncomes="activeTabStat === 'incomes' || activeTabStat === 'details' || activeTabStat === 'history'"
       :isShowExpenses="activeTabStat === 'expenses' || activeTabStat === 'details' || activeTabStat === 'history'"
       :chartType="chartType"

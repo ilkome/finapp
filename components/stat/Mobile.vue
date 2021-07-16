@@ -111,6 +111,9 @@ export default {
       return stat
     })
 
+    // is empty stat
+    const isEmptyStat = computed(() => statAverage.value.total === 0 && store.getters['trns/selectedTrnsIdsWithDate'].length === 0)
+
     return {
       isShowChart,
 
@@ -131,7 +134,9 @@ export default {
       moneyTypes,
 
       statToday,
-      statWithLastPeriods
+      statWithLastPeriods,
+
+      isEmptyStat
     }
   }
 }
@@ -140,7 +145,10 @@ export default {
 <template lang="pug">
 .pageWrapScroll
   .baseBox._chart(v-if="ui.showMainChart && isShowChart")
-    LazyChartMobileStatLines(v-if="ui.showMainChart && isShowChart")
+    LazyChartMobileStatLines(
+      v-if="ui.showMainChart && isShowChart"
+      :isEmptyStat="isEmptyStat"
+    )
 
   .baseBox._date
     DateMobilePrevNextArrow
@@ -150,6 +158,10 @@ export default {
 
   .baseBox._filter(v-if="isShowFilter")
     LazyFilterRow(v-if="isShowFilter")
+
+  .noStat(v-if="isEmptyStat")
+    .noStat__title {{ $t('stat.empty') }}
+    .noStat__desc {{ $t('stat.emptyDesc') }}
 
   template(v-if="activeTabStat !== 'history'")
     //- Total
@@ -315,6 +327,21 @@ export default {
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
+.noStat
+  overflow hidden
+  padding $m10 $m7
+  color var(--c-font-3)
+  text-align center
+
+  &__title
+    padding-bottom $m6
+    font-size 22px
+
+  &__desc
+    color var(--c-font-4)
+    font-size 14px
+
+// ------------------------------------
 .pageWrapScroll
   overflow hidden
   overflow-y auto

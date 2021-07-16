@@ -224,6 +224,7 @@ export default {
     periods: 'Detail',
     balanceTitle: 'Balance',
     empty: 'No stat for this period',
+    emptyDesc: 'Change filter, period or add new transactions.',
     customize: {
       showHistory: 'Show history',
       showRoundCats: 'Show round categories list',
