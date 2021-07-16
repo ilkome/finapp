@@ -54,7 +54,7 @@ export default {
   getChildCategoriesIds: (state, getters) => (categoryId) => {
     if (!getters.hasCategories) return []
     const category = state.items[categoryId]
-    return category.childIds || []
+    return category?.childIds || []
   },
 
   lastUsedCategoriesIdsByDate (state, getters, rootState, rootGetters) {
