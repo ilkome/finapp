@@ -13,7 +13,7 @@ export default {
     )
 
   .options__item(v-if="!$store.getters['wallets/hasWallets'] && !$store.getters['categories/hasCategories']")
-    h4 {{ $t('welcome.firstRun.text') }}
+    .options__text {{ $t('welcome.firstRun.text') }}
 
     SharedButton._text-center._blue2(
       :title="$t('welcome.firstRun.btn')"
@@ -25,7 +25,7 @@ export default {
       .options__or__border
       .options__or__text {{ $t('welcome.or') }}
 
-    h4 {{ $t('welcome.demo.text') }}
+    .options__text {{ $t('welcome.demo.text') }}
     SharedButton._text-center._blue2(
       :title="$t('welcome.demo.btn')"
       @onClick="$store.dispatch('demo/createDemo')"
@@ -33,6 +33,8 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
+@import '~assets/stylus/variables'
+
 .startSomething
   display flex
   align-items center
@@ -42,6 +44,11 @@ export default {
 
   .options__item
     margin-bottom 40px
+    padding 0 $m6
+
+  .options__text
+    padding-bottom $m8
+    text-align center
 
   .options__or
     position relative
@@ -49,12 +56,14 @@ export default {
     align-items center
     justify-content center
     padding $m9 0
-    color var(--c-font-4)
+    color var(--c-font-3)
     text-align center
+
     &__text
       position relative
       padding $m7
-      background var(--c-bg-2)
+      background var(--c-bg-3)
+
     &__border
       position absolute
       top 50%

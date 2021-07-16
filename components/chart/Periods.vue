@@ -170,6 +170,9 @@ export default {
     padding $m6 $m6
     font-size 12px
 
+  +media(800px)
+    padding $m6 $m7
+
   +media-hover()
     cursor pointer
     color var(--c-font-3)
