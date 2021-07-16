@@ -104,11 +104,10 @@ export default {
   },
 
   // selectedTrnsIds
-  selectedTrnsIds (state, getters, rootState) {
+  selectedTrnsIds (_state, getters, rootState) {
     if (!getters.hasTrns) return []
 
     const categories = rootState.categories.items
-    const categoriesIds = Object.keys(categories)
     const filterCategoryId = rootState.filter.categoryId
     const filterWalletId = rootState.filter.walletId
     const trns = rootState.trns.items
@@ -120,12 +119,14 @@ export default {
 
     // filter category
     if (filterCategoryId) {
-      const childCategoriesIds = categoriesIds.filter(id => categories[id].parentId === filterCategoryId)
-      if (childCategoriesIds.length) {
+      const childCategoriesIds = categories[filterCategoryId].childIds
+      if (childCategoriesIds?.length) {
         trnsIds = trnsIds.filter((trnId) => {
           const trnCategoryId = trns[trnId].categoryId
           for (const categoryId of childCategoriesIds)
             if (trnCategoryId === categoryId) return true
+
+          return false
         })
       }
       else {
@@ -143,7 +144,7 @@ export default {
     return trnsIds
   },
 
-  selectedTrnsIdsWithDate (state, getters, rootState) {
+  selectedTrnsIdsWithDate (_state, getters, rootState) {
     if (!getters.hasTrns) return []
 
     const trns = rootState.trns.items
@@ -155,8 +156,10 @@ export default {
 
     // filter date
     if (filterPeriod !== 'all') {
-      trnsIds = trnsIds
-        .filter(trnId => (trns[trnId].date >= startDateValue) && (trns[trnId].date <= endDateValue))
+      trnsIds = trnsIds.filter(
+        trnId =>
+          (trns[trnId].date >= startDateValue) &&
+          (trns[trnId].date <= endDateValue))
     }
 
     trnsIds = trnsIds
@@ -170,7 +173,7 @@ export default {
   },
 
   // sortedTrnsIds
-  sortedTrnsIds (state, getters, rootState, rootGetters) {
+  sortedTrnsIds (state, getters) {
     if (!getters.hasTrns) return []
 
     const trns = state.items
@@ -260,12 +263,11 @@ export default {
     return trnsIds
   },
 
-  getTrnsIds: (state, getters, rootState) => (props) => {
+  getTrnsIds: (_state, getters, rootState) => (props) => {
     if (!getters.hasTrns) return []
 
     const { startDate, endDate, periodName } = props
     const categories = rootState.categories.items
-    const categoriesIds = Object.keys(categories)
     const filterCategoryId = props.categoryId
     const filterWalletId = props.walletId
 
@@ -287,8 +289,8 @@ export default {
 
     // filter category
     if (filterCategoryId) {
-      const childCategoriesIds = categoriesIds.filter(id => categories[id].parentId === filterCategoryId)
-      if (childCategoriesIds.length) {
+      const childCategoriesIds = categories[filterCategoryId].childIds
+      if (childCategoriesIds?.length) {
         trnsIds = trnsIds.filter((trnId) => {
           const trnCategoryId = trns[trnId].categoryId
           for (const categoryId of childCategoriesIds)
