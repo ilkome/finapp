@@ -1,5 +1,5 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { ref, computed, watch, nextTick, useContext } from '@nuxtjs/composition-api'
 import { Chart } from 'highcharts-vue'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
@@ -45,7 +45,7 @@ export default {
   },
 
   setup () {
-    const { store } = useContext()
+    const { store, app: { $day } } = useContext()
     const { isShowDataLabels } = useChart()
     const { filterPeriodNameAllReplacedToYear } = useFilter()
 
@@ -59,7 +59,51 @@ export default {
       return type
     })
 
+    const chartObj = ref({})
+    const chartCallback = (v) => { chartObj.value = v }
+
+    const onClickChart = (event) => {
+      const chart = chartObj.value
+      if (!chart)
+        return
+
+      const nEvent = chart.pointer.normalize(event)
+      const value = chart.series[0].searchPoint(nEvent, true) || chart.series[0].searchPoint(nEvent, false) || chart.series[1].searchPoint(nEvent, true)
+
+      if (value) {
+        if (store.state.filter.period === 'all')
+          store.dispatch('filter/setPeriod', 'year')
+        if (value.date)
+          store.dispatch('filter/setDate', parseInt(value.date))
+      }
+    }
+
+    watch(() => store.state.filter.date, async (date) => {
+      await nextTick()
+      const chart = chartObj.value
+      if (!chartObj.value)
+        return
+
+      let format = 'MM'
+      if (filterPeriodNameAllReplacedToYear.value === 'day') format = 'D.MM'
+      if (filterPeriodNameAllReplacedToYear.value === 'week') format = 'D MMM'
+      if (filterPeriodNameAllReplacedToYear.value === 'month') format = 'MMM'
+      if (filterPeriodNameAllReplacedToYear.value === 'year') format = 'YYYY'
+      const name = $day(date).format(format)
+
+      const index = chart.xAxis && chart?.xAxis[0].categories.indexOf(name)
+      chart.xAxis[0].update({
+        plotBands: [{
+          color: 'var(--c-bg-7)',
+          from: index + 0.5,
+          to: index - 0.5
+        }]
+      })
+    }, { immediate: true })
+
     return {
+      onClickChart,
+      chartCallback,
       isShowDataLabels,
       filterPeriodNameAllReplacedToYear,
       chartType
@@ -71,7 +115,6 @@ export default {
       const periodName = this.filterPeriodNameAllReplacedToYear
       const chartPeriods = this.$store.state.chart.periods
       const trns = this.$store.state.trns.items
-      const vm = this
 
       // diff periods from oldest trn and today
       const oldestTrnDate = this.$day(trns[this.$store.getters['trns/firstCreatedTrnId']].date).endOf(periodName)
@@ -185,12 +228,7 @@ export default {
 
         xAxis: {
           ...chartOptions.xAxis,
-          categories: data.categories,
-          plotBands: [{
-            color: 'var(--c-bg-5)',
-            from: data.categories.length - 1.5,
-            to: data.categories.length - 0.5
-          }]
+          categories: data.categories
         },
 
         yAxis: {
@@ -212,26 +250,7 @@ export default {
 
         chart: {
           ...chartOptions.chart,
-          height: '180',
-
-          events: {
-            click (e) {
-              const value = this.series[0].searchPoint(e, false) || this.series[1].searchPoint(e, false)
-              if (value) {
-                this.xAxis[0].update({
-                  plotBands: [{
-                    color: 'var(--c-bg-5)',
-                    from: value.index + 0.5,
-                    to: value.index - 0.5
-                  }]
-                })
-                if (vm.$store.state.filter.period === 'all')
-                  vm.$store.dispatch('filter/setPeriod', 'year')
-
-                vm.$store.dispatch('filter/setDate', parseInt(value.date))
-              }
-            }
-          }
+          height: '180'
         },
 
         plotOptions: {
@@ -241,24 +260,6 @@ export default {
             dataLabels: {
               ...chartOptions.plotOptions.series.dataLabels,
               enabled: this.isShowDataLabels
-            },
-            cursor: 'pointer',
-            point: {
-              events: {
-                click () {
-                  this.series.xAxis.update({
-                    plotBands: [{
-                      color: 'var(--c-bg-5)',
-                      from: this.index + 0.5,
-                      to: this.index - 0.5
-                    }]
-                  })
-                  if (vm.$store.state.filter.period === 'all')
-                    vm.$store.dispatch('filter/setPeriod', 'year')
-
-                  vm.$store.dispatch('filter/setDate', parseInt(this.date))
-                }
-              }
             }
           }
         }
@@ -269,8 +270,8 @@ export default {
 </script>
 
 <template lang="pug">
-.chart
-  Chart(:options="chartData")
+.chart(@click="onClickChart")
+  Chart(:options="chartData" :callback="chartCallback")
 </template>
 
 <style lang="stylus" scoped>

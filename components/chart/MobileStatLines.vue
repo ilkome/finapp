@@ -38,7 +38,7 @@ export default {
 <template lang="pug">
 .chart
   .chart__content(v-if="!isEmptyStat")
-    LazyStatChartLines(
+    LazyChartStatChartLines(
       v-if="!isEmptyStat"
       :isShowIncomes="activeTabStat === 'incomes' || activeTabStat === 'details' || activeTabStat === 'history'"
       :isShowExpenses="activeTabStat === 'expenses' || activeTabStat === 'details' || activeTabStat === 'history'"

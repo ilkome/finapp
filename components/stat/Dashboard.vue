@@ -208,7 +208,7 @@ export default {
               )
 
             .statChartLines(v-if="filter.categoryId")
-              StatChartLines(
+              LazyChartStatChartLines(
                 v-if="filter.categoryId && $store.getters['trns/hasTrns']"
                 :categoryId="filter.categoryId"
                 :chartColor="$store.state.categories.items[filter.categoryId].color"

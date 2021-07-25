@@ -57,8 +57,8 @@ export default {
 
       chart: {
         backgroundColor: 'transparent',
-        with: '100%',
-        height: '40%',
+        with: 'auto',
+        height: '300',
         spacing: [5, 0, 0, 0],
         type: 'column',
         panning: true,
@@ -82,7 +82,7 @@ export default {
       return baseAmountFormat(amount, ' ', fixed)
     },
 
-    generateData (periodName, oldSeries) {
+    generateData (periodName) {
       const trns = this.$store.state.trns.items
       const allTrnsIds = Object.keys(trns)
 
@@ -187,6 +187,8 @@ $border = var(--c-bg-1)
 .chart
   z-index 3
   position relative
+  width 100%
+  // height 300px
   background var(--c-bg-2)
   anim()
 
@@ -207,6 +209,5 @@ $border = var(--c-bg-1)
       background var(--c-bg-1)
 
   &__content
-    padding 30px 60px
-
+    padding 30px 40px
 </style>
