@@ -37,11 +37,12 @@ export default {
       groupPadding: 0.2,
       pointPadding: 0.1,
       borderWidth: 0,
-      maxPointWidth: 10
+      maxPointWidth: 10,
+      borderRadius: 3
     },
 
     spline: {
-      lineWidth: 2,
+      lineWidth: 3,
       states: {
         hover: {
           lineWidth: 2
@@ -71,9 +72,9 @@ export default {
       },
 
       marker: {
-        radius: 2,
+        radius: 3,
         fillColor: 'var(--c-bg-4)',
-        lineWidth: 2,
+        lineWidth: 3,
         lineColor: 'var(--c-incomes-1)',
         symbol: 'circle'
       },
@@ -105,6 +106,7 @@ export default {
     lineColor: 'var(--c-bg-7)',
     tickColor: 'var(--c-bg-7)',
     tickmarkPlacement: 'on',
+    crosshair: true,
     labels: {
       padding: 15,
       rotation: false,
@@ -115,10 +117,6 @@ export default {
         fontFamily: 'var(--font-secondary)',
         textTransform: 'uppercase'
       }
-    },
-
-    crosshair: {
-      enabled: true
     }
   },
 
@@ -145,8 +143,12 @@ export default {
     backgroundColor: 'var(--c-bg-3)',
     borderColor: 'var(--c-bg-7)',
     borderRadius: 8,
-    padding: 12,
+    padding: 0,
     shadow: false,
+    useHTML: true,
+    headerFormat: '',
+    pointFormat: '',
+    footerFormat: '',
     style: {
       color: 'var(--c-font-2)',
       fontSize: '12px',

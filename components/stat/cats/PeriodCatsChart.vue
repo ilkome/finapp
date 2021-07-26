@@ -81,14 +81,6 @@ export default {
   position relative
   width 100%
 
-  @media $media-laptop
-    opacity .7
-    anim-all(100)
-
-  &:hover
-    @media $media-laptop
-      opacity 1
-
   &._incomes
     @media $media-laptop
       border-bottom 2px solid rgba(44, 173, 34, .5)

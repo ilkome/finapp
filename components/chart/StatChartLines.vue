@@ -69,7 +69,6 @@ export default {
 
       const nEvent = chart.pointer.normalize(event)
       const value = chart.series[0].searchPoint(nEvent, true) || chart.series[0].searchPoint(nEvent, false) || chart.series[1].searchPoint(nEvent, true)
-
       if (value) {
         if (store.state.filter.period === 'all')
           store.dispatch('filter/setPeriod', 'year')
@@ -89,16 +88,18 @@ export default {
       if (filterPeriodNameAllReplacedToYear.value === 'week') format = 'D MMM'
       if (filterPeriodNameAllReplacedToYear.value === 'month') format = 'MMM'
       if (filterPeriodNameAllReplacedToYear.value === 'year') format = 'YYYY'
-      const name = $day(date).format(format)
-
+      const name = $day(date).startOf(filterPeriodNameAllReplacedToYear.value).format(format)
       const index = chart.xAxis && chart?.xAxis[0].categories.indexOf(name)
-      chart.xAxis[0].update({
-        plotBands: [{
-          color: 'var(--c-bg-7)',
-          from: index + 0.5,
-          to: index - 0.5
-        }]
-      })
+
+      if (index !== -1) {
+        chart.xAxis[0].update({
+          plotBands: [{
+            color: 'var(--c-bg-7)',
+            from: index + 0.5,
+            to: index - 0.5
+          }]
+        })
+      }
     }, { immediate: true })
 
     return {
@@ -234,13 +235,13 @@ export default {
         yAxis: {
           ...chartOptions.yAxis,
           plotLines: [{
-            opacity: 0.3,
+            opacity: 0.5,
             color: 'var(--c-expenses-opacity)',
             value: data.averageExpenses,
             width: '1',
             zIndex: 1
           }, {
-            opacity: 0.3,
+            opacity: 0.5,
             color: 'var(--c-incomes-opacity)',
             value: data.averageIncomes,
             width: '1',
