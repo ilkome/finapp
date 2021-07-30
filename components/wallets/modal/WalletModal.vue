@@ -10,9 +10,9 @@ export default {
 
   computed: {
     deleteInfo () {
-      if (this.trnsIds.length > 0) {
+      if (this.trnsIds.length > 0)
         return `It's also will delete ${this.trnsIds.length} trns in this wallet`
-      }
+
       return null
     },
     walletId () {
@@ -22,8 +22,12 @@ export default {
       const trns = this.$store.state.trns.items
       const trnsIds = []
       for (const trnId in trns) {
-        if (trns[trnId].walletId === this.walletId) { trnsIds.push(trnId) }
+        if (trns[trnId].walletId === this.walletId ||
+          trns[trnId].walletFromId === this.walletId ||
+          trns[trnId].walletToId === this.walletId)
+          trnsIds.push(trnId)
       }
+
       return trnsIds
     }
   },
