@@ -20,18 +20,18 @@ export default {
     }
   },
 
-  setFilterCategoryId ({ state, commit, dispatch }, categoryId) {
+  setFilterCategoryId ({ state, commit }, categoryId) {
     state.categoryId === categoryId
       ? commit('setFilterCategoryId', null)
       : commit('setFilterCategoryId', categoryId)
-    dispatch('ui/setUiView', null, { root: true })
+    // TODO: save to composition api
   },
 
-  setFilterWalletId ({ state, commit, dispatch }, walletId) {
+  setFilterWalletId ({ state, commit }, walletId) {
     state.walletId === walletId
       ? commit('setFilterWalletId', null)
       : commit('setFilterWalletId', walletId)
-    dispatch('ui/setUiView', null, { root: true })
+    // TODO: save to composition api
   },
 
   setPeriod ({ commit, dispatch }, period) {

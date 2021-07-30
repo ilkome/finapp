@@ -31,14 +31,6 @@ export default {
     state.catsChart = status
   },
 
-  setVisibleCatsChartPie (state, status) {
-    state.catsChartPie = status
-  },
-
-  setVisibilityStatItems (state, status) {
-    state.statItems = status
-  },
-
   setShow (state, { id, value }) {
     state.stat[id] = value
   }

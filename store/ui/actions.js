@@ -22,15 +22,13 @@ export default {
           dispatch('setActiveTabStat', uiLocalStore.stat.activeTabStat)
       }
     }
-
-    dispatch('setUiView')
   },
 
-  setActiveTabViewName ({ state, commit, dispatch }, value) {
+  setActiveTabViewName ({ state, commit }, value) {
     if (state.activeTabViewName !== value) {
       commit('setActiveTabViewName', value)
       localforage.setItem('finapp.activeTabViewName', value)
-      dispatch('ui/setUiView', null, { root: true })
+      // TODO: save to composition api
     }
   },
 
@@ -95,55 +93,6 @@ export default {
     localforage.setItem('finapp.stat', state)
   },
 
-  /**
-    * Toogle all stat periods graph
-  */
-  toogleShowStatGraphs ({ state, commit, dispatch }) {
-    state.statGraphsVisibility === 'visible'
-      ? commit('hideStatGraphs')
-      : commit('showStatGraphs')
-    dispatch('ui/saveUiView', null, { root: true })
-  },
-
-  /**
-    * Toggle cats chart
-  */
-  toogleVisibleCatsChart ({ commit, dispatch, state }) {
-    let nextStatus
-    state.catsChart === 'visible'
-      ? nextStatus = 'hidden'
-      : nextStatus = 'visible'
-
-    commit('setVisibleCatsChart', nextStatus)
-    dispatch('ui/saveUiView', null, { root: true })
-  },
-
-  /**
-    * Toggle cats chart pie
-  */
-  toogleVisibleCatsChartPie ({ commit, dispatch, state }) {
-    let nextStatus
-    state.catsChartPie === 'visible'
-      ? nextStatus = 'hidden'
-      : nextStatus = 'visible'
-
-    commit('setVisibleCatsChartPie', nextStatus)
-    dispatch('ui/saveUiView', null, { root: true })
-  },
-
-  /**
-    * Toggle stat cats items
-  */
-  toogleVisibilityStatItems ({ commit, dispatch, state }) {
-    let nextStatus
-    state.statItems === 'visible'
-      ? nextStatus = 'hidden'
-      : nextStatus = 'visible'
-
-    commit('setVisibilityStatItems', nextStatus)
-    dispatch('ui/saveUiView', null, { root: true })
-  },
-
   toogleStat ({ commit, dispatch, state }, id) {
     let value
     state.stat[id] === 'visible'
@@ -169,53 +118,12 @@ export default {
     await localforage.setItem(localName, {
       ...localFilterUi,
       [uiItemName]: {
-        catsChart: rootState.ui.catsChart,
         period: rootState.filter.period,
-        statGraphsVisibility: rootState.ui.statGraphsVisibility,
-        catsChartPie: rootState.ui.catsChartPie,
-        statItems: rootState.ui.statItems,
         totalChartPeriods: rootState.chart.periods
       }
     })
 
     const periods = rootState.chart.periods
     localforage.setItem('finapp.chart.periods', periods)
-  },
-
-  /**
-    * Set ui view params for selected filter
-  */
-  async setUiView ({ commit, rootState }) {
-    const localName = 'finapp.statViewConfig'
-    const localFilterUi = await localforage.getItem(localName)
-    const walletName = rootState.filter.walletId || 'root'
-    const periodName = rootState.filter.period || 'month'
-    const categoryName = rootState.filter.categoryId || 'root'
-    const activeTabViewName = rootState.ui.activeTabViewName || 'expenses'
-    const uiItemName = `${walletName}${categoryName}${periodName}${activeTabViewName}`
-
-    if (localFilterUi && localFilterUi[uiItemName]) {
-      const localFilterUiItem = localFilterUi[uiItemName]
-
-      // stat periods graph
-      localFilterUiItem.statGraphsVisibility === 'visible'
-        ? commit('showStatGraphs')
-        : commit('hideStatGraphs')
-
-      // cats chart
-      localFilterUiItem.catsChart === 'visible'
-        ? commit('setVisibleCatsChart', 'visible')
-        : commit('setVisibleCatsChart', 'hidden')
-
-      // cats chart pie
-      localFilterUiItem.catsChartPie === 'visible'
-        ? commit('setVisibleCatsChartPie', 'visible')
-        : commit('setVisibleCatsChartPie', 'hidden')
-
-      // cats items
-      localFilterUiItem.statItems === 'visible'
-        ? commit('setVisibilityStatItems', 'visible')
-        : commit('setVisibilityStatItems', 'hidden')
-    }
   }
 }
