@@ -19,18 +19,6 @@ export default {
     state.width = props.width
   },
 
-  showStatGraphs (state) {
-    state.statGraphsVisibility = 'visible'
-  },
-
-  hideStatGraphs (state) {
-    state.statGraphsVisibility = 'hidden'
-  },
-
-  setVisibleCatsChart (state, status) {
-    state.catsChart = status
-  },
-
   setShow (state, { id, value }) {
     state.stat[id] = value
   }

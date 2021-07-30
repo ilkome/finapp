@@ -10,12 +10,6 @@ const state = () => ({
   mobile: false,
   pc: false,
 
-  statGraphsVisibility: 'visible',
-
-  stat: {
-    activeTab: 'stat'
-  },
-
   activeTabStat: 'details',
   activeTabViewName: 'stat'
 })
