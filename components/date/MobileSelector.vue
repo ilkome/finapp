@@ -60,11 +60,11 @@ export default {
   display flex
   align-items center
   justify-content center
+  padding-top $m5
 
   +media(800px)
     align-items flex-start
     justify-content flex-start
-    padding 0
 
 .menuDots
   cursor pointer

@@ -151,9 +151,6 @@ export default {
 <template lang="pug">
 .pageWrapScroll
   .baseBox._date
-    ChartPeriods
-
-  .baseBox._date
     DateMobilePrevNextArrow
 
     DateMobileSelector
@@ -210,6 +207,9 @@ export default {
         div
           .baseBox._chart(v-if="ui.showMainChart && isShowChart")
             LazyChartTotal(v-if="ui.showMainChart && isShowChart")
+
+    .baseBox._date
+      ChartPeriods
 
     .noStat(v-if="isEmptyStat")
       .noStat__title {{ $t('stat.empty') }}
@@ -487,9 +487,12 @@ export default {
 
   &._total
     margin-top 0
+    margin-bottom 0
     padding-top $m4
     padding-right 0
+    padding-bottom 0
     background none
+    border none
 
     +media(800px)
       padding-bottom 0

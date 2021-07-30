@@ -102,19 +102,18 @@ export default {
 
   .periods__group
     .periodItem(
-      @click="removePeriodOrGroup"
-    ): .mdi.mdi-minus
-
-    .periodItem(
       v-for="periodItem in periodsNames"
       :key="periodItem.slug"
       :class="{ _active: filterPeriodNameAllReplacedToYear === periodItem.slug }"
       @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
     )
       .periodItem__name {{ periodItem.name }}
-      .periodItem__count(
-        v-if="filterPeriodNameAllReplacedToYear === periodItem.slug"
-      ) {{ $store.state.chart.periods[periodItem.slug].showedPeriods }}
+
+  .periods__group(v-if="!isEmptyStat")
+    .periodItem(
+      @click="removePeriodOrGroup"
+    ): .mdi.mdi-minus
+    .periodItem__count {{ $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }}
     .periodItem(
       @click="addPeriodOrGroup"
     ): .mdi.mdi-plus
@@ -135,13 +134,17 @@ export default {
   z-index 10
   position relative
   display grid
-  grid-template-columns auto 1fr auto
+  grid-template-columns auto 1fr auto auto
   grid-column-gap $m5
   align-items center
+  margin 0 (- 0)
 
   +media(600px)
-    padding-top 8px
+    margin 0 (- $m4)
     grid-column-gap $m9
+
+  +media(800px)
+    margin 0 (- $m6)
 
   &__group
     display flex
@@ -183,7 +186,8 @@ export default {
     color var(--c-blue-1)
 
   &__count
-    padding-left $m4
+    color var(--c-font-3)
+    font-size 14px
 
   .mdi
     +media(600px)
