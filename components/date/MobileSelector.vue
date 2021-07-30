@@ -24,37 +24,41 @@ export default {
 
 <template lang="pug">
 .dateSelector
-  SharedContextMenu(
-    :position="{ left: '-24px', top: true }"
-    :visible="visiblePeriodMenu"
-    @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu"
-  )
-    template(slot="opener")
-      .menuDots
-        .menuDots__name: SharedDate(:type="2")
-        .menuDots__dots: .mdi.mdi-dots-vertical
+  .dateSelector__in
+    SharedContextMenu(
+      :position="{ left: '-24px', top: true }"
+      :visible="visiblePeriodMenu"
+      @onClickOpener="visiblePeriodMenu = !visiblePeriodMenu"
+    )
+      template(slot="opener")
+        .menuDots
+          .menuDots__name: SharedDate(:type="2")
+          .menuDots__dots: .mdi.mdi-dots-vertical
 
-    template(slot="content")
-      SharedContextMenuItem(
-        v-for="periodItem in periodsNames"
-        :key="periodItem.slug"
-        :icon="periodItem.icon"
-        :selected="filterPeriod === periodItem.slug"
-        :title="$t(`dates.${periodItem.slug}.simple`)"
-        @onClick="onSelectPeriod(periodItem.slug)"
-        @onClose="visiblePeriodMenu = !visiblePeriodMenu"
-      )
-      SharedContextMenuItem(
-        :selected="filterPeriod === 'all'"
-        :title="$t('dates.all.simple')"
-        icon="mdi mdi-database"
-        @onClick="onSelectPeriod('all')"
-        @onClose="visiblePeriodMenu = !visiblePeriodMenu"
-      )
+      template(slot="content")
+        SharedContextMenuItem(
+          v-for="periodItem in periodsNames"
+          :key="periodItem.slug"
+          :icon="periodItem.icon"
+          :selected="filterPeriod === periodItem.slug"
+          :title="$t(`dates.${periodItem.slug}.simple`)"
+          @onClick="onSelectPeriod(periodItem.slug)"
+          @onClose="visiblePeriodMenu = !visiblePeriodMenu"
+        )
+        SharedContextMenuItem(
+          :selected="filterPeriod === 'all'"
+          :title="$t('dates.all.simple')"
+          icon="mdi mdi-database"
+          @onClick="onSelectPeriod('all')"
+          @onClose="visiblePeriodMenu = !visiblePeriodMenu"
+        )
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
+.hey
+  max-width 200px
 
 .dateSelector
   display flex
@@ -62,9 +66,8 @@ export default {
   justify-content center
   padding-top $m5
 
-  +media(800px)
-    align-items flex-start
-    justify-content flex-start
+  &__in
+    position relative
 
 .menuDots
   cursor pointer
