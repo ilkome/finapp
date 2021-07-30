@@ -115,7 +115,7 @@ export default {
       this.pageNumber = this.pageNumber + 1
       setTimeout(() => {
         this.slider.update()
-        this.slider.slideTo(2, 0)
+        this.slider.slideTo(0, 0)
       }, 100)
     },
 
