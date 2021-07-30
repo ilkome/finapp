@@ -1,18 +1,8 @@
 <script>
 export default {
   props: {
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    openerCircle: {
-      type: Boolean,
-      default: false
-    },
-    position: {
-      type: Object,
-      default: () => {}
-    }
+    visible: { type: Boolean, default: false },
+    position: { type: Object, default: () => {} }
   },
 
   computed: {
@@ -27,18 +17,21 @@ export default {
     positionStyles () {
       if (this.position && this.position.left && typeof this.position.left === 'string') {
         return {
-          left: this.position.left
+          left: this.position.left,
+          maxWidth: `${this.$store.state.ui.width - 24}px`
         }
       }
       if (this.position && this.position.right && typeof this.position.right === 'string') {
         if (this.position.top && typeof this.position.top === 'string') {
           return {
             right: this.position.right,
-            top: this.position.top
+            top: this.position.top,
+            maxWidth: `${this.$store.state.ui.width - 24}px`
           }
         }
         return {
-          right: this.position.right
+          right: this.position.right,
+          maxWidth: `${this.$store.state.ui.width - 24}px`
         }
       }
 
@@ -72,10 +65,7 @@ export default {
     template(v-if="$slots.opener")
       slot(name="opener")
     template(v-else)
-      template(v-if="openerCircle")
-        .d-button-cirle: .mdi.mdi-dots-horizontal
-      template(v-else)
-        .d-button._noPadding._grey: .mdi.mdi-tune
+      .d-button._noPadding._grey: .mdi.mdi-tune
 </template>
 
 <style lang="stylus" scoped>
@@ -84,6 +74,7 @@ export default {
 .context-menu
   z-index 6
   position relative
+  width 100%
 
   &__opener
     z-index 22
@@ -96,15 +87,13 @@ export default {
     left 0
     width 100%
     height 100%
-    // anim()
-    // background rgba(0, 0, 0, .4)
 
   &__popup
     overflow hidden
     z-index 10
     position absolute
     top 48px
-    min-width 200px
+    min-width 360px
     background var(--c-bg-5)
     border 1px solid var(--c-bg-1)
     border-radius $m6

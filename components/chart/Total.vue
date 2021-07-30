@@ -1,7 +1,6 @@
 <script>
 import { computed, useContext } from '@nuxtjs/composition-api'
 import useFilter from '~/modules/filter/useFilter'
-import useStat from '~/modules/stat/useStat'
 
 export default {
   name: 'ChartMobileStatLines',
@@ -9,10 +8,10 @@ export default {
   setup () {
     const { store } = useContext()
     const { filterPeriodNameAllReplacedToYear } = useFilter()
-    const { isEmptyStat } = useStat()
 
     const activeTabStat = computed(() => store.state.ui.activeTabStat)
     const periods = computed(() => store.state.chart.periods)
+    const filter = computed(() => store.state.filter)
     const filterPeriod = computed(() => store.state.filter.period)
 
     const chartType = computed(() => {
@@ -25,9 +24,9 @@ export default {
     })
 
     return {
-      isEmptyStat,
       activeTabStat,
       periods,
+      filter,
       filterPeriod,
       chartType
     }
@@ -37,16 +36,14 @@ export default {
 
 <template lang="pug">
 .chart
-  .chart__content(v-if="!isEmptyStat")
+  .chart__content
     LazyChartStatChartLines(
-      v-if="!isEmptyStat"
       :isShowIncomes="activeTabStat === 'incomes' || activeTabStat === 'details' || activeTabStat === 'history'"
       :isShowExpenses="activeTabStat === 'expenses' || activeTabStat === 'details' || activeTabStat === 'history'"
+      :categoryId="filter.categoryId"
+      :chartColor="filter.categoryId && $store.state.categories.items[filter.categoryId].color"
       :chartType="chartType"
-      :disableCategoryFilter="true"
     )
-
-  ChartPeriods
 </template>
 
 <style lang="stylus" scoped>

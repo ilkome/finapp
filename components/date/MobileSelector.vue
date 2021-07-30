@@ -61,6 +61,11 @@ export default {
   align-items center
   justify-content center
 
+  +media(800px)
+    align-items flex-start
+    justify-content flex-start
+    padding 0
+
 .menuDots
   cursor pointer
   display flex

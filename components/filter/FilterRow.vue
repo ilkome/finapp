@@ -77,7 +77,7 @@ export default {
 
 .filterRow
   overflow hidden
-  overflow-x scroll
+  overflow-x auto
   display flex
   align-items center
   width 100%

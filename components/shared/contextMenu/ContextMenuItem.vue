@@ -51,11 +51,11 @@ export default {
   cursor pointer
   display flex
   align-items center
+  flex-grow 1
   height 44px
   margin $m4 $m4
   padding 0 $m6
   font-size 14px
-  white-space nowrap
   border-radius $m5
 
   @media $media-laptop

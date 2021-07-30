@@ -2,7 +2,7 @@
 import { computed, useContext } from '@nuxtjs/composition-api'
 
 export default {
-  name: 'LayoutMobileStatMenu',
+  name: 'StatDashboardMenu',
 
   setup () {
     const { store } = useContext()

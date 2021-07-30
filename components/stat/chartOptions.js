@@ -42,7 +42,7 @@ export default {
     },
 
     spline: {
-      lineWidth: 3,
+      lineWidth: 2,
       states: {
         hover: {
           lineWidth: 2
@@ -74,7 +74,7 @@ export default {
       marker: {
         radius: 3,
         fillColor: 'var(--c-bg-4)',
-        lineWidth: 3,
+        lineWidth: 2,
         lineColor: 'var(--c-incomes-1)',
         symbol: 'circle'
       },

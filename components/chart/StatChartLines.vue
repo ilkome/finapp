@@ -62,19 +62,23 @@ export default {
     const chartObj = ref({})
     const chartCallback = (v) => { chartObj.value = v }
 
-    const onClickChart = (event) => {
+    const onClickChart = async (event) => {
       const chart = chartObj.value
       if (!chart)
         return
 
-      const nEvent = chart.pointer.normalize(event)
-      const value = chart.series[0].searchPoint(nEvent, true) || chart.series[0].searchPoint(nEvent, false) || chart.series[1].searchPoint(nEvent, true)
-      if (value) {
-        if (store.state.filter.period === 'all')
-          store.dispatch('filter/setPeriod', 'year')
-        if (value.date)
-          store.dispatch('filter/setDate', parseInt(value.date))
-      }
+      const nEvent = await chart.pointer.normalize(event)
+      let value = chart.series[0].searchPoint(nEvent, true) || chart.series[0].searchPoint(nEvent, false) || chart.series[1].searchPoint(nEvent, true)
+      setTimeout(() => {
+        value = chart.series[0].searchPoint(nEvent, true) || chart.series[0].searchPoint(nEvent, false) || chart.series[1].searchPoint(nEvent, true)
+
+        if (value) {
+          if (store.state.filter.period === 'all')
+            store.dispatch('filter/setPeriod', 'year')
+          if (value.date)
+            store.dispatch('filter/setDate', parseInt(value.date))
+        }
+      }, 100)
     }
 
     watch(() => store.state.filter.date, async (date) => {
@@ -181,6 +185,8 @@ export default {
         }
       }
 
+      const fakeLineDate = expensesData.map(i => ({ date: i.date, y: periodsTotalIncomes / periods || periodsTotalExpenses / periodsExpenses }))
+
       const data = {
         series: [{
           zIndex: 3,
@@ -202,15 +208,26 @@ export default {
           marker: {
             lineColor: this.categoryId ? this.$store.state.categories.items[this.categoryId].color : 'var(--c-expenses-1)'
           }
+        // Fake data to make good hover on bar chart
         }, {
           zIndex: 1,
-          visible: false,
-          type: 'areaspline',
-          name: this.$t('money.total'),
-          color: '#c1c1c1',
-          data: totalData,
+          visible: true,
+          type: 'line',
+          name: '',
+          color: 'transparent',
+          data: fakeLineDate,
           marker: {
-            lineColor: '#c1c1c1'
+            enabled: false,
+            symbol: 'circle',
+            radius: 0,
+            lineWidth: 0,
+            states: {
+              hover: {
+                fillColor: 'transparent',
+                lineColor: 'transparent',
+                lineWidth: 0
+              }
+            }
           }
         }],
         categories,
@@ -238,13 +255,13 @@ export default {
             opacity: 0.5,
             color: 'var(--c-expenses-opacity)',
             value: data.averageExpenses,
-            width: '1',
+            width: '2',
             zIndex: 1
           }, {
             opacity: 0.5,
             color: 'var(--c-incomes-opacity)',
             value: data.averageIncomes,
-            width: '1',
+            width: '2',
             zIndex: 1
           }]
         },
