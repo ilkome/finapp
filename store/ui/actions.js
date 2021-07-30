@@ -10,17 +10,11 @@ export default {
 
     // ui
     if (uiLocalStore) {
-      // stat
-      if (uiLocalStore.stat) {
-        uiLocalStore.stat.activeTab &&
-          dispatch('setActiveTab', uiLocalStore.stat.activeTab)
+      uiLocalStore.activeTabStat &&
+        dispatch('setActiveTabStat', uiLocalStore.activeTabStat)
 
-        uiLocalStore.stat.activeTabViewName &&
-          dispatch('setActiveTabViewName', uiLocalStore.stat.activeTabViewName)
-
-        uiLocalStore.stat.activeTabStat &&
-          dispatch('setActiveTabStat', uiLocalStore.stat.activeTabStat)
-      }
+      uiLocalStore.activeTabViewName &&
+        dispatch('setActiveTabViewName', uiLocalStore.activeTabViewName)
     }
   },
 
