@@ -57,5 +57,4 @@ Portal(
       color var(--c-font-1)
       background var(--c-blue-1)
       border none
-
 </style>

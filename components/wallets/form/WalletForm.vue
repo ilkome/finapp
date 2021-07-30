@@ -211,7 +211,7 @@ LayoutComponentWrap
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables"
+@import '~assets/stylus/variables'
 
 .customColor
   margin (- $m7)
@@ -283,4 +283,31 @@ LayoutComponentWrap
     margin 0
     padding 0
     font-size 10px
+
+.currencies
+  display grid
+  grid-template-columns repeat(auto-fill, minmax(120px, 1fr))
+  grid-column-gap $m7
+  grid-row-gap $m7
+
+  &__item
+    cursor pointer
+    display flex
+    align-items center
+    justify-content center
+    height 44px
+    padding $m6
+    text-align center
+    border 1px solid var(--c-bg-6)
+    border-radius $m4
+
+    +media-hover()
+      &:not(._active)
+        background var(--c-bg-6)
+
+    &._active
+      cursor default
+      color var(--c-font-1)
+      background var(--c-blue-1)
+      border none
 </style>
