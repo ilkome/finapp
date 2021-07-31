@@ -1,4 +1,5 @@
 <script lang="ts">
+import Vue from 'vue'
 import dayjs from 'dayjs'
 import SwiperCore, { Pagination } from 'swiper'
 import 'swiper/swiper-bundle.css'
@@ -166,19 +167,19 @@ export default {
         })
 
         if (validateStatus.error) {
-          // this.$notify({
-          //   type: 'error',
-          //   title: validateStatus.error.title,
-          //   text: validateStatus.error.text
-          // })
+          Vue.notify({
+            type: 'error',
+            title: validateStatus.error.title,
+            text: validateStatus.error.text
+          })
           return
         }
 
-        // this.$notify({
-        //   type: 'success',
-        //   text: 'Excellent transaction!',
-        //   title: random(successEmo)
-        // })
+        Vue.notify({
+          type: 'success',
+          text: 'Excellent transaction!',
+          title: random(successEmo)
+        })
 
         store.dispatch('trns/addTrn', { id, values })
       }
