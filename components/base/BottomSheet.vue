@@ -350,6 +350,8 @@ export default defineComponent({
     .handler(ref="handler")
       slot(name="handler" :close="close")
 
+    slot(name="header" :close="close")
+
     .scroll
       slot(:close="close")
         .info
