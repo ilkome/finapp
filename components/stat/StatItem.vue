@@ -79,6 +79,7 @@ export default {
       Icon(
         :background="category.color"
         :icon="category.icon"
+        round
       )
 
     .statItem__name {{ category.name }}

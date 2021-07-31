@@ -88,9 +88,8 @@ export default {
 )
   .statItemRound__icon
     Icon(
-      :color="category.color"
       :icon="category.icon"
-      background="transparent"
+      :background="category.color"
       round
     )
 
@@ -105,18 +104,6 @@ export default {
       size="md"
     )
 </template>
-
-<style lang="stylus">
-.layout
-  .statItemRound
-    &__icon
-      .icon
-        width auto
-        height auto
-
-      .icon__image
-        font-size 28px
-</style>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'

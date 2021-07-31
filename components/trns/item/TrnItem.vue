@@ -139,9 +139,8 @@ export default {
       .trnItem__left
         .trnItem__categoryIcon
           Icon(
-            :background="category.color"
+            :color="category.color"
             :icon="category.icon"
-            round
           )
 
       .trnItem__center
@@ -232,8 +231,9 @@ export default {
       .trnItem__left
         .trnItem__categoryIcon
           Icon(
-            :background="category.color"
+            :color="category.color"
             :icon="category.icon"
+            background="var(--c-bg-5)"
             round
           )
 

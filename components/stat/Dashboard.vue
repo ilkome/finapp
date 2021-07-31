@@ -428,7 +428,7 @@ export default {
     border-bottom 1px solid var(--c-bg-5)
 
   &._mw
-    max-width 480px
+    max-width 400px
     margin-top 0
 
   &._noBdMedia
