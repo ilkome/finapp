@@ -1,6 +1,6 @@
 <script lang="ts">
 import dayjs from 'dayjs'
-import Swiper, { Pagination } from 'swiper'
+import SwiperCore, { Pagination } from 'swiper'
 import 'swiper/swiper-bundle.css'
 import { ref, computed, watch, onMounted, useContext } from '@nuxtjs/composition-api'
 import generateId from '~/utils/id'
@@ -9,7 +9,7 @@ import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import useTrnFormValidate from '~/components/trnForm/useTrnFormValidate'
 import { successEmo, random } from '~/assets/js/emo'
 
-Swiper.use([Pagination])
+SwiperCore.use([Pagination])
 
 export default {
   name: 'TrnForm',
@@ -47,7 +47,7 @@ export default {
 
     function init () {
       if (!sliderObj.value) {
-        sliderObj.value = new Swiper(slider.value, {
+        sliderObj.value = new SwiperCore(slider.value, {
           init: false,
           observer: true,
           observeParents: true,
