@@ -122,7 +122,7 @@ export default {
 
   //- Modals
   //-----------------------------------
-  CategoriesModalCategoryModal
+  CategoriesModal
   CurrenciesCurrencyModal
 
   BaseBottomSheet(
@@ -140,15 +140,15 @@ export default {
           stroke='#000'
           stroke-linecap='round'
           stroke-linejoin='round'
-          stroke-width='1.5'
+          stroke-width='3'
         )
           path(d='M.75 23.249l22.5-22.5')
           path(d='M23.25 23.249L.75.749')
 
     TrnForm(:show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show")
 
-  TrnsModalTrnModal
-  WalletsModalWalletModal
+  TrnsModal
+  WalletsModal
 
   //- Base Menu
   LazyLayoutMobileMenuModal(v-if="activeTab === 'menu'")
@@ -162,7 +162,7 @@ export default {
       key="createCategory"
       @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
     )
-      CategoriesFormCategoryForm
+      CategoriesForm
 
   //- Settings
   Portal(

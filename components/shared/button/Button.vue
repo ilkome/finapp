@@ -200,7 +200,7 @@ export default {
     font-size 12px
     background var(--c-bg-3)
     border 1px solid var(--c-bg-7)
-    border-radius $m5
+    border-radius $m6
 
     ^[0]:active &
       color var(--c-font-3)

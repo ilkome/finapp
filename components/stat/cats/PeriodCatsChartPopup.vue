@@ -17,16 +17,16 @@ export default {
 
   computed: {
     amount () {
-      if (this.$store.getters['stat/statCurrentPeriod'].categories[this.categoryId]) {
+      if (this.$store.getters['stat/statCurrentPeriod'].categories[this.categoryId])
         return this.$store.getters['stat/statCurrentPeriod'].categories[this.categoryId][this.type]
-      }
+
       return null
     },
 
     categoryName () {
-      if (this.$store.state.categories.items[this.categoryId]) {
+      if (this.$store.state.categories.items[this.categoryId])
         return this.$store.state.categories.items[this.categoryId].name
-      }
+
       return null
     }
   }
@@ -48,10 +48,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/fonts'
-@import '~assets/stylus/variables/media'
-@import '~assets/stylus/variables/scroll'
+@import '~assets/stylus/variables'
 
 .chart-popup
   z-index 2
@@ -59,8 +56,8 @@ export default {
   bottom 0px
   display block
   padding $m6 $m8
-  background var(--c-bg-6)
-  border-radius $m4
+  background var(--c-bg-5)
+  border-radius $m5
   transform translate(-50%, calc(100% + 40px))
   white-space nowrap
 
@@ -76,7 +73,7 @@ export default {
     content ''
     border-left 8px solid transparent
     border-right 8px solid transparent
-    border-bottom 8px solid var(--c-bg-6)
+    border-bottom 8px solid var(--c-bg-5)
 
     /.light-mode &
       border-bottom-color var(--c-bg-5)

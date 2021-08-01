@@ -27,15 +27,12 @@ export default {
       }
     },
     amount () {
-      if (this.total >= 1000000) {
+      if (this.total >= 1000000)
         return (this.total / 1000000).toFixed(2) + 'm'
-      }
-      else if (this.total >= 10000) {
+      else if (this.total >= 10000)
         return (this.total / 1000).toFixed() + 'k'
-      }
-      else if (this.total > 999) {
+      else if (this.total > 999)
         return (this.total / 1000).toFixed(1) + 'k'
-      }
 
       return this.total.toFixed()
     }
@@ -54,9 +51,8 @@ export default {
     },
 
     handleMouseLeave (e) {
-      if (this.$store.state.ui.pc) {
+      if (this.$store.state.ui.pc)
         this.$emit('onActiveCategoryChange', { categoryId: null })
-      }
     }
   }
 }
@@ -77,8 +73,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables'
 
 .statCatsItem
   cursor pointer
@@ -88,14 +83,13 @@ export default {
   border-radius $m4
 
   &:hover
-    @media $media-laptop
-      @media (hover hover)
-        margin -20px 0px -20px -10px
-        padding 32px 10px 20px 10px
-        background var(--c-bg-6)
+    @media (hover hover)
+      margin -20px 0px -20px -10px
+      padding 32px 10px 20px 10px
+      background var(--c-bg-6)
 
-        /.light-mode &
-          background var(--c-bg-1)
+      /.light-mode &
+        background var(--c-bg-1)
 
   &__graph
     position relative

@@ -32,15 +32,13 @@ export default {
 
   methods: {
     handleClick () {
-      if (this.$listeners.onClick) {
+      if (this.$listeners.onClick)
         this.$listeners.onClick(this.id)
-      }
     },
 
     handleIconClick () {
-      if (this.$listeners.onIconClick) {
+      if (this.$listeners.onIconClick)
         this.$listeners.onIconClick(this.id)
-      }
     }
   }
 }
@@ -54,72 +52,88 @@ export default {
   .categoryItem__active(v-if="activeItemId === id")
   .categoryItem__icon
     Icon(
-      :icon="category.icon"
-      :color="category.color || $store.state.ui.defaultBgColor"
       :category="true"
+      :color="category.color || $store.state.ui.defaultBgColor"
+      :icon="category.icon"
       small
       @click="handleIconClick"
     )
 
-  .categoryItem__name
-    .categoryItem__parent(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
+  .categoryItem__name(:class="{ _flat: ui === '_flat' }")
     .categoryItem__parent(v-if="ui === '_flat' && parentCategory") {{ parentCategory.name }}
     .categoryItem__child {{ category.name }}
+    .categoryItem__length(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
 
-  .categoryItem__dots(v-if="childCategoriesIds.length > 0"): .mdi.mdi-dots-vertical
+  //- .categoryItem__dots(v-if="childCategoriesIds.length > 0"): .mdi.mdi-dots-vertical
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
-@import '~assets/stylus/variables/fonts'
+@import '~assets/stylus/variables'
 
 .categoryItem
   overflow hidden
   cursor pointer
   position relative
   display flex
-  flex-flow column nowrap
+  flex-flow row nowrap
   align-items center
   justify-content center
+  min-height 48px
   padding $m6
   color var(--c-font-1)
   background var(--color-item-bg)
   border-radius $m5
+  anim()
+
+  +media-hover()
+    color var(--c-text-1)
+    border 1px solid var(--c-blue-1)
+
+  +media(700px)
+    padding $m7 $m8
 
   &._flat
     flex-flow row
     align-items center
-    justify-content flex-start
+    justify-content center
+    min-height inherit
     flex 1 1 auto
     padding $m6
-
-  @media $media-laptop
-    padding $m6 0
 
   &:active
     opacity .9
 
   &__icon
-    padding-bottom $m4
+    padding-right $m6
 
     ^[0]._flat &
-      padding-right $m3
+      padding-right $m5
       padding-bottom 0
 
   &__name
     overflow hidden
-    min-height 16px
+    display flex
+    flex-grow 1
     text-overflow ellipsis
-    padding 0 $m4
+    padding-right 0
     font-size 14px
 
     ^[0]._flat &
+      display block
       flex-grow 1
       min-height inherit
 
     &:last-child
       padding-bottom 0
+
+  &__length
+    margin-left auto
+    padding-left $m6
+    color var(--c-font-4)
+    font-size 12px
+
+    ^[0]._flat &
+      text-align left
 
   &__parent
     padding-bottom $m3

@@ -434,8 +434,8 @@ LayoutComponentWrap
 <style lang="stylus">
 @import '~assets/stylus/variables/media'
 
-.dashboard .component
-  .categories__list
-    @media $media-laptop
-      grid-template-columns repeat(3,  1fr)
+// .dashboard .component
+//   .categories__list
+//     @media $media-laptop
+//       grid-template-columns repeat(3,  1fr)
 </style>

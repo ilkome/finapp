@@ -37,7 +37,7 @@ export default {
 
   methods: {
     handleActiveCategoryChange ({ categoryId, offset }) {
-      if (offset) { this.offset = offset }
+      if (offset) this.offset = offset
       categoryId
         ? this.activeCategoryId = categoryId
         : this.activeCategoryId = null
@@ -60,7 +60,6 @@ export default {
     )
 
   .cats-chart__popup(
-    v-if="$store.state.ui.pc"
     v-show="activeCategoryId"
   )
 
@@ -72,10 +71,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/animations"
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
-@import "~assets/stylus/variables/scroll"
+@import '~assets/stylus/variables'
 
 .cats-chart
   position relative
@@ -100,7 +96,7 @@ export default {
       padding 10px 10px
 
     &:after
-      content ""
+      content ''
       min-width $m7
 
       @media $media-laptop

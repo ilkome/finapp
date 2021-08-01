@@ -1,8 +1,27 @@
 <script>
+import { useContext } from '@nuxtjs/composition-api'
+import useFilter from '~/modules/filter/useFilter'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
 export default {
   name: 'TrnModal',
+
+  setup () {
+    const { store } = useContext()
+    const { setCategoryFilter, setWalletFilter } = useFilter()
+
+    const closed = () => {
+      store.commit('trns/hideTrnModal')
+      store.commit('trns/setTrnModalId', null)
+    }
+
+    return {
+      setCategoryFilter,
+      setWalletFilter,
+
+      closed
+    }
+  },
 
   data () {
     return {
@@ -30,20 +49,19 @@ export default {
   },
 
   methods: {
-    handleSetFilterCategory (id) {
+    handleSetFilterCategory () {
+      this.setCategoryFilter(this.$store.state.trns.items[this.trnId].categoryId)
       this.$store.commit('filter/setFilterDateNow')
-      this.$store.dispatch('filter/setFilterCategoryId', this.$store.state.trns.items[this.trnId].categoryId)
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
       this.$store.dispatch('ui/setActiveTab', 'stat')
     },
-    handleSetFilterWallet (id) {
-      this.$store.commit('filter/setFilterDateNow')
-      this.$store.dispatch('filter/setFilterWalletId', this.$store.state.trns.items[this.trnId].walletId)
+    handleSetFilterWallet () {
+      this.setWalletFilter(this.$store.state.trns.items[this.trnId].walletId)
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-      this.$store.commit('stat/setCategoryModal', { id: null, type: null })
+      this.$store.commit('filter/setFilterDateNow')
       this.$store.dispatch('ui/setActiveTab', 'stat')
     },
     handleDublicateTrn () {
@@ -85,67 +103,88 @@ export default {
 
 <template lang="pug">
 Portal(
-  v-if="$store.getters['trns/hasTrns'] && $store.state.trns.modal.show"
+  key="trnsModal"
+  v-if="$store.state.trns.modal.show"
   to="modal"
 )
-  ModalBottom(
-    :key="trnId"
-    @onClose="$store.commit('trns/hideTrnModal')"
-    @afterClose="$store.commit('trns/setTrnModalId', null)"
+  LazyBaseBottomSheet(
+    v-if="$store.state.trns.modal.show"
+    key="trnsModal"
+    @closed="closed()"
   )
-    template(v-if="trnId")
-      template(slot="header")
-        //- trn
-        TrnsItemTrnItem(
-          :category="category"
-          :trn="$store.state.trns.items[trnId]"
-          :trnId="trnId"
-          :wallet="wallet"
-          ui="detailed"
+    template(#handler="{ close }")
+      .handler__close(@click="close")
+        svg(
+          viewBox='0 0 24 24'
+          fill='none'
+          stroke='#000'
+          stroke-linecap='round'
+          stroke-linejoin='round'
+          stroke-width='3'
         )
+          path(d='M.75 23.249l22.5-22.5')
+          path(d='M23.25 23.249L.75.749')
 
-      //- btns
-      template(slot="btns")
-        ModalButton(
-          :name="$t('base.delete')"
-          icon="mdi mdi-delete-empty-outline"
-          @onClick="handleDeleteClick"
-        )
+    template(#header)
+      .header
+        .header__category
+          TrnsItemTrnItem(
+            :category="category"
+            :trn="$store.state.trns.items[trnId]"
+            :trnId="trnId"
+            :wallet="wallet"
+            ui="detailed"
+          )
 
-        ModalButton(
-          :name="$t('base.edit')"
-          icon="mdi mdi-pencil-outline"
-          @onClick="handleEditClick"
-        )
+    template
+      .content
+        .tools
+          .modalLinks
+            ModalButton(
+              :name="$t('base.delete')"
+              icon="mdi mdi-delete-empty-outline"
+              @onClick="handleDeleteClick"
+            )
 
-        ModalButton(
-          :name="$t('base.dublicate')"
-          icon="mdi mdi-content-copy"
-          @onClick="handleDublicateTrn"
-        )
+            ModalButton(
+              :name="$t('base.edit')"
+              icon="mdi mdi-pencil-outline"
+              @onClick="handleEditClick"
+            )
 
-      .moreActions
-        SharedButton.marginBottom(
-          :title="`${$t('base.setFilter')} ${this.category.name}`"
-          className="_borderBottom"
-          icon="mdi mdi-folder-star"
-          @onClick="handleSetFilterCategory"
-        )
+            ModalButton(
+              :name="$t('base.dublicate')"
+              icon="mdi mdi-content-copy"
+              @onClick="handleDublicateTrn"
+            )
 
-        SharedButton.marginBottom(
-          :title="`${$t('base.setFilter')} ${this.wallet.name}`"
-          className="_borderBottom"
-          icon="mdi mdi-credit-card-multiple"
-          @onClick="handleSetFilterWallet"
-        )
+            ModalButton(
+              :name="`${$t('base.setFilter')} ${category.name}`"
+              @onClick="handleSetFilterCategory"
+            )
+              template(#icon)
+                Icon(
+                  :icon="category.icon"
+                  :background="category.color || $store.state.ui.defaultBgColor"
+                  round
+                )
 
-        SharedButton(
-          v-if="groups && $store.getters['user/isTester']"
-          className="_borderBottom"
-          icon="mdi mdi-folder-multiple-outline"
-          :title="$t('groups.show')"
-          @onClick="showModalGroups = true"
-        )
+            ModalButton(
+              :name="`${$t('base.setFilter')} ${wallet.name}`"
+              @onClick="handleSetFilterWallet"
+            )
+              template(#icon)
+                Icon(
+                  :abbr="wallet.name"
+                  :background="wallet.color"
+                )
+
+            ModalButton(
+              v-if="groups && $store.getters['user/isTester']"
+              :name="$t('groups.show')"
+              icon="mdi mdi-folder-multiple-outline"
+              @onClick="showModalGroups = true"
+            )
 
     template(v-if="groups && $store.getters['user/isTester']")
       Portal(
@@ -175,8 +214,20 @@ Portal(
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/scroll"
+@import '~assets/stylus/variables'
+
+.header
+  flex-grow 1
+  position relative
+  display flex
+  align-items center
+  justify-content center
+  padding $m7
+  padding-bottom $m9
+  color var(--c-font-2)
+  fontFamilyNunito()
+  background var(--c-bg-3)
+  border-radius $m7 $m7 0 0
 
 .marginBottom
   margin-bottom $m7
@@ -203,4 +254,11 @@ Portal(
 
   &__name
     flex-grow 1
+
+.content
+  +media(600px)
+    border-radius 0 0 $m7 $m7
+  // padding-top $m6
+  // padding-bottom $m6
+  // background var(--c-bg-3)
 </style>

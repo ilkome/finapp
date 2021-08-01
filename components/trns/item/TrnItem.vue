@@ -302,6 +302,7 @@ export default {
     &._history
     &._stat
       background var(--c-bg-5)
+      border-radius $m5
 
   &__amount
     align-self center

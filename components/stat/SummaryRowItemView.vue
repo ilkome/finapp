@@ -62,6 +62,7 @@ export default {
     padding-bottom $m4
     color var(--c-font-4)
     font-size 10px
+    white-space nowrap
 
   &__line
     position absolute

@@ -118,6 +118,10 @@ export default {
         store.dispatch('ui/setActiveTabStat', 'details')
     }
 
+    function toogleView (name) {
+      setUI({ name, value: !ui[name] })
+    }
+
     return {
       isShowChart,
 
@@ -142,7 +146,9 @@ export default {
 
       isEmptyStat,
 
-      onClickTitle
+      onClickTitle,
+
+      toogleView
     }
   }
 }
@@ -155,9 +161,6 @@ export default {
 
     DateMobileSelector
     StatDashboardMenu
-
-  .baseBox._filter(v-if="isShowFilter")
-    LazyFilterRow(v-if="isShowFilter")
 
   template
     //- Total
@@ -182,9 +185,9 @@ export default {
               )
 
         template(v-if="activeTabStat === 'incomes' || activeTabStat === 'expenses'")
-          .sumBox(@click="onClickTitle()")
+          .sumBox
             .baseBox__title {{ $t(`money.${activeTabStat}`) }}
-            .boxSummary2
+            .boxSummary2(@click="onClickTitle()")
               .boxSummary2__item
                 Amount(
                   :currency="$store.state.currencies.base"
@@ -204,12 +207,37 @@ export default {
                 :amount="statToday[activeTabStat].total"
                 :title="$t('dates.day.today')"
               )
+
+            .total__custom(v-if="statCurrentPeriod[activeTabStat].total !== 0")
+              .periodItem(
+                :class="{ _active: ui.showPieChart }"
+                @click="toogleView('showPieChart')"
+              ): .mdi.mdi-chart-pie
+
+              .periodItem(
+                :class="{ _active: ui.showCatsVerticalChart }"
+                @click="toogleView('showCatsVerticalChart')"
+              ): .mdi.mdi-poll
+
+              .periodItem(
+                :class="{ _active: ui.showRoundCats }"
+                @click="toogleView('showRoundCats')"
+              ): .mdi.mdi-chart-bubble
+
+              .periodItem(
+                :class="{ _active: ui.showCatsHorizontalList }"
+                @click="toogleView('showCatsHorizontalList')"
+              ): .mdi.mdi-chart-timeline
+
         div
           .baseBox._chart(v-if="ui.showMainChart && isShowChart")
             LazyChartTotal(v-if="ui.showMainChart && isShowChart")
 
     .baseBox._date
       ChartPeriods
+
+    .baseBox._filter(v-if="isShowFilter")
+      LazyFilterRow(v-if="isShowFilter")
 
     .noStat(v-if="isEmptyStat")
       .noStat__title {{ $t('stat.empty') }}
@@ -224,10 +252,10 @@ export default {
         template(v-if="statCurrentPeriod[item.id].total > 0 || (statAverage && statAverage[item.id] !== 0) || $store.state.filter.period === 'all'")
           .baseBox._noBdMedia._mw
             template(v-if="activeTabStat === 'details' && (statAverage.incomes !== 0 && statAverage.expenses !== 0)")
-              .sumBox(@click="onClickTitle(item.type)")
+              .sumBox
                 .baseBox__title {{ $t(`money.${item.id}`) }}
                 .boxSummary2
-                  .boxSummary2__item
+                  .boxSummary2__item(@click="onClickTitle(item.type)")
                     Amount(
                       :currency="$store.state.currencies.base"
                       :type="item.type"
@@ -247,14 +275,26 @@ export default {
                     :title="$t('dates.day.today')"
                   )
 
-              .statChartLines(v-if="filter.categoryId")
-                LazyChartStatChartLines(
-                  v-if="filter.categoryId && $store.getters['trns/hasTrns']"
-                  :categoryId="filter.categoryId"
-                  :chartColor="$store.state.categories.items[filter.categoryId].color"
-                  :isShowExpenses="item.type === 0"
-                  :isShowIncomes="item.type === 1"
-                )
+                .total__custom(v-if="statCurrentPeriod[item.id].total !== 0")
+                  .periodItem(
+                    :class="{ _active: ui.showPieChart }"
+                    @click="toogleView('showPieChart')"
+                  ): .mdi.mdi-chart-pie
+
+                  .periodItem(
+                    :class="{ _active: ui.showCatsVerticalChart }"
+                    @click="toogleView('showCatsVerticalChart')"
+                  ): .mdi.mdi-poll
+
+                  .periodItem(
+                    :class="{ _active: ui.showRoundCats }"
+                    @click="toogleView('showRoundCats')"
+                  ): .mdi.mdi-chart-bubble
+
+                  .periodItem(
+                    :class="{ _active: ui.showCatsHorizontalList }"
+                    @click="toogleView('showCatsHorizontalList')"
+                  ): .mdi.mdi-chart-timeline
 
             .boxEmpty(v-if="statCurrentPeriod[item.id].categoriesIds.length === 0") {{ $t('stat.empty') }}
 
@@ -310,15 +350,15 @@ export default {
                 :type="item.type"
               )
 
-      template(v-if="(statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)) || (activeTabStat === 'incomes' || activeTabStat === 'expenses')")
-        .baseBox._mw(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
-          .baseBox__title {{ $t('trns.history') }}
-          .baseBox__content
-            TrnsList3(
-              :incomes="activeTabStat === 'incomes'"
-              :expenses="activeTabStat === 'expenses'"
-              :size="12"
-            )
+    template(v-if="(statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)) || (activeTabStat === 'incomes' && statAverage.incomes !== 0 || activeTabStat === 'expenses'  && statAverage.expenses !== 0)")
+      .baseBox._mw(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
+        .baseBox__title {{ $t('trns.history') }}
+        .baseBox__content
+          TrnsList3(
+            :incomes="activeTabStat === 'incomes'"
+            :expenses="activeTabStat === 'expenses'"
+            :size="12"
+          )
 
   //- history
   .history(v-if="activeTabStat === 'history' || statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0 && (activeTabStat !== 'incomes' && activeTabStat !== 'expenses')")
@@ -341,16 +381,26 @@ export default {
   +media(700px)
     padding $m8 $m8
 
+  .baseBox__title
+    margin-bottom (- $m8)
+    +media(600px)
+      margin-bottom 0
+
   .trnsList__content
+    .trnsList__header
+      margin 0 (- $m5)
+      +media(600px)
+        margin 0
+
+    .trnsList__trns
+      margin 0 (- $m5)
+      padding 0 0
+
     .trnsList__grid
       padding 0
 
       .trnsList__day
         padding-bottom 0
-
-        // &:first-child
-        //   margin-top 0
-        //   padding-top $m5
 
   .trnItem._history
     margin 0
@@ -361,9 +411,29 @@ export default {
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
+.total__custom
+  position absolute
+  top $m5
+  right 0
+  display flex
+  margin-left (- $m6)
+
+  .periodItem
+    padding $m5
+    color var(--c-font-5)
+    border-radius $m5
+
+    &._active
+      color var(--c-font-3)
+
+    +media-hover()
+      background var(--c-bg-5)
+
 .sumBox
   cursor pointer
+  position relative
   display inline-block
+  width 100%
 
 .noStat
   overflow hidden
@@ -401,6 +471,7 @@ export default {
 
     +media(800px)
       grid-column-gap 32px
+      padding-top $m7
 
   .baseBox:last-child
     border none
@@ -428,6 +499,7 @@ export default {
     border-bottom 1px solid var(--c-bg-5)
 
   &._mw
+    overflow initial
     max-width 400px
     margin-top 0
 

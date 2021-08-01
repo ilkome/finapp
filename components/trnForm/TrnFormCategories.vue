@@ -50,6 +50,7 @@ export default {
           .scrollBlock.scrollerBlock(
             v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'] && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
           )
+            .header {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
             .pb_base
               CategoriesView(
                 :activeItemId="$store.state.trnForm.values.categoryId"
@@ -61,6 +62,7 @@ export default {
 
         .swiper-slide
           .scrollBlock.scrollerBlock
+            .header {{ $t('categories.title') }}
             .pb_base
               CategoriesView(
                 :ids="$store.getters['categories/categoriesRootIds']"
@@ -72,6 +74,7 @@ export default {
           .scrollBlock.scrollerBlock(
             v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length"
           )
+            .header {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
             .pb_base
               CategoriesView(
                 :activeItemId="$store.state.trnForm.values.categoryId"
@@ -106,7 +109,7 @@ export default {
   overflow hidden
   position relative
   display grid
-  grid-template-rows 1fr auto
+  grid-template-rows auto
   height 100%
 
   &__box
@@ -133,6 +136,7 @@ export default {
   align-items center
   justify-content center
   padding $m6
+  padding-bottom 0
 
 .menuItem
   cursor pointer
@@ -153,4 +157,15 @@ export default {
   &._active
     cursor default
     color var(--c-blue-1)
+
+.header
+  padding 40px 0
+  padding-bottom 60px
+  font-h1()
+  font-size 22px
+  font-weight 600
+  text-align center
+
+  +media-laptop()
+    font-size 28px
 </style>

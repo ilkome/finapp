@@ -1,7 +1,33 @@
-@import "variables/*"
-
+@import 'variables/*'
 
 font-title-1()
   font-size 16px
   font-weight 500
   font-roboto()
+
+button-base-1()
+  cursor pointer
+  display flex
+  flex 1 1 50%
+  align-items center
+  justify-content center
+  height 44px
+  max-width 420px
+  margin 0 auto
+  padding 0 $m9
+  color var(--color-text-link)
+  font-size 12px
+  text-decoration none
+  background var(--c-bg-4)
+  border 1px solid var(--c-bg-4)
+  border-radius $m6
+  anim()
+
+  +media-hover()
+    color var(--c-text-1)
+    border 1px solid var(--c-blue-1)
+
+  +media(700px)
+    height 48px
+    max-width 280px
+    border-radius $m9

@@ -52,11 +52,11 @@ export default {
         chart: {
           ...chartOptions.chart,
           spacing: [0, 0, 0, 0],
-          height: '100',
+          height: '280',
 
           events: {
             click (e) {
-              // console.log(e)
+              console.log(e)
               // const value = this.series[0].searchPoint(e, true) || this.series[1].searchPoint(e, true)
               // vm.$store.dispatch('filter/setDate', parseInt(value.date))
             }

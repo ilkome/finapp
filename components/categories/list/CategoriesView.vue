@@ -65,5 +65,5 @@ export default {
   padding 0
 
   .categories__list
-    grid-template-columns repeat(3, 1fr)
+    // grid-template-columns repeat(3, 1fr)
 </style>

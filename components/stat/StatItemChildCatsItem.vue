@@ -59,9 +59,10 @@ export default {
       @click.stop="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)"
     )
       Icon(
-        :color="$store.state.ui.pc ? category.color : null"
-        :background="$store.state.ui.mobile ? category.color : null"
+        :color="category.color"
         :icon="category.icon"
+        background="var(--c-bg-6)"
+        round
       )
 
     .statItemChild__name {{ category.name }}
@@ -153,6 +154,9 @@ export default {
     align-self center
 
   &__trns
+    padding-right $m6
+    padding-left $m6
+
     ^[0]._active &
       padding-bottom $m6
 </style>

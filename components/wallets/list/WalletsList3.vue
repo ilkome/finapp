@@ -57,8 +57,8 @@ export default {
 </script>
 
 <template lang="pug">
-.walllets
-  .walllets__grid
+.wallets
+  .wallets__grid
     WalletsItemWalletItem2(
       :activeItemId="activeItemId"
       v-for="walletId in walletsIds"
@@ -68,7 +68,7 @@ export default {
       v-on="$listeners"
     )
 
-  .walletsList__toogle._alt(v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit" @click="toogleWallets")
+  .wallets__toogle(v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit" @click="toogleWallets")
     template(v-if="stateLimit > 0") {{ this.$t('wallets.showAll') }}
     template(v-else) {{ this.$t('wallets.showOnly') }} {{ limit }}
 </template>
@@ -76,22 +76,22 @@ export default {
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
-.walllets
+.wallets
   padding 0 $m7
 
-.walllets__grid
-  display grid
-  grid-template-columns repeat(2, 1fr)
-  grid-column-gap $m7
-  grid-row-gap $m7
-
-  +media(600px)
-    grid-template-columns repeat(auto-fill, minmax(220px, 1fr))
+  &__grid
+    display grid
+    grid-template-columns repeat(2, 1fr)
     grid-column-gap $m7
     grid-row-gap $m7
 
-.walletsList__toogle._alt
-  margin-right 0
-  margin-left 0
-  border-top 0
+    +media(600px)
+      grid-template-columns repeat(4, minmax(220px, 1fr))
+      grid-column-gap $m7
+      grid-row-gap $m7
+
+  &__toogle
+    button-base-1()
+    margin-top $m9
+    margin-bottom $m9
 </style>

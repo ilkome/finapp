@@ -47,6 +47,7 @@ export default {
         store.dispatch('ui/setActiveTab', 'menu')
         return
       }
+      store.dispatch('ui/setActiveTab', tabName)
       store.dispatch('ui/setActiveTabViewName', tabName)
     }
 

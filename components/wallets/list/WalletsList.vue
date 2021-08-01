@@ -58,7 +58,7 @@ export default {
 </script>
 
 <template lang="pug">
-.walllets
+.wallets
   div(:class="className")
     WalletsItemWalletItem(
       v-for="walletId in walletsIds"

@@ -71,8 +71,8 @@ export default {
 
   // Color mode
   colorMode: {
-    preference: 'system', // default value of $colorMode.preference
-    fallback: 'dark' // fallback value if not system preference found
+    preference: 'dark' // default value of $colorMode.preference
+    // fallback: 'dark' // fallback value if not system preference found
   },
 
   // Style resources

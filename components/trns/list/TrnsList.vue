@@ -52,37 +52,33 @@ export default {
       let trnsIds = this.$store.getters['trns/selectedTrnsIdsWithDate']
 
       // from category
-      if (this.categoryId) {
+      if (this.categoryId)
         trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === this.categoryId)
-      }
 
       // filter type
-      if (this.incomes) { trnsIds = trnsIds.filter(id => trns[id].type === 1) }
-      if (this.expenses) { trnsIds = trnsIds.filter(id => trns[id].type === 0) }
+      if (this.incomes) trnsIds = trnsIds.filter(id => trns[id].type === 1)
+      if (this.expenses) trnsIds = trnsIds.filter(id => trns[id].type === 0)
 
       // limit
-      if (this.limit > 0) { return trnsIds.slice(0, this.limit) }
+      if (this.limit > 0) return trnsIds.slice(0, this.limit)
       return trnsIds
     },
 
     groupedTrns () {
       const trns = this.$store.state.trns.items
-      const trnsIds = this.paginatedTrnsIds
       const trnsList = {}
 
-      for (const trnId of trnsIds) {
+      for (const trnId of this.paginatedTrnsIds) {
         let dayDate
         this.sortByEditDate
           ? dayDate = this.$day(trns[trnId].edited).startOf('day').valueOf()
           : dayDate = this.$day(trns[trnId].date).startOf('day').valueOf()
 
-        if (!trnsList[dayDate]) {
-          trnsList[dayDate] = [trnId]
-        }
-        else {
-          trnsList[dayDate].push(trnId)
-        }
+        !trnsList[dayDate]
+          ? trnsList[dayDate] = [trnId]
+          : trnsList[dayDate].push(trnId)
       }
+
       return trnsList
     }
   },

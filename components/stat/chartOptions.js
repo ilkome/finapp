@@ -52,7 +52,7 @@ export default {
 
     pie: {
       dataLabels: {
-        enabled: false,
+        enabled: true,
         distance: -30,
         format: '<b>{point.name}</b><br>{point.y}',
         filter: {

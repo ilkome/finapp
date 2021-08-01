@@ -12,9 +12,6 @@ export default {
 
 <template lang="pug">
 TrnFormModal(@closed="afterClose")
-  template(#header)
-    template {{ $t('categories.title') }}
-
   template(#default="{ close }")
     TrnFormCategories(@closeModal="close")
 </template>

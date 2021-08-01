@@ -273,8 +273,8 @@ export default {
 <style lang="stylus">
 @import '~assets/stylus/variables'
 
-.trnFormWalletsList .walllets__grid
-.trnForm .walllets__grid
+.trnFormWalletsList .wallets__grid
+.trnForm .wallets__grid
   grid-template-columns repeat(2, 1fr) !important
   grid-column-gap $m6 !important
   grid-row-gap $m6 !important

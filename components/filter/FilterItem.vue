@@ -97,11 +97,12 @@ export default {
   justify-content center
   flex-grow 0
   margin 0 $m4
-  padding $m5 $m7
+  padding $m6 $m7
   color var(--c-font-1)
+  font-size 12px
   white-space nowrap
   background var(--c-bg-5)
-  border-radius $m5
+  border-radius $m6
 
   +media(600px)
     margin-right $m5
