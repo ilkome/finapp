@@ -86,7 +86,7 @@ export default {
     grid-row-gap $m7
 
     +media(600px)
-      grid-template-columns repeat(4, minmax(220px, 1fr))
+      grid-template-columns repeat(auto-fill, minmax(220px, 1fr))
       grid-column-gap $m7
       grid-row-gap $m7
 
