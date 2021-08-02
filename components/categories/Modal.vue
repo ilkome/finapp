@@ -182,14 +182,15 @@ Portal(
             )
 
         //- TODO: translate
-        .header__back(
-          v-if="category.parentId"
-          @click="$store.dispatch('categories/showCategoryModal', category.parentId)"
-        )
-          svg(width="24" height="24" fill="currentColor")
-            path(d="M17.171 2.937a1.5 1.5 0 0 0-2.343-1.874l2.343 1.874zM8 12l-1.171-.937a1.5 1.5 0 0 0 0 1.874L8 12zm6.829 10.937a1.5 1.5 0 0 0 2.343-1.874l-2.343 1.874zm0-21.874l-8 10 2.343 1.874 8-10-2.343-1.874zm-8 11.874l8 10 2.343-1.874-8-10-2.343 1.874z")
+        .wrap
+          .header__back(
+            v-if="category.parentId"
+            @click="$store.dispatch('categories/showCategoryModal', category.parentId)"
+          )
+            svg(width="24" height="24" fill="currentColor")
+              path(d="M17.171 2.937a1.5 1.5 0 0 0-2.343-1.874l2.343 1.874zM8 12l-1.171-.937a1.5 1.5 0 0 0 0 1.874L8 12zm6.829 10.937a1.5 1.5 0 0 0 2.343-1.874l-2.343 1.874zm0-21.874l-8 10 2.343 1.874 8-10-2.343-1.874zm-8 11.874l8 10 2.343-1.874-8-10-2.343 1.874z")
 
-          | Back to {{ $store.state.categories.items[category.parentId].name }}
+            | Back to {{ $store.state.categories.items[category.parentId].name }}
 
   ModalBottomConfirm(
     :description="deleteInfo"
@@ -223,6 +224,9 @@ Portal(
 .categories
   padding $m6
 
+.wrap
+  padding 0 $m8
+
 .header
   flex-grow 1
   position relative
@@ -239,10 +243,7 @@ Portal(
 
   &__back
     button-base-1()
-    margin $m8 $m7 $m5 $m7
-
-    +media(700px)
-      margin $m8 auto $m5 auto
+    margin $m8 auto $m5 auto
 
     svg
       display none

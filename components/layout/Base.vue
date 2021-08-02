@@ -66,13 +66,13 @@ export default {
     .page(
       v-show="activeTabViewName === 'categories'"
       :style="{ zIndex: activeTabViewName === 'categories' ? 10 : 0 }"
-    ): LayoutIndexCategories
+    ): CategoriesPage
 
     //- Wallets
     .page(
       v-show="activeTabViewName === 'wallets'"
       :style="{ zIndex: activeTabViewName === 'wallets' ? 10 : 0 }"
-    ): WalletsPageMobile
+    ): WalletsPage
 
     //- Analytics
     //-----------------------------

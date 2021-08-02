@@ -64,7 +64,6 @@ export default {
   flex-wrap wrap
   align-items center
   justify-content center
-  padding 22px 0
   padding-bottom 16px
 
   &__item

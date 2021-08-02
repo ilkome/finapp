@@ -82,6 +82,7 @@ export default {
   padding $m6
   color var(--c-font-1)
   background var(--color-item-bg)
+  border 1px solid transparent
   border-radius $m5
   anim()
 

@@ -12,7 +12,7 @@ button-base-1()
   align-items center
   justify-content center
   height 44px
-  max-width 420px
+  max-width 280px
   margin 0 auto
   padding 0 $m9
   color var(--color-text-link)
@@ -20,14 +20,13 @@ button-base-1()
   text-decoration none
   background var(--c-bg-4)
   border 1px solid var(--c-bg-4)
-  border-radius $m6
+  border-radius $m9
   anim()
 
   +media-hover()
     color var(--c-text-1)
-    border 1px solid var(--c-blue-1)
+    background var(--c-bg-6)
 
   +media(700px)
     height 48px
     max-width 280px
-    border-radius $m9
