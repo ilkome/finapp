@@ -81,9 +81,15 @@ export default {
   position relative
   padding 14px $m7
   padding-top 0
-  background var(--color-item-bg)
+  background var(--c-item-bg-main)
+  border 1px solid transparent
   border-top 0
-  border-radius $m5
+  border-radius $m6
+  anim()
+
+  +media-hover()
+    background var(--c-item-bg-hover)
+    border-color var(--c-item-bd-hover)
 
   &__line
     opacity 1

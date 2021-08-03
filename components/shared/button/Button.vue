@@ -93,10 +93,7 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/animations'
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
-@import '~assets/stylus/variables/fonts'
+@import '~assets/stylus/variables'
 
 .d-button
   cursor pointer
@@ -115,8 +112,8 @@ export default {
     font-size 14px
 
   +media-hover()
-    color var(--c-font-3)
-    background var(--c-bg-5)
+    color var(--c-font-1)
+    background var(--c-bg-6)
 
   &._ttu
     text-transform uppercase
@@ -152,15 +149,19 @@ export default {
     height 40px
 
   &._bdb
-    height 44px
-    padding $m6 $m7
+    min-height 48px
+    padding $m6 $m8
+    color var(--c-text-4)
+    font-size 14px
+    text-decoration none
     background var(--c-bg-4)
     border 1px solid var(--c-bg-5)
     border-radius $m5
 
     +media-hover()
-      color var(--c-font-3)
-      background var(--c-bg-5)
+      color var(--c-text-1)
+      background var(--c-item-bg-hover)
+      border 1px solid var(--c-item-bd-hover)
 
   &._inline
     display flex
@@ -186,12 +187,6 @@ export default {
     /.light-mode &
       color var(--c-font-1)
       background var(--c-bg-12)
-
-    &:hover
-      @media $media-laptop
-        background var(--c-bg-6)
-        /.light-mode &
-          background var(--c-bg-13)
 
   &._small
     height 44px

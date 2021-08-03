@@ -1,6 +1,7 @@
 <script>
 export default {
   name: 'WelcomePage',
+  layout: 'login',
 
   data () {
     return {

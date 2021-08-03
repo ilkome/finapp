@@ -25,6 +25,7 @@ export default {
         slot(name="headerRight")
 
   .component__header(v-else)
+
   //------------------------------------------------
   //- content
   //------------------------------------------------
@@ -106,6 +107,9 @@ export default {
       height 100%
       scrollbar()
 
+      +media(1100px)
+        justify-content start
+
     &-left
       margin-bottom 16px
 
@@ -113,6 +117,9 @@ export default {
       margin-bottom 16px
 
     &-bottom
+      +media(600px)
+        padding-bottom $m7
+
       &-in
         padding 16px
 

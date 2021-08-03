@@ -11,7 +11,7 @@ export default defineComponent({
   setup (props, { emit }) {
     // settings
     const settings = {
-      moveToCloseOffset: 100,
+      moveToCloseOffset: 60,
       debounceOffset: 20
     }
 

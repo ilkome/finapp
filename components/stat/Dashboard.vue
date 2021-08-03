@@ -350,15 +350,15 @@ export default {
                 :type="item.type"
               )
 
-    template(v-if="(statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)) || (activeTabStat === 'incomes' && statAverage.incomes !== 0 || activeTabStat === 'expenses'  && statAverage.expenses !== 0)")
-      .baseBox._mw(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
-        .baseBox__title {{ $t('trns.history') }}
-        .baseBox__content
-          TrnsList3(
-            :incomes="activeTabStat === 'incomes'"
-            :expenses="activeTabStat === 'expenses'"
-            :size="12"
-          )
+      template(v-if="(activeTabStat !== 'history' && statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)) || (activeTabStat === 'incomes' && statAverage.incomes !== 0 || activeTabStat === 'expenses'  && statAverage.expenses !== 0)")
+        .baseBox._mw(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
+          .baseBox__title {{ $t('trns.history') }}
+          .baseBox__content
+            TrnsList3(
+              :incomes="activeTabStat === 'incomes'"
+              :expenses="activeTabStat === 'expenses'"
+              :size="12"
+            )
 
   //- history
   .history(v-if="activeTabStat === 'history' || statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0 && (activeTabStat !== 'incomes' && activeTabStat !== 'expenses')")

@@ -78,6 +78,7 @@ export default {
       justify-content center
       width 48px
       height 48px
+      color var(--c-font-1)
       font-size 32px
       background var(--c-blue-1)
       border-radius 50%

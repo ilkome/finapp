@@ -20,6 +20,9 @@ export default {
     change: 'Change theme'
   },
 
+  backTo: 'Back to ',
+  close: 'Close',
+
   trnForm: {
     transferTitle: 'Transfer',
     saveTrnButton: 'Save transaction',
@@ -133,7 +136,7 @@ export default {
     open: 'Open settings',
     customize: 'Сustomize',
     app: 'Application',
-    delete: 'Delete',
+    caution: 'With caution',
     demo: 'Demo',
     deleteButton: 'Delete my data',
     loadDemoButton: 'Load demo data'

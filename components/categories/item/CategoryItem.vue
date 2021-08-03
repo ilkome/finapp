@@ -81,14 +81,15 @@ export default {
   min-height 48px
   padding $m6
   color var(--c-font-1)
-  background var(--color-item-bg)
+  background var(--c-item-bg-main)
   border 1px solid transparent
   border-radius $m5
   anim()
 
   +media-hover()
     color var(--c-text-1)
-    border 1px solid var(--c-blue-1)
+    background var(--c-item-bg-hover)
+    border 1px solid var(--c-item-bd-hover)
 
   +media(700px)
     padding $m7 $m8

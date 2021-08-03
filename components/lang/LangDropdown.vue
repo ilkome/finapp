@@ -47,7 +47,7 @@ div
       SharedContextMenuItem(
         title="🇷🇺 Russian - Русский (Не полный)"
         @onClick="changeLang('ru')")
-      .context-menu-sep
+
       SharedContextMenuItem(
         title="🇺🇸 English - Английский"
         @onClick="changeLang('en')")

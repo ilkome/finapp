@@ -172,9 +172,7 @@ LayoutComponentWrap(:contentPadding="false")
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/fonts'
-@import '~assets/stylus/variables/media'
-@import '~assets/stylus/variables/scroll'
+@import '~assets/stylus/variables'
 
 .wrapper
   padding 0 $m7
@@ -244,10 +242,17 @@ LayoutComponentWrap(:contentPadding="false")
 .item
   position relative
   width 100%
-  padding 16px
-  background var(--c-bg-1)
-  border-radius 8px
+  padding $m8
+  background var(--c-bg-4)
+  border 1px solid transparent
+  border-radius $m7
   flex-grow 1
+  anim()
+
+  +media-hover()
+    color var(--c-text-1)
+    background var(--c-bg-2)
+    border 1px solid var(--c-blue-1)
 
   h2
     padding-right 40px

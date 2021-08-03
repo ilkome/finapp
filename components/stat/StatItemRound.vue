@@ -89,7 +89,8 @@ export default {
   .statItemRound__icon
     Icon(
       :icon="category.icon"
-      :background="category.color"
+      :color="category.color"
+      background="var(--c-bg-5)"
       round
     )
 
@@ -105,6 +106,18 @@ export default {
     )
 </template>
 
+<style lang="stylus">
+.statItemRound
+  &__icon
+    .icon
+      width 42px !important
+      height 42px !important
+      background var(--c-bg-4) !important
+      // border 1px solid var(--c-bg-5)
+
+      .icon__image
+        font-size 24px
+</style>
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
@@ -117,10 +130,12 @@ export default {
   justify-content center
   flex-flow column
   padding $m6
+  border 1px solid transparent
   border-radius $m5
 
   +media-hover()
     background var(--c-bg-4)
+    border 1px solid var(--c-item-bd-hover)
 
   &._prevStat
     opacity .5

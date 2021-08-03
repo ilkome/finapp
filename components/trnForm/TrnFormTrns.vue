@@ -167,15 +167,14 @@ export default {
             )
 
       .trnsList__pages(v-if="!isShowedAllTrns")
-        SharedButton(
-          :class="['_text-center _border _inline']"
-          :title="$t('trns.more')"
-          @onClick="showMoreTrns"
-        )
+        .button(@click="showMoreTrns") {{ $t('trns.more') }}
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
+.button
+  button-base-1()
 
 .container
   display flex
@@ -253,15 +252,15 @@ export default {
   font-roboto()
   text-align center
   border 1px solid transparent
-  border-radius 50px
-
-  &:active
-    color var(--c-font-2)
-    background var(--c-blue-1)
+  anim()
 
   &._active
     cursor default
-    color var(--c-font-3)
-    background var(--c-bg-5)
-    border 1px solid var(--c-bg-5)
+    color var(--c-blue-1)
+
+  +media-hover()
+    &:not(._active)
+      color var(--c-font-2)
+      background var(--c-bg-5)
+      border-radius 50px
 </style>

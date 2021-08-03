@@ -1,0 +1,39 @@
+@import './variables'
+
+*
+  box-sizing border-box
+  -webkit-tap-highlight-color transparent
+
+  &:focus
+    outline 0
+
+html
+body
+#__nuxt
+#__layout
+  height 100%
+
+html
+  font-size 16px
+  overscroll-behavior-y none
+
+body
+  overflow hidden
+  overscroll-behavior-y none
+  margin 0
+  color var(--c-font-2)
+  font-primary()
+  font-size 14px
+  line-height 1
+  letter-spacing 0
+  background var(--color-bg-canvas)
+  user-select none
+
+.layout
+  display flex
+  height 100%
+  min-width 320px
+
+  &__wrap
+    flex-grow 1
+    position relative

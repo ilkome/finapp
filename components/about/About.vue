@@ -8,13 +8,14 @@ export default {
 .about
   .about__title {{ $t('about.creators.title') }}
 
-  .aboutPerson
-    .aboutPerson__title {{ $t('about.creators.author') }}
-    .aboutPerson__name @ilkome
+  .about__wrap
+    .aboutPerson
+      .aboutPerson__title {{ $t('about.creators.author') }}
+      .aboutPerson__name ilkome
 
-  .aboutPerson
-    .aboutPerson__title {{ $t('about.creators.ideas') }}
-    .aboutPerson__name @TheCarolissy <br/>@TihomirovPro
+    .aboutPerson
+      .aboutPerson__title {{ $t('about.creators.ideas') }}
+      .aboutPerson__name TheCarolissy <br/>TihomirovPro
 </template>
 
 <style lang="stylus" scoped>
@@ -22,22 +23,23 @@ export default {
 
 .about
   &__title
-    padding-bottom $m9
+    padding-bottom $m7
     font-h1()
+    font-size 18px
 
-    +media-laptop()
-      font-size 28px
+  &__wrap
+    display flex
+    gap $m10
+    padding-bottom $m7
 
 .aboutPerson
-  padding-bottom $m10
-
   &__title
     padding-bottom $m5
     color var(--c-font-3)
-    font-size 16px
+    font-size 12px
 
   &__name
-    font-size 20px
-    line-height 32px
+    font-size 14px
+    line-height 18px
     fontFamilyNunito()
 </style>

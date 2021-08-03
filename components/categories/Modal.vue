@@ -1,10 +1,12 @@
 <script>
 import { useContext } from '@nuxtjs/composition-api'
 import { db } from '~/services/firebaseConfig'
+import useFilter from '~/modules/filter/useFilter'
 
 export default {
   setup () {
     const { store } = useContext()
+    const { setCategoryFilter } = useFilter()
 
     const closed = () => {
       store.commit('categories/hideCategoryModal')
@@ -12,6 +14,7 @@ export default {
     }
 
     return {
+      setCategoryFilter,
       closed
     }
   },
@@ -53,17 +56,15 @@ export default {
 
   methods: {
     handleSetFilterCategory () {
-      this.$store.commit('categories/hideCategoryModal')
-      this.$store.dispatch('ui/setActiveTab', 'stat')
+      this.setCategoryFilter(this.categoryId)
       this.$store.commit('filter/setFilterDateNow')
-      this.$store.dispatch('filter/setFilterCategoryId', this.categoryId)
+
       this.$store.commit('categories/hideCategoryModal')
       this.$store.commit('categories/setCategoryModalId', null)
 
-      if (this.$store.state.ui.mobile) {
-        this.$store.dispatch('ui/setActiveTabViewName', 'stat')
-        this.$store.dispatch('ui/setActiveTabStat', 'details')
-      }
+      this.$store.dispatch('ui/setActiveTab', 'stat')
+      this.$store.dispatch('ui/setActiveTabViewName', 'stat')
+      this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
 
     handleEditClick () {
@@ -150,7 +151,7 @@ Portal(
           .header__title {{ category.name }}
           .header__subCategory(v-if="category.parentId") {{ $store.state.categories.items[category.parentId].name }}
 
-    template
+    template(#default="{ close }")
       .content
         .tools
           .modalLinks
@@ -181,16 +182,16 @@ Portal(
               @onClick="id => $store.dispatch('categories/showCategoryModal', id)"
             )
 
-        //- TODO: translate
         .wrap
-          .header__back(
+          .buttonBack(
             v-if="category.parentId"
             @click="$store.dispatch('categories/showCategoryModal', category.parentId)"
-          )
-            svg(width="24" height="24" fill="currentColor")
-              path(d="M17.171 2.937a1.5 1.5 0 0 0-2.343-1.874l2.343 1.874zM8 12l-1.171-.937a1.5 1.5 0 0 0 0 1.874L8 12zm6.829 10.937a1.5 1.5 0 0 0 2.343-1.874l-2.343 1.874zm0-21.874l-8 10 2.343 1.874 8-10-2.343-1.874zm-8 11.874l8 10 2.343-1.874-8-10-2.343 1.874z")
+          ) {{ $t('backTo') }} {{ $store.state.categories.items[category.parentId].name }}
 
-            | Back to {{ $store.state.categories.items[category.parentId].name }}
+          .buttonBack(
+            v-if="category.parentId === 0"
+            @click="close()"
+          ) {{ $t('close') }}
 
   ModalBottomConfirm(
     :description="deleteInfo"
@@ -223,6 +224,7 @@ Portal(
 
 .categories
   padding $m6
+  padding-bottom $m4
 
 .wrap
   padding 0 $m8
@@ -240,13 +242,6 @@ Portal(
 
   &__subCategory
     padding-top $m3
-
-  &__back
-    button-base-1()
-    margin $m8 auto $m5 auto
-
-    svg
-      display none
 
   &__title
     font-size 28px
@@ -269,4 +264,8 @@ Portal(
     justify-content center
     margin-top -38px
     padding-bottom 12px
+
+.buttonBack
+  button-base-1()
+  margin $m8 auto $m5 auto
 </style>

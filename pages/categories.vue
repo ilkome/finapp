@@ -1,6 +1,13 @@
 <script>
 export default {
-  name: 'LayoutIndexCategories'
+  name: 'CategoriesPage',
+  layout: 'app',
+
+  head () {
+    return {
+      title: this.$t('categories.title')
+    }
+  },
 }
 </script>
 
@@ -22,14 +29,7 @@ LayoutComponentWrap(:contentPadding="false")
 @import '~assets/stylus/variables'
 
 .header
-  padding 60px 0
-  font-h1()
-  font-size 22px
-  font-weight 600
-  text-align center
-
-  +media-laptop()
-    font-size 28px
+  header-title()
 
 .buttons
   display flex

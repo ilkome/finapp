@@ -21,6 +21,9 @@ export default {
     change: 'Сменить цвет оформления'
   },
 
+  backTo: 'Назад к ',
+  close: 'Закрыть',
+
   trnForm: {
     transferTitle: 'Перевод',
     saveTrnButton: 'Сохранить',
@@ -135,7 +138,7 @@ export default {
     open: 'Открыть настройки',
     customize: 'Внешний вид',
     app: 'Приложение',
-    delete: 'Удаление данных',
+    caution: 'C осторожностью',
     demo: 'Демо режим',
     deleteButton: 'Удалить все мои данные',
     loadDemoButton: 'Загрузить демо данные'

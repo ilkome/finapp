@@ -72,7 +72,3 @@ export default {
       :total="category[typeName]"
     )
 </template>
-
-<style lang="stylus" scoped>
-
-</style>

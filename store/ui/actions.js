@@ -10,10 +10,10 @@ export default {
 
     // ui
     if (uiLocalStore) {
-      uiLocalStore.activeTabStat &&
-        dispatch('setActiveTabStat', uiLocalStore.activeTabStat)
+      if (uiLocalStore.activeTab)
+        dispatch('setActiveTab', uiLocalStore.activeTab)
 
-      uiLocalStore.activeTabViewName &&
+      if (uiLocalStore.activeTabViewName)
         dispatch('setActiveTabViewName', uiLocalStore.activeTabViewName)
     }
   },

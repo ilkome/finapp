@@ -231,7 +231,7 @@ export default {
       .swiper-slide(:style="{ height: maxHeight }")
         .scroll.scrollerBlock
           div(style="paddingBottom: 16px")
-            div(style="padding: 20px 0 20px 0")
+            div(style="padding: 20px 0 26px 0")
               WalletsList3(
                 :activeItemId="$store.state.trnForm.values.walletId"
                 :limit="4"
@@ -240,7 +240,8 @@ export default {
                 @onClick="onClickWallet"
               )
 
-            div(style="padding: 0 0 20px 0")
+            div(style="padding: 0 0 26px 0")
+              .subTitle {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
               CategoriesView(
                 :ids="$store.getters['categories/quickSelectorCategoriesIds']"
                 :activeItemId="$store.state.trnForm.values.categoryId"
@@ -250,6 +251,7 @@ export default {
               )
 
             div(style="padding: 0 0 10px 0")
+              .subTitle {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
               CategoriesView(
                 :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
                 :activeItemId="$store.state.trnForm.values.categoryId"
@@ -257,6 +259,10 @@ export default {
                 :noPaddingBottom="true"
                 @onClick="onCategoryClick"
               )
+
+          .buttons
+            .button(@click="$store.commit('trnForm/showTrnFormModal', 'categories')") {{ $t('categories.title') }}
+            .button(@click="$store.commit('trnForm/showTrnFormModal', 'wallets')") {{ $t('wallets.title') }}
 
   .trnForm__pagination
 
@@ -390,6 +396,28 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
+.buttons
+  display flex
+  align-items center
+  justify-content center
+  gap $m8
+  padding 0 $m8
+  padding-top $m4
+  padding-bottom $m9
+
+.button
+  button-base-1()
+
+.subTitle
+  padding 0 $m8
+  padding-bottom $m6
+  color var(--c-font-4)
+  font-size 10px
+  letter-spacing 0px
+  font-weight 600
+  text-align center
+  text-transform uppercase
 
 .scroll
   overflow hidden

@@ -123,15 +123,15 @@ export default {
           )
 
   .trnsList__pages(v-if="!isShowedAllTrns")
-    SharedButton(
-      :class="['_text-center _border _inline']"
-      :title="$t('trns.more')"
-      @onClick="showMoreTrns"
-    )
+    .button(@click="showMoreTrns") {{ $t('trns.more') }}
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
+.button
+  button-base-1()
+  margin-top $m7
 
 .trnsList
   max-width 400px
@@ -161,7 +161,6 @@ export default {
 
   &__day
     overflow hidden
-    border-bottom 1px solid var(--c-bg-3)
     margin-bottom 16px
     padding-bottom 16px
 

@@ -86,7 +86,6 @@ export default {
       template(slot="content")
         template(v-if="!isEmptyStat")
           CustomizeMenu
-          .context-menu-sep
 
         SharedContextMenuItem(
           :title="$t('theme.change')"

@@ -29,9 +29,8 @@ export default {
           nextAmountType = 1
           break
         case 1:
-          if (this.$store.getters['wallets/walletsSortedIds'].length > 1) {
+          if (this.$store.getters['wallets/walletsSortedIds'].length > 1)
             nextAmountType = 0
-          }
           break
       }
 

@@ -62,12 +62,13 @@ export default {
   border 1px solid transparent
   anim()
 
-  +media-hover()
-    color var(--c-font-2)
-    background var(--c-bg-5)
-    border-radius 50px
-
   &._active
     cursor default
     color var(--c-blue-1)
+
+  +media-hover()
+    &:not(._active)
+      color var(--c-font-2)
+      background var(--c-bg-5)
+      border-radius 50px
 </style>

@@ -36,21 +36,22 @@ export default {
   display flex
   align-items stretch
   width auto
-  height 44px
+  min-height 48px
   margin-left auto
   padding $m6 $m7
-  color var(--c-font-4)
+  color var(--c-font-2)
   font-size 13px
   background var(--c-bg-4)
   border 1px solid var(--c-bg-5)
-  border-radius $m5
+  border-radius $m6
 
   &:active:not(._disable)
     color var(--c-font-3)
 
   +media-hover()
-    color var(--c-font-3)
-    background var(--c-bg-5)
+    color var(--c-font-1)
+    background var(--c-item-bg-hover)
+    border 1px solid var(--c-item-bd-hover)
 
   &._noBd
     margin 0 -12px
@@ -78,7 +79,7 @@ export default {
     display flex
     align-items center
     justify-content center
-    margin-right 6px
+    margin-right $m7
     font-size 22px
 
   &__title

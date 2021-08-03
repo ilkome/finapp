@@ -137,10 +137,13 @@ export default {
       border 1px solid var(--c-bg-5)
 
   &._active
-    margin $m6 (- $m6)
+    margin 0 (- $m5)
+    margin-bottom $m7
+    margin-left (- $m6)
     padding 0
-    background var(--c-bg-4)
-    border 1px solid var(--c-bg-5)
+    padding-left $m4
+    border-radius 0
+    border-left 1px solid var(--c-bg-8)
 
   &__content
     display grid
@@ -149,9 +152,7 @@ export default {
     grid-column-gap 20px
 
     ^[0]._active &
-      margin 0 $m6
-      padding $m6 0
-      border-bottom 1px solid var(--c-bg-5)
+      padding $m5 $m5
 
   &__inside
     padding 0

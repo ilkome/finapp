@@ -4,6 +4,7 @@ import { ref, useContext } from '@nuxtjs/composition-api'
 
 export default {
   name: 'LoginPage',
+  layout: 'login',
 
   setup () {
     const { query } = useContext()

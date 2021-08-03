@@ -41,8 +41,19 @@ export default {
   max-width 100%
   padding $m6 $m6
   text-align center
+  border 1px solid transparent
   border-radius $m6
   anim()
+
+  &._active
+    background var(--c-bg-3)
+    border 1px solid var(--c-bg-6)
+
+  +media-hover()
+    &:not(._active)
+      color var(--c-font-3)
+      background var(--c-item-bg-hover)
+      border 1px solid var(--c-item-bd-hover)
 
   &__icon
     opacity .8
@@ -53,14 +64,6 @@ export default {
     color var(--c-font-2)
     font-size 32px
 
-  +media-hover()
-    &:not(._active)
-      color var(--c-font-3)
-      background var(--c-bg-5)
-
-  &._active
-    background var(--c-bg-3)
-    border 1px solid var(--c-bg-6)
 
   &__name
     color var(--c-font-3)

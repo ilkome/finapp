@@ -51,18 +51,34 @@ export default {
     },
 
     handleClickMenu (menuId) {
+      if (menuId === 'settings') {
+        this.$store.dispatch('ui/setActiveTab', 'stat')
+        this.$store.dispatch('ui/setActiveTabViewName', 'stat')
+        this.$router.push(menuId)
+        return
+      }
+
+      if (menuId === 'wallets') {
+        this.$store.dispatch('ui/setActiveTab', 'wallets')
+        this.$store.dispatch('ui/setActiveTabViewName', 'wallets')
+        this.$router.push(menuId)
+        return
+      }
+
       if (menuId === 'stat')
         this.$store.dispatch('ui/setActiveTabViewName', 'stat')
 
-      if (menuId === 'wallets')
-        this.$store.dispatch('ui/setActiveTabViewName', 'wallets')
-
-      if (menuId === 'categories')
+      if (menuId === 'categories') {
+        this.$router.push(menuId)
+        this.$store.dispatch('ui/setActiveTab', 'categories')
         this.$store.dispatch('ui/setActiveTabViewName', 'categories')
+        return
+      }
 
       if (menuId === 'users') {
-        this.$router.push('/users')
-        this.$store.dispatch('ui/setActiveTab', 'stat')
+        this.$router.push(menuId)
+        this.$store.dispatch('ui/setActiveTab', 'users')
+        this.$store.dispatch('ui/setActiveTabViewName', 'users')
         return
       }
       else if (menuId === 'trnForm') {
@@ -87,7 +103,7 @@ export default {
   template(v-for="(menuItem, menuId) in menu")
     .menuItem(
       v-if="$store.getters['user/isTester'] || !menuItem.private"
-      :class="{ _active: activeTab === menuId, [`_${menuId}`]: true }"
+      :class="{ _active: $route.name === menuId || ($route.name === 'index' && menuId === 'stat') || (activeTab !== 'categories' && activeTab === menuId), [`_${menuId}`]: true }"
       @click="handleClickMenu(menuId)"
     )
       .menuItem__icon: div(:class="menuItem.icon")
@@ -101,8 +117,7 @@ item-bg-active()
   background var(--c-bg-6)
 
 .menu
-  &__wallets
-    padding-top $m8
+  padding-bottom $m10
 
 .menuItem
   cursor pointer
@@ -111,7 +126,7 @@ item-bg-active()
   grid-column-gap 20px
   align-items center
   height 50px
-  padding 16px 16px
+  padding $m7 $m9
 
   +media-laptop()
     height auto

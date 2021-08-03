@@ -1,10 +1,12 @@
 <script>
 import { useContext } from '@nuxtjs/composition-api'
 import { db } from '~/services/firebaseConfig'
+import useFilter from '~/modules/filter/useFilter'
 
 export default {
   setup () {
     const { store } = useContext()
+    const { setWalletFilter } = useFilter()
 
     const closed = () => {
       store.commit('wallets/hideWalletsModalWalletModal')
@@ -12,6 +14,7 @@ export default {
     }
 
     return {
+      setWalletFilter,
       closed
     }
   },
@@ -48,16 +51,15 @@ export default {
 
   methods: {
     handleSetFilterWallet () {
-      this.$store.commit('wallets/hideWalletsModalWalletModal')
-      this.$store.dispatch('ui/setActiveTab', 'stat')
+      this.setWalletFilter(this.walletId)
       this.$store.commit('filter/setFilterDateNow')
-      this.$store.dispatch('filter/setFilterWalletId', this.walletId)
+
+      this.$store.commit('wallets/hideWalletsModalWalletModal')
       this.$store.commit('wallets/setWalletsModalWalletModalId', null)
 
-      if (this.$store.state.ui.mobile) {
-        this.$store.dispatch('ui/setActiveTabViewName', 'stat')
-        this.$store.dispatch('ui/setActiveTabStat', 'details')
-      }
+      this.$store.dispatch('ui/setActiveTab', 'stat')
+      this.$store.dispatch('ui/setActiveTabViewName', 'stat')
+      this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
 
     handleEditClick () {
@@ -124,7 +126,7 @@ Portal(
             size="xl"
           )
 
-    template
+    template(#default="{ close }")
       .content
         template(v-if="$store.state.wallets.items[walletId].desc")
           .info(style="padding-bottom:20px") {{ $store.state.wallets.items[walletId].desc }}
@@ -146,6 +148,12 @@ Portal(
             @onClick="handleSetFilterWallet"
           )
 
+        .buttonBack(
+          @click="close()"
+        ) {{ $t('close') }}
+
+        button-base-1()
+
   ModalBottomConfirm(
     :show="showModalConfirm"
     :description="deleteInfo"
@@ -163,12 +171,14 @@ Portal(
     background var(--c-bg-3)
 
     .walletItemGrid
+      cursor default
       width 100%
       padding $m8
       padding-top 0
       padding-bottom $m6
       border-bottom 0
-      background var(--c-bg-3)
+      background var(--c-bg-3) !important
+      border 1px solid transparent !important
       border-radius $m6 $m6 0 0
 
       &__name
@@ -234,4 +244,8 @@ Portal(
         width 12px
         height 12px
         stroke var(--c-font-1)
+
+.buttonBack
+  button-base-1()
+  margin $m8 auto $m5 auto
 </style>

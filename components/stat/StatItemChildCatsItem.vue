@@ -61,7 +61,7 @@ export default {
       Icon(
         :color="category.color"
         :icon="category.icon"
-        background="var(--c-bg-6)"
+        :background="isShowInside ? 'var(--c-bg-5)' : 'transparent'"
         round
       )
 
@@ -93,7 +93,7 @@ export default {
 
 .statItemChild
   .trnItem._stat
-    padding-right $m6
+    padding-right $m5
     padding-left $m6
 </style>
 
@@ -110,13 +110,7 @@ export default {
     grid-template-rows repeat(2, minmax(10px, max-content))
     grid-column-gap 20px
     margin 0 0px
-    padding $m6 $m6
-
-  &__trns
-    padding 0
-
-    @media $media-laptop
-      padding 0 $m6 0 $m7
+    padding $m6 $m5
 
   &__graph
     overflow hidden
@@ -154,8 +148,7 @@ export default {
     align-self center
 
   &__trns
-    padding-right $m6
-    padding-left $m6
+    padding 0
 
     ^[0]._active &
       padding-bottom $m6

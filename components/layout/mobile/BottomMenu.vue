@@ -1,5 +1,5 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useContext, useRoute, useRouter } from '@nuxtjs/composition-api'
 
 export default {
   name: 'LayoutMobileBottomMenu',
@@ -17,6 +17,8 @@ export default {
 
   setup () {
     const { store, app: { i18n } } = useContext()
+    const route = useRoute()
+    const router = useRouter()
     const activeTabViewName = computed(() => store.state.ui.activeTabViewName)
 
     const menu = computed(() => ({
@@ -43,16 +45,33 @@ export default {
     }))
 
     function handleSetActiveTab (tabName) {
-      if (tabName === 'menu') {
-        store.dispatch('ui/setActiveTab', 'menu')
+      if (tabName === 'wallets') {
+        router.push('/wallets')
         return
       }
-      store.dispatch('ui/setActiveTab', tabName)
-      store.dispatch('ui/setActiveTabViewName', tabName)
+
+      if (tabName === 'categories') {
+        router.push('/categories')
+        store.dispatch('ui/setActiveTab', 'categories')
+        store.dispatch('ui/setActiveTabViewName', 'categories')
+        return
+      }
+      if (tabName === 'stat') {
+        store.dispatch('ui/setActiveTab', 'stat')
+        store.dispatch('ui/setActiveTabViewName', 'stat')
+        router.push('/')
+        return
+      }
+
+      store.dispatch('ui/setActiveTab', 'menu')
     }
 
     function getClassName (tabName) {
-      return activeTabViewName.value === tabName
+      if (route.value.name === tabName)
+        return true
+
+      if (route.value.name === 'index')
+        return activeTabViewName.value === tabName
     }
 
     return {
