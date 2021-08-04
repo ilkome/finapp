@@ -72,7 +72,6 @@ export default {
   // Color mode
   colorMode: {
     preference: 'dark' // default value of $colorMode.preference
-    // fallback: 'dark' // fallback value if not system preference found
   },
 
   // Style resources
@@ -83,8 +82,8 @@ export default {
   // Nuxt.js modules
   modules: [
     '@nuxtjs/color-mode',
+    '@nuxtjs/i18n',
     '@nuxtjs/pwa',
-    'nuxt-i18n',
     'portal-vue/nuxt'
   ],
 
@@ -108,17 +107,18 @@ export default {
   i18n: {
     locales: [{
       code: 'en',
+      iso: 'en-US',
       file: 'en-US.js'
     }, {
       code: 'ru',
+      iso: 'ru-RU',
       file: 'ru-RU.js'
     }],
     strategy: 'no_prefix',
     defaultLocale: 'en',
     detectBrowserLanguage: {
       useCookie: true,
-      cookieKey: 'i18n_redirected',
-      alwaysRedirect: false
+      cookieKey: 'i18n_redirected'
     },
     seo: false,
     lazy: true,
