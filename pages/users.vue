@@ -99,83 +99,79 @@ export default {
 <template lang="pug">
 LayoutComponentWrap(:contentPadding="false")
   template(slot="content")
-    .wrapper
-      .header Users
+    .header Users
 
-      template(v-if="$store.getters['user/isTester']")
-        .items
-          .item(
-            v-for="(userName, userUid) in usersUid"
-            @click="getCustomUserData(userUid)"
-          ) {{ userName }}
+    template(v-if="$store.getters['user/isTester']")
+      .items
+        .item(
+          v-for="(userName, userUid) in usersUid"
+          @click="getCustomUserData(userUid)"
+        ) {{ userName }}
 
-        .pb_baseOneAndHalf
-          SharedButton(
-            @click="getUsers"
-            title="Update users"
-          )
+      .pb_baseOneAndHalf
+        SharedButton(
+          @click="getUsers"
+          title="Update users"
+        )
 
-        .usersWrap
-          .item(
-            v-for="user in users"
-          )
-            .tags
-              .tagItem._one(v-if="$day(user.creationDate).isSame(user.loginDate, 'day')") once
-              .tagItem._one(v-if="$day(user.creationDate).isSame($day(), 'week')") new
-              .tagItem._one(v-if="!$day(user.creationDate).isSame(user.loginDate, 'day')") {{ $day(user.loginDate).from(user.creationDate, true) }}
+      .usersWrap
+        .item(
+          v-for="user in users"
+        )
+          .tags
+            .tagItem._one(v-if="$day(user.creationDate).isSame(user.loginDate, 'day')") once
+            .tagItem._one(v-if="$day(user.creationDate).isSame($day(), 'week')") new
+            .tagItem._one(v-if="!$day(user.creationDate).isSame(user.loginDate, 'day')") {{ $day(user.loginDate).from(user.creationDate, true) }}
 
-            h2(@click="getCustomUserData(user.uid)") {{ user.name }}
-            .pb_base {{ user.uid }}
-            .pb_base(v-if="user.theme")
-              .item__info._noPad
-                .item__title Theme
-                .item__date {{ user.theme }}
+          h2(@click="getCustomUserData(user.uid)") {{ user.name }}
+          .pb_base {{ user.uid }}
+          .pb_base(v-if="user.theme")
+            .item__info._noPad
+              .item__title Theme
+              .item__date {{ user.theme }}
 
-            .div
-              .item__info._noPad
-                .item__title Last login
-                .item__date {{ $day(user.loginDate).format('D MMMM YYYY HH:mm') }}
+          .div
+            .item__info._noPad
+              .item__title Last login
+              .item__date {{ $day(user.loginDate).format('D MMMM YYYY HH:mm') }}
 
-            .pb_base
-              .item__info._noPad(v-if="user.creationDate")
-                .item__title Creation
-                .item__date {{ $day(user.creationDate).format('D MMMM YYYY HH:mm') }}
+          .pb_base
+            .item__info._noPad(v-if="user.creationDate")
+              .item__title Creation
+              .item__date {{ $day(user.creationDate).format('D MMMM YYYY HH:mm') }}
 
-            .pb_base(v-if="user.opensApp")
-              .item__info._noPad Opened
-              .item__info._noPad(
-                v-for="(date, version) in user.opensApp"
-                @click="deleteUserOpened(version, user.uid)"
-              )
-                .item__title {{ version }}
-                .item__date {{ $day(date).format('D MMMM YYYY HH:mm') }}
+          .pb_base(v-if="user.opensApp")
+            .item__info._noPad Opened
+            .item__info._noPad(
+              v-for="(date, version) in user.opensApp"
+              @click="deleteUserOpened(version, user.uid)"
+            )
+              .item__title {{ version }}
+              .item__date {{ $day(date).format('D MMMM YYYY HH:mm') }}
 
-            .pb_base(v-if="user.actions")
-              .item__info._noPad Actions
-              .item__info._noPad(
-                v-for="(action, date) in user.actions"
-                @click="deleteUserAction(date, user.uid)"
-              )
-                .item__title {{ action }}
-                .item__date {{ $day(date).format('D MMMM YYYY HH:mm') }}
+          .pb_base(v-if="user.actions")
+            .item__info._noPad Actions
+            .item__info._noPad(
+              v-for="(action, date) in user.actions"
+              @click="deleteUserAction(date, user.uid)"
+            )
+              .item__title {{ action }}
+              .item__date {{ $day(date).format('D MMMM YYYY HH:mm') }}
 
-            .item__links
-              a.item__link(
-                :href="`https://finapp-17474.firebaseio.com/users/${user.uid}`"
-                target="_blank"
-              ) User Data
+          .item__links
+            a.item__link(
+              :href="`https://finapp-17474.firebaseio.com/users/${user.uid}`"
+              target="_blank"
+            ) User Data
 
-              a.item__link(
-                :href="`https://finapp-17474.firebaseio.com/users-info/${user.uid}`"
-                target="_blank"
-              ) User Info
+            a.item__link(
+              :href="`https://finapp-17474.firebaseio.com/users-info/${user.uid}`"
+              target="_blank"
+            ) User Info
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
-
-.wrapper
-  padding 0 $m7
 
 .header
   header-title()
@@ -199,11 +195,10 @@ LayoutComponentWrap(:contentPadding="false")
   display grid
   width 100%
   height 100%
-  padding 16px
-  padding-bottom 0
+  padding 0 16px
 
   +media-tablet()
-    padding 32px
+    padding 0 32px
 
 .pageHeader
   position relative
@@ -243,7 +238,7 @@ LayoutComponentWrap(:contentPadding="false")
   position relative
   width 100%
   padding $m8
-  background var(--c-bg-4)
+  background var(--c-item-bg-main)
   border 1px solid transparent
   border-radius $m7
   flex-grow 1
@@ -251,8 +246,8 @@ LayoutComponentWrap(:contentPadding="false")
 
   +media-hover()
     color var(--c-text-1)
-    background var(--c-bg-2)
-    border 1px solid var(--c-blue-1)
+    background var(--c-item-bg-hover)
+    border 1px solid var(--c-item-bd-hover)
 
   h2
     padding-right 40px

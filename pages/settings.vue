@@ -23,11 +23,17 @@ export default {
     generateDemo () {
       this.confirmCreateDemo = false
       this.$store.dispatch('demo/createDemo')
+
+      if (this.$route.name !== 'index')
+        this.$router.push('/')
     },
 
     removeUserData () {
       this.confirmRemoveUserData = false
       this.$store.dispatch('user/removeUserData')
+
+      if (this.$route.name !== 'index')
+        this.$router.push('/')
     }
   }
 }

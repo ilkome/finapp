@@ -98,103 +98,106 @@ export default {
 
 <template lang="pug">
 .layoutNew(:class="className")
-  //- Modals
-  //-----------------------------------
-  CategoriesModal
-  CurrenciesCurrencyModal
+  .layoutNew__modals
+    //- Modals
+    //-----------------------------------
+    CategoriesModal
+    CurrenciesCurrencyModal
 
-  BaseBottomSheet(
-    keepAlive
-    :show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show"
-    @closed="$store.dispatch('trnForm/closeTrnForm')"
-  )
-    template(#handler="{ close }")
-      .handler
+    BaseBottomSheet(
+      keepAlive
+      :show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show"
+      @closed="$store.dispatch('trnForm/closeTrnForm')"
+    )
+      template(#handler="{ close }")
+        .handler
+        BaseBottomSheetClose(@onClick="close")
 
-      .handler__close(@click="close")
-        svg(
-          viewBox='0 0 24 24'
-          fill='none'
-          stroke='#000'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-          stroke-width='3'
-        )
-          path(d='M.75 23.249l22.5-22.5')
-          path(d='M23.25 23.249L.75.749')
+      TrnForm(:show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show")
 
-    TrnForm(:show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show")
+    TrnsModal
+    WalletsModal
 
-  TrnsModal
-  WalletsModal
+    //- Base Menu
+    LazyLayoutMobileMenuModal(v-if="activeTab === 'menu'")
 
-  //- Base Menu
-  LazyLayoutMobileMenuModal(v-if="activeTab === 'menu'")
-
-  ModalBottom(
-    v-if="activeTab === 'createCategory'"
-    key="createCategory"
-    @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
-  ): CategoriesForm
-
-  //- Settings
-  Portal(
-    v-if="activeTab === 'settings'"
-    to="modal"
-  )
-    ModalBottom(@onClose="$store.dispatch('ui/setActiveTab', 'stat')")
-      Settings(v-if="activeTab === 'settings'")
-
-  //- Wallet Form: create or edit
-  Portal(
-    v-if="activeTab === 'createWallet'"
-    to="modal"
-  )
-    ModalBottom(
-      :key="$store.state.wallets.editId"
+    //- category
+    LazyCategoriesEditModal(
+      v-if="activeTab === 'createCategory'"
       @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
     )
-      WalletsFormWalletForm
 
-  //- Wallet Sort
-  Portal(
-    v-if="activeTab === 'walletsSort'"
-    to="modal"
-    key="walletsSort"
-  )
-    ModalBottom(
-      isShow
+    //- Settings
+    Portal(
+      v-if="activeTab === 'settings'"
+      to="modal"
+    )
+      ModalBottom(@onClose="$store.dispatch('ui/setActiveTab', 'stat')")
+        Settings(v-if="activeTab === 'settings'")
+
+    //- Wallet Form: create or edit
+    Portal(
+      v-if="activeTab === 'createWallet'"
+      to="modal"
+    )
+      ModalBottom(
+        :key="$store.state.wallets.editId"
+        @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
+      )
+        WalletsFormWalletForm
+
+    //- Wallet Sort
+    Portal(
+      v-if="activeTab === 'walletsSort'"
+      to="modal"
       key="walletsSort"
-      @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
     )
-      template(#default="{ closeModal }")
-        WalletsSort(
-          v-if="activeTab === 'walletsSort'"
-          @closeModal="closeModal"
-        )
+      ModalBottom(
+        isShow
+        key="walletsSort"
+        @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
+      )
+        template(#default="{ closeModal }")
+          WalletsSort(
+            v-if="activeTab === 'walletsSort'"
+            @closeModal="closeModal"
+          )
 
-  //- Loading
-  template(v-if="!$store.state.app.status.ready")
-    LoaderSharedLoader
+    //- Loading
+    template(v-if="!$store.state.app.status.ready")
+      LoaderSharedLoader
 
-  //- Notifications
-  Notifications(
-    :position="$store.state.ui.mobile ? 'top center' : 'top left'"
-    :width="$store.state.ui.mobile ? '94%' : '380px'"
-    classes="notifications"
-  )
+    //- Notifications
+    Notifications(
+      :position="$store.state.ui.mobile ? 'top center' : 'top left'"
+      :width="$store.state.ui.mobile ? '94%' : '380px'"
+      classes="notifications"
+    )
 
-  //- Modals
-  PortalTarget(
-    multiple
-    name="modal"
-  )
+    //- Modals
+    PortalTarget(
+      multiple
+      name="modal"
+    )
 
-  //- Update modal
-  LazyAppUpdateAppModal(
-    v-if="isShowUpdateApp"
-    @onClose="isShowUpdateApp = false"
-  )
+    //- Update modal
+    LazyAppUpdateAppModal(
+      v-if="isShowUpdateApp"
+      @onClose="isShowUpdateApp = false"
+    )
+
+  //- wrap
+  //-----------------------------------
+  .layoutNew__wrap
+    .layoutNew__sidebar
+      LayoutPcSidebar
+
+    .layoutNew__content
+      .page2
+        Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
+
+    .layoutNew__menu
+      LayoutMobileBottomMenu
 </template>
 
 <style lang="stylus">
@@ -207,11 +210,15 @@ export default {
 .layoutNew
   overflow hidden
   position relative
-  display grid
+  display flex
   height 100%
   background var(--c-bg-3)
 
+  &__modals
+    height 0
+
   &__wrap
+    flex-grow 1
     overflow hidden
     display grid
     grid-template-columns 1fr
@@ -237,9 +244,8 @@ export default {
   &__menu
     background var(--c-bg-3)
 
-    +media(600px)
+    +media(1100px)
       display none
-      background var(--c-bg-2)
 
 .handler
   z-index 2
@@ -259,35 +265,6 @@ export default {
     height 4px
     background var(--c-bg-8)
     border-radius 4px
-
-  &__close
-    z-index 3
-    cursor pointer
-    position absolute
-    top 4px
-    right 4px
-    display flex
-    align-items center
-    justify-content center
-    width 40px
-    height 40px
-    border-radius 50%
-    anim()
-
-    +media-hover()
-      background var(--c-blue-1)
-
-    svg
-      anim()
-      width 12px
-      height 12px
-      stroke var(--c-font-4)
-
-    +media-hover()
-      svg
-        width 12px
-        height 12px
-        stroke var(--c-font-1)
 
 .page2
   overflow hidden

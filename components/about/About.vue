@@ -14,8 +14,8 @@ export default {
       .aboutPerson__name ilkome
 
     .aboutPerson
-      .aboutPerson__title {{ $t('about.creators.ideas') }}
-      .aboutPerson__name TheCarolissy <br/>TihomirovPro
+      .aboutPerson__title {{ $t('about.creators.thanks') }}
+      .aboutPerson__name TheCarolissy, TihomirovPro
 </template>
 
 <style lang="stylus" scoped>

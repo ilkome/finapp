@@ -103,7 +103,7 @@ export default {
   template(v-for="(menuItem, menuId) in menu")
     .menuItem(
       v-if="$store.getters['user/isTester'] || !menuItem.private"
-      :class="{ _active: $route.name === menuId || ($route.name === 'index' && menuId === 'stat') || (activeTab !== 'categories' && activeTab === menuId), [`_${menuId}`]: true }"
+      :class="{ _active: $route.name === menuId || ($route.name === 'index' && menuId === 'stat'), [`_${menuId}`]: true }"
       @click="handleClickMenu(menuId)"
     )
       .menuItem__icon: div(:class="menuItem.icon")

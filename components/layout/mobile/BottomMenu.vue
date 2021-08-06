@@ -45,25 +45,14 @@ export default {
     }))
 
     function handleSetActiveTab (tabName) {
-      if (tabName === 'wallets') {
-        router.push('/wallets')
+      if (tabName === 'menu') {
+        store.dispatch('ui/setActiveTab', 'menu')
         return
       }
 
-      if (tabName === 'categories') {
-        router.push('/categories')
-        store.dispatch('ui/setActiveTab', 'categories')
-        store.dispatch('ui/setActiveTabViewName', 'categories')
-        return
-      }
-      if (tabName === 'stat') {
-        store.dispatch('ui/setActiveTab', 'stat')
-        store.dispatch('ui/setActiveTabViewName', 'stat')
-        router.push('/')
-        return
-      }
-
-      store.dispatch('ui/setActiveTab', 'menu')
+      router.push(tabName)
+      store.dispatch('ui/setActiveTab', tabName)
+      store.dispatch('ui/setActiveTabViewName', tabName)
     }
 
     function getClassName (tabName) {
@@ -169,9 +158,6 @@ export default {
 
 .menu
   background var(--c-bg-3)
-
-  +media(600px)
-    background var(--c-bg-2)
 
   &__wrap
     display grid

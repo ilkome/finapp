@@ -1,31 +1,23 @@
 <script>
+import useFilter from '~/modules/filter/useFilter'
+
 export default {
   name: 'StatItem',
 
   props: {
-    category: {
-      type: Object,
-      required: true
-    },
-    categoryId: {
-      type: String,
-      required: true
-    },
-    currency: {
-      type: String,
-      required: true
-    },
-    total: {
-      type: Number,
-      required: true
-    },
-    biggest: {
-      type: Number,
-      required: true
-    },
-    type: {
-      type: Number,
-      required: true
+    biggest: { type: Number, required: true },
+    category: { type: Object, required: true },
+    categoryId: { type: String, required: true },
+    currency: { type: String, required: true },
+    total: { type: Number, required: true },
+    type: { type: Number, required: true }
+  },
+
+  setup () {
+    const { setCategoryFilter } = useFilter()
+
+    return {
+      setCategoryFilter
     }
   },
 
@@ -45,10 +37,13 @@ export default {
           categoryId: childCategoryId,
           type: this.type
         })
-        if (trnsIds.length > 0) { childCatsIdsWithTrns.push(childCategoryId) }
+        if (trnsIds.length > 0)
+          childCatsIdsWithTrns.push(childCategoryId)
       }
 
-      if (childCatsIdsWithTrns.length > 0) { return true }
+      if (childCatsIdsWithTrns.length > 0)
+        return true
+
       return false
     },
 
@@ -75,9 +70,10 @@ export default {
 )
   .statItem__content
     .statItem__graph: .statItem__graph__in(:style="styles")
-    .statItem__icon(@click.stop="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)")
+    .statItem__icon(@click.stop="setCategoryFilter(categoryId)")
       Icon(
-        :background="category.color"
+        :background="showInside ? category.color : 'var(--c-bg-5)'"
+        :color="showInside ? 'var(--c-font-1)' : category.color"
         :icon="category.icon"
         round
       )
@@ -111,6 +107,15 @@ export default {
 @import '~assets/stylus/variables'
 
 .statItem
+  &__icon
+    .icon
+      width 36px !important
+      height 36px !important
+      background var(--c-bg-4)
+
+      .icon__image
+        font-size 22px
+
   .trnItem._stat
     padding-right $m6
     padding-left $m6
@@ -123,27 +128,21 @@ export default {
   // overflow hidden
   cursor pointer
   position relative
-  margin 0 (- $m5)
   padding $m5 $m5
   border 1px solid transparent
-  border-radius $m5
+  border-radius $borderRadiusMd
 
   +media-hover()
     &:not(._active)
       z-index 2
-      margin 0 (- $m5)
-      padding $m5 $m5
-      background var(--c-bg-4)
-      border 1px solid var(--c-bg-5)
+      background var(--c-item2-bg-hover)
+      border 1px solid var(--c-item2-bd-hover)
 
   &._active
-    margin 0 (- $m5)
+    // margin 0 (- $m5)
     margin-bottom $m7
-    margin-left (- $m6)
     padding 0
-    padding-left $m4
     border-radius 0
-    border-left 1px solid var(--c-bg-8)
 
   &__content
     display grid

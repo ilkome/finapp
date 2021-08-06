@@ -31,86 +31,73 @@ export default {
 </script>
 
 <template lang="pug">
-.trnFormMeta
-  .trnFormMeta__date
-    .trnFormDate
-      .trnFormDate__item._icon(@click="setPrevDay()"): .mdi.mdi-chevron-left
-      .trnFormDate__item._date(@click="$store.commit('trnForm/showTrnFormModal', 'calendar')") {{ formatedDate }}
-      .trnFormDate__item._icon(:class="{ _disable: isToday }" @click="setNextDay()"):  .mdi.mdi-chevron-right
-
-  .trnFormMeta__desc(
-    @click="$store.commit('trnForm/showTrnFormModal', 'description')"
-  )
-    .mdi.mdi-comment-text-outline
-    .dot(v-if="$store.state.trnForm.values.description")
+.trnFormDate
+  .trnFormDate__item._icon(@click="setPrevDay()"): .mdi.mdi-chevron-left
+  .trnFormDate__item._date(@click="$store.commit('trnForm/showTrnFormModal', 'calendar')") {{ formatedDate }}
+  .flex
+    .trnFormDate__item._icon(
+      v-if="!isToday" @click="setNextDay()"
+      style="marginRight: 16px"
+    ): .mdi.mdi-chevron-right
+    .trnFormDate__item._icon(
+      :class="{ _desc: $store.state.trnForm.values.description }"
+      @click="$store.commit('trnForm/showTrnFormModal', 'description')"
+    )
+      .mdi.mdi-comment-text-outline
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
-.trnFormMeta
-  display grid
-  grid-template-columns repeat(5, minmax(10px, 1fr))
-  padding 0 $m6
-  border-top 1px solid var(--c-bg-3)
-
-  @media $media-laptop
-    color var(--c-font-4)
-    border-top 0
-
-  &__date
-    grid-column 1/5
-    grid-row 1/-1
-
-  &__desc
-    position relative
-    padding $m6
-    color var(--c-font-4)
-    font-size 22px
-    text-align center
-    border-radius $m7
-
-    +media-hover()
-      background var(--c-bg-5)
-
-    &._active
-      color var(--c-font-1)
-
-    .dot
-      position absolute
-      top $m7
-      right $m7
-      width 6px
-      height 6px
-      background var(--c-bg-9)
-      border-radius 50%
-
 .trnFormDate
   display grid
   height 100%
-  grid-template-columns repeat(4, minmax(10px, 1fr))
+  grid-template-columns auto 1fr auto
+  grid-column-gap $m8
+  padding 0 $m7
   font-size 12px
   font-weight 500
   text-align center
 
   &__item
+    position relative
     display flex
     align-items center
     justify-content center
-    flex-grow 1
-    height 100%
-    border-radius $m7
+    width 44px
+    height 44px
+    padding $m7
+    border 1px solid transparent
+    border-radius $borderRadiusMd
+    user-select none
+    anim()
 
-    &._date
-      grid-column 2/4
-      color var(--c-font-3)
+    +media(400px)
+      width 58px
+      height 58px
 
     +media-hover()
-      background var(--c-bg-5)
+      background var(--c-item-bg-hover)
+      border 1px solid var(--c-item-bd-hover)
+
+    &._date
+      width 100%
+      height auto
+      flex-grow 1
+      color var(--c-font-3)
+      font-size 12px
+
+    &._desc .mdi
+      color var(--c-blue-1)
 
     &._icon
       color var(--c-font-4)
       font-size 28px
+      background var(--c-bg-4)
+      border-radius 50%
+
+      .mdi
+        font-size 18px
 
     &._disable
       opacity .4

@@ -127,6 +127,7 @@ export default {
   top $m7
   left $m7
   display flex
+  gap $m5
 
   @media $media-laptop
     top $mn1
@@ -145,7 +146,7 @@ export default {
 .linkItem
   cursor pointer
   padding 8px 10px
-  color var(--color-text-link)
+  color var(--color-text-link-active)
   text-decoration none
 
   +media-hover()
@@ -155,7 +156,7 @@ export default {
 
   &._active
     cursor default
-    color var(--color-text-link-active)
+    color var(--color-text-link)
 
     +media-hover()
       text-decoration none

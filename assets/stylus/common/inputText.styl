@@ -1,4 +1,5 @@
-input, textarea
+input
+textarea
   font-primary()
   font-size 16px
 
@@ -10,11 +11,17 @@ input, textarea
 
   &__value
     width 100% !important
-    padding-bottom $m5
+    padding $m7
+    color var(--c-font-1)
     font-size 18px
-    color var(--c-font-2)
     background transparent
-    border 0
+    border 1px solid var(--c-bg-8)
+    border-radius $m5
+    anim()
+    &:hover
+      border 1px solid var(--c-bg-9)
+    &:focus
+      border-color var(--c-blue-1)
 
     +media-laptop()
       font-size 14px
@@ -24,23 +31,19 @@ input, textarea
       min-height 60px
 
   &__label
-    text-align left
     opacity .6
-    padding-top $m5
+    padding-bottom $m5
+    color var(--c-font-3)
     font-size 10px
     font-weight 500
-    color var(--c-font-4)
+    text-align left
     text-transform uppercase
-    border-top 1px solid var(--c-bg-6)
 
 .colors
   display grid
   grid-template-columns repeat(10, 1fr)
-  // margin-bottom $m5
 
 .colorItem
-  // flex 0 1 40px
-  // width 45px
   height 45px
   border 2px solid transparent
 

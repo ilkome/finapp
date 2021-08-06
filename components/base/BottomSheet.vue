@@ -5,7 +5,8 @@ import { useEventListener } from '@vueuse/core'
 export default defineComponent({
   props: {
     keepAlive: { type: Boolean, default: false },
-    show: { type: Boolean, default: false }
+    show: { type: Boolean, default: false },
+    maxHeight: { type: Number, default: null }
   },
 
   setup (props, { emit }) {
@@ -17,6 +18,7 @@ export default defineComponent({
 
     // elements
     const drug = ref<Element | null>(null)
+    const drugHeader = ref<Element | null>(null)
     const container = ref<HTMLElement | null>(null)
     const handler = ref<HTMLElement | null>(null)
 
@@ -37,6 +39,13 @@ export default defineComponent({
       diffHeight: computed(() => diffHeight.value),
       diffHeightWithDebounce: computed(() => diffHeightWithDebounce.value),
       nextCurrentY: computed(() => nextCurrentY.value)
+    })
+
+    const maxHeightScroll = computed(() => {
+      if (!props.maxHeight || !drugHeader.value)
+        return false
+
+      return `${props.maxHeight - drugHeader.value?.clientHeight - 40}px`
     })
 
     /**
@@ -317,6 +326,7 @@ export default defineComponent({
     return {
       container,
       drug,
+      drugHeader,
       handler,
 
       opened,
@@ -325,7 +335,8 @@ export default defineComponent({
       open,
       close,
       overlayStyles,
-      drugStyles
+      drugStyles,
+      maxHeightScroll
     }
   }
 })
@@ -347,20 +358,22 @@ export default defineComponent({
     :class="{ _anim: !isDraging && opened, _drug: isDraging && drugStyles.transform }"
     :style="drugStyles"
   )
-    .handler(ref="handler")
-      slot(name="handler" :close="close")
+    .drug__header(ref="drugHeader")
+      slot(name="header" :close="close")
 
-    slot(name="header" :close="close")
+    .drug__inside(:class="{ _scroll: !!maxHeightScroll }" :style="{ maxHeight: maxHeightScroll }")
+      .handler(ref="handler")
+        slot(name="handler" :close="close")
 
-    .scroll
-      slot(:close="close")
-        .info
-          .info__item Status: {{ debug.status }}
-          .info__item Direction: {{ debug.direction }}
-          .info__item DiffHeight: {{ debug.diffHeight }}
-          .info__item DiffHeightWithDebounce: {{ debug.diffHeightWithDebounce }}
-          .info__item NextCurrentY: {{ debug.nextCurrentY }}
-          .info__item drugStyles: {{ drugStyles.transform }}
+      .scroll
+        slot(:close="close")
+          .info
+            .info__item Status: {{ debug.status }}
+            .info__item Direction: {{ debug.direction }}
+            .info__item DiffHeight: {{ debug.diffHeight }}
+            .info__item DiffHeightWithDebounce: {{ debug.diffHeightWithDebounce }}
+            .info__item NextCurrentY: {{ debug.nextCurrentY }}
+            .info__item drugStyles: {{ drugStyles.transform }}
 </template>
 
 <style lang="stylus" scoped>
@@ -430,6 +443,11 @@ export default defineComponent({
   &._drug
     user-select none
     pointer-events none
+
+  &__inside
+    &._scroll
+      overflow hidden
+      overflowScrollY()
 
 .scroll
   overflow hidden

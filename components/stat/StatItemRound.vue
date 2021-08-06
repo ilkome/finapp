@@ -110,13 +110,12 @@ export default {
 .statItemRound
   &__icon
     .icon
-      width 42px !important
-      height 42px !important
+      width 36px !important
+      height 36px !important
       background var(--c-bg-4) !important
-      // border 1px solid var(--c-bg-5)
 
       .icon__image
-        font-size 24px
+        font-size 22px
 </style>
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
@@ -134,7 +133,7 @@ export default {
   border-radius $m5
 
   +media-hover()
-    background var(--c-bg-4)
+    background var(--c-item2-bg-hover)
     border 1px solid var(--c-item-bd-hover)
 
   &._prevStat

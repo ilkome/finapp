@@ -69,8 +69,7 @@ TrnFormModal(@closed="afterClose")
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/margins"
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables'
 
 .description
   padding 0 $m7
@@ -98,6 +97,8 @@ TrnFormModal(@closed="afterClose")
   font-size 16px
   background var(--c-bg-2)
   border 1px solid var(--c-bg-5)
+  border-radius $borderRadiusMd
+  anim()
 
   &:focus
     border-color var(--c-blue-1)

@@ -1,21 +1,29 @@
 export default [
   [
+    // food
     'mdi mdi-food-fork-drink',
     'mdi mdi-silverware-variant',
     'mdi mdi-food',
     'mdi mdi-food-variant',
     'mdi mdi-glass-cocktail',
     'mdi mdi-chef-hat',
+    'mdi mdi-cake',
     'mdi mdi-cake-variant',
     'mdi mdi-cupcake',
     'mdi mdi-food-apple',
     'mdi mdi-fruit-watermelon',
     'mdi mdi-food-croissant',
     'mdi mdi-pizza',
+    'mdi mdi-fruit-cherries',
+    'mdi mdi-fruit-pineapple',
     'mdi mdi-corn',
-    'mdi mdi-mushroom',
-    'mdi mdi-rocket'
+    'mdi mdi-hamburger',
+    'mdi mdi-egg',
+    'mdi mdi-egg-outline',
+    'mdi mdi-baguette',
+    'mdi mdi-mushroom'
   ], [
+    'mdi mdi-dump-truck',
     'mdi mdi-car-sports',
     'mdi mdi-car-hatchback',
     'mdi mdi-car',
@@ -35,6 +43,7 @@ export default [
     'mdi mdi-gauge-full'
   ], [
     'mdi mdi-airplane',
+    'mdi mdi-rocket',
     'mdi mdi-concourse-ci',
     'mdi mdi-airballoon',
     'mdi mdi-parachute',
@@ -181,7 +190,11 @@ export default [
     'mdi mdi-gamepad-variant-outline',
     'mdi mdi-microsoft-xbox-controller',
     'mdi mdi-tshirt-crew',
+    'mdi mdi-tshirt-crew-outline',
+    'mdi mdi-wizard-hat',
+    'mdi mdi-sunglasses',
     'mdi mdi-shoe-heel',
+    'mdi mdi-shoe-sneaker',
     'mdi mdi-lipstick',
     'mdi mdi-creation',
     'mdi mdi-content-cut',

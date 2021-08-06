@@ -122,21 +122,12 @@ Portal(
 )
   LazyBaseBottomSheet(
     v-if="$store.state.categories.modal.id"
+    :maxHeight="$store.state.ui.height"
     key="categoriesModal"
     @closed="closed()"
   )
     template(#handler="{ close }")
-      .handler__close(@click="close")
-        svg(
-          viewBox='0 0 24 24'
-          fill='none'
-          stroke='#000'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-          stroke-width='3'
-        )
-          path(d='M.75 23.249l22.5-22.5')
-          path(d='M23.25 23.249L.75.749')
+      BaseBottomSheetClose(@onClick="close")
 
     template(#header)
       .header
@@ -183,12 +174,12 @@ Portal(
             )
 
         .wrap
-          .buttonBack(
+          .button(
             v-if="category.parentId"
             @click="$store.dispatch('categories/showCategoryModal', category.parentId)"
           ) {{ $t('backTo') }} {{ $store.state.categories.items[category.parentId].name }}
 
-          .buttonBack(
+          .button(
             v-if="category.parentId === 0"
             @click="close()"
           ) {{ $t('close') }}
@@ -205,12 +196,14 @@ Portal(
 @import '~assets/stylus/variables'
 
 .content
+  padding 0
+  padding-bottom $m6
   background var(--c-bg-3)
   +media(600px)
     border-radius 0 0 $m7 $m7
 
 .tools
-  padding-top $m6
+  padding-top 0
 
 .categoriesTitle
   margin-bottom (- $m5)
@@ -229,12 +222,17 @@ Portal(
 .wrap
   padding 0 $m8
 
+.button
+  button-base-1()
+  margin $m8 auto $m5 auto
+
 .header
   flex-grow 1
   position relative
   display flex
   align-items center
   padding $m7
+  padding-bottom $m8
   color var(--c-font-2)
   fontFamilyNunito()
   background var(--c-bg-3)
@@ -255,17 +253,12 @@ Portal(
     align-items center
     justify-content center
     flex-flow column
-    margin-bottom -10px
 
   &__icon
     flex-grow 1
     display flex
     align-items center
     justify-content center
-    margin-top -38px
+    margin-top -36px
     padding-bottom 12px
-
-.buttonBack
-  button-base-1()
-  margin $m8 auto $m5 auto
 </style>

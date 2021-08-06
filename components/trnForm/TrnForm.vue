@@ -217,7 +217,7 @@ export default {
         )
 
       .swiper-slide.getHeight
-        .modalHeightBase
+        .scroll.scrollerBlock(:style="{ maxHeight: `${$store.state.ui.height}px` }")
           .trnForm__title(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
           .trnForm__title(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
 
@@ -402,7 +402,7 @@ export default {
   align-items center
   justify-content center
   gap $m8
-  padding 0 $m8
+  padding 0 $m7
   padding-top $m4
   padding-bottom $m9
 

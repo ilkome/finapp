@@ -173,7 +173,9 @@ export default {
   transition(name="fadeIn")
     .tab(v-if="showCategoryForm")
       .tab__content
-        CategoriesFormCategoryForm(@callback="categoryCreatedCallback")
+        LazyCategoriesForm(
+          @callback="categoryCreatedCallback"
+        )
 
   .copyright
     SharedCopyright

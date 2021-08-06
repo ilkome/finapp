@@ -50,7 +50,7 @@ export default {
     creators: {
       title: 'Creators',
       author: 'Author',
-      ideas: 'Ideas & testing'
+      thanks: 'Thanks for support'
     }
   },
 
@@ -214,7 +214,7 @@ export default {
         placeholder: 'Select icon'
       },
       lastUsed: 'Show in last used categories',
-      quickSelector: 'Show in trnForm quick selector',
+      quickSelector: 'Favorite category',
       childColor: 'Apply color to all child categories',
       save: 'Save'
     }

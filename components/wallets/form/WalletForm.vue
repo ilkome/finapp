@@ -134,12 +134,12 @@ LayoutComponentWrap
     .form
       .form-line._text
         .inputText
+          .inputText__label {{ $t('wallets.form.name.label') }}
           input(
             type="text"
             :placeholder="$t('wallets.form.name.placeholder')"
             v-model="wallet.name"
           ).inputText__value
-          .inputText__label {{ $t('wallets.form.name.label') }}
 
       .form__btns
         .form__btns__i

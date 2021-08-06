@@ -100,7 +100,6 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
-
 .trnFormButton
   padding $m7
 
@@ -141,6 +140,9 @@ export default {
   align-items center
   justify-content center
   font-secondary()
+
+  &._sum
+    max-width 61px
 
   &__in
     display flex

@@ -113,17 +113,7 @@ Portal(
     @closed="closed()"
   )
     template(#handler="{ close }")
-      .handler__close(@click="close")
-        svg(
-          viewBox='0 0 24 24'
-          fill='none'
-          stroke='#000'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-          stroke-width='3'
-        )
-          path(d='M.75 23.249l22.5-22.5')
-          path(d='M23.25 23.249L.75.749')
+      BaseBottomSheetClose(@onClick="close")
 
     template(#header)
       .header
@@ -136,7 +126,7 @@ Portal(
             ui="detailed"
           )
 
-    template
+    template(#default="{ close }")
       .content
         .tools
           .modalLinks
@@ -186,6 +176,11 @@ Portal(
               @onClick="showModalGroups = true"
             )
 
+        .wrap
+          .button(
+            @click="close()"
+          ) {{ $t('close') }}
+
     template(v-if="groups && $store.getters['user/isTester']")
       Portal(
         v-if="showModalGroups"
@@ -229,9 +224,6 @@ Portal(
   background var(--c-bg-3)
   border-radius $m7 $m7 0 0
 
-.marginBottom
-  margin-bottom $m7
-
 .item
   cursor pointer
   display flex
@@ -245,8 +237,6 @@ Portal(
 
   &:hover
     background var(--c-bg-5)
-    /.light-mode &
-      background var(--c-bg-5)
 
   &__active
     flex-grow 0
@@ -258,7 +248,11 @@ Portal(
 .content
   +media(600px)
     border-radius 0 0 $m7 $m7
-  // padding-top $m6
-  // padding-bottom $m6
-  // background var(--c-bg-3)
+
+.wrap
+  padding 0 $m8
+
+.button
+  button-base-1()
+  margin $m8 auto $m5 auto
 </style>

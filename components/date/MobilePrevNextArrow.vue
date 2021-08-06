@@ -25,7 +25,7 @@ div
 @import '~assets/stylus/variables'
 
 .tabItem
-  z-index 10
+  z-index 50
   cursor pointer
   position absolute
   top 60%

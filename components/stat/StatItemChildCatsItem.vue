@@ -1,25 +1,20 @@
 <script>
+import useFilter from '~/modules/filter/useFilter'
+
 export default {
   props: {
-    category: {
-      type: Object,
-      required: true
-    },
-    categoryId: {
-      type: String,
-      required: true
-    },
-    total: {
-      type: Number,
-      required: true
-    },
-    type: {
-      type: Number,
-      required: true
-    },
-    biggest: {
-      type: Number,
-      required: true
+    biggest: { type: Number, required: true },
+    category: { type: Object, required: true },
+    categoryId: { type: String, required: true },
+    total: { type: Number, required: true },
+    type: { type: Number, required: true }
+  },
+
+  setup () {
+    const { setCategoryFilter } = useFilter()
+
+    return {
+      setCategoryFilter
     }
   },
 
@@ -55,9 +50,7 @@ export default {
     .statItemChild__graph
       .statItemChild__graph__in(:style="styles")
 
-    .statItemChild__icon(
-      @click.stop="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)"
-    )
+    .statItemChild__icon(@click.stop="setCategoryFilter(categoryId)")
       Icon(
         :color="category.color"
         :icon="category.icon"
@@ -101,15 +94,20 @@ export default {
 @import '~assets/stylus/variables'
 
 .statItemChild
-  &._active
-    padding-bottom $m6
+  border 1px solid transparent
+  border-radius $borderRadiusMd
+
+  +media-hover()
+    &:not(._active)
+      background var(--c-item2-bg-hover)
+      border 1px solid var(--c-item2-bd-hover)
 
   &__content
     display grid
     grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
     grid-template-rows repeat(2, minmax(10px, max-content))
     grid-column-gap 20px
-    margin 0 0px
+    margin 0
     padding $m6 $m5
 
   &__graph
@@ -135,7 +133,6 @@ export default {
 
     ^[0]._active &
       color var(--c-font-2)
-      font-weight 500
 
   &__icon
     display flex
@@ -151,5 +148,5 @@ export default {
     padding 0
 
     ^[0]._active &
-      padding-bottom $m6
+      padding-bottom $m4
 </style>

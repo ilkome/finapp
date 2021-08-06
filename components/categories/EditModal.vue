@@ -203,79 +203,92 @@ export default {
 </script>
 
 <template lang="pug">
-.form
-  .header
-    template(v-if="!categoryId") {{ $t('categories.createNewTitle') }}
-    template(v-else) {{ $t('categories.editTitle') }}
+Portal(
+  key="categoryFormModal"
+  to="modal"
+)
+  BaseBottomSheet(
+    :show="true"
+    :maxHeight="$store.state.ui.height"
+    @closed="closed()"
+  )
+    template(#handler="{ close }")
+      BaseBottomSheetClose(@onClick="close")
 
-  .content
-    .form-line._text
-      .inputText
-        .inputText__label {{ $t('categories.form.name.label') }}
-        input(
-          type="text"
-          :placeholder="$t('categories.form.name.placeholder')"
-          v-model="category.name"
-        ).inputText__value
+    template(#header)
+      .header
+        template(v-if="!categoryId") {{ $t('categories.createNewTitle') }}
+        template(v-else) {{ $t('categories.editTitle') }}
 
-    //- can not change root category if inside this category already has some categories
-    template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0 && $store.getters['categories/hasCategories']")
-      .form__btns__i._full
-        .form-line(@click="showParents = true")
-          .inputModal._flex
-            .inputModal__content
-              template(v-if="category.parentId !== 0")
-                .inputModal__icon
-                  div(
-                    :class="$store.state.categories.items[category.parentId].icon"
-                    :style="{ color: $store.state.categories.items[category.parentId].color }"
-                  )
-                .inputModal__name {{ $store.state.categories.items[category.parentId].name }}
-              template(v-else)
-                .inputModal__icon: .mdi.mdi-folder-star
-                .inputModal__name {{ $t('categories.form.parent.no') }}
-            .inputModal__label {{ $t('categories.form.parent.label') }}
+    template(#default="{ close }")
+      .content
+        .form-line._text
+          .inputText
+            .inputText__label {{ $t('categories.form.name.label') }}
+            input(
+              type="text"
+              :placeholder="$t('categories.form.name.placeholder')"
+              v-model="category.name"
+            ).inputText__value
 
-    .form__btns
-      .form__btns__i
-        .form-line(@click="showColors = true")
-          .inputModal._flex
-            .inputModal__value: .inputModal__color(:style="{ background: category.color }")
-            .inputModal__label {{ $t('categories.form.color.label') }}
+        //- can not change root category if inside this category already has some categories
+        template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0 && $store.getters['categories/hasCategories']")
+          .form__btns__i._full
+            .form-line(@click="showParents = true")
+              .inputModal._flex
+                .inputModal__content
+                  template(v-if="category.parentId !== 0")
+                    .inputModal__icon
+                      div(
+                        :class="$store.state.categories.items[category.parentId].icon"
+                        :style="{ color: $store.state.categories.items[category.parentId].color }"
+                      )
+                    .inputModal__name {{ $store.state.categories.items[category.parentId].name }}
+                  template(v-else)
+                    .inputModal__icon: .mdi.mdi-folder-star
+                    .inputModal__name {{ $t('categories.form.parent.no') }}
+                .inputModal__label {{ $t('categories.form.parent.label') }}
 
-      .form__btns__i
-        .form-line(@click="showIcons = true")
-          .inputModal._flex
-            .inputModal__icon: div(:class="category.icon", :style="{ color: category.color }")
-            .inputModal__label {{ $t('categories.form.icon.label') }}
+        .form__btns
+          .form__btns__i
+            .form-line(@click="showColors = true")
+              .inputModal._flex
+                .inputModal__value: .inputModal__color(:style="{ background: category.color }")
+                .inputModal__label {{ $t('categories.form.color.label') }}
 
-    template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length")
-      .form-line._p0._clean
-        SharedInputsCheckbox(
-          v-model="applyChildColor"
-          :title="$t('categories.form.childColor')"
-          :alt="true"
-        )
+          .form__btns__i
+            .form-line(@click="showIcons = true")
+              .inputModal._flex
+                .inputModal__icon: div(:class="category.icon", :style="{ color: category.color }")
+                .inputModal__label {{ $t('categories.form.icon.label') }}
 
-    template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0")
-      .form-line._p0._clean
-        SharedInputsCheckbox(
-          v-model="category.showInLastUsed"
-          :title="$t('categories.form.lastUsed')"
-          :alt="true")
-      .form-line._p0._clean
-        SharedInputsCheckbox(
-          v-model="category.showInQuickSelector"
-          :title="$t('categories.form.quickSelector')"
-          :alt="true")
-      template(slot="bottom")
+        template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length")
+          .form-line._p0._clean
+            SharedInputsCheckbox(
+              v-model="applyChildColor"
+              :title="$t('categories.form.childColor')"
+              :alt="true"
+            )
 
-    .col
-      SharedButton(
-        :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
-        :title="$t('categories.form.save')"
-        @onClick="handleSubmit"
-      )
+        template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0")
+          .form-line._p0._clean
+            SharedInputsCheckbox(
+              v-model="category.showInLastUsed"
+              :title="$t('categories.form.lastUsed')"
+              :alt="true")
+          .form-line._p0._clean
+            SharedInputsCheckbox(
+              v-model="category.showInQuickSelector"
+              :title="$t('categories.form.quickSelector')"
+              :alt="true")
+          template(slot="bottom")
+
+        .col
+          SharedButton(
+            :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
+            :title="$t('categories.form.save')"
+            @onClick="handleSubmit"
+          )
 
   //- colors
   Portal(
