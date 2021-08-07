@@ -6,7 +6,7 @@ import detectTouch from '~/assets/js/isTouchDevice'
 import useUIView from '~/components/layout/useUIView'
 
 export default {
-  name: 'AppLayout',
+  name: 'DefaultLayout',
 
   setup () {
     const { store } = useContext()
@@ -25,10 +25,7 @@ export default {
     const { ui } = useUIView()
 
     // Computed
-    const activeTabViewName = computed(() => store.state.ui.activeTabViewName)
     const activeTab = computed(() => store.state.ui.activeTab)
-    const activeTabStat = computed(() => store.state.ui.activeTabStat)
-    const isStatPage = computed(() => activeTabViewName.value === 'stat')
     const statCurrentPeriod = computed(() => store.getters['stat/statCurrentPeriod'])
     const statAverage = computed(() => store.getters['stat/statAverage'])
 
@@ -62,8 +59,6 @@ export default {
     }
 
     const className = computed(() => ({
-      _stat: !!isStatPage.value,
-      [`_${activeTabViewName.value}`]: true,
       isNotTouchDevice: !isTouchDevice.value,
       isTouchDevice: isTouchDevice.value
     }))
@@ -80,17 +75,12 @@ export default {
 
       ui,
 
-      activeTabViewName,
       activeTab,
-      activeTabStat,
-      isStatPage,
       statCurrentPeriod,
       statAverage,
 
       className,
-
-      isShowUpdateApp,
-      className
+      isShowUpdateApp
     }
   }
 }
@@ -99,11 +89,7 @@ export default {
 <template lang="pug">
 .layoutNew(:class="className")
   .layoutNew__modals
-    //- Modals
-    //-----------------------------------
-    CategoriesModal
-    CurrenciesCurrencyModal
-
+    //- trn: form
     BaseBottomSheet(
       keepAlive
       :show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show"
@@ -112,50 +98,45 @@ export default {
       template(#handler="{ close }")
         .handler
         BaseBottomSheetClose(@onClick="close")
-
       TrnForm(:show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show")
 
+    //- trn: item
     TrnsModal
-    WalletsModal
 
-    //- Base Menu
-    LazyLayoutMobileMenuModal(v-if="activeTab === 'menu'")
+    //- menu
+    LazyLayoutMenuModal(v-if="activeTab === 'menu'")
 
-    //- category
-    LazyCategoriesEditModal(
-      v-if="activeTab === 'createCategory'"
-      @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
-    )
+    //- currencies
+    CurrenciesModal
 
-    //- Settings
-    Portal(
-      v-if="activeTab === 'settings'"
-      to="modal"
-    )
-      ModalBottom(@onClose="$store.dispatch('ui/setActiveTab', 'stat')")
+    //- category: item
+    CategoriesModal
+
+    //- category: create or edit
+    LazyCategoriesEditModal(v-if="activeTab === 'createCategory'")
+
+    //- settings
+    Portal(v-if="activeTab === 'settings'" to="modal")
+      ModalBottom(@onClose="$store.dispatch('ui/setActiveTab', null)")
         Settings(v-if="activeTab === 'settings'")
 
-    //- Wallet Form: create or edit
-    Portal(
-      v-if="activeTab === 'createWallet'"
-      to="modal"
-    )
+    //- wallet item
+    WalletsModal
+
+    //- wallet: create or edit
+    Portal(v-if="activeTab === 'createWallet'" to="modal")
       ModalBottom(
         :key="$store.state.wallets.editId"
-        @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
+        @onClose="$store.dispatch('ui/setActiveTab', null)"
       )
         WalletsFormWalletForm
 
-    //- Wallet Sort
-    Portal(
-      v-if="activeTab === 'walletsSort'"
-      to="modal"
-      key="walletsSort"
-    )
+    //- wallet: sort
+    Portal(v-if="activeTab === 'walletsSort'" to="modal" key="walletsSort")
       ModalBottom(
         isShow
         key="walletsSort"
-        @onClose="$store.dispatch('ui/setActiveTab', 'stat')"
+        @onClose="$store.dispatch('ui/setActiveTab', null)"
       )
         template(#default="{ closeModal }")
           WalletsSort(
@@ -163,24 +144,24 @@ export default {
             @closeModal="closeModal"
           )
 
-    //- Loading
+    //- loading
     template(v-if="!$store.state.app.status.ready")
       LoaderSharedLoader
 
-    //- Notifications
+    //- notifications
     Notifications(
       :position="$store.state.ui.mobile ? 'top center' : 'top left'"
       :width="$store.state.ui.mobile ? '94%' : '380px'"
       classes="notifications"
     )
 
-    //- Modals
+    //- portal
     PortalTarget(
       multiple
       name="modal"
     )
 
-    //- Update modal
+    //- update app
     LazyAppUpdateAppModal(
       v-if="isShowUpdateApp"
       @onClose="isShowUpdateApp = false"
@@ -190,14 +171,14 @@ export default {
   //-----------------------------------
   .layoutNew__wrap
     .layoutNew__sidebar
-      LayoutPcSidebar
+      LayoutSidebar
 
     .layoutNew__content
       .page2
         Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
 
     .layoutNew__menu
-      LayoutMobileBottomMenu
+      LayoutBottomMenu
 </template>
 
 <style lang="stylus">

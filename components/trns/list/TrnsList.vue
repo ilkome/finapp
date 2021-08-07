@@ -3,50 +3,24 @@ export default {
   name: 'TrnsList',
 
   props: {
-    ui: {
-      type: String,
-      default: 'history'
-    },
-    limit: {
-      type: Number,
-      default: 0
-    },
-    categoryId: {
-      type: String,
-      default: null
-    },
-    expenses: {
-      type: Boolean,
-      default: false
-    },
-    incomes: {
-      type: Boolean,
-      default: false
-    },
-    size: {
-      type: Number,
-      required: false,
-      default: 30
-    }
+    categoryId: { type: String, default: null },
+    expenses: { type: Boolean, default: false },
+    incomes: { type: Boolean, default: false },
+    isShowFilter: { type: Boolean, default: false },
+    limit: { type: Number, default: 0 },
+    size: { type: Number, required: false, default: 30 },
+    ui: { type: String, default: 'history' }
   },
 
   data () {
     return {
       pageNumber: 1,
-      sortByEditDate: false
+      sortByEditDate: false,
+      isShowTrnsWithDesc: false
     }
   },
 
   computed: {
-    isShowedAllTrns () {
-      return this.paginatedTrnsIds.length === this.trnsIds.length
-    },
-
-    paginatedTrnsIds () {
-      const end = this.pageNumber * this.size
-      return this.trnsIds.slice(0, end)
-    },
-
     trnsIds () {
       const trns = this.$store.state.trns.items
       let trnsIds = this.$store.getters['trns/selectedTrnsIdsWithDate']
@@ -59,9 +33,33 @@ export default {
       if (this.incomes) trnsIds = trnsIds.filter(id => trns[id].type === 1)
       if (this.expenses) trnsIds = trnsIds.filter(id => trns[id].type === 0)
 
-      // limit
-      if (this.limit > 0) return trnsIds.slice(0, this.limit)
       return trnsIds
+    },
+
+    isShowedAllTrns () {
+      return this.paginatedTrnsIds.length === this.trnsIdsWithLimit.length
+    },
+
+    isTrnsWithDescription () {
+      const trns = this.$store.state.trns.items
+      return this.trnsIds.filter(id => trns[id].description).length > 0
+    },
+
+    trnsIdsWithLimit () {
+      const trns = this.$store.state.trns.items
+
+      if (this.isShowFilter && this.isShowTrnsWithDesc && this.isTrnsWithDescription)
+        return this.trnsIds.filter(id => trns[id].description)
+
+      if (this.limit > 0)
+        return this.trnsIds.slice(0, this.limit)
+
+      return this.trnsIds
+    },
+
+    paginatedTrnsIds () {
+      const end = this.pageNumber * this.size
+      return this.trnsIdsWithLimit.slice(0, end)
     },
 
     groupedTrns () {
@@ -86,6 +84,10 @@ export default {
   methods: {
     showMoreTrns () {
       this.pageNumber = this.pageNumber + 1
+    },
+
+    showTrnsWithDesc () {
+      this.isShowTrnsWithDesc = !this.isShowTrnsWithDesc
     }
   }
 }
@@ -93,6 +95,17 @@ export default {
 
 <template lang="pug">
 .trnsList
+  template(v-if="isShowFilter && isTrnsWithDescription")
+    .filter
+      SharedContextMenuItem(
+        :checkboxValue="isShowTrnsWithDesc"
+        :grow="false"
+        :title="$t('trns.filter.showTrnsWithDesc')"
+        icon="mdi mdi-comment-text-outline"
+        showCheckbox
+        @onClick="isShowTrnsWithDesc = !isShowTrnsWithDesc"
+      )
+
   .trnsList__content
     template(v-if="trnsIds.length > 0")
       //- history view
@@ -128,6 +141,11 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
+.filter
+  display flex
+  justify-content flex-end
+  padding-bottom $m6
 
 .button
   button-base-1()

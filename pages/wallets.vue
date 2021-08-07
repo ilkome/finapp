@@ -1,7 +1,6 @@
 <script>
 export default {
   name: 'WalletsPage',
-  layout: 'app',
 
   head () {
     return {
@@ -19,10 +18,13 @@ export default {
 </script>
 
 <template lang="pug">
-LayoutComponentWrap(:contentPadding="false")
+LayoutBaseWrap(:contentPadding="false")
   template(slot="content")
     .header {{ $t('wallets.name') }}
-    WalletsTotal
+
+    div(style="padding: 0 0 16px 0")
+      WalletsTotal
+
     WalletsList3(
       :limit="6"
       showToogle

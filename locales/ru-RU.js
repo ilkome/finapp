@@ -262,7 +262,10 @@ export default {
   trns: {
     shortTitle: 'Транзакции',
     history: 'История',
-    more: 'Показать еще'
+    more: 'Показать еще',
+    filter: {
+      showTrnsWithDesc: 'Только с описанием'
+    }
   },
 
   create: {

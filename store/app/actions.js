@@ -3,22 +3,20 @@ import { app } from '~/services/firebaseConfig'
 
 export default {
   async initApp ({ rootState, commit, dispatch }) {
-    if (this.$router.currentRoute.name === 'login') {
+    if (this.$router.currentRoute.name === 'login')
       commit('setAppStatus', 'loading')
-    }
 
     await dispatch('demo/getDemoDataStatus', null, { root: true })
 
     app.auth().onAuthStateChanged(async (user) => {
-      if (this.$router.currentRoute.name === 'login') {
+      if (this.$router.currentRoute.name === 'login')
         commit('setAppStatus', 'loading')
-      }
 
       if (user) {
         try {
-          if (rootState.user.user && rootState.user.user.uid && rootState.user.user.uid !== user.uid) {
+          if (rootState.user.user && rootState.user.user.uid && rootState.user.user.uid !== user.uid)
             dispatch('clearUserData')
-          }
+
           await dispatch('user/initUser', user, { root: true })
           await dispatch('currencies/initCurrencies', null, { root: true })
           await dispatch('categories/initCategories', null, { root: true })
@@ -60,19 +58,19 @@ export default {
       localforage.getItem('finapp.filter.period')
     ])
 
-    if (ativeTab) { dispatch('ui/setActiveTab', ativeTab, { root: true }) }
-    if (user) { commit('user/setUser', user, { root: true }) }
-    if (currencies) { commit('currencies/setCurrencies', currencies, { root: true }) }
-    if (categories) { commit('categories/setCategories', categories, { root: true }) }
-    if (wallets) { commit('wallets/setWallets', wallets, { root: true }) }
-    if (trns) { commit('trns/setTrns', trns, { root: true }) }
-    if (filterPeriod) { dispatch('filter/setPeriod', filterPeriod, { root: true }) }
+    if (ativeTab) dispatch('ui/setActiveTab', ativeTab, { root: true })
+    if (user) commit('user/setUser', user, { root: true })
+    if (currencies) commit('currencies/setCurrencies', currencies, { root: true })
+    if (categories) commit('categories/setCategories', categories, { root: true })
+    if (wallets) commit('wallets/setWallets', wallets, { root: true })
+    if (trns) commit('trns/setTrns', trns, { root: true })
+    if (filterPeriod) dispatch('filter/setPeriod', filterPeriod, { root: true })
 
     // ready
     if (categories && user && trns && wallets) {
-      if (this.$router.currentRoute.name === 'login') {
+      if (this.$router.currentRoute.name === 'login')
         this.app.context.redirect('/')
-      }
+
       resolve()
     }
     else {

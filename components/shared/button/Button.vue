@@ -56,8 +56,7 @@ export default {
     v-if="showCheckbox"
     @click.prevent=""
   )
-    SharedInputsCheckbox._small(v-model="checkboxValue")
-
+    SharedInputsCheckbox(v-model="checkboxValue")
 </template>
 
 <style lang="stylus">

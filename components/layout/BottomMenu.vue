@@ -19,7 +19,6 @@ export default {
     const { store, app: { i18n } } = useContext()
     const route = useRoute()
     const router = useRouter()
-    const activeTabViewName = computed(() => store.state.ui.activeTabViewName)
 
     const menu = computed(() => ({
       stat: {
@@ -51,16 +50,11 @@ export default {
       }
 
       router.push(tabName)
-      store.dispatch('ui/setActiveTab', tabName)
-      store.dispatch('ui/setActiveTabViewName', tabName)
     }
 
     function getClassName (tabName) {
       if (route.value.name === tabName)
         return true
-
-      if (route.value.name === 'index')
-        return activeTabViewName.value === tabName
     }
 
     return {
@@ -144,17 +138,13 @@ export default {
       fill var(--c-font-1)
 
   +media(600px)
-    padding $m9 0
+    padding $m8 0
 
   svg
     width 24px
     height 24px
     fill var(--c-blue-1)
     anim()
-
-    +media(600px)
-      width 24px
-      height 24px
 
 .menu
   background var(--c-bg-3)
@@ -185,7 +175,7 @@ export default {
     anim()
 
     +media(600px)
-      padding $m9 0
+      padding $m8 0
       border-radius 8px
 
     +media-hover()
@@ -206,5 +196,5 @@ export default {
       font-size 22px
 
       +media(800px)
-        font-size 36px
+        font-size 28px
 </style>

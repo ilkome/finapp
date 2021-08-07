@@ -57,8 +57,6 @@ export default {
       this.$store.commit('wallets/hideWalletsModalWalletModal')
       this.$store.commit('wallets/setWalletsModalWalletModalId', null)
 
-      this.$store.dispatch('ui/setActiveTab', 'stat')
-      this.$store.dispatch('ui/setActiveTabViewName', 'stat')
       this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
 

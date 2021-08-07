@@ -71,7 +71,7 @@ export default {
 
   removeUserData ({ rootState, commit, dispatch }) {
     commit('app/setAppStatus', 'loading', { root: true })
-    dispatch('ui/setActiveTab', 'stat', { root: true })
+    dispatch('ui/setActiveTab', null, { root: true })
     const uid = rootState.user.user.uid
 
     db.ref(`users/${uid}/accounts/`).set(null)

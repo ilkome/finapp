@@ -41,10 +41,6 @@ export default {
   },
 
   computed: {
-    activeTab () {
-      return this.$store.state.dashboard.activeTab === 'balance'
-    },
-
     periods () {
       return this.$store.state.chart.periods
     },

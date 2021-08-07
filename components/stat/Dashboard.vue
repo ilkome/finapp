@@ -14,10 +14,7 @@ export default {
     const { getTrnsIds } = useTrns()
     const { getStatBy } = getStat()
 
-    const activeTabViewName = computed(() => store.state.ui.activeTabViewName)
-    const activeTab = computed(() => store.state.ui.activeTab)
     const activeTabStat = computed(() => store.state.ui.activeTabStat)
-    const statPage = computed(() => activeTabViewName.value === 'stat')
     const statCurrentPeriod = computed(() => store.getters['stat/statCurrentPeriod'])
     const statAverage = computed(() => store.getters['stat/statAverage'])
     const filterPeriod = computed(() => store.state.filter.period)
@@ -125,10 +122,7 @@ export default {
     return {
       isShowChart,
 
-      activeTabViewName,
-      activeTab,
       activeTabStat,
-      statPage,
       statCurrentPeriod,
       statAverage,
       filter,
@@ -363,7 +357,10 @@ export default {
   //- history
   .history(v-if="activeTabStat === 'history' || statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0 && (activeTabStat !== 'incomes' && activeTabStat !== 'expenses')")
     .baseBox__title(v-if="activeTabStat !== 'history'") {{ $t('trns.history') }}
-    TrnsList(:size="50")
+    TrnsList(
+      :size="50"
+      :isShowFilter="activeTabStat === 'history'"
+    )
 </template>
 
 <style lang="stylus">

@@ -158,7 +158,6 @@ export default {
         }
 
         this.$store.commit('categories/setCategoryEditId', null)
-        this.$store.dispatch('ui/setActiveTab', 'categories')
 
         if (this.$listeners.callback)
           this.$listeners.callback()
@@ -251,26 +250,28 @@ export default {
 
     template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length")
       .form-line._p0._clean
-        SharedInputsCheckbox(
-          v-model="applyChildColor"
+        SharedContextMenuItem(
+          :checkboxValue="applyChildColor"
           :title="$t('categories.form.childColor')"
-          :alt="true"
+          showCheckbox
+          @onClick="applyChildColor = !applyChildColor"
         )
 
     template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0")
-      .form-line._p0._clean
-        SharedInputsCheckbox(
-          v-model="category.showInLastUsed"
-          :title="$t('categories.form.lastUsed')"
-          :alt="true")
-      .form-line._p0._clean
-        SharedInputsCheckbox(
-          v-model="category.showInQuickSelector"
-          :title="$t('categories.form.quickSelector')"
-          :alt="true")
-      template(slot="bottom")
+      SharedContextMenuItem(
+        :checkboxValue="category.showInLastUsed"
+        :title="$t('categories.form.lastUsed')"
+        showCheckbox
+        @onClick="category.showInLastUsed = !category.showInLastUsed"
+      )
+      SharedContextMenuItem(
+        :checkboxValue="category.showInQuickSelector"
+        :title="$t('categories.form.quickSelector')"
+        showCheckbox
+        @onClick="category.showInQuickSelector = !category.showInQuickSelector"
+      )
 
-    .col
+    .col(style="padding-top: 16px; text-align: center")
       SharedButton(
         :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
         :title="$t('categories.form.save')"
@@ -422,7 +423,6 @@ export default {
   @media $media-laptop
     grid-column-gap $m10
     grid-row-gap $m10
-    padding-bottom $m10
 
   &__i._full
     grid-column 1 / -1
@@ -449,8 +449,4 @@ export default {
     margin 0
     padding 0
     font-size 10px
-</style>
-
-<style lang="stylus">
-@import '~assets/stylus/variables'
 </style>

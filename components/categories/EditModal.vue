@@ -9,16 +9,6 @@ function random (icons) {
 }
 
 export default {
-  setup (_props, { emit }) {
-    const closed = () => {
-      emit('onClose')
-    }
-
-    return {
-      closed
-    }
-  },
-
   data () {
     return {
       originalParentId: null,
@@ -74,6 +64,11 @@ export default {
   },
 
   methods: {
+    closed () {
+      this.$store.commit('categories/setCategoryEditId', null)
+      this.$store.dispatch('ui/setActiveTab', null)
+    },
+
     handleColorSelect (color) {
       this.category.color = color
       this.showColors = false
@@ -93,7 +88,7 @@ export default {
       this.showParents = false
     },
 
-    handleSubmit () {
+    handleSubmit (close) {
       if (this.validateForm()) {
         const uid = this.$store.state.user.user.uid
         const id = this.categoryId || generateId()
@@ -157,11 +152,7 @@ export default {
           }
         }
 
-        this.$store.commit('categories/setCategoryEditId', null)
-        this.$store.dispatch('ui/setActiveTab', 'categories')
-
-        if (this.$listeners.callback)
-          this.$listeners.callback()
+        close()
       }
     },
 
@@ -264,30 +255,32 @@ Portal(
 
         template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length")
           .form-line._p0._clean
-            SharedInputsCheckbox(
-              v-model="applyChildColor"
+            SharedContextMenuItem(
+              :checkboxValue="applyChildColor"
               :title="$t('categories.form.childColor')"
-              :alt="true"
+              showCheckbox
+              @onClick="applyChildColor = !applyChildColor"
             )
 
         template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0")
-          .form-line._p0._clean
-            SharedInputsCheckbox(
-              v-model="category.showInLastUsed"
-              :title="$t('categories.form.lastUsed')"
-              :alt="true")
-          .form-line._p0._clean
-            SharedInputsCheckbox(
-              v-model="category.showInQuickSelector"
-              :title="$t('categories.form.quickSelector')"
-              :alt="true")
-          template(slot="bottom")
+          SharedContextMenuItem(
+            :checkboxValue="category.showInLastUsed"
+            :title="$t('categories.form.lastUsed')"
+            showCheckbox
+            @onClick="category.showInLastUsed = !category.showInLastUsed"
+          )
+          SharedContextMenuItem(
+            :checkboxValue="category.showInQuickSelector"
+            :title="$t('categories.form.quickSelector')"
+            showCheckbox
+            @onClick="category.showInQuickSelector = !category.showInQuickSelector"
+          )
 
-        .col
+        .col(style="padding-top: 16px; text-align: center")
           SharedButton(
             :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
             :title="$t('categories.form.save')"
-            @onClick="handleSubmit"
+            @onClick="handleSubmit(close)"
           )
 
   //- colors
@@ -361,6 +354,8 @@ Portal(
 @import '~assets/stylus/variables'
 
 .header
+  max-width 400px
+  margin 0 auto
   padding $m8
   flex-grow 1
   fontFamilyNunito()
@@ -416,6 +411,8 @@ Portal(
   padding-bottom $m8
 
 .content
+  max-width 400px
+  margin 0 auto
   padding $m8
   background var(--c-bg-3)
   +media(600px)
@@ -435,7 +432,6 @@ Portal(
   @media $media-laptop
     grid-column-gap $m10
     grid-row-gap $m10
-    padding-bottom $m10
 
   &__i._full
     grid-column 1 / -1

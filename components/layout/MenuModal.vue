@@ -16,12 +16,10 @@ export default {
 </script>
 
 <template lang="pug">
-Portal(
-  to="modal"
-)
+Portal(to="modal")
   LazyBaseBottomSheet(
     v-if="activeTab === 'menu'"
-    @closed="$store.dispatch('ui/setActiveTab', 'stat')"
+    @closed="$store.dispatch('ui/setActiveTab', null)"
   )
     template(#handler="{ close }")
       .handler
@@ -39,7 +37,7 @@ Portal(
     template
       .content
         div(style="height: 16px")
-        LayoutSidebarBaseMenu
+        LayoutSidebarMenu
 
         div(style="padding: 0 16px 16px 16px")
           SharedContextMenuItem(

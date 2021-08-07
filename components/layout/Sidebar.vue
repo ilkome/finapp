@@ -1,18 +1,6 @@
 <script>
 export default {
-  name: 'LayoutPcSidebar',
-
-  data () {
-    return {
-      visibleSettingsMenu: false
-    }
-  },
-
-  computed: {
-    activeTab () {
-      return this.$store.state.ui.activeTab
-    }
-  },
+  name: 'LayoutSidebar',
 
   methods: {
     handleShowWalletsModalWalletModal (id) {
@@ -25,7 +13,7 @@ export default {
 
 <template lang="pug" scoped>
 .sidebar
-  LayoutSidebarBaseMenu
+  LayoutSidebarMenu
 
   .sidebar__content
     WalletsTotal
@@ -48,6 +36,7 @@ export default {
   grid-template-columns 1fr
   grid-template-rows minmax(auto, auto) minmax(auto, auto) 1fr
   height 100vh
+  min-width 280px
   background var(--c-bg-4)
   border-right 1px solid var(--c-bg-2)
 

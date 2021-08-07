@@ -71,7 +71,6 @@ export default {
 
         this.$store.dispatch('wallets/addWallet', { id, values: walletsValues })
         this.$store.commit('wallets/setWalletEditId', null)
-        this.$store.dispatch('ui/setActiveTab', 'wallets')
 
         if (this.$listeners.callback) this.$listeners.callback()
       }
@@ -125,7 +124,7 @@ export default {
 </script>
 
 <template lang="pug">
-LayoutComponentWrap
+LayoutBaseWrap
   template(slot="headerLeft")
     template(v-if="!walletId") {{ $t('wallets.createNewTitle') }}
     template(v-else) {{ $t('wallets.editTitle') }}
@@ -156,10 +155,11 @@ LayoutComponentWrap
               .inputModal__label {{ $t('wallets.form.color.label') }}
 
       .form-line._p0._clean
-        SharedInputsCheckbox(
-          v-model="wallet.countTotal"
+        SharedContextMenuItem(
+          :checkboxValue="wallet.countTotal"
           :title="$t('wallets.form.total.placeholder')"
-          :alt="true"
+          showCheckbox
+          @onClick="wallet.countTotal = !wallet.countTotal"
         )
 
     //- colors
@@ -203,7 +203,7 @@ LayoutComponentWrap
             ) {{ currency }}
 
   template(slot="bottom")
-    .col
+    .col(style="padding-top: 16px")
       SharedButton(
         :class="['_text-center _blue2', { _inline: $store.state.ui.pc }]"
         :title="$t('wallets.form.save')"
@@ -253,7 +253,6 @@ LayoutComponentWrap
   +media-laptop()
     grid-column-gap $m10
     grid-row-gap $m10
-    padding-bottom 24px
 
   &__i._full
     grid-column 1 / -1

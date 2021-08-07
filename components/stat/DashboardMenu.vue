@@ -7,8 +7,6 @@ export default {
   setup () {
     const { store } = useContext()
     const activeTabStat = computed(() => store.state.ui.activeTabStat)
-    const statAverage = computed(() => store.getters['stat/statAverage'])
-    const isStatPage = computed(() => store.state.ui.activeTabViewName === 'stat')
 
     function onClickStatMenu (tabName) {
       store.dispatch('ui/setActiveTabStat', tabName)
@@ -16,9 +14,6 @@ export default {
 
     return {
       activeTabStat,
-      statAverage,
-      isStatPage,
-
       onClickStatMenu
     }
   }
@@ -26,7 +21,7 @@ export default {
 </script>
 
 <template lang="pug">
-.menu(v-if="isStatPage")
+.menu
   .menuItem(
     :class="{ _active: activeTabStat === 'details' }"
     @click="onClickStatMenu('details')"

@@ -3,15 +3,14 @@ import mutations from './mutations'
 
 const state = () => ({
   activeTab: 'stat',
-  defaultBgColor: '#455a64',
+  activeTabStat: 'details',
 
   width: 0,
   height: 0,
   mobile: false,
   pc: false,
 
-  activeTabStat: 'details',
-  activeTabViewName: 'stat'
+  defaultBgColor: '#455a64'
 })
 
 export default {

@@ -1,18 +1,17 @@
 <script>
 export default {
   name: 'CategoriesPage',
-  layout: 'app',
 
   head () {
     return {
       title: this.$t('categories.title')
     }
-  },
+  }
 }
 </script>
 
 <template lang="pug">
-LayoutComponentWrap(:contentPadding="false")
+LayoutBaseWrap(:contentPadding="false")
   template(slot="content")
     .header {{ $t('categories.name') }}
     CategoriesList(

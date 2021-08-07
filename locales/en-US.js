@@ -260,7 +260,10 @@ export default {
   trns: {
     shortTitle: 'Trns',
     history: 'History',
-    more: 'Show more'
+    more: 'Show more',
+    filter: {
+      showTrnsWithDesc: 'Only with description'
+    }
   },
 
   create: {

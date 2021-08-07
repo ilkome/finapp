@@ -38,7 +38,6 @@ export default {
   methods: {
     categoryCreatedCallback () {
       this.showCategoryForm = false
-      this.$store.dispatch('ui/setActiveTab', 'stat')
     },
 
     changeLang (lang) {
@@ -173,9 +172,7 @@ export default {
   transition(name="fadeIn")
     .tab(v-if="showCategoryForm")
       .tab__content
-        LazyCategoriesForm(
-          @callback="categoryCreatedCallback"
-        )
+        LazyCategoriesForm(@callback="categoryCreatedCallback")
 
   .copyright
     SharedCopyright

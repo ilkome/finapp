@@ -9,7 +9,9 @@ export default {
   computed: {
     groups () {
       const formatedGroups = {}
-      if (!this.$store.state.groups) { return }
+      if (!this.$store.state.groups)
+        return
+
       for (const id in this.$store.state.groups.items) {
         formatedGroups[id] = {
           id,
@@ -28,7 +30,7 @@ export default {
 </script>
 
 <template lang="pug">
-LayoutComponentWrap
+LayoutBaseWrap
   template(slot="headerLeft")
     div {{ $t('groups.name') }}
 

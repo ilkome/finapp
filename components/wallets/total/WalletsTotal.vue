@@ -64,18 +64,19 @@ export default {
   flex-wrap wrap
   align-items center
   justify-content center
-  padding-bottom 16px
+  gap $m8
+  padding 0 $m8
+  padding-bottom $m8
+
+  +media(600px)
+    gap $m8
+    padding 0 $m8
+    padding-bottom $m8
 
   &__item
     flex 0 0 0
     align-self start
     justify-self start
-    padding 0 16px
-    padding-bottom 16px
-
-    +media(600px)
-      padding 0 $m9
-      padding-bottom $m9
 
   &__title
     opacity .6

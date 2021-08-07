@@ -39,13 +39,12 @@ export default {
 
   methods: {
     handleClick () {
-      if (this.$listeners.onClick) {
+      if (this.$listeners.onClick)
         this.$listeners.onClick(this.id)
-      }
     },
 
     handleIconClick () {
-      this.$store.dispatch('ui/setActiveTab', 'stat')
+      this.$store.dispatch('ui/setActiveTabStat', 'details')
       this.$store.dispatch('filter/setFilterWalletId', this.id)
     }
   }

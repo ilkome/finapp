@@ -3,7 +3,6 @@ import pkg from '~/package'
 
 export default {
   name: 'SettingsPage',
-  layout: 'app',
 
   data () {
     return {
@@ -25,7 +24,7 @@ export default {
       this.$store.dispatch('demo/createDemo')
 
       if (this.$route.name !== 'index')
-        this.$router.push('/')
+        this.$router.push('/welcome')
     },
 
     removeUserData () {
@@ -33,14 +32,14 @@ export default {
       this.$store.dispatch('user/removeUserData')
 
       if (this.$route.name !== 'index')
-        this.$router.push('/')
+        this.$router.push('/welcome')
     }
   }
 }
 </script>
 
 <template lang="pug">
-LayoutComponentWrap(:contentPadding="false")
+LayoutBaseWrap(:contentPadding="false")
   template(slot="content")
     .header {{ $t('settings.title') }}
 

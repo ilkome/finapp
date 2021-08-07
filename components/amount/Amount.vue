@@ -1,56 +1,23 @@
 <script>
 import currency from 'currency.js'
 
-const baseAmountFormat = (value, separator) => currency(value, { symbol: '', precision: 0, pattern: '#', separator }).format()
+const baseAmountFormat = (value, separator) =>
+  currency(value, { symbol: '', precision: 0, pattern: '#', separator })
+    .format()
 
 export default {
   name: 'Amount',
 
   props: {
-    value: {
-      type: Number,
-      required: true
-    },
-
-    currency: {
-      type: String,
-      required: true
-    },
-
-    type: {
-      type: Number,
-      default: null
-    },
-
-    showBase: {
-      type: Boolean,
-      default: true
-    },
-
-    size: {
-      type: String,
-      default: null
-    },
-
-    vertical: {
-      type: String,
-      default: null
-    },
-
-    isShowPrefix: {
-      type: Boolean,
-      default: false
-    },
-
-    isColorize: {
-      type: Boolean,
-      default: true
-    },
-
-    isAltColor: {
-      type: Boolean,
-      default: false
-    }
+    currency: { type: String, required: true },
+    isAltColor: { type: Boolean, default: false },
+    isColorize: { type: Boolean, default: true },
+    isShowPrefix: { type: Boolean, default: false },
+    showBase: { type: Boolean, default: true },
+    size: { type: String, default: null },
+    type: { type: Number, default: null },
+    value: { type: Number, required: true },
+    vertical: { type: String, default: null }
   },
 
   computed: {
@@ -70,9 +37,9 @@ export default {
         currency: this.currency
       })
 
-      if (baseValue) {
+      if (baseValue)
         return this.formatAmount(baseValue)
-      }
+
       return null
     }
   },
@@ -184,7 +151,12 @@ export default {
 
   &._base
     opacity .6
-    padding-top 0px
+
+  &._base._size_xl
+    padding-top 4px
+
+  &._base._size_md
+    padding-top 3px
 
   &__prefix
     align-self center
@@ -192,8 +164,19 @@ export default {
     font-weight 400
 
     ~/._size_xl &
+      padding-top 2px
       padding-right $m4
       font-size 26px
+
+    ~/._base &
+      padding-top 10px
+      font-size 12px
+
+    ~/._base._size_xl &
+      padding-top 1px
+
+    ~/._base._size_md &
+      padding-top 2px
 
   &__value
     font-secondary()
@@ -212,8 +195,12 @@ export default {
       font-weight 500
 
     ~/._size_xl._base &
-      padding-top $m6
+      padding-top 0
       font-size 18px
+
+    ~/._size_md._base &
+      padding-top 0
+      font-size 14px
 
   &__symbol
     padding-bottom 0px
@@ -231,13 +218,17 @@ export default {
       padding-bottom 3px
 
     ~/._size_xl &
-      padding-bottom 4px
+      padding-bottom 5px
       font-size 18px
       font-weight 300
 
     ~/._size_xl._base &
-      padding-bottom 0
-      font-size 14px
+      padding-bottom 2px
+      font-size 12px
+
+    ~/._size_md._base &
+      padding-bottom 1px
+      font-size 10px
 
 .amount._size_lg
   .amountItem__value

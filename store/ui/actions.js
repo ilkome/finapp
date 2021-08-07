@@ -1,28 +1,13 @@
 import localforage from 'localforage'
 
 export default {
-  async initUi ({ commit, dispatch }) {
+  async initUi ({ dispatch }) {
     const uiLocalStore = await localforage.getItem('finapp.stat')
-    const activeTabViewName = await localforage.getItem('finapp.activeTabViewName')
-
-    if (activeTabViewName)
-      commit('setActiveTabViewName', activeTabViewName)
 
     // ui
     if (uiLocalStore) {
       if (uiLocalStore.activeTab)
         dispatch('setActiveTab', uiLocalStore.activeTab)
-
-      if (uiLocalStore.activeTabViewName)
-        dispatch('setActiveTabViewName', uiLocalStore.activeTabViewName)
-    }
-  },
-
-  setActiveTabViewName ({ state, commit }, value) {
-    if (state.activeTabViewName !== value) {
-      commit('setActiveTabViewName', value)
-      localforage.setItem('finapp.activeTabViewName', value)
-      // TODO: save to composition api
     }
   },
 
@@ -87,16 +72,6 @@ export default {
     localforage.setItem('finapp.stat', state)
   },
 
-  toogleStat ({ commit, dispatch, state }, id) {
-    let value
-    state.stat[id] === 'visible'
-      ? value = 'hidden'
-      : value = 'visible'
-
-    commit('ui/setShow', { id, value }, { root: true })
-    dispatch('ui/saveUiView', null, { root: true })
-  },
-
   /**
     * Save ui view state to localStorage for selected filter
   */
@@ -106,8 +81,7 @@ export default {
     const walletName = rootState.filter.walletId || 'root'
     const periodName = rootState.filter.period || 'month'
     const categoryName = rootState.filter.categoryId || 'root'
-    const activeTabViewName = rootState.ui.activeTabViewName || 'expenses'
-    const uiItemName = `${walletName}${categoryName}${periodName}${activeTabViewName}`
+    const uiItemName = `${walletName}${categoryName}${periodName}`
 
     await localforage.setItem(localName, {
       ...localFilterUi,

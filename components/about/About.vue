@@ -29,16 +29,17 @@ export default {
 
   &__wrap
     display flex
-    gap $m10
+    gap $mb2
     padding-bottom $m7
 
 .aboutPerson
   &__title
-    padding-bottom $m5
-    color var(--c-font-3)
+    padding-bottom $m4
+    color var(--c-font-4)
     font-size 12px
 
   &__name
+    color var(--c-font-2)
     font-size 14px
     line-height 18px
     fontFamilyNunito()

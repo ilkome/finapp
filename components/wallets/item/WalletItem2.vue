@@ -3,30 +3,11 @@ export default {
   name: 'WalletItem2',
 
   props: {
-    id: {
-      type: String,
-      required: true
-    },
-
-    showBase: {
-      type: Boolean,
-      default: true
-    },
-
-    vertical: {
-      type: String,
-      default: 'left'
-    },
-
-    size: {
-      type: String,
-      default: null
-    },
-
-    activeItemId: {
-      type: String,
-      default: null
-    }
+    id: { type: String, required: true },
+    showBase: { type: Boolean, default: true },
+    vertical: { type: String, default: 'left' },
+    size: { type: String, default: null },
+    activeItemId: { type: String, default: null }
   },
 
   computed: {
@@ -40,14 +21,8 @@ export default {
 
   methods: {
     handleClick () {
-      if (this.$listeners.onClick) {
+      if (this.$listeners.onClick)
         this.$listeners.onClick(this.id)
-      }
-    },
-
-    handleIconClick () {
-      this.$store.dispatch('ui/setActiveTab', 'stat')
-      this.$store.dispatch('filter/setFilterWalletId', this.id)
     }
   }
 }
@@ -55,8 +30,8 @@ export default {
 
 <template lang="pug">
 .walletItemGrid(
-  @click="handleClick"
   :class="{ _active: activeItemId === id }"
+  @click="handleClick"
 )
   .walletItemGrid__active(v-if="activeItemId === id")
   .walletItemGrid__line(:style="{ background: wallet.color || $store.state.ui.defaultBgColor }")

@@ -44,7 +44,7 @@ export default {
 </script>
 
 <template lang="pug">
-LayoutComponentWrap(:contentPadding="$store.state.ui.pc")
+LayoutBaseWrap(:contentPadding="$store.state.ui.pc")
   template(slot="headerLeft") {{ $t('wallets.sortTitle') }}
 
   template(slot="content")

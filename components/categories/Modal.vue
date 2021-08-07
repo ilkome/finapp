@@ -62,8 +62,6 @@ export default {
       this.$store.commit('categories/hideCategoryModal')
       this.$store.commit('categories/setCategoryModalId', null)
 
-      this.$store.dispatch('ui/setActiveTab', 'stat')
-      this.$store.dispatch('ui/setActiveTabViewName', 'stat')
       this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
 

@@ -55,14 +55,14 @@ export default {
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
-      this.$store.dispatch('ui/setActiveTab', 'stat')
+      this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
     handleSetFilterWallet () {
       this.setWalletFilter(this.$store.state.trns.items[this.trnId].walletId)
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
       this.$store.commit('filter/setFilterDateNow')
-      this.$store.dispatch('ui/setActiveTab', 'stat')
+      this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
     handleDublicateTrn () {
       const trnId = this.trnId
@@ -181,31 +181,31 @@ Portal(
             @click="close()"
           ) {{ $t('close') }}
 
-    template(v-if="groups && $store.getters['user/isTester']")
-      Portal(
-        v-if="showModalGroups"
-        to="modal"
-      )
-        ModalBottom(
-          :title="$t('groups.name')"
-          paddingless
-          @onClose="showModalGroups = false"
-        )
-          template(v-for="(group, groupId) in groups")
-            .item(@click="toogleAddToGroup(groupId)")
-              .item__active
-                template(v-if="trn && trn.groups && trn.groups[groupId]")
-                  .mdi.mdi-check
-                template(v-else)
-                  .mdi.mdi-plus
-              .item__name {{ group.name }}
-
-    //- confirm
-    ModalBottomConfirm(
-      :show="showModalConfirm"
-      @onClose="showModalConfirm = false"
-      @onConfirm="handleDeleteConfirm"
+  //- groups
+  Portal(
+    v-if="groups && $store.getters['user/isTester'] && showModalGroups"
+    to="modal"
+  )
+    ModalBottom(
+      :title="$t('groups.name')"
+      paddingless
+      @onClose="showModalGroups = false"
     )
+      template(v-for="(group, groupId) in groups")
+        .groupItem(@click="toogleAddToGroup(groupId)")
+          .groupItem__active
+            template(v-if="trn && trn.groups && trn.groups[groupId]")
+              .mdi.mdi-check
+            template(v-else)
+              .mdi.mdi-plus
+          .groupItem__name {{ group.name }}
+
+  //- delete confirm
+  ModalBottomConfirm(
+    :show="showModalConfirm"
+    @onClose="showModalConfirm = false"
+    @onConfirm="handleDeleteConfirm"
+  )
 </template>
 
 <style lang="stylus" scoped>
@@ -224,7 +224,7 @@ Portal(
   background var(--c-bg-3)
   border-radius $m7 $m7 0 0
 
-.item
+.groupItem
   cursor pointer
   display flex
   width 100%

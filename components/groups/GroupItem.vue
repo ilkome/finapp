@@ -29,9 +29,9 @@ export default {
       if (this.group.trnsIds) {
         return Object.keys(this.group.trnsIds)
           .sort((a, b) => {
-            if (!this.$store.state.trns.items[a]) { return }
-            if (this.$store.state.trns.items[a].date > this.$store.state.trns.items[b].date) { return -1 }
-            if (this.$store.state.trns.items[a].date < this.$store.state.trns.items[b].date) { return 1 }
+            if (!this.$store.state.trns.items[a]) return
+            if (this.$store.state.trns.items[a].date > this.$store.state.trns.items[b].date) return -1
+            if (this.$store.state.trns.items[a].date < this.$store.state.trns.items[b].date) return 1
             return 0
           })
       }
@@ -39,9 +39,9 @@ export default {
     },
 
     gotAmount () {
-      if (this.trnsIds) {
+      if (this.trnsIds)
         return this.$store.getters['trns/getTotalOfTrnsIds'](this.trnsIds)
-      }
+
       return 0
     },
 
@@ -126,7 +126,20 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "~assets/stylus/variables/media"
+@import '~assets/stylus/variables'
+
+.sum
+  &__title
+    opacity .6
+    padding-bottom 5px
+    color var(--c-font-4)
+    font-size 10px
+
+    +media-laptop()
+      font-size 11px
+
+  &._right
+    text-align right
 
 .groupItem
   overflow hidden
@@ -174,8 +187,8 @@ export default {
     border-radius 3px
 
     &__in
-      min-width 0px
       height 6px
+      min-width 0px
       background rgba(44, 173, 34, .7)
 
   &__trns
