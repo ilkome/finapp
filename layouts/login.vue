@@ -64,29 +64,29 @@ export default {
 
 <template lang="pug">
 .layout(:class="className")
-  //- Loading
+  //- loading
   template(v-if="!$store.state.app.status.ready")
     LoaderSharedLoader
 
-  //- Continue to app
+  //- continue to app
   transition(name="fadeInSlow" appear)
     template(v-show="$store.state.app.status.ready && !$fetchState.pending")
       Nuxt
 
-  //- Notifications
+  //- notifications
   Notifications(
     :position="$store.state.ui.mobile ? 'top center' : 'top left'"
     :width="$store.state.ui.mobile ? '94%' : '380px'"
     classes="notifications"
   )
 
-  //- Modals
+  //- modals
   PortalTarget(
     multiple
     name="modal"
   )
 
-  //- Update modal
+  //- update modal
   LazyAppUpdateAppModal(
     v-if="isShowUpdateApp"
     @onClose="isShowUpdateApp = false"
