@@ -28,6 +28,7 @@ export default function useFilter () {
   }
 
   return {
+    scrollTop,
     setCategoryFilter,
     setWalletFilter,
     filterPeriodNameAllReplacedToYear

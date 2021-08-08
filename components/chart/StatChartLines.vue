@@ -47,7 +47,7 @@ export default {
   setup () {
     const { store, app: { $day } } = useContext()
     const { isShowDataLabels } = useChart()
-    const { filterPeriodNameAllReplacedToYear } = useFilter()
+    const { filterPeriodNameAllReplacedToYear, scrollTop } = useFilter()
 
     const periods = computed(() => store.state.chart.periods)
     const chartType = computed(() => {
@@ -77,6 +77,8 @@ export default {
             store.dispatch('filter/setPeriod', 'year')
           if (value.date)
             store.dispatch('filter/setDate', parseInt(value.date))
+
+          scrollTop()
         }
       }, 100)
     }
@@ -110,8 +112,9 @@ export default {
       onClickChart,
       chartCallback,
       isShowDataLabels,
+      chartType,
       filterPeriodNameAllReplacedToYear,
-      chartType
+      scrollTop
     }
   },
 
