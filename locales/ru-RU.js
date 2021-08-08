@@ -248,7 +248,6 @@ export default {
       remove: 'Удалить',
       toogle: 'Изменить график',
       showed: 'Показано',
-      groupsName: 'групп',
       periodsName: 'период',
       simpleTitle: 'График линия',
       groupedTitle: 'График колонки',
@@ -323,26 +322,6 @@ export default {
     nextTitle: 'Следующий',
     prevTitle: 'Прошлый',
     nextStep: 'Далее'
-  },
-
-  groups: {
-    id: 'groups',
-    title: 'Группы',
-    show: 'Показать группы',
-    form: {
-      title: 'Create new group',
-      name: 'Group name',
-      amount: 'Group amount',
-      button: 'Create'
-    },
-    trns: {
-      name: 'Group transactions'
-    },
-    stat: {
-      expenses: 'Рассход',
-      incomes: 'Доход',
-      total: 'Итого'
-    }
   },
 
   users: {

@@ -21,11 +21,6 @@ export default {
           icon: 'mdi mdi-folder-star',
           name: this.$t('categories.name')
         },
-        users: {
-          icon: 'mdi mdi-account-multiple',
-          name: this.$t('users.title'),
-          private: true
-        },
         settings: {
           icon: 'mdi mdi-cog-outline',
           name: this.$t('settings.title')
@@ -50,7 +45,6 @@ export default {
 .menu
   template(v-for="(menuItem, menuId) in menu")
     .menuItem(
-      v-if="$store.getters['user/isTester'] || !menuItem.private"
       :class="{ _active: $route.name === menuId }"
       @click="onClickMenu(menuId)"
     )

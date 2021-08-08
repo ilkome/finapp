@@ -22,7 +22,6 @@ export default {
           await dispatch('categories/initCategories', null, { root: true })
           await dispatch('wallets/initWallets', null, { root: true })
           await dispatch('trns/initTrns', null, { root: true })
-          await dispatch('groups/initGroups', null, { root: true })
           await dispatch('lang/initDbLang', null, { root: true })
           dispatch('trns/uploadOfflineTrns', null, { root: true })
 

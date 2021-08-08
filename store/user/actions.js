@@ -31,7 +31,6 @@ export default {
       await dispatch('trns/unsubcribeTrns', null, { root: true })
       await dispatch('wallets/unsubcribeWallets', null, { root: true })
       await dispatch('app/clearUserData', null, { root: true })
-      db.ref(`users/${uid}/groups`).off()
     }
 
     if (this.$router.currentRoute.name !== 'login')

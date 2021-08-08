@@ -240,7 +240,6 @@ export default {
       .trnItem__center
         .trnItem__categoryName
           | {{ category.name }}
-          .trnItem__groups(v-if="trn.groups") In group
 
         .trnItem__wallet
           .trnItem__walletIcon
@@ -385,12 +384,6 @@ export default {
 
     ^[0]._stat &
       padding-right 20px
-
-  &__groups
-  &__budgest
-    display inline-block
-    padding-left 10px
-    font-size 10px
 
 // Stat
 // ----------------------------------------------------------------------------

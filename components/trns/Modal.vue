@@ -25,8 +25,7 @@ export default {
 
   data () {
     return {
-      showModalConfirm: false,
-      showModalGroups: false
+      showModalConfirm: false
     }
   },
 
@@ -42,9 +41,6 @@ export default {
     },
     wallet () {
       return this.$store.state.wallets.items[this.$store.state.trns.items[this.trnId].walletId]
-    },
-    groups () {
-      return this.$store.getters['groups/groups']
     }
   },
 
@@ -57,6 +53,7 @@ export default {
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
       this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
+
     handleSetFilterWallet () {
       this.setWalletFilter(this.$store.state.trns.items[this.trnId].walletId)
       this.$store.commit('trns/hideTrnModal')
@@ -64,6 +61,7 @@ export default {
       this.$store.commit('filter/setFilterDateNow')
       this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
+
     handleDublicateTrn () {
       const trnId = this.trnId
       this.$store.dispatch('trnForm/openTrnForm', { action: 'duplicate', trnId })
@@ -71,6 +69,7 @@ export default {
       this.$store.commit('trns/setTrnModalId', null)
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
     },
+
     handleEditClick () {
       const trn = this.trn
       const trnId = this.trnId
@@ -82,9 +81,11 @@ export default {
       const { setExpression } = useCalculator()
       setExpression(trn.amount)
     },
+
     handleDeleteClick () {
       this.showModalConfirm = true
     },
+
     handleDeleteConfirm () {
       const trnId = this.trnId
       setTimeout(() => { this.$store.dispatch('trns/deleteTrn', trnId) }, 100)
@@ -92,10 +93,6 @@ export default {
       this.showModalConfirm = false
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-    },
-    toogleAddToGroup (groupId) {
-      this.$store.dispatch('groups/toogleAddToGroup', { groupId, trnId: this.trnId })
-      this.showModalGroups = false
     }
   }
 }
@@ -169,36 +166,10 @@ Portal(
                   :background="wallet.color"
                 )
 
-            ModalButton(
-              v-if="groups && $store.getters['user/isTester']"
-              :name="$t('groups.show')"
-              icon="mdi mdi-folder-multiple-outline"
-              @onClick="showModalGroups = true"
-            )
-
         .wrap
           .button(
             @click="close()"
           ) {{ $t('close') }}
-
-  //- groups
-  Portal(
-    v-if="groups && $store.getters['user/isTester'] && showModalGroups"
-    to="modal"
-  )
-    ModalBottom(
-      :title="$t('groups.title')"
-      paddingless
-      @onClose="showModalGroups = false"
-    )
-      template(v-for="(group, groupId) in groups")
-        .groupItem(@click="toogleAddToGroup(groupId)")
-          .groupItem__active
-            template(v-if="trn && trn.groups && trn.groups[groupId]")
-              .mdi.mdi-check
-            template(v-else)
-              .mdi.mdi-plus
-          .groupItem__name {{ group.name }}
 
   //- delete confirm
   ModalBottomConfirm(

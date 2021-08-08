@@ -246,7 +246,6 @@ export default {
       remove: 'Remove',
       toogle: 'Toogle chart view',
       showed: 'Showed',
-      groupsName: 'groups',
       periodsName: 'periods',
       simpleTitle: 'Line view',
       groupedTitle: 'Column view',
@@ -321,26 +320,6 @@ export default {
     nextTitle: 'Next',
     prevTitle: 'Prev',
     nextStep: 'Next step'
-  },
-
-  groups: {
-    id: 'groups',
-    title: 'Groups',
-    show: 'Show groups',
-    form: {
-      title: 'Create new group',
-      name: 'Group name',
-      amount: 'Group amount',
-      button: 'Create'
-    },
-    trns: {
-      name: 'Group transactions'
-    },
-    stat: {
-      expenses: 'Epenses',
-      incomes: 'Incomes',
-      total: 'Total'
-    }
   },
 
   users: {
