@@ -80,7 +80,7 @@ export default {
     classes="notifications"
   )
 
-  //- modals
+  //- portal
   PortalTarget(
     multiple
     name="modal"

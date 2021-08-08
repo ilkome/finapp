@@ -70,15 +70,11 @@ export default {
 
     return {
       keepAliveInclude,
-
       isShowPeriodsNamesModal,
-
       ui,
-
       activeTab,
       statCurrentPeriod,
       statAverage,
-
       className,
       isShowUpdateApp
     }
