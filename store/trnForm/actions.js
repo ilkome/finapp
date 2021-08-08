@@ -12,6 +12,7 @@ export default {
     commit('openTrnForm')
     switch (action) {
       case 'create':
+        // get data from last trn
         if (rootGetters['trns/hasTrns'] && rootState.trns.items[rootGetters['trns/lastCreatedTrnId']]) {
           const lastTrn = rootState.trns.items[rootGetters['trns/lastCreatedTrnId']]
           commit('setTrnFormValues', {
@@ -20,6 +21,7 @@ export default {
             categoryId: lastTrn.categoryId,
             date: dayjs().valueOf(),
             description: null,
+            groups: null,
             trnId: null,
             walletId: lastTrn.walletId
           })
@@ -36,6 +38,7 @@ export default {
             categoryId,
             date: dayjs().valueOf(),
             description: null,
+            groups: null,
             trnId: null,
             walletId
           })
@@ -57,9 +60,10 @@ export default {
               categoryId: trn.categoryId,
               date: trn.date,
               description: trn.description || null,
+              groups: null,
               trnId,
-              walletId: trn.walletId,
               walletFromId: trn.walletFromId,
+              walletId: trn.walletId,
               walletToId: trn.walletToId
             })
           }
@@ -72,6 +76,7 @@ export default {
               categoryId: trn.categoryId,
               date: trn.date,
               description: trn.description || null,
+              groups: trn.groups || null,
               trnId,
               walletId: trn.walletId
             })
@@ -88,6 +93,7 @@ export default {
             categoryId: trn.categoryId,
             date: dayjs().valueOf(),
             description: trn.description || null,
+            groups: null,
             trnId: null,
             walletId: trn.walletId
           })

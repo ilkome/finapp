@@ -187,7 +187,7 @@ Portal(
     to="modal"
   )
     ModalBottom(
-      :title="$t('groups.name')"
+      :title="$t('groups.title')"
       paddingless
       @onClose="showModalGroups = false"
     )

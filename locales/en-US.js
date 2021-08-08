@@ -325,7 +325,7 @@ export default {
 
   groups: {
     id: 'groups',
-    name: 'Groups',
+    title: 'Groups',
     show: 'Show groups',
     form: {
       title: 'Create new group',
