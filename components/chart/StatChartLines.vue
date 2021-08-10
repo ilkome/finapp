@@ -68,9 +68,9 @@ export default {
         return
 
       const nEvent = await chart.pointer.normalize(event)
-      let value = chart.series[0].searchPoint(nEvent, true) || chart.series[0].searchPoint(nEvent, false) || chart.series[1].searchPoint(nEvent, true)
+      let value = chart.series[0].searchPoint(nEvent, true) || chart.series[1].searchPoint(nEvent, true) || chart.series[2].searchPoint(nEvent, true)
       setTimeout(() => {
-        value = chart.series[0].searchPoint(nEvent, true) || chart.series[0].searchPoint(nEvent, false) || chart.series[1].searchPoint(nEvent, true)
+        value = chart.series[0].searchPoint(nEvent, true) || chart.series[1].searchPoint(nEvent, true) || chart.series[2].searchPoint(nEvent, true)
 
         if (value) {
           if (store.state.filter.period === 'all')
@@ -292,7 +292,10 @@ export default {
 
 <template lang="pug">
 .chart(@click="onClickChart")
-  Chart(:options="chartData" :callback="chartCallback")
+  Chart(
+    :options="chartData"
+    :callback="chartCallback"
+  )
 </template>
 
 <style lang="stylus" scoped>
