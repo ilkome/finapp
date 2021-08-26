@@ -104,6 +104,14 @@ export default {
       .mdi
         font-size 32px
 
+    &._arrow
+      color var(--c-font-4)
+      font-size 28px
+      background var(--c-item-bg-main)
+      // border-radius 50%
+      .mdi
+        font-size 24px
+
     &._disable
       opacity .4
 
