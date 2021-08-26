@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, onMounted, onUnmounted } from '@nuxtjs/composition-api'
+import { ref, computed, onMounted, onUnmounted, useContext } from '@nuxtjs/composition-api'
 import useCalculator from './useCalculator'
 import './long-press-event'
 
@@ -7,6 +7,9 @@ export default {
   name: 'TrnFormCalculator',
 
   setup () {
+    const { store } = useContext()
+    const amountType = computed(() => store.state.trnForm.values.amountType)
+
     const deleteRef = ref(document.createElement('div'))
 
     const {
@@ -31,6 +34,8 @@ export default {
     })
 
     return {
+      amountType,
+
       isSum,
       deleteRef,
       handleTouch
@@ -54,32 +59,32 @@ export default {
 
   .trnFormCalculator__group
     .trnFormCalculator__numbers
-      .calcItem._num(@click="handleTouch('7')")
+      .calcItem(@click="handleTouch('7')")
         .calcItem__in 7
-      .calcItem._num(@click="handleTouch('8')")
+      .calcItem(@click="handleTouch('8')")
         .calcItem__in 8
-      .calcItem._num(@click="handleTouch('9')")
+      .calcItem(@click="handleTouch('9')")
         .calcItem__in 9
 
-      .calcItem._num(@click="handleTouch('4')")
+      .calcItem(@click="handleTouch('4')")
         .calcItem__in 4
-      .calcItem._num(@click="handleTouch('5')")
+      .calcItem(@click="handleTouch('5')")
         .calcItem__in 5
-      .calcItem._num(@click="handleTouch('6')")
+      .calcItem(@click="handleTouch('6')")
         .calcItem__in 6
 
-      .calcItem._num(@click="handleTouch('1')")
+      .calcItem(@click="handleTouch('1')")
         .calcItem__in 1
-      .calcItem._num(@click="handleTouch('2')")
+      .calcItem(@click="handleTouch('2')")
         .calcItem__in 2
-      .calcItem._num(@click="handleTouch('3')")
+      .calcItem(@click="handleTouch('3')")
         .calcItem__in 3
 
-      .calcItem._num._grey(@click="handleTouch('.')")
+      .calcItem(@click="handleTouch('.')")
         .calcItem__in .
-      .calcItem._num(@click="handleTouch('0')")
+      .calcItem(@click="handleTouch('0')")
         .calcItem__in 0
-      .calcItem._clear(
+      .calcItem(
         ref="deleteRef"
         data-long-press-delay="300"
         @click="handleTouch('delete')"
@@ -88,9 +93,7 @@ export default {
 
   .trnFormCalculator__group
     .trnFormCalculator__action
-      .calcItem._sum(
-        @click="isSum ? $emit('onSubmit') : handleTouch('=')"
-      )
+      .calcItem._sum(@click="isSum ? $emit('onSubmit') : handleTouch('=')")
         .calcItem__in
           template(v-if="isSum")
             .mdi.mdi-check
@@ -100,6 +103,7 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
 .trnFormButton
   padding $m7
 
@@ -134,6 +138,7 @@ export default {
     grid-row-gap $m5
     align-items space-between
     justify-content space-between
+    max-width 240px
 
 .calcItem
   display flex
@@ -155,24 +160,15 @@ export default {
     font-size 22px
     border-bottom 0
     border-right 0
-    background var(--c-bg-4)
+    background var(--c-item-bg-main)
+    border 1px solid var(--c-item-bd-main)
     border-radius 50%
     user-select none
-    anim()
+    anim(100ms)
 
     +media(400px)
       width 58px
       height 58px
-
-    ~/._num &
-      background var(--c-bg-5)
-
-    ~/._grey &
-      background var(--c-bg-4)
-
-    ~/._clear &
-    ~/._dot &
-      color var(--c-font-4)
 
     ~/._sum &
       width 100%
@@ -180,14 +176,11 @@ export default {
       color var(--c-font-1)
       font-size 40px
       background var(--c-blue-1)
+      border-color transparent !important
+      border none
       border-radius 6px
 
-      ~/._expenses &
-        background var(--c-expenses-1)
-
-      ~/._incomes &
-        background var(--c-incomes-1)
-
-    &:active
-      transform scale(1.1)
+    +media-hover()
+      background var(--c-bg-7)
+      border 1px solid var(--c-bg-8)
 </style>

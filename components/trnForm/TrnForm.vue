@@ -210,12 +210,14 @@ export default {
 .trnForm
   .swiper-container(ref="slider")
     .swiper-wrapper
+      //- History
       .swiper-slide(:style="{ height: maxHeight }")
         TrnFormTrns(
           v-if="sliderObj"
           :slider="sliderObj"
         )
 
+      //- Main
       .swiper-slide.getHeight
         .scroll.scrollerBlock(:style="{ maxHeight: `${$store.state.ui.height}px` }")
           .trnForm__title(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
@@ -228,9 +230,11 @@ export default {
           TrnFormHeader
           TrnFormHeaderTransfer(v-show="isTransfer")
 
+      //- Quick selector
       .swiper-slide(:style="{ height: maxHeight }")
         .scroll.scrollerBlock
           div(style="paddingBottom: 16px")
+            //- Wallets
             div(style="padding: 20px 0 26px 0")
               WalletsList3(
                 :activeItemId="$store.state.trnForm.values.walletId"
@@ -240,6 +244,7 @@ export default {
                 @onClick="onClickWallet"
               )
 
+            //- Favorite categories
             div(style="padding: 0 0 26px 0")
               .subTitle {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
               CategoriesView(
@@ -250,6 +255,7 @@ export default {
                 @onClick="onCategoryClick"
               )
 
+            //- Last used categories
             div(style="padding: 0 0 10px 0")
               .subTitle {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
               CategoriesView(
@@ -261,8 +267,8 @@ export default {
               )
 
           .buttons
-            .button(@click="$store.commit('trnForm/showTrnFormModal', 'categories')") {{ $t('categories.title') }}
             .button(@click="$store.commit('trnForm/showTrnFormModal', 'wallets')") {{ $t('wallets.title') }}
+            .button(@click="$store.commit('trnForm/showTrnFormModal', 'categories')") {{ $t('categories.title') }}
 
   .trnForm__pagination
 
@@ -285,97 +291,25 @@ export default {
   grid-column-gap $m6 !important
   grid-row-gap $m6 !important
 
-.formTitle
-  padding $m7
-  fontFamilyNunito()
-  color var(--c-font-4)
-  font-size 18px
-  font-weight 700
-
-.formCategories
-  padding 0
-  padding-bottom $m7
-
-.formWallets
-  padding-bottom $m4
-
-  &__input
-    position relative
-
-    &__value
-      z-index 2
-      position relative
-      width 100%
-      padding $m8 $m9
-      color var(--c-font-2)
-      font-header-1()
-      font-size 36px
-      font-weight 500
-      text-align right
-      background 0
-      border 0
-
 .trnForm
-  &__handler
+  &__pagination
     z-index 2
     position absolute
-    top 0
-    left 0
+    left 50%
+    bottom 1px
     display flex
     align-items center
     justify-content center
-    width 100%
-    height 16px
+    width auto
+    padding $m5
+    background alpha(#171717, .9)
+    border-radius $m5
+    backdrop-filter blur(12px)
+    transform translateX(-50%)
 
-    &:after
-      content ''
-      display block
-      width 32px
-      height 4px
-      background var(--c-bg-8)
-      border-radius 4px
+    /.light-mode &
+      background var(--color-bg-canvas)
 
-  &__closure
-    z-index 3
-    cursor pointer
-    position absolute
-    top 4px
-    right 4px
-    display flex
-    align-items center
-    justify-content center
-    width 40px
-    height 40px
-    border-radius 50%
-    anim()
-
-    +media-hover()
-      background var(--c-blue-1)
-
-    svg
-      anim()
-      width 12px
-      height 12px
-      stroke var(--c-font-4)
-
-    +media-hover()
-      svg
-        width 18px
-        height 18px
-        stroke var(--c-font-1)
-
-  &__title
-    padding 0 $m8
-    padding-top $m9
-    padding-bottom $m7
-    color var(--c-font-3)
-    font-size 22px
-    font-weight 700
-    letter-spacing 1px
-    text-align center
-    fontFamilyNunito()
-
-  &__pagination
     .swiper-pagination-bullet
       opacity 1
       width 6px
@@ -396,34 +330,6 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
-
-.buttons
-  display flex
-  align-items center
-  justify-content center
-  gap $m8
-  padding 0 $m7
-  padding-top $m4
-  padding-bottom $m9
-
-.button
-  button-base-1()
-
-.subTitle
-  padding 0 $m8
-  padding-bottom $m6
-  color var(--c-font-4)
-  font-size 10px
-  letter-spacing 0px
-  font-weight 600
-  text-align center
-  text-transform uppercase
-
-.scroll
-  overflow hidden
-  overflow-y auto
-  height 100%
-  scrollbar()
 
 .trnForm
   overflow hidden
@@ -456,21 +362,42 @@ export default {
   &__scroll
     background var(--color-bg-canvas)
 
-  &__pagination
-    z-index 2
-    position absolute
-    left 50%
-    bottom 1px
-    display flex
-    align-items center
-    justify-content center
-    width auto
-    padding $m5
-    background alpha(#171717, .9)
-    border-radius $m5
-    backdrop-filter blur(12px)
-    transform translateX(-50%)
+  &__title
+    padding 0 $m8
+    padding-top $m9
+    padding-bottom $m7
+    color var(--c-font-3)
+    font-size 22px
+    font-weight 700
+    letter-spacing 1px
+    text-align center
+    fontFamilyNunito()
 
-    /.light-mode &
-      background var(--color-bg-canvas)
+.buttons
+  display flex
+  align-items center
+  justify-content center
+  gap $m8
+  padding 0 $m7
+  padding-top $m4
+  padding-bottom $m9
+
+.button
+  button-base-1()
+
+.subTitle
+  padding 0 $m8
+  padding-bottom $m6
+  color var(--c-font-4)
+  font-size 10px
+  letter-spacing 0px
+  font-weight 600
+  text-align center
+  text-transform uppercase
+
+.scroll
+  overflow hidden
+  overflow-y auto
+  height 100%
+  scrollbar()
 </style>

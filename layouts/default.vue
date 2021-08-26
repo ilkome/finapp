@@ -221,7 +221,7 @@ export default {
   &__menu
     background var(--c-bg-3)
 
-    +media(1100px)
+    +media(1200px)
       display none
 
 .handler

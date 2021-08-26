@@ -32,10 +32,10 @@ export default {
 
 <template lang="pug">
 .trnFormDate
-  .trnFormDate__item._icon(@click="setPrevDay()"): .mdi.mdi-chevron-left
+  .trnFormDate__item._arrow(@click="setPrevDay()"): .mdi.mdi-chevron-left
   .trnFormDate__item._date(@click="$store.commit('trnForm/showTrnFormModal', 'calendar')") {{ formatedDate }}
   .flex
-    .trnFormDate__item._icon(
+    .trnFormDate__item._arrow(
       v-if="!isToday" @click="setNextDay()"
       style="marginRight: 16px"
     ): .mdi.mdi-chevron-right
@@ -70,7 +70,6 @@ export default {
     border 1px solid transparent
     border-radius $borderRadiusMd
     user-select none
-    anim()
 
     +media(400px)
       width 58px
@@ -86,6 +85,8 @@ export default {
       flex-grow 1
       color var(--c-font-3)
       font-size 12px
+      border-radius 50px
+      border-color transparent
 
     &._desc .mdi
       color var(--c-blue-1)
@@ -93,11 +94,18 @@ export default {
     &._icon
       color var(--c-font-4)
       font-size 28px
-      background var(--c-bg-4)
-      border-radius 50%
-
+      background var(--c-item-bg-main)
+      // border-radius 50%
       .mdi
         font-size 18px
+
+    &._arrow
+      color var(--c-font-4)
+      font-size 28px
+      background var(--c-item-bg-main)
+      // border-radius 50%
+      .mdi
+        font-size 24px
 
     &._disable
       opacity .4

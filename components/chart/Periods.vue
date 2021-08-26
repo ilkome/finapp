@@ -108,7 +108,7 @@ export default {
     )
       .periodItem__name {{ periodItem.name }}
 
-  .periods__group(v-if="!isEmptyStat")
+  .periods__group
     .periodItem(
       @click="removePeriodOrGroup"
     ): .mdi.mdi-minus

@@ -53,14 +53,17 @@ export default {
 .menuItem
   cursor pointer
   margin 0 $m5
-  padding $m6 $m8
+  padding $m7 $m8
   color var(--c-font-5)
   font-size 12px
   font-weight 500
   font-roboto()
   text-align center
+  background var(--c-item2-bg-main)
   border 1px solid transparent
-  anim()
+
+  +media(600px)
+    padding $m7 $m9
 
   &._active
     cursor default
@@ -69,6 +72,7 @@ export default {
   +media-hover()
     &:not(._active)
       color var(--c-font-2)
-      background var(--c-bg-5)
+      background var(--c-item-bg-hover)
+      border-color var(--c-item-bd-hover)
       border-radius 50px
 </style>
