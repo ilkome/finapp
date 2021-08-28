@@ -3,42 +3,41 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '~/services/firebaseHelpers'
 
 export default {
-  async initApp ({ rootState, commit, dispatch }) {
+  initApp ({ rootGetters, commit, dispatch }) {
     if (this.$router.currentRoute.name === 'login')
       commit('setAppStatus', 'loading')
-
-    await dispatch('demo/getDemoDataStatus', null, { root: true })
 
     onAuthStateChanged(auth, async (user) => {
       if (this.$router.currentRoute.name === 'login')
         commit('setAppStatus', 'loading')
 
-      if (user) {
-        try {
-          if (rootState.user.user && rootState.user.user.uid && rootState.user.user.uid !== user.uid)
-            dispatch('clearUserData')
+      if (!user) {
+        dispatch('clearUserData')
+        return
+      }
 
-          await dispatch('user/initUser', user, { root: true })
-          await dispatch('currencies/initCurrencies', null, { root: true })
-          await dispatch('categories/initCategories', null, { root: true })
-          await dispatch('wallets/initWallets', null, { root: true })
-          await dispatch('trns/initTrns', null, { root: true })
-          await dispatch('lang/initDbLang', null, { root: true })
-          dispatch('trns/uploadOfflineTrns', null, { root: true })
+      try {
+        if (rootGetters['user/userUid'] !== user.uid)
+          dispatch('clearUserData')
 
-          if (this.$router.currentRoute.name === 'login') {
-            this.app.context.redirect('/')
-            setTimeout(() => {
-              commit('setAppStatus', 'ready')
-            }, 100)
-          }
-        }
-        catch (e) {
-          console.error(e)
+        await dispatch('demo/getDemoDataStatus', null, { root: true })
+        await dispatch('user/initUser', user, { root: true })
+        await dispatch('currencies/initCurrencies', null, { root: true })
+        await dispatch('categories/initCategories', null, { root: true })
+        await dispatch('wallets/initWallets', null, { root: true })
+        await dispatch('trns/initTrns', null, { root: true })
+        await dispatch('lang/initDbLang', null, { root: true })
+        await dispatch('trns/uploadOfflineTrns', null, { root: true })
+
+        if (this.$router.currentRoute.name === 'login') {
+          this.app.context.redirect('/')
+          setTimeout(() => {
+            commit('setAppStatus', 'ready')
+          }, 100)
         }
       }
-      else {
-        dispatch('clearUserData')
+      catch (e) {
+        console.error(e)
       }
     })
   },
