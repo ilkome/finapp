@@ -69,7 +69,7 @@ $ npm install
 }
 ```
 - Go to the Project Overview and click Add Firebase to your web app.
-- You need to replace config in app's directory `/src/firebase.js` with your config.
+- You need to replace config in app's directory `services/firebaseConfig.js` with your config.
 ``` bash
 apiKey: 'YOUR_CONFIG',
 authDomain: 'YOUR_CONFIG',
@@ -94,7 +94,7 @@ $ npm run build
 ```
 
 ## Upload to server
-You can add your FTP config in app's directory `/src/ftp.config.js`
+You can add your FTP config in app's directory `ftp.config.js`
 
 ``` bash
 # upload all files from dist folder
