@@ -150,6 +150,7 @@ export default {
     max-width 61px
 
   &__in
+    cursor pointer
     display flex
     align-items center
     justify-content center
@@ -175,10 +176,12 @@ export default {
       height 100%
       color var(--c-font-1)
       font-size 40px
-      background var(--c-blue-1)
+      background var(--c-blue-1) !important
       border-color transparent !important
       border none
       border-radius 6px
+      +media-hover()
+        transform scale(1.04)
 
     +media-hover()
       background var(--c-bg-7)

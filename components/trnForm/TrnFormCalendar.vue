@@ -60,6 +60,7 @@ export default {
   text-align center
 
   &__item
+    cursor pointer
     position relative
     display flex
     align-items center
@@ -93,19 +94,15 @@ export default {
 
     &._icon
       color var(--c-font-4)
-      font-size 28px
-      background var(--c-item-bg-main)
-      // border-radius 50%
+      border-radius 50%
       .mdi
-        font-size 18px
+        font-size 24px
 
     &._arrow
       color var(--c-font-4)
-      font-size 28px
-      background var(--c-item-bg-main)
-      // border-radius 50%
+      border-radius 50%
       .mdi
-        font-size 24px
+        font-size 32px
 
     &._disable
       opacity .4
