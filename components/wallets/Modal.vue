@@ -139,8 +139,6 @@ Portal(
           @click="close()"
         ) {{ $t('close') }}
 
-        button-base-1()
-
   ModalBottomConfirm(
     :show="showModalConfirm"
     :description="deleteInfo"

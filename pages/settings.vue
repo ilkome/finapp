@@ -19,19 +19,19 @@ export default {
   },
 
   methods: {
-    generateDemo () {
+    async generateDemo () {
       this.confirmCreateDemo = false
-      this.$store.dispatch('demo/createDemo')
+      await this.$store.dispatch('demo/createDemo')
 
       if (this.$route.name !== 'index')
-        this.$router.push('/welcome')
+        this.$router.push('/')
     },
 
     removeUserData () {
       this.confirmRemoveUserData = false
       this.$store.dispatch('user/removeUserData')
 
-      if (this.$route.name !== 'index')
+      if (this.$route.name !== 'welcome')
         this.$router.push('/welcome')
     }
   }
