@@ -354,8 +354,6 @@ Portal(
 @import '~assets/stylus/variables'
 
 .header
-  max-width 400px
-  margin 0 auto
   padding $m8
   flex-grow 1
   fontFamilyNunito()
@@ -379,11 +377,17 @@ Portal(
   min-height 50px
   padding 8px
   font-size 30px
+  border-radius 4px
+
+  +media-hover()
+    &:not(._active)
+      cursor pointer
+      background var(--c-item-bg-hover)
+      border 1px solid var(--c-item-bd-hover)
 
   &._active
-    background var(--c-bg-2)
-    border-radius 4px
-    box-shadow 0 2px 10px 0 var(--shaddow)
+    background var(--c-item-bg-hover)
+    border 1px solid var(--c-item-bd-hover)
 
 .customColor
   margin (- $m7)
@@ -411,8 +415,6 @@ Portal(
   padding-bottom $m8
 
 .content
-  max-width 400px
-  margin 0 auto
   padding $m8
   background var(--c-bg-3)
   +media(600px)

@@ -98,8 +98,13 @@ export default {
       const id = this.categoryId
 
       this.showModalConfirm = false
-      this.$store.commit('categories/hideCategoryModal')
-      this.$store.commit('categories/setCategoryModalId', null)
+      if (this.category.parentId !== 0) {
+        this.$store.commit('categories/setCategoryModalId', this.category.parentId)
+      }
+      else {
+        this.$store.commit('categories/hideCategoryModal')
+        this.$store.commit('categories/setCategoryModalId', null)
+      }
 
       setTimeout(async () => {
         await this.$store.dispatch('trns/deleteTrnsByIds', trnsIds)
