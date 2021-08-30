@@ -1,7 +1,19 @@
 import localforage from 'localforage'
-import { db } from '~/services/firebaseConfig'
+import { saveData, getDataAndWatch, updateData, unsubcribeData } from '~/services/firebaseHelpers'
 
 export default {
+  initWallets ({ dispatch, rootState }) {
+    const uid = rootState.user.user.uid
+    getDataAndWatch(`users/${uid}/accounts`, (items) => {
+      dispatch('setWallets', Object.freeze(items || {}))
+    })
+  },
+
+  setWallets ({ commit }, items) {
+    commit('setWallets', items)
+    localforage.setItem('finapp.wallets', items)
+  },
+
   addWallet ({ dispatch, rootState, getters }, { id, values }) {
     const uid = rootState.user.user.uid
 
@@ -14,30 +26,10 @@ export default {
     }
 
     // set default currency based on first created wallet
-    if (!getters.hasWallets) {
+    if (!getters.hasWallets)
       dispatch('currencies/setBaseCurrency', values.currency, { root: true })
-    }
 
-    db.ref(`users/${uid}/accounts/${id}`).set(formatedValues)
-  },
-
-  initWallets ({ dispatch, rootState }) {
-    const uid = rootState.user.user.uid
-
-    db.ref(`users/${uid}/accounts`).on('value', (snapshot) => {
-      const items = Object.freeze(snapshot.val())
-      dispatch('setWallets', items)
-    }, e => console.error(e))
-  },
-
-  setWallets ({ commit }, items) {
-    commit('setWallets', items)
-    localforage.setItem('finapp.wallets', items)
-  },
-
-  unsubcribeWallets ({ rootGetters }) {
-    const uid = rootGetters['user/userUid']
-    db.ref(`users/${uid}/accounts`).off()
+    saveData(`users/${uid}/accounts/${id}`, formatedValues)
   },
 
   /**
@@ -50,17 +42,18 @@ export default {
     const updates = {}
     const result = {}
 
-    for (const walletId in wallets) {
+    for (const walletId in wallets)
       updates[`${walletId}/order`] = wallets[walletId]
-    }
 
-    await db.ref(`users/${rootGetters['user/userUid']}/accounts`)
-      .update(updates, (error) => {
-        error
-          ? result.error = error
-          : result.succsess = 'Updated'
-      })
+    await updateData(`users/${rootGetters['user/userUid']}/accounts`, updates)
+      .then(() => { result.succsess = 'Updated' })
+      .catch((error) => { result.error = error })
 
     return result
+  },
+
+  unsubcribeWallets ({ rootGetters }) {
+    const uid = rootGetters['user/userUid']
+    unsubcribeData(`users/${uid}/accounts`)
   }
 }

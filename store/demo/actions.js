@@ -1,34 +1,26 @@
 import dayjs from 'dayjs'
-import { db } from '~/services/firebaseConfig'
+import { saveData, getDataOnce } from '~/services/firebaseHelpers'
 
 export default {
   async getDemoDataStatus ({ commit }) {
-    try {
-      const damoReq = await db.ref('demo-data/isDemo').once('value')
-      if (damoReq.val()) {
-        commit('setDemoDataStatus', true)
-      }
-    }
-    catch (error) {}
+    const isHasDemo = await getDataOnce('demo-data/isDemo')
+    isHasDemo && commit('setDemoDataStatus', true)
   },
 
   async createDemo ({ rootState, commit, dispatch }) {
     commit('app/setAppStatus', 'loading', { root: true })
     dispatch('ui/setActiveTab', 'stat', { root: true })
     const uid = rootState.user.user.uid
+    const demo = await getDataOnce('demo-data')
 
-    await db.ref('demo-data').once('value')
-      .then((demo) => {
-        const demoData = demo.val()
-        db.ref(`users/${uid}/accounts`).set(demoData.accounts)
-        db.ref(`users/${uid}/categories`).set(demoData.categories)
-        db.ref(`users/${uid}/trns`).set(demoData.trns)
+    saveData(`users/${uid}/accounts`, demo.accounts)
+    saveData(`users/${uid}/categories`, demo.categories)
+    saveData(`users/${uid}/trns`, demo.trns)
 
-        db.ref(`users/${uid}/settings/baseCurrency`).set('USD')
-        db.ref(`users-info/${uid}/actions/${dayjs().valueOf()}`).set('demo')
+    saveData(`users/${uid}/settings/baseCurrency`, 'USD')
+    saveData(`users-info/${uid}/actions/${dayjs().valueOf()}`, 'demo')
 
-        dispatch('currencies/initCurrencies', null, { root: true })
-        commit('app/setAppStatus', 'ready', { root: true })
-      })
+    dispatch('currencies/initCurrencies', null, { root: true })
+    commit('app/setAppStatus', 'ready', { root: true })
   }
 }

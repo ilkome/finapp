@@ -1,6 +1,6 @@
 {
   "name": "finapp",
-  "version": "3.17.1",
+  "version": "3.18.0",
   "scripts": {
     "dev": "cross-env NUXT_HOST=0.0.0.0 nuxt",
     "build": "nuxt build",
@@ -20,7 +20,7 @@
     "core-js": "3.16.1",
     "currency.js": "2.0.4",
     "dayjs": "1.10.6",
-    "firebase": "8.9.0",
+    "firebase": "9.0.0",
     "highcharts": "9.1.2",
     "highcharts-vue": "1.4.0",
     "localforage": "1.9.0",

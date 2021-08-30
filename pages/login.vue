@@ -1,6 +1,7 @@
 <script>
-import firebase from 'firebase/app'
 import { ref, useContext } from '@nuxtjs/composition-api'
+import { signInWithRedirect, GoogleAuthProvider } from 'firebase/auth'
+import { auth } from '~/services/firebaseHelpers'
 
 export default {
   name: 'LoginPage',
@@ -32,9 +33,8 @@ export default {
       this.$router.push({ query: { loading: true } })
       this.isLoading = true
 
-      const provider = new firebase.auth.GoogleAuthProvider()
-      firebase.auth()
-        .signInWithRedirect(provider)
+      const provider = new GoogleAuthProvider()
+      signInWithRedirect(auth, provider)
         .catch(e => this.notifyAboutError(e))
     },
 

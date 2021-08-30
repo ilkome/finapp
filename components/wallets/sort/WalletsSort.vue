@@ -24,13 +24,12 @@ export default {
     async saveWalletsOrder () {
       const sortedWallets = {}
 
-      for (const [idx, walletId] of this.sortedWalletsIds.entries()) {
+      for (const [idx, walletId] of this.sortedWalletsIds.entries())
         sortedWallets[walletId] = idx
-      }
 
       const result = await this.$store.dispatch('wallets/saveWalletsOrder', sortedWallets)
       if (result.succsess) {
-        if (this.$listeners.closeModal) { this.$listeners.closeModal() }
+        if (this.$listeners.closeModal) this.$listeners.closeModal()
         // this.$store.dispatch('ui/setActiveTab', 'wallets')
         this.$notify({
           type: 'success',

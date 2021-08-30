@@ -1,6 +1,6 @@
 <script>
 import { useContext } from '@nuxtjs/composition-api'
-import { db } from '~/services/firebaseConfig'
+import { removeData } from '~/services/firebaseHelpers'
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
@@ -103,9 +103,7 @@ export default {
 
       setTimeout(async () => {
         await this.$store.dispatch('trns/deleteTrnsByIds', trnsIds)
-        db.ref(`users/${uid}/categories/${id}`)
-          .remove()
-          // .then(() => { console.log('category deleted') })
+        removeData(`users/${uid}/categories/${id}`)
       }, 200)
     }
   }

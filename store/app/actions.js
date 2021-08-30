@@ -1,5 +1,6 @@
 import localforage from 'localforage'
-import { app } from '~/services/firebaseConfig'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '~/services/firebaseHelpers'
 
 export default {
   async initApp ({ rootState, commit, dispatch }) {
@@ -8,7 +9,7 @@ export default {
 
     await dispatch('demo/getDemoDataStatus', null, { root: true })
 
-    app.auth().onAuthStateChanged(async (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (this.$router.currentRoute.name === 'login')
         commit('setAppStatus', 'loading')
 

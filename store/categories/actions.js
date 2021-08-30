@@ -1,13 +1,10 @@
 import localforage from 'localforage'
-import { db } from '~/services/firebaseConfig'
+import { getDataAndWatch, unsubcribeData } from '~/services/firebaseHelpers'
 
 export default {
   initCategories ({ dispatch, rootState }) {
     const uid = rootState.user.user.uid
-
-    db.ref(`users/${uid}/categories`).on('value', (snapshot) => {
-      const items = snapshot.val()
-
+    getDataAndWatch(`users/${uid}/categories`, (items) => {
       // add child categories to root categories
       for (const categoryId in items) {
         const parentCategoryId = items[categoryId].parentId
@@ -19,7 +16,7 @@ export default {
       }
 
       dispatch('setCategories', items)
-    }, e => console.error(e))
+    })
   },
 
   setCategories ({ commit }, items) {
@@ -29,7 +26,7 @@ export default {
 
   unsubcribeCategories ({ rootState }) {
     const uid = rootState.user.user.uid
-    db.ref(`users/${uid}/categories`).off()
+    unsubcribeData(`users/${uid}/categories`)
   },
 
   showCategoryModal ({ commit }, id) {

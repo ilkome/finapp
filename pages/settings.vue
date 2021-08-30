@@ -81,7 +81,7 @@ LayoutBaseWrap(:contentPadding="false")
               icon="mdi mdi-delete-empty-outline"
               @onClick="confirmRemoveUserData = true"
             )
-          .settings__item
+          .settings__item(v-if="$store.state.demo.hasDemo")
             SharedButton._bdb(
               :title="$t('settings.loadDemoButton')"
               icon="mdi mdi-gamepad-variant-outline"

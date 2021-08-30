@@ -1,5 +1,5 @@
 <script>
-import { db } from '~/services/firebaseConfig'
+import { saveData } from '~/services/firebaseHelpers'
 import generateId from '~/utils/id'
 import colors from '~/assets/js/colors'
 import icons from '~/assets/js/icons'
@@ -117,7 +117,7 @@ export default {
           if (this.originalParentId !== 0) {
             const originalParent = categories[this.originalParentId]
             if (originalParent) {
-              db.ref(`users/${uid}/categories/${this.originalParentId}`).set({
+              saveData(`users/${uid}/categories/${this.originalParentId}`, {
                 ...originalParent,
                 childIds: originalParent.childIds.filter(cId => cId !== id)
               })
@@ -131,7 +131,7 @@ export default {
               ? [...parenCategory.childIds.filter(cId => cId !== id), id]
               : [id]
 
-            db.ref(`users/${uid}/categories/${this.category.parentId}`).set({
+            saveData(`users/${uid}/categories/${this.category.parentId}`, {
               ...parenCategory,
               childIds
             })
@@ -141,7 +141,7 @@ export default {
         const childIds = this.$store.getters['categories/getChildCategoriesIds'](id)
 
         // update category
-        db.ref(`users/${uid}/categories/${id}`).set({
+        saveData(`users/${uid}/categories/${id}`, {
           ...categoriesValues,
           childIds
         })
@@ -150,7 +150,7 @@ export default {
         if (this.applyChildColor) {
           for (const childId of childIds) {
             const category = categories[childId]
-            db.ref(`users/${uid}/categories/${childId}`).set({
+            saveData(`users/${uid}/categories/${childId}`, {
               ...category,
               color: categoriesValues.color
             })

@@ -7,9 +7,26 @@ import {
   removeTrnToDeleteLaterLocal
 } from './helpers'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
-import { db } from '~/services/firebaseConfig'
+import {
+  getDataAndWatch,
+  removeData,
+  saveData,
+  unsubcribeData,
+  updateData
+} from '~/services/firebaseHelpers'
 
 export default {
+  // init
+  initTrns ({ rootGetters, dispatch }) {
+    const path = `users/${rootGetters['user/userUid']}/trns`
+    getDataAndWatch(path, items => dispatch('setTrns', items || {}))
+  },
+
+  setTrns ({ commit }, items) {
+    commit('setTrns', items)
+    localforage.setItem('finapp.trns', items)
+  },
+
   /**
     * Create new trn
     * and save it to local storage when Client offline
@@ -32,8 +49,7 @@ export default {
     localforage.setItem('finapp.trns', { ...trns, [id]: valuesWithEditDate })
     commit('setTrns', Object.freeze({ ...trns, [id]: valuesWithEditDate }))
 
-    db.ref(`users/${uid}/trns/${id}`)
-      .set(valuesWithEditDate)
+    saveData(`users/${uid}/trns/${id}`, valuesWithEditDate)
       .then(() => {
         isTrnSavedOnline = true
         removeTrnToAddLaterLocal(id)
@@ -65,52 +81,33 @@ export default {
     localforage.setItem('finapp.trns', trns)
     saveTrnIDforDeleteWhenClientOnline(id)
 
-    db.ref(`users/${uid}/trns/${id}`)
-      .remove()
+    removeData(`users/${uid}/trns/${id}`)
       .then(() => removeTrnToDeleteLaterLocal(id))
   },
 
-  async deleteTrnsByIds ({ rootState }, trnsIds) {
+  deleteTrnsByIds ({ rootState }, trnsIds) {
     const uid = rootState.user.user.uid
     const trnsForDelete = {}
     for (const trnId of trnsIds)
       trnsForDelete[trnId] = null
 
-    await db.ref(`users/${uid}/trns`)
-      .update(trnsForDelete)
-      // .then(() => console.log('trns deleted'))
-  },
-
-  // init
-  async initTrns ({ rootState, dispatch }) {
-    const uid = rootState.user.user.uid
-
-    await db.ref(`users/${uid}/trns`).on('value', (snapshot) => {
-      const items = Object.freeze(snapshot.val())
-      dispatch('setTrns', items)
-    }, e => console.error(e))
-  },
-
-  setTrns ({ commit }, items) {
-    commit('setTrns', items)
-    localforage.setItem('finapp.trns', items)
+    updateData(`users/${uid}/trns`, trnsForDelete)
   },
 
   unsubcribeTrns ({ rootState }) {
     const uid = rootState.user.user.uid
-    db.ref(`users/${uid}/trns`).off()
+    unsubcribeData(`users/${uid}/trns`)
   },
 
   /**
-    * Add and delete trns with had been created in offline mode
+    * Add and delete trns which has been created in offline mode
     *
     * When user online
     * get trns from local storage
-    * and add them to database
+    * and add trns to database
   */
   uploadOfflineTrns ({ dispatch, rootState }) {
-    db.ref('.info/connected').on('value', async (snap) => {
-      const isConnected = snap.val()
+    getDataAndWatch('.info/connected', async (isConnected) => {
       if (isConnected) {
         const trnsArrayForDelete = await localforage.getItem('finapp.trns.offline.delete') || []
         const trnsItemsForUpdate = await localforage.getItem('finapp.trns.offline.update') || {}
