@@ -125,7 +125,9 @@ export default {
         :key="$store.state.wallets.editId"
         @onClose="$store.dispatch('ui/setActiveTab', null)"
       )
-        WalletsFormWalletForm
+        WalletsFormWalletForm(
+          @callback="$store.dispatch('ui/setActiveTab', null)"
+        )
 
     //- wallet: sort
     Portal(v-if="activeTab === 'walletsSort'" to="modal" key="walletsSort")
