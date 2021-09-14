@@ -7,7 +7,7 @@ import getStat from '~/modules/stat/getStat'
 import useTrns from '~/modules/trns/useTrns'
 
 export default {
-  name: 'StatMobile',
+  name: 'StatDashboard',
 
   setup () {
     const { store, app: { $day } } = useContext()
@@ -151,208 +151,230 @@ export default {
 <template lang="pug">
 .pageWrapScroll
   .baseBox._date
-    DateMobilePrevNextArrow
+    StatDashboardDatesArrows
 
     DateMobileSelector
-    StatDashboardMenu
 
-  template
-    //- Total
-    .baseBox._total
-      .baseBoxIn
-        template(v-if="(activeTabStat === 'details' || activeTabStat === 'history') && $store.state.filter.period !== 'all'")
-          div
-            .baseBox__title {{ $t('money.total') }}
-            .boxSummary2
-              .boxSummary2__item
-                Amount(
-                  :currency="$store.state.currencies.base"
-                  :type="(statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total) > 0 ? 1 : 0"
-                  :value="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total"
-                  size="xl"
-                  vertical="left"
-                )
-              StatSummaryRowItemView(
-                :type="(statAverage.incomes - statAverage.expenses) > 0 ? 1 : 0"
-                :amount="statAverage.incomes - statAverage.expenses"
-                :title="$t('money.averageTotal')"
-              )
+  //-
+  //- Chart control
+  //-
+  //- .baseBox._date
 
-        template(v-if="activeTabStat === 'incomes' || activeTabStat === 'expenses'")
-          .sumBox
-            .baseBox__title {{ $t(`money.${activeTabStat}`) }}
-            .boxSummary2(@click="onClickTitle()")
-              .boxSummary2__item
-                Amount(
-                  :currency="$store.state.currencies.base"
-                  :type="activeTabStat === 'incomes' ? 1 : 0"
-                  :value="statCurrentPeriod[activeTabStat].total"
-                  size="xl"
-                  vertical="left"
-                )
-              StatSummaryRowItemView(
-                :type="activeTabStat === 'incomes' ? 1 : 0"
-                :amount="statAverage[activeTabStat]"
-                :title="$t(`money.average.${activeTabStat}`)"
-              )
-              StatSummaryRowItemView(
-                v-if="statToday && statToday[activeTabStat].total !== 0 && $store.state.filter.period !== 'day'"
-                :type="activeTabStat === 'incomes' ? 1 : 0"
-                :amount="statToday[activeTabStat].total"
-                :title="$t('dates.day.today')"
-              )
 
-            .total__custom(v-if="statCurrentPeriod[activeTabStat].total !== 0")
-              .periodItem(
-                :class="{ _active: ui.showPieChart }"
-                @click="toogleView('showPieChart')"
-              ): .mdi.mdi-chart-pie
-
-              .periodItem(
-                :class="{ _active: ui.showCatsVerticalChart }"
-                @click="toogleView('showCatsVerticalChart')"
-              ): .mdi.mdi-poll
-
-              .periodItem(
-                :class="{ _active: ui.showRoundCats }"
-                @click="toogleView('showRoundCats')"
-              ): .mdi.mdi-chart-bubble
-
-              .periodItem(
-                :class="{ _active: ui.showCatsHorizontalList }"
-                @click="toogleView('showCatsHorizontalList')"
-              ): .mdi.mdi-chart-timeline
-
+  //-
+  //- Chart graph
+  //-
+  .baseBox._total
+    .baseBoxIn
+      template(v-if="(activeTabStat === 'details' || activeTabStat === 'history') && $store.state.filter.period !== 'all'")
         div
-          .baseBox._chart(v-if="ui.showMainChart && isShowChart")
-            LazyChartTotal(v-if="ui.showMainChart && isShowChart")
+          .baseBox__title {{ $t('money.total') }}
+          .boxSummary2
+            .boxSummary2__item
+              Amount(
+                :currency="$store.state.currencies.base"
+                :type="(statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total) > 0 ? 1 : 0"
+                :value="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total"
+                size="xl"
+                vertical="left"
+              )
+            StatSummaryRowItemView(
+              :type="(statAverage.incomes - statAverage.expenses) > 0 ? 1 : 0"
+              :amount="statAverage.incomes - statAverage.expenses"
+              :title="$t('money.averageTotal')"
+            )
 
-    .baseBox._date
+      template(v-if="activeTabStat === 'incomes' || activeTabStat === 'expenses'")
+        .sumBox
+          .baseBox__title {{ $t(`money.${activeTabStat}`) }}
+          .boxSummary2(@click="onClickTitle()")
+            .boxSummary2__item
+              Amount(
+                :currency="$store.state.currencies.base"
+                :type="activeTabStat === 'incomes' ? 1 : 0"
+                :value="statCurrentPeriod[activeTabStat].total"
+                size="xl"
+                vertical="left"
+              )
+            StatSummaryRowItemView(
+              :type="activeTabStat === 'incomes' ? 1 : 0"
+              :amount="statAverage[activeTabStat]"
+              :title="$t(`money.average.${activeTabStat}`)"
+            )
+            StatSummaryRowItemView(
+              v-if="statToday && statToday[activeTabStat].total !== 0 && $store.state.filter.period !== 'day'"
+              :type="activeTabStat === 'incomes' ? 1 : 0"
+              :amount="statToday[activeTabStat].total"
+              :title="$t('dates.day.today')"
+            )
+
+          .total__custom(
+            v-if="statCurrentPeriod[activeTabStat].total !== 0"
+            style="padding-right: 12px"
+          )
+            .periodItem(
+              :class="{ _active: ui.showPieChart }"
+              @click="toogleView('showPieChart')"
+            ): .mdi.mdi-chart-pie
+
+            .periodItem(
+              :class="{ _active: ui.showCatsVerticalChart }"
+              @click="toogleView('showCatsVerticalChart')"
+            ): .mdi.mdi-poll
+
+            .periodItem(
+              :class="{ _active: ui.showRoundCats }"
+              @click="toogleView('showRoundCats')"
+            ): .mdi.mdi-chart-bubble
+
+            .periodItem(
+              :class="{ _active: ui.showCatsHorizontalList }"
+              @click="toogleView('showCatsHorizontalList')"
+            ): .mdi.mdi-chart-timeline
+
+      //- Control
       ChartPeriods
 
-    .baseBox._filter(v-if="isShowFilter")
-      LazyFilterRow(v-if="isShowFilter")
+      //- Graph
+      .baseBox._chart(v-if="ui.showMainChart && isShowChart")
+        LazyChartTotal(v-if="ui.showMainChart && isShowChart")
 
-    .noStat(v-if="isEmptyStat")
-      .noStat__title {{ $t('stat.empty') }}
-      .noStat__desc {{ $t('stat.emptyDesc') }}
+  //-
+  //- Menu
+  //-
+  StatDashboardMenu
 
-    //- Loop throw incomes / expenses
-    .statMoneyTypes
-      template(
-        v-for="item in moneyTypes"
-        v-if="activeTabStat === 'details' || (activeTabStat === 'incomes' && item.id === 'incomes') || (activeTabStat === 'expenses' && item.id === 'expenses')"
-      )
-        template(v-if="statCurrentPeriod[item.id].total > 0 || (statAverage && statAverage[item.id] !== 0) || $store.state.filter.period === 'all'")
-          .baseBox._noBdMedia._mw
-            template(v-if="activeTabStat === 'details' && (statAverage.incomes !== 0 && statAverage.expenses !== 0)")
-              .sumBox
-                .baseBox__title {{ $t(`money.${item.id}`) }}
-                .boxSummary2
-                  .boxSummary2__item(@click="onClickTitle(item.type)")
-                    Amount(
-                      :currency="$store.state.currencies.base"
-                      :type="item.type"
-                      :value="statCurrentPeriod[item.id].total"
-                      size="xl"
-                      vertical="left"
-                    )
-                  StatSummaryRowItemView(
+  //-
+  //- Filter
+  //-
+  .baseBox._filter(v-if="isShowFilter")
+    LazyFilterRow(v-if="isShowFilter")
+
+  //-
+  //- No stat
+  //-
+  .noStat(v-if="isEmptyStat")
+    .noStat__title {{ $t('stat.empty') }}
+    .noStat__desc {{ $t('stat.emptyDesc') }}
+
+  //-
+  //- Loop throw incomes / expenses
+  //-
+  .statMoneyTypes
+    template(
+      v-for="item in moneyTypes"
+      v-if="activeTabStat === 'details' || (activeTabStat === 'incomes' && item.id === 'incomes') || (activeTabStat === 'expenses' && item.id === 'expenses')"
+    )
+      template(v-if="statCurrentPeriod[item.id].total > 0 || (statAverage && statAverage[item.id] !== 0) || $store.state.filter.period === 'all'")
+        .baseBox._noBdMedia._mw
+          template(v-if="activeTabStat === 'details' && (statAverage.incomes !== 0 && statAverage.expenses !== 0)")
+            .sumBox
+              .baseBox__title {{ $t(`money.${item.id}`) }}
+              .boxSummary2
+                .boxSummary2__item(@click="onClickTitle(item.type)")
+                  Amount(
+                    :currency="$store.state.currencies.base"
                     :type="item.type"
-                    :amount="statAverage[item.id]"
-                    :title="$t(`money.average.${item.id}`)"
+                    :value="statCurrentPeriod[item.id].total"
+                    size="xl"
+                    vertical="left"
                   )
-                  StatSummaryRowItemView(
-                    v-if="statToday && statToday[item.id].total !== 0 && $store.state.filter.period !== 'day'"
-                    :type="item.type"
-                    :amount="statToday[item.id].total"
-                    :title="$t('dates.day.today')"
-                  )
+                StatSummaryRowItemView(
+                  :type="item.type"
+                  :amount="statAverage[item.id]"
+                  :title="$t(`money.average.${item.id}`)"
+                )
+                StatSummaryRowItemView(
+                  v-if="statToday && statToday[item.id].total !== 0 && $store.state.filter.period !== 'day'"
+                  :type="item.type"
+                  :amount="statToday[item.id].total"
+                  :title="$t('dates.day.today')"
+                )
 
-                .total__custom(v-if="statCurrentPeriod[item.id].total !== 0")
-                  .periodItem(
-                    :class="{ _active: ui.showPieChart }"
-                    @click="toogleView('showPieChart')"
-                  ): .mdi.mdi-chart-pie
+              .total__custom(v-if="statCurrentPeriod[item.id].total !== 0")
+                .periodItem(
+                  :class="{ _active: ui.showPieChart }"
+                  @click="toogleView('showPieChart')"
+                ): .mdi.mdi-chart-pie
 
-                  .periodItem(
-                    :class="{ _active: ui.showCatsVerticalChart }"
-                    @click="toogleView('showCatsVerticalChart')"
-                  ): .mdi.mdi-poll
+                .periodItem(
+                  :class="{ _active: ui.showCatsVerticalChart }"
+                  @click="toogleView('showCatsVerticalChart')"
+                ): .mdi.mdi-poll
 
-                  .periodItem(
-                    :class="{ _active: ui.showRoundCats }"
-                    @click="toogleView('showRoundCats')"
-                  ): .mdi.mdi-chart-bubble
+                .periodItem(
+                  :class="{ _active: ui.showRoundCats }"
+                  @click="toogleView('showRoundCats')"
+                ): .mdi.mdi-chart-bubble
 
-                  .periodItem(
-                    :class="{ _active: ui.showCatsHorizontalList }"
-                    @click="toogleView('showCatsHorizontalList')"
-                  ): .mdi.mdi-chart-timeline
+                .periodItem(
+                  :class="{ _active: ui.showCatsHorizontalList }"
+                  @click="toogleView('showCatsHorizontalList')"
+                ): .mdi.mdi-chart-timeline
 
-            .boxEmpty(v-if="statCurrentPeriod[item.id].categoriesIds.length === 0") {{ $t('stat.empty') }}
+          .boxEmpty(v-if="statCurrentPeriod[item.id].categoriesIds.length === 0") {{ $t('stat.empty') }}
 
-            //- Pie chart
-            .statChartPie(v-if="ui.showPieChart")
-              LazyStatChartPie(
-                v-if="ui.showPieChart && statCurrentPeriod[item.id].categoriesIds.length"
-                :amountType="item.id"
-              )
-
-            //- Cats vertical chart
-            StatCatsPeriodCatsChart(
-              v-if="ui.showCatsVerticalChart && !filter.categoryId && statCurrentPeriod[item.id].categoriesIds.length > 1 && (!filter.categoryId || filter.categoryId && $store.getters['categories/getChildCategoriesIds'](filter.categoryId).length !== 0)"
-              :type="item.id"
+          //- Pie chart
+          .statChartPie(v-if="ui.showPieChart")
+            LazyStatChartPie(
+              v-if="ui.showPieChart && statCurrentPeriod[item.id].categoriesIds.length"
+              :amountType="item.id"
             )
 
-            //- Round cats list
-            .statItemsTiles(v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0 && (!filter.categoryId || filter.categoryId && $store.getters['categories/getChildCategoriesIds'](filter.categoryId).length !== 0)")
-              LazyStatItemRound(
-                v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0"
-                v-for="categoryId in statWithLastPeriods[item.id].categoriesIds"
-                :category="$store.state.categories.items[categoryId]"
-                :categoryId="categoryId"
-                :currency="$store.state.currencies.base"
-                :key="categoryId"
-                :total="statWithLastPeriods.categories[categoryId][item.id]"
-                :type="item.type"
-              )
-              template(v-if="filter.categoryId")
-                template(v-for="categoryId in $store.getters['categories/getChildCategoriesIds'](filter.categoryId)")
-                  template(v-if="!statWithLastPeriods[item.id].categoriesIds.includes(categoryId)")
-                    LazyStatItemRound(
-                      v-if="filter.categoryId"
-                      :category="$store.state.categories.items[categoryId]"
-                      :categoryId="categoryId"
-                      :currency="$store.state.currencies.base"
-                      :key="categoryId"
-                      :total="0"
-                      :type="item.type"
-                    )
+          //- Cats vertical chart
+          StatCatsPeriodCatsChart(
+            v-if="ui.showCatsVerticalChart && !filter.categoryId && statCurrentPeriod[item.id].categoriesIds.length > 1 && (!filter.categoryId || filter.categoryId && $store.getters['categories/getChildCategoriesIds'](filter.categoryId).length !== 0)"
+            :type="item.id"
+          )
 
-            //- Cats horizontal list
-            .statCategories(v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0 ")
-              LazyStatItem(
-                v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0"
-                v-for="categoryId in statCurrentPeriod[item.id].categoriesIds"
-                :key="categoryId"
-                :biggest="statCurrentPeriod[item.id].biggest"
-                :category="$store.state.categories.items[categoryId]"
-                :categoryId="categoryId"
-                :currency="$store.state.currencies.base"
-                :total="statCurrentPeriod.categories[categoryId][item.id]"
-                :type="item.type"
-              )
-
-      template(v-if="(activeTabStat !== 'history' && statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)) || (activeTabStat === 'incomes' && statAverage.incomes !== 0 || activeTabStat === 'expenses'  && statAverage.expenses !== 0)")
-        .baseBox._mw(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
-          .baseBox__title {{ $t('trns.history') }}
-          .baseBox__content
-            TrnsList3(
-              :incomes="activeTabStat === 'incomes'"
-              :expenses="activeTabStat === 'expenses'"
-              :size="12"
+          //- Round cats list
+          .statItemsTiles(v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0 && (!filter.categoryId || filter.categoryId && $store.getters['categories/getChildCategoriesIds'](filter.categoryId).length !== 0)")
+            LazyStatItemRound(
+              v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0"
+              v-for="categoryId in statWithLastPeriods[item.id].categoriesIds"
+              :category="$store.state.categories.items[categoryId]"
+              :categoryId="categoryId"
+              :currency="$store.state.currencies.base"
+              :key="categoryId"
+              :total="statWithLastPeriods.categories[categoryId][item.id]"
+              :type="item.type"
             )
+            template(v-if="filter.categoryId")
+              template(v-for="categoryId in $store.getters['categories/getChildCategoriesIds'](filter.categoryId)")
+                template(v-if="!statWithLastPeriods[item.id].categoriesIds.includes(categoryId)")
+                  LazyStatItemRound(
+                    v-if="filter.categoryId"
+                    :category="$store.state.categories.items[categoryId]"
+                    :categoryId="categoryId"
+                    :currency="$store.state.currencies.base"
+                    :key="categoryId"
+                    :total="0"
+                    :type="item.type"
+                  )
+
+          //- Cats horizontal list
+          .statCategories(v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0 ")
+            LazyStatItem(
+              v-if="ui.showCatsHorizontalList && statCurrentPeriod[item.id].categoriesIds.length > 0"
+              v-for="categoryId in statCurrentPeriod[item.id].categoriesIds"
+              :key="categoryId"
+              :biggest="statCurrentPeriod[item.id].biggest"
+              :category="$store.state.categories.items[categoryId]"
+              :categoryId="categoryId"
+              :currency="$store.state.currencies.base"
+              :total="statCurrentPeriod.categories[categoryId][item.id]"
+              :type="item.type"
+            )
+
+    template(v-if="(activeTabStat !== 'history' && statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)) || (activeTabStat === 'incomes' && statAverage.incomes !== 0 || activeTabStat === 'expenses'  && statAverage.expenses !== 0)")
+      .baseBox._mw(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
+        .baseBox__title {{ $t('trns.history') }}
+        .baseBox__content
+          TrnsList3(
+            :incomes="activeTabStat === 'incomes'"
+            :expenses="activeTabStat === 'expenses'"
+            :size="12"
+          )
 
   //- history
   .history(v-if="activeTabStat === 'history' || statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0 && (activeTabStat !== 'incomes' && activeTabStat !== 'expenses')")
@@ -418,6 +440,7 @@ export default {
   .periodItem
     padding $m5
     color var(--c-font-5)
+    font-size 18px
     border-radius $m5
 
     &._active
@@ -499,6 +522,7 @@ export default {
     overflow initial
     max-width 400px
     margin-top 0
+    padding-top $m7
 
   &._noBdMedia
     +media(700px)
@@ -527,7 +551,7 @@ export default {
     margin-top 0
     margin-bottom 0
     padding-top 0
-    padding-bottom $m5
+    padding-bottom 0
     background none
     border none
 
@@ -557,7 +581,7 @@ export default {
   &._total
     margin-top 0
     margin-bottom 0
-    padding-top $m4
+    padding-top 0
     padding-right 0
     padding-bottom 0
     background none
@@ -619,10 +643,12 @@ export default {
   grid-template-columns repeat(auto-fill, minmax(80px, 1fr))
   grid-column-gap 0
   grid-row-gap 0
+  padding-bottom $m7
 
 .statCategories
   max-width 400px
   padding $m7 $m5
+  padding-top 0
 
 // ------------------------------------
 .pageAnalytics

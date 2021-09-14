@@ -51,11 +51,12 @@ export default {
   z-index 10
   display flex
   align-items center
-  justify-content center
-  max-width 640px
+  justify-content space-between
+  max-width 480px
   overflow-x auto
   margin 0 auto
-  padding 0 $m6
+  padding $m7 $m6
+  padding-bottom 0
 
   +media(600px)
     overflow initial
@@ -66,14 +67,15 @@ export default {
   align-items center
   justify-content center
   min-height 38px
+  min-width 80px
   margin 0 $m5
   padding $m6 $m6
-  color var(--c-font-5)
+  color var(--c-font-4)
   font-size 12px
   font-weight 500
   font-roboto()
   text-align center
-  border-radius 50px
+  border-radius $m6
   anim()
 
   +media(400px)
@@ -88,9 +90,10 @@ export default {
     &:not(._active)
       cursor pointer
       color var(--c-font-3)
-      background var(--c-bg-5)
+      background var(--c-item2-bg-hover)
 
   &._active
     cursor default
     color var(--c-blue-1)
+    background var(--c-item-bg-hover)
 </style>

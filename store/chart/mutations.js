@@ -18,8 +18,8 @@ export default {
   },
 
   setHoveredPeriodValues (state, { values, offset }) {
-    if (values) { state.hoveredPeriod.values = values }
-    if (offset) { state.hoveredPeriod.offset = offset }
+    if (values) state.hoveredPeriod.values = values
+    if (offset) state.hoveredPeriod.offset = offset
   },
   clearHoveredPeriodValues (state) {
     state.hoveredPeriod.values = null

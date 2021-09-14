@@ -108,9 +108,11 @@ export default {
     tickmarkPlacement: 'on',
     crosshair: true,
     labels: {
+      autoRotation: 0,
       padding: 15,
       rotation: false,
       style: {
+        lineHeight: '10px',
         cursor: 'pointer',
         color: 'var(--c-font-5)',
         fontSize: '10px',
