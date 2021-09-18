@@ -1,7 +1,7 @@
-import { ref, computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useContext } from '@nuxtjs/composition-api'
 
 export default function usePeriods () {
-  const { store, app: { i18n } } = useContext()
+  const { app: { i18n } } = useContext()
 
   const periodsNames = computed(() => [
     {
