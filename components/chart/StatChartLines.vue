@@ -45,7 +45,7 @@ export default {
   },
 
   setup () {
-    const { store, app: { $day } } = useContext()
+    const { store } = useContext()
     const { isShowDataLabels } = useChart()
     const { filterPeriodNameAllReplacedToYear, scrollTop } = useFilter()
 
