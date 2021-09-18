@@ -68,41 +68,35 @@ export default {
         return
 
       const nEvent = await chart.pointer.normalize(event)
-      let value = chart.series[0].searchPoint(nEvent, true) || chart.series[1].searchPoint(nEvent, true) || chart.series[2].searchPoint(nEvent, true)
+      let date = chart.series[0].searchPoint(nEvent, true)?.date || chart.series[1].searchPoint(nEvent, true)?.date || chart.series[2].searchPoint(nEvent, true)?.date
       setTimeout(() => {
-        value = chart.series[0].searchPoint(nEvent, true) || chart.series[1].searchPoint(nEvent, true) || chart.series[2].searchPoint(nEvent, true)
-
-        if (value) {
+        date = chart.series[0].searchPoint(nEvent, true)?.date || chart.series[1].searchPoint(nEvent, true)?.date || chart.series[2].searchPoint(nEvent, true)?.date
+        if (date) {
           if (store.state.filter.period === 'all')
             store.dispatch('filter/setPeriod', 'year')
-          if (value.date)
-            store.dispatch('filter/setDate', parseInt(value.date))
 
+          store.dispatch('filter/setDate', parseInt(date))
           scrollTop()
         }
       }, 100)
     }
 
-    watch(() => store.state.filter.date, async (date) => {
+    watch(() => store.state.filter.date, async () => {
       await nextTick()
+
       const chart = chartObj.value
+      console.log('chart', chart)
       if (!chartObj.value)
         return
 
-      let format = 'MM'
-      if (filterPeriodNameAllReplacedToYear.value === 'day') format = 'D.MM'
-      if (filterPeriodNameAllReplacedToYear.value === 'week') format = 'D MMM'
-      if (filterPeriodNameAllReplacedToYear.value === 'month') format = 'MMM'
-      if (filterPeriodNameAllReplacedToYear.value === 'year') format = 'YYYY'
-      const name = $day(date).startOf(filterPeriodNameAllReplacedToYear.value).format(format)
-      const index = chart.xAxis && chart?.xAxis[0].categories.indexOf(name)
-
-      if (index !== -1) {
+      const chartSeriesIdx = chart.series[0].options.data.findIndex(v => +v.date === +store.state.filter.date)
+      console.log(chartSeriesIdx)
+      if (chartSeriesIdx !== -1) {
         chart.xAxis[0].update({
           plotBands: [{
             color: 'var(--c-bg-7)',
-            from: index + 0.5,
-            to: index - 0.5
+            from: chartSeriesIdx + 0.5,
+            to: chartSeriesIdx - 0.5
           }]
         })
       }
@@ -137,7 +131,7 @@ export default {
 
       for (let index = 0; index < periodsToShow; index++) {
         // count total period
-        const periodDate = this.$day().endOf(periodName).subtract(index, periodName).valueOf()
+        const periodDate = this.$day().startOf(periodName).subtract(index, periodName).valueOf()
         const trnsIds = this.$store.getters['trns/getTrns']({
           date: periodDate,
           periodName,

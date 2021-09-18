@@ -36,7 +36,7 @@ export default {
 
   setPeriod ({ commit, dispatch }, period) {
     commit('setPeriod', period)
-    commit('setDate', dayjs().valueOf())
+    commit('setDate', dayjs().startOf(period).valueOf())
     localforage.setItem('finapp.filter.period', period)
     dispatch('ui/saveUiView', null, { root: true })
   },
