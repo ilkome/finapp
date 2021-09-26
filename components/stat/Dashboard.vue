@@ -35,7 +35,7 @@ export default {
 
     // Stat today
     const statToday = computed(() => {
-      if (!isFirstPeriodSelected.value) {
+      if (!isFirstPeriodSelected.value || filterPeriod.value !== 'day') {
         return store.getters['stat/getStat']({
           date: dayjs().valueOf(),
           periodName: 'day'
@@ -152,14 +152,7 @@ export default {
 .pageWrapScroll
   .baseBox._date
     StatDashboardDatesArrows
-
     DateMobileSelector
-
-  //-
-  //- Chart control
-  //-
-  //- .baseBox._date
-
 
   //-
   //- Chart graph
@@ -271,6 +264,7 @@ export default {
             .sumBox
               .baseBox__title {{ $t(`money.${item.id}`) }}
               .boxSummary2
+                //- Summary
                 .boxSummary2__item(@click="onClickTitle(item.type)")
                   Amount(
                     :currency="$store.state.currencies.base"
@@ -279,13 +273,15 @@ export default {
                     size="xl"
                     vertical="left"
                   )
+                //- Average
                 StatSummaryRowItemView(
                   :type="item.type"
                   :amount="statAverage[item.id]"
                   :title="$t(`money.average.${item.id}`)"
                 )
+                //- Today
                 StatSummaryRowItemView(
-                  v-if="statToday && statToday[item.id].total !== 0 && $store.state.filter.period !== 'day'"
+                  v-if="statToday && statToday[item.id].total !== 0"
                   :type="item.type"
                   :amount="statToday[item.id].total"
                   :title="$t('dates.day.today')"

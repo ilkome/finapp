@@ -44,7 +44,7 @@ export default {
 )
   //- Wallet
   template(v-if="walletId && wallet")
-    .filterItemWallet__line(:style="{ background: wallet.color || $store.state.ui.defaultBgColor }")
+    .filterItemWallet__line(:style="{ background: wallet.color }")
     .filterItemWallet
       .filterItemWallet__amount
         Amount(
@@ -67,12 +67,9 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/animations'
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
+@import '~assets/stylus/variables'
 
 .filterItemWallet
-  display flex
   display flex
   flex-flow column
   justify-content center
@@ -95,45 +92,27 @@ export default {
   display flex
   flex-flow column
   justify-content center
+  min-width 80px
   flex-grow 0
   margin 0 $m4
   padding $m6 $m7
   color var(--c-font-1)
   font-size 12px
   white-space nowrap
-  background var(--c-bg-5)
+  background var(--c-item-bg-main)
+  border 1px solid transparent
   border-radius $m6
 
   +media(600px)
-    margin-right $m5
-    margin-left $m5
+    margin 0 $m5
 
-  &._pc
-    margin-right $m6
+  +media(1000px)
+    margin 0 $m6
 
-  &:active
-    background var(--c-bg-5)
-
-  &:last-child
-    +media-tablet('less')
-      margin-right auto
-
-  &:first-child
-    +media-tablet('less')
-      margin-left auto
-
-  &:last-child&:after
-    display none
-
-  &._clear
-    margin-right 0
-    margin-left auto
-    color var(--c-font-4)
-
-    &:hover
-      @media $media-laptop
-        color var(--c-font-1)
-        background var(--c-blue-1)
+  +media-hover()
+    &:not(._active)
+      background var(--c-item2-bg-hover)
+      border 1px solid var(--c-item2-bd-hover)
 
   &__icon
     opacity .8
@@ -144,39 +123,11 @@ export default {
       width auto
       height auto
 
-      ^[0]._clear &
-        color var(--c-font-4)
-
-      ^[0]:hover &
-        color var(--c-font-1)
-
   &__name
     overflow hidden
     text-overflow ellipsis
     color var(--c-font-4)
     font-size 13px
     text-align center
-
-    ~/:hover &
-      color var(--c-font-2)
-
-  &__close
-    margin-left auto
-    padding-left 10px
-    color var(--c-font-1)
-
-    @media $media-laptop
-      opacity 0
-      position absolute
-      top (- $m6)
-      right (- $m6)
-      padding $m4
-      background var(--c-bg-3)
-      border 1px solid var(--c-bg-1)
-      border-radius $m3
-      anim()
-
-    ^[0]:hover:not(._clear) &
-      @media $media-laptop
-        opacity 1
+    anim()
 </style>

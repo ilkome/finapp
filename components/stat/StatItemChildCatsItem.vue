@@ -100,7 +100,6 @@ export default {
   +media-hover()
     &:not(._active)
       background var(--c-item2-bg-hover)
-      border 1px solid var(--c-item2-bd-hover)
 
   &__content
     display grid
@@ -119,6 +118,9 @@ export default {
     background var(--c-bg-6)
     border-radius 2px
 
+    ~/:hover &
+      background var(--c-bg-7)
+
     &__in
       height 4px
       min-width 2px
@@ -131,7 +133,7 @@ export default {
     white-space nowrap
     text-overflow ellipsis
 
-    ^[0]._active &
+    ~/._active &
       color var(--c-font-2)
 
   &__icon

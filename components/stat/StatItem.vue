@@ -125,24 +125,24 @@ export default {
 @import '~assets/stylus/variables'
 
 .statItem
-  // overflow hidden
   cursor pointer
   position relative
   padding $m5 $m5
   border 1px solid transparent
-  border-radius $borderRadiusMd
+  border-radius $borderRadiusLg
 
   +media-hover()
     &:not(._active)
       z-index 2
       background var(--c-item2-bg-hover)
-      border 1px solid var(--c-item2-bd-hover)
 
   &._active
-    // margin 0 (- $m5)
-    margin-bottom $m7
-    padding 0
-    border-radius 0
+    margin-top $m6
+    margin-right (- $m4)
+    margin-bottom $m6
+    margin-left (- $m4)
+    padding $m5
+    border 1px solid var(--c-item2-bd-hover)
 
   &__content
     display grid

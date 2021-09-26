@@ -1,14 +1,8 @@
 <script>
 export default {
   props: {
-    ids: {
-      type: Array,
-      required: true
-    },
-    limit: {
-      type: Number,
-      default: null
-    }
+    ids: { type: Array, required: true },
+    limit: { type: Number, default: null }
   },
 
   computed: {
@@ -16,11 +10,11 @@ export default {
       const categores = {}
       let ids = this.ids
 
-      if (!this.ids || this.ids.length <= 0) { return categores }
+      if (!this.ids || this.ids.length <= 0)
+        return categores
 
-      if (this.limit) {
+      if (this.limit)
         ids = this.ids.slice(0, this.limit)
-      }
 
       for (const categoryId of ids) {
         const category = this.$store.state.categories.items[categoryId]
@@ -41,7 +35,3 @@ export default {
 .categories
   slot(:categories="categories")
 </template>
-
-<style lang="stylus" scoped>
-//
-</style>

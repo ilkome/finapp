@@ -85,12 +85,10 @@ export default {
       await nextTick()
 
       const chart = chartObj.value
-      console.log('chart', chart)
       if (!chartObj.value)
         return
 
       const chartSeriesIdx = chart.series[0].options.data.findIndex(v => +v.date === +store.state.filter.date)
-      console.log(chartSeriesIdx)
       if (chartSeriesIdx !== -1) {
         chart.xAxis[0].update({
           plotBands: [{

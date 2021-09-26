@@ -1,44 +1,35 @@
 <script>
+import { computed, useContext } from '@nuxtjs/composition-api'
+
 export default {
   props: {
-    id: {
-      type: String,
-      required: true
-    },
-    category: {
-      type: Object,
-      required: true
-    },
-    ui: {
-      type: String,
-      default: null
-    },
-
-    activeItemId: {
-      type: String,
-      default: null
-    }
+    activeItemId: { type: String, default: null },
+    category: { type: Object, required: true },
+    id: { type: String, required: true },
+    ui: { type: String, default: null }
   },
 
-  computed: {
-    childCategoriesIds () {
-      return this.$store.getters['categories/getChildCategoriesIds'](this.id)
-    },
+  setup ({ id, category }, { listeners }) {
+    const { store } = useContext()
 
-    parentCategory () {
-      return this.$store.state.categories.items[this.category.parentId]
+    const childCategoriesIds = computed(() => store.getters['categories/getChildCategoriesIds'](id))
+    const parentCategory = computed(() => store.state.categories.items[category.parentId])
+
+    function onClickItem () {
+      if (listeners.onClick)
+        listeners.onClick(id)
     }
-  },
 
-  methods: {
-    handleClick () {
-      if (this.$listeners.onClick)
-        this.$listeners.onClick(this.id)
-    },
+    function onClickIcon () {
+      if (listeners.onIconClick)
+        listeners.onIconClick(id)
+    }
 
-    handleIconClick () {
-      if (this.$listeners.onIconClick)
-        this.$listeners.onIconClick(this.id)
+    return {
+      childCategoriesIds,
+      parentCategory,
+      onClickItem,
+      onClickIcon
     }
   }
 }
@@ -47,7 +38,7 @@ export default {
 <template lang="pug">
 .categoryItem(
   :class="{ [ui]: ui, _active: activeItemId === id }"
-  @click="handleClick"
+  @click="onClickItem"
 )
   .categoryItem__active(v-if="activeItemId === id")
   .categoryItem__icon
@@ -63,8 +54,6 @@ export default {
     .categoryItem__parent(v-if="ui === '_flat' && parentCategory") {{ parentCategory.name }}
     .categoryItem__child {{ category.name }}
     .categoryItem__length(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
-
-  //- .categoryItem__dots(v-if="childCategoriesIds.length > 0"): .mdi.mdi-dots-vertical
 </template>
 
 <style lang="stylus" scoped>
@@ -107,6 +96,9 @@ export default {
 
   &__icon
     padding-right $m6
+
+    +media(700px)
+      padding-right $m8
 
     ^[0]._flat &
       padding-right $m5
@@ -156,13 +148,6 @@ export default {
 
     ^[0]._flat &
       text-align left
-
-  &__dots
-    position absolute
-    top $m5
-    right $m4
-    color var(--c-font-5)
-    font-size 18px
 
   &__active
     position absolute

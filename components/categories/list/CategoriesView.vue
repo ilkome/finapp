@@ -1,40 +1,20 @@
 <script>
 export default {
   props: {
-    ids: {
-      type: Array,
-      required: true
-    },
-    title: {
-      type: String,
-      default: null
-    },
-    limit: {
-      type: Number,
-      default: null
-    },
-    noPadding: {
-      type: Boolean,
-      default: false
-    },
-    noPaddingBottom: {
-      type: Boolean,
-      default: false
-    },
-    ui: {
-      type: String,
-      default: null
-    },
-
-    activeItemId: {
-      type: String,
-      default: null
-    }
+    activeItemId: { type: String, default: null },
+    ids: { type: Array, required: true },
+    limit: { type: Number, default: null },
+    noPadding: { type: Boolean, default: false },
+    noPaddingBottom: { type: Boolean, default: false },
+    title: { type: String, default: null },
+    ui: { type: String, default: null }
   },
 
   computed: {
     categoresIds () {
-      if (this.limit) { return this.ids.slice(0, this.limit) }
+      if (this.limit)
+        return this.ids.slice(0, this.limit)
+
       return this.ids
     }
   }

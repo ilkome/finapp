@@ -80,12 +80,7 @@ export default {
   overflow-x auto
   display flex
   align-items center
+  justify-content safe center
   width 100%
   scrollbar()
-
-  +media-tablet('less')
-    justify-content safe center
-
-  +media(600px)
-    justify-content center
 </style>
