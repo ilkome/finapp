@@ -286,6 +286,8 @@ export default {
   },
 
   dates: {
+    period: 'Period',
+    count: 'Count',
     twoDaysAgo: '2 days ago',
     day: {
       current: 'Today',

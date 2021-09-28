@@ -13,14 +13,20 @@ export default {
   addElementsToChart (state, { periodName, periodType }) {
     state.periods[periodName][periodType] = state.periods[periodName][periodType] + 1
   },
+
   removeElementsFromChart (state, { periodName, periodType }) {
     state.periods[periodName][periodType] = state.periods[periodName][periodType] - 1
+  },
+
+  setElementsToChart (state, { period, value }) {
+    state.periods[period].showedPeriods = value
   },
 
   setHoveredPeriodValues (state, { values, offset }) {
     if (values) state.hoveredPeriod.values = values
     if (offset) state.hoveredPeriod.offset = offset
   },
+
   clearHoveredPeriodValues (state) {
     state.hoveredPeriod.values = null
     state.hoveredPeriod.offset = null

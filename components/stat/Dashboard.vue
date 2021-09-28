@@ -151,8 +151,8 @@ export default {
 <template lang="pug">
 .pageWrapScroll
   .baseBox._date
-    StatDashboardDatesArrows
-    DateMobileSelector
+    StatPeriodArrows
+    StatPeriodSelector
 
   //-
   //- Chart graph

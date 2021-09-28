@@ -26,7 +26,7 @@ export default {
   .button-link__icon(v-if="$slots.icon")
     slot(name="icon")
 
-  template(v-if="!$slots.icon")
+  template(v-if="!$slots.icon && icon")
     .button-link__icon: div(:class="icon")
 
   .button-link__name {{ name }}
@@ -37,8 +37,13 @@ export default {
 
 .button-link
   cursor pointer
+  display flex
+  align-items center
+  flex-flow column
+  justify-content center
   width auto
   max-width 100%
+  min-height 48px
   padding $m6 $m6
   text-align center
   border 1px solid transparent
@@ -46,8 +51,8 @@ export default {
   anim()
 
   &._active
-    background var(--c-bg-3)
-    border 1px solid var(--c-bg-6)
+    cursor default
+    background var(--c-item-bg-hover)
 
   +media-hover()
     &:not(._active)
@@ -64,9 +69,14 @@ export default {
     color var(--c-font-2)
     font-size 32px
 
+    ~/._active &
+      color var(--c-blue-1)
 
   &__name
     color var(--c-font-3)
     font-size 12px
     line-height 16px
+
+    ~/._active &
+      color var(--c-blue-1)
 </style>

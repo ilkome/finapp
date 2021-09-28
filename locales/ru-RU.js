@@ -288,6 +288,8 @@ export default {
   },
 
   dates: {
+    period: 'Период',
+    count: 'Количество',
     twoDaysAgo: '2 дня назад',
     day: {
       current: 'Сегодня',
