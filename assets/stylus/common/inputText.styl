@@ -18,10 +18,14 @@ textarea
     border 1px solid var(--c-bg-8)
     border-radius $m5
     anim()
+    /.light-mode &
+      color var(--c-font-2)
+
     &:hover
       border 1px solid var(--c-bg-9)
     &:focus
       border-color var(--c-blue-1)
+
 
     +media-laptop()
       font-size 14px

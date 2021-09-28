@@ -27,7 +27,6 @@ export default {
   position relative
   width 44px
   height 24px
-  // margin-left auto
   background var(--c-bg-8)
   border-radius $m8
   anim()
@@ -45,6 +44,9 @@ export default {
     border-radius $m8
     box-shadow 0px 0px 4px rgba(0, 0, 0, .25)
     anim()
+
+    /.light-mode &
+      background var(--c-bg-1)
 
     ^[0]._active &
       transform translateX(18px)
