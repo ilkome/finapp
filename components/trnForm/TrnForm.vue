@@ -228,7 +228,7 @@ export default {
           TrnFormCalendar
           TrnFormCalculator(@onSubmit="handleSubmitForm")
           TrnFormHeader
-          TrnFormHeaderTransfer(v-show="isTransfer")
+          LazyTrnFormHeaderTransfer(v-if="isTransfer")
 
       //- Quick selector
       .swiper-slide(:style="{ height: maxHeight }")

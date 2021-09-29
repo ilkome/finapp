@@ -29,7 +29,7 @@ export default function useTrnFormValidate () {
       }
     }
 
-    if (!values.walletId) {
+    if (!values.walletId && values.type !== 2) {
       return {
         error: {
           title: errorTitle,
@@ -38,7 +38,7 @@ export default function useTrnFormValidate () {
       }
     }
 
-    if (!values.categoryId) {
+    if (!values.categoryId && values.type !== 2) {
       return {
         error: {
           title: errorTitle,
@@ -48,7 +48,7 @@ export default function useTrnFormValidate () {
     }
 
     // Transfer
-    if (values.amountType === 2) {
+    if (values.type === 2) {
       if (values.walletFromId === values.walletToId) {
         return {
           error: {
