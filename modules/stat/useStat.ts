@@ -10,7 +10,13 @@ const moneyTypes = [{
 
 export default function useStat () {
   const { store } = useContext()
-  const isEmptyStat = computed(() => store.getters['stat/statAverage'].total === 0 && store.getters['stat/statAverage'].incomes === 0 && store.getters['stat/statAverage'].expenses === 0)
+  const isEmptyStat = computed(() => {
+    const total = store.getters['stat/statAverage'].total === 0
+    const incomes = store.getters['stat/statAverage'].incomes === 0
+    const expenses = store.getters['stat/statAverage'].expenses === 0
+
+    return total && incomes && expenses
+  })
 
   return {
     moneyTypes,

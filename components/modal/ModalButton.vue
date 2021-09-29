@@ -1,41 +1,32 @@
 <script>
 export default {
   props: {
-    icon: {
-      type: String,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    isActive: {
-      type: Boolean,
-      default: false
-    }
+    icon: { type: String, required: true },
+    name: { type: String, required: true },
+    isActive: { type: Boolean, default: false }
   }
 }
 </script>
 
 <template lang="pug">
-.button-link(
+.modalButton(
   :class="{ _active: isActive }"
   @click="$emit('onClick')"
 )
 
-  .button-link__icon(v-if="$slots.icon")
+  .modalButton__icon(v-if="$slots.icon")
     slot(name="icon")
 
   template(v-if="!$slots.icon && icon")
-    .button-link__icon: div(:class="icon")
+    .modalButton__icon: div(:class="icon")
 
-  .button-link__name {{ name }}
+  .modalButton__name {{ name }}
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
-.button-link
+.modalButton
   cursor pointer
   display flex
   align-items center

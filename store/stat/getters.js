@@ -9,7 +9,7 @@ export default {
     * @return {Number} return[date].expenses
     * @return {Number} return[date].total
   */
-  statAverage (state, getters) {
+  statAverage (_state, getters) {
     const statPeriods = getters.statByPeriods
 
     let incomes = 0
@@ -51,7 +51,7 @@ export default {
     * @return {Number} return[date].expenses
     * @return {Number} return[date].total
   */
-  statByPeriods (state, getters, rootState, rootGetters) {
+  statByPeriods (_state, _getters, rootState, rootGetters) {
     const trns = rootState.trns.items
     const transferCategoryId = rootGetters['categories/transferCategoryId']
     const trnsIds = rootGetters['trns/selectedTrnsIds']

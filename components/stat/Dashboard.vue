@@ -287,6 +287,7 @@ export default {
                   :title="$t('dates.day.today')"
                 )
 
+              //- Views
               .total__custom(v-if="statCurrentPeriod[item.id].total !== 0")
                 .periodItem(
                   :class="{ _active: ui.showPieChart }"
@@ -324,10 +325,10 @@ export default {
           )
 
           //- Round cats list
-          .statItemsTiles(v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0 && (!filter.categoryId || filter.categoryId && $store.getters['categories/getChildCategoriesIds'](filter.categoryId).length !== 0)")
+          .statItemsTiles(v-if="ui.showRoundCats && (!filter.categoryId || filter.categoryId && $store.getters['categories/getChildCategoriesIds'](filter.categoryId).length !== 0)")
             LazyStatItemRound(
-              v-if="ui.showRoundCats && statWithLastPeriods[item.id].categoriesIds.length > 0"
-              v-for="categoryId in statWithLastPeriods[item.id].categoriesIds"
+              v-if="ui.showRoundCats"
+              v-for="categoryId in statCurrentPeriod[item.id].categoriesIds"
               :category="$store.state.categories.items[categoryId]"
               :categoryId="categoryId"
               :currency="$store.state.currencies.base"
@@ -337,7 +338,7 @@ export default {
             )
             template(v-if="filter.categoryId")
               template(v-for="categoryId in $store.getters['categories/getChildCategoriesIds'](filter.categoryId)")
-                template(v-if="!statWithLastPeriods[item.id].categoriesIds.includes(categoryId)")
+                template(v-if="!statCurrentPeriod[item.id].categoriesIds.includes(categoryId)")
                   LazyStatItemRound(
                     v-if="filter.categoryId"
                     :category="$store.state.categories.items[categoryId]"
