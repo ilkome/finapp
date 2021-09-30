@@ -90,7 +90,7 @@ export default {
     Icon(
       :icon="category.icon"
       :color="category.color"
-      background="var(--c-bg-5)"
+      background="var(--c-item-stat-bg)"
       round
     )
 

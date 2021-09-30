@@ -115,11 +115,13 @@ export default {
       .trnItem__wallet
         WalletsItemWalletItem(
           :id="trn.walletFromId"
+          isAltColor
           ui="tile"
         )
         .trnFormHeaderSeparator: .mdi.mdi-chevron-right
         WalletsItemWalletItem(
           :id="trn.walletToId"
+          isAltColor
           ui="tile"
         )
       .trnItem__amount(@click.stop="setTrnEdit")
@@ -141,6 +143,8 @@ export default {
           Icon(
             :color="category.color"
             :icon="category.icon"
+            background="var(--c-item-stat-bg)"
+            round
           )
 
       .trnItem__center
@@ -233,7 +237,7 @@ export default {
           Icon(
             :color="category.color"
             :icon="category.icon"
-            background="var(--c-bg-5)"
+            background="var(--c-item-stat-bg)"
             round
           )
 
@@ -300,7 +304,7 @@ export default {
   +media-hover(true)
     &._history
     &._stat
-      background var(--c-bg-5)
+      background var(--c-item-bg-hover)
       border-radius $m5
 
   &__amount
@@ -429,12 +433,7 @@ export default {
       color var(--c-font-2)
       font-size 14px
 
-  &__amount
-    ^[0]._history &
-      //
-
   &._active
-  // &._history
   &._trnForm
     margin-right - ($m7)
     margin-left - ($m7)

@@ -72,8 +72,8 @@ export default {
     .statItem__graph: .statItem__graph__in(:style="styles")
     .statItem__icon(@click.stop="setCategoryFilter(categoryId)")
       Icon(
-        :background="showInside ? category.color : 'var(--c-bg-5)'"
-        :color="showInside ? 'var(--c-font-1)' : category.color"
+        :background="showInside ? category.color : 'var(--c-item-stat-bg)'"
+        :color="showInside ? 'var(--c-item-stat-icon)' : category.color"
         :icon="category.icon"
         round
       )

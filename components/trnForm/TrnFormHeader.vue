@@ -38,4 +38,7 @@ export default {
     right $m4
     color var(--c-font-2)
     font-size 16px
+
+    /.light-mode &
+      color var(--c-item-stat-icon)
 </style>

@@ -92,7 +92,7 @@ export default {
       if (chartSeriesIdx !== -1) {
         chart.xAxis[0].update({
           plotBands: [{
-            color: 'var(--c-bg-7)',
+            color: 'var(--c-item-bg-active)',
             from: chartSeriesIdx + 0.5,
             to: chartSeriesIdx - 0.5
           }]

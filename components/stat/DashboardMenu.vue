@@ -95,5 +95,5 @@ export default {
   &._active
     cursor default
     color var(--c-blue-1)
-    background var(--c-item-bg-hover)
+    background var(--c-item-bg-active)
 </style>

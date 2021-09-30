@@ -20,7 +20,7 @@ export default {
   WalletsItemWalletItem(
     :id="$store.state.trnForm.values.walletId"
     :showBase="false"
-    :isAltColor="true"
+    isAltColor
     ui="tile"
   )
 

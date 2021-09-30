@@ -43,7 +43,9 @@ export default {
     },
     transfer: {
       from: 'Из',
-      to: 'В'
+      fromLong: 'Из кошелька',
+      to: 'В',
+      toLong: 'В кошелек'
     }
   },
 

@@ -42,7 +42,9 @@ export default {
     },
     transfer: {
       from: 'From',
-      to: 'To'
+      fromLong: 'From wallet',
+      to: 'To',
+      toLong: 'To wallet'
     }
   },
 

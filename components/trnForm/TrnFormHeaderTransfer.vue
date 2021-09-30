@@ -43,10 +43,11 @@ export default {
   //- Wallet from
   template(v-if="walletFrom")
     .trnFormHeaderItem
-      .trnFormHeaderItem__desc From wallet
+      .trnFormHeaderItem__desc {{ $t('trnForm.transfer.fromLong') }}
       WalletsItemWalletItem(
         :id="walletFromId"
         :showBase="false"
+        isAltColor
         ui="tile"
         @onClick="$store.commit('trnForm/showTrnFormModal', 'transferFrom')"
       )
@@ -56,10 +57,11 @@ export default {
   //- Wallet to
   template(v-if="walletTo")
     .trnFormHeaderItem
-      .trnFormHeaderItem__desc To wallet
+      .trnFormHeaderItem__desc {{ $t('trnForm.transfer.toLong') }}
       WalletsItemWalletItem(
         :id="walletToId"
         :showBase="false"
+        isAltColor
         ui="tile"
         @onClick="$store.commit('trnForm/showTrnFormModal', 'transferTo')"
       )
