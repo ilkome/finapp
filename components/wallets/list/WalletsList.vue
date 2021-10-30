@@ -2,20 +2,9 @@
 
 export default {
   props: {
-    ui: {
-      type: String,
-      default: null
-    },
-
-    limit: {
-      type: [Number, Boolean],
-      default: null
-    },
-
-    showToogle: {
-      type: Boolean,
-      default: false
-    }
+    limit: { type: [Number, Boolean], default: null },
+    showToogle: { type: Boolean, default: false },
+    ui: { type: String, default: null }
   },
 
   data () {
@@ -35,7 +24,9 @@ export default {
 
     walletsIds () {
       const walletsIds = this.$store.getters['wallets/walletsSortedIds']
-      if (this.stateLimit) { return walletsIds.slice(0, this.stateLimit) }
+      if (this.stateLimit)
+        return walletsIds.slice(0, this.stateLimit)
+
       return walletsIds
     }
   },
@@ -46,12 +37,9 @@ export default {
 
   methods: {
     toogleWallets () {
-      if (this.stateLimit > 0) {
-        this.stateLimit = 0
-      }
-      else {
-        this.stateLimit = this.limit
-      }
+      this.stateLimit > 0
+        ? this.stateLimit = 0
+        : this.stateLimit = this.limit
     }
   }
 }

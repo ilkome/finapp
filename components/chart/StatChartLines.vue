@@ -28,11 +28,6 @@ export default {
       default: true
     },
 
-    chartColor: {
-      type: String,
-      default: null
-    },
-
     categoryId: {
       type: String,
       default: null
@@ -188,20 +183,20 @@ export default {
           visible: periodsTotalIncomes > 0 && this.isShowIncomes,
           type: this.chartType,
           name: this.$t('money.incomes'),
-          color: this.chartColor || 'var(--c-incomes-1)',
+          color: 'var(--c-incomes-1)',
           data: incomesData,
           marker: {
-            lineColor: this.categoryId ? this.$store.state.categories.items[this.categoryId].color : 'var(--c-incomes-1)'
+            lineColor: 'var(--c-incomes-1)'
           }
         }, {
           zIndex: 2,
           visible: periodsTotalExpenses > 0 && this.isShowExpenses,
           type: this.chartType,
           name: this.$t('money.expenses'),
-          color: this.chartColor || 'var(--c-expenses-1)',
+          color: 'var(--c-expenses-1)',
           data: expensesData,
           marker: {
-            lineColor: this.categoryId ? this.$store.state.categories.items[this.categoryId].color : 'var(--c-expenses-1)'
+            lineColor: 'var(--c-expenses-1)'
           }
         // Fake data to make good hover on bar chart
         }, {
@@ -223,6 +218,9 @@ export default {
                 lineWidth: 0
               }
             }
+          },
+          dataLabels: {
+            enabled: false
           }
         }],
         categories,

@@ -1,30 +1,67 @@
 <script>
+import { ref, useContext, onMounted } from '@nuxtjs/composition-api'
 import { saveData } from '~/services/firebaseHelpers'
 import generateId from '~/utils/id'
-import colors from '~/assets/js/colors'
+import { popularColors, allColors } from '~/assets/js/colorsPopular'
+import { random } from '~/assets/js/emo'
 import icons from '~/assets/js/icons'
 
-function random (icons) {
-  return icons[Math.floor(Math.random() * icons.length)]
-}
-
 export default {
+  setup () {
+    const { store } = useContext()
+
+    const showColors = ref(false)
+    const activeTab = ref('data')
+
+    const category = ref({
+      color: '',
+      icon: '',
+      name: null,
+      parentId: 0,
+      showInLastUsed: true,
+      showInQuickSelector: false,
+      showStat: true
+    })
+
+    function findCategoryWithThisColor (color) {
+      const categories = store.state.categories.items
+      if (categories) {
+        const categoryIdWithThisColor = store.getters['categories/categoriesRootIds']?.find(id => categories[id]?.color === color)
+        if (categoryIdWithThisColor)
+          return categories[categoryIdWithThisColor]?.icon
+      }
+    }
+
+    function onSelectColor (color) {
+      if (color)
+        category.value.color = color
+    }
+
+    const documentHeight = ref('100%')
+    onMounted(() => {
+      documentHeight.value = `${document.documentElement.clientHeight}px`
+    })
+
+    return {
+      activeTab,
+      category,
+      findCategoryWithThisColor,
+
+      onSelectColor,
+      showColors,
+
+      popularColors,
+      allColors,
+      documentHeight
+    }
+  },
+
   data () {
     return {
       originalParentId: null,
       showParents: false,
-      showColors: false,
       showIcons: false,
-      applyChildColor: true,
-      category: {
-        color: '',
-        icon: '',
-        name: null,
-        parentId: 0,
-        showInLastUsed: true,
-        showInQuickSelector: false,
-        showStat: true
-      }
+      applyChildColor: true
     }
   },
 
@@ -51,11 +88,11 @@ export default {
   },
 
   created () {
-    this.colors = colors
+    this.colors = allColors
     this.icons = icons
     if (!this.$store.state.categories.editId) {
       this.category.icon = random(random(icons))
-      this.category.color = colors[Math.floor(Math.random() * colors.length)]
+      this.category.color = random(popularColors)
     }
   },
 
@@ -67,11 +104,6 @@ export default {
     closed () {
       this.$store.commit('categories/setCategoryEditId', null)
       this.$store.dispatch('ui/setActiveTab', null)
-    },
-
-    handleColorSelect (color) {
-      this.category.color = color
-      this.showColors = false
     },
 
     handleIconSelect (icon) {
@@ -128,6 +160,8 @@ export default {
 
             saveData(`users/${uid}/categories/${this.category.parentId}`, {
               ...parenCategory,
+              showInLastUsed: false,
+              showInQuickSelector: false,
               childIds
             })
           }
@@ -143,13 +177,8 @@ export default {
 
         // update child categories colors
         if (this.applyChildColor) {
-          for (const childId of childIds) {
-            const category = categories[childId]
-            saveData(`users/${uid}/categories/${childId}`, {
-              ...category,
-              color: categoriesValues.color
-            })
-          }
+          for (const childId of childIds)
+            saveData(`users/${uid}/categories/${childId}/color`, categoriesValues.color)
         }
 
         close()
@@ -194,231 +223,451 @@ export default {
 </script>
 
 <template lang="pug">
-Portal(
-  key="categoryFormModal"
-  to="modal"
-)
-  BaseBottomSheet(
-    :show="true"
-    :maxHeight="$store.state.ui.height"
-    @closed="closed()"
+div
+  Portal(
+    key="categoryFormModal"
+    to="modal"
   )
-    template(#handler="{ close }")
-      BaseBottomSheetClose(@onClick="close")
+    BaseBottomSheet(
+      show
+      @closed="closed()"
+    )
+      template(#handler="{ close }")
+        BaseBottomSheetClose(@onClick="close")
 
-    template(#header)
-      .header
-        template(v-if="!categoryId") {{ $t('categories.createNewTitle') }}
-        template(v-else) {{ $t('categories.editTitle') }}
+      template(#default="{ close }")
+        .content(:style="{ maxHeight: documentHeight }")
+          //- Header
+          .header
+            template(v-if="!categoryId") {{ $t('categories.createNewTitle') }}
+            template(v-else) {{ $t('categories.editTitle') }}
 
-    template(#default="{ close }")
-      .content
-        .form-line._text
-          .inputText
-            .inputText__label {{ $t('categories.form.name.label') }}
-            input(
-              type="text"
-              :placeholder="$t('categories.form.name.placeholder')"
-              v-model="category.name"
-            ).inputText__value
+          //-
+          //- Menu
+          //-
+          .menu
+            .menuItem(
+              :class="{ _active: activeTab === 'data' }"
+              @click="activeTab = 'data'"
+            ) {{ $t('categories.form.data.label') }}
+            .menuItem(
+              :class="{ _active: activeTab === 'colors' }"
+              @click="activeTab = 'colors'"
+            ) {{ $t('categories.form.color.label') }}
+            .menuItem(
+              :class="{ _active: activeTab === 'icons' }"
+              @click="activeTab = 'icons'"
+            ) {{ $t('categories.form.icons.label') }}
 
-        //- can not change root category if inside this category already has some categories
-        template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0 && $store.getters['categories/hasCategories']")
-          .form__btns__i._full
-            .form-line(@click="showParents = true")
-              .inputModal._flex
-                .inputModal__content
-                  template(v-if="category.parentId !== 0")
-                    .inputModal__icon
-                      div(
-                        :class="$store.state.categories.items[category.parentId].icon"
-                        :style="{ color: $store.state.categories.items[category.parentId].color }"
+          .preview(v-if="activeTab !== 'data'")
+            .previewIcon
+              Icon(
+                :icon="category.icon"
+                :background="category.color"
+                round
+              )
+            .categoryParentItem(style="width: 100%")
+              .categoryParentItem__icon
+                Icon(
+                  :icon="category.icon"
+                  :color="category.color"
+                )
+              .categoryParentItem__name {{ category.name || $t('categories.form.name.label') }}
+
+          //-
+          //- Content
+          //-
+          .scrollerBlock
+            //- Data
+            template(v-if="activeTab === 'data'")
+              .form
+                .inputText
+                  .inputText__label {{ $t('categories.form.name.label') }}
+                  input(
+                    type="text"
+                    :placeholder="$t('categories.form.name.placeholder')"
+                    v-model="category.name"
+                  ).inputText__value
+
+                //- can not change root category if inside this category already has some categories
+                div(
+                  v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0 && $store.getters['categories/hasCategories']"
+                  style="paddingBottom: 8px"
+                )
+                  .inputText__label {{ $t('categories.form.parent.label') }}
+
+                  div(@click="showParents = true")
+                    template(v-if="category.parentId !== 0")
+                      CategoriesItemCategoryItem(
+                        :category="$store.state.categories.items[category.parentId]"
+                        :id="category.parentId"
                       )
-                    .inputModal__name {{ $store.state.categories.items[category.parentId].name }}
-                  template(v-else)
-                    .inputModal__icon: .mdi.mdi-folder-star
-                    .inputModal__name {{ $t('categories.form.parent.no') }}
-                .inputModal__label {{ $t('categories.form.parent.label') }}
+                    template(v-else)
+                      .categoryParentItem
+                        .categoryParentItem__icon
+                          Icon(icon="mdi mdi-folder-star")
+                        .categoryParentItem__name {{ $t('categories.form.parent.no') }}
 
-        .form__btns
-          .form__btns__i
-            .form-line(@click="showColors = true")
-              .inputModal._flex
-                .inputModal__value: .inputModal__color(:style="{ background: category.color }")
-                .inputModal__label {{ $t('categories.form.color.label') }}
+                LazySharedContextMenuItem(
+                  v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length"
+                  :checkboxValue="applyChildColor"
+                  :title="$t('categories.form.childColor')"
+                  showCheckbox
+                  @onClick="applyChildColor = !applyChildColor"
+                )
+                LazySharedContextMenuItem(
+                  v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0"
+                  :checkboxValue="category.showInLastUsed"
+                  :title="$t('categories.form.lastUsed')"
+                  showCheckbox
+                  @onClick="category.showInLastUsed = !category.showInLastUsed"
+                )
+                SharedContextMenuItem(
+                  :checkboxValue="category.showInQuickSelector"
+                  :title="$t('categories.form.quickSelector')"
+                  showCheckbox
+                  @onClick="category.showInQuickSelector = !category.showInQuickSelector"
+                )
 
-          .form__btns__i
-            .form-line(@click="showIcons = true")
-              .inputModal._flex
-                .inputModal__icon: div(:class="category.icon", :style="{ color: category.color }")
-                .inputModal__label {{ $t('categories.form.icon.label') }}
+            //-
+            //- Colors
+            //-
+            template(v-if="activeTab === 'colors'")
+              .form
+                .subTitle {{ $t('popularColors') }}
+                .colors
+                  .iconItem(
+                    v-for="(color, idx) in popularColors"
+                    :key="idx"
+                    :class="{ _active: color === category.color }"
+                    :style="{ background: color === category.color ? color : 'transparent' }"
+                    @click="onSelectColor(color)"
+                  )
+                    template(v-if="color")
+                      //- .colorPreview(:style="{ background: color }")
+                      template(v-if="findCategoryWithThisColor(color)")
+                        Icon(
+                          :icon="findCategoryWithThisColor(color)"
+                          :color="color === category.color ? null : color"
+                          big
+                        )
+                      template(v-else-if="color === category.color")
+                        Icon(
+                          :icon="category.icon"
+                          background="transparent"
+                          big
+                        )
+                      template(v-else)
+                        .colorPreview(:style="{ background: color }")
+                        //- Icon(
+                        //-   :icon="category.icon"
+                        //-   :color="color"
+                        //-   big
+                        //- )
 
-        template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length")
-          .form-line._p0._clean
-            SharedContextMenuItem(
-              :checkboxValue="applyChildColor"
-              :title="$t('categories.form.childColor')"
-              showCheckbox
-              @onClick="applyChildColor = !applyChildColor"
+                .subTitle {{ $t('palette') }}
+                .colors
+                  .iconItem(
+                    v-for="(color, idx) in allColors"
+                    :key="idx"
+                    :class="{ _active: color === category.color, _empty: !color }"
+                    :style="{ background: color === category.color ? color : 'transparent' }"
+                    @click="onSelectColor(color)"
+                  )
+
+                    template(v-if="color")
+                      template(v-if="findCategoryWithThisColor(color)")
+                        Icon(
+                          :icon="findCategoryWithThisColor(color)"
+                          :color="color === category.color ? null : color"
+                          big
+                        )
+                      template(v-else-if="color === category.color")
+                        Icon(
+                          :icon="category.icon"
+                          background="transparent"
+                          big
+                        )
+                      template(v-else)
+                        .colorPreview(:style="{ background: color }")
+                        //- Icon(
+                        //-   icon="mdi mdi-folder-star"
+                        //-   :color="color"
+                        //-   big
+                        //- )
+
+                .subTitle {{ $t('categories.form.color.custom') }}
+                .customColor
+                  input.customColor__value(v-model="category.color" type="color")
+
+            template(v-if="activeTab === 'icons'")
+              .form
+                .icons
+                  .icons__group(
+                    v-for="iconGroup in icons"
+                  )
+                    .iconItem(
+                      v-for="icon in iconGroup"
+                      :class="{ _active: category.icon === icon }"
+                      :style="{ color: category.color }"
+                      @click="handleIconSelect(icon)"
+                    )
+                      div(:class="icon")
+
+          //- Submit
+          .col(style="padding-top: 16px; text-align: center")
+            SharedButton(
+              :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
+              :title="$t('categories.form.save')"
+              @onClick="handleSubmit(close)"
             )
-
-        template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0")
-          SharedContextMenuItem(
-            :checkboxValue="category.showInLastUsed"
-            :title="$t('categories.form.lastUsed')"
-            showCheckbox
-            @onClick="category.showInLastUsed = !category.showInLastUsed"
-          )
-          SharedContextMenuItem(
-            :checkboxValue="category.showInQuickSelector"
-            :title="$t('categories.form.quickSelector')"
-            showCheckbox
-            @onClick="category.showInQuickSelector = !category.showInQuickSelector"
-          )
-
-        .col(style="padding-top: 16px; text-align: center")
-          SharedButton(
-            :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
-            :title="$t('categories.form.save')"
-            @onClick="handleSubmit(close)"
-          )
-
-  //- colors
-  Portal(
-    v-if="showColors"
-    to="modal"
-  )
-    ModalBottom(
-      :center="true"
-      :title="$t('categories.form.color.placeholder')"
-      @onClose="showColors = false"
+  //-
+  //- Parent Modal
+  //-
+  Portal(to="modal")
+    LazyBaseBottomSheet(
+      v-if="showParents"
+      @closed="showParents = false"
     )
-      .inputText
-        .inputText__colors
-          .colors
-            .colorItem(
-              :class="{ _active: category.color === color }"
-              :style="{ background: color }"
-              v-for="color in colors"
-              @click="handleColorSelect(color)"
-            )
-      .customColor
-        .customColor__title {{ $t('categories.form.color.custom') }}
-        input.customColor__value(v-model="category.color" type="color")
+      template(#handler="{ close }")
+        BaseBottomSheetClose(@onClick="close")
 
-  //- parent
-  Portal(
-    v-if="showParents"
-    to="modal"
-  )
-    ModalBottom(
-      key="parent"
-      :center="true"
-      :title="$t('categories.form.parent.label')"
-      @onClose="showParents = false"
-    )
-      .padding-bottom
-        ModalButton(
-          :name="$t('categories.form.parent.no')"
-          icon="mdi mdi-folder-star"
-          @onClick="() => handleParenCategorySelect(0)")
-      CategoriesView(
-        :noPadding="true"
-        :ids="$store.getters['categories/categoriesForBeParent'].filter(cId => cId !== categoryId)"
-        @onClick="handleParenCategorySelect")
+      template(#default="{ close }")
+        .content(:style="{ maxHeight: documentHeight }")
+          .scrollerBlock
+            .wrap
+              //- Header
+              .header {{ $t('categories.form.parent.label') }}
 
-  //- icons
-  Portal(
-    v-if="showIcons"
-    to="modal"
-  )
-    ModalBottom(
-      :center="true"
-      :title="$t('categories.form.icon.placeholder')"
-      @onClose="showIcons = false"
-    )
-      .icons
-        .icons__group(
-          v-for="iconGroup in icons"
-        )
-          .iconItem(
-            v-for="icon in iconGroup"
-            :class="{ _active: category.icon === icon }"
-            :style="{ color: category.color }"
-            @click="handleIconSelect(icon)"
-          )
-            div(:class="icon")
+              .padding-bottom
+                ModalButton(
+                  :name="$t('categories.form.parent.no')"
+                  icon="mdi mdi-folder-star"
+                  @onClick="() => handleParenCategorySelect(0)")
+
+              CategoriesView(
+                :activeItemId="category.parentId"
+                :noPadding="true"
+                :ids="$store.getters['categories/categoriesForBeParent'].filter(cId => cId !== categoryId)"
+                @onClick="handleParenCategorySelect"
+              )
 </template>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
-.header
-  padding $m8
-  flex-grow 1
-  fontFamilyNunito()
-  color var(--c-font-2)
-  font-size 28px
-  font-weight 700
+.preview
+  display flex
+  align-items center
+  justify-content space-between
+  padding $m5 $m7
+  gap $m7
+
+.subTitle
+  padding 0 $m5
+  padding-bottom $m6
+  color var(--c-font-4)
+  font-size 13px
+  font-weight 500
+
+.categoryParentItem
+  overflow hidden
+  cursor pointer
+  position relative
+  display flex
+  flex-flow row nowrap
+  align-items center
+  justify-content center
+  min-height 48px
+  padding $m6
+  color var(--c-font-1)
+  background var(--c-item-bg-main)
+  border 1px solid transparent
+  border-radius $m5
+  anim()
+  +media-hover()
+    color var(--c-text-1)
+    background var(--c-item-bg-hover)
+    border 1px solid var(--c-item-bd-hover)
+
+  &__icon
+    padding-right $m6
+    +media(700px)
+      padding-right $m8
+
+  &__name
+    overflow hidden
+    display flex
+    flex-grow 1
+    text-overflow ellipsis
+    padding-right 0
+    font-size 14px
+
+.menu
+  overflow hidden
+  z-index 10
+  display flex
+  align-items center
+  justify-content space-between
+  max-width 480px
+  overflow-x auto
+  margin 0 auto
+  padding $m5 $m6
+
+  +media(600px)
+    overflow initial
+
+.menuItem
+  cursor pointer
+  display flex
+  align-items center
+  justify-content center
+  min-height 38px
+  min-width 70px
+  margin 0 $m5
+  padding $m6 $m7
+  color var(--c-font-4)
+  font-size 12px
+  font-weight 500
+  font-roboto()
   text-align center
-  background var(--c-bg-3)
-  border-radius $m7 $m7 0 0
+  border-radius $m6
+  anim()
+
+  +media(400px)
+    min-width 80px
+    margin 0 $m5
+    padding-right $m7
+    padding-left $m7
+
+  +media(600px)
+    padding-right $m9
+    padding-left $m9
+
+  +media-hover()
+    &:not(._active)
+      cursor pointer
+      color var(--c-font-3)
+      background var(--c-item2-bg-hover)
+
+  &._active
+    cursor default
+    color var(--c-blue-1)
+    background var(--c-item-bg-active)
+
+.wrap
+  padding 0 $m8
+  padding-top $m6
+
+.button
+  button-base-1()
+
+.form
+  padding $m6
+
+  .inputText
+    margin-bottom 0
+    padding-bottom $m8
+
+  h2
+    padding-bottom $m6
+
+.scrollerBlock
+  overflow hidden
+  overflow-y auto
+  height 100%
+
+.colorPreview
+  display flex
+  align-items center
+  justify-content center
+  width 90%
+  height 90%
+  border-radius 50%
+
+.colors
+  display grid
+  grid-template-columns repeat(8, minmax(auto, 1fr))
+  padding-bottom $m8
+  &:last-child
+    padding-bottom 0
 
 .icons
   &__group
     display grid
-    grid-template-columns repeat(auto-fill, minmax(50px, 1fr))
-    padding-bottom 20px
+    grid-template-columns repeat(auto-fill, minmax(40px, 1fr))
+    padding-bottom $m8
 
 .iconItem
   display flex
   align-items center
   justify-content center
-  min-height 50px
-  padding 8px
-  font-size 30px
-  border-radius 4px
+  width 40px
+  height 40px
+  max-width 40px
+  max-height 40px
+  padding 4px
+  font-size 24px
+  border-radius 50%
 
   +media-hover()
-    &:not(._active)
+    &:not(._empty)
       cursor pointer
-      background var(--c-item-bg-hover)
-      border 1px solid var(--c-item-bd-hover)
+      background var(--c-item-bd-hover)
 
   &._active
-    background var(--c-item-bg-hover)
-    border 1px solid var(--c-item-bd-hover)
+    padding 0
+    background var(--c-item-bd-hover)
+
+.header
+  position relative
+  display flex
+  align-items center
+  justify-content center
+  padding $m7
+  padding-top 0
+  padding-bottom $m5
+  color var(--c-font-3)
+  font-size 18px
+  font-weight 700
+  letter-spacing 1px
+  fontFamilyNunito()
+
+  /.light-mode &
+    color var(--c-font-4)
 
 .customColor
-  margin (- $m7)
-  margin-top 0
-  padding $m7
+  padding 0 $m4
   background var(--c-bg-3)
-
-  @media $media-laptop
-    margin (- $m9)
-    margin-top 0
-    padding $m9
 
   &__title
     padding-bottom $m6
     color var(--c-font-4)
 
   &__value
+    overflow hidden
+    display block
+    appearance none
     width 100%
-    height 40px
+    height 48px
     margin 0
     padding 0
+    background none
     border 0
+    border-radius $borderRadiusMd
 
 .padding-bottom
   padding-bottom $m8
 
 .content
-  padding $m8
-  background var(--c-bg-3)
+  overflow hidden
+  display grid
+  padding-top $m7
+  background var(--color-bg-canvas)
+  border-radius $m8 $m8 0 0
+
   +media(600px)
-    border-radius 0 0 $m7 $m7
+    border-radius 16px
 
 .form__actions
   @media $media-phone

@@ -1,4 +1,5 @@
 <script>
+import { ref, computed, watch, onMounted, useContext } from '@nuxtjs/composition-api'
 import { saveData } from '~/services/firebaseHelpers'
 import generateId from '~/utils/id'
 import colors from '~/assets/js/colors'
@@ -279,15 +280,18 @@ export default {
       )
 
   //- colors
-  Portal(
+  LazyBaseBottomSheet(
     v-if="showColors"
-    to="modal"
+    @closed="showColors = false"
   )
-    ModalBottom(
-      :center="true"
-      :title="$t('categories.form.color.placeholder')"
-      @onClose="showColors = false"
-    )
+    template(#handler="{ close }")
+      BaseBottomSheetClose(@onClick="close")
+
+    template(#header)
+      .header
+        .header__title {{ $t('colors') }}
+
+    template(#default="{ close }")
       .inputText
         .inputText__colors
           .colors
@@ -347,6 +351,29 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
+.handler
+  z-index 2
+  position absolute
+  top 0
+  left 0
+  display flex
+  align-items center
+  justify-content center
+  width 100%
+  height 16px
+
+  &:after
+    content ''
+    display block
+    width 32px
+    height 4px
+    background var(--c-bg-8)
+    border-radius 4px
+
+.content
+  +media(600px)
+    border-radius 0 0 $m7 $m7
 
 .header
   padding $m8

@@ -11,11 +11,14 @@ const moneyTypes = [{
 export default function useStat () {
   const { store } = useContext()
   const isEmptyStat = computed(() => {
-    const total = store.getters['stat/statAverage'].total === 0
-    const incomes = store.getters['stat/statAverage'].incomes === 0
-    const expenses = store.getters['stat/statAverage'].expenses === 0
+    const statCurrentPeriod = store.getters['stat/statCurrentPeriod']
 
-    return total && incomes && expenses
+    if (store.state.ui.activeTabStat === 'details')
+      return statCurrentPeriod.total === 0
+    else if (store.state.ui.activeTabStat === 'incomes')
+      return statCurrentPeriod.incomes.total === 0
+    else if (store.state.ui.activeTabStat === 'expenses')
+      return statCurrentPeriod.expenses.total === 0
   })
 
   return {

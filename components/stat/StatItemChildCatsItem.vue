@@ -47,14 +47,11 @@ export default {
   @click="toogleShowInside(categoryId)"
 )
   .statItemChild__content
-    .statItemChild__graph
-      .statItemChild__graph__in(:style="styles")
-
     .statItemChild__icon(@click.stop="setCategoryFilter(categoryId)")
       Icon(
-        :color="category.color"
+        :background="isShowInside ? category.color : 'var(--c-item-stat-bg)'"
+        :color="isShowInside ? 'var(--c-item-stat-icon)' : category.color"
         :icon="category.icon"
-        :background="isShowInside ? 'var(--c-bg-5)' : 'transparent'"
         round
       )
 
@@ -88,42 +85,35 @@ export default {
   .trnItem._stat
     padding-right $m5
     padding-left $m6
+
+  &__icon
+    .icon
+      width 36px !important
+      height 36px !important
+      background var(--c-bg-4)
+
+      .icon__image
+        font-size 22px
 </style>
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
 .statItemChild
+  cursor default
   border 1px solid transparent
   border-radius $borderRadiusMd
 
   +media-hover()
     &:not(._active)
-      background var(--c-item2-bg-hover)
+      background var(--c-item-bg-hover)
 
   &__content
     display grid
     grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
-    grid-template-rows repeat(2, minmax(10px, max-content))
     grid-column-gap 20px
     margin 0
-    padding $m6 $m5
-
-  &__graph
-    overflow hidden
-    grid-column 2 / -1
-    grid-row 2 / -1
-    align-self center
-    margin-top 6px
-    background var(--c-bg-6)
-    border-radius 2px
-
-    ~/:hover &
-      background var(--c-bg-7)
-
-    &__in
-      height 4px
-      min-width 2px
+    padding $m5 $m5
 
   &__name
     overflow hidden
@@ -137,11 +127,16 @@ export default {
       color var(--c-font-2)
 
   &__icon
-    display flex
-    justify-content center
     width 32px
     grid-column 1 / 2
     grid-row 1 / -1
+
+    &:active
+      opacity .8
+
+    @media $media-laptop
+      &:hover
+        transform scale(1.3)
 
   &__amount
     align-self center

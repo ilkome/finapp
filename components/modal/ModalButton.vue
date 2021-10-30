@@ -39,7 +39,6 @@ export default {
   text-align center
   border 1px solid transparent
   border-radius $m6
-  anim()
 
   &._active
     cursor default

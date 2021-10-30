@@ -23,7 +23,7 @@ export default {
 
   data () {
     return {
-      showInside: false
+      isShowInside: false
     }
   },
 
@@ -57,7 +57,7 @@ export default {
 
   methods: {
     toogleShowInside () {
-      this.showInside = !this.showInside
+      this.isShowInside = !this.isShowInside
     }
   }
 }
@@ -65,27 +65,27 @@ export default {
 
 <template lang="pug">
 .statItem(
-  :class="{ _active: showInside }"
+  :class="{ _active: isShowInside }"
   @click="toogleShowInside"
 )
   .statItem__content
     .statItem__graph: .statItem__graph__in(:style="styles")
     .statItem__icon(@click.stop="setCategoryFilter(categoryId)")
       Icon(
-        :background="showInside ? category.color : 'var(--c-item-stat-bg)'"
-        :color="showInside ? 'var(--c-item-stat-icon)' : category.color"
+        :background="isShowInside ? category.color : 'var(--c-item-stat-bg)'"
+        :color="isShowInside ? 'var(--c-item-stat-icon)' : category.color"
         :icon="category.icon"
         round
       )
 
-    .statItem__name {{ category.name }}
+    .statItem__name {{ category.name }} {{ showChildCategories ? '...' : '' }}
     .statItem__amount
       Amount(
         :currency="currency"
         :value="total"
       )
 
-  template(v-if="showInside")
+  template(v-if="isShowInside")
     .statItem__inside(@click.stop="")
       template(v-if="showChildCategories")
         StatItemChildCats(
@@ -129,20 +129,19 @@ export default {
   position relative
   padding $m5 $m5
   border 1px solid transparent
-  border-radius $borderRadiusLg
+  border-radius $borderRadiusMd
 
   +media-hover()
     &:not(._active)
       z-index 2
-      background var(--c-item2-bg-hover)
+      background var(--c-item-bg-hover)
 
   &._active
-    margin-top $m6
-    margin-right (- $m4)
-    margin-bottom $m6
-    margin-left (- $m4)
-    padding $m5
-    border 1px solid var(--c-item2-bd-hover)
+    margin-bottom $m5
+    background var(--c-item2-bg-hover)
+
+    &:not(:first-child)
+      margin-top $m5
 
   &__content
     display grid
@@ -150,10 +149,9 @@ export default {
     grid-template-rows repeat(2, minmax(10px, max-content))
     grid-column-gap 20px
 
-    ^[0]._active &
-      padding $m5 $m5
-
   &__inside
+    margin (- $m5)
+    margin-top $m3
     padding 0
 
   &__graph

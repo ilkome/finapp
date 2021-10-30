@@ -1,10 +1,12 @@
 <script lang="ts">
 import dayjs from 'dayjs'
 import { computed, useContext } from '@nuxtjs/composition-api'
-import useUIView from '~/components/layout/useUIView'
-import useStat from '~/modules/stat/useStat'
 import getStat from '~/modules/stat/getStat'
+import useChart from '~/components/chart/useChart'
+import useFilter from '~/modules/filter/useFilter'
+import useStat from '~/modules/stat/useStat'
 import useTrns from '~/modules/trns/useTrns'
+import useUIView from '~/components/layout/useUIView'
 
 export default {
   name: 'StatDashboard',
@@ -13,6 +15,10 @@ export default {
     const { store, app: { $day } } = useContext()
     const { getTrnsIds } = useTrns()
     const { getStatBy } = getStat()
+    const { filterPeriodNameAllReplacedToYear } = useFilter()
+
+    // Chart
+    const { isShowDataLabels, toogleChartsView } = useChart()
 
     const activeTabStat = computed(() => store.state.ui.activeTabStat)
     const statCurrentPeriod = computed(() => store.getters['stat/statCurrentPeriod'])
@@ -120,6 +126,11 @@ export default {
     }
 
     return {
+      isShowDataLabels,
+      toogleChartsView,
+
+      filterPeriodNameAllReplacedToYear,
+
       isShowChart,
 
       activeTabStat,
@@ -150,87 +161,93 @@ export default {
 
 <template lang="pug">
 .pageWrapScroll
-  .baseBox._date
+  .baseBox._date(v-if="activeTabStat !== 'history'")
     StatPeriodArrows
     StatPeriodSelector
 
   //-
   //- Chart graph
   //-
-  .baseBox._total
+  .baseBox._total(v-if="activeTabStat !== 'history'")
     .baseBoxIn
-      template(v-if="(activeTabStat === 'details' || activeTabStat === 'history') && $store.state.filter.period !== 'all'")
-        div
-          .baseBox__title {{ $t('money.total') }}
-          .boxSummary2
-            .boxSummary2__item
-              Amount(
-                :currency="$store.state.currencies.base"
-                :type="(statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total) > 0 ? 1 : 0"
-                :value="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total"
-                size="xl"
-                vertical="left"
-              )
-            StatSummaryRowItemView(
-              :type="(statAverage.incomes - statAverage.expenses) > 0 ? 1 : 0"
-              :amount="statAverage.incomes - statAverage.expenses"
-              :title="$t('money.averageTotal')"
-            )
-
-      template(v-if="activeTabStat === 'incomes' || activeTabStat === 'expenses'")
-        .sumBox
-          .baseBox__title {{ $t(`money.${activeTabStat}`) }}
-          .boxSummary2(@click="onClickTitle()")
-            .boxSummary2__item
-              Amount(
-                :currency="$store.state.currencies.base"
-                :type="activeTabStat === 'incomes' ? 1 : 0"
-                :value="statCurrentPeriod[activeTabStat].total"
-                size="xl"
-                vertical="left"
-              )
-            StatSummaryRowItemView(
-              :type="activeTabStat === 'incomes' ? 1 : 0"
-              :amount="statAverage[activeTabStat]"
-              :title="$t(`money.average.${activeTabStat}`)"
-            )
-            StatSummaryRowItemView(
-              v-if="statToday && statToday[activeTabStat].total !== 0 && $store.state.filter.period !== 'day'"
-              :type="activeTabStat === 'incomes' ? 1 : 0"
-              :amount="statToday[activeTabStat].total"
-              :title="$t('dates.day.today')"
-            )
-
-          .total__custom(
-            v-if="statCurrentPeriod[activeTabStat].total !== 0"
-            style="padding-right: 12px"
-          )
-            .periodItem(
-              :class="{ _active: ui.showPieChart }"
-              @click="toogleView('showPieChart')"
-            ): .mdi.mdi-chart-pie
-
-            .periodItem(
-              :class="{ _active: ui.showCatsVerticalChart }"
-              @click="toogleView('showCatsVerticalChart')"
-            ): .mdi.mdi-poll
-
-            .periodItem(
-              :class="{ _active: ui.showRoundCats }"
-              @click="toogleView('showRoundCats')"
-            ): .mdi.mdi-chart-bubble
-
-            .periodItem(
-              :class="{ _active: ui.showCatsHorizontalList }"
-              @click="toogleView('showCatsHorizontalList')"
-            ): .mdi.mdi-chart-timeline
-
       //- Control
       ChartPeriods
 
       //- Graph
       .baseBox._chart(v-if="ui.showMainChart && isShowChart")
         LazyChartTotal(v-if="ui.showMainChart && isShowChart")
+
+  //- Controls
+  .statWiews(v-if="activeTabStat !== 'history'")
+    .periodItem(
+      :class="{ _active: ui.showPieChart }"
+      @click="toogleView('showPieChart')"
+    ): .mdi.mdi-chart-pie
+
+    .periodItem(
+      :class="{ _active: ui.showCatsVerticalChart }"
+      @click="toogleView('showCatsVerticalChart')"
+    ): .mdi.mdi-poll
+
+    .periodItem(
+      :class="{ _active: ui.showRoundCats }"
+      @click="toogleView('showRoundCats')"
+    ): .mdi.mdi-chart-bubble
+
+    .periodItem(
+      :class="{ _active: ui.showCatsHorizontalList }"
+      @click="toogleView('showCatsHorizontalList')"
+    ): .mdi.mdi-chart-timeline
+
+    template(v-if="!isEmptyStat")
+      .periodItem(@click="toogleChartsView")
+        .mdi.mdi-chart-line(v-if="periods[filterPeriodNameAllReplacedToYear].grouped")
+        .mdi.mdi-chart-bar(v-else)
+
+      .periodItem(@click="isShowDataLabels = !isShowDataLabels")
+        .mdi.mdi-subtitles-outline
+
+  //-
+  //-
+  //-
+  .totalSum(v-if="activeTabStat !== 'history'")
+    template(v-if="(activeTabStat === 'details' || activeTabStat === 'history') && $store.state.filter.period !== 'all'")
+      div
+        .baseBox__title {{ $t('money.total') }}
+        .boxSummary2
+          .boxSummary2__item
+            Amount(
+              :currency="$store.state.currencies.base"
+              :type="(statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total) > 0 ? 1 : 0"
+              :value="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total"
+              size="xl"
+              vertical="left"
+            )
+          LazyStatSummaryRowItemView(
+            v-if="statAverage.incomes - statAverage.expenses !== 0"
+            :type="(statAverage.incomes - statAverage.expenses) > 0 ? 1 : 0"
+            :amount="statAverage.incomes - statAverage.expenses"
+            :title="$t('money.averageTotal')"
+          )
+
+    template(v-else-if="$store.state.filter.period !== 'all'")
+      div
+        .baseBox__title {{ $t('money.total') }}
+        .boxSummary2
+          .boxSummary2__item
+            Amount(
+              :currency="$store.state.currencies.base"
+              :type="activeTabStat === 'incomes' ? 1 : 0"
+              :value="statCurrentPeriod[activeTabStat].total"
+              size="xl"
+              vertical="left"
+            )
+          LazyStatSummaryRowItemView(
+            v-if="statAverage[activeTabStat] !== 0"
+            :type="activeTabStat === 'incomes' ? 1 : 0"
+            :amount="statAverage[activeTabStat]"
+            :title="$t('money.averageTotal')"
+          )
 
   //-
   //- Menu
@@ -253,14 +270,14 @@ export default {
   //-
   //- Loop throw incomes / expenses
   //-
-  .statMoneyTypes
+  .statMoneyTypes(v-if="activeTabStat !== 'history'")
     template(
       v-for="item in moneyTypes"
       v-if="activeTabStat === 'details' || (activeTabStat === 'incomes' && item.id === 'incomes') || (activeTabStat === 'expenses' && item.id === 'expenses')"
     )
       template(v-if="statCurrentPeriod[item.id].total > 0 || (statAverage && statAverage[item.id] !== 0) || $store.state.filter.period === 'all'")
         .baseBox._noBdMedia._mw
-          template(v-if="activeTabStat === 'details' && (statAverage.incomes !== 0 && statAverage.expenses !== 0)")
+          template(v-if="activeTabStat === 'details'")
             .sumBox
               .baseBox__title {{ $t(`money.${item.id}`) }}
               .boxSummary2
@@ -274,40 +291,19 @@ export default {
                     vertical="left"
                   )
                 //- Average
-                StatSummaryRowItemView(
+                LazyStatSummaryRowItemView(
+                  v-if="statAverage[item.id] !== 0"
                   :type="item.type"
                   :amount="statAverage[item.id]"
                   :title="$t(`money.average.${item.id}`)"
                 )
                 //- Today
-                StatSummaryRowItemView(
+                LazyStatSummaryRowItemView(
                   v-if="statToday && statToday[item.id].total !== 0"
                   :type="item.type"
                   :amount="statToday[item.id].total"
                   :title="$t('dates.day.today')"
-                )
-
-              //- Views
-              .total__custom(v-if="statCurrentPeriod[item.id].total !== 0")
-                .periodItem(
-                  :class="{ _active: ui.showPieChart }"
-                  @click="toogleView('showPieChart')"
-                ): .mdi.mdi-chart-pie
-
-                .periodItem(
-                  :class="{ _active: ui.showCatsVerticalChart }"
-                  @click="toogleView('showCatsVerticalChart')"
-                ): .mdi.mdi-poll
-
-                .periodItem(
-                  :class="{ _active: ui.showRoundCats }"
-                  @click="toogleView('showRoundCats')"
-                ): .mdi.mdi-chart-bubble
-
-                .periodItem(
-                  :class="{ _active: ui.showCatsHorizontalList }"
-                  @click="toogleView('showCatsHorizontalList')"
-                ): .mdi.mdi-chart-timeline
+              )
 
           .boxEmpty(v-if="statCurrentPeriod[item.id].categoriesIds.length === 0") {{ $t('stat.empty') }}
 
@@ -363,9 +359,9 @@ export default {
               :type="item.type"
             )
 
-    template(v-if="(activeTabStat !== 'history' && statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)) || (activeTabStat === 'incomes' && statAverage.incomes !== 0 || activeTabStat === 'expenses'  && statAverage.expenses !== 0)")
+    template(v-if="!isEmptyStat && (activeTabStat !== 'history' && statAverage && (statAverage.incomes === 0 || statAverage.expenses === 0)) || (activeTabStat === 'incomes' && statAverage.incomes !== 0 || activeTabStat === 'expenses'  && statAverage.expenses !== 0)")
       .baseBox._mw(v-if="$store.getters['trns/selectedTrnsIdsWithDate'].length > 0")
-        .baseBox__title {{ $t('trns.history') }}
+        .baseBox__title {{ $t('trns.inPeriodTitle') }}
         .baseBox__content
           TrnsList3(
             :incomes="activeTabStat === 'incomes'"
@@ -374,11 +370,17 @@ export default {
           )
 
   //- history
-  .history(v-if="activeTabStat === 'history' || statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0 && (activeTabStat !== 'incomes' && activeTabStat !== 'expenses')")
-    .baseBox__title(v-if="activeTabStat !== 'history'") {{ $t('trns.history') }}
+  .history(v-if="activeTabStat !== 'history' && statAverage && (statAverage.incomes !== 0 && statAverage.expenses !== 0) && ui.showHistory && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0 && (activeTabStat !== 'incomes' && activeTabStat !== 'expenses')")
+    .baseBox__title(v-if="activeTabStat !== 'history'") {{ $t('trns.inPeriodTitle') }}
     TrnsList(
       :size="50"
       :isShowFilter="activeTabStat === 'history'"
+    )
+
+  .history(v-if="activeTabStat === 'history'")
+    TrnsListHistory(
+      :size="50"
+      isShowFilter
     )
 </template>
 
@@ -427,12 +429,15 @@ export default {
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
 
-.total__custom
-  position absolute
-  top $m5
-  right 0
+.totalSum
+  padding 0 $m6
+
+.statWiews
   display flex
-  margin-left (- $m6)
+  justify-content flex-end
+  margin-bottom (- $m5)
+  padding 0 $m6
+  padding-top $m4
 
   .periodItem
     padding $m5
@@ -581,6 +586,7 @@ export default {
     padding-top 0
     padding-right 0
     padding-bottom 0
+    padding-left $m5
     background none
     border none
 
@@ -614,6 +620,8 @@ export default {
 
 // ------------------------------------
 .boxSummary2
+  overflow hidden
+  overflow-y auto
   z-index 9
   display flex
   align-items center

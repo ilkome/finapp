@@ -15,6 +15,17 @@ export default {
         }
       }
 
+      for (const categoryId in items) {
+        const cat = items[categoryId]
+        if (cat.childIds) {
+          items[categoryId] = {
+            ...cat,
+            showInLastUsed: false,
+            showInQuickSelector: false
+          }
+        }
+      }
+
       dispatch('setCategories', items)
     })
   },

@@ -229,6 +229,9 @@ export default {
     +media-hover()
       background var(--c-blue-1)
 
+  &._maxWidth
+    max-width 280px
+
   &._size_lg
     padding 16px
     font-size 16px

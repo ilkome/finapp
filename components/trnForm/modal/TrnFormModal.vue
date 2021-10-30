@@ -17,7 +17,7 @@ export default defineComponent({
 <template lang="pug">
 Portal(to="modal")
   BaseBottomSheet(
-    :show="true"
+    show
     @closed="$emit('closed')"
   )
     template(#handler="{ close }")
@@ -25,8 +25,11 @@ Portal(to="modal")
       BaseBottomSheetClose(@onClick="close")
 
     template(#default="{ close }")
-      .content(:style="{ maxHeight: documentHeight }")
-        .header
+      .content(
+        :class="{ _withHeader: $slots.header }"
+        :style="{ maxHeight: documentHeight }"
+      )
+        .header(v-if="$slots.header")
           slot(name="header")
 
         slot(name="default" :close="close")
@@ -57,7 +60,6 @@ Portal(to="modal")
 .content
   overflow hidden
   display grid
-  grid-template-rows minmax(min-content, auto) minmax(50px, min-content)
   padding-top $m7
   background var(--color-bg-canvas)
   border-radius $m8 $m8 0 0
@@ -65,13 +67,17 @@ Portal(to="modal")
   +media(600px)
     border-radius 16px
 
+  &._withHeader
+    grid-template-rows minmax(min-content, auto) minmax(50px, min-content)
+
 .header
   position relative
   display flex
   align-items center
   justify-content center
   padding $m7
-  padding-bottom $m7
+  padding-top $m4
+  padding-bottom $m8
   color var(--c-font-3)
   font-size 22px
   font-weight 700

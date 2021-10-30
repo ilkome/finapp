@@ -122,6 +122,7 @@ export default {
   },
 
   yAxis: {
+    opposite: false,
     endOnTick: false,
     cursor: 'pointer',
     alternateGridColor: '',

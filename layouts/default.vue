@@ -148,8 +148,9 @@ export default {
 
     //- notifications
     Notifications(
-      :position="$store.state.ui.mobile ? 'top center' : 'top left'"
-      :width="$store.state.ui.mobile ? '94%' : '380px'"
+      :max="2"
+      :position="$store.state.ui.width < 600 ? 'top center' : 'top center'"
+      :width="$store.state.ui.width < 600 ? '94%' : '380px'"
       classes="notifications"
     )
 

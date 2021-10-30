@@ -55,7 +55,7 @@ export default {
   max-width 480px
   overflow-x auto
   margin 0 auto
-  padding $m7 $m6
+  padding $m5 $m6
   padding-bottom 0
 
   +media(600px)
@@ -67,7 +67,7 @@ export default {
   align-items center
   justify-content center
   min-height 38px
-  min-width 80px
+  min-width 70px
   margin 0 $m5
   padding $m6 $m6
   color var(--c-font-4)
@@ -79,6 +79,8 @@ export default {
   anim()
 
   +media(400px)
+    min-width 80px
+    margin 0 $m5
     padding-right $m7
     padding-left $m7
 

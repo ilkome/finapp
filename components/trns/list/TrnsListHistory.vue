@@ -3,13 +3,9 @@ export default {
   name: 'TrnsList',
 
   props: {
-    categoryId: { type: String, default: null },
-    expenses: { type: Boolean, default: false },
-    incomes: { type: Boolean, default: false },
     isShowFilter: { type: Boolean, default: false },
     limit: { type: Number, default: 0 },
-    size: { type: Number, required: false, default: 30 },
-    ui: { type: String, default: 'history' }
+    size: { type: Number, required: false, default: 30 }
   },
 
   data () {
@@ -22,18 +18,7 @@ export default {
 
   computed: {
     trnsIds () {
-      const trns = this.$store.state.trns.items
-      let trnsIds = this.$store.getters['trns/selectedTrnsIdsWithDate']
-
-      // from category
-      if (this.categoryId)
-        trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === this.categoryId)
-
-      // filter type
-      if (this.incomes) trnsIds = trnsIds.filter(id => trns[id].type === 1)
-      if (this.expenses) trnsIds = trnsIds.filter(id => trns[id].type === 0)
-
-      return trnsIds
+      return this.$store.getters['trns/selectedTrnsIds']
     },
 
     isShowedAllTrns () {
@@ -108,32 +93,18 @@ export default {
 
   .trnsList__content
     template(v-if="trnsIds.length > 0")
-      //- history view
-      template(v-if="ui === 'history'")
-        .trnsList__grid
-          .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
-            .trnsList__header: TrnsListDate(:date="date")
-            .trnsList__trns
-              TrnsItemTrnItem(
-                v-for="trnId in trnsIds"
-                :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
-                :key="trnId"
-                :trn="$store.state.trns.items[trnId]"
-                :trnId="trnId"
-                :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
-              )
-
-      //- stat view
-      template(v-else)
-        template(v-for="trnId of paginatedTrnsIds")
-          TrnsItemTrnItem(
-            :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
-            :key="trnId"
-            :trn="$store.state.trns.items[trnId]"
-            :trnId="trnId"
-            :ui="ui"
-            :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
-          )
+      .trnsList__grid
+        .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
+          .trnsList__header: TrnsListDate(:date="date")
+          .trnsList__trns
+            TrnsItemTrnItem(
+              v-for="trnId in trnsIds"
+              :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
+              :key="trnId"
+              :trn="$store.state.trns.items[trnId]"
+              :trnId="trnId"
+              :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
+            )
 
   .trnsList__pages(v-if="!isShowedAllTrns")
     .button(@click="showMoreTrns") {{ $t('trns.more') }}

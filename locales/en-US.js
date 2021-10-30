@@ -172,7 +172,7 @@ export default {
         error: 'Select currency'
       },
       total: {
-        placeholder: 'Count amount in total balance'
+        placeholder: 'Сash withdrawal'
       },
       save: 'Save'
     }
@@ -206,14 +206,14 @@ export default {
         placeholder: 'Select parent category'
       },
       color: {
-        label: 'Color',
-        placeholder: 'Select color',
-        error: 'Select color',
+        label: 'Colors',
         custom: 'Custom color'
       },
-      icon: {
-        label: 'Icon',
-        placeholder: 'Select icon'
+      icons: {
+        label: 'Icons'
+      },
+      data: {
+        label: 'Data'
       },
       lastUsed: 'Show in last used categories',
       quickSelector: 'Favorite category',
@@ -259,6 +259,7 @@ export default {
   },
 
   trns: {
+    inPeriodTitle: 'Transactions',
     shortTitle: 'Trns',
     history: 'History',
     more: 'Show more',
@@ -328,5 +329,9 @@ export default {
 
   users: {
     title: 'Users'
-  }
+  },
+
+  colors: 'Colors',
+  palette: 'Palette',
+  popularColors: 'Popular colors'
 }

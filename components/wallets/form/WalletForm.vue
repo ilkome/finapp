@@ -8,11 +8,12 @@ export default {
       showColors: false,
       showCurrencies: false,
       wallet: {
-        name: null,
-        order: 1,
+        color: this.$store.state.ui.defaultBgColor,
         countTotal: true,
         currency: 'RUB',
-        color: this.$store.state.ui.defaultBgColor
+        isCredit: false,
+        name: null,
+        order: Object.keys(this.$store.state.wallets.items).length || 1
       }
     }
   },
@@ -65,6 +66,7 @@ export default {
           color: this.wallet.color,
           countTotal: this.wallet.countTotal,
           currency: this.wallet.currency,
+          isCredit: this.wallet.isCredit,
           name: this.wallet.name,
           order: this.wallet.order
         }
@@ -140,7 +142,7 @@ LayoutBaseWrap
             v-model="wallet.name"
           ).inputText__value
 
-      .form__btns
+      .form__btns(style="paddingBottom: 8px")
         .form__btns__i
           .form-line(@click="showCurrencies = true")
             .inputModal._flex
@@ -154,13 +156,19 @@ LayoutBaseWrap
               .inputModal__value: .inputModal__color(:style="{ background: wallet.color }")
               .inputModal__label {{ $t('wallets.form.color.label') }}
 
-      .form-line._p0._clean
-        SharedContextMenuItem(
-          :checkboxValue="wallet.countTotal"
-          :title="$t('wallets.form.total.placeholder')"
-          showCheckbox
-          @onClick="wallet.countTotal = !wallet.countTotal"
-        )
+      SharedContextMenuItem(
+        :checkboxValue="wallet.countTotal"
+        :title="$t('wallets.form.total.placeholder')"
+        showCheckbox
+        @onClick="wallet.countTotal = !wallet.countTotal"
+      )
+
+      SharedContextMenuItem(
+        :checkboxValue="wallet.isCredit"
+        :title="$t('isCredit')"
+        showCheckbox
+        @onClick="wallet.isCredit = !wallet.isCredit"
+      )
 
     //- colors
     Portal(
@@ -310,3 +318,14 @@ LayoutBaseWrap
       background var(--c-blue-1)
       border none
 </style>
+
+<i18n lang="json5">
+{
+  en: {
+    isCredit: 'Credit account'
+  },
+  ru: {
+    isCredit: 'Кредитный счёт'
+  }
+}
+</i18n>

@@ -11,24 +11,15 @@ textarea
 
   &__value
     width 100% !important
-    padding $m7
+    padding $m7 $m7
     color var(--c-font-1)
-    font-size 18px
+    font-size 14px
     background transparent
-    border 1px solid var(--c-bg-8)
+    border 1px solid var(--c-item-bd-main)
     border-radius $m5
     anim()
     /.light-mode &
       color var(--c-font-2)
-
-    &:hover
-      border 1px solid var(--c-bg-9)
-    &:focus
-      border-color var(--c-blue-1)
-
-
-    +media-laptop()
-      font-size 14px
 
     &._color
       width 100px
@@ -38,10 +29,9 @@ textarea
     opacity .6
     padding-bottom $m5
     color var(--c-font-3)
-    font-size 10px
-    font-weight 500
+    font-size 11px
+    font-weight 400
     text-align left
-    text-transform uppercase
 
 .colors
   display grid

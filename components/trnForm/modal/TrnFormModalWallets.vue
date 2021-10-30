@@ -22,9 +22,7 @@ TrnFormModal(@closed="afterClose")
     .trnFormWalletsList.scrollerBlock
       WalletsList3(
         :activeItemId="$store.state.trnForm.values.walletId"
-        :limit="6"
         :showBase="false"
-        showToogle
         ui="widget"
         @onClick="walletId => handleSetWallet(walletId, close)"
       )

@@ -1,6 +1,6 @@
 const successEmo = ['🤟', '🤘', '🤙', '👌', '👍', '💪', '👏', '🤗', '🥰', '😍']
 const errorEmo = ['🤷‍♀️', '🤦‍♀️', '🤔', '😲']
-const greetEmo = ['🤟', '🤘', '🤙', '✌️', '🖖', '🤗', '😘', '😜', '🤪']
+const updateEmo = ['🤟', '💃', '✨', '🔥', '💥', '🎉', '🤘', '🤙']
 
 function random (icons) {
   return icons[Math.floor(Math.random() * icons.length)]
@@ -9,6 +9,6 @@ function random (icons) {
 export {
   successEmo,
   errorEmo,
-  greetEmo,
+  updateEmo,
   random
 }

@@ -55,6 +55,7 @@ export default {
           vertical="center"
         )
       .filterItem__name {{ wallet.name }}
+      .filterItem__close: .mdi.mdi-close
 
   //- Category
   template(v-if="!walletId")
@@ -64,6 +65,7 @@ export default {
         :icon="icon"
       )
     .filterItem__name {{ name }}
+    .filterItem__close: .mdi.mdi-close
 </template>
 
 <style lang="stylus" scoped>
@@ -130,4 +132,12 @@ export default {
     font-size 13px
     text-align center
     anim()
+
+  &__close
+    opacity .8
+    position absolute
+    top $m3
+    right $m3
+    color var(--c-font-5)
+    font-size 14px
 </style>

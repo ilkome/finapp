@@ -1,8 +1,5 @@
 export const state = () => ({
-  hoveredPeriod: {
-    values: null,
-    position: null
-  },
+  isShowDataLabels: true,
 
   periods: {
     day: {

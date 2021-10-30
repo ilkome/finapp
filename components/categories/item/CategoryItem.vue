@@ -37,6 +37,7 @@ export default {
 
 <template lang="pug">
 .categoryItem(
+  v-if="category"
   :class="{ [ui]: ui, _active: activeItemId === id }"
   @click="onClickItem"
 )
@@ -74,14 +75,13 @@ export default {
   border 1px solid transparent
   border-radius $m5
   anim()
-
   +media-hover()
     color var(--c-text-1)
     background var(--c-item-bg-hover)
     border 1px solid var(--c-item-bd-hover)
-
-  +media(700px)
-    padding $m7 $m8
+  &._active
+    background var(--c-item-bg-hover)
+    border 1px solid var(--c-item-bd-hover)
 
   &._flat
     flex-flow row

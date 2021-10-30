@@ -19,7 +19,7 @@ export default {
     }
 
     const periodCounts = {
-      items: [1, 3, 6, 12, 16, 24, 36, 48, 60],
+      items: [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60],
       onSelect: (value) => {
         store.commit('chart/setElementsToChart', {
           period: filterPeriod.value,
@@ -59,6 +59,7 @@ export default {
         .title {{ $t('dates.period') }}
 
         .content
+          //- Periods
           .modalLinks
             ModalButton(
               v-for="periodItem in periodsNames"
@@ -76,15 +77,15 @@ export default {
               @onClick="onSelectPeriod('all')"
             )
 
+          //- Counts
           .title {{ $t('dates.count') }}
-          .modalLinks
-            ModalButton(
+          .counts
+            .countsItem(
               v-for="periodCount in periodCounts.items"
               :key="periodCount"
-              :isActive="periodCount === $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods"
-              :name="periodCount"
-              @onClick="periodCounts.onSelect(periodCount)"
-            )
+              :class="{ _active: periodCount === $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }"
+              @click="periodCounts.onSelect(periodCount)"
+            ) {{ periodCount }}
 
           .wrap
             .button(
@@ -94,6 +95,38 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~assets/stylus/variables'
+
+.counts
+  display flex
+  flex-flow row wrap
+  justify-content center
+  gap $m7
+  padding $m6 $m9
+
+  &Item
+    cursor pointer
+    display flex
+    align-items center
+    justify-content center
+    width 48px
+    height 48px
+    padding $m8 $m7
+    font-secondary()
+    font-size 18px
+    text-align center
+    background #1c1c1c
+    border 1px solid transparent
+    border-radius 50%
+
+    +media-hover()
+      &:not(._active)
+        color var(--c-text-1)
+        background var(--c-item-bg-hover)
+        border-color var(--c-item-bd-hover)
+
+    &._active
+      background var(--c-item-bg-active)
+      border-color var(--c-item-bd-main)
 
 .handler
   z-index 2

@@ -1,23 +1,17 @@
 <script>
-import { ref, computed, useContext } from '@nuxtjs/composition-api'
-import useChart from '~/components/chart/useChart'
-import usePeriods from '~/components/periods/usePeriods'
+import { useContext } from '@nuxtjs/composition-api'
 import useFilter from '~/modules/filter/useFilter'
-import useUIView from '~/components/layout/useUIView'
-import useStat from '~/modules/stat/useStat'
+import usePeriods from '~/components/periods/usePeriods'
 
 export default {
   name: 'ChartPeriods',
 
   setup () {
     const { store } = useContext()
-    const { isEmptyStat } = useStat()
 
     // Filter
     const { filterPeriodNameAllReplacedToYear } = useFilter()
 
-    // Chart
-    const { isShowDataLabels, toogleChartsView } = useChart()
     function saveChartsPeriodsToLocalStorage () {
       store.dispatch('ui/saveUiView')
     }
@@ -42,32 +36,13 @@ export default {
     }
 
     // Periods
-    const periods = computed(() => store.state.chart.periods)
     const { periodsNames } = usePeriods()
 
-    const { ui, setUI } = useUIView()
-    function toogleView (name) {
-      setUI({ name, value: !ui[name] })
-    }
-
-    const visibleContextMenu = ref(false)
-
     return {
-      isEmptyStat,
-      isShowDataLabels,
-      toogleChartsView,
       addPeriodOrGroup,
       removePeriodOrGroup,
-
-      periods,
-      periodsNames,
-
       filterPeriodNameAllReplacedToYear,
-
-      ui,
-      toogleView,
-
-      visibleContextMenu
+      periodsNames
     }
   }
 }
@@ -92,14 +67,6 @@ export default {
     .periodItem(
       @click="addPeriodOrGroup"
     ): .mdi.mdi-plus
-
-  .periods__group(v-if="!isEmptyStat")
-    .periodItem(@click="toogleChartsView")
-      .mdi.mdi-chart-line(v-if="periods[filterPeriodNameAllReplacedToYear].grouped")
-      .mdi.mdi-chart-bar(v-else)
-
-    .periodItem(@click="isShowDataLabels = !isShowDataLabels")
-      .mdi.mdi-subtitles-outline
 </template>
 
 <style lang="stylus" scoped>
@@ -108,7 +75,7 @@ export default {
 .periods
   position relative
   display grid
-  grid-template-columns auto 1fr auto auto
+  grid-template-columns 1fr auto
   grid-column-gap $m5
   align-items center
 
@@ -123,7 +90,7 @@ export default {
     display flex
     align-items center
     justify-content center
-    justify-self center
+    justify-self start
 
 .periodItem
   cursor pointer

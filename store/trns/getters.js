@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 
 export default {
-  hasTrns (state, getters, rootState) {
+  hasTrns (_state, _getters, rootState) {
     if (rootState.trns.items) {
       if (Object.keys(rootState.trns.items).length > 0)
         return true
@@ -11,7 +11,7 @@ export default {
 
   /**
     * Return total amounts of trnsIds
-    * * Refactor params should be Object
+    * * Refactor: params should be Object
     *
     * @param {Array} trnsIds
     * @return {Object} return
@@ -19,7 +19,7 @@ export default {
     * @return {String} return.incomes
     * @return {String} return.total
   */
-  getTotalOfTrnsIds: (state, getters, rootState, rootGetters) => (trnsIds, inculdeTrnasfers = false, isConvertToBase = true, walletId) => {
+  getTotalOfTrnsIds: (_state, _getters, rootState, rootGetters) => (trnsIds, inculdeTrnasfers = false, isConvertToBase = true, walletId) => {
     const trns = rootState.trns.items
     const currencies = rootState.currencies.rates
     const wallets = rootState.wallets.items

@@ -21,6 +21,7 @@ export default {
       color: values.color,
       countTotal: values.countTotal,
       currency: values.currency,
+      isCredit: values.isCredit,
       name: values.name,
       order: parseInt(values.order) || 1
     }

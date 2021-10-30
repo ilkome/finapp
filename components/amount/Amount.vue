@@ -169,7 +169,6 @@ export default {
       font-size 26px
 
     ~/._base &
-      padding-top 10px
       font-size 12px
 
     ~/._base._size_xl &

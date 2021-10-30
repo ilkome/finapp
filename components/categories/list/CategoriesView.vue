@@ -43,7 +43,4 @@ export default {
 .categories._flat
   overflow hidden
   padding 0
-
-  .categories__list
-    // grid-template-columns repeat(3, 1fr)
 </style>

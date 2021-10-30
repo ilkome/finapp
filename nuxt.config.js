@@ -118,6 +118,7 @@ export default {
     },
     seo: false,
     lazy: true,
+    vueI18nLoader: true,
     langDir: 'locales/'
   },
 

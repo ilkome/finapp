@@ -174,7 +174,7 @@ export default {
         error: 'Выберите валюту'
       },
       total: {
-        placeholder: 'Считать в общем балансе'
+        placeholder: 'Деньги доступны для снятия'
       },
       save: 'Сохранить'
     }
@@ -208,14 +208,14 @@ export default {
         placeholder: 'Выберите категрию'
       },
       color: {
-        label: 'Цвет',
-        placeholder: 'Выберите цвет',
-        error: 'Выберите цвет',
+        label: 'Цвета',
         custom: 'Кастомный цвет'
       },
-      icon: {
-        label: 'Иконка',
-        placeholder: 'Выберите иконку'
+      icons: {
+        label: 'Иконки'
+      },
+      data: {
+        label: 'Данные'
       },
       lastUsed: 'Показывать в списке недавних категорий',
       quickSelector: 'Любимая категория',
@@ -261,6 +261,7 @@ export default {
   },
 
   trns: {
+    inPeriodTitle: 'Транзакции',
     shortTitle: 'Транзакции',
     history: 'История',
     more: 'Показать еще',
@@ -283,7 +284,7 @@ export default {
       incomes: 'Средний доход',
       expenses: 'Средний расход'
     },
-    averageTotal: 'Средний баланс',
+    averageTotal: 'Обычно',
     also: 'Еще',
     wallets: 'Кошельки',
     all: 'Всего'
@@ -330,5 +331,29 @@ export default {
 
   users: {
     title: 'Пользователи'
+  },
+
+  colors: 'Цвета',
+  palette: 'Палитра',
+  popularColors: 'Популярные',
+
+  groups: {
+    id: 'groups',
+    title: 'Группы',
+    show: 'Показать группы',
+    form: {
+      title: 'Create new group',
+      name: 'Group name',
+      amount: 'Group amount',
+      button: 'Create'
+    },
+    trns: {
+      name: 'Group transactions'
+    },
+    stat: {
+      expenses: 'Рассход',
+      incomes: 'Доход',
+      total: 'Итого'
+    }
   }
 }

@@ -24,13 +24,13 @@ export default {
       return this.$store.state.trnForm.values.walletFromId || this.$store.state.trnForm.values.walletId || this.$store.getters['wallets/walletsSortedIds'][0]
     },
     walletFrom () {
-      return this.$store.state.wallets.items[this.walletFromId]
+      return this.$store.state.wallets.items && this.$store.state.wallets.items[this.walletFromId]
     },
     walletToId () {
       return this.$store.state.trnForm.values.walletToId || this.$store.getters['wallets/walletsSortedIds'][1] || this.$store.state.trnForm.values.walletId
     },
     walletTo () {
-      return this.$store.state.wallets.items[this.walletToId]
+      return this.$store.state.wallets.items && this.$store.state.wallets.items[this.walletToId]
     }
   }
 }

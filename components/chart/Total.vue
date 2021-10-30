@@ -39,7 +39,6 @@ export default {
   .chart__content
     LazyChartStatChartLines(
       :categoryId="filter.categoryId"
-      :chartColor="filter.categoryId && $store.state.categories.items[filter.categoryId].color"
       :chartType="chartType"
       :isShowExpenses="activeTabStat === 'expenses' || activeTabStat === 'details' || activeTabStat === 'history'"
       :isShowIncomes="activeTabStat === 'incomes' || activeTabStat === 'details' || activeTabStat === 'history'"

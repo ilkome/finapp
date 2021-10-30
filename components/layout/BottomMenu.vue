@@ -55,6 +55,8 @@ export default {
     function getClassName (tabName) {
       if (route.value.name === tabName)
         return true
+      else if (tabName === 'stat' && route.value.name === 'index')
+        return true
     }
 
     return {

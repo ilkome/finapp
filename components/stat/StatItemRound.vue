@@ -40,11 +40,13 @@ export default {
       })
     })
 
+    const isCategoryHasChildren = computed(() => store.getters['categories/isCategoryHasChildren'](categoryId.value))
     const filterPeriod = computed(() => store.state.filter.period)
     const statCurrentPeriod = computed(() => store.getters['stat/statCurrentPeriod'])
 
     // long press
     const item = ref(document.createElement('div'))
+
     onMounted(() => {
     // Long press for delete
       const element: HTMLElement = item.value
@@ -52,8 +54,6 @@ export default {
         store.dispatch('trnForm/openTrnForm', {
           action: 'create'
         })
-
-        const isCategoryHasChildren = computed(() => store.getters['categories/isCategoryHasChildren'](categoryId.value))
 
         if (isCategoryHasChildren.value) {
           store.commit('trnForm/showTrnFormModal', 'categories')
@@ -73,7 +73,8 @@ export default {
       trnsIds,
       filterPeriod,
       statCurrentPeriod,
-      item
+      item,
+      isCategoryHasChildren
     }
   }
 }
@@ -81,6 +82,7 @@ export default {
 
 <template lang="pug">
 .statItemRound(
+  v-if="category"
   :class="{ _prevStat: total === 0 }"
   ref="item"
   data-long-press-delay="300"
@@ -94,7 +96,7 @@ export default {
       round
     )
 
-  .statItemRound__name {{ category.name }}
+  .statItemRound__name(:class="{ _isCategoryHasChildren: isCategoryHasChildren }") {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
   .statItemRound__amount
     Amount(
       :currency="currency"
@@ -152,6 +154,9 @@ export default {
     ^[0]._active &
       color var(--c-font-2)
       font-weight 500
+
+    &._isCategoryHasChildren
+      margin-right -8px
 
   &__amount
     align-self center

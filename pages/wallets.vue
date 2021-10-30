@@ -23,11 +23,12 @@ LayoutBaseWrap(:contentPadding="false")
     .header {{ $t('wallets.name') }}
 
     div(style="padding: 0 0 16px 0")
-      WalletsTotal
+      WalletsTotal(
+        isShowCredits
+        isShowTotal
+      )
 
     WalletsList3(
-      :limit="6"
-      showToogle
       @onClick="(id) => handleShowWalletsModalWalletModal(id)"
     )
 

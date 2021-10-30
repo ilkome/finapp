@@ -106,18 +106,16 @@ TrnFormModal(@closed="afterClose")
 
       .prev
       .next
+        width 48px
+        height 48px
+        min-width 48px
         margin 0
-        padding $m6 $m9
-        background none
-        border 1px solid var(--c-bg-5)
-        border-radius 3px
+        background var(--c-item-bg-main)
+        border-radius 50%
         anim()
 
         &.disabled
           opacity 0
-
-        &:hover
-          background none
 
       .prev:after
         border-right 10px solid var(--c-bg-9)
@@ -153,7 +151,7 @@ TrnFormModal(@closed="afterClose")
       position relative
       padding-top $m2
       text-align center
-      border-radius $m5
+      border-radius 24px
 
     .today
       color var(--c-font-1)
@@ -162,7 +160,11 @@ TrnFormModal(@closed="afterClose")
     .disabled
       color var(--c-font-4)
 
-    .selected
+    .cell.selected
       color var(--c-font-1)
       background var(--c-blue-1)
+
+    .cell.month
+    .cell.year
+      border-radius $m5
 </style>
