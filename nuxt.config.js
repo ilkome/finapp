@@ -89,8 +89,14 @@ export default {
     // https://composition-api.nuxtjs.org/
     '@nuxtjs/composition-api/module',
     // https://typescript.nuxtjs.org/
-    '@nuxt/typescript-build'
+    '@nuxt/typescript-build',
+    // https://tailwindcss.nuxtjs.org/
+    '@nuxtjs/tailwindcss'
   ],
+
+  tailwindcss: {
+    viewer: false
+  },
 
   // Router middleware
   router: {

@@ -39,6 +39,7 @@
     "@nuxtjs/eslint-config-typescript": "6.0.1",
     "@nuxtjs/pwa": "3.3.5",
     "@nuxtjs/style-resources": "1.2.1",
+    "@nuxtjs/tailwindcss": "^4.2.1",
     "cross-env": "7.0.3",
     "eslint": "7.32.0",
     "eslint-plugin-nuxt": "2.0.0",
