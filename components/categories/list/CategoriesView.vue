@@ -38,8 +38,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .categories._flat
   overflow hidden
   padding 0

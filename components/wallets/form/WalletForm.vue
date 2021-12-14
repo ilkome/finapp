@@ -219,8 +219,6 @@ LayoutBaseWrap
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .customColor
   margin (- $m7)
   margin-top 0

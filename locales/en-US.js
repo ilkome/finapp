@@ -48,20 +48,7 @@ export default {
     }
   },
 
-  about: {
-    creators: {
-      title: 'Creators',
-      author: 'Author',
-      thanks: 'Thanks for support'
-    }
-  },
-
   app: {
-    update: {
-      title: 'New version available',
-      text: 'Reload the app to use new futures.',
-      button: 'Reload'
-    },
     version: 'Version',
     desc: 'Powerful personal finance application',
     welcome: 'Welcome to Finapp',

@@ -1,7 +1,5 @@
 <script>
 export default {
-  name: 'TrnsList',
-
   props: {
     isShowFilter: { type: Boolean, default: false },
     limit: { type: Number, default: 0 },
@@ -79,112 +77,42 @@ export default {
 </script>
 
 <template lang="pug">
-.trnsList
-  template(v-if="isShowFilter && isTrnsWithDescription")
-    .filter
-      SharedContextMenuItem(
-        :checkboxValue="isShowTrnsWithDesc"
-        :grow="false"
-        :title="$t('trns.filter.showTrnsWithDesc')"
-        icon="mdi mdi-comment-text-outline"
-        showCheckbox
-        @onClick="isShowTrnsWithDesc = !isShowTrnsWithDesc"
-      )
+div
+  .flex.pb-3(v-if="isShowFilter && isTrnsWithDescription")
+    SharedContextMenuItem(
+      :checkboxValue="isShowTrnsWithDesc"
+      :grow="false"
+      :title="$t('trns.filter.showTrnsWithDesc')"
+      icon="mdi mdi-comment-text-outline"
+      showCheckbox
+      @onClick="isShowTrnsWithDesc = !isShowTrnsWithDesc"
+    )
 
-  .trnsList__content
-    template(v-if="trnsIds.length > 0")
-      .trnsList__grid
-        .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
-          .trnsList__header: TrnsListDate(:date="date")
-          .trnsList__trns
+  template(v-if="trnsIds.length > 0")
+    .grid.grid-cols-1.gap-2(
+      class="md:grid-cols-2 md:gap-6 lg:grid-cols-3"
+    )
+      .overflow-hidden.rounded-md.bg-4(
+        v-for="(trnsIds, date) in groupedTrns"
+      )
+        .pt-4
+          .pb-2.px-3
+            TrnsListDate(:date="date")
+          div
             TrnsItemTrnItem(
               v-for="trnId in trnsIds"
-              :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
               :key="trnId"
+              :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
               :trn="$store.state.trns.items[trnId]"
               :trnId="trnId"
               :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
             )
 
-  .trnsList__pages(v-if="!isShowedAllTrns")
+  .py-4(v-if="!isShowedAllTrns")
     .button(@click="showMoreTrns") {{ $t('trns.more') }}
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
-.filter
-  display flex
-  padding-bottom $m6
-
 .button
   button-base-1()
-  margin-top $m7
-
-.trnsList
-  max-width 400px
-  padding-bottom 8px
-
-  &:last-child
-    padding-bottom 0
-
-  +media(600px)
-    max-width 100%
-    padding 0
-
-  &__grid
-    display grid
-    grid-template-rows 1fr
-    grid-template-columns 1fr
-    grid-column-gap 8px
-    grid-row-gap 8px
-    padding 8px
-    padding-bottom 0
-
-    +media(600px)
-      grid-column-gap 20px
-      grid-row-gap 20px
-      grid-template-columns repeat(auto-fill, minmax(260px, 1fr))
-      padding 0
-
-  &__day
-    overflow hidden
-    margin-bottom 16px
-    padding-bottom 16px
-
-    +media(600px)
-      margin 0
-      padding 16px 0px
-      background var(--c-bg-4)
-      border-bottom 1px solid var(--c-bg-2)
-      border-radius 12px
-
-    &:first-child
-      margin-top $m9
-      border-top 0
-
-      +media(600px)
-        margin 0
-
-  &__header
-    display flex
-    align-items center
-    justify-content space-between
-    padding 0 12px
-    padding-bottom 12px
-
-  &__pages
-    padding 16px 8px
-
-    +media(600px)
-      padding 0
-      padding-top 20px
-
-  &__sort
-    padding 0
-    padding-bottom $m8
-
-    +media-laptop('less')
-      padding $m7
-      padding-bottom $m6
 </style>

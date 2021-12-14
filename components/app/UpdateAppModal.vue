@@ -17,26 +17,21 @@ export default {
 <template lang="pug">
 TrnFormModal(@closed="$emit('onClose')")
   template(#default="{ close }")
-    .scrollerBlock
-      .wrap
-        .emo {{ emo }}
-        .header {{ $t('app.update.title') }}
-        .text {{ $t('app.update.text') }}
+    .py-5.text-center(
+      class="lg:py-8"
+    )
+      .emo {{ emo }}
+      .header {{ $t('title') }}
+      .pb-10 {{ $t('text') }}
 
-        SharedButton(
-          className="_blue2 _text-center _maxWidth"
-          :title="$t('base.ok')"
-          @onClick="$emit('onClose')"
-        )
+      SharedButton(
+        className="_blue2 _text-center _maxWidth"
+        :title="$t('button')"
+        @onClick="$emit('onClose')"
+      )
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
-.wrap
-  padding 0 $m7
-  text-align center
-
 .header
   padding-bottom $m6
   color var(--c-font-3)
@@ -47,11 +42,24 @@ TrnFormModal(@closed="$emit('onClose')")
   /.light-mode &
     color var(--c-font-4)
 
-.text
-  padding-bottom $m9
-
 .emo
   padding-top $m8
   padding-bottom $m9
   font-size 86px
 </style>
+
+<i18n lang="json5">
+{
+  en: {
+    title: 'New version available',
+    text: 'Reload the app to use new futures.',
+    button: 'Wow, great!'
+  },
+
+  ru: {
+    title: 'Доступа новая версия',
+    text: 'Перезагрузи приложение, чтобы использовать все новые фишки.',
+    button: 'Оки, Ура!'
+  }
+}
+</i18n>

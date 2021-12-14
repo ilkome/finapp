@@ -9,6 +9,7 @@ module.exports = {
     '@nuxtjs/eslint-config-typescript'
   ],
   rules: {
+    'vue/multi-word-component-names': 'off',
     'no-console': 'off',
     'no-throw-literal': 'off',
     'brace-style': [

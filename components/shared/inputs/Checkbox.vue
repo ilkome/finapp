@@ -17,8 +17,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .checkboxBlock
   display flex
   align-items center

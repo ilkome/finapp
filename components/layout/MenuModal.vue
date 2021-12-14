@@ -2,7 +2,7 @@
 import { computed, useContext } from '@nuxtjs/composition-api'
 
 export default {
-  name: 'LayoutMobileMenuModal',
+  name: 'LayoutMenuModal',
 
   setup () {
     const { store } = useContext()
@@ -34,22 +34,11 @@ Portal(to="modal")
             size="xl"
           )
 
-    template
-      .content
-        div(style="height: 16px")
-        LayoutSidebarMenu
-
-        div(style="padding: 0 16px 16px 16px")
-          SharedContextMenuItem(
-            :title="$t('theme.change')"
-            icon="mdi mdi-palette"
-            @onClick="$store.dispatch('ui/changeTheme')"
-          )
+    .content(class="!overflow-hidden !pt-8 !pb-2")
+      LayoutMenuModalItems
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .handler
   z-index 2
   position absolute
@@ -70,6 +59,7 @@ Portal(to="modal")
     border-radius 4px
 
 .content
+  padding 0
   border-radius $m7 $m7 0 0
   +media(600px)
     border-radius $m7

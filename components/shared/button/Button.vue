@@ -92,8 +92,6 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .d-button
   cursor pointer
   display flex
@@ -211,7 +209,7 @@ export default {
 
     &:hover
       @media $media-laptop
-        background var(--c-blue-2)
+        background var(--c-blue-3)
 
   &._blue2
     cursor pointer

@@ -48,24 +48,24 @@ export default {
     const item = ref(document.createElement('div'))
 
     onMounted(() => {
-    // Long press for delete
-      const element: HTMLElement = item.value
-      element.addEventListener('long-press', () => {
-        store.dispatch('trnForm/openTrnForm', {
-          action: 'create'
-        })
+      // Long press for delete
+      // const element: HTMLElement = item.value
+      // element.addEventListener('long-press', () => {
+      //   store.dispatch('trnForm/openTrnForm', {
+      //     action: 'create'
+      //   })
 
-        if (isCategoryHasChildren.value) {
-          store.commit('trnForm/showTrnFormModal', 'categories')
-          store.commit('trnForm/showTrnFormModal', 'categoriesChild')
-          store.commit('trnForm/setTrnFormModalCategoryId', categoryId.value)
-        }
-        else {
-          store.commit('trnForm/setTrnFormValues', {
-            categoryId: categoryId.value
-          })
-        }
-      })
+      //   if (isCategoryHasChildren.value) {
+      //     store.commit('trnForm/showTrnFormModal', 'categories')
+      //     store.commit('trnForm/showTrnFormModal', 'categoriesChild')
+      //     store.commit('trnForm/setTrnFormModalCategoryId', categoryId.value)
+      //   }
+      //   else {
+      //     store.commit('trnForm/setTrnFormValues', {
+      //       categoryId: categoryId.value
+      //     })
+      //   }
+      // })
     })
 
     return {
@@ -96,14 +96,13 @@ export default {
       round
     )
 
-  .statItemRound__name(:class="{ _isCategoryHasChildren: isCategoryHasChildren }") {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
-  .statItemRound__amount
+  .statItemRound__name.js-getWidth(:class="{ _isCategoryHasChildren: isCategoryHasChildren }") {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
+  .statItemRound__amount.js-getWidth
     Amount(
       :currency="currency"
       :isColorize="false"
       :type="type"
       :value="total"
-      isShowPrefix
       size="md"
     )
 </template>
@@ -120,10 +119,7 @@ export default {
         font-size 22px
 </style>
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .statItemRound
-  overflow hidden
   cursor pointer
   position relative
   display flex
@@ -133,10 +129,8 @@ export default {
   padding $m6
   border 1px solid transparent
   border-radius $m5
-
   +media-hover()
     background var(--c-item2-bg-hover)
-    border 1px solid var(--c-item-bd-hover)
 
   &._prevStat
     opacity .5
@@ -145,7 +139,6 @@ export default {
     margin-bottom $m9
 
   &__name
-    align-self center
     padding 6px 0 2px 0
     color var(--c-font-4)
     font-size 12px
@@ -157,7 +150,4 @@ export default {
 
     &._isCategoryHasChildren
       margin-right -8px
-
-  &__amount
-    align-self center
 </style>

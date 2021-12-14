@@ -36,8 +36,6 @@ Portal(to="modal")
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .handler
   z-index 2
   position absolute
@@ -61,7 +59,7 @@ Portal(to="modal")
   overflow hidden
   display grid
   padding-top $m7
-  background var(--color-bg-canvas)
+  background var(--c-bg-3)
   border-radius $m8 $m8 0 0
 
   +media(600px)

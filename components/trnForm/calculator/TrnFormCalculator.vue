@@ -102,8 +102,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .trnFormButton
   padding $m7
 
@@ -167,7 +165,7 @@ export default {
     user-select none
     anim(100ms)
 
-    +media(400px)
+    +media(360px)
       width 58px
       height 58px
 

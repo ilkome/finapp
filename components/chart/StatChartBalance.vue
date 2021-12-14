@@ -179,8 +179,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 $background = var(--c-bg-4)
 $border = var(--c-bg-1)
 

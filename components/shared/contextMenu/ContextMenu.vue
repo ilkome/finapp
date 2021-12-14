@@ -69,8 +69,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .context-menu
   z-index 6
   position relative

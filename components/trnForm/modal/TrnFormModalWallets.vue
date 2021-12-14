@@ -29,8 +29,6 @@ TrnFormModal(@closed="afterClose")
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/variables'
-
 .trnFormWalletsList
   overflow hidden
   overflow-y auto

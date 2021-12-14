@@ -100,8 +100,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .block
   padding-bottom $m10
 

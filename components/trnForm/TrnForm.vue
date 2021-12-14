@@ -283,8 +283,6 @@ export default {
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/variables'
-
 .trnFormWalletsList .wallets__grid
 .trnForm .wallets__grid
   grid-template-columns repeat(2, 1fr) !important
@@ -308,7 +306,7 @@ export default {
     transform translateX(-50%)
 
     /.light-mode &
-      background var(--color-bg-canvas)
+      background var(--c-bg-3)
 
     .swiper-pagination-bullet
       opacity 1
@@ -329,14 +327,12 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .trnForm
   overflow hidden
   overflow hidden
   width 100%
   height auto
-  background var(--color-bg-canvas)
+  background var(--c-bg-3)
   border-radius $m8 $m8 0 0
 
   +media(600px)
@@ -352,7 +348,7 @@ export default {
   &__wrap
     overflow hidden
     position relative
-    background var(--color-bg-canvas)
+    background var(--c-bg-3)
     border-radius 16px 16px 0 0
     box-shadow 0 0 10px 5px var(--c-bg-1)
 
@@ -360,7 +356,7 @@ export default {
       anim(200ms)
 
   &__scroll
-    background var(--color-bg-canvas)
+    background var(--c-bg-3)
 
   &__title
     padding 0 $m8

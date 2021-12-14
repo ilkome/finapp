@@ -343,7 +343,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.container(
+.modalContainer(
   ref="container"
   :class="{ _hidden: !opened }"
 )
@@ -377,8 +377,6 @@ export default defineComponent({
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .info
   padding 20px
 
@@ -388,7 +386,7 @@ export default defineComponent({
     &:last-child
       padding-bottom 0
 
-.container
+.modalContainer
   overflow hidden
   z-index 1000
   position absolute
@@ -412,7 +410,7 @@ export default defineComponent({
   bottom 0
   width 100%
   height 100%
-  background rgba(0, 0, 0, .8)
+  background var(--c-bg-14)
   backdrop-filter blur(6px)
 
   &._anim

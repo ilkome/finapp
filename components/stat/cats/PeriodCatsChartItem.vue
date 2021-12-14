@@ -73,23 +73,19 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .statCatsItem
   cursor pointer
-  margin-top 12px
-  margin-right 10px
-  background var(--c-bg-5)
+  margin-top 16px
+  margin-right 8px
   border-radius $m4
+  +media-hover()
+    padding 8px
+    padding-top 8px
+    margin 8px 0 -8px -8px
+    background var(--c-bg-7)
 
-  &:hover
-    @media (hover hover)
-      margin -20px 0px -20px -10px
-      padding 32px 10px 20px 10px
-      background var(--c-bg-6)
-
-      /.light-mode &
-        background var(--c-bg-1)
+    /.light-mode &
+      background var(--c-bg-1)
 
   &__graph
     position relative
@@ -98,6 +94,7 @@ export default {
     margin 0 auto
     margin-bottom -3px
     border-radius $m4
+    background var(--c-bg-5)
 
     &__amount
       position absolute

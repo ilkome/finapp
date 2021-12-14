@@ -24,8 +24,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .modalButton
   cursor pointer
   display flex

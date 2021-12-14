@@ -19,7 +19,7 @@ export default {
 </script>
 
 <template lang="pug">
-.container
+.containerWrap
   h1 Error
   pre {{ error }}
   h1(@click="$router.push('/')") Go to home
@@ -28,6 +28,6 @@ export default {
 <style lang="stylus">
 @import "~assets/stylus/variables"
 
-.container
+.containerWrap
   padding $m9
 </style>

@@ -29,8 +29,6 @@ Portal(
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .currencies
   display grid
   grid-template-columns repeat(auto-fill, minmax(100px, 1fr))

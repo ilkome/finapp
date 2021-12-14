@@ -27,8 +27,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .trnsListDate
   display grid
   grid-template-columns minmax(0, max-content) minmax(0, max-content)

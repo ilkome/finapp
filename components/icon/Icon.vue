@@ -1,46 +1,16 @@
 <script>
 export default {
   props: {
-    color: {
-      type: String,
-      default: ''
-    },
-    background: {
-      type: String,
-      default: null
-    },
-    abbr: {
-      type: String,
-      default: null
-    },
-    category: {
-      type: Boolean,
-      default: false
-    },
-    icon: {
-      type: String,
-      default: ''
-    },
-    round: {
-      type: Boolean,
-      default: false
-    },
-    small: {
-      type: Boolean,
-      default: false
-    },
-    medium: {
-      type: Boolean,
-      default: false
-    },
-    big: {
-      type: Boolean,
-      default: false
-    },
-    invert: {
-      type: Boolean,
-      default: false
-    }
+    abbr: { type: String, default: null },
+    background: { type: String, default: null },
+    big: { type: Boolean, default: false },
+    category: { type: Boolean, default: false },
+    color: { type: String, default: '' },
+    icon: { type: String, default: '' },
+    invert: { type: Boolean, default: false },
+    medium: { type: Boolean, default: false },
+    round: { type: Boolean, default: false },
+    small: { type: Boolean, default: false }
   },
 
   computed: {

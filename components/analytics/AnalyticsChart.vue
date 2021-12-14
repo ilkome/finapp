@@ -178,7 +178,7 @@ export default {
             states: {
               select: {
                 color: 'green',
-                backgroundColor: 'var(--c-bg-15)'
+                backgroundColor: 'var(--c-bg-14)'
               }
             }
           }
@@ -224,8 +224,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .chart
   z-index 3
   position relative

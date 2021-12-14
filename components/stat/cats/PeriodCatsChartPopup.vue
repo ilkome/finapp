@@ -48,8 +48,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .chart-popup
   z-index 2
   position absolute

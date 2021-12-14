@@ -69,8 +69,6 @@ TrnFormModal(@closed="afterClose")
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .description
   padding 0 $m7
   padding-bottom 16px

@@ -237,17 +237,21 @@ export default {
             .inputModal__label {{ $t('categories.form.parent.label') }}
 
     .form__btns
-      .form__btns__i
+      pre {{ showColors }}
+      pre(@click="showIcons = !showIcons") {{ showIcons }}
+      //- Colors
+      .form__btns__i.cursor-pointer
         .form-line(@click="showColors = true")
           .inputModal._flex
             .inputModal__value: .inputModal__color(:style="{ background: category.color }")
             .inputModal__label {{ $t('categories.form.color.label') }}
 
-      .form__btns__i
+      //- icons
+      .form__btns__i.cursor-pointer
         .form-line(@click="showIcons = true")
           .inputModal._flex
             .inputModal__icon: div(:class="category.icon", :style="{ color: category.color }")
-            .inputModal__label {{ $t('categories.form.icon.label') }}
+            .inputModal__label {{ $t('categories.form.icons.label') }}
 
     template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length")
       .form-line._p0._clean
@@ -279,9 +283,10 @@ export default {
         @onClick="handleSubmit"
       )
 
-  //- colors
+  //- Colors
   LazyBaseBottomSheet(
     v-if="showColors"
+    :maxHeight="$store.state.ui.height"
     @closed="showColors = false"
   )
     template(#handler="{ close }")
@@ -292,85 +297,49 @@ export default {
         .header__title {{ $t('colors') }}
 
     template(#default="{ close }")
-      .inputText
-        .inputText__colors
-          .colors
-            .colorItem(
-              :class="{ _active: category.color === color }"
-              :style="{ background: color }"
-              v-for="color in colors"
-              @click="handleColorSelect(color)"
-            )
-      .customColor
-        .customColor__title {{ $t('categories.form.color.custom') }}
-        input.customColor__value(v-model="category.color" type="color")
+      .p-3.bg-3
+        .inputText
+          .inputText__colors
+            .colors
+              .colorItem(
+                :class="{ _active: category.color === color }"
+                :style="{ background: color }"
+                v-for="color in colors"
+                @click="handleColorSelect(color)"
+              )
+        .customColor
+          .customColor__title {{ $t('categories.form.color.custom') }}
+          input.customColor__value(v-model="category.color" type="color")
 
-  //- parent
-  Portal(
-    v-if="showParents"
-    to="modal"
-  )
-    ModalBottom(
-      key="parent"
-      :center="true"
-      :title="$t('categories.form.parent.label')"
-      @onClose="showParents = false"
-    )
-      .padding-bottom
-        ModalButton(
-          :name="$t('categories.form.parent.no')"
-          icon="mdi mdi-folder-star"
-          @onClick="() => handleParenCategorySelect(0)")
-      CategoriesView(
-        :noPadding="true"
-        :ids="$store.getters['categories/categoriesForBeParent'].filter(cId => cId !== categoryId)"
-        @onClick="handleParenCategorySelect")
-
-  //- icons
-  Portal(
+  //- Icons
+  LazyBaseBottomSheet(
     v-if="showIcons"
-    to="modal"
+    :maxHeight="$store.state.ui.height"
+    @onClose="showIcons = false"
   )
-    ModalBottom(
-      :center="true"
-      :title="$t('categories.form.icon.placeholder')"
-      @onClose="showIcons = false"
-    )
-      .icons
-        .icons__group(
-          v-for="iconGroup in icons"
-        )
-          .iconItem(
-            v-for="icon in iconGroup"
-            :class="{ _active: category.icon === icon }"
-            :style="{ color: category.color }"
-            @click="handleIconSelect(icon)"
+    template(#handler="{ close }")
+      BaseBottomSheetClose(@onClick="close")
+
+    template(#header)
+      .header
+        .header__title {{ $t('categories.form.icons.label') }}
+
+    template(#default="{ close }")
+      .p-3.bg-3
+        .icons
+          .icons__group(
+            v-for="iconGroup in icons"
           )
-            div(:class="icon")
+            .iconItem(
+              v-for="icon in iconGroup"
+              :class="{ _active: category.icon === icon }"
+              :style="{ color: category.color }"
+              @click="handleIconSelect(icon)"
+            )
+              div(:class="icon")
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
-.handler
-  z-index 2
-  position absolute
-  top 0
-  left 0
-  display flex
-  align-items center
-  justify-content center
-  width 100%
-  height 16px
-
-  &:after
-    content ''
-    display block
-    width 32px
-    height 4px
-    background var(--c-bg-8)
-    border-radius 4px
-
 .content
   +media(600px)
     border-radius 0 0 $m7 $m7

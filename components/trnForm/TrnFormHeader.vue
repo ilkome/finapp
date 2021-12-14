@@ -13,8 +13,6 @@ export default {
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/variables'
-
 .trnFormHeader
   display grid
   grid-template-columns repeat(2, 1fr)

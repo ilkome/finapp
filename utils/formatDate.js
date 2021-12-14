@@ -3,6 +3,10 @@ const calendar = require('dayjs/plugin/calendar')
 
 dayjs.extend(calendar)
 
+dayjs.locale('en', {
+  mondayFirst: true
+})
+
 export const formatDate = (value, type) => {
   // eslint-disable-next-line no-undef
   const currentLocale = $nuxt.$i18n.locale
@@ -31,15 +35,15 @@ export const formatDate = (value, type) => {
       return dayjs(+value).format('DD.MM')
 
     case 'trnItem':
-      if (dayjs().isSame(+value, 'day')) {
+      if (dayjs().isSame(+value, 'day'))
         return 'dates.day.today'
-      }
-      if (dayjs().isSame(dayjs(+value).add(1, 'day'), 'day')) {
+
+      if (dayjs().isSame(dayjs(+value).add(1, 'day'), 'day'))
         return 'dates.day.yesterday'
-      }
-      if (dayjs().isSame(+value, 'year')) {
+
+      if (dayjs().isSame(+value, 'year'))
         return dayjs(+value).format('DD.MM')
-      }
+
       return dayjs(+value).format('DD.MM.YY')
 
     default:

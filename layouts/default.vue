@@ -24,10 +24,7 @@ export default {
     // UI
     const { ui } = useUIView()
 
-    // Computed
-    const activeTab = computed(() => store.state.ui.activeTab)
     const statCurrentPeriod = computed(() => store.getters['stat/statCurrentPeriod'])
-    const statAverage = computed(() => store.getters['stat/statAverage'])
 
     /**
      * Update modal
@@ -72,9 +69,7 @@ export default {
       keepAliveInclude,
       isShowPeriodsNamesModal,
       ui,
-      activeTab,
       statCurrentPeriod,
-      statAverage,
       className,
       isShowUpdateApp
     }
@@ -83,120 +78,40 @@ export default {
 </script>
 
 <template lang="pug">
-.layoutNew(:class="className")
-  .layoutNew__modals
-    //- trn: form
-    BaseBottomSheet(
-      keepAlive
-      :show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show"
-      @closed="$store.dispatch('trnForm/closeTrnForm')"
-    )
-      template(#handler="{ close }")
-        .handler
-        BaseBottomSheetClose(@onClick="close")
-      TrnForm(:show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show")
+.overflow-hidden.relative.flex.h-full.min-w-base(:class="className")
+  LayoutModals
 
-    //- trn: item
-    TrnsModal
+  PortalTarget(
+    multiple
+    name="modal"
+  )
 
-    //- menu
-    LazyLayoutMenuModal(v-if="activeTab === 'menu'")
+  LazyAppUpdateAppModal(
+    v-if="isShowUpdateApp"
+    @onClose="isShowUpdateApp = false"
+  )
 
-    //- currencies
-    CurrenciesModal
-
-    //- category: item
-    CategoriesModal
-
-    //- category: create or edit
-    LazyCategoriesEditModal(v-if="activeTab === 'createCategory'")
-
-    //- settings
-    Portal(v-if="activeTab === 'settings'" to="modal")
-      ModalBottom(@onClose="$store.dispatch('ui/setActiveTab', null)")
-        Settings(v-if="activeTab === 'settings'")
-
-    //- wallet item
-    WalletsModal
-
-    //- wallet: create or edit
-    Portal(v-if="activeTab === 'createWallet'" to="modal")
-      ModalBottom(
-        :key="$store.state.wallets.editId"
-        @onClose="$store.dispatch('ui/setActiveTab', null)"
-      )
-        WalletsFormWalletForm(
-          @callback="$store.dispatch('ui/setActiveTab', null)"
-        )
-
-    //- wallet: sort
-    Portal(v-if="activeTab === 'walletsSort'" to="modal" key="walletsSort")
-      ModalBottom(
-        isShow
-        key="walletsSort"
-        @onClose="$store.dispatch('ui/setActiveTab', null)"
-      )
-        template(#default="{ closeModal }")
-          WalletsSort(
-            v-if="activeTab === 'walletsSort'"
-            @closeModal="closeModal"
-          )
-
-    //- loading
-    template(v-if="!$store.state.app.status.ready")
-      LoaderSharedLoader
-
-    //- notifications
-    Notifications(
-      :max="2"
-      :position="$store.state.ui.width < 600 ? 'top center' : 'top center'"
-      :width="$store.state.ui.width < 600 ? '94%' : '380px'"
-      classes="notifications"
-    )
-
-    //- portal
-    PortalTarget(
-      multiple
-      name="modal"
-    )
-
-    //- update app
-    LazyAppUpdateAppModal(
-      v-if="isShowUpdateApp"
-      @onClose="isShowUpdateApp = false"
-    )
-
-  //- wrap
-  //-----------------------------------
-  .layoutNew__wrap
-    .layoutNew__sidebar
+  .layout__wrap
+    .layout__sidebar
       LayoutSidebar
 
-    .layoutNew__content
-      .page2
+    .layout__content
+      transition(name="fadeInSlow" appear)
         Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
 
-    .layoutNew__menu
+    .layout__menu
       LayoutBottomMenu
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/base'
+@import '~assets/stylus/index'
+@import '~assets/stylus/reset'
+@import '~assets/stylus/colors-dark'
+@import '~assets/stylus/colors-light'
 </style>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
-.layoutNew
-  overflow hidden
-  position relative
-  display flex
-  height 100%
-  background var(--c-bg-3)
-
-  &__modals
-    height 0
-
+.layout
   &__wrap
     flex-grow 1
     overflow hidden
@@ -217,47 +132,20 @@ export default {
 
   &__content
     overflow hidden
-    position relative
+    overflowScrollY()
     display grid
     height 100%
+    max-width 1100px
+    padding 0
+    background var(--c-bg-3)
+    +media(800px)
+      padding 0 32px
+    +media(1000px)
+      padding 0 64px
 
   &__menu
     background var(--c-bg-3)
 
     +media(1200px)
       display none
-
-.handler
-  z-index 2
-  position absolute
-  top 0
-  left 0
-  display flex
-  align-items center
-  justify-content center
-  width 100%
-  height 16px
-
-  &:after
-    content ''
-    display block
-    width 32px
-    height 4px
-    background var(--c-bg-8)
-    border-radius 4px
-
-.page2
-  overflow hidden
-  overflowScrollY()
-  display grid
-  height 100%
-  max-width 1100px
-  padding 0
-  background var(--color-bg-canvas)
-
-  +media(800px)
-    padding 0 32px
-
-  +media(1000px)
-    padding 0 64px
 </style>

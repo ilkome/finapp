@@ -86,8 +86,6 @@ TrnFormModal(@closed="afterClose")
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/variables'
-
 .inlineCalendar
   padding 0 $m7
   padding-bottom $m7

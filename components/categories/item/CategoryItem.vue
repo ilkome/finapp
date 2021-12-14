@@ -58,8 +58,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .categoryItem
   overflow hidden
   cursor pointer

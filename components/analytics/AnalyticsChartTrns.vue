@@ -268,8 +268,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .chart
   z-index 3
   position relative

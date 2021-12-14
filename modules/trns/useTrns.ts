@@ -16,9 +16,8 @@ export default function useFilter () {
    * Get trns with params
    */
   function getTrnsIds (params:any) {
-    if (trnsIds.value.length === 0) {
+    if (trnsIds.value.length === 0)
       return trnsIds.value
-    }
 
     const { walletId, categoryId, date } = params || {}
     let ids = trnsIds.value
@@ -40,9 +39,9 @@ export default function useFilter () {
       if (childCategoriesIds.length) {
         ids = trnsIds.value.filter((trnId) => {
           const trnCategoryId = trns.value[trnId].categoryId
-          for (const categoryId of childCategoriesIds) {
-            if (trnCategoryId === categoryId) { return true }
-          }
+          for (const categoryId of childCategoriesIds)
+            if (trnCategoryId === categoryId) return true
+
           return true
         })
       }

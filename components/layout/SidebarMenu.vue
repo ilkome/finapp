@@ -1,85 +1,30 @@
 <script>
-export default {
-  name: 'LayoutSidebarBaseMenu',
+import { defineComponent } from '@nuxtjs/composition-api'
+import useMenuData from '~/modules/menu/useMenuData'
 
-  computed: {
-    menu () {
-      return {
-        trnForm: {
-          icon: 'mdi mdi-plus',
-          name: this.$t('createTrn')
-        },
-        index: {
-          icon: 'mdi mdi-poll',
-          name: this.$t('stat.shortTitle')
-        },
-        wallets: {
-          icon: 'mdi mdi-credit-card-multiple',
-          name: this.$t('wallets.name')
-        },
-        categories: {
-          icon: 'mdi mdi-folder-star',
-          name: this.$t('categories.name')
-        },
-        settings: {
-          icon: 'mdi mdi-cog-outline',
-          name: this.$t('settings.title')
-        }
-      }
-    }
-  },
+export default defineComponent({
+  setup () {
+    const { items, onClick, getClassNames, checkIsShow } = useMenuData()
 
-  methods: {
-    onClickMenu (menuId) {
-      menuId === 'trnForm'
-        ? this.$store.dispatch('trnForm/openTrnForm', { action: 'create' })
-        : this.$router.push(menuId)
-
-      this.$store.dispatch('ui/setActiveTab', null)
+    return {
+      items,
+      onClick,
+      getClassNames,
+      checkIsShow
     }
   }
-}
+})
 </script>
 
 <template lang="pug">
-.menu
-  template(v-for="(menuItem, menuId) in menu")
-    .menuItem(
-      :class="{ _active: $route.name === menuId }"
-      @click="onClickMenu(menuId)"
-    )
-      .menuItem__icon: div(:class="menuItem.icon")
-      .menuItem__text {{ menuItem.name }}
+div
+  .flex.items-center.py-2.px-4.space-x-5(
+    v-for="(item, menuId) in items"
+    :key="menuId"
+    v-if="checkIsShow(item)"
+    :class="getClassNames(menuId)"
+    @click="onClick(menuId)"
+  )
+    .text-xl.text-neutral-400(:class="item.icon")
+    .text-sm.text-neutral-400 {{ item.name }}
 </template>
-
-<style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
-.menu
-  padding-bottom $m10
-
-.menuItem
-  cursor pointer
-  display flex
-  align-items center
-  gap $m8
-  padding $m7 $m8
-
-  +media-hover()
-    background var(--c-item3-bg-hover)
-
-  &._active
-    color var(--c-font-2)
-    border-right 4px solid var(--c-bg-8)
-
-  &__icon
-    color var(--c-font-3)
-    font-size 20px
-
-  &__text
-    color var(--c-font-4)
-    font-size 14px
-
-    ~/._active &
-      color var(--c-font-2)
-</style>

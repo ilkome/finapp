@@ -4,37 +4,13 @@ import { formatDate } from '~/utils/formatDate'
 
 export default {
   props: {
-    category: {
-      type: Object,
-      required: true
-    },
-    trn: {
-      type: Object,
-      required: true
-    },
-    trnId: {
-      type: String,
-      required: true
-    },
-    wallet: {
-      type: Object,
-      required: true
-    },
-
-    ui: {
-      type: String,
-      default: 'history'
-    },
-
-    showCategory: {
-      type: Boolean,
-      default: false
-    },
-
-    isActive: {
-      type: Boolean,
-      default: false
-    }
+    category: { type: Object, required: true },
+    isActive: { type: Boolean, default: false },
+    showCategory: { type: Boolean, default: false },
+    trn: { type: Object, required: true },
+    trnId: { type: String, required: true },
+    ui: { type: String, default: 'history' },
+    wallet: { type: Object, required: true }
   },
 
   computed: {
@@ -92,16 +68,14 @@ export default {
 </script>
 
 <template lang="pug">
-.trnItem(
+.trnItem.py-3.px-3(
   v-if="(category && wallet) || trn.type === 2"
-  :class="className"
+  :class="{ ...className, 'py-2.5': true }"
   @click="handleClick"
 )
   //- Transfer
-  //---------------------------------------------------------------------------
   template(v-if="trn.type === 2")
     //- Transfer: Detailed
-    //---------------------------------------------------------------------------
     template(v-if="ui === 'detailed'")
       .trnItem__categoryIcon
         Icon(
@@ -136,7 +110,6 @@ export default {
       .trnItem__desc(v-if="trn.description") {{ trn.description }}
 
     //- Transfer: History
-    //-------------------------------------------------------------------------
     template(v-else)
       .trnItem__left
         .trnItem__categoryIcon
@@ -170,10 +143,8 @@ export default {
           )
 
   //- Transaction
-  //---------------------------------------------------------------------------
   template(v-else)
     //- Detailed
-    //-------------------------------------------------------------------------
     template(v-if="ui === 'detailed'")
       .trnItem__categoryIcon
         Icon(
@@ -207,7 +178,6 @@ export default {
       .trnItem__desc(v-if="trn.description") {{ trn.description }}
 
     //- Stat no category
-    //-------------------------------------------------------------------------
     template(v-else-if="ui === 'stat' && !showCategory")
       .trnItem__statWrap
         .trnItem__date {{ $t(formatedDateDay) }}
@@ -230,7 +200,6 @@ export default {
           )
 
     //- History
-    //-------------------------------------------------------------------------
     template(v-else)
       .trnItem__left
         .trnItem__categoryIcon
@@ -269,8 +238,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .transfer
   padding-top $m5
   font-size 14px
@@ -305,7 +272,6 @@ export default {
     &._history
     &._stat
       background var(--c-item-bg-hover)
-      border-radius $m5
 
   &__amount
     align-self center
@@ -401,14 +367,6 @@ export default {
     display grid
     grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
     grid-column-gap $m7
-    margin-top -1px
-    padding $m6 0
-
-    @media $media-laptop
-      padding $m6 $m7
-
-    &:first-child
-      margin-top 0
 
   &__wallet
     display flex

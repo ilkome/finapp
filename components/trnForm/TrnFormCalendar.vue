@@ -47,8 +47,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .trnFormDate
   display grid
   height 100%

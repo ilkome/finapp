@@ -14,9 +14,7 @@ export default {
     if (query.value && query.value.loading)
       isLoading.value = true
 
-    setTimeout(() => {
-      isLoading.value = false
-    }, 10000)
+    setTimeout(() => { isLoading.value = false }, 10000)
 
     return {
       isLoading
@@ -24,7 +22,7 @@ export default {
   },
 
   fetch ({ store, redirect }) {
-    if (store.state.user && store.state.user.user)
+    if (store.state.user?.user)
       redirect('/')
   },
 
@@ -48,7 +46,7 @@ export default {
       this.isLoading = false
     },
 
-    changeLang (lang) {
+    onSetLocale (lang) {
       this.$store.dispatch('lang/setLang', lang)
     }
   }
@@ -58,18 +56,22 @@ export default {
 <template lang="pug">
 .tab
   .tab__top
-    .langChanger
-      .linkItem(
-        @click="changeLang('ru')"
+    .absolute.flex.gap-3.top-3.left-5(
+      class="lg:top-7 lg:left-7"
+    )
+      .linkItem.py-2.px-3.rounded(
         :class="{ _active: $store.state.lang.lang === 'ru' }"
-      ) RU
-      .linkItem(
-        @click="changeLang('en')"
+        @click="onSetLocale('ru')"
+      ) Русский
+      .linkItem.py-2.px-3.rounded(
         :class="{ _active: $store.state.lang.lang === 'en' }"
-      ) EN
+        @click="onSetLocale('en')"
+      ) English
 
-    .themeChanger
-      .linkItem(@click="$store.dispatch('ui/changeTheme')") {{ $t('changeTheme') }}
+    .absolute.flex.gap-3.top-3.right-5(
+      class="lg:top-7 lg:right-7"
+    )
+      .linkItem.py-2.px-3.rounded(@click="$store.dispatch('ui/changeTheme')") {{ $t('changeTheme') }}
 
   .tab__content
     SharedAppName
@@ -86,8 +88,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .tab
   overflow-x hidden
   overflow-y scroll
@@ -122,44 +122,18 @@ export default {
       padding $mb2
       padding-top 0
 
-.langChanger
-  position absolute
-  top $m7
-  left $m7
-  display flex
-  gap $m5
-
-  @media $media-laptop
-    top $mn1
-    left $m9
-
-.themeChanger
-  cursor pointer
-  position absolute
-  top $m7
-  right $m7
-
-  @media $media-laptop
-    top $mn1
-    right $m9
-
 .linkItem
   cursor pointer
-  padding 8px 10px
   color var(--color-text-link-active)
   text-decoration none
 
   +media-hover()
     &:not(._active)
       background var(--color-link-bg)
-      border-radius 4px
 
   &._active
     cursor default
     color var(--color-text-link)
-
-    +media-hover()
-      text-decoration none
 
 .loginButton
   overflow hidden
@@ -175,7 +149,7 @@ export default {
   anim()
 
   &:hover
-    background var(--c-blue-4)
+    background var(--c-blue-3)
 
   &._loading
     pointer-events none

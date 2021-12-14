@@ -180,8 +180,6 @@ Portal(
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .header
   flex-grow 1
   position relative

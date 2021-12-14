@@ -39,8 +39,6 @@ LayoutBaseWrap(:contentPadding="false")
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .header
   header-title()
 

@@ -42,9 +42,9 @@ export default {
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
-  css: [
-    { src: '~/assets/stylus/index.styl' }
-  ],
+  styleResources: {
+    stylus: ['~/assets/stylus/variables']
+  },
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: [{
@@ -70,11 +70,6 @@ export default {
     preference: 'dark' // default value of $colorMode.preference
   },
 
-  // Style resources
-  styleResources: {
-    stylus: ['~/assets/stylus/variables']
-  },
-
   // Nuxt.js modules
   modules: [
     '@nuxtjs/color-mode',
@@ -85,6 +80,7 @@ export default {
 
   // Modules for dev and build (https://go.nuxtjs.dev/config-modules)
   buildModules: [
+    '@nuxtjs/style-resources',
     '@nuxtjs/pwa',
     // https://composition-api.nuxtjs.org/
     '@nuxtjs/composition-api/module',

@@ -28,8 +28,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .trnFormHeaderItem
   +media-hover()
     transform scale(1.04)

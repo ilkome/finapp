@@ -128,8 +128,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 $transition-style = cubic-bezier(.17, .04, .03, 1)
 
 .baseModalOveflowAnim
@@ -172,8 +170,6 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
 </style>
 
 <style lang="stylus">
-@import '~assets/stylus/variables'
-
 .modalBottom
   z-index 1000
   position fixed
@@ -193,7 +189,6 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     anim()
 
   &__wrap
-    // overflow hidden
     position relative
     display flex
     flex-grow 1

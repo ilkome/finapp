@@ -35,8 +35,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .item
   cursor pointer
   display flex

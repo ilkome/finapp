@@ -1,15 +1,14 @@
-import localforage from 'localforage'
 import { reactive } from '@nuxtjs/composition-api'
+import localforage from 'localforage'
 
 const localName = 'finapp.ui'
 
 const ui = reactive({
+  showCatsHorizontalList: true,
+  showCatsVerticalChart: true,
   showMainChart: true,
   showPieChart: false,
-  showCatsVerticalChart: true,
-  showRoundCats: true,
-  showCatsHorizontalList: true,
-  showHistory: true
+  showRoundCats: true
 })
 
 export default function useUIView () {
@@ -31,9 +30,8 @@ export default function useUIView () {
   async function initUI () {
     const localUI = await getLocalUI()
     for (const key in localUI) {
-      if (ui[key]) {
+      if (ui[key])
         ui[key] = localUI[key]
-      }
     }
   }
 

@@ -1,0 +1,37 @@
+$transition-style = cubic-bezier(.17, .04, .03, 1)
+
+.fadeIn
+  &-enter-active
+  &-leave-active
+    opacity 1
+    transition all 150ms ease-out
+
+  &-enter
+  &-leave-to
+    opacity 0
+    transition all 150ms ease-out
+
+.fadeInSlow
+  &-enter-active
+  &-leave-active
+    opacity 1
+    transform translate(0, 0)
+    transition opacity 900ms ease-out, transform 600ms ease-out
+
+  &-enter
+  &-leave-to
+    opacity 0
+    transform translate(0, 10px)
+
+.slide2
+  &-enter-active
+  &-leave-active
+    opacity 1
+    transform translate(0, 0)
+    transition opacity 100ms ease-out, transform 150ms $transition-style
+
+  &-enter
+  &-leave-to
+    opacity 0
+    transform translate(0, 5px)
+    transition opacity 100ms ease-out, transform 150ms ease-out

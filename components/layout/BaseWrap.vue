@@ -45,8 +45,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .component
   display grid
   grid-template-columns 1fr

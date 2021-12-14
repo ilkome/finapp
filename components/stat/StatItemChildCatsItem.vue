@@ -79,8 +79,6 @@ export default {
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/variables'
-
 .statItemChild
   .trnItem._stat
     padding-right $m5
@@ -97,8 +95,6 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .statItemChild
   cursor default
   border 1px solid transparent

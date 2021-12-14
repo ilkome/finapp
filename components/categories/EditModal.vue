@@ -454,8 +454,6 @@ div
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .preview
   display flex
   align-items center
@@ -663,7 +661,7 @@ div
   overflow hidden
   display grid
   padding-top $m7
-  background var(--color-bg-canvas)
+  background var(--c-bg-3)
   border-radius $m8 $m8 0 0
 
   +media(600px)

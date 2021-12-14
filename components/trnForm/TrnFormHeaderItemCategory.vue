@@ -23,7 +23,7 @@ export default {
   :style="{ background: category.color }"
   @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
 )
-  transition(name="slide")
+  transition(name="slide2")
     .trnFormHeaderItem__icon(
       v-show="true"
       :key="category.icon"
@@ -37,8 +37,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .trnFormHeaderItem
   +media-hover()
     transform scale(1.04)

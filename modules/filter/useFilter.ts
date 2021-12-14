@@ -5,6 +5,7 @@ export default function useFilter () {
   const route = useRoute()
   const router = useRouter()
   const filterPeriodNameAllReplacedToYear = computed(() => store.state.filter.period === 'all' ? 'year' : store.state.filter.period)
+  const isNeedToRedirect = computed(() => route.value.name !== 'index' && route.value.name !== 'history')
 
   function scrollTop () {
     const page = document.querySelector('.pageWrapScroll')
@@ -12,7 +13,7 @@ export default function useFilter () {
   }
 
   function setCategoryFilter (id) {
-    if (route.value.name !== 'index')
+    if (isNeedToRedirect.value)
       router.push('/')
 
     store.dispatch('filter/handleSetFilterCategory', id)
@@ -20,7 +21,7 @@ export default function useFilter () {
   }
 
   function setWalletFilter (id) {
-    if (route.value.name !== 'index')
+    if (isNeedToRedirect.value)
       router.push('/')
 
     store.dispatch('filter/setFilterWalletId', id)

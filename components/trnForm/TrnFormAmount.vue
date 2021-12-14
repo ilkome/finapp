@@ -52,8 +52,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .trnFormAmount
   &__wrap
     padding $m7 $m7

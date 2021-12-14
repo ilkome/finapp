@@ -33,8 +33,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .startSomething
   display flex
   align-items center

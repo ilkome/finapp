@@ -1,0 +1,71 @@
+<script>
+import { computed, useContext } from '@nuxtjs/composition-api'
+
+export default {
+  name: 'StatDashboardMenu',
+
+  setup () {
+    const { store } = useContext()
+    const activeTabStat = computed(() => store.state.ui.activeTabStat)
+
+    function onClickStatMenu (tabName) {
+      store.dispatch('ui/setActiveTabStat', tabName)
+    }
+
+    return {
+      activeTabStat,
+      onClickStatMenu
+    }
+  }
+}
+</script>
+
+<template lang="pug">
+.overflow-hidden.overflow-x-auto.mx-3.scrollbar
+  .menu__wrap.flex.items-center.justify-between
+    .menuItem.statTitle(
+      :class="{ _active: activeTabStat === 'details' }"
+      @click="onClickStatMenu('details')"
+    ) {{ $t('stat.periods') }}
+
+    .menuItem.statTitle(
+      :class="{ _active: activeTabStat === 'expenses' }"
+      @click="onClickStatMenu('expenses')"
+    ) {{ $t('money.expenses') }}
+
+    .menuItem.statTitle(
+      :class="{ _active: activeTabStat === 'incomes' }"
+      @click="onClickStatMenu('incomes')"
+    ) {{ $t('money.incomes') }}
+
+    .menuItem.statTitle(
+      @click="$router.push('history')"
+    ) {{ $t('trns.history') }}
+</template>
+
+<style lang="stylus" scoped>
+.menu
+  &__wrap
+    border-bottom 3px solid var(--c-item-bg-main)
+
+.menuItem
+  margin-right 22px
+  margin-bottom -3px
+  padding 0 0
+  padding-bottom 6px
+  color var(--c-font-5)
+  border-bottom 3px solid var(--c-item-bg-main)
+  +media(400px)
+    margin-right 28px
+  +media(500px)
+    margin-right 32px
+
+  +media-hover()
+    &:not(._active)
+      cursor pointer
+      color var(--c-blue-1)
+
+  &._active
+    color var(--c-font-3)
+    border-bottom 3px solid var(--c-blue-1)
+</style>

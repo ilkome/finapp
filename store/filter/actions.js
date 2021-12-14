@@ -35,6 +35,13 @@ export default {
   },
 
   setPeriod ({ commit, dispatch }, period) {
+    if (period.custom) {
+      commit('setPeriod', period.name)
+      commit('setDate', dayjs().startOf(period.value).valueOf())
+      // TODO save to local
+      return
+    }
+
     commit('setPeriod', period)
     commit('setDate', dayjs().startOf(period).valueOf())
     localforage.setItem('finapp.filter.period', period)

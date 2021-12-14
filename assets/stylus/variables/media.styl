@@ -62,14 +62,9 @@ media-laptop($less = false)
 
 // hover
 // ------------------------------------
-media-hover(active = true, hoverOnTouchDevice = false)
+media-hover()
   .isNotTouchDevice &:hover
     {block}
 
-  if active
-    &:active
-      {block}
-
-  if hoverOnTouchDevice
-    &:hover
-      {block}
+  &:active
+    {block}

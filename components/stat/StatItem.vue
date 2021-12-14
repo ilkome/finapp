@@ -104,8 +104,6 @@ export default {
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/variables'
-
 .statItem
   &__icon
     .icon
@@ -122,8 +120,6 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .statItem
   cursor pointer
   position relative

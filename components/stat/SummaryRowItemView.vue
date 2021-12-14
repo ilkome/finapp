@@ -49,8 +49,6 @@ export default {
   position relative
   display flex
   flex-flow column
-  margin-right $m8
-  padding-right $m8
 
   &._expenses
     color var(--c-expenses-1)

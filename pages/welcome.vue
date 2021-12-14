@@ -179,8 +179,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .steps
   display flex
   width 100%
@@ -218,7 +216,9 @@ export default {
   &__content
     width 100%
     flex-grow 1
-    display-flex(column, grow)
+    display flex
+    flex-flow column
+    flex-grow 1
     padding $m9
     padding-bottom 100px
     align-self center
@@ -271,7 +271,7 @@ export default {
     &__text
       position relative
       padding $m7
-      background var(--color-bg-canvas)
+      background var(--c-bg-3)
     &__border
       position absolute
       top 50%

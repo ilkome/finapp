@@ -48,8 +48,6 @@ export default {
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/variables'
-
 .walletItemGrid
   overflow hidden
   cursor pointer

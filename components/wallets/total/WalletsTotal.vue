@@ -90,8 +90,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .walletsTotal
   display flex
   flex-wrap wrap

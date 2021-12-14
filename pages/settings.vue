@@ -108,8 +108,6 @@ LayoutBaseWrap(:contentPadding="false")
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .button
   button-base-1()
 

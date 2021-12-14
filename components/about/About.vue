@@ -1,46 +1,46 @@
-<script>
-export default {
-  name: 'About'
-}
-</script>
-
 <template lang="pug">
-.about
-  .about__title {{ $t('about.creators.title') }}
+div
+  .title.pb-4 {{ $t('title') }}
 
-  .about__wrap
-    .aboutPerson
-      .aboutPerson__title {{ $t('about.creators.author') }}
-      .aboutPerson__name ilkome
+  .flex.gap-8.pb-3
+    div
+      .subTitle.pb-4 {{ $t('author') }}
+      .name ilkome
 
-    .aboutPerson
-      .aboutPerson__title {{ $t('about.creators.thanks') }}
-      .aboutPerson__name TheCarolissy, TihomirovPro
+    div
+      .subTitle.pb-4 {{ $t('thanks') }}
+      .name TheCarolissy, TihomirovPro
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
+.title
+  font-h1()
+  font-size 18px
 
-.about
-  &__title
-    padding-bottom $m7
-    font-h1()
-    font-size 18px
+.subTitle
+  padding-bottom $m4
+  color var(--c-font-4)
+  font-size 12px
 
-  &__wrap
-    display flex
-    gap $mb2
-    padding-bottom $m7
-
-.aboutPerson
-  &__title
-    padding-bottom $m4
-    color var(--c-font-4)
-    font-size 12px
-
-  &__name
-    color var(--c-font-2)
-    font-size 14px
-    line-height 18px
-    fontFamilyNunito()
+.name
+  color var(--c-font-2)
+  font-size 14px
+  line-height 18px
+  fontFamilyNunito()
 </style>
+
+<i18n lang="json5">
+{
+  en: {
+    title: 'Creators',
+    author: 'Author',
+    thanks: 'Thanks for support'
+  },
+
+  ru: {
+    title: 'Создатели',
+    author: 'Автор',
+    thanks: 'Спасибо за поддержку'
+  }
+}
+</i18n>

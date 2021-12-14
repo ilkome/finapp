@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template lang="pug">
-div
+div(class="lg:hidden")
   .arrowDate._left(
     :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
     @click="$store.dispatch('filter/setPeriodNext')"
@@ -22,8 +22,6 @@ div
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .arrowDate
   z-index 50
   cursor pointer

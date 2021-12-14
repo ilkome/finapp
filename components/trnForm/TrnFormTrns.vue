@@ -5,39 +5,14 @@ export default {
   name: 'TrnFormTrns',
 
   props: {
-    ui: {
-      type: String,
-      default: 'history'
-    },
-    onlyList: {
-      type: Boolean,
-      default: false
-    },
-    limit: {
-      type: Number,
-      default: 0
-    },
-    categoryId: {
-      type: String,
-      default: null
-    },
-    expenses: {
-      type: Boolean,
-      default: false
-    },
-    incomes: {
-      type: Boolean,
-      default: false
-    },
-    slider: {
-      type: Object,
-      required: true
-    },
-    size: {
-      type: Number,
-      required: false,
-      default: 10
-    }
+    categoryId: { type: String, default: null },
+    expenses: { type: Boolean, default: false },
+    incomes: { type: Boolean, default: false },
+    limit: { type: Number, default: 0 },
+    onlyList: { type: Boolean, default: false },
+    size: { type: Number, required: false, default: 10 },
+    slider: { type: Object, required: true },
+    ui: { type: String, default: 'history' }
   },
 
   data () {
@@ -142,20 +117,15 @@ export default {
 
 <template lang="pug">
 .contentWrap
-  .switcherList
-    .menuItem(@click="changeFilter('wallet')" :class="{ _active: filterBy === 'wallet' }") {{ $t('trnForm.filterWallet') }}
-    .menuItem(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
-    .menuItem(@click="changeFilter('all')" :class="{ _active: filterBy === 'all' }") {{ $t('trnForm.filterAll') }}
-
   .contentWrap__box.trnsListScroll.scrollerBlock
-    .container(v-if="trnsIds.length === 0") No transactions
+    .containerWrap(v-if="trnsIds.length === 0") No transactions
 
     .scrollBlock
-      .trnsList__content
+      .trnsList__content.pt-2
         .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
           .trnsList__header: TrnsListDate(:date="date")
           .trnsList__trns
-            TrnsItemTrnItem._trnForm(
+            TrnsItemTrnItem(
               v-for="trnId in trnsIds"
               :isActive="$store.state.trnForm.values.trnId === trnId"
               :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
@@ -168,15 +138,19 @@ export default {
 
       .trnsList__pages(v-if="!isShowedAllTrns")
         .button(@click="showMoreTrns") {{ $t('trns.more') }}
+
+  .flex.items-center.justify-center.pt-2.pb-5.px-3
+    .overflow-hidden.flex.items-center.bg-4.rounded
+      .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('wallet')" :class="{ _active: filterBy === 'wallet' }") {{ $t('trnForm.filterWallet') }}
+      .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
+      .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('all')" :class="{ _active: filterBy === 'all' }") {{ $t('trnForm.filterAll') }}
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .button
   button-base-1()
 
-.container
+.containerWrap
   display flex
   align-items center
   justify-content center
@@ -240,7 +214,7 @@ export default {
   background alpha(#171717, .9)
 
   /.light-mode &
-    background var(--color-bg-canvas)
+    background var(--c-bg-3)
 
 .menuItem
   cursor pointer

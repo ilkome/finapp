@@ -19,8 +19,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .handlerClose
   z-index 3
   cursor pointer

@@ -194,8 +194,6 @@ Portal(
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .content
   padding 0
   padding-bottom $m6

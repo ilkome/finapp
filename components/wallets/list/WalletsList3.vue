@@ -74,8 +74,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .wallets
   padding 0 $m7
 

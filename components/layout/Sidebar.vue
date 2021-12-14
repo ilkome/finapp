@@ -13,28 +13,26 @@ export default {
 
 <template lang="pug" scoped>
 .sidebar
-  LayoutSidebarMenu
-
   .sidebar__content
-    WalletsTotal
+    .pt-2.pb-8
+      LayoutSidebarMenu
 
+    WalletsTotal
     WalletsList(
       :showToogle="true"
       :limit="6"
       @onClick="(id) => handleShowWalletsModalWalletModal(id)")
 
-  .sidebar__trn(@click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })")
+  .sidebar__trn.py-2(@click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })")
     .btn
       .mdi.mdi-plus
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables'
-
 .sidebar
   display grid
   grid-template-columns 1fr
-  grid-template-rows minmax(auto, auto) minmax(auto, auto) 1fr
+  grid-template-rows minmax(auto, auto) 1fr
   height 100vh
   min-width 280px
   background var(--c-bg-4)
@@ -52,7 +50,6 @@ export default {
     display flex
     align-items flex-end
     justify-content center
-    padding-bottom $m10
     anim()
 
     +media-hover()

@@ -148,9 +148,7 @@ Portal(
 </template>
 
 <style lang="stylus">
-@import '~assets/stylus/variables'
-
-.container
+.modalContainer
   .walletWrap
     padding-bottom $m8
     background var(--c-bg-3)
@@ -181,8 +179,6 @@ Portal(
 </style>
 
 <style lang="stylus">
-@import '~assets/stylus/variables'
-
 .content
   padding-top $m6
   padding-bottom $m6

@@ -84,7 +84,7 @@ export default {
         allowOverlap: false,
         shadow: false,
         color: 'var(--c-chart-lables-text-color)',
-        backgroundColor: 'var(--c-chart-lables-bg)',
+        backgroundColor: 'var(--c-item-bg-main)',
         align: 'center',
         borderRadius: 3,
         padding: 3,
