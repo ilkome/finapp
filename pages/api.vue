@@ -1,6 +1,11 @@
-<script>
-import { computed, useContext, defineComponent } from '@nuxtjs/composition-api'
+<script lang="ts">
+import { reactive, computed, useContext, defineComponent } from '@nuxtjs/composition-api'
+import Datepicker from 'vuejs-datepicker'
 import dayjs from 'dayjs'
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
+import useFilter from '~/modules/filter/useFilter'
+
+type PeriodNavDirection = 'prev' | 'next'
 
 const sortByDate = (trns, ids) => {
   return ids
@@ -12,39 +17,69 @@ const sortByDate = (trns, ids) => {
 }
 
 const filterByDate = (trns, ids, date) => {
+  console.log(date)
   return ids.filter(
     trnId =>
-      (trns[trnId].date >= date.after) &&
-      (trns[trnId].date <= date.before))
+      (trns[trnId].date >= date.start) &&
+      (trns[trnId].date <= date.end))
 }
 
 export default defineComponent({
-  name: '',
+  components: { Datepicker },
 
   setup () {
     const { store } = useContext()
+    const { setExpression } = useCalculator()
+    const { setCategoryFilter } = useFilter()
 
-    const period = {
-      name: 'week',
+    const period = reactive({
+      name: 'month',
       value: 1
-    }
+    })
+
     // const today = dayjs().subtract(1, 'week').valueOf()
     const today = dayjs().valueOf()
 
     const date = {
-      after: dayjs(today).subtract(period.value, period.name).startOf(period.name).valueOf(),
-      before: dayjs(today).endOf(period.name).valueOf()
+      // @ts-ignore
+      end: dayjs(today).subtract(period.value, period.name).startOf(period.name).valueOf(),
+      // @ts-ignore
+      start: dayjs(today).endOf(period.name).valueOf()
     }
 
-    const fromDay = dayjs('12.09.2021').valueOf()
-    const toDay = dayjs('12.10.2021').valueOf()
+    // @ts-ignore
+    const startDay = computed(() => dayjs().subtract(period.value, period.name).valueOf())
+    const endDay = computed(() => dayjs().valueOf())
 
-    const dateRange = {
-      after: dayjs(fromDay).startOf('day').valueOf(),
-      before: dayjs(toDay).endOf('day').valueOf()
+    const dateRange = reactive({
+      start: dayjs(startDay.value).startOf('day').valueOf(),
+      end: dayjs(endDay.value).endOf('day').valueOf(),
+      // @ts-ignore
+      count: computed(() => dayjs(dateRange.end).diff(dateRange.start, period.name) + 1)
+    })
+
+    function onSelectDay (date, type) {
+      dateRange[type] = type === 'end' ? dayjs(date).endOf('day').valueOf() : dayjs(date).startOf('day').valueOf()
     }
 
-    const categories = store.state.categories.items
+    function onChangePeriodName (name) {
+      period.name = name
+      selectPeriod()
+    }
+
+    function selectPeriod (direction?: PeriodNavDirection) {
+      let selectedDate = dayjs(dateRange.end)
+      if (direction === 'next')
+        selectedDate = dayjs(selectedDate).add(1, period.name)
+      if (direction === 'prev')
+        selectedDate = dayjs(selectedDate).subtract(1, period.name)
+
+      // @ts-ignore
+      dateRange.start = dayjs(selectedDate).startOf(period.name).valueOf()
+      // @ts-ignore
+      dateRange.end = dayjs(selectedDate).endOf(period.name).valueOf()
+    }
+
     const trns = computed(() => store.state.trns.items)
     const trnsIds = computed(() => Object.keys(trns.value))
 
@@ -56,12 +91,49 @@ export default defineComponent({
       return ids
     })
 
-    const chartData = computed(() => {
+    const actions = trnItem => ({
+      onOpenDetails: () => {
+        if (!store.state.trns.modal.show) {
+          store.commit('categories/hideCategoryModal')
+          store.commit('trns/showTrnModal')
+          store.commit('trns/setTrnModalId', trnItem.id)
+        }
+      },
 
+      onOpenEdit: (event) => {
+        event.stopPropagation()
+        setExpression(trnItem.amount)
+        store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.id })
+        store.commit('stat/setCategoryModal', { id: null, type: null })
+      },
+
+      onSetFilter: (event) => {
+        event.stopPropagation()
+        setCategoryFilter(trnItem.category.id)
+        store.commit('filter/setFilterDateNow')
+        store.commit('trns/hideTrnModal')
+        store.commit('trns/setTrnModalId', null)
+        store.commit('stat/setCategoryModal', { id: null, type: null })
+        store.dispatch('ui/setActiveTabStat', 'details')
+      }
     })
 
+    const disabledDates = {
+      from: new Date()
+    }
+
     return {
-      selectedTrnsIds
+      actions,
+      selectedTrnsIds,
+
+      startDay,
+      dateRange,
+      onSelectDay,
+      disabledDates,
+      selectPeriod,
+      onChangePeriodName,
+
+      period
     }
   }
 })
@@ -69,20 +141,57 @@ export default defineComponent({
 
 <template lang="pug">
 div
-  TrnsItemTrnItem(
-    v-for="trnId in selectedTrnsIds"
-    :key="trnId"
-    :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
-    :trn="$store.state.trns.items[trnId]"
-    :trnId="trnId"
-    :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
-  )
+  pre {{ startDay }}
+  pre {{ period }}
+  pre {{ dateRange }}
+  pre {{ $day(dateRange.start).format() }}
+  pre {{ $day(dateRange.end).format() }}
 
-  pre {{ $store.state.trns.items[selectedTrnsIds[0]] }}
+  .p-2.text-lg(@click="selectPeriod('prev')") prev
+  .p-2.text-lg(@click="selectPeriod('next')") next
 
-  Chart(
-    :options="chartData"
+  .p-3.flex
+    .p-1(@click="onChangePeriodName('day')") day
+    .p-1(@click="onChangePeriodName('week')") week
+    .p-1(@click="onChangePeriodName('month')") month
+    .p-1(@click="onChangePeriodName('year')") year
+
+  .p-3.gap-4.flex
+    .py-3.bg-neutral-800
+      .px-3.pb-3.text-md.text-center Start Date
+      Datepicker(
+        :disabledDates="disabledDates"
+        :monday-first="true"
+        :value="dateRange.start"
+        calendar-class="inlineCalendar__in"
+        inline
+        wrapper-class="inlineCalendar"
+        @selected="date => onSelectDay(date, 'start')"
+      )
+
+    .py-3.bg-neutral-800
+      .px-3.pb-3.text-md.text-center End date
+      Datepicker(
+        :disabledDates="disabledDates"
+        :monday-first="true"
+        :value="dateRange.end"
+        calendar-class="inlineCalendar__in"
+        inline
+        wrapper-class="inlineCalendar"
+        @selected="date => onSelectDay(date, 'end')"
+      )
+
+  .grid.gap-2(
+    class="md:grid-cols-2 md:gap-0"
   )
+    .p-3
+      pre {{ selectedTrnsIds.length }}
+      TrnsItemHistory.py-3.px-2.rounded-md.cursor-pointer(
+        v-for="trnId in selectedTrnsIds"
+        :key="trnId"
+        :actions="actions"
+        :trnId="trnId"
+      )
 </template>
 
 <style lang="stylus" scoped>

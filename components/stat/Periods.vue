@@ -57,10 +57,6 @@ export default {
         @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
       ) {{ periodItem.name }}
 
-      //- .barItem.px-4.py-2.font5.text-xs(
-      //-   @click="$store.dispatch('filter/setPeriod', { custom: true, name: 'days', num: 7 })"
-      //- ) 7days
-
     .bar.overflow-hidden.flex.rounded-md
       .bar__btn.flex-grow.flex.items-center.justify-center.w-8(
         @click="removePeriodOrGroup"

@@ -28,7 +28,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.pb-6(v-if="isShow")
+.space-y-2.flex-col.flex.pb-6(v-if="isShow")
   LazyStatItem(
     v-if="isShow"
     v-for="categoryId in statPage.current[typeText].categoriesIds"

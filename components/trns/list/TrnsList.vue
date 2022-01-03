@@ -1,5 +1,9 @@
-<script>
-export default {
+<script lang="ts">
+import { useContext, defineComponent } from '@nuxtjs/composition-api'
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
+import useFilter from '~/modules/filter/useFilter'
+
+export default defineComponent({
   props: {
     categoryId: { type: String, default: null },
     expenses: { type: Boolean, default: false },
@@ -9,6 +13,41 @@ export default {
     size: { type: Number, required: false, default: 30 },
     ui: { type: String, default: 'history' },
     classNames: { type: String, default: 'md:grid-cols-2 md:gap-6 lg:grid-cols-3' }
+  },
+
+  setup () {
+    const { store } = useContext()
+    const { setExpression } = useCalculator()
+    const { setCategoryFilter } = useFilter()
+
+    const actions = trnItem => ({
+      onOpenDetails: () => {
+        if (!store.state.trns.modal.show) {
+          store.commit('categories/hideCategoryModal')
+          store.commit('trns/showTrnModal')
+          store.commit('trns/setTrnModalId', trnItem.id)
+        }
+      },
+
+      onOpenEdit: (event) => {
+        event.stopPropagation()
+        setExpression(trnItem.amount)
+        store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.id })
+        store.commit('stat/setCategoryModal', { id: null, type: null })
+      },
+
+      onSetFilter: (event) => {
+        event.stopPropagation()
+        setCategoryFilter(trnItem.categoryId)
+        store.commit('filter/setFilterDateNow')
+        store.commit('trns/hideTrnModal')
+        store.commit('trns/setTrnModalId', null)
+        store.commit('stat/setCategoryModal', { id: null, type: null })
+        store.dispatch('ui/setActiveTabStat', 'details')
+      }
+    })
+
+    return { actions }
   },
 
   data () {
@@ -85,7 +124,7 @@ export default {
       this.isShowTrnsWithDesc = !this.isShowTrnsWithDesc
     }
   }
-}
+})
 </script>
 
 <template lang="pug">
@@ -115,26 +154,31 @@ div
             TrnsListDate(:date="date")
 
           .overflow-hidden.rounded-md
-            TrnsItemTrnItem(
+            TrnsItemHistory.py-3.px-3.cursor-pointer(
               v-for="trnId in trnsIds"
-              :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
               :key="trnId"
-              :trn="$store.state.trns.items[trnId]"
+              :actions="actions"
               :trnId="trnId"
-              :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
             )
 
     //- Stat view
     div(v-else)
-      TrnsItemTrnItem(
-        v-for="trnId of paginatedTrnsIds"
+      TrnsItemWithoutCat.py-3.px-2.cursor-pointer(
+        v-for="trnId in paginatedTrnsIds"
         :key="trnId"
-        :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
-        :trn="$store.state.trns.items[trnId]"
+        :actions="actions"
         :trnId="trnId"
-        :ui="ui"
-        :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
       )
+
+      //- TrnsItemTrnItem(
+      //-   v-for="trnId of paginatedTrnsIds"
+      //-   :key="trnId"
+      //-   :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
+      //-   :trn="$store.state.trns.items[trnId]"
+      //-   :trnId="trnId"
+      //-   :ui="ui"
+      //-   :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
+      //- )
 
   .py-4(v-if="!isShowedAllTrns")
     .button(@click="showMoreTrns") {{ $t('trns.more') }}

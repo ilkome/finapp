@@ -4,12 +4,12 @@ import useMenuData from '~/modules/menu/useMenuData'
 
 export default defineComponent({
   setup () {
-    const { items, onClick, getClassNames, checkIsShow } = useMenuData()
+    const { items, onClick, checkIsActive, checkIsShow } = useMenuData()
 
     return {
       items,
       onClick,
-      getClassNames,
+      checkIsActive,
       checkIsShow
     }
   }
@@ -22,11 +22,11 @@ div
     v-for="(item, menuId) in items"
     :key="menuId"
     v-if="checkIsShow(item)"
-    :class="getClassNames(menuId)"
+    class="hocus:bg-neutral-800"
     @click="onClick(menuId)"
   )
-    .text-xl.text-neutral-400(:class="item.icon")
-    .text-sm.text-neutral-400 {{ item.name }}
+    .text-xl.text-neutral-400(:class="[item.icon, { 'text-neutral-200': checkIsActive(menuId) }]")
+    .text-sm.text-neutral-400(:class="{'text-neutral-200': checkIsActive(menuId)}") {{ item.name }}
 
   .flex.items-center.py-3.px-6.space-x-5(
     class="hocus:bg-neutral-800"

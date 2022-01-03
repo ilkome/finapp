@@ -1,6 +1,8 @@
 const plugin = require('tailwindcss/plugin')
 
 module.exports = {
+  darkMode: 'class',
+
   content: [
     './components/**/*.{js,ts}',
     './layouts/**/*.{js,ts}',
@@ -10,11 +12,14 @@ module.exports = {
 
   theme: {
     extend: {
+      fontSize: {
+        '2xs': '10px'
+      },
+      fontFamily: {
+        unica: ['"Unica One"', '"Roboto Condensed"', 'sans-serif']
+      },
       minWidth: {
         base: '320px'
-      },
-      height: {
-        0: '0'
       }
     }
   },

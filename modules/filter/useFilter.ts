@@ -8,7 +8,7 @@ export default function useFilter () {
   const isNeedToRedirect = computed(() => route.value.name !== 'index' && route.value.name !== 'history')
 
   function scrollTop () {
-    const page = document.querySelector('.pageWrapScroll')
+    const page = document.querySelector('.js_scroll_page')
     if (page) page.scrollTop = 0
   }
 

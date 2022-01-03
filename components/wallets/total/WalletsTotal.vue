@@ -1,8 +1,15 @@
 <script>
+import useAmount from '~/components/amount/useAmount'
+
 export default {
   props: {
     isShowCredits: { type: Boolean, default: false },
     isShowTotal: { type: Boolean, default: false }
+  },
+
+  setup () {
+    const { getAmountInBaseCurrency } = useAmount()
+    return { getAmountInBaseCurrency }
   },
 
   computed: {
@@ -21,9 +28,10 @@ export default {
           walletTotal = walletsTotal[walletId].base
         }
         else {
-          walletTotal = this.$store.getters['currencies/getAmountInBaseCurrency']({
+          walletTotal = this.getAmountInBaseCurrency({
             amount: walletsTotal[walletId].base,
-            currency: walletsItems[walletId].currency
+            currency: walletsItems[walletId].currency,
+            noFormat: true
           })
         }
 

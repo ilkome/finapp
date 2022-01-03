@@ -2,8 +2,6 @@
 export default {
   // TODO: add check for valid category
 
-  name: 'TrnFormHeaderItemCategory',
-
   computed: {
     category () {
       const categoryId = this.$store.state.trnForm.values.categoryId

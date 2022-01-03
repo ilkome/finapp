@@ -52,44 +52,37 @@ export default {
 </script>
 
 <template lang="pug">
-.overflow-hidden.overflow-y-auto.scrollbar.snap-y.snap-proximity.pb-8
+.overflow-hidden.overflow-y-auto.scrollbar.pb-8.js_scroll_page
   StatPeriodArrows
   StatDate
   StatViewConfig
   LazyStatChart(v-if="ui.showMainChart && statPage.isHasTrns")
   StatPeriods
-  .pt-3.px-3
+  .pt-3.px-3(v-if="statPage.filter.isShow")
     LazyStatFilter(v-if="statPage.filter.isShow")
 
-  .snap-start.scroll-mt-12
-    StatSumTotal
-    StatMenu
+  StatSumTotal
+  StatMenu
 
   //- Loop throw incomes / expenses
   .w-100
-    .py-5.px-3
+    .py-2.px-3
       .grid.grid-cols-1.gap-y-5(class="md:grid-cols-2 md:gap-x-20")
         div(
           v-for="item in moneyTypes"
           v-if="isShowGroup(item.id)"
           :key="item.id"
         )
-          .snap-start.scroll-mt-12
-            StatGroupSum(:typeText="item.id")
-          StatGroupEmpty(:typeText="item.id")
 
+          StatGroupSum(:typeText="item.id")
+          StatGroupEmpty(:typeText="item.id")
           StatGroupCatsPie(:typeText="item.id")
           StatGroupCatsVertical(:typeText="item.id")
-          .snap-start.scroll-mt-12
-            StatGroupCatsRound(:typeText="item.id")
-
+          StatGroupCatsRound(:typeText="item.id")
           StatGroupCatsHorizontal(:typeText="item.id")
 
-        .snap-start.scroll-mt-12
-          LazyStatGroupTrns(v-if="isShowGroupTrns")
+        LazyStatGroupTrns(v-if="isShowGroupTrns")
 
   StatEmpty
-
-  .snap-start.scroll-mt-12
-    LazyStatTrns(v-if="isShowTrns")
+  LazyStatTrns(v-if="isShowTrns")
 </template>

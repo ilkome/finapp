@@ -42,29 +42,29 @@ export default {
 </script>
 
 <template lang="pug">
-.statItemChild(
+.statItem(
   :class="{ _active: isShowInside }"
-  @click="toogleShowInside(categoryId)"
+  @click="toogleShowInside"
 )
-  .statItemChild__content
-    .statItemChild__icon(@click.stop="setCategoryFilter(categoryId)")
-      Icon(
-        :background="isShowInside ? category.color : 'var(--c-item-stat-bg)'"
-        :color="isShowInside ? 'var(--c-item-stat-icon)' : category.color"
-        :icon="category.icon"
-        round
-      )
+  .ins.py-2.px-3.space-x-3.justify-between.items-center.flex.border-t(
+    :class="[{ _active: isShowInside }, { 'border-b-0 cursor-n-resize': isShowInside }, { 'cursor-s-resize': !isShowInside }, 'dark:border-neutral-800']"
+  )
+    .cursor-pointer.statItem__icon(@click.stop="setCategoryFilter(categoryId)")
+      .text-neutral-50.text-2xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
+      ): div(:class="category.icon" :style="{ color: category.color }")
 
-    .statItemChild__name {{ category.name }}
+    .grow
+      .space-x-3.flex
+        .grow.statItem__name {{ category.name }}
 
-    .statItemChild__amount
-      Amount(
-        :currency="$store.state.currencies.base"
-        :value="total"
-        :type="type"
-        :isColorize="false"
-        isShowPrefix
-      )
+        .statItem__amount
+          Amount(
+            :currency="$store.state.currencies.base"
+            :value="total"
+            :type="type"
+            :isColorize="false"
+            isShowPrefix
+          )
 
   .statItemChild__trns(
     v-if="isShowInside"
@@ -95,21 +95,24 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-.statItemChild
-  cursor default
-  border 1px solid transparent
-  border-radius $borderRadiusMd
+
+.ins2
+  position relative
+  background var(--c-item2-bg-hover)
+
+.ins
+  position relative
+  background var(--c-item2-bg-hover)
 
   +media-hover()
-    &:not(._active)
-      background var(--c-item-bg-hover)
+    background var(--c-item-bg-hover)
 
-  &__content
-    display grid
-    grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
-    grid-column-gap 20px
-    margin 0
-    padding $m5 $m5
+.statItem
+  &__graph
+    &__in
+      height 4px
+      min-width 2px
+      border-radius 3px
 
   &__name
     overflow hidden
@@ -119,27 +122,6 @@ export default {
     white-space nowrap
     text-overflow ellipsis
 
-    ~/._active &
-      color var(--c-font-2)
-
   &__icon
     width 32px
-    grid-column 1 / 2
-    grid-row 1 / -1
-
-    &:active
-      opacity .8
-
-    @media $media-laptop
-      &:hover
-        transform scale(1.3)
-
-  &__amount
-    align-self center
-
-  &__trns
-    padding 0
-
-    ^[0]._active &
-      padding-bottom $m4
 </style>

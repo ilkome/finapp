@@ -91,7 +91,10 @@ export default {
     @onClose="isShowUpdateApp = false"
   )
 
-  .layout__wrap
+  .layout__wrap.overflow-hidden.flex-grow.h-full.grid(
+    class=""
+  )
+    //- .div hello
     .layout__sidebar
       LayoutSidebar
 
@@ -113,12 +116,8 @@ export default {
 <style lang="stylus" scoped>
 .layout
   &__wrap
-    flex-grow 1
-    overflow hidden
-    display grid
     grid-template-columns 1fr
     grid-template-rows 1fr minmax(auto, auto)
-    height 100%
 
     +media(1200px)
       grid-template-rows 1fr auto

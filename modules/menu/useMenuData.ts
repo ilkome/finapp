@@ -60,20 +60,18 @@ export default function useMenuData () {
     store.dispatch('ui/setActiveTab', null)
   }
 
-  function getClassNames (menuId: string) {
-    return ['hocus:bg-neutral-800', { 'border-r-2 bored-neutral-900': route.value.name === menuId }]
+  function checkIsActive (menuId: string) {
+    return route.value.name === menuId
   }
 
   function checkIsShow (item: MenuItem) {
-    console.log('item', item)
-
     return !item.private || (item.private && store.getters['user/isTester'])
   }
 
   return {
     items,
     onClick,
-    getClassNames,
-    checkIsShow
+    checkIsShow,
+    checkIsActive
   }
 }

@@ -22,7 +22,7 @@ export default {
 
 <template lang="pug">
 .overflow-hidden.overflow-x-auto.mx-3.scrollbar
-  .menu__wrap.flex.items-center.justify-between
+  .menu__wrap.flex.items-center.space-x-8
     .menuItem.statTitle(
       :class="{ _active: activeTabStat === 'details' }"
       @click="onClickStatMenu('details')"
@@ -49,16 +49,11 @@ export default {
     border-bottom 3px solid var(--c-item-bg-main)
 
 .menuItem
-  margin-right 22px
   margin-bottom -3px
   padding 0 0
   padding-bottom 6px
   color var(--c-font-5)
   border-bottom 3px solid var(--c-item-bg-main)
-  +media(400px)
-    margin-right 28px
-  +media(500px)
-    margin-right 32px
 
   +media-hover()
     &:not(._active)

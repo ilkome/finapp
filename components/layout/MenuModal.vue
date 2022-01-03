@@ -2,8 +2,6 @@
 import { computed, useContext } from '@nuxtjs/composition-api'
 
 export default {
-  name: 'LayoutMenuModal',
-
   setup () {
     const { store } = useContext()
     const activeTab = computed(() => store.state.ui.activeTab)
@@ -25,16 +23,12 @@ Portal(to="modal")
       .handler
       BaseBottomSheetClose(@onClick="close")
 
-    template(#header)
-      template(v-if="walletId")
-        .walletWrap
-          WalletsItemWalletItem2(
-            :id="walletId"
-            vertical="center"
-            size="xl"
-          )
-
     .content(class="!overflow-hidden !pt-8 !pb-2")
+      .mb-2.mx-6.pb-6.flex.items-center.justify-between.border-b.border-neutral-800
+        .text-neutral-400
+          .text-lg {{ $store.state.user.user.displayName }}
+          .text-sm {{ $store.state.user.user.email }}
+
       LayoutMenuModalItems
 </template>
 

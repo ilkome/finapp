@@ -1,9 +1,7 @@
-<script>
+<script lang="ts">
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
-  name: 'StatItem',
-
   props: {
     biggest: { type: Number, required: true },
     category: { type: Object, required: true },
@@ -28,11 +26,13 @@ export default {
   },
 
   computed: {
-    showChildCategories () {
-      const childCategoriesIds = this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
+    childCategoriesIds () {
+      return this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
+    },
 
+    showChildCategories () {
       const childCatsIdsWithTrns = []
-      for (const childCategoryId of childCategoriesIds) {
+      for (const childCategoryId of this.childCategoriesIds) {
         const trnsIds = this.$store.getters['trns/getTrnsIdsByFilter']({
           categoryId: childCategoryId,
           type: this.type
@@ -52,6 +52,27 @@ export default {
         width: `${Math.abs(this.total) / Math.abs(this.biggest) * 100}%`,
         background: this.category.color
       }
+    },
+
+    getCatgoryName () {
+      const cats = []
+      const categoriesIds = this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
+
+      const getTrnsByCategoryId = (categoryId) => {
+        const trns = this.$store.state.trns.items
+        let trnsIds = this.$store.getters['trns/selectedTrnsIdsWithDate']
+        trnsIds = trnsIds.filter(id => trns[id].categoryId === categoryId)
+        trnsIds = trnsIds.filter(id => trns[id].type === this.type)
+        return trnsIds
+      }
+
+      for (const categoryId of categoriesIds) {
+        const trnsIds = getTrnsByCategoryId(categoryId)
+        if (trnsIds.length > 0)
+          cats.push(this.$store.state.categories.items[categoryId]?.name)
+      }
+
+      return cats
     }
   },
 
@@ -68,39 +89,49 @@ export default {
   :class="{ _active: isShowInside }"
   @click="toogleShowInside"
 )
-  .statItem__content
-    .statItem__graph: .statItem__graph__in(:style="styles")
-    .statItem__icon(@click.stop="setCategoryFilter(categoryId)")
-      Icon(
-        :background="isShowInside ? category.color : 'var(--c-item-stat-bg)'"
-        :color="isShowInside ? 'var(--c-item-stat-icon)' : category.color"
-        :icon="category.icon"
-        round
-      )
+  .z-10.ins.py-2.px-3.space-x-3.rounded-md.justify-between.items-center.flex.border(
+    :class="{ _active: isShowInside, 'dark:border-neutral-800 cursor-n-resize shadow-xl': isShowInside, 'border-transparent cursor-s-resize shadow': !isShowInside }"
+  )
+    .cursor-pointer.statItem__icon(@click.stop="setCategoryFilter(categoryId)")
+      .text-neutral-50.text-2xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
+      ): div(:class="category.icon" :style="{ color: category.color }")
 
-    .statItem__name {{ category.name }} {{ showChildCategories ? '...' : '' }}
-    .statItem__amount
-      Amount(
-        :currency="currency"
-        :value="total"
-      )
+    .grow
+      .space-x-3.flex
+        .overflow-hidden.truncate.grow.space-x-2.flex.items-baseline.text-neutral-700(class="dark:text-neutral-400")
+          .overflow-hidden.text-sm {{ category.name }}{{ showChildCategories ? '...' : '' }}
+          //- pre {{ getCatgoryName }}
+          //- .overflow-hidden.space-x-2.items-baseline.flex.truncate.text-xs
+          //-   .text-xs(v-for="name in getCatgoryName") {{ name }}
 
-  template(v-if="isShowInside")
-    .statItem__inside(@click.stop="")
-      template(v-if="showChildCategories")
-        StatItemChildCats(
-          :categoryId="categoryId"
-          :type="type"
-        )
-
-      template(v-else)
-        .statItem__trns
-          TrnsList(
-            :incomes="type === 1"
-            :expenses="type === 0"
-            :categoryId="categoryId"
-            ui="stat"
+        .statItem__amount
+          Amount(
+            :currency="currency"
+            :value="total"
           )
+      .pt-1.statItem__graph.mt-1: .statItem__graph__in(:style="styles")
+
+  //- pre {{ $store.state.categories.items }}
+  //- Inside
+  .overflow-hidden.ins2.mx-2.rounded-b-md.border.border-t-0(
+    v-if="isShowInside"
+    class="mt-[-1px] dark:border-neutral-800"
+    @click.stop=""
+  )
+    template(v-if="showChildCategories")
+      StatItemChildCats(
+        :categoryId="categoryId"
+        :type="type"
+      )
+
+    template(v-else)
+      .statItem__trns
+        TrnsList(
+          :incomes="type === 1"
+          :expenses="type === 0"
+          :categoryId="categoryId"
+          ui="stat"
+        )
 </template>
 
 <style lang="stylus">
@@ -120,48 +151,23 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-.statItem
-  cursor pointer
+.ins2
   position relative
-  padding $m5 $m5
-  border 1px solid transparent
-  border-radius $borderRadiusMd
+  background var(--c-item2-bg-hover)
+
+.ins
+  position relative
+  background var(--c-item2-bg-hover)
 
   +media-hover()
-    &:not(._active)
-      z-index 2
-      background var(--c-item-bg-hover)
+    background var(--c-item-bg-hover)
 
-  &._active
-    margin-bottom $m5
-    background var(--c-item2-bg-hover)
-
-    &:not(:first-child)
-      margin-top $m5
-
-  &__content
-    display grid
-    grid-template-columns minmax(10px, max-content) 1fr minmax(10px, max-content)
-    grid-template-rows repeat(2, minmax(10px, max-content))
-    grid-column-gap 20px
-
-  &__inside
-    margin (- $m5)
-    margin-top $m3
-    padding 0
-
+.statItem
   &__graph
-    overflow hidden
-    grid-column 2 / -1
-    grid-row 2 / -1
-    align-self center
-    margin-top $m3
-    background var(--c-bg-8)
-    border-radius 2px
-
     &__in
       height 4px
       min-width 2px
+      border-radius 3px
 
   &__name
     overflow hidden
@@ -171,27 +177,6 @@ export default {
     white-space nowrap
     text-overflow ellipsis
 
-    ^[0]._active &
-      color var(--c-font-2)
-
   &__icon
     width 32px
-    grid-column 1 / 2
-    grid-row 1 / -1
-
-    &:active
-      opacity .8
-
-    @media $media-laptop
-      &:hover
-        transform scale(1.3)
-
-  &__amount
-    align-self center
-
-  &__arrow
-    padding-top $m2
-    color var(--c-font-5)
-    grid-column 4 / 5
-    grid-row 1 / 2
 </style>

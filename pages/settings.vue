@@ -55,6 +55,19 @@ LayoutBaseWrap(:contentPadding="false")
             )
 
         .settings__group
+          .settings__subHeader {{ $t('user') }}
+          .pb-3.text-neutral-400
+            .text-lg {{ $store.state.user.user.displayName }}
+            .text-sm {{ $store.state.user.user.email }}
+
+          .settings__item
+            SharedButton._bdb(
+              :title="$t('userLogout')"
+              icon="mdi mdi-logout"
+              @onClick="$store.dispatch('user/signOut')"
+            )
+
+        .settings__group
           .settings__subHeader {{ $t('settings.app') }}
           .settings__item
             LangDropdown
@@ -63,13 +76,6 @@ LayoutBaseWrap(:contentPadding="false")
               icon="mdi mdi-palette"
               :title="$t('theme.change')"
               @onClick="$store.dispatch('ui/changeTheme')"
-            )
-
-          .settings__item
-            SharedButton._bdb(
-              :title="$t('userLogout')"
-              icon="mdi mdi-logout"
-              @onClick="$store.dispatch('user/signOut')"
             )
 
         .settings__group
@@ -155,3 +161,15 @@ LayoutBaseWrap(:contentPadding="false")
   color var(--c-font-3)
   font-size 10px
 </style>
+
+<i18n lang="json5">
+{
+  en: {
+    user: 'User'
+  },
+
+  ru: {
+    user: 'Пользователь'
+  }
+}
+</i18n>

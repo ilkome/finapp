@@ -67,6 +67,7 @@ export default {
 
   // Color mode
   colorMode: {
+    classSuffix: '',
     preference: 'dark' // default value of $colorMode.preference
   },
 

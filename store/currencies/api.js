@@ -16,9 +16,9 @@ export const getRatesOf = async (baseCurrency) => {
     const baseRate = ratesBasedOnUsd[baseCurrency]
 
     // Conver rates to base currency
-    for (const id in ratesBasedOnUsd) {
+    for (const id in ratesBasedOnUsd)
       rates[id] = ratesBasedOnUsd[id] / baseRate
-    }
+
     return rates
   }
   else {

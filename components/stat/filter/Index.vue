@@ -57,14 +57,13 @@ export default {
 <template lang="pug">
 .overflow-hidden.rounded.py-2
   .pb-2
-    .flex.items-center
-      .statTitle {{ $t('base.filter') }}
-      .cursor-pointer.ml-6.text-xs.font5(@click="onClearFilter") {{ $t('filter.clear') }}
+    .statTitle {{ $t('base.filter') }}
 
-  .safe.scrollbar.overflow-hidden.overflow-x-auto.flex(v-if="filterCategory || filterWallet")
+  .safe.scrollbar.overflow-hidden.overflow-x-auto.flex.items-stretch(v-if="filterCategory || filterWallet")
     //- Wallet
     template(v-if="filterWallet")
       .overflow-hidden.cursor-pointer.relative.flex.flex-col.items-center.mr-3.py-2.px-3.bg-4.rounded-md(
+        class="hocus:bg-neutral-800"
         @click="clearWalletFilter"
       )
         .absolute.top-0.left-0.w-full(:style="{ height: '2px', background: filterWallet.color }")
@@ -83,7 +82,8 @@ export default {
 
     //- Category
     template(v-if="filterCategory")
-      .overflow-hidden.cursor-pointer.relative.flex.items-center.py-2.px-3.bg-4.rounded-md(
+      .overflow-hidden.cursor-pointer.relative.flex.items-center.mr-3.py-2.px-3.bg-4.rounded-md(
+        class="hocus:bg-neutral-800"
         @click="onClearCategory"
       )
         .text-2xl(
@@ -95,4 +95,10 @@ export default {
           .text-sm.font3 {{ filterCategory.name }}
         .absolute.top-1.right-1
           .text-sm.font5.mdi.mdi-close
+
+    //- Clear
+    .cursor-pointer.flex.items-center.px-4.text-xs.font3.bg-4.rounded-md(
+      @click="onClearFilter"
+      class="hocus:bg-neutral-800"
+    ) {{ $t('filter.clear') }}
 </template>

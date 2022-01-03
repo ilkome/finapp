@@ -28,15 +28,13 @@ export default {
   },
 
   /**
-    * Create new trn
-    * and save it to local storage when Client offline
-    *
-    * @param {object}
-    * @param {string} {}.id
-    * @param {object} {}.values
-    * @param {string} {}.values.amount
-    * @param {string} {}.values.category
-  */
+   * Create new trn
+   * and save it to local storage when Client offline
+   *
+   * @param {object}
+   * @param id
+   * @param values
+   */
   addTrn ({ commit, rootState }, { id, values }) {
     const uid = rootState.user.user.uid
     const trns = rootState.trns.items

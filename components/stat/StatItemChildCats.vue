@@ -28,8 +28,8 @@ export default {
       }
 
       stat = stat.sort((a, b) => {
-        if (a[this.typeName] > b[this.typeName]) { return -1 }
-        if (a[this.typeName] < b[this.typeName]) { return 1 }
+        if (a[this.typeName] > b[this.typeName]) return -1
+        if (a[this.typeName] < b[this.typeName]) return 1
         return 0
       })
 

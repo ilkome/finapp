@@ -55,8 +55,8 @@ export default {
 
 <template lang="pug">
 .tab
-  .tab__top
-    .absolute.flex.gap-3.top-3.left-5(
+  .py-4.px-3.h-24.justify-between.items-start.flex
+    .flex.gap-1.top-3.left-5(
       class="lg:top-7 lg:left-7"
     )
       .linkItem.py-2.px-3.rounded(
@@ -68,7 +68,7 @@ export default {
         @click="onSetLocale('en')"
       ) English
 
-    .absolute.flex.gap-3.top-3.right-5(
+    .flex.gap-3.top-3.right-5(
       class="lg:top-7 lg:right-7"
     )
       .linkItem.py-2.px-3.rounded(@click="$store.dispatch('ui/changeTheme')") {{ $t('changeTheme') }}
@@ -77,7 +77,7 @@ export default {
     SharedAppName
     SharedCopyright
 
-  .tab__bottom
+  .tab__bottom.px-3.py-8
     .loginButton(
       :class="{ _loading: isLoading }"
       @click.prevent="signInWithGoogle"
@@ -108,19 +108,15 @@ export default {
     align-items center
     justify-content center
     flex-flow column
-    padding-top 100px
 
   &__bottom
     display flex
     align-items center
     justify-content center
     flex-flow column
-    padding $mn1
 
     +media(600px)
       justify-content flex-start
-      padding $mb2
-      padding-top 0
 
 .linkItem
   cursor pointer

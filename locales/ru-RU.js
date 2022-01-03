@@ -72,7 +72,7 @@ export default {
 
   userLogout: 'Выход',
   loginWithGoogle: 'Войти через Google',
-  changeTheme: 'Сменить оформление',
+  changeTheme: 'Сменить тему',
   createTrn: 'Создать транзакцию',
 
   base: {

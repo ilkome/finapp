@@ -1,5 +1,6 @@
 <script>
 import currency from 'currency.js'
+import useAmount from '~/components/amount/useAmount'
 
 const baseAmountFormat = (value, separator) =>
   currency(value, { symbol: '', precision: 0, pattern: '#', separator })
@@ -20,6 +21,11 @@ export default {
     vertical: { type: String, default: null }
   },
 
+  setup () {
+    const { getAmountInBaseCurrency } = useAmount()
+    return { getAmountInBaseCurrency }
+  },
+
   computed: {
     className () {
       return {
@@ -32,15 +38,10 @@ export default {
     },
 
     amountInBaseCurrency () {
-      const baseValue = this.$store.getters['currencies/getAmountInBaseCurrency']({
+      return this.getAmountInBaseCurrency({
         amount: this.value,
         currency: this.currency
       })
-
-      if (baseValue)
-        return this.formatAmount(baseValue)
-
-      return null
     }
   },
 

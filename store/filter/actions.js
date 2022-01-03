@@ -4,10 +4,10 @@ import localforage from 'localforage'
 export default {
   handleSetFilterCategory ({ rootState, dispatch }, categoryId) {
     const filterCategoryId = rootState.filter.categoryId
-    const filterCategory = rootState.categories.items[filterCategoryId]
+    const filterCategory = rootState.categories.items[categoryId]
 
     if (filterCategoryId === categoryId) {
-      if (filterCategory.parentId !== 0) {
+      if (filterCategory?.parentId !== 0) {
         dispatch('setFilterCategoryId', null)
         dispatch('setFilterCategoryId', filterCategory.parentId)
       }
@@ -16,6 +16,7 @@ export default {
       }
     }
     else {
+      console.log(11, categoryId)
       dispatch('setFilterCategoryId', categoryId)
     }
   },
