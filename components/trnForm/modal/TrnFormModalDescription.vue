@@ -46,46 +46,42 @@ TrnFormModal(@closed="afterClose")
     template {{ $t('trnForm.description.title') }}
 
   template(#default="{ close }")
-    .description
-      .description__filed
-        textarea.textarea(
+    .p-4.pb-2
+      .relative.pb-6
+        textarea.textarea.rounded-md(
           v-model="description"
           :placeholder="$t('trnForm.description.placeholder')"
         )
 
-      .description__action
-        .description__action-cancel
-          SharedButton(
-            className="_grey _inline"
-            :title="$t('base.cancel')"
-            @onClick="handleCancel(close)"
-          )
-        .description__action-ok
-          SharedButton(
-            className="_blue _inline"
-            :title="$t('base.save')"
-            @onClick="handleSave(close)"
-          )
+      .gap-4.items-center.justify-end.flex
+        .text-neutral-500.py-4.px-3.items-center.justify-center.flex(
+          class="dark:text-neutral-400"
+          @click="handleCancel(close)"
+        ) {{ $t('close') }}
+        .shame1.py-4.px-6.rounded-full.items-center.justify-center.flex(
+          class="min-w-[120px]"
+          @click="handleSave(close)"
+        ) {{ $t('base.save') }}
 </template>
 
 <style lang="stylus" scoped>
-.description
-  padding 0 $m7
-  padding-bottom 16px
+.shame1
+  background var(--c-blue-3)
+  media-hover()
+    background var(--c-blue-3)
 
-  &__filed
-    padding-bottom $m9
+.textarea
+  width 100%
+  min-height 100px
+  padding $m7
+  color var(--color-white)
+  font-size 16px
+  background var(--c-bg-2)
+  border 1px solid var(--c-bg-5)
+  anim()
 
-  &__action
-    display flex
-    align-items center
-
-    &-ok
-      margin-left $m9
-
-.btnTrans
-  padding $m7 $m9
-  border-radius $m3
+  &:focus
+    border-color var(--c-blue-1)
 
 .textarea
   width 100%

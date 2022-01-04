@@ -94,7 +94,6 @@ export default {
      */
     function onCategoryClick (categoryId) {
       $store.commit('trnForm/setTrnFormValues', { categoryId })
-      // sliderObj.value.slideTo(1, 300)
     }
 
     /**
@@ -102,7 +101,6 @@ export default {
      */
     function onClickWallet (walletId) {
       $store.commit('trnForm/setTrnFormValues', { walletId })
-      // sliderObj.value.slideTo(1, 300)
     }
 
     /**

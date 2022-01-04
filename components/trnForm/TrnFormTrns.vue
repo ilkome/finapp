@@ -154,8 +154,8 @@ export default defineComponent({
       .trnsList__pages(v-if="!isShowedAllTrns")
         .button(@click="showMoreTrns") {{ $t('trns.more') }}
 
-  .flex.items-center.justify-center.pt-2.pb-5.px-3
-    .overflow-hidden.flex.items-center.bg-4.rounded
+  .pt-2.pb-5.px-3.justify-center.flex
+    .overflow-hidden.bg-4.rounded-md.justify-center.items-center.flex
       .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('wallet')" :class="{ _active: filterBy === 'wallet' }") {{ $t('trnForm.filterWallet') }}
       .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
       .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('all')" :class="{ _active: filterBy === 'all' }") {{ $t('trnForm.filterAll') }}
