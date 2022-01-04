@@ -250,7 +250,6 @@ export default {
               CategoriesView(
                 :ids="$store.getters['categories/quickSelectorCategoriesIds']"
                 :activeItemId="$store.state.trnForm.values.categoryId"
-                ui="_flat"
                 :noPaddingBottom="true"
                 @onClick="onCategoryClick"
               )
@@ -261,7 +260,6 @@ export default {
               CategoriesView(
                 :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
                 :activeItemId="$store.state.trnForm.values.categoryId"
-                ui="_flat"
                 :noPaddingBottom="true"
                 @onClick="onCategoryClick"
               )

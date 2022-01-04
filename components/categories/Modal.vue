@@ -137,8 +137,8 @@ Portal(
             Icon(
               :icon="category.icon"
               :background="category.color || $store.state.ui.defaultBgColor"
-              :round="true"
-              :big="true"
+              big
+              round
             )
           .header__title {{ category.name }}
           .header__subCategory(v-if="category.parentId") {{ $store.state.categories.items[category.parentId].name }}
@@ -168,9 +168,9 @@ Portal(
           .categoriesTitle {{ $t('categories.title') }}
           .categories
             CategoriesView(
-              :borderTop="true"
               :ids="childCategoriesIds"
-              :noPadding="true"
+              borderTop
+              noPadding
               @onClick="id => $store.dispatch('categories/showCategoryModal', id)"
             )
 

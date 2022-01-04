@@ -74,9 +74,9 @@ export default {
 .trnFormHeaderSeparator
   z-index 2
   position absolute
-  top 28px
+  top 22px
   left 50%
-  color var(--c-font-1)
+  color var(--c-font-3)
   font-size 32px
   transform translate(-50%)
 
@@ -85,7 +85,4 @@ export default {
     margin-bottom 2px
     color var(--c-font-4)
     font-size 12px
-
-  .walletItemGrid
-    width 100%
 </style>

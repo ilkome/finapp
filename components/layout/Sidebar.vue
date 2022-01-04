@@ -21,7 +21,9 @@ export default {
     WalletsList(
       :showToogle="true"
       :limit="6"
-      @onClick="(id) => handleShowWalletsModalWalletModal(id)")
+      ui="simple"
+      @onClick="(id) => handleShowWalletsModalWalletModal(id)"
+    )
 
   .sidebar__trn.py-2(@click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })")
     .btn

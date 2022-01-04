@@ -1,7 +1,8 @@
 <script>
-import { computed, useNuxtApp } from '#app'
+import { computed, useNuxtApp, defineComponent } from '#app'
+import useFilter from '~/modules/filter/useFilter'
 
-export default {
+export default defineComponent({
   props: {
     activeItemId: { type: String, default: null },
     category: { type: Object, required: true },
@@ -12,6 +13,8 @@ export default {
   setup ({ id, category }, { listeners }) {
     const { $store } = useNuxtApp()
 
+    const { setCategoryFilter } = useFilter()
+
     const childCategoriesIds = computed(() => $store.getters['categories/getChildCategoriesIds'](id))
     const parentCategory = computed(() => $store.state.categories.items[category.parentId])
 
@@ -21,8 +24,11 @@ export default {
     }
 
     function onClickIcon () {
-      if (listeners.onIconClick)
-        listeners.onIconClick(id)
+      setCategoryFilter(id)
+      $store.commit('filter/setFilterDateNow')
+      $store.commit('categories/hideCategoryModal')
+      $store.commit('categories/setCategoryModalId', null)
+      $store.dispatch('ui/setActiveTabStat', 'details')
     }
 
     return {
@@ -32,120 +38,60 @@ export default {
       onClickIcon
     }
   }
-}
+})
 </script>
 
 <template lang="pug">
-.categoryItem(
+.categoryItem.bg-main.p-2.gap-x-3.items-center.flex.rounded-md(
   v-if="category"
   :class="{ [ui]: ui, _active: activeItemId === id }"
   @click="onClickItem"
 )
   .categoryItem__active(v-if="activeItemId === id")
-  .categoryItem__icon
-    Icon(
-      :category="true"
-      :color="category.color || $store.state.ui.defaultBgColor"
-      :icon="category.icon"
-      small
-      @click="handleIconClick"
-    )
+  .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
+    :style="{ background: category.color }"
+    @click.stop="onClickIcon"
+  ): div(:class="category.icon")
 
-  .categoryItem__name(:class="{ _flat: ui === '_flat' }")
-    .categoryItem__parent(v-if="ui === '_flat' && parentCategory") {{ parentCategory.name }}
-    .categoryItem__child {{ category.name }}
-    .categoryItem__length(v-if="childCategoriesIds.length > 0") {{ childCategoriesIds.length }}
+  .categoryItem__name.grow.truncate
+    .text-xs.text-neutral-500(
+      v-if="parentCategory"
+      class="dark:text-neutral-400"
+    ) {{ parentCategory.name }}
+
+    .leading-none.text-sm.text-neutral-700(class="dark:text-neutral-300") {{ category.name }}
+
+  .text-md.text-neutral-500(
+    v-if="childCategoriesIds.length > 0"
+    class="dark:text-neutral-400"
+  ) {{ childCategoriesIds.length }}
 </template>
 
 <style lang="stylus" scoped>
+.bg-main
+  background var(--c-item-bg-main)
+  +media-hover()
+    background var(--c-item-bg-hover)
+  &._active
+    background var(--c-item-bg-hover)
+
 .categoryItem
   overflow hidden
   cursor pointer
   position relative
-  display flex
-  flex-flow row nowrap
-  align-items center
-  justify-content center
-  min-height 48px
-  padding $m6
   color var(--c-font-1)
-  background var(--c-item-bg-main)
-  border 1px solid transparent
-  border-radius $m5
-  anim()
-  +media-hover()
-    color var(--c-text-1)
-    background var(--c-item-bg-hover)
-    border 1px solid var(--c-item-bd-hover)
-  &._active
-    background var(--c-item-bg-hover)
-    border 1px solid var(--c-item-bd-hover)
-
-  &._flat
-    flex-flow row
-    align-items center
-    justify-content center
-    min-height inherit
-    flex 1 1 auto
-    padding $m6
-
-  &:active
-    opacity .9
-
-  &__icon
-    padding-right $m6
-
-    +media(700px)
-      padding-right $m8
-
-    ^[0]._flat &
-      padding-right $m5
-      padding-bottom 0
-
-  &__name
-    overflow hidden
-    display flex
-    flex-grow 1
-    text-overflow ellipsis
-    padding-right 0
-    font-size 14px
-
-    ^[0]._flat &
-      display block
-      flex-grow 1
-      min-height inherit
-
-    &:last-child
-      padding-bottom 0
 
   &__length
-    margin-left auto
-    padding-left $m6
     color var(--c-font-4)
-    font-size 12px
-
-    ^[0]._flat &
-      text-align left
 
   &__parent
-    padding-bottom $m3
     color var(--c-font-4)
-    font-size 12px
-    text-align center
-
-    ^[0]._flat &
-      text-align left
 
   &__child
     color var(--c-font-1)
-    font-size 14px
-    text-align center
 
     /.light-mode &
       color var(--c-font-4)
-
-    ^[0]._flat &
-      text-align left
 
   &__active
     position absolute

@@ -20,11 +20,11 @@ export default {
   WalletsItemWalletItem(
     :id="$store.state.trnForm.values.walletId"
     :showBase="false"
-    isAltColor
-    ui="tile"
   )
 
-  .trnFormHeaderItem__dots: .mdi.mdi-dots-vertical
+  .trnFormHeaderItem__dots.text-neutral-500(
+    class="dark:text-neutral-400"
+  ): .mdi.mdi-dots-vertical
 </template>
 
 <style lang="stylus" scoped>

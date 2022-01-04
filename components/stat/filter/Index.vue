@@ -12,11 +12,9 @@ export default {
     const filterWallet = computed(() => $store.state.wallets.items[$store.state.filter.walletId])
 
     const onClearCategory = () => {
-      console.log('onClearCategory')
-      if (filterCategory.value.parentId)
-        setCategoryFilter(filterCategory.value.parentId)
-      else
-        setCategoryFilter(null)
+      filterCategory.value.parentId
+        ? setCategoryFilter(filterCategory.value.parentId)
+        : setCategoryFilter(null)
     }
 
     const onClearFilter = () => {

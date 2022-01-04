@@ -16,7 +16,6 @@ export default {
       }
     }
     else {
-      console.log(11, categoryId)
       dispatch('setFilterCategoryId', categoryId)
     }
   },

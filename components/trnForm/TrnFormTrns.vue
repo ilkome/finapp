@@ -1,9 +1,8 @@
-<script>
+<script lang="ts">
+import { useNuxtApp, defineComponent } from '#app'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
-export default {
-  name: 'TrnFormTrns',
-
+export default defineComponent({
   props: {
     categoryId: { type: String, default: null },
     expenses: { type: Boolean, default: false },
@@ -13,6 +12,27 @@ export default {
     size: { type: Number, required: false, default: 10 },
     slider: { type: Object, required: true },
     ui: { type: String, default: 'history' }
+  },
+
+  setup ({ slider }) {
+    const { $store } = useNuxtApp()
+
+    const actions = trnItem => ({
+      onOpenDetails: () => {
+        event.stopPropagation()
+        event.stopPropagation()
+        const { setExpression } = useCalculator()
+        setExpression($store.state.trns.items[trnItem.id].amount)
+        slider.slideTo(1)
+      },
+
+      onOpenEdit: () => {},
+      onSetFilter: () => {}
+    })
+
+    return {
+      actions
+    }
   },
 
   data () {
@@ -104,15 +124,9 @@ export default {
       setTimeout(() => {
         this.slider.slideTo(0, 0)
       }, 100)
-    },
-
-    onClickEditTrn (amount) {
-      const { setExpression } = useCalculator()
-      setExpression(amount)
-      this.slider.slideTo(1)
     }
   }
-}
+})
 </script>
 
 <template lang="pug">
@@ -121,19 +135,20 @@ export default {
     .containerWrap(v-if="trnsIds.length === 0") No transactions
 
     .scrollBlock
-      .trnsList__content.pt-2
-        .trnsList__day(v-for="(trnsIds, date) in groupedTrns")
-          .trnsList__header: TrnsListDate(:date="date")
-          .trnsList__trns
-            TrnsItemTrnItem(
+      .m-3.overflow-hidden.rounded-md.bg-4(
+        v-for="(trnsIds, date) in groupedTrns"
+        :key="date"
+      )
+        .pt-4
+          .pb-2.px-3
+            TrnsListDate(:date="date")
+
+          .overflow-hidden.rounded-md
+            TrnsItemHistory.py-3.px-2.rounded-md.cursor-pointer(
               v-for="trnId in trnsIds"
-              :isActive="$store.state.trnForm.values.trnId === trnId"
-              :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
               :key="trnId"
-              :trn="$store.state.trns.items[trnId]"
+              :actions="actions"
               :trnId="trnId"
-              :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
-              @onClickEdit="onClickEditTrn($store.state.trns.items[trnId].amount)"
             )
 
       .trnsList__pages(v-if="!isShowedAllTrns")

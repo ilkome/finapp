@@ -89,20 +89,18 @@ export default {
   :class="{ _active: isShowInside }"
   @click="toogleShowInside"
 )
-  .z-10.ins.py-2.px-3.space-x-3.rounded-md.justify-between.items-center.flex.border(
-    :class="{ _active: isShowInside, 'dark:border-neutral-800 cursor-n-resize shadow-xl': isShowInside, 'border-transparent cursor-s-resize shadow': !isShowInside }"
+  .ins.py-2.px-3.space-x-3.rounded-md.justify-between.items-center.flex.border(
+    :class="['z-[9]', { _active: isShowInside }, { 'dark:border-neutral-800 cursor-n-resize shadow-xl': isShowInside }, { 'border-transparent cursor-s-resize shadow': !isShowInside }]"
   )
-    .cursor-pointer.statItem__icon(@click.stop="setCategoryFilter(categoryId)")
-      .text-neutral-50.text-2xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
-      ): div(:class="category.icon" :style="{ color: category.color }")
+    .cursor-pointer.text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
+      :style="{ background: category.color }"
+      @click.stop="setCategoryFilter(categoryId)"
+    ): div(:class="category.icon")
 
     .grow
       .space-x-3.flex
         .overflow-hidden.truncate.grow.space-x-2.flex.items-baseline.text-neutral-700(class="dark:text-neutral-400")
           .overflow-hidden.text-sm {{ category.name }}{{ showChildCategories ? '...' : '' }}
-          //- pre {{ getCatgoryName }}
-          //- .overflow-hidden.space-x-2.items-baseline.flex.truncate.text-xs
-          //-   .text-xs(v-for="name in getCatgoryName") {{ name }}
 
         .statItem__amount
           Amount(
@@ -111,7 +109,6 @@ export default {
           )
       .pt-1.statItem__graph.mt-1: .statItem__graph__in(:style="styles")
 
-  //- pre {{ $store.state.categories.items }}
   //- Inside
   .overflow-hidden.ins2.mx-2.rounded-b-md.border.border-t-0(
     v-if="isShowInside"

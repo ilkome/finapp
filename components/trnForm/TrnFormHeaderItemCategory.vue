@@ -16,22 +16,26 @@ export default {
 </script>
 
 <template lang="pug">
-.trnFormHeaderItem._category(
+.trnFormHeaderItem._category.gap-x-3.flex(
   v-if="category"
-  :style="{ background: category.color }"
   @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
 )
   transition(name="slide2")
-    .trnFormHeaderItem__icon(
-      v-show="true"
-      :key="category.icon"
-    )
-      Icon(:icon="category.icon")
-  .trnFormHeaderItem__name
-    .parent(v-if="parentCategory") {{ parentCategory.name }}
-    .child {{ category.name }}
+    .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
+      :style="{ background: category.color }"
+      @click.stop="handleIconClick"
+    ): div(:class="category.icon")
 
-  .trnFormHeaderItem__dots: .mdi.mdi-dots-vertical
+  .trnFormHeaderItem__name
+    .text-xs.text-neutral-500(
+      v-if="parentCategory"
+      class="dark:text-neutral-400"
+    ) {{ parentCategory.name }}
+    .text-sm.text-neutral-700(class="dark:text-neutral-300") {{ category.name }}
+
+  .trnFormHeaderItem__dots.text-neutral-500(
+    class="dark:text-neutral-400"
+  ): .mdi.mdi-dots-vertical
 </template>
 
 <style lang="stylus" scoped>
@@ -43,7 +47,7 @@ export default {
     display flex
     align-items center
     padding $m5 $m6
-    background var(--c-bg-3)
+    background var(--c-item-bg-main)
 
   .trnFormHeaderItem__icon
     padding-right $m4

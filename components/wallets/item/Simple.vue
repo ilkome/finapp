@@ -29,18 +29,18 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.walletItemGrid.p-2.rounded-md(
+.bg-main.py-2.px-3.gap-x-3.items-center.flex(
   :class="{ _active: activeItemId === id }"
   @click="handleClick"
 )
-  .walletItemGridActive(v-if="activeItemId === id")
-  .gap-x-3.flex
-    .text-neutral-50.text-xs.leading-none.w-6.h-6.rounded-md.justify-center.items-center.flex(
-      :style="{ background: wallet.color }"
-    ) {{ wallet.name.substring(0, 2) }}
+  .text-neutral-50.text-xs.leading-none.w-6.h-6.rounded-md.justify-center.items-center.flex(
+    :style="{ background: wallet.color }"
+  ) {{ wallet.name.substring(0, 2) }}
 
-    div
-      .text-sm.text-neutral-500(class="dark:text-neutral-400") {{ wallet.name }}
+  .grow
+    .py-1.items-center.flex
+      .grow.text-neutral-500(class="dark:text-neutral-400") {{ wallet.name }}
+
       Amount(
         :alwaysShowSymbol="true"
         :currency="wallet.currency"
@@ -49,27 +49,16 @@ export default defineComponent({
         :value="wallet.total"
         :vertical="vertical"
       )
+
+    .line
 </template>
 
 <style lang="stylus">
-.walletItemGrid
-  cursor pointer
-  position relative
-  background var(--c-item-bg-main)
-  anim()
-
+.bg-main
   +media-hover()
     background var(--c-item-bg-hover)
 
-.walletItemGridActive
-  position absolute
-  top $m6
-  right $m5
-  display flex
-  align-items center
-  justify-content center
-  width 8px
-  height 8px
-  background var(--c-blue-1)
-  border-radius 50%
+.line
+  height 1px
+  background var(--c-bg-6);
 </style>

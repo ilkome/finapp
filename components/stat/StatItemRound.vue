@@ -47,27 +47,6 @@ export default {
     // long press
     const item = ref(document.createElement('div'))
 
-    onMounted(() => {
-      // Long press for delete
-      // const element: HTMLElement = item.value
-      // element.addEventListener('long-press', () => {
-      //   $store.dispatch('trnForm/openTrnForm', {
-      //     action: 'create'
-      //   })
-
-      //   if (isCategoryHasChildren.value) {
-      //     $store.commit('trnForm/showTrnFormModal', 'categories')
-      //     $store.commit('trnForm/showTrnFormModal', 'categoriesChild')
-      //     $store.commit('trnForm/setTrnFormModalCategoryId', categoryId.value)
-      //   }
-      //   else {
-      //     $store.commit('trnForm/setTrnFormValues', {
-      //       categoryId: categoryId.value
-      //     })
-      //   }
-      // })
-    })
-
     return {
       setCategoryFilter,
       trnsIds,
@@ -89,12 +68,10 @@ export default {
   @click="setCategoryFilter(categoryId)"
 )
   .statItemRound__icon
-    Icon(
-      :icon="category.icon"
-      :color="category.color"
-      background="var(--c-item-stat-bg)"
-      round
-    )
+    .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
+      :style="{ background: category.color }"
+      @click.stop="setCategoryFilter(categoryId)"
+    ): div(:class="category.icon")
 
   .statItemRound__name.js-getWidth(:class="{ _isCategoryHasChildren: isCategoryHasChildren }") {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
   .statItemRound__amount.js-getWidth

@@ -236,8 +236,6 @@ export default {
             .inputModal__label {{ $t('categories.form.parent.label') }}
 
     .form__btns
-      pre {{ showColors }}
-      pre(@click="showIcons = !showIcons") {{ showIcons }}
       //- Colors
       .form__btns__i.cursor-pointer
         .form-line(@click="showColors = true")

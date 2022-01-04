@@ -185,7 +185,6 @@ div
     class="md:grid-cols-2 md:gap-0"
   )
     .p-3
-      pre {{ selectedTrnsIds.length }}
       TrnsItemHistory.py-3.px-2.rounded-md.cursor-pointer(
         v-for="trnId in selectedTrnsIds"
         :key="trnId"

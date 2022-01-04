@@ -10,7 +10,7 @@ export default {
     const { $store } = useNuxtApp()
     const { statPage } = useStatPage()
     const { ui } = useUIView()
-    const { moneyTypes } = useStat()
+    const { moneyTypes, isEmptyStat } = useStat()
 
     const { onWatch } = useStatChart()
     onWatch()
@@ -36,7 +36,7 @@ export default {
     const isShowGroupTrns = computed(() => {
       const p1 = statPage.activeTab === 'incomes' || statPage.activeTab === 'expenses'
       const p2 = statPage.average.total === 0
-      return p1 || p2
+      return (p1 || p2) && statPage.activeTab !== 'history'
     })
 
     return {
@@ -45,6 +45,7 @@ export default {
       isShowTrns,
       moneyTypes,
       statPage,
+      isEmptyStat,
       ui
     }
   }
@@ -81,8 +82,17 @@ export default {
           StatGroupCatsRound(:typeText="item.id")
           StatGroupCatsHorizontal(:typeText="item.id")
 
-        LazyStatGroupTrns(v-if="isShowGroupTrns")
+        LazyStatGroupTrns(v-if="isShowGroupTrns && !isEmptyStat")
 
-  StatEmpty
-  LazyStatTrns(v-if="isShowTrns")
+  template(v-if="statPage.activeTab !== 'history'")
+    StatEmpty
+    LazyStatTrns.px-3(
+      v-if="isShowTrns && !isEmptyStat"
+    )
+
+  .px-3(v-if="statPage.activeTab === 'history'")
+    TrnsListHistory(
+      :size="50"
+      isShowFilter
+    )
 </template>

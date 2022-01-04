@@ -34,7 +34,7 @@ export default {
   computed: {
     walletsIds () {
       const walletsIds = this.$store.getters['wallets/walletsSortedIds']
-      if (this.stateLimit) { return walletsIds.slice(0, this.stateLimit) }
+      if (this.stateLimit) return walletsIds.slice(0, this.stateLimit)
       return walletsIds
     }
   },
@@ -45,12 +45,10 @@ export default {
 
   methods: {
     toogleWallets () {
-      if (this.stateLimit > 0) {
+      if (this.stateLimit > 0)
         this.stateLimit = 0
-      }
-      else {
+      else
         this.stateLimit = this.limit
-      }
     }
   }
 }
@@ -59,7 +57,7 @@ export default {
 <template lang="pug">
 .wallets
   .wallets__grid
-    WalletsItemWalletItem2(
+    WalletsItemWalletItem(
       :activeItemId="activeItemId"
       v-for="walletId in walletsIds"
       :id="walletId"
@@ -75,18 +73,17 @@ export default {
 
 <style lang="stylus" scoped>
 .wallets
-  padding 0 $m7
-
   &__grid
     display grid
     grid-template-columns repeat(2, 1fr)
-    grid-column-gap $m7
-    grid-row-gap $m7
+    grid-column-gap $m6
+    grid-row-gap $m6
+    padding 0 $m7
 
     +media(600px)
-      grid-template-columns repeat(auto-fill, minmax(220px, 1fr))
-      grid-column-gap $m7
-      grid-row-gap $m7
+      grid-template-columns repeat(auto-fill, minmax(200px, 1fr))
+      grid-column-gap $m6
+      grid-row-gap $m6
 
   &__toogle
     button-base-1()

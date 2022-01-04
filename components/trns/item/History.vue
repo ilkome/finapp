@@ -25,23 +25,21 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.space-x-3.flex(
+.space-x-3.flex.cursor-context-menu(
   class="hocus:bg-neutral-100 dark:hocus:bg-neutral-800"
   @click="onOpenDetails"
 )
-  .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
+  .cursor-pointer.text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
     :style="{ background: trnItem.category.color }"
     @click="onSetFilter"
   ): div(:class="trnItem.category.icon")
 
   .grow
     .items-center.flex
-      .text-neutral-500.grow(
-        class="dark:text-neutral-400"
-      )
+      .grow.text-neutral-500(class="dark:text-neutral-400")
         //- Category
-        .pb-1.text-sm.space-x-2.items-baseline.flex
-          .text-neutral-700(class="dark:text-neutral-300") {{ trnItem.category.name }}
+        .pb-1.space-x-2.items-baseline.flex
+          .text-sm.text-neutral-700(class="dark:text-neutral-300") {{ trnItem.category.name }}
 
           .text-xs.space-x-2.items-baseline.flex(v-if="trnItem.category.parentId")
             div •
@@ -63,13 +61,14 @@ export default defineComponent({
             .text-neutral-500(class="dark:text-neutral-400") {{ trnItem.walletTo.name }}
 
       //- Amount
-      Amount2(
-        :amount="trnItem.amount"
-        :currency="trnItem.wallet.currency"
-        :type="trnItem.type"
-        colorize="incomes"
-        @click="onOpenEdit"
-      )
+      .cursor-pointer
+        Amount2(
+          :amount="trnItem.amount"
+          :currency="trnItem.wallet.currency"
+          :type="trnItem.type"
+          colorize="incomes"
+          @click="onOpenEdit"
+        )
 
     //- Description
     .pt-2.text-neutral-500.text-xs.leading-none(

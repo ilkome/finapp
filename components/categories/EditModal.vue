@@ -259,20 +259,14 @@ div
               @click="activeTab = 'icons'"
             ) {{ $t('categories.form.icons.label') }}
 
-          .preview(v-if="activeTab !== 'data'")
-            .previewIcon
-              Icon(
-                :icon="category.icon"
-                :background="category.color"
-                round
-              )
-            .categoryParentItem(style="width: 100%")
-              .categoryParentItem__icon
-                Icon(
-                  :icon="category.icon"
-                  :color="category.color"
-                )
-              .categoryParentItem__name {{ category.name || $t('categories.form.name.label') }}
+          .bg-main.m-3.p-2.rounded-md.items-center.gap-x-3.flex(
+            v-if="activeTab !== 'data'"
+          )
+            .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
+              :style="{ background: category.color }"
+              @click.stop="handleIconClick"
+            ): div(:class="category.icon")
+            .text-sm.text-neutral-700(class="dark:text-neutral-300") {{ category.name || $t('categories.form.name.label') }}
 
           //-
           //- Content
@@ -447,13 +441,16 @@ div
 
               CategoriesView(
                 :activeItemId="category.parentId"
-                :noPadding="true"
                 :ids="$store.getters['categories/categoriesForBeParent'].filter(cId => cId !== categoryId)"
+                noPadding
                 @onClick="handleParenCategorySelect"
               )
 </template>
 
 <style lang="stylus" scoped>
+.bg-main
+  background var(--c-item-bg-main)
+
 .preview
   display flex
   align-items center
@@ -487,19 +484,6 @@ div
     color var(--c-text-1)
     background var(--c-item-bg-hover)
     border 1px solid var(--c-item-bd-hover)
-
-  &__icon
-    padding-right $m6
-    +media(700px)
-      padding-right $m8
-
-  &__name
-    overflow hidden
-    display flex
-    flex-grow 1
-    text-overflow ellipsis
-    padding-right 0
-    font-size 14px
 
 .menu
   overflow hidden

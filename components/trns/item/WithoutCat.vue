@@ -28,7 +28,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.space-x-4.flex.text-neutral-500(
+.cursor-context-menu.space-x-4.flex.text-neutral-500(
   class="dark:text-neutral-400 hocus:bg-neutral-100 dark:hocus:bg-neutral-800"
   @click="onOpenDetails"
 )
@@ -53,13 +53,14 @@ export default defineComponent({
             .text-neutral-500(class="dark:text-neutral-400") {{ trnItem.walletTo.name }}
 
       //- Amount
-      Amount2(
-        :amount="trnItem.amount"
-        :currency="trnItem.wallet.currency"
-        :type="trnItem.type"
-        colorize="incomes"
-        @click="onOpenEdit"
-      )
+      .cursor-pointer
+        Amount2(
+          :amount="trnItem.amount"
+          :currency="trnItem.wallet.currency"
+          :type="trnItem.type"
+          colorize="incomes"
+          @click="onOpenEdit"
+        )
 
     //- Description
     .pt-1.text-neutral-500.text-xs(

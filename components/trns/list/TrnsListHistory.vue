@@ -1,9 +1,48 @@
-<script>
-export default {
+<script lang="ts">
+import { useNuxtApp, defineComponent } from '#app'
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
+import useFilter from '~/modules/filter/useFilter'
+
+export default defineComponent({
   props: {
     isShowFilter: { type: Boolean, default: false },
     limit: { type: Number, default: 0 },
     size: { type: Number, required: false, default: 30 }
+  },
+
+  setup () {
+    const { $store } = useNuxtApp()
+    const { setExpression } = useCalculator()
+    const { setCategoryFilter } = useFilter()
+
+    const actions = trnItem => ({
+      onOpenDetails: () => {
+        if (!$store.state.trns.modal.show) {
+          $store.commit('categories/hideCategoryModal')
+          $store.commit('trns/showTrnModal')
+          $store.commit('trns/setTrnModalId', trnItem.id)
+        }
+      },
+
+      onOpenEdit: (event) => {
+        event.stopPropagation()
+        setExpression(trnItem.amount)
+        $store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.id })
+        $store.commit('stat/setCategoryModal', { id: null, type: null })
+      },
+
+      onSetFilter: (event) => {
+        event.stopPropagation()
+        setCategoryFilter(trnItem.categoryId)
+        $store.commit('filter/setFilterDateNow')
+        $store.commit('trns/hideTrnModal')
+        $store.commit('trns/setTrnModalId', null)
+        $store.commit('stat/setCategoryModal', { id: null, type: null })
+        $store.dispatch('ui/setActiveTabStat', 'details')
+      }
+    })
+
+    return { actions }
   },
 
   data () {
@@ -73,7 +112,7 @@ export default {
       this.isShowTrnsWithDesc = !this.isShowTrnsWithDesc
     }
   }
-}
+})
 </script>
 
 <template lang="pug">
@@ -94,18 +133,18 @@ div
     )
       .overflow-hidden.rounded-md.bg-4(
         v-for="(trnsIds, date) in groupedTrns"
+        :key="date"
       )
         .pt-4
           .pb-2.px-3
             TrnsListDate(:date="date")
-          div
-            TrnsItemTrnItem(
+
+          .overflow-hidden.rounded-md
+            TrnsItemHistory.py-3.px-3.cursor-pointer(
               v-for="trnId in trnsIds"
               :key="trnId"
-              :category="$store.state.categories.items[$store.state.trns.items[trnId].categoryId]"
-              :trn="$store.state.trns.items[trnId]"
+              :actions="actions"
               :trnId="trnId"
-              :wallet="$store.state.wallets.items[$store.state.trns.items[trnId].walletId]"
             )
 
   .py-4(v-if="!isShowedAllTrns")

@@ -32,10 +32,10 @@ export default {
 
 <template lang="pug">
 .trnFormDate
-  .trnFormDate__item._arrow(@click="setPrevDay()"): .mdi.mdi-chevron-left
+  .shame1._arrow(@click="setPrevDay()"): .mdi.mdi-chevron-left
   .trnFormDate__item._date(@click="$store.commit('trnForm/showTrnFormModal', 'calendar')") {{ formatedDate }}
   .flex
-    .trnFormDate__item._arrow(
+    .shame1._arrow(
       v-if="!isToday" @click="setNextDay()"
       style="marginRight: 16px"
     ): .mdi.mdi-chevron-right
@@ -47,6 +47,32 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
+.shame1
+  cursor pointer
+  display flex
+  align-items center
+  justify-content center
+  width 44px
+  height 44px
+  padding $m7
+  color var(--c-font-3)
+  font-size 22px
+  border-bottom 0
+  border-right 0
+  background var(--c-item-bg-main)
+  border 1px solid var(--c-item-bd-main)
+  border-radius 50%
+  user-select none
+  anim(100ms)
+
+  +media(360px)
+    width 58px
+    height 58px
+
+  +media-hover()
+    background var(--c-bg-7)
+    border 1px solid var(--c-bg-8)
+
 .trnFormDate
   display grid
   height 100%

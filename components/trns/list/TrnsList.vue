@@ -12,7 +12,7 @@ export default defineComponent({
     limit: { type: Number, default: 0 },
     size: { type: Number, required: false, default: 30 },
     ui: { type: String, default: 'history' },
-    classNames: { type: String, default: 'md:grid-cols-2 md:gap-6 lg:grid-cols-3' }
+    classNames: { type: String, default: '' }
   },
 
   setup () {
@@ -141,8 +141,9 @@ div
 
   div(v-if="trnsIds.length > 0")
     //- History view
-    .grid.grid-cols-1.gap-2(
+    .grid.grid-cols-1.gap-y-5(
       v-if="ui === 'history'"
+      class="md:grid-cols-2 md:gap-x-20"
       :class="classNames"
     )
       .overflow-hidden.rounded-md.bg-4(

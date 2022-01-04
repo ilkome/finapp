@@ -39,7 +39,8 @@ export default {
     ) {{ $t('money.incomes') }}
 
     .menuItem.statTitle(
-      @click="$router.push('history')"
+      :class="{ _active: activeTabStat === 'history' }"
+      @click="onClickStatMenu('history')"
     ) {{ $t('trns.history') }}
 </template>
 

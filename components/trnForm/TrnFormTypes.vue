@@ -26,17 +26,17 @@ export default {
 <template lang="pug">
 .flex.justify-center
   .overflow-hidden.flex.items-center.bg-4.rounded-md
-    .barItem.px-6.py-3.font5.text-sm(
+    .barItem.px-6.py-2.font5.text-sm(
       @click="() => setAmountType(0)"
       :class="{ _active: amountType === 0 }"
     ) {{ $t('money.expenses') }}
 
-    .barItem.px-6.py-3.font5.text-sm(
+    .barItem.px-6.py-2.font5.text-sm(
       @click="() => setAmountType(1)"
       :class="{ _active: amountType === 1 }"
     ) {{ $t('money.incomes') }}
 
-    .barItem.px-6.py-3.font5.text-sm(
+    .barItem.px-6.py-2.font5.text-sm(
       v-if="$store.getters['wallets/walletsSortedIds'].length > 1"
       @click="() => setAmountType(2)"
       :class="{ _active: amountType === 2 }"

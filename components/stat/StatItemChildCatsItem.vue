@@ -49,9 +49,10 @@ export default {
   .ins.py-2.px-3.space-x-3.justify-between.items-center.flex.border-t(
     :class="[{ _active: isShowInside }, { 'border-b-0 cursor-n-resize': isShowInside }, { 'cursor-s-resize': !isShowInside }, 'dark:border-neutral-800']"
   )
-    .cursor-pointer.statItem__icon(@click.stop="setCategoryFilter(categoryId)")
-      .text-neutral-50.text-2xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
-      ): div(:class="category.icon" :style="{ color: category.color }")
+    .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
+      :style="{ background: category.color }"
+      @click.stop="setCategoryFilter(categoryId)"
+    ): div(:class="category.icon")
 
     .grow
       .space-x-3.flex

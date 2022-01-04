@@ -32,14 +32,12 @@
 
 .walletsTiles
   display grid
-  grid-template-columns repeat(3, 1fr)
+  grid-template-columns repeat(2, 1fr)
   grid-column-gap $m6
   grid-row-gap $m6
   padding 0 $m7
 
-.walletsLine
-  overflow hidden
-  display flex
-  overflow-x auto
-  padding 0 $m7
-  scrollbar()
+  +media(600px)
+    grid-template-columns repeat(auto-fill, minmax(200px, 1fr))
+    grid-column-gap $m6
+    grid-row-gap $m6

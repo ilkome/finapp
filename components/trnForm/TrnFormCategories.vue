@@ -57,7 +57,6 @@ export default {
                 :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
                 :noPaddingBottom="true"
                 @onClick="handleCategoryClick"
-                ui="_flat"
               )
 
         .swiper-slide
@@ -81,7 +80,6 @@ export default {
                 :ids="$store.getters['categories/quickSelectorCategoriesIds']"
                 :noPaddingBottom="true"
                 @onClick="handleCategoryClick"
-                ui="_flat"
               )
 
   .flex.justify-center(v-if="slider")

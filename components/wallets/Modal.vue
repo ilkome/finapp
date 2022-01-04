@@ -1,5 +1,5 @@
 <script>
-import { useNuxtApp } from '#app'
+import { computed, useNuxtApp } from '#app'
 import { removeData } from '~/services/firebaseHelpers'
 import useFilter from '~/modules/filter/useFilter'
 
@@ -13,9 +13,19 @@ export default {
       $store.commit('wallets/setWalletsModalWalletModalId', null)
     }
 
+    const wallet = computed(() => {
+      const id = $store.state.wallets.modal.id
+      if (!id) return
+      return {
+        ...$store.state.wallets.items[id],
+        total: $store.getters['wallets/walletsTotal'][id].base
+      }
+    })
+
     return {
       setWalletFilter,
-      closed
+      closed,
+      wallet
     }
   },
 
@@ -106,12 +116,25 @@ Portal(
 
     template(#header)
       template(v-if="walletId")
-        .walletWrap
-          WalletsItemWalletItem2(
-            :id="walletId"
-            vertical="center"
-            size="xl"
+        .shame1.rounded-t-2xl.pb-2
+          .gap-4.items-center.justify-center.flex-col.flex(
+            class="-translate-y-6 -mb-6"
           )
+            .text-neutral-50.text-lg.leading-none.w-12.h-12.rounded-md.justify-center.items-center.flex(
+              :style="{ background: wallet.color }"
+            ) {{ wallet.name.substring(0, 2) }}
+
+            .gap-y-1.flex-col.flex
+              .text-center.text-lg.text-neutral-500(class="dark:text-neutral-400") {{ wallet.name }}
+
+              Amount(
+                alwaysShowSymbol
+                :currency="wallet.currency"
+                :showBase="showBase"
+                :value="wallet.total"
+                size="xl"
+                vertical="center"
+              )
 
     template(#default="{ close }")
       .content
@@ -148,37 +171,9 @@ Portal(
 </template>
 
 <style lang="stylus">
-.modalContainer
-  .walletWrap
-    padding-bottom $m8
-    background var(--c-bg-3)
+.shame1
+  background var(--c-bg-3)
 
-    .walletItemGrid
-      cursor default
-      width 100%
-      padding $m8
-      padding-top 0
-      padding-bottom $m6
-      border-bottom 0
-      background var(--c-bg-3) !important
-      border 1px solid transparent !important
-      border-radius $m6 $m6 0 0
-
-      &__name
-        padding-bottom $m9
-        color var(--c-font-2)
-        font-size 22px
-        text-align center
-        fontFamilyNunito()
-
-      &__line
-        height 6px
-        margin-right (- $m8)
-        margin-bottom $m8
-        margin-left (- $m8)
-</style>
-
-<style lang="stylus">
 .content
   padding-top $m6
   padding-bottom $m6

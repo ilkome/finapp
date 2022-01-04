@@ -14,14 +14,6 @@ export default {
   },
 
   computed: {
-    className () {
-      return {
-        walletsList: !this.ui,
-        walletsTiles: this.ui === 'tile',
-        walletsLine: this.ui === 'line'
-      }
-    },
-
     walletsIds () {
       const walletsIds = this.$store.getters['wallets/walletsSortedIds']
       if (this.stateLimit)
@@ -47,16 +39,29 @@ export default {
 
 <template lang="pug">
 .wallets
-  div(:class="className")
-    WalletsItemWalletItem(
-      v-for="walletId in walletsIds"
-      :id="walletId"
-      :key="walletId"
-      :ui="ui"
-      v-on="$listeners"
-    )
+  div
+    template(v-if="ui === 'simple'")
+      WalletsItemSimple(
+        v-for="walletId in walletsIds"
+        :id="walletId"
+        :key="walletId"
+        :ui="ui"
+        v-on="$listeners"
+      )
 
-  .walletsList__toogle(v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit" @click="toogleWallets")
+    template(v-else)
+      WalletsItemWalletItem(
+        v-for="walletId in walletsIds"
+        :id="walletId"
+        :key="walletId"
+        :ui="ui"
+        v-on="$listeners"
+      )
+
+  .walletsList__toogle(
+    v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit"
+    @click="toogleWallets"
+  )
     template(v-if="stateLimit > 0") {{ $t('wallets.showAll') }}
     template(v-else) {{ $t('wallets.showOnly') }} {{ limit }}
 </template>
