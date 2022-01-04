@@ -1,12 +1,12 @@
-import { useContext } from '@nuxtjs/composition-api'
+import { useNuxtApp } from '#app'
 import { formatDate } from '~/utils/formatDate'
 
 export default function useFormatTrnFullItem () {
-  const { store } = useContext()
+  const { $store } = useNuxtApp()
 
   function formatTrnFullItem (id) {
     try {
-      const { trns, wallets, categories } = store.state
+      const { trns, wallets, categories } = $store.state
 
       if (!trns?.items || !wallets?.items || !categories?.items)
         return 'Something missing'

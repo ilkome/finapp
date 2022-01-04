@@ -1,10 +1,10 @@
-import { ref, useContext } from '@nuxtjs/composition-api'
+import { ref, useNuxtApp } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 
 const isShowDataLabels = ref(false)
 
 export default function useChart () {
-  const { store } = useContext()
+  const { $store } = useNuxtApp()
   const { filterPeriodNameAllReplacedToYear } = useFilter()
 
   function showDataLabels () {
@@ -15,10 +15,10 @@ export default function useChart () {
   }
 
   function toogleChartsView () {
-    store.commit('chart/toogleChartPeriodView', {
+    $store.commit('chart/toogleChartPeriodView', {
       periodName: filterPeriodNameAllReplacedToYear.value
     })
-    store.dispatch('ui/saveUiView')
+    $store.dispatch('ui/saveUiView')
   }
 
   return {

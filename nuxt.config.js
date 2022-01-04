@@ -1,4 +1,11 @@
-export default {
+import { defineNuxtConfig } from '@nuxt/bridge'
+
+export default defineNuxtConfig({
+  bridge: {
+    nitro: false,
+    vite: false
+  },
+
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
   ssr: false,
 
@@ -83,13 +90,13 @@ export default {
   buildModules: [
     '@nuxtjs/style-resources',
     '@nuxtjs/pwa',
-    // https://composition-api.nuxtjs.org/
-    '@nuxtjs/composition-api/module',
-    // https://typescript.nuxtjs.org/
-    '@nuxt/typescript-build',
     // https://tailwindcss.nuxtjs.org/
     '@nuxtjs/tailwindcss'
   ],
+
+  alias: {
+    tslib: 'tslib/tslib.es6.js'
+  },
 
   tailwindcss: {
     viewer: false
@@ -148,4 +155,4 @@ export default {
       }]
     }
   }
-}
+})

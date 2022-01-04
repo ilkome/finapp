@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent } from '#app'
 import useAmount from '~/components/amount/useAmount'
 
 export default defineComponent({

@@ -1,16 +1,16 @@
 <script>
-import { useContext } from '@nuxtjs/composition-api'
+import { useNuxtApp } from '#app'
 import { removeData } from '~/services/firebaseHelpers'
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { setCategoryFilter } = useFilter()
 
     const closed = () => {
-      store.commit('categories/hideCategoryModal')
-      store.commit('categories/setCategoryModalId', null)
+      $store.commit('categories/hideCategoryModal')
+      $store.commit('categories/setCategoryModalId', null)
     }
 
     return {

@@ -1,15 +1,15 @@
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
 import dayjs from 'dayjs'
 
 export default function useFilter () {
-  const { store } = useContext()
+  const { $store } = useNuxtApp()
 
   /**
    * Base
    */
-  const trns = computed(() => store.state.trns.items)
+  const trns = computed(() => $store.state.trns.items)
   const trnsIds = computed(() => Object.keys(trns.value))
-  const cats = computed(() => store.state.categories.items)
+  const cats = computed(() => $store.state.categories.items)
   const catsIds = computed(() => Object.keys(cats.value))
 
   /**

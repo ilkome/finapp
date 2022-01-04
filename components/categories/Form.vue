@@ -1,5 +1,4 @@
 <script>
-import { ref, computed, watch, onMounted, useContext } from '@nuxtjs/composition-api'
 import { saveData } from '~/services/firebaseHelpers'
 import generateId from '~/utils/id'
 import colors from '~/assets/js/colors'

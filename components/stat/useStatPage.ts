@@ -1,17 +1,17 @@
-import { reactive, computed, useContext } from '@nuxtjs/composition-api'
+import { reactive, computed, useNuxtApp } from '#app'
 
 export default function useStatPage () {
-  const { store } = useContext()
+  const { $store } = useNuxtApp()
 
-  const activeTabStat = computed(() => store.state.ui.activeTabStat)
-  const statCurrentPeriod = computed(() => store.getters['stat/statCurrentPeriod'])
-  const statAverage = computed(() => store.getters['stat/statAverage'])
-  const filterPeriod = computed(() => store.state.filter.period)
-  const filter = computed(() => store.state.filter)
-  const filterDate = computed(() => store.state.filter.date)
-  const isShowFilter = computed(() => !!store.state.filter.categoryId || !!store.state.filter.walletId)
-  // const periods = computed(() => store.state.chart.periods)
-  const isHasTrns = computed(() => store.getters['trns/hasTrns'])
+  const activeTabStat = computed(() => $store.state.ui.activeTabStat)
+  const statCurrentPeriod = computed(() => $store.getters['stat/statCurrentPeriod'])
+  const statAverage = computed(() => $store.getters['stat/statAverage'])
+  const filterPeriod = computed(() => $store.state.filter.period)
+  const filter = computed(() => $store.state.filter)
+  const filterDate = computed(() => $store.state.filter.date)
+  const isShowFilter = computed(() => !!$store.state.filter.categoryId || !!$store.state.filter.walletId)
+  // const periods = computed(() => $store.state.chart.periods)
+  const isHasTrns = computed(() => $store.getters['trns/hasTrns'])
 
   return {
     statPage: reactive({

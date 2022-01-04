@@ -1,4 +1,4 @@
-import { reactive } from '@nuxtjs/composition-api'
+import { reactive } from '#app'
 import localforage from 'localforage'
 
 const localName = 'finapp.ui'

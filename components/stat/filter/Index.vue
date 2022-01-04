@@ -1,15 +1,15 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { setCategoryFilter, setWalletFilter } = useFilter()
 
-    const filterCategory = computed(() => store.state.categories.items[store.state.filter.categoryId])
-    const filterParentCategory = computed(() => store.state.categories.items[filterCategory.value.parentId])
-    const filterWallet = computed(() => store.state.wallets.items[store.state.filter.walletId])
+    const filterCategory = computed(() => $store.state.categories.items[$store.state.filter.categoryId])
+    const filterParentCategory = computed(() => $store.state.categories.items[filterCategory.value.parentId])
+    const filterWallet = computed(() => $store.state.wallets.items[$store.state.filter.walletId])
 
     const onClearCategory = () => {
       console.log('onClearCategory')

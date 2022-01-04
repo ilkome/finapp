@@ -1,17 +1,17 @@
-<script>
-import { ref, useContext } from '@nuxtjs/composition-api'
+<script lang="ts">
 import { signInWithRedirect, GoogleAuthProvider } from 'firebase/auth'
+import { ref, defineComponent } from '#app'
+import { useRoute } from '#imports'
 import { auth } from '~/services/firebaseHelpers'
 
-export default {
-  name: 'LoginPage',
+export default defineComponent({
   layout: 'login',
 
   setup () {
-    const { query } = useContext()
     const isLoading = ref(false)
 
-    if (query.value && query.value.loading)
+    const route = useRoute()
+    if (route.query?.loading)
       isLoading.value = true
 
     setTimeout(() => { isLoading.value = false }, 10000)
@@ -50,7 +50,7 @@ export default {
       this.$store.dispatch('lang/setLang', lang)
     }
   }
-}
+})
 </script>
 
 <template lang="pug">
@@ -71,13 +71,15 @@ export default {
     .flex.gap-3.top-3.right-5(
       class="lg:top-7 lg:right-7"
     )
-      .linkItem.py-2.px-3.rounded(@click="$store.dispatch('ui/changeTheme')") {{ $t('changeTheme') }}
+      .linkItem.py-2.px-3.rounded(
+        @click="$store.dispatch('ui/changeTheme')"
+      ) {{ $t('changeTheme') }}
 
   .tab__content
     SharedAppName
     SharedCopyright
 
-  .tab__bottom.px-3.py-8
+  .flex.flex-col.items-center.px-3.py-8
     .loginButton(
       :class="{ _loading: isLoading }"
       @click.prevent="signInWithGoogle"
@@ -108,15 +110,6 @@ export default {
     align-items center
     justify-content center
     flex-flow column
-
-  &__bottom
-    display flex
-    align-items center
-    justify-content center
-    flex-flow column
-
-    +media(600px)
-      justify-content flex-start
 
 .linkItem
   cursor pointer

@@ -1,16 +1,16 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
 
 export default {
   name: 'TrnFormTypes',
 
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
 
-    const amountType = computed(() => store.state.trnForm.values.amountType)
+    const amountType = computed(() => $store.state.trnForm.values.amountType)
 
     function setAmountType (amountType) {
-      store.commit('trnForm/setTrnFormValues', {
+      $store.commit('trnForm/setTrnFormValues', {
         amountType
       })
     }

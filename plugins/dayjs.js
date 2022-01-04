@@ -7,15 +7,11 @@ dayjs.extend(updateLocale)
 dayjs.extend(relativeTime)
 dayjs.extend(isoWeek)
 
-dayjs.updateLocale('en', {
-  weekStart: 1
-})
-
 const weekOfYear = require('dayjs/plugin/weekOfYear')
 dayjs.extend(weekOfYear)
 
-export default ({ app }, inject) => {
-  const locale = require(`dayjs/locale/${app.i18n.locale}.js`)
+export default (_, inject) => {
+  const locale = require('dayjs/locale/en.js')
   dayjs.locale(locale)
   dayjs.updateLocale(locale, {
     weekStart: 1

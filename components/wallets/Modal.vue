@@ -1,16 +1,16 @@
 <script>
-import { useContext } from '@nuxtjs/composition-api'
+import { useNuxtApp } from '#app'
 import { removeData } from '~/services/firebaseHelpers'
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { setWalletFilter } = useFilter()
 
     const closed = () => {
-      store.commit('wallets/hideWalletsModalWalletModal')
-      store.commit('wallets/setWalletsModalWalletModalId', null)
+      $store.commit('wallets/hideWalletsModalWalletModal')
+      $store.commit('wallets/setWalletsModalWalletModalId', null)
     }
 
     return {

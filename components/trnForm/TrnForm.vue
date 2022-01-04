@@ -3,7 +3,7 @@ import Vue from 'vue'
 import dayjs from 'dayjs'
 import SwiperCore, { Pagination } from 'swiper'
 import 'swiper/swiper-bundle.css'
-import { ref, computed, watch, onMounted, useContext } from '@nuxtjs/composition-api'
+import { ref, computed, watch, onMounted, useNuxtApp } from '#app'
 import generateId from '~/utils/id'
 
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
@@ -20,7 +20,7 @@ export default {
   },
 
   setup (props) {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     /**
      * Slider
      */
@@ -33,13 +33,13 @@ export default {
       const el = document.querySelector('.getHeight')
       const height = el.clientHeight
 
-      store.commit('trnForm/setTrnFormHeight', height)
+      $store.commit('trnForm/setTrnFormHeight', height)
       maxHeight.value = `${height}px`
 
       const observer = new ResizeObserver((entries) => {
         for (const entry of entries) {
           const height = entry.contentRect.height
-          store.commit('trnForm/setTrnFormHeight', height)
+          $store.commit('trnForm/setTrnFormHeight', height)
           maxHeight.value = `${height}px`
         }
       })
@@ -86,14 +86,14 @@ export default {
     /**
      * Amounts
      */
-    const amountType = computed(() => store.state.trnForm.values.amountType)
-    const isTransfer = computed(() => store.state.trnForm.values.amountType === 2)
+    const amountType = computed(() => $store.state.trnForm.values.amountType)
+    const isTransfer = computed(() => $store.state.trnForm.values.amountType === 2)
 
     /**
      * Click on category
      */
     function onCategoryClick (categoryId) {
-      store.commit('trnForm/setTrnFormValues', { categoryId })
+      $store.commit('trnForm/setTrnFormValues', { categoryId })
       // sliderObj.value.slideTo(1, 300)
     }
 
@@ -101,7 +101,7 @@ export default {
      * Click on wallet
      */
     function onClickWallet (walletId) {
-      store.commit('trnForm/setTrnFormValues', { walletId })
+      $store.commit('trnForm/setTrnFormValues', { walletId })
       // sliderObj.value.slideTo(1, 300)
     }
 
@@ -111,7 +111,7 @@ export default {
     function prepeareValues (): any {
       let normalizedValues
 
-      const id = store.state.trnForm.values.trnId || generateId(dayjs().valueOf())
+      const id = $store.state.trnForm.values.trnId || generateId(dayjs().valueOf())
       const { getResult } = useCalculator()
 
       // Simple
@@ -120,12 +120,12 @@ export default {
           amount: getResult.value,
           amountFrom: getResult.value,
           amountTo: getResult.value,
-          categoryId: store.state.trnForm.values.categoryId,
-          date: dayjs(store.state.trnForm.values.date).valueOf(),
-          description: store.state.trnForm.values.description || null,
-          groups: store.state.trnForm.values.groups || null,
-          type: Number(store.state.trnForm.values.amountType) || 0,
-          walletId: store.state.trnForm.values.walletId
+          categoryId: $store.state.trnForm.values.categoryId,
+          date: dayjs($store.state.trnForm.values.date).valueOf(),
+          description: $store.state.trnForm.values.description || null,
+          groups: $store.state.trnForm.values.groups || null,
+          type: Number($store.state.trnForm.values.amountType) || 0,
+          walletId: $store.state.trnForm.values.walletId
         }
       }
 
@@ -136,13 +136,13 @@ export default {
           amountFrom: getResult.value,
           amountTo: getResult.value,
           categoryId: 'transfer',
-          date: dayjs(store.state.trnForm.values.date).valueOf(),
-          walletId: store.state.trnForm.values.walletFromId,
-          walletFromId: store.state.trnForm.values.walletFromId,
-          walletToId: store.state.trnForm.values.walletToId,
+          date: dayjs($store.state.trnForm.values.date).valueOf(),
+          walletId: $store.state.trnForm.values.walletFromId,
+          walletFromId: $store.state.trnForm.values.walletFromId,
+          walletToId: $store.state.trnForm.values.walletToId,
           type: 2,
-          description: store.state.trnForm.values.description || null,
-          groups: store.state.trnForm.values.groups || null
+          description: $store.state.trnForm.values.description || null,
+          groups: $store.state.trnForm.values.groups || null
         }
       }
 
@@ -162,8 +162,8 @@ export default {
 
         const validateStatus = validate({
           ...values,
-          walletFrom: store.getters['wallets/getWalletWithId'](store.state.trnForm.values.walletFromId),
-          walletTo: store.getters['wallets/getWalletWithId'](store.state.trnForm.values.walletToId)
+          walletFrom: $store.getters['wallets/getWalletWithId']($store.state.trnForm.values.walletFromId),
+          walletTo: $store.getters['wallets/getWalletWithId']($store.state.trnForm.values.walletToId)
         })
 
         if (validateStatus.error) {
@@ -181,7 +181,7 @@ export default {
           title: random(successEmo)
         })
 
-        store.dispatch('trns/addTrn', { id, values })
+        $store.dispatch('trns/addTrn', { id, values })
       }
       catch (e) {
         console.log(e)

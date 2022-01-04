@@ -1,25 +1,25 @@
 <script>
-import { ref, computed, useContext } from '@nuxtjs/composition-api'
+import { ref, computed, useNuxtApp } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
 
 export default {
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { periodsNames } = usePeriods()
     const { filterPeriodNameAllReplacedToYear } = useFilter()
-    const filterPeriod = computed(() => store.state.filter.period)
+    const filterPeriod = computed(() => $store.state.filter.period)
 
     const visiblePeriodMenu = ref(false)
 
     const onSelectPeriod = (period) => {
-      store.dispatch('filter/setPeriod', period)
+      $store.dispatch('filter/setPeriod', period)
     }
 
     const periodCounts = {
       items: [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60],
       onSelect: (value) => {
-        store.commit('chart/setElementsToChart', {
+        $store.commit('chart/setElementsToChart', {
           period: filterPeriod.value,
           value
         })

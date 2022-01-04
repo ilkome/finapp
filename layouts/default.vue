@@ -1,20 +1,21 @@
-<script>
-import { ref, computed, useContext, useFetch, onMounted } from '@nuxtjs/composition-api'
+<script lang="ts">
+import { ref, computed, useNuxtApp, onMounted, useLazyAsyncData, defineComponent } from '#app'
 import useBaseLayout from '~/components/layout/useBaseLayout'
 import debounce from '~/utils/debounce'
 import detectTouch from '~/assets/js/isTouchDevice'
 import useUIView from '~/components/layout/useUIView'
 
-export default {
-  name: 'DefaultLayout',
-
+export default defineComponent({
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
 
-    useFetch(async () => {
+    useLazyAsyncData('posts', async () => {
       const { initUI } = useUIView()
       await initUI()
     })
+
+    // metrica
+    const isShowMetrica = process.env.NODE_ENV === 'production' && !$store.getters['user/isTester']
 
     const keepAliveInclude = ['IndexPage2']
 
@@ -24,7 +25,7 @@ export default {
     // UI
     const { ui } = useUIView()
 
-    const statCurrentPeriod = computed(() => store.getters['stat/statCurrentPeriod'])
+    const statCurrentPeriod = computed(() => $store.getters['stat/statCurrentPeriod'])
 
     /**
      * Update modal
@@ -52,7 +53,7 @@ export default {
       const width = document.documentElement.clientWidth
       const height = document.documentElement.clientHeight
       document.documentElement.style.setProperty('--height', height + 'px')
-      store.dispatch('ui/setAppDimensions', { width, height })
+      $store.dispatch('ui/setAppDimensions', { width, height })
     }
 
     const className = computed(() => ({
@@ -74,7 +75,7 @@ export default {
       isShowUpdateApp
     }
   }
-}
+})
 </script>
 
 <template lang="pug">

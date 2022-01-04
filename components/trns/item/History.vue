@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent } from '#app'
 import useTrn from '~/components/trns/item/useTrn'
 
 export default defineComponent({

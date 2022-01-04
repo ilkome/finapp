@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, computed, watch, defineComponent, nextTick } from '@nuxtjs/composition-api'
+import { ref, computed, watch, defineComponent, nextTick } from '#app'
 import { useEventListener } from '@vueuse/core'
 
 export default defineComponent({

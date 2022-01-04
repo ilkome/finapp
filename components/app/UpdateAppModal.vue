@@ -1,5 +1,5 @@
 <script>
-import { computed } from '@nuxtjs/composition-api'
+import { computed } from '#app'
 import { updateEmo, random } from '~/assets/js/emo'
 
 export default {

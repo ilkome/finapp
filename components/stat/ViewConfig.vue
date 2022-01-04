@@ -1,5 +1,5 @@
-<script>
-import { computed, useContext, defineComponent } from '@nuxtjs/composition-api'
+<script lang="ts">
+import { computed, useNuxtApp, defineComponent } from '#app'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
 import useStat from '~/modules/stat/useStat'
@@ -8,10 +8,10 @@ import useStatChart from '~/components/stat/useStatChart'
 
 export default defineComponent({
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { chartState, toogleChart } = useStatChart()
 
-    const activeTabStat = computed(() => store.state.ui.activeTabStat)
+    const activeTabStat = computed(() => $store.state.ui.activeTabStat)
 
     const { ui, setUI } = useUIView()
     function toogleView (name) {
@@ -19,7 +19,7 @@ export default defineComponent({
     }
 
     const { isEmptyStat } = useStat()
-    const periods = computed(() => store.state.chart.periods)
+    const periods = computed(() => $store.state.chart.periods)
     const { filterPeriodNameAllReplacedToYear } = useFilter()
     const { isShowDataLabels, toogleChartsView } = useChart()
 

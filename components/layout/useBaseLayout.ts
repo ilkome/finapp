@@ -1,4 +1,4 @@
-import { ref } from '@nuxtjs/composition-api'
+import { ref } from '#app'
 
 const isShowPeriodsNamesModal = ref(false)
 

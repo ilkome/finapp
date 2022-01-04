@@ -1,5 +1,5 @@
 <script lang="ts">
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
 import useStat from '~/modules/stat/useStat'
 import useStatChart from '~/components/stat/useStatChart'
 import useStatPage from '~/components/stat/useStatPage'
@@ -7,7 +7,7 @@ import useUIView from '~/components/layout/useUIView'
 
 export default {
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { statPage } = useStatPage()
     const { ui } = useUIView()
     const { moneyTypes } = useStat()
@@ -21,7 +21,7 @@ export default {
                 (statPage.activeTab === 'expenses' && type === 'expenses')
       const p2 = statPage.current[type].total > 0 ||
                   (statPage.average && statPage.average[type] !== 0) ||
-                  store.state.filter.period === 'all'
+                  $store.state.filter.period === 'all'
       return p1 && p2
     }
 
@@ -29,7 +29,7 @@ export default {
       const proceed = statPage.activeTab === 'details' &&
                       statPage.average?.incomes !== 0 &&
                       statPage.average?.expenses !== 0 &&
-                      store.getters['trns/selectedTrnsIdsWithDate'].length > 0
+                      $store.getters['trns/selectedTrnsIdsWithDate'].length > 0
       return proceed
     })
 

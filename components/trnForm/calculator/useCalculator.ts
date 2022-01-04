@@ -1,4 +1,4 @@
-import { ref, computed } from '@nuxtjs/composition-api'
+import { ref, computed } from '#app'
 import currency from 'currency.js'
 
 const baseAmountFormat = (value: string, separator: string, symbol?: string) => currency(value, { symbol, precision: 0, pattern: '#', separator }).format()

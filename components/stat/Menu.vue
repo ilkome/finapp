@@ -1,15 +1,15 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
 
 export default {
   name: 'StatDashboardMenu',
 
   setup () {
-    const { store } = useContext()
-    const activeTabStat = computed(() => store.state.ui.activeTabStat)
+    const { $store } = useNuxtApp()
+    const activeTabStat = computed(() => $store.state.ui.activeTabStat)
 
     function onClickStatMenu (tabName) {
-      store.dispatch('ui/setActiveTabStat', tabName)
+      $store.dispatch('ui/setActiveTabStat', tabName)
     }
 
     return {

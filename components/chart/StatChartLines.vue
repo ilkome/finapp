@@ -1,50 +1,27 @@
-<script>
-import { ref, computed, watch, nextTick, useContext } from '@nuxtjs/composition-api'
+<script lang="ts">
 import { Chart } from 'highcharts-vue'
+import { ref, computed, watch, nextTick, useNuxtApp, defineComponent } from '#app'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
 
-export default {
-  name: 'StatChartLines',
-
-  components: {
-    Chart
-  },
+export default defineComponent({
+  components: { Chart },
 
   props: {
-    isShowIncomes: {
-      type: Boolean,
-      default: true
-    },
-
-    disableCategoryFilter: {
-      type: Boolean,
-      default: false
-    },
-
-    isShowExpenses: {
-      type: Boolean,
-      default: true
-    },
-
-    categoryId: {
-      type: String,
-      default: null
-    },
-
-    amountType: {
-      type: String,
-      default: null
-    }
+    amountType: { type: String, default: null },
+    categoryId: { type: String, default: null },
+    disableCategoryFilter: { type: Boolean, default: false },
+    isShowExpenses: { type: Boolean, default: true },
+    isShowIncomes: { type: Boolean, default: true }
   },
 
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { isShowDataLabels } = useChart()
     const { filterPeriodNameAllReplacedToYear, scrollTop } = useFilter()
 
-    const periods = computed(() => store.state.chart.periods)
+    const periods = computed(() => $store.state.chart.periods)
     const chartType = computed(() => {
       let type = null
       periods.value[filterPeriodNameAllReplacedToYear.value].grouped
@@ -67,23 +44,23 @@ export default {
       setTimeout(() => {
         date = chart.series[0].searchPoint(nEvent, true)?.date || chart.series[1].searchPoint(nEvent, true)?.date || chart.series[2].searchPoint(nEvent, true)?.date
         if (date) {
-          if (store.state.filter.period === 'all')
-            store.dispatch('filter/setPeriod', 'year')
+          if ($store.state.filter.period === 'all')
+            $store.dispatch('filter/setPeriod', 'year')
 
-          store.dispatch('filter/setDate', parseInt(date))
+          $store.dispatch('filter/setDate', parseInt(date))
           scrollTop()
         }
       }, 100)
     }
 
-    watch(() => store.state.filter.date, async () => {
+    watch(() => $store.state.filter.date, async () => {
       await nextTick()
 
       const chart = chartObj.value
       if (!chartObj.value)
         return
 
-      const chartSeriesIdx = chart.series[0].options.data.findIndex(v => +v.date === +store.state.filter.date)
+      const chartSeriesIdx = chart.series[0].options.data.findIndex(v => +v.date === +$store.state.filter.date)
       if (chartSeriesIdx !== -1) {
         chart.xAxis[0].update({
           plotBands: [{
@@ -277,7 +254,7 @@ export default {
       }
     }
   }
-}
+})
 </script>
 
 <template lang="pug">

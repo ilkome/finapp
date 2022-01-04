@@ -1,14 +1,12 @@
 <script>
-import { useContext } from '@nuxtjs/composition-api'
+import { useNuxtApp } from '#app'
 
 export default {
-  name: 'TrnFormModalTransferFrom',
-
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
 
     function onClickWallet (walletId, close) {
-      store.commit('trnForm/setTrnFormValues', {
+      $store.commit('trnForm/setTrnFormValues', {
         walletFromId: walletId,
         walletId
       })
@@ -16,7 +14,7 @@ export default {
     }
 
     function afterClose () {
-      store.commit('trnForm/closeTrnFormModal', 'transferFrom')
+      $store.commit('trnForm/closeTrnFormModal', 'transferFrom')
     }
 
     return {

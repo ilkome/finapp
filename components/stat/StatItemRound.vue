@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, computed, useContext, onMounted, toRefs } from '@nuxtjs/composition-api'
+import { ref, computed, useNuxtApp, onMounted, toRefs } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
@@ -30,19 +30,19 @@ export default {
 
   setup (props) {
     const { categoryId, type } = toRefs(props)
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { setCategoryFilter } = useFilter()
 
     const trnsIds = computed(() => {
-      return store.getters['trns/getTrns']({
+      return $store.getters['trns/getTrns']({
         categoryId: categoryId.value,
         type: type.value
       })
     })
 
-    const isCategoryHasChildren = computed(() => store.getters['categories/isCategoryHasChildren'](categoryId.value))
-    const filterPeriod = computed(() => store.state.filter.period)
-    const statCurrentPeriod = computed(() => store.getters['stat/statCurrentPeriod'])
+    const isCategoryHasChildren = computed(() => $store.getters['categories/isCategoryHasChildren'](categoryId.value))
+    const filterPeriod = computed(() => $store.state.filter.period)
+    const statCurrentPeriod = computed(() => $store.getters['stat/statCurrentPeriod'])
 
     // long press
     const item = ref(document.createElement('div'))
@@ -51,17 +51,17 @@ export default {
       // Long press for delete
       // const element: HTMLElement = item.value
       // element.addEventListener('long-press', () => {
-      //   store.dispatch('trnForm/openTrnForm', {
+      //   $store.dispatch('trnForm/openTrnForm', {
       //     action: 'create'
       //   })
 
       //   if (isCategoryHasChildren.value) {
-      //     store.commit('trnForm/showTrnFormModal', 'categories')
-      //     store.commit('trnForm/showTrnFormModal', 'categoriesChild')
-      //     store.commit('trnForm/setTrnFormModalCategoryId', categoryId.value)
+      //     $store.commit('trnForm/showTrnFormModal', 'categories')
+      //     $store.commit('trnForm/showTrnFormModal', 'categoriesChild')
+      //     $store.commit('trnForm/setTrnFormModalCategoryId', categoryId.value)
       //   }
       //   else {
-      //     store.commit('trnForm/setTrnFormValues', {
+      //     $store.commit('trnForm/setTrnFormValues', {
       //       categoryId: categoryId.value
       //     })
       //   }

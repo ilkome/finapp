@@ -1,5 +1,5 @@
 <script>
-import { computed, toRefs, defineComponent } from '@nuxtjs/composition-api'
+import { computed, toRefs, defineComponent } from '#app'
 import useStat from '~/modules/stat/useStat'
 import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'

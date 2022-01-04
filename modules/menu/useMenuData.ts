@@ -1,4 +1,5 @@
-import { useContext, useRoute, useRouter } from '@nuxtjs/composition-api'
+import { useNuxtApp } from '#app'
+import { useRouter, useRoute } from '#imports'
 import dayjs from 'dayjs'
 
 interface MenuItem {
@@ -8,7 +9,7 @@ interface MenuItem {
 }
 
 export default function useMenuData () {
-  const { store, app: { i18n } } = useContext()
+  const { $store, nuxt2Context: { i18n } } = useNuxtApp()
   const route = useRoute()
   const router = useRouter()
 
@@ -51,21 +52,21 @@ export default function useMenuData () {
 
   function onClick (menuId: string) {
     menuId === 'trnForm'
-      ? store.dispatch('trnForm/openTrnForm', { action: 'create' })
+      ? $store.dispatch('trnForm/openTrnForm', { action: 'create' })
       : router.push(menuId)
 
     if (menuId === 'history')
       router.push(menuId)
 
-    store.dispatch('ui/setActiveTab', null)
+    $store.dispatch('ui/setActiveTab', null)
   }
 
   function checkIsActive (menuId: string) {
-    return route.value.name === menuId
+    return route.name === menuId
   }
 
   function checkIsShow (item: MenuItem) {
-    return !item.private || (item.private && store.getters['user/isTester'])
+    return !item.private || (item.private && $store.getters['user/isTester'])
   }
 
   return {

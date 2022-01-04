@@ -1,5 +1,5 @@
 <script>
-import { ref, watch, reactive, toRefs } from '@nuxtjs/composition-api'
+import { ref, watch, reactive, toRefs } from '#app'
 import useTouchClose from '~/components/base/modal/useTouchClose'
 
 export default {

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, onMounted, defineComponent } from '@nuxtjs/composition-api'
+import { ref, onMounted, defineComponent } from '#app'
 
 export default defineComponent({
   setup () {

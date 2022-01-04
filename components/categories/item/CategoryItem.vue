@@ -1,5 +1,5 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
 
 export default {
   props: {
@@ -10,10 +10,10 @@ export default {
   },
 
   setup ({ id, category }, { listeners }) {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
 
-    const childCategoriesIds = computed(() => store.getters['categories/getChildCategoriesIds'](id))
-    const parentCategory = computed(() => store.state.categories.items[category.parentId])
+    const childCategoriesIds = computed(() => $store.getters['categories/getChildCategoriesIds'](id))
+    const parentCategory = computed(() => $store.state.categories.items[category.parentId])
 
     function onClickItem () {
       if (listeners.onClick)

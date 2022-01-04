@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, computed, onMounted, onUnmounted, useContext } from '@nuxtjs/composition-api'
+import { ref, computed, onMounted, onUnmounted, useNuxtApp } from '#app'
 import useCalculator from './useCalculator'
 import './long-press-event'
 
@@ -7,8 +7,8 @@ export default {
   name: 'TrnFormCalculator',
 
   setup () {
-    const { store } = useContext()
-    const amountType = computed(() => store.state.trnForm.values.amountType)
+    const { $store } = useNuxtApp()
+    const amountType = computed(() => $store.state.trnForm.values.amountType)
 
     const deleteRef = ref(document.createElement('div'))
 

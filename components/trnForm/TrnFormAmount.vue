@@ -1,12 +1,12 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
 export default {
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { isSum, getResult, expression } = useCalculator()
-    const amountType = computed(() => store.state.trnForm.values.amountType)
+    const amountType = computed(() => $store.state.trnForm.values.amountType)
 
     return {
       amountType,

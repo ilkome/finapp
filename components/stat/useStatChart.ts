@@ -1,4 +1,4 @@
-import { reactive, computed, watch, useContext } from '@nuxtjs/composition-api'
+import { reactive, computed, watch, useNuxtApp } from '#app'
 
 type MoneyType = 'incomes' | 'expenses'
 
@@ -10,8 +10,8 @@ const state = reactive({
 })
 
 export default function useStatChart () {
-  const { store } = useContext()
-  const activeTabStat = computed(() => store.state.ui.activeTabStat)
+  const { $store } = useNuxtApp()
+  const activeTabStat = computed(() => $store.state.ui.activeTabStat)
 
   function setChart (type: MoneyType, value: boolean): void {
     state.show[type] = value

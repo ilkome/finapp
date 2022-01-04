@@ -1,18 +1,16 @@
-<script>
-import { useContext } from '@nuxtjs/composition-api'
+<script lang="ts">
+import { useNuxtApp } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
 export default {
-  name: 'TrnModal',
-
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { setCategoryFilter, setWalletFilter } = useFilter()
 
     const closed = () => {
-      store.commit('trns/hideTrnModal')
-      store.commit('trns/setTrnModalId', null)
+      $store.commit('trns/hideTrnModal')
+      $store.commit('trns/setTrnModalId', null)
     }
 
     return {

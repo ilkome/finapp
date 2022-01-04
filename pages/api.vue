@@ -1,5 +1,5 @@
 <script lang="ts">
-import { reactive, computed, useContext, defineComponent } from '@nuxtjs/composition-api'
+import { reactive, computed, useNuxtApp, defineComponent } from '#app'
 import Datepicker from 'vuejs-datepicker'
 import dayjs from 'dayjs'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
@@ -28,7 +28,7 @@ export default defineComponent({
   components: { Datepicker },
 
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { setExpression } = useCalculator()
     const { setCategoryFilter } = useFilter()
 
@@ -80,11 +80,11 @@ export default defineComponent({
       dateRange.end = dayjs(selectedDate).endOf(period.name).valueOf()
     }
 
-    const trns = computed(() => store.state.trns.items)
+    const trns = computed(() => $store.state.trns.items)
     const trnsIds = computed(() => Object.keys(trns.value))
 
     const selectedTrnsIds = computed(() => {
-      if (!store.getters['trns/hasTrns']) return []
+      if (!$store.getters['trns/hasTrns']) return []
       let ids = []
       ids = filterByDate(trns.value, trnsIds.value, dateRange)
       ids = sortByDate(trns.value, ids)
@@ -93,28 +93,28 @@ export default defineComponent({
 
     const actions = trnItem => ({
       onOpenDetails: () => {
-        if (!store.state.trns.modal.show) {
-          store.commit('categories/hideCategoryModal')
-          store.commit('trns/showTrnModal')
-          store.commit('trns/setTrnModalId', trnItem.id)
+        if (!$store.state.trns.modal.show) {
+          $store.commit('categories/hideCategoryModal')
+          $store.commit('trns/showTrnModal')
+          $store.commit('trns/setTrnModalId', trnItem.id)
         }
       },
 
       onOpenEdit: (event) => {
         event.stopPropagation()
         setExpression(trnItem.amount)
-        store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.id })
-        store.commit('stat/setCategoryModal', { id: null, type: null })
+        $store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.id })
+        $store.commit('stat/setCategoryModal', { id: null, type: null })
       },
 
       onSetFilter: (event) => {
         event.stopPropagation()
         setCategoryFilter(trnItem.category.id)
-        store.commit('filter/setFilterDateNow')
-        store.commit('trns/hideTrnModal')
-        store.commit('trns/setTrnModalId', null)
-        store.commit('stat/setCategoryModal', { id: null, type: null })
-        store.dispatch('ui/setActiveTabStat', 'details')
+        $store.commit('filter/setFilterDateNow')
+        $store.commit('trns/hideTrnModal')
+        $store.commit('trns/setTrnModalId', null)
+        $store.commit('stat/setCategoryModal', { id: null, type: null })
+        $store.dispatch('ui/setActiveTabStat', 'details')
       }
     })
 

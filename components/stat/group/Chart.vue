@@ -1,6 +1,6 @@
 <script>
-import { ref, computed, watch, nextTick, useContext } from '@nuxtjs/composition-api'
 import { Chart } from 'highcharts-vue'
+import { ref, computed, watch, nextTick, useNuxtApp } from '#app'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
@@ -21,11 +21,11 @@ export default {
   },
 
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { isShowDataLabels } = useChart()
     const { filterPeriodNameAllReplacedToYear, scrollTop } = useFilter()
 
-    const periods = computed(() => store.state.chart.periods)
+    const periods = computed(() => $store.state.chart.periods)
     const chartType = computed(() => {
       let type = null
       periods.value[filterPeriodNameAllReplacedToYear.value].grouped
@@ -48,23 +48,23 @@ export default {
       setTimeout(() => {
         date = chart.series[0].searchPoint(nEvent, true)?.date || chart.series[1].searchPoint(nEvent, true)?.date || chart.series[2].searchPoint(nEvent, true)?.date
         if (date) {
-          if (store.state.filter.period === 'all')
-            store.dispatch('filter/setPeriod', 'year')
+          if ($store.state.filter.period === 'all')
+            $store.dispatch('filter/setPeriod', 'year')
 
-          store.dispatch('filter/setDate', parseInt(date))
+          $store.dispatch('filter/setDate', parseInt(date))
           scrollTop()
         }
       }, 100)
     }
 
-    watch(() => store.state.filter.date, async () => {
+    watch(() => $store.state.filter.date, async () => {
       await nextTick()
 
       const chart = chartObj.value
       if (!chartObj.value)
         return
 
-      const chartSeriesIdx = chart.series[0].options.data.findIndex(v => +v.date === +store.state.filter.date)
+      const chartSeriesIdx = chart.series[0].options.data.findIndex(v => +v.date === +$store.state.filter.date)
       if (chartSeriesIdx !== -1) {
         chart.xAxis[0].update({
           plotBands: [{

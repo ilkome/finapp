@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, onMounted } from '@nuxtjs/composition-api'
+import { ref, computed, onMounted } from '#app'
 import detectTouch from '~/assets/js/isTouchDevice'
 
 export default {

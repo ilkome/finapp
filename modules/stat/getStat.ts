@@ -1,4 +1,4 @@
-import { useContext } from '@nuxtjs/composition-api'
+import { useNuxtApp } from '#app'
 
 /**
  * Get first item in sorted catgories
@@ -21,16 +21,16 @@ function getBiggestAmount (categoriesTotal, categoriesIds, typeName) {
  * @return {*}
  */
 export default function getStat () {
-  const { store } = useContext()
+  const { $store } = useNuxtApp()
 
   function getStatBy (trnsIds = []) {
-    const categoriesWithTrnsIds = store.getters['stat/getCategoriesIdsWithTrnsIds']({ trnsIds })
-    const totalAllTrns = store.getters['trns/getTotalOfTrnsIds'](trnsIds)
+    const categoriesWithTrnsIds = $store.getters['stat/getCategoriesIdsWithTrnsIds']({ trnsIds })
+    const totalAllTrns = $store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
     // count total in categories
     const categoriesTotal = {}
     for (const categoryId in categoriesWithTrnsIds)
-      categoriesTotal[categoryId] = store.getters['trns/getTotalOfTrnsIds'](categoriesWithTrnsIds[categoryId])
+      categoriesTotal[categoryId] = $store.getters['trns/getTotalOfTrnsIds'](categoriesWithTrnsIds[categoryId])
 
     // separate catgories by incomes and expenses
     const statIncomes = {}

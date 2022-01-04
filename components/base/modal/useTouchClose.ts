@@ -1,4 +1,4 @@
-import { onUnmounted } from '@nuxtjs/composition-api'
+import { onUnmounted } from '#app'
 
 export default function useOnTouch () {
   let isDragging = true

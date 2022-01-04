@@ -61,7 +61,7 @@ export default {
 </script>
 
 <template lang="pug">
-.items
+div
   template(v-for="category in statCategories")
     StatItemChildCatsItem(
       :biggest="$store.getters['stat/statCurrentPeriod'][typeName].biggest"

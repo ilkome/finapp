@@ -1,6 +1,6 @@
 <script>
-import { ref, computed, useContext } from '@nuxtjs/composition-api'
 import Datepicker from 'vuejs-datepicker'
+import { ref, computed, useNuxtApp } from '#app'
 
 const calendarOptions = {
   'use-utc': true,
@@ -15,9 +15,9 @@ export default {
   },
 
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
 
-    const date = computed(() => store.state.trnForm.values.date)
+    const date = computed(() => $store.state.trnForm.values.date)
     const closeModal = ref(null)
 
     return {

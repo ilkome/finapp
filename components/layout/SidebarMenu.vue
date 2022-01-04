@@ -1,5 +1,5 @@
 <script>
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent } from '#app'
 import useMenuData from '~/modules/menu/useMenuData'
 
 export default defineComponent({

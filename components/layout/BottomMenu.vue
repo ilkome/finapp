@@ -1,5 +1,6 @@
 <script>
-import { computed, useContext, useRoute, useRouter } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
+import { useRouter, useRoute } from '#imports'
 
 export default {
   name: 'LayoutMobileBottomMenu',
@@ -16,7 +17,7 @@ export default {
   },
 
   setup () {
-    const { store, app: { i18n } } = useContext()
+    const { $store, nuxt2Context: { i18n } } = useNuxtApp()
     const route = useRoute()
     const router = useRouter()
 
@@ -45,7 +46,7 @@ export default {
 
     function handleSetActiveTab (tabName) {
       if (tabName === 'menu') {
-        store.dispatch('ui/setActiveTab', 'menu')
+        $store.dispatch('ui/setActiveTab', 'menu')
         return
       }
 
@@ -53,9 +54,9 @@ export default {
     }
 
     function getClassName (tabName) {
-      if (route.value.name === tabName)
+      if (route.name === tabName)
         return true
-      else if (tabName === 'stat' && route.value.name === 'index')
+      else if (tabName === 'stat' && route.name === 'index')
         return true
     }
 

@@ -1,4 +1,4 @@
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
 import currency from 'currency.js'
 
 function getCurrencySymbol (currency) {
@@ -27,17 +27,17 @@ const formatAmount = (value, separator = ' ') =>
   }).format()
 
 export default function useAmount () {
-  const { store } = useContext()
+  const { $store } = useNuxtApp()
 
   function getAmountInBaseCurrency ({ amount, currency, noFormat }) {
-    const fixed = store.state.currencies.base === 'RUB' ? 0 : 2
-    const baseValue = (amount / store.state.currencies.rates[currency]).toFixed(fixed)
+    const fixed = $store.state.currencies.base === 'RUB' ? 0 : 2
+    const baseValue = (amount / $store.state.currencies.rates[currency]).toFixed(fixed)
     if (!baseValue) return
     if (noFormat) return Number(baseValue)
     return formatAmount(Number(baseValue))
   }
 
-  const baseCurrency = computed(() => store.state.currencies.base)
+  const baseCurrency = computed(() => $store.state.currencies.base)
 
   return {
     baseCurrency,

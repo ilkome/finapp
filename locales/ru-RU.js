@@ -322,25 +322,5 @@ export default {
 
   colors: 'Цвета',
   palette: 'Палитра',
-  popularColors: 'Популярные',
-
-  groups: {
-    id: 'groups',
-    title: 'Группы',
-    show: 'Показать группы',
-    form: {
-      title: 'Create new group',
-      name: 'Group name',
-      amount: 'Group amount',
-      button: 'Create'
-    },
-    trns: {
-      name: 'Group transactions'
-    },
-    stat: {
-      expenses: 'Рассход',
-      incomes: 'Доход',
-      total: 'Итого'
-    }
-  }
+  popularColors: 'Популярные'
 }

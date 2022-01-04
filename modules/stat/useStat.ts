@@ -1,4 +1,4 @@
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
 
 const moneyTypes = [{
   id: 'expenses',
@@ -9,15 +9,15 @@ const moneyTypes = [{
 }]
 
 export default function useStat () {
-  const { store } = useContext()
+  const { $store } = useNuxtApp()
   const isEmptyStat = computed(() => {
-    const statCurrentPeriod = store.getters['stat/statCurrentPeriod']
+    const statCurrentPeriod = $store.getters['stat/statCurrentPeriod']
 
-    if (store.state.ui.activeTabStat === 'details')
+    if ($store.state.ui.activeTabStat === 'details')
       return statCurrentPeriod.total === 0
-    else if (store.state.ui.activeTabStat === 'incomes')
+    else if ($store.state.ui.activeTabStat === 'incomes')
       return statCurrentPeriod.incomes.total === 0
-    else if (store.state.ui.activeTabStat === 'expenses')
+    else if ($store.state.ui.activeTabStat === 'expenses')
       return statCurrentPeriod.expenses.total === 0
   })
 

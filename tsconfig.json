@@ -1,28 +1,5 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "jsx": "preserve",
-    "moduleResolution": "node",
-    "strict": false,
-    "esModuleInterop": true,
-    "allowJs": true,
-    "sourceMap": true,
-    "noEmit": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": [
-        "./*"
-      ],
-      "@/*": [
-        "./*"
-      ]
-    },
-    "types": [
-      "@types/node",
-      "@nuxt/types"
-    ]
-  },
+  "extends": "./.nuxt/tsconfig.json",
   "exclude": [
     "node_modules"
   ]

@@ -1,11 +1,11 @@
 <script>
-import { computed, useContext, defineComponent } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp, defineComponent } from '#app'
 
 export default defineComponent({
   setup () {
-    const { store } = useContext()
-    const statCurrentPeriod = computed(() => store.getters['stat/statCurrentPeriod'])
-    const statAverage = computed(() => store.getters['stat/statAverage'])
+    const { $store } = useNuxtApp()
+    const statCurrentPeriod = computed(() => $store.getters['stat/statCurrentPeriod'])
+    const statAverage = computed(() => $store.getters['stat/statAverage'])
 
     return {
       statCurrentPeriod,

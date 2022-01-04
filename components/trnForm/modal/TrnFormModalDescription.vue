@@ -1,17 +1,17 @@
-<script>
-import { ref, computed, onMounted, useContext } from '@nuxtjs/composition-api'
+<script lang="ts">
+import { ref, onMounted, useNuxtApp } from '#app'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
 export default {
   name: 'TrnFormModalDescription',
 
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
     const { setKeysActive } = useCalculator()
     const description = ref('')
 
     onMounted(() => {
-      description.value = store.state.trnForm.values.description
+      description.value = $store.state.trnForm.values.description
       setKeysActive(false)
     })
 

@@ -1,21 +1,21 @@
 <script>
-import { useContext } from '@nuxtjs/composition-api'
+import { useNuxtApp } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
 
 export default {
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
 
     // Filter
     const { filterPeriodNameAllReplacedToYear } = useFilter()
 
     function saveChartsPeriodsToLocalStorage () {
-      store.dispatch('ui/saveUiView')
+      $store.dispatch('ui/saveUiView')
     }
 
     function addPeriodOrGroup () {
-      store.commit('chart/addElementsToChart', {
+      $store.commit('chart/addElementsToChart', {
         periodName: filterPeriodNameAllReplacedToYear.value,
         periodType: 'showedPeriods'
       })
@@ -23,10 +23,10 @@ export default {
     }
 
     function removePeriodOrGroup () {
-      if (store.state.chart.periods[filterPeriodNameAllReplacedToYear.value].showedPeriods <= 2)
+      if ($store.state.chart.periods[filterPeriodNameAllReplacedToYear.value].showedPeriods <= 2)
         return
 
-      store.commit('chart/removeElementsFromChart', {
+      $store.commit('chart/removeElementsFromChart', {
         periodName: filterPeriodNameAllReplacedToYear.value,
         periodType: 'showedPeriods'
       })

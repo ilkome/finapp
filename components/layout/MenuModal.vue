@@ -1,10 +1,10 @@
 <script>
-import { computed, useContext } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
 
 export default {
   setup () {
-    const { store } = useContext()
-    const activeTab = computed(() => store.state.ui.activeTab)
+    const { $store } = useNuxtApp()
+    const activeTab = computed(() => $store.state.ui.activeTab)
 
     return {
       activeTab

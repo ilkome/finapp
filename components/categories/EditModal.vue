@@ -1,5 +1,5 @@
 <script>
-import { ref, useContext, onMounted } from '@nuxtjs/composition-api'
+import { ref, useNuxtApp, onMounted } from '#app'
 import { saveData } from '~/services/firebaseHelpers'
 import generateId from '~/utils/id'
 import { popularColors, allColors } from '~/assets/js/colorsPopular'
@@ -8,7 +8,7 @@ import icons from '~/assets/js/icons'
 
 export default {
   setup () {
-    const { store } = useContext()
+    const { $store } = useNuxtApp()
 
     const showColors = ref(false)
     const activeTab = ref('data')
@@ -24,9 +24,9 @@ export default {
     })
 
     function findCategoryWithThisColor (color) {
-      const categories = store.state.categories.items
+      const categories = $store.state.categories.items
       if (categories) {
-        const categoryIdWithThisColor = store.getters['categories/categoriesRootIds']?.find(id => categories[id]?.color === color)
+        const categoryIdWithThisColor = $store.getters['categories/categoriesRootIds']?.find(id => categories[id]?.color === color)
         if (categoryIdWithThisColor)
           return categories[categoryIdWithThisColor]?.icon
       }

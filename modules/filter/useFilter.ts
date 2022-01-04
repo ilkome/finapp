@@ -1,10 +1,11 @@
-import { computed, useContext, useRoute, useRouter } from '@nuxtjs/composition-api'
+import { computed, useNuxtApp } from '#app'
+import { useRouter, useRoute } from '#imports'
 
 export default function useFilter () {
-  const { store } = useContext()
+  const { $store } = useNuxtApp()
   const route = useRoute()
   const router = useRouter()
-  const filterPeriodNameAllReplacedToYear = computed(() => store.state.filter.period === 'all' ? 'year' : store.state.filter.period)
+  const filterPeriodNameAllReplacedToYear = computed(() => $store.state.filter.period === 'all' ? 'year' : $store.state.filter.period)
   const isNeedToRedirect = computed(() => route.value.name !== 'index' && route.value.name !== 'history')
 
   function scrollTop () {
@@ -16,7 +17,7 @@ export default function useFilter () {
     if (isNeedToRedirect.value)
       router.push('/')
 
-    store.dispatch('filter/handleSetFilterCategory', id)
+    $store.dispatch('filter/handleSetFilterCategory', id)
     scrollTop()
   }
 
@@ -24,7 +25,7 @@ export default function useFilter () {
     if (isNeedToRedirect.value)
       router.push('/')
 
-    store.dispatch('filter/setFilterWalletId', id)
+    $store.dispatch('filter/setFilterWalletId', id)
     scrollTop()
   }
 
