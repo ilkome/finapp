@@ -30,7 +30,6 @@ export default defineComponent({
     WalletsList(
       :showToogle="true"
       :limit="6"
-      ui="simple"
       @onClick="(id) => handleShowWalletsModalWalletModal(id)"
     )
 

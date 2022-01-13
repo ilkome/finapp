@@ -23,7 +23,6 @@ TrnFormModal(@closed="afterClose")
       WalletsList3(
         :activeItemId="$store.state.trnForm.values.walletId"
         :showBase="false"
-        ui="widget"
         @onClick="walletId => handleSetWallet(walletId, close)"
       )
 </template>

@@ -1,10 +1,8 @@
 <script>
-
 export default {
   props: {
     limit: { type: [Number, Boolean], default: null },
-    showToogle: { type: Boolean, default: false },
-    ui: { type: String, default: null }
+    showToogle: { type: Boolean, default: false }
   },
 
   data () {
@@ -39,24 +37,13 @@ export default {
 
 <template lang="pug">
 .wallets
-  div
-    template(v-if="ui === 'simple'")
-      WalletsItemSimple(
-        v-for="walletId in walletsIds"
-        :id="walletId"
-        :key="walletId"
-        :ui="ui"
-        v-on="$listeners"
-      )
-
-    template(v-else)
-      WalletsItemWalletItem(
-        v-for="walletId in walletsIds"
-        :id="walletId"
-        :key="walletId"
-        :ui="ui"
-        v-on="$listeners"
-      )
+  WalletsItemWalletItem(
+    v-for="walletId in walletsIds"
+    :id="walletId"
+    :key="walletId"
+    :ui="ui"
+    v-on="$listeners"
+  )
 
   .walletsList__toogle(
     v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit"

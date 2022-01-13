@@ -238,7 +238,6 @@ export default {
                 :activeItemId="$store.state.trnForm.values.walletId"
                 :limit="4"
                 :showBase="false"
-                ui="widget"
                 @onClick="onClickWallet"
               )
 

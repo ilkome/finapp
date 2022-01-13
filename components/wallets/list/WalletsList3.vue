@@ -4,25 +4,10 @@ export default {
   name: 'WalletsList3',
 
   props: {
-    limit: {
-      type: [Number, Boolean],
-      default: null
-    },
-
-    showToogle: {
-      type: Boolean,
-      default: false
-    },
-
-    showBase: {
-      type: Boolean,
-      default: true
-    },
-
-    activeItemId: {
-      type: String,
-      default: null
-    }
+    activeItemId: { type: String, default: null },
+    limit: { type: [Number, Boolean], default: null },
+    showBase: { type: Boolean, default: true },
+    showToogle: { type: Boolean, default: false }
   },
 
   data () {
