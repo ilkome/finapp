@@ -131,9 +131,10 @@ div
     .grid.grid-cols-1.gap-2(
       class="md:grid-cols-2 md:gap-6 lg:grid-cols-3"
     )
-      .overflow-hidden.rounded-md.bg-4(
+      .overflow-hidden.rounded-md.bg-white2(
         v-for="(trnsIds, date) in groupedTrns"
         :key="date"
+        class="dark:bg-dark4"
       )
         .pt-4
           .pb-2.px-3

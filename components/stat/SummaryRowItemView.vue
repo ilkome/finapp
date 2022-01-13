@@ -57,7 +57,6 @@ export default {
     color var(--c-incomes-1)
 
   &__title
-    padding-bottom $m4
     color var(--c-font-4)
     font-size 10px
     white-space nowrap

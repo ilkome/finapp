@@ -23,7 +23,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.sticky.top-0.z-10.bg-3
+.sticky.top-0.z-10.bg-white(class="dark:bg-dark3")
   .py-3
     .statTitle.pb-2(v-if="statPage.activeTab !== typeText") {{ $t(`money.${typeText}`) }}
     .overflow-hidden.overflow-x-auto.scrollbar

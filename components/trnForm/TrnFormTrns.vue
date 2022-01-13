@@ -23,6 +23,7 @@ export default defineComponent({
         event.stopPropagation()
         const { setExpression } = useCalculator()
         setExpression($store.state.trns.items[trnItem.id].amount)
+        $store.commit('trnForm/setTrnFormModalTrnId', trnItem.id)
         slider.slideTo(1)
       },
 
@@ -135,7 +136,7 @@ export default defineComponent({
     .containerWrap(v-if="trnsIds.length === 0") No transactions
 
     .scrollBlock
-      .m-3.overflow-hidden.rounded-md.bg-4(
+      .m-3.overflow-hidden.rounded-md.bg-dark4(
         v-for="(trnsIds, date) in groupedTrns"
         :key="date"
       )
@@ -144,7 +145,7 @@ export default defineComponent({
             TrnsListDate(:date="date")
 
           .overflow-hidden.rounded-md
-            TrnsItemHistory.py-3.px-2.rounded-md.cursor-pointer(
+            TrnsItemHistory.py-3.px-2.rounded-md(
               v-for="trnId in trnsIds"
               :key="trnId"
               :actions="actions"
@@ -155,7 +156,7 @@ export default defineComponent({
         .button(@click="showMoreTrns") {{ $t('trns.more') }}
 
   .pt-2.pb-5.px-3.justify-center.flex
-    .overflow-hidden.bg-4.rounded-md.justify-center.items-center.flex
+    .overflow-hidden.bg-dark4.rounded-md.justify-center.items-center.flex
       .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('wallet')" :class="{ _active: filterBy === 'wallet' }") {{ $t('trnForm.filterWallet') }}
       .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
       .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('all')" :class="{ _active: filterBy === 'all' }") {{ $t('trnForm.filterAll') }}

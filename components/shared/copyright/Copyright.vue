@@ -5,7 +5,10 @@ export default {
 </script>
 
 <template lang="pug">
-a(href="https://ilko.me").copyright
+a.copyright.py-1.px-5.rounded-md(
+  href="https://ilko.me"
+  class="hocus:bg-white2 dark:hocus:bg-custom1"
+)
   | {{ $t('app.madeBy.text') }}
   .copyright__heart.mdi.mdi-heart
   | {{ $t('app.madeBy.name') }}
@@ -21,13 +24,7 @@ a(href="https://ilko.me").copyright
   display flex
   align-items center
   justify-content center
-  padding 10px $m6
-  color var(--c-font-4)
   text-decoration none
-  anim()
-
-  +media-hover()
-    color var(--c-font-2)
 
   &__heart
     display inline-flex

@@ -20,18 +20,18 @@ export default defineComponent({
 div
   .flex.items-center.py-3.px-6.space-x-5(
     v-for="(item, menuId) in items"
-    :key="menuId"
     v-if="checkIsShow(item)"
-    class="hocus:bg-neutral-800"
+    :key="menuId"
+    :class="['hocus:bg-zinc-100 dark:hocus:bg-neutral-800', { 'text-slate-900 dark:text-neutral-100': checkIsActive(menuId) }, { 'text-slate-600 dark:text-neutral-400': !checkIsActive(menuId) }]"
     @click="onClick(menuId)"
   )
-    .text-xl.text-neutral-400(:class="[item.icon, { 'text-neutral-200': checkIsActive(menuId) }]")
-    .text-sm.text-neutral-400(:class="{'text-neutral-200': checkIsActive(menuId)}") {{ item.name }}
+    .text-xl(:class="item.icon")
+    .text-sm {{ item.name }}
 
   .flex.items-center.py-3.px-6.space-x-5(
-    class="hocus:bg-neutral-800"
+    class="text-slate-600 dark:text-neutral-400 hocus:bg-zinc-100 dark:hocus:bg-neutral-800"
     @click="$store.dispatch('ui/changeTheme')"
   )
-    .text-xl.text-neutral-400.mdi.mdi-palette
-    .text-sm.text-neutral-400 {{ $t('theme.change') }}
+    .text-xl.mdi.mdi-palette
+    .text-sm {{ $t('theme.change') }}
 </template>

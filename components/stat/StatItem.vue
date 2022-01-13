@@ -89,8 +89,8 @@ export default {
   :class="{ _active: isShowInside }"
   @click="toogleShowInside"
 )
-  .ins.py-2.px-3.space-x-3.rounded-md.justify-between.items-center.flex.border(
-    :class="['z-[9]', { _active: isShowInside }, { 'dark:border-neutral-800 cursor-n-resize shadow-xl': isShowInside }, { 'border-transparent cursor-s-resize shadow': !isShowInside }]"
+  .ins.py-2.px-3.space-x-3.rounded-md.justify-between.items-center.flex.border.bg-white2(
+    :class="['z-[9] dark:bg-dark4 hocus:bg-neutral-100 dark:hocus:bg-neutral-800', { _active: isShowInside }, { 'dark:border-neutral-800 cursor-n-resize shadow-xl': isShowInside }, { 'border-transparent cursor-s-resize shadow-sm': !isShowInside }]"
   )
     .cursor-pointer.text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
       :style="{ background: category.color }"
@@ -154,10 +154,6 @@ export default {
 
 .ins
   position relative
-  background var(--c-item2-bg-hover)
-
-  +media-hover()
-    background var(--c-item-bg-hover)
 
 .statItem
   &__graph

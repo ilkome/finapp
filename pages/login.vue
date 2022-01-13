@@ -59,19 +59,20 @@ export default defineComponent({
     .flex.gap-1.top-3.left-5(
       class="lg:top-7 lg:left-7"
     )
-      .linkItem.py-2.px-3.rounded(
-        :class="{ _active: $store.state.lang.lang === 'ru' }"
+      .linkItem.py-2.px-4.rounded-md(
+        :class="[{ 'text-blue2 dark:text-blue1': $store.state.lang.lang === 'ru' }, 'hocus:bg-white2 dark:hocus:bg-custom1']"
         @click="onSetLocale('ru')"
       ) Русский
-      .linkItem.py-2.px-3.rounded(
-        :class="{ _active: $store.state.lang.lang === 'en' }"
+      .linkItem.py-2.px-4.rounded-md(
+        :class="[{ 'text-blue2 dark:text-blue1': $store.state.lang.lang === 'en' }, 'hocus:bg-white2 dark:hocus:bg-custom1']"
         @click="onSetLocale('en')"
       ) English
 
     .flex.gap-3.top-3.right-5(
       class="lg:top-7 lg:right-7"
     )
-      .linkItem.py-2.px-3.rounded(
+      .linkItem.py-2.px-4.rounded-md(
+        class="hocus:bg-white2 dark:hocus:bg-custom1"
         @click="$store.dispatch('ui/changeTheme')"
       ) {{ $t('changeTheme') }}
 
@@ -86,7 +87,7 @@ export default defineComponent({
     )
       transition(name="fadeIn")
         .loginButton__spiner(v-if="isLoading"): SharedSpiner
-      .loginButton__text {{ $t('loginWithGoogle') }}
+      .loginButton__text.text-white {{ $t('loginWithGoogle') }}
 </template>
 
 <style lang="stylus" scoped>
@@ -112,17 +113,11 @@ export default defineComponent({
     flex-flow column
 
 .linkItem
-  cursor pointer
-  color var(--color-text-link-active)
   text-decoration none
 
   +media-hover()
     &:not(._active)
-      background var(--color-link-bg)
-
-  &._active
-    cursor default
-    color var(--color-text-link)
+      cursor pointer
 
 .loginButton
   overflow hidden
@@ -130,7 +125,6 @@ export default defineComponent({
   position relative
   min-width 260px
   padding $m7 $mb1
-  color var(--c-font-1)
   font-size 16px
   text-align center
   background var(--c-blue-3)
@@ -145,7 +139,6 @@ export default defineComponent({
     cursor default
 
   &__text
-    font-weight 300
     anim()
 
     ^[0]._loading &

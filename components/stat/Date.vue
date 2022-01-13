@@ -39,8 +39,7 @@ export default {
 </script>
 
 <template lang="pug">
-//- .sticky.top-0.z-10.bg-3
-.z-10.bg-3
+.z-10.bg-white(class="dark:bg-dark3")
   //- Date
   .menuDots.flex.items-center.p-4.cursor-pointer(
     @click="visiblePeriodMenu = true"

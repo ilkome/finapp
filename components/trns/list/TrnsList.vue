@@ -146,9 +146,10 @@ div
       class="md:grid-cols-2 md:gap-x-20"
       :class="classNames"
     )
-      .overflow-hidden.rounded-md.bg-4(
+      .overflow-hidden.rounded-md.bg-white2.shadow-sm(
         v-for="(trnsIds, date) in groupedTrns"
         :key="date"
+        class="dark:bg-dark4"
       )
         .pt-4
           .pb-2.px-3

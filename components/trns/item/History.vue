@@ -10,9 +10,9 @@ export default defineComponent({
 
   setup ({ trnId, actions }) {
     const { formatTrnItem } = useTrn()
-    const trnItem = formatTrnItem(trnId)
+    const trnItem = computed(() => formatTrnItem(trnId))
     // @ts-ignore
-    const { onOpenDetails, onOpenEdit, onSetFilter } = actions(trnItem)
+    const { onOpenDetails, onOpenEdit, onSetFilter } = actions(trnItem.value)
 
     return {
       trnItem,

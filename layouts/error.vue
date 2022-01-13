@@ -1,7 +1,5 @@
-<script>
-export default {
-  name: 'ErrorLayout',
-
+<script lang="ts">
+export default defineComponent({
   // eslint-disable-next-line vue/require-prop-types
   props: ['error'],
 
@@ -15,19 +13,15 @@ export default {
       return (this.error && this.error.statusCode) || 500
     }
   }
-}
+})
 </script>
 
 <template lang="pug">
-.containerWrap
+.p-4
   h1 Error
   pre {{ error }}
   h1(@click="$router.push('/')") Go to home
 </template>
 
 <style lang="stylus">
-@import "~assets/stylus/variables"
-
-.containerWrap
-  padding $m9
 </style>

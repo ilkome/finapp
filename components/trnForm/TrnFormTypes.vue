@@ -25,7 +25,7 @@ export default {
 
 <template lang="pug">
 .flex.justify-center
-  .overflow-hidden.flex.items-center.bg-4.rounded-md
+  .overflow-hidden.flex.items-center.bg-dark4.rounded-md
     .barItem.px-6.py-2.font5.text-sm(
       @click="() => setAmountType(0)"
       :class="{ _active: amountType === 0 }"

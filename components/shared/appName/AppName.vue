@@ -1,5 +1,7 @@
 <template lang="pug">
-.appName {{ $t('appName') }}
+.appName.text-gray-600.font-nunito(
+  class="dark:text-neutral-200"
+) {{ $t('appName') }}
 </template>
 
 <style lang="stylus" scoped>
@@ -8,8 +10,6 @@
 
 .appName
   margin-bottom 20px
-  color var(--c-font-2)
-  fontFamilyNunito()
   font-size 66px
   font-weight 800
   letter-spacing 2px

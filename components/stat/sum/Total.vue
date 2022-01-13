@@ -19,7 +19,7 @@ export default defineComponent({
 .py-6.px-3
   .statTitle {{ $t('money.total') }}
   .overflow-hidden.overflow-x-auto.scrollbar
-    .flex
+    .flex.items-center
       .pr-6
         Amount(
           :currency="$store.state.currencies.base"

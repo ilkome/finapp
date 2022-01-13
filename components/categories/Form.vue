@@ -294,7 +294,7 @@ export default {
         .header__title {{ $t('colors') }}
 
     template(#default="{ close }")
-      .p-3.bg-3
+      .p-3.bg-white(class="dark:bg-dark3")
         .inputText
           .inputText__colors
             .colors
@@ -322,7 +322,7 @@ export default {
         .header__title {{ $t('categories.form.icons.label') }}
 
     template(#default="{ close }")
-      .p-3.bg-3
+      .p-3.bg-white(class="dark:bg-dark3")
         .icons
           .icons__group(
             v-for="iconGroup in icons"

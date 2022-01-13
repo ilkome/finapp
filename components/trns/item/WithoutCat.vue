@@ -11,9 +11,9 @@ export default defineComponent({
 
   setup ({ trnId, actions }) {
     const { formatTrnItem, formatDate } = useTrn()
-    const trnItem = formatTrnItem(trnId)
+    const trnItem = computed(() => formatTrnItem(trnId))
     // @ts-ignore
-    const { onOpenDetails, onOpenEdit, onSetFilter } = actions(trnItem)
+    const { onOpenDetails, onOpenEdit, onSetFilter } = actions(trnItem.value)
 
     return {
       trnItem,
@@ -32,7 +32,9 @@ export default defineComponent({
   class="dark:text-neutral-400 hocus:bg-neutral-100 dark:hocus:bg-neutral-800"
   @click="onOpenDetails"
 )
-  .truncate.shrink-0.text-xs.leading-none(class="pt-[1px] min-w-[32px]") {{ $t(formatDate(trnItem.date, 'trnItem')) }}
+  .truncate.shrink-0.text-xs.leading-none(
+    class="pt-[1px] min-w-[32px]"
+  ) {{ $t(formatDate(trnItem.date, 'trnItem')) }}
 
   .grow
     .items-center.flex

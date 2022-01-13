@@ -1,19 +1,28 @@
-<script>
-export default {
-  name: 'LayoutSidebar',
-
+<script lang="ts">
+export default defineComponent({
   methods: {
     handleShowWalletsModalWalletModal (id) {
       this.$store.commit('wallets/showWalletsModalWalletModal')
       this.$store.commit('wallets/setWalletsModalWalletModalId', id)
     }
   }
-}
+})
 </script>
 
 <template lang="pug" scoped>
-.sidebar
+.sidebar.bg-white2(
+  class="dark:bg-custom5"
+)
   .sidebar__content
+    .p-4.px-5.flex.items-center.justify-between
+      .font-nunito.text-xl.font-bold.text-neutral-500(
+        class="dark:text-neutral-200"
+      )  {{ $t('appName') }}
+
+      .text-xl.mdi.mdi-palette(
+        @click="$store.dispatch('ui/changeTheme')"
+      )
+
     .pt-2.pb-8
       LayoutSidebarMenu
 
@@ -37,8 +46,6 @@ export default {
   grid-template-rows minmax(auto, auto) 1fr
   height 100vh
   min-width 280px
-  background var(--c-bg-4)
-  border-right 1px solid var(--c-bg-2)
 
   &__content
     scrollbar()

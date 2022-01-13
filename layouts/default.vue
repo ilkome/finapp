@@ -14,9 +14,6 @@ export default defineComponent({
       await initUI()
     })
 
-    // metrica
-    const isShowMetrica = process.env.NODE_ENV === 'production' && !$store.getters['user/isTester']
-
     const keepAliveInclude = ['IndexPage2']
 
     // Layout
@@ -56,7 +53,7 @@ export default defineComponent({
       $store.dispatch('ui/setAppDimensions', { width, height })
     }
 
-    const className = computed(() => ({
+    const touchClassNames = computed(() => ({
       isNotTouchDevice: !isTouchDevice.value,
       isTouchDevice: isTouchDevice.value
     }))
@@ -71,7 +68,7 @@ export default defineComponent({
       isShowPeriodsNamesModal,
       ui,
       statCurrentPeriod,
-      className,
+      touchClassNames,
       isShowUpdateApp
     }
   }
@@ -79,7 +76,9 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.overflow-hidden.relative.flex.h-full.min-w-base(:class="className")
+.font-roboto.text-gray-500.leading-none.antialiased.overflow-hidden.relative.h-full.min-w-base.flex(
+  :class="[{ ...touchClassNames }, 'dark:text-gray-400']"
+)
   LayoutModals
 
   PortalTarget(
@@ -92,10 +91,7 @@ export default defineComponent({
     @onClose="isShowUpdateApp = false"
   )
 
-  .layout__wrap.overflow-hidden.flex-grow.h-full.grid(
-    class=""
-  )
-    //- .div hello
+  .layout__wrap.overflow-hidden.flex-grow.h-full.grid
     .layout__sidebar
       LayoutSidebar
 
@@ -108,8 +104,8 @@ export default defineComponent({
 </template>
 
 <style lang="stylus">
+@import '~assets/stylus/base/animations'
 @import '~assets/stylus/index'
-@import '~assets/stylus/reset'
 @import '~assets/stylus/colors-dark'
 @import '~assets/stylus/colors-light'
 </style>

@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  -webkit-tap-highlight-color: transparent
+}
+
+*:focus {
+  outline: 0
+}
+
+html,
+body {
+  overscroll-behavior-y: none
+}
+
+body {
+  background: #171717
+}
+
+html,
+body,
+#__nuxt,
+#__layout {
+  height: 100%
+}

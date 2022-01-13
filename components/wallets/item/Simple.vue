@@ -29,7 +29,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.bg-main.py-2.px-3.gap-x-3.items-center.flex(
+.bg-main.py-2.px-5.gap-x-3.items-center.flex(
   :class="{ _active: activeItemId === id }"
   @click="handleClick"
 )
@@ -39,7 +39,7 @@ export default defineComponent({
 
   .grow
     .py-1.items-center.flex
-      .grow.text-neutral-500(class="dark:text-neutral-400") {{ wallet.name }}
+      .grow.text-xs.text-neutral-500(class="dark:text-neutral-400") {{ wallet.name }}
 
       Amount(
         :alwaysShowSymbol="true"

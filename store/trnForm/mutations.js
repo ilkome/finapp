@@ -1,5 +1,3 @@
-import { baseModalState } from './'
-
 export default {
   setTrnFormValues (state, values) {
     state.values = {
@@ -9,9 +7,8 @@ export default {
   },
 
   setTrnFormTransfer (state, { tranferType, walletId }) {
-    if (tranferType) {
+    if (tranferType)
       state.transfer[tranferType] = walletId
-    }
   },
 
   setTrnFormHeight (state, height) {
@@ -19,21 +16,15 @@ export default {
   },
 
   setTrnFormModalCategoryId (state, id) {
-    if (state.showModalCategoryId === id) {
-      state.showModalCategoryId = null
-    }
-    else {
-      state.showModalCategoryId = id
-    }
+    state.showModalCategoryId === id
+      ? state.showModalCategoryId = null
+      : state.showModalCategoryId = id
   },
 
   setTrnFormModalTrnId (state, id) {
-    if (state.showModalTrnId === id) {
-      state.showModalTrnId = null
-    }
-    else {
-      state.showModalTrnId = id
-    }
+    state.showModalTrnId === id
+      ? state.showModalTrnId = null
+      : state.showModalTrnId = id
   },
 
   closeTrnFormModal (state, modalName) {

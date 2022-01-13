@@ -83,7 +83,7 @@ export default {
               )
 
   .pt-2.pb-0.px-3.justify-center.flex(v-if="slider")
-    .overflow-hidden.bg-4.rounded-md.justify-center.items-center.flex
+    .overflow-hidden.bg-dark4.rounded-md.justify-center.items-center.flex
       .barItem.px-6.py-3.font5(
         :class="{ _active: slider.activeIndex === 0 }"
         @click="slider.slideTo(0)"

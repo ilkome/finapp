@@ -24,10 +24,21 @@ Portal(to="modal")
       BaseBottomSheetClose(@onClick="close")
 
     .content(class="!overflow-hidden !pt-8 !pb-2")
-      .mb-2.mx-6.pb-6.flex.items-center.justify-between.border-b.border-neutral-800
-        .text-neutral-400
-          .text-lg {{ $store.state.user.user.displayName }}
-          .text-sm {{ $store.state.user.user.email }}
+      .mb-4.pb-4.border-b(
+        class="border-neutral-300 dark:border-neutral-800"
+      )
+        .mx-6.mb-2(
+          class="dark:text-neutral-300"
+        )
+          .text-xl.font-nunito.font-semibold {{ $store.state.user.user.displayName }}
+          .text-sm.text-gray-900(class="dark:text-neutral-500") {{ $store.state.user.user.email }}
+
+        .py-3.px-6.space-x-5.flex.items-center(
+          class="hocus:bg-white2 dark:hocus:bg-custom1"
+          @click="$store.dispatch('user/signOut')"
+        )
+          .text-xl.mdi.mdi-logout
+          .text-sm {{ $t('userLogout') }}
 
       LayoutMenuModalItems
 </template>
