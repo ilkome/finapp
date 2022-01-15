@@ -2,5 +2,6 @@
   "extends": "./.nuxt/tsconfig.json",
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "noUnusedLocals": true
 }

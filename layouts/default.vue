@@ -1,77 +1,55 @@
-<script lang="ts">
-import { ref, computed, useNuxtApp, onMounted, useLazyAsyncData, defineComponent } from '#app'
-import useBaseLayout from '~/components/layout/useBaseLayout'
+<script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import debounce from '~/utils/debounce'
 import detectTouch from '~/assets/js/isTouchDevice'
 import useUIView from '~/components/layout/useUIView'
 
-export default defineComponent({
-  setup () {
-    const { $store } = useNuxtApp()
+const { $store } = useNuxtApp()
 
-    useLazyAsyncData('posts', async () => {
-      const { initUI } = useUIView()
-      await initUI()
+useLazyAsyncData('posts', async () => {
+  const { initUI } = useUIView()
+  await initUI()
+})
+
+const keepAliveInclude = []
+
+/**
+ * Update modal
+ */
+const isShowUpdateApp = ref(false)
+onMounted(async () => {
+  const workbox = await window.$workbox
+  if (workbox) {
+    workbox.addEventListener('installed', (event) => {
+      isShowUpdateApp.value = event.isUpdate
     })
-
-    const keepAliveInclude = ['IndexPage2']
-
-    // Layout
-    const { isShowPeriodsNamesModal } = useBaseLayout()
-
-    // UI
-    const { ui } = useUIView()
-
-    const statCurrentPeriod = computed(() => $store.getters['stat/statCurrentPeriod'])
-
-    /**
-     * Update modal
-     */
-    const isShowUpdateApp = ref(false)
-    onMounted(async () => {
-      const workbox = await window.$workbox
-      if (workbox) {
-        workbox.addEventListener('installed', (event) => {
-          isShowUpdateApp.value = event.isUpdate
-        })
-      }
-    })
-
-    /**
-     * Detect touch device
-     */
-    const isTouchDevice = ref(false)
-    onMounted(() => { isTouchDevice.value = detectTouch() })
-
-    /**
-     * Page dimensions
-     */
-    function getPageDimensions () {
-      const width = document.documentElement.clientWidth
-      const height = document.documentElement.clientHeight
-      document.documentElement.style.setProperty('--height', height + 'px')
-      $store.dispatch('ui/setAppDimensions', { width, height })
-    }
-
-    const touchClassNames = computed(() => ({
-      isNotTouchDevice: !isTouchDevice.value,
-      isTouchDevice: isTouchDevice.value
-    }))
-
-    onMounted(() => {
-      getPageDimensions()
-      window.addEventListener('resize', debounce(getPageDimensions, 300))
-    })
-
-    return {
-      keepAliveInclude,
-      isShowPeriodsNamesModal,
-      ui,
-      statCurrentPeriod,
-      touchClassNames,
-      isShowUpdateApp
-    }
   }
+})
+
+/**
+ * Detect touch device
+ */
+const isTouchDevice = ref(false)
+onMounted(() => { isTouchDevice.value = detectTouch() })
+
+/**
+ * Page dimensions
+ */
+function getPageDimensions () {
+  const width = document.documentElement.clientWidth
+  const height = document.documentElement.clientHeight
+  document.documentElement.style.setProperty('--height', height + 'px')
+  $store.dispatch('ui/setAppDimensions', { width, height })
+}
+
+const touchClassNames = computed(() => ({
+  isNotTouchDevice: !isTouchDevice.value,
+  isTouchDevice: isTouchDevice.value
+}))
+
+onMounted(() => {
+  getPageDimensions()
+  window.addEventListener('resize', debounce(getPageDimensions, 300))
 })
 </script>
 
