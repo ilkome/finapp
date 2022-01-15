@@ -1,39 +1,10 @@
 <script lang="ts">
-import { useNuxtApp, defineComponent } from '#app'
-import useCalculator from '~/components/trnForm/calculator/useCalculator'
-
 export default defineComponent({
   props: {
     categoryId: { type: String, default: null },
-    expenses: { type: Boolean, default: false },
-    incomes: { type: Boolean, default: false },
     limit: { type: Number, default: 0 },
-    onlyList: { type: Boolean, default: false },
     size: { type: Number, required: false, default: 10 },
-    slider: { type: Object, required: true },
-    ui: { type: String, default: 'history' }
-  },
-
-  setup ({ slider }) {
-    const { $store } = useNuxtApp()
-
-    const actions = trnItem => ({
-      onOpenDetails: () => {
-        event.stopPropagation()
-        event.stopPropagation()
-        const { setExpression } = useCalculator()
-        setExpression($store.state.trns.items[trnItem.id].amount)
-        $store.commit('trnForm/setTrnFormModalTrnId', trnItem.id)
-        slider.slideTo(1)
-      },
-
-      onOpenEdit: () => {},
-      onSetFilter: () => {}
-    })
-
-    return {
-      actions
-    }
+    slider: { type: Object, required: true }
   },
 
   data () {
@@ -75,10 +46,6 @@ export default defineComponent({
       // from category
       if (this.categoryId)
         trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === this.categoryId)
-
-      // filter type
-      if (this.incomes) trnsIds = trnsIds.filter(id => trns[id].type === 1)
-      if (this.expenses) trnsIds = trnsIds.filter(id => trns[id].type === 0)
 
       // limit
       if (this.limit > 0) return trnsIds.slice(0, this.limit)
@@ -148,11 +115,11 @@ export default defineComponent({
             TrnsItemHistory.py-3.px-2.rounded-md(
               v-for="trnId in trnsIds"
               :key="trnId"
-              :actions="actions"
+              :slider="slider"
               :trnId="trnId"
             )
 
-      .trnsList__pages(v-if="!isShowedAllTrns")
+      .pages(v-if="!isShowedAllTrns")
         .button(@click="showMoreTrns") {{ $t('trns.more') }}
 
   .pt-2.pb-5.px-3.justify-center.flex
@@ -179,32 +146,9 @@ export default defineComponent({
   text-align center
   fontFamilyNunito()
 
-.trnsList
-  &__day
-    overflow hidden
-    border-bottom 1px solid var(--c-bg-3)
-    margin-bottom 16px
-    padding-bottom 16px
-
-    &:first-child
-      border-top 0
-
-      +media-laptop()
-        margin 0
-
-  &__header
-    display flex
-    align-items center
-    justify-content space-between
-    padding 0 $m7
-    padding-bottom $m7
-
-  &__trns
-    padding 0 $m7
-
-  &__pages
-    padding 16px 8px
-    padding-top 0
+.pages
+  padding 16px 8px
+  padding-top 0
 
 .contentWrap
   position relative
@@ -220,37 +164,4 @@ export default defineComponent({
 .scrollBlock
   padding-top $m6
   padding-bottom $m8
-
-.switcherList
-  display flex
-  justify-content center
-  width 100%
-  padding $m6
-  padding-top $m8
-  background alpha(#171717, .9)
-
-  /.light-mode &
-    background var(--c-bg-3)
-
-.menuItem
-  cursor pointer
-  margin 0 $m5
-  padding $m6 $m8
-  color var(--c-font-5)
-  font-size 12px
-  font-weight 500
-  font-roboto()
-  text-align center
-  border 1px solid transparent
-  anim()
-
-  &._active
-    cursor default
-    color var(--c-blue-1)
-
-  +media-hover()
-    &:not(._active)
-      color var(--c-font-2)
-      background var(--c-bg-5)
-      border-radius 50px
 </style>

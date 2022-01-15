@@ -1,24 +1,51 @@
 <script lang="ts">
-import { defineComponent } from '#app'
+import { useNuxtApp } from '#app'
 import useTrn from '~/components/trns/item/useTrn'
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
+import useFilter from '~/modules/filter/useFilter'
 
 export default defineComponent({
   props: {
-    actions: { type: Object, required: false, default: () => ({}) },
     trnId: { type: String, required: true }
   },
 
-  setup ({ trnId, actions }) {
+  setup ({ trnId }) {
+    const { $store } = useNuxtApp()
+    const { setExpression } = useCalculator()
+    const { setCategoryFilter } = useFilter()
     const { formatTrnItem } = useTrn()
     const trnItem = computed(() => formatTrnItem(trnId))
-    // @ts-ignore
-    const { onOpenDetails, onOpenEdit, onSetFilter } = actions(trnItem.value)
+
+    const actions = {
+      onOpenDetails: () => {
+        if (!$store.state.trns.modal.show) {
+          $store.commit('categories/hideCategoryModal')
+          $store.commit('trns/showTrnModal')
+          $store.commit('trns/setTrnModalId', trnItem.value.id)
+        }
+      },
+
+      onOpenEdit: (event) => {
+        event.stopPropagation()
+        setExpression(trnItem.value.amount)
+        $store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.value.id })
+        $store.commit('stat/setCategoryModal', { id: null, type: null })
+      },
+
+      onSetFilter: (event) => {
+        event.stopPropagation()
+        setCategoryFilter(trnItem.value.categoryId)
+        $store.commit('filter/setFilterDateNow')
+        $store.commit('trns/hideTrnModal')
+        $store.commit('trns/setTrnModalId', null)
+        $store.commit('stat/setCategoryModal', { id: null, type: null })
+        $store.dispatch('ui/setActiveTabStat', 'details')
+      }
+    }
 
     return {
-      trnItem,
-      onOpenDetails,
-      onOpenEdit,
-      onSetFilter
+      actions,
+      trnItem
     }
   }
 })
@@ -27,11 +54,11 @@ export default defineComponent({
 <template lang="pug">
 .space-x-3.flex.cursor-context-menu(
   class="hocus:bg-neutral-100 dark:hocus:bg-neutral-800"
-  @click="onOpenDetails"
+  @click="actions.onOpenDetails"
 )
   .cursor-pointer.text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
     :style="{ background: trnItem.category.color }"
-    @click="onSetFilter"
+    @click="actions.onSetFilter"
   ): div(:class="trnItem.category.icon")
 
   .grow
@@ -67,7 +94,7 @@ export default defineComponent({
           :currency="trnItem.wallet.currency"
           :type="trnItem.type"
           colorize="incomes"
-          @click="onOpenEdit"
+          @click="actions.onOpenEdit"
         )
 
     //- Description

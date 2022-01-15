@@ -1,5 +1,5 @@
-import { ref, computed } from '#app'
 import currency from 'currency.js'
+import { ref, computed } from '#app'
 
 const baseAmountFormat = (value: string, separator: string, symbol?: string) => currency(value, { symbol, precision: 0, pattern: '#', separator }).format()
 
@@ -77,11 +77,12 @@ export default function useCalculator () {
       const isLastSimbolAction = checkIsLastSimbolAction(lastSimbol)
       const prepeatedExpression = isLastSimbolAction ? clearedExpression.slice(0, -1) : clearedExpression
 
+      // eslint-disable-next-line no-new-func
       const math = Function('"use strict";return (' + prepeatedExpression + ')')()
 
-      if (math <= Number.MAX_SAFE_INTEGER) {
+      if (math <= Number.MAX_SAFE_INTEGER)
         return String(Math.abs(math))
-      }
+
       return '0'
     }
     catch (error) {
@@ -111,20 +112,19 @@ export default function useCalculator () {
     // Delete
     if (clearedExpression !== '0' && isDeleteAction) {
       const deleteString = clearedExpression.slice(0, -1)
-      if (deleteString) { return deleteString }
+      if (deleteString) return deleteString
       return '0'
     }
 
     // Start from 0
     if (clearedExpression === '0') {
-      if (value === '0') { return expression }
-      if (!inputIsAction) { return value }
+      if (value === '0') return expression
+      if (!inputIsAction) return value
     }
 
     // Change math simbol
-    if (inputIsAction && isLastSimbolAction && !isDotAction && !isSumAction && !isDeleteAction) {
+    if (inputIsAction && isLastSimbolAction && !isDotAction && !isSumAction && !isDeleteAction)
       return clearedExpression.slice(0, -1) + value
-    }
 
     // Calculate
     if (inputIsAction && isSumAction) {
@@ -135,9 +135,9 @@ export default function useCalculator () {
     // Handle dot value
     if (inputIsAction && isDotAction) {
       if (Array.isArray(clearedExpression.split(/[/*\-+]/)) && (clearedExpression.split(/[/*\-+]/).slice(-1)[0].includes('.') || isLastSimbolAction)) {
-        if (isLastSimbolAction && lastSimbol !== '.') {
+        if (isLastSimbolAction && lastSimbol !== '.')
           return clearedExpression + '0.'
-        }
+
         return expression
       }
       else {
@@ -146,9 +146,8 @@ export default function useCalculator () {
     }
 
     // Add math simbol
-    if (inputIsAction) {
+    if (inputIsAction)
       return clearedExpression + value
-    }
 
     // Handle number
     const maxIntegerLengthAllowed = 12
@@ -162,18 +161,16 @@ export default function useCalculator () {
       // Check if math will success
       if (lastSimbol !== '.') {
         const result = makeCalculation(clearedExpression + value)
-        if (result === '0') { return clearedExpression }
+        if (result === '0') return clearedExpression
       }
 
       // Limit integer
-      if (isInteger && lastNumber.length < maxIntegerLengthAllowed) {
+      if (isInteger && lastNumber.length < maxIntegerLengthAllowed)
         return clearedExpression + value
-      }
 
       // Limit float
-      if (!isInteger && lastNumberSplit[1].length < fixed) {
+      if (!isInteger && lastNumberSplit[1].length < fixed)
         return clearedExpression + value
-      }
     }
 
     return expression
@@ -199,19 +196,17 @@ export default function useCalculator () {
           let clearedValue = removeSpaces(String(item))
 
           // Remove ended zero after dot
-          if (isTrimFloatSpaces) {
+          if (isTrimFloatSpaces)
             clearedValue = String(parseFloat(Number(clearedValue).toFixed(fixed)))
-          }
 
           const splitFloatValue = String(clearedValue).split(/[.]/)
           const isInteger = splitFloatValue.length === 1
 
-          if (isInteger) {
+          if (isInteger)
             formatedItem = baseAmountFormat(item, separator.value)
-          }
-          else {
+
+          else
             formatedItem = baseAmountFormat(splitFloatValue[0], separator.value) + '.' + splitFloatValue[1]
-          }
         }
         return formatedItem
       })
@@ -229,15 +224,15 @@ export default function useCalculator () {
   }
 
   function keyboardHandler (event: KeyboardEvent): void {
-    if (!isKeysActive.value) { return }
+    if (!isKeysActive.value) return
 
     const allowValue = (event.key).match(/[0-9%/*\-+=.,]|Backspace|Enter/)
     let input = allowValue ? allowValue.input : false
 
     if (input) {
-      if (input === ',') { input = '.' }
-      if (input === 'Enter') { input = '=' }
-      if (input === 'Backspace') { input = 'delete' }
+      if (input === ',') input = '.'
+      if (input === 'Enter') input = '='
+      if (input === 'Backspace') input = 'delete'
 
       handleTouch(input)
     }
