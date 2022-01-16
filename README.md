@@ -23,6 +23,7 @@ This is Finapp 3. For the 2.x see the [2 branch](https://github.com/ilkome/finap
 - Vue
 - Nuxt
 - Stylus
+- Tailwind
 - Pug
 - Firebase
 
