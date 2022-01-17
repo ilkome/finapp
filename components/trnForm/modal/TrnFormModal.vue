@@ -1,6 +1,4 @@
 <script lang="ts">
-import { ref, onMounted, defineComponent } from '#app'
-
 export default defineComponent({
   setup () {
     const documentHeight = ref('100%')

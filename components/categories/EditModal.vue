@@ -1,5 +1,4 @@
 <script>
-import { ref, useNuxtApp, onMounted } from '#app'
 import { saveData } from '~/services/firebaseHelpers'
 import generateId from '~/utils/id'
 import { popularColors, allColors } from '~/assets/js/colorsPopular'

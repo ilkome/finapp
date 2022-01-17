@@ -1,5 +1,3 @@
-import { onUnmounted } from '#app'
-
 export default function useOnTouch () {
   let isDragging = true
   let isDrugByHandler = false

@@ -1,5 +1,4 @@
 import currency from 'currency.js'
-import { ref, computed } from '#app'
 
 const baseAmountFormat = (value: string, separator: string, symbol?: string) => currency(value, { symbol, precision: 0, pattern: '#', separator }).format()
 

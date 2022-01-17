@@ -1,5 +1,3 @@
-import { reactive, computed, useNuxtApp } from '#app'
-
 export default function useStatPage () {
   const { $store } = useNuxtApp()
 

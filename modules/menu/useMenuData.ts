@@ -1,7 +1,3 @@
-import { useNuxtApp } from '#app'
-import { useRouter, useRoute } from '#imports'
-import dayjs from 'dayjs'
-
 interface MenuItem {
   icon: string
   name: string

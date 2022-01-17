@@ -26,20 +26,20 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.font-unica.flex.flex-col.gap-1(
+.font-unica.gap-1.flex.flex-col(
   @click="event => $emit('click', event)"
 )
   //- Amount
   template(v-if="amount !== 0")
     div(:class="[{ 'text-green-600 dark:text-green-500': colorize === 'incomes' && type === 1 }]")
       //- Original
-      .gap-1.flex.items-baseline
+      .gap-1.flex.items-baseline.justify-end
         .text-md.leading-none {{ sign }}
         .text-md.leading-none {{ formatAmount(amount) }}
         .text-xs.leading-none {{ getCurrencySymbol(currency) }}
 
       //- Base
-      .text-neutral-400.gap-1.flex.items-baseline(v-if="currency !== baseCurrency")
+      .text-neutral-400.gap-1.flex.items-baseline.justify-end(v-if="currency !== baseCurrency")
         .text-md.leading-none {{ sign }}
         .text-md.leading-none {{ getAmountInBaseCurrency({ amount, currency }) }}
         .text-xs.leading-none {{ getCurrencySymbol(baseCurrency) }}

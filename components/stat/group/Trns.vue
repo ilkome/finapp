@@ -1,5 +1,4 @@
 <script>
-import { defineComponent } from '#app'
 import useStatPage from '~/components/stat/useStatPage'
 
 export default defineComponent({

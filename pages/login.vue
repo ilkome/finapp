@@ -1,6 +1,5 @@
 <script lang="ts">
 import { signInWithRedirect, GoogleAuthProvider } from 'firebase/auth'
-import { ref, defineComponent } from '#app'
 import { useRoute } from '#imports'
 import { auth } from '~/services/firebaseHelpers'
 

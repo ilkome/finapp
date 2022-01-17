@@ -1,5 +1,4 @@
 <script>
-import { computed } from '#app'
 import { updateEmo, random } from '~/assets/js/emo'
 
 export default {

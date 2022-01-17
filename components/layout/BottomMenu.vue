@@ -1,7 +1,4 @@
 <script>
-import { computed, useNuxtApp } from '#app'
-import { useRouter, useRoute } from '#imports'
-
 export default {
   name: 'LayoutMobileBottomMenu',
 

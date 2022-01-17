@@ -1,4 +1,3 @@
-import { ref, useNuxtApp } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 
 const isShowDataLabels = ref(false)

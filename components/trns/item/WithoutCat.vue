@@ -1,6 +1,5 @@
 
 <script lang="ts">
-import { defineComponent } from '#app'
 import useTrn from '~/components/trns/item/useTrn'
 
 export default defineComponent({

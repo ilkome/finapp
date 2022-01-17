@@ -1,6 +1,5 @@
 <script>
 import { Chart } from 'highcharts-vue'
-import { ref, computed, watch, nextTick, useNuxtApp } from '#app'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'

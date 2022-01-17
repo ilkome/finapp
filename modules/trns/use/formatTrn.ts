@@ -1,4 +1,3 @@
-import { useNuxtApp } from '#app'
 import { formatDate } from '~/utils/formatDate'
 
 export default function useFormatTrnFullItem () {

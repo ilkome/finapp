@@ -1,5 +1,3 @@
-import { computed, useNuxtApp } from '#app'
-
 const moneyTypes = [{
   id: 'expenses',
   type: 0

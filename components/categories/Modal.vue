@@ -1,5 +1,4 @@
 <script>
-import { useNuxtApp } from '#app'
 import { removeData } from '~/services/firebaseHelpers'
 import useFilter from '~/modules/filter/useFilter'
 

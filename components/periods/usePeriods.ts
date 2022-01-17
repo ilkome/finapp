@@ -1,5 +1,3 @@
-import { computed, useNuxtApp } from '#app'
-
 export default function usePeriods () {
   const { nuxt2Context: { i18n } } = useNuxtApp()
 

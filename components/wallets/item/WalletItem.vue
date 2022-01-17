@@ -1,6 +1,4 @@
 <script lang="ts">
-import { defineComponent } from '#app'
-
 export default defineComponent({
   props: {
     id: { type: String, required: true },
@@ -37,6 +35,7 @@ export default defineComponent({
   .gap-x-3.flex
     .text-neutral-50.text-xs.leading-none.w-6.h-6.rounded-md.justify-center.items-center.flex(
       :style="{ background: wallet.color }"
+      class="mt-[2px]"
     ) {{ wallet.name.substring(0, 2) }}
 
     div
@@ -52,6 +51,9 @@ export default defineComponent({
 </template>
 
 <style lang="stylus">
+.sidebar .walletItemGrid
+  background none
+
 .walletItemGrid
   cursor pointer
   position relative

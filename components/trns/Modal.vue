@@ -1,5 +1,4 @@
 <script lang="ts">
-import { useNuxtApp } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
@@ -104,7 +103,7 @@ Portal(
   LazyBaseBottomSheet(
     v-if="$store.state.trns.modal.show"
     key="trnsModal"
-    @closed="closed()"
+    @closed="closed"
   )
     template(#handler="{ close }")
       BaseBottomSheetClose(@onClick="close")

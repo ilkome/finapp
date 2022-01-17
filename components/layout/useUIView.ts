@@ -1,4 +1,3 @@
-import { reactive } from '#app'
 import localforage from 'localforage'
 
 const localName = 'finapp.ui'

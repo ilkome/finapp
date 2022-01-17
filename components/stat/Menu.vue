@@ -1,6 +1,4 @@
 <script>
-import { computed, useNuxtApp } from '#app'
-
 export default {
   name: 'StatDashboardMenu',
 

@@ -1,4 +1,3 @@
-import { computed, useNuxtApp } from '#app'
 import dayjs from 'dayjs'
 
 export default function useFilter () {

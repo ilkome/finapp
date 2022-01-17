@@ -1,5 +1,4 @@
 <script>
-import { ref, computed, useNuxtApp } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
 

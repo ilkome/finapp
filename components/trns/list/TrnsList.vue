@@ -1,5 +1,4 @@
 <script lang="ts">
-import { useNuxtApp, defineComponent } from '#app'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import useFilter from '~/modules/filter/useFilter'
 

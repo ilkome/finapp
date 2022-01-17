@@ -1,6 +1,5 @@
 <script>
 import Datepicker from 'vuejs-datepicker'
-import { ref, computed, useNuxtApp } from '#app'
 
 const calendarOptions = {
   'use-utc': true,

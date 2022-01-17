@@ -1,5 +1,4 @@
 <script lang="ts">
-import { reactive, computed, useNuxtApp, defineComponent } from '#app'
 import Datepicker from 'vuejs-datepicker'
 import dayjs from 'dayjs'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'

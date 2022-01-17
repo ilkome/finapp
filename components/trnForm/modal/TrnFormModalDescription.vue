@@ -1,5 +1,4 @@
 <script lang="ts">
-import { ref, onMounted, useNuxtApp } from '#app'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
 export default {

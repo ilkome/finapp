@@ -1,5 +1,3 @@
-import { reactive, computed, watch, useNuxtApp } from '#app'
-
 type MoneyType = 'incomes' | 'expenses'
 
 const state = reactive({

@@ -1,5 +1,4 @@
 <script>
-import { ref, watch, reactive, toRefs } from '#app'
 import useTouchClose from '~/components/base/modal/useTouchClose'
 
 export default {
@@ -44,12 +43,10 @@ export default {
         initTouchModal({
           ...toRefs(wrappers),
           onClose: () => {
-            if (listeners.onClose) {
+            if (listeners.onClose)
               listeners.onClose()
-            }
-            if (listeners && listeners.afterClose) {
+            if (listeners && listeners.afterClose)
               listeners.afterClose()
-            }
           }
         })
       }, 10)

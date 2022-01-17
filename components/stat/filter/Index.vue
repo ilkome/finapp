@@ -1,5 +1,4 @@
 <script>
-import { computed, useNuxtApp } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 
 export default {

@@ -1,5 +1,4 @@
 <script lang="ts">
-import { ref, computed, onMounted, onUnmounted, useNuxtApp } from '#app'
 import useCalculator from './useCalculator'
 import './long-press-event'
 

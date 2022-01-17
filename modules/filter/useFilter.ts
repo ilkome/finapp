@@ -1,6 +1,3 @@
-import { computed, useNuxtApp } from '#app'
-import { useRouter, useRoute } from '#imports'
-
 export default function useFilter () {
   const { $store } = useNuxtApp()
   const route = useRoute()

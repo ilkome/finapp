@@ -1,5 +1,3 @@
-import { ref } from '#app'
-
 const isShowPeriodsNamesModal = ref(false)
 
 export default function useBaseLayout () {

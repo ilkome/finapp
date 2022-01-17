@@ -1,5 +1,4 @@
 <script>
-import { computed, useNuxtApp } from '#app'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
 export default {

@@ -1,5 +1,3 @@
-import { useNuxtApp } from '#app'
-
 /**
  * Get first item in sorted catgories
  *

@@ -1,5 +1,4 @@
 <script>
-import { computed, toRefs, defineComponent } from '#app'
 import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
 

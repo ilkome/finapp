@@ -1,5 +1,4 @@
 <script>
-import { computed, useNuxtApp } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 import useStatChart from '~/components/stat/useStatChart'
 

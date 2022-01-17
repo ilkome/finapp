@@ -1,6 +1,4 @@
 <script lang="ts">
-import { computed, useNuxtApp, defineComponent } from '#app'
-
 export default defineComponent({
   setup () {
     const { $store } = useNuxtApp()

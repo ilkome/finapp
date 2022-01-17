@@ -1,5 +1,4 @@
 <script lang="ts">
-import { computed, useNuxtApp } from '#app'
 import useStat from '~/modules/stat/useStat'
 import useStatChart from '~/components/stat/useStatChart'
 import useStatPage from '~/components/stat/useStatPage'

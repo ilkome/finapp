@@ -1,4 +1,3 @@
-import { computed, useNuxtApp } from '#app'
 import currency from 'currency.js'
 
 function getCurrencySymbol (currency) {

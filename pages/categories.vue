@@ -1,6 +1,4 @@
 <script>
-import { defineComponent } from '#app'
-
 export default defineComponent({
   setup () {
 

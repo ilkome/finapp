@@ -1,6 +1,4 @@
 <script>
-import { computed, useNuxtApp } from '#app'
-
 export default {
   setup () {
     const { $store } = useNuxtApp()
@@ -23,7 +21,7 @@ Portal(to="modal")
       .handler
       BaseBottomSheetClose(@onClick="close")
 
-    .content(class="!overflow-hidden !pt-8 !pb-2")
+    .content(class="content !overflow-hidden !pt-8 !pb-2")
       .mb-4.pb-4.border-b(
         class="border-neutral-300 dark:border-neutral-800"
       )

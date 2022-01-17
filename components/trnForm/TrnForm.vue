@@ -3,7 +3,6 @@ import Vue from 'vue'
 import dayjs from 'dayjs'
 import SwiperCore, { Pagination } from 'swiper'
 import 'swiper/swiper-bundle.css'
-import { ref, computed, watch, onMounted, useNuxtApp } from '#app'
 import generateId from '~/utils/id'
 
 import useCalculator from '~/components/trnForm/calculator/useCalculator'

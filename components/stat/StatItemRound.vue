@@ -1,5 +1,4 @@
 <script lang="ts">
-import { ref, computed, useNuxtApp, onMounted, toRefs } from '#app'
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
