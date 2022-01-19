@@ -80,6 +80,6 @@ Portal(to="modal")
   letter-spacing 1px
   fontFamilyNunito()
 
-  /.light-mode &
+  /.light &
     color var(--c-font-4)
 </style>

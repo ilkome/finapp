@@ -181,7 +181,7 @@ export default {
     background var(--c-bg-5)
     border-radius $m3
 
-    /.light-mode &
+    /.light &
       color var(--c-font-1)
       background var(--c-bg-12)
 

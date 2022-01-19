@@ -483,6 +483,8 @@ div
     color var(--c-text-1)
     background var(--c-item-bg-hover)
     border 1px solid var(--c-item-bd-hover)
+  /.light &
+    color var(--c-font-2)
 
 .menu
   overflow hidden
@@ -614,7 +616,7 @@ div
   letter-spacing 1px
   fontFamilyNunito()
 
-  /.light-mode &
+  /.light &
     color var(--c-font-4)
 
 .customColor

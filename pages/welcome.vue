@@ -1,7 +1,7 @@
 <script>
 export default {
   name: 'WelcomePage',
-  layout: 'login',
+  layout: 'welcome',
 
   data () {
     return {
@@ -103,6 +103,7 @@ export default {
                 @onClick="step = 2"
               )
 
+  //-
   transition(name="fadeIn")
     template(v-if="step === 2")
       .tab
@@ -272,6 +273,7 @@ export default {
       position relative
       padding $m7
       background var(--c-bg-3)
+
     &__border
       position absolute
       top 50%

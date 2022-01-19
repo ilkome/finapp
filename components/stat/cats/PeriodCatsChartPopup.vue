@@ -59,7 +59,7 @@ export default {
   transform translate(-50%, calc(100% + 40px))
   white-space nowrap
 
-  /.light-mode &
+  /.light &
     background var(--c-bg-1)
     border 1px solid var(--c-bg-5)
 
@@ -73,7 +73,7 @@ export default {
     border-right 8px solid transparent
     border-bottom 8px solid var(--c-bg-5)
 
-    /.light-mode &
+    /.light &
       border-bottom-color var(--c-bg-5)
 
   &__name

@@ -90,7 +90,7 @@ export default {
   typo-money()
 
   &._altColor
-    /.light-mode &
+    /.light &
       color var(--c-font-1)
 
   &._incomes

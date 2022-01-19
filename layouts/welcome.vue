@@ -11,7 +11,7 @@ useLazyAsyncData('posts', async () => {
   await initUI()
 })
 
-const keepAliveInclude = ['PagesIndex, PagesWallets', 'PagesCategories', 'PagesHistory']
+const keepAliveInclude = []
 
 /**
  * Update modal
@@ -69,15 +69,9 @@ onMounted(() => {
     @onClose="isShowUpdateApp = false"
   )
 
-  .layout__wrap.overflow-hidden.flex-grow.h-full.grid
-    .layout__sidebar
-      LayoutSidebar
-
-    .layout__content
+  .layout__wrap.overflow-hidden.flex-grow.h-full.flex
+    transition(name="fadeIn" appear)
       Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
-
-    .layout__menu
-      LayoutBottomMenu
 </template>
 
 <style lang="stylus">

@@ -84,7 +84,7 @@ export default {
     margin 8px 0 -8px -8px
     background var(--c-bg-7)
 
-    /.light-mode &
+    /.light &
       background var(--c-bg-1)
 
   &__graph

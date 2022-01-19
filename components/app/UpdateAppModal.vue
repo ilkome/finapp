@@ -38,7 +38,7 @@ TrnFormModal(@closed="$emit('onClose')")
   font-weight 700
   fontFamilyNunito()
 
-  /.light-mode &
+  /.light &
     color var(--c-font-4)
 
 .emo

@@ -37,6 +37,6 @@ export default {
     color var(--c-font-2)
     font-size 16px
 
-    /.light-mode &
+    /.light &
       color var(--c-item-stat-icon)
 </style>

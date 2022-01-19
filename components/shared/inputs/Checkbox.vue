@@ -43,7 +43,7 @@ export default {
     box-shadow 0px 0px 4px rgba(0, 0, 0, .25)
     anim()
 
-    /.light-mode &
+    /.light &
       background var(--c-bg-1)
 
     ^[0]._active &

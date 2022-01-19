@@ -38,11 +38,6 @@ export default function useMenuData () {
       private: true,
       icon: 'mdi mdi-account-multiple',
       name: i18n.t('users.title')
-    },
-    groups: {
-      private: true,
-      icon: 'mdi mdi-folder-multiple-outline',
-      name: i18n.t('groups.title')
     }
   }
 

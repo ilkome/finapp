@@ -96,7 +96,7 @@ export default {
     border 1px solid var(--c-bg-1)
     border-radius $m6
 
-    /.light-mode &
+    /.light &
       background var(--c-bg-1)
       border 1px solid var(--c-bg-5)
 

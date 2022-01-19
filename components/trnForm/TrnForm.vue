@@ -299,7 +299,7 @@ export default {
     backdrop-filter blur(12px)
     transform translateX(-50%)
 
-    /.light-mode &
+    /.light &
       background var(--c-bg-3)
 
     .swiper-pagination-bullet
@@ -316,7 +316,7 @@ export default {
         background var(--c-bg-10)
         border-radius 4px
 
-        /.light-mode &
+        /.light &
           background var(--c-blue-1)
 </style>
 

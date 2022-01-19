@@ -89,7 +89,7 @@ export default defineComponent({
   &__child
     color var(--c-font-1)
 
-    /.light-mode &
+    /.light &
       color var(--c-font-4)
 
   &__active
