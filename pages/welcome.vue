@@ -127,17 +127,6 @@ export default {
                 @onClick="step = 3"
               )
 
-            template(v-if="$store.state.demo.hasDemo")
-              .options__or
-                .options__or__border
-                .options__or__text {{ $t('welcome.or') }}
-              .options__item
-                .options__desc {{ $t('welcome.demo.text') }}
-                SharedButton._blue2._center(
-                  :title="$t('welcome.demo.btn')"
-                  @onClick="$store.dispatch('demo/createDemo')"
-                )
-
   //- wallet
   transition(name="fadeIn")
     template(v-if="(step !== 1 && step !== 2) && !showWalletForm && !$store.getters['wallets/hasWallets']")

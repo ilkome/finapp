@@ -103,11 +103,6 @@ export default {
       text: 'Start creating your own wallets, categories',
       btn: 'Let\'s go'
     },
-    or: 'or',
-    demo: {
-      text: 'Load app in demo mode with created wallets, categories and transactions',
-      btn: 'Start demo'
-    },
     createFirstWallet: {
       text: "Let's start with create first Wallet",
       btn: 'Create wallet'
@@ -126,9 +121,7 @@ export default {
     customize: 'Сustomize',
     app: 'Application',
     caution: 'With caution',
-    demo: 'Demo',
-    deleteButton: 'Delete my data',
-    loadDemoButton: 'Load demo data'
+    deleteButton: 'Delete my data'
   },
 
   wallets: {

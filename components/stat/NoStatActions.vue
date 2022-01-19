@@ -19,17 +19,6 @@ export default {
       :title="$t('welcome.firstRun.btn')"
       @onClick="$router.push('/welcome')"
     )
-
-  .options__item(v-if="$store.state.demo.hasDemo")
-    .options__or
-      .options__or__border
-      .options__or__text {{ $t('welcome.or') }}
-
-    .options__text {{ $t('welcome.demo.text') }}
-    SharedButton._text-center._blue2(
-      :title="$t('welcome.demo.btn')"
-      @onClick="$store.dispatch('demo/createDemo')"
-    )
 </template>
 
 <style lang="stylus" scoped>

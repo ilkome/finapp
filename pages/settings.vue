@@ -6,7 +6,6 @@ export default {
 
   data () {
     return {
-      confirmCreateDemo: false,
       confirmRemoveUserData: false,
       version: pkg.version
     }
@@ -19,14 +18,6 @@ export default {
   },
 
   methods: {
-    async generateDemo () {
-      this.confirmCreateDemo = false
-      await this.$store.dispatch('demo/createDemo')
-
-      if (this.$route.name !== 'index')
-        this.$router.push('/')
-    },
-
     removeUserData () {
       this.confirmRemoveUserData = false
       this.$store.dispatch('user/removeUserData')
@@ -87,23 +78,11 @@ LayoutBaseWrap(:contentPadding="false")
               icon="mdi mdi-delete-empty-outline"
               @onClick="confirmRemoveUserData = true"
             )
-          .settings__item(v-if="$store.state.demo.hasDemo")
-            SharedButton._bdb(
-              :title="$t('settings.loadDemoButton')"
-              icon="mdi mdi-gamepad-variant-outline"
-              @onClick="confirmCreateDemo = true"
-            )
+
       .settings__column
         .settings__group
           About
           .appVersion {{ $t('app.version') }} {{ version }}
-
-    ModalBottomConfirm(
-      :description="$t('alerts.willDeleteEverything')"
-      :show="confirmCreateDemo"
-      @onClose="confirmCreateDemo = false"
-      @onConfirm="generateDemo"
-    )
 
     ModalBottomConfirm(
       :description="$t('alerts.willDeleteEverything')"

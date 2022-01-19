@@ -20,7 +20,6 @@ export default {
         if (rootGetters['user/userUid'] !== user.uid)
           dispatch('clearUserData')
 
-        await dispatch('demo/getDemoDataStatus', null, { root: true })
         await dispatch('user/initUser', user, { root: true })
         await dispatch('currencies/initCurrencies', null, { root: true })
         await dispatch('categories/initCategories', null, { root: true })
