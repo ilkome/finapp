@@ -1,55 +1,65 @@
-<script setup lang="ts">
-/* eslint-disable @typescript-eslint/no-unused-vars */
+<script lang="ts">
+import { ref, computed, useNuxtApp, onMounted, useLazyAsyncData, defineComponent } from '#app'
 import debounce from '~/utils/debounce'
 import detectTouch from '~/assets/js/isTouchDevice'
 import useUIView from '~/components/layout/useUIView'
 
-const { $store } = useNuxtApp()
+export default defineComponent({
+  setup () {
+    const { $store } = useNuxtApp()
 
-useLazyAsyncData('posts', async () => {
-  const { initUI } = useUIView()
-  await initUI()
-})
-
-const keepAliveInclude = []
-
-/**
- * Update modal
- */
-const isShowUpdateApp = ref(false)
-onMounted(async () => {
-  const workbox = await window.$workbox
-  if (workbox) {
-    workbox.addEventListener('installed', (event) => {
-      isShowUpdateApp.value = event.isUpdate
+    useLazyAsyncData('posts', async () => {
+      const { initUI } = useUIView()
+      await initUI()
     })
+
+    const keepAliveInclude = ['PagesIndex, PagesWallets', 'PagesCategories', 'PagesHistory']
+
+    /**
+     * Update modal
+     */
+    const isShowUpdateApp = ref(false)
+    onMounted(async () => {
+      const workbox = await window.$workbox
+      if (workbox) {
+        workbox.addEventListener('installed', (event) => {
+          isShowUpdateApp.value = event.isUpdate
+        })
+      }
+    })
+
+    /**
+     * Detect touch device
+     */
+    const isTouchDevice = ref(false)
+
+    /**
+     * Page dimensions
+     */
+    function getPageDimensions () {
+      const width = document.documentElement.clientWidth
+      const height = document.documentElement.clientHeight
+      document.documentElement.style.setProperty('--height', height + 'px')
+      $store.dispatch('ui/setAppDimensions', { width, height })
+    }
+
+    const touchClassNames = computed(() => ({
+      isNotTouchDevice: !isTouchDevice.value,
+      isTouchDevice: isTouchDevice.value
+    }))
+
+    onMounted(() => {
+      isTouchDevice.value = detectTouch()
+      getPageDimensions()
+      window.addEventListener('resize', debounce(getPageDimensions, 300))
+    })
+
+    return {
+      keepAliveInclude,
+      touchClassNames,
+      isShowUpdateApp
+    }
   }
-})
-
-/**
- * Detect touch device
- */
-const isTouchDevice = ref(false)
-onMounted(() => { isTouchDevice.value = detectTouch() })
-
-/**
- * Page dimensions
- */
-function getPageDimensions () {
-  const width = document.documentElement.clientWidth
-  const height = document.documentElement.clientHeight
-  document.documentElement.style.setProperty('--height', height + 'px')
-  $store.dispatch('ui/setAppDimensions', { width, height })
-}
-
-const touchClassNames = computed(() => ({
-  isNotTouchDevice: !isTouchDevice.value,
-  isTouchDevice: isTouchDevice.value
-}))
-
-onMounted(() => {
-  getPageDimensions()
-  window.addEventListener('resize', debounce(getPageDimensions, 300))
 })
 </script>
 
@@ -73,6 +83,13 @@ onMounted(() => {
     transition(name="fadeIn" appear)
       Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
 </template>
+
+<style lang="stylus">
+@import '~assets/stylus/base/animations'
+@import '~assets/stylus/index'
+@import '~assets/stylus/colors-dark'
+@import '~assets/stylus/colors-light'
+</style>
 
 <style lang="stylus">
 @import '~assets/stylus/base/animations'
