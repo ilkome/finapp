@@ -43,9 +43,8 @@ $ npm install
 
 ### Firebase setup
 - Create a Firebase project in the [Firebase console](https://console.firebase.google.com/)
-- Go to the Authentication tab and enable Google authentication.
-- Go to the Database tab and enable Firestore.
-- Select Realtime Database and go to Rules tab.
+- Create Realtime Database
+- Open Realtime Database and go to Rules tab.
 - Change rules to:
 ``` javascript
 {
@@ -69,7 +68,8 @@ $ npm install
   }
 }
 ```
-- Go to the Project Overview and click Add Firebase to your web app.
+- Go to the Project Overview and find `Get started by adding Firebase to your app` click to `web`.
+- Register a app and you will get your config.
 - You need to replace config in app's directory `services/firebaseConfig.js` with your config.
 ``` bash
 apiKey: 'YOUR_CONFIG',
