@@ -90,6 +90,7 @@ $ npm run dev
 
 ## Production
 #### Compiles and minifies for production
+This will give you `build` folder. You can upload files from this folder to any shared hosting.
 ``` bash
 $ npm run build
 ```
