@@ -1,8 +1,8 @@
 {
   "name": "finapp",
-  "version": "3.30.5",
+  "version": "3.4.0",
   "scripts": {
-    "dev": "cross-env NUXT_HOST=0.0.0.0 nuxi dev",
+    "dev": "cross-env NUXT_HOST=0.0.0.0 PORT=3010 nuxi dev",
     "build": "nuxi generate",
     "start": "nuxi preview",
     "deploy": "npm run build && firebase deploy",
