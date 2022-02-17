@@ -115,8 +115,6 @@ export default {
       if (!isTransfer.value) {
         normalizedValues = {
           amount: getResult.value,
-          amountFrom: getResult.value,
-          amountTo: getResult.value,
           categoryId: $store.state.trnForm.values.categoryId,
           date: dayjs($store.state.trnForm.values.date).valueOf(),
           description: $store.state.trnForm.values.description || null,
@@ -130,8 +128,6 @@ export default {
       if (isTransfer.value) {
         normalizedValues = {
           amount: getResult.value,
-          amountFrom: getResult.value,
-          amountTo: getResult.value,
           categoryId: 'transfer',
           date: dayjs($store.state.trnForm.values.date).valueOf(),
           walletId: $store.state.trnForm.values.walletFromId,
@@ -139,7 +135,15 @@ export default {
           walletToId: $store.state.trnForm.values.walletToId,
           type: 2,
           description: $store.state.trnForm.values.description || null,
-          groups: $store.state.trnForm.values.groups || null
+          groups: $store.state.trnForm.values.groups || null,
+          expense: {
+            walletId: $store.state.trnForm.values.walletFromId,
+            amount: getResult.value
+          },
+          income: {
+            walletId: $store.state.trnForm.values.walletToId,
+            amount: getResult.value
+          }
         }
       }
 

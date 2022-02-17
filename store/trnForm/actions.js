@@ -54,8 +54,6 @@ export default {
             commit('setTrnFormValues', {
               ...trn,
               amount: trn.amount,
-              amountFrom: trn.amount,
-              amountTo: trn.amount,
               amountType: trn.type,
               categoryId: trn.categoryId,
               date: trn.date,

@@ -50,10 +50,10 @@ export default {
 
         if (trn.type === 2 && inculdeTrnasfers) {
           if (walletId === trn.walletFromId)
-            expenses = expenses + trn.amountFrom
+            expenses = expenses + trn.amount
 
           if (walletId === trn.walletToId)
-            incomes = incomes + trn.amountTo
+            incomes = incomes + trn.amount
         }
       }
     }
