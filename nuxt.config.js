@@ -75,7 +75,7 @@ export default defineNuxtConfig({
   // Color mode
   colorMode: {
     classSuffix: '',
-    preference: 'dark' // default value of $colorMode.preference
+    preference: 'dark'
   },
 
   // Nuxt.js modules
@@ -109,7 +109,6 @@ export default defineNuxtConfig({
     ]
   },
 
-  // Nuxt-i18n module configuration (https://i18n.nuxtjs.org)
   i18n: {
     locales: [{
       code: 'en',
@@ -132,7 +131,6 @@ export default defineNuxtConfig({
     langDir: 'locales/'
   },
 
-  // Manifest
   pwa: {
     manifest: {
       name: 'Finapp',
