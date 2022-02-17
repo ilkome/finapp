@@ -84,8 +84,7 @@ export default defineComponent({
       LayoutSidebar
 
     .layout__content
-      transition(name="fadeInSlow" appear)
-        Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
+      Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
 
     .layout__menu
       LayoutBottomMenu

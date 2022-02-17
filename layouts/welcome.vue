@@ -91,13 +91,6 @@ export default defineComponent({
 @import '~assets/stylus/colors-light'
 </style>
 
-<style lang="stylus">
-@import '~assets/stylus/base/animations'
-@import '~assets/stylus/index'
-@import '~assets/stylus/colors-dark'
-@import '~assets/stylus/colors-light'
-</style>
-
 <style lang="stylus" scoped>
 .layout
   &__wrap

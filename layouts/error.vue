@@ -22,6 +22,3 @@ export default defineComponent({
   pre {{ error }}
   h1(@click="$router.push('/')") Go to home
 </template>
-
-<style lang="stylus">
-</style>

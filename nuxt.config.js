@@ -104,9 +104,7 @@ export default defineNuxtConfig({
 
   // Router middleware
   router: {
-    middleware: [
-      'auth'
-    ]
+    middleware: ['auth']
   },
 
   i18n: {
