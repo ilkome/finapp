@@ -18,7 +18,7 @@ export default {
       const walletsTotal = this.$store.getters['wallets/walletsTotal']
       const total = {
         counted: 0,
-        other: 0,
+        savings: 0,
         credits: 0
       }
 
@@ -40,7 +40,7 @@ export default {
         else if (walletsItems[walletId].isCredit)
           total.credits = total.credits + walletTotal
         else
-          total.other = total.other + walletTotal
+          total.savings = total.savings + walletTotal
       }
       return total
     }
@@ -64,12 +64,12 @@ export default {
       )
 
   //- Savings
-  .walletsTotal__item(v-if="totalInWallets.other !== 0")
+  .walletsTotal__item(v-if="totalInWallets.savings !== 0")
     .walletsTotal__title {{ $t('savings') }}
     .walletsTotal__value
       Amount(
         :currency="$store.state.currencies.base"
-        :value="totalInWallets.other"
+        :value="totalInWallets.savings"
         size="lg"
         vertical="center"
       )
@@ -91,7 +91,7 @@ export default {
     .walletsTotal__value
       Amount(
         :currency="$store.state.currencies.base"
-        :value="totalInWallets.counted + totalInWallets.other - Math.abs(totalInWallets.credits)"
+        :value="totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)"
         size="lg"
         vertical="center"
       )
