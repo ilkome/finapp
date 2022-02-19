@@ -5,5 +5,11 @@
   ],
   "vueCompilerOptions": {
     "experimentalCompatMode": 2
+  },
+  "compilerOptions": {
+    "types": [
+      "unplugin-vue2-script-setup/types",
+      "unplugin-vue2-script-setup/ref-macros"
+    ]
   }
 }

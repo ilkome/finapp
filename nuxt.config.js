@@ -92,7 +92,12 @@ export default defineNuxtConfig({
     '@nuxtjs/pwa',
     // https://tailwindcss.nuxtjs.org/
     '@nuxtjs/tailwindcss',
+    'unplugin-vue2-script-setup/nuxt',
   ],
+
+  scriptSetup: {
+    reactivityTransform: true,
+  },
 
   alias: {
     tslib: 'tslib/tslib.es6.js',
