@@ -6,10 +6,10 @@ export default defineComponent({
     activeItemId: { type: String, default: null },
     category: { type: Object, required: true },
     id: { type: String, required: true },
-    ui: { type: String, default: null }
+    ui: { type: String, default: null },
   },
 
-  setup ({ id, category }, { listeners }) {
+  setup({ id, category }, { listeners }) {
     const { $store } = useNuxtApp()
 
     const { setCategoryFilter } = useFilter()
@@ -17,12 +17,12 @@ export default defineComponent({
     const childCategoriesIds = computed(() => $store.getters['categories/getChildCategoriesIds'](id))
     const parentCategory = computed(() => $store.state.categories.items[category.parentId])
 
-    function onClickItem () {
+    function onClickItem() {
       if (listeners.onClick)
         listeners.onClick(id)
     }
 
-    function onClickIcon () {
+    function onClickIcon() {
       setCategoryFilter(id)
       $store.commit('filter/setFilterDateNow')
       $store.commit('categories/hideCategoryModal')
@@ -34,9 +34,9 @@ export default defineComponent({
       childCategoriesIds,
       parentCategory,
       onClickItem,
-      onClickIcon
+      onClickIcon,
     }
-  }
+  },
 })
 </script>
 

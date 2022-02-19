@@ -5,14 +5,14 @@ export default defineComponent({
   props: {
     keepAlive: { type: Boolean, default: false },
     show: { type: Boolean, default: false },
-    maxHeight: { type: Number, default: null }
+    maxHeight: { type: Number, default: null },
   },
 
-  setup (props, { emit }) {
+  setup(props, { emit }) {
     // settings
     const settings = {
       moveToCloseOffset: 60,
-      debounceOffset: 20
+      debounceOffset: 20,
     }
 
     // elements
@@ -37,7 +37,7 @@ export default defineComponent({
       direction: computed(() => direction.value),
       diffHeight: computed(() => diffHeight.value),
       diffHeightWithDebounce: computed(() => diffHeightWithDebounce.value),
-      nextCurrentY: computed(() => nextCurrentY.value)
+      nextCurrentY: computed(() => nextCurrentY.value),
     })
 
     const maxHeightScroll = computed(() => {
@@ -63,13 +63,13 @@ export default defineComponent({
     const drugStyles = computed(() => {
       if (nextCurrentY.value <= debounce.value) {
         return {
-          opacity: 1
+          opacity: 1,
         }
       }
 
       return {
         transform: `translateX(-50%) translateY(${nextCurrentY.value - debounce.value}px)`,
-        ...overlayStyles.value
+        ...overlayStyles.value,
       }
     })
 
@@ -108,19 +108,19 @@ export default defineComponent({
           ? 1
           : diffHeightWithDebounce.value >= 10
             ? `0.${diffHeightWithDebounce.value}`
-            : `0.0${diffHeightWithDebounce.value}`
+            : `0.0${diffHeightWithDebounce.value}`,
         )
       }
 
       return {
-        opacity
+        opacity,
       }
     })
 
     /**
      * Get client Y
      */
-    function getClientY (event): number {
+    function getClientY(event): number {
       return event.type.includes('touch')
         ? Math.round(event.touches[0].clientY)
         : event.clientY
@@ -129,7 +129,7 @@ export default defineComponent({
     /**
      * Content has scroll
      */
-    function contentHasScroll (event): boolean {
+    function contentHasScroll(event): boolean {
       // Handle scroll inside slider
       const swiperSlideActive = drug.value?.querySelector('.swiper-slide-active')
       if (swiperSlideActive) {
@@ -146,7 +146,7 @@ export default defineComponent({
     /**
      * Drag start
      */
-    function onDragStart (event): void {
+    function onDragStart(event): void {
       if (disabled.value)
         return
 
@@ -167,7 +167,7 @@ export default defineComponent({
     /**
      * Dragging
      */
-    function onDragging (event): void {
+    function onDragging(event): void {
       if (disabled.value)
         return
 
@@ -195,7 +195,7 @@ export default defineComponent({
     /**
      * Drag end
      */
-    function onDragEnd (): void {
+    function onDragEnd(): void {
       if (disabled.value || !isDraging.value)
         return
 
@@ -207,7 +207,7 @@ export default defineComponent({
     /**
      * Clear
      */
-    function clear () {
+    function clear() {
       clientY.value = 0
       isDraging.value = false
     }
@@ -215,7 +215,7 @@ export default defineComponent({
     /**
      * Close modal
      */
-    function close () {
+    function close() {
       clear()
       initialY.value = -(drug.value.clientHeight + handler.value.clientHeight)
     }
@@ -223,7 +223,7 @@ export default defineComponent({
     /**
      * Open modal
      */
-    function open () {
+    function open() {
       clear()
       opened.value = true
       initialY.value = 0
@@ -232,7 +232,7 @@ export default defineComponent({
     /**
      * Scroll up all scroller blocks
      */
-    function scrollUpAllScrollers () {
+    function scrollUpAllScrollers() {
       const scrollerBlocks = drug.value?.querySelectorAll('.scrollerBlock')
       if (scrollerBlocks) {
         scrollerBlocks.forEach((el) => {
@@ -244,7 +244,7 @@ export default defineComponent({
     /**
      * On close modal
      */
-    function onClose () {
+    function onClose() {
       scrollUpAllScrollers()
       drug.value.removeEventListener('transitionend', onClose)
       opened.value = false
@@ -254,7 +254,7 @@ export default defineComponent({
     /**
      * Add events listeners
      */
-    function addEvents () {
+    function addEvents() {
       isEventsInited.value = true
 
       // Touch
@@ -274,7 +274,7 @@ export default defineComponent({
     /**
      * Init modal
      */
-    async function init () {
+    async function init() {
       await nextTick()
       initialY.value = -(drug.value.clientHeight + handler.value.clientHeight)
       disabled.value = false
@@ -314,7 +314,7 @@ export default defineComponent({
     /**
      * Run init when mounted or show changed
      */
-    watch(() => props.show, async () => {
+    watch(() => props.show, async() => {
       if (!props.keepAlive || (props.keepAlive && props.show))
         await init()
 
@@ -335,9 +335,9 @@ export default defineComponent({
       close,
       overlayStyles,
       drugStyles,
-      maxHeightScroll
+      maxHeightScroll,
     }
-  }
+  },
 })
 </script>
 

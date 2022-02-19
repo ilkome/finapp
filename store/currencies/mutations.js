@@ -1,15 +1,15 @@
 export default {
-  setCurrencies (state, { base, date, rates }) {
+  setCurrencies(state, { base, date, rates }) {
     state.base = base
     state.date = date
     state.rates = rates
   },
 
-  showBaseCurrenciesModal (state) {
+  showBaseCurrenciesModal(state) {
     state.modal.show = true
   },
 
-  hideBaseCurrenciesModal (state) {
+  hideBaseCurrenciesModal(state) {
     state.modal.show = false
-  }
+  },
 }

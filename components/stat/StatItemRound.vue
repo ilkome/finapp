@@ -7,27 +7,27 @@ export default {
   props: {
     category: {
       type: Object,
-      required: true
+      required: true,
     },
     categoryId: {
       type: String,
-      required: true
+      required: true,
     },
     currency: {
       type: String,
-      required: true
+      required: true,
     },
     total: {
       type: Number,
-      required: true
+      required: true,
     },
     type: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
 
-  setup (props) {
+  setup(props) {
     const { categoryId, type } = toRefs(props)
     const { $store } = useNuxtApp()
     const { setCategoryFilter } = useFilter()
@@ -35,7 +35,7 @@ export default {
     const trnsIds = computed(() => {
       return $store.getters['trns/getTrns']({
         categoryId: categoryId.value,
-        type: type.value
+        type: type.value,
       })
     })
 
@@ -52,9 +52,9 @@ export default {
       filterPeriod,
       statCurrentPeriod,
       item,
-      isCategoryHasChildren
+      isCategoryHasChildren,
     }
-  }
+  },
 }
 </script>
 

@@ -6,16 +6,16 @@ export default {
     icon: { type: String, default: null },
     selected: { type: Boolean, default: false },
     showCheckbox: { type: Boolean, default: false },
-    title: { type: String, required: true }
+    title: { type: String, required: true },
   },
 
   methods: {
-    handleClick () {
+    handleClick() {
       this.$emit('onClick')
       if (this.$listeners.onClose)
         this.$listeners.onClose()
-    }
-  }
+    },
+  },
 }
 </script>
 

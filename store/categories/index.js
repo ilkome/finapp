@@ -7,13 +7,13 @@ const state = () => ({
   editId: null,
   modal: {
     show: false,
-    id: null
-  }
+    id: null,
+  },
 })
 
 export default {
   state,
   actions,
   getters,
-  mutations
+  mutations,
 }

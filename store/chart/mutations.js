@@ -1,34 +1,34 @@
 export default {
-  setPeriodValues (state, { periodName, values }) {
+  setPeriodValues(state, { periodName, values }) {
     state.periods[periodName] = {
       ...state.periods[periodName],
-      ...values
+      ...values,
     }
   },
 
-  toogleChartPeriodView (state, { periodName }) {
+  toogleChartPeriodView(state, { periodName }) {
     state.periods[periodName].grouped = !state.periods[periodName].grouped
   },
 
-  addElementsToChart (state, { periodName, periodType }) {
+  addElementsToChart(state, { periodName, periodType }) {
     state.periods[periodName][periodType] = state.periods[periodName][periodType] + 1
   },
 
-  removeElementsFromChart (state, { periodName, periodType }) {
+  removeElementsFromChart(state, { periodName, periodType }) {
     state.periods[periodName][periodType] = state.periods[periodName][periodType] - 1
   },
 
-  setElementsToChart (state, { period, value }) {
+  setElementsToChart(state, { period, value }) {
     state.periods[period].showedPeriods = value
   },
 
-  setHoveredPeriodValues (state, { values, offset }) {
+  setHoveredPeriodValues(state, { values, offset }) {
     if (values) state.hoveredPeriod.values = values
     if (offset) state.hoveredPeriod.offset = offset
   },
 
-  clearHoveredPeriodValues (state) {
+  clearHoveredPeriodValues(state) {
     state.hoveredPeriod.values = null
     state.hoveredPeriod.offset = null
-  }
+  },
 }

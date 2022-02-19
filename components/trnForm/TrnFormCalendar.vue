@@ -3,30 +3,30 @@ import { formatDate } from '~/utils/formatDate'
 
 export default {
   computed: {
-    formatedDate () {
+    formatedDate() {
       const date = formatDate(this.$store.state.trnForm.values.date, 'full')
       return `${date.weekday}, ${date.day} ${date.month}`
     },
 
-    isToday () {
+    isToday() {
       return this.$day().isSame(this.$store.state.trnForm.values.date, 'day')
-    }
+    },
   },
 
   methods: {
-    setPrevDay () {
+    setPrevDay() {
       this.$store.commit('trnForm/setTrnFormValues', {
-        date: this.$day(this.$store.state.trnForm.values.date).subtract(1, 'day').valueOf()
+        date: this.$day(this.$store.state.trnForm.values.date).subtract(1, 'day').valueOf(),
       })
     },
-    setNextDay () {
+    setNextDay() {
       if (!this.isToday) {
         this.$store.commit('trnForm/setTrnFormValues', {
-          date: this.$day(this.$store.state.trnForm.values.date).add(1, 'day').valueOf()
+          date: this.$day(this.$store.state.trnForm.values.date).add(1, 'day').valueOf(),
         })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

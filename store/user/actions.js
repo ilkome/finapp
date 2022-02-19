@@ -6,23 +6,23 @@ import { auth, getDataOnce, saveData } from '~/services/firebaseHelpers'
 import pkg from '~/package'
 
 export default {
-  initUser ({ dispatch }, userParams) {
+  initUser({ dispatch }, userParams) {
     const user = {
       displayName: userParams.displayName,
       email: userParams.email,
-      uid: userParams.uid
+      uid: userParams.uid,
     }
 
     dispatch('setUser', user)
     dispatch('saveUserInfo', user)
   },
 
-  setUser ({ commit }, user) {
+  setUser({ commit }, user) {
     commit('setUser', user)
     localforage.setItem('finapp.user', user)
   },
 
-  async signOut ({ rootGetters, dispatch }) {
+  async signOut({ rootGetters, dispatch }) {
     const uid = rootGetters['user/userUid']
 
     saveData(`users-info/${uid}/actions/${dayjs().valueOf()}`, 'signOut')
@@ -37,7 +37,7 @@ export default {
       this.app.context.redirect('/login')
   },
 
-  async saveUserInfo ({ rootState }) {
+  async saveUserInfo({ rootState }) {
     const user = rootState.user.user
     const todayValueOf = dayjs().valueOf()
 
@@ -47,7 +47,7 @@ export default {
       displayName: user.displayName,
       email: user.email,
       uid: user.uid,
-      loginDate: todayValueOf
+      loginDate: todayValueOf,
     }
 
     saveData(`users/${user.uid}/user`, userData)
@@ -65,7 +65,7 @@ export default {
     saveData(`users-info/${user.uid}/opensApp/${pkg.version.split('.').join('')}`, dayjs().valueOf())
   },
 
-  removeUserData ({ rootGetters, commit, dispatch }) {
+  removeUserData({ rootGetters, commit, dispatch }) {
     commit('app/setAppStatus', 'loading', { root: true })
     dispatch('ui/setActiveTab', null, { root: true })
     const uid = rootGetters['user/userUid']
@@ -75,5 +75,5 @@ export default {
     saveData(`users/${uid}/trns/`, null)
     saveData(`users-info/${uid}/actions/${dayjs().valueOf()}`, 'removeUserData')
     commit('app/setAppStatus', 'ready', { root: true })
-  }
+  },
 }

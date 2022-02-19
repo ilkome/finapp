@@ -1,14 +1,14 @@
 <script lang="ts">
 export default defineComponent({
-  setup () {
+  setup() {
     const documentHeight = ref('100%')
     onMounted(() => {
       documentHeight.value = `${document.documentElement.clientHeight}px`
     })
     return {
-      documentHeight
+      documentHeight,
     }
-  }
+  },
 })
 </script>
 

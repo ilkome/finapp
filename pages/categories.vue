@@ -1,14 +1,14 @@
 <script>
 export default defineComponent({
-  setup () {
+  setup() {
 
   },
 
-  head () {
+  head() {
     return {
-      title: this.$t('categories.title')
+      title: this.$t('categories.title'),
     }
-  }
+  },
 })
 </script>
 

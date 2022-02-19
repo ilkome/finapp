@@ -2,16 +2,16 @@
 import useMenuData from '~/modules/menu/useMenuData'
 
 export default defineComponent({
-  setup () {
+  setup() {
     const { items, onClick, checkIsActive, checkIsShow } = useMenuData()
 
     return {
       items,
       onClick,
       checkIsActive,
-      checkIsShow
+      checkIsShow,
     }
-  }
+  },
 })
 </script>
 

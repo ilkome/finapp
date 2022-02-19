@@ -6,7 +6,7 @@
  * @param {*} typeName
  * @return {*}
  */
-function getBiggestAmount (categoriesTotal, categoriesIds, typeName) {
+function getBiggestAmount(categoriesTotal, categoriesIds, typeName) {
   const biggestAmount = categoriesIds[0]
   return categoriesTotal[biggestAmount] && Math.abs(categoriesTotal[biggestAmount][typeName])
 }
@@ -18,10 +18,10 @@ function getBiggestAmount (categoriesTotal, categoriesIds, typeName) {
  * @param {*} [trnsIds=[]]
  * @return {*}
  */
-export default function getStat () {
+export default function getStat() {
   const { $store } = useNuxtApp()
 
-  function getStatBy (trnsIds = []) {
+  function getStatBy(trnsIds = []) {
     const categoriesWithTrnsIds = $store.getters['stat/getCategoriesIdsWithTrnsIds']({ trnsIds })
     const totalAllTrns = $store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
@@ -53,19 +53,19 @@ export default function getStat () {
       expenses: {
         biggest: expensesBiggest,
         categoriesIds: expensesCategoriesIds,
-        total: totalAllTrns.expenses
+        total: totalAllTrns.expenses,
       },
       incomes: {
         biggest: incomesBiggest,
         categoriesIds: incomesCategoriesIds,
-        total: totalAllTrns.incomes
-      }
+        total: totalAllTrns.incomes,
+      },
     }
 
     return stat
   }
 
   return {
-    getStatBy
+    getStatBy,
   }
 }

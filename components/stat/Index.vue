@@ -5,7 +5,7 @@ import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
 
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { statPage } = useStatPage()
     const { ui } = useUIView()
@@ -15,20 +15,20 @@ export default {
     onWatch()
 
     const isShowGroup = (type) => {
-      const p1 = statPage.activeTab === 'details' ||
-                (statPage.activeTab === 'incomes' && type === 'incomes') ||
-                (statPage.activeTab === 'expenses' && type === 'expenses')
-      const p2 = statPage.current[type].total > 0 ||
-                  (statPage.average && statPage.average[type] !== 0) ||
-                  $store.state.filter.period === 'all'
+      const p1 = statPage.activeTab === 'details'
+                || (statPage.activeTab === 'incomes' && type === 'incomes')
+                || (statPage.activeTab === 'expenses' && type === 'expenses')
+      const p2 = statPage.current[type].total > 0
+                  || (statPage.average && statPage.average[type] !== 0)
+                  || $store.state.filter.period === 'all'
       return p1 && p2
     }
 
     const isShowTrns = computed(() => {
-      const proceed = statPage.activeTab === 'details' &&
-                      statPage.average?.incomes !== 0 &&
-                      statPage.average?.expenses !== 0 &&
-                      $store.getters['trns/selectedTrnsIdsWithDate'].length > 0
+      const proceed = statPage.activeTab === 'details'
+                      && statPage.average?.incomes !== 0
+                      && statPage.average?.expenses !== 0
+                      && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0
       return proceed
     })
 
@@ -45,9 +45,9 @@ export default {
       moneyTypes,
       statPage,
       isEmptyStat,
-      ui
+      ui,
     }
-  }
+  },
 }
 </script>
 

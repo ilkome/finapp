@@ -1,16 +1,16 @@
-export default function useFilter () {
+export default function useFilter() {
   const { $store } = useNuxtApp()
   const route = useRoute()
   const router = useRouter()
   const filterPeriodNameAllReplacedToYear = computed(() => $store.state.filter.period === 'all' ? 'year' : $store.state.filter.period)
   const isNeedToRedirect = computed(() => route.name !== 'index' && route.name !== 'history')
 
-  function scrollTop () {
+  function scrollTop() {
     const page = document.querySelector('.js_scroll_page')
     if (page) page.scrollTop = 0
   }
 
-  function setCategoryFilter (id) {
+  function setCategoryFilter(id) {
     if (isNeedToRedirect.value)
       router.push('/')
 
@@ -18,7 +18,7 @@ export default function useFilter () {
     scrollTop()
   }
 
-  function setWalletFilter (id) {
+  function setWalletFilter(id) {
     if (isNeedToRedirect.value)
       router.push('/')
 
@@ -30,6 +30,6 @@ export default function useFilter () {
     scrollTop,
     setCategoryFilter,
     setWalletFilter,
-    filterPeriodNameAllReplacedToYear
+    filterPeriodNameAllReplacedToYear,
   }
 }

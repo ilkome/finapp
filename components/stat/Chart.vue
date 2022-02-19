@@ -3,7 +3,7 @@ import useFilter from '~/modules/filter/useFilter'
 import useStatChart from '~/components/stat/useStatChart'
 
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { filterPeriodNameAllReplacedToYear } = useFilter()
     const { chartState } = useStatChart()
@@ -28,9 +28,9 @@ export default {
       periods,
       filter,
       filterPeriod,
-      chartType
+      chartType,
     }
-  }
+  },
 }
 </script>
 

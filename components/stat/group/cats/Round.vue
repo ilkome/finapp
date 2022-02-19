@@ -5,10 +5,10 @@ import useUIView from '~/components/layout/useUIView'
 
 export default defineComponent({
   props: {
-    typeText: { type: String, required: true }
+    typeText: { type: String, required: true },
   },
 
-  setup (props) {
+  setup(props) {
     const { typeText } = toRefs(props)
     const { statPage } = useStatPage()
     const { moneyTypes } = useStat()
@@ -49,9 +49,9 @@ export default defineComponent({
       isShow,
       typeNumber,
       incomesRef,
-      expensesRef
+      expensesRef,
     }
-  }
+  },
 })
 </script>
 

@@ -3,43 +3,43 @@ export default {
   props: {
     category: {
       type: Object,
-      required: true
+      required: true,
     },
     categoryId: {
       type: String,
-      required: true
+      required: true,
     },
     total: {
       type: Number,
-      required: true
+      required: true,
     },
     biggest: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
-    styles () {
+    styles() {
       return {
         height: `${Math.abs(this.total) / Math.abs(this.biggest) * 100}%`,
-        background: this.category.color
+        background: this.category.color,
       }
     },
-    amount () {
+    amount() {
       if (this.total >= 1000000)
-        return (this.total / 1000000).toFixed(2) + 'm'
+        return `${(this.total / 1000000).toFixed(2)}m`
       else if (this.total >= 10000)
-        return (this.total / 1000).toFixed() + 'k'
+        return `${(this.total / 1000).toFixed()}k`
       else if (this.total > 999)
-        return (this.total / 1000).toFixed(1) + 'k'
+        return `${(this.total / 1000).toFixed(1)}k`
 
       return this.total.toFixed()
-    }
+    },
   },
 
   methods: {
-    handleMouseEnter (e) {
+    handleMouseEnter(e) {
       if (this.$store.state.ui.pc) {
         const parent = e.target.parentNode
         const parentScrollLeft = parent.scrollLeft
@@ -50,11 +50,11 @@ export default {
       }
     },
 
-    handleMouseLeave (e) {
+    handleMouseLeave(e) {
       if (this.$store.state.ui.pc)
         this.$emit('onActiveCategoryChange', { categoryId: null })
-    }
-  }
+    },
+  },
 }
 </script>
 

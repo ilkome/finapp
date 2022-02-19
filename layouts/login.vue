@@ -2,20 +2,20 @@
 import detectTouch from '~/assets/js/isTouchDevice'
 
 export default defineComponent({
-  setup () {
+  setup() {
     // Detect touch device
     const isTouchDevice = ref(false)
     onMounted(() => { isTouchDevice.value = detectTouch() })
 
     const touchClassNames = computed(() => ({
       isNotTouchDevice: !isTouchDevice.value,
-      isTouchDevice: isTouchDevice.value
+      isTouchDevice: isTouchDevice.value,
     }))
 
     return {
-      touchClassNames
+      touchClassNames,
     }
-  }
+  },
 })
 </script>
 

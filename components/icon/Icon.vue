@@ -10,21 +10,21 @@ export default {
     invert: { type: Boolean, default: false },
     medium: { type: Boolean, default: false },
     round: { type: Boolean, default: false },
-    small: { type: Boolean, default: false }
+    small: { type: Boolean, default: false },
   },
 
   computed: {
-    className () {
+    className() {
       return {
         _big: this.big,
         _category: this.category,
         _invert: this.invert,
         _round: this.round,
         _medium: this.medium,
-        _small: this.small
+        _small: this.small,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -4,45 +4,45 @@ export default {
     type: {
       type: String,
       required: true,
-      validator (value) {
+      validator(value) {
         return value === 'incomes' || value === 'expenses'
-      }
-    }
+      },
+    },
   },
 
-  data () {
+  data() {
     return {
       activeCategoryId: null,
-      offset: 0
+      offset: 0,
     }
   },
 
   computed: {
-    className () {
+    className() {
       return {
         _incomes: this.type === 'incomes',
-        _expenses: this.type === 'expenses'
+        _expenses: this.type === 'expenses',
       }
     },
-    biggestAmount () {
+    biggestAmount() {
       return this.$store.getters['stat/statCurrentPeriod'][this.type].biggest
     },
-    categories () {
+    categories() {
       return this.$store.state.categories.items
     },
-    statCurrentPeriod () {
+    statCurrentPeriod() {
       return this.$store.getters['stat/statCurrentPeriod']
-    }
+    },
   },
 
   methods: {
-    handleActiveCategoryChange ({ categoryId, offset }) {
+    handleActiveCategoryChange({ categoryId, offset }) {
       if (offset) this.offset = offset
       categoryId
         ? this.activeCategoryId = categoryId
         : this.activeCategoryId = null
-    }
-  }
+    },
+  },
 }
 </script>
 

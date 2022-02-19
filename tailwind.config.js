@@ -7,7 +7,7 @@ module.exports = {
     './components/**/*.{js,ts}',
     './layouts/**/*.{js,ts}',
     './modules/**/*.{js,ts}',
-    './pages/**/*.{js,ts}'
+    './pages/**/*.{js,ts}',
   ],
 
   theme: {
@@ -21,25 +21,25 @@ module.exports = {
         white1: '#fdfdfd',
         white2: '#fcfcfd',
         blue1: '#58a6ff',
-        blue2: '#0366d6'
+        blue2: '#0366d6',
       },
       fontSize: {
-        '2xs': '10px'
+        '2xs': '10px',
       },
       fontFamily: {
         nunito: ['Nunito', 'Roboto', 'sans-serif'],
         roboto: ['Roboto', 'sans-serif'],
-        unica: ['"Unica One"', '"Roboto Condensed"', 'sans-serif']
+        unica: ['"Unica One"', '"Roboto Condensed"', 'sans-serif'],
       },
       minWidth: {
-        base: '320px'
-      }
-    }
+        base: '320px',
+      },
+    },
   },
 
   plugins: [
-    plugin(function ({ addVariant }) {
+    plugin(({ addVariant }) => {
       addVariant('hocus', ['.isNotTouchDevice &:hover', '&:active'])
-    })
-  ]
+    }),
+  ],
 }

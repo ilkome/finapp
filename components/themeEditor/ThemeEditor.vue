@@ -4,7 +4,7 @@ import '@simonwep/pickr/dist/themes/classic.min.css'
 
 export default {
   name: 'ThemeEditor',
-  data () {
+  data() {
     return {
       colors: [
         '--c-bg-1',
@@ -20,21 +20,21 @@ export default {
         '--c-bg-11',
         '--c-bg-12',
         '--c-bg-13',
-        '--c-bg-14'
-      ]
+        '--c-bg-14',
+      ],
     }
   },
 
-  mounted () {
+  mounted() {
     this.initPickrs()
   },
 
   methods: {
-    setColor (name, color) {
+    setColor(name, color) {
       document.documentElement.style.setProperty(name, color)
     },
 
-    initPickrs () {
+    initPickrs() {
       for (const colorItem of this.colors) {
         const colorIdx = this.colors.indexOf(colorItem)
         const element = document.querySelector([`.initPickElement${colorIdx}`])
@@ -57,16 +57,16 @@ export default {
               hsla: true,
               hsva: true,
               cmyk: true,
-              input: true
-            }
-          }
+              input: true,
+            },
+          },
         }).on('change', (color) => {
           const hexColor = color.toHEXA().toString()
           this.setColor(colorItem, hexColor)
         })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

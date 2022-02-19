@@ -1,15 +1,15 @@
 <script>
 export default {
   methods: {
-    handleSetWallet (walletId, close) {
+    handleSetWallet(walletId, close) {
       this.$store.commit('trnForm/setTrnFormValues', { walletId })
       close()
     },
 
-    afterClose () {
+    afterClose() {
       this.$store.commit('trnForm/closeTrnFormModal', 'wallets')
-    }
-  }
+    },
+  },
 }
 </script>
 

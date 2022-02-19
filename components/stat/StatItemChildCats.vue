@@ -6,16 +6,16 @@ export default {
   props: {
     categoryId: {
       type: String,
-      required: true
+      required: true,
     },
     type: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
-    statCategories () {
+    statCategories() {
       const categoriesIds = this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
       let stat = []
 
@@ -36,13 +36,13 @@ export default {
       return stat
     },
 
-    typeName () {
+    typeName() {
       return this.type === 1 ? 'incomes' : 'expenses'
-    }
+    },
   },
 
   methods: {
-    getTrnsByCategoryId (categoryId) {
+    getTrnsByCategoryId(categoryId) {
       const trns = this.$store.state.trns.items
       let trnsIds = this.$store.getters['trns/selectedTrnsIdsWithDate']
       trnsIds = trnsIds.filter(id => trns[id].categoryId === categoryId)
@@ -50,13 +50,13 @@ export default {
       return trnsIds
     },
 
-    getCategoryStat ({ categoryId, trnsIds }) {
+    getCategoryStat({ categoryId, trnsIds }) {
       return {
         categoryId,
-        ...this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
+        ...this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds),
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

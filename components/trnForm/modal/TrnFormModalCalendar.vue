@@ -3,17 +3,17 @@ import Datepicker from 'vuejs-datepicker'
 
 const calendarOptions = {
   'use-utc': true,
-  disabledDates: {
-    from: new Date()
-  }
+  'disabledDates': {
+    from: new Date(),
+  },
 }
 
 export default {
   components: {
-    Datepicker
+    Datepicker,
   },
 
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
 
     const date = computed(() => $store.state.trnForm.values.date)
@@ -21,33 +21,33 @@ export default {
 
     return {
       date,
-      closeModal
+      closeModal,
     }
   },
 
-  created () {
+  created() {
     this.calendarOptions = calendarOptions
   },
 
   methods: {
-    handleSelectDate (date, close) {
+    handleSelectDate(date, close) {
       this.$store.commit('trnForm/setTrnFormValues', {
-        date: this.$day(date).valueOf()
+        date: this.$day(date).valueOf(),
       })
       close()
     },
 
-    handleSelectDateDaysAgo (daysAgo, close) {
+    handleSelectDateDaysAgo(daysAgo, close) {
       this.$store.commit('trnForm/setTrnFormValues', {
-        date: this.$day().subtract(daysAgo, 'day').valueOf()
+        date: this.$day().subtract(daysAgo, 'day').valueOf(),
       })
       close()
     },
 
-    afterClose () {
+    afterClose() {
       this.$store.commit('trnForm/closeTrnFormModal', 'calendar')
-    }
-  }
+    },
+  },
 }
 </script>
 

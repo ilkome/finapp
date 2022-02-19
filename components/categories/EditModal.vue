@@ -1,12 +1,12 @@
 <script>
 import { saveData } from '~/services/firebaseHelpers'
 import generateId from '~/utils/id'
-import { popularColors, allColors } from '~/assets/js/colorsPopular'
+import { allColors, popularColors } from '~/assets/js/colorsPopular'
 import { random } from '~/assets/js/emo'
 import icons from '~/assets/js/icons'
 
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
 
     const showColors = ref(false)
@@ -19,10 +19,10 @@ export default {
       parentId: 0,
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true
+      showStat: true,
     })
 
-    function findCategoryWithThisColor (color) {
+    function findCategoryWithThisColor(color) {
       const categories = $store.state.categories.items
       if (categories) {
         const categoryIdWithThisColor = $store.getters['categories/categoriesRootIds']?.find(id => categories[id]?.color === color)
@@ -31,7 +31,7 @@ export default {
       }
     }
 
-    function onSelectColor (color) {
+    function onSelectColor(color) {
       if (color)
         category.value.color = color
     }
@@ -51,42 +51,42 @@ export default {
 
       popularColors,
       allColors,
-      documentHeight
+      documentHeight,
     }
   },
 
-  data () {
+  data() {
     return {
       originalParentId: null,
       showParents: false,
       showIcons: false,
-      applyChildColor: true
+      applyChildColor: true,
     }
   },
 
   computed: {
-    categoryId () {
+    categoryId() {
       return this.$store.state.categories.editId
-    }
+    },
   },
 
   watch: {
     categoryId: {
-      handler (categoryId) {
+      handler(categoryId) {
         if (categoryId) {
           this.category = {
             ...this.category,
-            ...this.$store.state.categories.items[this.categoryId]
+            ...this.$store.state.categories.items[this.categoryId],
           }
 
           this.originalParentId = this.category.parentId
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
 
-  created () {
+  created() {
     this.colors = allColors
     this.icons = icons
     if (!this.$store.state.categories.editId) {
@@ -95,22 +95,22 @@ export default {
     }
   },
 
-  beforeDestroy () {
+  beforeUnmount() {
     this.$store.commit('categories/setCategoryEditId', null)
   },
 
   methods: {
-    closed () {
+    closed() {
       this.$store.commit('categories/setCategoryEditId', null)
       this.$store.dispatch('ui/setActiveTab', null)
     },
 
-    handleIconSelect (icon) {
+    handleIconSelect(icon) {
       this.category.icon = icon
       this.showIcons = false
     },
 
-    handleParenCategorySelect (categoryId) {
+    handleParenCategorySelect(categoryId) {
       const parentCategory = this.$store.state.categories.items[categoryId]
       if (parentCategory)
         this.category.color = parentCategory.color
@@ -119,7 +119,7 @@ export default {
       this.showParents = false
     },
 
-    handleSubmit (close) {
+    handleSubmit(close) {
       if (this.validateForm()) {
         const uid = this.$store.state.user.user.uid
         const id = this.categoryId || generateId()
@@ -134,7 +134,7 @@ export default {
           parentId: this.category.parentId,
           showInLastUsed: this.category.showInLastUsed,
           showInQuickSelector: this.category.showInQuickSelector,
-          showStat: true
+          showStat: true,
         }
 
         // ad or remove from parent
@@ -145,7 +145,7 @@ export default {
             if (originalParent) {
               saveData(`users/${uid}/categories/${this.originalParentId}`, {
                 ...originalParent,
-                childIds: originalParent.childIds.filter(cId => cId !== id)
+                childIds: originalParent.childIds.filter(cId => cId !== id),
               })
             }
           }
@@ -161,7 +161,7 @@ export default {
               ...parenCategory,
               showInLastUsed: false,
               showInQuickSelector: false,
-              childIds
+              childIds,
             })
           }
         }
@@ -171,7 +171,7 @@ export default {
         // update category
         saveData(`users/${uid}/categories/${id}`, {
           ...categoriesValues,
-          childIds
+          childIds,
         })
 
         // update child categories colors
@@ -184,12 +184,12 @@ export default {
       }
     },
 
-    validateForm () {
+    validateForm() {
       const categories = this.$store.state.categories.items
       if (!this.category.name) {
         this.$notify({
           title: '😮',
-          text: this.$t('categories.form.name.error')
+          text: this.$t('categories.form.name.error'),
         })
         return false
       }
@@ -200,7 +200,7 @@ export default {
             if (this.categoryId !== categoryId) {
               this.$notify({
                 title: '😮',
-                text: this.$t('categories.form.name.exist')
+                text: this.$t('categories.form.name.exist'),
               })
               return false
             }
@@ -208,7 +208,7 @@ export default {
           else {
             this.$notify({
               title: '😮',
-              text: this.$t('categories.form.name.exist')
+              text: this.$t('categories.form.name.exist'),
             })
             return false
           }
@@ -216,8 +216,8 @@ export default {
       }
 
       return true
-    }
-  }
+    },
+  },
 }
 </script>
 

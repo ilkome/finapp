@@ -3,33 +3,33 @@ export default {
   props: {
     categoryId: {
       type: String,
-      default: null
+      default: null,
     },
     offset: {
       type: Number,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
-    amount () {
+    amount() {
       if (this.$store.getters['stat/statCurrentPeriod'].categories[this.categoryId])
         return this.$store.getters['stat/statCurrentPeriod'].categories[this.categoryId][this.type]
 
       return null
     },
 
-    categoryName () {
+    categoryName() {
       if (this.$store.state.categories.items[this.categoryId])
         return this.$store.state.categories.items[this.categoryId].name
 
       return null
-    }
-  }
+    },
+  },
 }
 </script>
 

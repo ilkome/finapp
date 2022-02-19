@@ -4,10 +4,10 @@ import useUIView from '~/components/layout/useUIView'
 
 export default defineComponent({
   props: {
-    typeText: { type: String, required: true }
+    typeText: { type: String, required: true },
   },
 
-  setup (props) {
+  setup(props) {
     const { typeText } = toRefs(props)
     const { statPage } = useStatPage()
     const { ui } = useUIView()
@@ -15,9 +15,9 @@ export default defineComponent({
     const isShow = computed(() => ui.showPieChart && statPage.current[typeText.value]?.categoriesIds?.length)
 
     return {
-      isShow
+      isShow,
     }
-  }
+  },
 })
 </script>
 

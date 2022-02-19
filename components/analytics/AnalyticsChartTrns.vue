@@ -9,22 +9,22 @@ export default {
   name: 'AnalyticsChartTrns',
 
   components: {
-    Chart
+    Chart,
   },
 
   props: {
     periodName: {
       type: String,
-      default: 'month'
+      default: 'month',
     },
 
     isShowSummury: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
 
-  data () {
+  data() {
     return {
       biggest: 0,
       average: 0,
@@ -35,61 +35,61 @@ export default {
       chartOptions: {
         ...chartOptions,
         legend: false,
-        tooltip: false
-      }
+        tooltip: false,
+      },
     }
   },
 
   computed: {
-    periods () {
+    periods() {
       return this.$store.state.chart.periods
     },
 
-    statCurrentPeriod () {
+    statCurrentPeriod() {
       return this.$store.getters['stat/statCurrentPeriod']
     },
 
-    statAverage () {
+    statAverage() {
       return this.$store.getters['stat/statAverage']
     },
 
-    filterDate () {
+    filterDate() {
       return this.$store.state.filter.date
     },
 
-    filterCategory () {
+    filterCategory() {
       return this.$store.state.filter.categoryId
     },
-    filterWallet () {
+    filterWallet() {
       return this.$store.state.filter.walletId
-    }
+    },
   },
 
   watch: {
-    showedPeriods () {
+    showedPeriods() {
       this.init()
     },
 
-    filterDate () {
+    filterDate() {
       this.init()
     },
-    filterCategory () {
+    filterCategory() {
       this.init()
     },
-    filterWallet () {
+    filterWallet() {
       this.init()
     },
-    periods () {
+    periods() {
       this.init()
-    }
+    },
   },
 
-  mounted () {
+  mounted() {
     this.init()
   },
 
   methods: {
-    init () {
+    init() {
       const data = this.generateData(this.periodName)
       const handlePerioSelect = (date) => {
         this.$store.dispatch('filter/setPeriod', this.periodName)
@@ -101,18 +101,18 @@ export default {
         cursor: 'pointer',
         point: {
           events: {
-            click () {
+            click() {
               handlePerioSelect(this.date)
-            }
-          }
-        }
+            },
+          },
+        },
       }
 
       this.chartOptions = {
         ...this.chartOptions,
         tooltip: false,
         xAxis: {
-          categories: data.categories
+          categories: data.categories,
         },
 
         yAxis: {
@@ -120,8 +120,8 @@ export default {
             color: 'var(--c-bg-8)',
             value: this.average, // Insert your average here
             width: '2',
-            zIndex: 1
-          }]
+            zIndex: 1,
+          }],
         },
 
         chart: {
@@ -134,28 +134,28 @@ export default {
           panKey: 'shift',
 
           events: {
-            click (e) {
+            click(e) {
               // console.log(this.series[0].searchPoint(e, true))
-            }
-          }
-        }
+            },
+          },
+        },
       }
     },
 
-    formatAmount (amount) {
+    formatAmount(amount) {
       const fixed = this.$store.state.currencies.base === 'RUB' ? 0 : 2
       return baseAmountFormat(amount, ' ', fixed)
     },
 
-    generateData (periodName, oldSeries) {
+    generateData(periodName, oldSeries) {
       const categories = []
       const incomesData = []
 
       let format = 'MM'
-      if (periodName === 'day') { format = 'D.MM' }
-      if (periodName === 'week') { format = 'D.MM' }
-      if (periodName === 'month') { format = 'MMM' }
-      if (periodName === 'year') { format = 'YYYY' }
+      if (periodName === 'day') format = 'D.MM'
+      if (periodName === 'week') format = 'D.MM'
+      if (periodName === 'month') format = 'MMM'
+      if (periodName === 'year') format = 'YYYY'
 
       for (let index = 0; index < this.$store.state.chart.periods[periodName].showedPeriods; index++) {
         // count total period
@@ -163,14 +163,13 @@ export default {
         const name = this.$day(periodDate).startOf(periodName).format(format)
         const trnsIds = this.$store.getters['trns/getTrns']({
           date: periodDate,
-          periodName
+          periodName,
         })
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
         let amount = Math.floor(Number(`${periodTotal.incomes.toFixed() - periodTotal.expenses.toFixed()}`))
-        if (!this.statAverage.total) {
+        if (!this.statAverage.total)
           amount = Math.abs(Number(`${periodTotal.incomes.toFixed() - periodTotal.expenses.toFixed()}`))
-        }
 
         // return
         incomesData.unshift({
@@ -193,29 +192,27 @@ export default {
         if (iterator.y !== 0) {
           periods = periods + 1
           periodsTotal = periodsTotal + iterator.y
-          if (iterator.y > biggest) {
+          if (iterator.y > biggest)
             biggest = iterator.y
-          }
         }
       }
 
       this.biggest = biggest
 
       let amountAverage = Math.floor(Number(periodsTotal / periods).toFixed())
-      if (this.statAverage.total !== 0) {
+      if (this.statAverage.total !== 0)
         amountAverage = Math.abs(Number(periodsTotal / periods).toFixed())
-      }
+
       this.average = amountAverage
 
       let color = 'var(--c-blue-1)'
 
       if (this.statAverage.total === 0) {
-        if (this.statAverage.incomes > 0) {
+        if (this.statAverage.incomes > 0)
           color = 'var(--c-incomes-1)'
-        }
-        else if (this.statAverage.expenses > 0) {
+
+        else if (this.statAverage.expenses > 0)
           color = 'var(--c-expenses-1)'
-        }
       }
 
       return {
@@ -229,13 +226,13 @@ export default {
             fillColor: 'var(--c-bg-4)',
             lineWidth: 2,
             lineColor: 'var(--c-blue-1)',
-            symbol: 'circle'
-          }
+            symbol: 'circle',
+          },
         }],
-        categories
+        categories,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

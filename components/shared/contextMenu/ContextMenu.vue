@@ -2,23 +2,23 @@
 export default {
   props: {
     visible: { type: Boolean, default: false },
-    position: { type: Object, default: () => {} }
+    position: { type: Object, default: () => {} },
   },
 
   computed: {
-    className () {
+    className() {
       return {
         _bottom: this.position && this.position.bottom,
         _right: this.position && this.position.right,
-        _top: this.position && this.position.top
+        _top: this.position && this.position.top,
       }
     },
 
-    positionStyles () {
+    positionStyles() {
       if (this.position && this.position.left && typeof this.position.left === 'string') {
         return {
           left: this.position.left,
-          maxWidth: `${this.$store.state.ui.width - 24}px`
+          maxWidth: `${this.$store.state.ui.width - 24}px`,
         }
       }
       if (this.position && this.position.right && typeof this.position.right === 'string') {
@@ -26,18 +26,18 @@ export default {
           return {
             right: this.position.right,
             top: this.position.top,
-            maxWidth: `${this.$store.state.ui.width - 24}px`
+            maxWidth: `${this.$store.state.ui.width - 24}px`,
           }
         }
         return {
           right: this.position.right,
-          maxWidth: `${this.$store.state.ui.width - 24}px`
+          maxWidth: `${this.$store.state.ui.width - 24}px`,
         }
       }
 
       return null
-    }
-  }
+    },
+  },
 }
 </script>
 

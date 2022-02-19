@@ -4,11 +4,11 @@ export default {
   name: 'TrnFormHeaderItemWallet',
 
   computed: {
-    wallet () {
+    wallet() {
       const walletId = this.$store.state.trnForm.values.walletId
       return this.$store.state.wallets.items[walletId]
-    }
-  }
+    },
+  },
 }
 </script>
 

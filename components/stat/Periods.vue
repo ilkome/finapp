@@ -3,31 +3,31 @@ import useFilter from '~/modules/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
 
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
 
     // Filter
     const { filterPeriodNameAllReplacedToYear } = useFilter()
 
-    function saveChartsPeriodsToLocalStorage () {
+    function saveChartsPeriodsToLocalStorage() {
       $store.dispatch('ui/saveUiView')
     }
 
-    function addPeriodOrGroup () {
+    function addPeriodOrGroup() {
       $store.commit('chart/addElementsToChart', {
         periodName: filterPeriodNameAllReplacedToYear.value,
-        periodType: 'showedPeriods'
+        periodType: 'showedPeriods',
       })
       saveChartsPeriodsToLocalStorage()
     }
 
-    function removePeriodOrGroup () {
+    function removePeriodOrGroup() {
       if ($store.state.chart.periods[filterPeriodNameAllReplacedToYear.value].showedPeriods <= 2)
         return
 
       $store.commit('chart/removeElementsFromChart', {
         periodName: filterPeriodNameAllReplacedToYear.value,
-        periodType: 'showedPeriods'
+        periodType: 'showedPeriods',
       })
       saveChartsPeriodsToLocalStorage()
     }
@@ -39,9 +39,9 @@ export default {
       addPeriodOrGroup,
       removePeriodOrGroup,
       filterPeriodNameAllReplacedToYear,
-      periodsNames
+      periodsNames,
     }
-  }
+  },
 }
 </script>
 

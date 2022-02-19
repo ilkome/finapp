@@ -5,13 +5,13 @@ import useTrn from '~/components/trns/item/useTrn'
 export default defineComponent({
   props: {
     actions: { type: Object, required: false, default: () => ({}) },
-    trnId: { type: String, required: true }
+    trnId: { type: String, required: true },
   },
 
-  setup ({ trnId, actions }) {
+  setup({ trnId, actions }) {
     const { formatTrnItem, formatDate } = useTrn()
     const trnItem = computed(() => formatTrnItem(trnId))
-    // @ts-ignore
+    // @ts-expect-error
     const { onOpenDetails, onOpenEdit, onSetFilter } = actions(trnItem.value)
 
     return {
@@ -20,9 +20,9 @@ export default defineComponent({
       onOpenEdit,
       onSetFilter,
 
-      formatDate
+      formatDate,
     }
-  }
+  },
 })
 </script>
 

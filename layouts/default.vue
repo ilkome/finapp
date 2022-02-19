@@ -1,14 +1,14 @@
 <script lang="ts">
-import { ref, computed, useNuxtApp, onMounted, useLazyAsyncData, defineComponent } from '#app'
+import { computed, defineComponent, onMounted, ref, useLazyAsyncData, useNuxtApp } from '#app'
 import debounce from '~/utils/debounce'
 import detectTouch from '~/assets/js/isTouchDevice'
 import useUIView from '~/components/layout/useUIView'
 
 export default defineComponent({
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
 
-    useLazyAsyncData('posts', async () => {
+    useLazyAsyncData('posts', async() => {
       const { initUI } = useUIView()
       await initUI()
     })
@@ -19,7 +19,7 @@ export default defineComponent({
      * Update modal
      */
     const isShowUpdateApp = ref(false)
-    onMounted(async () => {
+    onMounted(async() => {
       const workbox = await window.$workbox
       if (workbox) {
         workbox.addEventListener('installed', (event) => {
@@ -36,16 +36,16 @@ export default defineComponent({
     /**
      * Page dimensions
      */
-    function getPageDimensions () {
+    function getPageDimensions() {
       const width = document.documentElement.clientWidth
       const height = document.documentElement.clientHeight
-      document.documentElement.style.setProperty('--height', height + 'px')
+      document.documentElement.style.setProperty('--height', `${height}px`)
       $store.dispatch('ui/setAppDimensions', { width, height })
     }
 
     const touchClassNames = computed(() => ({
       isNotTouchDevice: !isTouchDevice.value,
-      isTouchDevice: isTouchDevice.value
+      isTouchDevice: isTouchDevice.value,
     }))
 
     onMounted(() => {
@@ -57,9 +57,9 @@ export default defineComponent({
     return {
       keepAliveInclude,
       touchClassNames,
-      isShowUpdateApp
+      isShowUpdateApp,
     }
-  }
+  },
 })
 </script>
 

@@ -2,22 +2,22 @@
 export default {
   name: 'TrnFormTypes',
 
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
 
     const amountType = computed(() => $store.state.trnForm.values.amountType)
 
-    function setAmountType (amountType) {
+    function setAmountType(amountType) {
       $store.commit('trnForm/setTrnFormValues', {
-        amountType
+        amountType,
       })
     }
 
     return {
       amountType,
-      setAmountType
+      setAmountType,
     }
-  }
+  },
 }
 </script>
 

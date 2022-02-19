@@ -19,63 +19,63 @@ const filterByDate = (trns, ids, date) => {
   console.log(date)
   return ids.filter(
     trnId =>
-      (trns[trnId].date >= date.start) &&
-      (trns[trnId].date <= date.end))
+      (trns[trnId].date >= date.start)
+      && (trns[trnId].date <= date.end))
 }
 
 export default defineComponent({
   components: { Datepicker },
 
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { setExpression } = useCalculator()
     const { setCategoryFilter } = useFilter()
 
     const period = reactive({
       name: 'month',
-      value: 1
+      value: 1,
     })
 
     // const today = dayjs().subtract(1, 'week').valueOf()
     const today = dayjs().valueOf()
 
     const date = {
-      // @ts-ignore
+      // @ts-expect-error
       end: dayjs(today).subtract(period.value, period.name).startOf(period.name).valueOf(),
-      // @ts-ignore
-      start: dayjs(today).endOf(period.name).valueOf()
+      // @ts-expect-error
+      start: dayjs(today).endOf(period.name).valueOf(),
     }
 
-    // @ts-ignore
+    // @ts-expect-error
     const startDay = computed(() => dayjs().subtract(period.value, period.name).valueOf())
     const endDay = computed(() => dayjs().valueOf())
 
     const dateRange = reactive({
       start: dayjs(startDay.value).startOf('day').valueOf(),
       end: dayjs(endDay.value).endOf('day').valueOf(),
-      // @ts-ignore
-      count: computed(() => dayjs(dateRange.end).diff(dateRange.start, period.name) + 1)
+      // @ts-expect-error
+      count: computed(() => dayjs(dateRange.end).diff(dateRange.start, period.name) + 1),
     })
 
-    function onSelectDay (date, type) {
+    function onSelectDay(date, type) {
       dateRange[type] = type === 'end' ? dayjs(date).endOf('day').valueOf() : dayjs(date).startOf('day').valueOf()
     }
 
-    function onChangePeriodName (name) {
+    function onChangePeriodName(name) {
       period.name = name
       selectPeriod()
     }
 
-    function selectPeriod (direction?: PeriodNavDirection) {
+    function selectPeriod(direction?: PeriodNavDirection) {
       let selectedDate = dayjs(dateRange.end)
       if (direction === 'next')
         selectedDate = dayjs(selectedDate).add(1, period.name)
       if (direction === 'prev')
         selectedDate = dayjs(selectedDate).subtract(1, period.name)
 
-      // @ts-ignore
+      // @ts-expect-error
       dateRange.start = dayjs(selectedDate).startOf(period.name).valueOf()
-      // @ts-ignore
+      // @ts-expect-error
       dateRange.end = dayjs(selectedDate).endOf(period.name).valueOf()
     }
 
@@ -114,11 +114,11 @@ export default defineComponent({
         $store.commit('trns/setTrnModalId', null)
         $store.commit('stat/setCategoryModal', { id: null, type: null })
         $store.dispatch('ui/setActiveTabStat', 'details')
-      }
+      },
     })
 
     const disabledDates = {
-      from: new Date()
+      from: new Date(),
     }
 
     return {
@@ -132,9 +132,9 @@ export default defineComponent({
       selectPeriod,
       onChangePeriodName,
 
-      period
+      period,
     }
-  }
+  },
 })
 </script>
 

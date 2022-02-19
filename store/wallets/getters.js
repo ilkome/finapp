@@ -3,7 +3,7 @@
 // walletsSortedIds
 
 export default {
-  hasWallets (state, getters, rootState) {
+  hasWallets(state, getters, rootState) {
     if (rootState.wallets.items) {
       if (Object.keys(rootState.wallets.items).length > 0)
         return true
@@ -18,7 +18,7 @@ export default {
     return total || 0
   },
 
-  walletsTotal (state, getters, rootState, rootGetters) {
+  walletsTotal(state, getters, rootState, rootGetters) {
     if (!getters.hasWallets) return {}
     const walletsTotal = {}
     const wallets = rootState.wallets.items
@@ -32,14 +32,14 @@ export default {
     Object.keys(wallets).forEach((id) => {
       walletsTotal[id] = {
         base: getWalletAmount(id),
-        currency: wallets[id].currency
+        currency: wallets[id].currency,
       }
     })
 
     return walletsTotal
   },
 
-  walletsSortedIds (state, getters) {
+  walletsSortedIds(state, getters) {
     if (!getters.hasWallets) return []
     return Object.keys(state.items).sort((a, b) => {
       if (parseInt(state.items[a].order) < parseInt(state.items[b].order)) return -1
@@ -51,7 +51,7 @@ export default {
   getWalletWithId: (state, getters, rootState, rootGetters) => (walletId) => {
     return {
       id: walletId,
-      ...rootState.wallets.items[walletId]
+      ...rootState.wallets.items[walletId],
     }
-  }
+  },
 }

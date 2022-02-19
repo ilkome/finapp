@@ -3,23 +3,23 @@ export default {
   props: {
     theme: {
       type: String,
-      default: 'light'
+      default: 'light',
     },
 
     size: {
       type: String,
-      default: 'md'
-    }
+      default: 'md',
+    },
   },
 
   computed: {
-    className () {
+    className() {
       return {
         _dark: this.theme === 'dark',
-        [`_size_${this.size}`]: this.size
+        [`_size_${this.size}`]: this.size,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

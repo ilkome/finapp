@@ -7,35 +7,35 @@ export default {
     activeItemId: { type: String, default: null },
     limit: { type: [Number, Boolean], default: null },
     showBase: { type: Boolean, default: true },
-    showToogle: { type: Boolean, default: false }
+    showToogle: { type: Boolean, default: false },
   },
 
-  data () {
+  data() {
     return {
-      stateLimit: 0
+      stateLimit: 0,
     }
   },
 
   computed: {
-    walletsIds () {
+    walletsIds() {
       const walletsIds = this.$store.getters['wallets/walletsSortedIds']
       if (this.stateLimit) return walletsIds.slice(0, this.stateLimit)
       return walletsIds
-    }
+    },
   },
 
-  mounted () {
+  mounted() {
     this.stateLimit = this.limit
   },
 
   methods: {
-    toogleWallets () {
+    toogleWallets() {
       if (this.stateLimit > 0)
         this.stateLimit = 0
       else
         this.stateLimit = this.limit
-    }
-  }
+    },
+  },
 }
 </script>
 

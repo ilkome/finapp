@@ -2,9 +2,9 @@ import localforage from 'localforage'
 import dayjs from 'dayjs'
 import {
   removeTrnToAddLaterLocal,
-  saveTrnToAddLaterLocal,
+  removeTrnToDeleteLaterLocal,
   saveTrnIDforDeleteWhenClientOnline,
-  removeTrnToDeleteLaterLocal
+  saveTrnToAddLaterLocal,
 } from './helpers'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import {
@@ -12,17 +12,17 @@ import {
   removeData,
   saveData,
   unsubcribeData,
-  updateData
+  updateData,
 } from '~/services/firebaseHelpers'
 
 export default {
   // init
-  initTrns ({ rootGetters, dispatch }) {
+  initTrns({ rootGetters, dispatch }) {
     const path = `users/${rootGetters['user/userUid']}/trns`
     getDataAndWatch(path, items => dispatch('setTrns', items || {}))
   },
 
-  setTrns ({ commit }, items) {
+  setTrns({ commit }, items) {
     commit('setTrns', items)
     localforage.setItem('finapp.trns', items)
   },
@@ -35,12 +35,12 @@ export default {
    * @param id
    * @param values
    */
-  addTrn ({ commit, rootState }, { id, values }) {
+  addTrn({ commit, rootState }, { id, values }) {
     const uid = rootState.user.user.uid
     const trns = rootState.trns.items
     const valuesWithEditDate = {
       ...values,
-      edited: dayjs().valueOf()
+      edited: dayjs().valueOf(),
     }
     let isTrnSavedOnline = false
 
@@ -63,14 +63,14 @@ export default {
     commit('trnForm/setTrnFormValues', {
       trnId: null,
       amount: '0',
-      description: null
+      description: null,
     }, { root: true })
 
     return true
   },
 
   // delete
-  deleteTrn ({ commit, rootState }, id) {
+  deleteTrn({ commit, rootState }, id) {
     const uid = rootState.user.user.uid
     const trns = { ...rootState.trns.items }
 
@@ -83,7 +83,7 @@ export default {
       .then(() => removeTrnToDeleteLaterLocal(id))
   },
 
-  deleteTrnsByIds ({ rootState }, trnsIds) {
+  deleteTrnsByIds({ rootState }, trnsIds) {
     const uid = rootState.user.user.uid
     const trnsForDelete = {}
     for (const trnId of trnsIds)
@@ -92,7 +92,7 @@ export default {
     updateData(`users/${uid}/trns`, trnsForDelete)
   },
 
-  unsubcribeTrns ({ rootState }) {
+  unsubcribeTrns({ rootState }) {
     const uid = rootState.user.user.uid
     unsubcribeData(`users/${uid}/trns`)
   },
@@ -104,8 +104,8 @@ export default {
     * get trns from local storage
     * and add trns to database
   */
-  uploadOfflineTrns ({ dispatch, rootState }) {
-    getDataAndWatch('.info/connected', async (isConnected) => {
+  uploadOfflineTrns({ dispatch, rootState }) {
+    getDataAndWatch('.info/connected', async(isConnected) => {
       if (isConnected) {
         const trnsArrayForDelete = await localforage.getItem('finapp.trns.offline.delete') || []
         const trnsItemsForUpdate = await localforage.getItem('finapp.trns.offline.update') || {}
@@ -134,11 +134,11 @@ export default {
             console.log('update', trnId, trnsItemsForUpdate[trnId])
             dispatch('addTrn', {
               id: trnId,
-              values: trnsItemsForUpdate[trnId]
+              values: trnsItemsForUpdate[trnId],
             })
           }
         }
       }
     })
-  }
+  },
 }

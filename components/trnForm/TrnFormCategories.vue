@@ -5,13 +5,13 @@ import 'swiper/swiper-bundle.css'
 export default {
   name: 'TrnFormCategories',
 
-  data () {
+  data() {
     return {
-      slider: null
+      slider: null,
     }
   },
 
-  mounted () {
+  mounted() {
     const initialSlide = 1
 
     this.slider = new Swiper(this.$refs.trnFormCategories, {
@@ -22,12 +22,12 @@ export default {
       initialSlide,
       shortSwipes: false,
       longSwipesRatio: 0.1,
-      longSwipesMs: 60
+      longSwipesMs: 60,
     })
   },
 
   methods: {
-    handleCategoryClick (categoryId) {
+    handleCategoryClick(categoryId) {
       if (this.$store.getters['categories/isCategoryHasChildren'](categoryId)) {
         this.$store.commit('trnForm/setTrnFormModalCategoryId', categoryId)
         this.$store.commit('trnForm/showTrnFormModal', 'categoriesChild')
@@ -36,8 +36,8 @@ export default {
         this.$emit('closeModal')
         this.$store.commit('trnForm/setTrnFormValues', { categoryId })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

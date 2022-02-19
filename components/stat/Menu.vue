@@ -2,19 +2,19 @@
 export default {
   name: 'StatDashboardMenu',
 
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const activeTabStat = computed(() => $store.state.ui.activeTabStat)
 
-    function onClickStatMenu (tabName) {
+    function onClickStatMenu(tabName) {
       $store.dispatch('ui/setActiveTabStat', tabName)
     }
 
     return {
       activeTabStat,
-      onClickStatMenu
+      onClickStatMenu,
     }
-  }
+  },
 }
 </script>
 

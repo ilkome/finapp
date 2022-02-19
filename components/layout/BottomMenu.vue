@@ -5,15 +5,15 @@ export default {
   props: {
     slider: {
       type: Object,
-      required: true
+      required: true,
     },
     stat2: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
-  setup () {
+  setup() {
     const { $store, nuxt2Context: { i18n } } = useNuxtApp()
     const route = useRoute()
     const router = useRouter()
@@ -22,26 +22,26 @@ export default {
       stat: {
         icon: 'mdi mdi-poll',
         id: 'stat',
-        name: i18n.t('stat.shortTitle')
+        name: i18n.t('stat.shortTitle'),
       },
       wallets: {
         icon: 'mdi mdi-credit-card-multiple',
         id: 'wallets',
-        name: i18n.t('wallets.name')
+        name: i18n.t('wallets.name'),
       },
       categories: {
         icon: 'mdi mdi-folder-star',
         id: 'categories',
-        name: i18n.t('categories.shortTitle')
+        name: i18n.t('categories.shortTitle'),
       },
       menu: {
         icon: 'mdi mdi-menu',
         id: 'menu',
-        name: i18n.t('trns.shortTitle')
-      }
+        name: i18n.t('trns.shortTitle'),
+      },
     }))
 
-    function handleSetActiveTab (tabName) {
+    function handleSetActiveTab(tabName) {
       if (tabName === 'menu') {
         $store.dispatch('ui/setActiveTab', 'menu')
         return
@@ -50,7 +50,7 @@ export default {
       router.push(tabName)
     }
 
-    function getClassName (tabName) {
+    function getClassName(tabName) {
       if (route.name === tabName)
         return true
       else if (tabName === 'stat' && route.name === 'index')
@@ -60,9 +60,9 @@ export default {
     return {
       menu,
       handleSetActiveTab,
-      getClassName
+      getClassName,
     }
-  }
+  },
 }
 </script>
 

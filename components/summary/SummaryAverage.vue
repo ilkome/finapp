@@ -3,14 +3,14 @@ export default {
   name: 'SummaryAverage',
 
   computed: {
-    statCurrentPeriod () {
+    statCurrentPeriod() {
       return this.$store.getters['stat/statCurrentPeriod']
     },
 
-    statAverage () {
+    statAverage() {
       return this.$store.getters['stat/statAverage']
-    }
-  }
+    },
+  },
 }
 </script>
 

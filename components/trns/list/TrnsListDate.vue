@@ -5,15 +5,15 @@ export default {
   props: {
     date: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
-    formatedDate () {
+    formatedDate() {
       return formatDate(this.date, 'full')
-    }
-  }
+    },
+  },
 }
 </script>
 

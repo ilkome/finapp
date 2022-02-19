@@ -3,6 +3,6 @@ export const state = () => ({
   editId: null,
   modal: {
     show: false,
-    id: null
-  }
+    id: null,
+  },
 })

@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'StatNoStatActions'
+  name: 'StatNoStatActions',
 }
 </script>
 

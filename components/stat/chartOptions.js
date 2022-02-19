@@ -6,7 +6,7 @@ export default {
     spacing: [5, 0, 0, 0],
     type: 'column',
     panning: true,
-    panKey: 'shift'
+    panKey: 'shift',
   },
 
   title: { text: null },
@@ -15,22 +15,22 @@ export default {
   legend: {
     itemHiddenStyle: {
       fontWeight: 'normal',
-      color: 'var(--c-font-5)'
+      color: 'var(--c-font-5)',
     },
     itemStyle: {
       fontWeight: 'normal',
-      color: 'var(--c-font-4)'
+      color: 'var(--c-font-4)',
     },
     itemHoverStyle: {
       fontWeight: 'normal',
-      color: 'var(--c-font-4)'
-    }
+      color: 'var(--c-font-4)',
+    },
   },
 
   plotOptions: {
     areaspline: {
       fillOpacity: 0.3,
-      borderWidth: 2
+      borderWidth: 2,
     },
 
     column: {
@@ -38,16 +38,16 @@ export default {
       pointPadding: 0.1,
       borderWidth: 0,
       maxPointWidth: 10,
-      borderRadius: 3
+      borderRadius: 3,
     },
 
     spline: {
       lineWidth: 2,
       states: {
         hover: {
-          lineWidth: 2
-        }
-      }
+          lineWidth: 2,
+        },
+      },
     },
 
     pie: {
@@ -58,17 +58,17 @@ export default {
         filter: {
           property: 'percentage',
           operator: '>',
-          value: 4
-        }
+          value: 4,
+        },
       },
-      startAngle: 270
+      startAngle: 270,
     },
 
     series: {
       states: {
         inactive: {
-          opacity: 1
-        }
+          opacity: 1,
+        },
       },
 
       marker: {
@@ -76,7 +76,7 @@ export default {
         fillColor: 'var(--c-bg-4)',
         lineWidth: 2,
         lineColor: 'var(--c-incomes-1)',
-        symbol: 'circle'
+        symbol: 'circle',
       },
 
       dataLabels: {
@@ -94,10 +94,10 @@ export default {
           fontSize: '10px',
           fontFamily: 'var(--font-secondary)',
           fontWeight: 400,
-          textTransform: 'uppercase'
-        }
-      }
-    }
+          textTransform: 'uppercase',
+        },
+      },
+    },
   },
 
   xAxis: {
@@ -116,9 +116,9 @@ export default {
         color: 'var(--c-font-5)',
         fontSize: '10px',
         fontFamily: 'var(--font-secondary)',
-        textTransform: 'uppercase'
-      }
-    }
+        textTransform: 'uppercase',
+      },
+    },
   },
 
   yAxis: {
@@ -134,9 +134,9 @@ export default {
         color: 'var(--c-font-5)',
         fontSize: '12px',
         fontFamily: 'var(--font-secondary)',
-        textTransform: 'uppercase'
-      }
-    }
+        textTransform: 'uppercase',
+      },
+    },
   },
 
   tooltip: {
@@ -154,7 +154,7 @@ export default {
     style: {
       color: 'var(--c-font-2)',
       fontSize: '12px',
-      fontFamily: 'var(--font-roboto)'
-    }
-  }
+      fontFamily: 'var(--font-roboto)',
+    },
+  },
 }

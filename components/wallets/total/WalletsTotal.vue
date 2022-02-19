@@ -4,22 +4,22 @@ import useAmount from '~/components/amount/useAmount'
 export default {
   props: {
     isShowCredits: { type: Boolean, default: false },
-    isShowTotal: { type: Boolean, default: false }
+    isShowTotal: { type: Boolean, default: false },
   },
 
-  setup () {
+  setup() {
     const { getAmountInBaseCurrency } = useAmount()
     return { getAmountInBaseCurrency }
   },
 
   computed: {
-    totalInWallets () {
+    totalInWallets() {
       const walletsItems = this.$store.state.wallets.items
       const walletsTotal = this.$store.getters['wallets/walletsTotal']
       const total = {
         counted: 0,
         savings: 0,
-        credits: 0
+        credits: 0,
       }
 
       for (const walletId in walletsItems) {
@@ -31,7 +31,7 @@ export default {
           walletTotal = this.getAmountInBaseCurrency({
             amount: walletsTotal[walletId].base,
             currency: walletsItems[walletId].currency,
-            noFormat: true
+            noFormat: true,
           })
         }
 
@@ -43,8 +43,8 @@ export default {
           total.savings = total.savings + walletTotal
       }
       return total
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -127,17 +127,17 @@ export default {
 
 <i18n lang="json5">
 {
-  en: {
-    avaliable: 'Avaliable',
-    credits: 'Credits',
-    savings: 'Savings',
-    total: 'Total'
+  "en": {
+    "avaliable": "Avaliable",
+    "credits": "Credits",
+    "savings": "Savings",
+    "total": "Total"
   },
-  ru: {
-    avaliable: 'Доступные',
-    credits: 'Кредиты',
-    savings: 'Вложения',
-    total: 'Всего'
+  "ru": {
+    "avaliable": "Доступные",
+    "credits": "Кредиты",
+    "savings": "Вложения",
+    "total": "Всего"
   }
 }
 </i18n>

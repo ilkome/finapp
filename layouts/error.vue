@@ -3,16 +3,16 @@ export default defineComponent({
   // eslint-disable-next-line vue/require-prop-types
   props: ['error'],
 
-  fetch () {
+  fetch() {
     if (Object.keys(this.$route.query).length > 0)
       this.$router.replace({ query: null })
   },
 
   computed: {
-    statusCode () {
+    statusCode() {
       return (this.error && this.error.statusCode) || 500
-    }
-  }
+    },
+  },
 })
 </script>
 

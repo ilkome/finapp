@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import localforage from 'localforage'
 
 export default {
-  handleSetFilterCategory ({ rootState, dispatch }, categoryId) {
+  handleSetFilterCategory({ rootState, dispatch }, categoryId) {
     const filterCategoryId = rootState.filter.categoryId
     const filterCategory = rootState.categories.items[categoryId]
 
@@ -20,21 +20,21 @@ export default {
     }
   },
 
-  setFilterCategoryId ({ state, commit }, categoryId) {
+  setFilterCategoryId({ state, commit }, categoryId) {
     state.categoryId === categoryId
       ? commit('setFilterCategoryId', null)
       : commit('setFilterCategoryId', categoryId)
     // TODO: save to composition api
   },
 
-  setFilterWalletId ({ state, commit }, walletId) {
+  setFilterWalletId({ state, commit }, walletId) {
     state.walletId === walletId
       ? commit('setFilterWalletId', null)
       : commit('setFilterWalletId', walletId)
     // TODO: save to composition api
   },
 
-  setPeriod ({ commit, dispatch }, period) {
+  setPeriod({ commit, dispatch }, period) {
     if (period.custom) {
       commit('setPeriod', period.name)
       commit('setDate', dayjs().startOf(period.value).valueOf())
@@ -48,11 +48,11 @@ export default {
     dispatch('ui/saveUiView', null, { root: true })
   },
 
-  setDate ({ commit }, date) {
+  setDate({ commit }, date) {
     commit('setDate', dayjs(date).valueOf())
   },
 
-  setPeriodNext ({ state, commit, rootState, rootGetters }) {
+  setPeriodNext({ state, commit, rootState, rootGetters }) {
     if (rootGetters['trns/hasTrns']) {
       const trns = rootState.trns.items
       const firstCreatedTrnIdFromSelectedTrns = rootGetters['trns/firstCreatedTrnIdFromSelectedTrns']
@@ -65,11 +65,11 @@ export default {
     }
   },
 
-  setPeriodPrev ({ state, commit, rootGetters }) {
+  setPeriodPrev({ state, commit, rootGetters }) {
     if (rootGetters['trns/hasTrns']) {
       const filterDate = state.date
       const nextDate = dayjs(filterDate).add(1, state.period).startOf(state.period).valueOf()
       if (nextDate < dayjs().valueOf()) commit('setPeriodPrev', nextDate)
     }
-  }
+  },
 }

@@ -2,8 +2,8 @@
 export default defineComponent({
   props: {
     trnId: { type: String, required: true },
-    trnItem: { type: Object, required: true }
-  }
+    trnItem: { type: Object, required: true },
+  },
 })
 </script>
 

@@ -10,11 +10,11 @@ const state = () => ({
   mobile: false,
   pc: false,
 
-  defaultBgColor: '#455a64'
+  defaultBgColor: '#455a64',
 })
 
 export default {
   state,
   actions,
-  mutations
+  mutations,
 }

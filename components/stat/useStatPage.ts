@@ -1,4 +1,4 @@
-export default function useStatPage () {
+export default function useStatPage() {
   const { $store } = useNuxtApp()
 
   const activeTabStat = computed(() => $store.state.ui.activeTabStat)
@@ -21,10 +21,10 @@ export default function useStatPage () {
         ...filter,
         isShow: isShowFilter,
         period: filterPeriod,
-        date: filterDate
+        date: filterDate,
       },
 
-      isHasTrns
-    })
+      isHasTrns,
+    }),
   }
 }

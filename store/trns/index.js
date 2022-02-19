@@ -5,17 +5,17 @@ import mutations from './mutations'
 const state = () => ({
   items: {},
   edit: {
-    id: null
+    id: null,
   },
   modal: {
     show: false,
-    id: null
-  }
+    id: null,
+  },
 })
 
 export default {
   state,
   actions,
   getters,
-  mutations
+  mutations,
 }

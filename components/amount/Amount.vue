@@ -18,35 +18,35 @@ export default {
     size: { type: String, default: null },
     type: { type: Number, default: null },
     value: { type: Number, required: true },
-    vertical: { type: String, default: null }
+    vertical: { type: String, default: null },
   },
 
-  setup () {
+  setup() {
     const { getAmountInBaseCurrency } = useAmount()
     return { getAmountInBaseCurrency }
   },
 
   computed: {
-    className () {
+    className() {
       return {
         _altColor: this.isAltColor,
         _expenses: this.isColorize && this.type === 0,
         _incomes: this.isColorize && this.type === 1,
         [`_${this.vertical}`]: this.vertical,
-        [`_size_${this.size}`]: this.size
+        [`_size_${this.size}`]: this.size,
       }
     },
 
-    amountInBaseCurrency () {
+    amountInBaseCurrency() {
       return this.getAmountInBaseCurrency({
         amount: this.value,
-        currency: this.currency
+        currency: this.currency,
       })
-    }
+    },
   },
 
   methods: {
-    getCurrencySymbol (currency) {
+    getCurrencySymbol(currency) {
       switch (currency) {
         case 'USD':
           return '$'
@@ -63,10 +63,10 @@ export default {
       }
     },
 
-    formatAmount (amount) {
+    formatAmount(amount) {
       return baseAmountFormat(amount, ' ')
-    }
-  }
+    },
+  },
 }
 </script>
 

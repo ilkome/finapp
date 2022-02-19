@@ -1,14 +1,14 @@
 import dayjs from 'dayjs'
 
 export default {
-  closeTrnForm ({ commit }) {
+  closeTrnForm({ commit }) {
     commit('closeTrnForm')
     commit('setTrnFormValues', {
-      trnId: null
+      trnId: null,
     })
   },
 
-  openTrnForm ({ rootState, rootGetters, commit }, { action, trnId }) {
+  openTrnForm({ rootState, rootGetters, commit }, { action, trnId }) {
     commit('openTrnForm')
     switch (action) {
       case 'create':
@@ -23,7 +23,7 @@ export default {
             description: null,
             groups: null,
             trnId: null,
-            walletId: lastTrn.walletId
+            walletId: lastTrn.walletId,
           })
         }
         else {
@@ -40,7 +40,7 @@ export default {
             description: null,
             groups: null,
             trnId: null,
-            walletId
+            walletId,
           })
         }
         break
@@ -62,7 +62,7 @@ export default {
               trnId,
               walletFromId: trn.walletFromId,
               walletId: trn.walletId,
-              walletToId: trn.walletToId
+              walletToId: trn.walletToId,
             })
           }
           // Simple
@@ -76,7 +76,7 @@ export default {
               description: trn.description || null,
               groups: trn.groups || null,
               trnId,
-              walletId: trn.walletId
+              walletId: trn.walletId,
             })
           }
         }
@@ -93,10 +93,10 @@ export default {
             description: trn.description || null,
             groups: null,
             trnId: null,
-            walletId: trn.walletId
+            walletId: trn.walletId,
           })
         }
         break
     }
-  }
+  },
 }

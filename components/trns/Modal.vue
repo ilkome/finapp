@@ -3,7 +3,7 @@ import useFilter from '~/modules/filter/useFilter'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { setCategoryFilter, setWalletFilter } = useFilter()
 
@@ -15,33 +15,33 @@ export default {
     return {
       setCategoryFilter,
       setWalletFilter,
-      closed
+      closed,
     }
   },
 
-  data () {
+  data() {
     return {
-      showModalConfirm: false
+      showModalConfirm: false,
     }
   },
 
   computed: {
-    trnId () {
+    trnId() {
       return this.$store.state.trns.modal.id
     },
-    trn () {
+    trn() {
       return this.$store.state.trns.items[this.trnId]
     },
-    category () {
+    category() {
       return this.$store.state.categories.items[this.$store.state.trns.items[this.trnId].categoryId]
     },
-    wallet () {
+    wallet() {
       return this.$store.state.wallets.items[this.$store.state.trns.items[this.trnId].walletId]
-    }
+    },
   },
 
   methods: {
-    handleSetFilterCategory () {
+    handleSetFilterCategory() {
       this.setCategoryFilter(this.$store.state.trns.items[this.trnId].categoryId)
       this.$store.commit('filter/setFilterDateNow')
       this.$store.commit('trns/hideTrnModal')
@@ -50,7 +50,7 @@ export default {
       this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
 
-    handleSetFilterWallet () {
+    handleSetFilterWallet() {
       this.setWalletFilter(this.$store.state.trns.items[this.trnId].walletId)
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
@@ -58,7 +58,7 @@ export default {
       this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
 
-    handleDublicateTrn () {
+    handleDublicateTrn() {
       const trnId = this.trnId
       this.$store.dispatch('trnForm/openTrnForm', { action: 'duplicate', trnId })
       this.$store.commit('trns/hideTrnModal')
@@ -66,7 +66,7 @@ export default {
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
     },
 
-    handleEditClick () {
+    handleEditClick() {
       const trn = this.trn
       const trnId = this.trnId
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
@@ -78,19 +78,19 @@ export default {
       setExpression(trn.amount)
     },
 
-    handleDeleteClick () {
+    handleDeleteClick() {
       this.showModalConfirm = true
     },
 
-    handleDeleteConfirm () {
+    handleDeleteConfirm() {
       const trnId = this.trnId
       setTimeout(() => { this.$store.dispatch('trns/deleteTrn', trnId) }, 100)
 
       this.showModalConfirm = false
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-    }
-  }
+    },
+  },
 }
 </script>
 

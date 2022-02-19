@@ -1,9 +1,9 @@
 import { formatDate } from '~/utils/formatDate'
 
-export default function useFormatTrnFullItem () {
+export default function useFormatTrnFullItem() {
   const { $store } = useNuxtApp()
 
-  function formatTrnFullItem (id) {
+  function formatTrnFullItem(id) {
     try {
       const { trns, wallets, categories } = $store.state
 
@@ -51,7 +51,7 @@ export default function useFormatTrnFullItem () {
 
       // Date
       let dateFormated = formatDate(trn.date, 'full')
-      // @ts-ignore
+      // @ts-expect-error dif types
       dateFormated = `${dateFormated.weekday}, ${dateFormated.day} ${dateFormated.month} ${dateFormated.year}`
 
       return {
@@ -62,7 +62,7 @@ export default function useFormatTrnFullItem () {
         categoryParent,
         walletFrom,
         walletTo,
-        wallet
+        wallet,
       }
     }
     catch (error) {
@@ -71,6 +71,6 @@ export default function useFormatTrnFullItem () {
   }
 
   return {
-    formatTrnFullItem
+    formatTrnFullItem,
   }
 }

@@ -12,10 +12,10 @@ export default defineComponent({
     categoryId: { type: String, default: null },
     disableCategoryFilter: { type: Boolean, default: false },
     isShowExpenses: { type: Boolean, default: true },
-    isShowIncomes: { type: Boolean, default: true }
+    isShowIncomes: { type: Boolean, default: true },
   },
 
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { isShowDataLabels } = useChart()
     const { filterPeriodNameAllReplacedToYear, scrollTop } = useFilter()
@@ -33,7 +33,7 @@ export default defineComponent({
     const chartObj = ref({})
     const chartCallback = (v) => { chartObj.value = v }
 
-    const onClickChart = async (event) => {
+    const onClickChart = async(event) => {
       const chart = chartObj.value
       if (!chart)
         return
@@ -52,7 +52,7 @@ export default defineComponent({
       }, 100)
     }
 
-    watch(() => $store.state.filter.date, async () => {
+    watch(() => $store.state.filter.date, async() => {
       await nextTick()
 
       const chart = chartObj.value
@@ -65,8 +65,8 @@ export default defineComponent({
           plotBands: [{
             color: 'var(--c-item-bg-active)',
             from: chartSeriesIdx + 0.5,
-            to: chartSeriesIdx - 0.5
-          }]
+            to: chartSeriesIdx - 0.5,
+          }],
         })
       }
     }, { immediate: true })
@@ -77,12 +77,12 @@ export default defineComponent({
       isShowDataLabels,
       chartType,
       filterPeriodNameAllReplacedToYear,
-      scrollTop
+      scrollTop,
     }
   },
 
   computed: {
-    chartData () {
+    chartData() {
       const periodName = this.filterPeriodNameAllReplacedToYear
       const chartPeriods = this.$store.state.chart.periods
       const trns = this.$store.state.trns.items
@@ -105,7 +105,7 @@ export default defineComponent({
           date: periodDate,
           periodName,
           categoryId: null,
-          disableCategoryFilter: this.disableCategoryFilter
+          disableCategoryFilter: this.disableCategoryFilter,
         })
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
@@ -119,17 +119,17 @@ export default defineComponent({
         // Incomes
         incomesData.unshift({
           date: periodDate,
-          y: Number(`${periodTotal.incomes.toFixed()}`)
+          y: Number(`${periodTotal.incomes.toFixed()}`),
         })
         // Expenses
         expensesData.unshift({
           date: periodDate,
-          y: Number(`${periodTotal.expenses.toFixed()}`)
+          y: Number(`${periodTotal.expenses.toFixed()}`),
         })
         // Total
         totalData.unshift({
           date: periodDate,
-          y: Number(`${(periodTotal.total).toFixed()}`)
+          y: Number(`${(periodTotal.total).toFixed()}`),
         })
         categories.unshift(name)
       }
@@ -162,8 +162,8 @@ export default defineComponent({
           color: 'var(--c-incomes-1)',
           data: incomesData,
           marker: {
-            lineColor: 'var(--c-incomes-1)'
-          }
+            lineColor: 'var(--c-incomes-1)',
+          },
         }, {
           zIndex: 2,
           visible: periodsTotalExpenses > 0 && this.isShowExpenses,
@@ -172,8 +172,8 @@ export default defineComponent({
           color: 'var(--c-expenses-1)',
           data: expensesData,
           marker: {
-            lineColor: 'var(--c-expenses-1)'
-          }
+            lineColor: 'var(--c-expenses-1)',
+          },
         // Fake data to make good hover on bar chart
         }, {
           zIndex: 1,
@@ -191,17 +191,17 @@ export default defineComponent({
               hover: {
                 fillColor: 'transparent',
                 lineColor: 'transparent',
-                lineWidth: 0
-              }
-            }
+                lineWidth: 0,
+              },
+            },
           },
           dataLabels: {
-            enabled: false
-          }
+            enabled: false,
+          },
         }],
         categories,
         averageIncomes: periodsTotalIncomes / periods,
-        averageExpenses: periodsTotalExpenses / periodsExpenses
+        averageExpenses: periodsTotalExpenses / periodsExpenses,
       }
 
       const tooltip = this.$store.state.ui.pc ? { ...chartOptions.tooltip } : { enabled: false }
@@ -215,7 +215,7 @@ export default defineComponent({
 
         xAxis: {
           ...chartOptions.xAxis,
-          categories: data.categories
+          categories: data.categories,
         },
 
         yAxis: {
@@ -225,19 +225,19 @@ export default defineComponent({
             color: 'var(--c-expenses-opacity)',
             value: data.averageExpenses,
             width: '2',
-            zIndex: 1
+            zIndex: 1,
           }, {
             opacity: 0.5,
             color: 'var(--c-incomes-opacity)',
             value: data.averageIncomes,
             width: '2',
-            zIndex: 1
-          }]
+            zIndex: 1,
+          }],
         },
 
         chart: {
           ...chartOptions.chart,
-          height: '180'
+          height: '180',
         },
 
         plotOptions: {
@@ -246,13 +246,13 @@ export default defineComponent({
             ...chartOptions.plotOptions.series,
             dataLabels: {
               ...chartOptions.plotOptions.series.dataLabels,
-              enabled: this.isShowDataLabels
-            }
-          }
-        }
+              enabled: this.isShowDataLabels,
+            },
+          },
+        },
       }
-    }
-  }
+    },
+  },
 })
 </script>
 

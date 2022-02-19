@@ -9,7 +9,7 @@ export default {
     * @return {Number} return[date].expenses
     * @return {Number} return[date].total
   */
-  statAverage (_state, getters) {
+  statAverage(_state, getters) {
     const statPeriods = getters.statByPeriods
 
     let incomes = 0
@@ -18,7 +18,7 @@ export default {
     const periodsCounter = {
       incomes: 0,
       expenses: 0,
-      total: 0
+      total: 0,
     }
 
     for (const idx in statPeriods) {
@@ -38,7 +38,7 @@ export default {
     return {
       incomes: incomes !== 0 ? Math.ceil(incomes / periodsCounter.incomes) : 0,
       expenses: expenses !== 0 ? Math.ceil(expenses / periodsCounter.expenses) : 0,
-      total: total !== 0 ? Math.ceil(total / periodsCounter.total) : 0
+      total: total !== 0 ? Math.ceil(total / periodsCounter.total) : 0,
     }
   },
 
@@ -51,7 +51,7 @@ export default {
     * @return {Number} return[date].expenses
     * @return {Number} return[date].total
   */
-  statByPeriods (_state, _getters, rootState, rootGetters) {
+  statByPeriods(_state, _getters, rootState, rootGetters) {
     const trns = rootState.trns.items
     const transferCategoryId = rootGetters['categories/transferCategoryId']
     const trnsIds = rootGetters['trns/selectedTrnsIds']
@@ -72,21 +72,21 @@ export default {
       const dateEndOfPeriod = dayjs().subtract(period, periodName).endOf(periodName)
       const ids = trnsIds
         .filter(trnId =>
-          trns[trnId].date >= dateStartOfPeriod &&
-          trns[trnId].date <= dateEndOfPeriod &&
-          trns[trnId].categoryId !== transferCategoryId
+          trns[trnId].date >= dateStartOfPeriod
+          && trns[trnId].date <= dateEndOfPeriod
+          && trns[trnId].categoryId !== transferCategoryId,
         )
 
       stat[dateStartOfPeriod.valueOf()] = {
         date: dateStartOfPeriod.valueOf(),
-        ...rootGetters['trns/getTotalOfTrnsIds'](ids)
+        ...rootGetters['trns/getTotalOfTrnsIds'](ids),
       }
     }
 
     return stat
   },
 
-  isFirstPeriodSelected (state, getters, rootState, rootGetters) {
+  isFirstPeriodSelected(state, getters, rootState, rootGetters) {
     if (rootGetters['trns/hasTrns']) {
       if (dayjs(rootState.filter.date).isSame(dayjs(), rootState.filter.period))
         return true
@@ -96,7 +96,7 @@ export default {
     }
   },
 
-  isLastPeriodSelected (state, getters, rootState, rootGetters) {
+  isLastPeriodSelected(state, getters, rootState, rootGetters) {
     if (rootGetters['trns/hasTrns']) {
       const trns = rootState.trns.items
       const firstCreatedTrnIdFromSelectedTrns = rootGetters['trns/firstCreatedTrnIdFromSelectedTrns']
@@ -150,7 +150,7 @@ export default {
     * { categiryId: [...trnId, trnId] }
   */
   getCategoriesIdsWithTrnsIds: (state, getters, rootState, rootGetters) => ({
-    trnsIds
+    trnsIds,
   }) => {
     const filterCategoryId = rootState.filter.categoryId
     const trns = rootState.trns.items
@@ -214,7 +214,7 @@ export default {
     }
 
     // sort categories amount
-    function sortCategoriesByTotal (categories, typeName) {
+    function sortCategoriesByTotal(categories, typeName) {
       const categoriesIds = Object.keys(categories)
       let sortedCategoriesIds = []
 
@@ -234,7 +234,7 @@ export default {
     const expensesCategoriesIds = sortCategoriesByTotal(statExpenses, 'expenses')
 
     // get first item in sorted catgories
-    function getBiggestAmount (categoriesTotal, categoriesIds, typeName) {
+    function getBiggestAmount(categoriesTotal, categoriesIds, typeName) {
       const biggestAmount = categoriesIds[0]
       return categoriesTotal[biggestAmount] && Math.abs(categoriesTotal[biggestAmount][typeName])
     }
@@ -249,21 +249,21 @@ export default {
       expenses: {
         biggest: expensesBiggest,
         categoriesIds: expensesCategoriesIds,
-        total: totalAllTrns.expenses
+        total: totalAllTrns.expenses,
       },
       incomes: {
         biggest: incomesBiggest,
         categoriesIds: incomesCategoriesIds,
-        total: totalAllTrns.incomes
-      }
+        total: totalAllTrns.incomes,
+      },
     }
 
     return stat
   },
 
-  statCurrentPeriod (_state, getters, rootState) {
+  statCurrentPeriod(_state, getters, rootState) {
     const date = rootState.filter.date
     const stat = getters.getStat({ date })
     return stat
-  }
+  },
 }

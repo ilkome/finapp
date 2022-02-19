@@ -3,7 +3,7 @@ import { removeData } from '~/services/firebaseHelpers'
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { setCategoryFilter } = useFilter()
 
@@ -14,47 +14,47 @@ export default {
 
     return {
       setCategoryFilter,
-      closed
+      closed,
     }
   },
 
-  data () {
+  data() {
     return {
-      showModalConfirm: false
+      showModalConfirm: false,
     }
   },
 
   computed: {
-    categoryId () {
+    categoryId() {
       return this.$store.state.categories.modal.id
     },
-    category () {
+    category() {
       return this.$store.state.categories.items[this.categoryId]
     },
 
-    deleteInfo () {
+    deleteInfo() {
       if (this.trnsIds.length > 0)
         return `It's also will delete ${this.trnsIds.length} trns in this category`
 
       return null
     },
 
-    childCategoriesIds () {
+    childCategoriesIds() {
       return this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
     },
 
-    trnsIds () {
+    trnsIds() {
       const trns = this.$store.state.trns.items
       const trnsIds = []
       for (const trnId in trns)
         if (trns[trnId].categoryId === this.categoryId) trnsIds.push(trnId)
 
       return trnsIds
-    }
+    },
   },
 
   methods: {
-    handleSetFilterCategory () {
+    handleSetFilterCategory() {
       this.setCategoryFilter(this.categoryId)
       this.$store.commit('filter/setFilterDateNow')
 
@@ -64,7 +64,7 @@ export default {
       this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
 
-    handleEditClick () {
+    handleEditClick() {
       const categoryId = this.categoryId
       this.$store.commit('categories/hideCategoryModal')
       this.$store.commit('categories/setCategoryModalId', null)
@@ -72,7 +72,7 @@ export default {
       this.$store.dispatch('ui/setActiveTab', 'createCategory')
     },
 
-    handleDeleteClick () {
+    handleDeleteClick() {
       const categories = this.$store.state.categories.items
       const id = this.categoryId
       let isChildCategories = false
@@ -81,7 +81,7 @@ export default {
         if (categories[categoryId].parentId === id) {
           this.$notify({
             title: '👆',
-            text: 'You can not delete category with child categories'
+            text: 'You can not delete category with child categories',
           })
           isChildCategories = true
           break
@@ -91,7 +91,7 @@ export default {
       if (!isChildCategories) this.showModalConfirm = true
     },
 
-    handleDeleteConfirm () {
+    handleDeleteConfirm() {
       const trnsIds = this.trnsIds
       const uid = this.$store.state.user.user.uid
       const id = this.categoryId
@@ -105,12 +105,12 @@ export default {
         this.$store.commit('categories/setCategoryModalId', null)
       }
 
-      setTimeout(async () => {
+      setTimeout(async() => {
         await this.$store.dispatch('trns/deleteTrnsByIds', trnsIds)
         removeData(`users/${uid}/categories/${id}`)
       }, 200)
-    }
-  }
+    },
+  },
 }
 </script>
 

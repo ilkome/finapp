@@ -8,34 +8,34 @@ export default {
     categoryId: { type: String, required: true },
     currency: { type: String, required: true },
     total: { type: Number, required: true },
-    type: { type: Number, required: true }
+    type: { type: Number, required: true },
   },
 
-  setup () {
+  setup() {
     const { setCategoryFilter } = useFilter()
 
     return {
-      setCategoryFilter
+      setCategoryFilter,
     }
   },
 
-  data () {
+  data() {
     return {
-      isShowInside: false
+      isShowInside: false,
     }
   },
 
   computed: {
-    childCategoriesIds () {
+    childCategoriesIds() {
       return this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
     },
 
-    showChildCategories () {
+    showChildCategories() {
       const childCatsIdsWithTrns = []
       for (const childCategoryId of this.childCategoriesIds) {
         const trnsIds = this.$store.getters['trns/getTrnsIdsByFilter']({
           categoryId: childCategoryId,
-          type: this.type
+          type: this.type,
         })
         if (trnsIds.length > 0)
           childCatsIdsWithTrns.push(childCategoryId)
@@ -47,14 +47,14 @@ export default {
       return false
     },
 
-    styles () {
+    styles() {
       return {
         width: `${Math.abs(this.total) / Math.abs(this.biggest) * 100}%`,
-        background: this.category.color
+        background: this.category.color,
       }
     },
 
-    getCatgoryName () {
+    getCatgoryName() {
       const cats = []
       const categoriesIds = this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
 
@@ -73,14 +73,14 @@ export default {
       }
 
       return cats
-    }
+    },
   },
 
   methods: {
-    toogleShowInside () {
+    toogleShowInside() {
       this.isShowInside = !this.isShowInside
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -1,10 +1,10 @@
 export default {
   common: {
-    date: 'Date'
+    date: 'Date',
   },
 
   analytics: {
-    title: 'Analytics'
+    title: 'Analytics',
   },
 
   appName: 'Finapp',
@@ -12,12 +12,12 @@ export default {
   for: 'for',
 
   locale: {
-    toogle: 'Toogle locale'
+    toogle: 'Toogle locale',
   },
 
   theme: {
     title: 'Theme',
-    change: 'Change theme'
+    change: 'Change theme',
   },
 
   backTo: 'Back to ',
@@ -38,14 +38,14 @@ export default {
     lastUsedCats: 'Show last used categories',
     description: {
       title: 'Description',
-      placeholder: 'Write description...'
+      placeholder: 'Write description...',
     },
     transfer: {
       from: 'From',
       fromLong: 'From wallet',
       to: 'To',
-      toLong: 'To wallet'
-    }
+      toLong: 'To wallet',
+    },
   },
 
   app: {
@@ -55,17 +55,17 @@ export default {
     lang: {
       select: 'Choose language',
       en: 'English',
-      ru: 'Русский'
+      ru: 'Русский',
     },
     theme: {
       select: 'Choose style',
       dark: 'Dark',
-      light: 'Light'
+      light: 'Light',
     },
     madeBy: {
       text: 'Made with',
-      name: 'by Ilya Komichev'
-    }
+      name: 'by Ilya Komichev',
+    },
   },
 
   userLogout: 'Logout',
@@ -87,30 +87,30 @@ export default {
     off: 'Off',
     edit: 'Edit',
     delete: 'Delete',
-    filter: 'Filter'
+    filter: 'Filter',
   },
 
   filter: {
-    clear: 'Clear filter'
+    clear: 'Clear filter',
   },
 
   welcome: {
     firstRun: {
       text: 'Start with create base configuration of application',
-      btn: 'Start'
+      btn: 'Start',
     },
     create: {
       text: 'Start creating your own wallets, categories',
-      btn: 'Let\'s go'
+      btn: 'Let\'s go',
     },
     createFirstWallet: {
-      text: "Let's start with create first Wallet",
-      btn: 'Create wallet'
+      text: 'Let\'s start with create first Wallet',
+      btn: 'Create wallet',
     },
     createFirstCategory: {
-      text: "Great! Now Let's create first category",
-      btn: 'Create category'
-    }
+      text: 'Great! Now Let\'s create first category',
+      btn: 'Create category',
+    },
   },
 
   settings: {
@@ -121,7 +121,7 @@ export default {
     customize: 'Сustomize',
     app: 'Application',
     caution: 'With caution',
-    deleteButton: 'Delete my data'
+    deleteButton: 'Delete my data',
   },
 
   wallets: {
@@ -138,29 +138,29 @@ export default {
         label: 'Wallet name',
         placeholder: 'Write wallet name...',
         error: 'Write wallet name',
-        exist: 'Wallet with same name is exist'
+        exist: 'Wallet with same name is exist',
       },
       color: {
         label: 'Color',
         placeholder: 'Select color',
         error: 'Select color',
-        custom: 'Custom color'
+        custom: 'Custom color',
       },
       currency: {
         label: 'Currency',
         placeholder: 'Select currency',
-        error: 'Select currency'
+        error: 'Select currency',
       },
       total: {
-        placeholder: 'Сash withdrawal'
+        placeholder: 'Сash withdrawal',
       },
-      save: 'Save'
-    }
+      save: 'Save',
+    },
   },
 
   currency: {
     title: 'Currency',
-    selectBaseTitle: 'Select base currency'
+    selectBaseTitle: 'Select base currency',
   },
 
   categories: {
@@ -178,28 +178,28 @@ export default {
         label: 'Category name',
         placeholder: 'Write category name...',
         error: 'Write category name',
-        exist: 'Category with same name is exist'
+        exist: 'Category with same name is exist',
       },
       parent: {
         no: 'No parent',
         label: 'Parent category',
-        placeholder: 'Select parent category'
+        placeholder: 'Select parent category',
       },
       color: {
         label: 'Colors',
-        custom: 'Custom color'
+        custom: 'Custom color',
       },
       icons: {
-        label: 'Icons'
+        label: 'Icons',
       },
       data: {
-        label: 'Data'
+        label: 'Data',
       },
       lastUsed: 'Show in last used categories',
       quickSelector: 'Favorite category',
       childColor: 'Apply color to all child categories',
-      save: 'Save'
-    }
+      save: 'Save',
+    },
   },
 
   stat: {
@@ -216,8 +216,8 @@ export default {
       showCategorisChart: 'Show categories chart',
       showCategorisList: 'Show categories list',
       showcatsChartPie: 'Show categories pie chart',
-      showPeriodsChart: 'Show periods chart'
-    }
+      showPeriodsChart: 'Show periods chart',
+    },
   },
 
   chart: {
@@ -234,8 +234,8 @@ export default {
       addGroupButton: 'Add group',
       addPeriodButton: 'Add period',
       removeGroupButton: 'Remove group',
-      removePeriodButton: 'Remove period'
-    }
+      removePeriodButton: 'Remove period',
+    },
   },
 
   trns: {
@@ -244,12 +244,12 @@ export default {
     history: 'History',
     more: 'Show more',
     filter: {
-      showTrnsWithDesc: 'Only with description'
-    }
+      showTrnsWithDesc: 'Only with description',
+    },
   },
 
   create: {
-    title: 'Create'
+    title: 'Create',
   },
 
   money: {
@@ -260,12 +260,12 @@ export default {
     average: {
       base: 'Average',
       incomes: 'Average incomes',
-      expenses: 'Average expenses'
+      expenses: 'Average expenses',
     },
     averageTotal: 'Average total',
     also: 'Also',
     wallets: 'Wallets',
-    all: 'Total'
+    all: 'Total',
   },
 
   dates: {
@@ -276,42 +276,42 @@ export default {
       current: 'Today',
       today: 'Today',
       yesterday: 'Yesterday',
-      simple: 'Day'
+      simple: 'Day',
     },
     week: {
       current: 'This week',
       last: 'Last week',
-      simple: 'Week'
+      simple: 'Week',
     },
     month: {
       current: 'This month',
       last: 'Last month',
-      simple: 'Month'
+      simple: 'Month',
     },
     year: {
       current: 'This year',
-      simple: 'Year'
+      simple: 'Year',
     },
     all: {
-      simple: 'All trns'
-    }
+      simple: 'All trns',
+    },
   },
 
   alerts: {
-    willDeleteEverything: 'This will delete all your wallets, categories and trns.'
+    willDeleteEverything: 'This will delete all your wallets, categories and trns.',
   },
 
   buttons: {
     nextTitle: 'Next',
     prevTitle: 'Prev',
-    nextStep: 'Next step'
+    nextStep: 'Next step',
   },
 
   users: {
-    title: 'Users'
+    title: 'Users',
   },
 
   colors: 'Colors',
   palette: 'Palette',
-  popularColors: 'Popular colors'
+  popularColors: 'Popular colors',
 }

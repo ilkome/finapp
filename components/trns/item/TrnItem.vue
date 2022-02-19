@@ -10,30 +10,30 @@ export default {
     trn: { type: Object, required: true },
     trnId: { type: String, required: true },
     ui: { type: String, default: 'history' },
-    wallet: { type: Object, required: true }
+    wallet: { type: Object, required: true },
   },
 
   computed: {
-    className () {
+    className() {
       return {
         _active: this.isActive,
         _detailed: this.ui === 'detailed',
         _history: this.ui === 'history' || (this.ui === 'stat' && this.showCategory),
-        _stat: this.ui === 'stat'
+        _stat: this.ui === 'stat',
       }
     },
-    formatedDate () {
+    formatedDate() {
       const date = formatDate(this.trn.date, 'full')
       return `${date.weekday}, ${date.day} ${date.month} ${date.year}`
     },
-    formatedDateDay () {
+    formatedDateDay() {
       return formatDate(this.trn.date, 'trnItem')
     },
-    formatedDateDay2 () {
+    formatedDateDay2() {
       return formatDate(this.trn.date, 'trnItem')
     },
 
-    filterTrnsDate () {
+    filterTrnsDate() {
       const date = this.trn.date
       const walletId = this.trn.walletId
 
@@ -43,11 +43,11 @@ export default {
 
       const total = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds, true)
       return total
-    }
+    },
   },
 
   methods: {
-    handleClick () {
+    handleClick() {
       if (!this.$store.state.trns.modal.show) {
         this.$store.commit('categories/hideCategoryModal')
         this.$store.commit('trns/showTrnModal')
@@ -55,15 +55,15 @@ export default {
       }
     },
 
-    setTrnEdit () {
+    setTrnEdit() {
       const trnId = this.trnId
       const { setExpression } = useCalculator()
       setExpression(this.trn.amount)
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
       this.$emit('onClickEdit', this.trnId)
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -5,10 +5,10 @@ import useFilter from '~/modules/filter/useFilter'
 
 export default defineComponent({
   props: {
-    trnId: { type: String, required: true }
+    trnId: { type: String, required: true },
   },
 
-  setup ({ trnId }) {
+  setup({ trnId }) {
     const { $store } = useNuxtApp()
     const { setExpression } = useCalculator()
     const { setCategoryFilter } = useFilter()
@@ -39,14 +39,14 @@ export default defineComponent({
         $store.commit('trns/setTrnModalId', null)
         $store.commit('stat/setCategoryModal', { id: null, type: null })
         $store.dispatch('ui/setActiveTabStat', 'details')
-      }
+      },
     }
 
     return {
       actions,
-      trnItem
+      trnItem,
     }
-  }
+  },
 })
 </script>
 

@@ -5,24 +5,24 @@ export default defineComponent({
     showBase: { type: Boolean, default: true },
     vertical: { type: String, default: 'left' },
     size: { type: String, default: null },
-    activeItemId: { type: String, default: null }
+    activeItemId: { type: String, default: null },
   },
 
   computed: {
-    wallet () {
+    wallet() {
       return {
         ...this.$store.state.wallets.items[this.id],
-        total: this.$store.getters['wallets/walletsTotal'][this.id].base
+        total: this.$store.getters['wallets/walletsTotal'][this.id].base,
       }
-    }
+    },
   },
 
   methods: {
-    handleClick () {
+    handleClick() {
       if (this.$listeners.onClick)
         this.$listeners.onClick(this.id)
-    }
-  }
+    },
+  },
 })
 </script>
 

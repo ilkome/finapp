@@ -1,5 +1,5 @@
 export default {
-  hasCategories (state) {
+  hasCategories(state) {
     if (state.items) {
       // More than 1 because categories has 1 static category "Transfer"
       if (Object.keys(state.items).length > 1)
@@ -8,12 +8,12 @@ export default {
     return false
   },
 
-  categoriesIds (state, getters) {
+  categoriesIds(state, getters) {
     if (!getters.hasCategories) return []
     return Object.keys(state.items)
   },
 
-  categoriesRootIds (state, getters) {
+  categoriesRootIds(state, getters) {
     if (!getters.hasCategories) return []
 
     return Object.keys(state.items)
@@ -25,7 +25,7 @@ export default {
       })
   },
 
-  categoriesForBeParent (state, getters, rootState) {
+  categoriesForBeParent(state, getters, rootState) {
     const categories = state.items
     const categoriesRootIds = getters.categoriesRootIds
     const trns = rootState.trns.items
@@ -57,7 +57,7 @@ export default {
     return category?.childIds || []
   },
 
-  lastUsedCategoriesIdsByDate (state, getters, rootState, rootGetters) {
+  lastUsedCategoriesIdsByDate(state, getters, rootState, rootGetters) {
     if (!getters.hasCategories) return []
 
     const trns = rootState.trns.items
@@ -89,7 +89,7 @@ export default {
     }
   },
 
-  quickSelectorCategoriesIds (state, getters) {
+  quickSelectorCategoriesIds(state, getters) {
     if (!getters.hasCategories) return []
 
     return Object.keys(state.items)
@@ -101,10 +101,10 @@ export default {
       })
   },
 
-  transferCategoryId (state, getters) {
+  transferCategoryId(state, getters) {
     if (!getters.hasCategories) return null
 
     return Object.keys(state.items)
       .find(id => state.items[id].name === 'Перевод' || state.items[id].name === 'Transfer') || state.items.transfer || false
-  }
+  },
 }

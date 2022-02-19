@@ -4,28 +4,28 @@ export default defineComponent({
     categoryId: { type: String, default: null },
     limit: { type: Number, default: 0 },
     size: { type: Number, required: false, default: 10 },
-    slider: { type: Object, required: true }
+    slider: { type: Object, required: true },
   },
 
-  data () {
+  data() {
     return {
       pageNumber: 1,
       sortByEditDate: false,
-      filterBy: 'wallet'
+      filterBy: 'wallet',
     }
   },
 
   computed: {
-    isShowedAllTrns () {
+    isShowedAllTrns() {
       return this.paginatedTrnsIds.length === this.trnsIds.length
     },
 
-    paginatedTrnsIds () {
+    paginatedTrnsIds() {
       const end = this.pageNumber * this.size
       return this.trnsIds.slice(0, end)
     },
 
-    filterTrns () {
+    filterTrns() {
       const filter = {}
       if (this.filterBy === 'wallet') {
         filter.walletId = this.$store.state.trnForm.values.walletId
@@ -37,10 +37,10 @@ export default defineComponent({
       return filter
     },
 
-    trnsIds () {
+    trnsIds() {
       const trns = this.$store.state.trns.items
       let trnsIds = this.$store.getters['trns/getTrnsIds']({
-        ...this.filterTrns
+        ...this.filterTrns,
       })
 
       // from category
@@ -52,7 +52,7 @@ export default defineComponent({
       return trnsIds
     },
 
-    groupedTrns () {
+    groupedTrns() {
       const trns = this.$store.state.trns.items
       const trnsIds = this.paginatedTrnsIds
       const trnsList = {}
@@ -70,11 +70,11 @@ export default defineComponent({
           trnsList[dayDate].push(trnId)
       }
       return trnsList
-    }
+    },
   },
 
   methods: {
-    showMoreTrns () {
+    showMoreTrns() {
       this.pageNumber = this.pageNumber + 1
       setTimeout(() => {
         this.slider.update()
@@ -82,7 +82,7 @@ export default defineComponent({
       }, 100)
     },
 
-    changeFilter (filterBy) {
+    changeFilter(filterBy) {
       const trnForm = document.querySelector('.trnForm')
       const trnsListScroll = trnForm.querySelector('.trnsListScroll')
       trnsListScroll.scrollTop = 0
@@ -92,8 +92,8 @@ export default defineComponent({
       setTimeout(() => {
         this.slider.slideTo(0, 0)
       }, 100)
-    }
-  }
+    },
+  },
 })
 </script>
 

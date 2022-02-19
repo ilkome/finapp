@@ -3,11 +3,11 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '~/services/firebaseHelpers'
 
 export default {
-  initApp ({ rootGetters, commit, dispatch }) {
+  initApp({ rootGetters, commit, dispatch }) {
     if (this.$router.currentRoute.name === 'login')
       commit('setAppStatus', 'loading')
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, async(user) => {
       if (this.$router.currentRoute.name === 'login')
         commit('setAppStatus', 'loading')
 
@@ -41,7 +41,7 @@ export default {
     })
   },
 
-  async initAppFromCache ({ commit, dispatch }, resolve) {
+  async initAppFromCache({ commit, dispatch }, resolve) {
     dispatch('lang/initLocalLang', null, { root: true })
     dispatch('ui/initUi', null, { root: true })
     dispatch('chart/initChart', null, { root: true })
@@ -53,7 +53,7 @@ export default {
       localforage.getItem('finapp.categories'),
       localforage.getItem('finapp.wallets'),
       localforage.getItem('finapp.trns'),
-      localforage.getItem('finapp.filter.period')
+      localforage.getItem('finapp.filter.period'),
     ])
 
     if (ativeTab) dispatch('ui/setActiveTab', ativeTab, { root: true })
@@ -77,7 +77,7 @@ export default {
     commit('setAppStatus', 'ready')
   },
 
-  async clearUserData ({ commit, dispatch }) {
+  async clearUserData({ commit, dispatch }) {
     commit('setAppStatus', 'loading')
     dispatch('ui/setActiveTab', 'stat', { root: true })
     await dispatch('user/setUser', null, { root: true })
@@ -87,5 +87,5 @@ export default {
     setTimeout(() => {
       commit('setAppStatus', 'ready')
     }, 100)
-  }
+  },
 }

@@ -6,23 +6,23 @@ export default {
   name: 'StatChartPie',
 
   components: {
-    Chart
+    Chart,
   },
 
   props: {
     chartType: {
       type: String,
-      default: 'pie'
+      default: 'pie',
     },
 
     amountType: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
 
   computed: {
-    chartData () {
+    chartData() {
       const statCurrentPeriodCategories = this.$store.getters['stat/statCurrentPeriod'].categories
       const statCurrentPeriod = this.$store.getters['stat/statCurrentPeriod']
       const data = []
@@ -35,14 +35,14 @@ export default {
             categoryId,
             color: category.color,
             name: category.name,
-            y: categoryAmountValues[this.amountType]
+            y: categoryAmountValues[this.amountType],
           })
         }
       }
 
       const series = [{
         data,
-        type: this.chartType
+        type: this.chartType,
       }]
 
       return {
@@ -55,12 +55,12 @@ export default {
           height: '280',
 
           events: {
-            click (e) {
+            click(e) {
               console.log(e)
               // const value = this.series[0].searchPoint(e, true) || this.series[1].searchPoint(e, true)
               // vm.$store.dispatch('filter/setDate', parseInt(value.date))
-            }
-          }
+            },
+          },
         },
 
         plotOptions: {
@@ -70,17 +70,17 @@ export default {
             cursor: 'pointer',
             point: {
               events: {
-                click (e) {
+                click(e) {
                   // console.log(e)
                   // vm.$store.dispatch('filter/setDate', parseInt(this.date))
-                }
-              }
-            }
-          }
-        }
+                },
+              },
+            },
+          },
+        },
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

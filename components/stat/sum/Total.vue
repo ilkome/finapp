@@ -1,15 +1,15 @@
 <script>
 export default defineComponent({
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const statCurrentPeriod = computed(() => $store.getters['stat/statCurrentPeriod'])
     const statAverage = computed(() => $store.getters['stat/statAverage'])
 
     return {
       statCurrentPeriod,
-      statAverage
+      statAverage,
     }
-  }
+  },
 })
 </script>
 

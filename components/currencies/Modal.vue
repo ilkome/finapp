@@ -1,11 +1,11 @@
 <script>
 export default {
   methods: {
-    handleCurrencySelect (currency) {
+    handleCurrencySelect(currency) {
       this.$store.commit('currencies/hideBaseCurrenciesModal')
       this.$store.dispatch('currencies/setBaseCurrency', currency)
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -1,20 +1,20 @@
 import localforage from 'localforage'
-import { saveData, getDataAndWatch, updateData, unsubcribeData } from '~/services/firebaseHelpers'
+import { getDataAndWatch, saveData, unsubcribeData, updateData } from '~/services/firebaseHelpers'
 
 export default {
-  initWallets ({ dispatch, rootState }) {
+  initWallets({ dispatch, rootState }) {
     const uid = rootState.user.user.uid
     getDataAndWatch(`users/${uid}/accounts`, (items) => {
       dispatch('setWallets', Object.freeze(items || {}))
     })
   },
 
-  setWallets ({ commit }, items) {
+  setWallets({ commit }, items) {
     commit('setWallets', items)
     localforage.setItem('finapp.wallets', items)
   },
 
-  addWallet ({ dispatch, rootState, getters }, { id, values }) {
+  addWallet({ dispatch, rootState, getters }, { id, values }) {
     const uid = rootState.user.user.uid
 
     const formatedValues = {
@@ -23,7 +23,7 @@ export default {
       currency: values.currency,
       isCredit: values.isCredit,
       name: values.name,
-      order: parseInt(values.order) || 1
+      order: parseInt(values.order) || 1,
     }
 
     // set default currency based on first created wallet
@@ -39,7 +39,7 @@ export default {
     * Update only order field for each wallet
     *
   */
-  async saveWalletsOrder ({ rootGetters }, wallets) {
+  async saveWalletsOrder({ rootGetters }, wallets) {
     const updates = {}
     const result = {}
 
@@ -53,8 +53,8 @@ export default {
     return result
   },
 
-  unsubcribeWallets ({ rootGetters }) {
+  unsubcribeWallets({ rootGetters }) {
     const uid = rootGetters['user/userUid']
     unsubcribeData(`users/${uid}/accounts`)
-  }
+  },
 }

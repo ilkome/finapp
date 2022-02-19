@@ -11,10 +11,10 @@ export default defineComponent({
     limit: { type: Number, default: 0 },
     size: { type: Number, required: false, default: 30 },
     ui: { type: String, default: 'history' },
-    classNames: { type: String, default: '' }
+    classNames: { type: String, default: '' },
   },
 
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { setExpression } = useCalculator()
     const { setCategoryFilter } = useFilter()
@@ -43,21 +43,21 @@ export default defineComponent({
         $store.commit('trns/setTrnModalId', null)
         $store.commit('stat/setCategoryModal', { id: null, type: null })
         $store.dispatch('ui/setActiveTabStat', 'details')
-      }
+      },
     })
 
     return { actions }
   },
 
-  data () {
+  data() {
     return {
       pageNumber: 1,
-      isShowTrnsWithDesc: false
+      isShowTrnsWithDesc: false,
     }
   },
 
   computed: {
-    trnsIds () {
+    trnsIds() {
       const trns = this.$store.state.trns.items
       let trnsIds = this.$store.getters['trns/selectedTrnsIdsWithDate']
 
@@ -72,16 +72,16 @@ export default defineComponent({
       return trnsIds
     },
 
-    isShowedAllTrns () {
+    isShowedAllTrns() {
       return this.paginatedTrnsIds.length === this.trnsIdsWithLimit.length
     },
 
-    isTrnsWithDescription () {
+    isTrnsWithDescription() {
       const trns = this.$store.state.trns.items
       return this.trnsIds.filter(id => trns[id].description).length > 0
     },
 
-    trnsIdsWithLimit () {
+    trnsIdsWithLimit() {
       const trns = this.$store.state.trns.items
 
       if (this.isShowFilter && this.isShowTrnsWithDesc && this.isTrnsWithDescription)
@@ -93,12 +93,12 @@ export default defineComponent({
       return this.trnsIds
     },
 
-    paginatedTrnsIds () {
+    paginatedTrnsIds() {
       const end = this.pageNumber * this.size
       return this.trnsIdsWithLimit.slice(0, end)
     },
 
-    groupedTrns () {
+    groupedTrns() {
       const trns = this.$store.state.trns.items
       const trnsList = {}
 
@@ -111,18 +111,18 @@ export default defineComponent({
       }
 
       return trnsList
-    }
+    },
   },
 
   methods: {
-    showMoreTrns () {
+    showMoreTrns() {
       this.pageNumber = this.pageNumber + 1
     },
 
-    showTrnsWithDesc () {
+    showTrnsWithDesc() {
       this.isShowTrnsWithDesc = !this.isShowTrnsWithDesc
-    }
-  }
+    },
+  },
 })
 </script>
 

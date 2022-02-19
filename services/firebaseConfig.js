@@ -5,5 +5,5 @@ export const config = {
   projectId: 'finapp-17474',
   storageBucket: 'finapp-17474.appspot.com',
   messagingSenderId: '1057184379213',
-  appId: '1:1057184379213:web:8c728d0b7099f194'
+  appId: '1:1057184379213:web:8c728d0b7099f194',
 }

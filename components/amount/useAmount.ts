@@ -1,6 +1,6 @@
 import currency from 'currency.js'
 
-function getCurrencySymbol (currency) {
+function getCurrencySymbol(currency) {
   switch (currency) {
     case 'USD':
       return '$'
@@ -22,13 +22,13 @@ const formatAmount = (value, separator = ' ') =>
     symbol: '',
     precision: 0,
     pattern: '#',
-    separator
+    separator,
   }).format()
 
-export default function useAmount () {
+export default function useAmount() {
   const { $store } = useNuxtApp()
 
-  function getAmountInBaseCurrency ({ amount, currency, noFormat }) {
+  function getAmountInBaseCurrency({ amount, currency, noFormat }) {
     const fixed = $store.state.currencies.base === 'RUB' ? 0 : 2
     const baseValue = (amount / $store.state.currencies.rates[currency]).toFixed(fixed)
     if (!baseValue) return
@@ -43,6 +43,6 @@ export default function useAmount () {
 
     formatAmount,
     getCurrencySymbol,
-    getAmountInBaseCurrency
+    getAmountInBaseCurrency,
   }
 }

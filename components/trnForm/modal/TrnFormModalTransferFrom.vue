@@ -1,25 +1,25 @@
 <script>
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
 
-    function onClickWallet (walletId, close) {
+    function onClickWallet(walletId, close) {
       $store.commit('trnForm/setTrnFormValues', {
         walletFromId: walletId,
-        walletId
+        walletId,
       })
       close()
     }
 
-    function afterClose () {
+    function afterClose() {
       $store.commit('trnForm/closeTrnFormModal', 'transferFrom')
     }
 
     return {
       onClickWallet,
-      afterClose
+      afterClose,
     }
-  }
+  },
 }
 </script>
 

@@ -3,7 +3,7 @@ import generateId from '~/utils/id'
 import colors from '~/assets/js/colors'
 
 export default {
-  data () {
+  data() {
     return {
       showColors: false,
       showCurrencies: false,
@@ -13,52 +13,52 @@ export default {
         currency: 'RUB',
         isCredit: false,
         name: null,
-        order: Object.keys(this.$store.state.wallets.items).length || 1
-      }
+        order: Object.keys(this.$store.state.wallets.items).length || 1,
+      },
     }
   },
 
   computed: {
-    walletId () {
+    walletId() {
       return this.$store.state.wallets.editId
-    }
+    },
   },
 
   watch: {
     walletId: {
-      handler (walletId) {
+      handler(walletId) {
         if (walletId) {
           this.wallet = {
             ...this.wallet,
-            ...this.$store.state.wallets.items[this.walletId]
+            ...this.$store.state.wallets.items[this.walletId],
           }
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
 
-  created () {
+  created() {
     this.colors = colors
     if (!this.$store.state.wallets.editId)
       this.wallet.color = colors[Math.floor(Math.random() * colors.length)]
   },
 
-  beforeDestroy () {
+  beforeUnmount() {
     this.$store.commit('wallets/setWalletEditId', null)
   },
 
   methods: {
-    handleColorSelect (color) {
+    handleColorSelect(color) {
       this.wallet.color = color
       this.showColors = false
     },
-    handleCurrencySelect (currency) {
+    handleCurrencySelect(currency) {
       this.wallet.currency = currency
       this.showCurrencies = false
     },
 
-    handleSubmit () {
+    handleSubmit() {
       if (this.validateForm()) {
         const id = this.walletId || generateId()
 
@@ -68,7 +68,7 @@ export default {
           currency: this.wallet.currency,
           isCredit: this.wallet.isCredit,
           name: this.wallet.name,
-          order: this.wallet.order
+          order: this.wallet.order,
         }
 
         this.$store.dispatch('wallets/addWallet', { id, values: walletsValues })
@@ -78,13 +78,13 @@ export default {
       }
     },
 
-    validateForm () {
+    validateForm() {
       const wallets = this.$store.state.wallets.items
       // name
       if (!this.wallet.name) {
         this.$notify({
           title: '😮',
-          text: this.$t('wallets.form.name.error')
+          text: this.$t('wallets.form.name.error'),
         })
         return false
       }
@@ -93,7 +93,7 @@ export default {
       if (!this.wallet.currency) {
         this.$notify({
           title: '😮',
-          text: this.$t('wallets.form.currency.error')
+          text: this.$t('wallets.form.currency.error'),
         })
         return false
       }
@@ -104,7 +104,7 @@ export default {
             if (this.walletId !== walletId) {
               this.$notify({
                 title: '😮',
-                text: this.$t('wallets.form.name.exist')
+                text: this.$t('wallets.form.name.exist'),
               })
               return false
             }
@@ -112,7 +112,7 @@ export default {
           else {
             this.$notify({
               title: '😮',
-              text: this.$t('wallets.form.name.exist')
+              text: this.$t('wallets.form.name.exist'),
             })
             return false
           }
@@ -120,8 +120,8 @@ export default {
       }
 
       return true
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -319,11 +319,11 @@ LayoutBaseWrap
 
 <i18n lang="json5">
 {
-  en: {
-    isCredit: 'Credit account'
+  "en": {
+    "isCredit": "Credit account"
   },
-  ru: {
-    isCredit: 'Кредитный счёт'
+  "ru": {
+    "isCredit": "Кредитный счёт"
   }
 }
 </i18n>

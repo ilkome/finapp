@@ -2,13 +2,13 @@
 import useStatPage from '~/components/stat/useStatPage'
 
 export default defineComponent({
-  setup () {
+  setup() {
     const { statPage } = useStatPage()
 
     return {
-      statPage
+      statPage,
     }
-  }
+  },
 })
 </script>
 

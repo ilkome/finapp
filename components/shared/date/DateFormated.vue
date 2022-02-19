@@ -5,17 +5,17 @@ export default {
   props: {
     date: {
       type: Number,
-      required: true
+      required: true,
     },
 
     periodName: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
-    formatedDate () {
+    formatedDate() {
       const today = this.$day()
       const filterDate = this.$day(this.date)
       const filterPeriod = this.periodName
@@ -23,12 +23,12 @@ export default {
 
       switch (filterPeriod) {
         case 'day':
-          if (today.isSame(filterDate, 'year')) {
+          if (today.isSame(filterDate, 'year'))
             format = 'DD MMMM'
-          }
-          else {
+
+          else
             format = 'DD MMMM YYYY'
-          }
+
           break
 
         case 'week':
@@ -36,20 +36,19 @@ export default {
           const endDate = this.$day(filterDate).endOf('week')
 
           // this week
-          if (today.isSame(filterDate, 'week')) {
+          if (today.isSame(filterDate, 'week'))
             return this.$t('dates.week.current')
-          }
+
           // last week
-          else if (today.subtract(1, filterPeriod).isSame(filterDate, 'week')) {
+          else if (today.subtract(1, filterPeriod).isSame(filterDate, 'week'))
             return this.$t('dates.week.last')
-          }
+
           // same month in week
-          else if (this.$day(startDate).isSame(endDate, 'month')) {
+          else if (this.$day(startDate).isSame(endDate, 'month'))
             return `${this.$day(startDate).format('D')}-${this.$day(endDate).format('D MMMM')}`
-          }
-          else {
+
+          else
             return `${this.$day(startDate).format('D MMMM')} - ${this.$day(endDate).format('D MMMM')}`
-          }
 
         case 'month':
           if (today.isSame(filterDate, 'year')) {
@@ -65,8 +64,8 @@ export default {
       }
 
       return this.$day(filterDate).format(format)
-    }
-  }
+    },
+  },
 }
 </script>
 

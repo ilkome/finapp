@@ -1,12 +1,12 @@
 <script lang="ts">
-import { signInWithRedirect, GoogleAuthProvider } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
 import { useRoute } from '#imports'
 import { auth } from '~/services/firebaseHelpers'
 
 export default defineComponent({
   layout: 'login',
 
-  setup () {
+  setup() {
     const isLoading = ref(false)
 
     const route = useRoute()
@@ -16,17 +16,17 @@ export default defineComponent({
     setTimeout(() => { isLoading.value = false }, 10000)
 
     return {
-      isLoading
+      isLoading,
     }
   },
 
-  fetch ({ store, redirect }) {
+  fetch({ store, redirect }) {
     if (store.state.user?.user)
       redirect('/')
   },
 
   methods: {
-    signInWithGoogle () {
+    signInWithGoogle() {
       this.$router.push({ query: { loading: true } })
       this.isLoading = true
 
@@ -35,20 +35,20 @@ export default defineComponent({
         .catch(e => this.notifyAboutError(e))
     },
 
-    notifyAboutError (e) {
+    notifyAboutError(e) {
       this.$notify({
         duration: 6000,
         text: e.message,
         title: 'Error',
-        type: 'error'
+        type: 'error',
       })
       this.isLoading = false
     },
 
-    onSetLocale (lang) {
+    onSetLocale(lang) {
       this.$store.dispatch('lang/setLang', lang)
-    }
-  }
+    },
+  },
 })
 </script>
 

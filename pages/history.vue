@@ -2,16 +2,16 @@
 import useStatPage from '~/components/stat/useStatPage'
 
 export default {
-  setup () {
+  setup() {
     const { statPage } = useStatPage()
     return { statPage }
   },
 
-  head () {
+  head() {
     return {
-      title: this.$t('trns.history')
+      title: this.$t('trns.history'),
     }
-  }
+  },
 }
 </script>
 

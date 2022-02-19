@@ -1,15 +1,15 @@
 <script>
-import { updateEmo, random } from '~/assets/js/emo'
+import { random, updateEmo } from '~/assets/js/emo'
 
 export default {
   name: 'AppUpdateAppModal',
 
-  setup () {
+  setup() {
     const emo = computed(() => random(updateEmo))
     return {
-      emo
+      emo,
     }
-  }
+  },
 }
 </script>
 
@@ -49,16 +49,16 @@ TrnFormModal(@closed="$emit('onClose')")
 
 <i18n lang="json5">
 {
-  en: {
-    title: 'New version available',
-    text: 'Reload the app to use new futures.',
-    button: 'Wow, great!'
+  "en": {
+    "title": "New version available",
+    "text": "Reload the app to use new futures.",
+    "button": "Wow, great!"
   },
 
-  ru: {
-    title: 'Доступа новая версия',
-    text: 'Перезагрузи приложение, чтобы использовать все новые фишки.',
-    button: 'Оки, Ура!'
+  "ru": {
+    "title": "Доступа новая версия",
+    "text": "Перезагрузи приложение, чтобы использовать все новые фишки.",
+    "button": "Оки, Ура!"
   }
 }
 </i18n>

@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'StatPeriodArrows'
+  name: 'StatPeriodArrows',
 }
 </script>
 

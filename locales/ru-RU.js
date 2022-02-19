@@ -1,11 +1,11 @@
 
 export default {
   common: {
-    date: 'Дата'
+    date: 'Дата',
   },
 
   analytics: {
-    title: 'Аналитика'
+    title: 'Аналитика',
   },
 
   appName: 'Финапка',
@@ -13,12 +13,12 @@ export default {
   for: 'за',
 
   locale: {
-    toogle: 'Сменить язык'
+    toogle: 'Сменить язык',
   },
 
   theme: {
     title: 'Тема',
-    change: 'Сменить цвет оформления'
+    change: 'Сменить цвет оформления',
   },
 
   backTo: 'Назад к ',
@@ -39,14 +39,14 @@ export default {
     lastUsedCats: 'Показывать последние использованные категории',
     description: {
       title: 'Описание',
-      placeholder: 'Напишите описание...'
+      placeholder: 'Напишите описание...',
     },
     transfer: {
       from: 'Из',
       fromLong: 'Из кошелька',
       to: 'В',
-      toLong: 'В кошелек'
-    }
+      toLong: 'В кошелек',
+    },
   },
 
   app: {
@@ -56,18 +56,18 @@ export default {
     lang: {
       select: 'Выберите язык',
       en: 'English',
-      ru: 'Русский'
+      ru: 'Русский',
     },
     theme: {
       change: 'Сменить тему',
       select: 'Выберите тему',
       dark: 'Темная',
-      light: 'Светлая'
+      light: 'Светлая',
     },
     madeBy: {
       text: 'Разработал',
-      name: 'Илья Комичев'
-    }
+      name: 'Илья Комичев',
+    },
   },
 
   userLogout: 'Выход',
@@ -89,30 +89,30 @@ export default {
     off: 'Нет',
     edit: 'Редактировать',
     delete: 'Удалить',
-    filter: 'Фильтровать'
+    filter: 'Фильтровать',
   },
 
   filter: {
-    clear: 'Очистить фильтр'
+    clear: 'Очистить фильтр',
   },
 
   welcome: {
     firstRun: {
       text: 'Пройти первоначальную настройку приложения',
-      btn: 'Начать'
+      btn: 'Начать',
     },
     create: {
       text: 'Начнем с создания первого кошелька и категории',
-      btn: 'Погнали'
+      btn: 'Погнали',
     },
     createFirstWallet: {
       text: 'Создадим первый кошелек',
-      btn: 'Создать'
+      btn: 'Создать',
     },
     createFirstCategory: {
       text: 'Отлично! Теперь создадим категорию',
-      btn: 'Создать'
-    }
+      btn: 'Создать',
+    },
   },
 
   settings: {
@@ -123,7 +123,7 @@ export default {
     customize: 'Внешний вид',
     app: 'Приложение',
     caution: 'C осторожностью',
-    deleteButton: 'Удалить все мои данные'
+    deleteButton: 'Удалить все мои данные',
   },
 
   wallets: {
@@ -140,29 +140,29 @@ export default {
         label: 'Имя кошелька',
         placeholder: 'Напишите имя кошелька...',
         error: 'Напишите имя кошелька',
-        exist: 'Кошелек с таким именем уже существует'
+        exist: 'Кошелек с таким именем уже существует',
       },
       color: {
         label: 'Цвет',
         placeholder: 'Выберите цвет',
         error: 'Выберите цвет',
-        custom: 'Кастомный цвет'
+        custom: 'Кастомный цвет',
       },
       currency: {
         label: 'Валюта',
         placeholder: 'Выберите валюту',
-        error: 'Выберите валюту'
+        error: 'Выберите валюту',
       },
       total: {
-        placeholder: 'Деньги доступны для снятия'
+        placeholder: 'Деньги доступны для снятия',
       },
-      save: 'Сохранить'
-    }
+      save: 'Сохранить',
+    },
   },
 
   currency: {
     title: 'Валюта',
-    selectBaseTitle: 'Выбрать основную валюту'
+    selectBaseTitle: 'Выбрать основную валюту',
   },
 
   categories: {
@@ -180,28 +180,28 @@ export default {
         label: 'Имя категории',
         placeholder: 'Напишите имя категории...',
         error: 'Напишите имя категории',
-        exist: 'Категория с таким именем уже существует'
+        exist: 'Категория с таким именем уже существует',
       },
       parent: {
         no: 'Корневая категория',
         label: 'Категория',
-        placeholder: 'Выберите категрию'
+        placeholder: 'Выберите категрию',
       },
       color: {
         label: 'Цвета',
-        custom: 'Кастомный цвет'
+        custom: 'Кастомный цвет',
       },
       icons: {
-        label: 'Иконки'
+        label: 'Иконки',
       },
       data: {
-        label: 'Данные'
+        label: 'Данные',
       },
       lastUsed: 'Показывать в списке недавних категорий',
       quickSelector: 'Любимая категория',
       childColor: 'Применить цвет ко всем дочерним категориям',
-      save: 'Сохранить'
-    }
+      save: 'Сохранить',
+    },
   },
 
   stat: {
@@ -218,8 +218,8 @@ export default {
       showCategorisChart: 'Показывать вертикальный график категорий',
       showCategorisList: 'Показывать список категорий',
       showcatsChartPie: 'Показывать статистику "пирог"',
-      showPeriodsChart: 'Показывать график периодов'
-    }
+      showPeriodsChart: 'Показывать график периодов',
+    },
   },
 
   chart: {
@@ -236,8 +236,8 @@ export default {
       addGroupButton: 'Добавить группу',
       addPeriodButton: 'Добавить период',
       removeGroupButton: 'Удалить группу',
-      removePeriodButton: 'Удалить период'
-    }
+      removePeriodButton: 'Удалить период',
+    },
   },
 
   trns: {
@@ -246,12 +246,12 @@ export default {
     history: 'История',
     more: 'Показать еще',
     filter: {
-      showTrnsWithDesc: 'Только с описанием'
-    }
+      showTrnsWithDesc: 'Только с описанием',
+    },
   },
 
   create: {
-    title: 'Создать'
+    title: 'Создать',
   },
 
   money: {
@@ -262,12 +262,12 @@ export default {
     average: {
       base: 'Среднее',
       incomes: 'Средний доход',
-      expenses: 'Средний расход'
+      expenses: 'Средний расход',
     },
     averageTotal: 'Обычно',
     also: 'Еще',
     wallets: 'Кошельки',
-    all: 'Всего'
+    all: 'Всего',
   },
 
   dates: {
@@ -278,42 +278,42 @@ export default {
       current: 'Сегодня',
       today: 'Сегодня',
       yesterday: 'Вчера',
-      simple: 'День'
+      simple: 'День',
     },
     week: {
       current: 'Текущая неделя',
       last: 'Прошлая неделя',
-      simple: 'Неделя'
+      simple: 'Неделя',
     },
     month: {
       current: 'Текущий месяц',
       last: 'Прошлый месяц',
-      simple: 'Месяц'
+      simple: 'Месяц',
     },
     year: {
       current: 'Текущий год',
-      simple: 'Год'
+      simple: 'Год',
     },
     all: {
-      simple: 'Все транзакции'
-    }
+      simple: 'Все транзакции',
+    },
   },
 
   alerts: {
-    willDeleteEverything: 'Все кошельки, категории и транзакции будут удалены.'
+    willDeleteEverything: 'Все кошельки, категории и транзакции будут удалены.',
   },
 
   buttons: {
     nextTitle: 'Следующий',
     prevTitle: 'Прошлый',
-    nextStep: 'Далее'
+    nextStep: 'Далее',
   },
 
   users: {
-    title: 'Пользователи'
+    title: 'Пользователи',
   },
 
   colors: 'Цвета',
   palette: 'Палитра',
-  popularColors: 'Популярные'
+  popularColors: 'Популярные',
 }

@@ -1,10 +1,10 @@
 <script>
 export default {
-  head () {
+  head() {
     return {
-      title: this.$t('stat.title')
+      title: this.$t('stat.title'),
     }
-  }
+  },
 }
 </script>
 

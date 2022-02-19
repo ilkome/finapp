@@ -3,8 +3,8 @@ export default {
   props: {
     icon: { type: String, required: true },
     name: { type: String, required: true },
-    isActive: { type: Boolean, default: false }
-  }
+    isActive: { type: Boolean, default: false },
+  },
 }
 </script>
 

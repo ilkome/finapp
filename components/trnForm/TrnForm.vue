@@ -7,7 +7,7 @@ import generateId from '~/utils/id'
 
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import useTrnFormValidate from '~/components/trnForm/useTrnFormValidate'
-import { successEmo, random } from '~/assets/js/emo'
+import { random, successEmo } from '~/assets/js/emo'
 
 SwiperCore.use([Pagination])
 
@@ -15,10 +15,10 @@ export default {
   name: 'TrnForm',
 
   props: {
-    show: { type: Boolean, default: true }
+    show: { type: Boolean, default: true },
   },
 
-  setup (props) {
+  setup(props) {
     const { $store } = useNuxtApp()
     /**
      * Slider
@@ -28,7 +28,7 @@ export default {
     const maxHeight = ref('550px')
     const { clearExpression } = useCalculator()
 
-    function setTrnFormHeight () {
+    function setTrnFormHeight() {
       const el = document.querySelector('.getHeight')
       const height = el.clientHeight
 
@@ -45,7 +45,7 @@ export default {
       observer.observe(el)
     }
 
-    function init () {
+    function init() {
       if (!sliderObj.value) {
         sliderObj.value = new SwiperCore(slider.value, {
           init: false,
@@ -59,8 +59,8 @@ export default {
           longSwipesMs: 60,
           pagination: {
             el: '.trnForm__pagination',
-            clickable: false
-          }
+            clickable: false,
+          },
         })
         setTrnFormHeight()
         sliderObj.value.init()
@@ -91,21 +91,21 @@ export default {
     /**
      * Click on category
      */
-    function onCategoryClick (categoryId) {
+    function onCategoryClick(categoryId) {
       $store.commit('trnForm/setTrnFormValues', { categoryId })
     }
 
     /**
      * Click on wallet
      */
-    function onClickWallet (walletId) {
+    function onClickWallet(walletId) {
       $store.commit('trnForm/setTrnFormValues', { walletId })
     }
 
     /**
      * Prepare values
      */
-    function prepeareValues (): any {
+    function prepeareValues(): any {
       let normalizedValues
 
       const id = $store.state.trnForm.values.trnId || generateId(dayjs().valueOf())
@@ -120,7 +120,7 @@ export default {
           description: $store.state.trnForm.values.description || null,
           groups: $store.state.trnForm.values.groups || null,
           type: Number($store.state.trnForm.values.amountType) || 0,
-          walletId: $store.state.trnForm.values.walletId
+          walletId: $store.state.trnForm.values.walletId,
         }
       }
 
@@ -138,25 +138,25 @@ export default {
           groups: $store.state.trnForm.values.groups || null,
           expense: {
             walletId: $store.state.trnForm.values.walletFromId,
-            amount: getResult.value
+            amount: getResult.value,
           },
           income: {
             walletId: $store.state.trnForm.values.walletToId,
-            amount: getResult.value
-          }
+            amount: getResult.value,
+          },
         }
       }
 
       return {
         id,
-        values: normalizedValues
+        values: normalizedValues,
       }
     }
 
     /**
      * Submit form
      */
-    function handleSubmitForm () {
+    function handleSubmitForm() {
       try {
         const { validate } = useTrnFormValidate()
         const { id, values } = prepeareValues()
@@ -164,14 +164,14 @@ export default {
         const validateStatus = validate({
           ...values,
           walletFrom: $store.getters['wallets/getWalletWithId']($store.state.trnForm.values.walletFromId),
-          walletTo: $store.getters['wallets/getWalletWithId']($store.state.trnForm.values.walletToId)
+          walletTo: $store.getters['wallets/getWalletWithId']($store.state.trnForm.values.walletToId),
         })
 
         if (validateStatus.error) {
           Vue.notify({
             type: 'error',
             title: validateStatus.error.title,
-            text: validateStatus.error.text
+            text: validateStatus.error.text,
           })
           return
         }
@@ -179,7 +179,7 @@ export default {
         Vue.notify({
           type: 'success',
           text: 'Excellent transaction!',
-          title: random(successEmo)
+          title: random(successEmo),
         })
 
         $store.dispatch('trns/addTrn', { id, values })
@@ -201,9 +201,9 @@ export default {
       onCategoryClick,
       onClickWallet,
 
-      handleSubmitForm
+      handleSubmitForm,
     }
-  }
+  },
 }
 </script>
 

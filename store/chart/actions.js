@@ -1,7 +1,7 @@
 import localforage from 'localforage'
 
 export default {
-  async initChart ({ rootState, commit }) {
+  async initChart({ rootState, commit }) {
     const localPeriods = await localforage.getItem('finapp.chart.periods')
     let showedPeriods
 
@@ -16,10 +16,10 @@ export default {
 
       const periodValues = {
         ...localPeriods[periodName],
-        showedPeriods
+        showedPeriods,
       }
 
       commit('chart/setPeriodValues', { periodName, values: periodValues }, { root: true })
     }
-  }
+  },
 }

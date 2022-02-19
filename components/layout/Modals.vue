@@ -1,13 +1,13 @@
 <script lang="ts">
 export default defineComponent({
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const activeTab = computed(() => $store.state.ui.activeTab)
 
     return {
-      activeTab
+      activeTab,
     }
-  }
+  },
 })
 </script>
 

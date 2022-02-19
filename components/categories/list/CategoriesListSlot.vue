@@ -2,11 +2,11 @@
 export default {
   props: {
     ids: { type: Array, required: true },
-    limit: { type: Number, default: null }
+    limit: { type: Number, default: null },
   },
 
   computed: {
-    categories () {
+    categories() {
       const categores = {}
       let ids = this.ids
 
@@ -21,13 +21,13 @@ export default {
 
         categores[categoryId] = {
           id: categoryId,
-          ...category
+          ...category,
         }
       }
 
       return categores
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -2,11 +2,11 @@ import actions from './actions'
 import mutations from './mutations'
 
 const state = () => ({
-  lang: 'en'
+  lang: 'en',
 })
 
 export default {
   state,
   actions,
-  mutations
+  mutations,
 }

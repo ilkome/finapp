@@ -1,5 +1,5 @@
 export default {
-  setCategories (state, items) {
+  setCategories(state, items) {
     const freezedItems = {}
     if (items) {
       for (const itemId of Object.keys(items))
@@ -16,28 +16,28 @@ export default {
         childIds: [],
         showInLastUsed: false,
         showInQuickSelector: false,
-        showStat: false
-      }
+        showStat: false,
+      },
     }
   },
 
-  showCategoryModal (state) {
+  showCategoryModal(state) {
     state.modal.show = true
   },
 
-  hideCategoryModal (state) {
+  hideCategoryModal(state) {
     state.modal.show = false
   },
 
-  setCategoryModalId (state, id) {
+  setCategoryModalId(state, id) {
     state.modal.id === id
       ? state.modal.id = null
       : state.modal.id = id
   },
 
-  setCategoryEditId (state, id) {
+  setCategoryEditId(state, id) {
     state.editId === id
       ? state.editId = null
       : state.editId = id
-  }
+  },
 }

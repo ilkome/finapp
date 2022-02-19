@@ -4,7 +4,7 @@ interface MenuItem {
   private?: boolean
 }
 
-export default function useMenuData () {
+export default function useMenuData() {
   const { $store, nuxt2Context: { i18n } } = useNuxtApp()
   const route = useRoute()
   const router = useRouter()
@@ -12,36 +12,36 @@ export default function useMenuData () {
   const items: Record<string, MenuItem> = {
     trnForm: {
       icon: 'mdi mdi-plus',
-      name: i18n.t('createTrn')
+      name: i18n.t('createTrn'),
     },
     index: {
       icon: 'mdi mdi-poll',
-      name: i18n.t('stat.shortTitle')
+      name: i18n.t('stat.shortTitle'),
     },
     history: {
       icon: 'mdi mdi-history',
-      name: i18n.t('trns.history')
+      name: i18n.t('trns.history'),
     },
     wallets: {
       icon: 'mdi mdi-credit-card-multiple',
-      name: i18n.t('wallets.name')
+      name: i18n.t('wallets.name'),
     },
     categories: {
       icon: 'mdi mdi-folder-star',
-      name: i18n.t('categories.name')
+      name: i18n.t('categories.name'),
     },
     settings: {
       icon: 'mdi mdi-cog-outline',
-      name: i18n.t('settings.title')
+      name: i18n.t('settings.title'),
     },
     users: {
       private: true,
       icon: 'mdi mdi-account-multiple',
-      name: i18n.t('users.title')
-    }
+      name: i18n.t('users.title'),
+    },
   }
 
-  function onClick (menuId: string) {
+  function onClick(menuId: string) {
     menuId === 'trnForm'
       ? $store.dispatch('trnForm/openTrnForm', { action: 'create' })
       : router.push(menuId)
@@ -52,11 +52,11 @@ export default function useMenuData () {
     $store.dispatch('ui/setActiveTab', null)
   }
 
-  function checkIsActive (menuId: string) {
+  function checkIsActive(menuId: string) {
     return route.name === menuId
   }
 
-  function checkIsShow (item: MenuItem) {
+  function checkIsShow(item: MenuItem) {
     return !item.private || (item.private && $store.getters['user/isTester'])
   }
 
@@ -64,6 +64,6 @@ export default function useMenuData () {
     items,
     onClick,
     checkIsShow,
-    checkIsActive
+    checkIsActive,
   }
 }

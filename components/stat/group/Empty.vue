@@ -3,19 +3,19 @@ import useStatPage from '~/components/stat/useStatPage'
 
 export default defineComponent({
   props: {
-    typeText: { type: String, required: true }
+    typeText: { type: String, required: true },
   },
 
-  setup (props) {
+  setup(props) {
     const { typeText } = toRefs(props)
     const { statPage } = useStatPage()
 
     const isShow = computed(() => statPage.current[typeText.value]?.categoriesIds?.length === 0)
 
     return {
-      isShow
+      isShow,
     }
-  }
+  },
 })
 </script>
 

@@ -3,13 +3,13 @@ export default {
   props: {
     description: {
       type: String,
-      default: null
+      default: null,
     },
     show: {
       type: Boolean,
-      default: false
-    }
-  }
+      default: false,
+    },
+  },
 }
 </script>
 

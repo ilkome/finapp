@@ -8,7 +8,7 @@ export const baseModalState = {
   transferFrom: false,
   transferTo: false,
   wallets: false,
-  trn: false
+  trn: false,
 }
 
 export const state = () => ({
@@ -19,7 +19,7 @@ export const state = () => ({
 
   transfer: {
     from: null,
-    to: null
+    to: null,
   },
 
   show: false,
@@ -33,6 +33,6 @@ export const state = () => ({
     date: dayjs().valueOf(),
     description: null,
     trnId: null,
-    walletId: null
-  }
+    walletId: null,
+  },
 })

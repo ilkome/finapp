@@ -3,32 +3,32 @@ export default defineComponent({
   props: {
     isShowFilter: { type: Boolean, default: false },
     limit: { type: Number, default: 0 },
-    size: { type: Number, required: false, default: 30 }
+    size: { type: Number, required: false, default: 30 },
   },
 
-  data () {
+  data() {
     return {
       pageNumber: 1,
       sortByEditDate: false,
-      isShowTrnsWithDesc: false
+      isShowTrnsWithDesc: false,
     }
   },
 
   computed: {
-    trnsIds () {
+    trnsIds() {
       return this.$store.getters['trns/selectedTrnsIds']
     },
 
-    isShowedAllTrns () {
+    isShowedAllTrns() {
       return this.paginatedTrnsIds.length === this.trnsIdsWithLimit.length
     },
 
-    isTrnsWithDescription () {
+    isTrnsWithDescription() {
       const trns = this.$store.state.trns.items
       return this.trnsIds.filter(id => trns[id].description).length > 0
     },
 
-    trnsIdsWithLimit () {
+    trnsIdsWithLimit() {
       const trns = this.$store.state.trns.items
 
       if (this.isShowFilter && this.isShowTrnsWithDesc && this.isTrnsWithDescription)
@@ -40,12 +40,12 @@ export default defineComponent({
       return this.trnsIds
     },
 
-    paginatedTrnsIds () {
+    paginatedTrnsIds() {
       const end = this.pageNumber * this.size
       return this.trnsIdsWithLimit.slice(0, end)
     },
 
-    groupedTrns () {
+    groupedTrns() {
       const trns = this.$store.state.trns.items
       const trnsList = {}
 
@@ -61,18 +61,18 @@ export default defineComponent({
       }
 
       return trnsList
-    }
+    },
   },
 
   methods: {
-    showMoreTrns () {
+    showMoreTrns() {
       this.pageNumber = this.pageNumber + 1
     },
 
-    showTrnsWithDesc () {
+    showTrnsWithDesc() {
       this.isShowTrnsWithDesc = !this.isShowTrnsWithDesc
-    }
-  }
+    },
+  },
 })
 </script>
 

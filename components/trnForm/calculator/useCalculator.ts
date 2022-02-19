@@ -3,18 +3,18 @@ import currency from 'currency.js'
 const baseAmountFormat = (value: string, separator: string, symbol?: string) => currency(value, { symbol, precision: 0, pattern: '#', separator }).format()
 
 // State
-const fixed: number = 2
+const fixed = 2
 const expression = ref('0')
 const separator = ref(' ')
 const isKeysActive = ref(true)
 
-export default function useCalculator () {
+export default function useCalculator() {
   /**
    * Set separator
    *
    * @param {string} sep
    */
-  function setSeparator (sep: string): void {
+  function setSeparator(sep: string): void {
     separator.value = sep
     expression.value = formatInput(expression.value)
   }
@@ -24,7 +24,7 @@ export default function useCalculator () {
    *
    * @param {string} value
    */
-  function setExpression (value: string): void {
+  function setExpression(value: string): void {
     expression.value = formatInput(value)
   }
 
@@ -33,7 +33,7 @@ export default function useCalculator () {
    *
    * @param {boolean} value
    */
-  function setKeysActive (value: boolean): void {
+  function setKeysActive(value: boolean): void {
     isKeysActive.value = value
   }
 
@@ -43,7 +43,7 @@ export default function useCalculator () {
    * @param {string} value
    * @return {string[]}
    */
-  function separateExpression (value: string): string[] {
+  function separateExpression(value: string): string[] {
     return value
       .split(/(\/|\*|-|\+)/)
       .filter(i => i)
@@ -55,11 +55,11 @@ export default function useCalculator () {
    * @param {string} value
    * @return {string}
    */
-  function removeSpaces (value:string): string {
+  function removeSpaces(value: string): string {
     return String(value).replace(/[ ,]/g, '')
   }
 
-  function checkIsLastSimbolAction (lastSimbol:string): boolean {
+  function checkIsLastSimbolAction(lastSimbol: string): boolean {
     return Number.isNaN(Number.parseInt(lastSimbol))
   }
 
@@ -69,7 +69,7 @@ export default function useCalculator () {
    * @param {string} value
    * @return {(string | undefined)}
    */
-  function makeCalculation (value: string) : string {
+  function makeCalculation(value: string): string {
     try {
       const clearedExpression = removeSpaces(value)
       const lastSimbol = clearedExpression.slice(-1)
@@ -77,7 +77,7 @@ export default function useCalculator () {
       const prepeatedExpression = isLastSimbolAction ? clearedExpression.slice(0, -1) : clearedExpression
 
       // eslint-disable-next-line no-new-func
-      const math = Function('"use strict";return (' + prepeatedExpression + ')')()
+      const math = Function(`"use strict";return (${prepeatedExpression})`)()
 
       if (math <= Number.MAX_SAFE_INTEGER)
         return String(Math.abs(math))
@@ -97,7 +97,7 @@ export default function useCalculator () {
    * @param {string} value
    * @return {string} expression
    */
-  function createExpressionString (expression: string, value: string): string {
+  function createExpressionString(expression: string, value: string): string {
     const inputIsAction = Number.isNaN(Number.parseInt(value))
 
     // Last simbol of expression
@@ -135,7 +135,7 @@ export default function useCalculator () {
     if (inputIsAction && isDotAction) {
       if (Array.isArray(clearedExpression.split(/[/*\-+]/)) && (clearedExpression.split(/[/*\-+]/).slice(-1)[0].includes('.') || isLastSimbolAction)) {
         if (isLastSimbolAction && lastSimbol !== '.')
-          return clearedExpression + '0.'
+          return `${clearedExpression}0.`
 
         return expression
       }
@@ -182,7 +182,7 @@ export default function useCalculator () {
    * @param {boolean} [isTrimFloatSpaces]
    * @return {string} expression string
    */
-  function formatInput (value: string, isTrimFloatSpaces?: boolean): string {
+  function formatInput(value: string, isTrimFloatSpaces?: boolean): string {
     const formatedArray = separateExpression(String(value))
       .map((item) => {
         let formatedItem = ''
@@ -205,7 +205,7 @@ export default function useCalculator () {
             formatedItem = baseAmountFormat(item, separator.value)
 
           else
-            formatedItem = baseAmountFormat(splitFloatValue[0], separator.value) + '.' + splitFloatValue[1]
+            formatedItem = `${baseAmountFormat(splitFloatValue[0], separator.value)}.${splitFloatValue[1]}`
         }
         return formatedItem
       })
@@ -213,16 +213,16 @@ export default function useCalculator () {
     return formatedArray.join('')
   }
 
-  function clearExpression (): void {
+  function clearExpression(): void {
     expression.value = '0'
   }
 
-  function handleTouch (input: string): void {
+  function handleTouch(input: string): void {
     const expressionValue = createExpressionString(expression.value, input)
     expression.value = formatInput(expressionValue)
   }
 
-  function keyboardHandler (event: KeyboardEvent): void {
+  function keyboardHandler(event: KeyboardEvent): void {
     if (!isKeysActive.value) return
 
     const allowValue = (event.key).match(/[0-9%/*\-+=.,]|Backspace|Enter/)
@@ -262,6 +262,6 @@ export default function useCalculator () {
     createExpressionString,
     setSeparator,
     handleTouch,
-    removeSpaces
+    removeSpaces,
   }
 }

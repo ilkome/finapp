@@ -7,26 +7,26 @@ export default {
   props: {
     isShow: {
       type: Boolean,
-      default: true
+      default: true,
     },
 
     center: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
     title: {
       type: String,
-      default: null
+      default: null,
     },
 
     paddingless: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
-  setup (props, { listeners }) {
+  setup(props, { listeners }) {
     const { isShow } = toRefs(props)
     const { initTouchModal, closeModal } = useTouchClose()
 
@@ -35,7 +35,7 @@ export default {
       content: ref(null),
       handler: ref(null),
       overflow: ref(null),
-      wrap: ref(null)
+      wrap: ref(null),
     })
 
     watch(isShow, (value) => {
@@ -47,16 +47,16 @@ export default {
               listeners.onClose()
             if (listeners && listeners.afterClose)
               listeners.afterClose()
-          }
+          },
         })
       }, 10)
     }, { immediate: true })
 
     return {
       ...toRefs(wrappers),
-      closeModal
+      closeModal,
     }
-  }
+  },
 }
 </script>
 

@@ -3,31 +3,31 @@ export default {
   name: 'WelcomePage',
   layout: 'welcome',
 
-  data () {
+  data() {
     return {
       step: 1,
       showCategoryForm: false,
-      showWalletForm: false
+      showWalletForm: false,
     }
   },
 
   computed: {
-    newUserData () {
+    newUserData() {
       if (!this.$store.getters['wallets/hasWallets'] || !this.$store.getters['categories/hasCategories'])
         return true
 
       return false
-    }
+    },
   },
 
   watch: {
-    newUserData (newUserData) {
+    newUserData(newUserData) {
       if (!newUserData)
         this.$router.push('/')
-    }
+    },
   },
 
-  mounted () {
+  mounted() {
     if (!this.newUserData)
       this.$router.push('/')
 
@@ -36,14 +36,14 @@ export default {
   },
 
   methods: {
-    categoryCreatedCallback () {
+    categoryCreatedCallback() {
       this.showCategoryForm = false
     },
 
-    changeLang (lang) {
+    changeLang(lang) {
       this.$store.dispatch('lang/setLang', lang)
-    }
-  }
+    },
+  },
 }
 </script>
 

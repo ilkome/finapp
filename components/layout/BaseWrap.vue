@@ -3,9 +3,9 @@ export default {
   props: {
     contentPadding: {
       type: Boolean,
-      default: true
-    }
-  }
+      default: true,
+    },
+  },
 }
 </script>
 

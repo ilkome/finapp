@@ -1,13 +1,13 @@
-export default function useTrnFormValidate () {
-  function validate (values: any) {
+export default function useTrnFormValidate() {
+  function validate(values: any) {
     const errorTitle = '😮'
 
     if (!values.amount) {
       return {
         error: {
           title: errorTitle,
-          text: 'Amount can not be empty'
-        }
+          text: 'Amount can not be empty',
+        },
       }
     }
 
@@ -15,8 +15,8 @@ export default function useTrnFormValidate () {
       return {
         error: {
           title: errorTitle,
-          text: 'Amount can not be negative number'
-        }
+          text: 'Amount can not be negative number',
+        },
       }
     }
 
@@ -24,8 +24,8 @@ export default function useTrnFormValidate () {
       return {
         error: {
           title: errorTitle,
-          text: 'Amount can not be equal Zero'
-        }
+          text: 'Amount can not be equal Zero',
+        },
       }
     }
 
@@ -33,8 +33,8 @@ export default function useTrnFormValidate () {
       return {
         error: {
           title: errorTitle,
-          text: 'Please select wallet'
-        }
+          text: 'Please select wallet',
+        },
       }
     }
 
@@ -42,8 +42,8 @@ export default function useTrnFormValidate () {
       return {
         error: {
           title: errorTitle,
-          text: 'Please select category'
-        }
+          text: 'Please select category',
+        },
       }
     }
 
@@ -53,8 +53,8 @@ export default function useTrnFormValidate () {
         return {
           error: {
             title: errorTitle,
-            text: 'Transfer in same wallet'
-          }
+            text: 'Transfer in same wallet',
+          },
         }
       }
 
@@ -62,18 +62,18 @@ export default function useTrnFormValidate () {
         return {
           error: {
             title: errorTitle,
-            text: 'Sorry, transfer between wallets with different currency in development'
-          }
+            text: 'Sorry, transfer between wallets with different currency in development',
+          },
         }
       }
     }
 
     return {
-      valid: true
+      valid: true,
     }
   }
 
   return {
-    validate
+    validate,
   }
 }

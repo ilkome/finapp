@@ -9,10 +9,10 @@ export default {
   name: 'StatChartBalance',
 
   components: {
-    Chart
+    Chart,
   },
 
-  data () {
+  data() {
     const vm = this
     return {
       date: this.$day().valueOf(),
@@ -24,17 +24,17 @@ export default {
         ...chartOptions,
         chart: {
           events: {
-            click (e) {
+            click(e) {
               const value = this.series[0].searchPoint(e, true) || this.series[1].searchPoint(e, true)
               vm.$store.dispatch('filter/setDate', parseInt(value.date))
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     }
   },
 
-  mounted () {
+  mounted() {
     const data = this.generateData(this.periodName)
     const handlePerioSelect = date => this.$store.dispatch('filter/setDate', parseInt(date))
     this.chartOptions.series = data.series
@@ -42,17 +42,17 @@ export default {
       cursor: 'pointer',
       point: {
         events: {
-          click () {
+          click() {
             handlePerioSelect(this.date)
-          }
-        }
-      }
+          },
+        },
+      },
     }
 
     this.chartOptions = {
       ...this.chartOptions,
       xAxis: {
-        categories: data.categories
+        categories: data.categories,
       },
 
       chart: {
@@ -62,13 +62,13 @@ export default {
         spacing: [5, 0, 0, 0],
         type: 'column',
         panning: true,
-        panKey: 'shift'
-      }
+        panKey: 'shift',
+      },
     }
   },
 
   methods: {
-    changePeriod (name) {
+    changePeriod(name) {
       if (this.periodName !== name) {
         this.periodName = name
         const data = this.generateData(this.periodName, this.chartOptions.series)
@@ -77,12 +77,12 @@ export default {
       }
     },
 
-    formatAmount (amount) {
+    formatAmount(amount) {
       const fixed = this.$store.state.currencies.base === 'RUB' ? 0 : 2
       return baseAmountFormat(amount, ' ', fixed)
     },
 
-    generateData (periodName) {
+    generateData(periodName) {
       const trns = this.$store.state.trns.items
       const allTrnsIds = Object.keys(trns)
 
@@ -116,15 +116,15 @@ export default {
         // return
         incomesData.unshift({
           date: periodDate,
-          y: Number(`${periodTotal.incomes.toFixed()}`)
+          y: Number(`${periodTotal.incomes.toFixed()}`),
         })
         expensesData.unshift({
           date: periodDate,
-          y: Number(`${periodTotal.expenses.toFixed()}`)
+          y: Number(`${periodTotal.expenses.toFixed()}`),
         })
         totalData.unshift({
           date: periodDate,
-          y: Number(`${(totalStart.total + balanceTotal.total).toFixed()}`)
+          y: Number(`${(totalStart.total + balanceTotal.total).toFixed()}`),
         })
         categories.unshift(name)
       }
@@ -137,8 +137,8 @@ export default {
           color: 'var(--c-incomes-1)',
           data: incomesData,
           marker: {
-            lineColor: 'var(--c-incomes-1)'
-          }
+            lineColor: 'var(--c-incomes-1)',
+          },
         }, {
           visible: false,
           type: 'spline',
@@ -146,8 +146,8 @@ export default {
           color: 'var(--c-expenses-1)',
           data: expensesData,
           marker: {
-            lineColor: 'var(--c-expenses-1)'
-          }
+            lineColor: 'var(--c-expenses-1)',
+          },
         }, {
           visible: true,
           type: 'areaspline',
@@ -155,13 +155,13 @@ export default {
           color: '#c1c1c1',
           data: totalData,
           marker: {
-            lineColor: '#c1c1c1'
-          }
+            lineColor: '#c1c1c1',
+          },
         }],
-        categories
+        categories,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

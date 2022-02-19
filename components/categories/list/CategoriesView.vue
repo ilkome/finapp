@@ -7,17 +7,17 @@ export default {
     noPadding: { type: Boolean, default: false },
     noPaddingBottom: { type: Boolean, default: false },
     title: { type: String, default: null },
-    ui: { type: String, default: null }
+    ui: { type: String, default: null },
   },
 
   computed: {
-    categoresIds () {
+    categoresIds() {
       if (this.limit)
         return this.ids.slice(0, this.limit)
 
       return this.ids
-    }
-  }
+    },
+  },
 }
 </script>
 

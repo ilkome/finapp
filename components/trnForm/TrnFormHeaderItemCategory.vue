@@ -3,15 +3,15 @@ export default {
   // TODO: add check for valid category
 
   computed: {
-    category () {
+    category() {
       const categoryId = this.$store.state.trnForm.values.categoryId
       return this.$store.state.categories.items[categoryId]
     },
 
-    parentCategory () {
+    parentCategory() {
       return this.$store.state.categories.items[this.category.parentId]
-    }
-  }
+    },
+  },
 }
 </script>
 

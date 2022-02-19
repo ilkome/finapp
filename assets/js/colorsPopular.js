@@ -29,7 +29,7 @@ export const popularColors = [
   '#fb8c00',
   '#fdd835',
   '#ff8a65',
-  '#ffc107'
+  '#ffc107',
 ]
 
 export const allColors = [
@@ -182,5 +182,5 @@ export const allColors = [
   '#78909c',
   '#607d8b',
   '#546e7a',
-  '#455a64'
+  '#455a64',
 ]

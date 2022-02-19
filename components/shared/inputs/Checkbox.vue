@@ -3,8 +3,8 @@
 export default {
   props: {
     value: { type: Boolean, required: true },
-    title: { type: String, default: null }
-  }
+    title: { type: String, default: null },
+  },
 }
 </script>
 

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 
 export default {
-  hasTrns (_state, _getters, rootState) {
+  hasTrns(_state, _getters, rootState) {
     if (rootState.trns.items) {
       if (Object.keys(rootState.trns.items).length > 0)
         return true
@@ -60,7 +60,7 @@ export default {
     return {
       expenses: Math.abs(+expenses.toFixed(0)),
       incomes: Math.abs(+incomes.toFixed(0)),
-      total: parseInt(incomes - expenses)
+      total: parseInt(incomes - expenses),
     }
   },
 
@@ -75,7 +75,7 @@ export default {
     return trnsIds
   },
 
-  lastCreatedTrnId (state, getters, rootState, rootGetters) {
+  lastCreatedTrnId(state, getters, rootState, rootGetters) {
     if (getters.hasTrns) {
       const trnsIds = getters.sortedTrnsIds
       const trns = rootState.trns.items
@@ -90,21 +90,21 @@ export default {
     }
   },
 
-  firstCreatedTrnId (state, getters) {
+  firstCreatedTrnId(state, getters) {
     if (getters.hasTrns) {
       const trnsIds = [...getters.sortedTrnsIds].reverse()
       return trnsIds[0]
     }
   },
 
-  firstCreatedTrnIdFromSelectedTrns (state, getters) {
+  firstCreatedTrnIdFromSelectedTrns(state, getters) {
     const trnsIds = [...getters.selectedTrnsIds].reverse()
     if (trnsIds.length)
       return trnsIds[0]
   },
 
   // selectedTrnsIds
-  selectedTrnsIds (_state, getters, rootState) {
+  selectedTrnsIds(_state, getters, rootState) {
     if (!getters.hasTrns) return []
 
     const categories = rootState.categories.items
@@ -144,7 +144,7 @@ export default {
     return trnsIds
   },
 
-  selectedTrnsIdsWithDate (_state, getters, rootState) {
+  selectedTrnsIdsWithDate(_state, getters, rootState) {
     if (!getters.hasTrns) return []
 
     const trns = rootState.trns.items
@@ -158,8 +158,8 @@ export default {
     if (filterPeriod !== 'all') {
       trnsIds = trnsIds.filter(
         trnId =>
-          (trns[trnId].date >= startDateValue) &&
-          (trns[trnId].date <= endDateValue))
+          (trns[trnId].date >= startDateValue)
+          && (trns[trnId].date <= endDateValue))
     }
 
     trnsIds = trnsIds
@@ -173,7 +173,7 @@ export default {
   },
 
   // sortedTrnsIds
-  sortedTrnsIds (state, getters) {
+  sortedTrnsIds(state, getters) {
     if (!getters.hasTrns) return []
 
     const trns = state.items
@@ -310,5 +310,5 @@ export default {
       })
 
     return trnsIds || []
-  }
+  },
 }

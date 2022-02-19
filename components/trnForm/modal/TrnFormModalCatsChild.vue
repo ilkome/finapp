@@ -1,38 +1,38 @@
 <script>
 export default {
-  data () {
+  data() {
     return {
-      childSelected: false
+      childSelected: false,
     }
   },
 
   computed: {
-    id () {
+    id() {
       return this.$store.state.trnForm.showModalCategoryId
     },
-    category () {
+    category() {
       return this.$store.state.categories.items[this.id]
     },
-    childCategoriesIds () {
+    childCategoriesIds() {
       return this.$store.getters['categories/getChildCategoriesIds'](this.id)
-    }
+    },
   },
 
   methods: {
-    handleCategoryClick (categoryId, close) {
+    handleCategoryClick(categoryId, close) {
       this.childSelected = true
       this.$store.commit('trnForm/setTrnFormValues', { categoryId })
       close()
     },
 
-    afterClose () {
+    afterClose() {
       if (this.childSelected)
         this.$store.commit('trnForm/closeTrnFormModal', 'categories')
 
       this.$store.commit('trnForm/closeTrnFormModal', 'categoriesChild')
       this.$store.commit('trnForm/setTrnFormModalCategoryId', null)
-    }
-  }
+    },
+  },
 }
 </script>
 

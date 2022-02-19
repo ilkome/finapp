@@ -1,32 +1,32 @@
 <script>
 export default {
-  data () {
+  data() {
     return {
-      visibleDropdown: false
+      visibleDropdown: false,
     }
   },
 
   computed: {
-    currentLanguageName () {
+    currentLanguageName() {
       switch (this.$i18n.locale) {
         case 'ru':
           return '🇷🇺 Russian - Русский'
         default:
           return '🇺🇸 English - Английский'
       }
-    }
+    },
   },
 
   methods: {
-    changeLang (lang) {
+    changeLang(lang) {
       this.visibleDropdown = false
       this.$store.dispatch('lang/setLang', lang)
     },
 
-    onClickOpener () {
+    onClickOpener() {
       this.visibleDropdown = !this.visibleDropdown
-    }
-  }
+    },
+  },
 }
 </script>
 

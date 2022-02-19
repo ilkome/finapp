@@ -6,6 +6,6 @@ export const state = () => ({
   date: dayjs().valueOf(),
   rates: {},
   modal: {
-    show: false
-  }
+    show: false,
+  },
 })

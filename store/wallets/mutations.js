@@ -1,37 +1,34 @@
 export default {
-  setWallets (state, items) {
+  setWallets(state, items) {
     const freezedItems = {}
     if (items) {
-      for (const itemId of Object.keys(items)) {
+      for (const itemId of Object.keys(items))
         freezedItems[itemId] = Object.freeze(items[itemId])
-      }
     }
     state.items = freezedItems
   },
 
-  showWalletsModalWalletModal (state) {
+  showWalletsModalWalletModal(state) {
     state.modal.show = true
   },
 
-  hideWalletsModalWalletModal (state) {
+  hideWalletsModalWalletModal(state) {
     state.modal.show = false
   },
 
-  setWalletsModalWalletModalId (state, id) {
-    if (state.modal.id === id) {
+  setWalletsModalWalletModalId(state, id) {
+    if (state.modal.id === id)
       state.modal.id = null
-    }
-    else {
+
+    else
       state.modal.id = id
-    }
   },
 
-  setWalletEditId (state, id) {
-    if (state.editId === id) {
+  setWalletEditId(state, id) {
+    if (state.editId === id)
       state.editId = null
-    }
-    else {
+
+    else
       state.editId = id
-    }
-  }
+  },
 }

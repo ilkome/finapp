@@ -4,6 +4,6 @@ import VueNotification from 'vue-notification'
 // $notify
 if (process.client) {
   Vue.use(VueNotification, {
-    componentName: 'Notifications'
+    componentName: 'Notifications',
   })
 }

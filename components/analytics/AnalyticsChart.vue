@@ -9,50 +9,50 @@ export default {
   name: 'AnalyticsChart',
 
   components: {
-    Chart
+    Chart,
   },
 
   props: {
     categoryId: {
       type: String,
-      required: true
+      required: true,
     },
 
     chartType: {
       type: String,
-      default: 'column'
-    }
+      default: 'column',
+    },
   },
 
-  data () {
+  data() {
     return {
       average: 0,
       total: 0,
       date: this.$day().valueOf(),
       visiblePeriodMenu: false,
       dateStart: null,
-      dateEnd: null
+      dateEnd: null,
     }
   },
 
   computed: {
-    showedPeriods () {
+    showedPeriods() {
       return this.$store.state.stat.showedPeriods
     },
 
-    statCurrentPeriod () {
+    statCurrentPeriod() {
       return this.$store.getters['stat/statCurrentPeriod']
     },
 
-    filterDate () {
+    filterDate() {
       return this.$store.state.filter.date
     },
 
-    periodName () {
+    periodName() {
       return this.$store.state.filter.period
     },
 
-    chartData () {
+    chartData() {
       const vm = this
       const trns = this.$store.state.trns.items
       const periodName = this.periodName
@@ -66,10 +66,10 @@ export default {
       const categoryData = []
 
       let format = 'MMM'
-      if (periodName === 'day') { format = 'D.MM' }
-      if (periodName === 'week') { format = 'D.MM' }
-      if (periodName === 'month') { format = 'MMMM' }
-      if (periodName === 'year') { format = 'YYYY' }
+      if (periodName === 'day') format = 'D.MM'
+      if (periodName === 'week') format = 'D.MM'
+      if (periodName === 'month') format = 'MMMM'
+      if (periodName === 'year') format = 'YYYY'
 
       for (let index = 0; index < periodsToShow; index++) {
         // count total period
@@ -78,7 +78,7 @@ export default {
         const trnsIds = this.$store.getters['trns/getTrns']({
           categoryId: this.categoryId,
           date: periodDate,
-          periodName
+          periodName,
         })
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
@@ -89,8 +89,8 @@ export default {
           color: 'var(--c-font-1)',
           marker: {
             radius: 6,
-            enabled: this.$day(periodDate).isSame(this.$store.state.filter.date, periodName)
-          }
+            enabled: this.$day(periodDate).isSame(this.$store.state.filter.date, periodName),
+          },
         })
         categories.unshift(name)
       }
@@ -111,9 +111,9 @@ export default {
         series: [{
           visible: true,
           type: this.chartType,
-          data: categoryData
+          data: categoryData,
         }],
-        categories
+        categories,
       }
 
       return {
@@ -123,16 +123,16 @@ export default {
           shared: true,
           animation: false,
           outside: true,
-          positioner () {
+          positioner() {
             return { x: -1000, y: -1000 }
-          }
+          },
         },
 
         series: data.series,
 
         xAxis: {
           ...chartOptions.xAxis,
-          categories: data.categories
+          categories: data.categories,
         },
 
         yAxis: {
@@ -142,8 +142,8 @@ export default {
             value: this.average, // Insert your average here
             width: '2',
             height: 160,
-            zIndex: 1
-          }]
+            zIndex: 1,
+          }],
         },
 
         chart: {
@@ -151,11 +151,11 @@ export default {
           height: '120',
 
           events: {
-            click (e) {
+            click(e) {
               const value = this.series[0].searchPoint(e, true) || this.series[1].searchPoint(e, true)
               vm.$store.dispatch('filter/setDate', parseInt(value.date))
-            }
-          }
+            },
+          },
         },
 
         plotOptions: {
@@ -164,35 +164,35 @@ export default {
             ...chartOptions.plotOptions.series,
             dataLabels: {
               ...chartOptions.plotOptions.series.dataLabels,
-              enabled: true
+              enabled: true,
             },
             cursor: 'pointer',
             point: {
               events: {
-                click () {
+                click() {
                   vm.$store.dispatch('filter/setDate', parseInt(this.date))
-                }
-              }
+                },
+              },
             },
             allowPointSelect: true,
             states: {
               select: {
                 color: 'green',
-                backgroundColor: 'var(--c-bg-14)'
-              }
-            }
-          }
-        }
+                backgroundColor: 'var(--c-bg-14)',
+              },
+            },
+          },
+        },
       }
-    }
+    },
   },
 
   methods: {
-    formatAmount (amount) {
+    formatAmount(amount) {
       const fixed = this.$store.state.currencies.base === 'RUB' ? 0 : 2
       return baseAmountFormat(amount, ' ', fixed)
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -14,7 +14,7 @@ export default (_, inject) => {
   const locale = require('dayjs/locale/en.js')
   dayjs.locale(locale)
   dayjs.updateLocale(locale, {
-    weekStart: 1
+    weekStart: 1,
   })
 
   inject('day', (val) => {

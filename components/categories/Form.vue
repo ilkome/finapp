@@ -4,22 +4,22 @@ import generateId from '~/utils/id'
 import colors from '~/assets/js/colors'
 import icons from '~/assets/js/icons'
 
-function random (icons) {
+function random(icons) {
   return icons[Math.floor(Math.random() * icons.length)]
 }
 
 export default {
-  setup (_props, { emit }) {
+  setup(_props, { emit }) {
     const closed = () => {
       emit('onClose')
     }
 
     return {
-      closed
+      closed,
     }
   },
 
-  data () {
+  data() {
     return {
       originalParentId: null,
       showParents: false,
@@ -33,34 +33,34 @@ export default {
         parentId: 0,
         showInLastUsed: true,
         showInQuickSelector: false,
-        showStat: true
-      }
+        showStat: true,
+      },
     }
   },
 
   computed: {
-    categoryId () {
+    categoryId() {
       return this.$store.state.categories.editId
-    }
+    },
   },
 
   watch: {
     categoryId: {
-      handler (categoryId) {
+      handler(categoryId) {
         if (categoryId) {
           this.category = {
             ...this.category,
-            ...this.$store.state.categories.items[this.categoryId]
+            ...this.$store.state.categories.items[this.categoryId],
           }
 
           this.originalParentId = this.category.parentId
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
 
-  created () {
+  created() {
     this.colors = colors
     this.icons = icons
     if (!this.$store.state.categories.editId) {
@@ -69,22 +69,22 @@ export default {
     }
   },
 
-  beforeDestroy () {
+  beforeUnmount() {
     this.$store.commit('categories/setCategoryEditId', null)
   },
 
   methods: {
-    handleColorSelect (color) {
+    handleColorSelect(color) {
       this.category.color = color
       this.showColors = false
     },
 
-    handleIconSelect (icon) {
+    handleIconSelect(icon) {
       this.category.icon = icon
       this.showIcons = false
     },
 
-    handleParenCategorySelect (categoryId) {
+    handleParenCategorySelect(categoryId) {
       const parentCategory = this.$store.state.categories.items[categoryId]
       if (parentCategory)
         this.category.color = parentCategory.color
@@ -93,7 +93,7 @@ export default {
       this.showParents = false
     },
 
-    handleSubmit () {
+    handleSubmit() {
       if (this.validateForm()) {
         const uid = this.$store.state.user.user.uid
         const id = this.categoryId || generateId()
@@ -108,7 +108,7 @@ export default {
           parentId: this.category.parentId,
           showInLastUsed: this.category.showInLastUsed,
           showInQuickSelector: this.category.showInQuickSelector,
-          showStat: true
+          showStat: true,
         }
 
         // ad or remove from parent
@@ -119,7 +119,7 @@ export default {
             if (originalParent) {
               saveData(`users/${uid}/categories/${this.originalParentId}`, {
                 ...originalParent,
-                childIds: originalParent.childIds.filter(cId => cId !== id)
+                childIds: originalParent.childIds.filter(cId => cId !== id),
               })
             }
           }
@@ -133,7 +133,7 @@ export default {
 
             saveData(`users/${uid}/categories/${this.category.parentId}`, {
               ...parenCategory,
-              childIds
+              childIds,
             })
           }
         }
@@ -143,7 +143,7 @@ export default {
         // update category
         saveData(`users/${uid}/categories/${id}`, {
           ...categoriesValues,
-          childIds
+          childIds,
         })
 
         // update child categories colors
@@ -152,7 +152,7 @@ export default {
             const category = categories[childId]
             saveData(`users/${uid}/categories/${childId}`, {
               ...category,
-              color: categoriesValues.color
+              color: categoriesValues.color,
             })
           }
         }
@@ -164,12 +164,12 @@ export default {
       }
     },
 
-    validateForm () {
+    validateForm() {
       const categories = this.$store.state.categories.items
       if (!this.category.name) {
         this.$notify({
           title: '😮',
-          text: this.$t('categories.form.name.error')
+          text: this.$t('categories.form.name.error'),
         })
         return false
       }
@@ -180,7 +180,7 @@ export default {
             if (this.categoryId !== categoryId) {
               this.$notify({
                 title: '😮',
-                text: this.$t('categories.form.name.exist')
+                text: this.$t('categories.form.name.exist'),
               })
               return false
             }
@@ -188,7 +188,7 @@ export default {
           else {
             this.$notify({
               title: '😮',
-              text: this.$t('categories.form.name.exist')
+              text: this.$t('categories.form.name.exist'),
             })
             return false
           }
@@ -196,8 +196,8 @@ export default {
       }
 
       return true
-    }
-  }
+    },
+  },
 }
 </script>
 

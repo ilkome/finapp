@@ -2,13 +2,13 @@
 import useStat from '~/modules/stat/useStat'
 
 export default defineComponent({
-  setup () {
+  setup() {
     const { isEmptyStat } = useStat()
 
     return {
-      isEmptyStat
+      isEmptyStat,
     }
-  }
+  },
 })
 </script>
 

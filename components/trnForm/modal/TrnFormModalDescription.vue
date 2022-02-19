@@ -4,7 +4,7 @@ import useCalculator from '~/components/trnForm/calculator/useCalculator'
 export default {
   name: 'TrnFormModalDescription',
 
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { setKeysActive } = useCalculator()
     const description = ref('')
@@ -16,26 +16,26 @@ export default {
 
     return {
       description,
-      setKeysActive
+      setKeysActive,
     }
   },
 
   methods: {
-    handleCancel (close) {
+    handleCancel(close) {
       this.description = null
       close()
     },
 
-    handleSave (close) {
+    handleSave(close) {
       this.$store.commit('trnForm/setTrnFormValues', { description: this.description })
       close()
     },
 
-    afterClose () {
+    afterClose() {
       this.setKeysActive(true)
       this.$store.commit('trnForm/closeTrnFormModal', 'description')
-    }
-  }
+    },
+  },
 }
 </script>
 

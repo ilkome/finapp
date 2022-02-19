@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 
-export default function useFilter () {
+export default function useFilter() {
   const { $store } = useNuxtApp()
 
   /**
@@ -14,7 +14,7 @@ export default function useFilter () {
   /**
    * Get trns with params
    */
-  function getTrnsIds (params:any) {
+  function getTrnsIds(params: any) {
     if (trnsIds.value.length === 0)
       return trnsIds.value
 
@@ -24,9 +24,9 @@ export default function useFilter () {
     // Wallet
     if (walletId) {
       ids = ids.filter(id =>
-        trns.value[id].walletId === walletId ||
-        trns.value[id].walletToId === walletId ||
-        trns.value[id].walletFromId === walletId
+        trns.value[id].walletId === walletId
+        || trns.value[id].walletToId === walletId
+        || trns.value[id].walletFromId === walletId,
       )
     }
 
@@ -55,8 +55,8 @@ export default function useFilter () {
       if (typeof date === 'object') {
         ids = trnsIds.value
           .filter(id =>
-            trns.value[id].date >= dayjs(date.from).startOf('date') &&
-            trns.value[id].date <= dayjs(date.to).endOf('date')
+            trns.value[id].date >= dayjs(date.from).startOf('date')
+            && trns.value[id].date <= dayjs(date.to).endOf('date'),
           )
       }
     }
@@ -66,6 +66,6 @@ export default function useFilter () {
 
   return {
     trnsIds,
-    getTrnsIds
+    getTrnsIds,
   }
 }

@@ -1,16 +1,16 @@
 const isShowPeriodsNamesModal = ref(false)
 
-export default function useBaseLayout () {
-  function showPeriodsNamesModal () {
+export default function useBaseLayout() {
+  function showPeriodsNamesModal() {
     isShowPeriodsNamesModal.value = true
   }
-  function hidePeriodsNamesModal () {
+  function hidePeriodsNamesModal() {
     isShowPeriodsNamesModal.value = false
   }
 
   return {
     isShowPeriodsNamesModal,
     showPeriodsNamesModal,
-    hidePeriodsNamesModal
+    hidePeriodsNamesModal,
   }
 }

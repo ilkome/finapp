@@ -1,12 +1,12 @@
 const moneyTypes = [{
   id: 'expenses',
-  type: 0
+  type: 0,
 }, {
   id: 'incomes',
-  type: 1
+  type: 1,
 }]
 
-export default function useStat () {
+export default function useStat() {
   const { $store } = useNuxtApp()
   const isEmptyStat = computed(() => {
     const statCurrentPeriod = $store.getters['stat/statCurrentPeriod']
@@ -21,6 +21,6 @@ export default function useStat () {
 
   return {
     moneyTypes,
-    isEmptyStat
+    isEmptyStat,
   }
 }

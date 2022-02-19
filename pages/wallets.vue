@@ -2,18 +2,18 @@
 export default {
   name: 'WalletsPage',
 
-  head () {
+  head() {
     return {
-      title: this.$t('wallets.title')
+      title: this.$t('wallets.title'),
     }
   },
 
   methods: {
-    handleShowWalletsModalWalletModal (id) {
+    handleShowWalletsModalWalletModal(id) {
       this.$store.commit('wallets/showWalletsModalWalletModal')
       this.$store.commit('wallets/setWalletsModalWalletModalId', id)
-    }
-  }
+    },
+  },
 }
 </script>
 

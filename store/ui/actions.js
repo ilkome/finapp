@@ -1,7 +1,7 @@
 import localforage from 'localforage'
 
 export default {
-  async initUi ({ dispatch }) {
+  async initUi({ dispatch }) {
     const uiLocalStore = await localforage.getItem('finapp.stat')
 
     // ui
@@ -17,7 +17,7 @@ export default {
    *
    * @param {string} theme - New theme value (light, dark).
    */
-  changeTheme (_, theme) {
+  changeTheme(_, theme) {
     // eslint-disable-next-line no-undef
     const currentTheme = $nuxt.$colorMode.value
     let newTheme
@@ -36,7 +36,7 @@ export default {
     * @param {number} height
     * @param {number} width
   */
-  setAppDimensions ({ commit }, { height, width }) {
+  setAppDimensions({ commit }, { height, width }) {
     let view = 'mobile'
     if (width >= 1300) view = 'pc'
 
@@ -44,7 +44,7 @@ export default {
       mobile: view === 'mobile',
       pc: view === 'pc',
       width,
-      height
+      height,
     })
   },
 
@@ -54,7 +54,7 @@ export default {
     *
     * @param {string} nextTab - Next tab name.
   */
-  setActiveTab ({ commit, state }, nextTab) {
+  setActiveTab({ commit, state }, nextTab) {
     if (state.activeTab !== nextTab) {
       commit('setActiveTab', nextTab)
       localforage.setItem('finapp.stat', state)
@@ -67,7 +67,7 @@ export default {
     *
     * @param {string} nextTab - Next tab name.
   */
-  setActiveTabStat ({ commit, state }, nextTab) {
+  setActiveTabStat({ commit, state }, nextTab) {
     commit('setActiveTabStat', nextTab)
     localforage.setItem('finapp.stat', state)
   },
@@ -75,7 +75,7 @@ export default {
   /**
     * Save ui view state to localStorage for selected filter
   */
-  async saveUiView ({ rootState }) {
+  async saveUiView({ rootState }) {
     const localName = 'finapp.statViewConfig'
     const localFilterUi = await localforage.getItem(localName)
     const walletName = rootState.filter.walletId || 'root'
@@ -87,11 +87,11 @@ export default {
       ...localFilterUi,
       [uiItemName]: {
         period: rootState.filter.period,
-        totalChartPeriods: rootState.chart.periods
-      }
+        totalChartPeriods: rootState.chart.periods,
+      },
     })
 
     const periods = rootState.chart.periods
     localforage.setItem('finapp.chart.periods', periods)
-  }
+  },
 }

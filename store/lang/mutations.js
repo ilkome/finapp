@@ -1,5 +1,5 @@
 export default {
-  setLang (state, lang) {
+  setLang(state, lang) {
     state.lang = lang
-  }
+  },
 }

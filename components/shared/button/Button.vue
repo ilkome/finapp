@@ -3,43 +3,43 @@ export default {
   props: {
     background: {
       type: String,
-      default: null
+      default: null,
     },
     icon: {
       type: String,
-      default: null
+      default: null,
     },
     className: {
       type: String,
-      default: null
+      default: null,
     },
     title: {
       type: String,
-      default: null
+      default: null,
     },
     showCheckbox: {
       type: Boolean,
-      default: false
+      default: false,
     },
     checkboxValue: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
     size: {
       type: String,
-      default: 'md'
-    }
+      default: 'md',
+    },
   },
 
   computed: {
-    classNameComputed () {
+    classNameComputed() {
       return {
         [`_size_${this.size}`]: this.size,
-        [this.className]: this.className
+        [this.className]: this.className,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

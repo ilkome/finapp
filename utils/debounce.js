@@ -1,8 +1,8 @@
-export default function debounce (func, interval) {
+export default function debounce(func, interval) {
   let timeout
-  return function () {
+  return function() {
     const context = this; const args = arguments
-    const later = function () {
+    const later = function() {
       timeout = null
       func.apply(context, args)
     }

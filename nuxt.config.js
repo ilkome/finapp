@@ -3,7 +3,7 @@ import { defineNuxtConfig } from '@nuxt/bridge'
 export default defineNuxtConfig({
   bridge: {
     nitro: false,
-    vite: false
+    vite: false,
   },
 
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
@@ -24,8 +24,8 @@ export default defineNuxtConfig({
       silent: true,
       performance: false,
       productionTip: false,
-      devtools: process.env.NODE_ENV !== 'production'
-    }
+      devtools: process.env.NODE_ENV !== 'production',
+    },
   },
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
@@ -34,32 +34,32 @@ export default defineNuxtConfig({
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
     ],
 
     link: [{
       rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css?family=Roboto:400,500,600,700|Roboto+Condensed:400,500,600,700|Unica+One|Nunito:400,700,800&display=swap&subset=cyrillic'
+      href: 'https://fonts.googleapis.com/css?family=Roboto:400,500,600,700|Roboto+Condensed:400,500,600,700|Unica+One|Nunito:400,700,800&display=swap&subset=cyrillic',
     }, {
       rel: 'stylesheet',
-      href: 'https://cdn.materialdesignicons.com/5.9.55/css/materialdesignicons.min.css'
+      href: 'https://cdn.materialdesignicons.com/5.9.55/css/materialdesignicons.min.css',
     }],
 
-    noscript: [{ innerHTML: 'This website requires JavaScript.' }]
+    noscript: [{ innerHTML: 'This website requires JavaScript.' }],
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
   styleResources: {
-    stylus: ['~/assets/stylus/variables']
+    stylus: ['~/assets/stylus/variables'],
   },
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: [{
     path: '~/components/',
-    extensions: ['vue']
+    extensions: ['vue'],
   }, {
     path: '~/modules/',
-    extensions: ['vue']
+    extensions: ['vue'],
   }],
 
   // Loading
@@ -69,13 +69,13 @@ export default defineNuxtConfig({
   plugins: [
     { src: '~/plugins/initAppFromCache' },
     { src: '~/plugins/dayjs' },
-    { src: '~/plugins/notifications' }
+    { src: '~/plugins/notifications' },
   ],
 
   // Color mode
   colorMode: {
     classSuffix: '',
-    preference: 'dark'
+    preference: 'dark',
   },
 
   // Nuxt.js modules
@@ -83,7 +83,7 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@nuxtjs/i18n',
     '@nuxtjs/pwa',
-    'portal-vue/nuxt'
+    'portal-vue/nuxt',
   ],
 
   // Modules for dev and build (https://go.nuxtjs.dev/config-modules)
@@ -91,42 +91,42 @@ export default defineNuxtConfig({
     '@nuxtjs/style-resources',
     '@nuxtjs/pwa',
     // https://tailwindcss.nuxtjs.org/
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
   ],
 
   alias: {
-    tslib: 'tslib/tslib.es6.js'
+    tslib: 'tslib/tslib.es6.js',
   },
 
   tailwindcss: {
-    viewer: false
+    viewer: false,
   },
 
   // Router middleware
   router: {
-    middleware: ['auth']
+    middleware: ['auth'],
   },
 
   i18n: {
     locales: [{
       code: 'en',
       iso: 'en-US',
-      file: 'en-US.js'
+      file: 'en-US.js',
     }, {
       code: 'ru',
       iso: 'ru-RU',
-      file: 'ru-RU.js'
+      file: 'ru-RU.js',
     }],
     strategy: 'no_prefix',
     defaultLocale: 'en',
     detectBrowserLanguage: {
       useCookie: true,
-      cookieKey: 'i18n_redirected'
+      cookieKey: 'i18n_redirected',
     },
     seo: false,
     lazy: true,
     vueI18nLoader: true,
-    langDir: 'locales/'
+    langDir: 'locales/',
   },
 
   pwa: {
@@ -134,21 +134,21 @@ export default defineNuxtConfig({
       name: 'Finapp',
       short_name: 'Finapp',
       background_color: '#171717',
-      theme_color: '#171717'
+      theme_color: '#171717',
     },
 
     workbox: {
       offlineStrategy: 'cacheFirst',
       runtimeCaching: [{
         urlPattern: 'https://fonts.googleapis.com/',
-        handler: 'cacheFirst'
+        handler: 'cacheFirst',
       }, {
         urlPattern: 'https://fonts.gstatic.com/',
-        handler: 'cacheFirst'
+        handler: 'cacheFirst',
       }, {
         urlPattern: 'https://cdn.materialdesignicons.com/',
-        handler: 'cacheFirst'
-      }]
-    }
-  }
+        handler: 'cacheFirst',
+      }],
+    },
+  },
 })

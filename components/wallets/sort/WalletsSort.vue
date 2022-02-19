@@ -1,17 +1,17 @@
 <script>
 import draggable from 'vuedraggable'
-import { successEmo, random } from '~/assets/js/emo'
+import { random, successEmo } from '~/assets/js/emo'
 
 export default {
   name: 'WalletsSort',
 
   components: {
-    draggable
+    draggable,
   },
 
-  data () {
+  data() {
     return {
-      sortedWalletsIds: this.$store.getters['wallets/walletsSortedIds']
+      sortedWalletsIds: this.$store.getters['wallets/walletsSortedIds'],
     }
   },
 
@@ -21,7 +21,7 @@ export default {
      * Convert them to objects with order value
      * Push object with wallets to DB
      */
-    async saveWalletsOrder () {
+    async saveWalletsOrder() {
       const sortedWallets = {}
 
       for (const [idx, walletId] of this.sortedWalletsIds.entries())
@@ -34,11 +34,11 @@ export default {
         this.$notify({
           type: 'success',
           title: random(successEmo),
-          text: 'Saved'
+          text: 'Saved',
         })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

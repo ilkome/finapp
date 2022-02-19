@@ -5,26 +5,26 @@ export default {
   props: {
     amount: {
       type: Number,
-      required: true
+      required: true,
     },
     type: {
       type: Number,
-      default: 3
+      default: 3,
     },
     title: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
-    className () {
+    className() {
       return {
         _expenses: this.type === 0,
-        _incomes: this.type === 1
+        _incomes: this.type === 1,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

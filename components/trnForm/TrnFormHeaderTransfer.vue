@@ -1,38 +1,38 @@
 <script>
 export default {
-  fetch () {
+  fetch() {
     if (this.$store.state.trnForm.values.amountType === 2) {
       this.$store.commit('trnForm/setTrnFormValues', {
         walletFromId: this.walletFromId,
-        walletToId: this.walletToId
+        walletToId: this.walletToId,
       })
     }
     else {
       this.$store.commit('trnForm/setTrnFormTransfer', {
         tranferType: 'from',
-        walletId: this.walletFromId
+        walletId: this.walletFromId,
       })
       this.$store.commit('trnForm/setTrnFormTransfer', {
         tranferType: 'to',
-        walletId: this.walletToId
+        walletId: this.walletToId,
       })
     }
   },
 
   computed: {
-    walletFromId () {
+    walletFromId() {
       return this.$store.state.trnForm.values.walletFromId || this.$store.state.trnForm.values.walletId || this.$store.getters['wallets/walletsSortedIds'][0]
     },
-    walletFrom () {
+    walletFrom() {
       return this.$store.state.wallets.items && this.$store.state.wallets.items[this.walletFromId]
     },
-    walletToId () {
+    walletToId() {
       return this.$store.state.trnForm.values.walletToId || this.$store.getters['wallets/walletsSortedIds'][1] || this.$store.state.trnForm.values.walletId
     },
-    walletTo () {
+    walletTo() {
       return this.$store.state.wallets.items && this.$store.state.wallets.items[this.walletToId]
-    }
-  }
+    },
+  },
 }
 </script>
 

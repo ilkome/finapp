@@ -6,10 +6,10 @@ export default defineComponent({
     amount: { type: Number, required: true },
     currency: { type: String, required: true },
     colorize: { type: String, default: 'none' },
-    type: { type: Number, default: null }
+    type: { type: Number, default: null },
   },
 
-  setup ({ type }) {
+  setup({ type }) {
     const { baseCurrency, formatAmount, getCurrencySymbol, getAmountInBaseCurrency } = useAmount()
     const sign = type === 0 ? '-' : '+'
 
@@ -19,9 +19,9 @@ export default defineComponent({
 
       getCurrencySymbol,
       getAmountInBaseCurrency,
-      formatAmount
+      formatAmount,
     }
-  }
+  },
 })
 </script>
 

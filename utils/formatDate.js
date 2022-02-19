@@ -4,7 +4,7 @@ const calendar = require('dayjs/plugin/calendar')
 dayjs.extend(calendar)
 
 dayjs.locale('en', {
-  mondayFirst: true
+  mondayFirst: true,
 })
 
 export const formatDate = (value, type) => {
@@ -21,11 +21,11 @@ export const formatDate = (value, type) => {
           nextWeek: 'dddd',
           lastDay: `[${currentLocale === 'ru' ? 'Вчера' : 'Yesterday'}] dddd`,
           lastWeek: 'dddd',
-          sameElse: 'dddd'
+          sameElse: 'dddd',
         }),
         week: dayjs(+value).format('DD.MM'),
         month: dayjs(+value).format('MMM'),
-        year: dayjs(+value).format('YYYY')
+        year: dayjs(+value).format('YYYY'),
       }
 
     case 'number':

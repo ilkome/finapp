@@ -3,10 +3,10 @@ export default {
   name: 'TrnFormModalCats',
 
   methods: {
-    afterClose () {
+    afterClose() {
       this.$store.commit('trnForm/closeTrnFormModal', 'categories')
-    }
-  }
+    },
+  },
 }
 </script>
 

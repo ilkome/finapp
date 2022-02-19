@@ -4,7 +4,7 @@ import { getRatesOf } from './api'
 import { getDataOnce, saveData } from '~/services/firebaseHelpers'
 
 export default {
-  async initCurrencies ({ rootState, commit }) {
+  async initCurrencies({ rootState, commit }) {
     const uid = rootState.user.user.uid
 
     // user base currency in DB
@@ -22,7 +22,7 @@ export default {
       rates = await getRatesOf(userBaseCurrency)
       saveData(`currencies/${userBaseCurrency}`, {
         rates,
-        date: today
+        date: today,
       })
     }
 
@@ -31,9 +31,9 @@ export default {
     localforage.setItem('finapp.currencies', currencies)
   },
 
-  setBaseCurrency ({ rootState, dispatch }, baseCurrency) {
+  setBaseCurrency({ rootState, dispatch }, baseCurrency) {
     const uid = rootState.user.user.uid
     saveData(`users/${uid}/settings/baseCurrency`, baseCurrency)
     dispatch('initCurrencies')
-  }
+  },
 }

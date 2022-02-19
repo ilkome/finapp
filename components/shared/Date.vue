@@ -2,11 +2,11 @@
 /* eslint-disable no-case-declarations */
 export default {
   props: {
-    type: { type: Number, default: 3 }
+    type: { type: Number, default: 3 },
   },
 
   computed: {
-    formatedDate () {
+    formatedDate() {
       const today = this.$day()
       const filterDate = this.$store.state.filter.date
       const filterPeriod = this.$store.state.filter.period
@@ -46,8 +46,8 @@ export default {
 
       const fDate = this.$day(filterDate).format(format)
       return fDate[0].toUpperCase() + fDate.slice(1)
-    }
-  }
+    },
+  },
 }
 </script>
 

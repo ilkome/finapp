@@ -1,11 +1,11 @@
 <script lang="ts">
 export default defineComponent({
   methods: {
-    handleShowWalletsModalWalletModal (id) {
+    handleShowWalletsModalWalletModal(id) {
       this.$store.commit('wallets/showWalletsModalWalletModal')
       this.$store.commit('wallets/setWalletsModalWalletModalId', id)
-    }
-  }
+    },
+  },
 })
 </script>
 

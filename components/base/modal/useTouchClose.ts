@@ -1,4 +1,4 @@
-export default function useOnTouch () {
+export default function useOnTouch() {
   let isDragging = true
   let isDrugByHandler = false
   let initialY = 0
@@ -9,7 +9,7 @@ export default function useOnTouch () {
     whaitForScrollClassName: 'waitForScroll',
     whaitForScrollSliderClassName: 'waitForScrollSlider',
     doNotTouchClassName: 'doNotCloseModal',
-    animClassName: '_anim'
+    animClassName: '_anim',
   }
 
   let container: (null | any) = null
@@ -24,7 +24,7 @@ export default function useOnTouch () {
    * Init
    * @param props
    */
-  function initTouchModal (props: any): void {
+  function initTouchModal(props: any): void {
     container = props.container
     overflow = props.overflow
     wrap = props.wrap
@@ -35,7 +35,7 @@ export default function useOnTouch () {
     if (props.config) {
       config = {
         ...config,
-        ...props.config.value
+        ...props.config.value,
       }
     }
 
@@ -52,7 +52,7 @@ export default function useOnTouch () {
   /**
    * Translate
    */
-  function setTranslate (): void {
+  function setTranslate(): void {
     if (!wrap.value) return
     const offset = isDrugByHandler ? 0 : config.dragOffset
 
@@ -78,7 +78,7 @@ export default function useOnTouch () {
    * Drag start handler
    * @param event
    */
-  function onDragStart (event: any): void {
+  function onDragStart(event: any): void {
     isDragging = false
     wrap.value.classList.remove(config.animClassName)
 
@@ -125,7 +125,7 @@ export default function useOnTouch () {
    * Dragging handler
    * @param event
    */
-  function onDragging (event: any): void {
+  function onDragging(event: any): void {
     if (isDragging) {
       event.type === 'touchmove'
         ? currentY = event.touches[0].clientY - initialY
@@ -138,7 +138,7 @@ export default function useOnTouch () {
   /**
    * Drag end handler
    */
-  function onDragEnd (): void {
+  function onDragEnd(): void {
     if (currentY >= 80) {
       closeModal()
     }
@@ -152,7 +152,7 @@ export default function useOnTouch () {
   /**
    * Transition end handler
    */
-  function onTransitionEnd (): void {
+  function onTransitionEnd(): void {
     wrap.value.removeEventListener('transitionend', onTransitionEnd)
     currentY = 0
     wrap.value.style.transform = ''
@@ -164,7 +164,7 @@ export default function useOnTouch () {
   /**
    * Clode modal
    */
-  function closeModal (): void {
+  function closeModal(): void {
     isDragging = false
     isDrugByHandler = false
 
@@ -205,6 +205,6 @@ export default function useOnTouch () {
 
   return {
     initTouchModal,
-    closeModal
+    closeModal,
   }
 }

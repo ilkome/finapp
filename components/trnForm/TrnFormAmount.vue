@@ -2,7 +2,7 @@
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { isSum, getResult, expression } = useCalculator()
     const amountType = computed(() => $store.state.trnForm.values.amountType)
@@ -14,13 +14,13 @@ export default {
       expression,
       className: computed(() => ({
         _expenses: amountType.value === 0,
-        _incomes: amountType.value === 1
-      }))
+        _incomes: amountType.value === 1,
+      })),
     }
   },
 
   methods: {
-    handleChangeAmountType () {
+    handleChangeAmountType() {
       let nextAmountType = 0
 
       switch (this.amountType) {
@@ -34,10 +34,10 @@ export default {
       }
 
       this.$store.commit('trnForm/setTrnFormValues', {
-        amountType: nextAmountType
+        amountType: nextAmountType,
       })
-    }
-  }
+    },
+  },
 }
 </script>
 

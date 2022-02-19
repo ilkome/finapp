@@ -4,28 +4,28 @@ import pkg from '~/package'
 export default {
   name: 'SettingsPage',
 
-  data () {
+  data() {
     return {
       confirmRemoveUserData: false,
-      version: pkg.version
+      version: pkg.version,
     }
   },
 
-  head () {
+  head() {
     return {
-      title: this.$t('settings.title')
+      title: this.$t('settings.title'),
     }
   },
 
   methods: {
-    removeUserData () {
+    removeUserData() {
       this.confirmRemoveUserData = false
       this.$store.dispatch('user/removeUserData')
 
       if (this.$route.name !== 'welcome')
         this.$router.push('/welcome')
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -143,12 +143,12 @@ LayoutBaseWrap(:contentPadding="false")
 
 <i18n lang="json5">
 {
-  en: {
-    user: 'User'
+  "en": {
+    "user": "User"
   },
 
-  ru: {
-    user: 'Пользователь'
+  "ru": {
+    "user": "Пользователь"
   }
 }
 </i18n>

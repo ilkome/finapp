@@ -3,7 +3,7 @@ import { removeData } from '~/services/firebaseHelpers'
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { setWalletFilter } = useFilter()
 
@@ -17,49 +17,49 @@ export default {
       if (!id) return
       return {
         ...$store.state.wallets.items[id],
-        total: $store.getters['wallets/walletsTotal'][id].base
+        total: $store.getters['wallets/walletsTotal'][id].base,
       }
     })
 
     return {
       setWalletFilter,
       closed,
-      wallet
+      wallet,
     }
   },
 
-  data () {
+  data() {
     return {
-      showModalConfirm: false
+      showModalConfirm: false,
     }
   },
 
   computed: {
-    deleteInfo () {
+    deleteInfo() {
       if (this.trnsIds.length > 0)
         return `It's also will delete ${this.trnsIds.length} trns in this wallet`
 
       return null
     },
-    walletId () {
+    walletId() {
       return this.$store.state.wallets.modal.id
     },
-    trnsIds () {
+    trnsIds() {
       const trns = this.$store.state.trns.items
       const trnsIds = []
       for (const trnId in trns) {
-        if (trns[trnId].walletId === this.walletId ||
-          trns[trnId].walletFromId === this.walletId ||
-          trns[trnId].walletToId === this.walletId)
+        if (trns[trnId].walletId === this.walletId
+          || trns[trnId].walletFromId === this.walletId
+          || trns[trnId].walletToId === this.walletId)
           trnsIds.push(trnId)
       }
 
       return trnsIds
-    }
+    },
   },
 
   methods: {
-    handleSetFilterWallet () {
+    handleSetFilterWallet() {
       this.setWalletFilter(this.walletId)
       this.$store.commit('filter/setFilterDateNow')
 
@@ -69,7 +69,7 @@ export default {
       this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
 
-    handleEditClick () {
+    handleEditClick() {
       const walletId = this.walletId
       this.$store.commit('wallets/hideWalletsModalWalletModal')
       this.$store.commit('wallets/setWalletsModalWalletModalId', null)
@@ -77,11 +77,11 @@ export default {
       this.$store.dispatch('ui/setActiveTab', 'createWallet')
     },
 
-    handleDeleteClick () {
+    handleDeleteClick() {
       this.showModalConfirm = true
     },
 
-    handleDeleteConfirm () {
+    handleDeleteConfirm() {
       const trnsIds = this.trnsIds
       const uid = this.$store.state.user.user.uid
       const id = this.walletId
@@ -90,13 +90,13 @@ export default {
       this.$store.commit('wallets/hideWalletsModalWalletModal')
       this.$store.commit('wallets/setWalletsModalWalletModalId', null)
 
-      setTimeout(async () => {
+      setTimeout(async() => {
         await this.$store.dispatch('trns/deleteTrnsByIds', trnsIds)
         removeData(`users/${uid}/accounts/${id}`)
           .then(() => console.log('wallet deleted'))
       }, 200)
-    }
-  }
+    },
+  },
 }
 </script>
 

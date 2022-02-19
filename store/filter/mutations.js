@@ -1,31 +1,31 @@
 import dayjs from 'dayjs'
 
 export default {
-  setDate (state, date) {
+  setDate(state, date) {
     state.date = dayjs(date).valueOf()
   },
 
-  setFilterCategoryId (state, categoryId) {
+  setFilterCategoryId(state, categoryId) {
     state.categoryId = categoryId
   },
 
-  setFilterDateNow (state) {
+  setFilterDateNow(state) {
     state.date = dayjs().valueOf()
   },
 
-  setFilterWalletId (state, walletId) {
+  setFilterWalletId(state, walletId) {
     state.walletId = walletId
   },
 
-  setPeriod (state, period) {
+  setPeriod(state, period) {
     state.period = period
   },
 
-  setPeriodNext (state, date) {
+  setPeriodNext(state, date) {
     state.date = date
   },
 
-  setPeriodPrev (state, date) {
+  setPeriodPrev(state, date) {
     state.date = date
-  }
+  },
 }

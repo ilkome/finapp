@@ -5,19 +5,19 @@ export default {
   props: {
     showCategoriesCharts: {
       type: Boolean,
-      default: true
+      default: true,
     },
     showInside: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   computed: {
-    statCurrentPeriod () {
+    statCurrentPeriod() {
       return this.$store.getters['stat/statCurrentPeriod']
-    }
-  }
+    },
+  },
 }
 </script>
 

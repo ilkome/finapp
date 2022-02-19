@@ -2,7 +2,7 @@
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { setCategoryFilter, setWalletFilter } = useFilter()
 
@@ -30,24 +30,24 @@ export default {
       filterWallet,
 
       onClearFilter,
-      onClearCategory
+      onClearCategory,
     }
   },
 
   methods: {
-    clearCategoryFilter () {
+    clearCategoryFilter() {
       const nextCategoryId = this.filterCategory.parentId !== 0 ? this.filterCategory.parentId : null
       this.setCategoryFilter(nextCategoryId)
     },
 
-    clearParentCategoryFilter () {
+    clearParentCategoryFilter() {
       this.setCategoryFilter(null)
     },
 
-    clearWalletFilter () {
+    clearWalletFilter() {
       this.setWalletFilter(null)
-    }
-  }
+    },
+  },
 }
 </script>
 

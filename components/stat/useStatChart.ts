@@ -3,23 +3,23 @@ type MoneyType = 'incomes' | 'expenses'
 const state = reactive({
   show: {
     incomes: true,
-    expenses: true
-  }
+    expenses: true,
+  },
 })
 
-export default function useStatChart () {
+export default function useStatChart() {
   const { $store } = useNuxtApp()
   const activeTabStat = computed(() => $store.state.ui.activeTabStat)
 
-  function setChart (type: MoneyType, value: boolean): void {
+  function setChart(type: MoneyType, value: boolean): void {
     state.show[type] = value
   }
 
-  function toogle (type: MoneyType): void {
+  function toogle(type: MoneyType): void {
     state.show[type] = !state.show[type]
   }
 
-  function onWatch () {
+  function onWatch() {
     watch(activeTabStat, () => {
       switch (activeTabStat.value) {
         case 'incomes':
@@ -41,6 +41,6 @@ export default function useStatChart () {
   return {
     chartState: state,
     toogleChart: toogle,
-    onWatch
+    onWatch,
   }
 }

@@ -1,49 +1,49 @@
 export default {
-  setTrnFormValues (state, values) {
+  setTrnFormValues(state, values) {
     state.values = {
       ...state.values,
-      ...values
+      ...values,
     }
   },
 
-  setTrnFormTransfer (state, { tranferType, walletId }) {
+  setTrnFormTransfer(state, { tranferType, walletId }) {
     if (tranferType)
       state.transfer[tranferType] = walletId
   },
 
-  setTrnFormHeight (state, height) {
+  setTrnFormHeight(state, height) {
     state.height = height
   },
 
-  setTrnFormModalCategoryId (state, id) {
+  setTrnFormModalCategoryId(state, id) {
     state.showModalCategoryId === id
       ? state.showModalCategoryId = null
       : state.showModalCategoryId = id
   },
 
-  setTrnFormModalTrnId (state, id) {
+  setTrnFormModalTrnId(state, id) {
     state.showModalTrnId === id
       ? state.showModalTrnId = null
       : state.showModalTrnId = id
   },
 
-  closeTrnFormModal (state, modalName) {
+  closeTrnFormModal(state, modalName) {
     state.modal[modalName] = false
   },
 
-  showTrnFormModal (state, modalName) {
+  showTrnFormModal(state, modalName) {
     state.modal[modalName] = true
   },
 
-  closeTrnForm (state) {
+  closeTrnForm(state) {
     state.show = false
   },
 
-  openTrnForm (state) {
+  openTrnForm(state) {
     state.show = true
   },
 
-  toogleTrnForm (state) {
+  toogleTrnForm(state) {
     state.show = !state.show
-  }
+  },
 }

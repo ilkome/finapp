@@ -3,24 +3,24 @@ export default {
   props: {
     limit: {
       type: Number,
-      default: null
-    }
+      default: null,
+    },
   },
 
   computed: {
-    wallets () {
+    wallets() {
       const wallets = {}
 
       for (const walletId of this.$store.getters['wallets/walletsSortedIds']) {
         wallets[walletId] = {
           ...this.$store.state.wallets.items[walletId],
-          total: this.$store.getters['wallets/walletsTotal'][walletId].base
+          total: this.$store.getters['wallets/walletsTotal'][walletId].base,
         }
       }
 
       return wallets
-    }
-  }
+    },
+  },
 }
 </script>
 

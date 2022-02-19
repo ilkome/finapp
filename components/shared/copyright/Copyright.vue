@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'SharedCopyright'
+  name: 'SharedCopyright',
 }
 </script>
 

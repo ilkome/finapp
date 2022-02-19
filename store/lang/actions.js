@@ -1,8 +1,8 @@
 import localforage from 'localforage'
-import { saveData, getDataOnce } from '~/services/firebaseHelpers'
+import { getDataOnce, saveData } from '~/services/firebaseHelpers'
 
 export default {
-  setLang ({ commit, rootGetters }, lang) {
+  setLang({ commit, rootGetters }, lang) {
     const uid = rootGetters['user/userUid']
     if (uid)
       saveData(`users/${uid}/settings/lang`, lang)
@@ -16,12 +16,12 @@ export default {
     }
   },
 
-  async initLocalLang ({ commit }) {
+  async initLocalLang({ commit }) {
     const localLang = await localforage.getItem('finapp.lang')
     if (localLang) commit('setLang', localLang)
   },
 
-  async initDbLang ({ commit, rootGetters }) {
+  async initDbLang({ commit, rootGetters }) {
     const uid = rootGetters['user/userUid']
     if (!uid) return
 
@@ -35,5 +35,5 @@ export default {
       if (this.app.i18n.locale !== lang)
         this.app.i18n.setLocale(lang)
     }
-  }
+  },
 }

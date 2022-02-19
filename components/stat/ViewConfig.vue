@@ -6,14 +6,14 @@ import useUIView from '~/components/layout/useUIView'
 import useStatChart from '~/components/stat/useStatChart'
 
 export default defineComponent({
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { chartState, toogleChart } = useStatChart()
 
     const activeTabStat = computed(() => $store.state.ui.activeTabStat)
 
     const { ui, setUI } = useUIView()
-    function toogleView (name) {
+    function toogleView(name) {
       setUI({ name, value: !ui[name] })
     }
 
@@ -34,9 +34,9 @@ export default defineComponent({
       ui,
       isEmptyStat,
       isShowDataLabels,
-      toogleChartsView
+      toogleChartsView,
     }
-  }
+  },
 })
 </script>
 

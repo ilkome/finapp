@@ -5,7 +5,7 @@ import './long-press-event'
 export default {
   name: 'TrnFormCalculator',
 
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const amountType = computed(() => $store.state.trnForm.values.amountType)
 
@@ -15,7 +15,7 @@ export default {
       clearExpression,
       handleTouch,
       isSum,
-      keyboardHandler
+      keyboardHandler,
     } = useCalculator()
 
     // Mounted
@@ -37,9 +37,9 @@ export default {
 
       isSum,
       deleteRef,
-      handleTouch
+      handleTouch,
     }
-  }
+  },
 }
 </script>
 

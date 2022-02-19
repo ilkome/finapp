@@ -3,7 +3,7 @@ import useFilter from '~/modules/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
 
 export default {
-  setup () {
+  setup() {
     const { $store } = useNuxtApp()
     const { periodsNames } = usePeriods()
     const { filterPeriodNameAllReplacedToYear } = useFilter()
@@ -20,9 +20,9 @@ export default {
       onSelect: (value) => {
         $store.commit('chart/setElementsToChart', {
           period: filterPeriod.value,
-          value
+          value,
         })
-      }
+      },
     }
 
     return {
@@ -31,9 +31,9 @@ export default {
       filterPeriod,
       visiblePeriodMenu,
       onSelectPeriod,
-      periodCounts
+      periodCounts,
     }
-  }
+  },
 }
 </script>
 
