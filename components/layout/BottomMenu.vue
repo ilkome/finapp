@@ -1,16 +1,8 @@
 <script>
 export default {
-  name: 'LayoutMobileBottomMenu',
-
   props: {
-    slider: {
-      type: Object,
-      required: true,
-    },
-    stat2: {
-      type: Boolean,
-      default: false,
-    },
+    slider: { type: Object, required: true },
+    stat2: { type: Boolean, default: false },
   },
 
   setup() {

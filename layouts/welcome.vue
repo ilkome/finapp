@@ -1,5 +1,4 @@
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, useLazyAsyncData, useNuxtApp } from '#app'
 import debounce from '~/utils/debounce'
 import detectTouch from '~/assets/js/isTouchDevice'
 import useUIView from '~/components/layout/useUIView'

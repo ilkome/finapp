@@ -1,11 +1,8 @@
 <script lang="ts">
 import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
-import { useRoute } from '#imports'
 import { auth } from '~/services/firebaseHelpers'
 
 export default defineComponent({
-  layout: 'login',
-
   setup() {
     const isLoading = ref(false)
 
