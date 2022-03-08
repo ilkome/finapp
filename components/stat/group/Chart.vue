@@ -3,17 +3,15 @@ import { Chart } from 'highcharts-vue'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
+import { getTrnsIds } from '~/components/trns/functions/getTrns'
 
 export default {
   name: 'StatChartLines',
 
-  components: {
-    Chart,
-  },
+  components: { Chart },
 
   props: {
     isShowIncomes: { type: Boolean, default: true },
-    disableCategoryFilter: { type: Boolean, default: false },
     isShowExpenses: { type: Boolean, default: true },
     categoryId: { type: String, default: null },
     amountType: { type: String, default: null },
@@ -89,10 +87,10 @@ export default {
     chartData() {
       const periodName = this.filterPeriodNameAllReplacedToYear
       const chartPeriods = this.$store.state.chart.periods
-      const trns = this.$store.state.trns.items
+      const trnsItems = this.$store.state.trns.items
 
       // diff periods from oldest trn and today
-      const oldestTrnDate = this.$day(trns[this.$store.getters['trns/firstCreatedTrnId']].date).endOf(periodName)
+      const oldestTrnDate = this.$day(trnsItems[this.$store.getters['trns/firstCreatedTrnId']].date).endOf(periodName)
       let periodsToShow = this.$day().endOf(periodName).diff(oldestTrnDate, periodName) + 1
       const periodsWantToShow = chartPeriods[periodName].showedPeriods
       periodsToShow = periodsWantToShow >= periodsToShow ? periodsToShow : periodsWantToShow
@@ -105,12 +103,14 @@ export default {
       for (let index = 0; index < periodsToShow; index++) {
         // count total period
         const periodDate = this.$day().startOf(periodName).subtract(index, periodName).valueOf()
-        const trnsIds = this.$store.getters['trns/getTrns']({
-          date: periodDate,
+
+        const trnsIds = getTrnsIds({
+          categoriesIds: [this.categoryId],
           periodName,
-          categoryId: null,
-          disableCategoryFilter: this.disableCategoryFilter,
+          date: periodDate,
+          trnsItems,
         })
+
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
         let format = 'MM'

@@ -5,16 +5,8 @@ export default {
     state.date = dayjs(date).valueOf()
   },
 
-  setFilterCategoryId(state, categoryId) {
-    state.categoryId = categoryId
-  },
-
   setFilterDateNow(state) {
     state.date = dayjs().valueOf()
-  },
-
-  setFilterWalletId(state, walletId) {
-    state.walletId = walletId
   },
 
   setPeriod(state, period) {
@@ -27,5 +19,33 @@ export default {
 
   setPeriodPrev(state, date) {
     state.date = date
+  },
+
+  // Wallets
+  setFilterWalletsId(state, walletId) {
+    if (state.walletsIds.includes(walletId)) return
+    state.walletsIds.push(walletId)
+  },
+
+  removeFilterWalletId(state, walletId) {
+    state.walletsIds = state.walletsIds.filter(id => id !== walletId)
+  },
+
+  clearFilterWalletsIds(state) {
+    state.walletsIds = []
+  },
+
+  // Cats
+  setFilterCatsId(state, catId) {
+    if (state.catsIds.includes(catId)) return
+    state.catsIds.push(catId)
+  },
+
+  removeFilterCatId(state, catId) {
+    state.catsIds = state.catsIds.filter(id => id !== catId)
+  },
+
+  clearFilterCatsIds(state) {
+    state.catsIds = []
   },
 }

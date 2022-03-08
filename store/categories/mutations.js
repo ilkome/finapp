@@ -21,20 +21,6 @@ export default {
     }
   },
 
-  showCategoryModal(state) {
-    state.modal.show = true
-  },
-
-  hideCategoryModal(state) {
-    state.modal.show = false
-  },
-
-  setCategoryModalId(state, id) {
-    state.modal.id === id
-      ? state.modal.id = null
-      : state.modal.id = id
-  },
-
   setCategoryEditId(state, id) {
     state.editId === id
       ? state.editId = null

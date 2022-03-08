@@ -136,11 +136,10 @@ export default {
             .header
               .header__title {{ $t('appName') }}
             .options__desc {{ $t('welcome.createFirstWallet.text') }}
-            .button
-              SharedButton._center._blue2(
-                :title="$t('welcome.createFirstWallet.btn')"
-                @onClick="showWalletForm = true"
-              )
+            SharedButton._center._blue2(
+              :title="$t('welcome.createFirstWallet.btn')"
+              @onClick="showWalletForm = true"
+            )
 
   //- category
   transition(name="fadeIn")
@@ -149,10 +148,9 @@ export default {
         .tab__content
           .icon: .mdi.mdi-folder-star
           .options__desc {{ $t('welcome.createFirstCategory.text') }}
-          .button
-            SharedButton._blue2._center(
-              :title="$t('welcome.createFirstCategory.btn')"
-              @onClick="showCategoryForm = true")
+          SharedButton._blue2._center(
+            :title="$t('welcome.createFirstCategory.btn')"
+            @onClick="showCategoryForm = true")
 
   transition(name="fadeIn")
     .tab(v-if="showWalletForm")

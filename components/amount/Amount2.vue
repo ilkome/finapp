@@ -31,7 +31,7 @@ export default defineComponent({
 )
   //- Amount
   template(v-if="amount !== 0")
-    div(:class="[{ 'text-green-600 dark:text-green-500': colorize === 'incomes' && type === 1 }]")
+    div(:class="[{ 'text-green-600 dark_text-green-500': colorize === 'incomes' && type === 1 }]")
       //- Original
       .gap-1.flex.items-baseline.justify-end
         .text-md.leading-none {{ sign }}

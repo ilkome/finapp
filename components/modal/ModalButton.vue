@@ -14,13 +14,14 @@ export default {
   @click="$emit('onClick')"
 )
 
-  .modalButton__icon(v-if="$slots.icon")
+  .modalButton__icon.pb-2(v-if="$slots.icon")
     slot(name="icon")
 
   template(v-if="!$slots.icon && icon")
-    .modalButton__icon: div(:class="icon")
+    .modalButton__icon.pb-2
+      .text-3xl(:class="icon")
 
-  .modalButton__name {{ name }}
+  .modalButton__name.text-xs {{ name }}
 </template>
 
 <style lang="stylus" scoped>
@@ -49,20 +50,12 @@ export default {
       border 1px solid var(--c-item-bd-hover)
 
   &__icon
-    opacity .8
     display flex
     align-items center
     justify-content center
-    padding-bottom $m6
-    color var(--c-font-2)
-    font-size 32px
-
-    ~/._active &
-      color var(--c-blue-1)
 
   &__name
     color var(--c-font-3)
-    font-size 12px
     line-height 16px
 
     ~/._active &

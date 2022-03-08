@@ -39,14 +39,14 @@ export default defineComponent({
     ) {{ wallet.name.substring(0, 2) }}
 
     div
-      .text-sm.text-neutral-500(class="dark:text-neutral-400") {{ wallet.name }}
+      .text-sm.text-neutral-500(class="dark_text-neutral-400") {{ wallet.name }}
       Amount(
-        :alwaysShowSymbol="true"
         :currency="wallet.currency"
         :showBase="showBase"
         :size="size"
         :value="wallet.total"
         :vertical="vertical"
+        alwaysShowSymbol
       )
 </template>
 

@@ -10,7 +10,7 @@ export default {
     currentLanguageName() {
       switch (this.$i18n.locale) {
         case 'ru':
-          return '🇷🇺 Russian - Русский'
+          return '🇷🇺 Русский - Russian'
         default:
           return '🇺🇸 English - Английский'
       }
@@ -31,28 +31,23 @@ export default {
 </script>
 
 <template lang="pug">
-div
-  SharedContextMenu(
-    :position="{ left: true, top: true }"
-    :visible="visibleDropdown"
-    @onClickOpener="onClickOpener"
-  )
+SharedContextMenu(
+  :position="{ left: true, top: true }"
+  :visible="visibleDropdown"
+  @onClickOpener="onClickOpener"
+)
 
-    template(slot="opener")
-      SharedDropdown(
-        :active="visibleDropdown"
-        :title="currentLanguageName"
-      )
-    template(slot="content")
-      SharedContextMenuItem(
-        title="🇷🇺 Russian - Русский (Не полный)"
-        @onClick="changeLang('ru')")
+  template(slot="opener")
+    SharedDropdown(
+      :active="visibleDropdown"
+      :title="currentLanguageName"
+    )
+  template(slot="content")
+    SharedContextMenuItem(
+      title="🇷🇺 Русский - Russian"
+      @onClick="changeLang('ru')")
 
-      SharedContextMenuItem(
-        title="🇺🇸 English - Английский"
-        @onClick="changeLang('en')")
+    SharedContextMenuItem(
+      title="🇺🇸 English - Английский"
+      @onClick="changeLang('en')")
 </template>
-
-<style lang="stylus" scoped>
-
-</style>

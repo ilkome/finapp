@@ -11,10 +11,10 @@ export default {
   },
 
   setup() {
-    const { setCategoryFilter } = useFilter()
+    const { setFilterCatsId } = useFilter()
 
     return {
-      setCategoryFilter,
+      setFilterCatsId,
     }
   },
 
@@ -47,11 +47,11 @@ export default {
   @click="toogleShowInside"
 )
   .ins.py-2.px-3.space-x-3.justify-between.items-center.flex.border-t(
-    :class="[{ _active: isShowInside }, { 'border-b-0 cursor-n-resize': isShowInside }, { 'cursor-s-resize': !isShowInside }, 'dark:border-neutral-800']"
+    :class="[{ _active: isShowInside }, { 'border-b-0 cursor-n-resize': isShowInside }, { 'cursor-s-resize': !isShowInside }, 'dark_border-neutral-800']"
   )
     .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
       :style="{ background: category.color }"
-      @click.stop="setCategoryFilter(categoryId)"
+      @click.stop="setFilterCatsId(categoryId)"
     ): div(:class="category.icon")
 
     .grow

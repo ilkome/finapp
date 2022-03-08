@@ -90,14 +90,9 @@ export default defineNuxtConfig({
   buildModules: [
     '@nuxtjs/style-resources',
     '@nuxtjs/pwa',
-    // https://tailwindcss.nuxtjs.org/
     '@nuxtjs/tailwindcss',
     'unplugin-vue2-script-setup/nuxt',
   ],
-
-  scriptSetup: {
-    reactivityTransform: true,
-  },
 
   alias: {
     tslib: 'tslib/tslib.es6.js',
@@ -137,6 +132,7 @@ export default defineNuxtConfig({
   pwa: {
     manifest: {
       name: 'Finapp',
+      id: '/?standalone=true',
       short_name: 'Finapp',
       background_color: '#171717',
       theme_color: '#171717',

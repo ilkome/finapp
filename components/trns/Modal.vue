@@ -5,7 +5,7 @@ import useCalculator from '~/components/trnForm/calculator/useCalculator'
 export default {
   setup() {
     const { $store } = useNuxtApp()
-    const { setCategoryFilter, setWalletFilter } = useFilter()
+    const { setFilterCatsId, setFilterWalletsId } = useFilter()
 
     const closed = () => {
       $store.commit('trns/hideTrnModal')
@@ -13,8 +13,8 @@ export default {
     }
 
     return {
-      setCategoryFilter,
-      setWalletFilter,
+      setFilterCatsId,
+      setFilterWalletsId,
       closed,
     }
   },
@@ -22,6 +22,7 @@ export default {
   data() {
     return {
       showModalConfirm: false,
+      showModalGroups: false,
     }
   },
 
@@ -29,20 +30,23 @@ export default {
     trnId() {
       return this.$store.state.trns.modal.id
     },
+
     trn() {
       return this.$store.state.trns.items[this.trnId]
     },
+
     category() {
       return this.$store.state.categories.items[this.$store.state.trns.items[this.trnId].categoryId]
     },
+
     wallet() {
       return this.$store.state.wallets.items[this.$store.state.trns.items[this.trnId].walletId]
-    },
+    }
   },
 
   methods: {
     handleSetFilterCategory() {
-      this.setCategoryFilter(this.$store.state.trns.items[this.trnId].categoryId)
+      this.setFilterCatsId(this.$store.state.trns.items[this.trnId].categoryId)
       this.$store.commit('filter/setFilterDateNow')
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
@@ -51,7 +55,7 @@ export default {
     },
 
     handleSetFilterWallet() {
-      this.setWalletFilter(this.$store.state.trns.items[this.trnId].walletId)
+      this.setFilterWalletsId(this.$store.state.trns.items[this.trnId].walletId)
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
       this.$store.commit('filter/setFilterDateNow')
@@ -75,7 +79,7 @@ export default {
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
 
       const { setExpression } = useCalculator()
-      setExpression(trn.amount)
+      setExpression(trn.type === 2 && trn.incomeAmount ? trn.incomeAmount : trn.amount)
     },
 
     handleDeleteClick() {
@@ -89,7 +93,7 @@ export default {
       this.showModalConfirm = false
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-    },
+    }
   },
 }
 </script>
@@ -113,14 +117,14 @@ Portal(
         .header__category
           TrnsItemTrnItem(
             :category="category"
-            :trn="$store.state.trns.items[trnId]"
+            :trn="trn"
             :trnId="trnId"
             :wallet="wallet"
             ui="detailed"
           )
 
     template(#default="{ close }")
-      .content
+      .content.pb-4
         .tools
           .modalLinks
             ModalButton(
@@ -153,6 +157,7 @@ Portal(
                 )
 
             ModalButton(
+              v-if="wallet"
               :name="`${$t('base.setFilter')} ${wallet.name}`"
               @onClick="handleSetFilterWallet"
             )
@@ -163,7 +168,7 @@ Portal(
                 )
 
         .wrap
-          .button(
+          .button.my-2.mx-auto(
             @click="close()"
           ) {{ $t('close') }}
 
@@ -211,6 +216,7 @@ Portal(
     flex-grow 1
 
 .content
+  background var(--c-bg-3)
   +media(600px)
     border-radius 0 0 $m7 $m7
 
@@ -219,5 +225,4 @@ Portal(
 
 .button
   button-base-1()
-  margin $m8 auto $m5 auto
 </style>

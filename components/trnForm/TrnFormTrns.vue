@@ -1,4 +1,6 @@
 <script lang="ts">
+import { getTrnsIds } from '~/components/trns/functions/getTrns'
+
 export default defineComponent({
   props: {
     categoryId: { type: String, default: null },
@@ -25,27 +27,26 @@ export default defineComponent({
       return this.trnsIds.slice(0, end)
     },
 
-    filterTrns() {
-      const filter = {}
+    trnsIds() {
+      const trnsItems = this.$store.state.trns.items
+
+      const filter = {
+        walletsIds: null,
+        categoriesIds: null,
+      }
+
       if (this.filterBy === 'wallet') {
-        filter.walletId = this.$store.state.trnForm.values.walletId
+        filter.walletsIds = [this.$store.state.trnForm.values.walletId]
       }
       else if (this.filterBy === 'walletAndCategory') {
-        filter.walletId = this.$store.state.trnForm.values.walletId
-        filter.categoryId = this.$store.state.trnForm.values.categoryId
+        const catId = this.$store.state.trnForm.values.categoryId
+        const category = this.$store.state.categories.items[catId]
+
+        filter.walletsIds = [this.$store.state.trnForm.values.walletId]
+        filter.categoriesIds = category?.childIds ? category?.childIds : [catId]
       }
-      return filter
-    },
 
-    trnsIds() {
-      const trns = this.$store.state.trns.items
-      let trnsIds = this.$store.getters['trns/getTrnsIds']({
-        ...this.filterTrns,
-      })
-
-      // from category
-      if (this.categoryId)
-        trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === this.categoryId)
+      const trnsIds = getTrnsIds({ ...filter, trnsItems })
 
       // limit
       if (this.limit > 0) return trnsIds.slice(0, this.limit)
@@ -103,7 +104,10 @@ export default defineComponent({
     .containerWrap(v-if="trnsIds.length === 0") No transactions
 
     .scrollBlock
-      .m-3.overflow-hidden.rounded-md.bg-dark4(
+      .pt-5
+        .subTitle.text-center.pb-1.text-xs {{ $t('trns.history') }}
+
+      .mx-3.my-2.overflow-hidden.rounded-md.bg-dark4(
         v-for="(trnsIds, date) in groupedTrns"
         :key="date"
       )
@@ -122,17 +126,25 @@ export default defineComponent({
       .pages(v-if="!isShowedAllTrns")
         .button(@click="showMoreTrns") {{ $t('trns.more') }}
 
-  .pt-2.pb-5.px-3.justify-center.flex
-    .overflow-hidden.bg-dark4.rounded-md.justify-center.items-center.flex
-      .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('wallet')" :class="{ _active: filterBy === 'wallet' }") {{ $t('trnForm.filterWallet') }}
-      .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('walletAndCategory')" :class="{ _active: filterBy === 'walletAndCategory' }") {{ $t('trnForm.filterWalletAndCategory') }}
-      .barItem.px-6.py-3.font5.text-xs(@click="changeFilter('all')" :class="{ _active: filterBy === 'all' }") {{ $t('trnForm.filterAll') }}
+  .pt-2.pb-5.px-3
+    .overflow-hidden.rounded-md.items-center.flex.text-xs.text-center.bg-gray-50.dark_bg-dark4.dark_shadow
+      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+        :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': filterBy === 'wallet' }"
+        @click="changeFilter('wallet')"
+      ) {{ $t('trnForm.filterWallet') }}
+
+      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+        :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': filterBy === 'walletAndCategory' }"
+        @click="changeFilter('walletAndCategory')"
+      ) {{ $t('trnForm.filterWalletAndCategory') }}
+
+      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+        :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': filterBy === 'all' }"
+        @click="changeFilter('all')"
+      ) {{ $t('trnForm.filterAll') }}
 </template>
 
 <style lang="stylus" scoped>
-.button
-  button-base-1()
-
 .containerWrap
   display flex
   align-items center
@@ -161,7 +173,9 @@ export default defineComponent({
     overflow-y auto
     scrollbar()
 
-.scrollBlock
-  padding-top $m6
-  padding-bottom $m8
+.subTitle
+  color var(--c-font-4)
+  letter-spacing 0px
+  font-weight 600
+  text-transform uppercase
 </style>

@@ -1,4 +1,6 @@
 <script lang="ts">
+import useFilter from '~/modules/filter/useFilter'
+
 export default defineComponent({
   props: {
     id: { type: String, required: true },
@@ -6,6 +8,20 @@ export default defineComponent({
     vertical: { type: String, default: 'left' },
     size: { type: String, default: null },
     activeItemId: { type: String, default: null },
+  },
+
+  setup(props) {
+    const { $store } = useNuxtApp()
+    const { setFilterWalletsId } = useFilter()
+
+    const onClickFilterWallet = () => {
+      setFilterWalletsId(props.id)
+      $store.dispatch('ui/setActiveTabStat', 'details')
+    }
+
+    return {
+      onClickFilterWallet,
+    }
   },
 
   computed: {
@@ -27,36 +43,30 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.bg-main.py-2.px-5.gap-x-3.items-center.flex(
-  :class="{ _active: activeItemId === id }"
+.py-2.px-5.gap-x-3.items-center.flex.cursor-pointer(
+  :class="[{ _active: activeItemId === id }, 'hocus_bg-gray-200 dark_hocus_bg-neutral-800']"
   @click="handleClick"
 )
-  .text-neutral-50.text-xs.leading-none.w-6.h-6.rounded-md.justify-center.items-center.flex(
+  //- Icon
+  .w-6.h-6.flex-center.rounded-md.text-neutral-50.text-xs.leading-none(
     :style="{ background: wallet.color }"
+    @click.stop="onClickFilterWallet"
   ) {{ wallet.name.substring(0, 2) }}
 
   .grow
     .py-1.items-center.flex
-      .grow.text-xs.text-neutral-500(class="dark:text-neutral-400") {{ wallet.name }}
+      .grow.text-xs.text-neutral-600(
+        class="dark_text-neutral-400"
+      ) {{ wallet.name }}
 
       Amount(
-        :alwaysShowSymbol="true"
         :currency="wallet.currency"
         :showBase="showBase"
         :size="size"
         :value="wallet.total"
         :vertical="vertical"
+        alwaysShowSymbol
       )
 
-    .line
+    div(class="h-[1px] bg-gray-200 dark_bg-neutral-800")
 </template>
-
-<style lang="stylus">
-.bg-main
-  +media-hover()
-    background var(--c-item-bg-hover)
-
-.line
-  height 1px
-  background var(--c-bg-6);
-</style>

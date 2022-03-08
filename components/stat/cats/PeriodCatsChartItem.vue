@@ -1,22 +1,19 @@
-<script>
-export default {
+<script lang="ts">
+import useFilter from '~/modules/filter/useFilter'
+
+export default defineComponent({
   props: {
-    category: {
-      type: Object,
-      required: true,
-    },
-    categoryId: {
-      type: String,
-      required: true,
-    },
-    total: {
-      type: Number,
-      required: true,
-    },
-    biggest: {
-      type: Number,
-      required: true,
-    },
+    biggest: { type: Number, required: true },
+    category: { type: Object, required: true },
+    categoryId: { type: String, required: true },
+    total: { type: Number, required: true },
+  },
+
+  setup() {
+    const { setFilterCatsId } = useFilter()
+    return {
+      setFilterCatsId,
+    }
   },
 
   computed: {
@@ -55,12 +52,12 @@ export default {
         this.$emit('onActiveCategoryChange', { categoryId: null })
     },
   },
-}
+})
 </script>
 
 <template lang="pug">
 .statCatsItem.swiper-no-swiping(
-  @click="() => $store.dispatch('filter/handleSetFilterCategory', categoryId)"
+  @click="setFilterCatsId(categoryId)"
   @mouseenter="handleMouseEnter"
   @mouseleave="handleMouseLeave"
 )

@@ -1,70 +1,60 @@
-<script lang="ts">
+<script setup lang="ts">
 import debounce from '~/utils/debounce'
 import detectTouch from '~/assets/js/isTouchDevice'
 import useUIView from '~/components/layout/useUIView'
 
-export default defineComponent({
-  setup() {
-    const { $store } = useNuxtApp()
+const { $store } = useNuxtApp()
 
-    useLazyAsyncData('posts', async() => {
-      const { initUI } = useUIView()
-      await initUI()
+useLazyAsyncData('posts', async() => {
+  const { initUI } = useUIView()
+  await initUI()
+})
+
+const keepAliveInclude = ['PagesIndex, PagesWallets', 'PagesCategories', 'PagesHistory']
+
+/**
+ * Update modal
+ */
+const isShowUpdateApp = ref(false)
+onMounted(async() => {
+  const workbox = await window.$workbox
+  if (workbox) {
+    workbox.addEventListener('installed', (event) => {
+      isShowUpdateApp.value = event.isUpdate
     })
+  }
+})
 
-    const keepAliveInclude = ['PagesIndex, PagesWallets', 'PagesCategories', 'PagesHistory']
+/**
+ * Detect touch device
+ */
+const isTouchDevice = ref(false)
 
-    /**
-     * Update modal
-     */
-    const isShowUpdateApp = ref(false)
-    onMounted(async() => {
-      const workbox = await window.$workbox
-      if (workbox) {
-        workbox.addEventListener('installed', (event) => {
-          isShowUpdateApp.value = event.isUpdate
-        })
-      }
-    })
+/**
+ * Page dimensions
+ */
+function getPageDimensions() {
+  const width = document.documentElement.clientWidth
+  const height = document.documentElement.clientHeight
+  document.documentElement.style.setProperty('--height', `${height}px`)
+  $store.dispatch('ui/setAppDimensions', { width, height })
+}
 
-    /**
-     * Detect touch device
-     */
-    const isTouchDevice = ref(false)
+const touchClassNames = computed(() => ({
+  isNotTouchDevice: !isTouchDevice.value,
+  isTouchDevice: isTouchDevice.value,
+}))
 
-    /**
-     * Page dimensions
-     */
-    function getPageDimensions() {
-      const width = document.documentElement.clientWidth
-      const height = document.documentElement.clientHeight
-      document.documentElement.style.setProperty('--height', `${height}px`)
-      $store.dispatch('ui/setAppDimensions', { width, height })
-    }
-
-    const touchClassNames = computed(() => ({
-      isNotTouchDevice: !isTouchDevice.value,
-      isTouchDevice: isTouchDevice.value,
-    }))
-
-    onMounted(() => {
-      isTouchDevice.value = detectTouch()
-      getPageDimensions()
-      window.addEventListener('resize', debounce(getPageDimensions, 300))
-    })
-
-    return {
-      keepAliveInclude,
-      touchClassNames,
-      isShowUpdateApp,
-    }
-  },
+onMounted(() => {
+  isTouchDevice.value = detectTouch()
+  getPageDimensions()
+  window.addEventListener('resize', debounce(getPageDimensions, 300))
 })
 </script>
 
 <template lang="pug">
 .font-roboto.text-gray-500.leading-none.antialiased.overflow-hidden.relative.h-full.min-w-base.flex(
-  :class="[{ ...touchClassNames }, 'dark:text-gray-400']"
+  :class="[touchClassNames, 'dark_text-gray-400']"
 )
   LayoutModals
 

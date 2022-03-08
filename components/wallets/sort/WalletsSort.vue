@@ -1,13 +1,9 @@
 <script>
-import draggable from 'vuedraggable'
+import Draggable from 'vuedraggable'
 import { random, successEmo } from '~/assets/js/emo'
 
 export default {
-  name: 'WalletsSort',
-
-  components: {
-    draggable,
-  },
+  components: { Draggable },
 
   data() {
     return {
@@ -30,7 +26,6 @@ export default {
       const result = await this.$store.dispatch('wallets/saveWalletsOrder', sortedWallets)
       if (result.succsess) {
         if (this.$listeners.closeModal) this.$listeners.closeModal()
-        // this.$store.dispatch('ui/setActiveTab', 'wallets')
         this.$notify({
           type: 'success',
           title: random(successEmo),
@@ -43,35 +38,34 @@ export default {
 </script>
 
 <template lang="pug">
-LayoutBaseWrap(:contentPadding="$store.state.ui.pc")
-  template(slot="headerLeft") {{ $t('wallets.sortTitle') }}
+.h-full.overflow.overflow-x-auto
+  .mb-2.py-10.pt-12.px-3.text-center.text-neutral-800.dark_text-white.text-2xl.font-semibold.font-nunito
+    | {{ $t('wallets.sortTitle') }}
 
-  template(slot="content")
-    WalletsList2(
-      :style="{ paddingTop: '10px' }"
-      v-slot="{ wallets }")
-      draggable(
-        v-model="sortedWalletsIds"
-        handle=".handle"
-        ghost-class="_draggable"
-      )
-        template(v-for="walletId in sortedWalletsIds")
-          .walletItem2(:key="walletId")
-            .walletItem2__icon.handle
-              Icon(
-                :abbr="$store.state.wallets.items[walletId].name"
-                :background="$store.state.wallets.items[walletId].color || $store.state.ui.defaultBgColor")
+  WalletsList2(
+    :style="{ paddingTop: '10px' }"
+    v-slot="{ wallets }")
+    Draggable(
+      v-model="sortedWalletsIds"
+      handle=".handle"
+      ghost-class="_draggable"
+    )
+      template(v-for="walletId in sortedWalletsIds")
+        .walletItem2(:key="walletId")
+          .walletItem2__icon.handle
+            Icon(
+              :abbr="$store.state.wallets.items[walletId].name"
+              :background="$store.state.wallets.items[walletId].color || $store.state.ui.defaultBgColor")
 
-            .walletItem2__name {{ $store.state.wallets.items[walletId].name }}
-            .walletItem2__drag.handle.doNotCloseModal: .mdi.mdi-drag-horizontal-variant
+          .walletItem2__name {{ $store.state.wallets.items[walletId].name }}
+          .walletItem2__drag.handle.doNotCloseModal: .mdi.mdi-drag-horizontal-variant
 
-  template(slot="bottom")
-    .col
-      SharedButton(
-        className="_blue2 _text-center"
-        :title="$t('base.save')"
-        @onClick="saveWalletsOrder"
-      )
+  .col
+    SharedButton(
+      className="_blue2 _text-center"
+      :title="$t('base.save')"
+      @onClick="saveWalletsOrder"
+    )
 </template>
 
 <style lang="stylus" scoped>

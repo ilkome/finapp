@@ -1,10 +1,5 @@
 @import 'variables/*'
 
-font-title-1()
-  font-size 16px
-  font-weight 500
-  font-roboto()
-
 button-base-1()
   cursor pointer
   display flex
@@ -15,7 +10,6 @@ button-base-1()
   max-width 280px
   margin 0 auto
   padding 0 $m9
-  color var(--c-text-4)
   font-size 12px
   text-decoration none
   background var(--c-item-bg-main)
@@ -24,20 +18,9 @@ button-base-1()
   anim()
 
   +media-hover()
-    color var(--c-text-1)
     background var(--c-item-bg-hover)
     border 1px solid var(--c-item-bd-hover)
 
   +media(700px)
     height 48px
     max-width 280px
-
-header-title()
-  padding 60px 0
-  font-h1()
-  font-size 22px
-  font-weight 600
-  text-align center
-
-  +media-laptop()
-    font-size 28px

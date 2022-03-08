@@ -1,28 +1,22 @@
 import dayjs from 'dayjs'
 
-export const baseModalState = {
-  calendar: false,
-  categories: false,
-  categoriesChild: false,
-  description: false,
-  transferFrom: false,
-  transferTo: false,
-  wallets: false,
-  trn: false,
-}
-
 export const state = () => ({
   action: 'create',
-
   height: '100%',
-  modal: baseModalState,
 
-  transfer: {
-    from: null,
-    to: null,
+  modal: {
+    calendar: false,
+    categories: false,
+    categoriesChild: false,
+    description: false,
+    transferFrom: false,
+    transferTo: false,
+    wallets: false,
+    trn: false,
   },
 
   show: false,
+  showPc: true,
   showModalCategoryId: null,
   showModalTrnId: null,
 
@@ -34,5 +28,9 @@ export const state = () => ({
     description: null,
     trnId: null,
     walletId: null,
+    incomeAmount: 0,
+    incomeWalletId: null,
+    expenseAmount: 0,
+    expenseWalletId: null,
   },
 })

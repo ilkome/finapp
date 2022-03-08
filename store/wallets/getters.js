@@ -1,6 +1,4 @@
-// getWalletAmount
-// walletsTotal
-// walletsSortedIds
+import { getTrnsIds } from '~/components/trns/functions/getTrns'
 
 export default {
   hasWallets(state, getters, rootState) {
@@ -11,27 +9,22 @@ export default {
     return false
   },
 
-  // getWalletAmount
-  getWalletAmount: (state, getters, rootState, rootGetters) => (walletId) => {
-    const trnsIds = rootGetters['trns/getTrnsIdsInWallet'](walletId)
-    const { total } = rootGetters['trns/getTotalOfTrnsIds'](trnsIds, true, false, walletId)
-    return total || 0
-  },
-
   walletsTotal(state, getters, rootState, rootGetters) {
     if (!getters.hasWallets) return {}
     const walletsTotal = {}
     const wallets = rootState.wallets.items
+    const trnsItems = rootState.trns.items
 
-    const getWalletAmount = (walletId) => {
-      const trnsIds = rootGetters['trns/getTrnsIdsInWallet'](walletId)
+    const getWalletTotal = (walletId) => {
+      const trnsIds = getTrnsIds({ trnsItems, walletsIds: walletId })
+      // @IncludeTransfers @!isConvertToBase
       const { total } = rootGetters['trns/getTotalOfTrnsIds'](trnsIds, true, false, walletId)
       return total || 0
     }
 
     Object.keys(wallets).forEach((id) => {
       walletsTotal[id] = {
-        base: getWalletAmount(id),
+        base: getWalletTotal(id),
         currency: wallets[id].currency,
       }
     })
@@ -46,12 +39,5 @@ export default {
       if (parseInt(state.items[a].order) > parseInt(state.items[b].order)) return 1
       return 0
     })
-  },
-
-  getWalletWithId: (state, getters, rootState, rootGetters) => (walletId) => {
-    return {
-      id: walletId,
-      ...rootState.wallets.items[walletId],
-    }
   },
 }

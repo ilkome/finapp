@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import Vue from 'vue'
 import dayjs from 'dayjs'
 import SwiperCore, { Pagination } from 'swiper'
@@ -11,199 +11,190 @@ import { random, successEmo } from '~/assets/js/emo'
 
 SwiperCore.use([Pagination])
 
-export default {
-  name: 'TrnForm',
 
-  props: {
-    show: { type: Boolean, default: true },
-  },
+const props = withDefaults(defineProps<{
+  show: boolean
+}>(), {
+  show: true,
+})
 
-  setup(props) {
-    const { $store } = useNuxtApp()
-    /**
-     * Slider
-     */
-    const slider = ref<any>(null)
-    const sliderObj = ref<any>(null)
-    const maxHeight = ref('550px')
-    const { clearExpression } = useCalculator()
+const { $store } = useNuxtApp()
 
-    function setTrnFormHeight() {
-      const el = document.querySelector('.getHeight')
-      const height = el.clientHeight
+// Expense
+const expenseWalletId = computed(() => {
+  const expenseWalletId = $store.state.trnForm.values.expenseWalletId
+  const walletFromId = $store.state.trnForm.values.walletFromId
+  const firstWalletId = $store.getters['wallets/walletsSortedIds'][0]
+  return expenseWalletId || walletFromId || firstWalletId
+})
+const expenseWallet = computed(() => $store.state.wallets.items[expenseWalletId.value])
 
+// Income
+const incomeWalletId = computed(() => {
+  const incomeWalletId = $store.state.trnForm.values.incomeWalletId
+  const walletToId = $store.state.trnForm.values.walletToId
+  const secondWalletId = $store.getters['wallets/walletsSortedIds'][1]
+  return incomeWalletId || walletToId || secondWalletId
+})
+const incomeWallet = computed(() => $store.state.wallets.items[incomeWalletId.value])
+
+const isSameCurency = computed(() => incomeWallet.value?.currency === expenseWallet.value?.currency)
+
+/**
+ * Slider
+ */
+const slider = ref<any>(null)
+const sliderObj = ref<any>(null)
+const maxHeight = ref('550px')
+const { clearExpression } = useCalculator()
+
+function setTrnFormHeight() {
+  const el = document.querySelector('.getHeight')
+  const height = el.clientHeight
+
+  $store.commit('trnForm/setTrnFormHeight', height)
+  maxHeight.value = `${height}px`
+
+  const observer = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      const height = entry.contentRect.height
       $store.commit('trnForm/setTrnFormHeight', height)
       maxHeight.value = `${height}px`
+    }
+  })
+  observer.observe(el)
+}
 
-      const observer = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          const height = entry.contentRect.height
-          $store.commit('trnForm/setTrnFormHeight', height)
-          maxHeight.value = `${height}px`
-        }
+function init() {
+  if (!sliderObj.value) {
+    sliderObj.value = new SwiperCore(slider.value, {
+      init: false,
+      observer: true,
+      observeParents: true,
+      slidesPerView: 1,
+      touchStartPreventDefault: false,
+      initialSlide: 1,
+      shortSwipes: false,
+      longSwipesRatio: 0.1,
+      longSwipesMs: 60,
+      pagination: {
+        el: '.trnForm__pagination',
+        clickable: false,
+      },
+    })
+    setTrnFormHeight()
+    sliderObj.value.init()
+  }
+}
+
+/**
+ * isShow
+ */
+onMounted(() => {
+  init()
+})
+
+watch(() => props.show, (value) => {
+  if (!value) {
+    clearExpression()
+    if (sliderObj.value)
+      sliderObj.value.slideTo(1, 0)
+  }
+})
+
+/**
+ * Amounts
+ */
+const amountType = computed(() => $store.state.trnForm.values.amountType)
+const isTransfer = computed(() => $store.state.trnForm.values.amountType === 2)
+
+/**
+ * Click on category
+ */
+function onCategoryClick(categoryId) {
+  $store.commit('trnForm/setTrnFormValues', { categoryId })
+}
+
+/**
+ * Click on wallet
+ */
+function onClickWallet(walletId) {
+  $store.commit('trnForm/setTrnFormValues', { walletId })
+}
+
+/**
+ * Prepare values
+ */
+function prepeareValues(): any {
+  let normalizedValues
+
+  const id = $store.state.trnForm.values.trnId || generateId(dayjs().valueOf())
+  const { getResult } = useCalculator()
+
+  // Simple
+  if (!isTransfer.value) {
+    normalizedValues = {
+      amount: getResult.value,
+      categoryId: $store.state.trnForm.values.categoryId,
+      date: dayjs($store.state.trnForm.values.date).valueOf(),
+      description: $store.state.trnForm.values.description || null,
+      groups: $store.state.trnForm.values.groups || null,
+      type: Number($store.state.trnForm.values.amountType) || 0,
+      walletId: $store.state.trnForm.values.walletId,
+    }
+  }
+
+  // Transfer
+  if (isTransfer.value) {
+    normalizedValues = {
+      categoryId: 'transfer',
+      date: dayjs($store.state.trnForm.values.date).valueOf(),
+      type: 2,
+      description: $store.state.trnForm.values.description || null,
+      groups: $store.state.trnForm.values.groups || null,
+      expenseAmount: isSameCurency.value ? getResult.value : $store.state.trnForm.values.expenseAmount,
+      expenseWalletId: $store.state.trnForm.values.expenseWalletId,
+      incomeAmount: isSameCurency.value ? getResult.value : $store.state.trnForm.values.incomeAmount,
+      incomeWalletId: $store.state.trnForm.values.incomeWalletId,
+    }
+  }
+
+  return {
+    id,
+    values: normalizedValues,
+  }
+}
+
+/**
+ * Submit form
+ */
+function handleSubmitForm() {
+  try {
+    const { validate } = useTrnFormValidate()
+    const { id, values } = prepeareValues()
+
+    const validateStatus = validate(values)
+
+    if (validateStatus.error) {
+      Vue.notify({
+        type: 'error',
+        title: validateStatus.error.title,
+        text: validateStatus.error.text,
       })
-      observer.observe(el)
+      return
     }
 
-    function init() {
-      if (!sliderObj.value) {
-        sliderObj.value = new SwiperCore(slider.value, {
-          init: false,
-          observer: true,
-          observeParents: true,
-          slidesPerView: 1,
-          touchStartPreventDefault: false,
-          initialSlide: 1,
-          shortSwipes: false,
-          longSwipesRatio: 0.1,
-          longSwipesMs: 60,
-          pagination: {
-            el: '.trnForm__pagination',
-            clickable: false,
-          },
-        })
-        setTrnFormHeight()
-        sliderObj.value.init()
-      }
-    }
-
-    /**
-     * isShow
-     */
-    onMounted(() => {
-      init()
+    Vue.notify({
+      type: 'success',
+      text: 'Excellent transaction!',
+      title: random(successEmo),
     })
 
-    watch(() => props.show, (value) => {
-      if (!value) {
-        clearExpression()
-        if (sliderObj.value)
-          sliderObj.value.slideTo(1, 0)
-      }
-    })
-
-    /**
-     * Amounts
-     */
-    const amountType = computed(() => $store.state.trnForm.values.amountType)
-    const isTransfer = computed(() => $store.state.trnForm.values.amountType === 2)
-
-    /**
-     * Click on category
-     */
-    function onCategoryClick(categoryId) {
-      $store.commit('trnForm/setTrnFormValues', { categoryId })
-    }
-
-    /**
-     * Click on wallet
-     */
-    function onClickWallet(walletId) {
-      $store.commit('trnForm/setTrnFormValues', { walletId })
-    }
-
-    /**
-     * Prepare values
-     */
-    function prepeareValues(): any {
-      let normalizedValues
-
-      const id = $store.state.trnForm.values.trnId || generateId(dayjs().valueOf())
-      const { getResult } = useCalculator()
-
-      // Simple
-      if (!isTransfer.value) {
-        normalizedValues = {
-          amount: getResult.value,
-          categoryId: $store.state.trnForm.values.categoryId,
-          date: dayjs($store.state.trnForm.values.date).valueOf(),
-          description: $store.state.trnForm.values.description || null,
-          groups: $store.state.trnForm.values.groups || null,
-          type: Number($store.state.trnForm.values.amountType) || 0,
-          walletId: $store.state.trnForm.values.walletId,
-        }
-      }
-
-      // Transfer
-      if (isTransfer.value) {
-        normalizedValues = {
-          amount: getResult.value,
-          categoryId: 'transfer',
-          date: dayjs($store.state.trnForm.values.date).valueOf(),
-          walletId: $store.state.trnForm.values.walletFromId,
-          walletFromId: $store.state.trnForm.values.walletFromId,
-          walletToId: $store.state.trnForm.values.walletToId,
-          type: 2,
-          description: $store.state.trnForm.values.description || null,
-          groups: $store.state.trnForm.values.groups || null,
-          expense: {
-            walletId: $store.state.trnForm.values.walletFromId,
-            amount: getResult.value,
-          },
-          income: {
-            walletId: $store.state.trnForm.values.walletToId,
-            amount: getResult.value,
-          },
-        }
-      }
-
-      return {
-        id,
-        values: normalizedValues,
-      }
-    }
-
-    /**
-     * Submit form
-     */
-    function handleSubmitForm() {
-      try {
-        const { validate } = useTrnFormValidate()
-        const { id, values } = prepeareValues()
-
-        const validateStatus = validate({
-          ...values,
-          walletFrom: $store.getters['wallets/getWalletWithId']($store.state.trnForm.values.walletFromId),
-          walletTo: $store.getters['wallets/getWalletWithId']($store.state.trnForm.values.walletToId),
-        })
-
-        if (validateStatus.error) {
-          Vue.notify({
-            type: 'error',
-            title: validateStatus.error.title,
-            text: validateStatus.error.text,
-          })
-          return
-        }
-
-        Vue.notify({
-          type: 'success',
-          text: 'Excellent transaction!',
-          title: random(successEmo),
-        })
-
-        $store.dispatch('trns/addTrn', { id, values })
-      }
-      catch (e) {
-        console.log(e)
-      }
-    }
-
-    return {
-      maxHeight,
-      slider,
-      sliderObj,
-      setTrnFormHeight,
-
-      amountType,
-      isTransfer,
-
-      onCategoryClick,
-      onClickWallet,
-
-      handleSubmitForm,
-    }
-  },
+    $store.dispatch('trns/addTrn', { id, values })
+  }
+  catch (e) {
+    console.log(e)
+  }
 }
 </script>
 
@@ -221,48 +212,60 @@ export default {
       //- Main
       .swiper-slide.getHeight
         .scroll.scrollerBlock(:style="{ maxHeight: `${$store.state.ui.height}px` }")
-          .trnForm__title(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
-          .trnForm__title(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
+          .subTitle.text-center.pt-5.pb-2.text-xs
+            temaplte(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
+            temaplte(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
 
           TrnFormTypes
-          TrnFormAmount
-          TrnFormCalendar
-          TrnFormCalculator(@onSubmit="handleSubmitForm")
+          TrnFormAmount(v-if="!isTransfer || isTransfer && isSameCurency")
+
+          TrnFormDate
+          TrnFormCalculator(
+            v-if="!isTransfer || isTransfer && isSameCurency"
+            @onSubmit="handleSubmitForm"
+          )
           TrnFormHeader
-          LazyTrnFormHeaderTransfer(v-if="isTransfer")
+          LazyTrnFormHeaderTransfer(
+            v-if="isTransfer"
+            @onSubmit="handleSubmitForm"
+          )
 
       //- Quick selector
       .swiper-slide(:style="{ height: maxHeight }")
         .scroll.scrollerBlock
-          div(style="paddingBottom: 16px")
-            //- Wallets
-            div(style="padding: 20px 0 26px 0")
-              WalletsList3(
-                :activeItemId="$store.state.trnForm.values.walletId"
-                :limit="4"
-                :showBase="false"
-                @onClick="onClickWallet"
-              )
+          //- Wallets
+          .pt-5.pb-7
+            .subTitle.text-center.pb-2.text-xs {{ $t('wallets.title') }}
+            WalletsList3(
+              :activeItemId="$store.state.trnForm.values.walletId"
+              :limit="4"
+              :showBase="false"
+              @onClick="onClickWallet"
+            )
 
-            //- Favorite categories
-            div(style="padding: 0 0 26px 0")
-              .subTitle {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
-              CategoriesView(
-                :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-                :activeItemId="$store.state.trnForm.values.categoryId"
-                :noPaddingBottom="true"
-                @onClick="onCategoryClick"
-              )
+          //- Favorite categories
+          .pb-7
+            .subTitle.text-center.pb-2.text-xs {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
+            CategoriesView(
+              v-if="sliderObj"
+              :ids="$store.getters['categories/quickSelectorCategoriesIds']"
+              :activeItemId="$store.state.trnForm.values.categoryId"
+              :slider="sliderObj"
+              noPaddingBottom
+              @onClick="onCategoryClick"
+            )
 
-            //- Last used categories
-            div(style="padding: 0 0 10px 0")
-              .subTitle {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
-              CategoriesView(
-                :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
-                :activeItemId="$store.state.trnForm.values.categoryId"
-                :noPaddingBottom="true"
-                @onClick="onCategoryClick"
-              )
+          //- Last used categories
+          .pb-7
+            .subTitle.text-center.pb-2.text-xs {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
+            CategoriesView(
+              v-if="sliderObj"
+              :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
+              :activeItemId="$store.state.trnForm.values.categoryId"
+              :slider="sliderObj"
+              noPaddingBottom
+              @onClick="onCategoryClick"
+            )
 
           .buttons
             .button(@click="$store.commit('trnForm/showTrnFormModal', 'wallets')") {{ $t('wallets.title') }}
@@ -317,7 +320,6 @@ export default {
 
       &-active
         width 10px
-        background var(--c-bg-10)
         border-radius 4px
 
         /.light &
@@ -376,17 +378,10 @@ export default {
   padding-top $m4
   padding-bottom $m9
 
-.button
-  button-base-1()
-
 .subTitle
-  padding 0 $m8
-  padding-bottom $m6
   color var(--c-font-4)
-  font-size 10px
   letter-spacing 0px
   font-weight 600
-  text-align center
   text-transform uppercase
 
 .scroll

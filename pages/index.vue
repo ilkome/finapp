@@ -9,7 +9,7 @@ export default {
 </script>
 
 <template lang="pug">
-.overflow-hidden.grid.h-full
+.overflow-hidden.h-full
   LazyStat(v-if="$store.getters['trns/hasTrns']")
   LazyStatNoStatActions(v-if="!$store.getters['trns/hasTrns']")
 </template>

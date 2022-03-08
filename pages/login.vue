@@ -1,8 +1,10 @@
 <script lang="ts">
 import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
-import { auth } from '~/services/firebaseHelpers'
+import { auth } from '~/services/firebase/api'
 
 export default defineComponent({
+  layout: 'login',
+
   setup() {
     const isLoading = ref(false)
 
@@ -53,22 +55,22 @@ export default defineComponent({
 .tab
   .py-4.px-3.h-24.justify-between.items-start.flex
     .flex.gap-1.top-3.left-5(
-      class="lg:top-7 lg:left-7"
+      class="lg_top-7 lg_left-7"
     )
-      .linkItem.py-2.px-4.rounded-md(
-        :class="[{ 'text-blue2 dark:text-blue1': $store.state.lang.lang === 'ru' }, 'hocus:bg-white2 dark:hocus:bg-custom1']"
+      .linkItem.py-2.px-3.rounded-md(
+        :class="[{ 'text-blue2 dark_text-blue1': $store.state.lang.lang === 'ru' }, 'hocus_bg-white2 dark_hocus_bg-custom1']"
         @click="onSetLocale('ru')"
       ) Русский
-      .linkItem.py-2.px-4.rounded-md(
-        :class="[{ 'text-blue2 dark:text-blue1': $store.state.lang.lang === 'en' }, 'hocus:bg-white2 dark:hocus:bg-custom1']"
+      .linkItem.py-2.px-3.rounded-md(
+        :class="[{ 'text-blue2 dark_text-blue1': $store.state.lang.lang === 'en' }, 'hocus_bg-white2 dark_hocus_bg-custom1']"
         @click="onSetLocale('en')"
       ) English
 
     .flex.gap-3.top-3.right-5(
-      class="lg:top-7 lg:right-7"
+      class="lg_top-7 lg_right-7"
     )
-      .linkItem.py-2.px-4.rounded-md(
-        class="hocus:bg-white2 dark:hocus:bg-custom1"
+      .linkItem.py-2.px-3.rounded-md(
+        class="hocus_bg-white2 dark_hocus_bg-custom1"
         @click="$store.dispatch('ui/changeTheme')"
       ) {{ $t('changeTheme') }}
 
@@ -77,8 +79,8 @@ export default defineComponent({
     SharedCopyright
 
   .flex.flex-col.items-center.px-3.py-8
-    .loginButton(
-      :class="{ _loading: isLoading }"
+    .loginButton.bg-blue3.hocus_bg-blue1.hocus_shadow(
+      :class="[{ _loading: isLoading }]"
       @click.prevent="signInWithGoogle"
     )
       transition(name="fadeIn")
@@ -123,12 +125,8 @@ export default defineComponent({
   padding $m7 $mb1
   font-size 16px
   text-align center
-  background var(--c-blue-3)
   border-radius 36px
   anim()
-
-  &:hover
-    background var(--c-blue-3)
 
   &._loading
     pointer-events none

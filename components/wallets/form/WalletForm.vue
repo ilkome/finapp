@@ -126,96 +126,94 @@ export default {
 </script>
 
 <template lang="pug">
-LayoutBaseWrap
-  template(slot="headerLeft")
+.h-full.overflow.overflow-x-auto
+  .mb-2.py-10.pt-12.px-3.text-center.text-neutral-800.dark_text-white.text-2xl.font-semibold.font-nunito
     template(v-if="!walletId") {{ $t('wallets.createNewTitle') }}
     template(v-else) {{ $t('wallets.editTitle') }}
 
-  template(slot="content")
-    .form
-      .form-line._text
-        .inputText
-          .inputText__label {{ $t('wallets.form.name.label') }}
-          input(
-            type="text"
-            :placeholder="$t('wallets.form.name.placeholder')"
-            v-model="wallet.name"
-          ).inputText__value
+  .form
+    .form-line._text
+      .inputText
+        .inputText__label {{ $t('wallets.form.name.label') }}
+        input(
+          type="text"
+          :placeholder="$t('wallets.form.name.placeholder')"
+          v-model="wallet.name"
+        ).inputText__value
 
-      .form__btns(style="paddingBottom: 8px")
-        .form__btns__i
-          .form-line(@click="showCurrencies = true")
-            .inputModal._flex
-              .inputModal__value {{ wallet.currency }}
-              .inputModal__content
-              .inputModal__label {{ $t('wallets.form.currency.label') }}
+    .form__btns(style="paddingBottom: 8px")
+      .form__btns__i
+        .form-line(@click="showCurrencies = true")
+          .inputModal._flex
+            .inputModal__value {{ wallet.currency }}
+            .inputModal__content
+            .inputModal__label {{ $t('wallets.form.currency.label') }}
 
-        .form__btns__i
-          .form-line(@click="showColors = true")
-            .inputModal._flex
-              .inputModal__value: .inputModal__color(:style="{ background: wallet.color }")
-              .inputModal__label {{ $t('wallets.form.color.label') }}
+      .form__btns__i
+        .form-line(@click="showColors = true")
+          .inputModal._flex
+            .inputModal__value: .inputModal__color(:style="{ background: wallet.color }")
+            .inputModal__label {{ $t('wallets.form.color.label') }}
 
-      SharedContextMenuItem(
-        :checkboxValue="wallet.countTotal"
-        :title="$t('wallets.form.total.placeholder')"
-        showCheckbox
-        @onClick="wallet.countTotal = !wallet.countTotal"
-      )
-
-      SharedContextMenuItem(
-        :checkboxValue="wallet.isCredit"
-        :title="$t('isCredit')"
-        showCheckbox
-        @onClick="wallet.isCredit = !wallet.isCredit"
-      )
-
-    //- colors
-    Portal(
-      v-if="showColors"
-      to="modal"
+    SharedContextMenuItem(
+      :checkboxValue="wallet.countTotal"
+      :title="$t('wallets.form.total.placeholder')"
+      showCheckbox
+      @onClick="wallet.countTotal = !wallet.countTotal"
     )
-      ModalBottom(
-        :center="true"
-        :title="$t('wallets.form.color.placeholder')"
-        @onClose="showColors = false"
-      )
-        .inputText
-          .inputText__colors
-            .colors
-              .colorItem(
-                :class="{ _active: wallet.color === color }"
-                :style="{ background: color }"
-                @click="handleColorSelect(color)"
-                v-for="color in colors")
-        .customColor
-          .customColor__title {{ $t('wallets.form.color.custom') }}
-          input.customColor__value(v-model="wallet.color" type="color")
 
-    //- currencies
-    Portal(
-      v-if="showCurrencies"
-      to="modal"
+    SharedContextMenuItem(
+      :checkboxValue="wallet.isCredit"
+      :title="$t('isCredit')"
+      showCheckbox
+      @onClick="wallet.isCredit = !wallet.isCredit"
     )
-      ModalBottom(
-        :center="true"
-        :title="$t('wallets.form.currency.placeholder')"
-        @onClose="showCurrencies = false"
-      )
-        .inputText
-          .currencies
-            .currencies__item(
-              :class="{ _active: wallet.currency === currency }"
-              @click="handleCurrencySelect(currency)"
-              v-for="(item, currency) in $store.state.currencies.rates"
-            ) {{ currency }}
 
-  template(slot="bottom")
     .col(style="padding-top: 16px")
       SharedButton(
         :class="['_text-center _blue2', { _inline: $store.state.ui.pc }]"
         :title="$t('wallets.form.save')"
         @onClick="handleSubmit")
+
+  //- colors
+  Portal(
+    v-if="showColors"
+    to="modal"
+  )
+    ModalBottom(
+      :center="true"
+      :title="$t('wallets.form.color.placeholder')"
+      @onClose="showColors = false"
+    )
+      .inputText
+        .inputText__colors
+          .colors
+            .colorItem(
+              :class="{ _active: wallet.color === color }"
+              :style="{ background: color }"
+              @click="handleColorSelect(color)"
+              v-for="color in colors")
+      .customColor
+        .customColor__title {{ $t('wallets.form.color.custom') }}
+        input.customColor__value(v-model="wallet.color" type="color")
+
+  //- currencies
+  Portal(
+    v-if="showCurrencies"
+    to="modal"
+  )
+    ModalBottom(
+      :center="true"
+      :title="$t('wallets.form.currency.placeholder')"
+      @onClose="showCurrencies = false"
+    )
+      .inputText
+        .currencies
+          .currencies__item(
+            :class="{ _active: wallet.currency === currency }"
+            @click="handleCurrencySelect(currency)"
+            v-for="(item, currency) in $store.state.currencies.rates"
+          ) {{ currency }}
 </template>
 
 <style lang="stylus" scoped>

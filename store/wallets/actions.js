@@ -1,5 +1,5 @@
 import localforage from 'localforage'
-import { getDataAndWatch, saveData, unsubcribeData, updateData } from '~/services/firebaseHelpers'
+import { getDataAndWatch, saveData, unsubcribeData, updateData } from '~/services/firebase/api'
 
 export default {
   initWallets({ dispatch, rootState }) {

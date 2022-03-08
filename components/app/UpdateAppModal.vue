@@ -1,33 +1,20 @@
-<script>
+<script setup lang="ts">
 import { random, updateEmo } from '~/assets/js/emo'
-
-export default {
-  name: 'AppUpdateAppModal',
-
-  setup() {
-    const emo = computed(() => random(updateEmo))
-    return {
-      emo,
-    }
-  },
-}
+const emo = computed(() => random(updateEmo))
 </script>
 
 <template lang="pug">
 TrnFormModal(@closed="$emit('onClose')")
-  template(#default="{ close }")
-    .py-5.text-center(
-      class="lg:py-8"
-    )
-      .emo {{ emo }}
-      .header {{ $t('title') }}
-      .pb-10 {{ $t('text') }}
+  .py-5.lg_py-8.text-center
+    .emo {{ emo }}
+    .header {{ $t('title') }}
+    .pb-10 {{ $t('text') }}
 
-      SharedButton(
-        className="_blue2 _text-center _maxWidth"
-        :title="$t('button')"
-        @onClick="$emit('onClose')"
-      )
+    SharedButton(
+      className="_blue2 _text-center _maxWidth"
+      :title="$t('button')"
+      @onClick="$emit('onClose')"
+    )
 </template>
 
 <style lang="stylus" scoped>
@@ -57,7 +44,7 @@ TrnFormModal(@closed="$emit('onClose')")
 
   "ru": {
     "title": "Доступа новая версия",
-    "text": "Перезагрузи приложение, чтобы использовать все новые фишки.",
+    "text": "Перезагрузите приложение, чтобы использовать все новые фишки.",
     "button": "Оки, Ура!"
   }
 }

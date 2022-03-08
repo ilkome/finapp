@@ -22,21 +22,21 @@ export default {
 </script>
 
 <template lang="pug">
-.flex.justify-center
-  .overflow-hidden.flex.items-center.bg-dark4.rounded-md
-    .barItem.px-6.py-2.font5.text-sm(
+.px-4.pb-4.text-center
+  .overflow-hidden.flex.items-center.text-sm.rounded-md.bg-gray-50.dark_bg-dark4.dark_shadow
+    .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+      :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': amountType === 0 }"
       @click="() => setAmountType(0)"
-      :class="{ _active: amountType === 0 }"
     ) {{ $t('money.expenses') }}
 
-    .barItem.px-6.py-2.font5.text-sm(
+    .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+      :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': amountType === 1 }"
       @click="() => setAmountType(1)"
-      :class="{ _active: amountType === 1 }"
     ) {{ $t('money.incomes') }}
 
-    .barItem.px-6.py-2.font5.text-sm(
+    .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
       v-if="$store.getters['wallets/walletsSortedIds'].length > 1"
+      :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': amountType === 2 }"
       @click="() => setAmountType(2)"
-      :class="{ _active: amountType === 2 }"
     ) {{ $t('trnForm.transferTitle') }}
 </template>

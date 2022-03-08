@@ -1,7 +1,46 @@
+<script setup lang="ts">
+import useCalculator from '~/components/trnForm/calculator/useCalculator'
+import useFilter from '~/modules/filter/useFilter'
+
+const { $store } = useNuxtApp()
+const { setExpression } = useCalculator()
+const { setFilterCatsId } = useFilter()
+
+const actions = trnItem => ({
+  onOpenDetails: () => {
+    if (!$store.state.trns.modal.show) {
+      $store.commit('trns/showTrnModal')
+      $store.commit('trns/setTrnModalId', trnItem.id)
+    }
+  },
+
+  onOpenEdit: (event) => {
+    event.stopPropagation()
+    setExpression(trnItem.type === 2 && trnItem.incomeAmount ? trnItem.incomeAmount : trnItem.amount)
+    $store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.id })
+    $store.commit('stat/setCategoryModal', { id: null, type: null })
+  },
+
+  onSetFilter: (event) => {
+    event.stopPropagation()
+    setFilterCatsId(trnItem.categoryId)
+    $store.commit('filter/setFilterDateNow')
+    $store.commit('trns/hideTrnModal')
+    $store.commit('trns/setTrnModalId', null)
+    $store.commit('stat/setCategoryModal', { id: null, type: null })
+    $store.dispatch('ui/setActiveTabStat', 'details')
+  },
+})
+</script>
+
 <script lang="ts">
 export default defineComponent({
   props: {
+    trnsIds: { type: Array, required: true },
     isShowFilter: { type: Boolean, default: false },
+    isShowGroupDate: { type: Boolean, default: true },
+    uiHistory: { type: Boolean, default: true },
+    uiCat: { type: Boolean, default: false },
     limit: { type: Number, default: 0 },
     size: { type: Number, required: false, default: 30 },
   },
@@ -15,10 +54,6 @@ export default defineComponent({
   },
 
   computed: {
-    trnsIds() {
-      return this.$store.getters['trns/selectedTrnsIds']
-    },
-
     isShowedAllTrns() {
       return this.paginatedTrnsIds.length === this.trnsIdsWithLimit.length
     },
@@ -78,7 +113,7 @@ export default defineComponent({
 
 <template lang="pug">
 div
-  .flex.pb-3(v-if="isShowFilter && isTrnsWithDescription")
+  .pb-3(v-if="isShowFilter && isTrnsWithDescription")
     SharedContextMenuItem(
       :checkboxValue="isShowTrnsWithDesc"
       :grow="false"
@@ -89,30 +124,30 @@ div
     )
 
   template(v-if="trnsIds.length > 0")
-    .grid.grid-cols-1.gap-2(
-      class="md:grid-cols-2 md:gap-6 lg:grid-cols-3"
-    )
+    .grid.gap-2
       .overflow-hidden.rounded-md.bg-white2(
         v-for="(trnsIds, date) in groupedTrns"
         :key="date"
-        class="dark:bg-dark4"
+        class="dark_bg-dark4"
       )
-        .pt-4
-          .pb-2.px-3
-            TrnsListDate(:date="date")
+        .pt-4.pb-2.px-3(v-if="isShowGroupDate")
+          TrnsListDate(:date="date")
 
-          .overflow-hidden.rounded-md
-            TrnsItemHistory.py-3.px-3.cursor-pointer(
-              v-for="trnId in trnsIds"
-              :key="trnId"
-              :trnId="trnId"
-            )
+        .overflow-hidden.rounded-md
+          TrnsItemHistory.py-3.px-3.cursor-pointer(
+            v-if="uiHistory"
+            v-for="trnId in trnsIds"
+            :key="trnId"
+            :trnId="trnId"
+          )
+          TrnsItemWithoutCat.py-3.px-3.cursor-pointer(
+            v-if="uiCat"
+            v-for="trnId in trnsIds"
+            :actions="actions"
+            :key="trnId"
+            :trnId="trnId"
+          )
 
   .py-4(v-if="!isShowedAllTrns")
     .button(@click="showMoreTrns") {{ $t('trns.more') }}
 </template>
-
-<style lang="stylus" scoped>
-.button
-  button-base-1()
-</style>

@@ -55,7 +55,7 @@ export default {
               CategoriesView(
                 :activeItemId="$store.state.trnForm.values.categoryId"
                 :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
-                :noPaddingBottom="true"
+                noPaddingBottom
                 @onClick="handleCategoryClick"
               )
 
@@ -65,7 +65,7 @@ export default {
             .pb-4
               CategoriesView(
                 :ids="$store.getters['categories/categoriesRootIds']"
-                :noPaddingBottom="true"
+                noPaddingBottom
                 @onClick="handleCategoryClick"
               )
 
@@ -78,24 +78,24 @@ export default {
               CategoriesView(
                 :activeItemId="$store.state.trnForm.values.categoryId"
                 :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-                :noPaddingBottom="true"
+                noPaddingBottom
                 @onClick="handleCategoryClick"
               )
 
-  .pt-2.pb-0.px-3.justify-center.flex(v-if="slider")
-    .overflow-hidden.bg-dark4.rounded-md.justify-center.items-center.flex
-      .barItem.px-6.py-3.font5(
-        :class="{ _active: slider.activeIndex === 0 }"
+  .py-2.px-3(v-if="slider")
+    .overflow-hidden.flex.items-center.text-center.text-xs.rounded-md.bg-gray-50.dark_bg-dark4.dark_shadow
+      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+        :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': slider.activeIndex === 0 }"
         @click="slider.slideTo(0)"
       ) {{ $t('categories.lastUsedTitle') }}
 
-      .barItem.px-6.py-3.font5(
-        :class="{ _active: slider.activeIndex === 1 }"
+      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+        :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': slider.activeIndex === 1 }"
         @click="slider.slideTo(1)"
       ) {{ $t('categories.allTitle') }}
 
-      .barItem.px-6.py-3.font5(
-        :class="{ _active: slider.activeIndex === 2 }"
+      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+        :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': slider.activeIndex === 2 }"
         @click="slider.slideTo(2)"
       ) {{ $t('categories.favoriteTitle') }}
 </template>

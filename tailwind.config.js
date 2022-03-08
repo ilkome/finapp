@@ -2,26 +2,32 @@ const plugin = require('tailwindcss/plugin')
 
 module.exports = {
   darkMode: 'class',
+  separator: '_',
 
   content: [
-    './components/**/*.{js,ts}',
-    './layouts/**/*.{js,ts}',
-    './modules/**/*.{js,ts}',
-    './pages/**/*.{js,ts}',
+    './components/**/*.{js,ts,vue}',
+    './layouts/**/*.{js,ts,vue}',
+    './modules/**/*.{js,ts,vue}',
+    './pages/**/*.{js,ts,vue}',
   ],
 
   theme: {
     extend: {
       colors: {
-        custom1: '#212121',
-        dark3: '#171717',
-        dark4: '#1c1c1c',
-        custom4: '#1c1c1c',
-        custom5: '#1b1b1c',
-        white1: '#fdfdfd',
-        white2: '#fcfcfd',
+        '232323': '#232323',
         blue1: '#58a6ff',
         blue2: '#0366d6',
+        blue3: '#3a7dff',
+        blue4: '#2183f2',
+        custom1: '#212121',
+        custom4: '#1c1c1c',
+        custom5: '#1b1b1c',
+        dark3: '#171717',
+        dark4: '#1c1c1c',
+        white1: '#fdfdfd',
+        white2: '#fcfcfd',
+        income: '#2cad22',
+        expense: '#f92134',
       },
       fontSize: {
         '2xs': '10px',
@@ -39,7 +45,7 @@ module.exports = {
 
   plugins: [
     plugin(({ addVariant }) => {
-      addVariant('hocus', ['.isNotTouchDevice &:hover', '&:active'])
+      addVariant('hocus', ['.isNotTouchDevice &:not(._active):hover', '&:not(._active):active'])
     }),
   ],
 }

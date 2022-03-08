@@ -13,7 +13,7 @@ import {
   saveData,
   unsubcribeData,
   updateData,
-} from '~/services/firebaseHelpers'
+} from '~/services/firebase/api'
 
 export default {
   // init
@@ -63,6 +63,8 @@ export default {
     commit('trnForm/setTrnFormValues', {
       trnId: null,
       amount: '0',
+      incomeAmount: 0,
+      expenseAmount: 0,
       description: null,
     }, { root: true })
 

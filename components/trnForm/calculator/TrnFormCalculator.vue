@@ -44,7 +44,7 @@ export default {
 </script>
 
 <template lang="pug">
-.trnFormCalculator
+.trnFormCalculator.px-4.pb-4
   .trnFormCalculator__group
     .trnFormCalculator__acts
       .calcItem._act(@click="handleTouch('+')")
@@ -91,13 +91,20 @@ export default {
         .calcItem__in C
 
   .trnFormCalculator__group
-    .trnFormCalculator__action
-      .calcItem._sum(@click="isSum ? $emit('onSubmit') : handleTouch('=')")
-        .calcItem__in
-          template(v-if="isSum")
-            .mdi.mdi-check
-          template(v-else)
-            .mdi.mdi-equal
+    .grid.gap-2(class="grid-rows-[auto,1fr]")
+      .p-3.text-center.rounded-full.opacity-80.hocus_bg-neutral-700(
+        :class="['h-[58px]', { 'text-blue1': $store.state.trnForm.values.description }]"
+        @click="$store.commit('trnForm/showTrnFormModal', 'description')"
+      )
+        .mdi.mdi-comment-text-outline.text-2xl
+
+      .trnFormCalculator__action
+        .calcItem._sum(@click="isSum ? $emit('onSubmit') : handleTouch('=')")
+          .calcItem__in
+            template(v-if="isSum")
+              .mdi.mdi-check
+            template(v-else)
+              .mdi.mdi-equal
 </template>
 
 <style lang="stylus" scoped>
@@ -110,7 +117,6 @@ export default {
   align-items stretch
   grid-column-gap $m8
   grid-row-gap $m8
-  padding $m7
 
   &__group
     display flex
@@ -144,7 +150,7 @@ export default {
   font-secondary()
 
   &._sum
-    max-width 61px
+    max-width 58px
 
   &__in
     cursor pointer

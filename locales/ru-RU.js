@@ -2,6 +2,8 @@
 export default {
   common: {
     date: 'Дата',
+    open: 'Открыть',
+    all: 'Все',
   },
 
   analytics: {
@@ -23,6 +25,10 @@ export default {
 
   backTo: 'Назад к ',
   close: 'Закрыть',
+
+  transfer: {
+    titleMany: 'Переводы',
+  },
 
   trnForm: {
     transferTitle: 'Перевод',
@@ -67,7 +73,7 @@ export default {
     madeBy: {
       text: 'Разработал',
       name: 'Илья Комичев',
-    },
+    }
   },
 
   userLogout: 'Выход',
@@ -123,7 +129,7 @@ export default {
     customize: 'Внешний вид',
     app: 'Приложение',
     caution: 'C осторожностью',
-    deleteButton: 'Удалить все мои данные',
+    deleteButton: 'Удалить все мои данные'
   },
 
   wallets: {
@@ -134,7 +140,7 @@ export default {
     showOnly: 'Показать только',
     sortTitle: 'Сортировать кошельки',
     createNewTitle: 'Создание кошелька',
-    editTitle: 'Редактирование кошелек',
+    editTitle: 'Редактирование кошелька',
     form: {
       name: {
         label: 'Имя кошелька',
@@ -257,12 +263,17 @@ export default {
   money: {
     incomes: 'Доход',
     expenses: 'Расход',
+    total: 'Баланс',
+
+    income: 'Доход',
+    expense: 'Расход',
+    sum: 'Баланс',
+
     transfer: 'Перевод',
-    total: 'Итого',
     average: {
-      base: 'Среднее',
-      incomes: 'Средний доход',
-      expenses: 'Средний расход',
+      base: 'Обычно',
+      incomes: 'Обычно',
+      expenses: 'Обычно',
     },
     averageTotal: 'Обычно',
     also: 'Еще',

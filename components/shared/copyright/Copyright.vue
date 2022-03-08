@@ -7,7 +7,7 @@ export default {
 <template lang="pug">
 a.copyright.py-1.px-5.rounded-md(
   href="https://ilko.me"
-  class="hocus:bg-white2 dark:hocus:bg-custom1"
+  class="hocus_bg-white2 dark_hocus_bg-custom1"
 )
   | {{ $t('app.madeBy.text') }}
   .copyright__heart.mdi.mdi-heart

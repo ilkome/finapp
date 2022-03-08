@@ -1,7 +1,4 @@
-import actions from './actions'
-import mutations from './mutations'
-
-const state = () => ({
+export const state = () => ({
   activeTab: 'stat',
   activeTabStat: 'details',
 
@@ -12,9 +9,3 @@ const state = () => ({
 
   defaultBgColor: '#455a64',
 })
-
-export default {
-  state,
-  actions,
-  mutations,
-}

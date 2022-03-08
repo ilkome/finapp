@@ -1,8 +1,8 @@
 import dayjs from 'dayjs'
 
 export const state = () => ({
-  categoryId: null,
-  walletId: null,
+  walletsIds: [],
+  catsIds: [],
   date: dayjs().startOf('month').valueOf(),
   period: 'month',
 })

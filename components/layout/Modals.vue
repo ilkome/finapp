@@ -28,24 +28,13 @@ export default defineComponent({
   TrnsModal
 
   //- menu
-  LazyLayoutMenuModal(v-if="activeTab === 'menu'")
+  LazyLayoutBottomMenuModal(v-if="activeTab === 'menu'")
 
   //- currencies
   CurrenciesModal
 
-  //- category: item
-  CategoriesModal
-
   //- category: create or edit
   LazyCategoriesEditModal(v-if="activeTab === 'createCategory'")
-
-  //- settings
-  Portal(v-if="activeTab === 'settings'" to="modal")
-    ModalBottom(@onClose="$store.dispatch('ui/setActiveTab', null)")
-      Settings(v-if="activeTab === 'settings'")
-
-  //- wallet item
-  WalletsModal
 
   //- wallet: create or edit
   Portal(v-if="activeTab === 'createWallet'" to="modal")

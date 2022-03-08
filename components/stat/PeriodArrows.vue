@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template lang="pug">
-div(class="lg:hidden")
+div(class="lg_hidden")
   .arrowDate._left(
     :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
     @click="$store.dispatch('filter/setPeriodNext')"

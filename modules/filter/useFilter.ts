@@ -10,26 +10,26 @@ export default function useFilter() {
     if (page) page.scrollTop = 0
   }
 
-  function setCategoryFilter(id) {
+  function setFilterCatsId(catId) {
     if (isNeedToRedirect.value)
       router.push('/')
 
-    $store.dispatch('filter/handleSetFilterCategory', id)
+    $store.commit('filter/setFilterCatsId', catId)
     scrollTop()
   }
 
-  function setWalletFilter(id) {
+  function setFilterWalletsId(walletId) {
     if (isNeedToRedirect.value)
       router.push('/')
 
-    $store.dispatch('filter/setFilterWalletId', id)
+    $store.commit('filter/setFilterWalletsId', walletId)
     scrollTop()
   }
 
   return {
     scrollTop,
-    setCategoryFilter,
-    setWalletFilter,
+    setFilterCatsId,
+    setFilterWalletsId,
     filterPeriodNameAllReplacedToYear,
   }
 }

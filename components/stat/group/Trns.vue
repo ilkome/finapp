@@ -13,7 +13,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-div
+div(class="max-w-[420px]")
   .py-2
     .statTitle {{ $t('trns.inPeriodTitle') }}
 
@@ -21,6 +21,6 @@ div
     :incomes="statPage.activeTab === 'incomes'"
     :expenses="statPage.activeTab === 'expenses'"
     :size="12"
-    classNames="md:grid-cols-1"
+    classNames="md_grid-cols-1"
   )
 </template>

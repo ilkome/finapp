@@ -4,7 +4,7 @@ import useAmount from '~/components/amount/useAmount'
 export default {
   props: {
     isShowCredits: { type: Boolean, default: false },
-    isShowTotal: { type: Boolean, default: false },
+    isShowSavings: { type: Boolean, default: false },
   },
 
   setup() {
@@ -64,7 +64,7 @@ export default {
       )
 
   //- Savings
-  .walletsTotal__item(v-if="totalInWallets.savings !== 0")
+  .walletsTotal__item(v-if="totalInWallets.savings !== 0 && isShowSavings")
     .walletsTotal__title {{ $t('savings') }}
     .walletsTotal__value
       Amount(
@@ -74,24 +74,24 @@ export default {
         vertical="center"
       )
 
-  //- Avaliable
-  .walletsTotal__item
-    .walletsTotal__title {{ $t('avaliable') }}
-    .walletsTotal__value
-      Amount(
-        :currency="$store.state.currencies.base"
-        :value="totalInWallets.counted"
-        size="lg"
-        vertical="center"
-      )
-
   //- Total
-  .walletsTotal__item(v-if="isShowTotal")
+  .walletsTotal__item
     .walletsTotal__title {{ $t('total') }}
     .walletsTotal__value
       Amount(
         :currency="$store.state.currencies.base"
         :value="totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)"
+        size="lg"
+        vertical="center"
+      )
+
+  //- Avaliable
+  .walletsTotal__item(v-if="totalInWallets.counted !== totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)")
+    .walletsTotal__title {{ $t('avaliable') }}
+    .walletsTotal__value
+      Amount(
+        :currency="$store.state.currencies.base"
+        :value="totalInWallets.counted"
         size="lg"
         vertical="center"
       )

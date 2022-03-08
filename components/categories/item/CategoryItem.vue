@@ -6,27 +6,31 @@ export default defineComponent({
     activeItemId: { type: String, default: null },
     category: { type: Object, required: true },
     id: { type: String, required: true },
+    isHideParentCategory: { type: Boolean, default: false },
+    slider: { type: Object, required: true },
     ui: { type: String, default: null },
   },
 
-  setup({ id, category }, { listeners }) {
+  setup(props, { listeners }) {
     const { $store } = useNuxtApp()
+    const { setFilterCatsId } = useFilter()
 
-    const { setCategoryFilter } = useFilter()
-
-    const childCategoriesIds = computed(() => $store.getters['categories/getChildCategoriesIds'](id))
-    const parentCategory = computed(() => $store.state.categories.items[category.parentId])
+    const childCategoriesIds = computed(() => $store.getters['categories/getChildCategoriesIds'](props.id))
+    const parentCategory = computed(() => $store.state.categories.items[props.category?.parentId])
 
     function onClickItem() {
-      if (listeners.onClick)
-        listeners.onClick(id)
+      if (listeners.onClick) listeners.onClick(props.id)
     }
 
     function onClickIcon() {
-      setCategoryFilter(id)
+      // Prevent filter when using in TrnForm
+      if (props.slider) {
+        onClickItem()
+        return
+      }
+
+      setFilterCatsId(props.id)
       $store.commit('filter/setFilterDateNow')
-      $store.commit('categories/hideCategoryModal')
-      $store.commit('categories/setCategoryModalId', null)
       $store.dispatch('ui/setActiveTabStat', 'details')
     }
 
@@ -54,15 +58,15 @@ export default defineComponent({
 
   .categoryItem__name.grow.truncate
     .text-xs.text-neutral-500(
-      v-if="parentCategory"
-      class="dark:text-neutral-400"
+      v-if="parentCategory && !isHideParentCategory"
+      class="dark_text-neutral-400"
     ) {{ parentCategory.name }}
 
-    .leading-none.text-sm.text-neutral-700(class="dark:text-neutral-300") {{ category.name }}
+    .leading-none.text-sm.text-neutral-700(class="dark_text-neutral-300") {{ category.name }}
 
   .text-md.text-neutral-500(
     v-if="childCategoriesIds.length > 0"
-    class="dark:text-neutral-400"
+    class="dark_text-neutral-400"
   ) {{ childCategoriesIds.length }}
 </template>
 

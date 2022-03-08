@@ -1,5 +1,5 @@
 import localforage from 'localforage'
-import { getDataOnce, saveData } from '~/services/firebaseHelpers'
+import { getDataOnce, saveData } from '~/services/firebase/api'
 
 export default {
   setLang({ commit, rootGetters }, lang) {

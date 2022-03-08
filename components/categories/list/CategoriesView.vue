@@ -5,7 +5,9 @@ export default {
     ids: { type: Array, required: true },
     limit: { type: Number, default: null },
     noPadding: { type: Boolean, default: false },
+    isHideParentCategory: { type: Boolean, default: false },
     noPaddingBottom: { type: Boolean, default: false },
+    slider: { type: Object, required: true },
     title: { type: String, default: null },
     ui: { type: String, default: null },
   },
@@ -32,6 +34,8 @@ export default {
       :activeItemId="activeItemId"
       :id="categoryId"
       :key="categoryId"
+      :slider="slider"
+      :isHideParentCategory="isHideParentCategory"
       :ui="ui"
       v-on="$listeners"
     )

@@ -60,15 +60,22 @@ export default {
   lastUsedCategoriesIdsByDate(state, getters, rootState, rootGetters) {
     if (!getters.hasCategories) return []
 
-    const trns = rootState.trns.items
-    const sortedTrnsIds = rootGetters['trns/sortedTrnsIds']
+    const trnsItems = rootState.trns.items
+    const trnsIds = Object.keys(trnsItems)
+      .filter(trnId => trnsItems[trnId].type !== 2)
+      .sort((a, b) => {
+        if (trnsItems[a].date > trnsItems[b].date) return -1
+        if (trnsItems[a].date < trnsItems[b].date) return 1
+        return 0
+      })
+
     const transferCategoryId = getters.transferCategoryId
     const lastCategoriesIds = []
 
     if (state.items && rootGetters['trns/hasTrns']) {
-      for (const trnId of sortedTrnsIds.slice(0, 500)) {
+      for (const trnId of trnsIds.slice(0, 500)) {
         if (lastCategoriesIds.length < 12) {
-          const categoryId = trns[trnId].categoryId
+          const categoryId = trnsItems[trnId].categoryId
           const category = state.items[categoryId]
           if (category && (category.showInLastUsed || category.showInLastUsed === undefined)) {
             if (categoryId !== transferCategoryId) {

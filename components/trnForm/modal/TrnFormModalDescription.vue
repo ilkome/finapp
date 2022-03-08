@@ -54,7 +54,7 @@ TrnFormModal(@closed="afterClose")
 
       .gap-4.items-center.justify-end.flex
         .text-neutral-500.py-4.px-3.items-center.justify-center.flex(
-          class="dark:text-neutral-400"
+          class="dark_text-neutral-400"
           @click="handleCancel(close)"
         ) {{ $t('close') }}
         .shame1.py-4.px-6.rounded-full.items-center.justify-center.flex(

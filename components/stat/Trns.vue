@@ -7,5 +7,6 @@ div
   .py-2
     .statTitle {{ $t('trns.inPeriodTitle') }}
 
-  TrnsList(:size="50")
+  div(class="max-w-[420px] md_max-w-none")
+    TrnsList(:size="12")
 </template>

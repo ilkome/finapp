@@ -29,12 +29,11 @@ export default {
   .trnFormHeaderItem__name
     .text-xs.text-neutral-500(
       v-if="parentCategory"
-      class="dark:text-neutral-400"
+      class="dark_text-neutral-400"
     ) {{ parentCategory.name }}
-    .text-sm.text-neutral-700(class="dark:text-neutral-300") {{ category.name }}
+    .text-sm.text-neutral-700(class="dark_text-neutral-300") {{ category.name }}
 
-  .trnFormHeaderItem__dots.text-neutral-500(
-    class="dark:text-neutral-400"
+  .trnFormHeaderItem__dots.text-neutral-500.dark_text-neutral-400(
   ): .mdi.mdi-dots-vertical
 </template>
 

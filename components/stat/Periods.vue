@@ -46,37 +46,24 @@ export default {
 </script>
 
 <template lang="pug">
-.py-2.px-3
+.pt-2.px-3.lg_pt-1
   .flex.justify-between
-    .overflow-hidden.inline-flex.items-center.bg-4.rounded
-      .barItem.px-4.py-2.font5.text-xs(
+    .overflow-hidden.flex.items-center.rounded-md.text-xs.bg-gray-50.dark_bg-dark4.dark_shadow
+      .cursor-pointer.px-3.md_px-4.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
         v-for="periodItem in periodsNames"
         :key="periodItem.slug"
-        :class="{ _active: periodItem.slug === filterPeriodNameAllReplacedToYear }"
+        :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': periodItem.slug === filterPeriodNameAllReplacedToYear }"
         @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
       ) {{ periodItem.name }}
 
-    .bar.overflow-hidden.flex.rounded-md
-      .bar__btn.flex-grow.flex.items-center.justify-center.w-8(
+    .overflow-hidden.ml-2.flex.items-center.rounded-md.bg-gray-50.dark_bg-dark4.dark_shadow
+      .cursor-pointer.px-3.md_px-4.py-3.flex-center.hocus_bg-gray-200.dark_hocus_bg-neutral-800.w-8(
         @click="removePeriodOrGroup"
       ): .mdi.mdi-minus
-      .flex.items-center.text-sm.font5 {{ $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }}
-      .bar__btn.flex.items-center.justify-center.w-8(
+
+      .flex.items-center.text-sm {{ $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }}
+
+      .cursor-pointer.px-3.md_px-4.py-3.flex-center.hocus_bg-gray-200.dark_hocus_bg-neutral-800.w-8(
         @click="addPeriodOrGroup"
       ): .mdi.mdi-plus
 </template>
-
-<style lang="stylus" scoped>
-.bar
-  color var(--c-font-3)
-  background var(--c-bg-4)
-
-  &__btn
-    background var(--c-bg-4)
-    +media-hover()
-      &:not(._active)
-        cursor pointer
-        background var(--c-bg-6)
-    .mdi
-      font-size 16px
-</style>

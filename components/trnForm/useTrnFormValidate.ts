@@ -2,7 +2,7 @@ export default function useTrnFormValidate() {
   function validate(values: any) {
     const errorTitle = '😮'
 
-    if (!values.amount) {
+    if (!values.amount && values.type !== 2) {
       return {
         error: {
           title: errorTitle,
@@ -11,7 +11,7 @@ export default function useTrnFormValidate() {
       }
     }
 
-    if (values.amount <= 0) {
+    if (values.amount <= 0 && values.type !== 2) {
       return {
         error: {
           title: errorTitle,
@@ -20,7 +20,7 @@ export default function useTrnFormValidate() {
       }
     }
 
-    if (values.amount === 0) {
+    if (values.amount === 0 && values.type !== 2) {
       return {
         error: {
           title: errorTitle,
@@ -49,20 +49,20 @@ export default function useTrnFormValidate() {
 
     // Transfer
     if (values.type === 2) {
-      if (values.walletFromId === values.walletToId) {
+      if (Number(values.incomeAmount) === 0 || Number(values.expenseAmount) === 0) {
         return {
           error: {
             title: errorTitle,
-            text: 'Transfer in same wallet',
+            text: 'Amount can not be empty',
           },
         }
       }
 
-      if (values.walletFrom.currency !== values.walletTo.currency) {
+      if (values.incomeWalletId === values.expenseWalletId) {
         return {
           error: {
             title: errorTitle,
-            text: 'Sorry, transfer between wallets with different currency in development',
+            text: 'Transfer in same wallet',
           },
         }
       }

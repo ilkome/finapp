@@ -2,38 +2,6 @@ import dayjs from 'dayjs'
 import localforage from 'localforage'
 
 export default {
-  handleSetFilterCategory({ rootState, dispatch }, categoryId) {
-    const filterCategoryId = rootState.filter.categoryId
-    const filterCategory = rootState.categories.items[categoryId]
-
-    if (filterCategoryId === categoryId) {
-      if (filterCategory?.parentId !== 0) {
-        dispatch('setFilterCategoryId', null)
-        dispatch('setFilterCategoryId', filterCategory.parentId)
-      }
-      else {
-        dispatch('setFilterCategoryId', null)
-      }
-    }
-    else {
-      dispatch('setFilterCategoryId', categoryId)
-    }
-  },
-
-  setFilterCategoryId({ state, commit }, categoryId) {
-    state.categoryId === categoryId
-      ? commit('setFilterCategoryId', null)
-      : commit('setFilterCategoryId', categoryId)
-    // TODO: save to composition api
-  },
-
-  setFilterWalletId({ state, commit }, walletId) {
-    state.walletId === walletId
-      ? commit('setFilterWalletId', null)
-      : commit('setFilterWalletId', walletId)
-    // TODO: save to composition api
-  },
-
   setPeriod({ commit, dispatch }, period) {
     if (period.custom) {
       commit('setPeriod', period.name)

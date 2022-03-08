@@ -46,7 +46,7 @@ TrnFormModal(@closed="afterClose")
       .pb_base
         CategoriesView(
           :ids="childCategoriesIds"
-          :noPaddingBottom="true"
+          noPaddingBottom
           @onClick="catId => handleCategoryClick(catId, close)"
         )
 </template>

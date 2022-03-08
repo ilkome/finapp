@@ -20,7 +20,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.pb-3.text-sm.font5(v-if="isShow") {{ $t('stat.empty') }}
+.pb-3.text-sm(v-if="isShow") {{ $t('stat.empty') }}
 </template>
 
 <style lang="stylus" scoped>

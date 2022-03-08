@@ -9,18 +9,14 @@ export default function useMenuData() {
   const route = useRoute()
   const router = useRouter()
 
-  const items: Record<string, MenuItem> = {
+  const items = computed(() => ({
     trnForm: {
       icon: 'mdi mdi-plus',
       name: i18n.t('createTrn'),
     },
     index: {
       icon: 'mdi mdi-poll',
-      name: i18n.t('stat.shortTitle'),
-    },
-    history: {
-      icon: 'mdi mdi-history',
-      name: i18n.t('trns.history'),
+      name: i18n.t('stat.title'),
     },
     wallets: {
       icon: 'mdi mdi-credit-card-multiple',
@@ -29,6 +25,10 @@ export default function useMenuData() {
     categories: {
       icon: 'mdi mdi-folder-star',
       name: i18n.t('categories.name'),
+    },
+    history: {
+      icon: 'mdi mdi-history',
+      name: i18n.t('trns.history'),
     },
     settings: {
       icon: 'mdi mdi-cog-outline',
@@ -39,21 +39,21 @@ export default function useMenuData() {
       icon: 'mdi mdi-account-multiple',
       name: i18n.t('users.title'),
     },
-  }
+  }))
 
   function onClick(menuId: string) {
     menuId === 'trnForm'
       ? $store.dispatch('trnForm/openTrnForm', { action: 'create' })
-      : router.push(menuId)
+      : router.push(`/${menuId}`)
 
     if (menuId === 'history')
-      router.push(menuId)
+      router.push(`/${menuId}`)
 
     $store.dispatch('ui/setActiveTab', null)
   }
 
   function checkIsActive(menuId: string) {
-    return route.name === menuId
+    return route.name.includes(menuId)
   }
 
   function checkIsShow(item: MenuItem) {

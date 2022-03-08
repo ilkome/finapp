@@ -15,11 +15,6 @@ export default function useTrn() {
       if (!trn)
         return 'Trn not found'
 
-      // Wallet
-      const wallet = wallets.items[trn.walletId]
-      if (!wallet)
-        return 'Wallet not found'
-
       // Category
       const category = categories.items[trn.categoryId]
       if (!category)
@@ -33,36 +28,48 @@ export default function useTrn() {
           return 'Parent Category not found'
       }
 
-      // Transfer from
-      let walletFrom = null
-      if (trn.walletFromId) {
-        walletFrom = wallets.items[trn.walletFromId]
-        if (!walletFrom)
-          return 'Transfer WalletFrom not found'
-      }
-
-      // Transfer to
-      let walletTo = null
-      if (trn.walletToId) {
-        walletTo = wallets.items[trn.walletToId]
-        if (!walletTo)
-          return 'Transfer WalletTo not found'
-      }
-
       // Date
       let dateFormated = formatDate(trn.date, 'full')
-      // @ts-expect-error
+      // @ts-expect-error todo
       dateFormated = `${dateFormated.weekday}, ${dateFormated.day} ${dateFormated.month} ${dateFormated.year}`
 
-      return {
-        id,
-        ...trn,
-        dateFormated,
-        category,
-        categoryParent,
-        walletFrom,
-        walletTo,
-        wallet,
+      // Transaction
+      if (trn.type !== 2) {
+        // Wallet
+        const wallet = wallets.items[trn.walletId]
+        if (!wallet)
+          return 'Wallet not found'
+
+        return {
+          id,
+          ...trn,
+          dateFormated,
+          category,
+          categoryParent,
+          wallet,
+        }
+      }
+
+      if (trn.type === 2) {
+        const expenseWalletId = trn.expenseWalletId || trn.walletFromId
+        const expenseWallet = wallets.items[expenseWalletId]
+        if (!expenseWallet)
+          return 'Transfer expense Wallet not found'
+
+        const incomeWalletId = trn.incomeWalletId || trn.walletToId
+        const incomeWallet = wallets.items[incomeWalletId]
+        if (!incomeWallet)
+          return 'Transfer income Wallet not found'
+
+        return {
+          id,
+          ...trn,
+          dateFormated,
+          category,
+          categoryParent,
+          expenseWallet,
+          incomeWallet,
+        }
       }
     }
     catch (error) {

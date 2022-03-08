@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { getTrnsIds } from '~/components/trns/functions/getTrns'
 
 export default {
   /**
@@ -113,73 +114,6 @@ export default {
   },
 
   /**
-    * Return root category ID from trnId
-    *
-    * @param {String} trnId
-    * @return {String} root categoryId
-  */
-  getRootCategoryIdFromTrnId: (state, getters, rootState) => (trnId) => {
-    const trns = rootState.trns.items
-    const categories = rootState.categories.items
-    const wallets = rootState.wallets.items
-    const trnCategoryId = trns[trnId].categoryId
-
-    if (!wallets[trns[trnId].walletId]) {
-      console.log('no wallet for trn', trnId, trns[trnId])
-      console.log('walletId', trns[trnId].walletId)
-      console.log(`https://finapp-17474.firebaseio.com/users/${rootState.user.user.uid}/trns/${trnId}`)
-    }
-
-    if (!categories[trnCategoryId]) {
-      console.log('no category for trn', trnId, trns[trnId], categories[trnCategoryId])
-      console.log(`https://finapp-17474.firebaseio.com/users/${rootState.user.user.uid}/trns/${trnId}`)
-      return trnCategoryId
-    }
-
-    const trnCategoryParentId = categories[trnCategoryId].parentId
-    return trnCategoryParentId || trnCategoryId
-  },
-
-  /**
-    * Create categories with trnsIds from list of trnsIds
-    *
-    * @param {Array} trnsIds
-    * @return {Object} categoryId - categoryId with trnsIDs
-    * @return {Array} categoryId[] - trnsIds
-    * @return {String} categoryId[] - trnId
-    * { categiryId: [...trnId, trnId] }
-  */
-  getCategoriesIdsWithTrnsIds: (state, getters, rootState, rootGetters) => ({
-    trnsIds,
-  }) => {
-    const filterCategoryId = rootState.filter.categoryId
-    const trns = rootState.trns.items
-    const transferCategoryId = rootGetters['categories/transferCategoryId']
-
-    const categoriesWithTrnsIds = {}
-
-    for (const trnId of trnsIds) {
-      if (trns[trnId]) {
-        let categoryId
-        filterCategoryId
-          ? categoryId = trns[trnId].categoryId
-          : categoryId = getters.getRootCategoryIdFromTrnId(trnId)
-
-        // Push trnId to category. Exclude transfer category
-        if (categoryId !== transferCategoryId) {
-          if (!categoriesWithTrnsIds[categoryId])
-            categoriesWithTrnsIds[categoryId] = [trnId]
-
-          else
-            categoriesWithTrnsIds[categoryId].push(trnId)
-        }
-      }
-    }
-
-    return categoriesWithTrnsIds
-  },
-
-  /**
     * Stat by periods with period name and total.
     *
     * @return {Object}
@@ -194,15 +128,99 @@ export default {
     * @return {Number} total.total
     *
   */
-  getStat: (_state, getters, _rootState, rootGetters) => ({ date, periodName }) => {
-    const selectedTrns = rootGetters['trns/getTrns']({ date, periodName })
-    const categoriesWithTrnsIds = getters.getCategoriesIdsWithTrnsIds({ trnsIds: selectedTrns })
-    const totalAllTrns = rootGetters['trns/getTotalOfTrnsIds'](selectedTrns)
+  statCurrentPeriod(_state, getters, rootState, rootGetters) {
+    const trnsItems = rootState.trns.items
+    const catsItems = rootState.categories.items
+    const storeFilter = rootState.filter
+
+    // TODO: shared functions
+    function getCatsIds(catsIds) {
+      const ids = []
+
+      for (const catId of catsIds) {
+        const category = catsItems[catId]
+        category?.childIds
+          ? ids.push(...category.childIds)
+          : ids.push(catId)
+      }
+
+      return ids
+    }
+
+    const categoriesIds = rootState.filter.catsIds.length > 0 ? getCatsIds(rootState.filter.catsIds) : null
+    const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
+
+    const trnsIds = getTrnsIds({
+      trnsItems,
+      walletsIds,
+      categoriesIds,
+      periodName: storeFilter.period,
+      date: storeFilter.date,
+    })
+
+    /**
+      * Return root category ID from trnId
+      *
+      * @param {String} trnId
+      * @return {String} root categoryId
+    */
+    function getRootCategoryIdFromTrnId(trnId) {
+      const categories = rootState.categories.items
+      const wallets = rootState.wallets.items
+      const trnCategoryId = trnsItems[trnId].categoryId
+
+      if (!wallets[trnsItems[trnId].walletId] && !wallets[trnsItems[trnId].incomeWalletId] && !wallets[trnsItems[trnId].expenseWalletId]) {
+        console.log('no wallet for trn', trnId, trnsItems[trnId])
+        console.log('walletId', trnsItems[trnId].walletId)
+        console.log(`https://finapp-17474.firebaseio.com/users/${rootState.user.user.uid}/trns/${trnId}`)
+      }
+
+      if (!categories[trnCategoryId]) {
+        console.log('no category for trn', trnId, trnsItems[trnId], categories[trnCategoryId])
+        console.log(`https://finapp-17474.firebaseio.com/users/${rootState.user.user.uid}/trns/${trnId}`)
+        return trnCategoryId
+      }
+
+      const trnCategoryParentId = categories[trnCategoryId].parentId
+      return trnCategoryParentId || trnCategoryId
+    }
+
+    function getCatsIdsWithTrnsIds() {
+      const filterCategoryId = rootState.filter.categoryId
+      const transferCategoryId = rootGetters['categories/transferCategoryId']
+      const categoriesWithTrnsIds = {}
+
+      for (const trnId of trnsIds) {
+        if (trnsItems[trnId]) {
+          let categoryId
+          filterCategoryId
+            ? categoryId = trnsItems[trnId].categoryId
+            : categoryId = getRootCategoryIdFromTrnId(trnId)
+
+          // Push trnId to category. Exclude transfer category
+          // TODO: place transfer category in one place
+          if (categoryId !== transferCategoryId) {
+            if (!categoriesWithTrnsIds[categoryId])
+              categoriesWithTrnsIds[categoryId] = [trnId]
+
+            else
+              categoriesWithTrnsIds[categoryId].push(trnId)
+          }
+        }
+      }
+
+      return categoriesWithTrnsIds
+    }
+
+    const categoriesWithTrnsIds = getCatsIdsWithTrnsIds(trnsIds)
+    const totalAllTrns = rootGetters['trns/getTotalOfTrnsIds'](trnsIds)
 
     // count total in categories
     const categoriesTotal = {}
-    for (const categoryId in categoriesWithTrnsIds)
-      categoriesTotal[categoryId] = rootGetters['trns/getTotalOfTrnsIds'](categoriesWithTrnsIds[categoryId])
+    for (const categoryId in categoriesWithTrnsIds) {
+      const trnsIdsInCategory = categoriesWithTrnsIds[categoryId]
+      categoriesTotal[categoryId] = rootGetters['trns/getTotalOfTrnsIds'](trnsIdsInCategory)
+    }
 
     // separate catgories by incomes and expenses
     const statIncomes = {}
@@ -258,12 +276,6 @@ export default {
       },
     }
 
-    return stat
-  },
-
-  statCurrentPeriod(_state, getters, rootState) {
-    const date = rootState.filter.date
-    const stat = getters.getStat({ date })
     return stat
   },
 }

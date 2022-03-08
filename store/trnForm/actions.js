@@ -8,8 +8,11 @@ export default {
     })
   },
 
-  openTrnForm({ rootState, rootGetters, commit }, { action, trnId }) {
-    commit('openTrnForm')
+  openTrnForm({ rootState, rootGetters, commit }, { action, trnId, isPc }) {
+    isPc
+      ? commit('openTrnFormPc')
+      : commit('openTrnForm')
+
     switch (action) {
       case 'create':
         // get data from last trn
@@ -23,6 +26,8 @@ export default {
             description: null,
             groups: null,
             trnId: null,
+            expenseAmount: 0,
+            incomeAmount: 0,
             walletId: lastTrn.walletId,
           })
         }
@@ -40,6 +45,8 @@ export default {
             description: null,
             groups: null,
             trnId: null,
+            expenseAmount: 0,
+            incomeAmount: 0,
             walletId,
           })
         }
@@ -53,17 +60,20 @@ export default {
           if (trn.type === 2) {
             commit('setTrnFormValues', {
               ...trn,
-              amount: trn.amount,
-              amountType: trn.type,
+              amount: 888,
+              amountType: 2,
               categoryId: trn.categoryId,
               date: trn.date,
               description: trn.description || null,
               groups: null,
               trnId,
-              walletFromId: trn.walletFromId,
-              walletId: trn.walletId,
-              walletToId: trn.walletToId,
+              expenseWalletAmount: trn.expenseWalletAmount || trn.amount,
+              expenseWalletId: trn.expenseWalletId || trn.walletToId,
+              incomeWalletAmount: trn.incomeWalletAmount || trn.amount,
+              incomeWalletId: trn.incomeWalletId || trn.walletFromId,
             })
+
+            console.log(trn)
           }
           // Simple
           else {

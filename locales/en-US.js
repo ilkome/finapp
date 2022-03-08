@@ -1,6 +1,8 @@
 export default {
   common: {
     date: 'Date',
+    open: 'Open',
+    all: 'All',
   },
 
   analytics: {
@@ -22,6 +24,10 @@ export default {
 
   backTo: 'Back to ',
   close: 'Close',
+
+  transfer: {
+    titleMany: 'Transfers',
+  },
 
   trnForm: {
     transferTitle: 'Transfer',
@@ -132,7 +138,7 @@ export default {
     showOnly: 'Show only',
     sortTitle: 'Sort wallets',
     createNewTitle: 'Create new wallet',
-    editTitle: 'Edit wallet',
+    editTitle: 'Edit Wallet',
     form: {
       name: {
         label: 'Wallet name',
@@ -206,7 +212,7 @@ export default {
     title: 'Statistics',
     selectedPeriod: 'Selected period',
     shortTitle: 'Stat',
-    periods: 'Detail',
+    periods: 'Summary',
     balanceTitle: 'Balance',
     empty: 'No stat for this period',
     emptyDesc: 'Change filter, period or add new transactions.',
@@ -253,19 +259,24 @@ export default {
   },
 
   money: {
-    incomes: 'Incomes',
-    expenses: 'Expenses',
+    incomes: 'Income',
+    expenses: 'Expense',
+
+    total: 'Net income',
+    income: 'Income',
+    expense: 'Expense',
+    sum: 'Net income',
+
     transfer: 'Transfer',
-    total: 'Total',
     average: {
       base: 'Average',
-      incomes: 'Average incomes',
-      expenses: 'Average expenses',
+      incomes: 'Average',
+      expenses: 'Average',
     },
-    averageTotal: 'Average total',
+    averageTotal: 'Average',
     also: 'Also',
     wallets: 'Wallets',
-    all: 'Total',
+    all: 'Net income',
   },
 
   dates: {

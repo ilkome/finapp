@@ -1,32 +1,20 @@
-<script lang="ts">
-export default {
-  setup() {
-    const { $store } = useNuxtApp()
+<script setup lang="ts">
+const { $store } = useNuxtApp()
 
-    function onClickWallet(walletId, close) {
-      $store.commit('trnForm/setTrnFormValues', {
-        walletToId: walletId,
-        walletId,
-      })
-      close()
-    }
+function onClickWallet(walletId, close) {
+  $store.commit('trnForm/setTrnFormValues', { incomeWalletId: walletId })
+  close()
+}
 
-    function afterClose() {
-      $store.commit('trnForm/closeTrnFormModal', 'transferTo')
-    }
-
-    return {
-      onClickWallet,
-      afterClose,
-    }
-  },
+function afterClose() {
+  $store.commit('trnForm/closeTrnFormModal', 'transferTo')
 }
 </script>
 
 <template lang="pug">
 TrnFormModal(@closed="afterClose")
   template(#header)
-    template Transfer to wallet
+    template {{ $t('transfer') }}
 
   template(#default="{ close }")
     .trnFormWalletsList.scrollerBlock
@@ -40,3 +28,14 @@ TrnFormModal(@closed="afterClose")
   height 100%
   padding-bottom 16px
 </style>
+
+<i18n lang="json5">
+{
+  "en": {
+    "transfer": "Transfer to wallet",
+  },
+  "ru": {
+    "transfer": "Перевод в кошелек",
+  },
+}
+</i18n>

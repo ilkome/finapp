@@ -30,7 +30,7 @@ export default {
 
 <template lang="pug">
 .summaryItem(:class="className")
-  .summaryItem__title {{ title }}
+  .summaryItem__title.pb-1 {{ title }}
   .summaryItem__amount
     Amount(
       :currency="$store.state.currencies.base"

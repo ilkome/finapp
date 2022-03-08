@@ -14,7 +14,7 @@ export default {
       stat: {
         icon: 'mdi mdi-poll',
         id: 'stat',
-        name: i18n.t('stat.shortTitle'),
+        name: i18n.t('stat.title'),
       },
       wallets: {
         icon: 'mdi mdi-credit-card-multiple',
@@ -39,13 +39,13 @@ export default {
         return
       }
 
-      router.push(tabName)
+      router.push(`/${tabName}`)
     }
 
-    function getClassName(tabName) {
-      if (route.name === tabName)
+    function getClassName(id) {
+      if (route.name.includes(id))
         return true
-      else if (tabName === 'stat' && route.name === 'index')
+      else if (id === 'stat' && route.name === 'index')
         return true
     }
 

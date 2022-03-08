@@ -1,6 +1,6 @@
 <template lang="pug">
 .appName.text-gray-600.font-nunito(
-  class="dark:text-neutral-200"
+  class="dark_text-neutral-200"
 ) {{ $t('appName') }}
 </template>
 

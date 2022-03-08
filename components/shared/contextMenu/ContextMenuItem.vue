@@ -20,7 +20,7 @@ export default {
 </script>
 
 <template lang="pug">
-.item(
+.item.grow(
   :class="{ _selected: selected, _grow: grow }"
   @click="handleClick"
 )

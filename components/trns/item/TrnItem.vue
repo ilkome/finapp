@@ -32,24 +32,11 @@ export default {
     formatedDateDay2() {
       return formatDate(this.trn.date, 'trnItem')
     },
-
-    filterTrnsDate() {
-      const date = this.trn.date
-      const walletId = this.trn.walletId
-
-      const trns = this.$store.state.trns.items
-      const trnsIds = Object.keys(trns)
-        .filter(id => trns[id].date <= date && trns[id].walletId === walletId)
-
-      const total = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds, true)
-      return total
-    },
   },
 
   methods: {
     handleClick() {
       if (!this.$store.state.trns.modal.show) {
-        this.$store.commit('categories/hideCategoryModal')
         this.$store.commit('trns/showTrnModal')
         this.$store.commit('trns/setTrnModalId', this.trnId)
       }
@@ -58,7 +45,7 @@ export default {
     setTrnEdit() {
       const trnId = this.trnId
       const { setExpression } = useCalculator()
-      setExpression(this.trn.amount)
+      setExpression(this.trn.type === 2 && this.trn.incomeAmount ? this.trn.incomeAmount : this.trn.amount)
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
       this.$store.commit('stat/setCategoryModal', { id: null, type: null })
       this.$emit('onClickEdit', this.trnId)
@@ -70,11 +57,55 @@ export default {
 <template lang="pug">
 .trnItem.py-3.px-3(
   v-if="(category && wallet) || trn.type === 2"
-  :class="{ ...className, 'py-2.5': true }"
+  :class="{ ...className, 'py-2.5': true, '!cursor-default': trn.type === 2 && trn.incomeAmount && trn.expenseAmount }"
   @click="handleClick"
 )
-  //- Transfer
-  template(v-if="trn.type === 2")
+  //- Transfer@next
+  template(v-if="trn.type === 2 && trn.incomeAmount && trn.expenseAmount")
+    .trnItem__categoryIcon
+      Icon(
+        :background="category.color"
+        :icon="category.icon"
+        big
+        round
+      )
+    .trnItem__categoryName {{ $t('trnForm.transferTitle') }}
+    .trnItem__date {{ formatedDate }}
+    .trnItem__wallet
+      WalletsItemWalletItem(
+        :id="trn.expenseWalletId"
+        isAltColor
+        ui="tile"
+      )
+      .trnFormHeaderSeparator: .mdi.mdi-chevron-right
+      WalletsItemWalletItem(
+        :id="trn.incomeWalletId"
+        isAltColor
+        ui="tile"
+      )
+    .trnItem__amount.flex.gap-3(@click.stop="setTrnEdit")
+      Amount(
+        :currency="$store.state.wallets.items[trn.expenseWalletId].currency"
+        :value="trn.expenseAmount"
+        :type="2"
+        vertical="center"
+        size="xl"
+      )
+      .trnFormHeaderSeparator: .mdi.mdi-chevron-right
+      Amount(
+        :currency="$store.state.wallets.items[trn.incomeWalletId].currency"
+        :value="trn.incomeAmount"
+        :type="2"
+        vertical="center"
+        size="xl"
+      )
+    .trnItem__desc.whitespace-pre.font-roboto.leading-none(
+      class="!dark_text-white/80 !text-xs"
+      v-if="trn.description"
+    ) {{ trn.description }}
+
+  //- Transfer@deprecated
+  template(v-else-if="trn.type === 2")
     //- Transfer: Detailed
     template(v-if="ui === 'detailed'")
       .trnItem__categoryIcon
@@ -213,6 +244,7 @@ export default {
       .trnItem__center
         .trnItem__categoryName
           | {{ category.name }}
+          .trnItem__groups(v-if="trn.groups") In group
 
         .trnItem__wallet
           .trnItem__walletIcon
@@ -354,6 +386,11 @@ export default {
 
     ^[0]._stat &
       padding-right 20px
+
+  &__groups
+    display inline-block
+    padding-left 10px
+    font-size 10px
 
 // Stat
 // ----------------------------------------------------------------------------

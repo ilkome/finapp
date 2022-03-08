@@ -1,5 +1,5 @@
 <script>
-import { saveData } from '~/services/firebaseHelpers'
+import { saveData } from '~/services/firebase/api'
 import generateId from '~/utils/id'
 import { allColors, popularColors } from '~/assets/js/colorsPopular'
 import { random } from '~/assets/js/emo'
@@ -265,7 +265,7 @@ div
               :style="{ background: category.color }"
               @click.stop="handleIconClick"
             ): div(:class="category.icon")
-            .text-sm.text-neutral-700(class="dark:text-neutral-300") {{ category.name || $t('categories.form.name.label') }}
+            .text-sm.text-neutral-700(class="dark_text-neutral-300") {{ category.name || $t('categories.form.name.label') }}
 
           //-
           //- Content
@@ -408,7 +408,7 @@ div
                       div(:class="icon")
 
           //- Submit
-          .col(style="padding-top: 16px; text-align: center")
+          .col.pt-2.pb-6
             SharedButton(
               :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
               :title="$t('categories.form.save')"
@@ -541,9 +541,6 @@ div
 .wrap
   padding 0 $m8
   padding-top $m6
-
-.button
-  button-base-1()
 
 .form
   padding $m6

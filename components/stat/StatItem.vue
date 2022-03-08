@@ -12,10 +12,10 @@ export default {
   },
 
   setup() {
-    const { setCategoryFilter } = useFilter()
+    const { setFilterCatsId } = useFilter()
 
     return {
-      setCategoryFilter,
+      setFilterCatsId,
     }
   },
 
@@ -30,21 +30,8 @@ export default {
       return this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
     },
 
-    showChildCategories() {
-      const childCatsIdsWithTrns = []
-      for (const childCategoryId of this.childCategoriesIds) {
-        const trnsIds = this.$store.getters['trns/getTrnsIdsByFilter']({
-          categoryId: childCategoryId,
-          type: this.type,
-        })
-        if (trnsIds.length > 0)
-          childCatsIdsWithTrns.push(childCategoryId)
-      }
-
-      if (childCatsIdsWithTrns.length > 0)
-        return true
-
-      return false
+    isCategoryHasChildren() {
+      return this.$store.getters['categories/isCategoryHasChildren'](this.categoryId)
     },
 
     styles() {
@@ -90,17 +77,18 @@ export default {
   @click="toogleShowInside"
 )
   .ins.py-2.px-3.space-x-3.rounded-md.justify-between.items-center.flex.border.bg-white2(
-    :class="['z-[9] dark:bg-dark4 hocus:bg-neutral-100 dark:hocus:bg-neutral-800', { _active: isShowInside }, { 'dark:border-neutral-800 cursor-n-resize shadow-xl': isShowInside }, { 'border-transparent cursor-s-resize shadow-sm': !isShowInside }]"
+    :class="['z-[9] dark_bg-dark4 hocus_bg-neutral-100 dark_hocus_bg-neutral-800', { _active: isShowInside }, { 'dark_border-neutral-800 cursor-n-resize shadow-xl': isShowInside }, { 'border-transparent cursor-s-resize shadow-sm': !isShowInside }]"
   )
+    //- Icon
     .cursor-pointer.text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
       :style="{ background: category.color }"
-      @click.stop="setCategoryFilter(categoryId)"
+      @click.stop="setFilterCatsId(categoryId)"
     ): div(:class="category.icon")
 
     .grow
       .space-x-3.flex
-        .overflow-hidden.truncate.grow.space-x-2.flex.items-baseline.text-neutral-700(class="dark:text-neutral-400")
-          .overflow-hidden.text-sm {{ category.name }}{{ showChildCategories ? '...' : '' }}
+        .overflow-hidden.truncate.grow.space-x-2.flex.items-baseline.text-neutral-700(class="dark_text-neutral-400")
+          .overflow-hidden.text-sm {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
 
         .statItem__amount
           Amount(
@@ -112,10 +100,10 @@ export default {
   //- Inside
   .overflow-hidden.ins2.mx-2.rounded-b-md.border.border-t-0(
     v-if="isShowInside"
-    class="mt-[-1px] dark:border-neutral-800"
+    class="mt-[-1px] dark_border-neutral-800"
     @click.stop=""
   )
-    template(v-if="showChildCategories")
+    template(v-if="isCategoryHasChildren")
       StatItemChildCats(
         :categoryId="categoryId"
         :type="type"

@@ -28,8 +28,7 @@ export default defineComponent({
 
 <template lang="pug">
 .space-y-2.flex-col.flex.pb-6(v-if="isShow")
-  LazyStatItem(
-    v-if="isShow"
+  StatItem(
     v-for="categoryId in statPage.current[typeText].categoriesIds"
     :key="categoryId"
     :biggest="statPage.current[typeText].biggest"

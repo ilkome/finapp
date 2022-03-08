@@ -41,7 +41,7 @@ export default {
 
 <template lang="pug">
 .wallets
-  .wallets__grid
+  .wallets__grid.px-3
     WalletsItemWalletItem(
       :activeItemId="activeItemId"
       v-for="walletId in walletsIds"
@@ -63,7 +63,6 @@ export default {
     grid-template-columns repeat(2, 1fr)
     grid-column-gap $m6
     grid-row-gap $m6
-    padding 0 $m7
 
     +media(600px)
       grid-template-columns repeat(auto-fill, minmax(200px, 1fr))

@@ -190,7 +190,7 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     display flex
     flex-grow 1
     flex-flow column nowrap
-    max-width 440px
+    max-width 480px
     margin-right auto
     background var(--c-bg-3)
     border-radius $m7 $m7 0 0

@@ -17,12 +17,11 @@ export default defineComponent({
   setup() {
     const { $store } = useNuxtApp()
     const { setExpression } = useCalculator()
-    const { setCategoryFilter } = useFilter()
+    const { setFilterCatsId } = useFilter()
 
     const actions = trnItem => ({
       onOpenDetails: () => {
         if (!$store.state.trns.modal.show) {
-          $store.commit('categories/hideCategoryModal')
           $store.commit('trns/showTrnModal')
           $store.commit('trns/setTrnModalId', trnItem.id)
         }
@@ -30,14 +29,14 @@ export default defineComponent({
 
       onOpenEdit: (event) => {
         event.stopPropagation()
-        setExpression(trnItem.amount)
+        setExpression(trnItem.type === 2 && trnItem.incomeAmount ? trnItem.incomeAmount : trnItem.amount)
         $store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.id })
         $store.commit('stat/setCategoryModal', { id: null, type: null })
       },
 
       onSetFilter: (event) => {
         event.stopPropagation()
-        setCategoryFilter(trnItem.categoryId)
+        setFilterCatsId(trnItem.categoryId)
         $store.commit('filter/setFilterDateNow')
         $store.commit('trns/hideTrnModal')
         $store.commit('trns/setTrnModalId', null)
@@ -140,15 +139,14 @@ div
 
   div(v-if="trnsIds.length > 0")
     //- History view
-    .grid.grid-cols-1.gap-y-5(
+    .grid.gap-y-2(
       v-if="ui === 'history'"
-      class="md:grid-cols-2 md:gap-x-20"
       :class="classNames"
     )
       .overflow-hidden.rounded-md.bg-white2.shadow-sm(
         v-for="(trnsIds, date) in groupedTrns"
         :key="date"
-        class="dark:bg-dark4"
+        class="dark_bg-dark4"
       )
         .pt-4
           .pb-2.px-3
@@ -163,7 +161,7 @@ div
             )
 
     //- Stat view
-    div(v-else)
+    div(v-if="ui !== 'history'")
       TrnsItemWithoutCat.py-3.px-3.cursor-pointer(
         v-for="trnId in paginatedTrnsIds"
         :key="trnId"
@@ -174,8 +172,3 @@ div
   .py-4(v-if="!isShowedAllTrns")
     .button(@click="showMoreTrns") {{ $t('trns.more') }}
 </template>
-
-<style lang="stylus" scoped>
-.button
-  button-base-1()
-</style>

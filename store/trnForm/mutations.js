@@ -6,11 +6,6 @@ export default {
     }
   },
 
-  setTrnFormTransfer(state, { tranferType, walletId }) {
-    if (tranferType)
-      state.transfer[tranferType] = walletId
-  },
-
   setTrnFormHeight(state, height) {
     state.height = height
   },
@@ -39,9 +34,8 @@ export default {
     state.show = false
   },
 
-  openTrnForm(state) {
-    state.show = true
-  },
+  openTrnForm(state) { state.show = true },
+  openTrnFormPc(state) { state.showPc = true },
 
   toogleTrnForm(state) {
     state.show = !state.show

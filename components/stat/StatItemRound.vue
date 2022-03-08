@@ -5,53 +5,26 @@ export default {
   name: 'StatItemRound',
 
   props: {
-    category: {
-      type: Object,
-      required: true,
-    },
-    categoryId: {
-      type: String,
-      required: true,
-    },
-    currency: {
-      type: String,
-      required: true,
-    },
-    total: {
-      type: Number,
-      required: true,
-    },
-    type: {
-      type: Number,
-      required: true,
-    },
+    category: { type: Object, required: true },
+    categoryId: { type: String, required: true },
+    currency: { type: String, required: true },
+    total: { type: Number, required: true },
+    type: { type: Number, required: true },
   },
 
   setup(props) {
-    const { categoryId, type } = toRefs(props)
+    const { categoryId } = toRefs(props)
     const { $store } = useNuxtApp()
-    const { setCategoryFilter } = useFilter()
-
-    const trnsIds = computed(() => {
-      return $store.getters['trns/getTrns']({
-        categoryId: categoryId.value,
-        type: type.value,
-      })
-    })
+    const { setFilterCatsId } = useFilter()
 
     const isCategoryHasChildren = computed(() => $store.getters['categories/isCategoryHasChildren'](categoryId.value))
-    const filterPeriod = computed(() => $store.state.filter.period)
-    const statCurrentPeriod = computed(() => $store.getters['stat/statCurrentPeriod'])
 
     // long press
-    const item = ref(document.createElement('div'))
+    const itemRef = ref(document.createElement('div'))
 
     return {
-      setCategoryFilter,
-      trnsIds,
-      filterPeriod,
-      statCurrentPeriod,
-      item,
+      setFilterCatsId,
+      itemRef,
       isCategoryHasChildren,
     }
   },
@@ -64,12 +37,12 @@ export default {
   :class="{ _prevStat: total === 0 }"
   ref="item"
   data-long-press-delay="300"
-  @click="setCategoryFilter(categoryId)"
+  @click="setFilterCatsId(categoryId)"
 )
   .statItemRound__icon
     .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
       :style="{ background: category.color }"
-      @click.stop="setCategoryFilter(categoryId)"
+      @click.stop="setFilterCatsId(categoryId)"
     ): div(:class="category.icon")
 
   .statItemRound__name.js-getWidth(:class="{ _isCategoryHasChildren: isCategoryHasChildren }") {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}

@@ -23,7 +23,7 @@ export default {
   )
 
   .trnFormHeaderItem__dots.text-neutral-500(
-    class="dark:text-neutral-400"
+    class="dark_text-neutral-400"
   ): .mdi.mdi-dots-vertical
 </template>
 

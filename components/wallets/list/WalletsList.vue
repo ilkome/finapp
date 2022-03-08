@@ -3,6 +3,7 @@ export default {
   props: {
     limit: { type: [Number, Boolean], default: null },
     showToogle: { type: Boolean, default: false },
+    uiSimple: { type: Boolean, default: false },
   },
 
   data() {
@@ -38,6 +39,16 @@ export default {
 <template lang="pug">
 .wallets
   WalletsItemWalletItem(
+    v-if="!uiSimple"
+    v-for="walletId in walletsIds"
+    :id="walletId"
+    :key="walletId"
+    :ui="ui"
+    v-on="$listeners"
+  )
+
+  WalletsItemSimple(
+    v-if="uiSimple"
     v-for="walletId in walletsIds"
     :id="walletId"
     :key="walletId"

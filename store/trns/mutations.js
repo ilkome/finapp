@@ -17,10 +17,8 @@ export default {
   },
 
   setTrnModalId(state, id) {
-    if (state.modal.id === id)
-      state.modal.id = null
-
-    else
-      state.modal.id = id
+    state.modal.id === id
+      ? state.modal.id = null
+      : state.modal.id = id
   },
 }

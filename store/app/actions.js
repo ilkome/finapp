@@ -1,6 +1,6 @@
 import localforage from 'localforage'
 import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '~/services/firebaseHelpers'
+import { auth } from '~/services/firebase/api'
 
 export default {
   initApp({ rootGetters, commit, dispatch }) {
@@ -30,9 +30,7 @@ export default {
 
         if (this.$router.currentRoute.name === 'login') {
           this.app.context.redirect('/')
-          setTimeout(() => {
-            commit('setAppStatus', 'ready')
-          }, 100)
+          setTimeout(() => commit('setAppStatus', 'ready'), 100)
         }
       }
       catch (e) {
@@ -68,7 +66,6 @@ export default {
     if (categories && user && trns && wallets) {
       if (this.$router.currentRoute.name === 'login')
         this.app.context.redirect('/')
-
       resolve()
     }
     else {
@@ -84,8 +81,6 @@ export default {
     await dispatch('categories/setCategories', null, { root: true })
     await dispatch('wallets/setWallets', null, { root: true })
     await dispatch('trns/setTrns', null, { root: true })
-    setTimeout(() => {
-      commit('setAppStatus', 'ready')
-    }, 100)
+    setTimeout(() => commit('setAppStatus', 'ready'), 100)
   },
 }

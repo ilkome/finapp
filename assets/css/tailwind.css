@@ -16,7 +16,8 @@ body {
 }
 
 body {
-  background: #171717
+  background: #171717;
+  user-select: none;
 }
 @media (prefers-color-scheme: light) {
   body {
@@ -32,4 +33,22 @@ body,
 #__nuxt,
 #__layout {
   height: 100%
+}
+
+:root {
+  --height: 100vh
+}
+
+.flex-center {
+  @apply flex items-center justify-center;
+}
+.flex-center-col {
+  @apply flex flex-col items-center justify-center;
+}
+
+.absolute-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%)
 }

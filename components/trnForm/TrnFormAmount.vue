@@ -43,42 +43,29 @@ export default {
 
 <template lang="pug">
 .trnFormAmount(:class="className")
-  .trnFormAmount__wrap(@click="handleChangeAmountType")
-    .trnFormAmount__in
-      .trnFormAmount__content
-        .trnFormAmount__evaluation {{ isSum ? null : getResult }}
-        .trnFormAmount__value {{ expression }}
+  .trnFormAmount__wrap.text-center.px-4.flex.items-center.flex-col.justify-center(
+    class="h-[46px]"
+    @click="handleChangeAmountType"
+  )
+    .trnFormAmount__value(class="!text-4xl") {{ expression }}
+    .trnFormAmount__evaluation(v-if="!isSum") {{ isSum ? null : getResult }}
 </template>
 
 <style lang="stylus" scoped>
 .trnFormAmount
   &__wrap
-    padding $m7 $m7
-    padding-top $m6
-    text-align right
-
     ^[0]._expenses &
       color var(--c-expenses-1)
-
     ^[0]._incomes &
       color var(--c-incomes-1)
-
-  &__in
-    display flex
-    justify-content center
-
-  &__content
-    flex-grow 1
 
   &__value
     typo-money()
     padding 0
-    font-size 42px !important
     font-weight 500
     line-height 32px
     word-break break-word
     white-space normal
-    text-align right
     background none
     border none
 
