@@ -8,9 +8,9 @@ const moneyTypes = [{
 
 export default function useStat() {
   const { $store } = useNuxtApp()
+
   const isEmptyStat = computed(() => {
     const statCurrentPeriod = $store.getters['stat/statCurrentPeriod']
-
     if ($store.state.ui.activeTabStat === 'details')
       return statCurrentPeriod.total === 0
     else if ($store.state.ui.activeTabStat === 'incomes')

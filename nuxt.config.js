@@ -6,19 +6,11 @@ export default defineNuxtConfig({
     vite: false,
   },
 
-  // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
   ssr: false,
-
-  // Target (https://go.nuxtjs.dev/config-target)
   target: 'static',
-
-  // https://nuxtjs.org/guides/configuration-glossary/configuration-modern
   modern: 'client',
-
-  // https://nuxtjs.org/guides/configuration-glossary/configuration-telemetry
   telemetry: false,
 
-  // https://nuxtjs.org/guides/configuration-glossary/configuration-vue-config
   vue: {
     config: {
       silent: true,
@@ -28,7 +20,6 @@ export default defineNuxtConfig({
     },
   },
 
-  // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
     titleTemplate: '%s - Finapp',
     meta: [
@@ -48,12 +39,10 @@ export default defineNuxtConfig({
     noscript: [{ innerHTML: 'This website requires JavaScript.' }],
   },
 
-  // Global CSS (https://go.nuxtjs.dev/config-css)
   styleResources: {
     stylus: ['~/assets/stylus/variables'],
   },
 
-  // Auto import components (https://go.nuxtjs.dev/config-components)
   components: [{
     path: '~/components/',
     extensions: ['vue'],
@@ -62,23 +51,19 @@ export default defineNuxtConfig({
     extensions: ['vue'],
   }],
 
-  // Loading
   loading: false,
 
-  // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
     { src: '~/plugins/initAppFromCache' },
     { src: '~/plugins/dayjs' },
     { src: '~/plugins/notifications' },
   ],
 
-  // Color mode
   colorMode: {
     classSuffix: '',
     preference: 'dark',
   },
 
-  // Nuxt.js modules
   modules: [
     '@nuxtjs/color-mode',
     '@nuxtjs/i18n',
@@ -86,10 +71,9 @@ export default defineNuxtConfig({
     'portal-vue/nuxt',
   ],
 
-  // Modules for dev and build (https://go.nuxtjs.dev/config-modules)
   buildModules: [
-    '@nuxtjs/style-resources',
     '@nuxtjs/pwa',
+    '@nuxtjs/style-resources',
     '@nuxtjs/tailwindcss',
     'unplugin-vue2-script-setup/nuxt',
   ],
@@ -102,7 +86,6 @@ export default defineNuxtConfig({
     viewer: false,
   },
 
-  // Router middleware
   router: {
     middleware: ['auth'],
   },
