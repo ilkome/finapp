@@ -20,7 +20,7 @@ export default defineComponent({
 
 <template lang="pug">
 .h-full.overflow.overflow-x-auto
-  .py-6.pb-8.px-4.font-nunito.text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold
+  .py-6.px-3.font-nunito.text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold
     | {{ $t('categories.name') }}
 
   .pb-4
@@ -38,7 +38,7 @@ export default defineComponent({
           @onClick="id => $router.push(`/categories/${category.id}`)"
         )
 
-  .pb-4.px-4.flex.gap-4.pt-4
+  .pb-4.px-3.flex.gap-4.pt-4
     .button(@click="$store.dispatch('ui/setActiveTab', 'createCategory')") {{ $t('categories.new') }}
 </template>
 

@@ -104,9 +104,9 @@ export default {
   border-radius $m3
   anim-background()
 
-  +media-laptop()
-    padding 12px 20px
-    font-size 14px
+  // +media-laptop()
+  //   padding 12px 20px
+  //   font-size 14px
 
   +media-hover()
     color var(--c-font-1)
@@ -166,10 +166,10 @@ export default {
     max-width 220px
     margin 0 auto
 
-    @media $media-laptop
-      display inline-flex
-      width auto
-      margin 0
+    // @media $media-laptop
+    //   display inline-flex
+    //   width auto
+    //   margin 0
 
   &._center
     align-items center
@@ -251,9 +251,9 @@ export default {
       margin-right 0
       margin-right -5px
 
-    +media-laptop()
-      margin-right 10px
-      margin-left -8px
+    // +media-laptop()
+    //   margin-right 10px
+    //   margin-left -8px
 
   &__check
     margin-left auto

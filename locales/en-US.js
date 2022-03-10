@@ -146,13 +146,13 @@ export default {
         error: 'Write wallet name',
         exist: 'Wallet with same name is exist',
       },
-      color: {
+      colors: {
         label: 'Color',
         placeholder: 'Select color',
         error: 'Select color',
         custom: 'Custom color',
       },
-      currency: {
+      currencies: {
         label: 'Currency',
         placeholder: 'Select currency',
         error: 'Select currency',
@@ -191,7 +191,7 @@ export default {
         label: 'Parent category',
         placeholder: 'Select parent category',
       },
-      color: {
+      colors: {
         label: 'Colors',
         custom: 'Custom color',
       },

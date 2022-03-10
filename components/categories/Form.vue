@@ -241,7 +241,7 @@ export default {
         .form-line(@click="showColors = true")
           .inputModal._flex
             .inputModal__value: .inputModal__color(:style="{ background: category.color }")
-            .inputModal__label {{ $t('categories.form.color.label') }}
+            .inputModal__label {{ $t('categories.form.colors.label') }}
 
       //- icons
       .form__btns__i.cursor-pointer
@@ -305,7 +305,7 @@ export default {
                 @click="handleColorSelect(color)"
               )
         .customColor
-          .customColor__title {{ $t('categories.form.color.custom') }}
+          .customColor__title {{ $t('categories.form.colors.custom') }}
           input.customColor__value(v-model="category.color" type="color")
 
   //- Icons

@@ -93,7 +93,7 @@ export default {
       if (!this.wallet.currency) {
         this.$notify({
           title: '😮',
-          text: this.$t('wallets.form.currency.error'),
+          text: this.$t('wallets.form.currencies.error'),
         })
         return false
       }
@@ -147,13 +147,13 @@ export default {
           .inputModal._flex
             .inputModal__value {{ wallet.currency }}
             .inputModal__content
-            .inputModal__label {{ $t('wallets.form.currency.label') }}
+            .inputModal__label {{ $t('wallets.form.currencies.label') }}
 
       .form__btns__i
         .form-line(@click="showColors = true")
           .inputModal._flex
             .inputModal__value: .inputModal__color(:style="{ background: wallet.color }")
-            .inputModal__label {{ $t('wallets.form.color.label') }}
+            .inputModal__label {{ $t('wallets.form.colors.label') }}
 
     SharedContextMenuItem(
       :checkboxValue="wallet.countTotal"
@@ -182,7 +182,7 @@ export default {
   )
     ModalBottom(
       :center="true"
-      :title="$t('wallets.form.color.placeholder')"
+      :title="$t('wallets.form.colors.placeholder')"
       @onClose="showColors = false"
     )
       .inputText
@@ -194,7 +194,7 @@ export default {
               @click="handleColorSelect(color)"
               v-for="color in colors")
       .customColor
-        .customColor__title {{ $t('wallets.form.color.custom') }}
+        .customColor__title {{ $t('wallets.form.colors.custom') }}
         input.customColor__value(v-model="wallet.color" type="color")
 
   //- currencies
@@ -204,7 +204,7 @@ export default {
   )
     ModalBottom(
       :center="true"
-      :title="$t('wallets.form.currency.placeholder')"
+      :title="$t('wallets.form.currencies.placeholder')"
       @onClose="showCurrencies = false"
     )
       .inputText

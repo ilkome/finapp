@@ -73,7 +73,7 @@ export default {
     madeBy: {
       text: 'Разработал',
       name: 'Илья Комичев',
-    }
+    },
   },
 
   userLogout: 'Выход',
@@ -129,7 +129,7 @@ export default {
     customize: 'Внешний вид',
     app: 'Приложение',
     caution: 'C осторожностью',
-    deleteButton: 'Удалить все мои данные'
+    deleteButton: 'Удалить все мои данные',
   },
 
   wallets: {
@@ -148,13 +148,13 @@ export default {
         error: 'Напишите имя кошелька',
         exist: 'Кошелек с таким именем уже существует',
       },
-      color: {
+      colors: {
         label: 'Цвет',
         placeholder: 'Выберите цвет',
         error: 'Выберите цвет',
         custom: 'Кастомный цвет',
       },
-      currency: {
+      currencies: {
         label: 'Валюта',
         placeholder: 'Выберите валюту',
         error: 'Выберите валюту',
@@ -193,7 +193,7 @@ export default {
         label: 'Категория',
         placeholder: 'Выберите категрию',
       },
-      color: {
+      colors: {
         label: 'Цвета',
         custom: 'Кастомный цвет',
       },

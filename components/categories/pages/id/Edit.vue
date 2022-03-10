@@ -1,15 +1,13 @@
-<script>
+<script lang="ts">
 import { saveData } from '~/services/firebase/api'
 import generateId from '~/utils/id'
 import { allColors, popularColors } from '~/assets/js/colorsPopular'
 import { random } from '~/assets/js/emo'
 import icons from '~/assets/js/icons'
 
-export default {
+export default defineComponent({
   setup() {
     const { $store } = useNuxtApp()
-
-    const showColors = ref(false)
     const activeTab = ref('data')
 
     const category = ref({
@@ -47,7 +45,6 @@ export default {
       findCategoryWithThisColor,
 
       onSelectColor,
-      showColors,
 
       popularColors,
       allColors,
@@ -66,7 +63,7 @@ export default {
 
   computed: {
     categoryId() {
-      return this.$store.state.categories.editId
+      return this.$route.params.id
     },
   },
 
@@ -89,7 +86,7 @@ export default {
   created() {
     this.colors = allColors
     this.icons = icons
-    if (!this.$store.state.categories.editId) {
+    if (!this.categoryId) {
       this.category.icon = random(random(icons))
       this.category.color = random(popularColors)
     }
@@ -119,7 +116,7 @@ export default {
       this.showParents = false
     },
 
-    handleSubmit(close) {
+    handleSubmit() {
       if (this.validateForm()) {
         const uid = this.$store.state.user.user.uid
         const id = this.categoryId || generateId()
@@ -179,8 +176,6 @@ export default {
           for (const childId of childIds)
             saveData(`users/${uid}/categories/${childId}/color`, categoriesValues.color)
         }
-
-        close()
       }
     },
 
@@ -218,202 +213,185 @@ export default {
       return true
     },
   },
-}
+})
 </script>
 
 <template lang="pug">
-div
-  Portal(
-    key="categoryFormModal"
-    to="modal"
+.relative.h-full.overflow.overflow-x-auto(v-if="category")
+  router-link(
+    v-slot='{ href, navigate }'
+    :to='`/categories/${categoryId}`'
+    custom
   )
-    BaseBottomSheet(
-      show
-      @closed="closed()"
+    a.grow.cursor-pointer.block.py-5.pb-5.mb-3.px-3.font-nunito.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
+      :href='href'
+      @click='navigate'
     )
-      template(#handler="{ close }")
-        BaseBottomSheetClose(@onClick="close")
+      .pb-2.text-xs.font-medium(class="text-white/50") {{ $t('categories.editTitle') }}
 
-      template(#default="{ close }")
-        .content(:style="{ maxHeight: documentHeight }")
-          //- Header
-          .header
-            template(v-if="!categoryId") {{ $t('categories.createNewTitle') }}
-            template(v-else) {{ $t('categories.editTitle') }}
+      .flex.items-center.gap-3
+        .text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold {{ category.name }}
+        .w-8.h-8.rounded-full.flex-center.text-xl.text-neutral-50(
+          :style="{ background: category.color }"
+        )
+          div(:class="category.icon")
 
-          //-
-          //- Menu
-          //-
-          .menu
-            .menuItem(
-              :class="{ _active: activeTab === 'data' }"
-              @click="activeTab = 'data'"
-            ) {{ $t('categories.form.data.label') }}
-            .menuItem(
-              :class="{ _active: activeTab === 'colors' }"
-              @click="activeTab = 'colors'"
-            ) {{ $t('categories.form.colors.label') }}
-            .menuItem(
-              :class="{ _active: activeTab === 'icons' }"
-              @click="activeTab = 'icons'"
-            ) {{ $t('categories.form.icons.label') }}
+  //- Menu
+  //-----------------------------------
+  .px-3.pb-4
+    .overflow-hidden.rounded-md.scrollbar.mb-4.bg-gray-50.dark_bg-dark4.dark_shadow
+      .overflow-hidden.overflow-x-auto.flex.items-center.text-sm.text-center.max-w-md
+        .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+          :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': activeTab === 'data' }"
+          @click="activeTab = 'data'"
+        ) {{ $t('categories.form.data.label') }}
 
-          .bg-main.m-3.p-2.rounded-md.items-center.gap-x-3.flex(
-            v-if="activeTab !== 'data'"
+        .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+          :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': activeTab === 'colors' }"
+          @click="activeTab = 'colors'"
+        ) {{ $t('categories.form.colors.label') }}
+
+        .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+          :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': activeTab === 'icons' }"
+          @click="activeTab = 'icons'"
+        ) {{ $t('categories.form.icons.label') }}
+
+  //- Content
+  //-----------------------------------
+  .px-3.max-w-md
+    template(v-if="activeTab === 'data'")
+      .form
+        .inputText
+          .inputText__label {{ $t('categories.form.name.label') }}
+          input(
+            type="text"
+            :placeholder="$t('categories.form.name.placeholder')"
+            v-model="category.name"
+          ).inputText__value
+
+        //- can not change root category if inside this category already has some categories
+        div(
+          v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0 && $store.getters['categories/hasCategories']"
+          style="paddingBottom: 8px"
+        )
+          .inputText__label {{ $t('categories.form.parent.label') }}
+
+          div(@click="showParents = true")
+            template(v-if="category.parentId !== 0")
+              CategoriesItemCategoryItem(
+                :category="$store.state.categories.items[category.parentId]"
+                :id="category.parentId"
+              )
+            template(v-else)
+              .categoryParentItem
+                .categoryParentItem__icon
+                  Icon(icon="mdi mdi-folder-star")
+                .categoryParentItem__name {{ $t('categories.form.parent.no') }}
+
+        LazySharedContextMenuItem(
+          v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length"
+          :checkboxValue="applyChildColor"
+          :title="$t('categories.form.childColor')"
+          showCheckbox
+          @onClick="applyChildColor = !applyChildColor"
+        )
+        LazySharedContextMenuItem(
+          v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0"
+          :checkboxValue="category.showInLastUsed"
+          :title="$t('categories.form.lastUsed')"
+          showCheckbox
+          @onClick="category.showInLastUsed = !category.showInLastUsed"
+        )
+        SharedContextMenuItem(
+          :checkboxValue="category.showInQuickSelector"
+          :title="$t('categories.form.quickSelector')"
+          showCheckbox
+          @onClick="category.showInQuickSelector = !category.showInQuickSelector"
+        )
+
+    //- Colors
+    //---------------------------------
+    template(v-if="activeTab === 'colors'")
+      .form
+        .subTitle {{ $t('popularColors') }}
+        .colors
+          .iconItem(
+            v-for="(color, idx) in popularColors"
+            :key="idx"
+            :class="{ _active: color === category.color }"
+            :style="{ background: color === category.color ? color : 'transparent' }"
+            @click="onSelectColor(color)"
           )
-            .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
-              :style="{ background: category.color }"
-              @click.stop="handleIconClick"
-            ): div(:class="category.icon")
-            .text-sm.text-neutral-700(class="dark_text-neutral-300") {{ category.name || $t('categories.form.name.label') }}
-
-          //-
-          //- Content
-          //-
-          .scrollerBlock
-            //- Data
-            template(v-if="activeTab === 'data'")
-              .form
-                .inputText
-                  .inputText__label {{ $t('categories.form.name.label') }}
-                  input(
-                    type="text"
-                    :placeholder="$t('categories.form.name.placeholder')"
-                    v-model="category.name"
-                  ).inputText__value
-
-                //- can not change root category if inside this category already has some categories
-                div(
-                  v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0 && $store.getters['categories/hasCategories']"
-                  style="paddingBottom: 8px"
+            template(v-if="color")
+              template(v-if="findCategoryWithThisColor(color)")
+                Icon(
+                  :icon="findCategoryWithThisColor(color)"
+                  :color="color === category.color ? null : color"
+                  big
                 )
-                  .inputText__label {{ $t('categories.form.parent.label') }}
-
-                  div(@click="showParents = true")
-                    template(v-if="category.parentId !== 0")
-                      CategoriesItemCategoryItem(
-                        :category="$store.state.categories.items[category.parentId]"
-                        :id="category.parentId"
-                      )
-                    template(v-else)
-                      .categoryParentItem
-                        .categoryParentItem__icon
-                          Icon(icon="mdi mdi-folder-star")
-                        .categoryParentItem__name {{ $t('categories.form.parent.no') }}
-
-                LazySharedContextMenuItem(
-                  v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length"
-                  :checkboxValue="applyChildColor"
-                  :title="$t('categories.form.childColor')"
-                  showCheckbox
-                  @onClick="applyChildColor = !applyChildColor"
+              template(v-else-if="color === category.color")
+                Icon(
+                  :icon="category.icon"
+                  background="transparent"
+                  big
                 )
-                LazySharedContextMenuItem(
-                  v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0"
-                  :checkboxValue="category.showInLastUsed"
-                  :title="$t('categories.form.lastUsed')"
-                  showCheckbox
-                  @onClick="category.showInLastUsed = !category.showInLastUsed"
+              template(v-else)
+                .colorPreview(:style="{ background: color }")
+
+        .subTitle {{ $t('palette') }}
+        .colors
+          .iconItem(
+            v-for="(color, idx) in allColors"
+            :key="idx"
+            :class="{ _active: color === category.color, _empty: !color }"
+            :style="{ background: color === category.color ? color : 'transparent' }"
+            @click="onSelectColor(color)"
+          )
+
+            template(v-if="color")
+              template(v-if="findCategoryWithThisColor(color)")
+                Icon(
+                  :icon="findCategoryWithThisColor(color)"
+                  :color="color === category.color ? null : color"
+                  big
                 )
-                SharedContextMenuItem(
-                  :checkboxValue="category.showInQuickSelector"
-                  :title="$t('categories.form.quickSelector')"
-                  showCheckbox
-                  @onClick="category.showInQuickSelector = !category.showInQuickSelector"
+              template(v-else-if="color === category.color")
+                Icon(
+                  :icon="category.icon"
+                  background="transparent"
+                  big
                 )
+              template(v-else)
+                .colorPreview(:style="{ background: color }")
 
-            //-
-            //- Colors
-            //-
-            template(v-if="activeTab === 'colors'")
-              .form
-                .subTitle {{ $t('popularColors') }}
-                .colors
-                  .iconItem(
-                    v-for="(color, idx) in popularColors"
-                    :key="idx"
-                    :class="{ _active: color === category.color }"
-                    :style="{ background: color === category.color ? color : 'transparent' }"
-                    @click="onSelectColor(color)"
-                  )
-                    template(v-if="color")
-                      //- .colorPreview(:style="{ background: color }")
-                      template(v-if="findCategoryWithThisColor(color)")
-                        Icon(
-                          :icon="findCategoryWithThisColor(color)"
-                          :color="color === category.color ? null : color"
-                          big
-                        )
-                      template(v-else-if="color === category.color")
-                        Icon(
-                          :icon="category.icon"
-                          background="transparent"
-                          big
-                        )
-                      template(v-else)
-                        .colorPreview(:style="{ background: color }")
-                        //- Icon(
-                        //-   :icon="category.icon"
-                        //-   :color="color"
-                        //-   big
-                        //- )
+        .subTitle {{ $t('categories.form.colors.custom') }}
+        .customColor
+          input.customColor__value(v-model="category.color" type="color")
 
-                .subTitle {{ $t('palette') }}
-                .colors
-                  .iconItem(
-                    v-for="(color, idx) in allColors"
-                    :key="idx"
-                    :class="{ _active: color === category.color, _empty: !color }"
-                    :style="{ background: color === category.color ? color : 'transparent' }"
-                    @click="onSelectColor(color)"
-                  )
-
-                    template(v-if="color")
-                      template(v-if="findCategoryWithThisColor(color)")
-                        Icon(
-                          :icon="findCategoryWithThisColor(color)"
-                          :color="color === category.color ? null : color"
-                          big
-                        )
-                      template(v-else-if="color === category.color")
-                        Icon(
-                          :icon="category.icon"
-                          background="transparent"
-                          big
-                        )
-                      template(v-else)
-                        .colorPreview(:style="{ background: color }")
-                        //- Icon(
-                        //-   icon="mdi mdi-folder-star"
-                        //-   :color="color"
-                        //-   big
-                        //- )
-
-                .subTitle {{ $t('categories.form.colors.custom') }}
-                .customColor
-                  input.customColor__value(v-model="category.color" type="color")
-
-            template(v-if="activeTab === 'icons'")
-              .form
-                .icons
-                  .icons__group(
-                    v-for="iconGroup in icons"
-                  )
-                    .iconItem(
-                      v-for="icon in iconGroup"
-                      :class="{ _active: category.icon === icon }"
-                      :style="{ color: category.color }"
-                      @click="handleIconSelect(icon)"
-                    )
-                      div(:class="icon")
-
-          //- Submit
-          .col.pt-2.pb-6
-            SharedButton(
-              :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
-              :title="$t('categories.form.save')"
-              @onClick="handleSubmit(close)"
+    //- Icons
+    //---------------------------------
+    template(v-if="activeTab === 'icons'")
+      .form
+        .icons
+          .icons__group(
+            v-for="iconGroup in icons"
+          )
+            .iconItem(
+              v-for="icon in iconGroup"
+              :class="{ _active: category.icon === icon }"
+              :style="{ color: category.color }"
+              @click="handleIconSelect(icon)"
             )
+              div(:class="icon")
+
+    //- Submit
+    .pt-4.pb-6
+      SharedButton(
+        :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
+        :title="$t('categories.form.save')"
+        @onClick="handleSubmit()"
+      )
+
   //-
   //- Parent Modal
   //-
@@ -425,7 +403,7 @@ div
       template(#handler="{ close }")
         BaseBottomSheetClose(@onClick="close")
 
-      template(#default="{ close }")
+      template()
         .content(:style="{ maxHeight: documentHeight }")
           .scrollerBlock
             .wrap
@@ -447,9 +425,6 @@ div
 </template>
 
 <style lang="stylus" scoped>
-.bg-main
-  background var(--c-item-bg-main)
-
 .preview
   display flex
   align-items center
@@ -543,19 +518,12 @@ div
   padding-top $m6
 
 .form
-  padding $m6
-
   .inputText
     margin-bottom 0
     padding-bottom $m8
 
   h2
     padding-bottom $m6
-
-.scrollerBlock
-  overflow hidden
-  overflow-y auto
-  height 100%
 
 .colorPreview
   display flex
@@ -598,23 +566,6 @@ div
   &._active
     padding 0
     background var(--c-item-bd-hover)
-
-.header
-  position relative
-  display flex
-  align-items center
-  justify-content center
-  padding $m7
-  padding-top 0
-  padding-bottom $m5
-  color var(--c-font-3)
-  font-size 18px
-  font-weight 700
-  letter-spacing 1px
-  fontFamilyNunito()
-
-  /.light &
-    color var(--c-font-4)
 
 .customColor
   padding 0 $m4

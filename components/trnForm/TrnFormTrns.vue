@@ -128,17 +128,17 @@ export default defineComponent({
 
   .pt-2.pb-5.px-3
     .overflow-hidden.rounded-md.items-center.flex.text-xs.text-center.bg-gray-50.dark_bg-dark4.dark_shadow
-      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+      .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
         :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': filterBy === 'wallet' }"
         @click="changeFilter('wallet')"
       ) {{ $t('trnForm.filterWallet') }}
 
-      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+      .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
         :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': filterBy === 'walletAndCategory' }"
         @click="changeFilter('walletAndCategory')"
       ) {{ $t('trnForm.filterWalletAndCategory') }}
 
-      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+      .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
         :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': filterBy === 'all' }"
         @click="changeFilter('all')"
       ) {{ $t('trnForm.filterAll') }}

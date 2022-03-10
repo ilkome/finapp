@@ -84,17 +84,17 @@ export default {
 
   .py-2.px-3(v-if="slider")
     .overflow-hidden.flex.items-center.text-center.text-xs.rounded-md.bg-gray-50.dark_bg-dark4.dark_shadow
-      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+      .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
         :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': slider.activeIndex === 0 }"
         @click="slider.slideTo(0)"
       ) {{ $t('categories.lastUsedTitle') }}
 
-      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+      .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
         :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': slider.activeIndex === 1 }"
         @click="slider.slideTo(1)"
       ) {{ $t('categories.allTitle') }}
 
-      .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+      .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
         :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': slider.activeIndex === 2 }"
         @click="slider.slideTo(2)"
       ) {{ $t('categories.favoriteTitle') }}
