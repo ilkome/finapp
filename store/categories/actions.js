@@ -23,6 +23,11 @@ export default {
             showInLastUsed: false,
             showInQuickSelector: false,
           }
+
+          for (const childCatId of cat.childIds) {
+            if (!items[childCatId])
+              items[categoryId].childIds = items[categoryId].childIds.filter(id => id !== childCatId)
+          }
         }
       }
 
