@@ -10,7 +10,7 @@ export enum TrnType {
 }
 
 // TODO: make WalletId optional only if TrnType.Transfer
-export interface TrnTransaction{
+export interface TrnTransaction {
   amount: number
   type: TrnType.Income | TrnType.Expense
   categoryId: CategoryID
@@ -18,7 +18,7 @@ export interface TrnTransaction{
   date: number
 }
 
-export interface TrnTransfer{
+export interface TrnTransfer {
   type: TrnType.Transfer
   date: number
   categoryId: 'transfer'

@@ -18,5 +18,5 @@ const amount = computed(() =>
 </script>
 
 <template lang="pug">
-span.whitespace-nowrap {{ amount }}
+span.whitespace-nowrap.font-unica {{ amount }}
 </template>

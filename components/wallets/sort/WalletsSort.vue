@@ -7,7 +7,7 @@ export default {
 
   data() {
     return {
-      sortedWalletsIds: this.$store.getters['wallets/walletsSortedIds'],
+      sortedWalletsIds: [...this.$store.getters['wallets/walletsSortedIds']],
     }
   },
 
@@ -39,28 +39,37 @@ export default {
 
 <template lang="pug">
 .h-full.overflow.overflow-x-auto
-  .mb-2.py-10.pt-12.px-3.text-center.text-neutral-800.dark_text-white.text-2xl.font-semibold.font-nunito
-    | {{ $t('wallets.sortTitle') }}
+  .pb-8.flex.justify-between
+    .text-neutral-800.dark_text-white.text-2xl.font-semibold.font-nunito
+      | {{ $t('wallets.sortTitle') }}
 
-  WalletsList2(
-    :style="{ paddingTop: '10px' }"
-    v-slot="{ wallets }")
-    Draggable(
-      v-model="sortedWalletsIds"
-      handle=".handle"
-      ghost-class="_draggable"
+    .cursor-pointer.text-white.bg-blue2.rounded-full.w-10.h-10.flex-center.hocus-text-white.hocus_bg-blue1(
+      @click="saveWalletsOrder"
     )
-      template(v-for="walletId in sortedWalletsIds")
-        .walletItem2(:key="walletId")
-          .walletItem2__icon.handle
-            Icon(
-              :abbr="$store.state.wallets.items[walletId].name"
-              :background="$store.state.wallets.items[walletId].color || $store.state.ui.defaultBgColor")
+      svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16")
+        path(fill="currentColor" d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06a.733.733 0 0 1 1.047 0l3.052 3.093l5.4-6.425a.247.247 0 0 1 .02-.022Z")
 
-          .walletItem2__name {{ $store.state.wallets.items[walletId].name }}
-          .walletItem2__drag.handle.doNotCloseModal: .mdi.mdi-drag-horizontal-variant
+  Draggable.grid.gap-1(
+    v-model="sortedWalletsIds"
+    handle=".handle"
+    ghost-class="_draggable"
+  )
+    .overflow-hidden.flex.items-center.gap-3.bg.py-0.pl-3.rounded-md(
+      v-for="walletId in sortedWalletsIds"
+      :key="walletId"
+    )
+      .grow.flex-center.gap-x-3
+        .w-6.h-6.rounded-md.flex-center.text-neutral-50.text-xs.leading-none(
+          :style="{ background: $store.state.wallets.items[walletId].color }"
+          class="mt-[2px]"
+        ) {{ $store.state.wallets.items[walletId].name.substring(0, 2) }}
+        .grow.text-sm.text-neutral-500(class="dark_text-neutral-400") {{ $store.state.wallets.items[walletId].name }}
 
-  .col
+        .cursor-grab.flex-center.w-11.h-11.handle.doNotCloseModal.hocus_bg-gray-100.dark_hocus_bg-neutral-800
+          svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24")
+            path(fill="currentColor" d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2s.9-2 2-2s2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2z")
+
+  .pt-6
     SharedButton(
       className="_blue2 _text-center"
       :title="$t('base.save')"
@@ -70,6 +79,9 @@ export default {
 
 <style lang="stylus" scoped>
 @import "~assets/stylus/variables"
+
+.bg
+  background var(--c-item-bg-main)
 
 item-bg-active()
   background var(--c-bg-6)
@@ -110,17 +122,4 @@ item-icon()
     grid-row 1 / 3
     align-self center
     item-main-text()
-
-  &__drag
-    cursor pointer
-    grid-column 3 / 4
-    grid-row 1 / 3
-    align-self center
-    justify-self cent
-    item-icon()
-    display flex
-    align-items center
-    justify-content center
-    width 40px
-    height 40px
 </style>

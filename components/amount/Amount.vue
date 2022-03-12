@@ -72,16 +72,16 @@ export default {
 
 <template lang="pug">
 .amount(:class="className")
-  .amountItem._original(:class="className")
+  .amountItem._original.flex.items-baseline(:class="className")
     .amountItem__prefix(v-if="isShowPrefix && value !== 0") {{ type === 0 ? '-' : '+' }}
-    .amountItem__value {{ formatAmount(value) }}
-    .amountItem__symbol {{ getCurrencySymbol(currency) }}
+    .amountItem__value.leading-none {{ formatAmount(value) }}
+    .amountItem__symbol.leading-none {{ getCurrencySymbol(currency) }}
 
   template(v-if="showBase && (value !== 0) && (currency !== $store.state.currencies.base)")
-    .amountItem._base(:class="className")
+    .amountItem._base.pt-1.flex.items-baseline(:class="className")
       .amountItem__prefix(v-if="isShowPrefix && value !== 0") {{ type === 0 ? '-' : '+' }}
-      .amountItem__value {{ amountInBaseCurrency }}
-      .amountItem__symbol {{ getCurrencySymbol($store.state.currencies.base) }}
+      .amountItem__value.leading-none {{ amountInBaseCurrency }}
+      .amountItem__symbol.leading-none {{ getCurrencySymbol($store.state.currencies.base) }}
 </template>
 
 <style lang="stylus" scoped>
@@ -136,7 +136,6 @@ export default {
 
 .amountItem
   display flex
-  align-items flex-end
   justify-content flex-end
 
   &._left
@@ -178,7 +177,7 @@ export default {
 
   &__value
     font-secondary()
-    font-size 14px
+    font-size 16px
     font-weight 400
 
     ~/._base &
@@ -206,8 +205,7 @@ export default {
     font-weight 400
 
     ~/._original &
-      padding-bottom 1px
-      font-size 12px
+      font-size 11px
 
     ~/._base &
       font-size 10px

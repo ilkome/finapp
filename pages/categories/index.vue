@@ -23,23 +23,24 @@ export default defineComponent({
   .py-6.px-3.font-nunito.text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold
     | {{ $t('categories.name') }}
 
-  .pb-4
-    CategoriesListSlot(
-      :ids="catsIds"
-      v-slot="{ categories }"
-    )
-      .shame1.px-3
-        CategoriesItemCategoryItem(
-          v-for="category in categories"
-          :category="category"
-          :slider="() => ({})"
-          :id="category.id"
-          :key="category.id"
-          @onClick="id => $router.push(`/categories/${category.id}`)"
-        )
+  .max-w-3xl
+    .pb-4
+      CategoriesListSlot(
+        :ids="catsIds"
+        v-slot="{ categories }"
+      )
+        .shame1.px-3
+          CategoriesItemCategoryItem(
+            v-for="category in categories"
+            :category="category"
+            :slider="() => ({})"
+            :id="category.id"
+            :key="category.id"
+            @onClick="id => $router.push(`/categories/${category.id}`)"
+          )
 
-  .pb-4.px-3.flex.gap-4.pt-4
-    .button(@click="$store.dispatch('ui/setActiveTab', 'createCategory')") {{ $t('categories.new') }}
+    .pb-4.px-3.flex.gap-4.pt-4
+      .button(@click="$store.dispatch('ui/setActiveTab', 'createCategory')") {{ $t('categories.new') }}
 </template>
 
 <style lang="stylus" scoped>

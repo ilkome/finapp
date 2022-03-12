@@ -127,7 +127,7 @@ export default {
 
 <template lang="pug">
 .h-full.overflow.overflow-x-auto
-  .mb-2.py-10.pt-12.px-3.text-center.text-neutral-800.dark_text-white.text-2xl.font-semibold.font-nunito
+  .pb-4.text-neutral-800.dark_text-white.text-2xl.font-semibold.font-nunito
     template(v-if="!walletId") {{ $t('wallets.createNewTitle') }}
     template(v-else) {{ $t('wallets.editTitle') }}
 
@@ -169,7 +169,7 @@ export default {
       @onClick="wallet.isCredit = !wallet.isCredit"
     )
 
-    .col(style="padding-top: 16px")
+    .pt-6
       SharedButton(
         :class="['_text-center _blue2', { _inline: $store.state.ui.pc }]"
         :title="$t('wallets.form.save')"

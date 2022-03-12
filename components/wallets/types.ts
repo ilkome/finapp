@@ -5,3 +5,7 @@ export interface WalletItem {
   color: string
   currency: string
 }
+
+export interface WalletItemWithAmount extends WalletItem {
+  amount: number
+}

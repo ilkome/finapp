@@ -107,7 +107,7 @@ export default defineComponent({
       .pt-5
         .subTitle.text-center.pb-1.text-xs {{ $t('trns.history') }}
 
-      .mx-3.my-2.overflow-hidden.rounded-md.bg-dark4(
+      .overflow-hidden.mx-3.my-2.rounded-md.bg-gray-50.dark_bg-dark4(
         v-for="(trnsIds, date) in groupedTrns"
         :key="date"
       )
