@@ -63,10 +63,10 @@ onMounted(() => {
     name="modal"
   )
 
-  LazyAppUpdateAppModal(
-    v-if="isShowUpdateApp"
-    @onClose="isShowUpdateApp = false"
-  )
+  //- LazyAppUpdateAppModal(
+  //-   v-if="isShowUpdateApp"
+  //-   @onClose="isShowUpdateApp = false"
+  //- )
 
   .layout__wrap.overflow-hidden.flex-grow.h-full.flex
     transition(name="fadeIn" appear)

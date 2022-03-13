@@ -43,8 +43,8 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.py-2.px-5.gap-x-3.items-center.flex.cursor-pointer(
-  :class="[{ _active: activeItemId === id }, 'hocus_bg-gray-200 dark_hocus_bg-neutral-800']"
+.cursor-pointer.py-1.px-5.gap-x-3.flex.items-center.hocus_bg-gray-200.dark_hocus_bg-neutral-800.border-b.border-gray-200.dark_border-neutral-800(
+  :class="[{ _active: activeItemId === id }, 'min-h-[48px]']"
   @click="handleClick"
 )
   //- Icon
@@ -61,12 +61,9 @@ export default defineComponent({
 
       Amount(
         :currency="wallet.currency"
-        :showBase="showBase"
-        :size="size"
         :value="wallet.total"
-        :vertical="vertical"
         alwaysShowSymbol
+        showBase
+        vertical="right"
       )
-
-    div(class="h-[1px] bg-gray-200 dark_bg-neutral-800")
 </template>

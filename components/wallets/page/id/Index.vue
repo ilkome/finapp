@@ -75,63 +75,66 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.relative.h-full.overflow-y-auto(v-if="wallet")
-  router-link(
-    v-slot='{ href, navigate }'
-    to='/wallets'
-    custom
-  )
-    .flex.items-start
-      a.grow.cursor-pointer.block.py-5.mb-3.px-3.font-nunito.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
-        :href='href'
-        @click='navigate'
-      )
-        .pb-2.text-xs.font-medium(class="text-white/50") {{ $t('wallets.title') }}
-
-        .flex.items-center.gap-3.pb-3
-          .text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold {{ wallet.name }}
-          .p-1.px-1.rounded.flex-center.text-2xs.text-neutral-50(
-            :style="{ background: wallet.color }"
-          ) {{ wallet.currency }}
-
-        .flex
-          Amount(
-            :currency="wallet.currency"
-            :value="total"
-            showBase
-            size="lg"
-            vertical="right"
-          )
-
-      .mdi.mdi-pencil-outline.cursor-pointer.rounded-full.mt-3.mr-2.w-16.h-16.flex-center.text-2xl.p-4.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
-        @click="handleEditClick"
-      )
-
-  .pb-6
-    .px-3.flex
-      .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
-        class="dark_text-white/60"
-        @click="handleSetFilterWallet"
-      )
-        .mdi.mdi-poll.text-xl
-        .text-xs.leading-none {{ $t('statBy') }}: {{ wallet.name }}
-        .mdi.mdi-chevron-right.opacity-70.text-lg.leading-none
-
-  //- Stat
-  .overflow-hidden.relative.bg-white.dark_bg-custom4.mx-3.mb-12.p-3.rounded-md
-    SharedDate.text-xs.font-medium(class="-mb-1 text-white/50")
-    div(class="-mb-3")
-      StatGroupSum2(
-        :trnsIds="filteredTrnsIds"
-      )
-
-  //- History
-  .px-3
-    TrnsHistory(
-      :trnsIds="trnsIds"
-      :trnType="filter.trnType"
-      @setFilterTrnType="value => filter.trnType = value"
+.h-full.overflow.overflow-x-auto.max-w-3xl.h-full(
+  class="pb-[44px] md_pb-[52px] lg_pb-0"
+)
+  template(v-if="wallet")
+    router-link(
+      v-slot='{ href, navigate }'
+      to='/wallets'
+      custom
     )
+      .flex.items-start
+        a.grow.cursor-pointer.block.py-5.mb-3.px-3.font-nunito.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
+          :href='href'
+          @click='navigate'
+        )
+          .pb-2.text-xs.font-medium(class="text-white/50") {{ $t('wallets.title') }}
+
+          .flex.items-center.gap-3.pb-3
+            .text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold {{ wallet.name }}
+            .p-1.px-1.rounded.flex-center.text-2xs.text-neutral-50(
+              :style="{ background: wallet.color }"
+            ) {{ wallet.currency }}
+
+          .flex
+            Amount(
+              :currency="wallet.currency"
+              :value="total"
+              showBase
+              size="lg"
+              vertical="right"
+            )
+
+        .mdi.mdi-pencil-outline.cursor-pointer.rounded-full.mt-3.mr-2.w-16.h-16.flex-center.text-2xl.p-4.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
+          @click="handleEditClick"
+        )
+
+    .pb-6
+      .px-3.flex
+        .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
+          class="dark_text-white/60"
+          @click="handleSetFilterWallet"
+        )
+          .mdi.mdi-poll.text-xl
+          .text-xs.leading-none {{ $t('statBy') }}: {{ wallet.name }}
+          .mdi.mdi-chevron-right.opacity-70.text-lg.leading-none
+
+    //- Stat
+    .overflow-hidden.relative.bg-white.dark_bg-custom4.mx-3.mb-12.p-3.rounded-md
+      SharedDate.text-xs.font-medium(class="-mb-1 text-white/50")
+      div(class="-mb-3")
+        StatGroupSum2(
+          :trnsIds="filteredTrnsIds"
+        )
+
+    //- History
+    .px-3
+      TrnsHistory(
+        :trnsIds="trnsIds"
+        :trnType="filter.trnType"
+        @setFilterTrnType="value => filter.trnType = value"
+      )
 
   //- Delete?
   ModalBottomConfirm(

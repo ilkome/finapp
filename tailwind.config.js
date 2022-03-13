@@ -40,6 +40,9 @@ module.exports = {
       minWidth: {
         base: '320px',
       },
+      screens: {
+        '2sm': '400px',
+      },
     },
   },
 

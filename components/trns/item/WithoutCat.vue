@@ -36,7 +36,7 @@ export default defineComponent({
   ) {{ $t(formatDate(trnItem.date, 'trnItem')) }}
 
   .grow
-    .items-center.flex
+    .flex
       .grow
         .space-x-2.items-baseline.flex
           //- Wallet

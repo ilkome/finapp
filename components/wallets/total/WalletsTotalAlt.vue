@@ -49,71 +49,49 @@ export default {
 </script>
 
 <template lang="pug">
-.walletsTotal(
+.grid.gap-y-1.gap-x-2.2sm_grid-cols-2.md_gap-x-6(
   v-if="$store.getters['wallets/hasWallets']"
 )
   //- Credits
-  .walletsTotal__item(v-if="isShowCredits && totalInWallets.credits !== 0")
-    .walletsTotal__title {{ $t('credits') }}
-    .walletsTotal__value
-      Amount(
-        :currency="$store.state.currencies.base"
-        :value="totalInWallets.credits"
-        size="lg"
-        vertical="center"
-      )
+  .flex.items-center.bg.py-2.px-3.rounded-md(v-if="isShowCredits && totalInWallets.credits !== 0")
+    .grow.text-sm.leading-none {{ $t('credits') }}
+    Amount(
+      :currency="$store.state.currencies.base"
+      :value="totalInWallets.credits"
+      vertical="right"
+    )
 
   //- Savings
-  .walletsTotal__item(v-if="totalInWallets.savings !== 0 && isShowSavings")
-    .walletsTotal__title {{ $t('savings') }}
-    .walletsTotal__value
-      Amount(
-        :currency="$store.state.currencies.base"
-        :value="totalInWallets.savings"
-        size="lg"
-        vertical="center"
-      )
+  .flex.items-center.bg.py-2.px-3.rounded-md(v-if="totalInWallets.savings !== 0 && isShowSavings")
+    .grow.text-sm.leading-none {{ $t('savings') }}
+    Amount(
+      :currency="$store.state.currencies.base"
+      :value="totalInWallets.savings"
+      vertical="right"
+    )
 
   //- Total
-  .walletsTotal__item
-    .walletsTotal__title {{ $t('total') }}
-    .walletsTotal__value
-      Amount(
-        :currency="$store.state.currencies.base"
-        :value="totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)"
-        size="lg"
-        vertical="center"
-      )
+  .flex.items-center.bg.py-2.px-3.rounded-md
+    .grow.text-sm.leading-none {{ $t('total') }}
+    Amount(
+      :currency="$store.state.currencies.base"
+      :value="totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)"
+      vertical="right"
+    )
 
   //- Avaliable
-  .walletsTotal__item(v-if="totalInWallets.counted !== totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)")
-    .walletsTotal__title {{ $t('avaliable') }}
-    .walletsTotal__value
-      Amount(
-        :currency="$store.state.currencies.base"
-        :value="totalInWallets.counted"
-        size="lg"
-        vertical="center"
-      )
+  .flex.items-center.bg.py-2.px-3.rounded-md(v-if="totalInWallets.counted !== totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)")
+    .grow.text-sm.leading-none {{ $t('avaliable') }}
+    Amount(
+      :currency="$store.state.currencies.base"
+      :value="totalInWallets.counted"
+      vertical="right"
+    )
 </template>
 
 <style lang="stylus" scoped>
-.walletsTotal
-  display flex
-  flex-wrap wrap
-  align-items center
-  gap $m8
-
-  &__item
-    flex 0 0 0
-    align-self start
-    justify-self start
-
-  &__title
-    opacity .6
-    padding-right 0
-    padding-bottom 6px
-    font-size 12px
+.bg
+  background var(--c-item-bg-main)
 </style>
 
 <i18n lang="json5">

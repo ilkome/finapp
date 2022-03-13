@@ -162,158 +162,161 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.relative.h-full.overflow.overflow-x-auto(v-if="wallet")
-  router-link(
-    v-slot='{ href, navigate }'
-    :to='`/wallets/${walletId}`'
-    custom
-  )
-    a.grow.cursor-pointer.block.py-5.pb-5.mb-4.px-3.font-nunito.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
-      :href='href'
-      @click='navigate'
+.h-full.overflow.overflow-x-auto.max-w-3xl.h-full(
+  class="pb-[44px] md_pb-[52px] lg_pb-0"
+)
+  template(v-if="wallet")
+    router-link(
+      v-slot='{ href, navigate }'
+      :to='`/wallets/${walletId}`'
+      custom
     )
-      .pb-1.text-xs.font-medium(class="text-white/50") {{ $t('wallets.editTitle') }}
-
-      .flex.items-center.gap-3
-        .text-neutral-800.dark_text-white.text-2xl.font-semibold {{ wallet.name }}
-        .p-1.px-1.rounded.flex-center.text-2xs.text-neutral-50(
-          :style="{ background: wallet.color }"
-        ) {{ wallet.currency }}
-
-  //- Menu
-  //-----------------------------------
-  .px-3.pb-4
-    .overflow-hidden.rounded-md.scrollbar.mb-4.bg-gray-50.dark_bg-dark4.dark_shadow
-      .overflow-hidden.overflow-x-auto.flex.items-center.text-sm.text-center.max-w-md
-        .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
-          :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': activeTab === 'data' }"
-          @click="activeTab = 'data'"
-        ) {{ $t('categories.form.data.label') }}
-
-        .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
-          :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': activeTab === 'currencies' }"
-          @click="activeTab = 'currencies'"
-        ) {{ $t('wallets.form.currencies.label') }}
-
-        .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
-          :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': activeTab === 'colors' }"
-          @click="activeTab = 'colors'"
-        ) {{ $t('categories.form.colors.label') }}
-
-  //- Content
-  //-----------------------------------
-  .px-3.max-w-md
-
-    //- Data
-    //-----------------------------------
-    template(v-if="activeTab === 'data'")
-      .mb-4
-        .inputText
-          .inputText__label {{ $t('wallets.form.name.label') }}
-          input(
-            type="text"
-            :placeholder="$t('wallets.form.name.placeholder')"
-            v-model="wallet.name"
-          ).inputText__value
-
-      SharedContextMenuItem(
-        :checkboxValue="wallet.countTotal"
-        :title="$t('wallets.form.total.placeholder')"
-        showCheckbox
-        @onClick="wallet.countTotal = !wallet.countTotal"
+      a.grow.cursor-pointer.block.py-5.pb-5.mb-4.px-3.font-nunito.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
+        :href='href'
+        @click='navigate'
       )
+        .pb-1.text-xs.font-medium(class="text-white/50") {{ $t('wallets.editTitle') }}
 
-      SharedContextMenuItem(
-        :checkboxValue="wallet.isCredit"
-        :title="$t('isCredit')"
-        showCheckbox
-        @onClick="wallet.isCredit = !wallet.isCredit"
-      )
+        .flex.items-center.gap-3
+          .text-neutral-800.dark_text-white.text-2xl.font-semibold {{ wallet.name }}
+          .p-1.px-1.rounded.flex-center.text-2xs.text-neutral-50(
+            :style="{ background: wallet.color }"
+          ) {{ wallet.currency }}
 
-    //- Currencies
+    //- Menu
     //-----------------------------------
-    template(v-if="activeTab === 'currencies'")
-      div
-        .border-b.border-gray-50.dark_border-neutral-800.p-3.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
-          v-for="(item, currency) in $store.state.currencies.rates"
-          :key="item"
-          :class="{ '_active cursor-default text-blue3 dark_text-blue1': wallet.currency === currency }"
-          @click="handleCurrencySelect(currency)"
+    .px-3.pb-4
+      .overflow-hidden.rounded-md.scrollbar.mb-4.bg-gray-50.dark_bg-dark4.dark_shadow
+        .overflow-hidden.overflow-x-auto.flex.items-center.text-sm.text-center.max-w-md
+          .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+            :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': activeTab === 'data' }"
+            @click="activeTab = 'data'"
+          ) {{ $t('categories.form.data.label') }}
+
+          .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+            :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': activeTab === 'currencies' }"
+            @click="activeTab = 'currencies'"
+          ) {{ $t('wallets.form.currencies.label') }}
+
+          .cursor-pointer.px-6.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+            :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': activeTab === 'colors' }"
+            @click="activeTab = 'colors'"
+          ) {{ $t('categories.form.colors.label') }}
+
+    //- Content
+    //-----------------------------------
+    .px-3.max-w-md
+
+      //- Data
+      //-----------------------------------
+      template(v-if="activeTab === 'data'")
+        .mb-4
+          .inputText
+            .inputText__label {{ $t('wallets.form.name.label') }}
+            input(
+              type="text"
+              :placeholder="$t('wallets.form.name.placeholder')"
+              v-model="wallet.name"
+            ).inputText__value
+
+        SharedContextMenuItem(
+          :checkboxValue="wallet.countTotal"
+          :title="$t('wallets.form.total.placeholder')"
+          showCheckbox
+          @onClick="wallet.countTotal = !wallet.countTotal"
         )
-          .flex.items-center
-            template(v-if="currencies.find(c => c.code === currency)")
-              .grow {{ currencies.find(c => c.code === currency).currency }}
-              div {{ currency }}
 
-            template(v-else)
-              .grow
-              div {{ currency }}
+        SharedContextMenuItem(
+          :checkboxValue="wallet.isCredit"
+          :title="$t('isCredit')"
+          showCheckbox
+          @onClick="wallet.isCredit = !wallet.isCredit"
+        )
 
-    //- Colors
-    //---------------------------------
-    template(v-if="activeTab === 'colors'")
-      .form
-        .subTitle {{ $t('popularColors') }}
-        .colors
-          .iconItem(
-            v-for="(color, idx) in popularColors"
-            :key="idx"
-            :class="{ _active: color === wallet.color }"
-            :style="{ background: color === wallet.color ? color : 'transparent' }"
-            @click="onSelectColor(color)"
+      //- Currencies
+      //-----------------------------------
+      template(v-if="activeTab === 'currencies'")
+        div
+          .border-b.border-gray-50.dark_border-neutral-800.p-3.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+            v-for="(item, currency) in $store.state.currencies.rates"
+            :key="item"
+            :class="{ '_active cursor-default text-blue3 dark_text-blue1': wallet.currency === currency }"
+            @click="handleCurrencySelect(currency)"
           )
-            template(v-if="color")
-              template(v-if="findWalletWithThisColor(color)")
-                Icon(
-                  icon="mdi mdi-credit-card-multiple"
-                  :color="color === wallet.color ? null : color"
-                  big
-                )
-              template(v-else-if="color === wallet.color")
-                Icon(
-                  icon="mdi mdi-credit-card-multiple"
-                  background="transparent"
-                  big
-                )
+            .flex.items-center
+              template(v-if="currencies.find(c => c.code === currency)")
+                .grow {{ currencies.find(c => c.code === currency).currency }}
+                div {{ currency }}
+
               template(v-else)
-                .colorPreview(:style="{ background: color }")
+                .grow
+                div {{ currency }}
 
-        .subTitle {{ $t('palette') }}
-        .colors
-          .iconItem(
-            v-for="(color, idx) in allColors"
-            :key="idx"
-            :class="{ _active: color === wallet.color, _empty: !color }"
-            :style="{ background: color === wallet.color ? color : 'transparent' }"
-            @click="onSelectColor(color)"
-          )
+      //- Colors
+      //---------------------------------
+      template(v-if="activeTab === 'colors'")
+        .form
+          .subTitle {{ $t('popularColors') }}
+          .colors
+            .iconItem(
+              v-for="(color, idx) in popularColors"
+              :key="idx"
+              :class="{ _active: color === wallet.color }"
+              :style="{ background: color === wallet.color ? color : 'transparent' }"
+              @click="onSelectColor(color)"
+            )
+              template(v-if="color")
+                template(v-if="findWalletWithThisColor(color)")
+                  Icon(
+                    icon="mdi mdi-credit-card-multiple"
+                    :color="color === wallet.color ? null : color"
+                    big
+                  )
+                template(v-else-if="color === wallet.color")
+                  Icon(
+                    icon="mdi mdi-credit-card-multiple"
+                    background="transparent"
+                    big
+                  )
+                template(v-else)
+                  .colorPreview(:style="{ background: color }")
 
-            template(v-if="color")
-              template(v-if="findWalletWithThisColor(color)")
-                Icon(
-                  icon="mdi mdi-credit-card-multiple"
-                  :color="color === wallet.color ? null : color"
-                  big
-                )
-              template(v-else-if="color === wallet.color")
-                Icon(
-                  icon="mdi mdi-credit-card-multiple"
-                  background="transparent"
-                  big
-                )
-              template(v-else)
-                .colorPreview(:style="{ background: color }")
+          .subTitle {{ $t('palette') }}
+          .colors
+            .iconItem(
+              v-for="(color, idx) in allColors"
+              :key="idx"
+              :class="{ _active: color === wallet.color, _empty: !color }"
+              :style="{ background: color === wallet.color ? color : 'transparent' }"
+              @click="onSelectColor(color)"
+            )
 
-        .subTitle {{ $t('categories.form.colors.custom') }}
-        .customColor
-          input.customColor__value(v-model="wallet.color" type="color")
+              template(v-if="color")
+                template(v-if="findWalletWithThisColor(color)")
+                  Icon(
+                    icon="mdi mdi-credit-card-multiple"
+                    :color="color === wallet.color ? null : color"
+                    big
+                  )
+                template(v-else-if="color === wallet.color")
+                  Icon(
+                    icon="mdi mdi-credit-card-multiple"
+                    background="transparent"
+                    big
+                  )
+                template(v-else)
+                  .colorPreview(:style="{ background: color }")
 
-    .pt-4.pb-6
-      SharedButton(
-        :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
-        :title="$t('wallets.form.save')"
-        @onClick="handleSubmit()"
-      )
+          .subTitle {{ $t('categories.form.colors.custom') }}
+          .customColor
+            input.customColor__value(v-model="wallet.color" type="color")
+
+      .pt-4.pb-6
+        SharedButton(
+          :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
+          :title="$t('wallets.form.save')"
+          @onClick="handleSubmit()"
+        )
 </template>
 
 <style lang="stylus" scoped>

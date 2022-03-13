@@ -15,15 +15,15 @@ export default function useMenuData() {
       name: i18n.t('createTrn'),
     },
     index: {
-      icon: 'mdi mdi-poll',
+      component: 'UiIconStat',
       name: i18n.t('stat.title'),
     },
     wallets: {
-      icon: 'mdi mdi-credit-card-multiple',
+      component: 'UiIconWallet',
       name: i18n.t('wallets.name'),
     },
     categories: {
-      icon: 'mdi mdi-folder-star',
+      component: 'UiIconCategory',
       name: i18n.t('categories.name'),
     },
     history: {
@@ -42,6 +42,7 @@ export default function useMenuData() {
   }))
 
   function onClick(menuId: string) {
+    console.log(menuId)
     menuId === 'trnForm'
       ? $store.dispatch('trnForm/openTrnForm', { action: 'create' })
       : router.push(`/${menuId}`)

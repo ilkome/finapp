@@ -1,3 +1,3 @@
 <template lang="pug">
-CategoriesPagesIdEdit
+CategoriesPageIdEdit
 </template>

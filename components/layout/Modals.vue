@@ -27,9 +27,6 @@ export default defineComponent({
   //- trn: item
   TrnsModal
 
-  //- menu
-  LazyLayoutBottomMenuModal(v-if="activeTab === 'menu'")
-
   //- currencies
   CurrenciesModal
 

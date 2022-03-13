@@ -53,7 +53,7 @@ onMounted(() => {
 </script>
 
 <template lang="pug">
-.overflow-hidden.relative.h-full.min-w-base.font-roboto.text-slate-500.dark_text-gray-400.leading-none.antialiased.bg-white.dark_bg-dark3.max-w-7xl(
+.overflow-hidden.relative.h-full.min-w-base.font-roboto.text-slate-500.dark_text-gray-400.leading-none.antialiased.bg-white.dark_bg-dark3(
   :class="touchClassNames"
 )
   LayoutModals
@@ -63,26 +63,56 @@ onMounted(() => {
     name="modal"
   )
 
-  LazyAppUpdateAppModal(
-    v-if="isShowUpdateApp"
-    @onClose="isShowUpdateApp = false"
-  )
+  //- LazyAppUpdateAppModal(
+  //-   v-if="isShowUpdateApp"
+  //-   @onClose="isShowUpdateApp = false"
+  //- )
 
   .h-full.grid(
-    class="grid-rows-[1fr_auto] xl_grid-cols-[auto_1fr]"
+    class="lg_grid-cols-[auto_1fr]"
   )
-    .hidden.xl_block
+    .hidden.lg_block
       LayoutSidebar
 
-    .overflow-hidden.h-full.xl_px-8.grid
+    .overflow-hidden.h-full.lg_px-8.grid
       Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
+      .absolute.right-0.bottom-0.w-full
 
-    .xl_hidden
-      LayoutBottomMenu
+      .hidden.createTrn.absolute.right-6.bottom-6.lg_flex(
+        @click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
+      )
+        .btn: .mdi.mdi-plus
+
+    .z-10.absolute.bottom-0.left-0.w-full.backdrop-blur.lg_hidden(
+      class="bg-white/70 dark_bg-dark3/70"
+    )
+      LayoutMenuBottom
 </template>
 
 <style lang="stylus">
 @import '~assets/stylus/index'
 @import '~assets/stylus/colors-dark'
 @import '~assets/stylus/colors-light'
+
+.createTrn
+  cursor pointer
+  align-items flex-end
+  justify-content center
+  anim()
+
+  +media-hover()
+    .btn
+      transform scale(1.3)
+
+  .btn
+    display flex
+    align-items center
+    justify-content center
+    width 48px
+    height 48px
+    color var(--c-font-1)
+    font-size 32px
+    background var(--c-blue-1)
+    border-radius 50%
+    anim()
 </style>

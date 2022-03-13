@@ -7,15 +7,15 @@ export default {
 <template lang="pug">
 .handlerClose(@click="$emit('onClick')")
   svg(
-    viewBox='0 0 24 24'
-    fill='none'
-    stroke='#000'
-    stroke-linecap='round'
-    stroke-linejoin='round'
-    stroke-width='3'
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#000"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="3"
   )
-    path(d='M.75 23.249l22.5-22.5')
-    path(d='M23.25 23.249L.75.749')
+    path(d="M.75 23.249l22.5-22.5")
+    path(d="M23.25 23.249L.75.749")
 </template>
 
 <style lang="stylus" scoped>

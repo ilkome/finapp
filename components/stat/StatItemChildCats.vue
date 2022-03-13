@@ -62,13 +62,13 @@ export default {
 
 <template lang="pug">
 div
-  template(v-for="category in statCategories")
-    StatItemChildCatsItem(
-      :biggest="$store.getters['stat/statCurrentPeriod'][typeName].biggest"
-      :category="$store.state.categories.items[category.categoryId]"
-      :categoryId="category.categoryId"
-      :key="category.categoryId"
-      :type="type"
-      :total="category[typeName]"
-    )
+  StatItemChildCatsItem(
+    v-for="category in statCategories"
+    :key="category.categoryId"
+    :biggest="$store.getters['stat/statCurrentPeriod'][typeName].biggest"
+    :category="$store.state.categories.items[category.categoryId]"
+    :categoryId="category.categoryId"
+    :total="category[typeName]"
+    :type="type"
+  )
 </template>

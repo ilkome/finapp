@@ -1,14 +1,9 @@
-<script>
-export default {
-  setup() {
-    const { $store } = useNuxtApp()
-    const activeTab = computed(() => $store.state.ui.activeTab)
+<script setup lang="ts">
+import useMenuData from '~/modules/menu/useMenuData'
 
-    return {
-      activeTab,
-    }
-  },
-}
+const { $store } = useNuxtApp()
+const { onClick, checkIsActive } = useMenuData()
+const activeTab = computed(() => $store.state.ui.activeTab)
 </script>
 
 <template lang="pug">
@@ -22,6 +17,7 @@ Portal(to="modal")
       BaseBottomSheetClose(@onClick="close")
 
     .content(class="!overflow-hidden !pt-8 !pb-2")
+      //- User
       .mb-4.pb-4.border-b(
         class="border-neutral-300 dark_border-neutral-800"
       )
@@ -38,7 +34,16 @@ Portal(to="modal")
           .text-xl.mdi.mdi-logout
           .text-sm {{ $t('userLogout') }}
 
-      LayoutBottomMenuModalItems
+      //- Main Menu
+      LayoutSidebarMenu
+
+      //- Theme
+      .flex.items-center.py-3.px-6.space-x-5(
+        class="text-slate-600 dark_text-neutral-400 hocus_bg-zinc-100 dark_hocus_bg-neutral-800"
+        @click="$store.dispatch('ui/changeTheme')"
+      )
+        .text-xl.mdi.mdi-palette
+        .text-sm {{ $t('theme.change') }}
 </template>
 
 <style lang="stylus" scoped>

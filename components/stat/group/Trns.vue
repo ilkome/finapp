@@ -13,8 +13,8 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-div(class="max-w-[420px]")
-  .py-2
+.py-3(class="max-w-[420px]")
+  .pb-2
     .statTitle {{ $t('trns.inPeriodTitle') }}
 
   TrnsList(
