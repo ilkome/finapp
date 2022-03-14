@@ -57,7 +57,7 @@ function handleEditClick() {
           :href='href'
           @click='navigate'
         )
-          .pb-2.text-xs.font-medium(class="text-white/50")
+          .pb-2.text-xs.font-medium(class="dark_text-white/50")
             | {{ $t('categories.title') }}
             template(v-if="category.parentId")
               |
@@ -74,6 +74,7 @@ function handleEditClick() {
           @click="handleEditClick"
         )
 
+    //- Open stat
     .pb-12
       .px-3.flex
         .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(

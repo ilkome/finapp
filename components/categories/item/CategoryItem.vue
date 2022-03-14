@@ -45,13 +45,13 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.categoryItem.bg-main.p-2.gap-x-3.items-center.flex.rounded-md(
+.categoryItem.bg-main.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-gray-50.dark_bg-dark5.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
   v-if="category"
   :class="{ [ui]: ui, _active: activeItemId === id }"
   @click="onClickItem"
 )
   .categoryItem__active(v-if="activeItemId === id")
-  .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
+  .w-8.h-8.flex.items-center.justify-center.rounded-full.text-xl.leading-none.text-neutral-50(
     :style="{ background: category.color }"
     @click.stop="onClickIcon"
   ): div(:class="category.icon")
@@ -62,9 +62,11 @@ export default defineComponent({
       class="dark_text-neutral-400"
     ) {{ parentCategory.name }}
 
-    .leading-none.text-sm.text-neutral-700(class="dark_text-neutral-300") {{ category.name }}
+    .leading-none.text-sm.text-neutral-700.dark_text-neutral-300
+      | {{ category.name }}
+      template(v-if="childCategoriesIds.length > 0") ...
 
-  .text-md.text-neutral-500(
+  .font-unica.text-md.text-neutral-500(
     v-if="childCategoriesIds.length > 0"
     class="dark_text-neutral-400"
   ) {{ childCategoriesIds.length }}
@@ -72,9 +74,6 @@ export default defineComponent({
 
 <style lang="stylus" scoped>
 .bg-main
-  background var(--c-item-bg-main)
-  +media-hover()
-    background var(--c-item-bg-hover)
   &._active
     background var(--c-item-bg-hover)
 

@@ -39,16 +39,13 @@ export default {
 
 <template lang="pug">
 .h-full.overflow.overflow-x-auto
-  .pb-8.flex.justify-between
-    .text-neutral-800.dark_text-white.text-2xl.font-semibold.font-nunito
-      | {{ $t('wallets.sortTitle') }}
+  //- Header
+  //-----------------------------------
+  .pb-6.text-neutral-800.dark_text-white.text-2xl.font-semibold.font-nunito
+    | {{ $t('wallets.sortTitle') }}
 
-    .cursor-pointer.text-white.bg-blue2.rounded-full.w-10.h-10.flex-center.hocus-text-white.hocus_bg-blue1(
-      @click="saveWalletsOrder"
-    )
-      svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16")
-        path(fill="currentColor" d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06a.733.733 0 0 1 1.047 0l3.052 3.093l5.4-6.425a.247.247 0 0 1 .02-.022Z")
-
+  //- Items
+  //-----------------------------------
   Draggable.grid.gap-1(
     v-model="sortedWalletsIds"
     handle=".handle"

@@ -53,7 +53,7 @@ export default {
   v-if="$store.getters['wallets/hasWallets']"
 )
   //- Credits
-  .flex.items-center.bg.py-2.px-3.rounded-md(v-if="isShowCredits && totalInWallets.credits !== 0")
+  .flex.items-center.bg-gray-50.dark_bg-dark5.py-2.px-3.rounded-md(v-if="isShowCredits && totalInWallets.credits !== 0")
     .grow.text-sm.leading-none {{ $t('credits') }}
     Amount(
       :currency="$store.state.currencies.base"
@@ -62,7 +62,7 @@ export default {
     )
 
   //- Savings
-  .flex.items-center.bg.py-2.px-3.rounded-md(v-if="totalInWallets.savings !== 0 && isShowSavings")
+  .flex.items-center.bg-gray-50.dark_bg-dark5.py-2.px-3.rounded-md(v-if="totalInWallets.savings !== 0 && isShowSavings")
     .grow.text-sm.leading-none {{ $t('savings') }}
     Amount(
       :currency="$store.state.currencies.base"
@@ -71,7 +71,7 @@ export default {
     )
 
   //- Total
-  .flex.items-center.bg.py-2.px-3.rounded-md
+  .flex.items-center.bg-gray-50.dark_bg-dark5.py-2.px-3.rounded-md
     .grow.text-sm.leading-none {{ $t('total') }}
     Amount(
       :currency="$store.state.currencies.base"
@@ -80,7 +80,7 @@ export default {
     )
 
   //- Avaliable
-  .flex.items-center.bg.py-2.px-3.rounded-md(v-if="totalInWallets.counted !== totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)")
+  .flex.items-center.bg-gray-50.dark_bg-dark5.py-2.px-3.rounded-md(v-if="totalInWallets.counted !== totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)")
     .grow.text-sm.leading-none {{ $t('avaliable') }}
     Amount(
       :currency="$store.state.currencies.base"
@@ -88,11 +88,6 @@ export default {
       vertical="right"
     )
 </template>
-
-<style lang="stylus" scoped>
-.bg
-  background var(--c-item-bg-main)
-</style>
 
 <i18n lang="json5">
 {

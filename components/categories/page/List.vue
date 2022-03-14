@@ -19,19 +19,33 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.h-full.overflow.overflow-x-auto.grid.max-w-3xl.h-full(
-  class="pb-[44px] md_pb-[52px] lg_pb-0 lg_grid-rows-[1fr_auto]"
+.overflow.overflow-x-auto.h-full.grid.max-w-3xl(
+  class="md_pb-[52px] pb-[44px] lg_pb-0 grid-rows-[1fr_auto]"
 )
   div
-    .py-6.px-3.font-nunito.text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold
-      | {{ $t('categories.name') }}
+    //- Header
+    //---------------------------------
+    .flex
+      //- Title
+      .grow.py-6.px-3.font-nunito.text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold
+        | {{ $t('categories.name') }}
 
-    .pb-4
-      CategoriesListSlot(
-        :ids="catsIds"
-        v-slot="{ categories }"
-      )
-        .shame1.px-3
+      //- Actions
+      .flex-center.gap-3.pr-3
+        //- Add
+        .cursor-pointer.group.w-10.h-10.flex-center.rounded-full.bg-gray-50.dark_bg-dark5.hocus-text-white.hocus_bg-blue2(
+          @click="$store.dispatch('ui/setActiveTab', 'createCategory')"
+        )
+          svg.group-hover_text-white.w-6.h-6(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12")
+            path(fill="currentColor" d="M6 1.5a.5.5 0 0 0-1 0V5H1.5a.5.5 0 0 0 0 1H5v3.5a.5.5 0 0 0 1 0V6h3.5a.5.5 0 0 0 0-1H6V1.5Z")
+
+    //- List
+    //---------------------------------
+    CategoriesListSlot(
+      :ids="catsIds"
+      v-slot="{ categories }"
+    )
+      .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2
           CategoriesItemCategoryItem(
             v-for="category in categories"
             :category="category"
@@ -41,7 +55,7 @@ export default defineComponent({
             @onClick="id => $router.push(`/categories/${category.id}`)"
           )
 
-  .pb-4.px-3.flex.gap-4.pt-4
+  .pb-4.px-3.flex.gap-4
     .button(@click="$store.dispatch('ui/setActiveTab', 'createCategory')") {{ $t('categories.new') }}
 </template>
 

@@ -175,7 +175,7 @@ export default defineComponent({
         :href='href'
         @click='navigate'
       )
-        .pb-1.text-xs.font-medium(class="text-white/50") {{ $t('wallets.editTitle') }}
+        .pb-1.text-xs.font-medium(class="dark_text-white/50") {{ $t('wallets.editTitle') }}
 
         .flex.items-center.gap-3
           .text-neutral-800.dark_text-white.text-2xl.font-semibold {{ wallet.name }}

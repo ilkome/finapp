@@ -232,7 +232,7 @@ export default defineComponent({
         :href='href'
         @click='navigate'
       )
-        .pb-2.text-xs.font-medium(class="text-white/50") {{ $t('categories.editTitle') }}
+        .pb-2.text-xs.font-medium(class="dark_text-white/50") {{ $t('categories.editTitle') }}
 
         .flex.items-center.gap-3
           .text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold {{ category.name }}

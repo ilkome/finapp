@@ -24,10 +24,11 @@ module.exports = {
         custom5: '#1b1b1c',
         dark3: '#171717',
         dark4: '#1c1c1c',
+        dark5: '#1e1e1e',
+        expense: '#f92134',
+        income: '#2cad22',
         white1: '#fdfdfd',
         white2: '#fcfcfd',
-        income: '#2cad22',
-        expense: '#f92134',
       },
       fontSize: {
         '2xs': '10px',

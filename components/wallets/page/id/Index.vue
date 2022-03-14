@@ -89,7 +89,7 @@ export default defineComponent({
           :href='href'
           @click='navigate'
         )
-          .pb-2.text-xs.font-medium(class="text-white/50") {{ $t('wallets.title') }}
+          .pb-2.text-xs.font-medium(class="dark_text-white/50") {{ $t('wallets.title') }}
 
           .flex.items-center.gap-3.pb-3
             .text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold {{ wallet.name }}
@@ -121,8 +121,8 @@ export default defineComponent({
           .mdi.mdi-chevron-right.opacity-70.text-lg.leading-none
 
     //- Stat
-    .overflow-hidden.relative.bg-white.dark_bg-custom4.mx-3.mb-12.p-3.rounded-md
-      SharedDate.text-xs.font-medium(class="-mb-1 text-white/50")
+    .overflow-hidden.relative.bg-gray-50.dark_bg-custom4.mx-3.mb-12.p-3.rounded-md
+      SharedDate.text-xs.font-medium(class="-mb-1 dark_text-white/50")
       div(class="-mb-3")
         StatGroupSum2(
           :trnsIds="filteredTrnsIds"
