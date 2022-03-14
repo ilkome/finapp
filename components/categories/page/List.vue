@@ -45,7 +45,7 @@ export default defineComponent({
       :ids="catsIds"
       v-slot="{ categories }"
     )
-      .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2
+      .pb-12.px-3.grid.gap-y-1.gap-x-2.2sm_grid-cols-2.sm_gap-x-6
           CategoriesItemCategoryItem(
             v-for="category in categories"
             :category="category"
