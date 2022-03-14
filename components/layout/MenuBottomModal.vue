@@ -27,7 +27,7 @@ Portal(to="modal")
           .text-xl.font-nunito.font-semibold {{ $store.state.user.user.displayName }}
           .text-sm.text-gray-900(class="dark_text-neutral-500") {{ $store.state.user.user.email }}
 
-        .py-3.px-6.space-x-5.flex.items-center(
+        .cursor-pointer.py-3.px-6.space-x-5.flex.items-center(
           class="hocus_bg-white2 dark_hocus_bg-custom1"
           @click="$store.dispatch('user/signOut')"
         )
@@ -38,7 +38,7 @@ Portal(to="modal")
       LayoutSidebarMenu
 
       //- Theme
-      .flex.items-center.py-3.px-6.space-x-5(
+      .cursor-pointer.flex.items-center.py-3.px-6.space-x-5(
         class="text-slate-600 dark_text-neutral-400 hocus_bg-zinc-100 dark_hocus_bg-neutral-800"
         @click="$store.dispatch('ui/changeTheme')"
       )
