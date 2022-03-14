@@ -44,7 +44,8 @@ export default defineComponent({
         isShowSavings
       )
 
-      .flex.pt-4(v-if="$store.getters['user/isTester']")
+    .pb-6.px-3(v-if="$store.getters['user/isTester']")
+      .flex
         .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
           class="dark_text-white/60"
           @click="$router.push('/wallets/total')"
@@ -56,6 +57,7 @@ export default defineComponent({
     //- List
     //---------------------------------
     .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2
+      //- Item
       .bg.cursor-pointer.py-2.px-3.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
         v-for="(walletItem, walletId) in walletsItemsSorted"
         :key="walletId"
