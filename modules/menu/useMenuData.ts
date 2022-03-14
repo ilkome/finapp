@@ -42,7 +42,6 @@ export default function useMenuData() {
   }))
 
   function onClick(menuId: string) {
-    console.log(menuId)
     menuId === 'trnForm'
       ? $store.dispatch('trnForm/openTrnForm', { action: 'create' })
       : router.push(`/${menuId}`)

@@ -49,7 +49,7 @@ const activeTab = computed(() => $store.state.ui.activeTab)
       //- menu
       .menu__item.group(
         :class="{ _active: checkIsActive('menu') }"
-        @click="handleSetActiveTab('menu')"
+        @click="$store.dispatch('ui/setActiveTab', 'menu')"
       )
         UiIconMenu.w-6.h-6.md_w-8.md_h-8.group-hover_text-white
 </template>
