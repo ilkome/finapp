@@ -31,6 +31,9 @@ module.exports = {
         white2: '#fcfcfd',
 
         skin: {
+          layout: {
+            main: 'var(--color-layout-main)',
+          },
           red: {
             base: 'var(--color-red-base)',
           },
@@ -58,6 +61,7 @@ module.exports = {
         base: '320px',
       },
       screens: {
+        '3sm': '360px',
         '2sm': '400px',
       },
     },
