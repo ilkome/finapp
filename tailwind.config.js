@@ -29,6 +29,22 @@ module.exports = {
         income: '#2cad22',
         white1: '#fdfdfd',
         white2: '#fcfcfd',
+
+        skin: {
+          red: {
+            base: 'var(--color-red-base)',
+          },
+          icon: {
+            base: 'var(--color-icon-base)',
+          },
+          item: {
+            base: 'var(--color-item-base)',
+            main: {
+              bg: 'var(--color-item-main-bg)',
+              hover: 'var(--color-item-main-hover)',
+            },
+          },
+        },
       },
       fontSize: {
         '2xs': '10px',
