@@ -6,6 +6,8 @@ export default defineComponent({
     keepAlive: { type: Boolean, default: false },
     show: { type: Boolean, default: false },
     maxHeight: { type: Number, default: null },
+    height: { type: Number, default: null },
+    insideClass: { type: String, default: null },
   },
 
   setup(props, { emit }) {
@@ -45,6 +47,13 @@ export default defineComponent({
         return false
 
       return `${props.maxHeight - drugHeader.value?.clientHeight - 40}px`
+    })
+
+    const heightScroll = computed(() => {
+      if (!props.height || !drugHeader.value)
+        return false
+
+      return `${props.height - drugHeader.value?.clientHeight - 40}px`
     })
 
     /**
@@ -323,19 +332,19 @@ export default defineComponent({
     }, { immediate: true })
 
     return {
+      close,
       container,
+      debug,
       drug,
       drugHeader,
-      handler,
-
-      opened,
-      debug,
-      isDraging,
-      open,
-      close,
-      overlayStyles,
       drugStyles,
+      handler,
+      isDraging,
       maxHeightScroll,
+      heightScroll,
+      open,
+      opened,
+      overlayStyles,
     }
   },
 })
@@ -360,7 +369,10 @@ export default defineComponent({
     .drug__header(ref="drugHeader")
       slot(name="header" :close="close")
 
-    .drug__inside(:class="{ _scroll: !!maxHeightScroll }" :style="{ maxHeight: maxHeightScroll }")
+    .drug__inside(
+      :class="[insideClass, { _scroll: !!maxHeightScroll, scrollerBlock: !!maxHeightScroll }]"
+      :style="{ maxHeight: maxHeight && maxHeightScroll, height: height && heightScroll }"
+    )
       .handler(ref="handler")
         slot(name="handler" :close="close")
 
