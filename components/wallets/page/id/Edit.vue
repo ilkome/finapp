@@ -6,8 +6,6 @@ import { currencies } from '~/components/currencies/currencies'
 
 export default defineComponent({
   setup() {
-    console.log(currencies)
-
     const { $store } = useNuxtApp()
     const activeTab = ref('data')
 
@@ -17,16 +15,16 @@ export default defineComponent({
       currency: 'RUB',
       isCredit: false,
       name: null,
-      order: Object.keys($store.state.wallets.items).length || 1,
+      order: 1,
     })
 
     function findWalletWithThisColor(color) {
-      const wallets = $store.state.wallets.items
-      if (wallets) {
-        const categoryIdWithThisColor = Object.keys($store.state.wallets.items)?.find(id => wallets[id]?.color === color)
-        if (categoryIdWithThisColor)
-          return 'mdi mdi-credit-card-multiple'
-      }
+      const walletsItems = $store.state.wallets.items
+      if (!walletsItems) return false
+      const walletIdWithThisColor = Object.keys(walletsItems)?.find(id => walletsItems[id]?.color === color)
+      if (!walletIdWithThisColor) return false
+
+      return true
     }
 
     function onSelectColor(color) {
@@ -81,7 +79,6 @@ export default defineComponent({
   created() {
     this.colors = allColors
 
-    this.colors = allColors
     if (!this.walletId)
       this.wallet.color = random(popularColors)
   },
@@ -244,13 +241,10 @@ export default defineComponent({
             @click="handleCurrencySelect(currency)"
           )
             .flex.items-center
-              template(v-if="currencies.find(c => c.code === currency)")
-                .grow {{ currencies.find(c => c.code === currency).currency }}
-                div {{ currency }}
-
-              template(v-else)
-                .grow
-                div {{ currency }}
+              .w-14 {{ currency }}
+              .text-sm(
+                v-if="currencies.find(c => c.code === currency)"
+              ) {{ currencies.find(c => c.code === currency).currency }}
 
       //- Colors
       //---------------------------------
@@ -268,13 +262,13 @@ export default defineComponent({
               template(v-if="color")
                 template(v-if="findWalletWithThisColor(color)")
                   Icon(
-                    icon="mdi mdi-credit-card-multiple"
+                    icon="mdi mdi-circle-small"
                     :color="color === wallet.color ? null : color"
                     big
                   )
                 template(v-else-if="color === wallet.color")
                   Icon(
-                    icon="mdi mdi-credit-card-multiple"
+                    icon="mdi mdi-circle-small"
                     background="transparent"
                     big
                   )
@@ -294,13 +288,13 @@ export default defineComponent({
               template(v-if="color")
                 template(v-if="findWalletWithThisColor(color)")
                   Icon(
-                    icon="mdi mdi-credit-card-multiple"
+                    icon="mdi mdi-circle-small"
                     :color="color === wallet.color ? null : color"
                     big
                   )
                 template(v-else-if="color === wallet.color")
                   Icon(
-                    icon="mdi mdi-credit-card-multiple"
+                    icon="mdi mdi-circle-small"
                     background="transparent"
                     big
                   )

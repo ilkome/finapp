@@ -11,7 +11,6 @@ import { random, successEmo } from '~/assets/js/emo'
 
 SwiperCore.use([Pagination])
 
-
 const props = withDefaults(defineProps<{
   show: boolean
 }>(), {
@@ -79,7 +78,7 @@ function init() {
       longSwipesMs: 60,
       pagination: {
         el: '.trnForm__pagination',
-        clickable: false,
+        clickable: true,
       },
     })
     setTrnFormHeight()
@@ -267,9 +266,18 @@ function handleSubmitForm() {
               @onClick="onCategoryClick"
             )
 
-          .buttons
-            .button(@click="$store.commit('trnForm/showTrnFormModal', 'wallets')") {{ $t('wallets.title') }}
-            .button(@click="$store.commit('trnForm/showTrnFormModal', 'categories')") {{ $t('categories.title') }}
+          .pb-6.px-3.flex.justify-evenly.gap-6
+            //- Wallets
+            .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+              class="basis-1/2 max-w-[280px]"
+              @click="$store.commit('trnForm/showTrnFormModal', 'wallets')"
+            ) {{ $t('wallets.title') }}
+
+            //- Categories
+            .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+              class="basis-1/2 max-w-[280px]"
+              @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
+            ) {{ $t('categories.title') }}
 
   .trnForm__pagination
 

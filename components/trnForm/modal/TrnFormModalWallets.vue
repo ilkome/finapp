@@ -32,9 +32,4 @@ TrnFormModal(@closed="afterClose")
   overflow hidden
   overflow-y auto
   height 100%
-
-  .wallets__toogle
-    button-base-1()
-    margin-top $m7
-    margin-bottom $m5
 </style>

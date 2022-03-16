@@ -63,8 +63,9 @@ Portal(to="modal")
             @click="periodCounts.onSelect(periodCount)"
           ) {{ periodCount }}
 
-        .flex.py-3.px-3
-          .button(
+        .pb-4.px-3.flex.justify-evenly.gap-6
+          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+            class="basis-1/2 max-w-[280px]"
             @click="close()"
           ) {{ $t('close') }}
 </template>

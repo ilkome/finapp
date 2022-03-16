@@ -22,21 +22,21 @@ Portal(
     :title="$t('base.sure')"
     @onClose="$emit('onClose')"
   )
-    template(v-if="description")
-      template(slot="description")
-        .descError {{ description }}
 
-    template(#btnsTwo="{ closeModal }")
-      ModalButton(
-        :name="$t('base.no')"
-        icon="mdi mdi-close"
-        @onClick="closeModal"
-      )
-      ModalButton(
-        :name="$t('base.yes')"
-        icon="mdi mdi-check"
-        @onClick="$emit('onConfirm')"
-      )
+    template(#default="{ closeModal }")
+      .pb-8.text-skin-red-base.text-center(v-if="description") {{ description }}
+
+      .pb-4.px-3.flex.justify-evenly.gap-6
+        ModalButton.grow(
+          :name="$t('base.no')"
+          icon="mdi mdi-close"
+          @onClick="closeModal"
+        )
+        ModalButton.grow(
+          :name="$t('base.yes')"
+          icon="mdi mdi-check"
+          @onClick="$emit('onConfirm')"
+        )
 </template>
 
 <style lang="stylus">

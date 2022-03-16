@@ -52,20 +52,23 @@ export default defineComponent({
     //- List
     //---------------------------------
     .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2
-      //- Item
-      .cursor-pointer.py-2.px-3.rounded-md.bg-gray-50.dark_bg-dark5.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
+      //- Wallet
+      .cursor-pointer.py-2.px-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
         v-for="(walletItem, walletId) in walletsItemsSorted"
         :key="walletId"
         @click="$router.push(`/wallets/${walletId}`)"
       )
         .gap-x-3.flex.items-center
           .grow.flex-center.gap-x-3
-            .w-6.h-6.rounded-md.flex-center.text-neutral-50.text-xs.leading-none(
+            //- Icon
+            .w-6.h-6.rounded-md.flex-center.text-skin-icon-base.text-xs.leading-none(
               :style="{ background: walletItem.color }"
               class="mt-[2px]"
             ) {{ walletItem.name.substring(0, 2) }}
-            .grow.text-sm.text-neutral-500(class="dark_text-neutral-400") {{ walletItem.name }}
+            //- Name
+            .grow.text-sm.text-skin-item-base {{ walletItem.name }}
 
+          //- Amount
           Amount(
             :currency="walletItem.currency"
             :value="walletItem.amount"
@@ -74,9 +77,16 @@ export default defineComponent({
             vertical="right"
           )
 
-  .pb-4.px-3.flex.gap-4
-    //- Create
-    .button(@click="$store.dispatch('ui/setActiveTab', 'createWallet')") {{ $t('wallets.new') }}
+  .pb-4.px-3.flex.justify-evenly.gap-6
     //- Sort
-    .button(@click="$store.dispatch('ui/setActiveTab', 'walletsSort')") {{ $t('base.sort') }}
+    .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+      class="basis-1/2 max-w-[280px]"
+      @click="$store.dispatch('ui/setActiveTab', 'walletsSort')"
+    ) {{ $t('base.sort') }}
+
+    //- Create
+    .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+      class="basis-1/2 max-w-[280px]"
+      @click="$store.dispatch('ui/setActiveTab', 'createWallet')"
+    ) {{ $t('wallets.new') }}
 </template>

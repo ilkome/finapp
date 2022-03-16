@@ -123,8 +123,11 @@ export default defineComponent({
               :trnId="trnId"
             )
 
-      .pages(v-if="!isShowedAllTrns")
-        .button(@click="showMoreTrns") {{ $t('trns.more') }}
+      .py-4.pb-6.px-3.flex-center(v-if="!isShowedAllTrns")
+        .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+          class="basis-1/2 max-w-[280px]"
+          @click="showMoreTrns"
+        ) {{ $t('trns.more') }}
 
   .pt-2.pb-5.px-3
     .overflow-hidden.rounded-md.items-center.flex.text-xs.text-center.bg-gray-50.dark_bg-dark4.dark_shadow
@@ -157,10 +160,6 @@ export default defineComponent({
   font-weight 700
   text-align center
   fontFamilyNunito()
-
-.pages
-  padding 16px 8px
-  padding-top 0
 
 .contentWrap
   position relative

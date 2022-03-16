@@ -116,10 +116,6 @@ export default {
           .modalLinks
             slot(name="btns")
 
-        //- Buttons 2 collumns
-        .modalLinks._two
-          slot(name="btnsTwo" :closeModal="closeModal")
-
         //- Default
         slot(:closeModal="closeModal")
 </template>

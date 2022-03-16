@@ -1,8 +1,5 @@
 <script>
-
 export default {
-  name: 'WalletsList3',
-
   props: {
     activeItemId: { type: String, default: null },
     limit: { type: [Number, Boolean], default: null },
@@ -50,10 +47,6 @@ export default {
       :showBase="showBase"
       v-on="$listeners"
     )
-
-  .wallets__toogle(v-if="showToogle && $store.getters['wallets/walletsSortedIds'].length > limit" @click="toogleWallets")
-    template(v-if="stateLimit > 0") {{ this.$t('wallets.showAll') }}
-    template(v-else) {{ this.$t('wallets.showOnly') }} {{ limit }}
 </template>
 
 <style lang="stylus" scoped>
@@ -68,9 +61,4 @@ export default {
       grid-template-columns repeat(auto-fill, minmax(200px, 1fr))
       grid-column-gap $m6
       grid-row-gap $m6
-
-  &__toogle
-    button-base-1()
-    margin-top $m9
-    margin-bottom $m9
 </style>

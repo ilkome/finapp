@@ -41,7 +41,7 @@ export default {
 
     wallet() {
       return this.$store.state.wallets.items[this.$store.state.trns.items[this.trnId].walletId]
-    }
+    },
   },
 
   methods: {
@@ -93,7 +93,7 @@ export default {
       this.showModalConfirm = false
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-    }
+    },
   },
 }
 </script>
@@ -167,8 +167,9 @@ Portal(
                   :background="wallet.color"
                 )
 
-        .wrap
-          .button.my-2.mx-auto(
+        .pt-4.px-4.flex-center
+          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+            class="basis-1/2 max-w-[280px]"
             @click="close()"
           ) {{ $t('close') }}
 
@@ -194,35 +195,8 @@ Portal(
   background var(--c-bg-3)
   border-radius $m7 $m7 0 0
 
-.groupItem
-  cursor pointer
-  display flex
-  width 100%
-  flex-grow 1
-  padding $m7 $m8
-  border-bottom 1px solid var(--c-bg-6)
-
-  &:last-child
-    border-bottom 0
-
-  &:hover
-    background var(--c-bg-5)
-
-  &__active
-    flex-grow 0
-    width 40px
-
-  &__name
-    flex-grow 1
-
 .content
   background var(--c-bg-3)
   +media(600px)
     border-radius 0 0 $m7 $m7
-
-.wrap
-  padding 0 $m8
-
-.button
-  button-base-1()
 </style>

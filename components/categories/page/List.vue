@@ -55,19 +55,10 @@ export default defineComponent({
             @onClick="id => $router.push(`/categories/${category.id}`)"
           )
 
-  .pb-4.px-3.flex.gap-4
-    .button(@click="$store.dispatch('ui/setActiveTab', 'createCategory')") {{ $t('categories.new') }}
+  .pb-4.px-3.flex.justify-evenly.gap-6
+    //- Create
+    .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+      class="basis-1/2 max-w-[280px]"
+      @click="$store.dispatch('ui/setActiveTab', 'createCategory')"
+    ) {{ $t('categories.new') }}
 </template>
-
-<style lang="stylus" scoped>
-.shame1
-  display grid
-  grid-template-columns repeat(2, 1fr)
-  grid-column-gap $m6
-  grid-row-gap $m6
-
-  +media(600px)
-    grid-template-columns repeat(auto-fill, minmax(200px, 1fr))
-    grid-column-gap $m6
-    grid-row-gap $m6
-</style>
