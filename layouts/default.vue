@@ -83,7 +83,7 @@ onMounted(() => {
       )
         .btn: .mdi.mdi-plus
 
-    .z-10.absolute.bottom-0.left-0.w-full.backdrop-blur.lg_hidden(
+    .firefoxBackdropFix.z-10.absolute.bottom-0.left-0.w-full.backdrop-blur.lg_hidden(
       class="bg-white/70 dark_bg-dark3/70"
     )
       LayoutMenuBottom
@@ -93,6 +93,12 @@ onMounted(() => {
 @import '~assets/stylus/index'
 @import '~assets/stylus/colors-dark'
 @import '~assets/stylus/colors-light'
+
+.firefoxBackdropFix
+  @supports (not (-webkit-backdrop-filter: none)) and (not (backdrop-filter: none))
+    background theme('colors.dark3') !important
+    /.light &
+      background theme('colors.white') !important
 
 .createTrn
   cursor pointer
