@@ -37,28 +37,13 @@ export default {
 </script>
 
 <template lang="pug">
-.wallets
-  .wallets__grid.px-3
-    WalletsItemWalletItem(
-      :activeItemId="activeItemId"
-      v-for="walletId in walletsIds"
-      :id="walletId"
-      :key="walletId"
-      :showBase="showBase"
-      v-on="$listeners"
-    )
+.grid.gap-y-1.gap-2.3sm_grid-cols-2.sm_gap-x-6
+  WalletsItemWalletItem(
+    :activeItemId="activeItemId"
+    v-for="walletId in walletsIds"
+    :id="walletId"
+    :key="walletId"
+    :showBase="showBase"
+    v-on="$listeners"
+  )
 </template>
-
-<style lang="stylus" scoped>
-.wallets
-  &__grid
-    display grid
-    grid-template-columns repeat(2, 1fr)
-    grid-column-gap $m6
-    grid-row-gap $m6
-
-    +media(600px)
-      grid-template-columns repeat(auto-fill, minmax(200px, 1fr))
-      grid-column-gap $m6
-      grid-row-gap $m6
-</style>
