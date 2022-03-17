@@ -211,8 +211,8 @@ export default defineComponent({
           .inputText
             .inputText__label {{ $t('wallets.form.name.label') }}
             input(
-              type="text"
               :placeholder="$t('wallets.form.name.placeholder')"
+              type="text"
               v-model="wallet.name"
             ).inputText__value
 
@@ -244,7 +244,7 @@ export default defineComponent({
               .w-14 {{ currency }}
               .text-sm(
                 v-if="currencies.find(c => c.code === currency)"
-              ) {{ currencies.find(c => c.code === currency).currency }}
+              ) {{ currencies.find(c => c.code === currency).name }}
 
       //- Colors
       //---------------------------------
