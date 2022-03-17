@@ -235,36 +235,37 @@ function handleSubmitForm() {
           //- Wallets
           .pt-5.pb-7
             .subTitle.text-center.pb-2.text-xs {{ $t('wallets.title') }}
-            WalletsList3(
-              :activeItemId="$store.state.trnForm.values.walletId"
-              :limit="4"
-              :showBase="false"
-              @onClick="onClickWallet"
-            )
+            .pb-3.px-3
+              WalletsList3(
+                :activeItemId="$store.state.trnForm.values.walletId"
+                :limit="4"
+                :showBase="false"
+                @onClick="onClickWallet"
+              )
 
           //- Favorite categories
           .pb-7
             .subTitle.text-center.pb-2.text-xs {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
-            CategoriesView(
-              v-if="sliderObj"
-              :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-              :activeItemId="$store.state.trnForm.values.categoryId"
-              :slider="sliderObj"
-              noPaddingBottom
-              @onClick="onCategoryClick"
-            )
+            .px-3
+              CategoriesList(
+                v-if="sliderObj"
+                :ids="$store.getters['categories/quickSelectorCategoriesIds']"
+                :activeItemId="$store.state.trnForm.values.categoryId"
+                :slider="sliderObj"
+                @onClick="onCategoryClick"
+              )
 
           //- Last used categories
           .pb-7
             .subTitle.text-center.pb-2.text-xs {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
-            CategoriesView(
-              v-if="sliderObj"
-              :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
-              :activeItemId="$store.state.trnForm.values.categoryId"
-              :slider="sliderObj"
-              noPaddingBottom
-              @onClick="onCategoryClick"
-            )
+            .px-3
+              CategoriesList(
+                v-if="sliderObj"
+                :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
+                :activeItemId="$store.state.trnForm.values.categoryId"
+                :slider="sliderObj"
+                @onClick="onCategoryClick"
+              )
 
           .pb-6.px-3.flex.justify-evenly.gap-6
             //- Wallets
@@ -282,13 +283,14 @@ function handleSubmitForm() {
   .trnForm__pagination
 
   //- Modals
-  LazyTrnFormModalCalendar(v-if="$store.state.trnForm.modal.calendar")
-  LazyTrnFormModalCats(v-if="$store.state.trnForm.modal.categories")
-  LazyTrnFormModalCatsChild(v-if="$store.state.trnForm.modal.categoriesChild")
-  LazyTrnFormModalWallets(v-if="$store.state.trnForm.modal.wallets")
-  LazyTrnFormModalDescription(v-if="$store.state.trnForm.modal.description")
-  LazyTrnFormModalTransferFrom(v-if="$store.state.trnForm.modal.transferFrom")
-  LazyTrnFormModalTransferTo(v-if="$store.state.trnForm.modal.transferTo")
+  Portal(to="modal")
+    TrnFormModalCalendar(v-if="$store.state.trnForm.modal.calendar")
+    TrnFormModalCats(v-if="$store.state.trnForm.modal.categories")
+    TrnFormModalCatsChild(v-if="$store.state.trnForm.modal.categoriesChild")
+    TrnFormModalDescription(v-if="$store.state.trnForm.modal.description")
+    TrnFormModalTransferFrom(v-if="$store.state.trnForm.modal.transferFrom")
+    TrnFormModalTransferTo(v-if="$store.state.trnForm.modal.transferTo")
+    TrnFormModalWallets(v-if="$store.state.trnForm.modal.wallets")
 </template>
 
 <style lang="stylus">

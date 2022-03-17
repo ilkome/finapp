@@ -1,35 +1,34 @@
-<script>
-export default {
-  methods: {
-    handleSetWallet(walletId, close) {
-      this.$store.commit('trnForm/setTrnFormValues', { walletId })
-      close()
-    },
+<script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
 
-    afterClose() {
-      this.$store.commit('trnForm/closeTrnFormModal', 'wallets')
-    },
-  },
+const { $store } = useNuxtApp()
+const { height } = useWindowSize()
+
+function onClickWallet(walletId, close) {
+  $store.commit('trnForm/setTrnFormValues', { walletId })
+  close()
+}
+
+function closed() {
+  $store.commit('trnForm/closeTrnFormModal', 'wallets')
 }
 </script>
 
 <template lang="pug">
-TrnFormModal(@closed="afterClose")
-  template(#header)
-    template {{ $t('wallets.title') }}
+BaseBottomSheet(
+  :maxHeight="height"
+  insideClass="rounded-t-2xl bg-skin-layout-main"
+  @closed="closed"
+)
+  template(#handler="{ close }")
+    BaseBottomSheetHandler
+    BaseBottomSheetClose(@onClick="close")
 
   template(#default="{ close }")
-    .trnFormWalletsList.scrollerBlock
+    .pt-6.pb-3.px-3
       WalletsList3(
         :activeItemId="$store.state.trnForm.values.walletId"
         :showBase="false"
-        @onClick="walletId => handleSetWallet(walletId, close)"
+        @onClick="walletId => onClickWallet(walletId, close)"
       )
 </template>
-
-<style lang="stylus">
-.trnFormWalletsList
-  overflow hidden
-  overflow-y auto
-  height 100%
-</style>

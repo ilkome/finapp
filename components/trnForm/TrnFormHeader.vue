@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template lang="pug">
-.trnFormHeader(
+.px-3.pb-6.grid.grid-cols-2.gap-3(
   v-show="$store.state.trnForm.values.amountType !== 2"
 )
   TrnFormHeaderItemWallet
@@ -13,15 +13,6 @@ export default {
 </template>
 
 <style lang="stylus">
-.trnFormHeader
-  display grid
-  grid-template-columns repeat(2, 1fr)
-  grid-column-gap $m8
-  grid-row-gap $m8
-  padding 0 $m7
-  padding-top 0
-  padding-bottom $m9
-
 .trnFormHeaderItem
   cursor pointer
   position relative

@@ -50,22 +50,20 @@ export default {
           .scrollBlock.scrollerBlock(
             v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'] && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
           )
-            .header {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
-            .pb-4
-              CategoriesView(
+            .py-5.header {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
+            .pb-1.px-3
+              CategoriesList(
                 :activeItemId="$store.state.trnForm.values.categoryId"
                 :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
-                noPaddingBottom
                 @onClick="handleCategoryClick"
               )
 
         .swiper-slide
           .scrollBlock.scrollerBlock
-            .header {{ $t('categories.title') }}
-            .pb-4
-              CategoriesView(
+            .py-5.header {{ $t('categories.title') }}
+            .pb-1.px-3
+              CategoriesList(
                 :ids="$store.getters['categories/categoriesRootIds']"
-                noPaddingBottom
                 @onClick="handleCategoryClick"
               )
 
@@ -73,12 +71,11 @@ export default {
           .scrollBlock.scrollerBlock(
             v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length"
           )
-            .header {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
-            .pb-4
-              CategoriesView(
+            .py-5.header {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
+            .pb-1.px-3
+              CategoriesList(
                 :activeItemId="$store.state.trnForm.values.categoryId"
                 :ids="$store.getters['categories/quickSelectorCategoriesIds']"
-                noPaddingBottom
                 @onClick="handleCategoryClick"
               )
 
@@ -127,8 +124,6 @@ export default {
     align-items center
 
 .header
-  padding 40px 0
-  padding-bottom 60px
   font-h1()
   font-size 22px
   font-weight 600

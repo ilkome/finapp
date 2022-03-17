@@ -44,9 +44,8 @@ TrnFormModal(@closed="afterClose")
   template(#default="{ close }")
     template(v-if="id && category")
       .pb_base
-        CategoriesView(
+        CategoriesList(
           :ids="childCategoriesIds"
-          noPaddingBottom
           @onClick="catId => handleCategoryClick(catId, close)"
         )
 </template>

@@ -1,17 +1,25 @@
-<script>
-export default {
-  name: 'TrnFormModalCats',
+<script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
 
-  methods: {
-    afterClose() {
-      this.$store.commit('trnForm/closeTrnFormModal', 'categories')
-    },
-  },
+const { $store } = useNuxtApp()
+const { height } = useWindowSize()
+
+function closed() {
+  $store.commit('trnForm/closeTrnFormModal', 'categories')
 }
 </script>
 
 <template lang="pug">
-TrnFormModal(@closed="afterClose")
+BaseBottomSheet(
+  :height="height"
+  insideClass="rounded-t-2xl bg-skin-layout-main"
+  @closed="closed"
+)
+  template(#handler="{ close }")
+    BaseBottomSheetHandler
+    BaseBottomSheetClose(@onClick="close")
+
   template(#default="{ close }")
-    TrnFormCategories(@closeModal="close")
+    .h-full.overflow-hidden
+      TrnFormCategories(@closeModal="close")
 </template>

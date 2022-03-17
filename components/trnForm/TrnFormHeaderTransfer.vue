@@ -116,7 +116,7 @@ div(v-if="$store.getters['wallets/walletsSortedIds'].length > 1")
           .mdi.mdi-equal
 
   //- Same
-  .relative.trnFormHeader(v-if="isSameCurency")
+  .relative.px-3.pb-6.grid.grid-cols-2.gap-3(v-if="isSameCurency")
     //- Wallet from
     template(v-if="expenseWallet")
       .trnFormHeaderItem
