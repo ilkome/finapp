@@ -25,7 +25,7 @@ export default {
   @click="handleClick"
 )
   .item__icon(v-if="icon"): div(:class="icon")
-  .item__title {{ title }}
+  .grow.text-skin-item-base {{ title }}
 
   .item__check(
     v-if="showCheckbox"

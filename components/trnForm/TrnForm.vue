@@ -183,6 +183,7 @@ function handleSubmitForm() {
       return
     }
 
+    // TODO: translate
     Vue.notify({
       type: 'success',
       text: 'Excellent transaction!',

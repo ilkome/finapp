@@ -79,9 +79,9 @@ export default {
       vertical="right"
     )
 
-  //- Avaliable
+  //- Withdrawal
   .flex.items-center.bg-gray-50.dark_bg-dark5.py-2.px-3.rounded-md(v-if="totalInWallets.counted !== totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)")
-    .grow.text-sm.leading-none {{ $t('avaliable') }}
+    .grow.text-sm.leading-none {{ $t('withdrawal') }}
     Amount(
       :currency="$store.state.currencies.base"
       :value="totalInWallets.counted"
@@ -92,13 +92,13 @@ export default {
 <i18n lang="json5">
 {
   "en": {
-    "avaliable": "Avaliable",
+    "withdrawal": "Withdrawal",
     "credits": "Credits",
     "savings": "Savings",
     "total": "Total"
   },
   "ru": {
-    "avaliable": "Доступные",
+    "withdrawal": "Доступные",
     "credits": "Кредиты",
     "savings": "Вложения",
     "total": "Всего"
