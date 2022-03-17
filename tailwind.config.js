@@ -41,8 +41,10 @@ module.exports = {
             base: 'var(--color-icon-base)',
           },
           item: {
-            base: 'var(--color-item-base)',
-            main: {
+            'base': 'var(--color-item-base)',
+            'base-up': 'var(--color-item-base-up)',
+            'base-down': 'var(--color-item-base-down)',
+            'main': {
               bg: 'var(--color-item-main-bg)',
               hover: 'var(--color-item-main-hover)',
             },
