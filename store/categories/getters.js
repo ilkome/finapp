@@ -74,7 +74,7 @@ export default {
 
     if (state.items && rootGetters['trns/hasTrns']) {
       for (const trnId of trnsIds.slice(0, 500)) {
-        if (lastCategoriesIds.length < 12) {
+        if (lastCategoriesIds.length < 16) {
           const categoryId = trnsItems[trnId].categoryId
           const category = state.items[categoryId]
           if (category && (category.showInLastUsed || category.showInLastUsed === undefined)) {

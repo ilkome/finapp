@@ -291,7 +291,7 @@ div
 
                   div(@click="showParents = true")
                     template(v-if="category.parentId !== 0")
-                      CategoriesItemCategoryItem(
+                      CategoriesItem(
                         :category="$store.state.categories.items[category.parentId]"
                         :id="category.parentId"
                       )
@@ -438,10 +438,9 @@ div
                   icon="mdi mdi-folder-star"
                   @onClick="() => handleParenCategorySelect(0)")
 
-              CategoriesView(
+              CategoriesList(
                 :activeItemId="category.parentId"
                 :ids="$store.getters['categories/categoriesForBeParent'].filter(cId => cId !== categoryId)"
-                noPadding
                 @onClick="handleParenCategorySelect"
               )
 </template>

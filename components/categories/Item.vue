@@ -8,7 +8,6 @@ export default defineComponent({
     id: { type: String, required: true },
     isHideParentCategory: { type: Boolean, default: false },
     slider: { type: Object, required: true },
-    ui: { type: String, default: null },
   },
 
   setup(props, { listeners }) {
@@ -47,7 +46,7 @@ export default defineComponent({
 <template lang="pug">
 .categoryItem.bg-main.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-gray-50.dark_bg-dark5.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
   v-if="category"
-  :class="{ [ui]: ui, _active: activeItemId === id }"
+  :class="{ _active: activeItemId === id }"
   @click="onClickItem"
 )
   .categoryItem__active(v-if="activeItemId === id")
@@ -62,9 +61,7 @@ export default defineComponent({
       class="dark_text-neutral-400"
     ) {{ parentCategory.name }}
 
-    .leading-none.text-sm.text-neutral-700.dark_text-neutral-300
-      | {{ category.name }}
-      template(v-if="childCategoriesIds.length > 0") ...
+    .leading-none.text-sm.text-neutral-700.dark_text-neutral-300 {{ category.name }}
 
   .font-unica.text-md.text-neutral-500(
     v-if="childCategoriesIds.length > 0"

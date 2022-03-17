@@ -92,12 +92,10 @@ function handleEditClick() {
         div {{ category.childIds.length }}
 
       .px-3
-        CategoriesView(
+        CategoriesList(
           :ids="categoryChildIds"
           :slider="() => ({})"
           isHideParentCategory
-          borderTop
-          noPadding
           @onClick="id => $router.push(`/categories/${id}`)"
         )
 

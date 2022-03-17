@@ -41,19 +41,11 @@ export default defineComponent({
 
     //- List
     //---------------------------------
-    CategoriesListSlot(
-      :ids="catsIds"
-      v-slot="{ categories }"
-    )
-      .pb-12.px-3.grid.gap-y-1.gap-x-2.2sm_grid-cols-2.sm_gap-x-6
-          CategoriesItemCategoryItem(
-            v-for="category in categories"
-            :category="category"
-            :slider="() => ({})"
-            :id="category.id"
-            :key="category.id"
-            @onClick="id => $router.push(`/categories/${category.id}`)"
-          )
+    .pb-12.px-3
+      CategoriesList(
+        :ids="catsIds"
+        @onClick="catId => $router.push(`/categories/${catId}`)"
+      )
 
   .pb-4.px-3.flex.justify-evenly.gap-6
     //- Create
