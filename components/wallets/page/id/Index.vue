@@ -14,10 +14,10 @@ const wallet = computed(() => $store.state.wallets.items[walletId.value])
 if (!wallet.value)
   router.replace('/wallets')
 
-const trnsItems = computed(() => $store.state.trns.items)
 const total = computed(() => $store.getters['wallets/walletsTotal'][walletId.value].base)
-
 const filter = reactive({ trnType: null })
+
+const trnsItems = computed(() => $store.state.trns.items)
 const trnsIds = computed(() =>
   getTrnsIds({
     walletsIds: [walletId.value],
@@ -25,7 +25,7 @@ const trnsIds = computed(() =>
     trnsItems: trnsItems.value,
   }))
 
-const filteredTrnsIds = computed(() => $store.getters['trns/selectedTrnsIdsWithDate'].filter(trnId => $store.state.trns.items[trnId].walletId === walletId.value))
+const periodTrnsIds = computed(() => $store.getters['trns/selectedTrnsIdsWithDate'].filter(trnId => $store.state.trns.items[trnId].walletId === walletId.value))
 
 const showModalConfirm = ref(false)
 const deleteInfo = computed(() => {
@@ -42,10 +42,6 @@ function handleSetFilterWallet() {
 
 function handleEditClick() {
   router.push(`/wallets/${walletId.value}/edit`)
-}
-
-function handleDeleteClick() {
-  showModalConfirm.value = true
 }
 
 function handleDeleteConfirm() {
@@ -125,7 +121,7 @@ export default defineComponent({
       SharedDate.text-xs.font-medium(class="-mb-1 dark_text-white/50")
       div(class="-mb-3")
         StatGroupSum2(
-          :trnsIds="filteredTrnsIds"
+          :trnsIds="periodTrnsIds"
         )
 
     //- History

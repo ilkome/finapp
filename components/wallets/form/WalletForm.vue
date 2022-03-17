@@ -8,12 +8,12 @@ export default {
       showColors: false,
       showCurrencies: false,
       wallet: {
-        color: this.$store.state.ui.defaultBgColor,
+        color: null,
         countTotal: true,
         currency: 'RUB',
         isCredit: false,
         name: null,
-        order: Object.keys(this.$store.state.wallets.items).length || 1,
+        order: 1,
       },
     }
   },
