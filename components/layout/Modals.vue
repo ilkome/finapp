@@ -13,7 +13,7 @@ export default defineComponent({
 
 <template lang="pug">
 .h-0
-  //- trn: form
+  //- TrnForm
   BaseBottomSheet(
     keepAlive
     :show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show"
@@ -24,37 +24,14 @@ export default defineComponent({
       BaseBottomSheetClose(@onClick="close")
     TrnForm(:show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show")
 
-  //- trn: item
+  //- Trn Item
   TrnsModal
 
-  //- currencies
+  //- Currencies
   CurrenciesModal
 
   //- category: create or edit
   LazyCategoriesEditModal(v-if="activeTab === 'createCategory'")
-
-  //- wallet: create or edit
-  Portal(v-if="activeTab === 'createWallet'" to="modal")
-    ModalBottom(
-      :key="$store.state.wallets.editId"
-      @onClose="$store.dispatch('ui/setActiveTab', null)"
-    )
-      WalletsFormWalletForm(
-        @callback="$store.dispatch('ui/setActiveTab', null)"
-      )
-
-  //- wallet: sort
-  Portal(v-if="activeTab === 'walletsSort'" to="modal" key="walletsSort")
-    ModalBottom(
-      isShow
-      key="walletsSort"
-      @onClose="$store.dispatch('ui/setActiveTab', null)"
-    )
-      template(#default="{ closeModal }")
-        WalletsSort(
-          v-if="activeTab === 'walletsSort'"
-          @closeModal="closeModal"
-        )
 
   //- loading
   template(v-if="!$store.state.app.status.ready")

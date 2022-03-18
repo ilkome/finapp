@@ -1,6 +1,5 @@
 <script>
 export default {
-  name: 'WelcomePage',
   layout: 'welcome',
 
   data() {
@@ -127,7 +126,7 @@ export default {
                 @onClick="step = 3"
               )
 
-  //- wallet
+  //- Wallet
   transition(name="fadeIn")
     template(v-if="(step !== 1 && step !== 2) && !showWalletForm && !$store.getters['wallets/hasWallets']")
       .tab
@@ -141,7 +140,14 @@ export default {
               @onClick="showWalletForm = true"
             )
 
-  //- category
+  //- Wallet form
+  transition(name="fadeIn")
+    WalletsFormWelcome(
+      v-if="showWalletForm"
+      :saved="() => showWalletForm = false"
+    )
+
+  //- Category
   transition(name="fadeIn")
     template(v-if="(step !== 1 && step !== 2) && !showWalletForm && !showCategoryForm && $store.getters['wallets/hasWallets'] && !$store.getters['categories/hasCategories']")
       .tab
@@ -153,20 +159,23 @@ export default {
             @onClick="showCategoryForm = true")
 
   transition(name="fadeIn")
-    .tab(v-if="showWalletForm")
-      .tab__content
-        WalletsFormWalletForm(@callback="showWalletForm = false")
-
-  transition(name="fadeIn")
     .tab(v-if="showCategoryForm")
       .tab__content
         LazyCategoriesForm(@callback="categoryCreatedCallback")
 
-  .copyright
+  .firefoxBackdropFix.z-10.w-full.fixed.left-0.bottom-0.backdrop-blur(
+    class="bg-white/70 dark_bg-dark3/70"
+  )
     SharedCopyright
 </template>
 
 <style lang="stylus" scoped>
+.firefoxBackdropFix
+  @supports (not (-webkit-backdrop-filter: none)) and (not (backdrop-filter: none))
+    background theme('colors.dark3') !important
+    /.light &
+      background theme('colors.white') !important
+
 .steps
   display flex
   width 100%
@@ -288,16 +297,6 @@ export default {
   text-align center
   @media $media-laptop
     padding-bottom $m7
-
-.copyright
-  position fixed
-  left 0
-  bottom 0
-  width 100%
-  padding-bottom $m7
-
-  @media $media-laptop
-    padding-bottom $m9
 
 .themeSelector
   position relative

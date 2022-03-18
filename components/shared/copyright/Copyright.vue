@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template lang="pug">
-a.copyright.py-1.px-5.rounded-md(
+a.copyright.py-3.px-5.rounded-md(
   href="https://ilko.me"
   class="hocus_bg-white2 dark_hocus_bg-custom1"
 )
