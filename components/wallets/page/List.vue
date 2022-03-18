@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
 import useWallets from '~/components/wallets/useWallets'
 
+const { $store } = useNuxtApp()
+const { height } = useWindowSize()
+const activeTab = computed(() => $store.state.ui.activeTab)
 const { walletsItemsSorted } = useWallets()
 </script>
 
@@ -89,4 +93,60 @@ export default defineComponent({
       class="basis-1/2 max-w-[280px]"
       @click="$store.dispatch('ui/setActiveTab', 'createWallet')"
     ) {{ $t('wallets.new') }}
+
+  //- Sort
+  //-----------------------------------
+  Portal(v-if="activeTab === 'walletsSort'" to="modal" key="walletsSort")
+    ModalBottom(
+      isShow
+      key="walletsSort"
+      @onClose="$store.dispatch('ui/setActiveTab', null)"
+    )
+      template(#default="{ closeModal }")
+        WalletsSort(
+          v-if="activeTab === 'walletsSort'"
+          @closeModal="closeModal"
+        )
+
+  //- Portal(
+  //-   v-if="activeTab === 'walletsSort'"
+  //-   to="modal"
+  //- )
+  //-   BaseBottomSheet(
+  //-     :maxHeight="height"
+  //-     insideClass="bg-skin-layout-main"
+  //-     @closed="$store.dispatch('ui/setActiveTab', null)"
+  //-   )
+  //-     template(#handler="{ close }")
+  //-       BaseBottomSheetHandler
+  //-       BaseBottomSheetClose(@onClick="close")
+
+  //-     template(#header)
+  //-       .py-4.px-3.rounded-t-2xl.text-center.text-neutral-800.dark_text-white.text-xl.font-semibold.font-nunito.bg-skin-layout-main
+  //-         | {{ $t('wallets.sortTitle') }}
+
+  //-     template(#default="{ close }")
+  //-       WalletsSort(
+  //-         v-if="activeTab === 'walletsSort'"
+  //-         @closeModal="close"
+  //-       )
+
+  //- Create
+  Portal(
+    v-if="activeTab === 'createWallet'"
+    to="modal"
+  )
+    BaseBottomSheet(
+      :maxHeight="height"
+      insideClass="bg-skin-layout-main"
+      @closed="$store.dispatch('ui/setActiveTab', null)"
+    )
+      template(#handler="{ close }")
+        BaseBottomSheetHandler
+        BaseBottomSheetClose(@onClick="close")
+
+      template(#default="{ close }")
+        WalletsFormWalletForm(
+          @callback="close"
+        )
 </template>

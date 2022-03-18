@@ -1,21 +1,24 @@
 <script setup lang="ts">
 import { popularColors } from '~/assets/js/colorsPopular'
 import { random } from '~/assets/js/emo'
+import generateId from '~/utils/id'
+
+interface Props {
+  saved: Function
+}
+const props = defineProps<Props>()
 
 const { $store, $notify, nuxt2Context: { i18n } } = useNuxtApp()
-const route = useRoute()
-const router = useRouter()
 
-const walletId = computed(() => route.params.id)
-const wallet = computed(() => $store.state.wallets.items[walletId.value])
+const walletId = computed(() => generateId())
 
 const walletForm = ref({
-  color: wallet.value?.color || random(popularColors),
-  countTotal: wallet.value?.countTotal || true,
-  currency: wallet.value?.currency || 'RUB',
-  isCredit: wallet.value?.isCredit || false,
-  name: wallet.value?.name || null,
-  order: wallet.value?.order || 1,
+  color: random(popularColors),
+  countTotal: true,
+  currency: 'USD',
+  isCredit: false,
+  name: null,
+  order: 1,
 })
 
 function updateValue(id, value) {
@@ -76,7 +79,7 @@ function onSave() {
   }
 
   $store.dispatch('wallets/addWallet', { id, values: walletsValues })
-  router.push(`/wallets/${walletId.value}`)
+  if (props.saved) props.saved()
 }
 </script>
 
@@ -92,29 +95,17 @@ export default defineComponent({
 
 <template lang="pug">
 .overflow.overflow-x-auto.h-full.max-w-3xl(
-  v-if="wallet"
   class="pb-[44px] md_pb-[52px] lg_pb-0"
 )
-  .flex.items-start
-    router-link(
-      v-slot="{ href, navigate }"
-      custom
-      :to="`/wallets/${walletId}`"
-    )
-      a.cursor-pointer.grow.mb-3.py-5.px-3.block.font-nunito.hocus_bg-skin-item-main-hover(
-        :href="href"
-        @click="navigate"
-      )
-        .pb-1.text-xs.font-medium.text-skin-item-base-down
-          | {{ $t("wallets.editTitle") }}
+  .mb-3.py-5.px-3.font-nunito
+    .pb-1.text-xs.font-medium.text-skin-item-base-down
+      | {{ $t("wallets.createNewTitle") }}
 
-        .flex.items-center.gap-3
-          .text-skin-item-base-up.text-2xl.font-semibold
-            | {{ walletForm.name ? walletForm.name : $t("wallets.title") }}
-          .p-1.flex-center.rounded.text-skin-icon-base.text-2xs(:style="{ background: walletForm.color }")
-            | {{ walletForm.currency }}
-
-    WalletsDelete(:walletId="walletId")
+    .flex.items-center.gap-3
+      .text-skin-item-base-up.text-2xl.font-semibold
+        | {{ walletForm.name ? walletForm.name : $t("wallets.form.name.label") }}
+      .p-1.flex-center.rounded.text-skin-icon-base.text-2xs(:style="{ background: walletForm.color }")
+        | {{ walletForm.currency }}
 
   WalletsForm(
     :walletForm="walletForm"

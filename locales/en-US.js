@@ -137,12 +137,12 @@ export default {
     showAll: 'Show all wallets',
     showOnly: 'Show only',
     sortTitle: 'Sort wallets',
-    createNewTitle: 'Create new wallet',
+    createNewTitle: 'Create wallet',
     editTitle: 'Edit Wallet',
     form: {
       name: {
         label: 'Wallet name',
-        placeholder: 'Write wallet name...',
+        placeholder: 'Write...',
         error: 'Write wallet name',
         exist: 'Wallet with same name is exist',
       },
