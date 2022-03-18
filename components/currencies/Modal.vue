@@ -1,11 +1,12 @@
-<script>
-export default {
-  methods: {
-    handleCurrencySelect(currency) {
-      this.$store.commit('currencies/hideBaseCurrenciesModal')
-      this.$store.dispatch('currencies/setBaseCurrency', currency)
-    },
-  },
+<script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
+
+const { $store } = useNuxtApp()
+const { height } = useWindowSize()
+
+function onSelect(value, close) {
+  $store.dispatch('currencies/setBaseCurrency', value)
+  close()
 }
 </script>
 
@@ -14,45 +15,22 @@ Portal(
   v-if="$store.state.currencies.modal.show"
   to="modal"
 )
-  ModalBottom(
-    :center="true"
-    :title="$t('currency.selectBaseTitle')"
-    @onClose="$store.commit('currencies/hideBaseCurrenciesModal')"
+  BaseBottomSheet(
+    :maxHeight="height"
+    insideClass="bg-skin-layout-main"
+    @closed="$store.commit('currencies/hideBaseCurrenciesModal')"
   )
-    .inputText
-      .currencies
-        .currencies__item(
-          v-for="(item, currency) in $store.state.currencies.rates"
-          :class="{ _active: $store.state.currencies.base === currency }"
-          @click="handleCurrencySelect(currency)"
-        ) {{ currency }}
+    template(#handler="{ close }")
+      BaseBottomSheetHandler
+      BaseBottomSheetClose(@onClick="close")
+
+    template(#header)
+      .py-4.px-3.rounded-t-2xl.text-center.text-neutral-800.dark_text-white.text-xl.font-semibold.font-nunito.bg-skin-layout-main
+        | {{ $t('currency.selectBaseTitle') }}
+
+    template(#default="{ close }")
+      CurrenciesList(
+        :active="$store.state.currencies.base"
+        @onSelect="value => onSelect(value, close)"
+      )
 </template>
-
-<style lang="stylus" scoped>
-.currencies
-  display grid
-  grid-template-columns repeat(auto-fill, minmax(100px, 1fr))
-  grid-column-gap $m7
-  grid-row-gap $m7
-
-  &__item
-    cursor pointer
-    display flex
-    align-items center
-    justify-content center
-    height 44px
-    padding $m6
-    text-align center
-    border 1px solid var(--c-bg-6)
-    border-radius $m4
-
-    +media-hover()
-      &:not(._active)
-        background var(--c-bg-6)
-
-    &._active
-      cursor default
-      color var(--c-font-1)
-      background var(--c-blue-1)
-      border none
-</style>
