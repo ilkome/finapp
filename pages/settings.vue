@@ -2,8 +2,6 @@
 import pkg from '~/package'
 
 export default {
-  name: 'SettingsPage',
-
   data() {
     return {
       confirmCreateDemo: false,
@@ -31,56 +29,72 @@ export default {
 </script>
 
 <template lang="pug">
-.h-full.overflow.overflow-x-auto
-  .py-6.px-3.font-nunito.text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold
+.overflow.overflow-x-auto.h-full.max-w-3xl(
+  class="md_pb-[52px] pb-[44px] lg_pb-0"
+)
+  .mb-6.py-6.px-3.text-skin-item-base-up.text-2xl.leading-none.font-nunito.font-semibold
     | {{ $t('settings.title') }}
 
-  .settings.px-3.pt-5
-    .settings__column
-      .settings__group
-        .settings__subHeader {{ $t('settings.app') }}
-        .settings__item
-          LangDropdown
-        .settings__item
-          SharedButton._bdb(
-            icon="mdi mdi-palette"
-            :title="$t('theme.change')"
-            @onClick="$store.dispatch('ui/changeTheme')"
-          )
-        .settings__item
-          SharedButton._bdb(
-            :title="$t('currency.selectBaseTitle')"
-            icon="mdi mdi-currency-usd"
-            @onClick="$store.commit('currencies/showBaseCurrenciesModal')"
-          )
+  .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2
+    div
+      //- Currency
+      .pb-12
+        .pb-3.text-skin-item-base.text-lg.leading-none.font-nunito.font-semibold
+          | {{ $t('currency.title') }}
+        .pb-4.text-skin-item-base-down.text-xs.leading-1 {{ $t('currency.descBase') }}
 
-      .settings__group
-        .settings__subHeader {{ $t('user') }}
+        SharedButton._bdb(
+          :title="$t('currency.selectBaseTitle')"
+          icon="mdi mdi-currency-usd"
+          isShowDots
+          @onClick="$store.commit('currencies/showBaseCurrenciesModal')"
+        )
+
+      .pb-12
+        //- Locale
+        .pb-3.text-skin-item-base.text-lg.leading-none.font-nunito.font-semibold
+          | {{ $t('settings.app') }}
+        .pb-4
+          LangDropdown
+
+        //- Theme
+        SharedButton._bdb(
+          icon="mdi mdi-palette"
+          :title="$t('theme.change')"
+          @onClick="$store.dispatch('ui/changeTheme')"
+        )
+
+      //- User
+      .pb-12
+        .pb-3.text-skin-item-base.text-lg.leading-none.font-nunito.font-semibold
+          | {{ $t('user') }}
         .pb-3.text-neutral-400
           .text-lg {{ $store.state.user.user.displayName }}
           .text-sm {{ $store.state.user.user.email }}
 
-        .settings__item
-          SharedButton._bdb(
-            :title="$t('userLogout')"
-            icon="mdi mdi-logout"
-            @onClick="$store.dispatch('user/signOut')"
-          )
+        SharedButton._bdb(
+          :title="$t('userLogout')"
+          icon="mdi mdi-logout"
+          @onClick="$store.dispatch('user/signOut')"
+        )
 
-      .settings__group
-        .settings__subHeader {{ $t('settings.caution') }}
-        .settings__desc {{ $t('alerts.willDeleteEverything') }}
-        .settings__item
+      .pb-12
+        .pb-3.text-skin-item-base.text-lg.leading-none.font-nunito.font-semibold
+          | {{ $t('settings.caution') }}
+        .pb-4.text-skin-item-base-down.text-xs.leading-1 {{ $t('alerts.willDeleteEverything') }}
+
+        //- Delete
+        .pb-4
           SharedButton._bdb(
             :title="$t('settings.deleteButton')"
             icon="mdi mdi-delete-empty-outline"
             @onClick="confirmRemoveUserData = true"
           )
 
-    .settings__column
-      .settings__group
-        About
-        .appVersion {{ $t('app.version') }} {{ version }}
+    //- About
+    .pb-12
+      About
+      .pt-4.text-skin-item-base-down.text-xs {{ $t('app.version') }} {{ version }}
 
   ModalBottomConfirm(
     :description="$t('alerts.willDeleteEverything')"
@@ -90,50 +104,20 @@ export default {
   )
 </template>
 
-<style lang="stylus" scoped>
-.settings
-  width 100%
-  flex-grow 1
-  max-width 660px
-
-  +media-laptop()
-    display grid
-    grid-template-columns repeat(auto-fill, minmax(280px, 1fr))
-    grid-column-gap $mb2
-    grid-row-gap $m10
-
-  &__group
-    padding-bottom 56px
-
-  &__item
-    padding-bottom $m7
-    &:last-child
-      padding-bottom 0
-
-  &__desc
-    padding-bottom $m7
-    color var(--c-red-1)
-    font-size 14px
-
-  &__subHeader
-    padding-bottom $m7
-    font-h1()
-    font-size 18px
-
-.appVersion
-  padding-top $m10
-  color var(--c-font-3)
-  font-size 10px
-</style>
-
 <i18n lang="json5">
 {
   "en": {
-    "user": "User"
+    "user": "User",
+    "currency": {
+      "descBase": "Transactions in different currencies will be converted to this currency."
+    }
   },
 
   "ru": {
-    "user": "Пользователь"
+    "user": "Пользователь",
+    "currency": {
+      "descBase": "Основная валюта, в которую будут конвертироваться транзакции в других валютах."
+    }
   }
 }
 </i18n>
