@@ -1,62 +1,46 @@
-<script>
-export default {
+<script lang="ts">
+export default defineComponent({
   props: {
-    background: {
-      type: String,
-      default: null,
-    },
-    icon: {
-      type: String,
-      default: null,
-    },
-    className: {
-      type: String,
-      default: null,
-    },
-    title: {
-      type: String,
-      default: null,
-    },
-    showCheckbox: {
-      type: Boolean,
-      default: false,
-    },
-    checkboxValue: {
-      type: Boolean,
-      default: false,
-    },
-
-    size: {
-      type: String,
-      default: 'md',
-    },
+    background: { type: String, default: null },
+    checkboxValue: { type: Boolean, default: false },
+    className: { type: String, default: null },
+    icon: { type: String, default: null },
+    isShowDots: { type: Boolean, default: false },
+    showCheckbox: { type: Boolean, default: false },
+    size: { type: String, default: 'md' },
+    title: { type: String, default: null },
   },
 
-  computed: {
-    classNameComputed() {
-      return {
-        [`_size_${this.size}`]: this.size,
-        [this.className]: this.className,
-      }
-    },
+  setup(props) {
+    const classNames = computed(() => ({
+      [`_size_${props.size}`]: props.size,
+      [props.className]: props.className,
+      '!pr-3': props.isShowDots,
+    }))
+
+    return { classNames }
   },
-}
+})
 </script>
 
 <template lang="pug">
 .d-button(
-  :class="classNameComputed"
+  :class="classNames"
   :style="{ background: background }"
   @click="$emit('onClick')"
 )
   .d-button__icon(v-if="icon")
     div(:class="icon")
-  .d-button__title(v-if="title") {{ title }}
+
+  .d-button__title.grow(v-if="title") {{ title }}
+
   .d-button__check(
     v-if="showCheckbox"
     @click.prevent=""
   )
     SharedInputsCheckbox(v-model="checkboxValue")
+
+  .mdi.mdi-dots-vertical.text-lg(v-if="isShowDots")
 </template>
 
 <style lang="stylus">
