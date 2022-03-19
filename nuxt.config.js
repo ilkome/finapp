@@ -54,7 +54,7 @@ export default defineNuxtConfig({
   loading: false,
 
   plugins: [
-    { src: '~/plugins/initAppFromCache' },
+    { src: '~/plugins/initApp' },
     { src: '~/plugins/dayjs' },
     { src: '~/plugins/notifications' },
   ],
