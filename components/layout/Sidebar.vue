@@ -5,7 +5,9 @@
       .text-xl.font-bold.text-neutral-500.dark_text-neutral-200.font-nunito
         | {{ $t('appName') }}
 
-      .text-xl.mdi.mdi-palette(@click="$store.dispatch('ui/changeTheme')")
+      .mdi.mdi-palette.cursor-pointer.text-skin-item-base-down.text-xl.hocus_text-skin-item-base-up(
+        @click="$store.dispatch('ui/changeTheme')"
+      )
 
     .pt-2.pb-8
       LayoutSidebarMenu
