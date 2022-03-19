@@ -25,7 +25,7 @@ Portal(
       BaseBottomSheetClose(@onClick="close")
 
     template(#header)
-      .py-4.px-3.rounded-t-2xl.text-center.text-neutral-800.dark_text-white.text-xl.font-semibold.font-nunito.bg-skin-layout-main
+      .py-4.px-3.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
         | {{ $t('currency.selectBaseTitle') }}
 
     template(#default="{ close }")
