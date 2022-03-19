@@ -30,6 +30,7 @@ This is Finapp 3. For the 2.x see the [2 branch](https://github.com/ilkome/finap
 # 📦 Setup
 
 ### Project setup
+
 ``` bash
 # clone the repo
 $ git clone https://github.com/ilkome/finapp.git finapp
@@ -42,10 +43,12 @@ $ npm install
 ```
 
 ### Firebase setup
+
 - Create a Firebase project in the [Firebase console](https://console.firebase.google.com/)
 - Create Realtime Database
 - Open Realtime Database and go to Rules tab.
 - Change rules to:
+
 ``` javascript
 {
   "rules": {
@@ -80,22 +83,26 @@ storageBucket: 'YOUR_CONFIG',
 messagingSenderId: 'YOUR_CONFIG'
 ```
 
-
 ## Development
 
-#### Compiles and hot-reloads
+### Compiles and hot-reloads
+
 ``` bash
-$ npm run dev
+npm run dev
 ```
 
 ## Production
-#### Compiles and minifies for production
+
+### Compiles and minifies for production
+
 This will give you `build` folder. You can upload files from this folder to any shared hosting.
+
 ``` bash
-$ npm run build
+npm run build
 ```
 
 ## Upload to server
+
 You can add your FTP config in app's directory `ftp.config.js`
 
 ``` bash
@@ -107,8 +114,11 @@ $ npm run upload-min
 ```
 
 # 🤪 Stay In Touch
+
 I would like to speak with you about Finapp. I'm looking for awesome projects.
+
 - [My Telegram](https://t.me/ilkome)
 
 # 📄 License
+
 [MIT License](https://github.com/ilkome/finapp/blob/main/LICENSE)
