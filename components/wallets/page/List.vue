@@ -41,7 +41,7 @@ export default defineComponent({
 
         //- Add
         .cursor-pointer.group.w-10.h-10.flex-center.rounded-full.bg-gray-50.dark_bg-dark5.hocus-text-white.hocus_bg-blue2(
-          @click="$store.dispatch('ui/setActiveTab', 'createWallet')"
+          @click="$router.push('/wallets/new')"
         )
           svg.group-hover_text-white.w-6.h-6(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12")
             path(fill="currentColor" d="M6 1.5a.5.5 0 0 0-1 0V5H1.5a.5.5 0 0 0 0 1H5v3.5a.5.5 0 0 0 1 0V6h3.5a.5.5 0 0 0 0-1H6V1.5Z")
@@ -91,7 +91,7 @@ export default defineComponent({
     //- Create
     .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
       class="basis-1/2 max-w-[280px]"
-      @click="$store.dispatch('ui/setActiveTab', 'createWallet')"
+      @click="$router.push('/wallets/new')"
     ) {{ $t('wallets.new') }}
 
   //- Sort
@@ -130,23 +130,4 @@ export default defineComponent({
   //-         v-if="activeTab === 'walletsSort'"
   //-         @closeModal="close"
   //-       )
-
-  //- Create
-  Portal(
-    v-if="activeTab === 'createWallet'"
-    to="modal"
-  )
-    BaseBottomSheet(
-      :maxHeight="height"
-      insideClass="bg-skin-layout-main"
-      @closed="$store.dispatch('ui/setActiveTab', null)"
-    )
-      template(#handler="{ close }")
-        BaseBottomSheetHandler
-        BaseBottomSheetClose(@onClick="close")
-
-      template(#default="{ close }")
-        WalletsFormWalletForm(
-          @callback="close"
-        )
 </template>
