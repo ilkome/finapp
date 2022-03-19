@@ -59,18 +59,18 @@ $ npm install
       ".read": "auth != null",
       ".write": "auth != null"
     },
-    "users-info": {
-      "$uid": {
-        ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid"
-      }
+    "ratesUsd": {
+      ".read": "auth != null",
+      ".write": "auth != null"
     }
   }
 }
 ```
+
 - Go to the Project Overview and find `Get started by adding Firebase to your app` click to `web`.
 - Register a app and you will get your config.
 - You need to replace config in app's directory `services/firebaseConfig.js` with your config.
+
 ``` bash
 apiKey: 'YOUR_CONFIG',
 authDomain: 'YOUR_CONFIG',

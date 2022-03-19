@@ -1,7 +1,6 @@
 export default {
-  setCurrencies(state, { base, date, rates }) {
+  setCurrencies(state, { base, rates }) {
     state.base = base
-    state.date = date
     state.rates = rates
   },
 
