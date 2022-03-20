@@ -90,8 +90,6 @@ onMounted(() => {
 
 <style lang="stylus">
 @import '~assets/stylus/index'
-@import '~assets/stylus/colors-dark'
-@import '~assets/stylus/colors-light'
 
 .firefoxBackdropFix
   @supports (not (-webkit-backdrop-filter: none)) and (not (backdrop-filter: none))

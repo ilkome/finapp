@@ -24,7 +24,9 @@ export default {
 
     theme
       ? newTheme = theme
-      : currentTheme === 'dark' ? newTheme = 'light' : newTheme = 'dark'
+      : currentTheme === 'dark'
+        ? newTheme = 'light'
+        : newTheme = 'dark'
 
     // eslint-disable-next-line no-undef
     $nuxt.$colorMode.preference = newTheme
