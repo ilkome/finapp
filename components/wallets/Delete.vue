@@ -4,10 +4,9 @@ import { random, successEmo } from '~/assets/js/emo'
 import { removeData } from '~/services/firebase/api'
 import type { WalletID } from '~/components/wallets/types'
 
-interface Props {
+const props = defineProps<{
   walletId: WalletID
-}
-const props = defineProps<Props>()
+}>()
 const { walletId } = toRefs(props)
 
 const { $store, $notify } = useNuxtApp()

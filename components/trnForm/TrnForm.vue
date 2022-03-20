@@ -224,8 +224,8 @@ function handleSubmitForm() {
             v-if="!isTransfer || isTransfer && isSameCurency"
             @onSubmit="handleSubmitForm"
           )
-          TrnFormHeader
-          LazyTrnFormHeaderTransfer(
+          TrnFormSelected
+          TrnFormSelectedTransfer(
             v-if="isTransfer"
             @onSubmit="handleSubmitForm"
           )
@@ -236,16 +236,36 @@ function handleSubmitForm() {
           //- Wallets
           .pt-5.pb-7
             .subTitle.text-center.pb-2.text-xs {{ $t('wallets.title') }}
-            .pb-3.px-3
-              WalletsList3(
-                :activeItemId="$store.state.trnForm.values.walletId"
-                :limit="4"
-                :showBase="false"
-                @onClick="onClickWallet"
-              )
+
+            WalletsList(#default="{ walletsItemsSorted }")
+              .px-3.grid.gap-y-1.gap-x-1.3sm_grid-cols-2
+                //- Wallet
+                .cursor-pointer.relative.flex.items-center.py-2.px-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+                  v-for="(walletItem, walletId) in walletsItemsSorted"
+                  :key="walletId"
+                  :class="[{ 'cursor-default bg-skin-item-main-active': $store.state.trnForm.values.walletId === walletId }]"
+                  @click="onClickWallet(walletId)"
+                )
+                  .grow.flex-center.gap-x-3
+                    //- Icon
+                    .w-6.h-6.rounded-md.flex-center.text-skin-icon-base.text-xs.leading-none(
+                      :style="{ background: walletItem.color }"
+                      class="mt-[2px]"
+                    ) {{ walletItem.name.substring(0, 2) }}
+                    //- Name
+                    .grow.text-sm.text-skin-item-base {{ walletItem.name }}
+
+                  //- Amount
+                  Amount(
+                    :currency="walletItem.currency"
+                    :value="walletItem.amount"
+                    alwaysShowSymbol
+                    showBase
+                    vertical="right"
+                  )
 
           //- Favorite categories
-          .pb-7
+          .pb-7(v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length > 0")
             .subTitle.text-center.pb-2.text-xs {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
             .px-3
               CategoriesList(
@@ -253,6 +273,7 @@ function handleSubmitForm() {
                 :ids="$store.getters['categories/quickSelectorCategoriesIds']"
                 :activeItemId="$store.state.trnForm.values.categoryId"
                 :slider="sliderObj"
+                class="!gap-x-1"
                 @onClick="onCategoryClick"
               )
 
@@ -265,6 +286,7 @@ function handleSubmitForm() {
                 :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
                 :activeItemId="$store.state.trnForm.values.categoryId"
                 :slider="sliderObj"
+                class="!gap-x-1"
                 @onClick="onCategoryClick"
               )
 
@@ -285,22 +307,15 @@ function handleSubmitForm() {
 
   //- Modals
   Portal(to="modal")
+    TrnFormModals
+
     TrnFormModalCalendar(v-if="$store.state.trnForm.modal.calendar")
     TrnFormModalCats(v-if="$store.state.trnForm.modal.categories")
     TrnFormModalCatsChild(v-if="$store.state.trnForm.modal.categoriesChild")
     TrnFormModalDescription(v-if="$store.state.trnForm.modal.description")
-    TrnFormModalTransferFrom(v-if="$store.state.trnForm.modal.transferFrom")
-    TrnFormModalTransferTo(v-if="$store.state.trnForm.modal.transferTo")
-    TrnFormModalWallets(v-if="$store.state.trnForm.modal.wallets")
 </template>
 
 <style lang="stylus">
-.trnFormWalletsList .wallets__grid
-.trnForm .wallets__grid
-  grid-template-columns repeat(2, 1fr) !important
-  grid-column-gap $m6 !important
-  grid-row-gap $m6 !important
-
 .trnForm
   &__pagination
     z-index 2

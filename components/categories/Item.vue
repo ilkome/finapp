@@ -44,63 +44,25 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.categoryItem.bg-main.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-gray-50.dark_bg-dark5.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
+.cursor-pointer.py-2.px-3.relative.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
   v-if="category"
-  :class="{ _active: activeItemId === id }"
+  :class="{ '!cursor-default !bg-skin-item-main-active': activeItemId === id }"
   @click="onClickItem"
 )
-  .categoryItem__active(v-if="activeItemId === id")
   .w-8.h-8.flex.items-center.justify-center.rounded-full.text-xl.leading-none.text-neutral-50(
     :style="{ background: category.color }"
     @click.stop="onClickIcon"
   ): div(:class="category.icon")
 
-  .categoryItem__name.grow.truncate
-    .text-xs.text-neutral-500(
+  .grow.truncate
+    .text-xs.text-skin-item-base-down(
       v-if="parentCategory && !isHideParentCategory"
       class="dark_text-neutral-400"
     ) {{ parentCategory.name }}
 
     .leading-none.text-sm.text-neutral-700.dark_text-neutral-300 {{ category.name }}
 
-  .font-unica.text-md.text-neutral-500(
+  .font-unica.text-md.text-skin-item-base-down(
     v-if="childCategoriesIds.length > 0"
-    class="dark_text-neutral-400"
   ) {{ childCategoriesIds.length }}
 </template>
-
-<style lang="stylus" scoped>
-.bg-main
-  &._active
-    background var(--c-item-bg-hover)
-
-.categoryItem
-  overflow hidden
-  cursor pointer
-  position relative
-  color var(--c-font-1)
-
-  &__length
-    color var(--c-font-4)
-
-  &__parent
-    color var(--c-font-4)
-
-  &__child
-    color var(--c-font-1)
-
-    /.light &
-      color var(--c-font-4)
-
-  &__active
-    position absolute
-    top $m5
-    right $m5
-    display flex
-    align-items center
-    justify-content center
-    width 8px
-    height 8px
-    background var(--c-blue-1)
-    border-radius 50%
-</style>

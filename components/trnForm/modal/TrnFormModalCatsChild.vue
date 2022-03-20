@@ -43,14 +43,10 @@ TrnFormModal(@closed="afterClose")
 
   template(#default="{ close }")
     template(v-if="id && category")
-      .pb_base
+      .pb-3.px-3
         CategoriesList(
           :ids="childCategoriesIds"
+          class="!gap-x-1"
           @onClick="catId => handleCategoryClick(catId, close)"
         )
 </template>
-
-<style lang="stylus">
-.pb_base
-  padding-bottom 16px
-</style>

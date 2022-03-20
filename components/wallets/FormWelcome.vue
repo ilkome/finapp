@@ -3,10 +3,9 @@ import { popularColors } from '~/assets/js/colorsPopular'
 import { random } from '~/assets/js/emo'
 import generateId from '~/utils/id'
 
-interface Props {
+const props = defineProps<{
   saved: Function
-}
-const props = defineProps<Props>()
+}>()
 
 const { $store, $notify, nuxt2Context: { i18n } } = useNuxtApp()
 

@@ -32,16 +32,18 @@ export default {
 
 <template lang="pug">
 .trnFormDate.pb-2.px-4
-  .shame1._arrow(@click="setPrevDay()"): .mdi.mdi-chevron-left
+  .shame1._arrow.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+    @click="setPrevDay()"
+  ): .mdi.mdi-chevron-left
 
-  .trnFormDate__item._date(
+  .cursor-pointer.py-2.px-3.flex-center.rounded-md.text-center.text-sm.leading-none.hocus_bg-skin-item-main-hover(
     v-html="formatedDate"
     @click="$store.commit('trnForm/showTrnFormModal', 'calendar')"
   )
 
   .flex
-    .shame1._arrow(
-      :class="{ 'opacity-30 cursor-default' : isToday }"
+    .shame1._arrow.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+      :class="{ 'opacity-30 !cursor-default' : isToday }"
       @click="setNextDay()"
     ): .mdi.mdi-chevron-right
 </template>
@@ -63,10 +65,6 @@ export default {
   border-radius 50%
   user-select none
   anim(100ms)
-
-  +media-hover()
-    background var(--c-bg-7)
-    border 1px solid var(--c-bg-8)
 
 .trnFormDate
   display grid
@@ -91,10 +89,6 @@ export default {
     +media(400px)
       width 58px
       height 58px
-
-    +media-hover()
-      background var(--c-item-bg-hover)
-      border 1px solid var(--c-item-bd-hover)
 
     &._date
       display flex

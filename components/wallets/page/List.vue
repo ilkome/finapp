@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { useWindowSize } from '@vueuse/core'
-import useWallets from '~/components/wallets/useWallets'
-
 const { $store } = useNuxtApp()
-const { height } = useWindowSize()
 const activeTab = computed(() => $store.state.ui.activeTab)
-const { walletsItemsSorted } = useWallets()
 </script>
 
 <script lang="ts">
@@ -19,8 +14,8 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.overflow.overflow-x-auto.h-full.grid.max-w-3xl(
-  class="md_pb-[52px] pb-[44px] lg_pb-0 grid-rows-[1fr_auto]"
+.overflow-y-auto.h-full.grid.max-w-3xl(
+  class="grid-rows-[1fr_auto] md_pb-[52px] pb-[44px] lg_pb-0"
 )
   div
     //- Header
@@ -55,31 +50,32 @@ export default defineComponent({
 
     //- List
     //---------------------------------
-    .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2
-      //- Wallet
-      .cursor-pointer.py-2.px-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
-        v-for="(walletItem, walletId) in walletsItemsSorted"
-        :key="walletId"
-        @click="$router.push(`/wallets/${walletId}`)"
-      )
-        .gap-x-3.flex.items-center
-          .grow.flex-center.gap-x-3
-            //- Icon
-            .w-6.h-6.rounded-md.flex-center.text-skin-icon-base.text-xs.leading-none(
-              :style="{ background: walletItem.color }"
-              class="mt-[2px]"
-            ) {{ walletItem.name.substring(0, 2) }}
-            //- Name
-            .grow.text-sm.text-skin-item-base {{ walletItem.name }}
+    WalletsList(#default="{ walletsItemsSorted }")
+      .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2
+        //- Wallet
+        .cursor-pointer.flex.items-center.py-2.px-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+          v-for="(walletItem, walletId) in walletsItemsSorted"
+          :key="walletId"
+          @click="$router.push(`/wallets/${walletId}`)"
+        )
+          .grow.gap-x-3.flex.items-center
+            .grow.flex-center.gap-x-3
+              //- Icon
+              .w-6.h-6.rounded-md.flex-center.text-skin-icon-base.text-xs.leading-none(
+                :style="{ background: walletItem.color }"
+                class="mt-[2px]"
+              ) {{ walletItem.name.substring(0, 2) }}
+              //- Name
+              .grow.text-sm.text-skin-item-base {{ walletItem.name }}
 
-          //- Amount
-          Amount(
-            :currency="walletItem.currency"
-            :value="walletItem.amount"
-            alwaysShowSymbol
-            showBase
-            vertical="right"
-          )
+            //- Amount
+            Amount(
+              :currency="walletItem.currency"
+              :value="walletItem.amount"
+              alwaysShowSymbol
+              showBase
+              vertical="right"
+            )
 
   .pb-4.px-3.flex.justify-evenly.gap-6
     //- Sort

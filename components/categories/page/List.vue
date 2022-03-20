@@ -19,7 +19,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.overflow.overflow-x-auto.h-full.grid.max-w-3xl(
+.overflow-y-auto.h-full.grid.max-w-3xl(
   class="md_pb-[52px] pb-[44px] lg_pb-0 grid-rows-[1fr_auto]"
 )
   div

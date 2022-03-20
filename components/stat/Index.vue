@@ -39,7 +39,7 @@ const isShowGroupTrns = computed(() => {
 </script>
 
 <template lang="pug">
-.overflow-hidden.overflow-y-auto.h-full.pb-8.js_scroll_page
+.overflow-y-auto.h-full.pb-8.js_scroll_page
   .max-w-4xl.pb-6
     StatPeriodArrows
     StatDate

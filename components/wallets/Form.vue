@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { allColors, popularColors } from '~/assets/js/colorsPopular'
 
-interface Props {
+const props = defineProps<{
   walletForm: {
     name: string
     color: string
     currency: string
   }
-}
-const props = defineProps<Props>()
+}>()
 const { walletForm } = toRefs(props)
 const emit = defineEmits(['updateValue', 'onSave'])
 

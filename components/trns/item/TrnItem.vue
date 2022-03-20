@@ -72,13 +72,13 @@ export default {
     .trnItem__categoryName {{ $t('trnForm.transferTitle') }}
     .trnItem__date {{ formatedDate }}
     .trnItem__wallet
-      WalletsItemWalletItem(
+      WalletsItem(
         :id="trn.expenseWalletId"
         isAltColor
         ui="tile"
       )
       .trnFormHeaderSeparator: .mdi.mdi-chevron-right
-      WalletsItemWalletItem(
+      WalletsItem(
         :id="trn.incomeWalletId"
         isAltColor
         ui="tile"
@@ -118,13 +118,13 @@ export default {
       .trnItem__categoryName {{ $t('trnForm.transferTitle') }}
       .trnItem__date {{ formatedDate }}
       .trnItem__wallet
-        WalletsItemWalletItem(
+        WalletsItem(
           :id="trn.walletFromId"
           isAltColor
           ui="tile"
         )
         .trnFormHeaderSeparator: .mdi.mdi-chevron-right
-        WalletsItemWalletItem(
+        WalletsItem(
           :id="trn.walletToId"
           isAltColor
           ui="tile"

@@ -23,7 +23,10 @@ export default {
       for (const [idx, walletId] of this.sortedWalletsIds.entries())
         sortedWallets[walletId] = idx
 
-      const result = await this.$store.dispatch('wallets/saveWalletsOrder', sortedWallets)
+      const result = await this.$store.dispatch(
+        'wallets/saveWalletsOrder',
+        sortedWallets,
+      )
       if (result.succsess) {
         if (this.$listeners.closeModal) this.$listeners.closeModal()
         this.$notify({
@@ -41,7 +44,7 @@ export default {
 .h-full.overflow.overflow-x-auto.bg-skin-layout-main
   //- Header
   //-----------------------------------
-  .pb-6.text-neutral-800.dark_text-white.text-2xl.font-semibold.font-nunito
+  .pb-4.px-3.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold
     | {{ $t('wallets.sortTitle') }}
 
   //- Items

@@ -29,7 +29,7 @@ export default {
 </script>
 
 <template lang="pug">
-.overflow.overflow-x-auto.h-full.max-w-3xl(
+.overflow-y-auto.h-full.max-w-3xl(
   class="md_pb-[52px] pb-[44px] lg_pb-0"
 )
   .mb-6.py-6.px-3.text-skin-item-base-up.text-2xl.leading-none.font-nunito.font-semibold

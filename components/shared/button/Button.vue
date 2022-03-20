@@ -88,10 +88,6 @@ export default defineComponent({
   border-radius $m3
   anim-background()
 
-  // +media-laptop()
-  //   padding 12px 20px
-  //   font-size 14px
-
   +media-hover()
     color var(--c-font-1)
     background var(--c-bg-6)
@@ -149,11 +145,6 @@ export default defineComponent({
     width 100%
     max-width 220px
     margin 0 auto
-
-    // @media $media-laptop
-    //   display inline-flex
-    //   width auto
-    //   margin 0
 
   &._center
     align-items center

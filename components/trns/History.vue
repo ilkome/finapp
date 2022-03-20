@@ -3,13 +3,11 @@ import type { TrnID } from '~/components/trns/types'
 
 type TrnType = null | 0 | 1 | 2
 
-interface Props {
+const props = withDefaults(defineProps<{
   hideTransfers?: boolean
   trnsIds: TrnID[]
   trnType: TrnType
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   hideTransfers: false,
 })
 

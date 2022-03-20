@@ -1,7 +1,5 @@
 <script>
 export default {
-  name: 'TrnFormTypes',
-
   setup() {
     const { $store } = useNuxtApp()
 

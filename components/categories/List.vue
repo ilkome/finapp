@@ -19,7 +19,7 @@ export default {
 </script>
 
 <template lang="pug">
-.grid.gap-y-1.gap-x-2.3sm_grid-cols-2.sm_gap-x-6
+.grid.gap-y-1.gap-x-1.3sm_grid-cols-2.sm_gap-x-6
   CategoriesItem(
     v-for="categoryId in categoresIds"
     :category="$store.state.categories.items[categoryId]"

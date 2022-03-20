@@ -50,20 +50,25 @@ export default {
           .scrollBlock.scrollerBlock(
             v-if="$store.getters['categories/lastUsedCategoriesIdsByDate'] && $store.getters['categories/lastUsedCategoriesIdsByDate'].length > 0"
           )
-            .py-5.header {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
+            .py-4.px-3.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
+              | {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
                 :activeItemId="$store.state.trnForm.values.categoryId"
                 :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
+                class="!gap-x-1"
                 @onClick="handleCategoryClick"
               )
 
         .swiper-slide
           .scrollBlock.scrollerBlock
-            .py-5.header {{ $t('categories.title') }}
+            .py-4.px-3.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
+              | {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
+                :activeItemId="$store.state.trnForm.values.categoryId"
                 :ids="$store.getters['categories/categoriesRootIds']"
+                class="!gap-x-1"
                 @onClick="handleCategoryClick"
               )
 
@@ -71,11 +76,13 @@ export default {
           .scrollBlock.scrollerBlock(
             v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length"
           )
-            .py-5.header {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
+            .py-4.px-3.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
+              | {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
                 :activeItemId="$store.state.trnForm.values.categoryId"
                 :ids="$store.getters['categories/quickSelectorCategoriesIds']"
+                class="!gap-x-1"
                 @onClick="handleCategoryClick"
               )
 
@@ -122,13 +129,4 @@ export default {
 
   +media-laptop()
     align-items center
-
-.header
-  font-h1()
-  font-size 22px
-  font-weight 600
-  text-align center
-
-  +media-laptop()
-    font-size 28px
 </style>

@@ -53,7 +53,7 @@ onMounted(() => {
 </script>
 
 <template lang="pug">
-.overflow-hidden.relative.h-full.min-w-base.font-roboto.text-slate-500.dark_text-gray-400.leading-none.antialiased.bg-white.dark_bg-dark3(
+.overflow-hidden.relative.h-full.min-w-base.font-roboto.text-slate-500.dark_text-gray-400.leading-none.antialiased.bg-skin-layout-main(
   :class="touchClassNames"
 )
   LayoutModals
@@ -71,17 +71,16 @@ onMounted(() => {
   .h-full.grid(
     class="lg_grid-cols-[auto_1fr]"
   )
-    .hidden.lg_block
+    .hidden.overflow-hidden.h-full.lg_block
       LayoutSidebar
 
-    .overflow-hidden.h-full.lg_px-8.grid
+    .overflow-hidden.h-full.grid.lg_px-8
       Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
-      .absolute.right-0.bottom-0.w-full
 
-      .hidden.createTrn.absolute.right-6.bottom-6.lg_flex(
-        @click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
-      )
-        .btn: .mdi.mdi-plus
+    .hidden.createTrn.absolute.right-6.bottom-6.lg_flex(
+      @click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
+    )
+      .btn: .mdi.mdi-plus
 
     .firefoxBackdropFix.z-10.absolute.bottom-0.left-0.w-full.backdrop-blur.lg_hidden(
       class="bg-white/70 dark_bg-dark3/70"

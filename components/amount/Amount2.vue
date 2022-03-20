@@ -9,9 +9,9 @@ export default defineComponent({
     type: { type: Number, default: null },
   },
 
-  setup({ type }) {
+  setup(props) {
     const { baseCurrency, formatAmount, getCurrencySymbol, getAmountInBaseCurrency } = useAmount()
-    const sign = type === 0 ? '-' : '+'
+    const sign = props.type === 0 ? '-' : '+'
 
     return {
       baseCurrency,

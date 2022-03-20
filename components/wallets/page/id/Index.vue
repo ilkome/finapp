@@ -10,8 +10,7 @@ const router = useRouter()
 
 const walletId = computed(() => route.params.id)
 const wallet = computed(() => $store.state.wallets.items[walletId.value])
-if (!wallet.value)
-  router.replace('/wallets')
+if (!wallet.value) router.replace('/wallets')
 
 const total = computed(() => $store.getters['wallets/walletsTotal'][walletId.value].base)
 const filter = reactive({ trnType: null })
@@ -22,9 +21,14 @@ const trnsIds = computed(() =>
     walletsIds: [walletId.value],
     trnType: filter.trnType,
     trnsItems: trnsItems.value,
-  }))
+  }),
+)
 
-const periodTrnsIds = computed(() => $store.getters['trns/selectedTrnsIdsWithDate'].filter(trnId => $store.state.trns.items[trnId].walletId === walletId.value))
+const periodTrnsIds = computed(() =>
+  $store.getters['trns/selectedTrnsIdsWithDate'].filter(
+    trnId => $store.state.trns.items[trnId].walletId === walletId.value,
+  ),
+)
 
 function handleSetFilterWallet() {
   setFilterWalletsId(walletId.value)

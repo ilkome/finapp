@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { currencies } from '~/components/currencies/currencies'
 
-interface Props {
+const props = defineProps<{
   active: string
-}
-const props = defineProps<Props>()
+}>()
 const { active } = toRefs(props)
 
 const emit = defineEmits(['onSelect'])
