@@ -237,11 +237,14 @@ function handleSubmitForm() {
           .pt-5.pb-7
             .subTitle.text-center.pb-2.text-xs {{ $t('wallets.title') }}
 
-            WalletsList(#default="{ walletsItemsSorted }")
+            WalletsList(
+              :limit="4"
+              #default="{ walletsItemsLimited }"
+            )
               .px-3.grid.gap-y-1.gap-x-1.3sm_grid-cols-2
                 //- Wallet
                 .cursor-pointer.relative.flex.items-center.py-2.px-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
-                  v-for="(walletItem, walletId) in walletsItemsSorted"
+                  v-for="(walletItem, walletId) in walletsItemsLimited"
                   :key="walletId"
                   :class="[{ 'cursor-default bg-skin-item-main-active': $store.state.trnForm.values.walletId === walletId }]"
                   @click="onClickWallet(walletId)"
@@ -258,9 +261,9 @@ function handleSubmitForm() {
                   //- Amount
                   Amount(
                     :currency="walletItem.currency"
+                    :showBase="false"
                     :value="walletItem.amount"
                     alwaysShowSymbol
-                    showBase
                     vertical="right"
                   )
 
