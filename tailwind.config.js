@@ -21,7 +21,6 @@ module.exports = {
         blue4: '#2183f2',
         custom1: '#212121',
         custom4: '#1c1c1c',
-        custom5: '#1b1b1c',
         dark3: '#171717',
         dark4: '#1c1c1c',
         dark5: '#1e1e1e',
@@ -31,8 +30,13 @@ module.exports = {
         white2: '#fcfcfd',
 
         skin: {
+          accent: {
+            down: 'var(--color-accent-down)',
+            base: 'var(--color-accent-base)',
+          },
           layout: {
-            main: 'var(--color-layout-main)',
+            'main-up': 'var(--color-layout-main-up)',
+            'main': 'var(--color-layout-main)',
           },
           red: {
             base: 'var(--color-red-base)',
@@ -47,6 +51,7 @@ module.exports = {
             'main': {
               bg: 'var(--color-item-main-bg)',
               hover: 'var(--color-item-main-hover)',
+              active: 'var(--color-item-main-active)',
             },
           },
         },
