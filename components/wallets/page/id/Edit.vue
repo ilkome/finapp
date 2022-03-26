@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { popularColors } from '~/assets/js/colorsPopular'
+import { allColors } from '~/assets/js/colors'
 import { random } from '~/assets/js/emo'
+import type { WalletForm } from '~/components/wallets/types'
 
-const { $store, $notify, nuxt2Context: { i18n } } = useNuxtApp()
+const { $store } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
 
 const walletId = computed(() => route.params.id)
 const wallet = computed(() => $store.state.wallets.items[walletId.value])
 
-const walletForm = ref({
-  color: wallet.value?.color || random(popularColors),
+const walletForm = ref<WalletForm>({
+  color: wallet.value?.color || random(allColors),
   countTotal: wallet.value?.countTotal || true,
   currency: wallet.value?.currency || 'RUB',
   isCredit: wallet.value?.isCredit || false,
@@ -22,60 +23,7 @@ function updateValue(id, value) {
   walletForm.value[id] = value
 }
 
-function onSave() {
-  const wallets = $store.state.wallets.items
-
-  // name
-  if (!walletForm.value.name) {
-    $notify({
-      title: '😮',
-      text: i18n.t('wallets.form.name.error'),
-    })
-    return false
-  }
-
-  // currency
-  if (!walletForm.value.currency) {
-    $notify({
-      title: '😮',
-      text: i18n.t('wallets.form.currency.error'),
-    })
-    return false
-  }
-
-  for (const id in wallets) {
-    if (wallets[id].name === walletForm.value.name) {
-      if (walletId.value) {
-        if (walletId.value !== id) {
-          $notify({
-            title: '😮',
-            text: i18n.t('wallets.form.name.exist'),
-          })
-          return false
-        }
-      }
-      else {
-        $notify({
-          title: '😮',
-          text: i18n.t('wallets.form.name.exist'),
-        })
-        return false
-      }
-    }
-  }
-
-  const id = walletId.value
-
-  const walletsValues = {
-    color: walletForm.value.color,
-    countTotal: walletForm.value.countTotal,
-    currency: walletForm.value.currency,
-    isCredit: walletForm.value.isCredit,
-    name: walletForm.value.name,
-    order: walletForm.value.order,
-  }
-
-  $store.dispatch('wallets/addWallet', { id, values: walletsValues })
+function afterSave() {
   router.push(`/wallets/${walletId.value}`)
 }
 </script>
@@ -84,41 +32,34 @@ function onSave() {
 export default defineComponent({
   head() {
     return {
-      title: `${this.$t('base.edit')}: ${this.wallet?.name}`,
+      title: `${this.$t('base.edit')}: ${this.walletForm.name ? this.walletForm.name : this.$t('wallets.form.name.label')}`,
     }
   },
 })
 </script>
 
 <template lang="pug">
-.overflow.overflow-x-auto.h-full.max-w-3xl(
-  v-if="wallet"
-  class="pb-[44px] md_pb-[52px] lg_pb-0"
-)
-  .flex.items-start
-    router-link(
-      v-slot="{ href, navigate }"
-      custom
-      :to="`/wallets/${walletId}`"
-    )
-      a.cursor-pointer.grow.mb-3.py-5.px-3.block.font-nunito.hocus_bg-skin-item-main-hover(
-        :href="href"
-        @click="navigate"
-      )
-        .pb-1.text-xs.font-medium.text-skin-item-base-down
-          | {{ $t("wallets.editTitle") }}
+UiPage(v-if="wallet")
+  UiHeader
+    router-link(v-slot="{ href, navigate }" :to="`/wallets/${walletId}`" custom)
+      a.grow.hocus_bg-skin-item-main-hover(:href="href" @click="navigate")
+        UiHeaderTitle
+          .pb-1.text-xs.font-medium.text-skin-item-base-down
+            | {{ $t("wallets.editTitle") }}
 
-        .flex.items-center.gap-3
-          .text-skin-item-base-up.text-2xl.font-semibold
-            | {{ walletForm.name ? walletForm.name : $t("wallets.title") }}
-          .p-1.flex-center.rounded.text-skin-icon-base.text-2xs(:style="{ background: walletForm.color }")
-            | {{ walletForm.currency }}
+          .flex.items-center.gap-3
+            .text-skin-item-base-up.text-2xl.font-semibold
+              | {{ walletForm.name ? walletForm.name : $t("wallets.title") }}
+            .p-1.flex-center.rounded.text-skin-icon-base.text-2xs(:style="{ background: walletForm.color }")
+              | {{ walletForm.currency }}
 
-    WalletsDelete(:walletId="walletId")
+    template(#actions)
+      WalletsDelete(:walletId="walletId")
 
   WalletsForm(
+    :walletId="walletId"
     :walletForm="walletForm"
-    @onSave="onSave"
+    @afterSave="afterSave"
     @updateValue="updateValue"
   )
 </template>

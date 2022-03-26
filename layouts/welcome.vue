@@ -53,7 +53,7 @@ onMounted(() => {
 </script>
 
 <template lang="pug">
-.font-roboto.text-gray-500.leading-none.antialiased.overflow-hidden.relative.h-full.min-w-base.flex(
+.font-roboto.text-gray-500.leading-none.antialiased.overflow-hidden.relative.h-full.min-w-base.flex.bg-skin-layout-main(
   :class="[touchClassNames, 'dark_text-gray-400']"
 )
   LayoutModals

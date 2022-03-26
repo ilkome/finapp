@@ -33,6 +33,6 @@ export const updateData = (path, updates) => update(ref(db, path), updates)
 
 export const removeData = path => remove(ref(db, path))
 
-export const saveData = (path, value) => set(ref(db, path), value)
+export const saveData = async(path, value) => await set(ref(db, path), value)
 
 export const unsubcribeData = path => off(ref(db, path))

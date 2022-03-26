@@ -5,10 +5,10 @@ const isShowDateSelector = ref(false)
 <template lang="pug">
 .z-10.hocus_bg-gray-100.dark_hocus_bg-neutral-800
   //- Date
-  .menuDots.cursor-pointer.flex.items-center.text-lg(
+  .menuDots.cursor-pointer.px-3.flex.items-center.text-lg(
     @click="isShowDateSelector = true"
   )
-    .py-6.px-3.font-nunito.text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold
+    .py-6.font-nunito.text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold
       SharedDate
 
     .menuDots__dots: .mdi.mdi-dots-vertical

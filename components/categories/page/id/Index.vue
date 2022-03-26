@@ -26,7 +26,7 @@ const categoryChildIds = computed(() => category.value.childIds?.sort((a, b) => 
 
 const trnsIds = computed(() =>
   getTrnsIds({
-    categoriesIds: category.value?.childIds ? category.value?.childIds : [categoryId.value],
+    categoriesIds: category.value?.childIds?.length > 0 ? category.value?.childIds : [categoryId.value],
     trnType: filter.trnType,
     trnsItems: trnsItems.value,
   }))
@@ -43,70 +43,61 @@ function handleEditClick() {
 </script>
 
 <template lang="pug">
-.h-full.overflow.overflow-x-auto.max-w-3xl.h-full(
-  class="pb-[44px] md_pb-[52px] lg_pb-0"
-)
-  template(v-if="category")
-    router-link(
-      v-slot='{ href, navigate }'
-      :to='backLink'
-      custom
-    )
-      .flex.items-start
-        a.grow.cursor-pointer.block.py-5.mb-3.px-3.font-nunito.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
-          :href='href'
-          @click='navigate'
-        )
-          .pb-2.text-xs.font-medium(class="dark_text-white/50")
+UiPage(v-if="category")
+  UiHeader
+    router-link(v-slot="{ href, navigate }" :to="backLink" custom)
+      a.grow.hocus_bg-skin-item-main-hover(:href="href" @click="navigate")
+        UiHeaderTitle
+          .pb-1.text-xs.font-medium.text-skin-item-base-down
             | {{ $t('categories.title') }}
             template(v-if="category.parentId")
               |
               | • {{ $store.state.categories.items[category.parentId].name }}
 
-          .flex.items-center.gap-3
-            .text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold {{ category.name }}
-            .w-8.h-8.rounded-full.flex-center.text-xl.text-neutral-50(
-              :style="{ background: category.color }"
-            )
+          .flex.items-center.gap-4
+            | {{ category.name }}
+            .w-8.h-8.rounded-full.flex-center.text-xl.text-skin-icon-base(:style="{ background: category.color }")
               div(:class="category.icon")
 
-        .mdi.mdi-pencil-outline.cursor-pointer.rounded-full.mt-3.mr-2.w-16.h-16.flex-center.text-2xl.p-4.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
-          @click="handleEditClick"
-        )
+    template(#actions v-if="categoryId !== 'transfer'")
+      UiHeaderLink(@click="handleEditClick")
+        .mdi.mdi-pencil-outline.group-hover_text-white.text-xl
+      UiHeaderLink(@click="$router.push('/categories/new')")
+        UiIconAdd.group-hover_text-white.w-6.h-6
 
-    //- Open stat
-    .pb-12
-      .px-3.flex
-        .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
-          class="dark_text-white/60"
-          @click="handleSetFilterCategory"
-        )
-          .mdi.mdi-poll.text-xl
-          .text-xs.leading-none {{ $t('statBy') }} {{ category.name }}
-          .mdi.mdi-chevron-right.opacity-70.text-lg.leading-none
-
-    //- Childs categories
-    .pb-12(v-if="category.childIds && category.childIds.length > 0")
-      .statTitle.flex.gap-2.px-3(class="!pb-3")
-        div {{ $t('categories.title') }}:
-        div {{ category.childIds.length }}
-
-      .px-3
-        CategoriesList(
-          :ids="categoryChildIds"
-          :slider="() => ({})"
-          isHideParentCategory
-          @onClick="id => $router.push(`/categories/${id}`)"
-        )
-
-    //- History
-    .px-3
-      TrnsHistory(
-        :trnsIds="trnsIds"
-        :trnType="filter.trnType"
-        hideTransfers
-        @setFilterTrnType="value => filter.trnType = value"
+  //- Open stat
+  .pb-12
+    .px-3.flex
+      .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
+        class="dark_text-white/60"
+        @click="handleSetFilterCategory"
       )
+        .mdi.mdi-poll.text-xl
+        .text-xs.leading-none {{ $t('statBy') }} {{ category.name }}
+        .mdi.mdi-chevron-right.opacity-70.text-lg.leading-none
+
+  //- Childs categories
+  .pb-12(v-if="category.childIds && category.childIds.length > 0")
+    .statTitle.flex.gap-2.px-3(class="!pb-3")
+      div {{ $t('categories.title') }}:
+      div {{ category.childIds.length }}
+
+    .px-3
+      CategoriesList(
+        :ids="categoryChildIds"
+        :slider="() => ({})"
+        isHideParentCategory
+        @onClick="id => $router.push(`/categories/${id}`)"
+      )
+
+  //- History
+  .px-3
+    TrnsHistory(
+      :trnsIds="trnsIds"
+      :trnType="filter.trnType"
+      hideTransfers
+      @setFilterTrnType="value => filter.trnType = value"
+    )
 </template>
 
 <i18n lang="json5">
@@ -114,6 +105,7 @@ function handleEditClick() {
   "en": {
     "statBy": "Statistics: ",
   },
+
   "ru": {
     "statBy": "Статистика: ",
   },

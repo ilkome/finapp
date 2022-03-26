@@ -16,7 +16,6 @@ module.exports = {
       colors: {
         232323: '#232323',
         blue1: '#58a6ff',
-        blue2: '#0366d6',
         blue3: '#3a7dff',
         blue4: '#2183f2',
         custom1: '#212121',

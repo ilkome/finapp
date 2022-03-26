@@ -93,6 +93,7 @@ export default {
     dublicate: 'Дублировать',
     setFilter: 'Фильтр',
     off: 'Нет',
+    add: 'Создать',
     edit: 'Редактировать',
     delete: 'Удалить',
     filter: 'Фильтровать',
@@ -191,14 +192,13 @@ export default {
       parent: {
         no: 'Корневая категория',
         label: 'Категория',
-        placeholder: 'Выберите категрию',
       },
       colors: {
         label: 'Цвета',
         custom: 'Кастомный цвет',
       },
-      icons: {
-        label: 'Иконки',
+      icon: {
+        label: 'Иконка',
       },
       data: {
         label: 'Данные',
@@ -325,6 +325,4 @@ export default {
   },
 
   colors: 'Цвета',
-  palette: 'Палитра',
-  popularColors: 'Популярные',
 }

@@ -20,10 +20,4 @@ export default {
       },
     }
   },
-
-  setCategoryEditId(state, id) {
-    state.editId === id
-      ? state.editId = null
-      : state.editId = id
-  },
 }

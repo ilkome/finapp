@@ -30,14 +30,11 @@ export default defineComponent({
   //- Currencies
   CurrenciesModal
 
-  //- category: create or edit
-  LazyCategoriesEditModal(v-if="activeTab === 'createCategory'")
-
-  //- loading
+  //- Loading
   template(v-if="!$store.state.app.status.ready")
     LoaderSharedLoader
 
-  //- notifications
+  //- Notifications
   Notifications(
     :max="2"
     :position="$store.state.ui.width < 600 ? 'top center' : 'top center'"

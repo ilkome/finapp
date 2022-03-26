@@ -52,41 +52,32 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.overflow.overflow-x-auto.h-full.max-w-3xl(
-  v-if="wallet"
-  class="pb-[44px] md_pb-[52px] lg_pb-0"
-)
-  router-link(
-    v-slot="{ href, navigate }"
-    custom
-    to="/wallets"
-  )
-    .flex.items-start
-      a.grow.cursor-pointer.block.py-5.mb-3.px-3.font-nunito.hocus_bg-skin-item-main-hover(
-        :href="href"
-        @click="navigate"
-      )
-        .pb-1.text-xs.font-medium.text-skin-item-base-down
-          | {{ $t("wallets.title") }}
+UiPage(v-if="wallet")
+  UiHeader
+    router-link(v-slot="{ href, navigate }" to="/wallets" custom)
+      a.grow.hocus_bg-skin-item-main-hover(:href="href" @click="navigate")
+        UiHeaderTitle
+          .pb-1.text-xs.font-medium.text-skin-item-base-down
+            | {{ $t("wallets.title") }}
 
-        .flex.items-center.gap-3.pb-3
-          .text-skin-item-base-up.text-2xl.font-semibold
-            | {{ wallet.name }}
-          .p-1.flex-center.rounded.text-skin-icon-base.text-2xs(:style="{ background: wallet.color }")
-            | {{ wallet.currency }}
+          .flex.items-center.gap-3.pb-3
+            .text-skin-item-base-up.text-2xl.font-semibold
+              | {{ wallet.name }}
+            .p-1.flex-center.rounded.text-skin-icon-base.text-2xs(:style="{ background: wallet.color }")
+              | {{ wallet.currency }}
 
-        .flex
-          Amount(
-            :currency="wallet.currency"
-            :value="total"
-            showBase
-            size="lg"
-            vertical="right"
-          )
+          .flex
+            Amount(
+              :currency="wallet.currency"
+              :value="total"
+              showBase
+              size="lg"
+              vertical="right"
+            )
 
-      .mdi.mdi-pencil-outline.cursor-pointer.rounded-full.mt-3.mr-2.w-16.h-16.flex-center.text-2xl.p-4.hocus_bg-gray-100.dark_hocus_bg-neutral-800(
-        @click="handleEditClick"
-      )
+    template(#actions)
+      UiHeaderLink(@click="handleEditClick")
+        .mdi.mdi-pencil-outline.group-hover_text-white.text-xl
 
   .pb-6
     .px-3.flex

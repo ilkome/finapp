@@ -6,6 +6,4 @@ export const state = () => ({
   height: 0,
   mobile: false,
   pc: false,
-
-  defaultBgColor: '#455a64',
 })

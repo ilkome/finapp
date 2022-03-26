@@ -3,7 +3,8 @@ import useStat from '~/modules/stat/useStat'
 import useStatChart from '~/components/stat/useStatChart'
 import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
+import useWallets from '~/components/wallets/useWallets'
+const { walletsCurrencies } = useWallets()
 
 const { $store } = useNuxtApp()
 const { statPage } = useStatPage()
@@ -36,13 +37,27 @@ const isShowGroupTrns = computed(() => {
   const p2 = statPage.average.total === 0
   return (p1 || p2) && statPage.activeTab !== 'history'
 })
+
+const isShowCurrensiesList = ref(false)
 </script>
 
 <template lang="pug">
 .overflow-y-auto.h-full.pb-8.js_scroll_page
   .max-w-4xl.pb-6
     StatPeriodArrows
-    StatDate
+
+    .pr-3.flex.items-center.justify-between.gap-4
+      StatDate.grow
+      .cursor-pointer.py-2.px-4.text-sm.text-skin-item-base-down.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+        v-if="walletsCurrencies.length > 1"
+        :class="{ 'bg-skin-item-main-active': isShowCurrensiesList }"
+        @click="isShowCurrensiesList = !isShowCurrensiesList"
+      )
+        | {{ $store.state.currencies.base }}
+
+    .pb-4.px-3(v-if="isShowCurrensiesList")
+      WalletsCurrenciesChanger
+
     LazyStatChart(v-if="ui.showMainChart && statPage.isHasTrns")
     .pb-3.lg_flex
       StatViewConfig.lg_order-2.lg_ml-auto
@@ -51,7 +66,7 @@ const isShowGroupTrns = computed(() => {
     .py-6.px-3(v-if="statPage.filter.isShow")
       LazyStatFilter
 
-    .py-3.px-3
+    .py-3.pb-8.px-3
       StatMenu
 
     .py-3.pb-3.px-3(v-if="statPage.activeTab === 'details'")

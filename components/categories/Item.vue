@@ -44,7 +44,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.cursor-pointer.py-2.px-3.relative.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+.cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
   v-if="category"
   :class="{ '!cursor-default !bg-skin-item-main-active': activeItemId === id }"
   @click="onClickItem"
@@ -60,7 +60,7 @@ export default defineComponent({
       class="dark_text-neutral-400"
     ) {{ parentCategory.name }}
 
-    .leading-none.text-sm.text-neutral-700.dark_text-neutral-300 {{ category.name }}
+    .leading-none.text-sm.text-skin-item-base {{ category.name }}
 
   .font-unica.text-md.text-skin-item-base-down(
     v-if="childCategoriesIds.length > 0"

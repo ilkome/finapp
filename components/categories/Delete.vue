@@ -1,21 +1,23 @@
 <script setup lang="ts">
 import { getTrnsIds } from '~/components/trns/functions/getTrns'
-import { random, successEmo } from '~/assets/js/emo'
+import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { removeData } from '~/services/firebase/api'
-import type { WalletID } from '~/components/wallets/types'
+import type { CategoryID } from '~/components/categories/types'
 
 const props = defineProps<{
-  walletId: WalletID
+  categoryId: CategoryID
 }>()
-const { walletId } = toRefs(props)
 
 const { $store, $notify } = useNuxtApp()
 const router = useRouter()
 
+const { categoryId } = toRefs(props)
+const category = computed(() => $store.state.categories.items[categoryId.value])
+
 const trnsItems = computed(() => $store.state.trns.items)
 const trnsIds = computed(() =>
   getTrnsIds({
-    walletsIds: [walletId.value],
+    categoriesIds: category.value?.childIds?.length > 0 ? category.value?.childIds : [categoryId.value],
     trnsItems: trnsItems.value,
   }))
 
@@ -24,31 +26,43 @@ const isShowDeleteConfirm = ref(false)
 // TODO: translate
 const deleteDescText = computed(() => {
   if (trnsIds.value.length > 0)
-    return `It's also will delete ${trnsIds.value.length} trns in this wallet`
+    return `It's also will delete ${trnsIds.value.length} trns in this category.`
   return null
 })
 
+// TODO: translate
 function onClickDelete() {
+  for (const id in $store.state.categories.items) {
+    if ($store.state.categories.items[id].parentId === categoryId.value) {
+      $notify({
+        title: random(errorEmo),
+        type: 'error',
+        text: 'You can not delete category with child categories. Remove child categories first.',
+      })
+      return false
+    }
+  }
+
   isShowDeleteConfirm.value = true
 }
 
 // TODO: translate
 async function onDeleteConfirm() {
-  // Disable reactive to have data when user have already redirected to wallets page
+  // Disable reactive to have data when user have already redirected to categories page
   const uid = JSON.parse(JSON.stringify($store.state.user.user.uid))
   const trnsIdsS = JSON.parse(JSON.stringify(trnsIds.value))
-  const walletIdS = JSON.parse(JSON.stringify(walletId.value))
+  const categoryIdS = JSON.parse(JSON.stringify(categoryId.value))
 
-  router.push('/wallets')
+  router.push('/categories')
 
   // Give some time to complete redirect
   setTimeout(async() => {
     await this.$store.dispatch('trns/deleteTrnsByIds', trnsIdsS)
-    removeData(`users/${uid}/accounts/${walletIdS}`)
+    removeData(`users/${uid}/categories/${categoryIdS}`)
       .then(() => {
         $notify({
           type: 'success',
-          text: trnsIdsS?.length > 0 ? `Success delete wallet with ${trnsIdsS.length} transactions!` : 'Success delete wallet!',
+          text: trnsIdsS?.length > 0 ? `Success delete category with ${trnsIdsS.length} transactions!` : 'Success delete category!',
           title: random(successEmo),
         })
       })

@@ -38,6 +38,22 @@ export default {
     })
   },
 
+  async changeBaseCurrency({ commit }, baseCurrency) {
+    // Rates with date
+    const today = dayjs().startOf('day').valueOf()
+    const ratesBasedOnUsd = await getDataOnce(`ratesUsd/history/${today}`)
+
+    // Convert rates based on USD to user base currency
+    const ratesConvertedToBase = {}
+    for (const id in ratesBasedOnUsd)
+      ratesConvertedToBase[id] = ratesBasedOnUsd[id] / ratesBasedOnUsd[baseCurrency]
+
+    commit('setCurrencies', {
+      base: baseCurrency,
+      rates: ratesConvertedToBase,
+    })
+  },
+
   setBaseCurrency({ rootState, dispatch }, baseCurrency) {
     const uid = rootState.user.user.uid
     saveData(`users/${uid}/settings/baseCurrency`, baseCurrency)

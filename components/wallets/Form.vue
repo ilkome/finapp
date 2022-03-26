@@ -1,53 +1,109 @@
 <script setup lang="ts">
-import { allColors, popularColors } from '~/assets/js/colorsPopular'
+import { allColors } from '~/assets/js/colors'
+import generateId from '~/utils/id'
+import type { WalletForm, WalletID } from '~/components/wallets/types'
 
 const props = defineProps<{
-  walletForm: {
-    name: string
-    color: string
-    currency: string
-  }
+  walletId?: WalletID
+  walletForm: WalletForm
 }>()
-const { walletForm } = toRefs(props)
-const emit = defineEmits(['updateValue', 'onSave'])
+const { walletId, walletForm } = toRefs(props)
+const emit = defineEmits(['updateValue', 'afterSave'])
 
-const { $store } = useNuxtApp()
+const { $store, $notify, nuxt2Context: { i18n } } = useNuxtApp()
+const editWalletId = walletId.value ?? generateId()
+
 const activeTab = ref('data')
 
-// function findWalletWithThisColor(color) {
-//   const walletsItems = $store.state.wallets.items
-//   if (!walletsItems)
-//     return false
+/**
+ * Validate
+ */
+function validate({ values, wallets }) {
+  // name
+  if (!values.name) {
+    $notify({
+      title: '😮',
+      text: i18n.t('wallets.form.name.error'),
+    })
+    return false
+  }
 
-//   const walletIdWithThisColor = Object.keys(walletsItems)?.find(id => walletsItems[id]?.color === color)
-//   if (!walletIdWithThisColor)
-//     return false
+  // currency
+  if (!values.currency) {
+    $notify({
+      title: '😮',
+      text: i18n.t('wallets.form.currency.error'),
+    })
+    return false
+  }
 
-//   return true
-// }
+  for (const id in wallets) {
+    if (wallets[id].name === values.name) {
+      if (editWalletId) {
+        if (editWalletId !== id) {
+          $notify({
+            title: '😮',
+            text: i18n.t('wallets.form.name.exist'),
+          })
+          return false
+        }
+      }
+      else {
+        $notify({
+          title: '😮',
+          text: i18n.t('wallets.form.name.exist'),
+        })
+        return false
+      }
+    }
+  }
+
+  return true
+}
+
+function prepareForm({ values }) {
+  return {
+    color: values.color,
+    countTotal: values.countTotal,
+    currency: values.currency,
+    isCredit: values.isCredit,
+    name: values.name,
+    order: values.order,
+  }
+}
+
+function onSave() {
+  const wallets = $store.state.wallets.items
+
+  const isFormValid = validate({ values: walletForm.value, wallets })
+  if (!isFormValid)
+    return
+
+  const walletsValues = prepareForm({ values: walletForm.value })
+  $store.dispatch('wallets/addWallet', { id: editWalletId, values: walletsValues })
+
+  emit('afterSave')
+}
 </script>
 
 <template lang="pug">
-div
-  //- Menu
-  //-----------------------------------
-  .px-3
-    .overflow-hidden.mb-8.rounded-md.scrollbar.bg-skin-item-main-bg.dark_shadow
-      .overflow-hidden.overflow-x-auto.flex.items-center.text-sm.text-center.max-w-md
-        .cursor-pointer.px-6.py-3.grow.hocus_bg-skin-item-main-hover(
-          :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-300 dark_bg-232323': activeTab === 'data' }"
-          @click="activeTab = 'data'"
-        ) {{ $t('categories.form.data.label') }}
+div(v-if="walletForm")
+  .pb-8.px-3
+    UiTabs
+      UiTabsItem(
+        :isActive="activeTab === 'data'"
+        @click="activeTab = 'data'"
+      ) {{ $t('categories.form.data.label') }}
 
-        .cursor-pointer.px-6.py-3.grow.hocus_bg-skin-item-main-hover(
-          :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-300 dark_bg-232323': activeTab === 'currencies' }"
-          @click="activeTab = 'currencies'"
-        ) {{ $t('wallets.form.currencies.label') }}
+      UiTabsItem(
+        :isActive="activeTab === 'currencies'"
+        @click="activeTab = 'currencies'"
+      ) {{ $t('wallets.form.currencies.label') }}
 
-        .cursor-pointer.px-6.py-3.grow.hocus_bg-skin-item-main-hover(
-          :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-300 dark_bg-232323': activeTab === 'colors' }"
-          @click="activeTab = 'colors'"
-        ) {{ $t('categories.form.colors.label') }}
+      UiTabsItem(
+        :isActive="activeTab === 'colors'"
+        @click="activeTab = 'colors'"
+      ) {{ $t('wallets.form.colors.label') }}
 
   //- Content
   //-----------------------------------
@@ -89,19 +145,6 @@ div
     //- Colors
     //---------------------------------
     template(v-if="activeTab === 'colors'")
-      .pb-2.text-sm.text-skin-item-base-down {{ $t('popularColors') }}
-      .colors
-        .iconItem(
-          v-for="(color, idx) in popularColors"
-          :key="idx"
-          :class="{ _active: color === walletForm.color }"
-          :style="{ background: color === walletForm.color ? color : 'transparent' }"
-          @click="emit('updateValue', 'color', color)"
-        )
-          template(v-if="color")
-            .colorPreview(:style="{ background: color }")
-
-      .pb-2.text-sm.text-skin-item-base-down {{ $t('palette') }}
       .colors
         .iconItem(
           v-for="(color, idx) in allColors"
@@ -121,7 +164,7 @@ div
       SharedButton(
         :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
         :title="$t('wallets.form.save')"
-        @onClick="emit('onSave')"
+        @onClick="onSave"
       )
 </template>
 

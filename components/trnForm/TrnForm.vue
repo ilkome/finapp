@@ -246,7 +246,7 @@ function handleSubmitForm() {
                 .cursor-pointer.relative.flex.items-center.py-2.px-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
                   v-for="(walletItem, walletId) in walletsItemsLimited"
                   :key="walletId"
-                  :class="[{ 'cursor-default bg-skin-item-main-active': $store.state.trnForm.values.walletId === walletId }]"
+                  :class="[{ 'cursor-default !bg-skin-item-main-active': $store.state.trnForm.values.walletId === walletId }]"
                   @click="onClickWallet(walletId)"
                 )
                   .grow.flex-center.gap-x-3
@@ -255,17 +255,19 @@ function handleSubmitForm() {
                       :style="{ background: walletItem.color }"
                       class="mt-[2px]"
                     ) {{ walletItem.name.substring(0, 2) }}
-                    //- Name
-                    .grow.text-sm.text-skin-item-base {{ walletItem.name }}
 
-                  //- Amount
-                  Amount(
-                    :currency="walletItem.currency"
-                    :showBase="false"
-                    :value="walletItem.amount"
-                    alwaysShowSymbol
-                    vertical="right"
-                  )
+                    .grow
+                      //- Name
+                      .text-sm.text-skin-item-base {{ walletItem.name }}
+
+                      //- Amount
+                      Amount(
+                        :currency="walletItem.currency"
+                        :value="walletItem.amount"
+                        :showBase="false"
+                        alwaysShowSymbol
+                        vertical="left"
+                      )
 
           //- Favorite categories
           .pb-7(v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length > 0")

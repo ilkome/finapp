@@ -91,6 +91,7 @@ export default {
     on: 'On',
     ok: 'Ok',
     off: 'Off',
+    add: 'Create',
     edit: 'Edit',
     delete: 'Delete',
     filter: 'Filter',
@@ -177,7 +178,7 @@ export default {
     allTitle: 'All',
     lastUsedTitle: 'Recent',
     favoriteTitle: 'Favorite',
-    createNewTitle: 'Create new category',
+    createNewTitle: 'Create category',
     editTitle: 'Edit category',
     form: {
       name: {
@@ -187,16 +188,15 @@ export default {
         exist: 'Category with same name is exist',
       },
       parent: {
-        no: 'No parent',
+        no: 'Root category',
         label: 'Parent category',
-        placeholder: 'Select parent category',
       },
       colors: {
         label: 'Colors',
         custom: 'Custom color',
       },
-      icons: {
-        label: 'Icons',
+      icon: {
+        label: 'Icon',
       },
       data: {
         label: 'Data',
@@ -323,6 +323,4 @@ export default {
   },
 
   colors: 'Colors',
-  palette: 'Palette',
-  popularColors: 'Popular colors',
 }

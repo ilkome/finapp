@@ -152,7 +152,7 @@ Portal(
               template(#icon)
                 Icon(
                   :icon="category.icon"
-                  :background="category.color || $store.state.ui.defaultBgColor"
+                  :background="category.color"
                   round
                 )
 

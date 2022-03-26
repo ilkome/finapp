@@ -1,445 +1,340 @@
-<script>
+<script setup lang="ts">
+import { allColors } from '~/assets/js/colors'
 import { saveData } from '~/services/firebase/api'
 import generateId from '~/utils/id'
-import colors from '~/assets/js/colors'
 import icons from '~/assets/js/icons'
+import type { CategoryID } from '~/components/categories/types'
 
-function random(icons) {
-  return icons[Math.floor(Math.random() * icons.length)]
+const props = defineProps<{
+  categoryId?: CategoryID
+  categoryForm: {
+    color: string
+    icon: string
+    name: string
+    order: number
+    parentId: string | 0
+    showInLastUsed: boolean
+    showInQuickSelector: boolean
+    showStat: boolean
+  }
+}>()
+const { categoryId, categoryForm } = toRefs(props)
+const emit = defineEmits(['updateValue', 'afterSave'])
+
+const { $store, $notify, nuxt2Context: { i18n } } = useNuxtApp()
+const editCategoryId = categoryId.value ?? generateId()
+
+const activeTab = ref('data')
+const isUpdateChildCategoriesColor = ref(true)
+
+const isAllowChangeParent = computed(() => {
+  const childs = getChildCategoriesIds(categoryId.value)
+  if (childs) return false
+
+  return true
+})
+
+/**
+ * Find category with color
+ *
+ * @param color
+ */
+function findCategoryWithThisColor(color) {
+  const categoriesItems = $store.state.categories.items
+  if (!categoriesItems)
+    return false
+
+  const categoryIdWithThisColor = $store.getters['categories/categoriesRootIds']?.find(id => categoriesItems[id]?.color === color)
+
+  if (categoryIdWithThisColor)
+    return categoriesItems[categoryIdWithThisColor]?.icon
 }
 
-export default {
-  setup(_props, { emit }) {
-    const closed = () => {
-      emit('onClose')
+/**
+ * Get child categoreies ids
+ *
+ * @param categoryId
+ */
+function getChildCategoriesIds(categoryId) {
+  if (!categoryId) return false
+
+  const category = $store.state.categories.items[categoryId]
+  const categoriesItems = $store.state.categories.items
+  const ids = []
+
+  if (category?.parentId === 0) {
+    for (const id in categoriesItems) {
+      if (categoriesItems[id].parentId === categoryId)
+        ids.push(id)
     }
+  }
 
-    return {
-      closed,
-    }
-  },
+  if (ids.length === 0)
+    return false
 
-  data() {
-    return {
-      originalParentId: null,
-      showParents: false,
-      showColors: false,
-      showIcons: false,
-      applyChildColor: true,
-      category: {
-        color: '',
-        icon: '',
-        name: null,
-        parentId: 0,
-        showInLastUsed: true,
-        showInQuickSelector: false,
-        showStat: true,
-      },
-    }
-  },
+  return ids
+}
 
-  computed: {
-    categoryId() {
-      return this.$store.state.categories.editId
-    },
-  },
+/**
+ * Select parent
+ * @param parentId
+ */
+function onParentSelect(parentId) {
+  emit('updateValue', 'parentId', parentId)
 
-  watch: {
-    categoryId: {
-      handler(categoryId) {
-        if (categoryId) {
-          this.category = {
-            ...this.category,
-            ...this.$store.state.categories.items[this.categoryId],
-          }
+  // Change category color when patent category changed
+  const parentCategoryColor = $store.state.categories.items[parentId]?.color
+  if (parentCategoryColor)
+    emit('updateValue', 'color', parentCategoryColor)
+}
 
-          this.originalParentId = this.category.parentId
+/**
+ * Validate
+ */
+function validate({ values, categoriesItems }) {
+  if (!values.name) {
+    $notify({
+      title: '😮',
+      text: i18n.t('categories.form.name.error'),
+    })
+    return false
+  }
+
+  for (const id in categoriesItems) {
+    if (categoriesItems[id].name === values.name && categoriesItems[id].parentId === values.parentId) {
+      if (editCategoryId) {
+        if (editCategoryId !== id) {
+          $notify({
+            title: '😮',
+            text: i18n.t('categories.form.name.exist'),
+          })
+          return false
         }
-      },
-      immediate: true,
-    },
-  },
-
-  created() {
-    this.colors = colors
-    this.icons = icons
-    if (!this.$store.state.categories.editId) {
-      this.category.icon = random(random(icons))
-      this.category.color = colors[Math.floor(Math.random() * colors.length)]
-    }
-  },
-
-  beforeUnmount() {
-    this.$store.commit('categories/setCategoryEditId', null)
-  },
-
-  methods: {
-    handleColorSelect(color) {
-      this.category.color = color
-      this.showColors = false
-    },
-
-    handleIconSelect(icon) {
-      this.category.icon = icon
-      this.showIcons = false
-    },
-
-    handleParenCategorySelect(categoryId) {
-      const parentCategory = this.$store.state.categories.items[categoryId]
-      if (parentCategory)
-        this.category.color = parentCategory.color
-
-      this.category.parentId = categoryId
-      this.showParents = false
-    },
-
-    handleSubmit() {
-      if (this.validateForm()) {
-        const uid = this.$store.state.user.user.uid
-        const id = this.categoryId || generateId()
-        const categories = this.$store.state.categories.items
-
-        const categoriesValues = {
-          order: this.category.order || null,
-          color: this.category.color,
-          icon: this.category.icon,
-          name: this.category.name,
-          childIds: this.category.childIds || [],
-          parentId: this.category.parentId,
-          showInLastUsed: this.category.showInLastUsed,
-          showInQuickSelector: this.category.showInQuickSelector,
-          showStat: true,
-        }
-
-        // ad or remove from parent
-        if (this.originalParentId !== this.category.parentId) {
-          // remove from old parent
-          if (this.originalParentId !== 0) {
-            const originalParent = categories[this.originalParentId]
-            if (originalParent) {
-              saveData(`users/${uid}/categories/${this.originalParentId}`, {
-                ...originalParent,
-                childIds: originalParent.childIds.filter(cId => cId !== id),
-              })
-            }
-          }
-
-          // add to new parent
-          if (this.category.parentId !== 0) {
-            const parenCategory = categories[this.category.parentId]
-            const childIds = parenCategory.childIds
-              ? [...parenCategory.childIds.filter(cId => cId !== id), id]
-              : [id]
-
-            saveData(`users/${uid}/categories/${this.category.parentId}`, {
-              ...parenCategory,
-              childIds,
-            })
-          }
-        }
-
-        const childIds = this.$store.getters['categories/getChildCategoriesIds'](id)
-
-        // update category
-        saveData(`users/${uid}/categories/${id}`, {
-          ...categoriesValues,
-          childIds,
-        })
-
-        // update child categories colors
-        if (this.applyChildColor) {
-          for (const childId of childIds) {
-            const category = categories[childId]
-            saveData(`users/${uid}/categories/${childId}`, {
-              ...category,
-              color: categoriesValues.color,
-            })
-          }
-        }
-
-        this.$store.commit('categories/setCategoryEditId', null)
-
-        if (this.$listeners.callback)
-          this.$listeners.callback()
       }
-    },
-
-    validateForm() {
-      const categories = this.$store.state.categories.items
-      if (!this.category.name) {
-        this.$notify({
+      else {
+        $notify({
           title: '😮',
-          text: this.$t('categories.form.name.error'),
+          text: i18n.t('categories.form.name.exist'),
         })
         return false
       }
+    }
+  }
 
-      for (const categoryId in categories) {
-        if (categories[categoryId].name === this.category.name && categories[categoryId].parentId === this.category.parentId) {
-          if (this.categoryId) {
-            if (this.categoryId !== categoryId) {
-              this.$notify({
-                title: '😮',
-                text: this.$t('categories.form.name.exist'),
-              })
-              return false
-            }
-          }
-          else {
-            this.$notify({
-              title: '😮',
-              text: this.$t('categories.form.name.exist'),
-            })
-            return false
-          }
-        }
-      }
+  return true
+}
 
-      return true
-    },
-  },
+function prepareForm({ values, categoryChildIds }) {
+  return {
+    color: values.color,
+    icon: values.icon,
+    name: values.name,
+    order: values.order,
+    parentId: values.parentId,
+    showInLastUsed: categoryChildIds ? false : values.showInLastUsed,
+    showInQuickSelector: categoryChildIds ? false : values.showInQuickSelector,
+    showStat: categoryChildIds ? false : values.showStat,
+  }
+}
+
+async function onSave() {
+  const categoriesItems = $store.state.categories.items
+
+  const isFormValid = validate({ values: categoryForm.value, categoriesItems })
+  if (!isFormValid)
+    return
+
+  const uid = $store.state.user.user.uid
+  const categoryChildIds = getChildCategoriesIds(editCategoryId)
+  const categoryValues = prepareForm({ values: categoryForm.value, categoryChildIds })
+
+  // Update category
+  await saveData(`users/${uid}/categories/${editCategoryId}`, categoryValues)
+
+  // Update child categories colors
+  if (isUpdateChildCategoriesColor.value && categoryChildIds) {
+    for (const childId of categoryChildIds)
+      await saveData(`users/${uid}/categories/${childId}/color`, categoryValues.color)
+  }
+
+  emit('afterSave')
 }
 </script>
 
 <template lang="pug">
-.form
-  .header
-    template(v-if="!categoryId") {{ $t('categories.createNewTitle') }}
-    template(v-else) {{ $t('categories.editTitle') }}
+div
+  .pb-8.px-3
+    UiTabs
+      UiTabsItem(
+        :isActive="activeTab === 'data'"
+        @click="activeTab = 'data'"
+      ) {{ $t('categories.form.data.label') }}
 
-  .content
-    .form-line._text
-      .inputText
-        .inputText__label {{ $t('categories.form.name.label') }}
-        input(
-          type="text"
+      UiTabsItem(
+        v-if="$store.getters['categories/hasCategories']"
+        :isActive="activeTab === 'parent'"
+        @click="activeTab = 'parent'"
+      ) {{ $t('categories.form.parent.label') }}
+
+      UiTabsItem(
+        :isActive="activeTab === 'colors'"
+        @click="activeTab = 'colors'"
+      ) {{ $t('categories.form.colors.label') }}
+
+      UiTabsItem(
+        :isActive="activeTab === 'icon'"
+        @click="activeTab = 'icon'"
+      ) {{ $t('categories.form.icon.label') }}
+
+  //- Content
+  //-----------------------------------
+  .px-3.max-w-md
+    //- Data
+    //-----------------------------------
+    template(v-if="activeTab === 'data'")
+      .mb-4
+        .pb-2.text-skin-item-base-down.text-sm.leading-none {{ $t('wallets.form.name.label') }}
+        input.w-full.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-skin-item-base.bg-skin-item-main-bg.border.border-solid.border-skin-item-main-hover.placeholder_text-skin-item-base-down.transition.ease-in-out.focus_text-skin-item-base-up.focus_bg-skin-item-main-hover.focus_border-blue3.focus_outline-none(
           :placeholder="$t('categories.form.name.placeholder')"
-          v-model="category.name"
-        ).inputText__value
-
-    //- can not change root category if inside this category already has some categories
-    template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0 && $store.getters['categories/hasCategories']")
-      .form__btns__i._full
-        .form-line(@click="showParents = true")
-          .inputModal._flex
-            .inputModal__content
-              template(v-if="category.parentId !== 0")
-                .inputModal__icon
-                  div(
-                    :class="$store.state.categories.items[category.parentId].icon"
-                    :style="{ color: $store.state.categories.items[category.parentId].color }"
-                  )
-                .inputModal__name {{ $store.state.categories.items[category.parentId].name }}
-              template(v-else)
-                .inputModal__icon: .mdi.mdi-folder-star
-                .inputModal__name {{ $t('categories.form.parent.no') }}
-            .inputModal__label {{ $t('categories.form.parent.label') }}
-
-    .form__btns
-      //- Colors
-      .form__btns__i.cursor-pointer
-        .form-line(@click="showColors = true")
-          .inputModal._flex
-            .inputModal__value: .inputModal__color(:style="{ background: category.color }")
-            .inputModal__label {{ $t('categories.form.colors.label') }}
-
-      //- icons
-      .form__btns__i.cursor-pointer
-        .form-line(@click="showIcons = true")
-          .inputModal._flex
-            .inputModal__icon: div(:class="category.icon", :style="{ color: category.color }")
-            .inputModal__label {{ $t('categories.form.icons.label') }}
-
-    template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length")
-      .form-line._p0._clean
-        SharedContextMenuItem(
-          :checkboxValue="applyChildColor"
-          :title="$t('categories.form.childColor')"
-          showCheckbox
-          @onClick="applyChildColor = !applyChildColor"
+          :value="categoryForm.name"
+          type="text"
+          @input="event => emit('updateValue', 'name', event.target.value)"
         )
 
-    template(v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0")
-      SharedContextMenuItem(
-        :checkboxValue="category.showInLastUsed"
+      LazySharedContextMenuItem(
+        v-if="getChildCategoriesIds(categoryId)"
+        :checkboxValue="isUpdateChildCategoriesColor"
+        :title="$t('categories.form.childColor')"
+        showCheckbox
+        @onClick="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
+      )
+      LazySharedContextMenuItem(
+        v-if="!getChildCategoriesIds(categoryId)"
+        :checkboxValue="categoryForm.showInLastUsed"
         :title="$t('categories.form.lastUsed')"
         showCheckbox
-        @onClick="category.showInLastUsed = !category.showInLastUsed"
+        @onClick="categoryForm.showInLastUsed = !categoryForm.showInLastUsed"
       )
       SharedContextMenuItem(
-        :checkboxValue="category.showInQuickSelector"
+        v-if="!getChildCategoriesIds(categoryId)"
+        :checkboxValue="categoryForm.showInQuickSelector"
         :title="$t('categories.form.quickSelector')"
         showCheckbox
-        @onClick="category.showInQuickSelector = !category.showInQuickSelector"
+        @onClick="categoryForm.showInQuickSelector = !categoryForm.showInQuickSelector"
       )
 
-    .col(style="padding-top: 16px; text-align: center")
+    //- Colors
+    //---------------------------------
+    template(v-if="activeTab === 'colors'")
+      div
+        div
+          .pb-1(
+            v-for="(colorsGroup, groupIdx) in allColors"
+            :key="groupIdx"
+          )
+            .colors
+              .iconItem(
+                v-for="(color, idx) in colorsGroup"
+                :key="idx"
+                :class="{ _active: color === categoryForm.color, 'pointer-events-none': !color }"
+                :style="{ background: color === categoryForm.color ? color : 'transparent' }"
+                @click="emit('updateValue', 'color', color)"
+              )
+                template(v-if="findCategoryWithThisColor(color)")
+                  Icon(
+                    :icon="color === categoryForm.color ? categoryForm.icon : findCategoryWithThisColor(color)"
+                    :background="color"
+                    round
+                  )
+                template(v-else-if="color === categoryForm.color")
+                  Icon(
+                    :icon="categoryForm.icon"
+                    background="transparent"
+                    big
+                  )
+                template(v-else-if="color")
+                  .colorPreview(:style="{ background: color }")
+
+        .pb-2.text-sm.text-skin-item-base-down {{ $t('wallets.form.colors.custom') }}
+        input.cursor-pointer.w-full.h-12.p-0.border-0(v-model="categoryForm.color" type="color")
+
+    //- Parent
+    //---------------------------------
+    template(v-if="activeTab === 'parent'")
+      template(v-if="!isAllowChangeParent")
+        //- TODO: translate
+        .p-4 You can not change parent category because edited category has childs categories.
+
+      template(v-if="isAllowChangeParent")
+        .cursor-pointer.mb-4.py-3.px-3.gap-x-3.flex-center.rounded-md.text-center.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+          :class="{ '!cursor-default !bg-skin-item-main-active': categoryForm.parentId === 0 }"
+          @click="emit('updateValue', 'parentId', 0)"
+        ) {{ $t('categories.form.parent.no') }}
+
+        CategoriesList(
+          :activeItemId="categoryForm.parentId"
+          :ids="$store.getters['categories/categoriesForBeParent'].filter(cId => cId !== categoryId)"
+          :slider="() => ({})"
+          class="!gap-x-1"
+          @onClick="onParentSelect"
+        )
+
+    //- Icon
+    //---------------------------------
+    template(v-if="activeTab === 'icon'")
+      .flex.flex-wrap.pb-8.gap-3(v-for="iconGroup in icons")
+        .cursor-pointer.w-10.h-10.rounded-full.flex-center.border-2.border-transparent(
+          v-for="icon in iconGroup"
+          :key="icon"
+          :class="{ 'border-skin-accent-base': icon === categoryForm.icon }"
+          :style="{ background: categoryForm.color }"
+          @click="emit('updateValue', 'icon', icon)"
+        )
+          .text-2xl.text-skin-icon-base(:class="icon")
+
+    //- Save
+    //---------------------------------
+    .pt-4.pb-6
       SharedButton(
         :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
-        :title="$t('categories.form.save')"
-        @onClick="handleSubmit"
+        :title="$t('wallets.form.save')"
+        @onClick="onSave"
       )
-
-  //- Colors
-  LazyBaseBottomSheet(
-    v-if="showColors"
-    :maxHeight="$store.state.ui.height"
-    @closed="showColors = false"
-  )
-    template(#handler="{ close }")
-      BaseBottomSheetClose(@onClick="close")
-
-    template(#header)
-      .header
-        .header__title {{ $t('colors') }}
-
-    template(#default="{ close }")
-      .p-3.bg-white(class="dark_bg-dark3")
-        .inputText
-          .inputText__colors
-            .colors
-              .colorItem(
-                :class="{ _active: category.color === color }"
-                :style="{ background: color }"
-                v-for="color in colors"
-                @click="handleColorSelect(color)"
-              )
-        .customColor
-          .customColor__title {{ $t('categories.form.colors.custom') }}
-          input.customColor__value(v-model="category.color" type="color")
-
-  //- Icons
-  LazyBaseBottomSheet(
-    v-if="showIcons"
-    :maxHeight="$store.state.ui.height"
-    @onClose="showIcons = false"
-  )
-    template(#handler="{ close }")
-      BaseBottomSheetClose(@onClick="close")
-
-    template(#header)
-      .header
-        .header__title {{ $t('categories.form.icons.label') }}
-
-    template(#default="{ close }")
-      .p-3.bg-white(class="dark_bg-dark3")
-        .icons
-          .icons__group(
-            v-for="iconGroup in icons"
-          )
-            .iconItem(
-              v-for="icon in iconGroup"
-              :class="{ _active: category.icon === icon }"
-              :style="{ color: category.color }"
-              @click="handleIconSelect(icon)"
-            )
-              div(:class="icon")
 </template>
 
 <style lang="stylus" scoped>
-.content
-  +media(600px)
-    border-radius 0 0 $m7 $m7
+.colorPreview
+  display flex
+  align-items center
+  justify-content center
+  width 90%
+  height 90%
+  border-radius 50%
 
-.header
-  padding $m8
-  flex-grow 1
-  fontFamilyNunito()
-  color var(--c-font-2)
-  font-size 28px
-  font-weight 700
-  text-align center
-  background var(--c-bg-3)
-  border-radius $m7 $m7 0 0
-
-.icons
-  &__group
-    display grid
-    grid-template-columns repeat(auto-fill, minmax(50px, 1fr))
-    padding-bottom 20px
+.colors
+  display grid
+  grid-template-columns repeat(8, minmax(auto, 1fr))
+  padding-bottom $m8
+  &:last-child
+    padding-bottom 0
 
 .iconItem
   display flex
   align-items center
   justify-content center
-  min-height 50px
-  padding 8px
-  font-size 30px
+  width 40px
+  height 40px
+  max-width 40px
+  max-height 40px
+  font-size 24px
+  border-radius 50%
+
+  +media-hover()
+    &:not(._empty)
+      cursor pointer
+      background var(--c-item-bd-hover)
 
   &._active
-    background var(--c-bg-2)
-    border-radius 4px
-    box-shadow 0 2px 10px 0 var(--shaddow)
-
-.customColor
-  margin (- $m7)
-  margin-top 0
-  padding $m7
-  background var(--c-bg-3)
-
-  @media $media-laptop
-    margin (- $m9)
-    margin-top 0
-    padding $m9
-
-  &__title
-    padding-bottom $m6
-    color var(--c-font-4)
-
-  &__value
-    width 100%
-    height 40px
-    margin 0
     padding 0
-    border 0
-
-.padding-bottom
-  padding-bottom $m8
-
-.content
-  padding $m8
-  background var(--c-bg-3)
-  +media(600px)
-    border-radius 0 0 $m7 $m7
-
-.form__actions
-  @media $media-phone
-    text-align center
-
-.form__btns
-  display grid
-  grid-template-columns repeat(2, 1fr)
-  grid-column-gap $m9
-  grid-row-gap $m9
-  padding-bottom $m9
-
-  @media $media-laptop
-    grid-column-gap $m10
-    grid-row-gap $m10
-
-  &__i._full
-    grid-column 1 / -1
-
-  .form-line
-    display flex
-    align-items center
-    justify-content center
-    height 100%
-    height 56px
-    margin-bottom 0
-
-.inputModal
-  &._flex
-    flex 1
-    display flex
-    align-items center
-    justify-content space-between
-
-  &__content
-    display flex
-
-  &__label
-    margin 0
-    padding 0
-    font-size 10px
+    background var(--c-item-bd-hover)
 </style>

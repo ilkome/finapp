@@ -9,3 +9,12 @@ export interface WalletItem {
 export interface WalletItemWithAmount extends WalletItem {
   amount: number
 }
+
+export interface WalletForm {
+  color: string
+  countTotal: boolean
+  currency: string
+  isCredit: boolean
+  name: string
+  order: number
+}

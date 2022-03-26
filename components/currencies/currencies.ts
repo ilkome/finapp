@@ -1,5 +1,9 @@
+import type { Currency } from '~/components/currencies/types'
 
-export const currencies = [{
+export const currencies: {
+  code: Currency
+  name: string
+}[] = [{
   code: 'BTC',
   name: 'Bitcoin',
 }, {

@@ -7,10 +7,4 @@ export default {
     }
     state.items = freezedItems
   },
-
-  setWalletEditId(state, id) {
-    state.editId === id
-      ? state.editId = null
-      : state.editId = id
-  },
 }

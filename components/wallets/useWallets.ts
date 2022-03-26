@@ -1,5 +1,6 @@
 import type { ComputedRef } from '@vue/composition-api'
 import type { WalletID, WalletItemWithAmount } from '~/components/wallets/types'
+import type { Currency } from '~/components/currencies/types'
 
 export default function useWallets() {
   const { $store } = useNuxtApp()
@@ -14,7 +15,7 @@ export default function useWallets() {
    * Wallets items sorted
    *
    */
-  const walletsItemsSorted: ComputedRef<Record<WalletID, WalletItemWithAmount>> = computed(() => {
+  const walletsItemsSorted = computed<Record<WalletID, WalletItemWithAmount>>(() => {
     const walletsIdsSorted: WalletID[] = $store.getters['wallets/walletsSortedIds']
     let wallets: Record<WalletID, WalletItemWithAmount> = {}
 
@@ -31,8 +32,24 @@ export default function useWallets() {
     return wallets
   })
 
+  /**
+   * Wallets currencies
+   */
+  const walletsCurrencies = computed(() => {
+    const currencies: Currency[] = []
+
+    for (const walletId in walletsItemsSorted.value) {
+      const walletCurrency = walletsItemsSorted.value[walletId].currency
+      if (!currencies.includes(walletCurrency))
+        currencies.push(walletCurrency)
+    }
+
+    return currencies
+  })
+
   return {
     walletsIdsSorted,
     walletsItemsSorted,
+    walletsCurrencies,
   }
 }

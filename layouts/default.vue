@@ -71,7 +71,7 @@ onMounted(() => {
   .h-full.grid(
     class="lg_grid-cols-[auto_1fr]"
   )
-    .hidden.overflow-hidden.h-full.lg_block
+    .hidden.overflow-hidden.h-full.w-72.lg_block
       LayoutSidebar
 
     .overflow-hidden.h-full.grid.lg_px-8

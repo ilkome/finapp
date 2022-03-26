@@ -15,26 +15,25 @@ const wallet = computed(() => walletsItemsSorted.value[props.walletId])
   v-if="wallet"
   @click="emit('click')"
 )
-  .grow
-    .flex-center.gap-x-3
-      //- Icon
-      .w-6.h-6.rounded-md.flex-center.text-skin-icon-base.text-xs.leading-none(
-        :style="{ background: wallet.color }"
-        class="mt-[2px]"
-      ) {{ wallet.name.substring(0, 2) }}
+  .grow.flex-center.gap-x-3
+    //- Icon
+    .w-6.h-6.rounded-md.flex-center.text-skin-icon-base.text-xs.leading-none(
+      :style="{ background: wallet.color }"
+      class="mt-[2px]"
+    ) {{ wallet.name.substring(0, 2) }}
 
-      .grow
-        //- Name
-        .grow.text-sm.text-skin-item-base {{ wallet.name }}
+    .grow
+      //- Name
+      .text-sm.text-skin-item-base {{ wallet.name }}
 
-        //- Amount
-        Amount(
-          :currency="wallet.currency"
-          :value="wallet.amount"
-          :showBase="false"
-          alwaysShowSymbol
-          vertical="left"
-        )
+      //- Amount
+      Amount(
+        :currency="wallet.currency"
+        :value="wallet.amount"
+        :showBase="false"
+        alwaysShowSymbol
+        vertical="left"
+      )
 
   .mdi.mdi-dots-vertical.-mr-1.text-lg.text-skin-item-base-down
 </template>

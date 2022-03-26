@@ -1,4 +1,5 @@
 <script>
+// TODO: move code to components
 import pkg from '~/package'
 
 export default {
@@ -29,9 +30,7 @@ export default {
 </script>
 
 <template lang="pug">
-.overflow-y-auto.h-full.max-w-3xl(
-  class="md_pb-[52px] pb-[44px] lg_pb-0"
-)
+UiPage
   .mb-6.py-6.px-3.text-skin-item-base-up.text-2xl.leading-none.font-nunito.font-semibold
     | {{ $t('settings.title') }}
 
