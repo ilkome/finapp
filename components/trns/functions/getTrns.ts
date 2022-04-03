@@ -11,6 +11,8 @@ interface Props {
   trnType?: TrnType
   periodName?: PeriodName
   date?: Date
+  fromDate?: number
+  untilDate?: number
 }
 
 export const getTrnsIds = (props: Props) => {
@@ -25,7 +27,7 @@ export const getTrnsIds = (props: Props) => {
     })
   }
 
-  // Date
+  // @deprecated: Date
   if (props?.date && props?.periodName !== 'all') {
     const filterDate = dayjs(props.date)
     const filterPeriod = props.periodName
@@ -36,6 +38,14 @@ export const getTrnsIds = (props: Props) => {
       (props.trnsItems[trnId].date >= fromDate)
       && (props.trnsItems[trnId].date <= untilDate))
   }
+
+  // From date
+  if (props.fromDate)
+    trnsIds = trnsIds.filter(trnId => (props.trnsItems[trnId].date >= props.fromDate))
+
+  // Until date
+  if (props.untilDate)
+    trnsIds = trnsIds.filter(trnId => (props.trnsItems[trnId].date <= props.untilDate))
 
   // Wallet
   if (props.walletsIds?.length > 0) {
