@@ -17,6 +17,7 @@ Portal(
 )
   BaseBottomSheet(
     :maxHeight="height"
+    :height="height"
     insideClass="bg-skin-layout-main"
     @closed="$store.commit('currencies/hideBaseCurrenciesModal')"
   )

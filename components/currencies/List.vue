@@ -7,19 +7,57 @@ const props = defineProps<{
 const { active } = toRefs(props)
 
 const emit = defineEmits(['onSelect'])
+
+const searchInput = ref('')
+const list = computed(() => {
+  console.log(searchInput.value)
+  if (searchInput.value) {
+    return currencies.filter(currency =>
+      currency.name.toLowerCase().includes(searchInput.value.toLowerCase()
+      || currency.code.toLowerCase().includes(searchInput.value.toLowerCase())))
+  }
+
+  return currencies
+})
 </script>
 
 <template lang="pug">
-div
-  .cursor-pointer.border-b.border-gray-50.dark_border-neutral-800.p-3.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
-    v-for="(item, currency) in $store.state.currencies.rates"
-    :key="item"
-    :class="{ '_active cursor-default text-blue3 dark_text-blue1': currency === active }"
-    @click="emit('onSelect', currency, close)"
-  )
-    .flex.items-center
-      .w-14 {{ currency }}
-      .text-sm(
-        v-if="currencies.find(c => c.code === currency)"
-      ) {{ currencies.find(c => c.code === currency).name }}
+.overflow-hidden.h-full.grid(
+  class="grid-rows-[auto,1fr]"
+)
+  .pb-2.px-3
+    input.w-full.m-0.py-2.px-3.rounded-lg.text-base.font-normal.text-skin-item-base.bg-skin-item-main-bg.border.border-solid.border-skin-item-main-hover.placeholder_text-skin-item-base-down.transition.ease-in-out.focus_text-skin-item-base-up.focus_bg-skin-item-main-hover.focus_border-blue3.focus_outline-none(
+      placeholder="Search..."
+      v-model="searchInput"
+      type="text"
+    )
+
+  .overflow-y-auto.mt-3.pb-3.px-3.flex.flex-col.gap-1
+    template(v-if="list.length === 0")
+      .py-3.text-center {{ $t('notFound') }}
+
+    template(v-if="list.length > 0")
+      .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+        v-for="currency in list"
+        :key="currency.code"
+        :class="{ '!cursor-default text-skin-item-base-up !bg-skin-item-main-active': currency.code === active }"
+        @click="emit('onSelect', currency.code, close)"
+      )
+        .flex.items-center
+          .w-14 {{ currency.code }}
+          .text-sm(
+            v-if="currencies.find(c => c.code === currency.code)"
+          ) {{ currencies.find(c => c.code === currency.code).name }}
 </template>
+
+<i18n lang="json5">
+{
+  "en": {
+    "notFound": "Currency not found...",
+  },
+
+  "ru": {
+    "notFound": "Валюта не найдена..."
+  },
+}
+</i18n>
