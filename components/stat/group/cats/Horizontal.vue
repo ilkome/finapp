@@ -27,7 +27,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.space-y-2.flex-col.flex.pb-6(v-if="isShow")
+.pb-6.flex.flex-col.gap-2(v-if="isShow")
   StatItem(
     v-for="categoryId in statPage.current[typeText].categoriesIds"
     :key="categoryId"

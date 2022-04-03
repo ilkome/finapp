@@ -59,6 +59,7 @@ const isShowCurrensiesList = ref(false)
       WalletsCurrenciesChanger
 
     LazyStatChart(v-if="ui.showMainChart && statPage.isHasTrns")
+
     .pb-3.lg_flex
       StatViewConfig.lg_order-2.lg_ml-auto
       StatPeriods.lg_order-1
@@ -66,7 +67,7 @@ const isShowCurrensiesList = ref(false)
     .py-6.px-3(v-if="statPage.filter.isShow")
       LazyStatFilter
 
-    .py-3.pb-8.px-3
+    .py-3.pb-4.px-3
       StatMenu
 
     .py-3.pb-3.px-3(v-if="statPage.activeTab === 'details'")
