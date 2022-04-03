@@ -1,32 +1,31 @@
-<script>
-// TODO: move code to components
-import pkg from '~/package'
+<script setup lang="ts">
+import pkg from '~/package.json'
+import { currencies } from '~/components/currencies/currencies'
 
-export default {
-  data() {
-    return {
-      confirmCreateDemo: false,
-      confirmRemoveUserData: false,
-      version: pkg.version,
-    }
-  },
+const { $store } = useNuxtApp()
+const route = useRoute()
+const router = useRouter()
 
+const confirmRemoveUserData = ref(false)
+const version = pkg.version
+
+function removeUserData() {
+  confirmRemoveUserData.value = false
+  $store.dispatch('user/removeUserData')
+
+  if (route.name !== 'welcome')
+    router.push('/welcome')
+}
+</script>
+
+<script lang="ts">
+export default defineComponent({
   head() {
     return {
       title: this.$t('settings.title'),
     }
   },
-
-  methods: {
-    removeUserData() {
-      this.confirmRemoveUserData = false
-      this.$store.dispatch('user/removeUserData')
-
-      if (this.$route.name !== 'welcome')
-        this.$router.push('/welcome')
-    },
-  },
-}
+})
 </script>
 
 <template lang="pug">
@@ -43,8 +42,7 @@ UiPage
         .pb-4.text-skin-item-base-down.text-xs.leading-1 {{ $t('currency.descBase') }}
 
         SharedButton._bdb(
-          :title="$t('currency.selectBaseTitle')"
-          icon="mdi mdi-currency-usd"
+          :title="currencies.find(c => c.code === $store.state.currencies.base).name"
           isShowDots
           @onClick="$store.commit('currencies/showBaseCurrenciesModal')"
         )
