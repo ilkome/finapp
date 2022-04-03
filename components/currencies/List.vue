@@ -32,7 +32,7 @@ const list = computed(() => {
       type="text"
     )
 
-  .overflow-y-auto.mt-3.pb-3.px-3.flex.flex-col.gap-1
+  .overflow-y-auto.mt-3.pb-3.px-3.flex.flex-col.gap-1.scrollerBlock
     template(v-if="list.length === 0")
       .py-3.text-center {{ $t('notFound') }}
 

@@ -8,6 +8,7 @@ export default defineComponent({
     maxHeight: { type: Number, default: null },
     height: { type: Number, default: null },
     insideClass: { type: String, default: null },
+    isScrollerBlock: { type: Boolean, default: true },
   },
 
   setup(props, { emit }) {
@@ -370,7 +371,7 @@ export default defineComponent({
       slot(name="header" :close="close")
 
     .drug__inside(
-      :class="[insideClass, { _scroll: !!maxHeightScroll, scrollerBlock: !!maxHeightScroll }]"
+      :class="[insideClass, { _scroll: !!maxHeightScroll, scrollerBlock: (!!maxHeightScroll && isScrollerBlock) }]"
       :style="{ maxHeight: maxHeight && maxHeightScroll, height: height && heightScroll }"
     )
       .handler(ref="handler")
