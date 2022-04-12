@@ -10,7 +10,11 @@ useLazyAsyncData('', async() => {
   await initUI()
 })
 
-const keepAliveInclude = ['index', 'PagesIndex', 'PagesWalletsIndex', 'PagesCategoriesIndex', 'PagesHistory']
+const keepAliveInclude = [
+  'pages/categories.vue',
+  'pages/dashboard.vue',
+  'pages/wallets.vue',
+]
 
 /**
  * Update modal

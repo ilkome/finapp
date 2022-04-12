@@ -32,7 +32,8 @@ export default defineComponent({
           ? childs = incomesRef.value?.querySelectorAll('.js-getWidth')
           : childs = expensesRef.value?.querySelectorAll('.js-getWidth')
 
-        if (!childs) return
+        if (!childs)
+          return
 
         for (const key in childs) {
           if (childs[key].clientWidth > minWidth)
@@ -56,8 +57,8 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.pb-5(v-if="isShow")
-  .items.grid(:ref="`${typeText}Ref`")
+.my-6.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800(v-if="isShow")
+  .items.grid.py-2(:ref="`${typeText}Ref`")
     LazyStatItemRound(
       v-if="isShow"
       v-for="categoryId in statPage.current[typeText].categoriesIds"

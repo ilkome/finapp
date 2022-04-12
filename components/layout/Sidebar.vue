@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import type { WalletID } from '~/components/wallets/types'
+import useFilter from '~/modules/filter/useFilter'
+
+const { $store } = useNuxtApp()
+const { setFilterWalletsId } = useFilter()
+
+function setWalletFilter(walletId: WalletID) {
+  if ($store.state.filter.walletsIds.includes(walletId)) {
+    $store.commit('filter/removeFilterWalletId', walletId)
+    return
+  }
+
+  setFilterWalletsId(walletId)
+  $store.commit('filter/setFilterDateNow')
+  $store.dispatch('ui/setActiveTabStat', 'details')
+}
+</script>
+
 <template lang="pug" scoped>
 .overflow-y-auto.h-full.bg-skin-layout-main-up
   .p-4.px-5.flex.items-center.justify-between
@@ -31,6 +50,7 @@
               .w-6.h-6.rounded-md.flex-center.text-skin-icon-base.text-xs.leading-none(
                 :style="{ background: walletItem.color }"
                 class="mt-[2px]"
+                @click.stop="setWalletFilter(walletId)"
               ) {{ walletItem.name.substring(0, 2) }}
               //- Name
               .grow.text-sm.text-skin-item-base {{ walletItem.name }}

@@ -32,7 +32,7 @@ export default {
 </script>
 
 <template lang="pug">
-.statItemRound(
+.statItemRound.hocus_bg-skin-item-main-hover(
   v-if="category"
   :class="{ _prevStat: total === 0 }"
   ref="item"
@@ -78,8 +78,6 @@ export default {
   padding $m6
   border 1px solid transparent
   border-radius $m5
-  +media-hover()
-    background var(--c-item2-bg-hover)
 
   &._prevStat
     opacity .5

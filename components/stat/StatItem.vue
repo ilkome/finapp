@@ -76,8 +76,8 @@ export default {
   :class="{ _active: isShowInside }"
   @click="toogleShowInside"
 )
-  .ins.py-2.px-3.space-x-3.rounded-md.justify-between.items-center.flex.border.bg-white2(
-    :class="['z-[9] dark_bg-dark4 hocus_bg-neutral-100 dark_hocus_bg-neutral-800', { _active: isShowInside }, { 'dark_border-neutral-800 cursor-n-resize shadow-xl rounded-b-none': isShowInside }, { 'border-transparent cursor-s-resize shadow-sm': !isShowInside }]"
+  .ins.py-2.px-3.space-x-3.rounded-md.justify-between.items-center.flex.border.dark_border-neutral-800.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+    :class="['z-[9]', { _active: isShowInside }, { 'cursor-n-resize shadow-xl rounded-b-none': isShowInside }, { 'cursor-s-resize shadow-sm': !isShowInside }]"
   )
     //- Icon
     .cursor-pointer.text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(

@@ -12,7 +12,7 @@ export default defineComponent({
     const { statPage } = useStatPage()
     const { ui } = useUIView()
 
-    const isShow = computed(() => ui.showCatsVerticalChart && statPage.current[typeText.value]?.categoriesIds?.length)
+    const isShow = computed(() => ui.showPieChart && statPage.current[typeText.value]?.categoriesIds?.length)
 
     return {
       isShow,
@@ -22,8 +22,9 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-LazyStatCatsPeriodCatsChart(
-  v-if="isShow"
-  :type="typeText"
-)
+.my-6(v-if="isShow")
+  LazyStatChartPie(
+    v-if="isShow"
+    :amountType="typeText"
+  )
 </template>

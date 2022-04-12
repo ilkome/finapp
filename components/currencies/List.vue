@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { currencies } from '~/components/currencies/currencies'
+import useWallets from '~/components/wallets/useWallets'
+const { walletsCurrencies } = useWallets()
 
 const props = defineProps<{
   active: string
@@ -10,7 +12,6 @@ const emit = defineEmits(['onSelect'])
 
 const searchInput = ref('')
 const list = computed(() => {
-  console.log(searchInput.value)
   if (searchInput.value) {
     return currencies.filter(currency =>
       currency.name.toLowerCase().includes(searchInput.value.toLowerCase()
@@ -35,6 +36,21 @@ const list = computed(() => {
   .overflow-y-auto.mt-3.pb-3.px-3.flex.flex-col.gap-1.scrollerBlock
     template(v-if="list.length === 0")
       .py-3.text-center {{ $t('notFound') }}
+
+    template(v-if="!searchInput")
+      .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+        v-for="currencyCode in walletsCurrencies"
+        :key="currencyCode"
+        :class="{ '!cursor-default text-skin-item-base-up !bg-skin-item-main-active': currencyCode === active }"
+        @click="emit('onSelect', currencyCode, close)"
+      )
+        .flex.items-center
+          .w-14 {{ currencyCode }}
+          .text-sm(
+            v-if="currencies.find(c => c.code === currencyCode)"
+          ) {{ currencies.find(c => c.code === currencyCode).name }}
+
+      .my-2
 
     template(v-if="list.length > 0")
       .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(

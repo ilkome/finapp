@@ -13,9 +13,8 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.py-3(class="max-w-[420px]")
-  .pb-2
-    .statTitle {{ $t('trns.inPeriodTitle') }}
+.my-4(class="max-w-[420px]")
+  .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('trns.inPeriodTitle') }}
 
   TrnsList(
     :incomes="statPage.activeTab === 'incomes'"

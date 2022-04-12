@@ -1,6 +1,6 @@
 {
   "name": "finapp",
-  "version": "3.6.2",
+  "version": "3.6.3",
   "scripts": {
     "dev": "cross-env NUXT_HOST=0.0.0.0 PORT=3010 nuxi dev",
     "build": "nuxi generate",
@@ -15,13 +15,13 @@
   "dependencies": {
     "@nuxtjs/i18n": "^7.2.1",
     "@simonwep/pickr": "1.8.2",
-    "@vueuse/core": "^8.2.3",
+    "@vueuse/core": "^8.2.4",
     "axios": "0.26.1",
     "core-js": "3.21.1",
     "currency.js": "2.0.4",
     "dayjs": "1.11.0",
     "firebase": "9.6.10",
-    "highcharts": "9.3.3",
+    "highcharts": "10.0.0",
     "highcharts-vue": "1.4.0",
     "localforage": "1.10.0",
     "nuxt-edge": "latest",
@@ -61,6 +61,6 @@
     "typescript": "4.6.3",
     "unplugin-vue2-script-setup": "^0.10.2",
     "vinyl-ftp": "0.6.1",
-    "vitest": "^0.8.3"
+    "vitest": "^0.8.4"
   }
 }

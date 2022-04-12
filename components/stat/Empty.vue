@@ -13,21 +13,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.noStat.overflow-hidden.py-8.px-3(v-if="isEmptyStat")
-  .noStat__title {{ $t('stat.empty') }}
-  .noStat__desc {{ $t('stat.emptyDesc') }}
+.my-6.px-3.text-center(v-if="isEmptyStat")
+  .text-xl.text-skin-item-base {{ $t('stat.empty') }}
+  .text-sm.text-skin-item-base-down {{ $t('stat.emptyDesc') }}
 </template>
-
-<style lang="stylus" scoped>
-.noStat
-  color var(--c-font-3)
-  text-align center
-
-  &__title
-    padding-bottom $m6
-    font-size 22px
-
-  &__desc
-    color var(--c-font-4)
-    font-size 14px
-</style>

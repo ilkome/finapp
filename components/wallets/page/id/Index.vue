@@ -10,7 +10,8 @@ const router = useRouter()
 
 const walletId = computed(() => route.params.id)
 const wallet = computed(() => $store.state.wallets.items[walletId.value])
-if (!wallet.value) router.replace('/wallets')
+if (!wallet.value)
+  router.replace('/wallets')
 
 const total = computed(() => $store.getters['wallets/walletsTotal'][walletId.value].base)
 const filter = reactive({ trnType: null })

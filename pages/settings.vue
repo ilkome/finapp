@@ -6,15 +6,30 @@ const { $store } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
 
-const confirmRemoveUserData = ref(false)
 const version = pkg.version
 
+/**
+ * Remove user date
+ */
+const confirmRemoveUserData = ref(false)
 function removeUserData() {
   confirmRemoveUserData.value = false
   $store.dispatch('user/removeUserData')
 
   if (route.name !== 'welcome')
     router.push('/welcome')
+}
+
+/**
+ * Generate demo
+ */
+const confirmCreateDemo = ref(false)
+async function generateDemo() {
+  confirmCreateDemo.value = false
+  await $store.dispatch('demo/createDemo')
+
+  if (route.name !== 'index')
+    router.push('/')
 }
 </script>
 
@@ -33,7 +48,7 @@ UiPage
   .mb-6.py-6.px-3.text-skin-item-base-up.text-2xl.leading-none.font-nunito.font-semibold
     | {{ $t('settings.title') }}
 
-  .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2
+  .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2.md_gap-x-12
     div
       //- Currency
       .pb-12
@@ -89,7 +104,7 @@ UiPage
           )
 
     //- About
-    .pb-12
+    .pb-12.md_justify-self-end
       About
       .pt-4.text-skin-item-base-down.text-xs {{ $t('app.version') }} {{ version }}
 

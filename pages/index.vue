@@ -1,15 +1,9 @@
 <script>
 export default {
-  head() {
-    return {
-      title: this.$t('stat.title'),
-    }
+  fetch({ store, redirect }) {
+    store.state.user?.user
+      ? redirect('/dashboard')
+      : redirect('/login')
   },
 }
 </script>
-
-<template lang="pug">
-.overflow-hidden.h-full
-  LazyStat(v-if="$store.getters['trns/hasTrns']")
-  LazyStatNoStatActions(v-if="!$store.getters['trns/hasTrns']")
-</template>

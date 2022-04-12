@@ -56,12 +56,12 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.statCatsItem.swiper-no-swiping(
+.statCatsItem.swiper-no-swiping.active.hocus_bg-skin-item-main-hover(
   @click="setFilterCatsId(categoryId)"
   @mouseenter="handleMouseEnter"
   @mouseleave="handleMouseLeave"
 )
-  .statCatsItem__graph
+  .statCatsItem__graph.bg-skin-item-main-active
     .statCatsItem__graph__in(:style="styles")
       .statCatsItem__graph__amount {{ amount }}
 
@@ -79,10 +79,6 @@ export default defineComponent({
     padding 8px
     padding-top 8px
     margin 8px 0 -8px -8px
-    background var(--c-bg-7)
-
-    /.light &
-      background var(--c-bg-1)
 
   &__graph
     position relative
@@ -91,7 +87,6 @@ export default defineComponent({
     margin 0 auto
     margin-bottom -3px
     border-radius $m4
-    background var(--c-bg-5)
 
     &__amount
       position absolute

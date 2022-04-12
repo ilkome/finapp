@@ -18,7 +18,7 @@ div
       .flex.items-center.gap-6
         //- Income
         div
-          .statTitle.pb-2 {{ $t('money.expense') }}
+          .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('money.expense') }}
           Amount(
             :currency="$store.state.currencies.base"
             :type="0"
@@ -29,7 +29,7 @@ div
 
         //- Expense
         div
-          .statTitle.pb-2 {{ $t('money.income') }}
+          .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('money.income') }}
           Amount(
             :currency="$store.state.currencies.base"
             :type="1"
@@ -40,7 +40,7 @@ div
 
         //- Sum
         div
-          .statTitle.pb-2 {{ $t('money.sum') }}
+          .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('money.sum') }}
           Amount(
             :currency="$store.state.currencies.base"
             :type="3"

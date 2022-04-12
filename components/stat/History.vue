@@ -23,29 +23,10 @@ const trnsIds = computed(() => {
 })
 </script>
 
-<script lang="ts">
-export default defineComponent({
-  head() {
-    return {
-      title: this.$t('trns.history'),
-    }
-  },
-})
-</script>
-
 <template lang="pug">
-.h-full.overflow.overflow-x-auto
-  .py-6.px-3.font-nunito.text-neutral-800.dark_text-white.text-2xl.leading-none.font-semibold
-    | {{ $t('trns.history') }}
-
-  .px-3
-    .pb-8(v-if="statPage.filter.isShow")
-      LazyStatFilter
-
-    //- History
-    TrnsHistory(
-      :trnsIds="trnsIds"
-      :trnType="filterTrnType"
-      @setFilterTrnType="value => filterTrnType = value"
-    )
+TrnsHistory(
+  :trnsIds="trnsIds"
+  :trnType="filterTrnType"
+  @setFilterTrnType="value => filterTrnType = value"
+)
 </template>

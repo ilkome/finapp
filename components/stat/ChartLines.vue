@@ -1,9 +1,10 @@
 <script lang="ts">
 import { Chart } from 'highcharts-vue'
+import { getCatsIds } from '~/components/categories/getCategories'
+import { getTrnsIds } from '~/components/trns/functions/getTrns'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
 
 export default defineComponent({
   components: { Chart },
@@ -100,25 +101,11 @@ export default defineComponent({
       const expensesData = []
       const totalData = []
 
-      // TODO: shared functions
-      function getCatsIds(catsIds) {
-        const ids = []
-
-        for (const catId of catsIds) {
-          const category = catsItems[catId]
-          category?.childIds
-            ? ids.push(...category.childIds)
-            : ids.push(catId)
-        }
-
-        return ids
-      }
-
       for (let index = 0; index < periodsToShow; index++) {
         // count total period
         const periodDate = this.$day().startOf(periodName).subtract(index, periodName).valueOf()
 
-        const categoriesIds = storeFilter.catsIds.length > 0 ? getCatsIds(storeFilter.catsIds) : null
+        const categoriesIds = storeFilter.catsIds.length > 0 ? getCatsIds(storeFilter.catsIds, catsItems) : null
         const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
 
         const trnsIds = getTrnsIds({
@@ -132,10 +119,14 @@ export default defineComponent({
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
         let format = 'MM'
-        if (periodName === 'day') format = 'D.MM'
-        if (periodName === 'week') format = 'D MMM'
-        if (periodName === 'month') format = 'MMM'
-        if (periodName === 'year') format = 'YYYY'
+        if (periodName === 'day')
+          format = 'D.MM'
+        if (periodName === 'week')
+          format = 'D MMM'
+        if (periodName === 'month')
+          format = 'MMM'
+        if (periodName === 'year')
+          format = 'YYYY'
         const name = this.$day().startOf(periodName).subtract(index, periodName).format(format)
 
         // Incomes
@@ -281,6 +272,7 @@ export default defineComponent({
 <template lang="pug">
 .chart(@click="onClickChart")
   Chart(
+    :key="$route.fullPath"
     :options="chartData"
     :callback="chartCallback"
   )

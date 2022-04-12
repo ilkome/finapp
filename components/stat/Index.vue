@@ -38,44 +38,54 @@ const isShowGroupTrns = computed(() => {
   return (p1 || p2) && statPage.activeTab !== 'history'
 })
 
-const isShowCurrensiesList = ref(false)
+const chartKeyDirtyFix = ref('show')
+onActivated(async() => {
+  await nextTick()
+  chartKeyDirtyFix.value = 'hide'
+})
+onDeactivated(async() => {
+  await nextTick()
+  chartKeyDirtyFix.value = 'show'
+})
 </script>
 
 <template lang="pug">
 .overflow-y-auto.h-full.pb-8.js_scroll_page
   .max-w-4xl.pb-6
-    StatPeriodArrows
-
-    .pr-3.flex.items-center.justify-between.gap-4
+    .px-2.flex.items-center.justify-between.gap-4.sticky.top-0.z-20.backdrop-blur(
+      class="bg-white/70 dark_bg-dark3/70"
+    )
       StatDate.grow
-      .cursor-pointer.py-2.px-4.text-sm.text-skin-item-base-down.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+      .cursor-pointer.py-2.px-4.text-xs.text-skin-item-base-down.rounded-md.hocus_bg-skin-item-main-hover(
         v-if="walletsCurrencies.length > 1"
-        :class="{ 'bg-skin-item-main-active': isShowCurrensiesList }"
-        @click="isShowCurrensiesList = !isShowCurrensiesList"
+        @click="$store.commit('currencies/showBaseCurrenciesModal')"
       )
         | {{ $store.state.currencies.base }}
 
-    .pb-4.px-3(v-if="isShowCurrensiesList")
-      WalletsCurrenciesChanger
+    .mx-2.mb-4.lg_mb-8.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800
+      LazyStatChart(
+        :key="chartKeyDirtyFix"
+        v-if="ui.showMainChart && statPage.isHasTrns"
+      )
+      .sm_flex.justify-between.px-2.pb-2
+        StatPeriods
+        StatChartConfig
 
-    LazyStatChart(v-if="ui.showMainChart && statPage.isHasTrns")
+    .my-4.mx-2.p-3.rounded-lg.bg-skin-item-main-active(
+      v-if="statPage.filter.isShow"
+    )
+      LazyStatFilter(v-if="statPage.filter.isShow")
 
-    .pb-3.lg_flex
-      StatViewConfig.lg_order-2.lg_ml-auto
-      StatPeriods.lg_order-1
+    .px-2.flex.flex-wrap.items-center.justify-between.gap-x-6
+      StatSum
+      StatViewConfig
 
-    .py-6.px-3(v-if="statPage.filter.isShow")
-      LazyStatFilter
-
-    .py-3.pb-4.px-3
+    .pb-4.px-2
       StatMenu
 
-    .py-3.pb-3.px-3(v-if="statPage.activeTab === 'details'")
-      StatSumTotal
-
-    template(v-if="statPage.activeTab !== 'trns'")
+    template(v-if="statPage.activeTab !== 'trns' && statPage.activeTab !== 'history'")
       //- Loop throw incomes / expenses
-      .py-0.px-3
+      .mb-8.md_mb-4.px-2
         .grid.grid-cols-1.gap-y-5(class="md_grid-cols-2 md_gap-x-20")
           div(
             v-for="item in moneyTypes"
@@ -83,26 +93,47 @@ const isShowCurrensiesList = ref(false)
             :key="item.id"
             class="max-w-[420px]"
           )
-            StatGroupSum(:typeText="item.id")
-            StatGroupEmpty(:typeText="item.id")
-            StatGroupCatsPie(:typeText="item.id")
-            StatGroupCatsVertical(:typeText="item.id")
-            StatGroupCatsRound(:typeText="item.id")
-            StatGroupCatsHorizontal(:typeText="item.id")
+            StatSumGroup(
+              v-if="statPage.activeTab === 'details' || statPage.activeTab === 'balance'"
+              :typeText="item.id"
+            )
+
+            template(v-if="statPage.activeTab !== 'balance'")
+              StatGroupEmpty(:typeText="item.id")
+              StatGroupPie(:typeText="item.id")
+              StatGroupVertical(:typeText="item.id")
+              StatGroupRound(:typeText="item.id")
+              StatGroupHorizontal(:typeText="item.id")
+
+            template(v-if="statPage.activeTab === 'balance'")
+              StatGroupBudget(:typeText="item.id")
 
           LazyStatGroupTrns(v-if="isShowGroupTrns && !isEmptyStat")
 
-      .px-3
+      .px-2
         StatEmpty
         .grid.md_grid-cols-2.md_gap-x-20
           LazyStatTrns(v-if="isShowTrns && !isEmptyStat")
 
     //- Trns
     template(v-if="statPage.activeTab === 'trns'")
-      .px-3
+      .px-2
         .grid.md_grid-cols-2.md_gap-x-20
           TrnsList(
             :size="50"
             classNames="md_grid-cols-1"
           )
+
+    //- History
+    template(v-if="statPage.activeTab === 'history'")
+      .my-4.px-2
+        StatHistory
 </template>
+
+<style lang="stylus">
+.firefoxBackdropFix
+  @supports (not (-webkit-backdrop-filter: none)) and (not (backdrop-filter: none))
+    background theme('colors.dark3') !important
+    /.light &
+      background theme('colors.white') !important
+</style>

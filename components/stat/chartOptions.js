@@ -3,7 +3,7 @@ export default {
     backgroundColor: 'transparent',
     with: '100%',
     height: '40%',
-    spacing: [5, 0, 0, 0],
+    spacing: [10, 10, 0, 10],
     type: 'column',
     panning: true,
     panKey: 'shift',

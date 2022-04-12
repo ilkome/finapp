@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import useMenuData from '~/modules/menu/useMenuData'
-
 const { $store } = useNuxtApp()
-const { onClick, checkIsActive } = useMenuData()
 const activeTab = computed(() => $store.state.ui.activeTab)
 </script>
 
