@@ -4,9 +4,6 @@ export const currencies: {
   code: Currency
   name: string
 }[] = [{
-  code: 'BTC',
-  name: 'Bitcoin',
-}, {
   code: 'CNH',
   name: 'Chinese Yuan',
 }, {

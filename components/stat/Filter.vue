@@ -9,7 +9,8 @@ const filterWalletsItems = computed(() => {
 
   for (const walletId of $store.state.filter.walletsIds) {
     const wallet = $store.state.wallets.items[walletId]
-    if (!wallet) break
+    if (!wallet)
+      break
     wallets = { ...wallets, [walletId]: wallet }
   }
 
@@ -21,7 +22,8 @@ const filterCatsItems = computed(() => {
 
   for (const catId of $store.state.filter.catsIds) {
     const cat = $store.state.categories.items[catId]
-    if (!cat) break
+    if (!cat)
+      break
     cats = { ...cats, [catId]: cat }
   }
 
@@ -36,26 +38,22 @@ const onClearFilter = () => {
   $store.commit('filter/clearFilterCatsIds')
   $store.commit('filter/clearFilterWalletsIds')
 }
-
-function clearWalletFilter(walletId) {
-  $store.commit('filter/removeFilterWalletId', walletId)
-}
 </script>
 
 <template lang="pug">
-.overflow-hidden.rounded(v-if="filterCatsItems || filterWalletsItems")
-  .statTitle(class="!pb-3") {{ $t('base.filter') }}
-  .safe.scrollbar.overflow-hidden.overflow-x-auto.flex.items-center
+.overflow-hidden(v-if="filterCatsItems || filterWalletsItems")
+  .pb-3.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('base.filter') }}
+  .safe.scrollbar.overflow-hidden.overflow-x-auto.flex.flex-wrap.items-center.gap-4
     //- Wallet
     template(v-if="filterWalletsItems")
-      .cursor-pointer.relative.flex.flex-col.items-center.mr-3.py-2.px-3.bg-dark4.rounded-md.shadow.hocus_shadow-lg.hocus_bg-neutral-800(
+      .overflow-hidden.cursor-pointer.relative.py-1.px-3.flex.flex-col.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover.shadow.hocus_shadow-lg(
         v-for="(walletItem, walletId) in filterWalletsItems"
         :key="walletId"
-        @click="clearWalletFilter(walletId)"
+        @click="$store.commit('filter/removeFilterWalletId', walletId)"
       )
         .absolute.top-0.left-0.w-full(:style="{ height: '2px', background: walletItem.color }")
         .pr-2
-          .-mb-1.text-xs {{ walletItem.name }}
+          .text-xs {{ walletItem.name }}
           .text-sm
             Amount(
               :alwaysShowSymbol="false"
@@ -69,7 +67,7 @@ function clearWalletFilter(walletId) {
 
     //- Category
     template(v-if="filterCatsItems")
-      .cursor-pointer.relative.mr-3.p-1.px-2.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.shadow.hocus_shadow-lg.hocus_bg-neutral-800(
+      .cursor-pointer.relative.py-1.px-3.flex.items-center.gap-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover.shadow.hocus_shadow-lg(
         v-for="(catItem, catId) in filterCatsItems"
         :key="catId"
         @click="onClickCategory(catId)"
@@ -85,8 +83,7 @@ function clearWalletFilter(walletId) {
         .mdi.mdi-close.opacity-70.text-lg.leading-none
 
     //- Clear
-    .cursor-pointer.p-1.px-2.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
-        class="dark_text-white/60"
+    .cursor-pointer.py-1.px-3.flex.items-center.gap-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover.shadow.hocus_shadow-lg(
         @click="onClearFilter"
       )
         .mdi.mdi-filter-remove-outline.text-2xl

@@ -1,92 +1,97 @@
-<script>
+<script setup lang="ts">
 import useAmount from '~/components/amount/useAmount'
 
-export default {
-  props: {
-    isShowCredits: { type: Boolean, default: false },
-    isShowSavings: { type: Boolean, default: false },
+const props = withDefaults(defineProps<{
+  isShowCredits?: boolean
+  isShowSavings?: boolean
+}>(), {
+  isShowCredits: false,
+  isShowSavings: false,
+})
+
+const { $store } = useNuxtApp()
+const { getAmountInBaseCurrency } = useAmount()
+
+const totalInWallets = computed(() => {
+  const walletsItems = $store.state.wallets.items
+  const walletsTotal = $store.getters['wallets/walletsTotal']
+  const total = {
+    counted: 0,
+    savings: 0,
+    credits: 0,
+  }
+
+  for (const walletId in walletsItems) {
+    let walletTotal = 0
+    if (walletsItems[walletId].currency === $store.state.currencies.base) {
+      walletTotal = walletsTotal[walletId].base
+    }
+    else {
+      walletTotal = getAmountInBaseCurrency({
+        amount: walletsTotal[walletId].base,
+        currency: walletsItems[walletId].currency,
+        noFormat: true,
+      })
+    }
+
+    if (walletsItems[walletId].countTotal)
+      total.counted = total.counted + walletTotal
+    else if (walletsItems[walletId].isCredit)
+      total.credits = total.credits + walletTotal
+    else
+      total.savings = total.savings + walletTotal
+  }
+  return total
+})
+
+const counts = computed(() => ({
+  credit: {
+    titleId: 'credits',
+    isShow: props.isShowCredits && totalInWallets.value.credits !== 0,
+    value: totalInWallets.value.credits,
   },
-
-  setup() {
-    const { getAmountInBaseCurrency } = useAmount()
-    return { getAmountInBaseCurrency }
+  savings: {
+    titleId: 'savings',
+    isShow: totalInWallets.value.savings !== 0 && props.isShowSavings,
+    value: totalInWallets.value.savings,
   },
-
-  computed: {
-    totalInWallets() {
-      const walletsItems = this.$store.state.wallets.items
-      const walletsTotal = this.$store.getters['wallets/walletsTotal']
-      const total = {
-        counted: 0,
-        savings: 0,
-        credits: 0,
-      }
-
-      for (const walletId in walletsItems) {
-        let walletTotal = 0
-        if (walletsItems[walletId].currency === this.$store.state.currencies.base) {
-          walletTotal = walletsTotal[walletId].base
-        }
-        else {
-          walletTotal = this.getAmountInBaseCurrency({
-            amount: walletsTotal[walletId].base,
-            currency: walletsItems[walletId].currency,
-            noFormat: true,
-          })
-        }
-
-        if (walletsItems[walletId].countTotal)
-          total.counted = total.counted + walletTotal
-        else if (walletsItems[walletId].isCredit)
-          total.credits = total.credits + walletTotal
-        else
-          total.savings = total.savings + walletTotal
-      }
-      return total
-    },
+  withdraw: {
+    titleId: 'withdrawal',
+    isShow: totalInWallets.value.counted !== totalInWallets.value.counted + totalInWallets.value.savings - Math.abs(totalInWallets.value.credits),
+    value: totalInWallets.value.counted,
+    icon: 'UiIconWalletWithdrawal',
   },
-}
+  total: {
+    titleId: 'total',
+    isShow: true,
+    value: totalInWallets.value.counted + totalInWallets.value.savings,
+  },
+  withCredit: {
+    titleId: 'withCredit',
+    isShow: totalInWallets.value.credits !== 0,
+    value: totalInWallets.value.counted + totalInWallets.value.savings - Math.abs(totalInWallets.value.credits),
+  },
+}))
 </script>
 
 <template lang="pug">
-.grid.gap-y-1.gap-x-2.2sm_grid-cols-2.md_gap-x-6(
+.px-3.py-1.bg-skin-item-main-bg.rounded-md(
   v-if="$store.getters['wallets/hasWallets']"
 )
-  //- Credits
-  .flex.items-center.bg-gray-50.dark_bg-dark5.py-2.px-3.rounded-md(v-if="isShowCredits && totalInWallets.credits !== 0")
-    .grow.text-sm.leading-none {{ $t('credits') }}
-    Amount(
-      :currency="$store.state.currencies.base"
-      :value="totalInWallets.credits"
-      vertical="right"
+  template(
+    v-for="item in counts"
+  )
+    .py-2.flex.items-center.border-b.border-skin-item-main-hover.last_border-0(
+      v-if="item.isShow"
     )
+      .grow.flex.items-center.gap-3
+        .text-sm.leading-none {{ $t(item.titleId) }}
 
-  //- Savings
-  .flex.items-center.bg-gray-50.dark_bg-dark5.py-2.px-3.rounded-md(v-if="totalInWallets.savings !== 0 && isShowSavings")
-    .grow.text-sm.leading-none {{ $t('savings') }}
-    Amount(
-      :currency="$store.state.currencies.base"
-      :value="totalInWallets.savings"
-      vertical="right"
-    )
-
-  //- Total
-  .flex.items-center.bg-gray-50.dark_bg-dark5.py-2.px-3.rounded-md
-    .grow.text-sm.leading-none {{ $t('total') }}
-    Amount(
-      :currency="$store.state.currencies.base"
-      :value="totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)"
-      vertical="right"
-    )
-
-  //- Withdrawal
-  .flex.items-center.bg-gray-50.dark_bg-dark5.py-2.px-3.rounded-md(v-if="totalInWallets.counted !== totalInWallets.counted + totalInWallets.savings - Math.abs(totalInWallets.credits)")
-    .grow.text-sm.leading-none {{ $t('withdrawal') }}
-    Amount(
-      :currency="$store.state.currencies.base"
-      :value="totalInWallets.counted"
-      vertical="right"
-    )
+      Amount(
+        :currency="$store.state.currencies.base"
+        :value="item.value"
+        vertical="right"
+      )
 </template>
 
 <i18n lang="json5">
@@ -94,12 +99,14 @@ export default {
   "en": {
     "withdrawal": "Withdrawal",
     "credits": "Credits",
+    "withCredit": "Total with credit",
     "savings": "Savings",
     "total": "Total"
   },
   "ru": {
     "withdrawal": "Доступные",
     "credits": "Кредиты",
+    "withCredit": "Всего с учетом кредита",
     "savings": "Вложения",
     "total": "Всего"
   }

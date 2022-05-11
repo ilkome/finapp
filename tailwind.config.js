@@ -27,6 +27,7 @@ module.exports = {
         income: '#2cad22',
         white1: '#fdfdfd',
         white2: '#fcfcfd',
+        white3: '#f9fafb',
 
         skin: {
           accent: {

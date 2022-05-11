@@ -12,9 +12,9 @@ const wallet = computed(() => $store.state.wallets.items[walletId.value])
 
 const walletForm = ref<WalletForm>({
   color: wallet.value?.color || random(allColors),
-  countTotal: wallet.value?.countTotal || true,
+  countTotal: wallet.value?.countTotal,
   currency: wallet.value?.currency || 'RUB',
-  isCredit: wallet.value?.isCredit || false,
+  isCredit: wallet.value?.isCredit,
   name: wallet.value?.name || null,
   order: wallet.value?.order || 1,
 })

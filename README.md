@@ -33,13 +33,13 @@ This is Finapp 3. For the 2.x see the [2 branch](https://github.com/ilkome/finap
 
 ``` bash
 # clone the repo
-$ git clone https://github.com/ilkome/finapp.git finapp
+git clone https://github.com/ilkome/finapp.git finapp
 
 # go into app's directory
-$ cd finapp
+cd finapp
 
-# install app's dependencies
-$ npm install
+# install dependencies
+yarn
 ```
 
 ### Firebase setup
@@ -83,12 +83,20 @@ storageBucket: 'YOUR_CONFIG',
 messagingSenderId: 'YOUR_CONFIG'
 ```
 
+### Open exchange rates setup
+- Get your App ID at [openexchangerates.org](https://openexchangerates.org/signup/free)
+- Rename `.env.example` to `.env`
+- Set your App ID in `.env`
+``` bash
+OPEN_EXCHANGE_RATES=app_id
+```
+
 ## Development
 
 ### Compiles and hot-reloads
 
 ``` bash
-npm run dev
+yarn dev
 ```
 
 ## Production
@@ -98,19 +106,19 @@ npm run dev
 This will give you `build` folder. You can upload files from this folder to any shared hosting.
 
 ``` bash
-npm run build
+yarn build
 ```
 
-## Upload to server
+## Upload static files to server
 
 You can add your FTP config in app's directory `ftp.config.js`
 
 ``` bash
 # upload all files from dist folder
-$ npm run upload
+yarn upload
 
 # upload only css, js, html files from dist folder
-$ npm run upload-min
+yarn upload-min
 ```
 
 # 🤪 Stay In Touch

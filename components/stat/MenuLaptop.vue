@@ -30,8 +30,14 @@ UiTabs
   ) {{ $t('trns.shortTitle') }}
 
   UiTabsItem(
-    @click="$router.push('history')"
+    :isActive="activeTabStat === 'history'"
+    @click="onClickStatMenu('history')"
   )
     span {{ $t('trns.history') }}
-    span.mdi.mdi-open-in-new.ml-1
+
+  UiTabsItem(
+    v-if="$store.getters['user/isTester']"
+    :isActive="activeTabStat === 'balance'"
+    @click="onClickStatMenu('balance')"
+  ) Balance
 </template>

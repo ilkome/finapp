@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { currencies } from '~/components/currencies/currencies'
+import useWallets from '~/components/wallets/useWallets'
+const { walletsCurrencies } = useWallets()
 
 const props = defineProps<{
   active: string
@@ -10,11 +12,10 @@ const emit = defineEmits(['onSelect'])
 
 const searchInput = ref('')
 const list = computed(() => {
-  console.log(searchInput.value)
   if (searchInput.value) {
+    const search = searchInput.value.toLowerCase()
     return currencies.filter(currency =>
-      currency.name.toLowerCase().includes(searchInput.value.toLowerCase()
-      || currency.code.toLowerCase().includes(searchInput.value.toLowerCase())))
+      currency.name.toLowerCase().includes(search) || currency.code.toLowerCase().includes(search))
   }
 
   return currencies
@@ -36,6 +37,21 @@ const list = computed(() => {
     template(v-if="list.length === 0")
       .py-3.text-center {{ $t('notFound') }}
 
+    template(v-if="!searchInput")
+      .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+        v-for="currencyCode in walletsCurrencies"
+        :key="currencyCode"
+        :class="{ '!cursor-default text-skin-item-base-up !bg-skin-item-main-active': currencyCode === active }"
+        @click="emit('onSelect', currencyCode, close)"
+      )
+        .flex.items-center
+          .w-14 {{ currencyCode }}
+          .text-sm(
+            v-if="currencies.find(c => c.code === currencyCode)"
+          ) {{ currencies.find(c => c.code === currencyCode).name }}
+
+      .my-2
+
     template(v-if="list.length > 0")
       .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
         v-for="currency in list"
@@ -45,9 +61,7 @@ const list = computed(() => {
       )
         .flex.items-center
           .w-14 {{ currency.code }}
-          .text-sm(
-            v-if="currencies.find(c => c.code === currency.code)"
-          ) {{ currencies.find(c => c.code === currency.code).name }}
+          .text-sm {{ currency.name }}
 </template>
 
 <i18n lang="json5">

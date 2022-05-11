@@ -1,9 +1,10 @@
 <script lang="ts">
 import { Chart } from 'highcharts-vue'
+import { getCatsIds } from '~/components/categories/getCategories'
+import { getTrnsIds } from '~/components/trns/functions/getTrns'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
 
 export default defineComponent({
   components: { Chart },
@@ -33,7 +34,7 @@ export default defineComponent({
     const chartObj = ref({})
     const chartCallback = (v) => { chartObj.value = v }
 
-    const onClickChart = async(event) => {
+    const onClickChart = async (event) => {
       const chart = chartObj.value
       if (!chart)
         return
@@ -52,7 +53,7 @@ export default defineComponent({
       }, 100)
     }
 
-    watch(() => $store.state.filter.date, async() => {
+    watch(() => $store.state.filter.date, async () => {
       await nextTick()
 
       const chart = chartObj.value
@@ -86,6 +87,7 @@ export default defineComponent({
       const periodName = this.filterPeriodNameAllReplacedToYear
       const chartPeriods = this.$store.state.chart.periods
       const trnsItems = this.$store.state.trns.items
+      const allTrnsIds = Object.keys(trnsItems)
       const catsItems = this.$store.state.categories.items
       const storeFilter = this.$store.state.filter
 
@@ -99,26 +101,17 @@ export default defineComponent({
       const incomesData = []
       const expensesData = []
       const totalData = []
+      const balanceData = []
 
-      // TODO: shared functions
-      function getCatsIds(catsIds) {
-        const ids = []
-
-        for (const catId of catsIds) {
-          const category = catsItems[catId]
-          category?.childIds
-            ? ids.push(...category.childIds)
-            : ids.push(catId)
-        }
-
-        return ids
-      }
+      const dateStart = this.$day().endOf(periodName).subtract(periodsToShow, periodName).valueOf()
+      const trnsIdsBeforeDate = allTrnsIds.filter(id => trnsItems[id].date < dateStart)
+      const totalStart = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIdsBeforeDate, true)
 
       for (let index = 0; index < periodsToShow; index++) {
         // count total period
         const periodDate = this.$day().startOf(periodName).subtract(index, periodName).valueOf()
 
-        const categoriesIds = storeFilter.catsIds.length > 0 ? getCatsIds(storeFilter.catsIds) : null
+        const categoriesIds = storeFilter.catsIds.length > 0 ? getCatsIds(storeFilter.catsIds, catsItems) : null
         const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
 
         const trnsIds = getTrnsIds({
@@ -129,13 +122,27 @@ export default defineComponent({
           date: periodDate,
         })
 
+        const allTrnsIds = getTrnsIds({
+          trnsItems,
+          periodName,
+          date: periodDate,
+        })
+
+        const balanceDateStart = this.$day().endOf(periodName).subtract(index, periodName).valueOf()
+        const balanceTrnsIds = allTrnsIds.filter(id => trnsItems[id].date > dateStart && trnsItems[id].date < balanceDateStart)
+        const balanceTotal = this.$store.getters['trns/getTotalOfTrnsIds'](balanceTrnsIds, true)
+
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
         let format = 'MM'
-        if (periodName === 'day') format = 'D.MM'
-        if (periodName === 'week') format = 'D MMM'
-        if (periodName === 'month') format = 'MMM'
-        if (periodName === 'year') format = 'YYYY'
+        if (periodName === 'day')
+          format = 'D.MM'
+        if (periodName === 'week')
+          format = 'D MMM'
+        if (periodName === 'month')
+          format = 'MMM'
+        if (periodName === 'year')
+          format = 'YYYY'
         const name = this.$day().startOf(periodName).subtract(index, periodName).format(format)
 
         // Incomes
@@ -148,11 +155,20 @@ export default defineComponent({
           date: periodDate,
           y: Number(`${periodTotal.expenses.toFixed()}`),
         })
+
         // Total
         totalData.unshift({
           date: periodDate,
           y: Number(`${(periodTotal.total).toFixed()}`),
         })
+
+        // Balance
+        totalStart.total = totalStart.total + Number(`${(balanceTotal.total).toFixed()}`)
+        balanceData.unshift({
+          date: periodDate,
+          y: totalStart.total,
+        })
+
         categories.unshift(name)
       }
 
@@ -177,6 +193,7 @@ export default defineComponent({
 
       const data = {
         series: [{
+          // Income
           zIndex: 3,
           visible: periodsTotalIncomes > 0 && this.isShowIncomes,
           type: this.chartType,
@@ -187,6 +204,7 @@ export default defineComponent({
             lineColor: 'var(--c-incomes-1)',
           },
         }, {
+          // Expense
           zIndex: 2,
           visible: periodsTotalExpenses > 0 && this.isShowExpenses,
           type: this.chartType,
@@ -196,8 +214,18 @@ export default defineComponent({
           marker: {
             lineColor: 'var(--c-expenses-1)',
           },
-        // Fake data to make good hover on bar chart
+        // }, {
+        //   // Balance
+        //   visible: true,
+        //   type: 'areaspline',
+        //   name: 'Balance',
+        //   color: '#c1c1c1',
+        //   data: balanceData,
+        //   marker: {
+        //     lineColor: '#c1c1c1',
+        //   },
         }, {
+          // Fake data to make good hover on bar chart
           zIndex: 1,
           visible: true,
           type: 'line',
@@ -228,6 +256,29 @@ export default defineComponent({
 
       const tooltip = this.$store.state.ui.pc ? { ...chartOptions.tooltip } : { enabled: false }
 
+      const plotLines = []
+      // Expense
+      if (periodsTotalExpenses > 0 && this.isShowExpenses) {
+        plotLines.push({
+          opacity: 0.5,
+          color: 'var(--c-expenses-opacity)',
+          value: data.averageExpenses,
+          width: '2',
+          zIndex: 1,
+        })
+      }
+
+      // Income
+      if (periodsTotalIncomes > 0 && this.isShowIncomes) {
+        plotLines.push({
+          opacity: 0.5,
+          color: 'var(--c-incomes-opacity)',
+          value: data.averageIncomes,
+          width: '2',
+          zIndex: 1,
+        })
+      }
+
       return {
         ...chartOptions,
         legend: false,
@@ -242,19 +293,7 @@ export default defineComponent({
 
         yAxis: {
           ...chartOptions.yAxis,
-          plotLines: [{
-            opacity: 0.5,
-            color: 'var(--c-expenses-opacity)',
-            value: data.averageExpenses,
-            width: '2',
-            zIndex: 1,
-          }, {
-            opacity: 0.5,
-            color: 'var(--c-incomes-opacity)',
-            value: data.averageIncomes,
-            width: '2',
-            zIndex: 1,
-          }],
+          plotLines,
         },
 
         chart: {
@@ -281,6 +320,7 @@ export default defineComponent({
 <template lang="pug">
 .chart(@click="onClickChart")
   Chart(
+    :key="$route.fullPath"
     :options="chartData"
     :callback="chartCallback"
   )

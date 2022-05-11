@@ -10,7 +10,11 @@ useLazyAsyncData('', async() => {
   await initUI()
 })
 
-const keepAliveInclude = ['index', 'PagesIndex', 'PagesWalletsIndex', 'PagesCategoriesIndex', 'PagesHistory']
+const keepAliveInclude = [
+  'pages/categories/index.vue',
+  'pages/dashboard.vue',
+  'pages/wallets/index.vue',
+]
 
 /**
  * Update modal
@@ -77,7 +81,7 @@ onMounted(() => {
     .overflow-hidden.h-full.grid.lg_px-8
       Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
 
-    .hidden.createTrn.absolute.right-6.bottom-6.lg_flex(
+    .createTrn.hidden.z-10.absolute.right-6.bottom-6.lg_flex(
       @click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
     )
       .btn: .mdi.mdi-plus

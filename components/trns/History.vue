@@ -20,7 +20,7 @@ const setTrnType = (value: TrnType) => emit('setFilterTrnType', value)
 <template lang="pug">
 div
   //- Trns: Title
-  .statTitle.flex.gap-2(class="!pb-3")
+  .pb-2.flex.gap-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base(class="!pb-3")
     div {{ $t('trns.inPeriodTitle') }}:
     div {{ trnsCount }}
 

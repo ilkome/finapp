@@ -3,10 +3,9 @@ export default {}
 </script>
 
 <template lang="pug">
-div
-  .py-2
-    .statTitle {{ $t('trns.inPeriodTitle') }}
+.my-4
+  .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('trns.inPeriodTitle') }}
 
-  div(class="max-w-[420px] md_max-w-none")
+  .md_max-w-none(class="max-w-[420px]")
     TrnsList(:size="12")
 </template>

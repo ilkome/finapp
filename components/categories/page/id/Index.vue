@@ -78,7 +78,7 @@ UiPage(v-if="category")
 
   //- Childs categories
   .pb-12(v-if="category.childIds && category.childIds.length > 0")
-    .statTitle.flex.gap-2.px-3(class="!pb-3")
+    .pb-3.flex.gap-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
       div {{ $t('categories.title') }}:
       div {{ category.childIds.length }}
 

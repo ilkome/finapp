@@ -24,7 +24,7 @@ export default defineComponent({
      * Get max width from child elements name or amount
      * Set different width for incomes and expenses
      */
-    watch(() => statPage.current[typeText.value]?.categoriesIds, () => {
+    function updateWidth() {
       setTimeout(() => {
         let minWidth = 60
         let childs
@@ -32,7 +32,8 @@ export default defineComponent({
           ? childs = incomesRef.value?.querySelectorAll('.js-getWidth')
           : childs = expensesRef.value?.querySelectorAll('.js-getWidth')
 
-        if (!childs) return
+        if (!childs)
+          return
 
         for (const key in childs) {
           if (childs[key].clientWidth > minWidth)
@@ -42,7 +43,9 @@ export default defineComponent({
           ? incomesRef.value.style.setProperty('--minWidth', `${minWidth + 12}px`)
           : expensesRef.value.style.setProperty('--minWidth', `${minWidth + 12}px`)
       }, 100)
-    }, { immediate: true })
+    }
+    watch(statPage.current[typeText.value]?.categoriesIds, updateWidth, { immediate: true })
+    watch(isShow, updateWidth, { immediate: true })
 
     return {
       statPage,
@@ -56,8 +59,8 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.pb-5(v-if="isShow")
-  .items.grid(:ref="`${typeText}Ref`")
+.my-6.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800(v-if="isShow")
+  .items.grid.py-2(:ref="`${typeText}Ref`")
     LazyStatItemRound(
       v-if="isShow"
       v-for="categoryId in statPage.current[typeText].categoriesIds"

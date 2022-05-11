@@ -10,14 +10,15 @@ export default {
   },
 
   walletsTotal(state, getters, rootState, rootGetters) {
-    if (!getters.hasWallets) return {}
+    if (!getters.hasWallets)
+      return {}
     const walletsTotal = {}
     const wallets = rootState.wallets.items
     const trnsItems = rootState.trns.items
 
     const getWalletTotal = (walletId) => {
       const trnsIds = getTrnsIds({ trnsItems, walletsIds: walletId })
-      // @IncludeTransfers @!isConvertToBase
+      // @IncludeTransfers
       const { total } = rootGetters['trns/getTotalOfTrnsIds'](trnsIds, true, false, walletId)
       return total || 0
     }
@@ -33,10 +34,13 @@ export default {
   },
 
   walletsSortedIds(state, getters) {
-    if (!getters.hasWallets) return []
+    if (!getters.hasWallets)
+      return []
     return Object.keys(state.items).sort((a, b) => {
-      if (parseInt(state.items[a].order) < parseInt(state.items[b].order)) return -1
-      if (parseInt(state.items[a].order) > parseInt(state.items[b].order)) return 1
+      if (parseInt(state.items[a].order) < parseInt(state.items[b].order))
+        return -1
+      if (parseInt(state.items[a].order) > parseInt(state.items[b].order))
+        return 1
       return 0
     })
   },

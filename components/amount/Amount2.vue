@@ -1,28 +1,21 @@
-<script lang="ts">
+<script setup lang="ts">
 import useAmount from '~/components/amount/useAmount'
 
-export default defineComponent({
-  props: {
-    amount: { type: Number, required: true },
-    currency: { type: String, required: true },
-    colorize: { type: String, default: 'none' },
-    type: { type: Number, default: null },
-  },
+const props = defineProps<{
+  amount: Number
+  currency: String
+  colorize: String
+  type: Number
+  align: String
+}>()
 
-  setup(props) {
-    const { baseCurrency, formatAmount, getCurrencySymbol, getAmountInBaseCurrency } = useAmount()
-    const sign = props.type === 0 ? '-' : '+'
+const { baseCurrency, formatAmount, getCurrencySymbol, getAmountInBaseCurrency } = useAmount()
+const sign = props.type === 0 ? '-' : '+'
 
-    return {
-      baseCurrency,
-      sign,
-
-      getCurrencySymbol,
-      getAmountInBaseCurrency,
-      formatAmount,
-    }
-  },
-})
+const classes = computed(() => ({
+  'justify-end': !props.align,
+  'justify-start': props.align === 'left',
+}))
 </script>
 
 <template lang="pug">
@@ -33,18 +26,23 @@ export default defineComponent({
   template(v-if="amount !== 0")
     div(:class="[{ 'text-green-600 dark_text-green-500': colorize === 'incomes' && type === 1 }]")
       //- Original
-      .gap-1.flex.items-baseline.justify-end
+      .gap-1.flex.items-baseline(
+        :class="classes"
+      )
         .text-md.leading-none {{ sign }}
         .text-md.leading-none {{ formatAmount(amount) }}
         .text-xs.leading-none {{ getCurrencySymbol(currency) }}
 
       //- Base
-      .text-neutral-400.gap-1.flex.items-baseline.justify-end(v-if="currency !== baseCurrency")
+      .text-neutral-400.gap-1.flex.items-baseline(
+        v-if="currency !== baseCurrency"
+        :class="classes"
+      )
         .text-md.leading-none {{ sign }}
         .text-md.leading-none {{ getAmountInBaseCurrency({ amount, currency }) }}
         .text-xs.leading-none {{ getCurrencySymbol(baseCurrency) }}
 
   //- 0
-  template(v-else)
+  template(v-if="amount === 0")
     .text-md.leading-none.flex.items-baseline 0
 </template>

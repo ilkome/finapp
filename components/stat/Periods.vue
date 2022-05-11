@@ -46,24 +46,23 @@ export default {
 </script>
 
 <template lang="pug">
-.pt-2.px-3.lg_pt-1
-  .flex.justify-between
-    .overflow-hidden.flex.items-center.rounded-md.text-xs.bg-gray-50.dark_bg-dark4.dark_shadow
-      .cursor-pointer.px-3.md_px-4.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
-        v-for="periodItem in periodsNames"
-        :key="periodItem.slug"
-        :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': periodItem.slug === filterPeriodNameAllReplacedToYear }"
-        @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
-      ) {{ periodItem.name }}
+.flex-center
+  .overflow-hidden.flex.items-center.text-xs
+    .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-skin-item-main-hover(
+      @click="removePeriodOrGroup"
+    ): .mdi.mdi-minus
 
-    .overflow-hidden.ml-2.flex.items-center.rounded-md.bg-gray-50.dark_bg-dark4.dark_shadow
-      .cursor-pointer.px-3.md_px-4.py-3.flex-center.hocus_bg-gray-200.dark_hocus_bg-neutral-800.w-8(
-        @click="removePeriodOrGroup"
-      ): .mdi.mdi-minus
+    .cursor-pointer.py-2.px-3.rounded-md.hocus_bg-skin-item-main-hover(
+      v-for="periodItem in periodsNames"
+      :key="periodItem.slug"
+      :class="{ 'cursor-default text-skin-accent-base bg-skin-item-main-active': periodItem.slug === filterPeriodNameAllReplacedToYear }"
+      @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
+    )
+      span.pr-1(v-if="periodItem.slug === filterPeriodNameAllReplacedToYear")
+        | {{ $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }}
+      | {{ periodItem.name }}
 
-      .flex.items-center.text-sm {{ $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }}
-
-      .cursor-pointer.px-3.md_px-4.py-3.flex-center.hocus_bg-gray-200.dark_hocus_bg-neutral-800.w-8(
-        @click="addPeriodOrGroup"
-      ): .mdi.mdi-plus
+    .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-skin-item-main-hover(
+      @click="addPeriodOrGroup"
+    ): .mdi.mdi-plus
 </template>

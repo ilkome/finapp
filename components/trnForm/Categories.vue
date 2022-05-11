@@ -1,5 +1,5 @@
 <script>
-import Swiper from 'swiper'
+import SwiperCore from 'swiper'
 import 'swiper/swiper-bundle.css'
 
 export default {
@@ -14,8 +14,9 @@ export default {
   mounted() {
     const initialSlide = 1
 
-    this.slider = new Swiper(this.$refs.trnFormCategories, {
+    this.slider = new SwiperCore(this.$refs.trnFormCategories, {
       observer: true,
+      observeParents: true,
       slidesPerView: 1,
       touchStartPreventDefault: false,
       autoHeight: false,

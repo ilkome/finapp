@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { getCatsIds } from '~/components/categories/getCategories'
 import { getTrnsIds } from '~/components/trns/functions/getTrns'
 
 export default {
@@ -71,14 +72,17 @@ export default {
   },
 
   lastCreatedTrnId(state, getters, rootState, rootGetters) {
-    if (!getters.hasTrns) return
+    if (!getters.hasTrns)
+      return
 
     const trnsItems = rootState.trns.items
     const transferCategoryId = rootGetters['categories/transferCategoryId']
     const trnsIds = Object.keys(trnsItems)
       .sort((a, b) => {
-        if (trnsItems[a].date > trnsItems[b].date) return -1
-        if (trnsItems[a].date < trnsItems[b].date) return 1
+        if (trnsItems[a].date > trnsItems[b].date)
+          return -1
+        if (trnsItems[a].date < trnsItems[b].date)
+          return 1
         return 0
       })
 
@@ -91,13 +95,16 @@ export default {
   },
 
   firstCreatedTrnId(_state, getters, rootState) {
-    if (!getters.hasTrns) return
+    if (!getters.hasTrns)
+      return
 
     const trnsItems = rootState.trns.items
     const trnsIds = Object.keys(trnsItems)
       .sort((a, b) => {
-        if (trnsItems[a].date > trnsItems[b].date) return -1
-        if (trnsItems[a].date < trnsItems[b].date) return 1
+        if (trnsItems[a].date > trnsItems[b].date)
+          return -1
+        if (trnsItems[a].date < trnsItems[b].date)
+          return 1
         return 0
       })
       .reverse()
@@ -113,27 +120,14 @@ export default {
 
   // TODO: should use components/trns/functions/getTrns when its compatible
   selectedTrnsIds(_state, getters, rootState) {
-    if (!getters.hasTrns) return []
+    if (!getters.hasTrns)
+      return []
 
     const trnsItems = rootState.trns.items
     const catsItems = rootState.categories.items
     const storeFilter = rootState.filter
 
-    // TODO: shared functions
-    function getCatsIds(catsIds) {
-      const ids = []
-
-      for (const catId of catsIds) {
-        const category = catsItems[catId]
-        category?.childIds
-          ? ids.push(...category.childIds)
-          : ids.push(catId)
-      }
-
-      return ids
-    }
-
-    const categoriesIds = rootState.filter.catsIds.length > 0 ? getCatsIds(rootState.filter.catsIds) : null
+    const categoriesIds = rootState.filter.catsIds.length > 0 ? getCatsIds(rootState.filter.catsIds, catsItems) : null
     const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
 
     const trnsIds = getTrnsIds({
@@ -147,7 +141,8 @@ export default {
 
   // TODO: should use components/trns/functions/getTrns when its compatible
   selectedTrnsIdsWithDate(_state, getters, rootState) {
-    if (!getters.hasTrns) return []
+    if (!getters.hasTrns)
+      return []
 
     const trns = rootState.trns.items
     const filterDate = dayjs(rootState.filter.date)
@@ -166,8 +161,10 @@ export default {
 
     trnsIds = trnsIds
       .sort((a, b) => {
-        if (trns[a].date > trns[b].date) return -1
-        if (trns[a].date < trns[b].date) return 1
+        if (trns[a].date > trns[b].date)
+          return -1
+        if (trns[a].date < trns[b].date)
+          return 1
         return 0
       })
 

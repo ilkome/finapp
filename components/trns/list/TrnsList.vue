@@ -65,8 +65,10 @@ export default defineComponent({
         trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === this.categoryId)
 
       // filter type
-      if (this.incomes) trnsIds = trnsIds.filter(id => trns[id].type === 1)
-      if (this.expenses) trnsIds = trnsIds.filter(id => trns[id].type === 0)
+      if (this.incomes)
+        trnsIds = trnsIds.filter(id => trns[id].type === 1)
+      if (this.expenses)
+        trnsIds = trnsIds.filter(id => trns[id].type === 0)
 
       return trnsIds
     },

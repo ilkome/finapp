@@ -14,7 +14,7 @@ export default function useMenuData() {
       icon: 'mdi mdi-plus',
       name: i18n.t('createTrn'),
     },
-    index: {
+    dashboard: {
       component: 'UiIconStat',
       name: i18n.t('stat.title'),
     },

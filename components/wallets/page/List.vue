@@ -53,8 +53,14 @@ UiPage
               :style="{ background: walletItem.color }"
               class="mt-[2px]"
             ) {{ walletItem.name.substring(0, 2) }}
-            //- Name
-            .grow.text-sm.text-skin-item-base {{ walletItem.name }}
+            .grow.flex.items-center.gap-3
+              .text-sm.text-skin-item-base {{ walletItem.name }}
+              UiIconWalletWithdrawal.w-4.h-4.text-skin-item-base-down(
+                v-if="walletItem.countTotal"
+              )
+              UiIconWalletSavings.w-4.h-4.text-skin-item-base-down(
+                v-if="!walletItem.countTotal && !walletItem.isCredit"
+              )
 
           //- Amount
           Amount(

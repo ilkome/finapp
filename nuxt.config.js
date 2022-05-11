@@ -6,6 +6,10 @@ export default defineNuxtConfig({
     vite: false,
   },
 
+  env: {
+    ratesApiKey: process.env.OPEN_EXCHANGE_RATES,
+  },
+
   ssr: false,
   target: 'static',
   modern: 'client',

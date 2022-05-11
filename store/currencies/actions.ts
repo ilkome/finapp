@@ -1,6 +1,6 @@
 import localforage from 'localforage'
 import dayjs from 'dayjs'
-import { getRatesOfUSD } from './api'
+import { getRatesOfUSD } from '../../services/rates/api'
 import { getDataOnce, saveData } from '~/services/firebase/api'
 
 export default {
@@ -17,7 +17,9 @@ export default {
     // No rates for today
     if (!ratesBasedOnUsd) {
       ratesBasedOnUsd = await getRatesOfUSD()
-      if (!ratesBasedOnUsd) return
+      if (!ratesBasedOnUsd)
+        return
+
       saveData('ratesUsd/latest', ratesBasedOnUsd)
       saveData(`ratesUsd/history/${today}`, ratesBasedOnUsd)
     }

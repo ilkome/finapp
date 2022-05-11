@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { getCatsIds } from '~/components/categories/getCategories'
 import { getTrnsIds } from '~/components/trns/functions/getTrns'
 
 export default {
@@ -57,10 +58,12 @@ export default {
     const transferCategoryId = rootGetters['categories/transferCategoryId']
     const trnsIds = rootGetters['trns/selectedTrnsIds']
     const periodName = rootState.filter.period
-    if (periodName === 'all') return
+    if (periodName === 'all')
+      return
 
     const oldestTrn = trns[rootGetters['trns/firstCreatedTrnId']]
-    if (!oldestTrn) return
+    if (!oldestTrn)
+      return
 
     const oldestTrnDate = dayjs(oldestTrn.date).endOf(periodName)
     let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
@@ -102,11 +105,13 @@ export default {
       const trns = rootState.trns.items
       const firstCreatedTrnIdFromSelectedTrns = rootGetters['trns/firstCreatedTrnIdFromSelectedTrns']
       const firstCreatedTrn = trns[firstCreatedTrnIdFromSelectedTrns]
-      if (!firstCreatedTrn) return
+      if (!firstCreatedTrn)
+        return
       const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(state.period).valueOf()
       const filterDate = dayjs(rootState.filter.date).startOf(state.period).valueOf()
 
-      if (filterDate <= firstCreatedTrnDate) return true
+      if (filterDate <= firstCreatedTrnDate)
+        return true
     }
     else {
       return true
@@ -133,21 +138,7 @@ export default {
     const catsItems = rootState.categories.items
     const storeFilter = rootState.filter
 
-    // TODO: shared functions
-    function getCatsIds(catsIds) {
-      const ids = []
-
-      for (const catId of catsIds) {
-        const category = catsItems[catId]
-        category?.childIds
-          ? ids.push(...category.childIds)
-          : ids.push(catId)
-      }
-
-      return ids
-    }
-
-    const categoriesIds = rootState.filter.catsIds.length > 0 ? getCatsIds(rootState.filter.catsIds) : null
+    const categoriesIds = rootState.filter.catsIds.length > 0 ? getCatsIds(rootState.filter.catsIds, catsItems) : null
     const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
 
     const trnsIds = getTrnsIds({
@@ -227,8 +218,10 @@ export default {
     const statExpenses = {}
     for (const categoryId in categoriesWithTrnsIds) {
       const total = categoriesTotal[categoryId]
-      if (total.incomes > 0) statIncomes[categoryId] = total
-      if (total.expenses > 0) statExpenses[categoryId] = total
+      if (total.incomes > 0)
+        statIncomes[categoryId] = total
+      if (total.expenses > 0)
+        statExpenses[categoryId] = total
     }
 
     // sort categories amount
@@ -238,8 +231,10 @@ export default {
 
       if (categoriesIds.length) {
         sortedCategoriesIds = categoriesIds.sort((a, b) => {
-          if (categories[a][typeName] > categories[b][typeName]) return -1
-          if (categories[a][typeName] < categories[b][typeName]) return 1
+          if (categories[a][typeName] > categories[b][typeName])
+            return -1
+          if (categories[a][typeName] < categories[b][typeName])
+            return 1
           return 0
         })
       }

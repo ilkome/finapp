@@ -1,15 +1,15 @@
 import dayjs from 'dayjs'
+import type { PeriodNames } from '~/components/date/types'
 import type { TrnID, TrnItem, TrnType } from '~/components/trns/types'
 import type { WalletID } from '~/components/wallets/types'
 
-type PeriodName = 'day' | 'week' | 'month' | 'year' | 'all'
 type Date = number
 interface Props {
   trnsItems: Record<string, TrnItem>
   walletsIds?: WalletID[]
   categoriesIds?: WalletID[]
   trnType?: TrnType
-  periodName?: PeriodName
+  periodName?: PeriodNames
   date?: Date
   fromDate?: number
   untilDate?: number
@@ -70,8 +70,10 @@ export const getTrnsIds = (props: Props) => {
   // Sort
   trnsIds = trnsIds
     .sort((a, b) => {
-      if (props.trnsItems[a].date > props.trnsItems[b].date) return -1
-      if (props.trnsItems[a].date < props.trnsItems[b].date) return 1
+      if (props.trnsItems[a].date > props.trnsItems[b].date)
+        return -1
+      if (props.trnsItems[a].date < props.trnsItems[b].date)
+        return 1
       return 0
     })
 
