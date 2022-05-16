@@ -5,7 +5,7 @@ import useUIView from '~/components/layout/useUIView'
 
 const { $store } = useNuxtApp()
 
-useLazyAsyncData('posts', async() => {
+useLazyAsyncData('posts', async () => {
   const { initUI } = useUIView()
   await initUI()
 })
@@ -16,7 +16,7 @@ const keepAliveInclude = ['PagesIndex, PagesWallets', 'PagesCategories', 'PagesH
  * Update modal
  */
 const isShowUpdateApp = ref(false)
-onMounted(async() => {
+onMounted(async () => {
   const workbox = await window.$workbox
   if (workbox) {
     workbox.addEventListener('installed', (event) => {
@@ -62,11 +62,6 @@ onMounted(() => {
     multiple
     name="modal"
   )
-
-  //- LazyAppUpdateAppModal(
-  //-   v-if="isShowUpdateApp"
-  //-   @onClose="isShowUpdateApp = false"
-  //- )
 
   .layout__wrap.overflow-hidden.flex-grow.h-full.flex
     transition(name="fadeIn" appear)
