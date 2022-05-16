@@ -1,9 +1,9 @@
 export type WalletID = string
 
 export interface WalletItem {
-  name: string
   color: string
   currency: string
+  name: string
 }
 
 export interface WalletItemWithAmount extends WalletItem {
