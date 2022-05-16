@@ -83,6 +83,12 @@ storageBucket: 'YOUR_CONFIG',
 messagingSenderId: 'YOUR_CONFIG'
 ```
 
+### Add your domain to Firebase Authorized domains
+- Go to `Authentication` page
+- Click `Sign-in method` tab
+- Scroll to `Authorized domains` and click `Add domain`
+- Add your domain name where you hosted Finapp.
+
 ### Open exchange rates setup
 - Get your App ID at [openexchangerates.org](https://openexchangerates.org/signup/free)
 - Rename `.env.example` to `.env`
@@ -90,6 +96,8 @@ messagingSenderId: 'YOUR_CONFIG'
 ``` bash
 OPEN_EXCHANGE_RATES=app_id
 ```
+
+If you use netlify or similar services you need add OPEN_EXCHANGE_RATES to env variables.
 
 ## Development
 
