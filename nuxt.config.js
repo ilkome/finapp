@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     vite: false,
   },
 
-  env: {
+  publicRuntimeConfig: {
     ratesApiKey: process.env.OPEN_EXCHANGE_RATES,
   },
 
