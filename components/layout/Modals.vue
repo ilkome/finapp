@@ -25,7 +25,7 @@ export default defineComponent({
     TrnForm(:show="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show")
 
   //- Trn Item
-  TrnsModal
+  TrnsItemModal
 
   //- Currencies
   CurrenciesModal

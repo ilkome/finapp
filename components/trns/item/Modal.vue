@@ -100,13 +100,13 @@ export default {
 
 <template lang="pug">
 Portal(
-  key="trnsModal"
+  key="TrnsItemModal"
   v-if="$store.state.trns.modal.show"
   to="modal"
 )
   LazyBaseBottomSheet(
     v-if="$store.state.trns.modal.show"
-    key="trnsModal"
+    key="TrnsItemModal"
     @closed="closed"
   )
     template(#handler="{ close }")
