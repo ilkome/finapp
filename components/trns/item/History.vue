@@ -64,7 +64,7 @@ const actions = {
     .items-center.flex
       .grow.text-neutral-500(class="dark_text-neutral-500")
         //- Category
-        .pb-1.space-x-2.items-baseline.flex
+        .pb-1.space-x-2.items-baseline.flex.flex-wrap
           .text-sm.text-neutral-700(class="dark_text-neutral-300") {{ trnItem.category.name }}
 
           .text-xs.space-x-2.items-baseline.flex(v-if="trnItem.category.parentId")
