@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { getCatsIds } from '~/components/categories/getCategories'
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
+import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default {
   /**

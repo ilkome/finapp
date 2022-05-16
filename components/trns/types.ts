@@ -30,4 +30,17 @@ export interface TrnTransfer {
   expenseAmount: number
 }
 
-export type TrnItem = TrnTransaction | TrnTransfer
+// @deprecated: Use TrnTransfer instead
+export interface TrnTransferOld {
+  type: TrnType.Transfer
+  date: number
+  categoryId: 'transfer'
+
+  amountFrom: number
+  walletFromId: WalletID
+
+  amountTo: number
+  walletToId: WalletID
+}
+
+export type TrnItem = TrnTransaction | TrnTransfer | TrnTransferOld

@@ -1,4 +1,4 @@
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
+import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default {
   hasWallets(state, getters, rootState) {
@@ -9,6 +9,7 @@ export default {
     return false
   },
 
+  // TODO: refactor
   walletsTotal(state, getters, rootState, rootGetters) {
     if (!getters.hasWallets)
       return {}

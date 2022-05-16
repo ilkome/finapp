@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
-import { getCatsIds } from '~/components/categories/getCategories'
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
+import { getCatsIds, getTransferCatgoriesIds } from '~/components/categories/getCategories'
+import { getTotal } from '~/components/trns/getTotal'
+import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default {
   hasTrns(_state, _getters, rootState) {
