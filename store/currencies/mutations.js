@@ -4,6 +4,10 @@ export default {
     state.rates = rates
   },
 
+  setBaseRate(state, rate) {
+    state.base = rate
+  },
+
   showBaseCurrenciesModal(state) {
     state.modal.show = true
   },

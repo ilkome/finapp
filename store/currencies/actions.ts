@@ -24,36 +24,19 @@ export default {
       saveData(`ratesUsd/history/${today}`, ratesBasedOnUsd)
     }
 
-    // Convert rates based on USD to user base currency
-    const ratesConvertedToBase = {}
-    for (const id in ratesBasedOnUsd)
-      ratesConvertedToBase[id] = ratesBasedOnUsd[id] / ratesBasedOnUsd[userBaseCurrency]
-
     commit('setCurrencies', {
       base: userBaseCurrency,
-      rates: ratesConvertedToBase,
+      rates: ratesBasedOnUsd,
     })
 
     localforage.setItem('finapp.currencies', {
       base: userBaseCurrency,
-      rates: ratesConvertedToBase,
+      rates: ratesBasedOnUsd,
     })
   },
 
   async changeBaseCurrency({ commit }, baseCurrency) {
-    // Rates with date
-    const today = dayjs().startOf('day').valueOf()
-    const ratesBasedOnUsd = await getDataOnce(`ratesUsd/history/${today}`)
-
-    // Convert rates based on USD to user base currency
-    const ratesConvertedToBase = {}
-    for (const id in ratesBasedOnUsd)
-      ratesConvertedToBase[id] = ratesBasedOnUsd[id] / ratesBasedOnUsd[baseCurrency]
-
-    commit('setCurrencies', {
-      base: baseCurrency,
-      rates: ratesConvertedToBase,
-    })
+    commit('setBaseRate', baseCurrency)
   },
 
   setBaseCurrency({ rootState, dispatch }, baseCurrency) {
