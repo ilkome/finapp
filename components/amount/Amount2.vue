@@ -26,7 +26,7 @@ const classes = computed(() => ({
   template(v-if="amount !== 0")
     div(:class="[{ 'text-green-600 dark_text-green-500': colorize === 'incomes' && type === 1 }]")
       //- Original
-      .gap-1.flex.items-baseline(
+      .gap-1.flex.items-baseline.whitespace-nowrap(
         :class="classes"
       )
         .text-md.leading-none {{ sign }}
@@ -34,7 +34,7 @@ const classes = computed(() => ({
         .text-xs.leading-none {{ getCurrencySymbol(currency) }}
 
       //- Base
-      .text-neutral-400.gap-1.flex.items-baseline(
+      .text-neutral-400.gap-1.flex.items-baseline.whitespace-nowrap(
         v-if="currency !== baseCurrency"
         :class="classes"
       )

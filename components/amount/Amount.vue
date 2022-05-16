@@ -1,14 +1,7 @@
 <script>
-import currency from 'currency.js'
 import useAmount from '~/components/amount/useAmount'
 
-const baseAmountFormat = (value, separator) =>
-  currency(value, { symbol: '', precision: 0, pattern: '#', separator })
-    .format()
-
 export default {
-  name: 'Amount',
-
   props: {
     currency: { type: String, required: true },
     isAltColor: { type: Boolean, default: false },
@@ -22,8 +15,11 @@ export default {
   },
 
   setup() {
-    const { getAmountInBaseCurrency } = useAmount()
-    return { getAmountInBaseCurrency }
+    const { getAmountInBaseCurrency, formatAmount } = useAmount()
+    return {
+      getAmountInBaseCurrency,
+      formatAmount,
+    }
   },
 
   computed: {
@@ -62,23 +58,19 @@ export default {
           return currency
       }
     },
-
-    formatAmount(amount) {
-      return baseAmountFormat(amount, ' ')
-    },
   },
 }
 </script>
 
 <template lang="pug">
 .amount(:class="className")
-  .amountItem._original.flex.items-baseline(:class="className")
+  .amountItem._original.flex.items-baseline.whitespace-nowrap(:class="className")
     .amountItem__prefix(v-if="isShowPrefix && value !== 0") {{ type === 0 ? '-' : '+' }}
     .amountItem__value.leading-none {{ formatAmount(value) }}
     .amountItem__symbol.leading-none {{ getCurrencySymbol(currency) }}
 
   template(v-if="showBase && (value !== 0) && (currency !== $store.state.currencies.base)")
-    .amountItem._base.pt-1.flex.items-baseline(:class="className")
+    .amountItem._base.pt-1.flex.items-baseline.whitespace-nowrap(:class="className")
       .amountItem__prefix(v-if="isShowPrefix && value !== 0") {{ type === 0 ? '-' : '+' }}
       .amountItem__value.leading-none {{ amountInBaseCurrency }}
       .amountItem__symbol.leading-none {{ getCurrencySymbol($store.state.currencies.base) }}
