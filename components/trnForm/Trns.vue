@@ -1,5 +1,5 @@
 <script lang="ts">
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
+import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default defineComponent({
   props: {

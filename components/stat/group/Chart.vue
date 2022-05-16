@@ -3,7 +3,7 @@ import { Chart } from 'highcharts-vue'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
+import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default {
   name: 'StatChartLines',

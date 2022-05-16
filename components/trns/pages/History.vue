@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getCatsIds } from '~/components/categories/getCategories'
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
+import { getTrnsIds } from '~/components/trns/getTrns'
 import useStatPage from '~/components/stat/useStatPage'
 
 const { $store } = useNuxtApp()

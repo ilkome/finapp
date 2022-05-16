@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
+import { getTrnsIds } from '~/components/trns/getTrns'
 import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { removeData } from '~/services/firebase/api'
 import type { CategoryID } from '~/components/categories/types'

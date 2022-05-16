@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Chart } from 'highcharts-vue'
 import { getCatsIds } from '~/components/categories/getCategories'
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
+import { getTrnsIds } from '~/components/trns/getTrns'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import useFilter from '~/modules/filter/useFilter'
-import { getTrnsIds } from '~/components/trns/functions/getTrns'
+import { getTrnsIds } from '~/components/trns/getTrns'
 
 const { $store } = useNuxtApp()
 const { setFilterWalletsId } = useFilter()
