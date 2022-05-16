@@ -1,3 +1,4 @@
+// TODO: add typings
 export function getCatsIds(catsIds, catsItems) {
   const ids = []
 
@@ -9,4 +10,15 @@ export function getCatsIds(catsIds, catsItems) {
   }
 
   return ids
+}
+
+// TODO: add typings
+export function getTransferCatgoriesIds(categoriesItems) {
+  const categoriesIdsByName = Object.keys(categoriesItems)
+    .filter(id =>
+      categoriesItems[id].name.toLowerCase() === 'перевод'
+      || categoriesItems[id].name.toLowerCase() === 'transfer',
+    )
+
+  return [...categoriesIdsByName, 'transfer']
 }
