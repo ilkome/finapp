@@ -7,6 +7,7 @@ export default defineNuxtConfig({
   },
 
   publicRuntimeConfig: {
+    devEmails: process.env.DEV_EMAILS || [],
     ratesApiKey: process.env.OPEN_EXCHANGE_RATES,
   },
 

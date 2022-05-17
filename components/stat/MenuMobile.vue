@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const { $store } = useNuxtApp()
-
 const props = defineProps<{
   slider: any
 }>()
+
+const { $store } = useNuxtApp()
 const { nuxt2Context: { i18n } } = useNuxtApp()
 
 function onClickStatMenu(idx) {
@@ -25,10 +25,6 @@ const menu = computed(() => [{
 }, {
   idx: 4,
   name: i18n.t('trns.history'),
-}, {
-  isPrivate: true,
-  idx: 5,
-  name: 'Balance',
 }])
 </script>
 
@@ -36,7 +32,7 @@ const menu = computed(() => [{
 UiTabs2(v-if="slider")
   UiTabsItem2(
     v-for="item in menu"
-    v-if="!item.isPrivate || $store.getters['user/isTester']"
+    v-if="!item.isPrivate || $store.getters['user/isDevUser']"
     :key="item.name"
     :isActive="slider.activeIndex === item.idx"
     @click="onClickStatMenu(item.idx)"

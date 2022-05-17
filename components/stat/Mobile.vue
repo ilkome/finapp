@@ -38,11 +38,11 @@ onMounted(() => {
 const { onWatch } = useStatChart()
 onWatch()
 
-onActivated(async() => {
+onActivated(async () => {
   await nextTick()
   chartKeyDirtyFix.value = `hide${sliderObject.value.activeIndex}`
 })
-onDeactivated(async() => {
+onDeactivated(async () => {
   await nextTick()
   chartKeyDirtyFix.value = `show${sliderObject.value.activeIndex}`
 })
@@ -105,16 +105,6 @@ onDeactivated(async() => {
       StatMobileSlide
         .px-2
           StatHistory
-
-      //- Balance
-      StatMobileSlide(v-if="$store.getters['user/isTester']")
-        .px-2
-          .my-6
-            StatSumGroup(typeText="expenses")
-            StatGroupBudget(typeText="expenses")
-          .my-6
-            StatSumGroup(typeText="incomes")
-            StatGroupBudget(typeText="incomes")
 </template>
 
 <style lang="stylus">

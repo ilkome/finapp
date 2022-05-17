@@ -57,7 +57,7 @@ export default function useMenuData() {
   }
 
   function checkIsShow(item: MenuItem) {
-    return !item.private || (item.private && $store.getters['user/isTester'])
+    return !item.private || (item.private && $store.getters['user/isDevUser'])
   }
 
   return {

@@ -34,10 +34,4 @@ UiTabs
     @click="onClickStatMenu('history')"
   )
     span {{ $t('trns.history') }}
-
-  UiTabsItem(
-    v-if="$store.getters['user/isTester']"
-    :isActive="activeTabStat === 'balance'"
-    @click="onClickStatMenu('balance')"
-  ) Balance
 </template>
