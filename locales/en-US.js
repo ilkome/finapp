@@ -209,7 +209,7 @@ export default {
   },
 
   stat: {
-    title: 'Statistics',
+    title: 'Dashboard',
     selectedPeriod: 'Selected period',
     shortTitle: 'Stat',
     periods: 'Summary',
