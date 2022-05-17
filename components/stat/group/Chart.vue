@@ -35,7 +35,7 @@ export default {
     const chartObj = ref({})
     const chartCallback = (v) => { chartObj.value = v }
 
-    const onClickChart = async(event) => {
+    const onClickChart = async (event) => {
       const chart = chartObj.value
       if (!chart)
         return
@@ -54,7 +54,7 @@ export default {
       }, 100)
     }
 
-    watch(() => $store.state.filter.date, async() => {
+    watch(() => $store.state.filter.date, async () => {
       await nextTick()
 
       const chart = chartObj.value
@@ -114,10 +114,14 @@ export default {
         const periodTotal = this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds)
 
         let format = 'MM'
-        if (periodName === 'day') format = 'D.MM'
-        if (periodName === 'week') format = 'D MMM'
-        if (periodName === 'month') format = 'MMM'
-        if (periodName === 'year') format = 'YYYY'
+        if (periodName === 'day')
+          format = 'D.MM'
+        if (periodName === 'week')
+          format = 'D MMM'
+        if (periodName === 'month')
+          format = 'MMM'
+        if (periodName === 'year')
+          format = 'YYYY'
         const name = this.$day().startOf(periodName).subtract(index, periodName).format(format)
 
         // Incomes

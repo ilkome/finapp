@@ -111,14 +111,17 @@ export default function useCalculator() {
     // Delete
     if (clearedExpression !== '0' && isDeleteAction) {
       const deleteString = clearedExpression.slice(0, -1)
-      if (deleteString) return deleteString
+      if (deleteString)
+        return deleteString
       return '0'
     }
 
     // Start from 0
     if (clearedExpression === '0') {
-      if (value === '0') return expression
-      if (!inputIsAction) return value
+      if (value === '0')
+        return expression
+      if (!inputIsAction)
+        return value
     }
 
     // Change math simbol
@@ -160,7 +163,8 @@ export default function useCalculator() {
       // Check if math will success
       if (lastSimbol !== '.') {
         const result = makeCalculation(clearedExpression + value)
-        if (result === '0') return clearedExpression
+        if (result === '0')
+          return clearedExpression
       }
 
       // Limit integer
@@ -223,15 +227,19 @@ export default function useCalculator() {
   }
 
   function keyboardHandler(event: KeyboardEvent): void {
-    if (!isKeysActive.value) return
+    if (!isKeysActive.value)
+      return
 
     const allowValue = (event.key).match(/[0-9%/*\-+=.,]|Backspace|Enter/)
     let input = allowValue ? allowValue.input : false
 
     if (input) {
-      if (input === ',') input = '.'
-      if (input === 'Enter') input = '='
-      if (input === 'Backspace') input = 'delete'
+      if (input === ',')
+        input = '.'
+      if (input === 'Enter')
+        input = '='
+      if (input === 'Backspace')
+        input = 'delete'
 
       handleTouch(input)
     }

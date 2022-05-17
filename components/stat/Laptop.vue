@@ -40,11 +40,11 @@ const isShowGroupTrns = computed(() => {
 })
 
 const chartKeyDirtyFix = ref('show')
-onActivated(async() => {
+onActivated(async () => {
   await nextTick()
   chartKeyDirtyFix.value = 'hide'
 })
-onDeactivated(async() => {
+onDeactivated(async () => {
   await nextTick()
   chartKeyDirtyFix.value = 'show'
 })

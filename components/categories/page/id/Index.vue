@@ -19,8 +19,10 @@ const backLink = computed(() => category.value?.parentId ? `/categories/${catego
 const filter = reactive({ trnType: null })
 
 const categoryChildIds = computed(() => category.value.childIds?.sort((a, b) => {
-  if ($store.state.categories.items[a].name < $store.state.categories.items[b].name) return -1
-  if ($store.state.categories.items[a].name > $store.state.categories.items[b].name) return 1
+  if ($store.state.categories.items[a].name < $store.state.categories.items[b].name)
+    return -1
+  if ($store.state.categories.items[a].name > $store.state.categories.items[b].name)
+    return 1
   return 0
 }))
 

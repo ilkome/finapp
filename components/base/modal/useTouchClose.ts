@@ -40,7 +40,8 @@ export default function useOnTouch() {
     }
 
     if (!isInit) {
-      if (!container.value) return
+      if (!container.value)
+        return
       isInit = true
       container.value.addEventListener('touchstart', onDragStart, { passive: true })
       container.value.addEventListener('touchmove', onDragging, { passive: true })
@@ -53,7 +54,8 @@ export default function useOnTouch() {
    * Translate
    */
   function setTranslate(): void {
-    if (!wrap.value) return
+    if (!wrap.value)
+      return
     const offset = isDrugByHandler ? 0 : config.dragOffset
 
     if (currentY === 0) {
@@ -91,28 +93,34 @@ export default function useOnTouch() {
     // Check if should drag modal
     else {
       // Do not close modal inside this div
-      if (event.target.closest(`.${config.doNotTouchClassName}`)) return
+      if (event.target.closest(`.${config.doNotTouchClassName}`))
+        return
 
       // Stop drag when content has scroll
       // wait until content scroll up to top
       if (content.value) {
-        if (content.value.scrollTop > 0) return
+        if (content.value.scrollTop > 0)
+          return
 
         // wait until content scroll up inside Swiper
         const waitForScrollSlider = content.value.querySelector(`.swiper-slide-active .${config.whaitForScrollClassName}`)
-        if (waitForScrollSlider && waitForScrollSlider.scrollTop > 0) return
+        if (waitForScrollSlider && waitForScrollSlider.scrollTop > 0)
+          return
 
         const waitForScrollSlider2 = content.value.querySelector(`.swiper-slide-active .${config.whaitForScrollSliderClassName}`)
-        if (waitForScrollSlider2 && waitForScrollSlider2.scrollTop > 0) return
+        if (waitForScrollSlider2 && waitForScrollSlider2.scrollTop > 0)
+          return
 
         // wait until content scroll up inside
         const waitForScroll = content.value.querySelector(`.${config.whaitForScrollClassName}`)
-        if (waitForScroll && waitForScroll.scrollTop > 0) return
+        if (waitForScroll && waitForScroll.scrollTop > 0)
+          return
       }
     }
 
     // Drag inside wrap
-    if (event.target.closest(`.${wrap.value.className}`)) isDragging = true
+    if (event.target.closest(`.${wrap.value.className}`))
+      isDragging = true
 
     if (isDragging) {
       event.type === 'touchstart'
@@ -145,7 +153,8 @@ export default function useOnTouch() {
     else {
       currentY = 0
       setTranslate()
-      if (isDragging) wrap.value.classList.add(config.animClassName)
+      if (isDragging)
+        wrap.value.classList.add(config.animClassName)
     }
   }
 
@@ -158,7 +167,8 @@ export default function useOnTouch() {
     wrap.value.style.transform = ''
     wrap.value.style.opacity = ''
     overflow.value.style.opacity = ''
-    if (onClose) onClose()
+    if (onClose)
+      onClose()
   }
 
   /**
@@ -173,7 +183,8 @@ export default function useOnTouch() {
       wrap.value.style.transform = ''
       wrap.value.style.opacity = ''
       overflow.value.style.opacity = ''
-      if (onClose) onClose()
+      if (onClose)
+        onClose()
       return
     }
 
@@ -196,7 +207,8 @@ export default function useOnTouch() {
    * onUnmounted
    */
   onUnmounted(() => {
-    if (!container || !container.value) return
+    if (!container || !container.value)
+      return
     container.value.removeEventListener('touchstart', onDragStart)
     container.value.removeEventListener('touchmove', onDragging)
     container.value.removeEventListener('touchend', onDragEnd)

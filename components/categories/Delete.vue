@@ -56,7 +56,7 @@ async function onDeleteConfirm() {
   router.push('/categories')
 
   // Give some time to complete redirect
-  setTimeout(async() => {
+  setTimeout(async () => {
     await this.$store.dispatch('trns/deleteTrnsByIds', trnsIdsS)
     removeData(`users/${uid}/categories/${categoryIdS}`)
       .then(() => {

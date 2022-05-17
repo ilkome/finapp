@@ -18,15 +18,18 @@ export default {
 
   async initLocalLang({ commit }) {
     const localLang = await localforage.getItem('finapp.lang')
-    if (localLang) commit('setLang', localLang)
+    if (localLang)
+      commit('setLang', localLang)
   },
 
   async initDbLang({ commit, rootGetters }) {
     const uid = rootGetters['user/userUid']
-    if (!uid) return
+    if (!uid)
+      return
 
     const lang = await getDataOnce(`users/${uid}/settings/lang`)
-    if (!lang) return
+    if (!lang)
+      return
 
     commit('setLang', lang)
     localforage.setItem('finapp.lang', lang)

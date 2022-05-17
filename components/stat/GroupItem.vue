@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import useStatPage from '~/components/stat/useStatPage'
-const { statPage } = useStatPage()
-
 defineProps<{
   typeText: String
 }>()
-
+const { statPage } = useStatPage()
 </script>
 
 <template lang="pug">

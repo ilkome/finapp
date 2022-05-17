@@ -1,4 +1,3 @@
-
 export default {
   common: {
     date: 'Дата',

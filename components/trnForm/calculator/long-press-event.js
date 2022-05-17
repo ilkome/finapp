@@ -5,7 +5,7 @@
  * @author John Doherty <www.johndoherty.info>
  * @license MIT
  */
-(function(window, document) {
+(function (window, document) {
   'use strict'
 
   // local timer object based on rAF
@@ -27,7 +27,7 @@
 
   // patch CustomEvent to allow constructor creation (IE/Chrome)
   if (typeof window.CustomEvent !== 'function') {
-    window.CustomEvent = function(event, params) {
+    window.CustomEvent = function (event, params) {
       params = params || { bubbles: false, cancelable: false, detail: undefined }
 
       const evt = document.createEvent('CustomEvent')
@@ -39,12 +39,12 @@
   }
 
   // requestAnimationFrame() shim by Paul Irish
-  window.requestAnimFrame = (function() {
+  window.requestAnimFrame = (function () {
     return window.requestAnimationFrame
           || window.webkitRequestAnimationFrame
           || window.mozRequestAnimationFrame
           || window.oRequestAnimationFrame
-          || window.msRequestAnimationFrame || function(callback) {
+          || window.msRequestAnimationFrame || function (callback) {
       window.setTimeout(callback, 1000 / 60)
     }
   })()
@@ -58,12 +58,13 @@
   function requestTimeout(fn, delay) {
     if (!window.requestAnimationFrame && !window.webkitRequestAnimationFrame
           && !(window.mozRequestAnimationFrame && window.mozCancelRequestAnimationFrame) // Firefox 5 ships without cancel support
-          && !window.oRequestAnimationFrame && !window.msRequestAnimationFrame) return window.setTimeout(fn, delay)
+          && !window.oRequestAnimationFrame && !window.msRequestAnimationFrame)
+      return window.setTimeout(fn, delay)
 
     const start = new Date().getTime()
     const handle = {}
 
-    const loop = function() {
+    const loop = function () {
       const current = new Date().getTime()
       const delta = current - start
 

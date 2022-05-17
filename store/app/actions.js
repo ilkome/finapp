@@ -7,7 +7,7 @@ export default {
     if (this.$router.currentRoute.name === 'login')
       commit('setAppStatus', 'loading')
 
-    onAuthStateChanged(auth, async(user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (this.$router.currentRoute.name === 'login')
         commit('setAppStatus', 'loading')
 
@@ -54,13 +54,20 @@ export default {
       localforage.getItem('finapp.filter.period'),
     ])
 
-    if (ativeTab) dispatch('ui/setActiveTab', ativeTab, { root: true })
-    if (user) commit('user/setUser', user, { root: true })
-    if (currencies) commit('currencies/setCurrencies', currencies, { root: true })
-    if (categories) commit('categories/setCategories', categories, { root: true })
-    if (wallets) commit('wallets/setWallets', wallets, { root: true })
-    if (trns) commit('trns/setTrns', trns, { root: true })
-    if (filterPeriod) dispatch('filter/setPeriod', filterPeriod, { root: true })
+    if (ativeTab)
+      dispatch('ui/setActiveTab', ativeTab, { root: true })
+    if (user)
+      commit('user/setUser', user, { root: true })
+    if (currencies)
+      commit('currencies/setCurrencies', currencies, { root: true })
+    if (categories)
+      commit('categories/setCategories', categories, { root: true })
+    if (wallets)
+      commit('wallets/setWallets', wallets, { root: true })
+    if (trns)
+      commit('trns/setTrns', trns, { root: true })
+    if (filterPeriod)
+      dispatch('filter/setPeriod', filterPeriod, { root: true })
 
     // ready
     if (categories && user && trns && wallets) {

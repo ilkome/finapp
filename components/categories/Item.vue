@@ -18,7 +18,8 @@ export default defineComponent({
     const parentCategory = computed(() => $store.state.categories.items[props.category?.parentId])
 
     function onClickItem() {
-      if (listeners.onClick) listeners.onClick(props.id)
+      if (listeners.onClick)
+        listeners.onClick(props.id)
     }
 
     function onClickIcon() {

@@ -2,8 +2,10 @@
 const { $store } = useNuxtApp()
 
 const catsIds = computed(() => $store.getters['categories/categoriesRootIds']?.sort((a, b) => {
-  if ($store.state.categories.items[a].name < $store.state.categories.items[b].name) return -1
-  if ($store.state.categories.items[a].name > $store.state.categories.items[b].name) return 1
+  if ($store.state.categories.items[a].name < $store.state.categories.items[b].name)
+    return -1
+  if ($store.state.categories.items[a].name > $store.state.categories.items[b].name)
+    return 1
   return 0
 }))
 </script>

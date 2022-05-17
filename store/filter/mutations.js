@@ -23,7 +23,8 @@ export default {
 
   // Wallets
   setFilterWalletsId(state, walletId) {
-    if (state.walletsIds.includes(walletId)) return
+    if (state.walletsIds.includes(walletId))
+      return
     state.walletsIds.push(walletId)
   },
 
@@ -37,7 +38,8 @@ export default {
 
   // Cats
   setFilterCatsId(state, catId) {
-    if (state.catsIds.includes(catId)) return
+    if (state.catsIds.includes(catId))
+      return
     state.catsIds.push(catId)
   },
 

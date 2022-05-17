@@ -49,7 +49,8 @@ export default defineComponent({
       const trnsIds = getTrnsIds({ ...filter, trnsItems })
 
       // limit
-      if (this.limit > 0) return trnsIds.slice(0, this.limit)
+      if (this.limit > 0)
+        return trnsIds.slice(0, this.limit)
       return trnsIds
     },
 

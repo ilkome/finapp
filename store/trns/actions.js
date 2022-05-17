@@ -54,7 +54,8 @@ export default {
       })
 
     setTimeout(() => {
-      if (!isTrnSavedOnline) saveTrnToAddLaterLocal({ id, values })
+      if (!isTrnSavedOnline)
+        saveTrnToAddLaterLocal({ id, values })
     }, 1000)
 
     const { clearExpression } = useCalculator()
@@ -107,7 +108,7 @@ export default {
     * and add trns to database
   */
   uploadOfflineTrns({ dispatch, rootState }) {
-    getDataAndWatch('.info/connected', async(isConnected) => {
+    getDataAndWatch('.info/connected', async (isConnected) => {
       if (isConnected) {
         const trnsArrayForDelete = await localforage.getItem('finapp.trns.offline.delete') || []
         const trnsItemsForUpdate = await localforage.getItem('finapp.trns.offline.update') || {}

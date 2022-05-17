@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const isShowDateSelector = ref(false)
 defineProps<{
   dateClasses?: null
   wrapClasses?: null
 }>()
+const isShowDateSelector = ref(false)
 </script>
 
 <template lang="pug">

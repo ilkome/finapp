@@ -42,7 +42,7 @@ async function onDeleteConfirm() {
   router.push('/wallets')
 
   // Give some time to complete redirect
-  setTimeout(async() => {
+  setTimeout(async () => {
     await this.$store.dispatch('trns/deleteTrnsByIds', trnsIdsS)
     removeData(`users/${uid}/accounts/${walletIdS}`)
       .then(() => {

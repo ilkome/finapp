@@ -18,7 +18,8 @@ export default (_, inject) => {
   })
 
   inject('day', (val) => {
-    if (val) return dayjs(+val)
+    if (val)
+      return dayjs(+val)
     return dayjs()
   })
 }

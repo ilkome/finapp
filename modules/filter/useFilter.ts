@@ -7,7 +7,8 @@ export default function useFilter() {
 
   function scrollTop() {
     const page = document.querySelector('.js_scroll_page')
-    if (page) page.scrollTop = 0
+    if (page)
+      page.scrollTop = 0
   }
 
   function setFilterCatsId(catId) {

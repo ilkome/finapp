@@ -3,9 +3,9 @@ import { allColors } from '~/assets/js/colors'
 import { random } from '~/assets/js/emo'
 import icons from '~/assets/js/icons'
 
-const { $store } = useNuxtApp()
 const emit = defineEmits(['afterSave'])
 
+const { $store } = useNuxtApp()
 const categoryForm = ref({
   color: random(random(allColors)),
   icon: random(random(icons)),

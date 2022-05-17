@@ -7,9 +7,10 @@ const props = defineProps<{
   walletId?: WalletID
   walletForm: WalletForm
 }>()
-const { walletId, walletForm } = toRefs(props)
+
 const emit = defineEmits(['updateValue', 'afterSave'])
 
+const { walletId, walletForm } = toRefs(props)
 const { $store, $notify, nuxt2Context: { i18n } } = useNuxtApp()
 const editWalletId = walletId.value ?? generateId()
 

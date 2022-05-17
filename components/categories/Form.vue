@@ -18,9 +18,10 @@ const props = defineProps<{
     showStat: boolean
   }
 }>()
-const { categoryId, categoryForm } = toRefs(props)
+
 const emit = defineEmits(['updateValue', 'afterSave'])
 
+const { categoryId, categoryForm } = toRefs(props)
 const { $store, $notify, nuxt2Context: { i18n } } = useNuxtApp()
 const editCategoryId = categoryId.value ?? generateId()
 
@@ -29,7 +30,8 @@ const isUpdateChildCategoriesColor = ref(true)
 
 const isAllowChangeParent = computed(() => {
   const childs = getChildCategoriesIds(categoryId.value)
-  if (childs) return false
+  if (childs)
+    return false
 
   return true
 })
@@ -56,7 +58,8 @@ function findCategoryWithThisColor(color) {
  * @param categoryId
  */
 function getChildCategoriesIds(categoryId) {
-  if (!categoryId) return false
+  if (!categoryId)
+    return false
 
   const category = $store.state.categories.items[categoryId]
   const categoriesItems = $store.state.categories.items

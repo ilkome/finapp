@@ -324,7 +324,7 @@ export default defineComponent({
     /**
      * Run init when mounted or show changed
      */
-    watch(() => props.show, async() => {
+    watch(() => props.show, async () => {
       if (!props.keepAlive || (props.keepAlive && props.show))
         await init()
 
