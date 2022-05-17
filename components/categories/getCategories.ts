@@ -14,11 +14,10 @@ export function getCatsIds(catsIds, catsItems) {
 
 // TODO: add typings
 export function getTransferCatgoriesIds(categoriesItems) {
-  const categoriesIdsByName = Object.keys(categoriesItems)
-    .filter(id =>
-      categoriesItems[id].name.toLowerCase() === 'перевод'
-      || categoriesItems[id].name.toLowerCase() === 'transfer',
-    )
+  const names = ['перевод', 'transfer']
+  const categoriesIdsByName = Object
+    .keys(categoriesItems)
+    .filter(id => names.includes(categoriesItems[id].name.toLowerCase()))
 
   return [...categoriesIdsByName, 'transfer']
 }
