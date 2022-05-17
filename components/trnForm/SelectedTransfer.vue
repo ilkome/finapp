@@ -30,12 +30,11 @@ if ($store.state.trnForm.values.amountType === 2) {
 
 const isSameCurency = computed(() => incomeWallet.value?.currency === expenseWallet.value?.currency)
 
-function changeAmount(tranferType: 'income' | 'expense', event: any) {
+function changeAmount(TransferType: 'income' | 'expense', event: any) {
   $store.commit('trnForm/setTrnFormValues', {
-    [`${tranferType}Amount`]: Number(event.target.value),
+    [`${TransferType}Amount`]: Number(event.target.value),
   })
 }
-
 </script>
 
 <template lang="pug">

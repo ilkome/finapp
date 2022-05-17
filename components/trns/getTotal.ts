@@ -41,9 +41,9 @@ export function getTotal({
   walletsIds?: WalletID[]
   walletsItems: Record<WalletID, WalletItem>
 }) {
-  // TODO: rename getFormatedAmount
-  function getFormatedAmount(amount: number, currency: string) {
-    return getAmountInBaseRate({
+  // TODO: rename getformattedAmount
+  function getformattedAmount(amount: number, currency: string) {
+    return getAmountInRate({
       amount,
       baseRate,
       currency,
@@ -68,7 +68,7 @@ export function getTotal({
     if (trn.type === TrnType.Income || trn.type === TrnType.Expense) {
       const isTransferCategory = transferCategoriesIds?.includes(trn.categoryId)
       const wallet = walletsItems[trn.walletId]
-      const sum = getFormatedAmount(trn.amount, wallet.currency)
+      const sum = getformattedAmount(trn.amount, wallet.currency)
 
       // Income
       if (trn.type === TrnType.Income) {
@@ -89,8 +89,8 @@ export function getTotal({
     else if (trn.type === TrnType.Transfer && 'incomeWalletId' in trn) {
       const incomeWallet = walletsItems[trn.incomeWalletId]
       const expenseWallet = walletsItems[trn.expenseWalletId]
-      const incomeAmount = getFormatedAmount(trn.incomeAmount, incomeWallet.currency)
-      const expenseAmount = getFormatedAmount(trn.expenseAmount, expenseWallet.currency)
+      const incomeAmount = getformattedAmount(trn.incomeAmount, incomeWallet.currency)
+      const expenseAmount = getformattedAmount(trn.expenseAmount, expenseWallet.currency)
 
       // Include only selected wallets
       if (walletsIds && walletsIds.length > 0) {
@@ -114,8 +114,8 @@ export function getTotal({
     else if (trn.type === TrnType.Transfer && 'walletFromId' in trn) {
       const incomeWallet = walletsItems[trn.walletToId]
       const expenseWallet = walletsItems[trn.walletFromId]
-      const incomeAmount = getFormatedAmount(trn.amountTo, incomeWallet.currency)
-      const expenseAmount = getFormatedAmount(trn.amountFrom, expenseWallet.currency)
+      const incomeAmount = getformattedAmount(trn.amountTo, incomeWallet.currency)
+      const expenseAmount = getformattedAmount(trn.amountFrom, expenseWallet.currency)
 
       // Include only selected wallets
       if (walletsIds && walletsIds.length > 0) {

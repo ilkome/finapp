@@ -15,7 +15,7 @@ export default function useStatChart() {
     state.show[type] = value
   }
 
-  function toogle(type: MoneyType): void {
+  function toggle(type: MoneyType): void {
     state.show[type] = !state.show[type]
   }
 
@@ -40,7 +40,7 @@ export default function useStatChart() {
 
   return {
     chartState: state,
-    toogleChart: toogle,
+    toggleChart: toggle,
     onWatch,
   }
 }

@@ -20,7 +20,7 @@ export default function useCalculator() {
   }
 
   /**
-   * Set formated expression
+   * Set formatted expression
    *
    * @param {string} value
    */
@@ -183,13 +183,13 @@ export default function useCalculator() {
    * @return {string} expression string
    */
   function formatInput(value: string, isTrimFloatSpaces?: boolean): string {
-    const formatedArray = separateExpression(String(value))
+    const formattedArray = separateExpression(String(value))
       .map((item) => {
-        let formatedItem = ''
+        let formattedItem = ''
         const isAction = item.match(/[/*\-+]/g)
 
         if (isAction) {
-          formatedItem = ` ${item} `
+          formattedItem = ` ${item} `
         }
         else {
           let clearedValue = removeSpaces(String(item))
@@ -202,15 +202,15 @@ export default function useCalculator() {
           const isInteger = splitFloatValue.length === 1
 
           if (isInteger)
-            formatedItem = baseAmountFormat(item, separator.value)
+            formattedItem = baseAmountFormat(item, separator.value)
 
           else
-            formatedItem = `${baseAmountFormat(splitFloatValue[0], separator.value)}.${splitFloatValue[1]}`
+            formattedItem = `${baseAmountFormat(splitFloatValue[0], separator.value)}.${splitFloatValue[1]}`
         }
-        return formatedItem
+        return formattedItem
       })
 
-    return formatedArray.join('')
+    return formattedArray.join('')
   }
 
   function clearExpression(): void {
@@ -242,7 +242,7 @@ export default function useCalculator() {
     const result = makeCalculation(getExpression.value)
     return Number(result)
   })
-  const getFormatedResult = computed(() => { return formatInput(expression.value) })
+  const getformattedResult = computed(() => { return formatInput(expression.value) })
   const isSum = computed(() => String(getResult.value) === removeSpaces(expression.value))
 
   return {
@@ -250,7 +250,7 @@ export default function useCalculator() {
     formatInput,
     isSum,
     getExpression,
-    getFormatedResult,
+    getformattedResult,
     setExpression,
     getResult,
     isKeysActive,

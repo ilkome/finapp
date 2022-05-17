@@ -64,7 +64,7 @@ export default {
   },
 
   methods: {
-    toogleShowInside() {
+    toggleShowInside() {
       this.isShowInside = !this.isShowInside
     },
   },
@@ -74,7 +74,7 @@ export default {
 <template lang="pug">
 .statItem(
   :class="{ _active: isShowInside }"
-  @click="toogleShowInside"
+  @click="toggleShowInside"
 )
   .ins.py-2.px-3.space-x-3.rounded-md.justify-between.items-center.flex.border.dark_border-neutral-800.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
     :class="['z-[9]', { _active: isShowInside }, { 'cursor-n-resize shadow-xl rounded-b-none': isShowInside }, { 'cursor-s-resize shadow-sm': !isShowInside }]"

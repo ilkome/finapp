@@ -23,7 +23,7 @@ export default {
   .dropdown__title
     template(v-if="$slots.title"): slot(name="title")
     template(v-else) {{ title }}
-  .dropdown__toogle: .mdi.mdi-dots-vertical
+  .dropdown__toggle: .mdi.mdi-dots-vertical
 </template>
 
 <style lang="stylus" scoped>
@@ -88,7 +88,7 @@ export default {
     flex-grow 1
     white-space nowrap
 
-  &__toogle
+  &__toggle
     opacity .8
     justify-content center
     width 2px

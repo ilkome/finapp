@@ -33,7 +33,7 @@ function setWalletFilter(walletId: WalletID) {
   .pb-12
     WalletsList(
       :limit="6"
-      isShowToogle
+      isShowToggle
       @onClick="id => $router.push(`/wallets/${id}`)"
     )
       template(#default="{ walletsItemsLimited }")
@@ -61,9 +61,9 @@ function setWalletFilter(walletId: WalletID) {
                 :isShowSign="false"
               )
 
-      template(#toogle="{ stateLimit, limit, toogle }")
+      template(#toggle="{ stateLimit, limit, toggle }")
         .cursor-pointer.py-3.px-3.text-xs.text-center.hocus_text-skin-item-base-up.hocus_bg-skin-item-main-hover(
-          @click="toogle"
+          @click="toggle"
         )
           template(v-if="stateLimit > 0") {{ $t('wallets.showAll') }}
           template(v-else-if="stateLimit !== limit") {{ $t('wallets.showOnly') }} {{ limit }}

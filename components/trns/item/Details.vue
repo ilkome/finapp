@@ -22,14 +22,14 @@ export default {
         _stat: this.ui === 'stat',
       }
     },
-    formatedDate() {
+    formattedDate() {
       const date = formatDate(this.trn.date, 'full')
       return `${date.weekday}, ${date.day} ${date.month} ${date.year}`
     },
-    formatedDateDay() {
+    formattedDateDay() {
       return formatDate(this.trn.date, 'trnItem')
     },
-    formatedDateDay2() {
+    formattedDateDay2() {
       return formatDate(this.trn.date, 'trnItem')
     },
   },
@@ -70,7 +70,7 @@ export default {
         round
       )
     .trnItem__categoryName {{ $t('trnForm.transferTitle') }}
-    .trnItem__date {{ formatedDate }}
+    .trnItem__date {{ formattedDate }}
     .flex.gap-5.items-center
       //- Expense
       div
@@ -132,7 +132,7 @@ export default {
 
       .walletName {{ wallet.name }}
 
-    .trnItem__date {{ formatedDate }}
+    .trnItem__date {{ formattedDate }}
     .trnItem__amount.text-4xl(
       @click.stop="setTrnEdit"
     )

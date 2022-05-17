@@ -22,7 +22,7 @@ export default {
     * @return {String} return.incomes
     * @return {String} return.total
   */
-  getTotalOfTrnsIds: (_state, _getters, rootState) => (trnsIds, inculdeTransfers = false, isConvertToBase = true, walletId) => {
+  getTotalOfTrnsIds: (_state, _getters, rootState) => (trnsIds, includeTransfers = false, isConvertToBase = true, walletId) => {
     const trnsItems = rootState.trns.items
     const rates = rootState.currencies.rates
     const walletsItems = rootState.wallets.items
@@ -51,7 +51,7 @@ export default {
         total: total.sumTransactions + total.sumTransfers,
       }
     }
-    else if (inculdeTransfers && isConvertToBase) {
+    else if (includeTransfers && isConvertToBase) {
       total = getTotal({
         baseRate,
         rates,
@@ -71,7 +71,7 @@ export default {
         total: total.sumTransactions + total.sumTransfers,
       }
     }
-    else if (inculdeTransfers && !isConvertToBase) {
+    else if (includeTransfers && !isConvertToBase) {
       total = getTotal({
         transferCategoriesIds,
         trnsIds,
@@ -90,7 +90,7 @@ export default {
         total: total.sumTransactions + total.sumTransfers,
       }
     }
-    else if (!inculdeTransfers) {
+    else if (!includeTransfers) {
       total = getTotal({
         baseRate,
         rates,

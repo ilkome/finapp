@@ -34,7 +34,7 @@ export default {
   },
 
   methods: {
-    toogleShowInside() {
+    toggleShowInside() {
       this.isShowInside = !this.isShowInside
     },
   },
@@ -44,7 +44,7 @@ export default {
 <template lang="pug">
 .statItem(
   :class="{ _active: isShowInside }"
-  @click="toogleShowInside"
+  @click="toggleShowInside"
 )
   .ins.py-2.px-3.space-x-3.justify-between.items-center.flex.border-t(
     :class="[{ _active: isShowInside }, { 'border-b-0 cursor-n-resize': isShowInside }, { 'cursor-s-resize': !isShowInside }, 'dark_border-neutral-800']"

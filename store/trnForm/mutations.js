@@ -37,7 +37,7 @@ export default {
   openTrnForm(state) { state.show = true },
   openTrnFormPc(state) { state.showPc = true },
 
-  toogleTrnForm(state) {
+  toggleTrnForm(state) {
     state.show = !state.show
   },
 }

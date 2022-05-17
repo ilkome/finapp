@@ -15,7 +15,7 @@ export default {
   for: 'за',
 
   locale: {
-    toogle: 'Сменить язык',
+    toggle: 'Сменить язык',
   },
 
   theme: {
@@ -234,7 +234,7 @@ export default {
     view: {
       add: 'Добавить',
       remove: 'Удалить',
-      toogle: 'Изменить график',
+      toggle: 'Изменить график',
       showed: 'Показано',
       periodsName: 'период',
       simpleTitle: 'График линия',

@@ -3,7 +3,7 @@ import { formatDate } from '~/utils/formatDate'
 
 export default {
   computed: {
-    formatedDate() {
+    formattedDate() {
       const date = formatDate(this.$store.state.trnForm.values.date, 'full')
       return `${date.weekday} <br/> ${date.day} ${date.month}`
     },
@@ -37,7 +37,7 @@ export default {
   ): .mdi.mdi-chevron-left
 
   .cursor-pointer.py-2.px-3.flex-center.rounded-md.text-center.text-sm.leading-none.hocus_bg-skin-item-main-hover(
-    v-html="formatedDate"
+    v-html="formattedDate"
     @click="$store.commit('trnForm/showTrnFormModal', 'calendar')"
   )
 

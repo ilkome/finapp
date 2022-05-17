@@ -67,7 +67,7 @@ export const trnsItems: Record<TrnID, TrnItem> = {
   transferCategoryNameIncomeWalletCashUSD30: {
     date: 123456, // TODO: add real dates
     amount: 30,
-    categoryId: 'categoryTranferOld',
+    categoryId: 'categoryTransferOld',
     type: TrnType.Income,
     walletId: 'walletCashUSD',
   },

@@ -170,7 +170,7 @@ describe('Total of Transactions', () => {
     expect(total.sumTransfers).toEqual(0)
   })
 
-  it('Total of Transfers with deprecated tranfer type when no Wallets provided', () => {
+  it('Total of Transfers with deprecated Transfer type when no Wallets provided', () => {
     const trnsIds = ['transferOLDExpense2500Income3500']
 
     const total = getTotal({
@@ -185,7 +185,7 @@ describe('Total of Transactions', () => {
     expect(total.sumTransfers).toEqual(1000)
   })
 
-  it('Total of Transfers with deprecated tranfer type', () => {
+  it('Total of Transfers with deprecated Transfer type', () => {
     const walletsIds = ['walletDeprecatedTransferIncome', 'walletDeprecatedTransferExpense']
     const trnsIds = ['transferOLDExpense2500Income3500']
 

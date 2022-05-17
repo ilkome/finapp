@@ -14,7 +14,7 @@ export default {
   for: 'for',
 
   locale: {
-    toogle: 'Toogle locale',
+    toggle: 'Toggle locale',
   },
 
   theme: {
@@ -232,7 +232,7 @@ export default {
     view: {
       add: 'Add',
       remove: 'Remove',
-      toogle: 'Toogle chart view',
+      toggle: 'Toggle chart view',
       showed: 'Showed',
       periodsName: 'periods',
       simpleTitle: 'Line view',

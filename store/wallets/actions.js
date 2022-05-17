@@ -17,7 +17,7 @@ export default {
   addWallet({ dispatch, rootState, getters }, { id, values }) {
     const uid = rootState.user.user.uid
 
-    const formatedValues = {
+    const formattedValues = {
       color: values.color,
       countTotal: values.countTotal,
       currency: values.currency,
@@ -30,7 +30,7 @@ export default {
     if (!getters.hasWallets)
       dispatch('currencies/setBaseCurrency', values.currency, { root: true })
 
-    saveData(`users/${uid}/accounts/${id}`, formatedValues)
+    saveData(`users/${uid}/accounts/${id}`, formattedValues)
   },
 
   /**

@@ -13,8 +13,8 @@ export default function useChart() {
     isShowDataLabels.value = false
   }
 
-  function toogleChartsView() {
-    $store.commit('chart/toogleChartPeriodView', {
+  function toggleChartsView() {
+    $store.commit('chart/toggleChartPeriodView', {
       periodName: filterPeriodNameAllReplacedToYear.value,
     })
     $store.dispatch('ui/saveUiView')
@@ -23,7 +23,7 @@ export default function useChart() {
   return {
     isShowDataLabels,
 
-    toogleChartsView,
+    toggleChartsView,
     showDataLabels,
     hideDataLabels,
   }

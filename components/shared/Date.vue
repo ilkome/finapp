@@ -8,7 +8,7 @@ const props = defineProps<{
 
 const { nuxt2Context: { i18n } } = useNuxtApp()
 
-const formatedDate = computed(() => {
+const formattedDate = computed(() => {
   const today = dayjs()
   const filterDate = props.date
   const filterPeriod = props.period
@@ -54,5 +54,5 @@ const formatedDate = computed(() => {
 <template lang="pug">
 div
   template(v-if="period === 'all'") {{ $t('dates.all.simple') }}
-  template(v-if="period !== 'all'") {{ formatedDate }}
+  template(v-if="period !== 'all'") {{ formattedDate }}
 </template>

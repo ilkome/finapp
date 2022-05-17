@@ -4,7 +4,7 @@ import useWallets from '~/components/wallets/useWallets'
 const props = withDefaults(
   defineProps<{
     limit?: number
-    isShowToogle?: boolean
+    isShowToggle?: boolean
   }>(),
   {
     limit: 0,
@@ -39,7 +39,7 @@ onMounted(() => {
   stateLimit.value = props.limit
 })
 
-function toogle() {
+function toggle() {
   stateLimit.value > 0 ? (stateLimit.value = 0) : (stateLimit.value = props.limit)
 }
 </script>
@@ -54,10 +54,10 @@ div
   )
 
   slot(
-    v-if="isShowToogle && walletsIdsSorted.length > limit"
-    name="toogle"
+    v-if="isShowToggle && walletsIdsSorted.length > limit"
+    name="toggle"
     :stateLimit="stateLimit"
     :limit="limit"
-    :toogle="toogle"
+    :toggle="toggle"
   )
 </template>

@@ -10,7 +10,7 @@ export default {
   },
 
   computed: {
-    formatedDate() {
+    formattedDate() {
       return formatDate(this.date, 'full')
     },
   },
@@ -19,11 +19,11 @@ export default {
 
 <template lang="pug">
 .trnsListDate
-  .trnsListDate__day {{ formatedDate.day }}
-  .trnsListDate__weekday {{ formatedDate.weekday }}
+  .trnsListDate__day {{ formattedDate.day }}
+  .trnsListDate__weekday {{ formattedDate.weekday }}
   .trnsListDate__details
-    .trnsListDate__month {{ formatedDate.month }}
-    .trnsListDate__year {{ formatedDate.year }}
+    .trnsListDate__month {{ formattedDate.month }}
+    .trnsListDate__year {{ formattedDate.year }}
 </template>
 
 <style lang="stylus" scoped>

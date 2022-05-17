@@ -6,7 +6,7 @@ export default {
     }
   },
 
-  toogleChartPeriodView(state, { periodName }) {
+  toggleChartPeriodView(state, { periodName }) {
     state.periods[periodName].grouped = !state.periods[periodName].grouped
   },
 
