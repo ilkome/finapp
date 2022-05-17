@@ -89,6 +89,8 @@ messagingSenderId: 'YOUR_CONFIG'
 - Scroll to `Authorized domains` and click `Add domain`
 - Add your domain name where you hosted Finapp.
 
+<!-- TODO: add google for auth -->
+
 ### Open exchange rates setup
 - Get your App ID at [openexchangerates.org](https://openexchangerates.org/signup/free)
 - Rename `.env.example` to `.env`
