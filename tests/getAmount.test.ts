@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { getAmountInBaseRate } from '~/components/trns/getTotal'
+import { getAmountInRate } from '~/components/trns/getTotal'
 import { ratesBasedOnUsd as rates } from '~/tests/rates.mock'
 
 describe('Get amount', () => {
   it('Get amount in same rate as base rate', () => {
-    const amountInBaseRate = getAmountInBaseRate({
+    const amountInBaseRate = getAmountInRate({
       amount: 40,
       currency: 'USD',
       rates,
@@ -15,7 +15,7 @@ describe('Get amount', () => {
   })
 
   it('Get amount in RUB when base rate is USD', () => {
-    const amountInBaseRate = getAmountInBaseRate({
+    const amountInBaseRate = getAmountInRate({
       amount: 70,
       currency: 'RUB',
       rates,
@@ -26,7 +26,7 @@ describe('Get amount', () => {
   })
 
   it('Get amount in RUB when base rate is EUR', () => {
-    const amountInBaseRate = getAmountInBaseRate({
+    const amountInBaseRate = getAmountInRate({
       amount: 70,
       currency: 'RUB',
       rates,

@@ -2,7 +2,7 @@
 import useAmount from '~/components/amount/useAmount'
 
 const { $store } = useNuxtApp()
-const { getAmountInBaseCurrency } = useAmount()
+const { getAmountInBaseRate } = useAmount()
 
 const totalInWallets = computed(() => {
   const walletsItems = $store.state.wallets.items
@@ -19,7 +19,7 @@ const totalInWallets = computed(() => {
       walletTotal = walletsTotal[walletId].base
     }
     else {
-      walletTotal = getAmountInBaseCurrency({
+      walletTotal = getAmountInBaseRate({
         amount: walletsTotal[walletId].base,
         currency: walletsItems[walletId].currency,
         noFormat: true,

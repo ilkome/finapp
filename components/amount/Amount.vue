@@ -14,7 +14,7 @@ const props = withDefaults(defineProps<{
   isShowSign: true,
 })
 
-const { baseCurrency, formatAmount, getCurrencySymbol, getAmountInBaseCurrency } = useAmount()
+const { baseCurrency, formatAmount, getCurrencySymbol, getAmountInBaseRate } = useAmount()
 const sign = props.type === 0 ? '-' : '+'
 
 const alignClasses = computed(() => ({
@@ -51,7 +51,7 @@ const amountClasses = computed(() => ([{
         :class="alignClasses"
       )
         .text-xs.leading-none(v-if="isShowSign && sign === '-'") {{ sign }}
-        .text-xs.leading-none {{ getAmountInBaseCurrency({ amount, currency }) }}
+        .text-xs.leading-none {{ getAmountInBaseRate({ amount, currency }) }}
         .text-2xs.leading-none {{ getCurrencySymbol(baseCurrency) }}
 
   //- 0
