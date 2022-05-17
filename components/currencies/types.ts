@@ -1,1 +1,1 @@
-export type Currency = string
+export type CurrencyCode = string

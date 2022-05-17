@@ -3,6 +3,7 @@ import type { TrnID, TrnItem } from '~/components/trns/types'
 import type { WalletID, WalletItem } from '~/components/wallets/types'
 import { TrnType } from '~/components/trns/types'
 
+// TODO: why is getAmountInBaseRate and getAmountInBaseCurrency
 export function getAmountInBaseRate({
   amount,
   currency,
@@ -40,6 +41,7 @@ export function getTotal({
   walletsIds?: WalletID[]
   walletsItems: Record<WalletID, WalletItem>
 }) {
+  // TODO: rename getFormatedAmount
   function getFormatedAmount(amount: number, currency: string) {
     return getAmountInBaseRate({
       amount,

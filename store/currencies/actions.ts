@@ -10,18 +10,17 @@ export default {
     // User base currency in DB
     const userBaseCurrency = await getDataOnce(`users/${uid}/settings/baseCurrency`) || 'USD'
 
-    // Rates with date
+    // Rates for today
     const today = dayjs().startOf('day').valueOf()
     let ratesBasedOnUsd = await getDataOnce(`ratesUsd/history/${today}`)
 
-    // No rates for today
     if (!ratesBasedOnUsd) {
       ratesBasedOnUsd = await getRatesOfUSD(this.$config.ratesApiKey)
       if (!ratesBasedOnUsd)
         return
 
-      saveData('ratesUsd/latest', ratesBasedOnUsd)
-      saveData(`ratesUsd/history/${today}`, ratesBasedOnUsd)
+      await saveData('ratesUsd/latest', ratesBasedOnUsd)
+      await saveData(`ratesUsd/history/${today}`, ratesBasedOnUsd)
     }
 
     commit('setCurrencies', {
@@ -29,7 +28,7 @@ export default {
       rates: ratesBasedOnUsd,
     })
 
-    localforage.setItem('finapp.currencies', {
+    await localforage.setItem('finapp.currencies', {
       base: userBaseCurrency,
       rates: ratesBasedOnUsd,
     })

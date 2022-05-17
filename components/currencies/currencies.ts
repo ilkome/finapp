@@ -1,8 +1,10 @@
-import type { Currency } from '~/components/currencies/types'
+import type { CurrencyCode } from '~/components/currencies/types'
 
 export const currencies: {
-  code: Currency
+  code: CurrencyCode
   name: string
+  symbol?: string
+  precision?: number
 }[] = [{
   code: 'CNH',
   name: 'Chinese Yuan',
@@ -156,6 +158,7 @@ export const currencies: {
 }, {
   code: 'EUR',
   name: 'Euro',
+  symbol: '€',
 }, {
   code: 'FJD',
   name: 'Fiji Dollar',
@@ -204,6 +207,8 @@ export const currencies: {
 }, {
   code: 'IDR',
   name: 'Rupiah',
+  symbol: 'Rp',
+  precision: 0,
 }, {
   code: 'ILS',
   name: 'New Israeli Sheqel',
@@ -372,6 +377,8 @@ export const currencies: {
 }, {
   code: 'RUB',
   name: 'Russian Ruble',
+  symbol: '₽',
+  precision: 0,
 }, {
   code: 'RWF',
   name: 'Rwanda Franc',
@@ -423,6 +430,8 @@ export const currencies: {
 }, {
   code: 'THB',
   name: 'Baht',
+  symbol: '฿',
+  precision: 0,
 }, {
   code: 'TJS',
   name: 'Somoni',
@@ -456,6 +465,7 @@ export const currencies: {
 }, {
   code: 'USD',
   name: 'US Dollar',
+  symbol: '$',
 }, {
   code: 'USN',
   name: 'US Dollar (Next day)',

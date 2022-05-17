@@ -42,7 +42,7 @@ const amountClasses = computed(() => ([{
         :class="alignClasses"
       )
         .text-md.leading-none(v-if="isShowSign && sign === '-'") {{ sign }}
-        .text-md.leading-none {{ formatAmount(amount) }}
+        .text-md.leading-none {{ formatAmount(amount, currency) }}
         .text-xs.leading-none {{ getCurrencySymbol(currency) }}
 
       //- Base
