@@ -1,20 +1,9 @@
 <script>
 export default {
-  name: 'StatSummaryRowItemView',
-
   props: {
-    amount: {
-      type: Number,
-      required: true,
-    },
-    type: {
-      type: Number,
-      default: 3,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
+    amount: { type: Number, required: true },
+    type: { type: Number, default: 3 },
+    title: { type: String, required: true },
   },
 
   computed: {
@@ -31,13 +20,14 @@ export default {
 <template lang="pug">
 .summaryItem(:class="className")
   .summaryItem__title.pb-1 {{ title }}
-  .summaryItem__amount
+  .summaryItem__amount.text-skin-item-base
     Amount(
+      :amount="amount"
       :currency="$store.state.currencies.base"
       :type="type"
-      :value="amount"
-      size="md"
-      vertical="left"
+      :colorize="type === 0 ? 'expense' : 'income'"
+      :isShowBaseRate="false"
+      :isShowSign="false"
     )
   .summaryItem__line
 </template>

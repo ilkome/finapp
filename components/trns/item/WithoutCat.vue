@@ -1,4 +1,3 @@
-
 <script lang="ts">
 import useTrn from '~/components/trns/item/useTrn'
 
@@ -55,7 +54,7 @@ export default defineComponent({
 
       //- Amount
       .cursor-pointer
-        Amount2(
+        Amount(
           :amount="trnItem.amount"
           :currency="trnItem.wallet.currency"
           :type="trnItem.type"

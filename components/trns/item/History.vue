@@ -85,40 +85,46 @@ const actions = {
               div {{ $t('trnForm.transfer.from') }}:
               .text-neutral-500(class="dark_text-neutral-400") {{ trnItem.expenseWallet.name }}
 
-            Amount2.text-base(
-              :amount="trnItem.expenseAmount || trnItem.amount"
-              :currency="trnItem.expenseWallet.currency"
-              :type="0"
-              verti
-              colorize="expenses"
+            .text-base(
               @click="actions.onOpenEdit"
             )
+              Amount(
+                :amount="trnItem.expenseAmount || trnItem.amount"
+                :currency="trnItem.expenseWallet.currency"
+                :type="0"
+                verti
+                colorize="expenses"
+              )
+
+          //- Income
           div
-            //- Income
             .space-x-1.items-center.flex
               div {{ $t('trnForm.transfer.to') }}:
               .text-neutral-500(class="dark_text-neutral-400") {{ trnItem.incomeWallet.name }}
 
-            Amount2.text-base(
-              :amount="trnItem.incomeAmount || trnItem.amount"
-              :currency="trnItem.incomeWallet.currency"
-              :type="1"
-              colorize="incomes"
+            .text-base(
               @click="actions.onOpenEdit"
             )
+              Amount(
+                :amount="trnItem.incomeAmount || trnItem.amount"
+                :currency="trnItem.incomeWallet.currency"
+                :type="1"
+                colorize="incomes"
+              )
 
       //- Amount
-      .cursor-pointer(v-if="trnItem.type !== 2")
-        Amount2(
+      .cursor-pointer(
+        v-if="trnItem.type !== 2"
+        @click="actions.onOpenEdit"
+      )
+        Amount(
           :amount="trnItem.amount"
           :currency="trnItem.wallet.currency"
           :type="trnItem.type"
           colorize="incomes"
-          @click="actions.onOpenEdit"
         )
 
     //- Description
-    .pt-2.text-neutral-500.text-xs.leading-none(
-      v-if="trnItem.description"
-    ) {{ trnItem.description }}
+    .pt-2.text-neutral-500.text-xs.leading-none(v-if="trnItem.description")
+      | {{ trnItem.description }}
 </template>

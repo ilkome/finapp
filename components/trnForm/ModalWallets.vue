@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
-const { height } = useWindowSize()
-
 defineProps<{
   title: string
 }>()
-
 const emit = defineEmits(['click', 'closed'])
+const { height } = useWindowSize()
 
 function onClickWallet(walletId, close) {
   emit('click', walletId)
@@ -48,11 +46,10 @@ BaseBottomSheet(
               .grow.text-sm.text-skin-item-base {{ walletItem.name }}
 
             //- Amount
-            Amount(
-              :currency="walletItem.currency"
-              :value="walletItem.amount"
-              alwaysShowSymbol
-              showBase
-              vertical="right"
-            )
+            .text-skin-item-base
+              Amount(
+                :amount="walletItem.amount"
+                :currency="walletItem.currency"
+                :isShowSign="false"
+              )
 </template>

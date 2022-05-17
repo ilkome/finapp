@@ -90,10 +90,12 @@ export default {
         .overflow-hidden.truncate.grow.space-x-2.flex.items-baseline.text-neutral-700(class="dark_text-neutral-400")
           .overflow-hidden.text-sm {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
 
-        .statItem__amount
+        .statItem__amount.text-skin-item-base
           Amount(
+            :amount="total"
             :currency="currency"
-            :value="total"
+            :type="type"
+            :isShowBaseRate="false"
           )
       .pt-1.statItem__graph.mt-1: .statItem__graph__in(:style="styles")
 

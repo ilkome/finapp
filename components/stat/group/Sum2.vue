@@ -12,56 +12,44 @@ const total = computed(() => $store.getters['trns/getTotalOfTrnsIds'](props.trns
 </script>
 
 <template lang="pug">
-div
-  .py-3
-    .overflow-hidden.overflow-x-auto.scrollbar
-      .flex.items-center.gap-6
-        //- Income
-        div
-          .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('money.expense') }}
+.py-3
+  .overflow-hidden.overflow-x-auto.scrollbar
+    .flex.items-center.gap-6
+      //- Expense
+      div
+        .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+          | {{ $t('money.expense') }}
+        .text-xl
           Amount(
+            :amount="total.expense"
             :currency="$store.state.currencies.base"
             :type="0"
-            :value="total.expense"
-            size="lg"
-            vertical="left"
+            :isShowBaseRate="false"
+            colorize="expense"
           )
 
-        //- Expense
-        div
-          .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('money.income') }}
+      //- Income
+      div
+        .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+          | {{ $t('money.income') }}
+        .text-xl
           Amount(
+            :amount="total.income"
             :currency="$store.state.currencies.base"
             :type="1"
-            :value="total.income"
-            size="lg"
-            vertical="left"
+            :isShowBaseRate="false"
+            colorize="income"
           )
 
-        //- Sum
-        div
-          .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('money.sum') }}
+      //- Sum
+      div
+        .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+          | {{ $t('money.sum') }}
+        .text-xl
           Amount(
+            :amount="total.sum"
             :currency="$store.state.currencies.base"
             :type="3"
-            :value="total.sum"
-            size="lg"
-            vertical="left"
+            :isShowBaseRate="false"
           )
-
-        //- //- Average
-        //- LazyStatSummaryRowItemView(
-        //-   v-if="statPage.average[typeText] !== 0"
-        //-   :amount="statPage.average[typeText]"
-        //-   :title="$t(`money.average.${typeText}`)"
-        //-   :type="typeNumber"
-        //- )
-
-        //- //- Today
-        //- LazyStatSummaryRowItemView(
-        //-   v-if="statToday && statToday[typeText].total !== 0"
-        //-   :amount="statToday[typeText].total"
-        //-   :title="$t('dates.day.today')"
-        //-   :type="typeNumber"
-        //- )
 </template>

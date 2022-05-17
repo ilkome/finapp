@@ -27,13 +27,14 @@ const wallet = computed(() => walletsItemsSorted.value[props.walletId])
       .text-sm.text-skin-item-base {{ wallet.name }}
 
       //- Amount
-      Amount(
-        :currency="wallet.currency"
-        :value="wallet.amount"
-        :showBase="false"
-        alwaysShowSymbol
-        vertical="left"
-      )
+      .text-skin-item-base
+        Amount(
+          :amount="wallet.amount"
+          :currency="wallet.currency"
+          :isShowBaseRate="false"
+          :isShowSign="false"
+          align="left"
+        )
 
   .mdi.mdi-dots-vertical.-mr-1.text-lg.text-skin-item-base-down
 </template>

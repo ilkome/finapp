@@ -6,6 +6,7 @@ export default defineComponent({
     vertical: { type: String, default: 'left' },
     size: { type: String, default: null },
     activeItemId: { type: String, default: null },
+    isShowAmount: { type: Boolean, default: true },
   },
 
   computed: {
@@ -19,7 +20,8 @@ export default defineComponent({
 
   methods: {
     handleClick() {
-      if (this.$listeners.onClick) this.$listeners.onClick(this.id)
+      if (this.$listeners.onClick)
+        this.$listeners.onClick(this.id)
     },
   },
 })
@@ -31,7 +33,7 @@ export default defineComponent({
   @click="handleClick"
 )
   div.bg-red-300.h-8(v-if="activeItemId === id")
-  .gap-x-3.flex
+  .gap-x-3.flex.items-center
     .text-neutral-50.text-xs.leading-none.w-6.h-6.rounded-md.justify-center.items-center.flex(
       :style="{ background: wallet.color }"
       class="mt-[2px]"
@@ -39,11 +41,10 @@ export default defineComponent({
 
     div
       .text-sm.text-neutral-500(class="dark_text-neutral-400") {{ wallet.name }}
-      Amount(
-        :currency="wallet.currency"
-        :value="wallet.total"
-        alwaysShowSymbol
-        showBase
-        vertical="right"
-      )
+      template(v-if="isShowAmount")
+        Amount(
+          :amount="wallet.total"
+          :currency="wallet.currency"
+          align="right"
+        )
 </template>

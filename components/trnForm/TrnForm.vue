@@ -9,13 +9,13 @@ import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import useTrnFormValidate from '~/components/trnForm/useTrnFormValidate'
 import { random, successEmo } from '~/assets/js/emo'
 
-SwiperCore.use([Pagination])
-
 const props = withDefaults(defineProps<{
   show: boolean
 }>(), {
   show: true,
 })
+
+SwiperCore.use([Pagination])
 
 const { $store } = useNuxtApp()
 
@@ -261,13 +261,13 @@ function handleSubmitForm() {
                       .text-sm.text-skin-item-base {{ walletItem.name }}
 
                       //- Amount
-                      Amount(
-                        :currency="walletItem.currency"
-                        :value="walletItem.amount"
-                        :showBase="false"
-                        alwaysShowSymbol
-                        vertical="left"
-                      )
+                      .text-sm
+                        Amount(
+                          :amount="walletItem.amount"
+                          :currency="walletItem.currency"
+                          :isShowBaseRate="false"
+                          align="left"
+                        )
 
           //- Favorite categories
           .pb-7(v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length > 0")

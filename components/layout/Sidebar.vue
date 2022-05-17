@@ -31,8 +31,6 @@ function setWalletFilter(walletId: WalletID) {
     LayoutSidebarMenu
 
   .pb-12
-    WalletsTotal
-
     WalletsList(
       :limit="6"
       isShowToogle
@@ -56,13 +54,12 @@ function setWalletFilter(walletId: WalletID) {
               .grow.text-sm.text-skin-item-base {{ walletItem.name }}
 
             //- Amount
-            Amount(
-              :currency="walletItem.currency"
-              :value="walletItem.amount"
-              :showBase="false"
-              alwaysShowSymbol
-              vertical="right"
-            )
+            .text-skin-item-base
+              Amount(
+                :amount="walletItem.amount"
+                :currency="walletItem.currency"
+                :isShowSign="false"
+              )
 
       template(#toogle="{ stateLimit, limit, toogle }")
         .cursor-pointer.py-3.px-3.text-xs.text-center.hocus_text-skin-item-base-up.hocus_bg-skin-item-main-hover(

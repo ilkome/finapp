@@ -46,13 +46,12 @@ export default {
     ): div(:class="category.icon")
 
   .statItemRound__name.js-getWidth(:class="{ _isCategoryHasChildren: isCategoryHasChildren }") {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
-  .statItemRound__amount.js-getWidth
+  .statItemRound__amount.js-getWidth.text-skin-item-base
     Amount(
+      :amount="total"
       :currency="currency"
-      :isColorize="false"
       :type="type"
-      :value="total"
-      size="md"
+      :isShowBaseRate="false"
     )
 </template>
 
@@ -67,6 +66,7 @@ export default {
       .icon__image
         font-size 22px
 </style>
+
 <style lang="stylus" scoped>
 .statItemRound
   cursor pointer

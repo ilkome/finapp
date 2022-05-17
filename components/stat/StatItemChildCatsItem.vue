@@ -58,13 +58,12 @@ export default {
       .space-x-3.flex
         .grow.statItem__name {{ category.name }}
 
-        .statItem__amount
+        .statItem__amount.text-skin-item-base
           Amount(
+            :amount="total"
             :currency="$store.state.currencies.base"
-            :value="total"
             :type="type"
-            :isColorize="false"
-            isShowPrefix
+            :isShowBaseRate="false"
           )
 
   .statItemChild__trns(
@@ -96,7 +95,6 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-
 .ins2
   position relative
   background var(--c-item2-bg-hover)

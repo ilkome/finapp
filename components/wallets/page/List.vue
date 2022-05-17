@@ -31,10 +31,7 @@ UiPage
     WalletsCurrenciesChanger
 
   .pb-12.px-3
-    WalletsTotalAlt(
-      isShowCredits
-      isShowSavings
-    )
+    WalletsTotal
 
   //- List
   //---------------------------------
@@ -64,11 +61,8 @@ UiPage
 
           //- Amount
           Amount(
+            :amount="walletItem.amount"
             :currency="walletItem.currency"
-            :value="walletItem.amount"
-            alwaysShowSymbol
-            showBase
-            vertical="right"
           )
 
   template(#bottom)

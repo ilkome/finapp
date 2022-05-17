@@ -1,6 +1,7 @@
 <script lang="ts">
 import useFilter from '~/modules/filter/useFilter'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
+import useTrn from '~/components/trns/item/useTrn'
 
 export default {
   setup() {
@@ -12,7 +13,11 @@ export default {
       $store.commit('trns/setTrnModalId', null)
     }
 
+    const { formatTrnItem } = useTrn()
+    const trnItem = computed(() => formatTrnItem($store.state.trns.modal.id))
+
     return {
+      trnItem,
       setFilterCatsId,
       setFilterWalletsId,
       closed,
@@ -29,10 +34,6 @@ export default {
   computed: {
     trnId() {
       return this.$store.state.trns.modal.id
-    },
-
-    trn() {
-      return this.$store.state.trns.items[this.trnId]
     },
 
     category() {
@@ -71,7 +72,7 @@ export default {
     },
 
     handleEditClick() {
-      const trn = this.trn
+      const trn = this.trnItem
       const trnId = this.trnId
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
       this.$store.commit('trns/hideTrnModal')
@@ -115,9 +116,9 @@ Portal(
     template(#header)
       .header
         .header__category
-          TrnsItemTrnItem(
+          TrnsItemDetails(
             :category="category"
-            :trn="trn"
+            :trn="trnItem"
             :trnId="trnId"
             :wallet="wallet"
             ui="detailed"

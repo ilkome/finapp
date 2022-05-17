@@ -10,13 +10,14 @@ const statAverage = computed(() => $store.getters['stat/statAverage'])
   .overflow-hidden.overflow-x-auto.scrollbar
     .flex.items-center
       //- Total
-      .pr-6
+      .pr-6.text-4xl
         Amount(
+          :amount="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total"
+          :colorize="(statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total) > 0 ? 'income' : 'expense'"
           :currency="$store.state.currencies.base"
+          :isShowBaseRate="false"
+          :isShowSign="false"
           :type="(statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total) > 0 ? 1 : 0"
-          :value="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total"
-          size="xl"
-          vertical="left"
         )
 
       LazyStatSummaryRowItemView(
@@ -24,5 +25,5 @@ const statAverage = computed(() => $store.getters['stat/statAverage'])
         :type="(statAverage.incomes - statAverage.expenses) > 0 ? 1 : 0"
         :amount="statAverage.incomes - statAverage.expenses"
         :title="$t('money.averageTotal')"
-        )
+      )
 </template>

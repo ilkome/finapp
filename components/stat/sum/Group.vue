@@ -17,13 +17,13 @@ const typeNumber = computed(() => moneyTypes.find(t => t.id === `${props.typeTex
   .overflow-hidden.overflow-x-auto.scrollbar
     .flex.items-center
       //- Total
-      .pr-6
+      .pr-6.text-3xl
         Amount(
+          :amount="statPage.current[typeText].total"
+          :colorize="typeNumber === 1 ? 'income': 'expense'"
           :currency="$store.state.currencies.base"
+          :isShowBaseRate="false"
           :type="typeNumber"
-          :value="statPage.current[typeText].total"
-          size="xl"
-          vertical="left"
         )
 
       //- Average

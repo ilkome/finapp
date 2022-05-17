@@ -54,14 +54,15 @@ const onClearFilter = () => {
         .absolute.top-0.left-0.w-full(:style="{ height: '2px', background: walletItem.color }")
         .pr-2
           .text-xs {{ walletItem.name }}
-          .text-sm
+          .text-sm.text-skin-item-base
             Amount(
-              :alwaysShowSymbol="false"
+              :amount="$store.getters['wallets/walletsTotal'][walletId].base"
               :currency="walletItem.currency"
-              :showBase="false"
-              :value="$store.getters['wallets/walletsTotal'][walletId].base"
-              vertical="left"
+              :type="3"
+              :isShowBaseRate="false"
+              :isShowSign="false"
             )
+
           .absolute.top-1.right-1
             .text-sm.mdi.mdi-close
 
