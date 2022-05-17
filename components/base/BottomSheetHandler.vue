@@ -1,7 +1,3 @@
-<script>
-export default {}
-</script>
-
 <template lang="pug">
 .handler
 </template>
@@ -25,5 +21,4 @@ export default {}
     height 4px
     background var(--c-bg-8)
     border-radius 4px
-</style>
 </style>

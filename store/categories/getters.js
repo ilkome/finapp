@@ -9,18 +9,22 @@ export default {
   },
 
   categoriesIds(state, getters) {
-    if (!getters.hasCategories) return []
+    if (!getters.hasCategories)
+      return []
     return Object.keys(state.items)
   },
 
   categoriesRootIds(state, getters) {
-    if (!getters.hasCategories) return []
+    if (!getters.hasCategories)
+      return []
 
     return Object.keys(state.items)
       .filter(id => state.items[id].parentId === 0)
       .sort((a, b) => {
-        if (state.items[a].order < state.items[b].order) return -1
-        if (state.items[a].order > state.items[b].order) return 1
+        if (state.items[a].order < state.items[b].order)
+          return -1
+        if (state.items[a].order > state.items[b].order)
+          return 1
         return 0
       })
   },
@@ -39,7 +43,8 @@ export default {
           break
         }
       }
-      if (!hasTrnsIn && categoryId !== 'transfer' && categories[categoryId].name.toLowerCase() !== 'перевод' && categories[categoryId].name.toLowerCase() !== 'trnasfer')
+      // TODO: use new getTransferCatgoriesIds
+      if (!hasTrnsIn && categoryId !== 'transfer' && categories[categoryId].name.toLowerCase() !== 'перевод' && categories[categoryId].name.toLowerCase() !== 'transfer')
         categoriesForBeParent.push(categoryId)
     }
 
@@ -47,25 +52,30 @@ export default {
   },
 
   isCategoryHasChildren: (state, getters) => (categoryId) => {
-    if (!getters.hasCategories) return []
+    if (!getters.hasCategories)
+      return []
     return state.items[categoryId].childIds?.length > 0
   },
 
   getChildCategoriesIds: (state, getters) => (categoryId) => {
-    if (!getters.hasCategories) return []
+    if (!getters.hasCategories)
+      return []
     const category = state.items[categoryId]
     return category?.childIds || []
   },
 
   lastUsedCategoriesIdsByDate(state, getters, rootState, rootGetters) {
-    if (!getters.hasCategories) return []
+    if (!getters.hasCategories)
+      return []
 
     const trnsItems = rootState.trns.items
     const trnsIds = Object.keys(trnsItems)
       .filter(trnId => trnsItems[trnId].type !== 2)
       .sort((a, b) => {
-        if (trnsItems[a].date > trnsItems[b].date) return -1
-        if (trnsItems[a].date < trnsItems[b].date) return 1
+        if (trnsItems[a].date > trnsItems[b].date)
+          return -1
+        if (trnsItems[a].date < trnsItems[b].date)
+          return 1
         return 0
       })
 
@@ -88,8 +98,10 @@ export default {
 
       return lastCategoriesIds.sort((a, b) => {
         if (state.items[a] && state.items[b]) {
-          if (state.items[a].name < state.items[b].name) return -1
-          if (state.items[a].name > state.items[b].name) return 1
+          if (state.items[a].name < state.items[b].name)
+            return -1
+          if (state.items[a].name > state.items[b].name)
+            return 1
         }
         return 0
       })
@@ -97,21 +109,26 @@ export default {
   },
 
   quickSelectorCategoriesIds(state, getters) {
-    if (!getters.hasCategories) return []
+    if (!getters.hasCategories)
+      return []
 
     return Object.keys(state.items)
       .filter(key => state.items[key].showInQuickSelector)
       .sort((a, b) => {
-        if (state.items[a].name < state.items[b].name) return -1
-        if (state.items[a].name > state.items[b].name) return 1
+        if (state.items[a].name < state.items[b].name)
+          return -1
+        if (state.items[a].name > state.items[b].name)
+          return 1
         return 0
       })
   },
 
   transferCategoryId(state, getters) {
-    if (!getters.hasCategories) return null
+    if (!getters.hasCategories)
+      return null
 
+    // TODO: use new getTransferCatgoriesIds
     return Object.keys(state.items)
-      .find(id => state.items[id].name === 'Перевод' || state.items[id].name === 'Transfer') || state.items.transfer || false
+      .find(id => state.items[id].name === 'Перевод' || state.items[id].name === 'Transfer') || state.items.transfer
   },
 }

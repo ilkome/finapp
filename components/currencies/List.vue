@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { currencies } from '~/components/currencies/currencies'
 import useWallets from '~/components/wallets/useWallets'
-const { walletsCurrencies } = useWallets()
 
 const props = defineProps<{
   active: string
 }>()
-const { active } = toRefs(props)
-
 const emit = defineEmits(['onSelect'])
+
+const { walletsCurrencies } = useWallets()
+const { active } = toRefs(props)
 
 const searchInput = ref('')
 const list = computed(() => {
