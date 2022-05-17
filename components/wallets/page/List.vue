@@ -33,6 +33,16 @@ UiPage
   .pb-12.px-3
     WalletsTotal
 
+  //- Total
+  .pb-4.px-3(v-if="$store.getters['user/isDevUser']")
+    .flex
+      .cursor-pointer.p-1.px-3.flex.items-center.gap-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+        @click="$router.push('/wallets/total')"
+      )
+        .mdi.mdi-poll.text-xl
+        .text-xs.leading-none.text-skin-item-base Total details
+        .mdi.mdi-chevron-right.text-lg.leading-none.text-skin-item-base-down
+
   //- List
   //---------------------------------
   WalletsList(#default="{ walletsItemsSorted }")
