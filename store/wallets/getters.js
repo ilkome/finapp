@@ -1,4 +1,5 @@
 import { getTrnsIds } from '~/components/trns/getTrns'
+import { getTotal } from '~/components/trns/getTotal'
 
 export default {
   hasWallets(state, getters, rootState) {
@@ -9,27 +10,32 @@ export default {
     return false
   },
 
-  // TODO: refactor
-  walletsTotal(state, getters, rootState, rootGetters) {
+  /**
+   * Get total in every wallet
+   */
+  walletsTotal(_state, getters, rootState) {
     if (!getters.hasWallets)
       return {}
-    const walletsTotal = {}
-    const wallets = rootState.wallets.items
+
+    const walletsItems = rootState.wallets.items
     const trnsItems = rootState.trns.items
 
     const getWalletTotal = (walletId) => {
       const trnsIds = getTrnsIds({ trnsItems, walletsIds: walletId })
-      // @IncludeTransfers
-      const { total } = rootGetters['trns/getTotalOfTrnsIds'](trnsIds, true, false, walletId)
-      return total || 0
+      const { sumTransactions, sumTransfers } = getTotal({
+        trnsIds,
+        trnsItems,
+        walletsIds: [walletId],
+        walletsItems,
+      })
+
+      return sumTransactions + sumTransfers
     }
 
-    Object.keys(wallets).forEach((id) => {
-      walletsTotal[id] = {
-        base: getWalletTotal(id),
-        currency: wallets[id].currency,
-      }
-    })
+    const walletsTotal = {}
+    Object.keys(walletsItems)
+      .forEach(walletId =>
+        walletsTotal[walletId] = getWalletTotal(walletId))
 
     return walletsTotal
   },

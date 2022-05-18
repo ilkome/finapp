@@ -32,13 +32,13 @@ export function getTotal({
   walletsIds,
   walletsItems,
 }: {
-  baseRate?: string // TODO: add typings
-  rates?: Record<string, number> // TODO: add typings
-  transferCategoriesIds: CategoryID[]
   trnsIds: TrnID[]
   trnsItems: Record<TrnID, TrnItem>
-  walletsIds?: WalletID[]
   walletsItems: Record<WalletID, WalletItem>
+  transferCategoriesIds?: CategoryID[]
+  walletsIds?: WalletID[]
+  baseRate?: string // TODO: add typings
+  rates?: Record<string, number> // TODO: add typings
 }) {
   function getFormattedAmount(amount: number, currency: string) {
     return getAmountInRate({

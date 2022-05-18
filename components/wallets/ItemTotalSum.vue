@@ -1,30 +1,48 @@
 <script setup lang="ts">
+import { getTransferCategoriesIds } from '~/components/categories/getCategories'
+import { getTotal } from '~/components/trns/getTotal'
+import type { WalletID } from '~/components/wallets/types'
 import type { TrnID } from '~/components/trns/types'
 
 const props = withDefaults(defineProps<{
   trnsIds: TrnID[]
+  walletId: WalletID
 }>(), {
   trnsIds: () => [],
 })
 
 const { $store } = useNuxtApp()
-const total = computed(() => $store.getters['trns/getTotalOfTrnsIds'](props.trnsIds))
+
+const wallet = computed(() => $store.state.wallets.items[props.walletId])
+
+const total = computed(() => {
+  const trnsItems = $store.state.trns.items
+  const walletsItems = $store.state.wallets.items
+  const categoriesItems = $store.state.categories.items
+  const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
+  return getTotal({
+    trnsIds: props.trnsIds,
+    trnsItems,
+    transferCategoriesIds,
+    walletsIds: [props.walletId],
+    walletsItems,
+  })
+})
 </script>
 
 <template lang="pug">
 .py-3
   .overflow-hidden.overflow-x-auto.scrollbar
-    .flex.items-center.gap-6
+    .flex.gap-6
       //- Expense
       div
         .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
           | {{ $t('money.expense') }}
         .text-xl
           Amount(
-            :amount="total.expense"
-            :currency="$store.state.currencies.base"
+            :amount="total.expenseTransactions"
+            :currency="wallet.currency"
             :type="0"
-            :isShowBaseRate="false"
             colorize="expense"
           )
 
@@ -34,10 +52,9 @@ const total = computed(() => $store.getters['trns/getTotalOfTrnsIds'](props.trns
           | {{ $t('money.income') }}
         .text-xl
           Amount(
-            :amount="total.income"
-            :currency="$store.state.currencies.base"
+            :amount="total.incomeTransactions"
+            :currency="wallet.currency"
             :type="1"
-            :isShowBaseRate="false"
             colorize="income"
           )
 
@@ -47,9 +64,8 @@ const total = computed(() => $store.getters['trns/getTotalOfTrnsIds'](props.trns
           | {{ $t('money.sum') }}
         .text-xl
           Amount(
-            :amount="total.sum"
-            :currency="$store.state.currencies.base"
+            :amount="total.sumTransactions"
+            :currency="wallet.currency"
             :type="3"
-            :isShowBaseRate="false"
           )
 </template>

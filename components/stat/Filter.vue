@@ -56,7 +56,7 @@ const onClearFilter = () => {
           .text-xs {{ walletItem.name }}
           .text-sm.text-skin-item-base
             Amount(
-              :amount="$store.getters['wallets/walletsTotal'][walletId].base"
+              :amount="$store.getters['wallets/walletsTotal'][walletId]"
               :currency="walletItem.currency"
               :type="3"
               :isShowBaseRate="false"

@@ -24,7 +24,7 @@ export default function useWallets() {
         ...wallets,
         [walletId]: {
           ...$store.state.wallets.items[walletId],
-          amount: $store.getters['wallets/walletsTotal'][walletId].base,
+          amount: $store.getters['wallets/walletsTotal'][walletId],
         },
       }
     }

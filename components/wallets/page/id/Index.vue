@@ -13,7 +13,7 @@ const wallet = computed(() => $store.state.wallets.items[walletId.value])
 if (!wallet.value)
   router.replace('/wallets')
 
-const total = computed(() => $store.getters['wallets/walletsTotal'][walletId.value].base)
+const total = computed(() => $store.getters['wallets/walletsTotal'][walletId.value])
 const filter = reactive({ trnType: null })
 
 const trnsItems = computed(() => $store.state.trns.items)
@@ -89,10 +89,15 @@ UiPage(v-if="wallet")
 
   //- Stat
   .overflow-hidden.relative.bg-gray-50.dark_bg-custom4.mx-3.mb-12.p-3.rounded-md
-    SharedDate.text-xs.font-medium(class="-mb-1 dark_text-white/50")
+    SharedDate.text-xs.font-medium(
+      class="-mb-1 dark_text-white/50"
+      :date="$day().valueOf()"
+      :period="$store.state.filter.period"
+    )
     div(class="-mb-3")
-      StatGroupSum2(
+      WalletsItemTotalSum(
         :trnsIds="periodTrnsIds"
+        :walletId="walletId"
       )
 
   //- History

@@ -13,7 +13,7 @@ export default defineComponent({
     wallet() {
       return {
         ...this.$store.state.wallets.items[this.id],
-        total: this.$store.getters['wallets/walletsTotal'][this.id].base,
+        total: this.$store.getters['wallets/walletsTotal'][this.id],
       }
     },
   },

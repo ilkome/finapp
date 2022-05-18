@@ -16,11 +16,11 @@ const totalInWallets = computed(() => {
   for (const walletId in walletsItems) {
     let walletTotal = 0
     if (walletsItems[walletId].currency === $store.state.currencies.base) {
-      walletTotal = walletsTotal[walletId].base
+      walletTotal = walletsTotal[walletId]
     }
     else {
       walletTotal = getAmountInBaseRate({
-        amount: walletsTotal[walletId].base,
+        amount: walletsTotal[walletId],
         currency: walletsItems[walletId].currency,
         noFormat: true,
       })
@@ -33,6 +33,7 @@ const totalInWallets = computed(() => {
     else
       total.savings = total.savings + walletTotal
   }
+
   return total
 })
 
