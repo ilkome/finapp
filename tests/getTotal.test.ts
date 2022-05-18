@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { categoriesItems } from '~/tests/categories.mock'
 import { getTotal } from '~/components/trns/getTotal'
-import { getTransferCatgoriesIds } from '~/components/categories/getCategories'
+import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { trnsItems } from '~/tests/trns.mock'
 import { walletsItems } from '~/tests/wallets.mock'
 import { ratesBasedOnUsd as rates } from '~/tests/rates.mock'
 
-const transferCategoriesIds = getTransferCatgoriesIds(categoriesItems)
+const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 
 describe('Total of Transactions', () => {
   it('Correct empty result and correct total structure', () => {

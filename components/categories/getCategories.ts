@@ -13,7 +13,7 @@ export function getCatsIds(catsIds, catsItems) {
 }
 
 // TODO: add typings
-export function getTransferCatgoriesIds(categoriesItems) {
+export function getTransferCategoriesIds(categoriesItems) {
   const names = ['перевод', 'transfer']
   const categoriesIdsByName = Object
     .keys(categoriesItems)

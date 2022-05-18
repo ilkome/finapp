@@ -8,7 +8,7 @@ import type { PeriodsNamesExeptAll } from '~/components/date/types'
 import type { TrnID, TrnItem } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import { averageLine, baseSeriesItemStyle, options } from '~/components/chart/chartOprions'
-import { getTransferCatgoriesIds } from '~/components/categories/getCategories'
+import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/trns/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
@@ -102,7 +102,7 @@ const series = computed(() => periodshey.value.map((period) => {
   const walletsItems = $store.state.wallets.items
   const baseRate = $store.state.currencies.base
   const rates = $store.state.currencies.rates
-  const transferCategoriesIds = getTransferCatgoriesIds(categoriesItems)
+  const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
   const total = getTotal({
     baseRate,
     rates,

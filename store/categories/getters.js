@@ -43,7 +43,7 @@ export default {
           break
         }
       }
-      // TODO: use new getTransferCatgoriesIds
+      // TODO: use new getTransferCategoriesIds
       if (!hasTrnsIn && categoryId !== 'transfer' && categories[categoryId].name.toLowerCase() !== 'перевод' && categories[categoryId].name.toLowerCase() !== 'transfer')
         categoriesForBeParent.push(categoryId)
     }
@@ -127,7 +127,7 @@ export default {
     if (!getters.hasCategories)
       return null
 
-    // TODO: use new getTransferCatgoriesIds
+    // TODO: use new getTransferCategoriesIds
     return Object.keys(state.items)
       .find(id => state.items[id].name === 'Перевод' || state.items[id].name === 'Transfer') || state.items.transfer
   },

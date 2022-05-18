@@ -37,7 +37,7 @@ const incomeWalletId = computed(() => {
 })
 const incomeWallet = computed(() => $store.state.wallets.items[incomeWalletId.value])
 
-const isSameCurency = computed(() => incomeWallet.value?.currency === expenseWallet.value?.currency)
+const isSameCurrency = computed(() => incomeWallet.value?.currency === expenseWallet.value?.currency)
 
 /**
  * Slider
@@ -151,9 +151,9 @@ function prepeareValues(): any {
       type: 2,
       description: $store.state.trnForm.values.description || null,
       groups: $store.state.trnForm.values.groups || null,
-      expenseAmount: isSameCurency.value ? getResult.value : $store.state.trnForm.values.expenseAmount,
+      expenseAmount: isSameCurrency.value ? getResult.value : $store.state.trnForm.values.expenseAmount,
       expenseWalletId: $store.state.trnForm.values.expenseWalletId,
-      incomeAmount: isSameCurency.value ? getResult.value : $store.state.trnForm.values.incomeAmount,
+      incomeAmount: isSameCurrency.value ? getResult.value : $store.state.trnForm.values.incomeAmount,
       incomeWalletId: $store.state.trnForm.values.incomeWalletId,
     }
   }
@@ -217,11 +217,11 @@ function handleSubmitForm() {
             temaplte(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
 
           TrnFormTypes
-          TrnFormAmount(v-if="!isTransfer || isTransfer && isSameCurency")
+          TrnFormAmount(v-if="!isTransfer || isTransfer && isSameCurrency")
 
           TrnFormDate
           TrnFormCalculator(
-            v-if="!isTransfer || isTransfer && isSameCurency"
+            v-if="!isTransfer || isTransfer && isSameCurrency"
             @onSubmit="handleSubmitForm"
           )
           TrnFormSelected

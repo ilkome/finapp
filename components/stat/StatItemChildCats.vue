@@ -50,13 +50,6 @@ export default {
       trnsIds = trnsIds.filter(id => trns[id].type === this.type)
       return trnsIds
     },
-
-    getCategoryStat({ categoryId, trnsIds }) {
-      return {
-        categoryId,
-        ...this.$store.getters['trns/getTotalOfTrnsIds'](trnsIds),
-      }
-    },
   },
 }
 </script>

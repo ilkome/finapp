@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { getCatsIds, getTransferCatgoriesIds } from '~/components/categories/getCategories'
+import { getCatsIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/trns/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
@@ -28,7 +28,7 @@ export default {
     const walletsItems = rootState.wallets.items
     const categoriesItems = rootState.categories.items
     const baseRate = rootState.currencies.base
-    const transferCategoriesIds = getTransferCatgoriesIds(categoriesItems)
+    const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 
     let total = 0
 

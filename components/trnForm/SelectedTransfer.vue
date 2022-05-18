@@ -9,7 +9,6 @@ const expenseWalletId = computed(() => {
   return expenseWalletId || walletFromId || firstWalletId
 })
 const expenseWallet = computed(() => $store.state.wallets.items[expenseWalletId.value])
-const expenseWalletTotal = computed(() => $store.getters['wallets/walletsTotal'][expenseWalletId.value].base)
 
 // Income
 const incomeWalletId = computed(() => {
@@ -19,7 +18,6 @@ const incomeWalletId = computed(() => {
   return incomeWalletId || walletToId || secondWalletId
 })
 const incomeWallet = computed(() => $store.state.wallets.items[incomeWalletId.value])
-const incomeWalletTotal = computed(() => $store.getters['wallets/walletsTotal'][incomeWalletId.value].base)
 
 if ($store.state.trnForm.values.amountType === 2) {
   $store.commit('trnForm/setTrnFormValues', {
@@ -28,7 +26,7 @@ if ($store.state.trnForm.values.amountType === 2) {
   })
 }
 
-const isSameCurency = computed(() => incomeWallet.value?.currency === expenseWallet.value?.currency)
+const isSameCurrency = computed(() => incomeWallet.value?.currency === expenseWallet.value?.currency)
 
 function changeAmount(TransferType: 'income' | 'expense', event: any) {
   $store.commit('trnForm/setTrnFormValues', {
@@ -39,8 +37,8 @@ function changeAmount(TransferType: 'income' | 'expense', event: any) {
 
 <template lang="pug">
 div(v-if="$store.getters['wallets/walletsSortedIds'].length > 1")
-  //- isSameCurency
-  template(v-if="!isSameCurency")
+  //- isSameCurrency
+  template(v-if="!isSameCurrency")
     .pb-8.px-4.grid.gap-6(class="grid-cols-[1fr_auto]")
       .grid.gap-6
         div
@@ -86,7 +84,7 @@ div(v-if="$store.getters['wallets/walletsSortedIds'].length > 1")
           .mdi.mdi-equal
 
   //- Same
-  .relative.px-3.pb-6.grid.grid-cols-2.gap-3(v-if="isSameCurency")
+  .relative.px-3.pb-6.grid.grid-cols-2.gap-3(v-if="isSameCurrency")
     //- Transfer expense
     div(
       v-if="expenseWallet"
