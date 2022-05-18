@@ -45,7 +45,7 @@ export default function useCalculator() {
    */
   function separateExpression(value: string): string[] {
     return value
-      .split(/(\/|\*|-|\+)/)
+      .split(/([\/*\-+])/)
       .filter(i => i)
   }
 
@@ -230,7 +230,7 @@ export default function useCalculator() {
     if (!isKeysActive.value)
       return
 
-    const allowValue = (event.key).match(/[0-9%/*\-+=.,]|Backspace|Enter/)
+    const allowValue = (event.key).match(/[\d%/*\-+=.,]|Backspace|Enter/)
     let input = allowValue ? allowValue.input : false
 
     if (input) {
@@ -250,7 +250,7 @@ export default function useCalculator() {
     const result = makeCalculation(getExpression.value)
     return Number(result)
   })
-  const getformattedResult = computed(() => { return formatInput(expression.value) })
+  const getFormattedResult = computed(() => { return formatInput(expression.value) })
   const isSum = computed(() => String(getResult.value) === removeSpaces(expression.value))
 
   return {
@@ -258,7 +258,7 @@ export default function useCalculator() {
     formatInput,
     isSum,
     getExpression,
-    getformattedResult,
+    getFormattedResult,
     setExpression,
     getResult,
     isKeysActive,

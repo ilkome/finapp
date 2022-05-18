@@ -48,7 +48,7 @@ function onClickDelete() {
 
 // TODO: translate
 async function onDeleteConfirm() {
-  // Disable reactive to have data when user have already redirected to categories page
+  // Disable reactive when user has already redirected to categories page
   const uid = JSON.parse(JSON.stringify($store.state.user.user.uid))
   const trnsIdsS = JSON.parse(JSON.stringify(trnsIds.value))
   const categoryIdS = JSON.parse(JSON.stringify(categoryId.value))
