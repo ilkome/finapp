@@ -21,9 +21,9 @@ const statAverage = computed(() => $store.getters['stat/statAverage'])
         )
 
       LazyStatSummaryRowItemView(
-        v-if="statAverage.incomes - statAverage.expenses !== 0"
-        :type="(statAverage.incomes - statAverage.expenses) > 0 ? 1 : 0"
-        :amount="statAverage.incomes - statAverage.expenses"
+        v-if="statAverage.sum !== 0"
+        :type="statAverage.sum > 0 ? 1 : 0"
+        :amount="statAverage.sum"
         :title="$t('money.averageTotal')"
       )
 </template>

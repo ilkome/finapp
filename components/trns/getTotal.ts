@@ -23,15 +23,7 @@ export function getAmountInRate({
   return amount
 }
 
-export function getTotal({
-  baseRate,
-  rates,
-  transferCategoriesIds,
-  trnsIds,
-  trnsItems,
-  walletsIds,
-  walletsItems,
-}: {
+interface TotalProps {
   trnsIds: TrnID[]
   trnsItems: Record<TrnID, TrnItem>
   walletsItems: Record<WalletID, WalletItem>
@@ -39,7 +31,20 @@ export function getTotal({
   walletsIds?: WalletID[]
   baseRate?: string // TODO: add typings
   rates?: Record<string, number> // TODO: add typings
-}) {
+}
+
+export interface TotalReturns {
+  incomeTransactions: number
+  expenseTransactions: number
+  sumTransactions: number
+  incomeTransfers: number
+  expenseTransfers: number
+  sumTransfers: number
+}
+
+export function getTotal(props: TotalProps): TotalReturns {
+  const { baseRate, rates, transferCategoriesIds, trnsIds, trnsItems, walletsIds, walletsItems } = props
+
   function getFormattedAmount(amount: number, currency: string) {
     return getAmountInRate({
       amount,
@@ -49,15 +54,10 @@ export function getTotal({
     })
   }
 
-  // Transactions
   let incomeTransactions = 0
   let expenseTransactions = 0
-  let sumTransactions = 0
-
-  // Transfers
   let incomeTransfers = 0
   let expenseTransfers = 0
-  let sumTransfers = 0
 
   for (const trnId of trnsIds) {
     const trn = trnsItems[trnId]
@@ -135,8 +135,8 @@ export function getTotal({
   }
 
   // Total
-  sumTransactions = incomeTransactions - expenseTransactions
-  sumTransfers = incomeTransfers - expenseTransfers
+  const sumTransactions = incomeTransactions - expenseTransactions
+  const sumTransfers = incomeTransfers - expenseTransfers
 
   return {
     incomeTransactions,

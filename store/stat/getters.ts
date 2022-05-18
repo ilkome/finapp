@@ -1,67 +1,22 @@
 import dayjs from 'dayjs'
-import { getCatsIds } from '~/components/categories/getCategories'
+import type { TotalReturns } from '~/components/trns/getTotal'
+import { getCatsIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+import { getTotal } from '~/components/trns/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default {
-  /**
-    * Average stat used statByPeriods.
-    *
-    * @return {Object} Object with total
-    * @return {Number} return[date].incomes
-    * @return {Number} return[date].expenses
-    * @return {Number} return[date].total
-  */
-  statAverage(_state, getters) {
-    const statPeriods = getters.statByPeriods
-
-    let incomes = 0
-    let expenses = 0
-    let total = 0
-    const periodsCounter = {
-      incomes: 0,
-      expenses: 0,
-      total: 0,
-    }
-
-    for (const idx in statPeriods) {
-      const period = statPeriods[idx]
-      incomes = incomes + period.incomes
-      periodsCounter.incomes = periodsCounter.incomes + 1
-
-      expenses = expenses + period.expenses
-      periodsCounter.expenses = periodsCounter.expenses + 1
-
-      if (incomes > 0 && expenses > 0) {
-        total = incomes - expenses
-        periodsCounter.total = periodsCounter.total + 1
-      }
-    }
-
-    return {
-      incomes: incomes !== 0 ? Math.ceil(incomes / periodsCounter.incomes) : 0,
-      expenses: expenses !== 0 ? Math.ceil(expenses / periodsCounter.expenses) : 0,
-      total: total !== 0 ? Math.ceil(total / periodsCounter.total) : 0,
-    }
-  },
-
-  /**
-    * Stat by periods with period name and total.
-    *
-    * @return {Object} Object with periods
-    * @return {String} return[date].date - valueOf date
-    * @return {Number} return[date].incomes
-    * @return {Number} return[date].expenses
-    * @return {Number} return[date].total
-  */
-  statByPeriods(_state, _getters, rootState, rootGetters) {
-    const trns = rootState.trns.items
+  statAverage(_state, _getters, rootState, rootGetters) {
+    const trnsItems = rootState.trns.items
+    const walletsItems = rootState.wallets.items
+    const baseRate = rootState.currencies.base
+    const rates = rootState.currencies.rates
     const transferCategoryId = rootGetters['categories/transferCategoryId']
     const trnsIds = rootGetters['trns/selectedTrnsIds']
     const periodName = rootState.filter.period
     if (periodName === 'all')
       return
 
-    const oldestTrn = trns[rootGetters['trns/firstCreatedTrnId']]
+    const oldestTrn = trnsItems[rootGetters['trns/firstCreatedTrnId']]
     if (!oldestTrn)
       return
 
@@ -69,25 +24,63 @@ export default {
     let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
     periodsToShow = rootState.chart.periods[periodName].showedPeriods >= periodsToShow ? periodsToShow : rootState.chart.periods[periodName].showedPeriods
 
-    const stat = {}
+    const statPeriods: Record<string, { date: number; total: TotalReturns }> = {}
+
     // Start from 1 to remove last period from average
     for (let period = 1; period < periodsToShow; period++) {
       const dateStartOfPeriod = dayjs().subtract(period, periodName).startOf(periodName)
       const dateEndOfPeriod = dayjs().subtract(period, periodName).endOf(periodName)
       const ids = trnsIds
         .filter(trnId =>
-          trns[trnId].date >= dateStartOfPeriod
-          && trns[trnId].date <= dateEndOfPeriod
-          && trns[trnId].categoryId !== transferCategoryId,
+          trnsItems[trnId].date >= dateStartOfPeriod
+          && trnsItems[trnId].date <= dateEndOfPeriod
+          && trnsItems[trnId].categoryId !== transferCategoryId,
         )
 
-      stat[dateStartOfPeriod.valueOf()] = {
+      const total = getTotal({
+        baseRate,
+        rates,
+        trnsIds: ids,
+        trnsItems,
+        walletsItems,
+      })
+
+      statPeriods[dateStartOfPeriod.valueOf()] = {
         date: dateStartOfPeriod.valueOf(),
-        ...rootGetters['trns/getTotalOfTrnsIds'](ids),
+        total,
       }
     }
 
-    return stat
+    let income = 0
+    let expense = 0
+    let sum = 0
+    let periodsCounter = 0
+
+    for (const idx in statPeriods) {
+      const period = statPeriods[idx]
+      periodsCounter += 1
+
+      income += period.total.incomeTransactions
+      expense += period.total.expenseTransactions
+      sum = income - expense
+    }
+
+    const delimiter = periodsCounter
+
+    // When just this period and last
+    if (delimiter === 1) {
+      return {
+        income: 0,
+        expense: 0,
+        sum: 0,
+      }
+    }
+
+    return {
+      income: Math.ceil(income / delimiter),
+      expense: Math.ceil(expense / delimiter),
+      sum: Math.ceil(sum / delimiter),
+    }
   },
 
   isFirstPeriodSelected(state, getters, rootState, rootGetters) {
@@ -118,27 +111,16 @@ export default {
     }
   },
 
-  /**
-    * Stat by periods with period name and total.
-    *
-    * @return {Object}
-    * @return {Object} categories
-    * @return {Number} expensesBiggest
-    * @return {Array} expensesCategoriesIds - categories ids
-    * @return {Number} incomesBiggest
-    * @return {Array} incomesCategoriesIds - categories ids
-    * @return {Object} total
-    * @return {Number} total.expenses
-    * @return {Number} total.incomes
-    * @return {Number} total.total
-    *
-  */
-  statCurrentPeriod(_state, getters, rootState, rootGetters) {
+  statCurrentPeriod(_state, _getters, rootState, rootGetters) {
     const trnsItems = rootState.trns.items
-    const catsItems = rootState.categories.items
+    const categoriesItems = rootState.categories.items
+    const walletsItems = rootState.wallets.items
+    const baseRate = rootState.currencies.base
+    const rates = rootState.currencies.rates
     const storeFilter = rootState.filter
+    // const transferCategoriesIds = getTransferCategoriesIds(categoriesItems.value)
 
-    const categoriesIds = rootState.filter.catsIds.length > 0 ? getCatsIds(rootState.filter.catsIds, catsItems) : null
+    const categoriesIds = rootState.filter.catsIds.length > 0 ? getCatsIds(rootState.filter.catsIds, categoriesItems) : null
     const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
 
     const trnsIds = getTrnsIds({
@@ -203,17 +185,40 @@ export default {
       return categoriesWithTrnsIds
     }
 
-    const categoriesWithTrnsIds = getCatsIdsWithTrnsIds(trnsIds)
-    const totalAllTrns = rootGetters['trns/getTotalOfTrnsIds'](trnsIds)
+    const categoriesWithTrnsIds = getCatsIdsWithTrnsIds()
+
+    const total = getTotal({
+      baseRate,
+      rates,
+      trnsIds,
+      trnsItems,
+      walletsIds: [rootState.filter.walletsIds],
+      // transferCategoriesIds,
+      walletsItems,
+    })
 
     // count total in categories
     const categoriesTotal = {}
     for (const categoryId in categoriesWithTrnsIds) {
       const trnsIdsInCategory = categoriesWithTrnsIds[categoryId]
-      categoriesTotal[categoryId] = rootGetters['trns/getTotalOfTrnsIds'](trnsIdsInCategory)
+
+      const totalInCategory = getTotal({
+        baseRate,
+        rates,
+        trnsIds: trnsIdsInCategory,
+        trnsItems,
+        walletsIds: [rootState.filter.walletsIds],
+        walletsItems,
+      })
+
+      // totalInCategory
+      categoriesTotal[categoryId] = {
+        incomes: totalInCategory.incomeTransactions,
+        expenses: totalInCategory.expenseTransactions,
+      }
     }
 
-    // separate catgories by incomes and expenses
+    // separate categories by incomes and expenses
     const statIncomes = {}
     const statExpenses = {}
     for (const categoryId in categoriesWithTrnsIds) {
@@ -246,10 +251,10 @@ export default {
     const incomesCategoriesIds = sortCategoriesByTotal(statIncomes, 'incomes')
     const expensesCategoriesIds = sortCategoriesByTotal(statExpenses, 'expenses')
 
-    // get first item in sorted catgories
+    // get first item in sorted categories
     function getBiggestAmount(categoriesTotal, categoriesIds, typeName) {
       const biggestAmount = categoriesIds[0]
-      return categoriesTotal[biggestAmount] && Math.abs(categoriesTotal[biggestAmount][typeName])
+      return (categoriesTotal[biggestAmount] && Math.abs(categoriesTotal[biggestAmount][typeName])) || 0
     }
 
     // biggest
@@ -258,16 +263,16 @@ export default {
 
     const stat = {
       categories: categoriesTotal,
-      total: totalAllTrns.total,
+      total: total.sumTransactions,
       expenses: {
         biggest: expensesBiggest,
         categoriesIds: expensesCategoriesIds,
-        total: totalAllTrns.expenses,
+        total: total.expenseTransactions,
       },
       incomes: {
         biggest: incomesBiggest,
         categoriesIds: incomesCategoriesIds,
-        total: totalAllTrns.incomes,
+        total: total.incomeTransactions,
       },
     }
 

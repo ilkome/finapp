@@ -27,15 +27,15 @@ const isShowGroup = (type) => {
 
 const isShowTrns = computed(() => {
   const proceed = statPage.activeTab === 'details'
-                      && statPage.average?.incomes !== 0
-                      && statPage.average?.expenses !== 0
+                      && statPage.average?.income !== 0
+                      && statPage.average?.expense !== 0
                       && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0
   return proceed
 })
 
 const isShowGroupTrns = computed(() => {
   const p1 = statPage.activeTab === 'incomes' || statPage.activeTab === 'expenses'
-  const p2 = statPage.average.total === 0
+  const p2 = statPage.average.sum === 0
   return (p1 || p2) && statPage.activeTab !== 'history'
 })
 
