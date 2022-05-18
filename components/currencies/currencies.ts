@@ -212,6 +212,8 @@ export const currencies: {
 }, {
   code: 'ILS',
   name: 'New Israeli Sheqel',
+  symbol: '₪',
+  precision: 2,
 }, {
   code: 'INR',
   name: 'Indian Rupee',
