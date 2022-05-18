@@ -26,11 +26,10 @@ const isShowGroup = (type) => {
 }
 
 const isShowTrns = computed(() => {
-  const proceed = statPage.activeTab === 'details'
+  return statPage.activeTab === 'details'
                       && statPage.average?.income !== 0
                       && statPage.average?.expense !== 0
                       && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0
-  return proceed
 })
 
 const isShowGroupTrns = computed(() => {

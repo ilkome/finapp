@@ -162,8 +162,6 @@ export default {
     padding $m7
     color var(--c-font-3)
     font-size 22px
-    border-bottom 0
-    border-right 0
     background var(--c-item-bg-main)
     border 1px solid var(--c-item-bd-main)
     border-radius 50%

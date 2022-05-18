@@ -95,6 +95,6 @@ export default {
     })
 
     const periods = rootState.chart.periods
-    localforage.setItem('finapp.chart.periods', periods)
+    await localforage.setItem('finapp.chart.periods', periods)
   },
 }

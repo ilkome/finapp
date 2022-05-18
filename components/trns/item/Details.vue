@@ -189,7 +189,6 @@ export default {
     fontFamilyNunito()
 
   &__date
-    font-size 13px
     padding-bottom $m8
     font-size 14px
 

@@ -47,7 +47,7 @@ export default defineComponent({
       }
     },
 
-    handleMouseLeave(e) {
+    handleMouseLeave() {
       if (this.$store.state.ui.pc)
         this.$emit('onActiveCategoryChange', { categoryId: null })
     },
@@ -77,7 +77,6 @@ export default defineComponent({
   border-radius $m4
   +media-hover()
     padding 8px
-    padding-top 8px
     margin 8px 0 -8px -8px
 
   &__graph
@@ -107,7 +106,6 @@ export default defineComponent({
       border-radius $m4 $m4 0 0
 
   &__icon
-    display none
     display flex
     align-items center
     justify-content center

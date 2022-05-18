@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
-import type { TotalReturns } from '~/components/trns/getTotal'
-import { getCatsIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+import { getCatsIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/trns/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
@@ -22,15 +21,20 @@ export default {
 
     const oldestTrnDate = dayjs(oldestTrn.date).endOf(periodName)
     let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
-    periodsToShow = rootState.chart.periods[periodName].showedPeriods >= periodsToShow ? periodsToShow : rootState.chart.periods[periodName].showedPeriods
+    periodsToShow = rootState.chart.periods[periodName].showedPeriods >= periodsToShow
+      ? periodsToShow
+      : rootState.chart.periods[periodName].showedPeriods
 
-    const statPeriods: Record<string, { date: number; total: TotalReturns }> = {}
+    let income = 0
+    let expense = 0
 
     // Start from 1 to remove last period from average
     for (let period = 1; period < periodsToShow; period++) {
       const dateStartOfPeriod = dayjs().subtract(period, periodName).startOf(periodName)
       const dateEndOfPeriod = dayjs().subtract(period, periodName).endOf(periodName)
-      const ids = trnsIds
+
+      // TODO: use getTrnsIds
+      const trnsIdsInPeriod = trnsIds
         .filter(trnId =>
           trnsItems[trnId].date >= dateStartOfPeriod
           && trnsItems[trnId].date <= dateEndOfPeriod
@@ -40,75 +44,50 @@ export default {
       const total = getTotal({
         baseRate,
         rates,
-        trnsIds: ids,
+        trnsIds: trnsIdsInPeriod,
         trnsItems,
         walletsItems,
       })
 
-      statPeriods[dateStartOfPeriod.valueOf()] = {
-        date: dateStartOfPeriod.valueOf(),
-        total,
-      }
+      income += total.incomeTransactions
+      expense += total.expenseTransactions
     }
-
-    let income = 0
-    let expense = 0
-    let sum = 0
-    let periodsCounter = 0
-
-    for (const idx in statPeriods) {
-      const period = statPeriods[idx]
-      periodsCounter += 1
-
-      income += period.total.incomeTransactions
-      expense += period.total.expenseTransactions
-      sum = income - expense
-    }
-
-    const delimiter = periodsCounter
 
     // When just this period and last
-    if (delimiter === 1) {
-      return {
-        income: 0,
-        expense: 0,
-        sum: 0,
-      }
-    }
+    const delimiter = periodsToShow - 1
+    if (delimiter === 1)
+      return { income: 0, expense: 0, sum: 0 }
 
     return {
       income: Math.ceil(income / delimiter),
       expense: Math.ceil(expense / delimiter),
-      sum: Math.ceil(sum / delimiter),
+      sum: Math.ceil((income - expense) / delimiter),
     }
   },
 
-  isFirstPeriodSelected(state, getters, rootState, rootGetters) {
-    if (rootGetters['trns/hasTrns']) {
-      if (dayjs(rootState.filter.date).isSame(dayjs(), rootState.filter.period))
-        return true
-    }
-    else {
+  isOldestPeriodSelected(state, getters, rootState, rootGetters) {
+    if (!rootGetters['trns/hasTrns'])
+      return false
+
+    if (dayjs(rootState.filter.date).isSame(dayjs(), rootState.filter.period))
       return true
-    }
   },
 
-  isLastPeriodSelected(state, getters, rootState, rootGetters) {
-    if (rootGetters['trns/hasTrns']) {
-      const trns = rootState.trns.items
-      const firstCreatedTrnIdFromSelectedTrns = rootGetters['trns/firstCreatedTrnIdFromSelectedTrns']
-      const firstCreatedTrn = trns[firstCreatedTrnIdFromSelectedTrns]
-      if (!firstCreatedTrn)
-        return
-      const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(state.period).valueOf()
-      const filterDate = dayjs(rootState.filter.date).startOf(state.period).valueOf()
-
-      if (filterDate <= firstCreatedTrnDate)
-        return true
-    }
-    else {
+  isNewestPeriodSelected(state, getters, rootState, rootGetters) {
+    if (!rootGetters['trns/hasTrns'])
       return true
-    }
+
+    const trns = rootState.trns.items
+    const firstCreatedTrnIdFromSelectedTrns = rootGetters['trns/firstCreatedTrnIdFromSelectedTrns']
+    const firstCreatedTrn = trns[firstCreatedTrnIdFromSelectedTrns]
+    if (!firstCreatedTrn)
+      return true
+
+    const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(state.period).valueOf()
+    const filterDate = dayjs(rootState.filter.date).startOf(state.period).valueOf()
+
+    if (filterDate <= firstCreatedTrnDate)
+      return true
   },
 
   statCurrentPeriod(_state, _getters, rootState, rootGetters) {
@@ -118,9 +97,10 @@ export default {
     const baseRate = rootState.currencies.base
     const rates = rootState.currencies.rates
     const storeFilter = rootState.filter
-    // const transferCategoriesIds = getTransferCategoriesIds(categoriesItems.value)
 
-    const categoriesIds = rootState.filter.catsIds.length > 0 ? getCatsIds(rootState.filter.catsIds, categoriesItems) : null
+    const categoriesIds = rootState.filter.catsIds.length > 0
+      ? getCatsIds(rootState.filter.catsIds, categoriesItems)
+      : null
     const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
 
     const trnsIds = getTrnsIds({
@@ -131,29 +111,9 @@ export default {
       date: storeFilter.date,
     })
 
-    /**
-      * Return root category ID from trnId
-      *
-      * @param {String} trnId
-      * @return {String} root categoryId
-    */
     function getRootCategoryIdFromTrnId(trnId) {
       const categories = rootState.categories.items
-      const wallets = rootState.wallets.items
       const trnCategoryId = trnsItems[trnId].categoryId
-
-      if (!wallets[trnsItems[trnId].walletId] && !wallets[trnsItems[trnId].incomeWalletId] && !wallets[trnsItems[trnId].expenseWalletId]) {
-        console.log('no wallet for trn', trnId, trnsItems[trnId])
-        console.log('walletId', trnsItems[trnId].walletId)
-        console.log(`https://finapp-17474.firebaseio.com/users/${rootState.user.user.uid}/trns/${trnId}`)
-      }
-
-      if (!categories[trnCategoryId]) {
-        console.log('no category for trn', trnId, trnsItems[trnId], categories[trnCategoryId])
-        console.log(`https://finapp-17474.firebaseio.com/users/${rootState.user.user.uid}/trns/${trnId}`)
-        return trnCategoryId
-      }
-
       const trnCategoryParentId = categories[trnCategoryId].parentId
       return trnCategoryParentId || trnCategoryId
     }
@@ -193,7 +153,6 @@ export default {
       trnsIds,
       trnsItems,
       walletsIds: [rootState.filter.walletsIds],
-      // transferCategoriesIds,
       walletsItems,
     })
 

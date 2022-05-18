@@ -1,5 +1,5 @@
 import localforage from 'localforage'
-import { getDataAndWatch, saveData, unsubcribeData, updateData } from '~/services/firebase/api'
+import { getDataAndWatch, saveData, unsubscribeData, updateData } from '~/services/firebase/api'
 
 export default {
   initWallets({ dispatch, rootState }) {
@@ -53,8 +53,8 @@ export default {
     return result
   },
 
-  unsubcribeWallets({ rootGetters }) {
+  unsubscribeWallets({ rootGetters }) {
     const uid = rootGetters['user/userUid']
-    unsubcribeData(`users/${uid}/accounts`)
+    unsubscribeData(`users/${uid}/accounts`)
   },
 }

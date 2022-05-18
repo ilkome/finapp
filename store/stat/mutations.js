@@ -1,7 +1,6 @@
 export default {
   setDiffPeriods(state, value) {
-    const number = parseInt(value) || 1
-    state.showedPeriods = number
+    state.showedPeriods = parseInt(value) || 1
   },
 
   setCategoryModal(state, { id, type }) {

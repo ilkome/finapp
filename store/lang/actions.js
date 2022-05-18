@@ -32,11 +32,11 @@ export default {
       return
 
     commit('setLang', lang)
-    localforage.setItem('finapp.lang', lang)
+    await localforage.setItem('finapp.lang', lang)
 
     if (this.$i18n.locales.find(i => i.code !== this.$i18n.locale)) {
       if (this.app.i18n.locale !== lang)
-        this.app.i18n.setLocale(lang)
+        await this.app.i18n.setLocale(lang)
     }
   },
 }

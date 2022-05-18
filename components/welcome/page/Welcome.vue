@@ -212,7 +212,6 @@ export default {
     flex-grow 1
     display flex
     flex-flow column
-    flex-grow 1
     padding $m9
     padding-bottom 100px
     align-self center

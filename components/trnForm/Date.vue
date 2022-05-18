@@ -59,8 +59,6 @@ export default {
   padding $m7
   color var(--c-font-3)
   font-size 28px
-  border-bottom 0
-  border-right 0
   border 1px solid transparent
   border-radius 50%
   user-select none

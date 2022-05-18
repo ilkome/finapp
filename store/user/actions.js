@@ -20,12 +20,12 @@ export default {
   },
 
   async signOut({ dispatch }) {
-    await dispatch('categories/unsubcribeCategories', null, { root: true })
-    await dispatch('trns/unsubcribeTrns', null, { root: true })
-    await dispatch('wallets/unsubcribeWallets', null, { root: true })
+    await dispatch('categories/unsubscribeCategories', null, { root: true })
+    await dispatch('trns/unsubscribeTrns', null, { root: true })
+    await dispatch('wallets/unsubscribeWallets', null, { root: true })
     await dispatch('app/clearUserData', null, { root: true })
 
-    signOutFirebase(auth)
+    await signOutFirebase(auth)
 
     if (this.$router.currentRoute.name !== 'login')
       this.app.context.redirect('/login')

@@ -12,15 +12,14 @@ const ui = reactive({
 
 export default function useUIView() {
   async function getLocalUI(): Promise<{}> {
-    const localUI: {} = await localforage.getItem(localName) || {}
-    return localUI
+    return await localforage.getItem(localName) || {}
   }
 
   async function setUI({ name, value }) {
     const localUI = await getLocalUI()
     ui[name] = value
 
-    localforage.setItem(localName, {
+    await localforage.setItem(localName, {
       ...localUI,
       [name]: value,
     })

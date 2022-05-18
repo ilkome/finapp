@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
-import { getCatsIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
-import { getTotal } from '~/components/trns/getTotal'
+import { getCatsIds } from '~/components/categories/getCategories'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default {
@@ -71,13 +70,11 @@ export default {
     const categoriesIds = rootState.filter.catsIds.length > 0 ? getCatsIds(rootState.filter.catsIds, catsItems) : null
     const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
 
-    const trnsIds = getTrnsIds({
+    return getTrnsIds({
       trnsItems,
       walletsIds,
       categoriesIds,
     })
-
-    return trnsIds
   },
 
   // TODO: should use components/trns/getTrns when its compatible

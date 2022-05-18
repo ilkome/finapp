@@ -1,5 +1,5 @@
 import localforage from 'localforage'
-import { getDataAndWatch, unsubcribeData } from '~/services/firebase/api'
+import { getDataAndWatch, unsubscribeData } from '~/services/firebase/api'
 
 export default {
   initCategories({ dispatch, rootState }) {
@@ -40,8 +40,8 @@ export default {
     localforage.setItem('finapp.categories', items)
   },
 
-  unsubcribeCategories({ rootState }) {
+  unsubscribeCategories({ rootState }) {
     const uid = rootState.user.user.uid
-    unsubcribeData(`users/${uid}/categories`)
+    unsubscribeData(`users/${uid}/categories`)
   },
 }

@@ -54,7 +54,7 @@ export default {
       }
     },
 
-    handleMouseLeave(e) {
+    handleMouseLeave() {
       if (this.$store.state.ui.pc)
         this.$emit('onActiveCategoryChange', { categoryId: null })
     },

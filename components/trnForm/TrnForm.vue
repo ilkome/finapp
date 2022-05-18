@@ -360,7 +360,6 @@ function handleSubmitForm() {
 <style lang="stylus" scoped>
 .trnForm
   overflow hidden
-  overflow hidden
   width 100%
   height auto
   background var(--c-bg-3)

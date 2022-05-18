@@ -11,7 +11,7 @@ import {
   getDataAndWatch,
   removeData,
   saveData,
-  unsubcribeData,
+  unsubscribeData,
   updateData,
 } from '~/services/firebase/api'
 
@@ -95,9 +95,9 @@ export default {
     updateData(`users/${uid}/trns`, trnsForDelete)
   },
 
-  unsubcribeTrns({ rootState }) {
+  unsubscribeTrns({ rootState }) {
     const uid = rootState.user.user.uid
-    unsubcribeData(`users/${uid}/trns`)
+    unsubscribeData(`users/${uid}/trns`)
   },
 
   /**

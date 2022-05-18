@@ -35,4 +35,4 @@ export const removeData = path => remove(ref(db, path))
 
 export const saveData = async (path, value) => await set(ref(db, path), value)
 
-export const unsubcribeData = path => off(ref(db, path))
+export const unsubscribeData = path => off(ref(db, path))

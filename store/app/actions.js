@@ -44,7 +44,7 @@ export default {
     dispatch('ui/initUi', null, { root: true })
     dispatch('chart/initChart', null, { root: true })
 
-    const [ativeTab, user, currencies, categories, wallets, trns, filterPeriod] = await Promise.all([
+    const [activeTab, user, currencies, categories, wallets, trns, filterPeriod] = await Promise.all([
       localforage.getItem('finapp.activeTab'),
       localforage.getItem('finapp.user'),
       localforage.getItem('finapp.currencies'),
@@ -54,8 +54,8 @@ export default {
       localforage.getItem('finapp.filter.period'),
     ])
 
-    if (ativeTab)
-      dispatch('ui/setActiveTab', ativeTab, { root: true })
+    if (activeTab)
+      dispatch('ui/setActiveTab', activeTab, { root: true })
     if (user)
       commit('user/setUser', user, { root: true })
     if (currencies)

@@ -11,7 +11,7 @@ const dates = computed(() => ({
 <template lang="pug">
 .flex.justify-between.px-3
   .arrowDate.cursor-pointer.p-2.px-4.pl-2.flex.gap-2.bg-skin-item-main-bg._left.rounded-md(
-    :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isLastPeriodSelected'] }"
+    :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isNewestPeriodSelected'] }"
     @click="$store.dispatch('filter/setPeriodNext')"
   )
     svg(width="24" height="24" fill="currentColor")
@@ -23,7 +23,7 @@ const dates = computed(() => ({
     )
 
   .arrowDate.cursor-pointer.p-2.px-4.pr-2.flex.gap-2.bg-skin-item-main-bg._right.rounded-md(
-    :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isFirstPeriodSelected'] }"
+    :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isOldestPeriodSelected'] }"
     @click="$store.dispatch('filter/setPeriodPrev')"
   )
     SharedDate.text-sm(
