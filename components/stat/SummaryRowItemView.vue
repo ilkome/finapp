@@ -9,8 +9,8 @@ export default {
   computed: {
     className() {
       return {
-        _expenses: this.type === 0,
-        _incomes: this.type === 1,
+        _expense: this.type === 0,
+        _income: this.type === 1,
       }
     },
   },
@@ -40,11 +40,11 @@ export default {
   display flex
   flex-flow column
 
-  &._expenses
-    color var(--c-expenses-1)
+  &._expense
+    color var(--c-expense-1)
 
-  &._incomes
-    color var(--c-incomes-1)
+  &._income
+    color var(--c-income-1)
 
   &__title
     color var(--c-font-4)

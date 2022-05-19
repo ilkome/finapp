@@ -13,8 +13,8 @@ export default defineComponent({
   props: {
     amountType: { type: String, default: null },
     categoryId: { type: String, default: null },
-    isShowExpenses: { type: Boolean, default: true },
-    isShowIncomes: { type: Boolean, default: true },
+    isShowExpense: { type: Boolean, default: true },
+    isShowIncome: { type: Boolean, default: true },
   },
 
   setup() {
@@ -99,8 +99,8 @@ export default defineComponent({
       periodsToShow = periodsWantToShow >= periodsToShow ? periodsToShow : periodsWantToShow
 
       const categories = []
-      const incomesData = []
-      const expensesData = []
+      const incomeData = []
+      const expenseData = []
       const totalData = []
 
       for (let index = 0; index < periodsToShow; index++) {
@@ -135,13 +135,13 @@ export default defineComponent({
           format = 'YYYY'
         const name = this.$day().startOf(periodName).subtract(index, periodName).format(format)
 
-        // Incomes
-        incomesData.unshift({
+        // Income
+        incomeData.unshift({
           date: periodDate,
           y: incomeTransactions,
         })
-        // Expenses
-        expensesData.unshift({
+        // Expense
+        expenseData.unshift({
           date: periodDate,
           y: expenseTransactions,
         })
@@ -156,46 +156,46 @@ export default defineComponent({
       }
 
       let periods = 0
-      let periodsTotalIncomes = 0
-      for (const iterator of incomesData) {
+      let periodsTotalIncome = 0
+      for (const iterator of incomeData) {
         if (iterator.y !== 0) {
           periods = periods + 1
-          periodsTotalIncomes = periodsTotalIncomes + iterator.y
+          periodsTotalIncome = periodsTotalIncome + iterator.y
         }
       }
-      let periodsExpenses = 0
-      let periodsTotalExpenses = 0
-      for (const iterator of expensesData) {
+      let periodsExpense = 0
+      let periodsTotalExpense = 0
+      for (const iterator of expenseData) {
         if (iterator.y !== 0) {
-          periodsExpenses = periodsExpenses + 1
-          periodsTotalExpenses = periodsTotalExpenses + iterator.y
+          periodsExpense = periodsExpense + 1
+          periodsTotalExpense = periodsTotalExpense + iterator.y
         }
       }
 
-      const fakeLineDate = expensesData.map(i => ({ date: i.date, y: periodsTotalIncomes / periods || periodsTotalExpenses / periodsExpenses }))
+      const fakeLineDate = expenseData.map(i => ({ date: i.date, y: periodsTotalIncome / periods || periodsTotalExpense / periodsExpense }))
 
       const data = {
         series: [{
           // Income
           zIndex: 3,
-          visible: periodsTotalIncomes > 0 && this.isShowIncomes,
+          visible: periodsTotalIncome > 0 && this.isShowIncome,
           type: this.chartType,
-          name: this.$t('money.incomes'),
-          color: 'var(--c-incomes-1)',
-          data: incomesData,
+          name: this.$t('money.income'),
+          color: 'var(--c-income-1)',
+          data: incomeData,
           marker: {
-            lineColor: 'var(--c-incomes-1)',
+            lineColor: 'var(--c-income-1)',
           },
         }, {
           // Expense
           zIndex: 2,
-          visible: periodsTotalExpenses > 0 && this.isShowExpenses,
+          visible: periodsTotalExpense > 0 && this.isShowExpense,
           type: this.chartType,
-          name: this.$t('money.expenses'),
-          color: 'var(--c-expenses-1)',
-          data: expensesData,
+          name: this.$t('money.expense'),
+          color: 'var(--c-expense-1)',
+          data: expenseData,
           marker: {
-            lineColor: 'var(--c-expenses-1)',
+            lineColor: 'var(--c-expense-1)',
           },
         }, {
           // Fake data to make good hover on bar chart
@@ -223,30 +223,30 @@ export default defineComponent({
           },
         }],
         categories,
-        averageIncomes: periodsTotalIncomes / periods,
-        averageExpenses: periodsTotalExpenses / periodsExpenses,
+        averageIncome: periodsTotalIncome / periods,
+        averageExpense: periodsTotalExpense / periodsExpense,
       }
 
       const tooltip = this.$store.state.ui.pc ? { ...chartOptions.tooltip } : { enabled: false }
 
       const plotLines = []
       // Expense
-      if (periodsTotalExpenses > 0 && this.isShowExpenses) {
+      if (periodsTotalExpense > 0 && this.isShowExpense) {
         plotLines.push({
           opacity: 0.5,
-          color: 'var(--c-expenses-opacity)',
-          value: data.averageExpenses,
+          color: 'var(--c-expense-opacity)',
+          value: data.averageExpense,
           width: '2',
           zIndex: 1,
         })
       }
 
       // Income
-      if (periodsTotalIncomes > 0 && this.isShowIncomes) {
+      if (periodsTotalIncome > 0 && this.isShowIncome) {
         plotLines.push({
           opacity: 0.5,
-          color: 'var(--c-incomes-opacity)',
-          value: data.averageIncomes,
+          color: 'var(--c-income-opacity)',
+          value: data.averageIncome,
           width: '2',
           zIndex: 1,
         })

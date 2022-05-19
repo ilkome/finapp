@@ -260,8 +260,8 @@ export default {
   },
 
   money: {
-    incomes: 'Доход',
-    expenses: 'Расход',
+    income: 'Доход',
+    expense: 'Расход',
     total: 'Баланс',
 
     income: 'Доход',
@@ -271,8 +271,8 @@ export default {
     transfer: 'Перевод',
     average: {
       base: 'Обычно',
-      incomes: 'Обычно',
-      expenses: 'Обычно',
+      income: 'Обычно',
+      expense: 'Обычно',
     },
     averageTotal: 'Обычно',
     also: 'Еще',

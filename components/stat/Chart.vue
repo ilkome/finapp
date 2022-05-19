@@ -20,11 +20,11 @@ const chartType = computed(() => {
 </script>
 
 <template lang="pug">
-.h-48(v-if="chartState.show.expenses || chartState.show.incomes")
+.h-48(v-if="chartState.show.expense || chartState.show.income")
   LazyStatChartLines(
     :categoryId="filter.categoryId"
     :chartType="chartType"
-    :isShowExpenses="chartState.show.expenses"
-    :isShowIncomes="chartState.show.incomes"
+    :isShowExpense="chartState.show.expense"
+    :isShowIncome="chartState.show.income"
   )
 </template>

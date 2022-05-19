@@ -75,7 +75,7 @@ export default {
         radius: 3,
         fillColor: 'var(--c-bg-4)',
         lineWidth: 2,
-        lineColor: 'var(--c-incomes-1)',
+        lineColor: 'var(--c-income-1)',
         symbol: 'circle',
       },
 

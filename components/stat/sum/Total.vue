@@ -12,12 +12,12 @@ const statAverage = computed(() => $store.getters['stat/statAverage'])
       //- Total
       .pr-6.text-4xl
         Amount(
-          :amount="statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total"
-          :colorize="(statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total) > 0 ? 'income' : 'expense'"
+          :amount="statCurrentPeriod.income.total - statCurrentPeriod.expense.total"
+          :colorize="(statCurrentPeriod.income.total - statCurrentPeriod.expense.total) > 0 ? 'income' : 'expense'"
           :currency="$store.state.currencies.base"
           :isShowBaseRate="false"
           :isShowSign="false"
-          :type="(statCurrentPeriod.incomes.total - statCurrentPeriod.expenses.total) > 0 ? 1 : 0"
+          :type="(statCurrentPeriod.income.total - statCurrentPeriod.expense.total) > 0 ? 1 : 0"
         )
 
       LazyStatSummaryRowItemView(

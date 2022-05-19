@@ -58,7 +58,7 @@ export default defineComponent({
           :amount="trnItem.amount"
           :currency="trnItem.wallet.currency"
           :type="trnItem.type"
-          colorize="incomes"
+          colorize="income"
           @click="onOpenEdit"
         )
 

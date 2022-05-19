@@ -17,8 +17,8 @@ onWatch()
 const isShowGroup = (type) => {
   const p1 = statPage.activeTab === 'details'
                 || statPage.activeTab === 'balance'
-                || (statPage.activeTab === 'incomes' && type === 'incomes')
-                || (statPage.activeTab === 'expenses' && type === 'expenses')
+                || (statPage.activeTab === 'income' && type === 'income')
+                || (statPage.activeTab === 'expense' && type === 'expense')
   const p2 = statPage.current[type].total > 0
                   || (statPage.average && statPage.average[type] !== 0)
                   || $store.state.filter.period === 'all'
@@ -33,7 +33,7 @@ const isShowTrns = computed(() => {
 })
 
 const isShowGroupTrns = computed(() => {
-  const p1 = statPage.activeTab === 'incomes' || statPage.activeTab === 'expenses'
+  const p1 = statPage.activeTab === 'income' || statPage.activeTab === 'expense'
   const p2 = statPage.average.sum === 0
   return (p1 || p2) && statPage.activeTab !== 'history'
 })
@@ -82,7 +82,7 @@ onDeactivated(async () => {
       StatMenuLaptop
 
     template(v-if="statPage.activeTab !== 'trns' && statPage.activeTab !== 'history'")
-      //- Loop throw incomes / expenses
+      //- Loop throw income / expense
       .mb-8.md_mb-4.px-2
         .grid.grid-cols-1.gap-y-5(class="md_grid-cols-2 md_gap-x-20")
           div(
@@ -107,8 +107,8 @@ onDeactivated(async () => {
 
           LazyStatGroupTrns(
             v-if="isShowGroupTrns && !isEmptyStat"
-            :isShowExpenses="statPage.activeTab === 'expenses'"
-            :isShowIncomes="statPage.activeTab === 'incomes'"
+            :isShowExpense="statPage.activeTab === 'expense'"
+            :isShowIncome="statPage.activeTab === 'income'"
           )
 
       .px-2

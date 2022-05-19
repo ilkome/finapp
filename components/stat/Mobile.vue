@@ -72,8 +72,8 @@ onDeactivated(async () => {
       StatMobileSlide
         .my-4.px-2
           StatSumTotal
-          StatSumGroup(typeText="incomes")
-          StatSumGroup(typeText="expenses")
+          StatSumGroup(typeText="income")
+          StatSumGroup(typeText="expense")
 
         .my-6.mx-2.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800
           LazyStatChart(
@@ -87,14 +87,14 @@ onDeactivated(async () => {
       //- Expense
       StatMobileSlide
         .px-2
-          StatGroupItem(typeText="expenses")
-          LazyStatGroupTrns(isShowExpenses)
+          StatGroupItem(typeText="expense")
+          LazyStatGroupTrns(isShowExpense)
 
       //- Income
       StatMobileSlide
         .px-2
-          StatGroupItem(typeText="incomes")
-          LazyStatGroupTrns(isShowIncomes)
+          StatGroupItem(typeText="income")
+          LazyStatGroupTrns(isShowIncome)
 
       //- Transactions
       StatMobileSlide

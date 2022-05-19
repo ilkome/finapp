@@ -5,7 +5,7 @@ export default {
       type: String,
       required: true,
       validator(value) {
-        return value === 'incomes' || value === 'expenses'
+        return value === 'income' || value === 'expense'
       },
     },
   },

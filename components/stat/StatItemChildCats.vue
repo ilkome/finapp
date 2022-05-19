@@ -38,7 +38,7 @@ export default {
     },
 
     typeName() {
-      return this.type === 1 ? 'incomes' : 'expenses'
+      return this.type === 1 ? 'income' : 'expense'
     },
   },
 

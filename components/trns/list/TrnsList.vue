@@ -5,8 +5,8 @@ import useFilter from '~/modules/filter/useFilter'
 export default defineComponent({
   props: {
     categoryId: { type: String, default: null },
-    expenses: { type: Boolean, default: false },
-    incomes: { type: Boolean, default: false },
+    expense: { type: Boolean, default: false },
+    income: { type: Boolean, default: false },
     isShowFilter: { type: Boolean, default: false },
     limit: { type: Number, default: 0 },
     size: { type: Number, required: false, default: 30 },
@@ -65,9 +65,9 @@ export default defineComponent({
         trnsIds = trnsIds.filter(trnId => trns[trnId].categoryId === this.categoryId)
 
       // filter type
-      if (this.incomes)
+      if (this.income)
         trnsIds = trnsIds.filter(id => trns[id].type === 1)
-      if (this.expenses)
+      if (this.expense)
         trnsIds = trnsIds.filter(id => trns[id].type === 0)
 
       return trnsIds

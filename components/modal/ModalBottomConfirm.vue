@@ -44,6 +44,6 @@ Portal(
 
 .descError
   padding-bottom $m8
-  color var(--c-expenses-1)
+  color var(--c-expense-1)
   text-align center
 </style>

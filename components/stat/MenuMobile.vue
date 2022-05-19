@@ -15,10 +15,10 @@ const menu = computed(() => [{
   name: i18n.t('stat.periods'),
 }, {
   idx: 1,
-  name: i18n.t('money.expenses'),
+  name: i18n.t('money.expense'),
 }, {
   idx: 2,
-  name: i18n.t('money.incomes'),
+  name: i18n.t('money.income'),
 }, {
   idx: 3,
   name: i18n.t('trns.shortTitle'),

@@ -22,13 +22,13 @@ const { isShowDataLabels, toggleChartsView } = useChart()
 <template lang="pug">
 .flex-center(v-if="!isEmptyStat")
   .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-skin-item-main-hover(
-    :class="{ 'text-skin-item-base-up': chartState.show.incomes }"
-    @click="toggleChart('incomes')"
+    :class="{ 'text-skin-item-base-up': chartState.show.income }"
+    @click="toggleChart('income')"
   ): .mdi.mdi-arrow-down-thin-circle-outline
 
   .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-skin-item-main-hover(
-    :class="{ 'text-skin-item-base-up': chartState.show.expenses }"
-    @click="toggleChart('expenses')"
+    :class="{ 'text-skin-item-base-up': chartState.show.expense }"
+    @click="toggleChart('expense')"
   ):  .mdi.mdi-arrow-up-thin-circle-outline
 
   .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-skin-item-main-hover(

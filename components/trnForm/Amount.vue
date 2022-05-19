@@ -13,8 +13,8 @@ export default {
       getResult,
       expression,
       className: computed(() => ({
-        _expenses: amountType.value === 0,
-        _incomes: amountType.value === 1,
+        _expense: amountType.value === 0,
+        _income: amountType.value === 1,
       })),
     }
   },
@@ -54,10 +54,10 @@ export default {
 <style lang="stylus" scoped>
 .trnFormAmount
   &__wrap
-    ^[0]._expenses &
-      color var(--c-expenses-1)
-    ^[0]._incomes &
-      color var(--c-incomes-1)
+    ^[0]._expense &
+      color var(--c-expense-1)
+    ^[0]._income &
+      color var(--c-income-1)
 
   &__value
     typo-money()
@@ -69,11 +69,11 @@ export default {
     background none
     border none
 
-    ^[0]._expenses &
-      color var(--c-expenses-1)
+    ^[0]._expense &
+      color var(--c-expense-1)
 
-    ^[0]._incomes &
-      color var(--c-incomes-1)
+    ^[0]._income &
+      color var(--c-income-1)
 
   &__evaluation
     opacity .8

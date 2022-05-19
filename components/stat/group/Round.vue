@@ -13,8 +13,8 @@ export default defineComponent({
     const { statPage } = useStatPage()
     const { moneyTypes } = useStat()
     const { ui } = useUIView()
-    const incomesRef = ref(null)
-    const expensesRef = ref(null)
+    const incomeRef = ref(null)
+    const expenseRef = ref(null)
 
     const isShow = computed(() => ui.showRoundCats && statPage.current[typeText.value]?.categoriesIds?.length)
     const typeNumber = moneyTypes.find(t => t.id === typeText.value)?.type
@@ -22,15 +22,15 @@ export default defineComponent({
     /**
      * Watch for changes in categories
      * Get max width from child elements name or amount
-     * Set different width for incomes and expenses
+     * Set different width for income and expense
      */
     function updateWidth() {
       setTimeout(() => {
         let minWidth = 60
         let childs
-        typeText.value === 'incomes'
-          ? childs = incomesRef.value?.querySelectorAll('.js-getWidth')
-          : childs = expensesRef.value?.querySelectorAll('.js-getWidth')
+        typeText.value === 'income'
+          ? childs = incomeRef.value?.querySelectorAll('.js-getWidth')
+          : childs = expenseRef.value?.querySelectorAll('.js-getWidth')
 
         if (!childs)
           return
@@ -39,9 +39,9 @@ export default defineComponent({
           if (childs[key].clientWidth > minWidth)
             minWidth = childs[key].clientWidth
         }
-        typeText.value === 'incomes'
-          ? incomesRef.value.style.setProperty('--minWidth', `${minWidth + 12}px`)
-          : expensesRef.value.style.setProperty('--minWidth', `${minWidth + 12}px`)
+        typeText.value === 'income'
+          ? incomeRef.value.style.setProperty('--minWidth', `${minWidth + 12}px`)
+          : expenseRef.value.style.setProperty('--minWidth', `${minWidth + 12}px`)
       }, 100)
     }
     watch(statPage.current[typeText.value]?.categoriesIds, updateWidth, { immediate: true })
@@ -51,8 +51,8 @@ export default defineComponent({
       statPage,
       isShow,
       typeNumber,
-      incomesRef,
-      expensesRef,
+      incomeRef,
+      expenseRef,
     }
   },
 })

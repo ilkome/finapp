@@ -93,7 +93,7 @@ const actions = {
                 :currency="trnItem.expenseWallet.currency"
                 :type="0"
                 verti
-                colorize="expenses"
+                colorize="expense"
               )
 
           //- Income
@@ -109,7 +109,7 @@ const actions = {
                 :amount="trnItem.incomeAmount || trnItem.amount"
                 :currency="trnItem.incomeWallet.currency"
                 :type="1"
-                colorize="incomes"
+                colorize="income"
               )
 
       //- Amount
@@ -121,7 +121,7 @@ const actions = {
           :amount="trnItem.amount"
           :currency="trnItem.wallet.currency"
           :type="trnItem.type"
-          colorize="incomes"
+          colorize="income"
         )
 
     //- Description

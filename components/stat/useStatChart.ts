@@ -1,9 +1,9 @@
-type MoneyType = 'incomes' | 'expenses'
+type MoneyType = 'income' | 'expense'
 
 const state = reactive({
   show: {
-    incomes: true,
-    expenses: true,
+    income: true,
+    expense: true,
   },
 })
 
@@ -22,17 +22,17 @@ export default function useStatChart() {
   function onWatch() {
     watch(activeTabStat, () => {
       switch (activeTabStat.value) {
-        case 'incomes':
-          setChart('incomes', true)
-          setChart('expenses', false)
+        case 'income':
+          setChart('income', true)
+          setChart('expense', false)
           break
-        case 'expenses':
-          setChart('incomes', false)
-          setChart('expenses', true)
+        case 'expense':
+          setChart('income', false)
+          setChart('expense', true)
           break
         case 'details':
-          setChart('incomes', true)
-          setChart('expenses', true)
+          setChart('income', true)
+          setChart('expense', true)
           break
       }
     })

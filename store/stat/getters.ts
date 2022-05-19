@@ -172,20 +172,20 @@ export default {
 
       // totalInCategory
       categoriesTotal[categoryId] = {
-        incomes: totalInCategory.incomeTransactions,
-        expenses: totalInCategory.expenseTransactions,
+        income: totalInCategory.incomeTransactions,
+        expense: totalInCategory.expenseTransactions,
       }
     }
 
-    // separate categories by incomes and expenses
-    const statIncomes = {}
-    const statExpenses = {}
+    // separate categories by income and expense
+    const statIncome = {}
+    const statExpense = {}
     for (const categoryId in categoriesWithTrnsIds) {
       const total = categoriesTotal[categoryId]
-      if (total.incomes > 0)
-        statIncomes[categoryId] = total
-      if (total.expenses > 0)
-        statExpenses[categoryId] = total
+      if (total.income > 0)
+        statIncome[categoryId] = total
+      if (total.expense > 0)
+        statExpense[categoryId] = total
     }
 
     // sort categories amount
@@ -207,8 +207,8 @@ export default {
     }
 
     // sorted
-    const incomesCategoriesIds = sortCategoriesByTotal(statIncomes, 'incomes')
-    const expensesCategoriesIds = sortCategoriesByTotal(statExpenses, 'expenses')
+    const incomeCategoriesIds = sortCategoriesByTotal(statIncome, 'income')
+    const expenseCategoriesIds = sortCategoriesByTotal(statExpense, 'expense')
 
     // get first item in sorted categories
     function getBiggestAmount(categoriesTotal, categoriesIds, typeName) {
@@ -217,20 +217,20 @@ export default {
     }
 
     // biggest
-    const expensesBiggest = getBiggestAmount(categoriesTotal, expensesCategoriesIds, 'expenses')
-    const incomesBiggest = getBiggestAmount(categoriesTotal, incomesCategoriesIds, 'incomes')
+    const expenseBiggest = getBiggestAmount(categoriesTotal, expenseCategoriesIds, 'expense')
+    const incomeBiggest = getBiggestAmount(categoriesTotal, incomeCategoriesIds, 'income')
 
     const stat = {
       categories: categoriesTotal,
       total: total.sumTransactions,
-      expenses: {
-        biggest: expensesBiggest,
-        categoriesIds: expensesCategoriesIds,
+      expense: {
+        biggest: expenseBiggest,
+        categoriesIds: expenseCategoriesIds,
         total: total.expenseTransactions,
       },
-      incomes: {
-        biggest: incomesBiggest,
-        categoriesIds: incomesCategoriesIds,
+      income: {
+        biggest: incomeBiggest,
+        categoriesIds: incomeCategoriesIds,
         total: total.incomeTransactions,
       },
     }

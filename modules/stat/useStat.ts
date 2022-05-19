@@ -1,8 +1,8 @@
 const moneyTypes = [{
-  id: 'expenses',
+  id: 'expense',
   type: 0,
 }, {
-  id: 'incomes',
+  id: 'income',
   type: 1,
 }]
 
@@ -13,10 +13,10 @@ export default function useStat() {
     const statCurrentPeriod = $store.getters['stat/statCurrentPeriod']
     if ($store.state.ui.activeTabStat === 'details')
       return statCurrentPeriod.total === 0
-    else if ($store.state.ui.activeTabStat === 'incomes')
-      return statCurrentPeriod.incomes.total === 0
-    else if ($store.state.ui.activeTabStat === 'expenses')
-      return statCurrentPeriod.expenses.total === 0
+    else if ($store.state.ui.activeTabStat === 'income')
+      return statCurrentPeriod.income.total === 0
+    else if ($store.state.ui.activeTabStat === 'expense')
+      return statCurrentPeriod.expense.total === 0
   })
 
   return {

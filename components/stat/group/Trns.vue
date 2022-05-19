@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-  isShowIncomes: Boolean
-  isShowExpenses: Boolean
+  isShowIncome: Boolean
+  isShowExpense: Boolean
 }>()
 </script>
 
@@ -10,8 +10,8 @@ defineProps<{
   .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('trns.inPeriodTitle') }}
 
   TrnsList(
-    :expenses="isShowExpenses"
-    :incomes="isShowIncomes"
+    :expense="isShowExpense"
+    :income="isShowIncome"
     :size="12"
     classNames="md_grid-cols-1"
   )

@@ -15,14 +15,14 @@ UiTabs
   ) {{ $t('stat.periods') }}
 
   UiTabsItem(
-    :isActive="activeTabStat === 'expenses'"
-    @click="onClickStatMenu('expenses')"
-  ) {{ $t('money.expenses') }}
+    :isActive="activeTabStat === 'expense'"
+    @click="onClickStatMenu('expense')"
+  ) {{ $t('money.expense') }}
 
   UiTabsItem(
-    :isActive="activeTabStat === 'incomes'"
-    @click="onClickStatMenu('incomes')"
-  ) {{ $t('money.incomes') }}
+    :isActive="activeTabStat === 'income'"
+    @click="onClickStatMenu('income')"
+  ) {{ $t('money.income') }}
 
   UiTabsItem(
     :isActive="activeTabStat === 'trns'"

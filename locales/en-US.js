@@ -259,8 +259,8 @@ export default {
   },
 
   money: {
-    incomes: 'Income',
-    expenses: 'Expense',
+    income: 'Income',
+    expense: 'Expense',
 
     total: 'Net income',
     income: 'Income',
@@ -270,8 +270,8 @@ export default {
     transfer: 'Transfer',
     average: {
       base: 'Average',
-      incomes: 'Average',
-      expenses: 'Average',
+      income: 'Average',
+      expense: 'Average',
     },
     averageTotal: 'Average',
     also: 'Also',

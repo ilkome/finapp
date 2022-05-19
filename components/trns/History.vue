@@ -35,12 +35,12 @@ div
       .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
         :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': props.trnType === 0 }"
         @click="setTrnType(0)"
-      ) {{ $t('money.expenses') }}
+      ) {{ $t('money.expense') }}
 
       .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
         :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': props.trnType === 1 }"
         @click="setTrnType(1)"
-      ) {{ $t('money.incomes') }}
+      ) {{ $t('money.income') }}
 
       .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
         v-if="!hideTransfers"
