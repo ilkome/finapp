@@ -1,6 +1,6 @@
 import type { ComputedRef } from '@vue/composition-api'
 import type { WalletID, WalletItemWithAmount } from '~/components/wallets/types'
-import type { Currency } from '~/components/currencies/types'
+import type { CurrencyCode } from '~/components/currencies/types'
 
 export default function useWallets() {
   const { $store } = useNuxtApp()
@@ -36,7 +36,7 @@ export default function useWallets() {
    * Wallets currencies
    */
   const walletsCurrencies = computed(() => {
-    const currencies: Currency[] = []
+    const currencies: CurrencyCode[] = []
 
     for (const walletId in walletsItemsSorted.value) {
       const walletCurrency = walletsItemsSorted.value[walletId].currency
