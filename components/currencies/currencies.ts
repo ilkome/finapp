@@ -449,6 +449,8 @@ export const currencies: {
 }, {
   code: 'TRY',
   name: 'Turkish Lira',
+  symbol: '₺',
+  precision: 2,
 }, {
   code: 'TTD',
   name: 'Trinidad and Tobago Dollar',
