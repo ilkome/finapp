@@ -64,25 +64,25 @@ onDeactivated(async () => {
       )
         | {{ $store.state.currencies.base }}
 
-    StatMenuMobile(:slider="sliderObject")
+    StatMobileMenu(:slider="sliderObject")
 
   .swiper-container.overflow-hidden.h-full(ref="sliderRef")
     .swiper-wrapper
       //- Summary
       StatMobileSlide
         .my-4.px-2
-          StatSumTotal
           StatSumGroup(typeText="income")
           StatSumGroup(typeText="expense")
+          StatSumTotal
 
         .my-6.mx-2.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800
-          LazyStatChart(
+          LazyStatChartWrap(
             :key="chartKeyDirtyFix"
             v-if="ui.showMainChart && statPage.isHasTrns"
           )
           .sm_flex.justify-between.px-2.pb-2
-            StatPeriods
-            StatChartConfig
+            StatChartPeriods
+            StatChartOptions
 
       //- Expense
       StatMobileSlide

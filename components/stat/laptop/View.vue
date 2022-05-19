@@ -68,13 +68,13 @@ onDeactivated(async () => {
       WalletsCurrenciesChanger
 
     .mx-2.mb-4.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800
-      LazyStatChart(
+      LazyStatChartWrap(
         :key="chartKeyDirtyFix"
         v-if="ui.showMainChart && statPage.isHasTrns"
       )
       .sm_flex.justify-between.px-2.pb-2
-        StatPeriods
-        StatChartConfig
+        StatChartPeriods
+        StatChartOptions
 
     .my-4.mx-2.p-3.rounded-lg.bg-skin-item-main-active(v-if="statPage.filter.isShow")
       LazyStatFilter(v-if="statPage.filter.isShow")
@@ -84,7 +84,7 @@ onDeactivated(async () => {
       StatViewConfig
 
     .pb-4.px-2
-      StatMenuLaptop
+      StatLaptopMenu
 
     template(v-if="statPage.activeTab !== 'trns' && statPage.activeTab !== 'history'")
       //- Loop throw income / expense

@@ -23,7 +23,7 @@ export default defineComponent({
 
 <template lang="pug">
 .my-6(v-if="isShow")
-  LazyStatChartPie(
+  LazyStatPieChart(
     v-if="isShow"
     :amountType="typeText"
   )

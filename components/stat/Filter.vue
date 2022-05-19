@@ -1,37 +1,25 @@
 <script setup lang="ts">
-import useFilter from '~/modules/filter/useFilter'
-
+import type { CategoryID } from '~/components/categories/types'
 const { $store } = useNuxtApp()
-const { setFilterCatsId } = useFilter()
 
-const filterWalletsItems = computed(() => {
-  let wallets = {}
+const filterWalletsItems = computed(() =>
+  $store.state.filter.walletsIds
+    .reduce((acc, id) => {
+      acc[id] = $store.state.wallets.items[id]
+      return acc
+    }, {}),
+)
 
-  for (const walletId of $store.state.filter.walletsIds) {
-    const wallet = $store.state.wallets.items[walletId]
-    if (!wallet)
-      break
-    wallets = { ...wallets, [walletId]: wallet }
-  }
+const filterCatsItems = computed(() =>
+  $store.state.filter.catsIds
+    .reduce((acc, id) => {
+      acc[id] = $store.state.categories.items[id]
+      return acc
+    }, {}),
+)
 
-  return wallets
-})
-
-const filterCatsItems = computed(() => {
-  let cats = {}
-
-  for (const catId of $store.state.filter.catsIds) {
-    const cat = $store.state.categories.items[catId]
-    if (!cat)
-      break
-    cats = { ...cats, [catId]: cat }
-  }
-
-  return cats
-})
-
-const onClickCategory = (catId) => {
-  $store.commit('filter/removeFilterCatId', catId)
+const onClickCategory = (id: CategoryID) => {
+  $store.commit('filter/removeFilterCatId', id)
 }
 
 const onClearFilter = () => {

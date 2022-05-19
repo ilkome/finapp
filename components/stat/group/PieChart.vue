@@ -1,24 +1,13 @@
 <script>
 import { Chart } from 'highcharts-vue'
-import chartOptions from '~/components/stat/chartOptions'
+import chartOptions from '~/components/stat/chart/chartOptions'
 
 export default {
-  name: 'StatChartPie',
-
-  components: {
-    Chart,
-  },
+  components: { Chart },
 
   props: {
-    chartType: {
-      type: String,
-      default: 'pie',
-    },
-
-    amountType: {
-      type: String,
-      default: null,
-    },
+    chartType: { type: String, default: 'pie' },
+    amountType: { type: String, default: null },
   },
 
   computed: {

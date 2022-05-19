@@ -10,7 +10,7 @@ const statAverage = computed(() => $store.getters['stat/statAverage'])
   .overflow-hidden.overflow-x-auto.scrollbar
     .flex.items-center
       //- Total
-      .pr-6.text-4xl
+      .pr-6.text-3xl
         Amount(
           :amount="statCurrentPeriod.income.total - statCurrentPeriod.expense.total"
           :colorize="(statCurrentPeriod.income.total - statCurrentPeriod.expense.total) > 0 ? 'income' : 'expense'"
@@ -20,7 +20,7 @@ const statAverage = computed(() => $store.getters['stat/statAverage'])
           :type="(statCurrentPeriod.income.total - statCurrentPeriod.expense.total) > 0 ? 1 : 0"
         )
 
-      LazyStatSummaryRowItemView(
+      LazyStatSumAverage(
         v-if="statAverage.sum !== 0"
         :type="statAverage.sum > 0 ? 1 : 0"
         :amount="statAverage.sum"

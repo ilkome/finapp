@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Chart } from 'highcharts-vue'
-import chartOptions from '~/components/stat/chartOptions'
+import chartOptions from '~/components/stat/chart/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
 import { getCatsIds, getTransferCategoriesIds } from '~/components/categories/getCategories'

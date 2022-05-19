@@ -13,5 +13,5 @@ const { statPage } = useStatPage()
   slot
 
   .my-6
-    StatMobileNav(:slider="sliderObject")
+    StatPeriodArrows
 </template>

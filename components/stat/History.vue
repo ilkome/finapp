@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { getCatsIds } from '~/components/categories/getCategories'
 import { getTrnsIds } from '~/components/trns/getTrns'
-import useStatPage from '~/components/stat/useStatPage'
 
 const { $store } = useNuxtApp()
-const { statPage } = useStatPage()
 const catsItems = computed(() => $store.state.categories.items)
 const trnsItems = computed(() => $store.state.trns.items)
 const storeFilter = computed(() => $store.state.filter)

@@ -27,7 +27,7 @@ const typeNumber = computed(() => moneyTypes.find(t => t.id === `${props.typeTex
         )
 
       //- Average
-      LazyStatSummaryRowItemView(
+      LazyStatSumAverage(
         v-if="statPage.average[typeText] !== 0"
         :amount="statPage.average[typeText]"
         :title="$t(`money.average.${typeText}`)"
