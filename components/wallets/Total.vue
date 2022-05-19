@@ -21,7 +21,7 @@ const totalInWallets = computed(() => {
     else {
       walletTotal = getAmountInBaseRate({
         amount: walletsTotal[walletId],
-        currency: walletsItems[walletId].currency,
+        currencyCode: walletsItems[walletId].currency,
         noFormat: true,
       })
     }
@@ -80,7 +80,7 @@ const counts = computed(() => ({
 
       .text-skin-item-base
         Amount(
-          :currency="$store.state.currencies.base"
+          :currencyCode="$store.state.currencies.base"
           :amount="item.value"
         )
 </template>

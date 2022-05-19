@@ -41,7 +41,7 @@ const total = computed(() => {
         .text-xl
           Amount(
             :amount="total.expenseTransactions"
-            :currency="wallet.currency"
+            :currencyCode="wallet.currency"
             :type="0"
             colorize="expense"
           )
@@ -53,7 +53,7 @@ const total = computed(() => {
         .text-xl
           Amount(
             :amount="total.incomeTransactions"
-            :currency="wallet.currency"
+            :currencyCode="wallet.currency"
             :type="1"
             colorize="income"
           )
@@ -65,7 +65,7 @@ const total = computed(() => {
         .text-xl
           Amount(
             :amount="total.sumTransactions"
-            :currency="wallet.currency"
+            :currencyCode="wallet.currency"
             :type="3"
           )
 </template>

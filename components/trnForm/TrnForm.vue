@@ -264,7 +264,7 @@ function handleSubmitForm() {
                       .text-sm
                         Amount(
                           :amount="walletItem.amount"
-                          :currency="walletItem.currency"
+                          :currencyCode="walletItem.currency"
                           :isShowBaseRate="false"
                           align="left"
                         )

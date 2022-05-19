@@ -3,7 +3,7 @@ import useAmount from '~/components/amount/useAmount'
 
 const props = withDefaults(defineProps<{
   amount: number
-  currency: string
+  currencyCode: string
   colorize: string
   type: number
   align: string
@@ -14,7 +14,7 @@ const props = withDefaults(defineProps<{
   isShowSign: true,
 })
 
-const { baseCurrency, formatAmount, getCurrencySymbol, getAmountInBaseRate } = useAmount()
+const { baseCurrencyCode, formatAmount, getCurrencySymbol, getAmountInBaseRate } = useAmount()
 const sign = props.type === 0 ? '-' : '+'
 
 const alignClasses = computed(() => ({
@@ -42,17 +42,17 @@ const amountClasses = computed(() => ([{
         :class="alignClasses"
       )
         .text-md.leading-none(v-if="isShowSign && sign === '-'") {{ sign }}
-        .text-md.leading-none {{ formatAmount(amount, currency) }}
-        .text-xs.leading-none {{ getCurrencySymbol(currency) }}
+        .text-md.leading-none {{ formatAmount(amount, currencyCode) }}
+        .text-xs.leading-none {{ getCurrencySymbol(currencyCode) }}
 
       //- Base
       .text-neutral-400.gap-1.flex.items-baseline.whitespace-nowrap.opacity-80(
-        v-if="isShowBaseRate && currency !== baseCurrency"
+        v-if="isShowBaseRate && currencyCode !== baseCurrencyCode"
         :class="alignClasses"
       )
         .text-xs.leading-none(v-if="isShowSign && sign === '-'") {{ sign }}
-        .text-xs.leading-none {{ getAmountInBaseRate({ amount, currency }) }}
-        .text-2xs.leading-none {{ getCurrencySymbol(baseCurrency) }}
+        .text-xs.leading-none {{ getAmountInBaseRate({ amount, currencyCode }) }}
+        .text-2xs.leading-none {{ getCurrencySymbol(baseCurrencyCode) }}
 
   //- 0
   template(v-if="amount === 0")
@@ -60,5 +60,5 @@ const amountClasses = computed(() => ([{
       :class="alignClasses"
     )
       .text-md.leading-none.flex.items-baseline 0
-      .text-xs.leading-none {{ getCurrencySymbol(currency) }}
+      .text-xs.leading-none {{ getCurrencySymbol(currencyCode) }}
 </template>

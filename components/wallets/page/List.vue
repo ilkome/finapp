@@ -72,7 +72,7 @@ UiPage
           //- Amount
           Amount(
             :amount="walletItem.amount"
-            :currency="walletItem.currency"
+            :currencyCode="walletItem.currency"
           )
 
   template(#bottom)

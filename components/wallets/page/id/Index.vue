@@ -70,7 +70,7 @@ UiPage(v-if="wallet")
           .flex.text-3xl.font-normal
             Amount(
               :amount="total"
-              :currency="wallet.currency"
+              :currencyCode="wallet.currency"
             )
 
     template(#actions)

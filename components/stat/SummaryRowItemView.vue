@@ -23,7 +23,7 @@ export default {
   .summaryItem__amount.text-skin-item-base
     Amount(
       :amount="amount"
-      :currency="$store.state.currencies.base"
+      :currencyCode="$store.state.currencies.base"
       :type="type"
       :colorize="type === 0 ? 'expense' : 'income'"
       :isShowBaseRate="false"

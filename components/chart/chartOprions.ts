@@ -114,7 +114,7 @@ export const options = {
         backgroundColor: 'var(--color-item-main-active)',
       },
     },
-    // valueFormatter: value => `${formatAmount(value)} ${getCurrencySymbol(baseCurrency.value)}`,
+    // valueFormatter: value => `${formatAmount(value)} ${getCurrencySymbol(baseCurrencyCode.value)}`,
 
     // position(pos, params, dom, rect, size) {
     //   // tooltip will be fixed on the right if mouse hovering on the left,

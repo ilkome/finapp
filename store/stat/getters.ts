@@ -11,7 +11,7 @@ export default {
     const trnsItems = rootState.trns.items
     const categoriesItems = rootState.categories.items
     const walletsItems = rootState.wallets.items
-    const baseRate = rootState.currencies.base
+    const baseCurrencyCode = rootState.currencies.base
     const rates = rootState.currencies.rates
     const storeFilter = rootState.filter
     const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
@@ -66,7 +66,7 @@ export default {
     const categoriesWithTrnsIds = getCatsIdsWithTrnsIds()
 
     const total = getTotal({
-      baseRate,
+      baseCurrencyCode,
       rates,
       trnsIds,
       trnsItems,
@@ -80,7 +80,7 @@ export default {
       const trnsIdsInCategory = categoriesWithTrnsIds[categoryId]
 
       const totalInCategory = getTotal({
-        baseRate,
+        baseCurrencyCode,
         rates,
         trnsIds: trnsIdsInCategory,
         trnsItems,
@@ -163,7 +163,7 @@ export default {
     const trnsItems = rootState.trns.items
     const walletsItems = rootState.wallets.items
     const categoriesItems = rootState.categories.items
-    const baseRate = rootState.currencies.base
+    const baseCurrencyCode = rootState.currencies.base
     const rates = rootState.currencies.rates
     const trnsIds = rootGetters['trns/selectedTrnsIds']
     const periodName = rootState.filter.period
@@ -197,7 +197,7 @@ export default {
       )
 
       const total = getTotal({
-        baseRate,
+        baseCurrencyCode,
         rates,
         trnsIds: trnsIdsInPeriod,
         trnsItems,

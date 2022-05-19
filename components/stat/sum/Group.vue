@@ -21,7 +21,7 @@ const typeNumber = computed(() => moneyTypes.find(t => t.id === `${props.typeTex
         Amount(
           :amount="statPage.current[typeText].total"
           :colorize="typeText"
-          :currency="$store.state.currencies.base"
+          :currencyCode="$store.state.currencies.base"
           :isShowBaseRate="false"
           :type="typeNumber"
         )

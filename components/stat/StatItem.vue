@@ -6,7 +6,7 @@ export default {
     biggest: { type: Number, required: true },
     category: { type: Object, required: true },
     categoryId: { type: String, required: true },
-    currency: { type: String, required: true },
+    currencyCode: { type: String, required: true },
     total: { type: Number, required: true },
     type: { type: Number, required: true },
   },
@@ -93,7 +93,7 @@ export default {
         .statItem__amount.text-skin-item-base
           Amount(
             :amount="total"
-            :currency="currency"
+            :currencyCode="currencyCode"
             :type="type"
             :isShowBaseRate="false"
           )

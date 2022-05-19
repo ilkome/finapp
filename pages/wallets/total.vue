@@ -14,7 +14,7 @@ import { getTrnsIds } from '~/components/trns/getTrns'
 
 type DateValueOf = number
 
-const { baseCurrency, formatAmount, getCurrencySymbol } = useAmount()
+const { baseCurrencyCode, formatAmount, getCurrencySymbol } = useAmount()
 const { $store } = useNuxtApp()
 
 /**
@@ -84,13 +84,13 @@ function getPeriodsDates({ fromDate, periodName, periodsCount }: {
   return periods
 }
 
-const periodshey = computed(() => getPeriodsDates({
+const periodsGenerated = computed(() => getPeriodsDates({
   fromDate: oldestTrnDate,
   periodName: activePeriod.value,
   periodsCount: maxPeriodsNumber.value,
 }))
 
-const series = computed(() => periodshey.value.map((period) => {
+const series = computed(() => periodsGenerated.value.map((period) => {
   const periodDates = getPeriodDates({ date: period.date, period: activePeriod.value })
   const trnsIds = getTrnsIds({
     fromDate: periodDates.from,
@@ -100,11 +100,11 @@ const series = computed(() => periodshey.value.map((period) => {
 
   const categoriesItems = $store.state.categories.items
   const walletsItems = $store.state.wallets.items
-  const baseRate = $store.state.currencies.base
+  const baseCurrencyCode = $store.state.currencies.base
   const rates = $store.state.currencies.rates
   const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
   const total = getTotal({
-    baseRate,
+    baseCurrencyCode,
     rates,
     transferCategoriesIds,
     trnsIds,
@@ -170,7 +170,7 @@ const chartOptions = computed(() => ({
   }],
 
   tooltip: {
-    valueFormatter: value => `${formatAmount(value)} ${getCurrencySymbol(baseCurrency.value)}`,
+    valueFormatter: value => `${formatAmount(value)} ${getCurrencySymbol(baseCurrencyCode.value)}`,
   },
 
   dataZoom: [{

@@ -29,31 +29,31 @@ function formatAmount(amount: number, currencyCode?: CurrencyCode) {
 export default function useAmount() {
   const { $store } = useNuxtApp()
 
-  function getAmountInBaseRate({ amount, currency, noFormat }: {
+  function getAmountInBaseRate({ amount, currencyCode, noFormat }: {
     amount: number
-    currency: string // TODO: add typings
+    currencyCode: string // TODO: add typings
     noFormat?: boolean
   }) {
     const rates = $store.state.currencies.rates
-    const baseRate = $store.state.currencies.base
+    const baseCurrencyCode = $store.state.currencies.base
 
     const amountInBaseRate = getAmountInRate({
       amount,
-      currency,
+      currencyCode,
       rates,
-      baseRate,
+      baseCurrencyCode,
     })
 
     if (noFormat)
       return +amountInBaseRate
 
-    return formatAmount(amountInBaseRate, baseRate)
+    return formatAmount(amountInBaseRate, baseCurrencyCode)
   }
 
-  const baseCurrency = computed(() => $store.state.currencies.base)
+  const baseCurrencyCode = computed(() => $store.state.currencies.base)
 
   return {
-    baseCurrency,
+    baseCurrencyCode,
 
     formatAmount,
     getCurrencySymbol,

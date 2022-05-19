@@ -14,7 +14,7 @@ const statAverage = computed(() => $store.getters['stat/statAverage'])
         Amount(
           :amount="statCurrentPeriod.income.total - statCurrentPeriod.expense.total"
           :colorize="(statCurrentPeriod.income.total - statCurrentPeriod.expense.total) > 0 ? 'income' : 'expense'"
-          :currency="$store.state.currencies.base"
+          :currencyCode="$store.state.currencies.base"
           :isShowBaseRate="false"
           :isShowSign="false"
           :type="(statCurrentPeriod.income.total - statCurrentPeriod.expense.total) > 0 ? 1 : 0"

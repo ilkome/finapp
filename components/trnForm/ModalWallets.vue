@@ -49,7 +49,7 @@ BaseBottomSheet(
             .text-skin-item-base
               Amount(
                 :amount="walletItem.amount"
-                :currency="walletItem.currency"
+                :currencyCode="walletItem.currency"
                 :isShowSign="false"
               )
 </template>

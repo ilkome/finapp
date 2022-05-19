@@ -61,7 +61,7 @@ export default {
         .statItem__amount.text-skin-item-base
           Amount(
             :amount="total"
-            :currency="$store.state.currencies.base"
+            :currencyCode="$store.state.currencies.base"
             :type="type"
             :isShowBaseRate="false"
           )

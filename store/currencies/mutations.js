@@ -4,8 +4,8 @@ export default {
     state.rates = rates
   },
 
-  setBaseRate(state, rate) {
-    state.base = rate
+  setBaseRate(state, currencyCode) {
+    state.base = currencyCode
   },
 
   showBaseCurrenciesModal(state) {

@@ -31,10 +31,10 @@ describe('Total of Transactions', () => {
 
   it('Total in RUB Wallet converted to USD', () => {
     const trnsIds = ['transactionIncomeWalletOneRUB700']
-    const baseRate = 'USD'
+    const baseCurrencyCode = 'USD'
 
     const total = getTotal({
-      baseRate,
+      baseCurrencyCode,
       rates,
       transferCategoriesIds,
       trnsIds,
@@ -52,10 +52,10 @@ describe('Total of Transactions', () => {
 
   it('Total in RUB Wallet converted to EUR', () => {
     const trnsIds = ['transactionIncomeWalletOneRUB700']
-    const baseRate = 'EUR'
+    const baseCurrencyCode = 'EUR'
 
     const total = getTotal({
-      baseRate,
+      baseCurrencyCode,
       rates,
       transferCategoriesIds,
       trnsIds,
@@ -76,10 +76,10 @@ describe('Total of Transactions', () => {
       'transactionIncomeWalletCashUSD1000',
       'transactionExpenseWalletCashUSD400',
     ]
-    const baseRate = 'USD'
+    const baseCurrencyCode = 'USD'
 
     const total = getTotal({
-      baseRate,
+      baseCurrencyCode,
       rates,
       transferCategoriesIds,
       trnsIds,
@@ -100,10 +100,10 @@ describe('Total of Transactions', () => {
       'transactionIncomeWalletOneRUB700',
       'transactionExpenseWalletCashUSD400',
     ]
-    const baseRate = 'EUR'
+    const baseCurrencyCode = 'EUR'
 
     const total = getTotal({
-      baseRate,
+      baseCurrencyCode,
       rates,
       transferCategoriesIds,
       trnsIds,

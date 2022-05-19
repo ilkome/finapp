@@ -34,7 +34,7 @@ export default defineComponent({
     :biggest="statPage.current[typeText].biggest"
     :category="$store.state.categories.items[categoryId]"
     :categoryId="categoryId"
-    :currency="$store.state.currencies.base"
+    :currencyCode="$store.state.currencies.base"
     :total="statPage.current.categories[categoryId][typeText]"
     :type="typeNumber"
   )

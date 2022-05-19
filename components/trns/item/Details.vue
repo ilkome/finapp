@@ -82,7 +82,7 @@ export default {
         .text-2xl.text-skin-item-base
           Amount(
             :amount="trn.expenseAmount"
-            :currency="$store.state.wallets.items[trn.expenseWalletId].currency"
+            :currencyCode="$store.state.wallets.items[trn.expenseWalletId].currency"
             :type="0"
             align="center"
             colorize="expense"
@@ -101,7 +101,7 @@ export default {
         .text-2xl.text-skin-item-base
           Amount(
             :amount="trn.incomeAmount"
-            :currency="$store.state.wallets.items[trn.incomeWalletId].currency"
+            :currencyCode="$store.state.wallets.items[trn.incomeWalletId].currency"
             :type="1"
             align="center"
             colorize="income"
@@ -138,7 +138,7 @@ export default {
     )
       Amount(
         :amount="trn.amount"
-        :currency="wallet.currency"
+        :currencyCode="wallet.currency"
         :colorize="trn.type === 0 ? 'expense' : 'income'"
         :type="trn.type"
         align="center"

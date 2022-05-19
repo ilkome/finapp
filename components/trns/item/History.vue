@@ -90,7 +90,7 @@ const actions = {
             )
               Amount(
                 :amount="trnItem.expenseAmount || trnItem.amount"
-                :currency="trnItem.expenseWallet.currency"
+                :currencyCode="trnItem.expenseWallet.currency"
                 :type="0"
                 verti
                 colorize="expense"
@@ -107,7 +107,7 @@ const actions = {
             )
               Amount(
                 :amount="trnItem.incomeAmount || trnItem.amount"
-                :currency="trnItem.incomeWallet.currency"
+                :currencyCode="trnItem.incomeWallet.currency"
                 :type="1"
                 colorize="income"
               )
@@ -119,7 +119,7 @@ const actions = {
       )
         Amount(
           :amount="trnItem.amount"
-          :currency="trnItem.wallet.currency"
+          :currencyCode="trnItem.wallet.currency"
           :type="trnItem.type"
           colorize="income"
         )

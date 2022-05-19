@@ -44,7 +44,7 @@ export default defineComponent({
       template(v-if="isShowAmount")
         Amount(
           :amount="wallet.total"
-          :currency="wallet.currency"
+          :currencyCode="wallet.currency"
           align="right"
         )
 </template>

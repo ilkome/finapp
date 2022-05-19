@@ -7,7 +7,7 @@ export default {
   props: {
     category: { type: Object, required: true },
     categoryId: { type: String, required: true },
-    currency: { type: String, required: true },
+    currencyCode: { type: String, required: true },
     total: { type: Number, required: true },
     type: { type: Number, required: true },
   },
@@ -49,7 +49,7 @@ export default {
   .statItemRound__amount.js-getWidth.text-skin-item-base
     Amount(
       :amount="total"
-      :currency="currency"
+      :currencyCode="currencyCode"
       :type="type"
       :isShowBaseRate="false"
     )

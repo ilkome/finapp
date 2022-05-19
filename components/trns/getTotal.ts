@@ -5,20 +5,20 @@ import { TrnType } from '~/components/trns/types'
 
 export function getAmountInRate({
   amount,
-  currency,
-  baseRate,
+  currencyCode,
+  baseCurrencyCode,
   rates,
 }: {
   amount: number
-  currency: string
-  baseRate: string // TODO: add typings
+  currencyCode: string
+  baseCurrencyCode: string // TODO: add typings
   rates: Record<string, number> // TODO: add typings
 }): number {
-  if (!baseRate || !rates)
+  if (!baseCurrencyCode || !rates)
     return amount
 
-  if (baseRate !== currency)
-    return amount / rates[currency] * rates[baseRate]
+  if (baseCurrencyCode !== currencyCode)
+    return amount / rates[currencyCode] * rates[baseCurrencyCode]
 
   return amount
 }
@@ -29,7 +29,7 @@ interface TotalProps {
   walletsItems: Record<WalletID, WalletItem>
   transferCategoriesIds?: CategoryID[]
   walletsIds?: WalletID[]
-  baseRate?: string // TODO: add typings
+  baseCurrencyCode?: string // TODO: add typings
   rates?: Record<string, number> // TODO: add typings
 }
 
@@ -43,13 +43,13 @@ export interface TotalReturns {
 }
 
 export function getTotal(props: TotalProps): TotalReturns {
-  const { baseRate, rates, transferCategoriesIds, trnsIds, trnsItems, walletsIds, walletsItems } = props
+  const { baseCurrencyCode, rates, transferCategoriesIds, trnsIds, trnsItems, walletsIds, walletsItems } = props
 
-  function getFormattedAmount(amount: number, currency: string) {
+  function getAmount(amount: number, currencyCode: string) {
     return getAmountInRate({
       amount,
-      baseRate,
-      currency,
+      baseCurrencyCode,
+      currencyCode,
       rates,
     })
   }
@@ -66,7 +66,7 @@ export function getTotal(props: TotalProps): TotalReturns {
     if (trn.type === TrnType.Income || trn.type === TrnType.Expense) {
       const isTransferCategory = transferCategoriesIds?.includes(trn.categoryId)
       const wallet = walletsItems[trn.walletId]
-      const sum = getFormattedAmount(trn.amount, wallet.currency)
+      const sum = getAmount(trn.amount, wallet.currency)
 
       // Income
       if (trn.type === TrnType.Income) {
@@ -87,8 +87,8 @@ export function getTotal(props: TotalProps): TotalReturns {
     else if (trn.type === TrnType.Transfer && 'incomeWalletId' in trn) {
       const incomeWallet = walletsItems[trn.incomeWalletId]
       const expenseWallet = walletsItems[trn.expenseWalletId]
-      const incomeAmount = getFormattedAmount(trn.incomeAmount, incomeWallet.currency)
-      const expenseAmount = getFormattedAmount(trn.expenseAmount, expenseWallet.currency)
+      const incomeAmount = getAmount(trn.incomeAmount, incomeWallet.currency)
+      const expenseAmount = getAmount(trn.expenseAmount, expenseWallet.currency)
 
       // Include only selected wallets
       if (walletsIds && walletsIds.length > 0) {
@@ -112,8 +112,8 @@ export function getTotal(props: TotalProps): TotalReturns {
     else if (trn.type === TrnType.Transfer && 'walletFromId' in trn) {
       const incomeWallet = walletsItems[trn.walletToId]
       const expenseWallet = walletsItems[trn.walletFromId]
-      const incomeAmount = getFormattedAmount(trn.amountTo, incomeWallet.currency)
-      const expenseAmount = getFormattedAmount(trn.amountFrom, expenseWallet.currency)
+      const incomeAmount = getAmount(trn.amountTo, incomeWallet.currency)
+      const expenseAmount = getAmount(trn.amountFrom, expenseWallet.currency)
 
       // Include only selected wallets
       if (walletsIds && walletsIds.length > 0) {

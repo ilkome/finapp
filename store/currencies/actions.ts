@@ -34,13 +34,13 @@ export default {
     })
   },
 
-  async changeBaseCurrency({ commit }, baseCurrency) {
-    commit('setBaseRate', baseCurrency)
+  async changeBaseCurrency({ commit }, baseCurrencyCode) {
+    commit('setBaseRate', baseCurrencyCode)
   },
 
-  setBaseCurrency({ rootState, dispatch }, baseCurrency) {
+  setBaseCurrency({ rootState, dispatch }, baseCurrencyCode) {
     const uid = rootState.user.user.uid
-    saveData(`users/${uid}/settings/baseCurrency`, baseCurrency)
+    saveData(`users/${uid}/settings/baseCurrency`, baseCurrencyCode)
     dispatch('initCurrencies')
   },
 }

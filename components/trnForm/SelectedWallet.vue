@@ -30,7 +30,7 @@ const wallet = computed(() => walletsItemsSorted.value[props.walletId])
       .text-skin-item-base
         Amount(
           :amount="wallet.amount"
-          :currency="wallet.currency"
+          :currencyCode="wallet.currency"
           :isShowBaseRate="false"
           :isShowSign="false"
           align="left"
