@@ -34,11 +34,6 @@ export default function useMenuData() {
       icon: 'mdi mdi-cog-outline',
       name: i18n.t('settings.title'),
     },
-    users: {
-      private: true,
-      icon: 'mdi mdi-account-multiple',
-      name: i18n.t('users.title'),
-    },
   }))
 
   function onClick(menuId: string) {
