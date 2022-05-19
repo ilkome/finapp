@@ -226,37 +226,36 @@ div
     //- Colors
     //---------------------------------
     template(v-if="activeTab === 'colors'")
-      div
-        div
-          .pb-1(
-            v-for="(colorsGroup, groupIdx) in allColors"
-            :key="groupIdx"
-          )
-            .colors
-              .iconItem(
-                v-for="(color, idx) in colorsGroup"
-                :key="idx"
-                :class="{ _active: color === categoryForm.color, 'pointer-events-none': !color }"
-                :style="{ background: color === categoryForm.color ? color : 'transparent' }"
-                @click="emit('updateValue', 'color', color)"
-              )
-                template(v-if="findCategoryWithThisColor(color)")
-                  Icon(
-                    :icon="color === categoryForm.color ? categoryForm.icon : findCategoryWithThisColor(color)"
-                    :background="color"
-                    round
-                  )
-                template(v-else-if="color === categoryForm.color")
-                  Icon(
-                    :icon="categoryForm.icon"
-                    background="transparent"
-                    big
-                  )
-                template(v-else-if="color")
-                  .colorPreview(:style="{ background: color }")
+      .pb-4
+        .pb-1(
+          v-for="(colorsGroup, groupIdx) in allColors"
+          :key="groupIdx"
+        )
+          .colors
+            .iconItem(
+              v-for="(color, idx) in colorsGroup"
+              :key="idx"
+              :class="{ _active: color === categoryForm.color, 'pointer-events-none': !color }"
+              :style="{ background: color === categoryForm.color ? color : 'transparent' }"
+              @click="emit('updateValue', 'color', color)"
+            )
+              template(v-if="findCategoryWithThisColor(color)")
+                Icon(
+                  :icon="color === categoryForm.color ? categoryForm.icon : findCategoryWithThisColor(color)"
+                  :background="color"
+                  round
+                )
+              template(v-else-if="color === categoryForm.color")
+                Icon(
+                  :icon="categoryForm.icon"
+                  background="transparent"
+                  big
+                )
+              template(v-else-if="color")
+                .colorPreview(:style="{ background: color }")
 
-        .pb-2.text-sm.text-skin-item-base-down {{ $t('wallets.form.colors.custom') }}
-        input.cursor-pointer.w-full.h-12.p-0.border-0(v-model="categoryForm.color" type="color")
+      .pb-2.text-sm.text-skin-item-base-down {{ $t('wallets.form.colors.custom') }}
+      input.cursor-pointer.w-full.h-12.p-0.border-0(v-model="categoryForm.color" type="color")
 
     //- Parent
     //---------------------------------

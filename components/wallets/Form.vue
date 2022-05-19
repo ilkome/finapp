@@ -146,19 +146,22 @@ div(v-if="walletForm")
     //- Colors
     //---------------------------------
     template(v-if="activeTab === 'colors'")
-      .colors
-        .iconItem(
-          v-for="(color, idx) in allColors"
-          :key="idx"
-          :class="{ _active: color === walletForm.color, '_empty pointer-events-none': !color }"
-          :style="{ background: color === walletForm.color ? color : 'transparent' }"
-          @click="emit('updateValue', 'color', color)"
+      .pb-4
+        .pb-1(
+          v-for="(colorsGroup, groupIdx) in allColors"
+          :key="groupIdx"
         )
+          .colors
+            .iconItem(
+              v-for="(color, idx) in colorsGroup"
+              :key="idx"
+              :class="{ _active: color === walletForm.color, 'pointer-events-none': !color }"
+              :style="{ background: color === walletForm.color ? color : 'transparent' }"
+              @click="emit('updateValue', 'color', color)"
+            )
+              .colorPreview(:style="{ background: color }")
 
-          template(v-if="color")
-            .colorPreview(:style="{ background: color }")
-
-      .pb-2.text-sm.text-skin-item-base-down {{ $t('categories.form.colors.custom') }}
+      .pb-2.text-sm.text-skin-item-base-down {{ $t('wallets.form.colors.custom') }}
       input.cursor-pointer.w-full.h-12.p-0.border-0(v-model="walletForm.color" type="color")
 
     .pt-4.pb-6
