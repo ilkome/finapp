@@ -36,13 +36,12 @@ function getMaxPeriodsToShow({ periodName, fromDate }: { periodName: PeriodsName
  * Transactions
  */
 const trnsItems: ComputedRef<Record<TrnID, TrnItem>> = computed(() => $store.state.trns.items)
-const trnsIds: ComputedRef<TrnID[]> = computed(() => Object.keys(trnsItems.value))
 const oldestTrnDate = getOldestTrnDate(trnsItems.value)
 
 /**
  * Config
  */
-const activePeriod: Ref<PeriodsNamesExeptAll> = ref('week')
+const activePeriod: Ref<PeriodsNamesExeptAll> = ref('month')
 
 /**
  * Periods
@@ -183,6 +182,10 @@ const chartOptions = computed(() => ({
   }],
 
   legend: {},
+
+  grid: {
+    bottom: '50',
+  },
 }))
 
 /**
@@ -193,51 +196,32 @@ const chartData = computed(() => _merge(JSON.parse(JSON.stringify(options)), cha
 
 <template lang="pug">
 .h-full.overflow-hidden.overflow-y-auto
-  h1 periods
-  .flex
-    div.px-2(
-      v-for="date in periods"
-      :key="date"
-      @click="activePeriod = date"
-    ) {{ date }}
+  .my-5
+    h1.pb-2 Periods
 
-  h1 series
-  //- pre {{ series }}
+    UiTabs
+      UiTabsItem(
+        v-for="date in periods"
+        :key="date"
+        :isActive="activePeriod === date"
+        @click="activePeriod = date"
+      ) {{ date }}
 
-  h1(@click="loading = !loading") loading {{ loading }}
-  //- pre {{ series }}
+  .my-5
+    h1 date
+    pre {{ dayjs(date).format('YYYY-MM-DD HH:mm') }}
 
-  h1 seriesTotal
-  //- pre {{ seriesTotal }}
+  .my-5
+    h1 oldestTrnDate
+    pre {{ dayjs(oldestTrnDate).format('YYYY-MM-DD HH:mm') }}
 
-  h1 storeFilter
-  //- pre {{ storeFilter }}
-
-  h1 date
-  pre {{ dayjs(date).format('YYYY-MM-DD HH:mm') }}
-
-  h1 activePeriod
-  pre {{ activePeriod }}
-
-  h1 oldestTrnDate
-  pre {{ dayjs(oldestTrnDate).format('YYYY-MM-DD HH:mm') }}
-
-  h1 maxPeriodsNumber
-  pre {{ maxPeriodsNumber }}
+  .my-5
+    h1 maxPeriodsNumber
+    pre {{ maxPeriodsNumber }}
 
   .my-6.mx-2.py-2.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800
     ChartBase.h-80(
       @finished="finished"
       :option="chartData"
-    )
-
-  .my-6.mx-2
-    h1 {{ trnsIds.length }}
-
-    h1 chartOptions.xAxis
-    //- pre {{ chartOptions }}
-
-    TrnsHistory(
-      :trnsIds="trnsIds"
     )
 </template>
