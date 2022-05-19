@@ -27,7 +27,6 @@ const typeNumber = computed(() => moneyTypes.find(t => t.id === `${props.typeTex
         )
 
       //- Average
-      //- TODO: change everything to expense and income
       LazyStatSummaryRowItemView(
         v-if="statPage.average[typeText] !== 0"
         :amount="statPage.average[typeText]"

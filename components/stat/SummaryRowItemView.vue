@@ -9,8 +9,9 @@ export default {
   computed: {
     className() {
       return {
-        _expense: this.type === 0,
-        _income: this.type === 1,
+        '_expense': this.type === 0,
+        '_income': this.type === 1,
+        'pb-[2px]': true,
       }
     },
   },
@@ -19,7 +20,7 @@ export default {
 
 <template lang="pug">
 .summaryItem(:class="className")
-  .summaryItem__title.pb-1 {{ title }}
+  .summaryItem__title(class="pb-[2px]") {{ title }}
   .summaryItem__amount.text-skin-item-base
     Amount(
       :amount="amount"
