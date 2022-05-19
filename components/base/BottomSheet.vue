@@ -27,7 +27,7 @@ export default defineComponent({
     // state
     const initialY = ref(0)
     const clientY = ref(0)
-    const isDraging = ref(true)
+    const isDragging = ref(true)
     const direction = ref('up')
     const isHandler = ref(false)
 
@@ -165,13 +165,13 @@ export default defineComponent({
       const isHasScroll = contentHasScroll(event)
 
       if ((!isTarget || isHasScroll) && !isHandler.value) {
-        isDraging.value = false
+        isDragging.value = false
         return
       }
 
       clientY.value = getClientY(event)
       initialY.value = clientY.value + initialY.value
-      isDraging.value = true
+      isDragging.value = true
     }
 
     /**
@@ -184,17 +184,17 @@ export default defineComponent({
       const isHasScroll = contentHasScroll(event)
 
       if (isHasScroll && !isHandler.value) {
-        isDraging.value = false
+        isDragging.value = false
         initialY.value = 0
         clientY.value = 0
         return
       }
 
       // drug on pc only by nadler drug on mobile everywhere
-      // if (isDraging.value && ((!isHandler.value && event.type.includes('touch') || isHandler.value)))
+      // if (isDragging.value && ((!isHandler.value && event.type.includes('touch') || isHandler.value)))
       //   clientY.value = getClientY(event)
 
-      if (isDraging.value)
+      if (isDragging.value)
         clientY.value = getClientY(event)
 
       nextCurrentY.value >= settings.moveToCloseOffset && direction.value === 'down'
@@ -206,7 +206,7 @@ export default defineComponent({
      * Drag end
      */
     function onDragEnd(): void {
-      if (disabled.value || !isDraging.value)
+      if (disabled.value || !isDragging.value)
         return
 
       nextCurrentY.value >= settings.moveToCloseOffset && direction.value === 'down'
@@ -219,7 +219,7 @@ export default defineComponent({
      */
     function clear() {
       clientY.value = 0
-      isDraging.value = false
+      isDragging.value = false
     }
 
     /**
@@ -300,7 +300,7 @@ export default defineComponent({
      * Watch for diff height
      */
     watch(diffHeight, () => {
-      if (isDraging.value)
+      if (isDragging.value)
         return
 
       if (diffHeight.value === 0) {
@@ -340,7 +340,7 @@ export default defineComponent({
       drugHeader,
       drugStyles,
       handler,
-      isDraging,
+      isDragging,
       maxHeightScroll,
       heightScroll,
       open,
@@ -358,13 +358,13 @@ export default defineComponent({
 )
   .overflow(
     @click="close()"
-    :class="{ _anim: !isDraging && opened, _hidden: !opened }"
+    :class="{ _anim: !isDragging && opened, _hidden: !opened }"
     :style="overlayStyles"
   )
 
   .drug(
     ref="drug"
-    :class="{ _anim: !isDraging && opened, _drug: isDraging && drugStyles.transform }"
+    :class="{ _anim: !isDragging && opened, _drug: isDragging && drugStyles.transform }"
     :style="drugStyles"
   )
     .drug__header(ref="drugHeader")

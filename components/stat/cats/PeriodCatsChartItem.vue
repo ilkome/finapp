@@ -100,7 +100,7 @@ export default defineComponent({
     &__in
       position absolute
       left 0
-      bottom 0px
+      bottom 0
       width 100%
       min-height 1px
       border-radius $m4 $m4 0 0

@@ -30,10 +30,7 @@ const isUpdateChildCategoriesColor = ref(true)
 
 const isAllowChangeParent = computed(() => {
   const childs = getChildCategoriesIds(categoryId.value)
-  if (childs)
-    return false
-
-  return true
+  return !childs
 })
 
 /**

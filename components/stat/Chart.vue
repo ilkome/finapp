@@ -10,12 +10,9 @@ const periods = computed(() => $store.state.chart.periods)
 const filter = computed(() => $store.state.filter)
 
 const chartType = computed(() => {
-  let type = null
-  periods.value[filterPeriodNameAllReplacedToYear.value].grouped
-    ? type = 'column'
-    : type = 'spline'
-
-  return type
+  return periods.value[filterPeriodNameAllReplacedToYear.value].grouped
+    ? 'column'
+    : 'spline'
 })
 </script>
 

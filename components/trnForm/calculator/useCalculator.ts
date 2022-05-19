@@ -189,7 +189,7 @@ export default function useCalculator() {
   function formatInput(value: string, isTrimFloatSpaces?: boolean): string {
     const formattedArray = separateExpression(String(value))
       .map((item) => {
-        let formattedItem = ''
+        let formattedItem: string
         const isAction = item.match(/[/*\-+]/g)
 
         if (isAction) {

@@ -10,10 +10,7 @@ export default {
 
   computed: {
     newUserData() {
-      if (!this.$store.getters['wallets/hasWallets'] || !this.$store.getters['categories/hasCategories'])
-        return true
-
-      return false
+      return !this.$store.getters['wallets/hasWallets'] || !this.$store.getters['categories/hasCategories']
     },
   },
 

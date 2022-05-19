@@ -175,7 +175,7 @@ export default defineComponent({
 
 .subTitle
   color var(--c-font-4)
-  letter-spacing 0px
+  letter-spacing 0
   font-weight 600
   text-transform uppercase
 </style>

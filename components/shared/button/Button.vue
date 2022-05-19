@@ -60,7 +60,7 @@ export default defineComponent({
   &:active:not(._disable)
     color var(--c-font-3)
     background var(--c-bg-2)
-    box-shadow 2px 2px 6px 0px var(--c-bg-2)
+    box-shadow 2px 2px 6px 0 var(--c-bg-2)
 
   &:hover:not(._disable)
     @media $media-laptop

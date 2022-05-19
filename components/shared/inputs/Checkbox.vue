@@ -39,7 +39,7 @@ export default {
     height 20px
     background var(--c-font-2)
     border-radius $m8
-    box-shadow 0px 0px 4px rgba(0, 0, 0, .25)
+    box-shadow 0 0 4px rgba(0, 0, 0, .25)
     anim()
 
     /.light &

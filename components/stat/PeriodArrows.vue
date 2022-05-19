@@ -56,7 +56,7 @@ const dates = computed(() => ({
     opacity 0
 
   &._left
-    left 0px
+    left 0
     justify-content flex-start
 
     +media(950px)
@@ -64,7 +64,7 @@ const dates = computed(() => ({
       justify-content center
 
   &._right
-    right 0px
+    right 0
     justify-content flex-end
     padding-right 4px
 
