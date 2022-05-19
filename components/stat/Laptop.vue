@@ -16,25 +16,27 @@ onWatch()
 
 const isShowGroup = (type) => {
   const p1 = statPage.activeTab === 'details'
-                || statPage.activeTab === 'balance'
-                || (statPage.activeTab === 'income' && type === 'income')
-                || (statPage.activeTab === 'expense' && type === 'expense')
+    || statPage.activeTab === 'balance'
+    || (statPage.activeTab === 'income' && type === 'income')
+    || (statPage.activeTab === 'expense' && type === 'expense')
+
   const p2 = statPage.current[type].total > 0
-                  || (statPage.average && statPage.average[type] !== 0)
-                  || $store.state.filter.period === 'all'
+    || (statPage.average && statPage.average[type] !== 0)
+    || $store.state.filter.period === 'all'
+
   return p1 && p2
 }
 
 const isShowTrns = computed(() => {
   return statPage.activeTab === 'details'
-                      && statPage.average?.income !== 0
-                      && statPage.average?.expense !== 0
-                      && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0
+    && statPage.average?.income !== 0
+    && statPage.average?.expense !== 0
+    && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0
 })
 
 const isShowGroupTrns = computed(() => {
   const p1 = statPage.activeTab === 'income' || statPage.activeTab === 'expense'
-  const p2 = statPage.average.sum === 0
+  const p2 = statPage.average?.sum === 0
   return (p1 || p2) && statPage.activeTab !== 'history'
 })
 

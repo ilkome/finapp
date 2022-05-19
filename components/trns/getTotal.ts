@@ -84,7 +84,7 @@ export function getTotal(props: TotalProps): TotalReturns {
     }
 
     // Transfer v2
-    else if (trn.type === TrnType.Transfer && 'incomeWalletId' in trn) {
+    if (trn.type === TrnType.Transfer && 'incomeWalletId' in trn) {
       const incomeWallet = walletsItems[trn.incomeWalletId]
       const expenseWallet = walletsItems[trn.expenseWalletId]
       const incomeAmount = getAmount(trn.incomeAmount, incomeWallet.currency)
@@ -109,7 +109,7 @@ export function getTotal(props: TotalProps): TotalReturns {
     }
 
     // Transfer @deprecated
-    else if (trn.type === TrnType.Transfer && 'walletFromId' in trn) {
+    if (trn.type === TrnType.Transfer && 'walletFromId' in trn) {
       const incomeWallet = walletsItems[trn.walletToId]
       const expenseWallet = walletsItems[trn.walletFromId]
       const incomeAmount = getAmount(trn.amountTo, incomeWallet.currency)
