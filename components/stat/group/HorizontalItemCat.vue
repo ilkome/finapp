@@ -1,16 +1,10 @@
 <script>
-export default {
-  name: 'StatItemChildCats',
+import { getTotal } from '~/components/trns/getTotal'
 
+export default {
   props: {
-    categoryId: {
-      type: String,
-      required: true,
-    },
-    type: {
-      type: Number,
-      required: true,
-    },
+    categoryId: { type: String, required: true },
+    type: { type: Number, required: true },
   },
 
   computed: {
@@ -50,13 +44,35 @@ export default {
       trnsIds = trnsIds.filter(id => trns[id].type === this.type)
       return trnsIds
     },
+
+    getCategoryStat({ categoryId, trnsIds }) {
+      const trnsItems = this.$store.state.trns.items
+      const walletsItems = this.$store.state.wallets.items
+      const baseCurrencyCode = this.$store.state.currencies.base
+      const rates = this.$store.state.currencies.rates
+
+      const total = getTotal({
+        baseCurrencyCode,
+        rates,
+        trnsIds,
+        trnsItems,
+        walletsItems,
+      })
+
+      return {
+        categoryId,
+        total: total.sumTransactions,
+        incomes: total.incomeTransactions,
+        expense: total.expenseTransactions,
+      }
+    },
   },
 }
 </script>
 
 <template lang="pug">
 div
-  StatItemChildCatsItem(
+  StatGroupHorizontalItemCatItem(
     v-for="category in statCategories"
     :key="category.categoryId"
     :biggest="$store.getters['stat/statCurrentPeriod'][typeName].biggest"

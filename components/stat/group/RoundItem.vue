@@ -2,8 +2,6 @@
 import useFilter from '~/modules/filter/useFilter'
 
 export default {
-  name: 'StatItemRound',
-
   props: {
     category: { type: Object, required: true },
     categoryId: { type: String, required: true },

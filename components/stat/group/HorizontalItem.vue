@@ -106,7 +106,7 @@ export default {
     @click.stop=""
   )
     template(v-if="isCategoryHasChildren")
-      StatItemChildCats(
+      StatGroupHorizontalItemCat(
         :categoryId="categoryId"
         :type="type"
       )
