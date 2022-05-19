@@ -263,9 +263,6 @@ export default {
     income: 'Доход',
     expense: 'Расход',
     total: 'Баланс',
-
-    income: 'Доход',
-    expense: 'Расход',
     sum: 'Баланс',
 
     transfer: 'Перевод',

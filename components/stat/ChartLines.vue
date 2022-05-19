@@ -3,7 +3,7 @@ import { Chart } from 'highcharts-vue'
 import chartOptions from '~/components/stat/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
-import { getCatsIds } from '~/components/categories/getCategories'
+import { getCatsIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/trns/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
@@ -88,9 +88,10 @@ export default defineComponent({
       const periodName = this.filterPeriodNameAllReplacedToYear
       const chartPeriods = this.$store.state.chart.periods
       const trnsItems = this.$store.state.trns.items
-      const catsItems = this.$store.state.categories.items
+      const categoriesItems = this.$store.state.categories.items
       const walletsItems = this.$store.state.wallets.items
       const storeFilter = this.$store.state.filter
+      const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 
       // diff periods from oldest trn and today
       const oldestTrnDate = this.$day(trnsItems[this.$store.getters['trns/firstCreatedTrnId']].date).endOf(periodName)
@@ -107,7 +108,7 @@ export default defineComponent({
         // count total period
         const periodDate = this.$day().startOf(periodName).subtract(index, periodName).valueOf()
 
-        const categoriesIds = storeFilter.catsIds.length > 0 ? getCatsIds(storeFilter.catsIds, catsItems) : null
+        const categoriesIds = storeFilter.catsIds.length > 0 ? getCatsIds(storeFilter.catsIds, categoriesItems) : null
         const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
 
         const trnsIds = getTrnsIds({
@@ -122,6 +123,7 @@ export default defineComponent({
           trnsIds,
           trnsItems,
           walletsItems,
+          transferCategoriesIds,
         })
 
         let format = 'MM'

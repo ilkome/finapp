@@ -20,7 +20,7 @@ const typeNumber = computed(() => moneyTypes.find(t => t.id === `${props.typeTex
       .pr-6.text-3xl
         Amount(
           :amount="statPage.current[typeText].total"
-          :colorize="typeNumber === 1 ? 'income': 'expense'"
+          :colorize="typeText"
           :currency="$store.state.currencies.base"
           :isShowBaseRate="false"
           :type="typeNumber"
@@ -30,7 +30,7 @@ const typeNumber = computed(() => moneyTypes.find(t => t.id === `${props.typeTex
       //- TODO: change everything to expense and income
       LazyStatSummaryRowItemView(
         v-if="statPage.average[typeText] !== 0"
-        :amount="statPage.average[typeText === 'expense' ? 'expense' : 'income']"
+        :amount="statPage.average[typeText]"
         :title="$t(`money.average.${typeText}`)"
         :type="typeNumber"
       )

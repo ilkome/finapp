@@ -15,8 +15,24 @@ export default {
         }
       }
 
+      // Add missing props
       for (const categoryId in items) {
         const cat = items[categoryId]
+
+        if (cat.showInLastUsed === undefined) {
+          items[categoryId] = {
+            ...cat,
+            showInLastUsed: false,
+          }
+        }
+
+        if (cat.showInQuickSelector === undefined) {
+          items[categoryId] = {
+            ...cat,
+            showInQuickSelector: false,
+          }
+        }
+
         if (cat.childIds) {
           items[categoryId] = {
             ...cat,

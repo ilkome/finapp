@@ -261,10 +261,7 @@ export default {
   money: {
     income: 'Income',
     expense: 'Expense',
-
     total: 'Net income',
-    income: 'Income',
-    expense: 'Expense',
     sum: 'Net income',
 
     transfer: 'Transfer',
