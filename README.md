@@ -83,13 +83,16 @@ storageBucket: 'YOUR_CONFIG',
 messagingSenderId: 'YOUR_CONFIG'
 ```
 
+### Enable Google Auth
+- Go to `Authentication` page
+- Click `Sign-in method` tab
+- Add `Add new provider` and select Google
+
 ### Add your domain to Firebase Authorized domains
 - Go to `Authentication` page
 - Click `Sign-in method` tab
 - Scroll to `Authorized domains` and click `Add domain`
-- Add your domain name where you hosted Finapp.
-
-<!-- TODO: add google for auth -->
+- Add your domain name
 
 ### Open exchange rates setup
 - Get your App ID at [openexchangerates.org](https://openexchangerates.org/signup/free)
