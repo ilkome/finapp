@@ -43,7 +43,9 @@ export default {
       @click.stop="setFilterCatsId(categoryId)"
     ): div(:class="category.icon")
 
-  .statItemRound__name.js-getWidth(:class="{ _isCategoryHasChildren: isCategoryHasChildren }") {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
+  .statItemRound__name.js-getWidth(:class="{ _isCategoryHasChildren: isCategoryHasChildren }")
+    | {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
+
   .statItemRound__amount.js-getWidth.text-skin-item-base
     Amount(
       :amount="total"
@@ -55,6 +57,8 @@ export default {
 
 <style lang="stylus">
 .statItemRound
+  max-width 160px
+
   &__icon
     .icon
       width 36px !important
