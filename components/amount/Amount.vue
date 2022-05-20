@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import useAmount from '~/components/amount/useAmount'
+import { formatAmount, getCurrencySymbol } from '~/components/amount/formatAmount'
 
 const props = withDefaults(defineProps<{
   amount: number
@@ -14,7 +15,7 @@ const props = withDefaults(defineProps<{
   isShowSign: true,
 })
 
-const { baseCurrencyCode, formatAmount, getCurrencySymbol, getAmountInBaseRate } = useAmount()
+const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
 const sign = props.type === 0 ? '-' : '+'
 
 const alignClasses = computed(() => ({

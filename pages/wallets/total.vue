@@ -11,10 +11,11 @@ import { averageLine, baseSeriesItemStyle, options } from '~/components/chart/ch
 import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/trns/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
+import { formatAmount, getCurrencySymbol } from '~/components/amount/formatAmount'
 
 type DateValueOf = number
 
-const { baseCurrencyCode, formatAmount, getCurrencySymbol } = useAmount()
+const { baseCurrencyCode } = useAmount()
 const { $store } = useNuxtApp()
 
 /**

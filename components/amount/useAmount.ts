@@ -1,30 +1,5 @@
-import currencyjs from 'currency.js'
-import { currencies } from '~/components/currencies/currencies'
-import type { CurrencyCode } from '~/components/currencies/types'
 import { getAmountInRate } from '~/components/trns/getTotal'
-
-function getCurrencySymbol(currencyCode?: CurrencyCode) {
-  const currencySettings = currencies.find(c => c.code === currencyCode)
-
-  if (currencySettings?.symbol)
-    return currencySettings.symbol
-
-  return currencyCode
-}
-
-function formatAmount(amount: number, currencyCode?: CurrencyCode) {
-  let currencySettings = null
-
-  if (currencyCode && currencies.find(c => c.code === currencyCode))
-    currencySettings = currencies.find(c => c.code === currencyCode)
-
-  return currencyjs(amount, {
-    symbol: '',
-    precision: currencySettings?.precision ?? 2,
-    pattern: currencySettings?.pattern ?? '#',
-    separator: currencySettings?.separator ?? ' ',
-  }).format()
-}
+import { formatAmount } from '~/components/amount/formatAmount'
 
 export default function useAmount() {
   const { $store } = useNuxtApp()
@@ -54,9 +29,7 @@ export default function useAmount() {
 
   return {
     baseCurrencyCode,
-
     formatAmount,
-    getCurrencySymbol,
     getAmountInBaseRate,
   }
 }
