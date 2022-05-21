@@ -40,7 +40,7 @@ export default {
   */
   setAppDimensions({ commit }, { height, width }) {
     let view = 'mobile'
-    if (width >= 1300)
+    if (width >= 1024)
       view = 'pc'
 
     commit('setAppDimensions', {

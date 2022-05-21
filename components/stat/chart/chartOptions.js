@@ -34,7 +34,7 @@ export default {
     },
 
     column: {
-      groupPadding: 0.2,
+      groupPadding: 0.3,
       pointPadding: 0.1,
       borderWidth: 0,
       maxPointWidth: 10,
@@ -91,7 +91,7 @@ export default {
         y: -8,
         style: {
           textOutline: 'var(--c-chart-lables-text-shaddow)',
-          fontSize: '10px',
+          fontSize: '11px',
           fontFamily: 'var(--font-secondary)',
           fontWeight: 400,
           textTransform: 'uppercase',
@@ -141,19 +141,14 @@ export default {
 
   tooltip: {
     shared: true,
-    animation: false,
     backgroundColor: 'var(--c-bg-3)',
     borderColor: 'var(--c-bg-7)',
     borderRadius: 8,
-    padding: 0,
+    padding: 8,
     shadow: false,
-    useHTML: true,
-    headerFormat: '',
-    pointFormat: '',
-    footerFormat: '',
     style: {
       color: 'var(--c-font-2)',
-      fontSize: '12px',
+      fontSize: '14px',
       fontFamily: 'var(--font-roboto)',
     },
   },

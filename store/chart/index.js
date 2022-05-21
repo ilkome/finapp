@@ -4,22 +4,22 @@ export const state = () => ({
   periods: {
     day: {
       groupedBy: 'month',
-      showedPeriods: 14,
+      showedPeriods: 31,
       grouped: false,
     },
     week: {
       groupedBy: 'month',
-      showedPeriods: 6,
+      showedPeriods: 12,
       grouped: false,
     },
     month: {
       groupedBy: 'year',
-      showedPeriods: 6,
+      showedPeriods: 12,
       grouped: false,
     },
     year: {
       groupedBy: 'year',
-      showedPeriods: 3,
+      showedPeriods: 6,
       grouped: false,
     },
   },
