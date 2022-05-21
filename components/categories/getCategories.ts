@@ -1,8 +1,8 @@
-import type { CategoryID } from '~/components/categories/types'
+import type { CategoryID, CategoryItem } from '~/components/categories/types'
 
-// TODO: add typings
+// TODO: need a proper name
 export function getCategoriesIds(catsIds: CategoryID[], categoriesItems) {
-  const ids = []
+  const ids: CategoryID[] = []
 
   for (const catId of catsIds) {
     const category = categoriesItems[catId]
@@ -14,13 +14,11 @@ export function getCategoriesIds(catsIds: CategoryID[], categoriesItems) {
   return ids
 }
 
-// TODO: add typings
-export function getTransferCategoriesIds(categoriesItems): CategoryID[] {
+export function getTransferCategoriesIds(items: Record<CategoryID, CategoryItem>): CategoryID[] {
   const names = ['перевод', 'transfer']
 
-  const categoriesIdsByName = Object
-    .keys(categoriesItems)
-    .filter(id => names.includes(categoriesItems[id].name.toLowerCase()))
+  const categoriesIdsByName = Object.keys(items)
+    .filter(id => names.includes(items[id].name.toLowerCase()))
 
   return [...categoriesIdsByName, 'transfer']
 }
