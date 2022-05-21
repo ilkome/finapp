@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { getCatsIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
-import { getTotal } from '~/components/trns/getTotal'
+import { getTotal } from '~/components/amount/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default {

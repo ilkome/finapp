@@ -1,4 +1,4 @@
-import { getAmountInRate } from '~/components/trns/getTotal'
+import { getAmountInRate } from '~/components/amount/getTotal'
 import { formatAmount } from '~/components/amount/formatAmount'
 
 export default function useAmount() {

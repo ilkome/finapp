@@ -9,7 +9,7 @@ import type { TrnID, TrnItem } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import { averageLine, baseSeriesItemStyle, options } from '~/components/chart/chartOprions'
 import { getTransferCategoriesIds } from '~/components/categories/getCategories'
-import { getTotal } from '~/components/trns/getTotal'
+import { getTotal } from '~/components/amount/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { formatAmount, getCurrencySymbol } from '~/components/amount/formatAmount'
 
@@ -29,7 +29,7 @@ function getOldestTrnDate(trnsItems: Record<TrnID, TrnItem>): DateValueOf {
 /**
  * Get max periods to show
  */
-function getMaxPeriodsToShow({ periodName, fromDate }: { periodName: PeriodsNamesExceptAll; fromDate: DateValueOf }) {
+function getMaxPeriodsToShow(periodName: PeriodsNamesExceptAll, fromDate: DateValueOf): number {
   return dayjs().endOf(periodName).diff(fromDate, periodName) + 1
 }
 
@@ -48,7 +48,7 @@ const activePeriod: Ref<PeriodsNamesExceptAll> = ref('month')
  * Periods
  */
 const periods: PeriodsNamesExceptAll[] = ['day', 'week', 'month', 'year']
-const maxPeriodsNumber = computed(() => getMaxPeriodsToShow({ periodName: activePeriod.value, fromDate: oldestTrnDate }))
+const maxPeriodsNumber = computed(() => getMaxPeriodsToShow(activePeriod.value, oldestTrnDate))
 
 /**
  * Get Period date from until

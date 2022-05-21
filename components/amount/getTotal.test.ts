@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { categoriesItems } from '~/tests/categories.mock'
-import { getTotal } from '~/components/trns/getTotal'
+import { categoriesItems } from '~/mocks/categories'
+import { getTotal } from '~/components/amount/getTotal'
 import { getTransferCategoriesIds } from '~/components/categories/getCategories'
-import { trnsItems } from '~/tests/trns.mock'
-import { walletsItems } from '~/tests/wallets.mock'
-import { ratesBasedOnUsd as rates } from '~/tests/rates.mock'
+import { ratesBasedOnUsd as rates } from '~/mocks/rates'
+import { trnsItems } from '~/mocks/trns'
+import { walletsItems } from '~/mocks/wallets'
 
 const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 

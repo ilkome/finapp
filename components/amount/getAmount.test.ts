@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { getAmountInRate } from '~/components/trns/getTotal'
-import { ratesBasedOnUsd as rates } from '~/tests/rates.mock'
+import { getAmountInRate } from '~/components/amount/getTotal'
+import { ratesBasedOnUsd as rates } from '~/mocks/rates'
 
 describe('Get amount', () => {
   it('Get amount in same rate as base rate', () => {

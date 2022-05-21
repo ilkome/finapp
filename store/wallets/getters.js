@@ -1,5 +1,5 @@
 import { getTrnsIds } from '~/components/trns/getTrns'
-import { getTotal } from '~/components/trns/getTotal'
+import { getTotal } from '~/components/amount/getTotal'
 
 export default {
   hasWallets(state, getters, rootState) {

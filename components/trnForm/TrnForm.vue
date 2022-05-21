@@ -124,7 +124,7 @@ function onClickWallet(walletId) {
 /**
  * Prepare values
  */
-function prepeareValues(): any {
+function prepareValues(): any {
   let normalizedValues
 
   const id = $store.state.trnForm.values.trnId || generateId(dayjs().valueOf())
@@ -170,7 +170,7 @@ function prepeareValues(): any {
 function handleSubmitForm() {
   try {
     const { validate } = useTrnFormValidate()
-    const { id, values } = prepeareValues()
+    const { id, values } = prepareValues()
 
     const validateStatus = validate(values)
 
@@ -213,8 +213,8 @@ function handleSubmitForm() {
       .swiper-slide.getHeight
         .scroll.scrollerBlock(:style="{ maxHeight: `${$store.state.ui.height}px` }")
           .subTitle.text-center.pt-5.pb-2.text-xs
-            temaplte(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
-            temaplte(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
+            template(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
+            template(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
 
           TrnFormTypes
           TrnFormAmount(v-if="!isTransfer || isTransfer && isSameCurrency")

@@ -5,9 +5,9 @@ import { formatAmount, getCurrencySymbol } from '~/components/amount/formatAmoun
 const props = withDefaults(defineProps<{
   amount: number
   currencyCode: string
-  colorize: string
-  type: number
-  align: string
+  colorize?: string
+  type?: number
+  align?: string
   isShowBaseRate?: boolean
   isShowSign?: boolean
 }>(), {

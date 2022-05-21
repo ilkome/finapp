@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getTransferCategoriesIds } from '~/components/categories/getCategories'
-import { getTotal } from '~/components/trns/getTotal'
+import { getTotal } from '~/components/amount/getTotal'
 import type { WalletID } from '~/components/wallets/types'
 import type { TrnID } from '~/components/trns/types'
 

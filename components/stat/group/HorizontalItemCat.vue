@@ -1,5 +1,5 @@
 <script>
-import { getTotal } from '~/components/trns/getTotal'
+import { getTotal } from '~/components/amount/getTotal'
 
 export default {
   props: {
