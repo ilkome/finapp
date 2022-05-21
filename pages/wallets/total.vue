@@ -4,7 +4,7 @@ import _minby from 'lodash.minby'
 import _sortby from 'lodash.sortby'
 import dayjs from 'dayjs'
 import type { ComputedRef, Ref } from '@vue/composition-api'
-import type { PeriodsNamesExeptAll } from '~/components/date/types'
+import type { PeriodsNamesExceptAll } from '~/components/date/types'
 import type { TrnID, TrnItem } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import { averageLine, baseSeriesItemStyle, options } from '~/components/chart/chartOprions'
@@ -29,7 +29,7 @@ function getOldestTrnDate(trnsItems: Record<TrnID, TrnItem>): DateValueOf {
 /**
  * Get max periods to show
  */
-function getMaxPeriodsToShow({ periodName, fromDate }: { periodName: PeriodsNamesExeptAll; fromDate: DateValueOf }) {
+function getMaxPeriodsToShow({ periodName, fromDate }: { periodName: PeriodsNamesExceptAll; fromDate: DateValueOf }) {
   return dayjs().endOf(periodName).diff(fromDate, periodName) + 1
 }
 
@@ -42,18 +42,18 @@ const oldestTrnDate = getOldestTrnDate(trnsItems.value)
 /**
  * Config
  */
-const activePeriod: Ref<PeriodsNamesExeptAll> = ref('month')
+const activePeriod: Ref<PeriodsNamesExceptAll> = ref('month')
 
 /**
  * Periods
  */
-const periods: PeriodsNamesExeptAll[] = ['day', 'week', 'month', 'year']
+const periods: PeriodsNamesExceptAll[] = ['day', 'week', 'month', 'year']
 const maxPeriodsNumber = computed(() => getMaxPeriodsToShow({ periodName: activePeriod.value, fromDate: oldestTrnDate }))
 
 /**
  * Get Period date from until
  */
-function getPeriodDates({ date, period }: { date: DateValueOf; period: PeriodsNamesExeptAll }) {
+function getPeriodDates({ date, period }: { date: DateValueOf; period: PeriodsNamesExceptAll }) {
   return {
     from: dayjs(date).startOf(period).valueOf(),
     until: dayjs(date).endOf(period).valueOf(),
@@ -70,7 +70,7 @@ function getLastDateOrToday({ date }: { date: DateValueOf }) {
 
 function getPeriodsDates({ fromDate, periodName, periodsCount }: {
   fromDate: DateValueOf
-  periodName: PeriodsNamesExeptAll
+  periodName: PeriodsNamesExceptAll
   periodsCount: number
 }) {
   const periods = []
