@@ -1,11 +1,11 @@
 import type { CategoryID } from '~/components/categories/types'
 
 // TODO: add typings
-export function getCatsIds(catsIds: CategoryID[], catsItems) {
+export function getCategoriesIds(catsIds: CategoryID[], categoriesItems) {
   const ids = []
 
   for (const catId of catsIds) {
-    const category = catsItems[catId]
+    const category = categoriesItems[catId]
     category?.childIds
       ? ids.push(...category.childIds)
       : ids.push(catId)

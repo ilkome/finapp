@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { getCatsIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+import { getCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default {
@@ -45,17 +45,17 @@ export default {
       return trnsIds[0]
   },
 
-  // TODO: should use components/trns/getTrns when its compatible
   selectedTrnsIds(_state, getters, rootState) {
     if (!getters.hasTrns)
       return []
 
     const trnsItems = rootState.trns.items
-    const catsItems = rootState.categories.items
+    const categoriesItems = rootState.categories.items
     const storeFilter = rootState.filter
 
+    // TODO: move it to a separate function getFilterParams
     const categoriesIds = rootState.filter.catsIds.length > 0
-      ? getCatsIds(rootState.filter.catsIds, catsItems)
+      ? getCategoriesIds(rootState.filter.catsIds, categoriesItems)
       : null
     const walletsIds = storeFilter.walletsIds.length > 0
       ? storeFilter.walletsIds

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { getCatsIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+import { getCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/amount/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
@@ -16,8 +16,9 @@ export default {
     const storeFilter = rootState.filter
     const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 
+    // TODO: move it to a separate function getFilterParams
     const categoriesIds = rootState.filter.catsIds.length > 0
-      ? getCatsIds(rootState.filter.catsIds, categoriesItems)
+      ? getCategoriesIds(rootState.filter.catsIds, categoriesItems)
       : null
     const walletsIds = storeFilter.walletsIds.length > 0
       ? storeFilter.walletsIds
@@ -38,7 +39,7 @@ export default {
       return trnCategoryParentId || trnCategoryId
     }
 
-    function getCatsIdsWithTrnsIds() {
+    function getCategoriesIdsWithTrnsIds() {
       const filterCategoryId = rootState.filter.categoryId
       const categoriesWithTrnsIds = {}
 
@@ -63,7 +64,7 @@ export default {
       return categoriesWithTrnsIds
     }
 
-    const categoriesWithTrnsIds = getCatsIdsWithTrnsIds()
+    const categoriesWithTrnsIds = getCategoriesIdsWithTrnsIds()
 
     const total = getTotal({
       baseCurrencyCode,

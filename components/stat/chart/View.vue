@@ -3,7 +3,7 @@ import { Chart } from 'highcharts-vue'
 import chartOptions from '~/components/stat/chart/chartOptions'
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
-import { getCatsIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+import { getCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/amount/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
@@ -108,7 +108,7 @@ export default defineComponent({
         // count total period
         const periodDate = this.$day().startOf(periodName).subtract(index, periodName).valueOf()
 
-        const categoriesIds = storeFilter.catsIds.length > 0 ? getCatsIds(storeFilter.catsIds, categoriesItems) : null
+        const categoriesIds = storeFilter.catsIds.length > 0 ? getCategoriesIds(storeFilter.catsIds, categoriesItems) : null
         const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
 
         const trnsIds = getTrnsIds({
