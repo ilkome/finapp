@@ -26,7 +26,9 @@ function updateWidth() {
       ?.querySelector(`[data-type-text="${props.typeText}"]`)
       ?.querySelectorAll('.js-getWidth')
 
-    const minWidth: number = Math.max(...Array.from(elements).map(e => e.clientWidth)) || 60
+    const minWidth: number = elements
+      ? Math.max(...Array.from(elements).map(e => e.clientWidth)) || 60
+      : 60
 
     roundRef.value
       ?.querySelector(`[data-type-text="${props.typeText}"]`)

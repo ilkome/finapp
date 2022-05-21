@@ -31,7 +31,6 @@ const actions = {
 
     setExpression(trnItem.value.type === 2 && trnItem.value.incomeAmount ? trnItem.value.incomeAmount : trnItem.value.amount)
     $store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.value.id })
-    $store.commit('stat/setCategoryModal', { id: null, type: null })
   },
 
   onSetFilter: (event) => {
@@ -43,7 +42,6 @@ const actions = {
     $store.commit('filter/setFilterDateNow')
     $store.commit('trns/hideTrnModal')
     $store.commit('trns/setTrnModalId', null)
-    $store.commit('stat/setCategoryModal', { id: null, type: null })
     if ($store.state.ui.activeTabStat !== 'trns')
       $store.dispatch('ui/setActiveTabStat', 'details')
   },

@@ -47,7 +47,6 @@ export default {
       const { setExpression } = useCalculator()
       setExpression(this.trn.type === 2 && this.trn.incomeAmount ? this.trn.incomeAmount : this.trn.amount)
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
-      this.$store.commit('stat/setCategoryModal', { id: null, type: null })
       this.$emit('onClickEdit', this.trnId)
     },
   },

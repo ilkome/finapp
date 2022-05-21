@@ -51,7 +51,6 @@ export default {
       this.$store.commit('filter/setFilterDateNow')
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-      this.$store.commit('stat/setCategoryModal', { id: null, type: null })
       this.$store.dispatch('ui/setActiveTabStat', 'details')
     },
 
@@ -68,7 +67,6 @@ export default {
       this.$store.dispatch('trnForm/openTrnForm', { action: 'duplicate', trnId })
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-      this.$store.commit('stat/setCategoryModal', { id: null, type: null })
     },
 
     handleEditClick() {
@@ -77,7 +75,6 @@ export default {
       this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
-      this.$store.commit('stat/setCategoryModal', { id: null, type: null })
 
       const { setExpression } = useCalculator()
       setExpression(trn.type === 2 && trn.incomeAmount ? trn.incomeAmount : trn.amount)
