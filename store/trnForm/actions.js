@@ -8,16 +8,15 @@ export default {
     })
   },
 
-  openTrnForm({ rootState, rootGetters, commit }, { action, trnId, isPc }) {
-    isPc
-      ? commit('openTrnFormPc')
-      : commit('openTrnForm')
+  openTrnForm({ rootState, rootGetters, commit }, { action, trnId }) {
+    commit('openTrnForm')
+    const lastTrn = rootState.trns.items[rootGetters['trns/lastCreatedTrnId']]
+    console.log(rootGetters['trns/lastCreatedTrnId'], lastTrn)
 
     switch (action) {
       case 'create':
         // get data from last trn
-        if (rootGetters['trns/hasTrns'] && rootState.trns.items[rootGetters['trns/lastCreatedTrnId']]) {
-          const lastTrn = rootState.trns.items[rootGetters['trns/lastCreatedTrnId']]
+        if (lastTrn) {
           commit('setTrnFormValues', {
             amount: '0',
             amountType: 0,
@@ -72,8 +71,6 @@ export default {
               incomeWalletAmount: trn.incomeWalletAmount || trn.amount,
               incomeWalletId: trn.incomeWalletId || trn.walletFromId,
             })
-
-            console.log(trn)
           }
           // Simple
           else {

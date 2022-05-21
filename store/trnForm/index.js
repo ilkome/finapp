@@ -16,7 +16,6 @@ export const state = () => ({
   },
 
   show: false,
-  showPc: true,
   showModalCategoryId: null,
   showModalTrnId: null,
 

@@ -104,7 +104,6 @@ watch(() => props.show, (value) => {
 /**
  * Amounts
  */
-const amountType = computed(() => $store.state.trnForm.values.amountType)
 const isTransfer = computed(() => $store.state.trnForm.values.amountType === 2)
 
 /**
