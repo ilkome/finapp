@@ -90,6 +90,8 @@ export default defineComponent({
       const trnsItems = this.$store.state.trns.items
       const categoriesItems = this.$store.state.categories.items
       const walletsItems = this.$store.state.wallets.items
+      const baseCurrencyCode = this.$store.state.currencies.base
+      const rates = this.$store.state.currencies.rates
       const storeFilter = this.$store.state.filter
       const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 
@@ -125,6 +127,8 @@ export default defineComponent({
         })
 
         const { incomeTransactions, expenseTransactions, sumTransactions } = getTotal({
+          baseCurrencyCode,
+          rates,
           trnsIds,
           trnsItems,
           walletsItems,
