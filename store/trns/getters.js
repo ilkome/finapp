@@ -21,7 +21,7 @@ export default {
 
     return Object.keys(trnsItems)
       .sort((a, b) => trnsItems[b].date - trnsItems[a].date)
-      .some(trnId =>
+      .find(trnId =>
         !transferCategoriesIds.includes(trnsItems[trnId].categoryId)
         && trnsItems[trnId].type !== 2,
       )
