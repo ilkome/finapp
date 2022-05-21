@@ -108,8 +108,13 @@ export default defineComponent({
         // count total period
         const periodDate = this.$day().startOf(periodName).subtract(index, periodName).valueOf()
 
-        const categoriesIds = storeFilter.catsIds.length > 0 ? getCategoriesIds(storeFilter.catsIds, categoriesItems) : null
-        const walletsIds = storeFilter.walletsIds.length > 0 ? storeFilter.walletsIds : null
+        // TODO: move it to a separate function getFilterParams
+        const categoriesIds = storeFilter.catsIds.length > 0
+          ? getCategoriesIds(storeFilter.catsIds, categoriesItems)
+          : null
+        const walletsIds = storeFilter.walletsIds.length > 0
+          ? storeFilter.walletsIds
+          : null
 
         const trnsIds = getTrnsIds({
           trnsItems,
