@@ -69,6 +69,7 @@ export default {
     const total = getTotal({
       baseCurrencyCode,
       rates,
+      transferCategoriesIds,
       trnsIds,
       trnsItems,
       walletsIds: [rootState.filter.walletsIds],
