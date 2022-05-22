@@ -62,7 +62,7 @@ export default {
       return {
         categoryId,
         total: total.sumTransactions,
-        incomes: total.incomeTransactions,
+        income: total.incomeTransactions,
         expense: total.expenseTransactions,
       }
     },
