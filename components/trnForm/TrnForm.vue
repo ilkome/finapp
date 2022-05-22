@@ -213,7 +213,7 @@ function handleSubmitForm() {
         .scroll.scrollerBlock(:style="{ maxHeight: `${$store.state.ui.height}px` }")
           .subTitle.text-center.pt-5.pb-2.text-xs
             template(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
-            template(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.titleCreateTrn') }}
+            template(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.createTrn') }}
 
           TrnFormTypes
           TrnFormAmount(v-if="!isTransfer || isTransfer && isSameCurrency")

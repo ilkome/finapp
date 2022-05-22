@@ -33,10 +33,8 @@ export default {
     transferTitle: 'Transfer',
     saveTrnButton: 'Save transaction',
     calcTrnButton: 'Calculate',
-    createTrnButton: 'Create transaction',
-    createTransferButton: 'Create transfer',
+    createTrn: 'Add transaction',
     titleEditTrn: 'Edit transaction',
-    titleCreateTrn: 'Add transaction',
     filterWalletAndCategory: 'Wallet & Category',
     filterWallet: 'Wallet only',
     filterAll: 'Everything',
@@ -77,7 +75,6 @@ export default {
   userLogout: 'Logout',
   loginWithGoogle: 'Login with Google',
   changeTheme: 'Change theme',
-  createTrn: 'Create transaction',
 
   base: {
     sure: 'Are you sure?',

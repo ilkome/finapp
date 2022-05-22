@@ -12,7 +12,7 @@ export default function useMenuData() {
   const items = computed(() => ({
     trnForm: {
       icon: 'mdi mdi-plus',
-      name: i18n.t('createTrn'),
+      name: i18n.t('trnForm.createTrn'),
     },
     dashboard: {
       component: 'UiIconStat',

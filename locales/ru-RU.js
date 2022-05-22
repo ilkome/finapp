@@ -33,10 +33,8 @@ export default {
     transferTitle: 'Перевод',
     saveTrnButton: 'Сохранить',
     calcTrnButton: 'Посчитать результат',
-    createTrnButton: 'Создать транзакцию',
-    createTransferButton: 'Создать перевод',
+    createTrn: 'Создать транзакцию',
     titleEditTrn: 'Редактирование транзакции',
-    titleCreateTrn: 'Создание транзакции',
     filterWalletAndCategory: 'Кошелек и Категория',
     filterWallet: 'Только Кошелек',
     filterAll: 'Все',
@@ -78,7 +76,6 @@ export default {
   userLogout: 'Выход',
   loginWithGoogle: 'Войти через Google',
   changeTheme: 'Сменить тему',
-  createTrn: 'Создать транзакцию',
 
   base: {
     sure: 'Ты уверен?',
