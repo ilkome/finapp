@@ -201,6 +201,7 @@ export default {
       const total = getTotal({
         baseCurrencyCode,
         rates,
+        transferCategoriesIds,
         trnsIds: trnsIdsInPeriod,
         trnsItems,
         walletsItems,
