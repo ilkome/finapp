@@ -1,26 +1,17 @@
 <script setup lang="ts">
 import useChart from '~/components/chart/useChart'
 import useFilter from '~/modules/filter/useFilter'
-import useStat from '~/modules/stat/useStat'
-import useUIView from '~/components/layout/useUIView'
 import useStatChart from '~/components/stat/useStatChart'
 
 const { $store } = useNuxtApp()
 const { chartState, toggleChart } = useStatChart()
-
-const { ui, setUI } = useUIView()
-function toggleView(name) {
-  setUI({ name, value: !ui[name] })
-}
-
-const { isEmptyStat } = useStat()
 const periods = computed(() => $store.state.chart.periods)
 const { filterPeriodNameAllReplacedToYear } = useFilter()
 const { isShowDataLabels, toggleChartsView } = useChart()
 </script>
 
 <template lang="pug">
-.flex-center(v-if="!isEmptyStat")
+.flex-center
   .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-skin-item-main-hover(
     :class="{ 'text-skin-item-base-up': chartState.show.income }"
     @click="toggleChart('income')"

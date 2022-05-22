@@ -55,7 +55,7 @@ export default {
     .cursor-pointer.py-2.px-3.rounded-md.hocus_bg-skin-item-main-hover(
       v-for="periodItem in periodsNames"
       :key="periodItem.slug"
-      :class="{ 'cursor-default text-skin-accent-base bg-skin-item-main-active': periodItem.slug === filterPeriodNameAllReplacedToYear }"
+      :class="{ 'cursor-default text-skin-item-base-up': periodItem.slug === filterPeriodNameAllReplacedToYear }"
       @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
     )
       span.pr-1(v-if="periodItem.slug === filterPeriodNameAllReplacedToYear")

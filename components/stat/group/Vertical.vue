@@ -14,7 +14,7 @@ const isShow = computed(() => ui.showCatsVerticalChart && statPage.current[typeT
 </script>
 
 <template lang="pug">
-.my-6.py-1.flex.flex-col.gap-2.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800(
+.my-6.py-1.flex.flex-col.gap-2.border-t.border-b.dark_border-neutral-800(
   v-if="isShow"
 )
   LazyStatCatsPeriodCatsChart(

@@ -41,7 +41,7 @@ watch(isShow, updateWidth, { immediate: true })
 </script>
 
 <template lang="pug">
-.my-6.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800(v-if="isShow" ref="roundRef")
+.my-6.border-t.border-b.dark_border-neutral-800(v-if="isShow" ref="roundRef")
   .items.grid.py-2(:data-type-text="`${typeText}`")
     LazyStatGroupRoundItem(
       v-if="isShow"

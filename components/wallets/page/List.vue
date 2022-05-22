@@ -22,10 +22,10 @@ UiPage
     UiHeaderTitle {{ $t('wallets.name') }}
     template(#actions)
       UiHeaderLink(@click="$store.dispatch('ui/setActiveTab', 'walletsSort')")
-        UiIconSort.w-6.h-6.group-hover_text-white
+        UiIconSort.w-5.h-5.group-hover_text-white
 
       UiHeaderLink(@click="$router.push('/wallets/new')")
-        UiIconAdd.w-6.h-6.group-hover_text-white
+        UiIconAdd.w-5.h-5.group-hover_text-white
 
   .pb-6.px-3(v-if="walletsCurrencies.length > 1")
     WalletsCurrenciesChanger

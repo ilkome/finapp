@@ -1,109 +1,145 @@
 <script setup lang="ts">
-import SwiperCore from 'swiper'
-import 'swiper/swiper-bundle.css'
 import useStat from '~/modules/stat/useStat'
 import useStatChart from '~/components/stat/useStatChart'
 import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
 import useWallets from '~/components/wallets/useWallets'
-
 const { walletsCurrencies } = useWallets()
 
 const { $store } = useNuxtApp()
 const { statPage } = useStatPage()
 const { ui } = useUIView()
-const { isEmptyStat } = useStat()
-
-const sliderRef = ref(null)
-const sliderObject = ref(null)
-const chartKeyDirtyFix = ref(null)
-
-onMounted(() => {
-  sliderObject.value = new SwiperCore(sliderRef.value, {
-    observer: true,
-    slidesPerView: 1,
-    touchStartPreventDefault: false,
-    autoHeight: false,
-    initialSlide: 1,
-    shortSwipes: false,
-    longSwipesRatio: 0.1,
-    longSwipesMs: 60,
-  })
-  sliderObject.value.on('slideChangeTransitionEnd', (slider) => {
-    if (slider.activeIndex === 0)
-      chartKeyDirtyFix.value = `hide${sliderObject.value.activeIndex}`
-  })
-})
+const { moneyTypes, isEmptyStat } = useStat()
 
 const { onWatch } = useStatChart()
 onWatch()
 
+const isShowGroup = (type) => {
+  const p1 = statPage.activeTab === 'details'
+    || statPage.activeTab === 'balance'
+    || (statPage.activeTab === 'income' && type === 'income')
+    || (statPage.activeTab === 'expense' && type === 'expense')
+
+  const p2 = statPage.current[type].total > 0
+    || (statPage.average && statPage.average[type] !== 0)
+    || $store.state.filter.period === 'all'
+
+  return p1 && p2
+}
+
+const isShowTrns = computed(() => {
+  return statPage.activeTab === 'details'
+    && statPage.average?.income !== 0
+    && statPage.average?.expense !== 0
+    && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0
+})
+
+const isShowGroupTrns = computed(() => {
+  const p1 = statPage.activeTab === 'income' || statPage.activeTab === 'expense'
+  const p2 = statPage.average?.sum === 0
+  return (p1 || p2) && statPage.activeTab !== 'history'
+})
+
+const chartKeyDirtyFix = ref('show')
 onActivated(async () => {
   await nextTick()
-  chartKeyDirtyFix.value = `hide${sliderObject.value.activeIndex}`
+  chartKeyDirtyFix.value = 'hide'
 })
 onDeactivated(async () => {
   await nextTick()
-  chartKeyDirtyFix.value = `show${sliderObject.value.activeIndex}`
+  chartKeyDirtyFix.value = 'show'
 })
 </script>
 
 <template lang="pug">
-.overflow-y-auto.h-full.js_scroll_page
-  .fixed.top-0.left-0.w-full.z-20.backdrop-blur(
-    class="bg-white/70 dark_bg-dark3/70"
-  )
-    .px-0.flex.items-center.justify-between.gap-4
-      StatDate.grow(
-        wrapClasses="px-0"
-        dateClasses="text-base"
-      )
+.overflow-y-auto.h-full.pb-8.js_scroll_page
+  .max-w-4xl.pb-6
+    .px-2.flex.items-center.justify-between.gap-4.sticky.top-0.z-20.backdrop-blur(
+      class="h-[44px] bg-white/70 dark_bg-dark3/70"
+    )
+      StatDate.grow
       .cursor-pointer.py-2.px-4.text-xs.text-skin-item-base-down.rounded-md.hocus_bg-skin-item-main-hover(
         v-if="walletsCurrencies.length > 1"
         @click="$store.commit('currencies/showBaseCurrenciesModal')"
       )
         | {{ $store.state.currencies.base }}
 
-    StatMobileMenu(:slider="sliderObject")
+    .-mt-1
+      StatChartOptions
+    .px-2.border-t.border-b.dark_border-neutral-800
+      LazyStatChartWrap(
+        :key="chartKeyDirtyFix"
+        v-if="ui.showMainChart && statPage.isHasTrns"
+      )
+    .pt-1
+      StatChartPeriods
 
-  .swiper-container.overflow-hidden.h-full(ref="sliderRef")
-    .swiper-wrapper
-      //- Summary
-      StatMobileSlide
-        .my-4.px-2
-          StatSumGroup(typeText="income")
-          StatSumGroup(typeText="expense")
+    .my-4.mx-2.p-3.rounded-lg.bg-skin-item-main-active(v-if="statPage.filter.isShow")
+      LazyStatFilter(v-if="statPage.filter.isShow")
+
+    .my-4.px-2.sticky.z-20.backdrop-blur(
+      class="top-[44px] bg-white/70 dark_bg-dark3/70"
+    )
+      StatMobileMenu
+
+    div(
+      class="min-h-[calc(100vh-130px)]"
+      data-scroll-ref="stat"
+    )
+      template(v-if="statPage.activeTab !== 'trns' && statPage.activeTab !== 'history'")
+        .my-6.px-2(v-if="statPage.activeTab === 'details'")
+          StatViewConfig
           StatSumTotal
 
-        .my-6.mx-2.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800
-          LazyStatChartWrap(
-            :key="chartKeyDirtyFix"
-            v-if="ui.showMainChart && statPage.isHasTrns"
-          )
-          .sm_flex.justify-between.px-2.pb-2
-            StatChartPeriods
-            StatChartOptions
+        //- Loop throw income / expense
+        .mb-8.md_mb-4.px-2
+          .grid.grid-cols-1.gap-y-5(class="md_grid-cols-2 md_gap-x-20")
+            div(
+              v-for="item in moneyTypes"
+              v-show="isShowGroup(item.id)"
+              :key="item.id"
+              class="max-w-[420px]"
+            )
+              StatSumGroup(
+                :typeText="item.id"
+              )
 
-      //- Expense
-      StatMobileSlide
-        .px-2
-          StatGroupItem(typeText="expense")
-          LazyStatGroupTrns(isShowExpense)
+              template(v-if="statPage.activeTab !== 'balance'")
+                StatGroupEmpty(:typeText="item.id")
+                StatGroupPie(:typeText="item.id")
+                StatGroupVertical(:typeText="item.id")
+                StatGroupRound(:typeText="item.id")
+                StatGroupHorizontal(:typeText="item.id")
 
-      //- Income
-      StatMobileSlide
-        .px-2
-          StatGroupItem(typeText="income")
-          LazyStatGroupTrns(isShowIncome)
+              template(v-if="statPage.activeTab === 'balance'")
+                StatGroupBudget(:typeText="item.id")
 
-      //- Transactions
-      StatMobileSlide
+            //- LazyStatGroupTrns(
+            //-   v-if="isShowGroupTrns && !isEmptyStat"
+            //-   :isShowExpense="statPage.activeTab === 'expense'"
+            //-   :isShowIncome="statPage.activeTab === 'income'"
+            //- )
+
         .px-2
-          LazyStatTrns(v-if="!isEmptyStat")
+          StatEmpty
+          //- .grid.md_grid-cols-2.md_gap-x-20
+          //-   LazyStatTrns(v-if="isShowTrns && !isEmptyStat")
+
+      //- Trns
+      template(v-if="statPage.activeTab === 'trns'")
+        .my-6.px-2
+          .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+            | {{ $t('trns.inPeriodTitle') }}
+
+          .grid.md_grid-cols-2.md_gap-x-20
+            TrnsList(
+              :size="50"
+              classNames="md_grid-cols-1"
+            )
 
       //- History
-      StatMobileSlide
-        .px-2
+      template(v-if="statPage.activeTab === 'history'")
+        .my-6.px-2
           StatHistory
 </template>
 
