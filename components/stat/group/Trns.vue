@@ -6,7 +6,7 @@ defineProps<{
 </script>
 
 <template lang="pug">
-.my-4(class="max-w-[420px]")
+.my-6(class="max-w-[420px]")
   .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('trns.inPeriodTitle') }}
 
   TrnsList(

@@ -114,16 +114,8 @@ onDeactivated(async () => {
               template(v-if="statPage.activeTab === 'balance'")
                 StatGroupBudget(:typeText="item.id")
 
-            //- LazyStatGroupTrns(
-            //-   v-if="isShowGroupTrns && !isEmptyStat"
-            //-   :isShowExpense="statPage.activeTab === 'expense'"
-            //-   :isShowIncome="statPage.activeTab === 'income'"
-            //- )
-
         .px-2
           StatEmpty
-          //- .grid.md_grid-cols-2.md_gap-x-20
-          //-   LazyStatTrns(v-if="isShowTrns && !isEmptyStat")
 
       //- Trns
       template(v-if="statPage.activeTab === 'trns'")
