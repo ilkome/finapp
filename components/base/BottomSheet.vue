@@ -422,7 +422,7 @@ export default defineComponent({
   width 100%
   height 100%
   background var(--c-bg-14)
-  backdrop-filter blur(6px)
+  // backdrop-filter blur(6px)
 
   &._anim
     transition opacity 250ms ease
