@@ -147,19 +147,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-.transfer
-  padding-top $m5
-  font-size 14px
-
-  span
-    padding-right 2px
-    color var(--c-font-3)
-    font-size 11px
-
-.trnFormHeaderSeparator
-  color var(--c-font-1)
-  font-size 32px
-
 .trnItem
   position relative
   color var(--c-font-4)
@@ -196,11 +183,6 @@ export default {
     font-size 14px
     padding-top $m7
 
-  &__statWrap
-    display flex
-    align-items center
-    padding-bottom 10px
-
   &__wallet
     display flex
     align-items center
@@ -215,9 +197,4 @@ export default {
 
     .walletName
       font-size 16px
-
-  &__groups
-    display inline-block
-    padding-left 10px
-    font-size 10px
 </style>

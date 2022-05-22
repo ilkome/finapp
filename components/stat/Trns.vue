@@ -1,7 +1,3 @@
-<script>
-export default {}
-</script>
-
 <template lang="pug">
 .my-4
   .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('trns.inPeriodTitle') }}

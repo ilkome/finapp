@@ -7,7 +7,7 @@ export const getRatesOfUSD = async (apiKey: string): Promise<Props | false> => {
   const { data } = await axios.get(serviceUrl)
 
   if (!data) {
-    console.log('api unavaliable')
+    console.log('api unavailable')
     return false
   }
 

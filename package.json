@@ -27,7 +27,6 @@
     "highcharts-vue": "1.4.0",
     "localforage": "1.10.0",
     "lodash.merge": "4.6.2",
-    "lodash.minby": "4.6.0",
     "lodash.sortby": "4.7.0",
     "nuxt-edge": "latest",
     "portal-vue": "2.1.7",

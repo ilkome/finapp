@@ -3,7 +3,7 @@ export type CategoryID = string
 export interface CategoryItem {
   name: string
   color: string
-  parentId?: CategoryID
+  parentId: CategoryID | 0
   childIds?: CategoryID[]
 }
 

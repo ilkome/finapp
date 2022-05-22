@@ -12,7 +12,6 @@ export default defineComponent({
   data() {
     return {
       pageNumber: 1,
-      sortByEditDate: false,
       filterBy: 'wallet',
     }
   },
@@ -43,7 +42,8 @@ export default defineComponent({
         const category = this.$store.state.categories.items[catId]
 
         filter.walletsIds = [this.$store.state.trnForm.values.walletId]
-        filter.categoriesIds = category?.childIds ? category?.childIds : [catId]
+        // TODO: create function
+        filter.categoriesIds = category?.childIds ?? [catId]
       }
 
       const trnsIds = getTrnsIds({ ...filter, trnsItems })
@@ -54,24 +54,18 @@ export default defineComponent({
       return trnsIds
     },
 
+    // TODO: duplicate function
+    // Maybe move to trns
     groupedTrns() {
-      const trns = this.$store.state.trns.items
+      const trnsItems = this.$store.state.trns.items
       const trnsIds = this.paginatedTrnsIds
-      const trnsList = {}
 
-      for (const trnId of trnsIds) {
-        let dayDate
-        this.sortByEditDate
-          ? dayDate = this.$day(trns[trnId].edited).startOf('day').valueOf()
-          : dayDate = this.$day(trns[trnId].date).startOf('day').valueOf()
-
-        if (!trnsList[dayDate])
-          trnsList[dayDate] = [trnId]
-
-        else
-          trnsList[dayDate].push(trnId)
-      }
-      return trnsList
+      return trnsIds.reduce((acc, trnId) => {
+        const date = this.$day(trnsItems[trnId].date).startOf('day').valueOf()
+        acc[date] ??= []
+        acc[date].push(trnId)
+        return acc
+      }, {})
     },
   },
 

@@ -4,11 +4,7 @@ import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default {
   hasTrns(_state, _getters, rootState) {
-    if (rootState.trns.items) {
-      if (Object.keys(rootState.trns.items).length > 0)
-        return true
-    }
-    return false
+    return rootState.trns.items && Object.keys(rootState.trns.items).length > 0
   },
 
   lastCreatedTrnId(_state, getters, rootState) {
@@ -32,17 +28,14 @@ export default {
       return
 
     const trnsItems = rootState.trns.items
-    const trnsIds = Object.keys(trnsItems)
-      .sort((a, b) => trnsItems[b].date - trnsItems[a].date)
-      .reverse()
+    const sortedTrnsIds = Object.keys(trnsItems)
+      .sort((a, b) => trnsItems[a].date - trnsItems[b].date)
 
-    return trnsIds[0]
+    return sortedTrnsIds[0]
   },
 
   firstCreatedTrnIdFromSelectedTrns(_state, getters) {
-    const trnsIds = [...getters.selectedTrnsIds].reverse()
-    if (trnsIds.length)
-      return trnsIds[0]
+    return getters.selectedTrnsIds[getters.selectedTrnsIds.length - 1]
   },
 
   selectedTrnsIds(_state, getters, rootState) {

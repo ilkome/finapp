@@ -75,14 +75,14 @@ export default {
 
         .swiper-slide
           .scrollBlock.scrollerBlock(
-            v-if="$store.getters['categories/quickSelectorCategoriesIds'] && $store.getters['categories/quickSelectorCategoriesIds'].length"
+            v-if="$store.getters['categories/favoriteCategoriesIds'] && $store.getters['categories/favoriteCategoriesIds'].length"
           )
             .py-4.px-3.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
               | {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
                 :activeItemId="$store.state.trnForm.values.categoryId"
-                :ids="$store.getters['categories/quickSelectorCategoriesIds']"
+                :ids="$store.getters['categories/favoriteCategoriesIds']"
                 class="!gap-x-1"
                 @onClick="handleCategoryClick"
               )

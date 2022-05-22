@@ -40,25 +40,20 @@ export default {
     }
 
     function getCategoriesIdsWithTrnsIds() {
-      const filterCategoryId = rootState.filter.categoryId
       const categoriesWithTrnsIds = {}
 
-      // TODO: map, filter
       for (const trnId of trnsIds) {
-        if (trnsItems[trnId]) {
-          let categoryId
-          filterCategoryId
-            ? categoryId = trnsItems[trnId].categoryId
-            : categoryId = getRootCategoryIdFromTrnId(trnId)
+        if (!trnsItems[trnId])
+          continue
 
-          const isTransferCategory = transferCategoriesIds.includes(categoryId)
-          if (isTransferCategory)
-            continue
+        const categoryId = getRootCategoryIdFromTrnId(trnId)
 
-          !categoriesWithTrnsIds[categoryId]
-            ? categoriesWithTrnsIds[categoryId] = [trnId]
-            : categoriesWithTrnsIds[categoryId].push(trnId)
-        }
+        const isTransferCategory = transferCategoriesIds.includes(categoryId)
+        if (isTransferCategory)
+          continue
+
+        categoriesWithTrnsIds[categoryId] ??= []
+        categoriesWithTrnsIds[categoryId].push(trnId)
       }
 
       return categoriesWithTrnsIds
@@ -97,6 +92,12 @@ export default {
       }
     }
 
+    // sort categories amount
+    function sortCategoriesByTotal(categories, typeName) {
+      const categoriesIds = Object.keys(categories)
+      return categoriesIds.sort((a, b) => categories[b][typeName] - categories[a][typeName])
+    }
+
     // separate categories by income and expense
     const statIncome = {}
     const statExpense = {}
@@ -106,24 +107,6 @@ export default {
         statIncome[categoryId] = total
       if (total.expense > 0)
         statExpense[categoryId] = total
-    }
-
-    // sort categories amount
-    function sortCategoriesByTotal(categories, typeName) {
-      const categoriesIds = Object.keys(categories)
-      let sortedCategoriesIds = []
-
-      if (categoriesIds.length) {
-        sortedCategoriesIds = categoriesIds.sort((a, b) => {
-          if (categories[a][typeName] > categories[b][typeName])
-            return -1
-          if (categories[a][typeName] < categories[b][typeName])
-            return 1
-          return 0
-        })
-      }
-
-      return sortedCategoriesIds
     }
 
     // sorted
@@ -170,13 +153,14 @@ export default {
     const trnsIds = rootGetters['trns/selectedTrnsIds']
     const periodName = rootState.filter.period
     const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
+    const emptyData = { income: 0, expense: 0, sum: 0 }
 
     if (periodName === 'all')
-      return
+      return emptyData
 
     const oldestTrn = trnsItems[rootGetters['trns/firstCreatedTrnId']]
     if (!oldestTrn)
-      return
+      return emptyData
 
     const oldestTrnDate = dayjs(oldestTrn.date).endOf(periodName)
     let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
@@ -214,7 +198,7 @@ export default {
     // When just this period and last
     const delimiter = periodsToShow - 1
     if (delimiter === 1)
-      return { income: 0, expense: 0, sum: 0 }
+      return emptyData
 
     return {
       income: Math.ceil(income / delimiter),

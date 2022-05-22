@@ -50,7 +50,7 @@ function findCategoryWithThisColor(color) {
 }
 
 /**
- * Get child categoreies ids
+ * Get child categories ids
  *
  * @param categoryId
  */

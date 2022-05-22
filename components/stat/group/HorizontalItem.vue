@@ -26,10 +26,6 @@ export default {
   },
 
   computed: {
-    childCategoriesIds() {
-      return this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
-    },
-
     isCategoryHasChildren() {
       return this.$store.getters['categories/isCategoryHasChildren'](this.categoryId)
     },
@@ -39,27 +35,6 @@ export default {
         width: `${Math.abs(this.total) / Math.abs(this.biggest) * 100}%`,
         background: this.category.color,
       }
-    },
-
-    getCatgoryName() {
-      const cats = []
-      const categoriesIds = this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
-
-      const getTrnsByCategoryId = (categoryId) => {
-        const trns = this.$store.state.trns.items
-        let trnsIds = this.$store.getters['trns/selectedTrnsIdsWithDate']
-        trnsIds = trnsIds.filter(id => trns[id].categoryId === categoryId)
-        trnsIds = trnsIds.filter(id => trns[id].type === this.type)
-        return trnsIds
-      }
-
-      for (const categoryId of categoriesIds) {
-        const trnsIds = getTrnsByCategoryId(categoryId)
-        if (trnsIds.length > 0)
-          cats.push(this.$store.state.categories.items[categoryId]?.name)
-      }
-
-      return cats
     },
   },
 

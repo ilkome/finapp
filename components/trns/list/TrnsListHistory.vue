@@ -46,7 +46,6 @@ export default defineComponent({
   data() {
     return {
       pageNumber: 1,
-      sortByEditDate: false,
       isShowTrnsWithDesc: false,
     }
   },
@@ -78,22 +77,17 @@ export default defineComponent({
       return this.trnsIdsWithLimit.slice(0, end)
     },
 
+    // TODO: duplicate function
     groupedTrns() {
-      const trns = this.$store.state.trns.items
-      const trnsList = {}
+      const trnsItems = this.$store.state.trns.items
+      const trnsIds = this.paginatedTrnsIds
 
-      for (const trnId of this.paginatedTrnsIds) {
-        let dayDate
-        this.sortByEditDate
-          ? dayDate = this.$day(trns[trnId].edited).startOf('day').valueOf()
-          : dayDate = this.$day(trns[trnId].date).startOf('day').valueOf()
-
-        !trnsList[dayDate]
-          ? trnsList[dayDate] = [trnId]
-          : trnsList[dayDate].push(trnId)
-      }
-
-      return trnsList
+      return trnsIds.reduce((acc, trnId) => {
+        const date = this.$day(trnsItems[trnId].date).startOf('day').valueOf()
+        acc[date] ??= []
+        acc[date].push(trnId)
+        return acc
+      }, {})
     },
   },
 

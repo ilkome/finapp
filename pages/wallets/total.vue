@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import _merge from 'lodash.merge'
-import _minby from 'lodash.minby'
-import _sortby from 'lodash.sortby'
 import dayjs from 'dayjs'
 import type { ComputedRef, Ref } from '@vue/composition-api'
 import type { PeriodsNamesExceptAll } from '~/components/date/types'
@@ -11,27 +9,14 @@ import { averageLine, baseSeriesItemStyle, options } from '~/components/chart/ch
 import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/amount/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
+import { getOldestTrnDate } from '~/components/trns/helpers'
 import { formatAmount, getCurrencySymbol } from '~/components/amount/formatAmount'
+import { getMaxPeriodsToShow } from '~/components/date/helpers'
 
 type DateValueOf = number
 
 const { baseCurrencyCode } = useAmount()
 const { $store } = useNuxtApp()
-
-/**
- * Get oldest TrnItem
- */
-function getOldestTrnDate(trnsItems: Record<TrnID, TrnItem>): DateValueOf {
-  const startOfToday = dayjs().startOf('day').valueOf()
-  return _minby(Object.values(trnsItems), 'date')?.date || startOfToday
-}
-
-/**
- * Get max periods to show
- */
-function getMaxPeriodsToShow(periodName: PeriodsNamesExceptAll, fromDate: DateValueOf): number {
-  return dayjs().endOf(periodName).diff(fromDate, periodName) + 1
-}
 
 /**
  * Transactions
@@ -75,6 +60,7 @@ function getPeriodsDates({ fromDate, periodName, periodsCount }: {
 }) {
   const periods = []
 
+  // TODO: new Array map
   for (let index = 0; index < periodsCount; index++) {
     periods.push({
       date: dayjs(fromDate).startOf(periodName).add(index, periodName).startOf(periodName).format(),

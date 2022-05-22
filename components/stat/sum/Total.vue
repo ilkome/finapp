@@ -21,7 +21,7 @@ const statAverage = computed(() => $store.getters['stat/statAverage'])
         )
 
       LazyStatSumAverage(
-        v-if="statAverage.sum !== 0"
+        v-if="statAverage && statAverage.sum !== 0"
         :type="statAverage.sum > 0 ? 1 : 0"
         :amount="statAverage.sum"
         :title="$t('money.averageTotal')"

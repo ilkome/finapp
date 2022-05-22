@@ -36,6 +36,7 @@ export default function useWallets() {
    * Wallets currencies
    */
   const walletsCurrencies = computed(() => {
+    // TODO: map, maybe Set
     const currencies: CurrencyCode[] = []
 
     for (const walletId in walletsItemsSorted.value) {

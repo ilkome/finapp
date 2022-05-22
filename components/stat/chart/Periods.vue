@@ -1,55 +1,59 @@
-<script>
+<script setup lang="ts">
 import useFilter from '~/modules/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
+import { getMaxPeriodsToShow } from '~/components/date/helpers'
+import { getOldestTrnDate } from '~/components/trns/helpers'
 
-export default {
-  setup() {
-    const { $store } = useNuxtApp()
+const { $store } = useNuxtApp()
 
-    // Filter
-    const { filterPeriodNameAllReplacedToYear } = useFilter()
+// Filter
+const { filterPeriodNameAllReplacedToYear } = useFilter()
 
-    function saveChartsPeriodsToLocalStorage() {
-      $store.dispatch('ui/saveUiView')
-    }
+const showedPeriods = computed(() => $store.state.chart.periods[filterPeriodNameAllReplacedToYear.value].showedPeriods)
 
-    function addPeriodOrGroup() {
-      $store.commit('chart/addElementsToChart', {
-        periodName: filterPeriodNameAllReplacedToYear.value,
-        periodType: 'showedPeriods',
-      })
-      saveChartsPeriodsToLocalStorage()
-    }
-
-    function removePeriodOrGroup() {
-      if ($store.state.chart.periods[filterPeriodNameAllReplacedToYear.value].showedPeriods <= 2)
-        return
-
-      $store.commit('chart/removeElementsFromChart', {
-        periodName: filterPeriodNameAllReplacedToYear.value,
-        periodType: 'showedPeriods',
-      })
-      saveChartsPeriodsToLocalStorage()
-    }
-
-    // Periods
-    const { periodsNames } = usePeriods()
-
-    return {
-      addPeriodOrGroup,
-      removePeriodOrGroup,
-      filterPeriodNameAllReplacedToYear,
-      periodsNames,
-    }
-  },
+function saveChartsPeriodsToLocalStorage() {
+  $store.dispatch('ui/saveUiView')
 }
+
+function addPeriod() {
+  $store.commit('chart/addElementsToChart', {
+    periodName: filterPeriodNameAllReplacedToYear.value,
+    periodType: 'showedPeriods',
+  })
+  saveChartsPeriodsToLocalStorage()
+}
+
+function removePeriod() {
+  if (showedPeriods.value <= 1)
+    return
+
+  $store.commit('chart/removeElementsFromChart', {
+    periodName: filterPeriodNameAllReplacedToYear.value,
+    periodType: 'showedPeriods',
+  })
+  saveChartsPeriodsToLocalStorage()
+}
+
+// Periods
+const { periodsNames } = usePeriods()
+
+// TODO: duplicate computed
+const maxPeriodsNumber = computed(() => {
+  const trnsItems = $store.state.trns.items
+  const oldestTrnDate = getOldestTrnDate(trnsItems)
+  return getMaxPeriodsToShow(filterPeriodNameAllReplacedToYear.value, oldestTrnDate)
+})
+
+const isShowRemove = computed(() => showedPeriods.value <= 1)
+const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
 </script>
 
 <template lang="pug">
 .flex-center
   .overflow-hidden.flex.items-center.text-xs
     .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-skin-item-main-hover(
-      @click="removePeriodOrGroup"
+      :class="{ 'opacity-0 cursor-default pointer-events-none': isShowRemove }"
+      @click="removePeriod"
     ): .mdi.mdi-minus
 
     .cursor-pointer.py-2.px-3.rounded-md.hocus_bg-skin-item-main-hover(
@@ -58,11 +62,12 @@ export default {
       :class="{ 'cursor-default text-skin-item-base-up': periodItem.slug === filterPeriodNameAllReplacedToYear }"
       @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
     )
-      span.pr-1(v-if="periodItem.slug === filterPeriodNameAllReplacedToYear")
-        | {{ $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }}
       | {{ periodItem.name }}
+      span.pl-1(v-if="periodItem.slug === filterPeriodNameAllReplacedToYear")
+        | {{ showedPeriods }}/{{ maxPeriodsNumber }}
 
     .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-skin-item-main-hover(
-      @click="addPeriodOrGroup"
+      :class="{ 'opacity-0 cursor-default pointer-events-none': isShowAdd }"
+      @click="addPeriod"
     ): .mdi.mdi-plus
 </template>

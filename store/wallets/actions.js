@@ -47,7 +47,7 @@ export default {
       updates[`${walletId}/order`] = wallets[walletId]
 
     await updateData(`users/${rootGetters['user/userUid']}/accounts`, updates)
-      .then(() => { result.succsess = 'Updated' })
+      .then(() => { result.success = 'Updated' })
       .catch((error) => { result.error = error })
 
     return result

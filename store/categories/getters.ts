@@ -1,3 +1,6 @@
+import _sortby from 'lodash.sortby'
+import type { TrnID, TrnItem } from '~/components/trns/types'
+import type { CategoryID, CategoryItem } from '~/components/categories/types'
 import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 
 export default {
@@ -33,18 +36,18 @@ export default {
   },
 
   categoriesForBeParent(state, getters, rootState) {
-    const categoriesItems = state.items
-    const trnsItems = rootState.trns.items
+    const categoriesItems: Record<CategoryID, CategoryItem> = state.items
+    const trnsItems: Record<TrnID, TrnItem> = rootState.trns.items
     const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 
-    return getters.categoriesRootIds.filter((categoryId) => {
-      const hasTrnsIn = Object.values(trnsItems).some(trn => trn.categoryId === categoryId)
-      const isTransferCategory = transferCategoriesIds.includes(categoryId)
+    return getters.categoriesRootIds.filter((id: CategoryID) => {
+      const hasTrnsInCategory = Object.values(trnsItems).some(trn => trn.categoryId === id)
+      const isTransferCategory = transferCategoriesIds.includes(id)
 
-      if (hasTrnsIn || isTransferCategory)
+      if (hasTrnsInCategory || isTransferCategory)
         return false
 
-      return categoryId
+      return id
     })
   },
 
@@ -71,52 +74,49 @@ export default {
     const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 
     const trnsIds = Object.keys(trnsItems)
-      .filter(trnId => trnsItems[trnId].type !== 2)
+      .filter(id => trnsItems[id].type !== 2)
       .sort((a, b) => trnsItems[b].date - trnsItems[a].date)
 
-    const lastCategoriesIds = []
+    const lastCategories = []
 
-    for (const trnId of trnsIds.slice(0, 500)) {
-      if (lastCategoriesIds.length > 16)
+    // TODO: map, filter
+    for (const trnId of trnsIds) {
+      if (lastCategories.length > 16)
         break
 
       const categoryId = trnsItems[trnId].categoryId
       const category = state.items[categoryId]
 
-      if (!category || !category.showInLastUsed)
+      if (!category || ('showInLastUsed' in category && !category.showInLastUsed))
         continue
 
-      const isCategoryAlreadyAdded = lastCategoriesIds.includes(categoryId)
+      const isCategoryAlreadyAdded = lastCategories.some(c => c.id === categoryId)
       const isTransferCategory = transferCategoriesIds.includes(categoryId)
-      const isCategoryInQuickSelector = getters.quickSelectorCategoriesIds.includes(categoryId)
+      const isCategoryInQuickSelector = getters.favoriteCategoriesIds.includes(categoryId)
 
-      if (!isCategoryAlreadyAdded && !isTransferCategory && !isCategoryInQuickSelector)
-        lastCategoriesIds.push(categoryId)
+      if (!isCategoryAlreadyAdded && !isTransferCategory && !isCategoryInQuickSelector) {
+        lastCategories.push({
+          id: categoryId,
+          ...category,
+        })
+      }
     }
 
-    lastCategoriesIds.sort((a, b) => {
-      if (state.items[a].name > state.items[b].name)
-        return 1
-      if (state.items[a].name < state.items[b].name)
-        return -1
-      return 0
-    })
-
-    return lastCategoriesIds
+    return _sortby(lastCategories, category =>
+      [state.items[category.parentId]?.name || false, category.name])
+      .map(c => c.id)
   },
 
-  quickSelectorCategoriesIds(state, getters) {
+  favoriteCategoriesIds(state, getters) {
     if (!getters.hasCategories)
       return []
 
-    return Object.keys(state.items)
-      .filter(key => state.items[key].showInQuickSelector)
-      .sort((a, b) => {
-        if (state.items[a].name < state.items[b].name)
-          return -1
-        if (state.items[a].name > state.items[b].name)
-          return 1
-        return 0
-      })
+    const filteredCategories = Object.keys(state.items)
+      .filter(id => state.items[id].showInQuickSelector)
+      .map(id => ({ id, ...state.items[id] }))
+
+    return _sortby(filteredCategories, category =>
+      [state.items[category.parentId]?.name || false, category.name])
+      .map(c => c.id)
   },
 }

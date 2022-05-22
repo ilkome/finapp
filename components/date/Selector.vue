@@ -1,24 +1,33 @@
 <script setup lang="ts">
 import useFilter from '~/modules/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
+import { getMaxPeriodsToShow } from '~/components/date/helpers'
+import { getOldestTrnDate } from '~/components/trns/helpers'
 
 const { $store } = useNuxtApp()
 const { periodsNames } = usePeriods()
 const { filterPeriodNameAllReplacedToYear } = useFilter()
 const filterPeriod = computed(() => $store.state.filter.period)
 
-const onSelectPeriod = (period) => {
+const onSelectPeriodName = (period, close) => {
+  close()
   $store.dispatch('filter/setPeriod', period)
 }
 
-const periodCounts = {
-  items: [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60],
-  onSelect: (value) => {
-    $store.commit('chart/setElementsToChart', {
-      period: filterPeriod.value,
-      value,
-    })
-  },
+// TODO: duplicate computed
+const maxPeriodsNumber = computed(() => {
+  const trnsItems = $store.state.trns.items
+  const oldestTrnDate = getOldestTrnDate(trnsItems)
+  return getMaxPeriodsToShow(filterPeriodNameAllReplacedToYear.value, oldestTrnDate)
+})
+
+const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
+function onSelectPeriodCount(value, close) {
+  close()
+  $store.commit('chart/setElementsToChart', {
+    period: filterPeriod.value,
+    value,
+  })
 }
 </script>
 
@@ -43,25 +52,30 @@ Portal(to="modal")
             :icon="periodItem.icon"
             :isActive="filterPeriod === periodItem.slug"
             :name="$t(`dates.${periodItem.slug}.simple`)"
-            @onClick="onSelectPeriod(periodItem.slug)"
+            @onClick="onSelectPeriodName(periodItem.slug, close)"
           )
 
           ModalButton(
             :isActive="filterPeriod === 'all'"
             :name="$t('dates.all.simple')"
             icon="mdi mdi-database"
-            @onClick="onSelectPeriod('all')"
+            @onClick="onSelectPeriodName('all', close)"
           )
 
         //- Counts
         .title {{ $t('dates.count') }}
         .counts.flex.items-center.justify-center
           .countsItem(
-            v-for="periodCount in periodCounts.items"
+            v-for="periodCount in periodCounts"
             :key="periodCount"
             :class="{ _active: periodCount === $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }"
-            @click="periodCounts.onSelect(periodCount)"
+            @click="onSelectPeriodCount(periodCount, close)"
           ) {{ periodCount }}
+
+          .countsItem(
+            :class="{ _active: maxPeriodsNumber === $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }"
+            @click="onSelectPeriodCount(maxPeriodsNumber, close)"
+          ) {{ maxPeriodsNumber }}
 
         .pb-4.px-3.flex.justify-evenly.gap-6
           .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(

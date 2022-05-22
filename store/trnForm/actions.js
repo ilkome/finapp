@@ -11,7 +11,6 @@ export default {
   openTrnForm({ rootState, rootGetters, commit }, { action, trnId }) {
     commit('openTrnForm')
     const lastTrn = rootState.trns.items[rootGetters['trns/lastCreatedTrnId']]
-    console.log(rootGetters['trns/lastCreatedTrnId'], lastTrn)
 
     switch (action) {
       case 'create':

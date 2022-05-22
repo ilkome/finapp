@@ -27,9 +27,11 @@ export default {
         'wallets/saveWalletsOrder',
         sortedWallets,
       )
-      if (result.succsess) {
+
+      if (result.success) {
         if (this.$listeners.closeModal)
           this.$listeners.closeModal()
+
         this.$notify({
           type: 'success',
           title: random(successEmo),

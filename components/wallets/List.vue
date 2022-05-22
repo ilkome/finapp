@@ -21,6 +21,7 @@ const walletsIdsLimited = computed(() => {
 })
 
 const walletsItemsLimited = computed(() => {
+  // TODO: Reduce
   if (stateLimit.value !== 0) {
     let wallets = {}
     for (const id of walletsIdsLimited.value) {
