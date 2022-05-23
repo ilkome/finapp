@@ -123,7 +123,7 @@ export default {
     const expenseBiggest = getBiggestAmount(categoriesTotal, expenseCategoriesIds, 'expense')
     const incomeBiggest = getBiggestAmount(categoriesTotal, incomeCategoriesIds, 'income')
 
-    const stat = {
+    return {
       categories: categoriesTotal,
       total: total.sumTransactions,
       expense: {
@@ -137,8 +137,6 @@ export default {
         total: total.incomeTransactions,
       },
     }
-
-    return stat
   },
 
   /**
