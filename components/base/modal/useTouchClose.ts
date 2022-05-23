@@ -6,8 +6,8 @@ export default function useOnTouch() {
 
   let config = {
     dragOffset: 16,
-    whaitForScrollClassName: 'waitForScroll',
-    whaitForScrollSliderClassName: 'waitForScrollSlider',
+    waitForScrollClassName: 'waitForScroll',
+    waitForScrollSliderClassName: 'waitForScrollSlider',
     doNotTouchClassName: 'doNotCloseModal',
     animClassName: '_anim',
   }
@@ -103,16 +103,16 @@ export default function useOnTouch() {
           return
 
         // wait until content scroll up inside Swiper
-        const waitForScrollSlider = content.value.querySelector(`.swiper-slide-active .${config.whaitForScrollClassName}`)
+        const waitForScrollSlider = content.value.querySelector(`.swiper-slide-active .${config.waitForScrollClassName}`)
         if (waitForScrollSlider && waitForScrollSlider.scrollTop > 0)
           return
 
-        const waitForScrollSlider2 = content.value.querySelector(`.swiper-slide-active .${config.whaitForScrollSliderClassName}`)
+        const waitForScrollSlider2 = content.value.querySelector(`.swiper-slide-active .${config.waitForScrollSliderClassName}`)
         if (waitForScrollSlider2 && waitForScrollSlider2.scrollTop > 0)
           return
 
         // wait until content scroll up inside
-        const waitForScroll = content.value.querySelector(`.${config.whaitForScrollClassName}`)
+        const waitForScroll = content.value.querySelector(`.${config.waitForScrollClassName}`)
         if (waitForScroll && waitForScroll.scrollTop > 0)
           return
       }
@@ -172,7 +172,7 @@ export default function useOnTouch() {
   }
 
   /**
-   * Clode modal
+   * Close modal
    */
   function closeModal(): void {
     isDragging = false

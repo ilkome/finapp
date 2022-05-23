@@ -29,9 +29,9 @@ export default function useTrn() {
       }
 
       // Date
-      let dateformatted = formatDate(trn.date, 'full')
+      let dateFormatted = formatDate(trn.date, 'full')
       // @ts-expect-error todo
-      dateformatted = `${dateformatted.weekday}, ${dateformatted.day} ${dateformatted.month} ${dateformatted.year}`
+      dateFormatted = `${dateFormatted.weekday}, ${dateFormatted.day} ${dateFormatted.month} ${dateFormatted.year}`
 
       // Transaction
       if (trn.type !== 2) {
@@ -43,7 +43,7 @@ export default function useTrn() {
         return {
           id,
           ...trn,
-          dateformatted,
+          dateFormatted,
           category,
           categoryParent,
           wallet,
@@ -64,7 +64,7 @@ export default function useTrn() {
         return {
           id,
           ...trn,
-          dateformatted,
+          dateFormatted,
           category,
           categoryParent,
           expenseWallet,

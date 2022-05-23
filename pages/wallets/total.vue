@@ -118,7 +118,7 @@ const seriesTotal = computed(() => {
 })
 
 /**
- * Chart oprions
+ * Chart options
  */
 const chartOptions = computed(() => ({
   xAxis: {

@@ -59,8 +59,8 @@ export default function useCalculator() {
     return String(value).replace(/[ ,]/g, '')
   }
 
-  function checkIsLastSimbolAction(lastSimbol: string): boolean {
-    return Number.isNaN(Number.parseInt(lastSimbol))
+  function checkIsLastSymbolAction(lastSymbol: string): boolean {
+    return Number.isNaN(Number.parseInt(lastSymbol))
   }
 
   /**
@@ -72,9 +72,9 @@ export default function useCalculator() {
   function makeCalculation(value: string): string {
     try {
       const clearedExpression = removeSpaces(value)
-      const lastSimbol = clearedExpression.slice(-1)
-      const isLastSimbolAction = checkIsLastSimbolAction(lastSimbol)
-      const prepeatedExpression = isLastSimbolAction ? clearedExpression.slice(0, -1) : clearedExpression
+      const lastSymbol = clearedExpression.slice(-1)
+      const isLastSymbolAction = checkIsLastSymbolAction(lastSymbol)
+      const prepeatedExpression = isLastSymbolAction ? clearedExpression.slice(0, -1) : clearedExpression
 
       // eslint-disable-next-line no-new-func
       const math = Function(`"use strict";return (${prepeatedExpression})`)()
@@ -102,8 +102,8 @@ export default function useCalculator() {
 
     // Last simbol of expression
     const clearedExpression = removeSpaces(expression)
-    const lastSimbol = clearedExpression.slice(-1)
-    const isLastSimbolAction = checkIsLastSimbolAction(lastSimbol)
+    const lastSymbol = clearedExpression.slice(-1)
+    const isLastSymbolAction = checkIsLastSymbolAction(lastSymbol)
     const isSumAction = value === '='
     const isDeleteAction = value === 'delete'
     const isDotAction = value === '.'
@@ -125,7 +125,7 @@ export default function useCalculator() {
     }
 
     // Change math simbol
-    if (inputIsAction && isLastSimbolAction && !isDotAction && !isSumAction && !isDeleteAction)
+    if (inputIsAction && isLastSymbolAction && !isDotAction && !isSumAction && !isDeleteAction)
       return clearedExpression.slice(0, -1) + value
 
     // Calculate
@@ -136,8 +136,8 @@ export default function useCalculator() {
 
     // Handle dot value
     if (inputIsAction && isDotAction) {
-      if (Array.isArray(clearedExpression.split(/[/*\-+]/)) && (clearedExpression.split(/[/*\-+]/).slice(-1)[0].includes('.') || isLastSimbolAction)) {
-        if (isLastSimbolAction && lastSimbol !== '.')
+      if (Array.isArray(clearedExpression.split(/[/*\-+]/)) && (clearedExpression.split(/[/*\-+]/).slice(-1)[0].includes('.') || isLastSymbolAction)) {
+        if (isLastSymbolAction && lastSymbol !== '.')
           return `${clearedExpression}0.`
 
         return expression
@@ -161,7 +161,7 @@ export default function useCalculator() {
       const isInteger = lastNumberSplit.length === 1
 
       // Check if math will success
-      if (lastSimbol !== '.') {
+      if (lastSymbol !== '.') {
         const result = makeCalculation(clearedExpression + value)
         if (result === '0')
           return clearedExpression

@@ -8,7 +8,7 @@ export default {
   },
 
   computed: {
-    categoresIds() {
+    categoriesIds() {
       if (this.limit)
         return this.ids.slice(0, this.limit)
 
@@ -21,7 +21,7 @@ export default {
 <template lang="pug">
 .grid.gap-y-1.gap-x-1.3sm_grid-cols-2.sm_gap-x-6
   CategoriesItem(
-    v-for="categoryId in categoresIds"
+    v-for="categoryId in categoriesIds"
     :category="$store.state.categories.items[categoryId]"
     :activeItemId="activeItemId"
     :id="categoryId"
