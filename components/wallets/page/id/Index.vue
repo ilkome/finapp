@@ -58,27 +58,27 @@ UiPage(v-if="wallet")
     router-link(v-slot="{ href, navigate }" to="/wallets" custom)
       a.grow.hocus_bg-skin-item-main-hover(:href="href" @click="navigate")
         UiHeaderTitle
-          .pb-1.text-xs.font-medium.text-skin-item-base-down
+          .pt-1.text-xs.font-medium.text-skin-item-base-down
             | {{ $t("wallets.title") }}
 
-          .flex.items-center.gap-3.pb-4
+          .pb-1.flex.items-center.gap-3
             .text-skin-item-base-up.text-2xl.font-semibold
               | {{ wallet.name }}
             .p-1.flex-center.rounded.text-skin-icon-base.text-2xs(:style="{ background: wallet.color }")
               | {{ wallet.currency }}
 
-          .flex.text-3xl.font-normal
-            Amount(
-              :amount="total"
-              :currencyCode="wallet.currency"
-            )
-
     template(#actions)
       UiHeaderLink(@click="handleEditClick")
         .mdi.mdi-pencil-outline.group-hover_text-white.text-xl
 
-  .pb-6
-    .px-3.flex
+  .mb-6.pt-3.px-2.flex.text-3xl.font-normal
+    Amount(
+      :amount="total"
+      :currencyCode="wallet.currency"
+    )
+
+  .mb-6
+    .px-2.flex
       .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
         class="dark_text-white/60"
         @click="handleSetFilterWallet"
@@ -101,7 +101,7 @@ UiPage(v-if="wallet")
       )
 
   //- History
-  .px-3
+  .px-2
     TrnsHistory(
       :trnsIds="trnsIds"
       :trnType="filter.trnType"

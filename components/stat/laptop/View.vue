@@ -64,7 +64,7 @@ onDeactivated(async () => {
       )
         | {{ $store.state.currencies.base }}
 
-    .pb-6.px-3(v-if="walletsCurrencies.length > 1")
+    .pb-6.px-2(v-if="walletsCurrencies.length > 1")
       WalletsCurrenciesChanger
 
     .mx-2.mb-4.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800

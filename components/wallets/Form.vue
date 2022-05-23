@@ -89,7 +89,7 @@ function onSave() {
 
 <template lang="pug">
 div(v-if="walletForm")
-  .pb-8.px-3
+  .pb-8.px-2
     UiTabs
       UiTabsItem(
         :isActive="activeTab === 'data'"
@@ -108,7 +108,7 @@ div(v-if="walletForm")
 
   //- Content
   //-----------------------------------
-  .px-3.max-w-md
+  .px-2.max-w-md
     //- Data
     //-----------------------------------
     template(v-if="activeTab === 'data'")

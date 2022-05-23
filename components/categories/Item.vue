@@ -45,7 +45,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+.cursor-pointer.py-2.px-2.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
   v-if="category"
   :class="{ '!cursor-default !bg-skin-item-main-active': activeItemId === id }"
   @click="onClickItem"

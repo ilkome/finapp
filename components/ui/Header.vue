@@ -3,7 +3,7 @@
 </script>
 
 <template lang="pug">
-.flex.px-2.flex.items-center.justify-between.gap-4.sticky.top-0.z-20.backdrop-blur(
+.flex.flex.items-center.justify-between.gap-4.sticky.top-0.z-20.backdrop-blur(
   class="bg-white/70 dark_bg-dark3/70"
 )
   slot

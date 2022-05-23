@@ -27,14 +27,14 @@ UiPage
       UiHeaderLink(@click="$router.push('/wallets/new')")
         UiIconAdd.w-5.h-5.group-hover_text-white
 
-  .pb-6.px-3(v-if="walletsCurrencies.length > 1")
+  .pb-6.px-2(v-if="walletsCurrencies.length > 1")
     WalletsCurrenciesChanger
 
-  .pb-12.px-3
+  .pb-12.px-2
     WalletsTotal
 
   //- Total
-  .pb-4.px-3(v-if="$store.getters['user/isDevUser']")
+  .pb-4.px-2(v-if="$store.getters['user/isDevUser']")
     .flex
       .cursor-pointer.p-1.px-3.flex.items-center.gap-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
         @click="$router.push('/wallets/total')"
@@ -46,7 +46,7 @@ UiPage
   //- List
   //---------------------------------
   WalletsList(#default="{ walletsItemsSorted }")
-    .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2
+    .pb-12.px-2.grid.gap-y-1.gap-x-6.md_grid-cols-2
       //- Wallet
       .cursor-pointer.flex.items-center.py-2.px-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
         v-for="(walletItem, walletId) in walletsItemsSorted"
@@ -76,7 +76,7 @@ UiPage
           )
 
   template(#bottom)
-    .pb-4.px-3.flex.justify-evenly.gap-6
+    .pb-4.px-2.flex.justify-evenly.gap-6
       //- Sort
       .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
         class="basis-1/2 max-w-[280px]"

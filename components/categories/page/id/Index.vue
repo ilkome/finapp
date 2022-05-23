@@ -50,15 +50,17 @@ UiPage(v-if="category")
     router-link(v-slot="{ href, navigate }" :to="backLink" custom)
       a.grow.hocus_bg-skin-item-main-hover(:href="href" @click="navigate")
         UiHeaderTitle
-          .pb-1.text-xs.font-medium.text-skin-item-base-down
+          .pt-1.text-xs.font-medium.text-skin-item-base-down
             | {{ $t('categories.title') }}
             template(v-if="category.parentId")
               |
               | • {{ $store.state.categories.items[category.parentId].name }}
 
-          .flex.items-center.gap-4
+          .pb-1.flex.items-center.gap-4
             | {{ category.name }}
-            .w-8.h-8.rounded-full.flex-center.text-xl.text-skin-icon-base(:style="{ background: category.color }")
+            .w-8.h-8.rounded-full.flex-center.text-xl.text-skin-icon-base(
+              :style="{ background: category.color }"
+            )
               div(:class="category.icon")
 
     template(#actions v-if="categoryId !== 'transfer'")
@@ -68,9 +70,9 @@ UiPage(v-if="category")
         UiIconAdd.group-hover_text-white.w-6.h-6
 
   //- Open stat
-  .pb-12
-    .px-3.flex
-      .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
+  .pt-3.mb-12
+    .px-2.flex
+      .cursor-pointer.p-1.px-2.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
         class="dark_text-white/60"
         @click="handleSetFilterCategory"
       )
@@ -79,12 +81,12 @@ UiPage(v-if="category")
         .mdi.mdi-chevron-right.opacity-70.text-lg.leading-none
 
   //- Childs categories
-  .pb-12(v-if="category.childIds && category.childIds.length > 0")
-    .pb-3.flex.gap-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+  .mb-12(v-if="category.childIds && category.childIds.length > 0")
+    .pb-3.px-2.flex.gap-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
       div {{ $t('categories.title') }}:
       div {{ category.childIds.length }}
 
-    .px-3
+    .px-2
       CategoriesList(
         :ids="categoryChildIds"
         :slider="() => ({})"
@@ -93,7 +95,7 @@ UiPage(v-if="category")
       )
 
   //- History
-  .px-3
+  .px-2
     TrnsHistory(
       :trnsIds="trnsIds"
       :trnType="filter.trnType"

@@ -35,7 +35,7 @@ export default defineComponent({
 
 <template lang="pug">
 UiPage
-  .mb-3.py-5.px-3.font-nunito
+  .mb-3.py-5.px-2.font-nunito
     .pb-1.text-xs.font-medium.text-skin-item-base-down
       | {{ $t("wallets.createNewTitle") }}
 

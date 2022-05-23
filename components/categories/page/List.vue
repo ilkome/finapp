@@ -29,14 +29,14 @@ UiPage
         UiIconAdd.group-hover_text-white.w-6.h-6
 
   //- List
-  .pb-12.px-3
+  .pb-12.px-2
     CategoriesList(
       :ids="catsIds"
       @onClick="catId => $router.push(`/categories/${catId}`)"
     )
 
   template(#bottom)
-    .pb-4.px-3.flex.justify-evenly.gap-6
+    .pb-4.px-2.flex.justify-evenly.gap-6
       //- Create
       .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
         class="basis-1/2 max-w-[280px]"

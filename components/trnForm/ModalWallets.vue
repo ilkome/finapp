@@ -23,12 +23,12 @@ BaseBottomSheet(
     BaseBottomSheetClose(@onClick="close")
 
   template(#header)
-    .py-4.px-3.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
+    .py-4.px-2.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
       | {{ title }}
 
   template(#default="{ close }")
     WalletsList(#default="{ walletsItemsSorted }")
-      .pb-3.px-3.grid.gap-1
+      .pb-3.px-2.grid.gap-1
         //- Wallet
         .cursor-pointer.flex.items-center.py-2.px-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
           v-for="(walletItem, walletId) in walletsItemsSorted"

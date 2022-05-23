@@ -163,7 +163,7 @@ async function onSave() {
 
 <template lang="pug">
 div
-  .pb-8.px-3
+  .pb-8.px-2
     UiTabs
       UiTabsItem(
         :isActive="activeTab === 'data'"
@@ -188,7 +188,7 @@ div
 
   //- Content
   //-----------------------------------
-  .px-3.max-w-md
+  .px-2.max-w-md
     //- Data
     //-----------------------------------
     template(v-if="activeTab === 'data'")
@@ -265,7 +265,7 @@ div
         .p-4 You can not change parent category because edited category has childs categories.
 
       template(v-if="isAllowChangeParent")
-        .cursor-pointer.mb-4.py-3.px-3.gap-x-3.flex-center.rounded-md.text-center.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+        .cursor-pointer.mb-4.py-3.px-2.gap-x-3.flex-center.rounded-md.text-center.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
           :class="{ '!cursor-default !bg-skin-item-main-active': categoryForm.parentId === 0 }"
           @click="emit('updateValue', 'parentId', 0)"
         ) {{ $t('categories.form.parent.no') }}

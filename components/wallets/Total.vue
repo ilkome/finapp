@@ -68,7 +68,7 @@ const counts = computed(() => ({
 </script>
 
 <template lang="pug">
-.px-3.py-1.bg-skin-item-main-bg.rounded-md(
+.px-2.py-1.bg-skin-item-main-bg.rounded-md(
   v-if="$store.getters['wallets/hasWallets']"
 )
   template(v-for="item in counts")

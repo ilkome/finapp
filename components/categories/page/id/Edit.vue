@@ -56,24 +56,27 @@ UiPage(v-if="category")
         @click='navigate'
       )
         UiHeaderTitle
-          .pb-1.text-xs.font-medium.text-skin-item-base-down
+          .pt-1.text-xs.font-medium.text-skin-item-base-down
             | {{ $t('categories.title') }}
             template(v-if="parentCategory")
               |
               | • {{ parentCategory.name }}
 
-          .flex.items-center.gap-4
+          .pb-1.flex.items-center.gap-4
             | {{ categoryForm.name }}
-            .w-8.h-8.rounded-full.flex-center.text-xl.text-skin-icon-base(:style="{ background: categoryForm.color }")
+            .w-8.h-8.rounded-full.flex-center.text-xl.text-skin-icon-base(
+              :style="{ background: categoryForm.color }"
+            )
               div(:class="categoryForm.icon")
 
     template(#actions)
       CategoriesDelete(:categoryId="categoryId")
 
-  CategoriesForm(
-    :categoryId="categoryId"
-    :categoryForm="categoryForm"
-    @updateValue="updateValue"
-    @afterSave="afterSave"
-  )
+  .mt-3
+    CategoriesForm(
+      :categoryId="categoryId"
+      :categoryForm="categoryForm"
+      @updateValue="updateValue"
+      @afterSave="afterSave"
+    )
 </template>

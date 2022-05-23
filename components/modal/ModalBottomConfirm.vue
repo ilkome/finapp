@@ -26,7 +26,7 @@ Portal(
     template(#default="{ closeModal }")
       .pb-8.text-skin-red-base.text-center(v-if="description") {{ description }}
 
-      .pb-4.px-3.flex.justify-evenly.gap-6
+      .pb-4.px-2.flex.justify-evenly.gap-6
         ModalButton.grow(
           :name="$t('base.no')"
           icon="mdi mdi-close"

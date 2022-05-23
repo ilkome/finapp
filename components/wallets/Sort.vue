@@ -47,7 +47,7 @@ export default {
 .h-full.overflow.overflow-x-auto.bg-skin-layout-main
   //- Header
   //-----------------------------------
-  .pb-4.px-3.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold
+  .pb-4.px-2.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold
     | {{ $t('wallets.sortTitle') }}
 
   //- Items
