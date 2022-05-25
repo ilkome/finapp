@@ -1,4 +1,6 @@
 import dayjs from 'dayjs'
+import type { CategoryID } from '~/components/categories/types'
+import type { TrnID } from '~/components/trns/types'
 import { getCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/amount/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
@@ -32,24 +34,24 @@ export default {
       walletsIds,
     })
 
-    function getRootCategoryIdFromTrnId(trnId) {
+    function getRootCategoryIdFromTrnId(trnId: TrnID, excludeTransfer = false): CategoryID {
       const categories = rootState.categories.items
       const trnCategoryId = trnsItems[trnId].categoryId
       const trnCategoryParentId = categories[trnCategoryId].parentId
-      return trnCategoryParentId || trnCategoryId
+      const categoryId = trnCategoryParentId || trnCategoryId
+
+      if (excludeTransfer && transferCategoriesIds.includes(categoryId))
+        return null
+
+      return categoryId
     }
 
     function getCategoriesIdsWithTrnsIds() {
       const categoriesWithTrnsIds = {}
 
       for (const trnId of trnsIds) {
-        if (!trnsItems[trnId])
-          continue
-
-        const categoryId = getRootCategoryIdFromTrnId(trnId)
-
-        const isTransferCategory = transferCategoriesIds.includes(categoryId)
-        if (isTransferCategory)
+        const categoryId = getRootCategoryIdFromTrnId(trnId, true)
+        if (!categoryId)
           continue
 
         categoriesWithTrnsIds[categoryId] ??= []
@@ -92,12 +94,6 @@ export default {
       }
     }
 
-    // sort categories amount
-    function sortCategoriesByTotal(categories, typeName) {
-      const categoriesIds = Object.keys(categories)
-      return categoriesIds.sort((a, b) => categories[b][typeName] - categories[a][typeName])
-    }
-
     // separate categories by income and expense
     const statIncome = {}
     const statExpense = {}
@@ -110,8 +106,10 @@ export default {
     }
 
     // sorted
-    const incomeCategoriesIds = sortCategoriesByTotal(statIncome, 'income')
-    const expenseCategoriesIds = sortCategoriesByTotal(statExpense, 'expense')
+    const incomeCategoriesIds = Object.keys(statIncome)
+      .sort((a, b) => statIncome[b].income - statIncome[a].income)
+    const expenseCategoriesIds = Object.keys(statExpense)
+      .sort((a, b) => statExpense[b].expense - statExpense[a].expense)
 
     // get first item in sorted categories
     function getBiggestAmount(categoriesTotal, categoriesIds, typeName) {
@@ -124,6 +122,7 @@ export default {
     const incomeBiggest = getBiggestAmount(categoriesTotal, incomeCategoriesIds, 'income')
 
     return {
+      trnsIds: trnsIds.sort((a, b) => trnsItems[b].date - trnsItems[a].date),
       categories: categoriesTotal,
       total: total.sumTransactions,
       expense: {

@@ -1,20 +1,11 @@
-<script>
+<script setup lang="ts">
 import { formatDate } from '~/utils/formatDate'
 
-export default {
-  props: {
-    date: {
-      type: String,
-      required: true,
-    },
-  },
+const props = defineProps<{
+  date: number
+}>()
 
-  computed: {
-    formattedDate() {
-      return formatDate(this.date, 'full')
-    },
-  },
-}
+const formattedDate = computed(() => formatDate(props.date, 'full'))
 </script>
 
 <template lang="pug">

@@ -11,7 +11,9 @@ const { statPage } = useStatPage()
 const { ui } = useUIView()
 const { moneyTypes } = useStat()
 
-const isShow = computed(() => ui.showCatsHorizontalList && statPage.current[props.typeText]?.categoriesIds?.length)
+const isShow = computed(() =>
+  ui.showCatsHorizontalList && statPage.current[props.typeText]?.categoriesIds?.length)
+
 const typeNumber = moneyTypes.find(t => t.id === props.typeText)?.type
 </script>
 
@@ -23,7 +25,6 @@ const typeNumber = moneyTypes.find(t => t.id === props.typeText)?.type
     :biggest="statPage.current[typeText].biggest"
     :category="$store.state.categories.items[categoryId]"
     :categoryId="categoryId"
-    :currencyCode="$store.state.currencies.base"
     :total="statPage.current.categories[categoryId][typeText]"
     :type="typeNumber"
   )

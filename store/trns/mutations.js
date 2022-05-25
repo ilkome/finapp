@@ -5,6 +5,7 @@ export default {
       for (const itemId of Object.keys(items))
         freezedItems[itemId] = Object.freeze(items[itemId])
     }
+
     state.items = freezedItems
   },
 

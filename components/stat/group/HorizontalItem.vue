@@ -1,49 +1,45 @@
-<script lang="ts">
+<script setup lang="ts">
+import type { CategoryID, CategoryItem } from '~/components/categories/types'
 import useFilter from '~/modules/filter/useFilter'
+import type { TrnType } from '~/components/trns/types'
+import useStatPage from '~/components/stat/useStatPage'
 
-export default {
-  props: {
-    biggest: { type: Number, required: true },
-    category: { type: Object, required: true },
-    categoryId: { type: String, required: true },
-    currencyCode: { type: String, required: true },
-    total: { type: Number, required: true },
-    type: { type: Number, required: true },
-  },
+const props = defineProps<{
+  biggest: number
+  total: number
+  type: TrnType
+  category: CategoryItem
+  categoryId: CategoryID
+}>()
 
-  setup() {
-    const { setFilterCatsId } = useFilter()
+const { $store } = useNuxtApp()
+const { statPage } = useStatPage()
+const { setFilterCatsId } = useFilter()
+const isShowInside = ref(false)
 
-    return {
-      setFilterCatsId,
-    }
-  },
+const isCategoryHasChildren = computed(() =>
+  $store.getters['categories/isCategoryHasChildren'](props.categoryId))
 
-  data() {
-    return {
-      isShowInside: false,
-    }
-  },
+const styles = computed(() => ({
+  width: `${Math.abs(props.total) / Math.abs(props.biggest) * 100}%`,
+  background: props.category.color,
+}))
 
-  computed: {
-    isCategoryHasChildren() {
-      return this.$store.getters['categories/isCategoryHasChildren'](this.categoryId)
-    },
-
-    styles() {
-      return {
-        width: `${Math.abs(this.total) / Math.abs(this.biggest) * 100}%`,
-        background: this.category.color,
-      }
-    },
-  },
-
-  methods: {
-    toggleShowInside() {
-      this.isShowInside = !this.isShowInside
-    },
-  },
+function toggleShowInside() {
+  isShowInside.value = !isShowInside.value
 }
+
+const trnsIds = computed(() => {
+  if (isCategoryHasChildren.value)
+    return []
+
+  const trnsItems = $store.state.trns.items
+  const trnsIds = statPage.current.trnsIds
+    .filter(id => trnsItems[id].type === props.type && trnsItems[id].categoryId === props.categoryId)
+    .sort((a, b) => trnsItems[b].date - trnsItems[a].date)
+
+  return trnsIds
+})
 </script>
 
 <template lang="pug">
@@ -68,7 +64,7 @@ export default {
         .statItem__amount.text-skin-item-base
           Amount(
             :amount="total"
-            :currencyCode="currencyCode"
+            :currencyCode="$store.state.currencies.base"
             :type="type"
             :isShowBaseRate="false"
           )
@@ -86,13 +82,12 @@ export default {
         :type="type"
       )
 
-    template(v-else)
+    template(v-if="!isCategoryHasChildren")
       .statItem__trns
         TrnsList(
-          :income="type === 1"
-          :expense="type === 0"
-          :categoryId="categoryId"
-          ui="stat"
+          :trnsIds="trnsIds"
+          :isShowGroupDate="false"
+          uiCat
         )
 </template>
 

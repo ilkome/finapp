@@ -203,7 +203,7 @@ function handleSubmitForm() {
     .swiper-wrapper
       //- History
       .swiper-slide(:style="{ height: maxHeight }")
-        TrnFormTrns(
+        TrnFormTrnsSlide(
           v-if="sliderObj"
           :slider="sliderObj"
         )

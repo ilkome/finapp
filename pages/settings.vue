@@ -19,6 +19,8 @@ function removeUserData() {
   if (route.name !== 'welcome')
     router.push('/welcome')
 }
+
+const user = computed(() => $store.state.user?.user)
 </script>
 
 <script lang="ts">
@@ -65,12 +67,12 @@ UiPage
         )
 
       //- User
-      .pb-12
+      .pb-12(v-if="user")
         .pb-3.text-skin-item-base.text-lg.leading-none.font-nunito.font-semibold
           | {{ $t('user') }}
         .pb-3.text-neutral-400
-          .text-lg {{ $store.state.user.user.displayName }}
-          .text-sm {{ $store.state.user.user.email }}
+          .text-lg {{ user.displayName }}
+          .text-sm {{ user.email }}
 
         SharedButton._bdb(
           :title="$t('userLogout')"

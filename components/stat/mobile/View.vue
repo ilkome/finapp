@@ -2,14 +2,16 @@
 import useStat from '~/modules/stat/useStat'
 import useStatChart from '~/components/stat/useStatChart'
 import useStatPage from '~/components/stat/useStatPage'
+import useTrns from '~/components/trns/useTrns'
 import useUIView from '~/components/layout/useUIView'
 import useWallets from '~/components/wallets/useWallets'
-const { walletsCurrencies } = useWallets()
 
 const { $store } = useNuxtApp()
+const { walletsCurrencies } = useWallets()
 const { statPage } = useStatPage()
 const { ui } = useUIView()
-const { moneyTypes, isEmptyStat } = useStat()
+const { moneyTypes } = useStat()
+const { allTrnsWithFilter } = useTrns()
 
 const { onWatch } = useStatChart()
 onWatch()
@@ -26,19 +28,6 @@ const isShowGroup = (type) => {
 
   return p1 && p2
 }
-
-const isShowTrns = computed(() => {
-  return statPage.activeTab === 'details'
-    && statPage.average?.income !== 0
-    && statPage.average?.expense !== 0
-    && $store.getters['trns/selectedTrnsIdsWithDate'].length > 0
-})
-
-const isShowGroupTrns = computed(() => {
-  const p1 = statPage.activeTab === 'income' || statPage.activeTab === 'expense'
-  const p2 = statPage.average?.sum === 0
-  return (p1 || p2) && statPage.activeTab !== 'history'
-})
 
 const chartKeyDirtyFix = ref('show')
 onActivated(async () => {
@@ -100,9 +89,7 @@ onDeactivated(async () => {
               :key="item.id"
               class="max-w-[420px]"
             )
-              StatSumGroup(
-                :typeText="item.id"
-              )
+              StatSumGroup(:typeText="item.id")
 
               template(v-if="statPage.activeTab !== 'balance'")
                 StatGroupEmpty(:typeText="item.id")
@@ -126,13 +113,15 @@ onDeactivated(async () => {
           .grid.md_grid-cols-2.md_gap-x-20
             TrnsList(
               :size="50"
+              :trnsIds="statPage.current.trnsIds"
               classNames="md_grid-cols-1"
+              uiHistory
             )
 
       //- History
       template(v-if="statPage.activeTab === 'history'")
-        .my-6.px-2
-          StatHistory
+        .my-4.px-2.md_max-w-none(class="max-w-[420px]")
+          TrnsListWithControl(:trnsIds="allTrnsWithFilter")
 </template>
 
 <style lang="stylus">

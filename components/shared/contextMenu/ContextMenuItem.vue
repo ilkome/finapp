@@ -20,7 +20,7 @@ export default {
 </script>
 
 <template lang="pug">
-.item.grow(
+.item.grow.my-2(
   :class="{ _selected: selected, _grow: grow }"
   @click="handleClick"
 )
@@ -42,7 +42,6 @@ export default {
   flex-grow 0
   max-width 400px
   min-height 44px
-  margin $m4 0
   padding 0 $m6
   font-size 14px
   border-radius $m5
