@@ -2,7 +2,7 @@
 import dayjs from 'dayjs'
 import type { TrnID } from '~/components/trns/types'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 
 const props = withDefaults(defineProps<{
   limit: number

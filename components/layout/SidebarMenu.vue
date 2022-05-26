@@ -1,5 +1,5 @@
 <script lang="ts">
-import useMenuData from '~/modules/menu/useMenuData'
+import useMenuData from '~/components/menu/useMenuData'
 
 export default defineComponent({
   setup() {

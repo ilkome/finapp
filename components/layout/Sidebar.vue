@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { WalletID } from '~/components/wallets/types'
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 
 const { $store } = useNuxtApp()
 const { setFilterWalletsId } = useFilter()

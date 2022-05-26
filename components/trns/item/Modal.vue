@@ -1,5 +1,5 @@
 <script lang="ts">
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import useTrn from '~/components/trns/item/useTrn'
 

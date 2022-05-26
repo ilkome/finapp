@@ -120,7 +120,7 @@ const seriesTotal = computed(() => {
 /**
  * Chart options
  */
-const chartOptions = computed(() => ({
+const chartConfig = computed(() => ({
   xAxis: {
     type: 'category',
     data: series.value.map(period => dayjs(period.date).format('DD MMMM')),
@@ -178,7 +178,7 @@ const chartOptions = computed(() => ({
 /**
  * Chart data
  */
-const chartData = computed(() => _merge(JSON.parse(JSON.stringify(options)), chartOptions.value))
+const chartData = computed(() => _merge(JSON.parse(JSON.stringify(options)), chartConfig.value))
 </script>
 
 <template lang="pug">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useMenuData from '~/modules/menu/useMenuData'
+import useMenuData from '~/components/menu/useMenuData'
 
 const { $store } = useNuxtApp()
 const { onClick, checkIsActive } = useMenuData()

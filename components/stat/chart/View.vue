@@ -4,9 +4,9 @@ import { getTrnsIds } from '~/components/trns/getTrns'
 import { getTotal } from '~/components/amount/getTotal'
 import { getCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { formatAmount, getCurrencySymbol } from '~/components/amount/formatAmount'
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 import useChart from '~/components/chart/useChart'
-import chartOptions from '~/components/stat/chart/chartOptions'
+import chartConfig from '~/components/stat/chart/chartConfig'
 
 export default defineComponent({
   components: { Chart },
@@ -217,7 +217,7 @@ export default defineComponent({
       let tooltip = { enabled: false }
       if (this.$store.state.ui.pc) {
         tooltip = {
-          ...chartOptions.tooltip,
+          ...chartConfig.tooltip,
           formatter() {
             return this.points.reduce((s, point) => {
               return `${s}<br/>${point.series.name}: ${formatAmount(point.y, baseCurrencyCode)} ${getCurrencySymbol(baseCurrencyCode)}`
@@ -250,33 +250,33 @@ export default defineComponent({
       }
 
       return {
-        ...chartOptions,
+        ...chartConfig,
         legend: false,
         tooltip,
 
         series: data.series,
 
         xAxis: {
-          ...chartOptions.xAxis,
+          ...chartConfig.xAxis,
           categories: data.categories,
         },
 
         yAxis: {
-          ...chartOptions.yAxis,
+          ...chartConfig.yAxis,
           plotLines,
         },
 
         chart: {
-          ...chartOptions.chart,
+          ...chartConfig.chart,
           height: '180',
         },
 
         plotOptions: {
-          ...chartOptions.plotOptions,
+          ...chartConfig.plotOptions,
           series: {
-            ...chartOptions.plotOptions.series,
+            ...chartConfig.plotOptions.series,
             dataLabels: {
-              ...chartOptions.plotOptions.series.dataLabels,
+              ...chartConfig.plotOptions.series.dataLabels,
               enabled: this.isShowDataLabels,
               formatter() {
                 return formatAmount(this.y, baseCurrencyCode)

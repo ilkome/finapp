@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
 import { getOldestTrnDate } from '~/components/trns/helpers'

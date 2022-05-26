@@ -1,4 +1,4 @@
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 
 const isShowDataLabels = ref(false)
 

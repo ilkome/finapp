@@ -1,5 +1,5 @@
 <script>
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 
 export default defineComponent({
   props: {

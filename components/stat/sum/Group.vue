@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import useStatPage from '~/components/stat/useStatPage'
-import useStat from '~/modules/stat/useStat'
+import useStat from '~/components/stat/useStat'
 
 const props = defineProps<{
   typeText: 'income' | 'expense'

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TrnID } from '~/components/trns/types'
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 import useTrn from '~/components/trns/item/useTrn'
 
 const props = defineProps<{

@@ -26,10 +26,6 @@ export default function useStatPage() {
     idx: 3,
     id: 'trns',
     name: i18n.t('trns.shortTitle'),
-  }, {
-    idx: 4,
-    id: 'history',
-    name: i18n.t('trns.history'),
   }])
 
   return {

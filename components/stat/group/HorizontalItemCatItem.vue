@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryID, CategoryItem } from '~/components/categories/types'
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 import type { TrnType } from '~/components/trns/types'
 import useStatPage from '~/components/stat/useStatPage'
 

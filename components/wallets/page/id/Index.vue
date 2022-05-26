@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 const { $store } = useNuxtApp()

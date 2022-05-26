@@ -48,14 +48,7 @@ export default defineNuxtConfig({
     stylus: ['~/assets/stylus/variables'],
   },
 
-  components: [{
-    path: '~/components/',
-    extensions: ['vue'],
-  }, {
-    path: '~/modules/',
-    extensions: ['vue'],
-  }],
-
+  components: true,
   loading: false,
 
   plugins: [

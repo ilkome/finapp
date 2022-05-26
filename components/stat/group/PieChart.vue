@@ -1,6 +1,6 @@
 <script>
 import { Chart } from 'highcharts-vue'
-import chartOptions from '~/components/stat/chart/chartOptions'
+import chartConfig from '~/components/stat/chart/chartConfig'
 
 export default {
   components: { Chart },
@@ -35,11 +35,11 @@ export default {
       }]
 
       return {
-        ...chartOptions,
+        ...chartConfig,
         series,
 
         chart: {
-          ...chartOptions.chart,
+          ...chartConfig.chart,
           spacing: [0, 0, 0, 0],
           height: '280',
 
@@ -53,9 +53,9 @@ export default {
         },
 
         plotOptions: {
-          ...chartOptions.plotOptions,
+          ...chartConfig.plotOptions,
           series: {
-            ...chartOptions.plotOptions.series,
+            ...chartConfig.plotOptions.series,
             cursor: 'pointer',
             point: {
               events: {

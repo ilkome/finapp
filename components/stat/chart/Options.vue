@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import useChart from '~/components/chart/useChart'
-import useFilter from '~/modules/filter/useFilter'
+import useFilter from '~/components/filter/useFilter'
 import useStatChart from '~/components/stat/useStatChart'
 
 const { $store } = useNuxtApp()
