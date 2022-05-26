@@ -8,6 +8,7 @@ const props = defineProps<{
   trnId: TrnID
   slider: any
 }>()
+const emit = defineEmits(['onClickEdit'])
 
 const { $store } = useNuxtApp()
 const { setExpression } = useCalculator()
@@ -31,6 +32,7 @@ const actions = {
 
     setExpression(trnItem.value.type === 2 && trnItem.value.incomeAmount ? trnItem.value.incomeAmount : trnItem.value.amount)
     $store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.value.id })
+    emit('onClickEdit', props.trnId)
   },
 
   onSetFilter: (event) => {

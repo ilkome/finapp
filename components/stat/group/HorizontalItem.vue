@@ -87,6 +87,7 @@ const trnsIds = computed(() => {
         TrnsList(
           :trnsIds="trnsIds"
           :isShowGroupDate="false"
+          classNames="md_grid-cols-1"
           uiCat
         )
 </template>

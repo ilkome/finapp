@@ -1,40 +1,28 @@
-<script>
-export default {
-  setup() {
-    const { $store } = useNuxtApp()
+<script setup lang="ts">
+const { $store } = useNuxtApp()
+const amountType = computed(() => $store.state.trnForm.values.amountType)
 
-    const amountType = computed(() => $store.state.trnForm.values.amountType)
-
-    function setAmountType(amountType) {
-      $store.commit('trnForm/setTrnFormValues', {
-        amountType,
-      })
-    }
-
-    return {
-      amountType,
-      setAmountType,
-    }
-  },
+function setAmountType(amountType) {
+  $store.commit('trnForm/setTrnFormValues', { amountType })
 }
 </script>
 
 <template lang="pug">
-.px-4.pb-4.text-center
-  .overflow-hidden.flex.items-center.text-sm.rounded-md.bg-gray-50.dark_bg-dark4.dark_shadow
-    .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
-      :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': amountType === 0 }"
-      @click="() => setAmountType(0)"
+.px-4.pb-4
+  UiTabs
+    UiTabsItem(
+      :isActive="amountType === 0"
+      @click="setAmountType(0)"
     ) {{ $t('money.expense') }}
 
-    .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
-      :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': amountType === 1 }"
-      @click="() => setAmountType(1)"
+    UiTabsItem(
+      :isActive="amountType === 1"
+      @click="setAmountType(1)"
     ) {{ $t('money.income') }}
 
-    .cursor-pointer.px-5.py-3.grow.hocus_bg-gray-200.dark_hocus_bg-neutral-800(
+    UiTabsItem(
       v-if="$store.getters['wallets/walletsSortedIds'].length > 1"
-      :class="{ '_active cursor-default text-blue3 dark_text-blue1 bg-gray-100 dark_bg-232323': amountType === 2 }"
-      @click="() => setAmountType(2)"
+      :isActive="amountType === 2"
+      @click="setAmountType(2)"
     ) {{ $t('trnForm.transferTitle') }}
 </template>

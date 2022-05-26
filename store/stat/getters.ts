@@ -194,7 +194,7 @@ export default {
 
     // When just this period and last
     const delimiter = periodsToShow - 1
-    if (delimiter === 1)
+    if (delimiter <= 1)
       return emptyData
 
     return {

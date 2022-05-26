@@ -14,22 +14,17 @@ if (!wallet.value)
   router.replace('/wallets')
 
 const total = computed(() => $store.getters['wallets/walletsTotal'][walletId.value])
-const filter = reactive({ trnType: null })
 
 const trnsItems = computed(() => $store.state.trns.items)
 const trnsIds = computed(() =>
   getTrnsIds({
     walletsIds: [walletId.value],
-    trnType: filter.trnType,
     trnsItems: trnsItems.value,
   }),
 )
 
-const periodTrnsIds = computed(() =>
-  $store.getters['trns/selectedTrnsIdsWithDate'].filter(
-    trnId => $store.state.trns.items[trnId].walletId === walletId.value,
-  ),
-)
+const periodTrnsIds = computed(() => $store.getters['trns/selectedTrnsIdsWithDate']
+  .filter(trnId => $store.state.trns.items[trnId].walletId === walletId.value))
 
 function handleSetFilterWallet() {
   setFilterWalletsId(walletId.value)
@@ -102,11 +97,7 @@ UiPage(v-if="wallet")
 
   //- History
   .px-2
-    TrnsHistory(
-      :trnsIds="trnsIds"
-      :trnType="filter.trnType"
-      @setFilterTrnType="value => filter.trnType = value"
-    )
+    TrnsListWithControl(:trnsIds="trnsIds")
 </template>
 
 <i18n lang="json5">

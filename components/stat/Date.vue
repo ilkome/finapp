@@ -9,7 +9,7 @@ const isShowDateSelector = ref(false)
 <template lang="pug">
 .z-10.hocus_bg-skin-item-main-hover
   //- Date
-  .cursor-pointer.px-2.flex.items-center.text-lg(
+  .cursor-pointer.px-3.flex.items-center.text-lg(
     @click="isShowDateSelector = true"
     class="wrapClasses"
   )

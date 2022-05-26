@@ -34,6 +34,10 @@ export default function useStatChart() {
           setChart('income', true)
           setChart('expense', true)
           break
+        case 'trns':
+          setChart('income', true)
+          setChart('expense', true)
+          break
       }
     })
   }

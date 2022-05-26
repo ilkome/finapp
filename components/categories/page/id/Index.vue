@@ -16,20 +16,14 @@ if (!category.value)
 const trnsItems = computed(() => $store.state.trns.items)
 const backLink = computed(() => category.value?.parentId ? `/categories/${category.value.parentId}` : '/categories')
 
-const filter = reactive({ trnType: null })
-
-const categoryChildIds = computed(() => category.value.childIds?.sort((a, b) => {
-  if ($store.state.categories.items[a].name < $store.state.categories.items[b].name)
-    return -1
-  if ($store.state.categories.items[a].name > $store.state.categories.items[b].name)
-    return 1
-  return 0
-}))
+const categoryChildIds = computed(() => category.value.childIds
+  ?.sort((a, b) => $store.state.categories.items[b].name - $store.state.categories.items[a].name))
 
 const trnsIds = computed(() =>
   getTrnsIds({
-    categoriesIds: category.value?.childIds?.length > 0 ? category.value?.childIds : [categoryId.value],
-    trnType: filter.trnType,
+    categoriesIds: category.value?.childIds?.length > 0
+      ? category.value?.childIds
+      : [categoryId.value],
     trnsItems: trnsItems.value,
   }))
 
@@ -96,12 +90,7 @@ UiPage(v-if="category")
 
   //- History
   .px-2
-    TrnsHistory(
-      :trnsIds="trnsIds"
-      :trnType="filter.trnType"
-      hideTransfers
-      @setFilterTrnType="value => filter.trnType = value"
-    )
+    TrnsListWithControl(:trnsIds="trnsIds")
 </template>
 
 <i18n lang="json5">
