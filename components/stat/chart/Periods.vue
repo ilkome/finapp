@@ -64,7 +64,7 @@ const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
     )
       | {{ periodItem.name }}
       span.pl-1(v-if="periodItem.slug === filterPeriodNameAllReplacedToYear")
-        | {{ showedPeriods }}/{{ maxPeriodsNumber }}
+        | {{ showedPeriods }}
 
     .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-skin-item-main-hover(
       :class="{ 'opacity-0 cursor-default pointer-events-none': isShowAdd }"

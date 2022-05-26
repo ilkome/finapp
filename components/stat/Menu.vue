@@ -20,12 +20,23 @@ function onClickStatMenu(tabName) {
 </script>
 
 <template lang="pug">
-UiTabs2
-  UiTabsItem2(
-    v-for="item in menu"
-    v-if="!item.isPrivate || $store.getters['user/isDevUser']"
-    :key="item.id"
-    :isActive="item.id === activeTabStat"
-    @click="onClickStatMenu(item.id)"
-  ) {{ item.name }}
+.my-4.px-2.sticky.z-20.backdrop-blur.firefoxBackdropFix(
+  class="top-[44px] bg-white/70 dark_bg-dark3/70"
+)
+  UiTabs2
+    UiTabsItem2.md_text-lg(
+      v-for="item in menu"
+      v-if="!item.isPrivate || $store.getters['user/isDevUser']"
+      :key="item.id"
+      :isActive="item.id === activeTabStat"
+      @click="onClickStatMenu(item.id)"
+    ) {{ item.name }}
 </template>
+
+<style lang="stylus">
+.firefoxBackdropFix
+  @supports (not (-webkit-backdrop-filter: none)) and (not (backdrop-filter: none))
+    background theme('colors.dark3') !important
+    /.light &
+      background theme('colors.white') !important
+</style>

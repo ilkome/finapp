@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<{
   trnsIds: TrnID[]
 
   isShowFilter?: boolean
+  isFilterByDay?: boolean
   isShowGroupDate?: boolean
   uiCat?: boolean
   uiHistory?: boolean
@@ -24,7 +25,7 @@ const emit = defineEmits(['onClickEdit'])
 
 const { $store } = useNuxtApp()
 const { setExpression } = useCalculator()
-const { setFilterCatsId } = useFilter()
+const { setFilterCatsId, setDayDate } = useFilter()
 
 const pageNumber = ref(1)
 const isShowTrnsWithDesc = ref(false)
@@ -120,7 +121,10 @@ div(v-if="trnsIds && trnsIds.length > 0")
       :key="date"
       class="dark_bg-dark4"
     )
-      .pt-4.pb-2.px-3(v-if="isShowGroupDate")
+      .pt-4.pb-2.px-3(
+        v-if="isShowGroupDate"
+        @click="isFilterByDay ? setDayDate(date) : null"
+      )
         DateTrnsDay(:date="date")
 
       .overflow-hidden.rounded-md

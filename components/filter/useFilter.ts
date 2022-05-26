@@ -27,10 +27,17 @@ export default function useFilter() {
     scrollTop()
   }
 
+  function setDayDate(date) {
+    $store.dispatch('filter/setPeriod', 'day')
+    $store.dispatch('filter/setDate', parseInt(date))
+    scrollTop()
+  }
+
   return {
     scrollTop,
     setFilterCatsId,
     setFilterWalletsId,
     filterPeriodNameAllReplacedToYear,
+    setDayDate,
   }
 }

@@ -106,14 +106,7 @@ onDeactivated(async () => {
         StatSumTotal
         StatViewConfig
 
-      .mb-4.px-2
-        StatMenuLaptop
-
-    template(v-if="isMobileView")
-      .my-4.px-2.sticky.z-20.backdrop-blur(
-        class="top-[44px] bg-white/70 dark_bg-dark3/70"
-      )
-        StatMenuMobile
+    StatMenu
 
     div(
       class="min-h-[calc(100vh-130px)]"
@@ -183,14 +176,7 @@ onDeactivated(async () => {
         .my-4.px-2
           TrnsListWithControl(
             :trnsIds="statPage.current.trnsIds"
-            defaultPeriod="period"
+            isFilterByDay
+            defaultFilterTrnsPeriod="period"
           )
 </template>
-
-<style lang="stylus">
-.firefoxBackdropFix
-  @supports (not (-webkit-backdrop-filter: none)) and (not (backdrop-filter: none))
-    background theme('colors.dark3') !important
-    /.light &
-      background theme('colors.white') !important
-</style>

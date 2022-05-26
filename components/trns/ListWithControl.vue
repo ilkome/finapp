@@ -1,37 +1,43 @@
 <script setup lang="ts">
 import type { TrnID, TrnItem, TrnType } from '~/components/trns/types'
 import useTrns from '~/components/trns/useTrns'
+import useStatPage from '~/components/stat/useStatPage'
 
 const props = withDefaults(defineProps<{
   trnsIds: TrnID[]
   trnsClassNames?: string
-  defaultPeriod?: string
+  defaultFilterTrnsPeriod?: string
+  isFilterByDay?: boolean
 }>(), {
   trnsClassNames: ' grid md_grid-cols-2 md_gap-x-20',
 })
 const emit = defineEmits(['onClickEdit'])
 
 const { $store } = useNuxtApp()
-const filterType = ref<TrnType>(null)
-const filterAll = ref(props.defaultPeriod)
+const filterTrnsType = ref<TrnType>(null)
+const filterTrnsPeriod = ref(props.defaultFilterTrnsPeriod)
 const { allTrnsIdsWithFilter } = useTrns()
+const { statPage } = useStatPage()
+
+// Return to filter 'period', when global filter params changed
+watch(statPage.filter, () => filterTrnsPeriod.value = 'period')
 
 const filteredTrnsIds = computed(() => {
-  const trnsIds = props.defaultPeriod && filterAll.value === 'all'
+  const trnsIds = props.defaultFilterTrnsPeriod && filterTrnsPeriod.value === 'all'
     ? allTrnsIdsWithFilter.value
     : props.trnsIds
 
-  if (filterType.value === null)
+  if (filterTrnsType.value === null)
     return trnsIds
 
   const trnsItems: Record<TrnID, TrnItem> = $store.state.trns.items
-  return trnsIds.filter(id => trnsItems[id].type === filterType.value)
+  return trnsIds.filter(id => trnsItems[id].type === filterTrnsType.value)
 })
 
 const trnsCount = computed(() => filteredTrnsIds.value.length)
 
-function setTrnType(type: TrnType) {
-  filterType.value = type
+function setFilterTrnsType(type: TrnType) {
+  filterTrnsType.value = type
 }
 
 function onClickEdit(props) {
@@ -50,38 +56,38 @@ div
       div {{ $t('trns.inPeriodTitle') }}:
       div {{ trnsCount }}
 
-    .div(v-if="defaultPeriod")
+    .div(v-if="defaultFilterTrnsPeriod")
       UiTabs
         UiTabsItem(
-          :isActive="filterAll === 'period'"
-          @click="filterAll = 'period'"
+          :isActive="filterTrnsPeriod === 'period'"
+          @click="filterTrnsPeriod = 'period'"
         ) {{ $t('dates.period') }}
         UiTabsItem(
-          :isActive="filterAll === 'all'"
-          @click="filterAll = 'all'"
+          :isActive="filterTrnsPeriod === 'all'"
+          @click="filterTrnsPeriod = 'all'"
         ) {{ $t('common.all') }}
 
   //- TypeSelector
   .pb-2(v-if="trnsIds.length > 0")
     UiTabs
       UiTabsItem(
-        :isActive="filterType === null"
-        @click="setTrnType(null)"
+        :isActive="filterTrnsType === null"
+        @click="setFilterTrnsType(null)"
       ) {{ $t('common.all') }}
 
       UiTabsItem(
-        :isActive="filterType === 0"
-        @click="setTrnType(0)"
+        :isActive="filterTrnsType === 0"
+        @click="setFilterTrnsType(0)"
       ) {{ $t('money.expense') }}
 
       UiTabsItem(
-        :isActive="filterType === 1"
-        @click="setTrnType(1)"
+        :isActive="filterTrnsType === 1"
+        @click="setFilterTrnsType(1)"
       ) {{ $t('money.income') }}
 
       UiTabsItem(
-        :isActive="filterType === 2"
-        @click="setTrnType(2)"
+        :isActive="filterTrnsType === 2"
+        @click="setFilterTrnsType(2)"
       ) {{ $t('transfer.titleMany') }}
 
   //- Nothing
@@ -95,6 +101,7 @@ div
       TrnsList(
         :trnsIds="filteredTrnsIds"
         :size="50"
+        :isFilterByDay="isFilterByDay"
         isShowFilter
         uiHistory
         @onClickEdit="onClickEdit"
