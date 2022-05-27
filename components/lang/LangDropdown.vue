@@ -34,14 +34,15 @@ export default {
 SharedContextMenu(
   :position="{ left: true, top: true }"
   :visible="visibleDropdown"
-  @onClickOpener="onClickOpener"
 )
 
   template(slot="opener")
-    SharedDropdown(
-      :active="visibleDropdown"
+    SharedButton._bdb(
       :title="currentLanguageName"
+      isShowDots
+      @onClick="visibleDropdown = !visibleDropdown"
     )
+
   template(slot="content")
     SharedContextMenuItem(
       title="🇷🇺 Русский - Russian"

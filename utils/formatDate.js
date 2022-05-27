@@ -16,10 +16,10 @@ export const formatDate = (value, type) => {
       return {
         day: dayjs(+value).format('D'),
         weekday: dayjs(+value).calendar(null, {
-          sameDay: `[${currentLocale === 'ru' ? 'Сегодня' : 'Today'}] dddd`,
-          nextDay: `[${currentLocale === 'ru' ? 'Завтра' : 'Tomorrow'}] dddd`,
+          sameDay: `dddd, [${currentLocale === 'ru' ? 'Сегодня' : 'Today'}]`,
+          nextDay: `dddd, [${currentLocale === 'ru' ? 'Завтра' : 'Tomorrow'}]`,
           nextWeek: 'dddd',
-          lastDay: `[${currentLocale === 'ru' ? 'Вчера' : 'Yesterday'}] dddd`,
+          lastDay: `dddd, [${currentLocale === 'ru' ? 'Вчера' : 'Yesterday'}]`,
           lastWeek: 'dddd',
           sameElse: 'dddd',
         }),

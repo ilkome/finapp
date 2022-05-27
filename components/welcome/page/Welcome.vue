@@ -170,22 +170,6 @@ export default {
     /.light &
       background theme('colors.white') !important
 
-.steps
-  display flex
-  width 100%
-  padding-bottom $m10
-  border-radius $m4
-
-.stepItem
-  flex-grow 1
-  padding $m6
-  text-align center
-  background var(--c-bg-2)
-
-  &._active
-    background var(--c-bg-5)
-    border-radius $m4
-
 .tabs
   overflow hidden
   position absolute

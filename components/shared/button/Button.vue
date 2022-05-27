@@ -47,7 +47,7 @@ export default defineComponent({
 @import '~assets/stylus/variables/animations'
 @import '~assets/stylus/variables/media'
 
-.d-button-cirle
+.d-button-circle
   display flex
   align-items center
   justify-content center

@@ -108,9 +108,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-.trnFormButton
-  padding $m7
-
 .trnFormCalculator
   display grid
   grid-template-columns auto 1fr auto

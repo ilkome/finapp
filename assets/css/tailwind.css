@@ -42,9 +42,6 @@ body,
 .flex-center {
   @apply flex items-center justify-center;
 }
-.flex-center-col {
-  @apply flex flex-col items-center justify-center;
-}
 
 .absolute-center {
   position: absolute;
