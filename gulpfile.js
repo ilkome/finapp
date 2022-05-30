@@ -48,7 +48,7 @@ function uploadAll(cb) {
 }
 
 function uploadMin(cb) {
-  return uploadTask('dist/**/*.{css,js,html}', cb)
+  return uploadTask('dist/**/*.{css,js,json,html}', cb)
 }
 
 // upload task
