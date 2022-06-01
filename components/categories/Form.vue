@@ -294,7 +294,7 @@ div
 
     //- Save
     //---------------------------------
-    .absolute.bottom-40.left-0.pt-4.pb-6
+    .pt-4.pb-6
       SharedButton(
         :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
         :title="$t('wallets.form.save')"
