@@ -44,6 +44,6 @@ export default {
     if (!getters.hasWallets)
       return []
 
-    return Object.keys(state.items).sort((a, b) => state.items[b].order - state.items[a].order)
+    return Object.keys(state.items).sort((a, b) => state.items[a].order - state.items[b].order)
   },
 }
