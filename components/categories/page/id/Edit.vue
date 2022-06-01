@@ -14,11 +14,11 @@ const categoryForm = ref({
   color: category.value?.color || random(allColors),
   icon: category.value?.icon || random(random(icons)),
   name: category.value?.name || null,
-  order: category.value?.order || 1,
-  parentId: category.value?.parentId || 0,
-  showInLastUsed: category.value?.showInLastUsed !== undefined ? category.value.showInLastUsed : true,
-  showInQuickSelector: category.value?.showInQuickSelector !== undefined ? category.value.showInQuickSelector : false,
-  showStat: category.value?.showStat !== undefined ? category.value.showStat : true,
+  order: category.value?.order ?? 1,
+  parentId: category.value?.parentId ?? 0,
+  showInLastUsed: category.value?.showInLastUsed ?? true,
+  showInQuickSelector: category.value?.showInQuickSelector ?? false,
+  showStat: category.value?.showStat ?? true,
 })
 
 const parentCategory = computed(() => {

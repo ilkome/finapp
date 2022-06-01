@@ -17,7 +17,7 @@ const trnsItems = computed(() => $store.state.trns.items)
 const backLink = computed(() => category.value?.parentId ? `/categories/${category.value.parentId}` : '/categories')
 
 const categoryChildIds = computed(() => category.value.childIds
-  ?.sort((a, b) => $store.state.categories.items[b].name - $store.state.categories.items[a].name))
+  ?.sort((a, b) => $store.state.categories.items[a].name.localeCompare($store.state.categories.items[b].name)))
 
 const trnsIds = computed(() =>
   getTrnsIds({
@@ -27,6 +27,7 @@ const trnsIds = computed(() =>
     trnsItems: trnsItems.value,
   }))
 
+// TODO: useFilter
 function handleSetFilterCategory() {
   setFilterCatsId(categoryId.value)
   $store.commit('filter/setFilterDateNow')

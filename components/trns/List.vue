@@ -86,6 +86,7 @@ const actions = trnItem => ({
     $store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.id })
   },
 
+  // TODO: useFilter
   onSetFilter: (event) => {
     event.stopPropagation()
     setFilterCatsId(trnItem.categoryId)

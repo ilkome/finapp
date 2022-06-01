@@ -1,20 +1,6 @@
 <script setup lang="ts">
-import type { WalletID } from '~/components/wallets/types'
 import useFilter from '~/components/filter/useFilter'
-
-const { $store } = useNuxtApp()
-const { setFilterWalletsId } = useFilter()
-
-function setWalletFilter(walletId: WalletID) {
-  if ($store.state.filter.walletsIds.includes(walletId)) {
-    $store.commit('filter/removeFilterWalletId', walletId)
-    return
-  }
-
-  setFilterWalletsId(walletId)
-  $store.commit('filter/setFilterDateNow')
-  $store.dispatch('ui/setActiveTabStat', 'details')
-}
+const { toggleWalletFilter } = useFilter()
 </script>
 
 <template lang="pug" scoped>
@@ -48,7 +34,7 @@ function setWalletFilter(walletId: WalletID) {
               .w-6.h-6.rounded-md.flex-center.text-skin-icon-base.text-xs.leading-none(
                 :style="{ background: walletItem.color }"
                 class="mt-[2px]"
-                @click.stop="setWalletFilter(walletId)"
+                @click.stop="toggleWalletFilter(walletId)"
               ) {{ walletItem.name.substring(0, 2) }}
               //- Name
               .grow.text-sm.text-skin-item-base {{ walletItem.name }}
@@ -58,7 +44,6 @@ function setWalletFilter(walletId: WalletID) {
               Amount(
                 :amount="walletItem.amount"
                 :currencyCode="walletItem.currency"
-                :isShowSign="false"
               )
 
       template(#toggle="{ stateLimit, limit, toggle }")

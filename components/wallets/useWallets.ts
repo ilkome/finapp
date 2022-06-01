@@ -1,5 +1,5 @@
 import type { ComputedRef } from '@vue/composition-api'
-import type { WalletID, WalletItemWithAmount } from '~/components/wallets/types'
+import type { WalletID, WalletItem, WalletItemWithAmount } from '~/components/wallets/types'
 import type { CurrencyCode } from '~/components/currencies/types'
 
 export default function useWallets() {
@@ -17,35 +17,31 @@ export default function useWallets() {
    */
   const walletsItemsSorted = computed<Record<WalletID, WalletItemWithAmount>>(() => {
     const walletsIdsSorted: WalletID[] = $store.getters['wallets/walletsSortedIds']
-    let wallets: Record<WalletID, WalletItemWithAmount> = {}
 
-    for (const walletId of walletsIdsSorted) {
-      wallets = {
-        ...wallets,
-        [walletId]: {
-          ...$store.state.wallets.items[walletId],
-          amount: $store.getters['wallets/walletsTotal'][walletId],
-        },
+    return walletsIdsSorted.reduce((acc, id) => {
+      acc[id] ??= []
+      acc[id] = {
+        ...$store.state.wallets.items[id],
+        amount: $store.getters['wallets/walletsTotal'][id],
       }
-    }
-
-    return wallets
+      return acc
+    }, {})
   })
 
   /**
    * Wallets currencies
    */
   const walletsCurrencies = computed(() => {
-    // TODO: map, maybe Set
-    const currencies: CurrencyCode[] = []
+    const walletsIdsSorted: WalletID[] = $store.getters['wallets/walletsSortedIds']
+    const walletsItems: Record<WalletID, WalletItem> = $store.state.wallets.items
 
-    for (const walletId in walletsItemsSorted.value) {
-      const walletCurrency = walletsItemsSorted.value[walletId].currency
-      if (!currencies.includes(walletCurrency))
-        currencies.push(walletCurrency)
-    }
-
-    return currencies
+    // TODO: check Alex
+    return walletsIdsSorted.reduce((acc, id) => {
+      const currency = walletsItems[id].currency
+      if (!acc.includes(currency))
+        acc.push(currency)
+      return acc
+    }, [])
   })
 
   return {

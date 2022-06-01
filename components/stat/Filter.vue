@@ -1,36 +1,29 @@
 <script setup lang="ts">
-import type { CategoryID } from '~/components/categories/types'
+import useFilter from '~/components/filter/useFilter'
+
 const { $store } = useNuxtApp()
+const { removeFilterCategoryId, clearFilter } = useFilter()
 
 const filterWalletsItems = computed(() =>
-  $store.state.filter.walletsIds
-    .reduce((acc, id) => {
-      acc[id] = $store.state.wallets.items[id]
-      return acc
-    }, {}),
+  $store.state.filter.walletsIds.reduce((acc, id) => {
+    acc[id] = $store.state.wallets.items[id]
+    return acc
+  }, {}),
 )
 
-const filterCatsItems = computed(() =>
-  $store.state.filter.catsIds
-    .reduce((acc, id) => {
-      acc[id] = $store.state.categories.items[id]
-      return acc
-    }, {}),
+const filterCategoriesItems = computed(() =>
+  $store.state.filter.catsIds.reduce((acc, id) => {
+    acc[id] = $store.state.categories.items[id]
+    return acc
+  }, {}),
 )
-
-const onClickCategory = (id: CategoryID) => {
-  $store.commit('filter/removeFilterCatId', id)
-}
-
-const onClearFilter = () => {
-  $store.commit('filter/clearFilterCatsIds')
-  $store.commit('filter/clearFilterWalletsIds')
-}
 </script>
 
 <template lang="pug">
-.overflow-hidden(v-if="filterCatsItems || filterWalletsItems")
-  .pb-3.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('base.filter') }}
+.overflow-hidden(v-if="filterCategoriesItems || filterWalletsItems")
+  .pb-3.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+    | {{ $t('base.filter') }}
+
   .safe.scrollbar.overflow-hidden.overflow-x-auto.flex.flex-wrap.items-center.gap-4
     //- Wallet
     template(v-if="filterWalletsItems")
@@ -46,20 +39,18 @@ const onClearFilter = () => {
             Amount(
               :amount="$store.getters['wallets/walletsTotal'][walletId]"
               :currencyCode="walletItem.currency"
-              :type="3"
               :isShowBaseRate="false"
-              :isShowSign="false"
             )
 
           .absolute.top-1.right-1
             .text-sm.mdi.mdi-close
 
     //- Category
-    template(v-if="filterCatsItems")
+    template(v-if="filterCategoriesItems")
       .cursor-pointer.relative.py-1.px-3.flex.items-center.gap-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover.shadow.hocus_shadow-lg(
-        v-for="(catItem, catId) in filterCatsItems"
-        :key="catId"
-        @click="onClickCategory(catId)"
+        v-for="(catItem, categoryId) in filterCategoriesItems"
+        :key="categoryId"
+        @click="removeFilterCategoryId(categoryId)"
       )
         .text-2xl(
           :style="{ color: catItem.color }"
@@ -73,8 +64,8 @@ const onClearFilter = () => {
 
     //- Clear
     .cursor-pointer.py-1.px-3.flex.items-center.gap-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover.shadow.hocus_shadow-lg(
-        @click="onClearFilter"
-      )
-        .mdi.mdi-filter-remove-outline.text-2xl
-        .pr-1.text-xs.leading-none {{ $t('filter.clear') }}
+      @click="clearFilter"
+    )
+      .mdi.mdi-filter-remove-outline.text-2xl
+      .pr-1.text-xs.leading-none {{ $t('filter.clear') }}
 </template>

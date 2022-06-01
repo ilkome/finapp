@@ -10,8 +10,9 @@ export default {
   computed: {
     statCategories() {
       const categoriesIds = this.$store.getters['categories/getChildCategoriesIds'](this.categoryId)
-      let stat = []
+      const stat = []
 
+      // TODO: reduce
       for (const categoryId of categoriesIds) {
         const trnsIds = this.getTrnsByCategoryId(categoryId)
         if (trnsIds.length > 0) {
@@ -20,15 +21,7 @@ export default {
         }
       }
 
-      stat = stat.sort((a, b) => {
-        if (a[this.typeName] > b[this.typeName])
-          return -1
-        if (a[this.typeName] < b[this.typeName])
-          return 1
-        return 0
-      })
-
-      return stat
+      return stat.sort((a, b) => b[this.typeName] - a[this.typeName])
     },
 
     typeName() {

@@ -10,6 +10,7 @@ const router = useRouter()
 
 const walletId = computed(() => route.params.id)
 const wallet = computed(() => $store.state.wallets.items[walletId.value])
+
 if (!wallet.value)
   router.replace('/wallets')
 
@@ -26,13 +27,14 @@ const trnsIds = computed(() =>
 const periodTrnsIds = computed(() => $store.getters['trns/selectedTrnsIdsWithDate']
   .filter(trnId => $store.state.trns.items[trnId].walletId === walletId.value))
 
-function handleSetFilterWallet() {
+// TODO: useFilter
+function onClickFilterWallet() {
   setFilterWalletsId(walletId.value)
   $store.commit('filter/setFilterDateNow')
   $store.dispatch('ui/setActiveTabStat', 'details')
 }
 
-function handleEditClick() {
+function onEditClick() {
   router.push(`/wallets/${walletId.value}/edit`)
 }
 </script>
@@ -63,7 +65,7 @@ UiPage(v-if="wallet")
               | {{ wallet.currency }}
 
     template(#actions)
-      UiHeaderLink(@click="handleEditClick")
+      UiHeaderLink(@click="onEditClick")
         .mdi.mdi-pencil-outline.group-hover_text-white.text-xl
 
   .mb-6.pt-3.px-2.flex.text-3xl.font-normal
@@ -76,7 +78,7 @@ UiPage(v-if="wallet")
     .px-2.flex
       .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
         class="dark_text-white/60"
-        @click="handleSetFilterWallet"
+        @click="onClickFilterWallet"
       )
         .mdi.mdi-poll.text-xl
         .text-xs.leading-none {{ $t("statBy") }}: {{ wallet.name }}

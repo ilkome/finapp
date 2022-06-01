@@ -50,6 +50,5 @@ BaseBottomSheet(
               Amount(
                 :amount="walletItem.amount"
                 :currencyCode="walletItem.currency"
-                :isShowSign="false"
               )
 </template>

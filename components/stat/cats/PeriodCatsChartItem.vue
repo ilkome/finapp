@@ -1,6 +1,7 @@
 <script lang="ts">
 import useFilter from '~/components/filter/useFilter'
 
+// TODO: setup
 export default defineComponent({
   props: {
     biggest: { type: Number, required: true },
@@ -34,32 +35,12 @@ export default defineComponent({
       return this.total.toFixed()
     },
   },
-
-  methods: {
-    handleMouseEnter(e) {
-      if (this.$store.state.ui.pc) {
-        const parent = e.target.parentNode
-        const parentScrollLeft = parent.scrollLeft
-        const targetOffset = e.target.offsetLeft
-        const targetWidth = e.target.clientWidth
-        const offset = targetOffset + (targetWidth / 2) - parentScrollLeft
-        this.$emit('onActiveCategoryChange', { offset, categoryId: this.categoryId })
-      }
-    },
-
-    handleMouseLeave() {
-      if (this.$store.state.ui.pc)
-        this.$emit('onActiveCategoryChange', { categoryId: null })
-    },
-  },
 })
 </script>
 
 <template lang="pug">
 .statCatsItem.swiper-no-swiping.active.hocus_bg-skin-item-main-hover(
   @click="setFilterCatsId(categoryId)"
-  @mouseenter="handleMouseEnter"
-  @mouseleave="handleMouseLeave"
 )
   .statCatsItem__graph.bg-skin-item-main-active
     .statCatsItem__graph__in(:style="styles")
@@ -70,6 +51,7 @@ export default defineComponent({
 </template>
 
 <style lang="stylus" scoped>
+// TODO: styles
 .statCatsItem
   cursor pointer
   margin-top 16px

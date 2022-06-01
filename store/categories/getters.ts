@@ -20,19 +20,16 @@ export default {
     return Object.keys(state.items)
   },
 
-  categoriesRootIds(state, getters) {
+  /**
+   * Categories root IDs
+   */
+  categoriesRootIds(state, getters): CategoryID[] {
     if (!getters.hasCategories)
       return []
 
     return Object.keys(state.items)
       .filter(id => state.items[id].parentId === 0)
-      .sort((a, b) => {
-        if (state.items[a].order < state.items[b].order)
-          return -1
-        if (state.items[a].order > state.items[b].order)
-          return 1
-        return 0
-      })
+      .sort((a, b) => state.items[a].name.localeCompare(state.items[b].name))
   },
 
   categoriesForBeParent(state, getters, rootState) {

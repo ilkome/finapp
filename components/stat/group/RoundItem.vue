@@ -1,4 +1,5 @@
 <script lang="ts">
+// TODO: setup
 import useFilter from '~/components/filter/useFilter'
 
 export default {
@@ -56,6 +57,7 @@ export default {
 </template>
 
 <style lang="stylus">
+// TODO: style
 .statItemRound
   max-width 160px
 

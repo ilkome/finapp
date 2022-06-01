@@ -35,6 +35,7 @@ const actions = {
     emit('onClickEdit', props.trnId)
   },
 
+  // TODO: useFilter
   onSetFilter: (event) => {
     if (props.slider)
       return

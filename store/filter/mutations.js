@@ -43,7 +43,7 @@ export default {
     state.catsIds.push(catId)
   },
 
-  removeFilterCatId(state, catId) {
+  removeFilterCategoryId(state, catId) {
     state.catsIds = state.catsIds.filter(id => id !== catId)
   },
 

@@ -77,6 +77,7 @@ const trnsIds = computed(() => {
 </template>
 
 <style lang="stylus">
+// TODO: style
 .statItemChild
   .trnItem._stat
     padding-right $m5

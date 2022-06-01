@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CategoryID, CategoryItem } from '~/components/categories/types'
-import useFilter from '~/components/filter/useFilter'
 import type { TrnType } from '~/components/trns/types'
+import useFilter from '~/components/filter/useFilter'
 import useStatPage from '~/components/stat/useStatPage'
 
 const props = defineProps<{

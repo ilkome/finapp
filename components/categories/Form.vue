@@ -43,7 +43,8 @@ function findCategoryWithThisColor(color) {
   if (!categoriesItems)
     return false
 
-  const categoryIdWithThisColor = $store.getters['categories/categoriesRootIds']?.find(id => categoriesItems[id]?.color === color)
+  const categoryIdWithThisColor = $store.getters['categories/categoriesRootIds']
+    ?.find(id => categoriesItems[id]?.color === color)
 
   if (categoryIdWithThisColor)
     return categoriesItems[categoryIdWithThisColor]?.icon
@@ -51,10 +52,9 @@ function findCategoryWithThisColor(color) {
 
 /**
  * Get child categories ids
- *
- * @param categoryId
  */
-function getChildCategoriesIds(categoryId) {
+function getChildCategoriesIds(categoryId: CategoryID) {
+  // TODO: always return array
   if (!categoryId)
     return false
 
@@ -63,6 +63,7 @@ function getChildCategoriesIds(categoryId) {
   const ids = []
 
   if (category?.parentId === 0) {
+    // TODO: filter
     for (const id in categoriesItems) {
       if (categoriesItems[id].parentId === categoryId)
         ids.push(id)
@@ -272,7 +273,7 @@ div
 
         CategoriesList(
           :activeItemId="categoryForm.parentId"
-          :ids="$store.getters['categories/categoriesForBeParent'].filter(cId => cId !== categoryId)"
+          :ids="$store.getters['categories/categoriesForBeParent'].filter(id => id !== categoryId)"
           :slider="() => ({})"
           class="!gap-x-1"
           @onClick="onParentSelect"
@@ -293,7 +294,7 @@ div
 
     //- Save
     //---------------------------------
-    .pt-4.pb-6
+    .absolute.bottom-40.left-0.pt-4.pb-6
       SharedButton(
         :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
         :title="$t('wallets.form.save')"

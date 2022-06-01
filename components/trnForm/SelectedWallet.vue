@@ -32,7 +32,6 @@ const wallet = computed(() => walletsItemsSorted.value[props.walletId])
           :amount="wallet.amount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="false"
-          :isShowSign="false"
           align="left"
         )
 

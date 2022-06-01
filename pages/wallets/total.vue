@@ -109,9 +109,9 @@ const seriesTotal = computed(() => {
   const t = []
   for (const [idx, element] of series.value.entries()) {
     const sum = element.total.sumTransfers + element.total.sumTransactions
-    idx > 0
-      ? t.push(t[idx - 1] + sum)
-      : t.push(sum)
+    idx === 0
+      ? t.push(sum)
+      : t.push(t[idx - 1] + sum)
   }
 
   return t

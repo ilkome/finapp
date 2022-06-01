@@ -1,13 +1,8 @@
 <script>
+// TODO: setup
 export default {
   props: {
-    type: {
-      type: String,
-      required: true,
-      validator(value) {
-        return value === 'income' || value === 'expense'
-      },
-    },
+    type: { type: String, required: true },
   },
 
   data() {
@@ -28,16 +23,6 @@ export default {
       return this.$store.getters['stat/statCurrentPeriod']
     },
   },
-
-  methods: {
-    handleActiveCategoryChange({ categoryId, offset }) {
-      if (offset)
-        this.offset = offset
-      categoryId
-        ? this.activeCategoryId = categoryId
-        : this.activeCategoryId = null
-    },
-  },
 }
 </script>
 
@@ -46,16 +31,16 @@ export default {
   .cats-chart__items.px-2.pb-2(v-if="statCurrentPeriod[type].categoriesIds.length > 0")
     StatCatsPeriodCatsChartItem(
       v-for="categoryId in statCurrentPeriod[type].categoriesIds"
+      :key="`charts-${categoryId}`"
       :biggest="biggestAmount"
       :category="categories[categoryId]"
       :categoryId="categoryId"
-      :key="`charts-${categoryId}`"
       :total="statCurrentPeriod.categories[categoryId][type]"
-      @onActiveCategoryChange="handleActiveCategoryChange"
     )
 </template>
 
 <style lang="stylus" scoped>
+// TODO: style
 .cats-chart
   &__items
     overflow hidden
