@@ -18,6 +18,7 @@ export default function useWallets() {
   const walletsItemsSorted = computed<Record<WalletID, WalletItemWithAmount>>(() => {
     const walletsIdsSorted: WalletID[] = $store.getters['wallets/walletsSortedIds']
 
+    // TODO: check A
     return walletsIdsSorted.reduce((acc, id) => {
       acc[id] ??= []
       acc[id] = {
@@ -35,7 +36,7 @@ export default function useWallets() {
     const walletsIdsSorted: WalletID[] = $store.getters['wallets/walletsSortedIds']
     const walletsItems: Record<WalletID, WalletItem> = $store.state.wallets.items
 
-    // TODO: check Alex
+    // TODO: check A
     return walletsIdsSorted.reduce((acc, id) => {
       const currency = walletsItems[id].currency
       if (!acc.includes(currency))
