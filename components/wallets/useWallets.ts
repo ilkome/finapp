@@ -1,6 +1,5 @@
 import type { ComputedRef } from '@vue/composition-api'
 import type { WalletID, WalletItem, WalletItemWithAmount } from '~/components/wallets/types'
-import type { CurrencyCode } from '~/components/currencies/types'
 
 export default function useWallets() {
   const { $store } = useNuxtApp()
