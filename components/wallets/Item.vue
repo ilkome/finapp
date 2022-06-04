@@ -40,7 +40,7 @@ export default defineComponent({
     ) {{ wallet.name.substring(0, 2) }}
 
     div
-      .text-sm.text-neutral-500(class="dark_text-neutral-400") {{ wallet.name }}
+      .text-sm.text-neutral-500.dark_text-neutral-400 {{ wallet.name }}
       template(v-if="isShowAmount")
         Amount(
           :amount="wallet.total"

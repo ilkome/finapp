@@ -1,22 +1,13 @@
 <script setup lang="ts">
-import { allColors } from '~/assets/js/colors'
-import { saveData } from '~/services/firebase/api'
 import generateId from '~/utils/id'
 import icons from '~/assets/js/icons'
-import type { CategoryID } from '~/components/categories/types'
+import type { CategoryForm, CategoryID, CategoryItem } from '~/components/categories/types'
+import { allColors } from '~/assets/js/colors'
+import { saveData } from '~/services/firebase/api'
 
 const props = defineProps<{
   categoryId?: CategoryID
-  categoryForm: {
-    color: string
-    icon: string
-    name: string
-    order: number
-    parentId: string | 0
-    showInLastUsed: boolean
-    showInQuickSelector: boolean
-    showStat: boolean
-  }
+  categoryForm: CategoryForm
 }>()
 
 const emit = defineEmits(['updateValue', 'afterSave'])
@@ -27,27 +18,34 @@ const editCategoryId = categoryId.value ?? generateId()
 
 const activeTab = ref('data')
 const isUpdateChildCategoriesColor = ref(true)
+const isAllowChangeParent = computed(() => !getChildCategoriesIds(categoryId.value))
 
-const isAllowChangeParent = computed(() => {
-  const childs = getChildCategoriesIds(categoryId.value)
-  return !childs
-})
+const tabs = computed(() => [{
+  id: 'data',
+  name: i18n.t('categories.form.data.label'),
+}, {
+  id: 'parent',
+  name: i18n.t('categories.form.parent.label'),
+  isHidden: !$store.getters['categories/hasCategories'],
+}, {
+  id: 'colors',
+  name: i18n.t('categories.form.colors.label'),
+}, {
+  id: 'icon',
+  name: i18n.t('categories.form.icon.label'),
+}])
 
 /**
  * Find category with color
- *
- * @param color
  */
-function findCategoryWithThisColor(color) {
-  const categoriesItems = $store.state.categories.items
+function findCategoryIconByColor(color) {
+  const categoriesItems: Record<CategoryID, CategoryItem> = $store.state.categories.items
   if (!categoriesItems)
-    return false
+    return
 
-  const categoryIdWithThisColor = $store.getters['categories/categoriesRootIds']
+  return $store.getters['categories/categoriesRootIds']
     ?.find(id => categoriesItems[id]?.color === color)
-
-  if (categoryIdWithThisColor)
-    return categoriesItems[categoryIdWithThisColor]?.icon
+    ?.icon
 }
 
 /**
@@ -56,31 +54,19 @@ function findCategoryWithThisColor(color) {
 function getChildCategoriesIds(categoryId: CategoryID) {
   // TODO: always return array
   if (!categoryId)
-    return false
+    return
 
-  const category = $store.state.categories.items[categoryId]
-  const categoriesItems = $store.state.categories.items
-  const ids = []
+  const category: CategoryItem = $store.state.categories.items[categoryId]
+  const categoriesItems: Record<CategoryID, CategoryItem> = $store.state.categories.items
 
-  if (category?.parentId === 0) {
-    // TODO: filter
-    for (const id in categoriesItems) {
-      if (categoriesItems[id].parentId === categoryId)
-        ids.push(id)
-    }
-  }
-
-  if (ids.length === 0)
-    return false
-
-  return ids
+  if (category?.parentId === 0)
+    return Object.keys(categoriesItems).filter(id => categoriesItems[id]?.parentId === categoryId)
 }
 
 /**
  * Select parent
- * @param parentId
  */
-function onParentSelect(parentId) {
+function onParentSelect(parentId: CategoryID) {
   emit('updateValue', 'parentId', parentId)
 
   // Change category color when patent category changed
@@ -98,9 +84,10 @@ function validate({ values, categoriesItems }) {
       title: '😮',
       text: i18n.t('categories.form.name.error'),
     })
-    return false
+    return
   }
 
+  // TODO: refactor
   for (const id in categoriesItems) {
     if (categoriesItems[id].name === values.name && categoriesItems[id].parentId === values.parentId) {
       if (editCategoryId) {
@@ -109,7 +96,7 @@ function validate({ values, categoriesItems }) {
             title: '😮',
             text: i18n.t('categories.form.name.exist'),
           })
-          return false
+          return
         }
       }
       else {
@@ -117,7 +104,7 @@ function validate({ values, categoriesItems }) {
           title: '😮',
           text: i18n.t('categories.form.name.exist'),
         })
-        return false
+        return
       }
     }
   }
@@ -125,7 +112,7 @@ function validate({ values, categoriesItems }) {
   return true
 }
 
-function prepareForm({ values, categoryChildIds }) {
+function prepareForm({ values, categoryChildIds }): CategoryForm {
   return {
     color: values.color,
     icon: values.icon,
@@ -164,32 +151,22 @@ async function onSave() {
 
 <template lang="pug">
 div
-  .pb-8.px-2
-    UiTabs
-      UiTabsItem(
-        :isActive="activeTab === 'data'"
-        @click="activeTab = 'data'"
-      ) {{ $t('categories.form.data.label') }}
-
-      UiTabsItem(
-        v-if="$store.getters['categories/hasCategories']"
-        :isActive="activeTab === 'parent'"
-        @click="activeTab = 'parent'"
-      ) {{ $t('categories.form.parent.label') }}
-
-      UiTabsItem(
-        :isActive="activeTab === 'colors'"
-        @click="activeTab = 'colors'"
-      ) {{ $t('categories.form.colors.label') }}
-
-      UiTabsItem(
-        :isActive="activeTab === 'icon'"
-        @click="activeTab = 'icon'"
-      ) {{ $t('categories.form.icon.label') }}
+  .sticky.z-20.backdrop-blur.firefoxBackdropFix(
+    class="top-[60px] bg-white/70 dark_bg-dark3/70"
+  )
+    .px-2
+      UiTabs2
+        UiTabsItem2.md_text-lg(
+          v-for="tab in tabs"
+          v-if="!tab.isHidden"
+          :key="tab.id"
+          :isActive="activeTab === tab.id"
+          @click="activeTab = tab.id"
+        ) {{ tab.name }}
 
   //- Content
   //-----------------------------------
-  .px-2.max-w-md
+  .pt-8.px-2.max-w-md
     //- Data
     //-----------------------------------
     template(v-if="activeTab === 'data'")
@@ -240,9 +217,9 @@ div
               :style="{ background: color === categoryForm.color ? color : 'transparent' }"
               @click="emit('updateValue', 'color', color)"
             )
-              template(v-if="findCategoryWithThisColor(color)")
+              template(v-if="findCategoryIconByColor(color)")
                 Icon(
-                  :icon="color === categoryForm.color ? categoryForm.icon : findCategoryWithThisColor(color)"
+                  :icon="color === categoryForm.color ? categoryForm.icon : findCategoryIconByColor(color)"
                   :background="color"
                   round
                 )

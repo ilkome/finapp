@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { getCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default {
@@ -48,7 +48,7 @@ export default {
 
     // TODO: move it to a separate function getFilterParams
     const categoriesIds = rootState.filter.catsIds.length > 0
-      ? getCategoriesIds(rootState.filter.catsIds, categoriesItems)
+      ? getTransactibleCategoriesIds(rootState.filter.catsIds, categoriesItems)
       : null
     const walletsIds = storeFilter.walletsIds.length > 0
       ? storeFilter.walletsIds

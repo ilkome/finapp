@@ -1,4 +1,5 @@
 <script>
+// TODO: setup
 import useFilter from '~/components/filter/useFilter'
 
 export default defineComponent({
@@ -57,9 +58,8 @@ export default defineComponent({
   ): div(:class="category.icon")
 
   .grow.truncate
-    .text-xs.text-skin-item-base-down(
+    .text-xs.text-skin-item-base-down.dark_text-neutral-400(
       v-if="parentCategory && !isHideParentCategory"
-      class="dark_text-neutral-400"
     ) {{ parentCategory.name }}
 
     .leading-none.text-sm.text-skin-item-base {{ category.name }}

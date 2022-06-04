@@ -1,4 +1,5 @@
 <script>
+// TODO: setup
 export default {
   props: {
     theme: {
@@ -31,6 +32,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
+// TODO: style
 @import "~assets/stylus/variables/margins"
 
 .spinner

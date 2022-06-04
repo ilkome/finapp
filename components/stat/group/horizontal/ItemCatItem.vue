@@ -17,26 +17,22 @@ const { statPage } = useStatPage()
 const { setFilterCatsId } = useFilter()
 const isShowInside = ref(false)
 
+// TODO: same HorizontalItem, HorizontalItemCatItem
 const isCategoryHasChildren = computed(() =>
   $store.getters['categories/isCategoryHasChildren'](props.categoryId))
 
-function toggleShowInside() {
-  isShowInside.value = !isShowInside.value
-}
+// TODO: same HorizontalItem, HorizontalItemCatItem
+const toggleShowInside = () => isShowInside.value = !isShowInside.value
 
+// TODO: same HorizontalItem, HorizontalItemCatItem
 const trnsIds = computed(() => {
   if (isCategoryHasChildren.value)
     return []
 
   const trnsItems = $store.state.trns.items
-  const trnsIds = statPage.current.trnsIds
-    .filter((id) => {
-      const trn = trnsItems[id]
-      return trn.type === props.type && trn.categoryId === props.categoryId
-    })
+  return statPage.current.trnsIds
+    .filter(id => trnsItems[id].type === props.type && trnsItems[id].categoryId === props.categoryId)
     .sort((a, b) => trnsItems[b].date - trnsItems[a].date)
-
-  return trnsIds
 })
 </script>
 
@@ -65,7 +61,7 @@ const trnsIds = computed(() => {
             :isShowBaseRate="false"
           )
 
-  .statItemChild__trns(
+  div(
     v-if="isShowInside"
     @click.stop=""
   )
@@ -76,28 +72,7 @@ const trnsIds = computed(() => {
     )
 </template>
 
-<style lang="stylus">
-// TODO: style
-.statItemChild
-  .trnItem._stat
-    padding-right $m5
-    padding-left $m6
-
-  &__icon
-    .icon
-      width 36px !important
-      height 36px !important
-      background var(--c-bg-4)
-
-      .icon__image
-        font-size 22px
-</style>
-
 <style lang="stylus" scoped>
-.ins2
-  position relative
-  background var(--c-item2-bg-hover)
-
 .ins
   position relative
   background var(--c-item2-bg-hover)

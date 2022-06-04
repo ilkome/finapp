@@ -3,6 +3,7 @@ export default {
     date: 'Дата',
     open: 'Открыть',
     all: 'Все',
+    in: 'в',
   },
 
   analytics: {
@@ -10,8 +11,6 @@ export default {
   },
 
   appName: 'Финапка',
-
-  for: 'за',
 
   locale: {
     toggle: 'Сменить язык',
@@ -22,11 +21,10 @@ export default {
     change: 'Сменить цвет оформления',
   },
 
-  backTo: 'Назад к ',
   close: 'Закрыть',
 
   transfer: {
-    titleMany: 'Переводы',
+    titleMoney: 'Переводы',
   },
 
   trnForm: {

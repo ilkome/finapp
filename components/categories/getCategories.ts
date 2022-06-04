@@ -1,7 +1,7 @@
 import type { CategoryID, CategoryItem } from '~/components/categories/types'
 
 // TODO: need a proper name, maybe getTransactibleCategoriesIds
-export function getCategoriesIds(
+export function getTransactibleCategoriesIds(
   catsIds: CategoryID[],
   categoriesItems: Record<CategoryID, CategoryItem>,
 ): CategoryID[] {
@@ -15,4 +15,14 @@ export function getTransferCategoriesIds(items: Record<CategoryID, CategoryItem>
     .filter(id => names.includes(items[id].name.toLowerCase()))
 
   return [...categoriesIdsByName, 'transfer']
+}
+
+export function getParentCategory(
+  items: Record<CategoryID, CategoryItem>,
+  parentId: CategoryID | 0,
+): CategoryItem | false {
+  if (parentId === 0)
+    return false
+
+  return items[parentId]
 }

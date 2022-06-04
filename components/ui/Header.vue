@@ -8,6 +8,6 @@
 )
   slot
 
-  .flex.gap-2.py-1.pr-0
+  .flex.gap-2.py-1.pr-0(v-if="$slots.actions")
     slot(name="actions")
 </template>

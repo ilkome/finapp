@@ -1,4 +1,4 @@
-import { getCategoriesIds } from '~/components/categories/getCategories'
+import { getTransactibleCategoriesIds } from '~/components/categories/getCategories'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 export default function useTrns() {
@@ -11,7 +11,7 @@ export default function useTrns() {
 
     // TODO: move it to a separate function getFilterParams
     const categoriesIds = storeFilter.value.catsIds.length > 0
-      ? getCategoriesIds(storeFilter.value.catsIds, categoriesItems.value)
+      ? getTransactibleCategoriesIds(storeFilter.value.catsIds, categoriesItems.value)
       : null
     const walletsIds = storeFilter.value.walletsIds.length > 0
       ? storeFilter.value.walletsIds

@@ -26,8 +26,7 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.cursor-context-menu.space-x-4.flex.text-neutral-500(
-  class="dark_text-neutral-400 hocus_bg-neutral-100 dark_hocus_bg-neutral-800"
+.cursor-context-menu.space-x-4.flex.text-neutral-500.dark_text-neutral-400.hocus_bg-neutral-100.dark_hocus_bg-neutral-800(
   @click="onOpenDetails"
 )
   .truncate.shrink-0.text-xs.leading-none(
@@ -46,11 +45,11 @@ export default defineComponent({
         //- Transfer info
         .text-sm(v-if="trnItem.type === 2")
           .space-x-1.items-center.flex
-            .text-neutral-600(class="dark_text-neutral-500") {{ $t('trnForm.transfer.from') }}:
-            .text-neutral-500(class="dark_text-neutral-400") {{ trnItem.walletFrom.name }}
+            .text-neutral-600.dark_text-neutral-500 {{ $t('trnForm.transfer.from') }}:
+            .text-neutral-500.dark_text-neutral-400 {{ trnItem.walletFrom.name }}
           .space-x-1.items-center.flex
-            .text-neutral-600(class="dark_text-neutral-500") {{ $t('trnForm.transfer.to') }}:
-            .text-neutral-500(class="dark_text-neutral-400") {{ trnItem.walletTo.name }}
+            .text-neutral-600.dark_text-neutral-500 {{ $t('trnForm.transfer.to') }}:
+            .text-neutral-500.dark_text-neutral-400 {{ trnItem.walletTo.name }}
 
       //- Amount
       .cursor-pointer

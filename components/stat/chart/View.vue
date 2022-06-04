@@ -2,7 +2,7 @@
 import { Chart } from 'highcharts-vue'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { getTotal } from '~/components/amount/getTotal'
-import { getCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { formatAmount, getCurrencySymbol } from '~/components/amount/formatAmount'
 import useFilter from '~/components/filter/useFilter'
 import useChart from '~/components/chart/useChart'
@@ -113,7 +113,7 @@ export default defineComponent({
 
         // TODO: move it to a separate function getFilterParams
         const categoriesIds = storeFilter.catsIds.length > 0
-          ? getCategoriesIds(storeFilter.catsIds, categoriesItems)
+          ? getTransactibleCategoriesIds(storeFilter.catsIds, categoriesItems)
           : null
         const walletsIds = storeFilter.walletsIds.length > 0
           ? storeFilter.walletsIds

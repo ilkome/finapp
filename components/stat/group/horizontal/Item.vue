@@ -3,6 +3,7 @@ import type { CategoryID, CategoryItem } from '~/components/categories/types'
 import type { TrnType } from '~/components/trns/types'
 import useFilter from '~/components/filter/useFilter'
 import useStatPage from '~/components/stat/useStatPage'
+import { getWidthPercent } from '~/components/stat/helpers'
 
 const props = defineProps<{
   biggest: number
@@ -17,28 +18,27 @@ const { statPage } = useStatPage()
 const { setFilterCatsId } = useFilter()
 const isShowInside = ref(false)
 
-const isCategoryHasChildren = computed(() =>
-  $store.getters['categories/isCategoryHasChildren'](props.categoryId))
-
 const styles = computed(() => ({
-  width: `${Math.abs(props.total) / Math.abs(props.biggest) * 100}%`,
+  width: getWidthPercent(props.total, props.biggest),
   background: props.category.color,
 }))
 
-function toggleShowInside() {
-  isShowInside.value = !isShowInside.value
-}
+// TODO: same HorizontalItem, HorizontalItemCatItem
+const isCategoryHasChildren = computed(() =>
+  $store.getters['categories/isCategoryHasChildren'](props.categoryId))
 
+// TODO: same HorizontalItem, HorizontalItemCatItem
+const toggleShowInside = () => isShowInside.value = !isShowInside.value
+
+// TODO: same HorizontalItem, HorizontalItemCatItem
 const trnsIds = computed(() => {
   if (isCategoryHasChildren.value)
     return []
 
   const trnsItems = $store.state.trns.items
-  const trnsIds = statPage.current.trnsIds
+  return statPage.current.trnsIds
     .filter(id => trnsItems[id].type === props.type && trnsItems[id].categoryId === props.categoryId)
     .sort((a, b) => trnsItems[b].date - trnsItems[a].date)
-
-  return trnsIds
 })
 </script>
 
@@ -58,8 +58,8 @@ const trnsIds = computed(() => {
 
     .grow
       .space-x-3.flex
-        .overflow-hidden.truncate.grow.space-x-2.flex.items-baseline.text-neutral-700(class="dark_text-neutral-400")
-          .overflow-hidden.text-sm {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
+        .overflow-hidden.truncate.grow.space-x-2.flex.items-baseline.text-neutral-700.dark_text-neutral-400.text-sm
+          | {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
 
         .statItem__amount.text-skin-item-base
           Amount(
@@ -71,7 +71,7 @@ const trnsIds = computed(() => {
       .pt-1.statItem__graph.mt-1: .statItem__graph__in(:style="styles")
 
   //- Inside
-  .overflow-hidden.ins2.rounded-b-md.border.border-t-0(
+  .overflow-hidden.bg-skin-item-main-bg.border.border-t-0.rounded-b-md(
     v-if="isShowInside"
     class="mt-[-1px] dark_border-neutral-800"
     @click.stop=""
@@ -92,44 +92,13 @@ const trnsIds = computed(() => {
         )
 </template>
 
-<style lang="stylus">
-.statItem
-  &__icon
-    .icon
-      width 36px !important
-      height 36px !important
-      background var(--c-bg-4)
-
-      .icon__image
-        font-size 22px
-
-  .trnItem._stat
-    padding-right $m6
-    padding-left $m6
-</style>
-
 <style lang="stylus" scoped>
-.ins2
-  position relative
-  background var(--c-item2-bg-hover)
-
-.ins
-  position relative
-
 .statItem
   &__graph
     &__in
       height 4px
       min-width 2px
       border-radius 3px
-
-  &__name
-    overflow hidden
-    align-self center
-    color var(--c-font-4)
-    font-size 14px
-    white-space nowrap
-    text-overflow ellipsis
 
   &__icon
     width 32px

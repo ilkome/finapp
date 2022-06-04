@@ -88,7 +88,7 @@ div
       UiTabsItem(
         :isActive="filterTrnsType === 2"
         @click="setFilterTrnsType(2)"
-      ) {{ $t('transfer.titleMany') }}
+      ) {{ $t('transfer.titleMoney') }}
 
   //- Nothing
   .py-6.text-center(v-if="trnsCount === 0")

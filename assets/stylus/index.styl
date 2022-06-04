@@ -8,3 +8,10 @@
 html
   --c-income-opacity     rgba(44, 173, 34, .5)
   --c-expense-opacity    rgba(249, 33, 52, .5)
+
+
+.firefoxBackdropFix
+  @supports (not (-webkit-backdrop-filter: none)) and (not (backdrop-filter: none))
+    background theme('colors.dark3') !important
+    /.light &
+      background theme('colors.white') !important

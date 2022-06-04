@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import useFilter from '~/components/filter/useFilter'
 import { getTrnsIds } from '~/components/trns/getTrns'
+import useFilter from '~/components/filter/useFilter'
 
 const { $store } = useNuxtApp()
 const { setFilterCatsId } = useFilter()
@@ -14,10 +14,12 @@ if (!category.value)
   router.replace('/categories')
 
 const trnsItems = computed(() => $store.state.trns.items)
-const backLink = computed(() => category.value?.parentId ? `/categories/${category.value.parentId}` : '/categories')
+const backLink = computed(() => category.value?.parentId
+  ? `/categories/${category.value.parentId}`
+  : '/categories')
 
-const categoryChildIds = computed(() => category.value.childIds
-  ?.sort((a, b) => $store.state.categories.items[a].name.localeCompare($store.state.categories.items[b].name)))
+const categoryChildIds = computed(() => category.value.childIds?.sort((a, b) =>
+  $store.state.categories.items[a].name.localeCompare($store.state.categories.items[b].name)))
 
 const trnsIds = computed(() =>
   getTrnsIds({
@@ -34,9 +36,7 @@ function handleSetFilterCategory() {
   $store.dispatch('ui/setActiveTabStat', 'details')
 }
 
-function handleEditClick() {
-  router.push(`/categories/${categoryId.value}/edit`)
-}
+const onClickEdit = () => router.push(`/categories/${categoryId.value}/edit`)
 </script>
 
 <template lang="pug">
@@ -59,7 +59,7 @@ UiPage(v-if="category")
               div(:class="category.icon")
 
     template(#actions v-if="categoryId !== 'transfer'")
-      UiHeaderLink(@click="handleEditClick")
+      UiHeaderLink(@click="onClickEdit")
         .mdi.mdi-pencil-outline.group-hover_text-white.text-xl
       UiHeaderLink(@click="$router.push('/categories/new')")
         UiIconAdd.group-hover_text-white.w-6.h-6

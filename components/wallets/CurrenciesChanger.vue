@@ -3,9 +3,7 @@ import useWallets from '~/components/wallets/useWallets'
 const { walletsCurrencies } = useWallets()
 const { $store } = useNuxtApp()
 
-function onSelect(value) {
-  $store.dispatch('currencies/changeBaseCurrency', value)
-}
+const onSelect = value => $store.dispatch('currencies/changeBaseCurrency', value)
 </script>
 
 <template lang="pug">

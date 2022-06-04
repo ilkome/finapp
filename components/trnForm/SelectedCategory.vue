@@ -1,18 +1,7 @@
-<script>
-export default {
-  // TODO: add check for valid category
-
-  computed: {
-    category() {
-      const categoryId = this.$store.state.trnForm.values.categoryId
-      return this.$store.state.categories.items[categoryId]
-    },
-
-    parentCategory() {
-      return this.$store.state.categories.items[this.category.parentId]
-    },
-  },
-}
+<script setup lang="ts">
+const { $store } = useNuxtApp()
+const category = computed(() => $store.state.categories.items[$store.state.trnForm.values.categoryId])
+const parentCategory = computed(() => $store.state.categories.items[category.value.parentId])
 </script>
 
 <template lang="pug">
@@ -25,9 +14,8 @@ export default {
   ): div(:class="category.icon")
 
   .grow.truncate
-    .text-xs.text-skin-item-base-down(
+    .text-xs.text-skin-item-base-down.dark_text-neutral-400(
       v-if="parentCategory"
-      class="dark_text-neutral-400"
     ) {{ parentCategory.name }}
 
     .leading-none.text-sm.text-neutral-700.dark_text-neutral-300 {{ category.name }}

@@ -6,7 +6,7 @@ import useTrn from '~/components/trns/item/useTrn'
 
 const props = defineProps<{
   trnId: TrnID
-  slider: any
+  slider?: any
 }>()
 const emit = defineEmits(['onClickEdit'])
 
@@ -63,10 +63,10 @@ const actions = {
 
   .grow
     .items-center.flex
-      .grow.text-neutral-500(class="dark_text-neutral-500")
+      .grow.text-neutral-500.dark_text-neutral-500
         //- Category
         .pb-1.space-x-2.items-baseline.flex.flex-wrap
-          .text-sm.text-neutral-700(class="dark_text-neutral-300") {{ trnItem.category.name }}
+          .text-sm.text-neutral-700.dark_text-neutral-300 {{ trnItem.category.name }}
 
           .text-xs.space-x-2.items-baseline.flex(v-if="trnItem.category.parentId")
             div •
@@ -84,7 +84,7 @@ const actions = {
           div
             .space-x-1.items-center.flex
               div {{ $t('trnForm.transfer.from') }}:
-              .text-neutral-500(class="dark_text-neutral-400") {{ trnItem.expenseWallet.name }}
+              .text-neutral-500.dark_text-neutral-400 {{ trnItem.expenseWallet.name }}
 
             .text-base(
               @click="actions.onOpenEdit"
@@ -93,7 +93,6 @@ const actions = {
                 :amount="trnItem.expenseAmount || trnItem.amount"
                 :currencyCode="trnItem.expenseWallet.currency"
                 :type="0"
-                verti
                 colorize="expense"
               )
 
@@ -101,7 +100,7 @@ const actions = {
           div
             .space-x-1.items-center.flex
               div {{ $t('trnForm.transfer.to') }}:
-              .text-neutral-500(class="dark_text-neutral-400") {{ trnItem.incomeWallet.name }}
+              .text-neutral-500.dark_text-neutral-400 {{ trnItem.incomeWallet.name }}
 
             .text-base(
               @click="actions.onOpenEdit"

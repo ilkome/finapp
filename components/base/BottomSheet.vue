@@ -190,7 +190,7 @@ export default defineComponent({
         return
       }
 
-      // drug on pc only by nadler drug on mobile everywhere
+      // drug on pc only by handler drug on mobile everywhere
       // if (isDragging.value && ((!isHandler.value && event.type.includes('touch') || isHandler.value)))
       //   clientY.value = getClientY(event)
 

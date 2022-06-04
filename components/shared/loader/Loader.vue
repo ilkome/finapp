@@ -7,8 +7,8 @@ export default {
 .loader
   .loader__wrap
     SharedAppName
-    .loader__spiner
-      SharedSpiner(theme="dark" size="lg")
+    .loader__spinier
+      SharedSpinier(theme="dark" size="lg")
 </template>
 
 <style lang="stylus" scoped>
@@ -32,7 +32,7 @@ export default {
     flex-flow column nowrap
     align-items center
 
-  &__spiner
+  &__spinier
     height 48px
     margin-top 40px
 </style>

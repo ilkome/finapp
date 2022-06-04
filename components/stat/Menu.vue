@@ -32,11 +32,3 @@ function onClickStatMenu(tabName) {
       @click="onClickStatMenu(item.id)"
     ) {{ item.name }}
 </template>
-
-<style lang="stylus">
-.firefoxBackdropFix
-  @supports (not (-webkit-backdrop-filter: none)) and (not (backdrop-filter: none))
-    background theme('colors.dark3') !important
-    /.light &
-      background theme('colors.white') !important
-</style>

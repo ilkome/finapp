@@ -1,13 +1,6 @@
-<script>
-export default {
-  name: 'SharedCopyright',
-}
-</script>
-
 <template lang="pug">
-a.copyright.py-3.px-5.rounded-md(
+a.copyright.py-3.px-5.rounded-md.hocus_bg-white2.dark_hocus_bg-custom1(
   href="https://ilko.me"
-  class="hocus_bg-white2 dark_hocus_bg-custom1"
 )
   | {{ $t('app.madeBy.text') }}
   .copyright__heart.mdi.mdi-heart
@@ -15,6 +8,7 @@ a.copyright.py-3.px-5.rounded-md(
 </template>
 
 <style lang="stylus" scoped>
+// TODO: style
 @import '~assets/stylus/variables/animations'
 @import '~assets/stylus/variables/fonts'
 @import '~assets/stylus/variables/margins'

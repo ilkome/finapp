@@ -4,7 +4,7 @@ import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
 
 const props = defineProps<{
-  typeText: String
+  typeText: string
 }>()
 
 const { statPage } = useStatPage()

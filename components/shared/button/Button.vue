@@ -1,4 +1,5 @@
 <script lang="ts">
+// TODO: setup
 export default defineComponent({
   props: {
     background: { type: String, default: null },
@@ -44,6 +45,7 @@ export default defineComponent({
 </template>
 
 <style lang="stylus">
+// TODO: style
 @import '~assets/stylus/variables/animations'
 @import '~assets/stylus/variables/media'
 

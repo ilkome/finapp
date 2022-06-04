@@ -1,4 +1,5 @@
 <script lang="ts">
+// TODO: setup
 import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
 import { auth } from '~/services/firebase/api'
 
@@ -69,8 +70,7 @@ export default defineComponent({
     .flex.gap-3.top-3.right-5(
       class="lg_top-7 lg_right-7"
     )
-      .linkItem.py-2.px-3.rounded-md(
-        class="hocus_bg-white2 dark_hocus_bg-custom1"
+      .linkItem.py-2.px-3.rounded-md.hocus_bg-white2.dark_hocus_bg-custom1(
         @click="$store.dispatch('ui/changeTheme')"
       ) {{ $t('changeTheme') }}
 
@@ -84,7 +84,7 @@ export default defineComponent({
       @click.prevent="signInWithGoogle"
     )
       transition(name="fadeIn")
-        .loginButton__spiner(v-if="isLoading"): SharedSpiner
+        .loginButton__spinier(v-if="isLoading"): SharedSpinier
       .loginButton__text.text-white {{ $t('loginWithGoogle') }}
 </template>
 
@@ -138,7 +138,7 @@ export default defineComponent({
     ^[0]._loading &
       opacity 0
 
-  &__spiner
+  &__spinier
     position absolute
     top 0
     left 0

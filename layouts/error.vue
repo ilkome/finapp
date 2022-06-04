@@ -1,6 +1,5 @@
 <script lang="ts">
 export default defineComponent({
-  // eslint-disable-next-line vue/require-prop-types
   props: ['error'],
 
   fetch() {

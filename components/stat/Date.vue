@@ -1,8 +1,4 @@
 <script setup lang="ts">
-defineProps<{
-  dateClasses?: null
-  wrapClasses?: null
-}>()
 const isShowDateSelector = ref(false)
 </script>
 
@@ -11,11 +7,8 @@ const isShowDateSelector = ref(false)
   //- Date
   .cursor-pointer.px-3.flex.items-center.text-lg(
     @click="isShowDateSelector = true"
-    class="wrapClasses"
   )
-    .py-3.font-nunito.text-neutral-800.dark_text-white.text-xl.lg_text-2xl.leading-none.font-semibold(
-      :class="dateClasses"
-    )
+    .py-3.font-nunito.text-neutral-800.dark_text-white.text-xl.lg_text-2xl.leading-none.font-semibold
       SharedDate(
         :date="$store.state.filter.date"
         :period="$store.state.filter.period"
