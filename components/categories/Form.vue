@@ -19,7 +19,8 @@ const editCategoryId = categoryId.value ?? generateId()
 
 const activeTab = ref('data')
 const isUpdateChildCategoriesColor = ref(true)
-const isAllowChangeParent = computed(() => getChildCategoriesIds(categoryId.value).length === 0)
+const isAllowChangeParent = computed(() =>
+  $store.getters['categories/getChildCategoriesIds'](categoryId.value).length === 0)
 
 const tabs = computed(() => [{
   id: 'data',
@@ -47,22 +48,6 @@ function findCategoryIconByColor(color) {
   return $store.getters['categories/categoriesRootIds']
     ?.find(id => categoriesItems[id]?.color === color)
     ?.icon
-}
-
-/**
- * Get child categories ids
- */
-function getChildCategoriesIds(categoryId: CategoryID) {
-  if (!categoryId)
-    return []
-
-  const categoriesItems: Record<CategoryID, CategoryItem> = $store.state.categories.items
-  const category: CategoryItem = categoriesItems[categoryId]
-
-  if (category?.parentId === 0)
-    return Object.keys(categoriesItems).filter(id => categoriesItems[id]?.parentId === categoryId)
-
-  return []
 }
 
 /**
@@ -122,7 +107,7 @@ async function onSave() {
     return
 
   const uid = $store.state.user.user.uid
-  const categoryChildIds = getChildCategoriesIds(editCategoryId)
+  const categoryChildIds = $store.getters['categories/getChildCategoriesIds'](editCategoryId)
   const categoryValues = getPreparedFormData(categoryForm.value, categoryChildIds)
 
   // Update category
@@ -169,21 +154,21 @@ div
         )
 
       LazySharedContextMenuItem(
-        v-if="getChildCategoriesIds(categoryId).length > 0 "
+        v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length > 0 "
         :checkboxValue="isUpdateChildCategoriesColor"
         :title="$t('categories.form.childColor')"
         showCheckbox
         @onClick="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
       )
       LazySharedContextMenuItem(
-        v-if="getChildCategoriesIds(categoryId).length === 0"
+        v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0"
         :checkboxValue="categoryForm.showInLastUsed"
         :title="$t('categories.form.lastUsed')"
         showCheckbox
         @onClick="categoryForm.showInLastUsed = !categoryForm.showInLastUsed"
       )
       SharedContextMenuItem(
-        v-if="getChildCategoriesIds(categoryId).length === 0"
+        v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0"
         :checkboxValue="categoryForm.showInQuickSelector"
         :title="$t('categories.form.quickSelector')"
         showCheckbox

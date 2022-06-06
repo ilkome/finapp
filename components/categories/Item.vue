@@ -1,49 +1,36 @@
-<script>
-// TODO: setup
+<script setup lang="ts">
+import type { CategoryID, CategoryItem } from '~/components/categories/types'
 import useFilter from '~/components/filter/useFilter'
 
-export default defineComponent({
-  props: {
-    activeItemId: { type: String || 0, default: null },
-    category: { type: Object, required: true },
-    id: { type: String, required: true },
-    isHideParentCategory: { type: Boolean, default: false },
-    slider: { type: Object, required: true },
-  },
+const props = defineProps<{
+  activeItemId: string | 0
+  category: CategoryItem
+  id: CategoryID
+  isHideParentCategory?: boolean
+  slider: any
+}>()
+const emit = defineEmits(['onClick'])
 
-  setup(props, { listeners }) {
-    const { $store } = useNuxtApp()
-    const { setFilterCatsId } = useFilter()
+const { $store } = useNuxtApp()
+const { setFilterCatsId } = useFilter()
+const childCategoriesIds = computed(() =>
+  $store.getters['categories/getChildCategoriesIds'](props.id))
 
-    const childCategoriesIds = computed(() => $store.getters['categories/getChildCategoriesIds'](props.id))
-    const parentCategory = computed(() => $store.state.categories.items[props.category?.parentId])
+const parentCategory = computed(() => $store.state.categories.items[props.category?.parentId])
+const onClickItem = () => emit('onClick', props.id)
 
-    function onClickItem() {
-      if (listeners.onClick)
-        listeners.onClick(props.id)
-    }
+function onClickIcon() {
+  // Prevent filter when using in TrnForm
+  if (props.slider) {
+    onClickItem()
+    return
+  }
 
-    function onClickIcon() {
-      // Prevent filter when using in TrnForm
-      if (props.slider) {
-        onClickItem()
-        return
-      }
-
-      // TODO: useFilter
-      setFilterCatsId(props.id)
-      $store.commit('filter/setFilterDateNow')
-      $store.dispatch('ui/setActiveTabStat', 'details')
-    }
-
-    return {
-      childCategoriesIds,
-      parentCategory,
-      onClickItem,
-      onClickIcon,
-    }
-  },
-})
+  // TODO: useFilter
+  setFilterCatsId(props.id)
+  $store.commit('filter/setFilterDateNow')
+  $store.dispatch('ui/setActiveTabStat', 'details')
+}
 </script>
 
 <template lang="pug">
