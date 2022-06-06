@@ -1,26 +1,11 @@
 <script setup lang="ts">
-import { allColors } from '~/assets/js/colors'
-import { random } from '~/assets/js/emo'
-import type { WalletForm } from '~/components/wallets/types'
+import { getPreparedFormData } from '~/components/wallets/getForm'
 
 const router = useRouter()
+const walletForm = ref(getPreparedFormData())
 
-const walletForm = ref<WalletForm>({
-  color: random(random(allColors)),
-  countTotal: true,
-  currency: 'USD',
-  isCredit: false,
-  name: null,
-  order: 1,
-})
-
-function updateValue(id, value) {
-  walletForm.value[id] = value
-}
-
-function afterSave() {
-  router.push('/wallets/')
-}
+const updateValue = (id, value) => walletForm.value[id] = value
+const afterSave = () => router.replace('/wallets')
 </script>
 
 <script lang="ts">

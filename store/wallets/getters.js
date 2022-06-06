@@ -2,12 +2,9 @@ import { getTrnsIds } from '~/components/trns/getTrns'
 import { getTotal } from '~/components/amount/getTotal'
 
 export default {
-  hasWallets(state, getters, rootState) {
-    if (rootState.wallets.items) {
-      if (Object.keys(rootState.wallets.items).length > 0)
-        return true
-    }
-    return false
+  hasWallets(_state, _getters, rootState) {
+    if (Object.keys(rootState.wallets.items).length > 0)
+      return true
   },
 
   /**

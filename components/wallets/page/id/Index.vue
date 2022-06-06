@@ -74,6 +74,8 @@ UiPage(v-if="wallet")
       :currencyCode="wallet.currency"
     )
 
+  .mb-6.px-2.text-sm.text-skin-item-base-down(v-if="wallet.description") {{ wallet.description }}
+
   .mb-6
     .px-2.flex
       .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(

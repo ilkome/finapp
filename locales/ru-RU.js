@@ -142,6 +142,10 @@ export default {
         error: 'Напишите имя кошелька',
         exist: 'Кошелек с таким именем уже существует',
       },
+      description: {
+        label: 'Описание кошелька (не обязательно)',
+        placeholder: 'Напишите...',
+      },
       colors: {
         label: 'Цвет',
         placeholder: 'Выберите цвет',

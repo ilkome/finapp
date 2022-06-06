@@ -1,11 +1,13 @@
 export default {
   setWallets(state, items) {
-    const freezedItems = {}
-    if (items) {
-      for (const itemId of Object.keys(items))
-        freezedItems[itemId] = Object.freeze(items[itemId])
+    if (!items) {
+      state.items = {}
+      return
     }
 
-    state.items = freezedItems
+    state.items = Object.keys(items).reduce((acc, id) => {
+      acc[id] = Object.freeze(items[id])
+      return acc
+    }, {})
   },
 }

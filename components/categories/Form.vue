@@ -3,6 +3,7 @@ import generateId from '~/utils/id'
 import icons from '~/assets/js/icons'
 import type { CategoryForm, CategoryID, CategoryItem } from '~/components/categories/types'
 import { allColors } from '~/assets/js/colors'
+import { getPreparedFormData } from '~/components/categories/getForm'
 import { saveData } from '~/services/firebase/api'
 
 const props = defineProps<{
@@ -18,7 +19,7 @@ const editCategoryId = categoryId.value ?? generateId()
 
 const activeTab = ref('data')
 const isUpdateChildCategoriesColor = ref(true)
-const isAllowChangeParent = computed(() => !getChildCategoriesIds(categoryId.value))
+const isAllowChangeParent = computed(() => getChildCategoriesIds(categoryId.value).length === 0)
 
 const tabs = computed(() => [{
   id: 'data',
@@ -52,15 +53,16 @@ function findCategoryIconByColor(color) {
  * Get child categories ids
  */
 function getChildCategoriesIds(categoryId: CategoryID) {
-  // TODO: always return array
   if (!categoryId)
-    return
+    return []
 
-  const category: CategoryItem = $store.state.categories.items[categoryId]
   const categoriesItems: Record<CategoryID, CategoryItem> = $store.state.categories.items
+  const category: CategoryItem = categoriesItems[categoryId]
 
   if (category?.parentId === 0)
     return Object.keys(categoriesItems).filter(id => categoriesItems[id]?.parentId === categoryId)
+
+  return []
 }
 
 /**
@@ -112,19 +114,6 @@ function validate({ values, categoriesItems }) {
   return true
 }
 
-function prepareForm({ values, categoryChildIds }): CategoryForm {
-  return {
-    color: values.color,
-    icon: values.icon,
-    name: values.name,
-    order: values.order,
-    parentId: values.parentId,
-    showInLastUsed: categoryChildIds ? false : values.showInLastUsed,
-    showInQuickSelector: categoryChildIds ? false : values.showInQuickSelector,
-    showStat: categoryChildIds ? false : values.showStat,
-  }
-}
-
 async function onSave() {
   const categoriesItems = $store.state.categories.items
 
@@ -134,7 +123,7 @@ async function onSave() {
 
   const uid = $store.state.user.user.uid
   const categoryChildIds = getChildCategoriesIds(editCategoryId)
-  const categoryValues = prepareForm({ values: categoryForm.value, categoryChildIds })
+  const categoryValues = getPreparedFormData(categoryForm.value, categoryChildIds)
 
   // Update category
   await saveData(`users/${uid}/categories/${editCategoryId}`, categoryValues)
@@ -180,21 +169,21 @@ div
         )
 
       LazySharedContextMenuItem(
-        v-if="getChildCategoriesIds(categoryId)"
+        v-if="getChildCategoriesIds(categoryId).length > 0 "
         :checkboxValue="isUpdateChildCategoriesColor"
         :title="$t('categories.form.childColor')"
         showCheckbox
         @onClick="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
       )
       LazySharedContextMenuItem(
-        v-if="!getChildCategoriesIds(categoryId)"
+        v-if="getChildCategoriesIds(categoryId).length === 0"
         :checkboxValue="categoryForm.showInLastUsed"
         :title="$t('categories.form.lastUsed')"
         showCheckbox
         @onClick="categoryForm.showInLastUsed = !categoryForm.showInLastUsed"
       )
       SharedContextMenuItem(
-        v-if="!getChildCategoriesIds(categoryId)"
+        v-if="getChildCategoriesIds(categoryId).length === 0"
         :checkboxValue="categoryForm.showInQuickSelector"
         :title="$t('categories.form.quickSelector')"
         showCheckbox
@@ -238,6 +227,7 @@ div
     //- Parent
     //---------------------------------
     template(v-if="activeTab === 'parent'")
+      pre {{ isAllowChangeParent }}
       template(v-if="!isAllowChangeParent")
         //- TODO: translate
         .p-4 You can not change parent category because edited category has childs categories.

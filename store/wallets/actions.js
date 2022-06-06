@@ -1,5 +1,5 @@
 import localforage from 'localforage'
-import { getDataAndWatch, saveData, unsubscribeData, updateData } from '~/services/firebase/api'
+import { getDataAndWatch, unsubscribeData, updateData } from '~/services/firebase/api'
 
 export default {
   initWallets({ dispatch, rootState }) {
@@ -12,25 +12,6 @@ export default {
   setWallets({ commit }, items) {
     commit('setWallets', items)
     localforage.setItem('finapp.wallets', items)
-  },
-
-  addWallet({ dispatch, rootState, getters }, { id, values }) {
-    const uid = rootState.user.user.uid
-
-    const formattedValues = {
-      color: values.color,
-      countTotal: values.countTotal,
-      currency: values.currency,
-      isCredit: values.isCredit,
-      name: values.name,
-      order: parseInt(values.order) || 1,
-    }
-
-    // set default currency based on first created wallet
-    if (!getters.hasWallets)
-      dispatch('currencies/setBaseCurrency', values.currency, { root: true })
-
-    saveData(`users/${uid}/accounts/${id}`, formattedValues)
   },
 
   /**

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { allColors } from '~/assets/js/colors'
 import generateId from '~/utils/id'
 import type { WalletForm, WalletID } from '~/components/wallets/types'
+import { allColors } from '~/assets/js/colors'
+import { getPreparedFormData } from '~/components/wallets/getForm'
+import { saveData } from '~/services/firebase/api'
 
 const props = defineProps<{
   walletId?: WalletID
@@ -19,7 +21,7 @@ const activeTab = ref('data')
 /**
  * Validate
  */
-function validate({ values, wallets }) {
+function validate(values, wallets) {
   // name
   if (!values.name) {
     $notify({
@@ -38,6 +40,7 @@ function validate({ values, wallets }) {
     return false
   }
 
+  // TODO: refactor
   for (const id in wallets) {
     if (wallets[id].name === values.name) {
       if (editWalletId) {
@@ -62,27 +65,21 @@ function validate({ values, wallets }) {
   return true
 }
 
-function prepareForm({ values }) {
-  return {
-    color: values.color,
-    countTotal: values.countTotal,
-    currency: values.currency,
-    isCredit: values.isCredit,
-    name: values.name,
-    order: values.order,
-  }
+async function saveWalletData(id, values) {
+  const uid = $store.state.user.user.uid
+
+  // Set default currency based on first created wallet
+  if (!$store.getters['wallets/hasWallets'])
+    $store.dispatch('currencies/setBaseCurrency', values.currency)
+
+  await saveData(`users/${uid}/accounts/${id}`, values)
 }
 
-function onSave() {
-  const wallets = $store.state.wallets.items
-
-  const isFormValid = validate({ values: walletForm.value, wallets })
-  if (!isFormValid)
+async function onSave() {
+  if (!validate(walletForm.value, $store.state.wallets.items))
     return
 
-  const walletsValues = prepareForm({ values: walletForm.value })
-  $store.dispatch('wallets/addWallet', { id: editWalletId, values: walletsValues })
-
+  await saveWalletData(editWalletId, getPreparedFormData(walletForm.value))
   emit('afterSave')
 }
 </script>
@@ -112,13 +109,22 @@ div(v-if="walletForm")
     //- Data
     //-----------------------------------
     template(v-if="activeTab === 'data'")
-      .mb-4
+      .mb-8
         .pb-2.text-skin-item-base-down.text-sm.leading-none {{ $t('wallets.form.name.label') }}
         input.w-full.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-skin-item-base.bg-skin-item-main-bg.border.border-solid.border-skin-item-main-hover.placeholder_text-skin-item-base-down.transition.ease-in-out.focus_text-skin-item-base-up.focus_bg-skin-item-main-hover.focus_border-blue3.focus_outline-none(
           :placeholder="$t('wallets.form.name.placeholder')"
           :value="walletForm.name"
           type="text"
           @input="event => emit('updateValue', 'name', event.target.value)"
+        )
+
+      .mb-6
+        .pb-2.text-skin-item-base-down.text-sm.leading-none {{ $t('wallets.form.description.label') }}
+        input.w-full.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-skin-item-base.bg-skin-item-main-bg.border.border-solid.border-skin-item-main-hover.placeholder_text-skin-item-base-down.transition.ease-in-out.focus_text-skin-item-base-up.focus_bg-skin-item-main-hover.focus_border-blue3.focus_outline-none(
+          :placeholder="$t('wallets.form.description.placeholder')"
+          :value="walletForm.description"
+          type="text"
+          @input="event => emit('updateValue', 'description', event.target.value)"
         )
 
       SharedContextMenuItem(

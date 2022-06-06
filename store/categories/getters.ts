@@ -62,7 +62,7 @@ export default {
     return state.items[categoryId]?.childIds || []
   },
 
-  lastUsedCategoriesIdsByDate(state, getters, rootState, rootGetters) {
+  recentCategoriesIds(state, getters, rootState, rootGetters) {
     if (!getters.hasCategories || !rootGetters['trns/hasTrns'])
       return []
 

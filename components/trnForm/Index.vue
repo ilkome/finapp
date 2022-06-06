@@ -269,8 +269,10 @@ function handleSubmitForm() {
                         )
 
           //- Favorite categories
-          .pb-7(v-if="$store.getters['categories/favoriteCategoriesIds'] && $store.getters['categories/favoriteCategoriesIds'].length > 0")
-            .subTitle.text-center.pb-2.text-xs {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
+          .pb-7(v-if="$store.getters['categories/favoriteCategoriesIds'].length > 0")
+            .subTitle.text-center.pb-2.text-xs
+              | {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
+
             .px-3
               CategoriesList(
                 v-if="sliderObj"
@@ -281,13 +283,15 @@ function handleSubmitForm() {
                 @onClick="onCategoryClick"
               )
 
-          //- Last used categories
-          .pb-7
-            .subTitle.text-center.pb-2.text-xs {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
+          //- Recent categories
+          .pb-7(v-if="$store.getters['categories/recentCategoriesIds'].length > 0")
+            .subTitle.text-center.pb-2.text-xs
+              | {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
+
             .px-3
               CategoriesList(
                 v-if="sliderObj"
-                :ids="$store.getters['categories/lastUsedCategoriesIdsByDate']"
+                :ids="$store.getters['categories/recentCategoriesIds']"
                 :activeItemId="$store.state.trnForm.values.categoryId"
                 :slider="sliderObj"
                 class="!gap-x-1"

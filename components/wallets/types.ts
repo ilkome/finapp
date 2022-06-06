@@ -17,4 +17,5 @@ export interface WalletForm {
   isCredit: boolean
   name: string
   order: number
+  description?: string
 }

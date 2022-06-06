@@ -21,4 +21,5 @@ export interface CategoryForm {
   showInLastUsed: boolean
   showInQuickSelector: boolean
   showStat: boolean
+  childIds: string[] | false
 }

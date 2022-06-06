@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { allColors } from '~/assets/js/colors'
-import { random } from '~/assets/js/emo'
-import type { WalletForm } from '~/components/wallets/types'
+import { getPreparedFormData } from '~/components/wallets/getForm'
 
 const { $store } = useNuxtApp()
 const route = useRoute()
@@ -9,23 +7,10 @@ const router = useRouter()
 
 const walletId = computed(() => route.params.id)
 const wallet = computed(() => $store.state.wallets.items[walletId.value])
+const walletForm = ref(getPreparedFormData(wallet.value))
 
-const walletForm = ref<WalletForm>({
-  color: wallet.value?.color || random(allColors),
-  countTotal: wallet.value?.countTotal,
-  currency: wallet.value?.currency || 'RUB',
-  isCredit: wallet.value?.isCredit,
-  name: wallet.value?.name || null,
-  order: wallet.value?.order || 1,
-})
-
-function updateValue(id, value) {
-  walletForm.value[id] = value
-}
-
-function afterSave() {
-  router.push(`/wallets/${walletId.value}`)
-}
+const updateValue = (id, value) => walletForm.value[id] = value
+const afterSave = () => router.push(`/wallets/${walletId.value}`)
 </script>
 
 <script lang="ts">

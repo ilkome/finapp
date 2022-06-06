@@ -141,6 +141,10 @@ export default {
         error: 'Write wallet name',
         exist: 'Wallet with same name is exist',
       },
+      description: {
+        label: 'Wallet description (not required)',
+        placeholder: 'Write...',
+      },
       colors: {
         label: 'Color',
         placeholder: 'Select color',
