@@ -9,7 +9,8 @@ const { $store } = useNuxtApp()
 // Filter
 const { filterPeriodNameAllReplacedToYear } = useFilter()
 
-const showedPeriods = computed(() => $store.state.chart.periods[filterPeriodNameAllReplacedToYear.value].showedPeriods)
+const showedPeriods = computed(() =>
+  $store.state.chart.periods[filterPeriodNameAllReplacedToYear.value].showedPeriods)
 
 function saveChartsPeriodsToLocalStorage() {
   $store.dispatch('ui/saveUiView')
@@ -63,8 +64,6 @@ const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
       @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
     )
       | {{ periodItem.name }}
-      span.pl-1(v-if="periodItem.slug === filterPeriodNameAllReplacedToYear")
-        | {{ showedPeriods }}
 
     .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-skin-item-main-hover(
       :class="{ 'opacity-0 cursor-default pointer-events-none': isShowAdd }"

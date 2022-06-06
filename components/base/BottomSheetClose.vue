@@ -1,9 +1,3 @@
-<script>
-export default {
-  name: 'BaseBottomSheetClose',
-}
-</script>
-
 <template lang="pug">
 .handlerClose(@click="$emit('onClick')")
   svg(

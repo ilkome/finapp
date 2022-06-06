@@ -26,7 +26,7 @@ const list = computed(() => {
 .overflow-hidden.h-full.grid(
   class="grid-rows-[auto,1fr]"
 )
-  .pb-2.px-2
+  .px-2
     input.w-full.m-0.py-2.px-3.rounded-lg.text-base.font-normal.text-skin-item-base.bg-skin-item-main-bg.border.border-solid.border-skin-item-main-hover.placeholder_text-skin-item-base-down.transition.ease-in-out.focus_text-skin-item-base-up.focus_bg-skin-item-main-hover.focus_border-blue3.focus_outline-none(
       placeholder="Search..."
       v-model="searchInput"
