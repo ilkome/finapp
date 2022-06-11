@@ -251,6 +251,7 @@ export default {
     filter: {
       showTrnsWithDesc: 'Только с описанием',
     },
+    noTrns: 'Нет транзакций',
   },
 
   create: {

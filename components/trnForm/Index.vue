@@ -211,7 +211,7 @@ function handleSubmitForm() {
       //- Main
       .swiper-slide.getHeight
         .scroll.scrollerBlock(:style="{ maxHeight: `${$store.state.ui.height}px` }")
-          .subTitle.text-center.pt-5.pb-2.text-xs
+          .text-center.pt-2.text-sm.font-medium.text-xs
             template(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
             template(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.createTrn') }}
 
@@ -234,7 +234,9 @@ function handleSubmitForm() {
         .scroll.scrollerBlock
           //- Wallets
           .pt-5.pb-7
-            .subTitle.text-center.pb-2.text-xs {{ $t('wallets.title') }}
+            .px-3.pb-2.text-sm.font-medium(
+              @click="$store.commit('trnForm/showTrnFormModal', 'wallets')"
+            ) {{ $t('wallets.title') }}
 
             WalletsList(
               :limit="4"
@@ -270,8 +272,9 @@ function handleSubmitForm() {
 
           //- Favorite categories
           .pb-7(v-if="$store.getters['categories/favoriteCategoriesIds'].length > 0")
-            .subTitle.text-center.pb-2.text-xs
-              | {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
+            .px-3.pb-2.text-sm.font-medium(
+              @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
+            ) {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
 
             .px-3
               CategoriesList(
@@ -285,8 +288,9 @@ function handleSubmitForm() {
 
           //- Recent categories
           .pb-7(v-if="$store.getters['categories/recentCategoriesIds'].length > 0")
-            .subTitle.text-center.pb-2.text-xs
-              | {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
+            .px-3.pb-2.text-sm.font-medium(
+              @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
+            ) {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
 
             .px-3
               CategoriesList(
@@ -297,19 +301,6 @@ function handleSubmitForm() {
                 class="!gap-x-1"
                 @onClick="onCategoryClick"
               )
-
-          .pb-6.px-3.flex.justify-evenly.gap-6
-            //- Wallets
-            .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
-              class="basis-1/2 max-w-[280px]"
-              @click="$store.commit('trnForm/showTrnFormModal', 'wallets')"
-            ) {{ $t('wallets.title') }}
-
-            //- Categories
-            .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
-              class="basis-1/2 max-w-[280px]"
-              @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
-            ) {{ $t('categories.title') }}
 
   .trnForm__pagination
 
@@ -410,12 +401,6 @@ function handleSubmitForm() {
   padding 0 $m7
   padding-top $m4
   padding-bottom $m9
-
-.subTitle
-  color var(--c-font-4)
-  letter-spacing 0
-  font-weight 600
-  text-transform uppercase
 
 .scroll
   overflow hidden

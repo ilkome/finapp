@@ -93,7 +93,7 @@ div
   //- Nothing
   .py-6.text-center(v-if="trnsCount === 0")
     .text-7xl.mdi.mdi-palm-tree
-    .text-md No Transactions
+    .text-md {{ $t('trns.noTrns') }}
 
   //- List
   .pb-10

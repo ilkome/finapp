@@ -130,7 +130,6 @@ onDeactivated(async () => {
               StatSumGroup(:typeText="item.id")
 
               template(v-if="statPage.activeTab !== 'balance'")
-                StatGroupEmpty(:typeText="item.id")
                 StatGroupPie(:typeText="item.id")
                 StatGroupVertical(:typeText="item.id")
                 StatGroupRound(:typeText="item.id")

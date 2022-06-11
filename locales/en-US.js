@@ -212,7 +212,6 @@ export default {
     shortTitle: 'Stat',
     periods: 'Summary',
     balanceTitle: 'Balance',
-    empty: 'No stat for this period',
     emptyDesc: 'Change filter, period or add new transactions.',
     customize: {
       showHistory: 'Show history',
@@ -250,6 +249,7 @@ export default {
     filter: {
       showTrnsWithDesc: 'Only with description',
     },
+    noTrns: 'No transactions',
   },
 
   create: {

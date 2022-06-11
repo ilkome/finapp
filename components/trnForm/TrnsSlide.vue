@@ -4,9 +4,8 @@ import { getTrnsIds } from '~/components/trns/getTrns'
 const props = defineProps<{
   slider: object
 }>()
-const emit = defineEmits(['onClickEdit'])
 
-const { $store } = useNuxtApp()
+const { $store, nuxt2Context: { i18n } } = useNuxtApp()
 
 const filterBy = ref('wallet')
 
@@ -46,43 +45,39 @@ function changeFilter(value) {
 function onClickEdit() {
   props.slider.slideTo(1)
 }
+
+const tabs = computed(() => [{
+  id: 'wallets',
+  name: i18n.t('trnForm.filterWallet'),
+}, {
+  id: 'walletAndCategory',
+  name: i18n.t('trnForm.filterWalletAndCategory'),
+}, {
+  id: 'all',
+  name: i18n.t('trnForm.filterAll'),
+}])
 </script>
 
 <template lang="pug">
 .contentWrap
-  template(v-if="filteredTrnsIds.length === 0")
-    .contentWrap__box.trnsListScroll.scrollerBlock
-      .containerWrap No transactions
+  .contentWrap__box.trnsListScroll(
+    :class="{ 'grid items-center': filteredTrnsIds.length === 0 }"
+  )
+    .pt-5.px-3
+      TrnsListWithControl(
+        :trnsIds="filteredTrnsIds"
+        trnsClassNames=""
+        @onClickEdit="onClickEdit"
+      )
 
-  template(v-if="filteredTrnsIds.length > 0")
-    .contentWrap__box.trnsListScroll.scrollerBlock
-      .scrollBlock
-        .pt-5
-          .subTitle.text-center.pb-1.text-xs {{ $t('trns.history') }}
-
-        .px-3
-          TrnsListWithControl(
-            :trnsIds="filteredTrnsIds"
-            trnsClassNames=""
-            @onClickEdit="onClickEdit"
-          )
-
-    .pt-2.pb-6.px-3
+    .pt-2.pb-6.px-3(v-if="filteredTrnsIds.length > 0")
       UiTabs
         UiTabsItem(
-          :isActive="filterBy === 'wallet'"
-          @click="changeFilter('wallet')"
-        ) {{ $t('trnForm.filterWallet') }}
-
-        UiTabsItem(
-          :isActive="filterBy === 'walletAndCategory'"
-          @click="changeFilter('walletAndCategory')"
-        ) {{ $t('trnForm.filterWalletAndCategory') }}
-
-        UiTabsItem(
-          :isActive="filterBy === 'all'"
-          @click="changeFilter('all')"
-        ) {{ $t('trnForm.filterAll') }}
+          v-for="tab in tabs"
+          :key="tab.id"
+          :isActive="tab.id === filterBy"
+          @click="changeFilter(tab.id)"
+        ) {{ tab.name }}
 </template>
 
 <style lang="stylus" scoped>
@@ -109,10 +104,4 @@ function onClickEdit() {
     overflow hidden
     overflow-y auto
     scrollbar()
-
-.subTitle
-  color var(--c-font-4)
-  letter-spacing 0
-  font-weight 600
-  text-transform uppercase
 </style>

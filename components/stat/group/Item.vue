@@ -17,7 +17,6 @@ div
     StatViewConfig
 
   template(v-if="statPage.activeTab !== 'balance'")
-    StatGroupEmpty(:typeText="typeText")
     StatGroupPie(:typeText="typeText")
     StatGroupVertical(:typeText="typeText")
     StatGroupRound(:typeText="typeText")

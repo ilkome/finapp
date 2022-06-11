@@ -1,46 +1,30 @@
-<script lang="ts">
+<script setup lang="ts">
 import useCalculator from './useCalculator'
 import './long-press-event'
 
-export default {
-  name: 'TrnFormCalculator',
+const { $store } = useNuxtApp()
+const amountType = computed(() => $store.state.trnForm.values.amountType)
 
-  setup() {
-    const { $store } = useNuxtApp()
-    const amountType = computed(() => $store.state.trnForm.values.amountType)
+const deleteRef = ref(document.createElement('div'))
 
-    const deleteRef = ref(document.createElement('div'))
+const {
+  clearExpression,
+  handleTouch,
+  isSum,
+  keyboardHandler,
+} = useCalculator()
 
-    const {
-      clearExpression,
-      handleTouch,
-      isSum,
-      keyboardHandler,
-    } = useCalculator()
+// Mounted
+onMounted(() => {
+  document.addEventListener('keydown', keyboardHandler)
 
-    // Mounted
-    onMounted(() => {
-      document.addEventListener('keydown', keyboardHandler)
+  // Long press for delete
+  const element: HTMLElement = deleteRef.value
+  element.addEventListener('long-press', clearExpression)
+})
 
-      // Long press for delete
-      const element: HTMLElement = deleteRef.value
-      element.addEventListener('long-press', clearExpression)
-    })
-
-    // Unmounted
-    onUnmounted(() => {
-      document.removeEventListener('keydown', keyboardHandler)
-    })
-
-    return {
-      amountType,
-
-      isSum,
-      deleteRef,
-      handleTouch,
-    }
-  },
-}
+// Unmounted
+onUnmounted(() => document.removeEventListener('keydown', keyboardHandler))
 </script>
 
 <template lang="pug">
@@ -103,11 +87,12 @@ export default {
           .calcItem__in
             template(v-if="isSum")
               .mdi.mdi-check
-            template(v-else)
+            template(v-if="!isSum")
               .mdi.mdi-equal
 </template>
 
 <style lang="stylus" scoped>
+// TODO: style
 .trnFormCalculator
   display grid
   grid-template-columns auto 1fr auto
