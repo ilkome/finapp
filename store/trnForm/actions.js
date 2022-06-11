@@ -14,7 +14,7 @@ export default {
 
     switch (action) {
       case 'create':
-        // get data from last trn
+        // Get data from last trn
         if (lastTrn) {
           commit('setTrnFormValues', {
             amount: '0',
@@ -31,7 +31,10 @@ export default {
         }
         else {
           const categoriesIds = rootGetters['categories/categoriesIds']
-          const childs = categoriesIds.filter(cId => cId !== 'transfer' && (!rootState.categories.items[cId].childIds || rootState.categories.items[cId].childIds.length === 0))
+          const childs = categoriesIds.filter(id =>
+            id !== 'transfer'
+            && (!rootState.categories.items[id].childIds || rootState.categories.items[id].childIds.length === 0))
+
           const categoryId = childs[0]
           const walletsIds = Object.keys(rootState.wallets.items)
           const walletId = walletsIds[0]

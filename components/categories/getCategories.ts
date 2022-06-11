@@ -1,6 +1,5 @@
 import type { CategoryID, CategoryItem } from '~/components/categories/types'
 
-// TODO: need a proper name, maybe getTransactibleCategoriesIds
 export function getTransactibleCategoriesIds(
   catsIds: CategoryID[],
   categoriesItems: Record<CategoryID, CategoryItem>,

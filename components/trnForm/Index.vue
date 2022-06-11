@@ -234,7 +234,7 @@ function handleSubmitForm() {
         .scroll.scrollerBlock
           //- Wallets
           .pt-5.pb-7
-            .px-3.pb-2.text-sm.font-medium(
+            .px-3.pb-2.text-skin-item-base.text-sm.font-semibold.font-nunito(
               @click="$store.commit('trnForm/showTrnFormModal', 'wallets')"
             ) {{ $t('wallets.title') }}
 
@@ -272,7 +272,7 @@ function handleSubmitForm() {
 
           //- Favorite categories
           .pb-7(v-if="$store.getters['categories/favoriteCategoriesIds'].length > 0")
-            .px-3.pb-2.text-sm.font-medium(
+            .px-3.pb-2.text-skin-item-base.text-sm.font-semibold.font-nunito(
               @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
             ) {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
 
@@ -288,7 +288,7 @@ function handleSubmitForm() {
 
           //- Recent categories
           .pb-7(v-if="$store.getters['categories/recentCategoriesIds'].length > 0")
-            .px-3.pb-2.text-sm.font-medium(
+            .px-3.pb-2.text-skin-item-base.text-sm.font-semibold.font-nunito(
               @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
             ) {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
 

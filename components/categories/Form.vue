@@ -108,7 +108,7 @@ async function onSave() {
 
   const uid = $store.state.user.user.uid
   const categoryChildIds = $store.getters['categories/getChildCategoriesIds'](editCategoryId)
-  const categoryValues = getPreparedFormData(categoryForm.value, categoryChildIds)
+  const categoryValues = getPreparedFormData(categoryForm.value)
 
   // Update category
   await saveData(`users/${uid}/categories/${editCategoryId}`, categoryValues)
@@ -212,7 +212,6 @@ div
     //- Parent
     //---------------------------------
     template(v-if="activeTab === 'parent'")
-      pre {{ isAllowChangeParent }}
       template(v-if="!isAllowChangeParent")
         //- TODO: translate
         .p-4 You can not change parent category because edited category has childs categories.

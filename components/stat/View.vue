@@ -116,11 +116,11 @@ onDeactivated(async () => {
         template(v-if="isMobileView")
           .my-6.px-2(v-if="statPage.activeTab === 'details'")
             StatViewConfig
-            StatSumTotal
+            StatSumTotal(v-if="(statPage.average.income !== 0 && statPage.average.expense !== 0) || (statPage.current.income.total !== 0 && statPage.current.expense.total !== 0)")
 
         //- Loop throw income / expense
         .mb-8.md_mb-4.px-2
-          .grid.grid-cols-1.gap-y-5(class="md_grid-cols-2 md_gap-x-20")
+          .grid.grid-cols-1.gap-y-5.md_grid-cols-2.md_gap-x-20
             div(
               v-for="item in moneyTypes"
               v-show="isShowGroup(item.id)"

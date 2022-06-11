@@ -3,6 +3,6 @@
 </script>
 
 <template lang="pug">
-.grow.py-1.px-2.font-nunito.text-neutral-800.dark_text-white.text-xl.leading-none.font-semibold
+.grow.py-1.px-2.text-skin-item-base-up.font-semibold.font-nunito.leading-none
   slot
 </template>
