@@ -307,7 +307,6 @@ function handleSubmitForm() {
   //- Modals
   Portal(to="modal")
     TrnFormModals
-
     TrnFormModalCalendar(v-if="$store.state.trnForm.modal.calendar")
     TrnFormModalCats(v-if="$store.state.trnForm.modal.categories")
     TrnFormModalCatsChild(v-if="$store.state.trnForm.modal.categoriesChild")
@@ -315,6 +314,7 @@ function handleSubmitForm() {
 </template>
 
 <style lang="stylus">
+// TODO: style
 .trnForm
   &__pagination
     z-index 2
@@ -352,6 +352,7 @@ function handleSubmitForm() {
 </style>
 
 <style lang="stylus" scoped>
+// TODO: style
 .trnForm
   overflow hidden
   width 100%
@@ -361,46 +362,6 @@ function handleSubmitForm() {
 
   +media(600px)
     border-radius 16px
-
-  &__quickCats
-    opacity .8
-    padding-bottom $m7
-
-    &:hover
-      opacity 1
-
-  &__wrap
-    overflow hidden
-    position relative
-    background var(--c-bg-3)
-    border-radius 16px 16px 0 0
-    box-shadow 0 0 10px 5px var(--c-bg-1)
-
-    &._anim
-      anim(200ms)
-
-  &__scroll
-    background var(--c-bg-3)
-
-  &__title
-    padding 0 $m8
-    padding-top $m9
-    padding-bottom $m7
-    color var(--c-font-3)
-    font-size 22px
-    font-weight 700
-    letter-spacing 1px
-    text-align center
-    fontFamilyNunito()
-
-.buttons
-  display flex
-  align-items center
-  justify-content center
-  gap $m8
-  padding 0 $m7
-  padding-top $m4
-  padding-bottom $m9
 
 .scroll
   overflow hidden

@@ -60,7 +60,7 @@ const tabs = computed(() => [{
 
 <template lang="pug">
 .contentWrap
-  .contentWrap__box.trnsListScroll(
+  .contentWrap__box.trnsListScroll.scroll.scrollerBlock(
     :class="{ 'grid items-center': filteredTrnsIds.length === 0 }"
   )
     .pt-5.px-3
