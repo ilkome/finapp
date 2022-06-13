@@ -2,33 +2,30 @@
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 const props = defineProps<{
-  slider: object
+  slider: {
+    slideTo: Function
+  }
 }>()
 
 const { $store, nuxt2Context: { i18n } } = useNuxtApp()
-
 const filterBy = ref('wallet')
 
 const filteredTrnsIds = computed(() => {
   const trnsItems = $store.state.trns.items
+  const walletsIds = [$store.state.trnForm.values.walletId]
 
-  const filter = {
-    walletsIds: null,
-    categoriesIds: null,
+  if (filterBy.value === 'wallet')
+    return getTrnsIds({ walletsIds, trnsItems })
+
+  if (filterBy.value === 'walletAndCategory') {
+    const categoryId = $store.state.trnForm.values.categoryId
+    const childIds = $store.getters['categories/getChildCategoriesIds'](categoryId)
+    const categoriesIds = childIds.length > 0 ? childIds : [categoryId]
+
+    return getTrnsIds({ walletsIds, categoriesIds, trnsItems })
   }
 
-  if (filterBy.value === 'wallet') {
-    filter.walletsIds = [$store.state.trnForm.values.walletId]
-  }
-  else if (filterBy.value === 'walletAndCategory') {
-    const catId = $store.state.trnForm.values.categoryId
-    const category = $store.state.categories.items[catId]
-
-    filter.walletsIds = [$store.state.trnForm.values.walletId]
-    filter.categoriesIds = category?.childIds ?? [catId]
-  }
-
-  return getTrnsIds({ ...filter, trnsItems })
+  return getTrnsIds({ trnsItems })
 })
 
 function changeFilter(value) {
@@ -47,7 +44,7 @@ function onClickEdit() {
 }
 
 const tabs = computed(() => [{
-  id: 'wallets',
+  id: 'wallet',
   name: i18n.t('trnForm.filterWallet'),
 }, {
   id: 'walletAndCategory',
@@ -59,49 +56,23 @@ const tabs = computed(() => [{
 </script>
 
 <template lang="pug">
-.contentWrap
-  .contentWrap__box.trnsListScroll.scroll.scrollerBlock(
-    :class="{ 'grid items-center': filteredTrnsIds.length === 0 }"
-  )
-    .pt-5.px-3
+.h-full.overflow-hidden.grid.trnsListScroll
+  .h-full.overflow-hidden
+    .h-full.overflow-y-auto.pt-5.px-3.scroll.scrollerBlock(
+      :class="{ 'grid items-center': filteredTrnsIds.length === 0, 'grid-rows-[1fr_auto]': filteredTrnsIds.length > 0 }"
+    )
       TrnsListWithControl(
         :trnsIds="filteredTrnsIds"
         trnsClassNames=""
         @onClickEdit="onClickEdit"
       )
 
-    .pt-2.pb-6.px-3(v-if="filteredTrnsIds.length > 0")
-      UiTabs
-        UiTabsItem(
-          v-for="tab in tabs"
-          :key="tab.id"
-          :isActive="tab.id === filterBy"
-          @click="changeFilter(tab.id)"
-        ) {{ tab.name }}
+  .pt-2.pb-6.px-3(v-if="filteredTrnsIds.length > 0")
+    UiTabs
+      UiTabsItem(
+        v-for="tab in tabs"
+        :key="tab.id"
+        :isActive="tab.id === filterBy"
+        @click="changeFilter(tab.id)"
+      ) {{ tab.name }}
 </template>
-
-<style lang="stylus" scoped>
-.containerWrap
-  display flex
-  align-items center
-  justify-content center
-  height 100%
-  min-height 100%
-  padding $m10 $m7
-  color var(--c-font-3)
-  font-size 26px
-  font-weight 700
-  text-align center
-  fontFamilyNunito()
-
-.contentWrap
-  position relative
-  display grid
-  grid-template-rows 1fr auto
-  height 100%
-
-  &__box
-    overflow hidden
-    overflow-y auto
-    scrollbar()
-</style>
