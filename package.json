@@ -1,6 +1,6 @@
 {
   "name": "finapp",
-  "version": "3.8.4",
+  "version": "3.8.9",
   "scripts": {
     "dev": "cross-env NUXT_HOST=0.0.0.0 PORT=3010 nuxi dev",
     "build": "nuxi generate",
