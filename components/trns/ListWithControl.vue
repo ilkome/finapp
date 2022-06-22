@@ -49,7 +49,7 @@ function onClickEdit(props) {
 div
   //- Title
   .pb-2.flex.items-center.justify-between.gap-2.text-lg.text-skin-item-base(
-    v-if="trnsIds.length > 0"
+    v-if="trnsIds.length > 0 || defaultFilterTrnsPeriod"
     class="!pb-3"
   )
     .flex.gap-2.leading-none.font-nunito.font-semibold
