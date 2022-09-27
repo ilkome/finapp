@@ -16,6 +16,7 @@ export default defineComponent({
     categoryId: { type: String, default: null },
     isShowExpense: { type: Boolean, default: true },
     isShowIncome: { type: Boolean, default: true },
+    isShowSum: { type: Boolean, default: false },
   },
 
   setup() {
@@ -168,6 +169,8 @@ export default defineComponent({
       }
 
       let periods = 0
+
+      // Income
       let periodsTotalIncome = 0
       for (const iterator of incomeData) {
         if (iterator.y !== 0) {
@@ -175,12 +178,24 @@ export default defineComponent({
           periodsTotalIncome = periodsTotalIncome + iterator.y
         }
       }
+
+      // Expense
       let periodsExpense = 0
       let periodsTotalExpense = 0
       for (const iterator of expenseData) {
         if (iterator.y !== 0) {
           periodsExpense = periodsExpense + 1
           periodsTotalExpense = periodsTotalExpense + iterator.y
+        }
+      }
+
+      // Sum
+      let periodsSum = 0
+      let periodsTotalSum = 0
+      for (const iterator of totalData) {
+        if (iterator.y !== 0) {
+          periodsSum = periodsSum + 1
+          periodsTotalSum = periodsTotalSum + iterator.y
         }
       }
 
@@ -207,10 +222,22 @@ export default defineComponent({
           marker: {
             lineColor: 'var(--c-expense-1)',
           },
+        }, {
+          // Sum
+          zIndex: 3,
+          visible: periodsTotalIncome > 0 && periodsTotalExpense > 0 && this.isShowSum,
+          type: this.chartType,
+          name: this.$t('money.sum'),
+          color: 'var(--c-font-2)',
+          data: totalData,
+          marker: {
+            lineColor: 'var(--c-font-2)',
+          },
         }],
         categories,
         averageIncome: periodsTotalIncome / periods,
         averageExpense: periodsTotalExpense / periodsExpense,
+        averageSum: periodsTotalExpense / periodsExpense,
       }
 
       // Tooltip
@@ -218,7 +245,7 @@ export default defineComponent({
       if (this.$store.state.ui.pc) {
         tooltip = {
           ...chartConfig.tooltip,
-          formatter() {
+          formatter(): string {
             return this.points.reduce((s, point) => {
               return `${s}<br/>${point.series.name}: ${formatAmount(point.y, baseCurrencyCode)} ${getCurrencySymbol(baseCurrencyCode)}`
             }, this.x)
@@ -244,6 +271,17 @@ export default defineComponent({
           opacity: 0.5,
           color: 'var(--c-income-opacity)',
           value: data.averageIncome,
+          width: '2',
+          zIndex: 1,
+        })
+      }
+
+      // Sum
+      if (periodsTotalSum > 0 && this.isShowSum) {
+        plotLines.push({
+          opacity: 0.5,
+          color: 'var(--c-font-4)',
+          value: data.averageSum,
           width: '2',
           zIndex: 1,
         })

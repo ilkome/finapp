@@ -23,5 +23,6 @@ const chartType = computed(() => {
     :chartType="chartType"
     :isShowExpense="chartState.show.expense"
     :isShowIncome="chartState.show.income"
+    :isShowSum="chartState.show.sum"
   )
 </template>

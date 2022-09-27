@@ -4,6 +4,7 @@ const state = reactive({
   show: {
     income: true,
     expense: true,
+    sum: false,
   },
 })
 
