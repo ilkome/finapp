@@ -8,7 +8,7 @@ function setAmountType(amountType) {
 </script>
 
 <template lang="pug">
-.px-4.pb-4
+.px-2.pb-4
   UiTabs
     UiTabsItem(
       :isActive="amountType === 0"

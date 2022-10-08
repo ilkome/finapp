@@ -58,7 +58,7 @@ const tabs = computed(() => [{
 <template lang="pug">
 .h-full.overflow-hidden.grid.trnsListScroll
   .h-full.overflow-hidden
-    .h-full.overflow-y-auto.pt-5.px-3.scroll.scrollerBlock(
+    .h-full.overflow-y-auto.pt-5.px-2.scroll.scrollerBlock(
       :class="{ 'grid items-center': filteredTrnsIds.length === 0, 'grid-rows-[1fr_auto]': filteredTrnsIds.length > 0 }"
     )
       TrnsListWithControl(

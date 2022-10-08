@@ -28,7 +28,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyboardHandler))
 </script>
 
 <template lang="pug">
-.trnFormCalculator.px-4.pb-4
+.trnFormCalculator.px-2.pb-4
   .trnFormCalculator__group
     .trnFormCalculator__acts
       .calcItem._act(@click="handleTouch('+')")

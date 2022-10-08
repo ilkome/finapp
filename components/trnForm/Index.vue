@@ -211,7 +211,7 @@ function handleSubmitForm() {
       //- Main
       .swiper-slide.getHeight
         .scroll.scrollerBlock(:style="{ maxHeight: `${$store.state.ui.height}px` }")
-          .text-center.pt-2.text-sm.font-medium.text-xs
+          .px-3.pt-4.pb-2.text-skin-item-base.text-sm.font-semibold.font-nunito
             template(v-if="$store.state.trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
             template(v-if="!$store.state.trnForm.values.trnId") {{ $t('trnForm.createTrn') }}
 

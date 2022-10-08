@@ -31,7 +31,7 @@ export default {
 </script>
 
 <template lang="pug">
-.trnFormDate.pb-2.px-4
+.trnFormDate.pb-2.px-2
   .shame1._arrow.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
     @click="setPrevDay()"
   ): .mdi.mdi-chevron-left

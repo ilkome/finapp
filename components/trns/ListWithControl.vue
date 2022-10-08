@@ -47,12 +47,13 @@ function onClickEdit(props) {
 
 <template lang="pug">
 div
-  //- Title
-  .pb-2.flex.items-center.justify-between.gap-2.text-lg.text-skin-item-base(
+  //- Header
+  .pb-2.flex.items-center.justify-between.gap-2(
     v-if="trnsIds.length > 0 || defaultFilterTrnsPeriod"
     class="!pb-3"
   )
-    .flex.gap-2.leading-none.font-nunito.font-semibold
+    //- Title
+    .flex.gap-2.leading-none.font-nunito.font-semibold.text-lg.text-skin-item-base
       div {{ $t('trns.inPeriodTitle') }}:
       div {{ trnsCount }}
 
