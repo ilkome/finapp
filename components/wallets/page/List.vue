@@ -1,26 +1,35 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
 import useWallets from '~/components/wallets/useWallets'
 
 const { $store } = useNuxtApp()
 const activeTab = computed(() => $store.state.ui.activeTab)
 const { walletsCurrencies, walletsItemsSorted } = useWallets()
 
+const state = useStorage('finapp.page.wallets', {
+  activeTab: 'all',
+})
+
 const walletsCurrenciesTabs = reactive({
-  active: 'all',
   currencyCode: computed(() => {
-    if (walletsCurrenciesTabs.active === 'all')
+    if (state.value.activeTab === 'all')
       return $store.state.currencies.base
-    return walletsCurrenciesTabs.active
+    return state.value.activeTab
   }),
-  onSelect: v => walletsCurrenciesTabs.active = v,
+
+  onSelect: v => {
+    state.value.activeTab = v
+    state.value.activeTab = v
+  },
+
   wallets: computed(() => {
-    if (walletsCurrenciesTabs.active === 'all')
+    if (state.value.activeTab === 'all')
       return walletsItemsSorted.value
 
-    const array = Object
-      .entries(walletsItemsSorted.value)
-      .filter(([_key, value]) => value.currency === walletsCurrenciesTabs.active)
-    return Object.fromEntries(array)
+    return Object.fromEntries(
+      Object
+        .entries(walletsItemsSorted.value)
+        .filter(([_key, value]) => value.currency === state.value.activeTab))
   })
 })
 </script>
@@ -59,12 +68,12 @@ UiPage
   .pb-4.px-2(v-if="walletsCurrencies.length > 1")
     UiTabs
       UiTabsItem(
-        :isActive="walletsCurrenciesTabs.active === 'all'"
+        :isActive="state.activeTab === 'all'"
         @click="walletsCurrenciesTabs.onSelect('all')"
       ) All
       UiTabsItem(
         v-for="currency in walletsCurrencies"
-        :isActive="walletsCurrenciesTabs.active === currency"
+        :isActive="state.activeTab === currency"
         @click="walletsCurrenciesTabs.onSelect(currency)"
         :key="currency"
       ) {{ currency }}
