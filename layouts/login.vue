@@ -12,8 +12,8 @@ const touchClassNames = computed(() => ({
 </script>
 
 <template lang="pug">
-.font-roboto.text-gray-600.antialiased.leading-none.bg-neutral-100.flex.h-full.min-w-base.overflow-hidden(
-  :class="[touchClassNames, 'dark_text-gray-400 dark_bg-dark3']"
+.overflow-hidden.flex.h-full.min-w-base.font-roboto.text-gray-600.dark_text-gray-400.antialiased.leading-none.bg-neutral-100.dark_bg-dark3(
+  :class="touchClassNames"
 )
   transition(name="fadeInSlow" appear)
     Nuxt
