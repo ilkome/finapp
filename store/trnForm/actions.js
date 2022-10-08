@@ -61,7 +61,7 @@ export default {
           if (trn.type === 2) {
             commit('setTrnFormValues', {
               ...trn,
-              amount: 888,
+              amount: '0',
               amountType: 2,
               categoryId: trn.categoryId,
               date: trn.date,
@@ -69,9 +69,9 @@ export default {
               groups: null,
               trnId,
               expenseWalletAmount: trn.expenseWalletAmount || trn.amount,
-              expenseWalletId: trn.expenseWalletId || trn.walletToId,
+              expenseWalletId: trn.expenseWalletId || trn.walletFromId,
               incomeWalletAmount: trn.incomeWalletAmount || trn.amount,
-              incomeWalletId: trn.incomeWalletId || trn.walletFromId,
+              incomeWalletId: trn.incomeWalletId || trn.walletToId,
             })
           }
           // Simple
