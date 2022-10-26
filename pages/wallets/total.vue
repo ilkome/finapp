@@ -186,13 +186,13 @@ const chartData = computed(() => _merge(JSON.parse(JSON.stringify(options)), cha
   .my-5
     h1.pb-2 Periods
 
-    UiTabs
-      UiTabsItem(
-        v-for="date in periods"
-        :key="date"
-        :isActive="activePeriod === date"
-        @click="activePeriod = date"
-      ) {{ date }}
+    //- UiTabs
+    //-   UiTabsItem(
+    //-     v-for="date in periods"
+    //-     :key="date"
+    //-     :isActive="activePeriod === date"
+    //-     @click="activePeriod = date"
+    //-   ) {{ date }}
 
   .my-5
     h1 date

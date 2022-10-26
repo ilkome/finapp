@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { WalletID, WalletItem } from './types';
+import type { WalletID, WalletItem } from './types'
 import useAmount from '~/components/amount/useAmount'
 import type { CurrencyCode } from '~/components/currencies/types'
 
-const { $store } = useNuxtApp()
-const { getAmountInBaseRate } = useAmount()
-
 const props = defineProps<{
-  walletsItems: Record<WalletID, WalletItem>,
+  walletsItems: Record<WalletID, WalletItem>
   currencyCode: CurrencyCode
 }>()
+const { $store } = useNuxtApp()
+const { getAmountInBaseRate } = useAmount()
 
 const totalInWallets = computed(() => {
   const walletsTotal = $store.getters['wallets/walletsTotal']

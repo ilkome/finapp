@@ -37,8 +37,8 @@ export default function useWallets() {
     // TODO: check A
     return walletsIdsSorted.reduce((acc, id) => {
       const currency = walletsItems[id].currency
-      if (!acc.includes(currency))
-        acc.push(currency)
+      !acc.includes(currency)
+        && acc.push(currency)
       return acc
     }, [])
   })

@@ -17,7 +17,7 @@ const walletsCurrenciesTabs = reactive({
     return state.value.activeTab
   }),
 
-  onSelect: v => {
+  onSelect: (v) => {
     state.value.activeTab = v
     state.value.activeTab = v
   },
@@ -30,7 +30,7 @@ const walletsCurrenciesTabs = reactive({
       Object
         .entries(walletsItemsSorted.value)
         .filter(([_key, value]) => value.currency === state.value.activeTab))
-  })
+  }),
 })
 </script>
 
@@ -115,7 +115,6 @@ UiPage
           :amount="walletItem.amount"
           :currencyCode="walletItem.currency"
         )
-
 
   //- Sort
   //-----------------------------------

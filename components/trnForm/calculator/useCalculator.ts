@@ -100,7 +100,7 @@ export default function useCalculator() {
   function createExpressionString(expression: string, value: string): string {
     const inputIsAction = Number.isNaN(Number.parseInt(value))
 
-    // Last simbol of expression
+    // Last symbol of expression
     const clearedExpression = removeSpaces(expression)
     const lastSymbol = clearedExpression.slice(-1)
     const isLastSymbolAction = checkIsLastSymbolAction(lastSymbol)
@@ -124,7 +124,7 @@ export default function useCalculator() {
         return value
     }
 
-    // Change math simbol
+    // Change math symbol
     if (inputIsAction && isLastSymbolAction && !isDotAction && !isSumAction && !isDeleteAction)
       return clearedExpression.slice(0, -1) + value
 
@@ -147,7 +147,7 @@ export default function useCalculator() {
       }
     }
 
-    // Add math simbol
+    // Add math symbol
     if (inputIsAction)
       return clearedExpression + value
 
