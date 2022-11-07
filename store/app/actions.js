@@ -20,13 +20,13 @@ export default {
         if (rootGetters['user/userUid'] !== user.uid)
           dispatch('clearUserData')
 
-        await dispatch('user/initUser', user, { root: true })
-        await dispatch('currencies/initCurrencies', null, { root: true })
-        await dispatch('categories/initCategories', null, { root: true })
-        await dispatch('wallets/initWallets', null, { root: true })
-        await dispatch('trns/initTrns', null, { root: true })
-        await dispatch('lang/initDbLang', null, { root: true })
-        await dispatch('trns/uploadOfflineTrns', null, { root: true })
+        dispatch('user/initUser', user, { root: true })
+        dispatch('currencies/initCurrencies', null, { root: true })
+        dispatch('categories/initCategories', null, { root: true })
+        dispatch('wallets/initWallets', null, { root: true })
+        dispatch('trns/initTrns', null, { root: true })
+        dispatch('lang/initDbLang', null, { root: true })
+        dispatch('trns/uploadOfflineTrns', null, { root: true })
 
         if (this.$router.currentRoute.name === 'login') {
           this.app.context.redirect('/')
