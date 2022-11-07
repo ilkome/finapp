@@ -1,11 +1,7 @@
 {
 	"folders": [
     {
-      "name": "finapp",
       "path": "."
-    },
+    }
   ],
-  "settings": {
-    "vue3snippets.enable-compile-vue-file-on-did-save-code": true
-  }
 }
