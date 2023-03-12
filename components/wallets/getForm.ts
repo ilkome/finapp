@@ -10,6 +10,6 @@ export function getPreparedFormData(values?: any): WalletForm {
     description: values?.description ?? null,
     currency: values?.currency ?? 'USD',
     countTotal: values?.countTotal ?? true,
-    color: values?.color ?? random(allColors),
+    color: values?.color ?? random(random(allColors)),
   }
 }
