@@ -47,6 +47,6 @@ export default {
     overflow-x auto
     display flex
 
-    .isNotTouchDevice &
+    .mouse &
       scrollbar()
 </style>

@@ -75,7 +75,7 @@ module.exports = {
 
   plugins: [
     plugin(({ addVariant }) => {
-      addVariant('hocus', ['.isNotTouchDevice &:not(._active):hover', '&:not(._active):active'])
+      addVariant('hocus', ['.mouse &:not(._active):hover', '&:not(._active):active'])
     }),
   ],
 }
