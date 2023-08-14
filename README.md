@@ -14,8 +14,8 @@ This is Finapp 3. For the 2.x see the [2 branch](https://github.com/ilkome/finap
 
 # 🚀 Features
 - Works offline on all devices (Service Worker): you can see all your data. Create, edit and delete transactions.
-- Instant synchronisation between all device (Firebase).
-- Optimised for mobile and PC.
+- Instant synchronization between all device (Firebase).
+- Optimized for mobile and PC.
 - Themes: dark and white.
 - Support multiple currencies with auto conversion.
 
