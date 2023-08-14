@@ -22,7 +22,7 @@
     "currency.js": "2.0.4",
     "dayjs": "1.11.5",
     "echarts": "5.4.0",
-    "firebase": "9.11.0",
+    "firebase": "^10.1.0",
     "highcharts": "10.2.1",
     "highcharts-vue": "1.4.0",
     "localforage": "1.10.0",
