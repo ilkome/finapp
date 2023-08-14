@@ -1,0 +1,12 @@
+html {
+  /* Fonts */
+  --font-primary: 'Roboto', 'sans-serif';
+  --font-secondary: 'Nunito', 'Roboto', 'sans-serif';
+  --font-number: 'Unica One', 'Roboto Condensed', 'sans-serif';
+}
+
+body {
+  background: rgb(var(--bg-main) / 1);
+  color: rgb(var(--text-primary) / 1);
+  font-family: var(--font-primary);
+}

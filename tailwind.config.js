@@ -13,6 +13,26 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        primary: 'rgb(var(--text-primary) / <alpha-value>)',
+        secondary: 'rgb(var(--text-secondary) / <alpha-value>)',
+        main: 'rgb(var(--bg-main) / <alpha-value>)',
+        accent: {
+          default: 'rgb(var(--accent-default) / <alpha-value>)',
+          primary: 'rgb(var(--accent-primary) / <alpha-value>)',
+        },
+        foreground: {
+          primary: 'rgba(var(--foreground-primary) / <alpha-value>)',
+          main: 'rgb(var(--foreground-main) / <alpha-value>)',
+          second: 'rgba(var(--foreground-second) / <alpha-value>)',
+          hover: 'rgb(var(--foreground-hover) / <alpha-value>)',
+          active: 'rgb(var(--foreground-active) / <alpha-value>)',
+        },
+        item: {
+          main: 'rgba(var(--item-main) / <alpha-value>)',
+          hover: 'rgba(var(--item-hover) / <alpha-value>)',
+          primary: 'rgba(var(--item-primary) / <alpha-value>)',
+        },
+
         232323: '#232323',
         blue1: '#58a6ff',
         blue3: '#3a7dff',

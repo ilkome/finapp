@@ -1,0 +1,82 @@
+html {
+  --c-blue-1: #3a7dff;
+}
+
+
+html.dark {
+  /* Text */
+  --text-primary: 255 255 255;
+  --text-secondary: 255 255 255;
+
+  /* Bg */
+  --bg-main: 9 14 23;
+
+  /* Foreground */
+  --foreground-primary: 245 245 245;
+  --foreground-secondary: 245 245 245;
+
+  /* --foreground-main: 28 28 28; */
+  --foreground-main: 23 27 32;
+  --foreground-hover: 58 58 60;
+  --foreground-active: 44 44 46;
+  --foreground-second: 23 23 23;
+
+  /* Accent */
+  --accent-default: 56 148 2451;
+  --accent-primary: 255 255 255;
+
+  /* Item */
+  --item-main: 40 44 55;
+  --item-hover: 31 37 47;
+  --item-primary: 190 190 190;
+}
+
+html.dark-gray {
+  /* Text */
+  --text-primary: 255 255 255;
+  --text-secondary: 255 255 255;
+
+  /* Bg */
+  --bg-main: 27 27 28;
+
+  /* Foreground */
+  --foreground-primary: 245 245 245;
+  --foreground-secondary: 245 245 245;
+
+  --foreground-main: 28 28 28;
+  --foreground-hover: 58 58 60;
+  --foreground-active: 44 44 46;
+  --foreground-second: 23 23 23;
+
+  /* Accent */
+  --accent-default: 10 132 255;
+  --accent-primary: 255 255 255;
+}
+
+
+html.light {
+  /* Text */
+  --text-primary: 64 64 64;
+  --text-secondary: 0 0 0;
+
+  /* Bg */
+  --bg-main: 250 250 250;
+
+  /* Foreground */
+  --foreground-primary: 245 245 245;
+  --foreground-secondary: 245 245 245;
+  --foreground-second: 245 245 245;
+
+  --foreground-main: 235 235 240;
+  --foreground-hover: 188 188 192;
+  --foreground-active: 216 216 220;
+
+  /* Accent */
+  --accent-default: 0 122 255;
+  --accent-primary: 255 255 255;
+
+  /* Item */
+  --item-main: 235 235 240;
+  --item-hover: 188 188 192;
+  --item-active: 216 216 220;
+}

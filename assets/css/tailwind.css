@@ -2,12 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  -webkit-tap-highlight-color: transparent
-}
+@layer components {
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
 
-*:focus {
-  outline: 0
+  .flex-center-col {
+    @apply flex flex-col items-center justify-center;
+  }
+
+  .size-full {
+    @apply w-full h-full;
+  }
+
+  .absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* overflowScrollY() */
+  .overflow-scroll-y {
+    @apply overflow-hidden overflow-y-auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 html,
@@ -19,6 +38,7 @@ body {
   background: #171717;
   user-select: none;
 }
+
 @media (prefers-color-scheme: light) {
   body {
     background: #fafafa;
@@ -26,26 +46,4 @@ body {
 }
 .light body {
   background: #fafafa;
-}
-
-html,
-body,
-#__nuxt,
-#__layout {
-  height: 100%
-}
-
-:root {
-  --height: 100vh
-}
-
-.flex-center {
-  @apply flex items-center justify-center;
-}
-
-.absolute-center {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%)
 }

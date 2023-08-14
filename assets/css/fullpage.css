@@ -1,0 +1,19 @@
+/* Min properties to use fullscreen page and scroll inside div */
+html {
+  height: 100%;
+}
+
+#__nuxt,
+#__layout {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  overscroll-behavior-y: none;
+}
+
+:root {
+  --height: 100vh
+}
