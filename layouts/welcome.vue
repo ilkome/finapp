@@ -65,7 +65,10 @@ onMounted(() => {
 
   .layout__wrap.overflow-hidden.flex-grow.h-full.flex
     transition(name="fadeIn" appear)
-      Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
+      Nuxt(
+        keep-alive
+        :keep-alive-props="{ include: keepAliveInclude }"
+      )
 </template>
 
 <style lang="stylus">
