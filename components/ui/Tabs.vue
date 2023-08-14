@@ -1,5 +1,15 @@
-<template lang="pug">
-.overflow-hidden.rounded-md.bg-skin-item-main-bg.dark_shadow
-  .overflow-hidden.overflow-x-auto.flex.items-center.text-sm.text-center
-    slot
+<template>
+  <div
+    class="
+      @container/tabs
+      overflow-hidden
+      overflow-x-auto
+      grow
+      flex items-center
+      rounded-md
+      bg-item-main
+    "
+  >
+    <slot />
+  </div>
 </template>

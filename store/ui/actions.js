@@ -32,6 +32,11 @@ export default {
     $nuxt.$colorMode.preference = newTheme
   },
 
+  setTheme(_, theme) {
+    // eslint-disable-next-line no-undef
+    $nuxt.$colorMode.preference = theme
+  },
+
   /**
     * Set app dimensions
     *

@@ -6,13 +6,24 @@ export default defineComponent({
   layout: 'login',
 
   setup() {
+    const route = useRoute()
+    const router = useRouter()
+
     const isLoading = ref(false)
 
-    const route = useRoute()
     if (route.query?.loading)
       isLoading.value = true
 
-    setTimeout(() => { isLoading.value = false }, 10000)
+    onMounted(() => {
+      if (route.query?.loader) {
+        isLoading.value = true
+        const newRoute = { ...route }
+        delete newRoute.query?.loader
+        router.replace(newRoute)
+      }
+
+      setTimeout(() => isLoading.value = false, 10000)
+    })
 
     return {
       isLoading,
@@ -43,48 +54,39 @@ export default defineComponent({
       })
       this.isLoading = false
     },
-
-    onSetLocale(lang) {
-      this.$store.dispatch('lang/setLang', lang)
-    },
   },
 })
 </script>
 
 <template lang="pug">
-.tab
-  .py-4.px-3.h-24.justify-between.items-start.flex
-    .flex.gap-1.top-3.left-5(
-      class="lg_top-7 lg_left-7"
-    )
-      .linkItem.py-2.px-3.rounded-md(
-        :class="[{ 'text-blue2 dark_text-blue1': $store.state.lang.lang === 'ru' }, 'hocus_bg-white2 dark_hocus_bg-custom1']"
-        @click="onSetLocale('ru')"
-      ) Русский
-      .linkItem.py-2.px-3.rounded-md(
-        :class="[{ 'text-blue2 dark_text-blue1': $store.state.lang.lang === 'en' }, 'hocus_bg-white2 dark_hocus_bg-custom1']"
-        @click="onSetLocale('en')"
-      ) English
+.grid.h-full.text-center(class="grid-rows-[auto,1fr,auto]")
+  //- Top
+  .max-w-xl.mx-auto.p-2.w-full.md_p-6
+    .flex.justify-between
+      LocaleSwitcher
+      ThemeSwitcher
 
-    .flex.gap-3.top-3.right-5(
-      class="lg_top-7 lg_right-7"
-    )
-      .linkItem.py-2.px-3.rounded-md.hocus_bg-white2.dark_hocus_bg-custom1(
-        @click="$store.dispatch('ui/changeTheme')"
-      ) {{ $t('changeTheme') }}
+  //- Center
+  .h-full.grid.items-center.gap-8.py-4.px-3.h-full.overflow-hidden.overflow-y-auto
+    .flex.flex-col.items-center.justify-center.pb-10
+      SharedAppName
+      SharedCopyright
 
-  .tab__content
-    SharedAppName
-    SharedCopyright
+      .flex.flex-col.items-center.px-3.py-8
+        .loginButton.bg-blue3.hocus_bg-blue1.hocus_shadow(
+          :class="[{ _loading: isLoading }]"
+          @click.prevent="signInWithGoogle"
+        )
+          transition(name="fadeIn")
+            .loginButton__spinier(v-if="isLoading"): SharedSpinier
+          .loginButton__text.text-white {{ $t('loginWithGoogle') }}
 
-  .flex.flex-col.items-center.px-3.py-8
-    .loginButton.bg-blue3.hocus_bg-blue1.hocus_shadow(
-      :class="[{ _loading: isLoading }]"
-      @click.prevent="signInWithGoogle"
+  .p-4.flex.items-center.justify-center
+    a.py-2.px-4.flex.items-center.justify-center.gap-1.rounded-md.hocus_bg-item-hover.transition(
+      href="https://ilko.me"
+      target="_blank"
     )
-      transition(name="fadeIn")
-        .loginButton__spinier(v-if="isLoading"): SharedSpinier
-      .loginButton__text.text-white {{ $t('loginWithGoogle') }}
+      | ilko.me
 </template>
 
 <style lang="stylus" scoped>

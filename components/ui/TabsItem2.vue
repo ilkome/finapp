@@ -6,10 +6,21 @@ defineProps<{
 const emit = defineEmits(['click'])
 </script>
 
-<template lang="pug">
-.cursor-pointer.grow.max-w-xs.px-3.py-1.whitespace-nowrap.text-skin-item-base-down.border-b-2.border-skin-item-main-hover(
-  :class="{ 'cursor-default text-skin-item-base-up !border-skin-accent-base': isActive }"
-  @click="emit('click')"
-)
-  slot
+<template>
+  <div
+    :class="{
+      '!cursor-default !text-accent-default !bg-transparent': isActive,
+    }"
+    class="
+      cursor-pointer select-none
+      py-2 px-3 flex gap-1 items-center justify-center
+      border-1 rounded-md
+      text-secondary/70 text-sm leading-none
+      hocus_bg-item-hover
+      transition
+    "
+    @click="emit('click')"
+  >
+    <slot />
+  </div>
 </template>

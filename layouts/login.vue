@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { usePointer } from '@vueuse/core'
 
+import '~/assets/css/index.css'
+import '~/assets/css/themes.css'
+import '~/assets/css/fullpage.css'
+import '~/assets/css/reset.css'
+
 const { $store } = useNuxtApp()
 
+// TODO: Put in one separate setup function
 const { pointerType } = usePointer()
 const classes = computed(() => [
   {
@@ -10,8 +16,7 @@ const classes = computed(() => [
     touch: pointerType.value === 'touch',
   },
   `
-    overflow-hidden
-    flex
+    overflow-hidden relative
     h-full min-w-base
     font-roboto text-gray-600 dark_text-gray-400 antialiased leading-none
     bg-neutral-100 dark_bg-dark3

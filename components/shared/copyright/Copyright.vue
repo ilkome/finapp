@@ -1,32 +1,18 @@
 <template lang="pug">
-a.copyright.py-3.px-5.rounded-md.hocus_bg-white2.dark_hocus_bg-custom1(
+a.flex-center.py-3.px-5.rounded-md.hocus_bg-item-hover.transition(
   href="https://ilko.me"
 )
   | {{ $t('app.madeBy.text') }}
-  .copyright__heart.mdi.mdi-heart
+  .mdi.mdi-heart.mx-2.heart.text-2xl(
+    class=`
+      animate-[heartbeat_3s_ease-in-out_infinite]
+      text-[rgb(210,0,20)]
+    `
+  )
   | {{ $t('app.madeBy.name') }}
 </template>
 
-<style lang="stylus" scoped>
-// TODO: style
-@import '~assets/stylus/variables/animations'
-@import '~assets/stylus/variables/fonts'
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
-
-.copyright
-  display flex
-  align-items center
-  justify-content center
-  text-decoration none
-
-  &__heart
-    display inline-flex
-    margin 0 $m5
-    color rgba(210, 0, 20, 1)
-    font-size 28px
-    animation heartbeat 3s ease-in-out infinite
-
+<style lang="stylus">
 @keyframes heartbeat
   0%
     transform scale(.75)
