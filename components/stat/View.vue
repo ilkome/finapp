@@ -58,7 +58,7 @@ onDeactivated(async () => {
 
 <template lang="pug">
 .overflow-y-auto.h-full.pb-8.js_scroll_page
-  .max-w-4xl.pb-6
+  .lg_max-w-4xl.pb-6
     .flex.items-center.justify-between.gap-4.sticky.top-0.z-20.backdrop-blur(
       class="h-[44px] bg-white/70 dark_bg-dark3/70"
     )
