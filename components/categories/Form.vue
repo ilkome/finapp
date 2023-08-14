@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import generateId from '~/utils/id'
+import { generateId } from '~/utils/generateId'
 import icons from '~/assets/js/icons'
 import type { CategoryForm, CategoryID, CategoryItem } from '~/components/categories/types'
 import { allColors } from '~/assets/js/colors'

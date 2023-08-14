@@ -1,8 +1,6 @@
 import axios from 'axios'
 
-type Props = Record<string, string>
-
-export const getRatesOfUSD = async (apiKey: string): Promise<Props | false> => {
+export const getRatesOfUSD = async (apiKey: string): Promise<Record<string, string> | false> => {
   const serviceUrl = `https://openexchangerates.org/api/latest.json?app_id=${apiKey}`
   const { data } = await axios.get(serviceUrl)
 

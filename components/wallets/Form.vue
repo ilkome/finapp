@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import generateId from '~/utils/id'
+import { generateId } from '~/utils/generateId'
 import type { WalletForm, WalletID } from '~/components/wallets/types'
 import { allColors } from '~/assets/js/colors'
 import { getPreparedFormData } from '~/components/wallets/getForm'

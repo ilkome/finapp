@@ -3,7 +3,7 @@ import Vue from 'vue'
 import dayjs from 'dayjs'
 import SwiperCore, { Pagination } from 'swiper'
 import 'swiper/swiper-bundle.css'
-import generateId from '~/utils/id'
+import { generateId } from '~/utils/generateId'
 
 import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import useTrnFormValidate from '~/components/trnForm/useTrnFormValidate'
