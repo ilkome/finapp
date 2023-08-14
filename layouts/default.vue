@@ -29,6 +29,7 @@ onMounted(async () => {
   }
 })
 
+// TODO: Put in one separate setup function
 const { pointerType } = usePointer()
 const classes = computed(() => [
   {
