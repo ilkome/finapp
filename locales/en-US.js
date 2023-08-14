@@ -142,7 +142,7 @@ export default {
         exist: 'Wallet with same name is exist',
       },
       description: {
-        label: 'Wallet description (not required)',
+        label: 'Wallet description (optional)',
         placeholder: 'Write...',
       },
       colors: {

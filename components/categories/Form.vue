@@ -129,8 +129,8 @@ div
     class="top-[60px] bg-white/70 dark_bg-dark3/70"
   )
     .px-2
-      UiTabs2
-        UiTabsItem2.md_text-lg(
+      UiTabs
+        UiTabsItem.md_text-lg(
           v-for="tab in tabs"
           v-if="!tab.isHidden"
           :key="tab.id"
