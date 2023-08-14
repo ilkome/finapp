@@ -1,6 +1,5 @@
 <script lang="ts">
-// TODO: setup
-import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { auth } from '~/services/firebase/api'
 
 export default defineComponent({
@@ -31,7 +30,7 @@ export default defineComponent({
       this.isLoading = true
 
       const provider = new GoogleAuthProvider()
-      signInWithRedirect(auth, provider)
+      signInWithPopup(auth, provider)
         .catch(e => this.notifyAboutError(e))
     },
 
