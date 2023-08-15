@@ -12,19 +12,6 @@ useLazyAsyncData('posts', async () => {
 
 const keepAliveInclude = ['PagesIndex, PagesWallets', 'PagesCategories', 'PagesHistory']
 
-/**
- * Update modal
- */
-const isShowUpdateApp = ref(false)
-onMounted(async () => {
-  const workbox = await window.$workbox
-  if (workbox) {
-    workbox.addEventListener('installed', (event) => {
-      isShowUpdateApp.value = event.isUpdate
-    })
-  }
-})
-
 // TODO: Put in one separate setup function
 const { pointerType } = usePointer()
 const classes = computed(() => [
