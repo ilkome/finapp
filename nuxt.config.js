@@ -13,7 +13,6 @@ export default defineNuxtConfig({
 
   ssr: false,
   target: 'static',
-  modern: 'client',
   telemetry: false,
 
   vue: {
@@ -70,6 +69,7 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@nuxtjs/i18n',
     '@nuxtjs/pwa',
+    '@pinia/nuxt',
     'portal-vue/nuxt',
   ],
 
@@ -77,7 +77,7 @@ export default defineNuxtConfig({
     '@nuxtjs/pwa',
     '@nuxtjs/style-resources',
     '@nuxtjs/tailwindcss',
-    'unplugin-vue2-script-setup/nuxt',
+    'nuxt-typed-vuex',
   ],
 
   alias: {
@@ -90,6 +90,14 @@ export default defineNuxtConfig({
 
   router: {
     middleware: ['auth'],
+  },
+
+  pinia: {
+    autoImports: [
+      'defineStore',
+      ['defineStore', 'definePiniaStore'],
+    ],
+    disableVuex: false,
   },
 
   i18n: {

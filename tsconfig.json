@@ -5,10 +5,7 @@
   ],
   "compilerOptions": {
     "types": [
-      "@nuxt/types",
       "@nuxtjs/i18n",
-      "unplugin-vue2-script-setup/ref-macros",
-      "unplugin-vue2-script-setup/types",
     ]
   },
 }
