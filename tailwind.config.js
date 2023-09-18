@@ -13,24 +13,25 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: 'rgb(var(--text-primary) / <alpha-value>)',
-        secondary: 'rgb(var(--text-secondary) / <alpha-value>)',
-        main: 'rgb(var(--bg-main) / <alpha-value>)',
+        primary: 'rgb(var(--text-primary))',
+        secondary: 'rgb(var(--text-secondary))',
+        main: 'rgb(var(--bg-main))',
         accent: {
-          default: 'rgb(var(--accent-default) / <alpha-value>)',
-          primary: 'rgb(var(--accent-primary) / <alpha-value>)',
+          default: 'rgb(var(--accent-default))',
+          primary: 'rgb(var(--accent-primary))',
         },
         foreground: {
-          primary: 'rgba(var(--foreground-primary) / <alpha-value>)',
-          main: 'rgb(var(--foreground-main) / <alpha-value>)',
-          second: 'rgba(var(--foreground-second) / <alpha-value>)',
-          hover: 'rgb(var(--foreground-hover) / <alpha-value>)',
-          active: 'rgb(var(--foreground-active) / <alpha-value>)',
+          primary: 'rgba(var(--foreground-primary))',
+          main: 'rgb(var(--foreground-main))',
+          second: 'rgba(var(--foreground-second))',
+          hover: 'rgb(var(--foreground-hover))',
+          active: 'rgb(var(--foreground-active))',
         },
         item: {
-          main: 'rgba(var(--item-main) / <alpha-value>)',
-          hover: 'rgba(var(--item-hover) / <alpha-value>)',
-          primary: 'rgba(var(--item-primary) / <alpha-value>)',
+          main: 'rgba(var(--item-main))',
+          border: 'rgba(var(--item-border))',
+          hover: 'rgba(var(--item-hover))',
+          primary: 'rgba(var(--item-primary))',
         },
 
         232323: '#232323',

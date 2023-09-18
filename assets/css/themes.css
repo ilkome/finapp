@@ -26,8 +26,14 @@ html.dark {
   --accent-primary: 255 255 255;
 
   /* Item */
-  --item-main: 40 44 55;
+  /* --item-main: 40 44 55;
   --item-hover: 31 37 47;
+  --item-primary: 190 190 190; */
+
+  --item-main: 30 30 30;
+  --item-border: 44 44 44;
+  --item-hover: 46, 46, 46;
+  --item-hover-active: 63, 63, 63
   --item-primary: 190 190 190;
 }
 

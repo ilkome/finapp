@@ -1,6 +1,23 @@
 {
 	"folders": [
     {
+      "name": "store",
+      "path": "store"
+    },
+    {
+      "name": "trnForm",
+      "path": "components/trnForm"
+    },
+    {
+      "name": "components",
+      "path": "components"
+    },
+    {
+      "name": "layouts",
+      "path": "layouts"
+    },
+    {
+      "name": "finapp",
       "path": "."
     }
   ],
