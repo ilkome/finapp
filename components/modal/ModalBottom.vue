@@ -1,4 +1,5 @@
 <script>
+// TODO: need to deprecate
 import useTouchClose from '~/components/base/modal/useTouchClose'
 
 export default {

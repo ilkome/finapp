@@ -1,13 +1,13 @@
-import type { CategoryID, CategoryItem } from '~/components/categories/types'
+import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
 export function getTransactibleCategoriesIds(
-  catsIds: CategoryID[],
-  categoriesItems: Record<CategoryID, CategoryItem>,
-): CategoryID[] {
+  catsIds: CategoryId[],
+  categoriesItems: Record<CategoryId, CategoryItem>,
+): CategoryId[] {
   return catsIds.map(id => categoriesItems[id]?.childIds ?? id).flat()
 }
 
-export function getTransferCategoriesIds(items: Record<CategoryID, CategoryItem>): CategoryID[] {
+export function getTransferCategoriesIds(items: Record<CategoryId, CategoryItem>): CategoryId[] {
   const names = ['перевод', 'transfer']
 
   const categoriesIdsByName = Object.keys(items)
@@ -17,8 +17,8 @@ export function getTransferCategoriesIds(items: Record<CategoryID, CategoryItem>
 }
 
 export function getParentCategory(
-  items: Record<CategoryID, CategoryItem>,
-  parentId: CategoryID | 0,
+  items: Record<CategoryId, CategoryItem>,
+  parentId: CategoryId | 0,
 ): CategoryItem | false {
   if (parentId === 0)
     return false

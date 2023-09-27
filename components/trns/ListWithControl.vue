@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { TrnID, TrnItem, TrnType } from '~/components/trns/types'
+import type { TrnId, TrnItem, TrnType } from '~/components/trns/types'
 import useTrns from '~/components/trns/useTrns'
 import useStatPage from '~/components/stat/useStatPage'
 
 const props = withDefaults(defineProps<{
-  trnsIds: TrnID[]
+  trnsIds: TrnId[]
   trnsClassNames?: string
   defaultFilterTrnsPeriod?: string
   isFilterByDay?: boolean
 }>(), {
-  trnsClassNames: ' grid md_grid-cols-2 md_gap-x-20',
+  trnsClassNames: 'grid md_grid-cols-2 md_gap-x-20',
 })
 const emit = defineEmits(['onClickEdit'])
 
@@ -30,7 +30,7 @@ const filteredTrnsIds = computed(() => {
   if (filterTrnsType.value === null)
     return trnsIds
 
-  const trnsItems: Record<TrnID, TrnItem> = $store.state.trns.items
+  const trnsItems: Record<TrnId, TrnItem> = $store.state.trns.items
   return trnsIds.filter(id => trnsItems[id].type === filterTrnsType.value)
 })
 

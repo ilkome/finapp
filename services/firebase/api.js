@@ -7,7 +7,7 @@ export const app = initializeApp(config)
 export const db = getDatabase(app)
 export const auth = getAuth(app)
 
-export const getDataOnce = (path) => {
+export function getDataOnce(path) {
   return new Promise((resolve) => {
     get(child(ref(db), path))
       .then((snapshot) => {
@@ -22,7 +22,7 @@ export const getDataOnce = (path) => {
   })
 }
 
-export const getDataAndWatch = (path, callback) => {
+export function getDataAndWatch(path, callback) {
   onValue(ref(db, path), (snapshot) => {
     const data = snapshot.val()
     return callback(data)

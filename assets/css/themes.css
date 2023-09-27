@@ -16,7 +16,7 @@ html.dark {
   --foreground-secondary: 245 245 245;
 
   /* --foreground-main: 28 28 28; */
-  --foreground-main: 23 27 32;
+  --foreground-main: 0 0 0;
   --foreground-hover: 58 58 60;
   --foreground-active: 44 44 46;
   --foreground-second: 23 23 23;

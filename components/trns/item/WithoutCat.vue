@@ -63,6 +63,6 @@ export default defineComponent({
 
     //- Description
     .pt-1.text-neutral-500.text-xs(
-      v-if="trnItem.description"
-    ) {{ trnItem.description }}
+      v-if="trnItem.desc"
+    ) {{ trnItem.desc }}
 </template>

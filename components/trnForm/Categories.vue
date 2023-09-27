@@ -1,45 +1,44 @@
-<script>
+<script setup lang="ts">
 import SwiperCore from 'swiper'
 import 'swiper/swiper-bundle.css'
+import type { CategoryId } from '../categories/types'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
-export default {
-  name: 'TrnFormCategories',
+const emit = defineEmits<{
+  (e: 'closeModal'): void
+}>()
 
-  data() {
-    return {
-      slider: null,
-    }
-  },
+const { $store } = useNuxtApp()
+const $trnForm = useTrnFormStore()
+const slider = ref()
+const trnFormCategories = ref()
 
-  mounted() {
-    const initialSlide = 1
-
-    this.slider = new SwiperCore(this.$refs.trnFormCategories, {
-      observer: true,
-      observeParents: true,
-      slidesPerView: 1,
-      touchStartPreventDefault: false,
-      autoHeight: false,
-      initialSlide,
-      shortSwipes: false,
-      longSwipesRatio: 0.1,
-      longSwipesMs: 60,
-    })
-  },
-
-  methods: {
-    handleCategoryClick(categoryId) {
-      if (this.$store.getters['categories/isCategoryHasChildren'](categoryId)) {
-        this.$store.commit('trnForm/setTrnFormModalCategoryId', categoryId)
-        this.$store.commit('trnForm/showTrnFormModal', 'categoriesChild')
-      }
-      else {
-        this.$emit('closeModal')
-        this.$store.commit('trnForm/setTrnFormValues', { categoryId })
-      }
-    },
-  },
+function onClick(categoryId: CategoryId) {
+  if ($store.getters['categories/isCategoryHasChildren'](categoryId)) {
+    $store.commit('trnForm/setTrnFormModalCategoryId', categoryId)
+    $store.commit('trnForm/showTrnFormModal', 'categoriesChild')
+  }
+  else {
+    $trnForm.values.categoryId = categoryId
+    emit('closeModal')
+  }
 }
+
+onMounted(() => {
+  const initialSlide = 1
+
+  slider.value = new SwiperCore(trnFormCategories.value, {
+    observer: true,
+    observeParents: true,
+    slidesPerView: 1,
+    touchStartPreventDefault: false,
+    autoHeight: false,
+    initialSlide,
+    shortSwipes: false,
+    longSwipesRatio: 0.1,
+    longSwipesMs: 60,
+  })
+})
 </script>
 
 <template lang="pug">
@@ -54,10 +53,10 @@ export default {
               | {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
-                :activeItemId="$store.state.trnForm.values.categoryId"
+                :activeItemId="$trnForm?.values?.categoryId"
                 :ids="$store.getters['categories/recentCategoriesIds']"
                 class="!gap-x-1"
-                @onClick="handleCategoryClick"
+                @click="onClick"
               )
 
         //- Main
@@ -67,10 +66,10 @@ export default {
               | {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
-                :activeItemId="$store.state.trnForm.values.categoryId"
+                :activeItemId="$trnForm?.values?.categoryId"
                 :ids="$store.getters['categories/categoriesRootIds']"
                 class="!gap-x-1"
-                @onClick="handleCategoryClick"
+                @click="onClick"
               )
 
         //- Favorite
@@ -80,10 +79,10 @@ export default {
               | {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
-                :activeItemId="$store.state.trnForm.values.categoryId"
+                :activeItemId="$trnForm?.values?.categoryId"
                 :ids="$store.getters['categories/favoriteCategoriesIds']"
                 class="!gap-x-1"
-                @onClick="handleCategoryClick"
+                @click="onClick"
               )
 
   .py-2.px-3(v-if="slider")

@@ -1,5 +1,5 @@
 <template lang="pug">
-a.flex-center.py-3.px-5.rounded-md.hocus_bg-item-hover.transition(
+a.flex-center.py-2.px-5.rounded-md.hocus_bg-item-hover.transition(
   href="https://ilko.me"
 )
   | {{ $t('app.madeBy.text') }}

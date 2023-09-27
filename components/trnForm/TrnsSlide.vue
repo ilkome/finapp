@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getTrnsIds } from '~/components/trns/getTrns'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
   slider: {
@@ -8,17 +9,18 @@ const props = defineProps<{
 }>()
 
 const { $store, nuxt2Context: { i18n } } = useNuxtApp()
+const $trnForm = useTrnFormStore()
 const filterBy = ref('wallet')
 
 const filteredTrnsIds = computed(() => {
   const trnsItems = $store.state.trns.items
-  const walletsIds = [$store.state.trnForm.values.walletId]
+  const walletsIds = [$trnForm.values.walletId]
 
   if (filterBy.value === 'wallet')
     return getTrnsIds({ walletsIds, trnsItems })
 
   if (filterBy.value === 'walletAndCategory') {
-    const categoryId = $store.state.trnForm.values.categoryId
+    const categoryId = $trnForm.values.categoryId
     const childIds = $store.getters['categories/getChildCategoriesIds'](categoryId)
     const categoriesIds = childIds.length > 0 ? childIds : [categoryId]
 
@@ -56,7 +58,9 @@ const tabs = computed(() => [{
 </script>
 
 <template lang="pug">
-.h-full.overflow-hidden.grid.trnsListScroll
+.h-full.overflow-hidden.grid.trnsListScroll(
+  class="grid-rows-[1fr_auto]"
+)
   .h-full.overflow-hidden
     .h-full.overflow-y-auto.pt-5.px-2.scroll.scrollerBlock(
       :class="{ 'grid items-center': filteredTrnsIds.length === 0, 'grid-rows-[1fr_auto]': filteredTrnsIds.length > 0 }"

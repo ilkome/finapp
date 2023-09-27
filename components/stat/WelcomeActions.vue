@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
+
 const { $store } = useNuxtApp()
 const router = useRouter()
+const $trnForm = useTrnFormStore()
+const { trnFormCreate } = useTrnForm()
 
 if (!$store.getters['wallets/hasWallets'] || !$store.getters['categories/hasCategories'])
   router.replace('/welcome')
@@ -12,20 +16,16 @@ if (!$store.getters['wallets/hasWallets'] || !$store.getters['categories/hasCate
 
   SharedButton._text-center._blue2(
     :title="$t('create')"
-    @onClick="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
+    @onClick="trnFormCreate"
   )
 </template>
 
-<i18n lang="json5">
-{
-  "en": {
-    "intro": "To see Statistics",
-    "create": "Create your first Transaction",
-  },
+<i18n lang="yaml">
+en:
+  intro: To see Statistics
+  create: Create your first Transaction
 
-  "ru": {
-    "intro": "Чтобы увидеть статистику",
-    "create": "Создайте свою первую Транзакцию",
-  }
-}
+ru:
+  intro: Чтобы увидеть статистику
+  create: Создайте свою первую Транзакцию
 </i18n>

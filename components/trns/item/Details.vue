@@ -1,55 +1,61 @@
-<script>
-import useCalculator from '~/components/trnForm/calculator/useCalculator'
+<script setup lang="ts">
 import { formatDate } from '~/utils/formatDate'
+import type { TrnId, TrnItem } from '~/components/trns/types'
+import type { WalletItem } from '~~/components/wallets/types'
+import { useTrnForm } from '~/components/trnForm/useTrnForm'
 
-export default {
-  props: {
-    category: { type: Object, required: true },
-    isActive: { type: Boolean, default: false },
-    showCategory: { type: Boolean, default: false },
-    trn: { type: Object, required: true },
-    trnId: { type: String, required: true },
-    ui: { type: String, default: 'history' },
-    wallet: { type: Object, required: true },
-  },
+const props = withDefaults(defineProps<{
+  category: object
+  isActive?: boolean
+  showCategory?: boolean
+  trn: TrnItem
+  trnId: TrnId
+  ui?: string
+  wallet: WalletItem
+}>(), {
+  ui: 'history',
+})
 
-  computed: {
-    className() {
-      return {
-        _active: this.isActive,
-        _detailed: this.ui === 'detailed',
-        _history: this.ui === 'history' || (this.ui === 'stat' && this.showCategory),
-        _stat: this.ui === 'stat',
-      }
-    },
-    formattedDate() {
-      const date = formatDate(this.trn.date, 'full')
-      return `${date.weekday}, ${date.day} ${date.month} ${date.year}`
-    },
-    formattedDateDay() {
-      return formatDate(this.trn.date, 'trnItem')
-    },
-    formattedDateDay2() {
-      return formatDate(this.trn.date, 'trnItem')
-    },
-  },
+const emit = defineEmits<{
+  (e: 'onClickEdit', trnId: TrnId): void
+}>()
 
-  methods: {
-    handleClick() {
-      if (!this.$store.state.trns.modal.show) {
-        this.$store.commit('trns/showTrnModal')
-        this.$store.commit('trns/setTrnModalId', this.trnId)
-      }
-    },
+const { $store } = useNuxtApp()
+const { trnFormEdit } = useTrnForm()
 
-    setTrnEdit() {
-      const trnId = this.trnId
-      const { setExpression } = useCalculator()
-      setExpression(this.trn.type === 2 && this.trn.incomeAmount ? this.trn.incomeAmount : this.trn.amount)
-      this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
-      this.$emit('onClickEdit', this.trnId)
-    },
-  },
+const className = computed(() => {
+  return {
+    _active: props.isActive,
+    _detailed: props.ui === 'detailed',
+    _history: props.ui === 'history' || (props.ui === 'stat' && props.showCategory),
+    _stat: props.ui === 'stat',
+  }
+})
+
+const formattedDate = computed(() => {
+  const date = formatDate(props.trn.date, 'full')
+  return `${date.weekday}, ${date.day} ${date.month} ${date.year}`
+})
+
+const formattedDateDay = computed(() => {
+  return formatDate(props.trn.date, 'trnItem')
+})
+
+const formattedDateDay2 = computed(() => {
+  return formatDate(props.trn.date, 'trnItem')
+})
+
+function handleClick() {
+  if (!$store.state.trns.modal.show) {
+    $store.commit('trns/showTrnModal')
+    $store.commit('trns/setTrnModalId', props.trnId)
+  }
+}
+
+function setTrnEdit() {
+  const trnId = props.trnId
+  trnFormEdit(trnId)
+  emit('onClickEdit', trnId)
 }
 </script>
 

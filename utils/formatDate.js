@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+
 const calendar = require('dayjs/plugin/calendar')
 
 dayjs.extend(calendar)
@@ -7,7 +8,7 @@ dayjs.locale('en', {
   mondayFirst: true,
 })
 
-export const formatDate = (value, type) => {
+export function formatDate(value, type) {
   // eslint-disable-next-line no-undef
   const currentLocale = $nuxt.$i18n.locale
 
@@ -16,10 +17,10 @@ export const formatDate = (value, type) => {
       return {
         day: dayjs(+value).format('D'),
         weekday: dayjs(+value).calendar(null, {
-          sameDay: `dddd, [${currentLocale === 'ru' ? 'Сегодня' : 'Today'}]`,
-          nextDay: `dddd, [${currentLocale === 'ru' ? 'Завтра' : 'Tomorrow'}]`,
+          sameDay: `[${currentLocale === 'ru' ? 'Сегодня' : 'Today'}], dddd`,
+          nextDay: `[${currentLocale === 'ru' ? 'Завтра' : 'Tomorrow'}], dddd`,
           nextWeek: 'dddd',
-          lastDay: `dddd, [${currentLocale === 'ru' ? 'Вчера' : 'Yesterday'}]`,
+          lastDay: `[${currentLocale === 'ru' ? 'Вчера' : 'Yesterday'}], dddd`,
           lastWeek: 'dddd',
           sameElse: 'dddd',
         }),

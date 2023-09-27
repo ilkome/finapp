@@ -1,3 +1,5 @@
+import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
+
 interface MenuItem {
   icon: string
   name: string
@@ -6,8 +8,10 @@ interface MenuItem {
 
 export default function useMenuData() {
   const { $store, nuxt2Context: { i18n } } = useNuxtApp()
+  const { trnFormCreate } = useTrnForm()
   const route = useRoute()
   const router = useRouter()
+  const $trnForm = useTrnFormStore()
 
   const items = computed(() => ({
     trnForm: {
@@ -37,18 +41,18 @@ export default function useMenuData() {
   }))
 
   function onClick(menuId: string) {
-    menuId === 'trnForm'
-      ? $store.dispatch('trnForm/openTrnForm', { action: 'create' })
-      : router.push(`/${menuId}`)
-
-    if (menuId === 'history')
-      router.push(`/${menuId}`)
-
     $store.dispatch('ui/setActiveTab', null)
+
+    if (menuId === 'trnForm') {
+      trnFormCreate()
+      return
+    }
+
+    router.push(`/${menuId}`)
   }
 
   function checkIsActive(menuId: string) {
-    return route.name.includes(menuId)
+    return route.name?.includes(menuId)
   }
 
   function checkIsShow(item: MenuItem) {

@@ -2,10 +2,10 @@
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { random, successEmo } from '~/assets/js/emo'
 import { removeData } from '~/services/firebase/api'
-import type { WalletID } from '~/components/wallets/types'
+import type { WalletId } from '~/components/wallets/types'
 
 const props = defineProps<{
-  walletId: WalletID
+  walletId: WalletId
 }>()
 const { walletId } = toRefs(props)
 

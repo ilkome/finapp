@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import type { TrnID } from '~/components/trns/types'
-import useCalculator from '~/components/trnForm/calculator/useCalculator'
+import type { TrnId } from '~/components/trns/types'
 import useFilter from '~/components/filter/useFilter'
 import useTrn from '~/components/trns/item/useTrn'
+import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
-  trnId: TrnID
+  trnId: TrnId
   slider?: any
 }>()
 const emit = defineEmits(['onClickEdit'])
 
 const { $store } = useNuxtApp()
-const { setExpression } = useCalculator()
+const $trnForm = useTrnFormStore()
+const { trnFormEdit } = useTrnForm()
+
 const { setFilterCatsId } = useFilter()
 const { formatTrnItem } = useTrn()
 const trnItem = computed(() => formatTrnItem(props.trnId))
@@ -30,8 +32,7 @@ const actions = {
     if (props.slider)
       props.slider.slideTo(1)
 
-    setExpression(trnItem.value.type === 2 && trnItem.value.incomeAmount ? trnItem.value.incomeAmount : trnItem.value.amount)
-    $store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.value.id })
+    trnFormEdit(props.trnId)
     emit('onClickEdit', props.trnId)
   },
 
@@ -125,6 +126,6 @@ const actions = {
         )
 
     //- Description
-    .pt-2.text-neutral-500.text-xs.leading-none(v-if="trnItem.description")
-      | {{ trnItem.description }}
+    .pt-2.text-neutral-500.text-xs.leading-none(v-if="trnItem.desc")
+      | {{ trnItem.desc }}
 </template>

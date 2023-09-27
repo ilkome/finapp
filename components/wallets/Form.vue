@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { generateId } from '~/utils/generateId'
-import type { WalletForm, WalletID } from '~/components/wallets/types'
-import { allColors } from '~/assets/js/colors'
+import type { WalletForm, WalletId } from '~/components/wallets/types'
 import { getPreparedFormData } from '~/components/wallets/getForm'
 import { saveData } from '~/services/firebase/api'
 
 const props = defineProps<{
-  walletId?: WalletID
+  walletId?: WalletId
   walletForm: WalletForm
 }>()
 

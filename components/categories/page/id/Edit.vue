@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CategoryID, CategoryItem } from '~/components/categories/types'
+import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { getPreparedFormData } from '~/components/categories/getForm'
 import { getParentCategory } from '~/components/categories/getCategories'
 
@@ -7,7 +7,7 @@ const { $store } = useNuxtApp()
 const router = useRouter()
 const route = useRoute()
 
-const categoryId = computed<CategoryID>(() => route.params.id)
+const categoryId = computed<CategoryId>(() => route.params.id)
 const category = computed<CategoryItem>(() => $store.state.categories.items[categoryId.value])
 const categoryForm = ref(getPreparedFormData(category.value))
 const parentCategory = computed(() =>

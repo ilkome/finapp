@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('node:fs')
 const ftp = require('vinyl-ftp')
 const notifier = require('node-notifier')
 const { src } = require('gulp')
@@ -31,8 +31,8 @@ function uploadTask(path, cb) {
 
     return src(path)
       .pipe(toaster('Upload', cb))
-      .pipe(conn.newer(configFTP.dest))
-      .pipe(conn.dest(configFTP.dest))
+      .pipe(conn.newer('/'))
+      .pipe(conn.dest('/'))
   }
   else {
     notifier.notify({

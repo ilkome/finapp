@@ -1,23 +1,23 @@
 import dayjs from 'dayjs'
 import type { PeriodNames } from '~/components/date/types'
-import type { TrnID, TrnItem, TrnType } from '~/components/trns/types'
-import type { WalletID } from '~/components/wallets/types'
+import type { CategoryId, TrnId, TrnItem, TrnType } from '~/components/trns/types'
+import type { WalletId } from '~/components/wallets/types'
 
 type Date = number
 interface Props {
   trnsItems: Record<string, TrnItem>
-  categoriesIds?: WalletID[]
+  categoriesIds?: CategoryId[] | false
   date?: Date
   fromDate?: number
   periodName?: PeriodNames
   trnType?: TrnType
   untilDate?: number
-  walletsIds?: WalletID[]
+  walletsIds?: WalletId[]
 }
 
 // TODO: sorting option?
-export const getTrnsIds = (props: Props) => {
-  let trnsIds: TrnID[] = Object.keys(props.trnsItems)
+export function getTrnsIds(props: Props) {
+  let trnsIds: TrnId[] = Object.keys(props.trnsItems)
 
   // Type
   if (props.trnType !== undefined && props.trnType !== null)
@@ -45,7 +45,7 @@ export const getTrnsIds = (props: Props) => {
 
   // Wallet
   if (props.walletsIds?.length > 0) {
-    trnsIds = trnsIds.filter((trnId: TrnID) => {
+    trnsIds = trnsIds.filter((trnId: TrnId) => {
       const trn = props.trnsItems[trnId]
       return props.walletsIds?.includes(trn?.walletId)
        || props.walletsIds?.includes(trn?.expenseWalletId)
@@ -58,7 +58,7 @@ export const getTrnsIds = (props: Props) => {
   // Category
   if (props.categoriesIds?.length > 0) {
     trnsIds = trnsIds.filter(
-      (trnId: TrnID) => props.categoriesIds.includes(props.trnsItems[trnId].categoryId))
+      (trnId: TrnId) => props.categoriesIds.includes(props.trnsItems[trnId].categoryId))
   }
 
   return trnsIds.sort((a, b) => props.trnsItems[b].date - props.trnsItems[a].date)

@@ -1,7 +1,7 @@
-import type { WalletID } from '~/components/wallets/types'
+import type { WalletId } from '~/components/wallets/types'
 
-export type TrnID = string
-export type CategoryID = string
+export type TrnId = string
+export type CategoryId = string
 
 export enum TrnType {
   Expense,
@@ -9,38 +9,57 @@ export enum TrnType {
   Transfer,
 }
 
-// TODO: make WalletId optional only if TrnType.Transfer
-export interface TrnTransaction {
-  amount: number
-  type: TrnType.Income | TrnType.Expense
-  categoryId: CategoryID
-  walletId: WalletID
-  date: number
+export enum TransferType {
+  Expense,
+  Income,
 }
 
-export interface TrnTransfer {
-  type: TrnType.Transfer
+export enum TrnTypeSlug {
+  Expense = 'expense',
+  Income = 'income',
+  Transfer = 'transfer',
+}
+
+interface BaseTrn {
   date: number
+  desc?: string
+  edited: number
+}
+
+export interface Transaction extends BaseTrn {
+  type: TrnType.Income | TrnType.Expense
+  amount: number
+  categoryId: CategoryId
+  walletId: WalletId
+}
+
+export interface Transfer extends BaseTrn {
+  type: TrnType.Transfer
   categoryId: 'transfer'
 
-  incomeWalletId: WalletID
+  incomeWalletId: WalletId
   incomeAmount: number
 
-  expenseWalletId: WalletID
+  expenseWalletId: WalletId
   expenseAmount: number
 }
 
-// @deprecated: Use TrnTransfer instead
-export interface TrnTransferOld {
+/** @deprecated: use Transfer */
+export interface TransferDeprecated {
   type: TrnType.Transfer
   date: number
+  edited: number
   categoryId: 'transfer'
 
   amountFrom: number
-  walletFromId: WalletID
+  walletFromId: WalletId
 
   amountTo: number
-  walletToId: WalletID
+  walletToId: WalletId
 }
 
-export type TrnItem = TrnTransaction | TrnTransfer | TrnTransferOld
+export type TrnItem = Transaction | Transfer
+export type TrnItemDirty = Transaction | Transfer | TransferDeprecated
+
+export type Trns = Record<TrnId, TrnItem>
+export type TrnsDirty = Record<TrnId, TrnItemDirty>

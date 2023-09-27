@@ -1,15 +1,17 @@
-export type CategoryID = string
+export type CategoryId = string
 
 export interface CategoryItem {
   color: string
   icon: string
   name: string
-  parentId: CategoryID | 0
-  childIds?: CategoryID[]
+  parentId: CategoryId | 0
+  childIds?: CategoryId[]
+  showInLastUsed: boolean
+  showInQuickSelector: boolean
 }
 
 export interface CategoryStore {
-  items: Record<CategoryID, CategoryItem>
+  items: Record<CategoryId, CategoryItem>
 }
 
 export interface CategoryForm {
@@ -22,3 +24,5 @@ export interface CategoryForm {
   showInQuickSelector: boolean
   showStat: boolean
 }
+
+export type Categories = Record<CategoryId, CategoryItem>

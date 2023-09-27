@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { CategoryID } from '~/components/categories/types'
+import type { CategoryId } from '~/components/categories/types'
 
 defineProps<{
-  ids: CategoryID[]
+  ids: CategoryId[]
   activeItemId?: string | 0
   isHideParentCategory?: boolean
   slider?: object

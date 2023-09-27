@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { WalletID, WalletItem } from './types'
+import type { WalletId, WalletItem } from './types'
 import useAmount from '~/components/amount/useAmount'
 import type { CurrencyCode } from '~/components/currencies/types'
 
 const props = defineProps<{
-  walletsItems: Record<WalletID, WalletItem>
+  walletsItems: Record<WalletId, WalletItem>
   currencyCode: CurrencyCode
 }>()
 const { $store } = useNuxtApp()

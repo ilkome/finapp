@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CategoryID, CategoryItem } from '~/components/categories/types'
+import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import useFilter from '~/components/filter/useFilter'
 import type { TrnType } from '~/components/trns/types'
 import useStatPage from '~/components/stat/useStatPage'
@@ -9,7 +9,7 @@ const props = defineProps<{
   total: number
   type: TrnType
   category: CategoryItem
-  categoryId: CategoryID
+  categoryId: CategoryId
 }>()
 
 const { $store } = useNuxtApp()

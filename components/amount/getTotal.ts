@@ -1,6 +1,6 @@
-import type { CategoryID } from '~/components/categories/types'
-import type { TrnID, TrnItem } from '~/components/trns/types'
-import type { WalletID, WalletItem } from '~/components/wallets/types'
+import type { CategoryId } from '~/components/categories/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
+import type { WalletId, WalletItem } from '~/components/wallets/types'
 import { TrnType } from '~/components/trns/types'
 
 export function getAmountInRate({
@@ -24,11 +24,11 @@ export function getAmountInRate({
 }
 
 interface TotalProps {
-  trnsIds: TrnID[]
-  trnsItems: Record<TrnID, TrnItem>
-  walletsItems: Record<WalletID, WalletItem>
-  transferCategoriesIds?: CategoryID[]
-  walletsIds?: WalletID[]
+  trnsIds: TrnId[]
+  trnsItems: Record<TrnId, TrnItem>
+  walletsItems: Record<WalletId, WalletItem>
+  transferCategoriesIds?: CategoryId[]
+  walletsIds?: WalletId[]
   baseCurrencyCode?: string // TODO: add typings
   rates?: Record<string, number> // TODO: add typings
 }

@@ -1,28 +1,30 @@
 <script setup lang="ts">
-import type { CategoryID, CategoryItem } from '~/components/categories/types'
+import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import useFilter from '~/components/filter/useFilter'
 
 const props = defineProps<{
   activeItemId: string | 0
   category: CategoryItem
-  id: CategoryID
+  id: CategoryId
   isHideParentCategory?: boolean
   slider: any
 }>()
-const emit = defineEmits(['onClick'])
+const emit = defineEmits<{
+  (e: 'click', id: CategoryId): void
+}>()
 
 const { $store } = useNuxtApp()
 const { setFilterCatsId } = useFilter()
+
 const childCategoriesIds = computed(() =>
   $store.getters['categories/getChildCategoriesIds'](props.id))
 
 const parentCategory = computed(() => $store.state.categories.items[props.category?.parentId])
-const onClickItem = () => emit('onClick', props.id)
 
 function onClickIcon() {
   // Prevent filter when using in TrnForm
   if (props.slider) {
-    onClickItem()
+    emit('click', props.id)
     return
   }
 
@@ -37,7 +39,7 @@ function onClickIcon() {
 .cursor-pointer.py-2.px-2.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
   v-if="category"
   :class="{ '!cursor-default !bg-skin-item-main-active': activeItemId === id }"
-  @click="onClickItem"
+  @click="emit('click', id)"
 )
   .w-8.h-8.flex.items-center.justify-center.rounded-full.text-xl.leading-none.text-neutral-50(
     :style="{ background: category.color }"

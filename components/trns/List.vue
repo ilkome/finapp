@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { TrnID } from '~/components/trns/types'
-import useCalculator from '~/components/trnForm/calculator/useCalculator'
+import type { TrnId } from '~/components/trns/types'
 import useFilter from '~/components/filter/useFilter'
+import { useTrnForm } from '~/components/trnForm/useTrnForm'
 
 const props = withDefaults(defineProps<{
   limit: number
   size: number
-  trnsIds: TrnID[]
+  trnsIds: TrnId[]
 
   isShowFilter?: boolean
   isFilterByDay?: boolean
@@ -24,8 +24,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['onClickEdit'])
 
 const { $store } = useNuxtApp()
-const { setExpression } = useCalculator()
 const { setFilterCatsId, setDayDate } = useFilter()
+const { trnFormEdit } = useTrnForm()
 
 const pageNumber = ref(1)
 const isShowTrnsWithDesc = ref(false)
@@ -72,33 +72,30 @@ function toggleTrnsWithDesc() {
   isShowTrnsWithDesc.value = !isShowTrnsWithDesc.value
 }
 
-const actions = trnItem => ({
-  onOpenDetails: () => {
-    if (!$store.state.trns.modal.show) {
-      $store.commit('trns/showTrnModal')
-      $store.commit('trns/setTrnModalId', trnItem.id)
-    }
-  },
+function actions(trnItem) {
+  return {
+    onOpenDetails: () => {
+      if (!$store.state.trns.modal.show) {
+        $store.commit('trns/showTrnModal')
+        $store.commit('trns/setTrnModalId', trnItem.id)
+      }
+    },
 
-  onOpenEdit: (event) => {
-    event.stopPropagation()
-    setExpression(trnItem.type === 2 && trnItem.incomeAmount ? trnItem.incomeAmount : trnItem.amount)
-    $store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId: trnItem.id })
-  },
+    onOpenEdit: (event) => {
+      event.stopPropagation()
+      trnFormEdit(trnItem.id)
+    },
 
-  // TODO: useFilter
-  onSetFilter: (event) => {
-    event.stopPropagation()
-    setFilterCatsId(trnItem.categoryId)
-    $store.commit('filter/setFilterDateNow')
-    $store.commit('trns/hideTrnModal')
-    $store.commit('trns/setTrnModalId', null)
-    $store.dispatch('ui/setActiveTabStat', 'details')
-  },
-})
-
-function onClickEdit(props) {
-  emit('onClickEdit', props)
+    // TODO: useFilter
+    onSetFilter: (event) => {
+      event.stopPropagation()
+      setFilterCatsId(trnItem.categoryId)
+      $store.commit('filter/setFilterDateNow')
+      $store.commit('trns/hideTrnModal')
+      $store.commit('trns/setTrnModalId', null)
+      $store.dispatch('ui/setActiveTabStat', 'details')
+    },
+  }
 }
 </script>
 
@@ -133,7 +130,7 @@ div(v-if="trnsIds && trnsIds.length > 0")
           v-for="trnId in trnsIds"
           :key="trnId"
           :trnId="trnId"
-          @onClickEdit="onClickEdit"
+          @onClickEdit="$emit('onClickEdit')"
         )
         TrnsItemWithoutCat.py-3.px-3.cursor-pointer(
           v-if="uiCat"

@@ -5,7 +5,7 @@ export default {
   },
 
   isDevUser(state) {
-    if ($nuxt.$config.devEmails.includes(state.user?.email))
+    if ($nuxt.$config.public.devEmails.includes(state.user?.email))
       return true
   },
 }

@@ -86,7 +86,7 @@ UiPage(v-if="category")
         :ids="categoryChildIds"
         :slider="() => ({})"
         isHideParentCategory
-        @onClick="id => $router.push(`/categories/${id}`)"
+        @click="id => $router.push(`/categories/${id}`)"
       )
 
   //- History

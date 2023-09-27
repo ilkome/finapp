@@ -1,5 +1,5 @@
-import type { CategoryID } from '~/components/categories/types'
-import type { WalletID } from '~/components/wallets/types'
+import type { CategoryId } from '~/components/categories/types'
+import type { WalletId } from '~/components/wallets/types'
 
 export default function useFilter() {
   const { $store } = useNuxtApp()
@@ -26,7 +26,7 @@ export default function useFilter() {
     scrollTop()
   }
 
-  function setFilterWalletsId(walletId: WalletID) {
+  function setFilterWalletsId(walletId: WalletId) {
     if (isNeedToRedirect.value)
       router.push('/')
 
@@ -34,7 +34,7 @@ export default function useFilter() {
     scrollTop()
   }
 
-  function toggleWalletFilter(walletId: WalletID) {
+  function toggleWalletFilter(walletId: WalletId) {
     if ($store.state.filter.walletsIds.includes(walletId)) {
       $store.commit('filter/removeFilterWalletId', walletId)
       scrollTop()
@@ -49,7 +49,7 @@ export default function useFilter() {
 
   function setDayDate(date) {
     $store.dispatch('filter/setPeriod', 'day')
-    $store.dispatch('filter/setDate', parseInt(date))
+    $store.dispatch('filter/setDate', Number.parseInt(date))
     scrollTop()
   }
 
@@ -57,7 +57,7 @@ export default function useFilter() {
    * Removes
    *
    */
-  function removeFilterCategoryId(id: CategoryID) {
+  function removeFilterCategoryId(id: CategoryId) {
     $store.commit('filter/removeFilterCategoryId', id)
   }
 

@@ -20,7 +20,7 @@
     "axios": "^1.5.0",
     "core-js": "3.32.2",
     "currency.js": "^2.0.4",
-    "dayjs": "^1.11.9",
+    "dayjs": "^1.11.10",
     "echarts": "^5.4.3",
     "firebase": "^10.4.0",
     "highcharts": "^11.1.0",
@@ -29,7 +29,6 @@
     "lodash.merge": "^4.6.2",
     "lodash.sortby": "^4.7.0",
     "nuxt": "^2.17.1",
-    "nuxt-edge": "latest",
     "nuxt-typed-vuex": "^0.3.1",
     "pinia": "^2.1.6",
     "portal-vue": "^2.1.7",
@@ -59,10 +58,10 @@
     "@types/validator": "^13.11.1",
     "@volar/vue-language-plugin-pug": "^1.6.5",
     "@vue/runtime-dom": "^3.3.4",
-    "autoprefixer": "^10.4.15",
+    "autoprefixer": "^10.4.16",
     "c8": "7.12.0",
     "cross-env": "^7.0.3",
-    "eslint": "^8.49.0",
+    "eslint": "^8.50.0",
     "eslint-plugin-nuxt": "^4.0.0",
     "eslint-plugin-vue": "^9.17.0",
     "eslint-plugin-vue-pug": "^0.6.0",
@@ -81,7 +80,7 @@
     "stylus-loader": "^3.0.2",
     "typescript": "^5.2.2",
     "vinyl-ftp": "0.6.1",
-    "vitest": "^0.34.4",
+    "vitest": "^0.34.5",
     "webpack": "4.46.0"
   }
 }

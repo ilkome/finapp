@@ -2,8 +2,16 @@
 import { usePointer } from '@vueuse/core'
 import debounce from '~/utils/debounce'
 import useUIView from '~/components/layout/useUIView'
+import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
+
+import '~/assets/css/index.css'
+import '~/assets/css/themes.css'
+import '~/assets/css/fullpage.css'
+import '~/assets/css/reset.css'
 
 const { $store } = useNuxtApp()
+const $trnForm = useTrnFormStore()
+const { trnFormCreate } = useTrnForm()
 
 useLazyAsyncData('', async () => {
   const { initUI } = useUIView()
@@ -66,7 +74,7 @@ div(:class="classes")
       Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
 
     .createTrn.hidden.z-10.absolute.right-6.bottom-6.lg_flex(
-      @click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })"
+      @click="trnFormCreate"
     )
       .btn: .mdi.mdi-plus
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { generateId } from '~/utils/generateId'
 import icons from '~/assets/js/icons'
-import type { CategoryForm, CategoryID, CategoryItem } from '~/components/categories/types'
+import type { CategoryForm, CategoryId, CategoryItem } from '~/components/categories/types'
 import { allColors } from '~/assets/js/colors'
 import { getPreparedFormData } from '~/components/categories/getForm'
 import { saveData } from '~/services/firebase/api'
 
 const props = defineProps<{
-  categoryId?: CategoryID
+  categoryId?: CategoryId
   categoryForm: CategoryForm
 }>()
 
@@ -41,7 +41,7 @@ const tabs = computed(() => [{
  * Find category with color
  */
 function findCategoryIconByColor(color) {
-  const categoriesItems: Record<CategoryID, CategoryItem> = $store.state.categories.items
+  const categoriesItems: Record<CategoryId, CategoryItem> = $store.state.categories.items
   if (!categoriesItems)
     return
 
@@ -53,7 +53,7 @@ function findCategoryIconByColor(color) {
 /**
  * Select parent
  */
-function onParentSelect(parentId: CategoryID) {
+function onParentSelect(parentId: CategoryId) {
   emit('updateValue', 'parentId', parentId)
 
   // Change category color when patent category changed
@@ -227,7 +227,7 @@ div
           :ids="$store.getters['categories/categoriesForBeParent'].filter(id => id !== categoryId)"
           :slider="() => ({})"
           class="!gap-x-1"
-          @onClick="onParentSelect"
+          @click="onParentSelect"
         )
 
     //- Icon

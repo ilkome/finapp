@@ -12,7 +12,7 @@ export default {
         color: 'var(--c-blue-1)',
         icon: 'mdi mdi-repeat',
         name: 'Transfer',
-        order: 999,
+        order: 9999,
         parentId: 0,
         childIds: [],
         showInLastUsed: false,

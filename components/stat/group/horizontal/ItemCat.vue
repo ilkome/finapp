@@ -1,12 +1,12 @@
 <script setup lang="ts">
 // TODO: setup
-import type { CategoryID } from '~/components/categories/types'
+import type { CategoryId } from '~/components/categories/types'
 import { getTotal } from '~/components/amount/getTotal'
 import type { TrnType } from '~/components/trns/types'
 
 const props = defineProps<{
   type: TrnType
-  categoryId: CategoryID
+  categoryId: CategoryId
 }>()
 
 const { $store } = useNuxtApp()

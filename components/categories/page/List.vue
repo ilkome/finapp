@@ -25,7 +25,7 @@ UiPage
   .pt-1.pb-12.px-2
     CategoriesList(
       :ids="categoriesRootIds"
-      @onClick="catId => $router.push(`/categories/${catId}`)"
+      @click="catId => $router.push(`/categories/${catId}`)"
     )
 
   template(#bottom)

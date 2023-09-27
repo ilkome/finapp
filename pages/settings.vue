@@ -106,20 +106,14 @@ UiPage
   )
 </template>
 
-<i18n lang="json5">
-{
-  "en": {
-    "user": "User",
-    "currency": {
-      "descBase": "Transactions in different currencies will be converted to this currency."
-    }
-  },
+<i18n lang="yaml">
+en:
+  user: User
+  currency:
+    descBase: Transactions in different currencies will be converted to this currency.
 
-  "ru": {
-    "user": "Пользователь",
-    "currency": {
-      "descBase": "Основная валюта, в которую будут конвертироваться транзакции в других валютах."
-    }
-  }
-}
+ru:
+  user: Пользователь
+  currency:
+    descBase: 'Основная валюта, в которую будут конвертироваться транзакции в других валютах.'
 </i18n>

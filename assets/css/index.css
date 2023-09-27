@@ -1,8 +1,5 @@
 html {
-  /* Fonts */
   --font-primary: 'Roboto', 'sans-serif';
-  --font-secondary: 'Nunito', 'Roboto', 'sans-serif';
-  --font-number: 'Unica One', 'Roboto Condensed', 'sans-serif';
 }
 
 body {

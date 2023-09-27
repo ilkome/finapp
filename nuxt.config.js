@@ -4,10 +4,18 @@ export default defineNuxtConfig({
   bridge: {
     nitro: false,
     vite: false,
+    meta: true,
+  },
+
+  // Nuxt3: use this instead of publicRuntimeConfig
+  runtimeConfig: {
+    public: {
+      devEmails: process.env.DEV_EMAILS || [],
+      ratesApiKey: process.env.OPEN_EXCHANGE_RATES,
+    },
   },
 
   publicRuntimeConfig: {
-    devEmails: process.env.DEV_EMAILS || [],
     ratesApiKey: process.env.OPEN_EXCHANGE_RATES,
   },
 

@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import useMenuData from '~/components/menu/useMenuData'
+import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const { $store } = useNuxtApp()
+const $trnForm = useTrnFormStore()
+const { trnFormCreate } = useTrnForm()
+
 const { onClick, checkIsActive } = useMenuData()
 const activeTab = computed(() => $store.state.ui.activeTab)
 </script>
@@ -30,7 +34,7 @@ const activeTab = computed(() => $store.state.ui.activeTab)
           :class="{ 'text-blue3 dark_text-white': checkIsActive('categories'), 'group-hover_text-white': !checkIsActive('categories') }"
         )
 
-      .openTrnForm(@click="$store.dispatch('trnForm/openTrnForm', { action: 'create' })")
+      .openTrnForm(@click="trnFormCreate")
         svg(
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

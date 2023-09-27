@@ -1,12 +1,13 @@
 <script lang="ts">
 import useFilter from '~/components/filter/useFilter'
-import useCalculator from '~/components/trnForm/calculator/useCalculator'
 import useTrn from '~/components/trns/item/useTrn'
+import { useTrnForm } from '~/components/trnForm/useTrnForm'
 
 // TODO: useFilter
 export default {
   setup() {
     const { $store } = useNuxtApp()
+    const { trnFormEdit, trnFormDuplicate } = useTrnForm()
     const { setFilterCatsId, setFilterWalletsId } = useFilter()
 
     const closed = () => {
@@ -22,6 +23,8 @@ export default {
       setFilterCatsId,
       setFilterWalletsId,
       closed,
+      trnFormEdit,
+      trnFormDuplicate,
     }
   },
 
@@ -65,20 +68,19 @@ export default {
 
     handleDuplicateTrn() {
       const trnId = this.trnId
-      this.$store.dispatch('trnForm/openTrnForm', { action: 'duplicate', trnId })
+      console.log('trnId', trnId)
+      this.trnFormDuplicate(trnId)
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
     },
 
     handleEditClick() {
-      const trn = this.trnItem
       const trnId = this.trnId
-      this.$store.dispatch('trnForm/openTrnForm', { action: 'edit', trnId })
+      this.trnFormEdit(trnId)
       this.$store.commit('trns/hideTrnModal')
       this.$store.commit('trns/setTrnModalId', null)
 
-      const { setExpression } = useCalculator()
-      setExpression(trn.type === 2 && trn.incomeAmount ? trn.incomeAmount : trn.amount)
+      // setExpression(trn.type === 2 && trn.incomeAmount ? trn.incomeAmount : trn.amount)
     },
 
     handleDeleteClick() {
@@ -87,7 +89,9 @@ export default {
 
     handleDeleteConfirm() {
       const trnId = this.trnId
-      setTimeout(() => { this.$store.dispatch('trns/deleteTrn', trnId) }, 100)
+      setTimeout(() => {
+        this.$store.dispatch('trns/deleteTrn', trnId)
+      }, 100)
 
       this.showModalConfirm = false
       this.$store.commit('trns/hideTrnModal')

@@ -1,5 +1,4 @@
-import type { ComputedRef } from '@vue/composition-api'
-import type { WalletID, WalletItem, WalletItemWithAmount } from '~/components/wallets/types'
+import type { WalletId, WalletItem, WalletItemWithAmount } from '~/components/wallets/types'
 
 export default function useWallets() {
   const { $store } = useNuxtApp()
@@ -8,14 +7,14 @@ export default function useWallets() {
    * Wallets IDs sorted
    *
    */
-  const walletsIdsSorted: ComputedRef<WalletID[]> = computed(() => $store.getters['wallets/walletsSortedIds'])
+  const walletsIdsSorted = computed<WalletId[]>(() => $store.getters['wallets/walletsSortedIds'])
 
   /**
    * Wallets items sorted
    *
    */
-  const walletsItemsSorted: ComputedRef<Record<WalletID, WalletItemWithAmount>> = computed(() => {
-    const walletsIdsSorted: WalletID[] = $store.getters['wallets/walletsSortedIds']
+  const walletsItemsSorted = computed<Record<WalletId, WalletItemWithAmount>>(() => {
+    const walletsIdsSorted: WalletId[] = $store.getters['wallets/walletsSortedIds']
 
     return walletsIdsSorted.reduce((acc, id) => {
       acc[id] ??= []
@@ -30,9 +29,9 @@ export default function useWallets() {
   /**
    * Wallets currencies
    */
-  const walletsCurrencies: ComputedRef<WalletID[]> = computed(() => {
-    const walletsIdsSorted: WalletID[] = $store.getters['wallets/walletsSortedIds']
-    const walletsItems: Record<WalletID, WalletItem> = $store.state.wallets.items
+  const walletsCurrencies = computed<WalletId[]>(() => {
+    const walletsIdsSorted: WalletId[] = $store.getters['wallets/walletsSortedIds']
+    const walletsItems: Record<WalletId, WalletItem> = $store.state.wallets.items
 
     // TODO: check A
     return walletsIdsSorted.reduce((acc, id) => {

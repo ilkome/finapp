@@ -36,6 +36,35 @@ export default defineComponent({
   },
 
   methods: {
+    // signInWithEmailLink() {
+    //   const email = 'ilya.komichev@gmail.com'
+    //   const actionCodeSettings = {
+    //     // URL you want to redirect back to. The domain (www.example.com) for this
+    //     // URL must be in the authorized domains list in the Firebase Console.
+    //     url: 'https://finapp.ilko.me',
+    //     handleCodeInApp: true,
+    //     iOS: {
+    //       bundleId: 'com.finapp.ilko.me.ios',
+    //     },
+    //     android: {
+    //       packageName: 'com.finapp.ilko.me.android',
+    //       installApp: true,
+    //       minimumVersion: '12',
+    //     },
+    //     dynamicLinkDomain: 'finapp.ilko.me',
+    //   }
+
+    //   sendSignInLinkToEmail(auth, email, actionCodeSettings)
+    //     .then(() => {
+    //       window.localStorage.setItem('emailForSignIn', email)
+    //     })
+    //     .catch((error) => {
+    //       const errorCode = error.code
+    //       const errorMessage = error.message
+    //       console.log(errorCode, errorMessage)
+    //     })
+    // },
+
     signInWithGoogle() {
       this.$router.push({ query: { loading: true } })
       this.isLoading = true
@@ -61,7 +90,7 @@ export default defineComponent({
 <template lang="pug">
 .grid.h-full.text-center(class="grid-rows-[auto,1fr,auto]")
   //- Top
-  .max-w-xl.mx-auto.p-2.w-full.md_p-6
+  .max-w-xl.mx-auto.py-4.p-2.w-full.md_p-6
     .flex.justify-between
       LocaleSwitcher
       ThemeSwitcher
@@ -70,7 +99,8 @@ export default defineComponent({
   .h-full.grid.items-center.gap-8.py-4.px-3.h-full.overflow-hidden.overflow-y-auto
     .flex.flex-col.items-center.justify-center.pb-10
       SharedAppName
-      SharedCopyright
+
+      //- div(@click="signInWithEmailLink") signInWithEmailLink
 
       .flex.flex-col.items-center.px-3.py-8
         .loginButton.bg-blue3.hocus_bg-blue1.hocus_shadow(
@@ -81,12 +111,8 @@ export default defineComponent({
             .loginButton__spinier(v-if="isLoading"): SharedSpinier
           .loginButton__text.text-white {{ $t('loginWithGoogle') }}
 
-  .p-4.flex.items-center.justify-center
-    a.py-2.px-4.flex.items-center.justify-center.gap-1.rounded-md.hocus_bg-item-hover.transition(
-      href="https://ilko.me"
-      target="_blank"
-    )
-      | ilko.me
+  .p-4.md_p-6
+    SharedCopyright
 </template>
 
 <style lang="stylus" scoped>

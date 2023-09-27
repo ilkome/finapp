@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/amount/getTotal'
-import type { WalletID } from '~/components/wallets/types'
-import type { TrnID } from '~/components/trns/types'
+import type { WalletId } from '~/components/wallets/types'
+import type { TrnId } from '~/components/trns/types'
 
 const props = withDefaults(defineProps<{
-  trnsIds: TrnID[]
-  walletId: WalletID
+  trnsIds: TrnId[]
+  walletId: WalletId
 }>(), {
   trnsIds: () => [],
 })

@@ -1,6 +1,6 @@
 import _sortby from 'lodash.sortby'
-import type { TrnID, TrnItem } from '~/components/trns/types'
-import type { CategoryID, CategoryItem } from '~/components/categories/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
+import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 
 export default {
@@ -23,7 +23,7 @@ export default {
   /**
    * Categories root IDs
    */
-  categoriesRootIds(state, getters): CategoryID[] {
+  categoriesRootIds(state, getters): CategoryId[] {
     if (!getters.hasCategories)
       return []
 
@@ -33,11 +33,11 @@ export default {
   },
 
   categoriesForBeParent(state, getters, rootState) {
-    const categoriesItems: Record<CategoryID, CategoryItem> = state.items
-    const trnsItems: Record<TrnID, TrnItem> = rootState.trns.items
+    const categoriesItems: Record<CategoryId, CategoryItem> = state.items
+    const trnsItems: Record<TrnId, TrnItem> = rootState.trns.items
     const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 
-    return getters.categoriesRootIds.filter((id: CategoryID) => {
+    return getters.categoriesRootIds.filter((id: CategoryId) => {
       const hasTrnsInCategory = Object.values(trnsItems).some(trn => trn.categoryId === id)
       const isTransferCategory = transferCategoriesIds.includes(id)
 
@@ -65,6 +65,12 @@ export default {
       return Object.keys(state.items).filter(id => state.items[id]?.parentId === categoryId)
 
     return []
+  },
+
+  categoriesIdsForTrnValues(state: { items: Categories }, getters: any): CategoryId[] {
+    const ids: CategoryId[] = getters['categoriesIds']
+    return ids.filter((id: CategoryId) =>
+      id !== 'transfer' && (!state.items[id].childIds || state.items[id].childIds?.length === 0))
   },
 
   recentCategoriesIds(state, getters, rootState, rootGetters) {

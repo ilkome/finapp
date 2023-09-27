@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
-import type { CategoryID } from '~/components/categories/types'
-import type { TrnID } from '~/components/trns/types'
+import type { CategoryId } from '~/components/categories/types'
+import type { TrnId } from '~/components/trns/types'
 import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/amount/getTotal'
 import { getTrnsIds } from '~/components/trns/getTrns'
@@ -34,7 +34,7 @@ export default {
       walletsIds,
     })
 
-    function getRootCategoryIdFromTrnId(trnId: TrnID, excludeTransfer = false): CategoryID {
+    function getRootCategoryIdFromTrnId(trnId: TrnId, excludeTransfer = false): CategoryId {
       const categories = rootState.categories.items
       const trnCategoryId = trnsItems[trnId].categoryId
       const trnCategoryParentId = categories[trnCategoryId].parentId

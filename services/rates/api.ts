@@ -1,11 +1,12 @@
 import axios from 'axios'
+import type { Rates } from '~/components/currencies/types'
 
-export const getRatesOfUSD = async (apiKey: string): Promise<Record<string, string> | false> => {
+export async function getRatesOfUSD(apiKey: string): Promise<Rates | false> {
   const serviceUrl = `https://openexchangerates.org/api/latest.json?app_id=${apiKey}`
   const { data } = await axios.get(serviceUrl)
 
   if (!data) {
-    console.log('api unavailable')
+    console.error('openexchangerates.org api unavailable')
     return false
   }
 

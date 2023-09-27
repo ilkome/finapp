@@ -1,7 +1,7 @@
 import { TrnType } from '~/components/trns/types'
-import type { TrnID, TrnItem } from '~/components/trns/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
 
-export const trnsItems: Record<TrnID, TrnItem> = {
+export const trnsItems: Record<TrnId, TrnItem> = {
   transactionIncomeWalletCashUSD1000: {
     amount: 1000,
     date: 123456, // TODO: add real dates

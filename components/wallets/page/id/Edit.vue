@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getPreparedFormData } from '~/components/wallets/getForm'
 
-const { $store } = useNuxtApp()
+const { $store, nuxt2Context: { i18n } } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
 
@@ -11,15 +11,9 @@ const walletForm = ref(getPreparedFormData(wallet.value))
 
 const updateValue = (id, value) => walletForm.value[id] = value
 const afterSave = () => router.push(`/wallets/${walletId.value}`)
-</script>
 
-<script lang="ts">
-export default defineComponent({
-  head() {
-    return {
-      title: `${this.$t('base.edit')}: ${this.walletForm.name ? this.walletForm.name : this.$t('wallets.form.name.label')}`,
-    }
-  },
+useHead({
+  title: `${i18n.t('base.edit')}: ${walletForm.value?.name ? walletForm.value?.name : i18n.t('wallets.form.name.label')}`,
 })
 </script>
 

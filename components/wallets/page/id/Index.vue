@@ -2,7 +2,7 @@
 import useFilter from '~/components/filter/useFilter'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
-const { $store } = useNuxtApp()
+const { $store, nuxt2Context: { i18n } } = useNuxtApp()
 const { setFilterWalletsId } = useFilter()
 
 const route = useRoute()
@@ -37,15 +37,9 @@ function onClickFilterWallet() {
 function onEditClick() {
   router.push(`/wallets/${walletId.value}/edit`)
 }
-</script>
 
-<script lang="ts">
-export default defineComponent({
-  head() {
-    return {
-      title: `${this.$t('wallets.title')}: ${this.wallet.name}`,
-    }
-  },
+useHead({
+  title: `${i18n.t('wallets.title')}: ${wallet.value?.name}`,
 })
 </script>
 
