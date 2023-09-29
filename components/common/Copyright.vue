@@ -2,14 +2,15 @@
 a.flex-center.py-2.px-5.rounded-md.hocus_bg-item-hover.transition(
   href="https://ilko.me"
 )
-  | {{ $t('app.madeBy.text') }}
-  .mdi.mdi-heart.mx-2.heart.text-2xl(
+  | {{ $t('madeBy.text') }}
+  .mdi.mdi-heart(
     class=`
+      mx-2
+      text-2xl text-[rgb(210,0,20)]
       animate-[heartbeat_3s_ease-in-out_infinite]
-      text-[rgb(210,0,20)]
     `
   )
-  | {{ $t('app.madeBy.name') }}
+  | {{ $t('madeBy.name') }}
 </template>
 
 <style lang="stylus">
@@ -27,3 +28,14 @@ a.flex-center.py-2.px-5.rounded-md.hocus_bg-item-hover.transition(
   100%
     transform scale(.75)
 </style>
+
+<i18n lang="yaml">
+en:
+  madeBy:
+    text: Made with
+    name: by Ilya Komichev
+ru:
+  madeBy:
+    text: Разработал
+    name: Илья Комичев
+  </i18n>

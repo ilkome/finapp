@@ -64,10 +64,6 @@ export default {
       dark: 'Dark',
       light: 'Light',
     },
-    madeBy: {
-      text: 'Made with',
-      name: 'by Ilya Komichev',
-    },
   },
 
   userLogout: 'Logout',

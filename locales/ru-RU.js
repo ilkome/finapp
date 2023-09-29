@@ -65,10 +65,6 @@ export default {
       dark: 'Темная',
       light: 'Светлая',
     },
-    madeBy: {
-      text: 'Разработал',
-      name: 'Илья Комичев',
-    },
   },
 
   userLogout: 'Выход',

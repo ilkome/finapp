@@ -22,6 +22,8 @@ html.dark {
   --foreground-second: 23 23 23;
 
   /* Accent */
+  /* --accent-2: 220 100 61; */
+  --accent-2: 58 125 255;
   --accent-default: 56 148 2451;
   --accent-primary: 255 255 255;
 
@@ -55,6 +57,7 @@ html.dark-gray {
   --foreground-second: 23 23 23;
 
   /* Accent */
+  --accent-2: 58 125 255;
   --accent-default: 10 132 255;
   --accent-primary: 255 255 255;
 }
@@ -78,6 +81,7 @@ html.light {
   --foreground-active: 216 216 220;
 
   /* Accent */
+  --accent-2: 58 125 255;
   --accent-default: 0 122 255;
   --accent-primary: 255 255 255;
 

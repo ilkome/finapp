@@ -5,11 +5,13 @@ const emit = defineEmits(['click'])
 <template lang="pug">
 button(
   class=`
-    cursor-pointer
+    overflow-hidden relative
+    enabled:cursor-pointer
     py-3 px-3 w-full
+    min-h-[48px]
     text-accent-primary text-center
-    bg-accent-default rounded-full
-    hocus_bg-accent-default/80
+    bg-accent-2 rounded-full
+    hocus_bg-accent-2/80
     transition
   `
   @click="emit('click')"

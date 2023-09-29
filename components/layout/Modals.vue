@@ -8,10 +8,6 @@
   //- Currencies
   CurrenciesModal
 
-  //- Loading
-  template(v-if="!$store.state.app.status.ready")
-    LoaderSharedLoader
-
   //- Notifications
   Notifications(
     :max="2"

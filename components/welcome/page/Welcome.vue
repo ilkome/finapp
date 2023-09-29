@@ -160,7 +160,7 @@ export default {
   .firefoxBackdropFix.z-10.w-full.fixed.left-0.bottom-0.backdrop-blur(
     class="bg-skin-layout-main/70"
   )
-    SharedCopyright
+    CommonCopyright
 </template>
 
 <style lang="stylus" scoped>

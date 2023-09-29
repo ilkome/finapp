@@ -18,6 +18,7 @@ module.exports = {
         main: 'rgb(var(--bg-main))',
         accent: {
           default: 'rgb(var(--accent-default))',
+          2: 'rgb(var(--accent-2))',
           primary: 'rgb(var(--accent-primary))',
         },
         foreground: {
@@ -97,6 +98,16 @@ module.exports = {
   plugins: [
     plugin(({ addVariant }) => {
       addVariant('hocus', ['.mouse &:not(._active):hover', '&:not(._active):active'])
+    }),
+    plugin(({ matchUtilities, theme }) => {
+      matchUtilities({
+        size: value => ({
+          width: value,
+          height: value,
+        }),
+      }, {
+        values: theme('width'),
+      })
     }),
   ],
 }
