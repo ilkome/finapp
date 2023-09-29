@@ -111,24 +111,16 @@ export default {
           .options
             .options__item
               .options__desc {{ $t('welcome.create.text') }}
-              SharedButton._blue2._center(
-                :title="$t('welcome.create.btn')"
-                @onClick="step = 3"
+              SharedButton._center._blue2(
+                v-if="!$store.getters['wallets/hasWallets']"
+                :title="$t('wallets.createNewTitle')"
+                @onClick="() => { step = 3; showWalletForm = true; }"
               )
-
-  //- Wallet
-  transition(name="fadeIn")
-    template(v-if="(step !== 1 && step !== 2) && !showWalletForm && !$store.getters['wallets/hasWallets']")
-      .tab
-        .tab__content
-          .tab__wrap
-            .header
-              .header__title {{ $t('appName') }}
-            .options__desc {{ $t('welcome.createFirstWallet.text') }}
-            SharedButton._center._blue2(
-              :title="$t('welcome.createFirstWallet.btn')"
-              @onClick="showWalletForm = true"
-            )
+              SharedButton._center._blue2(
+                v-if="$store.getters['wallets/hasWallets']"
+                :title="$t('categories.createNewTitle')"
+                @onClick="() => { step = 3; showCategoryForm = true; }"
+              )
 
   //- Wallet form
   transition(name="fadeIn")
@@ -164,12 +156,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-.firefoxBackdropFix
-  @supports (not (-webkit-backdrop-filter: none)) and (not (backdrop-filter: none))
-    background theme('colors.dark3') !important
-    /.light &
-      background theme('colors.white') !important
-
 .tabs
   overflow hidden
   position absolute
@@ -255,7 +241,7 @@ export default {
       background var(--c-bg-6)
 
   &__desc
-    padding-bottom $m7
+    @apply pb-6;
     color var(--c-font-4)
     line-height 20px
     text-align center

@@ -13,6 +13,7 @@ div
 </template>
 
 <style lang="stylus" scoped>
+// TODO: use Ui components
 .title
   font-h1()
   font-size 18px

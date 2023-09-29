@@ -5,12 +5,14 @@ import type { WalletForm } from '~/components/wallets/types'
 
 const emit = defineEmits(['afterSave'])
 
+const { $store, nuxt2Context: { i18n } } = useNuxtApp()
+
 const walletForm = ref<WalletForm>({
   color: random(random(allColors)),
   countTotal: true,
   currency: 'USD',
   isCredit: false,
-  name: null,
+  name: '',
   order: 1,
 })
 
@@ -21,15 +23,12 @@ function updateValue(id, value) {
 function afterSave() {
   emit('afterSave')
 }
-</script>
 
-<script lang="ts">
-export default defineComponent({
-  head() {
-    return {
-      title: `${this.$t('base.add')}: ${this.wallet?.name}`,
-    }
-  },
+useHead({
+  title: () => `${i18n.t('base.add')}:
+    ${walletForm.value?.name
+      ? walletForm.value?.name
+      : i18n.t('categories.form.name.label')}`,
 })
 </script>
 

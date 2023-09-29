@@ -99,12 +99,8 @@ export default {
       btn: 'Начать',
     },
     create: {
-      text: 'Начнем с создания первого кошелька и категории',
+      text: 'Начнем с добавления кошелька и категории',
       btn: 'Погнали',
-    },
-    createFirstWallet: {
-      text: 'Создадим первый кошелек',
-      btn: 'Создать',
     },
     createFirstCategory: {
       text: 'Отлично! Теперь создадим категорию',
@@ -129,7 +125,7 @@ export default {
     showAll: 'Показать все кошельки',
     showOnly: 'Показать только',
     sortTitle: 'Сортировать кошельки',
-    createNewTitle: 'Создание кошелька',
+    createNewTitle: 'Добавить кошелек',
     editTitle: 'Редактирование кошелька',
     form: {
       name: {
@@ -173,7 +169,7 @@ export default {
     allTitle: 'Все',
     lastUsedTitle: 'Недавние',
     favoriteTitle: 'Любимые',
-    createNewTitle: 'Создание категории',
+    createNewTitle: 'Добавить категорию',
     editTitle: 'Редактирование категории',
     form: {
       name: {

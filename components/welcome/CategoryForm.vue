@@ -3,7 +3,7 @@ import { getPreparedFormData } from '~/components/categories/getForm'
 import { getParentCategory } from '~/components/categories/getCategories'
 
 const emit = defineEmits(['afterSave'])
-const { $store } = useNuxtApp()
+const { $store, nuxt2Context: { i18n } } = useNuxtApp()
 
 const categoryForm = ref(getPreparedFormData())
 const parentCategory = computed(() =>
@@ -11,15 +11,12 @@ const parentCategory = computed(() =>
 
 const updateValue = (id, value) => categoryForm.value[id] = value
 const afterSave = () => emit('afterSave')
-</script>
 
-<script lang="ts">
-export default defineComponent({
-  head() {
-    return {
-      title: `${this.$t('base.add')}: ${this.categoryForm.name ? this.categoryForm.name : this.$t('categories.form.name.label')}`,
-    }
-  },
+useHead({
+  title: () => `${i18n.t('base.add')}:
+    ${categoryForm.value?.name
+      ? categoryForm.value?.name
+      : i18n.t('categories.form.name.label')}`,
 })
 </script>
 

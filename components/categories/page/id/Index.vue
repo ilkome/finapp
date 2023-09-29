@@ -2,7 +2,7 @@
 import { getTrnsIds } from '~/components/trns/getTrns'
 import useFilter from '~/components/filter/useFilter'
 
-const { $store } = useNuxtApp()
+const { $store, nuxt2Context: { i18n } } = useNuxtApp()
 const { setFilterCatsId } = useFilter()
 
 const route = useRoute()
@@ -37,6 +37,11 @@ function handleSetFilterCategory() {
 }
 
 const onClickEdit = () => router.push(`/categories/${categoryId.value}/edit`)
+
+useHead({
+  // title: `${category.value.name} / ${i18n.t('categories.title')}`,
+  title: category.value.name,
+})
 </script>
 
 <template lang="pug">

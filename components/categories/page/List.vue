@@ -1,15 +1,9 @@
 <script setup lang="ts">
-const { $store } = useNuxtApp()
+const { $store, nuxt2Context: { i18n } } = useNuxtApp()
 const categoriesRootIds = computed(() => $store.getters['categories/categoriesRootIds'])
-</script>
 
-<script lang="ts">
-export default defineComponent({
-  head() {
-    return {
-      title: this.$t('categories.title'),
-    }
-  },
+useHead({
+  title: i18n.t('categories.title'),
 })
 </script>
 

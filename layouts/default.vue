@@ -53,6 +53,12 @@ onMounted(() => {
   getPageDimensions()
   window.addEventListener('resize', debounce(getPageDimensions, 300))
 })
+
+useHead({
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk} - Finapp` : 'Finapp'
+  },
+})
 </script>
 
 <template lang="pug">
@@ -86,12 +92,6 @@ div(:class="classes")
 
 <style lang="stylus">
 @import '~assets/stylus/index'
-
-.firefoxBackdropFix
-  @supports (not (-webkit-backdrop-filter: none)) and (not (backdrop-filter: none))
-    background theme('colors.dark3') !important
-    /.light &
-      background theme('colors.white') !important
 
 .createTrn
   cursor pointer

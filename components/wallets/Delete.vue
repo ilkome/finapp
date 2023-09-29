@@ -43,7 +43,7 @@ async function onDeleteConfirm() {
 
   // Give some time to complete redirect
   setTimeout(async () => {
-    await this.$store.dispatch('trns/deleteTrnsByIds', trnsIdsS)
+    await $store.dispatch('trns/deleteTrnsByIds', trnsIdsS)
     removeData(`users/${uid}/accounts/${walletIdS}`)
       .then(() => {
         $notify({
