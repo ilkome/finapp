@@ -6,7 +6,7 @@ const { $notify } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
 
-const isLoading = ref(true)
+const isLoading = ref(false)
 
 if (route.query?.loading)
   isLoading.value = true
