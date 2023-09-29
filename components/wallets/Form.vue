@@ -215,13 +215,10 @@ div(v-if="walletForm")
     background var(--c-item-bd-hover)
 </style>
 
-<i18n lang="json5">
-{
-  "en": {
-    "isCredit": "Credit account"
-  },
-  "ru": {
-    "isCredit": "Кредитный счёт"
-  }
-}
+<i18n lang="yaml">
+en:
+  isCredit: Credit account
+
+ru:
+  isCredit: Кредитный счёт
 </i18n>

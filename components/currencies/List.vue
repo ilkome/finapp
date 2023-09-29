@@ -64,14 +64,10 @@ const list = computed(() => {
           .text-sm {{ currency.name }}
 </template>
 
-<i18n lang="json5">
-{
-  "en": {
-    "notFound": "Currency not found...",
-  },
+<i18n lang="yaml">
+en:
+  notFound: Currency not found...
 
-  "ru": {
-    "notFound": "Валюта не найдена..."
-  },
-}
+ru:
+  notFound: Валюта не найдена...
 </i18n>

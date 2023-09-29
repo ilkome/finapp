@@ -154,16 +154,12 @@ UiPage
   //-       )
 </template>
 
-<i18n lang="json5">
-  {
-    "en": {
-      "list": "List",
-      "currenciesBase": "Base currency",
-    },
+<i18n lang="yaml">
+en:
+  list: List
+  currenciesBase: Base currency
 
-    "ru": {
-      "list": "Список",
-      "currenciesBase": "Основная валюта",
-    }
-  }
-  </i18n>
+ru:
+  list: Список
+  currenciesBase: Основная валюта
+</i18n>

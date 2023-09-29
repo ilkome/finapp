@@ -90,21 +90,18 @@ const counts = computed(() => ({
         )
 </template>
 
-<i18n lang="json5">
-{
-  "en": {
-    "withdrawal": "Withdrawal",
-    "credits": "Credits",
-    "withCredit": "Total without credit",
-    "savings": "Savings",
-    "total": "Total"
-  },
-  "ru": {
-    "withdrawal": "Доступные",
-    "credits": "Кредиты",
-    "withCredit": "Всего без учета кредита",
-    "savings": "Вложения",
-    "total": "Всего"
-  }
-}
+<i18n lang="yaml">
+en:
+  withdrawal: Withdrawal
+  credits: Credits
+  withCredit: Total without credit
+  savings: Savings
+  total: Total
+
+ru:
+  withdrawal: Доступные
+  credits: Кредиты
+  withCredit: Всего без учета кредита
+  savings: Вложения
+  total: Всего
 </i18n>

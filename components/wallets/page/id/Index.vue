@@ -98,13 +98,10 @@ UiPage(v-if="wallet")
     TrnsListWithControl(:trnsIds="trnsIds")
 </template>
 
-<i18n lang="json5">
-{
-  "en": {
-    "statBy": "Statistics",
-  },
-  "ru": {
-    "statBy": "Статистика",
-  },
-}
+<i18n lang="yaml">
+en:
+  statBy: Statistics
+
+ru:
+  statBy: Статистика
 </i18n>

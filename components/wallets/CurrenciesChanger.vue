@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import useWallets from '~/components/wallets/useWallets'
+
 const { walletsCurrencies } = useWallets()
 const { $store } = useNuxtApp()
 
@@ -23,14 +24,10 @@ UiTabs(v-if="walletsCurrencies.length > 1")
       span.mdi.mdi-dots-vertical.ml-1
 </template>
 
-<i18n lang="json5">
-{
-  "en": {
-    "more": "More"
-  },
+<i18n lang="yaml">
+en:
+  more: More
 
-  "ru": {
-    "more": "Еще"
-  },
-}
+ru:
+  more: Еще
 </i18n>
