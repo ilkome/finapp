@@ -55,8 +55,8 @@ div
   )
 
   slot(
-    v-if="isShowToggle && walletsIdsSorted.length > limit"
     name="toggle"
+    v-if="isShowToggle && walletsIdsSorted.length > limit"
     :stateLimit="stateLimit"
     :limit="limit"
     :toggle="toggle"

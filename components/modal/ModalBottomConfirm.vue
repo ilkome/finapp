@@ -1,49 +1,36 @@
-<script>
-export default {
-  props: {
-    description: {
-      type: String,
-      default: null,
-    },
-    show: {
-      type: Boolean,
-      default: false,
-    },
-  },
-}
+<script setup lang="ts">
+defineProps<{
+  show: boolean
+  description?: string
+}>()
+
+const emit = defineEmits<{
+  (e: 'onConfirm'): void
+  (e: 'closed'): void
+}>()
 </script>
 
 <template lang="pug">
-Portal(
+TrnFormModal(
   v-if="show"
-  to="modal"
+  @closed="$emit('closed')"
 )
-  ModalBottom(
-    :title="$t('base.sure')"
-    @onClose="$emit('onClose')"
-  )
 
-    template(#default="{ closeModal }")
-      .pb-8.text-skin-red-base.text-center(v-if="description") {{ description }}
+  template(#header)
+    .pt-2.flex-center {{ $t('base.sure') }}
 
-      .pb-4.px-2.flex.justify-evenly.gap-6
-        ModalButton.grow(
-          :name="$t('base.no')"
-          icon="mdi mdi-close"
-          @onClick="closeModal"
-        )
-        ModalButton.grow(
-          :name="$t('base.yes')"
-          icon="mdi mdi-check"
-          @onClick="$emit('onConfirm')"
-        )
+  template(#default="{ close }")
+    .pb-2.text-alert-base.text-center(v-if="description") {{ description }}
+
+    .pb-2.px-2.flex.justify-evenly
+      ModalButton.grow(
+        :name="$t('base.no')"
+        icon="mdi mdi-close"
+        @onClick="close"
+      )
+      ModalButton.grow(
+        :name="$t('base.yes')"
+        icon="mdi mdi-check"
+        @onClick="emit('onConfirm')"
+      )
 </template>
-
-<style lang="stylus">
-@import '~assets/stylus/variables/margins'
-
-.descError
-  padding-bottom $m8
-  color var(--c-expense-1)
-  text-align center
-</style>

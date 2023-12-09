@@ -42,7 +42,7 @@ watch(() => $trnForm.values.trnType, (trnType) => {
     .cursor-pointer.overflow-hidden.rounded-md(
       v-for="(item, slug) in items"
       :key="slug"
-      :class="[{ '!bg-skin-item-main-active': $trnForm.values.transferType === item.transferType }]"
+      :class="[{ '!bg-item-main-active': $trnForm.values.transferType === item.transferType }]"
       @click="$trnForm.onChangeTransferType(item.transferType)"
     )
       //- Wallet name

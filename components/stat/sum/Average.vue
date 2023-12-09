@@ -21,7 +21,7 @@ export default {
 <template lang="pug">
 .summaryItem(:class="className")
   .summaryItem__title(class="pb-[2px]") {{ title }}
-  .summaryItem__amount.text-skin-item-base
+  .summaryItem__amount.text-item-base
     Amount(
       :amount="amount"
       :currencyCode="$store.state.currencies.base"

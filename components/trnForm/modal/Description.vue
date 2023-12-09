@@ -11,12 +11,12 @@ function handleCancel(close) {
   close()
 }
 
-function handleSave(close) {
+function onSave(close) {
   $trnForm.values.desc = description.value
   close()
 }
 
-function afterClose() {
+function closed() {
   $store.commit('trnForm/closeTrnFormModal', 'description')
 }
 
@@ -26,19 +26,19 @@ onMounted(() => {
 </script>
 
 <template lang="pug">
-TrnFormModal(@closed="afterClose")
+TrnFormModal(@closed="closed")
   template(#header)
     template {{ $t('trnForm.description.title') }}
 
   template(#default="{ close }")
     .pb-6.px-3
-      textarea.w-full.h-28.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-skin-item-base.bg-skin-item-main-bg.border.border-solid.border-skin-item-main-hover.placeholder_text-skin-item-base-down.transition.ease-in-out.focus_text-skin-item-base-up.focus_bg-skin-item-main-hover.focus_border-blue3.focus_outline-none(
+      textarea.w-full.h-28.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-item-base.bg-item-main-bg.border.border-solid.border-item-main-hover.placeholder_text-item-base-down.transition.ease-in-out.focus_text-item-base-up.focus_bg-item-main-hover.focus_border-blue3.focus_outline-none(
         v-model="description"
         :placeholder="$t('trnForm.description.placeholder')"
       )
 
     .pb-4.px-3
-      .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-skin-item-base-up.text-sm.bg-skin-accent-base.hocus_bg-skin-accent-down(
-        @click="handleSave(close)"
+      UiButtonBlue(
+        @click="onSave(close)"
       ) {{ $t('base.save') }}
 </template>

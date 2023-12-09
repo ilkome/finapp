@@ -1,8 +1,10 @@
 <script setup lang="ts">
-
+const emit = defineEmits<{
+  (e: 'click'): void
+}>()
 </script>
 
 <template lang="pug">
-.py-4.px-3.text-secondary.font-nunito.text-xl.font-semibold
+.text-secondary.font-nunito.text-lg.font-semibold(@click="emit('click')")
   slot
 </template>

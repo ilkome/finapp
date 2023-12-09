@@ -22,7 +22,7 @@ const trnsIds = computed(() => {
 
 <template lang="pug">
 .my-6(class="max-w-[420px]")
-  .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+  .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
     | {{ $t('trns.inPeriodTitle') }}
 
   TrnsList(

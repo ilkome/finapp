@@ -1,8 +1,10 @@
 import dayjs from 'dayjs'
 
-export const state = () => ({
-  walletsIds: [],
-  catsIds: [],
-  date: dayjs().startOf('month').valueOf(),
-  period: 'month',
-})
+export function state() {
+  return {
+    walletsIds: [],
+    catsIds: [],
+    date: dayjs().startOf('month').valueOf(),
+    period: 'month',
+  }
+}

@@ -23,12 +23,13 @@ function onClickStatMenu(tabName) {
 .my-4.px-2.sticky.z-20.backdrop-blur.firefoxBackdropFix(
   class="top-[44px] bg-white/70 dark_bg-dark3/70"
 )
-  UiTabs2
-    UiTabsItem2.md_text-lg(
+  UiTabs
+    UiTabsItem.font-nunito.font-semibold(
       v-for="item in menu"
       v-if="!item.isPrivate || $store.getters['user/isDevUser']"
       :key="item.id"
       :isActive="item.id === activeTabStat"
+      class="!text-lg"
       @click="onClickStatMenu(item.id)"
     ) {{ item.name }}
 </template>

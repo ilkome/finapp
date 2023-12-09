@@ -14,7 +14,7 @@ function isItActive(amountType: TrnType) {
 </script>
 
 <template lang="pug">
-.px-2.pb-5
+.px-2.pb-2
   UiTabs
     UiTabsItem(
       :isActive="isItActive(0)"

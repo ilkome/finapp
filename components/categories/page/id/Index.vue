@@ -30,7 +30,7 @@ const trnsIds = computed(() =>
   }))
 
 // TODO: useFilter
-function handleSetFilterCategory() {
+function onClickFilterCategory() {
   setFilterCatsId(categoryId.value)
   $store.commit('filter/setFilterDateNow')
   $store.dispatch('ui/setActiveTabStat', 'details')
@@ -48,9 +48,9 @@ useHead({
 UiPage(v-if="category")
   UiHeader
     router-link(v-slot="{ href, navigate }" :to="backLink" custom)
-      a.grow.hocus_bg-skin-item-main-hover(:href="href" @click="navigate")
+      a.grow.hocus_bg-item-main-hover(:href="href" @click="navigate")
         UiHeaderTitle
-          .pt-1.text-xs.font-medium.text-skin-item-base-down
+          .pt-1.text-xs.font-medium.text-item-base-down
             | {{ $t('categories.title') }}
             template(v-if="category.parentId")
               |
@@ -58,7 +58,7 @@ UiPage(v-if="category")
 
           .pb-1.flex.items-center.gap-4
             | {{ category.name }}
-            .w-8.h-8.rounded-full.flex-center.text-xl.text-skin-icon-base(
+            .w-8.h-8.rounded-full.flex-center.text-xl.text-icon-base(
               :style="{ background: category.color }"
             )
               div(:class="category.icon")
@@ -72,9 +72,8 @@ UiPage(v-if="category")
   //- Open stat
   .pt-3.mb-12
     .px-2.flex
-      .cursor-pointer.p-1.px-2.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
-        class="dark_text-white/60"
-        @click="handleSetFilterCategory"
+      UiItemShadow.cursor-pointer.p-1.px-2.flex.items-center.gap-3(
+        @click="onClickFilterCategory"
       )
         .mdi.mdi-poll.text-xl
         .text-xs.leading-none {{ $t('statBy') }} {{ category.name }}
@@ -82,7 +81,7 @@ UiPage(v-if="category")
 
   //- Childs categories
   .mb-12(v-if="category.childIds && category.childIds.length > 0")
-    .pb-3.px-2.flex.gap-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+    .pb-3.px-2.flex.gap-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
       div {{ $t('categories.title') }}:
       div {{ category.childIds.length }}
 

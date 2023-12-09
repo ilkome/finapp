@@ -1,14 +1,26 @@
 <script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import type { CategoryId } from '~/components/categories/types'
 
+const { $store } = useNuxtApp()
 const $trnForm = useTrnFormStore()
+const { height } = useWindowSize()
+
+function onSelected(id: CategoryId) {
+  $trnForm.values.categoryId = id
+}
 </script>
 
 <template lang="pug">
 div
+  CategoriesSelector(
+    :isShow="$trnForm.ui.catsRootModal"
+    @show="value => $trnForm.ui.catsRootModal = value"
+    @onSelected="onSelected"
+  )
+
   LazyTrnFormModalCalendar(v-if="$store.state.trnForm.modal.calendar")
-  LazyTrnFormModalCats(v-if="$store.state.trnForm.modal.categories")
-  LazyTrnFormModalCatsChild(v-if="$store.state.trnForm.modal.categoriesChild")
   LazyTrnFormModalDescription(v-if="$store.state.trnForm.modal.description")
 
   //- Transaction

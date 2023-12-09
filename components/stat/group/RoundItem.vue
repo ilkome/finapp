@@ -31,7 +31,7 @@ export default {
 </script>
 
 <template lang="pug">
-.statItemRound.hocus_bg-skin-item-main-hover(
+.statItemRound.hocus_bg-item-main-hover(
   v-if="category"
   :class="{ _prevStat: total === 0 }"
   ref="item"
@@ -47,7 +47,7 @@ export default {
   .statItemRound__name.js-getWidth(:class="{ _isCategoryHasChildren: isCategoryHasChildren }")
     | {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
 
-  .statItemRound__amount.js-getWidth.text-skin-item-base
+  .statItemRound__amount.js-getWidth.text-item-base
     Amount(
       :amount="total"
       :currencyCode="currencyCode"

@@ -4,19 +4,18 @@ import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 const { $store } = useNuxtApp()
 const $trnForm = useTrnFormStore()
 
-const isShowTrnForm = computed(() => $store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories'] && $store.state.trnForm.show)
-
-function closeTrnForm() {
-  $store.commit('trnForm/closeTrnForm')
-  $trnForm.onClose()
-}
+const isShow = computed(() =>
+  $store.getters['wallets/hasWallets']
+  && $store.getters['categories/hasCategories']
+  && $trnForm.ui.isShow,
+)
 </script>
 
 <template lang="pug">
 BaseBottomSheet2(
   keepAlive
-  :isShow="isShowTrnForm"
-  @closed="closeTrnForm"
+  :isShow="isShow"
+  @closed="$trnForm.onClose()"
 )
   template(#handler="{ close }")
     BaseBottomSheetHandler

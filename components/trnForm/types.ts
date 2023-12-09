@@ -54,8 +54,6 @@ export interface TrnFormUi {
   walletsTab: string // TODO: add typing
   walletsModal: boolean
   catsRootModal: boolean
-  catsParentId: CategoryId | null
-  catsChildModal: boolean
   walletsViewAs: 'big' | 'small' // TODO: add typing
   tab: 'main' | 'date' | 'desc'
 

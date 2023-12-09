@@ -35,7 +35,7 @@ const classes = computed(() => [
     overflow-hidden relative
     h-full min-w-base
     font-roboto text-gray-500 dark_text-gray-400 leading-none antialiased
-    bg-skin-layout-main
+    bg-layout-main
   `,
 ])
 
@@ -76,7 +76,7 @@ div(:class="classes")
     .hidden.overflow-hidden.h-full.w-72.lg_block
       LayoutSidebar
 
-    .overflow-hidden.h-full.grid.lg_px-8
+    .overflow-hidden.h-full.grid
       Nuxt(keep-alive :keep-alive-props="{ include: keepAliveInclude }")
 
     .createTrn.hidden.z-10.absolute.right-6.bottom-6.lg_flex(

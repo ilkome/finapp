@@ -3,12 +3,6 @@ import SwiperCore, { Pagination } from 'swiper'
 import 'swiper/swiper-bundle.css'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
-const props = withDefaults(defineProps<{
-  show: boolean
-}>(), {
-  show: true,
-})
-
 SwiperCore.use([Pagination])
 
 const { $store } = useNuxtApp()
@@ -17,21 +11,18 @@ const $trnForm = useTrnFormStore()
 /**
  * Slider
  */
-const slider = ref<any>(null)
+const sliderRef = ref<any>(null)
 const sliderObj = ref<any>(null)
 const maxHeight = ref('550px')
 
 function setTrnFormHeight() {
   const el = document.querySelector('.getHeight')
   const height = el?.clientHeight
-
-  $store.commit('trnForm/setTrnFormHeight', height)
   maxHeight.value = `${height}px`
 
   const observer = new ResizeObserver((entries) => {
     for (const entry of entries) {
       const height = entry.contentRect.height
-      $store.commit('trnForm/setTrnFormHeight', height)
       maxHeight.value = `${height}px`
     }
   })
@@ -42,11 +33,12 @@ function setTrnFormHeight() {
 
 function init() {
   if (!sliderObj.value) {
-    sliderObj.value = new SwiperCore(slider.value, {
+    sliderObj.value = new SwiperCore(sliderRef.value, {
       init: false,
       observer: true,
       observeParents: true,
-      slidesPerView: 1,
+      slidesPerView: 'auto',
+      centeredSlides: true,
       touchStartPreventDefault: false,
       initialSlide: 1,
       shortSwipes: false,
@@ -62,85 +54,74 @@ function init() {
   }
 }
 
-/**
- * isShow
- */
-onMounted(() => {
-  init()
-})
-
-watch(() => props.show, (isShow) => {
-  if (!isShow) {
-    if (sliderObj.value)
-      sliderObj.value.slideTo(1, 0)
-  }
-})
+onMounted(init)
 </script>
 
 <template lang="pug">
-.trnForm.max-w-md.mx-auto
-  .swiper-container(ref="slider")
-    .swiper-wrapper
+.trnForm
+  .swiper-container(ref="sliderRef")
+    .swiper-wrapper.bg-foreground-second.rounded-xl
       //- History
-      .swiper-slide(:style="{ height: maxHeight }")
+      .swiper-slide.sm_max-w-sm.sm_rounded-xl.bg-foreground-second(:style="{ height: maxHeight }")
         TrnFormTrnsSlide(
           v-if="sliderObj"
           :slider="sliderObj"
         )
 
       //- Main
-      .swiper-slide.getHeight
+      .swiper-slide.getHeight.max-w-sm.sm_rounded-xl.bg-foreground-second.sm_max-w-sm.sm_mx-6
         .scroll.scrollerBlock(:style="{ maxHeight: `${$store.state.ui.height}px` }")
           TrnFormMain
 
       //- Quick selector
-      .swiper-slide(:style="{ height: maxHeight }")
+      .swiper-slide.sm_rounded-xl.bg-foreground-second.sm_max-w-sm(:style="{ height: maxHeight }")
         .scroll.scrollerBlock
-          //- Wallets
-          .pt-5.pb-7
-            .px-3.pb-2.text-skin-item-base.text-sm.font-semibold.font-nunito(
-              @click="$store.commit('trnForm/showTrnFormModal', 'wallets')"
-            ) {{ $t('wallets.title') }}
+          .py-4
+            //- Wallets
+            .pb-6
+              UiTitle.pb-2.px-3(
+                @click="$store.commit('trnForm/showTrnFormModal', 'wallets')"
+              ) {{ $t('wallets.title') }}
 
-            WalletsList(
-              :limit="4"
-              #default="{ walletsItemsLimited }"
-            )
-              .px-3.grid.gap-y-1.gap-x-1.3sm_grid-cols-2
-                //- Wallet
-                TrnFormMainSelectedWallet(
-                  v-for="(walletItem, walletId) in walletsItemsLimited"
-                  :key="walletId"
-                  :class="[{ 'cursor-default !bg-skin-item-main-active': $trnForm.values.walletId === walletId }]"
-                  :id="walletId"
-                  isHideDots
-                  @click="id => $trnForm.values.walletId = id"
+              WalletsList(
+                :limit="4"
+                #default="{ walletsItemsLimited }"
+              )
+                .px-3.grid.gap-y-1.gap-x-1.3sm_grid-cols-2
+                  //- Wallet
+                  TrnFormMainSelectedWallet(
+                    v-for="(walletItem, walletId) in walletsItemsLimited"
+                    :key="walletId"
+                    :class="[{ 'cursor-default !bg-item-main-active': $trnForm.values.walletId === walletId }]"
+                    :id="walletId"
+                    isHideDots
+                    @click="id => $trnForm.values.walletId = id"
+                  )
+
+            //- Favorite categories
+            .pb-6(v-if="$store.getters['categories/favoriteCategoriesIds'].length > 0")
+              UiTitle.pb-2.px-3(
+                @click="$trnForm.ui.catsRootModal = true"
+              ) {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
+
+              .px-3
+                CategoriesList(
+                  v-if="sliderObj"
+                  :ids="$store.getters['categories/favoriteCategoriesIds']"
+                  :activeItemId="$trnForm.values.categoryId"
+                  :slider="sliderObj"
+                  class="!gap-x-1"
+                  @click="id => $trnForm.values.categoryId = id"
                 )
 
-          //- Favorite categories
-          .pb-7(v-if="$store.getters['categories/favoriteCategoriesIds'].length > 0")
-            .px-3.pb-2.text-skin-item-base.text-sm.font-semibold.font-nunito(
-              @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
-            ) {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
+            //- Recent categories
+            .pb-6(v-if="$store.getters['categories/recentCategoriesIds'].length > 0")
+              UiTitle.pb-2.px-3(
+                @click="$trnForm.ui.catsRootModal = true"
+              ) {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
 
-            .px-3
-              CategoriesList(
-                v-if="sliderObj"
-                :ids="$store.getters['categories/favoriteCategoriesIds']"
-                :activeItemId="$trnForm.values.categoryId"
-                :slider="sliderObj"
-                class="!gap-x-1"
-                @click="id => $trnForm.values.categoryId = id"
-              )
-
-          //- Recent categories
-          .pb-7(v-if="$store.getters['categories/recentCategoriesIds'].length > 0")
-            .px-3.pb-2.text-skin-item-base.text-sm.font-semibold.font-nunito(
-              @click="$store.commit('trnForm/showTrnFormModal', 'categories')"
-            ) {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
-
-            .px-3
-              CategoriesList(
+              .px-3
+                CategoriesList(
                 v-if="sliderObj"
                 :ids="$store.getters['categories/recentCategoriesIds']"
                 :activeItemId="$trnForm.values.categoryId"
@@ -148,7 +129,6 @@ watch(() => props.show, (isShow) => {
                 class="!gap-x-1"
                 @click="id => $trnForm.values.categoryId = id"
               )
-
   .trnForm__pagination
 
   //- Modals
@@ -193,17 +173,6 @@ watch(() => props.show, (isShow) => {
 </style>
 
 <style lang="stylus" scoped>
-// TODO: style
-.trnForm
-  overflow hidden
-  width 100%
-  height auto
-  background var(--c-bg-3)
-  border-radius $m8 $m8 0 0
-
-  +media(600px)
-    border-radius 16px
-
 .scroll
   overflow hidden
   overflow-y auto

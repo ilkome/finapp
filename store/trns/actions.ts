@@ -35,8 +35,6 @@ export default {
     localforage.setItem('finapp.trns', { ...trns, [id]: valuesWithEditDate })
     commit('setTrns', Object.freeze({ ...trns, [id]: valuesWithEditDate }))
 
-    console.log('id', id)
-    console.log('hey', `users/${uid}/trns/${id}`, valuesWithEditDate)
     saveData(`users/${uid}/trns/${id}`, valuesWithEditDate)
       .then(() => {
         isTrnSavedOnline = true

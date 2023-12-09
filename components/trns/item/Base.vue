@@ -126,6 +126,6 @@ const actions = {
         )
 
     //- Description
-    .pt-2.text-neutral-500.text-xs.leading-none(v-if="trnItem.desc")
-      | {{ trnItem.desc }}
+    .pt-2.text-neutral-500.text-xs.leading-none(v-if="trnItem.desc || trnItem.description")
+      | {{ trnItem.desc || trnItem.description }}
 </template>

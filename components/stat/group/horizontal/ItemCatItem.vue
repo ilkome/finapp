@@ -53,7 +53,7 @@ const trnsIds = computed(() => {
       .space-x-3.flex
         .grow.statItem__name {{ category.name }}
 
-        .statItem__amount.text-skin-item-base
+        .statItem__amount.text-item-base
           Amount(
             :amount="total"
             :currencyCode="$store.state.currencies.base"
@@ -65,11 +65,14 @@ const trnsIds = computed(() => {
     v-if="isShowInside"
     @click.stop=""
   )
-    TrnsList(
-      :isShowGroupDate="false"
-      :trnsIds="trnsIds"
-      uiCat
+    .overflow-hidden.overflow-y-auto(
+      class="md_max-h-[30vh]"
     )
+      TrnsList(
+        :isShowGroupDate="false"
+        :trnsIds="trnsIds"
+        uiCat
+      )
 </template>
 
 <style lang="stylus" scoped>

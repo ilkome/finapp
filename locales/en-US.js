@@ -89,7 +89,7 @@ export default {
   },
 
   filter: {
-    clear: 'Clear filter',
+    clear: 'Clear',
   },
 
   welcome: {

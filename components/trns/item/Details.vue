@@ -84,7 +84,7 @@ function setTrnEdit() {
             :id="trn.expenseWalletId"
             :isShowAmount="false"
           )
-        .text-2xl.text-skin-item-base
+        .text-2xl.text-item-base
           Amount(
             :amount="trn.expenseAmount"
             :currencyCode="$store.state.wallets.items[trn.expenseWalletId].currency"
@@ -103,7 +103,7 @@ function setTrnEdit() {
             :id="trn.incomeWalletId"
             :isShowAmount="false"
           )
-        .text-2xl.text-skin-item-base
+        .text-2xl.text-item-base
           Amount(
             :amount="trn.incomeAmount"
             :currencyCode="$store.state.wallets.items[trn.incomeWalletId].currency"

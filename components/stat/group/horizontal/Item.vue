@@ -47,7 +47,7 @@ const trnsIds = computed(() => {
   :class="{ _active: isShowInside }"
   @click="toggleShowInside"
 )
-  .ins.py-2.px-3.space-x-3.rounded-md.justify-between.items-center.flex.border.dark_border-neutral-800.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+  .ins.py-2.px-2.space-x-3.rounded-md.justify-between.items-center.flex.bg-item-main-bg.hocus_bg-item-main-hover(
     :class="['z-[9]', { _active: isShowInside }, { 'cursor-n-resize shadow-xl rounded-b-none': isShowInside }, { 'cursor-s-resize shadow-sm': !isShowInside }]"
   )
     //- Icon
@@ -61,7 +61,7 @@ const trnsIds = computed(() => {
         .overflow-hidden.truncate.grow.space-x-2.flex.items-baseline.text-neutral-700.dark_text-neutral-400.text-sm
           | {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
 
-        .statItem__amount.text-skin-item-base
+        .statItem__amount.text-item-base
           Amount(
             :amount="total"
             :currencyCode="$store.state.currencies.base"
@@ -71,7 +71,7 @@ const trnsIds = computed(() => {
       .pt-1.statItem__graph.mt-1: .statItem__graph__in(:style="styles")
 
   //- Inside
-  .overflow-hidden.bg-skin-item-main-bg.border.border-t-0.rounded-b-md(
+  .overflow-hidden.bg-item-main-bg.rounded-b-md(
     v-if="isShowInside"
     class="mt-[-1px] dark_border-neutral-800"
     @click.stop=""
@@ -83,7 +83,9 @@ const trnsIds = computed(() => {
       )
 
     template(v-if="!isCategoryHasChildren")
-      .statItem__trns
+      .statItem__trns.overflow-hidden(
+        class="max-h-[60vh]"
+      )
         TrnsList(
           :trnsIds="trnsIds"
           :isShowGroupDate="false"

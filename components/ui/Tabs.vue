@@ -7,7 +7,7 @@
       grow
       flex items-center
       rounded-md
-      bg-skin-item-main-bg
+      bg-item-main-bg
     "
   >
     <slot />

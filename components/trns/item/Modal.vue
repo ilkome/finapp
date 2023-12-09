@@ -117,14 +117,13 @@ Portal(
 
     template(#header)
       .header
-        .header__category
-          TrnsItemDetails(
-            :category="category"
-            :trn="trnItem"
-            :trnId="trnId"
-            :wallet="wallet"
-            ui="detailed"
-          )
+        TrnsItemDetails(
+          :category="category"
+          :trn="trnItem"
+          :trnId="trnId"
+          :wallet="wallet"
+          ui="detailed"
+        )
 
     template(#default="{ close }")
       .content.pb-4
@@ -171,7 +170,7 @@ Portal(
                 )
 
         .pt-4.px-4.flex-center
-          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-main-bg.hocus_bg-item-main-hover(
             class="basis-1/2 max-w-[280px]"
             @click="close()"
           ) {{ $t('close') }}
@@ -179,7 +178,7 @@ Portal(
   //- delete confirm
   ModalBottomConfirm(
     :show="showModalConfirm"
-    @onClose="showModalConfirm = false"
+    @closed="showModalConfirm = false"
     @onConfirm="handleDeleteConfirm"
   )
 </template>

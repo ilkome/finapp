@@ -85,7 +85,6 @@ export default defineNuxtConfig({
     '@nuxtjs/pwa',
     '@nuxtjs/style-resources',
     '@nuxtjs/tailwindcss',
-    'nuxt-typed-vuex',
   ],
 
   alias: {
