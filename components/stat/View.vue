@@ -100,10 +100,12 @@ onDeactivated(async () => {
   )
     LazyStatFilter(v-if="statPage.filter.isShow")
 
-  template(v-if="!isMobileView")
-    .px-2.flex.flex-wrap.items-center.justify-between.gap-x-6
-      StatSumTotal
-      StatViewConfig
+  .px-2.flex.flex-wrap.items-center.justify-between.gap-6.gap-x-6
+    .flex.flex-wrap.items-center.gap-5
+      StatSumTotal(class="!m-0")
+      StatSumGroup(class="!m-0" typeText="expense")
+      StatSumGroup(class="!m-0" typeText="income")
+    StatViewConfig
 
   StatMenu
 
@@ -112,10 +114,10 @@ onDeactivated(async () => {
     data-scroll-ref="stat"
   )
     template(v-if="statPage.activeTab !== 'trns' && statPage.activeTab !== 'history'")
-      template(v-if="isMobileView")
-        .my-6.px-2(v-if="statPage.activeTab === 'details'")
-          StatViewConfig
-          StatSumTotal(v-if="(statPage.average.income !== 0 && statPage.average.expense !== 0) || (statPage.current.income.total !== 0 && statPage.current.expense.total !== 0)")
+      //- template(v-if="isMobileView")
+      //-   .my-6.px-2(v-if="statPage.activeTab === 'details'")
+      //-     StatViewConfig
+      //-     StatSumTotal(v-if="(statPage.average.income !== 0 && statPage.average.expense !== 0) || (statPage.current.income.total !== 0 && statPage.current.expense.total !== 0)")
 
       //- Loop throw income / expense
       .mb-8.md_mb-4.px-2
@@ -152,22 +154,22 @@ onDeactivated(async () => {
                     uiHistory
                   )
 
-        //- All
-        template(v-if="!isMobileView")
-          div(
-            v-if="isShowGroupTrns && !isEmptyStat && statPage.activeTab !== 'details' && combinedTrnsIds[statPage.activeTab].length > 0"
-          )
-            .my-6(class="max-w-[420px]")
-              .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
-                | {{ $t('trns.inPeriodTitle') }}
+          //- All
+          template
+            div(
+              v-if="isShowGroupTrns && !isEmptyStat && statPage.activeTab !== 'details' && combinedTrnsIds[statPage.activeTab].length > 0"
+            )
+              .my-6(class="max-w-[420px]")
+                .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
+                  | {{ $t('trns.inPeriodTitle') }}
 
-              TrnsList(
-                :size="12"
-                :trnsIds="combinedTrnsIds[statPage.activeTab]"
-                classNames="md_grid-cols-1"
-                isShowFilter
-                uiHistory
-              )
+                TrnsList(
+                  :size="12"
+                  :trnsIds="combinedTrnsIds[statPage.activeTab]"
+                  classNames="md_grid-cols-1"
+                  isShowFilter
+                  uiHistory
+                )
 
     //- Trns
     template(v-if="statPage.activeTab === 'trns'")
