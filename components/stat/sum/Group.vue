@@ -15,9 +15,9 @@ const typeNumber = computed(() => moneyTypes.find(t => t.id === `${props.typeTex
 .my-4.px-1.bg-white.dark_bg-dark3
   UiTitle {{ $t(`money.${typeText}`) }}
   .overflow-hidden.overflow-x-auto.scrollbar
-    .flex.items-center
+    .flex.flex-wrap.items-center.gap-1.gap-x-6
       //- Total
-      .pr-6.text-3xl
+      .text-3xl
         Amount(
           :amount="statPage.current[typeText].total"
           :colorize="typeText"
