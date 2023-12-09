@@ -6,7 +6,7 @@ const statAverage = computed(() => $store.getters['stat/statAverage'])
 
 <template lang="pug">
 .my-4.px-1.bg-white.dark_bg-dark3
-  .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base {{ $t('money.total') }}
+  UiTitle {{ $t('money.total') }}
   .overflow-hidden.overflow-x-auto.scrollbar
     .flex.items-center
       //- Total

@@ -86,11 +86,11 @@ export default {
     add: 'Создать',
     edit: 'Редактировать',
     delete: 'Удалить',
-    filter: 'Фильтровать',
+    filter: 'Фильтр',
   },
 
   filter: {
-    clear: 'Очистить фильтр',
+    clear: 'Убрать',
   },
 
   welcome: {

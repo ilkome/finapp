@@ -5,29 +5,21 @@ import type { CategoryId } from '../categories/types'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const emit = defineEmits<{
-  (e: 'closeModal'): void
+  (e: 'click', id: CategoryId): void
 }>()
 
-const { $store } = useNuxtApp()
 const $trnForm = useTrnFormStore()
-const slider = ref()
-const trnFormCategories = ref()
+const sliderObj = ref()
+const sliderRef = ref()
 
 function onClick(categoryId: CategoryId) {
-  if ($store.getters['categories/isCategoryHasChildren'](categoryId)) {
-    $store.commit('trnForm/setTrnFormModalCategoryId', categoryId)
-    $store.commit('trnForm/showTrnFormModal', 'categoriesChild')
-  }
-  else {
-    $trnForm.values.categoryId = categoryId
-    emit('closeModal')
-  }
+  emit('click', categoryId)
 }
 
 onMounted(() => {
   const initialSlide = 1
 
-  slider.value = new SwiperCore(trnFormCategories.value, {
+  sliderObj.value = new SwiperCore(sliderRef.value, {
     observer: true,
     observeParents: true,
     slidesPerView: 1,
@@ -44,12 +36,12 @@ onMounted(() => {
 <template lang="pug">
 .contentWrap.h-full.grid(class="grid-rows-[1fr,auto]")
   .contentWrap__box
-    .swiper-container(ref="trnFormCategories")
+    .swiper-container(ref="sliderRef")
       .swiper-wrapper
         //- Recent
         .swiper-slide
           .scrollBlock.scrollerBlock
-            .py-4.px-3.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
+            .py-4.px-3.text-center.text-item-base.text-xl.font-nunito.font-semibold.bg-layout-main.rounded-t-2xl
               | {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
@@ -62,7 +54,7 @@ onMounted(() => {
         //- Main
         .swiper-slide
           .scrollBlock.scrollerBlock
-            .py-4.px-3.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
+            .py-4.px-3.text-center.text-item-base.text-xl.font-nunito.font-semibold.bg-layout-main.rounded-t-2xl
               | {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
@@ -75,7 +67,7 @@ onMounted(() => {
         //- Favorite
         .swiper-slide
           .scrollBlock.scrollerBlock
-            .py-4.px-3.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
+            .py-4.px-3.text-center.text-item-base.text-xl.font-nunito.font-semibold.bg-layout-main.rounded-t-2xl
               | {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
@@ -85,21 +77,21 @@ onMounted(() => {
                 @click="onClick"
               )
 
-  .py-2.px-3(v-if="slider")
+  .py-2.px-3(v-if="sliderObj")
     UiTabs
       UiTabsItem(
-        :isActive="slider.activeIndex === 0"
-        @click="slider.slideTo(0)"
+        :isActive="sliderObj.activeIndex === 0"
+        @click="sliderObj.slideTo(0)"
       ) {{ $t('categories.lastUsedTitle') }}
 
       UiTabsItem(
-        :isActive="slider.activeIndex === 1"
-        @click="slider.slideTo(1)"
+        :isActive="sliderObj.activeIndex === 1"
+        @click="sliderObj.slideTo(1)"
       ) {{ $t('categories.allTitle') }}
 
       UiTabsItem(
-        :isActive="slider.activeIndex === 2"
-        @click="slider.slideTo(2)"
+        :isActive="sliderObj.activeIndex === 2"
+        @click="sliderObj.slideTo(2)"
       ) {{ $t('categories.favoriteTitle') }}
 </template>
 

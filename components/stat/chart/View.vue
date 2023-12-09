@@ -50,7 +50,7 @@ export default defineComponent({
           if ($store.state.filter.period === 'all')
             $store.dispatch('filter/setPeriod', 'year')
 
-          $store.dispatch('filter/setDate', parseInt(date))
+          $store.dispatch('filter/setDate', Number.parseInt(date))
           scrollTop()
         }
       }, 100)
@@ -329,16 +329,10 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.chart(@click="onClickChart")
+.relative(@click="onClickChart")
   Chart(
     :key="$route.fullPath"
     :options="chartData"
     :callback="chartCallback"
   )
 </template>
-
-<style lang="stylus" scoped>
-.chart
-  z-index 3
-  position relative
-</style>

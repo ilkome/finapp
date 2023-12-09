@@ -36,7 +36,7 @@ const total = computed(() => {
     .flex.gap-6
       //- Expense
       div
-        .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+        .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
           | {{ $t('money.expense') }}
         .text-xl
           Amount(
@@ -48,7 +48,7 @@ const total = computed(() => {
 
       //- Income
       div
-        .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+        .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
           | {{ $t('money.income') }}
         .text-xl
           Amount(
@@ -60,7 +60,7 @@ const total = computed(() => {
 
       //- Sum
       div
-        .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
+        .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
           | {{ $t('money.sum') }}
         .text-xl
           Amount(

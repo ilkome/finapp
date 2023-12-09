@@ -73,17 +73,17 @@ const counts = computed(() => ({
 </script>
 
 <template lang="pug">
-.px-3.py-1.bg-skin-item-main-bg.rounded-md(
+.px-3.py-1.bg-item-main-bg.rounded-md(
   v-if="$store.getters['wallets/hasWallets']"
 )
   template(v-for="item in counts")
-    .py-2.flex.items-center.border-b.border-skin-item-main-hover.last_border-0(
+    .py-2.flex.items-center.border-b.border-item-main-hover.last_border-0(
       v-if="item.isShow"
     )
       .grow.flex.items-center.gap-3
         .text-sm.leading-none {{ $t(item.titleId) }}
 
-      .text-skin-item-base
+      .text-item-base
         Amount(
           :currencyCode="currencyCode"
           :amount="item.value"

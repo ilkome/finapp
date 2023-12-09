@@ -20,13 +20,13 @@ function toaster(name, cb) {
 
 function uploadTask(path, cb) {
   if (fs.existsSync('./ftp.config.js')) {
-    const configFTP = require('./ftp.config.js')
     const conn = ftp.create({
-      host: configFTP.host,
-      user: configFTP.user,
-      password: configFTP.password,
+      host: 'style-nes.myjino.ru',
+      user: 'style-nes_finapp',
+      password: '5wefrfffsdfasfd',
+      dest: '/',
       log,
-      parallel: 10,
+      parallel: 1,
     })
 
     return src(path)

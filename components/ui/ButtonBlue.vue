@@ -1,9 +1,22 @@
 <script setup lang="ts">
+const props = defineProps<{
+  maxWidth?: boolean
+}>()
+
 const emit = defineEmits(['click'])
+
+const classes = computed(() => {
+  const cls = []
+  if (props.maxWidth)
+    cls.push('max-w-[320px]')
+
+  return cls
+})
 </script>
 
 <template lang="pug">
 button(
+  :class="classes"
   class=`
     overflow-hidden relative
     enabled:cursor-pointer

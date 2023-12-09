@@ -2,7 +2,7 @@
 import useFilter from '~/components/filter/useFilter'
 
 const { $store } = useNuxtApp()
-const { removeFilterCategoryId, clearFilter } = useFilter()
+const { setFilterCatsId, removeFilterCategoryId, clearFilter } = useFilter()
 
 const filterWalletsItems = computed(() =>
   $store.state.filter.walletsIds.reduce((acc, id) => {
@@ -17,55 +17,43 @@ const filterCategoriesItems = computed(() =>
     return acc
   }, {}),
 )
+
+const isShowCategorySelector = ref(false)
 </script>
 
 <template lang="pug">
-.overflow-hidden(v-if="filterCategoriesItems || filterWalletsItems")
-  .pb-3.text-lg.leading-none.font-nunito.font-semibold.text-skin-item-base
-    | {{ $t('base.filter') }}
+.flex.flex-col.gap-2(v-if="filterCategoriesItems || filterWalletsItems")
+  UiTitle {{ $t('base.filter') }}
 
-  .safe.scrollbar.overflow-hidden.overflow-x-auto.flex.flex-wrap.items-center.gap-4
-    //- Wallet
-    template(v-if="filterWalletsItems")
-      .overflow-hidden.cursor-pointer.relative.py-1.px-3.flex.flex-col.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover.shadow.hocus_shadow-lg(
+  //- Category
+  FilterRow
+    template(#add)
+      FilterAddItem(
+        :isShowText="$store.state.filter.catsIds.length === 0"
+        @click="isShowCategorySelector = true"
+      )
+    template(#content)
+      FilterWalletItem(
+        v-if="filterWalletsItems"
         v-for="(walletItem, walletId) in filterWalletsItems"
         :key="walletId"
+        :id="walletId"
         @click="$store.commit('filter/removeFilterWalletId', walletId)"
       )
-        .absolute.top-0.left-0.w-full(:style="{ height: '2px', background: walletItem.color }")
-        .pr-2
-          .text-xs {{ walletItem.name }}
-          .text-sm.text-skin-item-base
-            Amount(
-              :amount="$store.getters['wallets/walletsTotal'][walletId]"
-              :currencyCode="walletItem.currency"
-              :isShowBaseRate="false"
-            )
-
-          .absolute.top-1.right-1
-            .text-sm.mdi.mdi-close
-
-    //- Category
-    template(v-if="filterCategoriesItems")
-      .cursor-pointer.relative.py-1.px-3.flex.items-center.gap-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover.shadow.hocus_shadow-lg(
-        v-for="(catItem, categoryId) in filterCategoriesItems"
+      FilterCategoryItem(
+        v-if="$store.state.filter.catsIds"
+        v-for="categoryId in $store.state.filter.catsIds"
         :key="categoryId"
-        @click="removeFilterCategoryId(categoryId)"
+        :categoryId="categoryId"
+        @click="removeFilterCategoryId"
       )
-        .text-2xl(
-          :style="{ color: catItem.color }"
-          :class="catItem.icon"
-        )
-        div
-          .text-2xs(v-if="catItem.parentId") {{ $store.state.categories.items[catItem.parentId].name }}
-          .text-sm.leading-none {{ catItem.name }}
+      FilterItemBg(@click="clearFilter")
+        .mdi.mdi-filter-remove-outline.text-2xl
 
-        .mdi.mdi-close.opacity-70.text-lg.leading-none
-
-    //- Clear
-    .cursor-pointer.py-1.px-3.flex.items-center.gap-3.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover.shadow.hocus_shadow-lg(
-      @click="clearFilter"
-    )
-      .mdi.mdi-filter-remove-outline.text-2xl
-      .pr-1.text-xs.leading-none {{ $t('filter.clear') }}
+  CategoriesSelector(
+    :isShow="isShowCategorySelector"
+    isAllowSelectParentCategory
+    @show="value => isShowCategorySelector = value"
+    @onSelected="setFilterCatsId"
+  )
 </template>

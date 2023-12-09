@@ -22,15 +22,15 @@ export default defineComponent({
 UiPage
   UiHeader
     router-link(v-slot="{ href, navigate }" to="/wallets" custom)
-      a.grow.hocus_bg-skin-item-main-hover(:href="href" @click="navigate")
+      a.grow.hocus_bg-item-main-hover(:href="href" @click="navigate")
         UiHeaderTitle
-          .pb-1.text-xs.font-medium.text-skin-item-base-down
+          .pb-1.text-xs.font-medium.text-item-base-down
             | {{ $t("wallets.createNewTitle") }}
 
           .flex.items-center.gap-3
-            .text-skin-item-base-up.text-2xl.font-semibold
+            .text-item-base-up.text-2xl.font-semibold
               | {{ walletForm.name ? walletForm.name : $t("wallets.form.name.label") }}
-            .p-1.flex-center.rounded.text-skin-icon-base.text-2xs(:style="{ background: walletForm.color }")
+            .p-1.flex-center.rounded.text-icon-base.text-2xs(:style="{ background: walletForm.color }")
               | {{ walletForm.currency }}
 
   WalletsForm(

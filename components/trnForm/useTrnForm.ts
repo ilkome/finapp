@@ -34,8 +34,6 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     walletTransferModal: false,
     walletTransferType: 'expense',
     catsRootModal: false,
-    catsChildModal: false,
-    catsParentId: null,
     walletsViewAs: 'big',
     tab: 'main',
   })
@@ -115,6 +113,8 @@ export const useTrnFormStore = defineStore('trnForm', () => {
   function onClose() {
     if (values.trnId)
       onClear()
+
+    ui.value.isShow = false
   }
 
   /**
@@ -160,7 +160,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
 
       values.amountRaw = values.amount.map(i => formatInput(i)) as TrnFormValues['amountRaw']
       values.trnType = props.trn.type
-      values.desc = props.trn.desc
+      values.desc = props.trn.desc || props.trn.description
       values.date = props.trn.date
     }
   }
@@ -258,8 +258,7 @@ export function useTrnForm() {
       trnId,
       walletsIds: walletIds.value,
     })
-
-    $store.commit('trnForm/openTrnForm')
+    $trnForm.ui.isShow = true
   }
 
   function trnFormCreate() {
@@ -269,8 +268,7 @@ export function useTrnForm() {
       trn: $store.getters['trns/lastCreatedTrnItem'],
       walletsIds: walletIds.value,
     })
-
-    $store.commit('trnForm/openTrnForm')
+    $trnForm.ui.isShow = true
   }
 
   function trnFormDuplicate(trnId: TrnId) {
@@ -284,8 +282,7 @@ export function useTrnForm() {
       trnId,
       walletsIds: walletIds.value,
     })
-
-    $store.commit('trnForm/openTrnForm')
+    $trnForm.ui.isShow = true
   }
 
   return {

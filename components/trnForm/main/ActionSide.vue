@@ -40,7 +40,6 @@ div(
     bg-item-main border border-item-border rounded-xl
     hocus_bg-item-hover hocus_border[red] hocus_scale-[1.02]
     transition
-    transition
   `
   @click="onClickSubmit"
 )

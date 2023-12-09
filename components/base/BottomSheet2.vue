@@ -346,7 +346,7 @@ const wrapClasses = computed(() => ({
 </script>
 
 <template lang="pug">
-.z-50.select-none.overflow-hidden.absolute.inset-0.w-full.h-full(
+.z-50.pointer-events-none.select-none.overflow-hidden.absolute.inset-0.w-full.h-full(
   ref="containerRef"
   :class="wrapClasses"
 )
@@ -355,6 +355,7 @@ const wrapClasses = computed(() => ({
     :class="overflowClasses"
     :style="overlayStyles"
     class=`
+      md_invisible
       absolute inset-0 w-full h-full
       bg-foreground-main/70
     `
@@ -362,19 +363,19 @@ const wrapClasses = computed(() => ({
   )
 
   //- Drug
-  .drug(
+  #trnForm.drug(
     ref="drug"
     :class="drugClasses"
     :style="drugStyles"
     class=`
+      pointer-events-auto
       overflow-hidden
-      z-10 absolute left-1/2 bottom-0 w-full max-w-5xl h-auto
+      z-10 absolute left-1/2 bottom-0 w-full h-auto
       -translate-x-1/2 translate-y-0
       bg-foreground-second
     `
     @click.stop=""
   )
-
     div(ref="handlerRef")
       slot(name="handler" :close="close")
 

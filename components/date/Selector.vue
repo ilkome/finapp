@@ -78,7 +78,7 @@ Portal(to="modal")
           ) {{ maxPeriodsNumber }}
 
         .pb-4.px-2.flex.justify-evenly.gap-6
-          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-main-bg.hocus_bg-item-main-hover(
             class="basis-1/2 max-w-[280px]"
             @click="close()"
           ) {{ $t('close') }}

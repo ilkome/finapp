@@ -5571,14 +5571,7 @@ create-require@^1.1.1:
   resolved "https://registry.yarnpkg.com/create-require/-/create-require-1.1.1.tgz#c1d7e8f1e5f6cfc9ff65f9cd352d37348756c333"
   integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
 
-cross-env@^7.0.3:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.3.tgz#865264b29677dc015ba8418918965dd232fc54cf"
-  integrity sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==
-  dependencies:
-    cross-spawn "^7.0.1"
-
-cross-spawn@^7.0.0, cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
+cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
@@ -10541,14 +10534,6 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha512-4jbtZXNAsfZbAHiiqjLPBiCl16dES1zI4Hpzzxw61Tk+loF+sBDBKx1ICKKKwIqQ7M0mFn1TmkN7euSncWgHiQ==
 
-nuxt-typed-vuex@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/nuxt-typed-vuex/-/nuxt-typed-vuex-0.3.1.tgz#a26f7b92eb19257ccda2c3a1ffaab4303088c7dc"
-  integrity sha512-oMAoO7/i/aW8NHgE9QSnNcJmKiJjFfTtgU6aotr0786ApgXk1At2qhiW63qFlXsX1wei94WmqLMuNCI/nl8Z0A==
-  dependencies:
-    typed-vuex "0.3.1"
-    upath "^2.0.1"
-
 nuxt@^2.17.1:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/nuxt/-/nuxt-2.17.1.tgz#132a8812df48bf2df2fa9c890e63268600d06ce3"
@@ -14317,11 +14302,6 @@ typed-array-length@^1.0.4:
     call-bind "^1.0.2"
     for-each "^0.3.3"
     is-typed-array "^1.1.9"
-
-typed-vuex@0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/typed-vuex/-/typed-vuex-0.3.1.tgz#4ed6adfd8cbfe68e0792b5b75f425ce3f622627e"
-  integrity sha512-hYEcXxVNKxP6pQvzX007wJ9HdTsGlWPhSOOtpf32DbcyiPDduf6PAZPR8kwQ7+QPhp+dGyTn3K+5cKzARP6IZA==
 
 typedarray@^0.0.6:
   version "0.0.6"

@@ -145,8 +145,8 @@ div
     //-----------------------------------
     template(v-if="activeTab === 'data'")
       .mb-4
-        .pb-2.text-skin-item-base-down.text-sm.leading-none {{ $t('wallets.form.name.label') }}
-        input.w-full.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-skin-item-base.bg-skin-item-main-bg.border.border-solid.border-skin-item-main-hover.placeholder_text-skin-item-base-down.transition.ease-in-out.focus_text-skin-item-base-up.focus_bg-skin-item-main-hover.focus_border-blue3.focus_outline-none(
+        .pb-2.text-item-base-down.text-sm.leading-none {{ $t('wallets.form.name.label') }}
+        input.w-full.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-item-base.bg-item-main-bg.border.border-solid.border-item-main-hover.placeholder_text-item-base-down.transition.ease-in-out.focus_text-item-base-up.focus_bg-item-main-hover.focus_border-blue3.focus_outline-none(
           :placeholder="$t('categories.form.name.placeholder')"
           :value="categoryForm.name"
           type="text"
@@ -206,7 +206,7 @@ div
               template(v-else-if="color")
                 .colorPreview(:style="{ background: color }")
 
-      .pb-2.text-sm.text-skin-item-base-down {{ $t('wallets.form.colors.custom') }}
+      .pb-2.text-sm.text-item-base-down {{ $t('wallets.form.colors.custom') }}
       input.cursor-pointer.w-full.h-12.p-0.border-0(v-model="categoryForm.color" type="color")
 
     //- Parent
@@ -217,8 +217,8 @@ div
         .p-4 You can not change parent category because edited category has childs categories.
 
       template(v-if="isAllowChangeParent")
-        .cursor-pointer.mb-4.py-3.px-2.gap-x-3.flex-center.rounded-md.text-center.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
-          :class="{ '!cursor-default !bg-skin-item-main-active': categoryForm.parentId === 0 }"
+        .cursor-pointer.mb-4.py-3.px-2.gap-x-3.flex-center.rounded-md.text-center.bg-item-main-bg.hocus_bg-item-main-hover(
+          :class="{ '!cursor-default !bg-item-main-active': categoryForm.parentId === 0 }"
           @click="emit('updateValue', 'parentId', 0)"
         ) {{ $t('categories.form.parent.no') }}
 
@@ -237,20 +237,19 @@ div
         .cursor-pointer.w-10.h-10.rounded-full.flex-center.border-2.border-transparent(
           v-for="icon in iconGroup"
           :key="icon"
-          :class="{ 'border-skin-accent-base': icon === categoryForm.icon }"
+          :class="{ 'border-accent-2': icon === categoryForm.icon }"
           :style="{ background: categoryForm.color }"
           @click="emit('updateValue', 'icon', icon)"
         )
-          .text-2xl.text-skin-icon-base(:class="icon")
+          .text-2xl.text-icon-base(:class="icon")
 
     //- Save
     //---------------------------------
-    .pt-4.pb-6
-      SharedButton(
-        :class="['_text-center _blue2 _ml-big', { _inline: $store.state.ui.pc }]"
-        :title="$t('wallets.form.save')"
-        @onClick="onSave"
-      )
+    .pt-4.pb-6.flex-center
+      UiButtonBlue(
+        maxWidth
+        @click="onSave"
+      ) {{ $t('base.save') }}
 </template>
 
 <style lang="stylus" scoped>

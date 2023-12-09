@@ -19,7 +19,7 @@ Portal(
     :maxHeight="height"
     :height="height"
     :isScrollerBlock="false"
-    insideClass="bg-skin-layout-main"
+    insideClass="bg-layout-main"
     @closed="$store.commit('currencies/hideBaseCurrenciesModal')"
   )
     template(#handler="{ close }")
@@ -27,7 +27,7 @@ Portal(
       BaseBottomSheetClose(@onClick="close")
 
     template(#header)
-      .py-4.px-2.text-center.text-skin-item-base.text-xl.font-nunito.font-semibold.bg-skin-layout-main.rounded-t-2xl
+      .py-4.px-2.text-center.text-item-base.text-xl.font-nunito.font-semibold.bg-layout-main.rounded-t-2xl
         | {{ $t('currency.selectBaseTitle') }}
 
     template(#default="{ close }")

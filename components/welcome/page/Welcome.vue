@@ -87,10 +87,11 @@ export default {
                       .mdi.mdi-lightbulb-outline
                   .themeSelector__title {{ $t('app.theme.light') }}
 
-              SharedButton._blue2._center(
-                :title="$t('buttons.nextStep')"
-                @onClick="step = 2"
-              )
+              .flex-center
+                UiButtonBlue(
+                  maxWidth
+                  @click="step = 2"
+                ) {{ $t('buttons.nextStep') }}
 
   //-
   transition(name="fadeIn")
@@ -111,16 +112,18 @@ export default {
           .options
             .options__item
               .options__desc {{ $t('welcome.create.text') }}
-              SharedButton._center._blue2(
-                v-if="!$store.getters['wallets/hasWallets']"
-                :title="$t('wallets.createNewTitle')"
-                @onClick="() => { step = 3; showWalletForm = true; }"
-              )
-              SharedButton._center._blue2(
-                v-if="$store.getters['wallets/hasWallets']"
-                :title="$t('categories.createNewTitle')"
-                @onClick="() => { step = 3; showCategoryForm = true; }"
-              )
+              .flex-center
+                UiButtonBlue(
+                  v-if="!$store.getters['wallets/hasWallets']"
+                  maxWidth
+                  @click="() => { step = 3; showWalletForm = true; }"
+                ) {{ $t('wallets.createNewTitle') }}
+
+                UiButtonBlue(
+                  v-if="$store.getters['wallets/hasWallets']"
+                  maxWidth
+                  @click="() => { step = 3; showCategoryForm = true; }"
+                ) {{ $t('categories.createNewTitle') }}
 
   //- Wallet form
   transition(name="fadeIn")
@@ -136,10 +139,11 @@ export default {
         .tab__content
           .icon: .mdi.mdi-folder-star
           .options__desc {{ $t('welcome.createFirstCategory.text') }}
-          SharedButton._blue2._center(
-            :title="$t('welcome.createFirstCategory.btn')"
-            @onClick="showCategoryForm = true"
-          )
+          .flex-center
+            UiButtonBlue(
+              maxWidth
+              @click="showCategoryForm = true"
+            ) {{ $t('welcome.createFirstCategory.btn') }}
 
   //- Category form
   transition(name="fadeIn")
@@ -150,7 +154,7 @@ export default {
       )
 
   .firefoxBackdropFix.z-10.w-full.fixed.left-0.bottom-0.backdrop-blur(
-    class="bg-skin-layout-main/70"
+    class="bg-layout-main/70"
   )
     CommonCopyright
 </template>

@@ -9,11 +9,14 @@ const props = defineProps<{
   isHideParentCategory?: boolean
   slider: any
 }>()
+
 const emit = defineEmits<{
   (e: 'click', id: CategoryId): void
+  (e: 'onClickIcon', id: CategoryId): void
 }>()
 
 const { $store } = useNuxtApp()
+const router = useRouter()
 const { setFilterCatsId } = useFilter()
 
 const childCategoriesIds = computed(() =>
@@ -23,12 +26,18 @@ const parentCategory = computed(() => $store.state.categories.items[props.catego
 
 function onClickIcon() {
   // Prevent filter when using in TrnForm
-  if (props.slider) {
+  if (props.slider)
     emit('click', props.id)
-    return
-  }
 
-  // TODO: useFilter
+  emit('onClickIcon', props.id)
+  // TODO: v4.1
+  // router.push({
+  //   path: 'stat',
+  //   query: {
+  //     cats: [props.id],
+  //   },
+  // })
+
   setFilterCatsId(props.id)
   $store.commit('filter/setFilterDateNow')
   $store.dispatch('ui/setActiveTabStat', 'details')
@@ -36,9 +45,9 @@ function onClickIcon() {
 </script>
 
 <template lang="pug">
-.cursor-pointer.py-2.px-2.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+.cursor-pointer.py-2.px-2.gap-x-3.flex.items-center.rounded-md.bg-item-main-bg.hocus_bg-item-main-hover(
   v-if="category"
-  :class="{ '!cursor-default !bg-skin-item-main-active': activeItemId === id }"
+  :class="{ '!cursor-default !bg-item-main-active': activeItemId === id }"
   @click="emit('click', id)"
 )
   .w-8.h-8.flex.items-center.justify-center.rounded-full.text-xl.leading-none.text-neutral-50(
@@ -47,13 +56,13 @@ function onClickIcon() {
   ): div(:class="category.icon")
 
   .grow.truncate
-    .text-xs.text-skin-item-base-down.dark_text-neutral-400(
+    .text-xs.text-item-base-down.dark_text-neutral-400(
       v-if="parentCategory && !isHideParentCategory"
     ) {{ parentCategory.name }}
 
-    .leading-none.text-sm.text-skin-item-base {{ category.name }}
+    .leading-none.text-sm.text-item-base {{ category.name }}
 
-  .font-unica.text-md.text-skin-item-base-down(
+  .font-unica.text-md.text-item-base-down(
     v-if="childCategoriesIds.length > 0"
   ) {{ childCategoriesIds.length }}
 </template>

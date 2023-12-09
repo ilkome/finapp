@@ -27,7 +27,7 @@ const list = computed(() => {
   class="grid-rows-[auto,1fr]"
 )
   .px-2
-    input.w-full.m-0.py-2.px-3.rounded-lg.text-base.font-normal.text-skin-item-base.bg-skin-item-main-bg.border.border-solid.border-skin-item-main-hover.placeholder_text-skin-item-base-down.transition.ease-in-out.focus_text-skin-item-base-up.focus_bg-skin-item-main-hover.focus_border-blue3.focus_outline-none(
+    input.w-full.m-0.py-2.px-3.rounded-lg.text-base.font-normal.text-item-base.bg-item-main-bg.border.border-solid.border-item-main-hover.placeholder_text-item-base-down.transition.ease-in-out.focus_text-item-base-up.focus_bg-item-main-hover.focus_border-blue3.focus_outline-none(
       placeholder="Search..."
       v-model="searchInput"
       type="text"
@@ -38,10 +38,10 @@ const list = computed(() => {
       .py-3.text-center {{ $t('notFound') }}
 
     template(v-if="!searchInput")
-      .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+      .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-item-main-bg.hocus_bg-item-main-hover(
         v-for="currencyCode in walletsCurrencies"
         :key="currencyCode"
-        :class="{ '!cursor-default text-skin-item-base-up !bg-skin-item-main-active': currencyCode === active }"
+        :class="{ '!cursor-default text-item-base-up !bg-item-main-active': currencyCode === active }"
         @click="emit('onSelect', currencyCode, close)"
       )
         .flex.items-center
@@ -53,10 +53,10 @@ const list = computed(() => {
       .my-2
 
     template(v-if="list.length > 0")
-      .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+      .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-item-main-bg.hocus_bg-item-main-hover(
         v-for="currency in list"
         :key="currency.code"
-        :class="{ '!cursor-default text-skin-item-base-up !bg-skin-item-main-active': currency.code === active }"
+        :class="{ '!cursor-default text-item-base-up !bg-item-main-active': currency.code === active }"
         @click="emit('onSelect', currency.code, close)"
       )
         .flex.items-center

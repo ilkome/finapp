@@ -35,73 +35,67 @@ export default defineComponent({
 
 <template lang="pug">
 UiPage
-  .mb-6.py-6.px-3.text-skin-item-base-up.text-2xl.leading-none.font-nunito.font-semibold
-    | {{ $t('settings.title') }}
+  UiHeader
+    UiHeaderTitle {{ $t('settings.title') }}
 
-  .pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2.md_gap-x-12
+  .pt-4.pb-12.px-3.grid.gap-y-1.gap-x-6.md_grid-cols-2.md_gap-x-12
     div
       //- Currency
       .pb-12
-        .pb-3.text-skin-item-base.text-lg.leading-none.font-nunito.font-semibold
-          | {{ $t('currency.title') }}
-        .pb-4.text-skin-item-base-down.text-xs.leading-1 {{ $t('currency.descBase') }}
+        UiTitle {{ $t('currency.title') }}
+        .pb-4.text-item-base-down.text-xs.leading-1 {{ $t('currency.descBase') }}
 
-        SharedButton._bdb(
+        UiButtonSecond(
           :title="currencies.find(c => c.code === $store.state.currencies.base).name"
           isShowDots
-          @onClick="$store.commit('currencies/showBaseCurrenciesModal')"
+          @click="$store.commit('currencies/showBaseCurrenciesModal')"
         )
 
       .pb-12
         //- Locale
-        .pb-3.text-skin-item-base.text-lg.leading-none.font-nunito.font-semibold
-          | {{ $t('settings.app') }}
-        .pb-4
-          LangDropdown
+        UiTitle.pb-2 {{ $t('settings.app') }}
+        LangDropdown.pb-2
 
-        //- Theme
-        SharedButton._bdb(
-          icon="mdi mdi-palette"
+        UiButtonSecond(
           :title="$t('theme.change')"
-          @onClick="$store.dispatch('ui/changeTheme')"
+          icon="mdi mdi-palette"
+          @click="$store.dispatch('ui/changeTheme')"
         )
 
       //- User
       .pb-12(v-if="user")
-        .pb-3.text-skin-item-base.text-lg.leading-none.font-nunito.font-semibold
-          | {{ $t('user') }}
-        .pb-3.text-neutral-400
+        UiTitle.pb-2 {{ $t('user') }}
+        .pb-3.text-item-base-down
           .text-lg {{ user.displayName }}
           .text-sm {{ user.email }}
 
-        SharedButton._bdb(
+        UiButtonSecond(
           :title="$t('userLogout')"
           icon="mdi mdi-logout"
-          @onClick="$store.dispatch('user/signOut')"
+          @click="$store.dispatch('user/signOut')"
         )
 
+      //- Delete
       .pb-12
-        .pb-3.text-skin-item-base.text-lg.leading-none.font-nunito.font-semibold
-          | {{ $t('settings.caution') }}
-        .pb-4.text-skin-item-base-down.text-xs.leading-1 {{ $t('alerts.willDeleteEverything') }}
+        UiTitle.pb-2 {{ $t('settings.caution') }}
+        .pb-4.text-item-base-down.text-xs.leading-1 {{ $t('alerts.willDeleteEverything') }}
 
-        //- Delete
         .pb-4
-          SharedButton._bdb(
+          UiButtonSecond(
             :title="$t('settings.deleteButton')"
             icon="mdi mdi-delete-empty-outline"
-            @onClick="confirmRemoveUserData = true"
+            @click="confirmRemoveUserData = true"
           )
 
     //- About
     .pb-12.md_justify-self-end
       About
-      .pt-4.text-skin-item-base-down.text-xs {{ $t('app.version') }} {{ version }}
+      .pt-4.text-item-base-down.text-xs {{ $t('app.version') }} {{ version }}
 
   ModalBottomConfirm(
     :description="$t('alerts.willDeleteEverything')"
     :show="confirmRemoveUserData"
-    @onClose="confirmRemoveUserData = false"
+    @closed="confirmRemoveUserData = false"
     @onConfirm="removeUserData"
   )
 </template>

@@ -25,18 +25,18 @@ function changeDate(way: 'prev' | 'next') {
 <template lang="pug">
 .trnFormDate.flex.pb-2.px-2.gap-2
   .overflow-hidden.flex.rounded-xl
-    .shame1.flex-center.w-12._arrow.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+    .shame1.flex-center.w-12._arrow.bg-item-main-bg.hocus_bg-item-main-hover(
       @click="changeDate('prev')"
     ): .mdi.mdi-chevron-left
 
-    .shame1.flex-center.w-12._arrow.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+    .shame1.flex-center.w-12._arrow.bg-item-main-bg.hocus_bg-item-main-hover(
       :class="{ 'opacity-30 !cursor-default' : isToday }"
       @click="changeDate('next')"
     )
       .mdi.mdi-calendar-today(v-if="isToday")
       .mdi.mdi-chevron-right(v-else)
 
-  .grow.cursor-pointer.py-2.px-3.flex.items-center.rounded-md.text-xs.leading-none.hocus_bg-skin-item-main-hover(
+  .grow.cursor-pointer.py-2.px-3.flex.items-center.rounded-md.text-xs.leading-none.hocus_bg-item-main-hover(
     v-html="formattedDate"
     @click="$store.commit('trnForm/showTrnFormModal', 'calendar')"
   )

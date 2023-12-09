@@ -64,7 +64,7 @@ div
   ModalBottomConfirm(
     :show="isShowDeleteConfirm"
     :description="deleteDescText"
-    @onClose="isShowDeleteConfirm = false"
+    @closed="isShowDeleteConfirm = false"
     @onConfirm="onDeleteConfirm"
   )
 </template>

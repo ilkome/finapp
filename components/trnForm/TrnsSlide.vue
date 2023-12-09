@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import type { WalletId } from '~/components/wallets/types'
 
 const props = defineProps<{
   slider: {
-    slideTo: Function
+    slideTo: object
   }
 }>()
 
@@ -12,9 +13,11 @@ const { $store, nuxt2Context: { i18n } } = useNuxtApp()
 const $trnForm = useTrnFormStore()
 const filterBy = ref('wallet')
 
-const filteredTrnsIds = computed(() => {
+const trnsIds = computed(() => {
   const trnsItems = $store.state.trns.items
-  const walletsIds = [$trnForm.values.walletId]
+  const walletsIds: WalletId[] = []
+  if ($trnForm.values.walletId)
+    walletsIds.push($trnForm.values.walletId)
 
   if (filterBy.value === 'wallet')
     return getTrnsIds({ walletsIds, trnsItems })
@@ -32,17 +35,15 @@ const filteredTrnsIds = computed(() => {
 
 function changeFilter(value) {
   const trnForm = document.querySelector('.trnForm')
-  const trnsListScroll = trnForm.querySelector('.trnsListScroll')
-  trnsListScroll.scrollTop = 0
+  const trnsListScroll = trnForm?.querySelector('.trnsListScroll')
+  if (trnsListScroll?.scrollTop)
+    trnsListScroll.scrollTop = 0
 
   filterBy.value = value
-  setTimeout(() => {
-    props.slider.slideTo(0, 0)
-  }, 100)
 }
 
 function onClickEdit() {
-  props.slider.slideTo(1)
+  props.slider?.slideTo(1)
 }
 
 const tabs = computed(() => [{
@@ -58,20 +59,16 @@ const tabs = computed(() => [{
 </script>
 
 <template lang="pug">
-.h-full.overflow-hidden.grid.trnsListScroll(
+.h-full.overflow-hidden.grid.trnsListScroll.pt-4(
   class="grid-rows-[1fr_auto]"
 )
-  .h-full.overflow-hidden
-    .h-full.overflow-y-auto.pt-5.px-2.scroll.scrollerBlock(
-      :class="{ 'grid items-center': filteredTrnsIds.length === 0, 'grid-rows-[1fr_auto]': filteredTrnsIds.length > 0 }"
-    )
-      TrnsListWithControl(
-        :trnsIds="filteredTrnsIds"
-        trnsClassNames=""
-        @onClickEdit="onClickEdit"
-      )
+  TrnsListWithControl(
+    :trnsIds="trnsIds"
+    trnsClassNames=""
+    @onClickEdit="onClickEdit"
+  )
 
-  .pt-2.pb-6.px-3(v-if="filteredTrnsIds.length > 0")
+  .pt-2.pb-2.px-2(v-if="trnsIds.length > 0")
     UiTabs
       UiTabsItem(
         v-for="tab in tabs"
@@ -80,3 +77,8 @@ const tabs = computed(() => [{
         @click="changeFilter(tab.id)"
       ) {{ tab.name }}
 </template>
+
+<style lang="stylus">
+.scroll
+  scrollbar()
+</style>

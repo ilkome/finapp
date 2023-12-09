@@ -37,18 +37,20 @@ SharedContextMenu(
 )
 
   template(slot="opener")
-    SharedButton._bdb(
+    UiButtonSecond(
       :title="currentLanguageName"
       isShowDots
-      @onClick="visibleDropdown = !visibleDropdown"
+      @click="visibleDropdown = !visibleDropdown"
     )
 
   template(slot="content")
     SharedContextMenuItem(
       title="🇷🇺 Русский - Russian"
-      @onClick="changeLang('ru')")
+      @onClick="changeLang('ru')"
+    )
 
     SharedContextMenuItem(
       title="🇺🇸 English - Английский"
-      @onClick="changeLang('en')")
+      @onClick="changeLang('en')"
+    )
 </template>

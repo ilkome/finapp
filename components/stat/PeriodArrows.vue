@@ -10,7 +10,7 @@ const dates = computed(() => ({
 
 <template lang="pug">
 .flex.justify-between.px-3
-  .arrowDate.cursor-pointer.p-2.px-4.pl-2.flex.gap-2.bg-skin-item-main-bg._left.rounded-md(
+  .arrowDate.cursor-pointer.p-2.px-4.pl-2.flex.gap-2.bg-item-main-bg._left.rounded-md(
     :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isNewestPeriodSelected'] }"
     @click="$store.dispatch('filter/setPeriodNext')"
   )
@@ -22,7 +22,7 @@ const dates = computed(() => ({
       :period="$store.state.filter.period"
     )
 
-  .arrowDate.cursor-pointer.p-2.px-4.pr-2.flex.gap-2.bg-skin-item-main-bg._right.rounded-md(
+  .arrowDate.cursor-pointer.p-2.px-4.pr-2.flex.gap-2.bg-item-main-bg._right.rounded-md(
     :class="{ _disable: $store.state.filter.period === 'all' || $store.getters['stat/isOldestPeriodSelected'] }"
     @click="$store.dispatch('filter/setPeriodPrev')"
   )

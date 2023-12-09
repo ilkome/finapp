@@ -47,15 +47,15 @@ useHead({
 UiPage(v-if="wallet")
   UiHeader
     router-link(v-slot="{ href, navigate }" to="/wallets" custom)
-      a.grow.hocus_bg-skin-item-main-hover(:href="href" @click="navigate")
+      a.grow.hocus_bg-item-main-hover(:href="href" @click="navigate")
         UiHeaderTitle
-          .pt-1.text-xs.font-medium.text-skin-item-base-down
+          .pt-1.text-xs.font-medium.text-item-base-down
             | {{ $t("wallets.title") }}
 
           .pb-1.flex.items-center.gap-3
-            .text-skin-item-base-up.text-2xl.font-semibold
+            .text-item-base-up.text-2xl.font-semibold
               | {{ wallet.name }}
-            .p-1.flex-center.rounded.text-skin-icon-base.text-2xs(:style="{ background: wallet.color }")
+            .p-1.flex-center.rounded.text-icon-base.text-2xs(:style="{ background: wallet.color }")
               | {{ wallet.currency }}
 
     template(#actions)
@@ -68,12 +68,11 @@ UiPage(v-if="wallet")
       :currencyCode="wallet.currency"
     )
 
-  .mb-6.px-2.text-sm.text-skin-item-base-down(v-if="wallet.description") {{ wallet.description }}
+  .mb-6.px-2.text-sm.text-item-base-down(v-if="wallet.description") {{ wallet.description }}
 
   .mb-6
     .px-2.flex
-      .cursor-pointer.p-1.px-3.flex.items-center.gap-3.bg-gray-50.dark_bg-dark4.rounded-md.hocus_bg-gray-100.dark_hocus_bg-neutral-800.shadow.hocus_shadow-lg(
-        class="dark_text-white/60"
+      UiItemShadow.cursor-pointer.p-1.px-2.flex.items-center.gap-3(
         @click="onClickFilterWallet"
       )
         .mdi.mdi-poll.text-xl
@@ -81,7 +80,7 @@ UiPage(v-if="wallet")
         .mdi.mdi-chevron-right.opacity-70.text-lg.leading-none
 
   //- Stat
-  .overflow-hidden.relative.bg-gray-50.dark_bg-custom4.mx-3.mb-12.p-3.rounded-md
+  .overflow-hidden.relative.bg-gray-50.bg-item-main-bg.mx-3.mb-12.p-3.rounded-md
     SharedDate.text-xs.font-medium(
       class="-mb-1 dark_text-white/50"
       :date="$day().valueOf()"

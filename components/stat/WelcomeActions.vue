@@ -1,23 +1,19 @@
 <script setup lang="ts">
-import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnForm } from '~/components/trnForm/useTrnForm'
 
-const { $store } = useNuxtApp()
-const router = useRouter()
-const $trnForm = useTrnFormStore()
 const { trnFormCreate } = useTrnForm()
-
-if (!$store.getters['wallets/hasWallets'] || !$store.getters['categories/hasCategories'])
-  router.replace('/welcome')
 </script>
 
 <template lang="pug">
-.h-full.p-4.flex-center.flex-col(v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']")
-  .pb-4.text-skin-item-base-up.text-xl {{ $t('intro') }}
+.h-full.flex-center.flex-col(
+  v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
+)
+  UiTitle.pb-2 {{ $t('intro') }}
 
-  SharedButton._text-center._blue2(
-    :title="$t('create')"
-    @onClick="trnFormCreate"
-  )
+  UiButtonBlue(
+    @click="trnFormCreate"
+    maxWidth
+  ) {{ $t('create')}}
 </template>
 
 <i18n lang="yaml">

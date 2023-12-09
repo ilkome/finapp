@@ -205,7 +205,7 @@ const chartData = computed(() => _merge(JSON.parse(JSON.stringify(options)), cha
     h1 maxPeriodsNumber
     pre {{ maxPeriodsNumber }}
 
-  .my-6.mx-2.py-2.rounded-lg.bg-skin-item-main-bg.border.dark_border-neutral-800
+  .my-6.mx-2.py-2.rounded-lg.bg-item-main-bg.border.dark_border-neutral-800
     ChartBase.h-80(
       @finished="finished"
       :option="chartData"

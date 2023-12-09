@@ -5,8 +5,8 @@ const $trnForm = useTrnFormStore()
 </script>
 
 <template lang="pug">
-div
-  UiTitle
+.py-4
+  UiTitle.pb-2.px-3(@click="$trnForm.values.trnId = null")
     template(v-if="$trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
     template(v-if="!$trnForm.values.trnId") {{ $t('trnForm.createTrn') }}
 

@@ -114,7 +114,7 @@ div(v-if="trnsIds && trnsIds.length > 0")
   .grid(
     :class="{ 'gap-2': uiHistory }"
   )
-    .overflow-hidden.rounded-md.bg-white2.dark_bg-dark4(
+    .overflow-hidden.bg-item-main-bg.rounded-md(
       v-for="(trnsIds, date) in groupedTrns"
       :key="date"
     )
@@ -141,7 +141,7 @@ div(v-if="trnsIds && trnsIds.length > 0")
         )
 
   .py-4.pb-6.px-2.flex-center(v-if="!isShowedAllTrns")
-    .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-skin-item-main-bg.hocus_bg-skin-item-main-hover(
+    .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-main-bg.hocus_bg-item-main-hover(
       class="basis-1/2 max-w-[280px]"
       @click="showMoreTrns"
     ) {{ $t('trns.more') }}
