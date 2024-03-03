@@ -5,7 +5,7 @@ export async function getRatesOfUSD(apiKey: string): Promise<Rates | false> {
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')
 
-  const { data } = await fetch(serviceUrl, {
+  const data = await fetch(serviceUrl, {
     method: 'GET',
     headers,
   })

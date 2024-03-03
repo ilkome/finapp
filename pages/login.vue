@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import type { ToastOptions } from 'vue3-toastify'
+import UiToastContent from '~/components/ui/ToastContent.vue'
 import { useUserStore } from '~/components/user/useUser'
 import { auth } from '~/services/firebase/api'
 
@@ -29,13 +31,15 @@ function signInWithGoogle() {
 
   const provider = new GoogleAuthProvider()
   signInWithPopup(auth, provider).catch((e) => {
-    $toast(e.message, {
+    $toast(UiToastContent, {
+      data: {
+        title: 'Error',
+        description: e.message,
+      },
       autoClose: 6000,
-      theme: 'auto',
       type: 'error',
-      transition: 'slide',
-      position: toast.POSITION.TOP_LEFT,
     } as ToastOptions)
+
     isLoading.value = false
   })
 }

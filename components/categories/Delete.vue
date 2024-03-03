@@ -1,18 +1,19 @@
-<!-- eslint-disable vue/v-on-event-hyphenation -->
 <script setup lang="ts">
-import { errorEmo, random, successEmo } from '~/assets/js/emo'
+import type { ToastOptions } from 'vue3-toastify'
+import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CategoryId } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { getTrnsIds } from '~/components/trns/getTrns'
+import { removeData } from '~/services/firebase/api'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUser'
-import { removeData } from '~/services/firebase/api'
 
 const props = defineProps<{
   categoryId: CategoryId
 }>()
 
-const { $notify } = useNuxtApp()
+const { $toast } = useNuxtApp()
 const router = useRouter()
 const userStore = useUserStore()
 const categoriesStore = useCategoriesStore()
@@ -40,12 +41,15 @@ const deleteDescText = computed(() => {
 function onClickDelete() {
   for (const id in categoriesStore.items) {
     if (categoriesStore.items[id].parentId === categoryId.value) {
-      console.log('TODO')
-      // $notify({
-      //   title: random(errorEmo),
-      //   type: 'error',
-      //   text: 'You can not delete category with child categories. Remove child categories first.',
-      // })
+      $toast(UiToastContent, {
+        toastId: 'delete-category-with-child',
+        data: {
+          title: random(errorEmo),
+          description: 'You can not delete category with child categories. Remove child categories first.',
+        },
+        type: 'error',
+      } as ToastOptions)
+
       return false
     }
   }

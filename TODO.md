@@ -8,3 +8,6 @@
 # Styles
 - Rewrite all styles to Tailwind
 - Remove unused styles
+
+# Currencies
+- Update api call with fetch
