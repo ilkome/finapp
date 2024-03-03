@@ -112,7 +112,7 @@ yarn dev
 
 ## Production
 
-### Compiles and minifies for production
+### Generate static files
 
 This will give you `build` folder. You can upload files from this folder to any shared hosting.
 
@@ -120,24 +120,6 @@ This will give you `build` folder. You can upload files from this folder to any 
 yarn build
 ```
 
-## Upload static files to server
-
-You can add your FTP config in app's directory `ftp.config.js`
-
-``` bash
-# upload all files from dist folder
-yarn upload
-
-# upload only css, js, html files from dist folder
-yarn upload-min
-```
-
 # 🤪 Stay In Touch
 
-I would like to speak with you about Finapp. I'm looking for awesome projects.
-
 - [My Telegram](https://t.me/ilkome)
-
-# 📄 License
-
-[MIT License](https://github.com/ilkome/finapp/blob/main/LICENSE)
