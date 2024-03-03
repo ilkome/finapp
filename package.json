@@ -64,9 +64,6 @@
     "eslint-plugin-vue": "^9.17.0",
     "eslint-plugin-vue-pug": "^0.6.0",
     "fancy-log": "2.0.0",
-    "gulp": "4.0.2",
-    "gulp-notify": "4.0.0",
-    "gulp-plumber": "1.2.1",
     "node-notifier": "10.0.1",
     "pug": "^3.0.2",
     "pug-plain-loader": "^1.1.0",
@@ -77,7 +74,6 @@
     "stylus": "0.59.0",
     "stylus-loader": "^3.0.2",
     "typescript": "^5.2.2",
-    "vinyl-ftp": "0.6.1",
     "vitest": "^0.34.5",
     "webpack": "4.46.0"
   }
