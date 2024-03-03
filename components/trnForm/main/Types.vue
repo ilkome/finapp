@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { TrnType } from '~/components/trns/types'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const $trnForm = useTrnFormStore()
+const walletsStore = useWalletsStore()
 
 function setAmountType(amountType: TrnType) {
   $trnForm.onChangeTrnType(amountType)
@@ -27,7 +29,7 @@ function isItActive(amountType: TrnType) {
     ) {{ $t('money.income') }}
 
     UiTabsItem(
-      v-if="$store.getters['wallets/walletsSortedIds'].length > 1"
+      v-if="walletsStore.walletsSortedIds.length > 1"
       :isActive="isItActive(2)"
       @click="setAmountType(2)"
     ) {{ $t('trnForm.transferTitle') }}

@@ -51,24 +51,22 @@ export default {
   },
 
   app: {
-    version: 'Version',
     desc: 'Powerful personal finance application',
-    welcome: 'Welcome to Finapp',
-    lang: {
-      select: 'Choose language',
+    locale: {
       en: 'English',
       ru: 'Русский',
     },
     theme: {
+      change: 'Change style',
       select: 'Choose style',
       dark: 'Dark',
       light: 'Light',
+      system: 'System',
     },
   },
 
   userLogout: 'Logout',
   loginWithGoogle: 'Login with Google',
-  changeTheme: 'Change theme',
 
   base: {
     sure: 'Are you sure?',

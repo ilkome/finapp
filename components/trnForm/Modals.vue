@@ -1,15 +1,7 @@
 <script setup lang="ts">
-import { useWindowSize } from '@vueuse/core'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import type { CategoryId } from '~/components/categories/types'
 
-const { $store } = useNuxtApp()
 const $trnForm = useTrnFormStore()
-const { height } = useWindowSize()
-
-function onSelected(id: CategoryId) {
-  $trnForm.values.categoryId = id
-}
 </script>
 
 <template lang="pug">
@@ -17,33 +9,33 @@ div
   CategoriesSelector(
     :isShow="$trnForm.ui.catsRootModal"
     @show="value => $trnForm.ui.catsRootModal = value"
-    @onSelected="onSelected"
+    @onSelected="id => $trnForm.values.categoryId = id"
   )
 
-  LazyTrnFormModalCalendar(v-if="$store.state.trnForm.modal.calendar")
-  LazyTrnFormModalDescription(v-if="$store.state.trnForm.modal.description")
+  LazyTrnFormModalCalendar(v-if="$trnForm.modal.calendar")
+  LazyTrnFormModalDescription(v-if="$trnForm.modal.description")
 
   //- Transaction
   LazyTrnFormModalWallets(
-    v-if="$store.state.trnForm.modal.wallets"
+    v-if="$trnForm.modal.wallets"
     :title="$t('wallets.title')"
     @click="walletId => $trnForm.values.walletId = walletId"
-    @closed="$store.commit('trnForm/closeTrnFormModal', 'wallets')"
+    @closed="$trnForm.closeTrnFormModal('wallets')"
   )
 
   //- Transfer: expense
   LazyTrnFormModalWallets(
-    v-if="$store.state.trnForm.modal.transferFrom"
+    v-if="$trnForm.modal.transferFrom"
     :title="$t('trnForm.transfer.fromLong')"
     @click="id => $trnForm.values.expenseWalletId = id"
-    @closed="$store.commit('trnForm/closeTrnFormModal', 'transferFrom')"
+    @closed="$trnForm.closeTrnFormModal('transferFrom')"
   )
 
   //- Transfer: income
   LazyTrnFormModalWallets(
-    v-if="$store.state.trnForm.modal.transferTo"
+    v-if="$trnForm.modal.transferTo"
     :title="$t('trnForm.transfer.toLong')"
     @click="id => $trnForm.values.incomeWalletId = id"
-    @closed="$store.commit('trnForm/closeTrnFormModal', 'transferTo')"
+    @closed="$trnForm.closeTrnFormModal('transferTo')"
   )
 </template>

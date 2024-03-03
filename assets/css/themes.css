@@ -5,8 +5,9 @@ html {
 
 html.dark {
   /* Text */
-  --text-primary: 255 255 255;
-  --text-secondary: 255 255 255;
+  --text-primary: 220 220 220;
+  --text-secondary: 160 160 160;
+  --text-secondary2: 160 160 160;
 
   /* Bg */
   --bg-main: 9 14 23;
@@ -43,6 +44,7 @@ html.dark-gray {
   /* Text */
   --text-primary: 255 255 255;
   --text-secondary: 255 255 255;
+  --text-secondary2: 200 200 200;
 
   /* Bg */
   --bg-main: 27 27 28;
@@ -67,6 +69,7 @@ html.light {
   /* Text */
   --text-primary: 64 64 64;
   --text-secondary: 0 0 0;
+  --text-secondary2: 0 0 0;
 
   /* Bg */
   --bg-main: 250 250 250;

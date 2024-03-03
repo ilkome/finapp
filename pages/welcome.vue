@@ -1,9 +1,9 @@
-<script lang="ts">
-export default {
-  layout: 'welcome',
-}
+<script setup lang="ts">
+definePageMeta({
+  layout: 'center',
+})
 </script>
 
-<template lang="pug">
-Welcome
+<template>
+<WelcomePageWelcome />
 </template>

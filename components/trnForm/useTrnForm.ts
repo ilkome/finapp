@@ -1,16 +1,18 @@
 import dayjs from 'dayjs'
-import vue from 'vue'
 import { defineStore } from 'pinia'
-import type { WalletId } from '../wallets/types'
 import type { CategoryId } from '../categories/types'
+import type { WalletId } from '../wallets/types'
 import type { AmountsType, TrnFormUi, TrnFormValues } from '~/components/trnForm/types'
 import type { TransferType, TrnId, TrnItem } from '~/components/trns/types'
 import { TrnType } from '~/components/trns/types'
 import { formatInput, getSum } from '~/components/trnForm/utils/calculate'
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
-import { random, successEmo } from '~/assets/js/emo'
-import { validate } from '~/components/trnForm/utils/validate'
 import { generateId } from '~/utils/generateId'
+import { random, successEmo } from '~/assets/js/emo'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { validate } from '~/components/trnForm/utils/validate'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 export const useTrnFormStore = defineStore('trnForm', () => {
   const values = reactive<TrnFormValues>({
@@ -38,6 +40,24 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     tab: 'main',
   })
 
+  const modal = ref({
+    calendar: false,
+    categories: false,
+    description: false,
+    transferFrom: false,
+    transferTo: false,
+    wallets: false,
+    trn: false,
+  })
+
+  function closeTrnFormModal(name: keyof typeof modal.value) {
+    modal.value[name] = false
+  }
+
+  function openTrnFormModal(name: keyof typeof modal.value) {
+    modal.value[name] = true
+  }
+
   /**
    * Active amount idx
    */
@@ -51,12 +71,8 @@ export const useTrnFormStore = defineStore('trnForm', () => {
    * Change amount
    */
   function onChangeAmount(amountRaw: string) {
-    vue.set(values.amount, activeAmountIdx.value, getSum(amountRaw))
-    vue.set(values.amountRaw, activeAmountIdx.value, formatInput(amountRaw))
-
-    // TODO: Vue3
-    // values.amount[activeAmountIdx.value] = getSum(amountRaw)
-    // values.amountRaw[activeAmountIdx.value] = formatInput(amountRaw)
+    values.amount[activeAmountIdx.value] = getSum(amountRaw)
+    values.amountRaw[activeAmountIdx.value] = formatInput(amountRaw)
   }
 
   /**
@@ -177,20 +193,20 @@ export const useTrnFormStore = defineStore('trnForm', () => {
       const validateStatus = validate(data)
 
       if (validateStatus.error) {
-        vue.notify({
-          type: 'error',
-          title: validateStatus.error.title,
-          text: validateStatus.error.text,
-        })
+        // vue.notify({
+        //   type: 'error',
+        //   title: validateStatus.error.title,
+        //   text: validateStatus.error.text,
+        // })
         return
       }
 
       // TODO: translate
-      vue.notify({
-        type: 'success',
-        text: 'Excellent transaction!',
-        title: random(successEmo),
-      })
+      // vue.notify({
+      //   type: 'success',
+      //   text: 'Excellent transaction!',
+      //   title: random(successEmo),
+      // })
 
       return {
         id: values.trnId ?? generateId(),
@@ -208,19 +224,13 @@ export const useTrnFormStore = defineStore('trnForm', () => {
   function onChangeCountSum() {
     // Transfer
     if (values.trnType === 2) {
-      vue.set(values.amountRaw, 1, formatInput(values.amount[1]))
-      vue.set(values.amountRaw, 2, formatInput(values.amount[2]))
-
-      // TODO: Vue3
-      // values.amountRaw[1] = formatInput(values.amount[1])
-      // values.amountRaw[2] = formatInput(values.amount[2])
+      values.amountRaw[1] = formatInput(values.amount[1])
+      values.amountRaw[2] = formatInput(values.amount[2])
       return
     }
 
     // Transaction
-    vue.set(values.amountRaw, values.trnType, formatInput(values.amount[values.trnType]))
-    // TODO: Vue3
-    // values.amountRaw[values.trnType] = formatInput(values.amount[values.trnType])
+    values.amountRaw[values.trnType] = formatInput(values.amount[values.trnType])
   }
 
   return {
@@ -228,6 +238,10 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     values,
     ui,
     // dates,
+
+    modal,
+    closeTrnFormModal,
+    openTrnFormModal,
 
     setValues,
     getIsShowSum,
@@ -243,13 +257,15 @@ export const useTrnFormStore = defineStore('trnForm', () => {
 
 export function useTrnForm() {
   const $trnForm = useTrnFormStore()
-  const { $store } = useNuxtApp()
+  const walletsStore = useWalletsStore()
+  const categoriesStore = useCategoriesStore()
+  const trnsStore = useTrnsStore()
 
-  const categoriesIds = computed(() => $store.getters['categories/categoriesIdsForTrnValues'])
-  const walletIds = computed(() => $store.getters['wallets/walletsSortedIds'])
+  const categoriesIds = computed(() => categoriesStore.categoriesIdsForTrnValues)
+  const walletIds = computed(() => walletsStore.walletsSortedIds)
 
   function trnFormEdit(trnId: TrnId) {
-    const trn = $store.state.trns.items[trnId]
+    const trn = trnsStore.items[trnId]
 
     $trnForm.setValues({
       action: 'edit',
@@ -265,15 +281,14 @@ export function useTrnForm() {
     $trnForm.setValues({
       action: 'create',
       categoriesIds: categoriesIds.value,
-      trn: $store.getters['trns/lastCreatedTrnItem'],
+      trn: trnsStore.lastCreatedTrnItem,
       walletsIds: walletIds.value,
     })
     $trnForm.ui.isShow = true
   }
 
   function trnFormDuplicate(trnId: TrnId) {
-    const trn = $store.state.trns.items[trnId]
-    console.log('trnId', trnId)
+    const trn = trnsStore.items[trnId]
 
     $trnForm.setValues({
       action: 'duplicate',

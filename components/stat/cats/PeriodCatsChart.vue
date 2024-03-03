@@ -1,52 +1,31 @@
-<script>
-// TODO: setup
-export default {
-  props: {
-    type: { type: String, required: true },
-  },
+<script setup lang="ts">
+import { useCategoriesStore } from '~/components/categories/useCategories';
+import { useStat } from '~/components/stat/useStat';
 
-  data() {
-    return {
-      activeCategoryId: null,
-      offset: 0,
-    }
-  },
+const props = defineProps<{
+  type: 'expense' | 'income'
+}>()
 
-  computed: {
-    biggestAmount() {
-      return this.$store.getters['stat/statCurrentPeriod'][this.type].biggest
-    },
-    categories() {
-      return this.$store.state.categories.items
-    },
-    statCurrentPeriod() {
-      return this.$store.getters['stat/statCurrentPeriod']
-    },
-  },
-}
+const { statCurrentPeriod } = useStat()
+const categoriesStore = useCategoriesStore()
+
+const biggestAmount = computed(
+  () => statCurrentPeriod.value[props.type].biggest,
+)
 </script>
 
-<template lang="pug">
-.cats-chart(:class="className")
-  .cats-chart__items.px-2.pb-2(v-if="statCurrentPeriod[type].categoriesIds.length > 0")
-    StatCatsPeriodCatsChartItem(
+<template>
+  <div
+    v-if="statCurrentPeriod[type].categoriesIds.length > 0"
+    class="flex overflow-hidden overflow-x-auto px-2 pb-2"
+  >
+    <StatCatsPeriodCatsChartItem
       v-for="categoryId in statCurrentPeriod[type].categoriesIds"
       :key="`charts-${categoryId}`"
       :biggest="biggestAmount"
-      :category="categories[categoryId]"
+      :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
       :total="statCurrentPeriod.categories[categoryId][type]"
-    )
+    />
+  </div>
 </template>
-
-<style lang="stylus" scoped>
-// TODO: style
-.cats-chart
-  &__items
-    overflow hidden
-    overflow-x auto
-    display flex
-
-    .mouse &
-      scrollbar()
-</style>

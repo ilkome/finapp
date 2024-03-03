@@ -1,42 +1,42 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/classes'
+import { useAppNav } from '~/components/app/useAppNav'
+import { useUserStore } from '~/components/user/useUser'
 
-const { $store } = useNuxtApp()
-const activeTab = computed(() => $store.state.ui.activeTab)
-
-function onClickTheme(close: unknown) {
-  $store.dispatch('ui/changeTheme')
-  close && close()
-}
+const { isModalOpen, closeAllModals } = useAppNav()
+const userStore = useUserStore()
 </script>
 
-<template lang="pug">
-Portal(to="modal")
-  LazyBaseBottomSheet(
-    v-if="activeTab === 'menu'"
-    @closed="$store.dispatch('ui/setActiveTab', null)"
-  )
-    template(#handler="{ close }")
-      .handler
-      BaseBottomSheetClose(@onClick="close")
+<template>
+  <Teleport to="body">
+    <LazyBaseBottomSheet v-if="isModalOpen('menu')" @closed="closeAllModals">
+      <template #handler="{ close }">
+        <div class="handler">
+          <BaseBottomSheetClose @onClick="close" />
+        </div>
+      </template>
 
-    template(#default="{ close }")
-      div(:class="getStyles('modal', ['bg', 'rounded', 'padding1'])")
-        //- User
-        .mx-4.mb-2.dark_text-neutral-300
-          .text-xl.font-nunito.font-semibold {{ $store.state.user.user.displayName }}
-          .text-sm.text-gray-900.dark_text-neutral-500 {{ $store.state.user.user.email }}
+      <div :class="getStyles('modal', ['bg', 'rounded', 'padding1'])">
+        <!-- User -->
+        <div class="px-4 pb-2 dark_text-neutral-300">
+          <div class="text-xl font-nunito font-semibold">
+            {{ userStore.user?.displayName }}
+          </div>
+          <div class="text-sm text-gray-900 dark_text-neutral-500">
+            {{ userStore.user?.email }}
+          </div>
+        </div>
 
-        //- Main Menu
-        LayoutSidebarMenu(variant="modal")
+        <!-- Main Menu -->
+        <LayoutSidebarMenu variant="modal" />
 
-        //- Theme
-        div(
-          :class="getStyles('item', ['link', 'rounded', 'menu', 'menuModal'])"
-          @click="onClickTheme(close)"
-        )
-          .text-xl.mdi.mdi-palette
-          .text-sm {{ $t('theme.change') }}
+        <!-- Theme -->
+        <div class="pt-4 px-3 pb-2">
+          <AppThemeSwitcher />
+        </div>
+      </div>
+    </LazyBaseBottomSheet>
+  </Teleport>
 </template>
 
 <style lang="stylus" scoped>

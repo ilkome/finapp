@@ -1,26 +1,24 @@
 <script setup lang="ts">
-import useFilter from '~/components/filter/useFilter'
+import { useFilter } from '~/components/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
 import { getOldestTrnDate } from '~/components/trns/helpers'
+import { useChart } from '~/components/chart/useChart'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const { $store } = useNuxtApp()
-
-// Filter
-const { filterPeriodNameAllReplacedToYear } = useFilter()
+const { periods, addElementsToChart, removeElementsFromChart } = useChart()
+const filterStore = useFilter()
+const trnsStore = useTrnsStore()
 
 const showedPeriods = computed(() =>
-  $store.state.chart.periods[filterPeriodNameAllReplacedToYear.value].showedPeriods)
+  periods.value[filterStore.periodWithoutAll].showedPeriods)
 
 function saveChartsPeriodsToLocalStorage() {
-  $store.dispatch('ui/saveUiView')
+  localStorage.setItem('chartsPeriods', JSON.stringify(periods.value))
 }
 
 function addPeriod() {
-  $store.commit('chart/addElementsToChart', {
-    periodName: filterPeriodNameAllReplacedToYear.value,
-    periodType: 'showedPeriods',
-  })
+  addElementsToChart()
   saveChartsPeriodsToLocalStorage()
 }
 
@@ -28,10 +26,7 @@ function removePeriod() {
   if (showedPeriods.value <= 1)
     return
 
-  $store.commit('chart/removeElementsFromChart', {
-    periodName: filterPeriodNameAllReplacedToYear.value,
-    periodType: 'showedPeriods',
-  })
+  removeElementsFromChart()
   saveChartsPeriodsToLocalStorage()
 }
 
@@ -40,9 +35,9 @@ const { periodsNames } = usePeriods()
 
 // TODO: duplicate computed
 const maxPeriodsNumber = computed(() => {
-  const trnsItems = $store.state.trns.items
+  const trnsItems = trnsStore.items
   const oldestTrnDate = getOldestTrnDate(trnsItems)
-  return getMaxPeriodsToShow(filterPeriodNameAllReplacedToYear.value, oldestTrnDate)
+  return getMaxPeriodsToShow(filterStore.periodWithoutAll, oldestTrnDate)
 })
 
 const isShowRemove = computed(() => showedPeriods.value <= 1)
@@ -57,11 +52,11 @@ const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
       @click="removePeriod"
     ): .mdi.mdi-minus
 
-    .cursor-pointer.py-2.px-3.rounded-md.hocus_bg-item-main-hover(
+    .cursor-pointer.py-2.px-3.rounded-md.hocus_bg-item-main-hover.text-secondary2(
       v-for="periodItem in periodsNames"
       :key="periodItem.slug"
-      :class="{ 'cursor-default text-item-base-up': periodItem.slug === filterPeriodNameAllReplacedToYear }"
-      @click="$store.dispatch('filter/setPeriod', periodItem.slug)"
+      :class="{ 'cursor-default !text-primary': periodItem.slug === filterStore.periodWithoutAll }"
+      @click="filterStore.setPeriod(periodItem.slug)"
     )
       | {{ periodItem.name }}
 

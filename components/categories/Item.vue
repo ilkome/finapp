@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import useFilter from '~/components/filter/useFilter'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useFilter } from '~/components/filter/useFilter'
 
 const props = defineProps<{
-  activeItemId: string | 0
+  // TODO: export type
+  activeItemId?: string | 0 | false | null
   category: CategoryItem
   id: CategoryId
   isHideParentCategory?: boolean
@@ -15,14 +17,16 @@ const emit = defineEmits<{
   (e: 'onClickIcon', id: CategoryId): void
 }>()
 
-const { $store } = useNuxtApp()
-const router = useRouter()
-const { setFilterCatsId } = useFilter()
+const { setFilterCatStat } = useFilter()
+const categoriesStore = useCategoriesStore()
 
 const childCategoriesIds = computed(() =>
-  $store.getters['categories/getChildCategoriesIds'](props.id))
+  categoriesStore.getChildCategoriesIds(props.id),
+)
 
-const parentCategory = computed(() => $store.state.categories.items[props.category?.parentId])
+const parentCategory = computed(
+  () => categoriesStore.items[props.category?.parentId],
+)
 
 function onClickIcon() {
   // Prevent filter when using in TrnForm
@@ -30,39 +34,43 @@ function onClickIcon() {
     emit('click', props.id)
 
   emit('onClickIcon', props.id)
-  // TODO: v4.1
-  // router.push({
-  //   path: 'stat',
-  //   query: {
-  //     cats: [props.id],
-  //   },
-  // })
-
-  setFilterCatsId(props.id)
-  $store.commit('filter/setFilterDateNow')
-  $store.dispatch('ui/setActiveTabStat', 'details')
+  setFilterCatStat(props.id)
 }
 </script>
 
-<template lang="pug">
-.cursor-pointer.py-2.px-2.gap-x-3.flex.items-center.rounded-md.bg-item-main-bg.hocus_bg-item-main-hover(
-  v-if="category"
-  :class="{ '!cursor-default !bg-item-main-active': activeItemId === id }"
-  @click="emit('click', id)"
-)
-  .w-8.h-8.flex.items-center.justify-center.rounded-full.text-xl.leading-none.text-neutral-50(
-    :style="{ background: category.color }"
-    @click.stop="onClickIcon"
-  ): div(:class="category.icon")
+<template>
+  <div
+    v-if="category"
+    class="flex cursor-pointer items-center gap-x-3 rounded-md bg-item-main-bg px-2 py-2 hocus_bg-item-main-hover"
+    :class="{ '!cursor-default !bg-item-main-active': activeItemId === id }"
+    @click="emit('click', id)"
+  >
+    <div
+      class="flex h-8 w-8 items-center justify-center rounded-full text-xl leading-none text-neutral-50"
+      :style="{ background: category.color }"
+      @click.stop="onClickIcon"
+    >
+      <div :class="category.icon" />
+    </div>
 
-  .grow.truncate
-    .text-xs.text-item-base-down.dark_text-neutral-400(
-      v-if="parentCategory && !isHideParentCategory"
-    ) {{ parentCategory.name }}
+    <div class="grow truncate">
+      <div
+        v-if="parentCategory && !isHideParentCategory"
+        class="text-xs text-item-base-down dark_text-neutral-400"
+      >
+        {{ parentCategory.name }}
+      </div>
 
-    .leading-none.text-sm.text-item-base {{ category.name }}
+      <div class="text-secondary text-sm leading-none">
+        {{ category.name }}
+      </div>
+    </div>
 
-  .font-unica.text-md.text-item-base-down(
-    v-if="childCategoriesIds.length > 0"
-  ) {{ childCategoriesIds.length }}
+    <div
+      v-if="childCategoriesIds.length > 0"
+      class="text-md font-unica text-item-base-down"
+    >
+      {{ childCategoriesIds.length }}
+    </div>
+  </div>
 </template>

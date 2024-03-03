@@ -4,11 +4,9 @@ const props = defineProps<{
   isShowExpense: boolean
 }>()
 
-const { $store } = useNuxtApp()
-
 const trnsIds = computed(() => {
-  const trnsItems = $store.state.trns.items
-  let trnsIds = $store.getters['trns/selectedTrnsIdsWithDate']
+  const trnsItems = trnsStore.items
+  let trnsIds = trnsStore.selectedTrnsIdsWithDate
 
   // filter type
   if (props.isShowIncome)

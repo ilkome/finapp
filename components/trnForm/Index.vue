@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import SwiperCore, { Pagination } from 'swiper'
-import 'swiper/swiper-bundle.css'
+import Swiper from 'swiper'
+import { Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
+import { useWindowSize } from '@vueuse/core'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
-SwiperCore.use([Pagination])
-
-const { $store } = useNuxtApp()
 const $trnForm = useTrnFormStore()
+const categoriesStore = useCategoriesStore()
+const { height } = useWindowSize()
 
 /**
  * Slider
@@ -33,7 +36,8 @@ function setTrnFormHeight() {
 
 function init() {
   if (!sliderObj.value) {
-    sliderObj.value = new SwiperCore(sliderRef.value, {
+    sliderObj.value = new Swiper(sliderRef.value, {
+      modules: [Pagination],
       init: false,
       observer: true,
       observeParents: true,
@@ -70,7 +74,7 @@ onMounted(init)
 
       //- Main
       .swiper-slide.getHeight.max-w-sm.sm_rounded-xl.bg-foreground-second.sm_max-w-sm.sm_mx-6
-        .scroll.scrollerBlock(:style="{ maxHeight: `${$store.state.ui.height}px` }")
+        .scroll.scrollerBlock(:style="{ maxHeight: `${height}px` }")
           TrnFormMain
 
       //- Quick selector
@@ -80,7 +84,7 @@ onMounted(init)
             //- Wallets
             .pb-6
               UiTitle.pb-2.px-3(
-                @click="$store.commit('trnForm/showTrnFormModal', 'wallets')"
+                @click="$trnForm.openTrnFormModal('wallets')"
               ) {{ $t('wallets.title') }}
 
               WalletsList(
@@ -99,7 +103,7 @@ onMounted(init)
                   )
 
             //- Favorite categories
-            .pb-6(v-if="$store.getters['categories/favoriteCategoriesIds'].length > 0")
+            .pb-6(v-if="categoriesStore.favoriteCategoriesIds.length > 0")
               UiTitle.pb-2.px-3(
                 @click="$trnForm.ui.catsRootModal = true"
               ) {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
@@ -107,7 +111,7 @@ onMounted(init)
               .px-3
                 CategoriesList(
                   v-if="sliderObj"
-                  :ids="$store.getters['categories/favoriteCategoriesIds']"
+                  :ids="categoriesStore.favoriteCategoriesIds"
                   :activeItemId="$trnForm.values.categoryId"
                   :slider="sliderObj"
                   class="!gap-x-1"
@@ -115,7 +119,7 @@ onMounted(init)
                 )
 
             //- Recent categories
-            .pb-6(v-if="$store.getters['categories/recentCategoriesIds'].length > 0")
+            .pb-6(v-if="categoriesStore.recentCategoriesIds.length > 0")
               UiTitle.pb-2.px-3(
                 @click="$trnForm.ui.catsRootModal = true"
               ) {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
@@ -123,7 +127,7 @@ onMounted(init)
               .px-3
                 CategoriesList(
                 v-if="sliderObj"
-                :ids="$store.getters['categories/recentCategoriesIds']"
+                :ids="categoriesStore.recentCategoriesIds"
                 :activeItemId="$trnForm.values.categoryId"
                 :slider="sliderObj"
                 class="!gap-x-1"
@@ -132,7 +136,7 @@ onMounted(init)
   .trnForm__pagination
 
   //- Modals
-  Portal(to="modal")
+  Teleport(to="body")
     TrnFormModals
 </template>
 
@@ -147,9 +151,9 @@ onMounted(init)
     align-items center
     justify-content center
     width auto
-    padding $m5
+    padding 6px
     background alpha(#171717, .9)
-    border-radius $m5
+    border-radius 6px
     transform translateX(-50%)
 
     /.light &
@@ -173,6 +177,8 @@ onMounted(init)
 </style>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .scroll
   overflow hidden
   overflow-y auto

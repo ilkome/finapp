@@ -1,21 +1,28 @@
 <script setup lang="ts">
+import { getStyles } from '~/components/ui/classes'
+import { useFilter } from '~/components/filter/useFilter'
+
+const filterStore = useFilter()
 const isShowDateSelector = ref(false)
 </script>
 
 <template lang="pug">
-.z-10.hocus_bg-item-main-hover
+.z-10(
+  :class="getStyles('item', ['link', 'rounded'])"
+)
   //- Date
-  .cursor-pointer.px-2.flex.items-center.text-lg(
+  .px-2.flex.items-center.text-lg(
     @click="isShowDateSelector = true"
   )
-    .py-3.text-item-base-up.font-semibold.font-nunito.leading-none
+    .py-2.text-item-base-up.font-semibold.font-nunito.leading-none
       SharedDate(
-        :date="$store.state.filter.date"
-        :period="$store.state.filter.period"
+        :date="filterStore.date"
+        :period="filterStore.period"
       )
 
     .mdi.mdi-dots-vertical
 
+  //- Selector
   LazyDateSelector(
     v-if="isShowDateSelector"
     @close="isShowDateSelector = false"

@@ -1,32 +1,19 @@
 <script setup lang="ts">
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
-const { $store } = useNuxtApp()
 const $trnForm = useTrnFormStore()
 
 const description = ref('')
+onMounted(() => description.value = $trnForm.values.desc ?? '')
 
-function handleCancel(close) {
-  description.value = ''
-  close()
-}
-
-function onSave(close) {
+function onSave(close: () => void) {
   $trnForm.values.desc = description.value
   close()
 }
-
-function closed() {
-  $store.commit('trnForm/closeTrnFormModal', 'description')
-}
-
-onMounted(() => {
-  description.value = $trnForm.values.desc ?? ''
-})
 </script>
 
 <template lang="pug">
-TrnFormModal(@closed="closed")
+TrnFormModal(@closed="$trnForm.closeTrnFormModal('description')")
   template(#header)
     template {{ $t('trnForm.description.title') }}
 

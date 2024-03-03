@@ -81,7 +81,7 @@ onLongPress(
     //- Description
     TrnFormMainCalculatorButton(
       :class="{ 'text-accent-default': !!$trnForm.values.desc }"
-      @click="$store.commit('trnForm/showTrnFormModal', 'description')"
+      @click="$trnForm.openTrnFormModal('description')"
     ): .mdi.mdi-comment-text-outline
 
     //- Action

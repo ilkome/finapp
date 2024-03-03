@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
+import dayjs from 'dayjs';
 
 const props = defineProps<{
   date: number
-  period: String
+  period: string
 }>()
 
-const { nuxt2Context: { i18n } } = useNuxtApp()
+const { $i18n } = useNuxtApp()
 
 const formattedDate = computed(() => {
   const today = dayjs()
@@ -23,10 +23,10 @@ const formattedDate = computed(() => {
 
     case 'week':
       if (today.isSame(filterDate, 'week'))
-        return i18n.t('dates.week.current')
+        return $i18n.t('dates.week.current')
 
       else if (today.subtract(1, filterPeriod).isSame(filterDate, 'week'))
-        return i18n.t('dates.week.last')
+        return $i18n.t('dates.week.last')
 
       const date = dayjs(filterDate)
       const startDate = date.startOf('week').format('D MMMM')

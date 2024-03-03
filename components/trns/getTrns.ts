@@ -12,11 +12,14 @@ interface Props {
   periodName?: PeriodNames
   trnType?: TrnType
   untilDate?: number
-  walletsIds?: WalletId[]
+  walletsIds?: WalletId[] | false
 }
 
 // TODO: sorting option?
 export function getTrnsIds(props: Props) {
+  if (!props.trnsItems)
+    return false
+
   let trnsIds: TrnId[] = Object.keys(props.trnsItems)
 
   // Type

@@ -3,16 +3,20 @@ import { getTrnsIds } from '~/components/trns/getTrns'
 import { random, successEmo } from '~/assets/js/emo'
 import { removeData } from '~/services/firebase/api'
 import type { WalletId } from '~/components/wallets/types'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useUserStore } from '~/components/user/useUser'
 
 const props = defineProps<{
   walletId: WalletId
 }>()
 const { walletId } = toRefs(props)
 
-const { $store, $notify } = useNuxtApp()
+const { $notify } = useNuxtApp()
 const router = useRouter()
+const userStore = useUserStore()
+const trnsStore = useTrnsStore()
 
-const trnsItems = computed(() => $store.state.trns.items)
+const trnsItems = computed(() => trnsStore.items)
 const trnsIds = computed(() =>
   getTrnsIds({
     walletsIds: [walletId.value],
@@ -35,7 +39,7 @@ function onClickDelete() {
 // TODO: translate
 async function onDeleteConfirm() {
   // Disable reactive to have data when user have already redirected to wallets page
-  const uid = JSON.parse(JSON.stringify($store.state.user.user.uid))
+  const uid = JSON.parse(JSON.stringify(userStore.uid))
   const trnsIdsS = JSON.parse(JSON.stringify(trnsIds.value))
   const walletIdS = JSON.parse(JSON.stringify(walletId.value))
 
@@ -43,7 +47,7 @@ async function onDeleteConfirm() {
 
   // Give some time to complete redirect
   setTimeout(async () => {
-    await $store.dispatch('trns/deleteTrnsByIds', trnsIdsS)
+    await trnsStore.deleteTrnsByIds(trnsIdsS)
     removeData(`users/${uid}/accounts/${walletIdS}`)
       .then(() => {
         $notify({

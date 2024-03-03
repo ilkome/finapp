@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
 defineProps<{
   categoryId: CategoryId
@@ -8,19 +9,27 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'click', categoryId: CategoryId): void
 }>()
+
+const categoriesStore = useCategoriesStore()
 </script>
 
-<template lang="pug">
-FilterItemBg(
-  @click="emit('click', categoryId)"
-)
-  .text-2xl(
-    :style="{ color: $store.state.categories.items[categoryId].color }"
-    :class="$store.state.categories.items[categoryId].icon"
-  )
-  div
-    .text-2xs(v-if="$store.state.categories.items[categoryId].parentId").
-      {{ $store.state.categories.items[$store.state.categories.items[categoryId].parentId].name }}
-    .text-sm.leading-none.
-      {{ $store.state.categories.items[categoryId].name }}
+<template>
+  <FilterItemBg @click="emit('click', categoryId)">
+    <div
+      :style="{ color: categoriesStore.items[categoryId].color }"
+      :class="categoriesStore.items[categoryId].icon"
+      class="text-2xl"
+    />
+
+    <div>
+      <div v-if="categoriesStore.items[categoryId].parentId" class="text-2xs">
+        {{
+          categoriesStore.items[categoriesStore.items[categoryId].parentId].name
+        }}
+      </div>
+      <div class="text-secondary text-sm leading-none">
+        {{ categoriesStore.items[categoryId].name }}
+      </div>
+    </div>
+  </FilterItemBg>
 </template>

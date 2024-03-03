@@ -2,7 +2,8 @@ export const classes = {
   item: {
     simple: '',
     link: `
-      cursor-pointer
+      cursor-pointer select-none
+      text-secondary2
       hocus_bg-item-main-hover
       transition
     `,

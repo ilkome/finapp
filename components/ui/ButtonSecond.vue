@@ -9,44 +9,39 @@ const emit = defineEmits<{
   (e: 'click'): void
 }>()
 
-const classNames = computed(() => ({
+const classes = computed(() => ({
   '!pr-3': props.isShowDots,
 }))
 </script>
 
-<template lang="pug">
-.wrap(
-  :class="classNames"
-  @click="emit('click')"
-)
-  .icon(v-if="icon")
-    div(:class="icon")
+<template>
+  <div class="wrap" :class="classes" @click="emit('click')">
+    <div v-if="icon" class="icon" />
 
-  .grow(v-if="title") {{ title }}
+    <div v-if="title" class="grow">
+      {{ title }}
+    </div>
 
-  .check(
-    v-if="showCheckbox"
-    @click.prevent=""
-  )
-    SharedInputsCheckbox(v-model="checkboxValue")
-
-  .mdi.mdi-dots-vertical.text-lg(v-if="isShowDots")
+    <div v-if="isShowDots" class="mdi mdi-dots-vertical text-lg" />
+  </div>
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .wrap
   cursor pointer
   display flex
   align-items center
   width 100%
   min-height 48px
-  padding $m6 $m8
+  padding 10px 20px
   color var(--c-text-4)
   font-size 14px
   text-decoration none
   background var(--c-bg-4)
   border 1px solid var(--c-bg-5)
-  border-radius $m5
+  border-radius 6px
   anim-background()
 
   +media-hover()
@@ -55,7 +50,7 @@ const classNames = computed(() => ({
 
 .icon
   opacity .85
-  margin-right $m6
+  margin-right 10px
   margin-left -5px
   font-size 18px
   text-align center
@@ -63,8 +58,4 @@ const classNames = computed(() => ({
   &:last-child
     margin-right 0
     margin-right -5px
-
-.check
-  margin-left auto
-  padding-left 32px
 </style>

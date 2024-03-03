@@ -1,18 +1,11 @@
-<script lang="ts">
-export default defineComponent({
-  props: ['error'],
+<script setup lang="ts">
+// TODO: Add locale
+defineProps<{
+  error: unknown
+}>()
 
-  fetch() {
-    if (Object.keys(this.$route.query).length > 0)
-      this.$router.replace({ query: null })
-  },
-
-  computed: {
-    statusCode() {
-      return (this.error && this.error.statusCode) || 500
-    },
-  },
-})
+if (Object.keys(useRoute().query).length > 0)
+  useRouter().replace({ query: null })
 </script>
 
 <template lang="pug">

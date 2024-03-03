@@ -1,9 +1,13 @@
-html {
-  --font-primary: 'Roboto', 'sans-serif';
+body {
+  @apply
+    font-roboto text-primary leading-none antialiased
+    bg-layout-main;
 }
 
-body {
-  background: rgb(var(--bg-main) / 1);
-  color: rgb(var(--text-primary) / 1);
-  font-family: var(--font-primary);
+.layoutBase {
+  @apply
+    overflow-hidden relative
+    h-full;
+
+  @layer min-w-base;
 }

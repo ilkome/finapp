@@ -1,22 +1,28 @@
-*.log
-*.log*
-.DS_Store
-.cache
-.env
-.eslintcache
-.firebase
-.history
-.idea
-.nitro
-.npm
-.nuxt
+# Nuxt dev/build outputs
 .output
-.yarn
-coverage
+.data
+.nuxt
+.nitro
+.cache
 dist
-ftp.config.js
-node_modules
-npm-debug.log*
 sw.*
-yarn-debug.log*
-yarn-error.log*
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+
+ftp.config.js

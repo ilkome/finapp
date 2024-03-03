@@ -1,14 +1,16 @@
-<script>
-export default {
-  props: {
-    value: { type: Boolean, required: true },
-    title: { type: String, default: null },
-  },
-}
+<script setup lang="ts">
+const props = defineProps<{
+  value: boolean
+  title?: string
+}>()
+
+const emit = defineEmits<{
+  (e: 'click', value: boolean): void
+}>()
 </script>
 
 <template lang="pug">
-.checkboxBlock(@click="$emit('click', !value)")
+.checkboxBlock(@click="emit('click', !value)")
   .checkbox__title(v-if="title") {{ title }}
 
   .checkbox(:class="{ _active: value }")
@@ -16,6 +18,8 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .checkboxBlock
   display flex
   align-items center
@@ -25,7 +29,7 @@ export default {
   width 44px
   height 24px
   background var(--c-bg-8)
-  border-radius $m8
+  border-radius 20px
   anim()
 
   &._active
@@ -38,7 +42,7 @@ export default {
     width 20px
     height 20px
     background var(--c-font-2)
-    border-radius $m8
+    border-radius 20px
     box-shadow 0 0 4px rgba(0, 0, 0, .25)
     anim()
 
@@ -50,5 +54,5 @@ export default {
 
   &__title
     flex-grow 1
-    padding-right $m7
+    padding-right 16px
 </style>

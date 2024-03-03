@@ -1,11 +1,18 @@
 import { formatDate } from '~/utils/formatDate'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export default function useTrn() {
-  const { $store } = useNuxtApp()
+  const categoriesStore = useCategoriesStore()
+  const trnsStore = useTrnsStore()
+  const walletsStore = useWalletsStore()
 
   function formatTrnItem(id) {
     try {
-      const { trns, wallets, categories } = $store.state
+      const trns = trnsStore
+      const wallets = walletsStore
+      const categories = categoriesStore
 
       if (!trns?.items || !wallets?.items || !categories?.items)
         return 'Something missing'

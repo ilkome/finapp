@@ -1,19 +1,27 @@
 <script setup lang="ts">
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
+const { t } = useI18n()
 const { trnFormCreate } = useTrnForm()
+const walletsStore = useWalletsStore()
+const categoriesStore = useCategoriesStore()
 </script>
 
-<template lang="pug">
-.h-full.flex-center.flex-col(
-  v-if="$store.getters['wallets/hasWallets'] && $store.getters['categories/hasCategories']"
-)
-  UiTitle.pb-2 {{ $t('intro') }}
+<template>
+  <div
+    v-if="walletsStore.hasWallets && categoriesStore.hasCategories"
+    class="flex-center h-full flex-col"
+  >
+    <UiTitle class="pb-2">
+      {{ t("intro") }}
+    </UiTitle>
 
-  UiButtonBlue(
-    @click="trnFormCreate"
-    maxWidth
-  ) {{ $t('create')}}
+    <UiButtonBlue maxWidth @click="trnFormCreate">
+      {{ t("create") }}
+    </UiButtonBlue>
+  </div>
 </template>
 
 <i18n lang="yaml">

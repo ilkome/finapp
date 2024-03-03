@@ -1,3 +1,4 @@
+// @deprecated
 export default {
   chart: {
     backgroundColor: 'transparent',

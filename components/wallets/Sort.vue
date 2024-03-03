@@ -1,45 +1,32 @@
-<script>
+<script setup lang="ts">
 import Draggable from 'vuedraggable'
+
 import { random, successEmo } from '~/assets/js/emo'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-export default {
-  components: { Draggable },
+const emit = defineEmits(['closeModal'])
 
-  data() {
-    return {
-      sortedWalletsIds: [...this.$store.getters['wallets/walletsSortedIds']],
-    }
-  },
+const walletsStore = useWalletsStore()
+const { $notify } = useNuxtApp()
 
-  methods: {
-    /**
-     * Get array of wallets IDs
-     * Convert them to objects with order value
-     * Push object with wallets to DB
-     */
-    async saveWalletsOrder() {
-      const sortedWallets = {}
+const sortedWalletsIds = ref([...walletsStore.walletsSortedIds])
 
-      for (const [idx, walletId] of this.sortedWalletsIds.entries())
-        sortedWallets[walletId] = idx
+async function saveWalletsOrder() {
+  const sortedWallets = {}
 
-      const result = await this.$store.dispatch(
-        'wallets/saveWalletsOrder',
-        sortedWallets,
-      )
+  for (const [idx, walletId] of sortedWalletsIds.value.entries())
+    sortedWallets[walletId] = idx
 
-      if (result.success) {
-        if (this.$listeners.closeModal)
-          this.$listeners.closeModal()
+  const result = await walletsStore.saveWalletsOrder(sortedWallets)
 
-        this.$notify({
-          type: 'success',
-          title: random(successEmo),
-          text: 'Saved',
-        })
-      }
-    },
-  },
+  if (result.success)
+    emit('closeModal')
+
+  // $notify({
+  //   type: 'success',
+  //   title: random(successEmo),
+  //   text: 'Saved',
+  // })
 }
 </script>
 
@@ -56,21 +43,22 @@ export default {
     v-model="sortedWalletsIds"
     handle=".handle"
     ghost-class="_draggable"
+    item-key="id"
   )
-    .overflow-hidden.py-0.pl-3.flex.items-center.gap-3.rounded-md.bg-item-main-bg(
-      v-for="walletId in sortedWalletsIds"
-      :key="walletId"
-    )
-      .grow.flex-center.gap-x-3
-        .w-6.h-6.rounded-md.flex-center.text-neutral-50.text-xs.leading-none(
-          :style="{ background: $store.state.wallets.items[walletId].color }"
-          class="mt-[2px]"
-        ) {{ $store.state.wallets.items[walletId].name.substring(0, 2) }}
-        .grow.text-sm.text-neutral-500.dark_text-neutral-400 {{ $store.state.wallets.items[walletId].name }}
+    template(#item="{element}")
+      .overflow-hidden.py-0.pl-3.flex.items-center.gap-3.rounded-md.bg-item-main-bg(
+        :key="element"
+      )
+        .grow.flex-center.gap-x-3
+          .w-6.h-6.rounded-md.flex-center.text-neutral-50.text-xs.leading-none(
+            :style="{ background: walletsStore.items[element].color }"
+            class="mt-[2px]"
+          ) {{ walletsStore.items[element].name.substring(0, 2) }}
+          .grow.text-sm.text-neutral-500.dark_text-neutral-400 {{ walletsStore.items[element].name }}
 
-        .cursor-grab.flex-center.w-11.h-11.handle.doNotCloseModal.hocus_bg-item-main-hover
-          svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24")
-            path(fill="currentColor" d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2s.9-2 2-2s2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2z")
+          .cursor-grab.flex-center.w-11.h-11.handle.doNotCloseModal.hocus_bg-item-main-hover
+            svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24")
+              path(fill="currentColor" d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2s.9-2 2-2s2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2z")
 
   .flex-center.pt-6
     UiButtonBlue(

@@ -1,26 +1,27 @@
-import type { WalletId, WalletItem, WalletItemWithAmount } from '~/components/wallets/types'
+import type { WalletId, WalletItem, WalletItemWithAmount, Wallets } from '~/components/wallets/types'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export default function useWallets() {
-  const { $store } = useNuxtApp()
+  const walletsStore = useWalletsStore()
 
   /**
    * Wallets IDs sorted
    *
    */
-  const walletsIdsSorted = computed<WalletId[]>(() => $store.getters['wallets/walletsSortedIds'])
+  const walletsIdsSorted = computed<WalletId[]>(() => walletsStore.walletsSortedIds)
 
   /**
    * Wallets items sorted
    *
    */
   const walletsItemsSorted = computed<Record<WalletId, WalletItemWithAmount>>(() => {
-    const walletsIdsSorted: WalletId[] = $store.getters['wallets/walletsSortedIds']
+    const walletsIdsSorted: WalletId[] = walletsStore.walletsSortedIds
 
-    return walletsIdsSorted.reduce((acc, id) => {
+    return walletsIdsSorted.reduce((acc: Wallets, id) => {
       acc[id] ??= []
       acc[id] = {
-        ...$store.state.wallets.items[id],
-        amount: $store.getters['wallets/walletsTotal'][id],
+        ...walletsStore.items[id],
+        amount: walletsStore.walletsTotal[id],
       }
       return acc
     }, {})
@@ -30,8 +31,8 @@ export default function useWallets() {
    * Wallets currencies
    */
   const walletsCurrencies = computed<WalletId[]>(() => {
-    const walletsIdsSorted: WalletId[] = $store.getters['wallets/walletsSortedIds']
-    const walletsItems: Record<WalletId, WalletItem> = $store.state.wallets.items
+    const walletsIdsSorted: WalletId[] = walletsStore.walletsSortedIds
+    const walletsItems: Record<WalletId, WalletItem> = walletsStore.items
 
     // TODO: check A
     return walletsIdsSorted.reduce((acc, id) => {

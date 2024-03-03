@@ -1,82 +1,215 @@
+import dayjs from 'dayjs'
+import localforage from 'localforage'
+import { storeToRefs } from 'pinia'
+import { useAppNav } from '~/components/app/useAppNav'
 import type { CategoryId } from '~/components/categories/types'
+import type { PeriodName, PeriodNameWithAll } from '~/components/chart/useChart'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 
-export default function useFilter() {
-  const { $store } = useNuxtApp()
+export const useFilter = defineStore('filter', () => {
   const route = useRoute()
-  const router = useRouter()
-  const filterPeriodNameAllReplacedToYear = computed(() =>
-    $store.state.filter.period === 'all'
-      ? 'year'
-      : $store.state.filter.period)
+  const trnsStore = useTrnsStore()
+  const { activeTabStat } = storeToRefs(useAppNav())
 
-  const isNeedToRedirect = computed(() => route.name !== 'index' && route.name !== 'history')
+  /**
+   * Redirect
+   */
+  const isNeedToRedirect = computed(() => route.name !== 'dashboard' && route.name !== 'history')
 
-  function scrollTop() {
-    const page = document.querySelector('.js_scroll_page')
-    if (page)
-      page.scrollTop = 0
+  /**
+   * Date
+   */
+  const date = ref<number>(dayjs().startOf('month').valueOf())
+
+  function setDate(value: number) {
+    date.value = dayjs(value).valueOf()
   }
 
-  function setFilterCatsId(categoryId) {
-    if (isNeedToRedirect.value)
-      router.push('/')
+  function setDateNow() {
+    date.value = dayjs().valueOf()
+  }
 
-    $store.commit('filter/setFilterCatsId', categoryId)
+  /**
+   * Period
+   */
+  const period = ref<PeriodNameWithAll>('month')
+  const periodWithoutAll = computed<PeriodName>(() => period.value === 'all' ? 'year' : period.value)
+
+  function setPeriod(periodName: PeriodNameWithAll) {
+    if (!periodName)
+      return
+
+    if (periodName !== 'all')
+      date.value = dayjs().startOf(periodName).valueOf()
+
+    period.value = periodName
+    localforage.setItem('finapp.filter.period', periodName || 'month')
+  }
+
+  function setPeriodNext() {
+    if (period.value === 'all')
+      return
+
+    if (trnsStore.hasTrns) {
+      const trns = trnsStore.items
+      const firstCreatedTrn = trns[trnsStore.firstCreatedTrnIdFromSelectedTrns]
+      if (!firstCreatedTrn)
+        return
+
+      const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(period.value).valueOf()
+      const nextDate = dayjs(date.value).subtract(1, period.value).startOf(period.value).valueOf()
+      if (nextDate >= firstCreatedTrnDate)
+        date.value = nextDate
+    }
+  }
+
+  function setPeriodPrev() {
+    if (trnsStore.hasTrns) {
+      if (period.value === 'all')
+        return
+
+      const nextDate = dayjs(date.value).add(1, period.value).startOf(period.value).valueOf()
+      if (nextDate < dayjs().valueOf())
+        date.value = nextDate
+    }
+  }
+
+  /**
+   * Wallets
+   */
+  const walletsIds = ref<WalletId[]>([])
+
+  function setWalletId(walletId: WalletId) {
+    if (isNeedToRedirect.value)
+      navigateTo('/dashboard')
+
+    if (walletsIds.value.includes(walletId))
+      return
+
+    walletsIds.value.push(walletId)
     scrollTop()
   }
 
-  function setFilterWalletsId(walletId: WalletId) {
-    if (isNeedToRedirect.value)
-      router.push('/')
-
-    $store.commit('filter/setFilterWalletsId', walletId)
-    scrollTop()
-  }
-
-  function toggleWalletFilter(walletId: WalletId) {
-    if ($store.state.filter.walletsIds.includes(walletId)) {
-      $store.commit('filter/removeFilterWalletId', walletId)
+  function toggleWalletId(walletId: WalletId) {
+    if (walletsIds.value.includes(walletId)) {
+      removeWalletId(walletId)
       scrollTop()
       return
     }
 
-    setFilterWalletsId(walletId)
-    $store.commit('filter/setFilterDateNow')
-    $store.dispatch('ui/setActiveTabStat', 'details')
+    setWalletId(walletId)
+    setDateNow()
+    activeTabStat.value = 'summary'
     scrollTop()
   }
 
-  function setDayDate(date) {
-    $store.dispatch('filter/setPeriod', 'day')
-    $store.dispatch('filter/setDate', Number.parseInt(date))
-    scrollTop()
+  function removeWalletId(walletId: WalletId) {
+    walletsIds.value = walletsIds.value.filter(id => id !== walletId)
   }
 
   /**
-   * Removes
-   *
+   * Categories
    */
-  function removeFilterCategoryId(id: CategoryId) {
-    $store.commit('filter/removeFilterCategoryId', id)
+  const catsIds = ref<CategoryId[]>([])
+
+  function setCategoryId(categoryId: CategoryId) {
+    if (isNeedToRedirect.value)
+      navigateTo('/dashboard')
+
+    if (catsIds.value.includes(categoryId))
+      return
+
+    catsIds.value.push(categoryId)
+    scrollTop()
+  }
+
+  function removeCategoryId(categoryId: CategoryId) {
+    catsIds.value = catsIds.value.filter(id => id !== categoryId)
+  }
+
+  /**
+   * Others
+   */
+  function setDayDate(value: number) {
+    period.value = 'day'
+    date.value = +value
+    scrollTop()
   }
 
   /**
    * Clear
    */
   function clearFilter() {
-    $store.commit('filter/clearFilterCatsIds')
-    $store.commit('filter/clearFilterWalletsIds')
+    catsIds.value = []
+    walletsIds.value = []
   }
 
-  return {
-    clearFilter,
-    filterPeriodNameAllReplacedToYear,
-    removeFilterCategoryId,
-    scrollTop,
-    setDayDate,
-    setFilterCatsId,
-    setFilterWalletsId,
-    toggleWalletFilter,
+  function setFilterCatStat(catId: CategoryId) {
+    setCategoryId(catId)
+    setDateNow()
+    activeTabStat.value = 'summary'
   }
-}
+
+  function setFilterWalletStat(walletId: WalletId) {
+    setWalletId(walletId)
+    setDateNow()
+    activeTabStat.value = 'summary'
+  }
+
+  /**
+   * Scroll top
+   */
+  function scrollTop() {
+    const page = document.querySelector('.js_scroll_page')
+    if (page)
+      page.scrollTop = 0
+  }
+
+  /**
+   * Computed
+   */
+  const values = computed<{
+    date: number
+    walletsIds: WalletId[]
+    catsIds: CategoryId[]
+    period: PeriodNameWithAll
+  }>(() => ({
+    date: date.value,
+    walletsIds: walletsIds.value,
+    catsIds: catsIds.value,
+    period: period.value,
+  }))
+
+  return {
+    // Date
+    date,
+    setDate,
+    setDateNow,
+    setPeriodPrev,
+    setPeriodNext,
+
+    walletsIds,
+    setWalletId,
+    removeWalletId,
+    toggleWalletId,
+
+    catsIds,
+    setCategoryId,
+    removeCategoryId,
+
+    period,
+    periodWithoutAll,
+    setPeriod,
+
+    setDayDate,
+
+    setFilterCatStat,
+    setFilterWalletStat,
+
+    clearFilter,
+
+    // Computed
+    values,
+  }
+})

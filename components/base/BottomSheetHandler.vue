@@ -3,6 +3,8 @@
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .handler
   z-index 2
   position absolute

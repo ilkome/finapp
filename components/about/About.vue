@@ -1,14 +1,18 @@
+<script setup lang="ts">
+const { t } = useI18n()
+</script>
+
 <template lang="pug">
 div
-  .title.pb-4 {{ $t('title') }}
+  .title.pb-4 {{ t('title') }}
 
   .flex.gap-8.pb-3
     div
-      .subTitle.pb-4 {{ $t('author') }}
+      .subTitle.pb-4 {{ t('author') }}
       .name ilkome
 
     div
-      .subTitle.pb-4 {{ $t('thanks') }}
+      .subTitle.pb-4 {{ t('thanks') }}
       .name TheCarolissy, TihomirovPro
 </template>
 
@@ -19,7 +23,7 @@ div
   font-size 18px
 
 .subTitle
-  padding-bottom $m4
+  padding-bottom 4px
   color var(--c-font-4)
   font-size 12px
 

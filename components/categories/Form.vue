@@ -5,6 +5,8 @@ import type { CategoryForm, CategoryId, CategoryItem } from '~/components/catego
 import { allColors } from '~/assets/js/colors'
 import { getPreparedFormData } from '~/components/categories/getForm'
 import { saveData } from '~/services/firebase/api'
+import { useUserStore } from '~/components/user/useUser'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const props = defineProps<{
   categoryId?: CategoryId
@@ -14,38 +16,40 @@ const props = defineProps<{
 const emit = defineEmits(['updateValue', 'afterSave'])
 
 const { categoryId, categoryForm } = toRefs(props)
-const { $store, $notify, nuxt2Context: { i18n } } = useNuxtApp()
+const { $notify, $i18n } = useNuxtApp()
+const userStore = useUserStore()
+const categoriesStore = useCategoriesStore()
+
 const editCategoryId = categoryId.value ?? generateId()
 
 const activeTab = ref('data')
 const isUpdateChildCategoriesColor = ref(true)
-const isAllowChangeParent = computed(() =>
-  $store.getters['categories/getChildCategoriesIds'](categoryId.value).length === 0)
+const isAllowChangeParent = computed(() => categoriesStore.getChildCategoriesIds(categoryId.value).length === 0)
 
 const tabs = computed(() => [{
   id: 'data',
-  name: i18n.t('categories.form.data.label'),
+  name: $i18n.t('categories.form.data.label'),
 }, {
   id: 'parent',
-  name: i18n.t('categories.form.parent.label'),
-  isHidden: !$store.getters['categories/hasCategories'],
+  name: $i18n.t('categories.form.parent.label'),
+  isHidden: !categoriesStore.hasCategories,
 }, {
   id: 'colors',
-  name: i18n.t('categories.form.colors.label'),
+  name: $i18n.t('categories.form.colors.label'),
 }, {
   id: 'icon',
-  name: i18n.t('categories.form.icon.label'),
+  name: $i18n.t('categories.form.icon.label'),
 }])
 
 /**
  * Find category with color
  */
 function findCategoryIconByColor(color) {
-  const categoriesItems: Record<CategoryId, CategoryItem> = $store.state.categories.items
+  const categoriesItems: Record<CategoryId, CategoryItem> = categoriesStore.items
   if (!categoriesItems)
     return
 
-  return $store.getters['categories/categoriesRootIds']
+  return categoriesStore.categoriesRootIds
     ?.find(id => categoriesItems[id]?.color === color)
     ?.icon
 }
@@ -57,7 +61,7 @@ function onParentSelect(parentId: CategoryId) {
   emit('updateValue', 'parentId', parentId)
 
   // Change category color when patent category changed
-  const parentCategoryColor = $store.state.categories.items[parentId]?.color
+  const parentCategoryColor = categoriesStore.items[parentId]?.color
   if (parentCategoryColor)
     emit('updateValue', 'color', parentCategoryColor)
 }
@@ -69,7 +73,7 @@ function validate({ values, categoriesItems }) {
   if (!values.name) {
     $notify({
       title: '😮',
-      text: i18n.t('categories.form.name.error'),
+      text: $i18n.t('categories.form.name.error'),
     })
     return
   }
@@ -81,7 +85,7 @@ function validate({ values, categoriesItems }) {
         if (editCategoryId !== id) {
           $notify({
             title: '😮',
-            text: i18n.t('categories.form.name.exist'),
+            text: $i18n.t('categories.form.name.exist'),
           })
           return
         }
@@ -89,7 +93,7 @@ function validate({ values, categoriesItems }) {
       else {
         $notify({
           title: '😮',
-          text: i18n.t('categories.form.name.exist'),
+          text: $i18n.t('categories.form.name.exist'),
         })
         return
       }
@@ -100,14 +104,14 @@ function validate({ values, categoriesItems }) {
 }
 
 async function onSave() {
-  const categoriesItems = $store.state.categories.items
+  const categoriesItems = categoriesStore.items
 
   const isFormValid = validate({ values: categoryForm.value, categoriesItems })
   if (!isFormValid)
     return
 
-  const uid = $store.state.user.user.uid
-  const categoryChildIds = $store.getters['categories/getChildCategoriesIds'](editCategoryId)
+  const uid = userStore.uid
+  const categoryChildIds = categoriesStore.getChildCategoriesIds(editCategoryId)
   const categoryValues = getPreparedFormData(categoryForm.value)
 
   // Update category
@@ -125,14 +129,13 @@ async function onSave() {
 
 <template lang="pug">
 div
-  .sticky.z-20.backdrop-blur.firefoxBackdropFix(
+  .sticky.z-20.backdrop-blur(
     class="top-[60px] bg-white/70 dark_bg-dark3/70"
   )
     .px-2
       UiTabs
         UiTabsItem.md_text-lg(
           v-for="tab in tabs"
-          v-if="!tab.isHidden"
           :key="tab.id"
           :isActive="activeTab === tab.id"
           @click="activeTab = tab.id"
@@ -154,21 +157,21 @@ div
         )
 
       LazySharedContextMenuItem(
-        v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length > 0 "
+        v-if="categoriesStore.getChildCategoriesIds(categoryId).length > 0 "
         :checkboxValue="isUpdateChildCategoriesColor"
         :title="$t('categories.form.childColor')"
         showCheckbox
         @onClick="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
       )
       LazySharedContextMenuItem(
-        v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0"
+        v-if="categoriesStore.getChildCategoriesIds(categoryId).length === 0"
         :checkboxValue="categoryForm.showInLastUsed"
         :title="$t('categories.form.lastUsed')"
         showCheckbox
         @onClick="categoryForm.showInLastUsed = !categoryForm.showInLastUsed"
       )
       SharedContextMenuItem(
-        v-if="$store.getters['categories/getChildCategoriesIds'](categoryId).length === 0"
+        v-if="categoriesStore.getChildCategoriesIds(categoryId).length === 0"
         :checkboxValue="categoryForm.showInQuickSelector"
         :title="$t('categories.form.quickSelector')"
         showCheckbox
@@ -224,7 +227,7 @@ div
 
         CategoriesList(
           :activeItemId="categoryForm.parentId"
-          :ids="$store.getters['categories/categoriesForBeParent'].filter(id => id !== categoryId)"
+          :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
           :slider="() => ({})"
           class="!gap-x-1"
           @click="onParentSelect"
@@ -253,6 +256,8 @@ div
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .colorPreview
   display flex
   align-items center
@@ -264,7 +269,7 @@ div
 .colors
   display grid
   grid-template-columns repeat(8, minmax(auto, 1fr))
-  padding-bottom $m8
+  padding-bottom 20px
   &:last-child
     padding-bottom 0
 

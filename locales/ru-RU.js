@@ -51,11 +51,8 @@ export default {
   },
 
   app: {
-    version: 'Версия',
     desc: 'Приложение для учета личных финансов',
-    welcome: 'Добро пожаловать в Финапку',
-    lang: {
-      select: 'Выберите язык',
+    locale: {
       en: 'English',
       ru: 'Русский',
     },
@@ -64,12 +61,12 @@ export default {
       select: 'Выберите тему',
       dark: 'Темная',
       light: 'Светлая',
+      system: 'Авто',
     },
   },
 
   userLogout: 'Выход',
   loginWithGoogle: 'Войти через Google',
-  changeTheme: 'Сменить тему',
 
   base: {
     sure: 'Ты уверен?',

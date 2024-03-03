@@ -13,7 +13,7 @@ const emit = defineEmits<{
 <template lang="pug">
 TrnFormModal(
   v-if="show"
-  @closed="$emit('closed')"
+  @closed="emit('closed')"
 )
 
   template(#header)

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-const { $store, nuxt2Context: { i18n } } = useNuxtApp()
-const categoriesRootIds = computed(() => $store.getters['categories/categoriesRootIds'])
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
+const { $i18n } = useNuxtApp()
 useHead({
-  title: i18n.t('categories.title'),
+  title: $i18n.t('categories.title'),
 })
+
+const categoriesStore = useCategoriesStore()
 </script>
 
 <template lang="pug">
@@ -18,7 +20,7 @@ UiPage
   //- List
   .pt-1.pb-12.px-2
     CategoriesList(
-      :ids="categoriesRootIds"
+      :ids="categoriesStore.categoriesRootIds"
       @click="catId => $router.push(`/categories/${catId}`)"
     )
 

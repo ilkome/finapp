@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import { formatDate } from '~/utils/formatDate'
+import dayjs from 'dayjs';
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm';
+import { formatDate } from '~/utils/formatDate';
 
-const { $day } = useNuxtApp()
 const $trnForm = useTrnFormStore()
 
 const formattedDate = computed(() => {
@@ -11,14 +11,14 @@ const formattedDate = computed(() => {
 })
 
 const isToday = computed(() => {
-  return $day().isSame($trnForm.values.date, 'day')
+  return dayjs().isSame($trnForm.values.date, 'day')
 })
 
 function changeDate(way: 'prev' | 'next') {
   if (way === 'prev')
-    $trnForm.values.date = $day($trnForm.values.date).subtract(1, 'day').valueOf()
+    $trnForm.values.date = dayjs($trnForm.values.date).subtract(1, 'day').valueOf()
   if (way === 'next' && !isToday.value)
-    $trnForm.values.date = $day($trnForm.values.date).add(1, 'day').valueOf()
+    $trnForm.values.date = dayjs($trnForm.values.date).add(1, 'day').valueOf()
 }
 </script>
 
@@ -38,11 +38,13 @@ function changeDate(way: 'prev' | 'next') {
 
   .grow.cursor-pointer.py-2.px-3.flex.items-center.rounded-md.text-xs.leading-none.hocus_bg-item-main-hover(
     v-html="formattedDate"
-    @click="$store.commit('trnForm/showTrnFormModal', 'calendar')"
+    @click="$trnForm.openTrnFormModal('calendar')"
   )
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .shame1
   color var(--c-font-3)
   font-size 28px
@@ -58,7 +60,7 @@ function changeDate(way: 'prev' | 'next') {
     justify-content center
     width 44px
     height 44px
-    padding $m7
+    padding 16px
     border 1px solid transparent
     user-select none
 

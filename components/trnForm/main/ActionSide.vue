@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const { $store } = useNuxtApp()
+const trnsStore = useTrnsStore()
 const $trnForm = useTrnFormStore()
 // TODO: check for 0
 const isMath = computed(() => $trnForm.getIsShowSum($trnForm.activeAmountIdx, true))
@@ -17,7 +18,7 @@ async function onClickSubmit() {
   if (!trnFormData)
     return
 
-  await $store.dispatch('trns/addTrn', {
+  await trnsStore.addTrn({
     id: trnFormData.id,
     values: trnFormData.values,
   })

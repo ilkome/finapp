@@ -3,34 +3,39 @@ import { formatDate } from '~/utils/formatDate'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletItem } from '~~/components/wallets/types'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const props = withDefaults(defineProps<{
-  category: object
-  isActive?: boolean
-  showCategory?: boolean
-  trn: TrnItem
-  trnId: TrnId
-  ui?: string
-  wallet: WalletItem
-}>(), {
-  ui: 'history',
-})
+const props = withDefaults(
+  defineProps<{
+    category: object
+    isActive?: boolean
+    showCategory?: boolean
+    trn: TrnItem
+    trnId: TrnId
+    ui?: string
+    wallet: WalletItem
+  }>(),
+  {
+    ui: 'history',
+  },
+)
 
 const emit = defineEmits<{
   (e: 'onClickEdit', trnId: TrnId): void
 }>()
 
-const { $store } = useNuxtApp()
 const { trnFormEdit } = useTrnForm()
+const walletsStore = useWalletsStore()
+const trnsStore = useTrnsStore()
 
-const className = computed(() => {
-  return {
-    _active: props.isActive,
-    _detailed: props.ui === 'detailed',
-    _history: props.ui === 'history' || (props.ui === 'stat' && props.showCategory),
-    _stat: props.ui === 'stat',
-  }
-})
+const classes = computed(() => ({
+  _active: props.isActive,
+  _detailed: props.ui === 'detailed',
+  _history:
+    props.ui === 'history' || (props.ui === 'stat' && props.showCategory),
+  _stat: props.ui === 'stat',
+}))
 
 const formattedDate = computed(() => {
   const date = formatDate(props.trn.date, 'full')
@@ -46,9 +51,9 @@ const formattedDateDay2 = computed(() => {
 })
 
 function handleClick() {
-  if (!$store.state.trns.modal.show) {
-    $store.commit('trns/showTrnModal')
-    $store.commit('trns/setTrnModalId', props.trnId)
+  if (!useTrnsStore.isShownModal) {
+    trnsStore.showTrnModal()
+    trnsStore.setTrnModalId(props.trnId)
   }
 }
 
@@ -59,100 +64,111 @@ function setTrnEdit() {
 }
 </script>
 
-<template lang="pug">
-.trnItem.py-3.px-3(
-  v-if="(category && wallet) || trn.type === 2"
-  :class="{ ...className, 'py-2.5': true, '!cursor-default': trn.type === 2 && trn.incomeAmount && trn.expenseAmount }"
-  @click="handleClick"
-)
-  //- Transfer
-  template(v-if="trn.type === 2 && trn.incomeAmount && trn.expenseAmount")
-    .trnItem__categoryIcon
-      Icon(
-        :background="category.color"
-        :icon="category.icon"
-        big
-        round
-      )
-    .trnItem__categoryName {{ $t('trnForm.transferTitle') }}
-    .trnItem__date {{ formattedDate }}
-    .flex.gap-5.items-center
-      //- Expense
-      div
-        .pb-2
-          WalletsItem(
-            :id="trn.expenseWalletId"
-            :isShowAmount="false"
-          )
-        .text-2xl.text-item-base
-          Amount(
-            :amount="trn.expenseAmount"
-            :currencyCode="$store.state.wallets.items[trn.expenseWalletId].currency"
-            :type="0"
-            align="center"
-            colorize="expense"
-          )
+<template>
+  <div
+    v-if="(category && wallet) || trn.type === 2"
+    class="trnItem px-3 py-2.5 py-3"
+    :class="{
+      ...classes,
+      '!cursor-default':
+        trn.type === 2 && trn.incomeAmount && trn.expenseAmount,
+    }"
+    @click="handleClick"
+  >
+    <!-- Transfer -->
+    <template v-if="trn.type === 2 && trn.incomeAmount && trn.expenseAmount">
+      <div class="trnItem__categoryIcon">
+        <Icon :background="category.color" :icon="category.icon" big round />
+      </div>
+      <div class="trnItem__categoryName">
+        {{ $t("trnForm.transferTitle") }}
+      </div>
+      <div class="trnItem__date">
+        {{ formattedDate }}
+      </div>
 
-      //- Separator
-      .mdi.mdi-chevron-right.text-2xl
+      <div class="flex items-center gap-5">
+        <!-- Expense -->
+        <div>
+          <div class="pb-2">
+            <WalletsItem :id="trn.expenseWalletId" :isShowAmount="false" />
+          </div>
+          <div class="text-2xl text-item-base">
+            <Amount
+              :amount="trn.expenseAmount"
+              :currencyCode="walletsStore.items[trn.expenseWalletId].currency"
+              :type="0"
+              align="center"
+              colorize="expense"
+            />
+          </div>
+        </div>
 
-      //- Income
-      div
-        .pb-2
-          WalletsItem(
-            :id="trn.incomeWalletId"
-            :isShowAmount="false"
-          )
-        .text-2xl.text-item-base
-          Amount(
-            :amount="trn.incomeAmount"
-            :currencyCode="$store.state.wallets.items[trn.incomeWalletId].currency"
-            :type="1"
-            align="center"
-            colorize="income"
-          )
+        <!-- Separator -->
+        <div class="mdi mdi-chevron-right text-2xl" />
 
-    .trnItem__desc.whitespace-pre.font-roboto.leading-none(
-      v-if="trn.description"
-      class="!dark_text-white/80 !text-xs"
-    ) {{ trn.description }}
+        <!-- Income -->
+        <div>
+          <div class="pb-2">
+            <WalletsItem :id="trn.incomeWalletId" :isShowAmount="false" />
+          </div>
+          <div class="text-2xl text-item-base">
+            <Amount
+              :amount="trn.incomeAmount"
+              :currencyCode="walletsStore.items[trn.incomeWalletId].currency"
+              :type="1"
+              align="center"
+              colorize="income"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        v-if="trn.description"
+        class="trnItem__desc !dark_text-white/80 whitespace-pre font-roboto !text-xs leading-none"
+      >
+        {{ trn.description }}
+      </div>
+    </template>
 
-  //- Transaction
-  template(v-else)
-    .trnItem__categoryIcon
-      Icon(
-        :background="category.color"
-        :icon="category.icon"
-        big
-        round
-      )
-    .trnItem__categoryName {{ category.name }}
-    .trnItem__wallet
-      .walletIcon
-        Icon(
-          :abbr="wallet.name"
-          :background="wallet.color"
-          small
-        )
-
-      .walletName {{ wallet.name }}
-
-    .trnItem__date {{ formattedDate }}
-    .trnItem__amount.text-4xl(
-      @click.stop="setTrnEdit"
-    )
-      Amount(
-        :amount="trn.amount"
-        :currencyCode="wallet.currency"
-        :colorize="trn.type === 0 ? 'expense' : 'income'"
-        :type="trn.type"
-        align="center"
-      )
-
-    .trnItem__desc(v-if="trn.description") {{ trn.description }}
+    <!-- Transaction -->
+    <template v-else>
+      <div class="trnItem__categoryIcon">
+        <Icon :background="category.color" :icon="category.icon" big round />
+      </div>
+      <div class="trnItem__categoryName">
+        {{ category.name }}
+      </div>
+      <div class="trnItem__wallet">
+        <div class="walletIcon">
+          <Icon :abbr="wallet.name" :background="wallet.color" small />
+        </div>
+        <div class="walletName">
+          {{ wallet.name }}
+        </div>
+      </div>
+      <div class="trnItem__date">
+        {{ formattedDate }}
+      </div>
+      <div class="trnItem__amount text-4xl" @click.stop="setTrnEdit">
+        <Amount
+          :amount="trn.amount"
+          :currencyCode="wallet.currency"
+          :colorize="trn.type === 0 ? 'expense' : 'income'"
+          :type="trn.type"
+          align="center"
+        />
+      </div>
+      <div v-if="trn.description" class="trnItem__desc">
+        {{ trn.description }}
+      </div>
+    </template>
+  </div>
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .trnItem
   position relative
   color var(--c-font-4)
@@ -165,7 +181,7 @@ function setTrnEdit() {
 
   &__amount
     align-self center
-    padding-top $m5
+    padding-top 6px
 
   &__categoryIcon
     margin-top -38px
@@ -175,24 +191,24 @@ function setTrnEdit() {
     white-space nowrap
     overflow hidden
     text-overflow ellipsis
-    padding-bottom $m6
+    padding-bottom 10px
     color var(--c-font-2)
     font-size 22px
     fontFamilyNunito()
 
   &__date
-    padding-bottom $m8
+    padding-bottom 20px
     font-size 14px
 
   &__desc
     color var(--c-font-2)
     font-size 14px
-    padding-top $m7
+    padding-top 16px
 
   &__wallet
     display flex
     align-items center
-    padding-bottom $m6
+    padding-bottom 10px
 
     .walletIcon
       margin-right 8px

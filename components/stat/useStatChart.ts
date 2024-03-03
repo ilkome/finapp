@@ -1,3 +1,6 @@
+import { storeToRefs } from 'pinia'
+import { useAppNav } from '~/components/app/useAppNav'
+
 type MoneyType = 'income' | 'expense'
 
 const state = reactive({
@@ -9,14 +12,14 @@ const state = reactive({
 })
 
 export default function useStatChart() {
-  const { $store } = useNuxtApp()
-  const activeTabStat = computed(() => $store.state.ui.activeTabStat)
+  const { activeTabStat } = storeToRefs(useAppNav())
 
   function setChart(type: MoneyType, value: boolean): void {
     state.show[type] = value
   }
 
   function toggle(type: MoneyType): void {
+    console.log('111')
     state.show[type] = !state.show[type]
   }
 
@@ -31,7 +34,7 @@ export default function useStatChart() {
           setChart('income', false)
           setChart('expense', true)
           break
-        case 'details':
+        case 'summary':
           setChart('income', true)
           setChart('expense', true)
           break

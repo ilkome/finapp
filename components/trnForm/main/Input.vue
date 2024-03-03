@@ -13,6 +13,8 @@ const emit = defineEmits<{
   (e: 'onChange', value: string): void
 }>()
 
+const { t } = useI18n()
+
 function onInput(event: Event) {
   const value = (event.target as HTMLInputElement).value
   emit('onChange', value || '')
@@ -44,7 +46,7 @@ function onInput(event: Event) {
       'text-[#2cad22] placeholder_text-green-700/80': highlight === 'expense',
       'text-center': !isTransfer,
     }`
-    :placeholder="$t('enterAmount')"
+    :placeholder="t('enterAmount')"
     :value="amountRaw"
     class=`
       swiper-no-swiping

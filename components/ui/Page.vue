@@ -28,7 +28,7 @@ div(
     pb-[44px] md_pb-[52px] lg_pb-0
   `
 )
-  .max-w-5xl.lg_px-8(:style="styles")
+  .max-w-5xl.h-full.lg_px-8(:style="styles")
     slot
 
   .max-w-5xl

@@ -2,25 +2,27 @@
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { getPreparedFormData } from '~/components/categories/getForm'
 import { getParentCategory } from '~/components/categories/getCategories'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
-const { $store, nuxt2Context: { i18n } } = useNuxtApp()
+const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
+const categoriesStore = useCategoriesStore()
 
 const categoryId = computed<CategoryId>(() => route.params.id)
-const category = computed<CategoryItem>(() => $store.state.categories.items[categoryId.value])
+const category = computed<CategoryItem>(() => categoriesStore.items[categoryId.value])
 const categoryForm = ref(getPreparedFormData(category.value))
 const parentCategory = computed(() =>
-  getParentCategory($store.state.categories.items, categoryForm.value.parentId))
+  getParentCategory(categoriesStore.items, categoryForm.value.parentId))
 
 const updateValue = (id, value) => categoryForm.value[id] = value
 const afterSave = () => router.replace(`/categories/${categoryId.value}`)
 
 useHead({
-  title: `${i18n.t('base.edit')}:
+  title: `${t('base.edit')}:
     ${categoryForm.value?.name
       ? categoryForm.value?.name
-      : i18n.t('categories.form.name.label')}`,
+      : t('categories.form.name.label')}`,
 })
 </script>
 

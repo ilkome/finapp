@@ -1,33 +1,21 @@
-<script lang="ts">
-// TODO: setup
-import useFilter from '~/components/filter/useFilter'
+<script setup lang="ts">
+import { useFilter } from '~/components/filter/useFilter'
+import type { CurrencyCode } from '~/components/currencies/types'
+import type { CategoryId, CategoryItem } from '~/components/categories/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
-export default {
-  props: {
-    category: { type: Object, required: true },
-    categoryId: { type: String, required: true },
-    currencyCode: { type: String, required: true },
-    total: { type: Number, required: true },
-    type: { type: Number, required: true },
-  },
+const props = defineProps<{
+  category: CategoryItem
+  categoryId: CategoryId
+  currencyCode: CurrencyCode
+  total: number
+  type: number
+}>()
 
-  setup(props) {
-    const { categoryId } = toRefs(props)
-    const { $store } = useNuxtApp()
-    const { setFilterCatsId } = useFilter()
+const { setCategoryId } = useFilter()
+const categoriesStore = useCategoriesStore()
 
-    const isCategoryHasChildren = computed(() => $store.getters['categories/isCategoryHasChildren'](categoryId.value))
-
-    // long press
-    const itemRef = ref(document.createElement('div'))
-
-    return {
-      setFilterCatsId,
-      itemRef,
-      isCategoryHasChildren,
-    }
-  },
-}
+const isCategoryHasChildren = computed(() => categoriesStore.isCategoryHasChildren(props.categoryId))
 </script>
 
 <template lang="pug">
@@ -36,12 +24,12 @@ export default {
   :class="{ _prevStat: total === 0 }"
   ref="item"
   data-long-press-delay="300"
-  @click="setFilterCatsId(categoryId)"
+  @click="setCategoryId(categoryId)"
 )
   .statItemRound__icon
     .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
       :style="{ background: category.color }"
-      @click.stop="setFilterCatsId(categoryId)"
+      @click.stop="setCategoryId(categoryId)"
     ): div(:class="category.icon")
 
   .statItemRound__name.js-getWidth(:class="{ _isCategoryHasChildren: isCategoryHasChildren }")
@@ -72,6 +60,8 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .statItemRound
   cursor pointer
   position relative
@@ -79,15 +69,15 @@ export default {
   align-items center
   justify-content center
   flex-flow column
-  padding $m6
+  padding 10px
   border 1px solid transparent
-  border-radius $m5
+  border-radius 6px
 
   &._prevStat
     opacity .5
 
   &._active
-    margin-bottom $m9
+    margin-bottom 26px
 
   &__name
     padding 6px 0 2px 0

@@ -1,38 +1,41 @@
 <script setup lang="ts">
-import useFilter from '~/components/filter/useFilter'
+import { useFilter } from '~/components/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
 import { getOldestTrnDate } from '~/components/trns/helpers'
+import { useChart } from '~/components/chart/useChart'
+import type { PeriodNameWithAll, PeriodSchema } from '~/components/chart/useChart'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import '~/components/modal/styles/modalLinks.styl'
 
-const { $store } = useNuxtApp()
+// TODO: Hight
 const { periodsNames } = usePeriods()
-const { filterPeriodNameAllReplacedToYear } = useFilter()
-const filterPeriod = computed(() => $store.state.filter.period)
+const { periods, setElementsToChart } = useChart()
+const filterStore = useFilter()
+const trnsStore = useTrnsStore()
 
-const onSelectPeriodName = (period, close) => {
+function onSelectPeriodName(periodName: PeriodNameWithAll, close: () => void) {
   close()
-  $store.dispatch('filter/setPeriod', period)
+  filterStore.setPeriod(periodName)
 }
 
 // TODO: duplicate computed
 const maxPeriodsNumber = computed(() => {
-  const trnsItems = $store.state.trns.items
+  const trnsItems = trnsStore.items
   const oldestTrnDate = getOldestTrnDate(trnsItems)
-  return getMaxPeriodsToShow(filterPeriodNameAllReplacedToYear.value, oldestTrnDate)
+  return getMaxPeriodsToShow(filterStore.periodWithoutAll, oldestTrnDate)
 })
 
 const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
-function onSelectPeriodCount(value, close) {
+
+function onSelectPeriodCount(number: PeriodSchema['showedPeriods'], close: () => void) {
   close()
-  $store.commit('chart/setElementsToChart', {
-    period: filterPeriod.value,
-    value,
-  })
+  setElementsToChart(number)
 }
 </script>
 
 <template lang="pug">
-Portal(to="modal")
+Teleport(to="body")
   LazyBaseBottomSheet(
     @closed="$emit('close')"
   )
@@ -50,33 +53,35 @@ Portal(to="modal")
             v-for="periodItem in periodsNames"
             :key="periodItem.slug"
             :icon="periodItem.icon"
-            :isActive="filterPeriod === periodItem.slug"
+            :isActive="filterStore.period === periodItem.slug"
             :name="$t(`dates.${periodItem.slug}.simple`)"
             @onClick="onSelectPeriodName(periodItem.slug, close)"
           )
 
           ModalButton(
-            :isActive="filterPeriod === 'all'"
+            :isActive="filterStore.period === 'all'"
             :name="$t('dates.all.simple')"
             icon="mdi mdi-database"
             @onClick="onSelectPeriodName('all', close)"
           )
 
         //- Counts
-        .title {{ $t('dates.count') }}
-        .counts.flex.items-center.justify-center
-          .countsItem(
-            v-for="periodCount in periodCounts"
-            :key="periodCount"
-            :class="{ _active: periodCount === $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }"
-            @click="onSelectPeriodCount(periodCount, close)"
-          ) {{ periodCount }}
+        template(v-if="filterStore.period !== 'all'")
+          .title {{ $t('dates.count') }}
+          .counts.flex.items-center.justify-center
+            .countsItem(
+              v-for="periodCount in periodCounts"
+              :key="periodCount"
+              :class="{ _active: periodCount === periods[filterStore.periodWithoutAll].showedPeriods }"
+              @click="onSelectPeriodCount(periodCount, close)"
+            ) {{ periodCount }}
 
-          .countsItem(
-            :class="{ _active: maxPeriodsNumber === $store.state.chart.periods[filterPeriodNameAllReplacedToYear].showedPeriods }"
-            @click="onSelectPeriodCount(maxPeriodsNumber, close)"
-          ) {{ maxPeriodsNumber }}
+            .countsItem(
+              :class="{ _active: maxPeriodsNumber === periods[filterStore.periodWithoutAll].showedPeriods }"
+              @click="onSelectPeriodCount(maxPeriodsNumber, close)"
+            ) {{ maxPeriodsNumber }}
 
+        //- Close button
         .pb-4.px-2.flex.justify-evenly.gap-6
           .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-main-bg.hocus_bg-item-main-hover(
             class="basis-1/2 max-w-[280px]"
@@ -85,10 +90,12 @@ Portal(to="modal")
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .counts
   flex-flow row wrap
-  gap $m7
-  padding $m6 $m9
+  gap 16px
+  padding 10px 26px
 
   &Item
     cursor pointer
@@ -97,7 +104,7 @@ Portal(to="modal")
     justify-content center
     width 48px
     height 48px
-    padding $m8 $m7
+    padding 20px 16px
     font-secondary()
     font-size 18px
     text-align center
@@ -118,16 +125,16 @@ Portal(to="modal")
 .content
   background var(--c-bg-3)
   +media(600px)
-    border-radius 0 0 $m7 $m7
+    border-radius 0 0 16px 16px
 
 .title
-  padding $m9
-  padding-bottom $m6
+  padding 26px
+  padding-bottom 10px
   color var(--c-font-2)
   fontFamilyNunito()
   font-size 28px
   font-weight 700
   text-align center
   background var(--c-bg-3)
-  border-radius $m7 $m7 0 0
+  border-radius 16px 16px 0 0
 </style>

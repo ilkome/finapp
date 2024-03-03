@@ -2,9 +2,10 @@
 import { type TransferType, TrnType } from '~/components/trns/types'
 import type { WalletId } from '~~/components/wallets/types'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const $trnForm = useTrnFormStore()
-const { $store } = useNuxtApp()
+const walletsStore = useWalletsStore()
 
 const items = ref<Record<'expense' | 'income', {
   transferType: TransferType
@@ -21,11 +22,11 @@ const items = ref<Record<'expense' | 'income', {
 })
 
 const incomeWalletId = computed<WalletId | null>(() =>
-  $trnForm.values.incomeWalletId ?? $store.getters['wallets/walletsSortedIds'][0],
+  $trnForm.values.incomeWalletId ?? walletsStore.walletsSortedIds[0],
 )
 
 const expenseWalletId = computed<WalletId | null>(() =>
-  $trnForm.values.expenseWalletId ?? $store.getters['wallets/walletsSortedIds'][1],
+  $trnForm.values.expenseWalletId ?? walletsStore.walletsSortedIds[1],
 )
 
 watch(() => $trnForm.values.trnType, (trnType) => {
@@ -54,13 +55,13 @@ watch(() => $trnForm.values.trnType, (trnType) => {
           TrnFormMainSelectedWallet(
             :key="incomeWalletId"
             :id="incomeWalletId"
-            @click="$store.commit('trnForm/showTrnFormModal', 'transferTo')"
+            @click="$trnForm.openTrnFormModal('transferTo')"
           )
         template(v-if="slug === 'expense'")
           TrnFormMainSelectedWallet(
             :key="expenseWalletId"
             :id="expenseWalletId"
-            @click="$store.commit('trnForm/showTrnFormModal', 'transferFrom')"
+            @click="$trnForm.openTrnFormModal('transferFrom')"
           )
 
       //- Input

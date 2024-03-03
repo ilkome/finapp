@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import { getPreparedFormData } from '~/components/wallets/getForm'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const { $store, nuxt2Context: { i18n } } = useNuxtApp()
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const walletsStore = useWalletsStore()
 
 const walletId = computed(() => route.params.id)
-const wallet = computed(() => $store.state.wallets.items[walletId.value])
+const wallet = computed(() => walletsStore.items[walletId.value])
 const walletForm = ref(getPreparedFormData(wallet.value))
 
 const updateValue = (id, value) => walletForm.value[id] = value
 const afterSave = () => router.push(`/wallets/${walletId.value}`)
 
 useHead({
-  title: `${i18n.t('base.edit')}: ${walletForm.value?.name ? walletForm.value?.name : i18n.t('wallets.form.name.label')}`,
+  title: `${t('base.edit')}: ${walletForm.value?.name
+    ? walletForm.value?.name
+    : t('wallets.form.name.label')}`,
 })
 </script>
 

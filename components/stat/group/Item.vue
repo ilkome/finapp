@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import useStatPage from '~/components/stat/useStatPage'
+import { useAppNav } from '~/components/app/useAppNav'
+
 defineProps<{
-  typeText: String
+  typeText: string
 }>()
-const { statPage } = useStatPage()
+
+const appNavStore = useAppNav()
 </script>
 
-<template lang="pug">
-div
-  StatSumGroup(
-    v-if="statPage.activeTab === 'details' || statPage.activeTab === 'balance'"
-    :typeText="typeText"
-  )
+<template>
+  <div>
+    <StatSumGroup
+      v-if="appNavStore.activeTabStat === 'summary'"
+      :typeText="typeText"
+    />
 
-  .px-2.flex.flex-wrap.items-center.justify-between.gap-x-6
-    StatViewConfig
+    <div class="px-2 flex flex-wrap items-center justify-between gap-x-6">
+      <StatViewConfig />
+    </div>
 
-  template(v-if="statPage.activeTab !== 'balance'")
-    StatGroupPie(:typeText="typeText")
-    StatGroupVertical(:typeText="typeText")
-    StatGroupRound(:typeText="typeText")
-    StatGroupHorizontal(:typeText="typeText")
-
-  template(v-if="statPage.activeTab === 'balance'")
-    StatGroupBudget(:typeText="typeText")
+    <!-- StatGroupPie(:typeText="typeText") -->
+    <StatGroupVertical :typeText="typeText" />
+    <StatGroupRound :typeText="typeText" />
+    <StatGroupHorizontal :typeText="typeText" />
+  </div>
 </template>

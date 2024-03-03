@@ -1,52 +1,56 @@
-<script>
-export default {
-  props: {
-    abbr: { type: String, default: null },
-    background: { type: String, default: null },
-    big: { type: Boolean, default: false },
-    category: { type: Boolean, default: false },
-    color: { type: String, default: '' },
-    icon: { type: String, default: '' },
-    invert: { type: Boolean, default: false },
-    medium: { type: Boolean, default: false },
-    round: { type: Boolean, default: false },
-    small: { type: Boolean, default: false },
-  },
+<script setup lang="ts">
+const props = defineProps<{
+  abbr: string | null
+  background: string
+  big: boolean
+  category: boolean
+  color: string
+  icon: string
+  invert: boolean
+  medium: boolean
+  round: boolean
+  small: boolean
+}>()
 
-  computed: {
-    className() {
-      return {
-        _big: this.big,
-        _category: this.category,
-        _invert: this.invert,
-        _round: this.round,
-        _medium: this.medium,
-        _small: this.small,
-      }
-    },
-  },
-}
+const classes = computed(() => ({
+  _big: props.big,
+  _category: props.category,
+  _invert: props.invert,
+  _round: props.round,
+  _medium: props.medium,
+  _small: props.small,
+}))
 </script>
 
-<template lang="pug">
-.icon(
-  :class="className"
-  :style="{ background, color }")
-  //- wallet
-  template(v-if="abbr")
-    .icon__abbr {{ abbr.substring(0, 2) }}
-  //- category
-  template(v-else)
-    .icon__image
-      template(v-if="icon")
-        div(:class="icon")
-      template(v-else)
-        .mdi.mdi-folder-star
+<template>
+  <div
+    class="icon"
+    :class="classes"
+    :style="{ background, color }"
+  >
+    <!-- Wallet -->
+    <template v-if="abbr">
+      <div class="icon__abbr">
+        {{ abbr.substring(0, 2) }}
+      </div>
+    </template>
+
+    <!-- Category -->
+    <template v-else>
+      <div class="icon__image">
+        <template v-if="icon">
+          <div :class="icon" />
+        </template>
+        <template v-else>
+          <div class="mdi mdi-folder-star" />
+        </template>
+      </div>
+    </template>
+  </div>
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
+@import '../assets/stylus/variables'
 
 .icon
   display flex
@@ -55,7 +59,8 @@ export default {
   width 32px
   height 32px
   color var(--c-font-1)
-  border-radius $m5
+  border-radius 6px
+
   &._invert
     color var(--c-font-5)
     background var(--c-bg-10)
@@ -73,7 +78,7 @@ export default {
   &._category
     width auto
     height auto
-    padding-bottom $m5
+    padding-bottom 6px
   &._category._small
     padding-bottom 0
 

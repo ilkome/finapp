@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { generateId } from '~/utils/generateId'
 import type { WalletForm, WalletId } from '~/components/wallets/types'
+import { generateId } from '~/utils/generateId'
 import { getPreparedFormData } from '~/components/wallets/getForm'
 import { saveData } from '~/services/firebase/api'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useUserStore } from '~/components/user/useUser'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { allColors } from '~/assets/js/colors'
 
 const props = defineProps<{
   walletId?: WalletId
@@ -11,9 +15,14 @@ const props = defineProps<{
 
 const emit = defineEmits(['updateValue', 'afterSave'])
 
+const { $notify, $i18n } = useNuxtApp()
+const { t } = useI18n()
+const currenciesStore = useCurrenciesStore()
+const userStore = useUserStore()
+const walletsStore = useWalletsStore()
+
 const { walletId, walletForm } = toRefs(props)
-const { $store, $notify, nuxt2Context: { i18n } } = useNuxtApp()
-const editWalletId = walletId.value ?? generateId()
+const editWalletId = walletId.value ?? generateId();
 
 const activeTab = ref('data')
 
@@ -25,7 +34,7 @@ function validate(values, wallets) {
   if (!values.name) {
     $notify({
       title: '😮',
-      text: i18n.t('wallets.form.name.error'),
+      text: $i18n.t('wallets.form.name.error'),
     })
     return false
   }
@@ -34,7 +43,7 @@ function validate(values, wallets) {
   if (!values.currency) {
     $notify({
       title: '😮',
-      text: i18n.t('wallets.form.currency.error'),
+      text: $i18n.t('wallets.form.currency.error'),
     })
     return false
   }
@@ -46,7 +55,7 @@ function validate(values, wallets) {
         if (editWalletId !== id) {
           $notify({
             title: '😮',
-            text: i18n.t('wallets.form.name.exist'),
+            text: $i18n.t('wallets.form.name.exist'),
           })
           return false
         }
@@ -54,7 +63,7 @@ function validate(values, wallets) {
       else {
         $notify({
           title: '😮',
-          text: i18n.t('wallets.form.name.exist'),
+          text: $i18n.t('wallets.form.name.exist'),
         })
         return false
       }
@@ -65,17 +74,17 @@ function validate(values, wallets) {
 }
 
 async function saveWalletData(id, values) {
-  const uid = $store.state.user.user.uid
+  const uid = userStore.uid
 
   // Set default currency based on first created wallet
-  if (!$store.getters['wallets/hasWallets'])
-    $store.dispatch('currencies/setBaseCurrency', values.currency)
+  if (!walletsStore.hasWallets)
+    currenciesStore.setBaseCurrency(values.currency)
 
   await saveData(`users/${uid}/accounts/${id}`, values)
 }
 
 async function onSave() {
-  if (!validate(walletForm.value, $store.state.wallets.items))
+  if (!validate(walletForm.value, walletsStore.items))
     return
 
   await saveWalletData(editWalletId, getPreparedFormData(walletForm.value))
@@ -135,7 +144,7 @@ div(v-if="walletForm")
 
       SharedContextMenuItem(
         :checkboxValue="walletForm.isCredit"
-        :title="$t('isCredit')"
+        :title="t('isCredit')"
         showCheckbox
         @onClick="walletForm.isCredit = !walletForm.isCredit"
       )
@@ -177,6 +186,8 @@ div(v-if="walletForm")
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .colorPreview
   display flex
   align-items center
@@ -188,7 +199,7 @@ div(v-if="walletForm")
 .colors
   display grid
   grid-template-columns repeat(8, minmax(auto, 1fr))
-  padding-bottom $m8
+  padding-bottom 20px
   &:last-child
     padding-bottom 0
 

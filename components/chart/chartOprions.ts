@@ -3,7 +3,7 @@ export const marklineActiveConfig = {
   symbolSize: 10,
   itemStyle: {
     borderCap: 'round',
-    color: 'var(--color-item-main-active)',
+    color: 'var(--c-item-main-active)',
   },
   lineStyle: {
     width: 5,
@@ -28,7 +28,7 @@ export const baseSeriesConfig = {
     show: true,
     backgroundColor: 'var(--c-item-bg-main)',
     borderRadius: 2,
-    color: 'var(--color-item-base-down)',
+    color: 'var(--c-item-base-down)',
     fontFamily: 'var(--font-secondary)',
     fontSize: '10',
     padding: [2, 0],
@@ -75,7 +75,7 @@ export const options = {
       alignWithLabel: true,
     },
     axisLabel: {
-      color: 'var(--color-item-base-down)',
+      color: 'var(--c-item-base-down)',
       fontFamily: 'var(--font-secondary)',
       fontSize: '10',
     },
@@ -98,7 +98,7 @@ export const options = {
       },
     },
     axisLabel: {
-      color: 'var(--color-item-base-down)',
+      color: 'var(--c-item-base-down)',
       fontFamily: 'var(--font-secondary)',
       fontSize: '10',
     },
@@ -111,7 +111,7 @@ export const options = {
       type: 'cross',
       // type: 'shadow',
       label: {
-        backgroundColor: 'var(--color-item-main-active)',
+        backgroundColor: 'var(--c-item-main-active)',
       },
     },
     // valueFormatter: value => `${formatAmount(value)} ${getCurrencySymbol(baseCurrencyCode.value)}`,
@@ -126,7 +126,7 @@ export const options = {
     backgroundColor: 'var(--c-item-bg-main)',
     borderColor: 'var(--c-item-bg-active)',
     textStyle: {
-      color: 'var(--color-item-base)',
+      color: 'var(--c-item-base)',
     },
   },
 }

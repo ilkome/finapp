@@ -2,16 +2,18 @@
 import type { WalletId, WalletItem } from './types'
 import useAmount from '~/components/amount/useAmount'
 import type { CurrencyCode } from '~/components/currencies/types'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   walletsItems: Record<WalletId, WalletItem>
   currencyCode: CurrencyCode
 }>()
-const { $store } = useNuxtApp()
+
 const { getAmountInBaseRate } = useAmount()
+const walletsStore = useWalletsStore()
 
 const totalInWallets = computed(() => {
-  const walletsTotal = $store.getters['wallets/walletsTotal']
+  const walletsTotal = walletsStore.walletsTotal
   const total = {
     counted: 0,
     savings: 0,
@@ -74,7 +76,7 @@ const counts = computed(() => ({
 
 <template lang="pug">
 .px-3.py-1.bg-item-main-bg.rounded-md(
-  v-if="$store.getters['wallets/hasWallets']"
+  v-if="walletsStore.hasWallets"
 )
   template(v-for="item in counts")
     .py-2.flex.items-center.border-b.border-item-main-hover.last_border-0(

@@ -1,19 +1,26 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { TrnId } from '~/components/trns/types'
-import useFilter from '~/components/filter/useFilter'
+import { storeToRefs } from 'pinia'
+import useAmount from '~/components/amount/useAmount'
+import { useAppNav } from '~/components/app/useAppNav'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useFilter } from '~/components/filter/useFilter'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
+import type { TrnId } from '~/components/trns/types'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = withDefaults(defineProps<{
-  limit: number
-  size: number
-  trnsIds: TrnId[]
+  limit?: number
+  size?: number
+  trnsIds: TrnId[] | false
 
   isShowFilter?: boolean
   isFilterByDay?: boolean
   isShowGroupDate?: boolean
   uiCat?: boolean
   uiHistory?: boolean
+  isShowGroupSum?: boolean
 }>(), {
   isShowFilter: false,
   isShowGroupDate: true,
@@ -22,19 +29,22 @@ const props = withDefaults(defineProps<{
   uiHistory: false,
 })
 const emit = defineEmits(['onClickEdit'])
-
-const { $store } = useNuxtApp()
-const { setFilterCatsId, setDayDate } = useFilter()
+const { activeTabStat } = storeToRefs(useAppNav())
+const { getTotalOfTrnsIds } = useAmount()
+const filterStore = useFilter()
 const { trnFormEdit } = useTrnForm()
+const currenciesStore = useCurrenciesStore()
+const categoriesStore = useCategoriesStore()
+const trnsStore = useTrnsStore()
 
 const pageNumber = ref(1)
 const isShowTrnsWithDesc = ref(false)
 
 const isTrnsWithDescription = computed(() =>
-  props.trnsIds.some(id => $store.state.trns.items[id].description))
+  props.trnsIds.some(id => trnsStore.items[id].description))
 
 const trnsIdsWithLimit = computed(() => {
-  const trnsItems = $store.state.trns.items
+  const trnsItems = trnsStore.items
 
   if (props.isShowFilter && isShowTrnsWithDesc.value && isTrnsWithDescription.value)
     return props.trnsIds.filter(id => trnsItems[id].description)
@@ -53,7 +63,7 @@ const isShowedAllTrns = computed(() =>
 
 // TODO: duplicate function
 const groupedTrns = computed(() => {
-  const trnsItems = $store.state.trns.items
+  const trnsItems = trnsStore.items
   const trnsIds = paginatedTrnsIds.value
 
   return trnsIds.reduce((acc, trnId) => {
@@ -75,9 +85,9 @@ function toggleTrnsWithDesc() {
 function actions(trnItem) {
   return {
     onOpenDetails: () => {
-      if (!$store.state.trns.modal.show) {
-        $store.commit('trns/showTrnModal')
-        $store.commit('trns/setTrnModalId', trnItem.id)
+      if (!useTrnsStore.isShownModal) {
+        trnsStore.showTrnModal()
+        trnsStore.setTrnModalId(trnItem.id)
       }
     },
 
@@ -89,11 +99,11 @@ function actions(trnItem) {
     // TODO: useFilter
     onSetFilter: (event) => {
       event.stopPropagation()
-      setFilterCatsId(trnItem.categoryId)
-      $store.commit('filter/setFilterDateNow')
-      $store.commit('trns/hideTrnModal')
-      $store.commit('trns/setTrnModalId', null)
-      $store.dispatch('ui/setActiveTabStat', 'details')
+      filterStore.setCategoryId(trnItem.categoryId)
+      filterStore.setDateNow()
+      trnsStore.hideTrnModal()
+      trnsStore.setTrnModalId(null)
+      activeTabStat.value = 'summary'
     },
   }
 }
@@ -104,7 +114,6 @@ div(v-if="trnsIds && trnsIds.length > 0")
   .pb-2(v-if="isShowFilter && isTrnsWithDescription")
     SharedContextMenuItem(
       :checkboxValue="isShowTrnsWithDesc"
-      :grow="false"
       :title="$t('trns.filter.showTrnsWithDesc')"
       icon="mdi mdi-comment-text-outline"
       showCheckbox
@@ -118,11 +127,28 @@ div(v-if="trnsIds && trnsIds.length > 0")
       v-for="(trnsIds, date) in groupedTrns"
       :key="date"
     )
-      .pt-4.pb-2.px-3(
+      .flex.pt-4.pb-2.px-3(
         v-if="isShowGroupDate"
-        @click="isFilterByDay ? setDayDate(date) : null"
+        @click="isFilterByDay ? filterStore.setDayDate(date) : null"
       )
-        DateTrnsDay(:date="date")
+        DateTrnsDay(:date="+date").grow
+
+        .flex.items-center.gap-2.text-sm(v-if="isShowGroupSum")
+          Amount(
+            v-if="getTotalOfTrnsIds(trnsIds).incomeTransactions !== 0"
+            :amount="getTotalOfTrnsIds(trnsIds).incomeTransactions"
+            :currencyCode="currenciesStore.base"
+            :isShowBaseRate="false"
+            :type="1"
+            colorize="income"
+          )
+          Amount(
+            v-if="getTotalOfTrnsIds(trnsIds).expenseTransactions !== 0"
+            :amount="getTotalOfTrnsIds(trnsIds).expenseTransactions"
+            :currencyCode="currenciesStore.base"
+            :isShowBaseRate="false"
+            :type="0"
+          )
 
       .overflow-hidden.rounded-md
         TrnsItemBase.py-3.px-3.cursor-pointer(

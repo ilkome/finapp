@@ -1,36 +1,34 @@
-<script lang="ts">
-export default defineComponent({
-  props: {
-    id: { type: String, required: true },
-    showBase: { type: Boolean, default: true },
-    vertical: { type: String, default: 'left' },
-    size: { type: String, default: null },
-    activeItemId: { type: String, default: null },
-    isShowAmount: { type: Boolean, default: true },
-  },
+<script setup lang="ts">
+import type { WalletId } from './types'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-  computed: {
-    wallet() {
-      return {
-        ...this.$store.state.wallets.items[this.id],
-        total: this.$store.getters['wallets/walletsTotal'][this.id],
-      }
-    },
-  },
-
-  methods: {
-    handleClick() {
-      if (this.$listeners.onClick)
-        this.$listeners.onClick(this.id)
-    },
-  },
+const props = withDefaults(defineProps<{
+  id: WalletId
+  showBase: boolean
+  vertical?: 'left' | 'right'
+  size: 'sm' | 'md' | 'lg' | null
+  activeItemId: WalletId | null
+  isShowAmount?: boolean
+}>(), {
+  vertical: 'left',
+  showBase: true,
+  isShowAmount: true,
 })
+
+const emit = defineEmits(['onClick'])
+
+const walletsStore = useWalletsStore()
+
+const wallet = computed(() => ({
+  ...walletsStore.items[props.id],
+  total: walletsStore.walletsTotal[props.id],
+}))
 </script>
 
 <template lang="pug">
 .p-2.rounded-md(
   :class="{ _active: activeItemId === id }"
-  @click="handleClick"
+  @click="emit('onClick', id)"
 )
   div.bg-red-300.h-8(v-if="activeItemId === id")
   .gap-x-3.flex.items-center
@@ -40,7 +38,7 @@ export default defineComponent({
     ) {{ wallet.name.substring(0, 2) }}
 
     div
-      .text-sm.text-neutral-500.dark_text-neutral-400 {{ wallet.name }}
+      .text-secondary2.text-sm {{ wallet.name }}
       template(v-if="isShowAmount")
         Amount(
           :amount="wallet.total"

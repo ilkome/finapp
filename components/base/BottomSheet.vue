@@ -286,6 +286,12 @@ export default defineComponent({
      */
     async function init() {
       await nextTick()
+      if (!drug.value || !handler.value) {
+        await nextTick()
+        await init()
+        return
+      }
+
       initialY.value = -(drug.value.clientHeight + handler.value.clientHeight)
       disabled.value = false
 
@@ -389,6 +395,8 @@ export default defineComponent({
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .info
   padding 20px
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
 interface CategorySelector {
   parentId: CategoryId | null
@@ -10,7 +11,7 @@ interface CategorySelector {
 
 defineProps<{
   isShow: boolean
-  isAllowSelectParentCategory: boolean
+  isAllowSelectParentCategory?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -18,12 +19,12 @@ const emit = defineEmits<{
   (e: 'show', value: boolean): void
 }>()
 
-const { $store } = useNuxtApp()
+const categoriesStore = useCategoriesStore()
 
 const categorySelector = ref<CategorySelector>({
   parentId: null,
   select: (id: CategoryId, isForce: boolean) => {
-    if (!isForce && $store.getters['categories/isCategoryHasChildren'](id)) {
+    if (!isForce && categoriesStore.isCategoryHasChildren(id)) {
       categorySelector.value.parentId = id
       return
     }
@@ -49,12 +50,12 @@ div
     @closed="categorySelector.closeRoot"
   )
     template(#header)
-      template {{ $t('categories.title') }}
+      div {{ $t('categories.title') }}
 
     template(#default="{ close }")
       .pb-3.px-3
         CategoriesList(
-          :ids="$store.getters['categories/categoriesRootIds']"
+          :ids="categoriesStore.categoriesRootIds"
           class="!gap-x-1"
           @click="categorySelector.select"
         )
@@ -67,12 +68,12 @@ div
     template(#header)
       .pt-3.flex-col.flex-center.gap-2.text-center
         Icon(
-          :background="$store.state.categories.items[categorySelector.parentId].color"
-          :icon="$store.state.categories.items[categorySelector.parentId].icon"
+          :background="categoriesStore.items[categorySelector.parentId].color"
+          :icon="categoriesStore.items[categorySelector.parentId].icon"
           big
           round
         )
-        div {{ $store.state.categories.items[categorySelector.parentId].name }}
+        div {{ categoriesStore.items[categorySelector.parentId].name }}
 
     template(#default="{ close }")
       .px-3.flex-center.pb-5(v-if="isAllowSelectParentCategory")
@@ -82,7 +83,7 @@ div
 
       .pb-3.px-3
         CategoriesList(
-          :ids="$store.getters['categories/getChildCategoriesIds'](categorySelector.parentId)"
+          :ids="categoriesStore.getChildCategoriesIds(categorySelector.parentId)"
           class="!gap-x-1"
           @click="categorySelector.select"
         )

@@ -1,21 +1,29 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
+import localforage from 'localforage'
 import useWallets from '~/components/wallets/useWallets'
-import useFilter from '~/components/filter/useFilter'
+import { useAppNav } from '~/components/app/useAppNav'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useFilter } from '~/components/filter/useFilter'
 
-const { $store } = useNuxtApp()
-const activeTab = computed(() => $store.state.ui.activeTab)
+const { $i18n } = useNuxtApp()
+const { t } = useI18n()
+useSeoMeta({
+  title: $i18n.t('wallets.name'),
+})
+
+const currenciesStore = useCurrenciesStore()
+const { openModal, closeAllModals, isModalOpen } = useAppNav()
+const { setWalletId } = useFilter()
 const { walletsCurrencies, walletsItemsSorted } = useWallets()
-const { setFilterWalletsId } = useFilter()
 
-const state = useStorage('finapp.page.wallets', {
+const state = ref({
   activeTab: 'all',
 })
 
 const walletsCurrenciesTabs = reactive({
   currencyCode: computed(() => {
     if (state.value.activeTab === 'all')
-      return $store.state.currencies.base
+      return currenciesStore.base
     return state.value.activeTab
   }),
 
@@ -31,18 +39,9 @@ const walletsCurrenciesTabs = reactive({
     return Object.fromEntries(
       Object
         .entries(walletsItemsSorted.value)
-        .filter(([_key, value]) => value.currency === state.value.activeTab))
+        .filter(([_key, value]) => value.currency === state.value.activeTab),
+    )
   }),
-})
-</script>
-
-<script lang="ts">
-export default defineComponent({
-  head() {
-    return {
-      title: this.$t('wallets.title'),
-    }
-  },
 })
 </script>
 
@@ -51,7 +50,7 @@ UiPage
   UiHeader
     UiHeaderTitle {{ $t('wallets.name') }}
     template(#actions)
-      UiHeaderLink(@click="$store.dispatch('ui/setActiveTab', 'walletsSort')")
+      UiHeaderLink(@click="openModal('walletsSort')")
         UiIconSort.w-5.h-5.group-hover_text-white
 
       UiHeaderLink(@click="$router.push('/wallets/new')")
@@ -59,10 +58,10 @@ UiPage
 
   //- Base currency
   .px-2.pb-4(v-if="walletsCurrencies.length > 1")
-    UiTitle.pb-2 {{ $t('currenciesBase') }}
+    UiTitle.pb-2 {{ t('currenciesBase') }}
     WalletsCurrenciesChanger
 
-  UiTitle.px-2.pb-2 {{ $t('list') }}
+  UiTitle.px-2.pb-2 {{ t('list') }}
 
   //- Tabs
   .pb-4.px-2(v-if="walletsCurrencies.length > 1")
@@ -80,10 +79,10 @@ UiPage
 
   //- Total
   .pb-4.px-2
-    WalletsTotal(
-      :walletsItems="walletsCurrenciesTabs.wallets"
-      :currencyCode="walletsCurrenciesTabs.currencyCode"
-    )
+    //- WalletsTotal(
+    //-   :walletsItems="walletsCurrenciesTabs.wallets"
+    //-   :currencyCode="walletsCurrenciesTabs.currencyCode"
+    //- )
 
   //- List
   //---------------------------------
@@ -100,11 +99,11 @@ UiPage
           .w-6.h-6.rounded-md.flex-center.text-icon-base.text-xs.leading-none(
             :style="{ background: walletItem.color }"
             class="mt-[2px]"
-            @click.stop="setFilterWalletsId(walletId)"
+            @click.stop="setWalletId(walletId)"
           ) {{ walletItem.name.substring(0, 2) }}
 
           .grow.flex.items-center.gap-3
-            .text-sm.text-item-base {{ walletItem.name }}
+            .text-secondary2.text-sm {{ walletItem.name }}
             UiIconWalletWithdrawal.w-4.h-4.text-item-base-down(
               v-if="walletItem.countTotal"
             )
@@ -120,16 +119,19 @@ UiPage
 
   //- Sort
   //-----------------------------------
-  Portal(v-if="activeTab === 'walletsSort'" to="modal" key="walletsSort")
+  Teleport(
+    v-if="isModalOpen('walletsSort')"
+    to="body"
+  )
     ModalBottom(
       isShow
       key="walletsSort"
-      @onClose="$store.dispatch('ui/setActiveTab', null)"
+      @onClose="closeAllModals"
     )
       template(#default="{ closeModal }")
         WalletsSort(
-          v-if="activeTab === 'walletsSort'"
-          @closeModal="closeModal"
+          v-if="isModalOpen('walletsSort')"
+          @closeModal="closeAllModals"
         )
 </template>
 

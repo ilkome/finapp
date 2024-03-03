@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
-const { $store } = useNuxtApp()
 const $trnForm = useTrnFormStore()
+const categoriesStore = useCategoriesStore()
 
 const categoryId = computed<CategoryId | false>(() =>
-  $trnForm.values.categoryId ?? $store.getters['categories/categoriesIdsForTrnValues'][0],
+  $trnForm.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0],
 )
 const category = computed<CategoryItem | false>(() =>
-  categoryId.value && $store.state.categories.items[categoryId.value],
+  categoryId.value && categoriesStore.items[categoryId.value],
 )
 const parentCategory = computed<CategoryItem | false>(() =>
-  category.value && $store.state.categories.items[category.value.parentId],
+  category.value && categoriesStore.items[category.value.parentId],
 )
 </script>
 

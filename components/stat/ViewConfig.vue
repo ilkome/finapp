@@ -10,11 +10,6 @@ function toggleView(name) {
 <template lang="pug">
 .flex.bg-item-main-bg.rounded-md
   .cursor-pointer.w-10.py-2.px-2.flex-center.rounded-md.hocus_bg-item-main-hover(
-    :class="{ 'text-item-base-up': ui.showPieChart }"
-    @click="toggleView('showPieChart')"
-  ): .mdi.mdi-chart-pie
-
-  .cursor-pointer.w-10.py-2.px-2.flex-center.rounded-md.hocus_bg-item-main-hover(
     :class="{ 'text-item-base-up': ui.showCatsVerticalChart }"
     @click="toggleView('showCatsVerticalChart')"
   ): .mdi.mdi-poll

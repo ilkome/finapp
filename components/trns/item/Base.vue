@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import type { TrnId } from '~/components/trns/types'
-import useFilter from '~/components/filter/useFilter'
+import { useFilter } from '~/components/filter/useFilter'
 import useTrn from '~/components/trns/item/useTrn'
-import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnForm } from '~/components/trnForm/useTrnForm'
+import { useAppNav } from '~/components/app/useAppNav'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   trnId: TrnId
@@ -10,19 +13,18 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['onClickEdit'])
 
-const { $store } = useNuxtApp()
-const $trnForm = useTrnFormStore()
 const { trnFormEdit } = useTrnForm()
-
-const { setFilterCatsId } = useFilter()
+const { activeTabStat } = storeToRefs(useAppNav())
+const trnsStore = useTrnsStore()
+const filterStore = useFilter()
 const { formatTrnItem } = useTrn()
 const trnItem = computed(() => formatTrnItem(props.trnId))
 
 const actions = {
   onOpenDetails: () => {
-    if (!$store.state.trns.modal.show) {
-      $store.commit('trns/showTrnModal')
-      $store.commit('trns/setTrnModalId', trnItem.value.id)
+    if (!useTrnsStore.isShownModal) {
+      trnsStore.showTrnModal()
+      trnsStore.setTrnModalId(trnItem.value.id)
     }
   },
 
@@ -42,12 +44,12 @@ const actions = {
       return
 
     event.stopPropagation()
-    setFilterCatsId(trnItem.value.categoryId)
-    $store.commit('filter/setFilterDateNow')
-    $store.commit('trns/hideTrnModal')
-    $store.commit('trns/setTrnModalId', null)
-    if ($store.state.ui.activeTabStat !== 'trns')
-      $store.dispatch('ui/setActiveTabStat', 'details')
+    filterStore.setCategoryId(trnItem.value.categoryId)
+    filterStore.setDateNow()
+    trnsStore.hideTrnModal()
+    trnsStore.setTrnModalId(null)
+    if (activeTabStat.value !== 'trns')
+      activeTabStat.value = 'summary'
   },
 }
 </script>

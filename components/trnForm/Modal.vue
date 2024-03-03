@@ -5,7 +5,7 @@ const { height } = useWindowSize()
 </script>
 
 <template lang="pug">
-Portal(to="modal")
+Teleport(to="body")
   BaseBottomSheet(
     insideClass="sm_rounded-b-2xl bg-layout-main"
     show

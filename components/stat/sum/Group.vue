@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import useStatPage from '~/components/stat/useStatPage'
-import useStat from '~/components/stat/useStat'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useStat } from '~/components/stat/useStat'
 
 const props = defineProps<{
   typeText: 'income' | 'expense'
@@ -8,12 +9,15 @@ const props = defineProps<{
 
 const { statPage } = useStatPage()
 const { moneyTypes } = useStat()
+const currenciesStore = useCurrenciesStore()
+
 const typeNumber = computed(() => moneyTypes.find(t => t.id === `${props.typeText}`.toLowerCase())?.type)
 </script>
 
 <template lang="pug">
 .my-4.px-1.bg-white.dark_bg-dark3
   UiTitle {{ $t(`money.${typeText}`) }}
+
   .overflow-hidden.overflow-x-auto.scrollbar
     .flex.flex-wrap.items-center.gap-1.gap-x-6
       //- Total
@@ -21,7 +25,7 @@ const typeNumber = computed(() => moneyTypes.find(t => t.id === `${props.typeTex
         Amount(
           :amount="statPage.current[typeText].total"
           :colorize="typeText"
-          :currencyCode="$store.state.currencies.base"
+          :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
           :type="typeNumber"
         )

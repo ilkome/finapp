@@ -25,9 +25,9 @@ const alignClasses = computed(() => ({
 }))
 
 const amountClasses = computed(() => ([{
-  'text-income': props.colorize === 'income' && props.type === 1,
+  '!text-income': props.colorize === 'income' && props.type === 1,
 }, {
-  'text-expense': props.colorize === 'expense' && props.type === 0,
+  '!text-expense': props.colorize === 'expense' && props.type === 0,
 }]))
 </script>
 
@@ -37,7 +37,7 @@ const amountClasses = computed(() => ([{
 )
   //- Amount
   template(v-if="amount !== 0")
-    div(:class="amountClasses")
+    div(:class="amountClasses" class="text-primary")
       //- Original
       .gap-1.flex.items-baseline.whitespace-nowrap(
         :class="alignClasses"
@@ -47,7 +47,7 @@ const amountClasses = computed(() => ([{
         .text-xs.leading-none {{ getCurrencySymbol(currencyCode) }}
 
       //- Base
-      .text-neutral-400.gap-1.flex.items-baseline.whitespace-nowrap.opacity-80(
+      .text-secondary.gap-1.flex.items-baseline.whitespace-nowrap(
         v-if="isShowBaseRate && currencyCode !== baseCurrencyCode"
         :class="alignClasses"
       )

@@ -59,7 +59,8 @@ export function getTotal(props: TotalProps): TotalReturns {
   let incomeTransfers = 0
   let expenseTransfers = 0
 
-  for (const trnId of trnsIds) {
+  // TODO: fix trnsIds
+  for (const trnId of (trnsIds || [])) {
     const trn = trnsItems[trnId]
 
     // Transaction

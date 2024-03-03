@@ -1,0 +1,35 @@
+<script setup lang="ts">
+import { useUserStore } from '~/components/user/useUser'
+import { saveData } from '~/services/firebase/api'
+
+const { $i18n } = useNuxtApp()
+const { locale, setLocale } = useI18n()
+const userStore = useUserStore()
+
+const locales = [{
+  slug: 'ru',
+  localeKey: 'app.locale.ru',
+}, {
+  slug: 'en',
+  localeKey: 'app.locale.en',
+}]
+
+function changeLocale(locale: string) {
+  setLocale(locale)
+
+  if (!userStore.uid)
+    return
+
+  saveData(`users/${userStore.uid}/settings/lang`, locale)
+}
+</script>
+
+<template lang="pug">
+UiTabs2
+  UiTabsItem2(
+    v-for="item in locales"
+    :key="item.slug"
+    :isActive="item.slug === locale"
+    @click="changeLocale(item.slug)"
+  ) {{ $t(item.localeKey) }}
+</template>

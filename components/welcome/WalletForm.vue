@@ -4,8 +4,7 @@ import { random } from '~/assets/js/emo'
 import type { WalletForm } from '~/components/wallets/types'
 
 const emit = defineEmits(['afterSave'])
-
-const { $store, nuxt2Context: { i18n } } = useNuxtApp()
+const { t } = useI18n()
 
 const walletForm = ref<WalletForm>({
   color: random(random(allColors)),
@@ -25,10 +24,10 @@ function afterSave() {
 }
 
 useHead({
-  title: () => `${i18n.t('base.add')}:
+  title: () => `${t('base.add')}:
     ${walletForm.value?.name
       ? walletForm.value?.name
-      : i18n.t('categories.form.name.label')}`,
+      : t('categories.form.name.label')}`,
 })
 </script>
 
@@ -44,10 +43,9 @@ UiPage
       .p-1.flex-center.rounded.text-icon-base.text-2xs(:style="{ background: walletForm.color }")
         | {{ walletForm.currency }}
 
-  .pb-12
-    WalletsForm(
-      :walletForm="walletForm"
-      @afterSave="afterSave"
-      @updateValue="updateValue"
-    )
+  WalletsForm(
+    :walletForm="walletForm"
+    @afterSave="afterSave"
+    @updateValue="updateValue"
+  )
 </template>

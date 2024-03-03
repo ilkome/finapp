@@ -25,11 +25,11 @@ export interface WalletItem {
   archived?: boolean
 }
 
+export type Wallets = Record<WalletId, WalletItem>
+
 export interface WalletWithTotal extends WalletItem {
   total: TotalReturns
 }
-
-export type Wallets = Record<WalletId, WalletItem>
 
 export interface WalletsCurrenciesGroup {
   card: (v: WalletWithTotal) => boolean
@@ -48,8 +48,6 @@ export interface Item {
   totalInBase: number
   ids: WalletId[]
 }
-
-export type WalletId = string
 
 export interface WalletItemWithAmount extends WalletItem {
   amount: number

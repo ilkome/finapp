@@ -1,26 +1,27 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
+import { type CurrenciesValues, useCurrenciesStore } from '~/components/currencies/useCurrencies'
 
-const { $store } = useNuxtApp()
+const currenciesStore = useCurrenciesStore()
 const { height } = useWindowSize()
 
-function onSelect(value, close) {
-  $store.dispatch('currencies/setBaseCurrency', value)
+function onSelect(code: CurrenciesValues['base'], close: () => void) {
+  currenciesStore.setBaseCurrency(code)
   close()
 }
 </script>
 
 <template lang="pug">
-Portal(
-  v-if="$store.state.currencies.modal.show"
-  to="modal"
+Teleport(
+  v-if="currenciesStore.isShownModal"
+  to="body"
 )
   BaseBottomSheet(
     :maxHeight="height"
     :height="height"
     :isScrollerBlock="false"
     insideClass="bg-layout-main"
-    @closed="$store.commit('currencies/hideBaseCurrenciesModal')"
+    @closed="currenciesStore.hideBaseCurrenciesModal()"
   )
     template(#handler="{ close }")
       BaseBottomSheetHandler
@@ -32,7 +33,7 @@ Portal(
 
     template(#default="{ close }")
       CurrenciesList(
-        :active="$store.state.currencies.base"
+        :active="currenciesStore.base"
         @onSelect="value => onSelect(value, close)"
       )
 </template>

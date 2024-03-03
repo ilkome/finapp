@@ -1,101 +1,122 @@
 <script setup lang="ts">
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useFilter } from '~/components/filter/useFilter'
 import { getTrnsIds } from '~/components/trns/getTrns'
-import useFilter from '~/components/filter/useFilter'
-
-const { $store, nuxt2Context: { i18n } } = useNuxtApp()
-const { setFilterCatsId } = useFilter()
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
+const { setFilterCatStat } = useFilter()
+const categoriesStore = useCategoriesStore()
+const trnsStore = useTrnsStore()
 
 const categoryId = computed(() => route.params.id)
-const category = computed(() => $store.state.categories.items[categoryId.value])
+const category = computed(() => categoriesStore.items[categoryId.value])
 if (!category.value)
   router.replace('/categories')
 
-const trnsItems = computed(() => $store.state.trns.items)
 const backLink = computed(() => category.value?.parentId
   ? `/categories/${category.value.parentId}`
   : '/categories')
 
 const categoryChildIds = computed(() => category.value.childIds?.sort((a, b) =>
-  $store.state.categories.items[a].name.localeCompare($store.state.categories.items[b].name)))
+  categoriesStore.items[a].name.localeCompare(categoriesStore.items[b].name)))
 
 const trnsIds = computed(() =>
   getTrnsIds({
     categoriesIds: category.value?.childIds?.length > 0
       ? category.value?.childIds
       : [categoryId.value],
-    trnsItems: trnsItems.value,
+    trnsItems: trnsStore.items,
   }))
 
 // TODO: useFilter
 function onClickFilterCategory() {
-  setFilterCatsId(categoryId.value)
-  $store.commit('filter/setFilterDateNow')
-  $store.dispatch('ui/setActiveTabStat', 'details')
+  setFilterCatStat(categoryId.value)
 }
 
 const onClickEdit = () => router.push(`/categories/${categoryId.value}/edit`)
 
 useHead({
-  // title: `${category.value.name} / ${i18n.t('categories.title')}`,
-  title: category.value.name,
+  title: category.value?.name,
 })
 </script>
 
-<template lang="pug">
-UiPage(v-if="category")
-  UiHeader
-    router-link(v-slot="{ href, navigate }" :to="backLink" custom)
-      a.grow.hocus_bg-item-main-hover(:href="href" @click="navigate")
-        UiHeaderTitle
-          .pt-1.text-xs.font-medium.text-item-base-down
-            | {{ $t('categories.title') }}
-            template(v-if="category.parentId")
-              |
-              | • {{ $store.state.categories.items[category.parentId].name }}
+<template>
+  <UiPage v-if="category">
+    <UiHeader>
+      <router-link
+        v-slot="{ href, navigate }"
+        :to="backLink"
+        custom
+      >
+        <a class="grow hocus_bg-item-main-hover" :href="href" @click="navigate">
+          <UiHeaderTitle>
+            <div class="pt-1 text-xs font-medium text-item-base-down">
+              {{ $t('categories.title') }}
+              <template v-if="category.parentId">
+                |
+                | • {{ categoriesStore.items[category.parentId].name }}
+              </template>
 
-          .pb-1.flex.items-center.gap-4
-            | {{ category.name }}
-            .w-8.h-8.rounded-full.flex-center.text-xl.text-icon-base(
-              :style="{ background: category.color }"
-            )
-              div(:class="category.icon")
+            </div>
+            <div class="pb-1 flex items-center gap-4">
+              {{ category.name }}
+              <div class="w-8 h-8 rounded-full flex-center text-xl text-icon-base" :style="{ background: category.color }">
+                <div :class="category.icon" />
+              </div>
+            </div>
+          </UiHeaderTitle>
+        </a>
+      </router-link>
 
-    template(#actions v-if="categoryId !== 'transfer'")
-      UiHeaderLink(@click="onClickEdit")
-        .mdi.mdi-pencil-outline.group-hover_text-white.text-xl
-      UiHeaderLink(@click="$router.push('/categories/new')")
-        UiIconAdd.group-hover_text-white.w-6.h-6
+      <template v-if="categoryId !== 'transfer'">
+        <UiHeaderLink @click="onClickEdit">
+          <div class="mdi mdi-pencil-outline group-hover_text-white text-xl" />
+        </UiHeaderLink>
+        <UiHeaderLink @click="$router.push('/categories/new')">
+          <UiIconAdd class="group-hover_text-white w-6 h-6" />
+        </UiHeaderLink>
+      </template>
+    </UiHeader>
 
-  //- Open stat
-  .pt-3.mb-12
-    .px-2.flex
-      UiItemShadow.cursor-pointer.p-1.px-2.flex.items-center.gap-3(
-        @click="onClickFilterCategory"
-      )
-        .mdi.mdi-poll.text-xl
-        .text-xs.leading-none {{ $t('statBy') }} {{ category.name }}
-        .mdi.mdi-chevron-right.opacity-70.text-lg.leading-none
+    <!-- Open stat -->
+    <div class="pt-3 mb-12">
+      <div class="px-2 flex">
+        <UiItemShadow class="cursor-pointer p-1 px-2 flex items-center gap-3" @click="onClickFilterCategory">
+          <div class="mdi mdi-poll text-xl" />
 
-  //- Childs categories
-  .mb-12(v-if="category.childIds && category.childIds.length > 0")
-    .pb-3.px-2.flex.gap-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
-      div {{ $t('categories.title') }}:
-      div {{ category.childIds.length }}
+          <div class="text-xs leading-none">
+            {{ t('statBy') }} {{ category.name }}
+          </div>
 
-    .px-2
-      CategoriesList(
-        :ids="categoryChildIds"
-        :slider="() => ({})"
-        isHideParentCategory
-        @click="id => $router.push(`/categories/${id}`)"
-      )
+          <div class="mdi mdi-chevron-right opacity-70 text-lg leading-none" />
+        </UiItemShadow>
+      </div>
+    </div>
 
-  //- History
-  .px-2
-    TrnsListWithControl(:trnsIds="trnsIds")
+    <!-- Childs categories -->
+    <div v-if="category.childIds && category.childIds.length > 0" class="mb-12">
+      <div class="pb-3 px-2 flex gap-2 text-lg leading-none font-nunito font-semibold text-item-base">
+        <div>
+          {{ $t('categories.title') }}:
+        </div>
+
+        <div>
+          {{ category.childIds.length }}
+        </div>
+      </div>
+      <div class="px-2">
+        <CategoriesList :ids="categoryChildIds" :slider="() => ({})" isHideParentCategory @click="id => $router.push(`/categories/${id}`)" />
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="px-2">
+      <TrnsListWithControl :trnsIds="trnsIds" />
+    </div>
+  </UiPage>
 </template>
 
 <i18n lang="yaml">

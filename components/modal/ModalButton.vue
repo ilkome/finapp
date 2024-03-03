@@ -1,11 +1,9 @@
-<script>
-export default {
-  props: {
-    icon: { type: String, required: true },
-    name: { type: String, required: true },
-    isActive: { type: Boolean, default: false },
-  },
-}
+<script setup lang="ts">
+defineProps<{
+  icon: string
+  name: string
+  isActive?: boolean
+}>()
 </script>
 
 <template lang="pug">
@@ -25,6 +23,8 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .modalButton
   cursor pointer
   display flex
@@ -34,10 +34,10 @@ export default {
   width auto
   max-width 100%
   min-height 48px
-  padding $m6 $m6
+  padding 10px 10px
   text-align center
   border 1px solid transparent
-  border-radius $m6
+  border-radius 10px
 
   &._active
     cursor default

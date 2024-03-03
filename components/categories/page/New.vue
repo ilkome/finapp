@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { getPreparedFormData } from '~/components/categories/getForm'
 import { getParentCategory } from '~/components/categories/getCategories'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
-const { $store } = useNuxtApp()
+const categoriesStore = useCategoriesStore()
 const router = useRouter()
 
 const categoryForm = ref(getPreparedFormData())
 const parentCategory = computed(() =>
-  getParentCategory($store.state.categories.items, categoryForm.value.parentId))
+  getParentCategory(categoriesStore.items, categoryForm.value.parentId))
 
 const updateValue = (id, value) => categoryForm.value[id] = value
 const afterSave = () => router.replace('/categories/')

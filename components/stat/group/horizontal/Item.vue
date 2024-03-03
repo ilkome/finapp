@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { TrnType } from '~/components/trns/types'
-import useFilter from '~/components/filter/useFilter'
 import useStatPage from '~/components/stat/useStatPage'
 import { getWidthPercent } from '~/components/stat/helpers'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useFilter } from '~/components/filter/useFilter'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   biggest: number
@@ -13,9 +16,11 @@ const props = defineProps<{
   categoryId: CategoryId
 }>()
 
-const { $store } = useNuxtApp()
+const categoriesStore = useCategoriesStore()
+const trnsStore = useTrnsStore()
 const { statPage } = useStatPage()
-const { setFilterCatsId } = useFilter()
+const { setCategoryId } = useFilter()
+const currenciesStore = useCurrenciesStore()
 const isShowInside = ref(false)
 
 const styles = computed(() => ({
@@ -25,7 +30,7 @@ const styles = computed(() => ({
 
 // TODO: same HorizontalItem, HorizontalItemCatItem
 const isCategoryHasChildren = computed(() =>
-  $store.getters['categories/isCategoryHasChildren'](props.categoryId))
+  categoriesStore.isCategoryHasChildren(props.categoryId))
 
 // TODO: same HorizontalItem, HorizontalItemCatItem
 const toggleShowInside = () => isShowInside.value = !isShowInside.value
@@ -35,10 +40,9 @@ const trnsIds = computed(() => {
   if (isCategoryHasChildren.value)
     return []
 
-  const trnsItems = $store.state.trns.items
   return statPage.current.trnsIds
-    .filter(id => trnsItems[id].type === props.type && trnsItems[id].categoryId === props.categoryId)
-    .sort((a, b) => trnsItems[b].date - trnsItems[a].date)
+    .filter(id => trnsStore.items[id].type === props.type && trnsStore.items[id].categoryId === props.categoryId)
+    .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date)
 })
 </script>
 
@@ -53,7 +57,7 @@ const trnsIds = computed(() => {
     //- Icon
     .cursor-pointer.text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
       :style="{ background: category.color }"
-      @click.stop="setFilterCatsId(categoryId)"
+      @click.stop="setCategoryId(categoryId)"
     ): div(:class="category.icon")
 
     .grow
@@ -64,7 +68,7 @@ const trnsIds = computed(() => {
         .statItem__amount.text-item-base
           Amount(
             :amount="total"
-            :currencyCode="$store.state.currencies.base"
+            :currencyCode="currenciesStore.base"
             :type="type"
             :isShowBaseRate="false"
           )
@@ -89,7 +93,7 @@ const trnsIds = computed(() => {
         TrnsList(
           :trnsIds="trnsIds"
           :isShowGroupDate="false"
-          classNames="md_grid-cols-1"
+          classes="md_grid-cols-1"
           uiCat
         )
 </template>

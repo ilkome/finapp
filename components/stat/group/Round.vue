@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import useStat from '~/components/stat/useStat'
+import { useStat } from '~/components/stat/useStat'
 import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const props = defineProps<{
-  typeText: String
+  typeText: string
 }>()
 
 const { typeText } = toRefs(props)
 const { statPage } = useStatPage()
 const { moneyTypes } = useStat()
 const { ui } = useUIView()
+const currenciesStore = useCurrenciesStore()
+const categoriesStore = useCategoriesStore()
 const roundRef = ref(null)
 
 const isShow = computed(() => ui.showRoundCats && statPage.current[props.typeText]?.categoriesIds?.length)
@@ -46,22 +50,22 @@ watch(isShow, updateWidth, { immediate: true })
     LazyStatGroupRoundItem(
       v-if="isShow"
       v-for="categoryId in statPage.current[typeText].categoriesIds"
-      :category="$store.state.categories.items[categoryId]"
+      :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
-      :currencyCode="$store.state.currencies.base"
+      :currencyCode="currenciesStore.base"
       :key="categoryId"
       :total="statPage.current.categories[categoryId][typeText]"
       :type="typeNumber"
     )
 
     template(v-if="statPage.filter.categoryId")
-      template(v-for="categoryId in $store.getters['categories/getChildCategoriesIds'](statPage.filter.categoryId)")
+      template(v-for="categoryId in categoriesStore.getChildCategoriesIds(statPage.filter.categoryId)")
         template(v-if="!statPage.current[typeText].categoriesIds.includes(categoryId)")
           LazyStatGroupRoundItem(
             v-if="statPage.filter.categoryId"
-            :category="$store.state.categories.items[categoryId]"
+            :category="categoriesStore.items[categoryId]"
             :categoryId="categoryId"
-            :currencyCode="$store.state.currencies.base"
+            :currencyCode="currenciesStore.base"
             :key="categoryId"
             :total="0"
             :type="typeNumber"

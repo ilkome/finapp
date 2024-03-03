@@ -18,7 +18,7 @@ export default function useOnTouch() {
   let content: (null | any) = null
   let onClose: (null | any) = null
   let handler: (null | any) = null
-  let isInit: Boolean = false
+  let isInit: boolean = false
 
   /**
    * Init
@@ -85,7 +85,7 @@ export default function useOnTouch() {
     wrap.value.classList.remove(config.animClassName)
 
     // Always use touch with handler
-    isDrugByHandler = handler.value && event.target.classList.contains(handler.value.className)
+    isDrugByHandler = handler.value && event.target.classList.contains(handler.value.classes)
     if (isDrugByHandler) {
       isDrugByHandler = true
       isDragging = true
@@ -119,7 +119,7 @@ export default function useOnTouch() {
     }
 
     // Drag inside wrap
-    if (event.target.closest(`.${wrap.value.className}`))
+    if (event.target.closest(`.${wrap.value.classes}`))
       isDragging = true
 
     if (isDragging) {

@@ -18,14 +18,14 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/margins'
+@import '../assets/stylus/variables'
 
 .empty
-  padding $m10
+  padding 40px
   text-align center
 
   &__icon
-    padding-bottom $m8
+    padding-bottom 20px
     color var(--c-font-4)
     font-size 100px
 

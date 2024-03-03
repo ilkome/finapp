@@ -1,37 +1,40 @@
 <script setup lang="ts">
-import useFilter from '~/components/filter/useFilter'
 import { getTrnsIds } from '~/components/trns/getTrns'
+import { useFilter } from '~/components/filter/useFilter'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const { $store, nuxt2Context: { i18n } } = useNuxtApp()
-const { setFilterWalletsId } = useFilter()
-
+const { t } = useI18n()
+const { $i18n } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
+const filterStore = useFilter()
+const walletsStore = useWalletsStore()
+const categoriesStore = useCategoriesStore()
+const trnsStore = useTrnsStore()
 
 const walletId = computed(() => route.params.id)
-const wallet = computed(() => $store.state.wallets.items[walletId.value])
+const wallet = computed(() => walletsStore.items[walletId.value])
 
 if (!wallet.value)
   router.replace('/wallets')
 
-const total = computed(() => $store.getters['wallets/walletsTotal'][walletId.value])
+const total = computed(() => walletsStore.walletsTotal[walletId.value])
 
-const trnsItems = computed(() => $store.state.trns.items)
 const trnsIds = computed(() =>
   getTrnsIds({
     walletsIds: [walletId.value],
-    trnsItems: trnsItems.value,
+    trnsItems: trnsStore.items,
   }),
 )
 
-const periodTrnsIds = computed(() => $store.getters['trns/selectedTrnsIdsWithDate']
-  .filter(trnId => $store.state.trns.items[trnId].walletId === walletId.value))
+const periodTrnsIds = computed(() => trnsStore.selectedTrnsIdsWithDate
+  .filter(trnId => trnsStore.items[trnId].walletId === walletId.value))
 
 // TODO: useFilter
 function onClickFilterWallet() {
-  setFilterWalletsId(walletId.value)
-  $store.commit('filter/setFilterDateNow')
-  $store.dispatch('ui/setActiveTabStat', 'details')
+  filterStore.setFilterWalletStat(walletId.value)
 }
 
 function onEditClick() {
@@ -39,7 +42,7 @@ function onEditClick() {
 }
 
 useHead({
-  title: `${i18n.t('wallets.title')}: ${wallet.value?.name}`,
+  title: `${$i18n.t('wallets.title')}: ${wallet.value?.name}`,
 })
 </script>
 
@@ -76,7 +79,7 @@ UiPage(v-if="wallet")
         @click="onClickFilterWallet"
       )
         .mdi.mdi-poll.text-xl
-        .text-xs.leading-none {{ $t("statBy") }}: {{ wallet.name }}
+        .text-xs.leading-none {{ t("statBy") }}: {{ wallet.name }}
         .mdi.mdi-chevron-right.opacity-70.text-lg.leading-none
 
   //- Stat
@@ -84,7 +87,7 @@ UiPage(v-if="wallet")
     SharedDate.text-xs.font-medium(
       class="-mb-1 dark_text-white/50"
       :date="$day().valueOf()"
-      :period="$store.state.filter.period"
+      :period="filterStore.period"
     )
     div(class="-mb-3")
       WalletsItemTotalSum(

@@ -1,69 +1,60 @@
-<script>
+<script setup lang="ts">
 // TODO: need to deprecate
+import { useWindowSize } from '@vueuse/core'
 import useTouchClose from '~/components/base/modal/useTouchClose'
+import '~/components/modal/styles/modalLinks.styl'
 
-export default {
-  name: 'ModalBottom',
-
-  props: {
-    isShow: {
-      type: Boolean,
-      default: true,
-    },
-
-    center: {
-      type: Boolean,
-      default: false,
-    },
-
-    title: {
-      type: String,
-      default: null,
-    },
-
-    paddingless: {
-      type: Boolean,
-      default: false,
-    },
+const props = defineProps({
+  isShow: {
+    type: Boolean,
+    default: true,
   },
+  center: {
+    type: Boolean,
+    default: false,
+  },
+  title: {
+    type: String,
+    default: null,
+  },
+  paddingless: {
+    type: Boolean,
+    default: false,
+  },
+})
 
-  setup(props, { listeners }) {
-    const { isShow } = toRefs(props)
-    const { initTouchModal, closeModal } = useTouchClose()
+const emit = defineEmits(['onClose', 'afterClose'])
 
-    const wrappers = reactive({
-      container: ref(null),
-      content: ref(null),
-      handler: ref(null),
-      overflow: ref(null),
-      wrap: ref(null),
+const { isShow } = toRefs(props)
+const { initTouchModal, closeModal } = useTouchClose()
+const { height } = useWindowSize()
+
+const container = ref(null)
+const content = ref(null)
+const handler = ref(null)
+const overflow = ref(null)
+const wrap = ref(null)
+
+watch(isShow, (value) => {
+  value && setTimeout(() => {
+    initTouchModal({
+      container,
+      content,
+      handler,
+      overflow,
+      wrap,
+      onClose: () => {
+        emit('onClose')
+        emit('afterClose')
+      },
     })
-
-    watch(isShow, (value) => {
-      value && setTimeout(() => {
-        initTouchModal({
-          ...toRefs(wrappers),
-          onClose: () => {
-            if (listeners.onClose)
-              listeners.onClose()
-            if (listeners && listeners.afterClose)
-              listeners.afterClose()
-          },
-        })
-      }, 10)
-    }, { immediate: true })
-
-    return {
-      ...toRefs(wrappers),
-      closeModal,
-    }
-  },
-}
+  }, 10)
+}, { immediate: true })
 </script>
 
 <template lang="pug">
 .modalBottom(
-  :style="{ maxHeight: `${$store.state.ui.height}px`}"
+  :style="{ maxHeight: `${height}px`}"
   :class="{ _center: center, _paddingless: paddingless }"
   v-show="isShow"
   ref="container"
@@ -106,7 +97,7 @@ export default {
       //- Content
       //--------------------------------------
       .modalBottom__scroll(
-        :style="{ maxHeight: `${$store.state.ui.height - 100}px`}"
+        :style="{ maxHeight: `${height - 100}px`}"
         ref="content"
       )
         //- Description
@@ -122,6 +113,8 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 $transition-style = cubic-bezier(.17, .04, .03, 1)
 
 .baseModalOveflowAnim
@@ -164,6 +157,8 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
 </style>
 
 <style lang="stylus">
+@import "../assets/stylus/variables"
+
 .modalBottom
   z-index 1000
   position fixed
@@ -190,25 +185,25 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     max-width 480px
     margin-right auto
     background var(--c-bg-3)
-    border-radius $m7 $m7 0 0
+    border-radius 16px 16px 0 0
 
     @media $media-laptop
       max-width 460px
       margin 100px
-      border-radius $m7
+      border-radius 16px
 
   &__scroll
     overflow hidden
     overflow-y auto
     max-height calc(90vh - 80px)
-    padding $m7
+    padding 16px
     background var(--c-bg-3)
-    border-radius $m7 $m7 0 0
+    border-radius 16px 16px 0 0
     scrollbar()
 
     @media $media-laptop
-      padding $m9
-      border-radius $m7
+      padding 26px
+      border-radius 16px
 
     ^[0]._paddingless &
       padding 0
@@ -218,11 +213,11 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     position relative
     display flex
     align-items center
-    padding $m7
+    padding 16px
     color var(--c-font-2)
     fontFamilyNunito()
     background var(--c-bg-3)
-    border-radius $m7 $m7 0 0
+    border-radius 16px 16px 0 0
 
     &._alt
       background var(--c-bg-1)
@@ -252,13 +247,13 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
 
   &__icon
     position absolute
-    top (- $m5)
-    right $m7
+    top (- 6px)
+    right 16px
 
   &__child
     display flex
     align-items center
-    padding-left $m6
+    padding-left 10px
     font-size 18px
     font-weight 500
 </style>

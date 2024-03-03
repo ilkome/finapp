@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import useFilter from '~/components/filter/useFilter'
+import { useFilter } from '~/components/filter/useFilter'
 import type { TrnType } from '~/components/trns/types'
 import useStatPage from '~/components/stat/useStatPage'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   biggest: number
@@ -12,14 +15,17 @@ const props = defineProps<{
   categoryId: CategoryId
 }>()
 
-const { $store } = useNuxtApp()
 const { statPage } = useStatPage()
-const { setFilterCatsId } = useFilter()
+const { setCategoryId } = useFilter()
+const currenciesStore = useCurrenciesStore()
+const categoriesStore = useCategoriesStore()
+const trnsStore = useTrnsStore()
+
 const isShowInside = ref(false)
 
 // TODO: same HorizontalItem, HorizontalItemCatItem
 const isCategoryHasChildren = computed(() =>
-  $store.getters['categories/isCategoryHasChildren'](props.categoryId))
+  categoriesStore.isCategoryHasChildren(props.categoryId))
 
 // TODO: same HorizontalItem, HorizontalItemCatItem
 const toggleShowInside = () => isShowInside.value = !isShowInside.value
@@ -29,10 +35,9 @@ const trnsIds = computed(() => {
   if (isCategoryHasChildren.value)
     return []
 
-  const trnsItems = $store.state.trns.items
   return statPage.current.trnsIds
-    .filter(id => trnsItems[id].type === props.type && trnsItems[id].categoryId === props.categoryId)
-    .sort((a, b) => trnsItems[b].date - trnsItems[a].date)
+    .filter(id => trnsStore.items[id].type === props.type && trnsStore.items[id].categoryId === props.categoryId)
+    .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date)
 })
 </script>
 
@@ -46,7 +51,7 @@ const trnsIds = computed(() => {
   )
     .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
       :style="{ background: category.color }"
-      @click.stop="setFilterCatsId(categoryId)"
+      @click.stop="setCategoryId(categoryId)"
     ): div(:class="category.icon")
 
     .grow
@@ -56,7 +61,7 @@ const trnsIds = computed(() => {
         .statItem__amount.text-item-base
           Amount(
             :amount="total"
-            :currencyCode="$store.state.currencies.base"
+            :currencyCode="currenciesStore.base"
             :type="type"
             :isShowBaseRate="false"
           )
@@ -76,6 +81,8 @@ const trnsIds = computed(() => {
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .ins
   position relative
   background var(--c-item2-bg-hover)

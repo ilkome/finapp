@@ -3,6 +3,9 @@ import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { getTotal } from '~/components/amount/getTotal'
 import type { WalletId } from '~/components/wallets/types'
 import type { TrnId } from '~/components/trns/types'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const props = withDefaults(defineProps<{
   trnsIds: TrnId[]
@@ -11,14 +14,16 @@ const props = withDefaults(defineProps<{
   trnsIds: () => [],
 })
 
-const { $store } = useNuxtApp()
+const walletsStore = useWalletsStore()
+const trnsStore = useTrnsStore()
+const categoriesStore = useCategoriesStore()
 
-const wallet = computed(() => $store.state.wallets.items[props.walletId])
+const wallet = computed(() => walletsStore.items[props.walletId])
 
 const total = computed(() => {
-  const trnsItems = $store.state.trns.items
-  const walletsItems = $store.state.wallets.items
-  const categoriesItems = $store.state.categories.items
+  const trnsItems = trnsStore.items
+  const walletsItems = walletsStore.items
+  const categoriesItems = categoriesStore.items
   const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
   return getTotal({
     trnsIds: props.trnsIds,

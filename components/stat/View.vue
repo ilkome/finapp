@@ -1,17 +1,28 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { useWindowSize } from '@vueuse/core'
-import useStat from '~/components/stat/useStat'
 import useStatChart from '~/components/stat/useStatChart'
 import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
 import useWallets from '~/components/wallets/useWallets'
+import { getStyles } from '~/components/ui/classes'
+import { useAppNav } from '~/components/app/useAppNav'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useFilter } from '~/components/filter/useFilter'
+import { useStat } from '~/components/stat/useStat'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const { $store } = useNuxtApp()
 const { walletsCurrencies } = useWallets()
+const filterStore = useFilter()
 const { statPage } = useStatPage()
 const { ui } = useUIView()
 const { moneyTypes } = useStat()
 const { width } = useWindowSize()
+const categoriesStore = useCategoriesStore()
+const trnsStore = useTrnsStore()
+const { activeTabStat } = storeToRefs(useAppNav())
+const currenciesStore = useCurrenciesStore()
 
 const isMobileView = computed(() => width.value <= 1024)
 
@@ -19,24 +30,23 @@ const { onWatch } = useStatChart()
 onWatch()
 
 function isShowGroup(type) {
-  const p1 = statPage.activeTab === 'details'
-    || statPage.activeTab === 'balance'
-    || (statPage.activeTab === 'income' && type === 'income')
-    || (statPage.activeTab === 'expense' && type === 'expense')
+  const p1 = activeTabStat.value === 'summary'
+    || (activeTabStat.value === 'income' && type === 'income')
+    || (activeTabStat.value === 'expense' && type === 'expense')
 
-  const p2 = $store.state.filter.period === 'all'
+  const p2 = filterStore.period === 'all'
   return p1 || p2
 }
 
 const isShowGroupTrns = computed(() => {
-  const p1 = statPage.activeTab === 'income' || statPage.activeTab === 'expense'
+  const p1 = activeTabStat.value === 'income' || activeTabStat.value === 'expense'
   const p2 = statPage.average?.sum === 0
-  return (p1 || p2) && statPage.activeTab !== 'history'
+  return p1 || p2
 })
 
 const combinedTrnsIds = computed(() => {
-  const trnsItems = $store.state.trns.items
-  const trnsIds = $store.getters['trns/selectedTrnsIdsWithDate']
+  const trnsItems = trnsStore.items
+  const trnsIds = trnsStore.selectedTrnsIdsWithDate
 
   return {
     all: trnsIds,
@@ -58,17 +68,30 @@ onDeactivated(async () => {
 
 <template lang="pug">
 .lg_max-w-4xl.pb-6
-  .flex.items-center.justify-between.gap-4.sticky.top-0.z-20.backdrop-blur(
+  .flex.px-2.items-center.justify-between.gap-4.sticky.top-0.z-20.backdrop-blur(
     class="h-[44px] bg-white/70 dark_bg-dark3/70"
   )
+    .flex.items-center
+      div(
+        :class="getStyles('item', ['link', 'rounded'])"
+        @click="filterStore.setPeriodNext"
+      )
+        UiIconChevron.size-8
+
+      div(
+        @click="filterStore.setPeriodPrev"
+        :class="getStyles('item', ['link', 'rounded'])"
+      )
+        UiIconChevron.size-8.rotate-180
+
     StatDate.grow
 
     template(v-if="isMobileView")
       .cursor-pointer.py-2.px-4.text-xs.text-item-base-down.rounded-md.hocus_bg-item-main-hover(
         v-if="walletsCurrencies.length > 1"
-        @click="$store.commit('currencies/showBaseCurrenciesModal')"
+        @click="currenciesStore.showBaseCurrenciesModal()"
       )
-        | {{ $store.state.currencies.base }}
+        | {{ currenciesStore.base }}
 
   template(v-if="!isMobileView")
     .pb-6.px-2(v-if="walletsCurrencies.length > 1")
@@ -95,9 +118,7 @@ onDeactivated(async () => {
     .pt-1
       StatChartPeriods
 
-  .py-3.px-3(
-    v-if="statPage.filter.isShow"
-  )
+  .py-3.px-3(v-if="statPage.filter.isShow")
     LazyStatFilter(v-if="statPage.filter.isShow")
 
   .px-2.flex.flex-wrap.items-center.justify-between.gap-6.gap-x-6
@@ -113,9 +134,9 @@ onDeactivated(async () => {
     class="min-h-[calc(100vh-130px)]"
     data-scroll-ref="stat"
   )
-    template(v-if="statPage.activeTab !== 'trns' && statPage.activeTab !== 'history'")
+    template(v-if="activeTabStat !== 'trns' && activeTabStat !== 'history'")
       //- template(v-if="isMobileView")
-      //-   .my-6.px-2(v-if="statPage.activeTab === 'details'")
+      //-   .my-6.px-2(v-if="activeTabStat === 'summary'")
       //-     StatViewConfig
       //-     StatSumTotal(v-if="(statPage.average.income !== 0 && statPage.average.expense !== 0) || (statPage.current.income.total !== 0 && statPage.current.expense.total !== 0)")
 
@@ -130,18 +151,15 @@ onDeactivated(async () => {
           )
             StatSumGroup(:typeText="item.id")
 
-            template(v-if="statPage.activeTab !== 'balance'")
-              StatGroupPie(:typeText="item.id")
+            template(v-if="activeTabStat !== 'balance'")
+              //- StatGroupPie(:typeText="item.id")
               StatGroupVertical(:typeText="item.id")
               StatGroupRound(:typeText="item.id")
               StatGroupHorizontal(:typeText="item.id")
 
-            template(v-if="statPage.activeTab === 'balance'")
-              StatGroupBudget(:typeText="item.id")
-
             template(v-if="!isMobileView")
               div(
-                v-if="statPage.activeTab === 'details' && statPage.current[item.id].total !== 0 && combinedTrnsIds[item.id].length > 0"
+                v-if="activeTabStat === 'summary' && statPage.current[item.id].total !== 0 && combinedTrnsIds[item.id].length > 0"
               )
                 .my-6(class="max-w-[420px]")
                   .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
@@ -157,7 +175,7 @@ onDeactivated(async () => {
           //- All
           template
             div(
-              v-if="isShowGroupTrns && !isEmptyStat && statPage.activeTab !== 'details' && combinedTrnsIds[statPage.activeTab].length > 0"
+              v-if="isShowGroupTrns && !isEmptyStat && activeTabStat !== 'summary' && combinedTrnsIds[activeTabStat].length > 0"
             )
               .my-6(class="max-w-[420px]")
                 .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
@@ -165,14 +183,14 @@ onDeactivated(async () => {
 
                 TrnsList(
                   :size="12"
-                  :trnsIds="combinedTrnsIds[statPage.activeTab]"
-                  classNames="md_grid-cols-1"
+                  :trnsIds="combinedTrnsIds[activeTabStat]"
+                  classes="md_grid-cols-1"
                   isShowFilter
                   uiHistory
                 )
 
     //- Trns
-    template(v-if="statPage.activeTab === 'trns'")
+    template(v-if="activeTabStat === 'trns'")
       .my-4.px-2
         TrnsListWithControl(
           :trnsIds="statPage.current.trnsIds"

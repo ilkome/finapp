@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import { getPreparedFormData } from '~/components/categories/getForm'
 import { getParentCategory } from '~/components/categories/getCategories'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const emit = defineEmits(['afterSave'])
-const { $store, nuxt2Context: { i18n } } = useNuxtApp()
-
+const { t } = useI18n()
+const categoriesStore = useCategoriesStore()
 const categoryForm = ref(getPreparedFormData())
 const parentCategory = computed(() =>
-  getParentCategory($store.state.categories.items, categoryForm.value.parentId))
+  getParentCategory(categoriesStore.items, categoryForm.value.parentId))
 
 const updateValue = (id, value) => categoryForm.value[id] = value
 const afterSave = () => emit('afterSave')
 
 useHead({
-  title: () => `${i18n.t('base.add')}:
+  title: () => `${t('base.add')}:
     ${categoryForm.value?.name
       ? categoryForm.value?.name
-      : i18n.t('categories.form.name.label')}`,
+      : t('categories.form.name.label')}`,
 })
 </script>
 

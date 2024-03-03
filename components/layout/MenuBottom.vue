@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import useMenuData from '~/components/menu/useMenuData'
 import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useAppNav } from '~/components/app/useAppNav'
 
-const { $store } = useNuxtApp()
 const $trnForm = useTrnFormStore()
 const { trnFormCreate } = useTrnForm()
+const { openModal, isModalOpen } = useAppNav()
 
 const { onClick, checkIsActive } = useMenuData()
-const activeTab = computed(() => $store.state.ui.activeTab)
 </script>
 
 <template lang="pug">
 .menu
-  LazyLayoutMenuBottomModal(v-if="activeTab === 'menu'")
+  LazyLayoutMenuBottomModal(v-if="isModalOpen('menu')")
 
   .grid.mx-auto.max-w-xl
     .menu__row
@@ -43,8 +43,8 @@ const activeTab = computed(() => $store.state.ui.activeTab)
 
       //- Stat
       .menu__item.group(
-        :class="{ _active: checkIsActive('index') }"
-        @click="onClick('index')"
+        :class="{ _active: checkIsActive('dashboard') }"
+        @click="onClick('dashboard')"
       )
         UiIconStat.w-6.h-6.md_w-8.md_h-8(
           :class="{ 'text-blue3 dark_text-white': checkIsActive('index'), 'group-hover_text-white': !checkIsActive('index') }"
@@ -53,15 +53,13 @@ const activeTab = computed(() => $store.state.ui.activeTab)
       //- menu
       .menu__item.group(
         :class="{ _active: checkIsActive('menu') }"
-        @click="$store.dispatch('ui/setActiveTab', 'menu')"
+        @click="openModal('menu')"
       )
         UiIconMenu.w-6.h-6.md_w-8.md_h-8.group-hover_text-white
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/animations'
-@import '~assets/stylus/variables/margins'
-@import '~assets/stylus/variables/media'
+@import "../assets/stylus/variables"
 
 .menu
   &__row
@@ -75,18 +73,18 @@ const activeTab = computed(() => $store.state.ui.activeTab)
     justify-content center
     flex-grow 1
     flex-flow column
-    padding $m6 0
+    padding 10px 0
     color var(--c-font-4)
-    anim()
+    // anim()
 
-    +media(600px)
-      border-radius 8px
+    // +media(600px)
+    //   border-radius 8px
 
-    +media-hover()
-      &:not(._active)
-        cursor pointer
-        color var(--c-font-1)
-        background var(--c-blue-1)
+    // +media-hover()
+    //   &:not(._active)
+    //     cursor pointer
+    //     color var(--c-font-1)
+    //     background var(--c-blue-1)
 
     &:active
       color var(--c-font-2)
@@ -98,21 +96,21 @@ const activeTab = computed(() => $store.state.ui.activeTab)
   display flex
   align-items center
   justify-content center
-  padding $m6 0
-  anim()
+  padding 10px 0
+  // anim()
 
-  +media(600px)
-    border-radius 8px
+  // +media(600px)
+  //   border-radius 8px
 
-  +media-hover()
-    background var(--c-blue-1)
+  // +media-hover()
+  //   background var(--c-blue-1)
 
-    svg
-      fill var(--c-font-1)
+    // svg
+    //   fill var(--c-font-1)
 
   svg
     width 24px
     height 24px
     fill var(--c-blue-1)
-    anim()
+    // anim()
 </style>

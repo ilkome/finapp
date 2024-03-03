@@ -29,10 +29,18 @@ export function getDataAndWatch(path, callback) {
   })
 }
 
-export const updateData = (path, updates) => update(ref(db, path), updates)
+export function updateData(path, updates) {
+  return update(ref(db, path), updates)
+}
 
-export const removeData = path => remove(ref(db, path))
+export function removeData(path) {
+  return remove(ref(db, path))
+}
 
-export const saveData = async (path, value) => await set(ref(db, path), value)
+export async function saveData(path, value) {
+  return await set(ref(db, path), value)
+}
 
-export const unsubscribeData = path => off(ref(db, path))
+export function unsubscribeData(path) {
+  return off(ref(db, path))
+}

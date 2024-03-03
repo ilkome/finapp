@@ -44,7 +44,7 @@ BaseBottomSheet(
                 class="mt-[2px]"
               ) {{ walletItem.name.substring(0, 2) }}
               //- Name
-              .grow.text-sm.text-item-base {{ walletItem.name }}
+              .text-secondary2.grow.text-sm {{ walletItem.name }}
 
             //- Amount
             .text-item-base

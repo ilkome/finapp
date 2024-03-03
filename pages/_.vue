@@ -1,7 +1,3 @@
-<script>
-export default {
-  asyncData({ redirect }) {
-    return redirect('/')
-  },
-}
+<script setup lang="ts">
+useRouter().replace('/login')
 </script>

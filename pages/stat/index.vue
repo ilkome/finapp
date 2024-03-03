@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
-const { $store } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
+const categoriesStore = useCategoriesStore()
 
 // TODO: Is category is not exist?
 const catsIds = computed(() =>
   (Array.isArray(route.query.cats)
     ? route.query.cats
     : [route.query.cats])
-    .filter(id => !!$store.state.categories.items[id]),
+    .filter(id => !!categoriesStore.items[id]),
 )
 
 function hasParent(id: CategoryId) {
-  // if ($store.state.categories.items[id].parentId)
+  // if (categoriesStore.items[id].parentId)
   // cats = catsIds.value.filter(i => i !== id)
 }
 

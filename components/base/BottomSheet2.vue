@@ -337,7 +337,7 @@ const drugClasses = computed(() => ({
 
 const overflowClasses = computed(() => ({
   'transition-opacity': !isDragging.value && opened.value,
-  'pointer-events-none opacity-0': !opened.value,
+  // 'pointer-events-none opacity-0': !opened.value,
 }))
 
 const wrapClasses = computed(() => ({
@@ -346,7 +346,7 @@ const wrapClasses = computed(() => ({
 </script>
 
 <template lang="pug">
-.z-50.pointer-events-none.select-none.overflow-hidden.absolute.inset-0.w-full.h-full(
+.z-50.select-none.overflow-hidden.absolute.inset-0.w-full.h-full(
   ref="containerRef"
   :class="wrapClasses"
 )
@@ -355,7 +355,7 @@ const wrapClasses = computed(() => ({
     :class="overflowClasses"
     :style="overlayStyles"
     class=`
-      md_invisible
+      z-10
       absolute inset-0 w-full h-full
       bg-foreground-main/70
     `

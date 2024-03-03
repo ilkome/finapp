@@ -1,30 +1,30 @@
-<script>
-export default {
-  props: {
-    amount: { type: Number, required: true },
-    type: { type: Number, default: 3 },
-    title: { type: String, required: true },
-  },
+<script setup lang="ts">
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 
-  computed: {
-    className() {
-      return {
-        '_expense': this.type === 0,
-        '_income': this.type === 1,
-        'pb-[2px]': true,
-      }
-    },
-  },
-}
+const props = withDefaults(defineProps<{
+  amount: number
+  title: string
+  type?: number
+}>(), {
+  type: 3,
+})
+
+const currenciesStore = useCurrenciesStore()
+
+const classes = computed(() => ({
+  '_expense': props.type === 0,
+  '_income': props.type === 1,
+  'pb-[2px]': true,
+}))
 </script>
 
 <template lang="pug">
-.summaryItem(:class="className")
+.summaryItem(:class="classes")
   .summaryItem__title(class="pb-[2px]") {{ title }}
   .summaryItem__amount.text-item-base
     Amount(
       :amount="amount"
-      :currencyCode="$store.state.currencies.base"
+      :currencyCode="currenciesStore.base"
       :type="type"
       :colorize="type === 0 ? 'expense' : 'income'"
       :isShowBaseRate="false"
@@ -34,7 +34,7 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import '~assets/stylus/variables/margins'
+@import "../assets/stylus/variables"
 
 .summaryItem
   position relative

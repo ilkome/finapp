@@ -1,5 +1,5 @@
 <script lang="ts">
-import useFilter from '~/components/filter/useFilter'
+import { useFilter } from '~/components/filter/useFilter'
 
 // TODO: setup
 export default defineComponent({
@@ -11,9 +11,9 @@ export default defineComponent({
   },
 
   setup() {
-    const { setFilterCatsId } = useFilter()
+    const { setCategoryId } = useFilter()
     return {
-      setFilterCatsId,
+      setCategoryId,
     }
   },
 
@@ -40,7 +40,7 @@ export default defineComponent({
 
 <template lang="pug">
 .statCatsItem.swiper-no-swiping.active.hocus_bg-item-main-hover(
-  @click="setFilterCatsId(categoryId)"
+  @click="setCategoryId(categoryId)"
 )
   .statCatsItem__graph.bg-item-main-active
     .statCatsItem__graph__in(:style="styles")
@@ -51,12 +51,14 @@ export default defineComponent({
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 // TODO: styles
 .statCatsItem
   cursor pointer
   margin-top 16px
   margin-right 8px
-  border-radius $m4
+  border-radius 4px
   +media-hover()
     padding 8px
     margin 8px 0 -8px -8px
@@ -67,7 +69,7 @@ export default defineComponent({
     height 80px
     margin 0 auto
     margin-bottom -3px
-    border-radius $m4
+    border-radius 4px
 
     &__amount
       position absolute
@@ -85,7 +87,7 @@ export default defineComponent({
       bottom 0
       width 100%
       min-height 1px
-      border-radius $m4 $m4 0 0
+      border-radius 4px 4px 0 0
 
   &__icon
     display flex

@@ -1,10 +1,22 @@
 <script setup lang="ts">
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { useUserStore } from '~/components/user/useUser'
 import { auth } from '~/services/firebase/api'
 
-const { $notify } = useNuxtApp()
+definePageMeta({
+  layout: 'center',
+})
+
+const { t } = useI18n()
+
+useSeoMeta({
+  title: t('title'),
+})
+
+const { $toast } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
+const userStore = useUserStore()
 
 const isLoading = ref(false)
 
@@ -16,64 +28,78 @@ function signInWithGoogle() {
   isLoading.value = true
 
   const provider = new GoogleAuthProvider()
-  signInWithPopup(auth, provider)
-    .catch((e) => {
-      $notify({
-        duration: 6000,
-        text: e.message,
-        title: 'Error',
-        type: 'error',
-      })
-      isLoading.value = false
-    })
+  signInWithPopup(auth, provider).catch((e) => {
+    $toast(e.message, {
+      autoClose: 6000,
+      theme: 'auto',
+      type: 'error',
+      transition: 'slide',
+      position: toast.POSITION.TOP_LEFT,
+    } as ToastOptions)
+    isLoading.value = false
+  })
 }
 
 onMounted(() => {
-  if (route.query?.loader) {
+  if (route.query?.loading) {
     isLoading.value = true
     const newRoute = { ...route }
-    delete newRoute.query?.loader
+    delete newRoute.query?.loading
     router.replace(newRoute)
   }
 
-  setTimeout(() => isLoading.value = false, 10000)
+  setTimeout(() => (isLoading.value = false), 10000)
 })
-</script>
 
-<script lang="ts">
-export default defineComponent({
-  layout: 'login',
-
-  fetch({ store, redirect }) {
-    if (store.state.user?.user)
-      redirect('/')
+watch(
+  () => userStore.uid,
+  (uid) => {
+    uid && router.replace('/dashboard')
   },
-})
+)
 </script>
 
-<template lang="pug">
-.grid.h-full.text-center(class="grid-rows-[auto,1fr,auto]")
-  .max-w-xl.mx-auto.py-4.p-2.w-full.md_p-6
-    .flex.justify-between
-      LocaleSwitcher
-      ThemeSwitcher
+<template>
+  <div
+    class="mx-auto grid h-full w-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4 md_p-6"
+  >
+    <div class="flex justify-between">
+      <AppLocaleSwitcher />
+      <AppThemeSwitcher />
+    </div>
 
-  .h-full.grid.items-center.gap-8.py-4.px-3.h-full.overflow-hidden.overflow-y-auto
-    .flex.flex-col.items-center.justify-center.pb-10
-      UiLogo
+    <div
+      class="grid h-full items-center gap-8 overflow-hidden overflow-y-auto px-3 py-4"
+    >
+      <div class="flex flex-col items-center justify-center pb-10">
+        <UiLogo />
 
-      .px-3.py-8.flex.flex-col.items-center(
-        class="min-w-[280px]"
-      )
-        UiButtonBlue(
-          :disabled="isLoading"
-          @click="signInWithGoogle"
-        )
-          | {{ $t('loginWithGoogle') }}
-          transition(name="fadeIn")
-            .absolute.inset-0.w-full.h-full.flex-center.bg-accent-2(v-if="isLoading")
-              UiSpinier
+        <div class="flex min-w-[280px] flex-col items-center px-3 py-8">
+          <UiButtonBlue :disabled="isLoading" @click="signInWithGoogle">
+            {{ $t("loginWithGoogle") }}
+            <transition name="fadeIn">
+              <div
+                v-if="isLoading"
+                class="flex-center absolute inset-0 h-full w-full bg-accent-2"
+              >
+                <UiSpinier />
+              </div>
+            </transition>
+          </UiButtonBlue>
+        </div>
+      </div>
+    </div>
 
-  .p-4.md_p-6
-    CommonCopyright
+    <div class="flex-center">
+      <AppCopyright />
+    </div>
+  </div>
 </template>
+
+<i18n lang="yaml">
+en:
+  title: "Login"
+
+ru:
+  title: "Вход"
+</i18n>

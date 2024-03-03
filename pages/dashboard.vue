@@ -1,17 +1,26 @@
 <script setup lang="ts">
-const { $store, nuxt2Context: { i18n } } = useNuxtApp()
+import 'v-calendar/style.css';
+import { useCategoriesStore } from '~/components/categories/useCategories';
+import { useTrnsStore } from '~/components/trns/useTrnsStore';
+import { useWalletsStore } from '~/components/wallets/useWalletsStore';
+
+const { t } = useI18n()
 const router = useRouter()
+const walletsStore = useWalletsStore()
+const categoriesStore = useCategoriesStore()
+const trnsStore = useTrnsStore()
 
 useHead({
-  title: i18n.t('stat.title'),
+  title: t('stat.title'),
 })
 
-if (!$store.getters['wallets/hasWallets'] || !$store.getters['categories/hasCategories'])
-  router.replace('/welcome')
+// if (!walletsStore.hasWallets || !categoriesStore.hasCategories)
+//   router.replace('/welcome')
 </script>
 
-<template lang="pug">
-UiPage
-  LazyStatView(v-if="$store.getters['trns/hasTrns']")
-  LazyStatWelcomeActions(v-else)
+<template>
+  <UiPage>
+    <LazyStatView v-if="trnsStore.hasTrns" />
+    <LazyStatWelcomeActions v-else />
+  </UiPage>
 </template>

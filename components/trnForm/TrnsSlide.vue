@@ -2,6 +2,8 @@
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import type { WalletId } from '~/components/wallets/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   slider: {
@@ -9,12 +11,15 @@ const props = defineProps<{
   }
 }>()
 
-const { $store, nuxt2Context: { i18n } } = useNuxtApp()
+const { $i18n } = useNuxtApp()
 const $trnForm = useTrnFormStore()
+const categoriesStore = useCategoriesStore()
+const trnsStore = useTrnsStore()
+
 const filterBy = ref('wallet')
 
 const trnsIds = computed(() => {
-  const trnsItems = $store.state.trns.items
+  const trnsItems = trnsStore.items
   const walletsIds: WalletId[] = []
   if ($trnForm.values.walletId)
     walletsIds.push($trnForm.values.walletId)
@@ -24,7 +29,7 @@ const trnsIds = computed(() => {
 
   if (filterBy.value === 'walletAndCategory') {
     const categoryId = $trnForm.values.categoryId
-    const childIds = $store.getters['categories/getChildCategoriesIds'](categoryId)
+    const childIds = categoriesStore.getChildCategoriesIds(categoryId)
     const categoriesIds = childIds.length > 0 ? childIds : [categoryId]
 
     return getTrnsIds({ walletsIds, categoriesIds, trnsItems })
@@ -48,13 +53,13 @@ function onClickEdit() {
 
 const tabs = computed(() => [{
   id: 'wallet',
-  name: i18n.t('trnForm.filterWallet'),
+  name: $i18n.t('trnForm.filterWallet'),
 }, {
   id: 'walletAndCategory',
-  name: i18n.t('trnForm.filterWalletAndCategory'),
+  name: $i18n.t('trnForm.filterWalletAndCategory'),
 }, {
   id: 'all',
-  name: i18n.t('trnForm.filterAll'),
+  name: $i18n.t('trnForm.filterAll'),
 }])
 </script>
 
@@ -64,6 +69,7 @@ const tabs = computed(() => [{
 )
   TrnsListWithControl(
     :trnsIds="trnsIds"
+    isShowGroupSum
     trnsClassNames=""
     @onClickEdit="onClickEdit"
   )

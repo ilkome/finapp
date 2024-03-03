@@ -1,23 +1,26 @@
 <script setup lang="ts">
-import type { TrnId, TrnItem, TrnType } from '~/components/trns/types'
-import useTrns from '~/components/trns/useTrns'
-import useStatPage from '~/components/stat/useStatPage'
+import useStatPage from '~/components/stat/useStatPage';
+import type { TrnId, TrnItem, TrnType } from '~/components/trns/types';
+import useTrns from '~/components/trns/useTrns';
+import { useTrnsStore } from '~/components/trns/useTrnsStore';
 
 const props = withDefaults(defineProps<{
-  trnsIds: TrnId[]
+  trnsIds: TrnId[] | false
   trnsClassNames?: string
   defaultFilterTrnsPeriod?: string
   isFilterByDay?: boolean
+  isShowGroupSum?: boolean
 }>(), {
   trnsClassNames: 'grid md_grid-cols-2 md_gap-x-20',
 })
 const emit = defineEmits(['onClickEdit'])
 
-const { $store } = useNuxtApp()
-const filterTrnsType = ref<TrnType | null>(null)
-const filterTrnsPeriod = ref(props.defaultFilterTrnsPeriod)
 const { allTrnsIdsWithFilter } = useTrns()
 const { statPage } = useStatPage()
+const trnsStore = useTrnsStore()
+
+const filterTrnsType = ref<TrnType | null>(null)
+const filterTrnsPeriod = ref(props.defaultFilterTrnsPeriod)
 
 // Return to filter 'period', when global filter params changed
 watch(statPage.filter, () => filterTrnsPeriod.value = 'period')
@@ -30,7 +33,7 @@ const filteredTrnsIds = computed(() => {
   if (filterTrnsType.value === null)
     return trnsIds
 
-  const trnsItems: Record<TrnId, TrnItem> = $store.state.trns.items
+  const trnsItems: Record<TrnId, TrnItem> = trnsStore.items
   return trnsIds.filter(id => trnsItems[id].type === filterTrnsType.value)
 })
 
@@ -106,9 +109,10 @@ function onClickEdit(props) {
     .h-full.pb-10(v-else)
       div(:class="trnsClassNames")
         TrnsList(
-          :trnsIds="filteredTrnsIds"
-          :size="50"
           :isFilterByDay="isFilterByDay"
+          :isShowGroupSum="isShowGroupSum"
+          :size="50"
+          :trnsIds="filteredTrnsIds"
           isShowFilter
           uiHistory
           @onClickEdit="onClickEdit"

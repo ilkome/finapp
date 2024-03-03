@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import _merge from 'lodash.merge'
+import defu from 'defu'
 import dayjs from 'dayjs'
 import type { PeriodsNamesExceptAll } from '~/components/date/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
@@ -11,16 +11,21 @@ import { getTrnsIds } from '~/components/trns/getTrns'
 import { getOldestTrnDate } from '~/components/trns/helpers'
 import { formatAmount, getCurrencySymbol } from '~/components/amount/formatAmount'
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 type DateValueOf = number
 
 const { baseCurrencyCode } = useAmount()
-const { $store } = useNuxtApp()
+const currenciesStore = useCurrenciesStore()
+const walletsStore = useWalletsStore()
+const trnsStore = useTrnsStore()
 
 /**
  * Transactions
  */
-const trnsItems = computed<Record<TrnId, TrnItem>>(() => $store.state.trns.items)
+const trnsItems = computed<Record<TrnId, TrnItem>>(() => trnsStore.items)
 const oldestTrnDate = getOldestTrnDate(trnsItems.value)
 
 /**
@@ -83,10 +88,10 @@ const series = computed(() => periodsGenerated.value.map((period) => {
     trnsItems: trnsItems.value,
   })
 
-  const categoriesItems = $store.state.categories.items
-  const walletsItems = $store.state.wallets.items
-  const baseCurrencyCode = $store.state.currencies.base
-  const rates = $store.state.currencies.rates
+  const categoriesItems = categoriesStore.items
+  const walletsItems = walletsStore.items
+  const baseCurrencyCode = currenciesStore.base
+  const rates = currenciesStore.rates
   const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
   const total = getTotal({
     baseCurrencyCode,
@@ -177,7 +182,7 @@ const chartConfig = computed(() => ({
 /**
  * Chart data
  */
-const chartData = computed(() => _merge(JSON.parse(JSON.stringify(options)), chartConfig.value))
+const chartData = computed(() => defu(JSON.parse(JSON.stringify(options)), chartConfig.value))
 </script>
 
 <template lang="pug">

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import SwiperCore from 'swiper'
-import 'swiper/swiper-bundle.css'
-import type { CategoryId } from '../categories/types'
+import Swiper from 'swiper'
+import 'swiper/css'
+import type { CategoryId } from '~/components/categories/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const emit = defineEmits<{
@@ -9,6 +10,8 @@ const emit = defineEmits<{
 }>()
 
 const $trnForm = useTrnFormStore()
+const categoriesStore = useCategoriesStore()
+
 const sliderObj = ref()
 const sliderRef = ref()
 
@@ -19,7 +22,7 @@ function onClick(categoryId: CategoryId) {
 onMounted(() => {
   const initialSlide = 1
 
-  sliderObj.value = new SwiperCore(sliderRef.value, {
+  sliderObj.value = new Swiper(sliderRef.value, {
     observer: true,
     observeParents: true,
     slidesPerView: 1,
@@ -46,7 +49,7 @@ onMounted(() => {
             .pb-1.px-3
               CategoriesList(
                 :activeItemId="$trnForm?.values?.categoryId"
-                :ids="$store.getters['categories/recentCategoriesIds']"
+                :ids="categoriesStore.recentCategoriesIds"
                 class="!gap-x-1"
                 @click="onClick"
               )
@@ -59,7 +62,7 @@ onMounted(() => {
             .pb-1.px-3
               CategoriesList(
                 :activeItemId="$trnForm?.values?.categoryId"
-                :ids="$store.getters['categories/categoriesRootIds']"
+                :ids="categoriesStore.categoriesRootIds"
                 class="!gap-x-1"
                 @click="onClick"
               )
@@ -72,7 +75,7 @@ onMounted(() => {
             .pb-1.px-3
               CategoriesList(
                 :activeItemId="$trnForm?.values?.categoryId"
-                :ids="$store.getters['categories/favoriteCategoriesIds']"
+                :ids="categoriesStore.favoriteCategoriesIds"
                 class="!gap-x-1"
                 @click="onClick"
               )
@@ -96,6 +99,8 @@ onMounted(() => {
 </template>
 
 <style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
 .contentWrap
   overflow hidden
   position relative

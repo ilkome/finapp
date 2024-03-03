@@ -4,7 +4,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 const props = defineProps<{
   id: WalletId
-  isHideDots: boolean
+  isHideDots?: boolean
 }>()
 
 const emit = defineEmits(['click'])

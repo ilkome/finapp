@@ -22,7 +22,7 @@ FilterItemBg(@click="emit('click', id)")
     ) {{ wallet.name.substring(0, 2) }}
 
     .grow
-      .text-sm.leading-none {{ wallet.name }}
+      .text-sm.leading-none.text-secondary2 {{ wallet.name }}
       .text-item-base
         Amount(
           :amount="wallet.amount"

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
-const { $store } = useNuxtApp()
 const $trnForm = useTrnFormStore()
+const walletsStore = useWalletsStore()
+const categoriesStore = useCategoriesStore()
 
 const isShow = computed(() =>
-  $store.getters['wallets/hasWallets']
-  && $store.getters['categories/hasCategories']
+  walletsStore.hasWallets
+  && categoriesStore.hasCategories
   && $trnForm.ui.isShow,
 )
 </script>

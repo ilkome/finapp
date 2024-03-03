@@ -19,6 +19,7 @@ module.exports = {
 
         primary: 'rgb(var(--text-primary))',
         secondary: 'rgb(var(--text-secondary))',
+        secondary2: 'rgb(var(--text-secondary2))',
         main: 'rgb(var(--bg-main))',
         accent: {
           default: 'rgb(var(--accent-default))',
@@ -37,14 +38,14 @@ module.exports = {
           'border': 'rgba(var(--item-border))',
           'hover': 'rgba(var(--item-hover))',
           'primary': 'rgba(var(--item-primary))',
-          'base': 'var(--color-item-base)',
-          'base-up': 'var(--color-item-base-up)',
-          'base-down': 'var(--color-item-base-down)',
+          'base': 'var(--c-item-base)',
+          'base-up': 'var(--c-item-base-up)',
+          'base-down': 'var(--c-item-base-down)',
           'main': {
             main: 'rgba(var(--item-main))',
-            bg: 'var(--color-item-main-bg)',
-            hover: 'var(--color-item-main-hover)',
-            active: 'var(--color-item-main-active)',
+            bg: 'var(--c-item-main-bg)',
+            hover: 'var(--c-item-main-hover)',
+            active: 'var(--c-item-main-active)',
           },
         },
 
@@ -80,16 +81,6 @@ module.exports = {
   plugins: [
     plugin(({ addVariant }) => {
       addVariant('hocus', ['.mouse &:not(._active):hover', '&:not(._active):active'])
-    }),
-    plugin(({ matchUtilities, theme }) => {
-      matchUtilities({
-        size: value => ({
-          width: value,
-          height: value,
-        }),
-      }, {
-        values: theme('width'),
-      })
     }),
   ],
 }

@@ -1,7 +1,9 @@
 <script setup script="ts">
-const { $store } = useNuxtApp()
-const statCurrentPeriod = computed(() => $store.getters['stat/statCurrentPeriod'])
-const statAverage = computed(() => $store.getters['stat/statAverage'])
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useStat } from '~/components/stat/useStat'
+
+const currenciesStore = useCurrenciesStore()
+const { statAverage, statCurrentPeriod } = useStat()
 </script>
 
 <template lang="pug">
@@ -9,12 +11,11 @@ const statAverage = computed(() => $store.getters['stat/statAverage'])
   UiTitle {{ $t('money.total') }}
   .overflow-hidden.overflow-x-auto.scrollbar
     .flex.flex-wrap.items-center.gap-1.gap-x-6
-      //- Total
       .text-3xl
         Amount(
           :amount="statCurrentPeriod.income.total - statCurrentPeriod.expense.total"
           :colorize="(statCurrentPeriod.income.total - statCurrentPeriod.expense.total) > 0 ? 'income' : 'expense'"
-          :currencyCode="$store.state.currencies.base"
+          :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
           :isShowSign="false"
           :type="(statCurrentPeriod.income.total - statCurrentPeriod.expense.total) > 0 ? 1 : 0"
