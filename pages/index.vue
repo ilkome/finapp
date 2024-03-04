@@ -2,11 +2,10 @@
 import { useUserStore } from '~/components/user/useUser'
 
 const userStore = useUserStore()
-const router = useRouter()
 
 watch(() => userStore.uid, (uid) => {
-  // uid
-  //   ? router.replace('/dashboard')
-  //   : router.replace('/login')
+  uid
+    ? useRouter().replace('/dashboard')
+    : useRouter().replace('/login')
 }, { immediate: true })
 </script>
