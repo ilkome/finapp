@@ -7,7 +7,7 @@ const { height } = useWindowSize()
 <template lang="pug">
 Teleport(to="body")
   BaseBottomSheet(
-    insideClass="sm_rounded-b-2xl bg-layout-main"
+    insideClass="sm_rounded-b-2xl bg-foreground-3"
     show
     :maxHeight="height"
     @closed="$emit('closed')"
@@ -20,7 +20,7 @@ Teleport(to="body")
       v-if="$slots.header"
       #header
     )
-      .pt-3.pb-3.px-3.bg-layout-main.rounded-t-2xl
+      .pt-3.pb-3.px-3.bg-foreground-3.rounded-t-2xl
         UiTitle
           slot(name="header")
 

@@ -7,9 +7,9 @@ button(
   class=`
     cursor-pointer
     py-3 px-3 w-full
-    text-accent-primary text-center
-    bg-foreground-active rounded-full
-    hocus_bg-foreground-hover
+    text-accent-3 text-center
+    bg-foreground-1 rounded-full
+    hocus_bg-foreground-2
     transition
   `
   @click="emit('click')"

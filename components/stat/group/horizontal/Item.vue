@@ -51,7 +51,7 @@ const trnsIds = computed(() => {
   :class="{ _active: isShowInside }"
   @click="toggleShowInside"
 )
-  .ins.py-2.px-2.space-x-3.rounded-md.justify-between.items-center.flex.bg-item-main-bg.hocus_bg-item-main-hover(
+  .ins.py-2.px-2.space-x-3.rounded-md.justify-between.items-center.flex.bg-item-4.hocus_bg-item-5(
     :class="['z-[9]', { _active: isShowInside }, { 'cursor-n-resize shadow-xl rounded-b-none': isShowInside }, { 'cursor-s-resize shadow-sm': !isShowInside }]"
   )
     //- Icon
@@ -75,7 +75,7 @@ const trnsIds = computed(() => {
       .pt-1.statItem__graph.mt-1: .statItem__graph__in(:style="styles")
 
   //- Inside
-  .overflow-hidden.bg-item-main-bg.rounded-b-md(
+  .overflow-hidden.bg-item-4.rounded-b-md(
     v-if="isShowInside"
     class="mt-[-1px] dark_border-neutral-800"
     @click.stop=""

@@ -83,7 +83,7 @@ Teleport(to="body")
 
         //- Close button
         .pb-4.px-2.flex.justify-evenly.gap-6
-          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-main-bg.hocus_bg-item-main-hover(
+          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-4.hocus_bg-item-5(
             class="basis-1/2 max-w-[280px]"
             @click="close()"
           ) {{ $t('close') }}
@@ -116,7 +116,7 @@ Teleport(to="body")
       &:not(._active)
         color var(--c-text-1)
         background var(--c-item-bg-hover)
-        border-color var(--c-item-bd-hover)
+        border-color var(--accent-4)
 
     &._active
       background var(--c-item-bg-active)
@@ -131,7 +131,7 @@ Teleport(to="body")
   padding 26px
   padding-bottom 10px
   color var(--c-font-2)
-  fontFamilyNunito()
+  font-secondary()
   font-size 28px
   font-weight 700
   text-align center

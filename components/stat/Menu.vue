@@ -25,15 +25,15 @@ function onClickStatMenu(tabName: AppNav) {
 
 <template lang="pug">
 .my-4.px-2.sticky.z-20.backdrop-blur(
-  class="top-[44px] bg-white/70 dark_bg-dark3/70"
+  class="top-[44px] bg-foreground-4"
 )
   UiTabs
     //- v-if="!item.isPrivate || userStore.isDevUser"
-    UiTabsItem.font-nunito.font-semibold(
+    UiTabsItem(
       v-for="item in menu"
       :key="item.id"
       :isActive="item.id === activeTabStat"
-      class="!text-lg"
+      class="!text-lg !font-medium"
       @click="onClickStatMenu(item.id)"
     ) {{ item.name }}
 </template>

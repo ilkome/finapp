@@ -15,7 +15,7 @@ const typeNumber = computed(() => moneyTypes.find(t => t.id === `${props.typeTex
 </script>
 
 <template lang="pug">
-.my-4.px-1.bg-white.dark_bg-dark3
+.my-4.px-1.bg-foreground-3
   UiTitle {{ $t(`money.${typeText}`) }}
 
   .overflow-hidden.overflow-x-auto.scrollbar

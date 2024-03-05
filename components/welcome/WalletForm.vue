@@ -33,14 +33,14 @@ useHead({
 
 <template lang="pug">
 UiPage
-  .mb-3.py-5.px-2.font-nunito
-    .pb-1.text-xs.font-medium.text-item-base-down
+  .mb-3.py-5.px-2.font-primary
+    .pb-1.text-xs.font-medium.text-item-2
       | {{ $t("wallets.createNewTitle") }}
 
     .flex.items-center.gap-3
-      .text-item-base-up.text-2xl.font-semibold
+      .text-item-1.text-2xl.font-semibold
         | {{ walletForm.name ? walletForm.name : $t("wallets.form.name.label") }}
-      .p-1.flex-center.rounded.text-icon-base.text-2xs(:style="{ background: walletForm.color }")
+      .p-1.flex-center.rounded.text-icon-primary.text-2xs(:style="{ background: walletForm.color }")
         | {{ walletForm.currency }}
 
   WalletsForm(

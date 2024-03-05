@@ -27,7 +27,5 @@ watch(() => useUserStore().uid, (value) => {
   <NuxtPwaManifest />
   <div class="layoutBase">
     <slot />
-
-    <AppNotifications />
   </div>
 </template>

@@ -47,12 +47,12 @@ const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
 <template lang="pug">
 .flex-center
   .overflow-hidden.flex.items-center.text-xs
-    .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-item-main-hover(
+    .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-item-5(
       :class="{ 'opacity-0 cursor-default pointer-events-none': isShowRemove }"
       @click="removePeriod"
     ): .mdi.mdi-minus
 
-    .cursor-pointer.py-2.px-3.rounded-md.hocus_bg-item-main-hover.text-secondary2(
+    .cursor-pointer.py-2.px-3.rounded-md.hocus_bg-item-5.text-secondary2(
       v-for="periodItem in periodsNames"
       :key="periodItem.slug"
       :class="{ 'cursor-default !text-primary': periodItem.slug === filterStore.periodWithoutAll }"
@@ -60,7 +60,7 @@ const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
     )
       | {{ periodItem.name }}
 
-    .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-item-main-hover(
+    .cursor-pointer.w-10.py-2.px-3.flex-center.rounded-md.hocus_bg-item-5(
       :class="{ 'opacity-0 cursor-default pointer-events-none': isShowAdd }"
       @click="addPeriod"
     ): .mdi.mdi-plus

@@ -16,7 +16,7 @@ const wallet = computed(() => walletsItemsSorted.value[props.id])
 FilterItemBg(@click="emit('click', id)")
   .flex-center.gap-x-3
     //- Icon
-    .w-6.h-6.rounded-md.flex-center.text-icon-base.text-xs.leading-none(
+    .w-6.h-6.rounded-md.flex-center.text-icon-primary.text-xs.leading-none(
       :style="{ background: wallet.color }"
       class="mt-[2px]"
     ) {{ wallet.name.substring(0, 2) }}

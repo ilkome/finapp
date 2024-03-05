@@ -43,7 +43,7 @@ function removeUserData() {
         <!-- Currency -->
         <div class="pb-12">
           <UiTitle>{{ $t("currency.title") }}</UiTitle>
-          <div class="leading-1 pb-4 text-xs text-item-base-down">
+          <div class="leading-1 pb-4 text-xs text-item-2">
             {{ t("currency.descBase") }}
           </div>
           <UiButtonSecond
@@ -78,7 +78,7 @@ function removeUserData() {
           <UiTitle class="pb-2">
             {{ t("user") }}
           </UiTitle>
-          <div class="pb-4 text-item-base-down">
+          <div class="pb-4 text-item-2">
             {{ userStore.user?.email }}
           </div>
           <UiButtonSecond
@@ -93,7 +93,7 @@ function removeUserData() {
           <UiTitle class="pb-2">
             {{ $t("settings.caution") }}
           </UiTitle>
-          <div class="leading-1 pb-4 text-xs text-item-base-down">
+          <div class="leading-1 pb-4 text-xs text-item-2">
             {{ $t("alerts.willDeleteEverything") }}
           </div>
           <div class="pb-4">
@@ -109,7 +109,7 @@ function removeUserData() {
       <!-- About -->
       <div class="pb-12 md_justify-self-end">
         {{ t("app.about") }}
-        <div class="pt-4 text-xs text-item-base-down">
+        <div class="pt-4 text-xs text-item-2">
           {{ t("app.version") }} {{ version }}
         </div>
       </div>

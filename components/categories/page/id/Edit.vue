@@ -34,12 +34,12 @@ UiPage(v-if="category")
       to="/categories"
       custom
     )
-      a.grow.hocus_bg-item-main-hover(
+      a.grow.hocus_bg-item-5(
         :href='href'
         @click='navigate'
       )
         UiHeaderTitle
-          .pt-1.text-xs.font-medium.text-item-base-down
+          .pt-1.text-xs.font-medium.text-item-2
             | {{ $t('categories.title') }}
             template(v-if="parentCategory")
               |
@@ -47,7 +47,7 @@ UiPage(v-if="category")
 
           .pb-1.flex.items-center.gap-4
             | {{ categoryForm.name }}
-            .w-8.h-8.rounded-full.flex-center.text-xl.text-icon-base(
+            .w-8.h-8.rounded-full.flex-center.text-xl.text-icon-primary(
               :style="{ background: categoryForm.color }"
             )
               div(:class="categoryForm.icon")

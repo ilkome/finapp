@@ -69,7 +69,7 @@ onDeactivated(async () => {
 <template lang="pug">
 .lg_max-w-4xl.pb-6
   .flex.px-2.items-center.justify-between.gap-4.sticky.top-0.z-20.backdrop-blur(
-    class="h-[44px] bg-white/70 dark_bg-dark3/70"
+    class="h-[44px] bg-foreground-4"
   )
     .flex.items-center
       div(
@@ -87,7 +87,7 @@ onDeactivated(async () => {
     StatDate.grow
 
     template(v-if="isMobileView")
-      .cursor-pointer.py-2.px-4.text-xs.text-item-base-down.rounded-md.hocus_bg-item-main-hover(
+      .cursor-pointer.py-2.px-4.text-xs.text-item-2.rounded-md.hocus_bg-item-5(
         v-if="walletsCurrencies.length > 1"
         @click="currenciesStore.showBaseCurrenciesModal()"
       )
@@ -97,7 +97,7 @@ onDeactivated(async () => {
     .pb-6.px-2(v-if="walletsCurrencies.length > 1")
       WalletsCurrenciesChanger
 
-    .mx-2.mb-4.rounded-lg.bg-item-main-bg
+    .mx-2.mb-4.rounded-lg.bg-item-4
       LazyStatChartWrap(
         v-if="ui.showMainChart"
         :key="chartKeyDirtyFix"
@@ -135,11 +135,6 @@ onDeactivated(async () => {
     data-scroll-ref="stat"
   )
     template(v-if="activeTabStat !== 'trns' && activeTabStat !== 'history'")
-      //- template(v-if="isMobileView")
-      //-   .my-6.px-2(v-if="activeTabStat === 'summary'")
-      //-     StatViewConfig
-      //-     StatSumTotal(v-if="(statPage.average.income !== 0 && statPage.average.expense !== 0) || (statPage.current.income.total !== 0 && statPage.current.expense.total !== 0)")
-
       //- Loop throw income / expense
       .mb-8.md_mb-4.px-2
         .grid.grid-cols-1.gap-y-5.md_grid-cols-2.md_gap-x-20
@@ -152,7 +147,6 @@ onDeactivated(async () => {
             StatSumGroup(:typeText="item.id")
 
             template(v-if="activeTabStat !== 'balance'")
-              //- StatGroupPie(:typeText="item.id")
               StatGroupVertical(:typeText="item.id")
               StatGroupRound(:typeText="item.id")
               StatGroupHorizontal(:typeText="item.id")
@@ -162,7 +156,7 @@ onDeactivated(async () => {
                 v-if="activeTabStat === 'summary' && statPage.current[item.id].total !== 0 && combinedTrnsIds[item.id].length > 0"
               )
                 .my-6(class="max-w-[420px]")
-                  .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
+                  .pb-2.text-lg.leading-none.font-primary.font-semibold.text-item-base
                     | {{ $t('trns.inPeriodTitle') }}
 
                   TrnsList(
@@ -178,7 +172,7 @@ onDeactivated(async () => {
               v-if="isShowGroupTrns && !isEmptyStat && activeTabStat !== 'summary' && combinedTrnsIds[activeTabStat].length > 0"
             )
               .my-6(class="max-w-[420px]")
-                .pb-2.text-lg.leading-none.font-nunito.font-semibold.text-item-base
+                .pb-2.text-lg.leading-none.font-primary.font-semibold.text-item-base
                   | {{ $t('trns.inPeriodTitle') }}
 
                 TrnsList(

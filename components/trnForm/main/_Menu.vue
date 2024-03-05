@@ -62,7 +62,7 @@ TrnFormMainMetaItem(
   template(#icon)
     .mdi.mdi-menu
 
-    .z-10.hidden.absolute.left-0.top-0.w-60.bg-foreground-main.rounded-xl.shadow-lg(
+    .z-10.hidden.absolute.left-0.top-0.w-60.bg-foreground-1.rounded-xl.shadow-lg(
       ref="tooltipRef"
       role="tooltip"
       @click.stop=""

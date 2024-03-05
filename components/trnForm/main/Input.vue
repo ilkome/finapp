@@ -54,8 +54,8 @@ function onInput(event: Event) {
       text-3xl font-unica
       bg-transparent rounded-md
       placeholder_text-3xl placeholder_font-roboto
-      hocus_bg-item-hover
-      focus_bg-item-hover
+      hocus_bg-item-7
+      focus_bg-item-7
       transition
     `
     type="text"

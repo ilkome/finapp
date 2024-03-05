@@ -215,7 +215,7 @@ $transition-style = cubic-bezier(.17, .04, .03, 1)
     align-items center
     padding 16px
     color var(--c-font-2)
-    fontFamilyNunito()
+    font-secondary()
     background var(--c-bg-3)
     border-radius 16px 16px 0 0
 

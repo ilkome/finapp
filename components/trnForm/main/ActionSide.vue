@@ -29,7 +29,7 @@ async function onClickSubmit() {
 <template lang="pug">
 div(
   :class=`{
-    '!bg-accent-default/50 border-accent-default/50 hocus_!bg-accent-default/70': !isMath && isSubmittable,
+    '!bg-accent-1/50 border-accent-1/50 hocus_!bg-accent-1/70': !isMath && isSubmittable,
   }`
   class=`
     cursor-pointer
@@ -38,8 +38,8 @@ div(
     py-4 px-2
     h-full
     text-4xl text-primary text-center
-    bg-item-main border border-item-border rounded-xl
-    hocus_bg-item-hover hocus_border[red] hocus_scale-[1.02]
+    bg-item-main border border-item-6 rounded-xl
+    hocus_bg-item-7 hocus_border[red] hocus_scale-[1.02]
     transition
   `
   @click="onClickSubmit"

@@ -72,7 +72,8 @@ export function useInitApp() {
     // console.log('filterPeriod', filterPeriod)
 
     user && userStore.setUser(user)
-    currencies && currenciesStore.setCurrencies(currencies.base, currencies.rates)
+    currencies && currenciesStore.setBase(currencies.base)
+    currencies && currenciesStore.setRates(currencies.rates)
     wallets && walletsStore.setWallets(wallets)
     categories && categoriesStore.setCategories(categories)
     trns && trnsStore.setTrns(trns)

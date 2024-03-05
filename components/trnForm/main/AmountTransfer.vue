@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { type TransferType, TrnType } from '~/components/trns/types'
+import type { MoneyTypeSlug } from '~/components/stat/types'
 import type { WalletId } from '~~/components/wallets/types'
+import { type TransferType, TrnType } from '~/components/trns/types'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const $trnForm = useTrnFormStore()
 const walletsStore = useWalletsStore()
 
-const items = ref<Record<'expense' | 'income', {
+const items = ref<Record<MoneyTypeSlug, {
   transferType: TransferType
   amountsIdx: 1 | 2
 }>>({
@@ -43,7 +44,7 @@ watch(() => $trnForm.values.trnType, (trnType) => {
     .cursor-pointer.overflow-hidden.rounded-md(
       v-for="(item, slug) in items"
       :key="slug"
-      :class="[{ '!bg-item-main-active': $trnForm.values.transferType === item.transferType }]"
+      :class="[{ '!bg-item-3': $trnForm.values.transferType === item.transferType }]"
       @click="$trnForm.onChangeTransferType(item.transferType)"
     )
       //- Wallet name

@@ -25,15 +25,15 @@ useHead({
 UiPage(v-if="wallet")
   UiHeader
     router-link(v-slot="{ href, navigate }" :to="`/wallets/${walletId}`" custom)
-      a.grow.hocus_bg-item-main-hover(:href="href" @click="navigate")
+      a.grow.hocus_bg-item-5(:href="href" @click="navigate")
         UiHeaderTitle
-          .pb-1.text-xs.font-medium.text-item-base-down
+          .pb-1.text-xs.font-medium.text-item-2
             | {{ $t("wallets.editTitle") }}
 
           .flex.items-center.gap-3
-            .text-item-base-up.text-2xl.font-semibold
+            .text-item-1.text-2xl.font-semibold
               | {{ walletForm.name ? walletForm.name : $t("wallets.title") }}
-            .p-1.flex-center.rounded.text-icon-base.text-2xs(:style="{ background: walletForm.color }")
+            .p-1.flex-center.rounded.text-icon-primary.text-2xs(:style="{ background: walletForm.color }")
               | {{ walletForm.currency }}
 
     template(#actions)

@@ -4,11 +4,11 @@ export const classes = {
     link: `
       cursor-pointer select-none
       text-secondary2
-      hocus_bg-item-main-hover
+      hocus_bg-item-5
       transition
     `,
     bg: `
-      bg-item-main-bg
+      bg-item-4
     `,
     base: '',
     rounded: 'rounded-md',
@@ -27,7 +27,7 @@ export const classes = {
   },
 
   modal: {
-    bg: 'bg-item-main-bg',
+    bg: 'bg-item-4',
     rounded: 'rounded-xl',
     padding1: 'px-2 pt-6 !pb-2',
   },

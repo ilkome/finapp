@@ -13,63 +13,46 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        alert: {
-          base: 'var(--color-alert-base)',
+        'alert-primary': 'var(--text-alert-primary)',
+        'primary': 'rgb(var(--text-primary))',
+        'secondary': 'rgb(var(--text-secondary))',
+        'secondary2': 'rgb(var(--text-secondary2))',
+        'icon-primary': 'var(--text-icon-primary)',
+        'expense': 'var(--text-expense-1)',
+        'income': 'var(--text-income-1)',
+
+        'foreground': {
+          1: 'rgb(var(--foreground-1))',
+          2: 'rgba(var(--foreground-2))',
+          3: 'var(--foreground-3)',
+          4: 'var(--foreground-4)',
         },
 
-        primary: 'rgb(var(--text-primary))',
-        secondary: 'rgb(var(--text-secondary))',
-        secondary2: 'rgb(var(--text-secondary2))',
-        main: 'rgb(var(--bg-main))',
-        accent: {
-          default: 'rgb(var(--accent-default))',
+        'accent': {
+          1: 'rgb(var(--accent-1))',
           2: 'rgb(var(--accent-2))',
-          primary: 'rgb(var(--accent-primary))',
+          3: 'rgb(var(--accent-3))',
+          4: 'var(--accent-4)',
         },
 
-        foreground: {
-          primary: 'rgba(var(--foreground-primary))',
-          main: 'rgb(var(--foreground-main))',
-          second: 'rgba(var(--foreground-second))',
-          hover: 'rgb(var(--foreground-hover))',
-          active: 'rgb(var(--foreground-active))',
-        },
-        item: {
-          'border': 'rgba(var(--item-border))',
-          'hover': 'rgba(var(--item-hover))',
-          'primary': 'rgba(var(--item-primary))',
-          'base': 'var(--c-item-base)',
-          'base-up': 'var(--c-item-base-up)',
-          'base-down': 'var(--c-item-base-down)',
-          'main': {
-            main: 'rgba(var(--item-main))',
-            bg: 'var(--c-item-main-bg)',
-            hover: 'var(--c-item-main-hover)',
-            active: 'var(--c-item-main-active)',
-          },
-        },
-
-        blue3: '#3a7dff',
-        dark3: '#171717',
-        dark4: '#1c1c1c',
-        expense: '#f92134',
-        income: '#2cad22',
-
-        layout: {
-          'main-up': 'var(--color-layout-main-up)',
-          'main': 'var(--color-layout-main)',
-        },
-        icon: {
-          base: 'var(--color-icon-base)',
+        'item': {
+          1: 'var(--c-item-1)',
+          2: 'var(--c-item-2)',
+          3: 'var(--c-item-3)',
+          4: 'var(--c-item-4)',
+          5: 'var(--c-item-5)',
+          6: 'rgba(var(--item-6))',
+          7: 'rgba(var(--item-7))',
         },
       },
       fontSize: {
         '2xs': '10px',
       },
       fontFamily: {
-        nunito: ['Nunito', 'Roboto', 'sans-serif'],
+        primary: ['Roboto', 'sans-serif'],
         roboto: ['Roboto', 'sans-serif'],
-        unica: ['"Unica One"', '"Roboto Condensed"', 'sans-serif'],
+        secondary: ['"Unica One"', '"Roboto"', 'sans-serif'],
+        unica: ['"Unica One"', '"Roboto"', 'sans-serif'],
       },
       screens: {
         '3sm': '360px',

@@ -1,7 +1,8 @@
 body {
   @apply
-    font-roboto text-primary leading-none antialiased
-    bg-layout-main;
+    font-primary text-primary leading-none antialiased;
+
+  @layer bg-foreground-3;
 }
 
 .layoutBase {

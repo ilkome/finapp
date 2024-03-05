@@ -143,7 +143,7 @@ Teleport(
                 )
 
         .pt-4.px-4.flex-center
-          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-main-bg.hocus_bg-item-main-hover(
+          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-4.hocus_bg-item-5(
             class="basis-1/2 max-w-[280px]"
             @click="close()"
           ) {{ $t('close') }}
@@ -168,7 +168,7 @@ Teleport(
   padding 16px
   padding-bottom 26px
   color var(--c-font-2)
-  fontFamilyNunito()
+  font-secondary()
   background var(--c-bg-3)
   border-radius 16px 16px 0 0
 

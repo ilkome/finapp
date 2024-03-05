@@ -1,26 +1,30 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
-import { getDataOnce, saveData } from '~/services/firebase/api'
-import { getRatesOfUSD } from '~/services/rates/api'
-import { useUserStore } from '~/components/user/useUser'
+import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import { currencies as all } from '~/components/currencies/currencies'
+import { getDataOnce, saveData } from '~/services/firebase/api'
+import { useUserStore } from '~/components/user/useUser'
 
-export interface CurrenciesValues {
-  base: string
-  rates: Record<string, number>
-  modal: {
-    show: boolean
-  }
-}
-
+const serviceUrlBase = `https://openexchangerates.org/api/latest.json?app_id=`
 export const currencies = all
 
 export const useCurrenciesStore = defineStore('currencies', () => {
   const { $config } = useNuxtApp()
   const userStore = useUserStore()
 
-  const base = ref<CurrenciesValues['base']>('USD')
-  const rates = ref<CurrenciesValues['rates']>({})
+  const base = ref<CurrencyCode>('USD')
+  const rates = ref<Rates>({})
+
+  async function getRatesOfUSD(apiKey: string) {
+    try {
+      const { rates } = await $fetch<Rates>(`${serviceUrlBase}${apiKey}`)
+      return rates
+    }
+    catch (e) {
+      console.error('Currencies api are unavailable', e)
+      return false
+    }
+  }
 
   async function initCurrencies() {
     // User base currency in DB
@@ -31,7 +35,6 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     let ratesBasedOnUsd = await getDataOnce(`ratesUsd/history/${today}`)
 
     if (!ratesBasedOnUsd) {
-      console.log('$config.public.ratesApiKey', $config.public.ratesApiKey)
       ratesBasedOnUsd = await getRatesOfUSD($config.public.ratesApiKey)
       if (!ratesBasedOnUsd)
         return
@@ -40,8 +43,8 @@ export const useCurrenciesStore = defineStore('currencies', () => {
       await saveData(`ratesUsd/history/${today}`, ratesBasedOnUsd)
     }
 
-    base.value = userBaseCurrency
-    rates.value = ratesBasedOnUsd
+    setBase(userBaseCurrency)
+    setRates(ratesBasedOnUsd)
 
     await localforage.setItem('finapp.currencies', {
       base: userBaseCurrency,
@@ -49,16 +52,15 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     })
   }
 
-  function setCurrencies(b: CurrenciesValues['base'], r: CurrenciesValues['rates']) {
-    base.value = b
-    rates.value = r
+  function setRates(values: Rates) {
+    rates.value = values
   }
 
-  function setBaseRate(code: CurrenciesValues['base']) {
-    base.value = code
+  function setBase(value: CurrencyCode) {
+    base.value = value
   }
 
-  function setBaseCurrency(code: CurrenciesValues['base']) {
+  function updateBase(code: CurrencyCode) {
     saveData(`users/${userStore.uid}/settings/baseCurrency`, code)
     initCurrencies()
   }
@@ -78,10 +80,10 @@ export const useCurrenciesStore = defineStore('currencies', () => {
   return {
     base,
     rates,
-    setBaseRate,
-    setBaseCurrency,
+    setBase,
     initCurrencies,
-    setCurrencies,
+    updateBase,
+    setRates,
 
     isShownModal,
     showBaseCurrenciesModal,

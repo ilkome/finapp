@@ -13,7 +13,7 @@ UiTabs(v-if="walletsCurrencies.length > 1")
     v-for="currency in walletsCurrencies"
     :key="currency"
     :isActive="currency === currenciesStore.base"
-    @click="currenciesStore.setBaseRate(currency)"
+    @click="currenciesStore.setBase(currency)"
   ) {{ currency }}
 
   UiTabsItem(@click="currenciesStore.showBaseCurrenciesModal()")

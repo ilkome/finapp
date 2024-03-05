@@ -130,7 +130,7 @@ async function onSave() {
 <template lang="pug">
 div
   .sticky.z-20.backdrop-blur(
-    class="top-[60px] bg-white/70 dark_bg-dark3/70"
+    class="top-[60px] bg-foreground-4"
   )
     .px-2
       UiTabs
@@ -148,8 +148,8 @@ div
     //-----------------------------------
     template(v-if="activeTab === 'data'")
       .mb-4
-        .pb-2.text-item-base-down.text-sm.leading-none {{ $t('wallets.form.name.label') }}
-        input.w-full.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-item-base.bg-item-main-bg.border.border-solid.border-item-main-hover.placeholder_text-item-base-down.transition.ease-in-out.focus_text-item-base-up.focus_bg-item-main-hover.focus_border-blue3.focus_outline-none(
+        .pb-2.text-item-2.text-sm.leading-none {{ $t('wallets.form.name.label') }}
+        input.w-full.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-item-base.bg-item-4.border.border-solid.border-item-5.placeholder_text-item-2.transition.ease-in-out.focus_text-item-1.focus_bg-item-5.focus_border-accent-4.focus_outline-none(
           :placeholder="$t('categories.form.name.placeholder')"
           :value="categoryForm.name"
           type="text"
@@ -209,7 +209,7 @@ div
               template(v-else-if="color")
                 .colorPreview(:style="{ background: color }")
 
-      .pb-2.text-sm.text-item-base-down {{ $t('wallets.form.colors.custom') }}
+      .pb-2.text-sm.text-item-2 {{ $t('wallets.form.colors.custom') }}
       input.cursor-pointer.w-full.h-12.p-0.border-0(v-model="categoryForm.color" type="color")
 
     //- Parent
@@ -220,8 +220,8 @@ div
         .p-4 You can not change parent category because edited category has childs categories.
 
       template(v-if="isAllowChangeParent")
-        .cursor-pointer.mb-4.py-3.px-2.gap-x-3.flex-center.rounded-md.text-center.bg-item-main-bg.hocus_bg-item-main-hover(
-          :class="{ '!cursor-default !bg-item-main-active': categoryForm.parentId === 0 }"
+        .cursor-pointer.mb-4.py-3.px-2.gap-x-3.flex-center.rounded-md.text-center.bg-item-4.hocus_bg-item-5(
+          :class="{ '!cursor-default !bg-item-3': categoryForm.parentId === 0 }"
           @click="emit('updateValue', 'parentId', 0)"
         ) {{ $t('categories.form.parent.no') }}
 
@@ -244,7 +244,7 @@ div
           :style="{ background: categoryForm.color }"
           @click="emit('updateValue', 'icon', icon)"
         )
-          .text-2xl.text-icon-base(:class="icon")
+          .text-2xl.text-icon-primary(:class="icon")
 
     //- Save
     //---------------------------------
@@ -287,9 +287,9 @@ div
   +media-hover()
     &:not(._empty)
       cursor pointer
-      background var(--c-item-bd-hover)
+      background var(--accent-4)
 
   &._active
     padding 0
-    background var(--c-item-bd-hover)
+    background var(--accent-4)
 </style>

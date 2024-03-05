@@ -7,7 +7,7 @@ const { statAverage, statCurrentPeriod } = useStat()
 </script>
 
 <template lang="pug">
-.my-4.px-1.bg-white.dark_bg-dark3
+.my-4.px-1.bg-foreground-3
   UiTitle {{ $t('money.total') }}
   .overflow-hidden.overflow-x-auto.scrollbar
     .flex.flex-wrap.items-center.gap-1.gap-x-6

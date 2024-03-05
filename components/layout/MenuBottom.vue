@@ -22,7 +22,7 @@ const { onClick, checkIsActive } = useMenuData()
         @click="onClick('wallets')"
       )
         UiIconWallet.w-6.h-6.md_w-8.md_h-8(
-          :class="{ 'text-blue3 dark_text-white': checkIsActive('wallets'), 'group-hover_text-white': !checkIsActive('wallets') }"
+          :class="{ 'text-accent-4 dark_text-white': checkIsActive('wallets'), 'group-hover_text-white': !checkIsActive('wallets') }"
         )
 
       //- Categories
@@ -31,7 +31,7 @@ const { onClick, checkIsActive } = useMenuData()
         @click="onClick('categories')"
       )
         UiIconCategory.w-6.h-6.md_w-8.md_h-8(
-          :class="{ 'text-blue3 dark_text-white': checkIsActive('categories'), 'group-hover_text-white': !checkIsActive('categories') }"
+          :class="{ 'text-accent-4 dark_text-white': checkIsActive('categories'), 'group-hover_text-white': !checkIsActive('categories') }"
         )
 
       .openTrnForm(@click="trnFormCreate")
@@ -47,7 +47,7 @@ const { onClick, checkIsActive } = useMenuData()
         @click="onClick('dashboard')"
       )
         UiIconStat.w-6.h-6.md_w-8.md_h-8(
-          :class="{ 'text-blue3 dark_text-white': checkIsActive('index'), 'group-hover_text-white': !checkIsActive('index') }"
+          :class="{ 'text-accent-4 dark_text-white': checkIsActive('index'), 'group-hover_text-white': !checkIsActive('index') }"
         )
 
       //- menu
@@ -75,16 +75,16 @@ const { onClick, checkIsActive } = useMenuData()
     flex-flow column
     padding 10px 0
     color var(--c-font-4)
-    // anim()
+    anim()
 
-    // +media(600px)
-    //   border-radius 8px
+    +media(600px)
+      border-radius 8px
 
-    // +media-hover()
-    //   &:not(._active)
-    //     cursor pointer
-    //     color var(--c-font-1)
-    //     background var(--c-blue-1)
+    +media-hover()
+      &:not(._active)
+        cursor pointer
+        color var(--c-font-1)
+        background var(--c-blue-1)
 
     &:active
       color var(--c-font-2)
@@ -97,20 +97,20 @@ const { onClick, checkIsActive } = useMenuData()
   align-items center
   justify-content center
   padding 10px 0
-  // anim()
+  anim()
 
-  // +media(600px)
-  //   border-radius 8px
+  +media(600px)
+    border-radius 8px
 
-  // +media-hover()
-  //   background var(--c-blue-1)
+  +media-hover()
+    background var(--c-blue-1)
 
-    // svg
-    //   fill var(--c-font-1)
+    svg
+      fill var(--c-font-1)
 
   svg
     width 24px
     height 24px
     fill var(--c-blue-1)
-    // anim()
+    anim()
 </style>

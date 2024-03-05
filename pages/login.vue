@@ -76,7 +76,7 @@ watch(
       class="grid h-full items-center gap-8 overflow-hidden overflow-y-auto px-3 py-4"
     >
       <div class="flex flex-col items-center justify-center pb-10">
-        <UiLogo />
+        <UiLogo class="pb-8" />
 
         <div class="flex min-w-[280px] flex-col items-center px-3 py-8">
           <UiButtonBlue :disabled="isLoading" @click="signInWithGoogle">

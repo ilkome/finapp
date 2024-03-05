@@ -11,8 +11,8 @@ div(
     py-1 px-3
     flex items-center gap-3
     rounded-md
-    bg-item-main-bg
-    hocus_bg-item-main-hover
+    bg-item-4
+    hocus_bg-item-5
   `
   @click="emit('click')"
 )

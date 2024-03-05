@@ -210,7 +210,7 @@ const chartData = computed(() => defu(JSON.parse(JSON.stringify(options)), chart
     h1 maxPeriodsNumber
     pre {{ maxPeriodsNumber }}
 
-  .my-6.mx-2.py-2.rounded-lg.bg-item-main-bg.border.dark_border-neutral-800
+  .my-6.mx-2.py-2.rounded-lg.bg-item-4.border.dark_border-neutral-800
     ChartBase.h-80(
       @finished="finished"
       :option="chartData"

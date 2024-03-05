@@ -357,7 +357,7 @@ const wrapClasses = computed(() => ({
     class=`
       z-10
       absolute inset-0 w-full h-full
-      bg-foreground-main/70
+      bg-foreground-1/70
     `
     @click="close()"
   )
@@ -372,7 +372,7 @@ const wrapClasses = computed(() => ({
       overflow-hidden
       z-10 absolute left-1/2 bottom-0 w-full h-auto
       -translate-x-1/2 translate-y-0
-      bg-foreground-second
+      bg-foreground-2
     `
     @click.stop=""
   )

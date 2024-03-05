@@ -39,10 +39,10 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.statCatsItem.swiper-no-swiping.active.hocus_bg-item-main-hover(
+.statCatsItem.swiper-no-swiping.active.hocus_bg-item-5(
   @click="setCategoryId(categoryId)"
 )
-  .statCatsItem__graph.bg-item-main-active
+  .statCatsItem__graph.bg-item-3
     .statCatsItem__graph__in(:style="styles")
       .statCatsItem__graph__amount {{ amount }}
 

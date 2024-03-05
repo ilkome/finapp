@@ -64,21 +64,21 @@ onMounted(init)
 <template lang="pug">
 .trnForm
   .swiper-container(ref="sliderRef")
-    .swiper-wrapper.bg-foreground-second.rounded-xl
+    .swiper-wrapper.bg-foreground-2.rounded-xl
       //- History
-      .swiper-slide.sm_max-w-sm.sm_rounded-xl.bg-foreground-second(:style="{ height: maxHeight }")
+      .swiper-slide.sm_max-w-sm.sm_rounded-xl.bg-foreground-2(:style="{ height: maxHeight }")
         TrnFormTrnsSlide(
           v-if="sliderObj"
           :slider="sliderObj"
         )
 
       //- Main
-      .swiper-slide.getHeight.max-w-sm.sm_rounded-xl.bg-foreground-second.sm_max-w-sm.sm_mx-6
+      .swiper-slide.getHeight.max-w-sm.sm_rounded-xl.bg-foreground-2.sm_max-w-sm.sm_mx-6
         .scroll.scrollerBlock(:style="{ maxHeight: `${height}px` }")
           TrnFormMain
 
       //- Quick selector
-      .swiper-slide.sm_rounded-xl.bg-foreground-second.sm_max-w-sm(:style="{ height: maxHeight }")
+      .swiper-slide.sm_rounded-xl.bg-foreground-2.sm_max-w-sm(:style="{ height: maxHeight }")
         .scroll.scrollerBlock
           .py-4
             //- Wallets
@@ -96,7 +96,7 @@ onMounted(init)
                   TrnFormMainSelectedWallet(
                     v-for="(walletItem, walletId) in walletsItemsLimited"
                     :key="walletId"
-                    :class="[{ 'cursor-default !bg-item-main-active': $trnForm.values.walletId === walletId }]"
+                    :class="[{ 'cursor-default !bg-item-3': $trnForm.values.walletId === walletId }]"
                     :id="walletId"
                     isHideDots
                     @click="id => $trnForm.values.walletId = id"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import useUIView from '~/components/layout/useUIView'
+import { getStyles } from '~/components/ui/classes'
 
 const { ui, setUI } = useUIView()
 function toggleView(name) {
@@ -7,20 +8,39 @@ function toggleView(name) {
 }
 </script>
 
-<template lang="pug">
-.flex.bg-item-main-bg.rounded-md
-  .cursor-pointer.w-10.py-2.px-2.flex-center.rounded-md.hocus_bg-item-main-hover(
-    :class="{ 'text-item-base-up': ui.showCatsVerticalChart }"
-    @click="toggleView('showCatsVerticalChart')"
-  ): .mdi.mdi-poll
+<template>
+  <div class="flex rounded-md bg-item-4">
+    <div
+      class="flex-center w-10 cursor-pointer rounded-md px-3 py-2 hocus_bg-item-5"
+      :class="[
+        ...getStyles('item', ['link', 'rounded']),
+        { '!text-item-1': ui.showCatsVerticalChart },
+      ]"
+      @click="toggleView('showCatsVerticalChart')"
+    >
+      <i class="mdi mdi-poll" />
+    </div>
 
-  .cursor-pointer.w-10.py-2.px-2.flex-center.rounded-md.hocus_bg-item-main-hover(
-    :class="{ 'text-item-base-up': ui.showRoundCats }"
-    @click="toggleView('showRoundCats')"
-  ): .mdi.mdi-chart-bubble
+    <div
+      class="flex-center w-10 cursor-pointer rounded-md px-3 py-2 hocus_bg-item-5"
+      :class="[
+        ...getStyles('item', ['link', 'rounded']),
+        { '!text-item-1': ui.showRoundCats },
+      ]"
+      @click="toggleView('showRoundCats')"
+    >
+      <i class="mdi mdi-chart-bubble" />
+    </div>
 
-  .cursor-pointer.w-10.py-2.px-2.flex-center.rounded-md.hocus_bg-item-main-hover(
-    :class="{ 'text-item-base-up': ui.showCatsHorizontalList }"
-    @click="toggleView('showCatsHorizontalList')"
-  ): .mdi.mdi-chart-timeline
+    <div
+      class="flex-center w-10 cursor-pointer rounded-md px-3 py-2 hocus_bg-item-5"
+      :class="[
+        ...getStyles('item', ['link', 'rounded']),
+        { '!text-item-1': ui.showCatsHorizontalList },
+      ]"
+      @click="toggleView('showCatsHorizontalList')"
+    >
+      <i class="mdi mdi-chart-timeline" />
+    </div>
+  </div>
 </template>

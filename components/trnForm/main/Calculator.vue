@@ -80,7 +80,7 @@ onLongPress(
   .w-20.grid.gap-2.justify-items-end(class="grid-rows-[auto,1fr]")
     //- Description
     TrnFormMainCalculatorButton(
-      :class="{ 'text-accent-default': !!$trnForm.values.desc }"
+      :class="{ 'text-accent-1': !!$trnForm.values.desc }"
       @click="$trnForm.openTrnFormModal('description')"
     ): .mdi.mdi-comment-text-outline
 

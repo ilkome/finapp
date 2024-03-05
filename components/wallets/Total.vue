@@ -75,11 +75,11 @@ const counts = computed(() => ({
 </script>
 
 <template lang="pug">
-.px-3.py-1.bg-item-main-bg.rounded-md(
+.px-3.py-1.bg-item-4.rounded-md(
   v-if="walletsStore.hasWallets"
 )
   template(v-for="item in counts")
-    .py-2.flex.items-center.border-b.border-item-main-hover.last_border-0(
+    .py-2.flex.items-center.border-b.border-item-5.last_border-0(
       v-if="item.isShow"
     )
       .grow.flex.items-center.gap-3

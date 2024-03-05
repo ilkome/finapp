@@ -19,7 +19,7 @@ const isCategoryHasChildren = computed(() => categoriesStore.isCategoryHasChildr
 </script>
 
 <template lang="pug">
-.statItemRound.hocus_bg-item-main-hover(
+.statItemRound.hocus_bg-item-5(
   v-if="category"
   :class="{ _prevStat: total === 0 }"
   ref="item"

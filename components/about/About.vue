@@ -31,7 +31,7 @@ div
   color var(--c-font-2)
   font-size 14px
   line-height 18px
-  fontFamilyNunito()
+  font-secondary()
 </style>
 
 <i18n lang="yaml">

@@ -14,13 +14,13 @@ const wallet = computed(() => walletsItemsSorted.value[props.id])
 </script>
 
 <template lang="pug">
-.cursor-pointer.flex.items-center.py-2.px-3.rounded-md.bg-item-main-bg.hocus_bg-item-main-hover(
+.cursor-pointer.flex.items-center.py-2.px-3.rounded-md.bg-item-4.hocus_bg-item-5(
   v-if="wallet"
   @click="emit('click', id)"
 )
   .grow.flex-center.gap-x-3
     //- Icon
-    .w-6.h-6.rounded-md.flex-center.text-icon-base.text-xs.leading-none(
+    .w-6.h-6.rounded-md.flex-center.text-icon-primary.text-xs.leading-none(
       :style="{ background: wallet.color }"
       class="mt-[2px]"
     ) {{ wallet.name.substring(0, 2) }}
@@ -38,5 +38,5 @@ const wallet = computed(() => walletsItemsSorted.value[props.id])
           align="left"
         )
 
-  .mdi.mdi-dots-vertical.-mr-1.text-lg.text-item-base-down(v-if="!isHideDots")
+  .mdi.mdi-dots-vertical.-mr-1.text-lg.text-item-2(v-if="!isHideDots")
 </template>

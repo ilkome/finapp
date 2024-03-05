@@ -51,9 +51,9 @@ useHead({
         :to="backLink"
         custom
       >
-        <a class="grow hocus_bg-item-main-hover" :href="href" @click="navigate">
+        <a class="grow hocus_bg-item-5" :href="href" @click="navigate">
           <UiHeaderTitle>
-            <div class="pt-1 text-xs font-medium text-item-base-down">
+            <div class="pt-1 text-xs font-medium text-item-2">
               {{ $t('categories.title') }}
               <template v-if="category.parentId">
                 |
@@ -63,7 +63,7 @@ useHead({
             </div>
             <div class="pb-1 flex items-center gap-4">
               {{ category.name }}
-              <div class="w-8 h-8 rounded-full flex-center text-xl text-icon-base" :style="{ background: category.color }">
+              <div class="w-8 h-8 rounded-full flex-center text-xl text-icon-primary" :style="{ background: category.color }">
                 <div :class="category.icon" />
               </div>
             </div>
@@ -98,7 +98,7 @@ useHead({
 
     <!-- Childs categories -->
     <div v-if="category.childIds && category.childIds.length > 0" class="mb-12">
-      <div class="pb-3 px-2 flex gap-2 text-lg leading-none font-nunito font-semibold text-item-base">
+      <div class="pb-3 px-2 flex gap-2 text-lg leading-none font-primary font-semibold text-item-base">
         <div>
           {{ $t('categories.title') }}:
         </div>

@@ -4,7 +4,7 @@ div(class=`
   px-3 py-2 flex gap-1 items-center
   border-1 rounded-lg
   text-primary/60 leading-none
-  hocus_bg-item-hover
+  hocus_bg-item-7
 `)
   .text-xl.leading-none
     slot(name="icon")

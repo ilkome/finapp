@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useCategoriesStore } from '~/components/categories/useCategories';
-import { useStat } from '~/components/stat/useStat';
+import type { MoneyTypeSlug } from '~/components/stat/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useStat } from '~/components/stat/useStat'
 
 const props = defineProps<{
-  type: 'expense' | 'income'
+  type: MoneyTypeSlug
 }>()
 
 const { statCurrentPeriod } = useStat()

@@ -44,7 +44,7 @@ onMounted(() => {
         //- Recent
         .swiper-slide
           .scrollBlock.scrollerBlock
-            .py-4.px-3.text-center.text-item-base.text-xl.font-nunito.font-semibold.bg-layout-main.rounded-t-2xl
+            .py-4.px-3.text-center.text-item-base.text-xl.font-primary.font-semibold.bg-foreground-3.rounded-t-2xl
               | {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
@@ -57,7 +57,7 @@ onMounted(() => {
         //- Main
         .swiper-slide
           .scrollBlock.scrollerBlock
-            .py-4.px-3.text-center.text-item-base.text-xl.font-nunito.font-semibold.bg-layout-main.rounded-t-2xl
+            .py-4.px-3.text-center.text-item-base.text-xl.font-primary.font-semibold.bg-foreground-3.rounded-t-2xl
               | {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
@@ -70,7 +70,7 @@ onMounted(() => {
         //- Favorite
         .swiper-slide
           .scrollBlock.scrollerBlock
-            .py-4.px-3.text-center.text-item-base.text-xl.font-nunito.font-semibold.bg-layout-main.rounded-t-2xl
+            .py-4.px-3.text-center.text-item-base.text-xl.font-primary.font-semibold.bg-foreground-3.rounded-t-2xl
               | {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(

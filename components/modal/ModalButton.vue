@@ -47,7 +47,7 @@ defineProps<{
     &:not(._active)
       color var(--c-font-3)
       background var(--c-item-bg-hover)
-      border 1px solid var(--c-item-bd-hover)
+      border 1px solid var(--accent-4)
 
   &__icon
     display flex

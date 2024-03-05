@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import dayjs from 'dayjs';
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm';
-import { formatDate } from '~/utils/formatDate';
+import dayjs from 'dayjs'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { formatDate } from '~/utils/formatDate'
 
 const $trnForm = useTrnFormStore()
 
@@ -25,18 +25,18 @@ function changeDate(way: 'prev' | 'next') {
 <template lang="pug">
 .trnFormDate.flex.pb-2.px-2.gap-2
   .overflow-hidden.flex.rounded-xl
-    .shame1.flex-center.w-12._arrow.bg-item-main-bg.hocus_bg-item-main-hover(
+    .shame1.flex-center.w-12._arrow.bg-item-4.hocus_bg-item-5(
       @click="changeDate('prev')"
     ): .mdi.mdi-chevron-left
 
-    .shame1.flex-center.w-12._arrow.bg-item-main-bg.hocus_bg-item-main-hover(
+    .shame1.flex-center.w-12._arrow.bg-item-4.hocus_bg-item-5(
       :class="{ 'opacity-30 !cursor-default' : isToday }"
       @click="changeDate('next')"
     )
       .mdi.mdi-calendar-today(v-if="isToday")
       .mdi.mdi-chevron-right(v-else)
 
-  .grow.cursor-pointer.py-2.px-3.flex.items-center.rounded-md.text-xs.leading-none.hocus_bg-item-main-hover(
+  .grow.cursor-pointer.py-2.px-3.flex.items-center.rounded-md.text-xs.leading-none.hocus_bg-item-5(
     v-html="formattedDate"
     @click="$trnForm.openTrnFormModal('calendar')"
   )
@@ -84,7 +84,7 @@ function changeDate(way: 'prev' | 'next') {
     &._arrow
       color var(--c-font-4)
       font-size 28px
-      background var(--c-item-bg-main)
+      background var(--foreground-1)
       .mdi
         font-size 24px
 </style>

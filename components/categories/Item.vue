@@ -41,8 +41,8 @@ function onClickIcon() {
 <template>
   <div
     v-if="category"
-    class="flex cursor-pointer items-center gap-x-3 rounded-md bg-item-main-bg px-2 py-2 hocus_bg-item-main-hover"
-    :class="{ '!cursor-default !bg-item-main-active': activeItemId === id }"
+    class="flex cursor-pointer items-center gap-x-3 rounded-md bg-item-4 px-2 py-2 hocus_bg-item-5"
+    :class="{ '!cursor-default !bg-item-3': activeItemId === id }"
     @click="emit('click', id)"
   >
     <div
@@ -56,7 +56,7 @@ function onClickIcon() {
     <div class="grow truncate">
       <div
         v-if="parentCategory && !isHideParentCategory"
-        class="text-xs text-item-base-down dark_text-neutral-400"
+        class="text-xs text-item-2 dark_text-neutral-400"
       >
         {{ parentCategory.name }}
       </div>
@@ -68,7 +68,7 @@ function onClickIcon() {
 
     <div
       v-if="childCategoriesIds.length > 0"
-      class="text-md font-unica text-item-base-down"
+      class="text-md font-unica text-item-2"
     >
       {{ childCategoriesIds.length }}
     </div>

@@ -194,7 +194,7 @@ function setTrnEdit() {
     padding-bottom 10px
     color var(--c-font-2)
     font-size 22px
-    fontFamilyNunito()
+    font-secondary()
 
   &__date
     padding-bottom 20px

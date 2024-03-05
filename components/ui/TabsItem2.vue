@@ -12,7 +12,7 @@ const emit = defineEmits(['click'])
   <div
     :class="[
       ...getStyles('item', ['link', 'rounded']),
-      { '!cursor-default !bg-item-main-active !text-accent-default': isActive },
+      { '!cursor-default !bg-item-3 !text-accent-1': isActive },
     ]"
     class="
       py-2 px-3 flex gap-1 items-center justify-center

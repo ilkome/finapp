@@ -19,7 +19,7 @@ const userStore = useUserStore()
       <div :class="getStyles('modal', ['bg', 'rounded', 'padding1'])">
         <!-- User -->
         <div class="px-4 pb-2 dark_text-neutral-300">
-          <div class="text-xl font-nunito font-semibold">
+          <div class="text-xl font-primary font-semibold">
             {{ userStore.user?.displayName }}
           </div>
           <div class="text-sm text-gray-900 dark_text-neutral-500">

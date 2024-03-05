@@ -19,7 +19,7 @@ TrnFormModal(@closed="$trnForm.closeTrnFormModal('description')")
 
   template(#default="{ close }")
     .pb-6.px-3
-      textarea.w-full.h-28.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-item-base.bg-item-main-bg.border.border-solid.border-item-main-hover.placeholder_text-item-base-down.transition.ease-in-out.focus_text-item-base-up.focus_bg-item-main-hover.focus_border-blue3.focus_outline-none(
+      textarea.w-full.h-28.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-item-base.bg-item-4.border.border-solid.border-item-5.placeholder_text-item-2.transition.ease-in-out.focus_text-item-1.focus_bg-item-5.focus_border-accent-4.focus_outline-none(
         v-model="description"
         :placeholder="$t('trnForm.description.placeholder')"
       )

@@ -88,7 +88,7 @@ UiPage
   //---------------------------------
   .pb-12.px-2.grid.gap-y-1.gap-x-6.md_grid-cols-2
     //- Wallet
-    .cursor-pointer.flex.items-center.py-2.px-3.rounded-md.bg-item-main-bg.hocus_bg-item-main-hover(
+    .cursor-pointer.flex.items-center.py-2.px-3.rounded-md.bg-item-4.hocus_bg-item-5(
       v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
       :key="walletId"
       @click="$router.push(`/wallets/${walletId}`)"
@@ -96,7 +96,7 @@ UiPage
       .grow.gap-x-3.flex.items-center
         .grow.flex-center.gap-x-3
           //- Icon
-          .w-6.h-6.rounded-md.flex-center.text-icon-base.text-xs.leading-none(
+          .w-6.h-6.rounded-md.flex-center.text-icon-primary.text-xs.leading-none(
             :style="{ background: walletItem.color }"
             class="mt-[2px]"
             @click.stop="setWalletId(walletId)"
@@ -104,10 +104,10 @@ UiPage
 
           .grow.flex.items-center.gap-3
             .text-secondary2.text-sm {{ walletItem.name }}
-            UiIconWalletWithdrawal.w-4.h-4.text-item-base-down(
+            UiIconWalletWithdrawal.w-4.h-4.text-item-2(
               v-if="walletItem.countTotal"
             )
-            UiIconWalletSavings.w-4.h-4.text-item-base-down(
+            UiIconWalletSavings.w-4.h-4.text-item-2(
               v-if="!walletItem.countTotal && !walletItem.isCredit"
             )
 

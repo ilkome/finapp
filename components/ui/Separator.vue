@@ -6,7 +6,7 @@
 div(
   class=`
     h-[1px]
-    bg-item-main-active
+    bg-item-3
     my-2 mx-4
   `
 )

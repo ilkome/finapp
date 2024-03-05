@@ -1,6 +1,7 @@
 import type { TransferType, TrnId, TrnType } from '~/components/trns/types'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
+import type { MoneyTypeSlug } from '~/components/stat/types'
 
 export enum AmountsType {
   Transaction = 0,
@@ -58,5 +59,5 @@ export interface TrnFormUi {
   tab: 'main' | 'date' | 'desc'
 
   walletTransferModal: boolean
-  walletTransferType: 'expense' | 'income'
+  walletTransferType: MoneyTypeSlug
 }

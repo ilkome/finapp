@@ -5,8 +5,8 @@ const { toggleWalletId } = useFilter()
 </script>
 
 <template lang="pug" scoped>
-.overflow-y-auto.h-full.bg-layout-main-up
-  .p-4.px-5.text-xl.font-bold.text-neutral-500.dark_text-neutral-200.font-nunito
+.overflow-y-auto.h-full.bg-foreground-3-up
+  .p-4.px-5.text-xl.font-bold.text-neutral-500.dark_text-neutral-200.font-primary
     | {{ $t('appName') }}
 
   .pt-2.pb-8
@@ -19,7 +19,7 @@ const { toggleWalletId } = useFilter()
       @onClick="id => $router.push(`/wallets/${id}`)"
     )
       template(#default="{ walletsItemsLimited }")
-        .cursor-pointer.flex.py-2.px-3.border-b.border-item-main-hover.hocus_bg-item-main-hover(
+        .cursor-pointer.flex.py-2.px-3.border-b.border-item-5.hocus_bg-item-5(
           v-for="(walletItem, walletId) in walletsItemsLimited"
           :key="walletId"
           @click="$router.push(`/wallets/${walletId}`)"
@@ -27,7 +27,7 @@ const { toggleWalletId } = useFilter()
           .grow.gap-x-3.flex.items-center
             .grow.flex-center.gap-x-3
               //- Icon
-              .w-6.h-6.rounded-md.flex-center.text-icon-base.text-xs.leading-none(
+              .w-6.h-6.rounded-md.flex-center.text-icon-primary.text-xs.leading-none(
                 :style="{ background: walletItem.color }"
                 class="mt-[2px]"
                 @click.stop="toggleWalletId(walletId)"
@@ -43,7 +43,7 @@ const { toggleWalletId } = useFilter()
               )
 
       template(#toggle="{ stateLimit, limit, toggle }")
-        .cursor-pointer.py-3.px-3.text-xs.text-center.hocus_text-item-base-up.hocus_bg-item-main-hover(
+        .cursor-pointer.py-3.px-3.text-xs.text-center.hocus_text-item-1.hocus_bg-item-5(
           @click="toggle"
         )
           template(v-if="stateLimit > 0") {{ $t('wallets.showAll') }}

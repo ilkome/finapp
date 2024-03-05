@@ -18,7 +18,7 @@ const parentCategory = computed<CategoryItem | false>(() =>
 </script>
 
 <template lang="pug">
-.cursor-pointer.py-2.px-3.relative.gap-x-3.flex.items-center.rounded-md.bg-item-main-bg.hocus_bg-item-main-hover(
+.cursor-pointer.py-2.px-3.relative.gap-x-3.flex.items-center.rounded-md.bg-item-4.hocus_bg-item-5(
   v-if="category"
   @click="$trnForm.ui.catsRootModal = true"
 )
@@ -27,11 +27,11 @@ const parentCategory = computed<CategoryItem | false>(() =>
   ): div(:class="category.icon")
 
   .grow.truncate
-    .text-xs.text-item-base-down.dark_text-neutral-400(v-if="parentCategory").
+    .text-xs.text-item-2.dark_text-neutral-400(v-if="parentCategory").
       {{ parentCategory.name }}
 
     .leading-none.text-sm.text-neutral-700.dark_text-neutral-300.
       {{ category.name }}
 
-  .mdi.mdi-dots-vertical.-mr-1.text-lg.text-item-base-down
+  .mdi.mdi-dots-vertical.-mr-1.text-lg.text-item-2
 </template>

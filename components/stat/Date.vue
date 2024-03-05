@@ -14,7 +14,7 @@ const isShowDateSelector = ref(false)
   .px-2.flex.items-center.text-lg(
     @click="isShowDateSelector = true"
   )
-    .py-2.text-item-base-up.font-semibold.font-nunito.leading-none
+    .py-2.text-item-1.font-semibold.font-primary.leading-none
       SharedDate(
         :date="filterStore.date"
         :period="filterStore.period"

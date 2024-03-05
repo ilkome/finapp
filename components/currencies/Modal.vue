@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
-import { type CurrenciesValues, useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import type { CurrencyCode } from '~/components/currencies/types'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 
 const currenciesStore = useCurrenciesStore()
 const { height } = useWindowSize()
 
-function onSelect(code: CurrenciesValues['base'], close: () => void) {
-  currenciesStore.setBaseCurrency(code)
+function onSelect(code: CurrencyCode, close: () => void) {
+  currenciesStore.updateBase(code)
   close()
 }
 </script>
@@ -20,7 +21,7 @@ Teleport(
     :maxHeight="height"
     :height="height"
     :isScrollerBlock="false"
-    insideClass="bg-layout-main"
+    insideClass="bg-foreground-3"
     @closed="currenciesStore.hideBaseCurrenciesModal()"
   )
     template(#handler="{ close }")
@@ -28,7 +29,7 @@ Teleport(
       BaseBottomSheetClose(@onClick="close")
 
     template(#header)
-      .py-4.px-2.text-center.text-item-base.text-xl.font-nunito.font-semibold.bg-layout-main.rounded-t-2xl
+      .py-4.px-2.text-center.text-item-base.text-xl.font-primary.font-semibold.bg-foreground-3.rounded-t-2xl
         | {{ $t('currency.selectBaseTitle') }}
 
     template(#default="{ close }")

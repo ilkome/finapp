@@ -46,7 +46,7 @@ const classes = computed(() => ({
 
   +media-hover()
     background var(--c-item-bg-hover)
-    border 1px solid var(--c-item-bd-hover)
+    border 1px solid var(--accent-4)
 
 .icon
   opacity .85

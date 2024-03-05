@@ -20,7 +20,7 @@ TrnFormModal(
     .pt-2.flex-center {{ $t('base.sure') }}
 
   template(#default="{ close }")
-    .pb-2.text-alert-base.text-center(v-if="description") {{ description }}
+    .pb-2.text-alert-primary.text-center(v-if="description") {{ description }}
 
     .pb-2.px-2.flex.justify-evenly
       ModalButton.grow(

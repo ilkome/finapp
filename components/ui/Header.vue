@@ -1,13 +1,11 @@
-<script setup lang="ts">
+<template>
+  <div
+    class="bg-foreground-4 sticky top-0 z-20 flex min-h-[48px] items-center justify-between gap-4 backdrop-blur"
+  >
+    <slot />
 
-</script>
-
-<template lang="pug">
-.flex.flex.items-center.justify-between.gap-4.sticky.top-0.z-20.backdrop-blur(
-  class="min-h-[48px] bg-white/70 dark_bg-dark3/70"
-)
-  slot
-
-  .flex.gap-2.py-1.pr-0(v-if="$slots.actions")
-    slot(name="actions")
+    <div v-if="$slots.actions" class="flex gap-2 py-1 pr-0">
+      <slot name="actions" />
+    </div>
+  </div>
 </template>
