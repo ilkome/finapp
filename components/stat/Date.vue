@@ -1,30 +1,63 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/classes'
-import { useFilter } from '~/components/filter/useFilter'
+import type {
+  PeriodName,
+  PeriodNameWithAll,
+} from '~/components/chart/useChart'
 
-const filterStore = useFilter()
-const isShowDateSelector = ref(false)
+defineProps<{
+  isShowDateSelector: boolean
+  periodWithoutAll: PeriodName
+  period: PeriodNameWithAll
+  date: number
+}>()
+
+const emit = defineEmits<{
+  open: []
+  close: []
+  setPrevPeriodDate: []
+  setNextPeriodDate: []
+  setPeriodAndDate: [period: PeriodNameWithAll]
+}>()
 </script>
 
-<template lang="pug">
-.z-10(
-  :class="getStyles('item', ['link', 'rounded'])"
-)
-  //- Date
-  .px-2.flex.items-center.text-lg(
-    @click="isShowDateSelector = true"
-  )
-    .py-2.text-item-1.font-semibold.font-primary.leading-none
-      SharedDate(
-        :date="filterStore.date"
-        :period="filterStore.period"
-      )
+<template>
+  <div class="flex items-center justify-between gap-2 px-2">
+    <div class="flex">
+      <div
+        :class="getStyles('item', ['link', 'rounded'])"
+        @click="emit('setNextPeriodDate')"
+      >
+        <UiIconChevron class="size-8" />
+      </div>
 
-    .mdi.mdi-dots-vertical
+      <div
+        :class="getStyles('item', ['link', 'rounded'])"
+        @click="emit('setPrevPeriodDate')"
+      >
+        <UiIconChevron class="size-8 rotate-180" />
+      </div>
+    </div>
 
-  //- Selector
-  LazyDateSelector(
+    <div
+      :class="getStyles('item', ['link', 'rounded'])"
+      class="flex grow items-center px-3 py-2"
+      @click="emit('open')"
+    >
+      <div class="font-primary font-semibold leading-none text-item-1">
+        <SharedDate :date :period />
+      </div>
+      <div class="mdi mdi-dots-vertical" />
+    </div>
+
+    <CurrenciesChangeBtn />
+  </div>
+
+  <LazyDateSelector
     v-if="isShowDateSelector"
-    @close="isShowDateSelector = false"
-  )
+    :period
+    :periodWithoutAll
+    @close="emit('close')"
+    @setPeriodAndDate="v => emit('setPeriodAndDate', v)"
+  />
 </template>

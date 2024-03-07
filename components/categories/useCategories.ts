@@ -1,11 +1,10 @@
-
 import _sortby from 'lodash.sortby'
+import localforage from 'localforage'
 import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 import { getDataAndWatch, unsubscribeData, updateData } from '~/services/firebase/api'
 import { useUserStore } from '~/components/user/useUser'
 import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import localforage from 'localforage'
 
 export const useCategoriesStore = defineStore('categories', () => {
   const trnsStore = useTrnsStore()

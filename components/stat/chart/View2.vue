@@ -2,12 +2,21 @@
 import dayjs from 'dayjs'
 import defu from 'defu'
 import { BarChart, LineChart } from 'echarts/charts'
-import { GridComponent, MarkAreaComponent, MarkLineComponent, MarkPointComponent, TooltipComponent } from 'echarts/components'
+import {
+  GridComponent,
+  MarkAreaComponent,
+  MarkLineComponent,
+  MarkPointComponent,
+  TooltipComponent,
+} from 'echarts/components'
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 import { getTotal } from '~/components/amount/getTotal'
-import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+import {
+  getTransactibleCategoriesIds,
+  getTransferCategoriesIds,
+} from '~/components/categories/getCategories'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { config, lineConfig } from '~/components/chart/config'
 import { useChart } from '~/components/chart/useChart'
@@ -18,14 +27,35 @@ import { getTrnsIds } from '~/components/trns/getTrns'
 import { getOldestTrnDate } from '~/components/trns/helpers'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import type { TrnId, TrnItem } from '~/components/trns/types'
+import type { PeriodName } from '~/components/chart/useChart'
 
-const props = withDefaults(defineProps<{
-  chartType?: 'bar' | 'line'
-}>(), {
-  chartType: 'line',
-})
+const props = withDefaults(
+  defineProps<{
+    trnsIds: TrnId[]
+    periodWithoutAll: PeriodName
+    chartType?: 'bar' | 'line'
+  }>(),
+  {
+    chartType: 'line',
+    trnsIds: () => [],
+  },
+)
 
-use([BarChart, GridComponent, LineChart, SVGRenderer, MarkAreaComponent, MarkLineComponent, MarkPointComponent, TooltipComponent])
+const emit = defineEmits<{
+  (e: 'setDate', value: number): void
+}>()
+
+use([
+  BarChart,
+  GridComponent,
+  LineChart,
+  SVGRenderer,
+  MarkAreaComponent,
+  MarkLineComponent,
+  MarkPointComponent,
+  TooltipComponent,
+])
 
 const { isShowDataLabels } = useChart()
 const filterStore = useFilter()
@@ -37,19 +67,33 @@ const { periods } = useChart()
 
 const chartRef = ref()
 
+const trnsItems = computed(() =>
+  props.trnsIds.reduce(
+    (acc, id) => {
+      const trn = trnsStore.items[id]
+      acc[id] = trn
+      return acc
+    },
+    {} as Record<TrnId, TrnItem>,
+  ),
+)
+
 const statData = computed(() => {
   const categoriesItems = categoriesStore.items
   const walletsItems = walletsStore.items
   const baseCurrencyCode = currenciesStore.base
   const rates = currenciesStore.rates
-  const trnsItems = trnsStore.items
-  const periodName = filterStore.periodWithoutAll
   const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
+
   // Diff periods from oldest trn and today
-  const oldestTrnDate = getOldestTrnDate(trnsItems)
-  let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
-  const periodsWantToShow = periods.value[periodName].showedPeriods
-  periodsToShow = periodsWantToShow >= periodsToShow ? periodsToShow : periodsWantToShow
+  const oldestTrnDate = getOldestTrnDate(trnsItems.value)
+  let periodsToShow
+    = dayjs()
+      .endOf(props.periodWithoutAll)
+      .diff(oldestTrnDate, props.periodWithoutAll) + 1
+  const periodsWantToShow = periods.value[props.periodWithoutAll].showedPeriods
+  periodsToShow
+    = periodsWantToShow >= periodsToShow ? periodsToShow : periodsWantToShow
 
   const categories = []
   const incomeData = []
@@ -58,44 +102,51 @@ const statData = computed(() => {
 
   for (let index = 0; index < periodsToShow; index++) {
     // count total period
-    const periodDate = dayjs().startOf(periodName).subtract(index, periodName).valueOf()
+    const periodDate = dayjs()
+      .startOf(props.periodWithoutAll)
+      .subtract(index, props.periodWithoutAll)
+      .valueOf()
 
     // TODO: move it to a separate function getFilterParams
-    const categoriesIds = filterStore.catsIds.length > 0
-      ? getTransactibleCategoriesIds(filterStore.catsIds, categoriesItems)
-      : false
-    const walletsIds = filterStore.walletsIds.length > 0
-      ? filterStore.walletsIds
-      : false
+    const categoriesIds
+      = filterStore.catsIds.length > 0
+        ? getTransactibleCategoriesIds(filterStore.catsIds, categoriesItems)
+        : false
+    const walletsIds
+      = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : false
 
     const trnsIds = getTrnsIds({
-      trnsItems,
+      trnsItems: trnsItems.value,
       walletsIds,
       categoriesIds,
-      periodName,
+      periodName: props.periodWithoutAll,
       date: periodDate,
     })
 
-    const { incomeTransactions, expenseTransactions, sumTransactions } = getTotal({
-      baseCurrencyCode,
-      rates,
-      trnsIds,
-      trnsItems,
-      walletsItems,
-      transferCategoriesIds,
-    })
+    const { incomeTransactions, expenseTransactions, sumTransactions }
+      = getTotal({
+        baseCurrencyCode,
+        rates,
+        trnsIds,
+        trnsItems: trnsItems.value,
+        walletsItems,
+        transferCategoriesIds,
+      })
 
     let format = 'MM'
-    if (periodName === 'day')
+    if (props.periodWithoutAll === 'day')
       format = 'D.MM'
-    if (periodName === 'week')
+    if (props.periodWithoutAll === 'week')
       format = 'D MMM'
-    if (periodName === 'month')
+    if (props.periodWithoutAll === 'month')
       format = 'MMM'
-    if (periodName === 'year')
+    if (props.periodWithoutAll === 'year')
       format = 'YYYY'
 
-    const name = dayjs().startOf(periodName).subtract(index, periodName).format(format)
+    const name = dayjs()
+      .startOf(props.periodWithoutAll)
+      .subtract(index, props.periodWithoutAll)
+      .format(format)
 
     // Income
     incomeData.unshift({
@@ -169,40 +220,44 @@ const statData = computed(() => {
   const series = [income, expense]
 
   const data = {
-    series: [{
-      // Income
-      zIndex: 3,
-      visible: periodsTotalIncome > 0 && true,
-      type: 'line',
-      name: 'money.income',
-      color: 'var(--c-income-1)',
-      data: incomeData,
-      marker: {
-        lineColor: 'var(--c-income-1)',
+    series: [
+      {
+        // Income
+        zIndex: 3,
+        visible: periodsTotalIncome > 0 && true,
+        type: 'line',
+        name: 'money.income',
+        color: 'var(--c-income-1)',
+        data: incomeData,
+        marker: {
+          lineColor: 'var(--c-income-1)',
+        },
       },
-    }, {
-      // Expense
-      zIndex: 2,
-      visible: periodsTotalExpense > 0 && true,
-      type: 'line',
-      name: 'money.expense',
-      color: 'var(--c-expense-1)',
-      data: expenseData,
-      marker: {
-        lineColor: 'var(--c-expense-1)',
+      {
+        // Expense
+        zIndex: 2,
+        visible: periodsTotalExpense > 0 && true,
+        type: 'line',
+        name: 'money.expense',
+        color: 'var(--c-expense-1)',
+        data: expenseData,
+        marker: {
+          lineColor: 'var(--c-expense-1)',
+        },
       },
-    }, {
-      // Sum
-      zIndex: 3,
-      visible: periodsTotalIncome > 0 && periodsTotalExpense > 0 && true,
-      type: 'line',
-      name: 'money.sum',
-      color: 'var(--c-font-2)',
-      data: totalData,
-      marker: {
-        lineColor: 'var(--c-font-2)',
+      {
+        // Sum
+        zIndex: 3,
+        visible: periodsTotalIncome > 0 && periodsTotalExpense > 0 && true,
+        type: 'line',
+        name: 'money.sum',
+        color: 'var(--c-font-2)',
+        data: totalData,
+        marker: {
+          lineColor: 'var(--c-font-2)',
+        },
       },
-    }],
+    ],
     categories,
     averageIncome: periodsTotalIncome / periods2,
     averageExpense: periodsTotalExpense / periodsExpense,
@@ -280,8 +335,11 @@ function getChartData() {
 }
 
 async function onClickChart(params: { offsetX: number, offsetY: number }) {
-  const [point] = chartRef.value.convertFromPixel('grid', [params.offsetX, params.offsetY])
-  filterStore.setDate(statData.value.series[0].data[point].date)
+  const [point] = chartRef.value.convertFromPixel('grid', [
+    params.offsetX,
+    params.offsetY,
+  ])
+  emit('setDate', statData.value.series[0].data[point].date)
   markedArea.value = statData.value.categories[point]
 }
 

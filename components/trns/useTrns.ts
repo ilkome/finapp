@@ -1,7 +1,8 @@
-import { useFilter } from '~/components/filter/useFilter'
-import { getTrnsIds } from '~/components/trns/getTrns'
+import type { TrnsGetterProps } from '~/components/trns/types'
 import { getTransactibleCategoriesIds } from '~/components/categories/getCategories'
+import { getTrnsIds } from '~/components/trns/getTrns'
 import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 export default function useTrns() {
@@ -24,7 +25,15 @@ export default function useTrns() {
     })
   })
 
+  function getStoreTrnsIds(props: Omit<TrnsGetterProps, 'trnsItems'>) {
+    return getTrnsIds({
+      ...props,
+      trnsItems: trnsStore.items,
+    })
+  }
+
   return {
     allTrnsIdsWithFilter,
+    getStoreTrnsIds,
   }
 }

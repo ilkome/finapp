@@ -3,7 +3,10 @@ import type { CategoryId } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
 import { getOldestTrnDate } from '~/components/trns/helpers'
 import { getTotal } from '~/components/amount/getTotal'
-import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+import {
+  getTransactibleCategoriesIds,
+  getTransferCategoriesIds,
+} from '~/components/categories/getCategories'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { useChart } from '~/components/chart/useChart'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
@@ -16,13 +19,16 @@ import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 const moneyTypes: {
   id: MoneyTypeSlug
   type: MoneyTypeNumber
-}[] = [{
-  id: 'expense',
-  type: 0,
-}, {
-  id: 'income',
-  type: 1,
-}]
+}[] = [
+  {
+    id: 'expense',
+    type: 0,
+  },
+  {
+    id: 'income',
+    type: 1,
+  },
+]
 
 export function useStat() {
   const { periods } = useChart()
@@ -44,12 +50,12 @@ export function useStat() {
     const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 
     // TODO: move it to a separate function getFilterParams
-    const categoriesIds = filterStore.catsIds.length > 0
-      ? getTransactibleCategoriesIds(filterStore.catsIds, categoriesItems)
-      : false
-    const walletsIds = filterStore.walletsIds.length > 0
-      ? filterStore.walletsIds
-      : false
+    const categoriesIds
+      = filterStore.catsIds.length > 0
+        ? getTransactibleCategoriesIds(filterStore.catsIds, categoriesItems)
+        : false
+    const walletsIds
+      = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : false
 
     const trnsIds = getTrnsIds({
       categoriesIds,
@@ -59,7 +65,10 @@ export function useStat() {
       walletsIds,
     })
 
-    function getRootCategoryIdFromTrnId(trnId: TrnId, excludeTransfer = false): CategoryId | false {
+    function getRootCategoryIdFromTrnId(
+      trnId: TrnId,
+      excludeTransfer = false,
+    ): CategoryId | false {
       const categories = categoriesStore.items
       const trnCategoryId = trnsItems[trnId].categoryId
       const trnCategoryParentId = categories[trnCategoryId]?.parentId
@@ -131,20 +140,34 @@ export function useStat() {
     }
 
     // sorted
-    const incomeCategoriesIds = Object.keys(statIncome)
-      .sort((a, b) => statIncome[b].income - statIncome[a].income)
-    const expenseCategoriesIds = Object.keys(statExpense)
-      .sort((a, b) => statExpense[b].expense - statExpense[a].expense)
+    const incomeCategoriesIds = Object.keys(statIncome).sort(
+      (a, b) => statIncome[b].income - statIncome[a].income,
+    )
+    const expenseCategoriesIds = Object.keys(statExpense).sort(
+      (a, b) => statExpense[b].expense - statExpense[a].expense,
+    )
 
     // get first item in sorted categories
     function getBiggestAmount(categoriesTotal, categoriesIds, typeName) {
       const biggestAmount = categoriesIds[0]
-      return (categoriesTotal[biggestAmount] && Math.abs(categoriesTotal[biggestAmount][typeName])) || 0
+      return (
+        (categoriesTotal[biggestAmount]
+        && Math.abs(categoriesTotal[biggestAmount][typeName]))
+        || 0
+      )
     }
 
     // biggest
-    const expenseBiggest = getBiggestAmount(categoriesTotal, expenseCategoriesIds, 'expense')
-    const incomeBiggest = getBiggestAmount(categoriesTotal, incomeCategoriesIds, 'income')
+    const expenseBiggest = getBiggestAmount(
+      categoriesTotal,
+      expenseCategoriesIds,
+      'expense',
+    )
+    const incomeBiggest = getBiggestAmount(
+      categoriesTotal,
+      incomeCategoriesIds,
+      'income',
+    )
 
     return {
       trnsIds: trnsIds.sort((a, b) => trnsItems[b].date - trnsItems[a].date),
@@ -182,25 +205,32 @@ export function useStat() {
       return emptyData
 
     const oldestTrnDate = getOldestTrnDate(trnsItems)
-    let periodsToShow = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
+    let periodsToShow
+      = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
 
-    periodsToShow = periods.value[periodName].showedPeriods >= periodsToShow
-      ? periodsToShow
-      : periods.value[periodName].showedPeriods
+    periodsToShow
+      = periods.value[periodName].showedPeriods >= periodsToShow
+        ? periodsToShow
+        : periods.value[periodName].showedPeriods
 
     let income = 0
     let expense = 0
 
     // Start from 1 to remove last period from average
     for (let period = 1; period < periodsToShow; period++) {
-      const dateStartOfPeriod = dayjs().subtract(period, periodName).startOf(periodName)
-      const dateEndOfPeriod = dayjs().subtract(period, periodName).endOf(periodName)
+      const dateStartOfPeriod = dayjs()
+        .subtract(period, periodName)
+        .startOf(periodName)
+      const dateEndOfPeriod = dayjs()
+        .subtract(period, periodName)
+        .endOf(periodName)
 
       // TODO: fix trnsIds
-      const trnsIdsInPeriod = (trnsIds || []).filter((trnId: TrnId) =>
-        trnsItems[trnId].date >= dateStartOfPeriod
-        && trnsItems[trnId].date <= dateEndOfPeriod
-        && !transferCategoriesIds.includes(trnsItems[trnId].categoryId),
+      const trnsIdsInPeriod = (trnsIds || []).filter(
+        (trnId: TrnId) =>
+          trnsItems[trnId].date >= dateStartOfPeriod
+          && trnsItems[trnId].date <= dateEndOfPeriod
+          && !transferCategoriesIds.includes(trnsItems[trnId].categoryId),
       )
 
       const total = getTotal({
@@ -227,31 +257,6 @@ export function useStat() {
       sum: Math.ceil((income - expense) / delimiter),
     }
   })
-
-  // const isOldestPeriodSelected = computed(() => {
-  //   if (!trnsStore.hasTrns)
-  //     return false
-
-  //   if (dayjs(filterStore.date).isSame(dayjs(), filterStore.period))
-  //     return true
-  // })
-
-  // const isNewestPeriodSelected = computed(() => {
-  //   if (!trnsStore.hasTrns)
-  //     return true
-
-  //   const trns = trnsStore.items
-  //   const firstCreatedTrnIdFromSelectedTrns = trnsStore.firstCreatedTrnIdFromSelectedTrns
-  //   const firstCreatedTrn = trns[firstCreatedTrnIdFromSelectedTrns]
-  //   if (!firstCreatedTrn)
-  //     return true
-
-  //   const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(state.period).valueOf()
-  //   const filterDate = dayjs(filterStore.date).startOf(state.period).valueOf()
-
-  //   if (filterDate <= firstCreatedTrnDate)
-  //     return true
-  // })
 
   return {
     statAverage,

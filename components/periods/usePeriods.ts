@@ -1,8 +1,14 @@
+import type { PeriodName } from '~/components/chart/useChart'
+
 // TODO: move to stat store
 export default function usePeriods() {
   const { $i18n } = useNuxtApp()
 
-  const periodsNames = computed(() => [{
+  const periodsNames = computed<{
+    slug: PeriodName
+    icon: string
+    name: string
+  }[]>(() => [{
     slug: 'day',
     icon: 'mdi mdi-weather-sunset-up',
     name: $i18n.t('dates.day.simple'),

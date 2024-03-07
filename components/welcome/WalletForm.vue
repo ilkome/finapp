@@ -25,27 +25,36 @@ function afterSave() {
 
 useHead({
   title: () => `${t('base.add')}:
-    ${walletForm.value?.name
-      ? walletForm.value?.name
-      : t('categories.form.name.label')}`,
+    ${
+      walletForm.value?.name
+        ? walletForm.value?.name
+        : t('categories.form.name.label')
+    }`,
 })
 </script>
 
-<template lang="pug">
-UiPage
-  .mb-3.py-5.px-2.font-primary
-    .pb-1.text-xs.font-medium.text-item-2
-      | {{ $t("wallets.createNewTitle") }}
+<template>
+  <div class="mb-3 px-2 py-5 font-primary">
+    <div class="pb-1 text-xs font-medium text-item-2">
+      {{ $t("wallets.createNewTitle") }}
+    </div>
 
-    .flex.items-center.gap-3
-      .text-item-1.text-2xl.font-semibold
-        | {{ walletForm.name ? walletForm.name : $t("wallets.form.name.label") }}
-      .p-1.flex-center.rounded.text-icon-primary.text-2xs(:style="{ background: walletForm.color }")
-        | {{ walletForm.currency }}
+    <div class="flex items-center gap-3">
+      <div class="text-2xl font-semibold text-item-1">
+        {{ walletForm.name ? walletForm.name : $t("wallets.form.name.label") }}
+      </div>
+      <div
+        class="flex-center rounded p-1 text-2xs text-icon-primary"
+        :style="{ background: walletForm.color }"
+      >
+        {{ walletForm.currency }}
+      </div>
+    </div>
 
-  WalletsForm(
-    :walletForm="walletForm"
-    @afterSave="afterSave"
-    @updateValue="updateValue"
-  )
+    <WalletsForm
+      :walletForm="walletForm"
+      @afterSave="afterSave"
+      @updateValue="updateValue"
+    />
+  </div>
 </template>

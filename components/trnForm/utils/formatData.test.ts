@@ -4,11 +4,10 @@ import type { Transaction, Transfer } from '~/components/trns/types'
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
 
 const valuesBase: TrnFormValues = {
-  id: 'id',
+  trnId: 'id',
   amount: [10, 20, 30],
   amountRaw: ['10', '20', '30'],
   date: 99999,
-  desc: null,
   transferType: 1,
   trnType: 2,
   walletId: 'WalletId',

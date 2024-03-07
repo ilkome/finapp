@@ -17,7 +17,10 @@ const currenciesStore = useCurrenciesStore()
 const categoriesStore = useCategoriesStore()
 const roundRef = ref(null)
 
-const isShow = computed(() => ui.showRoundCats && statPage.current[props.typeText]?.categoriesIds?.length)
+const isShow = computed(
+  () =>
+    ui.showRoundCats && statPage.current[props.typeText]?.categoriesIds?.length,
+)
 const typeNumber = moneyTypes.find(t => t.id === props.typeText)?.type
 
 /**
@@ -40,36 +43,50 @@ function updateWidth() {
   }, 100)
 }
 
-watch(statPage.current[props.typeText]?.categoriesIds, updateWidth, { immediate: true })
+watch(statPage.current[props.typeText]?.categoriesIds, updateWidth, {
+  immediate: true,
+})
 watch(isShow, updateWidth, { immediate: true })
 </script>
 
-<template lang="pug">
-.my-6.border-t.border-b.dark_border-neutral-800(v-if="isShow" ref="roundRef")
-  .items.grid.py-2(:data-type-text="`${typeText}`")
-    LazyStatGroupRoundItem(
-      v-if="isShow"
-      v-for="categoryId in statPage.current[typeText].categoriesIds"
-      :category="categoriesStore.items[categoryId]"
-      :categoryId="categoryId"
-      :currencyCode="currenciesStore.base"
-      :key="categoryId"
-      :total="statPage.current.categories[categoryId][typeText]"
-      :type="typeNumber"
-    )
+<template>
+  <div v-if="isShow" ref="roundRef" class="rounded-lg bg-item-4 px-2">
+    <div class="items grid py-2" :data-type-text="`${typeText}`">
+      <LazyStatGroupRoundItem
+        v-for="categoryId in statPage.current[typeText].categoriesIds"
+        :key="categoryId"
+        :category="categoriesStore.items[categoryId]"
+        :categoryId="categoryId"
+        :currencyCode="currenciesStore.base"
+        :total="statPage.current.categories[categoryId][typeText]"
+        :type="typeNumber"
+      />
 
-    template(v-if="statPage.filter.categoryId")
-      template(v-for="categoryId in categoriesStore.getChildCategoriesIds(statPage.filter.categoryId)")
-        template(v-if="!statPage.current[typeText].categoriesIds.includes(categoryId)")
-          LazyStatGroupRoundItem(
-            v-if="statPage.filter.categoryId"
-            :category="categoriesStore.items[categoryId]"
-            :categoryId="categoryId"
-            :currencyCode="currenciesStore.base"
-            :key="categoryId"
-            :total="0"
-            :type="typeNumber"
-          )
+      <template v-if="statPage.filter.categoryId">
+        <template
+          v-for="categoryId in categoriesStore.getChildCategoriesIds(
+            statPage.filter.categoryId,
+          )"
+        >
+          <template
+            v-if="
+              !statPage.current[typeText].categoriesIds.includes(categoryId)
+            "
+          >
+            <LazyStatGroupRoundItem
+              v-if="statPage.filter.categoryId"
+              :key="categoryId"
+              :category="categoriesStore.items[categoryId]"
+              :categoryId="categoryId"
+              :currencyCode="currenciesStore.base"
+              :total="0"
+              :type="typeNumber"
+            />
+          </template>
+        </template>
+      </template>
+    </div>
+  </div>
 </template>
 
 <style lang="stylus" scoped>

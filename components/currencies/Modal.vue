@@ -12,29 +12,34 @@ function onSelect(code: CurrencyCode, close: () => void) {
 }
 </script>
 
-<template lang="pug">
-Teleport(
-  v-if="currenciesStore.isShownModal"
-  to="body"
-)
-  BaseBottomSheet(
-    :maxHeight="height"
-    :height="height"
-    :isScrollerBlock="false"
-    insideClass="bg-foreground-3"
-    @closed="currenciesStore.hideBaseCurrenciesModal()"
-  )
-    template(#handler="{ close }")
-      BaseBottomSheetHandler
-      BaseBottomSheetClose(@onClick="close")
+<template>
+  <Teleport v-if="currenciesStore.isShownModal" to="body">
+    <BaseBottomSheet
+      :maxHeight="height"
+      :height="height"
+      :isScrollerBlock="false"
+      insideClass="bg-foreground-3"
+      @closed="currenciesStore.hideBaseCurrenciesModal()"
+    >
+      <template #handler="{ close }">
+        <BaseBottomSheetHandler />
+        <BaseBottomSheetClose @onClick="close" />
+      </template>
 
-    template(#header)
-      .py-4.px-2.text-center.text-item-base.text-xl.font-primary.font-semibold.bg-foreground-3.rounded-t-2xl
-        | {{ $t('currency.selectBaseTitle') }}
+      <template #header>
+        <div
+          class="text-item-base rounded-t-2xl bg-foreground-3 px-2 py-4 text-center font-primary text-xl font-semibold"
+        >
+          {{ $t("currency.selectBaseTitle") }}
+        </div>
+      </template>
 
-    template(#default="{ close }")
-      CurrenciesList(
-        :active="currenciesStore.base"
-        @onSelect="value => onSelect(value, close)"
-      )
+      <template #default="{ close }">
+        <CurrenciesList
+          :active="currenciesStore.base"
+          @onSelect="(value) => onSelect(value, close)"
+        />
+      </template>
+    </BaseBottomSheet>
+  </Teleport>
 </template>

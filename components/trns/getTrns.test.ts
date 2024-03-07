@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { trnsItems } from '~/mocks/trns'
 
-describe('Get Transactions IDs', () => {
-  it('Get Transactions IDs in Wallet Cash USD', () => {
+describe('get Transactions IDs', () => {
+  it('get Transactions IDs in Wallet Cash USD', () => {
     const walletsIds = ['walletCashUSD']
     const trnsIds = getTrnsIds({ walletsIds, trnsItems })
 
@@ -17,7 +17,7 @@ describe('Get Transactions IDs', () => {
     ])
   })
 
-  it('Get Transactions IDs in Wallet RUB', () => {
+  it('get Transactions IDs in Wallet RUB', () => {
     const walletsIds = ['walletRUB']
     const trnsIds = getTrnsIds({ walletsIds, trnsItems })
 
@@ -27,7 +27,7 @@ describe('Get Transactions IDs', () => {
     ])
   })
 
-  it('Get Transactions IDs in Wallets with deprecated Transfers', () => {
+  it('get Transactions IDs in Wallets with deprecated Transfers', () => {
     const walletsIds = ['walletDeprecatedTransferIncome', 'walletDeprecatedTransferExpense']
     const trnsIds = getTrnsIds({ walletsIds, trnsItems })
 
@@ -36,7 +36,7 @@ describe('Get Transactions IDs', () => {
     ])
   })
 
-  it('Get All Transactions', () => {
+  it('get All Transactions', () => {
     const trnsIds = getTrnsIds({ trnsItems })
 
     expect(trnsIds).toEqual([

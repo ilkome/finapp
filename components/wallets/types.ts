@@ -13,6 +13,7 @@ export enum WalletType {
 export interface WalletItem {
   id: WalletId
   name: string
+  description?: string
   type: WalletType
   withdrawal?: boolean
   currency: string
@@ -26,6 +27,7 @@ export interface WalletItem {
 }
 
 export type Wallets = Record<WalletId, WalletItem>
+export type WalletsWithAmount = Record<WalletId, WalletItemWithAmount>
 
 export interface WalletWithTotal extends WalletItem {
   total: TotalReturns

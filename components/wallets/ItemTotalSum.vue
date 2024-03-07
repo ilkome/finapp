@@ -7,12 +7,10 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   trnsIds: TrnId[]
   walletId: WalletId
-}>(), {
-  trnsIds: () => [],
-})
+}>()
 
 const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
@@ -25,6 +23,7 @@ const total = computed(() => {
   const walletsItems = walletsStore.items
   const categoriesItems = categoriesStore.items
   const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
+
   return getTotal({
     trnsIds: props.trnsIds,
     trnsItems,
@@ -35,42 +34,60 @@ const total = computed(() => {
 })
 </script>
 
-<template lang="pug">
-.py-3
-  .overflow-hidden.overflow-x-auto.scrollbar
-    .flex.gap-6
-      //- Expense
-      div
-        .pb-2.text-lg.leading-none.font-primary.font-semibold.text-item-base
-          | {{ $t('money.expense') }}
-        .text-xl
-          Amount(
-            :amount="total.expenseTransactions"
-            :currencyCode="wallet.currency"
-            :type="0"
-            colorize="expense"
-          )
+<template>
+  <div class="py-3">
+    <div class="scrollbar overflow-hidden overflow-x-auto">
+      <div class="flex gap-6">
+        <!-- Expense -->
+        <div>
+          <div
+            class="text-item-base pb-2 font-primary text-lg font-semibold leading-none"
+          >
+            {{ $t("money.expense") }}
+          </div>
+          <div class="text-xl">
+            <Amount
+              :amount="total.expenseTransactions"
+              :currencyCode="wallet.currency"
+              :type="0"
+              colorize="expense"
+            />
+          </div>
+        </div>
 
-      //- Income
-      div
-        .pb-2.text-lg.leading-none.font-primary.font-semibold.text-item-base
-          | {{ $t('money.income') }}
-        .text-xl
-          Amount(
-            :amount="total.incomeTransactions"
-            :currencyCode="wallet.currency"
-            :type="1"
-            colorize="income"
-          )
+        <!-- Income -->
+        <div>
+          <div
+            class="text-item-base pb-2 font-primary text-lg font-semibold leading-none"
+          >
+            {{ $t("money.income") }}
+          </div>
+          <div class="text-xl">
+            <Amount
+              :amount="total.incomeTransactions"
+              :currencyCode="wallet.currency"
+              :type="1"
+              colorize="income"
+            />
+          </div>
+        </div>
 
-      //- Sum
-      div
-        .pb-2.text-lg.leading-none.font-primary.font-semibold.text-item-base
-          | {{ $t('money.sum') }}
-        .text-xl
-          Amount(
-            :amount="total.sumTransactions"
-            :currencyCode="wallet.currency"
-            :type="3"
-          )
+        <!-- Sum -->
+        <div>
+          <div
+            class="text-item-base pb-2 font-primary text-lg font-semibold leading-none"
+          >
+            {{ $t("money.sum") }}
+          </div>
+          <div class="text-xl">
+            <Amount
+              :amount="total.sumTransactions"
+              :currencyCode="wallet.currency"
+              :type="3"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

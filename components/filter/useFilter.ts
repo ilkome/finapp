@@ -36,10 +36,7 @@ export const useFilter = defineStore('filter', () => {
   const period = ref<PeriodNameWithAll>('month')
   const periodWithoutAll = computed<PeriodName>(() => period.value === 'all' ? 'year' : period.value)
 
-  function setPeriod(periodName: PeriodNameWithAll) {
-    if (!periodName)
-      return
-
+  function setPeriodAndDate(periodName: PeriodNameWithAll) {
     if (periodName !== 'all')
       date.value = dayjs().startOf(periodName).valueOf()
 
@@ -47,7 +44,7 @@ export const useFilter = defineStore('filter', () => {
     localforage.setItem('finapp.filter.period', periodName || 'month')
   }
 
-  function setPeriodNext() {
+  function setNextPeriodDate() {
     if (period.value === 'all')
       return
 
@@ -64,13 +61,13 @@ export const useFilter = defineStore('filter', () => {
     }
   }
 
-  function setPeriodPrev() {
+  function setPrevPeriodDate() {
     if (trnsStore.hasTrns) {
       if (period.value === 'all')
         return
 
       const nextDate = dayjs(date.value).add(1, period.value).startOf(period.value).valueOf()
-      if (nextDate < dayjs().valueOf())
+      if (nextDate <= dayjs().valueOf())
         date.value = nextDate
     }
   }
@@ -186,8 +183,8 @@ export const useFilter = defineStore('filter', () => {
     date,
     setDate,
     setDateNow,
-    setPeriodPrev,
-    setPeriodNext,
+    setPrevPeriodDate,
+    setNextPeriodDate,
 
     walletsIds,
     setWalletId,
@@ -200,7 +197,7 @@ export const useFilter = defineStore('filter', () => {
 
     period,
     periodWithoutAll,
-    setPeriod,
+    setPeriodAndDate,
 
     setDayDate,
 

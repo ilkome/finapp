@@ -20,7 +20,7 @@ export const classes = {
     `,
     menu: `
       flex items-center
-      py-3
+      py-2
     `,
     menuModal: 'px-4 gap-x-4',
     menuSidebar: 'px-5 gap-x-5',

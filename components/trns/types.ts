@@ -1,7 +1,8 @@
 import type { WalletId } from '~/components/wallets/types'
+import type { PeriodNames } from '~/components/date/types'
+import type { CategoryId } from '~/components/categories/types'
 
 export type TrnId = string
-export type CategoryId = string
 
 export enum TrnType {
   Expense,
@@ -63,3 +64,14 @@ export type TrnItemDirty = Transaction | Transfer | TransferDeprecated
 
 export type Trns = Record<TrnId, TrnItem>
 export type TrnsDirty = Record<TrnId, TrnItemDirty>
+
+export interface TrnsGetterProps {
+  categoriesIds?: CategoryId[] | false
+  date?: number
+  fromDate?: number
+  periodName?: PeriodNames
+  trnType?: TrnType
+  trnsItems: Record<string, TrnItem>
+  untilDate?: number
+  walletsIds?: WalletId[] | false
+}

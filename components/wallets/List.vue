@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import useWallets from '~/components/wallets/useWallets'
+import type { WalletsWithAmount } from '~/components/wallets/types'
 
 const props = withDefaults(
   defineProps<{
@@ -20,7 +21,7 @@ const walletsIdsLimited = computed(() => {
   return walletsIdsSorted.value
 })
 
-const walletsItemsLimited = computed(() => {
+const walletsItemsLimited = computed<WalletsWithAmount>(() => {
   // TODO: Reduce
   if (stateLimit.value !== 0) {
     let wallets = {}
@@ -41,24 +42,27 @@ onMounted(() => {
 })
 
 function toggle() {
-  stateLimit.value > 0 ? (stateLimit.value = 0) : (stateLimit.value = props.limit)
+  stateLimit.value > 0
+    ? (stateLimit.value = 0)
+    : (stateLimit.value = props.limit)
 }
 </script>
 
-<template lang="pug">
-div
-  slot(
-    :walletsIdsLimited="walletsIdsLimited"
-    :walletsIdsSorted="walletsIdsSorted"
-    :walletsItemsLimited="walletsItemsLimited"
-    :walletsItemsSorted="walletsItemsSorted"
-  )
+<template>
+  <div>
+    <slot
+      :walletsIdsLimited="walletsIdsLimited"
+      :walletsIdsSorted="walletsIdsSorted"
+      :walletsItemsLimited="walletsItemsLimited"
+      :walletsItemsSorted="walletsItemsSorted"
+    />
 
-  slot(
-    name="toggle"
-    v-if="isShowToggle && walletsIdsSorted.length > limit"
-    :stateLimit="stateLimit"
-    :limit="limit"
-    :toggle="toggle"
-  )
+    <slot
+      v-if="isShowToggle && walletsIdsSorted.length > limit"
+      name="toggle"
+      :stateLimit="stateLimit"
+      :limit="limit"
+      :toggle="toggle"
+    />
+  </div>
 </template>

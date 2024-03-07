@@ -1,7 +1,7 @@
 import { storeToRefs } from 'pinia'
 import { useAppNav } from '~/components/app/useAppNav'
 
-type MoneyType = 'income' | 'expense'
+type MoneyType = 'income' | 'expense' | 'sum'
 
 const state = reactive({
   show: {
@@ -19,7 +19,6 @@ export default function useStatChart() {
   }
 
   function toggle(type: MoneyType): void {
-    console.log('111')
     state.show[type] = !state.show[type]
   }
 

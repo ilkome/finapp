@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import useStatPage from '~/components/stat/useStatPage';
-import type { TrnId, TrnItem, TrnType } from '~/components/trns/types';
-import useTrns from '~/components/trns/useTrns';
-import { useTrnsStore } from '~/components/trns/useTrnsStore';
+import useStatPage from '~/components/stat/useStatPage'
+import type { TrnId, TrnItem, TrnType } from '~/components/trns/types'
+import useTrns from '~/components/trns/useTrns'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = withDefaults(defineProps<{
   trnsIds: TrnId[] | false
@@ -108,6 +108,13 @@ function onClickEdit(props) {
     //- List
     .h-full.pb-10(v-else)
       div(:class="trnsClassNames")
+        //- TrnsList(
+        //-   :trnsIds="filteredTrnsIds"
+        //-   :isShowGroupDate="false"
+        //-   classes="md_grid-cols-1"
+        //-   uiCat
+        //- )
+
         TrnsList(
           :isFilterByDay="isFilterByDay"
           :isShowGroupSum="isShowGroupSum"

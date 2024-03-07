@@ -24,8 +24,9 @@ module.exports = {
         'foreground': {
           1: 'rgb(var(--foreground-1))',
           2: 'rgba(var(--foreground-2))',
-          3: 'var(--foreground-3)',
-          4: 'var(--foreground-4)',
+          3: 'rgb(var(--foreground-3))',
+          4: 'rgba(var(--foreground-4))',
+          5: 'rgb(var(--foreground-5))',
         },
 
         'accent': {

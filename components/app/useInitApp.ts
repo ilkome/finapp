@@ -77,7 +77,7 @@ export function useInitApp() {
     wallets && walletsStore.setWallets(wallets)
     categories && categoriesStore.setCategories(categories)
     trns && trnsStore.setTrns(trns)
-    filterPeriod && filterStore.setPeriod(filterPeriod ?? 'month')
+    filterPeriod && filterStore.setPeriodAndDate(filterPeriod ?? 'month')
 
     // ready
     if (categories && user && trns && wallets) {

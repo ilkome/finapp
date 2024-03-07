@@ -43,11 +43,11 @@ const trnsIds = computed(() => {
 
 <template lang="pug">
 .statItem(
-  :class="{ _active: isShowInside }"
+  class="bg-foreground-3"
   @click="toggleShowInside"
 )
-  .ins.py-2.px-3.space-x-3.justify-between.items-center.flex.border-t(
-    :class="[{ _active: isShowInside }, { 'border-b-0 cursor-n-resize': isShowInside }, { 'cursor-s-resize': !isShowInside }, 'dark_border-neutral-800']"
+  .ins.py-2.px-2.space-x-3.justify-between.items-center.flex.border-t.bg-item-3(
+    :class="[{ 'border-b-0': isShowInside }, 'dark_border-neutral-800']"
   )
     .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
       :style="{ background: category.color }"
@@ -85,7 +85,6 @@ const trnsIds = computed(() => {
 
 .ins
   position relative
-  background var(--c-item2-bg-hover)
 
   +media-hover()
     background var(--c-item-bg-hover)

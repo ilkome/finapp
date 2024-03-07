@@ -24,7 +24,7 @@ const typeNumber = moneyTypes.find(t => t.id === props.typeText)?.type
 </script>
 
 <template>
-  <div v-if="isShow" class="my-6 flex flex-col gap-2">
+  <div v-if="isShow" class="flex flex-col gap-1">
     <StatGroupHorizontalItem
       v-for="categoryId in statPage.current[typeText].categoriesIds"
       :key="categoryId"

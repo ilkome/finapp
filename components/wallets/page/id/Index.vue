@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { getTrnsIds } from '~/components/trns/getTrns'
+import dayjs from 'dayjs'
+import type { WalletId } from '~/components/wallets/types'
 import { useFilter } from '~/components/filter/useFilter'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { getTrnsIds } from '~/components/trns/getTrns'
 
 const { t } = useI18n()
 const { $i18n } = useNuxtApp()
@@ -11,10 +12,9 @@ const route = useRoute()
 const router = useRouter()
 const filterStore = useFilter()
 const walletsStore = useWalletsStore()
-const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
-const walletId = computed(() => route.params.id)
+const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items[walletId.value])
 
 if (!wallet.value)
@@ -28,9 +28,6 @@ const trnsIds = computed(() =>
     trnsItems: trnsStore.items,
   }),
 )
-
-const periodTrnsIds = computed(() => trnsStore.selectedTrnsIdsWithDate
-  .filter(trnId => trnsStore.items[trnId].walletId === walletId.value))
 
 // TODO: useFilter
 function onClickFilterWallet() {
@@ -46,58 +43,78 @@ useHead({
 })
 </script>
 
-<template lang="pug">
-UiPage(v-if="wallet")
-  UiHeader
-    router-link(v-slot="{ href, navigate }" to="/wallets" custom)
-      a.grow.hocus_bg-item-5(:href="href" @click="navigate")
-        UiHeaderTitle
-          .pt-1.text-xs.font-medium.text-item-2
-            | {{ $t("wallets.title") }}
+<template>
+  <UiPage v-if="wallet">
+    <UiHeader>
+      <router-link v-slot="{ href, navigate }" to="/wallets" custom>
+        <a class="grow hocus_bg-item-5" :href="href" @click="navigate">
+          <UiHeaderTitle>
+            <div class="pt-1 text-xs font-medium text-item-2">
+              {{ $t("wallets.title") }}
+            </div>
+            <div class="flex items-center gap-3 pb-1">
+              <div class="text-2xl font-semibold text-item-1">
+                {{ wallet.name }}
+              </div>
+              <div
+                :style="{ background: wallet.color }"
+                class="flex-center rounded p-1 text-2xs text-icon-primary"
+              >
+                {{ wallet.currency }}
+              </div>
+            </div>
+          </UiHeaderTitle>
+        </a>
+      </router-link>
+      <template #actions>
+        <UiHeaderLink @click="onEditClick">
+          <div class="mdi mdi-pencil-outline text-xl group-hover_text-white" />
+        </UiHeaderLink>
+      </template>
+    </UiHeader>
 
-          .pb-1.flex.items-center.gap-3
-            .text-item-1.text-2xl.font-semibold
-              | {{ wallet.name }}
-            .p-1.flex-center.rounded.text-icon-primary.text-2xs(:style="{ background: wallet.color }")
-              | {{ wallet.currency }}
+    <div class="mb-6 flex px-2 pt-3 text-3xl">
+      <Amount :amount="total" :currencyCode="wallet.currency" />
+    </div>
 
-    template(#actions)
-      UiHeaderLink(@click="onEditClick")
-        .mdi.mdi-pencil-outline.group-hover_text-white.text-xl
+    <div v-if="wallet.description" class="mb-6 px-2 text-sm text-item-2">
+      {{ wallet.description }}
+    </div>
 
-  .mb-6.pt-3.px-2.flex.text-3xl.font-normal
-    Amount(
-      :amount="total"
-      :currencyCode="wallet.currency"
-    )
-
-  .mb-6.px-2.text-sm.text-item-2(v-if="wallet.description") {{ wallet.description }}
-
-  .mb-6
-    .px-2.flex
-      UiItemShadow.cursor-pointer.p-1.px-2.flex.items-center.gap-3(
+    <div class="mb-6 flex px-2">
+      <UiItemShadow
+        class="flex cursor-pointer items-center gap-3 p-1 px-2"
         @click="onClickFilterWallet"
-      )
-        .mdi.mdi-poll.text-xl
-        .text-xs.leading-none {{ t("statBy") }}: {{ wallet.name }}
-        .mdi.mdi-chevron-right.opacity-70.text-lg.leading-none
+      >
+        <div class="mdi mdi-poll text-xl" />
 
-  //- Stat
-  .overflow-hidden.relative.bg-gray-50.bg-item-4.mx-3.mb-12.p-3.rounded-md
-    SharedDate.text-xs.font-medium(
-      class="-mb-1 dark_text-white/50"
-      :date="$day().valueOf()"
-      :period="filterStore.period"
-    )
-    div(class="-mb-3")
-      WalletsItemTotalSum(
-        :trnsIds="periodTrnsIds"
-        :walletId="walletId"
-      )
+        <div class="text-xs leading-none">
+          {{ t("statBy") }}: {{ wallet.name }}
+        </div>
 
-  //- History
-  .px-2
-    TrnsListWithControl(:trnsIds="trnsIds")
+        <div class="mdi mdi-chevron-right text-lg leading-none opacity-70" />
+      </UiItemShadow>
+    </div>
+
+    <div
+      class="relative mx-3 mb-12 overflow-hidden rounded-md bg-gray-50 bg-item-4 p-3"
+    >
+      <SharedDate
+        class="-mb-1 dark_text-white/50"
+        :date="dayjs().valueOf()"
+        :period="filterStore.period"
+      />
+      <div class="-mb-3">
+        <div>WalletsItemTotalSum</div>
+        <WalletsItemTotalSum :trnsIds="trnsIds" :walletId="walletId" />
+      </div>
+    </div>
+
+    <!-- Stat -->
+    <div class="px-2">
+      <CategoriesStat :walletsIds="[walletId]" />
+    </div>
+  </UiPage>
 </template>
 
 <i18n lang="yaml">

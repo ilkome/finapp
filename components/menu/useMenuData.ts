@@ -8,6 +8,7 @@ interface MenuItem {
   private?: boolean
 }
 
+// TODO: replace with NuxtLink
 export default function useMenuData() {
   const { $i18n } = useNuxtApp()
   const { trnFormCreate } = useTrnForm()

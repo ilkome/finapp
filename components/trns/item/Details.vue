@@ -67,7 +67,7 @@ function setTrnEdit() {
 <template>
   <div
     v-if="(category && wallet) || trn.type === 2"
-    class="trnItem px-3 py-2.5 py-3"
+    class="trnItem px-3 py-3"
     :class="{
       ...classes,
       '!cursor-default':

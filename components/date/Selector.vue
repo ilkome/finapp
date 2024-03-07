@@ -1,92 +1,140 @@
 <script setup lang="ts">
-import { useFilter } from '~/components/filter/useFilter'
 import usePeriods from '~/components/periods/usePeriods'
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
 import { getOldestTrnDate } from '~/components/trns/helpers'
 import { useChart } from '~/components/chart/useChart'
-import type { PeriodNameWithAll, PeriodSchema } from '~/components/chart/useChart'
+import type {
+  PeriodName,
+  PeriodNameWithAll,
+  PeriodSchema,
+} from '~/components/chart/useChart'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import '~/components/modal/styles/modalLinks.styl'
+
+const props = defineProps<{
+  periodWithoutAll: PeriodName
+  period: PeriodNameWithAll
+}>()
+
+const emit = defineEmits<{
+  close: []
+  setPeriodAndDate: [period: PeriodNameWithAll]
+}>()
 
 // TODO: Hight
 const { periodsNames } = usePeriods()
 const { periods, setElementsToChart } = useChart()
-const filterStore = useFilter()
 const trnsStore = useTrnsStore()
 
 function onSelectPeriodName(periodName: PeriodNameWithAll, close: () => void) {
   close()
-  filterStore.setPeriod(periodName)
+  emit('setPeriodAndDate', periodName)
 }
 
 // TODO: duplicate computed
 const maxPeriodsNumber = computed(() => {
   const trnsItems = trnsStore.items
   const oldestTrnDate = getOldestTrnDate(trnsItems)
-  return getMaxPeriodsToShow(filterStore.periodWithoutAll, oldestTrnDate)
+  return getMaxPeriodsToShow(props.periodWithoutAll, oldestTrnDate)
 })
 
 const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
 
-function onSelectPeriodCount(number: PeriodSchema['showedPeriods'], close: () => void) {
+function onSelectPeriodCount(
+  number: PeriodSchema['showedPeriods'],
+  close: () => void,
+) {
   close()
   setElementsToChart(number)
 }
 </script>
 
-<template lang="pug">
-Teleport(to="body")
-  LazyBaseBottomSheet(
-    @closed="$emit('close')"
-  )
-    template(#handler="{ close }")
-      BaseBottomSheetHandler
-      BaseBottomSheetClose(@onClick="close")
+<template>
+  <Teleport to="body">
+    <LazyBaseBottomSheet @closed="emit('close')">
+      <template #handler="{ close }">
+        <BaseBottomSheetHandler />
+        <BaseBottomSheetClose @onClick="close" />
+      </template>
 
-    template(#default="{ close }")
-      .title {{ $t('dates.period') }}
+      <template #default="{ close }">
+        <div class="title">
+          {{ $t("dates.period") }}
+        </div>
 
-      .content
-        //- Periods
-        .modalLinks
-          ModalButton(
-            v-for="periodItem in periodsNames"
-            :key="periodItem.slug"
-            :icon="periodItem.icon"
-            :isActive="filterStore.period === periodItem.slug"
-            :name="$t(`dates.${periodItem.slug}.simple`)"
-            @onClick="onSelectPeriodName(periodItem.slug, close)"
-          )
+        <div class="content">
+          <!-- Periods -->
+          <div class="grid gap-2 px-3">
+            <ModalButton2
+              v-for="periodItem in periodsNames"
+              :key="periodItem.slug"
+              :isActive="props.period === periodItem.slug"
+              :name="$t(`dates.${periodItem.slug}.simple`)"
+              @click="onSelectPeriodName(periodItem.slug, close)"
+            >
+              <template #icon>
+                <div :class="periodItem.icon" />
+              </template>
+            </ModalButton2>
 
-          ModalButton(
-            :isActive="filterStore.period === 'all'"
-            :name="$t('dates.all.simple')"
-            icon="mdi mdi-database"
-            @onClick="onSelectPeriodName('all', close)"
-          )
+            <ModalButton2
+              :isActive="props.period === 'all'"
+              :name="$t('dates.all.simple')"
+              @click="onSelectPeriodName('all', close)"
+            >
+              <template #icon>
+                <div class="mdi mdi-database" />
+              </template>
+            </ModalButton2>
+          </div>
 
-        //- Counts
-        template(v-if="filterStore.period !== 'all'")
-          .title {{ $t('dates.count') }}
-          .counts.flex.items-center.justify-center
-            .countsItem(
-              v-for="periodCount in periodCounts"
-              :key="periodCount"
-              :class="{ _active: periodCount === periods[filterStore.periodWithoutAll].showedPeriods }"
-              @click="onSelectPeriodCount(periodCount, close)"
-            ) {{ periodCount }}
+          <!-- Counts -->
+          <template v-if="props.period !== 'all'">
+            <div class="title">
+              {{ $t("dates.count") }}
+            </div>
+            <div class="counts flex items-center justify-center">
+              <div
+                v-for="periodCount in periodCounts"
+                :key="periodCount"
+                :class="{
+                  _active:
+                    periodCount
+                    === periods[props.periodWithoutAll].showedPeriods,
+                }"
+                class="countsItem"
+                @click="onSelectPeriodCount(periodCount, close)"
+              >
+                {{ periodCount }}
+              </div>
 
-            .countsItem(
-              :class="{ _active: maxPeriodsNumber === periods[filterStore.periodWithoutAll].showedPeriods }"
-              @click="onSelectPeriodCount(maxPeriodsNumber, close)"
-            ) {{ maxPeriodsNumber }}
+              <div
+                :class="{
+                  _active:
+                    maxPeriodsNumber
+                    === periods[props.periodWithoutAll].showedPeriods,
+                }"
+                class="countsItem"
+                @click="onSelectPeriodCount(maxPeriodsNumber, close)"
+              >
+                {{ maxPeriodsNumber }}
+              </div>
+            </div>
+          </template>
 
-        //- Close button
-        .pb-4.px-2.flex.justify-evenly.gap-6
-          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-4.hocus_bg-item-5(
-            class="basis-1/2 max-w-[280px]"
-            @click="close()"
-          ) {{ $t('close') }}
+          <!-- Close button -->
+          <div class="flex justify-evenly gap-6 px-2 pb-4">
+            <div
+              class="flex-center max-w-[280px] grow basis-1/2 cursor-pointer rounded-full bg-item-4 px-5 py-3 text-sm hocus_bg-item-5"
+              @click="close()"
+            >
+              {{ $t("close") }}
+            </div>
+          </div>
+        </div>
+      </template>
+    </LazyBaseBottomSheet>
+  </Teleport>
 </template>
 
 <style lang="stylus" scoped>

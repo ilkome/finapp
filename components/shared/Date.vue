@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
+import type { PeriodNameWithAll } from '~/components/chart/useChart'
 
 const props = defineProps<{
   date: number
-  period: string
+  period: PeriodNameWithAll
 }>()
 
 const { $i18n } = useNuxtApp()
@@ -14,23 +15,22 @@ const formattedDate = computed(() => {
   const filterPeriod = props.period
   let format = 'MMMM'
 
+  const date = dayjs(filterDate)
+  const startDate = date.startOf('week').format('D MMMM')
+  const endDate = date.endOf('week').format('D MMMM')
+
   switch (filterPeriod) {
     case 'day':
       today.isSame(filterDate, 'year')
-        ? format = 'DD MMMM'
-        : format = 'DD MMMM YYYY'
+        ? (format = 'DD MMMM')
+        : (format = 'DD MMMM YYYY')
       break
 
     case 'week':
       if (today.isSame(filterDate, 'week'))
         return $i18n.t('dates.week.current')
-
       else if (today.subtract(1, filterPeriod).isSame(filterDate, 'week'))
         return $i18n.t('dates.week.last')
-
-      const date = dayjs(filterDate)
-      const startDate = date.startOf('week').format('D MMMM')
-      const endDate = date.endOf('week').format('D MMMM')
       return `${startDate} - ${endDate}`
 
     case 'month':
@@ -51,8 +51,8 @@ const formattedDate = computed(() => {
 })
 </script>
 
-<template lang="pug">
-div
-  template(v-if="period === 'all'") {{ $t('dates.all.simple') }}
-  template(v-if="period !== 'all'") {{ formattedDate }}
+<template>
+  <div>
+    {{ period === "all" ? $t("dates.all.simple") : formattedDate }}
+  </div>
 </template>
