@@ -1,12 +1,12 @@
 <script setup lang="ts">
 const emit = defineEmits<{
-  click: [e: Event];
-}>();
+  click: [e: Event]
+}>()
 </script>
 
 <template>
   <div
-    class="text-item-base pb-2 font-primary text-lg font-semibold leading-none"
+    class="text-item-base text-secondary text-md font-medium leading-none"
     @click="(e) => emit('click', e)"
   >
     <slot />

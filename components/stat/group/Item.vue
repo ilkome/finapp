@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useAppNav } from '~/components/app/useAppNav'
+import type { MoneyTypeSlug } from '~/components/stat/types'
 
 defineProps<{
-  typeText: string
+  moneyTypeSlug: MoneyTypeSlug
 }>()
 
 const appNavStore = useAppNav()
@@ -12,16 +13,15 @@ const appNavStore = useAppNav()
   <div>
     <StatSumGroup
       v-if="appNavStore.activeTabStat === 'summary'"
-      :typeText="typeText"
+      :moneyTypeSlugSum="moneyTypeSlug"
     />
 
     <div class="px-2 flex flex-wrap items-center justify-between gap-x-6">
       <StatViewConfig />
     </div>
 
-    <!-- StatGroupPie(:typeText="typeText") -->
-    <StatGroupVertical :typeText="typeText" />
-    <StatGroupRound :typeText="typeText" />
-    <StatGroupHorizontal :typeText="typeText" />
+    <StatGroupVertical :moneyTypeSlug="moneyTypeSlug" />
+    <StatGroupRound :moneyTypeSlug="moneyTypeSlug" />
+    <StatGroupHorizontal :moneyTypeSlug="moneyTypeSlug" />
   </div>
 </template>

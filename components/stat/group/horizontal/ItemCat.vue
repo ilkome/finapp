@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { TrnType } from '~/components/trns/types'
+import type { TrnId, TrnType } from '~/components/trns/types'
 import { getTotal } from '~/components/amount/getTotal'
 import { useStat } from '~/components/stat/useStat'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
@@ -33,7 +33,7 @@ const statCategories = computed(() => {
     .sort((a, b) => b[typeName.value] - a[typeName.value])
 })
 
-function getTrnsByCategoryId(categoryId) {
+function getTrnsByCategoryId(categoryId: CategoryId) {
   const trnsItems = trnsStore.items
   // Note: same performance as in one filter but better readability
   return trnsStore.selectedTrnsIdsWithDate
@@ -41,7 +41,7 @@ function getTrnsByCategoryId(categoryId) {
     .filter(id => trnsItems[id].type === props.type)
 }
 
-function getCategoryStat({ categoryId, trnsIds }) {
+function getCategoryStat({ categoryId, trnsIds }: { categoryId: CategoryId, trnsIds: TrnId[] }) {
   const trnsItems = trnsStore.items
   const walletsItems = walletsStore.items
   const baseCurrencyCode = currenciesStore.base
@@ -64,15 +64,16 @@ function getCategoryStat({ categoryId, trnsIds }) {
 }
 </script>
 
-<template lang="pug">
-div
-  StatGroupHorizontalItemCatItem(
-    v-for="category in statCategories"
-    :key="category.categoryId"
-    :biggest="biggestAmount"
-    :category="categoriesStore.items[category.categoryId]"
-    :categoryId="category.categoryId"
-    :total="category[typeName]"
-    :type="type"
-  )
+<template>
+  <div>
+    <StatGroupHorizontalItemCatItem
+      v-for="category in statCategories"
+      :key="category.categoryId"
+      :biggest="biggestAmount"
+      :category="categoriesStore.items[category.categoryId]"
+      :categoryId="category.categoryId"
+      :total="category[typeName]"
+      :type="type"
+    />
+  </div>
 </template>

@@ -4,12 +4,12 @@ import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useCategoriesStore } from '~/components/categories/useCategories'
+import type { MoneyTypeSlug } from '~/components/stat/types'
 
 const props = defineProps<{
-  typeText: string
+  moneyTypeSlug: MoneyTypeSlug
 }>()
 
-const { typeText } = toRefs(props)
 const { statPage } = useStatPage()
 const { moneyTypes } = useStat()
 const { ui } = useUIView()
@@ -19,9 +19,9 @@ const roundRef = ref(null)
 
 const isShow = computed(
   () =>
-    ui.showRoundCats && statPage.current[props.typeText]?.categoriesIds?.length,
+    ui.showRoundCats && statPage.current[props.moneyTypeSlug]?.categoriesIds?.length,
 )
-const typeNumber = moneyTypes.find(t => t.id === props.typeText)?.type
+const typeNumber = moneyTypes.find(t => t.id === props.moneyTypeSlug)?.type
 
 /**
  * Get max width from child elements name or amount
@@ -30,7 +30,7 @@ const typeNumber = moneyTypes.find(t => t.id === props.typeText)?.type
 function updateWidth() {
   setTimeout(() => {
     const elements: Element[] = roundRef.value
-      ?.querySelector(`[data-type-text="${props.typeText}"]`)
+      ?.querySelector(`[data-type-text="${props.moneyTypeSlug}"]`)
       ?.querySelectorAll('.js-getWidth')
 
     const minWidth: number = elements
@@ -38,12 +38,12 @@ function updateWidth() {
       : 60
 
     roundRef.value
-      ?.querySelector(`[data-type-text="${props.typeText}"]`)
+      ?.querySelector(`[data-type-text="${props.moneyTypeSlug}"]`)
       ?.style.setProperty('--minWidth', `${minWidth + 12}px`)
   }, 100)
 }
 
-watch(statPage.current[props.typeText]?.categoriesIds, updateWidth, {
+watch(statPage.current[props.moneyTypeSlug]?.categoriesIds, updateWidth, {
   immediate: true,
 })
 watch(isShow, updateWidth, { immediate: true })
@@ -51,14 +51,14 @@ watch(isShow, updateWidth, { immediate: true })
 
 <template>
   <div v-if="isShow" ref="roundRef" class="rounded-lg bg-item-4 px-2">
-    <div class="items grid py-2" :data-type-text="`${typeText}`">
+    <div class="items grid py-2" :data-type-text="`${moneyTypeSlug}`">
       <LazyStatGroupRoundItem
-        v-for="categoryId in statPage.current[typeText].categoriesIds"
+        v-for="categoryId in statPage.current[moneyTypeSlug].categoriesIds"
         :key="categoryId"
         :category="categoriesStore.items[categoryId]"
         :categoryId="categoryId"
         :currencyCode="currenciesStore.base"
-        :total="statPage.current.categories[categoryId][typeText]"
+        :total="statPage.current.categories[categoryId][moneyTypeSlug]"
         :type="typeNumber"
       />
 
@@ -70,7 +70,7 @@ watch(isShow, updateWidth, { immediate: true })
         >
           <template
             v-if="
-              !statPage.current[typeText].categoriesIds.includes(categoryId)
+              !statPage.current[moneyTypeSlug].categoriesIds.includes(categoryId)
             "
           >
             <LazyStatGroupRoundItem

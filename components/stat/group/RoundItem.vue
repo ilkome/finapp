@@ -3,13 +3,14 @@ import { useFilter } from '~/components/filter/useFilter'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
+import type { MoneyTypeNumber } from '~/components/stat/types'
 
 const props = defineProps<{
   category: CategoryItem
   categoryId: CategoryId
   currencyCode: CurrencyCode
   total: number
-  type: number
+  type?: MoneyTypeNumber
 }>()
 
 const { setCategoryId } = useFilter()

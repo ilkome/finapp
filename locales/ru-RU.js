@@ -258,6 +258,7 @@ export default {
       base: 'Обычно',
       income: 'Обычно',
       expense: 'Обычно',
+      sum: 'Обычно',
     },
     averageTotal: 'Обычно',
     also: 'Еще',

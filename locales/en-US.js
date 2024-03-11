@@ -257,6 +257,7 @@ export default {
       base: 'Average',
       income: 'Average',
       expense: 'Average',
+      sum: 'Average',
     },
     averageTotal: 'Average',
     also: 'Also',

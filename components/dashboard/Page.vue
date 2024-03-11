@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useWindowSize } from '@vueuse/core'
-import type { PeriodNameWithAll } from '../chart/useChart'
-import type { MoneyTypeSlug } from '~/components/stat/types'
+import type { MoneyTypeSlugSum } from '~/components/stat/types'
 import useStatChart from '~/components/stat/useStatChart'
 import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
@@ -25,7 +24,7 @@ const isMobileView = computed(() => width.value <= 1024)
 const { onWatch } = useStatChart()
 onWatch()
 
-function isShowGroupByType(type: MoneyTypeSlug) {
+function isShowGroupByType(type: MoneyTypeSlugSum) {
   const p1
     = activeTabStat.value === 'summary'
     || (activeTabStat.value === 'income' && type === 'income')
@@ -92,20 +91,16 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
     <div class="sticky top-0 z-20 h-[44px] bg-foreground-4 backdrop-blur">
       <StatDate />
     </div>
-
     <LazyStatChartWrap
       v-if="ui.showMainChart"
       :trnsIds="Object.keys(trnsStore.items ?? {})"
     />
-
     <LazyStatFilter v-if="statPage.filter.isShow" />
-
-    <StatMenu />
+    <StatSumAll />
+    <StatMenu class="py-4" />
 
     <div class="min-h-[calc(100vh-130px)]" data-scroll-ref="stat">
       <template v-if="activeTabStat !== 'trns'">
-        <StatSumAll v-if="activeTabStat === 'summary'" />
-
         <div class="mb-8 px-2 md_mb-4">
           <div class="grid items-start gap-6 md_grid-cols-2 md_gap-8">
             <div
@@ -114,10 +109,10 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
               :key="item.id"
               class="grid gap-3 rounded-lg bg-item-4 lg_p-2 xl_max-w-[420px]"
             >
-              <StatSumGroup :typeText="item.id" />
-              <StatGroupVertical :typeText="item.id" />
-              <StatGroupRound :typeText="item.id" />
-              <StatGroupHorizontal :typeText="item.id" />
+              <StatSumGroup :moneyTypeSlugSum="item.id" />
+              <StatGroupVertical :moneyTypeSlug="item.id" />
+              <StatGroupRound :moneyTypeSlug="item.id" />
+              <StatGroupHorizontal :moneyTypeSlug="item.id" />
 
               <template v-if="!isMobileView">
                 <div
@@ -152,7 +147,9 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
               "
               class="max-w-[420px]"
             >
-              <UiTitle2>{{ $t("trns.inPeriodTitle") }}</UiTitle2>
+              <UiTitle2 class="pb-3">
+                {{ $t("trns.inPeriodTitle") }}
+              </UiTitle2>
               <TrnsList
                 :size="12"
                 :trnsIds="combinedTrnsIds[activeTabStat]"
@@ -176,7 +173,9 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
         </div>
       </template>
 
-      <StatViewConfig />
+      <div class="pb-8">
+        <StatViewConfig />
+      </div>
     </div>
   </div>
 </template>

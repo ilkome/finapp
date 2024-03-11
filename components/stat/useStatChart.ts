@@ -1,7 +1,6 @@
 import { storeToRefs } from 'pinia'
 import { useAppNav } from '~/components/app/useAppNav'
-
-type MoneyType = 'income' | 'expense' | 'sum'
+import type { MoneyTypeSlug } from '~/components/stat/types'
 
 const state = reactive({
   show: {
@@ -14,11 +13,11 @@ const state = reactive({
 export default function useStatChart() {
   const { activeTabStat } = storeToRefs(useAppNav())
 
-  function setChart(type: MoneyType, value: boolean): void {
+  function setChart(type: MoneyTypeSlug, value: boolean): void {
     state.show[type] = value
   }
 
-  function toggle(type: MoneyType): void {
+  function toggle(type: MoneyTypeSlug): void {
     state.show[type] = !state.show[type]
   }
 

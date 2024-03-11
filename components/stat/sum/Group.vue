@@ -2,46 +2,77 @@
 import useStatPage from '~/components/stat/useStatPage'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useStat } from '~/components/stat/useStat'
+import type { MoneyTypeNumber, MoneyTypeSlugSum } from '~/components/stat/types'
 
 const props = defineProps<{
-  typeText: 'income' | 'expense'
+  moneyTypeSlugSum: MoneyTypeSlugSum
 }>()
 
 const { statPage } = useStatPage()
 const { moneyTypes } = useStat()
+const { statAverage, statCurrentPeriod } = useStat()
 const currenciesStore = useCurrenciesStore()
 
-const typeNumber = computed(
+const moneyTypeNumber = computed<MoneyTypeNumber | undefined>(
   () =>
-    moneyTypes.find(t => t.id === `${props.typeText}`.toLowerCase())?.type,
+    moneyTypes.find(t => t.id === `${props.moneyTypeSlugSum}`.toLowerCase())
+      ?.type,
 )
+
+const amount = computed(() => {
+  if (props.moneyTypeSlugSum === 'sum')
+    return statPage.current.income.total - statPage.current.expense.total
+
+  return statPage.current[props.moneyTypeSlugSum].total
+})
+
+const colorize = computed(() => {
+  if (props.moneyTypeSlugSum === 'sum') {
+    return statCurrentPeriod.value.income.total - statCurrentPeriod.value.expense.total > 0
+      ? 'income'
+      : 'expense'
+  }
+  return props.moneyTypeSlugSum
+})
+
+const isShownAverage = computed(() => {
+  if (props.moneyTypeSlugSum === 'sum')
+    return statAverage.value?.sum !== 0
+  return statPage.average[props.moneyTypeSlugSum] !== 0
+})
+
+const averageAmount = computed(() => {
+  if (props.moneyTypeSlugSum === 'sum')
+    return statAverage.value?.sum
+  return statPage.average[props.moneyTypeSlugSum]
+})
 </script>
 
 <template>
   <div class="rounded-lg bg-item-4 px-2 py-2 sm_px-5 sm_py-4">
-    <UiTitle>{{ $t(`money.${typeText}`) }}</UiTitle>
+    <UiTitle2>{{ $t(`money.${moneyTypeSlugSum}`) }}</UiTitle2>
 
-    <div class="scrollbar overflow-hidden overflow-x-auto pt-2">
-      <div class="flex sm_flex-col2 flex-wrap items-start gap-2 gap-x-6">
-        <!-- Total -->
-        <div class="text-3xl">
-          <Amount
-            :amount="statPage.current[typeText].total"
-            :colorize="typeText"
-            :currencyCode="currenciesStore.base"
-            :isShowBaseRate="false"
-            :type="typeNumber"
-          />
-        </div>
-
-        <!-- Average -->
-        <LazyStatSumAverage
-          v-if="statPage.average[typeText] !== 0"
-          :amount="statPage.average[typeText]"
-          :title="$t(`money.average.${typeText}`)"
-          :type="typeNumber"
+    <div
+      class="sm_flex-col2 flex flex-wrap items-start gap-2 gap-x-6 overflow-hidden overflow-x-auto pt-2"
+    >
+      <!-- Total -->
+      <div class="text-3xl">
+        <Amount
+          :amount="amount"
+          :colorize="colorize"
+          :currencyCode="currenciesStore.base"
+          :isShowBaseRate="false"
+          :type="moneyTypeNumber"
         />
       </div>
+
+      <!-- Average -->
+      <LazyStatSumAverage
+        v-if="isShownAverage"
+        :amount="averageAmount"
+        :title="$t(`money.average.${moneyTypeSlugSum}`)"
+        :type="moneyTypeNumber"
+      />
     </div>
   </div>
 </template>

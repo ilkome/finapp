@@ -6,7 +6,7 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useStat } from '~/components/stat/useStat'
 
 const props = defineProps<{
-  typeText: MoneyTypeSlug
+  moneyTypeSlug: MoneyTypeSlug
 }>()
 
 const { statPage } = useStatPage()
@@ -16,22 +16,22 @@ const categoriesStore = useCategoriesStore()
 
 const isShow = computed(
   () =>
-    statPage.current[props.typeText]?.categoriesIds?.length
+    statPage.current[props.moneyTypeSlug]?.categoriesIds?.length
     && ui.showCatsHorizontalList,
 )
 
-const typeNumber = moneyTypes.find(t => t.id === props.typeText)?.type
+const typeNumber = moneyTypes.find(t => t.id === props.moneyTypeSlug)?.type
 </script>
 
 <template>
   <div v-if="isShow" class="flex flex-col gap-1">
     <StatGroupHorizontalItem
-      v-for="categoryId in statPage.current[typeText].categoriesIds"
+      v-for="categoryId in statPage.current[moneyTypeSlug].categoriesIds"
       :key="categoryId"
-      :biggest="statPage.current[typeText].biggest"
+      :biggest="statPage.current[moneyTypeSlug].biggest"
       :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
-      :total="statPage.current.categories[categoryId][typeText]"
+      :total="statPage.current.categories[categoryId][moneyTypeSlug]"
       :type="typeNumber"
     />
   </div>
