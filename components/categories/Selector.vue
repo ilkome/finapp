@@ -1,13 +1,6 @@
 <script setup lang="ts">
-import type { CategoryId } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
-
-interface CategorySelector {
-  parentId: CategoryId | null
-  select: (id: CategoryId, isForce: boolean) => void
-  closeRoot: () => void
-  closeChild: () => void
-}
+import type { CategoryId } from "~/components/categories/types"
+import { useCategoriesStore } from "~/components/categories/useCategories"
 
 defineProps<{
   isShow: boolean
@@ -15,13 +8,17 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'onSelected', id: CategoryId): void
-  (e: 'show', value: boolean): void
+  onSelected: [id: CategoryId]
+  onClose: []
 }>()
 
 const categoriesStore = useCategoriesStore()
 
-const categorySelector = ref<CategorySelector>({
+const categorySelector = ref<{
+  parentId: CategoryId | null
+  select: (id: CategoryId, isForce: boolean) => void
+  closeChild: () => void
+}>({
   parentId: null,
   select: (id: CategoryId, isForce: boolean) => {
     if (!isForce && categoriesStore.isCategoryHasChildren(id)) {
@@ -29,12 +26,9 @@ const categorySelector = ref<CategorySelector>({
       return
     }
 
-    emit('onSelected', id)
-    categorySelector.value.closeRoot()
+    emit("onSelected", id)
     categorySelector.value.closeChild()
-  },
-  closeRoot: () => {
-    emit('show', false)
+    emit("onClose")
   },
   closeChild: () => {
     categorySelector.value.parentId = null
@@ -47,18 +41,17 @@ div
   //- Root Categories
   TrnFormModal(
     v-if="isShow"
-    @closed="categorySelector.closeRoot"
+    @closed="emit('onClose')"
   )
     template(#header)
       div {{ $t('categories.title') }}
 
-    template(#default="{ close }")
-      .pb-3.px-3
-        CategoriesList(
-          :ids="categoriesStore.categoriesRootIds"
-          class="!gap-x-1"
-          @click="categorySelector.select"
-        )
+    .pb-3.px-3
+      CategoriesList(
+        :ids="categoriesStore.categoriesRootIds"
+        class="!gap-x-1"
+        @click="categorySelector.select"
+      )
 
   //- Child Categories
   TrnFormModal(
@@ -75,16 +68,16 @@ div
         )
         div {{ categoriesStore.items[categorySelector.parentId].name }}
 
-    template(#default="{ close }")
-      .px-3.flex-center.pb-5(v-if="isAllowSelectParentCategory")
-        UiButtonGrey.max-w-xs(
-          @click="categorySelector.select(categorySelector.parentId, true)"
-        ) {{ $t('chart.view.add') }}
 
-      .pb-3.px-3
-        CategoriesList(
-          :ids="categoriesStore.getChildCategoriesIds(categorySelector.parentId)"
-          class="!gap-x-1"
-          @click="categorySelector.select"
-        )
+    .px-3.flex-center.pb-5(v-if="isAllowSelectParentCategory")
+      UiButtonGrey.max-w-xs(
+        @click="categorySelector.select(categorySelector.parentId, true)"
+      ) {{ $t('chart.view.add') }}
+
+    .pb-3.px-3
+      CategoriesList(
+        :ids="categoriesStore.getChildCategoriesIds(categorySelector.parentId)"
+        class="!gap-x-1"
+        @click="categorySelector.select"
+      )
 </template>

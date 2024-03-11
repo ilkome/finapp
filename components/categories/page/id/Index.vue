@@ -121,7 +121,7 @@ useHead({
 
     <!-- Stat -->
     <div class="px-2">
-      <CategoriesStat :categoriesIds />
+      <StatChartStat :categoriesIds />
     </div>
   </UiPage>
 </template>

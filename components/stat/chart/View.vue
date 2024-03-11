@@ -33,7 +33,6 @@ import type { PeriodName } from '~/components/chart/useChart'
 const props = withDefaults(
   defineProps<{
     trnsIds: TrnId[]
-    periodWithoutAll: PeriodName
     chartType?: 'bar' | 'line'
   }>(),
   {
@@ -42,9 +41,9 @@ const props = withDefaults(
   },
 )
 
-const emit = defineEmits<{
-  (e: 'setDate', value: number): void
-}>()
+
+const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
+const setDate = inject('setDate') as (date: number) => void
 
 use([
   BarChart,
@@ -89,9 +88,9 @@ const statData = computed(() => {
   const oldestTrnDate = getOldestTrnDate(trnsItems.value)
   let periodsToShow
     = dayjs()
-      .endOf(props.periodWithoutAll)
-      .diff(oldestTrnDate, props.periodWithoutAll) + 1
-  const periodsWantToShow = periods.value[props.periodWithoutAll].showedPeriods
+      .endOf(periodWithoutAll.value)
+      .diff(oldestTrnDate, periodWithoutAll.value) + 1
+  const periodsWantToShow = periods.value[periodWithoutAll.value].showedPeriods
   periodsToShow
     = periodsWantToShow >= periodsToShow ? periodsToShow : periodsWantToShow
 
@@ -103,8 +102,8 @@ const statData = computed(() => {
   for (let index = 0; index < periodsToShow; index++) {
     // count total period
     const periodDate = dayjs()
-      .startOf(props.periodWithoutAll)
-      .subtract(index, props.periodWithoutAll)
+      .startOf(periodWithoutAll.value)
+      .subtract(index, periodWithoutAll.value)
       .valueOf()
 
     // TODO: move it to a separate function getFilterParams
@@ -119,7 +118,7 @@ const statData = computed(() => {
       trnsItems: trnsItems.value,
       walletsIds,
       categoriesIds,
-      periodName: props.periodWithoutAll,
+      periodName: periodWithoutAll.value,
       date: periodDate,
     })
 
@@ -134,18 +133,18 @@ const statData = computed(() => {
       })
 
     let format = 'MM'
-    if (props.periodWithoutAll === 'day')
+    if (periodWithoutAll.value === 'day')
       format = 'D.MM'
-    if (props.periodWithoutAll === 'week')
+    if (periodWithoutAll.value === 'week')
       format = 'D MMM'
-    if (props.periodWithoutAll === 'month')
+    if (periodWithoutAll.value === 'month')
       format = 'MMM'
-    if (props.periodWithoutAll === 'year')
+    if (periodWithoutAll.value === 'year')
       format = 'YYYY'
 
     const name = dayjs()
-      .startOf(props.periodWithoutAll)
-      .subtract(index, props.periodWithoutAll)
+      .startOf(periodWithoutAll.value)
+      .subtract(index, periodWithoutAll.value)
       .format(format)
 
     // Income
@@ -174,9 +173,9 @@ const statData = computed(() => {
   // Income
   let periodsTotalIncome = 0
   for (const iterator of incomeData) {
-    if (iterator.y !== 0) {
+    if (iterator.value !== 0) {
       periods2 = periods2 + 1
-      periodsTotalIncome = periodsTotalIncome + iterator.y
+      periodsTotalIncome = periodsTotalIncome + iterator.value
     }
   }
 
@@ -184,9 +183,9 @@ const statData = computed(() => {
   let periodsExpense = 0
   let periodsTotalExpense = 0
   for (const iterator of expenseData) {
-    if (iterator.y !== 0) {
+    if (iterator.value !== 0) {
       periodsExpense = periodsExpense + 1
-      periodsTotalExpense = periodsTotalExpense + iterator.y
+      periodsTotalExpense = periodsTotalExpense + iterator.value
     }
   }
 
@@ -194,9 +193,9 @@ const statData = computed(() => {
   let periodsSum = 0
   let periodsTotalSum = 0
   for (const iterator of totalData) {
-    if (iterator.y !== 0) {
+    if (iterator.value !== 0) {
       periodsSum = periodsSum + 1
-      periodsTotalSum = periodsTotalSum + iterator.y
+      periodsTotalSum = periodsTotalSum + iterator.value
     }
   }
 
@@ -339,7 +338,7 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
     params.offsetX,
     params.offsetY,
   ])
-  emit('setDate', statData.value.series[0].data[point].date)
+  setDate(statData.value.series[0].data[point].date)
   markedArea.value = statData.value.categories[point]
 }
 

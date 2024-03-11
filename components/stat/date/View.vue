@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import { getStyles } from '~/components/ui/classes'
 import type { PeriodNameWithAll } from '~/components/chart/useChart'
 
-const props = defineProps<{
-  date: number
-  period: PeriodNameWithAll
-}>()
+const { t } = useI18n()
 
-const { $i18n } = useNuxtApp()
+const date = inject('date') as Ref<number>
+const period = inject('period') as Ref<PeriodNameWithAll>
+const openDateSelector = inject('openDateSelector') as () => void
 
 const formattedDate = computed(() => {
   const today = dayjs()
-  const filterDate = props.date
-  const filterPeriod = props.period
+  const filterDate = date.value
+  const filterPeriod = period.value
   let format = 'MMMM'
 
-  const date = dayjs(filterDate)
-  const startDate = date.startOf('week').format('D MMMM')
-  const endDate = date.endOf('week').format('D MMMM')
+  const startDate = dayjs(filterDate).startOf('week').format('D MMMM')
+  const endDate = dayjs(filterDate).endOf('week').format('D MMMM')
 
   switch (filterPeriod) {
     case 'day':
@@ -28,9 +27,9 @@ const formattedDate = computed(() => {
 
     case 'week':
       if (today.isSame(filterDate, 'week'))
-        return $i18n.t('dates.week.current')
+        return t('dates.week.current')
       else if (today.subtract(1, filterPeriod).isSame(filterDate, 'week'))
-        return $i18n.t('dates.week.last')
+        return t('dates.week.last')
       return `${startDate} - ${endDate}`
 
     case 'month':
@@ -52,7 +51,14 @@ const formattedDate = computed(() => {
 </script>
 
 <template>
-  <div>
+<div
+  :class="getStyles('item', ['link', 'rounded'])"
+  class="flex grow items-center px-3 py-2"
+  @click="openDateSelector"
+>
+  <div class="font-primary font-semibold leading-none text-item-1">
     {{ period === "all" ? $t("dates.all.simple") : formattedDate }}
   </div>
+  <div class="mdi mdi-dots-vertical" />
+</div>
 </template>

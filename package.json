@@ -41,10 +41,12 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.8.0",
+    "@babel/parser": "^7.24.0",
     "@nuxtjs/color-mode": "^3.3.2",
     "@nuxtjs/i18n": "^8.1.1",
     "@nuxtjs/tailwindcss": "^6.11.4",
     "@vite-pwa/nuxt": "^0.5.0",
+    "@vue/language-plugin-pug": "^2.0.6",
     "@vueuse/core": "^10.9.0",
     "@vueuse/nuxt": "^10.9.0",
     "eslint": "^8.57.0",

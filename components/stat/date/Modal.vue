@@ -11,15 +11,10 @@ import type {
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import '~/components/modal/styles/modalLinks.styl'
 
-const props = defineProps<{
-  periodWithoutAll: PeriodName
-  period: PeriodNameWithAll
-}>()
-
-const emit = defineEmits<{
-  close: []
-  setPeriodAndDate: [period: PeriodNameWithAll]
-}>()
+const closeDateSelector = inject('closeDateSelector') as () => void
+const period = inject('period') as Ref<PeriodNameWithAll>
+const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
+const setPeriodAndDate = inject('setPeriodAndDate') as (period: PeriodNameWithAll) => void
 
 // TODO: Hight
 const { periodsNames } = usePeriods()
@@ -28,14 +23,14 @@ const trnsStore = useTrnsStore()
 
 function onSelectPeriodName(periodName: PeriodNameWithAll, close: () => void) {
   close()
-  emit('setPeriodAndDate', periodName)
+  setPeriodAndDate(periodName)
 }
 
 // TODO: duplicate computed
 const maxPeriodsNumber = computed(() => {
   const trnsItems = trnsStore.items
   const oldestTrnDate = getOldestTrnDate(trnsItems)
-  return getMaxPeriodsToShow(props.periodWithoutAll, oldestTrnDate)
+  return getMaxPeriodsToShow(periodWithoutAll.value, oldestTrnDate)
 })
 
 const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
@@ -51,7 +46,7 @@ function onSelectPeriodCount(
 
 <template>
   <Teleport to="body">
-    <LazyBaseBottomSheet @closed="emit('close')">
+    <LazyBaseBottomSheet @closed="closeDateSelector">
       <template #handler="{ close }">
         <BaseBottomSheetHandler />
         <BaseBottomSheetClose @onClick="close" />
@@ -68,7 +63,7 @@ function onSelectPeriodCount(
             <ModalButton2
               v-for="periodItem in periodsNames"
               :key="periodItem.slug"
-              :isActive="props.period === periodItem.slug"
+              :isActive="period === periodItem.slug"
               :name="$t(`dates.${periodItem.slug}.simple`)"
               @click="onSelectPeriodName(periodItem.slug, close)"
             >
@@ -78,7 +73,7 @@ function onSelectPeriodCount(
             </ModalButton2>
 
             <ModalButton2
-              :isActive="props.period === 'all'"
+              :isActive="period === 'all'"
               :name="$t('dates.all.simple')"
               @click="onSelectPeriodName('all', close)"
             >
@@ -89,7 +84,7 @@ function onSelectPeriodCount(
           </div>
 
           <!-- Counts -->
-          <template v-if="props.period !== 'all'">
+          <template v-if="period !== 'all'">
             <div class="title">
               {{ $t("dates.count") }}
             </div>
@@ -100,7 +95,7 @@ function onSelectPeriodCount(
                 :class="{
                   _active:
                     periodCount
-                    === periods[props.periodWithoutAll].showedPeriods,
+                    === periods[periodWithoutAll].showedPeriods,
                 }"
                 class="countsItem"
                 @click="onSelectPeriodCount(periodCount, close)"
@@ -112,7 +107,7 @@ function onSelectPeriodCount(
                 :class="{
                   _active:
                     maxPeriodsNumber
-                    === periods[props.periodWithoutAll].showedPeriods,
+                    === periods[periodWithoutAll].showedPeriods,
                 }"
                 class="countsItem"
                 @click="onSelectPeriodCount(maxPeriodsNumber, close)"

@@ -7,20 +7,15 @@ import { useChart } from '~/components/chart/useChart'
 import type { PeriodName, PeriodNameWithAll } from '~/components/chart/useChart'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const props = defineProps<{
-  periodWithoutAll: PeriodName
-}>()
-
-const emit = defineEmits<{
-  setPeriodAndDate: [period: PeriodName]
-}>()
+const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
+const setPeriodAndDate = inject('setPeriodAndDate') as (period: PeriodNameWithAll) => void
 
 const { periods, addElementsToChart, removeElementsFromChart } = useChart()
 const filterStore = useFilter()
 const trnsStore = useTrnsStore()
 
 const showedPeriods = computed(
-  () => periods.value[props.periodWithoutAll].showedPeriods,
+  () => periods.value[periodWithoutAll.value].showedPeriods,
 )
 
 function saveChartsPeriodsToLocalStorage() {
@@ -75,7 +70,7 @@ const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
           'cursor-default !text-primary':
             periodItem.slug === periodWithoutAll,
         }"
-        @click="emit('setPeriodAndDate', periodItem.slug)"
+        @click="setPeriodAndDate(periodItem.slug)"
       >
         {{ periodItem.name }}
       </div>

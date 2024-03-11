@@ -1,27 +1,28 @@
 <script setup lang="ts">
-import { useCategoriesStore } from '~/components/categories/useCategories';
-import { useFilter } from '~/components/filter/useFilter';
-import { useWalletsStore } from '~/components/wallets/useWalletsStore';
+import { useCategoriesStore } from "~/components/categories/useCategories";
+import { useFilter } from "~/components/filter/useFilter";
+import { useWalletsStore } from "~/components/wallets/useWalletsStore";
+import type { Wallets } from "~/components/wallets/types";
 
-const filterStore = useFilter()
-const walletsStore = useWalletsStore()
-const categoriesStore = useCategoriesStore()
+const filterStore = useFilter();
+const walletsStore = useWalletsStore();
+const categoriesStore = useCategoriesStore();
 
 const filterWalletsItems = computed(() =>
   filterStore.walletsIds.reduce((acc, id) => {
-    acc[id] = walletsStore.items[id]
-    return acc
-  }, {}),
-)
+    acc[id] = walletsStore.items[id];
+    return acc;
+  }, {} as Wallets),
+);
 
 const filterCategoriesItems = computed(() =>
   filterStore.catsIds.reduce((acc, id) => {
-    acc[id] = categoriesStore.items[id]
-    return acc
-  }, {}),
-)
+    acc[id] = categoriesStore.items[id];
+    return acc;
+  }, {} as Wallets),
+);
 
-const isShowCategorySelector = ref(false)
+const isShowCategorySelector = ref(false);
 </script>
 
 <template lang="pug">
@@ -38,7 +39,7 @@ const isShowCategorySelector = ref(false)
     template(#content)
       FilterWalletItem(
         v-if="filterWalletsItems"
-        v-for="(walletItem, walletId) in filterWalletsItems"
+        v-for="(_, walletId) in filterWalletsItems"
         :key="walletId"
         :id="walletId"
         @click="filterStore.removeWalletId(walletId)"
@@ -57,7 +58,7 @@ const isShowCategorySelector = ref(false)
   CategoriesSelector(
     :isShow="isShowCategorySelector"
     isAllowSelectParentCategory
-    @show="value => isShowCategorySelector = value"
+    @onClose="isShowCategorySelector = false"
     @onSelected="filterStore.setCategoryId"
   )
 </template>

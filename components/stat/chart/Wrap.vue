@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { useChart } from '~/components/chart/useChart'
 import type { TrnId } from '~/components/trns/types'
-import type { PeriodName, PeriodNameWithAll } from '~/components/chart/useChart'
+import type { PeriodName } from '~/components/chart/useChart'
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     trnsIds: TrnId[]
     chartType?: 'bar' | 'line'
-    periodWithoutAll: PeriodName
   }>(),
   {
     chartType: 'line',
@@ -15,33 +14,27 @@ const props = withDefaults(
   },
 )
 
-const emit = defineEmits<{
-  setDate: [value: number]
-  setPeriodAndDate: [period: PeriodName]
-}>()
+const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
 
 const { periods } = useChart()
 
 const chartType = computed(
-  () => periods.value[props.periodWithoutAll].type,
+  () => periods.value[periodWithoutAll.value].type,
 )
+
+console.log('wrap')
 </script>
 
 <template>
-  <div class="mx-2 mb-4 rounded-lg bg-item-4">
+  <div class="relative mx-2 mb-4 rounded-lg bg-item-4">
     <div class="h-48">
-      <StatChartView2
+      <StatChartView
         :chartType
         :trnsIds
-        :periodWithoutAll
-        @setDate="v => emit('setDate', v)"
       />
     </div>
     <div class="justify-between px-2 pb-2 sm_flex">
-      <StatChartPeriods
-        :periodWithoutAll
-        @setPeriodAndDate="v => emit('setPeriodAndDate', v)"
-      />
+      <StatChartPeriods />
       <StatChartOptions />
     </div>
   </div>

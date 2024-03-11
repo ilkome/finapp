@@ -77,38 +77,32 @@ function useDateSelector() {
     closeDateSelector,
   }
 }
+
+const isShownFilter = ref(false)
+
+provide('date', computed(() => filterStore.date))
+provide('isShowDateSelector', isShowDateSelector)
+provide('setDate', filterStore.setDate)
+provide('closeDateSelector', closeDateSelector)
+provide('openDateSelector', openDateSelector)
+
+provide('period', computed(() => (filterStore.period)))
+provide('periodWithoutAll', computed(() => (filterStore.periodWithoutAll)))
+provide('setNextPeriodDate', filterStore.setNextPeriodDate)
+provide('setPeriodAndDate', filterStore.setPeriodAndDate)
+provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
 </script>
 
 <template>
   <div class="pb-6 pt-3 lg_max-w-4xl">
     <div class="sticky top-0 z-20 h-[44px] bg-foreground-4 backdrop-blur">
-      <!-- Date -->
-      <StatDate
-        :date="filterStore.date"
-        :period="filterStore.period"
-        :periodWithoutAll="filterStore.periodWithoutAll"
-        :isShowDateSelector
-        @open="openDateSelector"
-        @close="closeDateSelector"
-        @setPeriodAndDate="filterStore.setPeriodAndDate"
-        @setNextPeriodDate="filterStore.setNextPeriodDate"
-        @setPrevPeriodDate="filterStore.setPrevPeriodDate"
-      />
+      <StatDate />
     </div>
 
-    <template v-if="!isMobileView">
-      <div class="px-2 pb-6">
-        <WalletsCurrenciesChanger />
-      </div>
-
-      <LazyStatChartWrap
-        v-if="ui.showMainChart"
-        :periodWithoutAll="filterStore.periodWithoutAll"
-        :trnsIds="Object.keys(trnsStore.items ?? {})"
-        @setDate="filterStore.setDate"
-        @setPeriodAndDate="setPeriodAndDate"
-      />
-    </template>
+    <LazyStatChartWrap
+      v-if="ui.showMainChart"
+      :trnsIds="Object.keys(trnsStore.items ?? {})"
+    />
 
     <div v-if="statPage.filter.isShow" class="px-3 py-3">
       <LazyStatFilter v-if="statPage.filter.isShow" />

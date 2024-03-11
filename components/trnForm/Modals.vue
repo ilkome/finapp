@@ -6,9 +6,10 @@ const $trnForm = useTrnFormStore()
 
 <template lang="pug">
 div
+  //- Categories
   CategoriesSelector(
     :isShow="$trnForm.ui.catsRootModal"
-    @show="value => $trnForm.ui.catsRootModal = value"
+    @onClose="$trnForm.ui.catsRootModal = false"
     @onSelected="id => $trnForm.values.categoryId = id"
   )
 
@@ -16,26 +17,26 @@ div
   LazyTrnFormModalDescription(v-if="$trnForm.modal.description")
 
   //- Transaction
-  LazyTrnFormModalWallets(
+  WalletsSelector(
     v-if="$trnForm.modal.wallets"
     :title="$t('wallets.title')"
-    @click="walletId => $trnForm.values.walletId = walletId"
-    @closed="$trnForm.closeTrnFormModal('wallets')"
+    @onSelected="walletId => $trnForm.values.walletId = walletId"
+    @onClose="$trnForm.closeTrnFormModal('wallets')"
   )
 
   //- Transfer: expense
-  LazyTrnFormModalWallets(
+  WalletsSelector(
     v-if="$trnForm.modal.transferFrom"
     :title="$t('trnForm.transfer.fromLong')"
-    @click="id => $trnForm.values.expenseWalletId = id"
-    @closed="$trnForm.closeTrnFormModal('transferFrom')"
+    @onClose="$trnForm.closeTrnFormModal('transferFrom')"
+    @onSelected="id => $trnForm.values.expenseWalletId = id"
   )
 
   //- Transfer: income
-  LazyTrnFormModalWallets(
+  WalletsSelector(
     v-if="$trnForm.modal.transferTo"
     :title="$t('trnForm.transfer.toLong')"
-    @click="id => $trnForm.values.incomeWalletId = id"
-    @closed="$trnForm.closeTrnFormModal('transferTo')"
+    @onClose="$trnForm.closeTrnFormModal('transferTo')"
+    @onSelected="id => $trnForm.values.incomeWalletId = id"
   )
 </template>

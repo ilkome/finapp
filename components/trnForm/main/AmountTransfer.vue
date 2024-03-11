@@ -7,6 +7,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const $trnForm = useTrnFormStore()
 const walletsStore = useWalletsStore()
+const { t } = useI18n()
 
 const items = ref<Record<MoneyTypeSlug, {
   transferType: TransferType
@@ -51,7 +52,7 @@ watch(() => $trnForm.values.trnType, (trnType) => {
       .px-3.pt-2.grid.items-center.whitespace-nowrap(
         class="grid-cols-[.4fr,1fr]"
       )
-        .grow.text-sm(class="w-1/2 text-primary/70") {{ $t(slug) }}
+        .grow.text-sm(class="w-1/2 text-primary/70") {{ t(slug) }}
         template(v-if="slug === 'income'")
           TrnFormMainSelectedWallet(
             :key="incomeWalletId"

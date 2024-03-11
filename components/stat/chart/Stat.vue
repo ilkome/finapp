@@ -148,8 +148,7 @@ const periodTrnsIds = computed(() =>
 )
 
 // Date Selector
-const { isShowDateSelector, openDateSelector, closeDateSelector }
-  = useDateSelector()
+const { isShowDateSelector, openDateSelector, closeDateSelector } = useDateSelector()
 
 function useDateSelector() {
   const isShowDateSelector = ref(false)
@@ -167,28 +166,24 @@ function useDateSelector() {
     closeDateSelector,
   }
 }
+
+provide('date', date)
+provide('isShowDateSelector', isShowDateSelector)
+provide('closeDateSelector', closeDateSelector)
+provide('openDateSelector', openDateSelector)
+
+provide('period', period)
+provide('periodWithoutAll', periodWithoutAll)
+provide('setNextPeriodDate', setNextPeriodDate)
+provide('setPeriodAndDate', setPeriodAndDate)
+provide('setPrevPeriodDate', setPrevPeriodDate)
+provide('setDate', setDate)
 </script>
 
 <template>
-  <div class="grid gap-1">
-    <StatDate
-      :date
-      :period
-      :periodWithoutAll
-      :isShowDateSelector
-      @open="openDateSelector"
-      @close="closeDateSelector"
-      @setPeriodAndDate="setPeriodAndDate"
-      @setNextPeriodDate="setNextPeriodDate"
-      @setPrevPeriodDate="setPrevPeriodDate"
-    />
-
-    <StatChartWrap
-      :trnsIds="trnsIds || []"
-      :periodWithoutAll
-      @setDate="setDate"
-      @setPeriodAndDate="setPeriodAndDate"
-    />
+  <div class="flex flex-col gap-1">
+    <StatDate />
+    <StatChartWrap :trnsIds="trnsIds" />
   </div>
 
   <div class="px-2">
