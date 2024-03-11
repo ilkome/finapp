@@ -1,4 +1,5 @@
 import localforage from 'localforage'
+import { deepUnref } from 'vue-deepunref'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { getTotal } from '~/components/amount/getTotal'
 import type { WalletId, Wallets } from '~/components/wallets/types'
@@ -27,7 +28,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     }
 
     items.value = values
-    localforage.setItem('finapp.wallets', values)
+    localforage.setItem('finapp.wallets', deepUnref(values))
   }
 
   async function saveWalletsOrder(wallets: Wallets) {

@@ -1,4 +1,5 @@
 import _sortby from 'lodash.sortby'
+import { deepUnref } from 'vue-deepunref'
 import localforage from 'localforage'
 import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 import { getDataAndWatch, unsubscribeData, updateData } from '~/services/firebase/api'
@@ -183,7 +184,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     const valuesWithTransfer = { ...values, transfer }
     items.value = valuesWithTransfer
-    localforage.setItem('finapp.categories', valuesWithTransfer)
+    localforage.setItem('finapp.categories', deepUnref(valuesWithTransfer))
   }
 
   function unsubscribeCategories() {

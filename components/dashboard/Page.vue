@@ -25,7 +25,7 @@ const isMobileView = computed(() => width.value <= 1024)
 const { onWatch } = useStatChart()
 onWatch()
 
-function isShowGroup(type: MoneyTypeSlug) {
+function isShowGroupByType(type: MoneyTypeSlug) {
   const p1
     = activeTabStat.value === 'summary'
     || (activeTabStat.value === 'income' && type === 'income')
@@ -53,10 +53,6 @@ const combinedTrnsIds = computed(() => {
   }
 })
 
-function setPeriodAndDate(v: PeriodNameWithAll) {
-  filterStore.setPeriodAndDate(v)
-}
-
 // Date Selector
 const { isShowDateSelector, openDateSelector, closeDateSelector }
   = useDateSelector()
@@ -78,16 +74,14 @@ function useDateSelector() {
   }
 }
 
-const isShownFilter = ref(false)
-
 provide('date', computed(() => filterStore.date))
 provide('isShowDateSelector', isShowDateSelector)
 provide('setDate', filterStore.setDate)
 provide('closeDateSelector', closeDateSelector)
 provide('openDateSelector', openDateSelector)
 
-provide('period', computed(() => (filterStore.period)))
-provide('periodWithoutAll', computed(() => (filterStore.periodWithoutAll)))
+provide('period', computed(() => filterStore.period))
+provide('periodWithoutAll', computed(() => filterStore.periodWithoutAll))
 provide('setNextPeriodDate', filterStore.setNextPeriodDate)
 provide('setPeriodAndDate', filterStore.setPeriodAndDate)
 provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
@@ -104,28 +98,19 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
       :trnsIds="Object.keys(trnsStore.items ?? {})"
     />
 
-    <div v-if="statPage.filter.isShow" class="px-3 py-3">
-      <LazyStatFilter v-if="statPage.filter.isShow" />
-    </div>
+    <LazyStatFilter v-if="statPage.filter.isShow" />
 
     <StatMenu />
 
     <div class="min-h-[calc(100vh-130px)]" data-scroll-ref="stat">
       <template v-if="activeTabStat !== 'trns'">
-        <div
-          v-if="activeTabStat === 'summary'"
-          class="mx-2 mb-6 flex flex-wrap items-center sm_justify-start gap-4 rounded-lg bg-item-4 sm_bg-transparent p-2 sm_p-0"
-        >
-          <StatSumGroup typeText="expense" />
-          <StatSumGroup typeText="income" />
-          <StatSumTotal />
-        </div>
+        <StatSumAll v-if="activeTabStat === 'summary'" />
 
         <div class="mb-8 px-2 md_mb-4">
           <div class="grid items-start gap-6 md_grid-cols-2 md_gap-8">
             <div
               v-for="item in moneyTypes"
-              v-show="isShowGroup(item.id)"
+              v-show="isShowGroupByType(item.id)"
               :key="item.id"
               class="grid gap-3 rounded-lg bg-item-4 lg_p-2 xl_max-w-[420px]"
             >
@@ -158,19 +143,16 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
               </template>
             </div>
 
+            <!-- Trns on right -->
             <div
               v-if="
                 isShowGroupTrns
                   && activeTabStat !== 'summary'
                   && combinedTrnsIds[activeTabStat].length > 0
               "
-              class="max-w-[420px] pt-4"
+              class="max-w-[420px]"
             >
-              <div
-                class="text-item-base pb-2 font-primary text-lg font-semibold leading-none"
-              >
-                {{ $t("trns.inPeriodTitle") }}
-              </div>
+              <UiTitle2>{{ $t("trns.inPeriodTitle") }}</UiTitle2>
               <TrnsList
                 :size="12"
                 :trnsIds="combinedTrnsIds[activeTabStat]"

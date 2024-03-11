@@ -39,7 +39,7 @@ const filteredTrnsIds = computed(() => {
 
 const trnsCount = computed(() => filteredTrnsIds.value.length)
 
-function setFilterTrnsType(type: TrnType) {
+function setFilterTrnsType(type: TrnType | null) {
   filterTrnsType.value = type
 }
 
@@ -49,7 +49,7 @@ function onClickEdit(props) {
 </script>
 
 <template lang="pug">
-.grid.h-full.overflow-hidden.px-2(
+.grid.h-full.overflow-hidden(
   class="grid-rows-[auto,1fr]"
 )
   //- Header
@@ -59,7 +59,7 @@ function onClickEdit(props) {
       class="!pb-3"
     )
       //- Title
-      UiTitle.px-1
+      UiTitle
         .flex.gap-2
           div {{ $t('trns.inPeriodTitle') }}:
           div {{ trnsCount }}
@@ -75,7 +75,7 @@ function onClickEdit(props) {
             @click="filterTrnsPeriod = 'all'"
           ) {{ $t('common.all') }}
 
-    //- TypeSelector
+    //- Type Selector
     .pb-2(v-if="trnsIds.length > 0")
       UiTabs
         UiTabsItem(

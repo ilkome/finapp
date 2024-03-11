@@ -46,10 +46,10 @@ export async function removeTrnToAddLaterLocal(id) {
 export async function saveTrnIDforDeleteWhenClientOnline(id: TrnId) {
   const ids: TrnId[] = await localforage.getItem('finapp.trns.offline.delete')
 
-  if (ids.includes(id))
+  if (ids?.includes(id))
     return
 
-  ids.push(id)
+  ids?.push(id)
   await localforage.setItem('finapp.trns.offline.delete', ids)
 }
 
@@ -57,7 +57,7 @@ export async function saveTrnIDforDeleteWhenClientOnline(id: TrnId) {
 export async function removeTrnToDeleteLaterLocal(id: TrnId) {
   const ids: TrnId[] = await localforage.getItem('finapp.trns.offline.delete')
 
-  const trnId = ids.find(trnId => trnId === id)
+  const trnId = ids?.find(trnId => trnId === id)
   if (!trnId)
     return
 

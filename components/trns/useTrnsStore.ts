@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { deepUnref } from 'vue-deepunref'
 import localforage from 'localforage'
 import {
   getTransactibleCategoriesIds,
@@ -127,13 +128,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
   function setTrns(values: Trns | null) {
     items.value = values
-    localforage.setItem('finapp.trns', values)
-  }
-
-  function getOldestTrnDate() {
-    // const startOfToday = dayjs().startOf('day').valueOf()
-    // const minDate = Math.min(...Object.values(trnsItems).map(trn => trn.date))
-    // return minDate || startOfToday
+    localforage.setItem('finapp.trns', deepUnref(values))
   }
 
   function addTrn({ id, values }) {
@@ -143,10 +138,10 @@ export const useTrnsStore = defineStore('trns', () => {
       edited: dayjs().valueOf(),
     }
 
-    localforage.setItem('finapp.trns', {
+    localforage.setItem('finapp.trns', deepUnref({
       ...items.value,
       [id]: valuesWithEditDate,
-    })
+    }))
 
     setTrns({ ...items.value, [id]: valuesWithEditDate })
 
@@ -171,7 +166,7 @@ export const useTrnsStore = defineStore('trns', () => {
     delete trns[id]
     setTrns(trns)
 
-    localforage.setItem('finapp.trns', trns)
+    localforage.setItem('finapp.trns', deepUnref(trns))
     saveTrnIDforDeleteWhenClientOnline(id)
 
     removeData(`users/${userStore.uid}/trns/${id}`).then(() =>
@@ -209,21 +204,21 @@ export const useTrnsStore = defineStore('trns', () => {
 
         await localforage.setItem(
           'finapp.trns.offline.update',
-          trnsItemsForUpdate,
+          deepUnref(trnsItemsForUpdate)
         )
 
         // add trns
         for (const trnId in trnsItemsForUpdate) {
           const wallet = walletsStore.items[trnsItemsForUpdate[trnId].walletId]
           const category
-            = rootState.categories.items[trnsItemsForUpdate[trnId].categoryId]
+            = categoriesStore.items[trnsItemsForUpdate[trnId].categoryId]
 
           // delete trn from local storage if no wallet or category
           if (!wallet || !category) {
             delete trnsItemsForUpdate[trnId]
             await localforage.setItem(
               'finapp.trns.offline.update',
-              trnsItemsForUpdate,
+              deepUnref(trnsItemsForUpdate)
             )
           }
 

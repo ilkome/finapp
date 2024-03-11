@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const isShowDateSelector = inject('isShowDateSelector') as boolean
+const isShowDateSelector = inject("isShowDateSelector") as boolean
 </script>
 
 <template>
@@ -9,5 +9,5 @@ const isShowDateSelector = inject('isShowDateSelector') as boolean
     <CurrenciesChangeBtn />
   </div>
 
-  <LazyStatDateModal v-if="isShowDateSelector"/>
+  <LazyStatDateModal v-if="isShowDateSelector" />
 </template>

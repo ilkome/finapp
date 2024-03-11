@@ -27,7 +27,7 @@ const isShownWalletsSelector = ref(false);
 </script>
 
 <template lang="pug">
-.flex.flex-col.gap-2(v-if="filterCategoriesItems || filterWalletsItems")
+.flex.flex-col.gap-2.px-2(v-if="filterCategoriesItems || filterWalletsItems")
   UiTitle {{ $t('base.filter') }}
 
   FilterRow
