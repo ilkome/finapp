@@ -8,8 +8,8 @@ button(
     cursor-pointer
     py-3 px-3 w-full
     text-accent-3 text-center
-    bg-foreground-1 rounded-full
-    hocus_bg-foreground-2
+    bg-item-4 rounded-full
+    hocus_bg-item-5
     transition
   `
   @click="emit('click')"

@@ -114,11 +114,11 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
       <template v-if="activeTabStat !== 'trns'">
         <div
           v-if="activeTabStat === 'summary'"
-          class="mx-2 mb-6 grid gap-3 rounded-lg bg-item-4 lg_p-2"
+          class="mx-2 mb-6 flex flex-wrap items-center sm_justify-start gap-4 rounded-lg bg-item-4 sm_bg-transparent p-2 sm_p-0"
         >
-          <StatSumTotal />
           <StatSumGroup typeText="expense" />
           <StatSumGroup typeText="income" />
+          <StatSumTotal />
         </div>
 
         <div class="mb-8 px-2 md_mb-4">

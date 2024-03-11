@@ -23,6 +23,7 @@ const filterCategoriesItems = computed(() =>
 );
 
 const isShowCategorySelector = ref(false);
+const isShownWalletsSelector = ref(false);
 </script>
 
 <template lang="pug">
@@ -31,10 +32,18 @@ const isShowCategorySelector = ref(false);
 
   FilterRow
     template(#add)
-      FilterAddItem(
-        :isShowText="filterStore.catsIds.length === 0"
-        @click="isShowCategorySelector = true"
-      )
+      .flex.gap-3
+        FilterAddItem(@click="isShowCategorySelector = true")
+          template(#icon)
+            UiIconCategory.size-6
+          template(
+            v-if="filterStore.catsIds.length === 0"
+            name="text"
+          ) {{ $t('categories.createNewTitle') }}
+
+        FilterAddItem(@click="isShownWalletsSelector = true")
+          template(#icon)
+            UiIconWallet.size-6
 
     template(#content)
       FilterWalletItem(
@@ -60,5 +69,12 @@ const isShowCategorySelector = ref(false);
     isAllowSelectParentCategory
     @onClose="isShowCategorySelector = false"
     @onSelected="filterStore.setCategoryId"
+  )
+
+  WalletsSelector(
+    v-if="isShownWalletsSelector"
+    :title="$t('wallets.title')"
+    @onClose="isShownWalletsSelector = false"
+    @onSelected="filterStore.setWalletId"
   )
 </template>

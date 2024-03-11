@@ -7,10 +7,10 @@ const { statAverage, statCurrentPeriod } = useStat()
 </script>
 
 <template>
-  <div class="rounded-lg bg-item-4 px-2 py-2">
+  <div class="rounded-lg bg-item-4 px-2 py-2 sm_px-5 sm_py-4">
     <UiTitle>{{ $t("money.total") }}</UiTitle>
     <div class="scrollbar overflow-hidden overflow-x-auto pt-2">
-      <div class="flex flex-wrap items-center gap-1 gap-x-6">
+      <div class="flex sm_flex-col2 flex-wrap items-start gap-2 gap-x-6">
         <div class="text-3xl">
           <Amount
             :amount="
