@@ -40,7 +40,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.8.0",
+    "@antfu/eslint-config": "^2.7.0",
     "@babel/parser": "^7.24.0",
     "@nuxtjs/color-mode": "^3.3.2",
     "@nuxtjs/i18n": "^8.1.1",
@@ -54,8 +54,8 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "pug": "^3.0.2",
-    "stylus": "^0.63.0",
+    "stylus": "^0.62.0",
     "typescript": "^5.3.3",
-    "vitest": "^0.34.6"
+    "vitest": "^0.34.5"
   }
 }
