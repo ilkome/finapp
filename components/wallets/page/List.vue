@@ -37,102 +37,138 @@ const walletsCurrenciesTabs = reactive({
       return walletsItemsSorted.value
 
     return Object.fromEntries(
-      Object
-        .entries(walletsItemsSorted.value)
-        .filter(([_key, value]) => value.currency === state.value.activeTab),
+      Object.entries(walletsItemsSorted.value).filter(
+        ([_key, value]) => value.currency === state.value.activeTab,
+      ),
     )
   }),
 })
 </script>
 
-<template lang="pug">
-UiPage
-  UiHeader
-    UiHeaderTitle {{ $t('wallets.name') }}
-    template(#actions)
-      UiHeaderLink(@click="openModal('walletsSort')")
-        UiIconSort.w-5.h-5.group-hover_text-white
+<template>
+  <UiPage>
+    <UiHeader>
+      <UiHeaderTitle>{{ $t('wallets.name') }}</UiHeaderTitle>
+      <template #actions>
+        <UiHeaderLink @click="openModal('walletsSort')">
+          <UiIconSort class="w-5 h-5 group-hover_text-white" />
+        </UiHeaderLink>
+        <UiHeaderLink @click="$router.push('/wallets/new')">
+          <UiIconAdd class="w-5 h-5 group-hover_text-white" />
+        </UiHeaderLink>
+      </template>
+    </UiHeader>
 
-      UiHeaderLink(@click="$router.push('/wallets/new')")
-        UiIconAdd.w-5.h-5.group-hover_text-white
+    <!-- Base currency -->
+    <div v-if="walletsCurrencies.length > 1" class="px-2 pb-4">
+      <UiTitle class="pb-2">
+        {{ t('currenciesBase') }}
+      </UiTitle>
+      <WalletsCurrenciesChanger />
+    </div>
 
-  //- Base currency
-  .px-2.pb-4(v-if="walletsCurrencies.length > 1")
-    UiTitle.pb-2 {{ t('currenciesBase') }}
-    WalletsCurrenciesChanger
+    <UiTitle class="px-2 pb-2">
+      {{ t('list') }}
+    </UiTitle>
 
-  UiTitle.px-2.pb-2 {{ t('list') }}
+    <!-- Tabs -->
+    <div v-if="walletsCurrencies.length > 1" class="pb-4 px-2">
+      <UiTabs>
+        <UiTabsItem
+          :isActive="state.activeTab === 'all'"
+          @click="walletsCurrenciesTabs.onSelect('all')"
+        >
+          All
+        </UiTabsItem>
+        <UiTabsItem
+          v-for="currency in walletsCurrencies"
+          :key="currency"
+          :isActive="state.activeTab === currency"
+          @click="walletsCurrenciesTabs.onSelect(currency)"
+        >
+          {{ currency }}
+        </UiTabsItem>
+      </UiTabs>
+    </div>
 
-  //- Tabs
-  .pb-4.px-2(v-if="walletsCurrencies.length > 1")
-    UiTabs
-      UiTabsItem(
-        :isActive="state.activeTab === 'all'"
-        @click="walletsCurrenciesTabs.onSelect('all')"
-      ) All
-      UiTabsItem(
-        v-for="currency in walletsCurrencies"
-        :key="currency"
-        :isActive="state.activeTab === currency"
-        @click="walletsCurrenciesTabs.onSelect(currency)"
-      ) {{ currency }}
+    <!-- List -->
+    <div class="pb-12 px-2 grid gap-y-1 gap-x-6 md:grid-cols-2">
+      <!-- Wallet -->
+      <div
+        v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
+        :key="walletId"
+        class="cursor-pointer flex items-center py-2 px-3 rounded-md bg-item-4 hover:bg-item-5"
+        @click="$router.push(`/wallets/${walletId}`)"
+      >
+        <div class="grow gap-x-3 flex items-center">
+          <div class="grow flex-center gap-x-3">
+            <!-- Icon -->
+            <div
+              :style="{ background: walletItem.color }"
+              class="w-6 h-6 rounded-md flex-center text-icon-primary text-xs leading-none mt-[2px]"
+              @click.stop="setWalletId(walletId)"
+            >
+              {{ walletItem.name.substring(0, 2) }}
+            </div>
 
-  //- Total
-  .pb-4.px-2
-    //- WalletsTotal(
-    //-   :walletsItems="walletsCurrenciesTabs.wallets"
-    //-   :currencyCode="walletsCurrenciesTabs.currencyCode"
-    //- )
+            <div class="grow flex items-center gap-3">
+              <div class="text-secondary2 text-sm">
+                {{ walletItem.name }}
+              </div>
+              <UiIconWalletWithdrawal
+                v-if="walletItem.countTotal"
+                class="w-4 h-4 text-item-2"
+              />
+              <UiIconWalletSavings
+                v-if="!walletItem.countTotal && !walletItem.isCredit"
+                class="w-4 h-4 text-item-2"
+              />
+            </div>
+          </div>
 
-  //- List
-  //---------------------------------
-  .pb-12.px-2.grid.gap-y-1.gap-x-6.md_grid-cols-2
-    //- Wallet
-    .cursor-pointer.flex.items-center.py-2.px-3.rounded-md.bg-item-4.hocus_bg-item-5(
-      v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
-      :key="walletId"
-      @click="$router.push(`/wallets/${walletId}`)"
-    )
-      .grow.gap-x-3.flex.items-center
-        .grow.flex-center.gap-x-3
-          //- Icon
-          .w-6.h-6.rounded-md.flex-center.text-icon-primary.text-xs.leading-none(
-            :style="{ background: walletItem.color }"
-            class="mt-[2px]"
-            @click.stop="setWalletId(walletId)"
-          ) {{ walletItem.name.substring(0, 2) }}
+          <!-- Amount -->
+          <Amount
+            :amount="walletItem.amount"
+            :currencyCode="walletItem.currency"
+          />
+        </div>
+      </div>
+    </div>
 
-          .grow.flex.items-center.gap-3
-            .text-secondary2.text-sm {{ walletItem.name }}
-            UiIconWalletWithdrawal.w-4.h-4.text-item-2(
-              v-if="walletItem.countTotal"
-            )
-            UiIconWalletSavings.w-4.h-4.text-item-2(
-              v-if="!walletItem.countTotal && !walletItem.isCredit"
-            )
+    <!-- Sort -->
+    <Teleport v-if="isModalOpen('walletsSort')" to="body">
+      <div class="max-w-sm">
+        <BaseBottomSheet2
+          keepAlive
+          isShow
+          drugClassesCustom="max-w-md"
+          @closed="closeAllModals"
+        >
+          <template #header>
+            <div class="text-item-base px-2 pb-4 text-center font-primary text-xl font-semibold">
+              777
+            </div>
+          </template>
 
-        //- Amount
-        Amount(
-          :amount="walletItem.amount"
-          :currencyCode="walletItem.currency"
-        )
+          <WalletsSort
+            v-if="isModalOpen('walletsSort')"
+            @closeModal="closeAllModals"
+          />
+        </BaseBottomSheet2>
+      </div>
 
-  //- Sort
-  //-----------------------------------
-  Teleport(
-    v-if="isModalOpen('walletsSort')"
-    to="body"
-  )
-    ModalBottom(
-      isShow
-      key="walletsSort"
-      @onClose="closeAllModals"
-    )
-      template(#default="{ closeModal }")
-        WalletsSort(
+      <!-- <ModalBottom
+        key="walletsSort"
+        isShow
+        @onClose="closeAllModals"
+      >
+        <WalletsSort
           v-if="isModalOpen('walletsSort')"
           @closeModal="closeAllModals"
-        )
+        />
+      </ModalBottom> -->
+    </Teleport>
+  </UiPage>
 </template>
 
 <i18n lang="yaml">

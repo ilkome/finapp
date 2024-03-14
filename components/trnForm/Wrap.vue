@@ -19,6 +19,7 @@ BaseBottomSheet2(
   keepAlive
   :isShow="isShow"
   @closed="$trnForm.onClose()"
+  drugClassesCustom="bg-foreground-2 md_bg-transparent"
 )
   template(#handler="{ close }")
     BaseBottomSheetHandler

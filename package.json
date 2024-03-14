@@ -19,6 +19,7 @@
     "test-coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@formkit/drag-and-drop": "^0.0.29",
     "@pinia/nuxt": "^0.5.1",
     "@popperjs/core": "^2.11.8",
     "currency.js": "^2.0.4",
@@ -36,7 +37,6 @@
     "vue-echarts": "^6.6.9",
     "vue-router": "^4.3.0",
     "vue3-toastify": "^0.2.1",
-    "vuedraggable": "^4.1.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

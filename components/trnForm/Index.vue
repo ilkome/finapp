@@ -64,7 +64,7 @@ onMounted(init)
 <template lang="pug">
 .trnForm
   .swiper-container(ref="sliderRef")
-    .swiper-wrapper.bg-foreground-2.rounded-xl
+    .swiper-wrapper.rounded-xl
       //- History
       .swiper-slide.sm_max-w-sm.sm_rounded-xl.bg-foreground-2(:style="{ height: maxHeight }")
         TrnFormTrnsSlide(
@@ -133,6 +133,7 @@ onMounted(init)
                 class="!gap-x-1"
                 @click="id => $trnForm.values.categoryId = id"
               )
+
   .trnForm__pagination
 
   //- Modals
@@ -154,7 +155,7 @@ onMounted(init)
     padding 6px
     background alpha(#171717, .9)
     border-radius 6px
-    transform translateX(-50%)
+    // transform translateX(-50%)
 
     /.light &
       background var(--c-bg-3)

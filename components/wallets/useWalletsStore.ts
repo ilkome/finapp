@@ -9,11 +9,11 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
+  const userStore = useUserStore()
 
   const items = ref<Wallets>({})
 
   function initWallets() {
-    const userStore = useUserStore()
     getDataAndWatch(`users/${userStore.uid}/accounts`, (wallets: Wallets) => {
       setWallets(wallets || null)
     })
@@ -30,26 +30,21 @@ export const useWalletsStore = defineStore('wallets', () => {
     localforage.setItem('finapp.wallets', deepUnref(values))
   }
 
-  async function saveWalletsOrder(wallets: Wallets) {
-    const userStore = useUserStore()
-    const updates: Wallets = {}
-    const result = {
-      success: null,
-      error: null,
-    }
+  async function saveWalletsOrder(ids: WalletId[]) {
+    const updates = ids.reduce((acc, walletId, index) => {
+      acc[`${walletId}/order`] = index
+      return acc
+    }, {} as Record<string, number>)
 
-    for (const walletId in wallets)
-      updates[`${walletId}/order`] = wallets[walletId]
-
+    let result: string | null = null
     await updateData(`users/${userStore.uid}/accounts`, updates)
-      .then(() => { result.success = 'Updated' })
-      .catch((error) => { result.error = error })
+      .then(() => { result = 'ok' })
+      .catch((error) => { result = error })
 
     return result
   }
 
   function unsubscribeWallets() {
-    const userStore = useUserStore()
     unsubscribeData(`users/${userStore.uid}/accounts`)
     setWallets({})
   }

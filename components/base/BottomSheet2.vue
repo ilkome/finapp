@@ -5,6 +5,7 @@ type Event = TouchEvent | MouseEvent
 
 const props = defineProps<{
   isShow?: boolean
+  drugClassesCustom?: string
 }>()
 
 const emit = defineEmits<{
@@ -148,6 +149,9 @@ function contentHasScroll(event: Event) {
  * Drag start
  */
 function onDragStart(event: Event): void {
+  if (event.target instanceof Element && event?.target?.closest('.sortHandle'))
+    return
+
   if (disabled.value)
     return
 
@@ -329,11 +333,11 @@ watch(() => props.isShow, async () => {
 const { height: drugHeight } = useElementSize(drug)
 const { height: windowHeight } = useWindowSize()
 
-const drugClasses = computed(() => ({
+const drugClasses = computed(() => [{
   'rounded-tl-xl rounded-tr-xl': drugHeight.value < windowHeight.value,
   'transition-opacity transition-transform': !isDragging.value && opened.value,
   'pointer-events-none': isDragging.value && drugStyles.value.transform,
-}))
+}, props.drugClassesCustom])
 
 const overflowClasses = computed(() => ({
   'transition-opacity': !isDragging.value && opened.value,
@@ -363,7 +367,7 @@ const wrapClasses = computed(() => ({
   )
 
   //- Drug
-  #trnForm.drug(
+  .drug(
     ref="drug"
     :class="drugClasses"
     :style="drugStyles"
@@ -372,7 +376,6 @@ const wrapClasses = computed(() => ({
       overflow-hidden
       z-10 absolute left-1/2 bottom-0 w-full h-auto
       -translate-x-1/2 translate-y-0
-      bg-foreground-2
     `
     @click.stop=""
   )

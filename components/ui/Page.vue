@@ -1,22 +1,3 @@
-<script setup lang="ts">
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-
-const $trnForm = useTrnFormStore()
-const styles = ref({
-  paddingBottom: '0px',
-})
-
-watch(() => $trnForm.ui.isShow, (value) => {
-  if (!value) {
-    styles.value.paddingBottom = '0px'
-    return
-  }
-
-  const form: HTMLElement | null = document.querySelector('#trnForm')
-  styles.value.paddingBottom = `${form?.offsetHeight ?? 0}px`
-})
-</script>
-
 <template lang="pug">
 div(
   class=`
@@ -28,7 +9,7 @@ div(
     pb-[44px] md_pb-[52px] lg_pb-0
   `
 )
-  .max-w-5xl.h-full.lg_px-8(:style="styles")
+  .max-w-5xl.h-full.lg_px-8
     slot
 
   .max-w-5xl

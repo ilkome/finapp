@@ -7,7 +7,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     limit: 3,
     transition: 'zoom',
     theme: 'auto',
-    multiple: false,
+    multiple: true,
     icon: false,
     position: toast.POSITION.TOP_LEFT,
   } as ToastOptions)

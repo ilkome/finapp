@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@formkit/drag-and-drop':
+    specifier: ^0.0.29
+    version: 0.0.29
   '@pinia/nuxt':
     specifier: ^0.5.1
     version: 0.5.1(rollup@4.12.0)(typescript@5.3.3)(vue@3.4.21)
@@ -56,9 +59,6 @@ dependencies:
   vue3-toastify:
     specifier: ^0.2.1
     version: 0.2.1(vue@3.4.21)
-  vuedraggable:
-    specifier: ^4.1.0
-    version: 4.1.0(vue@3.4.21)
   zod:
     specifier: ^3.22.4
     version: 3.22.4
@@ -2366,6 +2366,10 @@ packages:
 
   /@firebase/webchannel-wrapper@0.10.5:
     resolution: {integrity: sha512-eSkJsnhBWv5kCTSU1tSUVl9mpFu+5NXXunZc83le8GMjMlsWwQArSc7cJJ4yl+aDFY0NGLi0AjZWMn1axOrkRg==}
+    dev: false
+
+  /@formkit/drag-and-drop@0.0.29:
+    resolution: {integrity: sha512-0B8evfYVy6Y72Wf14JqN9GLvir0W4qwqUZd2o7OQ030UjnDmk+rUkfn6HIx0ynwJgEEFSLql0vfu0DYEiS122g==}
     dev: false
 
   /@grpc/grpc-js@1.9.14:
@@ -9647,10 +9651,6 @@ packages:
       ip-address: 9.0.5
       smart-buffer: 4.2.0
 
-  /sortablejs@1.14.0:
-    resolution: {integrity: sha512-pBXvQCs5/33fdN1/39pPL0NZF20LeRbLQ5jtnheIPN9JQAaufGjKdWduZn4U7wCtVuzKhmRkI0DFYHYRbB2H1w==}
-    dev: false
-
   /source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
     engines: {node: '>=0.10.0'}
@@ -11051,15 +11051,6 @@ packages:
       '@vue/server-renderer': 3.4.21(vue@3.4.21)
       '@vue/shared': 3.4.21
       typescript: 5.3.3
-
-  /vuedraggable@4.1.0(vue@3.4.21):
-    resolution: {integrity: sha512-FU5HCWBmsf20GpP3eudURW3WdWTKIbEIQxh9/8GE806hydR9qZqRRxRE3RjqX7PkuLuMQG/A7n3cfj9rCEchww==}
-    peerDependencies:
-      vue: ^3.0.1
-    dependencies:
-      sortablejs: 1.14.0
-      vue: 3.4.21(typescript@5.3.3)
-    dev: false
 
   /webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
