@@ -21,8 +21,6 @@ const { periods } = useChart()
 const chartType = computed(
   () => periods.value[periodWithoutAll.value].type,
 )
-
-console.log('wrap')
 </script>
 
 <template>

@@ -6,11 +6,12 @@ import useStatPage from '~/components/stat/useStatPage'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import type { MoneyTypeNumber } from '~/components/stat/types'
 
 const props = defineProps<{
   biggest: number
   total: number
-  type: TrnType
+  moneyTypeNumber: MoneyTypeNumber
   category: CategoryItem
   categoryId: CategoryId
 }>()
@@ -36,7 +37,7 @@ const trnsIds = computed(() => {
     return []
 
   return statPage.current.trnsIds
-    .filter(id => trnsStore.items[id].type === props.type && trnsStore.items[id].categoryId === props.categoryId)
+    .filter(id => trnsStore.items[id].type === props.moneyTypeNumber && trnsStore.items[id].categoryId === props.categoryId)
     .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date)
 })
 </script>
@@ -62,7 +63,7 @@ const trnsIds = computed(() => {
           Amount(
             :amount="total"
             :currencyCode="currenciesStore.base"
-            :type="type"
+            :type="moneyTypeNumber"
             :isShowBaseRate="false"
           )
 

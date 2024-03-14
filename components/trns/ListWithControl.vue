@@ -65,12 +65,12 @@ function onClickEdit(props) {
           div {{ trnsCount }}
 
       .div(v-if="defaultFilterTrnsPeriod")
-        UiTabs
-          UiTabsItem(
+        UiTabs2
+          UiTabsItem2(
             :isActive="filterTrnsPeriod === 'period'"
             @click="filterTrnsPeriod = 'period'"
           ) {{ $t('dates.period') }}
-          UiTabsItem(
+          UiTabsItem2(
             :isActive="filterTrnsPeriod === 'all'"
             @click="filterTrnsPeriod = 'all'"
           ) {{ $t('common.all') }}

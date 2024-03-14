@@ -3,8 +3,9 @@ import useUIView from '~/components/layout/useUIView'
 import { getStyles } from '~/components/ui/classes'
 
 const { ui, setUI } = useUIView()
+
 function toggleView(name) {
-  setUI({ name, value: !ui[name] })
+  setUI({ name, value: !ui.value[name] })
 }
 </script>
 

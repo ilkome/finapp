@@ -204,7 +204,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
         await localforage.setItem(
           'finapp.trns.offline.update',
-          deepUnref(trnsItemsForUpdate)
+          deepUnref(trnsItemsForUpdate),
         )
 
         // add trns
@@ -218,7 +218,7 @@ export const useTrnsStore = defineStore('trns', () => {
             delete trnsItemsForUpdate[trnId]
             await localforage.setItem(
               'finapp.trns.offline.update',
-              deepUnref(trnsItemsForUpdate)
+              deepUnref(trnsItemsForUpdate),
             )
           }
 

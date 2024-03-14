@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MoneyTypeSlug } from '~/components/stat/types'
+import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
 import { useCategoriesStore } from '~/components/categories/useCategories'
@@ -17,10 +17,10 @@ const categoriesStore = useCategoriesStore()
 const isShow = computed(
   () =>
     statPage.current[props.moneyTypeSlug]?.categoriesIds?.length
-    && ui.showCatsHorizontalList,
+    && ui.value.showCatsHorizontalList,
 )
 
-const typeNumber = moneyTypes.find(t => t.id === props.moneyTypeSlug)?.type
+const moneyTypeNumber = moneyTypes.find(t => t.id === props.moneyTypeSlug)?.type ?? 1
 </script>
 
 <template>
@@ -32,7 +32,7 @@ const typeNumber = moneyTypes.find(t => t.id === props.moneyTypeSlug)?.type
       :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
       :total="statPage.current.categories[categoryId][moneyTypeSlug]"
-      :type="typeNumber"
+      :moneyTypeNumber="moneyTypeNumber"
     />
   </div>
 </template>

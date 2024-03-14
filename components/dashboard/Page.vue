@@ -164,7 +164,7 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
 
       <!-- Trns -->
       <template v-if="activeTabStat === 'trns'">
-        <div class="my-4 px-2">
+        <div class="mb-4 px-2">
           <TrnsListWithControl
             :trnsIds="statPage.current.trnsIds"
             isFilterByDay

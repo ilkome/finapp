@@ -10,7 +10,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 export const useCategoriesStore = defineStore('categories', () => {
   const trnsStore = useTrnsStore()
 
-  const items = ref<Categories | null>(null)
+  const items = ref<Categories>({})
 
   const hasCategories = computed(() => {
     if (!items.value)
@@ -195,20 +195,26 @@ export const useCategoriesStore = defineStore('categories', () => {
 
   function isCategoryHasChildren(categoryId: CategoryId) {
     if (!hasCategories.value)
-      return []
+      return false
 
     return items.value[categoryId].childIds?.length > 0
   }
 
   function getChildCategoriesIds(categoryId: CategoryId) {
+    console.log('getChildCategoriesIds')
     if (!hasCategories.value)
       return []
 
+    console.log('getChildCategoriesIds2', categoryId)
     const category = items.value[categoryId]
+    console.log('category', category)
 
-    if (category?.parentId === 0)
+    if (category?.parentId === 0) {
+      console.log('category?.parentId === 0', Object.keys(items.value).filter(id => items.value[id]?.parentId === categoryId))
       return Object.keys(items.value).filter(id => items.value[id]?.parentId === categoryId)
+    }
 
+    console.log('getChildCategoriesIds3')
     return []
   }
 

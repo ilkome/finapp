@@ -20,7 +20,7 @@ const biggestAmount = computed(
 
 const isShow = computed(
   () =>
-    ui.showCatsVerticalChart
+    ui.value.showCatsVerticalChart
     && statPage.current[props.moneyTypeSlug]?.categoriesIds?.length > 1,
 )
 </script>

@@ -8,8 +8,10 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUser'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { auth } from '~/services/firebase/api'
+import useUIView from '~/components/layout/useUIView'
 
 export function useInitApp() {
+  const { setUI } = useUIView()
   const filterStore = useFilter()
   const userStore = useUserStore()
   const currenciesStore = useCurrenciesStore()
@@ -55,13 +57,14 @@ export function useInitApp() {
     const { initChart } = useChart()
     await initChart()
 
-    const [user, currencies, categories, wallets, trns, filterPeriod] = await Promise.all([
+    const [user, currencies, categories, wallets, trns, filterPeriod, ui] = await Promise.all([
       localforage.getItem('finapp.user'),
       localforage.getItem('finapp.currencies'),
       localforage.getItem('finapp.categories'),
       localforage.getItem('finapp.wallets'),
       localforage.getItem('finapp.trns'),
       localforage.getItem('finapp.filter.period'),
+      localforage.getItem('finapp.ui'),
     ])
 
     // console.log('user', user)
@@ -78,6 +81,11 @@ export function useInitApp() {
     categories && categoriesStore.setCategories(categories)
     trns && trnsStore.setTrns(trns)
     filterPeriod && filterStore.setPeriodAndDate(filterPeriod ?? 'month')
+
+    if (ui) {
+      for (const slug in ui)
+        setUI({ name: slug, value: ui[slug] })
+    }
 
     // ready
     if (categories && user && trns && wallets) {

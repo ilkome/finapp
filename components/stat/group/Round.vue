@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
 import { useStat } from '~/components/stat/useStat'
 import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
@@ -10,6 +11,7 @@ const props = defineProps<{
   moneyTypeSlug: MoneyTypeSlug
 }>()
 
+const { width } = useWindowSize()
 const { statPage } = useStatPage()
 const { moneyTypes } = useStat()
 const { ui } = useUIView()
@@ -19,7 +21,7 @@ const roundRef = ref(null)
 
 const isShow = computed(
   () =>
-    ui.showRoundCats && statPage.current[props.moneyTypeSlug]?.categoriesIds?.length,
+    ui.value.showRoundCats && statPage.current[props.moneyTypeSlug]?.categoriesIds?.length,
 )
 const typeNumber = moneyTypes.find(t => t.id === props.moneyTypeSlug)?.type
 
@@ -46,7 +48,9 @@ function updateWidth() {
 watch(statPage.current[props.moneyTypeSlug]?.categoriesIds, updateWidth, {
   immediate: true,
 })
+
 watch(isShow, updateWidth, { immediate: true })
+watch(width, updateWidth)
 </script>
 
 <template>
