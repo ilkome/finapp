@@ -2,7 +2,6 @@
 import { storeToRefs } from 'pinia'
 import { useWindowSize } from '@vueuse/core'
 import type { MoneyTypeSlugSum } from '~/components/stat/types'
-import useStatChart from '~/components/stat/useStatChart'
 import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
 import { useAppNav } from '~/components/app/useAppNav'
@@ -20,9 +19,6 @@ const trnsStore = useTrnsStore()
 const { activeTabStat } = storeToRefs(useAppNav())
 
 const isMobileView = computed(() => width.value <= 1024)
-
-const { onWatch } = useStatChart()
-onWatch()
 
 function isShowGroupByType(type: MoneyTypeSlugSum) {
   const p1
@@ -96,7 +92,16 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
       :trnsIds="Object.keys(trnsStore.items ?? {})"
     />
     <LazyStatFilter v-if="statPage.filter.isShow" />
-    <StatSumAll />
+
+    <!-- Sum All -->
+    <div
+      class="mx-2 flex flex-wrap items-center gap-4 rounded-lg bg-item-4 p-2 sm_justify-start sm_bg-transparent sm_p-0"
+    >
+      <StatTotalWithAverage moneyTypeSlugSum="expense" />
+      <StatTotalWithAverage moneyTypeSlugSum="income" />
+      <StatTotalWithAverage moneyTypeSlugSum="sum" />
+    </div>
+
     <StatMenu class="py-4" />
 
     <div class="min-h-[calc(100vh-130px)]" data-scroll-ref="stat">
@@ -109,7 +114,7 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
               :key="item.id"
               class="grid gap-3 rounded-lg bg-item-4 lg_p-2 xl_max-w-[420px]"
             >
-              <StatSumGroup :moneyTypeSlugSum="item.id" />
+              <StatTotalWithAverage :moneyTypeSlugSum="item.id" />
               <StatGroupVertical :moneyTypeSlug="item.id" />
               <StatGroupRound :moneyTypeSlug="item.id" />
               <StatGroupHorizontal :moneyTypeSlug="item.id" />

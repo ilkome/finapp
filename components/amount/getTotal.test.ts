@@ -8,8 +8,8 @@ import { walletsItems } from '~/mocks/wallets'
 
 const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
 
-describe('Total of Transactions', () => {
-  it('Correct empty result and correct total structure', () => {
+describe('total of Transactions', () => {
+  it('correct empty result and correct total structure', () => {
     const trnsIds = []
 
     const total = getTotal({
@@ -29,7 +29,7 @@ describe('Total of Transactions', () => {
     })
   })
 
-  it('Total in RUB Wallet converted to USD', () => {
+  it('total in RUB Wallet converted to USD', () => {
     const trnsIds = ['transactionIncomeWalletOneRUB700']
     const baseCurrencyCode = 'USD'
 
@@ -50,7 +50,7 @@ describe('Total of Transactions', () => {
     expect(total.sumTransfers).toEqual(0)
   })
 
-  it('Total in RUB Wallet converted to EUR', () => {
+  it('total in RUB Wallet converted to EUR', () => {
     const trnsIds = ['transactionIncomeWalletOneRUB700']
     const baseCurrencyCode = 'EUR'
 
@@ -71,7 +71,7 @@ describe('Total of Transactions', () => {
     expect(total.sumTransfers).toEqual(0)
   })
 
-  it('Total in USD Wallet converted to USD', () => {
+  it('total in USD Wallet converted to USD', () => {
     const trnsIds = [
       'transactionIncomeWalletCashUSD1000',
       'transactionExpenseWalletCashUSD400',
@@ -95,7 +95,7 @@ describe('Total of Transactions', () => {
     expect(total.sumTransfers).toEqual(0)
   })
 
-  it('Total in RUB, USD Wallets converted to EUR', () => {
+  it('total in RUB, USD Wallets converted to EUR', () => {
     const trnsIds = [
       'transactionIncomeWalletOneRUB700',
       'transactionExpenseWalletCashUSD400',
@@ -119,7 +119,7 @@ describe('Total of Transactions', () => {
     expect(total.sumTransfers).toEqual(0)
   })
 
-  it('Total in Wallet Cash USD with Transfers', () => {
+  it('total in Wallet Cash USD with Transfers', () => {
     const walletsIds = ['walletCashUSD']
     const trnsIds = [
       'transactionIncomeWalletCashUSD1000',
@@ -146,7 +146,7 @@ describe('Total of Transactions', () => {
     expect(total.sumTransfers).toEqual(30)
   })
 
-  it('Total of Transfers when no Wallets provided', () => {
+  it('total of Transfers when no Wallets provided', () => {
     const trnsIds = [
       'transactionIncomeWalletCashUSD1000',
       'transactionExpenseWalletCashUSD400',
@@ -170,7 +170,7 @@ describe('Total of Transactions', () => {
     expect(total.sumTransfers).toEqual(0)
   })
 
-  it('Total of Transfers with deprecated Transfer type when no Wallets provided', () => {
+  it('total of Transfers with deprecated Transfer type when no Wallets provided', () => {
     const trnsIds = ['transferOLDExpense2500Income3500']
 
     const total = getTotal({
@@ -185,7 +185,7 @@ describe('Total of Transactions', () => {
     expect(total.sumTransfers).toEqual(1000)
   })
 
-  it('Total of Transfers with deprecated Transfer type', () => {
+  it('total of Transfers with deprecated Transfer type', () => {
     const walletsIds = ['walletDeprecatedTransferIncome', 'walletDeprecatedTransferExpense']
     const trnsIds = ['transferOLDExpense2500Income3500']
 

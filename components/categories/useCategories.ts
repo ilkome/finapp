@@ -1,16 +1,42 @@
 import _sortby from 'lodash.sortby'
 import { deepUnref } from 'vue-deepunref'
 import localforage from 'localforage'
-import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
-import { getDataAndWatch, unsubscribeData, updateData } from '~/services/firebase/api'
+import type {
+  Categories,
+  CategoryId,
+  CategoryItem,
+} from '~/components/categories/types'
+import {
+  getDataAndWatch,
+  unsubscribeData,
+  updateData,
+} from '~/services/firebase/api'
 import { useUserStore } from '~/components/user/useUser'
 import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import type { TrnId } from '~/components/trns/types'
+import { getTotal } from '~/components/amount/getTotal'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export const useCategoriesStore = defineStore('categories', () => {
-  const trnsStore = useTrnsStore()
+  const transfer: CategoryItem = {
+    color: 'var(--c-blue-1)',
+    icon: 'mdi mdi-repeat',
+    name: 'Transfer',
+    order: 9999,
+    parentId: 0,
+    childIds: [],
+    showInLastUsed: false,
+    showInQuickSelector: false,
+    showStat: false,
+  }
 
-  const items = ref<Categories>({})
+  const trnsStore = useTrnsStore()
+  const currenciesStore = useCurrenciesStore()
+  const walletsStore = useWalletsStore()
+
+  const items = ref<Categories>({ transfer })
 
   const hasCategories = computed(() => {
     if (!items.value)
@@ -43,8 +69,12 @@ export const useCategoriesStore = defineStore('categories', () => {
       return []
 
     return categoriesRootIds.value.filter((id: CategoryId) => {
-      const hasTrnsInCategory = Object.values(trnsStore.items).some(trn => trn.categoryId === id)
-      const isTransferCategory = getTransferCategoriesIds(items.value).includes(id)
+      const hasTrnsInCategory = Object.values(trnsStore.items).some(
+        trn => trn.categoryId === id,
+      )
+      const isTransferCategory = getTransferCategoriesIds(items.value).includes(
+        id,
+      )
 
       if (hasTrnsInCategory || isTransferCategory)
         return false
@@ -61,9 +91,10 @@ export const useCategoriesStore = defineStore('categories', () => {
       .filter(id => items.value[id].showInQuickSelector)
       .map(id => ({ id, ...items.value[id] }))
 
-    return _sortby(filteredCategories, category =>
-      [items.value[category.parentId]?.name || false, category.name])
-      .map(c => c.id)
+    return _sortby(filteredCategories, category => [
+      items.value[category.parentId]?.name || false,
+      category.name,
+    ]).map(c => c.id)
   })
 
   const recentCategoriesIds = computed(() => {
@@ -86,14 +117,24 @@ export const useCategoriesStore = defineStore('categories', () => {
       const categoryId = trnsItems[trnId].categoryId
       const category = items.value[categoryId]
 
-      if (!category || ('showInLastUsed' in category && !category.showInLastUsed))
+      if (
+        !category
+        || ('showInLastUsed' in category && !category.showInLastUsed)
+      )
         continue
 
-      const isCategoryAlreadyAdded = lastCategories.some(c => c.id === categoryId)
+      const isCategoryAlreadyAdded = lastCategories.some(
+        c => c.id === categoryId,
+      )
       const isTransferCategory = transferCategoriesIds.includes(categoryId)
-      const isCategoryInQuickSelector = favoriteCategoriesIds.value.includes(categoryId)
+      const isCategoryInQuickSelector
+        = favoriteCategoriesIds.value.includes(categoryId)
 
-      if (!isCategoryAlreadyAdded && !isTransferCategory && !isCategoryInQuickSelector) {
+      if (
+        !isCategoryAlreadyAdded
+        && !isTransferCategory
+        && !isCategoryInQuickSelector
+      ) {
         lastCategories.push({
           id: categoryId,
           ...category,
@@ -101,14 +142,18 @@ export const useCategoriesStore = defineStore('categories', () => {
       }
     } // Add a comma here
 
-    return _sortby(lastCategories, category =>
-      [items.value[category.parentId]?.name || false, category.name])
-      .map(c => c.id)
+    return _sortby(lastCategories, category => [
+      items.value[category.parentId]?.name || false,
+      category.name,
+    ]).map(c => c.id)
   })
 
   const categoriesIdsForTrnValues = computed(() => {
-    return categoriesIds.value.filter((id: CategoryId) =>
-      id !== 'transfer' && (!items.value[id].childIds || items.value[id].childIds?.length === 0))
+    return categoriesIds.value.filter(
+      (id: CategoryId) =>
+        id !== 'transfer'
+        && (!items.value[id].childIds || items.value[id].childIds?.length === 0),
+    )
   })
 
   /**
@@ -117,69 +162,64 @@ export const useCategoriesStore = defineStore('categories', () => {
   function initCategories() {
     const userStore = useUserStore()
 
-    getDataAndWatch(`users/${userStore.uid}/categories`, (items: Categories) => {
-      // add child categories to root categories
-      for (const categoryId in items) {
-        const parentCategoryId = items[categoryId].parentId
-        if (parentCategoryId !== 0 && items[parentCategoryId]) {
-          items[parentCategoryId].childIds
-            ? !items[parentCategoryId].childIds?.includes(categoryId) && items[parentCategoryId].childIds?.push(categoryId)
-            : items[parentCategoryId].childIds = [categoryId]
-        }
-      }
-
-      // Add missing props
-      for (const categoryId in items) {
-        const cat = items[categoryId]
-
-        if (cat.showInLastUsed === undefined) {
-          items[categoryId] = {
-            ...cat,
-            showInLastUsed: false,
+    getDataAndWatch(
+      `users/${userStore.uid}/categories`,
+      (items: Categories) => {
+        // add child categories to root categories
+        for (const categoryId in items) {
+          const parentCategoryId = items[categoryId].parentId
+          if (parentCategoryId !== 0 && items[parentCategoryId]) {
+            items[parentCategoryId].childIds
+              ? !items[parentCategoryId].childIds?.includes(categoryId)
+              && items[parentCategoryId].childIds?.push(categoryId)
+              : (items[parentCategoryId].childIds = [categoryId])
           }
         }
 
-        if (cat.showInQuickSelector === undefined) {
-          items[categoryId] = {
-            ...cat,
-            showInQuickSelector: false,
+        // Add missing props
+        for (const categoryId in items) {
+          const cat = items[categoryId]
+
+          if (cat.showInLastUsed === undefined) {
+            items[categoryId] = {
+              ...cat,
+              showInLastUsed: false,
+            }
+          }
+
+          if (cat.showInQuickSelector === undefined) {
+            items[categoryId] = {
+              ...cat,
+              showInQuickSelector: false,
+            }
+          }
+
+          if (cat.childIds) {
+            items[categoryId] = {
+              ...cat,
+              showInLastUsed: false,
+              showInQuickSelector: false,
+            }
+
+            for (const childCatId of cat.childIds) {
+              if (!items[childCatId]) {
+                items[categoryId].childIds = items[categoryId].childIds?.filter(
+                  id => id !== childCatId,
+                )
+              }
+            }
           }
         }
 
-        if (cat.childIds) {
-          items[categoryId] = {
-            ...cat,
-            showInLastUsed: false,
-            showInQuickSelector: false,
-          }
-
-          for (const childCatId of cat.childIds) {
-            if (!items[childCatId])
-              items[categoryId].childIds = items[categoryId].childIds?.filter(id => id !== childCatId)
-          }
-        }
-      }
-
-      setCategories(items)
-    })
+        setCategories(items)
+      },
+    )
   }
 
   function setCategories(values: Categories | null) {
     if (values == null) {
       items.value = null
       localforage.setItem('finapp.categories', null)
-    }
-
-    const transfer: CategoryItem = {
-      color: 'var(--c-blue-1)',
-      icon: 'mdi mdi-repeat',
-      name: 'Transfer',
-      order: 9999,
-      parentId: 0,
-      childIds: [],
-      showInLastUsed: false,
-      showInQuickSelector: false,
-      showStat: false,
     }
 
     const valuesWithTransfer = { ...values, transfer }
@@ -201,26 +241,44 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   function getChildCategoriesIds(categoryId: CategoryId) {
-    console.log('getChildCategoriesIds')
     if (!hasCategories.value)
       return []
 
-    console.log('getChildCategoriesIds2', categoryId)
-    const category = items.value[categoryId]
-    console.log('category', category)
-
-    if (category?.parentId === 0) {
-      console.log('category?.parentId === 0', Object.keys(items.value).filter(id => items.value[id]?.parentId === categoryId))
-      return Object.keys(items.value).filter(id => items.value[id]?.parentId === categoryId)
+    if (items.value[categoryId]?.parentId === 0) {
+      return Object.keys(items.value).filter(
+        id => items.value[id]?.parentId === categoryId,
+      )
     }
 
-    console.log('getChildCategoriesIds3')
     return []
   }
 
   function saveCategoriesOrder(ids: CategoryId[]) {
     const userStore = useUserStore()
     updateData(`users/${userStore.uid}/categories`, { order: ids })
+  }
+
+  function getCategoryStat({
+    categoryId,
+    trnsIds,
+  }: {
+    categoryId: CategoryId
+    trnsIds: TrnId[]
+  }) {
+    const total = getTotal({
+      baseCurrencyCode: currenciesStore.base,
+      rates: currenciesStore.rates,
+      trnsIds,
+      trnsItems: trnsStore.items,
+      walletsItems: walletsStore.items,
+    })
+
+    return {
+      categoryId,
+      total: total.sumTransactions,
+      income: total.incomeTransactions,
+      expense: total.expenseTransactions,
+    }
   }
 
   return {
@@ -237,7 +295,9 @@ export const useCategoriesStore = defineStore('categories', () => {
     setCategories,
     isCategoryHasChildren,
     getChildCategoriesIds,
-    saveCategoriesOrder,
     unsubscribeCategories,
+    saveCategoriesOrder,
+
+    getCategoryStat,
   }
 })

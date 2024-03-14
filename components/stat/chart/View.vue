@@ -19,7 +19,7 @@ import {
 } from '~/components/categories/getCategories'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { config, lineConfig } from '~/components/chart/config'
-import { useChart } from '~/components/chart/useChart'
+import { useChartStore } from '~/components/chart/useChartStore'
 import { markArea, setChartXAxis } from '~/components/chart/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
@@ -28,7 +28,7 @@ import { getOldestTrnDate } from '~/components/trns/helpers'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { TrnId, TrnItem } from '~/components/trns/types'
-import type { PeriodName } from '~/components/chart/useChart'
+import type { PeriodName } from '~/components/chart/useChartStore'
 
 const props = withDefaults(
   defineProps<{
@@ -40,7 +40,6 @@ const props = withDefaults(
     trnsIds: () => [],
   },
 )
-
 
 const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
 const setDate = inject('setDate') as (date: number) => void
@@ -56,13 +55,12 @@ use([
   TooltipComponent,
 ])
 
-const { isShowDataLabels } = useChart()
+const chartStore = useChartStore()
 const filterStore = useFilter()
 const currenciesStore = useCurrenciesStore()
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
-const { periods } = useChart()
 
 const chartRef = ref()
 
@@ -90,7 +88,7 @@ const statData = computed(() => {
     = dayjs()
       .endOf(periodWithoutAll.value)
       .diff(oldestTrnDate, periodWithoutAll.value) + 1
-  const periodsWantToShow = periods.value[periodWithoutAll.value].showedPeriods
+  const periodsWantToShow = chartStore.periods[periodWithoutAll.value].showedPeriods
   periodsToShow
     = periodsWantToShow >= periodsToShow ? periodsToShow : periodsWantToShow
 
@@ -348,7 +346,7 @@ function setChartSeries(series: unknown[]) {
     type: props.chartType,
     label: {
       ...lineConfig.label,
-      show: isShowDataLabels.value,
+      show: chartStore.isShowDataLabels,
     },
   }))
 }

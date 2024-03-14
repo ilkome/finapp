@@ -3,7 +3,7 @@ import localforage from 'localforage'
 import { storeToRefs } from 'pinia'
 import { useAppNav } from '~/components/app/useAppNav'
 import type { CategoryId } from '~/components/categories/types'
-import type { PeriodName, PeriodNameWithAll } from '~/components/chart/useChart'
+import type { PeriodName, PeriodNameWithAll } from '~/components/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 

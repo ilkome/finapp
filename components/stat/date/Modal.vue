@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import usePeriods from '~/components/periods/usePeriods'
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
 import { getOldestTrnDate } from '~/components/trns/helpers'
-import { useChart } from '~/components/chart/useChart'
+import { useChartStore } from '~/components/chart/useChartStore'
 import type {
   PeriodName,
   PeriodNameWithAll,
   PeriodSchema,
-} from '~/components/chart/useChart'
+} from '~/components/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import '~/components/modal/styles/modalLinks.styl'
 
@@ -16,9 +15,7 @@ const period = inject('period') as Ref<PeriodNameWithAll>
 const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
 const setPeriodAndDate = inject('setPeriodAndDate') as (period: PeriodNameWithAll) => void
 
-// TODO: Hight
-const { periodsNames } = usePeriods()
-const { periods, setElementsToChart } = useChart()
+const chartStore = useChartStore()
 const trnsStore = useTrnsStore()
 
 function onSelectPeriodName(periodName: PeriodNameWithAll, close: () => void) {
@@ -40,7 +37,7 @@ function onSelectPeriodCount(
   close: () => void,
 ) {
   close()
-  setElementsToChart(number)
+  chartStore.setElementsToChart(number)
 }
 </script>
 
@@ -61,7 +58,7 @@ function onSelectPeriodCount(
           <!-- Periods -->
           <div class="grid gap-2 px-3">
             <ModalButton2
-              v-for="periodItem in periodsNames"
+              v-for="periodItem in chartStore.periodsNames"
               :key="periodItem.slug"
               :isActive="period === periodItem.slug"
               :name="$t(`dates.${periodItem.slug}.simple`)"
@@ -95,7 +92,7 @@ function onSelectPeriodCount(
                 :class="{
                   _active:
                     periodCount
-                    === periods[periodWithoutAll].showedPeriods,
+                    === chartStore.periods[periodWithoutAll].showedPeriods,
                 }"
                 class="countsItem"
                 @click="onSelectPeriodCount(periodCount, close)"
@@ -107,7 +104,7 @@ function onSelectPeriodCount(
                 :class="{
                   _active:
                     maxPeriodsNumber
-                    === periods[periodWithoutAll].showedPeriods,
+                    === chartStore.periods[periodWithoutAll].showedPeriods,
                 }"
                 class="countsItem"
                 @click="onSelectPeriodCount(maxPeriodsNumber, close)"

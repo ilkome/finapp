@@ -1,29 +1,28 @@
 <script setup lang="ts">
 import { useFilter } from '~/components/filter/useFilter'
-import usePeriods from '~/components/periods/usePeriods'
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
 import { getOldestTrnDate } from '~/components/trns/helpers'
-import { useChart } from '~/components/chart/useChart'
-import type { PeriodName, PeriodNameWithAll } from '~/components/chart/useChart'
+import { useChartStore } from '~/components/chart/useChartStore'
+import type { PeriodName, PeriodNameWithAll } from '~/components/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
 const setPeriodAndDate = inject('setPeriodAndDate') as (period: PeriodNameWithAll) => void
 
-const { periods, addElementsToChart, removeElementsFromChart } = useChart()
+const chartStore = useChartStore()
 const filterStore = useFilter()
 const trnsStore = useTrnsStore()
 
 const showedPeriods = computed(
-  () => periods.value[periodWithoutAll.value].showedPeriods,
+  () => chartStore.periods[periodWithoutAll.value].showedPeriods,
 )
 
 function saveChartsPeriodsToLocalStorage() {
-  localStorage.setItem('chartsPeriods', JSON.stringify(periods.value))
+  localStorage.setItem('chartsPeriods', JSON.stringify(chartStore.periods))
 }
 
 function addPeriod() {
-  addElementsToChart()
+  chartStore.addElementsToChart()
   saveChartsPeriodsToLocalStorage()
 }
 
@@ -31,12 +30,9 @@ function removePeriod() {
   if (showedPeriods.value <= 1)
     return
 
-  removeElementsFromChart()
+  chartStore.removeElementsFromChart()
   saveChartsPeriodsToLocalStorage()
 }
-
-// Periods
-const { periodsNames } = usePeriods()
 
 // TODO: duplicate computed
 const maxPeriodsNumber = computed(() => {
@@ -63,7 +59,7 @@ const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
       </div>
 
       <div
-        v-for="periodItem in periodsNames"
+        v-for="periodItem in chartStore.periodsNames"
         :key="periodItem.slug"
         class="cursor-pointer rounded-md px-3 py-2 text-secondary2 hocus_bg-item-5"
         :class="{

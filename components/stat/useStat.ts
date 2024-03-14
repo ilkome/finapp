@@ -8,7 +8,7 @@ import {
   getTransferCategoriesIds,
 } from '~/components/categories/getCategories'
 import { getTrnsIds } from '~/components/trns/getTrns'
-import { useChart } from '~/components/chart/useChart'
+import { useChartStore } from '~/components/chart/useChartStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -18,20 +18,23 @@ import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 
 const moneyTypes: {
   id: MoneyTypeSlug
+  slug: MoneyTypeSlug
   type: MoneyTypeNumber
 }[] = [
   {
     id: 'expense',
+    slug: 'expense',
     type: 0,
   },
   {
     id: 'income',
+    slug: 'income',
     type: 1,
   },
 ]
 
 export function useStat() {
-  const { periods } = useChart()
+  const chartStore = useChartStore()
   const filterStore = useFilter()
   const currenciesStore = useCurrenciesStore()
   const walletsStore = useWalletsStore()
@@ -209,9 +212,9 @@ export function useStat() {
       = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
 
     periodsToShow
-      = periods.value[periodName].showedPeriods >= periodsToShow
+      = chartStore.periods[periodName].showedPeriods >= periodsToShow
         ? periodsToShow
-        : periods.value[periodName].showedPeriods
+        : chartStore.periods[periodName].showedPeriods
 
     let income = 0
     let expense = 0

@@ -11,7 +11,6 @@ export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
 
   const items = ref<Wallets>({})
-  const editId = ref(null)
 
   function initWallets() {
     const userStore = useUserStore()
@@ -96,7 +95,6 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   return {
     items,
-    editId,
     hasWallets,
     walletsTotal,
     walletsSortedIds,

@@ -2,35 +2,32 @@ import { formatDate } from '~/utils/formatDate'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import type { TrnId } from '~/components/trns/types'
 
 export default function useTrn() {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
   const walletsStore = useWalletsStore()
 
-  function formatTrnItem(id) {
+  function formatTrnItem(id: TrnId) {
     try {
-      const trns = trnsStore
-      const wallets = walletsStore
-      const categories = categoriesStore
-
-      if (!trns?.items || !wallets?.items || !categories?.items)
+      if (!trnsStore?.items || !walletsStore?.items || !categoriesStore?.items)
         return 'Something missing'
 
       // Trn
-      const trn = trns.items[id]
+      const trn = trnsStore.items[id]
       if (!trn)
         return 'Trn not found'
 
       // Category
-      const category = categories.items[trn.categoryId]
+      const category = categoriesStore.items[trn.categoryId]
       if (!category)
         return 'Category not found'
 
       // Parent category
       let categoryParent = null
       if (category.parentId) {
-        categoryParent = categories.items[category.parentId]
+        categoryParent = categoriesStore.items[category.parentId]
         if (!categoryParent)
           return 'Parent Category not found'
       }
@@ -43,7 +40,7 @@ export default function useTrn() {
       // Transaction
       if (trn.type !== 2) {
         // Wallet
-        const wallet = wallets.items[trn.walletId]
+        const wallet = walletsStore.items[trn.walletId]
         if (!wallet)
           return 'Wallet not found'
 
@@ -59,12 +56,12 @@ export default function useTrn() {
 
       if (trn.type === 2) {
         const expenseWalletId = trn.expenseWalletId || trn.walletFromId
-        const expenseWallet = wallets.items[expenseWalletId]
+        const expenseWallet = walletsStore.items[expenseWalletId]
         if (!expenseWallet)
           return 'Transfer expense Wallet not found'
 
         const incomeWalletId = trn.incomeWalletId || trn.walletToId
-        const incomeWallet = wallets.items[incomeWalletId]
+        const incomeWallet = walletsStore.items[incomeWalletId]
         if (!incomeWallet)
           return 'Transfer income Wallet not found'
 
@@ -79,6 +76,7 @@ export default function useTrn() {
         }
       }
     }
+
     catch (error) {
       console.log(error)
     }

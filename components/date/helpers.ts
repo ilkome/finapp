@@ -1,9 +1,9 @@
 import dayjs from 'dayjs'
-import type { DateValueOf, PeriodsNamesExceptAll } from '~/components/date/types'
+import type { PeriodName } from '~/components/chart/useChartStore'
 
 /**
  * Get max periods to show
  */
-export function getMaxPeriodsToShow(periodName: PeriodsNamesExceptAll, fromDate: DateValueOf): number {
+export function getMaxPeriodsToShow(periodName: PeriodName, fromDate: number): number {
   return dayjs().endOf(periodName).diff(fromDate, periodName) + 1
 }

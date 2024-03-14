@@ -1,6 +1,6 @@
 import type { WalletId } from '~/components/wallets/types'
-import type { PeriodNames } from '~/components/date/types'
 import type { CategoryId } from '~/components/categories/types'
+import type { PeriodNameWithAll } from '~/components/chart/useChartStore'
 
 export type TrnId = string
 
@@ -69,7 +69,7 @@ export interface TrnsGetterProps {
   categoriesIds?: CategoryId[] | false
   date?: number
   fromDate?: number
-  periodName?: PeriodNames
+  periodName?: PeriodNameWithAll
   trnType?: TrnType
   trnsItems: Record<string, TrnItem>
   untilDate?: number

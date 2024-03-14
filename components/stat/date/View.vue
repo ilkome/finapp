@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { getStyles } from '~/components/ui/classes'
-import type { PeriodNameWithAll } from '~/components/chart/useChart'
+import type { PeriodNameWithAll } from '~/components/chart/useChartStore'
 
 const { t } = useI18n()
 
@@ -51,14 +51,14 @@ const formattedDate = computed(() => {
 </script>
 
 <template>
-<div
-  :class="getStyles('item', ['link', 'rounded'])"
-  class="flex grow items-center px-3 py-2"
-  @click="openDateSelector"
->
-  <div class="font-primary font-semibold leading-none text-item-1">
-    {{ period === "all" ? $t("dates.all.simple") : formattedDate }}
+  <div
+    :class="getStyles('item', ['link', 'rounded'])"
+    class="flex grow items-center px-3 py-2"
+    @click="openDateSelector"
+  >
+    <div class="font-primary font-semibold leading-none text-item-1">
+      {{ period === "all" ? $t("dates.all.simple") : formattedDate }}
+    </div>
+    <div class="mdi mdi-dots-vertical" />
   </div>
-  <div class="mdi mdi-dots-vertical" />
-</div>
 </template>

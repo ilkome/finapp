@@ -33,6 +33,7 @@ const moneyTypeNumber = moneyTypes.find(t => t.id === props.moneyTypeSlug)?.type
       :categoryId="categoryId"
       :total="statPage.current.categories[categoryId][moneyTypeSlug]"
       :moneyTypeNumber="moneyTypeNumber"
+      :moneyTypeSlug="moneyTypeSlug"
     />
   </div>
 </template>

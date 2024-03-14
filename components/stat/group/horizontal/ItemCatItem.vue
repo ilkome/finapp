@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { useFilter } from '~/components/filter/useFilter'
-import type { TrnType } from '~/components/trns/types'
 import useStatPage from '~/components/stat/useStatPage'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useCategoriesStore } from '~/components/categories/useCategories'
@@ -25,86 +24,63 @@ const trnsStore = useTrnsStore()
 const isShowInside = ref(false)
 
 // TODO: same HorizontalItem, HorizontalItemCatItem
-const isCategoryHasChildren = computed(() =>
-  categoriesStore.isCategoryHasChildren(props.categoryId))
-
-// TODO: same HorizontalItem, HorizontalItemCatItem
-const toggleShowInside = () => isShowInside.value = !isShowInside.value
+function toggleShowInside() {
+  isShowInside.value = !isShowInside.value
+}
 
 // TODO: same HorizontalItem, HorizontalItemCatItem
 const trnsIds = computed(() => {
-  if (isCategoryHasChildren.value)
+  if (categoriesStore.isCategoryHasChildren(props.categoryId))
     return []
 
   return statPage.current.trnsIds
-    .filter(id => trnsStore.items[id].type === props.moneyTypeNumber && trnsStore.items[id].categoryId === props.categoryId)
+    .filter(
+      id =>
+        trnsStore.items[id].type === props.moneyTypeNumber
+        && trnsStore.items[id].categoryId === props.categoryId,
+    )
     .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date)
 })
 </script>
 
-<template lang="pug">
-.statItem(
-  class="bg-foreground-3"
-  @click="toggleShowInside"
-)
-  .ins.py-2.px-2.space-x-3.justify-between.items-center.flex.border-t.bg-item-3(
-    :class="[{ 'border-b-0': isShowInside }, 'dark_border-neutral-800']"
-  )
-    .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
-      :style="{ background: category.color }"
-      @click.stop="setCategoryId(categoryId)"
-    ): div(:class="category.icon")
+<template>
+  <div class="statItem bg-foreground-3" @click="toggleShowInside">
+    <div
+      class="hocus_bg-item-8 relative flex items-center justify-between space-x-3 border-t bg-item-3 px-2 py-2 dark_border-neutral-800"
+      :class="[{ 'border-b-0': isShowInside }]"
+    >
+      <div
+        class="flex h-8 w-8 items-center justify-center rounded-full text-xl leading-none text-neutral-50"
+        :style="{ background: category.color }"
+        @click.stop="setCategoryId(categoryId)"
+      >
+        <div :class="category.icon" />
+      </div>
 
-    .grow
-      .space-x-3.flex
-        .grow.statItem__name {{ category.name }}
+      <div class="grow">
+        <div class="flex space-x-3">
+          <div
+            class="flex grow items-baseline space-x-2 overflow-hidden truncate text-sm text-neutral-700 dark_text-neutral-400"
+          >
+            {{ category.name }}
+          </div>
 
-        .statItem__amount.text-item-base
-          Amount(
-            :amount="total"
-            :currencyCode="currenciesStore.base"
-            :type="moneyTypeNumber"
-            :isShowBaseRate="false"
-          )
+          <div class="statItem__amount text-item-base">
+            <Amount
+              :amount="total"
+              :currencyCode="currenciesStore.base"
+              :type="moneyTypeNumber"
+              :isShowBaseRate="false"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
 
-  div(
-    v-if="isShowInside"
-    @click.stop=""
-  )
-    .overflow-hidden.overflow-y-auto(
-      class="md_max-h-[30vh]"
-    )
-      TrnsList(
-        :isShowGroupDate="false"
-        :trnsIds="trnsIds"
-        uiCat
-      )
+    <div v-if="isShowInside" @click.stop="">
+      <div class="overflow-hidden overflow-y-auto md_max-h-[30vh]">
+        <TrnsList :isShowGroupDate="false" :trnsIds="trnsIds" uiCat />
+      </div>
+    </div>
+  </div>
 </template>
-
-<style lang="stylus" scoped>
-@import "../assets/stylus/variables"
-
-.ins
-  position relative
-
-  +media-hover()
-    background var(--c-item-bg-hover)
-
-.statItem
-  &__graph
-    &__in
-      height 4px
-      min-width 2px
-      border-radius 3px
-
-  &__name
-    overflow hidden
-    align-self center
-    color var(--c-font-4)
-    font-size 14px
-    white-space nowrap
-    text-overflow ellipsis
-
-  &__icon
-    width 32px
-</style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useChart } from '~/components/chart/useChart'
+import { useChartStore } from '~/components/chart/useChartStore'
 import type { TrnId } from '~/components/trns/types'
-import type { PeriodName } from '~/components/chart/useChart'
+import type { PeriodName } from '~/components/chart/useChartStore'
 
 withDefaults(
   defineProps<{
@@ -14,12 +14,11 @@ withDefaults(
   },
 )
 
+const chartStore = useChartStore()
 const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
 
-const { periods } = useChart()
-
 const chartType = computed(
-  () => periods.value[periodWithoutAll.value].type,
+  () => chartStore.periods[periodWithoutAll.value].type,
 )
 </script>
 

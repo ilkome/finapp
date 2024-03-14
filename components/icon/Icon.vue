@@ -1,15 +1,15 @@
 <script setup lang="ts">
 const props = defineProps<{
-  abbr: string | null
-  background: string
-  big: boolean
-  category: boolean
-  color: string
-  icon: string
-  invert: boolean
-  medium: boolean
-  round: boolean
-  small: boolean
+  abbr?: string | null
+  background?: string
+  big?: boolean
+  category?: boolean
+  color?: string
+  icon?: string
+  invert?: boolean
+  medium?: boolean
+  round?: boolean
+  small?: boolean
 }>()
 
 const classes = computed(() => ({

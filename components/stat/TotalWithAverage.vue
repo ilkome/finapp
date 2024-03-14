@@ -67,12 +67,17 @@ const averageAmount = computed(() => {
       </div>
 
       <!-- Average -->
-      <LazyStatSumAverage
-        v-if="isShownAverage"
-        :amount="averageAmount"
-        :title="$t(`money.average.${moneyTypeSlugSum}`)"
-        :type="moneyTypeNumber"
-      />
+      <div v-if="isShownAverage">
+        <UiTextSmall>{{ $t(`money.average.${moneyTypeSlugSum}`) }}</UiTextSmall>
+        <Amount
+          :amount="averageAmount"
+          :currencyCode="currenciesStore.base"
+          :type="moneyTypeNumber"
+          :colorize="moneyTypeSlugSum"
+          :isShowBaseRate="false"
+          :isShowSign="false"
+        />
+      </div>
     </div>
   </div>
 </template>

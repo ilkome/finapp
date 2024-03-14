@@ -6,7 +6,7 @@ import { useFilter } from '~/components/filter/useFilter'
 import type {
   PeriodName,
   PeriodNameWithAll,
-} from '~/components/chart/useChart'
+} from '~/components/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 import useTrns from '~/components/trns/useTrns'

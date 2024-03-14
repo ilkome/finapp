@@ -44,6 +44,7 @@ module.exports = {
           5: 'var(--c-item-5)',
           6: 'rgba(var(--item-6))',
           7: 'rgba(var(--item-7))',
+          8: 'var(--c-item-bg-hover)',
         },
       },
       fontSize: {

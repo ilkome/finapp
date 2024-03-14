@@ -1,38 +1,35 @@
 <script setup lang="ts">
-import { useChart } from '~/components/chart/useChart'
+import { useChartStore } from '~/components/chart/useChartStore'
 import { useFilter } from '~/components/filter/useFilter'
-import useStatChart from '~/components/stat/useStatChart'
 
-const { chartState, toggleChart } = useStatChart()
-const { periodWithoutAll } = useFilter()
-const { isShowDataLabels, toggleChartType } = useChart()
-const { periods } = useChart()
+const filterStore = useFilter()
+const chartStore = useChartStore()
 
 const items = ref([{
   slug: 'income',
   icon: 'mdi mdi-arrow-down-thin-circle-outline',
-  isActive: computed(() => chartState.show.income),
-  event: () => toggleChart('income'),
+  isActive: computed(() => chartStore.chart.income),
+  event: () => chartStore.toggleChartVisibility('income'),
 }, {
   slug: 'expense',
   icon: 'mdi mdi-arrow-up-thin-circle-outline',
-  isActive: computed(() => chartState.show.expense),
-  event: () => toggleChart('expense'),
+  isActive: computed(() => chartStore.chart.expense),
+  event: () => chartStore.toggleChartVisibility('expense'),
 }, {
   slug: 'sum',
   icon: 'mdi mdi-chart-gantt',
-  isActive: computed(() => chartState.show.sum),
-  event: () => toggleChart('sum'),
+  isActive: computed(() => chartStore.chart.sum),
+  event: () => chartStore.toggleChartVisibility('sum'),
 }, {
   slug: 'charLabels',
   icon: 'mdi mdi-subtitles-outline',
-  isActive: computed(() => isShowDataLabels.value),
-  event: () => isShowDataLabels.value = !isShowDataLabels.value,
+  isActive: computed(() => chartStore.isShowDataLabels),
+  event: () => chartStore.isShowDataLabels = !chartStore.isShowDataLabels,
 }, {
   slug: 'charType',
-  icon: computed(() => periods.value[periodWithoutAll].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
+  icon: computed(() => chartStore.periods[filterStore.periodWithoutAll].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
   isActive: false,
-  event: toggleChartType,
+  event: chartStore.toggleChartType,
 }])
 </script>
 

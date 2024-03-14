@@ -2,6 +2,7 @@ import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import { z } from 'zod'
 import { useFilter } from '~/components/filter/useFilter'
+import type { MoneyTypeSlugSum } from '~/components/stat/types'
 
 const periodSchema = z.object({
   type: z.enum(['line', 'bar']),
@@ -20,29 +21,52 @@ export type PeriodSchema = z.infer<typeof periodSchema>
 export type PeriodName = keyof Periods
 export type PeriodNameWithAll = PeriodName | 'all'
 
-const isShowDataLabels = ref(false)
+export const useChartStore = defineStore('chart', () => {
+  const { $i18n } = useNuxtApp()
 
-// TODO: Move to stat store
-export const periods = ref<Periods>({
-  day: {
-    showedPeriods: 14,
-    type: 'line',
-  },
-  week: {
-    showedPeriods: 12,
-    type: 'line',
-  },
-  month: {
-    showedPeriods: 12,
-    type: 'line',
-  },
-  year: {
-    showedPeriods: 6,
-    type: 'line',
-  },
-})
+  const isShowDataLabels = ref(false)
 
-export function useChart() {
+  const periods = ref<Periods>({
+    day: {
+      showedPeriods: 14,
+      type: 'line',
+    },
+    week: {
+      showedPeriods: 12,
+      type: 'line',
+    },
+    month: {
+      showedPeriods: 12,
+      type: 'line',
+    },
+    year: {
+      showedPeriods: 6,
+      type: 'line',
+    },
+  })
+
+  const periodsNames = computed<{
+    slug: PeriodName
+    icon: string
+    name: string
+  }[]>(() => [{
+    slug: 'day',
+    icon: 'mdi mdi-weather-sunset-up',
+    name: $i18n.t('dates.day.simple'),
+  }, {
+    slug: 'week',
+    icon: 'mdi mdi-calendar-week',
+    name: $i18n.t('dates.week.simple'),
+  }, {
+    slug: 'month',
+    icon: 'mdi mdi-calendar',
+    name: $i18n.t('dates.month.simple'),
+  }, {
+    slug: 'year',
+    icon: 'mdi mdi-calendar-star',
+    name: $i18n.t('dates.year.simple'),
+  }])
+
   const filterStore = useFilter()
 
   function showDataLabels() {
@@ -50,12 +74,6 @@ export function useChart() {
   }
   function hideDataLabels() {
     isShowDataLabels.value = false
-  }
-
-  function toggleChartType() {
-    periods.value[filterStore.periodWithoutAll].type = periods.value[filterStore.periodWithoutAll].type === 'line'
-      ? 'bar'
-      : 'line'
   }
 
   function addElementsToChart() {
@@ -76,13 +94,12 @@ export function useChart() {
     if (periodsSchema.safeParse(localPeriods).success === false)
       return false
 
-    let showedPeriods
     for (const periodName in localPeriods) {
-      showedPeriods = +localPeriods[periodName].showedPeriods
+      const showedPeriods = +localPeriods[periodName].showedPeriods
         ? localPeriods[periodName].showedPeriods
         : periods.value[periodName].showedPeriods
 
-      const periodValues = {
+      const periodValues: Periods = {
         ...localPeriods[periodName],
         showedPeriods,
       }
@@ -102,6 +119,22 @@ export function useChart() {
     localforage.setItem('finapp.chart.periods', deepUnref(newPeriods))
   }, { immediate: true, deep: true })
 
+  const chart = ref({
+    income: true,
+    expense: true,
+    sum: false,
+  })
+
+  function toggleChartVisibility(type: MoneyTypeSlugSum): void {
+    chart.value[type] = !chart.value[type]
+  }
+
+  function toggleChartType() {
+    periods.value[filterStore.periodWithoutAll].type = periods.value[filterStore.periodWithoutAll].type === 'line'
+      ? 'bar'
+      : 'line'
+  }
+
   return {
     isShowDataLabels,
 
@@ -112,9 +145,13 @@ export function useChart() {
     removeElementsFromChart,
     setElementsToChart,
 
+    periods,
+    periodsNames,
     showDataLabels,
     hideDataLabels,
+
+    chart,
     toggleChartType,
-    periods,
+    toggleChartVisibility,
   }
-}
+})

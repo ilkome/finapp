@@ -25,12 +25,15 @@ const { formatTrnItem } = useTrn()
 const trnItem = computed(() => formatTrnItem(trnsStore.editId))
 
 const showModalConfirm = ref(false)
-const showModalGroups = ref(false)
 
 const trnId = computed(() => trnsStore.editId)
-const category = computed(() => categoriesStore.items[trnsStore.items[trnId.value].categoryId])
+const category = computed(
+  () => categoriesStore.items[trnsStore.items[trnId.value].categoryId],
+)
 
-const wallet = computed(() => walletsStore.items?.[trnsStore.items[trnId.value].walletId])
+const wallet = computed(
+  () => walletsStore.items?.[trnsStore.items[trnId.value].walletId],
+)
 
 function handleSetFilterCategory() {
   filterStore.setCategoryId(trnsStore.items[trnId.value].categoryId)
@@ -75,85 +78,90 @@ function handleDeleteConfirm() {
 }
 </script>
 
-<template lang="pug">
-Teleport(
-  v-if="trnsStore.isShownModal"
-  to="body"
-)
-  LazyBaseBottomSheet(
-    v-if="trnsStore.isShownModal"
-    key="TrnsItemModal"
-    @closed="closed"
-  )
-    template(#handler="{ close }")
-      BaseBottomSheetClose(@onClick="close")
+<template>
+  <Teleport v-if="trnsStore.isShownModal" to="body">
+    <LazyBaseBottomSheet
+      v-if="trnsStore.isShownModal"
+      key="TrnsItemModal"
+      @closed="closed"
+    >
+      <template #handler="{ close }">
+        <BaseBottomSheetClose @onClick="close" />
+      </template>
 
-    template(#header)
-      .header
-        TrnsItemDetails(
-          :category="category"
-          :trn="trnItem"
-          :trnId="trnId"
-          :wallet="wallet"
-          ui="detailed"
-        )
+      <template #header>
+        <div class="header">
+          <TrnsItemDetails
+            :category="category"
+            :trn="trnItem"
+            :trnId="trnId"
+            :wallet="wallet"
+            ui="detailed"
+          />
+        </div>
+      </template>
 
-    template(#default="{ close }")
-      .content.pb-4
-        .tools
-          .modalLinks
-            ModalButton(
-              :name="$t('base.delete')"
-              icon="mdi mdi-delete-empty-outline"
-              @onClick="handleDeleteClick"
-            )
+      <template #default="{ close }">
+        <div class="content pb-4">
+          <div class="tools">
+            <div class="modalLinks">
+              <ModalButton
+                :name="$t('base.delete')"
+                icon="mdi mdi-delete-empty-outline"
+                @onClick="handleDeleteClick"
+              />
+              <ModalButton
+                :name="$t('base.edit')"
+                icon="mdi mdi-pencil-outline"
+                @onClick="handleEditClick"
+              />
+              <ModalButton
+                :name="$t('base.duplicate')"
+                icon="mdi mdi-content-copy"
+                @onClick="handleDuplicateTrn"
+              />
+              <ModalButton
+                :name="`${$t('base.setFilter')} ${category.name}`"
+                @onClick="handleSetFilterCategory"
+              >
+                <template #icon>
+                  <Icon
+                    :icon="category.icon"
+                    :background="category.color"
+                    round
+                  />
+                </template>
+              </ModalButton>
+              <ModalButton
+                v-if="wallet"
+                :name="`${$t('base.setFilter')} ${wallet.name}`"
+                @onClick="handleSetFilterWallet"
+              >
+                <template #icon>
+                  <Icon :abbr="wallet.name" :background="wallet.color" />
+                </template>
+              </ModalButton>
+            </div>
+          </div>
+          <div class="flex-center px-4 pt-4">
+            <div
+              class="flex-center max-w-[280px] grow basis-1/2 cursor-pointer rounded-full bg-item-4 px-5 py-3 text-sm hocus_bg-item-5"
+              @click="close()"
+            >
+              {{ $t("close") }}
+            </div>
+          </div>
+        </div>
+      </template>
+    </LazyBaseBottomSheet>
 
-            ModalButton(
-              :name="$t('base.edit')"
-              icon="mdi mdi-pencil-outline"
-              @onClick="handleEditClick"
-            )
-
-            ModalButton(
-              :name="$t('base.duplicate')"
-              icon="mdi mdi-content-copy"
-              @onClick="handleDuplicateTrn"
-            )
-
-            ModalButton(
-              :name="`${$t('base.setFilter')} ${category.name}`"
-              @onClick="handleSetFilterCategory"
-            )
-              template(#icon)
-                Icon(
-                  :icon="category.icon"
-                  :background="category.color"
-                  round
-                )
-
-            ModalButton(
-              v-if="wallet"
-              :name="`${$t('base.setFilter')} ${wallet.name}`"
-              @onClick="handleSetFilterWallet"
-            )
-              template(#icon)
-                Icon(
-                  :abbr="wallet.name"
-                  :background="wallet.color"
-                )
-
-        .pt-4.px-4.flex-center
-          .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-4.hocus_bg-item-5(
-            class="basis-1/2 max-w-[280px]"
-            @click="close()"
-          ) {{ $t('close') }}
-
-  //- delete confirm
-  ModalBottomConfirm(
-    :show="showModalConfirm"
-    @closed="showModalConfirm = false"
-    @onConfirm="handleDeleteConfirm"
-  )
+    <!-- delete confirm -->
+    <ModalBottomConfirm
+      :show="showModalConfirm"
+      @closed="showModalConfirm = false"
+      @onConfirm="handleDeleteConfirm"
+    />
+  </Teleport>
 </template>
 
 <style lang="stylus" scoped>
