@@ -7,19 +7,24 @@ const { walletsCurrencies } = useWallets()
 const currenciesStore = useCurrenciesStore()
 </script>
 
-<template lang="pug">
-UiTabs(v-if="walletsCurrencies.length > 1")
-  UiTabsItem(
-    v-for="currency in walletsCurrencies"
-    :key="currency"
-    :isActive="currency === currenciesStore.base"
-    @click="currenciesStore.setBase(currency)"
-  ) {{ currency }}
+<template>
+  <UiTabs3 v-if="walletsCurrencies.length > 1">
+    <UiTabsItem2
+      v-for="currency in walletsCurrencies"
+      :key="currency"
+      :isActive="currency === currenciesStore.base"
+      @click="currenciesStore.setBase(currency)"
+    >
+      {{ currency }}
+    </UiTabsItem2>
 
-  UiTabsItem(@click="currenciesStore.showBaseCurrenciesModal()")
-    .flex-center
-      span {{ t('more') }}
-      span.mdi.mdi-dots-vertical.ml-1
+    <UiTabsItem2 @click="currenciesStore.showBaseCurrenciesModal()">
+      <div class="flex-center">
+        <span>{{ t("more") }}</span>
+        <span class="mdi mdi-dots-vertical ml-1" />
+      </div>
+    </UiTabsItem2>
+  </UiTabs3>
 </template>
 
 <i18n lang="yaml">

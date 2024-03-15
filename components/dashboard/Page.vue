@@ -48,35 +48,20 @@ const combinedTrnsIds = computed(() => {
   }
 })
 
-// Date Selector
-const { isShowDateSelector, openDateSelector, closeDateSelector }
-  = useDateSelector()
-
-function useDateSelector() {
-  const isShowDateSelector = ref(false)
-
-  function openDateSelector() {
-    isShowDateSelector.value = true
-  }
-  function closeDateSelector() {
-    isShowDateSelector.value = false
-  }
-
-  return {
-    isShowDateSelector,
-    openDateSelector,
-    closeDateSelector,
-  }
-}
-
-provide('date', computed(() => filterStore.date))
-provide('isShowDateSelector', isShowDateSelector)
+provide(
+  'date',
+  computed(() => filterStore.date),
+)
 provide('setDate', filterStore.setDate)
-provide('closeDateSelector', closeDateSelector)
-provide('openDateSelector', openDateSelector)
 
-provide('period', computed(() => filterStore.period))
-provide('periodWithoutAll', computed(() => filterStore.periodWithoutAll))
+provide(
+  'period',
+  computed(() => filterStore.period),
+)
+provide(
+  'periodWithoutAll',
+  computed(() => filterStore.periodWithoutAll),
+)
 provide('setNextPeriodDate', filterStore.setNextPeriodDate)
 provide('setPeriodAndDate', filterStore.setPeriodAndDate)
 provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
@@ -87,22 +72,25 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
     <div class="sticky top-0 z-20 h-[44px] bg-foreground-4 backdrop-blur">
       <StatDate />
     </div>
-    <LazyStatChartWrap
-      v-if="ui.showMainChart"
-      :trnsIds="Object.keys(trnsStore.items ?? {})"
-    />
     <LazyStatFilter v-if="statPage.filter.isShow" />
 
     <!-- Sum All -->
-    <div
-      class="mx-2 flex flex-wrap items-center gap-4 rounded-lg bg-item-4 p-2 sm_justify-start sm_bg-transparent sm_p-0"
-    >
-      <StatTotalWithAverage moneyTypeSlugSum="expense" />
-      <StatTotalWithAverage moneyTypeSlugSum="income" />
-      <StatTotalWithAverage moneyTypeSlugSum="sum" />
+    <div class="mb-2 mx-2 rounded-xl bg-item-4">
+      <div
+        class="flex flex-wrap items-center gap-3 gap-x-6 rounded-lg bg-item-4 p-2 p-2 sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
+      >
+        <StatTotalWithAverage moneyTypeSlugSum="expense" />
+        <StatTotalWithAverage moneyTypeSlugSum="income" />
+        <StatTotalWithAverage moneyTypeSlugSum="sum" />
+      </div>
+
+      <LazyStatChartWrap
+        v-if="ui.showMainChart"
+        :trnsIds="Object.keys(trnsStore.items ?? {})"
+      />
     </div>
 
-    <StatMenu class="py-4" />
+    <StatMenu class="pb-2 pt-0" />
 
     <div class="min-h-[calc(100vh-130px)]" data-scroll-ref="stat">
       <template v-if="activeTabStat !== 'trns'">
@@ -112,9 +100,9 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
               v-for="item in moneyTypes"
               v-show="isShowGroupByType(item.id)"
               :key="item.id"
-              class="grid gap-3 rounded-lg bg-item-4 lg_p-2 xl_max-w-[420px]"
+              class="_bg-item-4 grid gap-3 rounded-lg lg_p-2 xl_max-w-[420px]"
             >
-              <StatTotalWithAverage :moneyTypeSlugSum="item.id" />
+              <StatTotalWithAverage :moneyTypeSlugSum="item.id" hasBg />
               <StatGroupVertical :moneyTypeSlug="item.id" />
               <StatGroupRound :moneyTypeSlug="item.id" />
               <StatGroupHorizontal :moneyTypeSlug="item.id" />
@@ -168,7 +156,7 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
       </template>
 
       <!-- Trns -->
-      <template v-if="activeTabStat === 'trns'">
+      <template v-else>
         <div class="mb-4 px-2">
           <TrnsListWithControl
             :trnsIds="statPage.current.trnsIds"

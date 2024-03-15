@@ -26,6 +26,7 @@
     "dayjs": "^1.11.10",
     "echarts": "^5.5.0",
     "firebase": "^10.8.1",
+    "floating-vue": "^5.2.2",
     "localforage": "^1.10.0",
     "lodash.sortby": "^4.7.0",
     "nuxt": "^3.10.3",

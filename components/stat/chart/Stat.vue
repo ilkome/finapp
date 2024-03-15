@@ -147,31 +147,7 @@ const periodTrnsIds = computed(() =>
   }),
 )
 
-// Date Selector
-const { isShowDateSelector, openDateSelector, closeDateSelector } = useDateSelector()
-
-function useDateSelector() {
-  const isShowDateSelector = ref(false)
-
-  function openDateSelector() {
-    isShowDateSelector.value = true
-  }
-  function closeDateSelector() {
-    isShowDateSelector.value = false
-  }
-
-  return {
-    isShowDateSelector,
-    openDateSelector,
-    closeDateSelector,
-  }
-}
-
 provide('date', date)
-provide('isShowDateSelector', isShowDateSelector)
-provide('closeDateSelector', closeDateSelector)
-provide('openDateSelector', openDateSelector)
-
 provide('period', period)
 provide('periodWithoutAll', periodWithoutAll)
 provide('setNextPeriodDate', setNextPeriodDate)

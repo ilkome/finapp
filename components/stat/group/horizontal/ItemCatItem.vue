@@ -78,7 +78,7 @@ const trnsIds = computed(() => {
     </div>
 
     <div v-if="isShowInside" @click.stop="">
-      <div class="overflow-hidden overflow-y-auto md_max-h-[30vh]">
+      <div class="md_max-h-[30vh]">
         <TrnsList :isShowGroupDate="false" :trnsIds="trnsIds" uiCat />
       </div>
     </div>

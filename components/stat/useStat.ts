@@ -33,7 +33,7 @@ const moneyTypes: {
   },
 ]
 
-export function useStat() {
+export function useStat(viewBy = 'child') {
   const chartStore = useChartStore()
   const filterStore = useFilter()
   const currenciesStore = useCurrenciesStore()
@@ -83,22 +83,19 @@ export function useStat() {
       return categoryId
     }
 
-    function getCategoriesIdsWithTrnsIds() {
-      const categoriesWithTrnsIds = {}
+    const categoriesWithTrnsIds = {}
+    for (const trnId of trnsIds) {
+      const categoryId
+        = viewBy === 'parent'
+          ? getRootCategoryIdFromTrnId(trnId, true)
+          : trnsStore.items[trnId]?.categoryId
 
-      for (const trnId of trnsIds) {
-        const categoryId = getRootCategoryIdFromTrnId(trnId, true)
-        if (!categoryId)
-          continue
+      if (!categoryId)
+        continue
 
-        categoriesWithTrnsIds[categoryId] ??= []
-        categoriesWithTrnsIds[categoryId].push(trnId)
-      }
-
-      return categoriesWithTrnsIds
+      categoriesWithTrnsIds[categoryId] ??= []
+      categoriesWithTrnsIds[categoryId].push(trnId)
     }
-
-    const categoriesWithTrnsIds = getCategoriesIdsWithTrnsIds()
 
     const total = getTotal({
       baseCurrencyCode,

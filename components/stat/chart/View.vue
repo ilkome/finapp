@@ -146,24 +146,24 @@ const statData = computed(() => {
       .format(format)
 
     // Income
-    incomeData.unshift({
+    incomeData.push({
       date: periodDate,
       value: incomeTransactions,
     })
 
     // Expense
-    expenseData.unshift({
+    expenseData.push({
       date: periodDate,
       value: expenseTransactions,
     })
 
     // Total
-    totalData.unshift({
+    totalData.push({
       date: periodDate,
       value: sumTransactions,
     })
 
-    categories.unshift(name)
+    categories.push(name)
   }
 
   let periods2 = 0
@@ -265,7 +265,7 @@ const statData = computed(() => {
 
   // Expense
   if (periodsTotalExpense > 0 && true) {
-    plotLines.push({
+    plotLines.unshift({
       opacity: 0.5,
       color: 'var(--c-expense-opacity)',
       value: data.averageExpense,
@@ -276,7 +276,7 @@ const statData = computed(() => {
 
   // Income
   if (periodsTotalIncome > 0 && true) {
-    plotLines.push({
+    plotLines.unshift({
       opacity: 0.5,
       color: 'var(--c-income-opacity)',
       value: data.averageIncome,
@@ -287,7 +287,7 @@ const statData = computed(() => {
 
   // Sum
   if (periodsTotalSum > 0 && true) {
-    plotLines.push({
+    plotLines.unshift({
       opacity: 0.5,
       color: 'var(--c-font-4)',
       value: data.averageSum,
@@ -308,7 +308,7 @@ const statData = computed(() => {
 })
 
 // TODO: computed, when date change outside this component
-const markedArea = ref(statData.value.categories.at(-1))
+const markedArea = ref(statData.value.categories.at(0))
 
 function getChartData() {
   const data = defu(config, {

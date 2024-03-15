@@ -14,7 +14,7 @@ const wallet = computed(() => walletsItemsSorted.value[props.id])
 
 <template lang="pug">
 FilterItemBg(@click="emit('click', id)")
-  .flex-center.gap-x-3
+  .flex-center.gap-x-3.text-secondary2
     //- Icon
     .w-6.h-6.rounded-md.flex-center.text-icon-primary.text-xs.leading-none(
       :style="{ background: wallet.color }"
@@ -22,7 +22,7 @@ FilterItemBg(@click="emit('click', id)")
     ) {{ wallet.name.substring(0, 2) }}
 
     .grow
-      .text-sm.leading-none.text-secondary2 {{ wallet.name }}
+      .text-sm.leading-none {{ wallet.name }}
       .text-item-base
         Amount(
           :amount="wallet.amount"

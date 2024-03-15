@@ -5,6 +5,7 @@ import { useStat } from '~/components/stat/useStat'
 import type { MoneyTypeNumber, MoneyTypeSlugSum } from '~/components/stat/types'
 
 const props = defineProps<{
+  hasBg?: boolean
   moneyTypeSlugSum: MoneyTypeSlugSum
 }>()
 
@@ -12,6 +13,10 @@ const { statPage } = useStatPage()
 const { moneyTypes } = useStat()
 const { statAverage, statCurrentPeriod } = useStat()
 const currenciesStore = useCurrenciesStore()
+
+const classes = computed(() => ({
+  'rounded-lg bg-item-4 px-2 py-2 sm_px-5 sm_py-4': props.hasBg,
+}))
 
 const moneyTypeNumber = computed<MoneyTypeNumber | undefined>(
   () =>
@@ -49,11 +54,11 @@ const averageAmount = computed(() => {
 </script>
 
 <template>
-  <div class="rounded-lg bg-item-4 px-2 py-2 sm_px-5 sm_py-4">
+  <div :class="classes">
     <UiTitle2>{{ $t(`money.${moneyTypeSlugSum}`) }}</UiTitle2>
 
     <div
-      class="sm_flex-col2 flex flex-wrap items-start gap-2 gap-x-6 overflow-hidden overflow-x-auto pt-2"
+      class="flex flex-wrap items-start gap-2 gap-x-4 overflow-hidden overflow-x-auto pt-2"
     >
       <!-- Total -->
       <div class="text-3xl">

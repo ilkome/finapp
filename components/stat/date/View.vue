@@ -7,7 +7,6 @@ const { t } = useI18n()
 
 const date = inject('date') as Ref<number>
 const period = inject('period') as Ref<PeriodNameWithAll>
-const openDateSelector = inject('openDateSelector') as () => void
 
 const formattedDate = computed(() => {
   const today = dayjs()
@@ -51,14 +50,16 @@ const formattedDate = computed(() => {
 </script>
 
 <template>
-  <div
-    :class="getStyles('item', ['link', 'rounded'])"
-    class="flex grow items-center px-3 py-2"
-    @click="openDateSelector"
-  >
-    <div class="font-primary font-semibold leading-none text-item-1">
+  <VDropdown>
+    <div
+      :class="getStyles('item', ['link', 'rounded'])"
+      class="flex items-center px-3 py-2 font-primary font-semibold leading-none text-item-1"
+    >
       {{ period === "all" ? $t("dates.all.simple") : formattedDate }}
     </div>
-    <div class="mdi mdi-dots-vertical" />
-  </div>
+
+    <template #popper="{ hide }">
+      <StatDateModal :hide="hide" />
+    </template>
+  </VDropdown>
 </template>

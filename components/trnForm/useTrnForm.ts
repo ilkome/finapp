@@ -41,7 +41,6 @@ export const useTrnFormStore = defineStore('trnForm', () => {
   })
 
   const modal = ref({
-    calendar: false,
     categories: false,
     description: false,
     transferFrom: false,

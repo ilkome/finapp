@@ -29,7 +29,7 @@ BaseBottomSheet(
 
   template(#default="{ close }")
     WalletsList(#default="{ walletsItemsSorted }")
-      .pb-3.px-2.grid.gap-1
+      .pb-3.px-2.grid.gap-1.text-secondary2
         //- Wallet
         .cursor-pointer.flex.items-center.py-2.px-3.rounded-md.bg-item-4.hocus_bg-item-5(
           v-for="(walletItem, walletId) in walletsItemsSorted"
@@ -44,7 +44,7 @@ BaseBottomSheet(
                 class="mt-[2px]"
               ) {{ walletItem.name.substring(0, 2) }}
               //- Name
-              .text-secondary2.grow.text-sm {{ walletItem.name }}
+              .grow.text-sm {{ walletItem.name }}
 
             //- Amount
             .text-item-base

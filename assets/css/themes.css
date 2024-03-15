@@ -22,6 +22,7 @@ html.dark {
   --text-secondary: 160 160 160;
   --text-secondary2: 160 160 160;
   --text-icon-primary: theme('colors.neutral.50');
+  --text-icon-primary2: theme('colors.neutral.50') / 50;
 
   --foreground-1: 0 0 0;
   --foreground-2: 23 23 23;

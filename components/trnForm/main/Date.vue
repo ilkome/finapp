@@ -2,6 +2,7 @@
 import dayjs from 'dayjs'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { formatDate } from '~/utils/formatDate'
+import { getStyles } from '~/components/ui/classes'
 
 const $trnForm = useTrnFormStore()
 
@@ -15,31 +16,55 @@ const isToday = computed(() => {
 })
 
 function changeDate(way: 'prev' | 'next') {
-  if (way === 'prev')
-    $trnForm.values.date = dayjs($trnForm.values.date).subtract(1, 'day').valueOf()
+  if (way === 'prev') {
+    $trnForm.values.date = dayjs($trnForm.values.date)
+      .subtract(1, 'day')
+      .valueOf()
+  }
   if (way === 'next' && !isToday.value)
     $trnForm.values.date = dayjs($trnForm.values.date).add(1, 'day').valueOf()
 }
 </script>
 
-<template lang="pug">
-.trnFormDate.flex.pb-2.px-2.gap-2
-  .overflow-hidden.flex.rounded-xl
-    .shame1.flex-center.w-12._arrow.bg-item-4.hocus_bg-item-5(
-      @click="changeDate('prev')"
-    ): .mdi.mdi-chevron-left
+<template>
+  <div class="trnFormDate flex ite gap-2 px-2 pb-2">
+    <VDropdown class="grow">
+      <div
+        class="flex cursor-pointer items-center rounded-md px-3 py-2 text-xs leading-none hocus_bg-item-5"
+        v-html="formattedDate"
+      />
 
-    .shame1.flex-center.w-12._arrow.bg-item-4.hocus_bg-item-5(
-      :class="{ 'opacity-30 !cursor-default' : isToday }"
-      @click="changeDate('next')"
-    )
-      .mdi.mdi-calendar-today(v-if="isToday")
-      .mdi.mdi-chevron-right(v-else)
+      <template #popper="{ hide }">
+        <TrnFormMainCalendar :hide="hide" />
+      </template>
+    </VDropdown>
 
-  .grow.cursor-pointer.py-2.px-3.flex.items-center.rounded-md.text-xs.leading-none.hocus_bg-item-5(
-    v-html="formattedDate"
-    @click="$trnForm.openTrnFormModal('calendar')"
-  )
+    <div class="flex items-center">
+      <div
+        v-if="!isToday"
+        :class="getStyles('item', ['link', 'rounded'])"
+        class="py-3 px-3"
+        @click="() => ($trnForm.values.date = dayjs().valueOf())"
+      >
+        <UiIconReturn class="size-4" />
+      </div>
+
+      <div
+        :class="getStyles('item', ['link', 'rounded'])"
+        class="px-2 text-2xl"
+        @click="changeDate('prev')"
+      >
+        <i class="mdi mdi-chevron-left" />
+      </div>
+      <div
+        :class="[...getStyles('item', ['link', 'rounded']), { '!cursor-default opacity-30': isToday }]"
+        class="px-2 text-2xl"
+        @click="changeDate('next')"
+      >
+        <i class="mdi mdi-chevron-right" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="stylus" scoped>

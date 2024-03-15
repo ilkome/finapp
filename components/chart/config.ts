@@ -95,8 +95,8 @@ export const config = {
 
 export const lineConfig = {
   type: 'line',
-  barMinWidth: '10',
-  barMaxWidth: '30',
+  barMinWidth: '4',
+  barMaxWidth: '12',
   smooth: true,
   emphasis: {
     disabled: true,

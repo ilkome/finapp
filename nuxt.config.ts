@@ -72,6 +72,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
+    'floating-vue/nuxt',
   ],
 
   i18n: {

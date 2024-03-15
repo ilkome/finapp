@@ -18,6 +18,7 @@ module.exports = {
         'secondary': 'rgb(var(--text-secondary))',
         'secondary2': 'rgb(var(--text-secondary2))',
         'icon-primary': 'var(--text-icon-primary)',
+        'icon-primary2': 'var(--text-icon-primary2)',
         'expense': 'var(--text-expense-1)',
         'income': 'var(--text-income-1)',
 
@@ -66,6 +67,7 @@ module.exports = {
   plugins: [
     plugin(({ addVariant }) => {
       addVariant('hocus', ['.mouse &:not(._active):hover', '&:not(._active):active'])
+      addVariant('group-hocus', ['.mouse .group:not(._active):hover &', '.group:not(._active):active &'])
     }),
   ],
 }

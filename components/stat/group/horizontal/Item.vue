@@ -77,30 +77,41 @@ function getTrnsByCategoryId(categoryId: CategoryId) {
 </script>
 
 <template>
-  <div class="statItem" @click="toggleShowInside">
+  <div
+    class="bg-item-4 rounded-lg" :class="[
+      { 'bg-item-4': isShowInside },
+    ]"
+    @click="toggleShowInside"
+  >
     <div
-      class="z-[9] flex items-center justify-between space-x-3 rounded-md bg-item-3 px-2 py-2 hocus_bg-item-5"
-      :class="[
-        { 'rounded-b-none shadow-xl': isShowInside },
-        { 'shadow-sm': !isShowInside },
-      ]"
+      class="group flex items-center justify-between space-x-3 rounded-md px-2 py-2 hocus_bg-item-5"
     >
       <!-- Icon -->
       <div
-        class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-xl leading-none text-neutral-50"
-        :style="{ background: category.color }"
+        class="group-hocus_bg-item-6 flex size-8 bg-item-5 cursor-pointer items-center justify-center rounded-full text-xl leading-none hocus_scale-110"
+        :style="{ color: category.color }"
         @click.stop="setCategoryId(categoryId)"
       >
         <div :class="category.icon" />
       </div>
 
       <div class="grow">
-        <div class="flex space-x-3">
-          <div
-            class="flex grow items-baseline space-x-2 overflow-hidden truncate text-sm text-neutral-700 dark_text-neutral-400"
+        <div class="flex space-x-3 pr-1">
+          <div class="grow flex items-baseline gap-2">
+            <div class="text-sm leading-none text-secondary">
+              {{ category.name }}{{ isCategoryHasChildren ? "..." : "" }}
+            </div>
+
+            <div v-if="category.parentId" class="opacity-60 grow truncate text-xs text-item-2 dark_text-neutral-400">
+              {{ categoriesStore.items[category.parentId].name }}
+            </div>
+          </div>
+
+          <!-- <div
+            class="flex grow pl-1 items-baseline space-x-2 overflow-hidden truncate text-sm text-neutral-700 dark_text-neutral-400"
           >
             {{ category.name }}{{ isCategoryHasChildren ? "..." : "" }}
-          </div>
+          </div> -->
 
           <Amount
             :amount="total"
@@ -110,7 +121,7 @@ function getTrnsByCategoryId(categoryId: CategoryId) {
           />
         </div>
 
-        <div class="mt-1 pt-1">
+        <div class="mt-1 mt-1 bg-item-5 rounded-[3px]">
           <div class="h-[4px] min-w-[2px] rounded-[3px]" :style="styles" />
         </div>
       </div>
@@ -119,7 +130,6 @@ function getTrnsByCategoryId(categoryId: CategoryId) {
     <!-- Inside -->
     <div
       v-if="isShowInside"
-      class="-mt-[1px] overflow-hidden rounded-b-md"
       @click.stop=""
     >
       <StatGroupHorizontalItemCatItem
@@ -133,11 +143,10 @@ function getTrnsByCategoryId(categoryId: CategoryId) {
         :moneyTypeSlug="moneyTypeSlug"
       />
 
-      <div v-if="!isCategoryHasChildren" class="max-h-[60vh] overflow-hidden">
+      <div v-if="!isCategoryHasChildren" class="pl-12 pr-1 pb-1 max-h-[60vh] overflow-hidden overflow-y-auto bg-item-4">
         <TrnsList
           :trnsIds="trnsIds"
           :isShowGroupDate="false"
-          classes="md_grid-cols-1"
           uiCat
         />
       </div>

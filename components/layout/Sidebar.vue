@@ -26,27 +26,30 @@ const { toggleWalletId } = useFilter()
           <div
             v-for="(walletItem, walletId) in walletsItemsLimited"
             :key="walletId"
-            class="flex cursor-pointer border-b border-item-5 px-3 py-2 hocus_bg-item-5"
+            class="text-secondary2"
             @click="$router.push(`/wallets/${walletId}`)"
           >
-            <div class="flex grow items-center gap-x-3">
-              <div
-                class="flex-center mt-[2px] h-6 w-6 gap-x-3 rounded-md text-xs leading-none text-icon-primary"
-                :style="{ background: walletItem.color }"
-                @click.stop="toggleWalletId(walletId)"
-              >
-                {{ walletItem.name.substring(0, 2) }}
+            <div class="-my-[1px] flex items-center cursor-pointer px-3 py-2 hocus_bg-item-5">
+              <div class="flex grow items-center gap-3">
+                <div
+                  class="border flex-center mt-[2px] w-8 h-6 rounded-md text-2xs leading-none text-icon-primary2"
+                  :style="{ borderColor: walletItem.color }"
+                  @click.stop="toggleWalletId(walletId)"
+                >
+                  {{ walletItem.name.substring(0, 2) }}
+                </div>
+                <div class="text-item-base grow text-sm">
+                  {{ walletItem.name }}
+                </div>
               </div>
-              <div class="text-item-base grow text-sm">
-                {{ walletItem.name }}
+              <div class="text-item-base">
+                <Amount
+                  :amount="walletItem.amount"
+                  :currencyCode="walletItem.currency"
+                />
               </div>
             </div>
-            <div class="text-item-base">
-              <Amount
-                :amount="walletItem.amount"
-                :currencyCode="walletItem.currency"
-              />
-            </div>
+            <div class="mx-2 ml-12 h-[1px] bg-item-5" />
           </div>
         </template>
 

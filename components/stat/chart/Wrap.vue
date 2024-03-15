@@ -23,7 +23,7 @@ const chartType = computed(
 </script>
 
 <template>
-  <div class="relative mx-2 mb-4 rounded-lg bg-item-4">
+  <div class="relative rounded-lg bg-item-4">
     <div class="h-48">
       <StatChartView
         :chartType

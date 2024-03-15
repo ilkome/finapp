@@ -26,7 +26,7 @@ const wallet = computed(() => ({
 </script>
 
 <template lang="pug">
-.p-2.rounded-md(
+.p-2.rounded-md.text-secondary2(
   :class="{ _active: activeItemId === id }"
   @click="emit('onClick', id)"
 )
@@ -38,7 +38,7 @@ const wallet = computed(() => ({
     ) {{ wallet.name.substring(0, 2) }}
 
     div
-      .text-secondary2.text-sm {{ wallet.name }}
+      .text-sm {{ wallet.name }}
       template(v-if="isShowAmount")
         Amount(
           :amount="wallet.total"

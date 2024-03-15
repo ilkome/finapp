@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import useAmount from '~/components/amount/useAmount'
-import { formatAmount, getCurrencySymbol } from '~/components/amount/formatAmount'
+import {
+  formatAmount,
+  getCurrencySymbol,
+} from '~/components/amount/formatAmount'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 
 const props = withDefaults(
@@ -12,6 +15,7 @@ const props = withDefaults(
     align?: 'left' | 'center'
     isShowBaseRate?: boolean
     isShowSign?: boolean
+    size?: 'sm' | 'base' | 'md' | 'lg'
   }>(),
   {
     isShowBaseRate: true,
@@ -40,12 +44,17 @@ const amountClasses = computed(() => [
     '!text-expense': props.colorize === 'expense' && props.type === 0,
   },
 ])
+
+const amountNumberClasses = computed(() => ({
+  'text-md': !props.size,
+  'text-base': props.size === 'base',
+}))
 </script>
 
 <template>
-  <div class="flex flex-col gap-1 font-unica" @click="(e) => emit('click', e)">
+  <div class="flex flex-col gap-1 font-secondary text-primary" @click="(e) => emit('click', e)">
     <!-- Amount -->
-    <div v-if="amount !== 0" :class="amountClasses" class="text-primary">
+    <div v-if="amount !== 0" :class="amountClasses">
       <!-- Original -->
       <div
         class="flex items-baseline gap-1 whitespace-nowrap"
@@ -54,7 +63,7 @@ const amountClasses = computed(() => [
         <div v-if="isShowSign && sign === '-'" class="text-md leading-none">
           {{ sign }}
         </div>
-        <div class="text-md leading-none">
+        <div :class="amountNumberClasses" class="leading-none">
           {{ formatAmount(amount, currencyCode) }}
         </div>
         <div class="text-xs leading-none">

@@ -127,7 +127,7 @@ div(v-if="trnsIds && trnsIds.length > 0")
       v-for="(trnsIds, date) in groupedTrns"
       :key="date"
     )
-      .flex.pt-4.pb-2.px-3(
+      .flex.items-center.pt-4.pb-2.px-3(
         v-if="isShowGroupDate"
         @click="isFilterByDay ? filterStore.setDayDate(date) : null"
       )
@@ -150,15 +150,15 @@ div(v-if="trnsIds && trnsIds.length > 0")
             :type="0"
           )
 
-      .overflow-hidden.rounded-md
-        TrnsItemBase.py-3.px-3.cursor-pointer(
+      .rounded-lg
+        TrnsItemBase.py-3.px-3(
           v-if="uiHistory"
           v-for="trnId in trnsIds"
           :key="trnId"
           :trnId="trnId"
           @onClickEdit="$emit('onClickEdit')"
         )
-        TrnsItemWithoutCat.py-3.px-3.cursor-pointer(
+        TrnsItemWithoutCat(
           v-if="uiCat"
           v-for="trnId in trnsIds"
           :actions="actions"
@@ -166,9 +166,9 @@ div(v-if="trnsIds && trnsIds.length > 0")
           :trnId="trnId"
         )
 
-  .py-4.pb-6.px-2.flex-center(v-if="!isShowedAllTrns")
-    .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-4.hocus_bg-item-5(
-      class="basis-1/2 max-w-[280px]"
+  .py-4.pb-6.px-2(v-if="!isShowedAllTrns")
+    .grow.px-5.flex-center.rounded-lg.text-sm.bg-item-5.hocus_bg-item-6.text-secondary(
+      class="py-2.5"
       @click="showMoreTrns"
     ) {{ $t('trns.more') }}
 </template>

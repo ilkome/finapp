@@ -6,32 +6,44 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 const $trnForm = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
 
-const categoryId = computed<CategoryId | false>(() =>
-  $trnForm.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0],
+const categoryId = computed<CategoryId | false>(
+  () =>
+    $trnForm.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0],
 )
-const category = computed<CategoryItem | false>(() =>
-  categoryId.value && categoriesStore.items[categoryId.value],
+const category = computed<CategoryItem | false>(
+  () => categoryId.value && categoriesStore.items[categoryId.value],
 )
-const parentCategory = computed<CategoryItem | false>(() =>
-  category.value && categoriesStore.items[category.value.parentId],
+const parentCategory = computed<CategoryItem | false>(
+  () => category.value && categoriesStore.items[category.value.parentId],
 )
 </script>
 
-<template lang="pug">
-.cursor-pointer.py-2.px-3.relative.gap-x-3.flex.items-center.rounded-md.bg-item-4.hocus_bg-item-5(
-  v-if="category"
-  @click="$trnForm.ui.catsRootModal = true"
-)
-  .w-8.h-8.flex.items-center.justify-center.rounded-full.text-xl.leading-none.text-neutral-50(
-    :style="{ background: category.color }"
-  ): div(:class="category.icon")
+<template>
+  <div
+    v-if="category"
+    class="relative flex cursor-pointer items-center gap-x-3 rounded-md bg-item-4 px-3 py-2 hocus_bg-item-5"
+    @click="$trnForm.ui.catsRootModal = true"
+  >
+    <div
+      class="flex h-8 w-8 items-center justify-center rounded-full text-xl leading-none text-neutral-50"
+      :style="{ background: category.color }"
+    >
+      <div :class="category.icon" />
+    </div>
 
-  .grow.truncate
-    .text-xs.text-item-2.dark_text-neutral-400(v-if="parentCategory").
-      {{ parentCategory.name }}
+    <div class="grow truncate">
+      <div
+        v-if="parentCategory"
+        class="text-xs text-item-2 dark_text-neutral-400"
+      >
+        {{ parentCategory.name }}
+      </div>
 
-    .leading-none.text-sm.text-neutral-700.dark_text-neutral-300.
-      {{ category.name }}
+      <div class="text-sm leading-none text-neutral-700 dark_text-neutral-300">
+        {{ category.name }}
+      </div>
+    </div>
 
-  .mdi.mdi-dots-vertical.-mr-1.text-lg.text-item-2
+    <div class="mdi mdi-dots-vertical -mr-1 text-lg text-item-2" />
+  </div>
 </template>
