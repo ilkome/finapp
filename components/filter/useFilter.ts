@@ -125,6 +125,19 @@ export const useFilter = defineStore('filter', () => {
     catsIds.value = catsIds.value.filter(id => id !== categoryId)
   }
 
+  function toggleCategoryId(categoryId: CategoryId) {
+    if (catsIds.value.includes(categoryId)) {
+      removeCategoryId(categoryId)
+      scrollTop()
+      return
+    }
+
+    setCategoryId(categoryId)
+    setDateNow()
+    activeTabStat.value = 'summary'
+    scrollTop()
+  }
+
   /**
    * Others
    */
@@ -178,6 +191,8 @@ export const useFilter = defineStore('filter', () => {
     period: period.value,
   }))
 
+  const isShow = computed(() => catsIds.value.length > 0 || walletsIds.value.length > 0)
+
   return {
     // Date
     date,
@@ -194,6 +209,7 @@ export const useFilter = defineStore('filter', () => {
     catsIds,
     setCategoryId,
     removeCategoryId,
+    toggleCategoryId,
 
     period,
     periodWithoutAll,
@@ -207,6 +223,7 @@ export const useFilter = defineStore('filter', () => {
     clearFilter,
 
     // Computed
+    isShow,
     values,
   }
 })

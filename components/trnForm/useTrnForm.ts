@@ -286,6 +286,17 @@ export function useTrnForm() {
     $trnForm.ui.isShow = true
   }
 
+  function trnFormCreate2(categoryId: CategoryId) {
+    $trnForm.setValues({
+      action: 'create',
+      categoriesIds: categoriesIds.value,
+      trn: trnsStore.lastCreatedTrnItem,
+      walletsIds: walletIds.value,
+    })
+    $trnForm.ui.isShow = true
+    $trnForm.values.categoryId = categoryId
+  }
+
   function trnFormDuplicate(trnId: TrnId) {
     const trn = trnsStore.items[trnId]
 
@@ -302,6 +313,7 @@ export function useTrnForm() {
   return {
     trnFormEdit,
     trnFormCreate,
+    trnFormCreate2,
     trnFormDuplicate,
   }
 }

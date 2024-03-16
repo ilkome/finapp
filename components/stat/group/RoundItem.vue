@@ -4,6 +4,7 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { MoneyTypeNumber } from '~/components/stat/types'
+import { useTrnForm } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
   category: CategoryItem
@@ -13,36 +14,46 @@ const props = defineProps<{
   type?: MoneyTypeNumber
 }>()
 
-const { setCategoryId } = useFilter()
+const { toggleCategoryId } = useFilter()
 const categoriesStore = useCategoriesStore()
+const { trnFormCreate2 } = useTrnForm()
 
-const isCategoryHasChildren = computed(() => categoriesStore.isCategoryHasChildren(props.categoryId))
+const isCategoryHasChildren = computed(() =>
+  categoriesStore.isCategoryHasChildren(props.categoryId),
+)
 </script>
 
-<template lang="pug">
-.statItemRound.hocus_bg-item-5(
-  v-if="category"
-  :class="{ _prevStat: total === 0 }"
-  ref="item"
-  data-long-press-delay="300"
-  @click="setCategoryId(categoryId)"
-)
-  .statItemRound__icon
-    .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
-      :style="{ background: category.color }"
-      @click.stop="setCategoryId(categoryId)"
-    ): div(:class="category.icon")
+<template>
+  <div
+    v-if="category"
+    class="statItemRound flex-center group hocus_bg-item-5 p-2 rounded-lg"
+    :class="{ _prevStat: total === 0 }"
+    data-long-press-delay="300"
+    @click="trnFormCreate2(categoryId)"
+  >
+    <Icon2
+      :categoryId="categoryId"
+      :color="category.color"
+      :icon="category.icon"
+      @click="toggleCategoryId"
+    />
 
-  .statItemRound__name.js-getWidth(:class="{ _isCategoryHasChildren: isCategoryHasChildren }")
-    | {{ category.name }}{{ isCategoryHasChildren ? '...' : '' }}
+    <div
+      class="statItemRound__name js-getWidth"
+      :class="{ _isCategoryHasChildren: isCategoryHasChildren }"
+    >
+      {{ category.name }}{{ isCategoryHasChildren ? "..." : "" }}
+    </div>
 
-  .statItemRound__amount.js-getWidth.text-item-base
-    Amount(
-      :amount="total"
-      :currencyCode="currencyCode"
-      :type="type"
-      :isShowBaseRate="false"
-    )
+    <div class="statItemRound__amount js-getWidth text-item-base">
+      <Amount
+        :amount="total"
+        :currencyCode="currencyCode"
+        :type="type"
+        :isShowBaseRate="false"
+      />
+    </div>
+  </div>
 </template>
 
 <style lang="stylus">
@@ -64,15 +75,7 @@ const isCategoryHasChildren = computed(() => categoriesStore.isCategoryHasChildr
 @import "../assets/stylus/variables"
 
 .statItemRound
-  cursor pointer
-  position relative
-  display flex
-  align-items center
-  justify-content center
   flex-flow column
-  padding 10px
-  border 1px solid transparent
-  border-radius 6px
 
   &._prevStat
     opacity .5

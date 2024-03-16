@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
-import { useStat } from '~/components/stat/useStat'
-import useStatPage from '~/components/stat/useStatPage'
-import useUIView from '~/components/layout/useUIView'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { MoneyTypeSlug } from '~/components/stat/types'
+import useUIView from '~/components/layout/useUIView'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useFilter } from '~/components/filter/useFilter'
+import { useStat } from '~/components/stat/useStat'
 
 const props = defineProps<{
   moneyTypeSlug: MoneyTypeSlug
 }>()
 
 const { width } = useWindowSize()
-const { statPage } = useStatPage()
-const { moneyTypes } = useStat()
+const filterStore = useFilter()
+const { statCurrentPeriod, moneyTypes } = useStat()
 const { ui } = useUIView()
 const currenciesStore = useCurrenciesStore()
 const categoriesStore = useCategoriesStore()
@@ -21,7 +21,8 @@ const roundRef = ref(null)
 
 const isShow = computed(
   () =>
-    ui.value.showRoundCats && statPage.current[props.moneyTypeSlug]?.categoriesIds?.length,
+    ui.value.showRoundCats
+    && statCurrentPeriod.value[props.moneyTypeSlug]?.categoriesIds?.length,
 )
 const typeNumber = moneyTypes.find(t => t.id === props.moneyTypeSlug)?.type
 
@@ -45,40 +46,41 @@ function updateWidth() {
   }, 100)
 }
 
-watch(statPage.current[props.moneyTypeSlug]?.categoriesIds, updateWidth, {
-  immediate: true,
-})
-
-watch(isShow, updateWidth, { immediate: true })
-watch(width, updateWidth)
+watch(
+  [
+    isShow,
+    width,
+    () => statCurrentPeriod.value[props.moneyTypeSlug]?.categoriesIds,
+  ],
+  () => updateWidth(),
+  { immediate: true },
+)
 </script>
 
 <template>
-  <div v-if="isShow" ref="roundRef" class="rounded-lg bg-item-4 px-2">
-    <div class="items grid py-2" :data-type-text="`${moneyTypeSlug}`">
+  <div v-if="isShow" ref="roundRef" class="rounded-lg bg-item-4">
+    <div class="items grid" :data-type-text="`${moneyTypeSlug}`">
       <LazyStatGroupRoundItem
-        v-for="categoryId in statPage.current[moneyTypeSlug].categoriesIds"
+        v-for="categoryId in statCurrentPeriod[moneyTypeSlug].categoriesIds"
         :key="categoryId"
         :category="categoriesStore.items[categoryId]"
         :categoryId="categoryId"
         :currencyCode="currenciesStore.base"
-        :total="statPage.current.categories[categoryId][moneyTypeSlug]"
+        :total="statCurrentPeriod.categories[categoryId][moneyTypeSlug]"
         :type="typeNumber"
       />
 
-      <template v-if="statPage.filter.categoryId">
-        <template
-          v-for="categoryId in categoriesStore.getChildCategoriesIds(
-            statPage.filter.categoryId,
-          )"
-        >
+      <template v-if="filterStore.catsIds.length > 0">
+        <template v-for="categoryId in filterStore.catsIds" :key="categoryId">
           <template
             v-if="
-              !statPage.current[moneyTypeSlug].categoriesIds.includes(categoryId)
+              !statCurrentPeriod[moneyTypeSlug].categoriesIds.includes(
+                categoryId,
+              )
             "
           >
             <LazyStatGroupRoundItem
-              v-if="statPage.filter.categoryId"
+              v-if="categoryId"
               :key="categoryId"
               :category="categoriesStore.items[categoryId]"
               :categoryId="categoryId"

@@ -1,10 +1,32 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import type { AppNav } from '~/components/app/types'
-import useStatPage from '~/components/stat/useStatPage'
 import { useAppNav } from '~/components/app/useAppNav'
 
-const { menu } = useStatPage()
+const { $i18n } = useNuxtApp()
+
+const menu = computed<{
+  idx: number
+  id: AppNav
+  name: string | unknown
+}[]>(() => [{
+  idx: 0,
+  id: 'summary',
+  name: $i18n.t('stat.periods'),
+}, {
+  idx: 1,
+  id: 'expense',
+  name: $i18n.t('money.expense'),
+}, {
+  idx: 2,
+  id: 'income',
+  name: $i18n.t('money.income'),
+}, {
+  idx: 3,
+  id: 'trns',
+  name: $i18n.t('trns.shortTitle'),
+}])
+
 const { activeTabStat } = storeToRefs(useAppNav())
 
 function onClickStatMenu(tabName: AppNav) {

@@ -10,7 +10,7 @@ function toggleView(name) {
 </script>
 
 <template>
-  <div class="mx-2 inline-flex rounded-md bg-item-4">
+  <div class="inline-flex">
     <div
       class="flex-center w-10 cursor-pointer rounded-md px-3 py-2 hocus_bg-item-5"
       :class="[

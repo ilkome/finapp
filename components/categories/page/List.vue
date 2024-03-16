@@ -1,34 +1,43 @@
 <script setup lang="ts">
 import { useCategoriesStore } from '~/components/categories/useCategories'
 
-const { $i18n } = useNuxtApp()
+const { t } = useI18n()
 useHead({
-  title: $i18n.t('categories.title'),
+  title: t('categories.title'),
 })
 
 const categoriesStore = useCategoriesStore()
 </script>
 
-<template lang="pug">
-UiPage
-  UiHeader
-    UiHeaderTitle {{ $t('categories.name') }}
-    template(#actions)
-      UiHeaderLink(@click="$router.push('/categories/new')")
-        UiIconAdd.w-5.h-5.group-hover_text-white
+<template>
+  <UiPage>
+    <UiHeader>
+      <UiHeaderTitle>{{ $t("categories.name") }}</UiHeaderTitle>
+      <template #actions>
+        <UiHeaderLink @click="$router.push('/categories/new')">
+          <UiIconAdd class="h-5 w-5 group-hover_text-white" />
+        </UiHeaderLink>
+      </template>
+    </UiHeader>
 
-  //- List
-  .pt-1.pb-12.px-2
-    CategoriesList(
-      :ids="categoriesStore.categoriesRootIds"
-      @click="catId => $router.push(`/categories/${catId}`)"
-    )
+    <!-- List -->
+    <div class="px-2 pb-12 pt-1">
+      <CategoriesList
+        :ids="categoriesStore.categoriesRootIds"
+        @click="(catId) => $router.push(`/categories/${catId}`)"
+      />
+    </div>
 
-  template(#bottom)
-    .pb-4.px-2.flex.justify-evenly.gap-6
-      //- Create
-      .cursor-pointer.grow.py-3.px-5.flex-center.rounded-full.text-sm.bg-item-4.hocus_bg-item-5(
-        class="basis-1/2 max-w-[280px]"
-        @click="$router.push('/categories/new')"
-      ) {{ $t('categories.new') }}
+    <template #bottom>
+      <div class="flex justify-evenly gap-6 px-2 pb-4">
+        <!-- Create -->
+        <div
+          class="flex-center max-w-[280px] grow basis-1/2 cursor-pointer rounded-full bg-item-4 px-5 py-3 text-sm hocus_bg-item-5"
+          @click="$router.push('/categories/new')"
+        >
+          {{ $t("categories.new") }}
+        </div>
+      </div>
+    </template>
+  </UiPage>
 </template>

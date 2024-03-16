@@ -1,29 +1,28 @@
 <script setup lang="ts">
-import useStatPage from '~/components/stat/useStatPage'
-import useTrns from '~/components/trns/useTrns'
+import { useFilter } from '~/components/filter/useFilter'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const { statPage } = useStatPage()
-const { allTrnsIdsWithFilter } = useTrns()
-</script>
+const filterStore = useFilter()
+const trnsStore = useTrnsStore()
 
-<script lang="ts">
-export default defineComponent({
-  head() {
-    return {
-      title: this.$t('trns.history'),
-    }
-  },
+const { t } = useI18n()
+useHead({
+  title: t('trns.history'),
 })
 </script>
 
-<template lang="pug">
-UiPage
-  UiHeader
-    UiHeaderTitle {{ $t('trns.history') }}
+<template>
+  <UiPage>
+    <UiHeader>
+      <UiHeaderTitle>{{ $t("trns.history") }}</UiHeaderTitle>
+    </UiHeader>
 
-  .pb-8(v-if="statPage.filter.isShow")
-    LazyStatFilter
+    <div v-if="filterStore.isShow" class="pb-8">
+      <LazyStatFilter />
+    </div>
 
-  .my-4.md_max-w-none(class="max-w-[420px]")
-    TrnsListWithControl(:trnsIds="allTrnsIdsWithFilter")
+    <div class="my-4 max-w-[420px] md_max-w-none">
+      <TrnsListWithControl :trnsIds="trnsStore.allTrnsIdsWithFilter" />
+    </div>
+  </UiPage>
 </template>

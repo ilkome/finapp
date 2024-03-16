@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { TrnId, TrnItem } from '../trns/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
 import type { CategoryId } from '~/components/categories/types'
 import { useFilter } from '~/components/filter/useFilter'
 import type {
@@ -9,7 +9,6 @@ import type {
 } from '~/components/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
-import useTrns from '~/components/trns/useTrns'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
@@ -18,10 +17,9 @@ const props = defineProps<{
 
 const trnsStore = useTrnsStore()
 const filterStore = useFilter()
-const { getStoreTrnsIds } = useTrns()
 
 const trnsIds = computed(() =>
-  getStoreTrnsIds({
+  trnsStore.getStoreTrnsIds({
     categoriesIds: props.categoriesIds,
     walletsIds: props.walletsIds,
   }),
@@ -139,7 +137,7 @@ const {
 } = usePeriodDate(trnsIds)
 
 const periodTrnsIds = computed(() =>
-  getStoreTrnsIds({
+  trnsStore.getStoreTrnsIds({
     date: date.value,
     periodName: period.value,
     categoriesIds: props.categoriesIds,

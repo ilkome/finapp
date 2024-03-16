@@ -2,18 +2,16 @@
 import { storeToRefs } from 'pinia'
 import { useWindowSize } from '@vueuse/core'
 import type { MoneyTypeSlugSum } from '~/components/stat/types'
-import useStatPage from '~/components/stat/useStatPage'
+import type { TrnId } from '~/components/trns/types'
 import useUIView from '~/components/layout/useUIView'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStat } from '~/components/stat/useStat'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { TrnId } from '~/components/trns/types'
 
 const filterStore = useFilter()
-const { statPage } = useStatPage()
 const { ui } = useUIView()
-const { moneyTypes } = useStat()
+const { statCurrentPeriod, statAverage, moneyTypes } = useStat()
 const { width } = useWindowSize()
 const trnsStore = useTrnsStore()
 const { activeTabStat } = storeToRefs(useAppNav())
@@ -33,7 +31,7 @@ function isShowGroupByType(type: MoneyTypeSlugSum) {
 const isShowGroupTrns = computed(() => {
   const p1
     = activeTabStat.value === 'income' || activeTabStat.value === 'expense'
-  const p2 = statPage.average?.sum === 0
+  const p2 = statAverage.value?.sum === 0
   return p1 || p2
 })
 
@@ -72,12 +70,11 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
     <div class="sticky top-0 z-20 h-[44px] bg-foreground-4 backdrop-blur">
       <StatDate />
     </div>
-    <LazyStatFilter v-if="statPage.filter.isShow" />
 
     <!-- Sum All -->
-    <div class="mb-2 mx-2 rounded-xl bg-item-4">
+    <div class="mx-2 mb-2 rounded-xl bg-item-4">
       <div
-        class="flex flex-wrap items-center gap-3 gap-x-6 rounded-lg bg-item-4 p-2 p-2 sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
+        class="flex flex-wrap items-center gap-3 gap-x-6 rounded-lg bg-item-4 p-2 sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
       >
         <StatTotalWithAverage moneyTypeSlugSum="expense" />
         <StatTotalWithAverage moneyTypeSlugSum="income" />
@@ -92,15 +89,20 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
 
     <StatMenu class="pb-2 pt-0" />
 
+    <div class="mx-2 flex gap-2 rounded-lg bg-item-4">
+      <LazyStatFilter class="grow" />
+      <StatViewConfig />
+    </div>
+
     <div class="min-h-[calc(100vh-130px)]" data-scroll-ref="stat">
       <template v-if="activeTabStat !== 'trns'">
-        <div class="mb-8 px-2 md_mb-4">
+        <div class="mb-8 px-2 md_mb-4 lg_px-0">
           <div class="grid items-start gap-6 md_grid-cols-2 md_gap-8">
             <div
               v-for="item in moneyTypes"
               v-show="isShowGroupByType(item.id)"
               :key="item.id"
-              class="_bg-item-4 grid gap-3 rounded-lg lg_p-2 xl_max-w-[420px]"
+              class="grid gap-3 rounded-lg py-2 lg_px-2 xl_max-w-[420px]"
             >
               <StatTotalWithAverage :moneyTypeSlugSum="item.id" hasBg />
               <StatGroupVertical :moneyTypeSlug="item.id" />
@@ -111,16 +113,12 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
                 <div
                   v-if="
                     activeTabStat === 'summary'
-                      && statPage.current[item.id].total !== 0
+                      && statCurrentPeriod[item.id].total !== 0
                       && combinedTrnsIds[item.id].length > 0
                   "
-                  class="max-w-[420px] pt-4"
+                  class="grid max-w-[420px] gap-2 pt-4"
                 >
-                  <div
-                    class="text-item-base pb-2 font-primary text-lg font-semibold leading-none"
-                  >
-                    {{ $t("trns.inPeriodTitle") }}
-                  </div>
+                  <UiTitle>{{ $t("trns.inPeriodTitle") }}</UiTitle>
                   <TrnsList
                     :size="12"
                     :trnsIds="combinedTrnsIds[item.id]"
@@ -159,16 +157,12 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
       <template v-else>
         <div class="mb-4 px-2">
           <TrnsListWithControl
-            :trnsIds="statPage.current.trnsIds"
+            :trnsIds="statCurrentPeriod.trnsIds"
             isFilterByDay
             defaultFilterTrnsPeriod="period"
           />
         </div>
       </template>
-
-      <div class="pb-8">
-        <StatViewConfig />
-      </div>
     </div>
   </div>
 </template>

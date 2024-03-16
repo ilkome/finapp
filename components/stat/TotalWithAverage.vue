@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import useStatPage from '~/components/stat/useStatPage'
+import type { MoneyTypeNumber, MoneyTypeSlugSum } from '~/components/stat/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useStat } from '~/components/stat/useStat'
-import type { MoneyTypeNumber, MoneyTypeSlugSum } from '~/components/stat/types'
 
 const props = defineProps<{
   hasBg?: boolean
   moneyTypeSlugSum: MoneyTypeSlugSum
 }>()
 
-const { statPage } = useStatPage()
-const { moneyTypes } = useStat()
-const { statAverage, statCurrentPeriod } = useStat()
+const { moneyTypes, statAverage, statCurrentPeriod } = useStat()
 const currenciesStore = useCurrenciesStore()
 
 const classes = computed(() => ({
-  'rounded-lg bg-item-4 px-2 py-2 sm_px-5 sm_py-4': props.hasBg,
+  'rounded-lg bg-item-4 px-2 py-2 sm_px-3 sm_pt-3': props.hasBg,
 }))
 
 const moneyTypeNumber = computed<MoneyTypeNumber | undefined>(
@@ -26,9 +23,9 @@ const moneyTypeNumber = computed<MoneyTypeNumber | undefined>(
 
 const amount = computed(() => {
   if (props.moneyTypeSlugSum === 'sum')
-    return statPage.current.income.total - statPage.current.expense.total
+    return statCurrentPeriod.value.income.total - statCurrentPeriod.value.expense.total
 
-  return statPage.current[props.moneyTypeSlugSum].total
+  return statCurrentPeriod.value[props.moneyTypeSlugSum].total
 })
 
 const colorize = computed(() => {
@@ -43,13 +40,13 @@ const colorize = computed(() => {
 const isShownAverage = computed(() => {
   if (props.moneyTypeSlugSum === 'sum')
     return statAverage.value?.sum !== 0
-  return statPage.average[props.moneyTypeSlugSum] !== 0
+  return statAverage.value[props.moneyTypeSlugSum] !== 0
 })
 
 const averageAmount = computed(() => {
   if (props.moneyTypeSlugSum === 'sum')
     return statAverage.value?.sum
-  return statPage.average[props.moneyTypeSlugSum]
+  return statAverage.value[props.moneyTypeSlugSum]
 })
 </script>
 

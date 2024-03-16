@@ -14,7 +14,7 @@ import {
   saveTrnIDforDeleteWhenClientOnline,
   saveTrnToAddLaterLocal,
 } from '~/components/trns/helpers'
-import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
+import type { TrnId, TrnItem, Trns, TrnsGetterProps } from '~/components/trns/types'
 import type { CategoryId } from '~/components/categories/types'
 import { useUserStore } from '~/components/user/useUser'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -120,6 +120,28 @@ export const useTrnsStore = defineStore('trns', () => {
 
     return trnsIds.sort((a, b) => items.value[b].date - items.value[a].date)
   })
+
+  const allTrnsIdsWithFilter = computed(() => {
+    const categoriesIds = filterStore.catsIds.length > 0
+      ? getTransactibleCategoriesIds(filterStore.catsIds, categoriesStore.items)
+      : false
+    const walletsIds = filterStore.walletsIds.length > 0
+      ? filterStore.walletsIds
+      : false
+
+    return getTrnsIds({
+      categoriesIds,
+      walletsIds,
+      trnsItems: items.value || {},
+    })
+  })
+
+  function getStoreTrnsIds(props: Omit<TrnsGetterProps, 'trnsItems'>) {
+    return getTrnsIds({
+      ...props,
+      trnsItems: items.value || {},
+    })
+  }
 
   function initTrns() {
     const path = `users/${userStore.uid}/trns`
@@ -268,11 +290,13 @@ export const useTrnsStore = defineStore('trns', () => {
     selectedTrnsIds,
     firstCreatedTrnIdFromSelectedTrns,
     selectedTrnsIdsWithDate,
+    allTrnsIdsWithFilter,
 
     initTrns,
     setTrns,
     addTrn,
     deleteTrn,
+    getStoreTrnsIds,
     unsubscribeTrns,
     deleteTrnsByIds,
     uploadOfflineTrns,

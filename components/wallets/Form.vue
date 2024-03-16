@@ -135,17 +135,15 @@ div(v-if="walletForm")
           @input="event => emit('updateValue', 'description', event.target.value)"
         )
 
-      SharedContextMenuItem(
+      UiCheckbox(
         :checkboxValue="walletForm.countTotal"
         :title="$t('wallets.form.total.placeholder')"
-        showCheckbox
         @onClick="walletForm.countTotal = !walletForm.countTotal"
       )
 
-      SharedContextMenuItem(
+      UiCheckbox(
         :checkboxValue="walletForm.isCredit"
         :title="t('isCredit')"
-        showCheckbox
         @onClick="walletForm.isCredit = !walletForm.isCredit"
       )
 

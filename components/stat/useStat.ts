@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import type { CategoryId } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
 import { getOldestTrnDate } from '~/components/trns/helpers'
-import { getTotal } from '~/components/amount/getTotal'
+import { type TotalReturns, getTotal } from '~/components/amount/getTotal'
 import {
   getTransactibleCategoriesIds,
   getTransferCategoriesIds,
@@ -32,6 +32,11 @@ const moneyTypes: {
     type: 1,
   },
 ]
+type CategoryTotal = Record<
+  CategoryId,
+  Record<'income', TotalReturns['incomeTransactions']> &
+  Record<'expense', TotalReturns['expenseTransactions']>
+>
 
 export function useStat(viewBy = 'child') {
   const chartStore = useChartStore()
@@ -83,7 +88,7 @@ export function useStat(viewBy = 'child') {
       return categoryId
     }
 
-    const categoriesWithTrnsIds = {}
+    const categoriesWithTrnsIds: Record<CategoryId, TrnId[]> = {}
     for (const trnId of trnsIds) {
       const categoryId
         = viewBy === 'parent'
@@ -108,7 +113,7 @@ export function useStat(viewBy = 'child') {
     })
 
     // count total in categories
-    const categoriesTotal = {}
+    const categoriesTotal: CategoryTotal = {}
     for (const categoryId in categoriesWithTrnsIds) {
       const trnsIdsInCategory = categoriesWithTrnsIds[categoryId]
 
@@ -129,8 +134,8 @@ export function useStat(viewBy = 'child') {
     }
 
     // separate categories by income and expense
-    const statIncome = {}
-    const statExpense = {}
+    const statIncome: CategoryTotal = {}
+    const statExpense: CategoryTotal = {}
     for (const categoryId in categoriesWithTrnsIds) {
       const total = categoriesTotal[categoryId]
       if (total.income > 0)
@@ -148,11 +153,15 @@ export function useStat(viewBy = 'child') {
     )
 
     // get first item in sorted categories
-    function getBiggestAmount(categoriesTotal, categoriesIds, typeName) {
+    function getBiggestAmount(
+      categoriesTotal: CategoryTotal,
+      categoriesIds: CategoryId[],
+      moneyTypeSlug: MoneyTypeSlug,
+    ) {
       const biggestAmount = categoriesIds[0]
       return (
         (categoriesTotal[biggestAmount]
-        && Math.abs(categoriesTotal[biggestAmount][typeName]))
+        && Math.abs(categoriesTotal[biggestAmount][moneyTypeSlug]))
         || 0
       )
     }

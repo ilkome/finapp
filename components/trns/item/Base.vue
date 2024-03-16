@@ -54,80 +54,99 @@ const actions = {
 }
 </script>
 
-<template lang="pug">
-.space-x-3.flex.cursor-context-menu.hocus_bg-neutral-100.dark_hocus_bg-neutral-800(
-  @click="actions.onOpenDetails"
-)
-  .text-neutral-50.text-xl.leading-none.w-8.h-8.rounded-full.justify-center.items-center.flex(
-    :style="{ background: trnItem.category.color }"
-    :class="[{ 'cursor-pointer': !slider }]"
-    @click="actions.onSetFilter"
-  ): div(:class="trnItem.category.icon")
+<template>
+  <div
+    class="group flex space-x-3 rounded-md px-2 py-2 hocus_bg-item-5"
+    @click="actions.onOpenDetails"
+  >
+    <Icon2
+      :categoryId="trnItem.categoryId"
+      :color="trnItem.category.color"
+      :icon="trnItem.category.icon"
+      @click="actions.onSetFilter"
+    />
 
-  .grow
-    .items-center.flex
-      .grow.text-neutral-500.dark_text-neutral-500
-        //- Category
-        .pb-1.space-x-2.items-baseline.flex.flex-wrap
-          .text-sm.text-neutral-700.dark_text-neutral-300 {{ trnItem.category.name }}
+    <div class="flex grow items-center">
+      <div class="grow text-neutral-500 dark_text-neutral-500">
+        <div class="flex flex-wrap items-baseline space-x-2 pb-1">
+          <div class="text-sm text-neutral-700 dark_text-neutral-300">
+            {{ trnItem.category.name }}
+          </div>
 
-          .text-xs.space-x-2.items-baseline.flex(v-if="trnItem.category.parentId")
-            div •
-            div {{ trnItem.categoryParent.name }}
+          <div
+            v-if="trnItem.category.parentId"
+            class="flex items-baseline space-x-2 text-xs"
+          >
+            <div>•</div>
+            <div>{{ trnItem.categoryParent.name }}</div>
+          </div>
+        </div>
 
-        //- Group
-        .text-xs.leading-none(v-if="trnItem.groups") In group
+        <div v-if="trnItem.type !== 2" class="text-xs leading-none">
+          {{ trnItem.wallet.name }}
+        </div>
 
-        //- Wallet
-        .text-xs.leading-none(v-if="trnItem.type !== 2") {{ trnItem.wallet.name }}
+        <div
+          v-if="trnItem.type === 2"
+          class="wrap flex gap-4 text-left text-xs"
+        >
+          <div>
+            <div class="flex items-center space-x-1">
+              <div>{{ $t("trnForm.transfer.from") }}:</div>
+              <div class="text-neutral-500 dark_text-neutral-400">
+                {{ trnItem.expenseWallet.name }}
+              </div>
+            </div>
 
-        //- Transfer
-        .flex.wrap.gap-4.text-xs.text-left(v-if="trnItem.type === 2")
-          //- Expense
-          div
-            .space-x-1.items-center.flex
-              div {{ $t('trnForm.transfer.from') }}:
-              .text-neutral-500.dark_text-neutral-400 {{ trnItem.expenseWallet.name }}
-
-            .text-base(
-              @click="actions.onOpenEdit"
-            )
-              Amount(
+            <div class="text-base" @click="actions.onOpenEdit">
+              <Amount
                 :amount="trnItem.expenseAmount || trnItem.amount"
                 :currencyCode="trnItem.expenseWallet.currency"
                 :type="0"
                 colorize="expense"
-              )
+              />
+            </div>
+          </div>
 
-          //- Income
-          div
-            .space-x-1.items-center.flex
-              div {{ $t('trnForm.transfer.to') }}:
-              .text-neutral-500.dark_text-neutral-400 {{ trnItem.incomeWallet.name }}
+          <div>
+            <div class="flex items-center space-x-1">
+              <div>{{ $t("trnForm.transfer.to") }}:</div>
+              <div class="text-neutral-500 dark_text-neutral-400">
+                {{ trnItem.incomeWallet.name }}
+              </div>
+            </div>
 
-            .text-base(
-              @click="actions.onOpenEdit"
-            )
-              Amount(
+            <div class="text-base" @click="actions.onOpenEdit">
+              <Amount
                 :amount="trnItem.incomeAmount || trnItem.amount"
                 :currencyCode="trnItem.incomeWallet.currency"
                 :type="1"
                 colorize="income"
-              )
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
-      //- Amount
-      .cursor-pointer(
+      <div
         v-if="trnItem.type !== 2"
+        class="cursor-pointer"
         @click="actions.onOpenEdit"
-      )
-        Amount(
+      >
+        <Amount
           :amount="trnItem.amount"
           :currencyCode="trnItem.wallet.currency"
           :type="trnItem.type"
           colorize="income"
-        )
+        />
+      </div>
+    </div>
 
-    //- Description
-    .pt-2.text-neutral-500.text-xs.leading-none(v-if="trnItem.desc || trnItem.description")
-      | {{ trnItem.desc || trnItem.description }}
+    <div
+      v-if="trnItem.desc || trnItem.description"
+      class="pt-2 text-xs leading-none text-neutral-500"
+    >
+      {{ trnItem.desc || trnItem.description }}
+    </div>
+  </div>
 </template>

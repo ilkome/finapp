@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   value: boolean
   title?: string
 }>()
@@ -9,12 +9,16 @@ const emit = defineEmits<{
 }>()
 </script>
 
-<template lang="pug">
-.checkboxBlock(@click="emit('click', !value)")
-  .checkbox__title(v-if="title") {{ title }}
+<template>
+  <div class="checkboxBlock" @click="emit('click', !value)">
+    <div v-if="title" class="checkbox__title">
+      {{ title }}
+    </div>
 
-  .checkbox(:class="{ _active: value }")
-    .checkbox__in
+    <div :class="{ _active: value }" class="checkbox">
+      <div class="checkbox__in" />
+    </div>
+  </div>
 </template>
 
 <style lang="stylus" scoped>
@@ -45,9 +49,6 @@ const emit = defineEmits<{
     border-radius 20px
     box-shadow 0 0 4px rgba(0, 0, 0, .25)
     anim()
-
-    /.light &
-      background var(--c-bg-1)
 
     ^[0]._active &
       transform translateX(18px)

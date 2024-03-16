@@ -8,14 +8,21 @@ const props = defineProps<{
 const formattedDate = computed(() => formatDate(props.date, 'full'))
 </script>
 
-<template lang="pug">
-.flex.items-center.gap-2
-  .text-3xl.font-unica {{ formattedDate.day }}
+<template>
+  <div class="flex items-center gap-2">
+    <div class="font-secondary text-3xl">
+      {{ formattedDate.day }}
+    </div>
 
-  .text-xs.leading-none
-    div(class="pb-[2px]") {{ formattedDate.weekday }}
+    <div class="text-secondary">
+      <div class="pb-[2px] text-2xs leading-none">
+        {{ formattedDate.weekday }}
+      </div>
 
-    .flex.gap-1
-      div {{ formattedDate.month }}
-      div {{ formattedDate.year }}
+      <div class="flex gap-1 text-xs leading-none">
+        <div>{{ formattedDate.month }}</div>
+        <div>{{ formattedDate.year }}</div>
+      </div>
+    </div>
+  </div>
 </template>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { MoneyTypeSlug } from '~/components/stat/types'
-import useStatPage from '~/components/stat/useStatPage'
 import useUIView from '~/components/layout/useUIView'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useStat } from '~/components/stat/useStat'
@@ -9,7 +8,6 @@ const props = defineProps<{
   moneyTypeSlug: MoneyTypeSlug
 }>()
 
-const { statPage } = useStatPage()
 const { ui } = useUIView()
 const { statCurrentPeriod } = useStat()
 const categoriesStore = useCategoriesStore()
@@ -21,7 +19,7 @@ const biggestAmount = computed(
 const isShow = computed(
   () =>
     ui.value.showCatsVerticalChart
-    && statPage.current[props.moneyTypeSlug]?.categoriesIds?.length > 1,
+    && statCurrentPeriod.value[props.moneyTypeSlug]?.categoriesIds?.length > 1,
 )
 </script>
 

@@ -15,15 +15,15 @@ const isToday = computed(() => dayjs().isSame(date.value, periodWithoutAll.value
 <template>
   <div class="flex">
     <div
-      :class="getStyles('item', ['link', 'rounded'])"
-      @click="setNextPeriodDate"
+      :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30 !cursor-default': isToday }]"
+      @click="setPrevPeriodDate"
     >
       <UiIconChevron class="size-8" />
     </div>
 
     <div
-      :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30 !cursor-default': isToday }]"
-      @click="setPrevPeriodDate"
+      :class="[...getStyles('item', ['link', 'rounded'])]"
+      @click="setNextPeriodDate"
     >
       <UiIconChevron class="size-8 rotate-180" />
     </div>

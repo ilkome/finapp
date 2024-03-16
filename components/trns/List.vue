@@ -112,10 +112,9 @@ function actions(trnItem) {
 <template lang="pug">
 div(v-if="trnsIds && trnsIds.length > 0")
   .pb-2(v-if="isShowFilter && isTrnsWithDescription")
-    SharedContextMenuItem(
+    UiCheckbox(
       :checkboxValue="isShowTrnsWithDesc"
       :title="$t('trns.filter.showTrnsWithDesc')"
-      icon="mdi mdi-comment-text-outline"
       showCheckbox
       @onClick="toggleTrnsWithDesc"
     )
@@ -151,7 +150,7 @@ div(v-if="trnsIds && trnsIds.length > 0")
           )
 
       .rounded-lg
-        TrnsItemBase.py-3.px-3(
+        TrnsItemBase(
           v-if="uiHistory"
           v-for="trnId in trnsIds"
           :key="trnId"

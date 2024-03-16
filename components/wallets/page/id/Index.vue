@@ -1,45 +1,46 @@
 <script setup lang="ts">
-import dayjs from "dayjs";
-import type { WalletId } from "~/components/wallets/types";
-import { useFilter } from "~/components/filter/useFilter";
-import { useWalletsStore } from "~/components/wallets/useWalletsStore";
-import { useTrnsStore } from "~/components/trns/useTrnsStore";
-import { getTrnsIds } from "~/components/trns/getTrns";
+import dayjs from 'dayjs'
+import type { WalletId } from '~/components/wallets/types'
+import { useFilter } from '~/components/filter/useFilter'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { getTrnsIds } from '~/components/trns/getTrns'
 
-const { t } = useI18n();
-const { $i18n } = useNuxtApp();
-const route = useRoute();
-const router = useRouter();
-const filterStore = useFilter();
-const walletsStore = useWalletsStore();
-const trnsStore = useTrnsStore();
+const { t } = useI18n()
+const { $i18n } = useNuxtApp()
+const route = useRoute()
+const router = useRouter()
+const filterStore = useFilter()
+const walletsStore = useWalletsStore()
+const trnsStore = useTrnsStore()
 
-const walletId = computed(() => route.params.id as WalletId);
-const wallet = computed(() => walletsStore.items[walletId.value]);
+const walletId = computed(() => route.params.id as WalletId)
+const wallet = computed(() => walletsStore.items[walletId.value])
 
-if (!wallet.value) router.replace("/wallets");
+if (!wallet.value)
+  router.replace('/wallets')
 
-const total = computed(() => walletsStore.walletsTotal[walletId.value]);
+const total = computed(() => walletsStore.walletsTotal[walletId.value])
 
 const trnsIds = computed(() =>
   getTrnsIds({
     walletsIds: [walletId.value],
     trnsItems: trnsStore.items,
   }),
-);
+)
 
 // TODO: useFilter
 function onClickFilterWallet() {
-  filterStore.setFilterWalletStat(walletId.value);
+  filterStore.setFilterWalletStat(walletId.value)
 }
 
 function onEditClick() {
-  router.push(`/wallets/${walletId.value}/edit`);
+  router.push(`/wallets/${walletId.value}/edit`)
 }
 
 useHead({
-  title: `${$i18n.t("wallets.title")}: ${wallet.value?.name}`,
-});
+  title: `${$i18n.t('wallets.title')}: ${wallet.value?.name}`,
+})
 </script>
 
 <template>
@@ -93,19 +94,6 @@ useHead({
 
         <div class="mdi mdi-chevron-right text-lg leading-none opacity-70" />
       </UiItemShadow>
-    </div>
-
-    <div
-      class="relative mx-3 mb-12 overflow-hidden rounded-md bg-gray-50 bg-item-4 p-3"
-    >
-      <SharedDate
-        class="-mb-1 dark_text-white/50"
-        :date="dayjs().valueOf()"
-        :period="filterStore.period"
-      />
-      <div class="-mb-3">
-        <WalletsItemTotalSum :trnsIds="trnsIds" :walletId="walletId" />
-      </div>
     </div>
 
     <!-- Stat -->

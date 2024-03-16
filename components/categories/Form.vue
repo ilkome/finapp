@@ -156,25 +156,22 @@ div
           @input="event => emit('updateValue', 'name', event.target.value)"
         )
 
-      LazySharedContextMenuItem(
+      LazyUiCheckbox(
         v-if="categoriesStore.getChildCategoriesIds(categoryId).length > 0 "
         :checkboxValue="isUpdateChildCategoriesColor"
         :title="$t('categories.form.childColor')"
-        showCheckbox
         @onClick="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
       )
-      LazySharedContextMenuItem(
+      LazyUiCheckbox(
         v-if="categoriesStore.getChildCategoriesIds(categoryId).length === 0"
         :checkboxValue="categoryForm.showInLastUsed"
         :title="$t('categories.form.lastUsed')"
-        showCheckbox
         @onClick="categoryForm.showInLastUsed = !categoryForm.showInLastUsed"
       )
-      SharedContextMenuItem(
+      UiCheckbox(
         v-if="categoriesStore.getChildCategoriesIds(categoryId).length === 0"
         :checkboxValue="categoryForm.showInQuickSelector"
         :title="$t('categories.form.quickSelector')"
-        showCheckbox
         @onClick="categoryForm.showInQuickSelector = !categoryForm.showInQuickSelector"
       )
 
