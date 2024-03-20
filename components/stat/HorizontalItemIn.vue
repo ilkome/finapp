@@ -33,7 +33,7 @@ const trnsIds = computed(() => {
   if (categoriesStore.isCategoryHasChildren(props.categoryId))
     return []
 
-  return statStore.statCurrentPeriod.trnsIds
+  return trnsStore.filteredTrnsIds
     .filter(
       id =>
         trnsStore.items[id].type === props.moneyTypeNumber

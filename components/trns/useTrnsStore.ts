@@ -27,6 +27,23 @@ export const useTrnsStore = defineStore('trns', () => {
 
   const hasTrns = computed(() => Object.keys(items.value ?? {}).length > 0)
 
+  const filteredTrnsIds = computed(() => {
+    const categoriesIds
+    = filterStore.catsIds.length > 0
+      ? categoriesStore.getTransactibleIds(filterStore.catsIds)
+      : false
+    const walletsIds
+    = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : false
+
+    return getTrnsIds({
+      categoriesIds,
+      date: filterStore.date,
+      periodName: filterStore.period,
+      trnsItems: items.value,
+      walletsIds,
+    })
+  })
+
   const allTrnsIdsWithFilter = computed(() => {
     const categoriesIds: CategoryId[] = filterStore.catsIds.length > 0
       ? categoriesStore.getTransactibleIds(filterStore.catsIds)
@@ -47,25 +64,11 @@ export const useTrnsStore = defineStore('trns', () => {
     if (!hasTrns.value)
       return []
 
-    const filterDate = dayjs(filterStore.date)
-    const startDateValue = filterDate
-      .startOf(filterStore.periodWithoutAll)
-      .valueOf()
-    const endDateValue = filterDate
-      .endOf(filterStore.periodWithoutAll)
-      .valueOf()
-    let trnsIds = allTrnsIdsWithFilter.value || []
-
-    // filter date
-    if (filterStore.period !== 'all') {
-      trnsIds = trnsIds.filter(
-        (trnId: TrnId) =>
-          items.value[trnId].date >= startDateValue
-          && items.value[trnId].date <= endDateValue,
-      )
-    }
-
-    return trnsIds.sort((a, b) => items.value[b].date - items.value[a].date)
+    return getTrnsIds({
+      date: filterStore.date,
+      periodName: filterStore.period,
+      trnsItems: items.value,
+    })
   })
 
   const firstCreatedTrnIdFromSelectedTrns = computed(
@@ -253,6 +256,7 @@ export const useTrnsStore = defineStore('trns', () => {
     lastCreatedTrnItem,
     firstCreatedTrnIdFromSelectedTrns,
     selectedTrnsIdsWithDate,
+    filteredTrnsIds,
     allTrnsIdsWithFilter,
     oldestTrnDate,
 

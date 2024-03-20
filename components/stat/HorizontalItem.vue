@@ -42,7 +42,7 @@ const trnsIds = computed(() => {
   if (isCategoryHasChildren.value)
     return []
 
-  return statStore.statCurrentPeriod.trnsIds
+  return trnsStore.filteredTrnsIds
     .filter(
       id =>
         trnsStore.items[id].type === props.moneyTypeNumber

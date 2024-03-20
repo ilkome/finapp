@@ -39,8 +39,7 @@ const combinedTrnsIds = computed(() => ({
   all: trnsStore.selectedTrnsIdsWithDate,
   income: trnsStore.selectedTrnsIdsWithDate.filter((id: TrnId) => trnsStore.items[id].type === 1),
   expense: trnsStore.selectedTrnsIdsWithDate.filter((id: TrnId) => trnsStore.items[id].type === 0),
-}),
-)
+}))
 
 function getMoneyTypeNumber(slug: MoneyTypeSlugSum): MoneyTypeNumber {
   return moneyTypes.find(t => t.id === `${slug}`.toLowerCase())?.type || 3
@@ -225,7 +224,7 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
       <template v-else>
         <div class="mb-4 px-2">
           <TrnsListWithControl
-            :trnsIds="statStore.statCurrentPeriod.trnsIds"
+            :trnsIds="trnsStore.filteredTrnsIds"
             isFilterByDay
             defaultFilterTrnsPeriod="period"
           />

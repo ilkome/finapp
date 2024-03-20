@@ -27,46 +27,42 @@ export const useStat = defineStore('stat', () => {
 
   const viewBy: 'child' | 'parent' = 'child'
 
+  function getBiggestAmount(
+    categoriesTotal: CategoryTotal,
+    categoriesIds: CategoryId[],
+    moneyTypeSlug: MoneyTypeSlug,
+  ) {
+    const biggestAmount = categoriesIds[0]
+    return (
+      (categoriesTotal[biggestAmount]
+      && Math.abs(categoriesTotal[biggestAmount][moneyTypeSlug]))
+      || 0
+    )
+  }
+
   /**
    * Stat for current period
    */
   const statCurrentPeriod = computed(() => {
-    // TODO: move it to a separate function getFilterParams
-    const categoriesIds
-      = filterStore.catsIds.length > 0
-        ? categoriesStore.getTransactibleIds(filterStore.catsIds)
-        : false
-    const walletsIds
-      = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : false
-
-    const trnsIds = getTrnsIds({
-      categoriesIds,
-      date: filterStore.date,
-      periodName: filterStore.period,
-      trnsItems: trnsStore.items,
-      walletsIds,
-    })
-
     function getRootCategoryIdFromTrnId(
       trnId: TrnId,
-      excludeTransfer = false,
     ): CategoryId | false {
-      const categories = categoriesStore.items
       const trnCategoryId = trnsStore.items[trnId].categoryId
-      const trnCategoryParentId = categories[trnCategoryId]?.parentId
+      const trnCategoryParentId = categoriesStore.items[trnCategoryId]?.parentId
       const categoryId = trnCategoryParentId || trnCategoryId
 
-      if (excludeTransfer && categoriesStore.transferCategoriesIds.includes(categoryId))
+      if (categoriesStore.transferCategoriesIds.includes(categoryId))
         return false
 
       return categoryId
     }
 
     const categoriesWithTrnsIds: Record<CategoryId, TrnId[]> = {}
-    for (const trnId of trnsIds) {
+
+    for (const trnId of trnsStore.filteredTrnsIds) {
       const categoryId
         = viewBy === 'parent'
-          ? getRootCategoryIdFromTrnId(trnId, true)
+          ? getRootCategoryIdFromTrnId(trnId)
           : trnsStore.items[trnId]?.categoryId
 
       if (!categoryId)
@@ -75,16 +71,6 @@ export const useStat = defineStore('stat', () => {
       categoriesWithTrnsIds[categoryId] ??= []
       categoriesWithTrnsIds[categoryId].push(trnId)
     }
-
-    const total = getTotal({
-      baseCurrencyCode: currenciesStore.base,
-      rates: currenciesStore.rates,
-      transferCategoriesIds: categoriesStore.transferCategoriesIds,
-      trnsIds,
-      trnsItems: trnsStore.items,
-      walletsIds: filterStore.walletsIds,
-      walletsItems: walletsStore.items,
-    })
 
     // count total in categories
     const categoriesTotal: CategoryTotal = {}
@@ -110,6 +96,7 @@ export const useStat = defineStore('stat', () => {
     // separate categories by income and expense
     const statIncome: CategoryTotal = {}
     const statExpense: CategoryTotal = {}
+
     for (const categoryId in categoriesWithTrnsIds) {
       const total = categoriesTotal[categoryId]
       if (total.income > 0)
@@ -122,23 +109,10 @@ export const useStat = defineStore('stat', () => {
     const incomeCategoriesIds = Object.keys(statIncome).sort(
       (a, b) => statIncome[b].income - statIncome[a].income,
     )
+
     const expenseCategoriesIds = Object.keys(statExpense).sort(
       (a, b) => statExpense[b].expense - statExpense[a].expense,
     )
-
-    // get first item in sorted categories
-    function getBiggestAmount(
-      categoriesTotal: CategoryTotal,
-      categoriesIds: CategoryId[],
-      moneyTypeSlug: MoneyTypeSlug,
-    ) {
-      const biggestAmount = categoriesIds[0]
-      return (
-        (categoriesTotal[biggestAmount]
-        && Math.abs(categoriesTotal[biggestAmount][moneyTypeSlug]))
-        || 0
-      )
-    }
 
     // biggest
     const expenseBiggest = getBiggestAmount(
@@ -152,8 +126,17 @@ export const useStat = defineStore('stat', () => {
       'income',
     )
 
+    const total = getTotal({
+      baseCurrencyCode: currenciesStore.base,
+      rates: currenciesStore.rates,
+      transferCategoriesIds: categoriesStore.transferCategoriesIds,
+      trnsIds: trnsStore.filteredTrnsIds,
+      trnsItems: trnsStore.items,
+      walletsIds: filterStore.walletsIds,
+      walletsItems: walletsStore.items,
+    })
+
     return {
-      trnsIds: trnsIds.sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date),
       categories: categoriesTotal,
       total: total.sumTransactions,
       expense: {
