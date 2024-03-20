@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
 import type { WalletId } from '~/components/wallets/types'
 import { useFilter } from '~/components/filter/useFilter'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { getTrnsIds } from '~/components/trns/getTrns'
+
+// import { getTrnsIds } from '~/components/trns/getTrns'
 
 const { t } = useI18n()
 const { $i18n } = useNuxtApp()
@@ -12,7 +13,7 @@ const route = useRoute()
 const router = useRouter()
 const filterStore = useFilter()
 const walletsStore = useWalletsStore()
-const trnsStore = useTrnsStore()
+// const trnsStore = useTrnsStore()
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items[walletId.value])
@@ -21,13 +22,6 @@ if (!wallet.value)
   router.replace('/wallets')
 
 const total = computed(() => walletsStore.walletsTotal[walletId.value])
-
-const trnsIds = computed(() =>
-  getTrnsIds({
-    walletsIds: [walletId.value],
-    trnsItems: trnsStore.items,
-  }),
-)
 
 // TODO: useFilter
 function onClickFilterWallet() {

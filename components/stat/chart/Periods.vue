@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { useFilter } from '~/components/filter/useFilter'
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
-import { getOldestTrnDate } from '~/components/trns/helpers'
-import { useChartStore } from '~/components/chart/useChartStore'
-import type { PeriodName, PeriodNameWithAll } from '~/components/chart/useChartStore'
+import { useChartStore } from '~/components/stat/chart/useChartStore'
+import type { PeriodName, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
@@ -35,12 +34,7 @@ function removePeriod() {
 }
 
 // TODO: duplicate computed
-const maxPeriodsNumber = computed(() => {
-  const trnsItems = trnsStore.items
-  const oldestTrnDate = getOldestTrnDate(trnsItems)
-  return getMaxPeriodsToShow(filterStore.periodWithoutAll, oldestTrnDate)
-})
-
+const maxPeriodsNumber = computed(() => getMaxPeriodsToShow(filterStore.periodWithoutAll, trnsStore.oldestTrnDate))
 const isShowRemove = computed(() => showedPeriods.value <= 1)
 const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
 </script>

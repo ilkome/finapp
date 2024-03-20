@@ -17,7 +17,7 @@ useHead({
       <UiHeaderTitle>{{ $t("trns.history") }}</UiHeaderTitle>
     </UiHeader>
 
-    <div v-if="filterStore.isShow" class="pb-8">
+    <div v-if="filterStore.isShow" class="flex gap-2 rounded-lg bg-item-4">
       <LazyStatFilter />
     </div>
 

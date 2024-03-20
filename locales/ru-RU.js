@@ -119,7 +119,6 @@ export default {
     title: 'Кошельки',
     name: 'Кошельки',
     new: 'Новый кошелек',
-    showAll: 'Показать все кошельки',
     showOnly: 'Показать только',
     sortTitle: 'Сортировать кошельки',
     createNewTitle: 'Добавить кошелек',
@@ -155,7 +154,6 @@ export default {
 
   currency: {
     title: 'Валюта',
-    selectBaseTitle: 'Выбрать основную валюту',
   },
 
   categories: {

@@ -1,7 +1,6 @@
 import type { TrnId } from '~/components/trns/types'
 import { formatAmount } from '~/components/amount/formatAmount'
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
-import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesStore } from '~/components/categories/useCategories'
@@ -40,8 +39,8 @@ export default function useAmount() {
     return getTotal({
       trnsIds,
       trnsItems: trnsStore.items,
-      transferCategoriesIds: getTransferCategoriesIds(categoriesStore.items),
-      walletsIds: Object.keys(walletsStore.items ?? {}),
+      transferCategoriesIds: categoriesStore.transferCategoriesIds,
+      walletsIds: walletsStore.ids,
       walletsItems: walletsStore.items,
     })
   }

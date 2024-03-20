@@ -8,7 +8,7 @@ const currenciesStore = useCurrenciesStore()
 </script>
 
 <template>
-  <UiTabs3 v-if="walletsCurrencies.length > 1">
+  <UiTabs2 v-if="walletsCurrencies.length > 1">
     <UiTabsItem2
       v-for="currency in walletsCurrencies"
       :key="currency"
@@ -24,7 +24,7 @@ const currenciesStore = useCurrenciesStore()
         <span class="mdi mdi-dots-vertical ml-1" />
       </div>
     </UiTabsItem2>
-  </UiTabs3>
+  </UiTabs2>
 </template>
 
 <i18n lang="yaml">

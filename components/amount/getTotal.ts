@@ -11,8 +11,8 @@ export function getAmountInRate({
 }: {
   amount: number
   currencyCode: string
-  baseCurrencyCode: string // TODO: add typings
-  rates: Record<string, number> // TODO: add typings
+  baseCurrencyCode?: string // TODO: add typings
+  rates?: Record<string, number> // TODO: add typings
 }): number {
   if (!baseCurrencyCode || !rates)
     return amount

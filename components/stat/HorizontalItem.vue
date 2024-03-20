@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
-import { getWidthPercent } from '~/components/stat/helpers'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStat } from '~/components/stat/useStat'
+import { useStat } from '~/components/stat/useStatStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import type { TrnId } from '~/components/trns/types'
 
 const props = defineProps<{
   biggest: number
@@ -19,7 +19,7 @@ const props = defineProps<{
 
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
-const { statCurrentPeriod } = useStat()
+const statStore = useStat()
 
 const { setCategoryId } = useFilter()
 const currenciesStore = useCurrenciesStore()
@@ -42,7 +42,7 @@ const trnsIds = computed(() => {
   if (isCategoryHasChildren.value)
     return []
 
-  return statCurrentPeriod.value.trnsIds
+  return statStore.statCurrentPeriod.trnsIds
     .filter(
       id =>
         trnsStore.items[id].type === props.moneyTypeNumber
@@ -52,7 +52,7 @@ const trnsIds = computed(() => {
 })
 
 const biggestAmount = computed(
-  () => statCurrentPeriod.value[props.moneyTypeSlug].biggest,
+  () => statStore.statCurrentPeriod[props.moneyTypeSlug].biggest,
 )
 
 const statCategories = computed(() => {
@@ -69,11 +69,13 @@ const statCategories = computed(() => {
 })
 
 function getTrnsByCategoryId(categoryId: CategoryId) {
-  const trnsItems = trnsStore.items
-  // Note: same performance as in one filter but better readability
   return trnsStore.selectedTrnsIdsWithDate
-    .filter(id => trnsItems[id].categoryId === categoryId)
-    .filter(id => trnsItems[id].type === props.moneyTypeNumber)
+    .filter((id: TrnId) => trnsStore.items[id].categoryId === categoryId)
+    .filter((id: TrnId) => trnsStore.items[id].type === props.moneyTypeNumber)
+}
+
+function getWidthPercent(value: number, biggest: number): string {
+  return `${Math.abs(value) / Math.abs(biggest) * 100}%`
 }
 </script>
 
@@ -107,12 +109,6 @@ function getTrnsByCategoryId(categoryId: CategoryId) {
             </div>
           </div>
 
-          <!-- <div
-            class="flex grow pl-1 items-baseline space-x-2 overflow-hidden truncate text-sm text-neutral-700 dark_text-neutral-400"
-          >
-            {{ category.name }}{{ isCategoryHasChildren ? "..." : "" }}
-          </div> -->
-
           <Amount
             :amount="total"
             :currencyCode="currenciesStore.base"
@@ -130,7 +126,7 @@ function getTrnsByCategoryId(categoryId: CategoryId) {
 
     <!-- Inside -->
     <div v-if="isShowInside" @click.stop="">
-      <StatGroupHorizontalItemCatItem
+      <StatHorizontalItemIn
         v-for="statCategory in statCategories"
         :key="statCategory.categoryId"
         :biggest="biggestAmount"

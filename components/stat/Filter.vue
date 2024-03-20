@@ -1,26 +1,11 @@
 <script setup lang="ts">
+import type { Categories } from '../categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useFilter } from '~/components/filter/useFilter'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { Wallets } from '~/components/wallets/types'
 
 const filterStore = useFilter()
-const walletsStore = useWalletsStore()
-const categoriesStore = useCategoriesStore()
-
-const filterWalletsItems = computed(() =>
-  filterStore.walletsIds.reduce((acc, id) => {
-    acc[id] = walletsStore.items[id]
-    return acc
-  }, {} as Wallets),
-)
-
-const filterCategoriesItems = computed(() =>
-  filterStore.catsIds.reduce((acc, id) => {
-    acc[id] = categoriesStore.items[id]
-    return acc
-  }, {} as Wallets),
-)
 
 const isShowCategorySelector = ref(false)
 const isShownWalletsSelector = ref(false)
@@ -30,12 +15,12 @@ const isShownWalletsSelector = ref(false)
   <div>
     <FilterRow>
       <template #add>
-        <div class="flex gap-3 h-10">
+        <div class="flex h-10 gap-3">
           <FilterAddItem @click="isShowCategorySelector = true">
             <template #icon>
               <UiIconCategory class="size-6" />
             </template>
-            <template v-if="filterStore.catsIds.length === 0" name="text">
+            <template v-if="filterStore.catsIds.length === 0">
               {{ $t("categories.createNewTitle") }}
             </template>
           </FilterAddItem>
@@ -50,8 +35,7 @@ const isShownWalletsSelector = ref(false)
 
       <template #content>
         <FilterWalletItem
-          v-for="(_, walletId) in filterWalletsItems"
-          v-if="filterWalletsItems"
+          v-for="walletId in filterStore.walletsIds"
           :id="walletId"
           :key="walletId"
           @click="filterStore.removeWalletId(walletId)"
@@ -59,13 +43,15 @@ const isShownWalletsSelector = ref(false)
 
         <FilterCategoryItem
           v-for="categoryId in filterStore.catsIds"
-          v-if="filterStore.catsIds"
           :key="categoryId"
           :categoryId="categoryId"
           @click="filterStore.removeCategoryId(categoryId)"
         />
 
-        <FilterItemBg v-if="filterStore.isShow" @click="filterStore.clearFilter">
+        <FilterItemBg
+          v-if="filterStore.isShow"
+          @click="filterStore.clearFilter"
+        >
           <div class="mdi mdi-filter-remove-outline text-2xl" />
         </FilterItemBg>
       </template>

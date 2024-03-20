@@ -21,7 +21,6 @@ button(
     overflow-hidden relative
     enabled:cursor-pointer
     py-3 px-3 w-full
-    min-h-[48px]
     text-accent-3 text-center
     bg-accent-2 rounded-full
     hocus_bg-accent-2/80

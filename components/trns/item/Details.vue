@@ -42,14 +42,6 @@ const formattedDate = computed(() => {
   return `${date.weekday}, ${date.day} ${date.month} ${date.year}`
 })
 
-const formattedDateDay = computed(() => {
-  return formatDate(props.trn.date, 'trnItem')
-})
-
-const formattedDateDay2 = computed(() => {
-  return formatDate(props.trn.date, 'trnItem')
-})
-
 function handleClick() {
   if (!useTrnsStore.isShownModal) {
     trnsStore.showTrnModal()

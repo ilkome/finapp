@@ -1,19 +1,11 @@
 import dayjs from 'dayjs'
 import { deepUnref } from 'vue-deepunref'
 import localforage from 'localforage'
-import {
-  getTransactibleCategoriesIds,
-  getTransferCategoriesIds,
-} from '~/components/categories/getCategories'
+import { getOldestTrnDate, removeTrnToAddLaterLocal, removeTrnToDeleteLaterLocal, saveTrnIDforDeleteWhenClientOnline, saveTrnToAddLaterLocal } from '~/components/trns/helpers'
+
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useFilter } from '~/components/filter/useFilter'
 import { getTrnsIds } from '~/components/trns/getTrns'
-import {
-  removeTrnToAddLaterLocal,
-  removeTrnToDeleteLaterLocal,
-  saveTrnIDforDeleteWhenClientOnline,
-  saveTrnToAddLaterLocal,
-} from '~/components/trns/helpers'
 import type { TrnId, TrnItem, Trns, TrnsGetterProps } from '~/components/trns/types'
 import type { CategoryId } from '~/components/categories/types'
 import { useUserStore } from '~/components/user/useUser'
@@ -31,27 +23,66 @@ export const useTrnsStore = defineStore('trns', () => {
   const categoriesStore = useCategoriesStore()
   const filterStore = useFilter()
 
-  const items = ref<Trns | null>({})
+  const items = ref<Trns>({})
 
   const hasTrns = computed(() => Object.keys(items.value ?? {}).length > 0)
+
+  const allTrnsIdsWithFilter = computed(() => {
+    const categoriesIds: CategoryId[] = filterStore.catsIds.length > 0
+      ? categoriesStore.getTransactibleIds(filterStore.catsIds)
+      : []
+
+    const walletsIds = filterStore.walletsIds.length > 0
+      ? filterStore.walletsIds
+      : []
+
+    return getTrnsIds({
+      categoriesIds,
+      walletsIds,
+      trnsItems: items.value,
+    })
+  })
+
+  const selectedTrnsIdsWithDate = computed(() => {
+    if (!hasTrns.value)
+      return []
+
+    const filterDate = dayjs(filterStore.date)
+    const startDateValue = filterDate
+      .startOf(filterStore.periodWithoutAll)
+      .valueOf()
+    const endDateValue = filterDate
+      .endOf(filterStore.periodWithoutAll)
+      .valueOf()
+    let trnsIds = allTrnsIdsWithFilter.value || []
+
+    // filter date
+    if (filterStore.period !== 'all') {
+      trnsIds = trnsIds.filter(
+        (trnId: TrnId) =>
+          items.value[trnId].date >= startDateValue
+          && items.value[trnId].date <= endDateValue,
+      )
+    }
+
+    return trnsIds.sort((a, b) => items.value[b].date - items.value[a].date)
+  })
+
+  const firstCreatedTrnIdFromSelectedTrns = computed(
+    () => allTrnsIdsWithFilter.value[allTrnsIdsWithFilter.value.length - 1],
+  )
 
   const lastCreatedTrnId = computed(() => {
     if (!hasTrns.value)
       return false
 
-    const transferCategoriesIds = getTransferCategoriesIds(
-      categoriesStore.items,
-    )
-
-    return (
-      Object.keys(items.value)
-        .sort((a, b) => items.value[b].date - items.value[a].date)
-        .find(
-          trnId =>
-            !transferCategoriesIds.includes(items.value[trnId].categoryId)
-            && items.value[trnId].type !== 2,
-        ) ?? false
-    )
+    return Object.keys(items.value)
+      .sort((a, b) => items.value[b].date - items.value[a].date)
+      .find(
+        trnId =>
+          !categoriesStore.transferCategoriesIds.includes(items.value[trnId].categoryId)
+          && items.value[trnId].type !== 2,
+      ) ?? false
   })
 
   const firstCreatedTrnId = computed<TrnItem | false>(() => {
@@ -67,79 +98,10 @@ export const useTrnsStore = defineStore('trns', () => {
     () => items.value?.[lastCreatedTrnId.value],
   )
 
-  const selectedTrnsIds = computed(() => {
-    if (!hasTrns.value)
-      return []
-
-    // TODO: move it to a separate function getFilterParams
-    const categoriesIds: CategoryId[] | false
-      = filterStore.catsIds.length > 0
-        ? getTransactibleCategoriesIds(
-          filterStore.catsIds,
-          categoriesStore.items,
-        )
-        : false
-
-    const walletsIds
-      = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : false
-
-    return (
-      getTrnsIds({
-        trnsItems: items.value ?? {},
-        walletsIds,
-        categoriesIds,
-      }) || []
-    )
-  })
-
-  const firstCreatedTrnIdFromSelectedTrns = computed(
-    () => selectedTrnsIds.value[selectedTrnsIds.value.length - 1],
-  )
-
-  const selectedTrnsIdsWithDate = computed(() => {
-    if (!hasTrns.value)
-      return []
-
-    const filterDate = dayjs(filterStore.date)
-    const startDateValue = filterDate
-      .startOf(filterStore.periodWithoutAll)
-      .valueOf()
-    const endDateValue = filterDate
-      .endOf(filterStore.periodWithoutAll)
-      .valueOf()
-    let trnsIds = selectedTrnsIds.value || []
-
-    // filter date
-    if (filterStore.period !== 'all') {
-      trnsIds = trnsIds.filter(
-        trnId =>
-          items.value[trnId].date >= startDateValue
-          && items.value[trnId].date <= endDateValue,
-      )
-    }
-
-    return trnsIds.sort((a, b) => items.value[b].date - items.value[a].date)
-  })
-
-  const allTrnsIdsWithFilter = computed(() => {
-    const categoriesIds = filterStore.catsIds.length > 0
-      ? getTransactibleCategoriesIds(filterStore.catsIds, categoriesStore.items)
-      : false
-    const walletsIds = filterStore.walletsIds.length > 0
-      ? filterStore.walletsIds
-      : false
-
-    return getTrnsIds({
-      categoriesIds,
-      walletsIds,
-      trnsItems: items.value || {},
-    })
-  })
-
   function getStoreTrnsIds(props: Omit<TrnsGetterProps, 'trnsItems'>) {
     return getTrnsIds({
       ...props,
-      trnsItems: items.value || {},
+      trnsItems: items.value,
     })
   }
 
@@ -148,7 +110,7 @@ export const useTrnsStore = defineStore('trns', () => {
     getDataAndWatch(path, (values: Trns) => setTrns(values || {}))
   }
 
-  function setTrns(values: Trns | null) {
+  function setTrns(values: Trns) {
     items.value = values
     localforage.setItem('finapp.trns', deepUnref(values))
   }
@@ -279,6 +241,8 @@ export const useTrnsStore = defineStore('trns', () => {
     isShownModal.value = false
   }
 
+  const oldestTrnDate = computed(() => getOldestTrnDate(items.value))
+
   return {
     // Trns
     items,
@@ -287,10 +251,10 @@ export const useTrnsStore = defineStore('trns', () => {
     lastCreatedTrnId,
     firstCreatedTrnId,
     lastCreatedTrnItem,
-    selectedTrnsIds,
     firstCreatedTrnIdFromSelectedTrns,
     selectedTrnsIdsWithDate,
     allTrnsIdsWithFilter,
+    oldestTrnDate,
 
     initTrns,
     setTrns,

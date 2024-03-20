@@ -1,4 +1,4 @@
-import { getCompactAmount, getLocalAmount } from '~/components/chart/utils'
+import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
 export const config = {
   // Grid

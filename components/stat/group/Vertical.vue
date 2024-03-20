@@ -2,40 +2,40 @@
 import type { MoneyTypeSlug } from '~/components/stat/types'
 import useUIView from '~/components/layout/useUIView'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useStat } from '~/components/stat/useStat'
+import { useStat } from '~/components/stat/useStatStore'
 
 const props = defineProps<{
   moneyTypeSlug: MoneyTypeSlug
 }>()
 
 const { ui } = useUIView()
-const { statCurrentPeriod } = useStat()
+const statStore = useStat()
 const categoriesStore = useCategoriesStore()
 
 const biggestAmount = computed(
-  () => statCurrentPeriod.value[props.moneyTypeSlug].biggest,
+  () => statStore.statCurrentPeriod[props.moneyTypeSlug].biggest,
 )
 
 const isShow = computed(
   () =>
     ui.value.showCatsVerticalChart
-    && statCurrentPeriod.value[props.moneyTypeSlug]?.categoriesIds?.length > 1,
+    && statStore.statCurrentPeriod[props.moneyTypeSlug]?.categoriesIds?.length > 1,
 )
 </script>
 
 <template>
   <div v-if="isShow" class="overflow-hidden rounded-lg bg-item-4 px-2 pb-2 pt-2">
     <div
-      v-if="statCurrentPeriod[moneyTypeSlug].categoriesIds.length > 0"
+      v-if="statStore.statCurrentPeriod[moneyTypeSlug].categoriesIds.length > 0"
       class="scrollbar flex overflow-x-auto px-2 pb-2"
     >
       <StatGroupVerticalItem
-        v-for="categoryId in statCurrentPeriod[moneyTypeSlug].categoriesIds"
+        v-for="categoryId in statStore.statCurrentPeriod[moneyTypeSlug].categoriesIds"
         :key="`charts-${categoryId}`"
         :biggest="biggestAmount"
         :category="categoriesStore.items[categoryId]"
         :categoryId="categoryId"
-        :total="statCurrentPeriod.categories[categoryId][moneyTypeSlug]"
+        :total="statStore.statCurrentPeriod.categories[categoryId][moneyTypeSlug]"
       />
     </div>
   </div>

@@ -1,44 +1,23 @@
 import dayjs from 'dayjs'
 import type { CategoryId } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
-import { getOldestTrnDate } from '~/components/trns/helpers'
 import { type TotalReturns, getTotal } from '~/components/amount/getTotal'
-import {
-  getTransactibleCategoriesIds,
-  getTransferCategoriesIds,
-} from '~/components/categories/getCategories'
 import { getTrnsIds } from '~/components/trns/getTrns'
-import { useChartStore } from '~/components/chart/useChartStore'
+import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
+import type { MoneyTypeSlug } from '~/components/stat/types'
 
-const moneyTypes: {
-  id: MoneyTypeSlug
-  slug: MoneyTypeSlug
-  type: MoneyTypeNumber
-}[] = [
-  {
-    id: 'expense',
-    slug: 'expense',
-    type: 0,
-  },
-  {
-    id: 'income',
-    slug: 'income',
-    type: 1,
-  },
-]
 type CategoryTotal = Record<
   CategoryId,
   Record<'income', TotalReturns['incomeTransactions']> &
   Record<'expense', TotalReturns['expenseTransactions']>
 >
 
-export function useStat(viewBy = 'child') {
+export const useStat = defineStore('stat', () => {
   const chartStore = useChartStore()
   const filterStore = useFilter()
   const currenciesStore = useCurrenciesStore()
@@ -46,21 +25,16 @@ export function useStat(viewBy = 'child') {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
 
+  const viewBy: 'child' | 'parent' = 'child'
+
   /**
    * Stat for current period
    */
   const statCurrentPeriod = computed(() => {
-    const trnsItems = trnsStore.items
-    const categoriesItems = categoriesStore.items
-    const walletsItems = walletsStore.items
-    const baseCurrencyCode = currenciesStore.base
-    const rates = currenciesStore.rates
-    const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
-
     // TODO: move it to a separate function getFilterParams
     const categoriesIds
       = filterStore.catsIds.length > 0
-        ? getTransactibleCategoriesIds(filterStore.catsIds, categoriesItems)
+        ? categoriesStore.getTransactibleIds(filterStore.catsIds)
         : false
     const walletsIds
       = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : false
@@ -69,7 +43,7 @@ export function useStat(viewBy = 'child') {
       categoriesIds,
       date: filterStore.date,
       periodName: filterStore.period,
-      trnsItems,
+      trnsItems: trnsStore.items,
       walletsIds,
     })
 
@@ -78,11 +52,11 @@ export function useStat(viewBy = 'child') {
       excludeTransfer = false,
     ): CategoryId | false {
       const categories = categoriesStore.items
-      const trnCategoryId = trnsItems[trnId].categoryId
+      const trnCategoryId = trnsStore.items[trnId].categoryId
       const trnCategoryParentId = categories[trnCategoryId]?.parentId
       const categoryId = trnCategoryParentId || trnCategoryId
 
-      if (excludeTransfer && transferCategoriesIds.includes(categoryId))
+      if (excludeTransfer && categoriesStore.transferCategoriesIds.includes(categoryId))
         return false
 
       return categoryId
@@ -103,13 +77,13 @@ export function useStat(viewBy = 'child') {
     }
 
     const total = getTotal({
-      baseCurrencyCode,
-      rates,
-      transferCategoriesIds,
+      baseCurrencyCode: currenciesStore.base,
+      rates: currenciesStore.rates,
+      transferCategoriesIds: categoriesStore.transferCategoriesIds,
       trnsIds,
-      trnsItems,
+      trnsItems: trnsStore.items,
       walletsIds: filterStore.walletsIds,
-      walletsItems,
+      walletsItems: walletsStore.items,
     })
 
     // count total in categories
@@ -118,12 +92,12 @@ export function useStat(viewBy = 'child') {
       const trnsIdsInCategory = categoriesWithTrnsIds[categoryId]
 
       const totalInCategory = getTotal({
-        baseCurrencyCode,
-        rates,
+        baseCurrencyCode: currenciesStore.base,
+        rates: currenciesStore.rates,
         trnsIds: trnsIdsInCategory,
-        trnsItems,
+        trnsItems: trnsStore.items,
         walletsIds: filterStore.walletsIds,
-        walletsItems,
+        walletsItems: walletsStore.items,
       })
 
       // totalInCategory
@@ -179,7 +153,7 @@ export function useStat(viewBy = 'child') {
     )
 
     return {
-      trnsIds: trnsIds.sort((a, b) => trnsItems[b].date - trnsItems[a].date),
+      trnsIds: trnsIds.sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date),
       categories: categoriesTotal,
       total: total.sumTransactions,
       expense: {
@@ -196,31 +170,22 @@ export function useStat(viewBy = 'child') {
   })
 
   const statAverage = computed(() => {
-    const trnsItems = trnsStore.items
-    const walletsItems = walletsStore.items
-    const categoriesItems = categoriesStore.items
-    const baseCurrencyCode = currenciesStore.base
-    const rates = currenciesStore.rates
-    const trnsIds = trnsStore.selectedTrnsIds
-    const periodName = filterStore.period
-    const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
     const emptyData = { income: 0, expense: 0, sum: 0 }
 
-    if (periodName === 'all')
+    if (filterStore.period === 'all')
       return emptyData
 
-    const oldestTrn = trnsItems[trnsStore.firstCreatedTrnId]
+    const oldestTrn = trnsStore.items[trnsStore.firstCreatedTrnId]
     if (!oldestTrn)
       return emptyData
 
-    const oldestTrnDate = getOldestTrnDate(trnsItems)
     let periodsToShow
-      = dayjs().endOf(periodName).diff(oldestTrnDate, periodName) + 1
+      = dayjs().endOf(filterStore.period).diff(trnsStore.oldestTrnDate, filterStore.period) + 1
 
     periodsToShow
-      = chartStore.periods[periodName].showedPeriods >= periodsToShow
+      = chartStore.periods[filterStore.period].showedPeriods >= periodsToShow
         ? periodsToShow
-        : chartStore.periods[periodName].showedPeriods
+        : chartStore.periods[filterStore.period].showedPeriods
 
     let income = 0
     let expense = 0
@@ -228,27 +193,26 @@ export function useStat(viewBy = 'child') {
     // Start from 1 to remove last period from average
     for (let period = 1; period < periodsToShow; period++) {
       const dateStartOfPeriod = dayjs()
-        .subtract(period, periodName)
-        .startOf(periodName)
+        .subtract(period, filterStore.period)
+        .startOf(filterStore.period)
       const dateEndOfPeriod = dayjs()
-        .subtract(period, periodName)
-        .endOf(periodName)
+        .subtract(period, filterStore.period)
+        .endOf(filterStore.period)
 
-      // TODO: fix trnsIds
-      const trnsIdsInPeriod = (trnsIds || []).filter(
+      const trnsIdsInPeriod = trnsStore.allTrnsIdsWithFilter.filter(
         (trnId: TrnId) =>
-          trnsItems[trnId].date >= dateStartOfPeriod
-          && trnsItems[trnId].date <= dateEndOfPeriod
-          && !transferCategoriesIds.includes(trnsItems[trnId].categoryId),
+          trnsStore.items[trnId].date >= dateStartOfPeriod
+          && trnsStore.items[trnId].date <= dateEndOfPeriod
+          && !categoriesStore.transferCategoriesIds.includes(trnsStore.items[trnId].categoryId),
       )
 
       const total = getTotal({
-        baseCurrencyCode,
-        rates,
-        transferCategoriesIds,
+        baseCurrencyCode: currenciesStore.base,
+        rates: currenciesStore.rates,
+        transferCategoriesIds: categoriesStore.transferCategoriesIds,
         trnsIds: trnsIdsInPeriod,
-        trnsItems,
-        walletsItems,
+        trnsItems: trnsStore.items,
+        walletsItems: walletsStore.items,
       })
 
       income += total.incomeTransactions
@@ -270,6 +234,5 @@ export function useStat(viewBy = 'child') {
   return {
     statAverage,
     statCurrentPeriod,
-    moneyTypes,
   }
-}
+})

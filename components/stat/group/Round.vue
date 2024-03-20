@@ -1,28 +1,30 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
+import { moneyTypes } from '~/components/stat/types'
 import type { MoneyTypeSlug } from '~/components/stat/types'
 import useUIView from '~/components/layout/useUIView'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStat } from '~/components/stat/useStat'
+import { useStat } from '~/components/stat/useStatStore'
 
 const props = defineProps<{
   moneyTypeSlug: MoneyTypeSlug
 }>()
 
-const { width } = useWindowSize()
-const filterStore = useFilter()
-const { statCurrentPeriod, moneyTypes } = useStat()
-const { ui } = useUIView()
-const currenciesStore = useCurrenciesStore()
 const categoriesStore = useCategoriesStore()
+const currenciesStore = useCurrenciesStore()
+const filterStore = useFilter()
+const statStore = useStat()
+const { ui } = useUIView()
+const { width } = useWindowSize()
+
 const roundRef = ref(null)
 
 const isShow = computed(
   () =>
     ui.value.showRoundCats
-    && statCurrentPeriod.value[props.moneyTypeSlug]?.categoriesIds?.length,
+    && statStore.statCurrentPeriod[props.moneyTypeSlug]?.categoriesIds?.length,
 )
 const typeNumber = moneyTypes.find(t => t.id === props.moneyTypeSlug)?.type
 
@@ -50,7 +52,7 @@ watch(
   [
     isShow,
     width,
-    () => statCurrentPeriod.value[props.moneyTypeSlug]?.categoriesIds,
+    () => statStore.statCurrentPeriod[props.moneyTypeSlug]?.categoriesIds,
   ],
   () => updateWidth(),
   { immediate: true },
@@ -61,12 +63,12 @@ watch(
   <div v-if="isShow" ref="roundRef" class="rounded-lg bg-item-4">
     <div class="items grid" :data-type-text="`${moneyTypeSlug}`">
       <LazyStatGroupRoundItem
-        v-for="categoryId in statCurrentPeriod[moneyTypeSlug].categoriesIds"
+        v-for="categoryId in statStore.statCurrentPeriod[moneyTypeSlug].categoriesIds"
         :key="categoryId"
         :category="categoriesStore.items[categoryId]"
         :categoryId="categoryId"
         :currencyCode="currenciesStore.base"
-        :total="statCurrentPeriod.categories[categoryId][moneyTypeSlug]"
+        :total="statStore.statCurrentPeriod.categories[categoryId][moneyTypeSlug]"
         :type="typeNumber"
       />
 
@@ -74,7 +76,7 @@ watch(
         <template v-for="categoryId in filterStore.catsIds" :key="categoryId">
           <template
             v-if="
-              !statCurrentPeriod[moneyTypeSlug].categoriesIds.includes(
+              !statStore.statCurrentPeriod[moneyTypeSlug].categoriesIds.includes(
                 categoryId,
               )
             "

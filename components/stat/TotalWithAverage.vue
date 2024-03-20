@@ -1,58 +1,29 @@
 <script setup lang="ts">
 import type { MoneyTypeNumber, MoneyTypeSlugSum } from '~/components/stat/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useStat } from '~/components/stat/useStat'
 
 const props = defineProps<{
   hasBg?: boolean
-  moneyTypeSlugSum: MoneyTypeSlugSum
+  item: {
+    amount: number
+    averageAmount: number
+    moneyTypeSlugSum: MoneyTypeSlugSum
+    moneyTypeNumber: MoneyTypeNumber
+    colorizeType: MoneyTypeSlugSum
+    isShownAverage: boolean
+  }
 }>()
 
-const { moneyTypes, statAverage, statCurrentPeriod } = useStat()
 const currenciesStore = useCurrenciesStore()
 
 const classes = computed(() => ({
   'rounded-lg bg-item-4 px-2 py-2 sm_px-3 sm_pt-3': props.hasBg,
 }))
-
-const moneyTypeNumber = computed<MoneyTypeNumber | undefined>(
-  () =>
-    moneyTypes.find(t => t.id === `${props.moneyTypeSlugSum}`.toLowerCase())
-      ?.type,
-)
-
-const amount = computed(() => {
-  if (props.moneyTypeSlugSum === 'sum')
-    return statCurrentPeriod.value.income.total - statCurrentPeriod.value.expense.total
-
-  return statCurrentPeriod.value[props.moneyTypeSlugSum].total
-})
-
-const colorize = computed(() => {
-  if (props.moneyTypeSlugSum === 'sum') {
-    return statCurrentPeriod.value.income.total - statCurrentPeriod.value.expense.total > 0
-      ? 'income'
-      : 'expense'
-  }
-  return props.moneyTypeSlugSum
-})
-
-const isShownAverage = computed(() => {
-  if (props.moneyTypeSlugSum === 'sum')
-    return statAverage.value?.sum !== 0
-  return statAverage.value[props.moneyTypeSlugSum] !== 0
-})
-
-const averageAmount = computed(() => {
-  if (props.moneyTypeSlugSum === 'sum')
-    return statAverage.value?.sum
-  return statAverage.value[props.moneyTypeSlugSum]
-})
 </script>
 
 <template>
   <div :class="classes">
-    <UiTitle2>{{ $t(`money.${moneyTypeSlugSum}`) }}</UiTitle2>
+    <UiTitle2>{{ $t(`money.${item.moneyTypeSlugSum}`) }}</UiTitle2>
 
     <div
       class="flex flex-wrap items-start gap-2 gap-x-4 overflow-hidden overflow-x-auto pt-2"
@@ -60,22 +31,22 @@ const averageAmount = computed(() => {
       <!-- Total -->
       <div class="text-3xl">
         <Amount
-          :amount="amount"
-          :colorize="colorize"
+          :amount="item.amount"
+          :colorize="item.colorizeType"
           :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
-          :type="moneyTypeNumber"
+          :type="item.moneyTypeNumber"
         />
       </div>
 
       <!-- Average -->
-      <div v-if="isShownAverage">
-        <UiTextSmall>{{ $t(`money.average.${moneyTypeSlugSum}`) }}</UiTextSmall>
+      <div v-if="item.isShownAverage">
+        <UiTextSmall>{{ $t(`money.average.${item.moneyTypeSlugSum}`) }}</UiTextSmall>
         <Amount
-          :amount="averageAmount"
+          :amount="item.averageAmount"
           :currencyCode="currenciesStore.base"
-          :type="moneyTypeNumber"
-          :colorize="moneyTypeSlugSum"
+          :type="item.moneyTypeNumber"
+          :colorize="item.colorizeType"
           :isShowBaseRate="false"
           :isShowSign="false"
         />

@@ -4,7 +4,7 @@ import type { MoneyTypeNumber } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStat } from '~/components/stat/useStat'
+import { useStat } from '~/components/stat/useStatStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
@@ -15,7 +15,7 @@ const props = defineProps<{
   categoryId: CategoryId
 }>()
 
-const { statCurrentPeriod } = useStat()
+const statStore = useStat()
 const { setCategoryId } = useFilter()
 const currenciesStore = useCurrenciesStore()
 const categoriesStore = useCategoriesStore()
@@ -33,7 +33,7 @@ const trnsIds = computed(() => {
   if (categoriesStore.isCategoryHasChildren(props.categoryId))
     return []
 
-  return statCurrentPeriod.value.trnsIds
+  return statStore.statCurrentPeriod.trnsIds
     .filter(
       id =>
         trnsStore.items[id].type === props.moneyTypeNumber

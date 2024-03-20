@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
 import { useWindowSize } from '@vueuse/core'
-import type { MoneyTypeSlugSum } from '~/components/stat/types'
+import { moneyTypes } from '~/components/stat/types'
+import type { MoneyTypeNumber, MoneyTypeSlug, MoneyTypeSlugSum } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import useUIView from '~/components/layout/useUIView'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStat } from '~/components/stat/useStat'
+import { useStat } from '~/components/stat/useStatStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const filterStore = useFilter()
-const { ui } = useUIView()
-const { statCurrentPeriod, statAverage, moneyTypes } = useStat()
-const { width } = useWindowSize()
 const trnsStore = useTrnsStore()
-const { activeTabStat } = storeToRefs(useAppNav())
+const statStore = useStat()
+const filterStore = useFilter()
+const appNavStore = useAppNav()
+const { ui } = useUIView()
+const { width } = useWindowSize()
 
 const isMobileView = computed(() => width.value <= 1024)
 
 function isShowGroupByType(type: MoneyTypeSlugSum) {
   const p1
-    = activeTabStat.value === 'summary'
-    || (activeTabStat.value === 'income' && type === 'income')
-    || (activeTabStat.value === 'expense' && type === 'expense')
+    = appNavStore.activeTabStat === 'summary'
+    || (appNavStore.activeTabStat === 'income' && type === 'income')
+    || (appNavStore.activeTabStat === 'expense' && type === 'expense')
 
   const p2 = filterStore.period === 'all'
   return p1 || p2
@@ -30,20 +30,76 @@ function isShowGroupByType(type: MoneyTypeSlugSum) {
 
 const isShowGroupTrns = computed(() => {
   const p1
-    = activeTabStat.value === 'income' || activeTabStat.value === 'expense'
-  const p2 = statAverage.value?.sum === 0
+    = appNavStore.activeTabStat === 'income' || appNavStore.activeTabStat === 'expense'
+  const p2 = statStore.statAverage?.sum === 0
   return p1 || p2
 })
 
-const combinedTrnsIds = computed(() => {
-  const trnsItems = trnsStore.items
-  const trnsIds = trnsStore.selectedTrnsIdsWithDate
+const combinedTrnsIds = computed(() => ({
+  all: trnsStore.selectedTrnsIdsWithDate,
+  income: trnsStore.selectedTrnsIdsWithDate.filter((id: TrnId) => trnsStore.items[id].type === 1),
+  expense: trnsStore.selectedTrnsIdsWithDate.filter((id: TrnId) => trnsStore.items[id].type === 0),
+}),
+)
 
-  return {
-    all: trnsIds,
-    income: trnsIds.filter((id: TrnId) => trnsItems[id].type === 1),
-    expense: trnsIds.filter((id: TrnId) => trnsItems[id].type === 0),
+function getMoneyTypeNumber(slug: MoneyTypeSlugSum): MoneyTypeNumber {
+  return moneyTypes.find(t => t.id === `${slug}`.toLowerCase())?.type || 3
+}
+
+function getAmount(slug: MoneyTypeSlugSum) {
+  if (slug === 'sum')
+    return statStore.statCurrentPeriod.income.total - statStore.statCurrentPeriod.expense.total
+
+  return statStore.statCurrentPeriod[slug].total
+}
+
+function getColorizeType(slug: MoneyTypeSlugSum) {
+  if (slug === 'sum') {
+    return statStore.statCurrentPeriod.income.total - statStore.statCurrentPeriod.expense.total > 0
+      ? 'income'
+      : 'expense'
   }
+  return slug
+}
+
+function isItShownAverage(slug: MoneyTypeSlugSum) {
+  if (slug === 'sum')
+    return statStore.statAverage?.sum !== 0
+  return statStore.statAverage[slug] !== 0
+}
+
+function getAverageAmount(slug: MoneyTypeSlugSum) {
+  if (slug === 'sum')
+    return statStore.statAverage?.sum
+  return statStore.statAverage[slug]
+}
+
+function getBiggestAmount(slug: MoneyTypeSlug) {
+  return statStore.statCurrentPeriod[slug].biggest
+}
+
+function getCategoriesIds(slug: MoneyTypeSlug) {
+  return statStore.statCurrentPeriod[slug].categoriesIds
+}
+
+function getAverageItem(slug: MoneyTypeSlugSum) {
+  return {
+    amount: getAmount(slug),
+    averageAmount: getAverageAmount(slug),
+    colorizeType: getColorizeType(slug),
+    isShownAverage: isItShownAverage(slug),
+    moneyTypeNumber: getMoneyTypeNumber(slug),
+    moneyTypeSlugSum: slug,
+  }
+}
+
+const averages = computed(() => {
+  const averageSlugs = ['income', 'expense', 'sum'] as const
+
+  return averageSlugs.reduce((acc, slug) => {
+    acc[slug] = getAverageItem(slug)
+    return acc
+  }, {} as Record<MoneyTypeSlugSum, ReturnType<typeof getAverageItem>>)
 })
 
 provide(
@@ -68,7 +124,11 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
 <template>
   <div class="pb-6 pt-3 lg_max-w-4xl">
     <div class="sticky top-0 z-20 h-[44px] bg-foreground-4 backdrop-blur">
-      <StatDate />
+      <div class="flex items-center justify-between gap-2 px-2">
+        <StatDateNav />
+        <StatDateView />
+        <CurrenciesChangeBtn />
+      </div>
     </div>
 
     <!-- Sum All -->
@@ -76,9 +136,11 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
       <div
         class="flex flex-wrap items-center gap-3 gap-x-6 rounded-lg bg-item-4 p-2 sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
       >
-        <StatTotalWithAverage moneyTypeSlugSum="expense" />
-        <StatTotalWithAverage moneyTypeSlugSum="income" />
-        <StatTotalWithAverage moneyTypeSlugSum="sum" />
+        <StatTotalWithAverage
+          v-for="(item, slug) in averages"
+          :key="slug"
+          :item="item"
+        />
       </div>
 
       <LazyStatChartWrap
@@ -95,33 +157,39 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
     </div>
 
     <div class="min-h-[calc(100vh-130px)]" data-scroll-ref="stat">
-      <template v-if="activeTabStat !== 'trns'">
+      <template v-if="appNavStore.activeTabStat !== 'trns'">
         <div class="mb-8 px-2 md_mb-4 lg_px-0">
           <div class="grid items-start gap-6 md_grid-cols-2 md_gap-8">
             <div
               v-for="item in moneyTypes"
-              v-show="isShowGroupByType(item.id)"
-              :key="item.id"
+              v-show="isShowGroupByType(item.slug)"
+              :key="item.slug"
               class="grid gap-3 rounded-lg py-2 lg_px-2 xl_max-w-[420px]"
             >
-              <StatTotalWithAverage :moneyTypeSlugSum="item.id" hasBg />
-              <StatGroupVertical :moneyTypeSlug="item.id" />
-              <StatGroupRound :moneyTypeSlug="item.id" />
-              <StatGroupHorizontal :moneyTypeSlug="item.id" />
+              <StatTotalWithAverage :item="averages[item.slug]" hasBg />
+
+              <StatGroupVertical :moneyTypeSlug="item.slug" />
+              <StatGroupRound :moneyTypeSlug="item.slug" />
+              <StatHorizontal
+                v-if="ui.showCatsHorizontalList"
+                :categoriesIds="getCategoriesIds(item.slug)"
+                :biggest="getBiggestAmount(item.slug)"
+                :moneyTypeSlug="item.slug"
+              />
 
               <template v-if="!isMobileView">
                 <div
                   v-if="
-                    activeTabStat === 'summary'
-                      && statCurrentPeriod[item.id].total !== 0
-                      && combinedTrnsIds[item.id].length > 0
+                    appNavStore.activeTabStat === 'summary'
+                      && statStore.statCurrentPeriod[item.slug].total !== 0
+                      && combinedTrnsIds[item.slug].length > 0
                   "
                   class="grid max-w-[420px] gap-2 pt-4"
                 >
                   <UiTitle>{{ $t("trns.inPeriodTitle") }}</UiTitle>
                   <TrnsList
                     :size="12"
-                    :trnsIds="combinedTrnsIds[item.id]"
+                    :trnsIds="combinedTrnsIds[item.slug]"
                     isShowFilter
                     uiHistory
                   />
@@ -133,8 +201,8 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
             <div
               v-if="
                 isShowGroupTrns
-                  && activeTabStat !== 'summary'
-                  && combinedTrnsIds[activeTabStat].length > 0
+                  && appNavStore.activeTabStat !== 'summary'
+                  && combinedTrnsIds[appNavStore.activeTabStat].length > 0
               "
               class="max-w-[420px]"
             >
@@ -143,7 +211,7 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
               </UiTitle2>
               <TrnsList
                 :size="12"
-                :trnsIds="combinedTrnsIds[activeTabStat]"
+                :trnsIds="combinedTrnsIds[appNavStore.activeTabStat]"
                 classes="md_grid-cols-1"
                 isShowFilter
                 uiHistory
@@ -157,7 +225,7 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
       <template v-else>
         <div class="mb-4 px-2">
           <TrnsListWithControl
-            :trnsIds="statCurrentPeriod.trnsIds"
+            :trnsIds="statStore.statCurrentPeriod.trnsIds"
             isFilterByDay
             defaultFilterTrnsPeriod="period"
           />

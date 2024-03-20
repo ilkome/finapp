@@ -13,22 +13,17 @@ import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 import { getTotal } from '~/components/amount/getTotal'
-import {
-  getTransactibleCategoriesIds,
-  getTransferCategoriesIds,
-} from '~/components/categories/getCategories'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { config, lineConfig } from '~/components/chart/config'
-import { useChartStore } from '~/components/chart/useChartStore'
-import { markArea, setChartXAxis } from '~/components/chart/utils'
+import { config, lineConfig } from '~/components/stat/chart/config'
+import { useChartStore } from '~/components/stat/chart/useChartStore'
+import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
 import { getTrnsIds } from '~/components/trns/getTrns'
-import { getOldestTrnDate } from '~/components/trns/helpers'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { TrnId, TrnItem } from '~/components/trns/types'
-import type { PeriodName } from '~/components/chart/useChartStore'
+import type { PeriodName } from '~/components/stat/chart/useChartStore'
 
 const props = withDefaults(
   defineProps<{
@@ -76,18 +71,11 @@ const trnsItems = computed(() =>
 )
 
 const statData = computed(() => {
-  const categoriesItems = categoriesStore.items
-  const walletsItems = walletsStore.items
-  const baseCurrencyCode = currenciesStore.base
-  const rates = currenciesStore.rates
-  const transferCategoriesIds = getTransferCategoriesIds(categoriesItems)
-
-  // Diff periods from oldest trn and today
-  const oldestTrnDate = getOldestTrnDate(trnsItems.value)
   let periodsToShow
     = dayjs()
       .endOf(periodWithoutAll.value)
-      .diff(oldestTrnDate, periodWithoutAll.value) + 1
+      .diff(trnsStore.oldestTrnDate, periodWithoutAll.value) + 1
+
   const periodsWantToShow = chartStore.periods[periodWithoutAll.value].showedPeriods
   periodsToShow
     = periodsWantToShow >= periodsToShow ? periodsToShow : periodsWantToShow
@@ -107,7 +95,7 @@ const statData = computed(() => {
     // TODO: move it to a separate function getFilterParams
     const categoriesIds
       = filterStore.catsIds.length > 0
-        ? getTransactibleCategoriesIds(filterStore.catsIds, categoriesItems)
+        ? categoriesStore.getTransactibleIds(filterStore.catsIds)
         : false
     const walletsIds
       = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : false
@@ -122,12 +110,12 @@ const statData = computed(() => {
 
     const { incomeTransactions, expenseTransactions, sumTransactions }
       = getTotal({
-        baseCurrencyCode,
-        rates,
+        baseCurrencyCode: currenciesStore.base,
+        rates: currenciesStore.rates,
         trnsIds,
         trnsItems: trnsItems.value,
-        walletsItems,
-        transferCategoriesIds,
+        walletsItems: walletsStore.items,
+        transferCategoriesIds: categoriesStore.transferCategoriesIds,
       })
 
     let format = 'MM'
@@ -359,4 +347,4 @@ function setChartSeries(series: unknown[]) {
     autoresize
     @zr:click="onClickChart"
   />
-</template>
+</template>~/components/stat/chart/config~/components/stat/chart/utils

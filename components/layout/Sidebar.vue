@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useFilter } from '~/components/filter/useFilter'
 
+const { t } = useI18n()
 const { toggleWalletId } = useFilter()
 </script>
 
@@ -33,13 +34,13 @@ const { toggleWalletId } = useFilter()
               class="-my-[1px] flex cursor-pointer items-center px-3 py-2 hocus_bg-item-5"
             >
               <div class="flex grow items-center gap-3">
-                <div
-                  class="flex-center mt-[2px] h-6 w-8 rounded-md border text-2xs leading-none text-icon-primary2"
-                  :style="{ borderColor: walletItem.color }"
-                  @click.stop="toggleWalletId(walletId)"
-                >
-                  {{ walletItem.name.substring(0, 2) }}
-                </div>
+                <WalletsIcon
+                  :color="walletItem.color"
+                  :name="walletItem.name"
+                  :walletId
+                  @click="toggleWalletId(walletId)"
+                />
+
                 <div class="text-item-base grow text-sm">
                   {{ walletItem.name }}
                 </div>
@@ -57,12 +58,13 @@ const { toggleWalletId } = useFilter()
 
         <template #toggle="{ stateLimit, limit, toggle }">
           <div
-            class="cursor-pointer px-3 py-3 text-center text-xs hocus_bg-item-5 hocus_text-item-1"
+            class="cursor-pointer px-3 py-3 text-center text-xs text-secondary hocus_bg-item-5"
             @click="toggle"
           >
             <template v-if="stateLimit > 0">
-              {{ $t("wallets.showAll") }}
+              {{ t("showAll") }}
             </template>
+
             <template v-else-if="stateLimit !== limit">
               {{ $t("wallets.showOnly") }} {{ limit }}
             </template>
@@ -72,3 +74,11 @@ const { toggleWalletId } = useFilter()
     </div>
   </div>
 </template>
+
+<i18n lang="yaml">
+  en:
+    showAll: "Show all"
+
+  ru:
+    showAll: "Показать все"
+</i18n>

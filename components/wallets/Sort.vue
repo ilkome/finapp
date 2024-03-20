@@ -26,58 +26,57 @@ async function saveWalletsOrder() {
       description: 'Saved',
     },
     autoClose: 6000,
-    type: 'error',
+    type: 'success',
   } as ToastOptions)
 }
 </script>
 
 <template>
-  <div class="overflow h-full overflow-x-auto bg-foreground-3">
+  <div class="grid grid-rows-[auto,1fr,auto] overflow-hidden h-full max-h-[95vh] bg-foreground-3">
     <!-- Header -->
-    <div
-      class="text-item-base px-2 pb-4 text-center font-primary text-xl font-semibold"
-    >
-      {{ $t("wallets.sortTitle") }}
+    <div class="px-2 py-4">
+      <UiTitle2>{{ $t("wallets.sortTitle") }}</UiTitle2>
     </div>
 
-    <div ref="parent" class="grid gap-1">
+    <div ref="parent" class="scrollerBlock overflow-hidden overflow-y-auto h-full pr-2">
       <div
         v-for="walletId in sortedWalletsIds"
         :key="walletId"
-        class="flex items-center gap-3 overflow-hidden rounded-md bg-item-4 py-0 pl-3"
+        class="overflow-hidden my-1 flex items-center rounded-md bg-item-4 text-secondary2"
       >
-        <div class="flex-center grow gap-x-3">
-          <div
-            class="flex-center h-6 w-6 rounded-md text-xs leading-none text-neutral-50 mt-[2px]"
-            :style="{ background: walletsStore.items[walletId].color }"
-          >
-            {{ walletsStore.items[walletId].name.substring(0, 2) }}
-          </div>
-          <div class="grow text-sm text-neutral-500 dark_text-neutral-400">
+        <div class="py-1 px-3 flex gap-2 items-center grow">
+          <WalletsIcon
+            :color="walletsStore.items[walletId].color"
+            :name="walletsStore.items[walletId].name"
+            :walletId
+          />
+
+          <div class="grow text-sm">
             {{ walletsStore.items[walletId].name }}
           </div>
-          <div
-            class="flex-center sortHandle doNotCloseModal h-11 w-11 cursor-grab hocus_bg-item-5"
+        </div>
+
+        <div class="sortHandle doNotCloseModal hocus_bg-item-5 px-3 py-2">
+          <svg
+            class="size-6"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
           >
-            <svg
-              class="h-6 w-6"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="currentColor"
-                d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2s.9-2 2-2s2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2z"
-              />
-            </svg>
-          </div>
+            <path
+              fill="currentColor"
+              d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2s.9-2 2-2s2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2z"
+            />
+          </svg>
         </div>
       </div>
     </div>
 
-    <div class="flex-center pt-6">
-      <UiButtonBlue class="maxWidth" @click="saveWalletsOrder">
-        {{ $t("base.save") }}
-      </UiButtonBlue>
+    <div class="flex flex-center">
+      <div class="grow max-w-xs py-3">
+        <UiButtonBlue @click="saveWalletsOrder">
+          {{ $t("base.save") }}
+        </UiButtonBlue>
+      </div>
     </div>
   </div>
 </template>

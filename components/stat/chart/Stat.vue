@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { TrnId, TrnItem } from '~/components/trns/types'
+import { moneyTypes } from '~/components/stat/types'
+import type { MoneyTypeNumber, MoneyTypeSlugSum } from '~/components/stat/types'
 import type { CategoryId } from '~/components/categories/types'
-import { useFilter } from '~/components/filter/useFilter'
-import type {
-  PeriodName,
-  PeriodNameWithAll,
-} from '~/components/chart/useChartStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import type { PeriodName, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
+import type { TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
+import { useFilter } from '~/components/filter/useFilter'
+import { useStat } from '~/components/stat/useStatStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
@@ -17,6 +17,59 @@ const props = defineProps<{
 
 const trnsStore = useTrnsStore()
 const filterStore = useFilter()
+const statStore = useStat()
+
+function getMoneyTypeNumber(slug: MoneyTypeSlugSum): MoneyTypeNumber {
+  return moneyTypes.find(t => t.id === `${slug}`.toLowerCase())?.type || 3
+}
+
+function getAmount(slug: MoneyTypeSlugSum) {
+  if (slug === 'sum')
+    return statStore.statCurrentPeriod.income.total - statStore.statCurrentPeriod.expense.total
+
+  return statStore.statCurrentPeriod[slug].total
+}
+
+function getColorizeType(slug: MoneyTypeSlugSum) {
+  if (slug === 'sum') {
+    return statStore.statCurrentPeriod.income.total - statStore.statCurrentPeriod.expense.total > 0
+      ? 'income'
+      : 'expense'
+  }
+  return slug
+}
+
+function isItShownAverage(slug: MoneyTypeSlugSum) {
+  if (slug === 'sum')
+    return statStore.statAverage?.sum !== 0
+  return statStore.statAverage[slug] !== 0
+}
+
+function getAverageAmount(slug: MoneyTypeSlugSum) {
+  if (slug === 'sum')
+    return statStore.statAverage?.sum
+  return statStore.statAverage[slug]
+}
+
+function getAverageItem(slug: MoneyTypeSlugSum) {
+  return {
+    amount: getAmount(slug),
+    averageAmount: getAverageAmount(slug),
+    colorizeType: getColorizeType(slug),
+    isShownAverage: isItShownAverage(slug),
+    moneyTypeNumber: getMoneyTypeNumber(slug),
+    moneyTypeSlugSum: slug,
+  }
+}
+
+const averages = computed(() => {
+  const averageSlugs = ['income', 'expense', 'sum'] as const
+
+  return averageSlugs.reduce((acc, slug) => {
+    acc[slug] = getAverageItem(slug)
+    return acc
+  }, {} as Record<MoneyTypeSlugSum, ReturnType<typeof getAverageItem>>)
+})
 
 const trnsIds = computed(() =>
   trnsStore.getStoreTrnsIds({
@@ -77,6 +130,33 @@ function usePeriodDate(trnsIds: Ref<TrnId[]>) {
   }
 }
 
+const {
+  date,
+  period,
+  setDate,
+  periodWithoutAll,
+  setPeriodAndDate,
+  setPrevPeriodDate,
+  setNextPeriodDate,
+} = usePeriodDate(trnsIds)
+
+const periodTrnsIds = computed(() =>
+  trnsStore.getStoreTrnsIds({
+    date: date.value,
+    periodName: period.value,
+    categoriesIds: props.categoriesIds,
+    walletsIds: props.walletsIds,
+  }),
+)
+
+provide('date', date)
+provide('period', period)
+provide('periodWithoutAll', periodWithoutAll)
+provide('setNextPeriodDate', setNextPeriodDate)
+provide('setPeriodAndDate', setPeriodAndDate)
+provide('setPrevPeriodDate', setPrevPeriodDate)
+provide('setDate', setDate)
+
 function usePeriodUtils() {
   function getNextPeriodDate({
     date,
@@ -125,39 +205,30 @@ function usePeriodUtils() {
     getPrevPeriodDate,
   }
 }
-
-const {
-  date,
-  period,
-  setDate,
-  periodWithoutAll,
-  setPeriodAndDate,
-  setPrevPeriodDate,
-  setNextPeriodDate,
-} = usePeriodDate(trnsIds)
-
-const periodTrnsIds = computed(() =>
-  trnsStore.getStoreTrnsIds({
-    date: date.value,
-    periodName: period.value,
-    categoriesIds: props.categoriesIds,
-    walletsIds: props.walletsIds,
-  }),
-)
-
-provide('date', date)
-provide('period', period)
-provide('periodWithoutAll', periodWithoutAll)
-provide('setNextPeriodDate', setNextPeriodDate)
-provide('setPeriodAndDate', setPeriodAndDate)
-provide('setPrevPeriodDate', setPrevPeriodDate)
-provide('setDate', setDate)
 </script>
 
 <template>
-  <div class="flex flex-col gap-1">
-    <StatDate />
-    <StatChartWrap :trnsIds="trnsIds" />
+  <div class="flex items-center justify-between gap-2 px-2">
+    <StatDateNav />
+    <StatDateView />
+    <CurrenciesChangeBtn />
+  </div>
+
+  <!-- Sum All -->
+  <div class="mx-2 mb-2 rounded-xl bg-item-4">
+    <div
+      class="flex flex-wrap items-center gap-3 gap-x-6 rounded-lg bg-item-4 p-2 sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
+    >
+      <StatTotalWithAverage2
+        v-for="(item, slug) in averages"
+        :key="slug"
+        :item="item"
+      />
+    </div>
+
+    <LazyStatChartWrap
+      :trnsIds
+    />
   </div>
 
   <div class="px-2">

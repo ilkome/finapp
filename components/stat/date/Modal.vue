@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
-import { getOldestTrnDate } from '~/components/trns/helpers'
-import { useChartStore } from '~/components/chart/useChartStore'
+import { useChartStore } from '~/components/stat/chart/useChartStore'
 import type {
   PeriodName,
   PeriodNameWithAll,
   PeriodSchema,
-} from '~/components/chart/useChartStore'
+} from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import '~/components/modal/styles/modalLinks.styl'
 
@@ -26,11 +25,7 @@ function onSelectPeriodName(periodName: PeriodNameWithAll) {
 }
 
 // TODO: duplicate computed
-const maxPeriodsNumber = computed(() => {
-  const trnsItems = trnsStore.items
-  const oldestTrnDate = getOldestTrnDate(trnsItems)
-  return getMaxPeriodsToShow(periodWithoutAll.value, oldestTrnDate)
-})
+const maxPeriodsNumber = computed(() => getMaxPeriodsToShow(periodWithoutAll.value, trnsStore.oldestTrnDate))
 
 const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
 

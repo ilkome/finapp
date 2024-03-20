@@ -11,8 +11,9 @@ import {
   unsubscribeData,
   updateData,
 } from '~/services/firebase/api'
+import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+
 import { useUserStore } from '~/components/user/useUser'
-import { getTransferCategoriesIds } from '~/components/categories/getCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { TrnId } from '~/components/trns/types'
 import { getTotal } from '~/components/amount/getTotal'
@@ -55,6 +56,10 @@ export const useCategoriesStore = defineStore('categories', () => {
     return Object.keys(items.value)
   })
 
+  const transferCategoriesIds = computed(() =>
+    getTransferCategoriesIds(items.value),
+  )
+
   const categoriesRootIds = computed(() => {
     if (!hasCategories.value || !items.value)
       return []
@@ -72,11 +77,8 @@ export const useCategoriesStore = defineStore('categories', () => {
       const hasTrnsInCategory = Object.values(trnsStore.items).some(
         trn => trn.categoryId === id,
       )
-      const isTransferCategory = getTransferCategoriesIds(items.value).includes(
-        id,
-      )
 
-      if (hasTrnsInCategory || isTransferCategory)
+      if (hasTrnsInCategory || transferCategoriesIds.value.includes(id))
         return false
 
       return id
@@ -102,13 +104,15 @@ export const useCategoriesStore = defineStore('categories', () => {
       return []
 
     const trnsItems = trnsStore.items ?? {}
-    const transferCategoriesIds = getTransferCategoriesIds(items.value)
 
     const trnsIds = Object.keys(trnsStore.items)
       .filter(id => trnsItems[id]?.type !== 2)
       .sort((a, b) => trnsItems[b]?.date - trnsItems[a]?.date)
 
-    const lastCategories = []
+    const lastCategories: Record<
+      CategoryId,
+      CategoryItem & Record<'id', CategoryId>
+    >[] = []
 
     for (const trnId of trnsIds) {
       if (lastCategories.length > 16)
@@ -126,7 +130,8 @@ export const useCategoriesStore = defineStore('categories', () => {
       const isCategoryAlreadyAdded = lastCategories.some(
         c => c.id === categoryId,
       )
-      const isTransferCategory = transferCategoriesIds.includes(categoryId)
+      const isTransferCategory
+        = transferCategoriesIds.value.includes(categoryId)
       const isCategoryInQuickSelector
         = favoriteCategoriesIds.value.includes(categoryId)
 
@@ -148,13 +153,13 @@ export const useCategoriesStore = defineStore('categories', () => {
     ]).map(c => c.id)
   })
 
-  const categoriesIdsForTrnValues = computed(() => {
-    return categoriesIds.value.filter(
-      (id: CategoryId) =>
-        id !== 'transfer'
-        && (!items.value[id].childIds || items.value[id].childIds?.length === 0),
-    )
-  })
+  const categoriesIdsForTrnValues = computed(() =>
+    categoriesIds.value.filter(
+      id =>
+        !transferCategoriesIds.value.includes(id)
+        && items.value[id].childIds?.length === 0,
+    ),
+  )
 
   /**
    * Methods
@@ -281,6 +286,10 @@ export const useCategoriesStore = defineStore('categories', () => {
     }
   }
 
+  function getTransactibleIds(ids: CategoryId[]) {
+    return getTransactibleCategoriesIds(ids, items.value)
+  }
+
   return {
     items,
     categoriesIds,
@@ -290,6 +299,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     favoriteCategoriesIds,
     hasCategories,
     recentCategoriesIds,
+    transferCategoriesIds,
 
     initCategories,
     setCategories,
@@ -299,5 +309,6 @@ export const useCategoriesStore = defineStore('categories', () => {
     saveCategoriesOrder,
 
     getCategoryStat,
+    getTransactibleIds,
   }
 })

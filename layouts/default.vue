@@ -51,7 +51,6 @@ watch(
       </div>
 
       <div class="grid h-full overflow-hidden">
-        <!-- <slot /> -->
         <NuxtPage />
       </div>
 
@@ -66,11 +65,7 @@ watch(
         </div>
       </div>
 
-      <div
-        class="bg-foreground-4 absolute bottom-0 left-0 z-10 w-full backdrop-blur lg_hidden"
-      >
-        <LayoutMenuBottom />
-      </div>
+      <AppMenuBottom />
     </div>
 
     <TrnFormWrap />

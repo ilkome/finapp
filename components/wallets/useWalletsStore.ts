@@ -12,6 +12,7 @@ export const useWalletsStore = defineStore('wallets', () => {
   const userStore = useUserStore()
 
   const items = ref<Wallets>({})
+  const ids = computed(() => Object.keys(items.value))
 
   function initWallets() {
     getDataAndWatch(`users/${userStore.uid}/accounts`, (wallets: Wallets) => {
@@ -90,6 +91,7 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   return {
     items,
+    ids,
     hasWallets,
     walletsTotal,
     walletsSortedIds,

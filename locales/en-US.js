@@ -119,7 +119,6 @@ export default {
     title: 'Wallets',
     name: 'Wallets',
     new: 'New wallet',
-    showAll: 'Show all wallets',
     showOnly: 'Show only',
     sortTitle: 'Sort wallets',
     createNewTitle: 'Add wallet',
@@ -155,7 +154,6 @@ export default {
 
   currency: {
     title: 'Currency',
-    selectBaseTitle: 'Select base currency',
   },
 
   categories: {

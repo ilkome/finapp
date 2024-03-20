@@ -1,7 +1,7 @@
 import { onAuthStateChanged } from 'firebase/auth'
 import localforage from 'localforage'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useChartStore } from '~/components/chart/useChartStore'
+import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'

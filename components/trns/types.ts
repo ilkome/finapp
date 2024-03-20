@@ -1,6 +1,6 @@
 import type { WalletId } from '~/components/wallets/types'
 import type { CategoryId } from '~/components/categories/types'
-import type { PeriodNameWithAll } from '~/components/chart/useChartStore'
+import type { PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
 
 export type TrnId = string
 

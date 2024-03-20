@@ -3,7 +3,7 @@ import localforage from 'localforage'
 import { storeToRefs } from 'pinia'
 import { useAppNav } from '~/components/app/useAppNav'
 import type { CategoryId } from '~/components/categories/types'
-import type { PeriodName, PeriodNameWithAll } from '~/components/chart/useChartStore'
+import type { PeriodName, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -179,17 +179,17 @@ export const useFilter = defineStore('filter', () => {
   /**
    * Computed
    */
-  const values = computed<{
-    date: number
-    walletsIds: WalletId[]
-    catsIds: CategoryId[]
-    period: PeriodNameWithAll
-  }>(() => ({
-    date: date.value,
-    walletsIds: walletsIds.value,
-    catsIds: catsIds.value,
-    period: period.value,
-  }))
+  // const values = computed<{
+  //   date: number
+  //   walletsIds: WalletId[]
+  //   catsIds: CategoryId[]
+  //   period: PeriodNameWithAll
+  // }>(() => ({
+  //   date: date.value,
+  //   walletsIds: walletsIds.value,
+  //   catsIds: catsIds.value,
+  //   period: period.value,
+  // }))
 
   const isShow = computed(() => catsIds.value.length > 0 || walletsIds.value.length > 0)
 
@@ -224,6 +224,5 @@ export const useFilter = defineStore('filter', () => {
 
     // Computed
     isShow,
-    values,
   }
 })

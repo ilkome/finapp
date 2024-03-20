@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useChartStore } from '~/components/chart/useChartStore'
+import { useChartStore } from '~/components/stat/chart/useChartStore'
 import type { TrnId } from '~/components/trns/types'
-import type { PeriodName } from '~/components/chart/useChartStore'
+import type { PeriodName } from '~/components/stat/chart/useChartStore'
 
 withDefaults(
   defineProps<{

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { getStyles } from '~/components/ui/classes'
-import type { PeriodName, PeriodNameWithAll } from '~/components/chart/useChartStore'
+import type { PeriodName, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
 
 const setNextPeriodDate = inject('setNextPeriodDate') as () => void
 const setPrevPeriodDate = inject('setPrevPeriodDate') as () => void

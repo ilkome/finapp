@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useChartStore } from '~/components/chart/useChartStore'
+import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { useFilter } from '~/components/filter/useFilter'
 
 const filterStore = useFilter()

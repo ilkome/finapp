@@ -42,7 +42,7 @@ const { onOpenDetails, onOpenEdit } = props.actions(trnItem.value)
               <div class="text-neutral-600 dark_text-neutral-500">
                 {{ $t("trnForm.transfer.from") }}:
               </div>
-              <div class="text-neutral-500 dark_text-neutral-400">
+              <div class="">
                 {{ trnItem.walletFrom.name }}
               </div>
             </div>
@@ -50,7 +50,7 @@ const { onOpenDetails, onOpenEdit } = props.actions(trnItem.value)
               <div class="text-neutral-600 dark_text-neutral-500">
                 {{ $t("trnForm.transfer.to") }}:
               </div>
-              <div class="text-neutral-500 dark_text-neutral-400">
+              <div class="">
                 {{ trnItem.walletTo.name }}
               </div>
             </div>
