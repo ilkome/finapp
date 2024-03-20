@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
 export const config = {
@@ -23,7 +24,7 @@ export const config = {
     textStyle: {
       color: 'var(--chart-label2)',
     },
-    formatter(props) {
+    formatter(props: any[]) {
       return `
         <div class="grid gap-2">
           <div>${getLocalAmount(props[0].value)}</div>
@@ -76,16 +77,12 @@ export const config = {
     },
     axisLabel: {
       color: 'var(--chart-label)',
-      // formatter(date) {
-      //   return dayjs(date).format()
-      // },
     },
     axisTick: {
       interval: 0,
     },
     axisPointer: {
-      // label: {
-      //   formatter(props) {
+      label: {},
       //     return dayjs(props.value).format()
       //   },
       // },

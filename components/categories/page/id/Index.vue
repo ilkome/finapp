@@ -6,7 +6,7 @@ import type { CategoryId } from '~/components/categories/types'
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-const { setFilterCatStat } = useFilter()
+const filterStore = useFilter()
 const categoriesStore = useCategoriesStore()
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
@@ -35,7 +35,7 @@ const categoriesIds = computed(() =>
 
 // TODO: useFilter
 function onClickFilterCategory() {
-  setFilterCatStat(categoryId.value)
+  filterStore.setCategoryId(categoryId.value)
 }
 
 const onClickEdit = () => router.push(`/categories/${categoryId.value}/edit`)

@@ -37,6 +37,7 @@ const props = withDefaults(
 )
 
 const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
+const date = inject('date') as Ref<number>
 const setDate = inject('setDate') as (date: number) => void
 
 use([
@@ -76,7 +77,8 @@ const statData = computed(() => {
       .endOf(periodWithoutAll.value)
       .diff(trnsStore.oldestTrnDate, periodWithoutAll.value) + 1
 
-  const periodsWantToShow = chartStore.periods[periodWithoutAll.value].showedPeriods
+  const periodsWantToShow
+    = chartStore.periods[periodWithoutAll.value].showedPeriods
   periodsToShow
     = periodsWantToShow >= periodsToShow ? periodsToShow : periodsWantToShow
 
@@ -118,21 +120,6 @@ const statData = computed(() => {
         transferCategoriesIds: categoriesStore.transferCategoriesIds,
       })
 
-    let format = 'MM'
-    if (periodWithoutAll.value === 'day')
-      format = 'D.MM'
-    if (periodWithoutAll.value === 'week')
-      format = 'D MMM'
-    if (periodWithoutAll.value === 'month')
-      format = 'MMM'
-    if (periodWithoutAll.value === 'year')
-      format = 'YYYY'
-
-    const name = dayjs()
-      .startOf(periodWithoutAll.value)
-      .subtract(index, periodWithoutAll.value)
-      .format(format)
-
     // Income
     incomeData.push({
       date: periodDate,
@@ -151,7 +138,12 @@ const statData = computed(() => {
       value: sumTransactions,
     })
 
-    categories.push(name)
+    categories.push(
+      `${dayjs()
+        .startOf(periodWithoutAll.value)
+        .subtract(index, periodWithoutAll.value)
+        .valueOf()}`,
+    )
   }
 
   let periods2 = 0
@@ -295,14 +287,34 @@ const statData = computed(() => {
   }
 })
 
-// TODO: computed, when date change outside this component
-const markedArea = ref(statData.value.categories.at(0))
+const markedArea = ref(statData.value.categories.find(i => i === `${date.value}`))
+
+function getFormat() {
+  let format = 'MM'
+  if (periodWithoutAll.value === 'day')
+    format = 'D.MM'
+  if (periodWithoutAll.value === 'week')
+    format = 'D MMM'
+  if (periodWithoutAll.value === 'month')
+    format = 'MMM'
+  if (periodWithoutAll.value === 'year')
+    format = 'YYYY'
+
+  return format
+}
 
 function getChartData() {
   const data = defu(config, {
     xAxis: setChartXAxis(statData.value.categories),
     series: setChartSeries(statData.value.series),
   })
+
+  data.xAxis.axisLabel.formatter = (date: string) => {
+    return dayjs(date).format(getFormat())
+  }
+  data.xAxis.axisPointer.label.formatter = ({ value } = { value: string }) => {
+    return dayjs(value).format()
+  }
 
   // INFO: Marked area works only with bar chart
   if (props.chartType !== 'bar') {
@@ -347,4 +359,5 @@ function setChartSeries(series: unknown[]) {
     autoresize
     @zr:click="onClickChart"
   />
-</template>~/components/stat/chart/config~/components/stat/chart/utils
+</template>
+~/components/stat/chart/config~/components/stat/chart/utils

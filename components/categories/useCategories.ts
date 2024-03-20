@@ -263,29 +263,6 @@ export const useCategoriesStore = defineStore('categories', () => {
     updateData(`users/${userStore.uid}/categories`, { order: ids })
   }
 
-  function getCategoryStat({
-    categoryId,
-    trnsIds,
-  }: {
-    categoryId: CategoryId
-    trnsIds: TrnId[]
-  }) {
-    const total = getTotal({
-      baseCurrencyCode: currenciesStore.base,
-      rates: currenciesStore.rates,
-      trnsIds,
-      trnsItems: trnsStore.items,
-      walletsItems: walletsStore.items,
-    })
-
-    return {
-      categoryId,
-      total: total.sumTransactions,
-      income: total.incomeTransactions,
-      expense: total.expenseTransactions,
-    }
-  }
-
   function getTransactibleIds(ids: CategoryId[]) {
     return getTransactibleCategoriesIds(ids, items.value)
   }
@@ -308,7 +285,6 @@ export const useCategoriesStore = defineStore('categories', () => {
     unsubscribeCategories,
     saveCategoriesOrder,
 
-    getCategoryStat,
     getTransactibleIds,
   }
 })

@@ -34,12 +34,12 @@ const parentCategory = computed<CategoryItem | false>(
     <div class="grow truncate">
       <div
         v-if="parentCategory"
-        class="text-xs text-item-2 dark_text-neutral-400"
+        class="text-xs text-item-2"
       >
         {{ parentCategory.name }}
       </div>
 
-      <div class="text-sm leading-none text-neutral-700 dark_text-neutral-300">
+      <div class="text-sm leading-none">
         {{ category.name }}
       </div>
     </div>

@@ -39,7 +39,7 @@ const { onOpenDetails, onOpenEdit } = props.actions(trnItem.value)
           <!-- Transfer info -->
           <div v-if="trnItem.type === 2" class="text-sm">
             <div class="flex items-center space-x-1">
-              <div class="text-neutral-600 dark_text-neutral-500">
+              <div class="">
                 {{ $t("trnForm.transfer.from") }}:
               </div>
               <div class="">
@@ -47,7 +47,7 @@ const { onOpenDetails, onOpenEdit } = props.actions(trnItem.value)
               </div>
             </div>
             <div class="flex items-center space-x-1">
-              <div class="text-neutral-600 dark_text-neutral-500">
+              <div class="">
                 {{ $t("trnForm.transfer.to") }}:
               </div>
               <div class="">

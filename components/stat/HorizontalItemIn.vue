@@ -46,7 +46,7 @@ const trnsIds = computed(() => {
 <template>
   <div @click="toggleShowInside">
     <div
-      class="relative flex items-center justify-between space-x-3 border-t bg-item-3 px-2 py-2 hocus_bg-item-8 dark_border-neutral-800"
+      class="relative flex items-center justify-between space-x-3 border-t bg-item-3 px-2 py-2 hocus_bg-item-8"
       :class="[{ 'border-b-0': isShowInside }]"
     >
       <div

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useFilter } from '~/components/filter/useFilter'
-import type { CurrencyCode } from '~/components/currencies/types'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import type { CurrencyCode } from '~/components/currencies/types'
 import type { MoneyTypeNumber } from '~/components/stat/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useFilter } from '~/components/filter/useFilter'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
@@ -11,7 +11,7 @@ const props = defineProps<{
   categoryId: CategoryId
   currencyCode: CurrencyCode
   total: number
-  type?: MoneyTypeNumber
+  moneyTypeNumber: MoneyTypeNumber
 }>()
 
 const { toggleCategoryId } = useFilter()
@@ -49,7 +49,7 @@ const isCategoryHasChildren = computed(() =>
       <Amount
         :amount="total"
         :currencyCode="currencyCode"
-        :type="type"
+        :type="moneyTypeNumber"
         :isShowBaseRate="false"
       />
     </div>

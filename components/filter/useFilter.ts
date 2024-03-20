@@ -1,7 +1,5 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
-import { storeToRefs } from 'pinia'
-import { useAppNav } from '~/components/app/useAppNav'
 import type { CategoryId } from '~/components/categories/types'
 import type { PeriodName, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -10,7 +8,6 @@ import type { WalletId } from '~/components/wallets/types'
 export const useFilter = defineStore('filter', () => {
   const route = useRoute()
   const trnsStore = useTrnsStore()
-  const { activeTabStat } = storeToRefs(useAppNav())
 
   /**
    * Redirect
@@ -24,10 +21,12 @@ export const useFilter = defineStore('filter', () => {
 
   function setDate(value: number) {
     date.value = dayjs(value).valueOf()
+    localforage.setItem('finapp.filter.date', unref(date.value))
   }
 
   function setDateNow() {
     date.value = dayjs().valueOf()
+    localforage.setItem('finapp.filter.date', unref(date.value))
   }
 
   /**
@@ -42,6 +41,13 @@ export const useFilter = defineStore('filter', () => {
 
     period.value = periodName
     localforage.setItem('finapp.filter.period', periodName || 'month')
+    localforage.setItem('finapp.filter.date', unref(date.value))
+  }
+
+  function setDayDate(value: number) {
+    period.value = 'day'
+    date.value = +value
+    scrollTop()
   }
 
   function setNextPeriodDate() {
@@ -96,8 +102,6 @@ export const useFilter = defineStore('filter', () => {
     }
 
     setWalletId(walletId)
-    setDateNow()
-    activeTabStat.value = 'summary'
     scrollTop()
   }
 
@@ -133,17 +137,6 @@ export const useFilter = defineStore('filter', () => {
     }
 
     setCategoryId(categoryId)
-    setDateNow()
-    activeTabStat.value = 'summary'
-    scrollTop()
-  }
-
-  /**
-   * Others
-   */
-  function setDayDate(value: number) {
-    period.value = 'day'
-    date.value = +value
     scrollTop()
   }
 
@@ -155,18 +148,6 @@ export const useFilter = defineStore('filter', () => {
     walletsIds.value = []
   }
 
-  function setFilterCatStat(catId: CategoryId) {
-    setCategoryId(catId)
-    setDateNow()
-    activeTabStat.value = 'summary'
-  }
-
-  function setFilterWalletStat(walletId: WalletId) {
-    setWalletId(walletId)
-    setDateNow()
-    activeTabStat.value = 'summary'
-  }
-
   /**
    * Scroll top
    */
@@ -175,21 +156,6 @@ export const useFilter = defineStore('filter', () => {
     if (page)
       page.scrollTop = 0
   }
-
-  /**
-   * Computed
-   */
-  // const values = computed<{
-  //   date: number
-  //   walletsIds: WalletId[]
-  //   catsIds: CategoryId[]
-  //   period: PeriodNameWithAll
-  // }>(() => ({
-  //   date: date.value,
-  //   walletsIds: walletsIds.value,
-  //   catsIds: catsIds.value,
-  //   period: period.value,
-  // }))
 
   const isShow = computed(() => catsIds.value.length > 0 || walletsIds.value.length > 0)
 
@@ -214,11 +180,7 @@ export const useFilter = defineStore('filter', () => {
     period,
     periodWithoutAll,
     setPeriodAndDate,
-
     setDayDate,
-
-    setFilterCatStat,
-    setFilterWalletStat,
 
     clearFilter,
 

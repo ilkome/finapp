@@ -17,7 +17,7 @@ const emit = defineEmits<{
   (e: 'onClickIcon', id: CategoryId): void
 }>()
 
-const { setFilterCatStat } = useFilter()
+const filterStore = useFilter()
 const categoriesStore = useCategoriesStore()
 
 const childCategoriesIds = computed(() =>
@@ -34,7 +34,7 @@ function onClickIcon() {
     emit('click', props.id)
 
   emit('onClickIcon', props.id)
-  setFilterCatStat(props.id)
+  filterStore.setCategoryId(props.id)
 }
 </script>
 
@@ -56,7 +56,7 @@ function onClickIcon() {
     <div class="grow truncate">
       <div
         v-if="parentCategory && !isHideParentCategory"
-        class="text-xs text-item-2 dark_text-neutral-400"
+        class="text-xs text-item-2"
       >
         {{ parentCategory.name }}
       </div>

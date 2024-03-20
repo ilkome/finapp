@@ -42,7 +42,7 @@ const combinedTrnsIds = computed(() => ({
 }))
 
 function getMoneyTypeNumber(slug: MoneyTypeSlugSum): MoneyTypeNumber {
-  return moneyTypes.find(t => t.id === `${slug}`.toLowerCase())?.type || 3
+  return moneyTypes.find(t => t.slug === `${slug}`.toLowerCase())?.type ?? 3
 }
 
 function getAmount(slug: MoneyTypeSlugSum) {
@@ -89,6 +89,7 @@ function getAverageItem(slug: MoneyTypeSlugSum) {
     isShownAverage: isItShownAverage(slug),
     moneyTypeNumber: getMoneyTypeNumber(slug),
     moneyTypeSlugSum: slug,
+
   }
 }
 
@@ -167,13 +168,27 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
             >
               <StatTotalWithAverage :item="averages[item.slug]" hasBg />
 
-              <StatGroupVertical :moneyTypeSlug="item.slug" />
-              <StatGroupRound :moneyTypeSlug="item.slug" />
+              <StatGroupVertical
+                v-if="ui.showCatsVerticalChart"
+                :categoriesIds="getCategoriesIds(item.slug)"
+                :biggest="getBiggestAmount(item.slug)"
+                :moneyTypeSlug="item.slug"
+                :moneyTypeNumber="getMoneyTypeNumber(item.slug)"
+              />
+
+              <StatGroupRound
+                v-if="ui.showRoundCats"
+                :categoriesIds="getCategoriesIds(item.slug)"
+                :moneyTypeSlug="item.slug"
+                :moneyTypeNumber="getMoneyTypeNumber(item.slug)"
+              />
+
               <StatHorizontal
                 v-if="ui.showCatsHorizontalList"
                 :categoriesIds="getCategoriesIds(item.slug)"
                 :biggest="getBiggestAmount(item.slug)"
                 :moneyTypeSlug="item.slug"
+                :moneyTypeNumber="getMoneyTypeNumber(item.slug)"
               />
 
               <template v-if="!isMobileView">

@@ -17,6 +17,19 @@ type CategoryTotal = Record<
   Record<'expense', TotalReturns['expenseTransactions']>
 >
 
+function getBiggestAmount(
+  categoriesTotal: CategoryTotal,
+  categoriesIds: CategoryId[],
+  moneyTypeSlug: MoneyTypeSlug,
+) {
+  const biggestAmount = categoriesIds[0]
+  return (
+    (categoriesTotal[biggestAmount]
+    && Math.abs(categoriesTotal[biggestAmount][moneyTypeSlug]))
+    || 0
+  )
+}
+
 export const useStat = defineStore('stat', () => {
   const chartStore = useChartStore()
   const filterStore = useFilter()
@@ -25,57 +38,25 @@ export const useStat = defineStore('stat', () => {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
 
-  const viewBy: 'child' | 'parent' = 'child'
-
-  function getBiggestAmount(
-    categoriesTotal: CategoryTotal,
-    categoriesIds: CategoryId[],
-    moneyTypeSlug: MoneyTypeSlug,
-  ) {
-    const biggestAmount = categoriesIds[0]
-    return (
-      (categoriesTotal[biggestAmount]
-      && Math.abs(categoriesTotal[biggestAmount][moneyTypeSlug]))
-      || 0
-    )
-  }
-
   /**
    * Stat for current period
    */
+
+  const categoriesWithTrnsIds = computed(() => trnsStore.filteredTrnsIds.reduce(
+    (prev, trnId) => {
+      const categoryId = trnsStore.items[trnId]?.categoryId
+      prev[categoryId] ??= []
+      prev[categoryId].push(trnId)
+      return prev
+    },
+    {} as Record<CategoryId, TrnId[]>,
+  ))
+
   const statCurrentPeriod = computed(() => {
-    function getRootCategoryIdFromTrnId(
-      trnId: TrnId,
-    ): CategoryId | false {
-      const trnCategoryId = trnsStore.items[trnId].categoryId
-      const trnCategoryParentId = categoriesStore.items[trnCategoryId]?.parentId
-      const categoryId = trnCategoryParentId || trnCategoryId
-
-      if (categoriesStore.transferCategoriesIds.includes(categoryId))
-        return false
-
-      return categoryId
-    }
-
-    const categoriesWithTrnsIds: Record<CategoryId, TrnId[]> = {}
-
-    for (const trnId of trnsStore.filteredTrnsIds) {
-      const categoryId
-        = viewBy === 'parent'
-          ? getRootCategoryIdFromTrnId(trnId)
-          : trnsStore.items[trnId]?.categoryId
-
-      if (!categoryId)
-        continue
-
-      categoriesWithTrnsIds[categoryId] ??= []
-      categoriesWithTrnsIds[categoryId].push(trnId)
-    }
-
     // count total in categories
     const categoriesTotal: CategoryTotal = {}
-    for (const categoryId in categoriesWithTrnsIds) {
-      const trnsIdsInCategory = categoriesWithTrnsIds[categoryId]
+    for (const categoryId in categoriesWithTrnsIds.value) {
+      const trnsIdsInCategory = categoriesWithTrnsIds.value[categoryId]
 
       const totalInCategory = getTotal({
         baseCurrencyCode: currenciesStore.base,
@@ -97,7 +78,7 @@ export const useStat = defineStore('stat', () => {
     const statIncome: CategoryTotal = {}
     const statExpense: CategoryTotal = {}
 
-    for (const categoryId in categoriesWithTrnsIds) {
+    for (const categoryId in categoriesWithTrnsIds.value) {
       const total = categoriesTotal[categoryId]
       if (total.income > 0)
         statIncome[categoryId] = total
@@ -163,7 +144,9 @@ export const useStat = defineStore('stat', () => {
       return emptyData
 
     let periodsToShow
-      = dayjs().endOf(filterStore.period).diff(trnsStore.oldestTrnDate, filterStore.period) + 1
+      = dayjs()
+        .endOf(filterStore.period)
+        .diff(trnsStore.oldestTrnDate, filterStore.period) + 1
 
     periodsToShow
       = chartStore.periods[filterStore.period].showedPeriods >= periodsToShow
@@ -186,7 +169,9 @@ export const useStat = defineStore('stat', () => {
         (trnId: TrnId) =>
           trnsStore.items[trnId].date >= dateStartOfPeriod
           && trnsStore.items[trnId].date <= dateEndOfPeriod
-          && !categoriesStore.transferCategoriesIds.includes(trnsStore.items[trnId].categoryId),
+          && !categoriesStore.transferCategoriesIds.includes(
+            trnsStore.items[trnId].categoryId,
+          ),
       )
 
       const total = getTotal({
@@ -215,7 +200,21 @@ export const useStat = defineStore('stat', () => {
   })
 
   return {
+    categoriesWithTrnsIds,
     statAverage,
     statCurrentPeriod,
   }
 })
+
+// function getRootCategoryIdFromTrnId(
+//   trnId: TrnId,
+// ): CategoryId | false {
+//   const trnCategoryId = trnsStore.items[trnId].categoryId
+//   const trnCategoryParentId = categoriesStore.items[trnCategoryId]?.parentId
+//   const categoryId = trnCategoryParentId || trnCategoryId
+
+//   if (categoriesStore.transferCategoriesIds.includes(categoryId))
+//     return false
+
+//   return categoryId
+// }
