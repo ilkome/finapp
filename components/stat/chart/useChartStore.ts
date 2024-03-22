@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import { z } from 'zod'
@@ -7,6 +8,7 @@ import type { MoneyTypeSlugSum } from '~/components/stat/types'
 const periodSchema = z.object({
   type: z.enum(['line', 'bar']),
   showedPeriods: z.number(),
+  // date: z.number(),
 })
 
 const periodsSchema = z.object({
@@ -30,18 +32,22 @@ export const useChartStore = defineStore('chart', () => {
     day: {
       showedPeriods: 14,
       type: 'line',
+      date: dayjs().valueOf(),
     },
     week: {
       showedPeriods: 12,
       type: 'line',
+      date: dayjs().valueOf(),
     },
     month: {
       showedPeriods: 12,
       type: 'line',
+      date: dayjs().valueOf(),
     },
     year: {
       showedPeriods: 6,
       type: 'line',
+      date: dayjs().valueOf(),
     },
   })
 
@@ -76,16 +82,24 @@ export const useChartStore = defineStore('chart', () => {
     isShowDataLabels.value = false
   }
 
-  function addElementsToChart() {
+  function addPeriod() {
     periods.value[filterStore.periodNameWithoutAll].showedPeriods = periods.value[filterStore.periodNameWithoutAll].showedPeriods + 1
   }
 
-  function removeElementsFromChart() {
+  function removePeriod() {
     periods.value[filterStore.periodNameWithoutAll].showedPeriods = periods.value[filterStore.periodNameWithoutAll].showedPeriods - 1
   }
 
-  function setElementsToChart(number: PeriodSchema['showedPeriods']) {
+  function setPeriod(number: PeriodSchema['showedPeriods']) {
     periods.value[filterStore.periodNameWithoutAll].showedPeriods = number
+  }
+
+  function setActivePeriod() {
+
+  }
+
+  function setDate(date: number) {
+    periods.value[filterStore.periodNameWithoutAll].date = date
   }
 
   async function initChart() {
@@ -141,9 +155,12 @@ export const useChartStore = defineStore('chart', () => {
     initChart,
     setPeriodValues,
 
-    addElementsToChart,
-    removeElementsFromChart,
-    setElementsToChart,
+    addPeriod,
+    removePeriod,
+    setPeriod,
+
+    setDate,
+    setActivePeriod,
 
     periods,
     periodsNames,

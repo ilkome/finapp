@@ -289,6 +289,18 @@ provide(
 provide('setNextPeriodDate', filterStore.setNextPeriodDate)
 provide('setPeriodAndDate', filterStore.setPeriodAndDate)
 provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
+
+const selectedPeriodDate = computed(() => {
+  const today = dayjs().startOf(filterStore.periodNameWithoutAll)
+  const selected = dayjs(filterStore.date).startOf(filterStore.periodNameWithoutAll)
+  const diff = dayjs(today).diff(selected, filterStore.periodNameWithoutAll)
+
+  return {
+    today,
+    selected,
+    diff,
+  }
+})
 </script>
 
 <template>
@@ -301,6 +313,7 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
       </div>
     </div>
 
+    <pre>{{ selectedPeriodDate }}</pre>
     <!-- Sum All -->
     <div class="mx-2 mb-2 rounded-xl bg-item-4">
       <div

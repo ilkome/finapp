@@ -16,7 +16,7 @@ const props = defineProps<{
 
 const { toggleCategoryId } = useFilter()
 const categoriesStore = useCategoriesStore()
-const { trnFormCreate2 } = useTrnForm()
+const { trnFormCreate } = useTrnForm()
 
 const isCategoryHasChildren = computed(() =>
   categoriesStore.isCategoryHasChildren(props.categoryId),
@@ -29,7 +29,7 @@ const isCategoryHasChildren = computed(() =>
     class="statItemRound flex-center group hocus_bg-item-5 p-2 rounded-lg"
     :class="{ _prevStat: total === 0 }"
     data-long-press-delay="300"
-    @click="trnFormCreate2(categoryId)"
+    @click="trnFormCreate(categoryId)"
   >
     <Icon2
       :categoryId="categoryId"

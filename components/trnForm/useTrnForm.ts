@@ -116,13 +116,6 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     values.amountRaw = ['', '', '']
     values.desc = undefined
     values.trnId = null
-    // values.trnType = 0
-
-    // values.date = dayjs().valueOf()
-    // values.walletId = null
-    // values.categoryId = null
-    // values.incomeWalletId = null
-    // values.expenseWalletId = null
   }
 
   function onClose() {
@@ -260,41 +253,30 @@ export function useTrnForm() {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
 
-  const categoriesIds = computed(() => categoriesStore.categoriesIdsForTrnValues)
-  const walletIds = computed(() => walletsStore.walletsSortedIds)
-
   function trnFormEdit(trnId: TrnId) {
     const trn = trnsStore.items[trnId]
 
     $trnForm.setValues({
       action: 'edit',
-      categoriesIds: categoriesIds.value,
+      categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn,
       trnId,
-      walletsIds: walletIds.value,
+      walletsIds: walletsStore.walletsSortedIds,
     })
     $trnForm.ui.isShow = true
   }
 
-  function trnFormCreate() {
+  function trnFormCreate(categoryId?: CategoryId) {
     $trnForm.setValues({
       action: 'create',
-      categoriesIds: categoriesIds.value,
+      categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn: trnsStore.lastCreatedTrnItem,
-      walletsIds: walletIds.value,
+      walletsIds: walletsStore.walletsSortedIds,
     })
     $trnForm.ui.isShow = true
-  }
 
-  function trnFormCreate2(categoryId: CategoryId) {
-    $trnForm.setValues({
-      action: 'create',
-      categoriesIds: categoriesIds.value,
-      trn: trnsStore.lastCreatedTrnItem,
-      walletsIds: walletIds.value,
-    })
-    $trnForm.ui.isShow = true
-    $trnForm.values.categoryId = categoryId
+    if (categoryId)
+      $trnForm.values.categoryId = categoryId
   }
 
   function trnFormDuplicate(trnId: TrnId) {
@@ -302,10 +284,10 @@ export function useTrnForm() {
 
     $trnForm.setValues({
       action: 'duplicate',
-      categoriesIds: categoriesIds.value,
+      categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn,
       trnId,
-      walletsIds: walletIds.value,
+      walletsIds: walletsStore.walletsSortedIds,
     })
     $trnForm.ui.isShow = true
   }
@@ -313,7 +295,6 @@ export function useTrnForm() {
   return {
     trnFormEdit,
     trnFormCreate,
-    trnFormCreate2,
     trnFormDuplicate,
   }
 }

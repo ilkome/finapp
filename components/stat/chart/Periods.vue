@@ -2,7 +2,7 @@
 import { useFilter } from '~/components/filter/useFilter'
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
-import type { PeriodNameWithoutAll, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const periodNameWithoutAll = inject('periodNameWithoutAll') as Ref<PeriodNameWithoutAll>
@@ -21,7 +21,7 @@ function saveChartsPeriodsToLocalStorage() {
 }
 
 function addPeriod() {
-  chartStore.addElementsToChart()
+  chartStore.addPeriod()
   saveChartsPeriodsToLocalStorage()
 }
 
@@ -29,7 +29,7 @@ function removePeriod() {
   if (showedPeriods.value <= 1)
     return
 
-  chartStore.removeElementsFromChart()
+  chartStore.removePeriod()
   saveChartsPeriodsToLocalStorage()
 }
 

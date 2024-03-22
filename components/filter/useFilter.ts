@@ -5,11 +5,13 @@ import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useChartStore } from '~/components/stat/chart/useChartStore'
 
 export const useFilter = defineStore('filter', () => {
   const route = useRoute()
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
+  const chartStore = useChartStore()
 
   /**
    * Redirect
@@ -22,8 +24,10 @@ export const useFilter = defineStore('filter', () => {
   const date = ref<number>(dayjs().startOf('month').valueOf())
 
   function setDate(value: number) {
-    date.value = dayjs(value).valueOf()
+    const newDate = dayjs(value).valueOf()
+    date.value = newDate
     localforage.setItem('finapp.filter.date', unref(date.value))
+    chartStore.setDate(newDate)
   }
 
   function setDateNow() {
@@ -38,8 +42,17 @@ export const useFilter = defineStore('filter', () => {
   const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() => periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value)
 
   function setPeriodAndDate(periodName: PeriodNameWithAll) {
-    if (periodName !== 'all')
-      date.value = dayjs().startOf(periodName).valueOf()
+    if (periodName !== 'all') {
+      if (periodNameWithAll.value === periodName) {
+        date.value = dayjs().startOf(periodName).valueOf()
+      }
+      else {
+        const savedDate = chartStore.periods[periodName].date
+        savedDate
+          ? date.value = savedDate
+          : date.value = dayjs().startOf(periodName).valueOf()
+      }
+    }
 
     periodNameWithAll.value = periodName
     localforage.setItem('finapp.filter.period', periodName || 'month')

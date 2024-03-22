@@ -2,8 +2,8 @@
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
 import type {
-  PeriodNameWithoutAll,
   PeriodNameWithAll,
+  PeriodNameWithoutAll,
   PeriodSchema,
 } from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -33,7 +33,7 @@ function onSelectPeriodCount(
   number: PeriodSchema['showedPeriods'],
 ) {
   props.hide && props.hide()
-  chartStore.setElementsToChart(number)
+  chartStore.setPeriod(number)
 }
 </script>
 
