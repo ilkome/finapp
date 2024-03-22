@@ -27,7 +27,7 @@ const items = ref([{
   event: () => chartStore.isShowDataLabels = !chartStore.isShowDataLabels,
 }, {
   slug: 'charType',
-  icon: computed(() => chartStore.periods[filterStore.periodWithoutAll].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
+  icon: computed(() => chartStore.periods[filterStore.periodNameWithoutAll].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
   isActive: false,
   event: chartStore.toggleChartType,
 }])

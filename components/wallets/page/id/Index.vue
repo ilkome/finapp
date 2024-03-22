@@ -18,7 +18,6 @@ if (!wallet.value)
 
 const total = computed(() => walletsStore.walletsTotal[walletId.value])
 
-// TODO: useFilter
 function onClickFilterWallet() {
   filterStore.toggleWalletId(walletId.value)
 }

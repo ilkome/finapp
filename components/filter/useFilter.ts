@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
 import type { CategoryId } from '~/components/categories/types'
-import type { PeriodName, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
@@ -34,26 +34,26 @@ export const useFilter = defineStore('filter', () => {
   /**
    * Period
    */
-  const period = ref<PeriodNameWithAll>('month')
-  const periodWithoutAll = computed<PeriodName>(() => period.value === 'all' ? 'year' : period.value)
+  const periodNameWithAll = ref<PeriodNameWithAll>('month')
+  const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() => periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value)
 
   function setPeriodAndDate(periodName: PeriodNameWithAll) {
     if (periodName !== 'all')
       date.value = dayjs().startOf(periodName).valueOf()
 
-    period.value = periodName
+    periodNameWithAll.value = periodName
     localforage.setItem('finapp.filter.period', periodName || 'month')
     localforage.setItem('finapp.filter.date', unref(date.value))
   }
 
   function setDayDate(value: number) {
-    period.value = 'day'
+    periodNameWithAll.value = 'day'
     date.value = +value
     scrollTop()
   }
 
   function setNextPeriodDate() {
-    if (period.value === 'all')
+    if (periodNameWithAll.value === 'all')
       return
 
     if (trnsStore.hasTrns) {
@@ -62,19 +62,19 @@ export const useFilter = defineStore('filter', () => {
       if (!firstCreatedTrn)
         return
 
-      const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(period.value).valueOf()
-      const nextDate = dayjs(date.value).subtract(1, period.value).startOf(period.value).valueOf()
-      if (nextDate >= firstCreatedTrnDate)
+      const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(periodNameWithAll.value).valueOf()
+      const nextDate = dayjs(date.value).subtract(1, periodNameWithAll.value).startOf(periodNameWithAll.value).valueOf()
+      if (nextDate > firstCreatedTrnDate)
         date.value = nextDate
     }
   }
 
   function setPrevPeriodDate() {
     if (trnsStore.hasTrns) {
-      if (period.value === 'all')
+      if (periodNameWithAll.value === 'all')
         return
 
-      const nextDate = dayjs(date.value).add(1, period.value).startOf(period.value).valueOf()
+      const nextDate = dayjs(date.value).add(1, periodNameWithAll.value).startOf(periodNameWithAll.value).valueOf()
       if (nextDate <= dayjs().valueOf())
         date.value = nextDate
     }
@@ -181,8 +181,8 @@ export const useFilter = defineStore('filter', () => {
     removeCategoryId,
     toggleCategoryId,
 
-    period,
-    periodWithoutAll,
+    periodNameWithAll,
+    periodNameWithoutAll,
     setPeriodAndDate,
     setDayDate,
 

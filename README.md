@@ -19,8 +19,8 @@ Finapp helps you to control personal finances easily and efficiently.
 # 🦄 Technologies
 - Vue
 - Nuxt
-- Stylus
 - Tailwind
+- Stylus
 - Pug
 - Firebase
 
@@ -96,6 +96,7 @@ messagingSenderId: 'YOUR_CONFIG'
 - Get your App ID at [openexchangerates.org](https://openexchangerates.org/signup/free)
 - Rename `.env.example` to `.env`
 - Set your App ID in `.env`
+
 ``` bash
 OPEN_EXCHANGE_RATES=app_id
 ```

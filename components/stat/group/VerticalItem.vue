@@ -1,46 +1,39 @@
-<script lang="ts">
+<script setup lang="ts">
+import type { CategoryId, CategoryItem } from '~/components/categories/types'
+import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useFilter } from '~/components/filter/useFilter'
 
-// TODO: setup
-export default defineComponent({
-  props: {
-    biggest: { type: Number, required: true },
-    category: { type: Object, required: true },
-    categoryId: { type: String, required: true },
-    total: { type: Number, required: true },
-  },
+const props = defineProps<{
+  biggest: number
+  total: number
+  moneyTypeNumber: MoneyTypeNumber
+  moneyTypeSlug: MoneyTypeSlug
+  category: CategoryItem
+  categoryId: CategoryId
+}>()
 
-  setup() {
-    const { setCategoryId } = useFilter()
-    return {
-      setCategoryId,
-    }
-  },
+const filterStore = useFilter()
 
-  computed: {
-    styles() {
-      return {
-        height: `${Math.abs(this.total) / Math.abs(this.biggest) * 100}%`,
-        background: this.category.color,
-      }
-    },
-    amount() {
-      if (this.total >= 1000000)
-        return `${(this.total / 1000000).toFixed(2)}m`
-      else if (this.total >= 10000)
-        return `${(this.total / 1000).toFixed()}k`
-      else if (this.total > 999)
-        return `${(this.total / 1000).toFixed(1)}k`
+const styles = computed(() => ({
+  height: `${Math.abs(props.total) / Math.abs(props.biggest) * 100}%`,
+  background: props.category.color,
+}))
 
-      return this.total.toFixed()
-    },
-  },
+const amount = computed(() => {
+  if (props.total >= 1000000)
+    return `${(props.total / 1000000).toFixed(2)}m`
+  else if (props.total >= 10000)
+    return `${(props.total / 1000).toFixed()}k`
+  else if (props.total > 999)
+    return `${(props.total / 1000).toFixed(1)}k`
+
+  return props.total.toFixed()
 })
 </script>
 
 <template lang="pug">
 .statCatsItem.swiper-no-swiping.active.hocus_bg-item-5.mx-2.hocus_mx-0.hocus_p-2.rounded-lg(
-  @click="setCategoryId(categoryId)"
+  @click="filterStore.setCategoryId(categoryId)"
 )
   .statCatsItem__graph._bg-item-3
     .statCatsItem__graph__in(:style="styles")

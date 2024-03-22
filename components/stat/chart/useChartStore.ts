@@ -18,8 +18,8 @@ const periodsSchema = z.object({
 
 type Periods = z.infer<typeof periodsSchema>
 export type PeriodSchema = z.infer<typeof periodSchema>
-export type PeriodName = keyof Periods
-export type PeriodNameWithAll = PeriodName | 'all'
+export type PeriodNameWithoutAll = keyof Periods
+export type PeriodNameWithAll = PeriodNameWithoutAll | 'all'
 
 export const useChartStore = defineStore('chart', () => {
   const { $i18n } = useNuxtApp()
@@ -46,7 +46,7 @@ export const useChartStore = defineStore('chart', () => {
   })
 
   const periodsNames = computed<{
-    slug: PeriodName
+    slug: PeriodNameWithoutAll
     icon: string
     name: string
   }[]>(() => [{
@@ -77,15 +77,15 @@ export const useChartStore = defineStore('chart', () => {
   }
 
   function addElementsToChart() {
-    periods.value[filterStore.periodWithoutAll].showedPeriods = periods.value[filterStore.periodWithoutAll].showedPeriods + 1
+    periods.value[filterStore.periodNameWithoutAll].showedPeriods = periods.value[filterStore.periodNameWithoutAll].showedPeriods + 1
   }
 
   function removeElementsFromChart() {
-    periods.value[filterStore.periodWithoutAll].showedPeriods = periods.value[filterStore.periodWithoutAll].showedPeriods - 1
+    periods.value[filterStore.periodNameWithoutAll].showedPeriods = periods.value[filterStore.periodNameWithoutAll].showedPeriods - 1
   }
 
   function setElementsToChart(number: PeriodSchema['showedPeriods']) {
-    periods.value[filterStore.periodWithoutAll].showedPeriods = number
+    periods.value[filterStore.periodNameWithoutAll].showedPeriods = number
   }
 
   async function initChart() {
@@ -130,7 +130,7 @@ export const useChartStore = defineStore('chart', () => {
   }
 
   function toggleChartType() {
-    periods.value[filterStore.periodWithoutAll].type = periods.value[filterStore.periodWithoutAll].type === 'line'
+    periods.value[filterStore.periodNameWithoutAll].type = periods.value[filterStore.periodNameWithoutAll].type === 'line'
       ? 'bar'
       : 'line'
   }

@@ -2,10 +2,10 @@
 import { useFilter } from '~/components/filter/useFilter'
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
-import type { PeriodName, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithoutAll, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
+const periodNameWithoutAll = inject('periodNameWithoutAll') as Ref<PeriodNameWithoutAll>
 const setPeriodAndDate = inject('setPeriodAndDate') as (period: PeriodNameWithAll) => void
 
 const chartStore = useChartStore()
@@ -13,7 +13,7 @@ const filterStore = useFilter()
 const trnsStore = useTrnsStore()
 
 const showedPeriods = computed(
-  () => chartStore.periods[periodWithoutAll.value].showedPeriods,
+  () => chartStore.periods[periodNameWithoutAll.value].showedPeriods,
 )
 
 function saveChartsPeriodsToLocalStorage() {
@@ -34,7 +34,7 @@ function removePeriod() {
 }
 
 // TODO: duplicate computed
-const maxPeriodsNumber = computed(() => getMaxPeriodsToShow(filterStore.periodWithoutAll, trnsStore.oldestTrnDate))
+const maxPeriodsNumber = computed(() => getMaxPeriodsToShow(filterStore.periodNameWithoutAll, trnsStore.oldestTrnDate))
 const isShowRemove = computed(() => showedPeriods.value <= 1)
 const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
 </script>
@@ -58,7 +58,7 @@ const isShowAdd = computed(() => showedPeriods.value >= maxPeriodsNumber.value)
         class="cursor-pointer rounded-md px-3 py-2 text-secondary2 hocus_bg-item-5"
         :class="{
           'cursor-default !text-primary':
-            periodItem.slug === periodWithoutAll,
+            periodItem.slug === periodNameWithoutAll,
         }"
         @click="setPeriodAndDate(periodItem.slug)"
       >

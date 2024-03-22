@@ -7,8 +7,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
 
 const props = defineProps<{
-  categoriesTotal: any
-  categoriesIds: CategoryId[]
+  categories: any
   moneyTypeSlug: MoneyTypeSlug
   moneyTypeNumber: MoneyTypeNumber
 }>()
@@ -40,23 +39,23 @@ function updateWidth() {
   }, 100)
 }
 
-watch([width, () => props.categoriesIds], () => updateWidth(), { immediate: true })
+watch([width, () => props.categories], () => updateWidth(), { immediate: true })
 </script>
 
 <template>
   <div
-    v-if="categoriesIds.length > 0"
+    v-if="categories.length > 0"
     ref="roundRef"
     class="rounded-lg bg-item-4"
   >
     <div class="items grid" :data-type-text="`${moneyTypeSlug}`">
       <LazyStatGroupRoundItem
-        v-for="categoryId in categoriesIds"
-        :key="categoryId"
-        :category="categoriesStore.items[categoryId]"
-        :categoryId="categoryId"
+        v-for="item in categories"
+        :key="item.id"
+        :category="categoriesStore.items[item.id]"
+        :categoryId="item.id"
         :currencyCode="currenciesStore.base"
-        :total="categoriesTotal[moneyTypeSlug][categoryId]"
+        :total="item.value"
         :moneyTypeNumber="moneyTypeNumber"
       />
 

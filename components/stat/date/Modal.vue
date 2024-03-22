@@ -2,7 +2,7 @@
 import { getMaxPeriodsToShow } from '~/components/date/helpers'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
 import type {
-  PeriodName,
+  PeriodNameWithoutAll,
   PeriodNameWithAll,
   PeriodSchema,
 } from '~/components/stat/chart/useChartStore'
@@ -12,8 +12,8 @@ import '~/components/modal/styles/modalLinks.styl'
 const props = defineProps<{
   hide?: () => void
 }>()
-const period = inject('period') as Ref<PeriodNameWithAll>
-const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
+const periodNameWithAll = inject('periodNameWithAll') as Ref<PeriodNameWithAll>
+const periodNameWithoutAll = inject('periodNameWithoutAll') as Ref<PeriodNameWithoutAll>
 const setPeriodAndDate = inject('setPeriodAndDate') as (period: PeriodNameWithAll) => void
 
 const chartStore = useChartStore()
@@ -25,7 +25,7 @@ function onSelectPeriodName(periodName: PeriodNameWithAll) {
 }
 
 // TODO: duplicate computed
-const maxPeriodsNumber = computed(() => getMaxPeriodsToShow(periodWithoutAll.value, trnsStore.oldestTrnDate))
+const maxPeriodsNumber = computed(() => getMaxPeriodsToShow(periodNameWithoutAll.value, trnsStore.oldestTrnDate))
 
 const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
 
@@ -49,7 +49,7 @@ function onSelectPeriodCount(
         <UiTabsItem2
           v-for="periodItem in chartStore.periodsNames"
           :key="periodItem.slug"
-          :isActive="period === periodItem.slug"
+          :isActive="periodNameWithAll === periodItem.slug"
           class="nowrap"
           @click="onSelectPeriodName(periodItem.slug)"
         >
@@ -58,7 +58,7 @@ function onSelectPeriodCount(
         </UiTabsItem2>
 
         <UiTabsItem2
-          :isActive="period === 'all'"
+          :isActive="periodNameWithAll === 'all'"
           @click="onSelectPeriodName('all')"
         >
           <div class="mdi mdi-database" />
@@ -68,7 +68,7 @@ function onSelectPeriodCount(
     </div>
 
     <!-- Counts -->
-    <div v-if="period !== 'all'" class="grid gap-2 overflow-hidden">
+    <div v-if="periodNameWithAll !== 'all'" class="grid gap-2 overflow-hidden">
       <UiTitle2>
         {{ $t("dates.count") }}
       </UiTitle2>
@@ -77,7 +77,7 @@ function onSelectPeriodCount(
         <UiTabsItem2
           v-for="periodCount in periodCounts"
           :key="periodCount"
-          :isActive="periodCount === chartStore.periods[periodWithoutAll].showedPeriods"
+          :isActive="periodCount === chartStore.periods[periodNameWithoutAll].showedPeriods"
           class="nowrap"
           @click="onSelectPeriodCount(periodCount)"
         >
@@ -85,7 +85,7 @@ function onSelectPeriodCount(
         </UiTabsItem2>
 
         <UiTabsItem2
-          :isActive="maxPeriodsNumber === chartStore.periods[periodWithoutAll].showedPeriods"
+          :isActive="maxPeriodsNumber === chartStore.periods[periodNameWithoutAll].showedPeriods"
           @click="onSelectPeriodCount(maxPeriodsNumber)"
         >
           {{ maxPeriodsNumber }}

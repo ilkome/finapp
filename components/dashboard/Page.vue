@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { useWindowSize } from '@vueuse/core'
+import { object } from 'zod'
 import { moneyTypes } from '~/components/stat/types'
 import type { CategoryId } from '~/components/categories/types'
 
@@ -13,7 +14,6 @@ import type { TrnId } from '~/components/trns/types'
 import useUIView from '~/components/layout/useUIView'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStat } from '~/components/stat/useStatStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { type TotalReturns, getTotal } from '~/components/amount/getTotal'
@@ -27,7 +27,6 @@ const categoriesStore = useCategoriesStore()
 const chartStore = useChartStore()
 const currenciesStore = useCurrenciesStore()
 const filterStore = useFilter()
-const statStore = useStat()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 
@@ -42,7 +41,7 @@ function isShowGroupByType(type: MoneyTypeSlugSum) {
     || (appNavStore.activeTabStat === 'income' && type === 'income')
     || (appNavStore.activeTabStat === 'expense' && type === 'expense')
 
-  const p2 = filterStore.period === 'all'
+  const p2 = filterStore.periodNameWithAll === 'all'
   return p1 || p2
 }
 
@@ -58,97 +57,76 @@ const combinedTrnsIds = computed(() => ({
 
 const selectedPeriodCount = computed(() =>
   dayjs()
-    .endOf(filterStore.periodWithoutAll)
-    .diff(filterStore.date, filterStore.periodWithoutAll),
+    .endOf(filterStore.periodNameWithoutAll)
+    .diff(filterStore.date, filterStore.periodNameWithoutAll),
 )
 
-const periodsToShow = computed(() => {
-  const chartConfigShowedPeriodsCount
-    = chartStore.periods[filterStore.periodWithoutAll].showedPeriods
+const filterPeriodMaxDateCount = computed(() =>
+  dayjs()
+    .endOf(filterStore.periodNameWithoutAll)
+    .diff(trnsStore.oldestTrnDate, filterStore.periodNameWithoutAll),
+)
 
-  const filterPeriodMaxDateCount = dayjs()
-    .endOf(filterStore.periodWithoutAll)
-    .diff(trnsStore.oldestTrnDate, filterStore.periodWithoutAll)
+const chartConfigShowedPeriodsCount = computed(
+  () => chartStore.periods[filterStore.periodNameWithoutAll].showedPeriods,
+)
 
-  return selectedPeriodCount.value > chartConfigShowedPeriodsCount
-    ? selectedPeriodCount.value
-    : chartConfigShowedPeriodsCount > filterPeriodMaxDateCount
-      ? filterPeriodMaxDateCount
-      : chartConfigShowedPeriodsCount
-})
+const periodsToShow = computed(() =>
+  selectedPeriodCount.value >= chartConfigShowedPeriodsCount.value
+    ? selectedPeriodCount.value + 1
+    : chartConfigShowedPeriodsCount.value > filterPeriodMaxDateCount.value
+      ? filterPeriodMaxDateCount.value
+      : chartConfigShowedPeriodsCount.value,
+)
 
-const statPrepareData = computed(() => {
-  const periodsWithData = Array.from({ length: periodsToShow.value }).map(
-    (_, index) => {
-      const date = dayjs()
-        .startOf(filterStore.periodWithoutAll)
-        .subtract(index, filterStore.periodWithoutAll)
-        .valueOf()
+const statPrepareData = computed(() =>
+  Array.from({ length: periodsToShow.value }).map((_, index) => {
+    const date = dayjs()
+      .startOf(filterStore.periodNameWithoutAll)
+      .subtract(index, filterStore.periodNameWithoutAll)
+      .valueOf()
 
-      // TODO?: Get trnsIds from all periods first, then filter them
-      const trnsIds = getTrnsIds({
-        trnsItems: trnsStore.items,
-        walletsIds: filterStore.walletsIds,
-        categoriesIds: filterStore.transactibleCatsIds,
-        periodName: filterStore.periodWithoutAll,
-        date,
-      })
+    // TODO?: Get trnsIds from all periods first, then filter them
+    const trnsIds = getTrnsIds({
+      trnsItems: trnsStore.items,
+      walletsIds: filterStore.walletsIds,
+      categoriesIds: filterStore.transactibleCatsIds,
+      periodName: filterStore.periodNameWithoutAll,
+      date,
+    })
 
-      const total = getTotal({
-        baseCurrencyCode: currenciesStore.base,
-        rates: currenciesStore.rates,
-        trnsIds,
-        trnsItems: trnsStore.items,
-        walletsItems: walletsStore.items,
-        transferCategoriesIds: categoriesStore.transferCategoriesIds,
-      })
+    const total = getTotal({
+      baseCurrencyCode: currenciesStore.base,
+      rates: currenciesStore.rates,
+      trnsIds,
+      trnsItems: trnsStore.items,
+      walletsItems: walletsStore.items,
+      transferCategoriesIds: categoriesStore.transferCategoriesIds,
+    })
 
-      return { date, ...total, trnsIds }
+    return { date, ...total, trnsIds }
+  }),
+)
+
+const statPrepareDataAverage = computed(() => {
+  const totalPeriods = statPrepareData.value.slice(1).reduce(
+    (acc, cur) => {
+      acc.incomeTransactions += cur.incomeTransactions
+      acc.expenseTransactions += cur.expenseTransactions
+      acc.sumTransactions += cur.sumTransactions
+      return acc
+    },
+    {
+      incomeTransactions: 0,
+      expenseTransactions: 0,
+      sumTransactions: 0,
     },
   )
 
-  return periodsWithData
-})
-
-const statPrepareDataAverage = computed(() => {
-  const fromDate = dayjs()
-    .startOf(filterStore.periodWithoutAll)
-    .subtract(periodsToShow.value - 1, filterStore.periodWithoutAll)
-    .valueOf()
-
-  const untilDate = dayjs()
-    .startOf(filterStore.periodWithoutAll)
-    .subtract(1, filterStore.periodWithoutAll)
-    .valueOf()
-
-  // TODO?: Get trnsIds from all periods first, then filter them
-  const trnsIds = getTrnsIds({
-    trnsItems: trnsStore.items,
-    walletsIds: filterStore.walletsIds,
-    categoriesIds: filterStore.transactibleCatsIds,
-    periodName: filterStore.periodWithoutAll,
-    fromDate,
-    untilDate,
-  })
-
-  const total = getTotal({
-    baseCurrencyCode: currenciesStore.base,
-    rates: currenciesStore.rates,
-    trnsIds,
-    trnsItems: trnsStore.items,
-    walletsItems: walletsStore.items,
-    transferCategoriesIds: categoriesStore.transferCategoriesIds,
-  })
-
-  const totalAverage = Object.keys(total).reduce((acc, prev) => {
-    acc[prev] = total[prev] / (periodsToShow.value - 1)
+  return Object.keys(totalPeriods).reduce((acc, prev) => {
+    acc[prev] = totalPeriods[prev] / (periodsToShow.value - 1)
     return acc
   }, {} as TotalReturns)
-
-  return {
-    ...totalAverage,
-    trnsIds,
-  }
 })
 
 const isShowGroupTrns = computed(() => {
@@ -186,65 +164,79 @@ interface CategoryTotal {
 
 const trnsIds = computed(() => trnsStore.filteredTrnsIds)
 
-const trnsIdsInCategory = computed(() => trnsIds.value.reduce(
-  (prev, trnId) => {
-    const categoryId = trnsStore.items[trnId]?.categoryId
-    prev[categoryId] ??= []
-    prev[categoryId].push(trnId)
-    return prev
-  },
-  {} as Record<CategoryId, TrnId[]>,
-))
+const trnsIdsInCategory = computed(() =>
+  trnsIds.value.reduce(
+    (prev, trnId) => {
+      const categoryId = trnsStore.items[trnId]?.categoryId
+      prev[categoryId] ??= []
+      prev[categoryId].push(trnId)
+      return prev
+    },
+    {} as Record<CategoryId, TrnId[]>,
+  ),
+)
 
-const categoriesTotal = computed(() => {
-  const income = {}
-  const expense = {}
-
-  for (const categoryId in trnsIdsInCategory.value) {
-    const totalInCategory = getTotal({
-      baseCurrencyCode: currenciesStore.base,
-      rates: currenciesStore.rates,
-      trnsIds: trnsIdsInCategory.value[categoryId],
-      trnsItems: trnsStore.items,
-      walletsIds: filterStore.walletsIds,
-      walletsItems: walletsStore.items,
-    })
-
-    if (totalInCategory.incomeTransactions > 0)
-      income[categoryId] = totalInCategory.incomeTransactions
-
-    if (totalInCategory.expenseTransactions > 0)
-      expense[categoryId] = totalInCategory.expenseTransactions
-  }
-
-  return {
-    income,
-    expense,
-  }
-})
-
-function getBiggestAmount(slug: MoneyTypeSlug) {
-  // function getBiggestAmount2(
-  //   categoriesTotal: CategoryTotal,
-  //   categoriesIds: CategoryId[],
-  //   moneyTypeSlug: MoneyTypeSlug,
-  // ) {
-  //   const biggestAmount = categoriesIds[0]
-  //   return (
-  //     (categoriesTotal[biggestAmount]
-  //     && Math.abs(categoriesTotal[biggestAmount][moneyTypeSlug]))
-  //     || 0
-  //   )
-  // }
-  return statStore.statCurrentPeriod[slug].biggest
+interface TotalCategory {
+  id: CategoryId
+  value: number
 }
 
-function getCategoriesIds(slug: MoneyTypeSlug): CategoryId[] {
-  return Object.keys(categoriesTotal.value[slug])
+interface TotalCategories {
+  income: TotalCategory[]
+  expense: TotalCategory[]
+}
+
+const totalCategories = computed(() => {
+  const categories = Object.keys(trnsIdsInCategory.value).reduce(
+    (acc, categoryId) => {
+      const totalInCategory = getTotal({
+        baseCurrencyCode: currenciesStore.base,
+        rates: currenciesStore.rates,
+        trnsIds: trnsIdsInCategory.value[categoryId],
+        trnsItems: trnsStore.items,
+        walletsIds: filterStore.walletsIds,
+        walletsItems: walletsStore.items,
+      })
+      if (totalInCategory.incomeTransactions > 0) {
+        acc.income.push({
+          id: categoryId,
+          value: totalInCategory.incomeTransactions,
+        })
+      }
+
+      if (totalInCategory.expenseTransactions > 0) {
+        acc.expense.push({
+          id: categoryId,
+          value: totalInCategory.expenseTransactions,
+        })
+      }
+
+      return acc
+    },
+    {
+      income: [],
+      expense: [],
+    } as TotalCategories,
+  )
+
+  return Object.keys(categories).reduce(
+    (prev, type) => {
+      prev[type] = categories[type].sort((a, b) => b?.value - a?.value)
+      return prev
+    },
+    {
+      income: [],
+      expense: [],
+    } as TotalCategories,
+  )
+})
+
+function getCategories(slug: MoneyTypeSlug): TotalCategories[MoneyTypeSlug] {
+  return totalCategories.value[slug]
 }
 
 function getColorizeType(slug: MoneyTypeSlugSum): MoneyTypeSlug {
-  return statPrepareData.value[selectedPeriodCount.value][mTypes[slug]] > 0
+  return statPrepareData.value[selectedPeriodCount.value]?.[mTypes[slug]] > 0
     ? 'income'
     : 'expense'
 }
@@ -255,7 +247,7 @@ function getMoneyTypeNumber(slug: MoneyTypeSlugSum): MoneyTypeNumber {
 
 function getAverageItem(slug: MoneyTypeSlugSum) {
   return {
-    amount: statPrepareData.value[selectedPeriodCount.value][mTypes[slug]],
+    amount: statPrepareData.value[selectedPeriodCount.value]?.[mTypes[slug]],
     averageAmount: statPrepareDataAverage.value[mTypes[slug]],
     colorizeType: getColorizeType(slug),
     isShownAverage: statPrepareDataAverage.value.sumTransactions !== 0,
@@ -287,12 +279,12 @@ provide(
 provide('setDate', filterStore.setDate)
 
 provide(
-  'period',
-  computed(() => filterStore.period),
+  'periodNameWithAll',
+  computed(() => filterStore.periodNameWithAll),
 )
 provide(
-  'periodWithoutAll',
-  computed(() => filterStore.periodWithoutAll),
+  'periodNameWithoutAll',
+  computed(() => filterStore.periodNameWithoutAll),
 )
 provide('setNextPeriodDate', filterStore.setNextPeriodDate)
 provide('setPeriodAndDate', filterStore.setPeriodAndDate)
@@ -312,7 +304,7 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
     <!-- Sum All -->
     <div class="mx-2 mb-2 rounded-xl bg-item-4">
       <div
-        class="flex flex-wrap sm_flex-nowrap items-center gap-4 gap-x-6 rounded-lg p-2 sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
+        class="flex flex-wrap items-center gap-4 gap-x-6 rounded-lg p-2 sm_flex-nowrap sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
       >
         <StatTotalWithAverage
           v-for="(item, slug) in averages"
@@ -334,21 +326,6 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
       <StatViewConfig />
     </div>
 
-    <!-- <div class="p-4">
-      <pre class="text-sm">categoriesTotal {{ categoriesTotal }}</pre>
-      <pre class="text-sm">trnsIdsInCategory {{ trnsIdsInCategory }}</pre>
-    </div> -->
-
-    <!-- <pre>statPrepareDataAverage: {{ statPrepareDataAverage }}</pre>
-    <hr>
-
-    <pre>periodsToShow: {{ periodsToShow }}</pre>
-    <pre>selectedPeriodCount: {{ selectedPeriodCount }}</pre>
-    <pre>{{ statPrepareData[selectedPeriodCount] }}</pre>
-    <pre>getAverageItem: {{ getAverageItem("expense") }}</pre>
-
-    <pre>{{ statPrepareData }}</pre>
- -->
     <div class="min-h-[calc(100vh-130px)]" data-scroll-ref="stat">
       <template v-if="appNavStore.activeTabStat !== 'trns'">
         <div class="mb-8 px-2 md_mb-4 lg_px-0">
@@ -360,29 +337,23 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
               class="grid gap-3 rounded-lg py-2 lg_px-2 xl_max-w-[420px]"
             >
               <StatTotalWithAverage :item="averages[item.slug]" hasBg />
-
-              <StatHorizontal
-                v-if="ui.showCatsHorizontalList"
-                :categoriesTotal
-                :categoriesIds="getCategoriesIds(item.slug)"
-                :biggest="getBiggestAmount(item.slug)"
+              <StatGroupRound
+                v-if="ui.showRoundCats"
+                :categories="getCategories(item.slug)"
                 :moneyTypeSlug="item.slug"
                 :moneyTypeNumber="getMoneyTypeNumber(item.slug)"
               />
 
               <StatGroupVertical
                 v-if="ui.showCatsVerticalChart"
-                :categoriesIds="getCategoriesIds(item.slug)"
-                :categoriesTotal
-                :biggest="getBiggestAmount(item.slug)"
+                :categories="getCategories(item.slug)"
                 :moneyTypeSlug="item.slug"
                 :moneyTypeNumber="getMoneyTypeNumber(item.slug)"
               />
 
-              <StatGroupRound
-                v-if="ui.showRoundCats"
-                :categoriesTotal
-                :categoriesIds="getCategoriesIds(item.slug)"
+              <StatHorizontal
+                v-if="ui.showCatsHorizontalList"
+                :categories="getCategories(item.slug)"
                 :moneyTypeSlug="item.slug"
                 :moneyTypeNumber="getMoneyTypeNumber(item.slug)"
               />
@@ -391,7 +362,8 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
                 <div
                   v-if="
                     appNavStore.activeTabStat === 'summary'
-                      && statStore.statCurrentPeriod[item.slug].total !== 0
+                      && statPrepareData[selectedPeriodCount][mTypes[item.slug]]
+                        !== 0
                       && combinedTrnsIds[item.slug].length > 0
                   "
                   class="grid max-w-[420px] gap-2 pt-4"
@@ -416,25 +388,6 @@ provide('setPrevPeriodDate', filterStore.setPrevPeriodDate)
               "
               class="max-w-[420px]"
             >
-              <div class="pt-4 grid gap-3 rounded-lg py-2 lg_px-2 xl_max-w-[420px]">
-                <StatGroupVertical
-                  v-if="ui.showCatsVerticalChart"
-                  :categoriesIds="getCategoriesIds(appNavStore.activeTabStat)"
-                  :categoriesTotal
-                  :biggest="getBiggestAmount(appNavStore.activeTabStat)"
-                  :moneyTypeSlug="appNavStore.activeTabStat"
-                  :moneyTypeNumber="getMoneyTypeNumber(appNavStore.activeTabStat)"
-                />
-
-                <StatGroupRound
-                  v-if="ui.showRoundCats"
-                  :categoriesTotal
-                  :categoriesIds="getCategoriesIds(appNavStore.activeTabStat)"
-                  :moneyTypeSlug="appNavStore.activeTabStat"
-                  :moneyTypeNumber="getMoneyTypeNumber(appNavStore.activeTabStat)"
-                />
-              </div>
-
               <UiTitle2 class="pb-3">
                 {{ $t("trns.inPeriodTitle") }}
               </UiTitle2>

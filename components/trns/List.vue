@@ -96,7 +96,6 @@ function actions(trnItem) {
       trnFormEdit(trnItem.id)
     },
 
-    // TODO: useFilter
     onSetFilter: (event) => {
       event.stopPropagation()
       filterStore.setCategoryId(trnItem.categoryId)

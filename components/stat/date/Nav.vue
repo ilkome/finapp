@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { getStyles } from '~/components/ui/classes'
-import type { PeriodName, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithoutAll, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
 
 const setNextPeriodDate = inject('setNextPeriodDate') as () => void
 const setPrevPeriodDate = inject('setPrevPeriodDate') as () => void
 const date = inject('date') as Ref<number>
-const periodWithoutAll = inject('periodWithoutAll') as Ref<PeriodName>
+const periodNameWithoutAll = inject('periodNameWithoutAll') as Ref<PeriodNameWithoutAll>
 const setPeriodAndDate = inject('setPeriodAndDate') as (period: PeriodNameWithAll) => void
 
-const isToday = computed(() => dayjs().isSame(date.value, periodWithoutAll.value))
+const isToday = computed(() => dayjs().isSame(date.value, periodNameWithoutAll.value))
 </script>
 
 <template>
@@ -32,7 +32,7 @@ const isToday = computed(() => dayjs().isSame(date.value, periodWithoutAll.value
       v-if="!isToday"
       :class="getStyles('item', ['link', 'rounded'])"
       class="pt-2 px-1"
-      @click="setPeriodAndDate(periodWithoutAll)"
+      @click="setPeriodAndDate(periodNameWithoutAll)"
     >
       <UiIconReturn class="size-5" />
     </div>

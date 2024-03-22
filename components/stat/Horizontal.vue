@@ -4,9 +4,7 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
 
 defineProps<{
-  categoriesTotal: any
-  categoriesIds: CategoryId[]
-  biggest: number
+  categories: any
   moneyTypeSlug: MoneyTypeSlug
   moneyTypeNumber: MoneyTypeNumber
 }>()
@@ -15,14 +13,14 @@ const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
-  <div v-if="categoriesIds.length > 0" class="grid gap-1">
+  <div v-if="categories.length > 0" class="grid gap-1">
     <StatHorizontalItem
-      v-for="categoryId in categoriesIds"
-      :key="categoryId"
-      :biggest
-      :category="categoriesStore.items[categoryId]"
-      :categoryId="categoryId"
-      :total="categoriesTotal[moneyTypeSlug][categoryId]"
+      v-for="item in categories"
+      :key="item.id"
+      :biggest="categories[0].value"
+      :category="categoriesStore.items[item.id]"
+      :categoryId="item.id"
+      :total="item.value"
       :moneyTypeNumber="moneyTypeNumber"
       :moneyTypeSlug="moneyTypeSlug"
     />

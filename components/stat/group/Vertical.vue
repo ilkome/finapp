@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import type { CategoryId } from '~/components/categories/types'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useStat } from '~/components/stat/useStatStore'
 
 defineProps<{
-  categoriesTotal: any
-  categoriesIds: CategoryId[]
-  biggest: number
+  categories: any
   moneyTypeSlug: MoneyTypeSlug
   moneyTypeNumber: MoneyTypeNumber
 }>()
@@ -17,17 +13,17 @@ const categoriesStore = useCategoriesStore()
 
 <template>
   <div
-    v-if="categoriesIds.length > 0"
+    v-if="categories.length > 0"
     class="overflow-hidden rounded-lg bg-item-4"
   >
     <div class="scrollbar flex overflow-x-auto pb-2">
       <StatGroupVerticalItem
-        v-for="categoryId in categoriesIds"
-        :key="categoryId"
-        :biggest
-        :category="categoriesStore.items[categoryId]"
-        :categoryId="categoryId"
-        :total="categoriesTotal[moneyTypeSlug][categoryId]"
+        v-for="item in categories"
+        :key="item.id"
+        :biggest="categories[0].value"
+        :category="categoriesStore.items[item.id]"
+        :categoryId="item.id"
+        :total="item.value"
       />
     </div>
   </div>

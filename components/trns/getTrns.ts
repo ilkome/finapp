@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { PeriodName } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
 import type { TrnId, TrnsGetterProps } from '~/components/trns/types'
 
 export function getTrnsIds(props: TrnsGetterProps) {
@@ -18,7 +18,7 @@ export function getTrnsIds(props: TrnsGetterProps) {
   // @deprecated: Date
   if (props?.date && props?.periodName !== 'all') {
     const filterDate = dayjs(props.date)
-    const filterPeriod = props.periodName as PeriodName
+    const filterPeriod = props.periodName as PeriodNameWithoutAll
     const fromDate = filterDate.startOf(filterPeriod).valueOf()
     const untilDate = filterDate.endOf(filterPeriod).valueOf()
 

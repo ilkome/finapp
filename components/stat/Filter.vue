@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import type { Categories } from '../categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useFilter } from '~/components/filter/useFilter'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import type { Wallets } from '~/components/wallets/types'
 
 const filterStore = useFilter()
 

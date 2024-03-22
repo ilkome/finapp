@@ -16,7 +16,7 @@ import { config, lineConfig } from '~/components/stat/chart/config'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
 import type { TrnId } from '~/components/trns/types'
-import type { PeriodName } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
 
 const props = withDefaults(
   defineProps<{
@@ -29,7 +29,7 @@ const props = withDefaults(
   },
 )
 
-const periodWithoutAll = inject('periodWithoutAll') as ComputedRef<PeriodName>
+const periodNameWithoutAll = inject('periodNameWithoutAll') as ComputedRef<PeriodNameWithoutAll>
 const date = inject('date') as ComputedRef<number>
 const setDate = inject('setDate') as (date: number) => void
 const statData = inject('statData') as ComputedRef<unknown>
@@ -54,7 +54,7 @@ const markedArea = computed(() =>
 )
 
 function getFormat() {
-  switch (periodWithoutAll.value) {
+  switch (periodNameWithoutAll.value) {
     case 'day':
       return 'D.MM'
     case 'week':

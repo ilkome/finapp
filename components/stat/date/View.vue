@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { getStyles } from '~/components/ui/classes'
-import type { PeriodNameWithAll } from '~/components/chart/useChartStore'
+import type { PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
 
 const { t } = useI18n()
 
 const date = inject('date') as Ref<number>
-const period = inject('period') as Ref<PeriodNameWithAll>
+const periodNameWithAll = inject('periodNameWithAll') as Ref<PeriodNameWithAll>
 
 const formattedDate = computed(() => {
   const today = dayjs()
   const filterDate = date.value
-  const filterPeriod = period.value
+  const filterPeriod = periodNameWithAll.value
   let format = 'MMMM'
 
   const startDate = dayjs(filterDate).startOf('week').format('D MMMM')
@@ -55,7 +55,7 @@ const formattedDate = computed(() => {
       :class="getStyles('item', ['link', 'rounded'])"
       class="flex items-center px-3 py-2 font-primary font-semibold leading-none text-item-1"
     >
-      {{ period === "all" ? $t("dates.all.simple") : formattedDate }}
+      {{ periodNameWithAll === "all" ? $t("dates.all.simple") : formattedDate }}
     </div>
 
     <template #popper="{ hide }">
