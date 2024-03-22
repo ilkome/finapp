@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { getStyles } from '~/components/ui/classes'
-import type { PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithAll } from '~/components/chart/useChartStore'
 
 const { t } = useI18n()
 

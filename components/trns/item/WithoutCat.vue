@@ -72,8 +72,8 @@ const { onOpenDetails, onOpenEdit } = props.actions(trnItem.value)
     </div>
 
     <!-- Description -->
-    <div v-if="trnItem.desc" class="text-xs">
-      {{ trnItem.desc }}
+    <div v-if="trnItem.desc || trnItem.description" class="text-xs">
+      {{ trnItem.desc || trnItem.description }}
     </div>
 
     <div class="mt-2 h-[1px] bg-item-5" />

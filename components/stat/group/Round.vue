@@ -5,9 +5,9 @@ import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStat } from '~/components/stat/useStatStore'
 
 const props = defineProps<{
+  categoriesTotal: any
   categoriesIds: CategoryId[]
   moneyTypeSlug: MoneyTypeSlug
   moneyTypeNumber: MoneyTypeNumber
@@ -16,7 +16,6 @@ const props = defineProps<{
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const filterStore = useFilter()
-const statStore = useStat()
 const { width } = useWindowSize()
 
 const roundRef = ref(null)
@@ -57,22 +56,20 @@ watch([width, () => props.categoriesIds], () => updateWidth(), { immediate: true
         :category="categoriesStore.items[categoryId]"
         :categoryId="categoryId"
         :currencyCode="currenciesStore.base"
-        :total="statStore.statCurrentPeriod.categories[categoryId][moneyTypeSlug]"
+        :total="categoriesTotal[moneyTypeSlug][categoryId]"
         :moneyTypeNumber="moneyTypeNumber"
       />
 
       <template v-if="filterStore.catsIds.length > 0">
-        <template v-for="categoryId in filterStore.catsIds" :key="categoryId">
-          <LazyStatGroupRoundItem
-            v-if="!statStore.statCurrentPeriod[moneyTypeSlug].categoriesIds.includes(categoryId)"
-            :key="categoryId"
-            :category="categoriesStore.items[categoryId]"
-            :categoryId="categoryId"
-            :currencyCode="currenciesStore.base"
-            :total="0"
-            :moneyTypeNumber="moneyTypeNumber"
-          />
-        </template>
+        <LazyStatGroupRoundItem
+          v-for="categoryId in filterStore.catsIds"
+          :key="categoryId"
+          :category="categoriesStore.items[categoryId]"
+          :categoryId="categoryId"
+          :currencyCode="currenciesStore.base"
+          :total="0"
+          :moneyTypeNumber="moneyTypeNumber"
+        />
       </template>
     </div>
   </div>

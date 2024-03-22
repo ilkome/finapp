@@ -1,9 +1,6 @@
-import dayjs from 'dayjs'
 import type { CategoryId } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
 import { type TotalReturns, getTotal } from '~/components/amount/getTotal'
-import { getTrnsIds } from '~/components/trns/getTrns'
-import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -31,16 +28,11 @@ function getBiggestAmount(
 }
 
 export const useStat = defineStore('stat', () => {
-  const chartStore = useChartStore()
   const filterStore = useFilter()
   const currenciesStore = useCurrenciesStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
-
-  /**
-   * Stat for current period
-   */
 
   const categoriesWithTrnsIds = computed(() => trnsStore.filteredTrnsIds.reduce(
     (prev, trnId) => {
@@ -118,90 +110,18 @@ export const useStat = defineStore('stat', () => {
     })
 
     return {
-      categories: categoriesTotal,
-      total: total.sumTransactions,
       expense: {
         biggest: expenseBiggest,
-        categoriesIds: expenseCategoriesIds,
         total: total.expenseTransactions,
       },
       income: {
         biggest: incomeBiggest,
-        categoriesIds: incomeCategoriesIds,
         total: total.incomeTransactions,
       },
     }
   })
 
-  const statAverage = computed(() => {
-    const emptyData = { income: 0, expense: 0, sum: 0 }
-
-    if (filterStore.period === 'all')
-      return emptyData
-
-    const oldestTrn = trnsStore.items[trnsStore.firstCreatedTrnId]
-    if (!oldestTrn)
-      return emptyData
-
-    let periodsToShow
-      = dayjs()
-        .endOf(filterStore.period)
-        .diff(trnsStore.oldestTrnDate, filterStore.period) + 1
-
-    periodsToShow
-      = chartStore.periods[filterStore.period].showedPeriods >= periodsToShow
-        ? periodsToShow
-        : chartStore.periods[filterStore.period].showedPeriods
-
-    let income = 0
-    let expense = 0
-
-    // Start from 1 to remove last period from average
-    for (let period = 1; period < periodsToShow; period++) {
-      const dateStartOfPeriod = dayjs()
-        .subtract(period, filterStore.period)
-        .startOf(filterStore.period)
-      const dateEndOfPeriod = dayjs()
-        .subtract(period, filterStore.period)
-        .endOf(filterStore.period)
-
-      const trnsIdsInPeriod = trnsStore.allTrnsIdsWithFilter.filter(
-        (trnId: TrnId) =>
-          trnsStore.items[trnId].date >= dateStartOfPeriod
-          && trnsStore.items[trnId].date <= dateEndOfPeriod
-          && !categoriesStore.transferCategoriesIds.includes(
-            trnsStore.items[trnId].categoryId,
-          ),
-      )
-
-      const total = getTotal({
-        baseCurrencyCode: currenciesStore.base,
-        rates: currenciesStore.rates,
-        transferCategoriesIds: categoriesStore.transferCategoriesIds,
-        trnsIds: trnsIdsInPeriod,
-        trnsItems: trnsStore.items,
-        walletsItems: walletsStore.items,
-      })
-
-      income += total.incomeTransactions
-      expense += total.expenseTransactions
-    }
-
-    // When just this period and last
-    const delimiter = periodsToShow - 1
-    if (delimiter <= 1)
-      return emptyData
-
-    return {
-      income: Math.ceil(income / delimiter),
-      expense: Math.ceil(expense / delimiter),
-      sum: Math.ceil((income - expense) / delimiter),
-    }
-  })
-
   return {
-    categoriesWithTrnsIds,
-    statAverage,
     statCurrentPeriod,
   }
 })

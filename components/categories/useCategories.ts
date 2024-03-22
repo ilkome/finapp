@@ -15,10 +15,6 @@ import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/compon
 
 import { useUserStore } from '~/components/user/useUser'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { TrnId } from '~/components/trns/types'
-import { getTotal } from '~/components/amount/getTotal'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export const useCategoriesStore = defineStore('categories', () => {
   const transfer: CategoryItem = {
@@ -34,8 +30,6 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   const trnsStore = useTrnsStore()
-  const currenciesStore = useCurrenciesStore()
-  const walletsStore = useWalletsStore()
 
   const items = ref<Categories>({ transfer })
 
@@ -263,7 +257,9 @@ export const useCategoriesStore = defineStore('categories', () => {
     updateData(`users/${userStore.uid}/categories`, { order: ids })
   }
 
-  function getTransactibleIds(ids: CategoryId[]) {
+  function getTransactibleIds(ids?: CategoryId[]) {
+    if (!ids)
+      return []
     return getTransactibleCategoriesIds(ids, items.value)
   }
 

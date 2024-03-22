@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { moneyTypes } from '~/components/stat/types'
-import type { MoneyTypeNumber, MoneyTypeSlugSum } from '~/components/stat/types'
+import type { MoneyTypeNumber, MoneyTypeSlug, MoneyTypeSlugSum } from '~/components/stat/types'
 import type { CategoryId } from '~/components/categories/types'
 import type { PeriodName, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
 import type { TrnId, TrnItem } from '~/components/trns/types'
@@ -9,54 +9,195 @@ import type { WalletId } from '~/components/wallets/types'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStat } from '~/components/stat/useStatStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { getTotal } from '~/components/amount/getTotal'
+import type { TotalReturns } from '~/components/amount/getTotal'
+import { useChartStore } from '~/components/stat/chart/useChartStore'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { getTrnsIds } from '~/components/trns/getTrns'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
   walletsIds?: WalletId[]
 }>()
 
-const trnsStore = useTrnsStore()
+const categoriesStore = useCategoriesStore()
+const chartStore = useChartStore()
+const currenciesStore = useCurrenciesStore()
 const filterStore = useFilter()
 const statStore = useStat()
+const trnsStore = useTrnsStore()
+const walletsStore = useWalletsStore()
 
-function getMoneyTypeNumber(slug: MoneyTypeSlugSum): MoneyTypeNumber {
-  return moneyTypes.find(t => t.id === `${slug}`.toLowerCase())?.type || 3
+const mTypes = {
+  expense: 'expenseTransactions',
+  income: 'incomeTransactions',
+  sum: 'sumTransactions',
+} as const
+
+const selectedPeriodCount = computed(() =>
+  dayjs()
+    .endOf(filterStore.periodWithoutAll)
+    .diff(filterStore.date, filterStore.periodWithoutAll),
+)
+
+const periodsToShow = computed(() => {
+  const chartConfigShowedPeriodsCount
+    = chartStore.periods[filterStore.periodWithoutAll].showedPeriods
+
+  const filterPeriodMaxDateCount = dayjs()
+    .endOf(filterStore.periodWithoutAll)
+    .diff(trnsStore.oldestTrnDate, filterStore.periodWithoutAll)
+
+  return selectedPeriodCount.value > chartConfigShowedPeriodsCount
+    ? selectedPeriodCount.value
+    : chartConfigShowedPeriodsCount > filterPeriodMaxDateCount
+      ? filterPeriodMaxDateCount
+      : chartConfigShowedPeriodsCount
+})
+
+const statPrepareData = computed(() => {
+  const periodsWithData = Array.from({ length: periodsToShow.value }).map(
+    (_, index) => {
+      const date = dayjs()
+        .startOf(filterStore.periodWithoutAll)
+        .subtract(index, filterStore.periodWithoutAll)
+        .valueOf()
+
+      // TODO: Get trnsIds from all periods first, then filter them
+      const trnsIds = getTrnsIds({
+        trnsItems: trnsStore.items,
+        walletsIds: filterStore.walletsIds,
+        categoriesIds: filterStore.transactibleCatsIds,
+        periodName: filterStore.periodWithoutAll,
+        date,
+      })
+
+      const total = getTotal({
+        baseCurrencyCode: currenciesStore.base,
+        rates: currenciesStore.rates,
+        trnsIds,
+        trnsItems: trnsStore.items,
+        walletsItems: walletsStore.items,
+        transferCategoriesIds: categoriesStore.transferCategoriesIds,
+      })
+
+      return { date, ...total, trnsIds }
+    },
+  )
+
+  return periodsWithData
+})
+
+const statPrepareDataAverage = computed(() => {
+  const fromDate = dayjs()
+    .startOf(filterStore.periodWithoutAll)
+    .subtract(periodsToShow.value - 1, filterStore.periodWithoutAll)
+    .valueOf()
+
+  const untilDate = dayjs()
+    .startOf(filterStore.periodWithoutAll)
+    .valueOf()
+
+  // TODO: Get trnsIds from all periods first, then filter them
+  const trnsIds = getTrnsIds({
+    trnsItems: trnsStore.items,
+    walletsIds: filterStore.walletsIds,
+    categoriesIds: filterStore.transactibleCatsIds,
+    periodName: filterStore.periodWithoutAll,
+    fromDate,
+    untilDate,
+  })
+
+  const total = getTotal({
+    baseCurrencyCode: currenciesStore.base,
+    rates: currenciesStore.rates,
+    trnsIds,
+    trnsItems: trnsStore.items,
+    walletsItems: walletsStore.items,
+    transferCategoriesIds: categoriesStore.transferCategoriesIds,
+  })
+
+  const totalAverage = Object.keys(total).reduce((acc, prev) => {
+    acc[prev] = total[prev] / (periodsToShow.value - 1)
+    return acc
+  }, {} as TotalReturns)
+
+  return {
+    ...totalAverage,
+    trnsIds,
+  }
+})
+
+function getBiggestAmount(slug: MoneyTypeSlug) {
+  return statStore.statCurrentPeriod[slug].biggest
 }
 
-function getAmount(slug: MoneyTypeSlugSum) {
-  if (slug === 'sum')
-    return statStore.statCurrentPeriod.income.total - statStore.statCurrentPeriod.expense.total
+const trnsIds = computed(() =>
+  trnsStore.getStoreTrnsIds({
+    categoriesIds: props.categoriesIds,
+    walletsIds: props.walletsIds,
+  }),
+)
 
-  return statStore.statCurrentPeriod[slug].total
+const trnsIdsInCategory = computed(() => trnsIds.value.reduce(
+  (prev, trnId) => {
+    const categoryId = trnsStore.items[trnId]?.categoryId
+    prev[categoryId] ??= []
+    prev[categoryId].push(trnId)
+    return prev
+  },
+  {} as Record<CategoryId, TrnId[]>,
+))
+
+const categoriesTotal = computed(() => {
+  const income = {}
+  const expense = {}
+
+  for (const categoryId in trnsIdsInCategory.value) {
+    const totalInCategory = getTotal({
+      baseCurrencyCode: currenciesStore.base,
+      rates: currenciesStore.rates,
+      trnsIds: trnsIdsInCategory.value[categoryId],
+      trnsItems: trnsStore.items,
+      walletsIds: filterStore.walletsIds,
+      walletsItems: walletsStore.items,
+    })
+
+    if (totalInCategory.incomeTransactions > 0)
+      income[categoryId] = totalInCategory.incomeTransactions
+
+    if (totalInCategory.expenseTransactions > 0)
+      expense[categoryId] = totalInCategory.expenseTransactions
+  }
+
+  return {
+    income,
+    expense,
+  }
+})
+
+function getCategoriesIds(slug: MoneyTypeSlug): CategoryId[] {
+  return Object.keys(categoriesTotal.value[slug])
 }
 
 function getColorizeType(slug: MoneyTypeSlugSum) {
-  if (slug === 'sum') {
-    return statStore.statCurrentPeriod.income.total - statStore.statCurrentPeriod.expense.total > 0
-      ? 'income'
-      : 'expense'
-  }
-  return slug
+  return statPrepareData.value[selectedPeriodCount.value][mTypes[slug]] > 0
+    ? 'income'
+    : 'expense'
 }
 
-function isItShownAverage(slug: MoneyTypeSlugSum) {
-  if (slug === 'sum')
-    return statStore.statAverage?.sum !== 0
-  return statStore.statAverage[slug] !== 0
-}
-
-function getAverageAmount(slug: MoneyTypeSlugSum) {
-  if (slug === 'sum')
-    return statStore.statAverage?.sum
-  return statStore.statAverage[slug]
+function getMoneyTypeNumber(slug: MoneyTypeSlugSum): MoneyTypeNumber {
+  return moneyTypes.find(t => t.slug === `${slug}`.toLowerCase())?.type ?? 3
 }
 
 function getAverageItem(slug: MoneyTypeSlugSum) {
   return {
-    amount: getAmount(slug),
-    averageAmount: getAverageAmount(slug),
+    amount: statPrepareData.value[selectedPeriodCount.value][mTypes[slug]],
+    averageAmount: statPrepareDataAverage.value[mTypes[slug]],
     colorizeType: getColorizeType(slug),
-    isShownAverage: isItShownAverage(slug),
+    isShownAverage: statPrepareDataAverage.value.sumTransactions !== 0,
     moneyTypeNumber: getMoneyTypeNumber(slug),
     moneyTypeSlugSum: slug,
   }
@@ -70,13 +211,6 @@ const averages = computed(() => {
     return acc
   }, {} as Record<MoneyTypeSlugSum, ReturnType<typeof getAverageItem>>)
 })
-
-const trnsIds = computed(() =>
-  trnsStore.getStoreTrnsIds({
-    categoriesIds: props.categoriesIds,
-    walletsIds: props.walletsIds,
-  }),
-)
 
 function usePeriodDate(trnsIds: Ref<TrnId[]>) {
   const { getNextPeriodDate, getPrevPeriodDate } = usePeriodUtils()
@@ -94,8 +228,11 @@ function usePeriodDate(trnsIds: Ref<TrnId[]>) {
     period.value === 'all' ? 'year' : period.value,
   )
 
-  function setPeriodAndDate(value: PeriodNameWithAll) {
-    period.value = value
+  function setPeriodAndDate(periodName: PeriodNameWithAll) {
+    if (periodName !== 'all')
+      date.value = dayjs().startOf(periodName).valueOf()
+
+    period.value = periodName
   }
 
   function setNextPeriodDate() {

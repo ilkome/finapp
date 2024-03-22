@@ -66,12 +66,12 @@ export type Trns = Record<TrnId, TrnItem>
 export type TrnsDirty = Record<TrnId, TrnItemDirty>
 
 export interface TrnsGetterProps {
-  categoriesIds?: CategoryId[] | false
+  categoriesIds?: CategoryId[]
   date?: number
   fromDate?: number
   periodName?: PeriodNameWithAll
   trnType?: TrnType
   trnsItems: Record<string, TrnItem>
   untilDate?: number
-  walletsIds?: WalletId[] | false
+  walletsIds?: WalletId[]
 }

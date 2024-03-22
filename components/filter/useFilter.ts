@@ -4,10 +4,12 @@ import type { CategoryId } from '~/components/categories/types'
 import type { PeriodName, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
 export const useFilter = defineStore('filter', () => {
   const route = useRoute()
   const trnsStore = useTrnsStore()
+  const categoriesStore = useCategoriesStore()
 
   /**
    * Redirect
@@ -113,6 +115,7 @@ export const useFilter = defineStore('filter', () => {
    * Categories
    */
   const catsIds = ref<CategoryId[]>([])
+  const transactibleCatsIds = computed(() => categoriesStore.getTransactibleIds(catsIds.value))
 
   function setCategoryId(categoryId: CategoryId) {
     if (isNeedToRedirect.value)
@@ -173,6 +176,7 @@ export const useFilter = defineStore('filter', () => {
     toggleWalletId,
 
     catsIds,
+    transactibleCatsIds,
     setCategoryId,
     removeCategoryId,
     toggleCategoryId,

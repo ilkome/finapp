@@ -4,7 +4,6 @@ import type { MoneyTypeNumber } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStat } from '~/components/stat/useStatStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
@@ -15,7 +14,6 @@ const props = defineProps<{
   categoryId: CategoryId
 }>()
 
-const statStore = useStat()
 const { setCategoryId } = useFilter()
 const currenciesStore = useCurrenciesStore()
 const categoriesStore = useCategoriesStore()

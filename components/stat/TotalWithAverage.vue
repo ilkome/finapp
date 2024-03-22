@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MoneyTypeNumber, MoneyTypeSlugSum } from '~/components/stat/types'
+import type { MoneyTypeNumber, MoneyTypeSlug, MoneyTypeSlugSum } from '~/components/stat/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 
 const props = defineProps<{
@@ -9,7 +9,7 @@ const props = defineProps<{
     averageAmount: number
     moneyTypeSlugSum: MoneyTypeSlugSum
     moneyTypeNumber: MoneyTypeNumber
-    colorizeType: MoneyTypeSlugSum
+    colorizeType: MoneyTypeSlug
     isShownAverage: boolean
   }
 }>()
@@ -17,7 +17,7 @@ const props = defineProps<{
 const currenciesStore = useCurrenciesStore()
 
 const classes = computed(() => ({
-  'rounded-lg bg-item-4 px-2 py-2 sm_px-3 sm_pt-3': props.hasBg,
+  'rounded-lg _bg-item-4 px-2 py-2 sm_px-3 sm_pt-3': props.hasBg,
 }))
 </script>
 

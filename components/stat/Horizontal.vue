@@ -1,19 +1,16 @@
 <script setup lang="ts">
-import { moneyTypes } from '~/components/stat/types'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
-import useUIView from '~/components/layout/useUIView'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useStat } from '~/components/stat/useStatStore'
 import type { CategoryId } from '~/components/categories/types'
 
 defineProps<{
+  categoriesTotal: any
   categoriesIds: CategoryId[]
   biggest: number
   moneyTypeSlug: MoneyTypeSlug
   moneyTypeNumber: MoneyTypeNumber
 }>()
 
-const statStore = useStat()
 const categoriesStore = useCategoriesStore()
 </script>
 
@@ -25,7 +22,7 @@ const categoriesStore = useCategoriesStore()
       :biggest
       :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
-      :total="statStore.statCurrentPeriod.categories[categoryId][moneyTypeSlug]"
+      :total="categoriesTotal[moneyTypeSlug][categoryId]"
       :moneyTypeNumber="moneyTypeNumber"
       :moneyTypeSlug="moneyTypeSlug"
     />

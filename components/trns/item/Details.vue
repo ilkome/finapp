@@ -116,10 +116,10 @@ function setTrnEdit() {
         </div>
       </div>
       <div
-        v-if="trn.description"
-        class="trnItem__desc whitespace-pre font-roboto !text-xs leading-none"
+        v-if="trn.desc || trn.description"
+        class="trn__desc whitespace-pre font-roboto !text-xs leading-none"
       >
-        {{ trn.description }}
+        {{ trn.desc || trn.description }}
       </div>
     </template>
 

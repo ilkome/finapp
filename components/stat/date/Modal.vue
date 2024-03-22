@@ -38,7 +38,7 @@ function onSelectPeriodCount(
 </script>
 
 <template>
-  <div class="grid gap-6 py-3 px-3 bg-item-6">
+  <div class="grid _sm_grid-cols-2 gap-6 py-3 px-3 bg-item-6">
     <div class="grid gap-2 overflow-hidden">
       <!-- Periods -->
       <UiTitle2>

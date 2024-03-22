@@ -39,15 +39,15 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-.statCatsItem.swiper-no-swiping.active.hocus_bg-item-5(
+.statCatsItem.swiper-no-swiping.active.hocus_bg-item-5.mx-2.hocus_mx-0.hocus_p-2.rounded-lg(
   @click="setCategoryId(categoryId)"
 )
-  .statCatsItem__graph.bg-item-3
+  .statCatsItem__graph._bg-item-3
     .statCatsItem__graph__in(:style="styles")
       .statCatsItem__graph__amount {{ amount }}
 
-  .statCatsItem__icon(:style="{ background: category.color }")
-    div(:class="category.icon")
+  .statCatsItem__icon.pt-2(:style="{ color: category.color }")
+    .text-xl(:class="category.icon")
 </template>
 
 <style lang="stylus" scoped>
@@ -57,15 +57,13 @@ export default defineComponent({
 .statCatsItem
   cursor pointer
   margin-top 16px
-  margin-right 8px
-  border-radius 4px
+
   +media-hover()
-    padding 8px
-    margin 8px 0 -8px -8px
+    margin 8px 0 -8px 0
 
   &__graph
     position relative
-    width 28px
+    width 18px
     height 80px
     margin 0 auto
     margin-bottom -3px
@@ -95,8 +93,4 @@ export default defineComponent({
     justify-content center
     width 28px
     height 28px
-    margin 0 auto
-    color var(--c-font-1)
-    font-size 16px
-    border-radius 3px
 </style>

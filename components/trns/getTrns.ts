@@ -44,7 +44,7 @@ export function getTrnsIds(props: TrnsGetterProps) {
   }
 
   // Wallet
-  if (props.walletsIds?.length > 0) {
+  if (props.walletsIds && props.walletsIds?.length > 0) {
     trnsIds = trnsIds.filter((trnId: TrnId) => {
       const trn = props.trnsItems[trnId]
       return (
@@ -58,7 +58,7 @@ export function getTrnsIds(props: TrnsGetterProps) {
   }
 
   // Category
-  if (props.categoriesIds?.length > 0) {
+  if (props.categoriesIds && props.categoriesIds?.length > 0) {
     trnsIds = trnsIds.filter((trnId: TrnId) =>
       props.categoriesIds?.includes(props.trnsItems[trnId].categoryId),
     )

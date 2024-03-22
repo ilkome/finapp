@@ -1,12 +1,12 @@
-export function markArea(value: string) {
+export function markArea(value: number) {
   return {
     silent: true,
     itemStyle: { opacity: 1, color: 'var(--chart-selected)' },
-    data: [[{ xAxis: value }, { xAxis: value }]],
+    data: [[{ xAxis: `${value}` }, { xAxis: `${value}` }]],
   }
 }
 
-export function setChartXAxis(categories: string[]) {
+export function setChartXAxis(categories: number[]) {
   return {
     type: 'category',
     data: categories,
