@@ -8,7 +8,7 @@ const currenciesStore = useCurrenciesStore()
 <template>
   <div
     :class="getStyles('item', ['link', 'rounded'])"
-    class="px-3 py-1 text-sm"
+    class="px-3 py-2 text-xs"
     @click="currenciesStore.showBaseCurrenciesModal"
   >
     {{ currenciesStore.base }}

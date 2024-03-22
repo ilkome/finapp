@@ -27,7 +27,32 @@ function changeDate(way: 'prev' | 'next') {
 </script>
 
 <template>
-  <div class="trnFormDate flex ite gap-2 px-2 pb-2">
+  <div class="trnFormDate flex items-center gap-2 px-2 pb-2">
+    <div class="flex items-center">
+      <div
+        :class="getStyles('item', ['link', 'rounded'])"
+        class="px-1 text-2xl"
+        @click="changeDate('prev')"
+      >
+        <i class="mdi mdi-chevron-left" />
+      </div>
+      <div
+        :class="[...getStyles('item', ['link', 'rounded']), { '!cursor-default opacity-30': isToday }]"
+        class="px-1 text-2xl"
+        @click="changeDate('next')"
+      >
+        <i class="mdi mdi-chevron-right" />
+      </div>
+      <div
+        v-if="!isToday"
+        :class="getStyles('item', ['link', 'rounded'])"
+        class="py-3 px-2"
+        @click="() => ($trnForm.values.date = dayjs().valueOf())"
+      >
+        <UiIconReturn class="size-4" />
+      </div>
+    </div>
+
     <VDropdown class="grow">
       <div
         class="flex cursor-pointer items-center rounded-md px-3 py-2 text-xs leading-none hocus_bg-item-5"
@@ -38,32 +63,6 @@ function changeDate(way: 'prev' | 'next') {
         <TrnFormMainCalendar :hide="hide" />
       </template>
     </VDropdown>
-
-    <div class="flex items-center">
-      <div
-        v-if="!isToday"
-        :class="getStyles('item', ['link', 'rounded'])"
-        class="py-3 px-3"
-        @click="() => ($trnForm.values.date = dayjs().valueOf())"
-      >
-        <UiIconReturn class="size-4" />
-      </div>
-
-      <div
-        :class="getStyles('item', ['link', 'rounded'])"
-        class="px-2 text-2xl"
-        @click="changeDate('prev')"
-      >
-        <i class="mdi mdi-chevron-left" />
-      </div>
-      <div
-        :class="[...getStyles('item', ['link', 'rounded']), { '!cursor-default opacity-30': isToday }]"
-        class="px-2 text-2xl"
-        @click="changeDate('next')"
-      >
-        <i class="mdi mdi-chevron-right" />
-      </div>
-    </div>
   </div>
 </template>
 

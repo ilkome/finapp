@@ -11,7 +11,7 @@ const isShownWalletsSelector = ref(false)
   <div>
     <FilterRow>
       <template #add>
-        <div class="flex h-10 gap-3">
+        <div class="flex h-10 gap-0">
           <FilterAddItem @click="isShowCategorySelector = true">
             <template #icon>
               <UiIconCategory class="size-6" />

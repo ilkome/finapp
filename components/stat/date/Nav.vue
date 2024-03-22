@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { getStyles } from '~/components/ui/classes'
-import type { PeriodNameWithoutAll, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
 
 const setNextPeriodDate = inject('setNextPeriodDate') as () => void
 const setPrevPeriodDate = inject('setPrevPeriodDate') as () => void
@@ -16,6 +16,7 @@ const isToday = computed(() => dayjs().isSame(date.value, periodNameWithoutAll.v
   <div class="flex">
     <div
       :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30 !cursor-default': isToday }]"
+      class="w-8"
       @click="setPrevPeriodDate"
     >
       <UiIconChevron class="size-8" />
@@ -23,6 +24,7 @@ const isToday = computed(() => dayjs().isSame(date.value, periodNameWithoutAll.v
 
     <div
       :class="[...getStyles('item', ['link', 'rounded'])]"
+      class="w-8"
       @click="setNextPeriodDate"
     >
       <UiIconChevron class="size-8 rotate-180" />
@@ -31,7 +33,7 @@ const isToday = computed(() => dayjs().isSame(date.value, periodNameWithoutAll.v
     <div
       v-if="!isToday"
       :class="getStyles('item', ['link', 'rounded'])"
-      class="pt-2 px-1"
+      class="flex-center w-8"
       @click="setPeriodAndDate(periodNameWithoutAll)"
     >
       <UiIconReturn class="size-5" />

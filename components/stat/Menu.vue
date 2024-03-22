@@ -46,7 +46,7 @@ function onClickStatMenu(tabName: AppNav) {
 </script>
 
 <template>
-  <div class="sticky top-[44px] z-20 bg-foreground-4 px-2 backdrop-blur">
+  <div>
     <UiTabs>
       <!-- v-if="!item.isPrivate || userStore.isDevUser" -->
       <UiTabsItem

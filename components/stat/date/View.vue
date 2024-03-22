@@ -53,7 +53,7 @@ const formattedDate = computed(() => {
   <VDropdown>
     <div
       :class="getStyles('item', ['link', 'rounded'])"
-      class="flex items-center px-3 py-2 font-primary font-semibold leading-none text-item-1"
+      class="flex items-center px-3 py-2 text-sm font-medium leading-none text-item-1"
     >
       {{ periodNameWithAll === "all" ? $t("dates.all.simple") : formattedDate }}
     </div>

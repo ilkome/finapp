@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { useWindowSize } from '@vueuse/core'
-import { object } from 'zod'
+import { useMediaQuery, useWindowSize } from '@vueuse/core'
 import { moneyTypes } from '~/components/stat/types'
 import type { CategoryId } from '~/components/categories/types'
 
@@ -34,6 +33,7 @@ const { ui } = useUIView()
 const { width } = useWindowSize()
 
 const isMobileView = computed(() => width.value <= 1024)
+const isLargeScreen = useMediaQuery('(min-width: 640px)')
 
 function isShowGroupByType(type: MoneyTypeSlugSum) {
   const p1
@@ -304,20 +304,20 @@ const selectedPeriodDate = computed(() => {
 </script>
 
 <template>
-  <div class="pb-6 pt-3 lg_max-w-4xl">
-    <div class="sticky top-0 z-20 h-[44px] bg-foreground-4 backdrop-blur">
-      <div class="flex items-center justify-between gap-2 px-2">
+  <div class="pb-6 lg_max-w-4xl">
+    <div class="sticky top-0 z-20 bg-foreground-4 backdrop-blur">
+      <div class="flex items-center justify-between py-1 gap-2 px-1 border-b border-item-5">
         <StatDateNav />
         <StatDateView />
         <CurrenciesChangeBtn />
       </div>
     </div>
 
-    <pre>{{ selectedPeriodDate }}</pre>
     <!-- Sum All -->
-    <div class="mx-2 mb-2 rounded-xl bg-item-4">
+    <div class="_mt-2 _mx-2 _mb-2 rounded-lg _bg-item-4">
       <div
-        class="flex flex-wrap items-center gap-4 gap-x-6 rounded-lg p-2 sm_flex-nowrap sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
+        v-if="isLargeScreen"
+        class="mb-0 mx-2 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg p-2 sm_flex-nowrap sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
       >
         <StatTotalWithAverage
           v-for="(item, slug) in averages"
@@ -332,12 +332,12 @@ const selectedPeriodDate = computed(() => {
       />
     </div>
 
-    <StatMenu class="pb-2 pt-0" />
-
-    <div class="mx-2 flex gap-2 rounded-lg bg-item-4">
+    <div class="mx-2 mb-2 flex gap-2 rounded-lg bg-item-4">
       <LazyStatFilter class="grow" />
       <StatViewConfig />
     </div>
+
+    <StatMenu class="sticky top-[41px] z-20 bg-foreground-4 px-2 mb-2 pt-0 backdrop-blur" />
 
     <div class="min-h-[calc(100vh-130px)]" data-scroll-ref="stat">
       <template v-if="appNavStore.activeTabStat !== 'trns'">

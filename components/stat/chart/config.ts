@@ -4,10 +4,10 @@ import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 export const config = {
   // Grid
   grid: {
-    top: '20',
-    left: '15',
-    right: '10',
-    bottom: '10',
+    top: '16',
+    left: '12',
+    right: '12',
+    bottom: '12',
     containLabel: true,
   },
 
@@ -54,7 +54,7 @@ export const config = {
         formatter: props => getLocalAmount(props.value),
       },
     },
-    position: 'right',
+    position: 'left',
     axisLabel: {
       color: 'var(--chart-label)',
       formatter: n => getCompactAmount(n),

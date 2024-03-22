@@ -23,14 +23,14 @@ const chartType = computed(
 </script>
 
 <template>
-  <div class="relative rounded-lg bg-item-4">
-    <div class="h-48">
+  <div class="relative _rounded-lg _bg-item-4">
+    <div class="h-48 bg-surface-4 border-b border-item-7">
       <StatChartView
         :chartType
         :trnsIds
       />
     </div>
-    <div class="justify-between px-2 pb-2 sm_flex">
+    <div class="justify-between px-2 _pb-2 sm_flex bg-item-4 border-b border-item-7">
       <StatChartPeriods />
       <StatChartOptions />
     </div>
