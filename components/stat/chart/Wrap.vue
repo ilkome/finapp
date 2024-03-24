@@ -30,7 +30,7 @@ const chartType = computed(
         :trnsIds
       />
     </div>
-    <div class="justify-between px-2 _pb-2 sm_flex bg-item-4 border-b border-item-7">
+    <div class="justify-between px-2 _pb-2 sm_flex bg-item-4 sm_bg-transparent sm_border-transparent border-b border-item-7">
       <StatChartPeriods />
       <StatChartOptions />
     </div>

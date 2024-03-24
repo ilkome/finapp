@@ -46,7 +46,7 @@ watch([width, () => props.categories], () => updateWidth(), { immediate: true })
   <div
     v-if="categories.length > 0"
     ref="roundRef"
-    class="rounded-lg bg-item-4"
+    class="_rounded-lg _bg-item-4 _border-t _border-b border-item-6"
   >
     <div class="items grid" :data-type-text="`${moneyTypeSlug}`">
       <LazyStatGroupRoundItem

@@ -35,6 +35,7 @@ const isCategoryHasChildren = computed(() =>
       :categoryId="categoryId"
       :color="category.color"
       :icon="category.icon"
+      size="lg"
       @click="toggleCategoryId"
     />
 

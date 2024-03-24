@@ -9,6 +9,22 @@ const isShownWalletsSelector = ref(false)
 
 <template>
   <div>
+    <div class="flex gap-2 pb-2">
+      <FilterWalletItem
+        v-for="walletId in filterStore.walletsIds"
+        :id="walletId"
+        :key="walletId"
+        @click="filterStore.removeWalletId(walletId)"
+      />
+
+      <FilterCategoryItem
+        v-for="categoryId in filterStore.catsIds"
+        :key="categoryId"
+        :categoryId="categoryId"
+        @click="filterStore.removeCategoryId(categoryId)"
+      />
+    </div>
+
     <FilterRow>
       <template #add>
         <div class="flex h-10 gap-0">
@@ -30,20 +46,6 @@ const isShownWalletsSelector = ref(false)
       </template>
 
       <template #content>
-        <FilterWalletItem
-          v-for="walletId in filterStore.walletsIds"
-          :id="walletId"
-          :key="walletId"
-          @click="filterStore.removeWalletId(walletId)"
-        />
-
-        <FilterCategoryItem
-          v-for="categoryId in filterStore.catsIds"
-          :key="categoryId"
-          :categoryId="categoryId"
-          @click="filterStore.removeCategoryId(categoryId)"
-        />
-
         <FilterItemBg
           v-if="filterStore.isShow"
           @click="filterStore.clearFilter"

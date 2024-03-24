@@ -20,7 +20,7 @@ const chartStore = useChartStore()
 const trnsStore = useTrnsStore()
 
 function onSelectPeriodName(periodName: PeriodNameWithAll) {
-  props.hide && props.hide()
+  // props.hide && props.hide()
   setPeriodAndDate(periodName)
 }
 
@@ -32,7 +32,7 @@ const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
 function onSelectPeriodCount(
   number: PeriodSchema['showedPeriods'],
 ) {
-  props.hide && props.hide()
+  // props.hide && props.hide()
   chartStore.setPeriod(number)
 }
 </script>

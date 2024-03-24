@@ -339,6 +339,42 @@ const selectedPeriodDate = computed(() => {
 
     <StatMenu class="sticky top-[41px] z-20 bg-foreground-4 px-2 mb-2 pt-0 backdrop-blur" />
 
+    <div class="max-w-md mx-2 grid _bg-item-4 _rounded-lg overflow-hidden _border border-item-3">
+      <div
+        v-for="item in statPrepareData"
+        :key="item.date"
+        class="flex items-center gap-3 _rounded-lg _bg-item-4 py-1 _px-3 hocus_bg-item-5 border-b border-item-3"
+        :class="{ '!bg-foreground-4': item.date === filterStore.date }"
+        @click="filterStore.setDate(item.date)"
+      >
+        <div class="text-sm font-medium text-secondary2">
+          {{ dayjs(item.date).format('YYYY MMMM') }}
+        </div>
+        <div class="_flex justify-end gap-3 grow">
+          <Amount
+            :amount="item.expenseTransfers"
+            :currencyCode="currenciesStore.base"
+            :type="0"
+            colorize="expense"
+            :isShowBaseRate="false"
+          />
+          <Amount
+            :amount="item.incomeTransactions"
+            :currencyCode="currenciesStore.base"
+            :type="1"
+            colorize="income"
+            :isShowBaseRate="false"
+          />
+          <Amount
+            :amount="item.sumTransactions"
+            :currencyCode="currenciesStore.base"
+            :type="3"
+            :isShowBaseRate="false"
+          />
+        </div>
+      </div>
+    </div>
+
     <div class="min-h-[calc(100vh-130px)]" data-scroll-ref="stat">
       <template v-if="appNavStore.activeTabStat !== 'trns'">
         <div class="mb-8 px-2 md_mb-4 lg_px-0">
