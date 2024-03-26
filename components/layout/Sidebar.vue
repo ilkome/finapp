@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 
 const { t } = useI18n()
-const { toggleWalletId } = useFilter()
+const { toggleWalletId } = useFilterStore()
 </script>
 
 <template>
@@ -82,3 +82,4 @@ const { toggleWalletId } = useFilter()
   ru:
     showAll: "Показать все"
 </i18n>
+~/components/filter/useFilterStore

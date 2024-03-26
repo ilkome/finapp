@@ -7,6 +7,7 @@ div(
     flex flex-col justify-between
     w-full
     pb-[44px] md_pb-[52px] lg_pb-0
+    js_scroll_page
   `
 )
   .max-w-5xl.h-full.lg_px-8

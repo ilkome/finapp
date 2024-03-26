@@ -143,7 +143,7 @@ onMounted(init)
 
 <style lang="stylus">
 .trnForm
-  &__pagination
+  .swiper-pagination-horizontal
     z-index 2
     position absolute
     left 50%
@@ -155,10 +155,6 @@ onMounted(init)
     padding 6px
     background alpha(#171717, .9)
     border-radius 6px
-    // transform translateX(-50%)
-
-    /.light &
-      background var(--c-bg-3)
 
     .swiper-pagination-bullet
       opacity 1
@@ -172,9 +168,6 @@ onMounted(init)
       &-active
         width 10px
         border-radius 4px
-
-        /.light &
-          background var(--c-blue-1)
 </style>
 
 <style lang="stylus" scoped>

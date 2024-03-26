@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 const trnsStore = useTrnsStore()
 
 const { t } = useI18n()

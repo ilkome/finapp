@@ -47,7 +47,7 @@ function onClickStatMenu(tabName: AppNav) {
 
 <template>
   <div>
-    <UiTabs>
+    <UiTabs class="items-center !rounded-none !bg-none border-b border-item-3">
       <!-- v-if="!item.isPrivate || userStore.isDevUser" -->
       <UiTabsItem
         v-for="item in menu"

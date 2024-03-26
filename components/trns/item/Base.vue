@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import type { TrnId } from '~/components/trns/types'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import useTrn from '~/components/trns/item/useTrn'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import { useAppNav } from '~/components/app/useAppNav'
@@ -16,7 +16,7 @@ const emit = defineEmits(['onClickEdit'])
 const { trnFormEdit } = useTrnForm()
 const { activeTabStat } = storeToRefs(useAppNav())
 const trnsStore = useTrnsStore()
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 const { formatTrnItem } = useTrn()
 const trnItem = computed(() => formatTrnItem(props.trnId))
 

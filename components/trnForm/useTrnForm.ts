@@ -13,6 +13,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { validate } from '~/components/trnForm/utils/validate'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 
 export const useTrnFormStore = defineStore('trnForm', () => {
   const values = reactive<TrnFormValues>({
@@ -190,10 +191,12 @@ export const useTrnFormStore = defineStore('trnForm', () => {
         //   title: validateStatus.error.title,
         //   text: validateStatus.error.text,
         // })
+        console.log('error')
         return
       }
 
       // TODO: translate
+      console.log()
       // vue.notify({
       //   type: 'success',
       //   text: 'Excellent transaction!',
@@ -252,6 +255,7 @@ export function useTrnForm() {
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
+  const filterStore = useFilterStore()
 
   function trnFormEdit(trnId: TrnId) {
     const trn = trnsStore.items[trnId]
@@ -266,7 +270,7 @@ export function useTrnForm() {
     $trnForm.ui.isShow = true
   }
 
-  function trnFormCreate(categoryId?: CategoryId) {
+  function trnFormCreate(props?: { categoryId?: CategoryId }) {
     $trnForm.setValues({
       action: 'create',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
@@ -275,8 +279,13 @@ export function useTrnForm() {
     })
     $trnForm.ui.isShow = true
 
-    if (categoryId)
-      $trnForm.values.categoryId = categoryId
+    if (filterStore.periodNameWithoutAll === 'day')
+      $trnForm.values.date = filterStore.date
+
+    if (props) {
+      if (props.categoryId)
+        $trnForm.values.categoryId = props.categoryId
+    }
   }
 
   function trnFormDuplicate(trnId: TrnId) {

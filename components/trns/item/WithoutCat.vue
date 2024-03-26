@@ -17,7 +17,7 @@ const { onOpenDetails, onOpenEdit } = props.actions(trnItem.value)
 
 <template>
   <div
-    class="-mt-[1px] pt-2 px-2 bg-item-4 hocus_bg-item-5 text-secondary"
+    class="-mt-[1px] pt-2 px-0 mx-2 hocus_px-2 hocus_mx-0 rounded-md hocus_bg-item-5 text-secondary"
     @click="onOpenDetails"
   >
     <div
@@ -58,7 +58,7 @@ const { onOpenDetails, onOpenEdit } = props.actions(trnItem.value)
         </div>
 
         <!-- Amount -->
-        <div class="hocus_bg-item-4 px-3 py-1 -mr-1.5 -my-2 rounded-lg">
+        <div class="hocus_bg-item-4 px-3 py-1 -mr-2 -my-2 rounded-lg">
           <Amount
             :amount="trnItem.amount"
             :currencyCode="trnItem.wallet.currency"

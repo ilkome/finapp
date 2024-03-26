@@ -10,7 +10,10 @@ defineProps<{
   slider?: object
 }>()
 
-const emit = defineEmits(['click', 'onClickIcon'])
+const emit = defineEmits<{
+  click: [id: CategoryId]
+  onClickIcon: [id: CategoryId]
+}>()
 const categoriesStore = useCategoriesStore()
 </script>
 
@@ -18,8 +21,8 @@ const categoriesStore = useCategoriesStore()
   <div class="grid gap-y-1 gap-x-1.3sm grid-cols-2 sm:gap-x-6">
     <CategoriesItem
       v-for="categoryId in ids"
-      :id="categoryId"
       :key="categoryId"
+      :categoryId="categoryId"
       :activeItemId="activeItemId"
       :category="categoriesStore.items[categoryId]"
       :isHideParentCategory="isHideParentCategory"

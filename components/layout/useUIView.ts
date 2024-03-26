@@ -12,9 +12,6 @@ const ui = ref({
 
 export default function useUIView() {
   async function setUI({ name, value }) {
-    if (!ui.value[name])
-      return
-
     ui.value[name] = value
     await localforage.setItem('finapp.ui', deepUnref(ui.value))
   }

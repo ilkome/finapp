@@ -14,6 +14,10 @@ const props = defineProps<{
   }
 }>()
 
+const emit = defineEmits<{
+  click: []
+}>()
+
 const currenciesStore = useCurrenciesStore()
 
 const classes = computed(() => ({
@@ -22,7 +26,10 @@ const classes = computed(() => ({
 </script>
 
 <template>
-  <div :class="classes">
+  <div
+    :class="classes"
+    @click="emit('click')"
+  >
     <UiTitle2>{{ $t(`money.${item.moneyTypeSlugSum}`) }}</UiTitle2>
 
     <div

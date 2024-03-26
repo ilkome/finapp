@@ -1,16 +1,13 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
 import type { CategoryId } from '~/components/categories/types'
-import type {
-  PeriodNameWithAll,
-  PeriodNameWithoutAll,
-} from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
 
-export function useFilter() {
+export const useFilterStore = defineStore('filter', () => {
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
   const chartStore = useChartStore()
@@ -36,15 +33,7 @@ export function useFilter() {
    * Period
    */
   const periodNameWithAll = ref<PeriodNameWithAll>('month')
-
-  const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() =>
-    periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value,
-  )
-
-  const nameWithAll = ref<PeriodNameWithAll>('month')
-  const nameWithoutAll = computed<PeriodNameWithoutAll>(() =>
-    periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value,
-  )
+  const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() => periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value)
 
   function setPeriodAndDate(periodName: PeriodNameWithAll) {
     if (periodName !== 'all') {
@@ -54,8 +43,8 @@ export function useFilter() {
       else {
         const savedDate = chartStore.periods[periodName].date
         savedDate
-          ? (date.value = savedDate)
-          : (date.value = dayjs().startOf(periodName).valueOf())
+          ? date.value = savedDate
+          : date.value = dayjs().startOf(periodName).valueOf()
       }
     }
 
@@ -70,20 +59,22 @@ export function useFilter() {
     scrollTop()
   }
 
-  function setNextPeriodDate(firstCreatedTrnDate: number) {
+  function setNextPeriodDate() {
     if (periodNameWithAll.value === 'all')
       return
 
-    const nextDate = dayjs(date.value)
-      .subtract(1, periodNameWithAll.value)
-      .startOf(periodNameWithAll.value)
-      .valueOf()
-    if (
-      nextDate
-      >= dayjs(firstCreatedTrnDate).startOf(periodNameWithAll.value).valueOf()
-    ) {
-      date.value = nextDate
-      localforage.setItem('finapp.filter.date', nextDate)
+    if (trnsStore.hasTrns) {
+      const trns = trnsStore.items
+      const firstCreatedTrn = trns[trnsStore.firstCreatedTrnIdFromSelectedTrns]
+      if (!firstCreatedTrn)
+        return
+
+      const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(periodNameWithAll.value).valueOf()
+      const nextDate = dayjs(date.value).subtract(1, periodNameWithAll.value).startOf(periodNameWithAll.value).valueOf()
+      if (nextDate > firstCreatedTrnDate) {
+        date.value = nextDate
+        localforage.setItem('finapp.filter.date', nextDate)
+      }
     }
   }
 
@@ -92,10 +83,7 @@ export function useFilter() {
       if (periodNameWithAll.value === 'all')
         return
 
-      const nextDate = dayjs(date.value)
-        .add(1, periodNameWithAll.value)
-        .startOf(periodNameWithAll.value)
-        .valueOf()
+      const nextDate = dayjs(date.value).add(1, periodNameWithAll.value).startOf(periodNameWithAll.value).valueOf()
       if (nextDate <= dayjs().valueOf()) {
         date.value = nextDate
         localforage.setItem('finapp.filter.date', nextDate)
@@ -135,9 +123,7 @@ export function useFilter() {
    * Categories
    */
   const catsIds = ref<CategoryId[]>([])
-  const transactibleCatsIds = computed(() =>
-    categoriesStore.getTransactibleIds(catsIds.value),
-  )
+  const transactibleCatsIds = computed(() => categoriesStore.getTransactibleIds(catsIds.value))
 
   function setCategoryId(categoryId: CategoryId) {
     if (catsIds.value.includes(categoryId))
@@ -179,9 +165,7 @@ export function useFilter() {
       page.scrollTop = 0
   }
 
-  const isShow = computed(
-    () => catsIds.value.length > 0 || walletsIds.value.length > 0,
-  )
+  const isShow = computed(() => catsIds.value.length > 0 || walletsIds.value.length > 0)
 
   return {
     // Date
@@ -202,8 +186,6 @@ export function useFilter() {
     removeCategoryId,
     toggleCategoryId,
 
-    nameWithAll,
-    nameWithoutAll,
     periodNameWithAll,
     periodNameWithoutAll,
     setPeriodAndDate,
@@ -214,4 +196,4 @@ export function useFilter() {
     // Computed
     isShow,
   }
-}
+})

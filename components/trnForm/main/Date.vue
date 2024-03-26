@@ -3,8 +3,10 @@ import dayjs from 'dayjs'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { formatDate } from '~/utils/formatDate'
 import { getStyles } from '~/components/ui/classes'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 
 const $trnForm = useTrnFormStore()
+const filterStore = useFilterStore()
 
 const formattedDate = computed(() => {
   const date = formatDate($trnForm.values.date, 'full')
@@ -15,14 +17,22 @@ const isToday = computed(() => {
   return dayjs().isSame($trnForm.values.date, 'day')
 })
 
-function changeDate(way: 'prev' | 'next') {
-  if (way === 'prev') {
-    $trnForm.values.date = dayjs($trnForm.values.date)
-      .subtract(1, 'day')
-      .valueOf()
-  }
+function changeDate(way: 'prev' | 'next' | 'today') {
+  let newDate: number = dayjs().valueOf()
+
+  if (way === 'prev')
+    newDate = dayjs($trnForm.values.date).subtract(1, 'day').valueOf()
+
   if (way === 'next' && !isToday.value)
-    $trnForm.values.date = dayjs($trnForm.values.date).add(1, 'day').valueOf()
+    newDate = dayjs($trnForm.values.date).add(1, 'day').valueOf()
+
+  if (way === 'today')
+    newDate = dayjs().valueOf()
+
+  $trnForm.values.date = newDate
+
+  if (filterStore.periodNameWithoutAll === 'day')
+    filterStore.date = newDate
 }
 </script>
 
@@ -32,22 +42,25 @@ function changeDate(way: 'prev' | 'next') {
       <div
         :class="getStyles('item', ['link', 'rounded'])"
         class="px-1 text-2xl"
-        @click="changeDate('prev')"
+        @click="changeDate('next')"
       >
         <i class="mdi mdi-chevron-left" />
       </div>
       <div
-        :class="[...getStyles('item', ['link', 'rounded']), { '!cursor-default opacity-30': isToday }]"
+        :class="[
+          ...getStyles('item', ['link', 'rounded']),
+          { '!cursor-default opacity-30': isToday },
+        ]"
         class="px-1 text-2xl"
-        @click="changeDate('next')"
+        @click="changeDate('prev')"
       >
         <i class="mdi mdi-chevron-right" />
       </div>
       <div
         v-if="!isToday"
         :class="getStyles('item', ['link', 'rounded'])"
-        class="py-3 px-2"
-        @click="() => ($trnForm.values.date = dayjs().valueOf())"
+        class="px-2 py-3"
+        @click="changeDate('today')"
       >
         <UiIconReturn class="size-4" />
       </div>

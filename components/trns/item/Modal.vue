@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useAppNav } from '~/components/app/useAppNav'
 import useTrn from '~/components/trns/item/useTrn'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -10,7 +10,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import '~/components/modal/styles/modalLinks.styl'
 
 const { trnFormEdit, trnFormDuplicate } = useTrnForm()
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 const { activeTabStat } = storeToRefs(useAppNav())
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
@@ -37,7 +37,6 @@ const wallet = computed(
 
 function handleSetFilterCategory() {
   filterStore.setCategoryId(trnsStore.items[trnId.value].categoryId)
-  filterStore.setDateNow()
   trnsStore.hideTrnModal()
   trnsStore.setTrnModalId(null)
   activeTabStat.value = 'summary'
@@ -47,7 +46,6 @@ function handleSetFilterWallet() {
   filterStore.setWalletId(trnsStore.items[trnId.value].walletId)
   trnsStore.hideTrnModal()
   trnsStore.setTrnModalId(null)
-  filterStore.setDateNow()
   activeTabStat.value = 'summary'
 }
 

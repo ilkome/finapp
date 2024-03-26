@@ -10,10 +10,9 @@ div
   CategoriesSelector(
     :isShow="$trnForm.ui.catsRootModal"
     @onClose="$trnForm.ui.catsRootModal = false"
-    @onSelected="id => $trnForm.values.categoryId = id"
+    @onSelected="categoryId => $trnForm.values.categoryId = categoryId"
   )
 
-  LazyTrnFormModalCalendar(v-if="$trnForm.modal.calendar")
   LazyTrnFormModalDescription(v-if="$trnForm.modal.description")
 
   //- Transaction

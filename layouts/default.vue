@@ -56,7 +56,7 @@ watch(
 
       <div
         class="flex-end group absolute bottom-6 right-6 z-10 hidden cursor-pointer justify-center lg_flex"
-        @click="trnFormCreate"
+        @click="() => trnFormCreate()"
       >
         <div
           class="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--c-blue-1)] text-3xl text-[var(--c-font-1)] transition group-hover_scale-125"

@@ -3,7 +3,7 @@ import localforage from 'localforage'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUser'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -12,7 +12,7 @@ import useUIView from '~/components/layout/useUIView'
 
 export function useInitApp() {
   const { setUI } = useUIView()
-  const filterStore = useFilter()
+  const filterStore = useFilterStore()
   const userStore = useUserStore()
   const currenciesStore = useCurrenciesStore()
   const walletsStore = useWalletsStore()

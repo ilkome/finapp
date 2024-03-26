@@ -4,7 +4,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 
 const props = defineProps<{
   categories: any
@@ -14,7 +14,7 @@ const props = defineProps<{
 
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 const { width } = useWindowSize()
 
 const roundRef = ref(null)
@@ -48,7 +48,7 @@ watch([width, () => props.categories], () => updateWidth(), { immediate: true })
     ref="roundRef"
     class="_rounded-lg _bg-item-4 _border-t _border-b border-item-6"
   >
-    <div class="items grid" :data-type-text="`${moneyTypeSlug}`">
+    <div class="flex flex-1 flex-wrap gap-2" :_data-type-text="`${moneyTypeSlug}`">
       <LazyStatGroupRoundItem
         v-for="item in categories"
         :key="item.id"

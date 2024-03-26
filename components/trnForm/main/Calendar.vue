@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-import { DatePicker } from 'v-calendar'
 import 'v-calendar/style.css'
 import '~/components/modal/styles/modalLinks.styl'
+import dayjs from 'dayjs'
+import { DatePicker } from 'v-calendar'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
@@ -11,14 +12,19 @@ const props = defineProps<{
 
 const colorMode = useColorMode()
 const $trnForm = useTrnFormStore()
+const filterStore = useFilterStore()
 
 const isDark = computed(() => colorMode.preference === 'dark' || colorMode.preference === 'system')
 const date = ref(dayjs($trnForm.values.date).toString())
 const maxDate = new Date()
 
 watch(date, (value) => {
+  const newDate = dayjs(value).valueOf()
   $trnForm.values.date = dayjs(value).valueOf()
   props.hide()
+
+  if (filterStore.periodNameWithoutAll === 'day')
+    filterStore.setDate(newDate)
 })
 </script>
 

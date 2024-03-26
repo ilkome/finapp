@@ -15,46 +15,40 @@ import VChart from 'vue-echarts'
 import { config, lineConfig } from '~/components/stat/chart/config'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
-import type { TrnId } from '~/components/trns/types'
-import type { PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
+import type { PeriodProvider } from '~/components/dashboard/Page.vue'
 
 const props = withDefaults(
   defineProps<{
-    trnsIds: TrnId[]
     chartType?: 'bar' | 'line'
+    isShowIncome?: boolean
+    isShowExpense?: boolean
   }>(),
   {
     chartType: 'line',
-    trnsIds: () => [],
+    isShowIncome: true,
+    isShowExpense: true,
   },
 )
 
-const periodNameWithoutAll = inject('periodNameWithoutAll') as ComputedRef<PeriodNameWithoutAll>
-const date = inject('date') as ComputedRef<number>
-const setDate = inject('setDate') as (date: number) => void
-const statData = inject('statData') as ComputedRef<unknown>
-
-use([
-  BarChart,
-  GridComponent,
-  LineChart,
-  SVGRenderer,
-  MarkAreaComponent,
-  MarkLineComponent,
-  MarkPointComponent,
-  TooltipComponent,
-])
+const period = inject('period') as PeriodProvider
+const statData = inject('statData') as ComputedRef<{
+  categories: any[]
+  series: any[]
+}>
 
 const chartStore = useChartStore()
-
 const chartRef = ref()
 
+const chartType = computed(
+  () => chartStore.periods[period.nameWithoutAll.value].type,
+)
+
 const markedArea = computed(() =>
-  statData.value.categories.find(i => +i === +date.value),
+  statData.value.categories.find((i: number) => +i === +period.date.value),
 )
 
 function getFormat() {
-  switch (periodNameWithoutAll.value) {
+  switch (period.nameWithoutAll.value) {
     case 'day':
       return 'D.MM'
     case 'week':
@@ -82,7 +76,7 @@ function getChartData() {
   }
 
   // INFO: Marked area works only with bar chart
-  if (props.chartType !== 'bar') {
+  if (chartType.value !== 'bar') {
     data.series.push({
       data: [],
       type: 'bar',
@@ -101,26 +95,56 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
     params.offsetX,
     params.offsetY,
   ])
-  setDate(statData.value.categories[index])
+  period.setDate(statData.value.categories[index])
 }
 
 function setChartSeries(series: unknown[]) {
-  return series.map((item: any) => ({
-    ...defu(lineConfig, item),
-    type: props.chartType,
-    label: {
-      ...lineConfig.label,
-      show: chartStore.isShowDataLabels,
-    },
-  }))
+  return series
+    .filter(
+      (v, index) =>
+        (index === 0 && props.isShowExpense)
+        || (index === 1 && props.isShowIncome),
+    )
+    .map((item: any) => ({
+      ...defu(lineConfig, item),
+      type: chartType.value,
+      label: {
+        ...lineConfig.label,
+        show: chartStore.ui.isShowDataLabels,
+      },
+    }))
 }
+
+use([
+  BarChart,
+  GridComponent,
+  LineChart,
+  SVGRenderer,
+  MarkAreaComponent,
+  MarkLineComponent,
+  MarkPointComponent,
+  TooltipComponent,
+])
 </script>
 
 <template>
-  <VChart
-    ref="chartRef"
-    :option="getChartData()"
-    autoresize
-    @zr:click="onClickChart"
-  />
+  <div class="_rounded-lg _bg-item-4 relative">
+    <!-- <pre>{{ statData.series }}</pre> -->
+    <!-- <pre @click="period.setNextPeriodDate()">{{ period }}</pre>
+    <pre @click="period.setPrevPeriodDate()">{{ period }}</pre> -->
+    <div class="bg-surface-4 h-48">
+      <VChart
+        ref="chartRef"
+        :option="getChartData()"
+        autoresize
+        @zr:click="onClickChart"
+      />
+    </div>
+    <div
+      class="_bg-item-4 _border-b _border-item-7 justify-between px-2 pb-1 sm_flex sm_border-transparent sm_bg-transparent sm_pb-0"
+    >
+      <StatChartPeriods class="flex-center" />
+      <!-- <StatChartOptions /> -->
+    </div>
+  </div>
 </template>

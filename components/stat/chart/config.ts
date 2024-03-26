@@ -27,8 +27,8 @@ export const config = {
     formatter(props: any[]) {
       return `
         <div class="grid gap-2">
-          <div>${getLocalAmount(props[0].value)}</div>
-          <div>${getLocalAmount(props[1].value)}</div>
+          <div>${props[0] && getLocalAmount(props[0].value)}</div>
+          <div>${props[1] && getLocalAmount(props[1].value)}</div>
         </div>
       `
     },
@@ -51,7 +51,7 @@ export const config = {
     axisPointer: {
       snap: true,
       label: {
-        formatter: props => getLocalAmount(props.value),
+        formatter: props => getLocalAmount(props?.value),
       },
     },
     position: 'left',

@@ -4,7 +4,7 @@ import localforage from 'localforage'
 import { getOldestTrnDate, removeTrnToAddLaterLocal, removeTrnToDeleteLaterLocal, saveTrnIDforDeleteWhenClientOnline, saveTrnToAddLaterLocal } from '~/components/trns/helpers'
 
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import type { TrnId, TrnItem, Trns, TrnsGetterProps } from '~/components/trns/types'
 import type { CategoryId } from '~/components/categories/types'
@@ -21,7 +21,7 @@ import {
 export const useTrnsStore = defineStore('trns', () => {
   const userStore = useUserStore()
   const categoriesStore = useCategoriesStore()
-  const filterStore = useFilter()
+  const filterStore = useFilterStore()
 
   const items = ref<Trns>({})
 

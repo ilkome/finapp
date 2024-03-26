@@ -5,7 +5,7 @@ import useAmount from '~/components/amount/useAmount'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import type { TrnId } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['onClickEdit'])
 const { activeTabStat } = storeToRefs(useAppNav())
 const { getTotalOfTrnsIds } = useAmount()
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 const { trnFormEdit } = useTrnForm()
 const currenciesStore = useCurrenciesStore()
 const categoriesStore = useCategoriesStore()
@@ -109,7 +109,10 @@ function actions(trnItem) {
 </script>
 
 <template lang="pug">
-div(v-if="trnsIds && trnsIds.length > 0")
+.grid(
+  v-if="trnsIds && trnsIds.length > 0"
+  :class="{ 'gap-2': uiHistory }"
+)
   .pb-2(v-if="isShowFilter && isTrnsWithDescription")
     UiCheckbox(
       :checkboxValue="isShowTrnsWithDesc"
@@ -118,51 +121,48 @@ div(v-if="trnsIds && trnsIds.length > 0")
       @onClick="toggleTrnsWithDesc"
     )
 
-  .grid(
-    :class="{ 'gap-2': uiHistory }"
+  div(
+    v-for="(trnsIds, date) in groupedTrns"
+    :key="date"
   )
-    .overflow-hidden.bg-item-4.rounded-md(
-      v-for="(trnsIds, date) in groupedTrns"
-      :key="date"
+    .flex.items-center.pt-4.pb-2.px-3(
+      v-if="isShowGroupDate"
+      @click="isFilterByDay ? filterStore.setDayDate(date) : null"
     )
-      .flex.items-center.pt-4.pb-2.px-3(
-        v-if="isShowGroupDate"
-        @click="isFilterByDay ? filterStore.setDayDate(date) : null"
+      DateTrnsDay(:date="+date").grow
+
+      .flex.items-center.gap-2.text-sm(v-if="isShowGroupSum")
+        Amount(
+          v-if="getTotalOfTrnsIds(trnsIds).incomeTransactions !== 0"
+          :amount="getTotalOfTrnsIds(trnsIds).incomeTransactions"
+          :currencyCode="currenciesStore.base"
+          :isShowBaseRate="false"
+          :type="1"
+          colorize="income"
+        )
+        Amount(
+          v-if="getTotalOfTrnsIds(trnsIds).expenseTransactions !== 0"
+          :amount="getTotalOfTrnsIds(trnsIds).expenseTransactions"
+          :currencyCode="currenciesStore.base"
+          :isShowBaseRate="false"
+          :type="0"
+        )
+
+    div
+      TrnsItemBase(
+        v-if="uiHistory"
+        v-for="trnId in trnsIds"
+        :key="trnId"
+        :trnId="trnId"
+        @onClickEdit="$emit('onClickEdit')"
       )
-        DateTrnsDay(:date="+date").grow
-
-        .flex.items-center.gap-2.text-sm(v-if="isShowGroupSum")
-          Amount(
-            v-if="getTotalOfTrnsIds(trnsIds).incomeTransactions !== 0"
-            :amount="getTotalOfTrnsIds(trnsIds).incomeTransactions"
-            :currencyCode="currenciesStore.base"
-            :isShowBaseRate="false"
-            :type="1"
-            colorize="income"
-          )
-          Amount(
-            v-if="getTotalOfTrnsIds(trnsIds).expenseTransactions !== 0"
-            :amount="getTotalOfTrnsIds(trnsIds).expenseTransactions"
-            :currencyCode="currenciesStore.base"
-            :isShowBaseRate="false"
-            :type="0"
-          )
-
-      .rounded-lg
-        TrnsItemBase(
-          v-if="uiHistory"
-          v-for="trnId in trnsIds"
-          :key="trnId"
-          :trnId="trnId"
-          @onClickEdit="$emit('onClickEdit')"
-        )
-        TrnsItemWithoutCat(
-          v-if="uiCat"
-          v-for="trnId in trnsIds"
-          :actions="actions"
-          :key="trnId"
-          :trnId="trnId"
-        )
+      TrnsItemWithoutCat(
+        v-if="uiCat"
+        v-for="trnId in trnsIds"
+        :actions="actions"
+        :key="trnId"
+        :trnId="trnId"
+      )
 
   .py-4.pb-6.px-2(v-if="!isShowedAllTrns")
     .grow.px-5.flex-center.rounded-lg.text-sm.bg-item-5.hocus_bg-item-6.text-secondary(

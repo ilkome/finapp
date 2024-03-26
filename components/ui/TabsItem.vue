@@ -9,7 +9,7 @@ const emit = defineEmits(['click'])
 <template>
   <div
     :class="{
-      '!bg-item-3 !text-accent-1 !cursor-default': isActive,
+      '!bg-item-3 !text-primary !cursor-default': isActive,
     }"
     class="
       cursor-pointer select-none

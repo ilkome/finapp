@@ -3,8 +3,8 @@ import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import type { PeriodProvider } from '~/components/dashboard/Page.vue'
 
 const props = defineProps<{
   biggest: number
@@ -15,10 +15,11 @@ const props = defineProps<{
   categoryId: CategoryId
 }>()
 
+const period = inject('period') as PeriodProvider
+
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
-const { setCategoryId } = useFilter()
 const currenciesStore = useCurrenciesStore()
 const isShowInside = ref(false)
 
@@ -52,15 +53,15 @@ function getWidthPercent(value: number, biggest: number): string {
 </script>
 
 <template>
-  <div class="rounded-lg bg-item-4" @click="toggleShowInside">
+  <div class="rounded-lg _bg-item-4" @click="toggleShowInside">
     <div
-      class="group flex items-center justify-between space-x-3 rounded-md px-2 py-2 hocus_bg-item-5"
+      class="group flex items-center justify-between space-x-3 rounded-md px-1 py-1 hocus_bg-item-5"
     >
       <Icon2
         :categoryId="categoryId"
         :color="category.color"
         :icon="category.icon"
-        @click="setCategoryId"
+        @click="period.setCategoryId(categoryId)"
       />
 
       <div class="grow">
@@ -83,7 +84,6 @@ function getWidthPercent(value: number, biggest: number): string {
             :currencyCode="currenciesStore.base"
             :type="moneyTypeNumber"
             :isShowBaseRate="false"
-            @click.stop="console.log('click')"
           />
         </div>
 
@@ -96,7 +96,7 @@ function getWidthPercent(value: number, biggest: number): string {
     <!-- Inside -->
     <div
       v-if="isShowInside"
-      class="scrollbar max-h-[40vh] overflow-hidden overflow-y-auto rounded-xl bg-item-4 pb-1 pl-12 pr-1"
+      class="scrollbar max-h-[40vh] overflow-hidden overflow-y-auto _bg-item-4 pb-1 ml-10 pr-1"
       @click.stop=""
     >
       <TrnsList :trnsIds="trnsIds" :isShowGroupDate="false" uiCat />

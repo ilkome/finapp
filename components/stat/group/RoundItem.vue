@@ -3,7 +3,7 @@ import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { MoneyTypeNumber } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
@@ -14,7 +14,7 @@ const props = defineProps<{
   moneyTypeNumber: MoneyTypeNumber
 }>()
 
-const { toggleCategoryId } = useFilter()
+const { toggleCategoryId } = useFilterStore()
 const categoriesStore = useCategoriesStore()
 const { trnFormCreate } = useTrnForm()
 
@@ -29,7 +29,7 @@ const isCategoryHasChildren = computed(() =>
     class="statItemRound flex-center group hocus_bg-item-5 p-2 rounded-lg"
     :class="{ _prevStat: total === 0 }"
     data-long-press-delay="300"
-    @click="trnFormCreate(categoryId)"
+    @click="() => trnFormCreate({ categoryId })"
   >
     <Icon2
       :categoryId="categoryId"

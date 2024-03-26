@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 
 const props = defineProps<{
   // TODO: export type
   activeItemId?: string | 0 | false | null
   category: CategoryItem
-  id: CategoryId
+  categoryId: CategoryId
   isHideParentCategory?: boolean
   slider: any
 }>()
@@ -17,11 +17,11 @@ const emit = defineEmits<{
   (e: 'onClickIcon', id: CategoryId): void
 }>()
 
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 const categoriesStore = useCategoriesStore()
 
 const childCategoriesIds = computed(() =>
-  categoriesStore.getChildCategoriesIds(props.id),
+  categoriesStore.getChildCategoriesIds(props.categoryId),
 )
 
 const parentCategory = computed(
@@ -31,27 +31,33 @@ const parentCategory = computed(
 function onClickIcon() {
   // Prevent filter when using in TrnForm
   if (props.slider)
-    emit('click', props.id)
+    emit('click', props.categoryId)
 
-  emit('onClickIcon', props.id)
-  filterStore.setCategoryId(props.id)
+  emit('onClickIcon', props.categoryId)
+  filterStore.setCategoryId(props.categoryId)
 }
 </script>
 
 <template>
   <div
     v-if="category"
-    class="flex cursor-pointer items-center gap-x-3 rounded-md bg-item-4 px-2 py-2 hocus_bg-item-5"
-    :class="{ '!cursor-default !bg-item-3': activeItemId === id }"
-    @click="emit('click', id)"
+    class="flex cursor-pointer items-center gap-x-3 rounded-md bg-item-4 px-1 py-1 hocus_bg-item-5"
+    :class="{ '!cursor-default !bg-item-3': activeItemId === categoryId }"
+    @click="emit('click', categoryId)"
   >
-    <div
+    <Icon2
+      :categoryId
+      :color="category.color"
+      :icon="category.icon"
+      @click.stop="onClickIcon"
+    />
+    <!-- <div
       class="flex h-8 w-8 items-center justify-center rounded-full text-xl leading-none text-neutral-50"
       :style="{ background: category.color }"
       @click.stop="onClickIcon"
     >
       <div :class="category.icon" />
-    </div>
+    </div> -->
 
     <div class="grow truncate">
       <div

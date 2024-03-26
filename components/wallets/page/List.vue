@@ -2,7 +2,7 @@
 import useWallets from '~/components/wallets/useWallets'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 
 const { $i18n } = useNuxtApp()
 const { t } = useI18n()
@@ -12,7 +12,7 @@ useSeoMeta({
 
 const currenciesStore = useCurrenciesStore()
 const { openModal, isModalOpen } = useAppNav()
-const { setWalletId } = useFilter()
+const { setWalletId } = useFilterStore()
 const { walletsCurrencies, walletsItemsSorted } = useWallets()
 
 const state = ref({
@@ -90,11 +90,11 @@ const walletsCurrenciesTabs = reactive({
       </div>
 
       <!-- List -->
-      <div class="grid gap-x-6 gap-y-1 pb-12 md_grid-cols-2">
+      <div class="grid gap-x-6 gap-y-1 pb-12 sm_grid-cols-2 max-w-fit">
         <div
           v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
           :key="walletId"
-          class="flex items-center rounded-md bg-item-4 px-3 py-2 text-secondary2 hocus_bg-item-5"
+          class="flex items-center rounded-md bg-item-4 px-2 py-1 text-secondary2 hocus_bg-item-5"
           @click="$router.push(`/wallets/${walletId}`)"
         >
           <div class="flex grow items-center gap-x-3">
@@ -144,3 +144,4 @@ ru:
   list: Список
   currenciesBase: Основная валюта
 </i18n>
+~/components/filter/useFilterStore

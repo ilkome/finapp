@@ -18,7 +18,7 @@ const categoriesStore = useCategoriesStore()
       {{ t("intro") }}
     </UiTitle>
 
-    <UiButtonBlue maxWidth @click="trnFormCreate">
+    <UiButtonBlue maxWidth @click="() => trnFormCreate()">
       {{ t("create") }}
     </UiButtonBlue>
   </div>

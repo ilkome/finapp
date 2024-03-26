@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
 const { $i18n } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 const walletsStore = useWalletsStore()
 
 const walletId = computed(() => route.params.id as WalletId)
@@ -86,7 +86,7 @@ useHead({
 
     <!-- Stat -->
     <div class="px-2">
-      <StatChartStat :walletsIds="[walletId]" />
+      <!-- <StatChartStat :walletsIds="[walletId]" /> -->
     </div>
   </UiPage>
 </template>
@@ -98,3 +98,4 @@ en:
 ru:
   statBy: Статистика
 </i18n>
+~/components/filter/useFilterStore

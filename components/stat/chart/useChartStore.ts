@@ -2,8 +2,7 @@ import dayjs from 'dayjs'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import { z } from 'zod'
-import { useFilter } from '~/components/filter/useFilter'
-import type { MoneyTypeSlugSum } from '~/components/stat/types'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 
 const periodSchema = z.object({
   type: z.enum(['line', 'bar']),
@@ -25,8 +24,6 @@ export type PeriodNameWithAll = PeriodNameWithoutAll | 'all'
 
 export const useChartStore = defineStore('chart', () => {
   const { $i18n } = useNuxtApp()
-
-  const isShowDataLabels = ref(false)
 
   const periods = ref<Periods>({
     day: {
@@ -73,14 +70,7 @@ export const useChartStore = defineStore('chart', () => {
     name: $i18n.t('dates.year.simple'),
   }])
 
-  const filterStore = useFilter()
-
-  function showDataLabels() {
-    isShowDataLabels.value = true
-  }
-  function hideDataLabels() {
-    isShowDataLabels.value = false
-  }
+  const filterStore = useFilterStore()
 
   function addPeriod() {
     periods.value[filterStore.periodNameWithoutAll].showedPeriods = periods.value[filterStore.periodNameWithoutAll].showedPeriods + 1
@@ -94,12 +84,14 @@ export const useChartStore = defineStore('chart', () => {
     periods.value[filterStore.periodNameWithoutAll].showedPeriods = number
   }
 
-  function setActivePeriod() {
-
-  }
-
   function setDate(date: number) {
     periods.value[filterStore.periodNameWithoutAll].date = date
+  }
+
+  function toggleChartType() {
+    periods.value[filterStore.periodNameWithoutAll].type = periods.value[filterStore.periodNameWithoutAll].type === 'line'
+      ? 'bar'
+      : 'line'
   }
 
   async function initChart() {
@@ -133,25 +125,22 @@ export const useChartStore = defineStore('chart', () => {
     localforage.setItem('finapp.chart.periods', deepUnref(newPeriods))
   }, { immediate: true, deep: true })
 
-  const chart = ref({
+  const ui = ref({
     income: true,
     expense: true,
     sum: false,
+    isShowDataLabels: false,
   })
 
-  function toggleChartVisibility(type: MoneyTypeSlugSum): void {
-    chart.value[type] = !chart.value[type]
+  function setUi(key, value) {
+    ui.value[key] = value
   }
 
-  function toggleChartType() {
-    periods.value[filterStore.periodNameWithoutAll].type = periods.value[filterStore.periodNameWithoutAll].type === 'line'
-      ? 'bar'
-      : 'line'
+  function toggleUi(key) {
+    ui.value[key] = !ui.value[key]
   }
 
   return {
-    isShowDataLabels,
-
     initChart,
     setPeriodValues,
 
@@ -160,15 +149,13 @@ export const useChartStore = defineStore('chart', () => {
     setPeriod,
 
     setDate,
-    setActivePeriod,
 
     periods,
     periodsNames,
-    showDataLabels,
-    hideDataLabels,
 
-    chart,
+    ui,
+    setUi,
+    toggleUi,
     toggleChartType,
-    toggleChartVisibility,
   }
 })

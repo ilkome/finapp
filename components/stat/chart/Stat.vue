@@ -3,10 +3,10 @@ import dayjs from 'dayjs'
 import { moneyTypes } from '~/components/stat/types'
 import type { MoneyTypeNumber, MoneyTypeSlug, MoneyTypeSlugSum } from '~/components/stat/types'
 import type { CategoryId } from '~/components/categories/types'
-import type { PeriodNameWithoutAll, PeriodNameWithAll } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { getTotal } from '~/components/amount/getTotal'
 import type { TotalReturns } from '~/components/amount/getTotal'
@@ -24,7 +24,7 @@ const props = defineProps<{
 const categoriesStore = useCategoriesStore()
 const chartStore = useChartStore()
 const currenciesStore = useCurrenciesStore()
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 

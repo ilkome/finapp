@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import type { TrnId, TrnType } from '~/components/trns/types'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useAppNav } from '~/components/app/useAppNav'
 
 const props = withDefaults(
   defineProps<{
-    trnsIds: TrnId[] | false
+    trnsIds: TrnId[]
     trnsClassNames?: string
     defaultFilterTrnsPeriod?: string
     isFilterByDay?: boolean
     isShowGroupSum?: boolean
+    isAutoTypes?: boolean
   }>(),
   {
     trnsClassNames: 'grid md_grid-cols-2 md_gap-x-20',
@@ -17,14 +19,25 @@ const props = withDefaults(
 )
 const emit = defineEmits(['onClickEdit'])
 
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 const trnsStore = useTrnsStore()
+const appNavStore = useAppNav()
 
 const filterTrnsType = ref<TrnType | null>(null)
 const filterTrnsPeriod = ref(props.defaultFilterTrnsPeriod)
 
 // Return to filter 'period', when global filter params changed
 watch(() => filterStore.isShow, () => (filterTrnsPeriod.value = 'period'))
+watch(() => appNavStore.activeTabStat, () => {
+  if (props.isAutoTypes) {
+    filterTrnsType.value
+      = appNavStore.activeTabStat === 'income'
+        ? 1
+        : appNavStore.activeTabStat === 'expense'
+          ? 0
+          : null
+  }
+})
 
 const filteredTrnsIds = computed(() => {
   const trnsIds
@@ -60,14 +73,11 @@ function onClickEdit(props) {
         class="flex items-center justify-between gap-2 !pb-3 pb-2"
       >
         <!-- Title -->
-        <UiTitle>
-          <div class="flex gap-2">
-            {{ $t("trns.inPeriodTitle") }}:
-          </div>
-          <div>{{ trnsCount }}</div>
+        <UiTitle class="">
+          {{ $t("trns.inPeriodTitle") }}: {{ trnsCount }}
         </UiTitle>
 
-        <div v-if="defaultFilterTrnsPeriod" class="div">
+        <div v-if="defaultFilterTrnsPeriod">
           <UiTabs2>
             <UiTabsItem2
               :isActive="filterTrnsPeriod === 'period'"
@@ -87,32 +97,32 @@ function onClickEdit(props) {
 
       <!-- Type Selector -->
       <div v-if="trnsIds.length > 0" class="pb-2">
-        <UiTabs>
-          <UiTabsItem
+        <UiTabs2>
+          <UiTabsItem2
             :isActive="filterTrnsType === null"
             @click="setFilterTrnsType(null)"
           >
             {{ $t("common.all") }}
-          </UiTabsItem>
-          <UiTabsItem
+          </UiTabsItem2>
+          <UiTabsItem2
             :isActive="filterTrnsType === 0"
             @click="setFilterTrnsType(0)"
           >
             {{ $t("money.expense") }}
-          </UiTabsItem>
-          <UiTabsItem
+          </UiTabsItem2>
+          <UiTabsItem2
             :isActive="filterTrnsType === 1"
             @click="setFilterTrnsType(1)"
           >
             {{ $t("money.income") }}
-          </UiTabsItem>
-          <UiTabsItem
+          </UiTabsItem2>
+          <UiTabsItem2
             :isActive="filterTrnsType === 2"
             @click="setFilterTrnsType(2)"
           >
             {{ $t("transfer.titleMoney") }}
-          </UiTabsItem>
-        </UiTabs>
+          </UiTabsItem2>
+        </UiTabs2>
       </div>
     </div>
 

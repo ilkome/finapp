@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 
 const props = defineProps<{
   biggest: number
@@ -12,7 +12,7 @@ const props = defineProps<{
   categoryId: CategoryId
 }>()
 
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 
 const styles = computed(() => ({
   height: `${Math.abs(props.total) / Math.abs(props.biggest) * 100}%`,

@@ -16,6 +16,7 @@ const sliderObj = ref()
 const sliderRef = ref()
 
 function onClick(categoryId: CategoryId) {
+  console.log(1, 'categoryId', categoryId)
   emit('click', categoryId)
 }
 

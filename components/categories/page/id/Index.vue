@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilterStore } from '~/components/filter/useFilterStore'
 import type { CategoryId } from '~/components/categories/types'
 
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-const filterStore = useFilter()
+const filterStore = useFilterStore()
 const categoriesStore = useCategoriesStore()
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
@@ -121,7 +121,7 @@ useHead({
 
     <!-- Stat -->
     <div class="px-2">
-      <StatChartStat :categoriesIds />
+      <!-- <StatChartStat :categoriesIds /> -->
     </div>
   </UiPage>
 </template>
@@ -133,3 +133,4 @@ en:
 ru:
   statBy: "Статистика: "
 </i18n>
+~/components/filter/useFilterStore
