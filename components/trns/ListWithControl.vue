@@ -62,6 +62,8 @@ function setFilterTrnsType(type: TrnType | null) {
 function onClickEdit(props) {
   emit('onClickEdit', props)
 }
+
+const isShown = ref(true)
 </script>
 
 <template>
@@ -73,7 +75,7 @@ function onClickEdit(props) {
         class="flex items-center justify-between gap-2 !pb-3 pb-2"
       >
         <!-- Title -->
-        <UiTitle class="">
+        <UiTitle @click="isShown = !isShown">
           {{ $t("trns.inPeriodTitle") }}: {{ trnsCount }}
         </UiTitle>
 
@@ -96,7 +98,7 @@ function onClickEdit(props) {
       </div>
 
       <!-- Type Selector -->
-      <div v-if="trnsIds.length > 0" class="pb-2">
+      <div v-if="trnsIds.length > 0" v-show="isShown" class="pb-2">
         <UiTabs2>
           <UiTabsItem2
             :isActive="filterTrnsType === null"
@@ -126,31 +128,33 @@ function onClickEdit(props) {
       </div>
     </div>
 
-    <div class="scroll scrollerBlock h-full h-full overflow-y-auto">
-      <!-- Nothing -->
-      <div v-if="trnsCount === 0" class="flex-center h-full pb-2">
-        <div class="py-3 text-center">
-          <div class="mdi mdi-palm-tree text-7xl" />
-          <div class="text-md">
-            {{ $t("trns.noTrns") }}
+    <template v-if="isShown">
+      <div class="scroll scrollerBlock h-full h-full overflow-y-auto">
+        <!-- Nothing -->
+        <div v-if="trnsCount === 0" class="flex-center h-full pb-2">
+          <div class="py-3 text-center">
+            <div class="mdi mdi-palm-tree text-7xl" />
+            <div class="text-md">
+              {{ $t("trns.noTrns") }}
+            </div>
+          </div>
+        </div>
+
+        <!-- List -->
+        <div v-else class="h-full pb-10">
+          <div :class="trnsClassNames">
+            <TrnsList
+              :isFilterByDay="isFilterByDay"
+              :isShowGroupSum="isShowGroupSum"
+              :size="50"
+              :trnsIds="filteredTrnsIds"
+              isShowFilter
+              uiHistory
+              @onClickEdit="onClickEdit"
+            />
           </div>
         </div>
       </div>
-
-      <!-- List -->
-      <div v-else class="h-full pb-10">
-        <div :class="trnsClassNames">
-          <TrnsList
-            :isFilterByDay="isFilterByDay"
-            :isShowGroupSum="isShowGroupSum"
-            :size="50"
-            :trnsIds="filteredTrnsIds"
-            isShowFilter
-            uiHistory
-            @onClickEdit="onClickEdit"
-          />
-        </div>
-      </div>
-    </div>
+    </template>
   </div>
 </template>

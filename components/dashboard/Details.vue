@@ -30,8 +30,11 @@ const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const filter = useFilter()
 
-console.log(111)
+const categoryId = useRoute().params.id as CategoryId
+
 async function initFilter() {
+  filter.setCategoryId(categoryId)
+
   filter.setPeriodAndDate(
     (await localforage.getItem('finapp.filter.period')) ?? 'month',
   )
@@ -384,7 +387,6 @@ const categoriesHey2 = computed(() =>
         <!-- <pre>
       {{ trnsItemsFiltered[ Object.keys(trnsItemsFiltered).at(-1)].date }}
       </pre> -->
-
         <div class="_mt-2 _mx-2 _mb-2 _bg-item-4 rounded-lg">
           <div
             v-if="isLargeScreen"

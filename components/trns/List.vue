@@ -109,7 +109,7 @@ function actions(trnItem) {
 </script>
 
 <template lang="pug">
-.grid(
+.grid.max-w-sm(
   v-if="trnsIds && trnsIds.length > 0"
   :class="{ 'gap-2': uiHistory }"
 )

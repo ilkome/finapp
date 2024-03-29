@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
 import { getStyles } from '~/components/ui/classes'
-import type { PeriodProvider } from '~/components/dashboard/Page.vue'
+import type { FiltersProvider, PeriodProvider } from '~/components/dashboard/Page.vue'
 
 const period = inject('period') as PeriodProvider
-const filters = inject('filters')
-const isToday = computed(() => dayjs().isSame(period.date.value, period.nameWithoutAll.value))
-const isLastPeriod = computed(() => dayjs(period.date.value).isSame(filters.avaDate.value, period.nameWithoutAll.value))
+const filters = inject('filters') as FiltersProvider
 </script>
 
 <template>
   <div class="flex">
     <div
-      :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30 !hocus_transparent': isToday }]"
+      :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30 !hocus_transparent': filters.isToday.value }]"
       class="w-8"
       @click="period.setPrevPeriodDate"
     >
@@ -20,7 +17,7 @@ const isLastPeriod = computed(() => dayjs(period.date.value).isSame(filters.avaD
     </div>
 
     <div
-      :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30 !hocus_transparent': isLastPeriod }]"
+      :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30 !hocus_transparent': filters.isLastPeriod.value }]"
       class="w-8"
       @click="period.setNextPeriodDate(filters.avaDate.value)"
     >
@@ -28,7 +25,7 @@ const isLastPeriod = computed(() => dayjs(period.date.value).isSame(filters.avaD
     </div>
 
     <div
-      v-if="!isToday"
+      v-if="!filters.isToday"
       :class="getStyles('item', ['link', 'rounded'])"
       class="flex-center w-8"
       @click="period.setPeriodAndDate(period.nameWithoutAll.value)"

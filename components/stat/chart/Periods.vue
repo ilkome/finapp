@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useChartStore } from '~/components/stat/chart/useChartStore'
-import type { PeriodProvider } from '~/components/dashboard/Page.vue'
+import type { FiltersProvider, PeriodProvider } from '~/components/dashboard/Page.vue'
 
 const period = inject('period') as PeriodProvider
-const filters = inject('filters')
+const filters = inject('filters') as FiltersProvider
 
 const chartStore = useChartStore()
 

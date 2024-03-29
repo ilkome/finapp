@@ -45,31 +45,29 @@ watch(
 
 <template>
   <div v-if="useUserStore()?.uid" class="layoutBase">
-    <div class="grid h-full lg_grid-cols-[auto_1fr]">
-      <div class="hidden h-full w-72 overflow-hidden lg_block">
-        <LayoutSidebar />
-      </div>
+    <div class="grid h-full lg_grid-cols-[auto_1fr_auto]">
+      <LayoutSidebar
+        class="hidden h-full w-64 overflow-hidden border-r border-item-6 lg_block h-full overflow-y-auto bg-foreground-5"
+      />
 
       <div class="grid h-full overflow-hidden">
         <NuxtPage />
       </div>
-
-      <div
-        class="flex-end group absolute bottom-6 right-6 z-10 hidden cursor-pointer justify-center lg_flex"
-        @click="() => trnFormCreate()"
-      >
-        <div
-          class="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--c-blue-1)] text-3xl text-[var(--c-font-1)] transition group-hover_scale-125"
-        >
-          <i class="mdi mdi-plus" />
-        </div>
-      </div>
-
-      <AppMenuBottom />
     </div>
 
-    <TrnFormWrap />
-    <TrnsItemModal />
-    <CurrenciesModal />
+    <AppMenuBottom />
+    <div
+      class="flex-end group absolute bottom-6 right-6 z-10 hidden justify-center lg_flex"
+      @click="() => trnFormCreate()"
+    >
+      <div
+        class="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--c-blue-1)] text-3xl text-[var(--c-font-1)] transition group-hover_scale-125"
+      >
+        <i class="mdi mdi-plus" />
+      </div>
+    </div>
   </div>
+
+  <TrnFormWrap />
+  <CurrenciesModal />
 </template>

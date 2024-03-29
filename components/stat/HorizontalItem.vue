@@ -4,7 +4,7 @@ import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { PeriodProvider } from '~/components/dashboard/Page.vue'
+import type { FiltersProvider } from '~/components/dashboard/Page.vue'
 
 const props = defineProps<{
   biggest: number
@@ -15,7 +15,7 @@ const props = defineProps<{
   categoryId: CategoryId
 }>()
 
-const period = inject('period') as PeriodProvider
+const filters = inject('filters') as FiltersProvider
 
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
@@ -36,16 +36,13 @@ function toggleShowInside() {
   isShowInside.value = !isShowInside.value
 }
 
-const trnsIds = computed(() => {
-  if (isCategoryHasChildren.value)
-    return []
-
-  return trnsStore.filteredTrnsIds.filter(
+const trnsIds = computed(() =>
+  filters.trnsIds.value.filter(
     id =>
       trnsStore.items[id].type === props.moneyTypeNumber
       && trnsStore.items[id].categoryId === props.categoryId,
-  )
-})
+  ),
+)
 
 function getWidthPercent(value: number, biggest: number): string {
   return `${(Math.abs(value) / Math.abs(biggest)) * 100}%`
@@ -53,7 +50,10 @@ function getWidthPercent(value: number, biggest: number): string {
 </script>
 
 <template>
-  <div class="rounded-lg _bg-item-4" @click="toggleShowInside">
+  <div
+    class="_bg-item-4 rounded-lg"
+    @click="$router.push(`/stat/${categoryId}`)"
+  >
     <div
       class="group flex items-center justify-between space-x-3 rounded-md px-1 py-1 hocus_bg-item-5"
     >
@@ -61,7 +61,7 @@ function getWidthPercent(value: number, biggest: number): string {
         :categoryId="categoryId"
         :color="category.color"
         :icon="category.icon"
-        @click="period.setCategoryId(categoryId)"
+        @click="toggleShowInside"
       />
 
       <div class="grow">
@@ -96,7 +96,7 @@ function getWidthPercent(value: number, biggest: number): string {
     <!-- Inside -->
     <div
       v-if="isShowInside"
-      class="scrollbar max-h-[40vh] overflow-hidden overflow-y-auto _bg-item-4 pb-1 ml-10 pr-1"
+      class="scrollbar _bg-item-4 ml-10 max-h-[40vh] overflow-hidden overflow-y-auto pb-1 pr-1"
       @click.stop=""
     >
       <TrnsList :trnsIds="trnsIds" :isShowGroupDate="false" uiCat />

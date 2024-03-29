@@ -10,18 +10,20 @@ const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
-  <div
-    v-if="walletsStore.hasWallets && categoriesStore.hasCategories"
-    class="flex-center h-full flex-col"
-  >
-    <UiTitle class="pb-2">
-      {{ t("intro") }}
-    </UiTitle>
+  <UiPage>
+    <div
+      v-if="walletsStore.hasWallets && categoriesStore.hasCategories"
+      class="flex-center h-full flex-col"
+    >
+      <UiTitle class="pb-2">
+        {{ t("intro") }}
+      </UiTitle>
 
-    <UiButtonBlue maxWidth @click="() => trnFormCreate()">
-      {{ t("create") }}
-    </UiButtonBlue>
-  </div>
+      <UiButtonBlue maxWidth @click="() => trnFormCreate()">
+        {{ t("create") }}
+      </UiButtonBlue>
+    </div>
+  </UiPage>
 </template>
 
 <i18n lang="yaml">

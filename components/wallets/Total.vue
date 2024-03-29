@@ -9,6 +9,7 @@ const props = defineProps<{
   currencyCode: CurrencyCode
 }>()
 
+const { t } = useI18n()
 const { getAmountInBaseRate } = useAmount()
 const walletsStore = useWalletsStore()
 
@@ -45,11 +46,6 @@ const totalInWallets = computed(() => {
 })
 
 const counts = computed(() => ({
-  credit: {
-    titleId: 'credits',
-    isShow: totalInWallets.value.credits !== 0,
-    value: totalInWallets.value.credits,
-  },
   savings: {
     titleId: 'savings',
     isShow: totalInWallets.value.savings !== 0,
@@ -66,6 +62,11 @@ const counts = computed(() => ({
     isShow: totalInWallets.value.credits !== 0,
     value: totalInWallets.value.counted + totalInWallets.value.savings,
   },
+  credit: {
+    titleId: 'credits',
+    isShow: totalInWallets.value.credits !== 0,
+    value: totalInWallets.value.credits,
+  },
   total: {
     titleId: 'total',
     isShow: true,
@@ -75,15 +76,13 @@ const counts = computed(() => ({
 </script>
 
 <template lang="pug">
-.px-3.py-1.bg-item-4.rounded-md(
-  v-if="walletsStore.hasWallets"
-)
+div
   template(v-for="item in counts")
-    .py-2.flex.items-center.border-b.border-item-5.last_border-0(
+    .py-2.px-1.flex.gap-12.items-center.border-b.border-item-5.last_border-0(
       v-if="item.isShow"
     )
       .grow.flex.items-center.gap-3
-        .text-sm.leading-none {{ $t(item.titleId) }}
+        .text-secondary.text-sm.leading-none {{ t(item.titleId) }}
 
       .text-item-base
         Amount(

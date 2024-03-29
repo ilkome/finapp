@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
-import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useAppNav } from '~/components/app/useAppNav'
 import useTrn from '~/components/trns/item/useTrn'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import '~/components/modal/styles/modalLinks.styl'
+import type { PeriodProvider } from '~/components/dashboard/Page.vue'
 
+const period = inject('period') as PeriodProvider
 const { trnFormEdit, trnFormDuplicate } = useTrnForm()
-const filterStore = useFilterStore()
 const { activeTabStat } = storeToRefs(useAppNav())
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
@@ -36,14 +36,14 @@ const wallet = computed(
 )
 
 function handleSetFilterCategory() {
-  filterStore.setCategoryId(trnsStore.items[trnId.value].categoryId)
+  period.setCategoryId(trnsStore.items[trnId.value].categoryId)
   trnsStore.hideTrnModal()
   trnsStore.setTrnModalId(null)
   activeTabStat.value = 'summary'
 }
 
 function handleSetFilterWallet() {
-  filterStore.setWalletId(trnsStore.items[trnId.value].walletId)
+  period.setWalletId(trnsStore.items[trnId.value].walletId)
   trnsStore.hideTrnModal()
   trnsStore.setTrnModalId(null)
   activeTabStat.value = 'summary'

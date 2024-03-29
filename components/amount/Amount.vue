@@ -37,18 +37,9 @@ const alignClasses = computed(() => ({
 }))
 
 const amountClasses = computed(() => [
-  {
-    '!text-income': props.colorize === 'income' && props.type === 1,
-  },
-  {
-    '!text-expense': props.colorize === 'expense' && props.type === 0,
-  },
+  { '!text-income': props.colorize === 'income' && props.type === 1 },
+  { '!text-expense': props.colorize === 'expense' && props.type === 0 },
 ])
-
-const amountNumberClasses = computed(() => ({
-  'text-md': !props.size,
-  'text-base': props.size === 'base',
-}))
 </script>
 
 <template>
@@ -60,12 +51,14 @@ const amountNumberClasses = computed(() => ({
         class="flex items-baseline gap-1 whitespace-nowrap"
         :class="alignClasses"
       >
-        <div v-if="isShowSign && sign === '-'" class="text-md leading-none">
+        <div v-if="isShowSign && sign === '-'" class="leading-none">
           {{ sign }}
         </div>
-        <div :class="amountNumberClasses" class="leading-none">
+
+        <div class="leading-none">
           {{ formatAmount(amount, currencyCode) }}
         </div>
+
         <div class="text-xs leading-none">
           {{ getCurrencySymbol(currencyCode) }}
         </div>

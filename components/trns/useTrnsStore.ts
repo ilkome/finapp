@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { deepUnref } from 'vue-deepunref'
 import localforage from 'localforage'
-import { getOldestTrnDate, removeTrnToAddLaterLocal, removeTrnToDeleteLaterLocal, saveTrnIDforDeleteWhenClientOnline, saveTrnToAddLaterLocal } from '~/components/trns/helpers'
+import { removeTrnToAddLaterLocal, removeTrnToDeleteLaterLocal, saveTrnIDforDeleteWhenClientOnline, saveTrnToAddLaterLocal } from '~/components/trns/helpers'
 
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useFilterStore } from '~/components/filter/useFilterStore'
@@ -244,8 +244,6 @@ export const useTrnsStore = defineStore('trns', () => {
     isShownModal.value = false
   }
 
-  const oldestTrnDate = computed(() => getOldestTrnDate(items.value))
-
   return {
     // Trns
     items,
@@ -258,7 +256,6 @@ export const useTrnsStore = defineStore('trns', () => {
     selectedTrnsIdsWithDate,
     filteredTrnsIds,
     allTrnsIdsWithFilter,
-    oldestTrnDate,
 
     initTrns,
     setTrns,

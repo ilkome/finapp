@@ -16,6 +16,7 @@ import { config, lineConfig } from '~/components/stat/chart/config'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
 import type { PeriodProvider } from '~/components/dashboard/Page.vue'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = withDefaults(
   defineProps<{
@@ -29,7 +30,7 @@ const props = withDefaults(
     isShowExpense: true,
   },
 )
-
+const trnFormStore = useTrnFormStore()
 const period = inject('period') as PeriodProvider
 const statData = inject('statData') as ComputedRef<{
   categories: any[]
@@ -96,6 +97,8 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
     params.offsetY,
   ])
   period.setDate(statData.value.categories[index])
+  if (period.nameWithoutAll.value === 'day')
+    trnFormStore.values.date = dayjs(statData.value.categories[index]).startOf(period.nameWithoutAll.value).valueOf()
 }
 
 function setChartSeries(series: unknown[]) {
@@ -129,6 +132,9 @@ use([
 
 <template>
   <div class="_rounded-lg _bg-item-4 relative">
+    <!-- <pre>11 {{ markedArea }}</pre>
+    <pre>{{ statData.categories }}</pre>
+    <pre>{{ period.date.value }}</pre> -->
     <!-- <pre>{{ statData.series }}</pre> -->
     <!-- <pre @click="period.setNextPeriodDate()">{{ period }}</pre>
     <pre @click="period.setPrevPeriodDate()">{{ period }}</pre> -->

@@ -64,6 +64,7 @@ export function getTrnsIds(props: TrnsGetterProps) {
     )
   }
 
+  // return trnsIds
   return trnsIds.sort(
     (a, b) => props.trnsItems[b].date - props.trnsItems[a].date,
   )

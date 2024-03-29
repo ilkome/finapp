@@ -12,7 +12,7 @@ function getClasses(menuId: string) {
   const items
     = props.variant === 'modal' ? ['rounded', 'menuModal'] : ['menuSidebar']
 
-  const cls = getStyles('item', ['link', 'menu', ...items])
+  const cls = getStyles('item', ['link', 'menu', 'rounded', ...items])
 
   return [
     cls,
@@ -29,8 +29,8 @@ function getClasses(menuId: string) {
       :class="getClasses(menuId)"
       @click="onClick(menuId)"
     >
-      <Component :is="item.component" v-if="item.component" class="h-6 w-6" />
-      <div v-else class="text-xl" :class="item.icon" />
+      <Component :is="item.component" v-if="item.component" class="h-5 w-5" />
+      <div v-else class="text-lg leading-none" :class="item.icon" />
       <div class="text-sm">
         {{ item.name }}
       </div>

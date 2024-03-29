@@ -4,9 +4,12 @@ import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { formatDate } from '~/utils/formatDate'
 import { getStyles } from '~/components/ui/classes'
 import { useFilterStore } from '~/components/filter/useFilterStore'
+import type { PeriodProvider } from '~/components/dashboard/Page.vue'
 
 const $trnForm = useTrnFormStore()
 const filterStore = useFilterStore()
+
+const period = inject('period') as PeriodProvider
 
 const formattedDate = computed(() => {
   const date = formatDate($trnForm.values.date, 'full')
@@ -31,8 +34,8 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 
   $trnForm.values.date = newDate
 
-  if (filterStore.periodNameWithoutAll === 'day')
-    filterStore.date = newDate
+  if (period.nameWithoutAll.value === 'day')
+    period.setDate(dayjs(newDate).startOf(period.nameWithoutAll.value).valueOf())
 }
 </script>
 
@@ -40,7 +43,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
   <div class="trnFormDate flex items-center gap-2 px-2 pb-2">
     <div class="flex items-center">
       <div
-        :class="getStyles('item', ['link', 'rounded'])"
+        :class="[...getStyles('item', ['link', 'rounded']), { '!cursor-default opacity-30': isToday }]"
         class="px-1 text-2xl"
         @click="changeDate('next')"
       >
@@ -49,7 +52,6 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       <div
         :class="[
           ...getStyles('item', ['link', 'rounded']),
-          { '!cursor-default opacity-30': isToday },
         ]"
         class="px-1 text-2xl"
         @click="changeDate('prev')"

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import type { CategoryId } from '~/components/categories/types'
 
 defineProps<{
   categories: any
@@ -13,7 +12,7 @@ const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
-  <div v-if="categories.length > 0" class="grid gap-1">
+  <div v-if="categories.length > 0" class="grid gap-1 max-w-sm">
     <StatHorizontalItem
       v-for="item in categories"
       :key="item.id"

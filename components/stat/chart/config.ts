@@ -55,6 +55,7 @@ export const config = {
       },
     },
     position: 'left',
+    // position: 'right',
     axisLabel: {
       color: 'var(--chart-label)',
       formatter: n => getCompactAmount(n),

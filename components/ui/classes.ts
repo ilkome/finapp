@@ -2,16 +2,15 @@ export const classes = {
   item: {
     simple: '',
     link: `
-      cursor-pointer select-none
+      select-none
       text-secondary2
       hocus_bg-item-5
-      transition
     `,
     bg: `
       bg-item-4
     `,
     base: '',
-    rounded: 'rounded-md',
+    rounded: 'rounded',
     paddings: {
       base: '',
     },
@@ -21,9 +20,10 @@ export const classes = {
     menu: `
       flex items-center
       py-2
+      h-[36px]
     `,
     menuModal: 'px-4 gap-x-4',
-    menuSidebar: 'px-5 gap-x-5',
+    menuSidebar: 'px-3 gap-3',
   },
 
   modal: {

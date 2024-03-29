@@ -14,10 +14,10 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="border flex-center mt-[2px] w-7 h-5 rounded-md text-2xs leading-none text-icon-primary2 hocus_scale-110"
+    class="size-2 rounded-full border hocus_scale-150"
     :style="{ borderColor: color }"
     @click.stop="emit('click', walletId)"
   >
-    {{ name.substring(0, 2) }}
+    <!-- {{ name.substring(0, 2) }} -->
   </div>
 </template>

@@ -1,64 +1,46 @@
 <script setup lang="ts">
 import { useFilterStore } from '~/components/filter/useFilterStore'
+import { getStyles } from '~/components/ui/classes'
 
 const { t } = useI18n()
 const { toggleWalletId } = useFilterStore()
 </script>
 
 <template>
-  <div class="h-full overflow-y-auto bg-foreground-5">
+  <div>
     <div class="p-4 px-5">
       <nuxt-link to="/dashboard">
         <UiLogo class="w-16" />
       </nuxt-link>
     </div>
 
-    <div class="pb-8 pt-2">
-      <LayoutSidebarMenu variant="sidebar" />
-    </div>
+    <LayoutSidebarMenu
+      variant="sidebar"
+      class="pb-6 pt-2 px-2"
+    />
 
-    <div class="pb-12">
+    <div class="grid gap-1 pb-6 px-2">
+      <UiTitle2>{{ $t('wallets.title') }}</UiTitle2>
       <WalletsList
         :limit="10"
         isShowToggle
         @onClick="(id) => $router.push(`/wallets/${id}`)"
       >
         <template #default="{ walletsItemsLimited }">
-          <div
+          <WalletsItem2
             v-for="(walletItem, walletId) in walletsItemsLimited"
             :key="walletId"
-            class="text-secondary2"
+            :walletId
+            :wallet="walletItem"
             @click="$router.push(`/wallets/${walletId}`)"
-          >
-            <div
-              class="-my-[1px] flex cursor-pointer items-center px-3 py-2 hocus_bg-item-5"
-            >
-              <div class="flex grow items-center gap-3">
-                <WalletsIcon
-                  :color="walletItem.color"
-                  :name="walletItem.name"
-                  :walletId
-                  @click="toggleWalletId(walletId)"
-                />
-
-                <div class="text-item-base grow text-sm">
-                  {{ walletItem.name }}
-                </div>
-              </div>
-              <div class="text-item-base">
-                <Amount
-                  :amount="walletItem.amount"
-                  :currencyCode="walletItem.currency"
-                />
-              </div>
-            </div>
-            <div class="mx-2 ml-12 h-[1px] bg-item-5" />
-          </div>
+            @filter="toggleWalletId(walletId)"
+          />
         </template>
 
         <template #toggle="{ stateLimit, limit, toggle }">
           <div
-            class="cursor-pointer px-3 py-3 text-center text-xs text-secondary hocus_bg-item-5"
+            :class="getStyles('item', ['link', 'rounded'])"
+            class="mt-[-1px] min-h-[36px] flex-center text-xs py-2 px-2"
             @click="toggle"
           >
             <template v-if="stateLimit > 0">

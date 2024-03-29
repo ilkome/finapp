@@ -1,4 +1,9 @@
-import type { WalletId, WalletItem, WalletItemWithAmount, Wallets } from '~/components/wallets/types'
+import type {
+  WalletId,
+  WalletItem,
+  WalletItemWithAmount,
+  Wallets,
+} from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export default function useWallets() {
@@ -8,24 +13,28 @@ export default function useWallets() {
    * Wallets IDs sorted
    *
    */
-  const walletsIdsSorted = computed<WalletId[]>(() => walletsStore.walletsSortedIds)
+  const walletsIdsSorted = computed<WalletId[]>(
+    () => walletsStore.walletsSortedIds,
+  )
 
   /**
    * Wallets items sorted
    *
    */
-  const walletsItemsSorted = computed<Record<WalletId, WalletItemWithAmount>>(() => {
-    const walletsIdsSorted: WalletId[] = walletsStore.walletsSortedIds
+  const walletsItemsSorted = computed<Record<WalletId, WalletItemWithAmount>>(
+    () => {
+      const walletsIdsSorted: WalletId[] = walletsStore.walletsSortedIds
 
-    return walletsIdsSorted.reduce((acc: Wallets, id) => {
-      acc[id] ??= []
-      acc[id] = {
-        ...walletsStore.items[id],
-        amount: walletsStore.walletsTotal[id],
-      }
-      return acc
-    }, {})
-  })
+      return walletsIdsSorted.reduce((acc: Wallets, id) => {
+        acc[id] ??= []
+        acc[id] = {
+          ...walletsStore.items[id],
+          amount: walletsStore.walletsTotal[id],
+        }
+        return acc
+      }, {})
+    },
+  )
 
   /**
    * Wallets currencies
@@ -37,8 +46,7 @@ export default function useWallets() {
     // TODO: check A
     return walletsIdsSorted.reduce((acc, id) => {
       const currency = walletsItems[id].currency
-      !acc.includes(currency)
-        && acc.push(currency)
+      !acc.includes(currency) && acc.push(currency)
       return acc
     }, [])
   })

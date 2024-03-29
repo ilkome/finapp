@@ -2,35 +2,36 @@
 import dayjs from 'dayjs'
 import { getStyles } from '~/components/ui/classes'
 import type { PeriodProvider } from '~/components/dashboard/Page.vue'
+import type { PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
 
-const { t } = useI18n()
 const period = inject('period') as PeriodProvider
 
-const formattedDate = computed(() => {
+const { t } = useI18n()
+const formattedDate = computed(() => formatDateByPeriod(period.date.value, period.nameWithoutAll.value))
+
+function formatDateByPeriod(date: number, periodName: PeriodNameWithoutAll) {
   const today = dayjs()
-  const filterDate = period.date.value
-  const filterPeriod = period.nameWithAll.value
   let format = 'MMMM'
 
-  const startDate = dayjs(filterDate).startOf('week').format('D MMMM')
-  const endDate = dayjs(filterDate).endOf('week').format('D MMMM')
+  const startDate = dayjs(date).startOf('week').format('D MMMM')
+  const endDate = dayjs(date).endOf('week').format('D MMMM')
 
-  switch (filterPeriod) {
+  switch (periodName) {
     case 'day':
-      today.isSame(filterDate, 'year')
+      today.isSame(date, 'year')
         ? (format = 'DD MMMM')
         : (format = 'DD MMMM YYYY')
       break
 
     case 'week':
-      if (today.isSame(filterDate, 'week'))
+      if (today.isSame(date, 'week'))
         return t('dates.week.current')
-      else if (today.subtract(1, filterPeriod).isSame(filterDate, 'week'))
+      else if (today.subtract(1, periodName).isSame(date, 'week'))
         return t('dates.week.last')
       return `${startDate} - ${endDate}`
 
     case 'month':
-      if (today.isSame(filterDate, 'year')) {
+      if (today.isSame(date, 'year')) {
         format = 'MMMM'
         break
       }
@@ -42,16 +43,17 @@ const formattedDate = computed(() => {
       break
   }
 
-  const fDate = dayjs(filterDate).format(format)
-  return fDate[0].toUpperCase() + fDate.slice(1)
-})
+  return dayjs(date).format(format)
+  // const fDate = dayjs(date).format(format)
+  // return fDate[0].toUpperCase() + fDate.slice(1)
+}
 </script>
 
 <template>
   <VDropdown>
     <div
       :class="getStyles('item', ['link', 'rounded'])"
-      class="flex items-center px-3 py-2 text-sm font-medium leading-none text-item-1"
+      class="flex items-center px-3 py-2 text-sm font-medium _leading-none text-item-1"
     >
       {{ period.nameWithAll.value === "all" ? $t("dates.all.simple") : formattedDate }}
     </div>

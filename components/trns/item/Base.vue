@@ -55,7 +55,7 @@ const actions = {
 
 <template>
   <div
-    class="group grid gap-2 rounded-md px-2 py-2 text-secondary hocus_bg-item-5"
+    class="group grid gap-2 border-b border-item-5 hocus_rounded-md px-2 py-2 text-secondary hocus_bg-item-5"
     @click="actions.onOpenDetails"
   >
     <div class="flex items-center gap-3">
@@ -67,7 +67,7 @@ const actions = {
       />
       <div class="flex grow items-center">
         <div class="grow">
-          <div class="flex flex-wrap items-baseline space-x-2 pb-1">
+          <div class="flex flex-wrap items-baseline space-x-2">
             <div class="text-sm text-primary">
               {{ trnItem.category.name }}
             </div>

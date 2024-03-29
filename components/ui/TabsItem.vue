@@ -17,7 +17,6 @@ const emit = defineEmits(['click'])
       text-primary/80 text-sm
       hocus_bg-item-5
       @4xl/tabs_text-lg @4xl/tabs_p-3
-      transition
     "
     @click="emit('click')"
   >

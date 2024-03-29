@@ -273,17 +273,17 @@ function addEvents() {
   isEventsAdded.value = true
 
   // Touch
-  useEventListener(containerRef, 'touchstart', onDragStart, { passive: true })
-  useEventListener(containerRef, 'touchmove', onDragging, { passive: true })
-  useEventListener(containerRef, 'touchend', onDragEnd, { passive: true })
+  useEventListener(containerRef, 'touchstart', onDragStart)
+  useEventListener(containerRef, 'touchmove', onDragging)
+  useEventListener(containerRef, 'touchend', onDragEnd)
 
   // Mouse
-  useEventListener(containerRef, 'mousedown', onDragStart, { passive: true })
-  useEventListener(document, 'mousemove', onDragging, { passive: true })
+  useEventListener(containerRef, 'mousedown', onDragStart)
+  useEventListener(document, 'mousemove', onDragging)
 
   // Mouse: Finish drag event only when mouse released
-  useEventListener(containerRef, 'mouseup', onDragEnd, { passive: true })
-  useEventListener(document, 'mouseleave', onDragEnd, { passive: true })
+  useEventListener(containerRef, 'mouseup', onDragEnd)
+  useEventListener(document, 'mouseleave', onDragEnd)
 }
 
 /**
