@@ -1,11 +1,11 @@
-import { signOut as signOutFirebase } from 'firebase/auth';
-import localforage from 'localforage';
-import { deepUnref } from 'vue-deepunref';
-import { useAppNav } from '~/components/app/useAppNav';
-import { useCategoriesStore } from '~/components/categories/useCategories';
-import { useTrnsStore } from '~/components/trns/useTrnsStore';
-import { useWalletsStore } from '~/components/wallets/useWalletsStore';
-import { auth, saveData } from '~/services/firebase/api';
+import { signOut as signOutFirebase } from 'firebase/auth'
+import localforage from 'localforage'
+import { deepUnref } from 'vue-deepunref'
+import { useAppNav } from '~/components/app/useAppNav'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { auth, saveData } from '~/services/firebase/api'
 
 export interface User {
   email: string

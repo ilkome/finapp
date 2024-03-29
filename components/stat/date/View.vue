@@ -53,7 +53,7 @@ function formatDateByPeriod(date: number, periodName: PeriodNameWithoutAll) {
   <VDropdown>
     <div
       :class="getStyles('item', ['link', 'rounded'])"
-      class="flex items-center px-3 py-2 text-sm font-medium _leading-none text-item-1"
+      class="flex items-center px-3 py-2 text-base font-medium leading-none text-item-1"
     >
       {{ period.nameWithAll.value === "all" ? $t("dates.all.simple") : formattedDate }}
     </div>

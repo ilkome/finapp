@@ -146,11 +146,5 @@ use([
         @zr:click="onClickChart"
       />
     </div>
-    <div
-      class="_bg-item-4 _border-b _border-item-7 justify-between px-2 pb-1 sm_flex sm_border-transparent sm_bg-transparent sm_pb-0"
-    >
-      <StatChartPeriods class="flex-center" />
-      <!-- <StatChartOptions /> -->
-    </div>
   </div>
 </template>
