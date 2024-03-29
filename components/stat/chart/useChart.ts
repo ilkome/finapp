@@ -22,10 +22,7 @@ export type PeriodSchema = z.infer<typeof periodSchema>
 export type PeriodNameWithoutAll = keyof Periods
 export type PeriodNameWithAll = PeriodNameWithoutAll | 'all'
 
-/**
- * @deprecated
- */
-export const useChartStore = defineStore('chart', () => {
+export function useChart() {
   const { $i18n } = useNuxtApp()
 
   const periods = ref<Periods>({
@@ -161,4 +158,4 @@ export const useChartStore = defineStore('chart', () => {
     toggleUi,
     toggleChartType,
   }
-})
+}

@@ -48,9 +48,9 @@ const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
         <UiTabsItem3
           v-for="periodCount in periodCounts"
           :key="periodCount"
-          :isActive="periodCount === chartStore.periods[period.nameWithoutAll.value].showedPeriods"
+          :isActive="periodCount === period.periods.value[period.nameWithoutAll.value].showedPeriods"
           class="nowrap"
-          @click="chartStore.setPeriod(periodCount)"
+          @click="period.setPeriod(periodCount)"
         >
           {{ periodCount }}
         </UiTabsItem3>

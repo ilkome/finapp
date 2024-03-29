@@ -13,7 +13,6 @@ import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 import { config, lineConfig } from '~/components/stat/chart/config'
-import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
 import type { PeriodProvider } from '~/components/dashboard/Page.vue'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
@@ -37,11 +36,10 @@ const statData = inject('statData') as ComputedRef<{
   series: any[]
 }>
 
-const chartStore = useChartStore()
 const chartRef = ref()
 
 const chartType = computed(
-  () => chartStore.periods[period.nameWithoutAll.value].type,
+  () => period.periods.value[period.nameWithoutAll.value].type,
 )
 
 const markedArea = computed(() =>
@@ -113,7 +111,7 @@ function setChartSeries(series: unknown[]) {
       type: chartType.value,
       label: {
         ...lineConfig.label,
-        show: chartStore.ui.isShowDataLabels,
+        show: period.ui.value.isShowDataLabels,
       },
     }))
 }

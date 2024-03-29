@@ -1,22 +1,19 @@
 <script setup lang="ts">
-import { useChartStore } from '~/components/stat/chart/useChartStore'
 import type { FiltersProvider, PeriodProvider } from '~/components/dashboard/Page.vue'
 
 const period = inject('period') as PeriodProvider
 const filters = inject('filters') as FiltersProvider
 
-const chartStore = useChartStore()
-
 const showedPeriods = computed(
-  () => chartStore.periods[period.nameWithoutAll.value].showedPeriods,
+  () => period.periods.value[period.nameWithoutAll.value].showedPeriods,
 )
 
 function saveChartsPeriodsToLocalStorage() {
-  localStorage.setItem('chartsPeriods', JSON.stringify(chartStore.periods))
+  localStorage.setItem('chartsPeriods', JSON.stringify(period.periods.value))
 }
 
 function addPeriod() {
-  chartStore.addPeriod()
+  period.addPeriod()
   saveChartsPeriodsToLocalStorage()
 }
 
@@ -24,7 +21,7 @@ function removePeriod() {
   if (showedPeriods.value <= 1)
     return
 
-  chartStore.removePeriod()
+  period.removePeriod()
   saveChartsPeriodsToLocalStorage()
 }
 
@@ -36,14 +33,14 @@ const isShowAdd = computed(() => showedPeriods.value >= filters.filterPeriodMaxD
 <template>
   <UiTabs2>
     <UiTabsItem2
-      v-for="periodItem in chartStore.periodsNames"
+      v-for="periodItem in period.periodsNames.value"
       :key="periodItem.slug"
       :isActive="periodItem.slug === period.nameWithoutAll.value"
       @click="period.setPeriodAndDate(periodItem.slug)"
     >
       {{ periodItem.name }}
       <sup v-if="periodItem.slug === period.nameWithoutAll.value" class="text-2xs -mr-2">
-        {{ chartStore.periods[period.nameWithoutAll.value].showedPeriods }}
+        {{ period.periods.value[period.nameWithoutAll.value].showedPeriods }}
       </sup>
     </UiTabsItem2>
 

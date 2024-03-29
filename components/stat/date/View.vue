@@ -2,7 +2,7 @@
 import dayjs from 'dayjs'
 import { getStyles } from '~/components/ui/classes'
 import type { PeriodProvider } from '~/components/dashboard/Page.vue'
-import type { PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithoutAll } from '~/components/stat/chart/useChart'
 
 const period = inject('period') as PeriodProvider
 

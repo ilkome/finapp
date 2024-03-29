@@ -15,7 +15,6 @@ import useUIView from '~/components/layout/useUIView'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { type TotalReturns, getTotal } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
@@ -24,13 +23,11 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const appNavStore = useAppNav()
 const categoriesStore = useCategoriesStore()
-const chartStore = useChartStore()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const filter = useFilter()
 
-console.log(111)
 async function initFilter() {
   filter.setPeriodAndDate(
     (await localforage.getItem('finapp.filter.period')) ?? 'month',
@@ -126,7 +123,7 @@ const filterPeriodMaxDateCount = computed(
 )
 
 const chartConfigShowedPeriodsCount = computed(
-  () => chartStore.periods[filter.periodNameWithoutAll.value].showedPeriods,
+  () => filter.periods.value[filter.periodNameWithoutAll.value].showedPeriods,
 )
 
 const periodsToShow = computed(() =>

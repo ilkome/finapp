@@ -1,35 +1,33 @@
 <script setup lang="ts">
-import { useChartStore } from '~/components/stat/chart/useChartStore'
-import { useFilterStore } from '~/components/filter/useFilterStore'
+import type { PeriodProvider } from '~/components/dashboard/Page.vue'
 
-const filterStore = useFilterStore()
-const chartStore = useChartStore()
+const period = inject('period') as PeriodProvider
 
 const items = ref([{
   slug: 'income',
   icon: 'mdi mdi-arrow-down-thin-circle-outline',
-  isActive: computed(() => chartStore.ui.income),
-  event: () => chartStore.toggleUi('income'),
+  isActive: computed(() => period.ui.value.income),
+  event: () => period.ui.value.toggleUi('income'),
 }, {
   slug: 'expense',
   icon: 'mdi mdi-arrow-up-thin-circle-outline',
-  isActive: computed(() => chartStore.ui.expense),
-  event: () => chartStore.toggleUi('expense'),
+  isActive: computed(() => period.ui.value.expense),
+  event: () => period.ui.value.toggleUi('expense'),
 }, {
   slug: 'sum',
   icon: 'mdi mdi-chart-gantt',
-  isActive: computed(() => chartStore.ui.sum),
-  event: () => chartStore.toggleUi('sum'),
+  isActive: computed(() => period.ui.value.sum),
+  event: () => period.ui.value.toggleUi('sum'),
 }, {
   slug: 'charLabels',
   icon: 'mdi mdi-subtitles-outline',
-  isActive: computed(() => chartStore.ui.isShowDataLabels),
-  event: () => chartStore.toggleUi('isShowDataLabels'),
+  isActive: computed(() => period.ui.value.isShowDataLabels),
+  event: () => period.ui.value.toggleUi('isShowDataLabels'),
 }, {
   slug: 'charType',
-  icon: computed(() => chartStore.periods[filterStore.periodNameWithoutAll].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
+  icon: computed(() => period.periods.value[period.nameWithoutAll.value].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
   isActive: false,
-  event: chartStore.toggleChartType,
+  event: period.toggleChartType,
 }])
 </script>
 

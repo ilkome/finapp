@@ -1,16 +1,33 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
+import { deepUnref } from 'vue-deepunref'
+import { z } from 'zod'
 import type { CategoryId } from '~/components/categories/types'
-import type {
-  PeriodNameWithAll,
-  PeriodNameWithoutAll,
-} from '~/components/stat/chart/useChartStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useChartStore } from '~/components/stat/chart/useChartStore'
 
+const periodSchema = z.object({
+  type: z.enum(['line', 'bar']),
+  showedPeriods: z.number(),
+  // date: z.number(),
+})
+
+const periodsSchema = z.object({
+  day: periodSchema,
+  week: periodSchema,
+  month: periodSchema,
+  year: periodSchema,
+})
+
+type Periods = z.infer<typeof periodsSchema>
+export type PeriodSchema = z.infer<typeof periodSchema>
+export type PeriodNameWithoutAll = keyof Periods
+export type PeriodNameWithAll = PeriodNameWithoutAll | 'all'
+
 export function useFilter() {
+  const { $i18n } = useNuxtApp()
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
   const chartStore = useChartStore()
@@ -24,7 +41,7 @@ export function useFilter() {
     const newDate = dayjs(value).valueOf()
     date.value = newDate
     localforage.setItem('finapp.filter.date', unref(date.value))
-    chartStore.setDate(newDate)
+    periods.value[nameWithoutAll.value].date = date
   }
 
   function setDateNow() {
@@ -35,6 +52,68 @@ export function useFilter() {
   /**
    * Period
    */
+  const periods = ref<Periods>({
+    day: {
+      showedPeriods: 14,
+      type: 'line',
+      date: dayjs().valueOf(),
+    },
+    week: {
+      showedPeriods: 12,
+      type: 'line',
+      date: dayjs().valueOf(),
+    },
+    month: {
+      showedPeriods: 12,
+      type: 'line',
+      date: dayjs().valueOf(),
+    },
+    year: {
+      showedPeriods: 6,
+      type: 'line',
+      date: dayjs().valueOf(),
+    },
+  })
+
+  const periodsNames = computed<{
+    slug: PeriodNameWithoutAll
+    icon: string
+    name: string
+  }[]>(() => [{
+    slug: 'day',
+    icon: 'mdi mdi-weather-sunset-up',
+    name: $i18n.t('dates.day.simple'),
+  }, {
+    slug: 'week',
+    icon: 'mdi mdi-calendar-week',
+    name: $i18n.t('dates.week.simple'),
+  }, {
+    slug: 'month',
+    icon: 'mdi mdi-calendar',
+    name: $i18n.t('dates.month.simple'),
+  }, {
+    slug: 'year',
+    icon: 'mdi mdi-calendar-star',
+    name: $i18n.t('dates.year.simple'),
+  }])
+
+  const ui = ref({
+    income: true,
+    expense: true,
+    sum: false,
+    isShowDataLabels: false,
+    setUi: (key, value) => ui.value[key] = value,
+    toggleUi: key => ui.value[key] = !ui.value[key],
+  })
+
+  function setUi(key, value) {
+    ui.value[key] = value
+  }
+
+  function toggleUi(key) {
+    ui.value[key] = !ui.value[key]
+  }
+
   const periodNameWithAll = ref<PeriodNameWithAll>('month')
 
   const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() =>
@@ -183,6 +262,55 @@ export function useFilter() {
     () => catsIds.value.length > 0 || walletsIds.value.length > 0,
   )
 
+  function addPeriod() {
+    periods.value[nameWithoutAll.value].showedPeriods = periods.value[nameWithoutAll.value].showedPeriods + 1
+  }
+
+  function removePeriod() {
+    periods.value[nameWithoutAll.value].showedPeriods = periods.value[nameWithoutAll.value].showedPeriods - 1
+  }
+
+  function setPeriod(number: PeriodSchema['showedPeriods']) {
+    periods.value[nameWithoutAll.value].showedPeriods = number
+  }
+
+  // function setDate(date: number) {
+  //   periods.value[nameWithoutAll.value].date = date
+  // }
+
+  function toggleChartType() {
+    periods.value[nameWithoutAll.value].type = periods.value[nameWithoutAll.value].type === 'line'
+      ? 'bar'
+      : 'line'
+  }
+
+  async function initChart() {
+    const localPeriods: Periods | null = await localforage.getItem('finapp.chart.periods')
+
+    if (periodsSchema.safeParse(localPeriods).success === false)
+      return false
+
+    for (const periodName in localPeriods) {
+      const showedPeriods = +localPeriods[periodName].showedPeriods
+        ? localPeriods[periodName].showedPeriods
+        : periods.value[periodName].showedPeriods
+
+      const periodValues: Periods = {
+        ...localPeriods[periodName],
+        showedPeriods,
+      }
+
+      setPeriodValues(periodName, periodValues)
+    }
+  }
+
+  function setPeriodValues(periodName, values) {
+    periods.value[periodName] = {
+      ...periods.value[periodName],
+      ...values,
+    }
+  }
+
   return {
     // Date
     date,
@@ -190,6 +318,17 @@ export function useFilter() {
     setDateNow,
     setPrevPeriodDate,
     setNextPeriodDate,
+
+    periods,
+    periodsNames,
+    nameWithAll,
+    nameWithoutAll,
+    periodNameWithAll,
+    periodNameWithoutAll,
+    setPeriodAndDate,
+    setDayDate,
+
+    ui,
 
     walletsIds,
     setWalletId,
@@ -202,16 +341,16 @@ export function useFilter() {
     removeCategoryId,
     toggleCategoryId,
 
-    nameWithAll,
-    nameWithoutAll,
-    periodNameWithAll,
-    periodNameWithoutAll,
-    setPeriodAndDate,
-    setDayDate,
-
     clearFilter,
 
     // Computed
     isShow,
+
+    initChart,
+    setPeriodValues,
+    addPeriod,
+    removePeriod,
+    setPeriod,
+    toggleChartType,
   }
 }
