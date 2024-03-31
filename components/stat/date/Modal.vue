@@ -18,7 +18,7 @@ const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
 
       <div>
         <UiTabsItem3
-          v-for="periodItem in period.periodsNames"
+          v-for="periodItem in period.periodsNames.value"
           :key="periodItem.slug"
           :isActive="period.nameWithAll.value === periodItem.slug"
           class="nowrap"
@@ -56,8 +56,8 @@ const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
         </UiTabsItem3>
 
         <UiTabsItem3
-          :isActive="filters.filterPeriodMaxDateCount.value === chartStore.periods[period.nameWithoutAll.value].showedPeriods"
-          @click="chartStore.setPeriod(filters.filterPeriodMaxDateCount.value)"
+          :isActive="filters.filterPeriodMaxDateCount.value === period.periods.value[period.nameWithoutAll.value].showedPeriods"
+          @click="period.setPeriod(filters.filterPeriodMaxDateCount.value)"
         >
           {{ filters.filterPeriodMaxDateCount.value }}
         </UiTabsItem3>

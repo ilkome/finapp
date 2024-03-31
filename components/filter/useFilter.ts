@@ -6,7 +6,6 @@ import type { CategoryId } from '~/components/categories/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useChartStore } from '~/components/stat/chart/useChartStore'
 
 const periodSchema = z.object({
   type: z.enum(['line', 'bar']),
@@ -30,7 +29,6 @@ export function useFilter() {
   const { $i18n } = useNuxtApp()
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
-  const chartStore = useChartStore()
 
   /**
    * Date
@@ -131,7 +129,7 @@ export function useFilter() {
         date.value = dayjs().startOf(periodName).valueOf()
       }
       else {
-        const savedDate = chartStore.periods[periodName].date
+        const savedDate = periods.value[periodName].date
         savedDate
           ? (date.value = savedDate)
           : (date.value = dayjs().startOf(periodName).valueOf())

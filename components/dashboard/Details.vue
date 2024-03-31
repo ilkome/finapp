@@ -15,7 +15,6 @@ import useUIView from '~/components/layout/useUIView'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { type TotalReturns, getTotal } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
@@ -24,12 +23,10 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const appNavStore = useAppNav()
 const categoriesStore = useCategoriesStore()
-const chartStore = useChartStore()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const filter = useFilter()
-
 const categoryId = useRoute().params.id as CategoryId
 
 async function initFilter() {
@@ -116,7 +113,10 @@ const selectedPeriodCount = computed(() =>
     .diff(filter.date.value, filter.periodNameWithoutAll.value),
 )
 
-const avaDate = computed(() => trnsItemsFiltered.value[Object.keys(trnsItemsFiltered.value).at(-1)].date)
+const avaDate = computed(
+  () =>
+    trnsItemsFiltered.value[Object.keys(trnsItemsFiltered.value).at(-1)].date,
+)
 
 const filterPeriodMaxDateCount = computed(
   () =>
@@ -126,7 +126,7 @@ const filterPeriodMaxDateCount = computed(
 )
 
 const chartConfigShowedPeriodsCount = computed(
-  () => chartStore.periods[filter.periodNameWithoutAll.value].showedPeriods,
+  () => filter.periods.value[filter.periodNameWithoutAll.value].showedPeriods,
 )
 
 const periodsToShow = computed(() =>
@@ -333,8 +333,12 @@ const averages = computed(() => {
   )
 })
 
-const isToday = computed(() => dayjs().isSame(filter.date.value, filter.nameWithoutAll.value))
-const isLastPeriod = computed(() => dayjs(filter.date.value).isSame(avaDate.value, filter.nameWithoutAll.value))
+const isToday = computed(() =>
+  dayjs().isSame(filter.date.value, filter.nameWithoutAll.value),
+)
+const isLastPeriod = computed(() =>
+  dayjs(filter.date.value).isSame(avaDate.value, filter.nameWithoutAll.value),
+)
 
 const filters = {
   filterPeriodMaxDateCount,
@@ -374,50 +378,61 @@ const categoriesHey2 = computed(() =>
 </script>
 
 <template>
-  <div class="overflow-hidden h-full grid xl_grid-cols-[1fr_auto]">
-    <div class="overflow-hidden h-full overflow-y-auto pb-6 px-3">
+  <div class="grid h-full overflow-hidden xl_grid-cols-[1fr_auto]">
+    <div class="h-full overflow-hidden overflow-y-auto px-3 pb-6">
       <div class="lg_max-w-4xl">
-        <div class="sticky top-0 z-20 bg-foreground-4 backdrop-blur">
+        <!-- <div class="sticky top-0 z-20 bg-foreground-4 backdrop-blur">
           <div class="_justify-between flex items-center gap-2 border-b border-item-7 px-1 py-1">
             <StatDateNav />
             <StatDateView />
           </div>
-        </div>
+        </div> -->
 
         <!-- <pre>
       {{ trnsItemsFiltered[ Object.keys(trnsItemsFiltered).at(-1)].date }}
       </pre> -->
-        <div class="_mt-2 _mx-2 _mb-2 _bg-item-4 rounded-lg">
-          <div
-            v-if="isLargeScreen"
-            class="mx-2 mb-0 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg p-2 sm_flex-nowrap sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
-          >
-            <StatTotalWithAverage
-              v-for="(item, slug) in averages"
-              :key="slug"
-              :item="item"
-            />
-          </div>
 
-          <StatMenu class="_mb-2 _bg-foreground-4 _px-2 sticky top-[40px] z-10 pt-0 backdrop-blur" />
-
-          <LazyStatFilter class="grow pt-2" />
-          <!-- <pre>{{ dayjs(avaDate).format() }}</pre> -->
-
-          <LazyStatChartView
-            v-if="
-              ui.showMainChart && statPrepareDataAverageAll.sumTransactions !== 0
-            "
-            :isShowIncome="
-              statPrepareDataAverageAll.incomeTransactions !== 0
-                && appNavStore.activeTabStat !== 'expense'
-            "
-            :isShowExpense="
-              statPrepareDataAverageAll.expenseTransactions !== 0
-                && appNavStore.activeTabStat !== 'income'
-            "
+        <div
+          v-if="isLargeScreen"
+          class="mx-2 mb-0 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg p-2 sm_flex-nowrap sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
+        >
+          <StatTotalWithAverage
+            v-for="(item, slug) in averages"
+            :key="slug"
+            :item="item"
           />
         </div>
+
+        <StatMenu
+          class="_mb-2 _bg-foreground-4 _px-2 sticky top-[0px] z-10 pt-0 backdrop-blur"
+        />
+
+        <!-- <pre>{{ dayjs(avaDate).format() }}</pre> -->
+
+        <LazyStatChartView
+          v-if="
+            ui.showMainChart && statPrepareDataAverageAll.sumTransactions !== 0
+          "
+          :isShowIncome="
+            statPrepareDataAverageAll.incomeTransactions !== 0
+              && appNavStore.activeTabStat !== 'expense'
+          "
+          :isShowExpense="
+            statPrepareDataAverageAll.expenseTransactions !== 0
+              && appNavStore.activeTabStat !== 'income'
+          "
+        />
+        <div
+          class="sticky top-[45px] sm_flex justify-between bg-foreground-4 px-2 backdrop-blur"
+        >
+          <div class="flex sm_flex-center">
+            <StatDateNav />
+            <StatDateView />
+          </div>
+
+          <StatChartPeriods class="flex sm_flex-center" />
+        </div>
+        <LazyStatFilter class="grow pt-2" />
 
         <!-- <div class="grid gap-2">
       <StatChartPeriods class="flex-center" />
@@ -496,6 +511,7 @@ const categoriesHey2 = computed(() =>
               isShowFilter
               uiHistory
               isAutoTypes
+              defaultFilterTrnsPeriod="period"
             />
 
             <StatChartOptions />
@@ -507,7 +523,9 @@ const categoriesHey2 = computed(() =>
       </div>
     </div>
 
-    <div class="hidden xl_block m-3 bg-foreground-5 w-[360px] border rounded-xl border-item-6">
+    <div
+      class="m-3 hidden w-[360px] rounded-xl border border-item-6 bg-foreground-5 xl_block"
+    >
       <TrnFormSidebar />
     </div>
   </div>

@@ -115,7 +115,7 @@ const walletsCurrenciesTabs = reactive({
       </div> -->
 
         <!-- List -->
-        <div class="lg_max-w-[360px] mb-24 bg-item-4 border border-item-6 rounded-lg px-1 py-2">
+        <div class="lg_max-w-[360px] mb-24 _bg-item-4 _border border-item-6 rounded-lg px-1 py-2">
           <WalletsItem2
             v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
             :key="walletId"

@@ -10,8 +10,8 @@ const isShownWalletsSelector = ref(false)
 <template>
   <div v-if="period.isShow.value">
     <FilterRow>
-      <template #add>
-        <div class="flex gap-1 h-9 gap-0">
+      <template #content>
+        <div class="flex">
           <FilterAddItem @click="isShowCategorySelector = true">
             <template #icon>
               <UiIconCategory class="size-6" />
@@ -20,34 +20,33 @@ const isShownWalletsSelector = ref(false)
               {{ $t("categories.createNewTitle") }}
             </template>
           </FilterAddItem>
+          <FilterCategoryItem
+            v-for="categoryId in period.catsIds.value"
+            :key="categoryId"
+            :categoryId="categoryId"
+            @click="period.removeCategoryId(categoryId)"
+          />
+        </div>
 
+        <div class="flex">
           <FilterAddItem @click="isShownWalletsSelector = true">
             <template #icon>
               <UiIconWallet class="size-6" />
             </template>
           </FilterAddItem>
+          <FilterWalletItem
+            v-for="walletId in period.walletsIds.value"
+            :id="walletId"
+            :key="walletId"
+            @click="period.removeWalletId(walletId)"
+          />
         </div>
-      </template>
 
-      <template #content>
-        <FilterWalletItem
-          v-for="walletId in period.walletsIds.value"
-          :id="walletId"
-          :key="walletId"
-          @click="period.removeWalletId(walletId)"
-        />
-
-        <FilterCategoryItem
-          v-for="categoryId in period.catsIds.value"
-          :key="categoryId"
-          :categoryId="categoryId"
-          @click="period.removeCategoryId(categoryId)"
-        />
         <FilterItemBg
           v-if="period.isShow"
           @click="period.clearFilter"
         >
-          <div class="mdi mdi-filter-remove-outline text-2xl" />
+          <div class="mdi mdi-filter-remove-outline text-xl" />
         </FilterItemBg>
       </template>
     </FilterRow>

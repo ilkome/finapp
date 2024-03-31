@@ -16,7 +16,7 @@ const emit = defineEmits<{
 <template>
   <div @click="emit('click')">
     <div
-      class="-my-[1px] text-secondary2 flex items-center px-2 py-1.5 min-h-[36px] hocus_bg-item-5 rounded-md"
+      class="-my-[1px] text-secondary2 flex items-center px-2 py-1.5 min-h-[42px] hocus_bg-item-5 rounded-md"
     >
       <div class="overflow-hidden flex grow items-center gap-3 pl-1">
         <template v-if="isShowIcons">

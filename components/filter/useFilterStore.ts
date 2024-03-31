@@ -1,16 +1,14 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
 import type { CategoryId } from '~/components/categories/types'
-import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChartStore'
+import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChart'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useChartStore } from '~/components/stat/chart/useChartStore'
 
 export const useFilterStore = defineStore('filter', () => {
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
-  const chartStore = useChartStore()
 
   /**
    * Date
@@ -21,7 +19,6 @@ export const useFilterStore = defineStore('filter', () => {
     const newDate = dayjs(value).valueOf()
     date.value = newDate
     localforage.setItem('finapp.filter.date', unref(date.value))
-    chartStore.setDate(newDate)
   }
 
   function setDateNow() {

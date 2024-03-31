@@ -377,7 +377,7 @@ const categoriesHey2 = computed(() =>
 <template>
   <div class="grid h-full overflow-hidden xl_grid-cols-[1fr_auto]">
     <div class="h-full overflow-hidden overflow-y-auto px-3 pb-6">
-      <div class="lg_max-w-4xl">
+      <div class="md_px-4 lg_px-8 lg_py-4 lg_max-w-4xl">
         <!-- <div class="sticky top-0 z-20 bg-foreground-4 backdrop-blur">
           <div class="_justify-between flex items-center gap-2 border-b border-item-7 px-1 py-1">
             <StatDateNav />
@@ -391,7 +391,7 @@ const categoriesHey2 = computed(() =>
 
         <div
           v-if="isLargeScreen"
-          class="mx-2 mb-0 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg p-2 sm_flex-nowrap sm_justify-start sm_bg-transparent sm_p-3 sm_pt-4"
+          class="mx-2 mb-0 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg py-2 sm_flex-nowrap sm_justify-start sm_bg-transparent sm_py-3 sm_pt-4"
         >
           <StatTotalWithAverage
             v-for="(item, slug) in averages"
@@ -399,10 +399,6 @@ const categoriesHey2 = computed(() =>
             :item="item"
           />
         </div>
-
-        <StatMenu
-          class="_mb-2 _bg-foreground-4 _px-2 sticky top-[0px] z-10 pt-0 backdrop-blur"
-        />
 
         <LazyStatFilter class="grow pt-2" />
         <!-- <pre>{{ dayjs(avaDate).format() }}</pre> -->
@@ -421,16 +417,19 @@ const categoriesHey2 = computed(() =>
           "
         />
         <div
-          class="sticky top-[45px] sm_flex justify-between bg-foreground-4 px-2 backdrop-blur"
+          class="sm-gap-0 sticky top-[-5px] justify-between gap-2 bg-foreground-4 px-2 py-2 backdrop-blur flex flex-col sm_flex-row"
         >
-          <div class="flex sm_flex-center">
+          <div class="sm_flex-center flex">
             <StatDateNav />
             <StatDateView />
           </div>
 
-          <StatChartPeriods class="flex sm_flex-center" />
+          <StatChartPeriods class="sm_flex-center flex" />
         </div>
 
+        <StatMenu
+          class="_mt-2 _px-2 sticky top-[35px] z-10 mx-1.5 flex items-center gap-2 border-b border-item-3 bg-foreground-4 px-1 py-2 backdrop-blur"
+        />
         <!-- <div class="grid gap-2">
       <StatChartPeriods class="flex-center" />
     </div> -->
@@ -501,13 +500,14 @@ const categoriesHey2 = computed(() =>
             </div>
           </div>
 
-          <div class="_max-w-[420px] grid gap-2 px-2 pt-4">
+          <div class="_max-w-[420px] grid gap-2 px-1 pt-4">
             <TrnsListWithControl
               :size="12"
               :trnsIds="combinedTrnsIds.summary"
               isShowFilter
               uiHistory
               isAutoTypes
+              defaultFilterTrnsPeriod="period"
             />
 
             <StatChartOptions />

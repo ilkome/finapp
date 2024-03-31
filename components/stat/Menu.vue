@@ -47,17 +47,15 @@ function onClickStatMenu(tabName: AppNav) {
 
 <template>
   <div>
-    <UiTabs class="items-center !rounded-none !bg-none border-b border-item-3">
-      <!-- v-if="!item.isPrivate || userStore.isDevUser" -->
-      <UiTabsItem
-        v-for="item in menu"
-        :key="item.id"
-        :isActive="item.id === activeTabStat"
-        class="!text-md !font-medium"
-        @click="onClickStatMenu(item.id)"
-      >
-        {{ item.name }}
-      </UiTabsItem>
-    </UiTabs>
+    <!-- v-if="!item.isPrivate || userStore.isDevUser" -->
+    <UiTabsItem2
+      v-for="item in menu"
+      :key="item.id"
+      :isActive="item.id === activeTabStat"
+      class="!text-md !font-medium min-w-xs grow-0"
+      @click="onClickStatMenu(item.id)"
+    >
+      {{ item.name }}
+    </UiTabsItem2>
   </div>
 </template>

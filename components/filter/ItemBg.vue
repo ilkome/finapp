@@ -12,6 +12,7 @@ div(
     flex items-center gap-3
     rounded-md
     bg-item-4
+    text-secondary/80
     hocus_bg-item-5
   `
   @click="emit('click')"

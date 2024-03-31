@@ -1,7 +1,7 @@
 import { onAuthStateChanged } from 'firebase/auth'
 import localforage from 'localforage'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useChartStore } from '~/components/stat/chart/useChartStore'
+// import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -54,7 +54,7 @@ export function useInitApp() {
   }
 
   async function initAppFromCache() {
-    await useChartStore().initChart()
+    // await useChartStore().initChart()
 
     const [user, currencies, categories, wallets, trns, filterPeriod, filterDate, ui] = await Promise.all([
       localforage.getItem('finapp.user'),

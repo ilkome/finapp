@@ -67,7 +67,7 @@ const isShown = ref(true)
 </script>
 
 <template>
-  <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden">
+  <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden max-w-sm">
     <!-- Header -->
     <div>
       <div
