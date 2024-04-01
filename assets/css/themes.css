@@ -12,8 +12,9 @@ html {
 
   --text-expense-1: #f92134;
   --text-income-1: #2cad22;
-  /* --font-primary: 'Roboto', sans-serif; */
-  /* --font-secondary: 'Unica One', 'Roboto', sans-serif; */
+  --font-primary: 'Roboto', sans-serif;
+  --font-secondary: 'Unica One', 'Roboto', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
 }
 
 html.dark {

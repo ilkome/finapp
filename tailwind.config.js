@@ -56,6 +56,7 @@ module.exports = {
         roboto: ['Roboto', 'sans-serif'],
         secondary: ['"Unica One"', '"Roboto"', 'sans-serif'],
         unica: ['"Unica One"', '"Roboto"', 'sans-serif'],
+        mono: ['"Roboto Mono"', 'monospace'],
       },
       screens: {
         '3sm': '360px',

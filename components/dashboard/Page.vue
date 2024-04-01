@@ -1,377 +1,48 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { useMediaQuery } from '@vueuse/core'
 import localforage from 'localforage'
-import { moneyTypes } from '~/components/stat/types'
-import type { CategoryId } from '~/components/categories/types'
-
-import type {
-  MoneyTypeNumber,
-  MoneyTypeSlug,
-  MoneyTypeSlugSum,
-} from '~/components/stat/types'
-import type { TrnId } from '~/components/trns/types'
+import { useMediaQuery } from '@vueuse/core'
 import useUIView from '~/components/layout/useUIView'
+import { moneyTypes } from '~/components/stat/types'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useFilter } from '~/components/filter/useFilter'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { type TotalReturns, getTotal } from '~/components/amount/getTotal'
-import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { getTrnsIds } from '~/components/trns/getTrns'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useStat } from '~/components/stat/useStat'
+import { formatDateByPeriod2 } from '~/components/date/format'
 
 const appNavStore = useAppNav()
-const categoriesStore = useCategoriesStore()
-const currenciesStore = useCurrenciesStore()
-const trnsStore = useTrnsStore()
-const walletsStore = useWalletsStore()
 const filter = useFilter()
+const stat = useStat(filter)
 
-async function initFilter() {
-  filter.setPeriodAndDate(
-    (await localforage.getItem('finapp.filter.period')) ?? 'month',
-  )
-  filter.setDate(
-    (await localforage.getItem('finapp.filter.date')) ?? dayjs().valueOf(),
-  )
+const { t } = useI18n()
+
+function getFormattedDate(date: number) {
+  return formatDateByPeriod2(date, filter.periodNameWithoutAll.value, {
+    current: t('dates.week.current'),
+    last: t('dates.week.last'),
+  })
 }
-initFilter()
 
 const { ui } = useUIView()
-
 const isLargeScreen = useMediaQuery('(min-width: 640px)')
 
-function isShowGroupByType(type: MoneyTypeSlugSum) {
-  const p1
-    = (appNavStore.activeTabStat === 'summary'
-    && statPrepareDataAverageAll.value[
-      type === 'income' ? 'incomeTransactions' : 'expenseTransactions'
-    ] > 0)
-    || (appNavStore.activeTabStat === 'income' && type === 'income')
-    || (appNavStore.activeTabStat === 'expense' && type === 'expense')
-
-  const p2 = filter.periodNameWithAll.value === 'all'
-  return p1 || p2
+async function initFilter() {
+  filter.setPeriodAndDate(await localforage.getItem('finapp.filter.period') ?? 'month')
+  filter.setDate(await localforage.getItem('finapp.filter.date') ?? dayjs().valueOf())
 }
 
-const trnsIds = computed(() => {
-  const categoriesIds
-    = filter.catsIds.value.length > 0
-      ? categoriesStore.getTransactibleIds(filter.catsIds.value)
-      : []
-  const walletsIds
-    = filter.walletsIds.value.length > 0 ? filter.walletsIds.value : []
+initFilter()
 
-  return getTrnsIds({
-    categoriesIds,
-    date: filter.date.value,
-    periodName: filter.periodNameWithAll.value,
-    trnsItems: trnsStore.items,
-    walletsIds,
-  })
-})
-
-const trnsItemsFiltered = computed(() => {
-  const categoriesIds
-    = filter.catsIds.value.length > 0
-      ? categoriesStore.getTransactibleIds(filter.catsIds.value)
-      : []
-  const walletsIds
-    = filter.walletsIds.value.length > 0 ? filter.walletsIds.value : []
-
-  const trnsIds = getTrnsIds({
-    categoriesIds,
-    trnsItems: trnsStore.items,
-    walletsIds,
-  })
-
-  return trnsIds.reduce((prev, trnId) => {
-    prev[trnId] = trnsStore.items[trnId]
-    return prev
-  }, {})
-})
-
-const combinedTrnsIds = computed(() => ({
-  summary: trnsIds.value,
-  income: trnsIds.value.filter(
-    (id: TrnId) =>
-      trnsStore.items[id].type === 1 || trnsStore.items[id].type === 2,
-  ),
-  expense: trnsIds.value.filter(
-    (id: TrnId) =>
-      trnsStore.items[id].type === 0 || trnsStore.items[id].type === 2,
-  ),
-}))
-
-const selectedPeriodCount = computed(() =>
-  dayjs()
-    .endOf(filter.periodNameWithoutAll.value)
-    .diff(filter.date.value, filter.periodNameWithoutAll.value),
-)
-
-const avaDate = computed(
-  () =>
-    trnsItemsFiltered.value[Object.keys(trnsItemsFiltered.value).at(-1)].date,
-)
-
-const filterPeriodMaxDateCount = computed(
-  () =>
-    dayjs()
-      .endOf(filter.periodNameWithoutAll.value)
-      .diff(avaDate.value, filter.periodNameWithoutAll.value) + 1,
-)
-
-const chartConfigShowedPeriodsCount = computed(
-  () => filter.periods.value[filter.periodNameWithoutAll.value].showedPeriods,
-)
-
-const periodsToShow = computed(() =>
-  selectedPeriodCount.value >= chartConfigShowedPeriodsCount.value
-    ? selectedPeriodCount.value + 1
-    : chartConfigShowedPeriodsCount.value > filterPeriodMaxDateCount.value
-      ? filterPeriodMaxDateCount.value
-      : chartConfigShowedPeriodsCount.value,
-)
-
-const statPrepareData = computed(() =>
-  Array.from({ length: periodsToShow.value }).map((_, index) => {
-    const date = dayjs()
-      .startOf(filter.periodNameWithoutAll.value)
-      .subtract(index, filter.periodNameWithoutAll.value)
-      .valueOf()
-
-    // TODO?: Get trnsIds from all periods first, then filter them
-    const trnsIds = getTrnsIds({
-      trnsItems: trnsStore.items,
-      walletsIds: filter.walletsIds.value,
-      categoriesIds: filter.transactibleCatsIds.value,
-      periodName: filter.periodNameWithoutAll.value,
-      date,
-    })
-
-    const total = getTotal({
-      baseCurrencyCode: currenciesStore.base,
-      rates: currenciesStore.rates,
-      trnsIds,
-      trnsItems: trnsStore.items,
-      walletsItems: walletsStore.items,
-      transferCategoriesIds: categoriesStore.transferCategoriesIds,
-    })
-
-    return { date, ...total, trnsIds }
-  }),
-)
-
-const statPrepareDataAverageAll = computed(() => {
-  const totalPeriods = statPrepareData.value.reduce(
-    (acc, cur) => {
-      acc.incomeTransactions += cur.incomeTransactions
-      acc.expenseTransactions += cur.expenseTransactions
-      acc.sumTransactions += cur.sumTransactions
-      return acc
-    },
-    {
-      incomeTransactions: 0,
-      expenseTransactions: 0,
-      sumTransactions: 0,
-    },
-  )
-
-  return Object.keys(totalPeriods).reduce((acc, prev) => {
-    acc[prev] = totalPeriods[prev] / (periodsToShow.value - 1)
-    return acc
-  }, {} as TotalReturns)
-})
-
-const statPrepareDataAverage = computed(() => {
-  const totalPeriods = statPrepareData.value.slice(1).reduce(
-    (acc, cur) => {
-      acc.incomeTransactions += cur.incomeTransactions
-      acc.expenseTransactions += cur.expenseTransactions
-      acc.sumTransactions += cur.sumTransactions
-      return acc
-    },
-    {
-      incomeTransactions: 0,
-      expenseTransactions: 0,
-      sumTransactions: 0,
-    },
-  )
-
-  return Object.keys(totalPeriods).reduce((acc, prev) => {
-    acc[prev] = totalPeriods[prev] / (periodsToShow.value - 1)
-    return acc
-  }, {} as TotalReturns)
-})
-
-const statData = computed(() => ({
-  series: [
-    {
-      data: statPrepareData.value.map(i => i.expenseTransactions),
-      color: 'var(--c-expense-1)',
-    },
-    {
-      data: statPrepareData.value.map(i => i.incomeTransactions),
-      color: 'var(--c-income-1)',
-    },
-  ],
-  categories: statPrepareData.value.map(i => i.date),
-}))
-
-const mTypes = {
-  expense: 'expenseTransactions',
-  income: 'incomeTransactions',
-  sum: 'sumTransactions',
-} as const
-
-const trnsIdsInCategory = computed(() =>
-  trnsIds.value.reduce(
-    (prev, trnId) => {
-      const categoryId = trnsStore.items[trnId]?.categoryId
-      prev[categoryId] ??= []
-      prev[categoryId].push(trnId)
-      return prev
-    },
-    {} as Record<CategoryId, TrnId[]>,
-  ),
-)
-
-interface TotalCategory {
-  id: CategoryId
-  value: number
-}
-
-interface TotalCategories {
-  income: TotalCategory[]
-  expense: TotalCategory[]
-}
-
-const totalCategories = computed(() => {
-  const categories = Object.keys(trnsIdsInCategory.value).reduce(
-    (acc, categoryId) => {
-      const totalInCategory = getTotal({
-        baseCurrencyCode: currenciesStore.base,
-        rates: currenciesStore.rates,
-        trnsIds: trnsIdsInCategory.value[categoryId],
-        trnsItems: trnsStore.items,
-        walletsIds: filter.walletsIds.value,
-        walletsItems: walletsStore.items,
-      })
-      if (totalInCategory.incomeTransactions > 0) {
-        acc.income.push({
-          id: categoryId,
-          value: totalInCategory.incomeTransactions,
-        })
-      }
-
-      if (totalInCategory.expenseTransactions > 0) {
-        acc.expense.push({
-          id: categoryId,
-          value: totalInCategory.expenseTransactions,
-        })
-      }
-
-      return acc
-    },
-    {
-      income: [],
-      expense: [],
-    } as TotalCategories,
-  )
-
-  return Object.keys(categories).reduce(
-    (prev, type) => {
-      prev[type] = categories[type].sort((a, b) => b?.value - a?.value)
-      return prev
-    },
-    {
-      income: [],
-      expense: [],
-    } as TotalCategories,
-  )
-})
-
-function getCategories(slug: MoneyTypeSlug): TotalCategories[MoneyTypeSlug] {
-  return totalCategories.value[slug]
-}
-
-function getColorizeType(slug: MoneyTypeSlugSum): MoneyTypeSlug {
-  return statPrepareData.value[selectedPeriodCount.value]?.[mTypes[slug]] > 0
-    ? 'income'
-    : 'expense'
-}
-
-function getMoneyTypeNumber(slug: MoneyTypeSlugSum): MoneyTypeNumber {
-  return moneyTypes.find(t => t.slug === `${slug}`.toLowerCase())?.type ?? 3
-}
-
-function getAverageItem(slug: MoneyTypeSlugSum) {
-  return {
-    amount: statPrepareData.value[selectedPeriodCount.value]?.[mTypes[slug]],
-    averageAmount: statPrepareDataAverage.value[mTypes[slug]],
-    colorizeType: getColorizeType(slug),
-    isShownAverage: statPrepareDataAverage.value.sumTransactions !== 0,
-    moneyTypeNumber: getMoneyTypeNumber(slug),
-    moneyTypeSlugSum: slug,
-  }
-}
-
-const averages = computed(() => {
-  // const averageSlugs = ['expense', 'income', 'sum'] as const
-  const averageSlugs = ['sum', 'expense', 'income'] as const
-
-  return averageSlugs.reduce(
-    (acc, slug) => {
-      acc[slug] = getAverageItem(slug)
-      return acc
-    },
-    {} as Record<MoneyTypeSlugSum, ReturnType<typeof getAverageItem>>,
-  )
-})
-
-const isToday = computed(() =>
-  dayjs().isSame(filter.date.value, filter.nameWithoutAll.value),
-)
-const isLastPeriod = computed(() =>
-  dayjs(filter.date.value).isSame(avaDate.value, filter.nameWithoutAll.value),
-)
-
-const filters = {
-  filterPeriodMaxDateCount,
-  avaDate,
-  isToday,
-  trnsIds,
-  isLastPeriod,
-} as const
-
-provide('periodsToShow', periodsToShow)
-provide('statData', statData)
+provide('periodsToShow', stat.periodsToShow)
+provide('statData', stat.statData)
 provide('period', filter)
-provide('filters', filters)
+provide('filters', stat.filters)
 
-export type PeriodProvider = typeof filter
-export type FiltersProvider = typeof filters
+const group = ref('lines')
 
-const categoriesHey = computed(() =>
-  categoriesStore.favoriteCategoriesIds.map((id: CategoryId) => ({
-    id,
-    value:
-      (totalCategories.value.income.find(c => c.id === id)?.value
-      || totalCategories.value.expense.find(c => c.id === id)?.value)
-      ?? 0,
-  })),
-)
-
-const categoriesHey2 = computed(() =>
-  categoriesStore.recentCategoriesIds.map((id: CategoryId) => ({
-    id,
-    value:
-      (totalCategories.value.income.find(c => c.id === id)?.value
-      || totalCategories.value.expense.find(c => c.id === id)?.value)
-      ?? 0,
-  })),
-)
+watch(useRoute(), (value) => {
+  console.log(1)
+  // console.log(value)
+})
 </script>
 
 <template>
@@ -394,25 +65,24 @@ const categoriesHey2 = computed(() =>
           class="mx-2 mb-0 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg py-2 sm_flex-nowrap sm_justify-start sm_bg-transparent sm_py-3 sm_pt-4"
         >
           <StatTotalWithAverage
-            v-for="(item, slug) in averages"
+            v-for="(item, slug) in stat.averages.value"
             :key="slug"
             :item="item"
           />
         </div>
 
-        <LazyStatFilter class="grow pt-2" />
         <!-- <pre>{{ dayjs(avaDate).format() }}</pre> -->
 
         <LazyStatChartView
           v-if="
-            ui.showMainChart && statPrepareDataAverageAll.sumTransactions !== 0
+            ui.showMainChart && stat.statPrepareDataAverageAll.value.sumTransactions !== 0
           "
           :isShowIncome="
-            statPrepareDataAverageAll.incomeTransactions !== 0
+            stat.statPrepareDataAverageAll.value.incomeTransactions !== 0
               && appNavStore.activeTabStat !== 'expense'
           "
           :isShowExpense="
-            statPrepareDataAverageAll.expenseTransactions !== 0
+            stat.statPrepareDataAverageAll.value.expenseTransactions !== 0
               && appNavStore.activeTabStat !== 'income'
           "
         />
@@ -441,69 +111,141 @@ const categoriesHey2 = computed(() =>
         <div>
           <StatGroupRound
             v-if="ui.showRoundCats"
-            :categories="categoriesHey"
+            :categories="stat.categoriesHey.value"
             :moneyTypeNumber="3"
             moneyTypeSlug="income"
           />
           <StatGroupRound
             v-if="ui.showRoundCats"
-            :categories="categoriesHey2"
+            :categories="stat.categoriesHey2.value"
             :moneyTypeNumber="3"
             moneyTypeSlug="income"
           />
         </div>
 
         <div data-scroll-ref="stat">
+          <StatFilter v-if2="filter.isShow.value" class="grow pt-2 px-2" />
           <div
             v-if="appNavStore.activeTabStat !== 'trns'"
             class="mb-8 px-2 md_mb-4 lg_px-0"
           >
             <div class="grid items-start gap-6 md_grid-cols-2 md_gap-8">
-              <div
-                v-for="item in moneyTypes"
-                v-show="isShowGroupByType(item.slug)"
-                :key="item.slug"
-                class="grid gap-3 rounded-lg py-2 lg_px-2 xl_max-w-[420px]"
-              >
+              <div class="grid gap-4">
                 <div
-                  @click="
-                    appNavStore.activeTabStat
-                      = appNavStore.activeTabStat === item.slug
-                        ? 'summary'
-                        : item.slug
-                  "
+                  v-for="item in moneyTypes"
+                  v-show="stat.isShowGroupByType(item.slug)"
+                  :key="item.slug"
+                  class="grid gap-3 rounded-lg py-2 lg_px-2 xl_max-w-[420px]"
                 >
-                  <StatTotalWithAverage :item="averages[item.slug]" hasBg />
+                  <StatTotalWithAverage :item="stat.averages.value[item.slug]" hasBg />
+
+                  <UiTabs2 class="ml-1 gap-1">
+                    <UiTabsItem2
+                      :isActive="group === 'lines'"
+                      @click="group = 'lines'"
+                    >
+                      Lines
+                    </UiTabsItem2>
+
+                    <UiTabsItem2
+                      :isActive="group === 'round'"
+                      @click="group = 'round'"
+                    >
+                      Round
+                    </UiTabsItem2>
+                    <UiTabsItem2
+                      :isActive="group === 'bars'"
+                      @click="group = 'bars'"
+                    >
+                      Bars
+                    </UiTabsItem2>
+
+                    <UiTabsItem2
+                      :isActive="group === 'trns'"
+                      @click="group = 'trns'"
+                    >
+                      Trns
+                    </UiTabsItem2>
+                  </UiTabs2>
+
+                  <StatGroupRound
+                    v-if="group === 'round'"
+                    :categories="stat.getCategories(item.slug)"
+                    :moneyTypeSlug="item.slug"
+                    :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
+                  />
+
+                  <StatGroupVertical
+                    v-if="group === 'bars'"
+                    :categories="stat.getCategories(item.slug)"
+                    :moneyTypeSlug="item.slug"
+                    :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
+                  />
+
+                  <StatHorizontal
+                    v-if="group === 'lines'"
+                    :categories="stat.getCategories(item.slug)"
+                    :moneyTypeSlug="item.slug"
+                    :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
+                  />
+
+                  <TrnsListWithControl
+                    v-if="group === 'trns'"
+                    :size="12"
+                    :trnsIds="stat.combinedTrnsIds.value.summary"
+                    isShowFilter
+                    uiHistory
+                    isAutoTypes
+                    defaultFilterTrnsPeriod="period"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-end">
+                  <div class="grid gap-2 grow my-6 max-w-xs bg-item-4 border border-item-6 rounded-lg px-1 pt-1">
+                    <div class="pt-2 px-2">
+                      <UiTitle2>
+                        {{ filter.periods.value[filter.nameWithoutAll.value].showedPeriods }}
+                        Periods
+                      </UiTitle2>
+                      <div class="text-xs text-secondary font-mono">
+                        {{ getFormattedDate(stat.statPrepareData.value[0].date) }} - {{ getFormattedDate(stat.statPrepareData.value.at(-1)?.date) }}
+                      </div>
+                    </div>
+
+                    <div class="grid ">
+                      <div
+                        v-for="(item, idx) in stat.statPrepareData.value"
+                        :key="item.date"
+                        class="flex items-center font-mono py-1 px-2 border-b border-item-5 hocus_rounded-md px-2 py-2 text-secondary hocus_bg-item-5"
+                        :class="{ 'bg-item-8 rounded-md': item.date === filter.date.value }"
+                        @click="filter.setDate(item.date)"
+                      >
+                        <div class="grow text-xs text-secondary">
+                          {{ getFormattedDate(item.date) }}
+                        </div>
+                        <div class="text-xs px-2">
+                          {{ Math.ceil(((stat.statPrepareData.value[idx]?.expenseTransactions - stat.statPrepareData.value[idx + 1]?.expenseTransactions) / ((stat.statPrepareData.value[idx]?.expenseTransactions + stat.statPrepareData.value[idx + 1]?.expenseTransactions) / 2)) * 100) }}
+                        </div>
+                        <Amount :amount="item.expenseTransactions" currencyCode="RUB" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <StatGroupRound
-                  v-if="ui.showRoundCats"
-                  :categories="getCategories(item.slug)"
-                  :moneyTypeSlug="item.slug"
-                  :moneyTypeNumber="getMoneyTypeNumber(item.slug)"
-                />
-
-                <StatGroupVertical
-                  v-if="ui.showCatsVerticalChart"
-                  :categories="getCategories(item.slug)"
-                  :moneyTypeSlug="item.slug"
-                  :moneyTypeNumber="getMoneyTypeNumber(item.slug)"
-                />
-
-                <StatHorizontal
-                  v-if="ui.showCatsHorizontalList"
-                  :categories="getCategories(item.slug)"
-                  :moneyTypeSlug="item.slug"
-                  :moneyTypeNumber="getMoneyTypeNumber(item.slug)"
-                />
+                <div class="flex justify-end">
+                  <StatChartOptions />
+                  <StatViewConfig />
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="_max-w-[420px] grid gap-2 px-1 pt-4">
+          <!-- <div class="_max-w-[420px] grid gap-2 px-1 pt-4">
             <TrnsListWithControl
               :size="12"
-              :trnsIds="combinedTrnsIds.summary"
+              :trnsIds="stat.combinedTrnsIds.value.summary"
               isShowFilter
               uiHistory
               isAutoTypes
@@ -512,7 +254,7 @@ const categoriesHey2 = computed(() =>
 
             <StatChartOptions />
             <StatViewConfig />
-          </div>
+          </div> -->
         </div>
 
         <div class="min-h-[calc(100vh-100px)]" />

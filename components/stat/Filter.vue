@@ -8,10 +8,10 @@ const isShownWalletsSelector = ref(false)
 </script>
 
 <template>
-  <div v-if="period.isShow.value">
+  <div>
     <FilterRow>
       <template #content>
-        <div class="flex">
+        <div class="flex bg-item-4 rounded-lg">
           <FilterAddItem @click="isShowCategorySelector = true">
             <template #icon>
               <UiIconCategory class="size-6" />
@@ -28,7 +28,7 @@ const isShownWalletsSelector = ref(false)
           />
         </div>
 
-        <div class="flex">
+        <div class="flex bg-item-4 rounded-lg">
           <FilterAddItem @click="isShownWalletsSelector = true">
             <template #icon>
               <UiIconWallet class="size-6" />
@@ -43,7 +43,8 @@ const isShownWalletsSelector = ref(false)
         </div>
 
         <FilterItemBg
-          v-if="period.isShow"
+          v-if="period.isShow.value"
+          class="bg-transparent"
           @click="period.clearFilter"
         >
           <div class="mdi mdi-filter-remove-outline text-xl" />

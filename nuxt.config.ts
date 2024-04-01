@@ -1,11 +1,11 @@
 export default defineNuxtConfig({
-  devtools: {
-    enabled: true,
+  // devtools: {
+  //   enabled: true,
 
-    timeline: {
-      enabled: true,
-    },
-  },
+  //   timeline: {
+  //     enabled: true,
+  //   },
+  // },
 
   runtimeConfig: {
     public: {
@@ -35,7 +35,7 @@ export default defineNuxtConfig({
 
       link: [{
         rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css?family=Roboto:400,500,600,700|Unica+One&display=swap&subset=cyrillic',
+        href: 'https://fonts.googleapis.com/css?family=Roboto+Mono:400,500|Roboto:400,500,600,700|Unica+One&display=swap&subset=cyrillic',
       }, {
         rel: 'stylesheet',
         href: 'https://cdn.materialdesignicons.com/5.9.55/css/materialdesignicons.min.css',

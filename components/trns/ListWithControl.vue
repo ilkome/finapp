@@ -14,7 +14,7 @@ const props = withDefaults(
     isAutoTypes?: boolean
   }>(),
   {
-    trnsClassNames: 'grid md_grid-cols-2 md_gap-x-20',
+    trnsClassNames: '',
   },
 )
 const emit = defineEmits(['onClickEdit'])

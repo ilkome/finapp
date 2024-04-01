@@ -5,6 +5,7 @@ import type { MoneyTypeNumber } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
+import type { FilterProvider } from '~/components/filter/useFilter'
 
 const props = defineProps<{
   category: CategoryItem
@@ -14,7 +15,8 @@ const props = defineProps<{
   moneyTypeNumber: MoneyTypeNumber
 }>()
 
-const { toggleCategoryId } = useFilterStore()
+const filter = inject('period') as FilterProvider
+
 const categoriesStore = useCategoriesStore()
 const { trnFormCreate } = useTrnForm()
 
@@ -36,7 +38,7 @@ const isCategoryHasChildren = computed(() =>
       :color="category.color"
       :icon="category.icon"
       size="lg"
-      @click="toggleCategoryId"
+      @click="id => filter.toggleCategoryId(id)"
     />
 
     <div

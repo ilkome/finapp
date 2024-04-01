@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/classes'
-import type { FiltersProvider, PeriodProvider } from '~/components/dashboard/Page.vue'
+import type { FiltersProvider } from '~/components/stat/useStat'
+import type { FilterProvider } from '~/components/filter/useFilter'
 
-const period = inject('period') as PeriodProvider
+const period = inject('period') as FilterProvider
 const filters = inject('filters') as FiltersProvider
 </script>
 

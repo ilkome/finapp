@@ -32,7 +32,7 @@ const items = ref([{
 </script>
 
 <template>
-  <div class="flex-center">
+  <div class="flex">
     <StatChartOptionsItem
       v-for="item in items"
       :key="item.slug"

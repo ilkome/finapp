@@ -14,6 +14,7 @@ div(
     bg-item-4
     text-secondary/80
     hocus_bg-item-5
+    min-h-[42px]
   `
   @click="emit('click')"
 )

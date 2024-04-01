@@ -4,7 +4,7 @@ import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { FiltersProvider } from '~/components/dashboard/Page.vue'
+import type { FilterProvider, FiltersProvider } from '~/components/filter/useFilter'
 
 const props = defineProps<{
   biggest: number
@@ -16,6 +16,7 @@ const props = defineProps<{
 }>()
 
 const filters = inject('filters') as FiltersProvider
+const filter = inject('period') as FilterProvider
 
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
@@ -52,7 +53,7 @@ function getWidthPercent(value: number, biggest: number): string {
 <template>
   <div
     class="_bg-item-4 rounded-lg"
-    @click="$router.push(`/stat/${categoryId}`)"
+    @click="filter.toggleCategoryId(categoryId)"
   >
     <div
       class="group flex items-center justify-between space-x-3 rounded-md px-1 py-1 hocus_bg-item-5"

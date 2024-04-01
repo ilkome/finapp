@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
-import { deepUnref } from 'vue-deepunref'
 import { z } from 'zod'
 import type { CategoryId } from '~/components/categories/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -221,22 +220,23 @@ export function useFilter() {
       return
 
     catsIds.value.push(categoryId)
+    useRouter().push(`?categories[]=${encodeURIComponent(catsIds.value)}`)
+    console.log(encodeURIComponent(catsIds.value))
     scrollTop()
   }
 
   function removeCategoryId(categoryId: CategoryId) {
     catsIds.value = catsIds.value.filter(id => id !== categoryId)
+    scrollTop()
   }
 
   function toggleCategoryId(categoryId: CategoryId) {
     if (catsIds.value.includes(categoryId)) {
       removeCategoryId(categoryId)
-      scrollTop()
       return
     }
 
     setCategoryId(categoryId)
-    scrollTop()
   }
 
   /**
@@ -352,3 +352,6 @@ export function useFilter() {
     toggleChartType,
   }
 }
+
+export type PeriodProvider = ReturnType<typeof useFilter>
+export type FilterProvider = ReturnType<typeof useFilter>
