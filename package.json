@@ -40,7 +40,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.11.4",
+    "@antfu/eslint-config": "^2.11.6",
     "@babel/parser": "^7.24.1",
     "@nuxtjs/color-mode": "^3.3.3",
     "@nuxtjs/i18n": "^8.2.0",
@@ -57,6 +57,6 @@
     "pug": "^3.0.2",
     "stylus": "^0.63.0",
     "typescript": "^5.4.3",
-    "vitest": "^0.34.6"
+    "vitest": "^1.4.0"
   }
 }

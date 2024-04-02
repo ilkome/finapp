@@ -21,7 +21,7 @@ const isShownWalletsSelector = ref(false)
             </template>
           </FilterAddItem>
           <FilterCategoryItem
-            v-for="categoryId in period.catsIds.value"
+            v-for="categoryId in filter.catsIds.value"
             :key="categoryId"
             :categoryId="categoryId"
             @click="filter.removeCategoryId(categoryId)"

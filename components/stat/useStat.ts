@@ -1,7 +1,11 @@
 import dayjs from 'dayjs'
 import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/useFilter'
-import type { MoneyTypeNumber, MoneyTypeSlug, MoneyTypeSlugSum } from '~/components/stat/types'
+import type {
+  MoneyTypeNumber,
+  MoneyTypeSlug,
+  MoneyTypeSlugSum,
+} from '~/components/stat/types'
 import type { TrnId, Trns } from '~/components/trns/types'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { moneyTypes } from '~/components/stat/types'
@@ -235,7 +239,44 @@ export function useStat(filter: FilterProvider) {
     expense: TotalCategory[]
   }
 
+  const totalCategoriesPrepare = computed(() => {
+    return Object.keys(trnsIdsInCategory.value).reduce(
+      (acc, categoryId) => {
+        const totalInCategory = getTotal({
+          baseCurrencyCode: currenciesStore.base,
+          rates: currenciesStore.rates,
+          trnsIds: trnsIdsInCategory.value[categoryId],
+          trnsItems: trnsStore.items,
+          walletsIds: filter.walletsIds.value,
+          walletsItems: walletsStore.items,
+        })
+        acc[categoryId] = totalInCategory
+        return acc
+      },
+      {} as Record<CategoryId, TotalReturns>,
+    )
+  })
+
   const totalCategories = computed(() => {
+    // Object.keys(totalCategoriesPrepare.value).reduce(
+    //   (acc, id) => {
+    //     const totalInCategory = totalCategoriesPrepare.value[id]
+    //     if (totalInCategory.incomeTransactions > 0)
+    //       acc.income[id] = totalInCategory.incomeTransactions
+    //     if (totalInCategory.expenseTransactions > 0)
+    //       acc.expense[id] = totalInCategory.expenseTransactions
+
+    //     return acc
+    //   },
+    //   {
+    //     income: {},
+    //     expense: {},
+    //   } as {
+    //     income: Record<CategoryId, number>
+    //     expense: Record<CategoryId, number>
+    //   },
+    // )
+
     const categories = Object.keys(trnsIdsInCategory.value).reduce(
       (acc, categoryId) => {
         const totalInCategory = getTotal({
@@ -280,7 +321,9 @@ export function useStat(filter: FilterProvider) {
     )
   })
 
-  function getCategories(slug: MoneyTypeSlug): TotalCategories[MoneyTypeSlug] {
+  function getCategoriesStatBySlug(
+    slug: MoneyTypeSlug,
+  ): TotalCategories[MoneyTypeSlug] {
     return totalCategories.value[slug]
   }
 
@@ -335,37 +378,38 @@ export function useStat(filter: FilterProvider) {
     isLastPeriod,
   } as const
 
-  const categoriesHey = computed(() =>
-    categoriesStore.favoriteCategoriesIds.map((id: CategoryId) => ({
-      id,
-      value:
-        (totalCategories.value.income.find(c => c.id === id)?.value
-        || totalCategories.value.expense.find(c => c.id === id)?.value)
-        ?? 0,
-    })),
-  )
+  // const categoriesHey = computed(() =>
+  //   categoriesStore.favoriteCategoriesIds.map((id: CategoryId) => ({
+  //     id,
+  //     value:
+  //       (totalCategories.value.income.find(c => c.id === id)?.value
+  //       || totalCategories.value.expense.find(c => c.id === id)?.value)
+  //       ?? 0,
+  //   })),
+  // )
 
-  const categoriesHey2 = computed(() =>
-    categoriesStore.recentCategoriesIds.map((id: CategoryId) => ({
-      id,
-      value:
-        (totalCategories.value.income.find(c => c.id === id)?.value
-        || totalCategories.value.expense.find(c => c.id === id)?.value)
-        ?? 0,
-    })),
-  )
+  // const categoriesHey2 = computed(() =>
+  //   categoriesStore.recentCategoriesIds.map((id: CategoryId) => ({
+  //     id,
+  //     value:
+  //       (totalCategories.value.income.find(c => c.id === id)?.value
+  //       || totalCategories.value.expense.find(c => c.id === id)?.value)
+  //       ?? 0,
+  //   })),
+  // )
 
   return {
+    // categoriesHey,
+    // categoriesHey2,
+
     avaDate,
     averages,
-    categoriesHey,
-    categoriesHey2,
     chartConfigShowedPeriodsCount,
     combinedTrnsIds,
     periodsToShow,
     filterPeriodMaxDateCount,
     getAverageItem,
-    getCategories,
+    getCategoriesStatBySlug,
     getColorizeType,
     getMoneyTypeNumber,
     getTotal,
@@ -376,6 +420,8 @@ export function useStat(filter: FilterProvider) {
     statData,
     statPrepareDataAverageAll,
     isShowGroupByType,
+    totalCategories,
+    totalCategoriesPrepare,
   }
 }
 

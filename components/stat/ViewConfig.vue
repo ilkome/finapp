@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import useUIView from '~/components/layout/useUIView'
-import { getStyles } from '~/components/ui/classes'
 
 const { ui, setUI } = useUIView()
 
@@ -10,38 +9,23 @@ function toggleView(name) {
 </script>
 
 <template>
-  <div class="inline-flex">
-    <div
-      class="flex-center w-10 cursor-pointer rounded-md px-3 py-2 hocus_bg-item-5"
-      :class="[
-        ...getStyles('item', ['link', 'rounded']),
-        { '!text-item-1': ui.showCatsVerticalChart },
-      ]"
+  <div class="flex">
+    <StatChartOptionsItem
+      :isActive="ui.showCatsVerticalChart"
+      icon="mdi mdi-poll"
       @click="toggleView('showCatsVerticalChart')"
-    >
-      <i class="mdi mdi-poll" />
-    </div>
+    />
 
-    <div
-      class="flex-center w-10 cursor-pointer rounded-md px-3 py-2 hocus_bg-item-5"
-      :class="[
-        ...getStyles('item', ['link', 'rounded']),
-        { '!text-item-1': ui.showRoundCats },
-      ]"
+    <StatChartOptionsItem
+      :isActive="ui.showRoundCats"
+      icon="mdi mdi-chart-bubble"
       @click="toggleView('showRoundCats')"
-    >
-      <i class="mdi mdi-chart-bubble" />
-    </div>
+    />
 
-    <div
-      class="flex-center w-10 cursor-pointer rounded-md px-3 py-2 hocus_bg-item-5"
-      :class="[
-        ...getStyles('item', ['link', 'rounded']),
-        { '!text-item-1': ui.showCatsHorizontalList },
-      ]"
+    <StatChartOptionsItem
+      :isActive="ui.showCatsHorizontalList"
+      icon="mdi mdi-chart-timeline"
       @click="toggleView('showCatsHorizontalList')"
-    >
-      <i class="mdi mdi-chart-timeline" />
-    </div>
+    />
   </div>
 </template>

@@ -95,31 +95,10 @@ const group = ref('lines')
         <StatMenu
           class="_mt-2 _px-2 sticky top-[35px] z-10 mx-1.5 flex items-center gap-2 border-b border-item-3 bg-foreground-4 px-1 py-2 backdrop-blur"
         />
-        <!-- <div class="grid gap-2">
-      <StatChartPeriods class="flex-center" />
-    </div> -->
-
-        <!-- <div class="_bg-item-4 mx-2 mb-2 flex rounded-lg">
-      <StatViewConfig />
-    </div> -->
-
-        <div>
-          <StatGroupRound
-            v-if="ui.showRoundCats"
-            :categories="stat.categoriesHey.value"
-            :moneyTypeNumber="3"
-            moneyTypeSlug="income"
-          />
-          <StatGroupRound
-            v-if="ui.showRoundCats"
-            :categories="stat.categoriesHey2.value"
-            :moneyTypeNumber="3"
-            moneyTypeSlug="income"
-          />
-        </div>
 
         <div data-scroll-ref="stat">
-          <StatFilter v-if2="filter.isShow.value" class="grow pt-2 px-2" />
+          <StatFilter class="grow pt-2 px-2" />
+
           <div
             v-if="appNavStore.activeTabStat !== 'trns'"
             class="mb-8 px-2 md_mb-4 lg_px-0"
@@ -165,21 +144,21 @@ const group = ref('lines')
 
                   <StatGroupRound
                     v-if="group === 'round'"
-                    :categories="stat.getCategories(item.slug)"
+                    :categories="stat.getCategoriesStatBySlug(item.slug)"
                     :moneyTypeSlug="item.slug"
                     :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
                   />
 
                   <StatGroupVertical
                     v-if="group === 'bars'"
-                    :categories="stat.getCategories(item.slug)"
+                    :categories="stat.getCategoriesStatBySlug(item.slug)"
                     :moneyTypeSlug="item.slug"
                     :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
                   />
 
                   <StatHorizontal
                     v-if="group === 'lines'"
-                    :categories="stat.getCategories(item.slug)"
+                    :categories="stat.getCategoriesStatBySlug(item.slug)"
                     :moneyTypeSlug="item.slug"
                     :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
                   />
@@ -197,23 +176,23 @@ const group = ref('lines')
               </div>
 
               <div>
-                <div class="flex justify-end">
-                  <div class="grid gap-2 grow my-6 max-w-xs bg-item-4 border border-item-6 rounded-lg px-1 pt-1">
-                    <div class="pt-2 px-2">
+                <div class="flex md_justify-end">
+                  <div class="grid gap-2 grow my-6 max-w-sm bg-item-4 border border-item-6 rounded-lg px-1 py-1">
+                    <div class="grid gap-1 pt-2 px-2">
                       <UiTitle2>
                         {{ filter.periods.value[filter.nameWithoutAll.value].showedPeriods }}
-                        Periods
+                        {{ filter.nameWithoutAll.value }}
                       </UiTitle2>
                       <div class="text-xs text-secondary font-mono">
                         {{ getFormattedDate(stat.statPrepareData.value[0].date) }} - {{ getFormattedDate(stat.statPrepareData.value.at(-1)?.date) }}
                       </div>
                     </div>
 
-                    <div class="grid ">
+                    <div class="grid">
                       <div
                         v-for="(item, idx) in stat.statPrepareData.value"
                         :key="item.date"
-                        class="flex items-center font-mono py-1 px-2 border-b border-item-5 hocus_rounded-md px-2 py-2 text-secondary hocus_bg-item-5"
+                        class="flex items-center font-mono py-1 px-2 border-t border-item-5 hocus_rounded-md px-2 py-2 text-secondary hocus_bg-item-5"
                         :class="{ 'bg-item-8 rounded-md': item.date === filter.date.value }"
                         @click="filter.setDate(item.date)"
                       >
@@ -229,38 +208,18 @@ const group = ref('lines')
                   </div>
                 </div>
 
-                <div class="flex justify-end">
+                <div class="flex md_justify-end">
                   <StatChartOptions />
                   <StatViewConfig />
                 </div>
               </div>
             </div>
           </div>
-
-          <!-- <div class="_max-w-[420px] grid gap-2 px-1 pt-4">
-            <TrnsListWithControl
-              :size="12"
-              :trnsIds="stat.combinedTrnsIds.value.summary"
-              isShowFilter
-              uiHistory
-              isAutoTypes
-              defaultFilterTrnsPeriod="period"
-            />
-
-            <StatChartOptions />
-            <StatViewConfig />
-          </div> -->
         </div>
 
         <div class="min-h-[calc(100vh-100px)]" />
       </div>
     </div>
-
-    <!-- <div
-      class="m-3 hidden w-[360px] rounded-xl border border-item-6 bg-foreground-5 xl_block"
-    >
-      <TrnFormSidebar />
-    </div> -->
   </div>
 
   <TrnsItemModal />

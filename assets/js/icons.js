@@ -22,7 +22,8 @@ export default [
     'mdi mdi-egg-outline',
     'mdi mdi-baguette',
     'mdi mdi-mushroom',
-  ], [
+  ],
+  [
     'mdi mdi-dump-truck',
     'mdi mdi-car-sports',
     'mdi mdi-car-hatchback',
@@ -41,7 +42,8 @@ export default [
     'mdi mdi-road-variant',
     'mdi mdi-gas-station',
     'mdi mdi-gauge-full',
-  ], [
+  ],
+  [
     'mdi mdi-airplane',
     'mdi mdi-rocket',
     'mdi mdi-concourse-ci',
@@ -52,7 +54,8 @@ export default [
     'mdi mdi-sail-boat',
     'mdi mdi-map-search',
     'mdi mdi-ferris-wheel',
-  ], [
+  ],
+  [
     'mdi mdi-bike',
     'mdi mdi-scooter',
     'mdi mdi-rollerblade',
@@ -77,7 +80,8 @@ export default [
     'mdi mdi-diving-helmet',
     'mdi mdi-diving-flippers',
     'mdi mdi-diving-snorkel',
-  ], [
+  ],
+  [
     'mdi mdi-shape',
     'mdi mdi-telescope',
     'mdi mdi-school',
@@ -94,7 +98,8 @@ export default [
     'mdi mdi-music',
     'mdi mdi-theater',
     'mdi mdi-movie-roll',
-  ], [
+  ],
+  [
     'mdi mdi-palm-tree',
     'mdi mdi-island',
     'mdi mdi-beach',
@@ -104,7 +109,8 @@ export default [
     'mdi mdi-clover',
     'mdi mdi-flower-tulip-outline',
     'mdi mdi-flower',
-  ], [
+  ],
+  [
     // animals
     'mdi mdi-space-invaders',
     'mdi mdi-google-downasaur',
@@ -121,7 +127,8 @@ export default [
     'mdi mdi-bat',
     'mdi mdi-paw',
     'mdi mdi-gnome',
-  ], [
+  ],
+  [
     // people
     'mdi mdi-account-tie',
     'mdi mdi-account-search-outline',
@@ -136,7 +143,8 @@ export default [
     'mdi mdi-drama-masks',
     'mdi mdi-guy-fawkes-mask',
     'mdi mdi-gender-female',
-  ], [
+  ],
+  [
     // medicine
     'mdi mdi-emoticon-poop',
     'mdi mdi-star-face',
@@ -149,7 +157,8 @@ export default [
     'mdi mdi-hospital',
     'mdi mdi-pill',
     'mdi mdi-folder-heart-outline',
-  ], [
+  ],
+  [
     // home
     'mdi mdi-home-heart',
     'mdi mdi-home',
@@ -174,7 +183,8 @@ export default [
     'mdi mdi-spray',
     'mdi mdi-air-filter',
     'mdi mdi-waves',
-  ], [
+  ],
+  [
     // staf
     'mdi mdi-gift',
     'mdi mdi-diamond-stone',
@@ -211,7 +221,8 @@ export default [
     'mdi mdi-magnify-close',
     'mdi mdi-basket-fill',
     'mdi mdi-metronome',
-  ], [
+  ],
+  [
     'mdi mdi-folder-star',
     'mdi mdi-chart-donut',
     'mdi mdi-chart-bell-curve',
@@ -228,7 +239,8 @@ export default [
     'mdi mdi-cash-100',
     'mdi mdi-repeat',
     'mdi mdi-bank',
-  ], [
+  ],
+  [
     'mdi mdi-auto-fix',
     'mdi mdi-wifi',
     'mdi mdi-android',
@@ -248,7 +260,8 @@ export default [
     'mdi mdi-web',
     'mdi mdi-disqus',
     'mdi mdi-white-balance-auto',
-  ], [
+  ],
+  [
     // rotate
     'mdi mdi-bullseye',
     'mdi mdi-chemical-weapon',
@@ -263,7 +276,8 @@ export default [
     'mdi mdi-alpha-i-circle-outline',
     'mdi mdi-alpha-m-circle-outline',
     'mdi mdi-all-inclusive',
-  ], [
+  ],
+  [
     'mdi mdi-clippy',
     'mdi mdi-attachment',
     'mdi mdi-google-drive',

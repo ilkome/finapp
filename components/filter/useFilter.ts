@@ -221,7 +221,6 @@ export function useFilter() {
 
     catsIds.value.push(categoryId)
     useRouter().push(`?categories[]=${encodeURIComponent(catsIds.value)}`)
-    console.log(encodeURIComponent(catsIds.value))
     scrollTop()
   }
 

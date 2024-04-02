@@ -155,4 +155,10 @@ export default defineNuxtConfig({
       type: 'module',
     },
   },
+
+  devtools: {
+    timeline: {
+      enabled: true,
+    },
+  },
 })

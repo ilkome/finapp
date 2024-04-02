@@ -1,8 +1,6 @@
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 
-const localName = 'finapp.ui'
-
 const ui = ref({
   showCatsHorizontalList: true,
   showCatsVerticalChart: true,

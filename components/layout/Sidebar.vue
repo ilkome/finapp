@@ -20,7 +20,9 @@ const filterStore = useFilterStore()
     />
 
     <div class="grid gap-1 pb-6 px-2">
-      <UiTitle2>{{ $t('wallets.title') }}</UiTitle2>
+      <UiTitle3 class="pl-3">
+        {{ $t('wallets.title') }}
+      </UiTitle3>
       <WalletsList
         :limit="10"
         isShowToggle
