@@ -3,7 +3,7 @@ import { useFilterStore } from '~/components/filter/useFilterStore'
 import { getStyles } from '~/components/ui/classes'
 
 const { t } = useI18n()
-const { toggleWalletId } = useFilterStore()
+const filterStore = useFilterStore()
 </script>
 
 <template>
@@ -33,7 +33,7 @@ const { toggleWalletId } = useFilterStore()
             :walletId
             :wallet="walletItem"
             @click="$router.push(`/wallets/${walletId}`)"
-            @filter="toggleWalletId(walletId)"
+            @filter="filterStore.toggleWalletId(walletId)"
           />
         </template>
 
@@ -64,4 +64,3 @@ const { toggleWalletId } = useFilterStore()
   ru:
     showAll: "Показать все"
 </i18n>
-~/components/filter/useFilterStore

@@ -15,7 +15,7 @@ const props = defineProps<{
   moneyTypeNumber: MoneyTypeNumber
 }>()
 
-const filter = inject('period') as FilterProvider
+const filter = inject('filter') as FilterProvider
 
 const categoriesStore = useCategoriesStore()
 const { trnFormCreate } = useTrnForm()

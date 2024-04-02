@@ -14,8 +14,8 @@ import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 import { config, lineConfig } from '~/components/stat/chart/config'
 import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
-import type { PeriodProvider } from '~/components/dashboard/Page.vue'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import type { FilterProvider } from '~/components/filter/useFilter'
 
 const props = withDefaults(
   defineProps<{
@@ -30,7 +30,7 @@ const props = withDefaults(
   },
 )
 const trnFormStore = useTrnFormStore()
-const period = inject('period') as PeriodProvider
+const filter = inject('filter') as FilterProvider
 const statData = inject('statData') as ComputedRef<{
   categories: any[]
   series: any[]
@@ -39,15 +39,15 @@ const statData = inject('statData') as ComputedRef<{
 const chartRef = ref()
 
 const chartType = computed(
-  () => period.periods.value[period.nameWithoutAll.value].type,
+  () => filter.periods.value[filter.nameWithoutAll.value].type,
 )
 
 const markedArea = computed(() =>
-  statData.value.categories.find((i: number) => +i === +period.date.value),
+  statData.value.categories.find((i: number) => +i === +filter.date.value),
 )
 
 function getFormat() {
-  switch (period.nameWithoutAll.value) {
+  switch (filter.nameWithoutAll.value) {
     case 'day':
       return 'D.MM'
     case 'week':
@@ -94,9 +94,9 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
     params.offsetX,
     params.offsetY,
   ])
-  period.setDate(statData.value.categories[index])
-  if (period.nameWithoutAll.value === 'day')
-    trnFormStore.values.date = dayjs(statData.value.categories[index]).startOf(period.nameWithoutAll.value).valueOf()
+  filter.setDate(statData.value.categories[index])
+  if (filter.nameWithoutAll.value === 'day')
+    trnFormStore.values.date = dayjs(statData.value.categories[index]).startOf(filter.nameWithoutAll.value).valueOf()
 }
 
 function setChartSeries(series: unknown[]) {
@@ -111,7 +111,7 @@ function setChartSeries(series: unknown[]) {
       type: chartType.value,
       label: {
         ...lineConfig.label,
-        show: period.ui.value.isShowDataLabels,
+        show: filter.ui.value.isShowDataLabels,
       },
     }))
 }
@@ -132,7 +132,7 @@ use([
   <div class="_rounded-lg _bg-item-4 relative">
     <!-- <pre>11 {{ markedArea }}</pre>
     <pre>{{ statData.categories }}</pre>
-    <pre>{{ period.date.value }}</pre> -->
+    <pre>{{ filter.date.value }}</pre> -->
     <!-- <pre>{{ statData.series }}</pre> -->
     <!-- <pre @click="period.setNextPeriodDate()">{{ period }}</pre>
     <pre @click="period.setPrevPeriodDate()">{{ period }}</pre> -->

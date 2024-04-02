@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
-import type { CategoryId } from '~/components/categories/types'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useFilterStore } from '~/components/filter/useFilterStore'
+import type { PeriodProvider } from '~/components/filter/useFilter'
 
 const props = defineProps<{
   categories: any
@@ -12,9 +11,9 @@ const props = defineProps<{
   moneyTypeNumber: MoneyTypeNumber
 }>()
 
+const filter = inject('filter') as PeriodProvider
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
-const filterStore = useFilterStore()
 const { width } = useWindowSize()
 
 const roundRef = ref(null)
@@ -59,9 +58,9 @@ watch([width, () => props.categories], () => updateWidth(), { immediate: true })
         :moneyTypeNumber="moneyTypeNumber"
       />
 
-      <template v-if="filterStore.catsIds.length > 0">
+      <template v-if="filter.catsIds.value.length > 0">
         <LazyStatGroupRoundItem
-          v-for="categoryId in filterStore.catsIds"
+          v-for="categoryId in filter.catsIds.value"
           :key="categoryId"
           :category="categoriesStore.items[categoryId]"
           :categoryId="categoryId"

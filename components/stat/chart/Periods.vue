@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { FiltersProvider, PeriodProvider } from '~/components/dashboard/Page.vue'
+import type { FilterProvider } from '~/components/filter/useFilter'
+import type { PeriodProvider } from '~/components/dashboard/Page.vue'
 
-const period = inject('period') as PeriodProvider
+const filter = inject('filter') as FilterProvider
 const filters = inject('filters') as FiltersProvider
 
 const showedPeriods = computed(

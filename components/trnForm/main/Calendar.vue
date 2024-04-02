@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import 'v-calendar/style.css'
-import '~/components/modal/styles/modalLinks.styl'
 import dayjs from 'dayjs'
 import { DatePicker } from 'v-calendar'
 import { useFilterStore } from '~/components/filter/useFilterStore'

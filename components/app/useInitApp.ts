@@ -1,9 +1,7 @@
 import { onAuthStateChanged } from 'firebase/auth'
 import localforage from 'localforage'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-// import { useChartStore } from '~/components/stat/chart/useChartStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUser'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -12,7 +10,6 @@ import useUIView from '~/components/layout/useUIView'
 
 export function useInitApp() {
   const { setUI } = useUIView()
-  const filterStore = useFilterStore()
   const userStore = useUserStore()
   const currenciesStore = useCurrenciesStore()
   const walletsStore = useWalletsStore()
@@ -80,8 +77,6 @@ export function useInitApp() {
     wallets && walletsStore.setWallets(wallets)
     categories && categoriesStore.setCategories(categories)
     trns && trnsStore.setTrns(trns)
-    filterPeriod && filterStore.setPeriodAndDate(filterPeriod ?? 'month')
-    filterDate && filterStore.setDate(filterDate)
 
     if (ui) {
       for (const slug in ui)

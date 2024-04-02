@@ -16,7 +16,7 @@ const props = defineProps<{
 }>()
 
 const filters = inject('filters') as FiltersProvider
-const filter = inject('period') as FilterProvider
+const filter = inject('filter') as FilterProvider
 
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()

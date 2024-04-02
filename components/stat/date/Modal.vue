@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import '~/components/modal/styles/modalLinks.styl'
-import type { FiltersProvider, PeriodProvider } from '~/components/dashboard/Page.vue'
+import type { FilterProvider } from '~/components/filter/useFilter'
+import type { FiltersProvider } from '~/components/stat/useStat'
 
-const period = inject('period') as PeriodProvider
+const filter = inject('filter') as FilterProvider
 const filters = inject('filters') as FiltersProvider
 
 const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
@@ -18,19 +18,19 @@ const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
 
       <div>
         <UiTabsItem3
-          v-for="periodItem in period.periodsNames.value"
+          v-for="periodItem in filter.periodsNames.value"
           :key="periodItem.slug"
-          :isActive="period.nameWithAll.value === periodItem.slug"
+          :isActive="filter.nameWithAll.value === periodItem.slug"
           class="nowrap"
-          @click="period.setPeriodAndDate(periodItem.slug)"
+          @click="filter.setPeriodAndDate(periodItem.slug)"
         >
           <div :class="periodItem.icon" />
           {{ $t(`dates.${periodItem.slug}.simple`) }}
         </UiTabsItem3>
 
         <UiTabsItem3
-          :isActive="period.nameWithAll.value === 'all'"
-          @click="period.setPeriodAndDate('all')"
+          :isActive="filter.nameWithAll.value === 'all'"
+          @click="filter.setPeriodAndDate('all')"
         >
           <div class="mdi mdi-database" />
           {{ $t('dates.all.simple') }}
@@ -39,7 +39,7 @@ const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
     </div>
 
     <!-- Counts -->
-    <div v-if="period.nameWithAll.value !== 'all'" class="grid gap-2 overflow-hidden">
+    <div v-if="filter.nameWithAll.value !== 'all'" class="grid gap-2 overflow-hidden">
       <UiTitle2>
         {{ $t("dates.count") }}
       </UiTitle2>
@@ -48,16 +48,16 @@ const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
         <UiTabsItem3
           v-for="periodCount in periodCounts"
           :key="periodCount"
-          :isActive="periodCount === period.periods.value[period.nameWithoutAll.value].showedPeriods"
+          :isActive="periodCount === filter.periods.value[filter.nameWithoutAll.value].showedPeriods"
           class="nowrap"
-          @click="period.setPeriod(periodCount)"
+          @click="filter.setPeriod(periodCount)"
         >
           {{ periodCount }}
         </UiTabsItem3>
 
         <UiTabsItem3
-          :isActive="filters.filterPeriodMaxDateCount.value === period.periods.value[period.nameWithoutAll.value].showedPeriods"
-          @click="period.setPeriod(filters.filterPeriodMaxDateCount.value)"
+          :isActive="filters.filterPeriodMaxDateCount.value === filter.periods.value[filter.nameWithoutAll.value].showedPeriods"
+          @click="filter.setPeriod(filters.filterPeriodMaxDateCount.value)"
         >
           {{ filters.filterPeriodMaxDateCount.value }}
         </UiTabsItem3>

@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import type { PeriodProvider } from '~/components/dashboard/Page.vue'
+import type { FilterProvider } from '~/components/filter/useFilter'
 
-const period = inject('period') as PeriodProvider
+const filter = inject('filter') as FilterProvider
 
 const items = ref([{
   slug: 'income',
   icon: 'mdi mdi-arrow-down-thin-circle-outline',
-  isActive: computed(() => period.ui.value.income),
-  event: () => period.ui.value.toggleUi('income'),
+  isActive: computed(() => filter.ui.value.income),
+  event: () => filter.ui.value.toggleUi('income'),
 }, {
   slug: 'expense',
   icon: 'mdi mdi-arrow-up-thin-circle-outline',
-  isActive: computed(() => period.ui.value.expense),
-  event: () => period.ui.value.toggleUi('expense'),
+  isActive: computed(() => filter.ui.value.expense),
+  event: () => filter.ui.value.toggleUi('expense'),
 }, {
   slug: 'sum',
   icon: 'mdi mdi-chart-gantt',
-  isActive: computed(() => period.ui.value.sum),
-  event: () => period.ui.value.toggleUi('sum'),
+  isActive: computed(() => filter.ui.value.sum),
+  event: () => filter.ui.value.toggleUi('sum'),
 }, {
   slug: 'charLabels',
   icon: 'mdi mdi-subtitles-outline',
-  isActive: computed(() => period.ui.value.isShowDataLabels),
-  event: () => period.ui.value.toggleUi('isShowDataLabels'),
+  isActive: computed(() => filter.ui.value.isShowDataLabels),
+  event: () => filter.ui.value.toggleUi('isShowDataLabels'),
 }, {
   slug: 'charType',
-  icon: computed(() => period.periods.value[period.nameWithoutAll.value].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
+  icon: computed(() => filter.periods.value[filter.nameWithoutAll.value].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
   isActive: false,
-  event: period.toggleChartType,
+  event: filter.toggleChartType,
 }])
 </script>
 

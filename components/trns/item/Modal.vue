@@ -6,10 +6,9 @@ import useTrn from '~/components/trns/item/useTrn'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import '~/components/modal/styles/modalLinks.styl'
 import type { PeriodProvider } from '~/components/dashboard/Page.vue'
 
-const period = inject('period') as PeriodProvider
+const period = inject('filter') as PeriodProvider
 const { trnFormEdit, trnFormDuplicate } = useTrnForm()
 const { activeTabStat } = storeToRefs(useAppNav())
 const walletsStore = useWalletsStore()
@@ -102,7 +101,7 @@ function handleDeleteConfirm() {
       <template #default="{ close }">
         <div class="content pb-4">
           <div class="tools">
-            <div class="modalLinks">
+            <div class="div">
               <ModalButton
                 :name="$t('base.delete')"
                 icon="mdi mdi-delete-empty-outline"

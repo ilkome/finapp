@@ -3,7 +3,7 @@ import { getStyles } from '~/components/ui/classes'
 import type { FilterProvider } from '~/components/filter/useFilter'
 import { formatDateByPeriod } from '~/components/date/format'
 
-const period = inject('period') as FilterProvider
+const period = inject('filter') as FilterProvider
 
 const { t } = useI18n()
 const formattedDate = computed(() => formatDateByPeriod(period.date.value, period.nameWithoutAll.value, {

@@ -34,15 +34,10 @@ initFilter()
 
 provide('periodsToShow', stat.periodsToShow)
 provide('statData', stat.statData)
-provide('period', filter)
+provide('filter', filter)
 provide('filters', stat.filters)
 
 const group = ref('lines')
-
-watch(useRoute(), (value) => {
-  console.log(1)
-  // console.log(value)
-})
 </script>
 
 <template>
@@ -261,12 +256,13 @@ watch(useRoute(), (value) => {
       </div>
     </div>
 
-    <div
+    <!-- <div
       class="m-3 hidden w-[360px] rounded-xl border border-item-6 bg-foreground-5 xl_block"
     >
       <TrnFormSidebar />
-    </div>
+    </div> -->
   </div>
 
   <TrnsItemModal />
+  <TrnFormWrap />
 </template>

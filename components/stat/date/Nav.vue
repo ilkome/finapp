@@ -3,7 +3,7 @@ import { getStyles } from '~/components/ui/classes'
 import type { FiltersProvider } from '~/components/stat/useStat'
 import type { FilterProvider } from '~/components/filter/useFilter'
 
-const period = inject('period') as FilterProvider
+const period = inject('filter') as FilterProvider
 const filters = inject('filters') as FiltersProvider
 </script>
 

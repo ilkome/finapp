@@ -353,5 +353,4 @@ export function useFilter() {
   }
 }
 
-export type PeriodProvider = ReturnType<typeof useFilter>
 export type FilterProvider = ReturnType<typeof useFilter>

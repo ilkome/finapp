@@ -68,6 +68,5 @@ watch(
     </div>
   </div>
 
-  <TrnFormWrap />
   <CurrenciesModal />
 </template>

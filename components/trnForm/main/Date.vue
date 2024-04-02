@@ -9,7 +9,7 @@ import type { PeriodProvider } from '~/components/dashboard/Page.vue'
 const $trnForm = useTrnFormStore()
 const filterStore = useFilterStore()
 
-const period = inject('period') as PeriodProvider
+const period = inject('filter') as PeriodProvider
 
 const formattedDate = computed(() => {
   const date = formatDate($trnForm.values.date, 'full')

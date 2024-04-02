@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { PeriodProvider } from '~/components/dashboard/Page.vue'
+import type { FilterProvider } from '~/components/filter/useFilter'
 
-const period = inject('period') as PeriodProvider
+const filter = inject('filter') as FilterProvider
 
 const isShowCategorySelector = ref(false)
 const isShownWalletsSelector = ref(false)
@@ -16,7 +16,7 @@ const isShownWalletsSelector = ref(false)
             <template #icon>
               <UiIconCategory class="size-6" />
             </template>
-            <template v-if="period.catsIds.value.length === 0">
+            <template v-if="filter.catsIds.value.length === 0">
               {{ $t("categories.createNewTitle") }}
             </template>
           </FilterAddItem>
@@ -24,7 +24,7 @@ const isShownWalletsSelector = ref(false)
             v-for="categoryId in period.catsIds.value"
             :key="categoryId"
             :categoryId="categoryId"
-            @click="period.removeCategoryId(categoryId)"
+            @click="filter.removeCategoryId(categoryId)"
           />
         </div>
 
@@ -35,17 +35,17 @@ const isShownWalletsSelector = ref(false)
             </template>
           </FilterAddItem>
           <FilterWalletItem
-            v-for="walletId in period.walletsIds.value"
+            v-for="walletId in filter.walletsIds.value"
             :id="walletId"
             :key="walletId"
-            @click="period.removeWalletId(walletId)"
+            @click="filter.removeWalletId(walletId)"
           />
         </div>
 
         <FilterItemBg
-          v-if="period.isShow.value"
+          v-if="filter.isShow.value"
           class="bg-transparent"
-          @click="period.clearFilter"
+          @click="filter.clearFilter"
         >
           <div class="mdi mdi-filter-remove-outline text-xl" />
         </FilterItemBg>
@@ -56,14 +56,14 @@ const isShownWalletsSelector = ref(false)
       :isShow="isShowCategorySelector"
       isAllowSelectParentCategory
       @onClose="isShowCategorySelector = false"
-      @onSelected="period.setCategoryId"
+      @onSelected="filter.setCategoryId"
     />
 
     <WalletsSelector
       v-if="isShownWalletsSelector"
       :title="$t('wallets.title')"
       @onClose="isShownWalletsSelector = false"
-      @onSelected="period.setWalletId"
+      @onSelected="filter.setWalletId"
     />
   </div>
 </template>
