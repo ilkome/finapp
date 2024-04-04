@@ -70,7 +70,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 
     <VDropdown class="grow">
       <div
-        class="flex cursor-pointer items-center rounded-md px-3 py-2 text-xs leading-none hocus_bg-item-5"
+        class="flex items-center rounded-md px-3 py-2 text-xs leading-none hocus_bg-item-5"
         v-html="formattedDate"
       />
 

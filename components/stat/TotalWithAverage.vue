@@ -27,6 +27,7 @@ const classes = computed(() => ({
 
 <template>
   <div
+    class="flex-1"
     :class="classes"
     @click="emit('click')"
   >

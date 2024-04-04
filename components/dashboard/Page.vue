@@ -38,26 +38,33 @@ provide('filter', filter)
 provide('filters', stat.filters)
 
 const group = ref('lines')
+
+const kdkdkdkdkdl = computed(() => {
+  let res = 'expenseTransactions'
+
+  switch (appNavStore.activeTabStat) {
+    case 'expense':
+      res = 'expenseTransactions'
+      break
+    case 'income':
+      res = 'incomeTransactions'
+      break
+    case 'summary':
+      res = 'sumTransactions'
+      break
+  }
+
+  return res
+})
 </script>
 
 <template>
   <div class="grid h-full overflow-hidden xl_grid-cols-[1fr_auto]">
     <div class="h-full overflow-hidden overflow-y-auto px-3 pb-6">
       <div class="md_px-4 lg_px-8 lg_py-4 lg_max-w-4xl">
-        <!-- <div class="sticky top-0 z-20 bg-foreground-4 backdrop-blur">
-          <div class="_justify-between flex items-center gap-2 border-b border-item-7 px-1 py-1">
-            <StatDateNav />
-            <StatDateView />
-          </div>
-        </div> -->
-
-        <!-- <pre>
-      {{ trnsItemsFiltered[ Object.keys(trnsItemsFiltered).at(-1)].date }}
-      </pre> -->
-
         <div
           v-if="isLargeScreen"
-          class="mx-2 mb-0 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg py-2 sm_flex-nowrap sm_justify-start sm_bg-transparent sm_py-3 sm_pt-4"
+          class="mx-2 mb-0 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg py-2 sm_flex-nowrap sm_justify-between sm_bg-transparent sm_py-3 sm_pt-4"
         >
           <StatTotalWithAverage
             v-for="(item, slug) in stat.averages.value"
@@ -65,8 +72,6 @@ const group = ref('lines')
             :item="item"
           />
         </div>
-
-        <!-- <pre>{{ dayjs(avaDate).format() }}</pre> -->
 
         <LazyStatChartView
           v-if="
@@ -99,12 +104,20 @@ const group = ref('lines')
         <div data-scroll-ref="stat">
           <StatFilter class="grow pt-2 px-2" />
 
-          <div
-            v-if="appNavStore.activeTabStat !== 'trns'"
-            class="mb-8 px-2 md_mb-4 lg_px-0"
-          >
+          <div class="mb-8 px-2 md_mb-4 lg_px-0">
             <div class="grid items-start gap-6 md_grid-cols-2 md_gap-8">
-              <div class="grid gap-4">
+              <div v-if="appNavStore.activeTabStat === 'trns'" class="px-2 py-2 sm_px-1.5 sm_pt-3">
+                <TrnsListWithControl
+                  :size="12"
+                  :trnsIds="stat.combinedTrnsIds.value.summary"
+                  isShowFilter
+                  uiHistory
+                  isAutoTypes
+                  defaultFilterTrnsPeriod="period"
+                />
+              </div>
+
+              <div v-else class="grid gap-4">
                 <div
                   v-for="item in moneyTypes"
                   v-show="stat.isShowGroupByType(item.slug)"
@@ -190,7 +203,7 @@ const group = ref('lines')
 
                     <div class="grid">
                       <div
-                        v-for="(item, idx) in stat.statPrepareData.value"
+                        v-for="item in stat.statPrepareData.value"
                         :key="item.date"
                         class="flex items-center font-mono py-1 px-2 border-t border-item-5 hocus_rounded-md px-2 py-2 text-secondary hocus_bg-item-5"
                         :class="{ 'bg-item-8 rounded-md': item.date === filter.date.value }"
@@ -199,10 +212,7 @@ const group = ref('lines')
                         <div class="grow text-xs text-secondary">
                           {{ getFormattedDate(item.date) }}
                         </div>
-                        <div class="text-xs px-2">
-                          {{ Math.ceil(((stat.statPrepareData.value[idx]?.expenseTransactions - stat.statPrepareData.value[idx + 1]?.expenseTransactions) / ((stat.statPrepareData.value[idx]?.expenseTransactions + stat.statPrepareData.value[idx + 1]?.expenseTransactions) / 2)) * 100) }}
-                        </div>
-                        <Amount :amount="item.expenseTransactions" currencyCode="RUB" />
+                        <Amount :amount="item[kdkdkdkdkdl]" currencyCode="RUB" />
                       </div>
                     </div>
                   </div>
@@ -217,7 +227,7 @@ const group = ref('lines')
           </div>
         </div>
 
-        <div class="min-h-[calc(100vh-100px)]" />
+        <div class="min-h-[calc(90vh)]" />
       </div>
     </div>
   </div>

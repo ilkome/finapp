@@ -10,7 +10,9 @@ export const classes = {
       bg-item-4
     `,
     base: '',
-    rounded: 'rounded',
+    rounded: 'rounded-md',
+    padding1: 'px-2 py-1.5',
+    minh: 'min-h-[42px]',
     paddings: {
       base: '',
     },
@@ -31,7 +33,7 @@ export const classes = {
     rounded: 'rounded-xl',
     padding1: 'px-2 pt-6 !pb-2',
   },
-}
+} as const
 
 export function getStyles(group: string, elements: string[]) {
   return elements.map(name => classes[group][name])

@@ -78,7 +78,7 @@ const counts = computed(() => ({
 <template lang="pug">
 div
   template(v-for="item in counts")
-    .py-2.px-1.flex.gap-12.items-center.border-b.border-item-5.last_border-0(
+    .py-2.px-2.flex.gap-12.items-center.border-b.border-item-5.last_border-0(
       v-if="item.isShow"
     )
       .grow.flex.items-center.gap-3

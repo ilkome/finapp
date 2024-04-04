@@ -18,7 +18,7 @@ const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
-  <div class="grid gap-y-1 gap-x-1.3sm grid-cols-2 sm:gap-x-6">
+  <div class="grid gap-1 sm:gap-x-6">
     <CategoriesItem
       v-for="categoryId in ids"
       :key="categoryId"

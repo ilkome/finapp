@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
+import type {
+  WalletId,
+  WalletItemWithAmount,
+} from '~/components/wallets/types'
 
 defineProps<{
   wallet: WalletItemWithAmount
@@ -14,11 +17,11 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div @click="emit('click')">
+  <div class="group" @click="emit('click')">
     <div
-      class="-my-[1px] text-secondary2 flex items-center px-2 py-1.5 min-h-[42px] hocus_bg-item-5 rounded-md"
+      class="-my-[1px] flex min-h-[42px] items-center rounded-md px-2 py-1.5 text-secondary2 hocus_bg-item-5"
     >
-      <div class="overflow-hidden flex grow items-center gap-3 pl-1">
+      <div class="flex grow items-center gap-3 overflow-hidden pl-1">
         <template v-if="isShowIcons">
           <UiIconWalletWithdrawal
             v-if="wallet.countTotal"
@@ -54,7 +57,7 @@ const emit = defineEmits<{
         </div>
       </div>
 
-      <div class="grow text-item-base pr-1">
+      <div class="text-item-base grow pr-1">
         <Amount
           :amount="wallet.amount"
           :currencyCode="wallet.currency"
@@ -64,6 +67,9 @@ const emit = defineEmits<{
         />
       </div>
     </div>
-    <div class="mr-2 ml-9 h-[1px] bg-item-5" :class="{ 'ml-9': isShowIcons, 'ml-7': !isShowIcons }" />
+    <div
+      class="ml-9 mr-2 h-[1px] bg-item-5 group-last_hidden"
+      :class="{ 'ml-9': isShowIcons, 'ml-7': !isShowIcons }"
+    />
   </div>
 </template>

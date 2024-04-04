@@ -142,7 +142,7 @@ function handleDeleteConfirm() {
           </div>
           <div class="flex-center px-4 pt-4">
             <div
-              class="flex-center max-w-[280px] grow basis-1/2 cursor-pointer rounded-full bg-item-4 px-5 py-3 text-sm hocus_bg-item-5"
+              class="flex-center max-w-[280px] grow basis-1/2 rounded-full bg-item-4 px-5 py-3 text-sm hocus_bg-item-5"
               @click="close()"
             >
               {{ $t("close") }}

@@ -53,7 +53,7 @@ function getWidthPercent(value: number, biggest: number): string {
 <template>
   <div
     class="_bg-item-4 rounded-lg"
-    @click="filter.toggleCategoryId(categoryId)"
+    @click="toggleShowInside"
   >
     <div
       class="group flex items-center justify-between space-x-3 rounded-md px-1 py-1 hocus_bg-item-5"
@@ -62,7 +62,7 @@ function getWidthPercent(value: number, biggest: number): string {
         :categoryId="categoryId"
         :color="category.color"
         :icon="category.icon"
-        @click="toggleShowInside"
+        @click="filter.toggleCategoryId(categoryId)"
       />
 
       <div class="grow">

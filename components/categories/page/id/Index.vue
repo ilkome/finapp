@@ -84,7 +84,7 @@ useHead({
     <div class="mb-12 pt-3">
       <div class="flex px-2">
         <UiItemShadow
-          class="flex cursor-pointer items-center gap-3 p-1 px-2"
+          class="flex items-center gap-3 p-1 px-2"
           @click="onClickFilterCategory"
         >
           <div class="mdi mdi-poll text-xl" />

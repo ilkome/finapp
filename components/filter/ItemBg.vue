@@ -7,7 +7,7 @@ const emit = defineEmits<{
 <template lang="pug">
 div(
   class=`
-    cursor-pointer relative
+    relative
     py-1 px-3
     flex items-center gap-3
     rounded-md

@@ -21,7 +21,7 @@ const parentCategory = computed<CategoryItem | false>(
 <template>
   <div
     v-if="category"
-    class="relative flex cursor-pointer items-center gap-x-3 rounded-md bg-item-4 px-3 py-2 hocus_bg-item-5"
+    class="relative flex items-center gap-x-3 rounded-md bg-item-4 px-3 py-2 hocus_bg-item-5"
     @click="$trnForm.ui.catsRootModal = true"
   >
     <div

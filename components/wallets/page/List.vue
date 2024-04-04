@@ -58,24 +58,27 @@ const walletsCurrenciesTabs = reactive({
       </template>
     </UiHeader>
 
-    <div class="grid gap-5 px-2 md_gap-8 md_grid-cols-[auto_auto] items-start">
-      <div class="grid gap-5 md_order-2">
+    <div class="grid items-start gap-5 px-2 md_grid-cols-[auto_auto] md_gap-8">
+      <div class="grid gap-5 md_gap-3 md_order-2">
         <!-- Base currency -->
-        <div v-if="walletsCurrencies.length > 1" class="md_order-3 grid gap-2 overflow-hidden w-full">
-          <UiTitle2>{{ t("currenciesBase") }}</UiTitle2>
+        <div
+          v-if="walletsCurrencies.length > 1"
+          class="grid w-full gap-2 overflow-hidden md_order-3"
+        >
+          <UiTitle3>{{ t("currenciesBase") }}</UiTitle3>
           <CurrenciesChanger />
         </div>
 
         <!-- Wallets Currencies -->
-        <div v-if="walletsCurrencies.length > 1" class="md_order-1 grid gap-2">
-          <UiTitle2>{{ t("list") }}</UiTitle2>
-          <div class="overflow-hidden w-full">
+        <div v-if="walletsCurrencies.length > 1" class="grid gap-2 md_order-1">
+          <UiTitle3>{{ t("list") }}</UiTitle3>
+          <div class="w-full overflow-hidden">
             <UiTabs2>
               <UiTabsItem2
                 :isActive="state.activeTab === 'all'"
                 @click="walletsCurrenciesTabs.onSelect('all')"
               >
-                All
+                {{ t("all") }}
               </UiTabsItem2>
 
               <UiTabsItem2
@@ -91,41 +94,24 @@ const walletsCurrenciesTabs = reactive({
         </div>
 
         <WalletsTotal
-          class="lg_max-w-[360px] md_order-2 bg-item-4 border border-item-6 rounded-lg px-2 py-1"
           :currencyCode="currenciesStore.base"
           :walletsItems="walletsCurrenciesTabs.wallets"
+          class="_border rounded-lg border-item-6 bg-item-4 px-2 py-1.5 md_order-2 lg_max-w-[360px]"
         />
       </div>
 
-      <div class="grid gap-5">
-        <!-- <div class="max-w-fit">
-        <div
-          v-for="group in Object.groupBy(Object.values(walletsCurrenciesTabs.wallets), (w) => w.type)"
-          class="pb-4"
-        >
-          <WalletsItem2
-            v-for="(walletItem, walletId) in group"
-            :key="walletId"
-            :walletId
-            :wallet="walletItem"
-            @click="$router.push(`/wallets/${walletId}`)"
-            @filter="setWalletId(walletId)"
-          />
-        </div>
-      </div> -->
-
-        <!-- List -->
-        <div class="lg_max-w-[360px] mb-24 _bg-item-4 _border border-item-6 rounded-lg px-1 py-2">
-          <WalletsItem2
-            v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
-            :key="walletId"
-            :walletId
-            :wallet="walletItem"
-            isShowIcons
-            @click="$router.push(`/wallets/${walletId}`)"
-            @filter="setWalletId(walletId)"
-          />
-        </div>
+      <div
+        class="grid gap-1 mb-24 py-2 lg_max-w-[360px]"
+      >
+        <WalletsItem3
+          v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
+          :key="walletId"
+          :walletId
+          :wallet="walletItem"
+          isShowIcons
+          @click="$router.push(`/wallets/${walletId}`)"
+          @filter="setWalletId(walletId)"
+        />
       </div>
     </div>
   </UiPage>
@@ -136,10 +122,12 @@ const walletsCurrenciesTabs = reactive({
 
 <i18n lang="yaml">
 en:
+  all: All
   list: Wallets Currencies
   currenciesBase: Base currency
 
 ru:
+  all: Все
   list: Валюты кошельков
   currenciesBase: Основная валюта
 </i18n>

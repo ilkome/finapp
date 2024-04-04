@@ -2,6 +2,7 @@
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useFilterStore } from '~/components/filter/useFilterStore'
+import { getStyles } from '~/components/ui/classes'
 
 const props = defineProps<{
   // TODO: export type
@@ -41,8 +42,11 @@ function onClickIcon() {
 <template>
   <div
     v-if="category"
-    class="flex cursor-pointer items-center gap-x-3 rounded-md bg-item-4 px-1 py-1 hocus_bg-item-5"
-    :class="{ '!cursor-default !bg-item-3': activeItemId === categoryId }"
+    class="flex items-center gap-x-3"
+    :class="[
+      { '!cursor-default !bg-item-3': activeItemId === categoryId },
+      ...getStyles('item', ['link', 'bg', 'rounded', 'padding1', 'minh']),
+    ]"
     @click="emit('click', categoryId)"
   >
     <Icon2

@@ -6,20 +6,17 @@ const { closeAllModals, isModalOpen } = useAppNav()
 
 <template>
   <Teleport to="body">
-    <div class="_max-w-sm">
-      <BaseBottomSheet2
-        :isShow="isModalOpen('walletsSort')"
-        keepAlive
-        drugClassesCustom="max-w-md rounded-xl"
-        @closed="closeAllModals"
-      >
-        <template #handler="{ close }">
-          <BaseBottomSheetHandler />
-          <BaseBottomSheetClose @onClick="close" />
-        </template>
+    <BaseBottomSheet2
+      :isShow="isModalOpen('walletsSort')"
+      drugClassesCustom="max-w-md rounded-xl px-2"
+      @closed="closeAllModals"
+    >
+      <template #handler="{ close }">
+        <BaseBottomSheetHandler />
+        <BaseBottomSheetClose @onClick="close" />
+      </template>
 
-        <WalletsSort @closeModal="closeAllModals" />
-      </BaseBottomSheet2>
-    </div>
+      <WalletsSort @closeModal="closeAllModals" />
+    </BaseBottomSheet2>
   </Teleport>
 </template>

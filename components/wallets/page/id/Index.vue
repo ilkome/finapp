@@ -71,7 +71,7 @@ useHead({
 
     <div class="mb-6 flex px-2">
       <UiItemShadow
-        class="flex cursor-pointer items-center gap-3 p-1 px-2"
+        class="flex items-center gap-3 p-1 px-2"
         @click="onClickFilterWallet"
       >
         <div class="mdi mdi-poll text-xl" />

@@ -21,7 +21,7 @@ const categoriesStore = useCategoriesStore()
     </UiHeader>
 
     <!-- List -->
-    <div class="px-2 pb-12 pt-1">
+    <div class="px-2 pb-12 pt-1 max-w-xs">
       <CategoriesList
         :ids="categoriesStore.categoriesRootIds"
         @click="(catId) => $router.push(`/categories/${catId}`)"
@@ -32,7 +32,7 @@ const categoriesStore = useCategoriesStore()
       <div class="flex justify-evenly gap-6 px-2 pb-4">
         <!-- Create -->
         <div
-          class="flex-center max-w-[280px] grow basis-1/2 cursor-pointer rounded-full bg-item-4 px-5 py-3 text-sm hocus_bg-item-5"
+          class="flex-center max-w-[280px] grow basis-1/2 rounded-full bg-item-4 px-5 py-3 text-sm hocus_bg-item-5"
           @click="$router.push('/categories/new')"
         >
           {{ $t("categories.new") }}

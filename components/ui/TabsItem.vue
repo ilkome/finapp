@@ -12,7 +12,7 @@ const emit = defineEmits(['click'])
       '!bg-item-3 !text-primary !cursor-default': isActive,
     }"
     class="
-      cursor-pointer select-none
+      select-none
       grow py-3 px-2 flex gap-1 items-center justify-center
       text-primary/80 text-sm
       hocus_bg-item-5
