@@ -199,7 +199,8 @@ export default {
     selectedPeriod: 'Выбранный период',
     shortTitle: 'Статистика',
     balanceTitle: 'Баланс',
-    periods: 'Общее',
+    summary: 'Общее',
+    periods: 'Периоды',
     empty: 'Статистики по выбранным параметрам нет :)',
     emptyDesc: 'Измените фильтр, период или добавьте новую транзакцию.',
     customize: {

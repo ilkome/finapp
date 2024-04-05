@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { FilterProvider } from '~/components/filter/useFilter'
-import type { FiltersProvider } from '~/components/stat/useStat'
+import type { StatProvider } from '~/components/stat/useStat'
 
 const filter = inject('filter') as FilterProvider
-const filters = inject('filters') as FiltersProvider
+const filters = inject('stat') as StatProvider
 
 const showedPeriods = computed(
   () => filter.periods.value[filter.nameWithoutAll.value].showedPeriods,
@@ -32,7 +32,7 @@ const isShowAdd = computed(() => showedPeriods.value >= filters.filterPeriodMaxD
 </script>
 
 <template>
-  <UiTabs2>
+  <UiTabs2 class="gap-1">
     <UiTabsItem2
       v-for="periodItem in filter.periodsNames.value"
       :key="periodItem.slug"

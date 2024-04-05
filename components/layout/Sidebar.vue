@@ -23,6 +23,7 @@ const filterStore = useFilterStore()
       <UiTitle3 class="pl-3">
         {{ $t('wallets.title') }}
       </UiTitle3>
+
       <WalletsList
         :limit="10"
         isShowToggle

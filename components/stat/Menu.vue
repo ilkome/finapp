@@ -12,7 +12,7 @@ const menu = computed<{
 }[]>(() => [{
   idx: 0,
   id: 'summary',
-  name: $i18n.t('stat.periods'),
+  name: $i18n.t('stat.summary'),
 }, {
   idx: 1,
   id: 'expense',
@@ -25,6 +25,10 @@ const menu = computed<{
   idx: 3,
   id: 'trns',
   name: $i18n.t('trns.shortTitle'),
+}, {
+  idx: 4,
+  id: 'periods',
+  name: $i18n.t('stat.periods'),
 }])
 
 const { activeTabStat } = storeToRefs(useAppNav())
@@ -46,7 +50,7 @@ function onClickStatMenu(tabName: AppNav) {
 </script>
 
 <template>
-  <div>
+  <div class="overflow-y-auto">
     <!-- v-if="!item.isPrivate || userStore.isDevUser" -->
     <UiTabsItem2
       v-for="item in menu"

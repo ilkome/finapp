@@ -218,7 +218,7 @@ div
 
       template(v-if="isAllowChangeParent")
         .cursor-pointer.mb-4.py-3.px-2.gap-x-3.flex-center.rounded-md.text-center.bg-item-4.hocus_bg-item-5(
-          :class="{ '!cursor-default !bg-item-3': categoryForm.parentId === 0 }"
+          :class="{ '!bg-item-3': categoryForm.parentId === 0 }"
           @click="emit('updateValue', 'parentId', 0)"
         ) {{ $t('categories.form.parent.no') }}
 

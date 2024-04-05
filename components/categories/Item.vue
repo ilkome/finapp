@@ -44,7 +44,7 @@ function onClickIcon() {
     v-if="category"
     class="flex items-center gap-x-3"
     :class="[
-      { '!cursor-default !bg-item-3': activeItemId === categoryId },
+      { '!bg-item-3': activeItemId === categoryId },
       ...getStyles('item', ['link', 'bg', 'rounded', 'padding1', 'minh']),
     ]"
     @click="emit('click', categoryId)"

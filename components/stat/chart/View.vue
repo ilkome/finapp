@@ -12,6 +12,7 @@ import {
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
+import type { StatProvider } from '~/components/stat/useStat'
 import { config, lineConfig } from '~/components/stat/chart/config'
 import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
@@ -29,13 +30,11 @@ const props = withDefaults(
     isShowExpense: true,
   },
 )
-const trnFormStore = useTrnFormStore()
-const filter = inject('filter') as FilterProvider
-const statData = inject('statData') as ComputedRef<{
-  categories: any[]
-  series: any[]
-}>
 
+const filter = inject('filter') as FilterProvider
+const stat = inject('stat') as StatProvider
+
+const trnFormStore = useTrnFormStore()
 const chartRef = ref()
 
 const chartType = computed(
@@ -43,7 +42,7 @@ const chartType = computed(
 )
 
 const markedArea = computed(() =>
-  statData.value.categories.find((i: number) => +i === +filter.date.value),
+  stat.chartCategories.value.find((i: number) => +i === +filter.date.value),
 )
 
 function getFormat() {
@@ -63,8 +62,8 @@ function getFormat() {
 
 function getChartData() {
   const data = defu(config, {
-    xAxis: setChartXAxis(statData.value.categories),
-    series: setChartSeries(statData.value.series),
+    xAxis: setChartXAxis(stat.chartCategories.value),
+    series: setChartSeries(stat.chartSeries.value),
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
@@ -94,9 +93,9 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
     params.offsetX,
     params.offsetY,
   ])
-  filter.setDate(statData.value.categories[index])
+  filter.setDate(stat.chartCategories.value[index])
   if (filter.nameWithoutAll.value === 'day')
-    trnFormStore.values.date = dayjs(statData.value.categories[index]).startOf(filter.nameWithoutAll.value).valueOf()
+    trnFormStore.values.date = dayjs(stat.chartCategories.value[index]).startOf(filter.nameWithoutAll.value).valueOf()
 }
 
 function setChartSeries(series: unknown[]) {
@@ -129,20 +128,12 @@ use([
 </script>
 
 <template>
-  <div class="_rounded-lg _bg-item-4 relative">
-    <!-- <pre>11 {{ markedArea }}</pre>
-    <pre>{{ statData.categories }}</pre>
-    <pre>{{ filter.date.value }}</pre> -->
-    <!-- <pre>{{ statData.series }}</pre> -->
-    <!-- <pre @click="period.setNextPeriodDate()">{{ period }}</pre>
-    <pre @click="period.setPrevPeriodDate()">{{ period }}</pre> -->
-    <div class="bg-surface-4 h-48">
-      <VChart
-        ref="chartRef"
-        :option="getChartData()"
-        autoresize
-        @zr:click="onClickChart"
-      />
-    </div>
+  <div class="bg-surface-4 h-48">
+    <VChart
+      ref="chartRef"
+      :option="getChartData()"
+      autoresize
+      @zr:click="onClickChart"
+    />
   </div>
 </template>

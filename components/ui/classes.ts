@@ -13,6 +13,7 @@ export const classes = {
     rounded: 'rounded-md',
     padding1: 'px-2 py-1.5',
     minh: 'min-h-[42px]',
+    minh2: 'min-h-[38px]',
     paddings: {
       base: '',
     },

@@ -14,6 +14,6 @@ definePageMeta({
 </script>
 
 <template>
-  <LazyDashboardPage v-if="trnsStore.hasTrns" />
+  <LazyStat v-if="trnsStore.hasTrns" />
   <LazyWelcomeActions v-else />
 </template>

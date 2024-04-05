@@ -62,7 +62,7 @@ function setTrnEdit() {
     class="trnItem px-3 py-3"
     :class="{
       ...classes,
-      '!cursor-default':
+      '':
         trn.type === 2 && trn.incomeAmount && trn.expenseAmount,
     }"
     @click="handleClick"

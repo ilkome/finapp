@@ -38,7 +38,7 @@ div(
     py-4 px-2
     h-full
     text-4xl text-primary text-center
-    bg-item-main border border-item-6 rounded-xl
+    bg-item-main border border-item-5 rounded-xl
     hocus_bg-item-7 hocus_border[red] hocus_scale-[1.02]
     transition
   `

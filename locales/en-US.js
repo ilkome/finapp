@@ -198,7 +198,8 @@ export default {
     title: 'Dashboard',
     selectedPeriod: 'Selected period',
     shortTitle: 'Stat',
-    periods: 'Summary',
+    summary: 'Summary',
+    periods: 'Periods',
     balanceTitle: 'Balance',
     emptyDesc: 'Change filter, period or add new transactions.',
     customize: {

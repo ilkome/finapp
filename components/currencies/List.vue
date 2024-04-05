@@ -41,7 +41,7 @@ const list = computed(() => {
       .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-item-4.hocus_bg-item-5(
         v-for="currencyCode in walletsCurrencies"
         :key="currencyCode"
-        :class="{ '!cursor-default text-item-1 !bg-item-3': currencyCode === active }"
+        :class="{ 'text-item-1 !bg-item-3': currencyCode === active }"
         @click="emit('onSelect', currencyCode, close)"
       )
         .flex.items-center
@@ -56,7 +56,7 @@ const list = computed(() => {
       .cursor-pointer.py-2.px-3.gap-x-3.flex.items-center.rounded-md.bg-item-4.hocus_bg-item-5(
         v-for="currency in list"
         :key="currency.code"
-        :class="{ '!cursor-default text-item-1 !bg-item-3': currency.code === active }"
+        :class="{ 'text-item-1 !bg-item-3': currency.code === active }"
         @click="emit('onSelect', currency.code, close)"
       )
         .flex.items-center

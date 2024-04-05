@@ -6,9 +6,10 @@ import useTrn from '~/components/trns/item/useTrn'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { PeriodProvider } from '~/components/dashboard/Page.vue'
+import type { FilterProvider } from '~/components/filter/useFilter'
 
-const period = inject('filter') as PeriodProvider
+const period = inject('filter') as FilterProvider
+
 const { trnFormEdit, trnFormDuplicate } = useTrnForm()
 const { activeTabStat } = storeToRefs(useAppNav())
 const walletsStore = useWalletsStore()

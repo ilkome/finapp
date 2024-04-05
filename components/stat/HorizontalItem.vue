@@ -3,23 +3,22 @@ import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { FilterProvider, FiltersProvider } from '~/components/filter/useFilter'
+import type { FilterProvider } from '~/components/filter/useFilter'
+import type { TrnId } from '~/components/trns/types'
 
 const props = defineProps<{
   biggest: number
   total: number
+  trnsIds: TrnId[]
   moneyTypeNumber: MoneyTypeNumber
   moneyTypeSlug: MoneyTypeSlug
   category: CategoryItem
   categoryId: CategoryId
 }>()
 
-const filters = inject('filters') as FiltersProvider
 const filter = inject('filter') as FilterProvider
 
 const categoriesStore = useCategoriesStore()
-const trnsStore = useTrnsStore()
 
 const currenciesStore = useCurrenciesStore()
 const isShowInside = ref(false)
@@ -36,14 +35,6 @@ const isCategoryHasChildren = computed(() =>
 function toggleShowInside() {
   isShowInside.value = !isShowInside.value
 }
-
-const trnsIds = computed(() =>
-  filters.trnsIds.value.filter(
-    id =>
-      trnsStore.items[id].type === props.moneyTypeNumber
-      && trnsStore.items[id].categoryId === props.categoryId,
-  ),
-)
 
 function getWidthPercent(value: number, biggest: number): string {
   return `${(Math.abs(value) / Math.abs(biggest)) * 100}%`

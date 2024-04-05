@@ -3,7 +3,6 @@ import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { MoneyTypeNumber } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import type { FilterProvider } from '~/components/filter/useFilter'
 

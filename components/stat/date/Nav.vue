@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/classes'
-import type { FiltersProvider } from '~/components/stat/useStat'
+import type { StatProvider } from '~/components/stat/useStat'
 import type { FilterProvider } from '~/components/filter/useFilter'
 
 const period = inject('filter') as FilterProvider
-const filters = inject('filters') as FiltersProvider
+const filters = inject('stat') as StatProvider
 </script>
 
 <template>

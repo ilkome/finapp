@@ -20,6 +20,7 @@ const categoriesStore = useCategoriesStore()
       :category="categoriesStore.items[item.id]"
       :categoryId="item.id"
       :total="item.value"
+      :trnsIds="item.trnsIds"
       :moneyTypeNumber="moneyTypeNumber"
       :moneyTypeSlug="moneyTypeSlug"
     />

@@ -32,23 +32,23 @@ export const useFilterStore = defineStore('filter', () => {
   const periodNameWithAll = ref<PeriodNameWithAll>('month')
   const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() => periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value)
 
-  function setPeriodAndDate(periodName: PeriodNameWithAll) {
-    if (periodName !== 'all') {
-      if (periodNameWithAll.value === periodName) {
-        date.value = dayjs().startOf(periodName).valueOf()
-      }
-      else {
-        const savedDate = chartStore.periods[periodName].date
-        savedDate
-          ? date.value = savedDate
-          : date.value = dayjs().startOf(periodName).valueOf()
-      }
-    }
+  // function setPeriodAndDate(periodName: PeriodNameWithAll) {
+  //   if (periodName !== 'all') {
+  //     if (periodNameWithAll.value === periodName) {
+  //       date.value = dayjs().startOf(periodName).valueOf()
+  //     }
+  //     else {
+  //       const savedDate = chartStore.periods[periodName].date
+  //       savedDate
+  //         ? date.value = savedDate
+  //         : date.value = dayjs().startOf(periodName).valueOf()
+  //     }
+  //   }
 
-    periodNameWithAll.value = periodName
-    localforage.setItem('finapp.filter.period', periodName || 'month')
-    localforage.setItem('finapp.filter.date', unref(date.value))
-  }
+  //   periodNameWithAll.value = periodName
+  //   localforage.setItem('finapp.filter.period', periodName || 'month')
+  //   localforage.setItem('finapp.filter.date', unref(date.value))
+  // }
 
   function setDayDate(value: number) {
     periodNameWithAll.value = 'day'
@@ -185,7 +185,7 @@ export const useFilterStore = defineStore('filter', () => {
 
     periodNameWithAll,
     periodNameWithoutAll,
-    setPeriodAndDate,
+    // setPeriodAndDate,
     setDayDate,
 
     clearFilter,

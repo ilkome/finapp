@@ -3,7 +3,7 @@ import { useWindowSize } from '@vueuse/core'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import type { PeriodProvider } from '~/components/filter/useFilter'
+import type { FilterProvider } from '~/components/filter/useFilter'
 
 const props = defineProps<{
   categories: any
@@ -11,7 +11,7 @@ const props = defineProps<{
   moneyTypeNumber: MoneyTypeNumber
 }>()
 
-const filter = inject('filter') as PeriodProvider
+const filter = inject('filter') as FilterProvider
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const { width } = useWindowSize()
@@ -45,7 +45,7 @@ watch([width, () => props.categories], () => updateWidth(), { immediate: true })
   <div
     v-if="categories.length > 0"
     ref="roundRef"
-    class="_rounded-lg _bg-item-4 _border-t _border-b border-item-6"
+    class="_rounded-lg _bg-item-4 _border-t _border-b border-item-5"
   >
     <div class="flex flex-1 flex-wrap gap-2" :_data-type-text="`${moneyTypeSlug}`">
       <LazyStatGroupRoundItem

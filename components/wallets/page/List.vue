@@ -96,7 +96,7 @@ const walletsCurrenciesTabs = reactive({
         <WalletsTotal
           :currencyCode="currenciesStore.base"
           :walletsItems="walletsCurrenciesTabs.wallets"
-          class="_border rounded-lg border-item-6 bg-item-4 px-2 py-1.5 md_order-2 lg_max-w-[360px]"
+          class="_border rounded-lg border-item-5 bg-item-4 px-2 py-1.5 md_order-2 lg_max-w-[360px]"
         />
       </div>
 

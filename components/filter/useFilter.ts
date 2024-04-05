@@ -123,6 +123,7 @@ export function useFilter() {
   )
 
   function setPeriodAndDate(periodName: PeriodNameWithAll) {
+    console.log('111')
     if (periodName !== 'all') {
       if (periodNameWithAll.value === periodName) {
         date.value = dayjs().startOf(periodName).valueOf()
@@ -130,8 +131,9 @@ export function useFilter() {
       else {
         const savedDate = periods.value[periodName].date
         savedDate
-          ? (date.value = savedDate)
+          ? (date.value = dayjs(savedDate).startOf(periodName).valueOf())
           : (date.value = dayjs().startOf(periodName).valueOf())
+        console.log('savedDate', dayjs(savedDate).format())
       }
     }
 

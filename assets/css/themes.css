@@ -51,7 +51,7 @@ html.light {
 
   --foreground-1: 235 235 240;
   --foreground-2: 245 245 245;
-  --foreground-3: theme('colors.white');
+  --foreground-3: theme('colors.neutral.400');
   --foreground-4: theme('colors.white')/70;
 
 

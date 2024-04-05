@@ -47,7 +47,7 @@ watch(
   <div v-if="useUserStore()?.uid" class="layoutBase">
     <div class="grid h-full lg_grid-cols-[auto_1fr_auto]">
       <LayoutSidebar
-        class="hidden h-full w-64 overflow-hidden border-r border-item-6 lg_block h-full overflow-y-auto bg-foreground-5"
+        class="hidden h-full w-64 overflow-hidden border-r border-item-5 lg_block h-full overflow-y-auto bg-foreground-5"
       />
 
       <div class="grid h-full overflow-hidden">

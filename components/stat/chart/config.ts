@@ -22,7 +22,7 @@ export const config = {
     borderWidth: 0,
     padding: 8,
     textStyle: {
-      color: 'var(--chart-label2)',
+      color: 'var(--chart-label)',
     },
     formatter(props: any[]) {
       return `
