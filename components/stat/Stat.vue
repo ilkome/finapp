@@ -16,8 +16,7 @@ const { ui } = useUIView()
 const isLargeScreen = useMediaQuery('(min-width: 640px)')
 
 async function initFilter() {
-  filter.setPeriodAndDate(await localforage.getItem('finapp.filter.period') ?? 'month')
-  filter.setDate(await localforage.getItem('finapp.filter.date') ?? dayjs().valueOf())
+  filter.initChart()
 }
 
 initFilter()
@@ -64,6 +63,8 @@ const group = ref('lines')
           class="sticky top-[35px] z-10 flex items-center sm_gap-2 border-b border-item-5 bg-foreground-4 py-2 backdrop-blur"
         />
 
+        <!-- <pre>{{ stat }}</pre> -->
+        <!-- <pre>{{ filter }}</pre> -->
         <div data-scroll-ref="stat">
           <StatFilter class="grow pt-2" />
 

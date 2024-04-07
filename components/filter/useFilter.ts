@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
 import { z } from 'zod'
+import { deepUnref } from 'vue-deepunref'
 import type { CategoryId } from '~/components/categories/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
@@ -9,7 +10,7 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 const periodSchema = z.object({
   type: z.enum(['line', 'bar']),
   showedPeriods: z.number(),
-  // date: z.number(),
+  date: z.number(),
 })
 
 const periodsSchema = z.object({
@@ -33,17 +34,20 @@ export function useFilter() {
    * Date
    */
   const date = ref<number>(dayjs().startOf('month').valueOf())
+  const periodNameWithAll = ref<PeriodNameWithAll>('month')
+
+  const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() =>
+    periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value,
+  )
 
   function setDate(value: number) {
     const newDate = dayjs(value).valueOf()
     date.value = newDate
-    localforage.setItem('finapp.filter.date', unref(date.value))
-    periods.value[nameWithoutAll.value].date = date
+    periods.value[periodNameWithoutAll.value].date = newDate
   }
 
   function setDateNow() {
     date.value = dayjs().valueOf()
-    localforage.setItem('finapp.filter.date', unref(date.value))
   }
 
   /**
@@ -72,64 +76,63 @@ export function useFilter() {
     },
   })
 
-  const periodsNames = computed<{
-    slug: PeriodNameWithoutAll
-    icon: string
-    name: string
-  }[]>(() => [{
-    slug: 'day',
-    icon: 'mdi mdi-weather-sunset-up',
-    name: $i18n.t('dates.day.simple'),
-  }, {
-    slug: 'week',
-    icon: 'mdi mdi-calendar-week',
-    name: $i18n.t('dates.week.simple'),
-  }, {
-    slug: 'month',
-    icon: 'mdi mdi-calendar',
-    name: $i18n.t('dates.month.simple'),
-  }, {
-    slug: 'year',
-    icon: 'mdi mdi-calendar-star',
-    name: $i18n.t('dates.year.simple'),
-  }])
+  const periodsNames = computed<
+    {
+      slug: PeriodNameWithoutAll
+      icon: string
+      name: string
+    }[]
+  >(() => [
+    {
+      slug: 'day',
+      icon: 'mdi mdi-weather-sunset-up',
+      name: $i18n.t('dates.day.simple'),
+    },
+    {
+      slug: 'week',
+      icon: 'mdi mdi-calendar-week',
+      name: $i18n.t('dates.week.simple'),
+    },
+    {
+      slug: 'month',
+      icon: 'mdi mdi-calendar',
+      name: $i18n.t('dates.month.simple'),
+    },
+    {
+      slug: 'year',
+      icon: 'mdi mdi-calendar-star',
+      name: $i18n.t('dates.year.simple'),
+    },
+  ])
 
   const ui = ref({
     income: true,
     expense: true,
     sum: false,
     isShowDataLabels: false,
-    setUi: (key, value) => ui.value[key] = value,
-    toggleUi: key => ui.value[key] = !ui.value[key],
+    setUi: (key, value) => (ui.value[key] = value),
+    toggleUi: key => (ui.value[key] = !ui.value[key]),
   })
-
-  const periodNameWithAll = ref<PeriodNameWithAll>('month')
-
-  const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() =>
-    periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value,
-  )
-
-  const nameWithAll = ref<PeriodNameWithAll>('month')
-  const nameWithoutAll = computed<PeriodNameWithoutAll>(() =>
-    periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value,
-  )
 
   function setPeriodAndDate(periodName: PeriodNameWithAll) {
     if (periodName !== 'all') {
       if (periodNameWithAll.value === periodName) {
-        date.value = dayjs().startOf(periodName).valueOf()
+        const newDate = dayjs().startOf(periodName).valueOf()
+        date.value = newDate
+        periods.value[periodName].date = newDate
       }
       else {
         const savedDate = periods.value[periodName].date
-        savedDate
-          ? (date.value = dayjs(savedDate).startOf(periodName).valueOf())
-          : (date.value = dayjs().startOf(periodName).valueOf())
+        const newDate = savedDate
+          ? dayjs(savedDate).startOf(periodName).valueOf()
+          : dayjs().startOf(periodName).valueOf()
+
+        date.value = newDate
+        periods.value[periodName].date = newDate
       }
     }
 
     periodNameWithAll.value = periodName
-    localforage.setItem('finapp.filter.period', periodName || 'month')
-    localforage.setItem('finapp.filter.date', unref(date.value))
   }
 
   function setDayDate(value: number) {
@@ -142,16 +145,16 @@ export function useFilter() {
     if (periodNameWithAll.value === 'all')
       return
 
-    const nextDate = dayjs(date.value)
+    const newDate = dayjs(date.value)
       .subtract(1, periodNameWithAll.value)
       .startOf(periodNameWithAll.value)
       .valueOf()
     if (
-      nextDate
+      newDate
       >= dayjs(firstCreatedTrnDate).startOf(periodNameWithAll.value).valueOf()
     ) {
-      date.value = nextDate
-      localforage.setItem('finapp.filter.date', nextDate)
+      date.value = newDate
+      periods.value[periodNameWithoutAll.value].date = newDate
     }
   }
 
@@ -160,13 +163,13 @@ export function useFilter() {
       if (periodNameWithAll.value === 'all')
         return
 
-      const nextDate = dayjs(date.value)
+      const newDate = dayjs(date.value)
         .add(1, periodNameWithAll.value)
         .startOf(periodNameWithAll.value)
         .valueOf()
-      if (nextDate <= dayjs().valueOf()) {
-        date.value = nextDate
-        localforage.setItem('finapp.filter.date', nextDate)
+      if (newDate <= dayjs().valueOf()) {
+        date.value = newDate
+        periods.value[periodNameWithoutAll.value].date = newDate
       }
     }
   }
@@ -252,53 +255,44 @@ export function useFilter() {
   )
 
   function addPeriod() {
-    periods.value[nameWithoutAll.value].showedPeriods = periods.value[nameWithoutAll.value].showedPeriods + 1
+    periods.value[periodNameWithoutAll.value].showedPeriods
+      = periods.value[periodNameWithoutAll.value].showedPeriods + 1
   }
 
   function removePeriod() {
-    periods.value[nameWithoutAll.value].showedPeriods = periods.value[nameWithoutAll.value].showedPeriods - 1
+    periods.value[periodNameWithoutAll.value].showedPeriods
+      = periods.value[periodNameWithoutAll.value].showedPeriods - 1
   }
 
   function setPeriod(number: PeriodSchema['showedPeriods']) {
-    periods.value[nameWithoutAll.value].showedPeriods = number
+    periods.value[periodNameWithoutAll.value].showedPeriods = number
   }
 
-  // function setDate(date: number) {
-  //   periods.value[nameWithoutAll.value].date = date
-  // }
-
   function toggleChartType() {
-    periods.value[nameWithoutAll.value].type = periods.value[nameWithoutAll.value].type === 'line'
-      ? 'bar'
-      : 'line'
+    periods.value[periodNameWithoutAll.value].type
+      = periods.value[periodNameWithoutAll.value].type === 'line'
+        ? 'bar'
+        : 'line'
   }
 
   async function initChart() {
+    const localDate = await localforage.getItem('finapp.chart.date')
+    const localPeriodName = await localforage.getItem('finapp.chart.periodName')
     const localPeriods: Periods | null = await localforage.getItem('finapp.chart.periods')
 
-    if (periodsSchema.safeParse(localPeriods).success === false)
-      return false
-
-    for (const periodName in localPeriods) {
-      const showedPeriods = +localPeriods[periodName].showedPeriods
-        ? localPeriods[periodName].showedPeriods
-        : periods.value[periodName].showedPeriods
-
-      const periodValues: Periods = {
-        ...localPeriods[periodName],
-        showedPeriods,
-      }
-
-      setPeriodValues(periodName, periodValues)
+    if (periodsSchema.safeParse(localPeriods)) {
+      for (const periodName in periods.value)
+        periods.value[periodName] = localPeriods[periodName]
     }
+
+    localDate && setDate(localDate)
+    if (localPeriodName)
+      periodNameWithAll.value = localPeriodName
   }
 
-  function setPeriodValues(periodName, values) {
-    periods.value[periodName] = {
-      ...periods.value[periodName],
-      ...values,
-    }
-  }
+  watch(date, value => localforage.setItem('finapp.chart.date', value))
+  watch(periods, value => localforage.setItem('finapp.chart.periods', deepUnref(value)), { deep: true })
+  watch(periodNameWithAll, value => localforage.setItem('finapp.chart.periodName', value))
 
   return {
     // Date
@@ -310,8 +304,6 @@ export function useFilter() {
 
     periods,
     periodsNames,
-    nameWithAll,
-    nameWithoutAll,
     periodNameWithAll,
     periodNameWithoutAll,
     setPeriodAndDate,
@@ -336,7 +328,6 @@ export function useFilter() {
     isShow,
 
     initChart,
-    setPeriodValues,
     addPeriod,
     removePeriod,
     setPeriod,

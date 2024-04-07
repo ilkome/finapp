@@ -32,8 +32,8 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 
   $trnForm.values.date = newDate
 
-  if (period.nameWithoutAll.value === 'day')
-    period.setDate(dayjs(newDate).startOf(period.nameWithoutAll.value).valueOf())
+  if (period.periodNameWithoutAll.value === 'day')
+    period.setDate(dayjs(newDate).startOf(period.periodNameWithoutAll.value).valueOf())
 }
 </script>
 

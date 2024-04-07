@@ -39,7 +39,7 @@ const trnFormStore = useTrnFormStore()
 const chartRef = ref()
 
 const chartType = computed(
-  () => filter.periods.value[filter.nameWithoutAll.value].type,
+  () => filter.periods.value[filter.periodNameWithoutAll.value].type,
 )
 
 const markedArea = computed(() =>
@@ -47,7 +47,7 @@ const markedArea = computed(() =>
 )
 
 function getFormat() {
-  switch (filter.nameWithoutAll.value) {
+  switch (filter.periodNameWithoutAll.value) {
     case 'day':
       return 'D.MM'
     case 'week':
@@ -94,9 +94,11 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
     params.offsetX,
     params.offsetY,
   ])
+
   filter.setDate(stat.chartCategories.value[index])
-  if (filter.nameWithoutAll.value === 'day')
-    trnFormStore.values.date = dayjs(stat.chartCategories.value[index]).startOf(filter.nameWithoutAll.value).valueOf()
+
+  if (filter.periodNameWithoutAll.value === 'day')
+    trnFormStore.values.date = dayjs(stat.chartCategories.value[index]).startOf(filter.periodNameWithoutAll.value).valueOf()
 }
 
 function setChartSeries(series: unknown[]) {

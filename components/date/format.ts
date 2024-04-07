@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChart'
+import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/filter/useFilter'
 
 export function formatDateByPeriod(date: number, periodName: PeriodNameWithoutAll, names: any) {
   const today = dayjs()

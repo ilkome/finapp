@@ -18,8 +18,10 @@ const categorySelector = ref<{
   parentId: CategoryId | null
   select: (id: CategoryId, isForce: boolean) => void
   closeChild: () => void
+  setCategoryId: (id: CategoryId) => void
 }>({
       parentId: null,
+
       select: (id: CategoryId, isForce: boolean) => {
         if (!isForce && categoriesStore.isCategoryHasChildren(id)) {
           categorySelector.value.parentId = id
@@ -30,16 +32,16 @@ const categorySelector = ref<{
         categorySelector.value.closeChild()
         emit('onClose')
       },
+
       closeChild: () => {
         categorySelector.value.parentId = null
       },
-    })
 
-function onSelectCategory(id: CategoryId) {
-  console.log('onSelectCategory', id)
-  emit('onSelected', id)
-  emit('onClose')
-}
+      setCategoryId: (id: CategoryId) => {
+        emit('onSelected', id)
+        emit('onClose')
+      },
+    })
 </script>
 
 <template lang="pug">
@@ -55,9 +57,8 @@ div
     .pb-3.px-3
       CategoriesList(
         :ids="categoriesStore.categoriesRootIds"
-        class="!gap-x-1"
         @click="categorySelector.select"
-        @onClickIcon="onSelectCategory"
+        @onClickIcon="categorySelector.setCategoryId"
       )
 
   //- Child Categories
@@ -66,24 +67,27 @@ div
     @closed="categorySelector.closeChild"
   )
     template(#header)
-      .pt-3.flex-col.flex-center.gap-2.text-center
-        Icon(
-          :background="categoriesStore.items[categorySelector.parentId].color"
-          :icon="categoriesStore.items[categorySelector.parentId].icon"
-          big
-          round
-        )
-        div {{ categoriesStore.items[categorySelector.parentId].name }}
+      .py-3.flex-center.gap-2
+        .flex-center.gap-4
+          Icon2(
+            :categoryId="categorySelector.parentId"
+            :color="categoriesStore.items[categorySelector.parentId].color"
+            :icon="categoriesStore.items[categorySelector.parentId].icon"
+            size="xl"
+            @click="categorySelector.select(categorySelector.parentId, true)"
+          )
+          div {{ categoriesStore.items[categorySelector.parentId].name }}
 
-    .px-3.flex-center.pb-5(v-if="isAllowSelectParentCategory")
-      UiButtonGrey.max-w-xs(
-        @click="categorySelector.select(categorySelector.parentId, true)"
-      ) {{ $t('chart.view.add') }}
+      .grow.flex-center(v-if="isAllowSelectParentCategory")
+        UiButtonGrey.max-w-xs(
+          @click="categorySelector.select(categorySelector.parentId, true)"
+        ) {{ $t('chart.view.add') }}
 
     .pb-3.px-3
       CategoriesList(
         :ids="categoriesStore.getChildCategoriesIds(categorySelector.parentId)"
-        class="!gap-x-1"
+        isHideParentCategory
         @click="categorySelector.select"
+        @onClickIcon="categorySelector.setCategoryId"
       )
 </template>

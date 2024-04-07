@@ -51,8 +51,6 @@ export function useInitApp() {
   }
 
   async function initAppFromCache() {
-    // await useChartStore().initChart()
-
     const [user, currencies, categories, wallets, trns, ui] = await Promise.all([
       localforage.getItem('finapp.user'),
       localforage.getItem('finapp.currencies'),

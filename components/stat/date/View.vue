@@ -6,7 +6,7 @@ import { formatDateByPeriod } from '~/components/date/format'
 const period = inject('filter') as FilterProvider
 
 const { t } = useI18n()
-const formattedDate = computed(() => formatDateByPeriod(period.date.value, period.nameWithoutAll.value, {
+const formattedDate = computed(() => formatDateByPeriod(period.date.value, period.periodNameWithoutAll.value, {
   current: t('dates.week.current'),
   last: t('dates.week.last'),
 }))
@@ -18,7 +18,7 @@ const formattedDate = computed(() => formatDateByPeriod(period.date.value, perio
       :class="getStyles('item', ['link', 'rounded'])"
       class="flex items-center px-3 py-2 text-base font-medium leading-none text-item-1"
     >
-      {{ period.nameWithAll.value === "all" ? $t("dates.all.simple") : formattedDate }}
+      {{ period.periodNameWithAll.value === "all" ? $t("dates.all.simple") : formattedDate }}
     </div>
 
     <template #popper="{ hide }">

@@ -29,7 +29,7 @@ const filters = inject('stat') as StatProvider
       v-if="!filters.isToday"
       :class="getStyles('item', ['link', 'rounded'])"
       class="flex-center w-8"
-      @click="period.setPeriodAndDate(period.nameWithoutAll.value)"
+      @click="period.setPeriodAndDate(period.periodNameWithoutAll.value)"
     >
       <UiIconReturn class="size-5" />
     </div>

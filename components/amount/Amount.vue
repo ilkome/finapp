@@ -43,7 +43,10 @@ const amountClasses = computed(() => [
 </script>
 
 <template>
-  <div class="flex flex-col gap-1 font-secondary text-primary" @click="(e) => emit('click', e)">
+  <div
+    class="flex flex-col gap-1 font-secondary text-primary"
+    @click="(e) => emit('click', e)"
+  >
     <!-- Amount -->
     <div v-if="amount !== 0" :class="amountClasses">
       <!-- Original -->

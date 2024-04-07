@@ -103,7 +103,7 @@ const walletsCurrenciesTabs = reactive({
       <div
         class="grid gap-1 mb-24 py-2 lg_max-w-[360px]"
       >
-        <WalletsItem3
+        <WalletsItem4
           v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
           :key="walletId"
           :walletId

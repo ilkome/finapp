@@ -27,74 +27,27 @@ const isCategoryHasChildren = computed(() =>
 <template>
   <div
     v-if="category"
-    class="statItemRound flex-center group hocus_bg-item-5 p-2 rounded-lg"
-    :class="{ _prevStat: total === 0 }"
+    class="flex flex-col flex-center group hocus_bg-item-5 p-2 rounded-lg"
     data-long-press-delay="300"
-    @click="() => trnFormCreate({ categoryId })"
+    @click="trnFormCreate({ categoryId })"
   >
     <Icon2
       :categoryId="categoryId"
       :color="category.color"
       :icon="category.icon"
       size="lg"
-      @click="id => filter.toggleCategoryId(id)"
+      @click="filter.toggleCategoryId(categoryId)"
     />
 
-    <div
-      class="statItemRound__name js-getWidth"
-      :class="{ _isCategoryHasChildren: isCategoryHasChildren }"
-    >
+    <div class="pt-1 text-xs text-secondary leading-none">
       {{ category.name }}{{ isCategoryHasChildren ? "..." : "" }}
     </div>
 
-    <div class="statItemRound__amount js-getWidth text-item-base">
-      <Amount
-        :amount="total"
-        :currencyCode="currencyCode"
-        :type="moneyTypeNumber"
-        :isShowBaseRate="false"
-      />
-    </div>
+    <Amount
+      :amount="total"
+      :currencyCode="currencyCode"
+      :type="moneyTypeNumber"
+      :isShowBaseRate="false"
+    />
   </div>
 </template>
-
-<style lang="stylus">
-// TODO: style
-.statItemRound
-  max-width 160px
-
-  &__icon
-    .icon
-      width 36px !important
-      height 36px !important
-      background var(--c-bg-4) !important
-
-      .icon__image
-        font-size 22px
-</style>
-
-<style lang="stylus" scoped>
-@import "../assets/stylus/variables"
-
-.statItemRound
-  flex-flow column
-
-  &._prevStat
-    opacity .5
-
-  &._active
-    margin-bottom 26px
-
-  &__name
-    padding 6px 0 2px 0
-    color var(--c-font-4)
-    font-size 12px
-    text-align center
-
-    ^[0]._active &
-      color var(--c-font-2)
-      font-weight 500
-
-    &._isCategoryHasChildren
-      margin-right -8px
-</style>

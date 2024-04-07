@@ -336,10 +336,10 @@ export function useStat(filter: FilterProvider) {
   })
 
   const isToday = computed(() =>
-    dayjs().isSame(filter.date.value, filter.nameWithoutAll.value),
+    dayjs().isSame(filter.date.value, filter.periodNameWithoutAll.value),
   )
   const isLastPeriod = computed(() =>
-    dayjs(filter.date.value).isSame(avaDate.value, filter.nameWithoutAll.value),
+    dayjs(filter.date.value).isSame(avaDate.value, filter.periodNameWithoutAll.value),
   )
 
   const filters = {

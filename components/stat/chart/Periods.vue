@@ -6,7 +6,7 @@ const filter = inject('filter') as FilterProvider
 const filters = inject('stat') as StatProvider
 
 const showedPeriods = computed(
-  () => filter.periods.value[filter.nameWithoutAll.value].showedPeriods,
+  () => filter.periods.value[filter.periodNameWithoutAll.value].showedPeriods,
 )
 
 function saveChartsPeriodsToLocalStorage() {
@@ -36,13 +36,10 @@ const isShowAdd = computed(() => showedPeriods.value >= filters.filterPeriodMaxD
     <UiTabsItem2
       v-for="periodItem in filter.periodsNames.value"
       :key="periodItem.slug"
-      :isActive="periodItem.slug === filter.nameWithoutAll.value"
+      :isActive="periodItem.slug === filter.periodNameWithoutAll.value"
       @click="filter.setPeriodAndDate(periodItem.slug)"
     >
       {{ periodItem.name }}
-      <sup v-if="periodItem.slug === filter.nameWithoutAll.value" class="text-2xs -mr-2">
-        {{ filter.periods.value[filter.nameWithoutAll.value].showedPeriods }}
-      </sup>
     </UiTabsItem2>
 
     <UiTabsItem2

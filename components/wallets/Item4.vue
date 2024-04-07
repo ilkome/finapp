@@ -64,7 +64,7 @@ const emit = defineEmits<{
       <Amount
         :amount="wallet.amount"
         :currencyCode="wallet.currency"
-        :isShowBaseRate="false"
+        :isShowBaseRate="true"
         size="base"
         class="opacity-90"
       />

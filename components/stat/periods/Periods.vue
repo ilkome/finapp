@@ -42,8 +42,8 @@ function getFormattedDate(date: number) {
     <div class="grid gap-2 grow my-2 max-w-sm md_max-w-xs">
       <div class="grid gap-1 px-2 py-2 sm_px-1.5 sm_pt-3">
         <UiTitle2>
-          {{ filter.periods.value[filter.nameWithoutAll.value].showedPeriods }}
-          {{ filter.nameWithoutAll.value }}
+          {{ filter.periods.value[filter.periodNameWithoutAll.value].showedPeriods }}
+          {{ filter.periodNameWithoutAll.value }}
         </UiTitle2>
         <div class="text-xs text-secondary font-mono">
           {{ getFormattedDate(stat.statPrepareData.value[0].date) }} - {{ getFormattedDate(stat.statPrepareData.value.at(-1)?.date) }}

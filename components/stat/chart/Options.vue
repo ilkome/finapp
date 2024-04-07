@@ -25,7 +25,7 @@ const items = ref([{
   event: () => filter.ui.value.toggleUi('isShowDataLabels'),
 }, {
   slug: 'charType',
-  icon: computed(() => filter.periods.value[filter.nameWithoutAll.value].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
+  icon: computed(() => filter.periods.value[filter.periodNameWithoutAll.value].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
   isActive: false,
   event: filter.toggleChartType,
 }])

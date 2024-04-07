@@ -14,8 +14,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'click', id: CategoryId): void
-  (e: 'onClickIcon', id: CategoryId): void
+  (e: 'click'): void
+  (e: 'onClickIcon'): void
 }>()
 
 const filterStore = useFilterStore()
@@ -31,9 +31,9 @@ const parentCategory = computed(
 
 function onClickIcon() {
   if (props.slider)
-    emit('click', props.categoryId)
+    emit('click')
 
-  emit('onClickIcon', props.categoryId)
+  emit('onClickIcon')
 }
 </script>
 
@@ -45,7 +45,7 @@ function onClickIcon() {
       { '!bg-item-3': activeItemId === categoryId },
       ...getStyles('item', ['link', 'bg', 'rounded', 'padding1', 'minh']),
     ]"
-    @click="emit('click', categoryId)"
+    @click="emit('click')"
   >
     <Icon2
       :categoryId
@@ -53,13 +53,6 @@ function onClickIcon() {
       :icon="category.icon"
       @click="onClickIcon"
     />
-    <!-- <div
-      class="flex h-8 w-8 items-center justify-center rounded-full text-xl leading-none text-neutral-50"
-      :style="{ background: category.color }"
-      @click.stop="onClickIcon"
-    >
-      <div :class="category.icon" />
-    </div> -->
 
     <div class="grow truncate">
       <div

@@ -3,7 +3,6 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 
 defineProps<{
-  // TODO: export type
   activeItemId?: string | 0 | false | null
   ids: CategoryId[]
   isHideParentCategory?: boolean
@@ -15,15 +14,10 @@ const emit = defineEmits<{
   onClickIcon: [id: CategoryId]
 }>()
 const categoriesStore = useCategoriesStore()
-
-function onClickIcon(categoryId: CategoryId) {
-  console.log('categoryId', categoryId)
-  emit('onClickIcon', categoryId)
-}
 </script>
 
 <template>
-  <div class="grid gap-1 sm:gap-x-6">
+  <div class="grid gap-1">
     <CategoriesItem
       v-for="categoryId in ids"
       :key="categoryId"
@@ -33,7 +27,7 @@ function onClickIcon(categoryId: CategoryId) {
       :isHideParentCategory="isHideParentCategory"
       :slider="slider"
       @click="emit('click', categoryId)"
-      @onClickIcon="onClickIcon(categoryId)"
+      @onClickIcon="emit('onClickIcon', categoryId)"
     />
   </div>
 </template>

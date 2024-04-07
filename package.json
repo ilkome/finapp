@@ -12,7 +12,6 @@
   ],
   "scripts": {
     "dev": "nuxt dev",
-    "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt generate && nuxt preview",
     "test": "vitest",

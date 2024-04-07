@@ -1,5 +1,3 @@
-import dayjs from 'dayjs'
-import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChart'
 import type { TrnId, TrnsGetterProps } from '~/components/trns/types'
 
 export function getTrnsIds(props: TrnsGetterProps) {

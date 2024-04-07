@@ -17,10 +17,9 @@ const props = defineProps<{
 }>()
 
 const filter = inject('filter') as FilterProvider
-
 const categoriesStore = useCategoriesStore()
-
 const currenciesStore = useCurrenciesStore()
+
 const isShowInside = ref(false)
 
 const styles = computed(() => ({
