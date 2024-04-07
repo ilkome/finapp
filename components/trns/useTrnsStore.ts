@@ -17,6 +17,7 @@ import {
   unsubscribeData,
   updateData,
 } from '~/services/firebase/api'
+import { getDate } from '~/components/date/format'
 
 export const useTrnsStore = defineStore('trns', () => {
   const userStore = useUserStore()
@@ -36,9 +37,8 @@ export const useTrnsStore = defineStore('trns', () => {
     = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : false
 
     return getTrnsIds({
+      dates: getDate(filterStore.periodNameWithAll, filterStore.date),
       categoriesIds,
-      date: filterStore.date,
-      periodName: filterStore.periodNameWithAll,
       trnsItems: items.value,
       walletsIds,
     })
@@ -65,8 +65,7 @@ export const useTrnsStore = defineStore('trns', () => {
       return []
 
     return getTrnsIds({
-      date: filterStore.date,
-      periodName: filterStore.periodNameWithAll,
+      dates: getDate(filterStore.periodNameWithAll, filterStore.date),
       trnsItems: items.value,
     })
   })
@@ -100,13 +99,6 @@ export const useTrnsStore = defineStore('trns', () => {
   const lastCreatedTrnItem = computed<TrnItem | false>(
     () => items.value?.[lastCreatedTrnId.value],
   )
-
-  function getStoreTrnsIds(props: Omit<TrnsGetterProps, 'trnsItems'>) {
-    return getTrnsIds({
-      ...props,
-      trnsItems: items.value,
-    })
-  }
 
   function initTrns() {
     const path = `users/${userStore.uid}/trns`
@@ -261,7 +253,6 @@ export const useTrnsStore = defineStore('trns', () => {
     setTrns,
     addTrn,
     deleteTrn,
-    getStoreTrnsIds,
     unsubscribeTrns,
     deleteTrnsByIds,
     uploadOfflineTrns,

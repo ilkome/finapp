@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
-import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const { t } = useI18n()
 const { $i18n } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
-const filterStore = useFilterStore()
 const walletsStore = useWalletsStore()
 
 const walletId = computed(() => route.params.id as WalletId)
@@ -17,10 +14,6 @@ if (!wallet.value)
   router.replace('/wallets')
 
 const total = computed(() => walletsStore.walletsTotal[walletId.value])
-
-function onClickFilterWallet() {
-  filterStore.toggleWalletId(walletId.value)
-}
 
 function onEditClick() {
   router.push(`/wallets/${walletId.value}/edit`)
@@ -67,26 +60,6 @@ useHead({
 
     <div v-if="wallet.description" class="mb-6 px-2 text-sm text-item-2">
       {{ wallet.description }}
-    </div>
-
-    <div class="mb-6 flex px-2">
-      <UiItemShadow
-        class="flex items-center gap-3 p-1 px-2"
-        @click="onClickFilterWallet"
-      >
-        <div class="mdi mdi-poll text-xl" />
-
-        <div class="text-xs leading-none">
-          {{ t("statBy") }}: {{ wallet.name }}
-        </div>
-
-        <div class="mdi mdi-chevron-right text-lg leading-none opacity-70" />
-      </UiItemShadow>
-    </div>
-
-    <!-- Stat -->
-    <div class="px-2">
-      <!-- <StatChartStat :walletsIds="[walletId]" /> -->
     </div>
   </UiPage>
 </template>

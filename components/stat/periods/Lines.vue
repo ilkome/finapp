@@ -70,7 +70,7 @@ const opened = ref<number[]>([])
             {{ slug }}
           </div>
 
-          <StatHorizontal
+          <StatGroupHorizontal
             :categories="statIn"
             :moneyTypeNumber="stat.getMoneyTypeNumber(slug)"
             :moneyTypeSlug="slug"

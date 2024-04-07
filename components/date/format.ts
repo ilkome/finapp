@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { PeriodNameWithoutAll } from '~/components/stat/chart/useChart'
+import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChart'
 
 export function formatDateByPeriod(date: number, periodName: PeriodNameWithoutAll, names: any) {
   const today = dayjs()
@@ -77,4 +77,15 @@ export function formatDateByPeriod2(date: number, periodName: PeriodNameWithoutA
   return dayjs(date).format(format)
   // const fDate = dayjs(date).format(format)
   // return fDate[0].toUpperCase() + fDate.slice(1)
+}
+
+export function getDate(periodName: PeriodNameWithAll, date: number) {
+  if (periodName === 'all')
+    return
+
+  const filterDate = dayjs(date)
+  const from = filterDate.startOf(periodName).valueOf()
+  const until = filterDate.endOf(periodName).valueOf()
+
+  return { from, until }
 }

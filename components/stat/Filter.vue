@@ -20,6 +20,7 @@ const isShownWalletsSelector = ref(false)
               {{ $t("categories.createNewTitle") }}
             </template>
           </FilterAddItem>
+
           <FilterCategoryItem
             v-for="categoryId in filter.catsIds.value"
             :key="categoryId"

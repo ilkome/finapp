@@ -25,9 +25,13 @@ const category = computed(() => categoriesStore.items[categoryId.value])
 const trnsItems = computed(() => trnsStore.items)
 const trnsIds = computed(() =>
   getTrnsIds({
-    categoriesIds: category.value?.childIds?.length > 0 ? category.value?.childIds : [categoryId.value],
+    categoriesIds:
+      category.value?.childIds?.length > 0
+        ? category.value?.childIds
+        : [categoryId.value],
     trnsItems: trnsItems.value,
-  }))
+  }),
+)
 
 const isShowDeleteConfirm = ref(false)
 
@@ -45,7 +49,8 @@ function onClickDelete() {
         toastId: 'delete-category-with-child',
         data: {
           title: random(errorEmo),
-          description: 'You can not delete category with child categories. Remove child categories first.',
+          description:
+            'You can not delete category with child categories. Remove child categories first.',
         },
         type: 'error',
       } as ToastOptions)
@@ -69,15 +74,14 @@ async function onDeleteConfirm() {
   // Give some time to complete redirect
   setTimeout(async () => {
     await trnsStore.deleteTrnsByIds(trnsIdsS)
-    removeData(`users/${uid}/categories/${categoryIdS}`)
-      .then(() => {
-        console.log('TODO')
-        // $notify({
-        //   type: 'success',
-        //   text: trnsIdsS?.length > 0 ? `Success delete category with ${trnsIdsS.length} transactions!` : 'Success delete category!',
-        //   title: random(successEmo),
-        // })
-      })
+    removeData(`users/${uid}/categories/${categoryIdS}`).then(() => {
+      console.log('TODO')
+      // $notify({
+      //   type: 'success',
+      //   text: trnsIdsS?.length > 0 ? `Success delete category with ${trnsIdsS.length} transactions!` : 'Success delete category!',
+      //   title: random(successEmo),
+      // })
+    })
   }, 100)
 }
 </script>
@@ -85,7 +89,9 @@ async function onDeleteConfirm() {
 <template>
   <div>
     <UiHeaderLink @click="onClickDelete">
-      <div class="mdi mdi-delete-empty-outline group-hover_text-white text-xl" />
+      <div
+        class="mdi mdi-delete-empty-outline text-xl group-hover_text-white"
+      />
     </UiHeaderLink>
 
     <ModalBottomConfirm

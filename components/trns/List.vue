@@ -125,7 +125,8 @@ function actions(trnItem) {
     v-for="(trnsIds, date) in groupedTrns"
     :key="date"
   )
-    .flex.items-center.pt-4.pb-2.px-3(
+    div(
+      class="flex items-center pt-4 pb-2 px-2 sm_px-1.5"
       v-if="isShowGroupDate"
       @click="isFilterByDay ? filterStore.setDayDate(date) : null"
     )

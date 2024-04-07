@@ -30,30 +30,23 @@ const group = ref('lines')
 
 <template>
   <div class="grid h-full overflow-hidden xl_grid-cols-[1fr_auto]">
-    <div class="h-full overflow-hidden overflow-y-auto px-3 pb-6">
-      <div class="md_px-4 lg_px-8 lg_py-4 lg_max-w-4xl">
-        <div
-          v-if="isLargeScreen"
-          class="mx-2 mb-0 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg py-2 sm_flex-nowrap sm_justify-between sm_bg-transparent sm_py-3 sm_pt-4"
-        >
-          <StatTotalWithAverage
-            v-for="(item, slug) in stat.averages.value"
-            :key="slug"
-            :item="item"
-          />
-        </div>
-
+    <div class="h-full overflow-hidden overflow-y-auto px-3 sm_px-1 lg_px-3 pb-6">
+      <div class="lg_px-4 lg_px-8 lg_py-4 lg_max-w-4xl">
         <LazyStatChartView
           v-if="
-            ui.showMainChart && stat.statPrepareDataAverageAll.value.sumTransactions !== 0
+            ui.showMainChart && stat.statPrepareDataAll.value.summary !== 0
           "
           :isShowIncome="
-            stat.statPrepareDataAverageAll.value.incomeTransactions !== 0
+            stat.statPrepareDataAll.value.income !== 0
               && appNavStore.activeTabStat !== 'expense'
           "
           :isShowExpense="
-            stat.statPrepareDataAverageAll.value.expenseTransactions !== 0
+            stat.statPrepareDataAll.value.expense !== 0
               && appNavStore.activeTabStat !== 'income'
+          "
+          :isShowSummary="
+            stat.statPrepareDataAll.value.summary !== 0
+              && appNavStore.activeTabStat === 'summary'
           "
         />
         <div
@@ -68,18 +61,29 @@ const group = ref('lines')
         </div>
 
         <StatMenu
-          class="sticky top-[35px] z-10 flex items-center sm_gap-2 border-b border-item-3 bg-foreground-4 py-2 backdrop-blur"
+          class="sticky top-[35px] z-10 flex items-center sm_gap-2 border-b border-item-5 bg-foreground-4 py-2 backdrop-blur"
         />
 
         <div data-scroll-ref="stat">
           <StatFilter class="grow pt-2" />
+
+          <!-- <div
+            v-if="isLargeScreen"
+            class="mx-2 mb-0 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg py-2 sm_flex-nowrap sm_justify-between sm_bg-transparent sm_py-3 sm_pt-4"
+          >
+            <StatTotalWithAverage
+              v-for="(item, slug) in stat.averages.value"
+              :key="slug"
+              :item="item"
+            />
+          </div> -->
 
           <div class="mb-8 md_mb-4">
             <div class="grid items-start gap-6 md_grid-cols-2 md_gap-8">
               <div v-if="appNavStore.activeTabStat === 'trns'" class="px-2 py-2 sm_px-1.5 sm_pt-3">
                 <TrnsListWithControl
                   :size="12"
-                  :trnsIds="stat.combinedTrnsIds.value.summary"
+                  :trnsIds="stat.trnsIds.value"
                   isShowFilter
                   uiHistory
                   isAutoTypes
@@ -114,12 +118,13 @@ const group = ref('lines')
                     >
                       Round
                     </UiTabsItem2>
-                    <UiTabsItem2
+
+                    <!-- <UiTabsItem2
                       :isActive="group === 'bars'"
                       @click="group = 'bars'"
                     >
                       Bars
-                    </UiTabsItem2>
+                    </UiTabsItem2> -->
 
                     <UiTabsItem2
                       :isActive="group === 'trns'"
@@ -136,14 +141,21 @@ const group = ref('lines')
                     :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
                   />
 
-                  <StatGroupVertical
+                  <!-- <StatGroupVertical
                     v-if="group === 'bars'"
                     :categories="stat.totalCategories.value[item.slug]"
                     :moneyTypeSlug="item.slug"
                     :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
-                  />
+                  /> -->
 
-                  <StatHorizontal
+                  <!-- <StatGroupHorizontal2
+                    v-if="group === 'lines'"
+                    :categories="stat.totalCategories.value[item.slug]"
+                    :moneyTypeSlug="item.slug"
+                    :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
+                  /> -->
+
+                  <StatGroupHorizontal
                     v-if="group === 'lines'"
                     :categories="stat.totalCategories.value[item.slug]"
                     :moneyTypeSlug="item.slug"
@@ -153,8 +165,10 @@ const group = ref('lines')
                   <TrnsListWithControl
                     v-if="group === 'trns'"
                     :size="12"
-                    :trnsIds="stat.combinedTrnsIds.value.summary"
+                    :trnsIds="stat.trnsIds.value"
+                    :initTrnType="stat.getMoneyTypeNumber(item.slug)"
                     isShowFilter
+                    class="px-2"
                     uiHistory
                     isAutoTypes
                     defaultFilterTrnsPeriod="period"
@@ -166,7 +180,6 @@ const group = ref('lines')
                 <StatPeriods class="sticky top-[60px]" />
                 <div class="flex md_justify-end">
                   <StatChartOptions />
-                  <StatViewConfig />
                 </div>
               </div>
             </div>

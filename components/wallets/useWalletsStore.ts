@@ -63,7 +63,11 @@ export const useWalletsStore = defineStore('wallets', () => {
     const trnsItems = trnsStore.items
 
     const getWalletTotal = (walletId: WalletId) => {
-      const trnsIds = getTrnsIds({ trnsItems, walletsIds: [walletId] })
+      const trnsIds = getTrnsIds({
+        trnsItems,
+        walletsIds: [walletId],
+      })
+
       const { sumTransactions, sumTransfers } = getTotal({
         trnsIds,
         trnsItems,

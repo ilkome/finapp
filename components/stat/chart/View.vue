@@ -23,6 +23,7 @@ const props = withDefaults(
     chartType?: 'bar' | 'line'
     isShowIncome?: boolean
     isShowExpense?: boolean
+    isShowSummary?: boolean
   }>(),
   {
     chartType: 'line',
@@ -103,7 +104,7 @@ function setChartSeries(series: unknown[]) {
     .filter(
       (v, index) =>
         (index === 0 && props.isShowExpense)
-        || (index === 1 && props.isShowIncome),
+        || (index === 1 && props.isShowIncome) || (index === 2 && props.isShowSummary),
     )
     .map((item: any) => ({
       ...defu(lineConfig, item),

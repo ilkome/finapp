@@ -34,7 +34,7 @@ function updateWidth() {
 
     roundRef.value
       ?.querySelector(`[data-type-text="${props.moneyTypeSlug}"]`)
-      ?.style.setProperty('--minWidth', `${minWidth + 12}px`)
+      ?.style.setProperty('--minWidth', `${minWidth}px`)
   }, 100)
 }
 
@@ -45,9 +45,8 @@ watch([width, () => props.categories], () => updateWidth(), { immediate: true })
   <div
     v-if="categories.length > 0"
     ref="roundRef"
-    class="_rounded-lg _bg-item-4 _border-t _border-b border-item-5"
   >
-    <div class="flex flex-1 flex-wrap gap-2" :_data-type-text="`${moneyTypeSlug}`">
+    <div class="flex flex-1 flex-wrap" :_data-type-text="`${moneyTypeSlug}`">
       <LazyStatGroupRoundItem
         v-for="item in categories"
         :key="item.id"

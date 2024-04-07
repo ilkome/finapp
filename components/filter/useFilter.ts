@@ -103,14 +103,6 @@ export function useFilter() {
     toggleUi: key => ui.value[key] = !ui.value[key],
   })
 
-  function setUi(key, value) {
-    ui.value[key] = value
-  }
-
-  function toggleUi(key) {
-    ui.value[key] = !ui.value[key]
-  }
-
   const periodNameWithAll = ref<PeriodNameWithAll>('month')
 
   const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() =>
@@ -123,7 +115,6 @@ export function useFilter() {
   )
 
   function setPeriodAndDate(periodName: PeriodNameWithAll) {
-    console.log('111')
     if (periodName !== 'all') {
       if (periodNameWithAll.value === periodName) {
         date.value = dayjs().startOf(periodName).valueOf()
@@ -133,7 +124,6 @@ export function useFilter() {
         savedDate
           ? (date.value = dayjs(savedDate).startOf(periodName).valueOf())
           : (date.value = dayjs().startOf(periodName).valueOf())
-        console.log('savedDate', dayjs(savedDate).format())
       }
     }
 

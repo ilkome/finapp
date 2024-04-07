@@ -13,7 +13,7 @@ const categoriesStore = useCategoriesStore()
 
 <template>
   <div v-if="categories.length > 0" class="grid gap-1 max-w-sm">
-    <StatHorizontalItem
+    <StatGroupHorizontalItem
       v-for="item in categories"
       :key="item.id"
       :biggest="categories[0].value"

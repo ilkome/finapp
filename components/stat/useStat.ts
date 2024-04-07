@@ -15,6 +15,7 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { getDate } from '~/components/date/format'
 
 export function useStat(filter: FilterProvider) {
   const appNavStore = useAppNav()
@@ -23,7 +24,7 @@ export function useStat(filter: FilterProvider) {
   const trnsStore = useTrnsStore()
   const walletsStore = useWalletsStore()
 
-  const trnsIds = computed(() => {
+  function getTrnsIdsWithFilter() {
     const categoriesIds
       = filter.catsIds.value.length > 0
         ? categoriesStore.getTransactibleIds(filter.catsIds.value)
@@ -32,13 +33,14 @@ export function useStat(filter: FilterProvider) {
       = filter.walletsIds.value.length > 0 ? filter.walletsIds.value : []
 
     return getTrnsIds({
+      dates: getDate(filter.periodNameWithAll.value, filter.date.value),
       categoriesIds,
-      date: filter.date.value,
-      periodName: filter.periodNameWithAll.value,
       trnsItems: trnsStore.items,
       walletsIds,
     })
-  })
+  }
+
+  const trnsIds = computed(() => getTrnsIdsWithFilter())
 
   const trnsItemsFiltered = computed(() => {
     const categoriesIds
@@ -59,18 +61,6 @@ export function useStat(filter: FilterProvider) {
       return prev
     }, {} as Trns)
   })
-
-  const combinedTrnsIds = computed(() => ({
-    summary: trnsIds.value,
-    income: trnsIds.value.filter(
-      (id: TrnId) =>
-        trnsStore.items[id].type === 1 || trnsStore.items[id].type === 2,
-    ),
-    expense: trnsIds.value.filter(
-      (id: TrnId) =>
-        trnsStore.items[id].type === 0 || trnsStore.items[id].type === 2,
-    ),
-  }))
 
   const avaDate = computed(
     () =>
@@ -104,16 +94,7 @@ export function useStat(filter: FilterProvider) {
 
   const statPrepareData = computed(() =>
     Array.from({ length: periodsToShow.value }).map((_, index) => {
-      // const today = dayjs().startOf(filter.periodNameWithoutAll.value)
-      // const lastPeriod = dayjs().subtract(periodsToShow.value, filter.periodNameWithoutAll.value).startOf(filter.periodNameWithoutAll.value)
-
-      // console.log(dayjs(today).format(), dayjs(lastPeriod).format())
-      // console.log('avaDate', dayjs(avaDate.value).format())
-
       const startDate = dayjs()
-
-      // if (selectedPeriodCount.value >= chartConfigShowedPeriodsCount.value)
-      //   startDate = dayjs().startOf(filter.periodNameWithoutAll.value).subtract(selectedPeriodCount.value, filter.periodNameWithoutAll.value)
 
       const date = dayjs(startDate)
         .startOf(filter.periodNameWithoutAll.value)
@@ -122,11 +103,10 @@ export function useStat(filter: FilterProvider) {
 
       // TODO?: Get trnsIds from all periods first, then filter them
       const trnsIds = getTrnsIds({
+        dates: getDate(filter.periodNameWithAll.value, date),
         trnsItems: trnsStore.items,
         walletsIds: filter.walletsIds.value,
         categoriesIds: filter.transactibleCatsIds.value,
-        periodName: filter.periodNameWithoutAll.value,
-        date,
       })
 
       const total = getTotal({
@@ -176,8 +156,8 @@ export function useStat(filter: FilterProvider) {
     return p1 || p2
   }
 
-  const statPrepareDataAverage = computed(() => {
-    const totalPeriods = statPrepareData.value.slice(1).reduce(
+  const statPrepareDataAverage = computed(() =>
+    statPrepareData.value.slice(1).reduce(
       (acc, cur) => {
         acc.incomeTransactions += cur.incomeTransactions
         acc.expenseTransactions += cur.expenseTransactions
@@ -189,26 +169,48 @@ export function useStat(filter: FilterProvider) {
         expenseTransactions: 0,
         sumTransactions: 0,
       },
-    )
+    ),
+  )
 
-    return Object.keys(totalPeriods).reduce((acc, prev) => {
-      acc[prev] = totalPeriods[prev] / (periodsToShow.value - 1)
-      return acc
-    }, {} as TotalReturns)
-  })
+  function getAllPeriodsTotal(data: typeof statPrepareData.value) {
+    return data.reduce(
+      (acc, cur) => {
+        acc.income += cur.incomeTransactions
+        acc.expense += cur.expenseTransactions
+        acc.summary += cur.sumTransactions
+        return acc
+      },
+      {
+        income: 0,
+        expense: 0,
+        summary: 0,
+      },
+    )
+  }
+
+  const statPrepareDataAll = computed(() => getAllPeriodsTotal(statPrepareData.value))
 
   /**
    * Data for StatChartView.vue
    */
-  const chartSeries = computed(() => [{
-    data: statPrepareData.value.map(i => i.expenseTransactions),
-    color: 'var(--c-expense-1)',
-  }, {
-    data: statPrepareData.value.map(i => i.incomeTransactions),
-    color: 'var(--c-income-1)',
-  }])
+  const chartSeries = computed(() => [
+    {
+      data: statPrepareData.value.map(i => i.expenseTransactions),
+      color: 'var(--c-expense-1)',
+    },
+    {
+      data: statPrepareData.value.map(i => i.incomeTransactions),
+      color: 'var(--c-income-1)',
+    },
+    // {
+    //   data: statPrepareData.value.map(i => i.sumTransactions),
+    //   color: 'grey',
+    // },
+  ])
 
-  const chartCategories = computed(() => statPrepareData.value.map(i => i.date))
+  const chartCategories = computed(() =>
+    statPrepareData.value.map(i => i.date),
+  )
 
   const mTypes = {
     expense: 'expenseTransactions',
@@ -245,7 +247,9 @@ export function useStat(filter: FilterProvider) {
     expense: TotalCategory[]
   }
 
-  function getTotalCategories(categoriesWithTrns: ReturnType<typeof getCategoriesWithTrnsIds>) {
+  function getTotalCategories(
+    categoriesWithTrns: ReturnType<typeof getCategoriesWithTrnsIds>,
+  ) {
     const categories = Object.keys(categoriesWithTrns).reduce(
       (acc, categoryId) => {
         const totalInCategory = getTotal({
@@ -260,7 +264,9 @@ export function useStat(filter: FilterProvider) {
           acc.income.push({
             id: categoryId,
             value: totalInCategory.incomeTransactions,
-            trnsIds: categoriesWithTrns[categoryId].filter(trnId => trnsStore.items[trnId].type === 1),
+            trnsIds: categoriesWithTrns[categoryId].filter(
+              trnId => trnsStore.items[trnId].type === 1,
+            ),
           })
         }
 
@@ -268,7 +274,9 @@ export function useStat(filter: FilterProvider) {
           acc.expense.push({
             id: categoryId,
             value: totalInCategory.expenseTransactions,
-            trnsIds: categoriesWithTrns[categoryId].filter(trnId => trnsStore.items[trnId].type === 0),
+            trnsIds: categoriesWithTrns[categoryId].filter(
+              trnId => trnsStore.items[trnId].type === 0,
+            ),
           })
         }
 
@@ -346,7 +354,7 @@ export function useStat(filter: FilterProvider) {
     avaDate,
     averages,
     chartConfigShowedPeriodsCount,
-    combinedTrnsIds,
+    trnsIds,
     periodsToShow,
     filterPeriodMaxDateCount,
     getColorizeType,
@@ -358,6 +366,8 @@ export function useStat(filter: FilterProvider) {
     filters,
     chartSeries,
     chartCategories,
+    statPrepareDataAll,
+    statPrepareDataAverage,
     statPrepareDataAverageAll,
     isShowGroupByType,
     getTotalCategories,

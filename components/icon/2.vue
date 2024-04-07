@@ -9,7 +9,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  click: [e: CategoryId]
+  click: []
 }>()
 </script>
 
@@ -18,7 +18,7 @@ const emit = defineEmits<{
     class="flex size-8 items-center justify-center rounded-full bg-item-5 text-xl leading-none hocus_scale-110 group-hocus_bg-item-6"
     :class="{ '!size-10 !text-2xl': size === 'lg' }"
     :style="{ color }"
-    @click.stop="() => emit('click', categoryId)"
+    @click.stop="emit('click')"
   >
     <div :class="icon" />
   </div>

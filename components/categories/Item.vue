@@ -30,12 +30,10 @@ const parentCategory = computed(
 )
 
 function onClickIcon() {
-  // Prevent filter when using in TrnForm
   if (props.slider)
     emit('click', props.categoryId)
 
   emit('onClickIcon', props.categoryId)
-  filterStore.setCategoryId(props.categoryId)
 }
 </script>
 
@@ -53,7 +51,7 @@ function onClickIcon() {
       :categoryId
       :color="category.color"
       :icon="category.icon"
-      @click.stop="onClickIcon"
+      @click="onClickIcon"
     />
     <!-- <div
       class="flex h-8 w-8 items-center justify-center rounded-full text-xl leading-none text-neutral-50"

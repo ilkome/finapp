@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { CategoryId } from "~/components/categories/types"
-import { useCategoriesStore } from "~/components/categories/useCategories"
+import type { CategoryId } from '~/components/categories/types'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
 defineProps<{
   isShow: boolean
@@ -19,21 +19,27 @@ const categorySelector = ref<{
   select: (id: CategoryId, isForce: boolean) => void
   closeChild: () => void
 }>({
-  parentId: null,
-  select: (id: CategoryId, isForce: boolean) => {
-    if (!isForce && categoriesStore.isCategoryHasChildren(id)) {
-      categorySelector.value.parentId = id
-      return
-    }
+      parentId: null,
+      select: (id: CategoryId, isForce: boolean) => {
+        if (!isForce && categoriesStore.isCategoryHasChildren(id)) {
+          categorySelector.value.parentId = id
+          return
+        }
 
-    emit("onSelected", id)
-    categorySelector.value.closeChild()
-    emit("onClose")
-  },
-  closeChild: () => {
-    categorySelector.value.parentId = null
-  },
-})
+        emit('onSelected', id)
+        categorySelector.value.closeChild()
+        emit('onClose')
+      },
+      closeChild: () => {
+        categorySelector.value.parentId = null
+      },
+    })
+
+function onSelectCategory(id: CategoryId) {
+  console.log('onSelectCategory', id)
+  emit('onSelected', id)
+  emit('onClose')
+}
 </script>
 
 <template lang="pug">
@@ -51,6 +57,7 @@ div
         :ids="categoriesStore.categoriesRootIds"
         class="!gap-x-1"
         @click="categorySelector.select"
+        @onClickIcon="onSelectCategory"
       )
 
   //- Child Categories
@@ -67,7 +74,6 @@ div
           round
         )
         div {{ categoriesStore.items[categorySelector.parentId].name }}
-
 
     .px-3.flex-center.pb-5(v-if="isAllowSelectParentCategory")
       UiButtonGrey.max-w-xs(

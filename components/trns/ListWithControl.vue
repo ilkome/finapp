@@ -12,6 +12,7 @@ const props = withDefaults(
     isFilterByDay?: boolean
     isShowGroupSum?: boolean
     isAutoTypes?: boolean
+    initTrnType?: undefined
   }>(),
   {
     trnsClassNames: '',
@@ -23,7 +24,7 @@ const filterStore = useFilterStore()
 const trnsStore = useTrnsStore()
 const appNavStore = useAppNav()
 
-const filterTrnsType = ref<TrnType | null>(null)
+const filterTrnsType = ref<TrnType | undefined>(props.initTrnType)
 const filterTrnsPeriod = ref(props.defaultFilterTrnsPeriod)
 
 // Return to filter 'period', when global filter params changed
@@ -35,7 +36,7 @@ watch(() => appNavStore.activeTabStat, () => {
         ? 1
         : appNavStore.activeTabStat === 'expense'
           ? 0
-          : null
+          : undefined
   }
 })
 
@@ -45,7 +46,7 @@ const filteredTrnsIds = computed(() => {
       ? trnsStore.allTrnsIdsWithFilter
       : props.trnsIds
 
-  if (filterTrnsType.value === null)
+  if (filterTrnsType.value === undefined)
     return trnsIds
 
   return trnsIds.filter(
@@ -55,7 +56,7 @@ const filteredTrnsIds = computed(() => {
 
 const trnsCount = computed(() => filteredTrnsIds.value.length)
 
-function setFilterTrnsType(type: TrnType | null) {
+function setFilterTrnsType(type: TrnType | undefined) {
   filterTrnsType.value = type
 }
 
@@ -101,8 +102,8 @@ const isShown = ref(true)
       <div v-if="trnsIds.length > 0" v-show="isShown" class="pb-2">
         <UiTabs2>
           <UiTabsItem2
-            :isActive="filterTrnsType === null"
-            @click="setFilterTrnsType(null)"
+            :isActive="filterTrnsType === undefined"
+            @click="setFilterTrnsType(undefined)"
           >
             {{ $t("common.all") }}
           </UiTabsItem2>
@@ -142,7 +143,7 @@ const isShown = ref(true)
 
         <!-- List -->
         <div v-else class="h-full pb-10">
-          <div :class="trnsClassNames">
+          <div :class="props.trnsClassNames">
             <TrnsList
               :isFilterByDay="isFilterByDay"
               :isShowGroupSum="isShowGroupSum"

@@ -15,6 +15,11 @@ const emit = defineEmits<{
   onClickIcon: [id: CategoryId]
 }>()
 const categoriesStore = useCategoriesStore()
+
+function onClickIcon(categoryId: CategoryId) {
+  console.log('categoryId', categoryId)
+  emit('onClickIcon', categoryId)
+}
 </script>
 
 <template>
@@ -28,7 +33,7 @@ const categoriesStore = useCategoriesStore()
       :isHideParentCategory="isHideParentCategory"
       :slider="slider"
       @click="emit('click', categoryId)"
-      @onClickIcon="emit('onClickIcon', categoryId)"
+      @onClickIcon="onClickIcon(categoryId)"
     />
   </div>
 </template>

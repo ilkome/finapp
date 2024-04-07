@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useFilterStore } from '~/components/filter/useFilterStore'
 import type { CategoryId } from '~/components/categories/types'
 
 const route = useRoute()
 const router = useRouter()
-const { t } = useI18n()
-const filterStore = useFilterStore()
 const categoriesStore = useCategoriesStore()
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
@@ -24,19 +21,8 @@ const backLink = computed(() =>
 const categoryChildIds = computed(() =>
   category.value.childIds?.sort((a, b) =>
     categoriesStore.items[a].name.localeCompare(categoriesStore.items[b].name),
-  ),
+  ) || [],
 )
-
-const categoriesIds = computed(() =>
-  category.value?.childIds?.length > 0
-    ? category.value?.childIds
-    : [categoryId.value],
-)
-
-// TODO: useFilter
-function onClickFilterCategory() {
-  filterStore.setCategoryId(categoryId.value)
-}
 
 const onClickEdit = () => router.push(`/categories/${categoryId.value}/edit`)
 
@@ -81,7 +67,7 @@ useHead({
     </UiHeader>
 
     <!-- Open stat -->
-    <div class="mb-12 pt-3">
+    <!-- <div class="mb-12 pt-3">
       <div class="flex px-2">
         <UiItemShadow
           class="flex items-center gap-3 p-1 px-2"
@@ -96,10 +82,10 @@ useHead({
           <div class="mdi mdi-chevron-right text-lg leading-none opacity-70" />
         </UiItemShadow>
       </div>
-    </div>
+    </div> -->
 
     <!-- Childs categories -->
-    <div v-if="category.childIds && category.childIds.length > 0" class="mb-12">
+    <div v-if="category.childIds && category.childIds.length > 0" class="pt-4 mb-12">
       <div
         class="text-item-base flex gap-2 px-2 pb-3 font-primary text-lg font-semibold leading-none"
       >
@@ -117,11 +103,6 @@ useHead({
           @click="(id) => $router.push(`/categories/${id}`)"
         />
       </div>
-    </div>
-
-    <!-- Stat -->
-    <div class="px-2">
-      <!-- <StatChartStat :categoriesIds /> -->
     </div>
   </UiPage>
 </template>

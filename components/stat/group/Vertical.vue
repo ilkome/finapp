@@ -14,17 +14,15 @@ const categoriesStore = useCategoriesStore()
 <template>
   <div
     v-if="categories.length > 0"
-    class="overflow-hidden rounded-lg bg-item-4"
+    class="overflow-hidden scrollbar flex overflow-x-auto pb-2"
   >
-    <div class="scrollbar flex overflow-x-auto pb-2">
-      <StatGroupVerticalItem
-        v-for="item in categories"
-        :key="item.id"
-        :biggest="categories[0].value"
-        :category="categoriesStore.items[item.id]"
-        :categoryId="item.id"
-        :total="item.value"
-      />
-    </div>
+    <StatGroupVerticalItem
+      v-for="item in categories"
+      :key="item.id"
+      :biggest="categories[0].value"
+      :category="categoriesStore.items[item.id]"
+      :categoryId="item.id"
+      :total="item.value"
+    />
   </div>
 </template>

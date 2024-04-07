@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { PeriodNameWithoutAll } from '~/components/stat/chart/useChart'
+import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/stat/chart/useChart'
 import type { TrnId, TrnsGetterProps } from '~/components/trns/types'
 
 export function getTrnsIds(props: TrnsGetterProps) {
@@ -9,38 +9,21 @@ export function getTrnsIds(props: TrnsGetterProps) {
   let trnsIds: TrnId[] = Object.keys(props.trnsItems)
 
   // Type
-  if (props.trnType !== undefined && props.trnType !== null) {
+  if (props?.trnType !== undefined && props?.trnType !== null) {
     trnsIds = trnsIds.filter(
       trnId => props.trnsItems[trnId].type === props.trnType,
     )
   }
 
-  // @deprecated: Date
-  if (props?.date && props?.periodName !== 'all') {
-    const filterDate = dayjs(props.date)
-    const filterPeriod = props.periodName as PeriodNameWithoutAll
-    const fromDate = filterDate.startOf(filterPeriod).valueOf()
-    const untilDate = filterDate.endOf(filterPeriod).valueOf()
-
-    trnsIds = trnsIds.filter(
-      trnId =>
-        props.trnsItems[trnId].date >= fromDate
-        && props.trnsItems[trnId].date <= untilDate,
-    )
-  }
-
-  // From date
-  if (props.fromDate) {
-    trnsIds = trnsIds.filter(
-      trnId => props.trnsItems[trnId].date >= props.fromDate,
-    )
-  }
-
-  // Until date
-  if (props.untilDate) {
-    trnsIds = trnsIds.filter(
-      trnId => props.trnsItems[trnId].date <= props.untilDate,
-    )
+  // Date
+  if (props?.dates) {
+    if (props.dates.from) {
+      trnsIds = trnsIds.filter(
+        trnId => props.trnsItems[trnId].date >= props.dates?.from,
+      )
+    }
+    if (props?.dates?.until)
+      trnsIds = trnsIds.filter(trnId => props.trnsItems[trnId].date <= props.dates.until)
   }
 
   // Wallet
@@ -64,8 +47,6 @@ export function getTrnsIds(props: TrnsGetterProps) {
     )
   }
 
-  // return trnsIds
-  return trnsIds.sort(
-    (a, b) => props.trnsItems[b].date - props.trnsItems[a].date,
-  )
+  // Sort
+  return trnsIds.sort((a, b) => props.trnsItems[b].date - props.trnsItems[a].date)
 }

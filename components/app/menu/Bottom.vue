@@ -4,18 +4,14 @@ import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import { useAppNav } from '~/components/app/useAppNav'
 
 const { trnFormCreate } = useTrnForm()
-const { openModal, isModalOpen } = useAppNav()
+const { openModal } = useAppNav()
 const { onClick, checkIsActive } = useMenuData()
 </script>
 
 <template>
-  <LazyAppMenuModal v-if="isModalOpen('menu')" />
-
-  <div
-    class="absolute bottom-0 left-0 z-10 w-full bg-foreground-4 backdrop-blur lg_hidden"
-  >
-    <div class="mx-auto grid max-w-xl">
-      <div class="menu__row">
+  <div>
+    <div class="mx-auto max-w-xl">
+      <div class="flex items-center">
         <!-- Wallets -->
         <div
           class="menu__item group"
@@ -86,11 +82,6 @@ const { onClick, checkIsActive } = useMenuData()
 @import "../assets/stylus/variables"
 
 .menu
-  &__row
-    display flex
-    align-items center
-    justify-content center
-
   &__item
     display flex
     align-items center
@@ -108,11 +99,10 @@ const { onClick, checkIsActive } = useMenuData()
       &:not(._active)
         cursor pointer
         color var(--c-font-1)
-        background var(--c-blue-1)
+        background var(--c-item-5)
 
-    &:active
-      color var(--c-font-2)
-      background var(--c-blue-1)
+    &._active
+      color var(--c-font-1)
 
 .openTrnForm
   flex-grow 1
@@ -127,7 +117,7 @@ const { onClick, checkIsActive } = useMenuData()
     border-radius 8px
 
   +media-hover()
-    background var(--c-blue-1)
+    background var(--c-item-5)
 
     svg
       fill var(--c-font-1)
@@ -135,6 +125,6 @@ const { onClick, checkIsActive } = useMenuData()
   svg
     width 24px
     height 24px
-    fill var(--c-blue-1)
+    fill var(--c-item-2)
     anim()
 </style>

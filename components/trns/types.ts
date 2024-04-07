@@ -67,9 +67,10 @@ export type TrnsDirty = Record<TrnId, TrnItemDirty>
 
 export interface TrnsGetterProps {
   categoriesIds?: CategoryId[]
-  date?: number
-  fromDate?: number
-  periodName?: PeriodNameWithAll
+  dates?: {
+    from: number
+    until: number
+  }
   trnType?: TrnType
   trnsItems: Record<string, TrnItem>
   untilDate?: number

@@ -8,9 +8,11 @@ import '~/assets/css/index.css'
 import '~/assets/css/reset.css'
 import '~/assets/css/themes.css'
 import '~/assets/stylus/index.styl'
+import { useAppNav } from '~/components/app/useAppNav'
 
 const { trnFormCreate } = useTrnForm()
 const { pointerClasses } = usePointerClass()
+const { isModalOpen } = useAppNav()
 
 useHead({
   bodyAttrs: {
@@ -45,17 +47,21 @@ watch(
 
 <template>
   <div v-if="useUserStore()?.uid" class="layoutBase">
-    <div class="grid h-full lg_grid-cols-[auto_1fr_auto]">
+    <div class="grid h-full sm_grid-cols-[auto_1fr_auto]">
       <LayoutSidebar
-        class="hidden h-full w-64 overflow-hidden border-r border-item-5 lg_block h-full overflow-y-auto bg-foreground-5"
+        class="hidden h-full w-64 overflow-hidden border-r border-item-5 lg_block h-full overflow-y-auto bg-item-4"
       />
 
-      <div class="grid h-full overflow-hidden">
+      <LayoutSidebarMenu2 class="hidden lg_hidden sm_flex sm_flex-col justify-center bg-item-4" />
+
+      <div class="grid h-full overflow-hidden sm_pl-2 lg_pl-0">
         <NuxtPage />
       </div>
     </div>
 
-    <AppMenuBottom />
+    <AppMenuBottom class="absolute bottom-0 sm_bottom-inherit sm_hidden left-0 z-20 w-full bg-item-4 backdrop-blur lg_hidden" />
+    <LazyAppMenuModal v-if="isModalOpen('menu')" />
+
     <div
       class="flex-end group absolute bottom-6 right-6 z-10 hidden justify-center lg_flex"
       @click="() => trnFormCreate()"
