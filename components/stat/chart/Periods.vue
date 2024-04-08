@@ -3,7 +3,7 @@ import type { FilterProvider } from '~/components/filter/useFilter'
 import type { StatProvider } from '~/components/stat/useStat'
 
 const filter = inject('filter') as FilterProvider
-const filters = inject('stat') as StatProvider
+const stat = inject('stat') as StatProvider
 
 const showedPeriods = computed(
   () => filter.periods.value[filter.periodNameWithoutAll.value].showedPeriods,
@@ -28,7 +28,7 @@ function removePeriod() {
 
 // TODO: duplicate computed
 const isShowRemove = computed(() => showedPeriods.value <= 1)
-const isShowAdd = computed(() => showedPeriods.value >= filters.filterPeriodMaxDateCount.value)
+const isShowAdd = computed(() => showedPeriods.value >= stat.filterPeriodMaxDateCount.value)
 </script>
 
 <template>

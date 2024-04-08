@@ -118,7 +118,15 @@ export function useStat(filter: FilterProvider) {
         transferCategoriesIds: categoriesStore.transferCategoriesIds,
       })
 
-      return { date, ...total, trnsIds }
+      return {
+        date,
+        ...total,
+        income: total.incomeTransactions,
+        expense: total.expenseTransactions,
+        summary: total.sumTransactions,
+        sum: total.sumTransactions,
+        trnsIds,
+      }
     }),
   )
 
@@ -200,30 +208,6 @@ export function useStat(filter: FilterProvider) {
     sum: 'sumTransactions',
   } as const
 
-  function getCategoriesWithTrnsIds(trnsIds: TrnId[]) {
-    return trnsIds.reduce(
-      (prev, trnId) => {
-        const categoryId = trnsStore.items[trnId]?.categoryId
-        prev[categoryId] ??= []
-        prev[categoryId].push(trnId)
-        return prev
-      },
-      {} as Record<CategoryId, TrnId[]>,
-    )
-  }
-
-  function getHeyTotalCategories(trnsIds: TrnId[]) {
-    return getTotalCategories(getCategoriesWithTrnsIds(trnsIds))
-  }
-
-  const totalCategories = computed(() => getHeyTotalCategories(trnsIds.value))
-
-  interface TotalCategory {
-    id: CategoryId
-    value: number
-    trnsIds: TrnId[]
-  }
-
   interface TotalCategories {
     income: TotalCategory[]
     expense: TotalCategory[]
@@ -280,6 +264,48 @@ export function useStat(filter: FilterProvider) {
         expense: [],
       } as TotalCategories,
     )
+  }
+
+  function getCategoriesWithTrnsIds(trnsIds: TrnId[]) {
+    return trnsIds.reduce(
+      (prev, trnId) => {
+        const categoryId = trnsStore.items[trnId]?.categoryId
+        prev[categoryId] ??= []
+        prev[categoryId].push(trnId)
+        return prev
+      },
+      {} as Record<CategoryId, TrnId[]>,
+    )
+  }
+
+  function getRootCategoriesWithTrnsIds(trnsIds: TrnId[]) {
+    return trnsIds.reduce(
+      (prev, trnId) => {
+        const trnBaseCategory = categoriesStore.items[trnsStore.items[trnId]?.categoryId]
+
+        const categoryId
+          = trnBaseCategory.parentId === 0
+            ? trnsStore.items[trnId]?.categoryId
+            : trnBaseCategory.parentId
+
+        prev[categoryId] ??= []
+        prev[categoryId].push(trnId)
+        return prev
+      },
+      {} as Record<CategoryId, TrnId[]>,
+    )
+  }
+
+  function getHeyTotalCategories(trnsIds: TrnId[]) {
+    return getTotalCategories(getCategoriesWithTrnsIds(trnsIds))
+  }
+
+  const totalCategories = computed(() => getHeyTotalCategories(trnsIds.value))
+
+  interface TotalCategory {
+    id: CategoryId
+    value: number
+    trnsIds: TrnId[]
   }
 
   function getColorizeType(slug: MoneyTypeSlugSum): MoneyTypeSlug {
@@ -354,6 +380,8 @@ export function useStat(filter: FilterProvider) {
     getTotalCategories,
     getHeyTotalCategories,
     totalCategories,
+    getCategoriesWithTrnsIds,
+    getRootCategoriesWithTrnsIds,
   }
 }
 

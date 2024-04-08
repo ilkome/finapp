@@ -1,5 +1,5 @@
 export type MoneyTypeSlug = 'expense' | 'income'
-export type MoneyTypeSlugSum = 'income' | 'expense' | 'sum'
+export type MoneyTypeSlugSum = 'income' | 'expense' | 'sum' | 'summary'
 export type MoneyTypeNumber = 0 | 1 | 3
 
 export const moneyTypes: {

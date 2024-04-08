@@ -5,6 +5,7 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import type { FilterProvider } from '~/components/filter/useFilter'
 import type { TrnId } from '~/components/trns/types'
+import type { StatProvider } from '~/components/stat/useStat'
 
 const props = defineProps<{
   biggest: number
@@ -17,6 +18,8 @@ const props = defineProps<{
 }>()
 
 const filter = inject('filter') as FilterProvider
+const stat = inject('stat') as StatProvider
+
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
@@ -38,6 +41,10 @@ function toggleShowInside() {
 function getWidthPercent(value: number, biggest: number): string {
   return `${(Math.abs(value) / Math.abs(biggest)) * 100}%`
 }
+
+const groupedCategories = computed(() => {
+  return stat.getTotalCategories(stat.getCategoriesWithTrnsIds(props.trnsIds))
+})
 </script>
 
 <template>
@@ -87,10 +94,20 @@ function getWidthPercent(value: number, biggest: number): string {
     <!-- Inside -->
     <div
       v-if="isShowInside"
-      class="scrollbar _bg-item-4 ml-10 max-h-[40vh] overflow-hidden overflow-y-auto pb-1 pr-1"
+      class="scrollbar _bg-item-4 ml-10 max-h-[40vh] overflow-hidden overflow-y-auto pb-1"
       @click.stop=""
     >
-      <TrnsList :trnsIds="trnsIds" :isShowGroupDate="false" uiCat />
+      <div v-if="category.childIds && category.childIds?.length > 0">
+        <StatGroupHorizontal
+          :categories="groupedCategories[props.moneyTypeSlug]"
+          :moneyTypeSlug="props.moneyTypeSlug"
+          :moneyTypeNumber="props.moneyTypeNumber"
+        />
+      </div>
+
+      <div v-else class=" -mr-1">
+        <TrnsList :trnsIds="trnsIds" :isShowGroupDate="false" uiCat />
+      </div>
     </div>
   </div>
 </template>

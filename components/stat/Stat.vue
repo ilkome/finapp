@@ -1,32 +1,35 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { useMediaQuery } from '@vueuse/core'
-import useUIView from '~/components/layout/useUIView'
-import { type MoneyTypeSlug, moneyTypes } from '~/components/stat/types'
+import { type MoneyTypeSlugSum, moneyTypes } from '~/components/stat/types'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStat } from '~/components/stat/useStat'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import type { ChartType } from '~/components/chart/types'
 
 const appNavStore = useAppNav()
 const filter = useFilter()
 const stat = useStat(filter)
 const trnFormStore = useTrnFormStore()
-const { t } = useI18n()
-const { ui } = useUIView()
-
-const isLargeScreen = useMediaQuery('(min-width: 640px)')
-
-async function initFilter() {
-  filter.initChart()
-}
-
-initFilter()
+filter.initChart()
 
 provide('stat', stat)
 provide('filter', filter)
 
 const group = ref('lines')
+
+const chartSeriesOptions = {
+  income: {
+    color: 'var(--c-income-1)',
+  },
+  expense: {
+    color: 'var(--c-expense-1)',
+  },
+  summary: {
+    color: 'grey',
+    type: 'line',
+  },
+}
 
 const chart = ref({
   markedArea: computed(() =>
@@ -36,47 +39,18 @@ const chart = ref({
     () => filter.periods.value[filter.periodNameWithoutAll.value].type,
   ),
 
-  getSeries: (slug: MoneyTypeSlug) => {
-    const series = []
-    if (slug === 'income') {
-      series.push({
-        data: stat.statPrepareData.value.map(i => i.incomeTransactions),
-        color: 'var(--c-income-1)',
+  getSeries: (slugs: MoneyTypeSlugSum[]) => {
+    return slugs.reduce((acc, slug) => {
+      acc.push({
+        data: stat.statPrepareData.value.map(i => i[slug]),
+        ...chartSeriesOptions[slug],
       })
-    }
-    if (slug === 'expense') {
-      series.push({
-        data: stat.statPrepareData.value.map(i => i.expenseTransactions),
-        color: 'var(--c-expense-1)',
-      })
-    }
-    if (slug === 'summary') {
-      series.push({
-        data: stat.statPrepareData.value.map(i => i.sumTransactions),
-        color: 'grey',
-        type: 'line',
-      })
-    }
-
-    if (slug === 'all') {
-      series.push({
-        data: stat.statPrepareData.value.map(i => i.incomeTransactions),
-        color: 'var(--c-income-1)',
-        type: 'bar',
-      })
-      series.push({
-        data: stat.statPrepareData.value.map(i => i.expenseTransactions),
-        color: 'var(--c-expense-1)',
-        type: 'bar',
-      })
-      series.push({
-        data: stat.statPrepareData.value.map(i => i.sumTransactions),
-        color: 'var(--c-item-2)',
-        type: 'line',
-      })
-    }
-
-    return series
+      return acc
+    }, [] as {
+      data: number[]
+      color?: string
+      type?: ChartType
+    }[])
   },
 
   onClick: (idx: number) => {
@@ -89,6 +63,10 @@ const chart = ref({
     }
   },
 })
+
+const groupedCategories = computed(() => {
+  return stat.getTotalCategories(stat.getRootCategoriesWithTrnsIds(stat.trnsIds.value))
+})
 </script>
 
 <template>
@@ -98,7 +76,7 @@ const chart = ref({
     >
       <div class="lg_max-w-4xl lg_px-4 lg_px-8 lg_py-4">
         <div
-          class="sm-gap-0 sticky top-[-5px] flex flex-col justify-between gap-2 bg-foreground-4 py-2 backdrop-blur sm_flex-row"
+          class="sm-gap-0 sticky z-50 top-[0px] flex flex-col justify-between gap-2 bg-foreground-4 py-2 backdrop-blur sm_flex-row"
         >
           <div class="sm_flex-center flex">
             <StatDateNav />
@@ -109,7 +87,7 @@ const chart = ref({
         </div>
 
         <div
-          class="sticky top-[35px] z-50 flex items-center border-b border-item-5 bg-foreground-4 py-2 backdrop-blur"
+          class="sticky top-[40px] z-50 flex items-center border-b border-item-5 bg-foreground-4 py-2 backdrop-blur"
         >
           <StatMenu class="flex grow items-center sm_gap-2" />
           <div class="hidden md_flex md_justify-end">
@@ -117,21 +95,8 @@ const chart = ref({
           </div>
         </div>
 
-        <!-- <pre>{{ stat }}</pre> -->
-        <!-- <pre>{{ filter }}</pre> -->
         <div class="grid gap-3" data-scroll-ref="stat">
           <StatFilter class="grow pt-2" />
-
-          <!-- <div
-            v-if="isLargeScreen"
-            class="mx-2 mb-0 flex flex-wrap items-center gap-2 gap-x-6 rounded-lg py-2 sm_flex-nowrap sm_justify-between sm_bg-transparent sm_py-3 sm_pt-4"
-          >
-            <StatTotalWithAverage
-              v-for="(item, slug) in stat.averages.value"
-              :key="slug"
-              :item="item"
-            />
-          </div> -->
 
           <div class="mb-8 md_mb-4">
             <div class="_grid items-start gap-6 md_grid-cols-2 md_gap-8">
@@ -164,12 +129,12 @@ const chart = ref({
                   />
                   <LazyStatChartView
                     v-if="stat.statPrepareDataAll.value.summary !== 0"
-                    :markedArea="chart.markedArea"
                     :categories="stat.chartCategories.value"
-                    :series="chart.getSeries('all')"
-                    chartType="bar"
-                    :periodName="filter.periodNameWithoutAll.value"
                     :isShowDataLabels="filter.ui.value.isShowDataLabels"
+                    :markedArea="chart.markedArea"
+                    :periodName="filter.periodNameWithoutAll.value"
+                    :series="chart.getSeries(['income', 'expense', 'summary'])"
+                    chartType="bar"
                     @click="chart.onClick"
                   />
                 </div>
@@ -191,7 +156,7 @@ const chart = ref({
                         v-if="stat.statPrepareDataAll.value.summary !== 0"
                         :markedArea="chart.markedArea"
                         :categories="stat.chartCategories.value"
-                        :series="chart.getSeries(item.slug)"
+                        :series="chart.getSeries([item.slug])"
                         :chartType="chart.chartType"
                         :periodName="filter.periodNameWithoutAll.value"
                         :isShowDataLabels="filter.ui.value.isShowDataLabels"
@@ -211,6 +176,12 @@ const chart = ref({
                           @click="group = 'lines'"
                         >
                           Lines
+                        </UiTabsItem2>
+                        <UiTabsItem2
+                          :isActive="group === 'lines2'"
+                          @click="group = 'lines2'"
+                        >
+                          G-Lines
                         </UiTabsItem2>
 
                         <UiTabsItem2
@@ -259,6 +230,13 @@ const chart = ref({
                       /> -->
 
                       <StatGroupHorizontal
+                        v-if="group === 'lines2'"
+                        :categories="groupedCategories[item.slug]"
+                        :moneyTypeSlug="item.slug"
+                        :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
+                      />
+
+                      <StatGroupHorizontal
                         v-if="group === 'lines'"
                         :categories="stat.totalCategories.value[item.slug]"
                         :moneyTypeSlug="item.slug"
@@ -280,18 +258,9 @@ const chart = ref({
                   </div>
                 </div>
               </div>
-
-              <!-- <div>
-                <StatPeriods />
-                <div class="md_hidden">
-                  <StatChartOptions />
-                </div>
-              </div> -->
             </div>
           </div>
         </div>
-
-        <div class="min-h-[calc(90vh)]" />
       </div>
     </div>
   </div>

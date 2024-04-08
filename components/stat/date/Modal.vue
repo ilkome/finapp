@@ -4,7 +4,7 @@ import type { StatProvider } from '~/components/stat/useStat'
 import { getStyles } from '~/components/ui/classes'
 
 const filter = inject('filter') as FilterProvider
-const filters = inject('stat') as StatProvider
+const stat = inject('stat') as StatProvider
 
 const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
 </script>
@@ -65,13 +65,13 @@ const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
 
         <div
           :class="[
-            { '!bg-item-3': filters.filterPeriodMaxDateCount.value === filter.periods.value[filter.periodNameWithoutAll.value].showedPeriods },
+            { '!bg-item-3': stat.filterPeriodMaxDateCount.value === filter.periods.value[filter.periodNameWithoutAll.value].showedPeriods },
             ...getStyles('item', ['link', 'bg', 'rounded', 'padding1', 'minh2']),
           ]"
           class="flex gap-2 items-center"
-          @click="filter.setPeriod(filters.filterPeriodMaxDateCount.value)"
+          @click="filter.setPeriod(stat.filterPeriodMaxDateCount.value)"
         >
-          {{ filters.filterPeriodMaxDateCount.value }}
+          {{ stat.filterPeriodMaxDateCount.value }}
         </div>
       </div>
     </div>

@@ -16,12 +16,13 @@ import { config, lineConfig } from '~/components/stat/chart/config'
 import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
 import type { PeriodNameWithoutAll } from '~/components/filter/useFilter'
 import { getFormatForChart } from '~/components/date/format'
+import type { ChartType } from '~/components/chart/types'
 
 const props = withDefaults(
   defineProps<{
     categories: unknown
     series: unknown[]
-    chartType?: 'bar' | 'line' | 'pie'
+    chartType?: ChartType
     isShowIncome?: boolean
     isShowExpense?: boolean
     isShowSummary?: boolean
