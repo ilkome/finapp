@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useFilterStore } from '~/components/filter/useFilterStore'
 import { getStyles } from '~/components/ui/classes'
 
 const props = defineProps<{
@@ -18,7 +17,6 @@ const emit = defineEmits<{
   (e: 'onClickIcon'): void
 }>()
 
-const filterStore = useFilterStore()
 const categoriesStore = useCategoriesStore()
 
 const childCategoriesIds = computed(() =>

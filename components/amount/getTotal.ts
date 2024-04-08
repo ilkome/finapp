@@ -140,6 +140,7 @@ export function getTotal(props: TotalProps): TotalReturns {
   const sumTransfers = incomeTransfers - expenseTransfers
 
   return {
+    income: incomeTransactions,
     incomeTransactions,
     expenseTransactions,
     sumTransactions,

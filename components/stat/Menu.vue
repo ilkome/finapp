@@ -10,6 +10,10 @@ const menu = computed<{
   id: AppNav
   name: string | unknown
 }[]>(() => [{
+  idx: 4,
+  id: 'periods',
+  name: $i18n.t('stat.periods'),
+}, {
   idx: 0,
   id: 'summary',
   name: $i18n.t('stat.summary'),
@@ -25,10 +29,6 @@ const menu = computed<{
   idx: 3,
   id: 'trns',
   name: $i18n.t('trns.shortTitle'),
-}, {
-  idx: 4,
-  id: 'periods',
-  name: $i18n.t('stat.periods'),
 }])
 
 const { activeTabStat } = storeToRefs(useAppNav())

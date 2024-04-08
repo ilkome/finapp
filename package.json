@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "build": "nuxt generate",
     "preview": "nuxt generate && nuxt preview",
     "test": "vitest",
     "test-coverage": "vitest run --coverage"

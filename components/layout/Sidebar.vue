@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { useFilterStore } from '~/components/filter/useFilterStore'
 import { getStyles } from '~/components/ui/classes'
 
 const { t } = useI18n()
-const filterStore = useFilterStore()
 </script>
 
 <template>
@@ -36,7 +34,6 @@ const filterStore = useFilterStore()
             :walletId
             :wallet="walletItem"
             @click="$router.push(`/wallets/${walletId}`)"
-            @filter="filterStore.toggleWalletId(walletId)"
           />
         </template>
 

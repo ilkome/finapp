@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import defu from 'defu'
-import { BarChart, LineChart } from 'echarts/charts'
+import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import {
   GridComponent,
   MarkAreaComponent,
@@ -12,18 +12,22 @@ import {
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
-import type { StatProvider } from '~/components/stat/useStat'
 import { config, lineConfig } from '~/components/stat/chart/config'
 import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import type { FilterProvider } from '~/components/filter/useFilter'
+import type { PeriodNameWithoutAll } from '~/components/filter/useFilter'
+import { getFormatForChart } from '~/components/date/format'
 
 const props = withDefaults(
   defineProps<{
-    chartType?: 'bar' | 'line'
+    categories: unknown
+    series: unknown[]
+    chartType?: 'bar' | 'line' | 'pie'
     isShowIncome?: boolean
     isShowExpense?: boolean
     isShowSummary?: boolean
+    markedArea?: unknown
+    periodName: PeriodNameWithoutAll
+    isShowDataLabels?: boolean
   }>(),
   {
     chartType: 'line',
@@ -32,58 +36,49 @@ const props = withDefaults(
   },
 )
 
-const filter = inject('filter') as FilterProvider
-const stat = inject('stat') as StatProvider
+const emit = defineEmits<{
+  click: [idx: number]
+}>()
 
-const trnFormStore = useTrnFormStore()
+use([
+  BarChart,
+  GridComponent,
+  LineChart,
+  SVGRenderer,
+  MarkAreaComponent,
+  MarkLineComponent,
+  MarkPointComponent,
+  TooltipComponent,
+  PieChart,
+])
+
 const chartRef = ref()
-
-const chartType = computed(
-  () => filter.periods.value[filter.periodNameWithoutAll.value].type,
-)
-
-const markedArea = computed(() =>
-  stat.chartCategories.value.find((i: number) => +i === +filter.date.value),
-)
-
-function getFormat() {
-  switch (filter.periodNameWithoutAll.value) {
-    case 'day':
-      return 'D.MM'
-    case 'week':
-      return 'D.MM'
-    case 'month':
-      return 'MMM'
-    case 'year':
-      return 'YYYY'
-    default:
-      return 'MM'
-  }
-}
 
 function getChartData() {
   const data = defu(config, {
-    xAxis: setChartXAxis(stat.chartCategories.value),
-    series: setChartSeries(stat.chartSeries.value),
+    xAxis: setChartXAxis(props.categories),
+    series: setChartSeries(props.series),
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
-    return dayjs(+date).format(getFormat())
+    return dayjs(+date).format(getFormatForChart(props.periodName))
   }
   data.xAxis.axisPointer.label.formatter = ({ value } = { value: string }) => {
-    return dayjs(+value).format(getFormat())
+    return dayjs(+value).format(getFormatForChart(props.periodName))
   }
 
   // INFO: Marked area works only with bar chart
-  if (chartType.value !== 'bar') {
-    data.series.push({
-      data: [],
-      type: 'bar',
-      markArea: markArea(markedArea.value),
-    })
-  }
-  else {
-    data.series[0].markArea = markArea(markedArea.value)
+  if (props.markedArea) {
+    if (props.chartType !== 'bar') {
+      data.series.push({
+        data: [],
+        type: 'bar',
+        markArea: markArea(props.markedArea),
+      })
+    }
+    else {
+      data.series[0].markArea = markArea(props.markedArea)
+    }
   }
 
   return data
@@ -95,39 +90,20 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
     params.offsetY,
   ])
 
-  filter.setDate(stat.chartCategories.value[index])
-
-  if (filter.periodNameWithoutAll.value === 'day')
-    trnFormStore.values.date = dayjs(stat.chartCategories.value[index]).startOf(filter.periodNameWithoutAll.value).valueOf()
+  emit('click', index)
 }
 
 function setChartSeries(series: unknown[]) {
   return series
-    .filter(
-      (v, index) =>
-        (index === 0 && props.isShowExpense)
-        || (index === 1 && props.isShowIncome) || (index === 2 && props.isShowSummary),
-    )
     .map((item: any) => ({
       ...defu(lineConfig, item),
-      type: chartType.value,
+      type: item.type || props.chartType,
       label: {
         ...lineConfig.label,
-        show: filter.ui.value.isShowDataLabels,
+        show: props.isShowDataLabels,
       },
     }))
 }
-
-use([
-  BarChart,
-  GridComponent,
-  LineChart,
-  SVGRenderer,
-  MarkAreaComponent,
-  MarkLineComponent,
-  MarkPointComponent,
-  TooltipComponent,
-])
 </script>
 
 <template>

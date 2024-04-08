@@ -75,8 +75,21 @@ export function formatDateByPeriod2(date: number, periodName: PeriodNameWithoutA
   }
 
   return dayjs(date).format(format)
-  // const fDate = dayjs(date).format(format)
-  // return fDate[0].toUpperCase() + fDate.slice(1)
+}
+
+export function getFormatForChart(periodName: PeriodNameWithoutAll) {
+  switch (periodName) {
+    case 'day':
+      return 'D.MM'
+    case 'week':
+      return 'D.MM'
+    case 'month':
+      return 'MMM'
+    case 'year':
+      return 'YYYY'
+    default:
+      return 'MM'
+  }
 }
 
 export function getDate(periodName: PeriodNameWithAll, date: number) {

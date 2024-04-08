@@ -114,4 +114,3 @@ en:
 ru:
   statBy: "Статистика: "
 </i18n>
-~/components/filter/useFilterStore

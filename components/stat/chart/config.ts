@@ -13,6 +13,7 @@ export const config = {
 
   // Tooltip
   tooltip: {
+    // show: false,
     trigger: 'axis',
     axisPointer: {
       type: 'cross',
@@ -24,14 +25,14 @@ export const config = {
     textStyle: {
       color: 'var(--chart-label)',
     },
-    formatter(props: any[]) {
-      return `
-        <div class="grid gap-2">
-          <div>${props[0] && getLocalAmount(props[0].value)}</div>
-          <div>${props[1] && getLocalAmount(props[1].value)}</div>
-        </div>
-      `
-    },
+    // formatter(props: any[]) {
+    //   return `
+    //     <div class="grid gap-2">
+    //       <div>${props[0] && getLocalAmount(props[0].value)}</div>
+    //       <div>${props[1] && getLocalAmount(props[1].value)}</div>
+    //     </div>
+    //   `
+    // },
   },
 
   // yAxis
@@ -66,7 +67,7 @@ export const config = {
   xAxis: {
     type: 'category',
     splitLine: {
-      show: true,
+      show: false,
       lineStyle: {
         color: 'var(--chart-line)',
       },

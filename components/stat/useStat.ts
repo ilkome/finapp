@@ -190,24 +190,6 @@ export function useStat(filter: FilterProvider) {
 
   const statPrepareDataAll = computed(() => getAllPeriodsTotal(statPrepareData.value))
 
-  /**
-   * Data for StatChartView.vue
-   */
-  const chartSeries = computed(() => [
-    {
-      data: statPrepareData.value.map(i => i.expenseTransactions),
-      color: 'var(--c-expense-1)',
-    },
-    {
-      data: statPrepareData.value.map(i => i.incomeTransactions),
-      color: 'var(--c-income-1)',
-    },
-    // {
-    //   data: statPrepareData.value.map(i => i.sumTransactions),
-    //   color: 'grey',
-    // },
-  ])
-
   const chartCategories = computed(() =>
     statPrepareData.value.map(i => i.date),
   )
@@ -364,7 +346,6 @@ export function useStat(filter: FilterProvider) {
     isLastPeriod,
     statPrepareData,
     filters,
-    chartSeries,
     chartCategories,
     statPrepareDataAll,
     statPrepareDataAverage,
