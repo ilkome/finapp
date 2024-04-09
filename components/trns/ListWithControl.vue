@@ -3,6 +3,7 @@ import type { TrnId, TrnType } from '~/components/trns/types'
 import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useAppNav } from '~/components/app/useAppNav'
+import type { MoneyTypeNumber } from '~/components/stat/types'
 
 const props = withDefaults(
   defineProps<{
@@ -11,8 +12,7 @@ const props = withDefaults(
     defaultFilterTrnsPeriod?: string
     isFilterByDay?: boolean
     isShowGroupSum?: boolean
-    isAutoTypes?: boolean
-    initTrnType?: undefined
+    initTrnType?: MoneyTypeNumber
   }>(),
   {
     trnsClassNames: '',
@@ -24,21 +24,11 @@ const filterStore = useFilterStore()
 const trnsStore = useTrnsStore()
 const appNavStore = useAppNav()
 
-const filterTrnsType = ref<TrnType | undefined>(props.initTrnType)
+const filterTrnsType = ref<TrnType | MoneyTypeNumber | undefined>(props.initTrnType)
 const filterTrnsPeriod = ref(props.defaultFilterTrnsPeriod)
 
 // Return to filter 'period', when global filter params changed
-watch(() => filterStore.isShow, () => (filterTrnsPeriod.value = 'period'))
-watch(() => appNavStore.activeTabStat, () => {
-  if (props.isAutoTypes) {
-    filterTrnsType.value
-      = appNavStore.activeTabStat === 'income'
-        ? 1
-        : appNavStore.activeTabStat === 'expense'
-          ? 0
-          : undefined
-  }
-})
+watch(() => filterStore.isShow, () => filterTrnsPeriod.value = 'period')
 
 const filteredTrnsIds = computed(() => {
   const trnsIds

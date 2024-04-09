@@ -92,6 +92,44 @@ export function useStat(filter: FilterProvider) {
         : chartConfigShowedPeriodsCount.value,
   )
 
+  function getStatDataPrepared(categoryId: CategoryId) {
+    return Array.from({ length: periodsToShow.value }).map((_, index) => {
+      const startDate = dayjs()
+
+      const date = dayjs(startDate)
+        .startOf(filter.periodNameWithoutAll.value)
+        .subtract(index, filter.periodNameWithoutAll.value)
+        .valueOf()
+
+      // TODO?: Get trnsIds from all periods first, then filter them
+      const trnsIds = getTrnsIds({
+        dates: getDate(filter.periodNameWithAll.value, date),
+        trnsItems: trnsStore.items,
+        walletsIds: filter.walletsIds.value,
+        categoriesIds: [categoryId],
+      })
+
+      const total = getTotal({
+        baseCurrencyCode: currenciesStore.base,
+        rates: currenciesStore.rates,
+        trnsIds,
+        trnsItems: trnsStore.items,
+        walletsItems: walletsStore.items,
+        transferCategoriesIds: categoriesStore.transferCategoriesIds,
+      })
+
+      return {
+        date,
+        ...total,
+        income: total.incomeTransactions,
+        expense: total.expenseTransactions,
+        summary: total.sumTransactions,
+        sum: total.sumTransactions,
+        trnsIds,
+      }
+    })
+  }
+
   const statPrepareData = computed(() =>
     Array.from({ length: periodsToShow.value }).map((_, index) => {
       const startDate = dayjs()
@@ -371,6 +409,7 @@ export function useStat(filter: FilterProvider) {
     isToday,
     isLastPeriod,
     statPrepareData,
+    getStatDataPrepared,
     filters,
     chartCategories,
     statPrepareDataAll,

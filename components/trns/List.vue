@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 import { storeToRefs } from 'pinia'
 import useAmount from '~/components/amount/useAmount'
 import { useAppNav } from '~/components/app/useAppNav'
-import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
@@ -34,7 +33,6 @@ const { getTotalOfTrnsIds } = useAmount()
 const filterStore = useFilterStore()
 const { trnFormEdit } = useTrnForm()
 const currenciesStore = useCurrenciesStore()
-const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
 const pageNumber = ref(1)
@@ -155,7 +153,7 @@ function actions(trnItem) {
         v-for="trnId in trnsIds"
         :key="trnId"
         :trnId="trnId"
-        @onClickEdit="$emit('onClickEdit')"
+        @onClickEdit="emit('onClickEdit')"
       )
       TrnsItemWithoutCat(
         v-if="uiCat"

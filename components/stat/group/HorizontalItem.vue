@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import dayjs from 'dayjs'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
+import type { MoneyTypeNumber, MoneyTypeSlug, MoneyTypeSlugSum } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import type { FilterProvider } from '~/components/filter/useFilter'
 import type { TrnId } from '~/components/trns/types'
 import type { StatProvider } from '~/components/stat/useStat'
+import type { ChartType } from '~/components/chart/types'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
   biggest: number
@@ -19,6 +22,7 @@ const props = defineProps<{
 
 const filter = inject('filter') as FilterProvider
 const stat = inject('stat') as StatProvider
+const trnFormStore = useTrnFormStore()
 
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
@@ -44,6 +48,40 @@ function getWidthPercent(value: number, biggest: number): string {
 
 const groupedCategories = computed(() => {
   return stat.getTotalCategories(stat.getCategoriesWithTrnsIds(props.trnsIds))
+})
+
+const chartSeriesOptions = {
+  income: {
+    color: 'var(--c-income-1)',
+  },
+  expense: {
+    color: 'var(--c-expense-1)',
+  },
+  summary: {
+    color: 'grey',
+    type: 'line',
+  },
+}
+
+const chart = ref({
+  markedArea: computed(() =>
+    stat.chartCategories.value.find((i: number) => +i === +filter.date.value),
+  ),
+
+  getSeries: (slugs: MoneyTypeSlugSum[]) => {
+    return slugs.reduce((acc, slug) => {
+      acc.push({
+        data: stat.getStatDataPrepared(props.categoryId).map(i => i[slug]),
+        ...chartSeriesOptions[slug],
+        color: props.category.color,
+      })
+      return acc
+    }, [] as {
+      data: number[]
+      color?: string
+      type?: ChartType
+    }[])
+  },
 })
 </script>
 
@@ -94,10 +132,10 @@ const groupedCategories = computed(() => {
     <!-- Inside -->
     <div
       v-if="isShowInside"
-      class="scrollbar _bg-item-4 ml-10 max-h-[40vh] overflow-hidden overflow-y-auto pb-1"
+      class="scrollbar max-h-[40vh] overflow-hidden overflow-y-auto pb-1"
       @click.stop=""
     >
-      <div v-if="category.childIds && category.childIds?.length > 0">
+      <div v-if="category.childIds && category.childIds?.length > 0" class="ml-10 -mr-1">
         <StatGroupHorizontal
           :categories="groupedCategories[props.moneyTypeSlug]"
           :moneyTypeSlug="props.moneyTypeSlug"
@@ -105,7 +143,18 @@ const groupedCategories = computed(() => {
         />
       </div>
 
-      <div v-else class=" -mr-1">
+      <div v-else class="-mr-1">
+        <LazyStatChartView
+          :categories="stat.chartCategories.value"
+          :isShowDataLabels="filter.ui.value.isShowDataLabels"
+          :markedArea="chart.markedArea"
+          :periodName="filter.periodNameWithoutAll.value"
+          :series="chart.getSeries([props.moneyTypeSlug])"
+          chartType="bar"
+        />
+      </div>
+
+      <div class="ml-10 -mr-1">
         <TrnsList :trnsIds="trnsIds" :isShowGroupDate="false" uiCat />
       </div>
     </div>

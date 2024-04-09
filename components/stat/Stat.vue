@@ -74,25 +74,25 @@ const groupedCategories = computed(() => {
     <div
       class="h-full overflow-hidden overflow-y-auto px-3 pb-6 sm_px-1 lg_px-3"
     >
-      <div class="lg_max-w-4xl lg_px-4 lg_px-8 lg_py-4">
+      <div class="lg_max-w-4xl lg_px-8 lg_py-0">
         <div
           class="sm-gap-0 sticky z-50 top-[0px] flex flex-col justify-between gap-2 bg-foreground-4 py-2 backdrop-blur sm_flex-row"
-        >
-          <div class="sm_flex-center flex">
-            <StatDateNav />
-            <StatDateView />
-          </div>
-
-          <StatChartPeriods class="sm_flex-center flex" />
-        </div>
-
-        <div
-          class="sticky top-[40px] z-50 flex items-center border-b border-item-5 bg-foreground-4 py-2 backdrop-blur"
         >
           <StatMenu class="flex grow items-center sm_gap-2" />
           <div class="hidden md_flex md_justify-end">
             <StatChartOptions />
           </div>
+        </div>
+
+        <div
+          class="sticky top-[40px] z-50 flex items-center border-b border-item-5 bg-foreground-4 pb-2 backdrop-blur"
+        >
+          <div class="flex grow">
+            <StatDateNav />
+            <StatDateView />
+          </div>
+
+          <StatChartPeriods class="flex" />
         </div>
 
         <div class="grid gap-3" data-scroll-ref="stat">
@@ -109,7 +109,6 @@ const groupedCategories = computed(() => {
                   :trnsIds="stat.trnsIds.value"
                   isShowFilter
                   uiHistory
-                  isAutoTypes
                   defaultFilterTrnsPeriod="period"
                 />
               </div>
@@ -238,6 +237,7 @@ const groupedCategories = computed(() => {
 
                       <StatGroupHorizontal
                         v-if="group === 'lines'"
+                        class="sticky top-[100px]"
                         :categories="stat.totalCategories.value[item.slug]"
                         :moneyTypeSlug="item.slug"
                         :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
@@ -251,7 +251,6 @@ const groupedCategories = computed(() => {
                         isShowFilter
                         class="px-2"
                         uiHistory
-                        isAutoTypes
                         defaultFilterTrnsPeriod="period"
                       />
                     </div>
