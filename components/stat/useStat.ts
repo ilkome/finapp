@@ -15,7 +15,7 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { getDate } from '~/components/date/format'
+import { getDates } from '~/components/date/format'
 
 export function useStat(filter: FilterProvider) {
   const appNavStore = useAppNav()
@@ -33,7 +33,7 @@ export function useStat(filter: FilterProvider) {
       = filter.walletsIds.value.length > 0 ? filter.walletsIds.value : []
 
     return getTrnsIds({
-      dates: getDate(filter.periodNameWithAll.value, filter.date.value),
+      dates: getDates(filter.periodNameWithAll.value, filter.date.value),
       categoriesIds,
       trnsItems: trnsStore.items,
       walletsIds,
@@ -103,7 +103,7 @@ export function useStat(filter: FilterProvider) {
 
       // TODO?: Get trnsIds from all periods first, then filter them
       const trnsIds = getTrnsIds({
-        dates: getDate(filter.periodNameWithAll.value, date),
+        dates: getDates(filter.periodNameWithAll.value, date),
         trnsItems: trnsStore.items,
         walletsIds: filter.walletsIds.value,
         categoriesIds: [categoryId],
@@ -141,7 +141,7 @@ export function useStat(filter: FilterProvider) {
 
       // TODO?: Get trnsIds from all periods first, then filter them
       const trnsIds = getTrnsIds({
-        dates: getDate(filter.periodNameWithAll.value, date),
+        dates: getDates(filter.periodNameWithAll.value, date),
         trnsItems: trnsStore.items,
         walletsIds: filter.walletsIds.value,
         categoriesIds: filter.transactibleCatsIds.value,
@@ -234,7 +234,7 @@ export function useStat(filter: FilterProvider) {
     )
   }
 
-  const statPrepareDataAll = computed(() => getAllPeriodsTotal(statPrepareData.value))
+  const statPrepareAllData = computed(() => getAllPeriodsTotal(statPrepareData.value))
 
   const chartCategories = computed(() =>
     statPrepareData.value.map(i => i.date),
@@ -412,7 +412,7 @@ export function useStat(filter: FilterProvider) {
     getStatDataPrepared,
     filters,
     chartCategories,
-    statPrepareDataAll,
+    statPrepareAllData,
     statPrepareDataAverage,
     statPrepareDataAverageAll,
     isShowGroupByType,

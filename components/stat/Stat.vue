@@ -1,19 +1,25 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
+import type { ChartType } from '~/components/chart/types'
 import { type MoneyTypeSlugSum, moneyTypes } from '~/components/stat/types'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useFilter } from '~/components/filter/useFilter'
+import { useSimpleTabs } from '~/components/tabs/useUtils'
 import { useStat } from '~/components/stat/useStat'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import type { ChartType } from '~/components/chart/types'
+import { getTrnsIds } from '~/components/trns/getTrns'
+import { getDates } from '~/components/date/format'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const appNavStore = useAppNav()
 const filter = useFilter()
 const stat = useStat(filter)
 const trnFormStore = useTrnFormStore()
-filter.initChart()
+const trnsStore = useTrnsStore()
 const { t } = useI18n()
+
+filter.initChart()
 
 provide('stat', stat)
 provide('filter', filter)
@@ -106,19 +112,19 @@ function useToggle({ name }: { name: string }) {
   }
 }
 
-function useSimpleTabs(name, items: {
-  slug: string
-  localeKey: string
-}[]) {
-  const active = useStorage(name, items.at(0)?.slug)
-  const set = (item: string) => active.value = item
+const selectedTrnsIds = computed(() => getTrnsIds({
+  trnsItems: trnsStore.items,
+  categoriesIds: filter.catsIds.value,
+  walletsIds: filter.walletsIds.value,
+  dates: {
+    from: dayjs().startOf(filter.periodNameWithoutAll.value).subtract(stat.periodsToShow.value, filter.periodNameWithoutAll.value).valueOf(),
+    until: dayjs().endOf('day').subtract(1, filter.periodNameWithoutAll.value).valueOf(),
+  },
+}))
 
-  return {
-    active,
-    items,
-    set,
-  }
-}
+// selectedTrnsIds
+
+const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selectedTrnsIds.value))
 </script>
 
 <template>
@@ -126,7 +132,7 @@ function useSimpleTabs(name, items: {
     <div
       class="h-full overflow-hidden overflow-y-auto px-3 pb-6 sm_px-1 lg_px-3"
     >
-      <div class="lg_max-w-4xl lg_px-8 lg_py-0">
+      <div class="lg_max-w-6xl lg_px-8 lg_py-0">
         <div
           class="sm-gap-0 sticky top-[0px] z-50 flex flex-col justify-between gap-2 bg-foreground-4 py-2 backdrop-blur sm_flex-row"
         >
@@ -144,8 +150,10 @@ function useSimpleTabs(name, items: {
             <StatDateView />
           </div>
 
-          <StatChartPeriods class="flex" />
+          <StatPeriodsSelector />
         </div>
+
+        <!-- <pre>{{ categoriesWithTrnsIds }}</pre> -->
 
         <div class="grid gap-3" data-scroll-ref="stat">
           <StatFilter class="grow pt-2" />
@@ -197,7 +205,7 @@ function useSimpleTabs(name, items: {
 
                   <LazyStatChartView
                     v-if="
-                      stat.statPrepareDataAll.value.summary !== 0
+                      stat.statPrepareAllData.value.summary !== 0
                         && total.isShown.value
                     "
                     :categories="stat.chartCategories.value"
@@ -216,7 +224,7 @@ function useSimpleTabs(name, items: {
                     v-for="item in moneyTypes"
                     v-show="stat.isShowGroupByType(item.slug)"
                     :key="item.slug"
-                    class="grid gap-3 md_max-w-sm lg_px-2 lg_py-2"
+                    class="grid gap-3 md_max-w-lg lg_px-2 lg_py-2"
                   >
                     <StatTotalWithAverage
                       :item="stat.averages.value[item.slug]"
@@ -225,13 +233,14 @@ function useSimpleTabs(name, items: {
 
                     <div>
                       <LazyStatChartView
-                        v-if="stat.statPrepareDataAll.value.summary !== 0"
+                        v-if="stat.statPrepareAllData.value.summary !== 0"
                         :markedArea="chart.markedArea"
                         :categories="stat.chartCategories.value"
                         :series="chart.getSeries([item.slug])"
                         :chartType="chart.chartType"
                         :periodName="filter.periodNameWithoutAll.value"
                         :isShowDataLabels="filter.ui.value.isShowDataLabels"
+                        class2="bg-item-4 rounded-lg"
                         @click="chart.onClick"
                       />
 

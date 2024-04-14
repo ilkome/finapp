@@ -92,7 +92,7 @@ export function getFormatForChart(periodName: PeriodNameWithoutAll) {
   }
 }
 
-export function getDate(periodName: PeriodNameWithAll, date: number) {
+export function getDates(periodName: PeriodNameWithAll, date: number) {
   if (periodName === 'all')
     return
 
@@ -102,3 +102,14 @@ export function getDate(periodName: PeriodNameWithAll, date: number) {
 
   return { from, until }
 }
+
+// export function getFromDate(periodName: PeriodNameWithAll, date: number) {
+//   if (periodName === 'all')
+//     return
+
+//   const filterDate = dayjs(date)
+//   const from = filterDate.startOf(periodName).valueOf()
+//   const until = filterDate.endOf(periodName).valueOf()
+
+//   return { from, until }
+// }

@@ -17,7 +17,7 @@ const currenciesStore = useCurrenciesStore()
 </script>
 
 <template>
-  <div class="flex-1">
+  <div>
     <UiTitle2 v-if="$slots.name">
       <slot name="name" />
     </UiTitle2>

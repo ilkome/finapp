@@ -15,9 +15,10 @@ export const config = {
   tooltip: {
     // show: false,
     trigger: 'axis',
+
     axisPointer: {
       // type: 'cross',
-      animation: false,
+      // animation: false,
     },
     backgroundColor: 'var(--chart-bg)',
     borderWidth: 0,
@@ -25,6 +26,14 @@ export const config = {
     textStyle: {
       color: '',
     },
+    position(pos, _params, _el, _elRect, size) {
+      const obj = {
+        top: 0,
+      }
+      obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 0
+      return obj
+    },
+
     formatter(props: any[]) {
       return `
         <div class="grid gap-2 px-2 text-secondary">

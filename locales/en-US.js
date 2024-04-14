@@ -217,6 +217,7 @@ export default {
       gLines: 'G-Lines',
       round: 'Rounds',
       trns: 'Trns',
+      periods: 'Periods',
     },
   },
 

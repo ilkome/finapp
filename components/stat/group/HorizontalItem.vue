@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import dayjs from 'dayjs'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { ChartType } from '~/components/chart/types'
 import type { FilterProvider } from '~/components/filter/useFilter'
@@ -9,7 +10,11 @@ import { getTrnsIds } from '~/components/trns/getTrns'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { getDate } from '~/components/date/format'
+import { formatDateByPeriod, formatDateByPeriod2, getDates } from '~/components/date/format'
+import { getTotal } from '~/components/amount/getTotal'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useSimpleTabs } from '~/components/tabs/useUtils'
+import { getStyles } from '~/components/ui/classes'
 
 const props = defineProps<{
   biggest: number
@@ -27,6 +32,7 @@ const stat = inject('stat') as StatProvider
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
+const walletsStore = useWalletsStore()
 
 const isShowInside = ref(false)
 
@@ -65,6 +71,7 @@ const chartSeriesOptions = {
 }
 
 const selectedDate = ref(+filter.date.value)
+watch(() => filter.date.value, v => selectedDate.value = v)
 
 const chart = ref({
   selectedIdx: stat.chartCategories.value.findIndex((i: number) => +i === selectedDate.value),
@@ -76,10 +83,12 @@ const chart = ref({
 
   series: computed(() => chart.value.getSeries([props.moneyTypeSlug])),
 
+  data: stat.getStatDataPrepared(props.categoryId).map(i => i[props.moneyTypeSlug]),
+
   getSeries: (slugs: MoneyTypeSlugSum[]) => {
     return slugs.reduce((acc, slug) => {
       acc.push({
-        data: stat.getStatDataPrepared(props.categoryId).map(i => i[slug]),
+        data: chart.value.data,
         ...chartSeriesOptions[slug],
         color: props.category.color,
       })
@@ -96,17 +105,73 @@ function onClickChart(idx: number) {
   selectedDate.value = stat.chartCategories.value[idx]
 }
 
-const trnsIds = computed(() => getTrnsIds({
+// TODO: This should be in function to filtered from trnsIdsAllPeriods
+const selectedTrnsIds = computed(() => getTrnsIds({
   trnsItems: trnsStore.items,
   categoriesIds: [props.categoryId],
   walletsIds: filter.walletsIds.value,
-  dates: getDate(filter.periodNameWithoutAll.value, selectedDate.value),
+  dates: getDates(filter.periodNameWithoutAll.value, selectedDate.value),
 }))
+
+const selectedPeriodTotal = computed(() => getTotal({
+  baseCurrencyCode: currenciesStore.base,
+  rates: currenciesStore.rates,
+  trnsIds: selectedTrnsIds.value,
+  trnsItems: trnsStore.items,
+  walletsItems: walletsStore.items,
+  transferCategoriesIds: categoriesStore.transferCategoriesIds,
+}))
+
+// const periodsCount = stat.periodsToShow.value
+const trnsIdsPeriodsExceptsLastOne = computed(() => getTrnsIds({
+  trnsItems: trnsStore.items,
+  walletsIds: filter.walletsIds.value,
+  categoriesIds: [props.categoryId],
+  dates: {
+    from: dayjs().startOf(filter.periodNameWithoutAll.value).subtract(stat.periodsToShow.value, filter.periodNameWithoutAll.value).valueOf(),
+    until: dayjs().endOf('day').subtract(1, filter.periodNameWithoutAll.value).valueOf(),
+  },
+}))
+
+const totalAllPeriodsExceptsLastOne = computed(() => getTotal({
+  baseCurrencyCode: currenciesStore.base,
+  rates: currenciesStore.rates,
+  trnsIds: trnsIdsPeriodsExceptsLastOne.value,
+  trnsItems: trnsStore.items,
+  walletsItems: walletsStore.items,
+  transferCategoriesIds: categoriesStore.transferCategoriesIds,
+}))
+
+const { t } = useI18n()
+const formattedDate = computed(() => formatDateByPeriod(selectedDate.value, filter.periodNameWithoutAll.value, {
+  current: t('dates.week.current'),
+  last: t('dates.week.last'),
+}))
+
+const tabs = useSimpleTabs(`stat-tabs-${props.categoryId}`, [{
+  slug: 'empty',
+  localeKey: 'stat.tabs.empty',
+}, {
+  slug: 'trns',
+  localeKey: 'stat.tabs.trns',
+}, {
+  slug: 'periods',
+  localeKey: 'stat.tabs.periods',
+}])
+
+function getFormattedDate(date: number) {
+  return formatDateByPeriod2(date, filter.periodNameWithoutAll.value, {
+    current: t('dates.week.current'),
+    last: t('dates.week.last'),
+  })
+}
 </script>
 
 <template>
   <div
-    class="_bg-item-4 rounded-lg"
+    :class="{
+      'pb-3': isShowInside,
+    }"
     @click="toggleShowInside"
   >
     <div
@@ -173,22 +238,70 @@ const trnsIds = computed(() => getTrnsIds({
         />
 
         <div class="scrollbar max-h-[40vh] overflow-hidden overflow-y-auto pb-1 _ml-10 -mr-1">
-          <TrnsList :trnsIds="trnsIds" :isShowGroupDate="false" uiCat />
-          <pre>{{ stat }}</pre>
-          <StatTotalWithAverage2
-            :item="{
-              amount: 111,
-              averageAmount: 2222,
-              colorizeType: 'income',
-              isShownAverage: true,
-              moneyTypeNumber: 1,
-              moneyTypeSlugSum: 'income',
-            }"
-          >
-            <template #name>
-              Hello
-            </template>
-          </StatTotalWithAverage2>
+          <div class="grid gap-2">
+            <div class="pl-3">
+              <StatTotalWithAverage2
+                :item="{
+                  amount: selectedPeriodTotal[props.moneyTypeSlug],
+                  averageAmount: 0,
+                  colorizeType: props.moneyTypeSlug,
+                  isShownAverage: false,
+                  moneyTypeNumber: props.moneyTypeNumber,
+                  moneyTypeSlugSum: props.moneyTypeSlug,
+                }"
+              >
+                <template #name>
+                  {{ formattedDate }}
+                </template>
+              </StatTotalWithAverage2>
+            </div>
+
+            <UiTabs2 class="gap-1 bg-item-4 rounded-md">
+              <UiTabsItem2
+                v-for="tabItem in tabs.items"
+                :key="tabItem.slug"
+                :isActive="tabs.active.value === tabItem.slug"
+                @click="tabs.set(tabItem.slug)"
+              >
+                {{ t(tabItem.localeKey) }}
+              </UiTabsItem2>
+            </UiTabs2>
+
+            <TrnsList
+              v-if="tabs.active.value === 'trns'"
+              :trnsIds="selectedTrnsIds"
+              :isShowGroupDate="false"
+              uiCat
+            />
+
+            <div
+              v-if="tabs.active.value === 'periods'"
+            >
+              <div
+                v-for="date in [...stat.chartCategories.value].reverse()"
+                :key="date"
+                :class="[
+                  { '!bg-item-3 !px-2 !mx-0': date === selectedDate },
+                ]"
+                class="group rounded-md hocus_bg-item-5 -mt-[1px] pt-2 px-0 mx-2 hocus_px-2 hocus_mx-0"
+                @click="onClickChart(stat.chartCategories.value.findIndex(d => d === date))"
+              >
+                <div
+                  class="flex items-center text-secondary"
+                >
+                  <div class="grow font-mono text-xs text-secondary">
+                    {{ getFormattedDate(date) }}
+                  </div>
+
+                  <Amount
+                    :amount="chart.data[stat.chartCategories.value.findIndex(d => d === date)]"
+                    :currencyCode="currenciesStore.base"
+                  />
+                </div>
+                <div class="mt-2 h-[1px] bg-item-5" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

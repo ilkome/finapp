@@ -2,7 +2,7 @@
 import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
-import { getDate } from '~/components/date/format'
+import { getDates } from '~/components/date/format'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
@@ -29,7 +29,7 @@ const trnsIds = computed(() => {
   let dates = false
 
   if (periodGrouped.value === 'period')
-    dates = getDate('day', $trnForm.values.date)
+    dates = getDates('day', $trnForm.values.date)
 
   if (filterBy.value === 'wallet' && $trnForm.values.walletId)
     walletsIds.push($trnForm.values.walletId)

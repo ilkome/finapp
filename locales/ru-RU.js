@@ -218,6 +218,7 @@ export default {
       gLines: 'Группы',
       round: 'Кружочки',
       trns: 'Список',
+      periods: 'Периоды',
     },
   },
 

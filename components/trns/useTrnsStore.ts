@@ -16,7 +16,7 @@ import {
   unsubscribeData,
   updateData,
 } from '~/services/firebase/api'
-import { getDate } from '~/components/date/format'
+import { getDates } from '~/components/date/format'
 
 export const useTrnsStore = defineStore('trns', () => {
   const userStore = useUserStore()
@@ -36,7 +36,7 @@ export const useTrnsStore = defineStore('trns', () => {
     = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : false
 
     return getTrnsIds({
-      dates: getDate(filterStore.periodNameWithAll, filterStore.date),
+      dates: getDates(filterStore.periodNameWithAll, filterStore.date),
       categoriesIds,
       trnsItems: items.value,
       walletsIds,
@@ -64,7 +64,7 @@ export const useTrnsStore = defineStore('trns', () => {
       return []
 
     return getTrnsIds({
-      dates: getDate(filterStore.periodNameWithAll, filterStore.date),
+      dates: getDates(filterStore.periodNameWithAll, filterStore.date),
       trnsItems: items.value,
     })
   })
@@ -235,6 +235,14 @@ export const useTrnsStore = defineStore('trns', () => {
     isShownModal.value = false
   }
 
+  function getStoreTrnsIds({
+    trnsIds,
+  }: {
+    trnsIds: TrnId[]
+  }) {
+    // return
+  }
+
   return {
     // Trns
     items,
@@ -264,5 +272,7 @@ export const useTrnsStore = defineStore('trns', () => {
     isShownModal,
     showTrnModal,
     hideTrnModal,
+
+    getStoreTrnsIds,
   }
 })
