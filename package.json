@@ -31,7 +31,6 @@
     "pinia": "^2.1.7",
     "swiper": "8.4.7",
     "v-calendar": "^3.1.2",
-    "vue": "^3.4.21",
     "vue-deepunref": "^1.0.1",
     "vue-echarts": "^6.6.9",
     "vue-router": "^4.3.0",

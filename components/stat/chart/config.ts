@@ -16,23 +16,29 @@ export const config = {
     // show: false,
     trigger: 'axis',
     axisPointer: {
-      type: 'cross',
+      // type: 'cross',
       animation: false,
     },
     backgroundColor: 'var(--chart-bg)',
     borderWidth: 0,
     padding: 8,
     textStyle: {
-      color: 'var(--chart-label)',
+      color: '',
     },
-    // formatter(props: any[]) {
-    //   return `
-    //     <div class="grid gap-2">
-    //       <div>${props[0] && getLocalAmount(props[0].value)}</div>
-    //       <div>${props[1] && getLocalAmount(props[1].value)}</div>
-    //     </div>
-    //   `
-    // },
+    formatter(props: any[]) {
+      return `
+        <div class="grid gap-2 px-2 text-secondary">
+          ${props.map((i, idx) => `
+            ${idx === 0 ? `<div class="text-primary">${i.axisValueLabel}</div>` : ''}
+
+            <div class="flex gap-2">
+              <div>${i.marker}</div>
+              <div>${getLocalAmount(i.value)}</div>
+            </div>
+          `)}
+          </div>
+          `
+    },
   },
 
   // yAxis
@@ -55,8 +61,8 @@ export const config = {
         formatter: props => getLocalAmount(props?.value),
       },
     },
-    position: 'left',
-    // position: 'right',
+    // position: 'left',
+    position: 'right',
     axisLabel: {
       color: 'var(--chart-label)',
       formatter: n => getCompactAmount(n),

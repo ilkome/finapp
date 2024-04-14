@@ -1,10 +1,10 @@
 import type { TrnId } from '~/components/trns/types'
 import { formatAmount } from '~/components/amount/formatAmount'
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export default function useAmount() {
   const currenciesStore = useCurrenciesStore()

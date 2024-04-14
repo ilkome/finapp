@@ -127,7 +127,7 @@ export function useStat(filter: FilterProvider) {
         sum: total.sumTransactions,
         trnsIds,
       }
-    })
+    }).reverse()
   }
 
   const statPrepareData = computed(() =>
@@ -165,7 +165,7 @@ export function useStat(filter: FilterProvider) {
         sum: total.sumTransactions,
         trnsIds,
       }
-    }),
+    }).reverse(),
   )
 
   const statPrepareDataAverageAll = computed(() => {

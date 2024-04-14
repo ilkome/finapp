@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import { useStorage } from '@vueuse/core'
 import { type MoneyTypeSlugSum, moneyTypes } from '~/components/stat/types'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useFilter } from '~/components/filter/useFilter'
@@ -12,11 +13,29 @@ const filter = useFilter()
 const stat = useStat(filter)
 const trnFormStore = useTrnFormStore()
 filter.initChart()
+const { t } = useI18n()
 
 provide('stat', stat)
 provide('filter', filter)
 
-const group = ref('lines')
+const statTabs = useSimpleTabs('dashboardStats', [{
+  slug: 'empty',
+  localeKey: 'stat.tabs.empty',
+}, {
+  slug: 'lines',
+  localeKey: 'stat.tabs.lines',
+}, {
+  slug: 'gLines',
+  localeKey: 'stat.tabs.gLines',
+}, {
+  slug: 'round',
+  localeKey: 'stat.tabs.round',
+}, {
+  slug: 'trns',
+  localeKey: 'stat.tabs.trns',
+}])
+
+const total = useToggle({ name: 'total' })
 
 const chartSeriesOptions = {
   income: {
@@ -40,17 +59,20 @@ const chart = ref({
   ),
 
   getSeries: (slugs: MoneyTypeSlugSum[]) => {
-    return slugs.reduce((acc, slug) => {
-      acc.push({
-        data: stat.statPrepareData.value.map(i => i[slug]),
-        ...chartSeriesOptions[slug],
-      })
-      return acc
-    }, [] as {
-      data: number[]
-      color?: string
-      type?: ChartType
-    }[])
+    return slugs.reduce(
+      (acc, slug) => {
+        acc.push({
+          data: stat.statPrepareData.value.map(i => i[slug]),
+          ...chartSeriesOptions[slug],
+        })
+        return acc
+      },
+      [] as {
+        data: number[]
+        color?: string
+        type?: ChartType
+      }[],
+    )
   },
 
   onClick: (idx: number) => {
@@ -65,8 +87,38 @@ const chart = ref({
 })
 
 const groupedCategories = computed(() => {
-  return stat.getTotalCategories(stat.getRootCategoriesWithTrnsIds(stat.trnsIds.value))
+  return stat.getTotalCategories(
+    stat.getRootCategoriesWithTrnsIds(stat.trnsIds.value),
+  )
 })
+
+function useToggle({ name }: { name: string }) {
+  const isShown = useStorage(name, true)
+  const show = () => (isShown.value = true)
+  const hide = () => (isShown.value = false)
+  const toggle = () => (isShown.value ? hide() : show())
+
+  return {
+    isShown,
+    show,
+    hide,
+    toggle,
+  }
+}
+
+function useSimpleTabs(name, items: {
+  slug: string
+  localeKey: string
+}[]) {
+  const active = useStorage(name, items.at(0)?.slug)
+  const set = (item: string) => active.value = item
+
+  return {
+    active,
+    items,
+    set,
+  }
+}
 </script>
 
 <template>
@@ -76,7 +128,7 @@ const groupedCategories = computed(() => {
     >
       <div class="lg_max-w-4xl lg_px-8 lg_py-0">
         <div
-          class="sm-gap-0 sticky z-50 top-[0px] flex flex-col justify-between gap-2 bg-foreground-4 py-2 backdrop-blur sm_flex-row"
+          class="sm-gap-0 sticky top-[0px] z-50 flex flex-col justify-between gap-2 bg-foreground-4 py-2 backdrop-blur sm_flex-row"
         >
           <StatMenu class="flex grow items-center sm_gap-2" />
           <div class="hidden md_flex md_justify-end">
@@ -121,13 +173,33 @@ const groupedCategories = computed(() => {
               </div>
 
               <div v-else class="grid gap-4">
-                <div v-if="appNavStore.activeTabStat === 'summary'" class="grid gap-3">
-                  <StatTotalWithAverage
-                    :item="stat.averages.value.sum"
-                    hasBg
-                  />
+                <!-- Total -->
+                <div
+                  v-if="appNavStore.activeTabStat === 'summary'"
+                  class="grid gap-3 lg_px-2 lg_py-2"
+                >
+                  <div class="flex">
+                    <StatTotalWithAverage
+                      v-if="total.isShown.value"
+                      :item="stat.averages.value.sum"
+                      hasBg
+                      @click="total.toggle"
+                    />
+                    <div
+                      v-if="!total.isShown.value"
+                      class="flex grow items-center px-2 py-2 sm_px-1.5 sm_pt-3"
+                      @click="total.toggle"
+                    >
+                      <UiTitle2>{{ $t(`money.sum`) }}</UiTitle2>
+                      <UiIconChevron class="rotate-120 size-4 text-secondary" />
+                    </div>
+                  </div>
+
                   <LazyStatChartView
-                    v-if="stat.statPrepareDataAll.value.summary !== 0"
+                    v-if="
+                      stat.statPrepareDataAll.value.summary !== 0
+                        && total.isShown.value
+                    "
                     :categories="stat.chartCategories.value"
                     :isShowDataLabels="filter.ui.value.isShowDataLabels"
                     :markedArea="chart.markedArea"
@@ -138,12 +210,13 @@ const groupedCategories = computed(() => {
                   />
                 </div>
 
+                <!-- Sides -->
                 <div class="grid items-start gap-4 md_grid-cols-2 md_gap-6">
                   <div
                     v-for="item in moneyTypes"
                     v-show="stat.isShowGroupByType(item.slug)"
                     :key="item.slug"
-                    class="md_max-w-sm grid gap-3 lg_py-2 lg_px-2"
+                    class="grid gap-3 md_max-w-sm lg_px-2 lg_py-2"
                   >
                     <StatTotalWithAverage
                       :item="stat.averages.value[item.slug]"
@@ -164,79 +237,33 @@ const groupedCategories = computed(() => {
 
                       <UiTabs2 class="gap-1">
                         <UiTabsItem2
-                          :isActive="group === 'empty'"
-                          @click="group = 'empty'"
+                          v-for="tabItem in statTabs.items"
+                          :key="tabItem.slug"
+                          :isActive="statTabs.active.value === tabItem.slug"
+                          @click="statTabs.set(tabItem.slug)"
                         >
-                          Empty
-                        </UiTabsItem2>
-
-                        <UiTabsItem2
-                          :isActive="group === 'lines'"
-                          @click="group = 'lines'"
-                        >
-                          Lines
-                        </UiTabsItem2>
-                        <UiTabsItem2
-                          :isActive="group === 'lines2'"
-                          @click="group = 'lines2'"
-                        >
-                          G-Lines
-                        </UiTabsItem2>
-
-                        <UiTabsItem2
-                          :isActive="group === 'round'"
-                          @click="group = 'round'"
-                        >
-                          Round
-                        </UiTabsItem2>
-
-                        <!-- <UiTabsItem2
-                      :isActive="group === 'bars'"
-                      @click="group = 'bars'"
-                    >
-                      Bars
-                    </UiTabsItem2> -->
-
-                        <UiTabsItem2
-                          :isActive="group === 'trns'"
-                          @click="group = 'trns'"
-                        >
-                          Trns
+                          {{ t(tabItem.localeKey) }}
                         </UiTabsItem2>
                       </UiTabs2>
                     </div>
 
-                    <div v-if="group !== 'empty'" class="max-w-sm">
+                    <div v-if="statTabs.active.value !== 'empty'" class="max-w-sm">
                       <StatGroupRound
-                        v-if="group === 'round'"
+                        v-if="statTabs.active.value === 'round'"
                         :categories="stat.totalCategories.value[item.slug]"
                         :moneyTypeSlug="item.slug"
                         :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
                       />
 
-                      <!-- <StatGroupVertical
-                        v-if="group === 'bars'"
-                        :categories="stat.totalCategories.value[item.slug]"
-                        :moneyTypeSlug="item.slug"
-                        :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
-                      /> -->
-
-                      <!-- <StatGroupHorizontal2
-                        v-if="group === 'lines'"
-                        :categories="stat.totalCategories.value[item.slug]"
-                        :moneyTypeSlug="item.slug"
-                        :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
-                      /> -->
-
                       <StatGroupHorizontal
-                        v-if="group === 'lines2'"
+                        v-if="statTabs.active.value === 'gLines'"
                         :categories="groupedCategories[item.slug]"
                         :moneyTypeSlug="item.slug"
                         :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
                       />
 
                       <StatGroupHorizontal
-                        v-if="group === 'lines'"
+                        v-if="statTabs.active.value === 'lines'"
                         class="sticky top-[100px]"
                         :categories="stat.totalCategories.value[item.slug]"
                         :moneyTypeSlug="item.slug"
@@ -244,7 +271,7 @@ const groupedCategories = computed(() => {
                       />
 
                       <TrnsListWithControl
-                        v-if="group === 'trns'"
+                        v-if="statTabs.active.value === 'trns'"
                         :size="12"
                         :trnsIds="stat.trnsIds.value"
                         :initTrnType="stat.getMoneyTypeNumber(item.slug)"

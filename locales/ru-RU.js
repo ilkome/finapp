@@ -211,6 +211,14 @@ export default {
       showCatsChartPie: 'Показывать статистику "пирог"',
       showPeriodsChart: 'Показывать график периодов',
     },
+
+    tabs: {
+      empty: 'Скрыть',
+      lines: 'Линии',
+      gLines: 'Группы',
+      round: 'Кружочки',
+      trns: 'Список',
+    },
   },
 
   chart: {

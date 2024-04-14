@@ -10,7 +10,7 @@ const $trnForm = useTrnFormStore()
     template(v-if="$trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
     template(v-if="!$trnForm.values.trnId") {{ $t('trnForm.createTrn') }}
 
-  TrnFormMainDate
+  TrnFormDate
   TrnFormMainAmountTrn(v-if="$trnForm.values.trnType !== 2")
   TrnFormMainAmountTransfer(v-if="$trnForm.values.trnType === 2")
 

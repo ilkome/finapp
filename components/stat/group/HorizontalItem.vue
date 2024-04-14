@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
+import type { ChartType } from '~/components/chart/types'
+import type { FilterProvider } from '~/components/filter/useFilter'
 import type { MoneyTypeNumber, MoneyTypeSlug, MoneyTypeSlugSum } from '~/components/stat/types'
+import type { StatProvider } from '~/components/stat/useStat'
+import type { TrnId } from '~/components/trns/types'
+import { getTrnsIds } from '~/components/trns/getTrns'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import type { FilterProvider } from '~/components/filter/useFilter'
-import type { TrnId } from '~/components/trns/types'
-import type { StatProvider } from '~/components/stat/useStat'
-import type { ChartType } from '~/components/chart/types'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { getDate } from '~/components/date/format'
 
 const props = defineProps<{
   biggest: number
@@ -22,10 +23,10 @@ const props = defineProps<{
 
 const filter = inject('filter') as FilterProvider
 const stat = inject('stat') as StatProvider
-const trnFormStore = useTrnFormStore()
 
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
+const trnsStore = useTrnsStore()
 
 const isShowInside = ref(false)
 
@@ -63,10 +64,17 @@ const chartSeriesOptions = {
   },
 }
 
+const selectedDate = ref(+filter.date.value)
+
 const chart = ref({
+  selectedIdx: stat.chartCategories.value.findIndex((i: number) => +i === selectedDate.value),
+  selectedIdx2: computed(() => stat.chartCategories.value.findIndex((i: number) => +i === selectedDate.value)),
+
   markedArea: computed(() =>
-    stat.chartCategories.value.find((i: number) => +i === +filter.date.value),
+    stat.chartCategories.value.find((i: number) => +i === selectedDate.value),
   ),
+
+  series: computed(() => chart.value.getSeries([props.moneyTypeSlug])),
 
   getSeries: (slugs: MoneyTypeSlugSum[]) => {
     return slugs.reduce((acc, slug) => {
@@ -83,6 +91,17 @@ const chart = ref({
     }[])
   },
 })
+
+function onClickChart(idx: number) {
+  selectedDate.value = stat.chartCategories.value[idx]
+}
+
+const trnsIds = computed(() => getTrnsIds({
+  trnsItems: trnsStore.items,
+  categoriesIds: [props.categoryId],
+  walletsIds: filter.walletsIds.value,
+  dates: getDate(filter.periodNameWithoutAll.value, selectedDate.value),
+}))
 </script>
 
 <template>
@@ -132,10 +151,9 @@ const chart = ref({
     <!-- Inside -->
     <div
       v-if="isShowInside"
-      class="scrollbar max-h-[40vh] overflow-hidden overflow-y-auto pb-1"
       @click.stop=""
     >
-      <div v-if="category.childIds && category.childIds?.length > 0" class="ml-10 -mr-1">
+      <div v-if="category.childIds && category.childIds?.length > 0" class="ml-10">
         <StatGroupHorizontal
           :categories="groupedCategories[props.moneyTypeSlug]"
           :moneyTypeSlug="props.moneyTypeSlug"
@@ -143,19 +161,35 @@ const chart = ref({
         />
       </div>
 
-      <div v-else class="-mr-1">
+      <div v-else class="">
         <LazyStatChartView
           :categories="stat.chartCategories.value"
           :isShowDataLabels="filter.ui.value.isShowDataLabels"
           :markedArea="chart.markedArea"
           :periodName="filter.periodNameWithoutAll.value"
-          :series="chart.getSeries([props.moneyTypeSlug])"
+          :series="chart.series"
           chartType="bar"
+          @click="onClickChart"
         />
-      </div>
 
-      <div class="ml-10 -mr-1">
-        <TrnsList :trnsIds="trnsIds" :isShowGroupDate="false" uiCat />
+        <div class="scrollbar max-h-[40vh] overflow-hidden overflow-y-auto pb-1 _ml-10 -mr-1">
+          <TrnsList :trnsIds="trnsIds" :isShowGroupDate="false" uiCat />
+          <pre>{{ stat }}</pre>
+          <StatTotalWithAverage2
+            :item="{
+              amount: 111,
+              averageAmount: 2222,
+              colorizeType: 'income',
+              isShownAverage: true,
+              moneyTypeNumber: 1,
+              moneyTypeSlugSum: 'income',
+            }"
+          >
+            <template #name>
+              Hello
+            </template>
+          </StatTotalWithAverage2>
+        </div>
       </div>
     </div>
   </div>

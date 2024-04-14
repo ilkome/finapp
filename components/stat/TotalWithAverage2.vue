@@ -2,8 +2,7 @@
 import type { MoneyTypeNumber, MoneyTypeSlug, MoneyTypeSlugSum } from '~/components/stat/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 
-const props = defineProps<{
-  hasBg?: boolean
+defineProps<{
   item: {
     amount: number
     averageAmount: number
@@ -14,26 +13,13 @@ const props = defineProps<{
   }
 }>()
 
-const emit = defineEmits<{
-  click: []
-}>()
-
 const currenciesStore = useCurrenciesStore()
-
-const classes = computed(() => ({
-  'px-2 py-2 sm_px-1.5 sm_pt-3': props.hasBg,
-}))
 </script>
 
 <template>
-  <div
-    class="flex-1"
-    :class="classes"
-  >
-    <UiTitle2
-      @click="emit('click')"
-    >
-      {{ $t(`money.${item.moneyTypeSlugSum}`) }}
+  <div class="flex-1">
+    <UiTitle2 v-if="$slots.name">
+      <slot name="name" />
     </UiTitle2>
 
     <div

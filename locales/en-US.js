@@ -210,6 +210,14 @@ export default {
       showCatsChartPie: 'Show categories pie chart',
       showPeriodsChart: 'Show periods chart',
     },
+
+    tabs: {
+      empty: 'Hide',
+      lines: 'Lines',
+      gLines: 'G-Lines',
+      round: 'Rounds',
+      trns: 'Trns',
+    },
   },
 
   chart: {

@@ -15,9 +15,10 @@ const emit = defineEmits(['click'])
       { '!bg-item-3 !text-primary': isActive },
     ]"
     class="
+      grow
       py-2 px-3 flex gap-1 items-center
       border-1 rounded-md
-      text-secondary2 text-sm leading-none
+      justify-center text-secondary2 text-sm leading-none
     "
     @click="emit('click')"
   >

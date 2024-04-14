@@ -94,7 +94,7 @@ onMounted(init)
                 .px-3.grid.gap-y-1.gap-x-1.3sm_grid-cols-2
                   //- Wallet
                   TrnFormMainSelectedWallet(
-                    v-for="(walletItem, walletId) in walletsItemsLimited"
+                    v-for="(_, walletId) in walletsItemsLimited"
                     :key="walletId"
                     :class="[{ 'cursor-default !bg-item-3': $trnForm.values.walletId === walletId }]"
                     :id="walletId"

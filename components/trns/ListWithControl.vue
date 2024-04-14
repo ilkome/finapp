@@ -2,7 +2,6 @@
 import type { TrnId, TrnType } from '~/components/trns/types'
 import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useAppNav } from '~/components/app/useAppNav'
 import type { MoneyTypeNumber } from '~/components/stat/types'
 
 const props = withDefaults(
@@ -15,26 +14,33 @@ const props = withDefaults(
     initTrnType?: MoneyTypeNumber
   }>(),
   {
+    defaultFilterTrnsPeriod: 'all',
     trnsClassNames: '',
   },
 )
-const emit = defineEmits(['onClickEdit'])
+
+const emit = defineEmits<{
+  onClickEdit: [e: Event]
+  onChangePeriod: [period: string]
+}>()
 
 const filterStore = useFilterStore()
 const trnsStore = useTrnsStore()
-const appNavStore = useAppNav()
 
 const filterTrnsType = ref<TrnType | MoneyTypeNumber | undefined>(props.initTrnType)
-const filterTrnsPeriod = ref(props.defaultFilterTrnsPeriod)
 
 // Return to filter 'period', when global filter params changed
 watch(() => filterStore.isShow, () => filterTrnsPeriod.value = 'period')
 
 const filteredTrnsIds = computed(() => {
-  const trnsIds
-    = props.defaultFilterTrnsPeriod && filterTrnsPeriod.value === 'all'
-      ? trnsStore.allTrnsIdsWithFilter
-      : props.trnsIds
+  // const trnsIds
+  //   = props.defaultFilterTrnsPeriod && filterTrnsPeriod.value === 'all'
+  //     ? trnsStore.allTrnsIdsWithFilter
+  //     : props.trnsIds
+
+  // Фильтровать выше? или сюда передавать с фильтром и без? Нагорье
+
+  const trnsIds = props.trnsIds
 
   if (filterTrnsType.value === undefined)
     return trnsIds
@@ -71,26 +77,26 @@ const isShown = ref(true)
         </UiTitle>
 
         <div v-if="defaultFilterTrnsPeriod">
-          <UiTabs2>
+          <UiTabs>
             <UiTabsItem2
-              :isActive="filterTrnsPeriod === 'period'"
-              @click="filterTrnsPeriod = 'period'"
+              :isActive="defaultFilterTrnsPeriod === 'period'"
+              @click="emit('onChangePeriod', 'period')"
             >
               {{ $t("dates.period") }}
             </UiTabsItem2>
             <UiTabsItem2
-              :isActive="filterTrnsPeriod === 'all'"
-              @click="filterTrnsPeriod = 'all'"
+              :isActive="defaultFilterTrnsPeriod === 'all'"
+              @click="emit('onChangePeriod', 'all')"
             >
               {{ $t("common.all") }}
             </UiTabsItem2>
-          </UiTabs2>
+          </UiTabs>
         </div>
       </div>
 
       <!-- Type Selector -->
       <div v-if="trnsIds.length > 0" v-show="isShown" class="pb-2">
-        <UiTabs2>
+        <UiTabs3>
           <UiTabsItem2
             :isActive="filterTrnsType === undefined"
             @click="setFilterTrnsType(undefined)"
@@ -115,12 +121,12 @@ const isShown = ref(true)
           >
             {{ $t("transfer.titleMoney") }}
           </UiTabsItem2>
-        </UiTabs2>
+        </UiTabs3>
       </div>
     </div>
 
     <template v-if="isShown">
-      <div class="scroll scrollerBlock h-full h-full overflow-y-auto">
+      <div class="scroll scrollerBlock h-full h-full overflow-y-auto js-scroll-trns">
         <!-- Nothing -->
         <div v-if="trnsCount === 0" class="flex-center h-full pb-2">
           <div class="py-3 text-center">

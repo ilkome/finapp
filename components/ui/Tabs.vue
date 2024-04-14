@@ -4,7 +4,7 @@
       @container/tabs
       overflow-hidden
       overflow-x-auto
-      grow
+      grow gap-1
       flex items-center
       rounded-md
       bg-item-4

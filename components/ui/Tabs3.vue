@@ -4,11 +4,9 @@
       @container/tabs
       overflow-hidden
       overflow-x-auto
+      grow
+      gap-2
       flex items-center
-      gap-1
-      rounded-xl
-      bg-item-4
-      p-2
     "
   >
     <slot />

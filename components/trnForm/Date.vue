@@ -41,18 +41,16 @@ function changeDate(way: 'prev' | 'next' | 'today') {
   <div class="trnFormDate flex items-center gap-2 px-2 pb-2">
     <div class="flex items-center">
       <div
-        :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30': isToday }]"
+        :class="[...getStyles('item', ['link', 'rounded'])]"
         class="px-1 text-2xl"
-        @click="changeDate('next')"
+        @click="changeDate('prev')"
       >
         <i class="mdi mdi-chevron-left" />
       </div>
       <div
-        :class="[
-          ...getStyles('item', ['link', 'rounded']),
-        ]"
+        :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30': isToday }]"
         class="px-1 text-2xl"
-        @click="changeDate('prev')"
+        @click="changeDate('next')"
       >
         <i class="mdi mdi-chevron-right" />
       </div>
