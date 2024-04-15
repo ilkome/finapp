@@ -88,19 +88,20 @@ onMounted(init)
               ) {{ $t('wallets.title') }}
 
               WalletsList(
-                :limit="4"
+                class="px-2"
+                :limit="5"
                 #default="{ walletsItemsLimited }"
               )
-                .px-3.grid.gap-y-1.gap-x-1.3sm_grid-cols-2
-                  //- Wallet
-                  TrnFormMainSelectedWallet(
-                    v-for="(_, walletId) in walletsItemsLimited"
-                    :key="walletId"
-                    :class="[{ 'cursor-default !bg-item-3': $trnForm.values.walletId === walletId }]"
-                    :id="walletId"
-                    isHideDots
-                    @click="id => $trnForm.values.walletId = id"
-                  )
+                //- Wallet
+                WalletsItem(
+                  v-for="(wallet, walletId) in walletsItemsLimited"
+                  :key="walletId"
+                  :activeItemId="$trnForm.values.walletId"
+                  :walletId
+                  :wallet
+                  isHideDots
+                  @click="$trnForm.values.walletId = walletId"
+                )
 
             //- Favorite categories
             .pb-6(v-if="categoriesStore.favoriteCategoriesIds.length > 0")
@@ -126,13 +127,13 @@ onMounted(init)
 
               .px-3
                 CategoriesList(
-                v-if="sliderObj"
-                :ids="categoriesStore.recentCategoriesIds"
-                :activeItemId="$trnForm.values.categoryId"
-                :slider="sliderObj"
-                class="!gap-x-1"
-                @click="id => $trnForm.values.categoryId = id"
-              )
+                  v-if="sliderObj"
+                  :ids="categoriesStore.recentCategoriesIds"
+                  :activeItemId="$trnForm.values.categoryId"
+                  :slider="sliderObj"
+                  class="!gap-x-1"
+                  @click="id => $trnForm.values.categoryId = id"
+                )
 
   .trnForm__pagination
 

@@ -3,6 +3,7 @@ import useWallets from '~/components/wallets/useWallets'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilterStore } from '~/components/filter/useFilterStore'
+import { getStyles } from '~/components/ui/classes'
 
 const { $i18n } = useNuxtApp()
 const { t } = useI18n()
@@ -101,9 +102,10 @@ const walletsCurrenciesTabs = reactive({
       </div>
 
       <div
-        class="grid gap-1 mb-24 py-2 lg_max-w-[360px]"
+        :class="getStyles('item', ['bg', 'rounded'])"
+        class="lg_max-w-[360px]"
       >
-        <WalletsItem4
+        <WalletsItem
           v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
           :key="walletId"
           :walletId

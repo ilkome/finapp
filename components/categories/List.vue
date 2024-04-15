@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
+import { getStyles } from '~/components/ui/classes'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 
 defineProps<{
@@ -17,7 +18,7 @@ const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
-  <div class="grid gap-1">
+  <div>
     <CategoriesItem
       v-for="categoryId in ids"
       :key="categoryId"

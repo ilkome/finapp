@@ -30,7 +30,7 @@ function onClickWallet(walletId: WalletId, close: () => void) {
 
     <template #default="{ close }">
       <div class="grid gap-1 py-2 px-2">
-        <WalletsItem3
+        <WalletsItem
           v-for="(wallet, walletId) in walletsItemsSorted"
           :key="walletId"
           :walletId

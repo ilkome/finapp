@@ -18,12 +18,10 @@ const date = ref(dayjs($trnForm.values.date).toString())
 const maxDate = new Date()
 
 watch(date, (value) => {
-  const newDate = dayjs(value).valueOf()
-  $trnForm.values.date = dayjs(value).valueOf()
-  props.hide()
-
-  if (filterStore.periodNameWithoutAll === 'day')
-    filterStore.setDate(newDate)
+  if (value) {
+    $trnForm.values.date = dayjs(value).valueOf()
+    props.hide()
+  }
 })
 </script>
 

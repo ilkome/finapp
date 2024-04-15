@@ -36,9 +36,8 @@ const isShowCategorySelector = ref(false)
               </template>
             </FilterAddItem>
 
-            <template #popper="{ hide }">
+            <template #popper>
               <WalletsSelector2
-                :hide="hide"
                 :selected="filter.walletsIds"
                 @onSelected="filter.toggleWalletId"
               />

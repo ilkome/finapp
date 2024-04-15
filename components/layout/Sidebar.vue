@@ -1,9 +1,3 @@
-<script setup lang="ts">
-import { getStyles } from '~/components/ui/classes'
-
-const { t } = useI18n()
-</script>
-
 <template>
   <div>
     <div class="p-4 px-5">
@@ -28,7 +22,7 @@ const { t } = useI18n()
         @onClick="(id) => $router.push(`/wallets/${id}`)"
       >
         <template #default="{ walletsItemsLimited }">
-          <WalletsItem2
+          <WalletsItem
             v-for="(walletItem, walletId) in walletsItemsLimited"
             :key="walletId"
             :walletId
@@ -36,31 +30,7 @@ const { t } = useI18n()
             @click="$router.push(`/wallets/${walletId}`)"
           />
         </template>
-
-        <template #toggle="{ stateLimit, limit, toggle }">
-          <div
-            :class="getStyles('item', ['link', 'rounded'])"
-            class="mt-[-1px] min-h-[36px] flex-center text-xs py-2 px-2"
-            @click="toggle"
-          >
-            <template v-if="stateLimit > 0">
-              {{ t("showAll") }}
-            </template>
-
-            <template v-else-if="stateLimit !== limit">
-              {{ $t("wallets.showOnly") }} {{ limit }}
-            </template>
-          </div>
-        </template>
       </WalletsList>
     </div>
   </div>
 </template>
-
-<i18n lang="yaml">
-  en:
-    showAll: "Show all"
-
-  ru:
-    showAll: "Показать все"
-</i18n>

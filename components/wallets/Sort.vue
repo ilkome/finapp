@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 import type { ToastOptions } from 'vue3-toastify'
+import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 import UiToastContent from '~/components/ui/ToastContent.vue'
+import useWallets from '~/components/wallets/useWallets'
 import { random, successEmo } from '~/assets/js/emo'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const emit = defineEmits(['closeModal'])
 const { $toast } = useNuxtApp()
 const walletsStore = useWalletsStore()
+const { walletsItemsSorted } = useWallets()
 
 const [parent, sortedWalletsIds] = useDragAndDrop([...walletsStore.walletsSortedIds], {
   dragHandle: '.sortHandle',
@@ -39,11 +41,11 @@ async function saveWalletsOrder() {
     </div>
 
     <div ref="parent" class="grid gap-1 scrollerBlock overflow-hidden overflow-y-auto h-full px-2">
-      <WalletsItem3
+      <WalletsItem
         v-for="walletId in sortedWalletsIds"
         :key="walletId"
         :walletId
-        :wallet="walletsStore.items[walletId]"
+        :wallet="walletsItemsSorted[walletId]"
         isShowIcons
       />
     </div>

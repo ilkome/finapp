@@ -7,6 +7,7 @@ import type { MoneyTypeNumber } from '~/components/stat/types'
 const props = withDefaults(
   defineProps<{
     trnsIds: TrnId[]
+    size?: number
     trnsClassNames?: string
     defaultFilterTrnsPeriod?: string
     isFilterByDay?: boolean
@@ -16,6 +17,7 @@ const props = withDefaults(
   {
     defaultFilterTrnsPeriod: 'all',
     trnsClassNames: '',
+    size: 50,
   },
 )
 
@@ -143,7 +145,7 @@ const isShown = ref(true)
             <TrnsList
               :isFilterByDay="isFilterByDay"
               :isShowGroupSum="isShowGroupSum"
-              :size="50"
+              :size="props.size"
               :trnsIds="filteredTrnsIds"
               isShowFilter
               uiHistory

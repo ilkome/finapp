@@ -85,7 +85,7 @@ function setTrnEdit() {
         <!-- Expense -->
         <div>
           <div class="pb-2">
-            <WalletsItem2
+            <WalletsItem
               :wallet="walletsItemsSorted[trn.expenseWalletId]"
               :walletId="trn.expenseWalletId"
             />
@@ -107,7 +107,7 @@ function setTrnEdit() {
         <!-- Income -->
         <div>
           <div class="pb-2">
-            <WalletsItem2
+            <WalletsItem
               :wallet="walletsItemsSorted[trn.incomeWalletId]"
               :walletId="trn.incomeWalletId"
             />

@@ -10,7 +10,7 @@ const formattedDate = computed(() => formatDate(props.date, 'full'))
 
 <template>
   <div class="flex items-center gap-2">
-    <div class="font-secondary text-3xl">
+    <div class="_w-10 _text-center font-secondary text-3xl">
       {{ formattedDate.day }}
     </div>
 

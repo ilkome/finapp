@@ -17,7 +17,5 @@ const emit = defineEmits<{
     class="size-2 rounded-full border hocus_scale-150"
     :style="{ borderColor: color }"
     @click.stop="emit('click', walletId)"
-  >
-    <!-- {{ name.substring(0, 2) }} -->
-  </div>
+  />
 </template>

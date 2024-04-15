@@ -78,12 +78,12 @@ const tabs = computed(() => [{
   class="grid-rows-[1fr,auto] pb-3"
 )
   TrnsListWithControl(
+    :defaultFilterTrnsPeriod="periodGrouped"
+    :size="10"
+    :trnsIds="trnsIds"
     class="grow"
     isFilterByDay
     isShowGroupSum
-    trnsClassNames=""
-    :defaultFilterTrnsPeriod="periodGrouped"
-    :trnsIds="trnsIds"
     @onChangePeriod="v => periodGrouped = v"
     @onClickEdit="onClickEdit"
   )

@@ -1,48 +1,79 @@
 <script setup lang="ts">
-import type { WalletId } from './types'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
+import { getStyles } from '~/components/ui/classes'
 
-const props = withDefaults(defineProps<{
-  id: WalletId
-  showBase: boolean
-  vertical?: 'left' | 'right'
-  size: 'sm' | 'md' | 'lg' | null
-  activeItemId: WalletId | null
-  isShowAmount?: boolean
-}>(), {
-  vertical: 'left',
-  showBase: true,
-  isShowAmount: true,
-})
+defineProps<{
+  activeItemId?: WalletId
+  wallet: WalletItemWithAmount
+  walletId: WalletId
+  isShowIcons?: boolean
+}>()
 
-const emit = defineEmits(['onClick'])
-
-const walletsStore = useWalletsStore()
-
-const wallet = computed(() => ({
-  ...walletsStore.items[props.id],
-  total: walletsStore.walletsTotal[props.id],
-}))
+const emit = defineEmits<{
+  click: []
+  filter: []
+}>()
 </script>
 
-<template lang="pug">
-.p-2.rounded-md.text-secondary2(
-  :class="{ _active: activeItemId === id }"
-  @click="emit('onClick', id)"
-)
-  div.bg-red-300.h-8(v-if="activeItemId === id")
-  .gap-x-3.flex.items-center
-    .text-neutral-50.text-xs.leading-none.w-6.h-6.rounded-md.justify-center.items-center.flex(
-      :style="{ background: wallet.color }"
-      class="mt-[2px]"
-    ) {{ wallet.name.substring(0, 2) }}
+<template>
+  <div class="group" @click="emit('click')">
+    <div
+      :class="[
+        { '!bg-item-3': activeItemId === walletId },
+        ...getStyles('item', ['link', 'rounded', 'padding1', 'minh']),
+      ]"
+      class="-my-[1px] flex items-center gap-2"
+    >
+      <div class="flex grow items-center gap-3 overflow-hidden pl-1">
+        <template v-if="isShowIcons">
+          <UiIconWalletWithdrawal
+            v-if="wallet.countTotal"
+            :style="{ color: wallet.color }"
+            class="h-4 w-4 text-item-2"
+          />
+          <UiIconWalletSavings
+            v-else-if="!wallet.countTotal && !wallet.isCredit"
+            :style="{ color: wallet.color }"
+            class="h-4 w-4 text-item-2"
+          />
+          <div v-else class="flex-center w-4">
+            <WalletsIcon2
+              :color="wallet.color"
+              :name="wallet.name"
+              :walletId
+              @click.stop="emit('filter')"
+            />
+          </div>
+        </template>
 
-    div
-      .text-sm {{ wallet.name }}
-      template(v-if="isShowAmount")
-        Amount(
-          :amount="wallet.total"
+        <div v-if="!isShowIcons" class="px-1">
+          <WalletsIcon2
+            :color="wallet.color"
+            :name="wallet.name"
+            :walletId
+            @click.stop="emit('filter')"
+          />
+        </div>
+
+        <div class="text-item-base text-sm leading-none">
+          {{ wallet.name }}
+        </div>
+      </div>
+
+      <div class="text-item-base grow pr-1">
+        <Amount
+          :amount="wallet.amount"
           :currencyCode="wallet.currency"
-          align="right"
-        )
+          :isShowBaseRate="false"
+          size="base"
+          class="opacity-90"
+        />
+      </div>
+    </div>
+
+    <div
+      class="ml-9 mr-2 h-[1px] bg-item-5 group-last_hidden"
+      :class="{ 'ml-9': isShowIcons, 'ml-7': !isShowIcons }"
+    />
+  </div>
 </template>

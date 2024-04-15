@@ -4,38 +4,42 @@ import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 const $trnForm = useTrnFormStore()
 </script>
 
-<template lang="pug">
-div
-  //- Categories
-  CategoriesSelector(
-    :isShow="$trnForm.ui.catsRootModal"
-    @onClose="$trnForm.ui.catsRootModal = false"
-    @onSelected="categoryId => $trnForm.values.categoryId = categoryId"
-  )
+<template>
+  <div>
+    <!-- Category -->
+    <CategoriesSelector
+      :isShow="$trnForm.ui.catsRootModal"
+      @onClose="$trnForm.ui.catsRootModal = false"
+      @onSelected="categoryId => $trnForm.values.categoryId = categoryId"
+    />
 
-  LazyTrnFormModalDescription(v-if="$trnForm.modal.description")
+    <!-- Description -->
+    <LazyTrnFormModalDescription
+      v-if="$trnForm.modal.description"
+    />
 
-  //- Transaction
-  WalletsSelector(
-    v-if="$trnForm.modal.wallets"
-    :title="$t('wallets.title')"
-    @onSelected="walletId => $trnForm.values.walletId = walletId"
-    @onClose="$trnForm.closeTrnFormModal('wallets')"
-  )
+    <!-- Wallet -->
+    <WalletsSelector
+      v-if="$trnForm.modal.wallets"
+      :title="$t('wallets.title')"
+      @onSelected="walletId => $trnForm.values.walletId = walletId"
+      @onClose="$trnForm.closeTrnFormModal('wallets')"
+    />
 
-  //- Transfer: expense
-  WalletsSelector(
-    v-if="$trnForm.modal.transferFrom"
-    :title="$t('trnForm.transfer.fromLong')"
-    @onClose="$trnForm.closeTrnFormModal('transferFrom')"
-    @onSelected="id => $trnForm.values.expenseWalletId = id"
-  )
+    <!-- Transfer: expense -->
+    <WalletsSelector
+      v-if="$trnForm.modal.transferFrom"
+      :title="$t('trnForm.transfer.fromLong')"
+      @onClose="$trnForm.closeTrnFormModal('transferFrom')"
+      @onSelected="id => $trnForm.values.expenseWalletId = id"
+    />
 
-  //- Transfer: income
-  WalletsSelector(
-    v-if="$trnForm.modal.transferTo"
-    :title="$t('trnForm.transfer.toLong')"
-    @onClose="$trnForm.closeTrnFormModal('transferTo')"
-    @onSelected="id => $trnForm.values.incomeWalletId = id"
-  )
+    <!-- Transfer: income -->
+    <WalletsSelector
+      v-if="$trnForm.modal.transferTo"
+      :title="$t('trnForm.transfer.toLong')"
+      @onClose="$trnForm.closeTrnFormModal('transferTo')"
+      @onSelected="id => $trnForm.values.incomeWalletId = id"
+    />
+  </div>
 </template>
