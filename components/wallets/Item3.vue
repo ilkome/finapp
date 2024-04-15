@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import type {
-  WalletId,
-  WalletItem,
-  WalletItemWithAmount,
-} from '~/components/wallets/types'
+import type { WalletId, WalletItem, WalletItemWithAmount } from '~/components/wallets/types'
 import { getStyles } from '~/components/ui/classes'
 
 defineProps<{

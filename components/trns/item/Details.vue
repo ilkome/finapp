@@ -5,6 +5,7 @@ import type { WalletItem } from '~~/components/wallets/types'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import useWallets from '~/components/wallets/useWallets'
 
 const props = withDefaults(
   defineProps<{
@@ -27,6 +28,7 @@ const emit = defineEmits<{
 
 const { trnFormEdit } = useTrnForm()
 const walletsStore = useWalletsStore()
+const { walletsItemsSorted } = useWallets()
 const trnsStore = useTrnsStore()
 
 const classes = computed(() => ({
@@ -83,7 +85,10 @@ function setTrnEdit() {
         <!-- Expense -->
         <div>
           <div class="pb-2">
-            <WalletsItem :id="trn.expenseWalletId" :isShowAmount="false" />
+            <WalletsItem2
+              :wallet="walletsItemsSorted[trn.expenseWalletId]"
+              :walletId="trn.expenseWalletId"
+            />
           </div>
           <div class="text-2xl text-item-base">
             <Amount
@@ -102,7 +107,10 @@ function setTrnEdit() {
         <!-- Income -->
         <div>
           <div class="pb-2">
-            <WalletsItem :id="trn.incomeWalletId" :isShowAmount="false" />
+            <WalletsItem2
+              :wallet="walletsItemsSorted[trn.incomeWalletId]"
+              :walletId="trn.incomeWalletId"
+            />
           </div>
           <div class="text-2xl text-item-base">
             <Amount

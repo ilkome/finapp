@@ -20,21 +20,25 @@ function onClickWallet(walletId: WalletId, close: () => void) {
 }
 </script>
 
-<template lang="pug">
-TrnFormModal(
-  @closed="emit('onClose')"
-)
-  template(#header)
-    div {{ title }}
+<template>
+  <TrnFormModal
+    @closed="emit('onClose')"
+  >
+    <template #header>
+      <div> {{ title }}</div>
+    </template>
 
-  template(#default="{ close }")
-    div(class="grid gap-1 py-2 px-2")
-      WalletsItem3(
-        v-for="(wallet, walletId) in walletsItemsSorted"
-        :key="walletId"
-        :walletId
-        :wallet
-        isHideDots
-        @click="onClickWallet(walletId, close)"
-      )
+    <template #default="{ close }">
+      <div class="grid gap-1 py-2 px-2">
+        <WalletsItem3
+          v-for="(wallet, walletId) in walletsItemsSorted"
+          :key="walletId"
+          :walletId
+          :wallet
+          isHideDots
+          @click="onClickWallet(walletId, close)"
+        />
+      </div>
+    </template>
+  </TrnFormModal>
 </template>

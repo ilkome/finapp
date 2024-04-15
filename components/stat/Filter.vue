@@ -4,7 +4,6 @@ import type { FilterProvider } from '~/components/filter/useFilter'
 const filter = inject('filter') as FilterProvider
 
 const isShowCategorySelector = ref(false)
-const isShownWalletsSelector = ref(false)
 </script>
 
 <template>
@@ -30,11 +29,22 @@ const isShownWalletsSelector = ref(false)
         </div>
 
         <div class="flex bg-item-4 rounded-lg">
-          <FilterAddItem @click="isShownWalletsSelector = true">
-            <template #icon>
-              <UiIconWallet class="size-6" />
+          <VDropdown>
+            <FilterAddItem @click="() => {}">
+              <template #icon>
+                <UiIconWallet class="size-6" />
+              </template>
+            </FilterAddItem>
+
+            <template #popper="{ hide }">
+              <WalletsSelector2
+                :hide="hide"
+                :selected="filter.walletsIds"
+                @onSelected="filter.toggleWalletId"
+              />
             </template>
-          </FilterAddItem>
+          </VDropdown>
+
           <FilterWalletItem
             v-for="walletId in filter.walletsIds.value"
             :id="walletId"
@@ -58,13 +68,6 @@ const isShownWalletsSelector = ref(false)
       isAllowSelectParentCategory
       @onClose="isShowCategorySelector = false"
       @onSelected="filter.setCategoryId"
-    />
-
-    <WalletsSelector
-      v-if="isShownWalletsSelector"
-      :title="$t('wallets.title')"
-      @onClose="isShownWalletsSelector = false"
-      @onSelected="filter.setWalletId"
     />
   </div>
 </template>

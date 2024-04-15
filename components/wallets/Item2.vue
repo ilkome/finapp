@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import type {
-  WalletId,
-  WalletItemWithAmount,
-} from '~/components/wallets/types'
+import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
+import { getStyles } from '~/components/ui/classes'
 
 defineProps<{
   wallet: WalletItemWithAmount
@@ -19,7 +17,8 @@ const emit = defineEmits<{
 <template>
   <div class="group" @click="emit('click')">
     <div
-      class="-my-[1px] flex min-h-[42px] items-center rounded-md px-2 py-1.5 text-secondary2 hocus_bg-item-5"
+      :class="getStyles('item', ['link', 'rounded', 'padding1', 'minh'])"
+      class="-my-[1px] flex items-center gap-2"
     >
       <div class="flex grow items-center gap-3 overflow-hidden pl-1">
         <template v-if="isShowIcons">
