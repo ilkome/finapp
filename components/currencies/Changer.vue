@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import useWallets from '~/components/wallets/useWallets'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
-const { walletsCurrencies } = useWallets()
 const currenciesStore = useCurrenciesStore()
+const walletsStore = useWalletsStore()
 </script>
 
 <template>
-  <UiTabs2 v-if="walletsCurrencies.length > 1">
+  <UiTabs2 v-if="walletsStore.walletsCurrencies.length > 1">
     <UiTabsItem2
-      v-for="currency in walletsCurrencies"
+      v-for="currency in walletsStore.walletsCurrencies"
       :key="currency"
       :isActive="currency === currenciesStore.base"
       @click="currenciesStore.setBase(currency)"

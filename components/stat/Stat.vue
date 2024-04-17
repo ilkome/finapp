@@ -150,7 +150,7 @@ const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selec
             <StatDateView />
           </div>
 
-          <StatPeriodsSelector />
+          <StatPeriodsSelector class="hidden md_flex" />
         </div>
 
         <!-- <pre>{{ categoriesWithTrnsIds }}</pre> -->

@@ -6,11 +6,11 @@ div(
     relative
     flex flex-col justify-between
     w-full
-    pb-[44px] md_pb-[52px] lg_pb-0
+    pb-[52px]
     js_scroll_page
   `
 )
-  .max-w-5xl.h-full.lg_px-8
+  .max-w-5xl.lg_px-8
     slot
 
   .max-w-5xl

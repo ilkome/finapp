@@ -37,7 +37,7 @@ function removeUserData() {
     </UiHeader>
 
     <div
-      class="grid gap-x-6 gap-y-1 px-3 pb-12 pt-4 md_grid-cols-2 md_gap-x-12"
+      class="grid gap-x-6 gap-y-1 px-3 md_grid-cols-2 md_gap-x-12"
     >
       <div>
         <!-- Currency -->

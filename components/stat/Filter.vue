@@ -10,15 +10,22 @@ const isShowCategorySelector = ref(false)
   <div>
     <FilterRow>
       <template #content>
+        <!-- Categories -->
         <div class="flex bg-item-4 rounded-lg">
-          <FilterAddItem @click="isShowCategorySelector = true">
-            <template #icon>
-              <UiIconCategory class="size-6" />
+          <VDropdown>
+            <FilterAddItem>
+              <template #icon>
+                <UiIconCategory class="size-6" />
+              </template>
+            </FilterAddItem>
+
+            <template #popper>
+              <CategoriesSelector
+                isAllowSelectParentCategory
+                @onSelected="filter.setCategoryId"
+              />
             </template>
-            <template v-if="filter.catsIds.value.length === 0">
-              {{ $t("categories.createNewTitle") }}
-            </template>
-          </FilterAddItem>
+          </VDropdown>
 
           <FilterCategoryItem
             v-for="categoryId in filter.catsIds.value"
@@ -28,16 +35,17 @@ const isShowCategorySelector = ref(false)
           />
         </div>
 
+        <!-- Wallets -->
         <div class="flex bg-item-4 rounded-lg">
           <VDropdown>
-            <FilterAddItem @click="() => {}">
+            <FilterAddItem>
               <template #icon>
                 <UiIconWallet class="size-6" />
               </template>
             </FilterAddItem>
 
             <template #popper>
-              <WalletsSelector2
+              <WalletsSelector
                 :selected="filter.walletsIds"
                 @onSelected="filter.toggleWalletId"
               />
@@ -46,8 +54,8 @@ const isShowCategorySelector = ref(false)
 
           <FilterWalletItem
             v-for="walletId in filter.walletsIds.value"
-            :id="walletId"
             :key="walletId"
+            :walletId
             @click="filter.removeWalletId(walletId)"
           />
         </div>
@@ -61,12 +69,5 @@ const isShowCategorySelector = ref(false)
         </FilterItemBg>
       </template>
     </FilterRow>
-
-    <CategoriesSelector
-      :isShow="isShowCategorySelector"
-      isAllowSelectParentCategory
-      @onClose="isShowCategorySelector = false"
-      @onSelected="filter.setCategoryId"
-    />
   </div>
 </template>

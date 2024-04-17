@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import useWallets from '~/components/wallets/useWallets'
+import { getStyles } from '~/components/ui/classes'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilterStore } from '~/components/filter/useFilterStore'
-import { getStyles } from '~/components/ui/classes'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { $i18n } = useNuxtApp()
 const { t } = useI18n()
@@ -11,10 +11,10 @@ useSeoMeta({
   title: $i18n.t('wallets.name'),
 })
 
+const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const { openModal, isModalOpen } = useAppNav()
 const { setWalletId } = useFilterStore()
-const { walletsCurrencies, walletsItemsSorted } = useWallets()
 
 const state = ref({
   activeTab: 'all',
@@ -34,10 +34,10 @@ const walletsCurrenciesTabs = reactive({
 
   wallets: computed(() => {
     if (state.value.activeTab === 'all')
-      return walletsItemsSorted.value
+      return walletsStore.walletsItemsSorted
 
     return Object.fromEntries(
-      Object.entries(walletsItemsSorted.value).filter(
+      Object.entries(walletsStore.walletsItemsSorted).filter(
         ([_key, value]) => value.currency === state.value.activeTab,
       ),
     )
@@ -63,7 +63,7 @@ const walletsCurrenciesTabs = reactive({
       <div class="grid gap-5 md_gap-3 md_order-2">
         <!-- Base currency -->
         <div
-          v-if="walletsCurrencies.length > 1"
+          v-if="walletsStore.walletsCurrencies.length > 1"
           class="grid w-full gap-2 overflow-hidden md_order-3"
         >
           <UiTitle3>{{ t("currenciesBase") }}</UiTitle3>
@@ -71,7 +71,7 @@ const walletsCurrenciesTabs = reactive({
         </div>
 
         <!-- Wallets Currencies -->
-        <div v-if="walletsCurrencies.length > 1" class="grid gap-2 md_order-1">
+        <div v-if="walletsStore.walletsCurrencies.length > 1" class="grid gap-2 md_order-1">
           <UiTitle3>{{ t("list") }}</UiTitle3>
           <div class="w-full overflow-hidden">
             <UiTabs2>
@@ -83,7 +83,7 @@ const walletsCurrenciesTabs = reactive({
               </UiTabsItem2>
 
               <UiTabsItem2
-                v-for="currency in walletsCurrencies"
+                v-for="currency in walletsStore.walletsCurrencies"
                 :key="currency"
                 :isActive="state.activeTab === currency"
                 @click="walletsCurrenciesTabs.onSelect(currency)"

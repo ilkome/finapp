@@ -36,7 +36,7 @@ function onClickIcon() {
 </script>
 
 <template>
-  <div class="group" @click="emit('click')">
+  <div class="_group" @click="emit('click')">
     <div
       :class="[
         { '!bg-item-3': activeItemId === categoryId },
@@ -57,7 +57,7 @@ function onClickIcon() {
         </div>
 
         <div
-          v-if="category.parentId"
+          v-if="category.parentId && !isHideParentCategory"
           class="grow text-right truncate text-xs text-item-2 opacity-60"
         >
           {{ categoriesStore.items[category.parentId].name }}

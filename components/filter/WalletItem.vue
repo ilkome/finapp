@@ -1,33 +1,42 @@
 <script setup lang="ts">
-import useWallets from '~/components/wallets/useWallets'
+import { useWalletsStore } from '../wallets/useWalletsStore'
 import type { WalletId } from '~/components/wallets/types'
 
 const props = defineProps<{
-  id: WalletId
+  walletId: WalletId
 }>()
 
-const emit = defineEmits(['click'])
-const { walletsItemsSorted } = useWallets()
+const emit = defineEmits<{
+  click: [walletId: WalletId]
+}>()
+const walletsStore = useWalletsStore()
 
-const wallet = computed(() => walletsItemsSorted.value[props.id])
+const wallet = computed(() => walletsStore.walletsItemsSorted[props.walletId])
 </script>
 
-<template lang="pug">
-FilterItemBg(@click="emit('click', id)")
-  .flex-center.gap-x-3.text-secondary2
-    //- Icon
-    .w-6.h-6.rounded-md.flex-center.text-icon-primary.text-xs.leading-none(
-      :style="{ background: wallet.color }"
-      class="mt-[2px]"
-    ) {{ wallet.name.substring(0, 2) }}
+<template>
+  <FilterItemBg @click="emit('click', props.walletId)">
+    <div class="flex-center gap-x-3 text-secondary2">
+      <WalletsIcon
+        :color="wallet.color"
+        :name="wallet.name"
+        :walletId="props.walletId"
+      />
 
-    .grow
-      .text-sm.leading-none {{ wallet.name }}
-      .text-item-base
-        Amount(
-          :amount="wallet.amount"
-          :currencyCode="wallet.currency"
-          :isShowBaseRate="false"
-          align="left"
-        )
+      <div class="grow">
+        <div class="text-sm leading-none">
+          {{ wallet.name }}
+        </div>
+
+        <div class="text-item-base">
+          <Amount
+            :amount="wallet.amount"
+            :currencyCode="wallet.currency"
+            :isShowBaseRate="false"
+            align="left"
+          />
+        </div>
+      </div>
+    </div>
+  </FilterItemBg>
 </template>

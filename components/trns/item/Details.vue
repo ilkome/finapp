@@ -28,7 +28,6 @@ const emit = defineEmits<{
 
 const { trnFormEdit } = useTrnForm()
 const walletsStore = useWalletsStore()
-const { walletsItemsSorted } = useWallets()
 const trnsStore = useTrnsStore()
 
 const classes = computed(() => ({
@@ -86,7 +85,7 @@ function setTrnEdit() {
         <div>
           <div class="pb-2">
             <WalletsItem
-              :wallet="walletsItemsSorted[trn.expenseWalletId]"
+              :wallet="walletsStore.walletsItemsSorted[trn.expenseWalletId]"
               :walletId="trn.expenseWalletId"
             />
           </div>

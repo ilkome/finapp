@@ -1,3 +1,4 @@
+import type { CurrencyCode } from '../currencies/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 
 export type WalletId = string
@@ -16,7 +17,7 @@ export interface WalletItem {
   description?: string
   type: WalletType
   withdrawal?: boolean
-  currency: string
+  currency: CurrencyCode
   color: string
   order: number
   // @deprecated: use withdrawal type

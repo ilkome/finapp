@@ -7,14 +7,16 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'click', categoryId: CategoryId): void
+  click: [categoryId: CategoryId]
 }>()
-
 const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
-  <FilterItemBg @click="emit('click', categoryId)">
+  <FilterItemBg
+    v-if="categoriesStore.items[categoryId]"
+    @click="emit('click', categoryId)"
+  >
     <div
       :style="{ color: categoriesStore.items[categoryId].color }"
       :class="categoriesStore.items[categoryId].icon"

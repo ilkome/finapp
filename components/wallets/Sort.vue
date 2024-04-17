@@ -2,14 +2,12 @@
 import type { ToastOptions } from 'vue3-toastify'
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 import UiToastContent from '~/components/ui/ToastContent.vue'
-import useWallets from '~/components/wallets/useWallets'
 import { random, successEmo } from '~/assets/js/emo'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const emit = defineEmits(['closeModal'])
 const { $toast } = useNuxtApp()
 const walletsStore = useWalletsStore()
-const { walletsItemsSorted } = useWallets()
 
 const [parent, sortedWalletsIds] = useDragAndDrop([...walletsStore.walletsSortedIds], {
   dragHandle: '.sortHandle',
@@ -45,7 +43,7 @@ async function saveWalletsOrder() {
         v-for="walletId in sortedWalletsIds"
         :key="walletId"
         :walletId
-        :wallet="walletsItemsSorted[walletId]"
+        :wallet="walletsStore.walletsItemsSorted[walletId]"
         isShowIcons
       />
     </div>

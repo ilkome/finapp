@@ -2,9 +2,9 @@
 import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 
-defineProps<{
-  isShow: boolean
+const props = defineProps<{
   isAllowSelectParentCategory?: boolean
+  hide?: () => null
 }>()
 
 const emit = defineEmits<{
@@ -14,80 +14,56 @@ const emit = defineEmits<{
 
 const categoriesStore = useCategoriesStore()
 
-const categorySelector = ref<{
-  parentId: CategoryId | null
-  select: (id: CategoryId, isForce: boolean) => void
-  closeChild: () => void
-  setCategoryId: (id: CategoryId) => void
-}>({
-      parentId: null,
+function select(id: CategoryId, isForce: boolean) {
+  if (!isForce && categoriesStore.isCategoryHasChildren(id))
+    return
 
-      select: (id: CategoryId, isForce: boolean) => {
-        if (!isForce && categoriesStore.isCategoryHasChildren(id)) {
-          categorySelector.value.parentId = id
-          return
-        }
-
-        emit('onSelected', id)
-        categorySelector.value.closeChild()
-        emit('onClose')
-      },
-
-      closeChild: () => {
-        categorySelector.value.parentId = null
-      },
-
-      setCategoryId: (id: CategoryId) => {
-        emit('onSelected', id)
-        emit('onClose')
-      },
-    })
+  emit('onSelected', id)
+  emit('onClose')
+  if (props.hide)
+    props.hide()
+}
 </script>
 
-<template lang="pug">
-div
-  //- Root Categories
-  TrnFormModal(
-    v-if="isShow"
-    @closed="emit('onClose')"
-  )
-    template(#header)
-      div {{ $t('categories.title') }}
+<template>
+  <div class="p-2 py-2.5 bg-item-4 overflow-hidden overflow-y-auto w-[90vw] max-w-xs max-h-[60vh]">
+    <template
+      v-for="categoryId in categoriesStore.categoriesRootIds"
+      :key="categoryId"
+    >
+      <CategoriesItem
+        v-if="!categoriesStore.items[categoryId].childIds || categoriesStore.items[categoryId].childIds?.length === 0"
+        :categoryId="categoryId"
+        :category="categoriesStore.items[categoryId]"
+        class="group"
+        @click="select(categoryId, false)"
+      />
 
-    .pb-3.px-3
-      CategoriesList(
-        :ids="categoriesStore.categoriesRootIds"
-        @click="categorySelector.select"
-        @onClickIcon="categorySelector.setCategoryId"
-      )
+      <VDropdown
+        v-else
+        :overflowPadding="12"
+        autoBoundaryMaxSize
+        class="group"
+      >
+        <CategoriesItem
+          :categoryId="categoryId"
+          :category="categoriesStore.items[categoryId]"
+        />
 
-  //- Child Categories
-  TrnFormModal(
-    v-if="categorySelector.parentId"
-    @closed="categorySelector.closeChild"
-  )
-    template(#header)
-      .py-3.flex-center.gap-2
-        .flex-center.gap-4
-          Icon2(
-            :categoryId="categorySelector.parentId"
-            :color="categoriesStore.items[categorySelector.parentId].color"
-            :icon="categoriesStore.items[categorySelector.parentId].icon"
-            size="xl"
-            @click="categorySelector.select(categorySelector.parentId, true)"
-          )
-          div {{ categoriesStore.items[categorySelector.parentId].name }}
-
-      .grow.flex-center(v-if="isAllowSelectParentCategory")
-        UiButtonGrey.max-w-xs(
-          @click="categorySelector.select(categorySelector.parentId, true)"
-        ) {{ $t('chart.view.add') }}
-
-    .pb-3.px-3
-      CategoriesList(
-        :ids="categoriesStore.getChildCategoriesIds(categorySelector.parentId)"
-        isHideParentCategory
-        @click="categorySelector.select"
-        @onClickIcon="categorySelector.setCategoryId"
-      )
+        <template #popper>
+          <div class="p-2 py-2.5 bg-item-4 overflow-hidden overflow-y-auto w-[90vw] max-w-xs max-h-[60vh]">
+            <CategoriesItem
+              v-for="childCategoryId in categoriesStore.items[categoryId].childIds"
+              :key="childCategoryId"
+              v-close-popper.all
+              :category="categoriesStore.items[childCategoryId]"
+              :categoryId="childCategoryId"
+              class="group"
+              @click="select(childCategoryId, false)"
+            />
+          </div>
+        </template>
+      </VDropdown>
+    </template>
+  </div>
 </template>

@@ -22,7 +22,7 @@ const categoriesStore = useCategoriesStore()
     </UiHeader>
 
     <!-- List -->
-    <div class="px-2 pb-12 pt-1 sm_max-w-xs ">
+    <div class="px-2 pt-1 sm_max-w-xs ">
       <CategoriesList
         :class="getStyles('item', ['bg', 'rounded'])"
         class="lg_max-w-[360px]"

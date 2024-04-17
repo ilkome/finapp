@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const $trnForm = useTrnFormStore()
 const walletsStore = useWalletsStore()
+const categoriesStore = useCategoriesStore()
 
 const walletId = computed(() => {
   const walletsIds = Object.keys(walletsStore.items ?? {})
@@ -12,34 +14,62 @@ const walletId = computed(() => {
 })
 </script>
 
-<template lang="pug">
-.py-4
-  UiTitle.pb-2.px-3(@click="$trnForm.values.trnId = null")
-    template(v-if="$trnForm.values.trnId") {{ $t('trnForm.titleEditTrn') }}
-    template(v-if="!$trnForm.values.trnId") {{ $t('trnForm.createTrn') }}
+<template>
+  <div class="py-4">
+    <UiTitle class="px-3 pb-2" @click="$trnForm.values.trnId = null">
+      <template v-if="$trnForm.values.trnId">
+        {{ $t("trnForm.titleEditTrn") }}
+      </template>
+      <template v-if="!$trnForm.values.trnId">
+        {{ $t("trnForm.createTrn") }}
+      </template>
+    </UiTitle>
 
-  TrnFormDate
-  TrnFormMainAmountTrn(v-if="$trnForm.values.trnType !== 2")
-  TrnFormMainAmountTransfer(v-if="$trnForm.values.trnType === 2")
+    <TrnFormDate />
+    <TrnFormMainAmountTrn v-if="$trnForm.values.trnType !== 2" />
+    <TrnFormMainAmountTransfer v-if="$trnForm.values.trnType === 2" />
 
-  TrnFormMainCalculator.pb-2(
-    :amountRaw="$trnForm.values.amountRaw[$trnForm.activeAmountIdx]"
-    @onChange="$trnForm.onChangeAmount"
-  )
+    <TrnFormMainCalculator
+      class="pb-2"
+      :amountRaw="$trnForm.values.amountRaw[$trnForm.activeAmountIdx]"
+      @onChange="$trnForm.onChangeAmount"
+    />
 
-  //- Selected
-  .px-2.pb-2.grid.grid-cols-2.gap-3(
-    v-if="$trnForm.values.trnType !== 2"
-  )
-    VDropdown(v-if="walletId")
-      TrnFormMainSelectedWallet(:id="walletId")
-      template(#popper="{ hide }")
-        WalletsSelector2(
-          :hide="hide"
-          @onSelected="id => $trnForm.values.walletId = id"
-        )
+    <!-- Selected -->
+    <div
+      v-if="$trnForm.values.trnType !== 2"
+      class="grid grid-cols-2 gap-3 px-2 pb-2"
+    >
+      <VDropdown v-if="walletId">
+        <FilterWalletItem :walletId />
+        <template #popper="{ hide }">
+          <WalletsSelector
+            :hide
+            @onSelected="id => $trnForm.values.walletId = id"
+          />
+        </template>
+      </VDropdown>
 
-    TrnFormMainSelectedCategory
+      <VDropdown
+        :overflowPadding="12"
+        autoBoundaryMaxSize
+      >
+        <div>
+          <FilterCategoryItem
+            :categoryId="$trnForm.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
+          />
+        </div>
 
-  TrnFormMainTypes
+        <template #popper="{ hide }">
+          <CategoriesSelector
+            :hide
+            isAllowSelectParentCategory
+            @onSelected="id => $trnForm.values.categoryId = id"
+          />
+        </template>
+      </VDropdown>
+    </div>
+
+    <TrnFormMainTypes />
+  </div>
 </template>

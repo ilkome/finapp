@@ -43,13 +43,15 @@ const periodCounts = [1, 3, 6, 7, 12, 14, 16, 24, 30, 36, 48, 60]
       </div>
     </div>
 
+    <StatChartOptions />
+
     <!-- Counts -->
     <div v-if="filter.periodNameWithAll.value !== 'all'" class="grid gap-2 overflow-hidden">
       <UiTitle2>
         {{ $t("dates.count") }}
       </UiTitle2>
 
-      <div class="overflow-y-auto max-h-[280px]">
+      <div>
         <div
           v-for="periodCount in periodCounts"
           :key="periodCount"

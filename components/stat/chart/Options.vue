@@ -4,21 +4,21 @@ import type { FilterProvider } from '~/components/filter/useFilter'
 const filter = inject('filter') as FilterProvider
 
 const items = ref([{
-  slug: 'income',
-  icon: 'mdi mdi-arrow-down-thin-circle-outline',
-  isActive: computed(() => filter.ui.value.income),
-  event: () => filter.ui.value.toggleUi('income'),
-}, {
-  slug: 'expense',
-  icon: 'mdi mdi-arrow-up-thin-circle-outline',
-  isActive: computed(() => filter.ui.value.expense),
-  event: () => filter.ui.value.toggleUi('expense'),
-}, {
-  slug: 'sum',
-  icon: 'mdi mdi-chart-gantt',
-  isActive: computed(() => filter.ui.value.sum),
-  event: () => filter.ui.value.toggleUi('sum'),
-}, {
+//   slug: 'income',
+//   icon: 'mdi mdi-arrow-down-thin-circle-outline',
+//   isActive: computed(() => filter.ui.value.income),
+//   event: () => filter.ui.value.toggleUi('income'),
+// }, {
+//   slug: 'expense',
+//   icon: 'mdi mdi-arrow-up-thin-circle-outline',
+//   isActive: computed(() => filter.ui.value.expense),
+//   event: () => filter.ui.value.toggleUi('expense'),
+// }, {
+//   slug: 'sum',
+//   icon: 'mdi mdi-chart-gantt',
+//   isActive: computed(() => filter.ui.value.sum),
+//   event: () => filter.ui.value.toggleUi('sum'),
+// }, {
   slug: 'charLabels',
   icon: 'mdi mdi-subtitles-outline',
   isActive: computed(() => filter.ui.value.isShowDataLabels),

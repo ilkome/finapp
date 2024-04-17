@@ -22,6 +22,7 @@ const categoriesStore = useCategoriesStore()
     <CategoriesItem
       v-for="categoryId in ids"
       :key="categoryId"
+      class="group"
       :categoryId="categoryId"
       :activeItemId="activeItemId"
       :category="categoriesStore.items[categoryId]"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useWallets from '~/components/wallets/useWallets'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { WalletsWithAmount } from '~/components/wallets/types'
 import { getStyles } from '~/components/ui/classes'
 
@@ -13,14 +13,14 @@ const props = withDefaults(
   },
 )
 const { t } = useI18n()
-const { walletsIdsSorted, walletsItemsSorted } = useWallets()
+const walletsStore = useWalletsStore()
 
 const stateLimit = ref(0)
 
 const walletsIdsLimited = computed(() => {
   if (stateLimit.value !== 0)
-    return walletsIdsSorted.value.slice(0, stateLimit.value)
-  return walletsIdsSorted.value
+    return walletsStore.walletsSortedIds.slice(0, stateLimit.value)
+  return walletsStore.walletsSortedIds
 })
 
 const walletsItemsLimited = computed<WalletsWithAmount>(() => {
@@ -30,13 +30,13 @@ const walletsItemsLimited = computed<WalletsWithAmount>(() => {
     for (const id of walletsIdsLimited.value) {
       wallets = {
         ...wallets,
-        [id]: walletsItemsSorted.value[id],
+        [id]: walletsStore.walletsItemsSorted[id],
       }
     }
     return wallets
   }
 
-  return walletsItemsSorted.value
+  return walletsStore.walletsItemsSorted
 })
 
 onMounted(() => {
@@ -54,13 +54,13 @@ function toggle() {
   <div>
     <slot
       :walletsIdsLimited="walletsIdsLimited"
-      :walletsIdsSorted="walletsIdsSorted"
+      :walletsIdsSorted="walletsStore.walletsSortedIds"
       :walletsItemsLimited="walletsItemsLimited"
-      :walletsItemsSorted="walletsItemsSorted"
+      :walletsItemsSorted="walletsStore.walletsItemsSorted"
     />
 
     <slot
-      v-if="isShowToggle && walletsIdsSorted.length > limit"
+      v-if="isShowToggle && walletsStore.walletsSortedIds.length > limit"
       name="toggle"
       :stateLimit="stateLimit"
       :limit="limit"

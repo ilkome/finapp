@@ -9,10 +9,15 @@ const $trnForm = useTrnFormStore()
 const walletsStore = useWalletsStore()
 const { t } = useI18n()
 
-const items = ref<Record<MoneyTypeSlug, {
-  transferType: TransferType
-  amountsIdx: 1 | 2
-}>>({
+const items = ref<
+  Record<
+    MoneyTypeSlug,
+    {
+      transferType: TransferType
+      amountsIdx: 1 | 2
+    }
+  >
+>({
   expense: {
     transferType: 0,
     amountsIdx: 1,
@@ -23,59 +28,80 @@ const items = ref<Record<MoneyTypeSlug, {
   },
 })
 
-const incomeWalletId = computed<WalletId | null>(() =>
-  $trnForm.values.incomeWalletId ?? walletsStore.walletsSortedIds[0],
+const incomeWalletId = computed<WalletId | null>(
+  () => $trnForm.values.incomeWalletId ?? walletsStore.walletsSortedIds[0],
 )
 
-const expenseWalletId = computed<WalletId | null>(() =>
-  $trnForm.values.expenseWalletId ?? walletsStore.walletsSortedIds[1],
+const expenseWalletId = computed<WalletId | null>(
+  () => $trnForm.values.expenseWalletId ?? walletsStore.walletsSortedIds[1],
 )
 
-watch(() => $trnForm.values.trnType, (trnType) => {
-  if (trnType === TrnType.Transfer) {
-    $trnForm.values.incomeWalletId = incomeWalletId.value
-    $trnForm.values.expenseWalletId = expenseWalletId.value
-  }
-}, { immediate: true })
+watch(
+  () => $trnForm.values.trnType,
+  (trnType) => {
+    if (trnType === TrnType.Transfer) {
+      $trnForm.values.incomeWalletId = incomeWalletId.value
+      $trnForm.values.expenseWalletId = expenseWalletId.value
+    }
+  },
+  { immediate: true },
+)
 </script>
 
-<template lang="pug">
-.pb-2
-  .flex.flex-col
-    .cursor-pointer.overflow-hidden.rounded-md(
-      v-for="(item, slug) in items"
-      :key="slug"
-      :class="[{ '!bg-item-3': $trnForm.values.transferType === item.transferType }]"
-      @click="$trnForm.onChangeTransferType(item.transferType)"
-    )
-      //- Wallet name
-      .px-3.pt-2.grid.items-center.whitespace-nowrap(
-        class="grid-cols-[.4fr,1fr]"
-      )
-        .grow.text-sm(class="w-1/2 text-primary/70") {{ t(slug) }}
-        template(v-if="slug === 'income'")
-          TrnFormMainSelectedWallet(
-            :key="incomeWalletId"
-            :id="incomeWalletId"
-            @click="$trnForm.openTrnFormModal('transferTo')"
-          )
-        template(v-if="slug === 'expense'")
-          TrnFormMainSelectedWallet(
-            :key="expenseWalletId"
-            :id="expenseWalletId"
-            @click="$trnForm.openTrnFormModal('transferFrom')"
-          )
+<template>
+  <div class="pb-2">
+    <div class="flex flex-col">
+      <div
+        v-for="(item, slug) in items"
+        :key="slug"
+        :class="[
+          { '!bg-item-3': $trnForm.values.transferType === item.transferType },
+        ]"
+        class="cursor-pointer overflow-hidden rounded-md"
+        @click="$trnForm.onChangeTransferType(item.transferType)"
+      >
+        <!-- Wallet name -->
+        <div
+          class="grid grid-cols-[.4fr,1fr] items-center whitespace-nowrap px-3 pt-2"
+        >
+          <div class="w-1/2 grow text-sm text-primary/70">
+            {{ t(slug) }}
+          </div>
 
-      //- Input
-      TrnFormMainInput(
-        :key="item.amountsIdx"
-        :amount="$trnForm.values.amount[item.amountsIdx]"
-        :amountRaw="$trnForm.values.amountRaw[item.amountsIdx]"
-        :highlight="item.transferType === 1 ? 'expense' : 'income'"
-        :isShowSum="$trnForm.getIsShowSum(item.amountsIdx)"
-        isTransfer
-        @onChange="$trnForm.onChangeAmount"
-      )
+          <VDropdown v-if="slug === 'income' && incomeWalletId">
+            <FilterWalletItem :walletId="incomeWalletId" />
+            <template #popper="{ hide }">
+              <WalletsSelector
+                :hide="hide"
+                @onSelected="id => $trnForm.values.incomeWalletId = id"
+              />
+            </template>
+          </VDropdown>
+
+          <VDropdown v-if="slug === 'expense' && expenseWalletId">
+            <FilterWalletItem :walletId="expenseWalletId" />
+            <template #popper="{ hide }">
+              <WalletsSelector
+                :hide="hide"
+                @onSelected="id => $trnForm.values.expenseWalletId = id"
+              />
+            </template>
+          </VDropdown>
+        </div>
+
+        <!-- Input -->
+        <TrnFormMainInput
+          :key="item.amountsIdx"
+          :amount="$trnForm.values.amount[item.amountsIdx]"
+          :amountRaw="$trnForm.values.amountRaw[item.amountsIdx]"
+          :highlight="item.transferType === 1 ? 'expense' : 'income'"
+          :isShowSum="$trnForm.getIsShowSum(item.amountsIdx)"
+          isTransfer
+          @onChange="$trnForm.onChangeAmount"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <i18n lang="yaml">
