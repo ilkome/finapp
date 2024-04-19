@@ -1,0 +1,48 @@
+<script setup lang="ts">
+import useMenuData from '~/components/menu/useMenuData'
+import { getStyles } from '~/components/ui/classes'
+
+const props = withDefaults(defineProps<{
+  item: unknown
+  menuId: unknown
+  isShowTitle?: boolean
+}>(), {
+  isShowTitle: true,
+})
+
+const { onClick, checkIsActive } = useMenuData()
+</script>
+
+<template>
+  <div
+    :class="[
+      ...getStyles('item', ['link', 'bg', 'rounded', 'padding1', 'menu']),
+      { '!text-primary': checkIsActive(props.menuId) },
+    ]"
+    class="group"
+    @click="onClick(props.menuId)"
+  >
+    <Component
+      :is="props.item.component"
+      v-if="props.item.component"
+      class="
+        size-5
+        group-[.is-bigger]_!size-6
+        group-[.is-trnForm]_!size-7
+      "
+    />
+
+    <div
+      v-else
+      :class="props.item.icon"
+      class="text-lg group-[.is-bigger]_!text-2xl leading-none"
+    />
+
+    <div
+      v-if="props.isShowTitle"
+      class="text-sm"
+    >
+      {{ item.name }}
+    </div>
+  </div>
+</template>

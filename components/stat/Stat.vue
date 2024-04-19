@@ -122,8 +122,6 @@ const selectedTrnsIds = computed(() => getTrnsIds({
   },
 }))
 
-// selectedTrnsIds
-
 const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selectedTrnsIds.value))
 </script>
 

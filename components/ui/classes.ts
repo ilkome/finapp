@@ -21,12 +21,10 @@ export const classes = {
       shadow hocus_shadow-lg
     `,
     menu: `
-      flex items-center
+      grow flex items-center
       py-2
-      h-[36px]
+      gap-3
     `,
-    menuModal: 'px-4 gap-x-4',
-    menuSidebar: 'px-3 gap-3',
   },
 
   modal: {

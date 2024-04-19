@@ -27,16 +27,4 @@ const isShow = computed(() =>
     </template>
     <TrnForm />
   </BaseBottomSheet2>
-
-  <!-- <BaseBottomSheet
-    v-if="isShow"
-    insideClass="bg-foreground-2 md_bg-transparent"
-    @closed="() => trnFormStore.onClose()"
-  >
-    <template #handler="{ close }">
-      <BaseBottomSheetHandler />
-      <BaseBottomSheetClose @onClick="close" />
-    </template>
-    <TrnForm />
-  </BaseBottomSheet> -->
 </template>

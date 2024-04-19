@@ -6,10 +6,7 @@
       </nuxt-link>
     </div>
 
-    <LayoutSidebarMenu
-      variant="sidebar"
-      class="pb-6 pt-2 px-2"
-    />
+    <LayoutMenuSidebar class="pb-6 pt-2 px-2" />
 
     <div class="grid gap-1 pb-6 px-2">
       <UiTitle3 class="pl-3">

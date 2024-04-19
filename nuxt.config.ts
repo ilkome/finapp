@@ -1,12 +1,4 @@
 export default defineNuxtConfig({
-  // devtools: {
-  //   enabled: true,
-
-  //   timeline: {
-  //     enabled: true,
-  //   },
-  // },
-
   runtimeConfig: {
     public: {
       ratesApiKey: process.env.OPEN_EXCHANGE_RATES,
@@ -14,7 +6,6 @@ export default defineNuxtConfig({
   },
 
   ssr: false,
-  telemetry: false,
 
   vite: {
     resolve: {
@@ -54,7 +45,7 @@ export default defineNuxtConfig({
   plugins: [
     { src: '~/plugins/initApp' },
     { src: '~/plugins/dayjs' },
-    { src: '~/plugins/notifications' },
+    { src: '~/plugins/toast' },
   ],
 
   colorMode: {
@@ -64,10 +55,6 @@ export default defineNuxtConfig({
 
   tailwindcss: {
     viewer: false,
-  },
-
-  router: {
-    // middleware: ['auth'],
   },
 
   modules: [
@@ -148,8 +135,8 @@ export default defineNuxtConfig({
       installPrompt: true,
     },
     devOptions: {
-      enabled: true,
-      suppressWarnings: true,
+      enabled: false,
+      suppressWarnings: false,
       navigateFallback: '/',
       navigateFallbackAllowlist: [/^\/$/],
       type: 'module',
@@ -158,7 +145,9 @@ export default defineNuxtConfig({
 
   devtools: {
     timeline: {
-      enabled: true,
+      // enabled: true,
     },
   },
+
+  telemetry: false,
 })

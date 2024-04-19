@@ -202,8 +202,8 @@ export function useStat(filter: FilterProvider) {
     return p1 || p2
   }
 
-  const statPrepareDataAverage = computed(() =>
-    statPrepareData.value.slice(1).reduce(
+  const statPrepareDataAverage = computed(() => {
+    const d = statPrepareData.value.slice(1).reduce(
       (acc, cur) => {
         acc.incomeTransactions += cur.incomeTransactions
         acc.expenseTransactions += cur.expenseTransactions
@@ -215,8 +215,14 @@ export function useStat(filter: FilterProvider) {
         expenseTransactions: 0,
         sumTransactions: 0,
       },
-    ),
-  )
+    )
+
+    return {
+      incomeTransactions: d.incomeTransactions / periodsToShow.value,
+      expenseTransactions: d.expenseTransactions / periodsToShow.value,
+      sumTransactions: d.sumTransactions / periodsToShow.value,
+    }
+  })
 
   function getAllPeriodsTotal(data: typeof statPrepareData.value) {
     return data.reduce(
@@ -360,7 +366,7 @@ export function useStat(filter: FilterProvider) {
 
   function getAverageItem(slug: MoneyTypeSlugSum) {
     return {
-      amount: statPrepareData.value[selectedPeriodCount.value]?.[mTypes[slug]],
+      amount: [...statPrepareData.value].reverse()[selectedPeriodCount.value]?.[mTypes[slug]],
       averageAmount: statPrepareDataAverage.value[mTypes[slug]],
       colorizeType: getColorizeType(slug),
       isShownAverage: statPrepareDataAverage.value.sumTransactions !== 0,
@@ -399,28 +405,29 @@ export function useStat(filter: FilterProvider) {
   return {
     avaDate,
     averages,
-    chartConfigShowedPeriodsCount,
-    trnsIds,
-    periodsToShow,
-    filterPeriodMaxDateCount,
-    getColorizeType,
-    getMoneyTypeNumber,
-    getTotal,
-    isToday,
-    isLastPeriod,
-    statPrepareData,
-    getStatDataPrepared,
-    filters,
     chartCategories,
+    chartConfigShowedPeriodsCount,
+    filterPeriodMaxDateCount,
+    filters,
+    getCategoriesWithTrnsIds,
+    getColorizeType,
+    getHeyTotalCategories,
+    getMoneyTypeNumber,
+    getRootCategoriesWithTrnsIds,
+    getStatDataPrepared,
+    getTotal,
+    getTotalCategories,
+    isLastPeriod,
+    isShowGroupByType,
+    isToday,
+    periodsToShow,
+    selectedPeriodCount,
     statPrepareAllData,
+    statPrepareData,
     statPrepareDataAverage,
     statPrepareDataAverageAll,
-    isShowGroupByType,
-    getTotalCategories,
-    getHeyTotalCategories,
     totalCategories,
-    getCategoriesWithTrnsIds,
-    getRootCategoriesWithTrnsIds,
+    trnsIds,
   }
 }
 

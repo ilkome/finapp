@@ -10,36 +10,47 @@ interface MenuItem {
 
 // TODO: replace with NuxtLink
 export default function useMenuData() {
-  const { $i18n } = useNuxtApp()
+  const { t } = useI18n()
   const { trnFormCreate } = useTrnForm()
   const route = useRoute()
-  const { closeAllModals } = useAppNav()
+  const { closeAllModals, openModal } = useAppNav()
   const userStore = useUserStore()
 
   const items = computed(() => ({
     trnForm: {
-      icon: 'mdi mdi-plus',
-      name: $i18n.t('trnForm.createTrn'),
+      component: 'UiIconAdd',
+      name: t('trnForm.createTrn'),
     },
     dashboard: {
       component: 'UiIconStat',
-      name: $i18n.t('stat.title'),
+      name: t('stat.title'),
     },
     wallets: {
       component: 'UiIconWallet',
-      name: $i18n.t('wallets.name'),
+      name: t('wallets.name'),
     },
     categories: {
       component: 'UiIconCategory',
-      name: $i18n.t('categories.name'),
+      name: t('categories.name'),
     },
     history: {
       icon: 'mdi mdi-history',
-      name: $i18n.t('trns.history'),
+      name: t('trns.history'),
     },
     settings: {
       icon: 'mdi mdi-cog-outline',
-      name: $i18n.t('settings.title'),
+      name: t('settings.title'),
+    },
+  }))
+
+  const itemsMini = computed(() => ({
+    wallets: items.value.wallets,
+    categories: items.value.categories,
+    trnForm: items.value.trnForm,
+    dashboard: items.value.dashboard,
+    menu: {
+      component: 'UiIconMenu',
+      name: '',
     },
   }))
 
@@ -47,7 +58,13 @@ export default function useMenuData() {
     closeAllModals()
 
     if (menuId === 'trnForm') {
+      navigateTo('dashboard')
       trnFormCreate()
+      return
+    }
+
+    if (menuId === 'menu') {
+      openModal('menu')
       return
     }
 
@@ -67,6 +84,7 @@ export default function useMenuData() {
 
   return {
     items,
+    itemsMini,
     onClick,
     checkIsShow,
     checkIsActive,

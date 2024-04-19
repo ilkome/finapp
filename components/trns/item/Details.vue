@@ -5,7 +5,6 @@ import type { WalletItem } from '~~/components/wallets/types'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import useWallets from '~/components/wallets/useWallets'
 
 const props = withDefaults(
   defineProps<{

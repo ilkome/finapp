@@ -36,9 +36,9 @@ export function useInitApp() {
 
         userStore.setUser(user)
         currenciesStore.initCurrencies()
-        // categoriesStore.initCategories()
-        // walletsStore.initWallets()
-        // trnsStore.initTrns()
+        categoriesStore.initCategories()
+        walletsStore.initWallets()
+        trnsStore.initTrns()
         trnsStore.uploadOfflineTrns()
 
         if (useRoute().name === 'login')

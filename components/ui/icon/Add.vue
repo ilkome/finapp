@@ -1,7 +1,3 @@
-<script setup lang="ts">
-
-</script>
-
 <template lang="pug">
 svg(
   xmlns="http://www.w3.org/2000/svg"
