@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { classes } from '~/components/ui/classes'
+import { classes } from '~/components/ui/getStyles'
 </script>
 
 <template lang="pug">

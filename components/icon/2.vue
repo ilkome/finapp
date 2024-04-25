@@ -9,7 +9,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  click: []
+  click: [event: Event]
 }>()
 </script>
 
@@ -21,7 +21,7 @@ const emit = defineEmits<{
       '!size-14 !text-4xl': size === 'xl',
     }"
     :style="{ color }"
-    @click.stop="emit('click')"
+    @click="event => emit('click', event)"
   >
     <div :class="icon" />
   </div>

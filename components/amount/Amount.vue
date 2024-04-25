@@ -15,7 +15,6 @@ const props = withDefaults(
     align?: 'left' | 'center'
     isShowBaseRate?: boolean
     isShowSign?: boolean
-    size?: 'sm' | 'base' | 'md' | 'lg'
   }>(),
   {
     isShowBaseRate: true,
@@ -62,7 +61,7 @@ const amountClasses = computed(() => [
           {{ formatAmount(amount, currencyCode) }}
         </div>
 
-        <div class="text-xs leading-none">
+        <div class="scale-90 leading-none">
           {{ getCurrencySymbol(currencyCode) }}
         </div>
       </div>
@@ -73,10 +72,10 @@ const amountClasses = computed(() => [
         class="flex items-baseline gap-1 whitespace-nowrap text-secondary"
         :class="alignClasses"
       >
-        <div v-if="isShowSign && sign === '-'" class="text-xs leading-none">
+        <div v-if="isShowSign && sign === '-'" class="scale-90 leading-none">
           {{ sign }}
         </div>
-        <div class="text-xs leading-none">
+        <div class="scale-90 leading-none">
           {{ getAmountInBaseRate({ amount, currencyCode }) }}
         </div>
         <div class="text-2xs leading-none">
@@ -94,7 +93,7 @@ const amountClasses = computed(() => [
       <div class="text-md flex items-baseline leading-none">
         0
       </div>
-      <div class="text-xs leading-none">
+      <div class="scale-90 leading-none">
         {{ getCurrencySymbol(currencyCode) }}
       </div>
     </div>

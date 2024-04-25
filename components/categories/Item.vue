@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   // TODO: export type
@@ -13,8 +13,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'click'): void
-  (e: 'onClickIcon'): void
+  click: [e: Event]
+  filter: [e: Event]
 }>()
 
 const categoriesStore = useCategoriesStore()
@@ -23,20 +23,13 @@ const childCategoriesIds = computed(() =>
   categoriesStore.getChildCategoriesIds(props.categoryId),
 )
 
-const parentCategory = computed(
-  () => categoriesStore.items[props.category?.parentId],
-)
-
-function onClickIcon() {
-  if (props.slider)
-    emit('click')
-
-  emit('onClickIcon')
-}
+// const parentCategory = computed(
+//   () => categoriesStore.items[props.category?.parentId],
+// )
 </script>
 
 <template>
-  <div class="_group" @click="emit('click')">
+  <div class="_group" @click="e => emit('click', e)">
     <div
       :class="[
         { '!bg-item-3': activeItemId === categoryId },
@@ -48,7 +41,7 @@ function onClickIcon() {
         :categoryId
         :color="category.color"
         :icon="category.icon"
-        @click="onClickIcon"
+        @click="e => emit('filter', e)"
       />
 
       <div class="flex grow items-baseline gap-2">

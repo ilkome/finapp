@@ -69,7 +69,7 @@ watch(
           </div>
 
           <VDropdown v-if="slug === 'income' && incomeWalletId">
-            <FilterWalletItem :walletId="incomeWalletId" />
+            <WalletsItem2 :walletId="incomeWalletId" />
             <template #popper="{ hide }">
               <WalletsSelector
                 :hide="hide"
@@ -79,7 +79,7 @@ watch(
           </VDropdown>
 
           <VDropdown v-if="slug === 'expense' && expenseWalletId">
-            <FilterWalletItem :walletId="expenseWalletId" />
+            <WalletsItem2 :walletId="expenseWalletId" />
             <template #popper="{ hide }">
               <WalletsSelector
                 :hide="hide"

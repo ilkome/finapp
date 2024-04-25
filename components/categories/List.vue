@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 
 defineProps<{

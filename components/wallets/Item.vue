@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 
-defineProps<{
+const props = defineProps<{
   activeItemId?: WalletId
   wallet: WalletItemWithAmount
   walletId: WalletId
@@ -10,16 +10,16 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  click: []
-  filter: []
+  click: [walletId: WalletId]
+  filter: [walletId: WalletId]
 }>()
 </script>
 
 <template>
-  <div class="group" @click="emit('click')">
+  <div class="group" @click="emit('click', props.walletId)">
     <div
       :class="[
-        { '!bg-item-3': activeItemId === walletId },
+        { '!bg-item-3': activeItemId === props.walletId },
         ...getStyles('item', ['link', 'rounded', 'padding1', 'minh']),
       ]"
       class="-my-[1px] flex items-center gap-2"
@@ -41,7 +41,7 @@ const emit = defineEmits<{
               :color="wallet.color"
               :name="wallet.name"
               :walletId
-              @click.stop="emit('filter')"
+              @click.stop="emit('filter', props.walletId)"
             />
           </div>
         </template>
@@ -51,7 +51,7 @@ const emit = defineEmits<{
             :color="wallet.color"
             :name="wallet.name"
             :walletId
-            @click.stop="emit('filter')"
+            @click.stop="emit('filter', props.walletId)"
           />
         </div>
 

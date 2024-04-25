@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 import type { StatProvider } from '~/components/stat/useStat'
 import type { FilterProvider } from '~/components/filter/useFilter'
 

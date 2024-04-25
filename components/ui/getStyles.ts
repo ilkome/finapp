@@ -12,8 +12,12 @@ export const classes = {
     base: '',
     rounded: 'rounded-md',
     padding1: 'px-2 py-1.5',
+    padding2: 'px-2',
+    center: 'flex items-center',
+    gap1: 'gap-3',
     minh: 'min-h-[42px]',
     minh2: 'min-h-[38px]',
+    minw1: 'min-w-[42px]',
     paddings: {
       base: '',
     },
@@ -21,7 +25,7 @@ export const classes = {
       shadow hocus_shadow-lg
     `,
     menu: `
-      grow flex items-center
+      flex items-center
       py-2
       gap-3
     `,

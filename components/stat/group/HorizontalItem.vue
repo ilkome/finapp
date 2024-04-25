@@ -14,7 +14,7 @@ import { formatDateByPeriod, formatDateByPeriod2, getDates } from '~/components/
 import { getTotal } from '~/components/amount/getTotal'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useSimpleTabs } from '~/components/tabs/useUtils'
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   biggest: number
@@ -24,6 +24,7 @@ const props = defineProps<{
   moneyTypeSlug: MoneyTypeSlug
   category: CategoryItem
   categoryId: CategoryId
+  isShowPeriodsTrns: false
 }>()
 
 const filter = inject('filter') as FilterProvider
@@ -237,7 +238,7 @@ function getFormattedDate(date: number) {
           @click="onClickChart"
         />
 
-        <div class="scrollbar max-h-[40vh] overflow-hidden overflow-y-auto pb-1 _ml-10 -mr-1">
+        <div class="pb-1 _ml-10 -mr-1">
           <div class="grid gap-2">
             <div class="pl-3">
               <StatTotalWithAverage2
@@ -297,6 +298,9 @@ function getFormattedDate(date: number) {
                     :amount="chart.data[stat.chartCategories.value.findIndex(d => d === date)]"
                     :currencyCode="currenciesStore.base"
                   />
+                </div>
+                <div v-if="isShowPeriodsTrns && date === selectedDate">
+                  hey
                 </div>
                 <div class="mt-2 h-[1px] bg-item-5" />
               </div>

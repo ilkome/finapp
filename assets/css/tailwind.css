@@ -11,10 +11,6 @@
     @apply flex flex-col items-center justify-center;
   }
 
-  .size-full {
-    @apply w-full h-full;
-  }
-
   .absolute-center {
     position: absolute;
     top: 50%;

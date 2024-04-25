@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 
 const currenciesStore = useCurrenciesStore()
 </script>

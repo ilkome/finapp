@@ -12,7 +12,7 @@ const { itemsMini } = useMenuData()
       :isShowTitle="false"
       :item
       :menuId
-      class="flex-center is-bigger"
+      class="flex-center is-bigger grow"
       :class="{
         'is-trnForm': menuId === 'trnForm',
       }"

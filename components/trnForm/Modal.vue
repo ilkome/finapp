@@ -6,7 +6,7 @@ const { height } = useWindowSize()
 
 <template>
   <Teleport to="body">
-    <BaseBottomSheet
+    <BaseBottomSheet2
       class="bg-foreground-3 sm_rounded-b-2xl"
       show
       :maxHeight="height"
@@ -28,6 +28,6 @@ const { height } = useWindowSize()
       <template #default="{ close }">
         <slot name="default" :close="close" />
       </template>
-    </BaseBottomSheet>
+    </BaseBottomSheet2>
   </Teleport>
 </template>

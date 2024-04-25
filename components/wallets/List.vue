@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { WalletsWithAmount } from '~/components/wallets/types'
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = withDefaults(
   defineProps<{

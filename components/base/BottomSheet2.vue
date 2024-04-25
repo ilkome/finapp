@@ -16,15 +16,19 @@ const emit = defineEmits<{
 const settings = {
   pixelsNeedToDrugForClose: 60,
   pixelOffsetToStartClosing: 20,
-  debug: false,
+  debug: true,
 }
 
 // Ref Elements
 const drug = ref<HTMLElement | null>(null)
 const containerRef = ref<HTMLElement | null>(null)
 const handlerRef = ref<HTMLElement | null>(null)
+const contentInside = ref<HTMLElement | null>(null)
 
 // State
+const initialHeight = ref(0)
+const isHeightTrna = ref(false)
+
 const initialY = ref(0)
 const clientY = ref(0)
 const isDragging = ref(true)
@@ -35,6 +39,9 @@ const disabled = ref(true)
 const opened = ref(false)
 const isEventsAdded = ref(false)
 
+const { height: drugHeight } = useElementSize(drug)
+const { height: windowHeight } = useWindowSize()
+
 /**
  * Next current y
  */
@@ -44,9 +51,7 @@ const nextCurrentY = computed(() => clientY.value - initialY.value)
  * Set direction
  */
 watch(nextCurrentY, (current, prev) => {
-  current > prev
-    ? direction.value = 'down'
-    : direction.value = 'up'
+  current > prev ? (direction.value = 'down') : (direction.value = 'up')
 })
 
 /**
@@ -62,7 +67,10 @@ const debounce = computed(() =>
 const diffHeight = computed(() => {
   const containerHeight = drug.value?.clientHeight ?? 0
   const handlerHeight = handlerRef.value?.clientHeight ?? 0
-  return Math.round((containerHeight + handlerHeight - nextCurrentY.value) / (containerHeight / 100))
+  return Math.round(
+    (containerHeight + handlerHeight - nextCurrentY.value)
+    / (containerHeight / 100),
+  )
 })
 
 /**
@@ -71,7 +79,10 @@ const diffHeight = computed(() => {
 const diffHeightWithDebounce = computed(() => {
   const containerHeight = drug.value?.clientHeight ?? 0
   const handlerHeight = handlerRef.value?.clientHeight ?? 0
-  return Math.round((containerHeight + handlerHeight - nextCurrentY.value + debounce.value) / (containerHeight / 100))
+  return Math.round(
+    (containerHeight + handlerHeight - nextCurrentY.value + debounce.value)
+    / (containerHeight / 100),
+  )
 })
 
 /**
@@ -86,11 +97,12 @@ const overlayStyles = computed(() => {
     opacity = nextCurrentY.value <= 100 ? 1 : 0
   }
   else {
-    opacity = Number(diffHeightWithDebounce.value >= 100
-      ? 1
-      : diffHeightWithDebounce.value >= 10
-        ? `0.${diffHeightWithDebounce.value}`
-        : `0.0${diffHeightWithDebounce.value}`,
+    opacity = Number(
+      diffHeightWithDebounce.value >= 100
+        ? 1
+        : diffHeightWithDebounce.value >= 10
+          ? `0.${diffHeightWithDebounce.value}`
+          : `0.0${diffHeightWithDebounce.value}`,
     )
   }
   return {
@@ -102,6 +114,13 @@ const overlayStyles = computed(() => {
  * Drug styles
  */
 const drugStyles = computed(() => {
+  if (!opened.value) {
+    return {
+      opacity: 0,
+      transform: 'translateX(-50%) translateY(30px)',
+    }
+  }
+
   if (nextCurrentY.value <= debounce.value) {
     return {
       opacity: 1,
@@ -188,6 +207,18 @@ function onDragging(event: Event): void {
 
   const isHasScroll = contentHasScroll(event)
 
+  const bodyHeight = document.querySelector('body')?.clientHeight ?? 0
+  const contentInsideHeight = contentInside.value?.clientHeight ?? 0
+  const drugHeight = drug.value?.clientHeight ?? 0
+
+  if (isDragging.value && drug.value && (drugHeight < contentInsideHeight) && ((drugHeight + 10) < bodyHeight)) {
+    drug.value?.querySelector('.scrollerBlock')?.classList.add('pointer-events-none')
+    drug.value.style.height = `${initialHeight.value - nextCurrentY.value}px`
+  }
+  else {
+    drug.value?.querySelector('.scrollerBlock')?.classList.remove('pointer-events-none')
+  }
+
   if (isHasScroll && !isHandler.value) {
     isDragging.value = false
     initialY.value = 0
@@ -203,20 +234,37 @@ function onDragging(event: Event): void {
     clientY.value = getClientY(event)
 
   if (settings.debug) {
-    nextCurrentY.value >= settings.pixelsNeedToDrugForClose && direction.value === 'down'
-      ? debug.value.status = 'will close'
-      : debug.value.status = 'will open'
+    nextCurrentY.value >= settings.pixelsNeedToDrugForClose
+    && direction.value === 'down'
+      ? (debug.value.status = 'will close')
+      : (debug.value.status = 'will open')
   }
 }
 
 /**
  * Drag end
  */
-function onDragEnd(): void {
+async function onDragEnd() {
   if (disabled.value || !isDragging.value)
     return
 
-  const isNeedClose = (nextCurrentY.value >= settings.pixelsNeedToDrugForClose) && direction.value === 'down'
+  const bodyHeight = document.querySelector('body')?.clientHeight ?? 0
+  const contentInsideHeight = contentInside.value?.clientHeight ?? 0
+  const drugHeight = drug.value?.clientHeight ?? 0
+
+  if (direction.value === 'up' && nextCurrentY.value < 0) {
+    isHeightTrna.value = true
+    await nextTick()
+    if (isDragging.value && drug.value && (drugHeight < contentInsideHeight) && ((drugHeight + 10) < bodyHeight))
+      drug.value.style.height = `${bodyHeight - 10}px`
+
+    else
+      isHeightTrna.value = false
+  }
+
+  const isNeedClose
+    = nextCurrentY.value >= settings.pixelsNeedToDrugForClose
+    && direction.value === 'down'
   isNeedClose
     ? close()
     : open()
@@ -257,7 +305,7 @@ function open() {
 function onClose() {
   // Scroll up all scroller blocks
   const scrollerBlocks = drug.value?.querySelectorAll('.scrollerBlock')
-  scrollerBlocks?.forEach(el => el.scrollTop = 0)
+  scrollerBlocks?.forEach(el => (el.scrollTop = 0))
   drug.value?.removeEventListener('transitionend', onClose)
   opened.value = false
   emit('closed')
@@ -287,20 +335,6 @@ function addEvents() {
 }
 
 /**
- * Init modal
- */
-async function init() {
-  setTimeout(async () => {
-    setInitialY()
-    disabled.value = false
-    addEvents()
-    setTimeout(() => {
-      open()
-    }, 100)
-  }, 10)
-}
-
-/**
  * Watch for diff height
  */
 watch(diffHeight, () => {
@@ -317,31 +351,51 @@ watch(diffHeight, () => {
 })
 
 /**
+ * Init modal
+ */
+async function init() {
+  initialHeight.value = drug.value?.clientHeight ?? 0
+
+  setTimeout(async () => {
+    setInitialY()
+    disabled.value = false
+    addEvents()
+    setTimeout(() => {
+      open()
+    }, 10)
+  }, 10)
+}
+/**
  * Run init when mounted or isShow changed
  */
-watch(() => props.isShow, async () => {
-  if (props.isShow)
-    await init()
+watch(
+  () => props.isShow,
+  async () => {
+    if (props.isShow)
+      await init()
 
-  if (!props.isShow && opened.value)
-    close()
-}, { immediate: true })
+    if (!props.isShow && opened.value)
+      close()
+  },
+  { immediate: true },
+)
 
 /**
  * Height
  */
-const { height: drugHeight } = useElementSize(drug)
-const { height: windowHeight } = useWindowSize()
-
-const drugClasses = computed(() => [{
-  'rounded-tl-xl rounded-tr-xl': drugHeight.value < windowHeight.value,
-  'transition-opacity transition-transform': !isDragging.value && opened.value,
-  'pointer-events-none': isDragging.value && drugStyles.value.transform,
-}, props.drugClassesCustom])
+const drugClasses = computed(() => [
+  {
+    'rounded-tl-xl rounded-tr-xl': drugHeight.value < windowHeight.value,
+    'transition-opacity transition-transform duration-100':
+      !isDragging.value && opened.value,
+    'pointer-events-none': isDragging.value && drugStyles.value.transform,
+    // 'transition-[height]': isHeightTrna.value,
+  },
+  props.drugClassesCustom,
+])
 
 const overflowClasses = computed(() => ({
-  'transition-opacity': !isDragging.value && opened.value,
-  // 'pointer-events-none opacity-0': !opened.value,
+  'transition-opacity duration-100': !isDragging.value && opened.value,
 }))
 
 const wrapClasses = computed(() => ({
@@ -349,47 +403,66 @@ const wrapClasses = computed(() => ({
 }))
 </script>
 
-<template lang="pug">
-.z-50.select-none.overflow-hidden.absolute.inset-0.w-full.h-full(
-  ref="containerRef"
-  :class="wrapClasses"
-)
-  //- Overlay
-  div(
-    :class="overflowClasses"
-    :style="overlayStyles"
-    class=`
-      z-10
-      absolute inset-0 w-full h-full
-      bg-foreground-1/70
-    `
-    @click="close()"
-  )
+<template>
+  <div
+    ref="containerRef"
+    :class="wrapClasses"
+    class="absolute inset-0 z-50 h-full w-full select-none overflow-hidden"
+  >
+    <!-- Overlay -->
+    <div
+      :class="overflowClasses"
+      :style="overlayStyles"
+      class="absolute inset-0 z-10 h-full w-full bg-foreground-1/70"
+      @click="close()"
+    />
 
-  //- Drug
-  .drug(
-    ref="drug"
-    :class="drugClasses"
-    :style="drugStyles"
-    class=`
-      pointer-events-auto
-      overflow-hidden
-      z-10 absolute left-1/2 bottom-0 w-full h-auto
-      -translate-x-1/2 translate-y-0
-    `
-    @click.stop=""
-  )
-    div(ref="handlerRef")
-      slot(name="handler" :close="close")
+    <!-- Drug -->
+    <div
+      ref="drug"
+      :class="drugClasses"
+      :style="drugStyles"
+      class="drug pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full h-50vh -translate-x-1/2 translate-y-0 overflow-hidden"
+      @click.stop=""
+    >
+      <div ref="handlerRef">
+        <slot name="handler" :close="close" />
+      </div>
 
-    slot(:close="close")
-      .overflow-hidden.grid.h-full.select-none
-        .flex.flex-col.gap-2
-          .p-2 Status: {{ debug.status }}
-          .p-2 Direction: {{ debug.direction }}
-          .p-2 DiffHeight: {{ diffHeight }}
-          .p-2 DiffHeightWithDebounce: {{ debug.diffHeightWithDebounce }}
-          .p-2 NextCurrentY: {{ debug.nextCurrentY }}
-          .p-2 drugStyles: {{ drugStyles }}
-          .p-2 overlayStyles: {{ overlayStyles }}
+      <slot :close="close">
+        <div class="grid h-full select-none overflow-hidden overflow-y-auto scrollerBlock">
+          <div ref="contentInside" class="flex flex-col gap-3">
+            <div>
+              initialHeight: {{ initialHeight }}
+            </div>
+            <div>
+              Status: {{ debug.status }}
+            </div>
+            <div>
+              Direction: {{ debug.direction }}
+            </div>
+            <div>
+              DiffHeight: {{ diffHeight }}
+            </div>
+            <div>
+              DiffHeightWithDebounce: {{ debug.diffHeightWithDebounce }}
+            </div>
+            <div>
+              NextCurrentY: {{ debug.nextCurrentY }}
+            </div>
+            <div>
+              drugStyles: {{ drugStyles }}
+            </div>
+            <div>
+              overlayStyles: {{ overlayStyles }}
+            </div>
+
+            <div class="border-t border-b text-sm">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis alias similique delectus sequi iusto aspernatur harum natus quaerat tempora aut commodi maxime, praesentium itaque soluta reprehenderit velit odio qui perspiciatis? Dolorum impedit distinctio illum nisi optio ipsum accusantium delectus corporis, expedita officia consequatur quidem aut architecto earum suscipit, aspernatur omnis accusamus ut exercitationem, harum facere repellat eligendi asperiores et? Nihil provident doloremque vitae illo dignissimos qui error rerum quo praesentium minus quaerat cum, esse, nostrum, blanditiis quas! Nihil quae possimus ipsam aliquam autem amet corporis, totam officia enim libero vel rem, laborum sint aspernatur numquam veniam tempora fugiat doloremque? Quae adipisci doloremque porro libero nisi voluptatum vitae, perspiciatis magnam nulla, deserunt nam molestiae, eligendi iusto cum aliquam. Itaque id earum, natus culpa impedit ex possimus nisi ipsam inventore aut voluptas recusandae, nobis pariatur similique et? Non voluptates consequuntur pariatur odio est ex inventore quisquam sunt libero sequi sint aliquam adipisci velit officiis, assumenda praesentium ea quia, itaque eos autem nostrum! Quaerat sit, accusantium modi sint impedit cum consequatur excepturi aliquam expedita omnis, quos saepe eos, autem itaque explicabo ipsam illum. Voluptatibus facere laboriosam molestias aliquam delectus ipsam earum possimus temporibus, tempora ratione molestiae. Aperiam officia voluptates perspiciatis ea rerum mollitia eius autem, nostrum esse ipsum beatae ipsam vero aspernatur quaerat labore iusto quisquam cumque quos possimus tempore quidem accusantium? Totam debitis dignissimos asperiores, nemo magnam perferendis voluptate fugit ipsa modi! Unde consequuntur a adipisci dolorum. Id numquam sint, enim esse eos fugit. Libero eos obcaecati cum est quae optio architecto. Officiis facere iste illo reprehenderit officia et voluptatem non soluta molestias aliquam doloremque, dolores aspernatur, eligendi veritatis consequuntur cum possimus. Mollitia, quidem perferendis non sint assumenda quae deserunt ratione tempore blanditiis neque ex asperiores, tempora veritatis pariatur dolorum laborum molestias amet necessitatibus nemo saepe voluptatum dolor ipsum cum qui. Eaque laudantium enim ipsam ad eum dolores obcaecati magni dolor architecto sapiente asperiores labore molestiae consequuntur exercitationem dolorum ratione voluptatem veniam, nesciunt explicabo qui at sunt. Nemo quidem a nihil dignissimos voluptates eos culpa, laborum ratione sapiente cupiditate perferendis magni voluptatum hic qui quae non impedit nam numquam eaque, rem suscipit omnis tenetur. Numquam earum omnis suscipit officiis magnam. Eligendi recusandae quam impedit reiciendis voluptatem vitae, facilis omnis assumenda commodi nihil exercitationem, unde nostrum numquam inventore iste accusamus laborum quo illum repudiandae dolorem nesciunt, nemo eum hic. Repellendus, eligendi magnam quidem at ipsam, dolore esse corporis nulla excepturi officia labore exercitationem recusandae id eos modi dicta iste nobis sequi reprehenderit quasi ad sint eum ut. Error dolore cupiditate blanditiis maiores voluptatum consequuntur consectetur qui iste veniam amet quae sunt cum rem quos, dignissimos deserunt, voluptates aut excepturi labore modi animi vero suscipit nesciunt! Eaque explicabo magnam rerum accusamus nesciunt numquam a laboriosam molestiae perspiciatis nemo. Consequuntur quia aperiam a labore aliquam eligendi, quo nobis placeat corrupti ratione, inventore fugit tempore rerum facilis nam dignissimos laudantium vitae minima iusto suscipit odit ullam veniam. Sequi voluptatibus quaerat assumenda reprehenderit maiores ex inventore placeat accusantium doloremque aliquam. Rerum soluta ullam aperiam assumenda consequatur voluptatem.
+            </div>
+          </div>
+        </div>
+      </slot>
+    </div>
+  </div>
 </template>

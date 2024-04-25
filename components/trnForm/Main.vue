@@ -41,7 +41,7 @@ const walletId = computed(() => {
       class="grid grid-cols-2 gap-3 px-2 pb-2"
     >
       <VDropdown v-if="walletId">
-        <FilterWalletItem :walletId />
+        <WalletsItem2 :walletId />
         <template #popper="{ hide }">
           <WalletsSelector
             :hide
@@ -54,11 +54,9 @@ const walletId = computed(() => {
         :overflowPadding="12"
         autoBoundaryMaxSize
       >
-        <div>
-          <FilterCategoryItem
-            :categoryId="$trnForm.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
-          />
-        </div>
+        <CategoriesItem2
+          :categoryId="$trnForm.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
+        />
 
         <template #popper="{ hide }">
           <CategoriesSelector

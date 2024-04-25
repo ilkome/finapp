@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import useMenuData from '~/components/menu/useMenuData'
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = withDefaults(defineProps<{
   item: unknown

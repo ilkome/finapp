@@ -3,7 +3,7 @@ import { formatDateByPeriod2 } from '~/components/date/format'
 import type { FilterProvider } from '~/components/filter/useFilter'
 import { useAppNav } from '~/components/app/useAppNav'
 import type { StatProvider } from '~/components/stat/useStat'
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 
 const filter = inject('filter') as FilterProvider
 const stat = inject('stat') as StatProvider

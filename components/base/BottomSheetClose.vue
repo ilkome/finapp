@@ -1,5 +1,8 @@
 <template lang="pug">
-.handlerClose(@click="$emit('onClick')")
+.handlerClose(
+  class="bg-item-6"
+  @click="$emit('onClick')"
+)
   svg(
     viewBox="0 0 24 24"
     fill="none"

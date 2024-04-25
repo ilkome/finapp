@@ -17,9 +17,7 @@ useHead({
       <UiHeaderTitle>{{ $t("trns.history") }}</UiHeaderTitle>
     </UiHeader>
 
-    <div v-if="filterStore.isShow" class="flex gap-2 rounded-lg bg-item-4">
-      <LazyStatFilter />
-    </div>
+    <Filter v-if="filterStore.isShow" class="flex gap-2 rounded-lg bg-item-4" />
 
     <div class="my-4 max-w-[420px] md_max-w-none">
       <TrnsListWithControl :trnsIds="trnsStore.allTrnsIdsWithFilter" />

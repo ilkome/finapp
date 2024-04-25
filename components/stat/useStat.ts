@@ -40,6 +40,21 @@ export function useStat(filter: FilterProvider) {
     })
   }
 
+  function getTrnsIdsWithFilterNoDates() {
+    const categoriesIds
+      = filter.catsIds.value.length > 0
+        ? categoriesStore.getTransactibleIds(filter.catsIds.value)
+        : []
+    const walletsIds
+      = filter.walletsIds.value.length > 0 ? filter.walletsIds.value : []
+
+    return getTrnsIds({
+      categoriesIds,
+      trnsItems: trnsStore.items,
+      walletsIds,
+    })
+  }
+
   const trnsIds = computed(() => getTrnsIdsWithFilter())
 
   const trnsItemsFiltered = computed(() => {
@@ -64,7 +79,7 @@ export function useStat(filter: FilterProvider) {
 
   const avaDate = computed(
     () =>
-      trnsItemsFiltered.value[Object.keys(trnsItemsFiltered.value).at(-1)].date,
+      trnsItemsFiltered.value[Object.keys(trnsItemsFiltered.value)?.at(-1)]?.date,
   )
 
   const selectedPeriodCount = computed(() =>
@@ -409,6 +424,7 @@ export function useStat(filter: FilterProvider) {
     chartConfigShowedPeriodsCount,
     filterPeriodMaxDateCount,
     filters,
+    getTrnsIdsWithFilterNoDates,
     getCategoriesWithTrnsIds,
     getColorizeType,
     getHeyTotalCategories,

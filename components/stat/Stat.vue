@@ -9,14 +9,13 @@ import { useSimpleTabs } from '~/components/tabs/useUtils'
 import { useStat } from '~/components/stat/useStat'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { getTrnsIds } from '~/components/trns/getTrns'
-import { getDates } from '~/components/date/format'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const appNavStore = useAppNav()
 const filter = useFilter()
 const stat = useStat(filter)
 const trnFormStore = useTrnFormStore()
-const trnsStore = useTrnsStore()
+// const trnsStore = useTrnsStore()
 const { t } = useI18n()
 
 filter.initChart()
@@ -54,7 +53,7 @@ const chartSeriesOptions = {
     color: 'grey',
     type: 'line',
   },
-}
+} as const
 
 const chart = ref({
   markedArea: computed(() =>
@@ -112,20 +111,41 @@ function useToggle({ name }: { name: string }) {
   }
 }
 
-const selectedTrnsIds = computed(() => getTrnsIds({
-  trnsItems: trnsStore.items,
-  categoriesIds: filter.catsIds.value,
-  walletsIds: filter.walletsIds.value,
-  dates: {
-    from: dayjs().startOf(filter.periodNameWithoutAll.value).subtract(stat.periodsToShow.value, filter.periodNameWithoutAll.value).valueOf(),
-    until: dayjs().endOf('day').subtract(1, filter.periodNameWithoutAll.value).valueOf(),
-  },
-}))
+// const selectedTrnsIds = computed(() => getTrnsIds({
+//   trnsItems: trnsStore.items,
+//   categoriesIds: filter.catsIds.value,
+//   walletsIds: filter.walletsIds.value,
+//   dates: {
+//     from: dayjs().startOf(filter.periodNameWithoutAll.value).subtract(stat.periodsToShow.value, filter.periodNameWithoutAll.value).valueOf(),
+//     until: dayjs().endOf('day').subtract(1, filter.periodNameWithoutAll.value).valueOf(),
+//   },
+// }))
 
-const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selectedTrnsIds.value))
+// // const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selectedTrnsIds.value))
+const isShow = ref(false)
+
+const periodGrouped = ref('period')
 </script>
 
 <template>
+  <Teleport to="body">
+    <BaseBottomSheet3
+      v-if="isShow"
+      :isShow="isShow"
+      drugClassesCustom="h-[50vh] bg-item-3"
+      @closed="() => isShow = false"
+    >
+      <template #handler="{ close }">
+        <BaseBottomSheetHandler />
+        <BaseBottomSheetClose @onClick="close" />
+      </template>
+    </BaseBottomSheet3>
+  </Teleport>
+
+  <!-- <div class="fixed left-0 top-0 inset-0 size-full" @click.prevent="isShow = !isShow">
+    isShow
+  </div> -->
+
   <div class="grid h-full overflow-hidden xl_grid-cols-[1fr_auto]">
     <div
       class="h-full overflow-hidden overflow-y-auto px-3 pb-6 sm_px-1 lg_px-3"
@@ -154,7 +174,7 @@ const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selec
         <!-- <pre>{{ categoriesWithTrnsIds }}</pre> -->
 
         <div class="grid gap-3" data-scroll-ref="stat">
-          <StatFilter class="grow pt-2" />
+          <Filter class="grow pt-2" />
 
           <div class="mb-8 md_mb-4">
             <div class="_grid items-start gap-6 md_grid-cols-2 md_gap-8">
@@ -163,11 +183,13 @@ const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selec
                 class="px-2 py-2 sm_px-1.5 sm_pt-3"
               >
                 <TrnsListWithControl
+                  :defaultFilterTrnsPeriod="periodGrouped"
                   :size="12"
-                  :trnsIds="stat.trnsIds.value"
+                  :trnsIds="periodGrouped === 'period' ? stat.trnsIds.value : stat.getTrnsIdsWithFilterNoDates()"
+                  class="px-2"
                   isShowFilter
                   uiHistory
-                  defaultFilterTrnsPeriod="period"
+                  @onChangePeriod="v => periodGrouped = v"
                 />
               </div>
 
@@ -194,9 +216,12 @@ const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selec
                     <div
                       v-if="!total.isShown.value"
                       class="flex grow items-center px-2 py-2 sm_px-1.5 sm_pt-3"
-                      @click="total.toggle"
                     >
-                      <UiTitle2>{{ $t(`money.sum`) }}</UiTitle2>
+                      <UiTitle2
+                        @click="total.toggle"
+                      >
+                        {{ $t(`money.sum`) }}
+                      </UiTitle2>
                       <UiIconChevron class="rotate-120 size-4 text-secondary" />
                     </div>
                   </div>
@@ -279,13 +304,14 @@ const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selec
 
                       <TrnsListWithControl
                         v-if="statTabs.active.value === 'trns'"
-                        :size="12"
-                        :trnsIds="stat.trnsIds.value"
+                        :defaultFilterTrnsPeriod="periodGrouped"
                         :initTrnType="stat.getMoneyTypeNumber(item.slug)"
-                        isShowFilter
+                        :size="12"
+                        :trnsIds="periodGrouped === 'period' ? stat.trnsIds.value : stat.getTrnsIdsWithFilterNoDates()"
                         class="px-2"
+                        isShowFilter
                         uiHistory
-                        defaultFilterTrnsPeriod="period"
+                        @onChangePeriod="v => periodGrouped = v"
                       />
                     </div>
                   </div>

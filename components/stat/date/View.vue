@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 import type { FilterProvider } from '~/components/filter/useFilter'
 import { formatDateByPeriod } from '~/components/date/format'
 

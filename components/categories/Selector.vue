@@ -9,6 +9,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   onSelected: [id: CategoryId]
+  filter: [id: CategoryId]
   onClose: []
 }>()
 
@@ -22,6 +23,13 @@ function select(id: CategoryId, isForce: boolean) {
   emit('onClose')
   if (props.hide)
     props.hide()
+}
+
+function onFilter(id: CategoryId) {
+  emit('filter', id)
+  // emit('onClose')
+  // if (props.hide)
+  //   props.hide()
 }
 </script>
 
@@ -37,29 +45,36 @@ function select(id: CategoryId, isForce: boolean) {
         :category="categoriesStore.items[categoryId]"
         class="group"
         @click="select(categoryId, false)"
+        @filter.stop="onFilter(categoryId)"
       />
 
       <VDropdown
         v-else
-        :overflowPadding="12"
+        :overflowPadding="18"
         autoBoundaryMaxSize
         class="group"
       >
         <CategoriesItem
           :categoryId="categoryId"
           :category="categoriesStore.items[categoryId]"
+          @filter.stop="onFilter(categoryId)"
         />
 
         <template #popper>
+          <div class="flex items-center px-3 h-12">
+            <UiTitle>{{ categoriesStore.items[categoryId].name }}</UiTitle>
+            <BaseBottomSheetClose v-close-popper />
+          </div>
+
           <div class="p-2 py-2.5 bg-item-4 overflow-hidden overflow-y-auto w-[90vw] max-w-xs max-h-[60vh]">
             <CategoriesItem
               v-for="childCategoryId in categoriesStore.items[categoryId].childIds"
               :key="childCategoryId"
-              v-close-popper.all
               :category="categoriesStore.items[childCategoryId]"
               :categoryId="childCategoryId"
               class="group"
-              @click="select(childCategoryId, false)"
+              @click.stop="onFilter(childCategoryId)"
+              @filter.stop="onFilter(childCategoryId)"
             />
           </div>
         </template>

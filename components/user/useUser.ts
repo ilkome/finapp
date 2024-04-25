@@ -8,8 +8,8 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { auth, saveData } from '~/services/firebase/api'
 
 export interface User {
-  email: string
-  displayName: string
+  email: string | null
+  displayName: string | null
   uid: string
 }
 

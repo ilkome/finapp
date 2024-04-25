@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useUserStore } from '~/components/user/useUser'
 

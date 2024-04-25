@@ -2,7 +2,7 @@
 import dayjs from 'dayjs'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { formatDate } from '~/utils/formatDate'
-import { getStyles } from '~/components/ui/classes'
+import { getStyles } from '~/components/ui/getStyles'
 import type { FilterProvider } from '~/components/filter/useFilter'
 
 const $trnForm = useTrnFormStore()

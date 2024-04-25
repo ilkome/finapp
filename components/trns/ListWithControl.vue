@@ -26,13 +26,13 @@ const emit = defineEmits<{
   onChangePeriod: [period: string]
 }>()
 
-const filterStore = useFilterStore()
+// const filterStore = useFilterStore()
 const trnsStore = useTrnsStore()
 
 const filterTrnsType = ref<TrnType | MoneyTypeNumber | undefined>(props.initTrnType)
 
 // Return to filter 'period', when global filter params changed
-watch(() => filterStore.isShow, () => filterTrnsPeriod.value = 'period')
+// watch(() => filterStore.isShow, () => filterTrnsPeriod.value = 'period')
 
 const filteredTrnsIds = computed(() => {
   // const trnsIds
