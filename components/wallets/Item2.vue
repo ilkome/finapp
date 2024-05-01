@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useWalletsStore } from '../wallets/useWalletsStore'
-import type { WalletId } from '~/components/wallets/types'
 import { getStyles } from '~/components/ui/getStyles'
+import type { WalletId } from '~/components/wallets/types'
 
 const props = defineProps<{
   walletId: WalletId
@@ -13,7 +13,7 @@ const emit = defineEmits<{
 }>()
 const walletsStore = useWalletsStore()
 
-const wallet = computed(() => walletsStore.walletsItemsSorted[props.walletId])
+const wallet = computed(() => walletsStore.sortedItems[props.walletId])
 </script>
 
 <template>

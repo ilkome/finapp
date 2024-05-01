@@ -8,7 +8,7 @@ const { height } = useWindowSize()
   <Teleport to="body">
     <BaseBottomSheet2
       class="bg-foreground-3 sm_rounded-b-2xl"
-      show
+      isShow
       :maxHeight="height"
       @closed="$emit('closed')"
     >

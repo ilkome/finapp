@@ -34,10 +34,10 @@ const walletsCurrenciesTabs = reactive({
 
   wallets: computed(() => {
     if (state.value.activeTab === 'all')
-      return walletsStore.walletsItemsSorted
+      return walletsStore.sortedItems
 
     return Object.fromEntries(
-      Object.entries(walletsStore.walletsItemsSorted).filter(
+      Object.entries(walletsStore.sortedItems).filter(
         ([_key, value]) => value.currency === state.value.activeTab,
       ),
     )
@@ -63,7 +63,7 @@ const walletsCurrenciesTabs = reactive({
       <div class="grid gap-5 md_gap-3 md_order-2">
         <!-- Base currency -->
         <div
-          v-if="walletsStore.walletsCurrencies.length > 1"
+          v-if="walletsStore.currenciesUsed.length > 1"
           class="grid w-full gap-2 overflow-hidden md_order-3"
         >
           <UiTitle3>{{ t("currenciesBase") }}</UiTitle3>
@@ -71,7 +71,7 @@ const walletsCurrenciesTabs = reactive({
         </div>
 
         <!-- Wallets Currencies -->
-        <div v-if="walletsStore.walletsCurrencies.length > 1" class="grid gap-2 md_order-1">
+        <div v-if="walletsStore.currenciesUsed.length > 1" class="grid gap-2 md_order-1">
           <UiTitle3>{{ t("list") }}</UiTitle3>
           <div class="w-full overflow-hidden">
             <UiTabs2>
@@ -83,7 +83,7 @@ const walletsCurrenciesTabs = reactive({
               </UiTabsItem2>
 
               <UiTabsItem2
-                v-for="currency in walletsStore.walletsCurrencies"
+                v-for="currency in walletsStore.currenciesUsed"
                 :key="currency"
                 :isActive="state.activeTab === currency"
                 @click="walletsCurrenciesTabs.onSelect(currency)"
@@ -108,11 +108,12 @@ const walletsCurrenciesTabs = reactive({
         <WalletsItem
           v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
           :key="walletId"
+          isShowIcons
+          isShowBaseRate
           :walletId
           :wallet="walletItem"
-          isShowIcons
-          @click="$router.push(`/wallets/${walletId}`)"
           @filter="setWalletId(walletId)"
+          @click="$router.push(`/wallets/${walletId}`)"
         />
       </div>
     </div>

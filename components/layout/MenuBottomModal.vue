@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
 import { useAppNav } from '~/components/app/useAppNav'
+import { getStyles } from '~/components/ui/getStyles'
 import { useUserStore } from '~/components/user/useUser'
 
-const { isModalOpen, closeAllModals } = useAppNav()
+const { closeAllModals, isModalOpen } = useAppNav()
 const userStore = useUserStore()
 </script>
 

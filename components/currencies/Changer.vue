@@ -8,9 +8,9 @@ const walletsStore = useWalletsStore()
 </script>
 
 <template>
-  <UiTabs2 v-if="walletsStore.walletsCurrencies.length > 1">
+  <UiTabs2 v-if="walletsStore.currenciesUsed.length > 1">
     <UiTabsItem2
-      v-for="currency in walletsStore.walletsCurrencies"
+      v-for="currency in walletsStore.currenciesUsed"
       :key="currency"
       :isActive="currency === currenciesStore.base"
       @click="currenciesStore.setBase(currency)"

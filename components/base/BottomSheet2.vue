@@ -4,8 +4,8 @@ import { useElementSize, useEventListener, useWindowSize } from '@vueuse/core'
 type Event = TouchEvent | MouseEvent
 
 const props = defineProps<{
-  isShow?: boolean
   drugClassesCustom?: string
+  isShow?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -14,9 +14,9 @@ const emit = defineEmits<{
 
 // Settings
 const settings = {
-  pixelsNeedToDrugForClose: 60,
-  pixelOffsetToStartClosing: 20,
   debug: true,
+  pixelOffsetToStartClosing: 20,
+  pixelsNeedToDrugForClose: 60,
 }
 
 // Ref Elements
@@ -191,11 +191,11 @@ function onDragStart(event: Event): void {
 }
 
 const debug = ref({
-  status: 'standby',
-  direction: computed(() => direction.value),
   diffHeight: computed(() => diffHeight.value),
   diffHeightWithDebounce: computed(() => diffHeightWithDebounce.value),
+  direction: computed(() => direction.value),
   nextCurrentY: computed(() => nextCurrentY.value),
+  status: 'standby',
 })
 
 /**
@@ -385,10 +385,10 @@ watch(
  */
 const drugClasses = computed(() => [
   {
+    'pointer-events-none': isDragging.value && drugStyles.value.transform,
     'rounded-tl-xl rounded-tr-xl': drugHeight.value < windowHeight.value,
     'transition-opacity transition-transform duration-100':
       !isDragging.value && opened.value,
-    'pointer-events-none': isDragging.value && drugStyles.value.transform,
     // 'transition-[height]': isHeightTrna.value,
   },
   props.drugClassesCustom,
@@ -413,7 +413,7 @@ const wrapClasses = computed(() => ({
     <div
       :class="overflowClasses"
       :style="overlayStyles"
-      class="absolute inset-0 z-10 h-full w-full bg-foreground-1/70"
+      class="absolute inset-0 z-10 h-full w-full bg-[var(--c-bg-14)]"
       @click="close()"
     />
 

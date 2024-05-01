@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
 import { getStyles } from '~/components/ui/getStyles'
+import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId
+  isShowBaseRate?: boolean
+  isShowIcons?: boolean
   wallet: WalletItemWithAmount
   walletId: WalletId
-  isShowIcons?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -17,6 +18,7 @@ const emit = defineEmits<{
 
 <template>
   <div class="group" @click="emit('click', props.walletId)">
+    <!-- <pre class="text-xs">{{ wallet }}</pre> -->
     <div
       :class="[
         { '!bg-item-3': activeItemId === props.walletId },
@@ -64,9 +66,9 @@ const emit = defineEmits<{
         <Amount
           :amount="wallet.amount"
           :currencyCode="wallet.currency"
-          :isShowBaseRate="false"
-          size="base"
+          :isShowBaseRate="props.isShowBaseRate"
           class="opacity-90"
+          size="base"
         />
       </div>
     </div>

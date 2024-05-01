@@ -23,7 +23,7 @@ function onClickWallet(walletId: WalletId) {
 <template>
   <div class="p-2 py-2.5 bg-item-4 overflow-hidden overflow-y-auto w-[90vw] max-w-xs max-h-[60vh]">
     <WalletsItem
-      v-for="(wallet, walletId) in walletsStore.walletsItemsSorted"
+      v-for="(wallet, walletId) in walletsStore.sortedItems"
       :key="walletId"
       :walletId
       :wallet

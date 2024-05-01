@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import type { WalletsWithAmount } from '~/components/wallets/types'
 import { getStyles } from '~/components/ui/getStyles'
+import type { WalletsWithAmount } from '~/components/wallets/types'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = withDefaults(
   defineProps<{
-    limit?: number
     isShowToggle?: boolean
+    limit?: number
   }>(),
   {
     limit: 0,
@@ -19,8 +19,8 @@ const stateLimit = ref(0)
 
 const walletsIdsLimited = computed(() => {
   if (stateLimit.value !== 0)
-    return walletsStore.walletsSortedIds.slice(0, stateLimit.value)
-  return walletsStore.walletsSortedIds
+    return walletsStore.sortedIds.slice(0, stateLimit.value)
+  return walletsStore.sortedIds
 })
 
 const walletsItemsLimited = computed<WalletsWithAmount>(() => {
@@ -30,13 +30,13 @@ const walletsItemsLimited = computed<WalletsWithAmount>(() => {
     for (const id of walletsIdsLimited.value) {
       wallets = {
         ...wallets,
-        [id]: walletsStore.walletsItemsSorted[id],
+        [id]: walletsStore.sortedItems[id],
       }
     }
     return wallets
   }
 
-  return walletsStore.walletsItemsSorted
+  return walletsStore.sortedItems
 })
 
 onMounted(() => {
@@ -54,13 +54,13 @@ function toggle() {
   <div>
     <slot
       :walletsIdsLimited="walletsIdsLimited"
-      :walletsIdsSorted="walletsStore.walletsSortedIds"
+      :walletsIdsSorted="walletsStore.sortedIds"
       :walletsItemsLimited="walletsItemsLimited"
-      :walletsItemsSorted="walletsStore.walletsItemsSorted"
+      :walletsItemsSorted="walletsStore.sortedItems"
     />
 
     <slot
-      v-if="isShowToggle && walletsStore.walletsSortedIds.length > limit"
+      v-if="isShowToggle && walletsStore.sortedIds.length > limit"
       name="toggle"
       :stateLimit="stateLimit"
       :limit="limit"
@@ -68,7 +68,7 @@ function toggle() {
     >
       <div
         :class="getStyles('item', ['link', 'rounded', 'minh'])"
-        class="mt-[-1px] flex-center text-xs py-2 px-2"
+        class="flex-center mt-[-1px] px-2 py-2 text-xs"
         @click="toggle"
       >
         <template v-if="stateLimit > 0">
@@ -84,9 +84,9 @@ function toggle() {
 </template>
 
 <i18n lang="yaml">
-  en:
-    showAll: "Show all"
+en:
+  showAll: "Show all"
 
-  ru:
-    showAll: "Показать все"
+ru:
+  showAll: "Показать все"
 </i18n>

@@ -47,7 +47,7 @@ const list = computed(() => {
 
       <template v-if="!searchInput">
         <div
-          v-for="currencyCode in walletsStore.walletsCurrencies"
+          v-for="currencyCode in walletsStore.currenciesUsed"
           :key="currencyCode"
           :class="{ '!bg-item-3 text-item-1': currencyCode === active }"
           class="flex cursor-pointer items-center gap-x-3 rounded-md bg-item-4 px-3 py-2 hocus_bg-item-5"

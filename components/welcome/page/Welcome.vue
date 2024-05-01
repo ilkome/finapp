@@ -14,7 +14,7 @@ const state = ref({
   showWalletForm: false,
 })
 
-const newUserData = computed(() => !walletsStore.hasWallets || !categoriesStore.hasCategories)
+const newUserData = computed(() => !walletsStore.hasItems || !categoriesStore.hasCategories)
 
 watch(newUserData, () => {
   // if (!newUserData.value)
@@ -39,12 +39,12 @@ watch(newUserData, () => {
       )
         Transition(name="fadeIn")
           WelcomeWalletForm(
-            v-if="!walletsStore.hasWallets"
+            v-if="!walletsStore.hasItems"
             @afterSave="state.showWalletForm = false"
           )
 
           WelcomeCategoryForm(
-            v-else-if="walletsStore.hasWallets"
+            v-else-if="walletsStore.hasItems"
             @afterSave="state.showCategoryForm = false"
           )
 

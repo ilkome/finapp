@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import { formatDate } from '~/utils/formatDate'
-import { getStyles } from '~/components/ui/getStyles'
 import type { FilterProvider } from '~/components/filter/useFilter'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { getStyles } from '~/components/ui/getStyles'
+import { formatDate } from '~/utils/formatDate'
 
 const $trnForm = useTrnFormStore()
 
@@ -38,7 +38,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 </script>
 
 <template>
-  <div class="trnFormDate flex items-center gap-2 px-2 pb-2">
+  <div class="trnFormDate flex items-center gap-2">
     <div class="flex items-center">
       <div
         :class="[...getStyles('item', ['link', 'rounded'])]"

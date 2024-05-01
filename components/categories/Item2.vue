@@ -17,28 +17,31 @@ const categoriesStore = useCategoriesStore()
 
 <template>
   <div
-    v-if="categoriesStore.items[categoryId]"
     :class="getStyles('item', ['link', 'center', 'gap1', 'rounded', 'padding2', 'minh'])"
     @click="emit('click', categoryId)"
   >
-    <div
-      :class="categoriesStore.items[categoryId].icon"
-      :style="{ color: categoriesStore.items[categoryId].color }"
-      class="text-2xl"
-      @click="emit('filter', categoryId)"
-    />
-
-    <div>
+    <template
+      v-if="categoriesStore.items[categoryId]"
+    >
       <div
-        v-if="categoriesStore.items[categoryId].parentId"
-        class="text-2xs"
-      >
-        {{ categoriesStore.items[categoriesStore.items[categoryId].parentId].name }}
-      </div>
+        :class="categoriesStore.items[categoryId].icon"
+        :style="{ color: categoriesStore.items[categoryId].color }"
+        class="text-2xl"
+        @click="emit('filter', categoryId)"
+      />
 
-      <div class="text-secondary text-sm leading-none">
-        {{ categoriesStore.items[categoryId].name }}
+      <div>
+        <div
+          v-if="categoriesStore.items[categoryId].parentId"
+          class="text-2xs"
+        >
+          {{ categoriesStore.items[categoriesStore.items[categoryId].parentId].name }}
+        </div>
+
+        <div class="text-secondary text-sm leading-none">
+          {{ categoriesStore.items[categoryId].name }}
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>

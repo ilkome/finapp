@@ -13,7 +13,7 @@ const wallet = computed(() => walletsStore.items[walletId.value])
 if (!wallet.value)
   router.replace('/wallets')
 
-const total = computed(() => walletsStore.walletsTotal[walletId.value])
+const total = computed(() => walletsStore.totals[walletId.value])
 
 function onEditClick() {
   router.push(`/wallets/${walletId.value}/edit`)

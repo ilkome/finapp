@@ -94,6 +94,9 @@ devDependencies:
   eslint-plugin-format:
     specifier: ^0.1.1
     version: 0.1.1(eslint@9.1.1)
+  eslint-plugin-perfectionist:
+    specifier: ^2.10.0
+    version: 2.10.0(eslint@9.1.1)(typescript@5.4.5)(vue-eslint-parser@9.4.2)
   nuxt:
     specifier: ^3.11.2
     version: 3.11.2(@unocss/reset@0.58.6)(eslint@9.1.1)(floating-vue@5.2.2)(rollup@4.14.2)(stylus@0.63.0)(typescript@5.4.5)(unocss@0.58.6)(vite@5.2.8)
@@ -200,7 +203,7 @@ packages:
       eslint-plugin-markdown: 4.0.1(eslint@9.1.1)
       eslint-plugin-n: 17.2.1(eslint@9.1.1)
       eslint-plugin-no-only-tests: 3.1.0
-      eslint-plugin-perfectionist: 2.9.0(eslint@9.1.1)(typescript@5.4.5)(vue-eslint-parser@9.4.2)
+      eslint-plugin-perfectionist: 2.10.0(eslint@9.1.1)(typescript@5.4.5)(vue-eslint-parser@9.4.2)
       eslint-plugin-toml: 0.11.0(eslint@9.1.1)
       eslint-plugin-unicorn: 52.0.0(eslint@9.1.1)
       eslint-plugin-unused-imports: 3.1.0(@typescript-eslint/eslint-plugin@7.7.1)(eslint@9.1.1)
@@ -6546,8 +6549,8 @@ packages:
     engines: {node: '>=5.0.0'}
     dev: true
 
-  /eslint-plugin-perfectionist@2.9.0(eslint@9.1.1)(typescript@5.4.5)(vue-eslint-parser@9.4.2):
-    resolution: {integrity: sha512-ipFtDrqtF99qVVo+FE1fo6aHyLLp7hg6PNGfzY5KxQjcl0XCbyEFvjtR1NfkHDTN9rdFeEDxg59LLOv3VOAHAw==}
+  /eslint-plugin-perfectionist@2.10.0(eslint@9.1.1)(typescript@5.4.5)(vue-eslint-parser@9.4.2):
+    resolution: {integrity: sha512-P+tdrkHeMWBc55+DZsoDOAftV1WCsEoHaKm6JC7zajFus/syfT4vUPBFb3atGFSuyaVnGQGHlcKpP9X3Q0gH/w==}
     peerDependencies:
       astro-eslint-parser: ^0.16.0
       eslint: '>=8.0.0'
@@ -6564,7 +6567,7 @@ packages:
       vue-eslint-parser:
         optional: true
     dependencies:
-      '@typescript-eslint/utils': 6.21.0(eslint@9.1.1)(typescript@5.4.5)
+      '@typescript-eslint/utils': 7.7.1(eslint@9.1.1)(typescript@5.4.5)
       eslint: 9.1.1
       minimatch: 9.0.4
       natural-compare-lite: 1.4.0

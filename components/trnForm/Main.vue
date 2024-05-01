@@ -16,7 +16,10 @@ const walletId = computed(() => {
 
 <template>
   <div class="py-4">
-    <UiTitle class="px-3 pb-2" @click="$trnForm.values.trnId = null">
+    <UiTitle
+      class="px-3 pb-2 pt-1.5"
+      @click="$trnForm.values.trnId = null"
+    >
       <template v-if="$trnForm.values.trnId">
         {{ $t("trnForm.titleEditTrn") }}
       </template>
@@ -25,7 +28,7 @@ const walletId = computed(() => {
       </template>
     </UiTitle>
 
-    <TrnFormDate />
+    <TrnFormDate class="px-2 pb-2" />
     <TrnFormMainAmountTrn v-if="$trnForm.values.trnType !== 2" />
     <TrnFormMainAmountTransfer v-if="$trnForm.values.trnType === 2" />
 
@@ -40,9 +43,19 @@ const walletId = computed(() => {
       v-if="$trnForm.values.trnType !== 2"
       class="grid grid-cols-2 gap-3 px-2 pb-2"
     >
-      <VDropdown v-if="walletId">
+      <!-- Wallet -->
+      <VDropdown
+        v-if="walletId"
+        :overflowPadding="12"
+        autoBoundaryMaxSize
+      >
         <WalletsItem2 :walletId />
         <template #popper="{ hide }">
+          <!-- TODO: combine -->
+          <div class="flex items-center px-3 h-12">
+            <UiTitle>{{ $t('wallets.title') }}</UiTitle>
+            <BaseBottomSheetClose @onClick="hide" />
+          </div>
           <WalletsSelector
             :hide
             @onSelected="id => $trnForm.values.walletId = id"
@@ -50,6 +63,7 @@ const walletId = computed(() => {
         </template>
       </VDropdown>
 
+      <!-- Category -->
       <VDropdown
         :overflowPadding="12"
         autoBoundaryMaxSize
@@ -59,6 +73,11 @@ const walletId = computed(() => {
         />
 
         <template #popper="{ hide }">
+          <!-- TODO: combine -->
+          <div class="flex items-center px-3 h-12">
+            <UiTitle>{{ $t('categories.title') }}</UiTitle>
+            <BaseBottomSheetClose @onClick="hide" />
+          </div>
           <CategoriesSelector
             :hide
             isAllowSelectParentCategory

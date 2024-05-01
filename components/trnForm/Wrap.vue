@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const trnFormStore = useTrnFormStore()
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 
 const isShow = computed(() =>
-  walletsStore.hasWallets
+  walletsStore.hasItems
   && categoriesStore.hasCategories
   && trnFormStore.ui.isShow,
 )
@@ -23,7 +23,7 @@ const isShow = computed(() =>
   >
     <template #handler="{ close }">
       <BaseBottomSheetHandler />
-      <BaseBottomSheetClose @onClick="close" />
+      <!-- <BaseBottomSheetClose @onClick="close" /> -->
     </template>
     <TrnForm />
   </BaseBottomSheet2>

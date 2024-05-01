@@ -1,12 +1,12 @@
 import { onAuthStateChanged } from 'firebase/auth'
-import localforage from 'localforage'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import useUIView from '~/components/layout/useUIView'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUser'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { auth } from '~/services/firebase/api'
-import useUIView from '~/components/layout/useUIView'
+import localforage from 'localforage'
 
 export function useInitApp() {
   const { setUI } = useUIView()
@@ -35,11 +35,11 @@ export function useInitApp() {
           clearUserData()
 
         userStore.setUser(user)
-        currenciesStore.initCurrencies()
-        categoriesStore.initCategories()
-        walletsStore.initWallets()
-        trnsStore.initTrns()
-        trnsStore.uploadOfflineTrns()
+        // currenciesStore.initCurrencies()
+        // categoriesStore.initCategories()
+        // walletsStore.initWallets()
+        // trnsStore.initTrns()
+        // trnsStore.uploadOfflineTrns()
 
         if (useRoute().name === 'login')
           navigateTo('/')

@@ -9,7 +9,7 @@ const emit = defineEmits(['closeModal'])
 const { $toast } = useNuxtApp()
 const walletsStore = useWalletsStore()
 
-const [parent, sortedWalletsIds] = useDragAndDrop([...walletsStore.walletsSortedIds], {
+const [parent, sortedWalletsIds] = useDragAndDrop([...walletsStore.sortedIds], {
   dragHandle: '.sortHandle',
 })
 
@@ -43,7 +43,7 @@ async function saveWalletsOrder() {
         v-for="walletId in sortedWalletsIds"
         :key="walletId"
         :walletId
-        :wallet="walletsStore.walletsItemsSorted[walletId]"
+        :wallet="walletsStore.sortedItems[walletId]"
         isShowIcons
       />
     </div>

@@ -1,32 +1,30 @@
 <script setup lang="ts">
-import type { TrnId, TrnType } from '~/components/trns/types'
-import { useFilterStore } from '~/components/filter/useFilterStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { MoneyTypeNumber } from '~/components/stat/types'
+import type { TrnId, TrnType } from '~/components/trns/types'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = withDefaults(
   defineProps<{
-    trnsIds: TrnId[]
-    size?: number
-    trnsClassNames?: string
     defaultFilterTrnsPeriod?: string
+    initTrnType?: MoneyTypeNumber
     isFilterByDay?: boolean
     isShowGroupSum?: boolean
-    initTrnType?: MoneyTypeNumber
+    size?: number
+    trnsClassNames?: string
+    trnsIds: TrnId[]
   }>(),
   {
     defaultFilterTrnsPeriod: 'all',
-    trnsClassNames: '',
     size: 50,
+    trnsClassNames: '',
   },
 )
 
 const emit = defineEmits<{
-  onClickEdit: [e: Event]
   onChangePeriod: [period: string]
+  onClickEdit: [e: Event]
 }>()
 
-// const filterStore = useFilterStore()
 const trnsStore = useTrnsStore()
 
 const filterTrnsType = ref<TrnType | MoneyTypeNumber | undefined>(props.initTrnType)
@@ -95,6 +93,9 @@ const isShown = ref(true)
           </UiTabs>
         </div>
       </div>
+
+      <!-- Content Before -->
+      <slot name="contentBefore" />
 
       <!-- Type Selector -->
       <div v-if="trnsIds.length > 0" v-show="isShown" class="pb-2">

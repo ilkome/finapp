@@ -265,7 +265,7 @@ export function useTrnForm() {
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn,
       trnId,
-      walletsIds: walletsStore.walletsSortedIds,
+      walletsIds: walletsStore.sortedIds,
     })
     $trnForm.ui.isShow = true
   }
@@ -275,7 +275,7 @@ export function useTrnForm() {
       action: 'create',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn: trnsStore.lastCreatedTrnItem,
-      walletsIds: walletsStore.walletsSortedIds,
+      walletsIds: walletsStore.sortedIds,
     })
     $trnForm.ui.isShow = true
 
@@ -296,7 +296,7 @@ export function useTrnForm() {
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn,
       trnId,
-      walletsIds: walletsStore.walletsSortedIds,
+      walletsIds: walletsStore.sortedIds,
     })
     $trnForm.ui.isShow = true
   }

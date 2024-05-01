@@ -29,7 +29,7 @@ function isItActive(amountType: TrnType) {
     ) {{ $t('money.income') }}
 
     UiTabsItem(
-      v-if="walletsStore.walletsSortedIds.length > 1"
+      v-if="walletsStore.sortedIds.length > 1"
       :isActive="isItActive(2)"
       @click="setAmountType(2)"
     ) {{ $t('trnForm.transferTitle') }}

@@ -12,7 +12,7 @@ const categoriesStore = useCategoriesStore()
 <template>
   <UiPage>
     <div
-      v-if="walletsStore.hasWallets && categoriesStore.hasCategories"
+      v-if="walletsStore.hasItems && categoriesStore.hasCategories"
       class="flex-center h-full flex-col"
     >
       <UiTitle class="pb-2">

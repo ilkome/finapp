@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { WalletId, WalletItem } from './types'
 import useAmount from '~/components/amount/useAmount'
 import type { CurrencyCode } from '~/components/currencies/types'
+import type { WalletId, WalletItem } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
-  walletsItems: Record<WalletId, WalletItem>
   currencyCode: CurrencyCode
+  walletsItems: Record<WalletId, WalletItem>
 }>()
 
 const { t } = useI18n()
@@ -14,81 +14,91 @@ const { getAmountInBaseRate } = useAmount()
 const walletsStore = useWalletsStore()
 
 const totalInWallets = computed(() => {
-  const walletsTotal = walletsStore.walletsTotal
   const total = {
     counted: 0,
-    savings: 0,
     credits: 0,
+    savings: 0,
   }
 
   for (const walletId in props.walletsItems) {
     let walletTotal = 0
     if (props.walletsItems[walletId].currency === props.currencyCode) {
-      walletTotal = walletsTotal[walletId]
+      walletTotal = walletsStore.totals[walletId]
     }
     else {
       walletTotal = getAmountInBaseRate({
-        amount: walletsTotal[walletId],
+        amount: walletsStore.totals[walletId],
         currencyCode: props.walletsItems[walletId].currency,
         noFormat: true,
-      })
+      }) as number
     }
 
     if (props.walletsItems[walletId].countTotal)
       total.counted = total.counted + walletTotal
     else if (props.walletsItems[walletId].isCredit)
       total.credits = total.credits + walletTotal
-    else
-      total.savings = total.savings + walletTotal
+    else total.savings = total.savings + walletTotal
   }
 
   return total
 })
 
 const counts = computed(() => ({
-  savings: {
-    titleId: 'savings',
-    isShow: totalInWallets.value.savings !== 0,
-    value: totalInWallets.value.savings,
-  },
-  withdraw: {
-    titleId: 'withdrawal',
-    isShow: totalInWallets.value.counted !== totalInWallets.value.counted + totalInWallets.value.savings - Math.abs(totalInWallets.value.credits),
-    value: totalInWallets.value.counted,
-    icon: 'UiIconWalletWithdrawal',
-  },
-  withCredit: {
-    titleId: 'withCredit',
-    isShow: totalInWallets.value.credits !== 0,
-    value: totalInWallets.value.counted + totalInWallets.value.savings,
-  },
   credit: {
-    titleId: 'credits',
     isShow: totalInWallets.value.credits !== 0,
+    titleId: 'credits',
     value: totalInWallets.value.credits,
   },
+  savings: {
+    isShow: totalInWallets.value.savings !== 0,
+    titleId: 'savings',
+    value: totalInWallets.value.savings,
+  },
   total: {
-    titleId: 'total',
     isShow: true,
-    value: totalInWallets.value.counted + totalInWallets.value.savings - Math.abs(totalInWallets.value.credits),
+    titleId: 'total',
+    value:
+      totalInWallets.value.counted
+      + totalInWallets.value.savings
+      - Math.abs(totalInWallets.value.credits),
+  },
+  withCredit: {
+    isShow: totalInWallets.value.credits !== 0,
+    titleId: 'withCredit',
+    value: totalInWallets.value.counted + totalInWallets.value.savings,
+  },
+  withdraw: {
+    icon: 'UiIconWalletWithdrawal',
+    isShow:
+      totalInWallets.value.counted
+      !== totalInWallets.value.counted
+      + totalInWallets.value.savings
+      - Math.abs(totalInWallets.value.credits),
+    titleId: 'withdrawal',
+    value: totalInWallets.value.counted,
   },
 }))
+
+const filteredCount = computed(() =>
+  Object.values(counts.value).filter(item => item.isShow),
+)
 </script>
 
-<template lang="pug">
-div
-  template(v-for="item in counts")
-    .py-2.px-2.flex.gap-12.items-center.border-b.border-item-5.last_border-0(
-      v-if="item.isShow"
-    )
-      .grow.flex.items-center.gap-3
-        .text-secondary.text-sm.leading-none {{ t(item.titleId) }}
+<template>
+  <div>
+    <div
+      v-for="item in filteredCount" :key="item.titleId"
+      class="flex items-center gap-12 border-b border-item-5 px-2 py-2 last_border-0"
+    >
+      <div class="flex grow items-center gap-3 text-sm leading-none text-secondary">
+        {{ t(item.titleId) }}
+      </div>
 
-      .text-item-base
-        Amount(
-          :currencyCode="currencyCode"
-          :amount="item.value"
-        )
+      <div class="text-item-base">
+        <Amount :currencyCode="currencyCode" :amount="item.value" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <i18n lang="yaml">

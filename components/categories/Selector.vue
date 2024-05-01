@@ -3,14 +3,14 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const props = defineProps<{
-  isAllowSelectParentCategory?: boolean
   hide?: () => null
+  isAllowSelectParentCategory?: boolean
 }>()
 
 const emit = defineEmits<{
-  onSelected: [id: CategoryId]
   filter: [id: CategoryId]
   onClose: []
+  onSelected: [id: CategoryId]
 }>()
 
 const categoriesStore = useCategoriesStore()
@@ -27,9 +27,6 @@ function select(id: CategoryId, isForce: boolean) {
 
 function onFilter(id: CategoryId) {
   emit('filter', id)
-  // emit('onClose')
-  // if (props.hide)
-  //   props.hide()
 }
 </script>
 
@@ -73,7 +70,7 @@ function onFilter(id: CategoryId) {
               :category="categoriesStore.items[childCategoryId]"
               :categoryId="childCategoryId"
               class="group"
-              @click.stop="onFilter(childCategoryId)"
+              @click.stop="select(childCategoryId, true)"
               @filter.stop="onFilter(childCategoryId)"
             />
           </div>

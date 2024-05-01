@@ -12,8 +12,8 @@ import {
 type Event = TouchEvent | MouseEvent
 
 const props = defineProps<{
-  isShow?: boolean
   drugClassesCustom?: string
+  isShow?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -26,10 +26,10 @@ onMounted(() => {
 
 // Settings
 const config = {
-  distanceBeforeClose: 60,
-  pixelOffsetToStartClosing: 20,
   debug: true,
+  distanceBeforeClose: 60,
   distanceBeforeFullSize: 5,
+  pixelOffsetToStartClosing: 20,
 }
 
 const drugRef = ref<HTMLElement | null>(null)
@@ -215,7 +215,7 @@ const wrapClasses = computed(() => ({
   >
     <!-- Overlay -->
     <div
-      class="absolute inset-0 z-10 h-full w-full bg-foreground-1/70"
+      class="absolute inset-0 z-10 h-full w-full bg-[var(--c-bg-14)]"
       @click="close()"
     />
 

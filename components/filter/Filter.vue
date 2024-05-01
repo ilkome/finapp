@@ -21,6 +21,7 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
           </div>
 
           <template #popper="{ hide }">
+            <!-- TODO: combine -->
             <div class="flex items-center px-3 h-12">
               <UiTitle>{{ $t('categories.title') }}</UiTitle>
               <BaseBottomSheetClose @onClick="hide" />

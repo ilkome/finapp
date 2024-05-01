@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import Swiper, { Pagination } from 'swiper'
+import { useWindowSize } from '@vueuse/core'
+import { useCategoriesStore } from '~/components/categories/useCategories';
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm';
+import Swiper, { Pagination } from 'swiper';
 import 'swiper/css'
 import 'swiper/css/pagination'
-
-import { useWindowSize } from '@vueuse/core'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const $trnForm = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
@@ -37,21 +36,21 @@ function setTrnFormHeight() {
 function init() {
   if (!sliderObj.value) {
     sliderObj.value = new Swiper(sliderRef.value, {
-      modules: [Pagination],
-      init: false,
-      observer: true,
-      observeParents: true,
-      slidesPerView: 'auto',
       centeredSlides: true,
+      init: false,
       initialSlide: 1,
-      shortSwipes: false,
-      longSwipesRatio: 0.1,
       longSwipesMs: 60,
-
+      longSwipesRatio: 0.1,
+      modules: [Pagination],
+      observeParents: true,
+      observer: true,
       pagination: {
-        el: '.trnForm__pagination',
         clickable: true,
+        el: '.trnForm__pagination',
       },
+      shortSwipes: false,
+
+      slidesPerView: 'auto',
     })
     setTrnFormHeight()
     sliderObj.value.init()
@@ -70,7 +69,11 @@ onMounted(init)
           class="swiper-slide bg-foreground-2 sm_max-w-sm sm_rounded-xl"
           :style="{ height: maxHeight }"
         >
-          <TrnFormTrnsSlide v-if="sliderObj" :slider="sliderObj" />
+          <TrnFormTrnsSlide
+            v-if="sliderObj"
+            :slider="sliderObj"
+            class="px-3 pb-3 pt-4"
+          />
         </div>
 
         <!-- Main -->
@@ -91,11 +94,11 @@ onMounted(init)
           :style="{ height: maxHeight }"
         >
           <div class="scroll scrollerBlock">
-            <div class="py-4">
+            <div class="pb-4 pt-4">
               <!-- Wallets -->
               <div class="pb-6">
                 <UiTitle
-                  class="px-3 pb-2"
+                  class="px-3 pb-2 pt-1.5"
                   @click="$trnForm.openTrnFormModal('wallets')"
                 >
                   {{ $t("wallets.title") }}
@@ -103,7 +106,7 @@ onMounted(init)
                 <WalletsList
                   v-slot="{ walletsItemsLimited }"
                   :limit="5"
-                  class="px-2"
+                  class="px-3"
                 >
                   <!-- Wallet -->
                   <WalletsItem
@@ -174,9 +177,7 @@ onMounted(init)
     <div class="trnForm__pagination" />
 
     <!-- Modals -->
-    <Teleport to="body">
-      <LazyTrnFormModalDescription v-if="$trnForm.modal.description" />
-    </Teleport>
+    <LazyTrnFormModalDescription v-if="$trnForm.modal.description" />
   </div>
 </template>
 

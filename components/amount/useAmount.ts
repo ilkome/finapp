@@ -1,8 +1,8 @@
-import type { TrnId } from '~/components/trns/types'
 import { formatAmount } from '~/components/amount/formatAmount'
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import type { TrnId } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -22,9 +22,9 @@ export default function useAmount() {
 
     const amountInBaseRate = getAmountInRate({
       amount,
+      baseCurrencyCode,
       currencyCode,
       rates,
-      baseCurrencyCode,
     })
 
     if (noFormat)
@@ -37,9 +37,9 @@ export default function useAmount() {
 
   function getTotalOfTrnsIds(trnsIds: TrnId[]) {
     return getTotal({
+      transferCategoriesIds: categoriesStore.transferCategoriesIds,
       trnsIds,
       trnsItems: trnsStore.items,
-      transferCategoriesIds: categoriesStore.transferCategoriesIds,
       walletsIds: walletsStore.ids,
       walletsItems: walletsStore.items,
     })

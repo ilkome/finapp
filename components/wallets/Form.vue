@@ -77,7 +77,7 @@ async function saveWalletData(id, values) {
   const uid = userStore.uid
 
   // Set default currency based on first created wallet
-  if (!walletsStore.hasWallets)
+  if (!walletsStore.hasItems)
     currenciesStore.updateBase(values.currency)
 
   await saveData(`users/${uid}/accounts/${id}`, values)

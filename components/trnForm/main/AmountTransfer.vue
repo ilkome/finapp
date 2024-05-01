@@ -29,11 +29,11 @@ const items = ref<
 })
 
 const incomeWalletId = computed<WalletId | null>(
-  () => $trnForm.values.incomeWalletId ?? walletsStore.walletsSortedIds[0],
+  () => $trnForm.values.incomeWalletId ?? walletsStore.sortedIds[0],
 )
 
 const expenseWalletId = computed<WalletId | null>(
-  () => $trnForm.values.expenseWalletId ?? walletsStore.walletsSortedIds[1],
+  () => $trnForm.values.expenseWalletId ?? walletsStore.sortedIds[1],
 )
 
 watch(
