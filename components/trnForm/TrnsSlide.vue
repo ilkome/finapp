@@ -19,7 +19,7 @@ const $trnForm = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
-const filterBy = ref('wallet')
+const filterBy = useStorage('filterBy', 'wallet')
 const periodGrouped = useStorage('trnForm', 'all')
 
 const trnsIds = computed(() => {
@@ -35,6 +35,9 @@ const trnsIds = computed(() => {
     walletsIds.push($trnForm.values.walletId)
 
   if (filterBy.value === 'walletAndCategory') {
+    if ($trnForm.values.walletId)
+      walletsIds.push($trnForm.values.walletId)
+
     const categoryId = $trnForm.values.categoryId!
     const childIds = categoriesStore.getChildCategoriesIds(categoryId)
     categoriesIds = childIds.length > 0 ? childIds : [categoryId]
@@ -83,7 +86,7 @@ const tabs = computed(() => [
       :defaultFilterTrnsPeriod="periodGrouped"
       :size="10"
       :trnsIds="trnsIds"
-      class="grow"
+      class="sm_max-w-sm grow"
       isFilterByDay
       isShowGroupSum
       @onChangePeriod="(v) => (periodGrouped = v)"
@@ -95,7 +98,7 @@ const tabs = computed(() => [
     </TrnsListWithControl>
 
     <div class="pb-2 pt-2">
-      <UiTabs3>
+      <UiTabs>
         <UiTabsItem3
           v-for="tab in tabs"
           :key="tab.id"
@@ -104,7 +107,7 @@ const tabs = computed(() => [
         >
           {{ tab.name }}
         </UiTabsItem3>
-      </UiTabs3>
+      </UiTabs>
     </div>
   </div>
 </template>

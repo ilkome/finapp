@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import type { ToastOptions } from 'vue3-toastify'
+import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import { useUserStore } from '~/components/user/useUser'
 import { auth } from '~/services/firebase/api'
+import type { ToastOptions } from 'vue3-toastify'
 
 definePageMeta({
   layout: 'center',
@@ -30,13 +30,13 @@ function signInWithGoogle() {
   isLoading.value = true
 
   const provider = new GoogleAuthProvider()
-  signInWithPopup(auth, provider).catch((e) => {
+  signInWithRedirect(auth, provider).catch((e) => {
     $toast(UiToastContent, {
-      data: {
-        title: 'Error',
-        description: e.message,
-      },
       autoClose: 6000,
+      data: {
+        description: e.message,
+        title: 'Error',
+      },
       type: 'error',
     } as ToastOptions)
 

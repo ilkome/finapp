@@ -4,7 +4,6 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const props = defineProps<{
   hide?: () => null
-  isAllowSelectParentCategory?: boolean
 }>()
 
 const emit = defineEmits<{

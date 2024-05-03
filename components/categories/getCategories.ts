@@ -25,3 +25,13 @@ export function getParentCategory(
 
   return items[parentId]
 }
+
+export function getParentCategoryId(
+  items: Record<CategoryId, CategoryItem>,
+  categoryId: CategoryId,
+): CategoryId {
+  if (items[categoryId].parentId === 0)
+    return categoryId
+
+  return items[categoryId].parentId
+}

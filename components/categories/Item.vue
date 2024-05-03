@@ -9,7 +9,7 @@ const props = defineProps<{
   category: CategoryItem
   categoryId: CategoryId
   isHideParentCategory?: boolean
-  slider: any
+  slider?: any
 }>()
 
 const emit = defineEmits<{

@@ -64,7 +64,7 @@ const isShown = ref(true)
 </script>
 
 <template>
-  <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden max-w-sm">
+  <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden">
     <!-- Header -->
     <div>
       <div
@@ -99,32 +99,32 @@ const isShown = ref(true)
 
       <!-- Type Selector -->
       <div v-if="trnsIds.length > 0" v-show="isShown" class="pb-2">
-        <UiTabs3>
-          <UiTabsItem2
+        <UiTabs>
+          <UiTabsItem3
             :isActive="filterTrnsType === undefined"
             @click="setFilterTrnsType(undefined)"
           >
             {{ $t("common.all") }}
-          </UiTabsItem2>
-          <UiTabsItem2
+          </UiTabsItem3>
+          <UiTabsItem3
             :isActive="filterTrnsType === 0"
             @click="setFilterTrnsType(0)"
           >
             {{ $t("money.expense") }}
-          </UiTabsItem2>
-          <UiTabsItem2
+          </UiTabsItem3>
+          <UiTabsItem3
             :isActive="filterTrnsType === 1"
             @click="setFilterTrnsType(1)"
           >
             {{ $t("money.income") }}
-          </UiTabsItem2>
-          <UiTabsItem2
+          </UiTabsItem3>
+          <UiTabsItem3
             :isActive="filterTrnsType === 2"
             @click="setFilterTrnsType(2)"
           >
             {{ $t("transfer.titleMoney") }}
-          </UiTabsItem2>
-        </UiTabs3>
+          </UiTabsItem3>
+        </UiTabs>
       </div>
     </div>
 
@@ -158,3 +158,13 @@ const isShown = ref(true)
     </template>
   </div>
 </template>
+
+<style lang="stylus" scoped>
+@import "../assets/stylus/variables"
+
+.scroll
+  overflow hidden
+  overflow-y auto
+  height 100%
+  scrollbar()
+</style>

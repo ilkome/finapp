@@ -22,9 +22,9 @@
     "@pinia/nuxt": "^0.5.1",
     "@popperjs/core": "^2.11.8",
     "currency.js": "^2.0.4",
-    "dayjs": "^1.11.10",
+    "dayjs": "^1.11.11",
     "echarts": "^5.5.0",
-    "firebase": "^10.11.0",
+    "firebase": "^10.11.1",
     "floating-vue": "^5.2.2",
     "localforage": "^1.10.0",
     "lodash.sortby": "^4.7.0",
@@ -32,19 +32,19 @@
     "swiper": "8.4.7",
     "v-calendar": "^3.1.2",
     "vue-deepunref": "^1.0.1",
-    "vue-echarts": "^6.7.0",
+    "vue-echarts": "^6.7.1",
     "vue-router": "^4.3.2",
     "vue3-toastify": "^0.2.1",
-    "zod": "^3.23.3"
+    "zod": "^3.23.5"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.15.0",
-    "@babel/parser": "^7.24.4",
-    "@nuxtjs/color-mode": "^3.4.0",
-    "@nuxtjs/i18n": "^8.3.0",
+    "@antfu/eslint-config": "^2.16.1",
+    "@babel/parser": "^7.24.5",
+    "@nuxtjs/color-mode": "^3.4.1",
+    "@nuxtjs/i18n": "^8.3.1",
     "@nuxtjs/tailwindcss": "^6.12.0",
-    "@vite-pwa/nuxt": "^0.6.0",
-    "@vue/language-plugin-pug": "^2.0.14",
+    "@vite-pwa/nuxt": "^0.7.0",
+    "@vue/language-plugin-pug": "^2.0.16",
     "@vueuse/core": "^10.9.0",
     "@vueuse/nuxt": "^10.9.0",
     "eslint": "^9.1.1",
@@ -56,6 +56,6 @@
     "pug": "^3.0.2",
     "stylus": "^0.63.0",
     "typescript": "^5.4.5",
-    "vitest": "^1.5.0"
+    "vitest": "^1.5.3"
   }
 }

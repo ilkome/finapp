@@ -1,53 +1,10 @@
 export default {
-  common: {
-    date: 'Date',
-    open: 'Open',
-    all: 'All',
-    in: 'in',
+  alerts: {
+    willDeleteEverything: 'This will delete all your wallets, categories and trns.',
   },
 
   analytics: {
     title: 'Analytics',
-  },
-
-  appName: 'Finapp',
-
-  locale: {
-    toggle: 'Toggle locale',
-  },
-
-  theme: {
-    title: 'Theme',
-    change: 'Change theme',
-  },
-
-  close: 'Close',
-
-  transfer: {
-    titleMoney: 'Transfers',
-  },
-
-  trnForm: {
-    transferTitle: 'Transfer',
-    saveTrnButton: 'Save transaction',
-    calcTrnButton: 'Calculate',
-    createTrn: 'Add transaction',
-    titleEditTrn: 'Edit transaction',
-    filterWalletAndCategory: 'Wallet & Category',
-    filterWallet: 'Wallet only',
-    filterAll: 'Everything',
-    title: 'Transaction form',
-    lastUsedCats: 'Show last used categories',
-    description: {
-      title: 'Description',
-      placeholder: 'Write description...',
-    },
-    transfer: {
-      from: 'From',
-      fromLong: 'From wallet',
-      to: 'To',
-      toLong: 'To wallet',
-    },
   },
 
   app: {
@@ -58,263 +15,306 @@ export default {
     },
     theme: {
       change: 'Change style',
-      select: 'Choose style',
       dark: 'Dark',
       light: 'Light',
+      select: 'Choose style',
       system: 'System',
     },
   },
 
-  userLogout: 'Logout',
-  loginWithGoogle: 'Login with Google',
+  appName: 'Finapp',
 
   base: {
+    add: 'Create',
+    cancel: 'Cancel',
+    delete: 'Delete',
+    duplicate: 'Duplicate',
+    edit: 'Edit',
+    filter: 'Filter',
+    no: 'No',
+    off: 'Off',
+    ok: 'Ok',
+    on: 'On',
+    save: 'Save',
+    setFilter: 'Filter by',
+    sort: 'Sort',
     sure: 'Are you sure?',
     yes: 'Yes',
-    no: 'No',
-    sort: 'Sort',
-    save: 'Save',
-    cancel: 'Cancel',
-    duplicate: 'Duplicate',
-    setFilter: 'Filter by',
-    on: 'On',
-    ok: 'Ok',
-    off: 'Off',
-    add: 'Create',
-    edit: 'Edit',
-    delete: 'Delete',
-    filter: 'Filter',
   },
 
-  filter: {
-    clear: 'Clear',
-  },
-
-  welcome: {
-    firstRun: {
-      text: 'Start with create base configuration of application',
-      btn: 'Start',
-    },
-    create: {
-      text: 'Start creating your first wallet and category',
-      btn: 'Let\'s go',
-    },
-    createFirstCategory: {
-      text: 'Great! Now let\'s create a category',
-      btn: 'Create category',
-    },
-  },
-
-  settings: {
-    title: 'Settings',
-    lang: 'Language',
-    options: 'Options',
-    open: 'Open settings',
-    app: 'Application',
-    caution: 'With caution',
-    deleteButton: 'Delete my data',
-  },
-
-  wallets: {
-    title: 'Wallets',
-    name: 'Wallets',
-    new: 'New wallet',
-    showOnly: 'Show only',
-    sortTitle: 'Sort wallets',
-    createNewTitle: 'Add wallet',
-    editTitle: 'Edit Wallet',
-    form: {
-      name: {
-        label: 'Wallet name',
-        placeholder: 'Write...',
-        error: 'Write wallet name',
-        exist: 'Wallet with same name is exist',
-      },
-      description: {
-        label: 'Wallet description (optional)',
-        placeholder: 'Write...',
-      },
-      colors: {
-        label: 'Color',
-        placeholder: 'Select color',
-        error: 'Select color',
-        custom: 'Custom color',
-      },
-      currencies: {
-        label: 'Currency',
-        placeholder: 'Select currency',
-        error: 'Select currency',
-      },
-      total: {
-        placeholder: 'Сash withdrawal',
-      },
-      save: 'Save',
-    },
-  },
-
-  currency: {
-    title: 'Currency',
+  buttons: {
+    nextStep: 'Continue',
+    nextTitle: 'Next',
+    prevTitle: 'Prev',
   },
 
   categories: {
-    title: 'Categories',
-    name: 'Categories',
-    shortTitle: 'Cats',
-    new: 'New category',
     allTitle: 'All',
-    lastUsedTitle: 'Recent',
-    favoriteTitle: 'Favorite',
     createNewTitle: 'Add category',
     editTitle: 'Edit category',
+    favoriteTitle: 'Favorite',
     form: {
-      name: {
-        label: 'Category name',
-        placeholder: 'Write category name...',
-        error: 'Write category name',
-        exist: 'Category with same name is exist',
-      },
-      parent: {
-        no: 'Root category',
-        label: 'Parent category',
-      },
+      childColor: 'Apply color to all child categories',
       colors: {
-        label: 'Colors',
         custom: 'Custom color',
-      },
-      icon: {
-        label: 'Icon',
+        label: 'Colors',
       },
       data: {
         label: 'Data',
       },
+      icon: {
+        label: 'Icon',
+      },
       lastUsed: 'Show in last used categories',
+      name: {
+        error: 'Write category name',
+        exist: 'Category with same name is exist',
+        label: 'Category name',
+        placeholder: 'Write category name...',
+      },
+      parent: {
+        label: 'Parent category',
+        no: 'Root category',
+      },
       quickSelector: 'Favorite category',
-      childColor: 'Apply color to all child categories',
       save: 'Save',
     },
-  },
-
-  stat: {
-    title: 'Dashboard',
-    selectedPeriod: 'Selected period',
-    shortTitle: 'Stat',
-    summary: 'Summary',
-    periods: 'Periods',
-    balanceTitle: 'Balance',
-    emptyDesc: 'Change filter, period or add new transactions.',
-    customize: {
-      showHistory: 'Show history',
-      showRoundCats: 'Show round categories list',
-      showCategoriesChart: 'Show categories chart',
-      showCategoriesList: 'Show categories list',
-      showCatsChartPie: 'Show categories pie chart',
-      showPeriodsChart: 'Show periods chart',
-    },
-
-    tabs: {
-      empty: 'Hide',
-      lines: 'Lines',
-      gLines: 'G-Lines',
-      round: 'Rounds',
-      trns: 'Trns',
-      periods: 'Periods',
-    },
+    lastUsedTitle: 'Recent',
+    name: 'Categories',
+    new: 'New category',
+    shortTitle: 'Cats',
+    title: 'Categories',
   },
 
   chart: {
-    title: 'Chart',
     showMain: 'Show main chart',
+    title: 'Chart',
     view: {
       add: 'Add',
-      remove: 'Remove',
-      toggle: 'Toggle chart view',
-      showed: 'Showed',
-      periodsName: 'periods',
-      simpleTitle: 'Line view',
-      groupedTitle: 'Column view',
       addGroupButton: 'Add group',
       addPeriodButton: 'Add period',
+      groupedTitle: 'Column view',
+      periodsName: 'periods',
+      remove: 'Remove',
       removeGroupButton: 'Remove group',
       removePeriodButton: 'Remove period',
+      showed: 'Showed',
+      simpleTitle: 'Line view',
+      toggle: 'Toggle chart view',
     },
   },
 
-  trns: {
-    inPeriodTitle: 'Transactions',
-    shortTitle: 'Trns',
-    history: 'History',
-    more: 'Show more',
-    filter: {
-      showTrnsWithDesc: 'Only with description',
-    },
-    noTrns: 'No transactions',
+  close: 'Close',
+
+  colors: 'Colors',
+  common: {
+    all: 'All',
+    date: 'Date',
+    in: 'in',
+    open: 'Open',
   },
 
   create: {
     title: 'Create',
   },
 
-  money: {
-    income: 'Income',
-    expense: 'Expense',
-    total: 'Net income',
-    sum: 'Net income',
-
-    transfer: 'Transfer',
-    average: {
-      base: 'Average',
-      income: 'Average',
-      expense: 'Average',
-      sum: 'Average',
-    },
-    averageTotal: 'Average',
-    also: 'Also',
-    wallets: 'Wallets',
-    all: 'Net income',
+  currency: {
+    title: 'Currency',
   },
 
   dates: {
-    period: 'Period',
+    all: {
+      simple: 'All trns',
+    },
     count: 'Count',
-    twoDaysAgo: '2 days ago',
     day: {
       current: 'Today',
+      simple: 'Day',
       today: 'Today',
       yesterday: 'Yesterday',
-      simple: 'Day',
-    },
-    week: {
-      current: 'This week',
-      last: 'Last week',
-      simple: 'Week',
     },
     month: {
       current: 'This month',
       last: 'Last month',
       simple: 'Month',
     },
+    period: 'Period',
+    twoDaysAgo: '2 days ago',
+    week: {
+      current: 'This week',
+      last: 'Last week',
+      simple: 'Week',
+    },
     year: {
       current: 'This year',
       simple: 'Year',
     },
-    all: {
-      simple: 'All trns',
+  },
+
+  filter: {
+    clear: 'Clear',
+  },
+
+  locale: {
+    toggle: 'Toggle locale',
+  },
+
+  loginWithGoogle: 'Login with Google',
+
+  money: {
+    all: 'Net income',
+    also: 'Also',
+    average: {
+      base: 'Average',
+      expense: 'Average',
+      income: 'Average',
+      sum: 'Average',
     },
+    averageTotal: 'Average',
+
+    expense: 'Expense',
+    income: 'Income',
+    sum: 'Net income',
+    total: 'Net income',
+    transfer: 'Transfer',
+    wallets: 'Wallets',
   },
 
-  alerts: {
-    willDeleteEverything: 'This will delete all your wallets, categories and trns.',
+  settings: {
+    app: 'Application',
+    caution: 'With caution',
+    deleteButton: 'Delete my data',
+    lang: 'Language',
+    open: 'Open settings',
+    options: 'Options',
+    title: 'Settings',
   },
 
-  buttons: {
-    nextTitle: 'Next',
-    prevTitle: 'Prev',
-    nextStep: 'Continue',
+  stat: {
+    balanceTitle: 'Balance',
+    customize: {
+      showCategoriesChart: 'Show categories chart',
+      showCategoriesList: 'Show categories list',
+      showCatsChartPie: 'Show categories pie chart',
+      showHistory: 'Show history',
+      showPeriodsChart: 'Show periods chart',
+      showRoundCats: 'Show round categories list',
+    },
+    emptyDesc: 'Change filter, period or add new transactions.',
+    periods: 'Periods',
+    selectedPeriod: 'Selected period',
+    shortTitle: 'Stat',
+    summary: 'Summary',
+    tabs: {
+      empty: 'Hide',
+      gLines: 'G-Lines',
+      lines: 'Lines',
+      periods: 'Periods',
+      round: 'Rounds',
+      trns: 'Trns',
+    },
+
+    title: 'Dashboard',
   },
+
+  theme: {
+    change: 'Change theme',
+    title: 'Theme',
+  },
+
+  transfer: {
+    titleMoney: 'Transfers',
+  },
+
+  trnForm: {
+    calcTrnButton: 'Calculate',
+    createTrn: 'Add transaction',
+    description: {
+      placeholder: 'Write description...',
+      title: 'Description',
+    },
+    filterAll: 'All',
+    filterWallet: 'Wallet',
+    filterWalletAndCategory: 'Wallet & Category',
+    lastUsedCats: 'Show last used categories',
+    saveTrnButton: 'Save transaction',
+    title: 'Transaction form',
+    titleEditTrn: 'Edit transaction',
+    transfer: {
+      from: 'From',
+      fromLong: 'From wallet',
+      to: 'To',
+      toLong: 'To wallet',
+    },
+    transferTitle: 'Transfer',
+  },
+
+  trns: {
+    filter: {
+      showTrnsWithDesc: 'Only with description',
+    },
+    history: 'History',
+    inPeriodTitle: 'Transactions',
+    more: 'Show more',
+    noTrns: 'No transactions',
+    shortTitle: 'Trns',
+  },
+
+  userLogout: 'Logout',
 
   users: {
     title: 'Users',
   },
 
-  colors: 'Colors',
+  wallets: {
+    createNewTitle: 'Add wallet',
+    editTitle: 'Edit Wallet',
+    form: {
+      colors: {
+        custom: 'Custom color',
+        error: 'Select color',
+        label: 'Color',
+        placeholder: 'Select color',
+      },
+      currencies: {
+        error: 'Select currency',
+        label: 'Currency',
+        placeholder: 'Select currency',
+      },
+      description: {
+        label: 'Wallet description (optional)',
+        placeholder: 'Write...',
+      },
+      name: {
+        error: 'Write wallet name',
+        exist: 'Wallet with same name is exist',
+        label: 'Wallet name',
+        placeholder: 'Write...',
+      },
+      save: 'Save',
+      total: {
+        placeholder: 'Сash withdrawal',
+      },
+    },
+    name: 'Wallets',
+    new: 'New wallet',
+    showOnly: 'Show only',
+    sortTitle: 'Sort wallets',
+    title: 'Wallets',
+  },
+
+  welcome: {
+    create: {
+      btn: 'Let\'s go',
+      text: 'Start creating your first wallet and category',
+    },
+    createFirstCategory: {
+      btn: 'Create category',
+      text: 'Great! Now let\'s create a category',
+    },
+    firstRun: {
+      btn: 'Start',
+      text: 'Start with create base configuration of application',
+    },
+  },
 }

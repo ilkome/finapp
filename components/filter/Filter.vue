@@ -28,7 +28,6 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
             </div>
 
             <CategoriesSelector
-              isAllowSelectParentCategory
               @onSelected="filter.toggleCategoryId"
               @filter="filter.toggleCategoryId"
             />

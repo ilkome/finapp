@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { useWindowSize } from '@vueuse/core'
-import { useCategoriesStore } from '~/components/categories/useCategories';
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm';
-import Swiper, { Pagination } from 'swiper';
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import Swiper, { Pagination } from 'swiper'
 import 'swiper/css'
 import 'swiper/css/pagination'
 
-const $trnForm = useTrnFormStore()
+const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
-const { height } = useWindowSize()
+const walletsStore = useWalletsStore()
+const isShow = computed(() =>
+  walletsStore.hasItems
+  && categoriesStore.hasCategories
+  && trnFormStore.ui.isShow,
+)
 
 /**
  * Slider
@@ -19,8 +24,6 @@ const maxHeight = ref('550px')
 
 function setTrnFormHeight() {
   const el = document.querySelector('.getHeight')
-  const height = el?.clientHeight
-  maxHeight.value = `${height}px`
 
   const observer = new ResizeObserver((entries) => {
     for (const entry of entries) {
@@ -36,20 +39,17 @@ function setTrnFormHeight() {
 function init() {
   if (!sliderObj.value) {
     sliderObj.value = new Swiper(sliderRef.value, {
-      centeredSlides: true,
+      // centeredSlides: true,
       init: false,
       initialSlide: 1,
       longSwipesMs: 60,
       longSwipesRatio: 0.1,
       modules: [Pagination],
-      observeParents: true,
-      observer: true,
       pagination: {
         clickable: true,
         el: '.trnForm__pagination',
       },
       shortSwipes: false,
-
       slidesPerView: 'auto',
     })
     setTrnFormHeight()
@@ -61,124 +61,136 @@ onMounted(init)
 </script>
 
 <template>
-  <div class="trnForm">
-    <div ref="sliderRef" class="swiper-container">
-      <div class="swiper-wrapper rounded-xl">
-        <!-- History -->
-        <div
-          class="swiper-slide bg-foreground-2 sm_max-w-sm sm_rounded-xl"
-          :style="{ height: maxHeight }"
-        >
-          <TrnFormTrnsSlide
-            v-if="sliderObj"
-            :slider="sliderObj"
-            class="px-3 pb-3 pt-4"
-          />
-        </div>
+  <BaseBottomSheet2
+    :isShow="isShow"
+    drugClassesCustom="_bg-foreground-2 md_bg-transparent md_bottom-1/2 md_-translate-x-1/2 md_translate-y-1/2"
+    @closed="trnFormStore.onClose()"
+  >
+    <template #handler="{ close }">
+      <BaseBottomSheetHandler />
+      <!-- <BaseBottomSheetClose @onClick="close" /> -->
+    </template>
 
-        <!-- Main -->
-        <div
-          class="swiper-slide getHeight max-w-sm bg-foreground-2 sm_mx-6 sm_max-w-sm sm_rounded-xl"
-        >
+    <div class="trnForm lg_ml-12">
+      <div ref="sliderRef" class="swiper-container">
+        <div class="swiper-wrapper">
+          <!-- History -->
           <div
-            class="scroll scrollerBlock"
-            :style="{ maxHeight: `${height}px` }"
+            class="swiper-slide bg-foreground-2 sm_max-w-xs sm_rounded-l-xl"
+            :style="{ height: maxHeight }"
           >
-            <TrnFormMain />
+            <TrnFormTrnsSlide
+              v-if="sliderObj"
+              :slider="sliderObj"
+              class="px-3 py-4"
+            />
           </div>
-        </div>
 
-        <!-- Quick selector -->
-        <div
-          class="swiper-slide bg-foreground-2 sm_max-w-sm sm_rounded-xl"
-          :style="{ height: maxHeight }"
-        >
-          <div class="scroll scrollerBlock">
-            <div class="pb-4 pt-4">
-              <!-- Wallets -->
-              <div class="pb-6">
-                <UiTitle
-                  class="px-3 pb-2 pt-1.5"
-                  @click="$trnForm.openTrnFormModal('wallets')"
-                >
-                  {{ $t("wallets.title") }}
-                </UiTitle>
-                <WalletsList
-                  v-slot="{ walletsItemsLimited }"
-                  :limit="5"
-                  class="px-3"
-                >
-                  <!-- Wallet -->
-                  <WalletsItem
-                    v-for="(wallet, walletId) in walletsItemsLimited"
-                    :key="walletId"
-                    :activeItemId="$trnForm.values.walletId"
-                    :walletId
-                    :wallet
-                    isHideDots
-                    @click="$trnForm.values.walletId = walletId"
-                  />
-                </WalletsList>
-              </div>
+          <!-- Main -->
+          <div
+            class="swiper-slide getHeight sm_max-w-sm sm_px-3 bg-foreground-2 sm_max-w-sm _sm_rounded-xl sm_border-r sm_border-l border-item-5"
+          >
+            <div
+              class="scroll scrollerBlock"
+            >
+              <TrnFormMain
+                :maxHeight
+              />
+            </div>
+          </div>
 
-              <!-- Favorite categories -->
-              <div
-                v-if="categoriesStore.favoriteCategoriesIds.length > 0"
-                class="pb-6"
-              >
-                <UiTitle
-                  class="px-3 pb-2"
-                  @click="$trnForm.ui.catsRootModal = true"
-                >
-                  {{ $t("categories.favoriteTitle") }}
-                  {{ $t("categories.title") }}
-                </UiTitle>
-                <div class="px-3">
-                  <CategoriesList
-                    v-if="sliderObj"
-                    :ids="categoriesStore.favoriteCategoriesIds"
-                    :activeItemId="$trnForm.values.categoryId"
-                    :slider="sliderObj"
-                    class="!gap-x-1"
-                    @click="(id) => ($trnForm.values.categoryId = id)"
-                  />
+          <!-- Quick selector -->
+          <div
+            class="swiper-slide bg-foreground-2 sm_max-w-xs sm_rounded-r-xl"
+            :style="{ height: maxHeight }"
+          >
+            <div class="scroll scrollerBlock">
+              <div class="pb-4 pt-4">
+                <!-- Wallets -->
+                <div class="pb-6">
+                  <UiTitle
+                    class="px-3 pb-2 pt-1.5"
+                    @click="trnFormStore.openTrnFormModal('wallets')"
+                  >
+                    {{ $t("wallets.title") }}
+                  </UiTitle>
+                  <WalletsList
+                    v-slot="{ walletsItemsLimited }"
+                    :limit="5"
+                    class="px-3"
+                  >
+                    <!-- Wallet -->
+                    <WalletsItem
+                      v-for="(wallet, walletId) in walletsItemsLimited"
+                      :key="walletId"
+                      :activeItemId="trnFormStore.values.walletId"
+                      :walletId
+                      :wallet
+                      isHideDots
+                      @click="trnFormStore.values.walletId = walletId"
+                    />
+                  </WalletsList>
                 </div>
-              </div>
 
-              <!-- Recent categories -->
-              <div
-                v-if="categoriesStore.recentCategoriesIds.length > 0"
-                class="pb-6"
-              >
-                <UiTitle
-                  class="px-3 pb-2"
-                  @click="$trnForm.ui.catsRootModal = true"
+                <!-- Favorite categories -->
+                <div
+                  v-if="categoriesStore.favoriteCategoriesIds.length > 0"
+                  class="pb-6"
                 >
-                  {{ $t("categories.lastUsedTitle") }}
-                  {{ $t("categories.title") }}
-                </UiTitle>
-                <div class="px-3">
-                  <CategoriesList
-                    v-if="sliderObj"
-                    :ids="categoriesStore.recentCategoriesIds"
-                    :activeItemId="$trnForm.values.categoryId"
-                    :slider="sliderObj"
-                    class="!gap-x-1"
-                    @click="(id) => ($trnForm.values.categoryId = id)"
-                  />
+                  <UiTitle
+                    class="px-3 pb-2"
+                    @click="trnFormStore.ui.catsRootModal = true"
+                  >
+                    {{ $t("categories.favoriteTitle") }}
+                    {{ $t("categories.title") }}
+                  </UiTitle>
+                  <div class="px-3">
+                    <CategoriesList
+                      v-if="sliderObj"
+                      :ids="categoriesStore.favoriteCategoriesIds"
+                      :activeItemId="trnFormStore.values.categoryId"
+                      :slider="sliderObj"
+                      class="!gap-x-1"
+                      @click="(id) => (trnFormStore.values.categoryId = id)"
+                    />
+                  </div>
+                </div>
+
+                <!-- Recent categories -->
+                <div
+                  v-if="categoriesStore.recentCategoriesIds.length > 0"
+                  class="pb-6"
+                >
+                  <UiTitle
+                    class="px-3 pb-2"
+                    @click="trnFormStore.ui.catsRootModal = true"
+                  >
+                    {{ $t("categories.lastUsedTitle") }}
+                    {{ $t("categories.title") }}
+                  </UiTitle>
+                  <div class="px-3">
+                    <CategoriesList
+                      v-if="sliderObj"
+                      :ids="categoriesStore.recentCategoriesIds"
+                      :activeItemId="trnFormStore.values.categoryId"
+                      :slider="sliderObj"
+                      class="!gap-x-1"
+                      @click="(id) => (trnFormStore.values.categoryId = id)"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="trnForm__pagination" />
     </div>
+  </BaseBottomSheet2>
 
-    <div class="trnForm__pagination" />
-
-    <!-- Modals -->
-    <LazyTrnFormModalDescription v-if="$trnForm.modal.description" />
-  </div>
+  <!-- Modals -->
+  <LazyTrnFormModalDescription v-if="trnFormStore.modal.description" />
 </template>
 
 <style lang="stylus">

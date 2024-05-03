@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
-import type { ChartType } from '~/components/chart/types'
-import { type MoneyTypeSlugSum, moneyTypes } from '~/components/stat/types'
+import dayjs from 'dayjs'
 import { useAppNav } from '~/components/app/useAppNav'
+import type { ChartType } from '~/components/chart/types'
 import { useFilter } from '~/components/filter/useFilter'
-import { useSimpleTabs } from '~/components/tabs/useUtils'
+import { type MoneyTypeSlugSum, moneyTypes } from '~/components/stat/types'
 import { useStat } from '~/components/stat/useStat'
+import { useSimpleTabs } from '~/components/tabs/useUtils'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -24,30 +24,30 @@ provide('stat', stat)
 provide('filter', filter)
 
 const statTabs = useSimpleTabs('dashboardStats', [{
-  slug: 'empty',
   localeKey: 'stat.tabs.empty',
+  slug: 'empty',
 }, {
-  slug: 'lines',
   localeKey: 'stat.tabs.lines',
+  slug: 'lines',
 }, {
-  slug: 'gLines',
   localeKey: 'stat.tabs.gLines',
+  slug: 'gLines',
 }, {
-  slug: 'round',
   localeKey: 'stat.tabs.round',
+  slug: 'round',
 }, {
-  slug: 'trns',
   localeKey: 'stat.tabs.trns',
+  slug: 'trns',
 }])
 
 const total = useToggle({ name: 'total' })
 
 const chartSeriesOptions = {
-  income: {
-    color: 'var(--c-income-1)',
-  },
   expense: {
     color: 'var(--c-expense-1)',
+  },
+  income: {
+    color: 'var(--c-income-1)',
   },
   summary: {
     color: 'grey',
@@ -56,13 +56,9 @@ const chartSeriesOptions = {
 } as const
 
 const chart = ref({
-  markedArea: computed(() =>
-    stat.chartCategories.value.find((i: number) => +i === +filter.date.value),
-  ),
   chartType: computed(
     () => filter.periods.value[filter.periodNameWithoutAll.value].type,
   ),
-
   getSeries: (slugs: MoneyTypeSlugSum[]) => {
     return slugs.reduce(
       (acc, slug) => {
@@ -73,12 +69,16 @@ const chart = ref({
         return acc
       },
       [] as {
-        data: number[]
         color?: string
+        data: number[]
         type?: ChartType
       }[],
     )
   },
+
+  markedArea: computed(() =>
+    stat.chartCategories.value.find((i: number) => +i === +filter.date.value),
+  ),
 
   onClick: (idx: number) => {
     filter.setDate(stat.chartCategories.value[idx])
@@ -104,9 +104,9 @@ function useToggle({ name }: { name: string }) {
   const toggle = () => (isShown.value ? hide() : show())
 
   return {
+    hide,
     isShown,
     show,
-    hide,
     toggle,
   }
 }
@@ -267,7 +267,7 @@ const periodGrouped = ref('period')
                         @click="chart.onClick"
                       />
 
-                      <UiTabs2 class="gap-1">
+                      <UiTabs2 class="gap-1 lg_py-3">
                         <UiTabsItem2
                           v-for="tabItem in statTabs.items"
                           :key="tabItem.slug"
@@ -279,7 +279,10 @@ const periodGrouped = ref('period')
                       </UiTabs2>
                     </div>
 
-                    <div v-if="statTabs.active.value !== 'empty'" class="max-w-sm">
+                    <div
+                      v-if="statTabs.active.value !== 'empty'"
+                      class="_max-w-sm"
+                    >
                       <StatGroupRound
                         v-if="statTabs.active.value === 'round'"
                         :categories="stat.totalCategories.value[item.slug]"
@@ -325,7 +328,7 @@ const periodGrouped = ref('period')
   </div>
 
   <TrnsItemModal />
-  <TrnFormWrap />
+  <TrnForm />
 </template>
 
 <i18n lang="yaml">

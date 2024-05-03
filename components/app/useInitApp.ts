@@ -35,11 +35,11 @@ export function useInitApp() {
           clearUserData()
 
         userStore.setUser(user)
-        // currenciesStore.initCurrencies()
-        // categoriesStore.initCategories()
-        // walletsStore.initWallets()
-        // trnsStore.initTrns()
-        // trnsStore.uploadOfflineTrns()
+        currenciesStore.initCurrencies()
+        categoriesStore.initCategories()
+        walletsStore.initWallets()
+        trnsStore.initTrns()
+        trnsStore.uploadOfflineTrns()
 
         if (useRoute().name === 'login')
           navigateTo('/')

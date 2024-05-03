@@ -1,53 +1,10 @@
 export default {
-  common: {
-    date: 'Дата',
-    open: 'Открыть',
-    all: 'Все',
-    in: 'в',
+  alerts: {
+    willDeleteEverything: 'Все кошельки, категории и транзакции будут удалены.',
   },
 
   analytics: {
     title: 'Аналитика',
-  },
-
-  appName: 'Финапка',
-
-  locale: {
-    toggle: 'Сменить язык',
-  },
-
-  theme: {
-    title: 'Тема',
-    change: 'Сменить цвет оформления',
-  },
-
-  close: 'Закрыть',
-
-  transfer: {
-    titleMoney: 'Переводы',
-  },
-
-  trnForm: {
-    transferTitle: 'Перевод',
-    saveTrnButton: 'Сохранить',
-    calcTrnButton: 'Посчитать результат',
-    createTrn: 'Создать транзакцию',
-    titleEditTrn: 'Редактирование транзакции',
-    filterWalletAndCategory: 'Кошелек и Категория',
-    filterWallet: 'Только Кошелек',
-    filterAll: 'Все',
-    title: 'Создание транзакции',
-    lastUsedCats: 'Показывать последние использованные категории',
-    description: {
-      title: 'Описание',
-      placeholder: 'Напишите описание...',
-    },
-    transfer: {
-      from: 'Из',
-      fromLong: 'Из кошелька',
-      to: 'В',
-      toLong: 'В кошелек',
-    },
   },
 
   app: {
@@ -58,264 +15,307 @@ export default {
     },
     theme: {
       change: 'Сменить тему',
-      select: 'Выберите тему',
       dark: 'Темная',
       light: 'Светлая',
+      select: 'Выберите тему',
       system: 'Авто',
     },
   },
 
-  userLogout: 'Выход',
-  loginWithGoogle: 'Войти через Google',
+  appName: 'Финапка',
 
   base: {
-    sure: 'Ты уверен?',
-    yes: 'Да',
-    no: 'Нет',
-    sort: 'Сортировка',
-    save: 'Сохранить',
+    add: 'Создать',
     cancel: 'Отмена',
+    delete: 'Удалить',
+    duplicate: 'Дублировать',
+    edit: 'Редактировать',
+    filter: 'Фильтр',
+    no: 'Нет',
+    off: 'Нет',
     ok: 'Хорошо',
     on: 'Да',
-    duplicate: 'Дублировать',
+    save: 'Сохранить',
     setFilter: 'Фильтр',
-    off: 'Нет',
-    add: 'Создать',
-    edit: 'Редактировать',
-    delete: 'Удалить',
-    filter: 'Фильтр',
+    sort: 'Сортировка',
+    sure: 'Ты уверен?',
+    yes: 'Да',
   },
 
-  filter: {
-    clear: 'Убрать',
-  },
-
-  welcome: {
-    firstRun: {
-      text: 'Пройти первоначальную настройку приложения',
-      btn: 'Начать',
-    },
-    create: {
-      text: 'Начнем с добавления кошелька и категории',
-      btn: 'Погнали',
-    },
-    createFirstCategory: {
-      text: 'Отлично! Теперь создадим категорию',
-      btn: 'Создать',
-    },
-  },
-
-  settings: {
-    title: 'Настройки',
-    lang: 'Язык приложения',
-    options: 'Опции',
-    open: 'Открыть настройки',
-    app: 'Приложение',
-    caution: 'C осторожностью',
-    deleteButton: 'Удалить все мои данные',
-  },
-
-  wallets: {
-    title: 'Кошельки',
-    name: 'Кошельки',
-    new: 'Новый кошелек',
-    showOnly: 'Показать только',
-    sortTitle: 'Сортировать кошельки',
-    createNewTitle: 'Добавить кошелек',
-    editTitle: 'Редактирование кошелька',
-    form: {
-      name: {
-        label: 'Имя кошелька',
-        placeholder: 'Напишите...',
-        error: 'Напишите имя кошелька',
-        exist: 'Кошелек с таким именем уже существует',
-      },
-      description: {
-        label: 'Описание кошелька (не обязательно)',
-        placeholder: 'Напишите...',
-      },
-      colors: {
-        label: 'Цвет',
-        placeholder: 'Выберите цвет',
-        error: 'Выберите цвет',
-        custom: 'Кастомный цвет',
-      },
-      currencies: {
-        label: 'Валюта',
-        placeholder: 'Выберите валюту',
-        error: 'Выберите валюту',
-      },
-      total: {
-        placeholder: 'Деньги доступны для снятия',
-      },
-      save: 'Сохранить',
-    },
-  },
-
-  currency: {
-    title: 'Валюта',
+  buttons: {
+    nextStep: 'Далее',
+    nextTitle: 'Следующий',
+    prevTitle: 'Прошлый',
   },
 
   categories: {
-    title: 'Категории',
-    name: 'Категории',
-    shortTitle: 'Категории',
-    new: 'Новая категория',
     allTitle: 'Все',
-    lastUsedTitle: 'Недавние',
-    favoriteTitle: 'Любимые',
     createNewTitle: 'Добавить категорию',
     editTitle: 'Редактирование категории',
+    favoriteTitle: 'Любимые',
     form: {
-      name: {
-        label: 'Имя категории',
-        placeholder: 'Напишите имя категории...',
-        error: 'Напишите имя категории',
-        exist: 'Категория с таким именем уже существует',
-      },
-      parent: {
-        no: 'Корневая категория',
-        label: 'Категория',
-      },
+      childColor: 'Применить цвет ко всем дочерним категориям',
       colors: {
-        label: 'Цвета',
         custom: 'Кастомный цвет',
-      },
-      icon: {
-        label: 'Иконка',
+        label: 'Цвета',
       },
       data: {
         label: 'Данные',
       },
+      icon: {
+        label: 'Иконка',
+      },
       lastUsed: 'Показывать в списке недавних категорий',
+      name: {
+        error: 'Напишите имя категории',
+        exist: 'Категория с таким именем уже существует',
+        label: 'Имя категории',
+        placeholder: 'Напишите имя категории...',
+      },
+      parent: {
+        label: 'Категория',
+        no: 'Корневая категория',
+      },
       quickSelector: 'Любимая категория',
-      childColor: 'Применить цвет ко всем дочерним категориям',
       save: 'Сохранить',
     },
-  },
-
-  stat: {
-    title: 'Статистика',
-    selectedPeriod: 'Выбранный период',
-    shortTitle: 'Статистика',
-    balanceTitle: 'Баланс',
-    summary: 'Общее',
-    periods: 'Периоды',
-    empty: 'Статистики по выбранным параметрам нет :)',
-    emptyDesc: 'Измените фильтр, период или добавьте новую транзакцию.',
-    customize: {
-      showHistory: 'Показывать историю',
-      showRoundCats: 'Показывать список круглых иконок',
-      showCategoriesChart: 'Показывать вертикальный график категорий',
-      showCategoriesList: 'Показывать список категорий',
-      showCatsChartPie: 'Показывать статистику "пирог"',
-      showPeriodsChart: 'Показывать график периодов',
-    },
-
-    tabs: {
-      empty: 'Скрыть',
-      lines: 'Линии',
-      gLines: 'Группы',
-      round: 'Кружочки',
-      trns: 'Список',
-      periods: 'Периоды',
-    },
+    lastUsedTitle: 'Недавние',
+    name: 'Категории',
+    new: 'Новая категория',
+    shortTitle: 'Категории',
+    title: 'Категории',
   },
 
   chart: {
-    title: 'График',
     showMain: 'Показывать основной график',
+    title: 'График',
     view: {
       add: 'Добавить',
-      remove: 'Удалить',
-      toggle: 'Изменить график',
-      showed: 'Показано',
-      periodsName: 'период',
-      simpleTitle: 'График линия',
-      groupedTitle: 'График колонки',
       addGroupButton: 'Добавить группу',
       addPeriodButton: 'Добавить период',
+      groupedTitle: 'График колонки',
+      periodsName: 'период',
+      remove: 'Удалить',
       removeGroupButton: 'Удалить группу',
       removePeriodButton: 'Удалить период',
+      showed: 'Показано',
+      simpleTitle: 'График линия',
+      toggle: 'Изменить график',
     },
   },
 
-  trns: {
-    inPeriodTitle: 'Транзакции',
-    shortTitle: 'Транзакции',
-    history: 'История',
-    more: 'Показать еще',
-    filter: {
-      showTrnsWithDesc: 'Только с описанием',
-    },
-    noTrns: 'Нет транзакций',
+  close: 'Закрыть',
+
+  colors: 'Цвета',
+  common: {
+    all: 'Все',
+    date: 'Дата',
+    in: 'в',
+    open: 'Открыть',
   },
 
   create: {
     title: 'Создать',
   },
 
-  money: {
-    income: 'Доход',
-    expense: 'Расход',
-    total: 'Баланс',
-    sum: 'Баланс',
-
-    transfer: 'Перевод',
-    average: {
-      base: 'Обычно',
-      income: 'Обычно',
-      expense: 'Обычно',
-      sum: 'Обычно',
-    },
-    averageTotal: 'Обычно',
-    also: 'Еще',
-    wallets: 'Кошельки',
-    all: 'Всего',
+  currency: {
+    title: 'Валюта',
   },
 
   dates: {
-    period: 'Период',
+    all: {
+      simple: 'Все транзакции',
+    },
     count: 'Количество',
-    twoDaysAgo: '2 дня назад',
     day: {
       current: 'Сегодня',
+      simple: 'День',
       today: 'Сегодня',
       yesterday: 'Вчера',
-      simple: 'День',
-    },
-    week: {
-      current: 'Текущая неделя',
-      last: 'Прошлая неделя',
-      simple: 'Неделя',
     },
     month: {
       current: 'Текущий месяц',
       last: 'Прошлый месяц',
       simple: 'Месяц',
     },
+    period: 'Период',
+    twoDaysAgo: '2 дня назад',
+    week: {
+      current: 'Текущая неделя',
+      last: 'Прошлая неделя',
+      simple: 'Неделя',
+    },
     year: {
       current: 'Текущий год',
       simple: 'Год',
     },
-    all: {
-      simple: 'Все транзакции',
+  },
+
+  filter: {
+    clear: 'Убрать',
+  },
+
+  locale: {
+    toggle: 'Сменить язык',
+  },
+
+  loginWithGoogle: 'Войти через Google',
+
+  money: {
+    all: 'Всего',
+    also: 'Еще',
+    average: {
+      base: 'Обычно',
+      expense: 'Обычно',
+      income: 'Обычно',
+      sum: 'Обычно',
     },
+    averageTotal: 'Обычно',
+
+    expense: 'Расход',
+    income: 'Доход',
+    sum: 'Баланс',
+    total: 'Баланс',
+    transfer: 'Перевод',
+    wallets: 'Кошельки',
   },
 
-  alerts: {
-    willDeleteEverything: 'Все кошельки, категории и транзакции будут удалены.',
+  settings: {
+    app: 'Приложение',
+    caution: 'C осторожностью',
+    deleteButton: 'Удалить все мои данные',
+    lang: 'Язык приложения',
+    open: 'Открыть настройки',
+    options: 'Опции',
+    title: 'Настройки',
   },
 
-  buttons: {
-    nextTitle: 'Следующий',
-    prevTitle: 'Прошлый',
-    nextStep: 'Далее',
+  stat: {
+    balanceTitle: 'Баланс',
+    customize: {
+      showCategoriesChart: 'Показывать вертикальный график категорий',
+      showCategoriesList: 'Показывать список категорий',
+      showCatsChartPie: 'Показывать статистику "пирог"',
+      showHistory: 'Показывать историю',
+      showPeriodsChart: 'Показывать график периодов',
+      showRoundCats: 'Показывать список круглых иконок',
+    },
+    empty: 'Статистики по выбранным параметрам нет :)',
+    emptyDesc: 'Измените фильтр, период или добавьте новую транзакцию.',
+    periods: 'Периоды',
+    selectedPeriod: 'Выбранный период',
+    shortTitle: 'Статистика',
+    summary: 'Общее',
+    tabs: {
+      empty: 'Скрыть',
+      gLines: 'Группы',
+      lines: 'Линии',
+      periods: 'Периоды',
+      round: 'Кружочки',
+      trns: 'Список',
+    },
+
+    title: 'Статистика',
   },
+
+  theme: {
+    change: 'Сменить цвет оформления',
+    title: 'Тема',
+  },
+
+  transfer: {
+    titleMoney: 'Переводы',
+  },
+
+  trnForm: {
+    calcTrnButton: 'Посчитать результат',
+    createTrn: 'Создать транзакцию',
+    description: {
+      placeholder: 'Напишите описание...',
+      title: 'Описание',
+    },
+    filterAll: 'Все',
+    filterWallet: 'Кошелек',
+    filterWalletAndCategory: 'Кошелек и Категория',
+    lastUsedCats: 'Показывать последние использованные категории',
+    saveTrnButton: 'Сохранить',
+    title: 'Создание транзакции',
+    titleEditTrn: 'Редактирование транзакции',
+    transfer: {
+      from: 'Из',
+      fromLong: 'Из кошелька',
+      to: 'В',
+      toLong: 'В кошелек',
+    },
+    transferTitle: 'Перевод',
+  },
+
+  trns: {
+    filter: {
+      showTrnsWithDesc: 'Только с описанием',
+    },
+    history: 'История',
+    inPeriodTitle: 'Транзакции',
+    more: 'Показать еще',
+    noTrns: 'Нет транзакций',
+    shortTitle: 'Транзакции',
+  },
+
+  userLogout: 'Выход',
 
   users: {
     title: 'Пользователи',
   },
 
-  colors: 'Цвета',
+  wallets: {
+    createNewTitle: 'Добавить кошелек',
+    editTitle: 'Редактирование кошелька',
+    form: {
+      colors: {
+        custom: 'Кастомный цвет',
+        error: 'Выберите цвет',
+        label: 'Цвет',
+        placeholder: 'Выберите цвет',
+      },
+      currencies: {
+        error: 'Выберите валюту',
+        label: 'Валюта',
+        placeholder: 'Выберите валюту',
+      },
+      description: {
+        label: 'Описание кошелька (не обязательно)',
+        placeholder: 'Напишите...',
+      },
+      name: {
+        error: 'Напишите имя кошелька',
+        exist: 'Кошелек с таким именем уже существует',
+        label: 'Имя кошелька',
+        placeholder: 'Напишите...',
+      },
+      save: 'Сохранить',
+      total: {
+        placeholder: 'Деньги доступны для снятия',
+      },
+    },
+    name: 'Кошельки',
+    new: 'Новый кошелек',
+    showOnly: 'Показать только',
+    sortTitle: 'Сортировать кошельки',
+    title: 'Кошельки',
+  },
+
+  welcome: {
+    create: {
+      btn: 'Погнали',
+      text: 'Начнем с добавления кошелька и категории',
+    },
+    createFirstCategory: {
+      btn: 'Создать',
+      text: 'Отлично! Теперь создадим категорию',
+    },
+    firstRun: {
+      btn: 'Начать',
+      text: 'Пройти первоначальную настройку приложения',
+    },
+  },
 }

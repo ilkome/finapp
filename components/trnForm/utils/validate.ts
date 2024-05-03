@@ -4,8 +4,8 @@ export function validate(values: any) {
   if (!values.amount && values.type !== 2) {
     return {
       error: {
-        title: errorTitle,
         text: 'Amount can not be empty',
+        title: errorTitle,
       },
     }
   }
@@ -13,8 +13,8 @@ export function validate(values: any) {
   if (values.amount <= 0 && values.type !== 2) {
     return {
       error: {
-        title: errorTitle,
         text: 'Amount can not be negative number',
+        title: errorTitle,
       },
     }
   }
@@ -22,8 +22,8 @@ export function validate(values: any) {
   if (values.amount === 0 && values.type !== 2) {
     return {
       error: {
-        title: errorTitle,
         text: 'Amount can not be equal Zero',
+        title: errorTitle,
       },
     }
   }
@@ -31,8 +31,8 @@ export function validate(values: any) {
   if (!values.walletId && values.type !== 2) {
     return {
       error: {
-        title: errorTitle,
         text: 'Please select wallet',
+        title: errorTitle,
       },
     }
   }
@@ -40,8 +40,8 @@ export function validate(values: any) {
   if (!values.categoryId && values.type !== 2) {
     return {
       error: {
-        title: errorTitle,
         text: 'Please select category',
+        title: errorTitle,
       },
     }
   }
@@ -51,8 +51,8 @@ export function validate(values: any) {
     if (Number(values.incomeAmount) === 0 || Number(values.expenseAmount) === 0) {
       return {
         error: {
-          title: errorTitle,
           text: 'Transfer amounts can not be empty',
+          title: errorTitle,
         },
       }
     }
@@ -60,8 +60,8 @@ export function validate(values: any) {
     if (values.incomeWalletId === values.expenseWalletId) {
       return {
         error: {
-          title: errorTitle,
           text: 'Transfer in same wallet',
+          title: errorTitle,
         },
       }
     }

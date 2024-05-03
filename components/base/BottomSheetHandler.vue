@@ -1,5 +1,7 @@
-<template lang="pug">
-.handler
+<template>
+  <div
+    class="handler hover_bg-item-5 transition rounded-xl"
+  />
 </template>
 
 <style lang="stylus" scoped>
@@ -22,5 +24,4 @@
     width 32px
     height 4px
     background var(--c-bg-8)
-    border-radius 4px
 </style>

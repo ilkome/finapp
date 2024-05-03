@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { WalletId } from '~/components/wallets/types'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
+  activeItemId?: WalletId
   hide?: () => null
 }>()
 
@@ -21,10 +22,11 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <div class="p-2 py-2.5 bg-item-4 overflow-hidden overflow-y-auto w-[90vw] max-w-xs max-h-[60vh]">
+  <div class="p-2 py-2.5 bg-item-4 overflow-hidden overflow-y-auto max-h-[60vh]">
     <WalletsItem
       v-for="(wallet, walletId) in walletsStore.sortedItems"
       :key="walletId"
+      :activeItemId="props.activeItemId"
       :walletId
       :wallet
       isHideDots
