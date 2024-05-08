@@ -162,8 +162,8 @@ function actions(trnItem: TrnItem) {
               colorize="income"
             />
             <Amount
-              v-if="getTotalOfTrnsIds(trnsIds).expense !== 0"
-              :amount="getTotalOfTrnsIds(trnsIds).expense"
+              v-if="getTotalOfTrnsIds(trnsIds).expenseTransactions !== 0"
+              :amount="getTotalOfTrnsIds(trnsIds).expenseTransactions"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
               :type="0"

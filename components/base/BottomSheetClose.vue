@@ -1,6 +1,6 @@
 <template lang="pug">
 .handlerClose(
-  class="bg-item-6"
+  class="bg-item-6 size-8 rounded-full"
   @click="$emit('onClick')"
 )
   svg(
@@ -27,9 +27,6 @@
   display flex
   align-items center
   justify-content center
-  width 40px
-  height 40px
-  border-radius 50%
   anim()
 
   +media-hover()

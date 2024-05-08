@@ -37,10 +37,12 @@ export default function useAmount() {
 
   function getTotalOfTrnsIds(trnsIds: TrnId[]) {
     return getTotal({
+      baseCurrencyCode: currenciesStore.base,
+      rates: currenciesStore.rates,
       transferCategoriesIds: categoriesStore.transferCategoriesIds,
       trnsIds,
       trnsItems: trnsStore.items,
-      walletsIds: walletsStore.ids,
+      walletsIds: Object.keys(walletsStore.items),
       walletsItems: walletsStore.items,
     })
   }

@@ -16,7 +16,7 @@ const categoriesStore = useCategoriesStore()
       <UiHeaderTitle2>{{ $t("categories.name") }}</UiHeaderTitle2>
       <template #actions>
         <UiHeaderLink @click="$router.push('/categories/new')">
-          <UiIconAdd class="h-5 w-5 group-hover_text-white" />
+          <UiIconAdd class="size-5" />
         </UiHeaderLink>
       </template>
     </UiHeader>

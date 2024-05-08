@@ -22,7 +22,7 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <div class="p-2 py-2.5 overflow-hidden overflow-y-auto">
+  <div class="p-2 py-2.5 overflow-hidden overflow-y-auto bg-item-4">
     <WalletsItem
       v-for="(wallet, walletId) in walletsStore.sortedItems"
       :key="walletId"

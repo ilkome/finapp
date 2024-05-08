@@ -30,10 +30,8 @@ const userStore = useUserStore()
           </div>
         </div>
 
-        <!-- Main Menu -->
-        <LayoutMenuSidebar variant="modal" />
+        <LayoutMenuSidebar />
 
-        <!-- Theme -->
         <div class="pt-4 px-3 pb-2">
           <AppThemeSwitcher />
         </div>

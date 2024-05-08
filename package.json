@@ -8,7 +8,7 @@
   "license": "MIT",
   "homepage": "https://ilko.me",
   "keywords": [
-    "vue, nuxt, firebase"
+    "vue, nuxt, firebase, tailwind, pwa, echarts, swiper"
   ],
   "scripts": {
     "dev": "nuxt dev",
@@ -32,13 +32,13 @@
     "swiper": "8.4.7",
     "v-calendar": "^3.1.2",
     "vue-deepunref": "^1.0.1",
-    "vue-echarts": "^6.7.1",
+    "vue-echarts": "^6.7.2",
     "vue-router": "^4.3.2",
     "vue3-toastify": "^0.2.1",
-    "zod": "^3.23.5"
+    "zod": "^3.23.7"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.16.1",
+    "@antfu/eslint-config": "^2.16.3",
     "@babel/parser": "^7.24.5",
     "@nuxtjs/color-mode": "^3.4.1",
     "@nuxtjs/i18n": "^8.3.1",
@@ -47,7 +47,7 @@
     "@vue/language-plugin-pug": "^2.0.16",
     "@vueuse/core": "^10.9.0",
     "@vueuse/nuxt": "^10.9.0",
-    "eslint": "^9.1.1",
+    "eslint": "^9.2.0",
     "eslint-plugin-format": "^0.1.1",
     "eslint-plugin-perfectionist": "^2.10.0",
     "nuxt": "^3.11.2",
@@ -56,6 +56,6 @@
     "pug": "^3.0.2",
     "stylus": "^0.63.0",
     "typescript": "^5.4.5",
-    "vitest": "^1.5.3"
+    "vitest": "^1.6.0"
   }
 }

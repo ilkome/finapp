@@ -153,7 +153,6 @@ const periodGrouped = ref('period')
                 :size="12"
                 :trnsIds="periodGrouped === 'period' ? stat.trnsIds.value : stat.getTrnsIdsWithFilterNoDates()"
                 isShowFilter
-                uiHistory
                 @onChangePeriod="v => periodGrouped = v"
               />
 

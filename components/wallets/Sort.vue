@@ -32,28 +32,30 @@ async function saveWalletsOrder() {
 </script>
 
 <template>
-  <div class="grid grid-rows-[auto,1fr,auto] overflow-hidden h-full max-h-[90vh] bg-foreground-3">
-    <!-- Header -->
+  <div class="grid grid-rows-[auto,1fr,auto] overflow-hidden h-full max-h-[90vh] bg-foreground-3 px-2">
     <div class="px-2 py-4">
-      <UiTitle2>{{ $t("wallets.sortTitle") }}</UiTitle2>
+      <UiTitle>{{ $t("wallets.sortTitle") }}</UiTitle>
     </div>
 
-    <div ref="parent" class="grid gap-1 scrollerBlock overflow-hidden overflow-y-auto h-full px-2">
+    <div ref="parent" class="scrollerBlock overflow-hidden overflow-y-auto h-full">
       <WalletsItem
         v-for="walletId in sortedWalletsIds"
         :key="walletId"
         :walletId
         :wallet="walletsStore.sortedItems[walletId]"
         isShowIcons
+        alt
+        isSort
       />
     </div>
 
-    <div class="flex flex-center">
-      <div class="grow max-w-xs py-3">
-        <UiButtonBlue @click="saveWalletsOrder">
-          {{ $t("base.save") }}
-        </UiButtonBlue>
-      </div>
+    <div class="flex-center py-2">
+      <UiButtonBlue
+        maxWidth
+        @click="saveWalletsOrder"
+      >
+        {{ $t("base.save") }}
+      </UiButtonBlue>
     </div>
   </div>
 </template>

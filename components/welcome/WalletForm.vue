@@ -9,7 +9,6 @@ const { t } = useI18n()
 const walletForm = ref<WalletForm>({
   color: random(random(allColors)),
   countTotal: true,
-  creditLimit: false,
   currency: 'USD',
   isCredit: false,
   name: '',

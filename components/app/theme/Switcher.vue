@@ -4,17 +4,17 @@ const colorMode = useColorMode()
 type Theme = 'system' | 'light' | 'dark'
 
 const locales: {
-  slug: Theme
   localeKey: string
+  slug: Theme
 }[] = [{
-  slug: 'system',
   localeKey: 'app.theme.system',
+  slug: 'system',
 }, {
-  slug: 'light',
   localeKey: 'app.theme.light',
+  slug: 'light',
 }, {
-  slug: 'dark',
   localeKey: 'app.theme.dark',
+  slug: 'dark',
 }] as const
 
 function setTheme(theme: Theme) {

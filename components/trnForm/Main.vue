@@ -92,10 +92,13 @@ function show(slide: number) {
 
           <template #popper="{ hide }">
             <!-- TODO: combine -->
-            <div class="flex items-center px-3 h-12">
-              <UiTitle>{{ $t('wallets.title') }}</UiTitle>
+            <div class="flex items-center">
+              <UiTitle class="px-3 pb-2 pt-1.5">
+                {{ $t("wallets.title") }}
+              </UiTitle>
               <BaseBottomSheetClose @onClick="hide" />
             </div>
+
             <WalletsSelector
               :hide
               class="w-[90vw] max-w-xs"
@@ -126,8 +129,11 @@ function show(slide: number) {
 
         <template #popper="{ hide }">
           <!-- TODO: combine -->
-          <div class="flex items-center px-3 h-12">
-            <UiTitle>{{ $t('categories.title') }}</UiTitle>
+          <div class="flex items-center bg-item-4">
+            <UiTitle class="px-3 py-3">
+              {{ $t("categories.title") }}
+            </UiTitle>
+
             <BaseBottomSheetClose @onClick="hide" />
           </div>
 

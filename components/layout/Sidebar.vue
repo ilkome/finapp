@@ -1,6 +1,13 @@
 <template>
-  <div>
-    <div class="p-4 px-5">
+  <div
+    class="
+    hidden lg_block
+    h-full w-64
+    overflow-hidden overflow-y-auto
+    bg-item-4 border-r border-item-5
+  "
+  >
+    <div class="py-4 px-5">
       <nuxt-link to="/dashboard">
         <UiLogo class="w-16" />
       </nuxt-link>

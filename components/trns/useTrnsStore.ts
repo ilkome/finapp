@@ -28,6 +28,10 @@ import {
 } from '~/services/firebase/api'
 import { getDates } from '~/components/date/format'
 
+interface TrnsGetterParams {
+  includesChildCategories?: boolean
+}
+
 export const useTrnsStore = defineStore('trns', () => {
   const userStore = useUserStore()
   const categoriesStore = useCategoriesStore()
@@ -35,7 +39,15 @@ export const useTrnsStore = defineStore('trns', () => {
 
   const items = ref<Trns>({})
 
-  function getStoreTrnsIds(props: TrnsGetterProps2) {
+  function getStoreTrnsIds(props: TrnsGetterProps2, params?: TrnsGetterParams) {
+    if (params?.includesChildCategories) {
+      return getTrnsIds({
+        trnsItems: items.value,
+        ...props,
+        categoriesIds: categoriesStore.getTransactibleIds(props.categoriesIds),
+      })
+    }
+
     return getTrnsIds({
       trnsItems: items.value,
       ...props,

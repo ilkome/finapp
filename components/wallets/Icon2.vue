@@ -2,8 +2,8 @@
 import type { WalletId, WalletItem } from '~/components/wallets/types'
 
 defineProps<{
-  name: WalletItem['name']
   color: WalletItem['color']
+  name: WalletItem['name']
   walletId: WalletId
 }>()
 

@@ -6,6 +6,7 @@ const props = defineProps<{
   alt?: boolean
   isShowBaseRate?: boolean
   isShowIcons?: boolean
+  isSort?: boolean
   wallet: WalletItemWithAmount
   walletId: WalletId
 }>()
@@ -21,7 +22,7 @@ const emit = defineEmits<{
     :isActive="activeItemId === props.walletId"
     :isShowIcons="props.isShowIcons"
     :hideDivider="!alt"
-    class="group"
+    class="relative group"
     @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
@@ -89,6 +90,18 @@ const emit = defineEmits<{
         <div class="text-secondary text-sm leading-none">
           {{ wallet.name }}
         </div>
+      </div>
+
+      <div
+        v-if="isSort"
+        class="
+          sortHandle
+          group-hocus_bg-item-7
+          absolute right-0 top-0 insert-0
+          h-full flex-center px-3 rounded-md
+        "
+      >
+        <UiIconSort class="size-6" />
       </div>
     </template>
   </UiElement>

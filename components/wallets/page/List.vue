@@ -51,15 +51,15 @@ const walletsCurrenciesTabs = reactive({
       <UiHeaderTitle2>{{ $t("wallets.name") }}</UiHeaderTitle2>
       <template #actions>
         <UiHeaderLink @click="openModal('walletsSort')">
-          <UiIconSort class="h-5 w-5 group-hover_text-white" />
+          <UiIconOrder class="size-5" />
         </UiHeaderLink>
         <UiHeaderLink @click="$router.push('/wallets/new')">
-          <UiIconAdd class="h-5 w-5 group-hover_text-white" />
+          <UiIconAdd class="size-5" />
         </UiHeaderLink>
       </template>
     </UiHeader>
 
-    <div class="grid items-start gap-5 px-2 md_grid-cols-[auto_auto] md_gap-8">
+    <div class="grid items-start gap-5 px-2 md_grid-cols-2 md_gap-8">
       <div class="grid gap-5 md_gap-3 md_order-2">
         <!-- Base currency -->
         <div

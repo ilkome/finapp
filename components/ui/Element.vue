@@ -38,7 +38,7 @@ const slots = useSlots()
 
     <div
       class="ml-9 mr-2 h-[1px] bg-item-5 group-last_hidden"
-      :class="{ 'ml-9': isShowIcons, 'ml-7': !isShowIcons }"
+      :class="{ 'ml-9': isShowIcons, 'ml-11': !isShowIcons }"
     />
   </div>
 </template>

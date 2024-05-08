@@ -141,14 +141,9 @@ export function getTotal(props: TotalProps): TotalReturns {
 
   return {
     expense,
-    expense,
-
     expenseTransfers,
     income,
-    income,
-
     incomeTransfers,
-    sum,
     sum,
     sumTransfers,
   }
