@@ -33,9 +33,16 @@ function show(slide: number) {
 </script>
 
 <template>
-  <div class="py-4">
+  <div class="1">
+    <TrnFormSelection
+      v-if="isShow"
+      v-model:isShow="isShow"
+      :maxHeight="props.maxHeight"
+      :initialSlide
+    />
+
     <UiTitle
-      class="px-3 pb-2 pt-1.5"
+      class="pb-2 pt-1.5"
       @click="trnFormStore.values.trnId = null"
     >
       <template v-if="trnFormStore.values.trnId">
@@ -46,12 +53,12 @@ function show(slide: number) {
       </template>
     </UiTitle>
 
-    <TrnFormDate class="px-2 pb-2" />
+    <TrnFormDate class="pb-2" />
     <TrnFormMainAmountTrn v-if="trnFormStore.values.trnType !== 2" />
     <TrnFormMainAmountTransfer v-if="trnFormStore.values.trnType === 2" />
 
     <TrnFormMainCalculator
-      class="pb-2"
+      class="pb-3"
       :amountRaw="trnFormStore.values.amountRaw[trnFormStore.activeAmountIdx]"
       @onChange="trnFormStore.onChangeAmount"
     />
@@ -59,13 +66,15 @@ function show(slide: number) {
     <!-- Selected -->
     <div
       v-if="trnFormStore.values.trnType !== 2"
-      class="grid grid-cols-2 gap-3 px-2 pb-2"
+      class="grid grid-cols-2 gap-3 pb-3"
     >
       <!-- Wallet -->
-      <template v-if="walletId">
-        <WalletsItem2
+      <div v-if="walletId">
+        <WalletsItem
           v-if="!isLaptop"
           :walletId
+          :wallet="walletsStore.sortedItems[walletId]"
+          alt
           @click="show(0)"
         />
 
@@ -73,8 +82,14 @@ function show(slide: number) {
           v-else
           :overflowPadding="12"
           autoBoundaryMaxSize
+          placement="bottom-start"
         >
-          <WalletsItem2 :walletId />
+          <WalletsItem
+            :walletId
+            :wallet="walletsStore.sortedItems[walletId]"
+            alt
+          />
+
           <template #popper="{ hide }">
             <!-- TODO: combine -->
             <div class="flex items-center px-3 h-12">
@@ -88,21 +103,24 @@ function show(slide: number) {
             />
           </template>
         </VDropdown>
-      </template>
+      </div>
 
       <!-- Category -->
-      <CategoriesItem2
-        v-if="!isLaptop"
-        :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
-        @click="show(2)"
-      />
+      <div v-if="!isLaptop">
+        <CategoriesItem2
+          :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
+          @click="show(2)"
+        />
+      </div>
 
       <VDropdown
         v-else
         :overflowPadding="12"
         autoBoundaryMaxSize
+        placement="top-start"
       >
         <CategoriesItem2
+
           :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
         />
 
@@ -123,11 +141,4 @@ function show(slide: number) {
 
     <TrnFormMainTypes />
   </div>
-
-  <TrnFormSelection
-    v-if="isShow"
-    v-model:isShow="isShow"
-    :maxHeight="props.maxHeight"
-    :initialSlide
-  />
 </template>

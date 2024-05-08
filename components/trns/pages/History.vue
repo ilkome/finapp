@@ -14,13 +14,17 @@ useHead({
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle>{{ $t("trns.history") }}</UiHeaderTitle>
+      <UiHeaderTitle2>{{ $t("trns.history") }}</UiHeaderTitle2>
     </UiHeader>
 
-    <Filter v-if="filterStore.isShow" class="flex gap-2 rounded-lg bg-item-4" />
+    <Filter
+      v-if="filterStore.isShow"
+      class="flex gap-2 rounded-lg bg-item-4"
+    />
 
-    <div class="my-4 max-w-[420px] md_max-w-none">
-      <TrnsListWithControl :trnsIds="trnsStore.allTrnsIdsWithFilter" />
-    </div>
+    <TrnsListWithControl
+      :trnsIds="trnsStore.allTrnsIdsWithFilter"
+      class="my-4 max-w-[420px] md_max-w-none"
+    />
   </UiPage>
 </template>

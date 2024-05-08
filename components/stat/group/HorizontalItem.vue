@@ -13,14 +13,13 @@ import { useSimpleTabs } from '~/components/tabs/useUtils'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import type { TrnId } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { getStyles } from '~/components/ui/getStyles'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   biggest: number
   category: CategoryItem
   categoryId: CategoryId
-  isShowPeriodsTrns: false
+  isShowPeriodsTrns?: false
   moneyTypeNumber: MoneyTypeNumber
   moneyTypeSlug: MoneyTypeSlug
   total: number
@@ -42,8 +41,8 @@ const styles = computed(() => ({
   width: getWidthPercent(props.total, props.biggest),
 }))
 
-const isCategoryHasChildren = computed(() =>
-  categoriesStore.isCategoryHasChildren(props.categoryId),
+const hasChildren = computed(() =>
+  categoriesStore.hasChildren(props.categoryId),
 )
 
 function toggleShowInside() {
@@ -171,7 +170,7 @@ function getFormattedDate(date: number) {
 <template>
   <div
     :class="{
-      'mb-3 border border-item-5 bg-item-4 rounded-md': isShowInside,
+      'mb-3 border-item-5 bg-item-4 rounded-md': isShowInside,
     }"
     class="border border-transparent"
     @click="toggleShowInside"
@@ -190,7 +189,7 @@ function getFormattedDate(date: number) {
         <div class="flex space-x-3 pr-1">
           <div class="flex grow items-baseline gap-2">
             <div class="text-sm leading-none text-secondary">
-              {{ category.name }}{{ isCategoryHasChildren ? "..." : "" }}
+              {{ category.name }}{{ hasChildren ? "..." : "" }}
             </div>
 
             <div
@@ -209,7 +208,7 @@ function getFormattedDate(date: number) {
           />
         </div>
 
-        <div class="mt-1 mt-1 rounded-[3px] bg-item-5">
+        <div class="mt-1 rounded-[3px] bg-item-5">
           <div class="h-[4px] min-w-[2px] rounded-[3px]" :style="styles" />
         </div>
       </div>
@@ -230,7 +229,7 @@ function getFormattedDate(date: number) {
 
       <div v-else class="grid gap-2">
         <div class="pt-3 pl-3">
-          <StatTotalWithAverage2
+          <StatTotalWithAverage3
             :item="{
               amount: selectedPeriodTotal[props.moneyTypeSlug],
               averageAmount: 0,
@@ -239,11 +238,8 @@ function getFormattedDate(date: number) {
               moneyTypeNumber: props.moneyTypeNumber,
               moneyTypeSlugSum: props.moneyTypeSlug,
             }"
-          >
-            <template #name>
-              {{ formattedDate }}
-            </template>
-          </StatTotalWithAverage2>
+          />
+          {{ formattedDate }}
         </div>
 
         <LazyStatChartView
@@ -256,7 +252,7 @@ function getFormattedDate(date: number) {
           @click="onClickChart"
         />
 
-        <UiTabs2 class="gap-1 bg-item-4 rounded-md">
+        <UiTabs2 class="gap-1">
           <UiTabsItem2
             v-for="tabItem in tabs.items"
             :key="tabItem.slug"
@@ -298,9 +294,9 @@ function getFormattedDate(date: number) {
                 :currencyCode="currenciesStore.base"
               />
             </div>
-            <div v-if="isShowPeriodsTrns && date === selectedDate">
+            <!-- <div v-if="isShowPeriodsTrns && date === selectedDate">
               hey
-            </div>
+            </div> -->
             <div class="mt-2 h-[1px] bg-item-5" />
           </div>
         </div>

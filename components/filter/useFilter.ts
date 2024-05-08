@@ -8,15 +8,15 @@ import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const periodSchema = z.object({
-  type: z.enum(['line', 'bar']),
-  showedPeriods: z.number(),
   date: z.number(),
+  showedPeriods: z.number(),
+  type: z.enum(['line', 'bar']),
 })
 
 const periodsSchema = z.object({
   day: periodSchema,
-  week: periodSchema,
   month: periodSchema,
+  week: periodSchema,
   year: periodSchema,
 })
 
@@ -36,7 +36,7 @@ export function useFilter() {
   const date = ref<number>(dayjs().startOf('month').valueOf())
   const periodNameWithAll = ref<PeriodNameWithAll>('month')
 
-  const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() =>
+  const periodNameWithoutAll = computed(() =>
     periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value,
   )
 
@@ -55,62 +55,62 @@ export function useFilter() {
    */
   const periods = ref<Periods>({
     day: {
+      date: dayjs().valueOf(),
       showedPeriods: 14,
       type: 'line',
-      date: dayjs().valueOf(),
-    },
-    week: {
-      showedPeriods: 12,
-      type: 'line',
-      date: dayjs().valueOf(),
     },
     month: {
+      date: dayjs().valueOf(),
       showedPeriods: 12,
       type: 'line',
+    },
+    week: {
       date: dayjs().valueOf(),
+      showedPeriods: 12,
+      type: 'line',
     },
     year: {
+      date: dayjs().valueOf(),
       showedPeriods: 6,
       type: 'line',
-      date: dayjs().valueOf(),
     },
   })
 
   const periodsNames = computed<
     {
-      slug: PeriodNameWithoutAll
       icon: string
       name: string
+      slug: PeriodNameWithoutAll
     }[]
   >(() => [
     {
-      slug: 'day',
       icon: 'mdi mdi-weather-sunset-up',
       name: $i18n.t('dates.day.simple'),
+      slug: 'day',
     },
     {
-      slug: 'week',
       icon: 'mdi mdi-calendar-week',
       name: $i18n.t('dates.week.simple'),
+      slug: 'week',
     },
     {
-      slug: 'month',
       icon: 'mdi mdi-calendar',
       name: $i18n.t('dates.month.simple'),
+      slug: 'month',
     },
     {
-      slug: 'year',
       icon: 'mdi mdi-calendar-star',
       name: $i18n.t('dates.year.simple'),
+      slug: 'year',
     },
   ])
 
   const ui = ref({
-    income: true,
     expense: true,
-    sum: false,
+    income: true,
     isShowDataLabels: false,
     setUi: (key, value) => (ui.value[key] = value),
+    sum: false,
     toggleUi: key => (ui.value[key] = !ui.value[key]),
   })
 
@@ -295,43 +295,43 @@ export function useFilter() {
   watch(periodNameWithAll, value => localforage.setItem('finapp.chart.periodName', value))
 
   return {
+    addPeriod,
+    catsIds,
+    clearFilter,
     // Date
     date,
-    setDate,
-    setDateNow,
-    setPrevPeriodDate,
-    setNextPeriodDate,
-
-    periods,
-    periodsNames,
-    periodNameWithAll,
-    periodNameWithoutAll,
-    setPeriodAndDate,
-    setDayDate,
-
-    ui,
-
-    walletsIds,
-    setWalletId,
-    removeWalletId,
-    toggleWalletId,
-
-    catsIds,
-    transactibleCatsIds,
-    setCategoryId,
-    removeCategoryId,
-    toggleCategoryId,
-
-    clearFilter,
+    initChart,
 
     // Computed
     isShow,
+    periodNameWithAll,
+    periodNameWithoutAll,
+    periods,
+    periodsNames,
+    removeCategoryId,
 
-    initChart,
-    addPeriod,
     removePeriod,
+
+    removeWalletId,
+    setCategoryId,
+    setDate,
+    setDateNow,
+
+    setDayDate,
+    setNextPeriodDate,
     setPeriod,
+    setPeriodAndDate,
+    setPrevPeriodDate,
+
+    setWalletId,
+
+    toggleCategoryId,
+
     toggleChartType,
+    toggleWalletId,
+    transactibleCatsIds,
+    ui,
+    walletsIds,
   }
 }
 

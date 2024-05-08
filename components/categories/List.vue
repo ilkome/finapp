@@ -6,7 +6,6 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 defineProps<{
   activeItemId?: string | 0 | false | null
   ids: CategoryId[]
-  isHideParentCategory?: boolean
   slider?: object
 }>()
 
@@ -26,7 +25,6 @@ const categoriesStore = useCategoriesStore()
       :categoryId="categoryId"
       :activeItemId="activeItemId"
       :category="categoriesStore.items[categoryId]"
-      :isHideParentCategory="isHideParentCategory"
       :slider="slider"
       @click="emit('click', categoryId)"
       @onClickIcon="emit('onClickIcon', categoryId)"

@@ -13,18 +13,18 @@ const items = ref<
   Record<
     MoneyTypeSlug,
     {
-      transferType: TransferType
       amountsIdx: 1 | 2
+      transferType: TransferType
     }
   >
 >({
   expense: {
-    transferType: 0,
     amountsIdx: 1,
+    transferType: 0,
   },
   income: {
-    transferType: 1,
     amountsIdx: 2,
+    transferType: 1,
   },
 })
 
@@ -68,7 +68,11 @@ watch(
             {{ t(slug) }}
           </div>
 
-          <VDropdown v-if="slug === 'income' && incomeWalletId">
+          <VDropdown
+            v-if="slug === 'income' && incomeWalletId"
+            :overflowPadding="12"
+            autoBoundaryMaxSize
+          >
             <WalletsItem2 :walletId="incomeWalletId" />
             <template #popper="{ hide }">
               <WalletsSelector
@@ -78,7 +82,11 @@ watch(
             </template>
           </VDropdown>
 
-          <VDropdown v-if="slug === 'expense' && expenseWalletId">
+          <VDropdown
+            v-if="slug === 'expense' && expenseWalletId"
+            :overflowPadding="12"
+            autoBoundaryMaxSize
+          >
             <WalletsItem2 :walletId="expenseWalletId" />
             <template #popper="{ hide }">
               <WalletsSelector

@@ -11,12 +11,13 @@ const emit = defineEmits(['click'])
 <template>
   <div
     :class="[
-      ...getStyles('item', ['link', 'rounded']),
+      ...getStyles('item', ['link', 'rounded', 'minh2', 'minw2']),
       { '!bg-item-3 !text-primary': isActive },
     ]"
     class="
-      py-2 px-3 flex gap-1 items-center justify-center
+      flex gap-1 items-center justify-center
       border-1 rounded-md
+      px-2
       text-secondary2 text-sm leading-none
     "
     @click="emit('click')"

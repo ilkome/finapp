@@ -4,8 +4,8 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 
 defineProps<{
   categories: any
-  moneyTypeSlug: MoneyTypeSlug
   moneyTypeNumber: MoneyTypeNumber
+  moneyTypeSlug: MoneyTypeSlug
 }>()
 
 const categoriesStore = useCategoriesStore()

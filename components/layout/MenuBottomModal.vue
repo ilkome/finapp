@@ -9,7 +9,11 @@ const userStore = useUserStore()
 
 <template>
   <Teleport to="body">
-    <LazyBaseBottomSheet v-if="isModalOpen('menu')" @closed="closeAllModals">
+    <LazyBaseBottomSheet2
+      v-if="isModalOpen('menu')"
+      isShow
+      @closed="closeAllModals"
+    >
       <template #handler="{ close }">
         <BaseBottomSheetHandler />
         <BaseBottomSheetClose @onClick="close" />
@@ -34,6 +38,6 @@ const userStore = useUserStore()
           <AppThemeSwitcher />
         </div>
       </div>
-    </LazyBaseBottomSheet>
+    </LazyBaseBottomSheet2>
   </Teleport>
 </template>

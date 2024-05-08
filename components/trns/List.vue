@@ -6,27 +6,29 @@ import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
-import type { TrnId } from '~/components/trns/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const props = withDefaults(defineProps<{
-  limit?: number
-  size?: number
-  trnsIds: TrnId[] | false
-
-  isShowFilter?: boolean
-  isFilterByDay?: boolean
-  isShowGroupDate?: boolean
-  uiCat?: boolean
-  uiHistory?: boolean
-  isShowGroupSum?: boolean
-}>(), {
-  isShowFilter: false,
-  isShowGroupDate: true,
-  limit: 0,
-  size: 30,
-  uiHistory: false,
-})
+const props = withDefaults(
+  defineProps<{
+    isFilterByDay?: boolean
+    isShowFilter?: boolean
+    isShowGroupDate?: boolean
+    isShowGroupSum?: boolean
+    limit?: number
+    size?: number
+    trnsIds: TrnId[]
+    uiCat?: boolean
+    uiHistory?: boolean
+  }>(),
+  {
+    isShowFilter: false,
+    isShowGroupDate: true,
+    limit: 0,
+    size: 30,
+    uiHistory: false,
+  },
+)
 const emit = defineEmits(['onClickEdit'])
 const { activeTabStat } = storeToRefs(useAppNav())
 const { getTotalOfTrnsIds } = useAmount()
@@ -39,13 +41,23 @@ const pageNumber = ref(1)
 const isShowTrnsWithDesc = ref(false)
 
 const isTrnsWithDescription = computed(() =>
-  props.trnsIds.some(id => trnsStore.items[id].description || trnsStore.items[id].desc))
+  props.trnsIds.some(
+    id => trnsStore.items[id].description || trnsStore.items[id].desc,
+  ),
+)
 
 const trnsIdsWithLimit = computed(() => {
   const trnsItems = trnsStore.items
 
-  if (props.isShowFilter && isShowTrnsWithDesc.value && isTrnsWithDescription.value)
-    return props.trnsIds.filter(id => trnsItems[id].description || trnsStore.items[id].desc)
+  if (
+    props.isShowFilter
+    && isShowTrnsWithDesc.value
+    && isTrnsWithDescription.value
+  ) {
+    return props.trnsIds.filter(
+      id => trnsItems[id].description || trnsStore.items[id].desc,
+    )
+  }
 
   if (props.limit > 0)
     return props.trnsIds.slice(0, props.limit)
@@ -54,12 +66,13 @@ const trnsIdsWithLimit = computed(() => {
 })
 
 const paginatedTrnsIds = computed(() =>
-  trnsIdsWithLimit.value.slice(0, pageNumber.value * props.size))
+  trnsIdsWithLimit.value.slice(0, pageNumber.value * props.size),
+)
 
-const isShowedAllTrns = computed(() =>
-  paginatedTrnsIds.value.length === trnsIdsWithLimit.value.length)
+const isShowedAllTrns = computed(
+  () => paginatedTrnsIds.value.length === trnsIdsWithLimit.value.length,
+)
 
-// TODO: duplicate function
 const groupedTrns = computed(() => {
   const trnsItems = trnsStore.items
   const trnsIds = paginatedTrnsIds.value
@@ -69,7 +82,7 @@ const groupedTrns = computed(() => {
     acc[date] ??= []
     acc[date].push(trnId)
     return acc
-  }, {})
+  }, {} as Record<TrnItem['date'], TrnId[]>)
 })
 
 function showMoreTrns() {
@@ -80,10 +93,10 @@ function toggleTrnsWithDesc() {
   isShowTrnsWithDesc.value = !isShowTrnsWithDesc.value
 }
 
-function actions(trnItem) {
+function actions(trnItem: TrnItem) {
   return {
     onOpenDetails: () => {
-      if (!useTrnsStore.isShownModal) {
+      if (!trnsStore.isShownModal) {
         trnsStore.showTrnModal()
         trnsStore.setTrnModalId(trnItem.id)
       }
@@ -106,66 +119,84 @@ function actions(trnItem) {
 }
 </script>
 
-<template lang="pug">
-.grid(
-  v-if="trnsIds && trnsIds.length > 0"
-  :class="{ 'gap-2': uiHistory }"
-)
-  .pb-2(v-if="isShowFilter && isTrnsWithDescription")
-    UiCheckbox(
-      :checkboxValue="isShowTrnsWithDesc"
-      :title="$t('trns.filter.showTrnsWithDesc')"
-      showCheckbox
-      @onClick="toggleTrnsWithDesc"
-    )
+<template>
+  <div
+    v-if="trnsIds && trnsIds.length > 0"
+    class="grid"
+    :class="{
+      'gap-2': uiHistory,
+    }"
+  >
+    <div v-if="isShowFilter && isTrnsWithDescription">
+      <UiCheckbox
+        :checkboxValue="isShowTrnsWithDesc"
+        :title="$t('trns.filter.showTrnsWithDesc')"
+        showCheckbox
+        @onClick="toggleTrnsWithDesc"
+      />
+    </div>
 
-  div(
-    v-for="(trnsIds, date) in groupedTrns"
-    :key="date"
-  )
-    div(
-      class="flex items-center pt-4 pb-2 px-2 sm_px-1.5"
-      v-if="isShowGroupDate"
-      @click="isFilterByDay ? filterStore.setDayDate(date) : null"
-    )
-      DateTrnsDay(:date="+date").grow
+    <div
+      class="grid"
+      :class="{
+        'gap-4': uiHistory,
+      }"
+    >
+      <div
+        v-for="(trnsIds, date) in groupedTrns"
+        :key="date"
+      >
+        <div
+          v-if="isShowGroupDate"
+          class="flex items-center px-2 pb-2 sm_px-1.5"
+          @click="isFilterByDay ? filterStore.setDayDate(date) : null"
+        >
+          <DateTrnsDay :date="+date" class="grow" />
+          <div v-if="isShowGroupSum" class="flex items-center gap-2 text-sm">
+            <Amount
+              v-if="getTotalOfTrnsIds(trnsIds).income !== 0"
+              :amount="getTotalOfTrnsIds(trnsIds).income"
+              :currencyCode="currenciesStore.base"
+              :isShowBaseRate="false"
+              :type="1"
+              colorize="income"
+            />
+            <Amount
+              v-if="getTotalOfTrnsIds(trnsIds).expense !== 0"
+              :amount="getTotalOfTrnsIds(trnsIds).expense"
+              :currencyCode="currenciesStore.base"
+              :isShowBaseRate="false"
+              :type="0"
+            />
+          </div>
+        </div>
 
-      .flex.items-center.gap-2.text-sm(v-if="isShowGroupSum")
-        Amount(
-          v-if="getTotalOfTrnsIds(trnsIds).incomeTransactions !== 0"
-          :amount="getTotalOfTrnsIds(trnsIds).incomeTransactions"
-          :currencyCode="currenciesStore.base"
-          :isShowBaseRate="false"
-          :type="1"
-          colorize="income"
-        )
-        Amount(
-          v-if="getTotalOfTrnsIds(trnsIds).expenseTransactions !== 0"
-          :amount="getTotalOfTrnsIds(trnsIds).expenseTransactions"
-          :currencyCode="currenciesStore.base"
-          :isShowBaseRate="false"
-          :type="0"
-        )
+        <div>
+          <TrnsItemBase
+            v-for="trnId in trnsIds"
+            v-if="uiHistory"
+            :key="trnId"
+            :trnId="trnId"
+            @onClickEdit="emit('onClickEdit')"
+          />
+          <TrnsItemWithoutCat
+            v-for="trnId in trnsIds"
+            v-if="uiCat"
+            :key="trnId"
+            :actions="actions"
+            :trnId="trnId"
+          />
+        </div>
+      </div>
+    </div>
 
-    div
-      TrnsItemBase(
-        v-if="uiHistory"
-        v-for="trnId in trnsIds"
-        :key="trnId"
-        :trnId="trnId"
-        @onClickEdit="emit('onClickEdit')"
-      )
-      TrnsItemWithoutCat(
-        v-if="uiCat"
-        v-for="trnId in trnsIds"
-        :actions="actions"
-        :key="trnId"
-        :trnId="trnId"
-      )
-
-  .py-4.pb-6.px-2(v-if="!isShowedAllTrns")
-    .grow.px-5.flex-center.rounded-lg.text-sm.bg-item-5.hocus_bg-item-6.text-secondary(
-      class="py-2.5"
-      @click="showMoreTrns"
-    ) {{ $t('trns.more') }}
+    <div v-if="!isShowedAllTrns">
+      <div
+        class="flex-center grow rounded-lg bg-item-5 px-5 py-2.5 text-sm text-secondary hocus_bg-item-6"
+        @click="showMoreTrns"
+      >
+        {{ $t("trns.more") }}
+      </div>
+    </div>
+  </div>
 </template>

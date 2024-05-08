@@ -9,14 +9,14 @@ import { useUserStore } from '~/components/user/useUser'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const props = defineProps<{
-  categoryId?: CategoryId
   categoryForm: CategoryForm
+  categoryId?: CategoryId
 }>()
 
 const emit = defineEmits(['updateValue', 'afterSave'])
 
-const { categoryId, categoryForm } = toRefs(props)
-const { $notify, $i18n } = useNuxtApp()
+const { categoryForm, categoryId } = toRefs(props)
+const { $i18n, $notify } = useNuxtApp()
 const userStore = useUserStore()
 const categoriesStore = useCategoriesStore()
 
@@ -24,15 +24,15 @@ const editCategoryId = categoryId.value ?? generateId()
 
 const activeTab = ref('data')
 const isUpdateChildCategoriesColor = ref(true)
-const isAllowChangeParent = computed(() => categoriesStore.getChildCategoriesIds(categoryId.value).length === 0)
+const isAllowChangeParent = computed(() => categoriesStore.getChildsIds(categoryId.value).length === 0)
 
 const tabs = computed(() => [{
   id: 'data',
   name: $i18n.t('categories.form.data.label'),
 }, {
   id: 'parent',
-  name: $i18n.t('categories.form.parent.label'),
   isHidden: !categoriesStore.hasCategories,
+  name: $i18n.t('categories.form.parent.label'),
 }, {
   id: 'colors',
   name: $i18n.t('categories.form.colors.label'),
@@ -69,11 +69,11 @@ function onParentSelect(parentId: CategoryId) {
 /**
  * Validate
  */
-function validate({ values, categoriesItems }) {
+function validate({ categoriesItems, values }) {
   if (!values.name) {
     $notify({
-      title: '😮',
       text: $i18n.t('categories.form.name.error'),
+      title: '😮',
     })
     return
   }
@@ -84,16 +84,16 @@ function validate({ values, categoriesItems }) {
       if (editCategoryId) {
         if (editCategoryId !== id) {
           $notify({
-            title: '😮',
             text: $i18n.t('categories.form.name.exist'),
+            title: '😮',
           })
           return
         }
       }
       else {
         $notify({
-          title: '😮',
           text: $i18n.t('categories.form.name.exist'),
+          title: '😮',
         })
         return
       }
@@ -106,12 +106,12 @@ function validate({ values, categoriesItems }) {
 async function onSave() {
   const categoriesItems = categoriesStore.items
 
-  const isFormValid = validate({ values: categoryForm.value, categoriesItems })
+  const isFormValid = validate({ categoriesItems, values: categoryForm.value })
   if (!isFormValid)
     return
 
   const uid = userStore.uid
-  const categoryChildIds = categoriesStore.getChildCategoriesIds(editCategoryId)
+  const categoryChildIds = categoriesStore.getChildsIds(editCategoryId)
   const categoryValues = getPreparedFormData(categoryForm.value)
 
   // Update category
@@ -157,19 +157,19 @@ div
         )
 
       LazyUiCheckbox(
-        v-if="categoriesStore.getChildCategoriesIds(categoryId).length > 0 "
+        v-if="categoriesStore.getChildsIds(categoryId).length > 0 "
         :checkboxValue="isUpdateChildCategoriesColor"
         :title="$t('categories.form.childColor')"
         @onClick="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
       )
       LazyUiCheckbox(
-        v-if="categoriesStore.getChildCategoriesIds(categoryId).length === 0"
+        v-if="categoriesStore.getChildsIds(categoryId).length === 0"
         :checkboxValue="categoryForm.showInLastUsed"
         :title="$t('categories.form.lastUsed')"
         @onClick="categoryForm.showInLastUsed = !categoryForm.showInLastUsed"
       )
       UiCheckbox(
-        v-if="categoriesStore.getChildCategoriesIds(categoryId).length === 0"
+        v-if="categoriesStore.getChildsIds(categoryId).length === 0"
         :checkboxValue="categoryForm.showInQuickSelector"
         :title="$t('categories.form.quickSelector')"
         @onClick="categoryForm.showInQuickSelector = !categoryForm.showInQuickSelector"

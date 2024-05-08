@@ -13,7 +13,7 @@ useSeoMeta({
 
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
-const { openModal, isModalOpen } = useAppNav()
+const { isModalOpen, openModal } = useAppNav()
 const { setWalletId } = useFilterStore()
 
 const state = ref({
@@ -74,7 +74,7 @@ const walletsCurrenciesTabs = reactive({
         <div v-if="walletsStore.currenciesUsed.length > 1" class="grid gap-2 md_order-1">
           <UiTitle3>{{ t("list") }}</UiTitle3>
           <div class="w-full overflow-hidden">
-            <UiTabs2>
+            <UiTabs2 class="gap-1">
               <UiTabsItem2
                 :isActive="state.activeTab === 'all'"
                 @click="walletsCurrenciesTabs.onSelect('all')"
@@ -101,19 +101,16 @@ const walletsCurrenciesTabs = reactive({
         />
       </div>
 
-      <div
-        :class="getStyles('item', ['bg', 'rounded'])"
-        class="lg_max-w-[360px]"
-      >
+      <div class="lg_max-w-[360px]">
         <WalletsItem
           v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
           :key="walletId"
-          isShowIcons
-          isShowBaseRate
-          :walletId
           :wallet="walletItem"
-          @filter="setWalletId(walletId)"
+          :walletId
+          isShowBaseRate
+          isShowIcons
           @click="$router.push(`/wallets/${walletId}`)"
+          @filter="setWalletId(walletId)"
         />
       </div>
     </div>

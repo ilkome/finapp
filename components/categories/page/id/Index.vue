@@ -36,7 +36,7 @@ useHead({
     <UiHeader>
       <router-link v-slot="{ href, navigate }" :to="backLink" custom>
         <a class="grow hocus_bg-item-5" :href="href" @click="navigate">
-          <UiHeaderTitle>
+          <UiHeaderTitle2>
             <div class="pt-1 text-xs font-medium text-item-2">
               {{ $t("categories.title") }}
               <template v-if="category.parentId">
@@ -52,7 +52,7 @@ useHead({
                 <div :class="category.icon" />
               </div>
             </div>
-          </UiHeaderTitle>
+          </UiHeaderTitle2>
         </a>
       </router-link>
 
@@ -85,24 +85,15 @@ useHead({
     </div> -->
 
     <!-- Childs categories -->
-    <div v-if="category.childIds && category.childIds.length > 0" class="pt-4 mb-12">
-      <div
-        class="text-item-base flex gap-2 px-2 pb-3 font-primary text-lg font-semibold leading-none"
-      >
-        <div>{{ $t("categories.title") }}:</div>
-
-        <div>
-          {{ category.childIds.length }}
-        </div>
-      </div>
-      <div class="px-2">
-        <CategoriesList
-          :ids="categoryChildIds"
-          :slider="() => ({})"
-          isHideParentCategory
-          @click="(id) => $router.push(`/categories/${id}`)"
-        />
-      </div>
+    <div
+      v-if="category.childIds && category.childIds.length > 0"
+      class="px-2 pt-4 mb-12"
+    >
+      <CategoriesList
+        :ids="categoryChildIds"
+        :slider="() => ({})"
+        @click="(id) => $router.push(`/categories/${id}`)"
+      />
     </div>
   </UiPage>
 </template>

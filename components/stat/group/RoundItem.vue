@@ -10,8 +10,8 @@ const props = defineProps<{
   category: CategoryItem
   categoryId: CategoryId
   currencyCode: CurrencyCode
-  total: number
   moneyTypeNumber: MoneyTypeNumber
+  total: number
 }>()
 
 const filter = inject('filter') as FilterProvider
@@ -19,8 +19,8 @@ const filter = inject('filter') as FilterProvider
 const categoriesStore = useCategoriesStore()
 const { trnFormCreate } = useTrnForm()
 
-const isCategoryHasChildren = computed(() =>
-  categoriesStore.isCategoryHasChildren(props.categoryId),
+const hasChildren = computed(() =>
+  categoriesStore.hasChildren(props.categoryId),
 )
 </script>
 
@@ -40,7 +40,7 @@ const isCategoryHasChildren = computed(() =>
     />
 
     <div class="pt-1 text-xs text-secondary leading-none">
-      {{ category.name }}{{ isCategoryHasChildren ? "..." : "" }}
+      {{ category.name }}{{ hasChildren ? "..." : "" }}
     </div>
 
     <Amount

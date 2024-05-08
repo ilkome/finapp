@@ -33,11 +33,11 @@ function removeUserData() {
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle>{{ $t("settings.title") }}</UiHeaderTitle>
+      <UiHeaderTitle2>{{ $t("settings.title") }}</UiHeaderTitle2>
     </UiHeader>
 
     <div
-      class="grid gap-x-6 gap-y-1 px-3 md_grid-cols-2 md_gap-x-12"
+      class="grow grid gap-x-6 gap-y-1 px-3 md_grid-cols-2 md_gap-x-12"
     >
       <div>
         <!-- Currency -->

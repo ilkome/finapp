@@ -18,12 +18,12 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 export const useCategoriesStore = defineStore('categories', () => {
   const transfer: CategoryItem = {
+    childIds: [],
     color: 'var(--c-blue-1)',
     icon: 'mdi mdi-repeat',
     name: 'Transfer',
     order: 9999,
     parentId: 0,
-    childIds: [],
     showInLastUsed: false,
     showInQuickSelector: false,
     showStat: false,
@@ -232,21 +232,20 @@ export const useCategoriesStore = defineStore('categories', () => {
     setCategories(null)
   }
 
-  function isCategoryHasChildren(categoryId: CategoryId) {
+  function hasChildren(categoryId: CategoryId) {
     if (!hasCategories.value)
       return false
 
     return items.value[categoryId].childIds?.length > 0
   }
 
-  function getChildCategoriesIds(categoryId: CategoryId) {
+  function getChildsIds(categoryId: CategoryId) {
     if (!hasCategories.value)
       return []
 
     if (items.value[categoryId]?.parentId === 0) {
-      return Object.keys(items.value).filter(
-        id => items.value[id]?.parentId === categoryId,
-      )
+      return Object.keys(items.value)
+        .filter(id => items.value[id]?.parentId === categoryId)
     }
 
     return []
@@ -264,23 +263,23 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   return {
-    items,
-    categoriesIds,
-    categoriesRootIds,
-    categoriesIdsForTrnValues,
     categoriesForBeParent,
+    categoriesIds,
+    categoriesIdsForTrnValues,
+    categoriesRootIds,
     favoriteCategoriesIds,
+    getChildsIds,
+    getTransactibleIds,
     hasCategories,
-    recentCategoriesIds,
-    transferCategoriesIds,
+    hasChildren,
 
     initCategories,
-    setCategories,
-    isCategoryHasChildren,
-    getChildCategoriesIds,
-    unsubscribeCategories,
+    items,
+    recentCategoriesIds,
     saveCategoriesOrder,
+    setCategories,
+    transferCategoriesIds,
 
-    getTransactibleIds,
+    unsubscribeCategories,
   }
 })

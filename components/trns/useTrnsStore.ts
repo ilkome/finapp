@@ -1,11 +1,21 @@
 import dayjs from 'dayjs'
 import { deepUnref } from 'vue-deepunref'
 import localforage from 'localforage'
-import { removeTrnToAddLaterLocal, removeTrnToDeleteLaterLocal, saveTrnIDforDeleteWhenClientOnline, saveTrnToAddLaterLocal } from '~/components/trns/helpers'
+import {
+  removeTrnToAddLaterLocal,
+  removeTrnToDeleteLaterLocal,
+  saveTrnIDforDeleteWhenClientOnline,
+  saveTrnToAddLaterLocal,
+} from '~/components/trns/helpers'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useFilterStore } from '~/components/filter/useFilterStore'
 import { getTrnsIds } from '~/components/trns/getTrns'
-import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
+import type {
+  TrnId,
+  TrnItem,
+  Trns,
+  TrnsGetterProps2,
+} from '~/components/trns/types'
 import type { CategoryId } from '~/components/categories/types'
 import { useUserStore } from '~/components/user/useUser'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -25,37 +35,28 @@ export const useTrnsStore = defineStore('trns', () => {
 
   const items = ref<Trns>({})
 
+  function getStoreTrnsIds(props: TrnsGetterProps2) {
+    return getTrnsIds({
+      trnsItems: items.value,
+      ...props,
+    })
+  }
+
   const hasTrns = computed(() => Object.keys(items.value ?? {}).length > 0)
 
-  const filteredTrnsIds = computed(() => {
-    const categoriesIds
-    = filterStore.catsIds.length > 0
-      ? categoriesStore.getTransactibleIds(filterStore.catsIds)
-      : false
-    const walletsIds
-    = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : false
-
-    return getTrnsIds({
-      dates: getDates(filterStore.periodNameWithAll, filterStore.date),
-      categoriesIds,
-      trnsItems: items.value,
-      walletsIds,
-    })
-  })
-
   const allTrnsIdsWithFilter = computed(() => {
-    const categoriesIds: CategoryId[] = filterStore.catsIds.length > 0
-      ? categoriesStore.getTransactibleIds(filterStore.catsIds)
-      : []
+    const categoriesIds: CategoryId[]
+      = filterStore.catsIds.length > 0
+        ? categoriesStore.getTransactibleIds(filterStore.catsIds)
+        : []
 
-    const walletsIds = filterStore.walletsIds.length > 0
-      ? filterStore.walletsIds
-      : []
+    const walletsIds
+      = filterStore.walletsIds.length > 0 ? filterStore.walletsIds : []
 
     return getTrnsIds({
       categoriesIds,
-      walletsIds,
       trnsItems: items.value,
+      walletsIds,
     })
   })
 
@@ -77,13 +78,16 @@ export const useTrnsStore = defineStore('trns', () => {
     if (!hasTrns.value)
       return false
 
-    return Object.keys(items.value)
-      .sort((a, b) => items.value[b].date - items.value[a].date)
-      .find(
-        trnId =>
-          !categoriesStore.transferCategoriesIds.includes(items.value[trnId].categoryId)
-          && items.value[trnId].type !== 2,
-      ) ?? false
+    return (
+      Object.keys(items.value)
+        .sort((a, b) => items.value[b].date - items.value[a].date)
+        .find(
+          trnId =>
+            !categoriesStore.transferCategoriesIds.includes(
+              items.value[trnId].categoryId,
+            ) && items.value[trnId].type !== 2,
+        ) ?? false
+    )
   })
 
   const firstCreatedTrnId = computed<TrnItem | false>(() => {
@@ -116,10 +120,13 @@ export const useTrnsStore = defineStore('trns', () => {
       edited: dayjs().valueOf(),
     }
 
-    localforage.setItem('finapp.trns', deepUnref({
-      ...items.value,
-      [id]: valuesWithEditDate,
-    }))
+    localforage.setItem(
+      'finapp.trns',
+      deepUnref({
+        ...items.value,
+        [id]: valuesWithEditDate,
+      }),
+    )
 
     setTrns({ ...items.value, [id]: valuesWithEditDate })
 
@@ -219,7 +226,8 @@ export const useTrnsStore = defineStore('trns', () => {
    * Edit
    */
   const editId = ref<TrnId | null>(null)
-  function setTrnModalId(id: TrnId) {
+
+  function setTrnModalId(id: TrnId | null) {
     editId.value === id ? (editId.value = null) : (editId.value = id)
   }
 
@@ -235,44 +243,35 @@ export const useTrnsStore = defineStore('trns', () => {
     isShownModal.value = false
   }
 
-  function getStoreTrnsIds({
-    trnsIds,
-  }: {
-    trnsIds: TrnId[]
-  }) {
-    // return
-  }
-
   return {
-    // Trns
-    items,
-
-    hasTrns,
-    lastCreatedTrnId,
-    firstCreatedTrnId,
-    lastCreatedTrnItem,
-    firstCreatedTrnIdFromSelectedTrns,
-    selectedTrnsIdsWithDate,
-    filteredTrnsIds,
-    allTrnsIdsWithFilter,
-
-    initTrns,
-    setTrns,
     addTrn,
-    deleteTrn,
-    unsubscribeTrns,
-    deleteTrnsByIds,
-    uploadOfflineTrns,
 
+    allTrnsIdsWithFilter,
+    deleteTrn,
+    deleteTrnsByIds,
     // Edit
     editId,
-    setTrnModalId,
+    firstCreatedTrnId,
+    firstCreatedTrnIdFromSelectedTrns,
+    getStoreTrnsIds,
 
+    hasTrns,
+    hideTrnModal,
+    initTrns,
     // Modal
     isShownModal,
-    showTrnModal,
-    hideTrnModal,
+    // Trns
+    items,
+    lastCreatedTrnId,
+    lastCreatedTrnItem,
 
-    getStoreTrnsIds,
+    selectedTrnsIdsWithDate,
+    setTrnModalId,
+
+    setTrns,
+    showTrnModal,
+    unsubscribeTrns,
+
+    uploadOfflineTrns,
   }
 })

@@ -39,8 +39,8 @@ const classes = computed(() => ({
   color var(--c-text-4)
   font-size 14px
   text-decoration none
-  background var(--c-bg-4)
-  border 1px solid var(--c-bg-5)
+  // background var(--c-item-3)
+  // border 1px solid var(--c-item-3)
   border-radius 6px
   anim-background()
 

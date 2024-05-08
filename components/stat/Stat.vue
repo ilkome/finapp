@@ -8,14 +8,11 @@ import { type MoneyTypeSlugSum, moneyTypes } from '~/components/stat/types'
 import { useStat } from '~/components/stat/useStat'
 import { useSimpleTabs } from '~/components/tabs/useUtils'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import { getTrnsIds } from '~/components/trns/getTrns'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const appNavStore = useAppNav()
 const filter = useFilter()
 const stat = useStat(filter)
 const trnFormStore = useTrnFormStore()
-// const trnsStore = useTrnsStore()
 const { t } = useI18n()
 
 filter.initChart()
@@ -38,9 +35,12 @@ const statTabs = useSimpleTabs('dashboardStats', [{
 }, {
   localeKey: 'stat.tabs.trns',
   slug: 'trns',
+}, {
+  localeKey: 'stat.tabs.periods',
+  slug: 'periods',
 }])
 
-const total = useToggle({ name: 'total' })
+const totalToggle = useToggle({ name: 'total' })
 
 const chartSeriesOptions = {
   expense: {
@@ -122,30 +122,11 @@ function useToggle({ name }: { name: string }) {
 // }))
 
 // // const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selectedTrnsIds.value))
-const isShow = ref(false)
 
 const periodGrouped = ref('period')
 </script>
 
 <template>
-  <Teleport to="body">
-    <BaseBottomSheet3
-      v-if="isShow"
-      :isShow="isShow"
-      drugClassesCustom="h-[50vh] bg-item-3"
-      @closed="() => isShow = false"
-    >
-      <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
-      </template>
-    </BaseBottomSheet3>
-  </Teleport>
-
-  <!-- <div class="fixed left-0 top-0 inset-0 size-full" @click.prevent="isShow = !isShow">
-    isShow
-  </div> -->
-
   <div class="grid h-full overflow-hidden xl_grid-cols-[1fr_auto]">
     <div
       class="h-full overflow-hidden overflow-y-auto px-3 pb-6 sm_px-1 lg_px-3"
@@ -160,99 +141,110 @@ const periodGrouped = ref('period')
           </div>
         </div>
 
-        <div
-          class="sticky top-[40px] z-50 flex items-center border-b border-item-5 bg-foreground-4 pb-2 backdrop-blur"
-        >
-          <div class="flex grow">
-            <StatDateNav />
-            <StatDateView />
-          </div>
-
-          <StatPeriodsSelector class="hidden md_flex" />
-        </div>
-
-        <!-- <pre>{{ categoriesWithTrnsIds }}</pre> -->
-
         <div class="grid gap-3" data-scroll-ref="stat">
           <Filter class="grow pt-2" />
 
           <div class="mb-8 md_mb-4">
             <div class="_grid items-start gap-6 md_grid-cols-2 md_gap-8">
-              <div
+              <TrnsListWithControl
                 v-if="appNavStore.activeTabStat === 'trns'"
                 class="px-2 py-2 sm_px-1.5 sm_pt-3"
-              >
-                <TrnsListWithControl
-                  :defaultFilterTrnsPeriod="periodGrouped"
-                  :size="12"
-                  :trnsIds="periodGrouped === 'period' ? stat.trnsIds.value : stat.getTrnsIdsWithFilterNoDates()"
-                  class="px-2"
-                  isShowFilter
-                  uiHistory
-                  @onChangePeriod="v => periodGrouped = v"
-                />
-              </div>
+                :defaultFilterTrnsPeriod="periodGrouped"
+                :size="12"
+                :trnsIds="periodGrouped === 'period' ? stat.trnsIds.value : stat.getTrnsIdsWithFilterNoDates()"
+                isShowFilter
+                uiHistory
+                @onChangePeriod="v => periodGrouped = v"
+              />
 
               <div
                 v-else-if="appNavStore.activeTabStat === 'periods'"
                 class="py-2 sm_pt-3"
               >
-                <StatPeriodsLines />
+                <StatPeriodsLines
+                  type="summary"
+                />
               </div>
 
-              <div v-else class="grid gap-4">
-                <!-- Total -->
+              <div v-else class="grid gap-8">
                 <div
                   v-if="appNavStore.activeTabStat === 'summary'"
-                  class="grid gap-3 lg_px-2 lg_py-2"
+                  class="grid items-start gap-4 md_grid-cols-2 md_gap-6"
                 >
-                  <div class="flex">
-                    <StatTotalWithAverage
-                      v-if="total.isShown.value"
-                      :item="stat.averages.value.sum"
-                      hasBg
-                      @click="total.toggle"
-                    />
-                    <div
-                      v-if="!total.isShown.value"
-                      class="flex grow items-center px-2 py-2 sm_px-1.5 sm_pt-3"
-                    >
-                      <UiTitle2
-                        @click="total.toggle"
+                  <!-- Total -->
+                  <div
+                    class="grid gap-3 md_max-w-lg lg_px-2 lg_py-2"
+                  >
+                    <div class="grid gap-3">
+                      <div
+                        class="flex grow items-center"
                       >
-                        {{ $t(`money.sum`) }}
-                      </UiTitle2>
-                      <UiIconChevron class="rotate-120 size-4 text-secondary" />
-                    </div>
-                  </div>
+                        <UiTitle5
+                          @click="totalToggle.toggle"
+                        >
+                          {{ $t(`money.sum`) }}
+                        </UiTitle5>
 
-                  <LazyStatChartView
-                    v-if="
-                      stat.statPrepareAllData.value.summary !== 0
-                        && total.isShown.value
-                    "
-                    :categories="stat.chartCategories.value"
-                    :isShowDataLabels="filter.ui.value.isShowDataLabels"
-                    :markedArea="chart.markedArea"
-                    :periodName="filter.periodNameWithoutAll.value"
-                    :series="chart.getSeries(['income', 'expense', 'summary'])"
-                    chartType="bar"
-                    @click="chart.onClick"
-                  />
+                        <UiIconChevron
+                          v-if="!totalToggle.isShown.value"
+                          class="rotate-120 size-4 text-secondary"
+                        />
+                      </div>
+
+                      <StatTotalWithAverage3
+                        v-if="totalToggle.isShown.value"
+                        :item="stat.averages.value.sum"
+                        hasBg
+                        @click="totalToggle.toggle"
+                      />
+                    </div>
+
+                    <LazyStatChartView
+                      v-if="
+                        stat.statPrepareAllData.value.summary !== 0
+                          && totalToggle.isShown.value
+                      "
+                      :categories="stat.chartCategories.value"
+                      :isShowDataLabels="filter.ui.value.isShowDataLabels"
+                      :markedArea="chart.markedArea"
+                      :periodName="filter.periodNameWithoutAll.value"
+                      :series="chart.getSeries(['income', 'expense', 'summary'])"
+                      chartType="bar"
+                      @click="chart.onClick"
+                    />
+                  </div>
                 </div>
 
                 <!-- Sides -->
-                <div class="grid items-start gap-4 md_grid-cols-2 md_gap-6">
+                <div class="grid items-start gap-8 md_grid-cols-2 md_gap-6">
                   <div
                     v-for="item in moneyTypes"
                     v-show="stat.isShowGroupByType(item.slug)"
                     :key="item.slug"
                     class="grid gap-3 md_max-w-lg lg_px-2 lg_py-2"
                   >
-                    <StatTotalWithAverage
-                      :item="stat.averages.value[item.slug]"
-                      hasBg
-                    />
+                    <div>
+                      <div class="grid gap-3">
+                        <UiTitle5>
+                          {{ $t(`money.${item.slug}`) }}
+                        </UiTitle5>
+
+                        <StatTotalWithAverage3
+                          :item="stat.averages.value[item.slug]"
+                          hasBg
+                        />
+                      </div>
+
+                      <div class="flex grow">
+                        <StatDateNav class="gap-1" />
+                        <StatDateView />
+
+                        <div class="flex ml-auto">
+                          <StatPeriodsSelector class="" />
+                          <StatChartOptions class="" />
+                        </div>
+                      </div>
+                    </div>
 
                     <div>
                       <LazyStatChartView
@@ -283,6 +275,12 @@ const periodGrouped = ref('period')
                       v-if="statTabs.active.value !== 'empty'"
                       class="_max-w-sm"
                     >
+                      <StatPeriodsLines
+                        v-if="statTabs.active.value === 'periods'"
+                        :type="item.slug"
+                        class="max-w-sm"
+                      />
+
                       <StatGroupRound
                         v-if="statTabs.active.value === 'round'"
                         :categories="stat.totalCategories.value[item.slug]"
@@ -330,11 +328,3 @@ const periodGrouped = ref('period')
   <TrnsItemModal />
   <TrnForm />
 </template>
-
-<i18n lang="yaml">
-en:
-  lines: Lines
-
-ru:
-  lines: Lines
-</i18n>

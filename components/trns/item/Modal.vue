@@ -10,7 +10,7 @@ import type { FilterProvider } from '~/components/filter/useFilter'
 
 const period = inject('filter') as FilterProvider
 
-const { trnFormEdit, trnFormDuplicate } = useTrnForm()
+const { trnFormDuplicate, trnFormEdit } = useTrnForm()
 const { activeTabStat } = storeToRefs(useAppNav())
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
@@ -78,16 +78,17 @@ function handleDeleteConfirm() {
 
 <template>
   <Teleport v-if="trnsStore.isShownModal" to="body">
-    <LazyBaseBottomSheet
+    <LazyBaseBottomSheet2
       v-if="trnsStore.isShownModal"
       key="TrnsItemModal"
+      isShow
       @closed="closed"
     >
       <template #handler="{ close }">
         <BaseBottomSheetClose @onClick="close" />
       </template>
 
-      <template #header>
+      <template #default="{ close }">
         <div class="header">
           <TrnsItemDetails
             :category="category"
@@ -97,9 +98,7 @@ function handleDeleteConfirm() {
             ui="detailed"
           />
         </div>
-      </template>
 
-      <template #default="{ close }">
         <div class="content pb-4">
           <div class="tools">
             <div class="div">
@@ -151,7 +150,7 @@ function handleDeleteConfirm() {
           </div>
         </div>
       </template>
-    </LazyBaseBottomSheet>
+    </LazyBaseBottomSheet2>
 
     <!-- delete confirm -->
     <ModalBottomConfirm
@@ -175,11 +174,9 @@ function handleDeleteConfirm() {
   padding-bottom 26px
   color var(--c-font-2)
   font-secondary()
-  background var(--c-bg-3)
   border-radius 16px 16px 0 0
 
 .content
-  background var(--c-bg-3)
   +media(600px)
     border-radius 0 0 16px 16px
 </style>

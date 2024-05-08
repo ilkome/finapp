@@ -18,16 +18,16 @@ const items = ref([{
 //   icon: 'mdi mdi-chart-gantt',
 //   isActive: computed(() => filter.ui.value.sum),
 //   event: () => filter.ui.value.toggleUi('sum'),
-// }, {
-  slug: 'charLabels',
+  event: () => filter.ui.value.toggleUi('isShowDataLabels'),
   icon: 'mdi mdi-subtitles-outline',
   isActive: computed(() => filter.ui.value.isShowDataLabels),
-  event: () => filter.ui.value.toggleUi('isShowDataLabels'),
+  // }, {
+  slug: 'charLabels',
 }, {
-  slug: 'charType',
+  event: filter.toggleChartType,
   icon: computed(() => filter.periods.value[filter.periodNameWithoutAll.value].type === 'line' ? 'mdi mdi-chart-line' : 'mdi mdi-chart-bar'),
   isActive: false,
-  event: filter.toggleChartType,
+  slug: 'charType',
 }])
 </script>
 

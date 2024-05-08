@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
 import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId
+  alt?: boolean
   isShowBaseRate?: boolean
   isShowIcons?: boolean
   wallet: WalletItemWithAmount
@@ -17,38 +17,27 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="group" @click="emit('click', props.walletId)">
-    <!-- <pre class="text-xs">{{ wallet }}</pre> -->
-    <div
-      :class="[
-        { '!bg-item-3': activeItemId === props.walletId },
-        ...getStyles('item', ['link', 'rounded', 'padding1', 'minh']),
-      ]"
-      class="-my-[1px] flex items-center gap-2"
-    >
-      <div class="flex grow items-center gap-3 overflow-hidden pl-1">
-        <template v-if="isShowIcons">
-          <UiIconWalletWithdrawal
-            v-if="wallet.countTotal"
-            :style="{ color: wallet.color }"
-            class="h-4 w-4 text-item-2"
-          />
-          <UiIconWalletSavings
-            v-else-if="!wallet.countTotal && !wallet.isCredit"
-            :style="{ color: wallet.color }"
-            class="h-4 w-4 text-item-2"
-          />
-          <div v-else class="flex-center w-4">
-            <WalletsIcon2
-              :color="wallet.color"
-              :name="wallet.name"
-              :walletId
-              @click.stop="emit('filter', props.walletId)"
-            />
-          </div>
-        </template>
-
-        <div v-if="!isShowIcons" class="px-1">
+  <UiElement
+    :isActive="activeItemId === props.walletId"
+    :isShowIcons="props.isShowIcons"
+    :hideDivider="!alt"
+    class="group"
+    @click="emit('click', props.walletId)"
+  >
+    <!-- Icon -->
+    <template #leftIcon>
+      <template v-if="isShowIcons">
+        <UiIconWalletWithdrawal
+          v-if="wallet.countTotal"
+          :style="{ color: wallet.color }"
+          class="h-4 w-4 text-item-2"
+        />
+        <UiIconWalletSavings
+          v-else-if="!wallet.countTotal && !wallet.isCredit"
+          :style="{ color: wallet.color }"
+          class="h-4 w-4 text-item-2"
+        />
+        <div v-else class="flex-center w-4">
           <WalletsIcon2
             :color="wallet.color"
             :name="wallet.name"
@@ -56,13 +45,25 @@ const emit = defineEmits<{
             @click.stop="emit('filter', props.walletId)"
           />
         </div>
+      </template>
 
-        <div class="text-item-base text-sm leading-none">
-          {{ wallet.name }}
-        </div>
+      <div v-if="!isShowIcons" class="px-1">
+        <WalletsIcon2
+          :color="wallet.color"
+          :name="wallet.name"
+          :walletId
+          @click.stop="emit('filter', props.walletId)"
+        />
+      </div>
+    </template>
+
+    <!-- Main -->
+    <template v-if="!props.alt">
+      <div class="text-sm leading-none">
+        {{ wallet.name }}
       </div>
 
-      <div class="text-item-base grow pr-1">
+      <div class="grow pr-1">
         <Amount
           :amount="wallet.amount"
           :currencyCode="wallet.currency"
@@ -71,11 +72,24 @@ const emit = defineEmits<{
           size="base"
         />
       </div>
-    </div>
+    </template>
 
-    <div
-      class="ml-9 mr-2 h-[1px] bg-item-5 group-last_hidden"
-      :class="{ 'ml-9': isShowIcons, 'ml-7': !isShowIcons }"
-    />
-  </div>
+    <!-- Alternative -->
+    <template v-if="props.alt">
+      <div class="grow">
+        <div class="text-2xs">
+          <Amount
+            :amount="wallet.amount"
+            :currencyCode="wallet.currency"
+            :isShowBaseRate="false"
+            align="left"
+          />
+        </div>
+
+        <div class="text-secondary text-sm leading-none">
+          {{ wallet.name }}
+        </div>
+      </div>
+    </template>
+  </UiElement>
 </template>

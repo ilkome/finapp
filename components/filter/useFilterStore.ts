@@ -1,7 +1,10 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
 import type { CategoryId } from '~/components/categories/types'
-import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/filter/useFilter'
+import type {
+  PeriodNameWithAll,
+  PeriodNameWithoutAll,
+} from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
@@ -30,7 +33,9 @@ export const useFilterStore = defineStore('filter', () => {
    * Period
    */
   const periodNameWithAll = ref<PeriodNameWithAll>('month')
-  const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() => periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value)
+  const periodNameWithoutAll = computed<PeriodNameWithoutAll>(() =>
+    periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value,
+  )
 
   function setDayDate(value: number) {
     periodNameWithAll.value = 'day'
@@ -48,8 +53,13 @@ export const useFilterStore = defineStore('filter', () => {
       if (!firstCreatedTrn)
         return
 
-      const firstCreatedTrnDate = dayjs(firstCreatedTrn.date).startOf(periodNameWithAll.value).valueOf()
-      const nextDate = dayjs(date.value).subtract(1, periodNameWithAll.value).startOf(periodNameWithAll.value).valueOf()
+      const firstCreatedTrnDate = dayjs(firstCreatedTrn.date)
+        .startOf(periodNameWithAll.value)
+        .valueOf()
+      const nextDate = dayjs(date.value)
+        .subtract(1, periodNameWithAll.value)
+        .startOf(periodNameWithAll.value)
+        .valueOf()
       if (nextDate > firstCreatedTrnDate) {
         date.value = nextDate
         localforage.setItem('finapp.filter.date', nextDate)
@@ -62,7 +72,10 @@ export const useFilterStore = defineStore('filter', () => {
       if (periodNameWithAll.value === 'all')
         return
 
-      const nextDate = dayjs(date.value).add(1, periodNameWithAll.value).startOf(periodNameWithAll.value).valueOf()
+      const nextDate = dayjs(date.value)
+        .add(1, periodNameWithAll.value)
+        .startOf(periodNameWithAll.value)
+        .valueOf()
       if (nextDate <= dayjs().valueOf()) {
         date.value = nextDate
         localforage.setItem('finapp.filter.date', nextDate)
@@ -102,7 +115,9 @@ export const useFilterStore = defineStore('filter', () => {
    * Categories
    */
   const catsIds = ref<CategoryId[]>([])
-  const transactibleCatsIds = computed(() => categoriesStore.getTransactibleIds(catsIds.value))
+  const transactibleCatsIds = computed(() =>
+    categoriesStore.getTransactibleIds(catsIds.value),
+  )
 
   function setCategoryId(categoryId: CategoryId) {
     if (catsIds.value.includes(categoryId))
@@ -144,34 +159,50 @@ export const useFilterStore = defineStore('filter', () => {
       page.scrollTop = 0
   }
 
-  const isShow = computed(() => catsIds.value.length > 0 || walletsIds.value.length > 0)
+  const isShow = computed(
+    () => catsIds.value.length > 0 || walletsIds.value.length > 0,
+  )
+
+  const selectedCategoriesIds = computed(() =>
+    catsIds.value.length > 0 ? transactibleCatsIds.value : [],
+  )
+
+  // const walletsIds = filterStore.walletsIds.length > 0
+  // ? filterStore.walletsIds
+  // : []
+
+  const selectedWalletsIds = computed(() =>
+    walletsIds.value.length > 0 ? walletsIds.value : [],
+  )
 
   return {
+    catsIds,
+    clearFilter,
     // Date
     date,
-    setDate,
-    setDateNow,
-    setPrevPeriodDate,
-    setNextPeriodDate,
-
-    walletsIds,
-    setWalletId,
-    removeWalletId,
-    toggleWalletId,
-
-    catsIds,
-    transactibleCatsIds,
-    setCategoryId,
-    removeCategoryId,
-    toggleCategoryId,
-
-    periodNameWithAll,
-    periodNameWithoutAll,
-    setDayDate,
-
-    clearFilter,
-
     // Computed
     isShow,
+    periodNameWithAll,
+    periodNameWithoutAll,
+
+    removeCategoryId,
+    removeWalletId,
+    selectedCategoriesIds,
+    selectedWalletsIds,
+
+    setCategoryId,
+    setDate,
+    setDateNow,
+    setDayDate,
+    setNextPeriodDate,
+
+    setPrevPeriodDate,
+    setWalletId,
+    toggleCategoryId,
+
+    toggleWalletId,
+
+    transactibleCatsIds,
+    walletsIds,
   }
 })

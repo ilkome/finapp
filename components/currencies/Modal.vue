@@ -15,7 +15,7 @@ function onSelect(code: CurrencyCode, close: () => void) {
 
 <template>
   <Teleport v-if="currenciesStore.isShownModal" to="body">
-    <BaseBottomSheet
+    <BaseBottomSheet2
       :maxHeight="height"
       :height="height"
       :isScrollerBlock="false"
@@ -41,7 +41,7 @@ function onSelect(code: CurrencyCode, close: () => void) {
           @onSelect="c => onSelect(c, close)"
         />
       </template>
-    </BaseBottomSheet>
+    </BaseBottomSheet2>
   </Teleport>
 </template>
 

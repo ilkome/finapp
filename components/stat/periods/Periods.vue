@@ -12,17 +12,17 @@ const appNavStore = useAppNav()
 const { t } = useI18n()
 
 const kdkdkdkdkdl = computed(() => {
-  let res = 'expenseTransactions'
+  let res = 'expense'
 
   switch (appNavStore.activeTabStat) {
     case 'expense':
-      res = 'expenseTransactions'
+      res = 'expense'
       break
     case 'income':
-      res = 'incomeTransactions'
+      res = 'income'
       break
     case 'summary':
-      res = 'sumTransactions'
+      res = 'sum'
       break
   }
 

@@ -8,14 +8,14 @@ export const config = {
     containLabel: true,
     left: '12',
     right: '12',
-    top: '16',
+    top: '14',
   },
 
   // Tooltip
   tooltip: {
     axisPointer: {
       // type: 'cross',
-      // animation: false,
+      animation: false,
     },
 
     backgroundColor: 'var(--chart-bg)',

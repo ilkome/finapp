@@ -38,7 +38,7 @@ UiPage(v-if="category")
         :href='href'
         @click='navigate'
       )
-        UiHeaderTitle
+        UiHeaderTitle2
           .pt-1.text-xs.font-medium.text-item-2
             | {{ $t('categories.title') }}
             template(v-if="parentCategory")

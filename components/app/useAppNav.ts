@@ -1,7 +1,9 @@
+import { useStorage } from '@vueuse/core'
 import type { AppNav } from '~/components/app/types'
 
 export const useAppNav = defineStore('appNav', () => {
-  const activeTabStat = ref<AppNav>('summary')
+  const activeTabStat = useStorage<AppNav>('activeTabStat', 'summary')
+
   const modals = useModal<['menu', 'walletsSort']>()
 
   return {
@@ -36,10 +38,10 @@ function useModal<T>() {
   }
 
   return {
+    closeAllModals,
+    closeModal,
+    isModalOpen,
     modals,
     openModal,
-    closeModal,
-    closeAllModals,
-    isModalOpen,
   }
 }

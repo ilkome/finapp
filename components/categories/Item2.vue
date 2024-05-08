@@ -4,6 +4,7 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import { getStyles } from '~/components/ui/getStyles'
 
 defineProps<{
+  activeItemId?: string | 0 | false | null
   categoryId: CategoryId
 }>()
 
@@ -16,9 +17,10 @@ const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
-  <div
-    :class="getStyles('item', ['link', 'center', 'gap1', 'rounded', 'padding2', 'minh'])"
-    @click="emit('click', categoryId)"
+  <UiElement
+    :isActive="activeItemId === categoryId"
+    class="group"
+    @click="e => emit('click', categoryId)"
   >
     <template
       v-if="categoriesStore.items[categoryId]"
@@ -26,7 +28,7 @@ const categoriesStore = useCategoriesStore()
       <div
         :class="categoriesStore.items[categoryId].icon"
         :style="{ color: categoriesStore.items[categoryId].color }"
-        class="text-2xl"
+        class="text-2xl leading-none"
         @click="emit('filter', categoryId)"
       />
 
@@ -43,5 +45,5 @@ const categoriesStore = useCategoriesStore()
         </div>
       </div>
     </template>
-  </div>
+  </UiElement>
 </template>

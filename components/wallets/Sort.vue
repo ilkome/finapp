@@ -21,11 +21,11 @@ async function saveWalletsOrder() {
 
   emit('closeModal')
   $toast(UiToastContent, {
-    data: {
-      title: random(successEmo),
-      description: 'Saved',
-    },
     autoClose: 6000,
+    data: {
+      description: 'Saved',
+      title: random(successEmo),
+    },
     type: 'success',
   } as ToastOptions)
 }

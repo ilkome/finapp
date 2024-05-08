@@ -13,7 +13,7 @@ const categoriesStore = useCategoriesStore()
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle>{{ $t("categories.name") }}</UiHeaderTitle>
+      <UiHeaderTitle2>{{ $t("categories.name") }}</UiHeaderTitle2>
       <template #actions>
         <UiHeaderLink @click="$router.push('/categories/new')">
           <UiIconAdd class="h-5 w-5 group-hover_text-white" />
@@ -21,12 +21,10 @@ const categoriesStore = useCategoriesStore()
       </template>
     </UiHeader>
 
-    <!-- List -->
-    <div class="px-2 pt-1 sm_max-w-xs ">
+    <div class="grow px-2">
       <CategoriesList
-        :class="getStyles('item', ['bg', 'rounded'])"
-        class="lg_max-w-[360px]"
         :ids="categoriesStore.categoriesRootIds"
+        class=""
         @click="(catId) => $router.push(`/categories/${catId}`)"
       />
     </div>

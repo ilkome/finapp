@@ -1,8 +1,8 @@
 <script setup lang="ts">
 defineProps<{
   icon?: string
-  name: string
   isActive?: boolean
+  name: string
 }>()
 </script>
 

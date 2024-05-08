@@ -26,7 +26,7 @@ UiPage(v-if="wallet")
   UiHeader
     router-link(v-slot="{ href, navigate }" :to="`/wallets/${walletId}`" custom)
       a.grow.hocus_bg-item-5(:href="href" @click="navigate")
-        UiHeaderTitle
+        UiHeaderTitle2
           .pb-1.text-xs.font-medium.text-item-2
             | {{ $t("wallets.editTitle") }}
 

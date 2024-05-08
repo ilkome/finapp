@@ -10,16 +10,16 @@ const stat = inject('stat') as StatProvider
 <template>
   <div class="flex">
     <div
-      :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30 !hocus_transparent': stat.isLastPeriod.value }]"
-      class="w-8"
+      :class="[...getStyles('item', ['link', 'rounded', 'minh2', 'center']), { 'opacity-30 !hocus_transparent': stat.isLastPeriod.value }]"
+      class="w-8 bg-item-4"
       @click="period.setNextPeriodDate(stat.avaDate.value)"
     >
       <UiIconChevron class="size-8" />
     </div>
 
     <div
-      :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30 !hocus_transparent': stat.isToday.value }]"
-      class="w-8"
+      :class="[...getStyles('item', ['link', 'rounded', 'minh2', 'center']), { 'opacity-30 !hocus_transparent': stat.isToday.value }]"
+      class="w-8 bg-item-4"
       @click="period.setPrevPeriodDate"
     >
       <UiIconChevron class="size-8 rotate-180" />
@@ -27,8 +27,8 @@ const stat = inject('stat') as StatProvider
 
     <div
       v-if="!stat.isToday.value"
-      :class="getStyles('item', ['link', 'rounded'])"
-      class="flex-center w-8"
+      :class="getStyles('item', ['link', 'rounded', 'minh2', 'center'])"
+      class="flex-center w-8 bg-item-4"
       @click="period.setPeriodAndDate(period.periodNameWithoutAll.value)"
     >
       <UiIconReturn class="size-5" />

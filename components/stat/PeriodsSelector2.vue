@@ -33,18 +33,27 @@ const isShowAdd = computed(() => showedPeriods.value >= stat.filterPeriodMaxDate
 
 <template>
   <UiTabs2 class="gap-1">
-    <UiTabsItem4
+    <UiTabsItem2
+      v-for="periodItem in filter.periodsNames.value"
+      :key="periodItem.slug"
+      :isActive="periodItem.slug === filter.periodNameWithoutAll.value"
+      @click="filter.setPeriodAndDate(periodItem.slug)"
+    >
+      {{ periodItem.name }}
+    </UiTabsItem2>
+
+    <UiTabsItem2
       :isActive="isShowRemove"
       @click="removePeriod()"
     >
       <i class="mdi mdi-minus" />
-    </UiTabsItem4>
+    </UiTabsItem2>
 
-    <UiTabsItem4
+    <UiTabsItem2
       :isActive="isShowAdd"
       @click="addPeriod()"
     >
       <i class="mdi mdi-plus" />
-    </UiTabsItem4>
+    </UiTabsItem2>
   </UiTabs2>
 </template>

@@ -27,7 +27,7 @@ const list = computed(() => {
 
 <template>
   <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden">
-    <div class="px-2">
+    <div>
       <input
         v-model="searchInput"
         class="text-item-base focus:text-item-1 focus:bg-item-5 focus:border-accent-4 focus:outline-none m-0 w-full rounded-lg border border-solid border-item-5 bg-item-4 px-3 py-2 text-base font-normal transition ease-in-out placeholder_text-item-2"
@@ -37,7 +37,7 @@ const list = computed(() => {
     </div>
 
     <div
-      class="scrollerBlock mt-3 flex flex-col gap-1 overflow-y-auto px-3 pb-3"
+      class="scrollerBlock mt-3 flex flex-col gap-1 overflow-y-auto pb-3"
     >
       <template v-if="list.length === 0">
         <div class="py-3 text-center">
@@ -45,18 +45,19 @@ const list = computed(() => {
         </div>
       </template>
 
-      <template v-if="!searchInput">
-        <div
+      <div v-if="!searchInput">
+        <UiElement
           v-for="currencyCode in walletsStore.currenciesUsed"
           :key="currencyCode"
-          :class="{ '!bg-item-3 text-item-1': currencyCode === active }"
-          class="flex cursor-pointer items-center gap-x-3 rounded-md bg-item-4 px-3 py-2 hocus_bg-item-5"
+          :isActive="currencyCode === active"
+          class="group"
           @click="emit('onSelect', currencyCode)"
         >
           <div class="flex items-center">
-            <div class="w-14">
+            <div class="w-14 pl-1">
               {{ currencyCode }}
             </div>
+
             <div
               v-if="currencies.find((c) => c.code === currencyCode)"
               class="text-sm"
@@ -64,28 +65,29 @@ const list = computed(() => {
               {{ currencies.find((c) => c.code === currencyCode)?.name }}
             </div>
           </div>
-        </div>
-        <div class="my-2" />
-      </template>
+        </UiElement>
 
-      <template v-if="list.length > 0">
-        <div
+        <div class="my-3" />
+      </div>
+
+      <div v-if="list.length > 0">
+        <UiElement
           v-for="currency in list"
           :key="currency.code"
-          :class="{ '!bg-item-3 text-item-1': currency.code === active }"
-          class="flex cursor-pointer items-center gap-x-3 rounded-md bg-item-4 px-3 py-2 hocus_bg-item-5"
+          :isActive="currency.code === active"
+          class="group"
           @click="emit('onSelect', currency.code)"
         >
           <div class="flex items-center">
-            <div class="w-14">
+            <div class="w-14 pl-1">
               {{ currency.code }}
             </div>
             <div class="text-sm">
               {{ currency.name }}
             </div>
           </div>
-        </div>
-      </template>
+        </UiElement>
+      </div>
     </div>
   </div>
 </template>

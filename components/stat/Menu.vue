@@ -6,28 +6,28 @@ import { useAppNav } from '~/components/app/useAppNav'
 const { $i18n } = useNuxtApp()
 
 const menu = computed<{
-  idx: number
   id: AppNav
+  idx: number
   name: string | unknown
 }[]>(() => [{
-  idx: 4,
   id: 'periods',
+  idx: 4,
   name: $i18n.t('stat.periods'),
 }, {
-  idx: 0,
   id: 'summary',
+  idx: 0,
   name: $i18n.t('stat.summary'),
 }, {
-  idx: 1,
   id: 'expense',
+  idx: 1,
   name: $i18n.t('money.expense'),
 }, {
-  idx: 2,
   id: 'income',
+  idx: 2,
   name: $i18n.t('money.income'),
 }, {
-  idx: 3,
   id: 'trns',
+  idx: 3,
   name: $i18n.t('trns.shortTitle'),
 }])
 

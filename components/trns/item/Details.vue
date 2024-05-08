@@ -106,7 +106,7 @@ function setTrnEdit() {
         <div>
           <div class="pb-2">
             <WalletsItem
-              :wallet="walletsItemsSorted[trn.incomeWalletId]"
+              :wallet="walletsStore.items[trn.incomeWalletId]"
               :walletId="trn.incomeWalletId"
             />
           </div>
@@ -182,7 +182,6 @@ function setTrnEdit() {
     padding-top 6px
 
   &__categoryIcon
-    margin-top -38px
     padding-bottom 12px
 
   &__categoryName

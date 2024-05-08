@@ -18,7 +18,7 @@ const emit = defineEmits<{
 const categoriesStore = useCategoriesStore()
 
 function select(id: CategoryId) {
-  if (categoriesStore.isCategoryHasChildren(id)) {
+  if (categoriesStore.hasChildren(id)) {
     emit('onClickParent', id)
     return
   }
@@ -36,18 +36,15 @@ function onFilter(id: CategoryId) {
 
 <template>
   <div class="p-2 py-2.5">
-    <template
+    <CategoriesItem
       v-for="categoryId in props.ids"
       :key="categoryId"
-    >
-      <CategoriesItem
-        :activeItemId="props.activeItemId"
-        :categoryId="categoryId"
-        :category="categoriesStore.items[categoryId]"
-        class="group"
-        @click="select(categoryId)"
-        @filter.stop="onFilter(categoryId)"
-      />
-    </template>
+      :activeItemId="props.activeItemId"
+      :categoryId="categoryId"
+      :category="categoriesStore.items[categoryId]"
+      class="group"
+      @click="select(categoryId)"
+      @filter.stop="onFilter(categoryId)"
+    />
   </div>
 </template>

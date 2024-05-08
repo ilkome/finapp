@@ -3,20 +3,20 @@ import useMenuData from '~/components/menu/useMenuData'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = withDefaults(defineProps<{
+  isShowTitle?: boolean
   item: unknown
   menuId: unknown
-  isShowTitle?: boolean
 }>(), {
   isShowTitle: true,
 })
 
-const { onClick, checkIsActive } = useMenuData()
+const { checkIsActive, onClick } = useMenuData()
 </script>
 
 <template>
   <div
     :class="[
-      ...getStyles('item', ['link', 'bg', 'rounded', 'padding1', 'menu']),
+      ...getStyles('item', ['link', 'rounded', 'padding1', 'menu']),
       { '!text-primary': checkIsActive(props.menuId) },
     ]"
     class="group"

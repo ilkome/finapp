@@ -5,13 +5,13 @@ import { TrnType } from '~/components/trns/types'
 
 export function getAmountInRate({
   amount,
-  currencyCode,
   baseCurrencyCode,
+  currencyCode,
   rates,
 }: {
   amount: number
-  currencyCode: string
   baseCurrencyCode?: string // TODO: add typings
+  currencyCode: string
   rates?: Record<string, number> // TODO: add typings
 }): number {
   if (!baseCurrencyCode || !rates)
@@ -24,21 +24,21 @@ export function getAmountInRate({
 }
 
 interface TotalProps {
-  trnsIds: TrnId[]
-  trnsItems: Record<TrnId, TrnItem>
-  walletsItems: Record<WalletId, WalletItem>
-  transferCategoriesIds?: CategoryId[]
-  walletsIds?: WalletId[]
   baseCurrencyCode?: string // TODO: add typings
   rates?: Record<string, number> // TODO: add typings
+  transferCategoriesIds?: CategoryId[]
+  trnsIds: TrnId[]
+  trnsItems: Record<TrnId, TrnItem>
+  walletsIds?: WalletId[]
+  walletsItems: Record<WalletId, WalletItem>
 }
 
 export interface TotalReturns {
-  incomeTransactions: number
-  expenseTransactions: number
-  sumTransactions: number
-  incomeTransfers: number
+  expense: number
   expenseTransfers: number
+  income: number
+  incomeTransfers: number
+  sum: number
   sumTransfers: number
 }
 
@@ -54,8 +54,8 @@ export function getTotal(props: TotalProps): TotalReturns {
     })
   }
 
-  let incomeTransactions = 0
-  let expenseTransactions = 0
+  let income = 0
+  let expense = 0
   let incomeTransfers = 0
   let expenseTransfers = 0
 
@@ -73,14 +73,14 @@ export function getTotal(props: TotalProps): TotalReturns {
       if (trn.type === TrnType.Income) {
         isTransferCategory
           ? incomeTransfers += sum
-          : incomeTransactions += sum
+          : income += sum
       }
 
       // Expense
       if (trn.type === TrnType.Expense) {
         isTransferCategory
           ? expenseTransfers += sum
-          : expenseTransactions += sum
+          : expense += sum
       }
     }
 
@@ -136,19 +136,20 @@ export function getTotal(props: TotalProps): TotalReturns {
   }
 
   // Total
-  const sumTransactions = incomeTransactions - expenseTransactions
+  const sum = income - expense
   const sumTransfers = incomeTransfers - expenseTransfers
 
   return {
-    income: incomeTransactions,
-    expense: expenseTransactions,
+    expense,
+    expense,
 
-    incomeTransactions,
-    expenseTransactions,
-    sumTransactions,
+    expenseTransfers,
+    income,
+    income,
 
     incomeTransfers,
-    expenseTransfers,
+    sum,
+    sum,
     sumTransfers,
   }
 }

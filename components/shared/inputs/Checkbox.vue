@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-  value: boolean
   title?: string
+  value: boolean
 }>()
 
 const emit = defineEmits<{
@@ -32,7 +32,7 @@ const emit = defineEmits<{
   position relative
   width 44px
   height 24px
-  background var(--c-bg-8)
+  background var(--c-bg-9)
   border-radius 20px
   anim()
 

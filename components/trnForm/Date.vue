@@ -64,7 +64,12 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       </div>
     </div>
 
-    <VDropdown class="grow">
+    <VDropdown
+      :overflowPadding="12"
+      autoBoundaryMaxSize
+      class="grow"
+      placement="bottom-start"
+    >
       <div
         class="flex items-center rounded-md px-3 py-2 text-xs leading-none hocus_bg-item-5"
         v-html="formattedDate"

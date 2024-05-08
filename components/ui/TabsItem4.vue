@@ -11,17 +11,14 @@ const emit = defineEmits(['click'])
 <template>
   <div
     :class="[
-      {
-        '!bg-item-3 !text-primary': isActive,
-      },
-      getStyles('item', ['minh']),
+      ...getStyles('item', ['link', 'rounded', 'minh2']),
+      { '!bg-item-3 !text-primary': isActive },
     ]"
     class="
-      select-none
-      grow px-2 flex gap-1 items-center justify-center
-      text-primary/80 text-sm
-      hocus_bg-item-5
-      @4xl/tabs_text-lg @4xl/tabs_p-3
+      aspect-square
+      flex gap-1 items-center justify-center
+      border-1 rounded-md
+      text-secondary2 text-sm leading-none
     "
     @click="emit('click')"
   >

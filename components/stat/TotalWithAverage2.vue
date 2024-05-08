@@ -6,10 +6,10 @@ defineProps<{
   item: {
     amount: number
     averageAmount: number
-    moneyTypeSlugSum: MoneyTypeSlugSum
-    moneyTypeNumber: MoneyTypeNumber
     colorizeType: MoneyTypeSlug
     isShownAverage: boolean
+    moneyTypeNumber: MoneyTypeNumber
+    moneyTypeSlugSum: MoneyTypeSlugSum
   }
 }>()
 

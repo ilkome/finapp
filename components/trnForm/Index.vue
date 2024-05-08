@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import Swiper, { Pagination } from 'swiper'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import Swiper, { Pagination } from 'swiper'
 import 'swiper/css'
 import 'swiper/css/pagination'
 
@@ -76,13 +76,13 @@ onMounted(init)
         <div class="swiper-wrapper">
           <!-- History -->
           <div
-            class="swiper-slide bg-foreground-2 sm_max-w-xs sm_rounded-l-xl"
+            class="swiper-slide bg-foreground-2 sm_max-w-sm sm_rounded-l-xl"
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide
               v-if="sliderObj"
               :slider="sliderObj"
-              class="px-3 py-4"
+              class="px-2 pt-4 pb-6"
             />
           </div>
 
@@ -95,13 +95,14 @@ onMounted(init)
             >
               <TrnFormMain
                 :maxHeight
+                class="px-2 pt-4 pb-6"
               />
             </div>
           </div>
 
           <!-- Quick selector -->
           <div
-            class="swiper-slide bg-foreground-2 sm_max-w-xs sm_rounded-r-xl"
+            class="swiper-slide bg-foreground-2 sm_max-w-[260px] sm_rounded-r-xl"
             :style="{ height: maxHeight }"
           >
             <div class="scroll scrollerBlock">
@@ -127,6 +128,7 @@ onMounted(init)
                       :walletId
                       :wallet
                       isHideDots
+                      alt
                       @click="trnFormStore.values.walletId = walletId"
                     />
                   </WalletsList>

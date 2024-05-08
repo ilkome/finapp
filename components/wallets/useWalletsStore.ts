@@ -1,20 +1,21 @@
-import localforage from "localforage";
-import { getTotal } from "~/components/amount/getTotal";
-import type { CurrencyCode } from "~/components/currencies/types";
-import { getTrnsIds } from "~/components/trns/getTrns";
-import { useTrnsStore } from "~/components/trns/useTrnsStore";
-import { useUserStore } from "~/components/user/useUser";
+import localforage from 'localforage'
+import { deepUnref } from 'vue-deepunref'
+import { getTotal } from '~/components/amount/getTotal'
+import type { CurrencyCode } from '~/components/currencies/types'
+import { getTrnsIds } from '~/components/trns/getTrns'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useUserStore } from '~/components/user/useUser'
 import type {
   WalletId,
   WalletItemWithAmount,
   Wallets,
-} from "~/components/wallets/types";
+} from '~/components/wallets/types'
 import {
   getDataAndWatch,
   unsubscribeData,
   updateData,
-} from "~/services/firebase/api";
-import { deepUnref } from 'vue-deepunref'
+} from '~/services/firebase/api'
+import { uniqueElementsBy } from '~/utils/simple'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
@@ -80,38 +81,34 @@ export const useWalletsStore = defineStore('wallets', () => {
   /**
    * Get total in every wallet
    */
-  const totals = computed<Record<WalletId, number>>(() => {
+
+  function getWalletTotal(walletId: WalletId) {
+    const trnsIds = getTrnsIds({
+      trnsItems: trnsStore.items,
+      walletsIds: [walletId],
+    })
+
+    const { sum, sumTransfers } = getTotal({
+      trnsIds,
+      trnsItems: trnsStore.items,
+      walletsIds: [walletId],
+      walletsItems: items.value,
+    })
+
+    return sum + sumTransfers
+  }
+
+  const totals = computed(() => {
     if (!hasItems.value)
       return {}
 
-    const walletsItems = items.value
-    const trnsItems = trnsStore.items
-
-    function getWalletTotal(walletId: WalletId) {
-      const trnsIds = getTrnsIds({
-        trnsItems,
-        walletsIds: [walletId],
-      })
-
-      const { sumTransactions, sumTransfers } = getTotal({
-        trnsIds,
-        trnsItems,
-        walletsIds: [walletId],
-        walletsItems,
-      })
-
-      return sumTransactions + sumTransfers
-    }
-
-    const walletsTotal2 = Object.keys(walletsItems).reduce(
-      (acc: Record<WalletId, number>, prev: WalletId) => {
-        acc[prev] = getWalletTotal(prev)
+    return Object.keys(items.value).reduce(
+      (acc, walletId) => {
+        acc[walletId] = getWalletTotal(walletId)
         return acc
       },
-      {} as Record<WalletId, number>,
+      {} as Record<WalletId, WalletItemWithAmount['amount']>,
     )
-
-    return walletsTotal2
   })
 
   const sortedItems = computed(() =>
@@ -127,12 +124,8 @@ export const useWalletsStore = defineStore('wallets', () => {
     ),
   )
 
-  const currenciesUsed = computed(() =>
-    sortedIds.value.reduce((acc, id) => {
-      const currency = items.value[id].currency
-      !acc.includes(currency) && acc.push(currency)
-      return acc
-    }, [] as CurrencyCode[]),
+  const currenciesUsed = computed<CurrencyCode[]>(() =>
+    uniqueElementsBy(items.value, 'currency'),
   )
 
   return {

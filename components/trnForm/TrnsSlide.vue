@@ -39,7 +39,7 @@ const trnsIds = computed(() => {
       walletsIds.push($trnForm.values.walletId)
 
     const categoryId = $trnForm.values.categoryId!
-    const childIds = categoriesStore.getChildCategoriesIds(categoryId)
+    const childIds = categoriesStore.getChildsIds(categoryId)
     categoriesIds = childIds.length > 0 ? childIds : [categoryId]
   }
 
@@ -81,12 +81,12 @@ const tabs = computed(() => [
 </script>
 
 <template>
-  <div class="grid h-full grid-rows-[1fr,auto] overflow-hidden">
+  <div class="grid gap-2 sm_max-w-sm grid h-full grid-rows-[1fr,auto] overflow-hidden">
     <TrnsListWithControl
       :defaultFilterTrnsPeriod="periodGrouped"
       :size="10"
       :trnsIds="trnsIds"
-      class="sm_max-w-sm grow"
+      class="overflow-hidden"
       isFilterByDay
       isShowGroupSum
       @onChangePeriod="(v) => (periodGrouped = v)"
@@ -97,17 +97,15 @@ const tabs = computed(() => [
       </template>
     </TrnsListWithControl>
 
-    <div class="pb-2 pt-2">
-      <UiTabs>
-        <UiTabsItem3
-          v-for="tab in tabs"
-          :key="tab.id"
-          :isActive="tab.id === filterBy"
-          @click="changeFilter(tab.id)"
-        >
-          {{ tab.name }}
-        </UiTabsItem3>
-      </UiTabs>
-    </div>
+    <UiTabs>
+      <UiTabsItem
+        v-for="tab in tabs"
+        :key="tab.id"
+        :isActive="tab.id === filterBy"
+        @click="changeFilter(tab.id)"
+      >
+        {{ tab.name }}
+      </UiTabsItem>
+    </UiTabs>
   </div>
 </template>

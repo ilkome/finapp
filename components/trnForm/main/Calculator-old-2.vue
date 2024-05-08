@@ -51,14 +51,14 @@ onLongPress(
 
 <template lang="pug">
 .px-2.grid.gap-0(class="grid-cols-[auto,1fr,auto]")
-  .w-20.flex.flex-col
+  .w-20.flex.flex-col.gap-2
     TrnFormMainCalculatorButton(@click="onClick('*')"): .mdi.mdi-plus.rotate-45
     TrnFormMainCalculatorButton(@click="onClick('-')"): .mdi.mdi-minus
     TrnFormMainCalculatorButton(@click="onClick('+')"): .mdi.mdi-plus
     TrnFormMainCalculatorButton(@click="onClick('/')"): .mdi.mdi-slash-forward
 
-  .flex.flex-col
-    .flex.justify-center(
+  .flex.flex-col.gap-2
+    .flex.gap-2.justify-center(
       v-for="(row, rowIdx) in buttons"
       :key="rowIdx"
     )
@@ -69,7 +69,7 @@ onLongPress(
         @click="onClick(btn)"
       ) {{ btn }}
 
-    .flex.justify-center
+    .flex.gap-2.justify-center
       TrnFormMainCalculatorButton(@click="onClick('.')") .
       TrnFormMainCalculatorButton(@click="onClick('0')") 0
       TrnFormMainCalculatorButton(

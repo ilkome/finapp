@@ -15,7 +15,7 @@ const emit = defineEmits<{
 const categoriesStore = useCategoriesStore()
 
 function select(id: CategoryId, isForce: boolean) {
-  if (!isForce && categoriesStore.isCategoryHasChildren(id))
+  if (!isForce && categoriesStore.hasChildren(id))
     return
 
   emit('onSelected', id)
@@ -30,7 +30,7 @@ function onFilter(id: CategoryId) {
 </script>
 
 <template>
-  <div class="p-2 py-2.5 bg-item-4 overflow-hidden overflow-y-auto w-[90vw] max-w-xs max-h-[60vh]">
+  <div class="p-2 py-2.5 bg-item-4 overflow-hidden overflow-y-auto max-h-[50vh] _w-[90vw] min-w-[260px]">
     <template
       v-for="categoryId in categoriesStore.categoriesRootIds"
       :key="categoryId"
@@ -44,10 +44,12 @@ function onFilter(id: CategoryId) {
         @filter.stop="onFilter(categoryId)"
       />
 
+      <!-- Position on left -->
       <VDropdown
         v-else
-        :overflowPadding="18"
+        :overflowPadding="12"
         autoBoundaryMaxSize
+        placement="bottom-start"
         class="group"
       >
         <CategoriesItem
@@ -56,16 +58,24 @@ function onFilter(id: CategoryId) {
           @filter.stop="onFilter(categoryId)"
         />
 
-        <template #popper>
+        <template #popper="{ hide: hideIn }">
           <div class="flex items-center px-3 h-12">
             <UiTitle>{{ categoriesStore.items[categoryId].name }}</UiTitle>
-            <BaseBottomSheetClose v-close-popper />
+            <BaseBottomSheetClose
+              v-if="categoriesStore.items[categoryId].childIds"
+              v-close-popper
+            />
+            <BaseBottomSheetClose
+              v-else
+              v-close-popper.all
+            />
           </div>
 
           <div class="p-2 py-2.5 bg-item-4 overflow-hidden overflow-y-auto w-[90vw] max-w-xs max-h-[60vh]">
             <CategoriesItem
               v-for="childCategoryId in categoriesStore.items[categoryId].childIds"
               :key="childCategoryId"
+              :hide
               :category="categoriesStore.items[childCategoryId]"
               :categoryId="childCategoryId"
               class="group"

@@ -12,19 +12,19 @@ export enum WalletType {
 }
 
 export interface WalletItem {
-  id: WalletId
-  name: string
-  description?: string
-  type: WalletType
-  withdrawal?: boolean
-  currency: CurrencyCode
+  archived?: boolean
   color: string
-  order: number
-  // @deprecated: use withdrawal type
-  isCredit?: boolean
   // @deprecated: use withdrawal
   countTotal?: boolean
-  archived?: boolean
+  currency: CurrencyCode
+  description?: string
+  id: WalletId
+  // @deprecated: use withdrawal type
+  isCredit?: boolean
+  name: string
+  order: number
+  type: WalletType
+  withdrawal?: boolean
 }
 
 export type Wallets = Record<WalletId, WalletItem>
@@ -35,21 +35,21 @@ export interface WalletWithTotal extends WalletItem {
 }
 
 export interface WalletsCurrenciesGroup {
+  all: () => true
   card: (v: WalletWithTotal) => boolean
-  electron: (v: WalletWithTotal) => boolean
-  deposit: (v: WalletWithTotal) => boolean
   cash: (v: WalletWithTotal) => boolean
   credits: (v: WalletWithTotal) => boolean
+  deposit: (v: WalletWithTotal) => boolean
+  electron: (v: WalletWithTotal) => boolean
   savings: (v: WalletWithTotal) => boolean
   withdrawal: (v: WalletWithTotal) => boolean
-  all: () => true
 }
 
 export interface Item {
   count: number
+  ids: WalletId[]
   total: number
   totalInBase: number
-  ids: WalletId[]
 }
 
 export interface WalletItemWithAmount extends WalletItem {
@@ -59,6 +59,7 @@ export interface WalletItemWithAmount extends WalletItem {
 export interface WalletForm {
   color: string
   countTotal: boolean
+  creditLimit?: number
   currency: string
   description?: string
   isCredit: boolean

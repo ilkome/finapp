@@ -18,24 +18,34 @@ export default defineComponent({
 })
 </script>
 
-<template lang="pug">
-UiPage
-  UiHeader
-    router-link(v-slot="{ href, navigate }" to="/wallets" custom)
-      a.grow.hocus_bg-item-5(:href="href" @click="navigate")
-        UiHeaderTitle
-          .pb-1.text-xs.font-medium.text-item-2
-            | {{ $t("wallets.createNewTitle") }}
+<template>
+  <UiPage>
+    <div class="h-full grid grid-rows-[auto,1fr]">
+      <UiHeader>
+        <router-link v-slot="{ href, navigate }" to="/wallets" custom>
+          <a class="grow hocus_bg-item-5" :href="href" @click="navigate">
+            <UiHeaderTitle2>
+              <div class="pb-1 text-xs font-medium text-item-2">
+                {{ $t("wallets.createNewTitle") }}
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="text-item-1 text-2xl font-semibold">
+                  {{ walletForm.name ? walletForm.name : $t("wallets.form.name.label") }}
+                </div>
+                <div class="p-1 flex-center rounded text-icon-primary text-2xs" :style="{ background: walletForm.color }">
+                  {{ walletForm.currency }}
+                </div>
+              </div>
+            </UiHeaderTitle2>
+          </a>
+        </router-link>
+      </UiHeader>
 
-          .flex.items-center.gap-3
-            .text-item-1.text-2xl.font-semibold
-              | {{ walletForm.name ? walletForm.name : $t("wallets.form.name.label") }}
-            .p-1.flex-center.rounded.text-icon-primary.text-2xs(:style="{ background: walletForm.color }")
-              | {{ walletForm.currency }}
-
-  WalletsForm(
-    :walletForm="walletForm"
-    @afterSave="afterSave"
-    @updateValue="updateValue"
-  )
+      <WalletsForm
+        :walletForm="walletForm"
+        @afterSave="afterSave"
+        @updateValue="updateValue"
+      />
+    </div>
+  </UiPage>
 </template>

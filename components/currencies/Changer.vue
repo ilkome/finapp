@@ -8,7 +8,10 @@ const walletsStore = useWalletsStore()
 </script>
 
 <template>
-  <UiTabs2 v-if="walletsStore.currenciesUsed.length > 1">
+  <UiTabs2
+    v-if="walletsStore.currenciesUsed.length > 1"
+    class="gap-1"
+  >
     <UiTabsItem2
       v-for="currency in walletsStore.currenciesUsed"
       :key="currency"

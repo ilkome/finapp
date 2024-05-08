@@ -27,34 +27,34 @@ interface BaseTrn {
 }
 
 export interface Transaction extends BaseTrn {
-  type: TrnType.Income | TrnType.Expense
   amount: number
   categoryId: CategoryId
+  type: TrnType.Income | TrnType.Expense
   walletId: WalletId
 }
 
 export interface Transfer extends BaseTrn {
-  type: TrnType.Transfer
   categoryId: 'transfer'
-
-  incomeWalletId: WalletId
-  incomeAmount: number
+  expenseAmount: number
 
   expenseWalletId: WalletId
-  expenseAmount: number
+  incomeAmount: number
+
+  incomeWalletId: WalletId
+  type: TrnType.Transfer
 }
 
 /** @deprecated: use Transfer */
 export interface TransferDeprecated {
-  type: TrnType.Transfer
-  date: number
-  edited: number
-  categoryId: 'transfer'
-
   amountFrom: number
-  walletFromId: WalletId
-
   amountTo: number
+  categoryId: 'transfer'
+  date: number
+
+  edited: number
+  type: TrnType.Transfer
+
+  walletFromId: WalletId
   walletToId: WalletId
 }
 
@@ -72,6 +72,17 @@ export interface TrnsGetterProps {
   }
   trnType?: TrnType
   trnsItems: Record<string, TrnItem>
+  untilDate?: number
+  walletsIds?: WalletId[]
+}
+
+export interface TrnsGetterProps2 {
+  categoriesIds?: CategoryId[]
+  dates?: {
+    from: number
+    until: number
+  }
+  trnType?: TrnType
   untilDate?: number
   walletsIds?: WalletId[]
 }

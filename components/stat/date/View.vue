@@ -13,9 +13,13 @@ const formattedDate = computed(() => formatDateByPeriod(period.date.value, perio
 </script>
 
 <template>
-  <VDropdown>
+  <VDropdown
+    :overflowPadding="12"
+    autoBoundaryMaxSize
+    placement="bottom-start"
+  >
     <div
-      :class="getStyles('item', ['link', 'rounded'])"
+      :class="getStyles('item', ['link', 'rounded', 'minh2', 'center'])"
       class="flex items-center px-3 py-2 text-base font-medium leading-none text-item-1"
     >
       {{ period.periodNameWithAll.value === "all" ? $t("dates.all.simple") : formattedDate }}

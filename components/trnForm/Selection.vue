@@ -56,18 +56,13 @@ function onSelectWallet(id: WalletId, close: () => void) {
   trnFormStore.values.walletId = id
   close()
 }
-
-function onSelectCategory(id: CategoryId, close: () => void) {
-  trnFormStore.values.categoryId = id
-  close()
-}
 </script>
 
 <template>
   <Teleport to="body">
     <BaseBottomSheet2
       :isShow="isShow"
-      drugClassesCustom="md_w-96 bg-foreground-2 md_bg-transparent"
+      drugClassesCustom="bg-foreground-2"
       @closed="isShow = false"
     >
       <template #handler="{ close }">
@@ -79,12 +74,13 @@ function onSelectCategory(id: CategoryId, close: () => void) {
         <div ref="sliderRef" class="swiper-container">
           <div class="swiper-wrapper">
             <!-- Wallets -->
-            <div class="swiper-slide py-4" :style="{ height: maxHeight }">
+            <div class="swiper-slide _!w-auto py-4" :style="{ height: maxHeight }">
               <UiTitle class="px-3 pb-2 pt-1.5">
                 {{ $t("wallets.title") }}
               </UiTitle>
 
               <WalletsSelector
+                class="scrollerBlock"
                 :hide="close"
                 :activeItemId="trnFormStore.values.walletId"
                 :style="{ maxHeight: props.maxHeight }"
@@ -93,68 +89,59 @@ function onSelectCategory(id: CategoryId, close: () => void) {
             </div>
 
             <!-- Fast Categories -->
-            <div class="swiper-slide overflow-y-auto" :style="{ height: maxHeight }">
-              <!-- Favorite categories -->
-              <div
-                v-if="categoriesStore.favoriteCategoriesIds.length > 0"
-              >
-                <UiTitle
-                  class="sticky top-0 pt-4 pb-2 px-3 bg-foreground-2"
-                  @click="trnFormStore.ui.catsRootModal = true"
+            <div class="swiper-slide _!w-auto" :style="{ height: maxHeight }">
+              <div class="h-full overflow-y-auto scrollerBlock">
+                <!-- Favorite categories -->
+                <div
+                  v-if="categoriesStore.favoriteCategoriesIds.length > 0"
                 >
-                  {{ $t("categories.favoriteTitle") }}
-                  {{ $t("categories.title") }}
-                </UiTitle>
+                  <UiTitle
+                    class="sticky top-0 pt-4 pb-2 px-3 bg-foreground-2"
+                    @click="trnFormStore.ui.catsRootModal = true"
+                  >
+                    {{ $t("categories.favoriteTitle") }}
+                    {{ $t("categories.title") }}
+                  </UiTitle>
 
-                <CategoriesSelector2
-                  :activeItemId="trnFormStore.values.categoryId"
-                  :hide="close"
-                  :ids="categoriesStore.favoriteCategoriesIds"
-                  @onClickParent="onSelectParentCategory"
-                  @onSelected="id => trnFormStore.values.categoryId = id"
-                />
-              </div>
-
-              <!-- Recent categories -->
-              <div
-                v-if="categoriesStore.recentCategoriesIds.length > 0"
-              >
-                <UiTitle
-                  class="sticky pt-4 pb-2 top-0 px-3 bg-foreground-2"
-                  @click="trnFormStore.ui.catsRootModal = true"
-                >
-                  {{ $t("categories.lastUsedTitle") }}
-                  {{ $t("categories.title") }}
-                </UiTitle>
-
-                <CategoriesSelector2
-                  :activeItemId="trnFormStore.values.categoryId"
-                  :hide="close"
-                  :ids="categoriesStore.recentCategoriesIds"
-                  @onClickParent="onSelectParentCategory"
-                  @onSelected="id => trnFormStore.values.categoryId = id"
-                />
-
-                <!-- <div class="px-3">
-                  <CategoriesList
-                    v-if="sliderObj"
-                    :ids="categoriesStore.recentCategoriesIds"
+                  <CategoriesSelector2
                     :activeItemId="trnFormStore.values.categoryId"
-                    :slider="sliderObj"
-                    class="!gap-x-1"
-                    @click="(id) => (trnFormStore.values.categoryId = id)"
+                    :hide="close"
+                    :ids="categoriesStore.favoriteCategoriesIds"
+                    @onClickParent="onSelectParentCategory"
+                    @onSelected="id => trnFormStore.values.categoryId = id"
                   />
-                </div> -->
+                </div>
+
+                <!-- Recent categories -->
+                <div
+                  v-if="categoriesStore.recentCategoriesIds.length > 0"
+                >
+                  <UiTitle
+                    class="sticky pt-4 pb-2 top-0 px-3 bg-foreground-2"
+                    @click="trnFormStore.ui.catsRootModal = true"
+                  >
+                    {{ $t("categories.lastUsedTitle") }}
+                    {{ $t("categories.title") }}
+                  </UiTitle>
+
+                  <CategoriesSelector2
+                    :activeItemId="trnFormStore.values.categoryId"
+                    :hide="close"
+                    :ids="categoriesStore.recentCategoriesIds"
+                    @onClickParent="onSelectParentCategory"
+                    @onSelected="id => trnFormStore.values.categoryId = id"
+                  />
+                </div>
               </div>
             </div>
 
             <!-- Categories -->
-            <div class="swiper-slide pt-4 grid grid-rows-[auto,1fr]" :style="{ height: maxHeight }">
+            <div class="swiper-slide _!w-auto pt-4 grid grid-rows-[auto,1fr]" :style="{ height: maxHeight }">
               <UiTitle class="px-3 pb-2 pt-1.5">
                 {{ $t("categories.title") }}
               </UiTitle>
 
-              <div class="bg-item-4 overflow-y-auto">
+              <div class="scrollerBlock overflow-y-auto">
                 <CategoriesSelector2
                   :activeItemId="parentCategoryId || trnFormStore.values.categoryId"
                   :hide="close"
@@ -165,16 +152,17 @@ function onSelectCategory(id: CategoryId, close: () => void) {
               </div>
             </div>
 
+            <!-- Child Categories Slide -->
             <div
               v-if="parentCategoryId && categoriesStore.items[parentCategoryId].childIds"
-              class="swiper-slide pt-4 grid grid-rows-[auto,1fr]"
+              class="swiper-slide _!w-auto pt-4 grid grid-rows-[auto,1fr]"
               :style="{ height: maxHeight }"
             >
               <UiTitle class="px-3 pb-2 pt-1.5">
                 {{ categoriesStore.items[parentCategoryId].name }}
               </UiTitle>
 
-              <div class="bg-item-4 overflow-y-auto">
+              <div class="scrollerBlock overflow-y-auto">
                 <CategoriesSelector2
                   :activeItemId="trnFormStore.values.categoryId"
                   :hide="close"

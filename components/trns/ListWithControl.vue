@@ -6,7 +6,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 const props = withDefaults(
   defineProps<{
     defaultFilterTrnsPeriod?: string
-    initTrnType?: MoneyTypeNumber
+    initTrnType?: TrnType | MoneyTypeNumber
     isFilterByDay?: boolean
     isShowGroupSum?: boolean
     size?: number
@@ -26,34 +26,19 @@ const emit = defineEmits<{
 }>()
 
 const trnsStore = useTrnsStore()
-
-const filterTrnsType = ref<TrnType | MoneyTypeNumber | undefined>(props.initTrnType)
-
-// Return to filter 'period', when global filter params changed
-// watch(() => filterStore.isShow, () => filterTrnsPeriod.value = 'period')
+const filterBy = ref(props.initTrnType)
 
 const filteredTrnsIds = computed(() => {
-  // const trnsIds
-  //   = props.defaultFilterTrnsPeriod && filterTrnsPeriod.value === 'all'
-  //     ? trnsStore.allTrnsIdsWithFilter
-  //     : props.trnsIds
+  if (filterBy.value === undefined)
+    return props.trnsIds
 
-  // Фильтровать выше? или сюда передавать с фильтром и без? Нагорье
-
-  const trnsIds = props.trnsIds
-
-  if (filterTrnsType.value === undefined)
-    return trnsIds
-
-  return trnsIds.filter(
-    (id: TrnId) => trnsStore.items[id].type === filterTrnsType.value,
+  return props.trnsIds.filter(
+    (id: TrnId) => trnsStore.items[id].type === filterBy.value,
   )
 })
 
-const trnsCount = computed(() => filteredTrnsIds.value.length)
-
-function setFilterTrnsType(type: TrnType | undefined) {
-  filterTrnsType.value = type
+function setFilterBy(type: TrnType | undefined) {
+  filterBy.value = type
 }
 
 function onClickEdit(props) {
@@ -64,20 +49,20 @@ const isShown = ref(true)
 </script>
 
 <template>
-  <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden">
-    <!-- Header -->
-    <div>
+  <div>
+    <div class="flex flex-col gap-2 h-full max-w-md">
+      <!-- Header -->
       <div
         v-if="trnsIds.length > 0 || defaultFilterTrnsPeriod"
-        class="flex items-center justify-between gap-2 !pb-3 pb-2"
+        class="flex items-center justify-between gap-2"
       >
         <!-- Title -->
         <UiTitle @click="isShown = !isShown">
-          {{ $t("trns.inPeriodTitle") }}: {{ trnsCount }}
+          {{ $t("trns.inPeriodTitle") }}: {{ filteredTrnsIds.length }}
         </UiTitle>
 
-        <div v-if="defaultFilterTrnsPeriod">
-          <UiTabs>
+        <div v-if="isShown && defaultFilterTrnsPeriod">
+          <UiTabs2 class="gap-1">
             <UiTabsItem2
               :isActive="defaultFilterTrnsPeriod === 'period'"
               @click="emit('onChangePeriod', 'period')"
@@ -90,7 +75,7 @@ const isShown = ref(true)
             >
               {{ $t("common.all") }}
             </UiTabsItem2>
-          </UiTabs>
+          </UiTabs2>
         </div>
       </div>
 
@@ -98,40 +83,43 @@ const isShown = ref(true)
       <slot name="contentBefore" />
 
       <!-- Type Selector -->
-      <div v-if="trnsIds.length > 0" v-show="isShown" class="pb-2">
+      <div
+        v-if="trnsIds.length > 0 && isShown"
+      >
         <UiTabs>
-          <UiTabsItem3
-            :isActive="filterTrnsType === undefined"
-            @click="setFilterTrnsType(undefined)"
+          <UiTabsItem2
+            :isActive="filterBy === undefined"
+            @click="setFilterBy(undefined)"
           >
             {{ $t("common.all") }}
-          </UiTabsItem3>
-          <UiTabsItem3
-            :isActive="filterTrnsType === 0"
-            @click="setFilterTrnsType(0)"
+          </UiTabsItem2>
+          <UiTabsItem2
+            :isActive="filterBy === 0"
+            @click="setFilterBy(0)"
           >
             {{ $t("money.expense") }}
-          </UiTabsItem3>
-          <UiTabsItem3
-            :isActive="filterTrnsType === 1"
-            @click="setFilterTrnsType(1)"
+          </UiTabsItem2>
+          <UiTabsItem2
+            :isActive="filterBy === 1"
+            @click="setFilterBy(1)"
           >
             {{ $t("money.income") }}
-          </UiTabsItem3>
-          <UiTabsItem3
-            :isActive="filterTrnsType === 2"
-            @click="setFilterTrnsType(2)"
+          </UiTabsItem2>
+          <UiTabsItem2
+            :isActive="filterBy === 2"
+            @click="setFilterBy(2)"
           >
             {{ $t("transfer.titleMoney") }}
-          </UiTabsItem3>
+          </UiTabsItem2>
         </UiTabs>
       </div>
-    </div>
 
-    <template v-if="isShown">
-      <div class="scroll scrollerBlock h-full h-full overflow-y-auto js-scroll-trns">
+      <div
+        v-if="isShown"
+        class="scroll scrollerBlock js-scroll-trns h-full overflow-y-auto"
+      >
         <!-- Nothing -->
-        <div v-if="trnsCount === 0" class="flex-center h-full pb-2">
+        <div v-if="filteredTrnsIds.length === 0" class="flex-center h-full pb-2">
           <div class="py-3 text-center">
             <div class="mdi mdi-palm-tree text-7xl" />
             <div class="text-md">
@@ -141,7 +129,7 @@ const isShown = ref(true)
         </div>
 
         <!-- List -->
-        <div v-else class="h-full pb-10">
+        <div v-else class="h-full">
           <div :class="props.trnsClassNames">
             <TrnsList
               :isFilterByDay="isFilterByDay"
@@ -155,7 +143,7 @@ const isShown = ref(true)
           </div>
         </div>
       </div>
-    </template>
+    </div>
   </div>
 </template>
 

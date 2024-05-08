@@ -29,7 +29,7 @@ useHead({
     <UiHeader>
       <router-link v-slot="{ href, navigate }" to="/wallets" custom>
         <a class="grow hocus_bg-item-5" :href="href" @click="navigate">
-          <UiHeaderTitle>
+          <UiHeaderTitle2>
             <div class="pt-1 text-xs font-medium text-item-2">
               {{ $t("wallets.title") }}
             </div>
@@ -44,7 +44,7 @@ useHead({
                 {{ wallet.currency }}
               </div>
             </div>
-          </UiHeaderTitle>
+          </UiHeaderTitle2>
         </a>
       </router-link>
       <template #actions>

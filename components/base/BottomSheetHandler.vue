@@ -23,5 +23,5 @@
     display block
     width 32px
     height 4px
-    background var(--c-bg-8)
+    background var(--c-bg-9)
 </style>
