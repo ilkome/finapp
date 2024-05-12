@@ -5,7 +5,15 @@ import { type TransferType, TrnType } from '~/components/trns/types'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const $trnForm = useTrnFormStore()
+defineProps<{
+  isLaptop: boolean
+}>()
+
+const emit = defineEmits<{
+  onOpen: [slide: number]
+}>()
+
+const trnFormStore = useTrnFormStore()
 const walletsStore = useWalletsStore()
 const { t } = useI18n()
 
@@ -29,19 +37,19 @@ const items = ref<
 })
 
 const incomeWalletId = computed<WalletId | null>(
-  () => $trnForm.values.incomeWalletId ?? walletsStore.sortedIds[0],
+  () => trnFormStore.values.incomeWalletId ?? walletsStore.sortedIds[0],
 )
 
 const expenseWalletId = computed<WalletId | null>(
-  () => $trnForm.values.expenseWalletId ?? walletsStore.sortedIds[1],
+  () => trnFormStore.values.expenseWalletId ?? walletsStore.sortedIds[1],
 )
 
 watch(
-  () => $trnForm.values.trnType,
+  () => trnFormStore.values.trnType,
   (trnType) => {
     if (trnType === TrnType.Transfer) {
-      $trnForm.values.incomeWalletId = incomeWalletId.value
-      $trnForm.values.expenseWalletId = expenseWalletId.value
+      trnFormStore.values.incomeWalletId = incomeWalletId.value
+      trnFormStore.values.expenseWalletId = expenseWalletId.value
     }
   },
   { immediate: true },
@@ -55,10 +63,10 @@ watch(
         v-for="(item, slug) in items"
         :key="slug"
         :class="[
-          { '!bg-item-3': $trnForm.values.transferType === item.transferType },
+          { '!bg-item-3': trnFormStore.values.transferType === item.transferType },
         ]"
         class="cursor-pointer overflow-hidden rounded-md"
-        @click="$trnForm.onChangeTransferType(item.transferType)"
+        @click="trnFormStore.onChangeTransferType(item.transferType)"
       >
         <!-- Wallet name -->
         <div
@@ -68,44 +76,32 @@ watch(
             {{ t(slug) }}
           </div>
 
-          <VDropdown
+          <TrnFormSelectorWallet
             v-if="slug === 'income' && incomeWalletId"
-            :overflowPadding="12"
-            autoBoundaryMaxSize
-          >
-            <WalletsItem2 :walletId="incomeWalletId" />
-            <template #popper="{ hide }">
-              <WalletsSelector
-                :hide="hide"
-                @onSelected="id => $trnForm.values.incomeWalletId = id"
-              />
-            </template>
-          </VDropdown>
+            :walletId="incomeWalletId"
+            :isLaptop
+            @onOpen="n => emit('onOpen', n)"
+            @onSelected="id => trnFormStore.values.incomeWalletId = id"
+          />
 
-          <VDropdown
+          <TrnFormSelectorWallet
             v-if="slug === 'expense' && expenseWalletId"
-            :overflowPadding="12"
-            autoBoundaryMaxSize
-          >
-            <WalletsItem2 :walletId="expenseWalletId" />
-            <template #popper="{ hide }">
-              <WalletsSelector
-                :hide="hide"
-                @onSelected="id => $trnForm.values.expenseWalletId = id"
-              />
-            </template>
-          </VDropdown>
+            :walletId="expenseWalletId"
+            :isLaptop
+            @onOpen="n => emit('onOpen', n)"
+            @onSelected="id => trnFormStore.values.expenseWalletId = id"
+          />
         </div>
 
         <!-- Input -->
         <TrnFormMainInput
           :key="item.amountsIdx"
-          :amount="$trnForm.values.amount[item.amountsIdx]"
-          :amountRaw="$trnForm.values.amountRaw[item.amountsIdx]"
+          :amount="trnFormStore.values.amount[item.amountsIdx]"
+          :amountRaw="trnFormStore.values.amountRaw[item.amountsIdx]"
           :highlight="item.transferType === 1 ? 'expense' : 'income'"
-          :isShowSum="$trnForm.getIsShowSum(item.amountsIdx)"
+          :isShowSum="trnFormStore.getIsShowSum(item.amountsIdx)"
           isTransfer
-          @onChange="$trnForm.onChangeAmount"
+          @onChange="trnFormStore.onChangeAmount"
         />
       </div>
     </div>

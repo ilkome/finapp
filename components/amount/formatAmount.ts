@@ -9,10 +9,10 @@ export function formatAmount(amount: number, currencyCode?: CurrencyCode) {
     currencySettings = currencies.find(c => c.code === currencyCode)
 
   return currencyjs(amount, {
-    symbol: '',
-    precision: currencySettings?.precision ?? 2,
     pattern: currencySettings?.pattern ?? '#',
+    precision: currencySettings?.precision ?? 2,
     separator: currencySettings?.separator ?? ' ',
+    symbol: '',
   }).format()
 }
 
@@ -22,5 +22,5 @@ export function getCurrencySymbol(currencyCode?: CurrencyCode) {
   if (currencySettings?.symbol)
     return currencySettings.symbol
 
-  return currencyCode
+  return currencyCode ?? ''
 }

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { CategoryId, CategoryItem } from '~/components/categories/types'
+import type { CategoryItem } from '~/components/categories/types'
 
 defineProps<{
-  categoryId: CategoryId
   color: CategoryItem['color']
   icon: CategoryItem['icon']
   size?: 'lg' | 'xl'

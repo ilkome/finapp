@@ -40,15 +40,14 @@ const classes = computed(() => ({
       class="flex flex-wrap items-start gap-2 gap-x-4 overflow-hidden overflow-x-auto pt-2"
     >
       <!-- Total -->
-      <div class="text-3xl">
-        <Amount
-          :amount="item.amount"
-          :colorize="item.colorizeType"
-          :currencyCode="currenciesStore.base"
-          :isShowBaseRate="false"
-          :type="item.moneyTypeNumber"
-        />
-      </div>
+      <Amount
+        :amount="item.amount"
+        :colorize="item.colorizeType"
+        :currencyCode="currenciesStore.base"
+        :isShowBaseRate="false"
+        :type="item.moneyTypeNumber"
+        variant="3xl"
+      />
 
       <!-- Average -->
       <div v-if="item.isShownAverage">

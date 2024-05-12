@@ -6,9 +6,9 @@ describe('get amount', () => {
   it('get amount in same rate as base rate', () => {
     const amountInBaseRate = getAmountInRate({
       amount: 40,
+      baseCurrencyCode: 'USD',
       currencyCode: 'USD',
       rates,
-      baseCurrencyCode: 'USD',
     })
 
     expect(amountInBaseRate).toEqual(40)
@@ -17,9 +17,9 @@ describe('get amount', () => {
   it('get amount in RUB when base rate is USD', () => {
     const amountInBaseRate = getAmountInRate({
       amount: 70,
+      baseCurrencyCode: 'USD',
       currencyCode: 'RUB',
       rates,
-      baseCurrencyCode: 'USD',
     })
 
     expect(amountInBaseRate).toEqual(1.0810810810810811)
@@ -28,9 +28,9 @@ describe('get amount', () => {
   it('get amount in RUB when base rate is EUR', () => {
     const amountInBaseRate = getAmountInRate({
       amount: 70,
+      baseCurrencyCode: 'EUR',
       currencyCode: 'RUB',
       rates,
-      baseCurrencyCode: 'EUR',
     })
 
     expect(amountInBaseRate).toEqual(1.0383135135135135)

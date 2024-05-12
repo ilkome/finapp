@@ -10,7 +10,7 @@ const props = defineProps<{
   trnId: TrnId
 }>()
 
-const { formatTrnItem, formatDate } = useTrn()
+const { formatDate, formatTrnItem } = useTrn()
 const trnItem = computed(() => formatTrnItem(props.trnId))
 const { onOpenDetails, onOpenEdit } = props.actions(trnItem.value)
 </script>
@@ -64,7 +64,6 @@ const { onOpenDetails, onOpenEdit } = props.actions(trnItem.value)
             :currencyCode="trnItem.wallet.currency"
             :type="trnItem.type"
             colorize="income"
-            size="base"
             @click="onOpenEdit"
           />
         </div>

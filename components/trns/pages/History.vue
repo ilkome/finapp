@@ -22,9 +22,10 @@ useHead({
       class="flex gap-2 rounded-lg bg-item-4"
     />
 
-    <TrnsListWithControl
-      :trnsIds="trnsStore.allTrnsIdsWithFilter"
-      class="my-4 max-w-[420px] md_max-w-none"
-    />
+    <div class="px-2">
+      <TrnsList2
+        :trnsIds="trnsStore.allTrnsIdsWithFilter.slice(0, 5)"
+      />
+    </div>
   </UiPage>
 </template>

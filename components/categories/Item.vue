@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   activeItemId?: string | 0 | false | null
@@ -25,6 +24,7 @@ const childCategoriesIds = computed(() =>
 <template>
   <UiElement
     :isActive="activeItemId === categoryId"
+    class="group"
     @click="e => emit('click', e)"
   >
     <template #leftIcon>

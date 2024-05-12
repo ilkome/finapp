@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { FilterProvider } from '~/components/filter/useFilter'
 import { getStyles } from '~/components/ui/getStyles'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const filter = inject('filter') as FilterProvider
 const walletsStore = useWalletsStore()
+const categoriesStore = useCategoriesStore()
 
 const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 'padding2', 'minh'])
 </script>
@@ -37,10 +39,12 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
           </template>
         </VDropdown>
 
-        <CategoriesItem2
+        <CategoriesItem
           v-for="categoryId in filter.catsIds.value"
           :key="categoryId"
+          :category="categoriesStore.items[categoryId]"
           :categoryId="categoryId"
+          alt
           @click="filter.removeCategoryId(categoryId)"
         />
       </div>

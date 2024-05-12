@@ -152,7 +152,8 @@ function actions(trnItem: TrnItem) {
           @click="isFilterByDay ? filterStore.setDayDate(date) : null"
         >
           <DateTrnsDay :date="+date" class="grow" />
-          <div v-if="isShowGroupSum" class="flex items-center gap-2 text-sm">
+
+          <div v-if="isShowGroupSum" class="flex items-center gap-2">
             <Amount
               v-if="getTotalOfTrnsIds(trnsIds).income !== 0"
               :amount="getTotalOfTrnsIds(trnsIds).income"
@@ -160,6 +161,7 @@ function actions(trnItem: TrnItem) {
               :isShowBaseRate="false"
               :type="1"
               colorize="income"
+              variant="sm"
             />
             <Amount
               v-if="getTotalOfTrnsIds(trnsIds).expenseTransactions !== 0"
@@ -167,6 +169,7 @@ function actions(trnItem: TrnItem) {
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
               :type="0"
+              variant="sm"
             />
           </div>
         </div>
@@ -179,6 +182,7 @@ function actions(trnItem: TrnItem) {
             :trnId="trnId"
             @onClickEdit="emit('onClickEdit')"
           />
+
           <TrnsItemWithoutCat
             v-for="trnId in trnsIds"
             v-if="uiCat"

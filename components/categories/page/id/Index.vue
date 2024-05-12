@@ -57,18 +57,20 @@ useHead({
       </template>
     </UiHeader>
 
-    <div
-      v-if="category.childIds && category.childIds.length > 0"
-      class="px-2 pt-4 mb-12"
-    >
-      <CategoriesList
-        :ids="categoryChildIds"
-        @click="id => $router.push(`/categories/${id}`)"
+    <div class="px-2">
+      <div
+        v-if="category.childIds && category.childIds.length > 0"
+        class="pt-4 mb-12"
+      >
+        <CategoriesList
+          :ids="categoryChildIds"
+          @click="id => $router.push(`/categories/${id}`)"
+        />
+      </div>
+
+      <StatMini
+        :categoryId
       />
     </div>
-
-    <StatMini
-      :categoryId
-    />
   </UiPage>
 </template>

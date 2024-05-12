@@ -88,15 +88,14 @@ function setTrnEdit() {
               :walletId="trn.expenseWalletId"
             />
           </div>
-          <div class="text-2xl text-item-base">
-            <Amount
-              :amount="trn.expenseAmount"
-              :currencyCode="walletsStore.items[trn.expenseWalletId].currency"
-              :type="0"
-              align="center"
-              colorize="expense"
-            />
-          </div>
+          <Amount
+            :amount="trn.expenseAmount"
+            :currencyCode="walletsStore.items[trn.expenseWalletId].currency"
+            :type="0"
+            align="center"
+            colorize="expense"
+            variant="3xl"
+          />
         </div>
 
         <!-- Separator -->
@@ -110,15 +109,14 @@ function setTrnEdit() {
               :walletId="trn.incomeWalletId"
             />
           </div>
-          <div class="text-2xl text-item-base">
-            <Amount
-              :amount="trn.incomeAmount"
-              :currencyCode="walletsStore.items[trn.incomeWalletId].currency"
-              :type="1"
-              align="center"
-              colorize="income"
-            />
-          </div>
+          <Amount
+            :amount="trn.incomeAmount"
+            :currencyCode="walletsStore.items[trn.incomeWalletId].currency"
+            :type="1"
+            align="center"
+            colorize="income"
+            variant="3xl"
+          />
         </div>
       </div>
       <div

@@ -64,13 +64,11 @@ const emit = defineEmits<{
         {{ wallet.name }}
       </div>
 
-      <div class="grow pr-1">
+      <div class="grow pr-1 opacity-90">
         <Amount
           :amount="wallet.amount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
-          class="opacity-90"
-          size="base"
         />
       </div>
     </template>
@@ -78,14 +76,14 @@ const emit = defineEmits<{
     <!-- Alternative -->
     <template v-if="props.alt">
       <div class="grow">
-        <div class="text-2xs">
-          <Amount
-            :amount="wallet.amount"
-            :currencyCode="wallet.currency"
-            :isShowBaseRate="false"
-            align="left"
-          />
-        </div>
+        <Amount
+          :amount="wallet.amount"
+          :currencyCode="wallet.currency"
+          :isShowBaseRate="false"
+          :isShowMinus="false"
+          align="left"
+          variant="2xs"
+        />
 
         <div class="text-secondary text-sm leading-none">
           {{ wallet.name }}

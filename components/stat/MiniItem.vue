@@ -19,24 +19,21 @@ const allTotal = computed(() => getTotalOfTrnsIds(props.trnsIds))
   <div>
     <div>Mini Item</div>
     <div>
-      <UiTitle5>
-        {{ $t(`money.${props.type}`) }}
-      </UiTitle5>
+      <UiTitle5>{{ $t(`money.${props.type}`) }}</UiTitle5>
 
-      <div class="text-3xl leading-none">
-        <Amount
-          :amount="allTotal[props.type]"
-          :currencyCode="currenciesStore.base"
-          align="left"
-        />
-      </div>
+      <Amount
+        :amount="allTotal[props.type]"
+        :currencyCode="currenciesStore.base"
+        align="left"
+        variant="3xl"
+      />
     </div>
 
     <div class="max-w-md">
-      <TrnsList
+      <TrnsList2
         :trnsIds
-        :isShowGroupDate="false"
-        uiCat
+        :type="props.type"
+        groupedBy="year"
       />
     </div>
   </div>

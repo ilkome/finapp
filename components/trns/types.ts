@@ -1,5 +1,5 @@
-import type { WalletId } from '~/components/wallets/types'
-import type { CategoryId } from '~/components/categories/types'
+import type { WalletId, WalletItem } from '~/components/wallets/types'
+import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
 export type TrnId = string
 
@@ -59,6 +59,13 @@ export interface TransferDeprecated {
 }
 
 export type TrnItem = Transaction | Transfer
+export type TrnItemWithId = (Transaction | Transfer) & TrnId
+export type TrnItemFull = (Transaction | Transfer)
+  & { id: TrnId }
+  & { category: CategoryItem }
+  & { categoryParent?: CategoryItem }
+  & { wallet: WalletItem }
+
 export type TrnItemDirty = Transaction | Transfer | TransferDeprecated
 
 export type Trns = Record<TrnId, TrnItem>

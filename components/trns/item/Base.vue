@@ -8,8 +8,8 @@ import { useAppNav } from '~/components/app/useAppNav'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
-  trnId: TrnId
   slider?: any
+  trnId: TrnId
 }>()
 const emit = defineEmits(['onClickEdit'])
 
@@ -65,6 +65,7 @@ const actions = {
         :icon="trnItem.category.icon"
         @click="actions.onSetFilter"
       />
+
       <div class="flex grow items-center">
         <div class="grow">
           <div class="flex flex-wrap items-baseline space-x-2">
@@ -97,14 +98,13 @@ const actions = {
                 </div>
               </div>
 
-              <div class="text-base" @click="actions.onOpenEdit">
-                <Amount
-                  :amount="trnItem.expenseAmount || trnItem.amount"
-                  :currencyCode="trnItem.expenseWallet.currency"
-                  :type="0"
-                  colorize="expense"
-                />
-              </div>
+              <Amount
+                :amount="trnItem.expenseAmount || trnItem.amount"
+                :currencyCode="trnItem.expenseWallet.currency"
+                :type="0"
+                colorize="expense"
+                @click="actions.onOpenEdit"
+              />
             </div>
 
             <div>
@@ -115,29 +115,25 @@ const actions = {
                 </div>
               </div>
 
-              <div class="text-base" @click="actions.onOpenEdit">
-                <Amount
-                  :amount="trnItem.incomeAmount || trnItem.amount"
-                  :currencyCode="trnItem.incomeWallet.currency"
-                  :type="1"
-                  colorize="income"
-                />
-              </div>
+              <Amount
+                :amount="trnItem.incomeAmount || trnItem.amount"
+                :currencyCode="trnItem.incomeWallet.currency"
+                :type="1"
+                colorize="income"
+                @click="actions.onOpenEdit"
+              />
             </div>
           </div>
         </div>
 
-        <div
+        <Amount
           v-if="trnItem.type !== 2"
+          :amount="trnItem.amount"
+          :currencyCode="trnItem.wallet.currency"
+          :type="trnItem.type"
+          colorize="income"
           @click="actions.onOpenEdit"
-        >
-          <Amount
-            :amount="trnItem.amount"
-            :currencyCode="trnItem.wallet.currency"
-            :type="trnItem.type"
-            colorize="income"
-          />
-        </div>
+        />
       </div>
     </div>
 

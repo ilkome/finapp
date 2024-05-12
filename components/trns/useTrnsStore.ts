@@ -184,7 +184,7 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   function uploadOfflineTrns() {
-    getDataAndWatch('.info/connected', async (isConnected) => {
+    getDataAndWatch('.info/connected', async (isConnected: boolean) => {
       const walletsStore = useWalletsStore()
 
       if (isConnected) {

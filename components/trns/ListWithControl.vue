@@ -116,7 +116,7 @@ const isShown = ref(true)
 
       <div
         v-if="isShown"
-        class="scroll scrollerBlock js-scroll-trns h-full overflow-y-auto"
+        class="scroll scrollerBlock js-scroll-trns"
       >
         <!-- Nothing -->
         <div v-if="filteredTrnsIds.length === 0" class="flex-center h-full pb-2">

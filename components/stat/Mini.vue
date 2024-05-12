@@ -32,6 +32,7 @@ const allTotal = computed(() => getTotalOfTrnsIds(trnsIds.value))
         :trnsIds="trnsIds.filter(trnId => trnsStore.items[trnId].type === 0)"
         type="expense"
       />
+
       <StatMiniItem
         v-if="allTotal.income"
         :trnsIds="trnsIds.filter(trnId => trnsStore.items[trnId].type === 1)"

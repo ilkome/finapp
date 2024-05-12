@@ -54,11 +54,18 @@ useHead({
       </template>
     </UiHeader>
 
-    <div class="mb-6 flex px-2 pt-3 text-3xl">
-      <Amount :amount="total" :currencyCode="wallet.currency" />
+    <div class="flex mb-6 px-2 pt-3">
+      <Amount
+        :amount="total"
+        :currencyCode="wallet.currency"
+        variant="3xl"
+      />
     </div>
 
-    <div v-if="wallet.description" class="mb-6 px-2 text-sm text-item-2">
+    <div
+      v-if="wallet.description"
+      class="mb-6 px-2 text-sm text-item-2"
+    >
       {{ wallet.description }}
     </div>
   </UiPage>
@@ -71,4 +78,3 @@ en:
 ru:
   statBy: Статистика
 </i18n>
-~/components/filter/useFilterStore

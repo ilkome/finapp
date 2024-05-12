@@ -79,14 +79,14 @@ export const useCurrenciesStore = defineStore('currencies', () => {
 
   return {
     base,
+    hideBaseCurrenciesModal,
+    initCurrencies,
+    isShownModal,
     rates,
     setBase,
-    initCurrencies,
-    updateBase,
-    setRates,
 
-    isShownModal,
+    setRates,
     showBaseCurrenciesModal,
-    hideBaseCurrenciesModal,
+    updateBase,
   }
 })

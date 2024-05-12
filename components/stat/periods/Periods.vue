@@ -64,8 +64,11 @@ function getFormattedDate(date: number) {
           <div class="grow text-xs text-secondary">
             {{ getFormattedDate(item.date) }}
           </div>
-          <!-- <pre>{{ item }}</pre> -->
-          <Amount :amount="item[kdkdkdkdkdl]" currencyCode="RUB" />
+
+          <Amount
+            :amount="item[kdkdkdkdkdl]"
+            currencyCode="RUB"
+          />
         </div>
       </div>
     </div>

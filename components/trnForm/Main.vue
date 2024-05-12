@@ -10,9 +10,9 @@ const props = withDefaults(defineProps<{
   maxHeight: '60vh',
 })
 
+const categoriesStore = useCategoriesStore()
 const trnFormStore = useTrnFormStore()
 const walletsStore = useWalletsStore()
-const categoriesStore = useCategoriesStore()
 const { width } = useWindowSize()
 const { pointerType } = usePointer()
 
@@ -33,7 +33,7 @@ function show(slide: number) {
 </script>
 
 <template>
-  <div class="1">
+  <div>
     <TrnFormSelection
       v-if="isShow"
       v-model:isShow="isShow"
@@ -45,21 +45,23 @@ function show(slide: number) {
       class="pb-2 pt-1.5"
       @click="trnFormStore.values.trnId = null"
     >
-      <template v-if="trnFormStore.values.trnId">
-        {{ $t("trnForm.titleEditTrn") }}
-      </template>
-      <template v-if="!trnFormStore.values.trnId">
-        {{ $t("trnForm.createTrn") }}
-      </template>
+      {{ trnFormStore.values.trnId
+        ? $t("trnForm.titleEditTrn")
+        : $t("trnForm.createTrn")
+      }}
     </UiTitle>
 
     <TrnFormDate class="pb-2" />
     <TrnFormMainAmountTrn v-if="trnFormStore.values.trnType !== 2" />
-    <TrnFormMainAmountTransfer v-if="trnFormStore.values.trnType === 2" />
+    <TrnFormMainAmountTransfer
+      v-if="trnFormStore.values.trnType === 2"
+      isLaptop
+      @onOpen="show(0)"
+    />
 
     <TrnFormMainCalculator
-      class="pb-3"
       :amountRaw="trnFormStore.values.amountRaw[trnFormStore.activeAmountIdx]"
+      class="pb-3"
       @onChange="trnFormStore.onChangeAmount"
     />
 
@@ -68,81 +70,22 @@ function show(slide: number) {
       v-if="trnFormStore.values.trnType !== 2"
       class="grid grid-cols-2 gap-3 pb-3"
     >
-      <!-- Wallet -->
-      <div v-if="walletId">
-        <WalletsItem
-          v-if="!isLaptop"
-          :walletId
-          :wallet="walletsStore.sortedItems[walletId]"
-          alt
-          @click="show(0)"
-        />
+      <TrnFormSelectorWallet
+        v-if="walletId"
+        :walletId
+        :isLaptop
+        @onOpen="show(0)"
+        @onSelected="id => trnFormStore.values.walletId = id"
+      />
 
-        <VDropdown
-          v-else
-          :overflowPadding="12"
-          autoBoundaryMaxSize
-          placement="bottom-start"
-        >
-          <WalletsItem
-            :walletId
-            :wallet="walletsStore.sortedItems[walletId]"
-            alt
-          />
-
-          <template #popper="{ hide }">
-            <!-- TODO: combine -->
-            <div class="flex items-center">
-              <UiTitle class="px-3 pb-2 pt-1.5">
-                {{ $t("wallets.title") }}
-              </UiTitle>
-              <BaseBottomSheetClose @onClick="hide" />
-            </div>
-
-            <WalletsSelector
-              :hide
-              class="w-[90vw] max-w-xs"
-              @onSelected="id => trnFormStore.values.walletId = id"
-            />
-          </template>
-        </VDropdown>
-      </div>
-
-      <!-- Category -->
-      <div v-if="!isLaptop">
-        <CategoriesItem2
-          :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
-          @click="show(2)"
-        />
-      </div>
-
-      <VDropdown
-        v-else
-        :overflowPadding="12"
-        autoBoundaryMaxSize
-        placement="top-start"
-      >
-        <CategoriesItem2
-
-          :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
-        />
-
-        <template #popper="{ hide }">
-          <!-- TODO: combine -->
-          <div class="flex items-center bg-item-4">
-            <UiTitle class="px-3 py-3">
-              {{ $t("categories.title") }}
-            </UiTitle>
-
-            <BaseBottomSheetClose @onClick="hide" />
-          </div>
-
-          <CategoriesSelector
-            :hide
-            @onSelected="id => trnFormStore.values.categoryId = id"
-          />
-        </template>
-      </VDropdown>
+      <TrnFormSelectorCategory
+        v-if="trnFormStore.values.categoryId"
+        :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
+        :category="categoriesStore.items[trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
+        :isLaptop
+        @onOpen="show(1)"
+        @onSelected="id => trnFormStore.values.categoryId = id"
+      />
     </div>
 
     <TrnFormMainTypes />
