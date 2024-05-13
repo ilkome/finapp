@@ -63,7 +63,7 @@ onMounted(init)
 <template>
   <BaseBottomSheet2
     :isShow="isShow"
-    drugClassesCustom="_bg-foreground-2 md_bg-transparent md_bottom-1/2 md_-translate-x-1/2 md_translate-y-1/2"
+    drugClassesCustom="md_bottom-1/2 md_-translate-x-1/2 md_translate-y-1/2"
     @closed="trnFormStore.onClose()"
   >
     <template #handler="{ close }">

@@ -19,8 +19,8 @@ const trnsStore = useTrnsStore()
 const trnsItems = computed(() => trnsStore.items)
 const trnsIds = computed(() =>
   getTrnsIds({
-    walletsIds: [walletId.value],
     trnsItems: trnsItems.value,
+    walletsIds: [walletId.value],
   }))
 
 const isShowDeleteConfirm = ref(false)
@@ -29,7 +29,7 @@ const isShowDeleteConfirm = ref(false)
 const deleteDescText = computed(() => {
   if (trnsIds.value.length > 0)
     return `It's also will delete ${trnsIds.value.length} trns in this wallet`
-  return null
+  return undefined
 })
 
 function onClickDelete() {
@@ -51,9 +51,9 @@ async function onDeleteConfirm() {
     removeData(`users/${uid}/accounts/${walletIdS}`)
       .then(() => {
         $notify({
-          type: 'success',
           text: trnsIdsS?.length > 0 ? `Success delete wallet with ${trnsIdsS.length} transactions!` : 'Success delete wallet!',
           title: random(successEmo),
+          type: 'success',
         })
       })
   }, 100)
@@ -65,7 +65,7 @@ div
   UiHeaderLink(@click="onClickDelete")
     .mdi.mdi-delete-empty-outline.group-hover_text-white.text-xl
 
-  ModalBottomConfirm(
+  LayoutConfirmModal(
     :show="isShowDeleteConfirm"
     :description="deleteDescText"
     @closed="isShowDeleteConfirm = false"

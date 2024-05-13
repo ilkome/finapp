@@ -255,10 +255,10 @@ export default {
       showTrnsWithDesc: 'Только с описанием',
     },
     history: 'История',
-    inPeriodTitle: 'Транзакции',
     more: 'Показать еще',
     noTrns: 'Нет транзакций',
     shortTitle: 'Транзакции',
+    title: 'Транзакции',
   },
 
   userLogout: 'Выход',

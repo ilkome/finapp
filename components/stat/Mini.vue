@@ -23,8 +23,8 @@ const allTotal = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
 <template>
   <div>
-    <div>Mini</div>
-    <pre>{{ props }}</pre>
+    <!-- <div>Mini</div> -->
+    <!-- <pre>{{ props }}</pre> -->
 
     <div class="grid grid-cols-2 gap-24">
       <StatMiniItem

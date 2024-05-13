@@ -24,7 +24,10 @@ const slots = useSlots()
         getStyles('item', ['link', 'rounded', 'padding1', 'minh']),
       ]"
 
-      class="flex grow items-center gap-3 overflow-hidden -my-[1px]"
+      class="
+        flex grow items-center gap-3 overflow-hidden -my-[1px]
+        uiElement
+      "
     >
       <div
         v-if="slots.leftIcon"
@@ -42,3 +45,9 @@ const slots = useSlots()
     />
   </div>
 </template>
+
+<style>
+.v-popper--shown .uiElement {
+  @apply !bg-item-3;
+}
+</style>

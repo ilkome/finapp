@@ -324,6 +324,5 @@ const periodGrouped = ref('period')
     </div>
   </div>
 
-  <TrnsItemModal />
   <TrnForm />
 </template>

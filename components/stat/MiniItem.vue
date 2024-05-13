@@ -16,9 +16,8 @@ const allTotal = computed(() => getTotalOfTrnsIds(props.trnsIds))
 </script>
 
 <template>
-  <div>
-    <div>Mini Item</div>
-    <div>
+  <div class="grid gap-6">
+    <div class="grid gap-3">
       <UiTitle5>{{ $t(`money.${props.type}`) }}</UiTitle5>
 
       <Amount
@@ -34,6 +33,7 @@ const allTotal = computed(() => getTotalOfTrnsIds(props.trnsIds))
         :trnsIds
         :type="props.type"
         groupedBy="year"
+        isShowFilter
       />
     </div>
   </div>

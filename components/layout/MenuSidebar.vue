@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useMenuData from '~/components/menu/useMenuData'
+import useMenuData from '~/components/layout/useMenuData'
 
 withDefaults(defineProps<{
   isShowTitle?: boolean

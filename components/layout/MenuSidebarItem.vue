@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useMenuData from '~/components/menu/useMenuData'
+import useMenuData from '~/components/layout/useMenuData'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = withDefaults(defineProps<{
@@ -34,7 +34,7 @@ const { checkIsActive, onClick } = useMenuData()
 
     <Icon
       v-else
-      :name="props.item.icon.replace('mdi mdi-', 'mdi:')"
+      :name="props.item.icon"
       class="text-lg group-[.is-bigger]_!text-2xl leading-none"
     />
 

@@ -9,7 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <UiElement>
+  <UiElement class="group2">
     <template v-if="!alt" #leftIcon>
       <Icon
         :name="props.trnItem.category.icon.replace('mdi mdi-', 'mdi:')"
@@ -18,7 +18,7 @@ const props = defineProps<{
       />
     </template>
 
-    <div class="grid gap-1 grow">
+    <div class="grid gap-1 grow pr-1">
       <div class="flex items-center grow gap-3">
         <template v-if="alt">
           <div
@@ -68,7 +68,7 @@ const props = defineProps<{
             <WalletsIcon2
               :color="trnItem.wallet.color"
               :name="trnItem.wallet.name"
-              :walletId="trnItem.wallet.id"
+              :walletId="trnItem.walletId"
             />
 
             <div class="text-xs leading-none">

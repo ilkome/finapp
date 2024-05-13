@@ -1,11 +1,12 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
-import { z } from 'zod'
 import { deepUnref } from 'vue-deepunref'
+import { z } from 'zod'
 import type { CategoryId } from '~/components/categories/types'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
+import { getTrnsIds } from '~/components/trns/getTrns'
 import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const periodSchema = z.object({
   date: z.number(),
@@ -294,37 +295,46 @@ export function useFilter() {
   watch(periods, value => localforage.setItem('finapp.chart.periods', deepUnref(value)), { deep: true })
   watch(periodNameWithAll, value => localforage.setItem('finapp.chart.periodName', value))
 
+  function getTrnsIdsWithFilter() {
+    return getTrnsIds({
+      categoriesIds: catsIds.value,
+      trnsItems: trnsStore.items,
+      walletsIds: walletsIds.value,
+    })
+  }
+
   return {
     addPeriod,
     catsIds,
     clearFilter,
     // Date
     date,
-    initChart,
+    getTrnsIdsWithFilter,
 
+    initChart,
     // Computed
     isShow,
     periodNameWithAll,
     periodNameWithoutAll,
     periods,
     periodsNames,
+
     removeCategoryId,
 
     removePeriod,
-
     removeWalletId,
     setCategoryId,
     setDate,
-    setDateNow,
 
+    setDateNow,
     setDayDate,
     setNextPeriodDate,
     setPeriod,
     setPeriodAndDate,
+
     setPrevPeriodDate,
 
     setWalletId,
-
     toggleCategoryId,
 
     toggleChartType,

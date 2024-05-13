@@ -14,16 +14,16 @@ export function formatDate(value, type) {
     case 'full':
       return {
         day: dayjs(+value).format('D'),
+        month: dayjs(+value).format('MMM'),
+        week: dayjs(+value).format('DD.MM'),
         weekday: dayjs(+value).calendar(null, {
-          sameDay: `[${currentLocale === 'ru' ? 'Сегодня' : 'Today'}], dddd`,
-          nextDay: `[${currentLocale === 'ru' ? 'Завтра' : 'Tomorrow'}], dddd`,
-          nextWeek: 'dddd',
           lastDay: `[${currentLocale === 'ru' ? 'Вчера' : 'Yesterday'}], dddd`,
           lastWeek: 'dddd',
+          nextDay: `[${currentLocale === 'ru' ? 'Завтра' : 'Tomorrow'}], dddd`,
+          nextWeek: 'dddd',
+          sameDay: `[${currentLocale === 'ru' ? 'Сегодня' : 'Today'}], dddd`,
           sameElse: 'dddd',
         }),
-        week: dayjs(+value).format('DD.MM'),
-        month: dayjs(+value).format('MMM'),
         year: dayjs(+value).format('YYYY'),
       }
 
@@ -35,10 +35,10 @@ export function formatDate(value, type) {
 
     case 'trnItem':
       if (dayjs().isSame(+value, 'day'))
-        return 'dates.day.today'
+        return $i18n.t('dates.day.today')
 
       if (dayjs().isSame(dayjs(+value).add(1, 'day'), 'day'))
-        return 'dates.day.yesterday'
+        return $i18n.t('dates.day.yesterday')
 
       if (dayjs().isSame(+value, 'year'))
         return dayjs(+value).format('DD.MM')

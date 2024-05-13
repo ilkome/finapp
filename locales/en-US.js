@@ -254,10 +254,10 @@ export default {
       showTrnsWithDesc: 'Only with description',
     },
     history: 'History',
-    inPeriodTitle: 'Transactions',
     more: 'Show more',
     noTrns: 'No transactions',
     shortTitle: 'Trns',
+    title: 'Transactions',
   },
 
   userLogout: 'Logout',

@@ -23,6 +23,8 @@ export enum TrnTypeSlug {
 interface BaseTrn {
   date: number
   desc?: string
+  // @deprecated
+  description?: string
   edited: number
 }
 

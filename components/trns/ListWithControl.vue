@@ -58,7 +58,7 @@ const isShown = ref(true)
       >
         <!-- Title -->
         <UiTitle @click="isShown = !isShown">
-          {{ $t("trns.inPeriodTitle") }}: {{ filteredTrnsIds.length }}
+          {{ $t("trns.title") }}: {{ filteredTrnsIds.length }}
         </UiTitle>
 
         <div v-if="isShown && defaultFilterTrnsPeriod">

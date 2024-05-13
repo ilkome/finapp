@@ -115,7 +115,7 @@ function removeUserData() {
       </div>
     </div>
 
-    <ModalBottomConfirm
+    <LayoutConfirmModal
       :description="$t('alerts.willDeleteEverything')"
       :show="confirmRemoveUserData"
       @closed="confirmRemoveUserData = false"

@@ -57,10 +57,10 @@ useHead({
       </template>
     </UiHeader>
 
-    <div class="px-2">
+    <div class="gap-4 px-2">
       <div
         v-if="category.childIds && category.childIds.length > 0"
-        class="pt-4 mb-12"
+        class="pt-4 pb-12"
       >
         <CategoriesList
           :ids="categoryChildIds"
@@ -68,9 +68,11 @@ useHead({
         />
       </div>
 
-      <StatMini
-        :categoryId
-      />
+      <div class="pt-6">
+        <StatMini
+          :categoryId
+        />
+      </div>
     </div>
   </UiPage>
 </template>

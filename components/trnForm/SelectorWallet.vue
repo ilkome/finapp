@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { usePointer, useWindowSize } from '@vueuse/core'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { WalletId } from '~/components/wallets/types'
 

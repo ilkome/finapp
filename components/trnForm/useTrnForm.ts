@@ -17,28 +17,28 @@ import { useFilterStore } from '~/components/filter/useFilterStore'
 
 export const useTrnFormStore = defineStore('trnForm', () => {
   const values = reactive<TrnFormValues>({
-    trnId: null,
     amount: [0, 0, 0],
     amountRaw: ['', '', ''],
+    categoryId: null,
     date: dayjs().valueOf(),
     desc: undefined,
+    expenseWalletId: null,
+    incomeWalletId: null,
     transferType: 0,
+    trnId: null,
     trnType: 0,
     walletId: null,
-    categoryId: null,
-    incomeWalletId: null,
-    expenseWalletId: null,
   })
 
   const ui = ref<TrnFormUi>({
+    catsRootModal: false,
     isShow: false,
-    walletsTab: 'all',
-    walletsModal: false,
+    tab: 'main',
     walletTransferModal: false,
     walletTransferType: 'expense',
-    catsRootModal: false,
+    walletsModal: false,
+    walletsTab: 'all',
     walletsViewAs: 'big',
-    tab: 'main',
   })
 
   const modal = ref({
@@ -46,8 +46,8 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     description: false,
     transferFrom: false,
     transferTo: false,
-    wallets: false,
     trn: false,
+    wallets: false,
   })
 
   function closeTrnFormModal(name: keyof typeof modal.value) {
@@ -230,23 +230,23 @@ export const useTrnFormStore = defineStore('trnForm', () => {
 
   return {
     activeAmountIdx,
-    values,
-    ui,
+    closeTrnFormModal,
+    getIsShowSum,
     // dates,
 
     modal,
-    closeTrnFormModal,
-    openTrnFormModal,
-
-    setValues,
-    getIsShowSum,
     onChangeAmount,
+    onChangeCountSum,
+
     onChangeTransferType,
     onChangeTrnType,
-    onChangeCountSum,
     onClear,
-    onSubmit,
     onClose,
+    onSubmit,
+    openTrnFormModal,
+    setValues,
+    ui,
+    values,
   }
 })
 
@@ -293,17 +293,19 @@ export function useTrnForm() {
 
     $trnForm.setValues({
       action: 'duplicate',
+      amount: trn.amount,
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn,
       trnId,
       walletsIds: walletsStore.sortedIds,
     })
+
     $trnForm.ui.isShow = true
   }
 
   return {
-    trnFormEdit,
     trnFormCreate,
     trnFormDuplicate,
+    trnFormEdit,
   }
 }

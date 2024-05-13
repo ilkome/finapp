@@ -27,7 +27,7 @@ function isItActive(theme: Theme) {
 </script>
 
 <template>
-  <UiTabs2>
+  <UiTabs3>
     <UiTabsItem2
       v-for="locale in locales"
       :key="locale.slug"
@@ -36,5 +36,5 @@ function isItActive(theme: Theme) {
     >
       {{ $t(locale.localeKey) }}
     </UiTabsItem2>
-  </UiTabs2>
+  </UiTabs3>
 </template>

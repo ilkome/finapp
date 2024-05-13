@@ -264,11 +264,10 @@ function getFormattedDate(date: number) {
           </UiTabsItem2>
         </UiTabs2>
 
-        <TrnsList
+        <TrnsList2
           v-if="tabs.active.value === 'trns'"
           :trnsIds="selectedTrnsIds"
-          :isShowGroupDate="false"
-          uiCat
+          alt
         />
 
         <div

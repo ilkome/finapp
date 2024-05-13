@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { useFilterStore } from '~/components/filter/useFilterStore'
+import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const filterStore = useFilterStore()
-const trnsStore = useTrnsStore()
-
 const { t } = useI18n()
+const filter = useFilter()
+
 useHead({
   title: t('trns.history'),
 })
+
+const trnsIds = computed(() => filter.getTrnsIdsWithFilter())
+
+provide('filter', filter)
 </script>
 
 <template>
@@ -17,14 +20,15 @@ useHead({
       <UiHeaderTitle2>{{ $t("trns.history") }}</UiHeaderTitle2>
     </UiHeader>
 
-    <Filter
-      v-if="filterStore.isShow"
-      class="flex gap-2 rounded-lg bg-item-4"
-    />
+    <div class="grid gap-3 px-2">
+      <Filter
+        class="flex gap-2 rounded-lg bg-item-4"
+      />
 
-    <div class="px-2">
       <TrnsList2
-        :trnsIds="trnsStore.allTrnsIdsWithFilter.slice(0, 200)"
+        isShowFilter
+        isShowHeader
+        :trnsIds
       />
     </div>
   </UiPage>

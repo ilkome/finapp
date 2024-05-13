@@ -35,11 +35,11 @@ export default function useMenuData() {
       name: t('categories.name'),
     },
     history: {
-      icon: 'mdi mdi-history',
+      icon: 'mdi:history',
       name: t('trns.history'),
     },
     settings: {
-      icon: 'mdi mdi-cog-outline',
+      icon: 'mdi:cog-outline',
       name: t('settings.title'),
     },
   }))

@@ -7,11 +7,11 @@ const { locale, setLocale } = useI18n()
 const userStore = useUserStore()
 
 const locales = [{
-  slug: 'ru',
   localeKey: 'app.locale.ru',
+  slug: 'ru',
 }, {
-  slug: 'en',
   localeKey: 'app.locale.en',
+  slug: 'en',
 }]
 
 function changeLocale(locale: string) {

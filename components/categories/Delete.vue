@@ -46,12 +46,12 @@ function onClickDelete() {
   for (const id in categoriesStore.items) {
     if (categoriesStore.items[id].parentId === categoryId.value) {
       $toast(UiToastContent, {
-        toastId: 'delete-category-with-child',
         data: {
-          title: random(errorEmo),
           description:
             'You can not delete category with child categories. Remove child categories first.',
+          title: random(errorEmo),
         },
+        toastId: 'delete-category-with-child',
         type: 'error',
       } as ToastOptions)
 
@@ -94,7 +94,7 @@ async function onDeleteConfirm() {
       />
     </UiHeaderLink>
 
-    <ModalBottomConfirm
+    <LayoutConfirmModal
       :show="isShowDeleteConfirm"
       :description="deleteDescText"
       @closed="isShowDeleteConfirm = false"
