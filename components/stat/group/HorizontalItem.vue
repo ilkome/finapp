@@ -169,6 +169,7 @@ function getFormattedDate(date: number) {
 
 <template>
   <div
+    v-if="props.category"
     :class="{
       'mb-3 border-item-5 bg-item-4 rounded-md': isShowInside,
     }"
@@ -178,10 +179,10 @@ function getFormattedDate(date: number) {
     <div
       class="group flex items-center justify-between space-x-3 rounded-md px-1 py-1 hocus_bg-item-5"
     >
-      <Icon2
-        :categoryId="categoryId"
+      <Icon
         :color="category.color"
-        :icon="category.icon"
+        :name="category.icon.replace('mdi mdi-', 'mdi:')"
+        size="20"
         @click="filter.toggleCategoryId(categoryId)"
       />
 

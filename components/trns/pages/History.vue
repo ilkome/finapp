@@ -24,7 +24,7 @@ useHead({
 
     <div class="px-2">
       <TrnsList2
-        :trnsIds="trnsStore.allTrnsIdsWithFilter.slice(0, 5)"
+        :trnsIds="trnsStore.allTrnsIdsWithFilter.slice(0, 200)"
       />
     </div>
   </UiPage>

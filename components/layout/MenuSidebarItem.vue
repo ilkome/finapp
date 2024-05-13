@@ -32,9 +32,9 @@ const { checkIsActive, onClick } = useMenuData()
       "
     />
 
-    <div
+    <Icon
       v-else
-      :class="props.item.icon"
+      :name="props.item.icon.replace('mdi mdi-', 'mdi:')"
       class="text-lg group-[.is-bigger]_!text-2xl leading-none"
     />
 

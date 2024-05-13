@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import { useAppNav } from '~/components/app/useAppNav'
-import useTrn from '~/components/trns/item/useTrn'
+import useTrn from '~/components/trns/useTrn'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -90,12 +90,8 @@ function handleDeleteConfirm() {
 
       <template #default="{ close }">
         <div class="header">
-          <TrnsItemDetails
-            :category="category"
-            :trn="trnItem"
-            :trnId="trnId"
-            :wallet="wallet"
-            ui="detailed"
+          <TrnsItem2
+            :trnItem="trnItem"
           />
         </div>
 
@@ -122,7 +118,7 @@ function handleDeleteConfirm() {
                 @onClick="handleSetFilterCategory"
               >
                 <template #icon>
-                  <Icon
+                  <Icon3
                     :icon="category.icon"
                     :background="category.color"
                     round
@@ -135,7 +131,7 @@ function handleDeleteConfirm() {
                 @onClick="handleSetFilterWallet"
               >
                 <template #icon>
-                  <Icon :abbr="wallet.name" :background="wallet.color" />
+                  <Icon3 :abbr="wallet.name" :background="wallet.color" />
                 </template>
               </ModalButton>
             </div>

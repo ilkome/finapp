@@ -40,6 +40,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^2.17.0",
     "@babel/parser": "^7.24.5",
+    "@iconify-json/mdi": "^1.1.66",
     "@nuxtjs/color-mode": "^3.4.1",
     "@nuxtjs/i18n": "^8.3.1",
     "@nuxtjs/tailwindcss": "^6.12.0",
@@ -51,6 +52,7 @@
     "eslint-plugin-format": "^0.1.1",
     "eslint-plugin-perfectionist": "^2.10.0",
     "nuxt": "^3.11.2",
+    "nuxt-icon": "^0.6.10",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "pug": "^3.0.2",

@@ -8,6 +8,7 @@ import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import useTrn from '~/components/trns/useTrn'
 
 const props = withDefaults(
   defineProps<{
@@ -36,6 +37,7 @@ const filterStore = useFilterStore()
 const { trnFormEdit } = useTrnForm()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
+const { formatDate, formatTrnItem } = useTrn()
 
 const pageNumber = ref(1)
 const isShowTrnsWithDesc = ref(false)
@@ -175,20 +177,14 @@ function actions(trnItem: TrnItem) {
         </div>
 
         <div>
-          <TrnsItemBase
+          <TrnsItem2
             v-for="trnId in trnsIds"
-            v-if="uiHistory"
             :key="trnId"
-            :trnId="trnId"
-            @onClickEdit="emit('onClickEdit')"
-          />
-
-          <TrnsItemWithoutCat
-            v-for="trnId in trnsIds"
-            v-if="uiCat"
-            :key="trnId"
+            :trnItem="formatTrnItem(trnId)"
+            :date="$t(formatDate(formatTrnItem(trnId).date, 'trnItem'))"
+            :alt="uiCat"
             :actions="actions"
-            :trnId="trnId"
+            @onClickEdit="emit('onClickEdit')"
           />
         </div>
       </div>

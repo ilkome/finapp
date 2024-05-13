@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-objects */
 import { useAppNav } from '~/components/app/useAppNav'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import { useUserStore } from '~/components/user/useUser'

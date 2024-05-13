@@ -24,17 +24,12 @@ export default function useTrn() {
       return 'Category not found'
 
     // Parent category
-    let categoryParent = null
+    let categoryParent
     if (category.parentId) {
       categoryParent = categoriesStore.items[category.parentId]
       if (!categoryParent)
         return 'Parent Category not found'
     }
-
-    // Date
-    let dateFormatted = formatDate(trn.date, 'full')
-    // @ts-expect-error todo
-    dateFormatted = `${dateFormatted.weekday}, ${dateFormatted.day} ${dateFormatted.month} ${dateFormatted.year}`
 
     // Transaction
     if (trn.type !== 2) {
@@ -48,7 +43,6 @@ export default function useTrn() {
         ...trn,
         category,
         categoryParent,
-        dateFormatted,
         wallet,
       }
     }
@@ -69,7 +63,6 @@ export default function useTrn() {
         ...trn,
         category,
         categoryParent,
-        dateFormatted,
         expenseWallet,
         incomeWallet,
       }

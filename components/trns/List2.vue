@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TrnId, TrnItemFull } from '~/components/trns/types'
-import useTrn from '~/components/trns/item/useTrn'
+import useTrn from '~/components/trns/useTrn'
 
 const props = withDefaults(
   defineProps<{
@@ -10,7 +10,7 @@ const props = withDefaults(
   },
 )
 
-const { formatTrnItem } = useTrn()
+const { formatDate, formatTrnItem } = useTrn()
 const trns = computed(() =>
   props.trnsIds
     .map(id => formatTrnItem(id))
@@ -21,10 +21,11 @@ const trns = computed(() =>
 <template>
   <div>
     <TrnsItem2
-      v-for="trn in trns"
-      :key="trn.id"
-      :trnId="trn.id"
-      :trn="trn"
+      v-for="trnItem in trns"
+      :key="trnItem.id"
+      :trnId="trnItem.id"
+      :trnItem="trnItem"
+      :date="$t(formatDate(trnItem.date, 'trnItem'))"
     />
   </div>
 </template>

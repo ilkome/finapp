@@ -192,13 +192,13 @@ div
               @click="emit('updateValue', 'color', color)"
             )
               template(v-if="findCategoryIconByColor(color)")
-                Icon(
+                Icon3(
                   :icon="color === categoryForm.color ? categoryForm.icon : findCategoryIconByColor(color)"
                   :background="color"
                   round
                 )
               template(v-else-if="color === categoryForm.color")
-                Icon(
+                Icon3(
                   :icon="categoryForm.icon"
                   background="transparent"
                   big

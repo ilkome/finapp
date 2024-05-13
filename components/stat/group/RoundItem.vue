@@ -31,11 +31,10 @@ const hasChildren = computed(() =>
     data-long-press-delay="300"
     @click="trnFormCreate({ categoryId })"
   >
-    <Icon2
-      :categoryId="categoryId"
+    <Icon
       :color="category.color"
-      :icon="category.icon"
-      size="lg"
+      :name="category.icon.replace('mdi mdi-', 'mdi:')"
+      size="24"
       @click="filter.toggleCategoryId(categoryId)"
     />
 

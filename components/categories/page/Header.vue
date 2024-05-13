@@ -12,9 +12,10 @@ const props = defineProps<{
     <div class="pt-1 text-xs font-medium text-item-2">
       {{ $t("categories.title") }}
       <template v-if="props.parentCategory">
-        | | • {{ props.parentCategory.name }}
+        • {{ props.parentCategory.name }}
       </template>
     </div>
+
     <div class="flex items-center gap-4 pb-1">
       {{ props.category.name }}
 

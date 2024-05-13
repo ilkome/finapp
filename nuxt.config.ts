@@ -4,9 +4,6 @@ export default defineNuxtConfig({
       link: [{
         href: 'https://fonts.googleapis.com/css?family=Roboto+Mono:400,500|Roboto:400,500,600,700|Unica+One&display=swap&subset=cyrillic',
         rel: 'stylesheet',
-      }, {
-        href: 'https://cdn.materialdesignicons.com/5.9.55/css/materialdesignicons.min.css',
-        rel: 'stylesheet',
       }],
       meta: [
         { charset: 'utf-8' },
@@ -64,6 +61,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
     'floating-vue/nuxt',
+    'nuxt-icon',
   ],
 
   plugins: [
