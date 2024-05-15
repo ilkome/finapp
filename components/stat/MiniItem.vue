@@ -29,11 +29,12 @@ const allTotal = computed(() => getTotalOfTrnsIds(props.trnsIds))
     </div>
 
     <div class="max-w-md">
-      <TrnsList2
+      <TrnsList
         :trnsIds
         :type="props.type"
         groupedBy="year"
         isShowFilter
+        isShowHeader
       />
     </div>
   </div>

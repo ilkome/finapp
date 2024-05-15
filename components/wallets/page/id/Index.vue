@@ -30,7 +30,7 @@ useHead({
       <router-link v-slot="{ href, navigate }" to="/wallets" custom>
         <a class="grow hocus_bg-item-5" :href="href" @click="navigate">
           <UiHeaderTitle2>
-            <div class="pt-1 text-xs font-medium text-item-2">
+            <div class="pt-3 text-xs font-medium text-item-2">
               {{ $t("wallets.title") }}
             </div>
             <div class="flex items-center gap-3 pb-1">
@@ -47,6 +47,7 @@ useHead({
           </UiHeaderTitle2>
         </a>
       </router-link>
+
       <template #actions>
         <UiHeaderLink @click="onEditClick">
           <div class="mdi mdi-pencil-outline text-xl group-hover_text-white" />
@@ -67,6 +68,12 @@ useHead({
       class="mb-6 px-2 text-sm text-item-2"
     >
       {{ wallet.description }}
+    </div>
+
+    <div class="pt-6">
+      <StatMini
+        :walletId
+      />
     </div>
   </UiPage>
 </template>

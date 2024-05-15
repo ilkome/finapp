@@ -82,20 +82,18 @@ const tabs = computed(() => [
 
 <template>
   <div class="grid gap-2 sm_max-w-sm grid h-full grid-rows-[1fr,auto] overflow-hidden">
-    <TrnsListWithControl
+    <TrnsList
       :defaultFilterTrnsPeriod="periodGrouped"
-      :size="10"
       :trnsIds="trnsIds"
-      class="overflow-hidden"
-      isFilterByDay
       isShowGroupSum
-      @onChangePeriod="(v) => (periodGrouped = v)"
+      isShowHeader
+      isShowFilter
       @onClickEdit="onClickEdit"
     >
       <template #contentBefore>
         <TrnFormDate class="pb-0" />
       </template>
-    </TrnsListWithControl>
+    </TrnsList>
 
     <UiTabs>
       <UiTabsItem

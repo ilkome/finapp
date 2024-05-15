@@ -243,7 +243,7 @@ function getFormattedDate(date: number) {
           {{ formattedDate }}
         </div>
 
-        <LazyStatChartView
+        <!-- <LazyStatChartView
           :categories="stat.chartCategories.value"
           :isShowDataLabels="filter.ui.value.isShowDataLabels"
           :markedArea="chart.markedArea"
@@ -251,7 +251,7 @@ function getFormattedDate(date: number) {
           :series="chart.series"
           chartType="bar"
           @click="onClickChart"
-        />
+        /> -->
 
         <UiTabs2 class="gap-1">
           <UiTabsItem2
@@ -264,7 +264,7 @@ function getFormattedDate(date: number) {
           </UiTabsItem2>
         </UiTabs2>
 
-        <TrnsList2
+        <TrnsList
           v-if="tabs.active.value === 'trns'"
           :trnsIds="selectedTrnsIds"
           alt

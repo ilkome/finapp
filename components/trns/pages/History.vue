@@ -25,7 +25,7 @@ provide('filter', filter)
         class="flex gap-2 rounded-lg bg-item-4"
       />
 
-      <TrnsList2
+      <TrnsList
         isShowFilter
         isShowHeader
         :trnsIds

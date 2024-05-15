@@ -146,14 +146,11 @@ const periodGrouped = ref('period')
 
           <div class="mb-8 md_mb-4">
             <div class="_grid items-start gap-6 md_grid-cols-2 md_gap-8">
-              <TrnsListWithControl
+              <TrnsList
                 v-if="appNavStore.activeTabStat === 'trns'"
-                class="px-2 py-2 sm_px-1.5 sm_pt-3"
-                :defaultFilterTrnsPeriod="periodGrouped"
-                :size="12"
-                :trnsIds="periodGrouped === 'period' ? stat.trnsIds.value : stat.getTrnsIdsWithFilterNoDates()"
+                isShowHeader
                 isShowFilter
-                @onChangePeriod="v => periodGrouped = v"
+                :trnsIds="stat.trnsIds.value"
               />
 
               <div
@@ -302,16 +299,12 @@ const periodGrouped = ref('period')
                         :moneyTypeNumber="stat.getMoneyTypeNumber(item.slug)"
                       />
 
-                      <TrnsListWithControl
+                      <TrnsList
                         v-if="statTabs.active.value === 'trns'"
-                        :defaultFilterTrnsPeriod="periodGrouped"
                         :initTrnType="stat.getMoneyTypeNumber(item.slug)"
-                        :size="12"
-                        :trnsIds="periodGrouped === 'period' ? stat.trnsIds.value : stat.getTrnsIdsWithFilterNoDates()"
-                        class="px-2"
+                        :trnsIds="stat.trnsIds.value"
                         isShowFilter
-                        uiHistory
-                        @onChangePeriod="v => periodGrouped = v"
+                        isShowHeader
                       />
                     </div>
                   </div>

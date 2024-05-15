@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { CategoryId } from '~/components/categories/types'
 import useAmount from '~/components/amount/useAmount'
+import type { WalletId } from '~/components/wallets/types'
 
 const props = defineProps<{
-  categoryId: CategoryId
+  categoryId?: CategoryId
+  walletId?: WalletId
 }>()
 
 const trnsStore = useTrnsStore()
-const currenciesStore = useCurrenciesStore()
 const { getTotalOfTrnsIds } = useAmount()
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: [props.categoryId],
+  categoriesIds: props.categoryId ? [props.categoryId] : [],
+  walletsIds: props.walletId ? [props.walletId] : [],
 }, {
   includesChildCategories: true,
 }))
@@ -23,9 +24,6 @@ const allTotal = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
 <template>
   <div>
-    <!-- <div>Mini</div> -->
-    <!-- <pre>{{ props }}</pre> -->
-
     <div class="grid grid-cols-2 gap-24">
       <StatMiniItem
         v-if="allTotal.expense"

@@ -70,9 +70,8 @@ const items = computed(() => ({
       :overflowPadding="12"
       autoBoundaryMaxSize
       placement="bottom-start"
-      class="group/dropdown"
     >
-      <TrnsItem2
+      <TrnsItem
         :alt="props.alt"
         :trnItem
         :date
