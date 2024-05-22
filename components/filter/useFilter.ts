@@ -87,22 +87,22 @@ export function useFilter() {
   // TODO: Move from here
   const periodsNames = computed<PeriodsNames>(() => [
     {
-      icon: 'mdi mdi-weather-sunset-up',
+      icon: 'mdi:weather-sunset-up',
       name: $i18n.t('dates.day.simple'),
       slug: 'day',
     },
     {
-      icon: 'mdi mdi-calendar-week',
+      icon: 'mdi:calendar-week',
       name: $i18n.t('dates.week.simple'),
       slug: 'week',
     },
     {
-      icon: 'mdi mdi-calendar',
+      icon: 'mdi:calendar',
       name: $i18n.t('dates.month.simple'),
       slug: 'month',
     },
     {
-      icon: 'mdi mdi-calendar-star',
+      icon: 'mdi:calendar-star',
       name: $i18n.t('dates.year.simple'),
       slug: 'year',
     },

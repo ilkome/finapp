@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import type { TrnId, TrnItemFull, TrnType } from '~/components/trns/types'
-import useTrn from '~/components/trns/useTrn'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import dayjs from 'dayjs'
 import type { MoneyTypeNumber } from '~/components/stat/types'
+import type { TrnId, TrnItemFull, TrnType } from '~/components/trns/types'
+import useAmount from '~/components/amount/useAmount'
+import useTrn from '~/components/trns/useTrn'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = withDefaults(
   defineProps<{
     alt?: boolean
     initTrnType?: TrnType | MoneyTypeNumber | undefined
     isShowFilter?: boolean
+    isShowGroupSum?: boolean
     isShowHeader?: boolean
     size?: number
     trnsIds: TrnId[]
@@ -20,9 +24,11 @@ const props = withDefaults(
   },
 )
 
-const { t } = useI18n()
-const { formatDate, formatTrnItem } = useTrn()
+const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
+const { formatDate, formatTrnItem } = useTrn()
+const { getTotalOfTrnsIds } = useAmount()
+const { t } = useI18n()
 
 const isShowWithDesc = ref(false)
 const filterBy = ref(props.initTrnType)
@@ -68,11 +74,12 @@ const isTrnsWithDescription = computed(() =>
   ),
 )
 
-const trns = computed(
-  () =>
-    paginatedTrnsIds.value
-      .map(id => formatTrnItem(id))
-      .filter(trn => trn?.id) as TrnItemFull[],
+const trns = computed(() =>
+  paginatedTrnsIds.value
+    .reduce((acc, id) => {
+      acc[id] = formatTrnItem(id)
+      return acc
+    }, {} as Record<TrnId, TrnItemFull>),
 )
 
 const typeFilters = computed(() => ({
@@ -102,6 +109,17 @@ const typeFilters = computed(() => ({
 function setFilterBy(type: TrnType | undefined) {
   filterBy.value = type
 }
+
+const groupedTrns = computed(() => {
+  return paginatedTrnsIds.value.reduce(
+    (acc, trnId) => {
+      const date = dayjs(trnsStore.items[trnId]?.date).startOf('day').valueOf()
+      !acc[date] ? acc[date] = [trnId] : acc[date].push(trnId)
+      return acc
+    },
+    {} as Record<string, TrnId[]>,
+  )
+})
 </script>
 
 <template>
@@ -153,15 +171,52 @@ function setFilterBy(type: TrnType | undefined) {
       </div>
     </div>
 
-    <div>
-      <TrnsItemWrap
-        v-for="trnItem in trns"
-        :key="trnItem.id"
-        :alt="props.alt"
-        :trnId="trnItem.id"
-        :trnItem="trnItem"
-        :date="formatDate(trnItem.date, 'trnItem')"
-      />
+    <div class="grid gap-4">
+      <div
+        v-for="(groupTrnsIds, date) in groupedTrns"
+        :key="date"
+      >
+        <div class="flex gap-2 items-center">
+          <DateTrns
+            :date="+date"
+            class="px-3 grow"
+          />
+
+          <div
+            v-if="isShowGroupSum"
+            class="pr-3"
+          >
+            <Amount
+              v-if="groupTrnsIds.length > 1 && getTotalOfTrnsIds(groupTrnsIds).income !== 0"
+              :amount="getTotalOfTrnsIds(groupTrnsIds).income"
+              :currencyCode="currenciesStore.base"
+              :isShowBaseRate="false"
+              :type="1"
+              colorize="income"
+              variant="2xs"
+            />
+
+            <Amount
+              v-if="groupTrnsIds.length > 1 && getTotalOfTrnsIds(groupTrnsIds).expense !== 0"
+              :amount="getTotalOfTrnsIds(groupTrnsIds).expense"
+              :currencyCode="currenciesStore.base"
+              :isShowBaseRate="false"
+              :type="0"
+              variant="2xs"
+              isShowMinus
+            />
+          </div>
+        </div>
+
+        <TrnsItemWrap
+          v-for="trnId in groupTrnsIds"
+          :key="trnId"
+          :alt="props.alt"
+          :trnId="trnId"
+          :trnItem="trns[trnId]"
+          :date="formatDate(trns[trnId].date, 'trnItem')"
+        />
+      </div>
     </div>
 
     <div v-if="!isShowedAllTrns">

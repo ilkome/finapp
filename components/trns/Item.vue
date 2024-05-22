@@ -9,11 +9,14 @@ const props = defineProps<{
 </script>
 
 <template>
-  <UiElement class="group2">
+  <UiElement
+    v-if="props.trnItem"
+    class="group2"
+  >
     <template v-if="!alt" #leftIcon>
       <Icon
-        :name="props.trnItem.category.icon.replace('mdi mdi-', 'mdi:')"
-        :color="props.trnItem.category.color"
+        :name="props.trnItem.category?.icon?.replace('mdi mdi-', 'mdi:')"
+        :color="props.trnItem.category?.color"
         size="22"
       />
     </template>
@@ -33,8 +36,8 @@ const props = defineProps<{
             class="flex gap-2 items-center"
           >
             <Icon
-              :name="props.trnItem.category.icon.replace('mdi mdi-', 'mdi:')"
-              :color="props.trnItem.category.color"
+              :name="props.trnItem.category?.icon?.replace('mdi mdi-', 'mdi:')"
+              :color="props.trnItem.category?.color"
               size="16"
             />
             <div
@@ -60,7 +63,7 @@ const props = defineProps<{
 
             <!-- Category name -->
             <div class="flex items-center gap-2 text-secondary text-sm leading-none">
-              {{ trnItem.category.name }}
+              {{ trnItem.category?.name }}
             </div>
           </div>
 

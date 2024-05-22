@@ -33,10 +33,10 @@ function onClick(slug: PeriodNameWithoutAll) {
       class="flex gap-3 items-center"
       @click="onClick(periodItem.slug)"
     >
-      <div :class="periodItem.icon" class="text-xl" />
+      <Icon :name="periodItem.icon" size="22" />
       <div class="text-sm">
         {{ $t(`dates.${periodItem.slug}.simple`) }}
-        {{ props.periods[periodItem.slug].showedPeriods }}
+        <!-- {{ props.periods[periodItem.slug].showedPeriods }} -->
       </div>
     </div>
   </div>

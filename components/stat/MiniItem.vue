@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import { useStorage } from '@vueuse/core'
 import type { MoneyTypeSlugSum } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
@@ -21,9 +22,10 @@ const currenciesStore = useCurrenciesStore()
 const { getTotalOfTrnsIds } = useAmount()
 const filter = useFilter()
 
-const period = ref<PeriodNameWithoutAll>('day')
-const date = ref<number>(dayjs().startOf(period.value).valueOf())
+const chartPeriodsShown = ref(12)
 const chartType = ref<ChartType>('bar')
+const period = useStorage<PeriodNameWithoutAll>('miniItemPeriod', 'day')
+const date = useStorage<number>('miniItemDate', dayjs().startOf(period.value).valueOf())
 
 const sortedTrnsIds = computed(() =>
   [...props.trnsIds].sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date),
@@ -34,11 +36,7 @@ const datesFromTrnsIds = computed(() => ({
   until: trnsStore.items[sortedTrnsIds.value.at(0)].date,
 }))
 
-onMounted(() =>
-  date.value = dayjs(datesFromTrnsIds.value.until).startOf(period.value).valueOf(),
-)
-
-const allTotal = computed(() => getTotalOfTrnsIds(props.trnsIds))
+onMounted(() => date.value = dayjs(datesFromTrnsIds.value.until).startOf(period.value).valueOf())
 
 const statTabs = useSimpleTabs(`mini-item${props.type}`, [
   {
@@ -66,70 +64,31 @@ const statTabs = useSimpleTabs(`mini-item${props.type}`, [
     slug: 'periods',
   },
 ])
-
 const datesGroups = computed(getDatesPeriod)
-
-// TODO: move to store useTrnsStore
-function groupByPeriod(trnsIds: TrnId[], period: PeriodNameWithAll) {
-  const periodNoAll = period === 'all' ? 'year' : period
-  const groups = datesGroups.value
-
-  trnsIds.forEach((trnId) => {
-    const date = dayjs(trnsStore.items[trnId]?.date).startOf(periodNoAll).valueOf()
-    datesGroups.value[date]?.push(trnId)
-  })
-
-  return groups
-}
-
-function getDatesPeriod() {
-  const list: Record<string, TrnId[]> = {}
-  let current = dayjs(datesFromTrnsIds.value.from).startOf(period.value).valueOf()
-
-  while (current < datesFromTrnsIds.value.until) {
-    list[current] = []
-    current = dayjs(current).add(1, period.value).startOf(period.value).valueOf()
-  }
-
-  return list
-}
-
 const trnsIdsGroupedByDate = computed(() => groupByPeriod(props.trnsIds, period.value))
-
-const groupedTrnsTotals = computed(() =>
-  Object.keys(trnsIdsGroupedByDate.value)
-    .sort((a, b) => +a - +b)
-    .reduce(
-      (acc, date) => {
-        acc[date] = getTotalOfTrnsIds(trnsIdsGroupedByDate.value[date])
-        return acc
-      },
-      {} as Record<string, TotalReturns>,
-    ),
+const groupedTrnsTotals = computed(() => Object.keys(trnsIdsGroupedByDate.value)
+  .sort((a, b) => +a - +b)
+  .reduce(
+    (acc, date) => {
+      acc[date] = getTotalOfTrnsIds(trnsIdsGroupedByDate.value[date])
+      return acc
+    },
+    {} as Record<string, TotalReturns>,
+  ),
 )
-
 const categories = computed(() => Object.keys(datesGroups.value).map(date => +date) ?? [])
-
 const series = computed(() => getSeries(groupedTrnsTotals.value, props.type))
-
-function onClickChart(idx: number) {
-  date.value = categories.value[idx]
-}
-
 const selectedTrnsIds = computed(() => trnsIdsGroupedByDate.value[date.value])
-
-function setPeriodAndDate(periodName: PeriodNameWithoutAll) {
-  period.value = periodName
-  date.value = dayjs(categories.value.at(-1)).startOf(periodName).valueOf()
-}
+const totals = computed(() => getTotalOfTrnsIds(selectedTrnsIds.value))
 
 const config = computed(() => {
   if (Object.keys(groupedTrnsTotals.value).length >= 30) {
     return {
       dataZoom: [{
-        start: 90,
+        maxValueSpan: chartPeriodsShown.value,
+        minValueSpan: chartPeriodsShown.value,
+        start: 100,
         type: 'inside',
-        until: 100,
       }],
     }
   }
@@ -170,6 +129,11 @@ function getSeries(total: Record<string, TotalReturns>, type: MoneyTypeSlugSum) 
   }))
 }
 
+function setPeriodAndDate(periodName: PeriodNameWithoutAll) {
+  period.value = periodName
+  date.value = dayjs(categories.value.at(-1)).startOf(periodName).valueOf()
+}
+
 function setPeriodDateNext() {
   const newDate = dayjs(date.value).subtract(1, period.value).valueOf()
   if (categories.value.includes(newDate))
@@ -182,6 +146,34 @@ function setPeriodDatePrev() {
   if (categories.value.includes(newDate))
     date.value = newDate
 }
+
+function onClickChart(idx: number) {
+  date.value = categories.value[idx]
+}
+
+function getDatesPeriod() {
+  const list: Record<string, TrnId[]> = {}
+  let current = dayjs(datesFromTrnsIds.value.from).startOf(period.value).valueOf()
+
+  while (current < datesFromTrnsIds.value.until) {
+    list[current] = []
+    current = dayjs(current).add(1, period.value).startOf(period.value).valueOf()
+  }
+
+  return list
+}
+
+function groupByPeriod(trnsIds: TrnId[], period: PeriodNameWithAll) {
+  const periodNoAll = period === 'all' ? 'year' : period
+  const groups = datesGroups.value
+
+  trnsIds.forEach((trnId) => {
+    const date = dayjs(trnsStore.items[trnId]?.date).startOf(periodNoAll).valueOf()
+    datesGroups.value[date]?.push(trnId)
+  })
+
+  return groups
+}
 </script>
 
 <template>
@@ -190,7 +182,7 @@ function setPeriodDatePrev() {
       <UiTitle5>{{ $t(`money.${props.type}`) }}</UiTitle5>
 
       <Amount
-        :amount="allTotal[props.type]"
+        :amount="totals[props.type]"
         :currencyCode="currenciesStore.base"
         align="left"
         variant="3xl"
@@ -250,6 +242,7 @@ function setPeriodDatePrev() {
         :groupedBy="period"
         isShowFilter
         isShowHeader
+        :isShowGroupSum="period !== 'day'"
       />
     </div>
   </div>
