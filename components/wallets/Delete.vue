@@ -28,7 +28,7 @@ const isShowDeleteConfirm = ref(false)
 // TODO: translate
 const deleteDescText = computed(() => {
   if (trnsIds.value.length > 0)
-    return `It's also will delete ${trnsIds.value.length} trns in this wallet`
+    return `This action will delete ${trnsIds.value.length} trns in this wallet`
   return undefined
 })
 
@@ -60,15 +60,17 @@ async function onDeleteConfirm() {
 }
 </script>
 
-<template lang="pug">
-div
-  UiHeaderLink(@click="onClickDelete")
-    .mdi.mdi-delete-empty-outline.group-hover_text-white.text-xl
+<template lang="html">
+  <div>
+    <UiHeaderLink @click="onClickDelete">
+      <i class="mdi mdi-delete-empty-outline group-hover:text-white text-xl" />
+    </UiHeaderLink>
 
-  LayoutConfirmModal(
-    :show="isShowDeleteConfirm"
-    :description="deleteDescText"
-    @closed="isShowDeleteConfirm = false"
-    @onConfirm="onDeleteConfirm"
-  )
+    <LayoutConfirmModal
+      :show="isShowDeleteConfirm"
+      :description="deleteDescText"
+      @closed="isShowDeleteConfirm = false"
+      @onConfirm="onDeleteConfirm"
+    />
+  </div>
 </template>

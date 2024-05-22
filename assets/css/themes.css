@@ -61,6 +61,7 @@ html.light {
   --accent-4: var(--hue) 100% 61%;
 
   --item-main: 235 235 240;
+  --item-6: 237 239 240;
   --item-7: 188 188 192;
   --item-active: 216 216 220;
 }

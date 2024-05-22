@@ -1,12 +1,22 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
-import type { FilterProvider } from '~/components/filter/useFilter'
+import type { DateNumber } from '~/components/date/types'
+import type { PeriodNameWithAll, PeriodNameWithoutAll, Periods, PeriodsNames } from '~/components/filter/useFilter'
 import { formatDateByPeriod } from '~/components/date/format'
+import { getStyles } from '~/components/ui/getStyles'
 
-const period = inject('filter') as FilterProvider
+const props = defineProps<{
+  date: DateNumber
+  periodNameWithAll: PeriodNameWithAll
+  periods: Periods
+  periodsNames: PeriodsNames
+}>()
+
+const emit = defineEmits<{
+  setPeriodAndDate: [slug: PeriodNameWithoutAll]
+}>()
 
 const { t } = useI18n()
-const formattedDate = computed(() => formatDateByPeriod(period.date.value, period.periodNameWithoutAll.value, {
+const formattedDate = computed(() => formatDateByPeriod(props.date, props.periodNameWithAll, {
   current: t('dates.week.current'),
   last: t('dates.week.last'),
 }))
@@ -22,11 +32,17 @@ const formattedDate = computed(() => formatDateByPeriod(period.date.value, perio
       :class="getStyles('item', ['link', 'rounded', 'minh2', 'center'])"
       class="flex items-center px-3 py-2 text-base font-medium leading-none text-item-1"
     >
-      {{ period.periodNameWithAll.value === "all" ? $t("dates.all.simple") : formattedDate }}
+      {{ props.periodNameWithAll === "all" ? $t("dates.all.simple") : formattedDate }}
     </div>
 
     <template #popper="{ hide }">
-      <StatDateModal :hide="hide" />
+      <StatDateModal
+        :hide="hide"
+        :periods="props.periods"
+        :periodsNames="props.periodsNames"
+        :periodNameWithAll="props.periodNameWithAll"
+        @setPeriodAndDate="slug => emit('setPeriodAndDate', slug)"
+      />
     </template>
   </VDropdown>
 </template>

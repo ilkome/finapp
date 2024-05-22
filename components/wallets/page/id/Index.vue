@@ -55,25 +55,28 @@ useHead({
       </template>
     </UiHeader>
 
-    <div class="flex mb-6 px-2 pt-3">
-      <Amount
-        :amount="total"
-        :currencyCode="wallet.currency"
-        variant="3xl"
-      />
-    </div>
+    <div class="px-2">
+      <div class="flex mb-6 pt-3">
+        <Amount
+          :amount="total"
+          :currencyCode="wallet.currency"
+          variant="3xl"
+        />
+      </div>
 
-    <div
-      v-if="wallet.description"
-      class="mb-6 px-2 text-sm text-item-2"
-    >
-      {{ wallet.description }}
-    </div>
+      <div
+        v-if="wallet.description"
+        class="mb-6 text-sm text-item-2"
+      >
+        {{ wallet.description }}
+      </div>
 
-    <div class="pt-6">
-      <StatMini
-        :walletId
-      />
+      <div class="pt-6">
+        <StatMini
+          :key="walletId"
+          :walletId
+        />
+      </div>
     </div>
   </UiPage>
 </template>

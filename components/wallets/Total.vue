@@ -26,11 +26,11 @@ const totalInWallets = computed(() => {
       walletTotal = walletsStore.totals[walletId]
     }
     else {
-      walletTotal = getAmountInBaseRate({
+      walletTotal = +getAmountInBaseRate({
         amount: walletsStore.totals[walletId],
         currencyCode: props.walletsItems[walletId].currency,
         noFormat: true,
-      }) as number
+      })
     }
 
     if (props.walletsItems[walletId].countTotal)
@@ -87,17 +87,17 @@ const filteredCount = computed(() =>
 <template>
   <div>
     <div
-      v-for="item in filteredCount" :key="item.titleId"
+      v-for="item in filteredCount"
+      :key="item.titleId"
       class="flex items-center gap-12 border-b border-item-5 px-2 py-2 last_border-0"
     >
-      <div class="flex grow items-center gap-3 text-sm leading-none text-secondary">
+      <div
+        class="flex grow items-center gap-3 text-sm leading-none text-secondary"
+      >
         {{ t(item.titleId) }}
       </div>
 
-      <Amount
-        :amount="item.value"
-        :currencyCode="currencyCode"
-      />
+      <Amount :amount="item.value" :currencyCode="currencyCode" />
     </div>
   </div>
 </template>

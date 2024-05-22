@@ -46,7 +46,10 @@ const props = defineProps<{
         </template>
 
         <div class="grow flex gap-6">
-          <div v-if="!alt">
+          <div
+            v-if="!alt"
+            class="min-w-[60px]"
+          >
             <!-- Parent category name -->
             <div
               v-if="trnItem.categoryParent"

@@ -21,10 +21,17 @@ const periodsSchema = z.object({
   year: periodSchema,
 })
 
-type Periods = z.infer<typeof periodsSchema>
+export type Periods = z.infer<typeof periodsSchema>
 export type PeriodSchema = z.infer<typeof periodSchema>
-export type PeriodNameWithoutAll = keyof Periods
+// export type PeriodNameWithoutAll = keyof Periods | dayjs.OpUnitType
+export type PeriodNameWithoutAll = keyof Periods | dayjs.ManipulateType
 export type PeriodNameWithAll = PeriodNameWithoutAll | 'all'
+
+export type PeriodsNames = {
+  icon: string
+  name: string
+  slug: PeriodNameWithoutAll
+}[]
 
 export function useFilter() {
   const { $i18n } = useNuxtApp()
@@ -77,13 +84,8 @@ export function useFilter() {
     },
   })
 
-  const periodsNames = computed<
-    {
-      icon: string
-      name: string
-      slug: PeriodNameWithoutAll
-    }[]
-  >(() => [
+  // TODO: Move from here
+  const periodsNames = computed<PeriodsNames>(() => [
     {
       icon: 'mdi mdi-weather-sunset-up',
       name: $i18n.t('dates.day.simple'),
@@ -115,6 +117,7 @@ export function useFilter() {
     toggleUi: key => (ui.value[key] = !ui.value[key]),
   })
 
+  // TODO: Move from here
   function setPeriodAndDate(periodName: PeriodNameWithAll) {
     if (periodName !== 'all') {
       if (periodNameWithAll.value === periodName) {

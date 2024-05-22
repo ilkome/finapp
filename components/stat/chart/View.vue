@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import defu from 'defu'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import {
+  DataZoomComponent,
   GridComponent,
   MarkAreaComponent,
   MarkLineComponent,
@@ -14,26 +15,28 @@ import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 import { config, lineConfig } from '~/components/stat/chart/config'
 import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
-import type { PeriodNameWithoutAll } from '~/components/filter/useFilter'
+import type { PeriodNameWithAll } from '~/components/filter/useFilter'
 import { getFormatForChart } from '~/components/date/format'
 import type { ChartType } from '~/components/chart/types'
 
 const props = withDefaults(
   defineProps<{
     categories: unknown
-    series: unknown[]
     chartType?: ChartType
-    isShowIncome?: boolean
+    config?: object
+    isShowDataLabels?: boolean
     isShowExpense?: boolean
+    isShowIncome?: boolean
     isShowSummary?: boolean
     markedArea?: unknown
-    periodName: PeriodNameWithoutAll
-    isShowDataLabels?: boolean
+    periodName: PeriodNameWithAll
+    series: unknown[]
   }>(),
   {
     chartType: 'line',
-    isShowIncome: true,
+    config: () => ({}),
     isShowExpense: true,
+    isShowIncome: true,
   },
 )
 
@@ -43,22 +46,24 @@ const emit = defineEmits<{
 
 use([
   BarChart,
+  DataZoomComponent,
   GridComponent,
   LineChart,
-  SVGRenderer,
   MarkAreaComponent,
   MarkLineComponent,
   MarkPointComponent,
-  TooltipComponent,
   PieChart,
+  SVGRenderer,
+  TooltipComponent,
 ])
 
 const chartRef = ref()
 
-function getChartData() {
+const baseConfig = computed(() => {
   const data = defu(config, {
-    xAxis: setChartXAxis(props.categories),
     series: setChartSeries(props.series),
+    xAxis: setChartXAxis(props.categories),
+    ...props.config,
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
@@ -68,13 +73,19 @@ function getChartData() {
     return dayjs(+value).format(getFormatForChart(props.periodName))
   }
 
+  return data
+})
+
+const chartOption = computed(() => {
+  const data = { ...baseConfig.value }
+
   // INFO: Marked area works only with bar chart
   if (props.markedArea) {
     if (props.chartType !== 'bar') {
       data.series.push({
         data: [],
-        type: 'bar',
         markArea: markArea(props.markedArea),
+        type: 'bar',
       })
     }
     else {
@@ -83,7 +94,7 @@ function getChartData() {
   }
 
   return data
-}
+})
 
 async function onClickChart(params: { offsetX: number, offsetY: number }) {
   const [index] = chartRef.value.convertFromPixel('grid', [
@@ -98,11 +109,11 @@ function setChartSeries(series: unknown[]) {
   return series
     .map((item: any) => ({
       ...defu(lineConfig, item),
-      type: item.type || props.chartType,
       label: {
         ...lineConfig.label,
         show: props.isShowDataLabels,
       },
+      type: item.type || props.chartType,
     }))
 }
 </script>
@@ -111,7 +122,7 @@ function setChartSeries(series: unknown[]) {
   <div class="bg-surface-4 h-48">
     <VChart
       ref="chartRef"
-      :option="getChartData()"
+      :option="chartOption"
       autoresize
       @zr:click="onClickChart"
     />

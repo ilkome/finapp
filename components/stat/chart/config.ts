@@ -28,27 +28,26 @@ export const config = {
 
             <div class="flex gap-2">
               <div>${i.marker}</div>
-              <div>${getLocalAmount(i.value)}</div>
+              <div class="text-right">${getLocalAmount(i.value)}</div>
             </div>
           `)}
           </div>
           `
     },
     padding: 8,
-    position(pos, _params, _el, _elRect, size) {
-      const obj = {
+    position() {
+      return {
         bottom: '100%',
         right: '10',
       }
-      // obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 0
-      return obj
     },
     textStyle: {
       color: '',
     },
-
     // show: false,
     trigger: 'axis',
+
+    valueFormatter: getLocalAmount,
   },
 
   // xAxis

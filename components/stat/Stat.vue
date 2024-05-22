@@ -232,8 +232,22 @@ const periodGrouped = ref('period')
                       </div>
 
                       <div class="flex grow">
-                        <StatDateNav class="gap-1" />
-                        <StatDateView />
+                        <StatDateNav
+                          :isLastPeriod="stat.isLastPeriod.value"
+                          :isToday="stat.isToday.value"
+                          :periodNameWithAll="filter.periodNameWithoutAll.value"
+                          @setNextPeriodDate="filter.setNextPeriodDate(stat.avaDate.value)"
+                          @setPeriodAndDate="v => filter.setPeriodAndDate(v)"
+                          @setPrevPeriodDate="filter.setPrevPeriodDate()"
+                        />
+
+                        <StatDateView
+                          :date="filter.date.value"
+                          :periodNameWithAll="filter.periodNameWithAll.value"
+                          :periodsNames="filter.periodsNames.value"
+                          :periods="filter.periods.value"
+                          @setPeriodAndDate="filter.setPeriodAndDate"
+                        />
 
                         <div class="flex ml-auto">
                           <StatPeriodsSelector class="" />
@@ -301,7 +315,7 @@ const periodGrouped = ref('period')
 
                       <TrnsList
                         v-if="statTabs.active.value === 'trns'"
-                        :initTrnType="stat.getMoneyTypeNumber(item.slug)"
+                        :initTrnType="item.slug"
                         :trnsIds="stat.trnsIds.value"
                         isShowFilter
                         isShowHeader

@@ -68,7 +68,7 @@ useHead({
         />
       </div>
 
-      <div class="pt-6">
+      <div class="">
         <StatMini
           :categoryId
         />

@@ -116,8 +116,8 @@ function removeUserData() {
     </div>
 
     <LayoutConfirmModal
+      v-if="confirmRemoveUserData"
       :description="$t('alerts.willDeleteEverything')"
-      :show="confirmRemoveUserData"
       @closed="confirmRemoveUserData = false"
       @onConfirm="removeUserData"
     />

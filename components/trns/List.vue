@@ -7,14 +7,16 @@ import type { MoneyTypeNumber } from '~/components/stat/types'
 const props = withDefaults(
   defineProps<{
     alt?: boolean
-    initTrnType?: TrnType | MoneyTypeNumber
+    initTrnType?: TrnType | MoneyTypeNumber | undefined
     isShowFilter?: boolean
     isShowHeader?: boolean
     size?: number
     trnsIds: TrnId[]
   }>(),
   {
-    size: 30,
+    initTrnType: 'sum',
+    size: 10,
+    trnsIds: () => [],
   },
 )
 
@@ -24,8 +26,8 @@ const trnsStore = useTrnsStore()
 
 const isShowWithDesc = ref(false)
 const filterBy = ref(props.initTrnType)
-
 const pageNumber = ref(1)
+
 watch(
   () => props.trnsIds,
   () => {
@@ -35,11 +37,11 @@ watch(
 )
 
 const selectedIds = computed(() => {
-  let ids = props.trnsIds
+  let ids = props.trnsIds ?? []
 
-  if (filterBy.value !== undefined) {
+  if (filterBy.value !== 'sum') {
     ids = props.trnsIds.filter(
-      id => trnsStore.items[id].type === filterBy.value,
+      id => trnsStore.items[id].type === typeFilters.value[filterBy.value]?.slug,
     )
   }
 
@@ -61,7 +63,7 @@ const isShowedAllTrns = computed(
 )
 
 const isTrnsWithDescription = computed(() =>
-  props.trnsIds.some(
+  (props.trnsIds ?? []).some(
     id => trnsStore.items[id].description || trnsStore.items[id].desc,
   ),
 )
@@ -74,11 +76,12 @@ const trns = computed(
 )
 
 const typeFilters = computed(() => ({
-  all: {
+  sum: {
     count: props.trnsIds.length,
     name: t('common.all'),
     slug: undefined,
   },
+  // eslint-disable-next-line perfectionist/sort-objects
   expense: {
     count: props.trnsIds.filter(id => trnsStore.items[id].type === 0).length,
     name: t('money.expense'),
@@ -114,13 +117,13 @@ function setFilterBy(type: TrnType | undefined) {
 
     <UiTabs3 v-if="isShowFilter">
       <UiTabsItem5
-        v-for="filterItem in typeFilters"
+        v-for="(filterItem, slug) in typeFilters"
         :key="filterItem.slug"
-        :isActive="filterBy === filterItem.slug"
+        :isActive="filterBy === slug"
         :class="{
           'opacity-50': filterItem.count === 0,
         }"
-        @click="setFilterBy(filterItem.slug)"
+        @click="setFilterBy(slug)"
       >
         {{ filterItem.name }}
       </UiTabsItem5>

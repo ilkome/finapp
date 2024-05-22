@@ -1,14 +1,16 @@
 import dayjs from 'dayjs'
 import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/filter/useFilter'
 
-export function formatDateByPeriod(date: number, periodName: PeriodNameWithoutAll, names: any) {
+export function formatDateByPeriod(date: number, periodNameWithAll: PeriodNameWithAll, names: any) {
+  const periodNameWithoutAll: PeriodNameWithoutAll = periodNameWithAll === 'all' ? 'year' : periodNameWithAll
+
   const today = dayjs()
   let format = 'MMMM'
 
   const startDate = dayjs(date).startOf('week').format('D MMMM')
   const endDate = dayjs(date).endOf('week').format('D MMMM')
 
-  switch (periodName) {
+  switch (periodNameWithoutAll) {
     case 'day':
       today.isSame(date, 'year')
         ? (format = 'DD MMMM')
@@ -18,7 +20,7 @@ export function formatDateByPeriod(date: number, periodName: PeriodNameWithoutAl
     case 'week':
       if (today.isSame(date, 'week'))
         return names.current
-      else if (today.subtract(1, periodName).isSame(date, 'week'))
+      else if (today.subtract(1, periodNameWithoutAll).isSame(date, 'week'))
         return names.last
       return `${startDate} - ${endDate}`
 
@@ -77,7 +79,7 @@ export function formatDateByPeriod2(date: number, periodName: PeriodNameWithoutA
   return dayjs(date).format(format)
 }
 
-export function getFormatForChart(periodName: PeriodNameWithoutAll) {
+export function getFormatForChart(periodName: PeriodNameWithAll) {
   switch (periodName) {
     case 'day':
       return 'D.MM'

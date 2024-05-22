@@ -38,7 +38,9 @@ const isShowDeleteConfirm = ref(false)
 // TODO: translate
 const deleteDescText = computed(() => {
   if (trnsIds.value && trnsIds.value.length > 0)
-    return `It's also will delete ${trnsIds.value.length} trns in this category.`
+    return `This action will delete ${trnsIds.value.length} trns in this category.`
+
+  return undefined
 })
 
 // TODO: translate

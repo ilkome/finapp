@@ -1,7 +1,6 @@
 <script setup lang="ts">
 defineProps<{
   description?: string
-  show: boolean
 }>()
 
 const emit = defineEmits<{
@@ -47,7 +46,10 @@ const items = computed(() => ({
             {{ $t('base.sure') }}
           </div>
 
-          <div v-if="description" class="text-alert-primary text-center">
+          <div
+            v-if="description"
+            class="text-alert-primary px-2"
+          >
             {{ description }}
           </div>
 
