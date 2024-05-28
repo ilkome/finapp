@@ -29,6 +29,10 @@ const menu = computed<{
   id: 'trns',
   idx: 3,
   name: $i18n.t('trns.shortTitle'),
+}, {
+  id: 'statNew',
+  idx: 4,
+  name: $i18n.t('stat.statNew'),
 }])
 
 const { activeTabStat } = storeToRefs(useAppNav())

@@ -136,7 +136,10 @@ function onSelectWallet(id: WalletId, close: () => void) {
             </div>
 
             <!-- Categories -->
-            <div class="swiper-slide _!w-auto pt-4 grid grid-rows-[auto,1fr]" :style="{ height: maxHeight }">
+            <div
+              :style="{ height: maxHeight }"
+              class="swiper-slide _!w-auto pt-4 grid grid-rows-[auto,1fr]"
+            >
               <UiTitle class="px-3 pb-2 pt-1.5">
                 {{ $t("categories.title") }}
               </UiTitle>

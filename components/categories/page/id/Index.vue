@@ -60,7 +60,7 @@ useHead({
     <div class="gap-4 px-2">
       <div
         v-if="category.childIds && category.childIds.length > 0"
-        class="pt-4 pb-12"
+        class="pt-4 pb-6"
       >
         <CategoriesList
           :ids="categoryChildIds"
@@ -68,9 +68,9 @@ useHead({
         />
       </div>
 
-      <div class="">
+      <div class="pt-6">
         <StatMini
-          :categoryId
+          :categoriesIds="[categoryId]"
         />
       </div>
     </div>

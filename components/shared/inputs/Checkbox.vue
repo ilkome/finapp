@@ -15,8 +15,8 @@ const emit = defineEmits<{
       {{ title }}
     </div>
 
-    <div :class="{ _active: value }" class="checkbox">
-      <div class="checkbox__in" />
+    <div :class="{ _active: value }" class="checkbox rounded-xl">
+      <div class="checkbox__in rounded-xl" />
     </div>
   </div>
 </template>
@@ -33,7 +33,6 @@ const emit = defineEmits<{
   width 44px
   height 24px
   background var(--c-bg-9)
-  border-radius 20px
   anim()
 
   &._active
@@ -46,7 +45,6 @@ const emit = defineEmits<{
     width 20px
     height 20px
     background var(--c-font-2)
-    border-radius 20px
     box-shadow 0 0 4px rgba(0, 0, 0, .25)
     anim()
 

@@ -12,6 +12,7 @@ const props = defineProps<{
   <UiElement
     v-if="props.trnItem"
     class="group2"
+    isShowLine
   >
     <template v-if="!alt" #leftIcon>
       <Icon
@@ -124,12 +125,12 @@ const props = defineProps<{
 
             <Amount
               :amount="trnItem.incomeAmount || trnItem.amount"
-              :currencyCode="trnItem.incomeWallet.currency"
-              :type="1"
-              colorize="income"
               :class="{
                 'opacity-0': trnItem.incomeAmount === trnItem.expenseAmount,
               }"
+              :currencyCode="trnItem.incomeWallet.currency"
+              :type="1"
+              colorize="income"
             />
           </div>
         </div>

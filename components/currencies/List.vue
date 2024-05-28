@@ -50,6 +50,7 @@ const list = computed(() => {
           v-for="currencyCode in walletsStore.currenciesUsed"
           :key="currencyCode"
           :isActive="currencyCode === active"
+          isShowLine
           class="group"
           @click="emit('onSelect', currencyCode)"
         >
@@ -76,6 +77,7 @@ const list = computed(() => {
           :key="currency.code"
           :isActive="currency.code === active"
           class="group"
+          isShowLine
           @click="emit('onSelect', currency.code)"
         >
           <div class="flex items-center">

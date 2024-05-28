@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
 export const config = {
@@ -109,7 +108,7 @@ export const config = {
 
 export const lineConfig = {
   barMaxWidth: '12',
-  barMinWidth: '4',
+  barMinWidth: '8',
   borderColor: 'blue',
   cursor: 'default',
   emphasis: {
@@ -121,7 +120,7 @@ export const lineConfig = {
     show: true,
   },
   lineStyle: {
-    width: 2,
+    width: 3,
   },
   smooth: true,
   symbol: 'circle',

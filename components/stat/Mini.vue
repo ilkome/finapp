@@ -3,24 +3,22 @@ import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { AppNav } from '~/components/app/types'
 
 const props = defineProps<{
-  categoryId?: CategoryId
-  walletId?: WalletId
+  categoriesIds?: CategoryId[]
+  walletsIds?: WalletId[]
 }>()
 
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
-const currenciesStore = useCurrenciesStore()
 
 const activeTab = useStorage<AppNav>('activeTabStatIn', 'sum')
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: props.categoryId ? [props.categoryId] : [],
-  walletsIds: props.walletId ? [props.walletId] : [],
+  categoriesIds: props.categoriesIds,
+  walletsIds: props.walletsIds,
 }, {
   includesChildCategories: true,
 }))
@@ -42,83 +40,81 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
 <template>
   <div class="grid gap-4">
-    <template
-      v-if="totals.income && totals.expense"
+    <div
+      v-if="totals.income || totals.expense"
+      class="grid gap-2"
     >
-      <div class="flex flex-wrap gap-6">
-        <div v-if="totals.expense">
-          <UiTitle5>{{ $t('money.expense') }}</UiTitle5>
-
-          <Amount
-            :amount="totals.expense"
-            :currencyCode="currenciesStore.base"
-            align="left"
-            variant="3xl"
-          />
-        </div>
-
-        <div v-if="totals.income">
-          <UiTitle5>{{ $t('money.income') }}</UiTitle5>
-
-          <Amount
-            :amount="totals.income"
-            :currencyCode="currenciesStore.base"
-            align="left"
-            variant="3xl"
-          />
-        </div>
-
-        <div v-if="totals.income && totals.expense">
-          <UiTitle5>{{ $t('money.sum') }}</UiTitle5>
-
-          <Amount
-            :amount="totals.sum"
-            :currencyCode="currenciesStore.base"
-            align="left"
-            variant="3xl"
-          />
-        </div>
+      <div class="flex flex-wrap gap-8 _bg-item-3 _p-4 rounded-lg py-3">
+        <StatSum
+          v-if="totals.expense"
+          :amount="totals.expense"
+          isTotal
+          type="expense"
+        />
+        <StatSum
+          v-if="totals.income"
+          :amount="totals.income"
+          isTotal
+          type="income"
+        />
+        <StatSum
+          v-if="totals.income && totals.expense"
+          :amount="totals.sum"
+          isTotal
+          type="sum"
+        />
       </div>
-    </template>
 
-    <StatMenu2
-      :active="activeTab"
-      :isShowIncome="totals.income !== 0"
-      :isShowExpense="totals.expense !== 0"
-      class="flex grow items-center sm_gap-2"
-      @click="id => activeTab = id"
-    />
+      <Filter class="grow" />
+
+      <StatMenu2
+        :active="activeTab"
+        :isShowIncome="totals.income !== 0"
+        :isShowExpense="totals.expense !== 0"
+        @click="id => activeTab = id"
+      />
+    </div>
 
     <!-- Sum -->
-    <div
+    <!-- <div
       v-if="activeTab === 'sum' && totals.sum && (totals.expense !== 0 && totals.income !== 0)"
-      class="grid md_grid-cols-2 gap-24"
+      class="grid @3xl/main_grid-cols-2 gap-24"
     >
       <StatMiniItem
         :trnsIds="trnsIds"
         type="sum"
       />
-    </div>
+    </div> -->
 
     <div class="grid md_grid-cols-2 gap-24">
+      <!-- <div>
+        <pre>{{ totals.expense }}</pre>
+        <pre>{{ expenseTrnsIds.length }}</pre>
+        <br>
+        <pre>{{ totals.income }}</pre>
+        <pre>{{ incomeTrnsIds.length }}</pre>
+      </div> -->
+
       <!-- Expense -->
       <StatMiniItem
-        v-if="(activeTab === 'sum' || activeTab === 'expense') && totals.expense"
+        v-if="(activeTab === 'sum' || activeTab === 'expense') && expenseTrnsIds.length > 0"
         :trnsIds="expenseTrnsIds"
         type="expense"
       />
 
       <!-- Income -->
       <StatMiniItem
-        v-if="(activeTab === 'sum' || activeTab === 'income') && totals.income"
+        v-if="(activeTab === 'sum' || activeTab === 'income') && incomeTrnsIds.length > 0"
         :trnsIds="incomeTrnsIds"
         type="income"
       />
 
+      <!-- Trns -->
       <TrnsList
         v-if="activeTab === 'trns' || (!totals.income && !totals.expense)"
-        isShowHeader
         :trnsIds
+        isShowHeader
+        isShowFilter
       />
     </div>
   </div>

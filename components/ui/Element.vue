@@ -5,6 +5,7 @@ defineProps<{
   hideDivider?: boolean
   isActive?: boolean
   isShowIcons?: boolean
+  isShowLine?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -37,9 +38,12 @@ const slots = useSlots()
       </div>
 
       <slot name="default" />
+
+      <slot name="line" />
     </div>
 
     <div
+      v-if="isShowLine"
       class="ml-9 mr-2 h-[1px] bg-item-5 group-last_hidden"
       :class="{ 'ml-9': isShowIcons, 'ml-11': !isShowIcons }"
     />

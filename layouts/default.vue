@@ -47,7 +47,7 @@ watch(
         class="hidden lg_hidden sm_flex sm_flex-col gap-1 justify-center sm_align-center bg-item-4"
       />
 
-      <div class="grid h-full overflow-hidden sm_pl-2 lg_pl-0">
+      <div class="@container/main grid h-full overflow-hidden sm_pl-2 lg_pl-0">
         <NuxtPage />
       </div>
     </div>
@@ -59,4 +59,5 @@ watch(
 
   <CurrenciesModal />
   <DevModalOpener />
+  <TrnForm />
 </template>

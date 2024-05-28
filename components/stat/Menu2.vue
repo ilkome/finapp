@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
 import type { AppNav } from '~/components/app/types'
 
 const props = defineProps<{
@@ -14,12 +13,12 @@ const emit = defineEmits<{
 
 const { $i18n } = useNuxtApp()
 
-const menu = computed<{
-  id: AppNav
-  idx: number
-  name: string | unknown
-}[]>(() => {
-  const all = []
+const menu = computed(() => {
+  const all: {
+    id: AppNav
+    idx: number
+    name: string | unknown
+  }[] = []
 
   if (props.isShowIncome && props.isShowExpense) {
     all.push({
@@ -71,16 +70,14 @@ function onClickStatMenu(tabName: AppNav) {
 </script>
 
 <template>
-  <div class="overflow-y-auto">
-    <!-- v-if="!item.isPrivate || userStore.isDevUser" -->
-    <UiTabsItem2
+  <div class="flex grow items-center overflow-y-auto sm_gap-1 border-b border-item-6 pb-1">
+    <UiTabsItem5
       v-for="item in menu"
       :key="item.id"
       :isActive="item.id === props.active"
-      class="!text-md !font-medium min-w-xs grow-0"
       @click="onClickStatMenu(item.id)"
     >
       {{ item.name }}
-    </UiTabsItem2>
+    </UiTabsItem5>
   </div>
 </template>

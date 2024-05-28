@@ -38,6 +38,9 @@ const statTabs = useSimpleTabs('dashboardStats', [{
 }, {
   localeKey: 'stat.tabs.periods',
   slug: 'periods',
+}, {
+  localeKey: 'stat.tabs.periods',
+  slug: 'statNew',
 }])
 
 const totalToggle = useToggle({ name: 'total' })
@@ -110,20 +113,6 @@ function useToggle({ name }: { name: string }) {
     toggle,
   }
 }
-
-// const selectedTrnsIds = computed(() => getTrnsIds({
-//   trnsItems: trnsStore.items,
-//   categoriesIds: filter.catsIds.value,
-//   walletsIds: filter.walletsIds.value,
-//   dates: {
-//     from: dayjs().startOf(filter.periodNameWithoutAll.value).subtract(stat.periodsToShow.value, filter.periodNameWithoutAll.value).valueOf(),
-//     until: dayjs().endOf('day').subtract(1, filter.periodNameWithoutAll.value).valueOf(),
-//   },
-// }))
-
-// // const categoriesWithTrnsIds = computed(() => stat.getCategoriesWithTrnsIds(selectedTrnsIds.value))
-
-const periodGrouped = ref('period')
 </script>
 
 <template>
@@ -142,10 +131,19 @@ const periodGrouped = ref('period')
         </div>
 
         <div class="grid gap-3" data-scroll-ref="stat">
-          <Filter class="grow pt-2" />
+          <Filter
+            v-if="appNavStore.activeTabStat !== 'statNew'"
+            class="grow pt-2"
+          />
 
           <div class="mb-8 md_mb-4">
             <div class="_grid items-start gap-6 md_grid-cols-2 md_gap-8">
+              <StatMini
+                v-if="appNavStore.activeTabStat === 'statNew'"
+                :categoriesIds="filter.catsIds.value"
+                :walletsIds="filter.walletsIds.value"
+              />
+
               <TrnsList
                 v-if="appNavStore.activeTabStat === 'trns'"
                 isShowHeader
@@ -330,6 +328,4 @@ const periodGrouped = ref('period')
       </div>
     </div>
   </div>
-
-  <TrnForm />
 </template>

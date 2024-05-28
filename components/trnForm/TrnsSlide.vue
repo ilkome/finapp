@@ -26,10 +26,7 @@ const trnsIds = computed(() => {
   const trnsItems = trnsStore.items
   const walletsIds: WalletId[] = []
   let categoriesIds: CategoryId[] = []
-  let dates = false
-
-  if (periodGrouped.value === 'period')
-    dates = getDates('day', $trnForm.values.date)
+  const dates = getDates('day', $trnForm.values.date)
 
   if (filterBy.value === 'wallet' && $trnForm.values.walletId)
     walletsIds.push($trnForm.values.walletId)
@@ -91,7 +88,7 @@ const tabs = computed(() => [
       @onClickEdit="onClickEdit"
     >
       <template #contentBefore>
-        <TrnFormDate class="pb-0" />
+        <TrnFormDate />
       </template>
     </TrnsList>
 

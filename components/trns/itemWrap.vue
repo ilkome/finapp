@@ -82,6 +82,7 @@ const items = computed(() => ({
           <UiElement
             v-for="(item, slug) in items"
             :key="slug"
+            isShowLine
             @click="item.click(hide)"
           >
             <template #leftIcon>

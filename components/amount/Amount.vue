@@ -14,12 +14,13 @@ const props = withDefaults(
     isShowPlus?: boolean
     isShowSign?: boolean
     type?: MoneyTypeNumber
-    variant?: '2xs' | 'sm' | '3xl'
+    variant?: '2xs' | '3xl' | 'base'
   }>(),
   {
     align: 'right',
     isShowBaseRate: true,
     isShowSign: true,
+    variant: 'base',
   },
 )
 
@@ -37,7 +38,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
       '!text-income': props.colorize === 'income' && props.type === 1,
       'text-2xs': props.variant === '2xs',
       'text-3xl': props.variant === '3xl',
-      'text-sm': props.variant === 'sm',
+      'text-base': props.variant === 'base',
     }"
     class="
       flex flex-col gap-1

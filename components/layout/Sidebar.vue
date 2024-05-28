@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import { useCategoriesStore } from '~/components/categories/useCategories'
+
+const categoriesStore = useCategoriesStore()
+</script>
+
 <template>
   <div
     class="
@@ -14,6 +20,18 @@
     </div>
 
     <LayoutMenuSidebar class="pb-6 pt-2 px-2" />
+
+    <div class="grid gap-1 pb-6 px-2">
+      <UiTitle3 class="pl-3">
+        {{ $t('categories.title') }}
+      </UiTitle3>
+
+      <!-- <CategoriesSelector2
+        class="!p-0"
+        :ids="categoriesStore.categoriesRootIds"
+        @onSelected="id => $router.push(`/categories/${id}`)"
+      /> -->
+    </div>
 
     <div class="grid gap-1 pb-6 px-2">
       <UiTitle3 class="pl-3">

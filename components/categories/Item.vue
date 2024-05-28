@@ -25,6 +25,7 @@ const childCategoriesIds = computed(() =>
   <UiElement
     :isActive="activeItemId === categoryId"
     class="group"
+    isShowLine
     @click="e => emit('click', e)"
   >
     <template #leftIcon>

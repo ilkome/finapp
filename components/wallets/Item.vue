@@ -22,6 +22,7 @@ const emit = defineEmits<{
     :isActive="activeItemId === props.walletId"
     :isShowIcons="props.isShowIcons"
     :hideDivider="!alt"
+    isShowLine
     class="relative group"
     @click="emit('click', props.walletId)"
   >
@@ -60,7 +61,7 @@ const emit = defineEmits<{
 
     <!-- Main -->
     <template v-if="!props.alt">
-      <div class="text-sm leading-none">
+      <div class="text-secondary text-sm leading-none">
         {{ wallet.name }}
       </div>
 

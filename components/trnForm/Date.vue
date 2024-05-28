@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { FilterProvider } from '~/components/filter/useFilter'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { getStyles } from '~/components/ui/getStyles'
 import { formatDate } from '~/utils/formatDate'
 
 const $trnForm = useTrnFormStore()
-
-const period = inject('filter') as FilterProvider
 
 const formattedDate = computed(() => {
   const date = formatDate($trnForm.values.date, 'full')
@@ -31,9 +28,6 @@ function changeDate(way: 'prev' | 'next' | 'today') {
     newDate = dayjs().valueOf()
 
   $trnForm.values.date = newDate
-
-  if (period.periodNameWithoutAll.value === 'day')
-    period.setDate(dayjs(newDate).startOf(period.periodNameWithoutAll.value).valueOf())
 }
 </script>
 
@@ -45,14 +39,14 @@ function changeDate(way: 'prev' | 'next' | 'today') {
         class="px-1 text-2xl"
         @click="changeDate('prev')"
       >
-        <i class="mdi mdi-chevron-left" />
+        <Icon name="mdi:chevron-left" size="24" />
       </div>
       <div
         :class="[...getStyles('item', ['link', 'rounded']), { 'opacity-30': isToday }]"
         class="px-1 text-2xl"
         @click="changeDate('next')"
       >
-        <i class="mdi mdi-chevron-right" />
+        <Icon name="mdi:chevron-right" size="24" />
       </div>
       <div
         v-if="!isToday"

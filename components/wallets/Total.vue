@@ -97,7 +97,10 @@ const filteredCount = computed(() =>
         {{ t(item.titleId) }}
       </div>
 
-      <Amount :amount="item.value" :currencyCode="currencyCode" />
+      <Amount
+        :amount="item.value"
+        :currencyCode="currencyCode"
+      />
     </div>
   </div>
 </template>

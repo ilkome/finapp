@@ -9,6 +9,7 @@ module.exports = {
   darkMode: 'class',
 
   plugins: [
+    require('@tailwindcss/container-queries'),
     plugin(({ addVariant }) => {
       addVariant('hocus', ['.mouse &:not(._active):hover', '&:not(._active):active'])
       addVariant('group-hocus', ['.mouse .group:not(._active):hover &', '.group:not(._active):active &'])

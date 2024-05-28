@@ -162,7 +162,7 @@ export default {
   loginWithGoogle: 'Login with Google',
 
   money: {
-    all: 'Net income',
+    all: 'Total',
     also: 'Also',
     average: {
       base: 'Average',
@@ -204,11 +204,15 @@ export default {
     periods: 'Periods',
     selectedPeriod: 'Selected period',
     shortTitle: 'Stat',
+    statNew: 'v2',
     summary: 'Summary',
     tabs: {
+      chart: 'Chart',
       empty: 'Hide',
       gLines: 'G-Lines',
       lines: 'Lines',
+      linesChart: 'Chart & Lines',
+      linesTrns: 'Lines & Trns',
       periods: 'Periods',
       round: 'Rounds',
       trns: 'Trns',

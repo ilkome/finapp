@@ -76,7 +76,7 @@ onMounted(init)
         <div class="swiper-wrapper">
           <!-- History -->
           <div
-            class="swiper-slide bg-foreground-2 sm_max-w-sm sm_rounded-l-xl"
+            class="swiper-slide bg-foreground-2 sm_max-w-xs sm_rounded-l-xl"
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide
