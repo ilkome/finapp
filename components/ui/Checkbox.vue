@@ -23,7 +23,6 @@ function handleClick() {
     <SharedInputsCheckbox
       v-if="checkboxValue !== undefined"
       :value="checkboxValue"
-      @click="handleClick"
     />
 
     <div class="text-secondary grow">

@@ -23,6 +23,7 @@ export const classes = {
     minw2: 'min-w-[60px]',
     padding1: 'px-2 py-1.5',
     padding2: 'px-2',
+    padding3: 'px-3',
     paddings: {
       base: '',
     },

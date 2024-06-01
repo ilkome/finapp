@@ -41,10 +41,9 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 <template>
   <div class="grid gap-4">
     <div
-      v-if="totals.income || totals.expense"
       class="grid gap-2"
     >
-      <div class="flex flex-wrap gap-8 _bg-item-3 _p-4 rounded-lg py-3">
+      <!-- <div class="flex flex-wrap gap-8 _bg-item-3 _p-4 rounded-lg py-3">
         <StatSum
           v-if="totals.expense"
           :amount="totals.expense"
@@ -63,7 +62,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
           isTotal
           type="sum"
         />
-      </div>
+      </div> -->
 
       <Filter class="grow" />
 
@@ -76,46 +75,41 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
     </div>
 
     <!-- Sum -->
-    <!-- <div
-      v-if="activeTab === 'sum' && totals.sum && (totals.expense !== 0 && totals.income !== 0)"
-      class="grid @3xl/main_grid-cols-2 gap-24"
-    >
+    <div class="grid gap-24">
       <StatMiniItem
+        v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 && totals.income !== 0)"
+        :storageKey="activeTab"
         :trnsIds="trnsIds"
+        class="max-w-lg"
         type="sum"
       />
-    </div> -->
 
-    <div class="grid md_grid-cols-2 gap-24">
-      <!-- <div>
-        <pre>{{ totals.expense }}</pre>
-        <pre>{{ expenseTrnsIds.length }}</pre>
-        <br>
-        <pre>{{ totals.income }}</pre>
-        <pre>{{ incomeTrnsIds.length }}</pre>
-      </div> -->
+      <div class="grid md_grid-cols-2 gap-24">
+        <!-- Expense -->
+        <StatMiniItem
+          v-if="(activeTab === 'sum' || activeTab === 'expense') && expenseTrnsIds.length > 0"
+          :trnsIds="expenseTrnsIds"
+          :storageKey="activeTab"
+          type="expense"
+        />
 
-      <!-- Expense -->
-      <StatMiniItem
-        v-if="(activeTab === 'sum' || activeTab === 'expense') && expenseTrnsIds.length > 0"
-        :trnsIds="expenseTrnsIds"
-        type="expense"
-      />
+        <!-- Income -->
+        <StatMiniItem
+          v-if="(activeTab === 'sum' || activeTab === 'income') && incomeTrnsIds.length > 0"
+          :trnsIds="incomeTrnsIds"
+          :storageKey="activeTab"
+          type="income"
+        />
 
-      <!-- Income -->
-      <StatMiniItem
-        v-if="(activeTab === 'sum' || activeTab === 'income') && incomeTrnsIds.length > 0"
-        :trnsIds="incomeTrnsIds"
-        type="income"
-      />
-
-      <!-- Trns -->
-      <TrnsList
-        v-if="activeTab === 'trns' || (!totals.income && !totals.expense)"
-        :trnsIds
-        isShowHeader
-        isShowFilter
-      />
+        <!-- Trns -->
+        <TrnsList
+          v-if="activeTab === 'trns' || (!totals.income && !totals.expense)"
+          :trnsIds
+          isShowHeader
+          isShowFilterByType
+          isShowFilterByDesc
+        />
+      </div>
     </div>
   </div>
 </template>

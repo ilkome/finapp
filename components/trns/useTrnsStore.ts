@@ -258,7 +258,6 @@ export const useTrnsStore = defineStore('trns', () => {
   return {
     addTrn,
 
-    allTrnsIdsWithFilter,
     deleteTrn,
     deleteTrnsByIds,
     // Edit

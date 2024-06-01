@@ -40,7 +40,7 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
         </VDropdown>
 
         <CategoriesItem
-          v-for="categoryId in filter.catsIds.value"
+          v-for="categoryId in filter?.catsIds?.value"
           :key="categoryId"
           :category="categoriesStore.items[categoryId]"
           :categoryId="categoryId"
@@ -69,14 +69,14 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
 
             <WalletsSelector
               class="max-h-[50vh] _w-[90vw] min-w-[260px]"
-              :selected="filter.walletsIds"
+              :selected="filter?.walletsIds.value"
               @onSelected="filter.toggleWalletId"
             />
           </template>
         </VDropdown>
 
         <WalletsItem
-          v-for="walletId in filter.walletsIds.value"
+          v-for="walletId in filter?.walletsIds?.value"
           :key="walletId"
           :walletId="walletId"
           :wallet="walletsStore.sortedItems[walletId]"
@@ -86,7 +86,7 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
       </div>
 
       <div
-        v-if="filter.isShow.value"
+        v-if="filter?.isShow?.value"
         :class="getStyles('item', ['link', 'minw1', 'center', 'rounded', 'padding2', 'minh'])"
         class="bg-transparent"
         @click="filter.clearFilter"

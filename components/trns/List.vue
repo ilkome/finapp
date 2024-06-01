@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import type { MoneyTypeNumber } from '~/components/stat/types'
-import type { TrnId, TrnItemFull, TrnType } from '~/components/trns/types'
+import type { TrnId, TrnType } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import useTrn from '~/components/trns/useTrn'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
@@ -11,7 +11,9 @@ const props = withDefaults(
   defineProps<{
     alt?: boolean
     initTrnType?: TrnType | MoneyTypeNumber | undefined
-    isShowFilter?: boolean
+    isHideDates?: boolean
+    isShowFilterByDesc?: boolean
+    isShowFilterByType?: boolean
     isShowGroupSum?: boolean
     isShowHeader?: boolean
     size?: number
@@ -76,7 +78,7 @@ const selectedIds = computed(() => {
     )
   }
 
-  if (isShowWithDesc.value && isTrnsWithDescription.value) {
+  if (isShowWithDesc.value && isTrnsWithDesc.value) {
     ids = ids.filter(
       id => trnsStore.items[id].description || trnsStore.items[id].desc,
     )
@@ -93,7 +95,7 @@ const isShowedAllTrns = computed(
   () => paginatedTrnsIds.value.length === selectedIds.value.length,
 )
 
-const isTrnsWithDescription = computed(() => {
+const isTrnsWithDesc = computed(() => {
   let ids = props.trnsIds ?? []
 
   if (filterBy.value !== 'sum') {
@@ -106,14 +108,6 @@ const isTrnsWithDescription = computed(() => {
     id => trnsStore.items[id].description || trnsStore.items[id].desc,
   )
 })
-
-const trns = computed(() =>
-  paginatedTrnsIds.value
-    .reduce((acc, id) => {
-      acc[id] = formatTrnItem(id)
-      return acc
-    }, {} as Record<TrnId, TrnItemFull>),
-)
 
 function setFilterBy(type: TrnType | undefined) {
   filterBy.value = type
@@ -133,21 +127,25 @@ const groupedTrns = computed(() => {
 
 <template>
   <div class="grid gap-3 h-full overflow-hidden content-start">
-    <UiTitle v-if="isShowHeader" class="flex items-baseline gap-2">
-      <div>{{ $t("trns.title") }}</div>
-      <div v-if="selectedIds.length > 0" class="text-sm">
-        <template v-if="paginatedTrnsIds.length === selectedIds.length">
-          {{ paginatedTrnsIds.length }}
-        </template>
-        <template v-else>
-          {{ paginatedTrnsIds.length }} / {{ selectedIds.length }}
-        </template>
-      </div>
-    </UiTitle>
+    <slot
+      v-if="isShowHeader"
+      name="header"
+      :paginatedTrnsIds
+      :selectedIds
+    >
+      <UiTitle
+        class="flex items-baseline gap-2"
+      >
+        <div>{{ $t("trns.title") }}</div>
+        <div v-if="selectedIds.length > 0" class="text-sm">
+          {{ selectedIds.length }}
+        </div>
+      </UiTitle>
+    </slot>
 
     <slot name="contentBefore" />
 
-    <UiTabs3 v-if="isShowFilter">
+    <UiTabs3 v-if="isShowFilterByType">
       <UiTabsItem5
         v-for="(filterItem, slug) in typeFilters"
         :key="filterItem.slug"
@@ -162,7 +160,7 @@ const groupedTrns = computed(() => {
     </UiTabs3>
 
     <div
-      v-if="isShowFilter && isTrnsWithDescription && selectedIds.length > 0"
+      v-if="isShowFilterByDesc && isTrnsWithDesc && selectedIds.length > 0"
       class="-my-1"
     >
       <UiCheckbox
@@ -183,7 +181,23 @@ const groupedTrns = computed(() => {
       </div>
     </div>
 
-    <div class="grid gap-6 overflow-hidden overflow-y-auto">
+    <div
+      v-if="isHideDates"
+    >
+      <TrnsItemWrap
+        v-for="trnId in paginatedTrnsIds"
+        :key="trnId"
+        :alt="props.alt"
+        :trnId="trnId"
+        :trnItem="formatTrnItem(trnId)"
+        :date="formatDate(formatTrnItem(trnId)?.date, 'trnItem')"
+      />
+    </div>
+
+    <div
+      v-if="!isHideDates"
+      class="grid gap-6 overflow-hidden overflow-y-auto"
+    >
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
@@ -225,19 +239,19 @@ const groupedTrns = computed(() => {
           :key="trnId"
           :alt="props.alt"
           :trnId="trnId"
-          :trnItem="trns[trnId]"
-          :date="formatDate(trns[trnId].date, 'trnItem')"
+          :trnItem="formatTrnItem(trnId)"
+          :date="formatDate(formatTrnItem(trnId)?.date, 'trnItem')"
         />
       </div>
+    </div>
 
-      <div v-if="!isShowedAllTrns">
-        <div
-          class="flex-center grow rounded-lg bg-item-5 px-5 py-2.5 text-sm text-secondary hocus_bg-item-6"
-          @click="pageNumber = ++pageNumber"
-        >
-          {{ $t("trns.more") }} {{ paginatedTrnsIds.length }} /
-          {{ selectedIds.length }}
-        </div>
+    <div v-if="!isShowedAllTrns">
+      <div
+        class="flex-center grow rounded-lg bg-item-5 px-5 py-2.5 text-sm text-secondary hocus_bg-item-6"
+        @click="pageNumber = ++pageNumber"
+      >
+        {{ $t("trns.more") }} {{ paginatedTrnsIds.length }} /
+        {{ selectedIds.length }}
       </div>
     </div>
   </div>

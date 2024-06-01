@@ -1,10 +1,10 @@
 import type { TrnId, TrnsGetterProps } from '~/components/trns/types'
 
 export function getTrnsIds(props: TrnsGetterProps) {
-  if (!props.trnsItems)
+  if (!props.trnsIds && !props.trnsItems)
     return []
 
-  let trnsIds: TrnId[] = Object.keys(props.trnsItems)
+  let trnsIds: TrnId[] = props.trnsIds || Object.keys(props.trnsItems)
 
   // Type
   if (props?.trnType !== undefined && props?.trnType !== null) {

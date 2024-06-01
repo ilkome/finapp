@@ -22,6 +22,11 @@ const menu = computed(() => {
 
   if (props.isShowIncome && props.isShowExpense) {
     all.push({
+      id: 'netIncome',
+      idx: 0,
+      name: $i18n.t('money.sum'),
+    })
+    all.push({
       id: 'sum',
       idx: 0,
       name: $i18n.t('stat.summary'),
@@ -70,7 +75,11 @@ function onClickStatMenu(tabName: AppNav) {
 </script>
 
 <template>
-  <div class="flex grow items-center overflow-y-auto sm_gap-1 border-b border-item-6 pb-1">
+  <div
+    class="
+      flex grow items-center overflow-y-auto sm_gap-1 border-b border-item-6 pb-1 gap-1
+    "
+  >
     <UiTabsItem5
       v-for="item in menu"
       :key="item.id"

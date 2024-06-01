@@ -50,7 +50,11 @@ useHead({
 
       <template #actions>
         <UiHeaderLink @click="onEditClick">
-          <div class="mdi mdi-pencil-outline text-xl group-hover_text-white" />
+          <Icon
+            name="mdi:pencil-outline"
+            size="22"
+            class="group-hover_text-white"
+          />
         </UiHeaderLink>
       </template>
     </UiHeader>

@@ -13,3 +13,17 @@ export function useSimpleTabs(id: string, items: {
     set,
   }
 }
+
+export function useToggle({ name }: { name: string }) {
+  const isShown = useStorage(name, true)
+  const show = () => (isShown.value = true)
+  const hide = () => (isShown.value = false)
+  const toggle = () => (isShown.value ? hide() : show())
+
+  return {
+    hide,
+    isShown,
+    show,
+    toggle,
+  }
+}

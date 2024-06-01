@@ -84,7 +84,8 @@ const tabs = computed(() => [
       :trnsIds="trnsIds"
       isShowGroupSum
       isShowHeader
-      isShowFilter
+      isShowFilterByType
+      isShowFilterByDesc
       @onClickEdit="onClickEdit"
     >
       <template #contentBefore>

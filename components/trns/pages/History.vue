@@ -26,8 +26,9 @@ provide('filter', filter)
       />
 
       <TrnsList
-        isShowFilter
         isShowHeader
+        isShowFilterByType
+        isShowFilterByDesc
         :trnsIds
       />
     </div>

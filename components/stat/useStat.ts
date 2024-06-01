@@ -27,7 +27,7 @@ export function useStat(filter: FilterProvider) {
   function getTrnsIdsWithFilter() {
     const categoriesIds
       = filter.catsIds.value.length > 0
-        ? categoriesStore.getTransactibleIds(filter.catsIds.value)
+        ? categoriesStore.getTransactibleIds(filter?.catsIds?.value)
         : []
     const walletsIds
       = filter.walletsIds.value.length > 0 ? filter.walletsIds.value : []
