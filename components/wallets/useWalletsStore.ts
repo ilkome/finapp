@@ -117,6 +117,14 @@ export const useWalletsStore = defineStore('wallets', () => {
         acc[id] ??= {
           ...items.value[id],
           amount: totals.value[id],
+          // amount:
+          //   items.value[id].creditLimit
+          //     ? items.value[id].creditLimit - totals.value[id]
+          //     : totals.value[id],
+          // amount:
+          //   id === '240312_89ntki'
+          //     ? 111
+          //     : totals.value[id],
         }
         return acc
       },

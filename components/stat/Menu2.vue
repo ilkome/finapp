@@ -76,9 +76,7 @@ function onClickStatMenu(tabName: AppNav) {
 
 <template>
   <div
-    class="
-      flex grow items-center overflow-y-auto sm_gap-1 border-b border-item-6 pb-1 gap-1
-    "
+    class="flex grow items-center gap-1 overflow-y-auto border-b border-item-6 pb-1 sm_gap-1"
   >
     <UiTabsItem5
       v-for="item in menu"

@@ -280,6 +280,9 @@ export default {
         label: 'Color',
         placeholder: 'Select color',
       },
+      credit: {
+        limit: 'Limit',
+      },
       currencies: {
         error: 'Select currency',
         label: 'Currency',

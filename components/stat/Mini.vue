@@ -8,6 +8,7 @@ import type { AppNav } from '~/components/app/types'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
+  isShowTotals?: boolean
   walletsIds?: WalletId[]
 }>()
 
@@ -43,7 +44,10 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
     <div
       class="grid gap-2"
     >
-      <!-- <div class="flex flex-wrap gap-8 _bg-item-3 _p-4 rounded-lg py-3">
+      <div
+        v-if="props.isShowTotals"
+        class="flex flex-wrap gap-8 rounded-lg"
+      >
         <StatSum
           v-if="totals.expense"
           :amount="totals.expense"
@@ -62,7 +66,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
           isTotal
           type="sum"
         />
-      </div> -->
+      </div>
 
       <Filter class="grow" />
 

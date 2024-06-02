@@ -16,6 +16,7 @@ export interface WalletItem {
   color: string
   // @deprecated: use withdrawal
   countTotal?: boolean
+  creditLimit?: number
   currency: CurrencyCode
   description?: string
   id: WalletId

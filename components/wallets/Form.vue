@@ -163,8 +163,8 @@ async function onSave() {
           </div>
           <input
             v-model="walletForm.description"
-            class="w-full m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder_text-item-2 transition ease-in-out focus_text-item-1 focus_bg-item-5 focus_border-accent-4 focus_outline-none"
             :placeholder="$t('wallets.form.description.placeholder')"
+            class="w-full m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder_text-item-2 transition ease-in-out focus_text-item-1 focus_bg-item-5 focus_border-accent-4 focus_outline-none"
             type="text"
             @input="event => emit('updateValue', 'description', event.target.value)"
           >
@@ -181,6 +181,17 @@ async function onSave() {
           :title="$t('isCredit')"
           @onClick="walletForm.isCredit = !walletForm.isCredit"
         />
+
+        <div class="pt-4">
+          <input
+            v-if="walletForm.isCredit"
+            v-model="walletForm.creditLimit"
+            :placeholder="$t('wallets.form.credit.limit')"
+            class="w-full m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder_text-item-2 transition ease-in-out focus_text-item-1 focus_bg-item-5 focus_border-accent-4 focus_outline-none"
+            type="text"
+            @input="event => emit('updateValue', 'creditLimit', event.target.value)"
+          >
+        </div>
       </template>
 
       <!-- Currencies -->

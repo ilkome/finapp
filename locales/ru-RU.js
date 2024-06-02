@@ -281,6 +281,9 @@ export default {
         label: 'Цвет',
         placeholder: 'Выберите цвет',
       },
+      credit: {
+        limit: 'Лимит',
+      },
       currencies: {
         error: 'Выберите валюту',
         label: 'Валюта',
