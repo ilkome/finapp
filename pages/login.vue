@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
+import type { ToastOptions } from 'vue3-toastify'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import { useUserStore } from '~/components/user/useUser'
 import { auth } from '~/services/firebase/api'
-import type { ToastOptions } from 'vue3-toastify'
 
 definePageMeta({
   layout: 'center',
@@ -68,7 +68,7 @@ watch(
     class="mx-auto grid h-full w-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4 md_p-6"
   >
     <div class="flex justify-between">
-      <AppLocaleSwitcher />
+      <AppLocaleSwitcher class="grow" />
       <AppThemeSwitcher />
     </div>
 

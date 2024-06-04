@@ -72,6 +72,12 @@ function onClickStatMenu(tabName: AppNav) {
   if (page.scrollTop > content?.offsetTop - h)
     page.scrollTop = content.offsetTop - h
 }
+
+onMounted(() => {
+  if (!menu.value.find(i => i.id === props.active)) {
+    onClickStatMenu(menu.value[0].id)
+  }
+})
 </script>
 
 <template>

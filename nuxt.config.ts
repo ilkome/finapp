@@ -1,8 +1,15 @@
+import process from 'node:process'
+
+const sw = process.env.SW === 'true'
+
 export default defineNuxtConfig({
   app: {
     head: {
       link: [{
         href: 'https://fonts.googleapis.com/css?family=Roboto+Mono:400,500|Roboto:400,500,600,700|Unica+One&display=swap&subset=cyrillic',
+        rel: 'stylesheet',
+      }, {
+        href: '/css/materialdesignicons.min.css',
         rel: 'stylesheet',
       }],
       meta: [
@@ -81,7 +88,7 @@ export default defineNuxtConfig({
       suppressWarnings: false,
       type: 'module',
     },
-    filename: process.env.SW === 'true' ? 'sw.ts' : undefined,
+    filename: sw ? 'sw.ts' : undefined,
     injectManifest: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
@@ -106,8 +113,9 @@ export default defineNuxtConfig({
       theme_color: '#171717',
     },
     registerType: 'autoUpdate',
-    srcDir: process.env.SW === 'true' ? 'service-worker' : undefined,
-    strategies: process.env.SW === 'true' ? 'injectManifest' : 'generateSW',
+    srcDir: sw ? 'service-worker' : undefined,
+    strategies: sw ? 'injectManifest' : 'generateSW',
+
     workbox: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
       runtimeCaching: [{
@@ -119,6 +127,9 @@ export default defineNuxtConfig({
       }, {
         handler: 'CacheFirst',
         urlPattern: 'https://cdn.materialdesignicons.com/',
+      }, {
+        handler: 'CacheFirst',
+        urlPattern: 'https://api.iconify.design',
       }],
     },
   },

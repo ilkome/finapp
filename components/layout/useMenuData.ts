@@ -59,7 +59,6 @@ export default function useMenuData() {
     closeAllModals()
 
     if (menuId === 'trnForm') {
-      navigateTo('dashboard')
       trnFormCreate()
       return
     }

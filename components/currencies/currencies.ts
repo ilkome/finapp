@@ -3,8 +3,8 @@ import type { CurrencyCode } from '~/components/currencies/types'
 export const currencies: {
   code: CurrencyCode
   name: string
-  symbol?: string
   precision?: number
+  symbol?: string
 }[] = [{
   code: 'CNH',
   name: 'Chinese Yuan',
@@ -207,13 +207,13 @@ export const currencies: {
 }, {
   code: 'IDR',
   name: 'Rupiah',
-  symbol: 'Rp',
   precision: 0,
+  symbol: 'Rp',
 }, {
   code: 'ILS',
   name: 'New Israeli Sheqel',
-  symbol: '₪',
   precision: 2,
+  symbol: '₪',
 }, {
   code: 'INR',
   name: 'Indian Rupee',
@@ -379,8 +379,8 @@ export const currencies: {
 }, {
   code: 'RUB',
   name: 'Russian Ruble',
-  symbol: '₽',
   precision: 0,
+  symbol: '₽',
 }, {
   code: 'RWF',
   name: 'Rwanda Franc',
@@ -432,8 +432,8 @@ export const currencies: {
 }, {
   code: 'THB',
   name: 'Baht',
-  symbol: '฿',
   precision: 0,
+  symbol: '฿',
 }, {
   code: 'TJS',
   name: 'Somoni',
@@ -449,8 +449,8 @@ export const currencies: {
 }, {
   code: 'TRY',
   name: 'Turkish Lira',
-  symbol: '₺',
   precision: 2,
+  symbol: '₺',
 }, {
   code: 'TTD',
   name: 'Trinidad and Tobago Dollar',

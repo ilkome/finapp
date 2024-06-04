@@ -78,7 +78,24 @@ function getCats(trnsIds: TrnId[], isGrouped: boolean) {
   }, {} as Record<CategoryId, TotalCategory>)
 
   return Object.keys(categories)
-    .sort((a, b) => categories[a].value - categories[b].value)
+    .sort((a, b) => {
+      // Sort positive values from biggest to smallest
+      if (categories[a].value >= 0 && categories[b].value >= 0) {
+        return categories[b].value - categories[a].value
+      }
+      // Sort negative values from smallest to biggest
+      else if (categories[a].value < 0 && categories[b].value < 0) {
+        return categories[a].value - categories[b].value
+      }
+      // Keep positive values before negative values
+      else if (categories[a].value >= 0 && categories[b].value < 0) {
+        return -1
+      }
+      // Keep negative values after positive values
+      else {
+        return 1
+      }
+    })
     .reduce(
       (prev, categoryId) => {
         prev.push(categories[categoryId])
@@ -101,6 +118,12 @@ function getTrns(categoryId: CategoryId) {
     trnsIds: props.trnsIds,
   }, { includesChildCategories: true })
 }
+
+watch(cats, () => {
+  if (props.isOpenedAll) {
+    openedCats.value = cats.value.map(d => d.id)
+  }
+}, { immediate: true })
 
 function toggleAll() {
   if (openedCats.value.length === cats.value.length) {
@@ -138,7 +161,7 @@ function onClick(item: TotalCategory) {
         :key="item.id"
         class="group"
         :class="{
-          'bg-item-4 rounded-md overflow-hidden': openedCats.includes(item.id),
+          'bg-item-4 rounded-md overflow-hidden mb-2': props.isGroupCategoriesByParent && openedCats.includes(item.id),
         }"
       >
         <UiElement
@@ -203,6 +226,7 @@ function onClick(item: TotalCategory) {
               :amount="item.value"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
+              colorize="income"
             />
           </div>
         </UiElement>

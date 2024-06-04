@@ -10,6 +10,7 @@ const walletForm = ref<WalletForm>({
   color: random(random(allColors)),
   countTotal: true,
   currency: 'USD',
+  isCashless: false,
   isCredit: false,
   name: '',
   order: 1,

@@ -78,6 +78,7 @@ useHead({
       <div class="pt-4">
         <StatMini
           :walletsIds="[walletId]"
+          :storageKey="walletId"
         />
       </div>
     </div>

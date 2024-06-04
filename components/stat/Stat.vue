@@ -18,7 +18,9 @@ provide('filter', filter)
     <StatMini
       :categoriesIds="filter?.catsIds?.value"
       :walletsIds="filter?.walletsIds?.value"
+      isShowFilter
       isShowTotals
+      storageKey="stat"
     />
   </div>
 </template>

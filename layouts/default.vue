@@ -49,6 +49,12 @@ watch(
 
       <div class="@container/main grid h-full overflow-hidden sm_pl-2 lg_pl-0">
         <NuxtPage />
+        <!-- <div class="flex gap-8 flex h-full overflow-hidden">
+          <NuxtPage />
+          <TrnFormMain
+            class="px-2 pt-4 pb-6"
+          />
+        </div> -->
       </div>
     </div>
 

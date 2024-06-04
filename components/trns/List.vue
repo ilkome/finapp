@@ -21,7 +21,7 @@ const props = withDefaults(
   }>(),
   {
     initTrnType: 'sum',
-    size: 10,
+    size: 30,
     trnsIds: () => [],
   },
 )
@@ -39,9 +39,9 @@ const pageNumber = ref(1)
 watch(
   () => props.trnsIds,
   () => {
-    pageNumber.value = 1
-    isShowWithDesc.value = false
-    filterBy.value = props.initTrnType
+    // pageNumber.value = 1
+    // isShowWithDesc.value = false
+    // filterBy.value = props.initTrnType
   },
 )
 
@@ -202,7 +202,7 @@ const groupedTrns = computed(() => {
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
       >
-        <div class="flex gap-2 items-center ">
+        <div class="flex gap-2 items-center _bg-item-4 rounded">
           <DateTrns
             :date="+date"
             class="px-3 grow"
@@ -219,7 +219,7 @@ const groupedTrns = computed(() => {
               :isShowBaseRate="false"
               :type="1"
               colorize="income"
-              variant="2xs"
+              variant="base"
             />
 
             <Amount
@@ -228,7 +228,7 @@ const groupedTrns = computed(() => {
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
               :type="0"
-              variant="2xs"
+              variant="base"
               isShowMinus
             />
           </div>

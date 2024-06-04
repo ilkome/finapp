@@ -22,6 +22,7 @@ export interface WalletItem {
   id: WalletId
   // @deprecated: use withdrawal type
   isCredit?: boolean
+  isDeposit?: boolean
   name: string
   order: number
   type: WalletType
@@ -63,7 +64,11 @@ export interface WalletForm {
   creditLimit?: number
   currency: string
   description?: string
+  isCash?: boolean
+  isCashless?: boolean
   isCredit: boolean
+  isDeposit?: boolean
   name: string
   order: number
+  withdrawal?: boolean
 }

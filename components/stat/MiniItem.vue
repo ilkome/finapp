@@ -261,132 +261,14 @@ export interface TotalCategory {
       </div>
     </div>
 
-    <!-- Not empty -->
-    <template v-if="statTabs.active.value !== 'empty'">
-      <div class="_@3xl/main_grid-cols-[1fr,.8fr] _gap-8 grid">
-        <div class="grid gap-0">
-          <UiToggle
-            :storageKey="`${props.storageKey}${props.type}-chart`"
-          >
-            <template #header="{ toggle, isShown }">
-              <div class="flex items-center justify-between">
-                <UiTitle
-                  :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                  class="grow flex items-center gap-2 pb-0"
-                  @click="toggle"
-                >
-                  <Icon
-                    :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
-                    size="22"
-                    class="-ml-1"
-                  />
-                  <div>{{ $t('chart.title') }}</div>
-                </UiTitle>
-
-                <VDropdown
-                  v-if="isShown"
-                  :overflowPadding="12"
-                  autoBoundaryMaxSize
-                  placement="bottom-start"
-                  class="group"
-                >
-                  <div
-                    :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
-                    class="justify-center text-xl"
-                  >
-                    <UiIconConfig />
-                  </div>
-
-                  <template #popper>
-                    <div class="p-3">
-                      <input v-model="chartPeriodsShown" type="number">
-                    </div>
-                  </template>
-                </VDropdown>
-              </div>
-            </template>
-
-            <LazyStatChartView
-              :markedArea="date"
-              :categories="categories"
-              :series="series"
-              :chartType="chartType"
-              :periodName="period"
-              :config
-              @click="onClickChart"
-            />
-          </UiToggle>
-
-          <UiToggle
-            :storageKey="`${props.storageKey}${props.type}-cats`"
-          >
-            <template #header="{ toggle, isShown }">
-              <div class="flex items-center justify-between">
-                <UiTitle
-                  :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                  class="grow flex items-center gap-1 pb-0"
-                  @click="toggle"
-                >
-                  <Icon
-                    :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
-                    size="22"
-                    class="-ml-1"
-                  />
-                  <div>{{ $t('categories.title') }}</div>
-                </UiTitle>
-
-                <VDropdown
-                  v-if="isShown"
-                  :overflowPadding="12"
-                  autoBoundaryMaxSize
-                  placement="bottom-start"
-                  class="group"
-                >
-                  <div
-                    :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
-                    class="justify-center text-xl"
-                  >
-                    <UiIconConfig />
-                  </div>
-
-                  <template #popper>
-                    <div class="p-1">
-                      <UiCheckbox
-                        :checkboxValue="isGroupCategoriesByParent"
-                        title="Group by parent"
-                        showCheckbox
-                        @onClick="isGroupCategoriesByParent = !isGroupCategoriesByParent"
-                      />
-                      <UiCheckbox
-                        :checkboxValue="isShowLinesChart"
-                        title="Show Lines"
-                        showCheckbox
-                        @onClick="isShowLinesChart = !isShowLinesChart"
-                      />
-                      <UiCheckbox
-                        :checkboxValue="isOpenedAll"
-                        title="Open all"
-                        showCheckbox
-                        @onClick="isOpenedAll = !isOpenedAll"
-                      />
-                    </div>
-                  </template>
-                </VDropdown>
-              </div>
-            </template>
-
-            <StatPeriodsLines2
-              :trnsIds="selectedTrnsIdsForTrnsList"
-              :isShowLinesChart
-              :isGroupCategoriesByParent
-              :isOpenedAll
-            />
-          </UiToggle>
-
-          <UiToggle
-            :storageKey="`${props.storageKey}${props.type}-trns`"
-          >
-            <template #header="{ toggle, isShown }">
+    <!-- Stat -->
+    <div class="_@3xl/main_grid-cols-[1fr,.8fr] _gap-8 grid">
+      <div class="grid gap-0">
+        <UiToggle
+          :storageKey="`${props.storageKey}${props.type}-chart`"
+        >
+          <template #header="{ toggle, isShown }">
+            <div class="flex items-center justify-between">
               <UiTitle
                 :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
                 class="grow flex items-center gap-2 pb-0"
@@ -397,21 +279,150 @@ export interface TotalCategory {
                   size="22"
                   class="-ml-1"
                 />
-                <div>{{ $t('trns.title') }}</div>
-                <div>{{ selectedTrnsIdsForTrnsList?.length }}</div>
+                <div>{{ $t('chart.title') }}</div>
               </UiTitle>
-            </template>
 
-            <TrnsList
-              :groupedBy="period"
-              :isShowGroupSum="period !== 'day'"
-              :trnsIds="selectedTrnsIdsForTrnsList"
-              isShowFilterByDesc
-              isShowHeader2
-            />
-          </UiToggle>
+              <VDropdown
+                v-if="isShown"
+                :overflowPadding="12"
+                autoBoundaryMaxSize
+                placement="bottom-start"
+                class="group"
+              >
+                <div
+                  :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
+                  class="justify-center text-xl"
+                >
+                  <UiIconConfig />
+                </div>
+
+                <template #popper>
+                  <div class="p-3">
+                    <input v-model="chartPeriodsShown" type="number">
+                  </div>
+                </template>
+              </VDropdown>
+            </div>
+          </template>
+
+          <LazyStatChartView
+            :markedArea="date"
+            :categories="categories"
+            :series="series"
+            :chartType="chartType"
+            :periodName="period"
+            :config
+            @click="onClickChart"
+          />
+        </UiToggle>
+
+        <UiToggle
+          v-if="selectedTrnsIdsForTrnsList?.length > 0"
+          :storageKey="`${props.storageKey}${props.type}-cats`"
+        >
+          <template #header="{ toggle, isShown }">
+            <div class="flex items-center justify-between">
+              <UiTitle
+                :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
+                class="grow flex items-center gap-1 pb-0"
+                @click="toggle"
+              >
+                <Icon
+                  :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                  size="22"
+                  class="-ml-1"
+                />
+                <div>{{ $t('categories.title') }}</div>
+              </UiTitle>
+
+              <VDropdown
+                v-if="isShown"
+                :overflowPadding="12"
+                autoBoundaryMaxSize
+                placement="bottom-start"
+                class="group"
+              >
+                <div
+                  :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
+                  class="justify-center text-xl"
+                >
+                  <UiIconConfig />
+                </div>
+
+                <template #popper>
+                  <div class="p-1">
+                    <UiCheckbox
+                      :checkboxValue="isGroupCategoriesByParent"
+                      title="Group by parent"
+                      showCheckbox
+                      @onClick="isGroupCategoriesByParent = !isGroupCategoriesByParent"
+                    />
+                    <UiCheckbox
+                      v-if="isGroupCategoriesByParent"
+                      :checkboxValue="isOpenedAll"
+                      title="Always open parent"
+                      showCheckbox
+                      @onClick="isOpenedAll = !isOpenedAll"
+                    />
+                    <UiCheckbox
+                      :checkboxValue="isShowLinesChart"
+                      title="Show Lines"
+                      showCheckbox
+                      @onClick="isShowLinesChart = !isShowLinesChart"
+                    />
+                  </div>
+                </template>
+              </VDropdown>
+            </div>
+          </template>
+
+          <StatPeriodsLines2
+            :trnsIds="selectedTrnsIdsForTrnsList"
+            :isShowLinesChart
+            :isGroupCategoriesByParent
+            :isOpenedAll
+          />
+        </UiToggle>
+
+        <UiToggle
+          v-if="selectedTrnsIdsForTrnsList?.length > 0"
+          :storageKey="`${props.storageKey}${props.type}-trns`"
+        >
+          <template #header="{ toggle, isShown }">
+            <UiTitle
+              :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
+              class="grow flex items-center gap-2 pb-0"
+              @click="toggle"
+            >
+              <Icon
+                :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                size="22"
+                class="-ml-1"
+              />
+              <div>{{ $t('trns.title') }}</div>
+              <div>{{ selectedTrnsIdsForTrnsList?.length }}</div>
+            </UiTitle>
+          </template>
+
+          <TrnsList
+            :groupedBy="period"
+            :isShowGroupSum="period !== 'day'"
+            :trnsIds="selectedTrnsIdsForTrnsList"
+            isShowFilterByDesc
+            isShowHeader2
+          />
+        </UiToggle>
+
+        <div
+          v-if="selectedTrnsIdsForTrnsList?.length === 0"
+          class="flex-col gap-2 flex-center h-full py-3 text-center text-secondary"
+        >
+          <Icon name="mdi:palm-tree" size="64" />
+          <div class="text-md">
+            {{ $t("trns.noTrns") }}
+          </div>
         </div>
       </div>
-    </template>
+    </div>
   </div>
 </template>

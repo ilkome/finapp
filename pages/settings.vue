@@ -47,9 +47,7 @@ function removeUserData() {
             {{ t("currency.descBase") }}
           </div>
           <UiButtonSecond
-            :title="
-              currencies.find((c) => c.code === currenciesStore.base).name
-            "
+            :title="currencies.find((c) => c.code === currenciesStore.base).name"
             isShowDots
             @click="currenciesStore.showBaseCurrenciesModal()"
           />

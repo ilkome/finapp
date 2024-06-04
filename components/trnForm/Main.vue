@@ -83,7 +83,7 @@ function show(slide: number) {
         :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
         :category="categoriesStore.items[trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
         :isLaptop
-        @onOpen="show(1)"
+        @onOpen="show(2)"
         @onSelected="id => trnFormStore.values.categoryId = id"
       />
     </div>

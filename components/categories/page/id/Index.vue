@@ -71,6 +71,7 @@ useHead({
       <div class="pt-6">
         <StatMini
           :categoriesIds="[categoryId]"
+          :storageKey="categoryId"
           isShowTotals
         />
       </div>

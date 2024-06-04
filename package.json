@@ -18,7 +18,7 @@
     "test-coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@formkit/drag-and-drop": "^0.0.38",
+    "@formkit/drag-and-drop": "^0.1.0",
     "@pinia/nuxt": "^0.5.1",
     "@popperjs/core": "^2.11.8",
     "@tailwindcss/container-queries": "^0.1.1",
@@ -39,7 +39,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.19.1",
+    "@antfu/eslint-config": "^2.20.0",
     "@babel/parser": "^7.24.6",
     "@iconify-json/mdi": "^1.1.66",
     "@nuxtjs/color-mode": "^3.4.1",
@@ -54,7 +54,7 @@
     "eslint-plugin-perfectionist": "^2.10.0",
     "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.10",
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.0",
     "prettier-plugin-tailwindcss": "^0.6.1",
     "pug": "^3.0.3",
     "stylus": "^0.63.0",

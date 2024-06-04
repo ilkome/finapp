@@ -172,7 +172,7 @@ async function onSave() {
 
         <UiCheckbox
           :checkboxValue="walletForm.countTotal"
-          :title="$t('wallets.form.total.placeholder')"
+          :title="$t('countTotal')"
           @onClick="walletForm.countTotal = !walletForm.countTotal"
         />
 
@@ -180,6 +180,26 @@ async function onSave() {
           :checkboxValue="walletForm.isCredit"
           :title="$t('isCredit')"
           @onClick="walletForm.isCredit = !walletForm.isCredit"
+        />
+        <UiCheckbox
+          :checkboxValue="walletForm.withdrawal"
+          :title="$t('withdrawal')"
+          @onClick="walletForm.withdrawal = !walletForm.withdrawal"
+        />
+        <UiCheckbox
+          :checkboxValue="walletForm.isDeposit"
+          :title="$t('isDeposit')"
+          @onClick="walletForm.isDeposit = !walletForm.isDeposit"
+        />
+        <UiCheckbox
+          :checkboxValue="walletForm.isCash"
+          :title="$t('isCash')"
+          @onClick="walletForm.isCash = !walletForm.isCash"
+        />
+        <UiCheckbox
+          :checkboxValue="walletForm.isCashless"
+          :title="$t('isCashless')"
+          @onClick="walletForm.isCashless = !walletForm.isCashless"
         />
 
         <div class="pt-4">

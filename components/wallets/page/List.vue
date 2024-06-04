@@ -16,32 +16,98 @@ const currenciesStore = useCurrenciesStore()
 const { isModalOpen, openModal } = useAppNav()
 const { setWalletId } = useFilterStore()
 
-const state = ref({
-  activeTab: 'all',
+const activeCurrency = ref('all')
+const activeType = ref('all')
+
+const selectedWallets = computed(() => {
+  if (activeCurrency.value === 'all' && activeType.value === 'all')
+    return walletsStore.sortedItems
+
+  return Object.fromEntries(
+    Object.entries(walletsStore.sortedItems).filter(
+      ([_key, wallet]) => {
+        if (activeCurrency.value === 'all') {
+          if (activeType.value === 'all')
+            return true
+
+          if (activeType.value === 'isCredit' && wallet.isCredit) {
+            return true
+          }
+
+          if (activeType.value === 'isSaving' && !wallet.withdrawal) {
+            return true
+          }
+
+          if (activeType.value === 'withdrawal' && wallet.withdrawal) {
+            return true
+          }
+          if (activeType.value === 'isDeposit' && wallet.isDeposit) {
+            return true
+          }
+
+          if (activeType.value === 'isCashless' && wallet.isCashless)
+            return true
+
+          if (activeType.value === 'isCash' && wallet.isCash)
+            return true
+        }
+
+        if (activeCurrency.value === wallet.currency) {
+          if (activeType.value === 'all')
+            return true
+
+          if (activeType.value === 'isCashless' && wallet.isCashless)
+            return true
+
+          if (activeType.value === 'isCash' && wallet.isCash)
+            return true
+
+          if (activeType.value === 'isCredit' && wallet.isCredit)
+            return true
+
+          if (activeType.value === 'isSaving' && !wallet.withdrawal)
+            return true
+
+          if (activeType.value === 'withdrawal' && wallet.withdrawal) {
+            return true
+          }
+          if (activeType.value === 'isDeposit' && wallet.isDeposit) {
+            return true
+          }
+        }
+
+        return false
+      },
+    ),
+  )
+})
+
+const selectedWallets2 = computed(() => {
+  if (activeCurrency.value === 'all')
+    return walletsStore.sortedItems
+
+  return Object.fromEntries(
+    Object.entries(walletsStore.sortedItems).filter(
+      ([_key, wallet]) => {
+        if (activeCurrency.value === wallet.currency)
+          return true
+
+        return false
+      },
+    ),
+  )
 })
 
 const walletsCurrenciesTabs = reactive({
   currencyCode: computed(() => {
-    if (state.value.activeTab === 'all')
+    if (activeCurrency.value === 'all')
       return currenciesStore.base
-    return state.value.activeTab
+    return activeCurrency.value
   }),
 
   onSelect: (v) => {
-    state.value.activeTab = v
-    state.value.activeTab = v
+    activeCurrency.value = v
   },
-
-  wallets: computed(() => {
-    if (state.value.activeTab === 'all')
-      return walletsStore.sortedItems
-
-    return Object.fromEntries(
-      Object.entries(walletsStore.sortedItems).filter(
-        ([_key, value]) => value.currency === state.value.activeTab,
-      ),
-    )
-  }),
 })
 </script>
 
@@ -76,7 +142,7 @@ const walletsCurrenciesTabs = reactive({
           <div class="w-full overflow-hidden">
             <UiTabs2 class="gap-1">
               <UiTabsItem2
-                :isActive="state.activeTab === 'all'"
+                :isActive="activeCurrency === 'all'"
                 @click="walletsCurrenciesTabs.onSelect('all')"
               >
                 {{ t("all") }}
@@ -85,7 +151,7 @@ const walletsCurrenciesTabs = reactive({
               <UiTabsItem2
                 v-for="currency in walletsStore.currenciesUsed"
                 :key="currency"
-                :isActive="state.activeTab === currency"
+                :isActive="activeCurrency === currency"
                 @click="walletsCurrenciesTabs.onSelect(currency)"
               >
                 {{ currency }}
@@ -94,16 +160,23 @@ const walletsCurrenciesTabs = reactive({
           </div>
         </div>
 
+        <pre>activeType {{ activeType }}</pre>
+        <pre>activeCurrency {{ activeCurrency }}</pre>
+        <pre>selectedWallets {{ Object.keys(selectedWallets).length }}</pre>
         <WalletsTotal
+          :activeType
           :currencyCode="currenciesStore.base"
-          :walletsItems="walletsCurrenciesTabs.wallets"
-          class="_border rounded-lg border-item-5 bg-item-4 px-2 py-1.5 md_order-2 lg_max-w-[360px]"
+          :walletsItems="selectedWallets2"
+          class="rounded-lg border-item-5 bg-item-4 px-2 py-1.5 md_order-2 lg_max-w-[360px]"
+          @click="v => activeType = v"
         />
       </div>
 
       <div class="lg_max-w-[360px]">
+        <!-- <pre>{{ selectedWallets }}</pre> -->
+
         <WalletsItem
-          v-for="(walletItem, walletId) in walletsCurrenciesTabs.wallets"
+          v-for="(walletItem, walletId) in selectedWallets"
           :key="walletId"
           :wallet="walletItem"
           :walletId

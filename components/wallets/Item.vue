@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
+import type {
+  WalletId,
+  WalletItemWithAmount,
+} from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId
@@ -15,6 +18,8 @@ const emit = defineEmits<{
   click: [walletId: WalletId]
   filter: [walletId: WalletId]
 }>()
+
+const isShowCredit = ref(false)
 </script>
 
 <template>
@@ -23,7 +28,7 @@ const emit = defineEmits<{
     :isShowIcons="props.isShowIcons"
     :hideDivider="!alt"
     isShowLine
-    class="relative group"
+    class="group relative"
     @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
@@ -43,7 +48,7 @@ const emit = defineEmits<{
           <WalletsIcon2
             :color="wallet.color"
             :name="wallet.name"
-            :walletId
+            :walletId="props.walletId"
             @click.stop="emit('filter', props.walletId)"
           />
         </div>
@@ -61,16 +66,28 @@ const emit = defineEmits<{
 
     <!-- Main -->
     <template v-if="!props.alt">
-      <div class="text-secondary text-sm leading-none">
+      <div class="text-sm leading-none text-secondary">
         {{ wallet.name }}
       </div>
 
       <div class="grow pr-1 opacity-90">
         <Amount
-          :amount="wallet.amount"
+          :amount="
+            isShowCredit && wallet.creditLimit
+              ? Math.abs(wallet.creditLimit) - Math.abs(wallet.amount)
+              : wallet.amount
+          "
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
+          @click.stop="isShowCredit = !isShowCredit"
         />
+      </div>
+
+      <div
+        class="text-2xs"
+        @click.stop="useRouter().push(`/wallets/${props.walletId}/edit`)"
+      >
+        Edit
       </div>
     </template>
 
@@ -86,19 +103,14 @@ const emit = defineEmits<{
           variant="2xs"
         />
 
-        <div class="text-secondary text-sm leading-none">
+        <div class="text-sm leading-none text-secondary">
           {{ wallet.name }}
         </div>
       </div>
 
       <div
         v-if="isSort"
-        class="
-          sortHandle
-          group-hocus_bg-item-7
-          absolute right-0 top-0 insert-0
-          h-full flex-center px-3 rounded-md
-        "
+        class="sortHandle insert-0 flex-center absolute right-0 top-0 h-full rounded-md px-3 group-hocus_bg-item-7"
       >
         <UiIconSort class="size-6" />
       </div>
