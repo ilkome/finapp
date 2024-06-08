@@ -100,6 +100,7 @@ export const config = {
     splitLine: {
       lineStyle: {
         color: 'var(--chart-line)',
+        // color: 'transparent',
       },
     },
     type: 'value',

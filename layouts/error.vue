@@ -13,4 +13,5 @@ if (Object.keys(useRoute().query).length > 0)
   h1 Error
   pre {{ error }}
   h1(@click="$router.push('/')") Go to home
+  NuxtPage
 </template>

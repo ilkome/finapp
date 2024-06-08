@@ -1,23 +1,14 @@
 <script setup lang="ts">
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import type { TrnId } from '~/components/trns/types'
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory } from '~/components/stat/useNewStat'
 
 const props = defineProps<{
-  allTrnsIds?: TrnId[]
   biggestCatNumber: number
-  cats: TotalCategory[]
   isActive?: boolean
-  isGroupCategoriesByParent?: boolean
-  isOpenedAll?: boolean
   isShowLinesChart?: boolean
-  item: unknown
-  openedCats: CategoryId[]
-  openedTrns: CategoryId[]
-  trnsIds: TrnId[]
+  item: TotalCategory
 }>()
 
 const emit = defineEmits<{
@@ -25,20 +16,12 @@ const emit = defineEmits<{
 }>()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
-const trnsStore = useTrnsStore()
 
 function getBarStyle(amount: number, categoryId: CategoryId) {
   return {
     backgroundColor: categoriesStore.items[categoryId].color,
     width: `${(Math.abs(amount) / Math.abs(props.biggestCatNumber ?? 0)) * 100}%`,
   }
-}
-
-function getTrns(categoryId: CategoryId) {
-  return trnsStore.getStoreTrnsIds({
-    categoriesIds: [categoryId],
-    trnsIds: props.trnsIds,
-  }, { includesChildCategories: true })
 }
 </script>
 
@@ -117,35 +100,6 @@ function getTrns(categoryId: CategoryId) {
       </div>
     </UiElement>
 
-    <div v-if="openedCats.includes(props.item.id) || openedTrns.includes(props.item.id)">
-      <LazyStatCategoryChartWrap
-        :categoryId="props.item.id"
-        :trnsIds="props.allTrnsIds ?? []"
-      />
-    </div>
-
-    <div
-      v-if="openedCats.includes(props.item.id)"
-      class="pl-4"
-    >
-      <!-- <StatPeriodsLines2
-            v-if="!!categoriesStore.items[props.item.id]?.childIds?.length"
-            :trnsIds="getTrns(props.item.id) ?? []"
-            :isShowLinesChart="props.isShowLinesChart"
-          /> -->
-    </div>
-
-    <div
-      v-if="openedTrns.includes(props.item.id)"
-      class="pl-8 pt-2 pb-2"
-    >
-      <TrnsList
-        :trnsIds="getTrns(props.item.id) ?? []"
-        alt
-        isHideDates
-        isShowHeader
-        isShowFilterByDesc
-      />
-    </div>
+    <slot />
   </div>
 </template>

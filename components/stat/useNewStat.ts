@@ -1,8 +1,12 @@
+import dayjs from 'dayjs'
 import { useCategoriesStore } from '../categories/useCategories'
 import type { TrnId } from '~/components/trns/types'
 import type { CategoryId } from '~/components/categories/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import useAmount from '~/components/amount/useAmount'
+import type { MoneyTypeSlugSum } from '~/components/stat/types'
+import type { TotalReturns } from '~/components/amount/getTotal'
+import type { PeriodNameWithAll } from '~/components/filter/useFilter'
 
 export interface TotalCategories {
   expense: TotalCategory[]
@@ -14,6 +18,24 @@ export interface TotalCategory {
   trnsIds: TrnId[]
   value: number
 }
+
+const chartSeriesOptions = {
+  expense: {
+    color: 'var(--c-expense-1)',
+    localeKey: 'money.expense',
+    type: 'bar',
+  },
+  income: {
+    color: 'var(--c-income-1)',
+    localeKey: 'money.expense',
+    type: 'bar',
+  },
+  sum: {
+    color: 'grey',
+    localeKey: 'money.sum',
+    type: 'line',
+  },
+} as const
 
 export function useNewStat() {
   const trnsStore = useTrnsStore()
@@ -84,7 +106,37 @@ export function useNewStat() {
       )
   }
 
+  function getPeriodsWithTrns(trnsIds: TrnId[], period: PeriodNameWithAll, groups: Record<string, TrnId[]>) {
+    const periodNoAll = period === 'all' ? 'year' : period
+    const groupsWithTrns = structuredClone(groups)
+
+    trnsIds.forEach((trnId) => {
+      const date = dayjs(trnsStore.items[trnId]?.date)
+        .startOf(periodNoAll)
+        .valueOf()
+      groupsWithTrns[date]?.push(trnId)
+    })
+
+    return groupsWithTrns
+  }
+
+  function getSeries(
+    total: Record<string, TotalReturns>,
+    type: MoneyTypeSlugSum,
+  ) {
+    const types = type === 'sum' ? ['income', 'expense', 'sum'] : [type]
+
+    return types.map(t => ({
+      color: chartSeriesOptions[t].color,
+      data: Object.values(total).map(i => t !== 'sum' ? Math.abs(i[t]) : i[t]),
+      name: chartSeriesOptions[t].name,
+      type: chartSeriesOptions[t].type,
+    }))
+  }
+
   return {
     getCats,
+    getPeriodsWithTrns,
+    getSeries,
   }
 }

@@ -26,6 +26,7 @@ watch(() => useUserStore().uid, (value) => {
 <template>
   <NuxtPwaManifest />
   <div class="layoutBase">
+    <NuxtPage />
     <slot />
   </div>
 </template>

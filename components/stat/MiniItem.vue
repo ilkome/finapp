@@ -26,7 +26,7 @@ const props = defineProps<{
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const filter = useFilter()
-const { getCats } = useNewStat()
+const { getCats, getPeriodsWithTrns, getSeries } = useNewStat()
 const categoriesStore = useCategoriesStore()
 
 const isGroupCategoriesByParent = useStorage<boolean>('isGroupCategoriesByParent', false)
@@ -62,9 +62,7 @@ const datesGroups = computed(() =>
   }),
 )
 
-const periodsWithTrnsIds = computed(() =>
-  getPeriodsOf(props.trnsIds, period.value),
-)
+const periodsWithTrnsIds = computed(() => getPeriodsWithTrns(props.trnsIds, period.value, datesGroups.value))
 
 const groupedTrnsTotals = computed(() =>
   Object.keys(periodsWithTrnsIds.value)
@@ -114,39 +112,6 @@ const config = computed(() => {
   }
 })
 
-const chartSeriesOptions = {
-  expense: {
-    color: 'var(--c-expense-1)',
-    localeKey: 'money.expense',
-    type: 'bar',
-  },
-  income: {
-    color: 'var(--c-income-1)',
-    localeKey: 'money.expense',
-    type: 'bar',
-  },
-  sum: {
-    color: 'grey',
-    localeKey: 'money.sum',
-    type: 'line',
-  },
-} as const
-
-function getSeries(
-  total: Record<string, TotalReturns>,
-  type: MoneyTypeSlugSum,
-) {
-  const types = type === 'sum' ? ['expense', 'income', 'sum'] : [type]
-
-  return types.map(t => ({
-    color: chartSeriesOptions[t].color,
-    data: Object.values(total).map(i => i[t]),
-    name: chartSeriesOptions[t].name,
-    roam: 'move',
-    type: chartSeriesOptions[t].type,
-  }))
-}
-
 function setPeriodAndDate(periodName: PeriodNameWithoutAll) {
   period.value = periodName
   date.value = dayjs(categories.value.at(-1)).startOf(periodName).valueOf()
@@ -187,20 +152,6 @@ function getPeriodsDates(params: {
   }
 
   return list
-}
-
-function getPeriodsOf(trnsIds: TrnId[], period: PeriodNameWithAll) {
-  const periodNoAll = period === 'all' ? 'year' : period
-  const groups = datesGroups.value
-
-  trnsIds.forEach((trnId) => {
-    const date = dayjs(trnsStore.items[trnId]?.date)
-      .startOf(periodNoAll)
-      .valueOf()
-    datesGroups.value[date]?.push(trnId)
-  })
-
-  return groups
 }
 
 /**
@@ -265,6 +216,13 @@ function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
   // If all elements are the same
   return true
 }
+
+function getTrns(categoryId: CategoryId) {
+  return trnsStore.getStoreTrnsIds({
+    categoriesIds: [categoryId],
+    trnsIds: props.trnsIds,
+  }, { includesChildCategories: true })
+}
 </script>
 
 <template>
@@ -295,6 +253,9 @@ function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
         />
       </div>
     </div>
+
+    <!-- <h1>datesGroups</h1>
+    <pre>{{ datesGroups }}</pre> -->
 
     <!-- Stat -->
     <div class="_@3xl/main_grid-cols-[1fr,.8fr] _gap-8 grid">
@@ -342,6 +303,7 @@ function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
           </template>
 
           <LazyStatChartView
+            class="bg-item-4 rounded-lg"
             :markedArea="date"
             :categories="categories"
             :series="series"
@@ -352,8 +314,8 @@ function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
           />
         </UiToggle>
 
-        <pre>{{ isOpenedAll }}</pre>
-        <pre>{{ openedCats }}</pre>
+        <!-- <pre>{{ isOpenedAll }}</pre>
+        <pre>{{ openedCats }}</pre> -->
 
         <!-- Categories -->
         <UiToggle
@@ -430,6 +392,9 @@ function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
             </div>
           </template>
 
+          <!-- <h1>111</h1>
+          <pre>{{ datesGroups }}</pre> -->
+
           <StatPeriodsLines2
             :cats
           >
@@ -437,18 +402,46 @@ function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
               v-for="item in cats"
               :key="item.id"
               :item
-              :trnsIds="selectedTrnsIdsForTrnsList"
-              :openedCats
-              :openedTrns
-              :allTrnsIds="props.trnsIds"
               :isShowLinesChart
-              :isGroupCategoriesByParent
-              :isOpenedAll
               :biggestCatNumber
               :isActive="isGroupCategoriesByParent && openedCats.includes(item.id)"
               @click="onClickCategory"
             >
-              <h1>hello</h1>
+              <div v-if="openedCats.includes(item.id) || openedTrns.includes(item.id)">
+                <StatCategoryChartWrap
+                  :categoryId="item.id"
+                  :chartPeriodsShown
+                  :datesGroups
+                  :markedArea="date"
+                  :period
+                  :type="props.type"
+                  :trnsIds="sortedTrnsIds"
+                />
+              </div>
+
+              <div
+                v-if="openedCats.includes(item.id)"
+                class="pl-4"
+              >
+                <!-- <StatPeriodsLines2
+                  v-if="!!categoriesStore.items[item.id]?.childIds?.length"
+                  :trnsIds="getTrns(item.id) ?? []"
+                  :isShowLinesChart="isShowLinesChart"
+                /> -->
+              </div>
+
+              <div
+                v-if="openedTrns.includes(item.id)"
+                class="pl-8 pt-2 pb-2"
+              >
+                <TrnsList
+                  :trnsIds="getTrns(item.id) ?? []"
+                  alt
+                  isHideDates
+                  isShowHeader
+                  isShowFilterByDesc
+                />
+              </div>
             </StatPeriodsLinesItem>
           </StatPeriodsLines2>
         </UiToggle>

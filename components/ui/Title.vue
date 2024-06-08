@@ -4,7 +4,11 @@ const emit = defineEmits<{
 }>()
 </script>
 
-<template lang="pug">
-.text-secondary.font-primary.text-md.font-medium(@click="emit('click')")
-  slot
+<template lang="html">
+  <span
+    class="text-secondary font-primary text-lg font-medium"
+    @click="emit('click')"
+  >
+    <slot />
+  </span>
 </template>
