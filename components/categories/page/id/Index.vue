@@ -34,7 +34,7 @@ useHead({
 <template>
   <UiPage v-if="category">
     <UiHeader>
-      <router-link v-slot="{ href, navigate }" :to="backLink" custom>
+      <RouterLink v-slot="{ href, navigate }" :to="backLink" custom>
         <a
           :href="href"
           class="grow hocus_bg-item-5"
@@ -45,7 +45,7 @@ useHead({
             :parentCategory="categoriesStore.items[category.parentId]"
           />
         </a>
-      </router-link>
+      </RouterLink>
 
       <template v-if="categoryId !== 'transfer'">
         <UiHeaderLink @click="onClickEdit">

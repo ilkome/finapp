@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// import { useCategoriesStore } from '~/components/categories/useCategories'
-
-// const categoriesStore = useCategoriesStore()
 import { getStyles } from '~/components/ui/getStyles'
 
 const colorMode = useColorMode()
@@ -10,26 +7,28 @@ const colorMode = useColorMode()
 <template>
   <div
     class="
-    hidden lg_block
-    h-full w-64
-    overflow-hidden overflow-y-auto
-    bg-item-4 border-r border-item-5
-  "
+      hidden lg_block
+      h-full w-64
+      overflow-hidden overflow-y-auto
+      bg-item-4 border-r border-item-5
+    "
   >
     <div class="flex items-center justify-between pb-4 pt-3 pl-4 pr-2">
-      <nuxt-link to="/dashboard">
+      <NuxtLink to="/dashboard">
         <UiLogo class="w-16" />
-      </nuxt-link>
+      </NuxtLink>
 
-      <div :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])">
+      <div>
         <Icon
           v-if="colorMode.preference === 'light'"
+          :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
           name="carbon:light"
           size="18"
           @click="colorMode.preference = 'dark'"
         />
         <Icon
           v-if="colorMode.preference === 'dark'"
+          :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
           name="carbon:moon"
           size="18"
           @click="colorMode.preference = 'light'"
@@ -37,19 +36,7 @@ const colorMode = useColorMode()
       </div>
     </div>
 
-    <LayoutMenuSidebar class="pb-6 pt-2 px-2" />
-
-    <!-- <div class="grid gap-1 pb-6 px-2">
-      <UiTitle3 class="pl-3">
-        {{ $t('categories.title') }}
-      </UiTitle3>
-
-      <CategoriesSelector2
-        class="!p-0"
-        :ids="categoriesStore.categoriesRootIds"
-        @onSelected="id => $router.push(`/categories/${id}`)"
-      />
-    </div> -->
+    <LayoutMenuSidebar />
 
     <div class="grid gap-1 pb-6 px-2">
       <UiTitle3 class="pl-3">

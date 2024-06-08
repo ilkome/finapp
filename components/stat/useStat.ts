@@ -40,21 +40,6 @@ export function useStat(filter: FilterProvider) {
     })
   }
 
-  function getTrnsIdsWithFilterNoDates() {
-    const categoriesIds
-      = filter.catsIds.value.length > 0
-        ? categoriesStore.getTransactibleIds(filter.catsIds.value)
-        : []
-    const walletsIds
-      = filter.walletsIds.value.length > 0 ? filter.walletsIds.value : []
-
-    return getTrnsIds({
-      categoriesIds,
-      trnsItems: trnsStore.items,
-      walletsIds,
-    })
-  }
-
   const trnsIds = computed(() => getTrnsIdsWithFilter())
 
   const trnsItemsFiltered = computed(() => {
@@ -106,44 +91,6 @@ export function useStat(filter: FilterProvider) {
         ? filterPeriodMaxDateCount.value
         : chartConfigShowedPeriodsCount.value,
   )
-
-  function getStatDataPrepared(categoryId: CategoryId) {
-    return Array.from({ length: periodsToShow.value }).map((_, index) => {
-      const startDate = dayjs()
-
-      const date = dayjs(startDate)
-        .startOf(filter.periodNameWithoutAll.value)
-        .subtract(index, filter.periodNameWithoutAll.value)
-        .valueOf()
-
-      // TODO?: Get trnsIds from all periods first, then filter them
-      const trnsIds = getTrnsIds({
-        categoriesIds: [categoryId],
-        dates: getDates(filter.periodNameWithAll.value, date),
-        trnsItems: trnsStore.items,
-        walletsIds: filter.walletsIds.value,
-      })
-
-      const total = getTotal({
-        baseCurrencyCode: currenciesStore.base,
-        rates: currenciesStore.rates,
-        transferCategoriesIds: categoriesStore.transferCategoriesIds,
-        trnsIds,
-        trnsItems: trnsStore.items,
-        walletsItems: walletsStore.items,
-      })
-
-      return {
-        date,
-        ...total,
-        expense: total.expense,
-        income: total.income,
-        sum: total.sum,
-        summary: total.sum,
-        trnsIds,
-      }
-    }).reverse()
-  }
 
   const statPrepareData = computed(() =>
     Array.from({ length: periodsToShow.value }).map((_, index) => {
@@ -429,10 +376,8 @@ export function useStat(filter: FilterProvider) {
     getHeyTotalCategories,
     getMoneyTypeNumber,
     getRootCategoriesWithTrnsIds,
-    getStatDataPrepared,
     getTotal,
     getTotalCategories,
-    getTrnsIdsWithFilterNoDates,
     isLastPeriod,
     isShowGroupByType,
     isToday,

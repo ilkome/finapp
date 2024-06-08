@@ -5,7 +5,6 @@ import type { CategoryId } from '../categories/types'
 import type { MoneyTypeSlugSum } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
-import { useSimpleTabs } from '~/components/tabs/useUtils'
 import type { ChartType } from '~/components/chart/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { TotalReturns } from '~/components/amount/getTotal'
@@ -15,6 +14,8 @@ import {
   useFilter,
 } from '~/components/filter/useFilter'
 import { getStyles } from '~/components/ui/getStyles'
+import { useNewStat } from '~/components/stat/useNewStat'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const props = defineProps<{
   storageKey?: string
@@ -25,20 +26,15 @@ const props = defineProps<{
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const filter = useFilter()
+const { getCats } = useNewStat()
+const categoriesStore = useCategoriesStore()
 
-const isGroupCategoriesByParent = useStorage<boolean>(
-  'isGroupCategoriesByParent',
-  false,
-)
-const isOpenedAll = useStorage<boolean>(`mini-item-${props.type}-isOpenedAll`, false)
+const isGroupCategoriesByParent = useStorage<boolean>('isGroupCategoriesByParent', false)
 const isShowLinesChart = useStorage<boolean>('isShowLinesChart', false)
-const chartPeriodsShown = ref(18)
+const chartPeriodsShown = useStorage<number>(`${props.storageKey}-${props.type}-chartPeriodsShown`, 18)
 const chartType = ref<ChartType>('bar')
-const period = useStorage<PeriodNameWithoutAll>('miniItemPeriod', 'day')
-const date = useStorage<number>(
-  'miniItemDate',
-  dayjs().startOf(period.value).valueOf(),
-)
+const period = useStorage<PeriodNameWithoutAll>(`${props.storageKey}-${props.type}-period`, 'day')
+const date = useStorage<number>(`${props.storageKey}-${props.type}-date`, dayjs().startOf(period.value).valueOf())
 
 const sortedTrnsIds = computed(() =>
   [...props.trnsIds].sort(
@@ -58,29 +54,6 @@ onMounted(
       .valueOf()),
 )
 
-const statTabs = useSimpleTabs(`mini-item${props.type}`, [
-  {
-    localeKey: 'stat.tabs.chart',
-    slug: 'chart',
-  },
-  {
-    localeKey: 'stat.tabs.lines',
-    slug: 'lines',
-  },
-  {
-    localeKey: 'stat.tabs.linesChart',
-    slug: 'linesChart',
-  },
-  {
-    localeKey: 'stat.tabs.linesTrns',
-    slug: 'linesTrns',
-  },
-  {
-    localeKey: 'stat.tabs.trns',
-    slug: 'trns',
-  },
-])
-
 const datesGroups = computed(() =>
   getPeriodsDates({
     from: datesFromTrnsIds.value.from,
@@ -92,6 +65,7 @@ const datesGroups = computed(() =>
 const periodsWithTrnsIds = computed(() =>
   getPeriodsOf(props.trnsIds, period.value),
 )
+
 const groupedTrnsTotals = computed(() =>
   Object.keys(periodsWithTrnsIds.value)
     .sort((a, b) => +a - +b)
@@ -103,6 +77,7 @@ const groupedTrnsTotals = computed(() =>
       {} as Record<string, TotalReturns>,
     ),
 )
+
 const categories = computed(
   () => Object.keys(datesGroups.value).map(date => +date) ?? [],
 )
@@ -119,10 +94,16 @@ const config = computed(() => {
     return {
       dataZoom: [
         {
+          filterMode: 'filter',
           maxValueSpan: chartPeriodsShown.value,
           minValueSpan: chartPeriodsShown.value,
+          // moveOnMouseMove: false,
+          preventDefaultMouseMove: false,
+          // moveOnMouseWheel: false,
+          roam: false,
           start: 100,
           type: 'inside',
+          zoomOnMouseWheel: false,
         },
       ],
     }
@@ -133,34 +114,35 @@ const config = computed(() => {
   }
 })
 
+const chartSeriesOptions = {
+  expense: {
+    color: 'var(--c-expense-1)',
+    localeKey: 'money.expense',
+    type: 'bar',
+  },
+  income: {
+    color: 'var(--c-income-1)',
+    localeKey: 'money.expense',
+    type: 'bar',
+  },
+  sum: {
+    color: 'grey',
+    localeKey: 'money.sum',
+    type: 'line',
+  },
+} as const
+
 function getSeries(
   total: Record<string, TotalReturns>,
   type: MoneyTypeSlugSum,
 ) {
-  const chartSeriesOptions = {
-    expense: {
-      color: 'var(--c-expense-1)',
-      localeKey: 'money.expense',
-      type: 'bar',
-    },
-    income: {
-      color: 'var(--c-income-1)',
-      localeKey: 'money.expense',
-      type: 'bar',
-    },
-    sum: {
-      color: 'grey',
-      localeKey: 'money.sum',
-      type: 'line',
-    },
-  } as const
-
   const types = type === 'sum' ? ['expense', 'income', 'sum'] : [type]
 
   return types.map(t => ({
     color: chartSeriesOptions[t].color,
     data: Object.values(total).map(i => i[t]),
     name: chartSeriesOptions[t].name,
+    roam: 'move',
     type: chartSeriesOptions[t].type,
   }))
 }
@@ -221,20 +203,73 @@ function getPeriodsOf(trnsIds: TrnId[], period: PeriodNameWithAll) {
   return groups
 }
 
-export interface TotalCategories {
-  expense: TotalCategory[]
-  income: TotalCategory[]
+/**
+ * Cats
+ */
+const cats = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParent.value))
+const biggestCatNumber = computed(() => cats.value.at(0)?.value ?? 0)
+const isOpenedAll = useStorage<boolean>(`mini-item-${props.type}-isOpenedAll`, false)
+const openedCats = ref<CategoryId[]>([])
+const openedTrns = ref<CategoryId[]>([])
+
+watch(cats, () => {
+  if (isOpenedAll.value) {
+    openedCats.value = cats.value.map(d => d.id)
+  }
+}, { immediate: true })
+
+function toggleCats() {
+  if (openedCats.value.length === cats.value.length) {
+    openedCats.value = []
+  }
+  else {
+    openedCats.value = cats.value.map(d => d.id)
+  }
 }
 
-export interface TotalCategory {
-  id: CategoryId
-  trnsIds: TrnId[]
-  value: number
+function onClickCategory(categoryId: CategoryId) {
+  const category = categoriesStore.items[categoryId]
+
+  if (category?.childIds && category?.childIds?.length > 0) {
+    openedCats.value.includes(categoryId)
+      ? (openedCats.value = openedCats.value.filter(d => d !== categoryId))
+      : openedCats.value.push(categoryId)
+  }
+
+  else {
+    openedTrns.value.includes(categoryId)
+      ? (openedTrns.value = openedTrns.value.filter(d => d !== categoryId))
+      : openedTrns.value.push(categoryId)
+  }
+}
+
+const isAllCatsOpened = computed(() => arraysAreEqualUnordered(cats.value.map(d => d.id), openedCats.value))
+
+function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
+  // Check if the lengths are the same
+  if (arr1.length !== arr2.length) {
+    return false
+  }
+
+  // Sort both arrays
+  const sortedArr1 = arr1.slice().sort()
+  const sortedArr2 = arr2.slice().sort()
+
+  // Check each element
+  for (let i = 0; i < sortedArr1.length; i++) {
+    if (sortedArr1[i] !== sortedArr2[i]) {
+      return false
+    }
+  }
+
+  // If all elements are the same
+  return true
 }
 </script>
 
 <template>
   <div class="grid content-start gap-3">
+    <!-- Date -->
     <div class="grid gap-3">
       <StatSum
         :amount="totals[props.type]"
@@ -264,6 +299,7 @@ export interface TotalCategory {
     <!-- Stat -->
     <div class="_@3xl/main_grid-cols-[1fr,.8fr] _gap-8 grid">
       <div class="grid gap-0">
+        <!-- Chart -->
         <UiToggle
           :storageKey="`${props.storageKey}${props.type}-chart`"
         >
@@ -316,6 +352,10 @@ export interface TotalCategory {
           />
         </UiToggle>
 
+        <pre>{{ isOpenedAll }}</pre>
+        <pre>{{ openedCats }}</pre>
+
+        <!-- Categories -->
         <UiToggle
           v-if="selectedTrnsIdsForTrnsList?.length > 0"
           :storageKey="`${props.storageKey}${props.type}-cats`"
@@ -335,55 +375,85 @@ export interface TotalCategory {
                 <div>{{ $t('categories.title') }}</div>
               </UiTitle>
 
-              <VDropdown
-                v-if="isShown"
-                :overflowPadding="12"
-                autoBoundaryMaxSize
-                placement="bottom-start"
-                class="group"
-              >
+              <template v-if="isShown">
                 <div
                   :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
                   class="justify-center text-xl"
+                  @click="toggleCats"
                 >
-                  <UiIconConfig />
+                  <Icon
+                    :name="isAllCatsOpened ? 'mdi:arrow-collapse' : 'mdi:arrow-expand'"
+                    size="22"
+                    class="-ml-1"
+                  />
                 </div>
 
-                <template #popper>
-                  <div class="p-1">
-                    <UiCheckbox
-                      :checkboxValue="isGroupCategoriesByParent"
-                      title="Group by parent"
-                      showCheckbox
-                      @onClick="isGroupCategoriesByParent = !isGroupCategoriesByParent"
-                    />
-                    <UiCheckbox
-                      v-if="isGroupCategoriesByParent"
-                      :checkboxValue="isOpenedAll"
-                      title="Always open parent"
-                      showCheckbox
-                      @onClick="isOpenedAll = !isOpenedAll"
-                    />
-                    <UiCheckbox
-                      :checkboxValue="isShowLinesChart"
-                      title="Show Lines"
-                      showCheckbox
-                      @onClick="isShowLinesChart = !isShowLinesChart"
-                    />
+                <VDropdown
+                  v-if="isShown"
+                  :overflowPadding="12"
+                  autoBoundaryMaxSize
+                  placement="bottom-start"
+                  class="group"
+                >
+                  <div
+                    :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
+                    class="justify-center text-xl"
+                  >
+                    <UiIconConfig />
                   </div>
-                </template>
-              </VDropdown>
+
+                  <template #popper>
+                    <div class="p-1">
+                      <UiCheckbox
+                        :checkboxValue="isGroupCategoriesByParent"
+                        title="Group by parent"
+                        showCheckbox
+                        @onClick="isGroupCategoriesByParent = !isGroupCategoriesByParent"
+                      />
+                      <UiCheckbox
+                        v-if="isGroupCategoriesByParent"
+                        :checkboxValue="isOpenedAll"
+                        title="Always open parent"
+                        showCheckbox
+                        @onClick="isOpenedAll = !isOpenedAll"
+                      />
+                      <UiCheckbox
+                        :checkboxValue="isShowLinesChart"
+                        title="Show Lines"
+                        showCheckbox
+                        @onClick="isShowLinesChart = !isShowLinesChart"
+                      />
+                    </div>
+                  </template>
+                </VDropdown>
+              </template>
             </div>
           </template>
 
           <StatPeriodsLines2
-            :trnsIds="selectedTrnsIdsForTrnsList"
-            :isShowLinesChart
-            :isGroupCategoriesByParent
-            :isOpenedAll
-          />
+            :cats
+          >
+            <StatPeriodsLinesItem
+              v-for="item in cats"
+              :key="item.id"
+              :item
+              :trnsIds="selectedTrnsIdsForTrnsList"
+              :openedCats
+              :openedTrns
+              :allTrnsIds="props.trnsIds"
+              :isShowLinesChart
+              :isGroupCategoriesByParent
+              :isOpenedAll
+              :biggestCatNumber
+              :isActive="isGroupCategoriesByParent && openedCats.includes(item.id)"
+              @click="onClickCategory"
+            >
+              <h1>hello</h1>
+            </StatPeriodsLinesItem>
+          </StatPeriodsLines2>
         </UiToggle>
 
+        <!-- Trns -->
         <UiToggle
           v-if="selectedTrnsIdsForTrnsList?.length > 0"
           :storageKey="`${props.storageKey}${props.type}-trns`"
@@ -413,6 +483,7 @@ export interface TotalCategory {
           />
         </UiToggle>
 
+        <!-- Empty -->
         <div
           v-if="selectedTrnsIdsForTrnsList?.length === 0"
           class="flex-col gap-2 flex-center h-full py-3 text-center text-secondary"

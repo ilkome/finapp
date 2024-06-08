@@ -22,7 +22,7 @@ export default defineComponent({
   <UiPage>
     <div class="h-full grid grid-rows-[auto,1fr]">
       <UiHeader>
-        <router-link v-slot="{ href, navigate }" to="/wallets" custom>
+        <RouterLink v-slot="{ href, navigate }" to="/wallets" custom>
           <a class="grow hocus_bg-item-5" :href="href" @click="navigate">
             <UiHeaderTitle2>
               <div class="pb-1 text-xs font-medium text-item-2">
@@ -38,7 +38,7 @@ export default defineComponent({
               </div>
             </UiHeaderTitle2>
           </a>
-        </router-link>
+        </RouterLink>
       </UiHeader>
 
       <WalletsForm

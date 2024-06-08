@@ -29,7 +29,7 @@ useHead({
 <template lang="pug">
 UiPage(v-if="category")
   UiHeader
-    router-link(
+    RouterLink(
       v-slot="{ href, navigate }"
       to="/categories"
       custom

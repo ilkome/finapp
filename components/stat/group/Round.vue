@@ -5,8 +5,8 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 
 defineProps<{
   categories: any
-  moneyTypeSlug: MoneyTypeSlug
   moneyTypeNumber: MoneyTypeNumber
+  moneyTypeSlug: MoneyTypeSlug
 }>()
 
 const categoriesStore = useCategoriesStore()

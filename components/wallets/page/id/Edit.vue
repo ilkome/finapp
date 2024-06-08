@@ -24,7 +24,7 @@ useHead({
 <template lang="pug">
 UiPage(v-if="wallet")
   UiHeader
-    router-link(v-slot="{ href, navigate }" :to="`/wallets/${walletId}`" custom)
+    RouterLink(v-slot="{ href, navigate }" :to="`/wallets/${walletId}`" custom)
       a.grow.hocus_bg-item-5(:href="href" @click="navigate")
         UiHeaderTitle2
           .pb-1.text-xs.font-medium.text-item-2

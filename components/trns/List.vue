@@ -127,6 +127,7 @@ const groupedTrns = computed(() => {
 
 <template>
   <div class="grid gap-3 h-full overflow-hidden content-start">
+    <!-- Header -->
     <slot
       v-if="isShowHeader"
       name="header"
@@ -145,6 +146,7 @@ const groupedTrns = computed(() => {
 
     <slot name="contentBefore" />
 
+    <!-- Filter by type -->
     <UiTabs3 v-if="isShowFilterByType">
       <UiTabsItem5
         v-for="(filterItem, slug) in typeFilters"
@@ -159,9 +161,10 @@ const groupedTrns = computed(() => {
       </UiTabsItem5>
     </UiTabs3>
 
+    <!-- With Desc -->
     <div
       v-if="isShowFilterByDesc && isTrnsWithDesc && selectedIds.length > 0"
-      class="-my-1"
+      class="z-10 relative -my-1"
     >
       <UiCheckbox
         :checkboxValue="isShowWithDesc"
@@ -171,6 +174,7 @@ const groupedTrns = computed(() => {
       />
     </div>
 
+    <!-- No Trns -->
     <div
       v-if="selectedIds.length === 0"
       class="flex-col gap-2 flex-center h-full py-3 text-center text-secondary"
@@ -181,19 +185,19 @@ const groupedTrns = computed(() => {
       </div>
     </div>
 
-    <div
-      v-if="isHideDates"
-    >
+    <!-- Hide dates -->
+    <div v-if="isHideDates">
       <TrnsItemWrap
         v-for="trnId in paginatedTrnsIds"
         :key="trnId"
         :alt="props.alt"
+        :date="formatDate(formatTrnItem(trnId)?.date, 'trnItem')"
         :trnId="trnId"
         :trnItem="formatTrnItem(trnId)"
-        :date="formatDate(formatTrnItem(trnId)?.date, 'trnItem')"
       />
     </div>
 
+    <!-- With dates -->
     <div
       v-if="!isHideDates"
       class="grid gap-6 overflow-hidden overflow-y-auto"
@@ -208,6 +212,7 @@ const groupedTrns = computed(() => {
             class="px-3 grow"
           />
 
+          <!-- Group Sum -->
           <div
             v-if="isShowGroupSum"
             class="pr-3"
@@ -228,8 +233,8 @@ const groupedTrns = computed(() => {
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
               :type="0"
-              variant="base"
               isShowMinus
+              variant="base"
             />
           </div>
         </div>
@@ -245,6 +250,7 @@ const groupedTrns = computed(() => {
       </div>
     </div>
 
+    <!-- Show all -->
     <div v-if="!isShowedAllTrns">
       <div
         class="flex-center grow rounded-lg bg-item-5 px-5 py-2.5 text-sm text-secondary hocus_bg-item-6"

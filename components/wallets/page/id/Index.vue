@@ -27,7 +27,7 @@ useHead({
 <template>
   <UiPage v-if="wallet">
     <UiHeader>
-      <router-link v-slot="{ href, navigate }" to="/wallets" custom>
+      <RouterLink v-slot="{ href, navigate }" to="/wallets" custom>
         <a class="grow hocus_bg-item-5" :href="href" @click="navigate">
           <UiHeaderTitle2>
             <div class="pt-3 text-xs font-medium text-item-2">
@@ -46,7 +46,7 @@ useHead({
             </div>
           </UiHeaderTitle2>
         </a>
-      </router-link>
+      </RouterLink>
 
       <template #actions>
         <UiHeaderLink @click="onEditClick">

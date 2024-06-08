@@ -27,7 +27,7 @@ export default defineComponent({
 <template lang="pug">
 UiPage
   UiHeader
-    router-link(
+    RouterLink(
       v-slot="{ href, navigate }"
       to="/categories"
       custom

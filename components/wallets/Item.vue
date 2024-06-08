@@ -82,13 +82,6 @@ const isShowCredit = ref(false)
           @click.stop="isShowCredit = !isShowCredit"
         />
       </div>
-
-      <div
-        class="text-2xs"
-        @click.stop="useRouter().push(`/wallets/${props.walletId}/edit`)"
-      >
-        Edit
-      </div>
     </template>
 
     <!-- Alternative -->
