@@ -24,35 +24,44 @@ export default defineComponent({
 })
 </script>
 
-<template lang="pug">
-UiPage
-  UiHeader
-    RouterLink(
-      v-slot="{ href, navigate }"
-      to="/categories"
-      custom
-    )
-      a.grow.hocus_bg-item-5(
-        :href="href"
-        @click="navigate"
-      )
-        UiHeaderTitle2
-          .pt-1.text-xs.font-medium.text-item-2
-            | {{ $t('categories.createNewTitle') }}
-            template(v-if="parentCategory")
-              |
-              | {{ $t('common.in')}} {{ parentCategory.name }}
+<template lang="html">
+  <UiPage>
+    <UiHeader>
+      <RouterLink
+        v-slot="{ href, navigate }"
+        to="/categories"
+        custom
+      >
+        <a
+          class="grow hocus_bg-item-5"
+          :href="href"
+          @click="navigate"
+        >
+          <UiHeaderTitle2>
+            <div class="pt-1 text-xs font-medium text-item-2">
+              {{ $t('categories.createNewTitle') }}
+              <template v-if="parentCategory">
+                {{ $t('common.in') }} {{ parentCategory.name }}
+              </template>
+            </div>
+            <div class="pb-1 flex items-center gap-4">
+              {{ categoryForm.name ? categoryForm.name : $t("categories.form.name.label") }}
+              <div
+                class="size-8 rounded-full flex-center text-xl text-icon-primary"
+                :style="{ background: categoryForm.color }"
+              >
+                <div :class="categoryForm.icon" />
+              </div>
+            </div>
+          </UiHeaderTitle2>
+        </a>
+      </RouterLink>
+    </UiHeader>
 
-          .pb-1.flex.items-center.gap-4
-            | {{ categoryForm.name ? categoryForm.name : $t("categories.form.name.label") }}
-            .w-8.h-8.rounded-full.flex-center.text-xl.text-icon-primary(
-              :style="{ background: categoryForm.color }"
-            )
-              div(:class="categoryForm.icon")
-
-  CategoriesForm(
-    :categoryForm="categoryForm"
-    @updateValue="updateValue"
-    @afterSave="afterSave"
-  )
+    <CategoriesForm
+      :categoryForm="categoryForm"
+      @updateValue="updateValue"
+      @afterSave="afterSave"
+    />
+  </UiPage>
 </template>

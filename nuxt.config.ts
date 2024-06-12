@@ -11,6 +11,10 @@ export default defineNuxtConfig({
       }, {
         href: '/css/materialdesignicons.min.css',
         rel: 'stylesheet',
+      }, {
+        href: '/favicon.png',
+        rel: 'icon',
+        type: 'image/png',
       }],
       meta: [
         { charset: 'utf-8' },

@@ -44,41 +44,63 @@ onLongPress(
 )
 </script>
 
-<template lang="pug">
-.px-2.grid.gap-0(class="grid-cols-[auto,1fr,auto]")
-  .w-20.flex.flex-col
-    TrnFormMainCalculatorButton(@click="onClick('*')"): .mdi.mdi-plus.rotate-45
-    TrnFormMainCalculatorButton(@click="onClick('-')"): .mdi.mdi-minus
-    TrnFormMainCalculatorButton(@click="onClick('+')"): .mdi.mdi-plus
-    TrnFormMainCalculatorButton(@click="onClick('/')"): .mdi.mdi-slash-forward
+<template lang="html">
+  <div class="px-2 grid gap-0 grid-cols-[auto,1fr,auto]">
+    <div class="w-20 flex flex-col">
+      <TrnFormMainCalculatorButton @click="onClick('*')">
+        <i class="mdi mdi-plus rotate-45" />
+      </TrnFormMainCalculatorButton>
+      <TrnFormMainCalculatorButton @click="onClick('-')">
+        <i class="mdi mdi-minus" />
+      </TrnFormMainCalculatorButton>
+      <TrnFormMainCalculatorButton @click="onClick('+')">
+        <i class="mdi mdi-plus" />
+      </TrnFormMainCalculatorButton>
+      <TrnFormMainCalculatorButton @click="onClick('/')">
+        <i class="mdi mdi-slash-forward" />
+      </TrnFormMainCalculatorButton>
+    </div>
 
-  .flex.flex-col
-    .flex.justify-center(
-      v-for="(row, rowIdx) in buttons"
-      :key="rowIdx"
-    )
-      TrnFormMainCalculatorButton(
-        v-for="(btn, btnIdx) in row"
-        :key="btn"
-        :class="getClassName(btnIdx, rowIdx, row)"
-        @click="onClick(btn)"
-      ) {{ btn }}
+    <div class="flex flex-col">
+      <div
+        v-for="(row, rowIdx) in buttons"
+        :key="rowIdx"
+        class="flex justify-center"
+      >
+        <TrnFormMainCalculatorButton
+          v-for="(btn, btnIdx) in row"
+          :key="btn"
+          :class="getClassName(btnIdx, rowIdx, row)"
+          @click="onClick(btn)"
+        >
+          {{ btn }}
+        </TrnFormMainCalculatorButton>
+      </div>
 
-    .flex.justify-center
-      TrnFormMainCalculatorButton(@click="onClick('.')") .
-      TrnFormMainCalculatorButton(@click="onClick('0')") 0
-      TrnFormMainCalculatorButton(
-        ref="deleteBtnRef"
-        @click="onClick('c')"
-      ) c
+      <div class="flex justify-center">
+        <TrnFormMainCalculatorButton @click="onClick('.')">
+          .
+        </TrnFormMainCalculatorButton>
+        <TrnFormMainCalculatorButton @click="onClick('0')">
+          0
+        </TrnFormMainCalculatorButton>
+        <TrnFormMainCalculatorButton ref="deleteBtnRef" @click="onClick('c')">
+          c
+        </TrnFormMainCalculatorButton>
+      </div>
+    </div>
 
-  .w-20.grid.gap-2.justify-items-end(class="grid-rows-[auto,1fr]")
-    //- Description
-    TrnFormMainCalculatorButton(
-      :class="{ 'text-accent-1': !!trnFormStore.values.desc }"
-      @click="trnFormStore.openTrnFormModal('description')"
-    ): .mdi.mdi-comment-text-outline
+    <div class="w-20 grid gap-2 justify-items-end grid-rows-[auto,1fr]">
+      <!-- Description -->
+      <TrnFormMainCalculatorButton
+        :class="{ 'text-accent-1': !!trnFormStore.values.desc }"
+        @click="trnFormStore.openTrnFormModal('description')"
+      >
+        <i class="mdi mdi-comment-text-outline" />
+      </TrnFormMainCalculatorButton>
 
-    //- Action
-    TrnFormMainActionSide
+      <!-- Action -->
+      <TrnFormMainActionSide />
+    </div>
+  </div>
 </template>

@@ -16,10 +16,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, true)
       :toggle="() => isShown = !isShown"
     />
 
-    <div
-      v-if="isShown"
-      class="pb-6"
-    >
+    <div v-if="isShown">
       <slot />
     </div>
   </div>

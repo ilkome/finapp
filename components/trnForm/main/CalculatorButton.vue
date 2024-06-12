@@ -1,14 +1,9 @@
-<template lang="pug">
-div(tabindex="0"
-  class=`
-    aspect-square
-    max-w-[58px] grow w-full p-3 flex items-center justify-center
-    text-2xl font-unica font-normal text-secondary
-    bg-item-main border _border-transparent border-item-4
-    hocus_bg-item-7 hocus_border[red] hocus_scale-[1.02]
-    _transition
-  `
-  @click="$emit('click')"
-)
-  slot
+<template lang="html">
+  <div
+    tabindex="0"
+    class="bg-item-main _border-transparent hocus_border[red] _transition flex aspect-square w-full max-w-[58px] grow items-center justify-center border border-item-4 p-3 font-unica text-2xl font-normal text-secondary hocus_scale-[1.02] hocus_bg-item-7"
+    @click="$emit('click')"
+  >
+    <slot />
+  </div>
 </template>

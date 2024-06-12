@@ -20,6 +20,10 @@ const props = defineProps<{
   type: MoneyTypeSlugSum
 }>()
 
+const emit = defineEmits<{
+  click: [idx: number]
+}>()
+
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
@@ -90,6 +94,7 @@ const config = computed(() => {
       :chartType
       :periodName="props.period"
       :config
+      @click="idx => emit('click', idx)"
     />
   </div>
 </template>

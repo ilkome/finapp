@@ -10,15 +10,10 @@ const isMath = computed(() => trnFormStore.getIsShowSum())
 const isSubmittable = computed(() => trnFormStore.values.amount[trnFormStore.activeAmountIdx] > 0)
 
 async function onClickSubmit() {
-  console.log('onClickSubmit', isMath.value)
-
   if (isMath.value) {
-    console.log('isMath.value', isMath.value)
     trnFormStore.onChangeCountSum()
     return
   }
-
-  console.log(111)
 
   const trnFormData = await trnFormStore.onSubmit()
   if (!trnFormData)
@@ -29,8 +24,6 @@ async function onClickSubmit() {
     values: trnFormData.values,
   })
   trnFormStore.onClear()
-
-  console.log(22)
 }
 </script>
 
@@ -54,7 +47,7 @@ async function onClickSubmit() {
   >
     <span v-if="!isMath" class="mdi mdi-check" />
     <span v-if="isMath" class="mdi mdi-equal" />
-    <pre>{{ trnFormStore.activeAmountIdx }}</pre>
-    <pre>{{ isMath }}</pre>
+    <!-- <pre>{{ trnFormStore.activeAmountIdx }}</pre>
+    <pre>{{ isMath }}</pre> -->
   </div>
 </template>

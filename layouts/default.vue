@@ -16,6 +16,9 @@ useHead({
   bodyAttrs: {
     class: pointerClasses,
   },
+  htmlAttrs: {
+    lang: useI18n().locale.value,
+  },
 })
 
 useHead({

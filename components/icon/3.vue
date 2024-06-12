@@ -16,8 +16,8 @@ const classes = computed(() => ({
   _big: props.big,
   _category: props.category,
   _invert: props.invert,
-  _round: props.round,
   _medium: props.medium,
+  _round: props.round,
   _small: props.small,
 }))
 </script>

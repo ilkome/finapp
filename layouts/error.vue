@@ -5,7 +5,16 @@ defineProps<{
 }>()
 
 if (Object.keys(useRoute().query).length > 0)
-  useRouter().replace({ query: null })
+  useRouter().replace({ query: undefined })
+
+useHead({
+  bodyAttrs: {
+    class: '',
+  },
+  htmlAttrs: {
+    lang: useI18n().locale.value,
+  },
+})
 </script>
 
 <template lang="pug">

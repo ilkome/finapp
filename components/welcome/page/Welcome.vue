@@ -9,9 +9,9 @@ const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 
 const state = ref({
-  step: 1,
   showCategoryForm: false,
   showWalletForm: false,
+  step: 1,
 })
 
 const newUserData = computed(() => !walletsStore.hasItems || !categoriesStore.hasCategories)
@@ -22,36 +22,45 @@ watch(newUserData, () => {
 }, { immediate: true })
 </script>
 
-<template lang="pug">
-.grid.h-full(class="grid-rows-[auto,1fr,auto]")
-  .max-w-xl.mx-auto.py-4.p-2.w-full.md_p-6
-    .flex.justify-between
-      AppLocaleSwitcher
-      AppThemeSwitcher
+<template lang="html">
+  <div class="grid h-full grid-rows-[auto,1fr,auto]">
+    <div class="max-w-xl mx-auto py-4 p-2 w-full md_p-6">
+      <div class="flex justify-between">
+        <AppLocaleSwitcher />
+        <AppThemeSwitcher />
+      </div>
+    </div>
 
-  .h-full.grid.items-center.gap-8.py-4.px-3.h-full.overflow-hidden.overflow-y-auto
-    .flex.flex-col.items-center.justify-center
-      UiLogo
+    <div class="h-full grid items-center gap-8 py-4 px-3 overflow-hidden overflow-y-auto">
+      <div class="flex flex-col items-center justify-center">
+        <UiLogo />
 
-      .px-3.py-8(
-        v-if="newUserData && userStore.user?.uid"
-        class="min-w-[280px]"
-      )
-        Transition(name="fadeIn")
-          WelcomeWalletForm(
-            v-if="!walletsStore.hasItems"
-            @afterSave="state.showWalletForm = false"
-          )
+        <div
+          v-if="newUserData && userStore.user?.uid"
+          class="px-3 py-8 min-w-[280px]"
+        >
+          <Transition name="fadeIn">
+            <WelcomeWalletForm
+              v-if="!walletsStore.hasItems"
+              @afterSave="state.showWalletForm = false"
+            />
+            <WelcomeCategoryForm
+              v-else-if="walletsStore.hasItems"
+              @afterSave="state.showCategoryForm = false"
+            />
+          </Transition>
+        </div>
+      </div>
+    </div>
 
-          WelcomeCategoryForm(
-            v-else-if="walletsStore.hasItems"
-            @afterSave="state.showCategoryForm = false"
-          )
-
-  .p-4.md_p-6.grid.gap-2
-    AppCopyright
-
-    .cursor-pointer(
-      @click="userStore.signOut"
-    ) {{ $t('userLogout') }} {{ userStore.user?.email }}
+    <div class="p-4 md_p-6 grid gap-2">
+      <AppCopyright />
+      <div
+        class="cursor-pointer"
+        @click="userStore.signOut"
+      >
+        {{ $t('userLogout') }} {{ userStore.user?.email }}
+      </div>
+    </div>
+  </div>
 </template>
