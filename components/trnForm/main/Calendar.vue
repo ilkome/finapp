@@ -10,16 +10,16 @@ const props = defineProps<{
 }>()
 
 const colorMode = useColorMode()
-const $trnForm = useTrnFormStore()
+const trnFormStore = useTrnFormStore()
 const filterStore = useFilterStore()
 
 const isDark = computed(() => colorMode.preference === 'dark' || colorMode.preference === 'system')
-const date = ref(dayjs($trnForm.values.date).toString())
+const date = ref(dayjs(trnFormStore.values.date).toString())
 const maxDate = new Date()
 
 watch(date, (value) => {
   if (value) {
-    $trnForm.values.date = dayjs(value).valueOf()
+    trnFormStore.values.date = dayjs(value).valueOf()
     props.hide()
   }
 })

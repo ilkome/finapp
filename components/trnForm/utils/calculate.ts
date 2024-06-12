@@ -13,7 +13,7 @@ const maxIntegerLengthAllowed = 999
  */
 function _separateExpression(value: string): string[] {
   return value
-    .split(/([\/*\-+])/)
+    .split(/([/*\-+])/)
     .filter(i => i)
 }
 
@@ -128,7 +128,7 @@ export function createExpressionString(value: string, expression: string): strin
 
   if (separatedExpression) {
     const lastNumber = separatedExpression.slice(-1)[0] || '0'
-    const lastNumberSplit = lastNumber.split(/[.]/)
+    const lastNumberSplit = lastNumber.split(/\./)
     const isInteger = lastNumberSplit.length === 1
 
     // Check if math will success
@@ -165,7 +165,7 @@ export function formatInput(value: string | number): string {
         return ` ${item} `
 
       const clearedValue = _removeSpaces(String(item))
-      const splitFloatValue = String(clearedValue).split(/[.]/)
+      const splitFloatValue = String(clearedValue).split(/\./)
       const isInteger = splitFloatValue.length === 1
 
       if (isInteger)

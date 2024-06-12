@@ -12,21 +12,20 @@ const { active } = toRefs(props)
 
 const searchInput = ref('')
 const list = computed(() => {
-  if (searchInput.value) {
-    const search = searchInput.value.toLowerCase()
-    return currencies.filter(
-      currency =>
-        currency.name.toLowerCase().includes(search)
-        || currency.code.toLowerCase().includes(search),
-    )
-  }
+  if (!searchInput.value)
+    return currencies
 
-  return currencies
+  const search = searchInput.value.toLowerCase()
+  return currencies.filter(
+    currency =>
+      currency.name.toLowerCase().includes(search)
+      || currency.code.toLowerCase().includes(search),
+  )
 })
 </script>
 
 <template>
-  <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden">
+  <div class="-grid -h-full -grid-rows-[auto,1fr] -overflow-hidden max-h-[60vh]">
     <div>
       <input
         v-model="searchInput"
@@ -37,7 +36,7 @@ const list = computed(() => {
     </div>
 
     <div
-      class="scrollerBlock mt-3 flex flex-col gap-1 overflow-y-auto pb-3"
+      class="-scrollerBlock mt-3 flex flex-col gap-1 -overflow-y-auto pb-3"
     >
       <template v-if="list.length === 0">
         <div class="py-3 text-center">

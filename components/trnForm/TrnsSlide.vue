@@ -15,7 +15,7 @@ const props = defineProps<{
 }>()
 
 const { $i18n } = useNuxtApp()
-const $trnForm = useTrnFormStore()
+const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
@@ -26,16 +26,16 @@ const trnsIds = computed(() => {
   const trnsItems = trnsStore.items
   const walletsIds: WalletId[] = []
   let categoriesIds: CategoryId[] = []
-  const dates = getDates('day', $trnForm.values.date)
+  const dates = getDates('day', trnFormStore.values.date)
 
-  if (filterBy.value === 'wallet' && $trnForm.values.walletId)
-    walletsIds.push($trnForm.values.walletId)
+  if (filterBy.value === 'wallet' && trnFormStore.values.walletId)
+    walletsIds.push(trnFormStore.values.walletId)
 
   if (filterBy.value === 'walletAndCategory') {
-    if ($trnForm.values.walletId)
-      walletsIds.push($trnForm.values.walletId)
+    if (trnFormStore.values.walletId)
+      walletsIds.push(trnFormStore.values.walletId)
 
-    const categoryId = $trnForm.values.categoryId!
+    const categoryId = trnFormStore.values.categoryId!
     const childIds = categoriesStore.getChildsIds(categoryId)
     categoriesIds = childIds.length > 0 ? childIds : [categoryId]
   }

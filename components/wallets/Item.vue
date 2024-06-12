@@ -5,7 +5,7 @@ import type {
 } from '~/components/wallets/types'
 
 const props = defineProps<{
-  activeItemId?: WalletId
+  activeItemId?: WalletId | null
   alt?: boolean
   isShowBaseRate?: boolean
   isShowIcons?: boolean

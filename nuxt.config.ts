@@ -37,8 +37,12 @@ export default defineNuxtConfig({
 
   devtools: {
     timeline: {
-      // enabled: true,
+      enabled: true,
     },
+  },
+
+  future: {
+    compatibilityVersion: 4,
   },
 
   i18n: {

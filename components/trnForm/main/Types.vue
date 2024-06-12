@@ -3,15 +3,15 @@ import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import type { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const $trnForm = useTrnFormStore()
+const trnFormStore = useTrnFormStore()
 const walletsStore = useWalletsStore()
 
 function setAmountType(amountType: TrnType) {
-  $trnForm.onChangeTrnType(amountType)
+  trnFormStore.onChangeTrnType(amountType)
 }
 
 function isItActive(amountType: TrnType) {
-  return $trnForm.values.trnType === amountType
+  return trnFormStore.values.trnType === amountType
 }
 </script>
 

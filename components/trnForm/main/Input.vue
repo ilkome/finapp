@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { formatInput } from '~/components/trnForm/utils/calculate'
-
 defineProps<{
   amount: number
   amountRaw: string
@@ -21,47 +19,49 @@ function onInput(event: Event) {
 }
 </script>
 
-<template lang="pug">
-.relative
-  //- Sum
-  div(
-    :class=`[{
-      'opacity-0': !isShowSum,
-      'left-3': isTransfer,
-      'left-1/2 -translate-x-1/2': !isTransfer,
-    }]`
-    class=`
-      pointer-events-none
-      absolute top-2
-      text-center text-sm text-primary/60
-    `
-    tabindex="0"
-  ).
-    {{ formatInput(amount) }}
+<template lang="html">
+  <div class="relative">
+    <!-- Sum -->
+    <div
+      :class="[{
+        'opacity-0': !isShowSum,
+        'left-3': isTransfer,
+        'left-1/2 -translate-x-1/2': !isTransfer,
+      }]"
+      class="
+        pointer-events-none
+        absolute top-2
+        text-center text-sm text-primary/60
+      "
+      tabindex="0"
+    >
+      {{ amount }}
+    </div>
 
-  //- Input
-  input(
-    :class=`{
-      'text-[#f92134] placeholder_text-red-700/80': highlight === 'income',
-      'text-[#2cad22] placeholder_text-green-700/80': highlight === 'expense',
-      'text-center': !isTransfer,
-    }`
-    :placeholder="t('enterAmount')"
-    :value="amountRaw"
-    class=`
-      swiper-no-swiping
-      block w-full h-auto pt-6 pb-2 px-3
-      text-3xl font-unica
-      bg-transparent rounded-md
-      placeholder_text-3xl placeholder_font-roboto
-      hocus_bg-item-7
-      focus_bg-item-7
-      transition
-    `
-    type="text"
-    inputmode="tel"
-    @input="onInput"
-  )
+    <!-- Input -->
+    <input
+      :class="{
+        'text-[#f92134] placeholder_text-red-700/80': highlight === 'income',
+        'text-[#2cad22] placeholder_text-green-700/80': highlight === 'expense',
+        'text-center': !isTransfer,
+      }"
+      :placeholder="t('enterAmount')"
+      :value="amountRaw"
+      class="
+        swiper-no-swiping
+        block size-full h-auto pt-6 pb-2 px-3
+        text-3xl font-unica
+        bg-transparent rounded-md
+        placeholder_text-3xl placeholder_font-roboto
+        hocus_bg-item-7
+        focus_bg-item-7
+        transition
+      "
+      type="text"
+      inputmode="tel"
+      @input="onInput"
+    >
+  </div>
 </template>
 
 <i18n lang="yaml">

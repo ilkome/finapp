@@ -80,19 +80,14 @@ onMounted(init)
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide
-              v-if="sliderObj"
               :slider="sliderObj"
               class="px-2 pt-4 pb-6"
             />
           </div>
 
           <!-- Main -->
-          <div
-            class="swiper-slide getHeight sm_max-w-sm sm_px-3 bg-foreground-2 sm_max-w-sm _sm_rounded-xl sm_border-r sm_border-l border-item-5"
-          >
-            <div
-              class="scroll scrollerBlock"
-            >
+          <div class="swiper-slide getHeight sm_max-w-sm sm_px-3 bg-foreground-2 sm_max-w-sm _sm_rounded-xl sm_border-r sm_border-l border-item-5">
+            <div class="scroll scrollerBlock">
               <TrnFormMain
                 :maxHeight
                 class="px-2 pt-4 pb-6"
@@ -115,12 +110,12 @@ onMounted(init)
                   >
                     {{ $t("wallets.title") }}
                   </UiTitle>
+
                   <WalletsList
                     v-slot="{ walletsItemsLimited }"
                     :limit="5"
                     class="px-3"
                   >
-                    <!-- Wallet -->
                     <WalletsItem
                       v-for="(wallet, walletId) in walletsItemsLimited"
                       :key="walletId"
@@ -146,6 +141,7 @@ onMounted(init)
                     {{ $t("categories.favoriteTitle") }}
                     {{ $t("categories.title") }}
                   </UiTitle>
+
                   <div class="px-3">
                     <CategoriesList
                       v-if="sliderObj"
@@ -170,16 +166,15 @@ onMounted(init)
                     {{ $t("categories.lastUsedTitle") }}
                     {{ $t("categories.title") }}
                   </UiTitle>
-                  <div class="px-3">
-                    <CategoriesList
-                      v-if="sliderObj"
-                      :ids="categoriesStore.recentCategoriesIds"
-                      :activeItemId="trnFormStore.values.categoryId"
-                      :slider="sliderObj"
-                      class="!gap-x-1"
-                      @click="(id) => (trnFormStore.values.categoryId = id)"
-                    />
-                  </div>
+
+                  <CategoriesList
+                    v-if="sliderObj"
+                    :ids="categoriesStore.recentCategoriesIds"
+                    :activeItemId="trnFormStore.values.categoryId"
+                    :slider="sliderObj"
+                    class="!gap-x-1 px-3 "
+                    @click="id => trnFormStore.values.categoryId = id"
+                  />
                 </div>
               </div>
             </div>

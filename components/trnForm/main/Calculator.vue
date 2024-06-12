@@ -11,18 +11,13 @@ const emit = defineEmits<{
   (e: 'onChange', value: string): string
 }>()
 
-const $trnForm = useTrnFormStore()
+const trnFormStore = useTrnFormStore()
 
 const buttons = [
   ['7', '8', '9'],
   ['4', '5', '6'],
   ['1', '2', '3'],
 ]
-
-// ['*', '7', '8', '9'],
-//   ['+', '4', '5', '6'],
-//   ['-', '1', '2', '3'],
-//   ['/', '.', '0', 'c'],
 
 function onClick(key: string) {
   const value = createExpressionString(key, props.amountRaw)
@@ -40,9 +35,9 @@ const deleteBtnRef = ref<HTMLElement | null>(null)
 onLongPress(
   deleteBtnRef,
   () => {
-    $trnForm.$patch((state) => {
+    trnFormStore.$patch((state) => {
       state.values.amount = [0, 0, 0]
-      state.values.amountRaw = ['0', '0', '0']
+      state.values.amountRaw = ['', '', '']
     })
   },
   { modifiers: { prevent: false } },
@@ -80,8 +75,8 @@ onLongPress(
   .w-20.grid.gap-2.justify-items-end(class="grid-rows-[auto,1fr]")
     //- Description
     TrnFormMainCalculatorButton(
-      :class="{ 'text-accent-1': !!$trnForm.values.desc }"
-      @click="$trnForm.openTrnFormModal('description')"
+      :class="{ 'text-accent-1': !!trnFormStore.values.desc }"
+      @click="trnFormStore.openTrnFormModal('description')"
     ): .mdi.mdi-comment-text-outline
 
     //- Action

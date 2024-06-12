@@ -9,7 +9,7 @@ const emit = defineEmits<{
   (e: 'click', id: CategoryId): void
 }>()
 
-const $trnForm = useTrnFormStore()
+const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
 
 const sliderObj = ref()
@@ -24,15 +24,15 @@ onMounted(() => {
   const initialSlide = 1
 
   sliderObj.value = new Swiper(sliderRef.value, {
-    observer: true,
-    observeParents: true,
-    slidesPerView: 1,
-    touchStartPreventDefault: false,
     autoHeight: false,
     initialSlide,
-    shortSwipes: false,
-    longSwipesRatio: 0.1,
     longSwipesMs: 60,
+    longSwipesRatio: 0.1,
+    observeParents: true,
+    observer: true,
+    shortSwipes: false,
+    slidesPerView: 1,
+    touchStartPreventDefault: false,
   })
 })
 </script>
@@ -49,7 +49,7 @@ onMounted(() => {
               | {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
-                :activeItemId="$trnForm?.values?.categoryId"
+                :activeItemId="trnFormStore?.values?.categoryId"
                 :ids="categoriesStore.recentCategoriesIds"
                 class="!gap-x-1"
                 @click="onClick"
@@ -62,7 +62,7 @@ onMounted(() => {
               | {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
-                :activeItemId="$trnForm?.values?.categoryId"
+                :activeItemId="trnFormStore?.values?.categoryId"
                 :ids="categoriesStore.categoriesRootIds"
                 class="!gap-x-1"
                 @click="onClick"
@@ -75,7 +75,7 @@ onMounted(() => {
               | {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
             .pb-1.px-3
               CategoriesList(
-                :activeItemId="$trnForm?.values?.categoryId"
+                :activeItemId="trnFormStore?.values?.categoryId"
                 :ids="categoriesStore.favoriteCategoriesIds"
                 class="!gap-x-1"
                 @click="onClick"

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
-const $trnForm = useTrnFormStore()
+const trnFormStore = useTrnFormStore()
 
 const description = ref('')
-onMounted(() => description.value = $trnForm.values.desc ?? '')
+onMounted(() => description.value = trnFormStore.values.desc ?? '')
 
 function onSave(close: () => void) {
-  $trnForm.values.desc = description.value
+  trnFormStore.values.desc = description.value
   close()
 }
 </script>
@@ -17,7 +17,7 @@ function onSave(close: () => void) {
     <BaseBottomSheet2
       isShow
       drugClassesCustom="max-w-sm mx-auto bg-foreground-2"
-      @closed="$trnForm.closeTrnFormModal('description')"
+      @closed="trnFormStore.closeTrnFormModal('description')"
     >
       <template #handler="{ close }">
         <BaseBottomSheetHandler />

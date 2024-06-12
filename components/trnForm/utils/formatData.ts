@@ -10,13 +10,13 @@ function formatTransaction(props: TrnFormValues): Transaction | false {
 
   const data: Transaction = {
     amount: props.amount[0],
-    type: props.trnType,
-
     categoryId: props.categoryId,
-    walletId: props.walletId,
 
     date: props.date || dayjs().valueOf(),
     edited: dayjs().valueOf(),
+
+    type: props.trnType,
+    walletId: props.walletId,
   }
 
   if (props.desc)
@@ -32,17 +32,17 @@ function formatTransfer(props: TrnFormValues): Transfer | false {
   }
 
   const data: Transfer = {
-    type: props.trnType,
     categoryId: 'transfer' as const,
-
     date: props.date,
+
     edited: dayjs().valueOf(),
-
     expenseAmount: props.amount[1],
-    expenseWalletId: props.expenseWalletId,
 
+    expenseWalletId: props.expenseWalletId,
     incomeAmount: props.amount[2],
+
     incomeWalletId: props.incomeWalletId,
+    type: props.trnType,
   }
 
   if (props.desc)

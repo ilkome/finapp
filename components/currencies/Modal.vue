@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { useWindowSize } from '@vueuse/core'
 import type { CurrencyCode } from '~/components/currencies/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 
 const { t } = useI18n()
 const currenciesStore = useCurrenciesStore()
-const { height } = useWindowSize()
 
 function onSelect(code: CurrencyCode, close: () => void) {
   currenciesStore.updateBase(code)
@@ -16,10 +14,8 @@ function onSelect(code: CurrencyCode, close: () => void) {
 <template>
   <Teleport v-if="currenciesStore.isShownModal" to="body">
     <BaseBottomSheet2
-      :maxHeight="height"
-      :height="height"
-      :isScrollerBlock="false"
-      insideClass="bg-foreground-3"
+      isShow
+      drugClassesCustom="max-w-sm mx-auto bg-foreground-2"
       @closed="currenciesStore.hideBaseCurrenciesModal()"
     >
       <template #handler="{ close }">
@@ -27,15 +23,8 @@ function onSelect(code: CurrencyCode, close: () => void) {
         <BaseBottomSheetClose @onClick="close" />
       </template>
 
-      <template #header>
-        <div
-          class="text-item-base rounded-t-2xl bg-foreground-3 px-2 py-4 text-center font-primary text-xl font-semibold"
-        >
-          {{ t("select") }}
-        </div>
-      </template>
-
       <template #default="{ close }">
+        <UiTitle>{{ t('select') }}</UiTitle>
         <CurrenciesList
           :active="currenciesStore.base"
           @onSelect="c => onSelect(c, close)"

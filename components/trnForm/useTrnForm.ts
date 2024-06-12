@@ -79,8 +79,8 @@ export const useTrnFormStore = defineStore('trnForm', () => {
    * Get is show sum
    */
   // TODO: refactor isTransferAuto
-  function getIsShowSum(trnType: TrnType | AmountsType, isTransferAuto = false) {
-    if (isTransferAuto && trnType === 2) {
+  function getIsShowSum() {
+    if (values.trnType === 2) {
       const expense = values.amount[1] !== 0
         && formatInput(values.amount[1]) !== values.amountRaw[1]
       const income = values.amount[2] !== 0
@@ -89,8 +89,11 @@ export const useTrnFormStore = defineStore('trnForm', () => {
       return expense || income
     }
 
-    return values.amount[trnType] !== 0
-      && formatInput(values.amount[trnType]) !== values.amountRaw[trnType]
+    return (values.amount[0] !== 0 || values.amountRaw[0] !== '')
+      && formatInput(values.amount[0]) !== values.amountRaw[0]
+
+    // return values.amount[values.trnType] !== 0
+    //   && formatInput(values.amount[values.trnType]) !== values.amountRaw[values.trnType]
   }
 
   /**
@@ -178,6 +181,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
    * Submit
    */
   async function onSubmit() {
+    console.log('onSubmit')
     const data = values.trnType !== 2
       ? formatTransaction(values)
       : formatTransfer(values)
@@ -191,7 +195,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
         //   title: validateStatus.error.title,
         //   text: validateStatus.error.text,
         // })
-        console.log('error')
+        console.log('error', validateStatus)
         return
       }
 
@@ -217,6 +221,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
    * onChangeCountSum
    */
   function onChangeCountSum() {
+    console.log('onChangeCountSum')
     // Transfer
     if (values.trnType === 2) {
       values.amountRaw[1] = formatInput(values.amount[1])
@@ -225,7 +230,15 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     }
 
     // Transaction
-    values.amountRaw[values.trnType] = formatInput(values.amount[values.trnType])
+    if (values.amount[0] !== 0) {
+      console.log('formatInput(values.amount[0])', formatInput(values.amount[0]))
+      values.amountRaw[0] = formatInput(values.amount[0])
+      return
+    }
+
+    console.log(111)
+    // Clear to placeholder
+    values.amountRaw[0] = '888'
   }
 
   return {
@@ -251,7 +264,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
 })
 
 export function useTrnForm() {
-  const $trnForm = useTrnFormStore()
+  const trnFormStore = useTrnFormStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
@@ -260,38 +273,38 @@ export function useTrnForm() {
   function trnFormEdit(trnId: TrnId) {
     const trn = trnsStore.items[trnId]
 
-    $trnForm.setValues({
+    trnFormStore.setValues({
       action: 'edit',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn,
       trnId,
       walletsIds: walletsStore.sortedIds,
     })
-    $trnForm.ui.isShow = true
+    trnFormStore.ui.isShow = true
   }
 
   function trnFormCreate(props?: { categoryId?: CategoryId }) {
-    $trnForm.setValues({
+    trnFormStore.setValues({
       action: 'create',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn: trnsStore.lastCreatedTrnItem,
       walletsIds: walletsStore.sortedIds,
     })
-    $trnForm.ui.isShow = true
+    trnFormStore.ui.isShow = true
 
     if (filterStore.periodNameWithoutAll === 'day')
-      $trnForm.values.date = filterStore.date
+      trnFormStore.values.date = filterStore.date
 
     if (props) {
       if (props.categoryId)
-        $trnForm.values.categoryId = props.categoryId
+        trnFormStore.values.categoryId = props.categoryId
     }
   }
 
   function trnFormDuplicate(trnId: TrnId) {
     const trn = trnsStore.items[trnId]
 
-    $trnForm.setValues({
+    trnFormStore.setValues({
       action: 'duplicate',
       amount: trn.amount,
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
@@ -300,7 +313,7 @@ export function useTrnForm() {
       walletsIds: walletsStore.sortedIds,
     })
 
-    $trnForm.ui.isShow = true
+    trnFormStore.ui.isShow = true
   }
 
   return {

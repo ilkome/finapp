@@ -4,30 +4,30 @@ import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { getStyles } from '~/components/ui/getStyles'
 import { formatDate } from '~/utils/formatDate'
 
-const $trnForm = useTrnFormStore()
+const trnFormStore = useTrnFormStore()
 
 const formattedDate = computed(() => {
-  const date = formatDate($trnForm.values.date, 'full')
+  const date = formatDate(trnFormStore.values.date, 'full')
   return `${date.weekday} <br/> ${date.day} ${date.month}`
 })
 
 const isToday = computed(() => {
-  return dayjs().isSame($trnForm.values.date, 'day')
+  return dayjs().isSame(trnFormStore.values.date, 'day')
 })
 
 function changeDate(way: 'prev' | 'next' | 'today') {
   let newDate: number = dayjs().valueOf()
 
   if (way === 'prev')
-    newDate = dayjs($trnForm.values.date).subtract(1, 'day').valueOf()
+    newDate = dayjs(trnFormStore.values.date).subtract(1, 'day').valueOf()
 
   if (way === 'next' && !isToday.value)
-    newDate = dayjs($trnForm.values.date).add(1, 'day').valueOf()
+    newDate = dayjs(trnFormStore.values.date).add(1, 'day').valueOf()
 
   if (way === 'today')
     newDate = dayjs().valueOf()
 
-  $trnForm.values.date = newDate
+  trnFormStore.values.date = newDate
 }
 </script>
 
