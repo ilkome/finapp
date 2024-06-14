@@ -44,8 +44,8 @@ onLongPress(
 )
 </script>
 
-<template lang="html">
-  <div class="px-2 grid gap-0 grid-cols-[auto,1fr,auto]">
+<template>
+  <div class="grid gap-0 grid-cols-[auto,1fr,auto]">
     <div class="w-20 flex flex-col">
       <TrnFormMainCalculatorButton @click="onClick('*')">
         <i class="mdi mdi-plus rotate-45" />

@@ -1,8 +1,7 @@
 import { useInitApp } from '~/components/app/useInitApp'
 
 export default defineNuxtPlugin(() => {
-  const { init } = useInitApp()
-  init()
+  useInitApp().loadData()
 
   // addRouteMiddleware('auth', (to) => {
   //   const userStore = useUserStore()

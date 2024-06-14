@@ -55,6 +55,7 @@ function getBarStyle(amount: number, categoryId: CategoryId) {
         <Icon
           :color="categoriesStore.items[props.item.id]?.color"
           :name="categoriesStore.items[props.item.id]?.icon.replace('mdi mdi-', 'mdi:')"
+          size="18"
         />
       </template>
 

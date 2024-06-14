@@ -2,10 +2,11 @@
 import { useStorage } from '@vueuse/core'
 
 const props = defineProps<{
+  initStatus?: boolean
   storageKey?: string
 }>()
 
-const isShown = useStorage(`ui-toggle-${props.storageKey}`, true)
+const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 </script>
 
 <template>

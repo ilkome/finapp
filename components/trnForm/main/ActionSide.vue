@@ -38,7 +38,7 @@ async function onClickSubmit() {
       min-size-[58px]
       py-4 px-2
       size-full
-      text-4xl text-primary text-center
+      text-4xl text-prima text-center
       bg-item-main border border-item-5 rounded-xl
       hocus_bg-item-7 hocus_border[red] hocus_scale-[1.02]
       transition

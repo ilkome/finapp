@@ -5,8 +5,10 @@
       overflow-hidden
       overflow-x-auto
       grow
-      gap-2
+      gap-x-2
+      gap-y-0.5
       flex items-center
+      flex-wrap
     "
   >
     <slot />

@@ -42,7 +42,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
     }"
     class="
       flex flex-col gap-1
-      font-secondary text-primary leading-none
+      font-secondary text-prima leading-none
     "
     @click="e => emit('click', e)"
   >

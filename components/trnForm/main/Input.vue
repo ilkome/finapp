@@ -31,7 +31,7 @@ function onInput(event: Event) {
       class="
         pointer-events-none
         absolute top-2
-        text-center text-sm text-primary/60
+        text-center text-sm text-prima/60
       "
       tabindex="0"
     >

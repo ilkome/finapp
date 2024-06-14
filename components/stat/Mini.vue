@@ -29,12 +29,16 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 const expenseTrnsIds = computed(() =>
   trnsIds.value.filter(
     trnId => trnsStore.items[trnId].type === 0 || trnsStore.items[trnId].type === 2,
+  ).sort(
+    (a, b) => trnsStore.items[b].date - trnsStore.items[a].date,
   ),
 )
 
 const incomeTrnsIds = computed(() =>
   trnsIds.value.filter(
     trnId => trnsStore.items[trnId].type === 1 || trnsStore.items[trnId].type === 2,
+  ).sort(
+    (a, b) => trnsStore.items[b].date - trnsStore.items[a].date,
   ),
 )
 

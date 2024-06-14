@@ -2,7 +2,6 @@
 import 'v-calendar/style.css'
 import dayjs from 'dayjs'
 import { DatePicker } from 'v-calendar'
-import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
@@ -11,7 +10,6 @@ const props = defineProps<{
 
 const colorMode = useColorMode()
 const trnFormStore = useTrnFormStore()
-const filterStore = useFilterStore()
 
 const isDark = computed(() => colorMode.preference === 'dark' || colorMode.preference === 'system')
 const date = ref(dayjs(trnFormStore.values.date).toString())

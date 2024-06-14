@@ -8,11 +8,7 @@ import useAmount from '~/components/amount/useAmount'
 import type { ChartType } from '~/components/chart/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { TotalReturns } from '~/components/amount/getTotal'
-import {
-  type PeriodNameWithAll,
-  type PeriodNameWithoutAll,
-  useFilter,
-} from '~/components/filter/useFilter'
+import { type PeriodNameWithoutAll, useFilter } from '~/components/filter/useFilter'
 import { getStyles } from '~/components/ui/getStyles'
 import { useNewStat } from '~/components/stat/useNewStat'
 import { useCategoriesStore } from '~/components/categories/useCategories'
@@ -37,15 +33,9 @@ const chartType = ref<ChartType>('bar')
 const period = useStorage<PeriodNameWithoutAll>(`${props.storageKey}-${props.type}-period`, 'day')
 const date = useStorage<number>(`${props.storageKey}-${props.type}-date`, dayjs().startOf(period.value).valueOf())
 
-const sortedTrnsIds = computed(() =>
-  [...props.trnsIds].sort(
-    (a, b) => trnsStore.items[b].date - trnsStore.items[a].date,
-  ),
-)
-
 const datesFromTrnsIds = computed(() => ({
-  from: trnsStore.items[sortedTrnsIds.value.at(-1)]?.date,
-  until: trnsStore.items[sortedTrnsIds.value.at(0)]?.date,
+  from: trnsStore.items[props.trnsIds.at(-1)]?.date,
+  until: trnsStore.items[props.trnsIds.at(0)]?.date,
 }))
 
 onMounted(
@@ -132,7 +122,6 @@ function setPeriodDatePrev() {
 }
 
 function onClickChart(idx: number) {
-  console.log('onClickChart', idx, categories.value[idx])
   date.value = categories.value[idx]
 }
 
@@ -219,13 +208,6 @@ function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
   return true
 }
 
-function getTrns(categoryId: CategoryId) {
-  return trnsStore.getStoreTrnsIds({
-    categoriesIds: [categoryId],
-    trnsIds: props.trnsIds,
-  }, { includesChildCategories: true })
-}
-
 function getTrnsWithDate(categoryId: CategoryId) {
   return trnsStore.getStoreTrnsIds({
     categoriesIds: [categoryId],
@@ -267,9 +249,10 @@ function getTrnsWithDate(categoryId: CategoryId) {
     <!-- Stat -->
     <div class="_@3xl/main_grid-cols-[1fr,.8fr] _gap-8 grid">
       <div class="grid gap-0">
-        <!-- Chart -->
+        <!-- Chart first level -->
         <UiToggle
           :storageKey="`${props.storageKey}-${props.type}-chart`"
+          :initStatus="true"
         >
           <template #header="{ toggle, isShown }">
             <div class="flex items-center justify-between">
@@ -302,7 +285,14 @@ function getTrnsWithDate(categoryId: CategoryId) {
 
                 <template #popper>
                   <div class="p-3">
-                    <input v-model="chartPeriodsShown" type="number">
+                    <UInput
+                      v-model="chartPeriodsShown"
+                      type="number"
+                      size="md"
+                      color="white"
+                      placeholder="Showed chart periods"
+                      inputClass="text-base"
+                    />
                   </div>
                 </template>
               </VDropdown>
@@ -321,10 +311,46 @@ function getTrnsWithDate(categoryId: CategoryId) {
           />
         </UiToggle>
 
-        <!-- Categories -->
         <UiToggle
           v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0"
           :storageKey="`${props.storageKey}${props.type}-cats`"
+          :initStatus="true"
+        >
+          <template #header="{ toggle, isShown }">
+            <div class="flex items-center justify-between">
+              <UiTitle
+                :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
+                class="grow flex items-center gap-1 pb-0"
+                @click="toggle"
+              >
+                <Icon
+                  :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                  size="22"
+                  class="-ml-1"
+                />
+                <div>{{ $t('categories.title') }} Round</div>
+              </UiTitle>
+            </div>
+          </template>
+
+          <div class="flex flex-wrap gap-1 pl-8">
+            <StatPeriodsLinesItem2
+              v-for="item in cats"
+              :key="item.id"
+              :item
+              :isShowLinesChart
+              :biggestCatNumber
+              :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+              @click="onClickCategory"
+            />
+          </div>
+        </UiToggle>
+
+        <!-- Categories first level -->
+        <UiToggle
+          v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0"
+          :storageKey="`${props.storageKey}${props.type}-cats`"
+          :initStatus="true"
         >
           <template #header="{ toggle, isShown }">
             <div class="flex items-center justify-between">
@@ -396,7 +422,7 @@ function getTrnsWithDate(categoryId: CategoryId) {
             </div>
           </template>
 
-          <div v-if="cats.length > 0">
+          <div v-if="cats.length > 0" class="pl-8">
             <StatPeriodsLinesItem
               v-for="item in cats"
               :key="item.id"
@@ -406,137 +432,146 @@ function getTrnsWithDate(categoryId: CategoryId) {
               :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
               @click="onClickCategory"
             >
-              <div v-if="openedCats.includes(item.id) || openedTrns.includes(item.id)">
-                <UiToggle
-                  :storageKey="`${props.storageKey}-${props.type}-${item.id}-in-chart`"
-                >
-                  <template #header="{ toggle, isShown }">
-                    <UiTitle3
-                      :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                      class="grow flex items-center gap-2 pb-0"
-                      @click="toggle"
-                    >
-                      <Icon
-                        :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
-                        size="22"
-                        class="-ml-1"
-                      />
-                      <div>{{ $t('chart.title') }}</div>
-                    </UiTitle3>
-                  </template>
-
-                  <StatCategoryChartWrap
-                    :categoryId="item.id"
-                    :chartPeriodsShown
-                    :datesGroups
-                    :markedArea="date"
-                    :period
-                    :type="props.type"
-                    :trnsIds="sortedTrnsIds"
-                    @click="onClickChart"
-                  />
-                </UiToggle>
-              </div>
-
               <div
-                v-if="openedCats.includes(item.id)"
+                class="pl-8"
               >
-                <UiToggle
-                  :storageKey="`${props.storageKey}-${props.type}-${item.id}-in-cats`"
+                <!-- Chart 2 level -->
+                <div
+                  v-if="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 >
-                  <template #header="{ toggle, isShown }">
-                    <UiTitle3
-                      :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                      class="grow flex items-center gap-2 pb-0"
-                      @click="toggle"
-                    >
-                      <Icon
-                        :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
-                        size="22"
-                        class="-ml-1"
-                      />
-                      <div>{{ $t('categories.title') }}</div>
-                    </UiTitle3>
-                  </template>
-
-                  <StatPeriodsLinesItem
-                    v-for="insideItem in getCats(item.trnsIds)"
-                    :key="insideItem.id"
-                    :item="insideItem"
-                    :isShowLinesChart
-                    :biggestCatNumber
-                    @click="onClickCategory"
+                  <UiToggle
+                    :storageKey="`${props.storageKey}-${props.type}-${item.id}-in-chart`"
                   >
-                    <div
-                      v-if="openedTrns.includes(insideItem.id)"
-                      class="pl-8 pt-2 pb-2"
-                    >
-                      <UiToggle
-                        :storageKey="`${props.storageKey}-${props.type}-${item.id}-trns-in`"
+                    <template #header="{ toggle, isShown }">
+                      <UiTitle3
+                        :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
+                        class="grow flex items-center gap-2 pb-0"
+                        @click="toggle"
                       >
-                        <template #header="{ toggle, isShown }">
-                          <UiTitle3
-                            :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                            class="grow flex items-center gap-2 pb-0"
-                            @click="toggle"
-                          >
-                            <Icon
-                              :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
-                              size="22"
-                              class="-ml-1"
-                            />
-                            <div>{{ $t('trns.title') }}</div>
-                            <div>{{ getTrnsWithDate(insideItem.id).length }}</div>
-                          </UiTitle3>
-                        </template>
-
-                        <TrnsList
-                          :trnsIds="getTrnsWithDate(insideItem.id) ?? []"
-                          alt2
-                          isHideDates
-                          isShowFilterByDesc
+                        <Icon
+                          :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                          size="22"
+                          class="-ml-1"
                         />
-                      </UiToggle>
-                    </div>
-                  </StatPeriodsLinesItem>
-                </UiToggle>
-              </div>
+                        <div>{{ $t('chart.title') }}</div>
+                      </UiTitle3>
+                    </template>
 
-              <div
-                v-if="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-              >
-                <UiToggle
-                  :storageKey="`${props.storageKey}-${props.type}-${item.id}-trns`"
+                    <StatCategoryChartWrap
+                      :categoryId="item.id"
+                      :chartPeriodsShown
+                      :datesGroups
+                      :markedArea="date"
+                      :period
+                      :type="props.type"
+                      :trnsIds="props.trnsIds"
+                      @click="onClickChart"
+                    />
+                  </UiToggle>
+                </div>
+
+                <div
+                  v-if="openedCats.includes(item.id)"
                 >
-                  <template #header="{ toggle, isShown }">
-                    <UiTitle3
-                      :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                      class="grow flex items-center gap-2 pb-0"
-                      @click="toggle"
-                    >
-                      <Icon
-                        :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
-                        size="22"
-                        class="-ml-1"
-                      />
-                      <div>{{ $t('trns.title') }}</div>
-                      <div>{{ getTrnsWithDate(item.id)?.length }}</div>
-                    </UiTitle3>
-                  </template>
+                  <UiToggle
+                    :storageKey="`${props.storageKey}-${props.type}-${item.id}-in-cats`"
+                  >
+                    <template #header="{ toggle, isShown }">
+                      <UiTitle3
+                        :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
+                        class="grow flex items-center gap-2 pb-0"
+                        @click="toggle"
+                      >
+                        <Icon
+                          :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                          size="22"
+                          class="-ml-1"
+                        />
+                        <div>{{ $t('categories.title') }}</div>
+                      </UiTitle3>
+                    </template>
 
-                  <TrnsList
-                    :trnsIds="getTrnsWithDate(item.id) ?? []"
-                    alt2
-                    isHideDates
-                    isShowFilterByDesc
-                  />
-                </UiToggle>
+                    <StatPeriodsLinesItem
+                      v-for="insideItem in getCats(item.trnsIds)"
+                      :key="insideItem.id"
+                      :item="insideItem"
+                      :isShowLinesChart
+                      :biggestCatNumber
+                      @click="onClickCategory"
+                    >
+                      <div
+                        v-if="openedTrns.includes(insideItem.id)"
+                        class="pl-8 -pt-2 -pb-2"
+                      >
+                        <UiToggle
+                          :storageKey="`${props.storageKey}-${props.type}-${item.id}-trns-in`"
+                        >
+                          <template #header="{ toggle, isShown }">
+                            <UiTitle3
+                              :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
+                              class="grow flex items-center gap-2 pb-0"
+                              @click="toggle"
+                            >
+                              <Icon
+                                :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                                size="22"
+                                class="-ml-1"
+                              />
+                              <div>{{ $t('trns.title') }}</div>
+                              <div>{{ getTrnsWithDate(insideItem.id).length }}</div>
+                            </UiTitle3>
+                          </template>
+
+                          <TrnsList
+                            class="pl-8"
+                            :trnsIds="getTrnsWithDate(insideItem.id) ?? []"
+                            alt2
+                            isHideDates
+                            isShowFilterByDesc
+                          />
+                        </UiToggle>
+                      </div>
+                    </StatPeriodsLinesItem>
+                  </UiToggle>
+                </div>
+
+                <div
+                  v-if="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+                >
+                  <UiToggle
+                    :storageKey="`${props.storageKey}-${props.type}-${item.id}-trns`"
+                  >
+                    <template #header="{ toggle, isShown }">
+                      <UiTitle3
+                        :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
+                        class="grow flex items-center gap-2 pb-0"
+                        @click="toggle"
+                      >
+                        <Icon
+                          :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                          size="22"
+                          class="-ml-1"
+                        />
+                        <div>{{ $t('trns.title') }}</div>
+                        <div>{{ getTrnsWithDate(item.id)?.length }}</div>
+                      </UiTitle3>
+                    </template>
+
+                    <TrnsList
+                      class="pl-8"
+                      :trnsIds="getTrnsWithDate(item.id) ?? []"
+                      alt2
+                      isHideDates
+                      isShowFilterByDesc
+                    />
+                  </UiToggle>
+                </div>
               </div>
             </StatPeriodsLinesItem>
           </div>
         </UiToggle>
 
-        <!-- Trns -->
+        <!-- Trns first level -->
         <UiToggle
           v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0"
           :storageKey="`${props.storageKey}${props.type}-trns`"
@@ -558,6 +593,7 @@ function getTrnsWithDate(categoryId: CategoryId) {
           </template>
 
           <TrnsList
+            class="pl-8"
             :groupedBy="period"
             :isShowGroupSum="period !== 'day'"
             :trnsIds="selectedTrnsIdsForTrnsList"

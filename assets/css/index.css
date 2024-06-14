@@ -1,6 +1,6 @@
 body {
   @apply
-    font-primary text-primary leading-none antialiased;
+    font-primary text-prima leading-none antialiased;
 
   @layer bg-foreground-3;
 }

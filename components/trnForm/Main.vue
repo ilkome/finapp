@@ -33,7 +33,7 @@ function show(slide: number) {
 </script>
 
 <template>
-  <div>
+  <div class="px-2 pt-4 pb-6">
     <TrnFormSelection
       v-if="isShow"
       v-model:isShow="isShow"
@@ -52,42 +52,52 @@ function show(slide: number) {
     </UiTitle>
 
     <TrnFormDate class="pb-2" />
-    <TrnFormMainAmountTrn v-if="trnFormStore.values.trnType !== 2" />
-    <TrnFormMainAmountTransfer
-      v-if="trnFormStore.values.trnType === 2"
-      isLaptop
-      @onOpen="show(0)"
-    />
 
-    <TrnFormMainCalculator
+    <TrnFormMainInput
+      v-if="trnFormStore.values.trnType !== 2"
+      :amount="trnFormStore.values.amount[trnFormStore.activeAmountIdx]"
       :amountRaw="trnFormStore.values.amountRaw[trnFormStore.activeAmountIdx]"
-      class="pb-3"
+      :highlight="trnFormStore.values.trnType === 0 ? 'income' : 'expense'"
+      :isShowSum="trnFormStore.getIsShowSum()"
       @onChange="trnFormStore.onChangeAmount"
     />
 
-    <!-- Selected -->
-    <div
-      v-if="trnFormStore.values.trnType !== 2"
-      class="grid grid-cols-2 gap-3 pb-3"
-    >
-      <TrnFormSelectorWallet
-        v-if="walletId"
-        :walletId
-        :isLaptop
+    <div class="grid gap-3">
+      <TrnFormMainTypes />
+
+      <TrnFormMainAmountTransfer
+        v-if="trnFormStore.values.trnType === 2"
+        isLaptop
         @onOpen="show(0)"
-        @onSelected="id => trnFormStore.values.walletId = id"
       />
 
-      <TrnFormSelectorCategory
-        v-if="trnFormStore.values.categoryId"
-        :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
-        :category="categoriesStore.items[trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
-        :isLaptop
-        @onOpen="show(2)"
-        @onSelected="id => trnFormStore.values.categoryId = id"
+      <TrnFormMainCalculator
+        :amountRaw="trnFormStore.values.amountRaw[trnFormStore.activeAmountIdx]"
+        @onChange="trnFormStore.onChangeAmount"
       />
+
+      <!-- Selected -->
+      <div
+        v-if="trnFormStore.values.trnType !== 2"
+        class="grid grid-cols-2 gap-3"
+      >
+        <TrnFormSelectorWallet
+          v-if="walletId"
+          :walletId
+          :isLaptop
+          @onOpen="show(0)"
+          @onSelected="id => trnFormStore.values.walletId = id"
+        />
+
+        <TrnFormSelectorCategory
+          v-if="trnFormStore.values.categoryId"
+          :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
+          :category="categoriesStore.items[trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
+          :isLaptop
+          @onOpen="show(2)"
+          @onSelected="id => trnFormStore.values.categoryId = id"
+        />
+      </div>
     </div>
-
-    <TrnFormMainTypes />
   </div>
 </template>

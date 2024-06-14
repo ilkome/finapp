@@ -66,20 +66,24 @@ const isShowCredit = ref(false)
 
     <!-- Main -->
     <template v-if="!props.alt">
-      <div class="text-sm leading-none text-secondary">
+      <div class="grow text-sm leading-none text-secondary">
         {{ wallet.name }}
       </div>
 
-      <div class="grow pr-1 opacity-90">
+      <div class="_grow pr-1 opacity-90">
         <Amount
-          :amount="
-            isShowCredit && wallet.creditLimit
-              ? Math.abs(wallet.creditLimit) - Math.abs(wallet.amount)
-              : wallet.amount
-          "
+          v-if="wallet.creditLimit"
+          :amount="isShowCredit ? Math.abs(wallet.creditLimit) - Math.abs(wallet.amount) : wallet.amount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
+          class="hocus_!bg-neutral-700/50 p-2 -m-2 rounded-lg"
           @click.stop="isShowCredit = !isShowCredit"
+        />
+        <Amount
+          v-else
+          :amount="wallet.amount"
+          :currencyCode="wallet.currency"
+          :isShowBaseRate="props.isShowBaseRate"
         />
       </div>
     </template>

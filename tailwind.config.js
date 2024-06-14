@@ -49,7 +49,7 @@ module.exports = {
           7: 'rgba(var(--item-7))',
           8: 'var(--c-item-bg-hover)',
         },
-        'primary': 'rgb(var(--text-primary))',
+        'prima': 'rgb(var(--text-prima))',
         'secondary': 'rgb(var(--text-secondary))',
         'secondary2': 'rgb(var(--text-secondary2))',
       },

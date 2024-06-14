@@ -36,11 +36,11 @@ const items = ref<
   },
 })
 
-const incomeWalletId = computed<WalletId | null>(
+const incomeWalletId = computed<WalletId | undefined>(
   () => trnFormStore.values.incomeWalletId ?? walletsStore.sortedIds[0],
 )
 
-const expenseWalletId = computed<WalletId | null>(
+const expenseWalletId = computed<WalletId | undefined>(
   () => trnFormStore.values.expenseWalletId ?? walletsStore.sortedIds[1],
 )
 
@@ -48,8 +48,8 @@ watch(
   () => trnFormStore.values.trnType,
   (trnType) => {
     if (trnType === TrnType.Transfer) {
-      trnFormStore.values.incomeWalletId = incomeWalletId.value
-      trnFormStore.values.expenseWalletId = expenseWalletId.value
+      incomeWalletId.value && (trnFormStore.values.incomeWalletId = incomeWalletId.value)
+      expenseWalletId.value && (trnFormStore.values.expenseWalletId = expenseWalletId.value)
     }
   },
   { immediate: true },
@@ -72,7 +72,7 @@ watch(
         <div
           class="grid grid-cols-[.4fr,1fr] items-center whitespace-nowrap px-3 pt-2"
         >
-          <div class="w-1/2 grow text-sm text-primary/70">
+          <div class="w-1/2 grow text-sm text-prima/70">
             {{ t(slug) }}
           </div>
 
@@ -99,7 +99,7 @@ watch(
           :amount="trnFormStore.values.amount[item.amountsIdx]"
           :amountRaw="trnFormStore.values.amountRaw[item.amountsIdx]"
           :highlight="item.transferType === 1 ? 'expense' : 'income'"
-          :isShowSum="trnFormStore.getIsShowSum(item.amountsIdx)"
+          :isShowSum="trnFormStore.getIsShowSum()"
           isTransfer
           @onChange="trnFormStore.onChangeAmount"
         />

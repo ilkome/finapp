@@ -1,4 +1,8 @@
 <script setup lang="ts">
+const props = defineProps<{
+  isShowSystem?: boolean
+}>()
+
 const colorMode = useColorMode()
 
 type Theme = 'system' | 'light' | 'dark'
@@ -7,15 +11,19 @@ const locales: {
   localeKey: string
   slug: Theme
 }[] = [{
-  localeKey: 'app.theme.system',
-  slug: 'system',
-}, {
   localeKey: 'app.theme.light',
   slug: 'light',
 }, {
   localeKey: 'app.theme.dark',
   slug: 'dark',
 }] as const
+
+if (props.isShowSystem) {
+  locales.unshift({
+    localeKey: 'app.theme.system',
+    slug: 'system',
+  })
+}
 
 function setTheme(theme: Theme) {
   colorMode.preference = theme

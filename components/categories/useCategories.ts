@@ -37,9 +37,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     if (!items.value)
       return false
 
-    // More than 1 because categories has 1 static category "Transfer"
-    // TODO: use get transfers categories and exclude them from the list
-    if (Object.keys(items.value).length > 1)
+    if (Object.keys(items.value).filter(id => id !== 'transfer').length > 0)
       return true
   })
 
@@ -118,8 +116,9 @@ export const useCategoriesStore = defineStore('categories', () => {
       if (
         !category
         || ('showInLastUsed' in category && !category.showInLastUsed)
-      )
+      ) {
         continue
+      }
 
       const isCategoryAlreadyAdded = lastCategories.some(
         c => c.id === categoryId,
@@ -139,7 +138,7 @@ export const useCategoriesStore = defineStore('categories', () => {
           ...category,
         })
       }
-    } // Add a comma here
+    }
 
     return _sortby(lastCategories, category => [
       items.value[category.parentId]?.name || false,
@@ -166,12 +165,14 @@ export const useCategoriesStore = defineStore('categories', () => {
       (items: Categories) => {
         // add child categories to root categories
         for (const categoryId in items) {
-          const parentCategoryId = items[categoryId].parentId
-          if (parentCategoryId !== 0 && items[parentCategoryId]) {
-            items[parentCategoryId].childIds
-              ? !items[parentCategoryId].childIds?.includes(categoryId)
-              && items[parentCategoryId].childIds?.push(categoryId)
-              : (items[parentCategoryId].childIds = [categoryId])
+          const parentCategoryId = items[categoryId]?.parentId
+          if (parentCategoryId !== 0 && parentCategoryId && items[parentCategoryId]) {
+            if (items[parentCategoryId]?.childIds && !items[parentCategoryId]?.childIds?.includes(categoryId)) {
+              items[parentCategoryId]?.childIds?.push(categoryId)
+            }
+            else if (parentCategoryId && items[parentCategoryId]) {
+              items[parentCategoryId].childIds = [categoryId]
+            }
           }
         }
 
@@ -193,12 +194,8 @@ export const useCategoriesStore = defineStore('categories', () => {
             }
           }
 
-          if (cat.childIds) {
-            items[categoryId] = {
-              ...cat,
-              showInLastUsed: false,
-              showInQuickSelector: false,
-            }
+          if (cat && cat.childIds) {
+            items[categoryId] = cat
 
             for (const childCatId of cat.childIds) {
               if (!items[childCatId]) {

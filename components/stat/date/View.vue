@@ -27,6 +27,7 @@ const formattedDate = computed(() => formatDateByPeriod(props.date, props.period
     :overflowPadding="12"
     autoBoundaryMaxSize
     placement="bottom-start"
+    class="grow"
   >
     <div
       :class="getStyles('item', ['link', 'rounded', 'minh2', 'center'])"

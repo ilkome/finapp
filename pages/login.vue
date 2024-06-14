@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import type { ToastOptions } from 'vue3-toastify'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import { useUserStore } from '~/components/user/useUser'
@@ -30,18 +30,22 @@ function signInWithGoogle() {
   isLoading.value = true
 
   const provider = new GoogleAuthProvider()
-  signInWithRedirect(auth, provider).catch((e) => {
-    $toast(UiToastContent, {
-      autoClose: 6000,
-      data: {
-        description: e.message,
-        title: 'Error',
-      },
-      type: 'error',
-    } as ToastOptions)
+  signInWithPopup(auth, provider)
+    .then(() => {
+      console.log(111)
+    })
+    .catch((e) => {
+      $toast(UiToastContent, {
+        autoClose: 6000,
+        data: {
+          description: e.message,
+          title: 'Error',
+        },
+        type: 'error',
+      } as ToastOptions)
 
-    isLoading.value = false
-  })
+      isLoading.value = false
+    })
 }
 
 onMounted(() => {
@@ -50,9 +54,8 @@ onMounted(() => {
     const newRoute = { ...route }
     delete newRoute.query?.loading
     router.replace(newRoute)
+    setTimeout(() => (isLoading.value = false), 10000)
   }
-
-  setTimeout(() => (isLoading.value = false), 10000)
 })
 
 watch(
@@ -67,9 +70,9 @@ watch(
   <div
     class="mx-auto grid h-full w-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4 md_p-6"
   >
-    <div class="flex justify-between">
-      <AppLocaleSwitcher class="grow" />
-      <AppThemeSwitcher />
+    <div class="flex flex-wrap gap-2 justify-between items-start">
+      <AppLocaleSwitcher />
+      <AppThemeSwitcher class="justify-end" />
     </div>
 
     <div

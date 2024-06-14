@@ -32,7 +32,7 @@ const userStore = useUserStore()
         <LayoutMenuSidebar />
 
         <div class="pl-2">
-          <AppThemeSwitcher />
+          <AppThemeSwitcher isShowSystem />
         </div>
       </div>
     </LazyBaseBottomSheet2>

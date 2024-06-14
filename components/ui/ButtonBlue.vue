@@ -20,6 +20,7 @@ const emit = defineEmits(['click'])
       bg-accent-2 rounded-full
       hocus_bg-accent-2/80
       transition
+      min-h-11
     "
     @click="emit('click')"
   >

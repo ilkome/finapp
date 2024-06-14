@@ -70,13 +70,12 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    '@nuxtjs/color-mode',
     '@nuxtjs/i18n',
-    '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
     'floating-vue/nuxt',
     'nuxt-icon',
+    '@nuxt/ui',
   ],
 
   plugins: [
@@ -155,6 +154,11 @@ export default defineNuxtConfig({
   },
 
   telemetry: false,
+
+  ui: {
+    gray: 'neutral',
+    primary: 'indigo',
+  },
 
   vite: {
     resolve: {

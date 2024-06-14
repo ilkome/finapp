@@ -86,12 +86,9 @@ onMounted(init)
           </div>
 
           <!-- Main -->
-          <div class="swiper-slide getHeight sm_max-w-sm sm_px-3 bg-foreground-2 sm_max-w-sm _sm_rounded-xl sm_border-r sm_border-l border-item-5">
+          <div class="swiper-slide getHeight sm_px-3 bg-foreground-2 sm_max-w-sm _sm_rounded-xl sm_border-r sm_border-l border-item-5">
             <div class="scroll scrollerBlock">
-              <TrnFormMain
-                :maxHeight
-                class="px-2 pt-4 pb-6"
-              />
+              <TrnFormMain :maxHeight />
             </div>
           </div>
 

@@ -17,7 +17,7 @@ const { checkIsActive, onClick } = useMenuData()
   <div
     :class="[
       ...getStyles('item', ['link', 'rounded', 'padding1', 'menu']),
-      { '!text-primary': checkIsActive(props.menuId) },
+      { '!text-prima': checkIsActive(props.menuId) },
     ]"
     class="group"
     @click="onClick(props.menuId)"
@@ -26,7 +26,7 @@ const { checkIsActive, onClick } = useMenuData()
       :is="props.item.component"
       v-if="props.item.component"
       class="
-        size-5
+        size-6
         group-[.is-bigger]_!size-6
         group-[.is-trnForm]_!size-7
       "
@@ -35,6 +35,7 @@ const { checkIsActive, onClick } = useMenuData()
     <Icon
       v-else
       :name="props.item.icon"
+      size="22"
       class="text-lg group-[.is-bigger]_!text-2xl leading-none"
     />
 

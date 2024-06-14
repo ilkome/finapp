@@ -11,6 +11,7 @@ export const classes = {
       select-none
       text-secondary2
       hocus_bg-item-5
+      _hocus_bg-neutral-800/50
     `,
     menu: `
       flex items-center

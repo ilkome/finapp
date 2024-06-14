@@ -68,7 +68,7 @@ function removeUserData() {
           <UiTitle class="pb-2">
             {{ $t("theme.title") }}
           </UiTitle>
-          <AppThemeSwitcher />
+          <AppThemeSwitcher isShowSystem />
         </div>
 
         <!-- User -->

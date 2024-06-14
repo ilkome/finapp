@@ -14,7 +14,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div>
+  <div class="rounded-md bg-item-4">
     <!-- Category -->
     <div v-if="!isLaptop">
       <CategoriesItem
