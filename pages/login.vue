@@ -35,6 +35,7 @@ function signInWithGoogle() {
       console.log(111)
     })
     .catch((e) => {
+      console.log(e)
       $toast(UiToastContent, {
         autoClose: 6000,
         data: {
