@@ -22,11 +22,11 @@ const props = defineProps<{
 
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
-const filter = useFilter()
+// const filter = useFilter()
+const filter = inject('filter')
 const { getCats, getPeriodsWithTrns, getSeries } = useNewStat()
 const categoriesStore = useCategoriesStore()
 
-const isGroupCategoriesByParent = useStorage<boolean>('isGroupCategoriesByParent', false)
 const isShowLinesChart = useStorage<boolean>('isShowLinesChart', false)
 const chartPeriodsShown = useStorage<number>(`${props.storageKey}-${props.type}-chartPeriodsShown`, 18)
 const chartType = ref<ChartType>('bar')
@@ -148,7 +148,11 @@ function getPeriodsDates(params: {
 /**
  * Cats
  */
+const isGroupCategoriesByParent = useStorage<boolean>('isGroupCategoriesByParent', false)
 const cats = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParent.value))
+
+const isGroupCategoriesByParentRounded = ref(true)
+const catsRounded = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParentRounded.value))
 const biggestCatNumber = computed(() => cats.value.at(0)?.value ?? 0)
 const isOpenedAll = useStorage<boolean>(`mini-item-${props.type}-isOpenedAll`, false)
 const openedCats = ref<CategoryId[]>([])
@@ -183,6 +187,26 @@ function onClickCategory(categoryId: CategoryId) {
       ? (openedTrns.value = openedTrns.value.filter(d => d !== categoryId))
       : openedTrns.value.push(categoryId)
   }
+}
+
+function onClickCategoryRounded(categoryId: CategoryId) {
+  isGroupCategoriesByParentRounded.value = false
+  filter.clearFilter()
+  filter.setCategoryId(categoryId)
+  const category = categoriesStore.items[categoryId]
+
+  if (category?.childIds && category?.childIds?.length > 0) {
+    isGroupCategoriesByParentRounded.value = false
+  }
+  else {
+    isGroupCategoriesByParentRounded.value = true
+  }
+
+  // else {
+  //   openedTrns.value.includes(categoryId)
+  //     ? (openedTrns.value = openedTrns.value.filter(d => d !== categoryId))
+  //     : openedTrns.value.push(categoryId)
+  // }
 }
 
 const isAllCatsOpened = computed(() => arraysAreEqualUnordered(cats.value.map(d => d.id), openedCats.value))
@@ -253,6 +277,8 @@ function getTrnsWithDate(categoryId: CategoryId) {
         <UiToggle
           :storageKey="`${props.storageKey}-${props.type}-chart`"
           :initStatus="true"
+          class="max-w-md"
+          isPadding
         >
           <template #header="{ toggle, isShown }">
             <div class="flex items-center justify-between">
@@ -311,10 +337,13 @@ function getTrnsWithDate(categoryId: CategoryId) {
           />
         </UiToggle>
 
+        <!-- Categories rounded -->
         <UiToggle
           v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0"
-          :storageKey="`${props.storageKey}${props.type}-cats`"
+          :storageKey="`${props.storageKey}${props.type}-rounded`"
           :initStatus="true"
+          class="_xl_w-1/2 max-w-3xl"
+          isPadding
         >
           <template #header="{ toggle, isShown }">
             <div class="flex items-center justify-between">
@@ -328,20 +357,35 @@ function getTrnsWithDate(categoryId: CategoryId) {
                   size="22"
                   class="-ml-1"
                 />
-                <div>{{ $t('categories.title') }} Round</div>
+                <div>{{ $t('categories.title') }} Round {{ catsRounded.length }}</div>
               </UiTitle>
+
+              <template v-if="isShown">
+                <div
+                  :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
+                  class="justify-center text-xl"
+                  @click="isGroupCategoriesByParentRounded = !isGroupCategoriesByParentRounded"
+                >
+                  <Icon
+                    :name="isAllCatsOpened ? 'mdi:arrow-collapse' : 'mdi:arrow-expand'"
+                    size="22"
+                    class="-ml-1"
+                  />
+                </div>
+              </template>
             </div>
           </template>
 
-          <div class="flex flex-wrap gap-1 pl-8">
+          <div class="flex flex-wrap gap-1 md_gap-2 pl-8">
             <StatPeriodsLinesItem2
-              v-for="item in cats"
+              v-for="item in catsRounded"
               :key="item.id"
+              class="flex-auto flex-grow-0 w-28"
               :item
               :isShowLinesChart
               :biggestCatNumber
               :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-              @click="onClickCategory"
+              @click="onClickCategoryRounded"
             />
           </div>
         </UiToggle>
@@ -349,8 +393,10 @@ function getTrnsWithDate(categoryId: CategoryId) {
         <!-- Categories first level -->
         <UiToggle
           v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0"
+          class="max-w-md"
           :storageKey="`${props.storageKey}${props.type}-cats`"
           :initStatus="true"
+          isPadding
         >
           <template #header="{ toggle, isShown }">
             <div class="flex items-center justify-between">
@@ -374,7 +420,19 @@ function getTrnsWithDate(categoryId: CategoryId) {
                   @click="toggleCats"
                 >
                   <Icon
-                    :name="isAllCatsOpened ? 'mdi:arrow-collapse' : 'mdi:arrow-expand'"
+                    :name="isAllCatsOpened ? 'mdi:abjad-arabic' : 'mdi:abjad-arabic'"
+                    size="22"
+                    class="-ml-1"
+                  />
+                </div>
+
+                <div
+                  :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
+                  class="justify-center text-xl"
+                  @click="isGroupCategoriesByParent = !isGroupCategoriesByParent"
+                >
+                  <Icon
+                    :name="isGroupCategoriesByParent ? 'mdi:ab-testing' : 'mdi:ab-testing'"
                     size="22"
                     class="-ml-1"
                   />
@@ -471,10 +529,11 @@ function getTrnsWithDate(categoryId: CategoryId) {
                 </div>
 
                 <div
-                  v-if="openedCats.includes(item.id)"
+                  v-if="openedCats.includes(item.id) "
                 >
                   <UiToggle
                     :storageKey="`${props.storageKey}-${props.type}-${item.id}-in-cats`"
+                    :initStatus="true"
                   >
                     <template #header="{ toggle, isShown }">
                       <UiTitle3
@@ -575,6 +634,7 @@ function getTrnsWithDate(categoryId: CategoryId) {
         <UiToggle
           v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0"
           :storageKey="`${props.storageKey}${props.type}-trns`"
+          class="max-w-md"
         >
           <template #header="{ toggle, isShown }">
             <UiTitle

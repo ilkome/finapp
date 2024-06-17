@@ -20,7 +20,7 @@ const colorMode = useColorMode()
 
       <div>
         <Icon
-          v-if="colorMode.preference === 'light'"
+          v-if="colorMode.preference !== 'dark'"
           :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
           name="carbon:light"
           size="18"

@@ -2,6 +2,17 @@
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
 
+import { useFilter } from '~/components/filter/useFilter'
+import { useStat } from '~/components/stat/useStat'
+
+const filter = useFilter()
+const stat = useStat(filter)
+
+filter.initChart()
+
+provide('stat', stat)
+provide('filter', filter)
+
 const route = useRoute()
 const router = useRouter()
 const categoriesStore = useCategoriesStore()

@@ -20,15 +20,35 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    class="grid gap-2 group text-secondary2 hocus_bg-item-5 py-3 px-4 rounded-md bg-item-4"
+    class="relative grid gap-2 group text-secondary2 hocus_bg-item-5 py-2.5 p-3 rounded-md bg-item-4"
+    @click="emit('click', props.item.id)"
   >
-    <Icon
-      :color="categoriesStore.items[props.item.id]?.color"
-      :name="categoriesStore.items[props.item.id]?.icon.replace('mdi mdi-', 'mdi:')"
-      size="22"
-    />
+    <div
+      class="relative size-8 flex-center"
+    >
+      <div
+        class="rounded-full absolute inset-0 size-full opacity-90 dark_opacity-70"
+        :style="{ backgroundColor: categoriesStore.items[props.item.id]?.color }"
+      />
 
-    <div class="grid gap-1">
+      <Icon
+        class="relative"
+        color="white"
+        :name="categoriesStore.items[props.item.id]?.icon.replace('mdi mdi-', 'mdi:')"
+        size="18"
+      />
+    </div>
+
+    <div class="absolute right-2 top-2 opacity-40">
+      <Icon
+        v-if="categoriesStore.items[props.item.id]?.parentId"
+        color="text-secondary2"
+        :name="categoriesStore.items[categoriesStore.items[props.item.id]?.parentId]?.icon.replace('mdi mdi-', 'mdi:')"
+        size="12"
+      />
+    </div>
+
+    <div class="grid gap-0 pt-2 pb-1">
       <!-- Parent category name -->
       <div
         v-if="categoriesStore.items[props.item.id].parentId"
@@ -48,17 +68,17 @@ const currenciesStore = useCurrenciesStore()
           ...
         </div>
       </div>
+    </div>
 
-      <div class="grow pr-1 opacity-90">
-        <Amount
-          align="left"
-          :amount="props.item.value"
-          :type="props.item.value >= 0 ? 1 : 0"
-          :currencyCode="currenciesStore.base"
-          :isShowBaseRate="false"
-          colorize="income"
-        />
-      </div>
+    <div class="grow pr-1 opacity-90">
+      <Amount
+        align="left"
+        :amount="props.item.value"
+        :type="props.item.value >= 0 ? 1 : 0"
+        :currencyCode="currenciesStore.base"
+        :isShowBaseRate="false"
+        colorize="income"
+      />
     </div>
   </div>
 </template>

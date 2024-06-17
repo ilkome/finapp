@@ -13,7 +13,7 @@ provide('filter', filter)
 
 <template>
   <div
-    class="h-full overflow-hidden overflow-y-auto px-3 py-4 pb-6 sm_px-1 lg_max-w-6xl lg_px-3 lg_px-8 lg_py-6"
+    class="h-full overflow-hidden overflow-y-auto px-3 py-4 pb-6 sm_px-1 -lg_max-w-6xl lg_px-3 lg_px-8 lg_py-6"
   >
     <StatMini
       :categoriesIds="filter?.catsIds?.value"

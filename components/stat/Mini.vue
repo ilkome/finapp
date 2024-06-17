@@ -93,7 +93,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
         v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 && totals.income !== 0)"
         :storageKey="props.storageKey + activeTab"
         :trnsIds="trnsIds"
-        class="max-w-lg"
+        class="-max-w-2xl"
         type="sum"
       />
 

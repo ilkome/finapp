@@ -124,7 +124,8 @@ export function useNewStat() {
     total: Record<string, TotalReturns>,
     type: MoneyTypeSlugSum,
   ) {
-    const types = type === 'sum' ? ['income', 'expense', 'sum'] : [type]
+    // const types = type === 'sum' ? ['income', 'expense', 'sum'] : [type]
+    const types = type === 'sum' ? ['income', 'expense'] : [type]
 
     return types.map(t => ({
       color: chartSeriesOptions[t].color,
