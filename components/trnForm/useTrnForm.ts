@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { defineStore } from 'pinia'
 import type { CategoryId } from '../categories/types'
 import type { WalletId } from '../wallets/types'
-import type { AmountsType, TrnFormUi, TrnFormValues } from '~/components/trnForm/types'
+import type { TrnFormUi, TrnFormValues } from '~/components/trnForm/types'
 import type { TransferType, TrnId, TrnItem } from '~/components/trns/types'
 import { TrnType } from '~/components/trns/types'
 import { formatInput, getSum } from '~/components/trnForm/utils/calculate'
@@ -181,7 +181,6 @@ export const useTrnFormStore = defineStore('trnForm', () => {
    * Submit
    */
   async function onSubmit() {
-    console.log('onSubmit')
     const data = values.trnType !== 2
       ? formatTransaction(values)
       : formatTransfer(values)
@@ -200,7 +199,6 @@ export const useTrnFormStore = defineStore('trnForm', () => {
       }
 
       // TODO: translate
-      console.log()
       // vue.notify({
       //   type: 'success',
       //   text: 'Excellent transaction!',
@@ -221,7 +219,6 @@ export const useTrnFormStore = defineStore('trnForm', () => {
    * onChangeCountSum
    */
   function onChangeCountSum() {
-    console.log('onChangeCountSum')
     // Transfer
     if (values.trnType === 2) {
       values.amountRaw[1] = formatInput(values.amount[1])
@@ -231,12 +228,10 @@ export const useTrnFormStore = defineStore('trnForm', () => {
 
     // Transaction
     if (values.amount[0] !== 0) {
-      console.log('formatInput(values.amount[0])', formatInput(values.amount[0]))
       values.amountRaw[0] = formatInput(values.amount[0])
       return
     }
 
-    console.log(111)
     // Clear to placeholder
     values.amountRaw[0] = '888'
   }

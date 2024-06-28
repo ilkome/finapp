@@ -6,7 +6,7 @@ const emit = defineEmits<{
 
 <template lang="html">
   <span
-    class="text-secondary font-primary text-lg font-medium"
+    class="text-secondary font-primary text-md font-medium"
     @click="emit('click')"
   >
     <slot />

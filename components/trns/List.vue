@@ -138,7 +138,7 @@ const groupedTrns = computed(() => {
         class="flex items-baseline gap-2"
       >
         <div>{{ $t("trns.title") }}</div>
-        <div v-if="selectedIds.length > 0" class="text-sm">
+        <div v-if="selectedIds.length > 0">
           {{ selectedIds.length }}
         </div>
       </UiTitle>
@@ -200,13 +200,14 @@ const groupedTrns = computed(() => {
     <!-- With dates -->
     <div
       v-if="!isHideDates"
-      class="grid gap-6 overflow-hidden overflow-y-auto"
+      class="grid gap-2 overflow-hidden overflow-y-auto"
     >
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
+        class="bg-item-4 rounded-lg overflow-hidden"
       >
-        <div class="flex gap-2 items-center _bg-item-4 rounded">
+        <div class="flex gap-2 items-center pt-2 pb-1">
           <DateTrns
             :date="+date"
             class="px-3 grow"
@@ -239,21 +240,24 @@ const groupedTrns = computed(() => {
           </div>
         </div>
 
-        <TrnsItemWrap
-          v-for="trnId in groupTrnsIds"
-          :key="trnId"
-          :alt="props.alt"
-          :trnId="trnId"
-          :trnItem="formatTrnItem(trnId)"
-          :date="formatDate(formatTrnItem(trnId)?.date, 'trnItem')"
-        />
+        <div>
+          <TrnsItemWrap
+            v-for="trnId in groupTrnsIds"
+            :key="trnId"
+            :alt="props.alt"
+            :trnId="trnId"
+            :trnItem="formatTrnItem(trnId)"
+            :date="formatDate(formatTrnItem(trnId)?.date, 'trnItem')"
+            class="group"
+          />
+        </div>
       </div>
     </div>
 
     <!-- Show all -->
     <div v-if="!isShowedAllTrns">
       <div
-        class="flex-center grow rounded-lg bg-item-5 px-5 py-2.5 text-sm text-secondary hocus_bg-item-6"
+        class="flex-center grow rounded-lg bg-item-5 px-5 py-2.5 text-sm text-secondary hocus:bg-item-6"
         @click="pageNumber = ++pageNumber"
       >
         {{ $t("trns.more") }} {{ paginatedTrnsIds.length }} /

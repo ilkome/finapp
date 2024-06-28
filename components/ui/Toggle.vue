@@ -13,7 +13,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 <template>
   <div>
     <div
-      class="max-w-md"
+      class="md:max-w-lg"
     >
       <slot
         name="header"
@@ -24,7 +24,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 
     <div
       v-if="isShown"
-      :class="{ 'md_pb-12': props.isPadding }"
+      :class="{ 'pb-8 sm:pb-10': props.isPadding }"
     >
       <slot />
     </div>

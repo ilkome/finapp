@@ -6,16 +6,16 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { ChartType } from '~/components/chart/types'
 import type { PeriodNameWithoutAll } from '~/components/filter/useFilter'
-import type { TotalReturns } from '~/components/amount/getTotal'
+import type { DateString, TotalReturns } from '~/components/amount/getTotal'
 import useAmount from '~/components/amount/useAmount'
 import { useNewStat } from '~/components/stat/useNewStat'
 
 const props = defineProps<{
   categoryId: CategoryId
   chartPeriodsShown: number
-  datesGroups: Record<string, TrnId[]>
   markedArea: number
   period: PeriodNameWithoutAll
+  periodsEmptyTrnsIds: Record<string, TrnId[]>
   trnsIds: TrnId[]
   type: MoneyTypeSlugSum
 }>()
@@ -43,9 +43,9 @@ const selectedTrnsIds = computed(() =>
 
 const chartType = ref<ChartType>('bar')
 
-const categories = computed(() => Object.keys(props.datesGroups).map(date => +date) ?? [])
+const categories = computed(() => Object.keys(props.periodsEmptyTrnsIds).map(date => +date) ?? [])
 
-const periodsWithTrnsIds = computed(() => getPeriodsWithTrns(selectedTrnsIds.value, props.period, props.datesGroups))
+const periodsWithTrnsIds = computed(() => getPeriodsWithTrns(selectedTrnsIds.value, props.period, props.periodsEmptyTrnsIds))
 
 const groupedTrnsTotals = computed(() =>
   Object.keys(periodsWithTrnsIds.value)
@@ -55,7 +55,7 @@ const groupedTrnsTotals = computed(() =>
         acc[date] = getTotalOfTrnsIds(periodsWithTrnsIds.value[date])
         return acc
       },
-      {} as Record<string, TotalReturns>,
+      {} as Record<DateString, TotalReturns>,
     ),
 )
 

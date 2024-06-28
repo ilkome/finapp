@@ -1,3 +1,3 @@
-<template lang="pug">
-WalletsPageNew
+<template>
+  <WalletsPageNew />
 </template>

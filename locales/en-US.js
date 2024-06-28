@@ -281,6 +281,8 @@ export default {
         placeholder: 'Select color',
       },
       credit: {
+        available: 'Available',
+        debt: 'Debt',
         limit: 'Limit',
       },
       currencies: {

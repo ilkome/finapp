@@ -79,7 +79,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
         class="grow"
       />
 
-      <StatMenu2
+      <StatMenu
         :active="activeTab"
         :isShowIncome="totals.income !== 0"
         :isShowExpense="totals.expense !== 0"
@@ -90,17 +90,33 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
     <!-- Sum -->
     <div class="grid gap-24">
       <StatMiniItem
-        v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 && totals.income !== 0)"
+        v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
         :storageKey="props.storageKey + activeTab"
         :trnsIds="trnsIds"
         class="-max-w-2xl"
         type="sum"
       />
 
-      <div class="grid md_grid-cols-2 gap-24">
+      <!-- Expense -->
+      <StatMiniItem
+        v-if="(activeTab === 'expense') && expenseTrnsIds.length > 0"
+        :trnsIds="expenseTrnsIds"
+        :storageKey="props.storageKey + activeTab"
+        type="expense"
+      />
+
+      <!-- Income -->
+      <StatMiniItem
+        v-if="(activeTab === 'income') && incomeTrnsIds.length > 0"
+        :trnsIds="incomeTrnsIds"
+        :storageKey="props.storageKey + activeTab"
+        type="income"
+      />
+
+      <div class="grid md:grid-cols-2 gap-24">
         <!-- Expense -->
         <StatMiniItem
-          v-if="(activeTab === 'sum' || activeTab === 'expense') && expenseTrnsIds.length > 0"
+          v-if="(activeTab === 'sum') && expenseTrnsIds.length > 0"
           :trnsIds="expenseTrnsIds"
           :storageKey="props.storageKey + activeTab"
           type="expense"
@@ -108,20 +124,10 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
         <!-- Income -->
         <StatMiniItem
-          v-if="(activeTab === 'sum' || activeTab === 'income') && incomeTrnsIds.length > 0"
+          v-if="(activeTab === 'sum') && incomeTrnsIds.length > 0"
           :trnsIds="incomeTrnsIds"
           :storageKey="props.storageKey + activeTab"
           type="income"
-        />
-
-        <!-- Trns -->
-        <TrnsList
-          v-if="activeTab === 'trns' || (!totals.income && !totals.expense)"
-          :trnsIds
-          isShowHeader
-          isShowGroupSum
-          isShowFilterByType
-          isShowFilterByDesc
         />
       </div>
     </div>

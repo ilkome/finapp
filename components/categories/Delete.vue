@@ -92,7 +92,7 @@ async function onDeleteConfirm() {
   <div>
     <UiHeaderLink @click="onClickDelete">
       <div
-        class="mdi mdi-delete-empty-outline text-xl group-hover_text-white"
+        class="mdi mdi-delete-empty-outline text-xl group-hover:text-white"
       />
     </UiHeaderLink>
 

@@ -2,14 +2,19 @@
   "name": "@ilkome/finapp",
   "type": "module",
   "version": "5.0.0",
-  "packageManager": "pnpm@8.15.0",
+  "packageManager": "pnpm@9.4.0",
   "description": "Simple financial app",
   "author": "Ilya Komichev @ilkome",
   "license": "MIT",
   "homepage": "https://ilko.me",
+  "repository": "ilkome/finapp",
   "keywords": [
     "vue, nuxt, firebase, tailwind, pwa, echarts, swiper"
   ],
+  "engines": {
+    "node": ">=v21.6.0"
+  },
+
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt generate",
@@ -18,7 +23,7 @@
     "test-coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@formkit/drag-and-drop": "^0.1.1",
+    "@formkit/drag-and-drop": "^0.1.4",
     "@pinia/nuxt": "^0.5.1",
     "@popperjs/core": "^2.11.8",
     "@tailwindcss/container-queries": "^0.1.1",
@@ -41,24 +46,23 @@
   "devDependencies": {
     "@antfu/eslint-config": "^2.21.1",
     "@babel/parser": "^7.24.7",
-    "@iconify-json/mdi": "^1.1.66",
     "@nuxt/ui": "^2.17.0",
     "@nuxtjs/i18n": "^8.3.1",
-    "@vite-pwa/nuxt": "^0.8.0",
-    "@vue/language-plugin-pug": "^2.0.21",
+    "@vite-pwa/nuxt": "^0.8.1",
     "@vueuse/core": "^10.11.0",
     "@vueuse/nuxt": "^10.11.0",
+    "basic-ftp": "^5.0.5",
+    "dotenv": "^16.4.5",
     "eslint": "^9.5.0",
     "eslint-plugin-format": "^0.1.2",
     "eslint-plugin-perfectionist": "^2.11.0",
-    "nuxt": "^3.12.2",
+    "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.10",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.4",
-    "pug": "^3.0.3",
     "stylus": "^0.63.0",
     "tailwindcss": "^3.4.4",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "vitest": "^1.6.0"
   }
 }

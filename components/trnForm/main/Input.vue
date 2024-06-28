@@ -41,8 +41,8 @@ function onInput(event: Event) {
     <!-- Input -->
     <input
       :class="{
-        'text-[#f92134] placeholder_text-red-700/80': highlight === 'income',
-        'text-[#2cad22] placeholder_text-green-700/80': highlight === 'expense',
+        'text-[#f92134] placeholder:text-red-700/80': highlight === 'income',
+        'text-[#2cad22] placeholder:text-green-700/80': highlight === 'expense',
         'text-center': !isTransfer,
       }"
       :placeholder="t('enterAmount')"
@@ -52,9 +52,9 @@ function onInput(event: Event) {
         block size-full h-auto pt-6 pb-2 px-3
         text-3xl font-unica
         bg-transparent rounded-md
-        placeholder_text-3xl placeholder_font-roboto
-        hocus_bg-item-7
-        focus_bg-item-7
+        placeholder:text-3xl placeholder:font-roboto
+        hocus:bg-item-7
+        focus:bg-item-7
         transition
       "
       type="text"

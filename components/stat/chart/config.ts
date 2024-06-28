@@ -13,37 +13,37 @@ export const config = {
   // Tooltip
   tooltip: {
     axisPointer: {
-      // type: 'cross',
       animation: false,
+      type: 'cross',
     },
 
     backgroundColor: 'var(--chart-bg)',
     borderWidth: 0,
-    formatter(props: any[]) {
-      return `
-        <div class="grid gap-2 px-2 text-secondary">
-          ${props.map((i, idx) => `
-            ${idx === 0 ? `<div class="text-prima">${i.axisValueLabel}</div>` : ''}
+    // formatter(props: any[]) {
+    //   return `
+    //     <div class="grid gap-2 px-2 text-secondary">
+    //       ${props.filter(i => i.value !== 0).map((i, idx) => `
+    //         ${idx === 0 ? `<div class="text-prima">${i.axisValueLabel}</div>` : ''}
 
-            <div class="flex gap-2">
-              <div>${i.marker}</div>
-              <div class="text-right">${getLocalAmount(i.value)}</div>
-            </div>
-          `)}
-          </div>
-          `
-    },
+    //         <div class="flex gap-2">
+    //           <div>${i.marker}</div>
+    //           <div class="text-right">${getLocalAmount(i.value)}</div>
+    //         </div>
+    //       `)}
+    //       </div>
+    //       `
+    // },
     padding: 8,
-    position() {
-      return {
-        bottom: '100%',
-        right: '10',
-      }
-    },
+    // position() {
+    //   return {
+    //     right: '10',
+    //     top: '0',
+    //   }
+    // show: false,
+    // },
     textStyle: {
       color: '',
     },
-    // show: false,
     trigger: 'axis',
 
     valueFormatter: getLocalAmount,
@@ -61,9 +61,6 @@ export const config = {
     },
     axisPointer: {
       label: {},
-      //     return dayjs(props.value).format()
-      //   },
-      // },
     },
     axisTick: {
       interval: 0,
@@ -100,7 +97,6 @@ export const config = {
     splitLine: {
       lineStyle: {
         color: 'var(--chart-line)',
-        // color: 'transparent',
       },
     },
     type: 'value',
@@ -108,20 +104,20 @@ export const config = {
 }
 
 export const lineConfig = {
-  barMaxWidth: '12',
-  barMinWidth: '8',
+  barMaxWidth: '200',
+  barMinWidth: '1',
   borderColor: 'blue',
   cursor: 'default',
   emphasis: {
     disabled: true,
   },
   label: {
-    formatter: ({ value }) => getCompactAmount(value),
+    formatter: ({ value }: { value: number }) => getCompactAmount(value),
     position: 'top',
     show: true,
   },
   lineStyle: {
-    width: 3,
+    width: 2,
   },
   smooth: true,
   symbol: 'circle',

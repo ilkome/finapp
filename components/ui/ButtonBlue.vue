@@ -18,7 +18,7 @@ const emit = defineEmits(['click'])
       py-3 px-3 w-full
       text-accent-3 text-center
       bg-accent-2 rounded-full
-      hocus_bg-accent-2/80
+      hocus:bg-accent-2/80
       transition
       min-h-11
     "

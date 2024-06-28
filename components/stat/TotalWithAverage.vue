@@ -21,7 +21,7 @@ const emit = defineEmits<{
 const currenciesStore = useCurrenciesStore()
 
 const classes = computed(() => ({
-  'px-2 py-2 sm_px-1.5 sm_pt-3': props.hasBg,
+  'px-2 py-2 sm:px-1.5 sm:pt-3': props.hasBg,
 }))
 </script>
 

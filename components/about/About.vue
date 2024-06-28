@@ -2,18 +2,32 @@
 const { t } = useI18n()
 </script>
 
-<template lang="pug">
-div
-  .title.pb-4 {{ t('title') }}
+<template>
+  <div>
+    <div class="title pb-4">
+      {{ t("title") }}
+    </div>
 
-  .flex.gap-8.pb-3
-    div
-      .subTitle.pb-4 {{ t('author') }}
-      .name ilkome
+    <div class="flex gap-8 pb-3">
+      <div>
+        <div class="subTitle pb-4">
+          {{ t("author") }}
+        </div>
+        <div class="name">
+          ilkome
+        </div>
+      </div>
 
-    div
-      .subTitle.pb-4 {{ t('thanks') }}
-      .name TheCarolissy, TihomirovPro
+      <div>
+        <div class="subTitle pb-4">
+          {{ t("thanks") }}
+        </div>
+        <div class="name">
+          TheCarolissy, TihomirovPro
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="stylus" scoped>

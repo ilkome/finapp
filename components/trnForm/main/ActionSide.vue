@@ -30,17 +30,16 @@ async function onClickSubmit() {
 <template lang="html">
   <div
     :class="{
-      '!bg-accent-1/50 border-accent-1/50 hocus_!bg-accent-1/70': !isMath && isSubmittable,
+      '!bg-accent-1/50 border-accent-1/50 hocus:!bg-accent-1/70': !isMath && isSubmittable,
     }"
     class="
-      cursor-pointer
       flex items-center justify-center
       min-size-[58px]
       py-4 px-2
       size-full
       text-4xl text-prima text-center
       bg-item-main border border-item-5 rounded-xl
-      hocus_bg-item-7 hocus_border[red] hocus_scale-[1.02]
+      hocus:bg-item-7 hocus:border[red] hocus:scale-[1.02]
       transition
     "
     @click="onClickSubmit"

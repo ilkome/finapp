@@ -6,9 +6,5 @@ body {
 }
 
 .layoutBase {
-  @apply
-    overflow-hidden relative
-    h-full;
-
-  @layer min-w-base;
+  @apply overflow-hidden relative h-full;
 }

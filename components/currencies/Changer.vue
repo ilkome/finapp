@@ -8,7 +8,7 @@ const walletsStore = useWalletsStore()
 </script>
 
 <template>
-  <UiTabs2
+  <UiTabs
     v-if="walletsStore.currenciesUsed.length > 1"
     class="gap-1"
   >
@@ -27,7 +27,7 @@ const walletsStore = useWalletsStore()
         <span class="mdi mdi-dots-vertical ml-1" />
       </div>
     </UiTabsItem2>
-  </UiTabs2>
+  </UiTabs>
 </template>
 
 <i18n lang="yaml">

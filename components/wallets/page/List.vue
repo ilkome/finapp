@@ -125,22 +125,22 @@ const walletsCurrenciesTabs = reactive({
       </template>
     </UiHeader>
 
-    <div class="grid items-start gap-5 px-2 md_grid-cols-2 md_gap-8">
-      <div class="grid gap-5 md_gap-3 md_order-2">
+    <div class="grid items-start gap-5 px-2 md:grid-cols-2 md:gap-8">
+      <div class="grid gap-5 md:gap-3 md:order-2">
         <!-- Base currency -->
         <div
           v-if="walletsStore.currenciesUsed.length > 1"
-          class="grid w-full gap-2 overflow-hidden md_order-3"
+          class="grid w-full gap-2 overflow-hidden md:order-3"
         >
           <UiTitle3>{{ t("currenciesBase") }}</UiTitle3>
           <CurrenciesChanger />
         </div>
 
         <!-- Wallets Currencies -->
-        <div v-if="walletsStore.currenciesUsed.length > 1" class="grid gap-2 md_order-1">
+        <div v-if="walletsStore.currenciesUsed.length > 1" class="grid gap-2 md:order-1">
           <UiTitle3>{{ t("list") }}</UiTitle3>
           <div class="w-full overflow-hidden">
-            <UiTabs2 class="gap-1">
+            <UiTabs class="gap-1">
               <UiTabsItem2
                 :isActive="activeCurrency === 'all'"
                 @click="walletsCurrenciesTabs.onSelect('all')"
@@ -156,7 +156,7 @@ const walletsCurrenciesTabs = reactive({
               >
                 {{ currency }}
               </UiTabsItem2>
-            </UiTabs2>
+            </UiTabs>
           </div>
         </div>
 
@@ -167,12 +167,12 @@ const walletsCurrenciesTabs = reactive({
           :activeType
           :currencyCode="currenciesStore.base"
           :walletsItems="selectedWallets2"
-          class="rounded-lg border-item-5 bg-item-4 px-2 py-1.5 md_order-2 lg_max-w-[360px]"
+          class="rounded-lg border-item-5 bg-item-4 px-2 py-1.5 md:order-2 lg:max-w-[360px]"
           @click="v => activeType = v"
         />
       </div>
 
-      <div class="lg_max-w-[360px]">
+      <div class="lg:max-w-[360px]">
         <!-- <pre>{{ selectedWallets }}</pre> -->
 
         <WalletsItem

@@ -23,7 +23,7 @@ export default defineComponent({
     <div class="h-full grid grid-rows-[auto,1fr]">
       <UiHeader>
         <RouterLink v-slot="{ href, navigate }" to="/wallets" custom>
-          <a class="grow hocus_bg-item-5" :href="href" @click="navigate">
+          <a class="grow hocus:bg-item-5" :href="href" @click="navigate">
             <UiHeaderTitle2>
               <div class="pb-1 text-xs font-medium text-item-2">
                 {{ $t("wallets.createNewTitle") }}

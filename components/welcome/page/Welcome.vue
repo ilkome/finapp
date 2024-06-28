@@ -24,7 +24,7 @@ watch(newUserData, () => {
 
 <template lang="html">
   <div class="grid h-full grid-rows-[auto,1fr,auto]">
-    <div class="max-w-xl mx-auto py-4 p-2 w-full md_p-6">
+    <div class="max-w-xl mx-auto py-4 p-2 w-full md:p-6">
       <div class="flex justify-between">
         <AppLocaleSwitcher />
         <AppThemeSwitcher />
@@ -53,7 +53,7 @@ watch(newUserData, () => {
       </div>
     </div>
 
-    <div class="p-4 md_p-6 grid gap-2">
+    <div class="p-4 md:p-6 grid gap-2">
       <AppCopyright />
       <div
         class="cursor-pointer"

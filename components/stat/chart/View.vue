@@ -82,11 +82,24 @@ const chartOption = computed(() => {
   // INFO: Marked area works only with bar chart
   if (props.markedArea) {
     if (props.chartType !== 'bar') {
-      data.series.push({
-        data: [],
-        markArea: markArea(props.markedArea),
-        type: 'bar',
-      })
+      const markAreaSeriesIdx = data.series.findIndex(s => s.markedArea === 'markedArea')
+
+      if (markAreaSeriesIdx === -1) {
+        data.series.push({
+          data: [],
+          markArea: markArea(props.markedArea),
+          markedArea: 'markedArea',
+          type: 'bar',
+        })
+      }
+      else {
+        data.series[markAreaSeriesIdx] = {
+          data: [],
+          markArea: markArea(props.markedArea),
+          markedArea: 'markedArea',
+          type: 'bar',
+        }
+      }
     }
     else {
       data.series[0].markArea = markArea(props.markedArea)
@@ -113,7 +126,7 @@ function setChartSeries(series: unknown[]) {
         ...lineConfig.label,
         show: props.isShowDataLabels,
       },
-      type: item.type || props.chartType,
+      type: props.chartType || item.type,
     }))
 }
 </script>

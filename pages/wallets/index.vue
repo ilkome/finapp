@@ -4,6 +4,6 @@ definePageMeta({
 })
 </script>
 
-<template lang="pug">
-WalletsPageList
+<template>
+  <WalletsPageList />
 </template>

@@ -2,7 +2,8 @@
 import { classes } from '~/components/ui/getStyles'
 </script>
 
-<template lang="pug">
-div(:class="[classes.item.base]")
-  slot
+<template>
+  <div :class="[classes.item.base]">
+    <slot />
+  </div>
 </template>

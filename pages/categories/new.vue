@@ -1,3 +1,3 @@
-<template lang="pug">
-CategoriesPageNew
+<template>
+  <CategoriesPageNew />
 </template>

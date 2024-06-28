@@ -1,18 +1,20 @@
-<template lang="pug">
-.handlerClose(
-  class="bg-item-6 size-8 rounded-full"
-  @click="$emit('onClick')"
-)
-  svg(
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#000"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="3"
-  )
-    path(d="M.75 23.249l22.5-22.5")
-    path(d="M23.25 23.249L.75.749")
+<template>
+  <div
+    class="handlerClose bg-item-6 size-8 rounded-full"
+    @click="$emit('onClick')"
+  >
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#000"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="3"
+    >
+      <path d="M0.75 23.249l22.5-22.5" />
+      <path d="M23.25 23.249L0.75 0.749" />
+    </svg>
+  </div>
 </template>
 
 <style lang="stylus" scoped>

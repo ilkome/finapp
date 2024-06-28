@@ -11,7 +11,7 @@ const { items } = useMenuData()
 </script>
 
 <template>
-  <div class="pb-6 pt-2 px-2">
+  <div>
     <LayoutMenuSidebarItem
       v-for="(item, menuId) in items"
       :key="menuId"

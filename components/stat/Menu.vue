@@ -1,44 +1,57 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
 import type { AppNav } from '~/components/app/types'
-import { useAppNav } from '~/components/app/useAppNav'
+
+const props = defineProps<{
+  active: AppNav
+  isShowExpense: boolean
+  isShowIncome: boolean
+}>()
+
+const emit = defineEmits<{
+  click: [id: AppNav]
+}>()
 
 const { $i18n } = useNuxtApp()
 
-const menu = computed<{
-  id: AppNav
-  idx: number
-  name: string | unknown
-}[]>(() => [{
-  id: 'periods',
-  idx: 4,
-  name: $i18n.t('stat.periods'),
-}, {
-  id: 'summary',
-  idx: 0,
-  name: $i18n.t('stat.summary'),
-}, {
-  id: 'expense',
-  idx: 1,
-  name: $i18n.t('money.expense'),
-}, {
-  id: 'income',
-  idx: 2,
-  name: $i18n.t('money.income'),
-}, {
-  id: 'trns',
-  idx: 3,
-  name: $i18n.t('trns.shortTitle'),
-}, {
-  id: 'statNew',
-  idx: 4,
-  name: $i18n.t('stat.statNew'),
-}])
+const menu = computed(() => {
+  const all: {
+    id: AppNav
+    idx: number
+    name: string | unknown
+  }[] = []
 
-const { activeTabStat } = storeToRefs(useAppNav())
+  all.push({
+    id: 'netIncome',
+    idx: 0,
+    name: $i18n.t('money.sum'),
+  })
+  all.push({
+    id: 'sum',
+    idx: 0,
+    name: $i18n.t('stat.summary'),
+  })
+
+  if (props.isShowExpense) {
+    all.push({
+      id: 'expense',
+      idx: 1,
+      name: $i18n.t('money.expense'),
+    })
+  }
+
+  if (props.isShowIncome) {
+    all.push({
+      id: 'income',
+      idx: 2,
+      name: $i18n.t('money.income'),
+    })
+  }
+
+  return all
+})
 
 function onClickStatMenu(tabName: AppNav) {
-  activeTabStat.value = tabName
+  emit('click', tabName)
   const page = document.querySelector('.js_scroll_page')
   const content = page?.querySelector(
     '[data-scroll-ref="stat"',
@@ -51,19 +64,31 @@ function onClickStatMenu(tabName: AppNav) {
   if (page.scrollTop > content?.offsetTop - h)
     page.scrollTop = content.offsetTop - h
 }
+
+onMounted(() => {
+  if (!menu.value.find(i => i.id === props.active)) {
+    onClickStatMenu(menu.value[0].id)
+  }
+})
+
+watch(() => props.active, () => {
+  if (!menu.value.find(i => i.id === props.active)) {
+    onClickStatMenu(menu.value[0].id)
+  }
+})
 </script>
 
 <template>
-  <div class="overflow-y-auto">
-    <!-- v-if="!item.isPrivate || userStore.isDevUser" -->
-    <UiTabsItem2
+  <div
+    class="flex grow items-center gap-1 overflow-y-auto border-b border-item-6 pb-1 sm:gap-1"
+  >
+    <UiTabsItem5
       v-for="item in menu"
       :key="item.id"
-      :isActive="item.id === activeTabStat"
-      class="!text-md !font-medium min-w-xs grow-0"
+      :isActive="item.id === props.active"
       @click="onClickStatMenu(item.id)"
     >
       {{ item.name }}
-    </UiTabsItem2>
+    </UiTabsItem5>
   </div>
 </template>

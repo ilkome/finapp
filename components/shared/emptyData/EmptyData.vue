@@ -4,17 +4,20 @@ export default {
 
   props: {
     text: {
-      type: String,
       required: true,
+      type: String,
     },
   },
 }
 </script>
 
-<template lang="pug">
-.empty
-  .empty__icon: .mdi.mdi-palm-tree
-  .empty__text {{ text }}
+<template>
+  <div class="empty">
+    <div class="empty__icon mdi mdi-palm-tree" />
+    <div class="empty__text">
+      {{ text }}
+    </div>
+  </div>
 </template>
 
 <style lang="stylus" scoped>

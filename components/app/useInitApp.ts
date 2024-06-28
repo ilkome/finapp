@@ -30,13 +30,6 @@ export function useInitApp() {
       localforage.getItem('finapp.trns'),
     ])
 
-    // console.log('user', user)
-    // console.log('currencies', currencies)
-    // console.log('categories', categories)
-    // console.log('wallets', wallets)
-    // console.log('trns', trns)
-    // console.log('filterPeriod', filterPeriod)
-
     userStore?.setUser(user)
     currenciesStore?.setBase(currencies?.base)
     currenciesStore?.setRates(currencies?.rates)
@@ -44,7 +37,6 @@ export function useInitApp() {
     categoriesStore?.setCategories(categories)
     trnsStore?.setTrns(trns)
 
-    // ready
     if (categories && user && trns && wallets) {
       if (useRoute().name === 'login')
         navigateTo('/')

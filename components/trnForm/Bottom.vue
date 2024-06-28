@@ -63,7 +63,7 @@ onMounted(init)
 <template>
   <BaseBottomSheet2
     :isShow="isShow"
-    drugClassesCustom="md_bottom-1/2 md_-translate-x-1/2 md_translate-y-1/2"
+    drugClassesCustom="md:bottom-1/2 md:-translate-x-1/2 md:translate-y-1/2"
     @closed="trnFormStore.onClose()"
   >
     <template #handler="{ close }">
@@ -71,12 +71,12 @@ onMounted(init)
       <!-- <BaseBottomSheetClose @onClick="close" /> -->
     </template>
 
-    <div class="trnForm lg_ml-12">
+    <div class="trnForm lg:ml-12">
       <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
           <!-- History -->
           <div
-            class="swiper-slide bg-foreground-2 sm_max-w-xs sm_rounded-l-xl"
+            class="swiper-slide bg-foreground-2 sm:max-w-xs sm:rounded-l-xl"
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide
@@ -86,7 +86,7 @@ onMounted(init)
           </div>
 
           <!-- Main -->
-          <div class="swiper-slide getHeight sm_px-3 bg-foreground-2 sm_max-w-sm _sm_rounded-xl sm_border-r sm_border-l border-item-5">
+          <div class="swiper-slide getHeight sm:px-3 bg-foreground-2 sm:max-w-sm _sm:rounded-xl sm:border-r sm:border-l border-item-5">
             <div class="scroll scrollerBlock">
               <TrnFormMain :maxHeight />
             </div>
@@ -94,7 +94,7 @@ onMounted(init)
 
           <!-- Quick selector -->
           <div
-            class="swiper-slide bg-foreground-2 sm_max-w-[260px] sm_rounded-r-xl"
+            class="swiper-slide bg-foreground-2 sm:max-w-[260px] sm:rounded-r-xl"
             :style="{ height: maxHeight }"
           >
             <div class="scroll scrollerBlock">

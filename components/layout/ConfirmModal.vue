@@ -33,7 +33,7 @@ const items = computed(() => ({
     <BaseBottomSheet2
       isShow
       :isScrollerBlock="false"
-      drugClassesCustom="max-w-sm bg-foreground-3 md_bottom-1/2 md_-translate-x-1/2 md_translate-y-1/2 rounded-xl"
+      drugClassesCustom="max-w-sm bg-foreground-3 md:bottom-1/2 md:-translate-x-1/2 md:translate-y-1/2 rounded-xl"
       @closed="emit('closed')"
     >
       <template #handler="{ close }">

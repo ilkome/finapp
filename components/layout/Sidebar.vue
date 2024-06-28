@@ -7,8 +7,8 @@ const colorMode = useColorMode()
 <template>
   <div
     class="
-      hidden lg_block
-      h-full w-64
+      hidden lg:block
+      h-full min-w-72
       overflow-hidden overflow-y-auto
       bg-item-4 border-r border-item-5
     "
@@ -36,7 +36,7 @@ const colorMode = useColorMode()
       </div>
     </div>
 
-    <LayoutMenuSidebar />
+    <LayoutMenuSidebar class="pb-6 pt-4 px-2" />
 
     <div class="grid gap-1 pb-6 px-2">
       <UiTitle3 class="pl-3">

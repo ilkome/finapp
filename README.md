@@ -24,7 +24,6 @@ Finapp helps you to control personal finances easily and efficiently.
 - Nuxt
 - Tailwind
 - Stylus
-- Pug
 - Firebase
 
 # 📦 Setup

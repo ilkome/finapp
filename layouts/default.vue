@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
 import { useAppNav } from '~/components/app/useAppNav'
 import { usePointerClass } from '~/components/layout/usePointerClass'
 import { useUserStore } from '~/components/user/useUser'
@@ -9,6 +10,7 @@ import '~/assets/css/reset.css'
 import '~/assets/css/themes.css'
 import '~/assets/stylus/index.styl'
 
+const { width } = useWindowSize()
 const { pointerClasses } = usePointerClass()
 const { isModalOpen } = useAppNav()
 
@@ -42,31 +44,27 @@ watch(
   </div>
 
   <div v-if="useUserStore()?.uid" class="layoutBase">
-    <div class="grid h-full sm_grid-cols-[auto_1fr_auto]">
+    <div class="grid h-full sm:grid-cols-[auto_1fr_auto]">
       <LayoutSidebar />
 
       <LayoutMenuSidebar
         :isShowTitle="false"
-        class="hidden lg_hidden sm_flex sm_flex-col gap-1 justify-center sm_align-center bg-item-4"
+        class="hidden lg:hidden sm:flex sm:flex-col gap-1 justify-center sm:align-center bg-item-4"
       />
 
-      <div class="@container/main grid h-full overflow-hidden sm_pl-2 lg_pl-0">
+      <div class="@container/main grid h-full overflow-hidden sm:pl-2 lg:pl-0">
         <NuxtPage />
-        <!-- <div class="flex gap-8 flex h-full overflow-hidden">
-          <NuxtPage />
-          <TrnFormMain
-            class="px-2 pt-4 pb-6"
-          />
-        </div> -->
       </div>
     </div>
 
-    <LayoutMenuBottom class="absolute bottom-0 sm_bottom-inherit sm_hidden left-0 z-20 w-full bg-item-4 backdrop-blur lg_hidden" />
+    <LayoutMenuBottom class="absolute bottom-0 sm:bottom-inherit sm:hidden left-0 z-20 w-full bg-item-4 backdrop-blur lg:hidden" />
     <LayoutMenuBottomModal v-if="isModalOpen('menu')" />
     <TrnFormFloatOpener />
   </div>
 
   <CurrenciesModal />
   <DevModalOpener />
-  <TrnForm />
+
+  <TrnFormBottom v-if="width < 767" />
+  <TrnFormSidebar v-else />
 </template>

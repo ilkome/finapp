@@ -20,7 +20,7 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    class="relative grid gap-2 group text-secondary2 hocus_bg-item-5 py-2.5 p-3 rounded-md bg-item-4"
+    class="relative grid gap-2 group text-secondary2 hocus:bg-item-5 py-2.5 p-3 rounded-md bg-item-4"
     @click="emit('click', props.item.id)"
   >
     <div

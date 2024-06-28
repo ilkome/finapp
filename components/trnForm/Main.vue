@@ -3,6 +3,7 @@ import { usePointer, useWindowSize } from '@vueuse/core'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import useTrn from '~/components/trns/useTrn'
 
 const props = withDefaults(defineProps<{
   maxHeight: string
@@ -15,6 +16,7 @@ const trnFormStore = useTrnFormStore()
 const walletsStore = useWalletsStore()
 const { width } = useWindowSize()
 const { pointerType } = usePointer()
+const { formatTrnItem } = useTrn()
 
 const isLaptop = computed(() => width.value >= 1024 && pointerType.value === 'mouse')
 
@@ -50,6 +52,16 @@ function show(slide: number) {
         : $t("trnForm.createTrn")
       }}
     </UiTitle>
+
+    <div class="relative pt-2 pb-2">
+      <TrnsItem
+        v-if="trnFormStore.values.trnId"
+        :trnItem="formatTrnItem(trnFormStore.values.trnId)"
+        :date="formatDate(formatTrnItem(trnFormStore.values.trnId)?.date, 'trnItem')"
+        class="group bg-item-4 rounded-lg"
+        @click="trnFormStore.values.trnId = null"
+      />
+    </div>
 
     <TrnFormDate class="pb-2" />
 

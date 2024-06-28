@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
-
 import { useFilter } from '~/components/filter/useFilter'
 import { useStat } from '~/components/stat/useStat'
 
@@ -48,7 +47,7 @@ useHead({
       <RouterLink v-slot="{ href, navigate }" :to="backLink" custom>
         <a
           :href="href"
-          class="grow hocus_bg-item-5"
+          class="grow hocus:bg-item-5"
           @click="navigate"
         >
           <CategoriesPageHeader
@@ -60,10 +59,10 @@ useHead({
 
       <template v-if="categoryId !== 'transfer'">
         <UiHeaderLink @click="onClickEdit">
-          <div class="mdi mdi-pencil-outline text-xl group-hover_text-white" />
+          <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
         </UiHeaderLink>
         <UiHeaderLink @click="$router.push('/categories/new')">
-          <UiIconAdd class="h-6 w-6 group-hover_text-white" />
+          <UiIconAdd class="h-6 w-6 group-hover:text-white" />
         </UiHeaderLink>
       </template>
     </UiHeader>

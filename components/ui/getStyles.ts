@@ -10,8 +10,8 @@ export const classes = {
     link: `
       select-none
       text-secondary2
-      hocus_bg-item-5
-      _hocus_bg-neutral-800/50
+      hocus:bg-item-5
+      _hocus:bg-neutral-800/50
     `,
     menu: `
       flex items-center
@@ -30,7 +30,7 @@ export const classes = {
     },
     rounded: 'rounded-md',
     shadow: `
-      shadow hocus_shadow-lg
+      shadow hocus:shadow-lg
     `,
     simple: '',
   },

@@ -33,6 +33,8 @@ interface TotalProps {
   walletsItems: Record<WalletId, WalletItem>
 }
 
+export type DateString = string
+
 export interface TotalReturns {
   expense: number
   expenseTransfers: number

@@ -6,6 +6,7 @@ defineProps<{
   isActive?: boolean
   isShowIcons?: boolean
   isShowLine?: boolean
+  isShowToggle?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -31,6 +32,17 @@ const slots = useSlots()
       "
     >
       <div
+        v-if="isShowToggle"
+        class="flex-center"
+      >
+        <Icon
+          :name="isActive ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+          size="22"
+          class="-mr-2"
+        />
+      </div>
+
+      <div
         v-if="slots.leftIcon"
         class="flex-center w-6"
       >
@@ -44,7 +56,7 @@ const slots = useSlots()
 
     <div
       v-if="isShowLine"
-      class="ml-9 mr-2 h-[1px] bg-item-5 group-last_hidden"
+      class="ml-9 mr-2 h-[1px] bg-item-5 group-last:hidden"
       :class="{ 'ml-9': isShowIcons, 'ml-11': !isShowIcons }"
     />
   </div>

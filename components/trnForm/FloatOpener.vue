@@ -6,12 +6,12 @@ const { trnFormCreate } = useTrnForm()
 
 <template>
   <div
-    class="group absolute bottom-6 right-6 z-10 hidden justify-center lg_flex flex-end "
+    class="group absolute bottom-6 right-6 z-10 hidden justify-center lg:flex flex-end "
     @click="trnFormCreate"
   >
     <div
       class="
-        group-hover_scale-125
+        group-hover:scale-125
         size-12
         flex items-center justify-center
         rounded-full bg-accent-2

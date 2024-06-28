@@ -1,3 +1,3 @@
-<template lang="pug">
-TrnsPagesHistory
+<template>
+  <TrnsPagesHistory />
 </template>

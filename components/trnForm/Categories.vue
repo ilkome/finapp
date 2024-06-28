@@ -37,66 +37,90 @@ onMounted(() => {
 })
 </script>
 
-<template lang="pug">
-.contentWrap.h-full.grid(class="grid-rows-[1fr,auto]")
-  .contentWrap__box
-    .swiper-container(ref="sliderRef")
-      .swiper-wrapper
-        //- Recent
-        .swiper-slide
-          .scrollBlock.scrollerBlock
-            .py-4.px-3.text-center.text-item-base.text-xl.font-primary.font-semibold.bg-foreground-3.rounded-t-2xl
-              | {{ $t('categories.lastUsedTitle') }} {{ $t('categories.title') }}
-            .pb-1.px-3
-              CategoriesList(
+<template>
+  <div class="contentWrap grid h-full grid-rows-[1fr,auto]">
+    <div class="contentWrap__box">
+      <div ref="sliderRef" class="swiper-container">
+        <div class="swiper-wrapper">
+          <!-- Recent -->
+          <div class="swiper-slide">
+            <div
+              class="scrollBlock scrollerBlock text-item-base rounded-t-2xl bg-foreground-3 px-3 py-4 text-center font-primary text-xl font-semibold"
+            >
+              {{ $t("categories.lastUsedTitle") }} {{ $t("categories.title") }}
+            </div>
+            <div class="px-3 pb-1">
+              <CategoriesList
                 :activeItemId="trnFormStore?.values?.categoryId"
                 :ids="categoriesStore.recentCategoriesIds"
                 class="!gap-x-1"
                 @click="onClick"
-              )
+              />
+            </div>
+          </div>
 
-        //- Main
-        .swiper-slide
-          .scrollBlock.scrollerBlock
-            .py-4.px-3.text-center.text-item-base.text-xl.font-primary.font-semibold.bg-foreground-3.rounded-t-2xl
-              | {{ $t('categories.title') }}
-            .pb-1.px-3
-              CategoriesList(
+          <!-- Main -->
+          <div class="swiper-slide">
+            <div
+              class="scrollBlock scrollerBlock text-item-base rounded-t-2xl bg-foreground-3 px-3 py-4 text-center font-primary text-xl font-semibold"
+            >
+              {{ $t("categories.title") }}
+            </div>
+            <div class="px-3 pb-1">
+              <CategoriesList
                 :activeItemId="trnFormStore?.values?.categoryId"
                 :ids="categoriesStore.categoriesRootIds"
                 class="!gap-x-1"
                 @click="onClick"
-              )
+              />
+            </div>
+          </div>
 
-        //- Favorite
-        .swiper-slide
-          .scrollBlock.scrollerBlock
-            .py-4.px-3.text-center.text-item-base.text-xl.font-primary.font-semibold.bg-foreground-3.rounded-t-2xl
-              | {{ $t('categories.favoriteTitle') }} {{ $t('categories.title') }}
-            .pb-1.px-3
-              CategoriesList(
+          <!-- Favorite -->
+          <div class="swiper-slide">
+            <div
+              class="scrollBlock scrollerBlock text-item-base rounded-t-2xl bg-foreground-3 px-3 py-4 text-center font-primary text-xl font-semibold"
+            >
+              {{ $t("categories.favoriteTitle") }} {{ $t("categories.title") }}
+            </div>
+            <div class="px-3 pb-1">
+              <CategoriesList
                 :activeItemId="trnFormStore?.values?.categoryId"
                 :ids="categoriesStore.favoriteCategoriesIds"
                 class="!gap-x-1"
                 @click="onClick"
-              )
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  .py-2.px-3(v-if="sliderObj")
-    UiTabs
-      UiTabsItem(
-        :isActive="sliderObj.activeIndex === 0"
-        @click="sliderObj.slideTo(0)"
-      ) {{ $t('categories.lastUsedTitle') }}
+    <div v-if="sliderObj" class="px-3 py-2">
+      <UiTabs>
+        <UiTabsItem
+          :isActive="sliderObj.activeIndex === 0"
+          @click="sliderObj.slideTo(0)"
+        >
+          {{ $t("categories.lastUsedTitle") }}
+        </UiTabsItem>
 
-      UiTabsItem(
-        :isActive="sliderObj.activeIndex === 1"
-        @click="sliderObj.slideTo(1)"
-      ) {{ $t('categories.allTitle') }}
+        <UiTabsItem
+          :isActive="sliderObj.activeIndex === 1"
+          @click="sliderObj.slideTo(1)"
+        >
+          {{ $t("categories.allTitle") }}
+        </UiTabsItem>
 
-      UiTabsItem(
-        :isActive="sliderObj.activeIndex === 2"
-        @click="sliderObj.slideTo(2)"
-      ) {{ $t('categories.favoriteTitle') }}
+        <UiTabsItem
+          :isActive="sliderObj.activeIndex === 2"
+          @click="sliderObj.slideTo(2)"
+        >
+          {{ $t("categories.favoriteTitle") }}
+        </UiTabsItem>
+      </UiTabs>
+    </div>
+  </div>
 </template>
 
 <style lang="stylus" scoped>

@@ -282,6 +282,8 @@ export default {
         placeholder: 'Выберите цвет',
       },
       credit: {
+        available: 'Доступно',
+        debt: 'Долг',
         limit: 'Лимит',
       },
       currencies: {

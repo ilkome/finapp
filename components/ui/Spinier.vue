@@ -1,8 +1,9 @@
-<template lang="pug">
-.h-full.flex-center
-  .dot._d1
-  .dot._d2
-  .dot._d3
+<template>
+  <div class="h-full flex-center">
+    <div class="dot _d1" />
+    <div class="dot _d2" />
+    <div class="dot _d3" />
+  </div>
 </template>
 
 <style lang="stylus" scoped>

@@ -17,10 +17,13 @@ useHead({
 })
 </script>
 
-<template lang="pug">
-.p-4
-  h1 Error
-  pre {{ error }}
-  h1(@click="$router.push('/')") Go to home
-  NuxtPage
+<template>
+  <div class="p-4">
+    <h1>Error</h1>
+    <pre>{{ error }}</pre>
+    <h1 @click="$router.push('/')">
+      Go to home
+    </h1>
+    <NuxtPage />
+  </div>
 </template>

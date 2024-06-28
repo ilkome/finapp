@@ -1,3 +1,3 @@
-<template lang="pug">
-WalletsPageIdEdit
+<template>
+  <WalletsPageIdEdit />
 </template>

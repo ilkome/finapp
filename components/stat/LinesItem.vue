@@ -34,13 +34,15 @@ function getBarStyle(amount: number, categoryId: CategoryId) {
   >
     <UiElement
       :isShowLine="!props.isShowLinesChart"
+      :isActive="props.isActive"
       class="relative"
+      isShowToggle
       @click="emit('click', props.item.id)"
     >
       <template #line>
         <div
           v-if="props.isShowLinesChart"
-          class="absolute left-0 bottom-2 w-full pl-11 pr-3 rounded-lg overflow-hidden"
+          class="absolute left-0 bottom-2 w-full pl-[68px] pr-3 rounded-lg overflow-hidden"
         >
           <div class="bg-item-3 rounded-lg overflow-hidden">
             <div
@@ -52,9 +54,9 @@ function getBarStyle(amount: number, categoryId: CategoryId) {
       </template>
 
       <template #leftIcon>
-        <Icon
+        <UiIconBase
           :color="categoriesStore.items[props.item.id]?.color"
-          :name="categoriesStore.items[props.item.id]?.icon.replace('mdi mdi-', 'mdi:')"
+          :name="categoriesStore.items[props.item.id]?.icon"
           size="18"
         />
       </template>

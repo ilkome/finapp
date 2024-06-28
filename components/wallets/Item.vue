@@ -34,8 +34,14 @@ const isShowCredit = ref(false)
     <!-- Icon -->
     <template #leftIcon>
       <template v-if="isShowIcons">
+        <UiIconWalletDeposit
+          v-if="wallet.isDeposit"
+          :style="{ color: wallet.color }"
+          class="h-4 w-4 text-item-2"
+        />
+
         <UiIconWalletWithdrawal
-          v-if="wallet.countTotal"
+          v-else-if="wallet.countTotal"
           :style="{ color: wallet.color }"
           class="h-4 w-4 text-item-2"
         />
@@ -76,7 +82,7 @@ const isShowCredit = ref(false)
           :amount="isShowCredit ? Math.abs(wallet.creditLimit) - Math.abs(wallet.amount) : wallet.amount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
-          class="hocus_!bg-neutral-700/50 p-2 -m-2 rounded-lg"
+          class="hocus:!bg-neutral-700/50 p-2 -m-2 rounded-lg"
           @click.stop="isShowCredit = !isShowCredit"
         />
         <Amount
@@ -107,7 +113,7 @@ const isShowCredit = ref(false)
 
       <div
         v-if="isSort"
-        class="sortHandle insert-0 flex-center absolute right-0 top-0 h-full rounded-md px-3 group-hocus_bg-item-7"
+        class="sortHandle insert-0 flex-center absolute right-0 top-0 h-full rounded-md px-3 group-hocus:bg-item-7"
       >
         <UiIconSort class="size-6" />
       </div>

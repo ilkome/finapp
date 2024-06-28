@@ -99,12 +99,12 @@ const items = computed(() => ({
         </div>
       </template>
     </VDropdown>
-  </div>
 
-  <LayoutConfirmModal
-    v-if="showModalConfirm"
-    show
-    @closed="showModalConfirm = false"
-    @onConfirm="handleDeleteConfirm"
-  />
+    <LayoutConfirmModal
+      v-if="showModalConfirm"
+      show
+      @closed="showModalConfirm = false"
+      @onConfirm="handleDeleteConfirm"
+    />
+  </div>
 </template>

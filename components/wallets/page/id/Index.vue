@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useFilter } from '~/components/filter/useFilter'
+import { useStat } from '~/components/stat/useStat'
+
+const filter = useFilter()
+const stat = useStat(filter)
+
+filter.initChart()
+
+provide('stat', stat)
+provide('filter', filter)
 
 const { $i18n } = useNuxtApp()
 const route = useRoute()
@@ -28,7 +38,7 @@ useHead({
   <UiPage v-if="wallet">
     <UiHeader>
       <RouterLink v-slot="{ href, navigate }" to="/wallets" custom>
-        <a class="grow hocus_bg-item-5" :href="href" @click="navigate">
+        <a class="grow hocus:bg-item-5" :href="href" @click="navigate">
           <UiHeaderTitle2>
             <div class="pt-3 text-xs font-medium text-item-2">
               {{ $t("wallets.title") }}
@@ -53,19 +63,36 @@ useHead({
           <Icon
             name="mdi:pencil-outline"
             size="22"
-            class="group-hover_text-white"
+            class="group-hover:text-white"
           />
         </UiHeaderLink>
       </template>
     </UiHeader>
 
     <div class="px-2">
-      <div class="flex mb-6 pt-3">
-        <Amount
-          :amount="total"
-          :currencyCode="wallet.currency"
-          variant="3xl"
-        />
+      <div class="flex flex-wrap mb-6 pt-3 gap-6">
+        <template v-if="!wallet.isCredit">
+          <Amount
+            :amount="total"
+            :currencyCode="wallet.currency"
+            variant="3xl"
+          />
+        </template>
+
+        <template v-if="wallet.creditLimit">
+          <StatSum2
+            :amount="total"
+            :title="$t('wallets.form.credit.debt')"
+          />
+          <StatSum2
+            :amount="wallet.creditLimit - (-total)"
+            :title="$t('wallets.form.credit.available')"
+          />
+          <StatSum2
+            :amount="wallet.creditLimit"
+            :title="$t('wallets.form.credit.limit')"
+          />
+        </template>
       </div>
 
       <div

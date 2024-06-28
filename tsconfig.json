@@ -1,8 +1,5 @@
 {
   "extends": "./.nuxt/tsconfig.json",
-  "vueCompilerOptions": {
-    "plugins": ["@vue/language-plugin-pug"]
-  },
   "compilerOptions": {
     "strict": true
   }

@@ -78,13 +78,12 @@ const tabs = computed(() => [
 </script>
 
 <template>
-  <div class="grid gap-2 sm_max-w-sm grid h-full grid-rows-[1fr,auto] overflow-hidden">
+  <div class="grid gap-2 sm:max-w-sm h-full grid-rows-[1fr,auto] overflow-hidden">
     <TrnsList
       :defaultFilterTrnsPeriod="periodGrouped"
       :trnsIds="trnsIds"
       isShowGroupSum
-      isShowHeader
-      isShowFilterByType
+      isHideDates
       isShowFilterByDesc
       @onClickEdit="onClickEdit"
     >

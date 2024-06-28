@@ -7,7 +7,7 @@ const { height } = useWindowSize()
 <template>
   <Teleport to="body">
     <BaseBottomSheet2
-      drugClassesCustom="bg-item-4 sm_rounded-b-2xl"
+      drugClassesCustom="bg-item-4 sm:rounded-b-2xl"
       isShow
       :maxHeight="height"
       @closed="$emit('closed')"

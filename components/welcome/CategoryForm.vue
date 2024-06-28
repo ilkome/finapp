@@ -21,26 +21,32 @@ useHead({
 })
 </script>
 
-<template lang="pug">
-UiPage
-  UiHeader
-    UiHeaderTitle2
-      .pt-1.text-xs.font-medium.text-item-2
-        | {{ $t('categories.createNewTitle') }}
-        template(v-if="parentCategory")
-          |
-          | {{ $t('common.in')}} {{ parentCategory.name }}
+<template>
+  <UiPage>
+    <UiHeader>
+      <UiHeaderTitle2>
+        <div class="pt-1 text-xs font-medium text-item-2">
+          {{ $t('categories.createNewTitle') }}
+          <template v-if="parentCategory">
+            |
+            {{ $t('common.in') }} {{ parentCategory.name }}
+          </template>
+        </div>
+        <div class="pb-1 flex items-center gap-4">
+          {{ categoryForm.name ? categoryForm.name : $t("categories.form.name.label") }}
+          <div class="w-8 h-8 rounded-full flex-center text-xl text-icon-primary" :style="{ background: categoryForm.color }">
+            <div :class="categoryForm.icon" />
+          </div>
+        </div>
+      </UiHeaderTitle2>
+    </UiHeader>
 
-      .pb-1.flex.items-center.gap-4
-        | {{ categoryForm.name ? categoryForm.name : $t("categories.form.name.label") }}
-        .w-8.h-8.rounded-full.flex-center.text-xl.text-icon-primary(
-          :style="{ background: categoryForm.color }"
-        )
-          div(:class="categoryForm.icon")
-  .pb-12
-    CategoriesForm(
-      :categoryForm="categoryForm"
-      @updateValue="updateValue"
-      @afterSave="afterSave"
-    )
+    <div class="pb-12">
+      <CategoriesForm
+        :categoryForm="categoryForm"
+        @updateValue="updateValue"
+        @afterSave="afterSave"
+      />
+    </div>
+  </UiPage>
 </template>

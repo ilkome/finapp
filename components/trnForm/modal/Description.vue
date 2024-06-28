@@ -35,7 +35,7 @@ function onSave(close: () => void) {
           <div class="pb-6 px-3">
             <textarea
               v-model="description"
-              class="w-full h-28 m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder_text-item-2 transition ease-in-out focus_text-item-1 focus_bg-item-5 focus_border-accent-4 focus_outline-none"
+              class="w-full h-28 m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder:text-item-2 transition ease-in-out focus:text-item-1 focus:bg-item-5 focus:border-accent-4 focus:outline-none"
               :placeholder="$t('trnForm.description.placeholder')"
             />
           </div>

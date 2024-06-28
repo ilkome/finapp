@@ -16,7 +16,7 @@ module.exports = {
     }),
   ],
 
-  separator: '_',
+  separator: ':',
 
   theme: {
     extend: {
@@ -66,6 +66,7 @@ module.exports = {
       screens: {
         '2sm': '400px',
         '3sm': '360px',
+        '4sm': '320px',
       },
     },
   },

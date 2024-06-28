@@ -106,6 +106,44 @@ export function useNewStat() {
       )
   }
 
+  function getCatsForChart(trnsIds: TrnId[], isGrouped?: boolean) {
+    const categoriesWithTrns = trnsIds?.reduce(
+      (prev, trnId) => {
+        let newCategoryId = trnsStore.items[trnId]?.categoryId
+
+        if (categoriesStore.transferCategoriesIds.includes(newCategoryId))
+          return prev
+
+        if (isGrouped) {
+          const trnBaseCategory = categoriesStore.items[newCategoryId]
+
+          newCategoryId
+            = trnBaseCategory.parentId === 0
+              ? trnsStore.items[trnId]?.categoryId
+              : trnBaseCategory.parentId
+        }
+
+        prev[newCategoryId] ??= []
+        prev[newCategoryId].push(trnId)
+        return prev
+      },
+      {} as Record<CategoryId, TrnId[]>,
+    )
+
+    const categories = Object.keys(categoriesWithTrns).reduce((acc, categoryId) => {
+      const totalInCategory = getTotalOfTrnsIds(categoriesWithTrns[categoryId])
+
+      acc[categoryId] = {
+        id: categoryId,
+        value: totalInCategory.sum,
+      }
+
+      return acc
+    }, {} as Record<CategoryId, TotalCategory>)
+
+    return Object.keys(categories).map(categoryId => categories[categoryId])
+  }
+
   function getPeriodsWithTrns(trnsIds: TrnId[], period: PeriodNameWithAll, groups: Record<string, TrnId[]>) {
     const periodNoAll = period === 'all' ? 'year' : period
     const groupsWithTrns = structuredClone(groups)
@@ -135,9 +173,22 @@ export function useNewStat() {
     }))
   }
 
+  function getUniqueIds(data) {
+    const ids = new Set()
+
+    for (const timestamp in data) {
+      const records = data[timestamp]
+      records.forEach(record => ids.add(record.id))
+    }
+
+    return Array.from(ids)
+  }
+
   return {
     getCats,
+    getCatsForChart,
     getPeriodsWithTrns,
     getSeries,
+    getUniqueIds,
   }
 }

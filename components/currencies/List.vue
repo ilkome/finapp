@@ -29,7 +29,7 @@ const list = computed(() => {
     <div>
       <input
         v-model="searchInput"
-        class="text-item-base focus:text-item-1 focus:bg-item-5 focus:border-accent-4 focus:outline-none m-0 w-full rounded-lg border border-solid border-item-5 bg-item-4 px-3 py-2 text-base font-normal transition ease-in-out placeholder_text-item-2"
+        class="text-item-base focus:text-item-1 focus:bg-item-5 focus:border-accent-4 focus:outline-none m-0 w-full rounded-lg border border-solid border-item-5 bg-item-4 px-3 py-2 text-base font-normal transition ease-in-out placeholder:text-item-2"
         placeholder="Search..."
         type="text"
       >

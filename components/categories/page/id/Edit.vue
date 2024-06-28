@@ -10,56 +10,65 @@ const route = useRoute()
 const categoriesStore = useCategoriesStore()
 
 const categoryId = computed<CategoryId>(() => route.params.id)
-const category = computed<CategoryItem>(() => categoriesStore.items[categoryId.value])
+const category = computed<CategoryItem>(
+  () => categoriesStore.items[categoryId.value],
+)
 const categoryForm = ref(getPreparedFormData(category.value))
 const parentCategory = computed(() =>
-  getParentCategory(categoriesStore.items, categoryForm.value.parentId))
+  getParentCategory(categoriesStore.items, categoryForm.value.parentId),
+)
 
-const updateValue = (id, value) => categoryForm.value[id] = value
+const updateValue = (id, value) => (categoryForm.value[id] = value)
 const afterSave = () => router.replace(`/categories/${categoryId.value}`)
 
 useHead({
   title: `${t('base.edit')}:
-    ${categoryForm.value?.name
-      ? categoryForm.value?.name
-      : t('categories.form.name.label')}`,
+    ${
+      categoryForm.value?.name
+        ? categoryForm.value?.name
+        : t('categories.form.name.label')
+    }`,
 })
 </script>
 
-<template lang="pug">
-UiPage(v-if="category")
-  UiHeader
-    RouterLink(
-      v-slot="{ href, navigate }"
-      to="/categories"
-      custom
-    )
-      a.grow.hocus_bg-item-5(
-        :href='href'
-        @click='navigate'
-      )
-        UiHeaderTitle2
-          .pt-1.text-xs.font-medium.text-item-2
-            | {{ $t('categories.title') }}
-            template(v-if="parentCategory")
-              |
-              | {{ $t('common.in')}} {{ parentCategory.name }}
+<template>
+  <UiPage v-if="category">
+    <UiHeader>
+      <RouterLink v-slot="{ href, navigate }" to="/categories" custom>
+        <a class="hocus:bg-item-5 grow" :href="href" @click="navigate">
+          <UiHeaderTitle2>
+            <div class="pt-1 text-xs font-medium text-item-2">
+              {{ $t("categories.title") }}
+              <template v-if="parentCategory">
+                |
+                {{ $t("common.in") }} {{ parentCategory.name }}
+              </template>
+            </div>
+            <div class="flex items-center gap-4 pb-1">
+              {{ categoryForm.name }}
+              <div
+                class="flex-center h-8 w-8 rounded-full text-xl text-icon-primary"
+                :style="{ background: categoryForm.color }"
+              >
+                <div :class="categoryForm.icon" />
+              </div>
+            </div>
+          </UiHeaderTitle2>
+        </a>
+      </RouterLink>
 
-          .pb-1.flex.items-center.gap-4
-            | {{ categoryForm.name }}
-            .w-8.h-8.rounded-full.flex-center.text-xl.text-icon-primary(
-              :style="{ background: categoryForm.color }"
-            )
-              div(:class="categoryForm.icon")
+      <template #actions>
+        <CategoriesDelete :categoryId="categoryId" />
+      </template>
+    </UiHeader>
 
-    template(#actions)
-      CategoriesDelete(:categoryId="categoryId")
-
-  .mt-3
-    CategoriesForm(
-      :categoryId="categoryId"
-      :categoryForm="categoryForm"
-      @updateValue="updateValue"
-      @afterSave="afterSave"
-    )
+    <div class="mt-3">
+      <CategoriesForm
+        :categoryId="categoryId"
+        :categoryForm="categoryForm"
+        @updateValue="updateValue"
+        @afterSave="afterSave"
+      />
+    </div>
+  </UiPage>
 </template>

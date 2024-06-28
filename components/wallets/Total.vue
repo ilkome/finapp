@@ -133,7 +133,7 @@ const filteredCount = computed(() =>
     <div
       v-for="(item) in filteredCount"
       :key="item.id"
-      class="flex items-center gap-12 border-b border-item-5 px-2 py-2 last_border-0"
+      class="flex items-center gap-12 border-b border-item-5 px-2 py-2 last:border-0"
       @click="emit('click', item.id)"
     >
       <div
