@@ -31,11 +31,8 @@ function signInWithGoogle() {
 
   const provider = new GoogleAuthProvider()
   signInWithPopup(auth, provider)
-    .then(() => {
-      console.log(111)
-    })
+    .then((data) => { console.log('auth', data) })
     .catch((e) => {
-      console.log(e)
       $toast(UiToastContent, {
         autoClose: 6000,
         data: {

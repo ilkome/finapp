@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory } from '~/components/stat/useNewStat'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   biggestCatNumber: number
@@ -14,13 +15,30 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: [categoryId: CategoryId]
 }>()
+
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
+const trnsStore = useTrnsStore()
 
-function getBarStyle(amount: number, categoryId: CategoryId) {
+const category = computed(() => {
+  const isOneCategory = props.item.trnsIds.length <= 1
+  const isParentCategory = categoriesStore.items[props.item.id]?.parentId === 0
+
+  const isDifferentCategories = props.item.trnsIds.some(id =>
+    trnsStore.items[id]?.categoryId !== trnsStore.items[props.item.trnsIds[0]]?.categoryId)
+
+  if (isParentCategory && (!isDifferentCategories || isOneCategory)) {
+    const parentId = trnsStore.items[props.item.trnsIds[0]].categoryId
+    return categoriesStore.items[parentId]
+  }
+
+  return categoriesStore.items[props.item.id]
+})
+
+function getBarStyle() {
   return {
-    backgroundColor: categoriesStore.items[categoryId].color,
-    width: `${(Math.abs(amount) / Math.abs(props.biggestCatNumber ?? 0)) * 100}%`,
+    backgroundColor: category.value?.color,
+    width: `${(Math.abs(props.item.value) / Math.abs(props.biggestCatNumber ?? 0)) * 100}%`,
   }
 }
 </script>
@@ -47,7 +65,7 @@ function getBarStyle(amount: number, categoryId: CategoryId) {
           <div class="bg-item-3 rounded-lg overflow-hidden">
             <div
               class="h-1 opacity-60"
-              :style="getBarStyle(props.item.value, props.item.id)"
+              :style="getBarStyle()"
             />
           </div>
         </div>
@@ -55,8 +73,8 @@ function getBarStyle(amount: number, categoryId: CategoryId) {
 
       <template #leftIcon>
         <UiIconBase
-          :color="categoriesStore.items[props.item.id]?.color"
-          :name="categoriesStore.items[props.item.id]?.icon"
+          :color="category?.color"
+          :name="category?.icon"
           size="18"
         />
       </template>
@@ -68,18 +86,18 @@ function getBarStyle(amount: number, categoryId: CategoryId) {
       >
         <!-- Parent category name -->
         <div
-          v-if="categoriesStore.items[props.item.id].parentId"
+          v-if="category?.parentId"
           class="text-2xs"
         >
-          {{ categoriesStore.items[categoriesStore.items[props.item.id].parentId].name }}
+          {{ categoriesStore.items[category?.parentId].name }}
         </div>
 
         <!-- Category name -->
         <div class="flex items-center gap-2 text-secondary text-sm leading-none">
-          {{ categoriesStore.items[props.item.id].name }}
+          {{ category?.name }}
           <!-- Has childs -->
           <div
-            v-if="categoriesStore.items[props.item.id].parentId === 0"
+            v-if="category?.parentId === 0"
             class="text-md font-unica"
           >
             ...

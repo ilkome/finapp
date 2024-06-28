@@ -29,7 +29,7 @@
     "@tailwindcss/container-queries": "^0.1.1",
     "currency.js": "^2.0.4",
     "dayjs": "^1.11.11",
-    "echarts": "^5.5.0",
+    "echarts": "^5.5.1",
     "firebase": "^10.12.2",
     "floating-vue": "^5.2.2",
     "localforage": "^1.10.0",
@@ -40,7 +40,7 @@
     "vue-deepunref": "^1.0.1",
     "vue-echarts": "^6.7.3",
     "vue-router": "^4.3.3",
-    "vue3-toastify": "^0.2.1",
+    "vue3-toastify": "^0.2.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -59,7 +59,7 @@
     "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.10",
     "prettier": "^3.3.2",
-    "prettier-plugin-tailwindcss": "^0.6.4",
+    "prettier-plugin-tailwindcss": "^0.6.5",
     "stylus": "^0.63.0",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.5.2",

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
@@ -14,8 +15,25 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: [categoryId: CategoryId]
 }>()
+
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
+const trnsStore = useTrnsStore()
+
+const category = computed(() => {
+  const isOneCategory = props.item.trnsIds.length <= 1
+  const isParentCategory = categoriesStore.items[props.item.id]?.parentId === 0
+
+  const isDifferentCategories = props.item.trnsIds.some(id =>
+    trnsStore.items[id]?.categoryId !== trnsStore.items[props.item.trnsIds[0]]?.categoryId)
+
+  if (isParentCategory && (!isDifferentCategories || isOneCategory)) {
+    const parentId = trnsStore.items[props.item.trnsIds[0]].categoryId
+    return categoriesStore.items[parentId]
+  }
+
+  return categoriesStore.items[props.item.id]
+})
 </script>
 
 <template>
@@ -28,22 +46,22 @@ const currenciesStore = useCurrenciesStore()
     >
       <div
         class="rounded-full absolute inset-0 size-full opacity-90 dark_opacity-70"
-        :style="{ backgroundColor: categoriesStore.items[props.item.id]?.color }"
+        :style="{ backgroundColor: category?.color }"
       />
 
       <Icon
         class="relative"
         color="white"
-        :name="categoriesStore.items[props.item.id]?.icon.replace('mdi mdi-', 'mdi:')"
+        :name="category?.icon.replace('mdi mdi-', 'mdi:')"
         size="18"
       />
     </div>
 
     <div class="absolute right-2 top-2 opacity-40">
       <Icon
-        v-if="categoriesStore.items[props.item.id]?.parentId"
+        v-if="category?.parentId"
         color="text-secondary2"
-        :name="categoriesStore.items[categoriesStore.items[props.item.id]?.parentId]?.icon.replace('mdi mdi-', 'mdi:')"
+        :name="categoriesStore.items[category?.parentId]?.icon.replace('mdi mdi-', 'mdi:')"
         size="12"
       />
     </div>
@@ -51,18 +69,18 @@ const currenciesStore = useCurrenciesStore()
     <div class="grid gap-0 pt-2 pb-1">
       <!-- Parent category name -->
       <div
-        v-if="categoriesStore.items[props.item.id].parentId"
+        v-if="category?.parentId"
         class="text-2xs"
       >
-        {{ categoriesStore.items[categoriesStore.items[props.item.id].parentId].name }}
+        {{ categoriesStore.items[category?.parentId].name }}
       </div>
 
       <!-- Category name -->
       <div class="flex items-center gap-0.5 text-secondary text-sm leading-none">
-        {{ categoriesStore.items[props.item.id].name }}
+        {{ category.name }}
         <!-- Has childs -->
         <div
-          v-if="categoriesStore.items[props.item.id].parentId === 0"
+          v-if="category?.parentId === 0"
           class="text-md font-unica"
         >
           ...

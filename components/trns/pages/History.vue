@@ -108,13 +108,10 @@ function select(row) {
     <div class="grid gap-3 px-2">
       <Filter class="flex gap-2 rounded-lg bg-item-4" />
 
-      <!-- <UTable :columns="columns" :rows="people" /> -->
-      <pre>{{ selected }}</pre>
       <UTable
         v-model="selected"
         :columns="columns"
         :rows="people"
-        ui="yellow"
         @select="select"
       >
         <template #name-data="{ row }">
@@ -138,10 +135,10 @@ function select(row) {
       </UTable>
 
       <TrnsList
+        :trnsIds
         isShowHeader
         isShowFilterByType
         isShowFilterByDesc
-        :trnsIds
       />
     </div>
   </UiPage>

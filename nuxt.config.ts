@@ -156,8 +156,8 @@ export default defineNuxtConfig({
   telemetry: false,
 
   ui: {
-    gray: 'neutral',
-    primary: 'indigo',
+    gray: 'blue',
+    primary: 'stone',
   },
 
   vite: {

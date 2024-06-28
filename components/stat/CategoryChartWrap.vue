@@ -86,15 +86,13 @@ const config = computed(() => {
 </script>
 
 <template>
-  <div class="pl-6">
-    <LazyStatChartView
-      :markedArea="props.markedArea"
-      :categories
-      :series
-      :chartType
-      :periodName="props.period"
-      :config
-      @click="idx => emit('click', idx)"
-    />
-  </div>
+  <LazyStatChartView
+    :markedArea="props.markedArea"
+    :categories
+    :series
+    :chartType
+    :periodName="props.period"
+    :config
+    @click="idx => emit('click', idx)"
+  />
 </template>

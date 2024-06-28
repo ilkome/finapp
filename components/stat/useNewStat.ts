@@ -42,7 +42,7 @@ export function useNewStat() {
   const categoriesStore = useCategoriesStore()
   const { getTotalOfTrnsIds } = useAmount()
 
-  function getCats(trnsIds: TrnId[], isGrouped?: boolean) {
+  function getCats(trnsIds: TrnId[], isGroupedByParent?: boolean) {
     const categoriesWithTrns = trnsIds?.reduce(
       (prev, trnId) => {
         let newCategoryId = trnsStore.items[trnId]?.categoryId
@@ -50,7 +50,7 @@ export function useNewStat() {
         if (categoriesStore.transferCategoriesIds.includes(newCategoryId))
           return prev
 
-        if (isGrouped) {
+        if (isGroupedByParent) {
           const trnBaseCategory = categoriesStore.items[newCategoryId]
 
           newCategoryId
@@ -68,10 +68,16 @@ export function useNewStat() {
 
     const categories = Object.keys(categoriesWithTrns).reduce((acc, categoryId) => {
       const totalInCategory = getTotalOfTrnsIds(categoriesWithTrns[categoryId])
+      const trnsIdsInCategory = categoriesWithTrns[categoryId]
+      const currentCategory = categoriesStore.items[categoryId]
+
+      if (isGroupedByParent && currentCategory?.parentId !== 0) {
+        const parentCategoryId = currentCategory?.parentId
+      }
 
       acc[categoryId] = {
         id: categoryId,
-        trnsIds: categoriesWithTrns[categoryId],
+        trnsIds: trnsIdsInCategory,
         value: totalInCategory.sum,
       }
 
