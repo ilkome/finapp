@@ -1,6 +1,7 @@
-const plugin = require('tailwindcss/plugin')
+import type { Config } from 'tailwindcss'
+import plugin from 'tailwindcss/plugin'
 
-module.exports = {
+export default <Partial<Config>>{
   content: [
     './components/**/*.{js,ts,vue}',
     './layouts/**/*.{js,ts,vue}',
@@ -9,7 +10,6 @@ module.exports = {
   darkMode: 'class',
 
   plugins: [
-    require('@tailwindcss/container-queries'),
     plugin(({ addVariant }) => {
       addVariant('hocus', ['.mouse &:not(._active):hover', '&:not(._active):active'])
       addVariant('group-hocus', ['.mouse .group:not(._active):hover &', '.group:not(._active):active &'])
@@ -20,6 +20,11 @@ module.exports = {
 
   theme: {
     extend: {
+      aspectRatio: {
+        auto: 'auto',
+        square: '1 / 1',
+        video: '16 / 9',
+      },
       colors: {
         'accent': {
           1: 'rgb(var(--accent-1))',

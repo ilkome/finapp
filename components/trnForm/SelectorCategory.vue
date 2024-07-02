@@ -14,8 +14,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="rounded-md bg-item-4">
-    <!-- Category -->
+  <div>
     <div v-if="!isLaptop">
       <CategoriesItem
         :category
@@ -39,7 +38,7 @@ const emit = defineEmits<{
 
       <template #popper="{ hide }">
         <!-- TODO: combine -->
-        <div class="flex items-center bg-item-4">
+        <div class="flex items-center">
           <UiTitle class="px-3 py-3">
             {{ $t("categories.title") }}
           </UiTitle>

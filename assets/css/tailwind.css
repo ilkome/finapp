@@ -31,8 +31,8 @@ body {
 }
 
 body {
-  background: #171717;
-  /* user-select: none; */
+  /* background: #171717; */
+  user-select: none;
 }
 
 @media (prefers-color-scheme: light) {
@@ -40,6 +40,7 @@ body {
     background: #fafafa;
   }
 }
+
 .light body {
   background: #fafafa;
 }

@@ -45,8 +45,8 @@ onLongPress(
 </script>
 
 <template>
-  <div class="grid gap-0 grid-cols-[auto,1fr,auto]">
-    <div class="w-20 flex flex-col">
+  <div class="grid gap-0 grid-cols-[.26fr,1fr,.26fr] justify-between">
+    <div class="flex flex-col gap-1">
       <TrnFormMainCalculatorButton @click="onClick('*')">
         <i class="mdi mdi-plus rotate-45" />
       </TrnFormMainCalculatorButton>
@@ -61,11 +61,11 @@ onLongPress(
       </TrnFormMainCalculatorButton>
     </div>
 
-    <div class="flex flex-col">
+    <div class="flex flex-col gap-1">
       <div
         v-for="(row, rowIdx) in buttons"
         :key="rowIdx"
-        class="flex justify-center"
+        class="flex justify-center gap-1"
       >
         <TrnFormMainCalculatorButton
           v-for="(btn, btnIdx) in row"
@@ -77,7 +77,7 @@ onLongPress(
         </TrnFormMainCalculatorButton>
       </div>
 
-      <div class="flex justify-center">
+      <div class="flex justify-center gap-1">
         <TrnFormMainCalculatorButton @click="onClick('.')">
           .
         </TrnFormMainCalculatorButton>
@@ -90,13 +90,15 @@ onLongPress(
       </div>
     </div>
 
-    <div class="w-20 grid gap-2 justify-items-end grid-rows-[auto,1fr]">
+    <div class="grid gap-1 grid-rows-[auto,1fr]">
       <!-- Description -->
       <TrnFormMainCalculatorButton
         :class="{ 'text-accent-1': !!trnFormStore.values.desc }"
+        class="relative"
         @click="trnFormStore.openTrnFormModal('description')"
       >
         <i class="mdi mdi-comment-text-outline" />
+        <div class="absolute right-1 top-1 aspect-square w-2 bg-accent-1 rounded-full" />
       </TrnFormMainCalculatorButton>
 
       <!-- Action -->

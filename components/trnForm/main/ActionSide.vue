@@ -34,10 +34,10 @@ async function onClickSubmit() {
     }"
     class="
       flex items-center justify-center
-      min-size-[58px]
-      py-4 px-2
+      max-w-[56px] p-1 text-2xl
+      py-4
       size-full
-      text-4xl text-prima text-center
+      text-prima text-center
       bg-item-main border border-item-5 rounded-xl
       hocus:bg-item-7 hocus:border[red] hocus:scale-[1.02]
       transition

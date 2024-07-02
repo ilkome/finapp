@@ -71,7 +71,7 @@ onMounted(init)
       <!-- <BaseBottomSheetClose @onClick="close" /> -->
     </template>
 
-    <div class="trnForm lg:ml-12">
+    <div class="trnForm lg:ml-12 bg-foreground-3">
       <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
           <!-- History -->

@@ -7,6 +7,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const periodSchema = z.object({
   date: z.number(),
@@ -35,8 +36,11 @@ export type PeriodsNames = {
 
 export function useFilter() {
   const { $i18n } = useNuxtApp()
+  const router = useRouter()
+  const route = useRoute()
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
+  const walletsStore = useWalletsStore()
 
   /**
    * Date
@@ -181,13 +185,23 @@ export function useFilter() {
   /**
    * Wallets
    */
-  const walletsIds = ref<WalletId[]>([])
+  const walletsIds = computed<CategoryId[]>(() => Array.isArray(route.query.filterWallets)
+    ? (route.query.filterWallets as CategoryId[]).filter(id => walletsStore.items[id])
+    : route.query.filterWallets
+      ? [route.query.filterWallets]
+      : [],
+  )
 
   function setWalletId(walletId: WalletId) {
     if (walletsIds.value.includes(walletId))
       return
 
-    walletsIds.value.push(walletId)
+    router.push({
+      query: {
+        ...route.query,
+        filterWallets: [...walletsIds.value, walletId],
+      },
+    })
     scrollTop()
   }
 
@@ -203,13 +217,25 @@ export function useFilter() {
   }
 
   function removeWalletId(walletId: WalletId) {
-    walletsIds.value = walletsIds.value.filter(id => id !== walletId)
+    router.push({
+      query: {
+        ...route.query,
+        filterWallets: [...walletsIds.value.filter(id => id !== walletId)],
+      },
+    })
   }
 
   /**
    * Categories
    */
-  const catsIds = ref<CategoryId[]>([])
+
+  const catsIds = computed<CategoryId[]>(() => Array.isArray(route.query.filterCategories)
+    ? (route.query.filterCategories as CategoryId[]).filter(id => categoriesStore.items[id])
+    : route.query.filterCategories
+      ? [route.query.filterCategories]
+      : [],
+  )
+
   const transactibleCatsIds = computed(() =>
     categoriesStore.getTransactibleIds(catsIds.value),
   )
@@ -218,13 +244,22 @@ export function useFilter() {
     if (catsIds.value.includes(categoryId))
       return
 
-    catsIds.value.push(categoryId)
-    useRouter().push(`?categories[]=${encodeURIComponent(catsIds.value)}`)
+    router.push({
+      query: {
+        ...route.query,
+        filterCategories: [...catsIds.value, categoryId],
+      },
+    })
     scrollTop()
   }
 
   function removeCategoryId(categoryId: CategoryId) {
-    catsIds.value = catsIds.value.filter(id => id !== categoryId)
+    router.push({
+      query: {
+        ...route.query,
+        filterCategories: [...catsIds.value.filter(id => id !== categoryId)],
+      },
+    })
     scrollTop()
   }
 
@@ -241,8 +276,9 @@ export function useFilter() {
    * Clear
    */
   function clearFilter() {
-    catsIds.value = []
-    walletsIds.value = []
+    // catsIds.value = []
+    // walletsIds.value = []
+    router.push({ query: undefined })
   }
 
   /**

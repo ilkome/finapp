@@ -254,6 +254,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   function getTransactibleIds(ids?: CategoryId[]) {
+    console.log('ids', ids)
     if (!ids)
       return []
     return getTransactibleCategoriesIds(ids, items.value)

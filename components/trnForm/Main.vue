@@ -71,6 +71,7 @@ function show(slide: number) {
       :amountRaw="trnFormStore.values.amountRaw[trnFormStore.activeAmountIdx]"
       :highlight="trnFormStore.values.trnType === 0 ? 'income' : 'expense'"
       :isShowSum="trnFormStore.getIsShowSum()"
+      class="pb-2"
       @onChange="trnFormStore.onChangeAmount"
     />
 

@@ -16,7 +16,7 @@ const walletsStore = useWalletsStore()
 </script>
 
 <template>
-  <div class="rounded-md bg-item-4">
+  <div>
     <WalletsItem
       v-if="!isLaptop"
       :walletId

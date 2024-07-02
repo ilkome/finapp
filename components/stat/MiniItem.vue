@@ -196,14 +196,14 @@ function onClickCategoryRounded(categoryId: CategoryId) {
   isGroupCategoriesByParentRounded.value = false
   filter.clearFilter()
   filter.setCategoryId(categoryId)
-  const category = categoriesStore.items[categoryId]
+  // const category = categoriesStore.items[categoryId]
 
-  if (category?.childIds && category?.childIds?.length > 0) {
-    isGroupCategoriesByParentRounded.value = false
-  }
-  else {
-    isGroupCategoriesByParentRounded.value = true
-  }
+  // if (category?.childIds && category?.childIds?.length > 0) {
+  //   isGroupCategoriesByParentRounded.value = false
+  // }
+  // else {
+  //   isGroupCategoriesByParentRounded.value = true
+  // }
 }
 
 const isAllCatsOpened = computed(() => arraysAreEqualUnordered(cats.value.map(d => d.id), openedCats.value))
