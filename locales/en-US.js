@@ -87,20 +87,11 @@ export default {
   },
 
   chart: {
-    showMain: 'Show main chart',
+    options: 'Chart options',
     title: 'Chart',
-    view: {
-      add: 'Add',
-      addGroupButton: 'Add group',
-      addPeriodButton: 'Add period',
-      groupedTitle: 'Column view',
-      periodsName: 'periods',
-      remove: 'Remove',
-      removeGroupButton: 'Remove group',
-      removePeriodButton: 'Remove period',
-      showed: 'Showed',
-      simpleTitle: 'Line view',
-      toggle: 'Toggle chart view',
+    types: {
+      bar: 'Bars',
+      line: 'Lines',
     },
   },
 

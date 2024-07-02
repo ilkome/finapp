@@ -36,8 +36,14 @@ function onClick(slug: PeriodNameWithoutAll) {
       <Icon :name="periodItem.icon" size="22" />
       <div class="text-sm">
         {{ $t(`dates.${periodItem.slug}.simple`) }}
-        <!-- {{ props.periods[periodItem.slug].showedPeriods }} -->
       </div>
     </div>
+    <UButton
+      :label="$t('close')"
+      color="blue"
+      size="lg"
+      block
+      @click="props.hide"
+    />
   </div>
 </template>

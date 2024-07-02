@@ -10,7 +10,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { PeriodNameWithoutAll } from '~/components/filter/useFilter'
 import { getStyles } from '~/components/ui/getStyles'
-import { type TotalCategory, useNewStat } from '~/components/stat/useNewStat'
+import { useNewStat } from '~/components/stat/useNewStat'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { getDates } from '~/components/date/format'
 
@@ -21,6 +21,7 @@ const props = defineProps<{
 }>()
 
 const filter = inject('filter')
+const { t } = useI18n()
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const { getCats, getPeriodsWithTrns, getSeries } = useNewStat()
@@ -31,6 +32,13 @@ const chartPeriodsShown = useStorage<number>(`${props.storageKey}-${props.type}-
 const period = useStorage<PeriodNameWithoutAll>(`${props.storageKey}-${props.type}-period`, 'month')
 const baseStorageKey = computed(() => `${period.value}-${props.storageKey}-${props.type}`)
 const chartType = useStorage<ChartType>(`${baseStorageKey.value}-chartType`, 'line')
+const chartTypes = computed(() => [{
+  name: t('chart.types.bar'),
+  value: 'bar',
+}, {
+  name: t('chart.types.line'),
+  value: 'line',
+}])
 const date = useStorage<number>(`${props.storageKey}-${props.type}-date`, dayjs().startOf(period.value).valueOf())
 
 const datesFromTrnsIds = computed(() => ({
@@ -351,20 +359,30 @@ function onClickInsideCategory(idx: number) {
                     <UiIconConfig />
                   </div>
 
-                  <template #popper>
-                    <div class="p-3">
-                      <UInput
-                        v-model="chartPeriodsShown"
-                        type="number"
-                        size="md"
-                        color="white"
-                        placeholder="Showed chart periods"
-                        inputClass="text-base"
+                  <template #popper="{ hide }">
+                    <div class="grid gap-4 p-3 min-w-52">
+                      <UiTitle>{{ $t('chart.options') }}</UiTitle>
+                      <USelect
+                        v-model.number="chartPeriodsShown"
+                        :options="Array.from({ length: 30 }, (_, i) => i + 1)"
+                        color="blue"
+                        size="lg"
                       />
-                    </div>
+                      <USelect
+                        v-model="chartType"
+                        :options="chartTypes"
+                        color="blue"
+                        optionAttribute="name"
+                        size="lg"
+                      />
 
-                    <div @click="chartType = chartType === 'bar' ? 'line' : 'bar'">
-                      {{ chartType }}
+                      <UButton
+                        :label="$t('close')"
+                        color="blue"
+                        size="lg"
+                        block
+                        @click="hide"
+                      />
                     </div>
                   </template>
                 </VDropdown>

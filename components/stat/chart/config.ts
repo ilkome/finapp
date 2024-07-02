@@ -105,7 +105,7 @@ export const config = {
 
 export const lineConfig = {
   barMaxWidth: '10',
-  barMinWidth: '8',
+  barMinWidth: '12',
   borderColor: 'blue',
   cursor: 'default',
   emphasis: {

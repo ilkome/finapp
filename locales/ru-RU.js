@@ -87,20 +87,11 @@ export default {
   },
 
   chart: {
-    showMain: 'Показывать основной график',
+    options: 'Настройки графика',
     title: 'График',
-    view: {
-      add: 'Добавить',
-      addGroupButton: 'Добавить группу',
-      addPeriodButton: 'Добавить период',
-      groupedTitle: 'График колонки',
-      periodsName: 'период',
-      remove: 'Удалить',
-      removeGroupButton: 'Удалить группу',
-      removePeriodButton: 'Удалить период',
-      showed: 'Показано',
-      simpleTitle: 'График линия',
-      toggle: 'Изменить график',
+    types: {
+      bar: 'Колонки',
+      line: 'Линии',
     },
   },
 
