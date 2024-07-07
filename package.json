@@ -14,7 +14,6 @@
   "engines": {
     "node": ">=v21.6.0"
   },
-
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt generate",
@@ -23,7 +22,7 @@
     "test-coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@formkit/drag-and-drop": "^0.1.4",
+    "@formkit/drag-and-drop": "^0.1.6",
     "@pinia/nuxt": "^0.5.1",
     "@popperjs/core": "^2.11.8",
     "@tailwindcss/container-queries": "^0.1.1",
@@ -52,9 +51,8 @@
     "@vite-pwa/nuxt": "^0.8.1",
     "@vueuse/core": "^10.11.0",
     "@vueuse/nuxt": "^10.11.0",
-    "basic-ftp": "^5.0.5",
     "dotenv": "^16.4.5",
-    "eslint": "^9.5.0",
+    "eslint": "^9.6.0",
     "eslint-plugin-format": "^0.1.2",
     "eslint-plugin-perfectionist": "^2.11.0",
     "nuxt": "^3.12.3",
@@ -63,7 +61,7 @@
     "prettier-plugin-tailwindcss": "^0.6.5",
     "stylus": "^0.63.0",
     "tailwindcss": "^3.4.4",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "vitest": "^1.6.0"
   }
 }
