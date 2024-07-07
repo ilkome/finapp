@@ -17,10 +17,9 @@ const props = defineProps<{
     </div>
 
     <div class="flex items-center gap-2 pb-1">
-      <Icon
-        :name="props.category.icon.replace('mdi mdi-', 'mdi:')"
+      <UiIconBase
+        :name="props.category.icon"
         :color="props.category.color"
-        size="22"
       />
       {{ props.category.name }}
     </div>

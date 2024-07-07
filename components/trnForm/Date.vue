@@ -32,6 +32,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 
 <template>
   <div class="flex items-stretch gap-2">
+    <pre>{{ formatted }}</pre>
     <StatDateNav
       :isLastPeriod="false"
       :isToday="isToday"

@@ -2,7 +2,6 @@
 import { useUserStore } from '~/components/user/useUser'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const userStore = useUserStore()
 const walletsStore = useWalletsStore()
@@ -17,46 +16,44 @@ const state = ref({
 const newUserData = computed(() => !walletsStore.hasItems || !categoriesStore.hasCategories)
 
 watch(newUserData, () => {
-  // if (!newUserData.value)
-  //   useRouter().push('/')
+  if (!newUserData.value)
+    useRouter().push('/dashboard')
 }, { immediate: true })
 </script>
 
-<template lang="html">
-  <div class="grid h-full grid-rows-[auto,1fr,auto]">
-    <div class="max-w-xl mx-auto py-4 p-2 w-full md:p-6">
-      <div class="flex justify-between">
-        <AppLocaleSwitcher />
-        <AppThemeSwitcher />
-      </div>
+<template>
+  <div
+    class="mx-auto grid h-full w-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4 md_p-6 gap-4"
+  >
+    <div class="flex flex-wrap gap-2 justify-between items-start">
+      <AppLocaleSwitcher />
+      <AppThemeSwitcher class="justify-end" />
     </div>
 
-    <div class="h-full grid items-center gap-8 py-4 px-3 overflow-hidden overflow-y-auto">
-      <div class="flex flex-col items-center justify-center">
+    <div
+      class="grid h-full gap-8 overflow-hidden overflow-y-auto px-3 py-4"
+    >
+      <div class="pb-10">
         <UiLogo />
 
         <div
           v-if="newUserData && userStore.user?.uid"
-          class="px-3 py-8 min-w-[280px]"
+          class="grow w-full py-8"
         >
-          <Transition name="fadeIn">
-            <WelcomeWalletForm
-              v-if="!walletsStore.hasItems"
-              @afterSave="state.showWalletForm = false"
-            />
-            <WelcomeCategoryForm
-              v-else-if="walletsStore.hasItems"
-              @afterSave="state.showCategoryForm = false"
-            />
-          </Transition>
+          <WelcomeWalletForm
+            v-if="!walletsStore.hasItems"
+            @afterSave="state.showWalletForm = false"
+          />
+          <WelcomeCategoryForm
+            v-else-if="walletsStore.hasItems"
+            @afterSave="state.showCategoryForm = false"
+          />
         </div>
       </div>
     </div>
 
-    <div class="p-4 md:p-6 grid gap-2">
-      <AppCopyright />
+    <div class="flex-center">
       <div
-        class="cursor-pointer"
         @click="userStore.signOut"
       >
         {{ $t('userLogout') }} {{ userStore.user?.email }}

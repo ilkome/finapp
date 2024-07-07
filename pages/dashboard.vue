@@ -11,9 +11,15 @@ useHead({
 definePageMeta({
   keepalive: true,
 })
+
+watch(() => trnsStore.hasTrns, (has) => {
+  if (!has) {
+    useRouter().push('/welcome')
+  }
+}, { immediate: true })
 </script>
 
 <template>
-  <LazyStat v-if="trnsStore.hasTrns" />
+  <LazyStat v-if="trnsStore.hasTrns" :key="useRoute().fullPath" />
   <LazyWelcomeActions v-else />
 </template>

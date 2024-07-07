@@ -21,13 +21,8 @@ const wallet = computed(() => walletsStore.sortedItems[props.walletId])
     :class="getStyles('item', ['link', 'center', 'gap1', 'rounded', 'padding2', 'minh'])"
     @click="emit('click', props.walletId)"
   >
-    <UiIconWalletWithdrawal
-      v-if="wallet.countTotal"
-      :style="{ color: wallet.color }"
-      class="h-4 w-4 text-item-2"
-    />
     <UiIconWalletSavings
-      v-else-if="!wallet.countTotal && !wallet.isCredit"
+      v-if="!wallet.isCredit"
       :style="{ color: wallet.color }"
       class="h-4 w-4 text-item-2"
     />

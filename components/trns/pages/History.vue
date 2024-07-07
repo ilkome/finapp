@@ -137,6 +137,7 @@ function select(row) {
       <TrnsList
         :trnsIds
         isShowHeader
+        isShowGroupSum
         isShowFilterByType
         isShowFilterByDesc
       />

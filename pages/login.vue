@@ -61,6 +61,7 @@ watch(
   (uid) => {
     uid && router.replace('/dashboard')
   },
+  { immediate: true },
 )
 </script>
 
@@ -82,14 +83,14 @@ watch(
         <div class="flex min-w-[280px] flex-col items-center px-3 py-8">
           <UiButtonBlue :disabled="isLoading" @click="signInWithGoogle">
             {{ $t("loginWithGoogle") }}
-            <transition name="fadeIn">
+            <Transition name="fadeIn">
               <div
                 v-if="isLoading"
-                class="flex-center absolute inset-0 h-full w-full bg-accent-2"
+                class="flex-center absolute inset-0 h-full w-full bg-stone-800"
               >
                 <UiSpinier />
               </div>
-            </transition>
+            </Transition>
           </UiButtonBlue>
         </div>
       </div>

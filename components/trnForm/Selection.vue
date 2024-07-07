@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import Swiper from 'swiper'
+import Swiper, { Pagination } from 'swiper'
 import type { CategoryId } from '../categories/types'
 import type { WalletId } from '../wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import 'swiper/css'
 import { getParentCategoryId } from '~/components/categories/getCategories'
+import 'swiper/css'
+import 'swiper/css/pagination'
 
 const props = withDefaults(
   defineProps<{
@@ -34,6 +35,11 @@ onMounted(() => {
       initialSlide: props.initialSlide,
       longSwipesMs: 60,
       longSwipesRatio: 0.1,
+      modules: [Pagination],
+      pagination: {
+        clickable: true,
+        el: '.trnFormSelectionPagination',
+      },
       shortSwipes: false,
     })
     sliderObj.value.init()
@@ -45,16 +51,21 @@ const parentCategoryId = ref<CategoryId | false>(
   || trnFormStore.values.categoryId,
 )
 
+function onSelectWallet(id: WalletId, close: () => void) {
+  trnFormStore.values.walletId = id
+  close()
+}
+
+function onSelectCategory(id: CategoryId, close: () => void) {
+  trnFormStore.values.categoryId = id
+  close()
+}
+
 async function onSelectParentCategory(id: CategoryId) {
   parentCategoryId.value = id
   await nextTick()
   sliderObj.value.update()
   sliderObj.value.slideTo(3)
-}
-
-function onSelectWallet(id: WalletId, close: () => void) {
-  trnFormStore.values.walletId = id
-  close()
 }
 </script>
 
@@ -62,7 +73,7 @@ function onSelectWallet(id: WalletId, close: () => void) {
   <Teleport to="body">
     <BaseBottomSheet2
       :isShow="isShow"
-      drugClassesCustom="bg-foreground-2"
+      drugClassesCustom="bg-foreground-3"
       @closed="isShow = false"
     >
       <template #handler="{ close }">
@@ -74,110 +85,84 @@ function onSelectWallet(id: WalletId, close: () => void) {
         <div ref="sliderRef" class="swiper-container">
           <div class="swiper-wrapper">
             <!-- Wallets -->
-            <div class="swiper-slide _!w-auto py-4" :style="{ height: maxHeight }">
-              <UiTitle class="px-3 pb-2 pt-1.5">
-                {{ $t("wallets.title") }}
-              </UiTitle>
-
-              <WalletsSelector
-                class="scrollerBlock"
-                :hide="close"
-                :activeItemId="trnFormStore.values.walletId"
-                :style="{ maxHeight: props.maxHeight }"
-                @onSelected="(id) => onSelectWallet(id, close)"
-              />
+            <div
+              :style="{ height: props.maxHeight }"
+              class="swiper-slide"
+            >
+              <div class="h-full overflow-y-auto scrollerBlock pb-3">
+                <TrnFormSelectionWalletsAll
+                  :maxHeight="maxHeight"
+                  @onSelectWallet="id => onSelectWallet(id, close)"
+                />
+              </div>
             </div>
 
-            <!-- Fast Categories -->
-            <div class="swiper-slide _!w-auto" :style="{ height: maxHeight }">
-              <div class="h-full overflow-y-auto scrollerBlock">
-                <!-- Favorite categories -->
-                <div
-                  v-if="categoriesStore.favoriteCategoriesIds.length > 0"
-                >
-                  <UiTitle
-                    class="sticky top-0 pt-4 pb-2 px-3 bg-foreground-2"
-                    @click="trnFormStore.ui.catsRootModal = true"
-                  >
-                    {{ $t("categories.favoriteTitle") }}
-                    {{ $t("categories.title") }}
-                  </UiTitle>
-
-                  <CategoriesSelector2
-                    :activeItemId="trnFormStore.values.categoryId"
-                    :hide="close"
-                    :ids="categoriesStore.favoriteCategoriesIds"
-                    @onClickParent="onSelectParentCategory"
-                    @onSelected="id => trnFormStore.values.categoryId = id"
-                  />
-                </div>
-
-                <!-- Recent categories -->
-                <div
-                  v-if="categoriesStore.recentCategoriesIds.length > 0"
-                >
-                  <UiTitle
-                    class="sticky pt-4 pb-2 top-0 px-3 bg-foreground-2"
-                    @click="trnFormStore.ui.catsRootModal = true"
-                  >
-                    {{ $t("categories.lastUsedTitle") }}
-                    {{ $t("categories.title") }}
-                  </UiTitle>
-
-                  <CategoriesSelector2
-                    :activeItemId="trnFormStore.values.categoryId"
-                    :hide="close"
-                    :ids="categoriesStore.recentCategoriesIds"
-                    @onClickParent="onSelectParentCategory"
-                    @onSelected="id => trnFormStore.values.categoryId = id"
-                  />
-                </div>
+            <!-- Categories fast -->
+            <div
+              :style="{ height: props.maxHeight }"
+              class="swiper-slide"
+            >
+              <div class="h-full overflow-y-auto scrollerBlock pb-3">
+                <TrnFormSelectionCategoriesFast
+                  @onSelectCategory="id => onSelectCategory(id, close)"
+                  @onSelectParentCategory="id => onSelectParentCategory(id)"
+                />
               </div>
             </div>
 
             <!-- Categories -->
-            <div
-              :style="{ height: maxHeight }"
-              class="swiper-slide _!w-auto pt-4 grid grid-rows-[auto,1fr]"
-            >
-              <UiTitle class="px-3 pb-2 pt-1.5">
-                {{ $t("categories.title") }}
-              </UiTitle>
-
-              <div class="scrollerBlock overflow-y-auto">
-                <CategoriesSelector2
-                  :activeItemId="parentCategoryId || trnFormStore.values.categoryId"
-                  :hide="close"
-                  :ids="categoriesStore.categoriesRootIds"
-                  @onClickParent="onSelectParentCategory"
-                  @onSelected="id => trnFormStore.values.categoryId = id"
-                />
-              </div>
-            </div>
+            <TrnFormSelectionCategoriesAll
+              :maxHeight="maxHeight"
+              :parentCategoryId
+              @onSelectCategory="id => onSelectCategory(id, close)"
+              @onSelectParentCategory="id => onSelectParentCategory(id)"
+            />
 
             <!-- Child Categories Slide -->
-            <div
-              v-if="parentCategoryId && categoriesStore.items[parentCategoryId].childIds"
-              class="swiper-slide _!w-auto pt-4 grid grid-rows-[auto,1fr]"
-              :style="{ height: maxHeight }"
-            >
-              <UiTitle class="px-3 pb-2 pt-1.5">
-                {{ categoriesStore.items[parentCategoryId].name }}
-              </UiTitle>
-
-              <div class="scrollerBlock overflow-y-auto">
-                <CategoriesSelector2
-                  :activeItemId="trnFormStore.values.categoryId"
-                  :hide="close"
-                  :ids="categoriesStore.items[parentCategoryId].childIds"
-                  @onClickParent="onSelectParentCategory"
-                  @onSelected="id => trnFormStore.values.categoryId = id"
-                />
-              </div>
-            </div>
+            <TrnFormSelectionCategoriesChild
+              :maxHeight="maxHeight"
+              :parentCategoryId
+              @onSelectCategory="id => onSelectCategory(id, close)"
+              @onSelectParentCategory="id => onSelectParentCategory(id)"
+            />
           </div>
         </div>
+        <div class="trnFormSelectionPagination" />
       </template>
     </BaseBottomSheet2>
   </Teleport>
 </template>
+
+<style>
+.trnFormSelectionPagination.swiper-pagination-horizontal
+  .swiper-pagination-bullet-active {
+  @apply !bg-neutral-600 dark:!bg-white/80;
+}
+</style>
+
+<style lang="stylus">
+@import "../assets/stylus/variables"
+.trnFormSelectionPagination
+  &.swiper-pagination-horizontal
+    z-index 2
+    position absolute
+    left 50%
+    bottom 1px
+    display flex
+    align-items center
+    justify-content center
+    width auto
+    padding 6px
+    background alpha(#171717, .9)
+    border-radius 6px
+    transform translateX(-50%)
+
+    .swiper-pagination-bullet
+      opacity 1
+      width 6px
+      height 6px
+      margin 0 4px
+      background var(--c-bg-9)
+      border-radius 50%
+      anim()
+</style>

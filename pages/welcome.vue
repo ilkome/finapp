@@ -5,5 +5,5 @@ definePageMeta({
 </script>
 
 <template>
-<WelcomePageWelcome />
+  <WelcomePageWelcome />
 </template>

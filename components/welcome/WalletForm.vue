@@ -1,20 +1,10 @@
 <script setup lang="ts">
-import { allColors } from '~/assets/js/colors'
-import { random } from '~/assets/js/emo'
-import type { WalletForm } from '~/components/wallets/types'
+import { getPreparedFormData } from '~/components/wallets/getForm'
 
 const emit = defineEmits(['afterSave'])
 const { t } = useI18n()
 
-const walletForm = ref<WalletForm>({
-  color: random(random(allColors)),
-  countTotal: true,
-  currency: 'USD',
-  isCashless: false,
-  isCredit: false,
-  name: '',
-  order: 1,
-})
+const walletForm = ref(getPreparedFormData())
 
 function updateValue(id, value) {
   walletForm.value[id] = value

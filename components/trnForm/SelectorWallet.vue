@@ -2,7 +2,7 @@
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { WalletId } from '~/components/wallets/types'
 
-defineProps<{
+const props = defineProps<{
   isLaptop: boolean
   walletId: WalletId
 }>()
@@ -22,6 +22,7 @@ const walletsStore = useWalletsStore()
       :walletId
       :wallet="walletsStore.sortedItems[walletId]"
       alt
+      insideClasses="bg-item-4"
       @click="emit('onOpen', 0)"
     />
 
@@ -29,28 +30,31 @@ const walletsStore = useWalletsStore()
       v-else
       :overflowPadding="12"
       autoBoundaryMaxSize
-      placement="bottom-start"
+      placement="top-start"
     >
       <WalletsItem
         :walletId
         :wallet="walletsStore.sortedItems[walletId]"
         alt
+        class="bg-item-4"
       />
 
       <template #popper="{ hide }">
-        <!-- TODO: combine -->
-        <div class="flex items-center">
-          <UiTitle class="px-3 pb-2 pt-1.5">
-            {{ $t("wallets.title") }}
-          </UiTitle>
-          <BaseBottomSheetClose @onClick="hide" />
-        </div>
+        <div>
+          <div class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-3">
+            <UiTitle class="px-3 pb-2 pt-1.5">
+              {{ $t("wallets.title") }}
+            </UiTitle>
+            <BaseBottomSheetClose @onClick="hide" />
+          </div>
 
-        <WalletsSelector
-          :hide
-          class="w-[90vw] max-w-xs"
-          @onSelected="id => emit('onSelected', id)"
-        />
+          <WalletsSelector
+            :hide
+            :activeItemId="props.walletId"
+            class="min-w-72 max-w-xs"
+            @onSelected="id => emit('onSelected', id)"
+          />
+        </div>
       </template>
     </VDropdown>
   </div>

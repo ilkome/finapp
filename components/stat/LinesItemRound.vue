@@ -42,27 +42,21 @@ const category = computed(() => {
     @click="emit('click', props.item.id)"
   >
     <div
-      class="relative size-8 flex-center"
+      class="size-8"
     >
-      <div
-        class="rounded-full absolute inset-0 size-full opacity-90 dark_opacity-70"
-        :style="{ backgroundColor: category?.color }"
-      />
-
-      <Icon
-        class="relative"
-        color="white"
-        :name="category?.icon.replace('mdi mdi-', 'mdi:')"
-        size="18"
+      <UiIconBase
+        :name="category?.icon"
+        :color="category?.color"
+        invert
       />
     </div>
 
     <div class="absolute right-2 top-2 opacity-40">
-      <Icon
+      <UiIconBase
         v-if="category?.parentId"
+        :name="categoriesStore.items[category?.parentId]?.icon"
+        class="text-2xs"
         color="text-secondary2"
-        :name="categoriesStore.items[category?.parentId]?.icon.replace('mdi mdi-', 'mdi:')"
-        size="12"
       />
     </div>
 

@@ -8,7 +8,7 @@ import useAmount from '~/components/amount/useAmount'
 import type { ChartType } from '~/components/chart/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { PeriodNameWithoutAll } from '~/components/filter/useFilter'
+import type { FilterProvider, PeriodNameWithoutAll } from '~/components/filter/useFilter'
 import { getStyles } from '~/components/ui/getStyles'
 import { useNewStat } from '~/components/stat/useNewStat'
 import { useCategoriesStore } from '~/components/categories/useCategories'
@@ -20,7 +20,7 @@ const props = defineProps<{
   type: MoneyTypeSlugSum
 }>()
 
-const filter = inject('filter')
+const filter = inject('filter') as FilterProvider
 const { t } = useI18n()
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
@@ -28,10 +28,15 @@ const { getCats, getPeriodsWithTrns, getSeries } = useNewStat()
 const categoriesStore = useCategoriesStore()
 
 const isShowLinesChart = useStorage<boolean>('isShowLinesChart', false)
-const chartPeriodsShown = useStorage<number>(`${props.storageKey}-${props.type}-chartPeriodsShown`, 12)
-const period = useStorage<PeriodNameWithoutAll>(`${props.storageKey}-${props.type}-period`, 'month')
-const baseStorageKey = computed(() => `${period.value}-${props.storageKey}-${props.type}`)
-const chartType = useStorage<ChartType>(`${baseStorageKey.value}-chartType`, 'line')
+const period = useStorage<PeriodNameWithoutAll>(`${props.storageKey}-period`, 'month')
+
+const newBaseStorageKey = computed(() => `${period.value}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
+const baseStorageKey = computed(() => `${period.value}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
+// const chartPeriodsShown = useStorage<number>(`${period.value}-${props.storageKey}-${props.type}-${JSON.stringify(filter.catsIds.value)}-chartPeriodsShown`, 12)
+
+// TODO: Get from parent
+const chartPeriodsShown2 = ref(+(localStorage.getItem(`1${period.value}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}-chartPeriodsShown`) ?? 12))
+const chartType = useStorage<ChartType>(`${baseStorageKey.value}-chartType`, 'bar')
 const chartTypes = computed(() => [{
   name: t('chart.types.bar'),
   value: 'bar',
@@ -39,7 +44,7 @@ const chartTypes = computed(() => [{
   name: t('chart.types.line'),
   value: 'line',
 }])
-const date = useStorage<number>(`${props.storageKey}-${props.type}-date`, dayjs().startOf(period.value).valueOf())
+const date = useStorage<number>(`${props.storageKey}-date`, dayjs().startOf(period.value).valueOf())
 
 const datesFromTrnsIds = computed(() => ({
   from: trnsStore.items[props.trnsIds.at(-1)]?.date,
@@ -87,13 +92,13 @@ const totals = computed(() =>
 )
 
 const config = computed(() => {
-  if (Object.keys(groupedTrnsTotals.value).length >= 30) {
+  if (Object.keys(groupedTrnsTotals.value).length >= chartPeriodsShown2.value) {
     return {
       dataZoom: [
         {
           filterMode: 'filter',
-          maxValueSpan: chartPeriodsShown.value,
-          minValueSpan: chartPeriodsShown.value,
+          maxValueSpan: chartPeriodsShown2.value,
+          minValueSpan: chartPeriodsShown2.value - 1,
           // moveOnMouseMove: false,
           preventDefaultMouseMove: false,
           // moveOnMouseWheel: false,
@@ -112,8 +117,15 @@ const config = computed(() => {
 })
 
 function setPeriodAndDate(periodName: PeriodNameWithoutAll) {
+  const d = localStorage.getItem(`1${periodName}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}-chartPeriodsShown`)
   period.value = periodName
   date.value = dayjs(categories.value.at(-1)).startOf(periodName).valueOf()
+  chartPeriodsShown2.value = +(d ?? 12)
+}
+
+function changeChartPeriodsShown2(n: number) {
+  localStorage.setItem(`1${period.value}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}-chartPeriodsShown`, `${n}`)
+  chartPeriodsShown2.value = n
 }
 
 function setPeriodDateNext() {
@@ -200,6 +212,10 @@ function onClickCategory(categoryId: CategoryId) {
   }
 }
 
+// function onClickCategoryIcon(categoryId: CategoryId) {
+//   filter.setCategoryId(categoryId)
+// }
+
 function onClickCategoryRounded(categoryId: CategoryId) {
   isGroupCategoriesByParentRounded.value = false
   filter.clearFilter()
@@ -245,50 +261,50 @@ function getTrnsWithDate(categoryId: CategoryId) {
   }, { includesChildCategories: true })
 }
 
-function transformData(data) {
-  const series = []
-  const idMap = {}
-  const timestamps = Object.keys(data).sort()
+// function transformData(data) {
+//   const series = []
+//   const idMap = {}
+//   const timestamps = Object.keys(data).sort()
 
-  // Collect all unique IDs
-  for (const timestamp of timestamps) {
-    const entries = data[timestamp]
+//   // Collect all unique IDs
+//   for (const timestamp of timestamps) {
+//     const entries = data[timestamp]
 
-    for (const entryId in entries) {
-      const id = entries[entryId].id
-      if (!idMap[id]) {
-        idMap[id] = {
-          color: categoriesStore.items[id].color,
-          data: Array.from({ length: timestamps.length }).fill(0),
-          id,
-          name: categoriesStore.items[id].name,
-          // stack: 'hey',
-        }
-        series.unshift(idMap[id])
-      }
-    }
-  }
+//     for (const entryId in entries) {
+//       const id = entries[entryId].id
+//       if (!idMap[id]) {
+//         idMap[id] = {
+//           color: categoriesStore.items[id].color,
+//           data: Array.from({ length: timestamps.length }).fill(0),
+//           id,
+//           name: categoriesStore.items[id].name,
+//           // stack: 'hey',
+//         }
+//         series.unshift(idMap[id])
+//       }
+//     }
+//   }
 
-  // Fill in the data values
-  timestamps.forEach((timestamp, index) => {
-    const entries = data[timestamp]
-    for (const entryId in entries) {
-      if (entries[entryId]) {
-        const entry = entries[entryId]
-        const id = entry.id
-        const value = entry.value
-        idMap[id].data[index] = Math.abs(value)
-      }
-    }
-  })
+//   // Fill in the data values
+//   timestamps.forEach((timestamp, index) => {
+//     const entries = data[timestamp]
+//     for (const entryId in entries) {
+//       if (entries[entryId]) {
+//         const entry = entries[entryId]
+//         const id = entry.id
+//         const value = entry.value
+//         idMap[id].data[index] = Math.abs(value)
+//       }
+//     }
+//   })
 
-  return series
-}
+//   return series
+// }
 
-function onClickInsideCategory(idx: number) {
-  console.log('onClickInsideCategory')
-  date.value = categories.value[idx]
-}
+// function onClickInsideCategory(idx: number) {
+//   console.log('onClickInsideCategory')
+//   date.value = categories.value[idx]
+// }
 </script>
 
 <template>
@@ -325,10 +341,9 @@ function onClickInsideCategory(idx: number) {
         <div class="grid @4xl/stat:grid-cols-[1.4fr,auto] @4xl/stat:gap-4">
           <!-- Chart first level -->
           <UiToggle
-            :storageKey="`${props.storageKey}-${props.type}-chart`"
+            :storageKey="`${newBaseStorageKey}-chart-root`"
             :initStatus="true"
             class="md:max-w-xl"
-            isPadding
           >
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between">
@@ -338,9 +353,10 @@ function onClickInsideCategory(idx: number) {
                   @click="toggle"
                 >
                   <Icon
-                    :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                    v-if="!isShown"
+                    name="mdi:chevron-right"
                     size="22"
-                    class="-ml-3"
+                    class="-ml-1"
                   />
                   <div>{{ $t('chart.title') }}</div>
                 </UiTitle>
@@ -363,11 +379,33 @@ function onClickInsideCategory(idx: number) {
                     <div class="grid gap-4 p-3 min-w-52">
                       <UiTitle>{{ $t('chart.options') }}</UiTitle>
                       <USelect
-                        v-model.number="chartPeriodsShown"
+                        v-model.number="chartPeriodsShown2"
                         :options="Array.from({ length: 30 }, (_, i) => i + 1)"
                         color="blue"
                         size="lg"
                       />
+                      <div @click="() => changeChartPeriodsShown2(30)">
+                        30
+                      </div>
+                      <div @click="() => changeChartPeriodsShown2(8)">
+                        8
+                      </div>
+                      <div @click="() => changeChartPeriodsShown2(7)">
+                        7
+                      </div>
+                      <div @click="() => changeChartPeriodsShown2(12)">
+                        12
+                      </div>
+                      <div @click="() => changeChartPeriodsShown2(3)">
+                        3
+                      </div>
+                      <div @click="() => changeChartPeriodsShown2(1)">
+                        1
+                      </div>
+                      <div @click="() => changeChartPeriodsShown2(24)">
+                        24
+                      </div>
+
                       <USelect
                         v-model="chartType"
                         :options="chartTypes"
@@ -390,6 +428,7 @@ function onClickInsideCategory(idx: number) {
             </template>
 
             <LazyStatChartView
+              :key="baseStorageKey"
               :categories="categories"
               :chartType="chartType"
               :markedArea="date"
@@ -410,7 +449,7 @@ function onClickInsideCategory(idx: number) {
               'md:max-w-4xl': catsView === 'round',
               'md:max-w-lg': catsView === 'list',
             }"
-            :storageKey="`${props.storageKey}${props.type}-cats`"
+            :storageKey="`${newBaseStorageKey}-cats-root`"
             :initStatus="true"
             isPadding
           >
@@ -418,13 +457,14 @@ function onClickInsideCategory(idx: number) {
               <div class="flex items-center justify-between">
                 <UiTitle
                   :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                  class="grow flex items-center gap-1 pb-0"
+                  class="grow flex items-center gap-2 pb-0 -ml-1"
                   @click="toggle"
                 >
                   <Icon
-                    :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                    v-if="!isShown"
+                    name="mdi:chevron-right"
                     size="22"
-                    class="-ml-3"
+                    class="-ml-1"
                   />
                   <div>{{ $t('categories.title') }}</div>
                   <div>{{ catsView === 'list' ? cats.length : catsRounded.length }}</div>
@@ -530,7 +570,7 @@ function onClickInsideCategory(idx: number) {
 
             <div
               v-if="cats.length > 0 && catsView === 'list'"
-              class="pl-3"
+              class="pl-0"
             >
               <StatLinesItemLine
                 v-for="item in cats"
@@ -540,6 +580,7 @@ function onClickInsideCategory(idx: number) {
                 :biggestCatNumber
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 @click="onClickCategory"
+                @onClickIcon="onClickCategoryRounded"
               >
                 <div
                   class="pl-2"
@@ -550,7 +591,7 @@ function onClickInsideCategory(idx: number) {
                   >
                     <StatCategoryChartWrap
                       :categoryId="item.id"
-                      :chartPeriodsShown
+                      :chartPeriodsShown="chartPeriodsShown2"
                       :periodsEmptyTrnsIds
                       :markedArea="date"
                       :period
@@ -582,7 +623,7 @@ function onClickInsideCategory(idx: number) {
                         >
                           <StatCategoryChartWrap
                             :categoryId="insideItem.id"
-                            :chartPeriodsShown
+                            :chartPeriodsShown="chartPeriodsShown2"
                             :periodsEmptyTrnsIds
                             :markedArea="date"
                             :period
@@ -616,6 +657,7 @@ function onClickInsideCategory(idx: number) {
                           <TrnsList
                             class="pl-8"
                             :trnsIds="getTrnsWithDate(insideItem.id) ?? []"
+                            :size="5"
                             alt2
                             isHideDates
                             isShowFilterByDesc
@@ -650,6 +692,7 @@ function onClickInsideCategory(idx: number) {
                       <TrnsList
                         class="pl-8"
                         :trnsIds="getTrnsWithDate(item.id) ?? []"
+                        :size="5"
                         alt2
                         isHideDates
                         isShowFilterByDesc
@@ -664,20 +707,21 @@ function onClickInsideCategory(idx: number) {
           <!-- Trns first level -->
           <UiToggle
             v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0"
-            :storageKey="`${props.storageKey}${props.type}-trns`"
+            :storageKey="`${newBaseStorageKey}-trns-root`"
             class="@xl/stat:min-w-96 max-w-lg"
             isPadding
           >
             <template #header="{ toggle, isShown }">
               <UiTitle
                 :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                class="grow flex items-center gap-2 pb-0"
+                class="grow flex items-center gap-2 -ml-1"
                 @click="toggle"
               >
                 <Icon
-                  :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                  v-if="!isShown"
+                  name="mdi:chevron-right"
                   size="22"
-                  class="-ml-3"
+                  class="-ml-1"
                 />
                 <div>{{ $t('trns.title') }}</div>
                 <div>{{ selectedTrnsIdsForTrnsList?.length }}</div>
@@ -700,7 +744,7 @@ function onClickInsideCategory(idx: number) {
           v-if="selectedTrnsIdsForTrnsList?.length === 0"
           class="flex-col gap-2 flex-center h-full py-3 text-center text-secondary"
         >
-          <Icon name="mdi:palm-tree" size="64" />
+          <UiIconBase name="mdi mdi-palm-tree" class="!text-3xl" />
           <div class="text-md">
             {{ $t("trns.noTrns") }}
           </div>

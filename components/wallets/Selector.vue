@@ -22,15 +22,13 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <div class="p-2 py-2.5 overflow-hidden overflow-y-auto bg-item-4">
+  <div class="p-2 pt-1 pb-2">
     <WalletsItem
       v-for="(wallet, walletId) in walletsStore.sortedItems"
       :key="walletId"
       :activeItemId="props.activeItemId"
       :walletId
       :wallet
-      isHideDots
-      alt
       @click="onClickWallet(walletId)"
     />
   </div>

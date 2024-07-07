@@ -13,7 +13,7 @@ const colorMode = useColorMode()
       bg-item-4 border-r border-item-5
     "
   >
-    <div class="flex items-center justify-between pb-4 pt-3 pl-4 pr-2">
+    <div class="flex items-center justify-between pb-0 pt-5 pl-4 pr-2">
       <NuxtLink to="/dashboard">
         <UiLogo class="w-16" />
       </NuxtLink>
@@ -24,6 +24,7 @@ const colorMode = useColorMode()
           :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
           name="carbon:light"
           size="18"
+          color="white"
           @click="colorMode.preference = 'dark'"
         />
         <Icon
@@ -31,6 +32,7 @@ const colorMode = useColorMode()
           :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
           name="carbon:moon"
           size="18"
+          color="white"
           @click="colorMode.preference = 'light'"
         />
       </div>

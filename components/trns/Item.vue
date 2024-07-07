@@ -15,10 +15,9 @@ const props = defineProps<{
     isShowLine
   >
     <template v-if="!alt" #leftIcon>
-      <Icon
-        :name="props.trnItem.category?.icon?.replace('mdi mdi-', 'mdi:')"
+      <UiIconBase
+        :name="props.trnItem.category?.icon"
         :color="props.trnItem.category?.color"
-        size="22"
       />
     </template>
 

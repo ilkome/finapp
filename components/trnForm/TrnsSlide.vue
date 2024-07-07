@@ -63,16 +63,16 @@ function onClickEdit() {
 
 const tabs = computed(() => [
   {
+    id: 'all',
+    name: $i18n.t('trnForm.filterAll'),
+  },
+  {
     id: 'wallet',
     name: $i18n.t('trnForm.filterWallet'),
   },
   {
     id: 'walletAndCategory',
     name: $i18n.t('trnForm.filterWalletAndCategory'),
-  },
-  {
-    id: 'all',
-    name: $i18n.t('trnForm.filterAll'),
   },
 ])
 </script>
@@ -89,18 +89,17 @@ const tabs = computed(() => [
     >
       <template #contentBefore>
         <TrnFormDate />
+        <UiTabs>
+          <UiTabsItem
+            v-for="tab in tabs"
+            :key="tab.id"
+            :isActive="tab.id === filterBy"
+            @click="changeFilter(tab.id)"
+          >
+            {{ tab.name }}
+          </UiTabsItem>
+        </UiTabs>
       </template>
     </TrnsList>
-
-    <UiTabs>
-      <UiTabsItem
-        v-for="tab in tabs"
-        :key="tab.id"
-        :isActive="tab.id === filterBy"
-        @click="changeFilter(tab.id)"
-      >
-        {{ tab.name }}
-      </UiTabsItem>
-    </UiTabs>
   </div>
 </template>

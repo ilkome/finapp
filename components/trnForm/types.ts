@@ -5,27 +5,27 @@ import type { MoneyTypeSlug } from '~/components/stat/types'
 
 export enum AmountsType {
   Transaction = 0,
-  TransferIncome = 1,
   TransferExpense = 2,
+  TransferIncome = 1,
 }
 
 export interface TrnFormValues {
-  trnId: null | TrnId
-  // TODO: is better way to show array meaning?
   // ['Transaction', 'expenseTransfer', 'incomeTransfer']
   amount: [number, number, number]
   // TODO: is better way to show array meaning?
   // ['Transaction', 'expenseTransfer', 'incomeTransfer']
   amountRaw: [string, string, string]
+  // TODO: is better way to show array meaning?
+  categoryId: CategoryId | null
   date: number
   desc?: string
-  transferType: TransferType
-  trnType: TrnType
-  categoryId: CategoryId | null
-  walletId: WalletId | null
-
   expenseWalletId: WalletId | null
   incomeWalletId: WalletId | null
+  transferType: TransferType
+  trnId: null | TrnId
+
+  trnType: TrnType
+  walletId: WalletId | null
 }
 
 // export type TrnFormValues = {
@@ -51,13 +51,13 @@ export interface TrnFormValues {
 // })
 
 export interface TrnFormUi {
-  isShow: boolean
-  walletsTab: string // TODO: add typing
-  walletsModal: boolean
   catsRootModal: boolean
-  walletsViewAs: 'big' | 'small' // TODO: add typing
+  isShow: boolean
   tab: 'main' | 'date' | 'desc'
-
   walletTransferModal: boolean
   walletTransferType: MoneyTypeSlug
+  walletsModal: boolean
+
+  walletsTab: string // TODO: add typing
+  walletsViewAs: 'big' | 'small' // TODO: add typing
 }

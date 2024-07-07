@@ -37,7 +37,7 @@ function onFilter(id: CategoryId) {
 
 <template>
   <div
-    class="_w-[90vw] max-h-[50vh] min-w-[260px] overflow-hidden overflow-y-auto bg-foreground-3 p-2 py-2"
+    class="p-2 pt-1 pb-2"
   >
     <div
       v-for="categoryId in categoriesStore.categoriesRootIds"
@@ -69,7 +69,6 @@ function onFilter(id: CategoryId) {
           :hide
           :category="categoriesStore.items[childCategoryId]"
           :categoryId="childCategoryId"
-          class="group"
           @click.stop="select(childCategoryId, true)"
           @filter.stop="onFilter(childCategoryId)"
         />

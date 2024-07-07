@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type {
-  WalletId,
-  WalletItemWithAmount,
-} from '~/components/wallets/types'
+import { useStorage } from '@vueuse/core'
+import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
   alt?: boolean
+  insideClasses?: string
   isShowBaseRate?: boolean
   isShowIcons?: boolean
   isSort?: boolean
@@ -19,13 +18,30 @@ const emit = defineEmits<{
   filter: [walletId: WalletId]
 }>()
 
-const isShowCredit = ref(false)
+const creditViews = ['dept', 'sum'] as const
+const activeCreditView = useStorage<typeof creditViews[number]>(props.walletId, 'dept')
+
+const creditAmount = computed(() => {
+  switch (activeCreditView.value) {
+    case 'dept':
+      return props.wallet.amount
+    case 'sum':
+      return Math.abs(props.wallet.creditLimit ?? 0) - Math.abs(props.wallet.amount)
+    default:
+      return 0
+  }
+})
+
+function changeCreditView() {
+  activeCreditView.value = creditViews[creditViews.findIndex(i => i === activeCreditView.value) + 1]
+}
 </script>
 
 <template>
   <UiElement
     :isActive="activeItemId === props.walletId"
     :isShowIcons="props.isShowIcons"
+    :insideClasses="props.insideClasses"
     :hideDivider="!alt"
     isShowLine
     class="group relative"
@@ -39,14 +55,8 @@ const isShowCredit = ref(false)
           :style="{ color: wallet.color }"
           class="h-4 w-4 text-item-2"
         />
-
-        <UiIconWalletWithdrawal
-          v-else-if="wallet.countTotal"
-          :style="{ color: wallet.color }"
-          class="h-4 w-4 text-item-2"
-        />
         <UiIconWalletSavings
-          v-else-if="!wallet.countTotal && !wallet.isCredit"
+          v-else-if="!wallet.isCredit"
           :style="{ color: wallet.color }"
           class="h-4 w-4 text-item-2"
         />
@@ -76,14 +86,14 @@ const isShowCredit = ref(false)
         {{ wallet.name }}
       </div>
 
-      <div class="_grow pr-1 opacity-90">
+      <div class="pr-1 opacity-90">
         <Amount
           v-if="wallet.creditLimit"
-          :amount="isShowCredit ? Math.abs(wallet.creditLimit) - Math.abs(wallet.amount) : wallet.amount"
+          :amount="creditAmount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
           class="hocus:!bg-neutral-700/50 p-2 -m-2 rounded-lg"
-          @click.stop="isShowCredit = !isShowCredit"
+          @click.stop="changeCreditView"
         />
         <Amount
           v-else

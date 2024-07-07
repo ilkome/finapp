@@ -14,11 +14,11 @@ const emit = defineEmits(['click'])
 
     class="
       overflow-hidden relative
-      enabled:cursor-pointer
+      enabled:cursor-default
       py-3 px-3 w-full
       text-accent-3 text-center
-      bg-accent-2 rounded-full
-      hocus:bg-accent-2/80
+      bg-blue-600 rounded-full
+      hocus:bg-blue-700
       transition
       min-h-11
     "

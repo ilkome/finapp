@@ -27,7 +27,7 @@ async function onClickSubmit() {
 }
 </script>
 
-<template lang="html">
+<template>
   <div
     :class="{
       '!bg-accent-1/50 border-accent-1/50 hocus:!bg-accent-1/70': !isMath && isSubmittable,

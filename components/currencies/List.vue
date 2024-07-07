@@ -36,7 +36,7 @@ const list = computed(() => {
     </div>
 
     <div
-      class="-scrollerBlock mt-3 flex flex-col gap-1 -overflow-y-auto pb-3"
+      class="scrollerBlock mt-3 flex flex-col gap-1 overflow-y-auto pb-3"
     >
       <template v-if="list.length === 0">
         <div class="py-3 text-center">

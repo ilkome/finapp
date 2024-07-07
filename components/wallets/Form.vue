@@ -102,6 +102,7 @@ async function saveWalletData(id, values) {
   if (!walletsStore.hasItems)
     currenciesStore.updateBase(values.currency)
 
+  console.log('1', `users/${uid}/accounts/${id}`)
   await saveData(`users/${uid}/accounts/${id}`, values)
 }
 
@@ -157,7 +158,7 @@ async function onSave() {
           >
         </div>
 
-        <div class="mb-6">
+        <div class="mb-8">
           <div class="pb-2 text-item-2 text-sm leading-none">
             {{ $t('wallets.form.description.label') }}
           </div>
@@ -170,48 +171,42 @@ async function onSave() {
           >
         </div>
 
-        <UiCheckbox
-          :checkboxValue="walletForm.countTotal"
-          :title="$t('countTotal')"
-          @onClick="walletForm.countTotal = !walletForm.countTotal"
-        />
-
+        <UiTitle class="pb-2">
+          {{ $t('wallets.properties') }}
+        </UiTitle>
         <UiCheckbox
           :checkboxValue="walletForm.isCredit"
-          :title="$t('isCredit')"
+          :title="$t('money.totals.isCredit')"
           @onClick="walletForm.isCredit = !walletForm.isCredit"
         />
+        <input
+          v-if="walletForm.isCredit"
+          v-model="walletForm.creditLimit"
+          :placeholder="$t('wallets.form.credit.limit')"
+          class="mt-2 mb-4 w-full m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder:text-item-2 transition ease-in-out focus:text-item-1 focus:bg-item-5 focus:border-accent-4 focus:outline-none"
+          type="number"
+          @input="event => emit('updateValue', 'creditLimit', event.target.value)"
+        >
         <UiCheckbox
           :checkboxValue="walletForm.withdrawal"
-          :title="$t('withdrawal')"
+          :title="$t('money.totals.withdrawal')"
           @onClick="walletForm.withdrawal = !walletForm.withdrawal"
         />
         <UiCheckbox
           :checkboxValue="walletForm.isDeposit"
-          :title="$t('isDeposit')"
+          :title="$t('money.totals.isDeposit')"
           @onClick="walletForm.isDeposit = !walletForm.isDeposit"
         />
         <UiCheckbox
           :checkboxValue="walletForm.isCash"
-          :title="$t('isCash')"
+          :title="$t('money.totals.isCash')"
           @onClick="walletForm.isCash = !walletForm.isCash"
         />
         <UiCheckbox
           :checkboxValue="walletForm.isCashless"
-          :title="$t('isCashless')"
+          :title="$t('money.totals.isCashless')"
           @onClick="walletForm.isCashless = !walletForm.isCashless"
         />
-
-        <div class="pt-4">
-          <input
-            v-if="walletForm.isCredit"
-            v-model="walletForm.creditLimit"
-            :placeholder="$t('wallets.form.credit.limit')"
-            class="w-full m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder:text-item-2 transition ease-in-out focus:text-item-1 focus:bg-item-5 focus:border-accent-4 focus:outline-none"
-            type="text"
-            @input="event => emit('updateValue', 'creditLimit', event.target.value)"
-          >
-        </div>
       </template>
 
       <!-- Currencies -->

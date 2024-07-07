@@ -5,6 +5,7 @@ import type { WalletId, WalletItem } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
+  activeType: string // TODO: types
   currencyCode: CurrencyCode
   walletsItems: Record<WalletId, WalletItem>
 }>()
@@ -13,7 +14,6 @@ const emit = defineEmits<{
   click: [v: string]
 }>()
 
-const { t } = useI18n()
 const { getAmountInBaseRate } = useAmount()
 const walletsStore = useWalletsStore()
 
@@ -30,44 +30,42 @@ const totalInWallets = computed(() => {
   }
 
   for (const walletId in props.walletsItems) {
-    let walletTotal = 0
-    if (props.walletsItems[walletId].currency === props.currencyCode) {
-      walletTotal = walletsStore.totals[walletId]
-    }
-    else {
-      walletTotal = +getAmountInBaseRate({
-        amount: walletsStore.totals[walletId],
-        currencyCode: props.walletsItems[walletId].currency,
-        noFormat: true,
-      })
-    }
+    const wallet = props.walletsItems[walletId]
+    if (!wallet)
+      continue
 
-    total.all = total.all + walletTotal
+    const itemValue = wallet.currency === props.currencyCode
+      ? walletsStore.totals[walletId] ?? 0
+      : +getAmountInBaseRate({
+          amount: walletsStore.totals[walletId] ?? 0,
+          currencyCode: wallet.currency ?? 'USD',
+          noFormat: true,
+        })
 
-    if (props.walletsItems[walletId].isCredit && walletsStore.items[walletId].creditLimit) {
+    total.all += itemValue
+
+    if (wallet.isCash)
+      total.isCash += itemValue
+
+    if (wallet.isCashless)
+      total.isCashless += itemValue
+
+    if (wallet.creditLimit) {
       total.creditPossible = total.creditPossible + +getAmountInBaseRate({
-        amount: walletsStore.items[walletId].creditLimit,
-        currencyCode: props.walletsItems[walletId].currency,
+        amount: wallet.creditLimit ?? 0,
+        currencyCode: wallet.currency ?? 'USD',
         noFormat: true,
       })
     }
 
-    if (props.walletsItems[walletId].isDeposit)
-      total.isDeposit = total.isDeposit + walletTotal
+    if (wallet.isDeposit)
+      total.isDeposit += itemValue
 
-    if (props.walletsItems[walletId].isCash)
-      total.isCash = total.isCash + walletTotal
+    if (wallet.withdrawal)
+      total.withdrawal += itemValue
 
-    if (props.walletsItems[walletId].isCashless)
-      total.isCashless = total.isCashless + walletTotal
-
-    if (props.walletsItems[walletId].withdrawal)
-      total.withdrawal = total.withdrawal + walletTotal
-
-    if (props.walletsItems[walletId].countTotal)
-      total.counted = total.counted + walletTotal
-    else if (props.walletsItems[walletId].isCredit)
-      total.credits = total.credits + walletTotal
+    else if (wallet.isCredit)
+      total.credits += itemValue
   }
 
   return total
@@ -78,16 +76,6 @@ const counts = computed(() => ({
     id: 'all',
     isShow: true,
     value: totalInWallets.value.all,
-  },
-  all2: {
-    id: 'all2',
-    isShow: true,
-    value: totalInWallets.value.counted - Math.abs(totalInWallets.value.credits),
-  },
-  creditPossible: {
-    id: 'isCredit',
-    isShow: totalInWallets.value.creditPossible !== 0,
-    value: totalInWallets.value.creditPossible,
   },
   isCash: {
     id: 'isCash',
@@ -104,64 +92,84 @@ const counts = computed(() => ({
     isShow: totalInWallets.value.credits !== 0,
     value: totalInWallets.value.credits,
   },
-  isDeposit: {
-    icon: 'isDeposit',
-    id: 'isDeposit',
-    isShow: totalInWallets.value.isDeposit !== 0,
-    value: totalInWallets.value.isDeposit,
-  },
-  withCredit: {
-    id: 'withCredit',
-    isShow: totalInWallets.value.credits !== 0,
-    value: totalInWallets.value.counted,
-  },
+}))
+
+const counts2 = computed(() => ({
   withdrawal: {
     icon: 'UiIconWalletWithdrawal',
     id: 'withdrawal',
     isShow: totalInWallets.value.withdrawal !== 0,
     value: totalInWallets.value.withdrawal,
   },
+  // eslint-disable-next-line perfectionist/sort-objects
+  isDeposit: {
+    icon: 'isDeposit',
+    id: 'isDeposit',
+    isShow: totalInWallets.value.isDeposit !== 0,
+    value: totalInWallets.value.isDeposit,
+  },
+  // eslint-disable-next-line perfectionist/sort-objects
+  creditPossible: {
+    id: 'creditPossible',
+    isShow: totalInWallets.value.creditPossible !== 0,
+    value: totalInWallets.value.creditPossible,
+  },
+  withCredit: {
+    id: 'withCredit',
+    isShow: totalInWallets.value.credits !== 0,
+    value: totalInWallets.value.all + -totalInWallets.value.credits,
+  },
 }))
-
-const filteredCount = computed(() =>
-  Object.values(counts.value).filter(item => item.isShow),
-)
 </script>
 
 <template>
-  <div>
-    <div
-      v-for="(item) in filteredCount"
-      :key="item.id"
-      class="flex items-center gap-12 border-b border-item-5 px-2 py-2 last:border-0"
-      @click="emit('click', item.id)"
-    >
-      <div
-        class="flex grow items-center gap-3 text-sm leading-none text-secondary"
+  <div class="grid gap-2 @md/wallets:grid-cols-2">
+    <div class="rounded-lg bg-item-4">
+      <UiElement
+        v-for="(item) in Object.values(counts).filter(item => item.isShow)"
+        :key="item.id"
+        :isActive="props.activeType === item.id"
+        isShowLine
+        class="group"
+        @click="emit('click', item.id)"
       >
-        {{ t(item.id) }}
-      </div>
+        <div
+          class="pl-1 grow text-sm leading-none text-secondary"
+        >
+          {{ $t(`money.totals.${item.id}`) }}
+        </div>
 
-      <Amount
-        :amount="item.value"
-        :currencyCode="currencyCode"
-      />
+        <div class="pr-1 opacity-90">
+          <Amount
+            :amount="item.value"
+            :currencyCode="currencyCode"
+          />
+        </div>
+      </UiElement>
+    </div>
+
+    <div class="rounded-lg bg-item-4">
+      <UiElement
+        v-for="(item) in Object.values(counts2).filter(item => item.isShow)"
+        :key="item.id"
+        :isActive="props.activeType === item.id"
+        isShowLine
+        class="group"
+        @click="emit('click', item.id)"
+      >
+        <div
+          class="pl-1 grow text-sm leading-none text-secondary"
+        >
+          {{ $t(`money.totals.${item.id}`) }}
+        </div>
+
+        <div class="pr-1 opacity-90">
+          <Amount
+            :amount="item.value"
+            :currencyCode="currencyCode"
+          />
+        </div>
+      </UiElement>
     </div>
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  withdrawal: Withdrawal
-  isCredit: Credits
-  withCredit: Total without credit
-  isSaving: Savings
-  all: Total
-
-ru:
-  withdrawal: Доступные
-  isCredit: Кредиты
-  withCredit: Всего без учета кредита
-  isSaving: Вложения
-  all: Всего
-</i18n>

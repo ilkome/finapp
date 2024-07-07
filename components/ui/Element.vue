@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
 
-defineProps<{
+const props = defineProps<{
   hideDivider?: boolean
+  insideClasses?: string
   isActive?: boolean
+  isShowIcon?: boolean
   isShowIcons?: boolean
   isShowLine?: boolean
   isShowToggle?: boolean
@@ -18,12 +20,13 @@ const slots = useSlots()
 
 <template>
   <div
-    @click="e => emit('click', e)"
+    @click="(e: Event) => emit('click', e)"
   >
     <div
       :class="[
         { '!bg-item-3': isActive },
         getStyles('item', ['link', 'rounded', 'padding1', 'minh']),
+        props.insideClasses,
       ]"
 
       class="
@@ -44,7 +47,7 @@ const slots = useSlots()
 
       <div
         v-if="slots.leftIcon"
-        class="flex-center w-6"
+        class="flex-center min-w-6"
       >
         <slot name="leftIcon" />
       </div>
@@ -56,8 +59,8 @@ const slots = useSlots()
 
     <div
       v-if="isShowLine"
-      class="ml-9 mr-2 h-[1px] bg-item-5 group-last:hidden"
-      :class="{ 'ml-9': isShowIcons, 'ml-11': !isShowIcons }"
+      class="mx-2 h-[1px] bg-item-5 group-last:hidden"
+      :class="{ 'ml-9': isShowIcons, 'ml-11': isShowIcon }"
     />
   </div>
 </template>

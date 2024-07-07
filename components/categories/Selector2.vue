@@ -35,7 +35,7 @@ function onFilter(id: CategoryId) {
 </script>
 
 <template>
-  <div class="p-2 py-2.5">
+  <div class="p-2 pt-1 pb-2">
     <CategoriesItem
       v-for="categoryId in props.ids"
       :key="categoryId"

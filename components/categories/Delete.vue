@@ -97,7 +97,8 @@ async function onDeleteConfirm() {
     </UiHeaderLink>
 
     <LayoutConfirmModal
-      :show="isShowDeleteConfirm"
+      v-if="isShowDeleteConfirm"
+      show
       :description="deleteDescText"
       @closed="isShowDeleteConfirm = false"
       @onConfirm="onDeleteConfirm"

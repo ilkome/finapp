@@ -4,9 +4,9 @@ import { random } from '~/assets/js/emo'
 
 export function getPreparedFormData(values?: any): WalletForm {
   return {
+    archived: values?.archived ?? false,
     color: values?.color ?? random(random(allColors)),
-    countTotal: values?.countTotal ?? true,
-    creditLimit: values?.creditLimit ?? 0,
+    creditLimit: values?.creditLimit ?? null,
     currency: values?.currency ?? 'USD',
     description: values?.description ?? null,
     isCash: values?.isCash ?? false,

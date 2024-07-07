@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <div
     class="
       grow flex items-center justify-center

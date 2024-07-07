@@ -94,85 +94,17 @@ onMounted(init)
 
           <!-- Quick selector -->
           <div
-            class="swiper-slide bg-foreground-2 sm:max-w-[260px] sm:rounded-r-xl"
+            class="swiper-slide bg-foreground-2 sm:max-w-[380px] sm:rounded-r-xl"
             :style="{ height: maxHeight }"
           >
             <div class="scroll scrollerBlock">
               <div class="pb-4 pt-4">
-                <!-- Wallets -->
-                <div class="pb-6">
-                  <UiTitle
-                    class="px-3 pb-2 pt-1.5"
-                    @click="trnFormStore.openTrnFormModal('wallets')"
-                  >
-                    {{ $t("wallets.title") }}
-                  </UiTitle>
-
-                  <WalletsList
-                    v-slot="{ walletsItemsLimited }"
-                    :limit="5"
-                    class="px-3"
-                  >
-                    <WalletsItem
-                      v-for="(wallet, walletId) in walletsItemsLimited"
-                      :key="walletId"
-                      :activeItemId="trnFormStore.values.walletId"
-                      :walletId
-                      :wallet
-                      isHideDots
-                      alt
-                      @click="trnFormStore.values.walletId = walletId"
-                    />
-                  </WalletsList>
-                </div>
-
-                <!-- Favorite categories -->
-                <div
-                  v-if="categoriesStore.favoriteCategoriesIds.length > 0"
+                <TrnFormSelectionWalletsFast
                   class="pb-6"
-                >
-                  <UiTitle
-                    class="px-3 pb-2"
-                    @click="trnFormStore.ui.catsRootModal = true"
-                  >
-                    {{ $t("categories.favoriteTitle") }}
-                    {{ $t("categories.title") }}
-                  </UiTitle>
-
-                  <div class="px-3">
-                    <CategoriesList
-                      v-if="sliderObj"
-                      :ids="categoriesStore.favoriteCategoriesIds"
-                      :activeItemId="trnFormStore.values.categoryId"
-                      :slider="sliderObj"
-                      class="!gap-x-1"
-                      @click="(id) => (trnFormStore.values.categoryId = id)"
-                    />
-                  </div>
-                </div>
-
-                <!-- Recent categories -->
-                <div
-                  v-if="categoriesStore.recentCategoriesIds.length > 0"
-                  class="pb-6"
-                >
-                  <UiTitle
-                    class="px-3 pb-2"
-                    @click="trnFormStore.ui.catsRootModal = true"
-                  >
-                    {{ $t("categories.lastUsedTitle") }}
-                    {{ $t("categories.title") }}
-                  </UiTitle>
-
-                  <CategoriesList
-                    v-if="sliderObj"
-                    :ids="categoriesStore.recentCategoriesIds"
-                    :activeItemId="trnFormStore.values.categoryId"
-                    :slider="sliderObj"
-                    class="!gap-x-1 px-3 "
-                    @click="id => trnFormStore.values.categoryId = id"
-                  />
-                </div>
+                />
+                <TrnFormSelectionCategoriesFast
+                  @onSelectCategory="id => trnFormStore.values.categoryId = id"
+                />
               </div>
             </div>
           </div>
@@ -186,6 +118,13 @@ onMounted(init)
   <!-- Modals -->
   <LazyTrnFormModalDescription v-if="trnFormStore.modal.description" />
 </template>
+
+<style>
+.trnForm__pagination.swiper-pagination-horizontal
+  .swiper-pagination-bullet-active {
+  @apply !bg-neutral-600 dark:!bg-white/80;
+}
+</style>
 
 <style lang="stylus">
 .trnForm
@@ -201,6 +140,7 @@ onMounted(init)
     padding 6px
     background alpha(#171717, .9)
     border-radius 6px
+    transform translateX(-50%)
 
     .swiper-pagination-bullet
       opacity 1
@@ -210,10 +150,6 @@ onMounted(init)
       background var(--c-bg-9)
       border-radius 50%
       anim()
-
-      &-active
-        width 10px
-        border-radius 4px
 </style>
 
 <style lang="stylus" scoped>

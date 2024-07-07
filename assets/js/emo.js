@@ -7,8 +7,8 @@ function random(icons) {
 }
 
 export {
-  successEmo,
   errorEmo,
-  updateEmo,
   random,
+  successEmo,
+  updateEmo,
 }

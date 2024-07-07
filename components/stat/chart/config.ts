@@ -19,6 +19,12 @@ export const config = {
 
     backgroundColor: 'var(--chart-bg)',
     borderWidth: 0,
+    label: {
+      backgroundColor: 'var(--chart-bg)',
+      color: 'red',
+    },
+    // },
+    padding: 8,
     // formatter(props: any[]) {
     //   return `
     //     <div class="grid gap-2 px-2 text-secondary">
@@ -32,8 +38,9 @@ export const config = {
     //       `)}
     //       </div>
     //       `
-    // },
-    padding: 8,
+    textStyle: {
+      color: 'var(--chart-tooltip)',
+    },
     // position() {
     //   return {
     //     right: '10',
@@ -41,9 +48,6 @@ export const config = {
     //   }
     // show: false,
     // },
-    textStyle: {
-      color: '',
-    },
     trigger: 'axis',
 
     valueFormatter: getLocalAmount,
@@ -104,8 +108,8 @@ export const config = {
 }
 
 export const lineConfig = {
-  barMaxWidth: '10',
-  barMinWidth: '12',
+  barMaxWidth: '12',
+  barMinWidth: '8',
   borderColor: 'blue',
   cursor: 'default',
   emphasis: {

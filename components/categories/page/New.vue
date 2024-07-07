@@ -24,7 +24,7 @@ export default defineComponent({
 })
 </script>
 
-<template lang="html">
+<template>
   <UiPage>
     <UiHeader>
       <RouterLink

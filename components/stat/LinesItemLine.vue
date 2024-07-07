@@ -14,6 +14,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [categoryId: CategoryId]
+  onClickIcon: [id: CategoryId]
 }>()
 
 const categoriesStore = useCategoriesStore()
@@ -75,7 +76,9 @@ function getBarStyle() {
         <UiIconBase
           :color="category?.color"
           :name="category?.icon"
-          size="18"
+          invert
+          class="!text-xl !w-8"
+          @click.stop="emit('onClickIcon', props.item.id)"
         />
       </template>
 
@@ -89,7 +92,7 @@ function getBarStyle() {
           v-if="category?.parentId"
           class="text-2xs"
         >
-          {{ categoriesStore.items[category?.parentId].name }}
+          {{ categoriesStore.items[category?.parentId]?.name }}
         </div>
 
         <!-- Category name -->

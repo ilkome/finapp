@@ -33,6 +33,8 @@ export default defineNuxtConfig({
     preference: 'system',
   },
 
+  compatibilityDate: '2024-07-07',
+
   components: [{
     extensions: ['vue'],
     global: true,
@@ -156,8 +158,8 @@ export default defineNuxtConfig({
   telemetry: false,
 
   ui: {
-    gray: 'blue',
-    primary: 'stone',
+    gray: 'zinc',
+    primary: 'blue',
   },
 
   vite: {

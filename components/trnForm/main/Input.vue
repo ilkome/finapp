@@ -19,7 +19,7 @@ function onInput(event: Event) {
 }
 </script>
 
-<template lang="html">
+<template>
   <div class="relative">
     <!-- Sum -->
     <div

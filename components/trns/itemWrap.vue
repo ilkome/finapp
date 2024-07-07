@@ -83,6 +83,7 @@ const items = computed(() => ({
             v-for="(item, slug) in items"
             :key="slug"
             isShowLine
+            class="group"
             @click="item.click(hide)"
           >
             <template #leftIcon>

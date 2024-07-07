@@ -18,12 +18,6 @@ useHead({
     lang: useI18n().locale.value,
   },
 })
-
-watch(() => useUserStore().uid, (value) => {
-  value
-    ? useRouter().replace('/dashboard')
-    : useRouter().replace('/login')
-}, { immediate: true })
 </script>
 
 <template>

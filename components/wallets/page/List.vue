@@ -50,6 +50,12 @@ const selectedWallets = computed(() => {
 
           if (activeType.value === 'isCash' && wallet.isCash)
             return true
+
+          if (activeType.value === 'creditPossible' && wallet.creditLimit)
+            return true
+
+          if (activeType.value === 'withCredit' && !wallet.isCredit)
+            return true
         }
 
         if (activeCurrency.value === wallet.currency) {
@@ -74,6 +80,10 @@ const selectedWallets = computed(() => {
           if (activeType.value === 'isDeposit' && wallet.isDeposit) {
             return true
           }
+          if (activeType.value === 'creditPossible' && wallet.creditLimit)
+            return true
+          if (activeType.value === 'withCredit' && !wallet.isCredit)
+            return true
         }
 
         return false
@@ -126,7 +136,7 @@ const walletsCurrenciesTabs = reactive({
     </UiHeader>
 
     <div class="grid items-start gap-5 px-2 md:grid-cols-2 md:gap-8">
-      <div class="grid gap-5 md:gap-3 md:order-2">
+      <div class="grid gap-5 md:gap-3 md:order-2 @container/wallets">
         <!-- Base currency -->
         <div
           v-if="walletsStore.currenciesUsed.length > 1"
@@ -160,21 +170,16 @@ const walletsCurrenciesTabs = reactive({
           </div>
         </div>
 
-        <pre>activeType {{ activeType }}</pre>
-        <pre>activeCurrency {{ activeCurrency }}</pre>
-        <pre>selectedWallets {{ Object.keys(selectedWallets).length }}</pre>
         <WalletsTotal
           :activeType
           :currencyCode="currenciesStore.base"
           :walletsItems="selectedWallets2"
-          class="rounded-lg border-item-5 bg-item-4 px-2 py-1.5 md:order-2 lg:max-w-[360px]"
+          class="md:order-2"
           @click="v => activeType = v"
         />
       </div>
 
       <div class="lg:max-w-[360px]">
-        <!-- <pre>{{ selectedWallets }}</pre> -->
-
         <WalletsItem
           v-for="(walletItem, walletId) in selectedWallets"
           :key="walletId"

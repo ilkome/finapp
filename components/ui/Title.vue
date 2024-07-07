@@ -4,11 +4,11 @@ const emit = defineEmits<{
 }>()
 </script>
 
-<template lang="html">
-  <span
+<template>
+  <div
     class="text-secondary font-primary text-md font-medium"
     @click="emit('click')"
   >
     <slot />
-  </span>
+  </div>
 </template>

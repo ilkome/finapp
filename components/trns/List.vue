@@ -187,6 +187,32 @@ const groupedTrns = computed(() => {
 
     <!-- Hide dates -->
     <div v-if="isHideDates">
+      <!-- Group Sum -->
+      <div
+        v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
+        class="pr-3 border-b border-item-7 pb-2"
+      >
+        <Amount
+          v-if="getTotalOfTrnsIds(paginatedTrnsIds).income !== 0"
+          :amount="getTotalOfTrnsIds(paginatedTrnsIds).income"
+          :currencyCode="currenciesStore.base"
+          :isShowBaseRate="false"
+          :type="1"
+          colorize="income"
+          variant="base"
+        />
+
+        <Amount
+          v-if="getTotalOfTrnsIds(paginatedTrnsIds).expense !== 0"
+          :amount="getTotalOfTrnsIds(paginatedTrnsIds).expense"
+          :currencyCode="currenciesStore.base"
+          :isShowBaseRate="false"
+          :type="0"
+          isShowMinus
+          variant="base"
+        />
+      </div>
+
       <TrnsItemWrap
         v-for="trnId in paginatedTrnsIds"
         :key="trnId"
@@ -194,6 +220,7 @@ const groupedTrns = computed(() => {
         :date="formatDate(formatTrnItem(trnId)?.date, 'trnItem')"
         :trnId="trnId"
         :trnItem="formatTrnItem(trnId)"
+        class="group"
       />
     </div>
 
@@ -207,19 +234,22 @@ const groupedTrns = computed(() => {
         :key="date"
         class="bg-item-4 rounded-lg overflow-hidden"
       >
-        <div class="flex gap-2 items-center pt-2 pb-1">
+        <div
+          :class="{ 'border-b border-item-7': isShowGroupSum && groupTrnsIds.length > 1 }"
+          class="flex gap-2 items-end pt-2 pb-1 mx-3"
+        >
           <DateTrns
             :date="+date"
-            class="px-3 grow"
+            class="grow"
           />
 
           <!-- Group Sum -->
           <div
-            v-if="isShowGroupSum"
-            class="pr-3"
+            v-if="isShowGroupSum && groupTrnsIds.length > 1"
+            class="pb-2"
           >
             <Amount
-              v-if="groupTrnsIds.length > 1 && getTotalOfTrnsIds(groupTrnsIds).income !== 0"
+              v-if="getTotalOfTrnsIds(groupTrnsIds).income !== 0"
               :amount="getTotalOfTrnsIds(groupTrnsIds).income"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
@@ -229,7 +259,7 @@ const groupedTrns = computed(() => {
             />
 
             <Amount
-              v-if="groupTrnsIds.length > 1 && getTotalOfTrnsIds(groupTrnsIds).expense !== 0"
+              v-if="getTotalOfTrnsIds(groupTrnsIds).expense !== 0"
               :amount="getTotalOfTrnsIds(groupTrnsIds).expense"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"

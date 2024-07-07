@@ -90,15 +90,17 @@ onLongPress(
       </div>
     </div>
 
-    <div class="grid gap-1 grid-rows-[auto,1fr]">
+    <div class="grid gap-3 grid-rows-[auto,1fr]">
       <!-- Description -->
       <TrnFormMainCalculatorButton
-        :class="{ 'text-accent-1': !!trnFormStore.values.desc }"
         class="relative"
         @click="trnFormStore.openTrnFormModal('description')"
       >
         <i class="mdi mdi-comment-text-outline" />
-        <div class="absolute right-1 top-1 aspect-square w-2 bg-accent-1 rounded-full" />
+        <div
+          v-if="!!trnFormStore.values.desc"
+          class="absolute right-1 top-1 aspect-square w-2 bg-accent-1 rounded-full"
+        />
       </TrnFormMainCalculatorButton>
 
       <!-- Action -->

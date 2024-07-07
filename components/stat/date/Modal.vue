@@ -38,11 +38,13 @@ function onClick(slug: PeriodNameWithoutAll) {
         {{ $t(`dates.${periodItem.slug}.simple`) }}
       </div>
     </div>
+
     <UButton
       :label="$t('close')"
-      color="blue"
       size="lg"
       block
+      color="blue"
+      variant="solid"
       @click="props.hide"
     />
   </div>

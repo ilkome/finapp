@@ -28,6 +28,7 @@ html.dark {
   --foreground-1: 0 0 0;
   --foreground-2: 23 23 23;
   --foreground-3: 23, 23, 23;
+  /* --foreground-3: 9, 14, 23; */
   --foreground-4: 23, 23, 23, 0.7;
   --foreground-5: 27 27 28;
 

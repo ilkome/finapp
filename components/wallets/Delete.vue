@@ -60,7 +60,7 @@ async function onDeleteConfirm() {
 }
 </script>
 
-<template lang="html">
+<template>
   <div>
     <UiHeaderLink @click="onClickDelete">
       <i class="mdi mdi-delete-empty-outline group-hover:text-white text-xl" />

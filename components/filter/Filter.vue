@@ -67,9 +67,10 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
               <BaseBottomSheetClose @onClick="hide" />
             </div>
 
+            <!-- TODO: fix for Arrays -->
             <WalletsSelector
-              class="max-h-[50vh] _w-[90vw] min-w-[260px]"
-              :selected="filter?.walletsIds.value"
+              class="min-w-72 max-w-xs"
+              :activeItemId="filter?.walletsIds.value[0]"
               @onSelected="filter.toggleWalletId"
             />
           </template>

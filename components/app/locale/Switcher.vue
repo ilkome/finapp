@@ -23,7 +23,7 @@ function changeLocale(locale: string) {
 }
 </script>
 
-<template lang="html">
+<template>
   <UiTabs3>
     <UiTabsItem2
       v-for="item in locales"

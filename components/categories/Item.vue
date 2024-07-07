@@ -29,9 +29,9 @@ const childCategoriesIds = computed(() =>
     @click="e => emit('click', e)"
   >
     <template #leftIcon>
-      <Icon
+      <UiIconBase
         :color="category.color"
-        :name="category.icon.replace('mdi mdi-', 'mdi:')"
+        :name="category.icon"
         @click="e => emit('filter', e)"
       />
     </template>
