@@ -8,6 +8,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 const props = defineProps<{
   biggestCatNumber: number
   isActive?: boolean
+  isAltIcon?: boolean
   isShowLinesChart?: boolean
   item: TotalCategory
 }>()
@@ -74,6 +75,14 @@ function getBarStyle() {
 
       <template #leftIcon>
         <UiIconBase
+          v-if="isAltIcon"
+          :color="category?.color"
+          :name="category?.icon"
+          class="!text-xl !w-6"
+          @click.stop="emit('onClickIcon', props.item.id)"
+        />
+        <UiIconBase
+          v-else
           :color="category?.color"
           :name="category?.icon"
           invert

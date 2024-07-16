@@ -54,9 +54,9 @@ export function useNewStat() {
           const trnBaseCategory = categoriesStore.items[newCategoryId]
 
           newCategoryId
-            = trnBaseCategory.parentId === 0
+            = trnBaseCategory?.parentId === 0
               ? trnsStore.items[trnId]?.categoryId
-              : trnBaseCategory.parentId
+              : trnBaseCategory?.parentId
         }
 
         prev[newCategoryId] ??= []
@@ -173,6 +173,7 @@ export function useNewStat() {
 
     return types.map(t => ({
       color: chartSeriesOptions[t].color,
+      cursor: 'default',
       data: Object.values(total).map(i => t !== 'sum' ? Math.abs(i[t]) : i[t]),
       name: chartSeriesOptions[t].name,
       type: chartSeriesOptions[t].type,

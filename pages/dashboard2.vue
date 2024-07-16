@@ -46,7 +46,9 @@ const trnsIds = computed(() =>
   }),
 )
 
-const { date, duration, groupBy, initialRange, period, range, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange()
+const { date, duration, groupBy, initialRange, period, range, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange({
+  key: 'test',
+})
 
 const periodTrnsIds = computed(() =>
   groupBy.value === 'all'

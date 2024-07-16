@@ -114,7 +114,10 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
         type="income"
       />
 
-      <div class="grid md:grid-cols-2 gap-24">
+      <div
+        v-if="activeTab === 'sum'"
+        class="grid md:grid-cols-2 gap-24"
+      >
         <!-- Expense -->
         <StatMiniItem
           v-if="(activeTab === 'sum') && expenseTrnsIds.length > 0"
@@ -129,6 +132,18 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
           :trnsIds="incomeTrnsIds"
           :storageKey="props.storageKey + activeTab"
           type="income"
+        />
+      </div>
+
+      <div
+        v-if="activeTab === 'sum2'"
+      >
+        <StatMiniItem4
+          v-if="totals.sum && (totals.expense !== 0 || totals.income !== 0)"
+          :storageKey="props.storageKey + activeTab"
+          :trnsIds="trnsIds"
+          class="-max-w-2xl"
+          type="sum"
         />
       </div>
     </div>

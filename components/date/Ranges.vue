@@ -15,25 +15,31 @@ const emit = defineEmits<{
 const ranges: RangeDuration[] = [
   { duration: 7, groupBy: 'period', label: '7d', period: 'day' },
   { duration: 30, groupBy: 'period', label: '30d', period: 'day' },
+  { duration: 60, groupBy: 'period', label: '60d', period: 'day' },
+
+  { duration: 12, groupBy: 'period', label: '12w', period: 'week' },
+
+  { duration: 3, groupBy: 'period', label: '3m', period: 'month' },
+  { duration: 6, groupBy: 'period', label: '6m', period: 'month' },
   { duration: 12, groupBy: 'period', label: '12m', period: 'month' },
   { duration: 24, groupBy: 'period', label: '24m', period: 'month' },
-  { duration: 11, groupBy: 'period', label: '11y', period: 'year' },
+  { duration: 62, groupBy: 'period', label: '62m', period: 'month' },
   { duration: 120, groupBy: 'period', label: '120m', period: 'month' },
-  { duration: 60, groupBy: 'period', label: '60d', period: 'day' },
+
+  { duration: 3, groupBy: 'period', label: '3y', period: 'year' },
+  { duration: 6, groupBy: 'period', label: '6y', period: 'year' },
+  { duration: 11, groupBy: 'period', label: '11y', period: 'year' },
+
   // { duration: 30, groupBy: 'period', label: 'Last 30 days', period: 'day' },
-  { duration: 6, groupBy: 'period', label: '6m', period: 'month' },
+  // { duration: 0, groupBy: 'period', label: 'This month', period: 'month' },
   // { duration: 6, groupBy: 'period', label: 'Last 6 months', period: 'month' },
   // { duration: 12, groupBy: 'period', label: 'Last 12 months', period: 'month' },
-  { duration: 0, groupBy: 'period', label: 'Today', period: 'day' },
-  { duration: 0, groupBy: 'period', label: 'Week', period: 'week' },
-  { duration: 3, groupBy: 'period', label: '3W', period: 'week' },
+  // { duration: 0, groupBy: 'period', label: 'Today', period: 'day' },
+  // { duration: 0, groupBy: 'period', label: 'Week', period: 'week' },
   // { duration: 3, groupBy: 'period', label: 'Last 3 Weeks', period: 'week' },
   // { duration: 7, groupBy: 'period', label: 'Last 7 days', period: 'day' },
-  { duration: 0, groupBy: 'period', label: 'This month', period: 'month' },
-  { duration: 3, groupBy: 'period', label: '3m', period: 'month' },
   // { duration: 3, groupBy: 'period', label: 'Last 3 months', period: 'month' },
-  { duration: 0, groupBy: 'period', label: 'This year', period: 'year' },
-  { duration: 3, groupBy: 'period', label: '3y', period: 'year' },
+  // { duration: 0, groupBy: 'period', label: 'This year', period: 'year' },
   // { duration: 3, groupBy: 'period', label: 'Last 3 years', period: 'year' },
 ]
 

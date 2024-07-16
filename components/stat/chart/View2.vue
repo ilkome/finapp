@@ -13,8 +13,8 @@ import {
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
-import { config, lineConfig } from '~/components/stat/chart/config'
-import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
+import { config, lineConfig } from '~/components/stat/chart/config2'
+import { setChartXAxis } from '~/components/stat/chart/utils'
 import type { PeriodNameWithAll } from '~/components/filter/useFilter'
 import { getFormatForChart } from '~/components/date/format'
 import type { ChartType } from '~/components/stat/chart/types'
@@ -93,7 +93,7 @@ function setChartSeries(series: unknown[]) {
         show: props.isShowDataLabels,
       },
       stack: (props.chartType || item.type) === 'bar' ? 'b' : false,
-      type: props.chartType || item.type,
+      type: item.markedArea ? 'bar' : (props.chartType || item.type),
     }))
 }
 </script>

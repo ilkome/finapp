@@ -23,7 +23,7 @@ export function getAmountInRate({
   return amount
 }
 
-interface TotalProps {
+type TotalProps = {
   baseCurrencyCode?: string // TODO: add typings
   rates?: Record<string, number> // TODO: add typings
   transferCategoriesIds?: CategoryId[]
@@ -35,7 +35,7 @@ interface TotalProps {
 
 export type DateString = string
 
-export interface TotalReturns {
+export type TotalReturns = {
   expense: number
   expenseTransfers: number
   income: number
@@ -69,7 +69,7 @@ export function getTotal(props: TotalProps): TotalReturns {
     if (trn.type === TrnType.Income || trn.type === TrnType.Expense) {
       const isTransferCategory = transferCategoriesIds?.includes(trn.categoryId)
       const wallet = walletsItems[trn.walletId]
-      const sum = getAmount(trn.amount, wallet.currency)
+      const sum = getAmount(trn.amount, wallet?.currency || 'USD')
 
       // Income
       if (trn.type === TrnType.Income) {
