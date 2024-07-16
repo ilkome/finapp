@@ -91,16 +91,6 @@ export function useFilter() {
   // TODO: Move from here
   const periodsNames = computed<PeriodsNames>(() => [
     {
-      icon: 'mdi:weather-sunset-up',
-      name: $i18n.t('dates.day.simple'),
-      slug: 'day',
-    },
-    {
-      icon: 'mdi:calendar-week',
-      name: $i18n.t('dates.week.simple'),
-      slug: 'week',
-    },
-    {
       icon: 'mdi:calendar',
       name: $i18n.t('dates.month.simple'),
       slug: 'month',
@@ -320,14 +310,14 @@ export function useFilter() {
     const localPeriodName = await localforage.getItem('finapp.chart.periodName')
     const localPeriods: Periods | null = await localforage.getItem('finapp.chart.periods')
 
-    if (periodsSchema.safeParse(localPeriods)) {
-      for (const periodName in periods.value)
-        periods.value[periodName] = localPeriods[periodName]
-    }
+    // if (periodsSchema.safeParse(localPeriods)) {
+    //   for (const periodName in periods.value)
+    //     periods.value[periodName] = localPeriods[periodName]
+    // }
 
-    localDate && setDate(localDate)
-    if (localPeriodName)
-      periodNameWithAll.value = localPeriodName
+    // localDate && setDate(localDate)
+    // if (localPeriodName)
+    //   periodNameWithAll.value = localPeriodName
   }
 
   watch(date, value => localforage.setItem('finapp.chart.date', value))

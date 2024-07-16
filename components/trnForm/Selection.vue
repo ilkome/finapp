@@ -141,7 +141,8 @@ async function onSelectParentCategory(id: CategoryId) {
 </style>
 
 <style lang="stylus">
-@import "../assets/stylus/variables"
+@import "../assets/stylus/variables/*"
+
 .trnFormSelectionPagination
   &.swiper-pagination-horizontal
     z-index 2

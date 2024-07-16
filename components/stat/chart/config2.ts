@@ -2,20 +2,28 @@ import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
 export const config = {
   // Grid
+  // grid: {
+  //   bottom: '12',
+  //   containLabel: true,
+  //   left: '12',
+  //   right: '12',
+  //   top: '14',
+  // },
+
   grid: {
-    bottom: '12',
+    bottom: '0',
     containLabel: true,
-    left: '12',
-    right: '12',
-    top: '14',
+    left: '2',
+    right: '2',
+    top: '0',
   },
 
   // Tooltip
   tooltip: {
-    axisPointer: {
-      animation: false,
-      type: 'cross',
-    },
+    // axisPointer: {
+    //   animation: false,
+    //   type: 'cross',
+    // },
 
     backgroundColor: 'var(--chart-bg)',
     borderWidth: 0,
@@ -37,19 +45,18 @@ export const config = {
     //         </div>
     //       `)}
     //       </div>
-    //       `
-    textStyle: {
-      color: 'var(--chart-tooltip)',
-    },
+    //   }
+    show: false,
     // position() {
     //   return {
     //     right: '10',
     //     top: '0',
-    //   }
-    // show: false,
+    //       `
+    textStyle: {
+      color: 'var(--chart-tooltip)',
+    },
     // },
     trigger: 'axis',
-
     valueFormatter: getLocalAmount,
   },
 
@@ -57,36 +64,90 @@ export const config = {
   xAxis: {
     axisLabel: {
       color: 'var(--chart-label)',
+      fontSize: 8,
     },
     axisLine: {
       lineStyle: {
-        color: 'var(--chart-splitLine)',
+        // color: 'var(--chart-splitLine)',
+        color: 'transparent',
       },
     },
     axisPointer: {
       label: {},
     },
-    axisTick: {
-      interval: 0,
-    },
-    splitLine: {
-      lineStyle: {
-        color: 'var(--chart-line)',
-      },
-      show: false,
-    },
+    // boundaryGap: false,
+    // axisTick: {
+    //   interval: 0,
+    // },
+    // splitLine: {
+    //   lineStyle: {
+    //     color: 'var(--chart-line)',
+    //   },
+    //   show: false,
+    // },
     type: 'category',
   },
+  // xAxis: {
+  //   axisLabel: {
+  //     color: 'var(--chart-label)',
+  //   },
+  //   axisLine: {
+  //     lineStyle: {
+  //       color: 'var(--chart-splitLine)',
+  //     },
+  //   },
+  //   axisPointer: {
+  //     label: {},
+  //   },
+  //   axisTick: {
+  //     interval: 0,
+  //   },
+  //   splitLine: {
+  //     lineStyle: {
+  //       color: 'var(--chart-line)',
+  //     },
+  //     show: false,
+  //   },
+  //   type: 'category',
+  // },
 
   // yAxis
+  // yAxis: {
+  //   axisLabel: {
+  //     color: 'var(--chart-label)',
+  //     formatter: n => getCompactAmount(n),
+  //   },
+  //   axisLine: {
+  //     lineStyle: {
+  //       color: 'var(--chart-splitLine)',
+  //     },
+  //   },
+  //   axisPointer: {
+  //     label: {
+  //       formatter: props => getLocalAmount(props?.value),
+  //     },
+  //     snap: true,
+  //   },
+  //   minInterval: 1,
+  //   // position: 'left',
+  //   position: 'right',
+  //   splitLine: {
+  //     lineStyle: {
+  //       color: 'var(--chart-line)',
+  //     },
+  //   },
+  //   type: 'value',
+  // },
   yAxis: {
     axisLabel: {
       color: 'var(--chart-label)',
       formatter: n => getCompactAmount(n),
+      show: false,
     },
     axisLine: {
       lineStyle: {
         color: 'var(--chart-splitLine)',
+        show: false,
       },
     },
     axisPointer: {
@@ -99,15 +160,18 @@ export const config = {
     // position: 'left',
     position: 'right',
     splitLine: {
-      lineStyle: {
-        color: 'var(--chart-line)',
-      },
+      lineStyle: false,
+      // color: 'var(--chart-line)',
+      // show: false,
     },
     type: 'value',
   },
 }
 
 export const lineConfig = {
+  areaStyle: {
+    opacity: 0.1,
+  },
   barMaxWidth: '26',
   barMinWidth: '1',
   borderColor: 'blue',

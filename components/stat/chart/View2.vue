@@ -21,15 +21,14 @@ import type { ChartType } from '~/components/stat/chart/types'
 
 const props = withDefaults(
   defineProps<{
-    categories: unknown
-    chartType?: ChartType
+    categories: string[]
+    chartType: ChartType
     config?: object
     isShowDataLabels?: boolean
     isShowExpense?: boolean
     isShowIncome?: boolean
     isShowSummary?: boolean
-    markedArea?: unknown
-    periodName: PeriodNameWithAll
+    period: PeriodNameWithAll
     series: unknown[]
   }>(),
   {
@@ -59,7 +58,7 @@ use([
 
 const chartRef = ref()
 
-const baseConfig = computed(() => {
+const option = computed(() => {
   const data = defu(config, {
     series: setChartSeries(props.series),
     xAxis: setChartXAxis(props.categories),
@@ -67,43 +66,10 @@ const baseConfig = computed(() => {
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
-    return dayjs(+date).format(getFormatForChart(props.periodName))
+    return dayjs(+date).format(getFormatForChart(props.period))
   }
   data.xAxis.axisPointer.label.formatter = ({ value } = { value: string }) => {
-    return dayjs(+value).format(getFormatForChart(props.periodName))
-  }
-
-  return data
-})
-
-const chartOption = computed(() => {
-  const data = { ...baseConfig.value }
-
-  // INFO: Marked area works only with bar chart
-  if (props.markedArea) {
-    if (props.chartType !== 'bar') {
-      const markAreaSeriesIdx = data.series.findIndex(s => s.markedArea === 'markedArea')
-
-      if (markAreaSeriesIdx === -1) {
-        data.series.push({
-          data: [],
-          markArea: markArea(props.markedArea),
-          markedArea: 'markedArea',
-          type: 'bar',
-        })
-      }
-      else {
-        data.series[markAreaSeriesIdx] = {
-          data: [],
-          markArea: markArea(props.markedArea),
-          markedArea: 'markedArea',
-          type: 'bar',
-        }
-      }
-    }
-    else {
-      data.series[0].markArea = markArea(props.markedArea)
-    }
+    return dayjs(+value).format(getFormatForChart(props.period))
   }
 
   return data
@@ -126,18 +92,18 @@ function setChartSeries(series: unknown[]) {
         ...lineConfig.label,
         show: props.isShowDataLabels,
       },
+      stack: (props.chartType || item.type) === 'bar' ? 'b' : false,
       type: props.chartType || item.type,
     }))
 }
 </script>
 
 <template>
-  <div class="bg-surface-4 h-48">
+  <div class="h-48" @click="onClickChart">
     <VChart
       ref="chartRef"
-      :option="chartOption"
+      :option
       autoresize
-      @zr:click="onClickChart"
     />
   </div>
 </template>

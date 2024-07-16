@@ -7,7 +7,7 @@ const colorMode = useColorMode()
 <template>
   <div
     class="
-      hidden lg:block
+      hidden lg:grid gap-6 content-start
       h-full min-w-72
       overflow-hidden overflow-y-auto
       bg-item-4 border-r border-item-5
@@ -38,10 +38,26 @@ const colorMode = useColorMode()
       </div>
     </div>
 
-    <LayoutMenuSidebar class="pb-6 pt-4 px-2" />
+    <!-- <div class="px-2 flex">
+      <LayoutMenuSidebarItem
+        :item="{ component: 'UiIconAdd', name: $t('trnForm.createTrn') }"
+        class="is-trnForm flex-center is-bigger grow"
+        menuId="trnForm"
+      />
+    </div> -->
 
-    <div class="grid gap-1 pb-6 px-2">
+    <!-- <div class="grid gap-2">
       <UiTitle3 class="pl-3">
+        {{ $t('wallets.title') }}
+      </UiTitle3>
+    </div> -->
+    <LayoutMenuSidebar class="px-2" />
+
+    <div class="pb-6 px-2">
+      <UiTitle3
+        class="pl-3"
+        :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
+      >
         {{ $t('wallets.title') }}
       </UiTitle3>
 

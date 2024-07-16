@@ -27,7 +27,7 @@ const classes = computed(() => ({
 </template>
 
 <style lang="stylus" scoped>
-@import "../assets/stylus/variables"
+@import "../assets/stylus/variables/*"
 
 .wrap
   cursor pointer

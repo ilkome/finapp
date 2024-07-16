@@ -235,7 +235,7 @@ const groupedTrns = computed(() => {
         class="bg-item-4 rounded-lg overflow-hidden"
       >
         <div
-          :class="{ 'border-b border-item-7': isShowGroupSum && groupTrnsIds.length > 1 }"
+          :class="{ '-border-b border-item-7': isShowGroupSum && groupTrnsIds.length > 1 }"
           class="flex gap-2 items-end pt-2 pb-1 mx-3"
         >
           <DateTrns
@@ -287,7 +287,7 @@ const groupedTrns = computed(() => {
     <!-- Show all -->
     <div v-if="!isShowedAllTrns">
       <div
-        class="flex-center grow rounded-lg bg-item-5 px-5 py-2.5 text-sm text-secondary hocus:bg-item-6"
+        class="flex-center grow rounded-full bg-item-5 px-5 py-2.5 text-sm text-secondary hocus:bg-item-6"
         @click="pageNumber = ++pageNumber"
       >
         {{ $t("trns.more") }} {{ paginatedTrnsIds.length }} /

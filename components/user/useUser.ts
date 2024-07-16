@@ -7,9 +7,9 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { auth, saveData } from '~/services/firebase/api'
 
-export interface User {
-  email: string | null
-  displayName: string | null
+export type User = {
+  displayName?: string | null
+  email?: string | null
   uid: string
 }
 
@@ -27,13 +27,15 @@ export const useUserStore = defineStore('user', () => {
   const uid = computed<string | null>(() => user.value?.uid || null)
 
   function setUser(values: User | null) {
-    if (values === null)
+    if (!values || values === null) {
       user.value = null
-
-    user.value = {
-      displayName: values?.displayName,
-      email: values?.email,
-      uid: values?.uid,
+    }
+    else {
+      user.value = {
+        displayName: values?.displayName,
+        email: values?.email,
+        uid: values.uid,
+      }
     }
 
     localforage.setItem('finapp.user', deepUnref(user.value))
@@ -71,12 +73,12 @@ export const useUserStore = defineStore('user', () => {
   }
 
   return {
-    user,
-    uid,
     isDevUser,
-
-    setUser,
-    signOut,
     removeUserData,
+    setUser,
+
+    signOut,
+    uid,
+    user,
   }
 })

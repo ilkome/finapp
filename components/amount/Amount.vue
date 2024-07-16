@@ -34,8 +34,9 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
 <template>
   <div
     :class="{
-      '!text-expense': props.colorize === 'expense' && props.type === 0,
-      '!text-income': props.colorize === 'income' && props.type === 1,
+      // 'text-expense !text-[#ED6660]': props.colorize === 'expense' && props.type === 0,
+      '!text-[#ED6660]': props.type === 0,
+      'text-income !text-[#22A2D3]': props.colorize === 'income' && props.type === 1,
       'text-2xs': props.variant === '2xs',
       'text-3xl': props.variant === '3xl',
       'text-base': props.variant === 'base',

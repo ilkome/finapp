@@ -27,12 +27,14 @@
 
 html,
 body {
-  overscroll-behavior-y: none
-}
-
-body {
+  overscroll-behavior-y: none;
   background: #171717;
   user-select: none;
+
+  @apply
+    font-primary text-prima leading-none antialiased;
+
+  @layer bg-foreground-3;
 }
 
 @media (prefers-color-scheme: light) {
@@ -43,4 +45,8 @@ body {
 
 .light body {
   background: #fafafa;
+}
+
+.layoutBase {
+  @apply overflow-hidden relative h-full;
 }

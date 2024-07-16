@@ -12,7 +12,7 @@ const currenciesStore = useCurrenciesStore()
 </script>
 
 <template>
-  <div class="grid gap-1">
+  <div class="grid gap-2">
     <UiTitle6>
       {{ props.isTotal ? $t('money.all') : '' }}
       {{ $t(`money.${props.type}`) }}
@@ -22,11 +22,7 @@ const currenciesStore = useCurrenciesStore()
       :amount="props.amount"
       :currencyCode="currenciesStore.base"
       align="left"
-      variant="-3xl"
-      :class="{
-        'text-income-2': props.amount > 0 && type !== 'sum',
-        'text-expense-2': props.amount < 0,
-      }"
+      variant="base"
     />
   </div>
 </template>

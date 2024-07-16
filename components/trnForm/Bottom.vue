@@ -153,7 +153,7 @@ onMounted(init)
 </style>
 
 <style lang="stylus" scoped>
-@import "../assets/stylus/variables"
+@import "../assets/stylus/variables/*"
 
 .scroll
   overflow hidden

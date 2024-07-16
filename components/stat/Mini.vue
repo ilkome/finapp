@@ -48,15 +48,15 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 <template>
   <div class="grid gap-4">
     <div
-      class="grid gap-2"
+      class="sticky top-0 z-10 grid gap-2 bg-foreground-2 px-2 py-2"
     >
-      <div
+      <!-- <div
         v-if="props.isShowTotals"
         class="flex flex-wrap gap-8 rounded-lg"
       >
         <StatSum
           v-if="totals.expense"
-          :amount="totals.expense"
+          :amount="-totals.expense"
           isTotal
           type="expense"
         />
@@ -72,19 +72,20 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
           isTotal
           type="sum"
         />
+      </div> -->
+
+      <div class="flex gap-1 overflow-y-auto">
+        <Filter
+          v-if="props.isShowFilter"
+        />
+
+        <StatMenu
+          :active="activeTab"
+          :isShowIncome="totals.income !== 0"
+          :isShowExpense="totals.expense !== 0"
+          @click="id => activeTab = id"
+        />
       </div>
-
-      <Filter
-        v-if="props.isShowFilter"
-        class="grow"
-      />
-
-      <StatMenu
-        :active="activeTab"
-        :isShowIncome="totals.income !== 0"
-        :isShowExpense="totals.expense !== 0"
-        @click="id => activeTab = id"
-      />
     </div>
 
     <!-- Sum -->

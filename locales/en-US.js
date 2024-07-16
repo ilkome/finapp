@@ -115,7 +115,7 @@ export default {
 
   dates: {
     all: {
-      simple: 'All trns',
+      simple: 'All time',
     },
     count: 'Count',
     day: {
@@ -130,6 +130,7 @@ export default {
       simple: 'Month',
     },
     period: 'Period',
+    select: 'Select',
     twoDaysAgo: '2 days ago',
     week: {
       current: 'This week',

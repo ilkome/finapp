@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { DateNumber } from '~/components/date/types'
+import type { DateUTC } from '~/components/date/types'
 import type { PeriodNameWithAll, PeriodNameWithoutAll, Periods, PeriodsNames } from '~/components/filter/useFilter'
 import { formatDateByPeriod } from '~/components/date/format'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
-  date: DateNumber
+  date: DateUTC
   periodNameWithAll: PeriodNameWithAll
   periods: Periods
   periodsNames: PeriodsNames

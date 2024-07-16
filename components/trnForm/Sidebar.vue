@@ -69,13 +69,37 @@ function onSelectCategory(id: CategoryId) {
           <!-- Main -->
           <div class="swiper-slide getHeight bg-foreground-2">
             <div class="grid grid-rows-[auto,1fr] gap-4 scroll scrollerBlock">
-              <TrnFormMain maxHeight="100vh" />
+              <TrnFormMain maxHeight="100vh" class="!pb-0" />
 
-              <!-- History -->
-              <TrnFormTrnsSlide
-                :slider="sliderObj"
-                class="px-2 pt-4 pb-6"
-              />
+              <div class="grid gap-3">
+                <!-- Favorite categories -->
+                <div
+                  v-if="categoriesStore.favoriteCategoriesIds.length > 0"
+                >
+                  <UiTitle
+                    class="px-3 pb-2 pt-1.5"
+                    @click="trnFormStore.ui.catsRootModal = true"
+                  >
+                    {{ $t("categories.favoriteTitle") }}
+                    {{ $t("categories.title") }}
+                  </UiTitle>
+
+                  <CategoriesSelector2
+                    :activeItemId="trnFormStore.values.categoryId"
+                    :ids="categoriesStore.favoriteCategoriesIds"
+                    class="grid 2sm:grid-cols-2 !p-0 !px-3"
+                    @onSelected="onSelectCategory"
+                  />
+                </div>
+
+                <TrnFormSelectionWalletsFast />
+
+                <!-- History -->
+                <TrnFormTrnsSlide
+                  :slider="sliderObj"
+                  class="px-2 pb-6"
+                />
+              </div>
             </div>
           </div>
 
@@ -86,9 +110,7 @@ function onSelectCategory(id: CategoryId) {
           >
             <div class="scroll scrollerBlock">
               <div class="pb-4 pt-4">
-                <TrnFormSelectionWalletsFast
-                  class="pb-6"
-                />
+                <TrnFormSelectionWalletsFast class="pb-6" />
 
                 <TrnFormSelectionCategoriesFast
                   @onSelectCategory="id => onSelectCategory(id)"
@@ -137,7 +159,7 @@ function onSelectCategory(id: CategoryId) {
 </style>
 
 <style lang="stylus" scoped>
-@import "../assets/stylus/variables"
+@import "../assets/stylus/variables/*"
 
 .scroll
   overflow hidden

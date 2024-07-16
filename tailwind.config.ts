@@ -33,7 +33,10 @@ export default <Partial<Config>>{
           4: 'var(--accent-4)',
         },
         'alert-primary': 'var(--text-alert-primary)',
-        'expense': 'var(--text-expense-1)',
+        'expense': {
+          1: 'var(--text-expense-1)',
+          2: 'var(--text-expense-2)',
+        },
         'foreground': {
           1: 'rgb(var(--foreground-1))',
           2: 'rgba(var(--foreground-2))',
@@ -43,7 +46,10 @@ export default <Partial<Config>>{
         },
         'icon-primary': 'var(--text-icon-primary)',
         'icon-primary2': 'var(--text-icon-primary2)',
-        'income': 'var(--text-income-1)',
+        'income': {
+          1: 'var(--text-income-1)',
+          2: 'var(--text-income-2)',
+        },
         'item': {
           1: 'var(--c-item-1)',
           2: 'var(--c-item-2)',
@@ -53,6 +59,7 @@ export default <Partial<Config>>{
           6: 'rgba(var(--item-6))',
           7: 'rgba(var(--item-7))',
           8: 'var(--c-item-bg-hover)',
+          9: 'rgba(var(--item-9))',
         },
         'prima': 'rgb(var(--text-prima))',
         'secondary': 'rgb(var(--text-secondary))',

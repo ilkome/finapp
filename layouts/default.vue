@@ -5,9 +5,7 @@ import { usePointerClass } from '~/components/layout/usePointerClass'
 import { useUserStore } from '~/components/user/useUser'
 
 import '~/assets/css/fullpage.css'
-import '~/assets/css/index.css'
 import '~/assets/css/reset.css'
-import '~/assets/css/themes.css'
 import '~/assets/stylus/index.styl'
 
 const { width } = useWindowSize()
@@ -52,7 +50,7 @@ watch(
         class="hidden lg:hidden sm:flex sm:flex-col gap-1 justify-center sm:align-center bg-item-4"
       />
 
-      <div class="@container/main grid h-full overflow-hidden sm:pl-2 lg:pl-0">
+      <div class="@container/main grid h-full pb-12 md:pb-0 overflow-hidden">
         <NuxtPage />
       </div>
     </div>

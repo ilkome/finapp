@@ -5,7 +5,7 @@ import type { CategoryId } from '../categories/types'
 import type { MoneyTypeSlugSum } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
-import type { ChartType } from '~/components/chart/types'
+import type { ChartType } from '~/components/stat/chart/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { FilterProvider, PeriodNameWithoutAll } from '~/components/filter/useFilter'
@@ -13,12 +13,18 @@ import { getStyles } from '~/components/ui/getStyles'
 import { useNewStat } from '~/components/stat/useNewStat'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { getDates } from '~/components/date/format'
+import { useDateRange } from '~/components/date/useDateRange'
+import { markArea } from '~/components/stat/chart/utils'
 
 const props = defineProps<{
   storageKey?: string
   trnsIds: TrnId[]
   type: MoneyTypeSlugSum
 }>()
+
+const { date, duration, groupBy, initialRange, period, range, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange({
+  key: `${props.type}${props.storageKey}`,
+})
 
 const filter = inject('filter') as FilterProvider
 const { t } = useI18n()
@@ -27,8 +33,33 @@ const { getTotalOfTrnsIds } = useAmount()
 const { getCats, getPeriodsWithTrns, getSeries } = useNewStat()
 const categoriesStore = useCategoriesStore()
 
+const periodsEmptyTrnsIds = computed(() =>
+  getPeriodsWithEmptyTrnsIds({
+    from: range.value.start,
+    period: period.value,
+    until: range.value.end,
+  }),
+)
+
+const categories = computed(
+  () => Object.keys(periodsEmptyTrnsIds.value).map(date => +date) ?? [],
+)
+
+const selectedPeriod = ref<number | false>(false)
+
+function onClickChart(idx: number) {
+  const newPeriod = categories.value[idx] || false
+
+  if (selectedPeriod.value === newPeriod) {
+    selectedPeriod.value = false
+    return
+  }
+
+  selectedPeriod.value = newPeriod
+}
+
 const isShowLinesChart = useStorage<boolean>('isShowLinesChart', false)
-const period = useStorage<PeriodNameWithoutAll>(`${props.storageKey}-period`, 'month')
+// const period = useStorage<PeriodNameWithoutAll>(`${props.storageKey}-period`, 'month')
 
 const newBaseStorageKey = computed(() => `${period.value}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
 const baseStorageKey = computed(() => `${period.value}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
@@ -37,34 +68,11 @@ const baseStorageKey = computed(() => `${period.value}-${props.storageKey}-${JSO
 // TODO: Get from parent
 const chartPeriodsShown2 = ref(+(localStorage.getItem(`1${period.value}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}-chartPeriodsShown`) ?? 12))
 const chartType = useStorage<ChartType>(`${baseStorageKey.value}-chartType`, 'bar')
-const chartTypes = computed(() => [{
-  name: t('chart.types.bar'),
-  value: 'bar',
-}, {
-  name: t('chart.types.line'),
-  value: 'line',
-}])
-const date = useStorage<number>(`${props.storageKey}-date`, dayjs().startOf(period.value).valueOf())
 
 const datesFromTrnsIds = computed(() => ({
   from: trnsStore.items[props.trnsIds.at(-1)]?.date,
   until: trnsStore.items[props.trnsIds.at(0)]?.date,
 }))
-
-onMounted(
-  () =>
-    (date.value = dayjs(datesFromTrnsIds.value.until)
-      .startOf(period.value)
-      .valueOf()),
-)
-
-const periodsEmptyTrnsIds = computed(() =>
-  getPeriodsWithEmptyTrnsIds({
-    from: datesFromTrnsIds.value.from,
-    period: period.value,
-    until: datesFromTrnsIds.value.until,
-  }),
-)
 
 const periodsWithTrnsIds = computed(() => getPeriodsWithTrns(props.trnsIds, period.value, periodsEmptyTrnsIds.value))
 
@@ -80,70 +88,64 @@ const groupedTrnsTotals = computed(() =>
     ),
 )
 
-const categories = computed(
-  () => Object.keys(periodsEmptyTrnsIds.value).map(date => +date) ?? [],
-)
-const series = computed(() => getSeries(groupedTrnsTotals.value, props.type))
-const selectedTrnsIdsForTrnsList = computed(
-  () => periodsWithTrnsIds.value[date.value],
-)
-const totals = computed(() =>
-  getTotalOfTrnsIds(selectedTrnsIdsForTrnsList.value),
-)
+const series = computed(() => {
+  const series = getSeries(groupedTrnsTotals.value, props.type)
 
-const config = computed(() => {
-  if (Object.keys(groupedTrnsTotals.value).length >= chartPeriodsShown2.value) {
-    return {
-      dataZoom: [
-        {
-          filterMode: 'filter',
-          maxValueSpan: chartPeriodsShown2.value,
-          minValueSpan: chartPeriodsShown2.value - 1,
-          // moveOnMouseMove: false,
-          preventDefaultMouseMove: false,
-          // moveOnMouseWheel: false,
-          roam: false,
-          start: 100,
-          type: 'inside',
-          zoomOnMouseWheel: false,
-        },
-      ],
+  if (selectedPeriod.value) {
+    if (chartType.value !== 'bar') {
+      const markAreaSeriesIdx = series.findIndex(s => s.markedArea === 'markedArea')
+
+      if (markAreaSeriesIdx === -1) {
+        series.push({
+          data: [],
+          markArea: markArea(selectedPeriod.value),
+          markedArea: 'markedArea',
+          type: 'bar',
+        })
+      }
+      else {
+        series[markAreaSeriesIdx] = {
+          data: [],
+          markArea: markArea(selectedPeriod.value),
+          markedArea: 'markedArea',
+          type: 'bar',
+        }
+      }
+    }
+    else {
+      series[0].markArea = markArea(selectedPeriod.value)
     }
   }
 
-  return {
-    dataZoom: false,
-  }
+  return series
 })
 
-function setPeriodAndDate(periodName: PeriodNameWithoutAll) {
-  const d = localStorage.getItem(`1${periodName}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}-chartPeriodsShown`)
-  period.value = periodName
-  date.value = dayjs(categories.value.at(-1)).startOf(periodName).valueOf()
-  chartPeriodsShown2.value = +(d ?? 12)
-}
+const periodTrnsIds = computed(() =>
+  groupBy.value === 'all'
+    ? trnsStore.getStoreTrnsIds(
+      {
+        categoriesIds: [],
+        trnsIds: props.trnsIds,
+      },
+      { includesChildCategories: false },
+    )
+    : trnsStore.getStoreTrnsIds(
+      {
+        categoriesIds: [],
+        dates: {
+          from: range.value.start,
+          until: range.value.end,
+        },
+        trnsIds: props.trnsIds,
+      },
+      { includesChildCategories: false },
+    ),
+)
+const selectedTrnsIdsForTrnsList = computed(() => periodTrnsIds.value)
 
-function changeChartPeriodsShown2(n: number) {
-  localStorage.setItem(`1${period.value}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}-chartPeriodsShown`, `${n}`)
-  chartPeriodsShown2.value = n
-}
-
-function setPeriodDateNext() {
-  const newDate = dayjs(date.value).subtract(1, period.value).valueOf()
-  if (categories.value.includes(newDate))
-    date.value = newDate
-}
-
-function setPeriodDatePrev() {
-  const newDate = dayjs(date.value).add(1, period.value).valueOf()
-
-  if (categories.value.includes(newDate))
-    date.value = newDate
-}
-
-function onClickChart(idx: number) {
-  date.value = categories.value[idx]
-}
+const totals = computed(() =>
+  getTotalOfTrnsIds(selectedTrnsIdsForTrnsList.value),
+)
 
 // TODO: move to dates utils
 function getPeriodsWithEmptyTrnsIds(params: {
@@ -260,188 +262,127 @@ function getTrnsWithDate(categoryId: CategoryId) {
     trnsIds: props.trnsIds,
   }, { includesChildCategories: true })
 }
-
-// function transformData(data) {
-//   const series = []
-//   const idMap = {}
-//   const timestamps = Object.keys(data).sort()
-
-//   // Collect all unique IDs
-//   for (const timestamp of timestamps) {
-//     const entries = data[timestamp]
-
-//     for (const entryId in entries) {
-//       const id = entries[entryId].id
-//       if (!idMap[id]) {
-//         idMap[id] = {
-//           color: categoriesStore.items[id].color,
-//           data: Array.from({ length: timestamps.length }).fill(0),
-//           id,
-//           name: categoriesStore.items[id].name,
-//           // stack: 'hey',
-//         }
-//         series.unshift(idMap[id])
-//       }
-//     }
-//   }
-
-//   // Fill in the data values
-//   timestamps.forEach((timestamp, index) => {
-//     const entries = data[timestamp]
-//     for (const entryId in entries) {
-//       if (entries[entryId]) {
-//         const entry = entries[entryId]
-//         const id = entry.id
-//         const value = entry.value
-//         idMap[id].data[index] = Math.abs(value)
-//       }
-//     }
-//   })
-
-//   return series
-// }
-
-// function onClickInsideCategory(idx: number) {
-//   console.log('onClickInsideCategory')
-//   date.value = categories.value[idx]
-// }
 </script>
 
 <template>
   <div class="grid content-start gap-3">
-    <!-- Date -->
-    <div class="grid gap-3">
+    <div class="sticky top-14 z-10 grid gap-3 overflow-x-auto px-3 bg-foreground-2">
+      <div
+        v-if="props.type === 'sum'"
+        class="flex gap-6 md:gap-12"
+      >
+        <StatSum
+          :amount="-totals.expense"
+          type="expense"
+        />
+        <StatSum
+          :amount="totals.income"
+          type="income"
+        />
+        <StatSum
+          :amount="totals.sum"
+          type="sum"
+        />
+      </div>
+
       <StatSum
+        v-else
         :amount="totals[props.type]"
         :type="props.type"
       />
 
-      <div class="flex grow">
-        <StatDateNav
-          :isLastPeriod="+categories.at(0) === +date"
-          :isToday="+categories.at(-1) === +date"
-          @setNextPeriodDate="setPeriodDateNext"
-          @setPeriodAndDate="() => (date = +categories.at(-1))"
-          @setPrevPeriodDate="setPeriodDatePrev"
+      <div class="flex overflow-y-auto gap-1">
+        <DateRanges
+          :groupBy
+          :range
+          @setRangeByPeriod="setRangeByPeriod"
         />
 
-        <StatDateView
-          :date="date"
-          :periodNameWithAll="period"
-          :periodsNames="filter.periodsNames.value"
-          :periods="filter.periods.value"
-          @setPeriodAndDate="setPeriodAndDate"
+        <DateDaySelector
+          :groupBy
+          :range
+          @setRangeByCalendar="setRangeByCalendar"
         />
       </div>
     </div>
 
+    <pre>selectedPeriod {{ selectedPeriod }}</pre>
+
     <!-- Stat -->
-    <div class="_@3xl/main:grid-cols-[1fr,.8fr] _gap-8 grid @container/stat">
+    <div class="_@3xl/main:grid-cols-[1fr,.8fr] _gap-8 grid @container/stat px-3">
       <div class="grid gap-2">
         <div class="grid @4xl/stat:grid-cols-[1.4fr,auto] @4xl/stat:gap-4">
           <!-- Chart first level -->
-          <UiToggle
-            :storageKey="`${newBaseStorageKey}-chart-root`"
-            :initStatus="true"
-            class="md:max-w-xl"
-          >
-            <template #header="{ toggle, isShown }">
-              <div class="flex items-center justify-between">
-                <UiTitle
-                  :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                  class="grow flex items-center gap-2 pb-0"
-                  @click="toggle"
-                >
-                  <Icon
-                    v-if="!isShown"
-                    name="mdi:chevron-right"
-                    size="22"
-                    class="-ml-1"
-                  />
-                  <div>{{ $t('chart.title') }}</div>
-                </UiTitle>
+          <StatChartView2
+            :key="baseStorageKey"
+            :categories
+            :chartType
+            :period
+            :series
+            @click="onClickChart"
+          />
 
-                <VDropdown
-                  v-if="isShown"
-                  :overflowPadding="12"
-                  autoBoundaryMaxSize
-                  placement="bottom-start"
-                  class="group"
-                >
-                  <div
-                    :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
-                    class="justify-center text-xl"
-                  >
-                    <UiIconConfig />
-                  </div>
-
-                  <template #popper="{ hide }">
-                    <div class="grid gap-4 p-3 min-w-52">
-                      <UiTitle>{{ $t('chart.options') }}</UiTitle>
-                      <USelect
-                        v-model.number="chartPeriodsShown2"
-                        :options="Array.from({ length: 30 }, (_, i) => i + 1)"
-                        color="blue"
-                        size="lg"
-                      />
-                      <div @click="() => changeChartPeriodsShown2(30)">
-                        30
-                      </div>
-                      <div @click="() => changeChartPeriodsShown2(8)">
-                        8
-                      </div>
-                      <div @click="() => changeChartPeriodsShown2(7)">
-                        7
-                      </div>
-                      <div @click="() => changeChartPeriodsShown2(12)">
-                        12
-                      </div>
-                      <div @click="() => changeChartPeriodsShown2(3)">
-                        3
-                      </div>
-                      <div @click="() => changeChartPeriodsShown2(1)">
-                        1
-                      </div>
-                      <div @click="() => changeChartPeriodsShown2(24)">
-                        24
-                      </div>
-
-                      <USelect
-                        v-model="chartType"
-                        :options="chartTypes"
-                        color="blue"
-                        optionAttribute="name"
-                        size="lg"
-                      />
-
-                      <UButton
-                        :label="$t('close')"
-                        color="blue"
-                        size="lg"
-                        block
-                        @click="hide"
-                      />
-                    </div>
-                  </template>
-                </VDropdown>
+          <div class="flex items-center justify-between pt-2">
+            <div class="flex gap-2">
+              <div
+                :class="[
+                  getStyles('item', ['link', 'minh2']), {
+                    'bg-item-5 rounded': chartType === 'bar',
+                  },
+                ]"
+                class="flex items-center px-3 py-0 text-xs bg-item-4 rounded-full leading-none font-primary text-nowrap"
+                @click="chartType = 'bar'"
+              >
+                {{ t('chart.types.bar') }}
               </div>
-            </template>
+              <div
+                :class="[
+                  getStyles('item', ['link', 'minh2']), {
+                    'bg-item-5 rounded': chartType === 'line',
+                  },
+                ]"
+                class="flex items-center px-3 py-0 text-xs bg-item-4 rounded-full leading-none font-primary text-nowrap"
+                @click="chartType = 'line'"
+              >
+                {{ t('chart.types.line') }}
+              </div>
+            </div>
 
-            <LazyStatChartView
-              :key="baseStorageKey"
-              :categories="categories"
-              :chartType="chartType"
-              :markedArea="date"
-              :periodName="period"
-              :series="series"
-              :config
-              class="bg-item-4 rounded-lg h-52"
-              @click="onClickChart"
-            />
-          </UiToggle>
+            <div class="flex gap-1">
+              <DateNavHome
+                v-if="groupBy !== 'all'"
+                :duration
+                :groupBy
+                :initialRange
+                :maxRange="trnsStore.getRange(trnsIds)"
+                :period
+                :range
+                @setRange="setRange"
+              />
+
+              <DateNav
+                v-if="groupBy !== 'all'"
+                :duration
+                :groupBy
+                :initialRange
+                :maxRange="trnsStore.getRange(trnsIds)"
+                :period
+                :range
+                @setRange="setRange"
+              />
+            </div>
+          </div>
+
+          <div class="text-2xs">
+            <pre>series: {{ series }}</pre>
+            <pre>markedArea: {{ }}</pre>
+            <pre>{{ period }}</pre>
+            <pre>{{ categories }}</pre>
+            <pre>{{ groupedTrnsTotals }}</pre>
+          </div>
         </div>
 
-        <div class="grid @4xl/stat:grid-cols-[1.4fr,auto] @4xl/stat:gap-4 gap-2">
+        <div class="grid @3xl/stat:grid-cols-[1.3fr,auto] @xl/stat:gap-12 gap-2">
           <!-- Categories first level -->
           <UiToggle
             v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0"
@@ -585,22 +526,6 @@ function getTrnsWithDate(categoryId: CategoryId) {
                 <div
                   class="pl-2"
                 >
-                  <!-- Chart 2 level -->
-                  <div
-                    v-if="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-                  >
-                    <StatCategoryChartWrap
-                      :categoryId="item.id"
-                      :chartPeriodsShown="chartPeriodsShown2"
-                      :periodsEmptyTrnsIds
-                      :markedArea="date"
-                      :period
-                      :type="props.type"
-                      :trnsIds="props.trnsIds"
-                      @click="onClickChart"
-                    />
-                  </div>
-
                   <!-- Categories 2 level -->
                   <div
                     v-if="isGroupCategoriesByParent && openedCats.includes(item.id) && getCats(item.trnsIds).length > 1"
@@ -618,51 +543,15 @@ function getTrnsWithDate(categoryId: CategoryId) {
                         v-if="openedTrns.includes(insideItem.id)"
                         class="pl-0"
                       >
-                        <div
-                          v-if="openedCats.includes(insideItem.id) || openedTrns.includes(insideItem.id)"
-                        >
-                          <StatCategoryChartWrap
-                            :categoryId="insideItem.id"
-                            :chartPeriodsShown="chartPeriodsShown2"
-                            :periodsEmptyTrnsIds
-                            :markedArea="date"
-                            :period
-                            :type="props.type"
-                            :trnsIds="props.trnsIds"
-                            @click="onClickChart"
-                          />
-                        </div>
-
+                        <TrnsList
+                          class="pl-8"
+                          :trnsIds="getTrnsWithDate(insideItem.id) ?? []"
+                          :size="5"
+                          alt2
+                          isHideDates
+                          isShowFilterByDesc
+                        />
                         <!-- Inside: trns -->
-                        <UiToggle
-                          :storageKey="`${props.storageKey}-${props.type}-${item.id}-trns-in`"
-                          class="pl-4"
-                        >
-                          <template #header="{ toggle, isShown }">
-                            <UiTitle3
-                              :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                              class="grow flex items-center gap-2 pb-0"
-                              @click="toggle"
-                            >
-                              <Icon
-                                :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
-                                size="22"
-                                class="-ml-3"
-                              />
-                              <div>{{ $t('trns.title') }}</div>
-                              <div>{{ getTrnsWithDate(insideItem.id).length }}</div>
-                            </UiTitle3>
-                          </template>
-
-                          <TrnsList
-                            class="pl-8"
-                            :trnsIds="getTrnsWithDate(insideItem.id) ?? []"
-                            :size="5"
-                            alt2
-                            isHideDates
-                            isShowFilterByDesc
-                          />
-                        </UiToggle>
                       </div>
                     </StatLinesItemLine>
                   </div>
@@ -670,34 +559,14 @@ function getTrnsWithDate(categoryId: CategoryId) {
                   <div
                     v-if="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                   >
-                    <UiToggle
-                      :storageKey="`${props.storageKey}-${props.type}-${item.id}-trns`"
-                    >
-                      <template #header="{ toggle, isShown }">
-                        <UiTitle3
-                          :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                          class="grow flex items-center gap-2 pb-0"
-                          @click="toggle"
-                        >
-                          <Icon
-                            :name="isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
-                            size="22"
-                            class="-ml-3"
-                          />
-                          <div>{{ $t('trns.title') }}</div>
-                          <div>{{ getTrnsWithDate(item.id)?.length }}</div>
-                        </UiTitle3>
-                      </template>
-
-                      <TrnsList
-                        class="pl-8"
-                        :trnsIds="getTrnsWithDate(item.id) ?? []"
-                        :size="5"
-                        alt2
-                        isHideDates
-                        isShowFilterByDesc
-                      />
-                    </UiToggle>
+                    <TrnsList
+                      class="pl-8"
+                      :trnsIds="getTrnsWithDate(item.id) ?? []"
+                      :size="5"
+                      alt2
+                      isHideDates
+                      isShowFilterByDesc
+                    />
                   </div>
                 </div>
               </StatLinesItemLine>

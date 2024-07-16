@@ -12,11 +12,11 @@ export default antfu({
   },
 
   rules: {
+    '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
     'perfectionist/sort-array-includes': ['error', { order: 'asc', type: 'natural' }],
     'perfectionist/sort-enums': ['error', { order: 'asc', type: 'natural' }],
     'perfectionist/sort-exports': ['error', { order: 'asc', type: 'natural' }],
     // 'perfectionist/sort-imports': ['error', { order: 'asc', type: 'natural' }],
-    'perfectionist/sort-interfaces': ['error', { order: 'asc', type: 'natural' }],
     'perfectionist/sort-interfaces': ['error', { order: 'asc', type: 'natural' }],
     'perfectionist/sort-named-exports': ['error', { order: 'asc', type: 'natural' }],
     'perfectionist/sort-named-imports': ['error', { order: 'asc', type: 'natural' }],

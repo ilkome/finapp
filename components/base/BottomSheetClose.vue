@@ -18,7 +18,7 @@
 </template>
 
 <style lang="stylus" scoped>
-@import "../assets/stylus/variables"
+@import "../assets/stylus/variables/*"
 
 .handlerClose
   z-index 3

@@ -78,7 +78,7 @@ const items = computed(() => ({
       />
 
       <template #popper="{ hide }">
-        <div class="bg-foreground-3 p-1 min-w-[180px]">
+        <div class="bg-foreground-3 p-1 min-w-[90dvw]">
           <UiElement
             v-for="(item, slug) in items"
             :key="slug"

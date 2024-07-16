@@ -22,7 +22,7 @@ const emit = defineEmits<{
 </template>
 
 <style lang="stylus" scoped>
-@import "../assets/stylus/variables"
+@import "../assets/stylus/variables/*"
 
 .checkboxBlock
   display flex

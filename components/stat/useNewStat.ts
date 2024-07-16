@@ -8,12 +8,12 @@ import type { MoneyTypeSlugSum } from '~/components/stat/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { PeriodNameWithAll } from '~/components/filter/useFilter'
 
-export interface TotalCategories {
+export type TotalCategories = {
   expense: TotalCategory[]
   income: TotalCategory[]
 }
 
-export interface TotalCategory {
+export type TotalCategory = {
   id: CategoryId
   trnsIds: TrnId[]
   value: number
@@ -21,12 +21,12 @@ export interface TotalCategory {
 
 const chartSeriesOptions = {
   expense: {
-    color: 'var(--c-expense-1)',
+    color: '#ED6660',
     localeKey: 'money.expense',
     type: 'bar',
   },
   income: {
-    color: 'var(--c-income-1)',
+    color: '#22A2D3',
     localeKey: 'money.expense',
     type: 'bar',
   },

@@ -130,6 +130,7 @@ export default {
       simple: 'Месяц',
     },
     period: 'Период',
+    select: 'Выбрать',
     twoDaysAgo: '2 дня назад',
     week: {
       current: 'Текущая неделя',

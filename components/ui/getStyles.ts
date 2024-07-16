@@ -11,12 +11,12 @@ export const classes = {
       select-none
       text-secondary2
       hocus:bg-item-5
-      _hocus:bg-neutral-800/50
     `,
     menu: `
       flex items-center
       py-2
-      gap-3
+      gap-2
+      px-3
     `,
     minh: 'min-h-[42px]',
     minh2: 'min-h-[38px]',

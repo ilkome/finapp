@@ -102,10 +102,12 @@ useHead({
         {{ wallet.description }}
       </div>
 
-      <div class="pt-4">
+      <div class="pt-0">
         <StatMini
-          :walletsIds="[walletId]"
+          :walletsIds="[walletId, ...filter?.walletsIds?.value]"
+          :categoriesIds="filter?.catsIds?.value"
           :storageKey="walletId"
+          isShowFilter
         />
       </div>
     </div>

@@ -13,9 +13,9 @@ provide('filter', filter)
 
 <template>
   <div
-    class="h-full overflow-hidden overflow-y-auto"
+    class="grid h-full pb-14 overflow-hidden"
   >
-    <StatMini
+    <StatMini2
       :categoriesIds="filter?.catsIds?.value"
       :isShowTotals="filter?.catsIds?.value?.length > 0 || filter?.walletsIds?.value?.length > 0"
       :walletsIds="filter?.walletsIds?.value"

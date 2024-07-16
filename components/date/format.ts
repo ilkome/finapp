@@ -1,7 +1,23 @@
 import dayjs from 'dayjs'
+import { format } from 'date-fns'
+import type { DateUTC, Range } from '~/components/date/types'
 import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/filter/useFilter'
 
-export function formatDateByPeriod(date: number, periodNameWithAll: PeriodNameWithAll, names: any) {
+export function formatDate(range: Range) {
+  if (dayjs(range.start).isSame(range.end, 'year')) {
+    if (dayjs(range.start).isSame(range.end, 'day')) {
+      return `${format(range.end, 'd MMM yyy')}`
+    }
+    if (dayjs(range.start).isSame(range.end, 'month')) {
+      return `${format(range.start, 'd')} - ${format(range.end, 'd MMM yyy')}`
+    }
+    return `${format(range.start, 'd MMM')} - ${format(range.end, 'd MMM yyy')}`
+  }
+
+  return `${format(range.start, 'd MMM yyy')} - ${format(range.end, 'd MMM yyy')}`
+}
+
+export function formatDateByPeriod(date: DateUTC, periodNameWithAll: PeriodNameWithAll, names: any) {
   const periodNameWithoutAll: PeriodNameWithoutAll = periodNameWithAll === 'all' ? 'year' : periodNameWithAll
 
   const today = dayjs()
@@ -38,8 +54,6 @@ export function formatDateByPeriod(date: number, periodNameWithAll: PeriodNameWi
   }
 
   return dayjs(date).format(format)
-  // const fDate = dayjs(date).format(format)
-  // return fDate[0].toUpperCase() + fDate.slice(1)
 }
 
 export function formatDateByPeriod2(date: number, periodName: PeriodNameWithoutAll, names: any) {
@@ -82,9 +96,9 @@ export function formatDateByPeriod2(date: number, periodName: PeriodNameWithoutA
 export function getFormatForChart(periodName: PeriodNameWithAll) {
   switch (periodName) {
     case 'day':
-      return 'D.MM'
+      return 'D MMM'
     case 'week':
-      return 'D.MM'
+      return 'D MMM'
     case 'month':
       return 'MMM'
     case 'year':
@@ -104,14 +118,3 @@ export function getDates(periodName: PeriodNameWithAll, date: number) {
 
   return { from, until }
 }
-
-// export function getFromDate(periodName: PeriodNameWithAll, date: number) {
-//   if (periodName === 'all')
-//     return
-
-//   const filterDate = dayjs(date)
-//   const from = filterDate.startOf(periodName).valueOf()
-//   const until = filterDate.endOf(periodName).valueOf()
-
-//   return { from, until }
-// }

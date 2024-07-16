@@ -28,7 +28,7 @@ import {
 } from '~/services/firebase/api'
 import { getDates } from '~/components/date/format'
 
-interface TrnsGetterParams {
+type TrnsGetterParams = {
   includesChildCategories?: boolean
 }
 
@@ -52,6 +52,13 @@ export const useTrnsStore = defineStore('trns', () => {
       trnsItems: items.value,
       ...props,
     })
+  }
+
+  function getRange(trnsIds: TrnId[]) {
+    return {
+      end: items.value[trnsIds.at(0)!]?.date,
+      start: items.value[trnsIds.at(-1)!]?.date,
+    }
   }
 
   const hasTrns = computed(() => Object.keys(items.value ?? {}).length > 0)
@@ -264,6 +271,8 @@ export const useTrnsStore = defineStore('trns', () => {
     editId,
     firstCreatedTrnId,
     firstCreatedTrnIdFromSelectedTrns,
+
+    getRange,
     getStoreTrnsIds,
 
     hasTrns,
