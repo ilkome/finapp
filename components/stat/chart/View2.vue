@@ -15,9 +15,9 @@ import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 import { config, lineConfig } from '~/components/stat/chart/config2'
 import { setChartXAxis } from '~/components/stat/chart/utils'
-import type { PeriodNameWithAll } from '~/components/filter/useFilter'
 import { getFormatForChart } from '~/components/date/format'
 import type { ChartType } from '~/components/stat/chart/types'
+import type { Period } from '~/components/date/types'
 
 const props = withDefaults(
   defineProps<{
@@ -28,7 +28,7 @@ const props = withDefaults(
     isShowExpense?: boolean
     isShowIncome?: boolean
     isShowSummary?: boolean
-    period: PeriodNameWithAll
+    period: Period
     series: unknown[]
   }>(),
   {

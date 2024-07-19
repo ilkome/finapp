@@ -37,6 +37,7 @@
     "pug": "^3.0.3",
     "swiper": "8.4.7",
     "v-calendar": "^3.1.2",
+    "vite": "^5.3.4",
     "vue-deepunref": "^1.0.1",
     "vue-echarts": "^6.7.3",
     "vue-router": "^4.3.3",

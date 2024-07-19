@@ -48,7 +48,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 <template>
   <div class="grid gap-4">
     <div
-      class="sticky top-0 z-10 grid gap-2 bg-foreground-2 px-2 py-2"
+      class="grid gap-2 bg-foreground-2 px-2 py-2"
     >
       <!-- <div
         v-if="props.isShowTotals"

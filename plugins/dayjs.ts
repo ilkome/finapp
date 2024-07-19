@@ -1,15 +1,13 @@
 import dayjs from 'dayjs'
 
 import updateLocale from 'dayjs/plugin/updateLocale'
-// import relativeTime from 'dayjs/plugin/relativeTime'
-// import weekOfYear from 'dayjs/plugin/weekOfYear'
+import isBetween from 'dayjs/plugin/isBetween'
 import en from 'dayjs/locale/en.js'
 import ru from 'dayjs/locale/ru.js'
 import calendar from 'dayjs/plugin/calendar'
 
 dayjs.extend(updateLocale)
-// dayjs.extend(relativeTime)
-// dayjs.extend(weekOfYear)
+dayjs.extend(isBetween)
 dayjs.extend(calendar)
 
 export default defineNuxtPlugin((nuxtApp) => {

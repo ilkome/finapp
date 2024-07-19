@@ -92,6 +92,7 @@ watch(() => props.active, () => {
       v-for="item in menu"
       :key="item.id"
       :isActive="item.id === props.active"
+      class="text-nowrap"
       @click="onClickStatMenu(item.id)"
     >
       {{ item.name }}

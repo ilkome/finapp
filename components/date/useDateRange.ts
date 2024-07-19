@@ -6,9 +6,9 @@ import { formatDate } from '~/components/date/format'
 export function useDateRange({ key }: { key: string }) {
   const { t } = useI18n()
 
-  const period = useStorage<Period>(`${key}-period`, 'day')
+  const period = useStorage<Period>(`${key}-period`, 'month')
   const groupBy = ref<GroupBy>('period')
-  const duration = useStorage<number>(`${key}-duration`, 6)
+  const duration = useStorage<number>(`${key}-duration`, 24)
   const range = ref({
     end: dayjs().endOf(period.value).valueOf(),
     start: dayjs().subtract(duration.value, period.value).startOf(period.value).valueOf(),

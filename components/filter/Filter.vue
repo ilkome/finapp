@@ -12,7 +12,7 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
 </script>
 
 <template>
-  <div class="flex flex-wrap gap-1 overflow-hidden overflow-x-auto">
+  <div class="flex gap-1">
     <!-- Categories -->
     <div class="flex bg-item-4 rounded-lg">
       <VDropdown

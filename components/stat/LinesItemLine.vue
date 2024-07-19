@@ -48,15 +48,15 @@ function getBarStyle() {
 <template>
   <div
     :class="{
-      'bg-item-4 rounded-md mb-2': props.isActive,
+      '-bg-item-4 ': props.isActive,
     }"
-    class="group"
+    class="group bg-item-4 rounded-md"
   >
     <UiElement
-      :isShowLine="!props.isShowLinesChart"
-      :isActive="props.isActive"
+      :isShowLine2="!props.isShowLinesChart"
+      :isActive2="props.isActive"
       class="relative"
-      isShowToggle
+      isShowToggle2
       @click="emit('click', props.item.id)"
     >
       <template #line>

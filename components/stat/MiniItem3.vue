@@ -247,7 +247,7 @@ function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
 
             <div
               v-if="cats.length > 0 && catsView === 'list'"
-              class="pl-0"
+              class="pl-0 grid gap-1"
             >
               <StatLinesItemLine
                 v-for="item in cats"

@@ -179,6 +179,21 @@ export function useNewStat() {
       type: chartSeriesOptions[t].type,
     }))
   }
+  function getSeries2(
+    total: TotalReturns[],
+    type: MoneyTypeSlugSum,
+  ) {
+    // const types = type === 'sum' ? ['income', 'expense', 'sum'] : [type]
+    const types = type === 'sum' ? ['income', 'expense'] : [type]
+
+    return types.map(t => ({
+      color: chartSeriesOptions[t].color,
+      cursor: 'default',
+      data: total.map(i => t !== 'sum' ? Math.abs(i[t]) : i[t]),
+      name: chartSeriesOptions[t].name,
+      type: chartSeriesOptions[t].type,
+    }))
+  }
 
   function getUniqueIds(data) {
     const ids = new Set()
@@ -196,6 +211,7 @@ export function useNewStat() {
     getCatsForChart,
     getPeriodsWithTrns,
     getSeries,
+    getSeries2,
     getUniqueIds,
   }
 }

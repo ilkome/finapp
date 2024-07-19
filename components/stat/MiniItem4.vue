@@ -292,7 +292,7 @@ const incomeTrnsIds = computed(() =>
 
 <template>
   <div class="grid content-start gap-3">
-    <div class="sticky top-14 z-10 grid gap-3 overflow-x-auto px-3 bg-foreground-2">
+    <div class="sticky -top-1 z-10 grid gap-3 py-2 px-3 bg-foreground-2 overflow-x-auto ">
       <div
         v-if="props.type === 'sum'"
         class="flex gap-6 md:gap-12"
@@ -316,7 +316,9 @@ const incomeTrnsIds = computed(() =>
         :amount="totals[props.type]"
         :type="props.type"
       />
+    </div>
 
+    <div class="grid gap-3 px-3">
       <div class="flex overflow-y-auto gap-1">
         <DateRanges
           :groupBy
