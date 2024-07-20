@@ -46,7 +46,7 @@ const trnsIds = computed(() =>
   }),
 )
 
-const { date, duration, groupBy, initialRange, period, range, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange({
+const { date, duration, groupBy, period, range, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange({
   key: 'test',
 })
 
@@ -113,7 +113,6 @@ const { getCats } = useNewStat()
         :period
         :date
         :duration
-        :initialRange
         :maxRange="trnsStore.getRange(trnsIds)"
         @setRange="setRange"
         @setRangeByCalendar="setRangeByCalendar"

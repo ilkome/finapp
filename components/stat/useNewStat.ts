@@ -7,6 +7,7 @@ import useAmount from '~/components/amount/useAmount'
 import type { MoneyTypeSlugSum } from '~/components/stat/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { PeriodNameWithAll } from '~/components/filter/useFilter'
+import type { Period, Range } from '~/components/date/types'
 
 export type TotalCategories = {
   expense: TotalCategory[]
@@ -182,15 +183,16 @@ export function useNewStat() {
   function getSeries2(
     total: TotalReturns[],
     type: MoneyTypeSlugSum,
+    ranges: Range[],
   ) {
     // const types = type === 'sum' ? ['income', 'expense', 'sum'] : [type]
     const types = type === 'sum' ? ['income', 'expense'] : [type]
 
-    return types.map(t => ({
+    return types.map((t, idx) => ({
       color: chartSeriesOptions[t].color,
       cursor: 'default',
       data: total.map(i => t !== 'sum' ? Math.abs(i[t]) : i[t]),
-      name: chartSeriesOptions[t].name,
+      name: ranges[idx]?.start,
       type: chartSeriesOptions[t].type,
     }))
   }

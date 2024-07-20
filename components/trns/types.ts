@@ -20,7 +20,7 @@ export enum TrnTypeSlug {
   Transfer = 'transfer',
 }
 
-interface BaseTrn {
+type BaseTrn = {
   date: number
   desc?: string
   // @deprecated
@@ -28,14 +28,14 @@ interface BaseTrn {
   edited: number
 }
 
-export interface Transaction extends BaseTrn {
+export type Transaction = {
   amount: number
   categoryId: CategoryId
   type: TrnType.Income | TrnType.Expense
   walletId: WalletId
-}
+} & BaseTrn
 
-export interface Transfer extends BaseTrn {
+export type Transfer = {
   categoryId: 'transfer'
   expenseAmount: number
 
@@ -44,10 +44,10 @@ export interface Transfer extends BaseTrn {
 
   incomeWalletId: WalletId
   type: TrnType.Transfer
-}
+} & BaseTrn
 
 /** @deprecated: use Transfer */
-export interface TransferDeprecated {
+export type TransferDeprecated = {
   amountFrom: number
   amountTo: number
   categoryId: 'transfer'
@@ -73,7 +73,7 @@ export type TrnItemDirty = Transaction | Transfer | TransferDeprecated
 export type Trns = Record<TrnId, TrnItem>
 export type TrnsDirty = Record<TrnId, TrnItemDirty>
 
-export interface TrnsGetterProps {
+export type TrnsGetterProps = {
   categoriesIds?: CategoryId[]
   dates?: {
     from: number
@@ -85,13 +85,14 @@ export interface TrnsGetterProps {
   walletsIds?: WalletId[]
 }
 
-export interface TrnsGetterProps2 {
+export type TrnsGetterProps2 = {
   categoriesIds?: CategoryId[]
   dates?: {
     from: number
     until: number
   }
   trnType?: TrnType
+  trnsIds?: TrnId[]
   untilDate?: number
   walletsIds?: WalletId[]
 }

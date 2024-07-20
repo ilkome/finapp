@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { GroupBy, Range } from '~/components/date/types'
+import type { Range } from '~/components/date/types'
 import { getStyles } from '~/components/ui/getStyles'
 
 defineProps<{
-  groupBy: GroupBy
   range: Range
 }>()
 

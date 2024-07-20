@@ -18,3 +18,14 @@ export type RangeDuration = {
   period: Period
   range?: Range
 }
+
+export type PeriodDuration = {
+  duration: number
+  period: Period
+}
+
+export type FullDuration = {
+  grouped: PeriodDuration
+  interval: PeriodDuration
+  label?: string
+}

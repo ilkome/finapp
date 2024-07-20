@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { Period, Range } from '~/components/date/types'
+import type { Period, Range, RangeGrouped } from '~/components/date/types'
 
 export const periods = ['day', 'week', 'month', 'year'] as const
 
@@ -14,4 +14,24 @@ export function getIntervalDates(r: Range, period: Period) {
   }
 
   return dates
+}
+
+export function getRangeFromNow(pd: RangeGrouped): Range {
+  return {
+    end: dayjs().endOf(pd.period).valueOf(),
+    start: dayjs()
+      .subtract(pd.count === 1 ? 0 : pd.count - 1, pd.period)
+      .startOf(pd.period)
+      .valueOf(),
+  }
+}
+
+export function getRangeFromInterval(pd: RangeGrouped): Range {
+  return {
+    end: dayjs().endOf(pd.period).valueOf(),
+    start: dayjs()
+      .subtract(pd.count === 1 ? 0 : pd.count - 1, pd.period)
+      .startOf(pd.period)
+      .valueOf(),
+  }
 }

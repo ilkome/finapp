@@ -7,15 +7,13 @@ import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import type { ChartType } from '~/components/stat/chart/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { TotalReturns } from '~/components/amount/getTotal'
-import type { FilterProvider, PeriodNameWithoutAll } from '~/components/filter/useFilter'
+import type { FilterProvider } from '~/components/filter/useFilter'
 import { getStyles } from '~/components/ui/getStyles'
 import { useNewStat } from '~/components/stat/useNewStat'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { getDates } from '~/components/date/format'
 import { useDateRange } from '~/components/date/useDateRange'
 import { markArea } from '~/components/stat/chart/utils'
-import type { Period, Range } from '~/components/date/types'
+import type { Range } from '~/components/date/types'
 
 const props = defineProps<{
   storageKey?: string
@@ -23,47 +21,68 @@ const props = defineProps<{
   type: MoneyTypeSlugSum
 }>()
 
-const { date, duration, groupBy, initialRange, period, range, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange({
+const maxRange = computed(() => useTrnsStore().getRange(props.trnsIds))
+
+const { addInterval, getPeriodsWithEmptyTrnsIds2, grouped, interval, intervalGroups, range, removeInterval, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange({
   key: `${props.type}${props.storageKey}`,
 })
+
+const selectedType = ref<MoneyTypeSlugSum>('sum')
+
+const filteredTrnsIds = computed(() => {
+  if (selectedType.value === 'income') {
+    return props.trnsIds
+      .filter(trnId => trnsStore.items[trnId].type === 1 || trnsStore.items[trnId].type === 2)
+      .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date)
+  }
+
+  if (selectedType.value === 'expense') {
+    return props.trnsIds
+      .filter(trnId => trnsStore.items[trnId].type === 0 || trnsStore.items[trnId].type === 2)
+      .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date)
+  }
+
+  return props.trnsIds
+})
+
+//   const expenseTrnsIds = computed(() =>
+//   props.trnsIds.filter(
+//     trnId => trnsStore.items[trnId].type === 0 || trnsStore.items[trnId].type === 2,
+//   ).sort(
+//     (a, b) => trnsStore.items[b].date - trnsStore.items[a].date,
+//   ),
+// )
+
+// const incomeTrnsIds = computed(() =>
+//   props.trnsIds.filter(
+//     trnId => trnsStore.items[trnId].type === 1 || trnsStore.items[trnId].type === 2,
+//   ).sort(
+//     (a, b) => trnsStore.items[b].date - trnsStore.items[a].date,
+//   ),
+// )
 
 const filter = inject('filter') as FilterProvider
 const { t } = useI18n()
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
-const { getCats, getPeriodsWithTrns, getSeries, getSeries2 } = useNewStat()
+const { getCats, getSeries2 } = useNewStat()
 const categoriesStore = useCategoriesStore()
-
-const groupDatesBy = ref<{
-  duration: number
-  period: Period
-}>({
-  duration: 1,
-  period: 'day',
-})
-
-const groupedPeriods = computed(() =>
-  getPeriodsWithEmptyTrnsIds({
-    duration: +groupDatesBy.value.duration || 1,
-    from: range.value.start,
-    period: groupDatesBy.value.period || period.value,
-    until: range.value.end,
-  }),
-)
 
 const groupedPeriods2 = computed(() =>
   getPeriodsWithEmptyTrnsIds2({
-    duration: +groupDatesBy.value.duration || 1,
-    from: range.value.start,
-    period: groupDatesBy.value.period || period.value,
-    until: range.value.end,
+    duration: grouped.value.duration || 1,
+    period: grouped.value.period,
+    range: range.value,
   }),
 )
 
 const categories = computed(() => groupedPeriods2.value.map(r => +r.start) ?? [])
 
 const selectedPeriod = ref<number>(-1)
-watch(date, () => selectedPeriod.value = -1)
+
+watch(range, () => {
+  selectedPeriod.value = -1
+})
 
 function onClickChart(idx: number) {
   const newPeriod = idx
@@ -77,14 +96,13 @@ function onClickChart(idx: number) {
 }
 
 const isShowLinesChart = useStorage<boolean>('isShowLinesChart', false)
-const newBaseStorageKey = computed(() => `${period.value}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
-const baseStorageKey = computed(() => `${period.value}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
+const newBaseStorageKey = computed(() => `${grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
+const baseStorageKey = computed(() => `${grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
 
 const chartType = useStorage<ChartType>(`${baseStorageKey.value}-chartType`, 'bar')
 
-const periodsWithTrnsIds = computed(() => getPeriodsWithTrns(props.trnsIds, period.value, groupedPeriods.value))
-
-const groupedTrnsIds = computed(() => getPeriodsWithTrns2(props.trnsIds, groupedPeriods2.value))
+const groupedTrnsIds = computed(() => getPeriodsWithTrns2(filteredTrnsIds.value, groupedPeriods2.value))
+const groupedTrnsIds2 = computed(() => getPeriodsWithTrns2(props.trnsIds, groupedPeriods2.value))
 const groupedTrnsTotals2 = computed(() => groupedTrnsIds.value.map(g => getTotalOfTrnsIds(g)))
 
 function getPeriodsWithTrns2(trnsIds: TrnId[], ranges: Range[]) {
@@ -92,7 +110,7 @@ function getPeriodsWithTrns2(trnsIds: TrnId[], ranges: Range[]) {
 
   trnsIds.forEach((trnId) => {
     const trnDate = trnsStore.items[trnId]?.date
-    const idx = ranges.findIndex(r => dayjs(trnDate).isBetween(r.start, r.end, 'day', '[)'))
+    const idx = ranges.findIndex(r => trnDate! >= r.start && trnDate! <= r.end)
     list[idx]?.push(trnId)
   })
 
@@ -100,7 +118,7 @@ function getPeriodsWithTrns2(trnsIds: TrnId[], ranges: Range[]) {
 }
 
 const series = computed(() => {
-  const series = getSeries2(groupedTrnsTotals2.value, props.type)
+  const series = getSeries2(groupedTrnsTotals2.value, props.type, groupedPeriods2.value)
 
   if (selectedPeriod.value >= 0) {
     if (chartType.value !== 'bar') {
@@ -132,15 +150,25 @@ const series = computed(() => {
 })
 
 const selectedTrnsIdsForTrnsList = computed(() => {
-  if (groupBy.value === 'all') {
-    return trnsStore.getStoreTrnsIds({
-      trnsIds: props.trnsIds,
-    }, { includesChildCategories: false })
-  }
-
   if (selectedPeriod.value >= 0) {
     return trnsStore.getStoreTrnsIds({
       trnsIds: groupedTrnsIds.value[selectedPeriod.value],
+    }, { includesChildCategories: false })
+  }
+
+  return trnsStore.getStoreTrnsIds({
+    dates: {
+      from: range.value.start,
+      until: range.value.end,
+    },
+    trnsIds: filteredTrnsIds.value,
+  }, { includesChildCategories: false })
+})
+
+const trnsIdsForTotals = computed(() => {
+  if (selectedPeriod.value >= 0) {
+    return trnsStore.getStoreTrnsIds({
+      trnsIds: groupedTrnsIds2.value[selectedPeriod.value],
     }, { includesChildCategories: false })
   }
 
@@ -154,57 +182,8 @@ const selectedTrnsIdsForTrnsList = computed(() => {
 })
 
 const totals = computed(() =>
-  getTotalOfTrnsIds(selectedTrnsIdsForTrnsList.value),
+  getTotalOfTrnsIds(trnsIdsForTotals.value),
 )
-
-// TODO: move to dates utils
-function getPeriodsWithEmptyTrnsIds(params: {
-  duration: number
-  from: number
-  period: PeriodNameWithoutAll
-  until: number
-}) {
-  const list: Record<string, TrnId[]> = {}
-  let current = dayjs(params.from).startOf(params.period).valueOf()
-
-  while (current < params.until) {
-    list[current] = []
-    current = dayjs(current)
-      .add(params.duration || 1, params.period)
-      .startOf(params.period)
-      .valueOf()
-  }
-
-  return list
-}
-
-function getPeriodsWithEmptyTrnsIds2(params: {
-  duration: number
-  from: number
-  period: PeriodNameWithoutAll
-  until: number
-}) {
-  if (params.duration < 1) {
-    return []
-  }
-
-  const list: Range[] = []
-  let current = {
-    end: dayjs(params.from).add(params.duration, params.period).endOf(params.period).valueOf(),
-    start: dayjs(params.from).startOf(params.period).valueOf(),
-  }
-
-  while (current.start < params.until) {
-    list.push(current)
-
-    current = {
-      end: dayjs(current.end).add(params.duration, params.period).endOf(params.period).valueOf(),
-      start: dayjs(current.start).add(params.duration, params.period).startOf(params.period).valueOf(),
-    }
-  }
-
-  return list
-}
 
 /**
  * Cats
@@ -253,10 +232,6 @@ function onClickCategory(categoryId: CategoryId) {
   }
 }
 
-// function onClickCategoryIcon(categoryId: CategoryId) {
-//   filter.setCategoryId(categoryId)
-// }
-
 function onClickCategoryRounded(categoryId: CategoryId) {
   isGroupCategoriesByParentRounded.value = false
   filter.clearFilter()
@@ -297,31 +272,37 @@ function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
 function getTrnsWithDate(categoryId: CategoryId) {
   return trnsStore.getStoreTrnsIds({
     categoriesIds: [categoryId],
-    dates: getDates(period.value, date.value),
-    trnsIds: props.trnsIds,
+    trnsIds: selectedTrnsIdsForTrnsList.value,
   }, { includesChildCategories: true })
 }
+
+const isShowDateSelector = ref(false)
 </script>
 
 <template>
-  <div class="grid content-start gap-3">
-    <div class="grid gap-3 overflow-x-auto px-3">
-      <div class="">
+  <div>
+    <div class="grid gap-3 pt-3 px-3">
+      <div class="-my-1">
         <div
           v-if="props.type === 'sum'"
-          class="flex gap-6 md:gap-12"
+          class="flex"
         >
           <StatSum
             :amount="-totals.expense"
+            :isActive="selectedType === 'expense'"
             type="expense"
+            @click="selectedType = 'expense'"
           />
           <StatSum
             :amount="totals.income"
+            :isActive="selectedType === 'income'"
             type="income"
+            @click="selectedType = 'income'"
           />
           <StatSum
             :amount="totals.sum"
             type="sum"
+            @click="selectedType = 'sum'"
           />
         </div>
 
@@ -332,50 +313,72 @@ function getTrnsWithDate(categoryId: CategoryId) {
         />
       </div>
 
-      <div class="flex overflow-y-auto gap-1">
-        <DateRanges
-          :groupBy
-          :range
-          @setRangeByPeriod="setRangeByPeriod"
-        />
+      <div>
+        <div
+          class="text-xs font-medium text-secondary"
+          @click="isShowDateSelector = !isShowDateSelector"
+        >
+          <DateViewRange
+            v-if="selectedPeriod !== -1"
+            :range="groupedPeriods2[selectedPeriod]"
+            title="selectedPeriod"
+          />
 
-        <DateDaySelector
-          :groupBy
-          :range
-          @setRangeByCalendar="setRangeByCalendar"
-        />
+          <DateViewRange v-else :range="range" title="range" />
+        </div>
+
+        <div
+          v-if="isShowDateSelector"
+          class="grid gap-2 bg-item-4 p-2 rounded-md"
+        >
+          <div class="flex overflow-y-auto gap-1">
+            <div class="flex gap-2">
+              <DateLinkItem @click="removeInterval">
+                -
+              </DateLinkItem>
+              <DateLinkItem @click="addInterval">
+                +
+              </DateLinkItem>
+            </div>
+
+            <DateRanges
+              :range
+              :interval
+              :grouped
+              :maxRange
+              @setRangeByPeriod="setRangeByPeriod"
+            />
+
+            <DateDaySelector
+              :groupBy="grouped.period"
+              :range
+              @setRangeByCalendar="setRangeByCalendar"
+            />
+          </div>
+
+          <div class="flex overflow-y-auto gap-1">
+            <div class="flex gap-1">
+              <div class="flex gap-2">
+                <DateLinkItem @click="--grouped.duration">
+                  -
+                </DateLinkItem>
+                <DateLinkItem @click="++grouped.duration">
+                  +
+                </DateLinkItem>
+              </div>
+
+              <DateLinkItem
+                v-for="rangeItem in intervalGroups"
+                :key="rangeItem.period"
+                :isActive="rangeItem.period === grouped.period && rangeItem.duration === grouped.duration"
+                @click="() => grouped = rangeItem"
+              >
+                {{ rangeItem.duration }}{{ rangeItem.period }}
+              </DateLinkItem>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <!-- <pre>{{ selectedPeriod }}</pre> -->
-    <!-- <pre>{{ groupedTrnsTotals2 }}</pre> -->
-    <!-- <pre>{{ groupedTrnsIds }}</pre> -->
-    <div class="text-sm flex gap-2">
-      <div>{{ dayjs(range.start).format() }}</div>
-      <div>{{ dayjs(range.end).format() }}</div>
-    </div>
-
-    <div class="text-sm">
-      <div
-        v-for="(d) in groupedPeriods2"
-        :key="d.start"
-        class="flex gap-2"
-      >
-        <div>{{ dayjs(+d.start).format() }}</div>
-        <div>{{ dayjs(+d.end).format() }}</div>
-      </div>
-    </div>
-
-    <pre>groupDatesBy {{ groupDatesBy }}</pre>
-
-    <div>
-      groupDatesBy.period
-      <input v-model.lazy="groupDatesBy.period">
-    </div>
-
-    <div>
-      groupDatesBy.duration
-      <input v-model.lazy="groupDatesBy.duration">
     </div>
 
     <!-- Stat -->
@@ -387,7 +390,7 @@ function getTrnsWithDate(categoryId: CategoryId) {
             :key="baseStorageKey"
             :categories
             :chartType
-            :period="groupDatesBy.period"
+            :period="grouped.period"
             :series
             @click="onClickChart"
           />
@@ -420,23 +423,15 @@ function getTrnsWithDate(categoryId: CategoryId) {
 
           <div class="flex gap-1">
             <DateNavHome
-              v-if="groupBy !== 'all'"
-              :duration
-              :groupBy
-              :initialRange
-              :maxRange="trnsStore.getRange(trnsIds)"
-              :period
-              :range
+              v-if="range.start !== dayjs().subtract(interval.duration - 1, interval.period).startOf(interval.period).valueOf() && range.end !== dayjs().endOf(interval.period).valueOf()"
+              :interval
               @setRange="setRange"
             />
 
             <DateNav
-              v-if="groupBy !== 'all'"
-              :duration
-              :groupBy
-              :initialRange
-              :maxRange="trnsStore.getRange(trnsIds)"
-              :period
+              v-if="range.start !== maxRange.start && range.end !== maxRange.end"
+              :interval
+              :maxRange
               :range
               @setRange="setRange"
             />
@@ -660,8 +655,7 @@ function getTrnsWithDate(categoryId: CategoryId) {
 
             <TrnsList
               class="pl-1"
-              :groupedBy="period"
-              :isShowGroupSum="period !== 'day'"
+              :isShowGroupSum="grouped.period !== 'day'"
               :trnsIds="selectedTrnsIdsForTrnsList"
               isShowFilterByDesc
               isShowHeader2

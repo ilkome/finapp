@@ -46,38 +46,11 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 </script>
 
 <template>
-  <div class="grid gap-4">
-    <div
-      class="grid gap-2 bg-foreground-2 px-2 py-2"
-    >
-      <!-- <div
-        v-if="props.isShowTotals"
-        class="flex flex-wrap gap-8 rounded-lg"
-      >
-        <StatSum
-          v-if="totals.expense"
-          :amount="-totals.expense"
-          isTotal
-          type="expense"
-        />
-        <StatSum
-          v-if="totals.income"
-          :amount="totals.income"
-          isTotal
-          type="income"
-        />
-        <StatSum
-          v-if="totals.income && totals.expense"
-          :amount="totals.sum"
-          isTotal
-          type="sum"
-        />
-      </div> -->
-
+  <div class="grid gap-0">
+    <!-- Sum -->
+    <div>
       <div class="flex gap-1 overflow-y-auto">
-        <Filter
-          v-if="props.isShowFilter"
-        />
+        <Filter v-if="props.isShowFilter" />
 
         <StatMenu
           :active="activeTab"
@@ -86,10 +59,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
           @click="id => activeTab = id"
         />
       </div>
-    </div>
 
-    <!-- Sum -->
-    <div class="grid gap-24">
       <StatMiniItem
         v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
         :storageKey="props.storageKey + activeTab"

@@ -20,6 +20,6 @@ watch(() => trnsStore.hasTrns, (has) => {
 </script>
 
 <template>
-  <LazyStat v-if="trnsStore.hasTrns" :key="useRoute().fullPath" />
+  <LazyStat v-if="trnsStore.hasTrns" />
   <LazyWelcomeActions v-else />
 </template>

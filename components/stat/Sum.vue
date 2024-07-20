@@ -4,15 +4,26 @@ import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const props = defineProps<{
   amount: number
+  isActive?: boolean
   isTotal?: boolean
   type: MoneyTypeSlugNew
+}>()
+
+const emit = defineEmits<{
+  click: [e: Event]
 }>()
 
 const currenciesStore = useCurrenciesStore()
 </script>
 
 <template>
-  <div class="grid gap-1">
+  <div
+    class="grid gap-1 px-3 py-2"
+    :class="{
+      'bg-item-5 rounded': props.isActive,
+    }"
+    @click="(e: Event) => emit('click', e)"
+  >
     <UiTitle6>
       {{ props.isTotal ? $t('money.all') : '' }}
       {{ $t(`money.${props.type}`) }}

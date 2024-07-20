@@ -27,6 +27,7 @@ import {
   updateData,
 } from '~/services/firebase/api'
 import { getDates } from '~/components/date/format'
+import type { Range } from '~/components/date/types'
 
 type TrnsGetterParams = {
   includesChildCategories?: boolean
@@ -54,10 +55,10 @@ export const useTrnsStore = defineStore('trns', () => {
     })
   }
 
-  function getRange(trnsIds: TrnId[]) {
+  function getRange(trnsIds: TrnId[]): Range {
     return {
-      end: items.value[trnsIds.at(0)!]?.date,
-      start: items.value[trnsIds.at(-1)!]?.date,
+      end: items.value[trnsIds.at(0)!]?.date ?? dayjs().endOf('day').valueOf(),
+      start: items.value[trnsIds.at(-1)!]?.date ?? dayjs().startOf('day').valueOf(),
     }
   }
 

@@ -1,61 +1,133 @@
 import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
-import type { GroupBy, Period, Range, RangeDuration } from '~/components/date/types'
-import { formatDate } from '~/components/date/format'
+import type { FullDuration, Period, PeriodDuration, Range } from '~/components/date/types'
 
 export function useDateRange({ key }: { key: string }) {
-  const { t } = useI18n()
-
-  const period = useStorage<Period>(`${key}-period`, 'month')
-  const groupBy = ref<GroupBy>('period')
-  const duration = useStorage<number>(`${key}-duration`, 24)
-  const range = ref({
-    end: dayjs().endOf(period.value).valueOf(),
-    start: dayjs().subtract(duration.value, period.value).startOf(period.value).valueOf(),
+  const grouped = useStorage<PeriodDuration>(`${key}-grouped`, {
+    duration: 1,
+    period: 'day',
   })
-  const initialRange = ref({ ...range.value })
-  const date = computed(() => groupBy.value === 'all' ? t('dates.all.simple') : formatDate(range.value))
+
+  const interval = useStorage<PeriodDuration>(`${key}-interval`, {
+    duration: 7,
+    period: 'day',
+  })
+
+  const range = ref({
+    end: dayjs().endOf(interval.value.period).valueOf(),
+    start: dayjs().subtract(interval.value.duration - 1, interval.value.period).startOf(interval.value.period).valueOf(),
+  })
 
   function setRange(r: Range) {
     range.value = { ...r }
   }
 
-  function setRangeByPeriod(r: RangeDuration) {
-    if (r.groupBy === 'all') {
-      groupBy.value = 'all'
-      return
+  function getPeriodsWithEmptyTrnsIds2(params: {
+    duration: number
+    period: Period
+    range: Range
+  }) {
+    if (params.duration < 1) {
+      return []
     }
 
-    groupBy.value = r.groupBy
-    period.value = r.period ?? 'day'
-    duration.value = r.duration === 0 ? 0 : r.duration - 1
+    const list: Range[] = []
+
+    let current = {
+      end: dayjs(params.range.end).endOf(params.period).valueOf(),
+      start: dayjs(params.range.end).subtract(params.duration === 1 ? 0 : params.duration - 1, params.period).startOf(params.period).valueOf(),
+    }
+
+    while (current.end > params.range.start) {
+      if (current.start < params.range.start) {
+        list.unshift({
+          end: current.end,
+          start: params.range.start,
+        })
+      }
+      else if (current.end > params.range.end) {
+        list.unshift({
+          end: params.range.end,
+          start: current.start,
+        })
+      }
+      else {
+        list.unshift(current)
+      }
+
+      // TODO: if date less than params.range.start change start date to params.range.start
+      current = {
+        end: dayjs(current.end).subtract(params.duration, params.period).endOf(params.period).valueOf(),
+        start: dayjs(current.start).subtract(params.duration, params.period).startOf(params.period).valueOf(),
+      }
+    }
+
+    return list
+  }
+
+  function setRangeByPeriod(rd: FullDuration) {
+    grouped.value = rd.grouped
+    interval.value = rd.interval
+
     range.value = {
-      end: dayjs().endOf(period.value).valueOf(),
-      start: dayjs().subtract(duration.value, period.value).startOf(period.value).valueOf(),
+      end: dayjs().endOf(interval.value.period).valueOf(),
+      start: dayjs().subtract(rd.interval.duration - 1, interval.value.period).startOf(rd.interval.period).valueOf(),
     }
   }
 
   function setRangeByCalendar(r: Range) {
-    groupBy.value = 'daySelector'
-    period.value = 'day'
-
-    const newRange = {
-      end: dayjs(r.end).endOf(period.value).valueOf(),
-      start: dayjs(r.start).startOf(period.value).valueOf(),
+    grouped.value = {
+      duration: 1,
+      period: 'day',
     }
 
-    initialRange.value = { ...newRange }
-    range.value = { ...newRange }
+    interval.value = {
+      duration: dayjs(r.end).diff(r.start, 'day') + 1,
+      period: 'day',
+    }
+
+    range.value = { ...r }
   }
 
-  return {
-    date,
-    duration,
-    groupBy,
-    initialRange,
-    period,
-    range,
+  function addInterval() {
+    ++interval.value.duration
+    range.value.start = dayjs(range.value.start).subtract(1, interval.value.period).startOf(interval.value.period).valueOf()
+  }
 
+  function removeInterval() {
+    --interval.value.duration
+    range.value.start = dayjs(range.value.start).add(1, interval.value.period).startOf(interval.value.period).valueOf()
+  }
+
+  const intervalGroups = computed<PeriodDuration[]>(() => [{
+    duration: grouped.value.duration,
+    period: grouped.value.period,
+  }, {
+    duration: 1,
+    period: 'day',
+  }, {
+    duration: 1,
+    period: 'week',
+  }, {
+    duration: 1,
+    period: 'month',
+  }, {
+    duration: 6,
+    period: 'month',
+  }, {
+    duration: 1,
+    period: 'year',
+  }])
+
+  return {
+    addInterval,
+    getPeriodsWithEmptyTrnsIds2,
+    grouped,
+    interval,
+    intervalGroups,
+
+    range,
+    removeInterval,
     setRange,
     setRangeByCalendar,
     setRangeByPeriod,
