@@ -313,7 +313,7 @@ const isShowDateSelector = ref(false)
         />
       </div>
 
-      <div>
+      <div class="overflow-y-auto">
         <div
           class="text-xs font-medium text-secondary"
           @click="isShowDateSelector = !isShowDateSelector"

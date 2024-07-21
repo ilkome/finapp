@@ -48,7 +48,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 <template>
   <div class="grid gap-0">
     <!-- Sum -->
-    <div>
+    <div class="overflow-hidden">
       <div class="flex gap-1 overflow-y-auto">
         <Filter v-if="props.isShowFilter" />
 
