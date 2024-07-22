@@ -42,9 +42,7 @@ function changeCreditView() {
     :isActive="activeItemId === props.walletId"
     :isShowIcons="props.isShowIcons"
     :insideClasses="props.insideClasses"
-    :hideDivider="!alt"
-    isShowLine
-    class="group relative"
+    class="relative bg-item-4 rounded-md"
     @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
@@ -82,7 +80,7 @@ function changeCreditView() {
 
     <!-- Main -->
     <template v-if="!props.alt">
-      <div class="grow text-sm leading-none text-secondary">
+      <div class="grow text-sm leading-none text-3">
         {{ wallet.name }}
       </div>
 
@@ -92,12 +90,13 @@ function changeCreditView() {
           :amount="creditAmount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
-          class="hocus:!bg-neutral-700/50 p-2 -m-2 rounded-lg"
+          class="hocus:!bg-neutral-700/50 p-2 -m-2 rounded-lg !text-secondary"
           @click.stop="changeCreditView"
         />
         <Amount
           v-else
           :amount="wallet.amount"
+          class="!text-secondary"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
         />

@@ -1,25 +1,23 @@
 /* eslint-disable perfectionist/sort-objects */
 import { useAppNav } from '~/components/app/useAppNav'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
-import { useUserStore } from '~/components/user/useUser'
 
-interface MenuItem {
-  icon: string
+export type MenuItem = {
+  component?: string
+  icon?: string
   name: string
-  private?: boolean
 }
 
-// TODO: replace with NuxtLink
 export default function useMenuData() {
   const { t } = useI18n()
   const { trnFormCreate } = useTrnForm()
   const route = useRoute()
   const { closeAllModals, openModal } = useAppNav()
-  const userStore = useUserStore()
 
-  const items = computed(() => ({
+  const items = computed<Record<string, MenuItem>>(() => ({
     trnForm: {
-      component: 'UiIconAdd',
+      // component: 'UiIconAdd',
+      icon: 'hugeicons:plus-sign-square',
       name: t('trnForm.createTrn'),
     },
     dashboard: {
@@ -44,15 +42,12 @@ export default function useMenuData() {
     },
   }))
 
-  const itemsMini = computed(() => ({
+  const itemsBottom = computed(() => ({
     wallets: items.value.wallets,
     categories: items.value.categories,
     trnForm: items.value.trnForm,
     dashboard: items.value.dashboard,
-    menu: {
-      component: 'UiIconMenu',
-      name: '',
-    },
+    menu: { component: 'UiIconMenu', name: '' },
   }))
 
   function onClick(menuId: string) {
@@ -75,18 +70,10 @@ export default function useMenuData() {
     return route.name?.includes(menuId)
   }
 
-  function checkIsShow(item: MenuItem) {
-    if (!item)
-      return false
-
-    return !item.private || (item.private && userStore.isDevUser)
-  }
-
   return {
     items,
-    itemsMini,
+    itemsBottom,
     onClick,
-    checkIsShow,
     checkIsActive,
   }
 }

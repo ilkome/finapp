@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [{
-        href: 'https://fonts.googleapis.com/css?family=Roboto+Mono:400,500|Roboto:400,500,600,700|Unica+One&display=swap&subset=cyrillic',
+        href: 'https://fonts.googleapis.com/css?family=Roboto+Mono:400,500|Nunito|Roboto:400,500,600,700|Unica+One&display=swap&subset=cyrillic',
         rel: 'stylesheet',
       }, {
         href: '/css/materialdesignicons.min.css',

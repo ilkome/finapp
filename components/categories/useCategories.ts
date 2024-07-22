@@ -15,6 +15,7 @@ import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/compon
 
 import { useUserStore } from '~/components/user/useUser'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import type { CategoriesItem } from '#build/components'
 
 export const useCategoriesStore = defineStore('categories', () => {
   const transfer: CategoryItem = {
@@ -48,9 +49,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     return Object.keys(items.value)
   })
 
-  const transferCategoriesIds = computed(() =>
-    getTransferCategoriesIds(items.value),
-  )
+  const transferCategoriesIds = computed(() => getTransferCategoriesIds(items.value))
 
   const categoriesRootIds = computed(() => {
     if (!hasCategories.value || !items.value)

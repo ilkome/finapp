@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grow text-lg px-2 py-1 font-primary text-prima font-medium leading-none"
+    class="grow text-base px-2 py-1 font-nunito text-3 font-bold leading-none"
   >
     <slot />
   </div>

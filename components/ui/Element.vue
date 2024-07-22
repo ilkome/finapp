@@ -25,7 +25,7 @@ const slots = useSlots()
     <div
       :class="[
         { '!bg-item-3': isActive },
-        getStyles('item', ['link', 'rounded', 'padding1', 'minh']),
+        getStyles('item', ['link', 'rounded', 'padding1', 'minh2']),
         props.insideClasses,
       ]"
 

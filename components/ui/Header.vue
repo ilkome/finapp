@@ -4,7 +4,7 @@
   >
     <slot />
 
-    <div v-if="$slots.actions" class="flex gap-2 py-1 pr-0">
+    <div v-if="$slots.actions" class="flex gap-2 py-1 pr-2">
       <slot name="actions" />
     </div>
   </div>

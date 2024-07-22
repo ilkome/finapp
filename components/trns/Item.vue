@@ -11,13 +11,14 @@ const props = defineProps<{
 <template>
   <UiElement
     v-if="props.trnItem"
-    class="group2"
-    isShowLine
+    class="group2 py-2"
+    isShowLine2
   >
     <template v-if="!alt" #leftIcon>
       <UiIconBase
         :name="props.trnItem.category?.icon"
         :color="props.trnItem.category?.color"
+        invert
       />
     </template>
 
@@ -48,22 +49,22 @@ const props = defineProps<{
           </div>
         </template>
 
-        <div class="grow flex gap-6">
+        <div class="grow grid gap-1">
           <div
             v-if="!alt"
-            class="min-w-[60px]"
+            class="flex gap-2 items-center"
           >
+            <!-- Category name -->
+            <div class="flex items-center gap-2 text-3 text-sm leading-none">
+              {{ trnItem.category?.name }}
+            </div>
+
             <!-- Parent category name -->
             <div
               v-if="trnItem.categoryParent"
-              class="text-2xs"
+              class="text-2xs text-4"
             >
               {{ trnItem.categoryParent.name }}
-            </div>
-
-            <!-- Category name -->
-            <div class="flex items-center gap-2 text-secondary text-sm leading-none">
-              {{ trnItem.category?.name }}
             </div>
           </div>
 
@@ -71,13 +72,13 @@ const props = defineProps<{
             v-if="trnItem.wallet"
             class="flex gap-2 items-center"
           >
-            <WalletsIcon2
+            <!-- <WalletsIcon2
               :color="trnItem.wallet.color"
               :name="trnItem.wallet.name"
               :walletId="trnItem.walletId"
-            />
+            /> -->
 
-            <div class="text-xs leading-none">
+            <div class="text-xs text-4 leading-none">
               {{ trnItem.wallet.name }}
             </div>
           </div>

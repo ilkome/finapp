@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import useMenuData from '~/components/layout/useMenuData'
+import useMenuData, { type MenuItem } from '~/components/layout/useMenuData'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = withDefaults(defineProps<{
   isShowTitle?: boolean
-  item: unknown
-  menuId: unknown
+  item: MenuItem
+  menuId: string
+  position?: 'bottom'
 }>(), {
   isShowTitle: true,
 })
@@ -18,8 +19,7 @@ const { checkIsActive, onClick } = useMenuData()
     :class="[
       ...getStyles('item', ['link', 'rounded', 'padding1', 'menu']),
       {
-        '!text-prima bg-item-5': checkIsActive(props.menuId),
-        'mb-3': props.menuId === 'trnForm',
+        '!text-prima': checkIsActive(props.menuId),
       },
     ]"
     class="group"
@@ -30,16 +30,15 @@ const { checkIsActive, onClick } = useMenuData()
       v-if="props.item?.component"
       class="
         size-5
-        group-[.is-bigger]:!size-6
-        group-[.is-trnForm]:!size-7
+        group-[.is-bigger]:!size-6 my-1
       "
     />
 
     <Icon
       v-else
       :name="props.item?.icon"
-      size="22"
-      class="text-lg group-[.is-bigger]:!text-2xl leading-none"
+      :size="position === 'bottom' ? 26 : 22"
+      class="text-lg leading-none"
     />
 
     <div

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { getStyles } from '~/components/ui/getStyles'
 
 const { t } = useI18n()
 useHead({

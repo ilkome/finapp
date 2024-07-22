@@ -150,23 +150,23 @@ const walletsCurrenciesTabs = reactive({
         <div v-if="walletsStore.currenciesUsed.length > 1" class="grid gap-2 md:order-1">
           <UiTitle3>{{ t("list") }}</UiTitle3>
           <div class="w-full overflow-hidden">
-            <UiTabs class="gap-1">
-              <UiTabsItem2
+            <UiTabs5>
+              <UiTabsItem
                 :isActive="activeCurrency === 'all'"
                 @click="walletsCurrenciesTabs.onSelect('all')"
               >
                 {{ t("all") }}
-              </UiTabsItem2>
+              </UiTabsItem>
 
-              <UiTabsItem2
+              <UiTabsItem
                 v-for="currency in walletsStore.currenciesUsed"
                 :key="currency"
                 :isActive="activeCurrency === currency"
                 @click="walletsCurrenciesTabs.onSelect(currency)"
               >
                 {{ currency }}
-              </UiTabsItem2>
-            </UiTabs>
+              </UiTabsItem>
+            </UiTabs5>
           </div>
         </div>
 
@@ -179,7 +179,7 @@ const walletsCurrenciesTabs = reactive({
         />
       </div>
 
-      <div class="lg:max-w-[360px]">
+      <div class="lg:max-w-[360px] grid gap-1">
         <WalletsItem
           v-for="(walletItem, walletId) in selectedWallets"
           :key="walletId"

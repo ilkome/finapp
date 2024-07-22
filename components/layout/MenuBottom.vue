@@ -1,21 +1,19 @@
 <script setup lang="ts">
 import useMenuData from '~/components/layout/useMenuData'
 
-const { itemsMini } = useMenuData()
+const { itemsBottom } = useMenuData()
 </script>
 
 <template>
-  <div class="mx-auto flex max-w-xl items-stretch">
+  <div class="mx-auto flex items-stretch">
     <LayoutMenuSidebarItem
-      v-for="(item, menuId) in itemsMini"
+      v-for="(item, menuId) in itemsBottom"
       :key="menuId"
       :isShowTitle="false"
       :item
       :menuId
       class="flex-center is-bigger grow"
-      :class="{
-        'is-trnForm': menuId === 'trnForm',
-      }"
+      position="bottom"
     />
   </div>
 </template>

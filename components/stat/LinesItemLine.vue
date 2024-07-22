@@ -95,6 +95,7 @@ function getBarStyle() {
         :class="{
           'pb-2 pt-1': props.isShowLinesChart,
         }"
+        class="grid gap-1"
       >
         <!-- Parent category name -->
         <div

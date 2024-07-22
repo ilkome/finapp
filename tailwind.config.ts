@@ -26,6 +26,8 @@ export default <Partial<Config>>{
         video: '16 / 9',
       },
       colors: {
+        '3': 'rgb(var(--text-3))',
+        '4': 'rgb(var(--text-4))',
         'accent': {
           1: 'rgb(var(--accent-1))',
           2: 'rgb(var(--accent-2))',
@@ -67,8 +69,9 @@ export default <Partial<Config>>{
       },
       fontFamily: {
         mono: ['"Roboto Mono"', 'monospace'],
-        primary: ['Roboto', 'sans-serif'],
-        roboto: ['Roboto', 'sans-serif'],
+        nunito: ['Nunito', 'Roboto', 'sans-serif'],
+        primary: ['"Roboto"', 'sans-serif'],
+        roboto: ['"Roboto"', 'sans-serif'],
         secondary: ['"Unica One"', '"Roboto"', 'sans-serif'],
         unica: ['"Unica One"', '"Roboto"', 'sans-serif'],
       },

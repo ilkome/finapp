@@ -9,9 +9,9 @@ const emit = defineEmits<{
 <template>
   <div
     :class="[
-      ...getStyles('item', ['link', 'center', 'rounded', 'padding1', 'minh2']),
+      ...getStyles('item', ['bg', 'link', 'center', 'rounded', 'padding1', 'minh2']),
     ]"
-    @click="e => emit('click', e)"
+    @click="(e: Event) => emit('click', e)"
   >
     <slot />
   </div>

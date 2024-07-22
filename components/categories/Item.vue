@@ -25,8 +25,7 @@ const childCategoriesIds = computed(() =>
   <UiElement
     :isActive="activeItemId === categoryId"
     class="group"
-    isShowLine
-    @click="e => emit('click', e)"
+    @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>
       <UiIconBase
@@ -36,17 +35,17 @@ const childCategoriesIds = computed(() =>
       />
     </template>
 
-    <div>
+    <div class="text-3">
       <!-- Parent category name -->
       <div
         v-if="categoriesStore.items[categoryId].parentId"
-        class="text-2xs"
+        class="text-2xs opacity-90"
       >
         {{ categoriesStore.items[categoriesStore.items[categoryId].parentId].name }}
       </div>
 
       <!-- Category name -->
-      <div class="flex items-center gap-2 text-secondary text-sm leading-none">
+      <div class="flex items-center gap-2 text-sm leading-none">
         {{ categoriesStore.items[categoryId].name }}
 
         <!-- Has childs -->
