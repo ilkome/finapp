@@ -17,7 +17,7 @@ const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
-  <div class="grid gap-1">
+  <div class="">
     <CategoriesItem
       v-for="categoryId in ids"
       :key="categoryId"
@@ -25,7 +25,7 @@ const categoriesStore = useCategoriesStore()
       :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
       :slider="slider"
-      class="group bg-item-4 rounded-md"
+      class="group"
       @click="emit('click', categoryId)"
       @onClickIcon="emit('onClickIcon', categoryId)"
     />

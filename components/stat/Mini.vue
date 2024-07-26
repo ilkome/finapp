@@ -4,7 +4,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { AppNav } from '~/components/app/types'
+import type { StatTabs } from '~/components/app/types'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
@@ -17,7 +17,7 @@ const props = defineProps<{
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 
-const activeTab = useStorage<AppNav>(`${props.storageKey}-mini-tab`, 'sum')
+const activeTab = useStorage<StatTabs>(`${props.storageKey}-mini-tab`, 'netIncome')
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: props.categoriesIds,
@@ -49,7 +49,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
   <div class="grid gap-0">
     <!-- Sum -->
     <div class="overflow-hidden">
-      <div class="flex gap-1 overflow-y-auto">
+      <!-- <div class="flex gap-1 overflow-y-auto">
         <Filter v-if="props.isShowFilter" />
 
         <StatMenu
@@ -58,7 +58,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
           :isShowExpense="totals.expense !== 0"
           @click="id => activeTab = id"
         />
-      </div>
+      </div> -->
 
       <StatMiniItem
         v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
@@ -102,18 +102,6 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
           :trnsIds="incomeTrnsIds"
           :storageKey="props.storageKey + activeTab"
           type="income"
-        />
-      </div>
-
-      <div
-        v-if="activeTab === 'sum2'"
-      >
-        <StatMiniItem4
-          v-if="totals.sum && (totals.expense !== 0 || totals.income !== 0)"
-          :storageKey="props.storageKey + activeTab"
-          :trnsIds="trnsIds"
-          class="-max-w-2xl"
-          type="sum"
         />
       </div>
     </div>

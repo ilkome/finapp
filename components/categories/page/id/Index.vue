@@ -3,11 +3,11 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStat } from '~/components/stat/useStat'
+import { getTrnsIds } from '~/components/trns/getTrns'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const filter = useFilter()
 const stat = useStat(filter)
-
-filter.initChart()
 
 provide('stat', stat)
 provide('filter', filter)
@@ -15,6 +15,7 @@ provide('filter', filter)
 const route = useRoute()
 const router = useRouter()
 const categoriesStore = useCategoriesStore()
+const trnsStore = useTrnsStore()
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = computed(() => categoriesStore.items[categoryId.value])
@@ -67,23 +68,42 @@ useHead({
       </template>
     </UiHeader>
 
-    <div class="gap-4 px-2">
-      <div
-        v-if="category.childIds && category.childIds.length > 0"
-        class="pt-4 pb-6"
-      >
-        <CategoriesList
-          :ids="categoryChildIds"
-          @click="id => $router.push(`/categories/${id}`)"
-        />
-      </div>
+    <div class="grid gap-12 px-2">
+      <StatMiniItem
+        type="sum"
+        :isQuickModal="!category.childIds || category.childIds.length === 0"
+        :trnsIds="getTrnsIds({
+          categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId),
+          trnsItems: trnsStore.items,
+        })"
+        :categoriesIds="[categoryId]"
+        :storageKey="categoryId"
+        isShowTotals
+      />
 
-      <div class="pt-6">
-        <StatMini
-          :categoriesIds="[categoryId]"
-          :storageKey="categoryId"
-          isShowTotals
-        />
+      <div>
+        <UiToggle
+          v-if="category.childIds && category.childIds.length > 0"
+          :storageKey="`finapp-category-page-${categoryId}`"
+          :initStatus="false"
+        >
+          <template #header="{ toggle, isShown }">
+            <UiTitle7 @click="toggle">
+              <div>{{ $t('categories.childs') }}</div>
+              <Icon
+                v-if="!isShown"
+                name="mdi:chevron-down"
+                size="22"
+                class="-ml-1"
+              />
+            </UiTitle7>
+          </template>
+
+          <CategoriesList
+            :ids="categoryChildIds"
+            @click="id => $router.push(`/categories/${id}`)"
+          />
+        </UiToggle>
       </div>
     </div>
   </UiPage>

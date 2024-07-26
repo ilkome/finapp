@@ -21,8 +21,7 @@ const walletsStore = useWalletsStore()
       v-if="!isLaptop"
       :walletId
       :wallet="walletsStore.sortedItems[walletId]"
-      alt
-      insideClasses="bg-item-4"
+      insideClasses="bg-item-4 min-h-[42px]"
       @click="emit('onOpen', 0)"
     />
 
@@ -36,7 +35,7 @@ const walletsStore = useWalletsStore()
         :walletId
         :wallet="walletsStore.sortedItems[walletId]"
         alt
-        class="bg-item-4"
+        class="bg-item-4 min-h-[42px]"
       />
 
       <template #popper="{ hide }">

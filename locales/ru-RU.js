@@ -50,6 +50,7 @@ export default {
 
   categories: {
     allTitle: 'Все',
+    childs: 'Дочерние категории',
     createNewTitle: 'Добавить категорию',
     editTitle: 'Редактирование категории',
     favoriteTitle: 'Любимые',
@@ -124,6 +125,7 @@ export default {
       today: 'Сегодня',
       yesterday: 'Вчера',
     },
+    last: 'Последний',
     month: {
       current: 'Текущий месяц',
       last: 'Прошлый месяц',

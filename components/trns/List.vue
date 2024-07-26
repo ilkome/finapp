@@ -6,12 +6,14 @@ import useAmount from '~/components/amount/useAmount'
 import useTrn from '~/components/trns/useTrn'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = withDefaults(
   defineProps<{
     alt?: boolean
     initTrnType?: TrnType | MoneyTypeNumber | undefined
     isHideDates?: boolean
+    isHideNoTrns?: boolean
     isShowFilterByDesc?: boolean
     isShowFilterByType?: boolean
     isShowGroupSum?: boolean
@@ -126,7 +128,7 @@ const groupedTrns = computed(() => {
 </script>
 
 <template>
-  <div class="grid gap-3 h-full overflow-hidden content-start">
+  <div class="-grid -gap-3 -h-full -overflow-hidden -content-start">
     <!-- Header -->
     <slot
       v-if="isShowHeader"
@@ -135,7 +137,8 @@ const groupedTrns = computed(() => {
       :selectedIds
     >
       <UiTitle
-        class="flex items-baseline gap-2"
+        :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
+        class="grow flex items-center gap-2 pb-0 -ml-1 !text-3 !text-sm !font-semibold !font-nunito"
       >
         <div>{{ $t("trns.title") }}</div>
         <div v-if="selectedIds.length > 0">
@@ -176,7 +179,7 @@ const groupedTrns = computed(() => {
 
     <!-- No Trns -->
     <div
-      v-if="selectedIds.length === 0"
+      v-if="!isHideNoTrns && selectedIds.length === 0"
       class="flex-col gap-2 flex-center h-full py-3 text-center text-secondary"
     >
       <Icon name="mdi:palm-tree" size="64" />
@@ -232,11 +235,11 @@ const groupedTrns = computed(() => {
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="bg-item-4 rounded-lg overflow-hidden"
+        class="-bg-item-4 rounded-lg overflow-hidden"
       >
         <div
           :class="{ '-border-b border-item-7': isShowGroupSum && groupTrnsIds.length > 1 }"
-          class="flex gap-2 items-end pt-2 pb-1 mx-3"
+          class="flex gap-2 items-end -pt-2 -pb-1 mx-3"
         >
           <DateTrns
             :date="+date"

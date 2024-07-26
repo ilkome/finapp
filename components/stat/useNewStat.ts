@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { useCategoriesStore } from '../categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { TrnId } from '~/components/trns/types'
 import type { CategoryId } from '~/components/categories/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -7,7 +7,8 @@ import useAmount from '~/components/amount/useAmount'
 import type { MoneyTypeSlugSum } from '~/components/stat/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { PeriodNameWithAll } from '~/components/filter/useFilter'
-import type { Period, Range } from '~/components/date/types'
+import type { Range } from '~/components/date/types'
+import { seriesOptions } from '~/components/stat/chart/config2'
 
 export type TotalCategories = {
   expense: TotalCategory[]
@@ -19,24 +20,6 @@ export type TotalCategory = {
   trnsIds: TrnId[]
   value: number
 }
-
-const chartSeriesOptions = {
-  expense: {
-    color: '#ED6660',
-    localeKey: 'money.expense',
-    type: 'bar',
-  },
-  income: {
-    color: '#22A2D3',
-    localeKey: 'money.expense',
-    type: 'bar',
-  },
-  sum: {
-    color: 'grey',
-    localeKey: 'money.sum',
-    type: 'line',
-  },
-} as const
 
 export function useNewStat() {
   const trnsStore = useTrnsStore()
@@ -173,11 +156,11 @@ export function useNewStat() {
     const types = type === 'sum' ? ['income', 'expense'] : [type]
 
     return types.map(t => ({
-      color: chartSeriesOptions[t].color,
+      color: seriesOptions[t].color,
       cursor: 'default',
       data: Object.values(total).map(i => t !== 'sum' ? Math.abs(i[t]) : i[t]),
-      name: chartSeriesOptions[t].name,
-      type: chartSeriesOptions[t].type,
+      name: seriesOptions[t].name,
+      type: seriesOptions[t].type,
     }))
   }
   function getSeries2(
@@ -189,11 +172,11 @@ export function useNewStat() {
     const types = type === 'sum' ? ['income', 'expense'] : [type]
 
     return types.map((t, idx) => ({
-      color: chartSeriesOptions[t].color,
+      color: seriesOptions[t].color,
       cursor: 'default',
       data: total.map(i => t !== 'sum' ? Math.abs(i[t]) : i[t]),
       name: ranges[idx]?.start,
-      type: chartSeriesOptions[t].type,
+      type: seriesOptions[t].type,
     }))
   }
 

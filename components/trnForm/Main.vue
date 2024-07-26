@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { usePointer, useWindowSize } from '@vueuse/core'
+import type { WalletId } from '../wallets/types'
+import type { CategoryId } from '../categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import useTrn from '~/components/trns/useTrn'
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = withDefaults(defineProps<{
   maxHeight: string
@@ -35,7 +38,7 @@ function show(slide: number) {
 </script>
 
 <template>
-  <div class="px-2 pt-4 pb-6">
+  <div class="grid px-3 pt-1 pb-6">
     <TrnFormSelection
       v-if="isShow"
       v-model:isShow="isShow"
@@ -44,7 +47,8 @@ function show(slide: number) {
     />
 
     <UiTitle
-      class="pb-2 pt-1.5"
+      :class="getStyles('item', ['center', 'minh2', 'minw1', 'rounded'])"
+      class="!text-3 !text-sm !font-semibold !font-nunito"
       @click="trnFormStore.values.trnId = null"
     >
       {{ trnFormStore.values.trnId
@@ -53,17 +57,23 @@ function show(slide: number) {
       }}
     </UiTitle>
 
-    <div class="relative pt-2 pb-2">
+    <div
+      v-if="trnFormStore.values.trnId"
+      class="pb-2"
+    >
       <TrnsItem
-        v-if="trnFormStore.values.trnId"
         :trnItem="formatTrnItem(trnFormStore.values.trnId)"
         :date="formatDate(formatTrnItem(trnFormStore.values.trnId)?.date, 'trnItem')"
-        class="group bg-item-4 rounded-lg"
+        class="group bg-item-4 rounded-lg !py-1"
         @click="trnFormStore.values.trnId = null"
       />
     </div>
 
-    <TrnFormDate class="pb-2" />
+    <!-- <TrnFormTrnsSlide2
+      class="pb-0"
+    /> -->
+
+    <TrnFormDate class="pb-0" />
 
     <TrnFormMainInput
       v-if="trnFormStore.values.trnType !== 2"
@@ -75,8 +85,29 @@ function show(slide: number) {
       @onChange="trnFormStore.onChangeAmount"
     />
 
-    <div class="grid gap-3">
-      <TrnFormMainTypes />
+    <div class="grid gap-3 pb-6">
+      <!-- Selected -->
+      <div
+        v-if="trnFormStore.values.trnType !== 2"
+        class="grid gap-2"
+      >
+        <TrnFormSelectorWallet
+          v-if="walletId"
+          :walletId
+          :isLaptop
+          @onOpen="show(0)"
+          @onSelected="(id: WalletId) => trnFormStore.values.walletId = id"
+        />
+
+        <TrnFormSelectorCategory
+          v-if="trnFormStore.values.categoryId"
+          :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
+          :category="categoriesStore.items[trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
+          :isLaptop
+          @onOpen="show(2)"
+          @onSelected="(id: CategoryId) => trnFormStore.values.categoryId = id"
+        />
+      </div>
 
       <TrnFormMainAmountTransfer
         v-if="trnFormStore.values.trnType === 2"
@@ -89,28 +120,7 @@ function show(slide: number) {
         @onChange="trnFormStore.onChangeAmount"
       />
 
-      <!-- Selected -->
-      <div
-        v-if="trnFormStore.values.trnType !== 2"
-        class="grid grid-cols-2 gap-3"
-      >
-        <TrnFormSelectorWallet
-          v-if="walletId"
-          :walletId
-          :isLaptop
-          @onOpen="show(0)"
-          @onSelected="id => trnFormStore.values.walletId = id"
-        />
-
-        <TrnFormSelectorCategory
-          v-if="trnFormStore.values.categoryId"
-          :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
-          :category="categoriesStore.items[trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
-          :isLaptop
-          @onOpen="show(2)"
-          @onSelected="id => trnFormStore.values.categoryId = id"
-        />
-      </div>
+      <TrnFormMainTypes />
     </div>
   </div>
 </template>

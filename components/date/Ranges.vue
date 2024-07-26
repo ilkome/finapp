@@ -15,14 +15,14 @@ const emit = defineEmits<{
 
 const ranges = computed<FullDuration[]>(() => [
   {
-    grouped: { duration: props.grouped?.duration, period: props.grouped?.period },
-    interval: { duration: props.interval?.duration, period: props.interval?.period },
-    label: `Last ${props.interval.duration} ${props.interval.period}`,
-  },
-  {
     grouped: { duration: 1, period: 'day' },
     interval: { duration: 7, period: 'day' },
     label: '7d',
+  },
+  {
+    grouped: { duration: 1, period: 'day' },
+    interval: { duration: 14, period: 'day' },
+    label: '14d',
   },
   {
     grouped: { duration: 1, period: 'day' },
@@ -67,7 +67,7 @@ function isRangeSelected(rd: FullDuration) {
 </script>
 
 <template>
-  <div class="flex gap-1">
+  <div class="grid gap-1">
     <DateLinkItem
       v-for="rangeItem in ranges"
       :key="rangeItem"

@@ -34,15 +34,14 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
 <template>
   <div
     :class="{
-      // 'text-expense !text-[#ED6660]': props.colorize === 'expense' && props.type === 0,
-      '!text-[#ED6660]': props.colorize === 'expense' && props.type === 0,
-      'text-income !text-[#22A2D3]': props.colorize === 'income' && props.type === 1,
+      '-text-expense !text-[#ED6660]': props.colorize === 'expense' && props.type === 0,
+      '!text-income-1 !-text-[#22A2D3]': props.colorize === 'income' && props.type === 1,
       'text-2xs': props.variant === '2xs',
       'text-3xl': props.variant === '3xl',
       'text-base': props.variant === 'base',
     }"
     class="
-      flex flex-col gap-1
+      grid gap-1
       font-secondary text-prima leading-none
     "
     @click="(e: Event) => emit('click', e)"

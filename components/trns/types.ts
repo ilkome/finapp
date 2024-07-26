@@ -80,7 +80,7 @@ export type TrnsGetterProps = {
     until: number
   }
   trnType?: TrnType
-  trnsItems: Record<string, TrnItem>
+  trnsIds?: TrnId[]
   untilDate?: number
   walletsIds?: WalletId[]
 }
@@ -93,6 +93,7 @@ export type TrnsGetterProps2 = {
   }
   trnType?: TrnType
   trnsIds?: TrnId[]
+  trnsItems?: Trns
   untilDate?: number
   walletsIds?: WalletId[]
 }

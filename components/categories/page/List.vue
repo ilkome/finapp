@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useCategoriesStore } from '~/components/categories/useCategories'
+import type { CategoryId } from '~/components/categories/types'
 
 const { t } = useI18n()
 useHead({
@@ -24,7 +25,7 @@ const categoriesStore = useCategoriesStore()
       <CategoriesList
         :ids="categoriesStore.categoriesRootIds"
         class=""
-        @click="(catId) => $router.push(`/categories/${catId}`)"
+        @click="(categoryId: CategoryId) => $router.push(`/categories/${categoryId}`)"
       />
     </div>
   </UiPage>

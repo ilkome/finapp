@@ -4,6 +4,7 @@ import { useStorage } from '@vueuse/core'
 const props = defineProps<{
   initStatus?: boolean
   isPadding?: boolean
+  openPadding?: number
   storageKey?: string
 }>()
 
@@ -24,7 +25,10 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 
     <div
       v-if="isShown"
-      :class="{ '!pb-8 sm:!pb-10': props.isPadding }"
+      :class="{
+        '!pb-8 sm:!pb-10': props.isPadding,
+        'pb-4': props.openPadding,
+      }"
     >
       <slot />
     </div>

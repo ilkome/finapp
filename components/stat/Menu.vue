@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import type { AppNav } from '~/components/app/types'
+import type { StatTabs } from '~/components/app/types'
 
 const props = defineProps<{
-  active: AppNav
+  active: StatTabs
   isShowExpense: boolean
   isShowIncome: boolean
 }>()
 
 const emit = defineEmits<{
-  click: [id: AppNav]
+  click: [id: StatTabs]
 }>()
 
 const { $i18n } = useNuxtApp()
 
 const menu = computed(() => {
   const all: {
-    id: AppNav
+    id: StatTabs
     idx: number
     name: string | unknown
   }[] = []
@@ -56,7 +56,7 @@ const menu = computed(() => {
   return all
 })
 
-function onClickStatMenu(tabName: AppNav) {
+function onClickStatMenu(tabName: StatTabs) {
   emit('click', tabName)
   const page = document.querySelector('.js_scroll_page')
   const content = page?.querySelector(

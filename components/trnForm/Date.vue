@@ -7,7 +7,7 @@ const trnFormStore = useTrnFormStore()
 
 const formattedDate = computed(() => {
   const date = formatDate(trnFormStore.values.date, 'full')
-  return `${date.weekday} <br/> ${date.day} ${date.month}`
+  return `${date.day} ${date.month} <div class="text-2xs font-regular leading-none">${date.weekday}</div>`
 })
 
 const isToday = computed(() => {
@@ -31,16 +31,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 </script>
 
 <template>
-  <div class="flex items-stretch gap-2">
-    <pre>{{ formatted }}</pre>
-    <StatDateNav
-      :isLastPeriod="false"
-      :isToday="isToday"
-      @setNextPeriodDate="changeDate('prev')"
-      @setPeriodAndDate="changeDate('today')"
-      @setPrevPeriodDate="changeDate('next')"
-    />
-
+  <div class="flex gap-1 -ml-1">
     <VDropdown
       :overflowPadding="12"
       autoBoundaryMaxSize
@@ -48,7 +39,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       placement="bottom-start"
     >
       <div
-        class="flex items-center rounded-md px-3 py-2 text-xs leading-none hocus:bg-item-5"
+        class="grid gap-1 rounded-md px-2 py-2 text-sm font-medium text-3 leading-none hocus:bg-item-5"
         v-html="formattedDate"
       />
 
@@ -56,5 +47,13 @@ function changeDate(way: 'prev' | 'next' | 'today') {
         <TrnFormCalendar :hide="hide" />
       </template>
     </VDropdown>
+
+    <StatDateNav
+      :isLastPeriod="false"
+      :isToday="isToday"
+      @setNextPeriodDate="changeDate('prev')"
+      @setPeriodAndDate="changeDate('today')"
+      @setPrevPeriodDate="changeDate('next')"
+    />
   </div>
 </template>

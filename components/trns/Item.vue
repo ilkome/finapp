@@ -18,7 +18,7 @@ const props = defineProps<{
       <UiIconBase
         :name="props.trnItem.category?.icon"
         :color="props.trnItem.category?.color"
-        invert
+        invert2
       />
     </template>
 

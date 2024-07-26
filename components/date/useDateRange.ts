@@ -5,12 +5,12 @@ import type { FullDuration, Period, PeriodDuration, Range } from '~/components/d
 export function useDateRange({ key }: { key: string }) {
   const grouped = useStorage<PeriodDuration>(`${key}-grouped`, {
     duration: 1,
-    period: 'day',
+    period: 'month',
   })
 
   const interval = useStorage<PeriodDuration>(`${key}-interval`, {
-    duration: 7,
-    period: 'day',
+    duration: 12,
+    period: 'month',
   })
 
   const range = ref({
@@ -100,9 +100,6 @@ export function useDateRange({ key }: { key: string }) {
   }
 
   const intervalGroups = computed<PeriodDuration[]>(() => [{
-    duration: grouped.value.duration,
-    period: grouped.value.period,
-  }, {
     duration: 1,
     period: 'day',
   }, {

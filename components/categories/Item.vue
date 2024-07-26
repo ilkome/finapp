@@ -24,7 +24,7 @@ const childCategoriesIds = computed(() =>
 <template>
   <UiElement
     :isActive="activeItemId === categoryId"
-    class="group"
+    :lineWidth="2"
     @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>

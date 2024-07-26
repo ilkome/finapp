@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
+import type { WalletId } from '~/components/wallets/types'
 
 const colorMode = useColorMode()
 </script>
@@ -10,7 +11,7 @@ const colorMode = useColorMode()
       hidden lg:grid gap-6 content-start
       h-full min-w-72
       overflow-hidden overflow-y-auto
-      bg-item-4 border-r border-item-5
+      bg-foreground-5 border-r border-item-5
     "
   >
     <div class="flex items-center justify-between pb-0 pt-5 pl-4 pr-2">
@@ -18,22 +19,20 @@ const colorMode = useColorMode()
         <UiLogo class="w-16" />
       </NuxtLink>
 
-      <div>
+      <div
+        :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
+        class="text-prima"
+        @click="() => colorMode.preference = colorMode.preference === 'dark' ? 'light' : 'dark'"
+      >
         <Icon
           v-if="colorMode.preference !== 'dark'"
-          :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
           name="carbon:light"
           size="18"
-          color="white"
-          @click="colorMode.preference = 'dark'"
         />
         <Icon
           v-if="colorMode.preference === 'dark'"
-          :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
           name="carbon:moon"
           size="18"
-          color="white"
-          @click="colorMode.preference = 'light'"
         />
       </div>
     </div>
@@ -64,7 +63,7 @@ const colorMode = useColorMode()
       <WalletsList
         :limit="10"
         isShowToggle
-        @onClick="(id) => $router.push(`/wallets/${id}`)"
+        @onClick="(id: WalletId) => $router.push(`/wallets/${id}`)"
       >
         <template #default="{ walletsItemsLimited }">
           <WalletsItem

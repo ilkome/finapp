@@ -21,9 +21,7 @@ function movePeriod() {
 
 <template>
   <div
-    :class="[
-      getStyles('item', ['link', 'rounded', 'minh2']),
-    ]"
+    :class="[getStyles('item', ['link', 'rounded', 'minh2'])]"
     class="flex items-center px-3 py-2 text-base font-medium leading-none font-primary text-nowrap"
 
     @click="movePeriod()"

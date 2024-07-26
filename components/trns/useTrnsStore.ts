@@ -14,7 +14,7 @@ import type {
   TrnId,
   TrnItem,
   Trns,
-  TrnsGetterProps2,
+  TrnsGetterProps,
 } from '~/components/trns/types'
 import type { CategoryId } from '~/components/categories/types'
 import { useUserStore } from '~/components/user/useUser'
@@ -40,12 +40,12 @@ export const useTrnsStore = defineStore('trns', () => {
 
   const items = ref<Trns>({})
 
-  function getStoreTrnsIds(props: TrnsGetterProps2, params?: TrnsGetterParams) {
+  function getStoreTrnsIds(props: TrnsGetterProps, params?: TrnsGetterParams) {
     if (params?.includesChildCategories) {
       return getTrnsIds({
+        categoriesIds: categoriesStore.getTransactibleIds(props.categoriesIds),
         trnsItems: items.value,
         ...props,
-        categoriesIds: categoriesStore.getTransactibleIds(props.categoriesIds),
       })
     }
 

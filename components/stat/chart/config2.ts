@@ -1,5 +1,24 @@
 import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
+export const seriesOptions = {
+  expense: {
+    color: '#ED6660',
+    localeKey: 'money.expense',
+    type: 'bar',
+  },
+  income: {
+    // color: '#22A2D3',
+    color: 'var(--text-income-1)',
+    localeKey: 'money.expense',
+    type: 'bar',
+  },
+  sum: {
+    color: 'grey',
+    localeKey: 'money.sum',
+    type: 'line',
+  },
+} as const
+
 export const config = {
   // Grid
   // grid: {
@@ -13,8 +32,8 @@ export const config = {
   grid: {
     bottom: '0',
     containLabel: true,
-    left: '2',
-    right: '2',
+    left: '5',
+    right: '5',
     top: '0',
   },
 

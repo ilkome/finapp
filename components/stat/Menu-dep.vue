@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import type { AppNav } from '~/components/app/types'
+import type { StatTabs } from '~/components/app/types'
 import { useAppNav } from '~/components/app/useAppNav'
 
 const { $i18n } = useNuxtApp()
 
 const menu = computed<{
-  id: AppNav
+  id: StatTabs
   idx: number
   name: string | unknown
 }[]>(() => [{
@@ -37,7 +37,7 @@ const menu = computed<{
 
 const { activeTabStat } = storeToRefs(useAppNav())
 
-function onClickStatMenu(tabName: AppNav) {
+function onClickStatMenu(tabName: StatTabs) {
   activeTabStat.value = tabName
   const page = document.querySelector('.js_scroll_page')
   const content = page?.querySelector(

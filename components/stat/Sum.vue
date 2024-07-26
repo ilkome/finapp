@@ -18,9 +18,9 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    class="grid gap-1 px-3 py-2"
+    class="grid gap-1 px-3 py-2 border border-transparent"
     :class="{
-      'bg-item-5 rounded': props.isActive,
+      '-bg-item-5 rounded !border-accent-1/80': props.isActive,
     }"
     @click="(e: Event) => emit('click', e)"
   >
@@ -35,8 +35,8 @@ const currenciesStore = useCurrenciesStore()
       align="left"
       variant="-3xl"
       :class="{
-        'text-income-2': props.amount > 0 && type !== 'sum',
-        'text-expense-2': props.amount < 0,
+        '!text-income-1': props.amount > 0 && type !== 'sum',
+        '!text-expense-1': props.amount < 0 && type !== 'sum',
       }"
     />
   </div>

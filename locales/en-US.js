@@ -50,6 +50,7 @@ export default {
 
   categories: {
     allTitle: 'All',
+    childs: 'Child categories',
     createNewTitle: 'Add category',
     editTitle: 'Edit category',
     favoriteTitle: 'Favorite',
@@ -124,6 +125,7 @@ export default {
       today: 'Today',
       yesterday: 'Yesterday',
     },
+    last: 'Last',
     month: {
       current: 'This month',
       last: 'Last month',

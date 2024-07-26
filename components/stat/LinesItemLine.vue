@@ -9,6 +9,7 @@ const props = defineProps<{
   biggestCatNumber: number
   isActive?: boolean
   isAltIcon?: boolean
+  isGroupCategoriesByParent?: boolean
   isShowLinesChart?: boolean
   item: TotalCategory
 }>()
@@ -23,16 +24,16 @@ const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 
 const category = computed(() => {
-  const isOneCategory = props.item.trnsIds.length <= 1
-  const isParentCategory = categoriesStore.items[props.item.id]?.parentId === 0
+  // const isOneCategory = props.item.trnsIds.length <= 1
+  // const isParentCategory = categoriesStore.items[props.item.id]?.parentId === 0
 
-  const isDifferentCategories = props.item.trnsIds.some(id =>
-    trnsStore.items[id]?.categoryId !== trnsStore.items[props.item.trnsIds[0]]?.categoryId)
+  // const isDifferentCategories = props.item.trnsIds.some(id =>
+  //   trnsStore.items[id]?.categoryId !== trnsStore.items[props.item.trnsIds[0]]?.categoryId)
 
-  if (isParentCategory && (!isDifferentCategories || isOneCategory)) {
-    const parentId = trnsStore.items[props.item.trnsIds[0]].categoryId
-    return categoriesStore.items[parentId]
-  }
+  // if (isParentCategory && (!isDifferentCategories || isOneCategory)) {
+  //   const parentId = trnsStore.items[props.item.trnsIds[0]].categoryId
+  //   return categoriesStore.items[parentId]
+  // }
 
   return categoriesStore.items[props.item.id]
 })
@@ -50,13 +51,14 @@ function getBarStyle() {
     :class="{
       '-bg-item-4 ': props.isActive,
     }"
-    class="group bg-item-4 rounded-md"
+    class="group -bg-item-4 -rounded-md"
   >
     <UiElement
       :isShowLine2="!props.isShowLinesChart"
       :isActive2="props.isActive"
       class="relative"
       isShowToggle2
+      :lineWidth="1"
       @click="emit('click', props.item.id)"
     >
       <template #line>
@@ -78,7 +80,7 @@ function getBarStyle() {
           v-if="isAltIcon"
           :color="category?.color"
           :name="category?.icon"
-          class="!text-xl !w-6"
+          class="!text-xl !w-6 ml-2"
           @click.stop="emit('onClickIcon', props.item.id)"
         />
         <UiIconBase
@@ -86,7 +88,7 @@ function getBarStyle() {
           :color="category?.color"
           :name="category?.icon"
           invert
-          class="!text-xl !w-8"
+          class="!text-xl !w-8 ml-2"
           @click.stop="emit('onClickIcon', props.item.id)"
         />
       </template>
@@ -95,26 +97,33 @@ function getBarStyle() {
         :class="{
           'pb-2 pt-1': props.isShowLinesChart,
         }"
-        class="grid gap-1"
+        class="flex gap-3 items-baseline"
       >
-        <!-- Parent category name -->
-        <div
-          v-if="category?.parentId"
-          class="text-2xs"
-        >
-          {{ categoriesStore.items[category?.parentId]?.name }}
-        </div>
-
         <!-- Category name -->
-        <div class="flex items-center gap-2 text-secondary text-sm leading-none">
+        <div class="flex items-center gap-2 text-3 text-sm leading-none">
           {{ category?.name }}
           <!-- Has childs -->
           <div
             v-if="category?.parentId === 0"
-            class="text-md font-unica"
+            class="leading-none text-sm text-4"
           >
             ...
           </div>
+        </div>
+
+        <!-- Parent category name -->
+        <div
+          v-if="category?.parentId"
+          class="leading-none text-2xs text-4"
+        >
+          •
+        </div>
+
+        <div
+          v-if="category?.parentId"
+          class="leading-none text-2xs text-4"
+        >
+          {{ categoriesStore.items[category?.parentId]?.name }}
         </div>
       </div>
 
@@ -122,7 +131,7 @@ function getBarStyle() {
         :class="{
           'pb-1': props.isShowLinesChart,
         }"
-        class="grow pr-1 opacity-90"
+        class="grow pr-1"
       >
         <Amount
           :amount="props.item.value"

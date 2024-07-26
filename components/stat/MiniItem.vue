@@ -14,8 +14,11 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useDateRange } from '~/components/date/useDateRange'
 import { markArea } from '~/components/stat/chart/utils'
 import type { Range } from '~/components/date/types'
+import { getTrnsIds } from '~/components/trns/getTrns'
 
 const props = defineProps<{
+  isQuickModal?: boolean
+  quickModalCategoryId?: CategoryId
   storageKey?: string
   trnsIds: TrnId[]
   type: MoneyTypeSlugSum
@@ -28,6 +31,7 @@ const { addInterval, getPeriodsWithEmptyTrnsIds2, grouped, interval, intervalGro
 })
 
 const selectedType = ref<MoneyTypeSlugSum>('sum')
+const onSelectType = (type: MoneyTypeSlugSum) => selectedType.value = type === selectedType.value ? 'sum' : type
 
 const filteredTrnsIds = computed(() => {
   if (selectedType.value === 'income') {
@@ -44,22 +48,6 @@ const filteredTrnsIds = computed(() => {
 
   return props.trnsIds
 })
-
-//   const expenseTrnsIds = computed(() =>
-//   props.trnsIds.filter(
-//     trnId => trnsStore.items[trnId].type === 0 || trnsStore.items[trnId].type === 2,
-//   ).sort(
-//     (a, b) => trnsStore.items[b].date - trnsStore.items[a].date,
-//   ),
-// )
-
-// const incomeTrnsIds = computed(() =>
-//   props.trnsIds.filter(
-//     trnId => trnsStore.items[trnId].type === 1 || trnsStore.items[trnId].type === 2,
-//   ).sort(
-//     (a, b) => trnsStore.items[b].date - trnsStore.items[a].date,
-//   ),
-// )
 
 const filter = inject('filter') as FilterProvider
 const { t } = useI18n()
@@ -191,7 +179,7 @@ const totals = computed(() =>
 const isGroupCategoriesByParent = useStorage<boolean>(`${baseStorageKey.value}-isGroupCategoriesByParent`, false)
 const isGroupCategoriesByParentRounded = useStorage<boolean>(`${baseStorageKey.value}-isGroupCategoriesByParentRounded`, true)
 
-const cats = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParent.value))
+const cats = computed(() => getCats(trnsIdsForTotals.value ?? [], isGroupCategoriesByParent.value))
 const catsRounded = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParentRounded.value))
 
 const biggestCatNumber = computed(() => cats.value.at(0)?.value ?? 0)
@@ -217,23 +205,25 @@ function toggleCats() {
 }
 
 function onClickCategory(categoryId: CategoryId) {
-  const category = categoriesStore.items[categoryId]
+  quickModalCategoryId.value = quickModalCategoryId.value === categoryId ? false : categoryId
 
-  if (category?.childIds && category?.childIds?.length > 0) {
-    openedCats.value.includes(categoryId)
-      ? (openedCats.value = openedCats.value.filter(d => d !== categoryId))
-      : openedCats.value.push(categoryId)
-  }
+  // const category = categoriesStore.items[categoryId]
 
-  else {
-    openedTrns.value.includes(categoryId)
-      ? (openedTrns.value = openedTrns.value.filter(d => d !== categoryId))
-      : openedTrns.value.push(categoryId)
-  }
+  // if (category?.childIds && category?.childIds?.length > 0) {
+  //   openedCats.value = openedCats.value.includes(categoryId) ? [] : [categoryId]
+  //   // ? (openedCats.value = openedCats.value.filter(d => d !== categoryId))
+  //   // : openedCats.value.push(categoryId)
+  // }
+
+  // else {
+  //   openedTrns.value.includes(categoryId)
+  //     ? (openedTrns.value = openedTrns.value.filter(d => d !== categoryId))
+  //     : openedTrns.value.push(categoryId)
+  // }
 }
 
 function onClickCategoryRounded(categoryId: CategoryId) {
-  isGroupCategoriesByParentRounded.value = false
+  // isGroupCategoriesByParentRounded.value = false
   filter.clearFilter()
   filter.setCategoryId(categoryId)
   // const category = categoriesStore.items[categoryId]
@@ -269,161 +259,71 @@ function arraysAreEqualUnordered(arr1: CategoryId[], arr2: CategoryId[]) {
   return true
 }
 
-function getTrnsWithDate(categoryId: CategoryId) {
-  return trnsStore.getStoreTrnsIds({
-    categoriesIds: [categoryId],
-    trnsIds: selectedTrnsIdsForTrnsList.value,
-  }, { includesChildCategories: true })
-}
-
 const isShowDateSelector = ref(false)
+const isShowTrns = ref(false)
+
+const quickModalCategoryId = ref<CategoryId | false>(false)
 </script>
 
 <template>
   <div>
-    <div class="grid gap-3 pt-3 px-3">
-      <div class="-my-1">
-        <div
-          v-if="props.type === 'sum'"
-          class="flex"
-        >
-          <StatSum
-            :amount="-totals.expense"
-            :isActive="selectedType === 'expense'"
-            type="expense"
-            @click="selectedType = 'expense'"
-          />
-          <StatSum
-            :amount="totals.income"
-            :isActive="selectedType === 'income'"
-            type="income"
-            @click="selectedType = 'income'"
-          />
-          <StatSum
-            :amount="totals.sum"
-            type="sum"
-            @click="selectedType = 'sum'"
-          />
-        </div>
-
-        <StatSum
-          v-else
-          :amount="totals[props.type]"
-          :type="props.type"
-        />
-      </div>
-
-      <div class="overflow-y-auto">
-        <div
-          class="text-xs font-medium text-secondary"
-          @click="isShowDateSelector = !isShowDateSelector"
-        >
-          <DateViewRange
-            v-if="selectedPeriod !== -1"
-            :range="groupedPeriods2[selectedPeriod]"
-            title="selectedPeriod"
-          />
-
-          <DateViewRange v-else :range="range" title="range" />
-        </div>
-
-        <div
-          v-if="isShowDateSelector"
-          class="grid gap-2 bg-item-4 p-2 rounded-md"
-        >
-          <div class="flex overflow-y-auto gap-1">
-            <div class="flex gap-2">
-              <DateLinkItem @click="removeInterval">
-                -
-              </DateLinkItem>
-              <DateLinkItem @click="addInterval">
-                +
-              </DateLinkItem>
-            </div>
-
-            <DateRanges
-              :range
-              :interval
-              :grouped
-              :maxRange
-              @setRangeByPeriod="setRangeByPeriod"
-            />
-
-            <DateDaySelector
-              :groupBy="grouped.period"
-              :range
-              @setRangeByCalendar="setRangeByCalendar"
-            />
-          </div>
-
-          <div class="flex overflow-y-auto gap-1">
-            <div class="flex gap-1">
-              <div class="flex gap-2">
-                <DateLinkItem @click="--grouped.duration">
-                  -
-                </DateLinkItem>
-                <DateLinkItem @click="++grouped.duration">
-                  +
-                </DateLinkItem>
-              </div>
-
-              <DateLinkItem
-                v-for="rangeItem in intervalGroups"
-                :key="rangeItem.period"
-                :isActive="rangeItem.period === grouped.period && rangeItem.duration === grouped.duration"
-                @click="() => grouped = rangeItem"
-              >
-                {{ rangeItem.duration }}{{ rangeItem.period }}
-              </DateLinkItem>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Stat -->
-    <div class="_@3xl/main:grid-cols-[1fr,.8fr] _gap-8 grid @container/stat px-3">
-      <div class="grid gap-2">
-        <div class="grid @4xl/stat:grid-cols-[1.4fr,auto] @4xl/stat:gap-4">
-          <!-- Chart first level -->
-          <StatChartView2
-            :key="baseStorageKey"
-            :categories
-            :chartType
-            :period="grouped.period"
-            :series
-            @click="onClickChart"
-          />
-        </div>
-        <div class="flex items-center justify-between pt-2">
-          <div class="flex gap-2">
-            <div
-              :class="[
-                getStyles('item', ['link', 'minh2']), {
-                  'bg-item-5 rounded': chartType === 'bar',
-                },
-              ]"
-              class="flex items-center px-3 py-0 text-xs bg-item-4 rounded-full leading-none font-primary text-nowrap"
-              @click="chartType = 'bar'"
-            >
+    <div class="@container/stat">
+      <div class="">
+        <div class="flex justify-between pt-2 px-2">
+          <!-- Chart types -->
+          <div class="flex gap-1">
+            <DateLinkItem2 :isActive="chartType === 'bar'" @click="chartType = 'bar'">
               {{ t('chart.types.bar') }}
-            </div>
-            <div
-              :class="[
-                getStyles('item', ['link', 'minh2']), {
-                  'bg-item-5 rounded': chartType === 'line',
-                },
-              ]"
-              class="flex items-center px-3 py-0 text-xs bg-item-4 rounded-full leading-none font-primary text-nowrap"
-              @click="chartType = 'line'"
-            >
+            </DateLinkItem2>
+
+            <DateLinkItem2 :isActive="chartType === 'line'" @click="chartType = 'line'">
               {{ t('chart.types.line') }}
-            </div>
+            </DateLinkItem2>
           </div>
 
           <div class="flex gap-1">
+            <DateLinkItem2 :isActive="grouped.period === 'day'" @click="grouped.period = 'day'">
+              {{ $t(`dates.day.simple`) }}
+            </DateLinkItem2>
+
+            <DateLinkItem2 :isActive="grouped.period === 'week'" @click="grouped.period = 'week'">
+              {{ $t(`dates.week.simple`) }}
+            </DateLinkItem2>
+
+            <DateLinkItem2 :isActive="grouped.period === 'month'" @click="grouped.period = 'month'">
+              {{ $t(`dates.month.simple`) }}
+            </DateLinkItem2>
+          </div>
+        </div>
+
+        <StatChartView2
+          :key="baseStorageKey"
+          :categories
+          :chartType
+          :period="grouped.period"
+          :series
+          class="!h-40 px-2"
+          @click="onClickChart"
+        />
+
+        <div class="flex items-end justify-between pt-2 pb-2 gap-2">
+          <UiTitle7
+            @click="isShowDateSelector = !isShowDateSelector"
+          >
+            <DateViewRange
+              v-if="selectedPeriod !== -1"
+              :range="groupedPeriods2[selectedPeriod]"
+              title="selectedPeriod"
+            />
+            <div v-else>
+              {{ `${$t('dates.last')} ${interval.duration} ${$t(`dates.${interval.period}.simple`)}` }}
+            </div>
+          </UiTitle7>
+
+          <div class="flex gap-1">
             <DateNavHome
-              v-if="range.start !== dayjs().subtract(interval.duration - 1, interval.period).startOf(interval.period).valueOf() && range.end !== dayjs().endOf(interval.period).valueOf()"
+              v-if="selectedPeriod !== -1 || range.start !== dayjs().subtract(interval.duration - 1, interval.period).startOf(interval.period).valueOf() && range.end !== dayjs().endOf(interval.period).valueOf()"
               :interval
               @setRange="setRange"
             />
@@ -438,116 +338,172 @@ const isShowDateSelector = ref(false)
           </div>
         </div>
 
-        <div class="grid @3xl/stat:grid-cols-[1.3fr,auto] @xl/stat:gap-12 gap-2">
+        <!-- Stat sum -->
+        <div class="px-2">
+          <div
+            v-if="props.type === 'sum'"
+            class="flex gap-1 flex-wrap justify-stretch"
+          >
+            <StatSum
+              :amount="-totals.expense"
+              :isActive="selectedType === 'expense'"
+              type="expense"
+              :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+              class="grow !-bg-red-600/10"
+              @click="onSelectType('expense')"
+            />
+            <StatSum
+              :amount="totals.income"
+              :isActive="selectedType === 'income'"
+              :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+              type="income"
+              class="grow !-bg-green-600/10"
+              @click="onSelectType('income')"
+            />
+            <StatSum
+              :amount="totals.sum"
+              :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+              type="sum"
+              class="grow"
+              @click="isShowTrns = true"
+            />
+          </div>
+
+          <StatSum
+            v-else
+            :class="[...getStyles('item', ['-link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+            :amount="totals[props.type]"
+            :type="props.type"
+          />
+        </div>
+
+        <!-- Content -->
+        <div class="grid @3xl/stat:grid-cols-[1.3fr,auto] @xl/stat:gap-12 gap-2 pt-3 md:px-2">
           <!-- Categories first level -->
           <UiToggle
-            v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0"
+            v-if="(isQuickModal ? (cats.length > 1 || (props.quickModalCategoryId && categoriesStore.items[props.quickModalCategoryId].parentId === 0)) : selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0)"
             :class="{
               'md:max-w-4xl': catsView === 'round',
               'md:max-w-lg': catsView === 'list',
             }"
             :storageKey="`${newBaseStorageKey}-cats-root`"
             :initStatus="true"
-            isPadding
           >
+            <!-- Header -->
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between">
-                <UiTitle
-                  :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                  class="grow flex items-center gap-2 pb-0 -ml-1"
-                  @click="toggle"
-                >
+                <UiTitle7 @click="toggle">
+                  <div>{{ $t('categories.title') }} {{ catsView === 'list' ? cats.length : catsRounded.length }}</div>
                   <Icon
                     v-if="!isShown"
-                    name="mdi:chevron-right"
+                    name="mdi:chevron-down"
                     size="22"
                     class="-ml-1"
                   />
-                  <div>{{ $t('categories.title') }}</div>
-                  <div>{{ catsView === 'list' ? cats.length : catsRounded.length }}</div>
-                </UiTitle>
+                </UiTitle7>
 
+                <!-- Actions buttons -->
                 <template v-if="isShown">
-                  <VDropdown
-                    v-if="isShown && catsView === 'list'"
-                    :overflowPadding="12"
-                    autoBoundaryMaxSize
-                    placement="bottom-start"
-                    class="group"
-                  >
+                  <div class="flex gap-1 pr-2">
+                    <VDropdown
+                      v-if="isShown && catsView === 'list'"
+                      :overflowPadding="12"
+                      autoBoundaryMaxSize
+                      placement="bottom-start"
+                      class="group"
+                    >
+                      <div
+                        :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
+                        class="justify-center text-xl"
+                      >
+                        <Icon
+                          name="fluent:settings-20-regular"
+                          size="18"
+                        />
+                      </div>
+
+                      <template #popper>
+                        <div class="p-1">
+                          <UiCheckbox
+                            :checkboxValue="isShowLinesChart"
+                            title="Show Lines"
+                            showCheckbox
+                            @onClick="isShowLinesChart = !isShowLinesChart"
+                          />
+                        </div>
+                      </template>
+                    </VDropdown>
+
+                    <!-- Folder -->
                     <div
-                      :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
+                      v-if="catsView === 'list'"
+                      :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
                       class="justify-center text-xl"
+                      @click="toggleCats"
                     >
                       <Icon
-                        name="fluent:settings-20-regular"
-                        size="24"
+                        :name="isAllCatsOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
+                        size="18"
                       />
                     </div>
 
-                    <template #popper>
-                      <div class="p-1">
-                        <UiCheckbox
-                          :checkboxValue="isShowLinesChart"
-                          title="Show Lines"
-                          showCheckbox
-                          @onClick="isShowLinesChart = !isShowLinesChart"
-                        />
-                      </div>
-                    </template>
-                  </VDropdown>
+                    <div
+                      v-if="catsView === 'round'"
+                      :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
+                      class="justify-center text-xl"
+                      @click="isGroupCategoriesByParentRounded = !isGroupCategoriesByParentRounded"
+                    >
+                      <Icon
+                        :name="isGroupCategoriesByParentRounded ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
+                        size="18"
+                      />
+                    </div>
 
-                  <!-- Folder -->
-                  <div
-                    v-if="catsView === 'list'"
-                    :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
-                    class="justify-center text-xl"
-                    @click="toggleCats"
-                  >
-                    <Icon
-                      :name="isAllCatsOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
-                      size="24"
-                    />
-                  </div>
+                    <div
+                      v-if="catsView === 'list'"
+                      :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
+                      class="justify-center text-xl"
+                      @click="isGroupCategoriesByParent = !isGroupCategoriesByParent"
+                    >
+                      <Icon
+                        :name="isGroupCategoriesByParent ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
+                        size="18"
+                      />
+                    </div>
 
-                  <div
-                    v-if="catsView === 'round'"
-                    :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
-                    class="justify-center text-xl"
-                    @click="isGroupCategoriesByParentRounded = !isGroupCategoriesByParentRounded"
-                  >
-                    <Icon
-                      :name="isGroupCategoriesByParentRounded ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
-                      size="22"
-                    />
-                  </div>
-
-                  <div
-                    v-if="catsView === 'list'"
-                    :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
-                    class="justify-center text-xl"
-                    @click="isGroupCategoriesByParent = !isGroupCategoriesByParent"
-                  >
-                    <Icon
-                      :name="isGroupCategoriesByParent ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
-                      size="22"
-                    />
-                  </div>
-
-                  <!-- Cat view -->
-                  <div
-                    :class="getStyles('item', ['link', 'center', 'minh', 'minw1', 'rounded'])"
-                    class="justify-center text-xl"
-                    @click="catsView = catsView === 'list' ? 'round' : 'list'"
-                  >
-                    <Icon
-                      :name="catsView === 'list' ? 'fluent:apps-list-20-regular' : 'fluent:equal-circle-20-regular'"
-                      size="24"
-                    />
+                    <!-- Cat view -->
+                    <div
+                      :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
+                      class="justify-center text-xl"
+                      @click="catsView = catsView === 'list' ? 'round' : 'list'"
+                    >
+                      <Icon
+                        :name="catsView === 'list' ? 'fluent:apps-list-20-regular' : 'fluent:equal-circle-20-regular'"
+                        size="18"
+                      />
+                    </div>
                   </div>
                 </template>
               </div>
             </template>
+
+            <!-- List -->
+            <div
+              v-if="cats.length > 0 && catsView === 'list'"
+            >
+              <StatLinesItemLine
+                v-for="item in cats"
+                :key="item.id"
+                :item
+                :isShowLinesChart
+                :isGroupCategoriesByParent
+                :biggestCatNumber
+                isAltIcon
+                :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+                @click="onClickCategory"
+                @onClickIcon="onClickCategoryRounded"
+              />
+            </div>
 
             <div
               v-if="cats.length > 0 && catsView === 'round'"
@@ -564,103 +520,20 @@ const isShowDateSelector = ref(false)
                 @click="onClickCategoryRounded"
               />
             </div>
-
-            <div
-              v-if="cats.length > 0 && catsView === 'list'"
-              class="grid gap-2"
-            >
-              <StatLinesItemLine
-                v-for="item in cats"
-                :key="item.id"
-                :item
-                :isShowLinesChart
-                :biggestCatNumber
-                :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-                @click="onClickCategory"
-                @onClickIcon="onClickCategoryRounded"
-              >
-                <div
-                  class="pl-2"
-                >
-                  <!-- Categories 2 level -->
-                  <div
-                    v-if="isGroupCategoriesByParent && openedCats.includes(item.id) && getCats(item.trnsIds).length > 1"
-                  >
-                    <StatLinesItemLine
-                      v-for="insideItem in getCats(item.trnsIds)"
-                      :key="insideItem.id"
-                      :item="insideItem"
-                      :isShowLinesChart
-                      :isActive="openedTrns.includes(insideItem.id)"
-                      :biggestCatNumber
-                      @click="onClickCategory"
-                    >
-                      <div
-                        v-if="openedTrns.includes(insideItem.id)"
-                        class="pl-0"
-                      >
-                        <TrnsList
-                          class="pl-8"
-                          :trnsIds="getTrnsWithDate(insideItem.id) ?? []"
-                          :size="5"
-                          alt2
-                          isHideDates
-                          isShowFilterByDesc
-                        />
-                        <!-- Inside: trns -->
-                      </div>
-                    </StatLinesItemLine>
-                  </div>
-
-                  <div
-                    v-if="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-                  >
-                    <TrnsList
-                      class="pl-8"
-                      :trnsIds="getTrnsWithDate(item.id) ?? []"
-                      :size="5"
-                      alt2
-                      isHideDates
-                      isShowFilterByDesc
-                    />
-                  </div>
-                </div>
-              </StatLinesItemLine>
-            </div>
           </UiToggle>
 
-          <!-- Trns first level -->
-          <UiToggle
-            v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0"
-            :storageKey="`${newBaseStorageKey}-trns-root`"
-            class="@xl/stat:min-w-96 max-w-lg"
-            isPadding
-          >
-            <template #header="{ toggle, isShown }">
-              <UiTitle
-                :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-                class="grow flex items-center gap-2 -ml-1"
-                @click="toggle"
-              >
-                <Icon
-                  v-if="!isShown"
-                  name="mdi:chevron-right"
-                  size="22"
-                  class="-ml-1"
-                />
-                <div>{{ $t('trns.title') }}</div>
-                <div>{{ selectedTrnsIdsForTrnsList?.length }}</div>
-              </UiTitle>
-            </template>
-
+          <!-- Opened quick modal with 1 category -->
+          <template v-else>
             <TrnsList
-              class="pl-1"
-              :isShowGroupSum="grouped.period !== 'day'"
               :trnsIds="selectedTrnsIdsForTrnsList"
+              class="px-2 py-2"
               isShowFilterByDesc
-              isShowHeader2
+              isShowFilterByType
+              isShowGroupSum
+              isShowGroupSumByDate
+              isShowHeader
             />
-          </UiToggle>
+          </template>
         </div>
 
         <!-- Empty -->
@@ -675,5 +548,158 @@ const isShowDateSelector = ref(false)
         </div>
       </div>
     </div>
+
+    <Teleport to="body">
+      <!-- Date Selector -->
+      <BaseBottomSheet2
+        v-if="isShowDateSelector"
+        isShow
+        drugClassesCustom="-max-w-sm mx-auto bg-foreground-2"
+        @closed="isShowDateSelector = false"
+      >
+        <template #handler="{ close }">
+          <BaseBottomSheetHandler />
+          <BaseBottomSheetClose @onClick="close" />
+        </template>
+
+        <template #default="{ close }">
+          <div class="grid gap-4 p-3">
+            <UiTitle7>{{ t('select') }}</UiTitle7>
+
+            <div class="grid grid-cols-2 items-start gap-6">
+              <div class="grid gap-2">
+                <div class="grid grid-cols-[auto,1fr,auto] gap-2">
+                  <DateLinkItem @click="removeInterval">
+                    -
+                  </DateLinkItem>
+                  <DateLinkItem
+                    @click="setRangeByPeriod({ grouped, interval })"
+                  >
+                    {{ `Last ${interval.duration} ${interval.period}` }}
+                  </DateLinkItem>
+                  <DateLinkItem @click="addInterval">
+                    +
+                  </DateLinkItem>
+                </div>
+
+                <DateRanges
+                  :range
+                  :interval
+                  :grouped
+                  :maxRange
+                  @setRangeByPeriod="setRangeByPeriod"
+                />
+
+                <DateDaySelector
+                  :groupBy="grouped.period"
+                  :range
+                  @setRangeByCalendar="setRangeByCalendar"
+                />
+              </div>
+
+              <div class="grid gap-1">
+                <div class="flex gap-2">
+                  <DateLinkItem @click="--grouped.duration">
+                    -
+                  </DateLinkItem>
+
+                  <DateLinkItem
+                    @click="() => grouped = {
+                      duration: grouped.duration,
+                      period: grouped.period,
+                    }"
+                  >
+                    {{ `Grouped by ${grouped.duration} ${grouped.period}` }}
+                  </DateLinkItem>
+
+                  <DateLinkItem @click="++grouped.duration">
+                    +
+                  </DateLinkItem>
+                </div>
+
+                <DateLinkItem
+                  v-for="rangeItem in intervalGroups"
+                  :key="rangeItem.period"
+                  :isActive="rangeItem.period === grouped.period && rangeItem.duration === grouped.duration"
+                  @click="() => grouped = rangeItem"
+                >
+                  {{ rangeItem.duration }}{{ rangeItem.period }}
+                </DateLinkItem>
+              </div>
+            </div>
+
+            <UiButtonBlue @click="close">
+              {{ $t('close') }}
+            </UiButtonBlue>
+          </div>
+        </template>
+      </BaseBottomSheet2>
+
+      <!-- Categories stat -->
+      <BaseBottomSheet2
+        v-if="quickModalCategoryId"
+        isShow
+        drugClassesCustom="-max-w-sm mx-auto bg-foreground-2"
+        @closed="quickModalCategoryId = false"
+      >
+        <template #handler="{ close }">
+          <div class="relative z-20">
+            <BaseBottomSheetHandler />
+            <BaseBottomSheetClose @onClick="close" />
+          </div>
+        </template>
+
+        <template #default="">
+          <div class="grid h-[98dvh] content-start overflow-hidden overflow-y-auto scrollerBlock">
+            <CategoriesPageHeader
+              :category="categoriesStore.items[quickModalCategoryId]"
+              :parentCategory="categoriesStore.items?.[categoriesStore.items[quickModalCategoryId]?.parentId]"
+              class="sticky top-0 bg-foreground-5 z-10"
+            />
+
+            <StatMiniItem
+              :quickModalCategoryId
+              :storageKey="`${props.storageKey}sum-in-${quickModalCategoryId}`"
+              :trnsIds="getTrnsIds({
+                categoriesIds: categoriesStore.getChildsIdsOrParent(quickModalCategoryId),
+                trnsItems: trnsStore.items,
+              })"
+              class="-max-w-2xl"
+              isQuickModal
+              type="sum"
+            />
+          </div>
+        </template>
+      </BaseBottomSheet2>
+
+      <!-- Trns -->
+      <BaseBottomSheet2
+        v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0 && isShowTrns"
+        isShow
+        drugClassesCustom="-max-w-sm mx-auto bg-foreground-2"
+        @closed="isShowTrns = false"
+      >
+        <template #handler="{ close }">
+          <div class="relative z-20">
+            <BaseBottomSheetHandler />
+            <BaseBottomSheetClose @onClick="close" />
+          </div>
+        </template>
+
+        <template #default="{ close }">
+          <div class="grid h-[98dvh] content-start overflow-hidden overflow-y-auto scrollerBlock">
+            <TrnsList
+              :trnsIds="selectedTrnsIdsForTrnsList"
+              class="px-2 py-2"
+              isShowFilterByDesc
+              isShowFilterByType
+              isShowGroupSum
+              isShowGroupSumByDate
+              isShowHeader
+            />
+          </div>
+        </template>
+      </BaseBottomSheet2>
+    </Teleport>
   </div>
 </template>

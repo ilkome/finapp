@@ -52,8 +52,7 @@ function onInput(event: Event) {
         block size-full h-auto pt-6 pb-2 px-3
         text-3xl font-unica
         bg-transparent rounded-md
-        placeholder:text-3xl placeholder:font-roboto
-        hocus:bg-item-7
+        -placeholder:text-3xl -placeholder:font-mono
         focus:bg-item-7
         transition
       "
@@ -66,8 +65,8 @@ function onInput(event: Event) {
 
 <i18n lang="yaml">
 en:
-  enterAmount: Type amount
+  enterAmount: '0'
 
 ru:
-  enterAmount: Введите сумму
+  enterAmount: '0'
 </i18n>

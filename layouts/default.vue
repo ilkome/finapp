@@ -50,7 +50,7 @@ watch(
         class="hidden lg:hidden sm:flex sm:flex-col gap-1 justify-center sm:align-center bg-item-4"
       />
 
-      <div class="@container/main grid h-full pb-12 md:pb-0 overflow-hidden">
+      <div class="@container/main grid h-full pb-12 sm:pb-0 overflow-hidden">
         <NuxtPage />
       </div>
     </div>

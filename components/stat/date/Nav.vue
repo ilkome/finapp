@@ -16,11 +16,20 @@ const emit = defineEmits<{
 <template>
   <div class="flex gap-1">
     <div
+      v-if="!props.isToday"
+      :class="[getStyles('item', ['link', 'rounded', 'minh2'])]"
+      class="flex items-center px-3 py-2 text-base font-medium leading-none font-primary text-nowrap"
+      @click="emit('setPeriodAndDate')"
+    >
+      <UiIconReturn class="size-5" />
+    </div>
+
+    <div
       :class="[
-        ...getStyles('item', ['link', 'rounded', 'minh2', 'center']),
+        ...getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
         { '!hocus:transparent opacity-30': props.isLastPeriod },
       ]"
-      class="w-8 bg-item-4"
+      class="flex-center bg-item-4"
       @click="emit('setNextPeriodDate')"
     >
       <UiIconChevron class="size-8" />
@@ -28,24 +37,13 @@ const emit = defineEmits<{
 
     <div
       :class="[
-        ...getStyles('item', ['link', 'rounded', 'minh2', 'center']),
-        {
-          '!hocus:transparent opacity-30': props.isToday,
-        },
+        ...getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
+        { '!hocus:transparent opacity-30': props.isToday },
       ]"
-      class="w-8 bg-item-4"
+      class="flex-center bg-item-4"
       @click="emit('setPrevPeriodDate')"
     >
       <UiIconChevron class="size-8 rotate-180" />
-    </div>
-
-    <div
-      v-if="!props.isToday"
-      :class="getStyles('item', ['link', 'rounded', 'minh2', 'center'])"
-      class="flex-center w-8 bg-item-4"
-      @click="emit('setPeriodAndDate')"
-    >
-      <UiIconReturn class="size-5" />
     </div>
   </div>
 </template>

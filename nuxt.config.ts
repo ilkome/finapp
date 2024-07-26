@@ -6,9 +6,6 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [{
-        href: 'https://fonts.googleapis.com/css?family=Roboto+Mono:400,500|Nunito|Roboto:400,500,600,700|Unica+One&display=swap&subset=cyrillic',
-        rel: 'stylesheet',
-      }, {
         href: '/css/materialdesignicons.min.css',
         rel: 'stylesheet',
       }, {
@@ -78,6 +75,7 @@ export default defineNuxtConfig({
     'floating-vue/nuxt',
     'nuxt-icon',
     '@nuxt/ui',
+    '@nuxt/fonts',
   ],
 
   plugins: [

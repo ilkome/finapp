@@ -7,8 +7,6 @@ import { useStat } from '~/components/stat/useStat'
 const filter = useFilter()
 const stat = useStat(filter)
 
-filter.initChart()
-
 provide('stat', stat)
 provide('filter', filter)
 
@@ -70,12 +68,12 @@ useHead({
     </UiHeader>
 
     <div class="px-2">
-      <div class="flex flex-wrap mb-6 pt-3 gap-6">
+      <div class="flex flex-wrap justify-stretch gap-1 pt-3">
         <template v-if="!wallet.isCredit">
           <Amount
             :amount="total"
             :currencyCode="wallet.currency"
-            variant="3xl"
+            variant="-3xl"
           />
         </template>
 
@@ -101,23 +99,15 @@ useHead({
       >
         {{ wallet.description }}
       </div>
+    </div>
 
-      <div class="pt-0">
-        <StatMini
-          :walletsIds="[walletId, ...filter?.walletsIds?.value]"
-          :categoriesIds="filter?.catsIds?.value"
-          :storageKey="walletId"
-          isShowFilter
-        />
-      </div>
+    <div class="pt-0">
+      <StatMini
+        :walletsIds="[walletId, ...filter?.walletsIds?.value]"
+        :categoriesIds="filter?.catsIds?.value"
+        :storageKey="walletId"
+        isShowFilter
+      />
     </div>
   </UiPage>
 </template>
-
-<i18n lang="yaml">
-en:
-  statBy: Statistics
-
-ru:
-  statBy: Статистика
-</i18n>

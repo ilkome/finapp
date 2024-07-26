@@ -305,21 +305,6 @@ export function useFilter() {
         : 'line'
   }
 
-  async function initChart() {
-    const localDate = await localforage.getItem('finapp.chart.date')
-    const localPeriodName = await localforage.getItem('finapp.chart.periodName')
-    const localPeriods: Periods | null = await localforage.getItem('finapp.chart.periods')
-
-    // if (periodsSchema.safeParse(localPeriods)) {
-    //   for (const periodName in periods.value)
-    //     periods.value[periodName] = localPeriods[periodName]
-    // }
-
-    // localDate && setDate(localDate)
-    // if (localPeriodName)
-    //   periodNameWithAll.value = localPeriodName
-  }
-
   watch(date, value => localforage.setItem('finapp.chart.date', value))
   watch(periods, value => localforage.setItem('finapp.chart.periods', deepUnref(value)), { deep: true })
   watch(periodNameWithAll, value => localforage.setItem('finapp.chart.periodName', value))
@@ -340,7 +325,6 @@ export function useFilter() {
     date,
     getTrnsIdsWithFilter,
 
-    initChart,
     // Computed
     isShow,
     periodNameWithAll,

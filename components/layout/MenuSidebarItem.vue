@@ -37,7 +37,7 @@ const { checkIsActive, onClick } = useMenuData()
     <Icon
       v-else
       :name="props.item?.icon"
-      :size="position === 'bottom' ? 26 : 22"
+      :size="position === 'bottom' ? '26' : '22'"
       class="text-lg leading-none"
     />
 

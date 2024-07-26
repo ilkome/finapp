@@ -62,9 +62,7 @@ function movePeriod(way: 'next' | 'prev' | 'today') {
     <div
       :class="[
         ...getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
-        {
-          '!hocus:transparent opacity-30': isEnd,
-        },
+        { '!hocus:transparent opacity-30': isEnd },
       ]"
       class="flex-center bg-item-4"
       @click="movePeriod('next')"

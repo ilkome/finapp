@@ -239,12 +239,25 @@ export const useCategoriesStore = defineStore('categories', () => {
     if (!hasCategories.value)
       return []
 
-    if (items.value[categoryId]?.parentId === 0) {
+    if (items.value[categoryId]?.childIds?.length && items.value[categoryId]?.childIds?.length > 0) {
+    // if (items.value[categoryId]?.parentId === 0) {
       return Object.keys(items.value)
         .filter(id => items.value[id]?.parentId === categoryId)
     }
 
     return []
+  }
+
+  function getChildsIdsOrParent(categoryId: CategoryId) {
+    if (!hasCategories.value)
+      return []
+
+    if (items.value[categoryId]?.childIds?.length && items.value[categoryId]?.childIds?.length > 0) {
+      return Object.keys(items.value)
+        .filter(id => items.value[id]?.parentId === categoryId)
+    }
+
+    return [categoryId]
   }
 
   function saveCategoriesOrder(ids: CategoryId[]) {
@@ -265,6 +278,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     categoriesRootIds,
     favoriteCategoriesIds,
     getChildsIds,
+    getChildsIdsOrParent,
     getTransactibleIds,
     hasCategories,
     hasChildren,

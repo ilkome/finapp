@@ -37,7 +37,7 @@ function removeUserData() {
     </UiHeader>
 
     <div
-      class="grow grid gap-x-6 gap-y-1 px-3 md:grid-cols-2 md:gap-x-12"
+      class="grow grid gap-x-6 gap-y-1 px-3"
     >
       <div>
         <!-- Currency -->
@@ -105,7 +105,7 @@ function removeUserData() {
       </div>
 
       <!-- About -->
-      <div class="pb-12 md:justify-self-end">
+      <div class="pb-12">
         {{ t("app.about") }}
         <div class="pt-4 text-xs text-item-2">
           {{ t("app.version") }} {{ version }}

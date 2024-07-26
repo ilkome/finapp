@@ -1,3 +1,3 @@
-const appNavs = ['summary', 'sum', 'expense', 'income', 'trns', 'periods', 'netIncome'] as const
+export const statTabs = ['summary', 'sum', 'expense', 'income', 'trns', 'periods', 'netIncome'] as const
 
-export type AppNav = typeof appNavs[number]
+export type StatTabs = typeof statTabs[number]

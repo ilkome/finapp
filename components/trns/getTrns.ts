@@ -1,6 +1,6 @@
-import type { TrnId, TrnsGetterProps } from '~/components/trns/types'
+import type { TrnId, TrnsGetterProps2 } from '~/components/trns/types'
 
-export function getTrnsIds(props: TrnsGetterProps) {
+export function getTrnsIds(props: TrnsGetterProps2) {
   if (!props.trnsIds && !props.trnsItems)
     return []
 
@@ -9,7 +9,7 @@ export function getTrnsIds(props: TrnsGetterProps) {
   // Type
   if (props?.trnType !== undefined && props?.trnType !== null) {
     trnsIds = trnsIds.filter(
-      trnId => props.trnsItems[trnId].type === props.trnType,
+      trnId => props.trnsItems[trnId]?.type === props.trnType,
     )
   }
 
@@ -17,7 +17,7 @@ export function getTrnsIds(props: TrnsGetterProps) {
   if (props?.dates) {
     if (props.dates.from) {
       trnsIds = trnsIds.filter(
-        trnId => props.trnsItems[trnId].date >= props.dates?.from,
+        trnId => props.trnsItems[trnId]?.date >= props.dates?.from,
       )
     }
     if (props?.dates?.until)

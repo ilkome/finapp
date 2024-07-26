@@ -3,6 +3,7 @@ import useAmount from '~/components/amount/useAmount'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItem } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   activeType: string // TODO: types
@@ -14,6 +15,7 @@ const emit = defineEmits<{
   click: [v: string]
 }>()
 
+const { t } = useI18n()
 const { getAmountInBaseRate } = useAmount()
 const walletsStore = useWalletsStore()
 
@@ -123,53 +125,82 @@ const counts2 = computed(() => ({
 </script>
 
 <template>
-  <div class="grid gap-2 @md/wallets:grid-cols-2">
-    <div class="rounded-lg bg-item-4">
-      <UiElement
-        v-for="(item) in Object.values(counts).filter(item => item.isShow)"
-        :key="item.id"
-        :isActive="props.activeType === item.id"
-        isShowLine
-        class="group"
-        @click="emit('click', item.id)"
-      >
-        <div
-          class="pl-1 grow text-sm leading-none text-secondary"
-        >
-          {{ $t(`money.totals.${item.id}`) }}
-        </div>
-
-        <div class="pr-1 opacity-90">
-          <Amount
-            :amount="item.value"
-            :currencyCode="currencyCode"
+  <UiToggle
+    :initStatus="true"
+    :openPadding="1"
+    storageKey="finapp-wallets-total"
+  >
+    <!-- Header -->
+    <template #header="{ toggle, isShown }">
+      <div class="flex items-center justify-between">
+        <UiTitle7 @click="toggle">
+          <div>{{ t('totalTitle') }}</div>
+          <Icon
+            v-if="!isShown"
+            name="mdi:chevron-down"
+            size="22"
+            class="-ml-1"
           />
-        </div>
-      </UiElement>
-    </div>
+        </UiTitle7>
+      </div>
+    </template>
 
-    <div class="rounded-lg bg-item-4">
-      <UiElement
-        v-for="(item) in Object.values(counts2).filter(item => item.isShow)"
-        :key="item.id"
-        :isActive="props.activeType === item.id"
-        isShowLine
-        class="group"
-        @click="emit('click', item.id)"
-      >
-        <div
-          class="pl-1 grow text-sm leading-none text-secondary"
+    <div class="grid gap-2 @md/wallets:grid-cols-2">
+      <div class="rounded-lg bg-item-4">
+        <UiElement
+          v-for="(item) in Object.values(counts).filter(item => item.isShow)"
+          :key="item.id"
+          :isActive="props.activeType === item.id"
+          isShowLine
+          class="group"
+          @click="emit('click', item.id)"
         >
-          {{ $t(`money.totals.${item.id}`) }}
-        </div>
+          <div
+            class="pl-1 grow text-sm leading-none text-secondary"
+          >
+            {{ $t(`money.totals.${item.id}`) }}
+          </div>
 
-        <div class="pr-1 opacity-90">
-          <Amount
-            :amount="item.value"
-            :currencyCode="currencyCode"
-          />
-        </div>
-      </UiElement>
+          <div class="pr-1 opacity-90">
+            <Amount
+              :amount="item.value"
+              :currencyCode="currencyCode"
+            />
+          </div>
+        </UiElement>
+      </div>
+
+      <div class="rounded-lg bg-item-4">
+        <UiElement
+          v-for="(item) in Object.values(counts2).filter(item => item.isShow)"
+          :key="item.id"
+          :isActive="props.activeType === item.id"
+          isShowLine
+          class="group"
+          @click="emit('click', item.id)"
+        >
+          <div
+            class="pl-1 grow text-sm leading-none text-secondary"
+          >
+            {{ $t(`money.totals.${item.id}`) }}
+          </div>
+
+          <div class="pr-1 opacity-90">
+            <Amount
+              :amount="item.value"
+              :currencyCode="currencyCode"
+            />
+          </div>
+        </UiElement>
+      </div>
     </div>
-  </div>
+  </UiToggle>
 </template>
+
+<i18n lang="yaml">
+en:
+  totalTitle: "Statistics"
+
+ru:
+  totalTitle: "Статистика"
+</i18n>

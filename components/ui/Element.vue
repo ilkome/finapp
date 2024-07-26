@@ -9,6 +9,7 @@ const props = defineProps<{
   isShowIcons?: boolean
   isShowLine?: boolean
   isShowToggle?: boolean
+  lineWidth?: number
 }>()
 
 const emit = defineEmits<{
@@ -61,6 +62,11 @@ const slots = useSlots()
       v-if="isShowLine"
       class="mx-2 h-[1px] bg-item-5 group-last:hidden"
       :class="{ 'ml-9': isShowIcons, 'ml-11': isShowIcon }"
+    />
+    <div
+      v-if="lineWidth"
+      class="mx-2 h-[1px] bg-item-5 group-last:hidden"
+      :class="{ 'ml-12': lineWidth === 1, 'ml-11': lineWidth === 2 }"
     />
   </div>
 </template>
