@@ -26,7 +26,6 @@
     "@pinia/nuxt": "^0.5.1",
     "@popperjs/core": "^2.11.8",
     "@tailwindcss/container-queries": "^0.1.1",
-    "basic-ftp": "^5.0.5",
     "currency.js": "^2.0.4",
     "dayjs": "^1.11.11",
     "echarts": "^5.5.1",
