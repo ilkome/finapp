@@ -69,10 +69,6 @@ function show(slide: number) {
       />
     </div>
 
-    <!-- <TrnFormTrnsSlide2
-      class="pb-0"
-    /> -->
-
     <TrnFormDate class="pb-0" />
 
     <TrnFormMainInput

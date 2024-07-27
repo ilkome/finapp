@@ -3,7 +3,7 @@ const isShow = ref(false)
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport to="layoutBase">
     <BaseBottomSheet3
       v-if="isShow"
       :isShow="isShow"

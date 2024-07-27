@@ -15,7 +15,7 @@ const { trnFormCreate } = useTrnForm()
         size-12
         flex items-center justify-center
         rounded-full bg-accent-2
-        text-3xl text-icon-primary2
+        text-3xl text-icon-primary
         transition"
     >
       <i class="mdi mdi-plus" />

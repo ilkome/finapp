@@ -49,7 +49,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
   <div class="grid gap-0">
     <!-- Sum -->
     <div class="overflow-hidden">
-      <!-- <div class="flex gap-1 overflow-y-auto">
+      <div class="flex gap-1 overflow-y-auto px-2 pt-2">
         <Filter v-if="props.isShowFilter" />
 
         <StatMenu
@@ -58,7 +58,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
           :isShowExpense="totals.expense !== 0"
           @click="id => activeTab = id"
         />
-      </div> -->
+      </div>
 
       <StatMiniItem
         v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"

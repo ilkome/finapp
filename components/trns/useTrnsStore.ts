@@ -38,7 +38,7 @@ export const useTrnsStore = defineStore('trns', () => {
   const categoriesStore = useCategoriesStore()
   const filterStore = useFilterStore()
 
-  const items = ref<Trns>({})
+  const items = ref<Trns | null>(null)
 
   function getStoreTrnsIds(props: TrnsGetterProps, params?: TrnsGetterParams) {
     if (params?.includesChildCategories) {
@@ -128,7 +128,7 @@ export const useTrnsStore = defineStore('trns', () => {
     getDataAndWatch(path, (values: Trns) => setTrns(values || {}))
   }
 
-  function setTrns(values: Trns) {
+  function setTrns(values: Trns | null) {
     items.value = values
     localforage.setItem('finapp.trns', deepUnref(values))
   }

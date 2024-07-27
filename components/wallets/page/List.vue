@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
+import { useStorage } from '@vueuse/core'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilterStore } from '~/components/filter/useFilterStore'
@@ -16,8 +16,8 @@ const currenciesStore = useCurrenciesStore()
 const { isModalOpen, openModal } = useAppNav()
 const { setWalletId } = useFilterStore()
 
-const activeCurrency = ref('all')
-const activeType = ref('all')
+const activeCurrency = useStorage('finapp-wallets-active-currency', 'all')
+const activeType = useStorage('finapp-wallets-active-type', 'all')
 
 const selectedWallets = computed(() => {
   if (activeCurrency.value === 'all' && activeType.value === 'all')

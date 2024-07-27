@@ -199,8 +199,8 @@ const counts2 = computed(() => ({
 
 <i18n lang="yaml">
 en:
-  totalTitle: "Statistics"
+  totalTitle: Statistics
 
 ru:
-  totalTitle: "Статистика"
+  totalTitle: Статистика
 </i18n>

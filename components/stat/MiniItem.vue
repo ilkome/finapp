@@ -176,7 +176,7 @@ const totals = computed(() =>
 /**
  * Cats
  */
-const isGroupCategoriesByParent = useStorage<boolean>(`${baseStorageKey.value}-isGroupCategoriesByParent`, false)
+const isGroupCategoriesByParent = useStorage<boolean>(`${baseStorageKey.value}-isGroupCategoriesByParent`, true)
 const isGroupCategoriesByParentRounded = useStorage<boolean>(`${baseStorageKey.value}-isGroupCategoriesByParentRounded`, true)
 
 const cats = computed(() => getCats(trnsIdsForTotals.value ?? [], isGroupCategoriesByParent.value))
@@ -206,20 +206,6 @@ function toggleCats() {
 
 function onClickCategory(categoryId: CategoryId) {
   quickModalCategoryId.value = quickModalCategoryId.value === categoryId ? false : categoryId
-
-  // const category = categoriesStore.items[categoryId]
-
-  // if (category?.childIds && category?.childIds?.length > 0) {
-  //   openedCats.value = openedCats.value.includes(categoryId) ? [] : [categoryId]
-  //   // ? (openedCats.value = openedCats.value.filter(d => d !== categoryId))
-  //   // : openedCats.value.push(categoryId)
-  // }
-
-  // else {
-  //   openedTrns.value.includes(categoryId)
-  //     ? (openedTrns.value = openedTrns.value.filter(d => d !== categoryId))
-  //     : openedTrns.value.push(categoryId)
-  // }
 }
 
 function onClickCategoryRounded(categoryId: CategoryId) {
@@ -268,9 +254,9 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
 <template>
   <div>
     <!-- Stat -->
-    <div class="@container/stat">
+    <div class="@container/stat px-2 pt-2">
       <div class="">
-        <div class="flex justify-between pt-2 px-2">
+        <div class="flex justify-between">
           <!-- Chart types -->
           <div class="flex gap-1">
             <DateLinkItem2 :isActive="chartType === 'bar'" @click="chartType = 'bar'">
@@ -339,7 +325,7 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
         </div>
 
         <!-- Stat sum -->
-        <div class="px-2">
+        <div>
           <div
             v-if="props.type === 'sum'"
             class="flex gap-1 flex-wrap justify-stretch"
@@ -349,7 +335,7 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
               :isActive="selectedType === 'expense'"
               type="expense"
               :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
-              class="grow !-bg-red-600/10"
+              class="grow md:grow-0 !-bg-red-600/10"
               @click="onSelectType('expense')"
             />
             <StatSum
@@ -357,14 +343,14 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
               :isActive="selectedType === 'income'"
               :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
               type="income"
-              class="grow !-bg-green-600/10"
+              class="grow md:grow-0 !-bg-green-600/10"
               @click="onSelectType('income')"
             />
             <StatSum
               :amount="totals.sum"
               :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
               type="sum"
-              class="grow"
+              class="grow md:grow-0"
               @click="isShowTrns = true"
             />
           </div>
@@ -378,13 +364,13 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
         </div>
 
         <!-- Content -->
-        <div class="grid @3xl/stat:grid-cols-[1.3fr,auto] @xl/stat:gap-12 gap-2 pt-3 md:px-2">
+        <div class="grid @3xl/stat:grid-cols-[1.3fr,auto] @xl/stat:gap-12 gap-2 pt-3">
           <!-- Categories first level -->
           <UiToggle
-            v-if="(isQuickModal ? (cats.length > 1 || (props.quickModalCategoryId && categoriesStore.items[props.quickModalCategoryId].parentId === 0)) : selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0)"
+            v-if="(isQuickModal ? (cats.length > 1 || (props.quickModalCategoryId && categoriesStore.items[props.quickModalCategoryId]?.childIds?.length > 0)) : selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0)"
             :class="{
               'md:max-w-4xl': catsView === 'round',
-              'md:max-w-lg': catsView === 'list',
+              'md:max-w-sm': catsView === 'list',
             }"
             :storageKey="`${newBaseStorageKey}-cats-root`"
             :initStatus="true"
@@ -404,7 +390,7 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
 
                 <!-- Actions buttons -->
                 <template v-if="isShown">
-                  <div class="flex gap-1 pr-2">
+                  <div class="flex gap-1 pr-1">
                     <VDropdown
                       v-if="isShown && catsView === 'list'"
                       :overflowPadding="12"
@@ -549,12 +535,12 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
       </div>
     </div>
 
-    <Teleport to="body">
+    <Teleport to="#teleports">
       <!-- Date Selector -->
       <BaseBottomSheet2
         v-if="isShowDateSelector"
         isShow
-        drugClassesCustom="-max-w-sm mx-auto bg-foreground-2"
+        drugClassesCustom="bg-foreground-2 max-w-xl md:mb-12 rounded-xl"
         @closed="isShowDateSelector = false"
       >
         <template #handler="{ close }">
@@ -563,10 +549,10 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
         </template>
 
         <template #default="{ close }">
-          <div class="grid gap-4 p-3">
+          <div class="grid gap-4 p-3 overflow-hidden h-full overflow-y-auto">
             <UiTitle7>{{ t('select') }}</UiTitle7>
 
-            <div class="grid grid-cols-2 items-start gap-6">
+            <div class="grid items-start gap-6">
               <div class="grid gap-2">
                 <div class="grid grid-cols-[auto,1fr,auto] gap-2">
                   <DateLinkItem @click="removeInterval">
@@ -639,7 +625,7 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
       <BaseBottomSheet2
         v-if="quickModalCategoryId"
         isShow
-        drugClassesCustom="-max-w-sm mx-auto bg-foreground-2"
+        drugClassesCustom="bg-foreground-2 lg:w-[calc(100%-120px)]"
         @closed="quickModalCategoryId = false"
       >
         <template #handler="{ close }">
@@ -656,6 +642,8 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
               :parentCategory="categoriesStore.items?.[categoriesStore.items[quickModalCategoryId]?.parentId]"
               class="sticky top-0 bg-foreground-5 z-10"
             />
+
+            <pre>quickModalCategoryId {{ quickModalCategoryId }}</pre>
 
             <StatMiniItem
               :quickModalCategoryId

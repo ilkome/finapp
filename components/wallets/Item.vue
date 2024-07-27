@@ -43,6 +43,7 @@ function changeCreditView() {
     :isShowIcons="props.isShowIcons"
     :insideClasses="props.insideClasses"
     :lineWidth="2"
+    class="relative"
     @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
@@ -108,6 +109,7 @@ function changeCreditView() {
     <template v-if="props.alt">
       <div class="grow">
         <Amount
+          v-if="!isSort"
           :amount="wallet.amount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="false"

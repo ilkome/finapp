@@ -6,6 +6,7 @@ const props = defineProps<{
   activeItemId?: string | 0 | false | null
   category: CategoryItem
   categoryId: CategoryId
+  lineWidth?: number
   slider?: any
 }>()
 
@@ -24,7 +25,7 @@ const childCategoriesIds = computed(() =>
 <template>
   <UiElement
     :isActive="activeItemId === categoryId"
-    :lineWidth="2"
+    :lineWidth="props.lineWidth"
     @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>

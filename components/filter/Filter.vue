@@ -8,7 +8,7 @@ const filter = inject('filter') as FilterProvider
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 
-const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 'padding2', 'minh'])
+const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 'padding2', 'minh2'])
 </script>
 
 <template>
@@ -20,8 +20,8 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
         autoBoundaryMaxSize
         placement="top-start"
       >
-        <div :class="itemAddClasses">
-          <UiIconCategory class="size-6" />
+        <div :class="itemAddClasses" class="justify-center">
+          <UiIconCategory class="size-5" />
         </div>
 
         <template #popper="{ hide }">
@@ -56,8 +56,8 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
         autoBoundaryMaxSize
         placement="top-start"
       >
-        <div :class="itemAddClasses">
-          <UiIconWallet class="size-6" />
+        <div :class="itemAddClasses" class="justify-center">
+          <UiIconWallet class="size-5" />
         </div>
 
         <template #popper="{ hide }">

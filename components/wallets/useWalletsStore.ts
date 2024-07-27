@@ -21,7 +21,7 @@ export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
   const userStore = useUserStore()
 
-  const items = ref<Wallets>({})
+  const items = ref<Wallets | null>(null)
 
   function initWallets() {
     getDataAndWatch(`users/${userStore.uid}/accounts`, (wallets: Wallets) => {
@@ -29,7 +29,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     })
   }
 
-  function setWallets(values: Wallets) {
+  function setWallets(values: Wallets | null) {
     if (!values) {
       items.value = {}
       localforage.setItem('finapp.wallets', {})

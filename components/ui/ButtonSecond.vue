@@ -45,7 +45,7 @@ const classes = computed(() => ({
   anim-background()
 
   +media-hover()
-    background var(--c-item-bg-hover)
+    background var(--c-item-1)
     border 1px solid var(--accent-4)
 
 .icon

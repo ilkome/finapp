@@ -31,12 +31,6 @@ const menu = computed(() => {
     name: $i18n.t('stat.summary'),
   })
 
-  all.push({
-    id: 'sum2',
-    idx: 0,
-    name: $i18n.t('stat.sum2'),
-  })
-
   if (props.isShowExpense) {
     all.push({
       id: 'expense',

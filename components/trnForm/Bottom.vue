@@ -20,7 +20,7 @@ const isShow = computed(() =>
  */
 const sliderRef = ref<any>(null)
 const sliderObj = ref<any>(null)
-const maxHeight = ref('100%')
+const maxHeight = ref('550px')
 
 function setTrnFormHeight() {
   const el = document.querySelector('.getHeight')
@@ -63,7 +63,7 @@ onMounted(init)
 <template>
   <BaseBottomSheet2
     :isShow="isShow"
-    drugClassesCustom="h-full max-h-[98dvh] md:bottom-1/2 md:-translate-x-1/2 md:translate-y-1/2 overflow-hidden"
+    drugClassesCustom="max-h-[100dvh] md:bottom-1/2 md:-translate-x-1/2 md:translate-y-1/2"
     @closed="trnFormStore.onClose()"
   >
     <template #handler="{ close }">
@@ -71,8 +71,8 @@ onMounted(init)
       <!-- <BaseBottomSheetClose @onClick="close" /> -->
     </template>
 
-    <div class="trnForm lg:ml-12 bg-foreground-3 overflow-hidden h-full">
-      <div ref="sliderRef" class="swiper-container overflow-hidden h-full">
+    <div class="trnForm lg:ml-12 bg-foreground-3">
+      <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
           <!-- History -->
           <div
@@ -86,9 +86,9 @@ onMounted(init)
           </div>
 
           <!-- Main -->
-          <div class="swiper-slide sm:px-3 bg-foreground-2 sm:max-w-sm _sm:rounded-xl sm:border-r sm:border-l border-item-5 overflow-hidden">
-            <div class="scroll grid items-end scrollerBlock h-full overflow-hidden">
-              <TrnFormMain />
+          <div class="swiper-slide getHeight sm:px-3 bg-foreground-2 sm:max-w-sm _sm:rounded-xl sm:border-r sm:border-l border-item-5">
+            <div class="scroll scrollerBlock">
+              <TrnFormMain :maxHeight />
             </div>
           </div>
 

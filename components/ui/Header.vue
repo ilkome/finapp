@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-foreground-4 sticky top-0 z-20 flex min-h-[48px] items-center justify-between gap-4 backdrop-blur"
+    class="bg-foreground-3 sticky top-0 z-20 flex min-h-[48px] items-center justify-between gap-4 backdrop-blur"
   >
     <slot />
 

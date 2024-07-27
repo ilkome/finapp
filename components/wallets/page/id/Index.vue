@@ -3,6 +3,8 @@ import type { WalletId } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStat } from '~/components/stat/useStat'
+import { getTrnsIds } from '~/components/trns/getTrns'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const filter = useFilter()
 const stat = useStat(filter)
@@ -14,9 +16,10 @@ const { $i18n } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
 const walletsStore = useWalletsStore()
+const trnsStore = useTrnsStore()
 
 const walletId = computed(() => route.params.id as WalletId)
-const wallet = computed(() => walletsStore.items[walletId.value])
+const wallet = computed(() => walletsStore.items?.[walletId.value])
 
 if (!wallet.value)
   router.replace('/wallets')
@@ -102,11 +105,14 @@ useHead({
     </div>
 
     <div class="pt-0">
-      <StatMini
-        :walletsIds="[walletId, ...filter?.walletsIds?.value]"
-        :categoriesIds="filter?.catsIds?.value"
+      <StatMiniItem
+        type="sum"
+        :trnsIds="getTrnsIds({
+          walletsId: [walletId, ...filter?.walletsIds?.value],
+          trnsItems: trnsStore.items,
+        })"
         :storageKey="walletId"
-        isShowFilter
+        isShowTotals
       />
     </div>
   </UiPage>

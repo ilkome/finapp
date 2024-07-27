@@ -25,6 +25,7 @@ const categoriesStore = useCategoriesStore()
       :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
       :slider="slider"
+      :lineWidth="2"
       class="group"
       @click="emit('click', categoryId)"
       @onClickIcon="emit('onClickIcon', categoryId)"

@@ -60,9 +60,11 @@ watch(
     <TrnFormFloatOpener />
   </div>
 
-  <CurrenciesModal />
-  <DevModalOpener />
+  <Teleport to="body">
+    <CurrenciesModal />
+    <DevModalOpener />
+    <TrnFormBottom v-if="width < 767" />
+  </Teleport>
 
-  <TrnFormBottom v-if="width < 767" />
-  <TrnFormSidebar v-else />
+  <TrnFormSidebar v-if="width >= 767" />
 </template>

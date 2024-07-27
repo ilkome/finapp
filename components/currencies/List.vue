@@ -25,7 +25,7 @@ const list = computed(() => {
 </script>
 
 <template>
-  <div class="-grid -h-full -grid-rows-[auto,1fr] -overflow-hidden max-h-[60vh]">
+  <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden max-h-[60vh]">
     <div>
       <input
         v-model="searchInput"

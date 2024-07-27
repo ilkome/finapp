@@ -80,7 +80,7 @@ function getBarStyle() {
           v-if="isAltIcon"
           :color="category?.color"
           :name="category?.icon"
-          class="!text-xl !w-6 ml-2"
+          class="!text-xl !w-6 ml-1"
           @click.stop="emit('onClickIcon', props.item.id)"
         />
         <UiIconBase

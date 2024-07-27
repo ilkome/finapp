@@ -12,7 +12,8 @@ useHead({
   title: t('trns.history'),
 })
 
-const trnsIds = computed(() => filter.getTrnsIdsWithFilter().slice(0, 10))
+const trnsIds = computed(() => filter.getTrnsIdsWithFilter())
+// const trnsIds = computed(() => filter.getTrnsIdsWithFilter().slice(0, 10))
 
 provide('filter', filter)
 
@@ -106,9 +107,9 @@ function select(row) {
     </UiHeader>
 
     <div class="grid gap-3 px-2">
-      <Filter class="flex gap-2 rounded-lg bg-item-4" />
+      <Filter class="flex gap-1" />
 
-      <UTable
+      <!-- <UTable
         v-model="selected"
         :columns="columns"
         :rows="people"
@@ -132,7 +133,7 @@ function select(row) {
             />
           </UDropdown>
         </template>
-      </UTable>
+      </UTable> -->
 
       <TrnsList
         :trnsIds
