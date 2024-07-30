@@ -86,7 +86,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
       <div
         v-if="activeTab === 'sum'"
-        class="grid md:grid-cols-2 gap-24"
+        class="grid md:grid-cols-2 gap-24 max-w-4xl"
       >
         <!-- Expense -->
         <StatMiniItem

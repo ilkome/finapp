@@ -23,7 +23,7 @@ const filterBy = useStorage('filterBy', 'wallet')
 const periodGrouped = useStorage('trnForm', 'all')
 
 const trnsIds = computed(() => {
-  const trnsItems = trnsStore.items
+  const trnsItems = trnsStore.items!
   const walletsIds: WalletId[] = []
   let categoriesIds: CategoryId[] = []
   const dates = getDates('day', trnFormStore.values.date)
@@ -35,9 +35,7 @@ const trnsIds = computed(() => {
     if (trnFormStore.values.walletId)
       walletsIds.push(trnFormStore.values.walletId)
 
-    const categoryId = trnFormStore.values.categoryId!
-    const childIds = categoriesStore.getChildsIds(categoryId)
-    categoriesIds = childIds.length > 0 ? childIds : [categoryId]
+    categoriesIds = categoriesStore.getChildsIdsOrParent(trnFormStore.values.categoryId!)
   }
 
   return getTrnsIds({

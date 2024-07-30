@@ -40,19 +40,6 @@ function removeUserData() {
       class="grow grid gap-x-6 gap-y-1 px-3"
     >
       <div>
-        <!-- Currency -->
-        <div class="pb-12">
-          <UiTitle>{{ $t("currency.title") }}</UiTitle>
-          <div class="leading-1 pb-4 text-xs text-item-2">
-            {{ t("currency.descBase") }}
-          </div>
-          <UiButtonSecond
-            :title="currencies.find((c) => c.code === currenciesStore.base).name"
-            isShowDots
-            @click="currenciesStore.showBaseCurrenciesModal()"
-          />
-        </div>
-
         <!-- Locale -->
         <div class="pb-12">
           <div class="grid gap-3">
@@ -79,7 +66,7 @@ function removeUserData() {
           <div class="pb-4 text-item-2">
             {{ userStore.user?.email }}
           </div>
-          <UiButtonSecond
+          <UiBox1
             :title="$t('userLogout')"
             icon="mdi mdi-logout"
             @click="userStore.signOut()"
@@ -95,11 +82,12 @@ function removeUserData() {
             {{ $t("alerts.willDeleteEverything") }}
           </div>
           <div class="pb-4">
-            <UiButtonSecond
-              :title="$t('settings.deleteButton')"
-              icon="mdi mdi-delete-empty-outline"
+            <UiBox1
               @click="confirmRemoveUserData = true"
-            />
+            >
+              <div class="mdi mdi-delete-empty-outline" />
+              <div>{{ $t('settings.deleteButton') }}</div>
+            </UiBox1>
           </div>
         </div>
       </div>

@@ -61,7 +61,6 @@ watch(
   </div>
 
   <Teleport to="body">
-    <CurrenciesModal />
     <DevModalOpener />
     <TrnFormBottom v-if="width < 767" />
   </Teleport>

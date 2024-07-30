@@ -20,18 +20,11 @@ const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
 const { categoryId } = toRefs(props)
-const category = computed(() => categoriesStore.items[categoryId.value])
 
-const trnsItems = computed(() => trnsStore.items)
-const trnsIds = computed(() =>
-  getTrnsIds({
-    categoriesIds:
-      category.value?.childIds?.length > 0
-        ? category.value?.childIds
-        : [categoryId.value],
-    trnsItems: trnsItems.value,
-  }),
-)
+const trnsIds = computed(() => getTrnsIds({
+  categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value),
+  trnsItems: trnsStore.items!,
+}))
 
 const isShowDeleteConfirm = ref(false)
 
@@ -46,7 +39,7 @@ const deleteDescText = computed(() => {
 // TODO: translate
 function onClickDelete() {
   for (const id in categoriesStore.items) {
-    if (categoriesStore.items[id].parentId === categoryId.value) {
+    if (categoriesStore.items[id]?.parentId === categoryId.value) {
       $toast(UiToastContent, {
         data: {
           description:

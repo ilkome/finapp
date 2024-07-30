@@ -55,15 +55,11 @@ function onFilter(id: CategoryId) {
       />
 
       <div
-        v-if="
-          opened.includes(categoryId)
-            && categoriesStore.items[categoryId].childIds
-            && categoriesStore.items[categoryId].childIds?.length > 0
-        "
+        v-if="opened.includes(categoryId) && categoriesStore.hasChildren(categoryId)"
         class="pl-4"
       >
         <CategoriesItem
-          v-for="childCategoryId in categoriesStore.items[categoryId].childIds"
+          v-for="childCategoryId in categoriesStore.getChildsIds(categoryId)"
           :key="childCategoryId"
           v-close-popper.all
           :hide

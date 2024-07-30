@@ -127,21 +127,14 @@ const counts2 = computed(() => ({
 <template>
   <UiToggle
     :initStatus="true"
-    :openPadding="1"
     storageKey="finapp-wallets-total"
   >
     <!-- Header -->
     <template #header="{ toggle, isShown }">
       <div class="flex items-center justify-between">
-        <UiTitle7 @click="toggle">
-          <div>{{ t('totalTitle') }}</div>
-          <Icon
-            v-if="!isShown"
-            name="mdi:chevron-down"
-            size="22"
-            class="-ml-1"
-          />
-        </UiTitle7>
+        <UiTitle8 :isShown @click="toggle">
+          {{ t('totalTitle') }}
+        </UiTitle8>
       </div>
     </template>
 

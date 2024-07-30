@@ -4,6 +4,8 @@ import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { getStyles } from '~/components/ui/getStyles'
+import type { CurrencyCode } from '~/components/currencies/types'
 
 const { $i18n } = useNuxtApp()
 const { t } = useI18n()
@@ -16,17 +18,17 @@ const currenciesStore = useCurrenciesStore()
 const { isModalOpen, openModal } = useAppNav()
 const { setWalletId } = useFilterStore()
 
-const activeCurrency = useStorage('finapp-wallets-active-currency', 'all')
+const currencyFiltered = useStorage('finapp-wallets-active-currency', 'all')
 const activeType = useStorage('finapp-wallets-active-type', 'all')
 
 const selectedWallets = computed(() => {
-  if (activeCurrency.value === 'all' && activeType.value === 'all')
+  if (currencyFiltered.value === 'all' && activeType.value === 'all')
     return walletsStore.sortedItems
 
   return Object.fromEntries(
     Object.entries(walletsStore.sortedItems).filter(
       ([_key, wallet]) => {
-        if (activeCurrency.value === 'all') {
+        if (currencyFiltered.value === 'all') {
           if (activeType.value === 'all')
             return true
 
@@ -58,7 +60,7 @@ const selectedWallets = computed(() => {
             return true
         }
 
-        if (activeCurrency.value === wallet.currency) {
+        if (currencyFiltered.value === wallet.currency) {
           if (activeType.value === 'all')
             return true
 
@@ -93,13 +95,13 @@ const selectedWallets = computed(() => {
 })
 
 const selectedWallets2 = computed(() => {
-  if (activeCurrency.value === 'all')
+  if (currencyFiltered.value === 'all')
     return walletsStore.sortedItems
 
   return Object.fromEntries(
     Object.entries(walletsStore.sortedItems).filter(
       ([_key, wallet]) => {
-        if (activeCurrency.value === wallet.currency)
+        if (currencyFiltered.value === wallet.currency)
           return true
 
         return false
@@ -110,15 +112,21 @@ const selectedWallets2 = computed(() => {
 
 const walletsCurrenciesTabs = reactive({
   currencyCode: computed(() => {
-    if (activeCurrency.value === 'all')
+    if (currencyFiltered.value === 'all')
       return currenciesStore.base
-    return activeCurrency.value
+    return currencyFiltered.value
   }),
 
   onSelect: (v) => {
-    activeCurrency.value = v
+    currencyFiltered.value = v
   },
 })
+
+const isShowCurrencyFilter = ref(false)
+function onSelectFilterCurrency(code: CurrencyCode) {
+  walletsCurrenciesTabs.onSelect(code)
+  isShowCurrencyFilter.value = false
+}
 </script>
 
 <template>
@@ -135,41 +143,69 @@ const walletsCurrenciesTabs = reactive({
       </template>
     </UiHeader>
 
-    <div class="grid items-start gap-5 px-2 md:grid-cols-2 md:gap-8">
-      <div class="md:order-2 @container/wallets">
-        <!-- Base currency -->
-        <UiToggle
-          v-if="walletsStore.currenciesUsed.length > 1"
-          :initStatus="true"
-          :openPadding="1"
-          class="w-full overflow-hidden md:order-3"
-          storageKey="finapp-wallets-base-currency"
-        >
-          <template #header="{ toggle, isShown }">
-            <UiTitle7 @click="toggle">
-              <div>{{ t('currenciesBase') }}</div>
-              <Icon
-                v-if="!isShown"
-                name="mdi:chevron-down"
-                size="22"
-                class="-ml-1"
-              />
-            </UiTitle7>
-          </template>
-          <CurrenciesChanger />
-        </UiToggle>
+    <div v-if="walletsStore.currenciesUsed.length > 1">
+      <CurrenciesModal
+        v-if="currenciesStore.isShownModal"
+        :activeCode="currenciesStore.base"
+        @onSelect="currenciesStore.setBase"
+        @onClose="currenciesStore.hideBaseCurrenciesModal"
+      />
 
+      <CurrenciesModal
+        v-if="isShowCurrencyFilter"
+        isShowAll
+        :activeCode="currencyFiltered"
+        @onSelect="onSelectFilterCurrency"
+        @onClose="isShowCurrencyFilter = false"
+      />
+    </div>
+
+    <div class="grid md:grid-cols-2 md:gap-12 px-2 md:px-6 max-w-3xl">
+      <div class="md:order-1">
+        <div
+          v-if="walletsStore.currenciesUsed.length > 1"
+          class="grid md:hidden grid-cols-2 gap-2"
+        >
+          <UiBox1 @click="isShowCurrencyFilter = true">
+            <UiTitle6>{{ t('filterByCurrency') }}</UiTitle6>
+            {{ currencyFiltered === 'all' ? t("all") : currencyFiltered }}
+          </UiBox1>
+
+          <UiBox1 @click="currenciesStore.showBaseCurrenciesModal()">
+            <UiTitle6>{{ t('currenciesBase') }}</UiTitle6>
+            {{ currenciesStore.base }}
+          </UiBox1>
+        </div>
+
+        <WalletsTotal
+          :activeType
+          :currencyCode="currenciesStore.base"
+          :walletsItems="selectedWallets2"
+          class="pb-2"
+          @click="v => activeType = v"
+        />
+
+        <UiBox1
+          class="hidden md:grid"
+          @click="currenciesStore.showBaseCurrenciesModal()"
+        >
+          <UiTitle6>{{ t('currenciesBase') }}</UiTitle6>
+          {{ currenciesStore.base }}
+        </UiBox1>
+      </div>
+
+      <div class="md:max-w-sm">
         <!-- Wallets Currencies -->
         <UiToggle
           v-if="walletsStore.currenciesUsed.length > 1"
           :initStatus="true"
           :openPadding="1"
-          class="md:order-1"
+          class="md:max-w-xl"
           storageKey="finapp-wallets-currencies"
         >
           <template #header="{ toggle, isShown }">
             <UiTitle7 @click="toggle">
-              <div>{{ t('list') }}</div>
+              <div>{{ t('filterByCurrency') }}</div>
               <Icon
                 v-if="!isShown"
                 name="mdi:chevron-down"
@@ -181,7 +217,7 @@ const walletsCurrenciesTabs = reactive({
 
           <UiTabs>
             <UiTabsItem
-              :isActive="activeCurrency === 'all'"
+              :isActive="currencyFiltered === 'all'"
               @click="walletsCurrenciesTabs.onSelect('all')"
             >
               {{ t("all") }}
@@ -190,7 +226,7 @@ const walletsCurrenciesTabs = reactive({
             <UiTabsItem
               v-for="currency in walletsStore.currenciesUsed"
               :key="currency"
-              :isActive="activeCurrency === currency"
+              :isActive="currencyFiltered === currency"
               @click="walletsCurrenciesTabs.onSelect(currency)"
             >
               {{ currency }}
@@ -198,21 +234,12 @@ const walletsCurrenciesTabs = reactive({
           </UiTabs>
         </UiToggle>
 
-        <WalletsTotal
-          :activeType
-          :currencyCode="currenciesStore.base"
-          :walletsItems="selectedWallets2"
-          class="md:order-2"
-          @click="v => activeType = v"
-        />
-      </div>
-
-      <div class="lg:max-w-[360px]">
         <WalletsItem
           v-for="(walletItem, walletId) in selectedWallets"
           :key="walletId"
           :wallet="walletItem"
           :walletId
+          :lineWidth="2"
           isShowBaseRate
           isShowIcons
           class="group"
@@ -230,11 +257,11 @@ const walletsCurrenciesTabs = reactive({
 <i18n lang="yaml">
 en:
   all: All
-  list: Wallets Currencies
+  filterByCurrency: Filter by
   currenciesBase: Base currency
 
 ru:
   all: Все
-  list: Валюты кошельков
+  filterByCurrency: Валюты кошельков
   currenciesBase: Основная валюта
 </i18n>

@@ -38,37 +38,57 @@ const category = computed(() => {
 
 <template>
   <div
-    class="relative flex gap-2 items-center text-secondary2 hocus:bg-item-5 p-1 px-1 rounded-full bg-item-4 overflow-hidden"
+    class="relative grid gap-2 group text-secondary2 hocus:bg-item-5 py-2.5 p-3 rounded-md bg-item-4"
     @click="emit('click', props.item.id)"
   >
     <div
-      :style="{ backgroundColor: category?.color }"
-      class="absolute inset-0 size-full opacity-10"
-    />
-
-    <div
-      class="size-5"
+      class="size-8"
     >
       <UiIconBase
         :name="category?.icon"
         :color="category?.color"
-        class="!text-xs"
         invert
       />
     </div>
 
-    <div class="text-xs">
-      {{ category.name }}
+    <div class="absolute right-2 top-2 opacity-40">
+      <UiIconBase
+        v-if="category?.parentId"
+        :name="categoriesStore.items[category?.parentId]?.icon"
+        class="text-2xs"
+        color="text-secondary2"
+      />
     </div>
 
-    <div class="opacity-90 pr-1">
+    <div class="grid gap-0 pt-2 pb-1">
+      <!-- Parent category name -->
+      <div
+        v-if="category?.parentId"
+        class="text-2xs"
+      >
+        {{ categoriesStore.items[category?.parentId].name }}
+      </div>
+
+      <!-- Category name -->
+      <div class="flex items-center gap-0.5 text-secondary text-sm leading-none">
+        {{ category.name }}
+        <!-- Has childs -->
+        <div
+          v-if="category?.parentId === 0"
+          class="text-md font-unica"
+        >
+          ...
+        </div>
+      </div>
+    </div>
+
+    <div class="grow pr-1 opacity-90">
       <Amount
+        align="left"
         :amount="props.item.value"
         :type="props.item.value >= 0 ? 1 : 0"
         :currencyCode="currenciesStore.base"
         :isShowBaseRate="false"
-        align="left"
-        variant="sm"
         colorize="income"
       />
     </div>

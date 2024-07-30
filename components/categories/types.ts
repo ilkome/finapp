@@ -1,20 +1,20 @@
 export type CategoryId = string | 'transfer'
 
-export interface CategoryItem {
+export type CategoryItem = {
+  childIds?: CategoryId[]
   color: string
   icon: string
   name: string
   order: number
-  showStat?: boolean
   parentId: CategoryId | 0
-  childIds?: CategoryId[]
   showInLastUsed: boolean
   showInQuickSelector: boolean
+  showStat?: boolean
 }
 
 export type Categories = Record<CategoryId, CategoryItem> & Record<'transfer', CategoryItem>
 
-export interface CategoryForm {
+export type CategoryForm = {
   color: string
   icon: string
   name: string

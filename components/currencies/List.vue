@@ -4,9 +4,11 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   active: string
+  isShowAll?: boolean
 }>()
 const emit = defineEmits(['onSelect'])
 
+const { t } = useI18n()
 const walletsStore = useWalletsStore()
 const { active } = toRefs(props)
 
@@ -36,13 +38,31 @@ const list = computed(() => {
     </div>
 
     <div
-      class="scrollerBlock mt-3 flex flex-col gap-1 overflow-y-auto pb-3"
+      class="scrollerBlock mt-3 flex flex-col gap-6 overflow-y-auto pb-3"
     >
       <template v-if="list.length === 0">
         <div class="py-3 text-center">
           {{ $t("notFound") }}
         </div>
       </template>
+
+      <div v-if="props.isShowAll">
+        <UiElement
+          :isActive="active === 'all'"
+          isShowLine
+          @click="emit('onSelect', 'all')"
+        >
+          <div class="flex items-center">
+            <div class="w-14 pl-1">
+              {{ t("all") }}
+            </div>
+
+            <div class="text-sm">
+              {{ t("showAll") }}
+            </div>
+          </div>
+        </UiElement>
+      </div>
 
       <div v-if="!searchInput">
         <UiElement
@@ -66,8 +86,6 @@ const list = computed(() => {
             </div>
           </div>
         </UiElement>
-
-        <div class="my-3" />
       </div>
 
       <div v-if="list.length > 0">
@@ -95,8 +113,12 @@ const list = computed(() => {
 
 <i18n lang="yaml">
 en:
+  all: All
+  showAll: Show all wallets
   notFound: Currency not found...
 
 ru:
+  all: Все
+  showAll: Показать все кошельки
   notFound: Валюта не найдена...
 </i18n>

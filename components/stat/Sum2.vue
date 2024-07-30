@@ -16,15 +16,7 @@ const currenciesStore = useCurrenciesStore()
 </script>
 
 <template>
-  <div
-    class="grow grid gap-1 px-3 py-2 border border-transparent"
-    :class="[
-      getStyles('item', ['bg', 'padding3', 'center', 'minh', 'minw1', 'rounded']), {
-        '-bg-item-5 rounded !border-accent-1/80': props.isActive,
-      },
-    ]"
-    @click="(e: Event) => emit('click', e)"
-  >
+  <UiBox2 @click="(e: Event) => emit('click', e)">
     <UiTitle6>{{ props.title }}</UiTitle6>
 
     <Amount
@@ -33,5 +25,5 @@ const currenciesStore = useCurrenciesStore()
       align="left"
       variant="-3xl"
     />
-  </div>
+  </UiBox2>
 </template>

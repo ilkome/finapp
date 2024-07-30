@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { useFilter } from '~/components/filter/useFilter'
-import { useStat } from '~/components/stat/useStat'
 
 const filter = useFilter()
-const stat = useStat(filter)
 
-provide('stat', stat)
 provide('filter', filter)
 </script>
 

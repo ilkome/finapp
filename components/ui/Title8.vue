@@ -1,0 +1,26 @@
+<script setup lang="ts">
+import { getStyles } from '~/components/ui/getStyles'
+
+const props = defineProps<{
+  isShown?: boolean
+}>()
+const emit = defineEmits<{
+  (e: 'click'): void
+}>()
+</script>
+
+<template>
+  <UiTitle
+    :class="getStyles('item', ['link', 'center', 'padding3', 'minh2', 'minw1', 'rounded'])"
+    class="grow flex items-center gap-2 pb-0 !text-3 !text-sm !font-semibold !font-nunito"
+    @click="emit('click')"
+  >
+    <div><slot /></div>
+    <Icon
+      v-if="!props.isShown"
+      name="mdi:chevron-down"
+      size="22"
+      class="-ml-1"
+    />
+  </UiTitle>
+</template>

@@ -29,6 +29,7 @@ function onClickWallet(walletId: WalletId) {
       :activeItemId="props.activeItemId"
       :walletId
       :wallet
+      :lineWidth="2"
       @click="onClickWallet(walletId)"
     />
   </div>

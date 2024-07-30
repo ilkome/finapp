@@ -1,22 +1,28 @@
 <script setup lang="ts">
 import type { CurrencyCode } from '~/components/currencies/types'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 
+const props = defineProps<{
+  activeCode?: CurrencyCode
+  isShowAll?: boolean
+}>()
+
+const emit = defineEmits<{
+  onClose: []
+  onSelect: [code: CurrencyCode]
+}>()
 const { t } = useI18n()
-const currenciesStore = useCurrenciesStore()
 
 function onSelect(code: CurrencyCode, close: () => void) {
-  currenciesStore.updateBase(code)
+  emit('onSelect', code)
   close()
 }
 </script>
 
 <template>
   <BaseBottomSheet2
-    v-if="currenciesStore.isShownModal"
     isShow
     drugClassesCustom="sm:max-w-md mx-auto bg-foreground-2"
-    @closed="currenciesStore.hideBaseCurrenciesModal()"
+    @closed="emit('onClose')"
   >
     <template #handler="{ close }">
       <BaseBottomSheetHandler />
@@ -26,9 +32,11 @@ function onSelect(code: CurrencyCode, close: () => void) {
     <template #default="{ close }">
       <div class="grid gap-4 py-4 px-3">
         <UiTitle3>{{ t('select') }}</UiTitle3>
+
         <CurrenciesList
-          :active="currenciesStore.base"
-          @onSelect="c => onSelect(c, close)"
+          :active="props.activeCode"
+          :isShowAll="props.isShowAll"
+          @onSelect="(c: CurrencyCode) => onSelect(c, close)"
         />
       </div>
     </template>
@@ -37,8 +45,8 @@ function onSelect(code: CurrencyCode, close: () => void) {
 
 <i18n lang="yaml">
   en:
-    select: Select base currency
+    select: Select currency
 
   ru:
-    select: Выбрать основную валюту
+    select: Выбрать валюту
 </i18n>

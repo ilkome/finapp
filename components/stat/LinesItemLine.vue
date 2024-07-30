@@ -3,7 +3,6 @@ import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory } from '~/components/stat/useNewStat'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   biggestCatNumber: number
@@ -21,22 +20,8 @@ const emit = defineEmits<{
 
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
-const trnsStore = useTrnsStore()
 
-const category = computed(() => {
-  // const isOneCategory = props.item.trnsIds.length <= 1
-  // const isParentCategory = categoriesStore.items[props.item.id]?.parentId === 0
-
-  // const isDifferentCategories = props.item.trnsIds.some(id =>
-  //   trnsStore.items[id]?.categoryId !== trnsStore.items[props.item.trnsIds[0]]?.categoryId)
-
-  // if (isParentCategory && (!isDifferentCategories || isOneCategory)) {
-  //   const parentId = trnsStore.items[props.item.trnsIds[0]].categoryId
-  //   return categoriesStore.items[parentId]
-  // }
-
-  return categoriesStore.items[props.item.id]
-})
+const category = computed(() => categoriesStore.items[props.item.id])
 
 function getBarStyle() {
   return {
@@ -58,13 +43,13 @@ function getBarStyle() {
       :isActive2="props.isActive"
       class="relative"
       isShowToggle2
-      :lineWidth="1"
+      :lineWidth="isShowLinesChart ? 0 : 1"
       @click="emit('click', props.item.id)"
     >
       <template #line>
         <div
           v-if="props.isShowLinesChart"
-          class="absolute left-0 bottom-2 w-full pl-[68px] pr-3 rounded-lg overflow-hidden"
+          class="absolute left-0 bottom-2 w-full pl-12 pr-3 rounded-lg overflow-hidden"
         >
           <div class="bg-item-3 rounded-lg overflow-hidden">
             <div

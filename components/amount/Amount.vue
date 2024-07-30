@@ -14,7 +14,7 @@ const props = withDefaults(
     isShowPlus?: boolean
     isShowSign?: boolean
     type?: MoneyTypeNumber
-    variant?: '2xs' | '3xl' | 'base'
+    variant?: '2xs' | '3xl' | 'base' | 'sm'
   }>(),
   {
     align: 'right',
@@ -37,6 +37,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
       '-text-expense !text-[#ED6660]': props.colorize === 'expense' && props.type === 0,
       '!text-income-1 !-text-[#22A2D3]': props.colorize === 'income' && props.type === 1,
       'text-2xs': props.variant === '2xs',
+      'text-xs': props.variant === 'sm',
       'text-3xl': props.variant === '3xl',
       'text-base': props.variant === 'base',
     }"
@@ -49,7 +50,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
     <AmountItem
       v-if="amount === 0"
       :align="props.align"
-      :amount="formatAmount(amount, currencyCode)"
+      :amount="0"
       :symbol="getCurrencySymbol(props.currencyCode)"
     />
 

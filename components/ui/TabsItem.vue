@@ -12,9 +12,9 @@ const emit = defineEmits(['click'])
   <div
     :class="[
       {
-        '!bg-item-3 !text-accent-1': isActive,
+        '!bg-item-3 !text-accent-1 @xl/wallets:!bg-transparent': isActive,
       },
-      getStyles('item', ['minh']),
+      getStyles('item', ['minh2']),
     ]"
     class="
       select-none
@@ -22,6 +22,9 @@ const emit = defineEmits(['click'])
       text-4 text-sm
       hocus:bg-item-5
       @4xl/tabs_text-lg @4xl/tabs_p-3
+      @xl/wallets:grow-0
+      @xl/wallets:rounded-md
+      @xl/wallets:px-3
     "
     @click="emit('click')"
   >

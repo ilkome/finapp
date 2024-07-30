@@ -9,6 +9,7 @@ const props = defineProps<{
   isShowBaseRate?: boolean
   isShowIcons?: boolean
   isSort?: boolean
+  lineWidth?: number
   wallet: WalletItemWithAmount
   walletId: WalletId
 }>()
@@ -42,7 +43,7 @@ function changeCreditView() {
     :isActive="activeItemId === props.walletId"
     :isShowIcons="props.isShowIcons"
     :insideClasses="props.insideClasses"
-    :lineWidth="2"
+    :lineWidth="props.lineWidth"
     class="relative"
     @click="emit('click', props.walletId)"
   >

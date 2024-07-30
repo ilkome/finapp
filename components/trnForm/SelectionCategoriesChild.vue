@@ -20,7 +20,7 @@ const trnFormStore = useTrnFormStore()
 
 <template>
   <div
-    v-if="parentCategoryId && categoriesStore.items[parentCategoryId]?.childIds?.length > 0"
+    v-if="parentCategoryId && categoriesStore.hasChildren(parentCategoryId)"
     :style="{ height: props.maxHeight }"
     class="swiper-slide"
   >
@@ -33,10 +33,10 @@ const trnFormStore = useTrnFormStore()
         <CategoriesSelector2
           :activeItemId="trnFormStore.values.categoryId"
           :hide="emit('close')"
-          :ids="categoriesStore.items[parentCategoryId]?.childIds"
+          :ids="categoriesStore.getChildsIds(parentCategoryId)"
           class="grid 2sm:grid-cols-2"
-          @onClickParent="id => emit('onSelectParentCategory', id)"
-          @onSelected="id => emit('onSelectCategory', id)"
+          @onClickParent="(id: CategoryId) => emit('onSelectParentCategory', id)"
+          @onSelected="(id: CategoryId) => emit('onSelectCategory', id)"
         />
       </div>
     </div>

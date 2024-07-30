@@ -2,14 +2,11 @@
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStat } from '~/components/stat/useStat'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const filter = useFilter()
-const stat = useStat(filter)
 
-provide('stat', stat)
 provide('filter', filter)
 
 const route = useRoute()
@@ -71,7 +68,7 @@ useHead({
     <div class="grid gap-12 px-2">
       <StatMiniItem
         type="sum"
-        :isQuickModal="!category.childIds || category.childIds.length === 0"
+        :isQuickModal="!categoriesStore.hasChildren(categoryId)"
         :trnsIds="getTrnsIds({
           categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId),
           trnsItems: trnsStore.items,
@@ -83,7 +80,7 @@ useHead({
 
       <div>
         <UiToggle
-          v-if="category.childIds && category.childIds.length > 0"
+          v-if="categoriesStore.hasChildren(categoryId)"
           :storageKey="`finapp-category-page-${categoryId}`"
           :initStatus="false"
         >
@@ -101,7 +98,7 @@ useHead({
 
           <CategoriesList
             :ids="categoryChildIds"
-            @click="id => $router.push(`/categories/${id}`)"
+            @click="(id: CategoryId) => $router.push(`/categories/${id}`)"
           />
         </UiToggle>
       </div>

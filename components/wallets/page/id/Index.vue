@@ -2,14 +2,10 @@
 import type { WalletId } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStat } from '~/components/stat/useStat'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const filter = useFilter()
-const stat = useStat(filter)
-
-provide('stat', stat)
 provide('filter', filter)
 
 const { $i18n } = useNuxtApp()

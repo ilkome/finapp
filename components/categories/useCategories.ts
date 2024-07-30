@@ -15,7 +15,6 @@ import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/compon
 
 import { useUserStore } from '~/components/user/useUser'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { CategoriesItem } from '#build/components'
 
 export const useCategoriesStore = defineStore('categories', () => {
   const transfer: CategoryItem = {
@@ -31,7 +30,6 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   const trnsStore = useTrnsStore()
-
   const items = ref<Categories>({ transfer })
 
   const hasCategories = computed(() => {
@@ -149,7 +147,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     categoriesIds.value.filter(
       id =>
         !transferCategoriesIds.value.includes(id)
-        && items.value[id].childIds?.length === 0,
+        && items.value[id]?.childIds?.length === 0,
     ),
   )
 
@@ -162,7 +160,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     getDataAndWatch(
       `users/${userStore.uid}/categories`,
       (items: Categories) => {
-        // add child categories to root categories
+        // Add child categories to root categories
         for (const categoryId in items) {
           const parentCategoryId = items[categoryId]?.parentId
           if (parentCategoryId !== 0 && parentCategoryId && items[parentCategoryId]) {
@@ -177,7 +175,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 
         // Add missing props
         for (const categoryId in items) {
-          const cat = items[categoryId]
+          const cat = items[categoryId]!
 
           if (cat.showInLastUsed === undefined) {
             items[categoryId] = {
@@ -232,32 +230,27 @@ export const useCategoriesStore = defineStore('categories', () => {
     if (!hasCategories.value)
       return false
 
-    return items.value[categoryId].childIds?.length > 0
+    return items.value[categoryId]?.childIds && items.value[categoryId]?.childIds?.length > 0
   }
 
   function getChildsIds(categoryId: CategoryId) {
     if (!hasCategories.value)
       return []
 
-    if (items.value[categoryId]?.childIds?.length && items.value[categoryId]?.childIds?.length > 0) {
-    // if (items.value[categoryId]?.parentId === 0) {
-      return Object.keys(items.value)
+    return hasChildren(categoryId)
+      ? Object.keys(items.value)
         .filter(id => items.value[id]?.parentId === categoryId)
-    }
-
-    return []
+      : []
   }
 
   function getChildsIdsOrParent(categoryId: CategoryId) {
     if (!hasCategories.value)
       return []
 
-    if (items.value[categoryId]?.childIds?.length && items.value[categoryId]?.childIds?.length > 0) {
-      return Object.keys(items.value)
+    return hasChildren(categoryId)
+      ? Object.keys(items.value)
         .filter(id => items.value[id]?.parentId === categoryId)
-    }
-
-    return [categoryId]
+      : [categoryId]
   }
 
   function saveCategoriesOrder(ids: CategoryId[]) {
