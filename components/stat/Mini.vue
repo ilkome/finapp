@@ -47,6 +47,11 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
 <template>
   <div class="grid gap-0">
+    <!-- <pre>{{ activeTab }}</pre>
+    <pre>{{ trnsIds.length }}</pre>
+    <pre>{{ props.categoriesIds }}</pre>
+    <pre>{{ props.walletsIds }}</pre> -->
+
     <!-- Sum -->
     <div class="overflow-hidden">
       <div class="flex gap-1 overflow-y-auto px-2 pt-2">
@@ -64,7 +69,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
         v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
         :storageKey="props.storageKey + activeTab"
         :trnsIds="trnsIds"
-        class="-max-w-2xl"
+        class="-max-w-2xl lg:gap-8 max-w-6xl xl:px-16 xl:py-6"
         type="sum"
       />
 
@@ -86,7 +91,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
       <div
         v-if="activeTab === 'sum'"
-        class="grid md:grid-cols-2 gap-24 max-w-4xl"
+        class="grid md:grid-cols-2 gap-4 lg:gap-8 max-w-6xl xl:px-16 xl:py-6"
       >
         <!-- Expense -->
         <StatMiniItem

@@ -6,11 +6,15 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 
 const props = defineProps<{
   biggestCatNumber: number
+  insideClass?: string
+  insideStyle?: string
   isActive?: boolean
-  isAltIcon?: boolean
   isGroupCategoriesByParent?: boolean
+  isHideDots?: boolean
+  isRoundIcon?: boolean
   isShowLinesChart?: boolean
   item: TotalCategory
+  lineWidth?: number
 }>()
 
 const emit = defineEmits<{
@@ -33,17 +37,18 @@ function getBarStyle() {
 
 <template>
   <div
-    :class="{
+    :class="[props.insideClass, {
       '-bg-item-4 ': props.isActive,
-    }"
-    class="group -bg-item-4 -rounded-md"
+    }]"
+    :style="props.insideStyle"
+    class="relative group -bg-item-4 -rounded-md"
   >
+    <slot name="before" />
     <UiElement
-      :isShowLine2="!props.isShowLinesChart"
       :isActive2="props.isActive"
       class="relative"
       isShowToggle2
-      :lineWidth="isShowLinesChart ? 0 : 1"
+      :lineWidth="props.lineWidth"
       @click="emit('click', props.item.id)"
     >
       <template #line>
@@ -62,7 +67,7 @@ function getBarStyle() {
 
       <template #leftIcon>
         <UiIconBase
-          v-if="isAltIcon"
+          v-if="isRoundIcon"
           :color="category?.color"
           :name="category?.icon"
           class="!text-xl !w-6 ml-1"
@@ -89,7 +94,7 @@ function getBarStyle() {
           {{ category?.name }}
           <!-- Has childs -->
           <div
-            v-if="category?.parentId === 0"
+            v-if="!isHideDots && category?.parentId === 0"
             class="leading-none text-sm text-4"
           >
             ...

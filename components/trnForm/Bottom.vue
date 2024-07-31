@@ -76,7 +76,7 @@ onMounted(init)
         <div class="swiper-wrapper">
           <!-- History -->
           <div
-            class="swiper-slide bg-foreground-2 sm:max-w-xs sm:rounded-l-xl"
+            class="swiper-slide bg-foreground-1 sm:max-w-xs sm:rounded-l-xl"
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide
@@ -86,7 +86,7 @@ onMounted(init)
           </div>
 
           <!-- Main -->
-          <div class="swiper-slide getHeight sm:px-3 bg-foreground-2 sm:max-w-sm _sm:rounded-xl sm:border-r sm:border-l border-item-5">
+          <div class="swiper-slide getHeight sm:px-3 bg-foreground-1 sm:max-w-sm _sm:rounded-xl sm:border-r sm:border-l border-item-5">
             <div class="scroll scrollerBlock">
               <TrnFormMain :maxHeight />
             </div>
@@ -94,7 +94,7 @@ onMounted(init)
 
           <!-- Quick selector -->
           <div
-            class="swiper-slide bg-foreground-2 sm:max-w-[380px] sm:rounded-r-xl"
+            class="swiper-slide bg-foreground-1 sm:max-w-[380px] sm:rounded-r-xl"
             :style="{ height: maxHeight }"
           >
             <div class="scroll scrollerBlock">

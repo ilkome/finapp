@@ -22,7 +22,7 @@ export function useDateRange({ key }: { key: string }) {
     range.value = { ...r }
   }
 
-  function getPeriodsWithEmptyTrnsIds2(params: {
+  function getPeriodsWithEmptyTrnsIds(params: {
     duration: number
     period: Period
     range: Range
@@ -99,29 +99,11 @@ export function useDateRange({ key }: { key: string }) {
     range.value.start = dayjs(range.value.start).add(1, interval.value.period).startOf(interval.value.period).valueOf()
   }
 
-  const intervalGroups = computed<PeriodDuration[]>(() => [{
-    duration: 1,
-    period: 'day',
-  }, {
-    duration: 1,
-    period: 'week',
-  }, {
-    duration: 1,
-    period: 'month',
-  }, {
-    duration: 6,
-    period: 'month',
-  }, {
-    duration: 1,
-    period: 'year',
-  }])
-
   return {
     addInterval,
-    getPeriodsWithEmptyTrnsIds2,
+    getPeriodsWithEmptyTrnsIds,
     grouped,
     interval,
-    intervalGroups,
 
     range,
     removeInterval,

@@ -85,7 +85,7 @@ function show(slide: number) {
       <!-- Selected -->
       <div
         v-if="trnFormStore.values.trnType !== 2"
-        class="grid gap-2"
+        class="grid grid-cols-2 gap-2"
       >
         <TrnFormSelectorWallet
           v-if="walletId"

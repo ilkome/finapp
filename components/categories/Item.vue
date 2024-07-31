@@ -29,18 +29,28 @@ const childCategoriesIds = computed(() =>
     @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>
-      <UiIconBase
+      <!-- <UiIconBase
         :color="category.color"
         :name="category.icon"
         @click="e => emit('filter', e)"
-      />
+      /> -->
+
+      <div
+        class="-size-8"
+      >
+        <UiIconBase
+          :name="category?.icon"
+          :color="category?.color"
+          invert
+        />
+      </div>
     </template>
 
-    <div class="text-3">
+    <div class="grid gap-0.5 text-3">
       <!-- Parent category name -->
       <div
         v-if="categoriesStore.items[categoryId].parentId"
-        class="text-2xs opacity-90"
+        class="text-2xs opacity-90 leading-none"
       >
         {{ categoriesStore.items[categoriesStore.items[categoryId].parentId].name }}
       </div>
@@ -52,7 +62,7 @@ const childCategoriesIds = computed(() =>
         <!-- Has childs -->
         <div
           v-if="childCategoriesIds.length > 0"
-          class="text-md font-unica"
+          class="text-md font-unica leading-none"
         >
           ...
         </div>

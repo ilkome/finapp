@@ -20,7 +20,7 @@ const emit = defineEmits<{
         :category
         :categoryId
         alt
-        insideClasses="bg-item-4"
+        insideClasses="bg-item-4 min-h-[46px] py-2"
         @click="emit('onOpen', 2)"
       />
     </div>
@@ -35,7 +35,7 @@ const emit = defineEmits<{
         :category
         :categoryId
         alt
-        class="bg-item-4"
+        insideClasses="bg-item-4 min-h-[46px] py-2"
       />
 
       <template #popper="{ hide }">

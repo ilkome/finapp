@@ -28,23 +28,13 @@
 html,
 body {
   overscroll-behavior-y: none;
-  background: #171717;
+  /* background: #171717; */
   user-select: none;
 
   @apply
     font-primary text-prima leading-none antialiased;
 
-  @layer bg-foreground-3;
-}
-
-@media (prefers-color-scheme: light) {
-  body {
-    background: #fafafa;
-  }
-}
-
-.light body {
-  background: #fafafa;
+  @apply bg-foreground-1;
 }
 
 .layoutBase {

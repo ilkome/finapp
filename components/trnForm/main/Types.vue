@@ -17,20 +17,20 @@ function isItActive(amountType: TrnType) {
 
 <template>
   <UiTabs class="!gap-0">
-    <UiTabsItem :isActive="isItActive(0)" @click="setAmountType(0)">
+    <UiTabsItem3 :isActive="isItActive(0)" @click="setAmountType(0)">
       {{ $t('money.expense') }}
-    </UiTabsItem>
+    </UiTabsItem3>
 
-    <UiTabsItem :isActive="isItActive(1)" @click="setAmountType(1)">
+    <UiTabsItem3 :isActive="isItActive(1)" @click="setAmountType(1)">
       {{ $t('money.income') }}
-    </UiTabsItem>
+    </UiTabsItem3>
 
-    <UiTabsItem
+    <UiTabsItem3
       v-if="walletsStore.sortedIds.length > 1"
       :isActive="isItActive(2)"
       @click="setAmountType(2)"
     >
       {{ $t('trnForm.transferTitle') }}
-    </UiTabsItem>
+    </UiTabsItem3>
   </UiTabs>
 </template>

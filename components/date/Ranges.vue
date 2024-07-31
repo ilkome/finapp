@@ -3,10 +3,8 @@ import dayjs from 'dayjs'
 import type { FullDuration, PeriodDuration, Range } from '~/components/date/types'
 
 const props = defineProps<{
-  grouped: PeriodDuration
   interval: PeriodDuration
   maxRange: Range
-  range: Range
 }>()
 
 const emit = defineEmits<{

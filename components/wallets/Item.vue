@@ -108,7 +108,7 @@ function changeCreditView() {
 
     <!-- Alternative -->
     <template v-if="props.alt">
-      <div class="grow">
+      <div class="grid gap-0.5 grow">
         <Amount
           v-if="!isSort"
           :amount="wallet.amount"
@@ -119,7 +119,7 @@ function changeCreditView() {
           variant="2xs"
         />
 
-        <div class="text-sm leading-none text-secondary">
+        <div class="text-sm leading-none text-3">
           {{ wallet.name }}
         </div>
       </div>

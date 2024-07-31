@@ -4,5 +4,8 @@ const logoSrc = computed(() => `/logo-${locale.value}.svg`)
 </script>
 
 <template>
-  <img :src="logoSrc" :alt="$t('appName')" :title="$t('appName')">
+  <div class="font-nunito font-bold text-2xl first-letter:text-accent-1">
+    {{ $t('appName') }}
+  </div>
+  <!-- <img :src="logoSrc" :alt="$t('appName')" :title="$t('appName')"> -->
 </template>

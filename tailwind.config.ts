@@ -28,6 +28,7 @@ export default <Partial<Config>>{
       colors: {
         '3': 'rgb(var(--text-3))',
         '4': 'rgb(var(--text-4))',
+        '5': 'rgb(var(--text-5))',
         'accent': {
           1: 'rgb(var(--accent-1))',
           2: 'rgb(var(--accent-2))',
@@ -40,6 +41,7 @@ export default <Partial<Config>>{
           2: 'var(--text-expense-2)',
         },
         'foreground': {
+          1: 'rgb(var(--foreground-1))',
           2: 'rgb(var(--foreground-2))',
           3: 'rgb(var(--foreground-3))',
           5: 'rgb(var(--foreground-5))',
@@ -57,6 +59,9 @@ export default <Partial<Config>>{
           5: 'var(--c-item-5)',
           6: 'rgba(var(--item-6))',
           7: 'rgba(var(--item-7))',
+          8: 'rgba(var(--item-8))',
+          9: 'rgba(var(--item-9))',
+          10: 'rgba(var(--item-10))',
         },
         'prima': 'rgb(var(--text-prima))',
         'secondary': 'rgb(var(--text-secondary))',

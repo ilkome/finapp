@@ -139,7 +139,7 @@ const counts2 = computed(() => ({
     </template>
 
     <div class="grid gap-2 @md/wallets:grid-cols-2">
-      <div class="rounded-lg bg-item-4">
+      <div class="rounded-lg bg-item-9">
         <UiElement
           v-for="(item) in Object.values(counts).filter(item => item.isShow)"
           :key="item.id"
@@ -163,7 +163,7 @@ const counts2 = computed(() => ({
         </UiElement>
       </div>
 
-      <div class="rounded-lg bg-item-4">
+      <div class="rounded-lg bg-item-9">
         <UiElement
           v-for="(item) in Object.values(counts2).filter(item => item.isShow)"
           :key="item.id"

@@ -33,6 +33,8 @@ function signInWithGoogle() {
   signInWithPopup(auth, provider)
     .then((data) => { console.log('auth', data) })
     .catch((e) => {
+      console.log(e.message)
+
       $toast(UiToastContent, {
         autoClose: 6000,
         data: {

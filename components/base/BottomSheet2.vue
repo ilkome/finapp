@@ -51,7 +51,7 @@ const nextCurrentY = computed(() => clientY.value - initialY.value)
  * Set direction
  */
 watch(nextCurrentY, (current, prev) => {
-  current > prev ? (direction.value = 'down') : (direction.value = 'up')
+  direction.value = current > prev ? 'down' : 'up'
 })
 
 /**
@@ -211,12 +211,21 @@ function onDragging(event: Event): void {
   const contentInsideHeight = contentInside.value?.clientHeight ?? 0
   const drugHeight = drug.value?.clientHeight ?? 0
 
-  if (isDragging.value && drug.value && (drugHeight < contentInsideHeight) && ((drugHeight + 10) < bodyHeight)) {
-    drug.value?.querySelector('.scrollerBlock')?.classList.add('pointer-events-none')
+  if (
+    isDragging.value
+    && drug.value
+    && drugHeight < contentInsideHeight
+    && drugHeight + 10 < bodyHeight
+  ) {
+    drug.value
+      ?.querySelector('.scrollerBlock')
+      ?.classList.add('pointer-events-none')
     drug.value.style.height = `${initialHeight.value - nextCurrentY.value}px`
   }
   else {
-    drug.value?.querySelector('.scrollerBlock')?.classList.remove('pointer-events-none')
+    drug.value
+      ?.querySelector('.scrollerBlock')
+      ?.classList.remove('pointer-events-none')
   }
 
   if (isHasScroll && !isHandler.value) {
@@ -255,19 +264,23 @@ async function onDragEnd() {
   if (direction.value === 'up' && nextCurrentY.value < 0) {
     isHeightTrna.value = true
     await nextTick()
-    if (isDragging.value && drug.value && (drugHeight < contentInsideHeight) && ((drugHeight + 10) < bodyHeight))
+    if (
+      isDragging.value
+      && drug.value
+      && drugHeight < contentInsideHeight
+      && drugHeight + 10 < bodyHeight
+    ) {
       drug.value.style.height = `${bodyHeight - 10}px`
-
-    else
+    }
+    else {
       isHeightTrna.value = false
+    }
   }
 
   const isNeedClose
     = nextCurrentY.value >= settings.pixelsNeedToDrugForClose
     && direction.value === 'down'
-  isNeedClose
-    ? close()
-    : open()
+  isNeedClose ? close() : open()
 }
 
 /**
@@ -279,7 +292,9 @@ function clear() {
 }
 
 function setInitialY() {
-  initialY.value = -((drug.value?.clientHeight ?? 0) + (handlerRef.value?.clientHeight ?? 0))
+  initialY.value = -(
+    (drug.value?.clientHeight ?? 0) + (handlerRef.value?.clientHeight ?? 0)
+  )
 }
 
 /**
@@ -422,7 +437,7 @@ const wrapClasses = computed(() => ({
       ref="drug"
       :class="drugClasses"
       :style="drugStyles"
-      class="drug pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full h-50vh -translate-x-1/2 translate-y-0 overflow-hidden"
+      class="drug h-50vh pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full -translate-x-1/2 translate-y-0 overflow-hidden"
       @click.stop=""
     >
       <div ref="handlerRef">
@@ -430,35 +445,83 @@ const wrapClasses = computed(() => ({
       </div>
 
       <slot :close="close">
-        <div class="grid h-full select-none overflow-hidden overflow-y-auto scrollerBlock">
+        <div
+          class="scrollerBlock grid h-full select-none overflow-hidden overflow-y-auto"
+        >
           <div ref="contentInside" class="flex flex-col gap-3">
-            <div>
-              initialHeight: {{ initialHeight }}
-            </div>
-            <div>
-              Status: {{ debug.status }}
-            </div>
-            <div>
-              Direction: {{ debug.direction }}
-            </div>
-            <div>
-              DiffHeight: {{ diffHeight }}
-            </div>
+            <div>initialHeight: {{ initialHeight }}</div>
+            <div>Status: {{ debug.status }}</div>
+            <div>Direction: {{ debug.direction }}</div>
+            <div>DiffHeight: {{ diffHeight }}</div>
             <div>
               DiffHeightWithDebounce: {{ debug.diffHeightWithDebounce }}
             </div>
-            <div>
-              NextCurrentY: {{ debug.nextCurrentY }}
-            </div>
-            <div>
-              drugStyles: {{ drugStyles }}
-            </div>
-            <div>
-              overlayStyles: {{ overlayStyles }}
-            </div>
+            <div>NextCurrentY: {{ debug.nextCurrentY }}</div>
+            <div>drugStyles: {{ drugStyles }}</div>
+            <div>overlayStyles: {{ overlayStyles }}</div>
 
-            <div class="border-t border-b text-sm">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis alias similique delectus sequi iusto aspernatur harum natus quaerat tempora aut commodi maxime, praesentium itaque soluta reprehenderit velit odio qui perspiciatis? Dolorum impedit distinctio illum nisi optio ipsum accusantium delectus corporis, expedita officia consequatur quidem aut architecto earum suscipit, aspernatur omnis accusamus ut exercitationem, harum facere repellat eligendi asperiores et? Nihil provident doloremque vitae illo dignissimos qui error rerum quo praesentium minus quaerat cum, esse, nostrum, blanditiis quas! Nihil quae possimus ipsam aliquam autem amet corporis, totam officia enim libero vel rem, laborum sint aspernatur numquam veniam tempora fugiat doloremque? Quae adipisci doloremque porro libero nisi voluptatum vitae, perspiciatis magnam nulla, deserunt nam molestiae, eligendi iusto cum aliquam. Itaque id earum, natus culpa impedit ex possimus nisi ipsam inventore aut voluptas recusandae, nobis pariatur similique et? Non voluptates consequuntur pariatur odio est ex inventore quisquam sunt libero sequi sint aliquam adipisci velit officiis, assumenda praesentium ea quia, itaque eos autem nostrum! Quaerat sit, accusantium modi sint impedit cum consequatur excepturi aliquam expedita omnis, quos saepe eos, autem itaque explicabo ipsam illum. Voluptatibus facere laboriosam molestias aliquam delectus ipsam earum possimus temporibus, tempora ratione molestiae. Aperiam officia voluptates perspiciatis ea rerum mollitia eius autem, nostrum esse ipsum beatae ipsam vero aspernatur quaerat labore iusto quisquam cumque quos possimus tempore quidem accusantium? Totam debitis dignissimos asperiores, nemo magnam perferendis voluptate fugit ipsa modi! Unde consequuntur a adipisci dolorum. Id numquam sint, enim esse eos fugit. Libero eos obcaecati cum est quae optio architecto. Officiis facere iste illo reprehenderit officia et voluptatem non soluta molestias aliquam doloremque, dolores aspernatur, eligendi veritatis consequuntur cum possimus. Mollitia, quidem perferendis non sint assumenda quae deserunt ratione tempore blanditiis neque ex asperiores, tempora veritatis pariatur dolorum laborum molestias amet necessitatibus nemo saepe voluptatum dolor ipsum cum qui. Eaque laudantium enim ipsam ad eum dolores obcaecati magni dolor architecto sapiente asperiores labore molestiae consequuntur exercitationem dolorum ratione voluptatem veniam, nesciunt explicabo qui at sunt. Nemo quidem a nihil dignissimos voluptates eos culpa, laborum ratione sapiente cupiditate perferendis magni voluptatum hic qui quae non impedit nam numquam eaque, rem suscipit omnis tenetur. Numquam earum omnis suscipit officiis magnam. Eligendi recusandae quam impedit reiciendis voluptatem vitae, facilis omnis assumenda commodi nihil exercitationem, unde nostrum numquam inventore iste accusamus laborum quo illum repudiandae dolorem nesciunt, nemo eum hic. Repellendus, eligendi magnam quidem at ipsam, dolore esse corporis nulla excepturi officia labore exercitationem recusandae id eos modi dicta iste nobis sequi reprehenderit quasi ad sint eum ut. Error dolore cupiditate blanditiis maiores voluptatum consequuntur consectetur qui iste veniam amet quae sunt cum rem quos, dignissimos deserunt, voluptates aut excepturi labore modi animi vero suscipit nesciunt! Eaque explicabo magnam rerum accusamus nesciunt numquam a laboriosam molestiae perspiciatis nemo. Consequuntur quia aperiam a labore aliquam eligendi, quo nobis placeat corrupti ratione, inventore fugit tempore rerum facilis nam dignissimos laudantium vitae minima iusto suscipit odit ullam veniam. Sequi voluptatibus quaerat assumenda reprehenderit maiores ex inventore placeat accusantium doloremque aliquam. Rerum soluta ullam aperiam assumenda consequatur voluptatem.
+            <div class="border-b border-t text-sm">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis
+              alias similique delectus sequi iusto aspernatur harum natus
+              quaerat tempora aut commodi maxime, praesentium itaque soluta
+              reprehenderit velit odio qui perspiciatis? Dolorum impedit
+              distinctio illum nisi optio ipsum accusantium delectus corporis,
+              expedita officia consequatur quidem aut architecto earum suscipit,
+              aspernatur omnis accusamus ut exercitationem, harum facere
+              repellat eligendi asperiores et? Nihil provident doloremque vitae
+              illo dignissimos qui error rerum quo praesentium minus quaerat
+              cum, esse, nostrum, blanditiis quas! Nihil quae possimus ipsam
+              aliquam autem amet corporis, totam officia enim libero vel rem,
+              laborum sint aspernatur numquam veniam tempora fugiat doloremque?
+              Quae adipisci doloremque porro libero nisi voluptatum vitae,
+              perspiciatis magnam nulla, deserunt nam molestiae, eligendi iusto
+              cum aliquam. Itaque id earum, natus culpa impedit ex possimus nisi
+              ipsam inventore aut voluptas recusandae, nobis pariatur similique
+              et? Non voluptates consequuntur pariatur odio est ex inventore
+              quisquam sunt libero sequi sint aliquam adipisci velit officiis,
+              assumenda praesentium ea quia, itaque eos autem nostrum! Quaerat
+              sit, accusantium modi sint impedit cum consequatur excepturi
+              aliquam expedita omnis, quos saepe eos, autem itaque explicabo
+              ipsam illum. Voluptatibus facere laboriosam molestias aliquam
+              delectus ipsam earum possimus temporibus, tempora ratione
+              molestiae. Aperiam officia voluptates perspiciatis ea rerum
+              mollitia eius autem, nostrum esse ipsum beatae ipsam vero
+              aspernatur quaerat labore iusto quisquam cumque quos possimus
+              tempore quidem accusantium? Totam debitis dignissimos asperiores,
+              nemo magnam perferendis voluptate fugit ipsa modi! Unde
+              consequuntur a adipisci dolorum. Id numquam sint, enim esse eos
+              fugit. Libero eos obcaecati cum est quae optio architecto.
+              Officiis facere iste illo reprehenderit officia et voluptatem non
+              soluta molestias aliquam doloremque, dolores aspernatur, eligendi
+              veritatis consequuntur cum possimus. Mollitia, quidem perferendis
+              non sint assumenda quae deserunt ratione tempore blanditiis neque
+              ex asperiores, tempora veritatis pariatur dolorum laborum
+              molestias amet necessitatibus nemo saepe voluptatum dolor ipsum
+              cum qui. Eaque laudantium enim ipsam ad eum dolores obcaecati
+              magni dolor architecto sapiente asperiores labore molestiae
+              consequuntur exercitationem dolorum ratione voluptatem veniam,
+              nesciunt explicabo qui at sunt. Nemo quidem a nihil dignissimos
+              voluptates eos culpa, laborum ratione sapiente cupiditate
+              perferendis magni voluptatum hic qui quae non impedit nam numquam
+              eaque, rem suscipit omnis tenetur. Numquam earum omnis suscipit
+              officiis magnam. Eligendi recusandae quam impedit reiciendis
+              voluptatem vitae, facilis omnis assumenda commodi nihil
+              exercitationem, unde nostrum numquam inventore iste accusamus
+              laborum quo illum repudiandae dolorem nesciunt, nemo eum hic.
+              Repellendus, eligendi magnam quidem at ipsam, dolore esse corporis
+              nulla excepturi officia labore exercitationem recusandae id eos
+              modi dicta iste nobis sequi reprehenderit quasi ad sint eum ut.
+              Error dolore cupiditate blanditiis maiores voluptatum consequuntur
+              consectetur qui iste veniam amet quae sunt cum rem quos,
+              dignissimos deserunt, voluptates aut excepturi labore modi animi
+              vero suscipit nesciunt! Eaque explicabo magnam rerum accusamus
+              nesciunt numquam a laboriosam molestiae perspiciatis nemo.
+              Consequuntur quia aperiam a labore aliquam eligendi, quo nobis
+              placeat corrupti ratione, inventore fugit tempore rerum facilis
+              nam dignissimos laudantium vitae minima iusto suscipit odit ullam
+              veniam. Sequi voluptatibus quaerat assumenda reprehenderit maiores
+              ex inventore placeat accusantium doloremque aliquam. Rerum soluta
+              ullam aperiam assumenda consequatur voluptatem.
             </div>
           </div>
         </div>

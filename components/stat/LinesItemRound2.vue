@@ -36,13 +36,13 @@ const category = computed(() => {
 
 <template>
   <div
-    class="relative flex gap-2 items-center text-secondary2 hocus:bg-item-5 p-1 px-1 rounded-md bg-item-4 hover:bg-item-5 overflow-hidden"
+    class="relative flex gap-2 items-center text-2 hocus:bg-item-5 p-1 px-1 rounded-full bg-item-4 hover:bg-item-5 overflow-hidden"
     @click="emit('click', props.item.id)"
   >
-    <!-- <div
+    <div
       :style="{ backgroundColor: category?.color }"
       class="absolute inset-0 size-full opacity-10"
-    /> -->
+    />
 
     <div
       class="size-5"

@@ -13,7 +13,7 @@ import { useNewStat } from '~/components/stat/useNewStat'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useDateRange } from '~/components/date/useDateRange'
 import { markArea } from '~/components/stat/chart/utils'
-import type { Range } from '~/components/date/types'
+import type { PeriodDuration, Range } from '~/components/date/types'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 const props = defineProps<{
@@ -26,7 +26,7 @@ const props = defineProps<{
 
 const maxRange = computed(() => useTrnsStore().getRange(props.trnsIds))
 
-const { addInterval, getPeriodsWithEmptyTrnsIds2, grouped, interval, intervalGroups, range, removeInterval, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange({
+const { addInterval, getPeriodsWithEmptyTrnsIds, grouped, interval, range, removeInterval, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange({
   key: `${props.type}${props.storageKey}`,
 })
 
@@ -53,20 +53,39 @@ const filter = inject('filter') as FilterProvider
 const { t } = useI18n()
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
-const { getCats, getSeries2 } = useNewStat()
+const { getCats, getSeries } = useNewStat()
 const categoriesStore = useCategoriesStore()
 
-const groupedPeriods2 = computed(() =>
-  getPeriodsWithEmptyTrnsIds2({
-    duration: grouped.value.duration || 1,
-    period: grouped.value.period,
-    range: range.value,
-  }),
-)
+const newBaseStorageKey = computed(() => `${grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
 
-const categories = computed(() => groupedPeriods2.value.map(r => +r.start) ?? [])
+const groupedPeriods = computed(() => getPeriodsWithEmptyTrnsIds({
+  duration: grouped.value.duration || 1,
+  period: grouped.value.period,
+  range: range.value,
+}))
 
-const selectedPeriod = ref<number>(-1)
+const isShowLinesChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowLinesChart`, false)
+const chartType = useStorage<ChartType>(`${newBaseStorageKey.value}-chartType`, 'bar')
+
+const xAxisLabels = computed(() => groupedPeriods.value.map(r => +r.start) ?? [])
+
+const groupedTrnsIds = computed(() => getPeriodsWithTrns(filteredTrnsIds.value, groupedPeriods.value))
+const groupedTrnsIds2 = computed(() => getPeriodsWithTrns(props.trnsIds, groupedPeriods.value))
+const groupedTrnsTotals2 = computed(() => groupedTrnsIds.value.map(g => getTotalOfTrnsIds(g)))
+
+function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
+  const list = [...ranges.map(() => [])]
+
+  trnsIds.forEach((trnId) => {
+    const trnDate = trnsStore.items[trnId]?.date
+    const idx = ranges.findIndex(r => trnDate! >= r.start && trnDate! <= r.end)
+    list[idx]?.push(trnId)
+  })
+
+  return list
+}
+
+const selectedPeriod = useStorage<number>(`${newBaseStorageKey.value}-selectedPeriod`, -1)
 
 watch(range, () => {
   selectedPeriod.value = -1
@@ -83,30 +102,8 @@ function onClickChart(idx: number) {
   selectedPeriod.value = newPeriod
 }
 
-const newBaseStorageKey = computed(() => `${grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
-const baseStorageKey = computed(() => `${grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
-const isShowLinesChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowLinesChart`, false)
-
-const chartType = useStorage<ChartType>(`${newBaseStorageKey.value}-chartType`, 'bar')
-
-const groupedTrnsIds = computed(() => getPeriodsWithTrns2(filteredTrnsIds.value, groupedPeriods2.value))
-const groupedTrnsIds2 = computed(() => getPeriodsWithTrns2(props.trnsIds, groupedPeriods2.value))
-const groupedTrnsTotals2 = computed(() => groupedTrnsIds.value.map(g => getTotalOfTrnsIds(g)))
-
-function getPeriodsWithTrns2(trnsIds: TrnId[], ranges: Range[]) {
-  const list = [...ranges.map(() => [])]
-
-  trnsIds.forEach((trnId) => {
-    const trnDate = trnsStore.items[trnId]?.date
-    const idx = ranges.findIndex(r => trnDate! >= r.start && trnDate! <= r.end)
-    list[idx]?.push(trnId)
-  })
-
-  return list
-}
-
 const series = computed(() => {
-  const series = getSeries2(groupedTrnsTotals2.value, props.type, groupedPeriods2.value)
+  const series = getSeries(groupedTrnsTotals2.value, props.type, groupedPeriods.value)
 
   if (selectedPeriod.value >= 0) {
     if (chartType.value !== 'bar') {
@@ -115,7 +112,7 @@ const series = computed(() => {
       if (markAreaSeriesIdx === -1) {
         series.push({
           data: [],
-          markArea: markArea(groupedPeriods2.value?.[selectedPeriod.value]?.start),
+          markArea: markArea(groupedPeriods.value?.[selectedPeriod.value]?.start),
           markedArea: 'markedArea',
           type: 'bar',
         })
@@ -123,14 +120,14 @@ const series = computed(() => {
       else {
         series[markAreaSeriesIdx] = {
           data: [],
-          markArea: markArea(groupedPeriods2.value?.[selectedPeriod.value]?.start),
+          markArea: markArea(groupedPeriods.value?.[selectedPeriod.value]?.start),
           markedArea: 'markedArea',
           type: 'bar',
         }
       }
     }
     else {
-      series[0].markArea = markArea(groupedPeriods2.value?.[selectedPeriod.value]?.start)
+      series[0].markArea = markArea(groupedPeriods.value?.[selectedPeriod.value]?.start)
     }
   }
 
@@ -176,8 +173,8 @@ const totals = computed(() =>
 /**
  * Cats
  */
-const isGroupCategoriesByParent = useStorage<boolean>(`${newBaseStorageKey.value}-isGroupCategoriesByParent`, true)
-const isGroupCategoriesByParentRounded = useStorage<boolean>(`${newBaseStorageKey.value}-isGroupCategoriesByParentRounded`, true)
+const isGroupCategoriesByParent = useStorage<boolean>(`${newBaseStorageKey.value}-isGroupCategoriesByParent`, false)
+const isGroupCategoriesByParentRounded = useStorage<boolean>(`${newBaseStorageKey.value}-isGroupCategoriesByParentRounded`, false)
 
 const cats = computed(() => getCats(trnsIdsForTotals.value ?? [], isGroupCategoriesByParent.value))
 const catsRounded = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParentRounded.value))
@@ -224,9 +221,9 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
 <template>
   <div>
     <!-- Stat -->
-    <div class="@container/stat px-2 pt-2 max-w-4xl">
+    <div class="@container/stat px-2 pt-2 -max-w-4xl">
       <div class="">
-        <div class="">
+        <div class="@2xl/stat:max-w-md xl:p-2 xl:bg-item-4 xl:rounded-xl">
           <div class="flex justify-between">
             <!-- Chart types -->
             <div class="flex gap-1">
@@ -255,8 +252,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
           </div>
 
           <StatChartView2
-            :key="baseStorageKey"
-            :categories
+            :xAxisLabels
             :chartType
             :period="grouped.period"
             :series
@@ -264,13 +260,13 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
             @click="onClickChart"
           />
 
-          <div class="flex items-end justify-between pt-2 pb-2 gap-2">
+          <div class="flex items-end justify-between pt-2 gap-2">
             <UiTitle7
               @click="isShowDateSelector = !isShowDateSelector"
             >
               <DateViewRange
                 v-if="selectedPeriod !== -1"
-                :range="groupedPeriods2[selectedPeriod]"
+                :range="groupedPeriods[selectedPeriod]"
                 title="selectedPeriod"
               />
               <div v-else>
@@ -296,43 +292,44 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
           </div>
 
           <!-- Stat sum -->
-          <div>
-            <div
-              v-if="props.type === 'sum'"
-              class="flex gap-1 flex-wrap justify-stretch"
-            >
-              <StatSum
-                :amount="-totals.expense"
-                :isActive="selectedType === 'expense'"
-                type="expense"
-                :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
-                class="grow md:grow-0 !-bg-red-600/10"
-                @click="onSelectType('expense')"
-              />
-              <StatSum
-                :amount="totals.income"
-                :isActive="selectedType === 'income'"
-                :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
-                type="income"
-                class="grow md:grow-0 !-bg-green-600/10"
-                @click="onSelectType('income')"
-              />
-              <StatSum
-                :amount="totals.sum"
-                :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
-                type="sum"
-                class="grow md:grow-0"
-                @click="isShowTrns = true"
-              />
-            </div>
+        </div>
 
+        <div class="pt-3">
+          <div
+            v-if="props.type === 'sum'"
+            class="flex gap-1 flex-wrap justify-stretch"
+          >
             <StatSum
-              v-else
-              :class="[...getStyles('item', ['-link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
-              :amount="totals[props.type]"
-              :type="props.type"
+              :amount="-totals.expense"
+              :isActive="selectedType === 'expense'"
+              :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+              class="grow md:grow-0 !-bg-red-600/10"
+              type="expense"
+              @click="onSelectType('expense')"
+            />
+            <StatSum
+              :amount="totals.income"
+              :isActive="selectedType === 'income'"
+              :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+              class="grow md:grow-0 !-bg-green-600/10"
+              type="income"
+              @click="onSelectType('income')"
+            />
+            <StatSum
+              :amount="totals.sum"
+              :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+              class="grow md:grow-0"
+              type="sum"
+              @click="isShowTrns = true"
             />
           </div>
+
+          <StatSum
+            v-else
+            :amount="totals[props.type]"
+            :class="[...getStyles('item', ['-link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+            :type="props.type"
+          />
         </div>
 
         <!-- Content -->
@@ -342,11 +339,12 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
             v-if="(isQuickModal ? (cats.length > 1 || (props.quickModalCategoryId && categoriesStore.hasChildren(props.quickModalCategoryId))) : selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0)"
             :storageKey="`${newBaseStorageKey}-cats-root`"
             :initStatus="true"
+            openPadding="!pb-6"
           >
             <template #header="{ toggle, isShown }">
-              <div class="flex items-center justify-between">
+              <div class="flex items-center justify-between md:max-w-sm">
                 <UiTitle8 :isShown @click="toggle">
-                  {{ $t('categories.title') }} {{ catsView === 'list' ? cats.length : catsRounded.length }}
+                  {{ $t('categories.title') }} {{ !isShown ? catsView === 'list' ? cats.length : catsRounded.length : '' }}
                 </UiTitle8>
                 <StatCategoriesButtons
                   v-if="isShown"
@@ -365,10 +363,13 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
             </template>
 
             <!-- List -->
-
             <div
               v-if="cats.length > 0 && catsView === 'list'"
-              class="md:max-w-sm"
+              class="pt-2"
+              :class="{
+                'grid gap-2 px-0': isGroupCategoriesByParent && isShowChilds,
+                'md:max-w-sm': !isGroupCategoriesByParent || !isShowChilds,
+              }"
             >
               <StatLinesItemLine
                 v-for="item in cats"
@@ -377,17 +378,30 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
                 :isShowLinesChart
                 :isGroupCategoriesByParent
                 :biggestCatNumber
-                isAltIcon
+                :isHideDots="isShowChilds"
+                :lineWidth="(isGroupCategoriesByParent && isShowChilds) || isShowLinesChart ? 0 : 1"
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-                :class="{ 'pb-3': isGroupCategoriesByParent && isShowChilds }"
+                :class="{ 'bg-item-9 rounded-lg -border border-item-5 overflow-hidden': isGroupCategoriesByParent && isShowChilds }"
+                isRoundIcon
                 @click="onClickCategory"
                 @onClickIcon="onClickCategoryRounded"
               >
-                <div v-if="isGroupCategoriesByParent && isShowChilds" class="pl-10 -grid flex flex-wrap gap-1">
+                <template #before>
+                  <!-- <div
+                    :style="{ backgroundColor: categoriesStore.items[item.id]?.color }"
+                    class="absolute inset-0 size-full opacity-10"
+                  /> -->
+                </template>
+                <div
+                  v-if="isGroupCategoriesByParent && isShowChilds"
+                  class="pl-2 pt-1 -grid flex flex-wrap gap-1 -border-b border-item-5 pb-3"
+                >
+                  <!-- class="pl-2 pt-1 -grid flex flex-wrap gap-1 border-b border-item-5 pb-3" -->
                   <StatLinesItemRound2
                     v-for="itemInside in getCats(item.trnsIds)"
                     :key="itemInside.id"
                     :item="itemInside"
+                    class="bg-item-3"
                     @click="onClickCategory"
                   />
                 </div>
@@ -397,7 +411,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
             <!-- class="flex flex-wrap gap-1 md:gap-2 pl-1" -->
             <div
               v-if="cats.length > 0 && catsView === 'round'"
-              class="flex flex-wrap gap-1"
+              class="flex flex-wrap gap-1 @3xl/stat:gap-2 pt-2 pl-2"
             >
               <StatLinesItemRound
                 v-for="item in catsRounded"
@@ -419,7 +433,6 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
               isShowFilterByDesc
               isShowFilterByType
               isShowGroupSum
-              isShowGroupSumByDate
               isShowHeader
             />
           </template>
@@ -433,24 +446,23 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between">
                 <UiTitle8 :isShown @click="toggle">
-                  {{ $t('trns.title') }} {{ selectedTrnsIdsForTrnsList.length }}
+                  {{ $t('trns.title') }} {{ !isShown ? selectedTrnsIdsForTrnsList.length : '' }}
                 </UiTitle8>
               </div>
             </template>
 
             <TrnsList
               :trnsIds="selectedTrnsIdsForTrnsList"
-              class="py-2 max-w-sm"
+              class="py-2 md:max-w-sm"
               isShowFilterByDesc
               isShowFilterByType
               isShowGroupSum
-              isShowGroupSumByDate
             />
           </UiToggle>
         </div>
 
         <!-- Empty -->
-        <div
+        <!-- <div
           v-if="selectedTrnsIdsForTrnsList?.length === 0"
           class="flex-col gap-2 flex-center h-full py-3 text-center text-secondary"
         >
@@ -458,7 +470,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
           <div class="text-md">
             {{ $t("trns.noTrns") }}
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -467,7 +479,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
       <BaseBottomSheet2
         v-if="isShowDateSelector"
         isShow
-        drugClassesCustom="bg-foreground-2 max-w-xl md:mb-12 rounded-xl"
+        drugClassesCustom="bg-foreground-2 max-w-xl grid md:mb-12 max-h-[98dvh]"
         @closed="isShowDateSelector = false"
       >
         <template #handler="{ close }">
@@ -476,7 +488,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
         </template>
 
         <template #default="{ close }">
-          <div class="grid gap-4 p-3 overflow-hidden h-full overflow-y-auto">
+          <div class="scrollerBlock grid gap-4 p-3 overflow-hidden max-h-[98dvh] overflow-y-auto">
             <UiTitle7>{{ t('select') }}</UiTitle7>
 
             <div class="grid items-start gap-6">
@@ -485,20 +497,16 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
                   <DateLinkItem @click="removeInterval">
                     -
                   </DateLinkItem>
-                  <DateLinkItem
-                    @click="setRangeByPeriod({ grouped, interval })"
-                  >
-                    {{ `Last ${interval.duration} ${interval.period}` }}
-                  </DateLinkItem>
+
+                  <DateLinkItemNoBg>{{ `Last ${interval.duration} ${interval.period}` }}</DateLinkItemNoBg>
+
                   <DateLinkItem @click="addInterval">
                     +
                   </DateLinkItem>
                 </div>
 
                 <DateRanges
-                  :range
                   :interval
-                  :grouped
                   :maxRange
                   @setRangeByPeriod="setRangeByPeriod"
                 />
@@ -516,28 +524,17 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
                     -
                   </DateLinkItem>
 
-                  <DateLinkItem
-                    @click="() => grouped = {
-                      duration: grouped.duration,
-                      period: grouped.period,
-                    }"
-                  >
-                    {{ `Grouped by ${grouped.duration} ${grouped.period}` }}
-                  </DateLinkItem>
+                  <DateLinkItemNoBg>{{ `Grouped by ${grouped.duration} ${grouped.period}` }}</DateLinkItemNoBg>
 
                   <DateLinkItem @click="++grouped.duration">
                     +
                   </DateLinkItem>
                 </div>
 
-                <DateLinkItem
-                  v-for="rangeItem in intervalGroups"
-                  :key="rangeItem.period"
-                  :isActive="rangeItem.period === grouped.period && rangeItem.duration === grouped.duration"
-                  @click="() => grouped = rangeItem"
-                >
-                  {{ rangeItem.duration }}{{ rangeItem.period }}
-                </DateLinkItem>
+                <DateIntervals
+                  :grouped
+                  @onSelect="(pd: PeriodDuration) => grouped = pd"
+                />
               </div>
             </div>
 
@@ -552,7 +549,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
       <BaseBottomSheet2
         v-if="quickModalCategoryId"
         isShow
-        drugClassesCustom="bg-foreground-2 lg:w-[calc(100%-120px)] max-w-4xl"
+        drugClassesCustom="bg-foreground-2 lg:w-[calc(100%-120px)] max-w-xl"
         @closed="quickModalCategoryId = false"
       >
         <template #handler="{ close }">
@@ -607,7 +604,6 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
               isShowFilterByDesc
               isShowFilterByType
               isShowGroupSum
-              isShowGroupSumByDate
               isShowHeader
             />
           </div>

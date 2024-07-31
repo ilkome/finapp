@@ -10,6 +10,28 @@ import type { PeriodNameWithAll } from '~/components/filter/useFilter'
 import type { Range } from '~/components/date/types'
 import { seriesOptions } from '~/components/stat/chart/config2'
 
+function sortCategoriesByAmount(a: CategoryId, b: CategoryId, categories: Record<string, TotalCategory>) {
+  if (!categories[a] || !categories[b])
+    return 0
+
+  // Sort positive values from biggest to smallest
+  if (categories[a].value >= 0 && categories[b].value >= 0) {
+    return categories[b].value - categories[a].value
+  }
+  // Sort negative values from smallest to biggest
+  else if (categories[a].value < 0 && categories[b].value < 0) {
+    return categories[a].value - categories[b].value
+  }
+  // Keep positive values before negative values
+  else if (categories[a].value >= 0 && categories[b].value < 0) {
+    return -1
+  }
+  // Keep negative values after positive values
+  else {
+    return 1
+  }
+}
+
 export type TotalCategories = {
   expense: TotalCategory[]
   income: TotalCategory[]
@@ -69,24 +91,7 @@ export function useNewStat() {
     }, {} as Record<CategoryId, TotalCategory>)
 
     return Object.keys(categories)
-      .sort((a, b) => {
-        // Sort positive values from biggest to smallest
-        if (categories[a].value >= 0 && categories[b].value >= 0) {
-          return categories[b].value - categories[a].value
-        }
-        // Sort negative values from smallest to biggest
-        else if (categories[a].value < 0 && categories[b].value < 0) {
-          return categories[a].value - categories[b].value
-        }
-        // Keep positive values before negative values
-        else if (categories[a].value >= 0 && categories[b].value < 0) {
-          return -1
-        }
-        // Keep negative values after positive values
-        else {
-          return 1
-        }
-      })
+      .sort((a, b) => sortCategoriesByAmount(a, b, categories))
       .reduce(
         (prev, categoryId) => {
           prev.push(categories[categoryId])
@@ -149,21 +154,6 @@ export function useNewStat() {
   }
 
   function getSeries(
-    total: Record<string, TotalReturns>,
-    type: MoneyTypeSlugSum,
-  ) {
-    // const types = type === 'sum' ? ['income', 'expense', 'sum'] : [type]
-    const types = type === 'sum' ? ['income', 'expense'] : [type]
-
-    return types.map(t => ({
-      color: seriesOptions[t].color,
-      cursor: 'default',
-      data: Object.values(total).map(i => t !== 'sum' ? Math.abs(i[t]) : i[t]),
-      name: seriesOptions[t].name,
-      type: seriesOptions[t].type,
-    }))
-  }
-  function getSeries2(
     total: TotalReturns[],
     type: MoneyTypeSlugSum,
     ranges: Range[],
@@ -196,7 +186,6 @@ export function useNewStat() {
     getCatsForChart,
     getPeriodsWithTrns,
     getSeries,
-    getSeries2,
     getUniqueIds,
   }
 }

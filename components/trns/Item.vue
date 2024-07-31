@@ -11,14 +11,15 @@ const props = defineProps<{
 <template>
   <UiElement
     v-if="props.trnItem"
-    class="group2 py-2"
+    class="group2"
+    insideClasses="py-3"
     isShowLine2
   >
     <template v-if="!alt" #leftIcon>
       <UiIconBase
         :name="props.trnItem.category?.icon"
         :color="props.trnItem.category?.color"
-        invert2
+        invert
       />
     </template>
 
@@ -60,9 +61,22 @@ const props = defineProps<{
             </div>
 
             <!-- Parent category name -->
-            <div
+            <!-- <div
               v-if="trnItem.categoryParent"
               class="text-2xs text-4"
+            >
+              {{ trnItem.categoryParent.name }}
+            </div> -->
+            <div
+              v-if="trnItem.categoryParent"
+              class="leading-none text-2xs text-4"
+            >
+              •
+            </div>
+
+            <div
+              v-if="trnItem.categoryParent"
+              class="leading-none text-2xs text-4"
             >
               {{ trnItem.categoryParent.name }}
             </div>

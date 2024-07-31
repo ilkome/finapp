@@ -25,12 +25,13 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 
     <div
       v-if="isShown"
-      :class="{
-        '!pb-8 sm:!pb-10': props.isPadding,
-        'pb-4': props.openPadding,
-      }"
+      :class="[{
+        'pb-8 sm:!pb-10': props.isPadding,
+      }, props.openPadding]"
     >
-      <slot />
+      <slot
+        :toggle="() => isShown = !isShown"
+      />
     </div>
   </div>
 </template>

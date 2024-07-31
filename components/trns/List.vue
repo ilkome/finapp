@@ -150,8 +150,8 @@ const groupedTrns = computed(() => {
     <slot name="contentBefore" />
 
     <!-- Filter by type -->
-    <UiTabs3 v-if="isShowFilterByType">
-      <UiTabsItem5
+    <UiTabs v-if="isShowFilterByType" class="mb-2">
+      <UiTabsItem
         v-for="(filterItem, slug) in typeFilters"
         :key="filterItem.slug"
         :isActive="filterBy === slug"
@@ -161,13 +161,13 @@ const groupedTrns = computed(() => {
         @click="setFilterBy(slug)"
       >
         {{ filterItem.name }}
-      </UiTabsItem5>
-    </UiTabs3>
+      </UiTabsItem>
+    </UiTabs>
 
     <!-- With Desc -->
     <div
       v-if="isShowFilterByDesc && isTrnsWithDesc && selectedIds.length > 0"
-      class="z-10 relative -my-1"
+      class="z-10 relative pb-2"
     >
       <UiCheckbox
         :checkboxValue="isShowWithDesc"
@@ -180,7 +180,7 @@ const groupedTrns = computed(() => {
     <!-- No Trns -->
     <div
       v-if="!isHideNoTrns && selectedIds.length === 0"
-      class="flex-col gap-2 flex-center h-full py-3 text-center text-secondary"
+      class="flex-col gap-2 flex-center py-3 text-center text-secondary"
     >
       <Icon name="mdi:palm-tree" size="64" />
       <div class="text-md">
@@ -230,16 +230,16 @@ const groupedTrns = computed(() => {
     <!-- With dates -->
     <div
       v-if="!isHideDates"
-      class="grid gap-2 overflow-hidden overflow-y-auto"
+      class="grid gap-2"
     >
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="-bg-item-4 rounded-lg overflow-hidden"
+        class="bg-item-9 rounded-lg overflow-hidden"
       >
         <div
           :class="{ '-border-b border-item-7': isShowGroupSum && groupTrnsIds.length > 1 }"
-          class="flex gap-2 items-end -pt-2 -pb-1 mx-3"
+          class="flex gap-2 items-end py-2 pb-1 px-3"
         >
           <DateTrns
             :date="+date"
@@ -258,7 +258,7 @@ const groupedTrns = computed(() => {
               :isShowBaseRate="false"
               :type="1"
               colorize="income"
-              variant="base"
+              variant="sm"
             />
 
             <Amount
@@ -268,7 +268,7 @@ const groupedTrns = computed(() => {
               :isShowBaseRate="false"
               :type="0"
               isShowMinus
-              variant="base"
+              variant="sm"
             />
           </div>
         </div>

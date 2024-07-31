@@ -21,6 +21,15 @@ const { setWalletId } = useFilterStore()
 const currencyFiltered = useStorage('finapp-wallets-active-currency', 'all')
 const activeType = useStorage('finapp-wallets-active-type', 'all')
 
+function setActiveType(v: string) {
+  if (activeType.value === v) {
+    activeType.value = 'all'
+    return
+  }
+
+  activeType.value = v
+}
+
 const selectedWallets = computed(() => {
   if (currencyFiltered.value === 'all' && activeType.value === 'all')
     return walletsStore.sortedItems
@@ -110,21 +119,16 @@ const selectedWallets2 = computed(() => {
   )
 })
 
-const walletsCurrenciesTabs = reactive({
-  currencyCode: computed(() => {
-    if (currencyFiltered.value === 'all')
-      return currenciesStore.base
-    return currencyFiltered.value
-  }),
-
-  onSelect: (v) => {
-    currencyFiltered.value = v
-  },
-})
-
 const isShowCurrencyFilter = ref(false)
-function onSelectFilterCurrency(code: CurrencyCode) {
-  walletsCurrenciesTabs.onSelect(code)
+function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
+  if (currencyFiltered.value === code && toggle)
+    toggle()
+
+  // walletsCurrenciesTabs.onSelect(code)
+  // if (selectedWallets.value.length === 0)
+  //   return
+  activeType.value = 'all'
+  currencyFiltered.value = code
   isShowCurrencyFilter.value = false
 }
 </script>
@@ -177,12 +181,53 @@ function onSelectFilterCurrency(code: CurrencyCode) {
           </UiBox1>
         </div>
 
+        <!-- Wallets Currencies -->
+        <UiToggle
+          v-if="walletsStore.currenciesUsed.length > 1"
+          :initStatus="true"
+          :openPadding="1"
+          class="md:max-w-xl hidden md:grid"
+          storageKey="finapp-wallets-currencies"
+        >
+          <template #header="{ toggle, isShown }">
+            <UiTitle7 @click="toggle">
+              <div>{{ t('filterByCurrency') }} {{ currencyFiltered === 'all' ? '' : currencyFiltered }}</div>
+              <Icon
+                v-if="!isShown"
+                name="mdi:chevron-down"
+                size="22"
+                class="-ml-1"
+              />
+            </UiTitle7>
+          </template>
+
+          <template #default="{ toggle }">
+            <UiTabs>
+              <UiTabsItem
+                :isActive="currencyFiltered === 'all'"
+                @click="onSelectFilterCurrency('all', toggle)"
+              >
+                {{ t("all") }}
+              </UiTabsItem>
+
+              <UiTabsItem
+                v-for="currency in walletsStore.currenciesUsed"
+                :key="currency"
+                :isActive="currencyFiltered === currency"
+                @click="onSelectFilterCurrency(currency, toggle)"
+              >
+                {{ currency }}
+              </UiTabsItem>
+            </UiTabs>
+          </template>
+        </UiToggle>
+
         <WalletsTotal
           :activeType
           :currencyCode="currenciesStore.base"
           :walletsItems="selectedWallets2"
           class="pb-2"
-          @click="v => activeType = v"
+          @click="setActiveType"
         />
 
         <UiBox1
@@ -195,45 +240,6 @@ function onSelectFilterCurrency(code: CurrencyCode) {
       </div>
 
       <div class="md:max-w-sm">
-        <!-- Wallets Currencies -->
-        <UiToggle
-          v-if="walletsStore.currenciesUsed.length > 1"
-          :initStatus="true"
-          :openPadding="1"
-          class="md:max-w-xl"
-          storageKey="finapp-wallets-currencies"
-        >
-          <template #header="{ toggle, isShown }">
-            <UiTitle7 @click="toggle">
-              <div>{{ t('filterByCurrency') }}</div>
-              <Icon
-                v-if="!isShown"
-                name="mdi:chevron-down"
-                size="22"
-                class="-ml-1"
-              />
-            </UiTitle7>
-          </template>
-
-          <UiTabs>
-            <UiTabsItem
-              :isActive="currencyFiltered === 'all'"
-              @click="walletsCurrenciesTabs.onSelect('all')"
-            >
-              {{ t("all") }}
-            </UiTabsItem>
-
-            <UiTabsItem
-              v-for="currency in walletsStore.currenciesUsed"
-              :key="currency"
-              :isActive="currencyFiltered === currency"
-              @click="walletsCurrenciesTabs.onSelect(currency)"
-            >
-              {{ currency }}
-            </UiTabsItem>
-          </UiTabs>
-        </UiToggle>
-
         <WalletsItem
           v-for="(walletItem, walletId) in selectedWallets"
           :key="walletId"

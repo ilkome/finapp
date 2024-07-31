@@ -21,7 +21,6 @@ import type { Period } from '~/components/date/types'
 
 const props = withDefaults(
   defineProps<{
-    categories: string[]
     chartType: ChartType
     config?: object
     isShowDataLabels?: boolean
@@ -30,6 +29,7 @@ const props = withDefaults(
     isShowSummary?: boolean
     period: Period
     series: unknown[]
+    xAxisLabels: string[]
   }>(),
   {
     chartType: 'line',
@@ -61,7 +61,7 @@ const chartRef = ref()
 const option = computed(() => {
   const data = defu(config, {
     series: setChartSeries(props.series),
-    xAxis: setChartXAxis(props.categories),
+    xAxis: setChartXAxis(props.xAxisLabels),
     ...props.config,
   })
 
