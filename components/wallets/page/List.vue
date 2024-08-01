@@ -239,7 +239,7 @@ function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
         </UiBox1>
       </div>
 
-      <div class="md:max-w-sm">
+      <div class="md:max-w-md">
         <WalletsItem
           v-for="(walletItem, walletId) in selectedWallets"
           :key="walletId"

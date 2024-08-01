@@ -16,7 +16,7 @@ function onSave(close: () => void) {
   <Teleport to="body">
     <BaseBottomSheet2
       isShow
-      drugClassesCustom="max-w-sm mx-auto bg-foreground-2"
+      drugClassesCustom="max-w-sm mx-auto bg-foreground-1"
       @closed="trnFormStore.closeTrnFormModal('description')"
     >
       <template #handler="{ close }">

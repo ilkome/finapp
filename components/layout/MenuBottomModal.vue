@@ -18,7 +18,7 @@ const userStore = useUserStore()
         <BaseBottomSheetClose @onClick="close" />
       </template>
 
-      <div class="grid gap-3 bg-foreground-3 px-1 py-3">
+      <div class="grid gap-3 bg-foreground-1 px-1 py-3">
         <!-- User -->
         <div class="px-4 pb-2">
           <div class="text-xl font-primary font-semibold">

@@ -25,7 +25,7 @@ const trnFormStore = useTrnFormStore()
   >
     <div class="h-full overflow-y-auto scrollerBlock pb-3">
       <div>
-        <UiTitle class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-3">
+        <UiTitle class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1">
           {{ $t("categories.title") }}
         </UiTitle>
 

@@ -11,7 +11,7 @@ const colorMode = useColorMode()
       hidden lg:grid gap-6 content-start
       h-full min-w-72
       overflow-hidden overflow-y-auto
-      bg-foreground-5 border-r border-item-5
+      bg-foreground-3 -border-r border-item-3
     "
   >
     <div class="flex items-center justify-between pb-0 pt-5 pl-4 pr-2">
@@ -70,6 +70,7 @@ const colorMode = useColorMode()
             v-for="(walletItem, walletId) in walletsItemsLimited"
             :key="walletId"
             :walletId
+            :lineWidth="1"
             :wallet="walletItem"
             @click="$router.push(`/wallets/${walletId}`)"
           />

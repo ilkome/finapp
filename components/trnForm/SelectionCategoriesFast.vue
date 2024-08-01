@@ -19,7 +19,7 @@ const trnFormStore = useTrnFormStore()
     v-if="categoriesStore.favoriteCategoriesIds.length > 0"
   >
     <UiTitle
-      class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-3"
+      class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1"
       @click="trnFormStore.ui.catsRootModal = true"
     >
       {{ $t("categories.favoriteTitle") }}
@@ -42,7 +42,7 @@ const trnFormStore = useTrnFormStore()
     class="pt-6"
   >
     <UiTitle
-      class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-3"
+      class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1"
       @click="trnFormStore.ui.catsRootModal = true"
     >
       {{ $t("categories.lastUsedTitle") }}

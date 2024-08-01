@@ -73,7 +73,7 @@ async function onSelectParentCategory(id: CategoryId) {
   <Teleport to="body">
     <BaseBottomSheet2
       :isShow="isShow"
-      drugClassesCustom="bg-foreground-3"
+      drugClassesCustom="bg-foreground-1"
       @closed="isShow = false"
     >
       <template #handler="{ close }">

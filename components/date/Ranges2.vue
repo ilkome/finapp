@@ -14,28 +14,28 @@ const emit = defineEmits<{
 const ranges = computed<FullDuration[]>(() => [
   {
     grouped: { duration: 1, period: 'day' },
-    interval: { duration: 1, period: 'day' },
-    label: 'Day',
+    interval: { duration: 7, period: 'day' },
+    label: '7d',
   },
   {
     grouped: { duration: 1, period: 'day' },
-    interval: { duration: 1, period: 'week' },
-    label: 'Week',
+    interval: { duration: 14, period: 'day' },
+    label: '14d',
   },
   {
     grouped: { duration: 1, period: 'day' },
-    interval: { duration: 1, period: 'month' },
-    label: 'Month',
+    interval: { duration: 30, period: 'day' },
+    label: '30d',
   },
   {
     grouped: { duration: 1, period: 'month' },
-    interval: { duration: 1, period: 'year' },
-    label: 'Year',
+    interval: { duration: 6, period: 'month' },
+    label: '6m',
   },
   {
-    grouped: { duration: 1, period: 'year' },
-    interval: { duration: dayjs(props.maxRange.end).diff(props.maxRange.start, 'day'), period: 'day' },
-    label: 'All',
+    grouped: { duration: 1, period: 'month' },
+    interval: { duration: 12, period: 'month' },
+    label: '12m',
   },
 ])
 

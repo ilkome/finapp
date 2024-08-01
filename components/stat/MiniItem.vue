@@ -13,7 +13,7 @@ import { useNewStat } from '~/components/stat/useNewStat'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useDateRange } from '~/components/date/useDateRange'
 import { markArea } from '~/components/stat/chart/utils'
-import type { PeriodDuration, Range } from '~/components/date/types'
+import type { FullDuration, PeriodDuration, Range } from '~/components/date/types'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 const props = defineProps<{
@@ -216,6 +216,8 @@ function onClickCategory(categoryId: CategoryId) {
 }
 
 const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChilds`, false)
+const isSimpleIcon = useStorage<boolean>('finapp-isSimpleIcon', false)
+const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`, true)
 </script>
 
 <template>
@@ -223,44 +225,50 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
     <!-- Stat -->
     <div class="@container/stat px-2 pt-2 -max-w-4xl">
       <div class="">
-        <div class="@2xl/stat:max-w-md xl:p-2 xl:bg-item-4 xl:rounded-xl">
-          <div class="flex justify-between">
-            <!-- Chart types -->
-            <div class="flex gap-1">
-              <DateLinkItem2 :isActive="chartType === 'bar'" @click="chartType = 'bar'">
-                {{ t('chart.types.bar') }}
-              </DateLinkItem2>
+        <div class="@2xl/stat:-max-w-md md:max-w-md xl:p-2 xl:bg-item-9 xl:rounded-xl">
+          <!-- Chart -->
+          <div
+            v-if="isShowChart && (interval.duration !== 1 || interval.period !== 'day')"
+            class="pb-2"
+          >
+            <div class="flex justify-between">
+              <!-- Chart types -->
+              <div class="flex gap-1">
+                <DateLinkItem2 :isActive="chartType === 'bar'" @click="chartType = 'bar'">
+                  {{ t('chart.types.bar') }}
+                </DateLinkItem2>
 
-              <DateLinkItem2 :isActive="chartType === 'line'" @click="chartType = 'line'">
-                {{ t('chart.types.line') }}
-              </DateLinkItem2>
+                <DateLinkItem2 :isActive="chartType === 'line'" @click="chartType = 'line'">
+                  {{ t('chart.types.line') }}
+                </DateLinkItem2>
+              </div>
+
+              <div class="flex gap-1">
+                <DateLinkItem2 :isActive="grouped.period === 'day'" @click="grouped.period = 'day'">
+                  {{ $t(`dates.day.simple`) }}
+                </DateLinkItem2>
+
+                <DateLinkItem2 :isActive="grouped.period === 'week'" @click="grouped.period = 'week'">
+                  {{ $t(`dates.week.simple`) }}
+                </DateLinkItem2>
+
+                <DateLinkItem2 :isActive="grouped.period === 'month'" @click="grouped.period = 'month'">
+                  {{ $t(`dates.month.simple`) }}
+                </DateLinkItem2>
+              </div>
             </div>
 
-            <div class="flex gap-1">
-              <DateLinkItem2 :isActive="grouped.period === 'day'" @click="grouped.period = 'day'">
-                {{ $t(`dates.day.simple`) }}
-              </DateLinkItem2>
-
-              <DateLinkItem2 :isActive="grouped.period === 'week'" @click="grouped.period = 'week'">
-                {{ $t(`dates.week.simple`) }}
-              </DateLinkItem2>
-
-              <DateLinkItem2 :isActive="grouped.period === 'month'" @click="grouped.period = 'month'">
-                {{ $t(`dates.month.simple`) }}
-              </DateLinkItem2>
-            </div>
+            <StatChartView2
+              :xAxisLabels
+              :chartType
+              :period="grouped.period"
+              :series
+              class="!h-40 px-2"
+              @click="onClickChart"
+            />
           </div>
 
-          <StatChartView2
-            :xAxisLabels
-            :chartType
-            :period="grouped.period"
-            :series
-            class="!h-40 px-2"
-            @click="onClickChart"
-          />
-
-          <div class="flex items-end justify-between pt-2 gap-2">
+          <div class="flex items-end justify-between gap-2">
             <UiTitle7
               @click="isShowDateSelector = !isShowDateSelector"
             >
@@ -288,6 +296,15 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
                 :range
                 @setRange="setRange"
               />
+
+              <div
+                v-if="interval.duration !== 1 || interval.period !== 'day'"
+                :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
+                class="justify-center text-xl"
+                @click="isShowChart = !isShowChart"
+              >
+                <Icon name="lucide:bar-chart-3" />
+              </div>
             </div>
           </div>
 
@@ -297,13 +314,13 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
         <div class="pt-3">
           <div
             v-if="props.type === 'sum'"
-            class="flex gap-1 flex-wrap justify-stretch"
+            class="flex gap-1 flex-wrap justify-stretch md:max-w-md"
           >
             <StatSum
               :amount="-totals.expense"
               :isActive="selectedType === 'expense'"
               :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
-              class="grow md:grow-0 !-bg-red-600/10"
+              class="grow"
               type="expense"
               @click="onSelectType('expense')"
             />
@@ -311,14 +328,14 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
               :amount="totals.income"
               :isActive="selectedType === 'income'"
               :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
-              class="grow md:grow-0 !-bg-green-600/10"
+              class="grow"
               type="income"
               @click="onSelectType('income')"
             />
             <StatSum
               :amount="totals.sum"
               :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
-              class="grow md:grow-0"
+              class="grow"
               type="sum"
               @click="isShowTrns = true"
             />
@@ -342,17 +359,20 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
             openPadding="!pb-6"
           >
             <template #header="{ toggle, isShown }">
-              <div class="flex items-center justify-between md:max-w-sm">
+              <div class="flex items-center justify-between md:max-w-md">
                 <UiTitle8 :isShown @click="toggle">
                   {{ $t('categories.title') }} {{ !isShown ? catsView === 'list' ? cats.length : catsRounded.length : '' }}
                 </UiTitle8>
+
                 <StatCategoriesButtons
                   v-if="isShown"
+                  v-model:isSimpleIcon="isSimpleIcon"
                   :catsView
                   :isShowLinesChart
                   :isShowChilds
                   :isGroupCategoriesByParentRounded
                   :isGroupCategoriesByParent
+                  class="-pr-1"
                   @toggleChart="isShowLinesChart = !isShowLinesChart"
                   @toggleCats="isShowChilds = !isShowChilds"
                   @toggleGroupByParentList="isGroupCategoriesByParent = !isGroupCategoriesByParent"
@@ -368,7 +388,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
               class="pt-2"
               :class="{
                 'grid gap-2 px-0': isGroupCategoriesByParent && isShowChilds,
-                'md:max-w-sm': !isGroupCategoriesByParent || !isShowChilds,
+                'md:max-w-md': !isGroupCategoriesByParent || !isShowChilds,
               }"
             >
               <StatLinesItemLine
@@ -382,7 +402,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
                 :lineWidth="(isGroupCategoriesByParent && isShowChilds) || isShowLinesChart ? 0 : 1"
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 :class="{ 'bg-item-9 rounded-lg -border border-item-5 overflow-hidden': isGroupCategoriesByParent && isShowChilds }"
-                isRoundIcon
+                :isSimpleIcon="(isGroupCategoriesByParent && isShowChilds) || isSimpleIcon"
                 @click="onClickCategory"
                 @onClickIcon="onClickCategoryRounded"
               >
@@ -453,7 +473,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
 
             <TrnsList
               :trnsIds="selectedTrnsIdsForTrnsList"
-              class="py-2 md:max-w-sm"
+              class="px-0 py-2 md:max-w-md"
               isShowFilterByDesc
               isShowFilterByType
               isShowGroupSum
@@ -479,7 +499,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
       <BaseBottomSheet2
         v-if="isShowDateSelector"
         isShow
-        drugClassesCustom="bg-foreground-2 max-w-xl grid md:mb-12 max-h-[98dvh]"
+        drugClassesCustom="bg-foreground-1 max-w-xl grid md:mb-12 max-h-[98dvh]"
         @closed="isShowDateSelector = false"
       >
         <template #handler="{ close }">
@@ -505,11 +525,21 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
                   </DateLinkItem>
                 </div>
 
-                <DateRanges
-                  :interval
-                  :maxRange
-                  @setRangeByPeriod="setRangeByPeriod"
-                />
+                <div class="flex flex-wrap gap-2">
+                  <DateRanges
+                    :interval
+                    :maxRange
+                    @setRangeByPeriod="(d: FullDuration) => { setRangeByPeriod(d); close() }"
+                  />
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                  <DateRanges2
+                    :interval
+                    :maxRange
+                    @setRangeByPeriod="(d: FullDuration) => { setRangeByPeriod(d); close() }"
+                  />
+                </div>
 
                 <DateDaySelector
                   :groupBy="grouped.period"
@@ -531,10 +561,12 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
                   </DateLinkItem>
                 </div>
 
-                <DateIntervals
-                  :grouped
-                  @onSelect="(pd: PeriodDuration) => grouped = pd"
-                />
+                <div class="flex flex-wrap gap-2">
+                  <DateIntervals
+                    :grouped
+                    @onSelect="(pd: PeriodDuration) => { grouped = pd; close() }"
+                  />
+                </div>
               </div>
             </div>
 
@@ -549,7 +581,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
       <BaseBottomSheet2
         v-if="quickModalCategoryId"
         isShow
-        drugClassesCustom="bg-foreground-2 lg:w-[calc(100%-120px)] max-w-xl"
+        drugClassesCustom="bg-foreground-1 lg:w-[calc(100%-120px)] max-w-md"
         @closed="quickModalCategoryId = false"
       >
         <template #handler="{ close }">
@@ -586,7 +618,7 @@ const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChild
       <BaseBottomSheet2
         v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0 && isShowTrns"
         isShow
-        drugClassesCustom="-max-w-sm mx-auto bg-foreground-2"
+        drugClassesCustom="-max-w-sm mx-auto bg-foreground-1"
         @closed="isShowTrns = false"
       >
         <template #handler="{ close }">

@@ -44,7 +44,7 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
         :key="categoryId"
         :category="categoriesStore.items[categoryId]"
         :categoryId="categoryId"
-        alt
+        isHideDots
         @click="filter.removeCategoryId(categoryId)"
       />
     </div>
@@ -88,7 +88,7 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
 
     <div
       v-if="filter?.isShow?.value"
-      :class="getStyles('item', ['link', 'minw1', 'center', 'rounded', 'padding2', 'minh'])"
+      :class="getStyles('item', ['link', 'minw1', 'center', 'rounded', 'padding2', 'minh2'])"
       class="bg-transparent"
       @click="filter.clearFilter"
     >

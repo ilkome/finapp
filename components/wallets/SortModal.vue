@@ -8,7 +8,7 @@ const { closeAllModals, isModalOpen } = useAppNav()
   <Teleport to="body">
     <BaseBottomSheet2
       :isShow="isModalOpen('walletsSort')"
-      drugClassesCustom="bg-foreground-2 max-w-md rounded-xl"
+      drugClassesCustom="bg-foreground-1 max-w-md rounded-xl"
       @closed="closeAllModals"
     >
       <template #handler="{ close }">

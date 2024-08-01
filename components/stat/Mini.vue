@@ -54,7 +54,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
     <!-- Sum -->
     <div class="overflow-hidden">
-      <div class="flex gap-1 overflow-y-auto px-2 pt-2">
+      <div class="flex gap-1 overflow-y-auto px-2 pt-2 lg:px-4 xl:px-16">
         <Filter v-if="props.isShowFilter" />
 
         <StatMenu
@@ -69,7 +69,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
         v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
         :storageKey="props.storageKey + activeTab"
         :trnsIds="trnsIds"
-        class="-max-w-2xl lg:gap-8 max-w-6xl xl:px-16 xl:py-6"
+        class="-max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:px-16 xl:py-2"
         type="sum"
       />
 
@@ -91,7 +91,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
       <div
         v-if="activeTab === 'sum'"
-        class="grid md:grid-cols-2 gap-4 lg:gap-8 max-w-6xl xl:px-16 xl:py-6"
+        class="grid md:grid-cols-2 gap-4 lg:gap-8 max-w-6xl lg:px-4 xl:px-16 xl:py-2"
       >
         <!-- Expense -->
         <StatMiniItem

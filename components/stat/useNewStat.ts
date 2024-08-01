@@ -159,7 +159,7 @@ export function useNewStat() {
     ranges: Range[],
   ) {
     // const types = type === 'sum' ? ['income', 'expense', 'sum'] : [type]
-    const types = type === 'sum' ? ['income', 'expense'] : [type]
+    const types = type === 'sum' ? ['expense', 'income'] : [type]
 
     return types.map((t, idx) => ({
       color: seriesOptions[t].color,

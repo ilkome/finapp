@@ -20,7 +20,7 @@ const currenciesStore = useCurrenciesStore()
   <div
     class="grid gap-1 px-3 py-2 border border-transparent"
     :class="{
-      'rounded !border-accent-1/80': props.isActive,
+      '!border-accent-1/40 !bg-item-9': props.isActive,
     }"
     @click="(e: Event) => emit('click', e)"
   >

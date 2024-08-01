@@ -130,7 +130,7 @@ async function onSave() {
 <template lang="pug">
 div
   .sticky.z-20.backdrop-blur(
-    class="top-[60px] bg-foreground-3"
+    class="top-[60px] bg-foreground-1"
   )
     .px-2
       UiTabs

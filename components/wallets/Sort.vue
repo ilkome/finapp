@@ -32,7 +32,7 @@ async function saveWalletsOrder() {
 </script>
 
 <template>
-  <div class="grid grid-rows-[auto,1fr,auto] overflow-hidden h-full max-h-[90vh] bg-foreground-3 px-2">
+  <div class="grid grid-rows-[auto,1fr,auto] overflow-hidden h-full max-h-[90vh] bg-foreground-1 px-2">
     <div class="px-2 py-4">
       <UiTitle>{{ $t("wallets.sortTitle") }}</UiTitle>
     </div>

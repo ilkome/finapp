@@ -11,8 +11,8 @@ const props = defineProps<{
   isActive?: boolean
   isGroupCategoriesByParent?: boolean
   isHideDots?: boolean
-  isRoundIcon?: boolean
   isShowLinesChart?: boolean
+  isSimpleIcon?: boolean
   item: TotalCategory
   lineWidth?: number
 }>()
@@ -48,13 +48,14 @@ function getBarStyle() {
       :isActive2="props.isActive"
       class="relative"
       isShowToggle2
+      insideClasses="min-h-[42px]"
       :lineWidth="props.lineWidth"
       @click="emit('click', props.item.id)"
     >
       <template #line>
         <div
           v-if="props.isShowLinesChart"
-          class="absolute left-0 bottom-2 w-full pl-12 pr-3 rounded-lg overflow-hidden"
+          class="absolute left-0 bottom-1 w-full pl-12 pr-3 rounded-lg overflow-hidden"
         >
           <div class="bg-item-3 rounded-lg overflow-hidden">
             <div
@@ -67,10 +68,10 @@ function getBarStyle() {
 
       <template #leftIcon>
         <UiIconBase
-          v-if="isRoundIcon"
+          v-if="isSimpleIcon"
           :color="category?.color"
           :name="category?.icon"
-          class="!text-xl !w-6 ml-1"
+          class="!text-xl leading-none !w-6 ml-1"
           @click.stop="emit('onClickIcon', props.item.id)"
         />
         <UiIconBase
@@ -78,7 +79,7 @@ function getBarStyle() {
           :color="category?.color"
           :name="category?.icon"
           invert
-          class="!text-xl !w-8 ml-2"
+          class="!text-base leading-none !w-7 ml-0"
           @click.stop="emit('onClickIcon', props.item.id)"
         />
       </template>
@@ -94,7 +95,7 @@ function getBarStyle() {
           {{ category?.name }}
           <!-- Has childs -->
           <div
-            v-if="!isHideDots && category?.parentId === 0"
+            v-if="!isHideDots && categoriesStore.hasChildren(props.item.id)"
             class="leading-none text-sm text-4"
           >
             ...
@@ -102,19 +103,15 @@ function getBarStyle() {
         </div>
 
         <!-- Parent category name -->
-        <div
-          v-if="category?.parentId"
-          class="leading-none text-2xs text-4"
-        >
-          •
-        </div>
+        <template v-if="!categoriesStore.hasChildren(props.item.id) && category?.parentId">
+          <div class="leading-none text-2xs text-4">
+            •
+          </div>
 
-        <div
-          v-if="category?.parentId"
-          class="leading-none text-2xs text-4"
-        >
-          {{ categoriesStore.items[category?.parentId]?.name }}
-        </div>
+          <div class="leading-none text-2xs text-4">
+            {{ categoriesStore.items[category?.parentId]?.name }}
+          </div>
+        </template>
       </div>
 
       <div

@@ -19,7 +19,6 @@ const emit = defineEmits<{
       <CategoriesItem
         :category
         :categoryId
-        alt
         insideClasses="bg-item-4 min-h-[46px] py-2"
         @click="emit('onOpen', 2)"
       />
@@ -34,12 +33,11 @@ const emit = defineEmits<{
       <CategoriesItem
         :category
         :categoryId
-        alt
         insideClasses="bg-item-4 min-h-[46px] py-2"
       />
 
       <template #popper="{ hide }">
-        <div class="z-10 sticky py-3 px-3 top-0 flex items-center bg-foreground-3">
+        <div class="z-10 sticky py-3 px-3 top-0 flex items-center bg-foreground-1">
           <UiTitle>
             {{ $t("categories.title") }}
           </UiTitle>

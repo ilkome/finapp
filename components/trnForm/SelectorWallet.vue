@@ -41,7 +41,7 @@ const walletsStore = useWalletsStore()
 
       <template #popper="{ hide }">
         <div>
-          <div class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-3">
+          <div class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1">
             <UiTitle class="px-3 pb-2 pt-1.5">
               {{ $t("wallets.title") }}
             </UiTitle>

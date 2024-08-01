@@ -21,7 +21,7 @@ function onSelect(code: CurrencyCode, close: () => void) {
 <template>
   <BaseBottomSheet2
     isShow
-    drugClassesCustom="sm:max-w-md mx-auto bg-foreground-2"
+    drugClassesCustom="sm:max-w-md mx-auto bg-foreground-1"
     @closed="emit('onClose')"
   >
     <template #handler="{ close }">

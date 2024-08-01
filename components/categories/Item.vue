@@ -6,6 +6,7 @@ const props = defineProps<{
   activeItemId?: string | 0 | false | null
   category: CategoryItem
   categoryId: CategoryId
+  isHideDots?: boolean
   lineWidth?: number
   slider?: any
 }>()
@@ -29,13 +30,13 @@ const childCategoriesIds = computed(() =>
     @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>
-      <!-- <UiIconBase
+      <UiIconBase
         :color="category.color"
         :name="category.icon"
         @click="e => emit('filter', e)"
-      /> -->
+      />
 
-      <div
+      <!-- <div
         class="-size-8"
       >
         <UiIconBase
@@ -43,7 +44,7 @@ const childCategoriesIds = computed(() =>
           :color="category?.color"
           invert
         />
-      </div>
+      </div> -->
     </template>
 
     <div class="grid gap-0.5 text-3">
@@ -61,7 +62,7 @@ const childCategoriesIds = computed(() =>
 
         <!-- Has childs -->
         <div
-          v-if="childCategoriesIds.length > 0"
+          v-if="!props.isHideDots && childCategoriesIds.length > 0"
           class="text-md font-unica leading-none"
         >
           ...

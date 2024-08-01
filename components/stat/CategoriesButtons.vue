@@ -16,10 +16,12 @@ const emit = defineEmits<{
   toggleGroupByParentList: []
   toggleGroupByParentRounded: []
 }>()
+
+const isSimpleIcon = defineModel('isSimpleIcon')
 </script>
 
 <template>
-  <div class="flex gap-1 pr-1">
+  <div class="flex gap-1">
     <VDropdown
       v-if="props.catsView === 'list'"
       :overflowPadding="12"
@@ -44,6 +46,15 @@ const emit = defineEmits<{
             title="Show Lines"
             showCheckbox
             @onClick="emit('toggleChart')"
+          />
+        </div>
+
+        <div class="p-1">
+          <UiCheckbox
+            :checkboxValue="isSimpleIcon"
+            title="isSimpleIcon"
+            showCheckbox
+            @onClick="isSimpleIcon = !isSimpleIcon"
           />
         </div>
       </template>
