@@ -1,21 +1,12 @@
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
-import { getTotal } from '~/components/amount/getTotal'
 import type { CurrencyCode } from '~/components/currencies/types'
-import { getTrnsIds } from '~/components/trns/getTrns'
+import type { WalletId, WalletItemWithAmount, Wallets } from '~/components/wallets/types'
+import { getDataAndWatch, unsubscribeData, updateData } from '~/services/firebase/api'
+import { getTotal } from '~/components/amount/getTotal'
+import { uniqueElementsBy } from '~/utils/simple'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUser'
-import type {
-  WalletId,
-  WalletItemWithAmount,
-  Wallets,
-} from '~/components/wallets/types'
-import {
-  getDataAndWatch,
-  unsubscribeData,
-  updateData,
-} from '~/services/firebase/api'
-import { uniqueElementsBy } from '~/utils/simple'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
@@ -83,8 +74,7 @@ export const useWalletsStore = defineStore('wallets', () => {
    */
 
   function getWalletTotal(walletId: WalletId) {
-    const trnsIds = getTrnsIds({
-      trnsItems: trnsStore.items,
+    const trnsIds = trnsStore.getStoreTrnsIds({
       walletsIds: [walletId],
     })
 

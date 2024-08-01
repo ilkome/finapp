@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { PeriodDuration, Range } from '~/components/date/types'
+import type { Interval, Range } from '~/components/date/types'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
-  interval: PeriodDuration
+  interval: Interval
   maxRange: Range
   range: Range
 }>()
@@ -13,8 +13,10 @@ const emit = defineEmits<{
   setRange: [range: Range]
 }>()
 
+const isDayToday = computed(() => props.interval.period === 'day' && props.interval.duration === 1 && props.range.end < dayjs().endOf('day').valueOf())
+
 const isEnd = computed(() => {
-  if (props.range.end >= props.maxRange.end) {
+  if (props.range.end >= props.maxRange.end && !isDayToday.value) {
     return true
   }
 

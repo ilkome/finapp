@@ -48,7 +48,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
     return getTrnsIds({
       ...props,
-      trnsItems: items.value,
+      trnsItems: items.value!,
     })
   }
 
@@ -72,7 +72,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
     return getTrnsIds({
       categoriesIds,
-      trnsItems: items.value,
+      trnsItems: items.value!,
       walletsIds,
     })
   })
@@ -83,7 +83,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
     return getTrnsIds({
       dates: getDates(filterStore.periodNameWithAll, filterStore.date),
-      trnsItems: items.value,
+      trnsItems: items.value!,
     })
   })
 

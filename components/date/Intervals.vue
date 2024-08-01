@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { FullDuration, Period, PeriodDuration, Range } from '~/components/date/types'
+import type { FullDuration, Interval, Period, Range } from '~/components/date/types'
 
 const props = defineProps<{
-  grouped: PeriodDuration
+  grouped: Interval
 }>()
 
 const emit = defineEmits<{
-  onSelect: [e: PeriodDuration]
+  onSelect: [e: Interval]
 }>()
 
-const intervalGroups = computed<PeriodDuration[]>(() => [{
+const intervalGroups = computed<Interval[]>(() => [{
   duration: 1,
   period: 'day',
 }, {

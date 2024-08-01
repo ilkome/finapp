@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
-import { getDates } from '~/components/date/format'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import { getTrnsIds } from '~/components/trns/getTrns'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
+import { getDates } from '~/components/date/format'
+import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
-  slider: {
-    slideTo: object
+  slider?: {
+    slideTo: object | null
   }
 }>()
 
@@ -23,7 +22,6 @@ const filterBy = useStorage('filterBy', 'wallet')
 const periodGrouped = useStorage('trnForm', 'all')
 
 const trnsIds = computed(() => {
-  const trnsItems = trnsStore.items!
   const walletsIds: WalletId[] = []
   let categoriesIds: CategoryId[] = []
   const dates = getDates('day', trnFormStore.values.date)
@@ -38,10 +36,9 @@ const trnsIds = computed(() => {
     categoriesIds = categoriesStore.getChildsIdsOrParent(trnFormStore.values.categoryId!)
   }
 
-  return getTrnsIds({
+  return trnsStore.getStoreTrnsIds({
     categoriesIds,
     dates,
-    trnsItems,
     walletsIds,
   })
 })

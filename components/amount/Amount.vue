@@ -50,8 +50,8 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
     <AmountItem
       v-if="amount === 0"
       :align="props.align"
-      :amount="0"
       :symbol="getCurrencySymbol(props.currencyCode)"
+      amount="0"
     />
 
     <template v-if="amount !== 0">

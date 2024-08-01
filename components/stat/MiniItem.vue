@@ -2,19 +2,18 @@
 import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '../categories/types'
+import type { ChartType } from '~/components/stat/chart/types'
+import type { FilterProvider } from '~/components/filter/useFilter'
+import type { FullDuration, Interval, Range } from '~/components/date/types'
 import type { MoneyTypeSlugSum } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
-import type { ChartType } from '~/components/stat/chart/types'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { FilterProvider } from '~/components/filter/useFilter'
 import { getStyles } from '~/components/ui/getStyles'
-import { useNewStat } from '~/components/stat/useNewStat'
+import { markArea } from '~/components/stat/chart/utils'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useDateRange } from '~/components/date/useDateRange'
-import { markArea } from '~/components/stat/chart/utils'
-import type { FullDuration, PeriodDuration, Range } from '~/components/date/types'
-import { getTrnsIds } from '~/components/trns/getTrns'
+import { useNewStat } from '~/components/stat/useNewStat'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   isQuickModal?: boolean
@@ -176,7 +175,7 @@ const totals = computed(() =>
 const isGroupCategoriesByParent = useStorage<boolean>(`${newBaseStorageKey.value}-isGroupCategoriesByParent`, false)
 const isGroupCategoriesByParentRounded = useStorage<boolean>(`${newBaseStorageKey.value}-isGroupCategoriesByParentRounded`, false)
 
-const cats = computed(() => getCats(trnsIdsForTotals.value ?? [], isGroupCategoriesByParent.value))
+const cats = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParent.value))
 const catsRounded = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParentRounded.value))
 
 const biggestCatNumber = computed(() => cats.value.at(0)?.value ?? 0)
@@ -191,15 +190,6 @@ watch(cats, () => {
     openedCats.value = cats.value.map(d => d.id)
   }
 }, { immediate: true })
-
-function toggleCats() {
-  if (openedCats.value.length === cats.value.length) {
-    openedCats.value = []
-  }
-  else {
-    openedCats.value = cats.value.map(d => d.id)
-  }
-}
 
 function onClickCategoryRounded(categoryId: CategoryId) {
   filter.clearFilter()
@@ -218,6 +208,8 @@ function onClickCategory(categoryId: CategoryId) {
 const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChilds`, false)
 const isSimpleIcon = useStorage<boolean>('finapp-isSimpleIcon', false)
 const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`, true)
+
+const isDayToday = computed(() => interval.value.period === 'day' && interval.value.duration === 1 && range.value.end < dayjs().endOf('day').valueOf())
 </script>
 
 <template>
@@ -244,15 +236,27 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
               </div>
 
               <div class="flex gap-1">
-                <DateLinkItem2 :isActive="grouped.period === 'day'" @click="grouped.period = 'day'">
+                <DateLinkItem2
+                  v-if="grouped.period !== 'day'"
+                  :isActive="grouped.period === 'day'"
+                  @click="grouped.period = 'day'"
+                >
                   {{ $t(`dates.day.simple`) }}
                 </DateLinkItem2>
 
-                <DateLinkItem2 :isActive="grouped.period === 'week'" @click="grouped.period = 'week'">
+                <DateLinkItem2
+                  v-if="dayjs(range.end).diff(range.start, 'day') >= 7"
+                  :isActive="grouped.period === 'week'"
+                  @click="grouped.period = 'week'"
+                >
                   {{ $t(`dates.week.simple`) }}
                 </DateLinkItem2>
 
-                <DateLinkItem2 :isActive="grouped.period === 'month'" @click="grouped.period = 'month'">
+                <DateLinkItem2
+                  v-if="dayjs(range.end).diff(range.start, 'day') >= 30"
+                  :isActive="grouped.period === 'month'"
+                  @click="grouped.period = 'month'"
+                >
                   {{ $t(`dates.month.simple`) }}
                 </DateLinkItem2>
               </div>
@@ -269,18 +273,12 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
           </div>
 
           <div class="flex items-end justify-between gap-2">
-            <UiTitle7
-              @click="isShowDateSelector = !isShowDateSelector"
-            >
+            <UiTitle10 @click="isShowDateSelector = !isShowDateSelector">
               <DateViewRange
-                v-if="selectedPeriod !== -1"
-                :range="groupedPeriods[selectedPeriod]"
-                title="selectedPeriod"
+                :range="selectedPeriod !== -1 ? groupedPeriods[selectedPeriod] : range"
+                :interval
               />
-              <div v-else>
-                {{ `${$t('dates.last')} ${interval.duration} ${$t(`dates.${interval.period}.simple`)}` }}
-              </div>
-            </UiTitle7>
+            </UiTitle10>
 
             <div class="flex gap-1">
               <DateNavHome
@@ -307,10 +305,9 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
               </div>
             </div>
           </div>
-
-          <!-- Stat sum -->
         </div>
 
+        <!-- Stat sum -->
         <div class="pt-3">
           <div
             v-if="props.type === 'sum'"
@@ -343,20 +340,24 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
 
           <StatSum
             v-else
-            :amount="totals[props.type]"
-            :class="[...getStyles('item', ['-link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+            :amount="props.type === 'income' ? totals[props.type] : -totals[props.type]"
+            :class="[...getStyles('item', ['-link', '-bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
             :type="props.type"
           />
         </div>
 
         <!-- Content -->
-        <div class="grid @3xl/stat:grid-cols-[2fr,1fr] @xl/stat:gap-8 gap-2 pt-3">
+        <div class="grid @3xl/stat:grid-cols-[2fr,1fr] gap-2 pt-3">
           <!-- Categories first level -->
           <UiToggle
-            v-if="(isQuickModal ? (cats.length > 1 || (props.quickModalCategoryId && categoriesStore.hasChildren(props.quickModalCategoryId))) : selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0)"
+            v-if="(
+              isQuickModal
+                ? (cats.length > 1 || (props.quickModalCategoryId && categoriesStore.hasChildren(props.quickModalCategoryId)))
+                : selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0
+            )"
             :storageKey="`${newBaseStorageKey}-cats-root`"
             :initStatus="true"
-            openPadding="!pb-6"
+            openPadding="!pb-3"
           >
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between md:max-w-md">
@@ -406,17 +407,10 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
                 @click="onClickCategory"
                 @onClickIcon="onClickCategoryRounded"
               >
-                <template #before>
-                  <!-- <div
-                    :style="{ backgroundColor: categoriesStore.items[item.id]?.color }"
-                    class="absolute inset-0 size-full opacity-10"
-                  /> -->
-                </template>
                 <div
                   v-if="isGroupCategoriesByParent && isShowChilds"
                   class="pl-2 pt-1 -grid flex flex-wrap gap-1 -border-b border-item-5 pb-3"
                 >
-                  <!-- class="pl-2 pt-1 -grid flex flex-wrap gap-1 border-b border-item-5 pb-3" -->
                   <StatLinesItemRound2
                     v-for="itemInside in getCats(item.trnsIds)"
                     :key="itemInside.id"
@@ -428,7 +422,6 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
               </StatLinesItemLine>
             </div>
 
-            <!-- class="flex flex-wrap gap-1 md:gap-2 pl-1" -->
             <div
               v-if="cats.length > 0 && catsView === 'round'"
               class="flex flex-wrap gap-1 @3xl/stat:gap-2 pt-2 pl-2"
@@ -445,40 +438,31 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
             </div>
           </UiToggle>
 
-          <!-- Opened quick modal with 1 category -->
-          <template v-else>
-            <TrnsList
-              :trnsIds="selectedTrnsIdsForTrnsList"
-              class="px-2 py-2"
-              isShowFilterByDesc
-              isShowFilterByType
-              isShowGroupSum
-              isShowHeader
-            />
-          </template>
-
           <UiToggle
-            v-if="(isQuickModal ? (cats.length > 1 || (props.quickModalCategoryId && categoriesStore.hasChildren(props.quickModalCategoryId))) : selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0)"
+            v-if="selectedTrnsIdsForTrnsList.length > 0"
             :storageKey="`${newBaseStorageKey}-${props.type}trns-all`"
-            :initStatus="false"
+            :initStatus="true"
             class="min-w-80"
           >
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between">
                 <UiTitle8 :isShown @click="toggle">
-                  {{ $t('trns.title') }} {{ !isShown ? selectedTrnsIdsForTrnsList.length : '' }}
+                  {{ $t('trns.title') }} {{ (!isShown && selectedTrnsIdsForTrnsList.length > 0) ? selectedTrnsIdsForTrnsList.length : '' }}
                 </UiTitle8>
               </div>
             </template>
 
             <TrnsList
               :trnsIds="selectedTrnsIdsForTrnsList"
-              class="px-0 py-2 md:max-w-md"
+              class="px-0 py-1 md:max-w-md"
+              :isHideDates="isDayToday"
               isShowFilterByDesc
               isShowFilterByType
-              isShowGroupSum
+              :isShowGroupSum="!isDayToday"
             />
           </UiToggle>
+
+          <TrnsNoTrns v-if="selectedTrnsIdsForTrnsList.length === 0" />
         </div>
 
         <!-- Empty -->
@@ -509,11 +493,11 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
 
         <template #default="{ close }">
           <div class="scrollerBlock grid gap-4 p-3 overflow-hidden max-h-[98dvh] overflow-y-auto">
-            <UiTitle7>{{ t('select') }}</UiTitle7>
+            <UiTitle9>{{ t('dates.select') }}</UiTitle9>
 
             <div class="grid items-start gap-6">
               <div class="grid gap-2">
-                <div class="grid grid-cols-[auto,1fr,auto] gap-2">
+                <div class="flex gap-2">
                   <DateLinkItem @click="removeInterval">
                     -
                   </DateLinkItem>
@@ -529,6 +513,7 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
                   <DateRanges
                     :interval
                     :maxRange
+                    @setRange="setRange"
                     @setRangeByPeriod="(d: FullDuration) => { setRangeByPeriod(d); close() }"
                   />
                 </div>
@@ -564,7 +549,7 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
                 <div class="flex flex-wrap gap-2">
                   <DateIntervals
                     :grouped
-                    @onSelect="(pd: PeriodDuration) => { grouped = pd; close() }"
+                    @onSelect="(pd: Interval) => { grouped = pd; close() }"
                   />
                 </div>
               </div>
@@ -602,9 +587,8 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
             <StatMiniItem
               :quickModalCategoryId
               :storageKey="`${props.storageKey}sum-in-${quickModalCategoryId}`"
-              :trnsIds="getTrnsIds({
+              :trnsIds="trnsStore.getStoreTrnsIds({
                 categoriesIds: categoriesStore.getChildsIdsOrParent(quickModalCategoryId),
-                trnsItems: trnsStore.items,
               })"
               class="-max-w-2xl"
               isQuickModal
@@ -618,7 +602,7 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
       <BaseBottomSheet2
         v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0 && isShowTrns"
         isShow
-        drugClassesCustom="-max-w-sm mx-auto bg-foreground-1"
+        drugClassesCustom="bg-foreground-1 lg:w-[calc(100%-120px)] max-w-md"
         @closed="isShowTrns = false"
       >
         <template #handler="{ close }">

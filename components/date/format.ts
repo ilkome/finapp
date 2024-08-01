@@ -1,97 +1,5 @@
 import dayjs from 'dayjs'
-import { format } from 'date-fns'
-import type { DateUTC, Range } from '~/components/date/types'
-import type { PeriodNameWithAll, PeriodNameWithoutAll } from '~/components/filter/useFilter'
-
-export function formatDate(range: Range) {
-  if (dayjs(range.start).isSame(range.end, 'year')) {
-    if (dayjs(range.start).isSame(range.end, 'day')) {
-      return `${format(range.end, 'd MMM yyy')}`
-    }
-    if (dayjs(range.start).isSame(range.end, 'month')) {
-      return `${format(range.start, 'd')} - ${format(range.end, 'd MMM yyy')}`
-    }
-    return `${format(range.start, 'd MMM')} - ${format(range.end, 'd MMM yyy')}`
-  }
-
-  return `${format(range.start, 'd MMM yyy')} - ${format(range.end, 'd MMM yyy')}`
-}
-
-export function formatDateByPeriod(date: DateUTC, periodNameWithAll: PeriodNameWithAll, names: any) {
-  const periodNameWithoutAll: PeriodNameWithoutAll = periodNameWithAll === 'all' ? 'year' : periodNameWithAll
-
-  const today = dayjs()
-  let format = 'MMMM'
-
-  const startDate = dayjs(date).startOf('week').format('D MMMM')
-  const endDate = dayjs(date).endOf('week').format('D MMMM')
-
-  switch (periodNameWithoutAll) {
-    case 'day':
-      today.isSame(date, 'year')
-        ? (format = 'DD MMMM')
-        : (format = 'DD MMMM YYYY')
-      break
-
-    case 'week':
-      if (today.isSame(date, 'week'))
-        return names.current
-      else if (today.subtract(1, periodNameWithoutAll).isSame(date, 'week'))
-        return names.last
-      return `${startDate} - ${endDate}`
-
-    case 'month':
-      if (today.isSame(date, 'year')) {
-        format = 'MMMM'
-        break
-      }
-      format = 'MMMM YYYY'
-      break
-
-    case 'year':
-      format = 'YYYY'
-      break
-  }
-
-  return dayjs(date).format(format)
-}
-
-export function formatDateByPeriod2(date: number, periodName: PeriodNameWithoutAll, names: any) {
-  const today = dayjs()
-  let format = 'MMMM'
-
-  const startDate = dayjs(date).startOf('week').format('DD.MM')
-  const endDate = dayjs(date).endOf('week').format('DD.MM')
-
-  switch (periodName) {
-    case 'day':
-      today.isSame(date, 'year')
-        ? (format = 'DD MMMM')
-        : (format = 'DD MMMM YYYY')
-      break
-
-    case 'week':
-      if (today.isSame(date, 'week'))
-        return names.current
-      else if (today.subtract(1, periodName).isSame(date, 'week'))
-        return names.last
-      return `${startDate}-${endDate}`
-
-    case 'month':
-      if (today.isSame(date, 'year')) {
-        format = 'MMM'
-        break
-      }
-      format = 'MMM YYYY'
-      break
-
-    case 'year':
-      format = 'YYYY'
-      break
-  }
-
-  return dayjs(date).format(format)
-}
+import type { PeriodNameWithAll } from '~/components/filter/useFilter'
 
 export function getFormatForChart(periodName: PeriodNameWithAll) {
   switch (periodName) {
@@ -117,4 +25,45 @@ export function getDates(periodName: PeriodNameWithAll, date: number) {
   const until = filterDate.endOf(periodName).valueOf()
 
   return { from, until }
+}
+
+export function formatDate(value: number, type: 'trnItem' | 'full') {
+  if (!value)
+    return false
+
+  const { $i18n } = useNuxtApp()
+  const currentLocale = $i18n.locale.value
+
+  switch (type) {
+    case 'full':
+      return {
+        day: dayjs(+value).format('D'),
+        month: dayjs(+value).format('MMM'),
+        week: dayjs(+value).format('DD.MM'),
+        weekday: dayjs(+value).calendar(null, {
+          lastDay: `[${currentLocale === 'ru' ? 'Вчера' : 'Yesterday'}], dddd`,
+          lastWeek: 'dddd',
+          nextDay: `[${currentLocale === 'ru' ? 'Завтра' : 'Tomorrow'}], dddd`,
+          nextWeek: 'dddd',
+          sameDay: `[${currentLocale === 'ru' ? 'Сегодня' : 'Today'}], dddd`,
+          sameElse: 'dddd',
+        }),
+        year: dayjs(+value).format('YYYY'),
+      }
+
+    case 'trnItem':
+      if (dayjs().isSame(+value, 'day'))
+        return $i18n.t('dates.day.today')
+
+      if (dayjs().isSame(dayjs(+value).add(1, 'day'), 'day'))
+        return $i18n.t('dates.day.yesterday')
+
+      if (dayjs().isSame(+value, 'year'))
+        return dayjs(+value).format('DD.MM')
+
+      return dayjs(+value).format('DD.MM.YY')
+
+    default:
+      return dayjs(+value).format('D MMMM YY')
+  }
 }

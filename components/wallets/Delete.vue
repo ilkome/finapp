@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { getTrnsIds } from '~/components/trns/getTrns'
+import type { WalletId } from '~/components/wallets/types'
 import { random, successEmo } from '~/assets/js/emo'
 import { removeData } from '~/services/firebase/api'
-import type { WalletId } from '~/components/wallets/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUser'
 
@@ -16,12 +15,9 @@ const router = useRouter()
 const userStore = useUserStore()
 const trnsStore = useTrnsStore()
 
-const trnsItems = computed(() => trnsStore.items)
-const trnsIds = computed(() =>
-  getTrnsIds({
-    trnsItems: trnsItems.value,
-    walletsIds: [walletId.value],
-  }))
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  walletsIds: [walletId.value],
+}))
 
 const isShowDeleteConfirm = ref(false)
 

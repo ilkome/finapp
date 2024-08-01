@@ -130,7 +130,6 @@ const drugStyles = computed(() => {
 
   return {
     transform: `translateX(-50%) translateY(${nextCurrentY.value - debounce.value}px)`,
-    ...overlayStyles.value,
   }
 })
 

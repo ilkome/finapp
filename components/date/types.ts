@@ -19,13 +19,13 @@ export type RangeDuration = {
   range?: Range
 }
 
-export type PeriodDuration = {
+export type Interval = {
   duration: number
   period: Period
 }
 
 export type FullDuration = {
-  grouped: PeriodDuration
-  interval: PeriodDuration
+  grouped: Interval
+  interval: Interval
   label?: string
 }

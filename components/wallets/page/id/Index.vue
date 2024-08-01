@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useFilter } from '~/components/filter/useFilter'
-import { getTrnsIds } from '~/components/trns/getTrns'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const filter = useFilter()
 provide('filter', filter)
@@ -67,7 +66,7 @@ useHead({
     </UiHeader>
 
     <div class="px-2">
-      <div class="flex flex-wrap justify-stretch gap-1 pt-3">
+      <div class="flex flex-wrap justify-stretch gap-1 overflow-y-auto px-2 pt-2 lg:px-4 xl:px-16">
         <template v-if="!wallet.isCredit">
           <Amount
             :amount="total"
@@ -100,12 +99,11 @@ useHead({
       </div>
     </div>
 
-    <div class="pt-0">
+    <div class="px-2 pt-2 lg:px-4 xl:px-16">
       <StatMiniItem
         type="sum"
-        :trnsIds="getTrnsIds({
-          walletsId: [walletId, ...filter?.walletsIds?.value],
-          trnsItems: trnsStore.items,
+        :trnsIds="trnsStore.getStoreTrnsIds({
+          walletsIds: [walletId, ...filter?.walletsIds?.value],
         })"
         :storageKey="walletId"
         isShowTotals

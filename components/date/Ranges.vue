@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { FullDuration, PeriodDuration, Range } from '~/components/date/types'
+import type { FullDuration, Interval, Range } from '~/components/date/types'
 
 const props = defineProps<{
-  interval: PeriodDuration
+  interval: Interval
   maxRange: Range
 }>()
 
 const emit = defineEmits<{
+  setRange: [d: Range]
   setRangeByPeriod: [d: FullDuration]
 }>()
 
@@ -34,7 +35,7 @@ const ranges = computed<FullDuration[]>(() => [
   },
   {
     grouped: { duration: 1, period: 'year' },
-    interval: { duration: dayjs(props.maxRange.end).diff(props.maxRange.start, 'day'), period: 'day' },
+    interval: { duration: dayjs(dayjs().endOf('day')).diff(props.maxRange.start, 'day') + 1, period: 'day' },
     label: 'All',
   },
 ])
@@ -52,5 +53,9 @@ function isRangeSelected(rd: FullDuration) {
     @click="emit('setRangeByPeriod', rangeItem)"
   >
     {{ rangeItem.label }}
+  </DateLinkItem>
+
+  <DateLinkItem @click="emit('setRange', props.maxRange)">
+    All 2
   </DateLinkItem>
 </template>

@@ -92,16 +92,16 @@ function changeCreditView() {
         <Amount
           v-if="wallet.creditLimit"
           :amount="creditAmount"
-          class="!text-secondary"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
+          class="!text-secondary"
         />
         <Amount
           v-else
           :amount="wallet.amount"
-          class="!text-secondary"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
+          class="!text-secondary"
         />
       </div>
     </template>

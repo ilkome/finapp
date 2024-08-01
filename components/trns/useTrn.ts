@@ -1,4 +1,3 @@
-import { formatDate } from '~/utils/formatDate'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -72,7 +71,6 @@ export default function useTrn() {
   }
 
   return {
-    formatDate,
     formatTrnItem,
   }
 }

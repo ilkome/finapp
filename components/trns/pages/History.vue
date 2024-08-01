@@ -13,7 +13,6 @@ useHead({
 })
 
 const trnsIds = computed(() => filter.getTrnsIdsWithFilter())
-// const trnsIds = computed(() => filter.getTrnsIdsWithFilter().slice(0, 10))
 
 provide('filter', filter)
 

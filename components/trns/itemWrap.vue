@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ToastOptions } from 'vue3-toastify'
+import { getStyles } from '../ui/getStyles'
 import type { TrnId, TrnItemFull } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
@@ -78,12 +79,13 @@ const items = computed(() => ({
       />
 
       <template #popper="{ hide }">
-        <div class="bg-foreground-1 p-1 min-w-[90dvw]">
+        <div class="bg-foreground-1 p-1 w-[90dvw] max-w-[320px]">
           <UiElement
             v-for="(item, slug) in items"
             :key="slug"
             isShowLine
             class="group"
+            :insideClasses="getStyles('item', ['minh4'])"
             @click="item.click(hide)"
           >
             <template #leftIcon>

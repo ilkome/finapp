@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatDate } from '~/utils/formatDate'
+import { formatDate } from '~/components/date/format'
 
 const props = defineProps<{
   date: number

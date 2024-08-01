@@ -63,7 +63,6 @@ function show(slide: number) {
     >
       <TrnsItem
         :trnItem="formatTrnItem(trnFormStore.values.trnId)"
-        :date="formatDate(formatTrnItem(trnFormStore.values.trnId)?.date, 'trnItem')"
         class="group bg-item-4 rounded-lg !py-1"
         @click="trnFormStore.values.trnId = null"
       />

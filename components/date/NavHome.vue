@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { PeriodDuration, Range } from '~/components/date/types'
+import type { Interval, Range } from '~/components/date/types'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
-  interval: PeriodDuration
+  interval: Interval
 }>()
 
 const emit = defineEmits<{

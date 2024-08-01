@@ -240,6 +240,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     return hasChildren(categoryId)
       ? Object.keys(items.value)
         .filter(id => items.value[id]?.parentId === categoryId)
+        .sort((a, b) => items.value[a]!.name.localeCompare(items.value[b]!.name))
       : []
   }
 

@@ -4,8 +4,11 @@ import { useUserStore } from '~/components/user/useUser'
 const userStore = useUserStore()
 
 watch(() => userStore.uid, (uid) => {
-  uid
-    ? useRouter().replace('/dashboard')
-    : useRouter().replace('/login')
+  if (uid) {
+    useRouter().replace('/dashboard')
+  }
+  else {
+    useRouter().replace('/login')
+  }
 }, { immediate: true })
 </script>

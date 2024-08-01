@@ -4,7 +4,7 @@ import { useStorage } from '@vueuse/core'
 const props = defineProps<{
   initStatus?: boolean
   isPadding?: boolean
-  openPadding?: number
+  openPadding?: string
   storageKey?: string
 }>()
 

@@ -4,9 +4,10 @@ import type { MoneyTypeNumber } from '~/components/stat/types'
 import type { TrnId, TrnType } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import useTrn from '~/components/trns/useTrn'
+import { formatDate } from '~/components/date/format'
+import { getStyles } from '~/components/ui/getStyles'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { getStyles } from '~/components/ui/getStyles'
 
 const props = withDefaults(
   defineProps<{
@@ -30,7 +31,7 @@ const props = withDefaults(
 
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
-const { formatDate, formatTrnItem } = useTrn()
+const { formatTrnItem } = useTrn()
 const { getTotalOfTrnsIds } = useAmount()
 const { t } = useI18n()
 
@@ -136,21 +137,16 @@ const groupedTrns = computed(() => {
       :paginatedTrnsIds
       :selectedIds
     >
-      <UiTitle
-        :class="getStyles('item', ['link', 'center', 'padding3', 'minh', 'minw1', 'rounded'])"
-        class="grow flex items-center gap-2 pb-0 -ml-1 !text-3 !text-sm !font-semibold !font-nunito"
-      >
-        <div>{{ $t("trns.title") }}</div>
-        <div v-if="selectedIds.length > 0">
-          {{ selectedIds.length }}
-        </div>
-      </UiTitle>
+      <UiTitle9>{{ $t("trns.title") }} {{ selectedIds.length > 0 ? selectedIds.length : '' }}</UiTitle9>
     </slot>
 
     <slot name="contentBefore" />
 
     <!-- Filter by type -->
-    <UiTabs v-if="isShowFilterByType" class="mb-2">
+    <UiTabs
+      v-if="isShowFilterByType"
+      class="mb-2"
+    >
       <UiTabsItem
         v-for="(filterItem, slug) in typeFilters"
         :key="filterItem.slug"
@@ -178,15 +174,7 @@ const groupedTrns = computed(() => {
     </div>
 
     <!-- No Trns -->
-    <div
-      v-if="!isHideNoTrns && selectedIds.length === 0"
-      class="flex-col gap-2 flex-center py-3 text-center text-secondary"
-    >
-      <Icon name="mdi:palm-tree" size="64" />
-      <div class="text-md">
-        {{ $t("trns.noTrns") }}
-      </div>
-    </div>
+    <TrnsNoTrns v-if="!props.isHideNoTrns && selectedIds.length === 0" />
 
     <!-- Hide dates -->
     <div v-if="isHideDates">

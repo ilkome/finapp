@@ -1,29 +1,25 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
-import { z } from 'zod'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
-import { getTrnsIds } from '~/components/trns/getTrns'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const periodSchema = z.object({
-  date: z.number(),
-  showedPeriods: z.number(),
-  type: z.enum(['line', 'bar']),
-})
+type PeriodSchema = {
+  date: number
+  showedPeriods: number
+  type: 'line' | 'bar'
+}
 
-const periodsSchema = z.object({
-  day: periodSchema,
-  month: periodSchema,
-  week: periodSchema,
-  year: periodSchema,
-})
+export type Periods = {
+  day: PeriodSchema
+  month: PeriodSchema
+  week: PeriodSchema
+  year: PeriodSchema
+}
 
-export type Periods = z.infer<typeof periodsSchema>
-export type PeriodSchema = z.infer<typeof periodSchema>
 // export type PeriodNameWithoutAll = keyof Periods | dayjs.OpUnitType
 export type PeriodNameWithoutAll = keyof Periods | dayjs.ManipulateType
 export type PeriodNameWithAll = PeriodNameWithoutAll | 'all'
@@ -310,9 +306,8 @@ export function useFilter() {
   watch(periodNameWithAll, value => localforage.setItem('finapp.chart.periodName', value))
 
   function getTrnsIdsWithFilter() {
-    return getTrnsIds({
+    return trnsStore.getStoreTrnsIds({
       categoriesIds: catsIds.value,
-      trnsItems: trnsStore.items,
       walletsIds: walletsIds.value,
     })
   }

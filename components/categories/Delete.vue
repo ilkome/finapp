@@ -3,7 +3,6 @@ import type { ToastOptions } from 'vue3-toastify'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CategoryId } from '~/components/categories/types'
 import { errorEmo, random, successEmo } from '~/assets/js/emo'
-import { getTrnsIds } from '~/components/trns/getTrns'
 import { removeData } from '~/services/firebase/api'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -21,9 +20,8 @@ const trnsStore = useTrnsStore()
 
 const { categoryId } = toRefs(props)
 
-const trnsIds = computed(() => getTrnsIds({
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value),
-  trnsItems: trnsStore.items!,
 }))
 
 const isShowDeleteConfirm = ref(false)

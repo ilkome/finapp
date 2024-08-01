@@ -21,6 +21,5 @@ useHead({
   <NuxtPwaManifest />
   <div class="layoutBase">
     <NuxtPage />
-    <slot />
   </div>
 </template>

@@ -1,19 +1,19 @@
 import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
-import type { FullDuration, Period, PeriodDuration, Range } from '~/components/date/types'
+import type { FullDuration, Period, Interval, Range } from '~/components/date/types'
 
 export function useDateRange({ key }: { key: string }) {
-  const grouped = useStorage<PeriodDuration>(`${key}-grouped`, {
+  const grouped = useStorage<Interval>(`${key}-grouped`, {
     duration: 1,
     period: 'month',
   })
 
-  const interval = useStorage<PeriodDuration>(`${key}-interval`, {
+  const interval = useStorage<Interval>(`${key}-interval`, {
     duration: 12,
     period: 'month',
   })
 
-  const range = ref({
+  const range = useStorage(`${key}-range`, {
     end: dayjs().endOf(interval.value.period).valueOf(),
     start: dayjs().subtract(interval.value.duration - 1, interval.value.period).startOf(interval.value.period).valueOf(),
   })

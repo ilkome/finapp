@@ -2,11 +2,9 @@
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
 import { useFilter } from '~/components/filter/useFilter'
-import { getTrnsIds } from '~/components/trns/getTrns'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const filter = useFilter()
-
 provide('filter', filter)
 
 const route = useRoute()
@@ -26,14 +24,9 @@ const backLink = computed(() =>
     : '/categories',
 )
 
-const categoryChildIds = computed(() =>
-  category.value.childIds?.sort((a, b) =>
-    categoriesStore.items[a].name.localeCompare(categoriesStore.items[b].name),
-  ) || [],
-)
-
 const onClickEdit = () => router.push(`/categories/${categoryId.value}/edit`)
 
+const childsIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
 useHead({
   title: category.value?.name,
 })
@@ -65,39 +58,33 @@ useHead({
       </template>
     </UiHeader>
 
-    <div class="grid gap-12 px-2">
+    <div class="grid gap-2 px-2 pt-2 lg:px-4 xl:px-16">
       <StatMiniItem
         type="sum"
         :isQuickModal="!categoriesStore.hasChildren(categoryId)"
-        :trnsIds="getTrnsIds({
+        :trnsIds="trnsStore.getStoreTrnsIds({
           categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId),
-          trnsItems: trnsStore.items,
         })"
         :categoriesIds="[categoryId]"
         :storageKey="categoryId"
         isShowTotals
       />
 
-      <div>
+      <div class="px-2">
         <UiToggle
           v-if="categoriesStore.hasChildren(categoryId)"
           :storageKey="`finapp-category-page-${categoryId}`"
           :initStatus="false"
         >
           <template #header="{ toggle, isShown }">
-            <UiTitle7 @click="toggle">
-              <div>{{ $t('categories.childs') }}</div>
-              <Icon
-                v-if="!isShown"
-                name="mdi:chevron-down"
-                size="22"
-                class="-ml-1"
-              />
-            </UiTitle7>
+            <UiTitle8 :isShown @click="toggle">
+              {{ $t('categories.childs') }}
+              {{ !isShown ? childsIds.length : '' }}
+            </UiTitle8>
           </template>
 
           <CategoriesList
-            :ids="categoryChildIds"
+            :ids="childsIds"
             @click="(id: CategoryId) => $router.push(`/categories/${id}`)"
           />
         </UiToggle>

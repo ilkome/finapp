@@ -185,20 +185,14 @@ function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
         <UiToggle
           v-if="walletsStore.currenciesUsed.length > 1"
           :initStatus="true"
-          :openPadding="1"
           class="md:max-w-xl hidden md:grid"
+          openPadding="pb-2"
           storageKey="finapp-wallets-currencies"
         >
           <template #header="{ toggle, isShown }">
-            <UiTitle7 @click="toggle">
-              <div>{{ t('filterByCurrency') }} {{ currencyFiltered === 'all' ? '' : currencyFiltered }}</div>
-              <Icon
-                v-if="!isShown"
-                name="mdi:chevron-down"
-                size="22"
-                class="-ml-1"
-              />
-            </UiTitle7>
+            <UiTitle8 :isShown @click="toggle">
+              {{ t('filterByCurrency') }} {{ currencyFiltered === 'all' ? '' : currencyFiltered }}
+            </UiTitle8>
           </template>
 
           <template #default="{ toggle }">

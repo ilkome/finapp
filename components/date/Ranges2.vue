@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { FullDuration, PeriodDuration, Range } from '~/components/date/types'
+import type { FullDuration, Interval, Range } from '~/components/date/types'
 
 const props = defineProps<{
-  interval: PeriodDuration
+  interval: Interval
   maxRange: Range
 }>()
 
@@ -36,6 +36,16 @@ const ranges = computed<FullDuration[]>(() => [
     grouped: { duration: 1, period: 'month' },
     interval: { duration: 12, period: 'month' },
     label: '12m',
+  },
+  {
+    grouped: { duration: 1, period: 'year' },
+    interval: { duration: 6, period: 'year' },
+    label: '6y',
+  },
+  {
+    grouped: { duration: 1, period: 'year' },
+    interval: { duration: 10, period: 'year' },
+    label: '10y',
   },
 ])
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import { formatDate } from '~/components/date/format'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import { formatDate } from '~/utils/formatDate'
 
 const trnFormStore = useTrnFormStore()
 
