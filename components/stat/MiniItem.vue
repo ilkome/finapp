@@ -612,18 +612,16 @@ const isDayToday = computed(() => interval.value.period === 'day' && interval.va
           </div>
         </template>
 
-        <template #default="{ close }">
-          <div class="grid h-[98dvh] content-start overflow-hidden overflow-y-auto scrollerBlock">
-            <TrnsList
-              :trnsIds="selectedTrnsIdsForTrnsList"
-              class="px-2 py-2"
-              isShowFilterByDesc
-              isShowFilterByType
-              isShowGroupSum
-              isShowHeader
-            />
-          </div>
-        </template>
+        <div class="grid h-[98dvh] content-start overflow-hidden overflow-y-auto scrollerBlock">
+          <TrnsList
+            :trnsIds="selectedTrnsIdsForTrnsList"
+            class="px-2 py-2"
+            isShowFilterByDesc
+            isShowFilterByType
+            isShowGroupSum
+            isShowHeader
+          />
+        </div>
       </BaseBottomSheet2>
     </Teleport>
   </div>
