@@ -15,10 +15,6 @@ watch(() => trnsStore.hasTrns, (has) => {
     useRouter().push('/welcome')
   }
 }, { immediate: true })
-
-onMounted(() => {
-  console.log(11)
-})
 </script>
 
 <template>

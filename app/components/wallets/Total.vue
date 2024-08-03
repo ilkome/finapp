@@ -127,6 +127,7 @@ const counts2 = computed(() => ({
 <template>
   <UiToggle
     :initStatus="true"
+    openPadding="pb-3"
     storageKey="finapp-wallets-total"
   >
     <!-- Header -->
@@ -139,7 +140,7 @@ const counts2 = computed(() => ({
     </template>
 
     <div class="grid gap-2 @md/wallets:grid-cols-2">
-      <div class="rounded-lg bg-item-9">
+      <div class="">
         <UiElement
           v-for="(item) in Object.values(counts).filter(item => item.isShow)"
           :key="item.id"
@@ -161,9 +162,7 @@ const counts2 = computed(() => ({
             />
           </div>
         </UiElement>
-      </div>
 
-      <div class="rounded-lg bg-item-9">
         <UiElement
           v-for="(item) in Object.values(counts2).filter(item => item.isShow)"
           :key="item.id"

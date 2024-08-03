@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import type { ToastOptions } from 'vue3-toastify'
+import { auth } from '../../services/firebase/api'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import { useUserStore } from '~/components/user/useUser'
-import { auth } from '../../../services/firebase/api'
 
 definePageMeta({
   layout: 'center',

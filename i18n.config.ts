@@ -1,24 +1,24 @@
 export default defineI18nConfig(() => {
   return {
+    defaultLocale: 'en',
+    detectBrowserLanguage: {
+      cookieKey: 'i18n_redirected',
+      useCookie: true,
+    },
+    fallbackLocale: 'en',
+    langDir: 'locales/',
+    lazy: true,
     legacy: false,
     locale: 'en',
     locales: [{
       code: 'en',
-      iso: 'en-US',
       file: 'en-US.js',
+      iso: 'en-US',
     }, {
       code: 'ru',
-      iso: 'ru-RU',
       file: 'ru-RU.js',
+      iso: 'ru-RU',
     }],
     strategy: 'no_prefix',
-    defaultLocale: 'en',
-    fallbackLocale: 'en',
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'i18n_redirected',
-    },
-    lazy: true,
-    langDir: 'locales/',
   }
 })

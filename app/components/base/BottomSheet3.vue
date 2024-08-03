@@ -9,8 +9,6 @@ import {
   useWindowSize,
 } from '@vueuse/core'
 
-type Event = TouchEvent | MouseEvent
-
 const props = defineProps<{
   drugClassesCustom?: string
   isShow?: boolean
@@ -19,10 +17,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'closed'): void
 }>()
-
-onMounted(() => {
-  console.log('mounted')
-})
 
 // Settings
 const config = {

@@ -14,10 +14,6 @@ useSeoMeta({
   title: $i18n.t('wallets.name'),
 })
 
-onMounted(() => {
-  console.log('WalletsList mounted 222')
-})
-
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const { isModalOpen, openModal } = useAppNav()
@@ -173,7 +169,7 @@ function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
       <div class="md:order-1">
         <div
           v-if="walletsStore.currenciesUsed.length > 1"
-          class="grid md:hidden grid-cols-2 gap-2"
+          class="grid md:hidden grid-cols-2 gap-2 pb-2"
         >
           <UiBox1 @click="isShowCurrencyFilter = true">
             <UiTitle6>{{ t('filterByCurrency') }}</UiTitle6>

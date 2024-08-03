@@ -2,6 +2,13 @@ import dayjs from 'dayjs'
 import { deepUnref } from 'vue-deepunref'
 import localforage from 'localforage'
 import {
+  getDataAndWatch,
+  removeData,
+  saveData,
+  unsubscribeData,
+  updateData,
+} from '../../../services/firebase/api'
+import {
   removeTrnToAddLaterLocal,
   removeTrnToDeleteLaterLocal,
   saveTrnIDforDeleteWhenClientOnline,
@@ -19,13 +26,6 @@ import type {
 import type { CategoryId } from '~/components/categories/types'
 import { useUserStore } from '~/components/user/useUser'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import {
-  getDataAndWatch,
-  removeData,
-  saveData,
-  unsubscribeData,
-  updateData,
-} from '../../../services/firebase/api'
 import { getDates } from '~/components/date/format'
 import type { Range } from '~/components/date/types'
 
@@ -38,7 +38,7 @@ export const useTrnsStore = defineStore('trns', () => {
   const categoriesStore = useCategoriesStore()
   const filterStore = useFilterStore()
 
-  const items = ref<Trns | null>(null)
+  const items = shallowRef<Trns | null>(null)
 
   function getStoreTrnsIds(props: TrnsGetterProps, params?: TrnsGetterParams) {
     if (params?.includesChildCategories) {

@@ -45,7 +45,7 @@ useHead({
               </div>
               <div
                 :style="{ background: wallet.color }"
-                class="flex-center rounded p-1 text-2xs text-icon-primary"
+                class="flex-center rounded-lg p-1 text-2xs text-icon-primary"
               >
                 {{ wallet.currency }}
               </div>

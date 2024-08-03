@@ -30,7 +30,8 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   const trnsStore = useTrnsStore()
-  const items = ref<Categories>({ transfer })
+
+  const items = shallowRef<Categories | null>({ transfer })
 
   const hasCategories = computed(() => {
     if (!items.value)

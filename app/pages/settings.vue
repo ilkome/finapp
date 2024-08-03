@@ -11,10 +11,6 @@ const userStore = useUserStore()
 useSeoMeta({
   title: $i18n.t('settings.title'),
 })
-
-onMounted(() => {
-  console.log('set')
-})
 const version = pkg.version
 
 /**

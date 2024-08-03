@@ -1,8 +1,8 @@
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
+import { getDataAndWatch, unsubscribeData, updateData } from '../../../services/firebase/api'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItemWithAmount, Wallets } from '~/components/wallets/types'
-import { getDataAndWatch, unsubscribeData, updateData } from '../../../services/firebase/api'
 import { getTotal } from '~/components/amount/getTotal'
 import { uniqueElementsBy } from '~/utils/simple'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -12,7 +12,7 @@ export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
   const userStore = useUserStore()
 
-  const items = ref<Wallets | null>(null)
+  const items = shallowRef<Wallets | null>(null)
 
   function initWallets() {
     getDataAndWatch(`users/${userStore.uid}/accounts`, (wallets: Wallets) => {

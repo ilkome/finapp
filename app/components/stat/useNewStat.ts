@@ -10,20 +10,20 @@ import type { PeriodNameWithAll } from '~/components/filter/useFilter'
 import type { Range } from '~/components/date/types'
 import { seriesOptions } from '~/components/stat/chart/config2'
 
-function sortCategoriesByAmount(a: CategoryId, b: CategoryId, categories: Record<string, TotalCategory>) {
-  if (!categories[a] || !categories[b])
+function sortCategoriesByAmount(a: TotalCategory, b: TotalCategory) {
+  if (!a || !b)
     return 0
 
   // Sort positive values from biggest to smallest
-  if (categories[a].value >= 0 && categories[b].value >= 0) {
-    return categories[b].value - categories[a].value
+  if (a.value >= 0 && b.value >= 0) {
+    return b.value - a.value
   }
   // Sort negative values from smallest to biggest
-  else if (categories[a].value < 0 && categories[b].value < 0) {
-    return categories[a].value - categories[b].value
+  else if (a.value < 0 && b.value < 0) {
+    return a.value - b.value
   }
   // Keep positive values before negative values
-  else if (categories[a].value >= 0 && categories[b].value < 0) {
+  else if (a.value >= 0 && b.value < 0) {
     return -1
   }
   // Keep negative values after positive values
@@ -48,7 +48,7 @@ export function useNewStat() {
   const categoriesStore = useCategoriesStore()
   const { getTotalOfTrnsIds } = useAmount()
 
-  function getCats(trnsIds: TrnId[], isGroupedByParent?: boolean) {
+  function getCats(trnsIds: TrnId[], isGroupedByParent?: boolean, preCategoriesIds?: CategoryId[]) {
     const categoriesWithTrns = trnsIds?.reduce(
       (prev, trnId) => {
         let newCategoryId = trnsStore.items[trnId]?.categoryId
@@ -72,33 +72,35 @@ export function useNewStat() {
       {} as Record<CategoryId, TrnId[]>,
     )
 
-    const categories = Object.keys(categoriesWithTrns).reduce((acc, categoryId) => {
-      const totalInCategory = getTotalOfTrnsIds(categoriesWithTrns[categoryId])
-      const trnsIdsInCategory = categoriesWithTrns[categoryId]
-      const currentCategory = categoriesStore.items[categoryId]
-
-      if (isGroupedByParent && currentCategory?.parentId !== 0) {
-        const parentCategoryId = currentCategory?.parentId
-      }
-
-      acc[categoryId] = {
-        id: categoryId,
-        trnsIds: trnsIdsInCategory,
-        value: totalInCategory.sum,
-      }
-
-      return acc
-    }, {} as Record<CategoryId, TotalCategory>)
-
-    return Object.keys(categories)
-      .sort((a, b) => sortCategoriesByAmount(a, b, categories))
+    const categories = Object.keys(categoriesWithTrns)
       .reduce(
-        (prev, categoryId) => {
-          prev.push(categories[categoryId])
-          return prev
+        (acc, categoryId) => {
+          const totalInCategory = getTotalOfTrnsIds(categoriesWithTrns[categoryId]!)
+          const trnsIdsInCategory = categoriesWithTrns[categoryId]!
+
+          acc.push({
+            id: categoryId,
+            trnsIds: trnsIdsInCategory,
+            value: totalInCategory.sum,
+          })
+          return acc
         },
         [] as TotalCategory[],
       )
+      .sort((a, b) => sortCategoriesByAmount(a, b))
+
+    if (preCategoriesIds && preCategoriesIds.length > 0) {
+      preCategoriesIds.forEach((id) => {
+        if (!categoriesWithTrns[id]) {
+          categories.push({
+            id,
+            trnsIds: [],
+            value: 0,
+          })
+        }
+      })
+    }
+    return categories
   }
 
   function getCatsForChart(trnsIds: TrnId[], isGrouped?: boolean) {

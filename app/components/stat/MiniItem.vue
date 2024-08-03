@@ -17,6 +17,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   isQuickModal?: boolean
+  preCategoriesIds?: CategoryId[]
   quickModalCategoryId?: CategoryId
   storageKey?: string
   trnsIds: TrnId[]
@@ -32,6 +33,7 @@ const { addInterval, getPeriodsWithEmptyTrnsIds, grouped, interval, range, remov
 const selectedType = ref<MoneyTypeSlugSum>('sum')
 const onSelectType = (type: MoneyTypeSlugSum) => selectedType.value = type === selectedType.value ? 'sum' : type
 
+// TODO: create function for this
 const filteredTrnsIds = computed(() => {
   if (selectedType.value === 'income') {
     return props.trnsIds
@@ -175,7 +177,7 @@ const totals = computed(() =>
 const isGroupCategoriesByParent = useStorage<boolean>(`${newBaseStorageKey.value}-isGroupCategoriesByParent`, false)
 const isGroupCategoriesByParentRounded = useStorage<boolean>(`${newBaseStorageKey.value}-isGroupCategoriesByParentRounded`, false)
 
-const cats = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParent.value))
+const cats = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParent.value, props.preCategoriesIds))
 const catsRounded = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParentRounded.value))
 
 const biggestCatNumber = computed(() => cats.value.at(0)?.value ?? 0)
@@ -202,7 +204,14 @@ const isShowTrns = ref(false)
 const quickModalCategoryId = ref<CategoryId | false>(false)
 
 function onClickCategory(categoryId: CategoryId) {
-  quickModalCategoryId.value = quickModalCategoryId.value === categoryId ? false : categoryId
+  if (props.preCategoriesIds) {
+    useRouter().push(`/categories/${categoryId}`)
+    return
+  }
+
+  quickModalCategoryId.value = quickModalCategoryId.value === categoryId
+    ? false
+    : categoryId
 }
 
 const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChilds`, false)
@@ -210,6 +219,10 @@ const isSimpleIcon = useStorage<boolean>('finapp-isSimpleIcon', false)
 const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`, true)
 
 const isDayToday = computed(() => interval.value.period === 'day' && interval.value.duration === 1 && range.value.end < dayjs().endOf('day').valueOf())
+
+const viewOptions = useStorage(`${newBaseStorageKey.value}-viewOptions`, {
+  isItemsBg: false,
+})
 </script>
 
 <template>
@@ -368,6 +381,7 @@ const isDayToday = computed(() => interval.value.period === 'day' && interval.va
                 <StatCategoriesButtons
                   v-if="isShown"
                   v-model:isSimpleIcon="isSimpleIcon"
+                  :viewOptions
                   :catsView
                   :isShowLinesChart
                   :isShowChilds
@@ -379,6 +393,7 @@ const isDayToday = computed(() => interval.value.period === 'day' && interval.va
                   @toggleGroupByParentList="isGroupCategoriesByParent = !isGroupCategoriesByParent"
                   @toggleGroupByParentRounded="isGroupCategoriesByParentRounded = !isGroupCategoriesByParentRounded"
                   @toggleCatView="catsView = catsView === 'list' ? 'round' : 'list'"
+                  @changeViewOptions="options => viewOptions = options"
                 />
               </div>
             </template>
@@ -386,16 +401,18 @@ const isDayToday = computed(() => interval.value.period === 'day' && interval.va
             <!-- List -->
             <div
               v-if="cats.length > 0 && catsView === 'list'"
-              class="pt-2"
               :class="{
                 'grid gap-2 px-0': isGroupCategoriesByParent && isShowChilds,
                 'md:max-w-md': !isGroupCategoriesByParent || !isShowChilds,
+                'grid gap-1': viewOptions.isItemsBg,
               }"
+              class="pt-2"
             >
               <StatLinesItemLine
                 v-for="item in cats"
                 :key="item.id"
                 :item
+                :viewOptions
                 :isShowLinesChart
                 :isGroupCategoriesByParent
                 :biggestCatNumber

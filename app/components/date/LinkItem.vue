@@ -14,7 +14,7 @@ const emit = defineEmits<{
     :class="[
       ...getStyles('item', ['link', 'bg', 'padding3', 'center2', 'minh', 'minw1', 'rounded']),
       {
-        'rounded bg-item-5': props.isActive,
+        'bg-item-5': props.isActive,
       },
     ]"
     class="text-nowrap font-primary text-xs leading-none"

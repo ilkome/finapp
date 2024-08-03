@@ -32,7 +32,7 @@ export default defineComponent({
                 <div class="text-item-1 text-2xl font-semibold">
                   {{ walletForm.name ? walletForm.name : $t("wallets.form.name.label") }}
                 </div>
-                <div class="p-1 flex-center rounded text-icon-primary text-2xs" :style="{ background: walletForm.color }">
+                <div class="p-1 flex-center rounded-lg text-icon-primary text-2xs" :style="{ background: walletForm.color }">
                   {{ walletForm.currency }}
                 </div>
               </div>

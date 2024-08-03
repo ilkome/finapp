@@ -4,6 +4,7 @@ const props = defineProps<{
   amount: string
   isShowMinus?: boolean
   isShowPlus?: boolean
+  isShowSymbol?: boolean
   symbol: string
 }>()
 </script>
@@ -25,6 +26,8 @@ const props = defineProps<{
     </div>
 
     <div>{{ amount }}</div>
-    <div>{{ symbol }}</div>
+    <div v-if="props.isShowSymbol">
+      {{ symbol }}
+    </div>
   </div>
 </template>

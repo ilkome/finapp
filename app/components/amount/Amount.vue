@@ -12,14 +12,14 @@ const props = withDefaults(
     isShowBaseRate?: boolean
     isShowMinus?: boolean
     isShowPlus?: boolean
-    isShowSign?: boolean
+    isShowSymbol?: boolean
     type?: MoneyTypeNumber
     variant?: '2xs' | '3xl' | 'base' | 'sm'
   }>(),
   {
     align: 'right',
     isShowBaseRate: true,
-    isShowSign: true,
+    isShowSymbol: true,
     variant: 'base',
   },
 )
@@ -50,6 +50,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
     <AmountItem
       v-if="amount === 0"
       :align="props.align"
+      :isShowSymbol="props.isShowSymbol"
       :symbol="getCurrencySymbol(props.currencyCode)"
       amount="0"
     />
@@ -60,6 +61,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
         :amount="formatAmount(amount, currencyCode)"
         :isShowMinus="props.isShowMinus"
         :isShowPlus="props.isShowPlus"
+        :isShowSymbol="props.isShowSymbol"
         :symbol="getCurrencySymbol(props.currencyCode)"
       />
 
@@ -69,6 +71,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
         :amount="getAmountInBaseRate({ amount, currencyCode })"
         :isShowMinus="props.isShowMinus"
         :isShowPlus="props.isShowPlus"
+        :isShowSymbol="props.isShowSymbol"
         :symbol="getCurrencySymbol(baseCurrencyCode)"
         class="text-xs opacity-70"
       />

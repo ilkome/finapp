@@ -58,37 +58,17 @@ useHead({
       </template>
     </UiHeader>
 
-    <div class="grid gap-2 px-2 pt-2 lg:px-4 xl:px-16">
+    <div class="grid gap-2 px-2 pt-2 lg:px-4 xl:px-16 pb-24">
       <StatMiniItem
         type="sum"
         :isQuickModal="!categoriesStore.hasChildren(categoryId)"
         :trnsIds="trnsStore.getStoreTrnsIds({
           categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId),
         })"
-        :categoriesIds="[categoryId]"
+        :preCategoriesIds="childsIds"
         :storageKey="categoryId"
         isShowTotals
       />
-
-      <div class="px-2">
-        <UiToggle
-          v-if="categoriesStore.hasChildren(categoryId)"
-          :storageKey="`finapp-category-page-${categoryId}`"
-          :initStatus="false"
-        >
-          <template #header="{ toggle, isShown }">
-            <UiTitle8 :isShown @click="toggle">
-              {{ $t('categories.childs') }}
-              {{ !isShown ? childsIds.length : '' }}
-            </UiTitle8>
-          </template>
-
-          <CategoriesList
-            :ids="childsIds"
-            @click="(id: CategoryId) => $router.push(`/categories/${id}`)"
-          />
-        </UiToggle>
-      </div>
     </div>
   </UiPage>
 </template>

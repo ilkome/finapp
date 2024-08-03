@@ -7,9 +7,11 @@ const props = defineProps<{
   isGroupCategoriesByParentRounded?: boolean
   isShowChilds?: boolean
   isShowLinesChart?: boolean
+  viewOptions: unknown
 }>()
 
 const emit = defineEmits<{
+  changeViewOptions: [options: unknown]
   toggleCatView: []
   toggleCats: []
   toggleChart: []
@@ -23,7 +25,6 @@ const isSimpleIcon = defineModel('isSimpleIcon')
 <template>
   <div class="flex gap-1">
     <VDropdown
-      v-if="props.catsView === 'list'"
       :overflowPadding="12"
       autoBoundaryMaxSize
       placement="bottom-start"
@@ -40,73 +41,75 @@ const isSimpleIcon = defineModel('isSimpleIcon')
       </div>
 
       <template #popper>
-        <div class="p-1">
-          <UiCheckbox
-            :checkboxValue="isShowLinesChart"
-            title="Show Lines"
-            showCheckbox
-            @onClick="emit('toggleChart')"
-          />
-        </div>
+        <div class="grid gap-2 px-2">
+          <div class="flex justify-end border-b border-item-3 py-2">
+            <!-- Folder -->
+            <UiItem1
+              v-if="props.catsView === 'list' && props.isGroupCategoriesByParent"
+              @click="emit('toggleCats')"
+            >
+              <Icon
+                :name="isShowChilds ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
+                size="24"
+              />
+            </UiItem1>
 
-        <div class="p-1">
-          <UiCheckbox
-            :checkboxValue="isSimpleIcon"
-            title="isSimpleIcon"
-            showCheckbox
-            @onClick="isSimpleIcon = !isSimpleIcon"
-          />
+            <UiItem1
+              v-if="props.catsView === 'list'"
+              @click="emit('toggleGroupByParentList')"
+            >
+              <Icon
+                :name="props.isGroupCategoriesByParent ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
+                size="24"
+              />
+            </UiItem1>
+
+            <!-- Round -->
+            <UiItem1
+              v-if="props.catsView === 'round'"
+              @click="emit('toggleGroupByParentRounded')"
+            >
+              <Icon
+                :name="props.isGroupCategoriesByParentRounded ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
+                size="24"
+              />
+            </UiItem1>
+
+            <!-- Cat view -->
+            <UiItem1 @click="emit('toggleCatView')">
+              <Icon
+                :name="props.catsView === 'list' ? 'fluent:apps-list-20-regular' : 'fluent:equal-circle-20-regular'"
+                size="24"
+              />
+            </UiItem1>
+          </div>
+
+          <div>
+            <UiCheckbox
+              :checkboxValue="props.viewOptions.isItemsBg"
+              title="Show Bg"
+              showCheckbox
+              @onClick="emit('changeViewOptions', { ...props.viewOptions, isItemsBg: !props.viewOptions.isItemsBg })"
+            />
+
+            <!-- Lines -->
+            <UiCheckbox
+              :checkboxValue="isShowLinesChart"
+              title="Show Lines"
+              showCheckbox
+              @onClick="emit('toggleChart')"
+            />
+
+            <!-- Round icons -->
+            <UiCheckbox
+              :checkboxValue="isSimpleIcon"
+              title="isSimpleIcon"
+              showCheckbox
+              @onClick="isSimpleIcon = !isSimpleIcon"
+            />
+          </div>
         </div>
       </template>
     </VDropdown>
-
-    <!-- Folder -->
-    <div
-      v-if="props.catsView === 'list' && props.isGroupCategoriesByParent"
-      :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
-      class="justify-center text-xl"
-      @click="emit('toggleCats')"
-    >
-      <Icon
-        :name="isShowChilds ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
-        size="18"
-      />
-    </div>
-
-    <div
-      v-if="props.catsView === 'round'"
-      :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
-      class="justify-center text-xl"
-      @click="emit('toggleGroupByParentRounded')"
-    >
-      <Icon
-        :name="props.isGroupCategoriesByParentRounded ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
-        size="18"
-      />
-    </div>
-
-    <div
-      v-if="props.catsView === 'list'"
-      :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
-      class="justify-center text-xl"
-      @click="emit('toggleGroupByParentList')"
-    >
-      <Icon
-        :name="props.isGroupCategoriesByParent ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
-        size="18"
-      />
-    </div>
-
-    <!-- Cat view -->
-    <div
-      :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
-      class="justify-center text-xl"
-      @click="emit('toggleCatView')"
-    >
-      <Icon
-        :name="props.catsView === 'list' ? 'fluent:apps-list-20-regular' : 'fluent:equal-circle-20-regular'"
-        size="18"
-      />
-    </div>
   </div>
 </template>

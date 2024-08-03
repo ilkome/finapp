@@ -15,6 +15,7 @@ const props = defineProps<{
   isSimpleIcon?: boolean
   item: TotalCategory
   lineWidth?: number
+  viewOptions?: unknown
 }>()
 
 const emit = defineEmits<{
@@ -39,23 +40,24 @@ function getBarStyle() {
   <div
     :class="[props.insideClass, {
       '-bg-item-4 ': props.isActive,
+      'bg-item-9 rounded-lg': props.viewOptions?.isItemsBg,
     }]"
     :style="props.insideStyle"
-    class="relative group -bg-item-4 -rounded-md"
+    class="relative group"
   >
     <slot name="before" />
     <UiElement
       :isActive2="props.isActive"
       class="relative"
       isShowToggle2
-      insideClasses="min-h-[42px]"
+      insideClasses="!min-h-[44px]"
       :lineWidth="props.lineWidth"
       @click="emit('click', props.item.id)"
     >
       <template #line>
         <div
           v-if="props.isShowLinesChart"
-          class="absolute left-0 bottom-1 w-full pl-12 pr-3 rounded-lg overflow-hidden"
+          class="absolute left-0 bottom-2 w-full pl-12 pr-3 rounded-lg overflow-hidden"
         >
           <div class="bg-item-3 rounded-lg overflow-hidden">
             <div
@@ -115,6 +117,7 @@ function getBarStyle() {
       </div>
 
       <div
+        v-if="props.item.value !== 0"
         :class="{
           'pb-1': props.isShowLinesChart,
         }"
@@ -122,9 +125,10 @@ function getBarStyle() {
       >
         <Amount
           :amount="props.item.value"
-          :type="props.item.value >= 0 ? 1 : 0"
+          :type="props.item.value > 0 ? 1 : 0"
           :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
+          :isShowSymbol="props.item.value !== 0"
           colorize="income"
         />
       </div>

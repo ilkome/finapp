@@ -28,16 +28,13 @@ useHead({
 watch(
   () => useUserStore().uid,
   (value) => {
-    console.log('11`', value)
-
     if (value && useRoute().name === 'login') {
       useRouter().replace('/dashboard')
     }
     else {
-      // useRouter().replace('/login')
+      useRouter().replace('/login')
     }
   },
-  { immediate: true },
 )
 
 const keepalive = ['Categories', 'Wallets', 'Dashboard']

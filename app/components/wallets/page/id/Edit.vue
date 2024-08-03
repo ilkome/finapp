@@ -41,7 +41,7 @@ useHead({
                 {{ walletForm.name ? walletForm.name : $t("wallets.title") }}
               </div>
               <div
-                class="flex-center rounded p-1 text-2xs text-icon-primary"
+                class="flex-center rounded-lg p-1 text-2xs text-icon-primary"
                 :style="{ background: walletForm.color }"
               >
                 {{ walletForm.currency }}
