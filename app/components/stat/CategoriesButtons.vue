@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
+import type { ViewOptions } from '~/components/stat/types'
 
 const props = defineProps<{
-  catsView: 'list' | 'round'
   isGroupCategoriesByParent?: boolean
   isGroupCategoriesByParentRounded?: boolean
   isShowChilds?: boolean
   isShowLinesChart?: boolean
-  viewOptions: unknown
+  viewOptions: ViewOptions
 }>()
 
 const emit = defineEmits<{
@@ -45,7 +45,7 @@ const isSimpleIcon = defineModel('isSimpleIcon')
           <div class="flex justify-end border-b border-item-3 py-2">
             <!-- Folder -->
             <UiItem1
-              v-if="props.catsView === 'list' && props.isGroupCategoriesByParent"
+              v-if="props.viewOptions.catsView === 'list' && props.isGroupCategoriesByParent"
               @click="emit('toggleCats')"
             >
               <Icon
@@ -54,8 +54,9 @@ const isSimpleIcon = defineModel('isSimpleIcon')
               />
             </UiItem1>
 
+            <!-- List -->
             <UiItem1
-              v-if="props.catsView === 'list'"
+              v-if="props.viewOptions.catsView === 'list'"
               @click="emit('toggleGroupByParentList')"
             >
               <Icon
@@ -66,7 +67,7 @@ const isSimpleIcon = defineModel('isSimpleIcon')
 
             <!-- Round -->
             <UiItem1
-              v-if="props.catsView === 'round'"
+              v-if="props.viewOptions.catsView === 'round'"
               @click="emit('toggleGroupByParentRounded')"
             >
               <Icon
@@ -76,9 +77,11 @@ const isSimpleIcon = defineModel('isSimpleIcon')
             </UiItem1>
 
             <!-- Cat view -->
-            <UiItem1 @click="emit('toggleCatView')">
+            <UiItem1
+              @click="emit('changeViewOptions', { ...props.viewOptions, catsView: props.viewOptions.catsView === 'list' ? 'round' : 'list' })"
+            >
               <Icon
-                :name="props.catsView === 'list' ? 'fluent:apps-list-20-regular' : 'fluent:equal-circle-20-regular'"
+                :name="props.viewOptions.catsView === 'list' ? 'fluent:apps-list-20-regular' : 'fluent:equal-circle-20-regular'"
                 size="24"
               />
             </UiItem1>

@@ -40,7 +40,6 @@ export const useFilterStore = defineStore('filter', () => {
   function setDayDate(value: number) {
     periodNameWithAll.value = 'day'
     date.value = +value
-    scrollTop()
   }
 
   function setNextPeriodDate() {
@@ -93,18 +92,15 @@ export const useFilterStore = defineStore('filter', () => {
       return
 
     walletsIds.value.push(walletId)
-    scrollTop()
   }
 
   function toggleWalletId(walletId: WalletId) {
     if (walletsIds.value.includes(walletId)) {
       removeWalletId(walletId)
-      scrollTop()
       return
     }
 
     setWalletId(walletId)
-    scrollTop()
   }
 
   function removeWalletId(walletId: WalletId) {
@@ -124,7 +120,6 @@ export const useFilterStore = defineStore('filter', () => {
       return
 
     catsIds.value.push(categoryId)
-    scrollTop()
   }
 
   function removeCategoryId(categoryId: CategoryId) {
@@ -134,12 +129,10 @@ export const useFilterStore = defineStore('filter', () => {
   function toggleCategoryId(categoryId: CategoryId) {
     if (catsIds.value.includes(categoryId)) {
       removeCategoryId(categoryId)
-      scrollTop()
       return
     }
 
     setCategoryId(categoryId)
-    scrollTop()
   }
 
   /**
@@ -148,15 +141,6 @@ export const useFilterStore = defineStore('filter', () => {
   function clearFilter() {
     catsIds.value = []
     walletsIds.value = []
-  }
-
-  /**
-   * Scroll top
-   */
-  function scrollTop() {
-    const page = document.querySelector('.js_scroll_page')
-    if (page)
-      page.scrollTop = 0
   }
 
   const isShow = computed(

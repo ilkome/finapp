@@ -132,7 +132,6 @@ export function useFilter() {
   function setDayDate(value: number) {
     periodNameWithAll.value = 'day'
     date.value = +value
-    scrollTop()
   }
 
   function setNextPeriodDate(firstCreatedTrnDate: number) {
@@ -188,18 +187,15 @@ export function useFilter() {
         filterWallets: [...walletsIds.value, walletId],
       },
     })
-    scrollTop()
   }
 
   function toggleWalletId(walletId: WalletId) {
     if (walletsIds.value.includes(walletId)) {
       removeWalletId(walletId)
-      scrollTop()
       return
     }
 
     setWalletId(walletId)
-    scrollTop()
   }
 
   function removeWalletId(walletId: WalletId) {
@@ -236,7 +232,6 @@ export function useFilter() {
         filterCategories: [...catsIds.value, categoryId],
       },
     })
-    scrollTop()
   }
 
   function removeCategoryId(categoryId: CategoryId) {
@@ -246,7 +241,6 @@ export function useFilter() {
         filterCategories: [...catsIds.value.filter(id => id !== categoryId)],
       },
     })
-    scrollTop()
   }
 
   function toggleCategoryId(categoryId: CategoryId) {
@@ -265,15 +259,6 @@ export function useFilter() {
     // catsIds.value = []
     // walletsIds.value = []
     router.push({ query: undefined })
-  }
-
-  /**
-   * Scroll top
-   */
-  function scrollTop() {
-    const page = document.querySelector('.js_scroll_page')
-    if (page)
-      page.scrollTop = 0
   }
 
   const isShow = computed(

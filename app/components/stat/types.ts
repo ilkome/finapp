@@ -3,6 +3,11 @@ export type MoneyTypeSlugSum = 'income' | 'expense' | 'sum' | 'summary'
 export type MoneyTypeSlugNew = 'income' | 'expense' | 'sum'
 export type MoneyTypeNumber = 0 | 1 | 3
 
+export type ViewOptions = {
+  catsView: 'list' | 'round'
+  isItemsBg: boolean
+}
+
 export const moneyTypes: {
   id: MoneyTypeSlug
   slug: MoneyTypeSlug

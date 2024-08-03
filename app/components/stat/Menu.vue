@@ -52,17 +52,6 @@ const menu = computed(() => {
 
 function onClickStatMenu(tabName: StatTabs) {
   emit('click', tabName)
-  const page = document.querySelector('.js_scroll_page')
-  const content = page?.querySelector(
-    '[data-scroll-ref="stat"',
-  ) as HTMLElement | null
-
-  if (!page || !content)
-    return
-
-  const h = 78
-  if (page.scrollTop > content?.offsetTop - h)
-    page.scrollTop = content.offsetTop - h
 }
 
 onMounted(() => {

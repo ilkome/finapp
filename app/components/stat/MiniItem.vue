@@ -5,7 +5,7 @@ import type { CategoryId } from '../categories/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { FilterProvider } from '~/components/filter/useFilter'
 import type { FullDuration, Interval, Range } from '~/components/date/types'
-import type { MoneyTypeSlugSum } from '~/components/stat/types'
+import type { MoneyTypeSlugSum, ViewOptions } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import { getStyles } from '~/components/ui/getStyles'
@@ -185,7 +185,6 @@ const biggestCatNumber = computed(() => cats.value.at(0)?.value ?? 0)
 const isOpenedAll = useStorage<boolean>(`${newBaseStorageKey.value}-isOpenedAll`, false)
 const openedCats = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedCats`, [])
 const openedTrns = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedTrns`, [])
-const catsView = useStorage<'list' | 'round'>(`${newBaseStorageKey.value}-catsView`, 'list')
 
 watch(cats, () => {
   if (isOpenedAll.value) {
@@ -220,9 +219,17 @@ const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`
 
 const isDayToday = computed(() => interval.value.period === 'day' && interval.value.duration === 1 && range.value.end < dayjs().endOf('day').valueOf())
 
-const viewOptions = useStorage(`${newBaseStorageKey.value}-viewOptions`, {
+const viewOptions = useStorage<ViewOptions>(`${newBaseStorageKey.value}-viewOptions`, {
+  catsView: 'list',
   isItemsBg: false,
 })
+
+function onviewOptions() {
+  viewOptions.value = {
+    catsView: 'list',
+    isItemsBg: false,
+  }
+}
 </script>
 
 <template>
@@ -375,14 +382,13 @@ const viewOptions = useStorage(`${newBaseStorageKey.value}-viewOptions`, {
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between md:max-w-md">
                 <UiTitle8 :isShown @click="toggle">
-                  {{ $t('categories.title') }} {{ !isShown ? catsView === 'list' ? cats.length : catsRounded.length : '' }}
+                  {{ $t('categories.title') }} {{ !isShown ? viewOptions.catsView === 'list' ? cats.length : catsRounded.length : '' }}
                 </UiTitle8>
 
                 <StatCategoriesButtons
                   v-if="isShown"
                   v-model:isSimpleIcon="isSimpleIcon"
                   :viewOptions
-                  :catsView
                   :isShowLinesChart
                   :isShowChilds
                   :isGroupCategoriesByParentRounded
@@ -392,15 +398,14 @@ const viewOptions = useStorage(`${newBaseStorageKey.value}-viewOptions`, {
                   @toggleCats="isShowChilds = !isShowChilds"
                   @toggleGroupByParentList="isGroupCategoriesByParent = !isGroupCategoriesByParent"
                   @toggleGroupByParentRounded="isGroupCategoriesByParentRounded = !isGroupCategoriesByParentRounded"
-                  @toggleCatView="catsView = catsView === 'list' ? 'round' : 'list'"
-                  @changeViewOptions="options => viewOptions = options"
+                  @changeViewOptions="(options: ViewOptions) => viewOptions = options"
                 />
               </div>
             </template>
 
             <!-- List -->
             <div
-              v-if="cats.length > 0 && catsView === 'list'"
+              v-if="cats.length > 0 && viewOptions.catsView === 'list'"
               :class="{
                 'grid gap-2 px-0': isGroupCategoriesByParent && isShowChilds,
                 'md:max-w-md': !isGroupCategoriesByParent || !isShowChilds,
@@ -440,7 +445,7 @@ const viewOptions = useStorage(`${newBaseStorageKey.value}-viewOptions`, {
             </div>
 
             <div
-              v-if="cats.length > 0 && catsView === 'round'"
+              v-if="cats.length > 0 && viewOptions.catsView === 'round'"
               class="flex flex-wrap gap-1 @3xl/stat:gap-2 pt-2 pl-2"
             >
               <StatLinesItemRound
@@ -641,5 +646,9 @@ const viewOptions = useStorage(`${newBaseStorageKey.value}-viewOptions`, {
         </div>
       </BaseBottomSheet2>
     </Teleport>
+
+    <div @click="onviewOptions">
+      <pre>{{ viewOptions }}</pre>
+    </div>
   </div>
 </template>

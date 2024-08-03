@@ -18,7 +18,8 @@ const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
-const filterBy = useStorage('filterBy', 'wallet')
+type FilterBy = 'wallet' | 'all' | 'walletAndCategory'
+const filterBy = useStorage<FilterBy>('filterBy', 'wallet')
 const periodGrouped = useStorage('trnForm', 'all')
 
 const trnsIds = computed(() => {
@@ -43,12 +44,7 @@ const trnsIds = computed(() => {
   })
 })
 
-function changeFilter(value) {
-  const trnForm = document.querySelector('.trnForm')
-  const trnsListScroll = trnForm?.querySelector('.js-scroll-trns')
-  if (trnsListScroll?.scrollTop)
-    trnsListScroll.scrollTop = 0
-
+function changeFilter(value: FilterBy) {
   filterBy.value = value
 }
 
@@ -56,7 +52,7 @@ function onClickEdit() {
   props.slider?.slideTo(1)
 }
 
-const tabs = computed(() => [
+const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
   {
     id: 'all',
     name: $i18n.t('trnForm.filterAll'),
