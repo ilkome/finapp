@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import { z } from 'zod'
 import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '../categories/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { FilterProvider } from '~/components/filter/useFilter'
 import type { FullDuration, Interval, Range } from '~/components/date/types'
-import type { MoneyTypeSlugSum, ViewOptions } from '~/components/stat/types'
+import { type MoneyTypeSlugSum, type ViewOptions, ViewOptionsSchema, defaultViewOptions } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import { getStyles } from '~/components/ui/getStyles'
@@ -24,11 +25,25 @@ const props = defineProps<{
   type: MoneyTypeSlugSum
 }>()
 
-const maxRange = computed(() => useTrnsStore().getRange(props.trnsIds))
-
+const filter = inject('filter') as FilterProvider
+const { t } = useI18n()
+const trnsStore = useTrnsStore()
+const { getTotalOfTrnsIds } = useAmount()
+const { getCats, getSeries } = useNewStat()
+const categoriesStore = useCategoriesStore()
 const { addInterval, getPeriodsWithEmptyTrnsIds, grouped, interval, range, removeInterval, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange({
-  key: `${props.type}${props.storageKey}`,
+  key: `finapp-${props.type}${props.storageKey}`,
 })
+
+const newBaseStorageKey = computed(() => `finapp-${grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
+
+const groupedPeriods = computed(() => getPeriodsWithEmptyTrnsIds({
+  duration: grouped.value.duration || 1,
+  period: grouped.value.period,
+  range: range.value,
+}))
+
+const maxRange = computed(() => useTrnsStore().getRange(props.trnsIds))
 
 const selectedType = ref<MoneyTypeSlugSum>('sum')
 const onSelectType = (type: MoneyTypeSlugSum) => selectedType.value = type === selectedType.value ? 'sum' : type
@@ -50,22 +65,16 @@ const filteredTrnsIds = computed(() => {
   return props.trnsIds
 })
 
-const filter = inject('filter') as FilterProvider
-const { t } = useI18n()
-const trnsStore = useTrnsStore()
-const { getTotalOfTrnsIds } = useAmount()
-const { getCats, getSeries } = useNewStat()
-const categoriesStore = useCategoriesStore()
+const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`, true)
+const isDayToday = computed(() => interval.value.period === 'day' && interval.value.duration === 1 && range.value.end < dayjs().endOf('day').valueOf())
 
-const newBaseStorageKey = computed(() => `${grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
+const viewOptions = useStorage<ViewOptions>(`${newBaseStorageKey.value}-viewOptions`, { ...defaultViewOptions })
+onBeforeMount(() => {
+  if (!ViewOptionsSchema.safeParse(viewOptions.value).success) {
+    viewOptions.value = { ...defaultViewOptions }
+  }
+})
 
-const groupedPeriods = computed(() => getPeriodsWithEmptyTrnsIds({
-  duration: grouped.value.duration || 1,
-  period: grouped.value.period,
-  range: range.value,
-}))
-
-const isShowLinesChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowLinesChart`, false)
 const chartType = useStorage<ChartType>(`${newBaseStorageKey.value}-chartType`, 'bar')
 
 const xAxisLabels = computed(() => groupedPeriods.value.map(r => +r.start) ?? [])
@@ -174,23 +183,13 @@ const totals = computed(() =>
 /**
  * Cats
  */
-const isGroupCategoriesByParent = useStorage<boolean>(`${newBaseStorageKey.value}-isGroupCategoriesByParent`, false)
-const isGroupCategoriesByParentRounded = useStorage<boolean>(`${newBaseStorageKey.value}-isGroupCategoriesByParentRounded`, false)
-
-const cats = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParent.value, props.preCategoriesIds))
-const catsRounded = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], isGroupCategoriesByParentRounded.value))
+const cats = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], viewOptions.value.catsList.isGrouped, props.preCategoriesIds))
+const catsRounded = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], viewOptions.value.catsRound.isGrouped))
 
 const biggestCatNumber = computed(() => cats.value.at(0)?.value ?? 0)
 
-const isOpenedAll = useStorage<boolean>(`${newBaseStorageKey.value}-isOpenedAll`, false)
 const openedCats = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedCats`, [])
 const openedTrns = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedTrns`, [])
-
-watch(cats, () => {
-  if (isOpenedAll.value) {
-    openedCats.value = cats.value.map(d => d.id)
-  }
-}, { immediate: true })
 
 function onClickCategoryRounded(categoryId: CategoryId) {
   filter.clearFilter()
@@ -213,21 +212,32 @@ function onClickCategory(categoryId: CategoryId) {
     : categoryId
 }
 
-const isShowChilds = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChilds`, false)
-const isSimpleIcon = useStorage<boolean>('finapp-isSimpleIcon', false)
-const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`, true)
+function set7Days(close?: () => void) {
+  viewOptions.value.catsView = 'list'
+  viewOptions.value.catsList.isGrouped = false
+  viewOptions.value.catsList.isOpened = false
 
-const isDayToday = computed(() => interval.value.period === 'day' && interval.value.duration === 1 && range.value.end < dayjs().endOf('day').valueOf())
+  setRangeByPeriod({
+    grouped: { duration: 1, period: 'day' },
+    interval: { duration: 7, period: 'day' },
+  })
 
-const viewOptions = useStorage<ViewOptions>(`${newBaseStorageKey.value}-viewOptions`, {
-  catsView: 'list',
-  isItemsBg: false,
-})
+  if (close) {
+    close()
+  }
+}
+function set12Months(close?: () => void) {
+  viewOptions.value.catsView = 'list'
+  viewOptions.value.catsList.isGrouped = true
+  viewOptions.value.catsList.isOpened = false
 
-function onviewOptions() {
-  viewOptions.value = {
-    catsView: 'list',
-    isItemsBg: false,
+  setRangeByPeriod({
+    grouped: { duration: 1, period: 'month' },
+    interval: { duration: 12, period: 'month' },
+  })
+
+  if (close) {
+    close()
   }
 }
 </script>
@@ -237,7 +247,7 @@ function onviewOptions() {
     <!-- Stat -->
     <div class="@container/stat px-2 pt-2 -max-w-4xl">
       <div class="">
-        <div class="@2xl/stat:-max-w-md md:max-w-md xl:p-2 xl:bg-item-9 xl:rounded-xl">
+        <div class="@2xl/stat:-max-w-md md:max-w-md -xl:p-2 -xl:bg-item-9 xl:rounded-xl">
           <!-- Chart -->
           <div
             v-if="isShowChart && (interval.duration !== 1 || interval.period !== 'day')"
@@ -245,7 +255,7 @@ function onviewOptions() {
           >
             <div class="flex justify-between">
               <!-- Chart types -->
-              <div class="flex gap-1">
+              <div class="flex gap-0">
                 <DateLinkItem2 :isActive="chartType === 'bar'" @click="chartType = 'bar'">
                   {{ t('chart.types.bar') }}
                 </DateLinkItem2>
@@ -255,7 +265,7 @@ function onviewOptions() {
                 </DateLinkItem2>
               </div>
 
-              <div class="flex gap-1">
+              <div class="flex gap-0">
                 <DateLinkItem2
                   v-if="grouped.period !== 'day'"
                   :isActive="grouped.period === 'day'"
@@ -387,17 +397,8 @@ function onviewOptions() {
 
                 <StatCategoriesButtons
                   v-if="isShown"
-                  v-model:isSimpleIcon="isSimpleIcon"
                   :viewOptions
-                  :isShowLinesChart
-                  :isShowChilds
-                  :isGroupCategoriesByParentRounded
-                  :isGroupCategoriesByParent
                   class="-pr-1"
-                  @toggleChart="isShowLinesChart = !isShowLinesChart"
-                  @toggleCats="isShowChilds = !isShowChilds"
-                  @toggleGroupByParentList="isGroupCategoriesByParent = !isGroupCategoriesByParent"
-                  @toggleGroupByParentRounded="isGroupCategoriesByParentRounded = !isGroupCategoriesByParentRounded"
                   @changeViewOptions="(options: ViewOptions) => viewOptions = options"
                 />
               </div>
@@ -407,9 +408,9 @@ function onviewOptions() {
             <div
               v-if="cats.length > 0 && viewOptions.catsView === 'list'"
               :class="{
-                'grid gap-2 px-0': isGroupCategoriesByParent && isShowChilds,
-                'md:max-w-md': !isGroupCategoriesByParent || !isShowChilds,
-                'grid gap-1': viewOptions.isItemsBg,
+                'grid gap-2 px-0': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened,
+                'md:max-w-md': !viewOptions.catsList.isGrouped || !viewOptions.catsList.isOpened,
+                'grid gap-1': viewOptions.catsList.isItemsBg,
               }"
               class="pt-2"
             >
@@ -418,19 +419,16 @@ function onviewOptions() {
                 :key="item.id"
                 :item
                 :viewOptions
-                :isShowLinesChart
-                :isGroupCategoriesByParent
                 :biggestCatNumber
-                :isHideDots="isShowChilds"
-                :lineWidth="(isGroupCategoriesByParent && isShowChilds) || isShowLinesChart ? 0 : 1"
+                :isHideDots="viewOptions.catsList.isOpened"
+                :lineWidth="(viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines ? 0 : 1"
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-                :class="{ 'bg-item-9 rounded-lg -border border-item-5 overflow-hidden': isGroupCategoriesByParent && isShowChilds }"
-                :isSimpleIcon="(isGroupCategoriesByParent && isShowChilds) || isSimpleIcon"
+                :class="{ 'bg-item-9 rounded-lg -border border-item-5 overflow-hidden': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
                 @click="onClickCategory"
                 @onClickIcon="onClickCategoryRounded"
               >
                 <div
-                  v-if="isGroupCategoriesByParent && isShowChilds"
+                  v-if="viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened"
                   class="pl-2 pt-1 -grid flex flex-wrap gap-1 -border-b border-item-5 pb-3"
                 >
                   <StatLinesItemRound2
@@ -452,7 +450,6 @@ function onviewOptions() {
                 v-for="item in catsRounded"
                 :key="item.id"
                 :item
-                :isShowLinesChart
                 :biggestCatNumber
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 @click="onClickCategoryRounded"
@@ -486,17 +483,6 @@ function onviewOptions() {
 
           <TrnsNoTrns v-if="selectedTrnsIdsForTrnsList.length === 0" />
         </div>
-
-        <!-- Empty -->
-        <!-- <div
-          v-if="selectedTrnsIdsForTrnsList?.length === 0"
-          class="flex-col gap-2 flex-center h-full py-3 text-center text-secondary"
-        >
-          <UiIconBase name="mdi mdi-palm-tree" class="!text-3xl" />
-          <div class="text-md">
-            {{ $t("trns.noTrns") }}
-          </div>
-        </div> -->
       </div>
     </div>
 
@@ -514,10 +500,19 @@ function onviewOptions() {
         </template>
 
         <template #default="{ close }">
-          <div class="scrollerBlock grid gap-4 p-3 overflow-hidden max-h-[98dvh] overflow-y-auto">
+          <div class="scrollerBlock grid gap-2 p-3 overflow-hidden max-h-[98dvh] overflow-y-auto">
             <UiTitle9>{{ t('dates.select') }}</UiTitle9>
 
-            <div class="grid items-start gap-6">
+            <div class="grid items-start gap-8">
+              <div class="flex gap-2">
+                <DateLinkItem @click="set7Days(close)">
+                  7 days
+                </DateLinkItem>
+                <DateLinkItem @click="set12Months(close)">
+                  12 months
+                </DateLinkItem>
+              </div>
+
               <div class="grid gap-2">
                 <div class="flex gap-2">
                   <DateLinkItem @click="removeInterval">
@@ -575,11 +570,11 @@ function onviewOptions() {
                   />
                 </div>
               </div>
-            </div>
 
-            <UiButtonBlue @click="close">
-              {{ $t('close') }}
-            </UiButtonBlue>
+              <UiButtonBlue @click="close">
+                {{ $t('close') }}
+              </UiButtonBlue>
+            </div>
           </div>
         </template>
       </BaseBottomSheet2>
@@ -646,9 +641,5 @@ function onviewOptions() {
         </div>
       </BaseBottomSheet2>
     </Teleport>
-
-    <div @click="onviewOptions">
-      <pre>{{ viewOptions }}</pre>
-    </div>
   </div>
 </template>

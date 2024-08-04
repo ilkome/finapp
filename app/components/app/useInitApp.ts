@@ -70,12 +70,8 @@ export function useInitApp() {
     })
   }
 
-  async function loadData() {
-    await loadFromCache()
-    // loadFromDB()
-  }
-
   return {
-    loadData,
+    loadFromCache,
+    loadFromDB,
   }
 }

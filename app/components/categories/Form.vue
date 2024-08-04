@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { saveData } from '../../../services/firebase/api'
 import { generateId } from '~/utils/generateId'
 import icons from '~/assets/js/icons'
 import type { CategoryForm, CategoryId, CategoryItem } from '~/components/categories/types'
 import { allColors } from '~/assets/js/colors'
+import { colors as colorsTailwind } from '~/components/color/colors'
 import { getPreparedFormData } from '~/components/categories/getForm'
-import { saveData } from '../../../services/firebase/api'
 import { useUserStore } from '~/components/user/useUser'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 
@@ -45,13 +46,7 @@ const tabs = computed(() => [{
  * Find category with color
  */
 function findCategoryIconByColor(color) {
-  const categoriesItems: Record<CategoryId, CategoryItem> = categoriesStore.items
-  if (!categoriesItems)
-    return
-
-  return categoriesStore.categoriesRootIds
-    ?.find(id => categoriesItems[id]?.color === color)
-    ?.icon
+  return categoriesStore.categoriesRootIds.map(id => categoriesStore.items[id]).find(c => c?.color === color)?.icon
 }
 
 /**
@@ -179,9 +174,42 @@ div
     //---------------------------------
     template(v-if="activeTab === 'colors'")
       .pb-4
+        //- Tailwind
+        .pb-12
+          .pb-1(
+            v-for="(colorsGroup, groupIdx) in colorsTailwind"
+            :key="groupIdx"
+          )
+            .colors(
+              class="!grid-cols-11"
+            )
+              template(v-for="(color, idx) in colorsGroup")
+                .iconItem(
+                  v-if="+idx !== 50 && +idx !== 100 && +idx !== 200 && +idx !== 300 && +idx !== 950"
+                  :class="{ _active: color === categoryForm.color, 'pointer-events-none': !color }"
+                  :style="{ background: color === categoryForm.color ? color : 'transparent' }"
+                  class="!size-9"
+                  @click="emit('updateValue', 'color', color)"
+                )
+                  template(v-if="findCategoryIconByColor(color)")
+                    Icon3(
+                      :icon="color === categoryForm.color ? categoryForm.icon : findCategoryIconByColor(color)"
+                      :background="color"
+                      round2
+                    )
+                  template(v-else-if="color === categoryForm.color")
+                    Icon3(
+                      :icon="categoryForm.icon"
+                      background="transparent"
+                      big
+                    )
+                  template(v-else-if="color")
+                    .colorPreview(:style="{ background: color }")
+
         .pb-1(
           v-for="(colorsGroup, groupIdx) in allColors"
           :key="groupIdx"
+          class="hidden"
         )
           .colors
             .iconItem(
@@ -261,7 +289,6 @@ div
   justify-content center
   width 90%
   height 90%
-  border-radius 50%
 
 .colors
   display grid

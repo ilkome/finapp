@@ -3,19 +3,17 @@ import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory } from '~/components/stat/useNewStat'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import type { ViewOptions } from '~/components/stat/types'
 
 const props = defineProps<{
   biggestCatNumber: number
   insideClass?: string
   insideStyle?: string
   isActive?: boolean
-  isGroupCategoriesByParent?: boolean
   isHideDots?: boolean
-  isShowLinesChart?: boolean
-  isSimpleIcon?: boolean
   item: TotalCategory
   lineWidth?: number
-  viewOptions?: unknown
+  viewOptions?: ViewOptions
 }>()
 
 const emit = defineEmits<{
@@ -40,10 +38,11 @@ function getBarStyle() {
   <div
     :class="[props.insideClass, {
       '-bg-item-4 ': props.isActive,
-      'bg-item-9 rounded-lg': props.viewOptions?.isItemsBg,
+      'bg-item-9 rounded-lg': props.viewOptions?.catsList.isItemsBg,
+      'group': !props.viewOptions?.catsList.isItemsBg,
     }]"
     :style="props.insideStyle"
-    class="relative group"
+    class="relative"
   >
     <slot name="before" />
     <UiElement
@@ -51,12 +50,12 @@ function getBarStyle() {
       class="relative"
       isShowToggle2
       insideClasses="!min-h-[44px]"
-      :lineWidth="props.lineWidth"
+      :lineWidth="!props.viewOptions?.catsList.isItemsBg && props.lineWidth"
       @click="emit('click', props.item.id)"
     >
       <template #line>
         <div
-          v-if="props.isShowLinesChart"
+          v-if="props.viewOptions?.catsList.isLines"
           class="absolute left-0 bottom-2 w-full pl-12 pr-3 rounded-lg overflow-hidden"
         >
           <div class="bg-item-3 rounded-lg overflow-hidden">
@@ -70,7 +69,7 @@ function getBarStyle() {
 
       <template #leftIcon>
         <UiIconBase
-          v-if="isSimpleIcon"
+          v-if="props.viewOptions?.catsList.isRoundIcon"
           :color="category?.color"
           :name="category?.icon"
           class="!text-xl leading-none !w-6 ml-1"
@@ -88,7 +87,7 @@ function getBarStyle() {
 
       <div
         :class="{
-          'pb-2 pt-1': props.isShowLinesChart,
+          'pb-2 pt-1': props.viewOptions?.catsList.isLines,
         }"
         class="flex gap-3 items-baseline"
       >
@@ -119,7 +118,7 @@ function getBarStyle() {
       <div
         v-if="props.item.value !== 0"
         :class="{
-          'pb-1': props.isShowLinesChart,
+          'pb-1': props.viewOptions?.catsList.isLines,
         }"
         class="grow pr-1"
       >

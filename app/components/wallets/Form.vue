@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { ToastOptions } from 'vue3-toastify'
+import { saveData } from '../../../services/firebase/api'
 import type { WalletForm, WalletId } from '~/components/wallets/types'
 import { generateId } from '~/utils/generateId'
 import { getPreparedFormData } from '~/components/wallets/getForm'
-import { saveData } from '../../../services/firebase/api'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useUserStore } from '~/components/user/useUser'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'

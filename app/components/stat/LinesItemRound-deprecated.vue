@@ -8,7 +8,6 @@ import type { TotalCategory } from '~/components/stat/useNewStat'
 const props = defineProps<{
   biggestCatNumber: number
   isActive?: boolean
-  isShowLinesChart?: boolean
   item: TotalCategory
 }>()
 

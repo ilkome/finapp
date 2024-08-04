@@ -7,7 +7,6 @@ import type { TotalCategory } from '~/components/stat/useNewStat'
 
 const props = defineProps<{
   isActive?: boolean
-  isShowLinesChart?: boolean
   item: TotalCategory
 }>()
 
