@@ -18,9 +18,8 @@ const emit = defineEmits<{
 
 const categoriesStore = useCategoriesStore()
 
-const childCategoriesIds = computed(() =>
-  categoriesStore.getChildsIds(props.categoryId),
-)
+const childCategoriesIds = computed(() => categoriesStore.getChildsIds(props.categoryId))
+const parentCategory = computed(() => categoriesStore.items[props.category.parentId])
 </script>
 
 <template>
@@ -33,41 +32,16 @@ const childCategoriesIds = computed(() =>
       <UiIconBase
         :color="category.color"
         :name="category.icon"
-        @click="e => emit('filter', e)"
+        @click="(e: Event) => emit('filter', e)"
       />
-
-      <!-- <div
-        class="-size-8"
-      >
-        <UiIconBase
-          :name="category?.icon"
-          :color="category?.color"
-          invert
-        />
-      </div> -->
     </template>
 
     <div class="grid gap-0.5 text-3">
-      <!-- Parent category name -->
-      <div
-        v-if="categoriesStore.items[categoryId].parentId"
-        class="text-2xs opacity-90 leading-none"
-      >
-        {{ categoriesStore.items[categoriesStore.items[categoryId].parentId].name }}
-      </div>
-
-      <!-- Category name -->
-      <div class="flex items-center gap-2 text-sm leading-none">
-        {{ categoriesStore.items[categoryId].name }}
-
-        <!-- Has childs -->
-        <div
-          v-if="!props.isHideDots && childCategoriesIds.length > 0"
-          class="text-md font-unica leading-none"
-        >
-          ...
-        </div>
-      </div>
+      <CategoriesName
+        :category
+        :parentCategory
+        :hasChildren="childCategoriesIds.length > 0"
+      />
     </div>
   </UiElement>
 </template>

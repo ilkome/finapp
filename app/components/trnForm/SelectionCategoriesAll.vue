@@ -33,7 +33,6 @@ const trnFormStore = useTrnFormStore()
           :activeItemId="parentCategoryId || trnFormStore.values.categoryId"
           :hide="emit('close')"
           :ids="categoriesStore.categoriesRootIds"
-          class="grid 2sm:grid-cols-2"
           @onClickParent="id => emit('onSelectParentCategory', id)"
           @onSelected="id => emit('onSelectCategory', id)"
         />

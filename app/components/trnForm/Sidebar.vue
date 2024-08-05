@@ -87,7 +87,7 @@ function onSelectCategory(id: CategoryId) {
                   <CategoriesSelector2
                     :activeItemId="trnFormStore.values.categoryId"
                     :ids="categoriesStore.favoriteCategoriesIds"
-                    class="grid 2sm:grid-cols-2 !p-0 !px-3"
+                    class="!px-3"
                     @onSelected="onSelectCategory"
                   />
                 </div>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
 defineProps<{
@@ -11,6 +12,8 @@ const emit = defineEmits<{
   onOpen: [slide: number]
   onSelected: [id: CategoryId]
 }>()
+
+const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
@@ -33,6 +36,7 @@ const emit = defineEmits<{
       <CategoriesItem
         :category
         :categoryId
+        :hasChildren="categoriesStore.getChildsIds(categoryId).length > 0"
         insideClasses="bg-item-4 min-h-[46px] py-2"
       />
 

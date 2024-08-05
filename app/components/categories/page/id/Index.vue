@@ -58,7 +58,7 @@ useHead({
       </template>
     </UiHeader>
 
-    <div class="grid gap-2 px-2 pt-2 lg:px-4 xl:px-16 pb-24">
+    <div class="grid gap-2 -px-2 -pt-2 lg:px-4 xl:-px-16 pb-24">
       <StatMiniItem
         type="sum"
         :isQuickModal="!categoriesStore.hasChildren(categoryId)"

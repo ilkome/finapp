@@ -48,7 +48,7 @@ const slots = useSlots()
 
       <div
         v-if="slots.leftIcon"
-        class="flex-center min-w-6"
+        class="flex-center min-w-8"
       >
         <slot name="leftIcon" />
       </div>

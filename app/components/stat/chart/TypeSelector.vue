@@ -1,0 +1,28 @@
+<script setup lang="ts">
+const chartType = defineModel('chartType', {
+  default: 'bar',
+})
+
+const { t } = useI18n()
+
+const items = computed(() => [{
+  label: t('chart.types.bar'),
+  value: 'bar',
+}, {
+  label: t('chart.types.line'),
+  value: 'line',
+}])
+</script>
+
+<template>
+  <div class="flex gap-0">
+    <DateLinkItem2
+      v-for="item in items"
+      :key="item.value"
+      :isActive="chartType === item.value"
+      @click="chartType = item.value"
+    >
+      {{ item.label }}
+    </DateLinkItem2>
+  </div>
+</template>

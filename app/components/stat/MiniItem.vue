@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { z } from 'zod'
+import defu from 'defu'
 import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '../categories/types'
 import type { ChartType } from '~/components/stat/chart/types'
@@ -26,21 +26,20 @@ const props = defineProps<{
 }>()
 
 const filter = inject('filter') as FilterProvider
-const { t } = useI18n()
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const { getCats, getSeries } = useNewStat()
 const categoriesStore = useCategoriesStore()
-const { addInterval, getPeriodsWithEmptyTrnsIds, grouped, interval, range, removeInterval, setRange, setRangeByCalendar, setRangeByPeriod } = useDateRange({
-  key: `finapp-${props.type}${props.storageKey}`,
+const intervalRange = useDateRange({
+  key: `finapp-${props.type}${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`,
 })
 
-const newBaseStorageKey = computed(() => `finapp-${grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
+const newBaseStorageKey = computed(() => `finapp-${intervalRange.grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
 
-const groupedPeriods = computed(() => getPeriodsWithEmptyTrnsIds({
-  duration: grouped.value.duration || 1,
-  period: grouped.value.period,
-  range: range.value,
+const groupedPeriods = computed(() => intervalRange.getPeriodsWithEmptyTrnsIds({
+  duration: intervalRange.grouped.value.duration || 1,
+  period: intervalRange.grouped.value.period,
+  range: intervalRange.range.value,
 }))
 
 const maxRange = computed(() => useTrnsStore().getRange(props.trnsIds))
@@ -66,15 +65,24 @@ const filteredTrnsIds = computed(() => {
 })
 
 const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`, true)
-const isDayToday = computed(() => interval.value.period === 'day' && interval.value.duration === 1 && range.value.end < dayjs().endOf('day').valueOf())
+const isDayToday = computed(() => intervalRange.interval.value.period === 'day' && intervalRange.interval.value.duration === 1 && intervalRange.range.value.end < dayjs().endOf('day').valueOf())
 
+/**
+ * View Options
+ */
 const viewOptions = useStorage<ViewOptions>(`${newBaseStorageKey.value}-viewOptions`, { ...defaultViewOptions })
+function changeViewOptions(newViewOptions: DeepPartial<ViewOptions>) {
+  viewOptions.value = defu(newViewOptions, viewOptions.value)
+}
 onBeforeMount(() => {
   if (!ViewOptionsSchema.safeParse(viewOptions.value).success) {
     viewOptions.value = { ...defaultViewOptions }
   }
 })
 
+/**
+ * Chart
+ */
 const chartType = useStorage<ChartType>(`${newBaseStorageKey.value}-chartType`, 'bar')
 
 const xAxisLabels = computed(() => groupedPeriods.value.map(r => +r.start) ?? [])
@@ -97,7 +105,7 @@ function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
 
 const selectedPeriod = useStorage<number>(`${newBaseStorageKey.value}-selectedPeriod`, -1)
 
-watch(range, () => {
+watch(intervalRange.range, () => {
   selectedPeriod.value = -1
 })
 
@@ -153,8 +161,8 @@ const selectedTrnsIdsForTrnsList = computed(() => {
 
   return trnsStore.getStoreTrnsIds({
     dates: {
-      from: range.value.start,
-      until: range.value.end,
+      from: intervalRange.range.value.start,
+      until: intervalRange.range.value.end,
     },
     trnsIds: filteredTrnsIds.value,
   }, { includesChildCategories: false })
@@ -169,8 +177,8 @@ const trnsIdsForTotals = computed(() => {
 
   return trnsStore.getStoreTrnsIds({
     dates: {
-      from: range.value.start,
-      until: range.value.end,
+      from: intervalRange.range.value.start,
+      until: intervalRange.range.value.end,
     },
     trnsIds: props.trnsIds,
   }, { includesChildCategories: false })
@@ -217,7 +225,7 @@ function set7Days(close?: () => void) {
   viewOptions.value.catsList.isGrouped = false
   viewOptions.value.catsList.isOpened = false
 
-  setRangeByPeriod({
+  intervalRange.setRangeByPeriod({
     grouped: { duration: 1, period: 'day' },
     interval: { duration: 7, period: 'day' },
   })
@@ -231,7 +239,7 @@ function set12Months(close?: () => void) {
   viewOptions.value.catsList.isGrouped = true
   viewOptions.value.catsList.isOpened = false
 
-  setRangeByPeriod({
+  intervalRange.setRangeByPeriod({
     grouped: { duration: 1, period: 'month' },
     interval: { duration: 12, period: 'month' },
   })
@@ -250,54 +258,22 @@ function set12Months(close?: () => void) {
         <div class="@2xl/stat:-max-w-md md:max-w-md -xl:p-2 -xl:bg-item-9 xl:rounded-xl">
           <!-- Chart -->
           <div
-            v-if="isShowChart && (interval.duration !== 1 || interval.period !== 'day')"
+            v-if="isShowChart && (intervalRange.interval.value.duration !== 1 || intervalRange.interval.value.period !== 'day')"
             class="pb-2"
           >
             <div class="flex justify-between">
-              <!-- Chart types -->
-              <div class="flex gap-0">
-                <DateLinkItem2 :isActive="chartType === 'bar'" @click="chartType = 'bar'">
-                  {{ t('chart.types.bar') }}
-                </DateLinkItem2>
-
-                <DateLinkItem2 :isActive="chartType === 'line'" @click="chartType = 'line'">
-                  {{ t('chart.types.line') }}
-                </DateLinkItem2>
-              </div>
-
-              <div class="flex gap-0">
-                <DateLinkItem2
-                  v-if="grouped.period !== 'day'"
-                  :isActive="grouped.period === 'day'"
-                  @click="grouped.period = 'day'"
-                >
-                  {{ $t(`dates.day.simple`) }}
-                </DateLinkItem2>
-
-                <DateLinkItem2
-                  v-if="dayjs(range.end).diff(range.start, 'day') >= 7"
-                  :isActive="grouped.period === 'week'"
-                  @click="grouped.period = 'week'"
-                >
-                  {{ $t(`dates.week.simple`) }}
-                </DateLinkItem2>
-
-                <DateLinkItem2
-                  v-if="dayjs(range.end).diff(range.start, 'day') >= 30"
-                  :isActive="grouped.period === 'month'"
-                  @click="grouped.period = 'month'"
-                >
-                  {{ $t(`dates.month.simple`) }}
-                </DateLinkItem2>
-              </div>
+              <LazyStatChartTypeSelector v-model:chartType="chartType" />
+              <LazyStatChartIntervals
+                v-model:period="intervalRange.grouped.value.period"
+                :range="intervalRange.range.value"
+              />
             </div>
 
             <StatChartView2
               :xAxisLabels
               :chartType
-              :period="grouped.period"
+              :period="intervalRange.grouped.value.period"
               :series
-              class="!h-40 px-2"
               @click="onClickChart"
             />
           </div>
@@ -305,28 +281,28 @@ function set12Months(close?: () => void) {
           <div class="flex items-end justify-between gap-2">
             <UiTitle10 @click="isShowDateSelector = !isShowDateSelector">
               <DateViewRange
-                :range="selectedPeriod !== -1 ? groupedPeriods[selectedPeriod] : range"
-                :interval
+                :range="selectedPeriod !== -1 ? (groupedPeriods[selectedPeriod] ? groupedPeriods[selectedPeriod] : intervalRange.range.value) : intervalRange.range.value"
+                :interval="intervalRange.interval.value"
               />
             </UiTitle10>
 
             <div class="flex gap-1">
               <DateNavHome
-                v-if="selectedPeriod !== -1 || range.start !== dayjs().subtract(interval.duration - 1, interval.period).startOf(interval.period).valueOf() && range.end !== dayjs().endOf(interval.period).valueOf()"
-                :interval
-                @setRange="setRange"
+                v-if="selectedPeriod !== -1 || intervalRange.range.value.start !== dayjs().subtract(intervalRange.interval.value.duration - 1, intervalRange.interval.value.period).startOf(intervalRange.interval.value.period).valueOf() && intervalRange.range.value.end !== dayjs().endOf(intervalRange.interval.value.period).valueOf()"
+                :interval="intervalRange.interval.value"
+                @setRange="intervalRange.setRange"
               />
 
               <DateNav
-                v-if="range.start !== maxRange.start && range.end !== maxRange.end"
-                :interval
+                v-if="intervalRange.range.value.start !== maxRange.start && intervalRange.range.value.end !== maxRange.end"
+                :interval="intervalRange.interval.value"
                 :maxRange
-                :range
-                @setRange="setRange"
+                :range="intervalRange.range.value"
+                @setRange="intervalRange.setRange"
               />
 
               <div
-                v-if="interval.duration !== 1 || interval.period !== 'day'"
+                v-if="intervalRange.interval.value.duration !== 1 || intervalRange.interval.value.period !== 'day'"
                 :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
                 class="justify-center text-xl"
                 @click="isShowChart = !isShowChart"
@@ -399,7 +375,7 @@ function set12Months(close?: () => void) {
                   v-if="isShown"
                   :viewOptions
                   class="-pr-1"
-                  @changeViewOptions="(options: ViewOptions) => viewOptions = options"
+                  @changeViewOptions="changeViewOptions"
                 />
               </div>
             </template>
@@ -410,7 +386,7 @@ function set12Months(close?: () => void) {
               :class="{
                 'grid gap-2 px-0': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened,
                 'md:max-w-md': !viewOptions.catsList.isGrouped || !viewOptions.catsList.isOpened,
-                'grid gap-2': viewOptions.catsList.isItemsBg,
+                'grid gap-1': viewOptions.catsList.isItemsBg,
               }"
               class="pt-2"
             >
@@ -421,7 +397,7 @@ function set12Months(close?: () => void) {
                 :viewOptions
                 :biggestCatNumber
                 :isHideDots="viewOptions.catsList.isOpened"
-                :lineWidth="(viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines ? 0 : 1"
+                :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 :class="{ 'bg-item-9 rounded-lg -border border-item-5 overflow-hidden': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
                 @click="onClickCategory"
@@ -435,7 +411,6 @@ function set12Months(close?: () => void) {
                     v-for="itemInside in getCats(item.trnsIds)"
                     :key="itemInside.id"
                     :item="itemInside"
-                    class="bg-item-3"
                     @click="onClickCategory"
                   />
                 </div>
@@ -487,97 +462,14 @@ function set12Months(close?: () => void) {
     </div>
 
     <Teleport to="#teleports">
-      <!-- Date Selector -->
-      <BaseBottomSheet2
+      <StatDateModalSelector
         v-if="isShowDateSelector"
-        isShow
-        drugClassesCustom="bg-foreground-1 max-w-xl grid md:mb-12 max-h-[98dvh]"
-        @closed="isShowDateSelector = false"
-      >
-        <template #handler="{ close }">
-          <BaseBottomSheetHandler />
-          <BaseBottomSheetClose @onClick="close" />
-        </template>
-
-        <template #default="{ close }">
-          <div class="scrollerBlock grid gap-2 p-3 overflow-hidden max-h-[98dvh] overflow-y-auto">
-            <UiTitle9>{{ t('dates.select') }}</UiTitle9>
-
-            <div class="grid items-start gap-8">
-              <div class="flex gap-2">
-                <DateLinkItem @click="set7Days(close)">
-                  7 days
-                </DateLinkItem>
-                <DateLinkItem @click="set12Months(close)">
-                  12 months
-                </DateLinkItem>
-              </div>
-
-              <div class="grid gap-2">
-                <div class="flex gap-2">
-                  <DateLinkItem @click="removeInterval">
-                    -
-                  </DateLinkItem>
-
-                  <DateLinkItemNoBg>{{ `Last ${interval.duration} ${interval.period}` }}</DateLinkItemNoBg>
-
-                  <DateLinkItem @click="addInterval">
-                    +
-                  </DateLinkItem>
-                </div>
-
-                <div class="flex flex-wrap gap-2">
-                  <DateRanges
-                    :interval
-                    :maxRange
-                    @setRange="setRange"
-                    @setRangeByPeriod="(d: FullDuration) => { setRangeByPeriod(d); close() }"
-                  />
-                </div>
-
-                <div class="flex flex-wrap gap-2">
-                  <DateRanges2
-                    :interval
-                    :maxRange
-                    @setRangeByPeriod="(d: FullDuration) => { setRangeByPeriod(d); close() }"
-                  />
-                </div>
-
-                <DateDaySelector
-                  :groupBy="grouped.period"
-                  :range
-                  @setRangeByCalendar="setRangeByCalendar"
-                />
-              </div>
-
-              <div class="grid gap-1">
-                <div class="flex gap-2">
-                  <DateLinkItem @click="--grouped.duration">
-                    -
-                  </DateLinkItem>
-
-                  <DateLinkItemNoBg>{{ `Grouped by ${grouped.duration} ${grouped.period}` }}</DateLinkItemNoBg>
-
-                  <DateLinkItem @click="++grouped.duration">
-                    +
-                  </DateLinkItem>
-                </div>
-
-                <div class="flex flex-wrap gap-2">
-                  <DateIntervals
-                    :grouped
-                    @onSelect="(pd: Interval) => { grouped = pd; close() }"
-                  />
-                </div>
-              </div>
-
-              <UiButtonBlue @click="close">
-                {{ $t('close') }}
-              </UiButtonBlue>
-            </div>
-          </div>
-        </template>
-      </BaseBottomSheet2>
+        :intervalRange="intervalRange"
+        :maxRange="maxRange"
+        @set7Days="set7Days"
+        @set12Months="set12Months"
+        @onClose="isShowDateSelector = false"
+      />
 
       <!-- Categories stat -->
       <BaseBottomSheet2

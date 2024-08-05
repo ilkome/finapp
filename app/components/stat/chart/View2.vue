@@ -99,7 +99,10 @@ function setChartSeries(series: unknown[]) {
 </script>
 
 <template>
-  <div class="h-48" @click="onClickChart">
+  <div
+    class="h-40 px-2"
+    @click="onClickChart"
+  >
     <VChart
       ref="chartRef"
       :option

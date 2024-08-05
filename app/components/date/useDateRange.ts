@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
-import type { FullDuration, Period, Interval, Range } from '~/components/date/types'
+import type { FullDuration, Interval, Period, Range } from '~/components/date/types'
 
 export function useDateRange({ key }: { key: string }) {
   const grouped = useStorage<Interval>(`${key}-grouped`, {
@@ -11,6 +11,11 @@ export function useDateRange({ key }: { key: string }) {
   const interval = useStorage<Interval>(`${key}-interval`, {
     duration: 12,
     period: 'month',
+  })
+
+  const viewConfig = useStorage(`${key}-viewConfig`, {
+    isShowAll: false,
+    isSkipEmpty: false,
   })
 
   const range = useStorage(`${key}-range`, {
@@ -90,25 +95,42 @@ export function useDateRange({ key }: { key: string }) {
   }
 
   function addInterval() {
+    ++grouped.value.duration
+  }
+
+  function delInterval() {
+    --grouped.value.duration
+  }
+
+  function plusRange() {
     ++interval.value.duration
     range.value.start = dayjs(range.value.start).subtract(1, interval.value.period).startOf(interval.value.period).valueOf()
   }
 
-  function removeInterval() {
+  function minusRange() {
     --interval.value.duration
     range.value.start = dayjs(range.value.start).add(1, interval.value.period).startOf(interval.value.period).valueOf()
   }
 
+  function setGrouped(values: Interval) {
+    grouped.value = values
+  }
+
   return {
     addInterval,
+    delInterval,
     getPeriodsWithEmptyTrnsIds,
     grouped,
     interval,
-
+    minusRange,
+    plusRange,
     range,
-    removeInterval,
+    setGrouped,
     setRange,
     setRangeByCalendar,
     setRangeByPeriod,
+    viewConfig,
   }
 }
+
+export type UseDateRange = ReturnType<typeof useDateRange>

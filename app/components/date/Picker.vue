@@ -31,7 +31,6 @@ const attrs = {
 
 <template>
   <VCalendarDatePicker v-model.range="date" :rows="2" v-bind="{ ...attrs, ...$attrs }" />
-  <!-- <VCalendarDatePicker v-else v-model="date" v-bind="{ ...attrs, ...$attrs }" /> -->
 </template>
 
 <style>

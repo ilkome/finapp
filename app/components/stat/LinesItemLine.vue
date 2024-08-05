@@ -25,6 +25,7 @@ const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
 const category = computed(() => categoriesStore.items[props.item.id])
+const parentCategory = computed(() => categoriesStore.items[category.value.parentId])
 
 function getBarStyle() {
   return {
@@ -50,13 +51,13 @@ function getBarStyle() {
       class="relative"
       isShowToggle2
       insideClasses="!min-h-[48px]"
-      :lineWidth="!props.viewOptions?.catsList.isItemsBg && props.lineWidth"
+      :lineWidth="!props.viewOptions?.catsList.isItemsBg ? props.lineWidth : 0"
       @click="emit('click', props.item.id)"
     >
       <template #line>
         <div
           v-if="props.viewOptions?.catsList.isLines"
-          class="absolute left-0 bottom-3 w-full pl-12 pr-3 rounded-lg overflow-hidden"
+          class="absolute left-0 bottom-2 w-full pl-[52px] pr-3 rounded-lg overflow-hidden"
         >
           <div class="bg-item-3 rounded-lg overflow-hidden">
             <div
@@ -72,53 +73,30 @@ function getBarStyle() {
           v-if="props.viewOptions?.catsList.isRoundIcon"
           :color="category?.color"
           :name="category?.icon"
-          class="!text-xl leading-none !w-6 ml-1"
+          invert
+          class="!text-base leading-none !w-7 ml-0"
           @click.stop="emit('onClickIcon', props.item.id)"
         />
         <UiIconBase
           v-else
           :color="category?.color"
           :name="category?.icon"
-          invert
-          class="!text-base leading-none !w-7 ml-0"
+          class="!text-xl leading-none !w-6 ml-1"
           @click.stop="emit('onClickIcon', props.item.id)"
         />
       </template>
 
-      <div
-        :class="{
-          '!pb-2': props.viewOptions?.catsList.isLines,
-        }"
-        class="flex gap-3 items-baseline pt-0"
-      >
-        <!-- Category name -->
-        <div class="flex items-center gap-2 text-3 text-sm leading-none">
-          {{ category?.name }}
-          <!-- Has childs -->
-          <div
-            v-if="!isHideDots && categoriesStore.hasChildren(props.item.id)"
-            class="leading-none text-sm text-4"
-          >
-            ...
-          </div>
-        </div>
-
-        <!-- Parent category name -->
-        <template v-if="!categoriesStore.hasChildren(props.item.id) && category?.parentId">
-          <div class="leading-none text-2xs text-4">
-            •
-          </div>
-
-          <div class="leading-none text-2xs text-4">
-            {{ categoriesStore.items[category?.parentId]?.name }}
-          </div>
-        </template>
-      </div>
+      <CategoriesName
+        :class="{ '!pb-2': props.viewOptions?.catsList.isLines }"
+        :category
+        :parentCategory
+        :hasChildren="categoriesStore.getChildsIds(props.item.id).length > 0"
+      />
 
       <div
         v-if="props.item.value !== 0"
         :class="{
-          'pt-0': props.viewOptions?.catsList.isLines,
+          '!pb-2': props.viewOptions?.catsList.isLines,
         }"
         class="grow pr-1"
       >

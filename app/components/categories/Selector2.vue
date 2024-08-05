@@ -42,6 +42,7 @@ function onFilter(id: CategoryId) {
       :activeItemId="props.activeItemId"
       :categoryId="categoryId"
       :category="categoriesStore.items[categoryId]"
+      :lineWidth="1"
       class="group"
       @click="select(categoryId)"
       @filter.stop="onFilter(categoryId)"

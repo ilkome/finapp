@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FullDuration, Interval, Period, Range } from '~/components/date/types'
+import type { Interval } from '~/components/date/types'
 
 const props = defineProps<{
   grouped: Interval
