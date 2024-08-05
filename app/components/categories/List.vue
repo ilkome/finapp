@@ -17,16 +17,16 @@ const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
-  <div class="">
-    <CategoriesItem
+  <!-- <div class=""> -->
+  <div class="grid grid-cols-3 gap-2 -items-center -justify-center -place-items-center">
+    <CategoriesItem2
       v-for="categoryId in ids"
       :key="categoryId"
       :activeItemId="activeItemId"
       :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
       :slider="slider"
-      :lineWidth="2"
-      class="group"
+      class=""
       @click="emit('click', categoryId)"
       @onClickIcon="emit('onClickIcon', categoryId)"
     />

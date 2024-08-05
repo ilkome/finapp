@@ -49,14 +49,14 @@ function getBarStyle() {
       :isActive2="props.isActive"
       class="relative"
       isShowToggle2
-      insideClasses="!min-h-[44px]"
+      insideClasses="!min-h-[48px]"
       :lineWidth="!props.viewOptions?.catsList.isItemsBg && props.lineWidth"
       @click="emit('click', props.item.id)"
     >
       <template #line>
         <div
           v-if="props.viewOptions?.catsList.isLines"
-          class="absolute left-0 bottom-2 w-full pl-12 pr-3 rounded-lg overflow-hidden"
+          class="absolute left-0 bottom-3 w-full pl-12 pr-3 rounded-lg overflow-hidden"
         >
           <div class="bg-item-3 rounded-lg overflow-hidden">
             <div
@@ -87,9 +87,9 @@ function getBarStyle() {
 
       <div
         :class="{
-          'pb-2 pt-1': props.viewOptions?.catsList.isLines,
+          '!pb-2': props.viewOptions?.catsList.isLines,
         }"
-        class="flex gap-3 items-baseline"
+        class="flex gap-3 items-baseline pt-0"
       >
         <!-- Category name -->
         <div class="flex items-center gap-2 text-3 text-sm leading-none">
@@ -118,7 +118,7 @@ function getBarStyle() {
       <div
         v-if="props.item.value !== 0"
         :class="{
-          'pb-1': props.viewOptions?.catsList.isLines,
+          'pt-0': props.viewOptions?.catsList.isLines,
         }"
         class="grow pr-1"
       >

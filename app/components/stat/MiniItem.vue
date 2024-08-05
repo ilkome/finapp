@@ -410,7 +410,7 @@ function set12Months(close?: () => void) {
               :class="{
                 'grid gap-2 px-0': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened,
                 'md:max-w-md': !viewOptions.catsList.isGrouped || !viewOptions.catsList.isOpened,
-                'grid gap-1': viewOptions.catsList.isItemsBg,
+                'grid gap-2': viewOptions.catsList.isItemsBg,
               }"
               class="pt-2"
             >
@@ -431,7 +431,7 @@ function set12Months(close?: () => void) {
                   v-if="viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened"
                   class="pl-2 pt-1 -grid flex flex-wrap gap-1 -border-b border-item-5 pb-3"
                 >
-                  <StatLinesItemRound2
+                  <StatLinesItemRound
                     v-for="itemInside in getCats(item.trnsIds)"
                     :key="itemInside.id"
                     :item="itemInside"
@@ -444,7 +444,7 @@ function set12Months(close?: () => void) {
 
             <div
               v-if="cats.length > 0 && viewOptions.catsView === 'round'"
-              class="flex flex-wrap gap-1 @3xl/stat:gap-2 pt-2 pl-2"
+              class="flex flex-wrap gap-1 @3xl/stat:gap-2 pt-2 pl-1"
             >
               <StatLinesItemRound
                 v-for="item in catsRounded"

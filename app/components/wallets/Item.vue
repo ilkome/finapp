@@ -42,7 +42,7 @@ function changeCreditView() {
   <UiElement
     :isActive="activeItemId === props.walletId"
     :isShowIcons="props.isShowIcons"
-    :insideClasses="props.insideClasses"
+    :insideClasses="[props.insideClasses, 'min-h-[48px]']"
     :lineWidth="props.lineWidth"
     class="relative"
     @click="emit('click', props.walletId)"

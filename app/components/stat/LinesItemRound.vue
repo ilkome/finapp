@@ -36,7 +36,7 @@ const category = computed(() => {
 
 <template>
   <div
-    class="relative flex gap-2 items-center text-secondary2 hocus:bg-item-5 p-1 px-1 rounded-full bg-item-4 overflow-hidden"
+    class="relative flex gap-2 items-center text-secondary2 hocus:bg-item-5 p-1 rounded-full bg-item-9 overflow-hidden"
     @click="emit('click', props.item.id)"
   >
     <div
@@ -55,19 +55,20 @@ const category = computed(() => {
       />
     </div>
 
-    <div class="text-xs">
+    <div class="text-xs text-3">
       {{ category.name }}
     </div>
 
     <div class="opacity-90 pr-1">
       <Amount
         :amount="props.item.value"
-        :type="props.item.value >= 0 ? 1 : 0"
         :currencyCode="currenciesStore.base"
         :isShowBaseRate="false"
+        :isShowSymbol="false"
+        :type="props.item.value >= 0 ? 1 : 0"
         align="left"
-        variant="sm"
         colorize="income"
+        variant="sm"
       />
     </div>
   </div>
