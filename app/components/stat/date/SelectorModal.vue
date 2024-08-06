@@ -1,0 +1,164 @@
+<script setup lang="ts">
+import type { UseDateRange } from '~/components/date/useDateRange'
+import type { FullDuration, Interval, Range } from '~/components/date/types'
+
+defineProps<{
+  intervalRange: UseDateRange
+  maxRange: Range
+}>()
+
+const emit = defineEmits<{
+  onClose: []
+  set7Days: [close: () => void]
+  set7DaysMini: [close: () => void]
+  set12Months: [close: () => void]
+}>()
+
+const { t } = useI18n()
+</script>
+
+<template>
+  <BaseBottomSheet2
+    isShow
+    drugClassesCustom="bg-foreground-1 max-w-xl grid md:mb-12 max-h-[98dvh]"
+    @closed="emit('onClose')"
+  >
+    <template #handler="{ close }">
+      <BaseBottomSheetHandler />
+      <BaseBottomSheetClose @onClick="close" />
+    </template>
+
+    <template #default="{ close }">
+      <div class="scrollerBlock grid p-3 pb-4 overflow-hidden max-h-[98dvh] overflow-y-auto">
+        <UiTitle9>{{ t('dates.select') }}</UiTitle9>
+
+        <div>
+          <UiToggle2
+            storageKey="finapp-date-modal-presets"
+            :initStatus="true"
+            :lineWidth="1"
+            openPadding="!pb-6"
+          >
+            <template #header="{ toggle, isShown }">
+              <UiTitle88 :isShown @click="toggle">
+                Presets
+              </UiTitle88>
+            </template>
+
+            <UiTabs2>
+              <DateLinkItem @click="emit('set7Days', close)">
+                7 days
+              </DateLinkItem>
+              <DateLinkItem @click="emit('set7DaysMini', close)">
+                7 days mini
+              </DateLinkItem>
+              <DateLinkItem @click="emit('set12Months', close)">
+                12 months
+              </DateLinkItem>
+            </UiTabs2>
+          </UiToggle2>
+
+          <UiToggle2
+            storageKey="finapp-date-modal-intervals"
+            :initStatus="true"
+            :lineWidth="1"
+            openPadding="!pb-6"
+          >
+            <template #header="{ toggle, isShown }">
+              <UiTitle88 :isShown @click="toggle">
+                Intervals
+              </UiTitle88>
+            </template>
+
+            <div class="grid gap-2">
+              <div class="flex flex-wrap gap-1">
+                <DateRanges
+                  :interval="intervalRange.interval.value"
+                  :maxRange
+                  @setRange="intervalRange.setRange"
+                  @setRangeByPeriod="(d: FullDuration) => { intervalRange.setRangeByPeriod(d); close() }"
+                />
+              </div>
+
+              <div class="flex flex-wrap gap-1">
+                <DateRanges2
+                  :interval="intervalRange.interval.value"
+                  :maxRange
+                  @setRangeByPeriod="(d: FullDuration) => { intervalRange.setRangeByPeriod(d); close() }"
+                />
+              </div>
+
+              <div class="flex gap-1">
+                <DateLinkItem @click="intervalRange.minusRange">
+                  -
+                </DateLinkItem>
+
+                <DateLinkItemNoBg>{{ `Last ${intervalRange.interval.value.duration} ${intervalRange.interval.value.period}` }}</DateLinkItemNoBg>
+
+                <DateLinkItem @click="intervalRange.plusRange">
+                  +
+                </DateLinkItem>
+              </div>
+            </div>
+          </UiToggle2>
+
+          <UiToggle2
+            storageKey="finapp-date-modal-grouped"
+            :initStatus="false"
+            :lineWidth="1"
+            openPadding="!pb-6"
+          >
+            <template #header="{ toggle, isShown }">
+              <UiTitle88 :isShown @click="toggle">
+                Grouped by
+              </UiTitle88>
+            </template>
+
+            <div class="grid gap-1">
+              <div class="flex flex-wrap gap-1">
+                <DateIntervals
+                  :grouped="intervalRange.grouped.value"
+                  @onSelect="(pd: Interval) => { intervalRange.setGrouped(pd); close() }"
+                />
+              </div>
+
+              <div class="flex gap-2">
+                <DateLinkItem @click="intervalRange.delInterval">
+                  -
+                </DateLinkItem>
+
+                <DateLinkItemNoBg>{{ `${intervalRange.grouped.value.duration} ${intervalRange.grouped.value.period}` }}</DateLinkItemNoBg>
+
+                <DateLinkItem @click="intervalRange.addInterval">
+                  +
+                </DateLinkItem>
+              </div>
+            </div>
+          </UiToggle2>
+
+          <UiToggle2
+            storageKey="finapp-date-modal-select"
+            :initStatus="false"
+            :lineWidth="1"
+            openPadding="!pb-6"
+          >
+            <template #header="{ toggle, isShown }">
+              <UiTitle88 :isShown @click="toggle">
+                Calendar
+              </UiTitle88>
+            </template>
+
+            <template #default="{ close: closeToggle }">
+              <DatePicker
+                expanded
+                color="blue"
+                :value="intervalRange.range.value"
+                @update:modelValue="(v: Range) => { intervalRange.setRange(v); closeToggle(); close() }"
+              />
+            </template>
+          </UiToggle2>
+        </div>
+      </div>
+    </template>
+  </BaseBottomSheet2>
+</template>

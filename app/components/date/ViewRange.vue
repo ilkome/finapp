@@ -7,8 +7,6 @@ const props = defineProps<{
   range: Range
 }>()
 
-console.log('props', props)
-
 const { t } = useI18n()
 
 const date = computed(() => {

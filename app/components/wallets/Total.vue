@@ -147,6 +147,7 @@ const counts2 = computed(() => ({
           :isActive="props.activeType === item.id"
           isShowLine
           class="group"
+          insideClasses="!min-h-[48px]"
           @click="emit('click', item.id)"
         >
           <div
@@ -169,6 +170,7 @@ const counts2 = computed(() => ({
           :isActive="props.activeType === item.id"
           isShowLine
           class="group"
+          insideClasses="!min-h-[48px]"
           @click="emit('click', item.id)"
         >
           <div

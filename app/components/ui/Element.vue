@@ -5,6 +5,7 @@ const props = defineProps<{
   hideDivider?: boolean
   insideClasses?: string
   isActive?: boolean
+  isLink?: boolean
   isShowIcon?: boolean
   isShowIcons?: boolean
   isShowLine?: boolean
@@ -17,24 +18,31 @@ const emit = defineEmits<{
 }>()
 
 const slots = useSlots()
+
+const classes = computed(() => {
+  let cls: (string | object)[] = [
+    'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px]',
+    {
+      '!bg-item-3': props.isActive,
+    },
+    getStyles('item', ['rounded', 'padding1', 'minh2']),
+  ]
+
+  // if (props.isLink) {
+  cls = [...cls, getStyles('item', ['link'])]
+  // }
+
+  if (props.insideClasses) {
+    cls.push(props.insideClasses)
+  }
+
+  return cls
+})
 </script>
 
 <template>
-  <div
-    @click="(e: Event) => emit('click', e)"
-  >
-    <div
-      :class="[
-        { '!bg-item-3': isActive },
-        getStyles('item', ['link', 'rounded', 'padding1', 'minh2']),
-        props.insideClasses,
-      ]"
-
-      class="
-        flex grow items-center gap-3 overflow-hidden -my-[1px]
-        uiElement
-      "
-    >
+  <div @click="(e: Event) => emit('click', e)">
+    <div :class="classes">
       <div
         v-if="isShowToggle"
         class="flex-center"

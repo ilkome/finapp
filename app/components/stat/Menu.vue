@@ -68,9 +68,7 @@ watch(() => props.active, () => {
 </script>
 
 <template>
-  <div
-    class="flex items-center gap-1"
-  >
+  <UiTabs2>
     <UiTabsItem5
       v-for="item in menu"
       :key="item.id"
@@ -80,5 +78,5 @@ watch(() => props.active, () => {
     >
       {{ item.name }}
     </UiTabsItem5>
-  </div>
+  </UiTabs2>
 </template>

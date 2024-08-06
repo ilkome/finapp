@@ -234,6 +234,20 @@ function set7Days(close?: () => void) {
     close()
   }
 }
+
+function set7DaysMini(close?: () => void) {
+  viewOptions.value.catsView = 'round'
+  viewOptions.value.catsRound.isGrouped = false
+
+  intervalRange.setRangeByPeriod({
+    grouped: { duration: 1, period: 'day' },
+    interval: { duration: 7, period: 'day' },
+  })
+
+  if (close) {
+    close()
+  }
+}
 function set12Months(close?: () => void) {
   viewOptions.value.catsView = 'list'
   viewOptions.value.catsList.isGrouped = true
@@ -462,11 +476,12 @@ function set12Months(close?: () => void) {
     </div>
 
     <Teleport to="#teleports">
-      <StatDateModalSelector
+      <StatDateSelectorModal
         v-if="isShowDateSelector"
         :intervalRange="intervalRange"
         :maxRange="maxRange"
         @set7Days="set7Days"
+        @set7DaysMini="set7DaysMini"
         @set12Months="set12Months"
         @onClose="isShowDateSelector = false"
       />

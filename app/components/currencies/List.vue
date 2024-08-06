@@ -50,6 +50,7 @@ const list = computed(() => {
         <UiElement
           :isActive="active === 'all'"
           isShowLine
+          insideClasses="!min-h-[48px]"
           @click="emit('onSelect', 'all')"
         >
           <div class="flex items-center">
@@ -71,6 +72,7 @@ const list = computed(() => {
           :isActive="currencyCode === active"
           isShowLine
           class="group"
+          insideClasses="!min-h-[48px]"
           @click="emit('onSelect', currencyCode)"
         >
           <div class="flex items-center">

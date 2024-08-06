@@ -31,7 +31,6 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
     >
       <slot
         :toggle="() => isShown = !isShown"
-        :close="() => isShown = false"
       />
     </div>
   </div>

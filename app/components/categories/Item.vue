@@ -26,6 +26,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category.paren
   <UiElement
     :isActive="activeItemId === categoryId"
     :lineWidth="props.lineWidth"
+    insideClasses="!min-h-[48px]"
     @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>
@@ -36,7 +37,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category.paren
       />
     </template>
 
-    <div class="grid gap-0.5 text-3">
+    <div class="grow grid gap-0.5 text-3">
       <CategoriesName
         :category
         :parentCategory

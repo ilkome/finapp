@@ -16,8 +16,8 @@ const emit = defineEmits(['click'])
     ]"
     class="
       flex gap-1 items-center justify-center
-      border-1 rounded-md
-      px-2.5
+      border-1 rounded-lg
+      px-3
       text-secondary2 text-sm leading-none
     "
     @click="emit('click')"

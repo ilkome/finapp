@@ -53,12 +53,12 @@ const items = computed(() => ({
             {{ description }}
           </div>
 
-          <div>
+          <div class="flex p-4 gap-4">
             <UiElement
               v-for="(item, slug) in items"
               :key="slug"
-              class="group"
-              isShowLine
+              class="grow"
+              insideClasses="!min-h-[48px] bg-item-4"
               @click="item.click(close)"
             >
               <template #leftIcon>

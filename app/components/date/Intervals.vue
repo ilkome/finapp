@@ -34,6 +34,6 @@ const intervalGroups = computed<Interval[]>(() => [{
     :isActive="rangeItem.period === props.grouped.period && rangeItem.duration === props.grouped.duration"
     @click="emit('onSelect', rangeItem)"
   >
-    {{ rangeItem.duration }}{{ rangeItem.period }}
+    {{ rangeItem.duration }} {{ rangeItem.period }}
   </DateLinkItem>
 </template>
