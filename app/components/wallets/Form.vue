@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import type { ToastOptions } from 'vue3-toastify'
 import { saveData } from '../../../services/firebase/api'
+import UiToastContent from '~/components/ui/ToastContent.vue'
+import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletForm, WalletId } from '~/components/wallets/types'
+import { allColors } from '~/assets/js/colors'
+import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { generateId } from '~/utils/generateId'
 import { getPreparedFormData } from '~/components/wallets/getForm'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useUserStore } from '~/components/user/useUser'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { allColors } from '~/assets/js/colors'
-import UiToastContent from '~/components/ui/ToastContent.vue'
-import { errorEmo, random, successEmo } from '~/assets/js/emo'
 
 const props = defineProps<{
   walletForm: WalletForm
@@ -32,7 +33,7 @@ const activeTab = ref('data')
 /**
  * Validate
  */
-function validate(values, wallets) {
+function validate(values: WalletForm) {
   // name
   if (!values.name) {
     $toast(UiToastContent, {
@@ -62,8 +63,8 @@ function validate(values, wallets) {
   }
 
   // TODO: refactor
-  for (const id in wallets) {
-    if (wallets[id].name === values.name) {
+  for (const id in walletsStore.items) {
+    if (walletsStore.items[id].name === values.name) {
       if (editWalletId) {
         if (editWalletId !== id) {
           $toast(UiToastContent, {
@@ -95,22 +96,19 @@ function validate(values, wallets) {
   return true
 }
 
-async function saveWalletData(id, values) {
+async function onSave() {
+  if (!validate(walletForm.value))
+    return
+
   const uid = userStore.uid
+  // Prepare data and remove empty values
+  const values = Object.fromEntries(Object.entries(getPreparedFormData(walletForm.value)).filter(([,v]) => v))
 
   // Set default currency based on first created wallet
   if (!walletsStore.hasItems)
     currenciesStore.updateBase(values.currency)
 
-  console.log('1', `users/${uid}/accounts/${id}`)
-  await saveData(`users/${uid}/accounts/${id}`, values)
-}
-
-async function onSave() {
-  if (!validate(walletForm.value, walletsStore.items))
-    return
-
-  await saveWalletData(editWalletId, getPreparedFormData(walletForm.value))
+  await saveData(`users/${uid}/accounts/${editWalletId}`, values)
   emit('afterSave')
 }
 </script>
@@ -207,13 +205,28 @@ async function onSave() {
           :title="$t('money.totals.isCashless')"
           @onClick="walletForm.isCashless = !walletForm.isCashless"
         />
+        <UiCheckbox
+          :checkboxValue="walletForm.isDebt"
+          :title="$t('money.totals.isDebt')"
+          @onClick="walletForm.isDebt = !walletForm.isDebt"
+        />
+        <UiCheckbox
+          :checkboxValue="walletForm.isIncludeTotal"
+          :title="$t('money.totals.isIncludeTotal')"
+          @onClick="walletForm.isIncludeTotal = !walletForm.isIncludeTotal"
+        />
+        <UiCheckbox
+          :checkboxValue="walletForm.archived"
+          :title="$t('money.totals.archived')"
+          @onClick="walletForm.archived = !walletForm.archived"
+        />
       </template>
 
       <!-- Currencies -->
       <CurrenciesList
         v-if="activeTab === 'currencies'"
         :active="walletForm.currency"
-        @onSelect="value => emit('updateValue', 'currency', value)"
+        @onSelect="(value: CurrencyCode) => emit('updateValue', 'currency', value)"
       />
 
       <!-- Colors -->

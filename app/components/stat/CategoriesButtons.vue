@@ -98,7 +98,7 @@ const { t } = useI18n()
             <UiElement
               @click="emit('changeViewOptions', {
                 catsList: {
-                  isItemsBg: true,
+                  isItemsBg: false,
                   isRoundIcon: true,
                   isLines: true,
                 },

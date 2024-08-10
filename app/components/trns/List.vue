@@ -129,7 +129,7 @@ const groupedTrns = computed(() => {
 </script>
 
 <template>
-  <div class="-grid -gap-3 -h-full -overflow-hidden -content-start">
+  <div>
     <!-- Header -->
     <slot
       v-if="isShowHeader"

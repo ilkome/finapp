@@ -2,19 +2,20 @@
 import { formatAmount, getCurrencySymbol } from '~/components/amount/formatAmount'
 import useAmount from '~/components/amount/useAmount'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
+import type { CurrencyCode } from '~/components/currencies/types'
 
 const props = withDefaults(
   defineProps<{
     align?: 'left' | 'center' | 'right'
     amount: number
     colorize?: MoneyTypeSlug
-    currencyCode: string
+    currencyCode: CurrencyCode
     isShowBaseRate?: boolean
     isShowMinus?: boolean
     isShowPlus?: boolean
     isShowSymbol?: boolean
     type?: MoneyTypeNumber
-    variant?: '2xs' | '3xl' | 'base' | 'sm'
+    variant?: '2xs' | '3xl' | 'base' | 'sm' | 'xl'
   }>(),
   {
     align: 'right',
@@ -39,6 +40,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
       'text-2xs': props.variant === '2xs',
       'text-xs': props.variant === 'sm',
       'text-3xl': props.variant === '3xl',
+      'text-xl': props.variant === 'xl',
       'text-base': props.variant === 'base',
     }"
     class="

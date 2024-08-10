@@ -21,7 +21,7 @@ const categoriesStore = useCategoriesStore()
       </template>
     </UiHeader>
 
-    <div class="grow px-2">
+    <div class="px-2 md:px-6 grow">
       <CategoriesList
         :ids="categoriesStore.categoriesRootIds"
         class=""

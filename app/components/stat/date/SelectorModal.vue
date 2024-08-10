@@ -45,7 +45,7 @@ const { t } = useI18n()
               </UiTitle88>
             </template>
 
-            <UiTabs2>
+            <UiTabs2 class="px-2">
               <DateLinkItem @click="emit('set7Days', close)">
                 7 days
               </DateLinkItem>
@@ -70,7 +70,7 @@ const { t } = useI18n()
               </UiTitle88>
             </template>
 
-            <div class="grid gap-2">
+            <div class="grid gap-2 px-2">
               <div class="flex flex-wrap gap-1">
                 <DateRanges
                   :interval="intervalRange.interval.value"
@@ -114,7 +114,7 @@ const { t } = useI18n()
               </UiTitle88>
             </template>
 
-            <div class="grid gap-1">
+            <div class="grid gap-2 px-2">
               <div class="flex flex-wrap gap-1">
                 <DateIntervals
                   :grouped="intervalRange.grouped.value"
@@ -122,16 +122,15 @@ const { t } = useI18n()
                 />
               </div>
 
-              <div class="flex gap-2">
+              <div class="flex gap-1">
                 <DateLinkItem @click="intervalRange.delInterval">
                   -
                 </DateLinkItem>
 
-                <DateLinkItemNoBg>{{ `${intervalRange.grouped.value.duration} ${intervalRange.grouped.value.period}` }}</DateLinkItemNoBg>
-
                 <DateLinkItem @click="intervalRange.addInterval">
                   +
                 </DateLinkItem>
+                <DateLinkItemNoBg>{{ `${intervalRange.grouped.value.duration} ${intervalRange.grouped.value.period}` }}</DateLinkItemNoBg>
               </div>
             </div>
           </UiToggle2>

@@ -66,12 +66,12 @@ useHead({
     </UiHeader>
 
     <div class="px-2">
-      <div class="flex flex-wrap justify-stretch gap-1 overflow-y-auto px-2 pt-2 lg:px-4 xl:px-16">
+      <div class="flex flex-wrap justify-stretch gap-1 px-2 pt-2 lg:px-4 xl:px-16">
         <template v-if="!wallet.isCredit">
           <Amount
             :amount="total"
             :currencyCode="wallet.currency"
-            variant="-3xl"
+            variant="xl"
           />
         </template>
 

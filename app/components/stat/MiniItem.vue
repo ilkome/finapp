@@ -450,7 +450,7 @@ function set12Months(close?: () => void) {
             v-if="selectedTrnsIdsForTrnsList.length > 0"
             :storageKey="`${newBaseStorageKey}-${props.type}trns-all`"
             :initStatus="true"
-            class="min-w-80"
+            class="min-w-80 md:max-w-md"
           >
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between">
@@ -461,12 +461,12 @@ function set12Months(close?: () => void) {
             </template>
 
             <TrnsList
-              :trnsIds="selectedTrnsIdsForTrnsList"
-              class="px-0 py-1 md:max-w-md"
               :isHideDates="isDayToday"
+              :isShowGroupSum="!isDayToday"
+              :trnsIds="selectedTrnsIdsForTrnsList"
+              class="py-1"
               isShowFilterByDesc
               isShowFilterByType
-              :isShowGroupSum="!isDayToday"
             />
           </UiToggle>
 

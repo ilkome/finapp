@@ -26,7 +26,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
         />
       </div>
 
-      <div v-if="isShown" class="px-3 rounded-xl">
+      <div v-if="isShown" class="">
         <slot
           :toggle="() => isShown = !isShown"
           :close="() => isShown = false"

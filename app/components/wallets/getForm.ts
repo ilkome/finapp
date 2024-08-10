@@ -2,7 +2,7 @@ import type { WalletForm } from '~/components/wallets/types'
 import { allColors } from '~/assets/js/colors'
 import { random } from '~/assets/js/emo'
 
-export function getPreparedFormData(values?: any): WalletForm {
+export function getPreparedFormData(values?: DeepPartial<WalletForm>): WalletForm {
   return {
     archived: values?.archived ?? false,
     color: values?.color ?? random(random(allColors)),
@@ -12,7 +12,9 @@ export function getPreparedFormData(values?: any): WalletForm {
     isCash: values?.isCash ?? false,
     isCashless: values?.isCashless ?? false,
     isCredit: values?.isCredit ?? false,
+    isDebt: values?.isDebt ?? false,
     isDeposit: values?.isDeposit ?? false,
+    isIncludeTotal: values?.isIncludeTotal ?? false,
     name: values?.name ?? '',
     order: values?.order ?? 1,
     withdrawal: values?.withdrawal ?? false,
