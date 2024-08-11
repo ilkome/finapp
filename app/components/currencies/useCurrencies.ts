@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
-import { getDataOnce, saveData } from '../../../services/firebase/api'
+import { getDataOnce, saveData } from '~~/services/firebase/api'
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import { currencies as all } from '~/components/currencies/currencies'
 import { useUserStore } from '~/components/user/useUser'

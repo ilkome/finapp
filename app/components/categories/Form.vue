@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { saveData } from '../../../services/firebase/api'
+import { saveData } from '~~/services/firebase/api'
 import { generateId } from '~/utils/generateId'
 import icons from '~/assets/js/icons'
 import type { CategoryForm, CategoryId, CategoryItem } from '~/components/categories/types'

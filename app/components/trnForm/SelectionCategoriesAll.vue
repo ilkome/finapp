@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CategoryId } from '../categories/types'
+import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 

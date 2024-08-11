@@ -2,7 +2,7 @@
 import dayjs from 'dayjs'
 import defu from 'defu'
 import { useStorage } from '@vueuse/core'
-import type { CategoryId, CategoryItem } from '../categories/types'
+import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { seriesOptions } from '~/components/stat/chart/config2'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { FilterProvider } from '~/components/filter/useFilter'

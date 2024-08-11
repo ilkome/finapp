@@ -1,4 +1,4 @@
-import type { CurrencyCode } from '../currencies/types'
+import type { CurrencyCode } from '~~/currencies/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 
 export type WalletId = string

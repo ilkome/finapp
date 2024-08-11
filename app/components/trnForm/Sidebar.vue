@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Swiper, { Pagination } from 'swiper'
-import type { CategoryId } from '../categories/types'
+import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'

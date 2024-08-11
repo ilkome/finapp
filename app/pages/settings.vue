@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import pkg from '../../package.json'
+import pkg from '~~/package.json'
 import { useUserStore } from '~/components/user/useUser'
 
 const { $i18n } = useNuxtApp()

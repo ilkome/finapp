@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
 import { random, successEmo } from '~/assets/js/emo'
-import { removeData } from '../../../services/firebase/api'
+import { removeData } from '~~/services/firebase/api'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUser'
 

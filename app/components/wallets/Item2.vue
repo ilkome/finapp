@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useWalletsStore } from '../wallets/useWalletsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { getStyles } from '~/components/ui/getStyles'
 import type { WalletId } from '~/components/wallets/types'
 

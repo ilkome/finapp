@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ToastOptions } from 'vue3-toastify'
-import { saveData } from '../../../services/firebase/api'
+import { saveData } from '~~/services/firebase/api'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletForm, WalletId } from '~/components/wallets/types'

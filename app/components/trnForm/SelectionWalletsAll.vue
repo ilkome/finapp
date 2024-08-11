@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WalletId } from '../wallets/types'
+import type { WalletId } from '~/components/wallets/types'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{

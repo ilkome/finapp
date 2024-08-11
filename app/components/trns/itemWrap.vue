@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ToastOptions } from 'vue3-toastify'
-import { getStyles } from '../ui/getStyles'
+import { getStyles } from '~/components/ui/getStyles'
 import type { TrnId, TrnItemFull } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'

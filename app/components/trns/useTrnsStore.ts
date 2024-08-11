@@ -7,7 +7,7 @@ import {
   saveData,
   unsubscribeData,
   updateData,
-} from '../../../services/firebase/api'
+} from '~~/services/firebase/api'
 import {
   removeTrnToAddLaterLocal,
   removeTrnToDeleteLaterLocal,

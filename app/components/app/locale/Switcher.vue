@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { saveData } from '../../../../services/firebase/api'
+import { saveData } from '~~/services/firebase/api'
 import { useUserStore } from '~/components/user/useUser'
 
 const { locale, setLocale } = useI18n()

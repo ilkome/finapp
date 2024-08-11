@@ -1,6 +1,6 @@
 import localforage from 'localforage'
 import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '../../../services/firebase/api'
+import { auth } from '~~/services/firebase/api'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'

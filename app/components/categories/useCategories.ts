@@ -5,7 +5,7 @@ import {
   getDataAndWatch,
   unsubscribeData,
   updateData,
-} from '../../../services/firebase/api'
+} from '~~/services/firebase/api'
 import type {
   Categories,
   CategoryId,
