@@ -159,12 +159,4 @@ export default defineNuxtConfig({
     gray: 'zinc',
     primary: 'blue',
   },
-
-  vite: {
-    resolve: {
-      alias: {
-        '~/': './',
-      },
-    },
-  },
 })
