@@ -19,7 +19,7 @@ const { checkIsActive, onClick } = useMenuData()
     :class="[
       ...getStyles('item', ['link', 'rounded', 'padding1', 'menu']),
       {
-        '!text-prima': checkIsActive(props.menuId),
+        '!text-1': checkIsActive(props.menuId),
       },
     ]"
     class="group"

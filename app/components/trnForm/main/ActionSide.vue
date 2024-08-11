@@ -37,7 +37,7 @@ async function onClickSubmit() {
       max-w-[56px] p-1 text-2xl
       py-4
       size-full
-      text-prima text-center
+      text-1 text-center
       bg-item-main border border-item-5 rounded-xl
       hocus:bg-item-7 hocus:border[red] hocus:scale-[1.02]
       transition

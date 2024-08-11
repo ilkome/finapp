@@ -2,7 +2,6 @@
 import { useStorage } from '@vueuse/core'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useFilterStore } from '~/components/filter/useFilterStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId } from '~/components/wallets/types'
@@ -18,16 +17,17 @@ useSeoMeta({
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const { isModalOpen, openModal } = useAppNav()
-const { setWalletId } = useFilterStore()
 const { getAmountInBaseRate } = useAmount()
 
 const isShowBaseCurrencyModal = ref(false)
 
+type WalletType = 'isCredit' | 'isDeposit' | 'isCash' | 'isCashless' | 'isDebt' | 'isSavings' | 'isWithdrawal' | 'isArchived'
+type WalletTypeAll = WalletType | 'all'
 const currencyFiltered = useStorage('finapp-wallets-active-currency', 'all')
-const activeType = useStorage('finapp-wallets-active-type', 'all')
+const activeType = useStorage<WalletTypeAll>('finapp-wallets-active-type', 'all')
 const gropedBy = useStorage<'list' | 'currencies' | 'type'>('finapp-wallets-groupedBy', 'list')
 
-function setActiveType(v: string) {
+function setActiveType(v: WalletTypeAll) {
   if (activeType.value === v) {
     activeType.value = 'all'
     return
@@ -159,11 +159,14 @@ const groupedWalletsByCurrency = computed(() => {
   const grouped: Record<string, WalletId[]> = {}
   for (const currency of walletsStore.currenciesUsed) {
     grouped[currency] = walletsStore.sortedIds.filter((id) => {
-      const isArchived = currency !== 'archived' && walletsStore.items[id].archived
-      const isType = activeType.value === 'all' ? true : walletsStore.items[id][activeType.value]
+      const wallet = walletsStore.items?.[id]
+      if (!wallet)
+        return false
 
-      const wallet = walletsStore.items[id]?.currency === currency && !isArchived && isType
-      return wallet
+      const isArchived = currency !== 'archived' && wallet.archived
+      const isType = activeType.value === 'all' ? true : wallet[activeType.value]
+
+      return wallet?.currency === currency && !isArchived && isType
     })
   }
 
@@ -215,6 +218,110 @@ function countWalletsSum(walletsIds: WalletId[], isConvert = true) {
     return acc + wallet.amount
   }, 0)
 }
+
+const totalInWallets = computed(() => {
+  const total = {
+    all: 0,
+    counted: 0,
+    creditPossible: 0,
+    credits: 0,
+    isCash: 0,
+    isCashless: 0,
+    isDeposit: 0,
+    withdrawal: 0,
+  }
+
+  for (const walletId in walletsStore.sortedItems) {
+    const wallet = walletsStore.sortedItems[walletId]
+    if (!wallet)
+      continue
+
+    const itemValue = wallet.currency === currenciesStore.base
+      ? walletsStore.totals[walletId] ?? 0
+      : +getAmountInBaseRate({
+          amount: walletsStore.totals[walletId] ?? 0,
+          currencyCode: wallet.currency ?? 'USD',
+          noFormat: true,
+        })
+
+    total.all += itemValue
+
+    if (wallet.isCash)
+      total.isCash += itemValue
+
+    if (wallet.isCashless)
+      total.isCashless += itemValue
+
+    if (wallet.creditLimit) {
+      total.creditPossible = total.creditPossible + +getAmountInBaseRate({
+        amount: wallet.creditLimit ?? 0,
+        currencyCode: wallet.currency ?? 'USD',
+        noFormat: true,
+      })
+    }
+
+    if (wallet.isDeposit)
+      total.isDeposit += itemValue
+
+    if (wallet.withdrawal)
+      total.withdrawal += itemValue
+
+    else if (wallet.isCredit)
+      total.credits += itemValue
+  }
+
+  return total
+})
+
+const counts = computed(() => ({
+  all: {
+    id: 'all',
+    isShow: true,
+    value: totalInWallets.value.all,
+  },
+  isCash: {
+    id: 'isCash',
+    isShow: totalInWallets.value.isCash !== 0,
+    value: totalInWallets.value.isCash,
+  },
+  isCashless: {
+    id: 'isCashless',
+    isShow: totalInWallets.value.isCashless !== 0,
+    value: totalInWallets.value.isCashless,
+  },
+  isCredit: {
+    id: 'isCredit',
+    isShow: totalInWallets.value.credits !== 0,
+    value: totalInWallets.value.credits,
+  },
+}))
+
+const counts2 = computed(() => ({
+  withdrawal: {
+    icon: 'UiIconWalletWithdrawal',
+    id: 'withdrawal',
+    isShow: totalInWallets.value.withdrawal !== 0,
+    value: totalInWallets.value.withdrawal,
+  },
+  // eslint-disable-next-line perfectionist/sort-objects
+  isDeposit: {
+    icon: 'isDeposit',
+    id: 'isDeposit',
+    isShow: totalInWallets.value.isDeposit !== 0,
+    value: totalInWallets.value.isDeposit,
+  },
+  // eslint-disable-next-line perfectionist/sort-objects
+  creditPossible: {
+    id: 'creditPossible',
+    isShow: totalInWallets.value.creditPossible !== 0,
+    value: totalInWallets.value.creditPossible,
+  },
+  withCredit: {
+    id: 'withCredit',
+    isShow: totalInWallets.value.credits !== 0,
+    value: totalInWallets.value.all + -totalInWallets.value.credits,
+  },
+}))
 </script>
 
 <template>
@@ -242,7 +349,7 @@ function countWalletsSum(walletsIds: WalletId[], isConvert = true) {
             {{ currencyFiltered === "all" ? t("all") : currencyFiltered }}
           </UiBox1>
 
-          <UiBox1 @click="currenciesStore.showBaseCurrenciesModal()">
+          <UiBox1 @click="isShowBaseCurrencyModal = true">
             <UiTitle6>{{ t("currenciesBase") }}</UiTitle6>
             {{ currenciesStore.base }}
           </UiBox1>
@@ -285,10 +392,7 @@ function countWalletsSum(walletsIds: WalletId[], isConvert = true) {
           </template>
         </UiToggle2>
 
-        <UiBox1
-          class="hidden md:grid"
-          @click="currenciesStore.showBaseCurrenciesModal()"
-        >
+        <UiBox1 @click="isShowBaseCurrencyModal = true">
           <UiTitle6>{{ t("currenciesBase") }}</UiTitle6>
           {{ currenciesStore.base }}
         </UiBox1>
@@ -316,47 +420,13 @@ function countWalletsSum(walletsIds: WalletId[], isConvert = true) {
           </UiTabsItem>
         </UiTabs>
 
-        <!-- <UiToggle2
-          storageKey="finapp-wallets-show-gropedBy"
-          :initStatus="true"
-          :lineWidth="1"
-          openPadding="!pb-2"
-        >
-          <template #header="{ toggle, isShown }">
-            <UiTitle88 :isShown @click="toggle">
-              Grouped By
-            </UiTitle88>
-          </template>
-
-          <UiTabs>
-            <UiTabsItem
-              :isActive="gropedBy === 'list'"
-              @click="gropedBy = 'list'"
-            >
-              list
-            </UiTabsItem>
-            <UiTabsItem
-              :isActive="gropedBy === 'type'"
-              @click="gropedBy = 'type'"
-            >
-              type
-            </UiTabsItem>
-            <UiTabsItem
-              :isActive="gropedBy === 'currencies'"
-              @click="gropedBy = 'currencies'"
-            >
-              currencies
-            </UiTabsItem>
-          </UiTabs>
-        </UiToggle2> -->
-
+        <!-- Statistics -->
         <UiToggle2
           :initStatus="true"
-          :lineWidth="1"
+          :lineWidth="0"
           :storageKey="`finapp-wallets-total-${gropedBy}`"
-          openPadding="!pb-6"
+          class="!pb-6"
         >
-          <!-- Header -->
           <template #header="{ toggle, isShown }">
             <div class="flex items-center justify-between grow">
               <UiTitle88 :isShown @click="toggle">
@@ -367,9 +437,14 @@ function countWalletsSum(walletsIds: WalletId[], isConvert = true) {
 
           <WalletsTotal
             :activeType
-            :gropedBy
             :currencyCode="currenciesStore.base"
-            :walletsItems="selectedWallets2"
+            :items="Object.values(counts).filter(item => item.isShow)"
+            @click="setActiveType"
+          />
+          <WalletsTotal
+            :activeType
+            :currencyCode="currenciesStore.base"
+            :items="Object.values(counts2).filter(item => item.isShow)"
             @click="setActiveType"
           />
         </UiToggle2>
@@ -408,7 +483,6 @@ function countWalletsSum(walletsIds: WalletId[], isConvert = true) {
               isShowBaseRate
               isShowIcons
               @click="$router.push(`/wallets/${walletId}`)"
-              @filter="setWalletId(walletId)"
             />
           </UiToggle2>
         </template>
@@ -447,7 +521,6 @@ function countWalletsSum(walletsIds: WalletId[], isConvert = true) {
               isShowBaseRate
               isShowIcons
               @click="$router.push(`/wallets/${walletId}`)"
-              @filter="setWalletId(walletId)"
             />
           </UiToggle2>
         </template>
@@ -466,7 +539,6 @@ function countWalletsSum(walletsIds: WalletId[], isConvert = true) {
             isShowIcons
             class="group"
             @click="$router.push(`/wallets/${walletId}`)"
-            @filter="setWalletId(walletId)"
           />
         </div>
       </div>
@@ -496,12 +568,10 @@ function countWalletsSum(walletsIds: WalletId[], isConvert = true) {
 
 <i18n lang="yaml">
 en:
-  all: All
   filterByCurrency: Filter by
   currenciesBase: Base currency
 
 ru:
-  all: Все
   filterByCurrency: Валюты кошельков
   currenciesBase: Основная валюта
 </i18n>

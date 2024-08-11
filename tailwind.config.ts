@@ -26,6 +26,7 @@ export default <Partial<Config>>{
         video: '16 / 9',
       },
       colors: {
+        '1': 'rgb(var(--text-1))',
         '3': 'rgb(var(--text-3))',
         '4': 'rgb(var(--text-4))',
         '5': 'rgb(var(--text-5))',
@@ -63,7 +64,6 @@ export default <Partial<Config>>{
           9: 'rgba(var(--item-9))',
           10: 'rgba(var(--item-10))',
         },
-        'prima': 'rgb(var(--text-prima))',
         'secondary': 'rgb(var(--text-secondary))',
         'secondary2': 'rgb(var(--text-secondary2))',
       },

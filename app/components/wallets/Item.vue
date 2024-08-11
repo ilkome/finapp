@@ -16,7 +16,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [walletId: WalletId]
-  filter: [walletId: WalletId]
 }>()
 
 const creditViews = ['dept', 'sum'] as const

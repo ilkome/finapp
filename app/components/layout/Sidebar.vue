@@ -21,7 +21,7 @@ const colorMode = useColorMode()
 
       <div
         :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
-        class="text-prima"
+        class="text-1"
         @click="() => colorMode.preference = colorMode.preference === 'dark' ? 'light' : 'dark'"
       >
         <Icon

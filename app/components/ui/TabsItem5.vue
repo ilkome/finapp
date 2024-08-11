@@ -12,13 +12,13 @@ const emit = defineEmits(['click'])
   <div
     :class="[
       ...getStyles('item', ['link', 'rounded', 'minh2', 'minw2']),
-      { '!bg-item-3 !text-prima': isActive },
+      { '!bg-item-3 !text-1': isActive },
     ]"
     class="
       flex gap-1 items-center justify-center
-      border-1 rounded-lg
       px-3
       text-secondary2 text-sm leading-none
+      border-1 rounded-lg
     "
     @click="emit('click')"
   >

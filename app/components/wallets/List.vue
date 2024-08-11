@@ -3,57 +3,39 @@ import { getStyles } from '~/components/ui/getStyles'
 import type { WalletsWithAmount } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const props = withDefaults(
-  defineProps<{
-    isShowToggle?: boolean
-    limit?: number
-  }>(),
-  {
-    limit: 0,
-  },
-)
+const props = withDefaults(defineProps<{
+  isShowToggle?: boolean
+  limit?: number
+}>(), {
+  limit: 0,
+})
+
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
-
 const stateLimit = ref(0)
 
-const walletsIdsLimited = computed(() => {
-  if (stateLimit.value !== 0)
-    return walletsStore.sortedIds.slice(0, stateLimit.value)
-  return walletsStore.sortedIds
-})
-
 const walletsItemsLimited = computed<WalletsWithAmount>(() => {
-  // TODO: Reduce
-  if (stateLimit.value !== 0) {
-    let wallets = {}
-    for (const id of walletsIdsLimited.value) {
-      wallets = {
-        ...wallets,
-        [id]: walletsStore.sortedItems[id],
-      }
-    }
-    return wallets
-  }
+  if (stateLimit.value === 0)
+    return walletsStore.sortedItems
 
-  return walletsStore.sortedItems
-})
-
-onMounted(() => {
-  stateLimit.value = props.limit
+  return walletsStore.sortedIds
+    .slice(0, stateLimit.value)
+    .reduce((acc, id) => {
+      acc[id] = walletsStore.sortedItems[id]!
+      return acc
+    }, {} as WalletsWithAmount)
 })
 
 function toggle() {
-  stateLimit.value > 0
-    ? (stateLimit.value = 0)
-    : (stateLimit.value = props.limit)
+  return stateLimit.value = stateLimit.value > 0 ? 0 : props.limit
 }
+
+onMounted(() => stateLimit.value = props.limit)
 </script>
 
 <template>
   <div>
     <slot
-      :walletsIdsLimited="walletsIdsLimited"
       :walletsIdsSorted="walletsStore.sortedIds"
       :walletsItemsLimited="walletsItemsLimited"
       :walletsItemsSorted="walletsStore.sortedItems"

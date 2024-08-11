@@ -72,7 +72,7 @@ watch(
         <div
           class="grid grid-cols-[.4fr,1fr] items-center whitespace-nowrap px-3 pt-2"
         >
-          <div class="w-1/2 grow text-sm text-prima/70">
+          <div class="w-1/2 grow text-sm text-1/70">
             {{ t(slug) }}
           </div>
 

@@ -32,7 +32,7 @@ body {
   user-select: none;
 
   @apply
-    font-primary text-prima leading-none antialiased;
+    font-primary text-1 leading-none antialiased;
 
   @apply bg-foreground-1;
 }

@@ -1,28 +1,21 @@
-import { useStorage } from '@vueuse/core'
-import type { StatTabs } from '~/components/app/types'
-
 export const useAppNav = defineStore('appNav', () => {
-  const modals = useModal<['menu', 'walletsSort']>()
+  const modals = useModal<'menu' | 'walletsSort'>()
 
   return {
     ...modals,
   }
 })
 
-// TODO: Add types
 function useModal<T>() {
-  type ModalTypes = T
-  type ModalItem = T[number]
+  const modals = ref<T[]>([])
 
-  const modals = ref<Partial<ModalTypes>>([])
-
-  function openModal(name: ModalItem) {
+  function openModal(name: T) {
     if (modals.value.includes(name))
       return
     modals.value.push(name)
   }
 
-  function closeModal(name: ModalItem) {
+  function closeModal(name: T) {
     modals.value = modals.value.filter(modal => modal !== name)
   }
 
@@ -30,7 +23,7 @@ function useModal<T>() {
     modals.value = []
   }
 
-  function isModalOpen(name) {
+  function isModalOpen(name: T) {
     return modals.value.includes(name)
   }
 

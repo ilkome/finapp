@@ -108,32 +108,6 @@ function select(row) {
     <div class="grid gap-3 px-2">
       <Filter class="flex gap-1" />
 
-      <!-- <UTable
-        v-model="selected"
-        :columns="columns"
-        :rows="people"
-        @select="select"
-      >
-        <template #name-data="{ row }">
-          <span
-            :class="[
-              selected.find((person) => person.id === row.id)
-                && 'text-primary-500 dark:text-primary-400',
-            ]"
-          >{{ row.name }}</span>
-        </template>
-
-        <template #actions-data="{ row }">
-          <UDropdown :items="items(row)">
-            <UButton
-              color="gray"
-              variant="ghost"
-              icon="i-heroicons-ellipsis-horizontal-20-solid"
-            />
-          </UDropdown>
-        </template>
-      </UTable> -->
-
       <TrnsList
         :trnsIds
         isShowHeader

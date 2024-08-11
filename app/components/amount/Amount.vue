@@ -45,7 +45,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
     }"
     class="
       grid gap-1
-      font-secondary text-prima leading-none
+      font-secondary text-1 leading-none
     "
     @click="(e: Event) => emit('click', e)"
   >

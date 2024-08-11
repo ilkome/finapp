@@ -59,7 +59,9 @@ const keepalive = ['Categories', 'Wallets', 'Dashboard']
       </div>
     </div>
 
-    <LayoutMenuBottom class="absolute bottom-0 sm:bottom-inherit sm:hidden left-0 z-20 w-full bg-foreground-3 backdrop-blur lg:hidden" />
+    <LayoutMenuBottom
+      class="absolute bottom-0 sm:bottom-inherit sm:hidden left-0 z-20 w-full bg-foreground-3 backdrop-blur lg:hidden"
+    />
     <LayoutMenuBottomModal v-if="isModalOpen('menu')" />
     <TrnFormFloatOpener />
   </div>

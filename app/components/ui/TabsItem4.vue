@@ -12,7 +12,7 @@ const emit = defineEmits(['click'])
   <div
     :class="[
       ...getStyles('item', ['link', 'rounded', 'minh2']),
-      { '!bg-item-3 !text-prima': isActive },
+      { '!bg-item-3 !text-1': isActive },
     ]"
     class="
       aspect-square
