@@ -7,11 +7,10 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
 
-const { $i18n } = useNuxtApp()
 const { t } = useI18n()
 
 useSeoMeta({
-  title: $i18n.t('wallets.name'),
+  title: t('wallets.name'),
 })
 
 const walletsStore = useWalletsStore()
