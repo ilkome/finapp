@@ -18,7 +18,7 @@ const emit = defineEmits(['click'])
     ]"
     class="
       select-none
-      grow px-2 flex gap-1 items-center justify-center
+      grow flex-1 px-2 flex gap-1 items-center justify-center
       text-3 text-sm
       rounded-lg
       hocus:bg-item-5

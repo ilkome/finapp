@@ -12,7 +12,7 @@
     "vue, nuxt, firebase, tailwind, pwa, echarts, swiper"
   ],
   "engines": {
-    "node": ">=v21.6.0"
+    "node": ">=v20.0.0"
   },
   "scripts": {
     "dev": "nuxt dev",

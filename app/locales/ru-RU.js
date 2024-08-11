@@ -231,6 +231,10 @@ export default {
     title: 'Статистика',
   },
 
+  statistics: {
+    title: 'Статистика',
+  },
+
   theme: {
     change: 'Сменить цвет оформления',
     title: 'Тема',

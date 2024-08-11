@@ -229,6 +229,10 @@ export default {
     title: 'Dashboard',
   },
 
+  statistics: {
+    title: 'Statistics',
+  },
+
   theme: {
     change: 'Change theme',
     title: 'Theme',

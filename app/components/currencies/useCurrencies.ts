@@ -1,8 +1,8 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
+import { getDataOnce, saveData } from '../../../services/firebase/api'
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import { currencies as all } from '~/components/currencies/currencies'
-import { getDataOnce, saveData } from '../../../services/firebase/api'
 import { useUserStore } from '~/components/user/useUser'
 
 const serviceUrlBase = `https://openexchangerates.org/api/latest.json?app_id=`
@@ -65,28 +65,13 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     initCurrencies()
   }
 
-  /**
-   * Modal
-   */
-  const isShownModal = ref<boolean>(false)
-  function showBaseCurrenciesModal() {
-    isShownModal.value = true
-  }
-
-  function hideBaseCurrenciesModal() {
-    isShownModal.value = false
-  }
-
   return {
     base,
-    hideBaseCurrenciesModal,
     initCurrencies,
-    isShownModal,
     rates,
     setBase,
 
     setRates,
-    showBaseCurrenciesModal,
     updateBase,
   }
 })
