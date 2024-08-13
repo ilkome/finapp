@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
 import type { FullDuration, Interval, Period, Range } from '~/components/date/types'
 
-export function useDateRange({ key }: { key: string }) {
+export function useIntervalRange({ key, maxRange }: { key: string, maxRange: ComputedRef<Range> }) {
   const grouped = useStorage<Interval>(`${key}-grouped`, {
     duration: 1,
     period: 'month',
@@ -18,13 +18,25 @@ export function useDateRange({ key }: { key: string }) {
     isSkipEmpty: false,
   })
 
-  const range = useStorage(`${key}-range`, {
-    end: dayjs().endOf(interval.value.period).valueOf(),
-    start: dayjs().subtract(interval.value.duration - 1, interval.value.period).startOf(interval.value.period).valueOf(),
+  const subtracted = ref(0)
+
+  const range = computed(() => {
+    console.log('range')
+
+    if (viewConfig.value.isShowAll) {
+      return { ...maxRange.value }
+    }
+
+    return {
+      end: dayjs().subtract(subtracted.value * interval.value.duration, interval.value.period).endOf(interval.value.period).valueOf(),
+      start: dayjs().subtract(subtracted.value * interval.value.duration, interval.value.period).subtract(interval.value.duration - 1, interval.value.period).startOf(interval.value.period).valueOf(),
+    }
   })
 
   function setRange(r: Range) {
-    range.value = { ...r }
+    subtracted.value = 0
+    console.log('setRange', r)
+    // range.value = { ...r }
   }
 
   function getPeriodsWithEmptyTrnsIds(params: {
@@ -74,10 +86,11 @@ export function useDateRange({ key }: { key: string }) {
     grouped.value = rd.grouped
     interval.value = rd.interval
 
-    range.value = {
-      end: dayjs().endOf(interval.value.period).valueOf(),
-      start: dayjs().subtract(rd.interval.duration - 1, interval.value.period).startOf(rd.interval.period).valueOf(),
-    }
+    // TODO: compute interval
+    // range.value = {
+    //   end: dayjs().endOf(interval.value.period).valueOf(),
+    //   start: dayjs().subtract(rd.interval.duration - 1, interval.value.period).startOf(rd.interval.period).valueOf(),
+    // }
   }
 
   function setRangeByCalendar(r: Range) {
@@ -91,7 +104,8 @@ export function useDateRange({ key }: { key: string }) {
       period: 'day',
     }
 
-    range.value = { ...r }
+    // TODO: compute interval
+    // range.value = { ...r }
   }
 
   function addInterval() {
@@ -125,6 +139,7 @@ export function useDateRange({ key }: { key: string }) {
     minusRange,
     plusRange,
     range,
+    subtracted,
     setGrouped,
     setRange,
     setRangeByCalendar,
@@ -133,4 +148,4 @@ export function useDateRange({ key }: { key: string }) {
   }
 }
 
-export type UseDateRange = ReturnType<typeof useDateRange>
+export type IntervalRange = ReturnType<typeof useIntervalRange>

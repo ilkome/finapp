@@ -1,22 +1,18 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { Interval, Range } from '~/components/date/types'
+import type { Range } from '~/components/date/types'
 import { getStyles } from '~/components/ui/getStyles'
+import type { IntervalRange } from "~/components/date/useIntervalRange"
 
 const props = defineProps<{
-  interval: Interval
+  intervalRange: IntervalRange
   maxRange: Range
-  range: Range
 }>()
 
-const emit = defineEmits<{
-  setRange: [range: Range]
-}>()
-
-const isDayToday = computed(() => props.interval.period === 'day' && props.interval.duration === 1 && props.range.end < dayjs().endOf('day').valueOf())
+const isDayToday = computed(() => props.intervalRange.interval.value.period === 'day' && props.intervalRange.interval.value.duration === 1 && props.intervalRange.range.value.end < dayjs().endOf('day').valueOf())
 
 const isEnd = computed(() => {
-  if (props.range.end >= props.maxRange.end && !isDayToday.value) {
+  if (props.intervalRange.range.value.end >= props.maxRange.end && !isDayToday.value) {
     return true
   }
 
@@ -24,7 +20,7 @@ const isEnd = computed(() => {
 })
 
 const isStart = computed(() => {
-  if (props.range.start <= props.maxRange.start) {
+  if (props.intervalRange.range.value.start <= props.maxRange.start) {
     return true
   }
 
@@ -33,17 +29,11 @@ const isStart = computed(() => {
 
 function movePeriod(way: 'next' | 'prev' | 'today') {
   if (way === 'next' && !isEnd.value) {
-    emit('setRange', {
-      end: dayjs(props.range.end).add(props.interval.duration, props.interval.period).endOf(props.interval.period).valueOf(),
-      start: dayjs(props.range.start).add(props.interval.duration, props.interval.period).startOf(props.interval.period).valueOf(),
-    })
+    props.intervalRange.subtracted.value = props.intervalRange.subtracted.value - 1
   }
 
   if (way === 'prev' && !isStart.value) {
-    emit('setRange', {
-      end: dayjs(props.range.end).subtract(props.interval.duration, props.interval.period).endOf(props.interval.period).valueOf(),
-      start: dayjs(props.range.start).subtract(props.interval.duration, props.interval.period).startOf(props.interval.period).valueOf(),
-    })
+    props.intervalRange.subtracted.value = props.intervalRange.subtracted.value + 1
   }
 }
 </script>

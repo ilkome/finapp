@@ -1,11 +1,6 @@
 <template>
   <div
-    class="
-    relative overflow-x-hidden overflow-y-auto
-    grid content-start
-    w-full pb-[52px] sm:pb-2
-    -max-w-5xl
-  "
+    class="-max-w-5xl relative grid w-full content-start overflow-y-auto overflow-x-hidden pb-[52px] sm:pb-2"
   >
     <slot />
   </div>

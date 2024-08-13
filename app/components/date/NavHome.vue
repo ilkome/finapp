@@ -1,22 +1,11 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-import type { Interval, Range } from '~/components/date/types'
 import { getStyles } from '~/components/ui/getStyles'
+import type { IntervalRange } from "~/components/date/useIntervalRange";
 
-const props = defineProps<{
-  interval: Interval
+
+defineProps<{
+  intervalRange: IntervalRange
 }>()
-
-const emit = defineEmits<{
-  setRange: [range: Range]
-}>()
-
-function movePeriod() {
-  emit('setRange', {
-    end: dayjs().endOf(props.interval.period).valueOf(),
-    start: dayjs().subtract(props.interval.duration - 1, props.interval.period).startOf(props.interval.period).valueOf(),
-  })
-}
 </script>
 
 <template>
@@ -24,7 +13,7 @@ function movePeriod() {
     :class="[getStyles('item', ['link', 'rounded', 'minh2'])]"
     class="flex items-center px-3 py-2 text-base font-medium leading-none font-primary text-nowrap"
 
-    @click="movePeriod()"
+    @click="intervalRange.subtracted.value = 0"
   >
     <UiIconReturn class="size-5" />
   </div>

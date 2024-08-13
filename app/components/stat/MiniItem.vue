@@ -13,7 +13,7 @@ import useAmount from '~/components/amount/useAmount'
 import { getStyles } from '~/components/ui/getStyles'
 import { markArea } from '~/components/stat/chart/utils'
 import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useDateRange } from '~/components/date/useDateRange'
+import { useIntervalRange } from '~/components/date/useIntervalRange'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { TotalReturns } from '~/components/amount/getTotal'
 
@@ -30,8 +30,20 @@ const filter = inject('filter') as FilterProvider
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
-const intervalRange = useDateRange({
-  key: `finapp-${props.type}${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`,
+
+const maxRange = computed(() => useTrnsStore().getRange(props.trnsIds))
+
+watch(maxRange, (v) => {
+  console.log(111, v)
+})
+
+// watch(useTrnsStore().getRange(props.trnsIds), (v) => {
+//   console.log(111111, v)
+// })
+
+const intervalRange = useIntervalRange({
+  key: `finapp-${props.quickModalCategoryId}-${props.type}${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`,
+  maxRange: maxRange
 })
 
 const newBaseStorageKey = computed(() => `finapp-${intervalRange.grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
@@ -41,8 +53,6 @@ const groupedPeriods = computed(() => intervalRange.getPeriodsWithEmptyTrnsIds({
   period: intervalRange.grouped.value.period,
   range: intervalRange.range.value,
 }))
-
-const maxRange = computed(() => useTrnsStore().getRange(props.trnsIds))
 
 const selectedType = ref<MoneyTypeSlugSum>('sum')
 const onSelectType = (type: MoneyTypeSlugSum) => selectedType.value = type === selectedType.value ? 'sum' : type
@@ -74,6 +84,7 @@ const viewOptions = useStorage<ViewOptions>(`${newBaseStorageKey.value}-viewOpti
 function changeViewOptions(newViewOptions: DeepPartial<ViewOptions>) {
   viewOptions.value = defu(newViewOptions, viewOptions.value)
 }
+
 onBeforeMount(() => {
   if (!ViewOptionsSchema.safeParse(viewOptions.value).success) {
     viewOptions.value = { ...defaultViewOptions }
@@ -208,7 +219,7 @@ function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
   return list
 }
 
-const selectedPeriod = useStorage<number>(`${newBaseStorageKey.value}-selectedPeriod`, -1)
+const selectedPeriod = ref<number>(-1)
 
 watch(intervalRange.range, () => {
   selectedPeriod.value = -1
@@ -358,19 +369,36 @@ function set12Months(close?: () => void) {
   viewOptions.value.catsList.isGrouped = true
   viewOptions.value.catsList.isOpened = false
 
-  intervalRange.setRangeByPeriod({
-    grouped: { duration: 1, period: 'month' },
-    interval: { duration: 12, period: 'month' },
-  })
-
   if (close) {
     close()
   }
 }
+
+const quickModalTrnsIds = computed(() => {
+  console.log('trnsIds')
+  if (quickModalCategoryId.value) {
+    trnsStore.getStoreTrnsIds({
+      categoriesIds: categoriesStore.getChildsIdsOrParent(quickModalCategoryId.value),
+    })
+  }
+
+  return []
+})
 </script>
 
 <template>
   <div>
+
+    <StatDateSelector
+      class="bg-foreground-2"
+      :intervalRange
+      :maxRange
+      @set12Months="set12Months"
+      @set7Days="set7Days"
+      @set7DaysMini="set7DaysMini"
+      @onClose="() => {}"
+    />
+
     <!-- Stat -->
     <div class="@container/stat px-2 pt-2 -max-w-4xl">
       <div class="">
@@ -407,17 +435,14 @@ function set12Months(close?: () => void) {
 
             <div class="flex gap-1">
               <DateNavHome
-                v-if="selectedPeriod !== -1 || intervalRange.range.value.start !== dayjs().subtract(intervalRange.interval.value.duration - 1, intervalRange.interval.value.period).startOf(intervalRange.interval.value.period).valueOf() && intervalRange.range.value.end !== dayjs().endOf(intervalRange.interval.value.period).valueOf()"
-                :interval="intervalRange.interval.value"
-                @setRange="intervalRange.setRange"
+                v-if="selectedPeriod !== -1 || (intervalRange.range.value.start !== dayjs().subtract(intervalRange.interval.value.duration - 1, intervalRange.interval.value.period).startOf(intervalRange.interval.value.period).valueOf() && intervalRange.range.value.end !== dayjs().endOf(intervalRange.interval.value.period).valueOf() && !intervalRange.viewConfig.value.isShowAll)"
+                :intervalRange
               />
 
               <DateNav
                 v-if="intervalRange.range.value.start !== maxRange.start && intervalRange.range.value.end !== maxRange.end"
-                :interval="intervalRange.interval.value"
                 :maxRange
-                :range="intervalRange.range.value"
-                @setRange="intervalRange.setRange"
+                :intervalRange
               />
 
               <div
@@ -616,9 +641,7 @@ function set12Months(close?: () => void) {
             <StatMiniItem
               :quickModalCategoryId
               :storageKey="`${props.storageKey}sum-in-${quickModalCategoryId}`"
-              :trnsIds="trnsStore.getStoreTrnsIds({
-                categoriesIds: categoriesStore.getChildsIdsOrParent(quickModalCategoryId),
-              })"
+              :trnsIds="quickModalTrnsIds"
               class="-max-w-2xl"
               isQuickModal
               type="sum"
