@@ -103,7 +103,7 @@ messagingSenderId: 'YOUR_CONFIG'
 OPEN_EXCHANGE_RATES=app_id
 ```
 
-If you use netlify or similar services you need add OPEN_EXCHANGE_RATES to env variables.
+If you use netlify or similar services you need to add OPEN_EXCHANGE_RATES env.
 
 ## Development
 
