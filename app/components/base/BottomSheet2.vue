@@ -167,6 +167,8 @@ function contentHasScroll(event: Event) {
  * Drag start
  */
 function onDragStart(event: Event): void {
+  // event.preventDefault()
+
   if (event.target instanceof Element && event?.target?.closest('.sortHandle'))
     return
 
@@ -201,9 +203,14 @@ const debug = ref({
  * Dragging
  */
 function onDragging(event: Event): void {
-  if (disabled.value)
+  // console.log('onDraggin3')
+
+  // event.preventDefault()
+
+  if (disabled.value || !isDragging.value)
     return
 
+  // console.log('onDraggin2')
   const isHasScroll = contentHasScroll(event)
 
   const bodyHeight = document.querySelector('body')?.clientHeight ?? 0
@@ -252,7 +259,9 @@ function onDragging(event: Event): void {
 /**
  * Drag end
  */
-async function onDragEnd() {
+async function onDragEnd(event: Event) {
+  // event.preventDefault()
+
   if (disabled.value || !isDragging.value)
     return
 
@@ -335,17 +344,28 @@ function addEvents() {
   isEventsAdded.value = true
 
   // Touch
-  useEventListener(containerRef, 'touchstart', onDragStart)
-  useEventListener(containerRef, 'touchmove', onDragging)
-  useEventListener(containerRef, 'touchend', onDragEnd)
+  if (containerRef.value) {
+    containerRef.value.addEventListener('touchstart', onDragStart)
+    containerRef.value.addEventListener('touchmove', onDragging)
+    containerRef.value.addEventListener('touchend', onDragEnd)
+    containerRef.value.addEventListener('mousedown', onDragStart)
+    containerRef.value.addEventListener('mouseup', onDragEnd)
+
+    document.addEventListener('mousemove', onDragging)
+    document.addEventListener('mouseleave', onDragEnd)
+  }
+
+  // addEventListener(containerRef.value, 'touchstart', onDragStart)
+  // addEventListener(containerRef.value, 'touchmove', onDragging)
+  // addEventListener(containerRef.value, 'touchend', onDragEnd)
 
   // Mouse
-  useEventListener(containerRef, 'mousedown', onDragStart)
-  useEventListener(document, 'mousemove', onDragging)
+  // addEventListener(containerRef.value, 'mousedown', onDragStart)
+  // addEventListener(document, 'mousemove', onDragging)
 
   // Mouse: Finish drag event only when mouse released
-  useEventListener(containerRef, 'mouseup', onDragEnd)
-  useEventListener(document, 'mouseleave', onDragEnd)
+  // addEventListener(containerRef.value, 'mouseup', onDragEnd)
+  // addEventListener(document, 'mouseleave', onDragEnd)
 }
 
 /**
@@ -379,21 +399,42 @@ async function init() {
     }, 10)
   }, 10)
 }
+
+function removeEvents () {
+  isEventsAdded.value = false
+      if (containerRef.value) {
+        containerRef.value.removeEventListener('touchstart', onDragStart)
+        containerRef.value.removeEventListener('touchmove', onDragging)
+        containerRef.value.removeEventListener('touchend', onDragEnd)
+        containerRef.value.removeEventListener('mousedown', onDragStart)
+        containerRef.value.removeEventListener('mouseup', onDragEnd)
+
+        document.removeEventListener('mousemove', onDragging)
+        document.removeEventListener('mouseleave', onDragEnd)
+      }
+}
 /**
  * Run init when mounted or isShow changed
  */
 watch(
   () => props.isShow,
-  async () => {
-    if (props.isShow)
+  async (value) => {
+    // console.log('isShow', value)
+
+    if (value)
       await init()
 
-    if (!props.isShow && opened.value)
+    if (!value)
+      removeEvents()
+
+    if (!value && opened.value) {
       close()
+    }
   },
   { immediate: true },
 )
 
+onBeforeUnmount(removeEvents)
 /**
  * Height
  */

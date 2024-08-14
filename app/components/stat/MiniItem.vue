@@ -33,13 +33,9 @@ const categoriesStore = useCategoriesStore()
 
 const maxRange = computed(() => useTrnsStore().getRange(props.trnsIds))
 
-watch(maxRange, (v) => {
-  console.log(111, v)
+watch(props, (v) => {
+  console.log('props', v)
 })
-
-// watch(useTrnsStore().getRange(props.trnsIds), (v) => {
-//   console.log(111111, v)
-// })
 
 const intervalRange = useIntervalRange({
   key: `finapp-${props.quickModalCategoryId}-${props.type}${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`,
@@ -375,9 +371,8 @@ function set12Months(close?: () => void) {
 }
 
 const quickModalTrnsIds = computed(() => {
-  console.log('trnsIds')
   if (quickModalCategoryId.value) {
-    trnsStore.getStoreTrnsIds({
+    return trnsStore.getStoreTrnsIds({
       categoriesIds: categoriesStore.getChildsIdsOrParent(quickModalCategoryId.value),
     })
   }
@@ -388,17 +383,6 @@ const quickModalTrnsIds = computed(() => {
 
 <template>
   <div>
-
-    <StatDateSelector
-      class="bg-foreground-2"
-      :intervalRange
-      :maxRange
-      @set12Months="set12Months"
-      @set7Days="set7Days"
-      @set7DaysMini="set7DaysMini"
-      @onClose="() => {}"
-    />
-
     <!-- Stat -->
     <div class="@container/stat px-2 pt-2 -max-w-4xl">
       <div class="">
@@ -545,7 +529,6 @@ const quickModalTrnsIds = computed(() => {
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 :class="{ 'bg-item-9 rounded-lg -border border-item-5 overflow-hidden': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
                 @click="onClickCategory"
-                @onClickIcon="onClickCategoryRounded"
               >
                 <div
                   v-if="viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened"
@@ -571,7 +554,7 @@ const quickModalTrnsIds = computed(() => {
                 :item
                 :biggestCatNumber
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-                @click="onClickCategoryRounded"
+                @click="onClickCategory"
               />
             </div>
           </UiToggle>

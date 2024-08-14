@@ -9,7 +9,7 @@ const emit = defineEmits<{
 }>()
 
 const items = computed(() => ({
-  yes: {
+  no: {
     click: (close: () => void) => {
       close()
     },
@@ -17,7 +17,7 @@ const items = computed(() => ({
     localeKey: 'base.no',
   },
   // eslint-disable-next-line perfectionist/sort-objects
-  no: {
+  yes: {
     click: (close: () => void) => {
       emit('onConfirm')
       close()

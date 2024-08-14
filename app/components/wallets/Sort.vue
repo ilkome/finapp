@@ -2,7 +2,7 @@
 import type { ToastOptions } from 'vue3-toastify'
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 import UiToastContent from '~/components/ui/ToastContent.vue'
-import { random, successEmo } from '~/assets/js/emo'
+import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const emit = defineEmits(['closeModal'])
@@ -16,18 +16,19 @@ const [parent, sortedWalletsIds] = useDragAndDrop([...walletsStore.sortedIds], {
 async function saveWalletsOrder() {
   const result = await walletsStore.saveWalletsOrder(sortedWalletsIds.value)
 
-  if (result !== 'ok')
+  if (result !== 'ok') {
+    $toast(UiToastContent, {
+      autoClose: 6000,
+      data: {
+        description: 'Error',
+        title: random(errorEmo),
+      },
+      type: 'error',
+    } as ToastOptions)
     return
+  }
 
   emit('closeModal')
-  $toast(UiToastContent, {
-    autoClose: 6000,
-    data: {
-      description: 'Saved',
-      title: random(successEmo),
-    },
-    type: 'success',
-  } as ToastOptions)
 }
 </script>
 

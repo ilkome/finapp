@@ -51,6 +51,19 @@ function close() {
   <div>
     <div>
       <UiToggle2
+        storageKey="finapp-date-modal-dev"
+        :initStatus="true"
+        :lineWidth="1"
+        openPadding="!pb-6"
+      >
+        <template #header="{ toggle, isShown }">
+          <UiTitle88 :isShown @click="toggle">Dev</UiTitle88>
+        </template>
+
+        <pre>{{ props.intervalRange }}</pre>
+      </UiToggle2>
+
+      <UiToggle2
         storageKey="finapp-date-modal-presets"
         :initStatus="true"
         :lineWidth="1"
@@ -59,9 +72,6 @@ function close() {
         <template #header="{ toggle, isShown }">
           <UiTitle88 :isShown @click="toggle"> Presets </UiTitle88>
         </template>
-
-        <pre>{{ props.intervalRange }}</pre>
-
 
         <UiTabs2 class="px-2">
           <DateLinkItem @click="emit('set7Days', close)"> 7 days </DateLinkItem>

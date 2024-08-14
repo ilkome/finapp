@@ -30,11 +30,13 @@ async function onClickSubmit() {
 <template>
   <div
     :class="{
-      '!bg-accent-1/50 border-accent-1/50 hocus:!bg-accent-1/70': !isMath && isSubmittable,
+      '!bg-accent-1/50 !border-transparent hocus:!bg-accent-1/70': !isMath && isSubmittable,
+      '!text-secondary !border-item-4':  !isSubmittable,
+      '!text-secondary':  isMath,
     }"
     class="
       flex items-center justify-center
-      max-w-[56px] p-1 text-2xl
+      max-w-[56px] p-1 text-4xl
       py-4
       size-full
       text-1 text-center
@@ -44,8 +46,9 @@ async function onClickSubmit() {
     "
     @click="onClickSubmit"
   >
-    <span v-if="!isMath" class="mdi mdi-check" />
-    <span v-if="isMath" class="mdi mdi-equal" />
+    <span v-if="!isMath && isSubmittable" class="mdi mdi-check" />
+    <span v-else-if="isMath" class="mdi mdi-equal" />
+    <span v-else class="mdi mdi-palm-tree" />
     <!-- <pre>{{ trnFormStore.activeAmountIdx }}</pre>
     <pre>{{ isMath }}</pre> -->
   </div>
