@@ -5,11 +5,13 @@ const props = defineProps<{
   activeType?: string
   currencyCode: CurrencyCode
   items: unknown[]
-}>()
+}>();
 
 const emit = defineEmits<{
   click: [v: string]
-}>()
+}>();
+
+
 </script>
 
 <template>
