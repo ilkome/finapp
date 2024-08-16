@@ -180,7 +180,6 @@ export default {
       isDebt: 'Debts',
       isDeposit: 'Deposit',
       isIncludeTotal: 'Include in total',
-      savings: 'Savings',
       withCredit: 'Total without credit',
       withdrawal: 'Withdrawal',
     },

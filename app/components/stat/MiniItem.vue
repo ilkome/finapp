@@ -39,7 +39,7 @@ watch(props, (v) => {
 
 const intervalRange = useIntervalRange({
   key: `finapp-${props.quickModalCategoryId}-${props.type}${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`,
-  maxRange: maxRange
+  maxRange,
 })
 
 const newBaseStorageKey = computed(() => `finapp-${intervalRange.grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
@@ -500,11 +500,66 @@ const quickModalTrnsIds = computed(() => {
                 </UiTitle8>
 
                 <StatCategoriesButtons
-                  v-if="isShown"
+                  v-if="isShown && viewOptions.catsView === 'list'"
                   :viewOptions
                   class="-pr-1"
                   @changeViewOptions="changeViewOptions"
                 />
+
+                <!-- Folder -->
+                <UiItem1
+                  v-if="viewOptions.catsList.isGrouped"
+                  @click="changeViewOptions({
+                    catsList: {
+                      isOpened: !viewOptions.catsList.isOpened,
+                    },
+                  })"
+                >
+                  <Icon
+                    :name="viewOptions.catsList.isOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
+                    size="24"
+                  />
+                </UiItem1>
+
+                <!-- List -->
+                <UiItem1
+                  v-if="viewOptions.catsView === 'list'"
+                  @click="changeViewOptions({
+                    catsList: {
+                      isGrouped: !viewOptions.catsList.isGrouped,
+                    },
+                  })"
+                >
+                  <Icon
+                    :name="viewOptions.catsList.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
+                    size="24"
+                  />
+                </UiItem1>
+
+                <!-- Round -->
+                <UiItem1
+                  v-if="viewOptions.catsView === 'round'"
+                  @click="changeViewOptions({
+                    catsRound: {
+                      isGrouped: !viewOptions.catsRound.isGrouped,
+                    },
+                  })"
+                >
+                  <Icon
+                    :name="viewOptions.catsRound.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
+                    size="24"
+                  />
+                </UiItem1>
+
+                <UiItem1
+                  @click="changeViewOptions({
+                    catsView: viewOptions.catsView === 'list' ? 'round' : 'list',
+                  })"
+                >
+                  <Icon
+                    :name="viewOptions.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'"
+                  />
+                </UiItem1>
               </div>
             </template>
 

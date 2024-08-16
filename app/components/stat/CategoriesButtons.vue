@@ -33,64 +33,6 @@ const { t } = useI18n()
 
       <template #popper>
         <div class="grid gap-2 px-2 pb-2">
-          <div class="flex justify-end pt-2">
-            <!-- Folder -->
-            <UiItem1
-              v-if="props.viewOptions.catsView === 'list' && viewOptions.catsList.isGrouped"
-              @click="emit('changeViewOptions', {
-                catsList: {
-                  isOpened: !props.viewOptions.catsList.isOpened,
-                },
-              })"
-            >
-              <Icon
-                :name="props.viewOptions.catsList.isOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
-                size="24"
-              />
-            </UiItem1>
-
-            <!-- List -->
-            <UiItem1
-              v-if="props.viewOptions.catsView === 'list'"
-              @click="emit('changeViewOptions', {
-                catsList: {
-                  isGrouped: !props.viewOptions.catsList.isGrouped,
-                },
-              })"
-            >
-              <Icon
-                :name="props.viewOptions.catsList.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
-                size="24"
-              />
-            </UiItem1>
-
-            <!-- Round -->
-            <UiItem1
-              v-if="props.viewOptions.catsView === 'round'"
-              @click="emit('changeViewOptions', {
-                catsRound: {
-                  isGrouped: !props.viewOptions.catsRound.isGrouped,
-                },
-              })"
-            >
-              <Icon
-                :name="props.viewOptions.catsRound.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
-                size="24"
-              />
-            </UiItem1>
-
-            <!-- Cat view -->
-            <UiItem1
-              @click="emit('changeViewOptions', {
-                catsView: props.viewOptions.catsView === 'list' ? 'round' : 'list',
-              })"
-            >
-              <Icon
-                :name="props.viewOptions.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'"
-              />
-            </UiItem1>
-          </div>
-
           <div
             v-if="props.viewOptions.catsView === 'list'"
             class="border-t border-item-3 pt-2"

@@ -180,7 +180,6 @@ export default {
       isDebt: 'Долги',
       isDeposit: 'Вклады',
       isIncludeTotal: 'Включать в ощий баланс',
-      savings: 'Вложения',
       withCredit: 'Без учета кредита',
       withdrawal: 'Доступные',
     },

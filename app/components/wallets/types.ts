@@ -1,5 +1,6 @@
-import type { CurrencyCode } from '~~/currencies/types'
+import type { CurrencyCode } from '~/components/currencies/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
+import type { DeepPartial } from '~~/utils/types'
 
 export type WalletId = string
 
