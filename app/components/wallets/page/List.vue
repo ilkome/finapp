@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+import { groupBy } from 'es-toolkit'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -111,22 +112,6 @@ const selectedWallets = computed(() => {
   )
 })
 
-const selectedWallets2 = computed(() => {
-  if (currencyFiltered.value === 'all')
-    return walletsStore.sortedItems
-
-  return Object.fromEntries(
-    Object.entries(walletsStore.sortedItems).filter(
-      ([_key, wallet]) => {
-        if (currencyFiltered.value === wallet.currency)
-          return true
-
-        return false
-      },
-    ),
-  )
-})
-
 const isShowCurrencyFilter = ref(false)
 function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
   if (currencyFiltered.value === code && toggle)
@@ -187,16 +172,11 @@ const groupedWalletsByType = computed(() => {
 
       const isArchived = type !== 'archived' && wallet?.archived
 
-      const isType = activeType.value === 'all'
-        ? true
-        : wallet[activeType.value]
-
       if (type === 'available') {
-        wallet = (wallet?.isCredit || wallet?.withdrawal) && isCurrencyFiltered && !isArchived && isType
-        return wallet
+        return (wallet?.isCredit || wallet?.withdrawal) && isCurrencyFiltered && !isArchived
       }
 
-      return wallet[type] && isCurrencyFiltered && !isArchived && isType
+      return wallet[type] && isCurrencyFiltered && !isArchived
     })
   }
 
@@ -278,42 +258,41 @@ const counts = computed(() => ({
     isShow: true,
     value: totalInWallets.value.all,
   },
-  isCash: {
-    id: 'isCash',
-    isShow: totalInWallets.value.isCash !== 0,
-    value: totalInWallets.value.isCash,
-  },
-  isCashless: {
-    id: 'isCashless',
-    isShow: totalInWallets.value.isCashless !== 0,
-    value: totalInWallets.value.isCashless,
-  },
   isCredit: {
     id: 'isCredit',
-    isShow: totalInWallets.value.credits !== 0,
+    isShow: gropedBy.value === 'list' && totalInWallets.value.credits !== 0,
     value: totalInWallets.value.credits,
-  },
-}))
-
-const counts2 = computed(() => ({
-  withdrawal: {
-    icon: 'UiIconWalletWithdrawal',
-    id: 'withdrawal',
-    isShow: totalInWallets.value.withdrawal !== 0,
-    value: totalInWallets.value.withdrawal,
   },
   // eslint-disable-next-line perfectionist/sort-objects
   isDeposit: {
     icon: 'isDeposit',
     id: 'isDeposit',
-    isShow: totalInWallets.value.isDeposit !== 0,
+    isShow: gropedBy.value === 'list' && totalInWallets.value.isDeposit !== 0,
     value: totalInWallets.value.isDeposit,
   },
+  isCash: {
+    id: 'isCash',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.isCash !== 0,
+    value: totalInWallets.value.isCash,
+  },
+  isCashless: {
+    id: 'isCashless',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.isCashless !== 0,
+    value: totalInWallets.value.isCashless,
+  },
+
+  withdrawal: {
+    icon: 'UiIconWalletWithdrawal',
+    id: 'withdrawal',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.withdrawal !== 0,
+    value: totalInWallets.value.withdrawal,
+  },
+
   // eslint-disable-next-line perfectionist/sort-objects
   creditPossible: {
     id: 'creditPossible',
     isShow: totalInWallets.value.creditPossible !== 0,
-    value: totalInWallets.value.creditPossible,
+    value: totalInWallets.value.creditPossible + totalInWallets.value.credits,
   },
   withCredit: {
     id: 'withCredit',
@@ -321,6 +300,27 @@ const counts2 = computed(() => ({
     value: totalInWallets.value.all + -totalInWallets.value.credits,
   },
 }))
+
+function groupByWalletType(id: WalletId) {
+  const wallet = walletsStore.items?.[id]
+  if (wallet?.isCash)
+    return 'isCash'
+  if (wallet?.isDeposit)
+    return 'isDeposit'
+  if (wallet?.isCredit)
+    return 'isCredit'
+  if (wallet?.isCredit)
+    return 'isCredit'
+  if (wallet?.isCashless)
+    return 'isCashless'
+
+  return 'other'
+}
+
+function groupByWalletCurrency(id: WalletId) {
+  const wallet = walletsStore.items?.[id]
+  return wallet?.currency
+}
 </script>
 
 <template>
@@ -391,7 +391,10 @@ const counts2 = computed(() => ({
           </template>
         </UiToggle2>
 
-        <UiBox1 @click="isShowBaseCurrencyModal = true">
+        <UiBox1
+          @click="isShowBaseCurrencyModal = true"
+          class="hidden md:grid"
+        >
           <UiTitle6>{{ t("currenciesBase") }}</UiTitle6>
           {{ currenciesStore.base }}
         </UiBox1>
@@ -435,15 +438,9 @@ const counts2 = computed(() => ({
           </template>
 
           <WalletsTotal
-            :activeType
+            :activeType="gropedBy === 'list' ? activeType : false"
             :currencyCode="currenciesStore.base"
             :items="Object.values(counts).filter(item => item.isShow)"
-            @click="setActiveType"
-          />
-          <WalletsTotal
-            :activeType
-            :currencyCode="currenciesStore.base"
-            :items="Object.values(counts2).filter(item => item.isShow)"
             @click="setActiveType"
           />
         </UiToggle2>
@@ -466,10 +463,29 @@ const counts2 = computed(() => ({
                   {{ currency }} {{ !isShown ? walletsIds.length : '' }}
                 </UiTitle88>
 
-                <Amount
-                  :amount="countWalletsSum(walletsIds, false)"
-                  :currencyCode="currency"
-                />
+                <div class="py-2">
+                  <Amount
+                    :amount="countWalletsSum(walletsIds, false)"
+                    :currencyCode="currency"
+                  />
+
+                  <div v-if="isShown">
+                    <div
+                      v-for="(groupedWalletsIds, grouped) in groupBy(walletsIds, groupByWalletType)"
+                      :key="grouped"
+                      class="grid grid-cols-2 gap-2"
+                    >
+                      <div class="text-2xs text-right">{{ $t(`money.totals.${grouped}`) }}</div>
+                      <Amount
+                        :amount="countWalletsSum(groupedWalletsIds, false)"
+                        :isShowBaseRate="false"
+                        :currencyCode="currency"
+                        class="opacity-60"
+                        variant="sm"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </template>
 
@@ -501,26 +517,56 @@ const counts2 = computed(() => ({
                 @click="toggle"
               >
                 <UiTitle88 :isShown>
-                  {{ $t(`money.totals.${type}`) }} {{ !isShown ? walletsIds.length : '' }}
+                  {{ $t(`money.totals.${type}`) }} {{ walletsIds.length }}
                 </UiTitle88>
 
-                <Amount
-                  :amount="countWalletsSum(walletsIds)"
-                  :currencyCode="currenciesStore.base"
-                />
+                <div class="py-2">
+                  <Amount
+                    :amount="countWalletsSum(walletsIds)"
+                    :currencyCode="currenciesStore.base"
+                  />
+
+                  <!-- <div v-if="isShown">
+                    <Amount
+                      v-for="(groupedWalletsIds, currency) in groupBy(walletsIds, groupByWalletCurrency)"
+                      :key="currency"
+                      :amount="countWalletsSum(groupedWalletsIds, false)"
+                      :isShowBaseRate="false"
+                      :currencyCode="currency"
+                      class="opacity-60"
+                      variant="sm"
+                    />
+                  </div> -->
+                </div>
               </div>
             </template>
 
-            <WalletsItem
-              v-for="walletId in walletsIds"
-              :key="walletId"
-              :wallet="walletsStore.sortedItems[walletId]"
-              :walletId
-              :lineWidth="2"
-              isShowBaseRate
-              isShowIcons
-              @click="$router.push(`/wallets/${walletId}`)"
-            />
+            <div class="grid gap-4">
+              <div
+                v-for="(groupedWalletsIds, currency) in groupBy(walletsIds, groupByWalletCurrency)"
+                :key="currency"
+                class="ml-3 pl-2 border-l border-item-5"
+              >
+                <div class="flex items-center justify-between grow pr-3">
+                  <UiTitle9>{{ currency }}</UiTitle9>
+                  <Amount
+                    :amount="countWalletsSum(groupedWalletsIds, false)"
+                    :currencyCode="currency"
+                  />
+                </div>
+
+                <WalletsItem
+                  v-for="walletId in groupedWalletsIds"
+                  :key="walletId"
+                  :wallet="walletsStore.sortedItems[walletId]"
+                  :walletId
+                  :lineWidth="2"
+                  isShowBaseRate
+                  isShowIcons
+                  @click="$router.push(`/wallets/${walletId}`)"
+                />
+              </div>
+            </div>
           </UiToggle2>
         </template>
 

@@ -38,9 +38,6 @@ importers:
       localforage:
         specifier: ^1.10.0
         version: 1.10.0
-      lodash.sortby:
-        specifier: ^4.7.0
-        version: 4.7.0
       pinia:
         specifier: ^2.1.7
         version: 2.1.7(typescript@5.5.3)(vue@3.4.31(typescript@5.5.3))
@@ -96,6 +93,9 @@ importers:
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
+      es-toolkit:
+        specifier: ^1.15.1
+        version: 1.15.1
       eslint:
         specifier: ^9.7.0
         version: 9.7.0
@@ -3562,6 +3562,9 @@ packages:
   es-to-primitive@1.2.1:
     resolution: {integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==}
     engines: {node: '>= 0.4'}
+
+  es-toolkit@1.15.1:
+    resolution: {integrity: sha512-2rPCylgxxpgZ3jQLyvbm+B9dNAMdHv4S80iabK9njEWxDbObhAPJCQUpqHv8iaOZrfprl3UlWhfxZd7kKSQtbg==}
 
   esbuild@0.20.2:
     resolution: {integrity: sha512-WdOOppmUNU+IbZ0PaDiTst80zjnrOkyJNHoKupIcVyU8Lvla3Ugx94VzkQ32Ijqd7UhHJy75gNWDMUekcrSJ6g==}
@@ -11108,6 +11111,8 @@ snapshots:
       is-callable: 1.2.7
       is-date-object: 1.0.5
       is-symbol: 1.0.4
+
+  es-toolkit@1.15.1: {}
 
   esbuild@0.20.2:
     optionalDependencies:

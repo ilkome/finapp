@@ -19,28 +19,30 @@ function onSelect(code: CurrencyCode, close: () => void) {
 </script>
 
 <template>
-  <BaseBottomSheet2
-    isShow
-    drugClassesCustom="sm:max-w-md mx-auto bg-foreground-1"
-    @closed="emit('onClose')"
-  >
-    <template #handler="{ close }">
-      <BaseBottomSheetHandler />
-      <BaseBottomSheetClose @onClick="close" />
-    </template>
+  <Teleport to="#teleports">
+    <BaseBottomSheet2
+      isShow
+      drugClassesCustom="sm:max-w-md mx-auto bg-foreground-1"
+      @closed="emit('onClose')"
+    >
+      <template #handler="{ close }">
+        <BaseBottomSheetHandler />
+        <BaseBottomSheetClose @onClick="close" />
+      </template>
 
-    <template #default="{ close }">
-      <div class="grid gap-4 py-4 px-3">
-        <UiTitle3>{{ t('select') }}</UiTitle3>
+      <template #default="{ close }">
+        <div class="grid gap-4 py-4 px-3">
+          <UiTitle3>{{ t('select') }}</UiTitle3>
 
-        <CurrenciesList
-          :active="props.activeCode"
-          :isShowAll="props.isShowAll"
-          @onSelect="(c: CurrencyCode) => onSelect(c, close)"
-        />
-      </div>
-    </template>
-  </BaseBottomSheet2>
+          <CurrenciesList
+            :active="props.activeCode"
+            :isShowAll="props.isShowAll"
+            @onSelect="(c: CurrencyCode) => onSelect(c, close)"
+          />
+        </div>
+      </template>
+    </BaseBottomSheet2>
+  </Teleport>
 </template>
 
 <i18n lang="yaml">

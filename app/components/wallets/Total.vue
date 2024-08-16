@@ -2,7 +2,7 @@
 import type { CurrencyCode } from '~/components/currencies/types'
 
 const props = defineProps<{
-  activeType: string
+  activeType?: string
   currencyCode: CurrencyCode
   items: unknown[]
 }>()
