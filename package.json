@@ -51,7 +51,7 @@
     "@vueuse/nuxt": "^10.11.1",
     "dotenv": "^16.4.5",
     "es-toolkit": "^1.16.0",
-    "eslint": "^9.7.0",
+    "eslint": "^9.9.0",
     "eslint-plugin-format": "^0.1.2",
     "eslint-plugin-perfectionist": "^2.11.0",
     "lodash.sortby": "^4.7.0",
