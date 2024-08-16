@@ -59,11 +59,11 @@ export default defineNuxtConfig({
     locales: [{
       code: 'en',
       file: 'en-US.js',
-      iso: 'en-US',
+      language: 'en-US',
     }, {
       code: 'ru',
       file: 'ru-RU.js',
-      iso: 'ru-RU',
+      language: 'ru-RU',
     }],
     strategy: 'no_prefix',
   },

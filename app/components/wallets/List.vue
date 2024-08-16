@@ -43,13 +43,13 @@ onMounted(() => stateLimit.value = props.limit)
 
     <slot
       v-if="isShowToggle && walletsStore.sortedIds.length > limit"
-      name="toggle"
       :stateLimit="stateLimit"
       :limit="limit"
       :toggle="toggle"
+      name="toggle"
     >
       <div
-        :class="getStyles('item', ['link', 'rounded', 'minh'])"
+        :class="getStyles('item', ['rounded', 'minh'])"
         class="flex-center mt-[-1px] px-2 py-2 text-xs"
         @click="toggle"
       >
