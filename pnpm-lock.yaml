@@ -17,9 +17,6 @@ importers:
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
-      '@tailwindcss/container-queries':
-        specifier: ^0.1.1
-        version: 0.1.1(tailwindcss@3.4.5)
       currency.js:
         specifier: ^2.0.4
         version: 2.0.4
@@ -38,6 +35,9 @@ importers:
       localforage:
         specifier: ^1.10.0
         version: 1.10.0
+      lodash.sortby:
+        specifier: ^4.7.0
+        version: 4.7.0
       pinia:
         specifier: ^2.1.7
         version: 2.1.7(typescript@5.5.3)(vue@3.4.31(typescript@5.5.3))
@@ -62,9 +62,6 @@ importers:
       vue3-toastify:
         specifier: ^0.2.2
         version: 0.2.2(vue@3.4.31(typescript@5.5.3))
-      zod:
-        specifier: ^3.23.8
-        version: 3.23.8
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^2.22.3
@@ -93,9 +90,6 @@ importers:
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
-      es-toolkit:
-        specifier: ^1.15.1
-        version: 1.15.1
       eslint:
         specifier: ^9.7.0
         version: 9.7.0
@@ -3563,9 +3557,6 @@ packages:
     resolution: {integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==}
     engines: {node: '>= 0.4'}
 
-  es-toolkit@1.15.1:
-    resolution: {integrity: sha512-2rPCylgxxpgZ3jQLyvbm+B9dNAMdHv4S80iabK9njEWxDbObhAPJCQUpqHv8iaOZrfprl3UlWhfxZd7kKSQtbg==}
-
   esbuild@0.20.2:
     resolution: {integrity: sha512-WdOOppmUNU+IbZ0PaDiTst80zjnrOkyJNHoKupIcVyU8Lvla3Ugx94VzkQ32Ijqd7UhHJy75gNWDMUekcrSJ6g==}
     engines: {node: '>=12'}
@@ -6936,9 +6927,6 @@ packages:
   zip-stream@6.0.1:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
-
-  zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
   zrender@5.6.0:
     resolution: {integrity: sha512-uzgraf4njmmHAbEUxMJ8Oxg+P3fT04O+9p7gY+wJRVxo8Ge+KmYv0WJev945EH4wFuc4OY2NLXz46FZrWS9xJg==}
@@ -11112,8 +11100,6 @@ snapshots:
       is-date-object: 1.0.5
       is-symbol: 1.0.4
 
-  es-toolkit@1.15.1: {}
-
   esbuild@0.20.2:
     optionalDependencies:
       '@esbuild/aix-ppc64': 0.20.2
@@ -15047,8 +15033,6 @@ snapshots:
       archiver-utils: 5.0.2
       compress-commons: 6.0.2
       readable-stream: 4.5.2
-
-  zod@3.23.8: {}
 
   zrender@5.6.0:
     dependencies:
