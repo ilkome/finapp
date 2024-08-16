@@ -4,7 +4,7 @@ import { getDataAndWatch, unsubscribeData, updateData } from '~~/services/fireba
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItemWithAmount, Wallets } from '~/components/wallets/types'
 import { getTotal } from '~/components/amount/getTotal'
-import { uniqueElementsBy } from '~/utils/simple'
+import { uniqueElementsBy } from '~~/utils/simple'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUser'
 
