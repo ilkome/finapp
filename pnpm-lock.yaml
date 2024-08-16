@@ -62,9 +62,6 @@ importers:
       vue-echarts:
         specifier: ^6.7.3
         version: 6.7.3(@vue/runtime-core@3.4.31)(echarts@5.5.1)(vue@3.4.31(typescript@5.5.3))
-      vue-router:
-        specifier: ^4.3.3
-        version: 4.4.0(vue@3.4.31(typescript@5.5.3))
       vue3-toastify:
         specifier: ^0.2.2
         version: 0.2.2(vue@3.4.31(typescript@5.5.3))
