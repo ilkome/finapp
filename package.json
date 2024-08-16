@@ -42,7 +42,7 @@
     "vue3-toastify": "^0.2.2"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.22.3",
+    "@antfu/eslint-config": "2.22.2",
     "@nuxt/fonts": "^0.7.2",
     "@nuxt/ui": "^2.18.4",
     "@nuxtjs/i18n": "^8.4.0",
