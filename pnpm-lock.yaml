@@ -66,9 +66,6 @@ importers:
       '@antfu/eslint-config':
         specifier: ^2.22.3
         version: 2.22.3(@vue/compiler-sfc@3.4.31)(eslint-plugin-format@0.1.2(eslint@9.7.0))(eslint@9.7.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.10)(stylus@0.63.0)(terser@5.31.1))
-      '@babel/parser':
-        specifier: ^7.24.8
-        version: 7.24.8
       '@nuxt/fonts':
         specifier: ^0.7.1
         version: 0.7.1(encoding@0.1.13)(ioredis@5.4.1)(magicast@0.3.4)(rollup@4.18.0)(vite@5.3.4(@types/node@20.14.10)(stylus@0.63.0)(terser@5.31.1))
@@ -90,6 +87,9 @@ importers:
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
+      es-toolkit:
+        specifier: ^1.16.0
+        version: 1.16.0
       eslint:
         specifier: ^9.7.0
         version: 9.7.0
@@ -3556,6 +3556,9 @@ packages:
   es-to-primitive@1.2.1:
     resolution: {integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==}
     engines: {node: '>= 0.4'}
+
+  es-toolkit@1.16.0:
+    resolution: {integrity: sha512-eNJh3zF1KmAHRYd1D8rFi1cMFMCjrC6tumBfwuuZdSur97mED/ifyeBoGzxS11L4owCMx3XSmWTo6oxJQkdGng==}
 
   esbuild@0.20.2:
     resolution: {integrity: sha512-WdOOppmUNU+IbZ0PaDiTst80zjnrOkyJNHoKupIcVyU8Lvla3Ugx94VzkQ32Ijqd7UhHJy75gNWDMUekcrSJ6g==}
@@ -11099,6 +11102,8 @@ snapshots:
       is-callable: 1.2.7
       is-date-object: 1.0.5
       is-symbol: 1.0.4
+
+  es-toolkit@1.16.0: {}
 
   esbuild@0.20.2:
     optionalDependencies:

@@ -161,7 +161,7 @@ const groupedWalletsByType = computed(() => {
   const grouped: Record<string, WalletId[]> = {}
   for (const type of types) {
     grouped[type] = walletsStore.sortedIds.filter((id) => {
-      let wallet = walletsStore.items?.[id]
+      const wallet = walletsStore.items?.[id]
 
       if (!wallet)
         return false
@@ -258,17 +258,11 @@ const counts = computed(() => ({
     isShow: true,
     value: totalInWallets.value.all,
   },
-  isCredit: {
-    id: 'isCredit',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.credits !== 0,
-    value: totalInWallets.value.credits,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  isDeposit: {
-    icon: 'isDeposit',
-    id: 'isDeposit',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.isDeposit !== 0,
-    value: totalInWallets.value.isDeposit,
+
+  creditPossible: {
+    id: 'creditPossible',
+    isShow: totalInWallets.value.creditPossible !== 0,
+    value: totalInWallets.value.creditPossible + totalInWallets.value.credits,
   },
   isCash: {
     id: 'isCash',
@@ -280,24 +274,29 @@ const counts = computed(() => ({
     isShow: gropedBy.value === 'list' && totalInWallets.value.isCashless !== 0,
     value: totalInWallets.value.isCashless,
   },
+  isCredit: {
+    id: 'isCredit',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.credits !== 0,
+    value: totalInWallets.value.credits,
+  },
 
+  isDeposit: {
+    icon: 'isDeposit',
+    id: 'isDeposit',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.isDeposit !== 0,
+    value: totalInWallets.value.isDeposit,
+  },
+
+  withCredit: {
+    id: 'withCredit',
+    isShow: totalInWallets.value.credits !== 0,
+    value: totalInWallets.value.all + -totalInWallets.value.credits,
+  },
   withdrawal: {
     icon: 'UiIconWalletWithdrawal',
     id: 'withdrawal',
     isShow: gropedBy.value === 'list' && totalInWallets.value.withdrawal !== 0,
     value: totalInWallets.value.withdrawal,
-  },
-
-  // eslint-disable-next-line perfectionist/sort-objects
-  creditPossible: {
-    id: 'creditPossible',
-    isShow: totalInWallets.value.creditPossible !== 0,
-    value: totalInWallets.value.creditPossible + totalInWallets.value.credits,
-  },
-  withCredit: {
-    id: 'withCredit',
-    isShow: totalInWallets.value.credits !== 0,
-    value: totalInWallets.value.all + -totalInWallets.value.credits,
   },
 }))
 
@@ -392,8 +391,8 @@ function groupByWalletCurrency(id: WalletId) {
         </UiToggle2>
 
         <UiBox1
-          @click="isShowBaseCurrencyModal = true"
           class="hidden md:grid"
+          @click="isShowBaseCurrencyModal = true"
         >
           <UiTitle6>{{ t("currenciesBase") }}</UiTitle6>
           {{ currenciesStore.base }}
@@ -475,7 +474,9 @@ function groupByWalletCurrency(id: WalletId) {
                       :key="grouped"
                       class="grid grid-cols-2 gap-2"
                     >
-                      <div class="text-2xs text-right">{{ $t(`money.totals.${grouped}`) }}</div>
+                      <div class="text-2xs text-right">
+                        {{ $t(`money.totals.${grouped}`) }}
+                      </div>
                       <Amount
                         :amount="countWalletsSum(groupedWalletsIds, false)"
                         :isShowBaseRate="false"
