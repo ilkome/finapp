@@ -153,6 +153,7 @@ export default {
     toggle: 'Toggle locale',
   },
 
+  loginWithGithub: 'Login with Github',
   loginWithGoogle: 'Login with Google',
 
   money: {
@@ -173,13 +174,13 @@ export default {
       all: 'Total',
       archived: 'Archived',
       available: 'Available',
-      creditPossible: 'Credit available',
+      creditPossible: 'Credit limits',
       isCash: 'Cash',
       isCashless: 'Cashless',
       isCredit: 'Credits',
       isDebt: 'Debts',
       isDeposit: 'Deposit',
-      isIncludeTotal: 'Include in total',
+      isExcludeTotal: 'Do not include in total',
       withCredit: 'Total without credit',
       withdrawal: 'Withdrawal',
     },

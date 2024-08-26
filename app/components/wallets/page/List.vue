@@ -29,11 +29,6 @@ const activeType = useStorage<WalletTypeAll>('finapp-wallets-active-type', 'all'
 const gropedBy = useStorage<'list' | 'currencies' | 'type'>('finapp-wallets-groupedBy', 'list')
 
 function setActiveType(v: WalletTypeAll) {
-  if (activeType.value === v) {
-    activeType.value = 'all'
-    return
-  }
-
   activeType.value = v
 }
 
@@ -49,6 +44,9 @@ const selectedWallets = computed(() => {
             return true
 
           if (activeType.value === 'isCredit' && wallet.isCredit) {
+            return true
+          }
+          if (activeType.value === 'isDebt' && wallet.isDebt) {
             return true
           }
 
@@ -79,6 +77,9 @@ const selectedWallets = computed(() => {
           if (activeType.value === 'isCashless' && wallet.isCashless)
             return true
 
+          if (activeType.value === 'isDebt' && wallet.isDebt)
+            return true
+
           if (activeType.value === 'isCash' && wallet.isCash)
             return true
 
@@ -107,6 +108,7 @@ const selectedWallets = computed(() => {
 })
 
 const isShowCurrencyFilter = ref(false)
+
 function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
   if (currencyFiltered.value === code && toggle)
     toggle()
@@ -136,18 +138,12 @@ const groupedWalletsByCurrency = computed(() => {
         return false
 
       const isArchived = currency !== 'archived' && wallet.archived
-      const isType = activeType.value === 'all' ? true : wallet[activeType.value]
-
-      return wallet?.currency === currency && !isArchived && isType
+      return wallet?.currency === currency && !isArchived
     })
   }
 
   return grouped
 })
-
-function checkIsAvailable(wallet: WalletItem) {
-  return (wallet?.isCredit || wallet?.withdrawal)
-}
 
 const groupedWalletsByType = computed(() => {
   const grouped: Record<string, WalletId[]> = {}
@@ -176,20 +172,6 @@ const groupedWalletsByType = computed(() => {
   return Object.fromEntries(Object.entries(grouped).filter(([_key, value]) => value.length > 0))
 })
 
-function countWalletsSum(walletsIds: WalletId[], isConvert = true) {
-  return walletsIds.reduce((acc, id) => {
-    const wallet = walletsStore.sortedItems[id]
-    if (!wallet)
-      return acc
-
-    if (isConvert) {
-      return acc + +getAmountInBaseRate({ amount: wallet.amount, currencyCode: wallet.currency, noFormat: true })
-    }
-
-    return acc + wallet.amount
-  }, 0)
-}
-
 const totalInWallets = computed(() => {
   const total = {
     all: 0,
@@ -198,6 +180,7 @@ const totalInWallets = computed(() => {
     credits: 0,
     isCash: 0,
     isCashless: 0,
+    isDebt: 0,
     isDeposit: 0,
     withdrawal: 0,
   }
@@ -215,7 +198,9 @@ const totalInWallets = computed(() => {
           noFormat: true,
         })
 
-    total.all += itemValue
+    if (!wallet.isExcludeTotal) {
+      total.all += itemValue
+    }
 
     if (wallet.isCash)
       total.isCash += itemValue
@@ -234,6 +219,9 @@ const totalInWallets = computed(() => {
     if (wallet.isDeposit)
       total.isDeposit += itemValue
 
+    if (wallet.isDebt)
+      total.isDebt += itemValue
+
     if (wallet.withdrawal)
       total.withdrawal += itemValue
 
@@ -248,9 +236,20 @@ const counts = computed(() => ({
   all: {
     id: 'all',
     isShow: true,
-    value: totalInWallets.value.all,
+    value: totalInWallets.value.all - totalInWallets.value.credits - totalInWallets.value.isDebt,
   },
-
+  isDebt: {
+    id: 'isDebt',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.isDebt !== 0,
+    value: totalInWallets.value.isDebt,
+  },
+  // eslint-disable-next-line perfectionist/sort-objects
+  isCredit: {
+    id: 'isCredit',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.credits !== 0,
+    value: totalInWallets.value.credits,
+  },
+  // eslint-disable-next-line perfectionist/sort-objects
   creditPossible: {
     id: 'creditPossible',
     isShow: totalInWallets.value.creditPossible !== 0,
@@ -266,23 +265,11 @@ const counts = computed(() => ({
     isShow: gropedBy.value === 'list' && totalInWallets.value.isCashless !== 0,
     value: totalInWallets.value.isCashless,
   },
-  isCredit: {
-    id: 'isCredit',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.credits !== 0,
-    value: totalInWallets.value.credits,
-  },
-
   isDeposit: {
     icon: 'isDeposit',
     id: 'isDeposit',
     isShow: gropedBy.value === 'list' && totalInWallets.value.isDeposit !== 0,
     value: totalInWallets.value.isDeposit,
-  },
-
-  withCredit: {
-    id: 'withCredit',
-    isShow: totalInWallets.value.credits !== 0,
-    value: totalInWallets.value.all + -totalInWallets.value.credits,
   },
   withdrawal: {
     icon: 'UiIconWalletWithdrawal',
@@ -291,17 +278,6 @@ const counts = computed(() => ({
     value: totalInWallets.value.withdrawal,
   },
 }))
-
-// const types = [
-//   'available',
-//   'withdrawal',
-//   'isCash',
-//   'isCashless',
-//   'isDeposit',
-//   'isCredit',
-//   'isDebt',
-//   'archived',
-// ]
 
 function groupByWalletType(id: WalletId) {
   const wallet = walletsStore.items?.[id]
@@ -318,6 +294,8 @@ function groupByWalletType(id: WalletId) {
     return 'isCredit'
   if (wallet?.isCashless)
     return 'isCashless'
+  if (wallet?.isDebt)
+    return 'isDebt'
   if (checkIsAvailable(wallet) && !wallet?.archived)
     return 'available'
 
@@ -327,6 +305,26 @@ function groupByWalletType(id: WalletId) {
 function groupByWalletCurrency(id: WalletId) {
   const wallet = walletsStore.items?.[id]
   return wallet?.currency
+}
+
+function countWalletsSum(walletsIds: WalletId[], isConvert = true, isExcludeTotal = false) {
+  return walletsIds.reduce((acc, id) => {
+    const wallet = walletsStore.sortedItems[id]
+    if (!wallet)
+      return acc
+
+    if (isConvert) {
+      return acc + +getAmountInBaseRate({ amount: wallet.amount, currencyCode: wallet.currency, noFormat: true })
+    }
+
+    if (isExcludeTotal && wallet.isExcludeTotal)
+      return acc
+    return acc + wallet.amount
+  }, 0)
+}
+
+function checkIsAvailable(wallet: WalletItem) {
+  return (wallet?.isCredit || wallet?.withdrawal)
 }
 </script>
 
@@ -431,6 +429,7 @@ function groupByWalletCurrency(id: WalletId) {
 
         <!-- Statistics -->
         <UiToggle2
+          v-if="gropedBy === 'list'"
           :initStatus="true"
           :lineWidth="0"
           :storageKey="`finapp-wallets-total-${gropedBy}`"
@@ -460,7 +459,7 @@ function groupByWalletCurrency(id: WalletId) {
             :storageKey="`finapp-wallets-show-${currency}`"
             :initStatus="true"
             :lineWidth="1"
-            openPadding="!pb-6"
+            openPadding="!pb-2"
           >
             <template #header="{ toggle, isShown }">
               <div
@@ -473,7 +472,7 @@ function groupByWalletCurrency(id: WalletId) {
 
                 <div class="py-2">
                   <Amount
-                    :amount="countWalletsSum(walletsIds, false)"
+                    :amount="countWalletsSum(walletsIds, false, true)"
                     :currencyCode="currency"
                   />
                 </div>
@@ -487,7 +486,7 @@ function groupByWalletCurrency(id: WalletId) {
               :storageKey="`finapp-wallets-show-${currency}-${grouped}`"
               :initStatus="false"
               :lineWidth="1"
-              openPadding="!pb-6"
+              openPadding="!pb-3"
             >
               <template #header="{ toggle }">
                 <div
@@ -584,6 +583,7 @@ function groupByWalletCurrency(id: WalletId) {
           </UiToggle2>
         </template>
 
+        <!-- List -->
         <div
           v-if="gropedBy === 'list'"
           class="md:max-w-md"

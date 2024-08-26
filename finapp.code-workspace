@@ -12,6 +12,7 @@
   "settings": {
     "cSpell.words": [
       "defu"
-    ]
+    ],
+    "typescript.tsdk": "finapp/node_modules/typescript/lib"
   },
 }

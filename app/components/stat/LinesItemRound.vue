@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { onLongPress } from '@vueuse/core'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
-import type { TotalCategory } from '~/components/stat/useNewStat'
+import type { TotalCategory } from '~/components/stat/types'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
   isActive?: boolean
@@ -17,6 +19,7 @@ const emit = defineEmits<{
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
+const trnFormStore = useTrnFormStore()
 
 const category = computed(() => {
   const isOneCategory = props.item.trnsIds.length <= 1
@@ -32,11 +35,27 @@ const category = computed(() => {
 
   return categoriesStore.items[props.item.id]
 })
+
+const longPressRef = ref(null)
+onLongPress(
+  longPressRef,
+  () => {
+    trnFormStore.$patch((state) => {
+      state.values.amount = [0, 0, 0]
+      state.values.amountRaw = ['', '', '']
+      state.values.categoryId = props.item.id
+      state.ui.isShow = true
+    })
+  },
+  { delay: 300, modifiers: { prevent: true } },
+)
 </script>
 
 <template>
   <div
+    ref="longPressRef"
     class="relative flex gap-2 items-center text-secondary2 hocus:bg-item-5 p-1 rounded-full bg-item-9 overflow-hidden"
+    :class="{ 'opacity-60': props.item.value === 0 }"
     @click="emit('click', props.item.id)"
   >
     <div

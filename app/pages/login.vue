@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import type { ToastOptions } from 'vue3-toastify'
 import { auth } from '~~/services/firebase/api'
 import UiToastContent from '~/components/ui/ToastContent.vue'
@@ -15,7 +15,7 @@ useSeoMeta({
   title: t('title'),
 })
 
-const { $toast } = useNuxtApp()
+const { $toast } = useNuxtApp() as unknown as { $toast: (c: any, o: any) => void }
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
@@ -26,26 +26,45 @@ if (route.query?.loading)
   isLoading.value = true
 
 function signInWithGoogle() {
-  router.push({ query: { loading: true } })
+  router.push({ query: { loading: 'true' } })
   isLoading.value = true
 
   const provider = new GoogleAuthProvider()
-  signInWithPopup(auth, provider)
-    .then((data) => { console.log('auth', data) })
-    .catch((e) => {
-      console.log(e.message)
+  signInWithPopup(auth, provider).catch((e) => {
+    console.log(e.message)
 
-      $toast(UiToastContent, {
-        autoClose: 6000,
-        data: {
-          description: e.message,
-          title: 'Error',
-        },
-        type: 'error',
-      } as ToastOptions)
+    $toast(UiToastContent, {
+      autoClose: 6000,
+      data: {
+        description: e.message,
+        title: 'Error',
+      },
+      type: 'error',
+    } as ToastOptions)
 
-      isLoading.value = false
-    })
+    isLoading.value = false
+  })
+}
+
+function signInWithGithub() {
+  router.push({ query: { loading: 'true' } })
+  isLoading.value = true
+
+  const provider = new GithubAuthProvider()
+  signInWithPopup(auth, provider).catch((e) => {
+    console.log(e.message)
+
+    $toast(UiToastContent, {
+      autoClose: 6000,
+      data: {
+        description: e.message,
+        title: 'Error',
+      },
+      type: 'error',
+    } as ToastOptions)
+
+    isLoading.value = false
+  })
 }
 
 onMounted(() => {
@@ -61,7 +80,9 @@ onMounted(() => {
 watch(
   () => userStore.uid,
   (uid) => {
-    uid && router.replace('/dashboard')
+    if (uid) {
+      router.replace('/dashboard')
+    }
   },
   { immediate: true },
 )
@@ -69,9 +90,9 @@ watch(
 
 <template>
   <div
-    class="mx-auto grid h-full w-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4 md_p-6"
+    class="md_p-6 mx-auto grid h-full w-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4"
   >
-    <div class="flex flex-wrap gap-2 justify-between items-start">
+    <div class="flex flex-wrap items-start justify-between gap-2">
       <AppLocaleSwitcher />
       <AppThemeSwitcher class="justify-end" />
     </div>
@@ -80,11 +101,23 @@ watch(
       class="grid h-full items-center gap-8 overflow-hidden overflow-y-auto px-3 py-4"
     >
       <div class="flex flex-col items-center justify-center pb-10">
-        <UiLogo class="pb-8" />
+        <UiLogo class="!text-5xl !font-extrabold pb-6" />
 
-        <div class="flex min-w-[280px] flex-col items-center px-3 py-8">
+        <div class="grid min-w-[280px] gap-5 items-center px-3 py-8">
           <UiButtonBlue :disabled="isLoading" @click="signInWithGoogle">
             {{ $t("loginWithGoogle") }}
+            <Transition name="fadeIn">
+              <div
+                v-if="isLoading"
+                class="flex-center absolute inset-0 h-full w-full bg-stone-800"
+              >
+                <UiSpinier />
+              </div>
+            </Transition>
+          </UiButtonBlue>
+
+          <UiButtonBlue :disabled="isLoading" @click="signInWithGithub">
+            {{ $t("loginWithGithub") }}
             <Transition name="fadeIn">
               <div
                 v-if="isLoading"

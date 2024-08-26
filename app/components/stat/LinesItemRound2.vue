@@ -3,7 +3,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
-import type { TotalCategory } from '~/components/stat/useNewStat'
+import type { TotalCategory } from '~/components/stat/types'
 
 const props = defineProps<{
   isHideAmount?: boolean

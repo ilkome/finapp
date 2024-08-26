@@ -47,11 +47,8 @@ function changeCreditView() {
     @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
-    <template #leftIcon>
-      <div
-        v-if="isShowIcons"
-        @click.stop="changeCreditView"
-      >
+    <template v-if="isShowIcons" #leftIcon>
+      <div @click.stop="changeCreditView">
         <UiIconWalletDeposit
           v-if="wallet.isDeposit"
           :style="{ color: wallet.color }"
@@ -70,15 +67,6 @@ function changeCreditView() {
           />
         </div>
       </div>
-
-      <div v-if="!isShowIcons" class="px-1">
-        <WalletsIcon2
-          :color="wallet.color"
-          :name="wallet.name"
-          :walletId
-          @click.stop="changeCreditView"
-        />
-      </div>
     </template>
 
     <!-- Main -->
@@ -87,7 +75,13 @@ function changeCreditView() {
         {{ wallet.name }}
       </div>
 
-      <div class="pr-1 opacity-90">
+      <div
+        class="pr-1 opacity-90"
+        :class="{
+          'text-accent-4': creditAmount > 0,
+          'text-accent-1': creditAmount < 0,
+        }"
+      >
         <Amount
           v-if="wallet.creditLimit"
           :amount="creditAmount"
@@ -118,7 +112,7 @@ function changeCreditView() {
           variant="2xs"
         />
 
-        <div class="text-sm leading-none text-3">
+        <div class="text-sm leading-none text-3 whitespace-nowrap">
           {{ wallet.name }}
         </div>
       </div>

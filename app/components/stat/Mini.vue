@@ -5,6 +5,7 @@ import type { WalletId } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { StatTabs } from '~/components/app/types'
+import { useTrnForm } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
@@ -16,12 +17,14 @@ const props = defineProps<{
 
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
+const { trnFormCreate } = useTrnForm()
 
 const activeTab = useStorage<StatTabs>(`${props.storageKey}-mini-tab`, 'netIncome')
+const filteredWallets = ref<WalletId[]>([])
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: props.categoriesIds,
-  walletsIds: props.walletsIds,
+  walletsIds: filteredWallets.value.length > 0 ? filteredWallets.value : props.walletsIds,
 }, {
   includesChildCategories: true,
 }))
@@ -48,7 +51,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 <template>
   <!-- Sum -->
   <div class="overflow-hidden">
-    <div class="flex gap-1 overflow-y-auto">
+    <div class="flex gap-1 overflow-y-auto p-2 pb-0">
       <Filter v-if="props.isShowFilter" />
 
       <StatMenu
@@ -57,6 +60,25 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
         :isShowExpense="totals.expense !== 0"
         @click="id => activeTab = id"
       />
+    </div>
+
+    <div class="">
+      <WalletsList
+        v-slot="{ walletsItemsLimited }"
+        :limit="5"
+        class="flex gap-1 overflow-y-auto p-2 pb-0"
+      >
+        <WalletsItem
+          v-for="(wallet, walletId) in walletsItemsLimited"
+          :key="walletId"
+          :activeItemId="filteredWallets.includes(`${walletId}`) ? walletId : null"
+          :walletId
+          :wallet
+          alt
+          insideClasses="bg-item-4 min-w-16"
+          @click="filteredWallets.includes(`${walletId}`) ? filteredWallets = filteredWallets.filter(id => id !== `${walletId}`) : filteredWallets.push(`${walletId}`)"
+        />
+      </WalletsList>
     </div>
 
     <!-- NetIncome -->

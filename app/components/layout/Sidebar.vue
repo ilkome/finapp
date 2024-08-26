@@ -72,6 +72,7 @@ const colorMode = useColorMode()
             :walletId
             :lineWidth="1"
             :wallet="walletItem"
+            isShowIcons
             @click="$router.push(`/wallets/${walletId}`)"
           />
         </template>

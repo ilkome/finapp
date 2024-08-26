@@ -23,8 +23,8 @@ export default antfu({
     'perfectionist/sort-object-types': ['error', { order: 'asc', type: 'natural' }],
 
     'perfectionist/sort-objects': ['error', { order: 'asc', type: 'natural' }],
-    'vue/attribute-hyphenation': ['error', 'never'],
 
+    'vue/attribute-hyphenation': ['error', 'never'],
     'vue/v-on-event-hyphenation': ['error', 'never'],
   },
 })

@@ -16,7 +16,7 @@ export type WalletItem = {
   isCredit?: boolean
   isDebt?: boolean
   isDeposit?: boolean
-  isIncludeTotal?: boolean
+  isExcludeTotal?: boolean
   name: string
   order: number
   withdrawal?: boolean

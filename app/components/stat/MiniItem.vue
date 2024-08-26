@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import defu from 'defu'
+import _sortby from 'lodash.sortby'
 import { useStorage } from '@vueuse/core'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import { seriesOptions } from '~/components/stat/chart/config2'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { FilterProvider } from '~/components/filter/useFilter'
 import type { Range } from '~/components/date/types'
-import { type MoneyTypeSlugSum, type ViewOptions, ViewOptionsSchema, defaultViewOptions } from '~/components/stat/types'
+import { type MoneyTypeSlugSum, type TotalCategory, type ViewOptions, ViewOptionsSchema, defaultViewOptions } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import { getStyles } from '~/components/ui/getStyles'
@@ -16,6 +17,7 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useIntervalRange } from '~/components/date/useIntervalRange'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { TotalReturns } from '~/components/amount/getTotal'
+import type { DeepPartial } from '~~/utils/types'
 
 const props = defineProps<{
   isQuickModal?: boolean
@@ -32,10 +34,6 @@ const { getTotalOfTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
 
 const maxRange = computed(() => useTrnsStore().getRange(props.trnsIds))
-
-watch(props, (v) => {
-  console.log('props', v)
-})
 
 const intervalRange = useIntervalRange({
   key: `finapp-${props.quickModalCategoryId}-${props.type}${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`,
@@ -107,17 +105,6 @@ function sortCategoriesByAmount(a: TotalCategory, b: TotalCategory) {
   else {
     return 1
   }
-}
-
-export type TotalCategories = {
-  expense: TotalCategory[]
-  income: TotalCategory[]
-}
-
-export type TotalCategory = {
-  id: CategoryId
-  trnsIds: TrnId[]
-  value: number
 }
 
 function getCats(trnsIds: TrnId[], isGroupedByParent?: boolean, preCategoriesIds?: CategoryId[]) {
@@ -304,17 +291,27 @@ const totals = computed(() =>
  * Cats
  */
 const cats = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], viewOptions.value.catsList.isGrouped, props.preCategoriesIds))
-const catsRounded = computed(() => getCats(selectedTrnsIdsForTrnsList.value ?? [], viewOptions.value.catsRound.isGrouped))
+const catsRounded = computed(() => {
+  let cats = []
+  if (viewOptions.value.catsRound.isShowFavorites) {
+    cats.push(...categoriesStore.favoriteCategoriesIds)
+  }
+  if (viewOptions.value.catsRound.isShowRecent) {
+    cats.push(...categoriesStore.recentCategoriesIds)
+  }
+
+  cats = _sortby(cats, id => [
+    categoriesStore.items[categoriesStore.items[id]?.parentId]?.name || false,
+    categoriesStore.items[id]?.name,
+  ])
+
+  return getCats(selectedTrnsIdsForTrnsList.value ?? [], viewOptions.value.catsRound.isGrouped, cats)
+})
 
 const biggestCatNumber = computed(() => cats.value.at(0)?.value ?? 0)
 
 const openedCats = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedCats`, [])
 const openedTrns = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedTrns`, [])
-
-function onClickCategoryRounded(categoryId: CategoryId) {
-  filter.clearFilter()
-  filter.setCategoryId(categoryId)
-}
 
 const isShowDateSelector = ref(false)
 const isShowTrns = ref(false)
@@ -340,6 +337,20 @@ function set7Days(close?: () => void) {
   intervalRange.setRangeByPeriod({
     grouped: { duration: 1, period: 'day' },
     interval: { duration: 7, period: 'day' },
+  })
+
+  if (close) {
+    close()
+  }
+}
+
+function set30DaysMini(close?: () => void) {
+  viewOptions.value.catsView = 'round'
+  viewOptions.value.catsRound.isGrouped = false
+
+  intervalRange.setRangeByPeriod({
+    grouped: { duration: 1, period: 'week' },
+    interval: { duration: 30, period: 'day' },
   })
 
   if (close) {
@@ -499,67 +510,100 @@ const quickModalTrnsIds = computed(() => {
                   {{ $t('categories.title') }} {{ !isShown ? viewOptions.catsView === 'list' ? cats.length : catsRounded.length : '' }}
                 </UiTitle8>
 
-                <StatCategoriesButtons
-                  v-if="isShown && viewOptions.catsView === 'list'"
-                  :viewOptions
-                  class="-pr-1"
-                  @changeViewOptions="changeViewOptions"
-                />
-
-                <!-- Folder -->
-                <UiItem1
-                  v-if="viewOptions.catsList.isGrouped"
-                  @click="changeViewOptions({
-                    catsList: {
-                      isOpened: !viewOptions.catsList.isOpened,
-                    },
-                  })"
-                >
-                  <Icon
-                    :name="viewOptions.catsList.isOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
-                    size="24"
+                <div class="flex gap-1">
+                  <StatCategoriesButtons
+                    v-if="isShown && viewOptions.catsView !== 'round'"
+                    :viewOptions
+                    class="-pr-1"
+                    @changeViewOptions="changeViewOptions"
                   />
-                </UiItem1>
 
-                <!-- List -->
-                <UiItem1
-                  v-if="viewOptions.catsView === 'list'"
-                  @click="changeViewOptions({
-                    catsList: {
-                      isGrouped: !viewOptions.catsList.isGrouped,
-                    },
-                  })"
-                >
-                  <Icon
-                    :name="viewOptions.catsList.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
-                    size="24"
-                  />
-                </UiItem1>
+                  <!-- Round -->
+                  <template v-if="viewOptions.catsView === 'round' && !viewOptions.catsRound.isGrouped">
+                    <!-- Favorite -->
+                    <UiItem1
+                      @click="changeViewOptions({
+                        catsRound: {
+                          isShowFavorites: !viewOptions.catsRound.isShowFavorites,
+                        },
+                      })"
+                    >
+                      <Icon
+                        name="material-symbols:favorite-outline-rounded"
+                        :class="{ 'opacity-50': !viewOptions.catsRound.isShowFavorites }"
+                      />
+                    </UiItem1>
 
-                <!-- Round -->
-                <UiItem1
-                  v-if="viewOptions.catsView === 'round'"
-                  @click="changeViewOptions({
-                    catsRound: {
-                      isGrouped: !viewOptions.catsRound.isGrouped,
-                    },
-                  })"
-                >
-                  <Icon
-                    :name="viewOptions.catsRound.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
-                    size="24"
-                  />
-                </UiItem1>
+                    <!-- Recent -->
+                    <UiItem1
+                      @click="changeViewOptions({
+                        catsRound: {
+                          isShowRecent: !viewOptions.catsRound.isShowRecent,
+                        },
+                      })"
+                    >
+                      <Icon
+                        name="material-symbols:history-rounded"
+                        :class="{ 'opacity-50': !viewOptions.catsRound.isShowRecent }"
+                      />
+                    </UiItem1>
+                  </template>
 
-                <UiItem1
-                  @click="changeViewOptions({
-                    catsView: viewOptions.catsView === 'list' ? 'round' : 'list',
-                  })"
-                >
-                  <Icon
-                    :name="viewOptions.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'"
-                  />
-                </UiItem1>
+                  <!-- Folder -->
+                  <UiItem1
+                    v-if="viewOptions.catsList.isGrouped"
+                    @click="changeViewOptions({
+                      catsList: {
+                        isOpened: !viewOptions.catsList.isOpened,
+                      },
+                    })"
+                  >
+                    <Icon
+                      :name="viewOptions.catsList.isOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
+                      size="24"
+                    />
+                  </UiItem1>
+
+                  <!-- List -->
+                  <UiItem1
+                    v-if="viewOptions.catsView === 'list'"
+                    @click="changeViewOptions({
+                      catsList: {
+                        isGrouped: !viewOptions.catsList.isGrouped,
+                      },
+                    })"
+                  >
+                    <Icon
+                      :name="viewOptions.catsList.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
+                      size="24"
+                    />
+                  </UiItem1>
+
+                  <!-- Round -->
+                  <UiItem1
+                    v-if="viewOptions.catsView === 'round'"
+                    @click="changeViewOptions({
+                      catsRound: {
+                        isGrouped: !viewOptions.catsRound.isGrouped,
+                      },
+                    })"
+                  >
+                    <Icon
+                      :name="viewOptions.catsRound.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
+                      size="24"
+                    />
+                  </UiItem1>
+
+                  <UiItem1
+                    @click="changeViewOptions({
+                      catsView: viewOptions.catsView === 'list' ? 'round' : 'list',
+                    })"
+                  >
+                    <Icon
+                      :name="viewOptions.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'"
+                    />
+                  </UiItem1>
+                </div>
               </div>
             </template>
 
@@ -599,6 +643,7 @@ const quickModalTrnsIds = computed(() => {
               </StatLinesItemLine>
             </div>
 
+            <!-- Rounded view -->
             <div
               v-if="cats.length > 0 && viewOptions.catsView === 'round'"
               class="flex flex-wrap gap-1 @3xl/stat:gap-2 pt-2 pl-1"
@@ -650,6 +695,7 @@ const quickModalTrnsIds = computed(() => {
         :maxRange="maxRange"
         @set7Days="set7Days"
         @set7DaysMini="set7DaysMini"
+        @set30DaysMini="set30DaysMini"
         @set12Months="set12Months"
         @onClose="isShowDateSelector = false"
       />

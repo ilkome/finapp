@@ -211,9 +211,9 @@ async function onSave() {
           @onClick="walletForm.isDebt = !walletForm.isDebt"
         />
         <UiCheckbox
-          :checkboxValue="walletForm.isIncludeTotal"
-          :title="$t('money.totals.isIncludeTotal')"
-          @onClick="walletForm.isIncludeTotal = !walletForm.isIncludeTotal"
+          :checkboxValue="walletForm.isExcludeTotal"
+          :title="$t('money.totals.isExcludeTotal')"
+          @onClick="walletForm.isExcludeTotal = !walletForm.isExcludeTotal"
         />
         <UiCheckbox
           :checkboxValue="walletForm.archived"

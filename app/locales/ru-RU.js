@@ -153,6 +153,7 @@ export default {
     toggle: 'Сменить язык',
   },
 
+  loginWithGithub: 'Войти через Github',
   loginWithGoogle: 'Войти через Google',
 
   money: {
@@ -179,7 +180,7 @@ export default {
       isCredit: 'Кредиты',
       isDebt: 'Долги',
       isDeposit: 'Вклады',
-      isIncludeTotal: 'Включать в ощий баланс',
+      isExcludeTotal: 'Не считать в общем балансе',
       withCredit: 'Без учета кредита',
       withdrawal: 'Доступные',
     },

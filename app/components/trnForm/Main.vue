@@ -37,7 +37,6 @@ function show(slide: number) {
   initialSlide.value = slide
 }
 
-
 /**
  *
  *
@@ -80,7 +79,7 @@ const items2 = computed(() => ({
     icon: 'mdi:close',
     localeKey: 'base.no',
   },
-  // eslint-disable-next-line perfectionist/sort-objects
+
   yes: {
     click: () => {
       handleDeleteConfirm()
@@ -153,7 +152,6 @@ const items2 = computed(() => ({
           </div>
         </div>
       </div>
-
 
       <div class="flex gap-2 pt-2">
         <DateLinkItem

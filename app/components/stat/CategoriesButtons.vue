@@ -32,9 +32,39 @@ const { t } = useI18n()
       </div>
 
       <template #popper>
-        <div class="grid gap-2 px-2 pb-2">
+        <!-- Round -->
+        <div
+          v-if="props.viewOptions.catsView === 'round'"
+          class="grid gap-2 px-2 pb-2"
+        >
+          <UiCheckbox
+            :checkboxValue="props.viewOptions.catsRound.isShowFavorites"
+            :title="t('isShowFavorites')"
+            showCheckbox
+            @onClick="emit('changeViewOptions', {
+              catsRound: {
+                isShowFavorites: !props.viewOptions.catsRound.isShowFavorites,
+              },
+            })"
+          />
+          <UiCheckbox
+            :checkboxValue="props.viewOptions.catsRound.isShowRecent"
+            :title="t('isShowRecent')"
+            showCheckbox
+            @onClick="emit('changeViewOptions', {
+              catsRound: {
+                isShowRecent: !props.viewOptions.catsRound.isShowRecent,
+              },
+            })"
+          />
+        </div>
+
+        <!-- List -->
+        <div
+          v-if="props.viewOptions.catsView === 'list'"
+          class="grid gap-2 px-2 pb-2"
+        >
           <div
-            v-if="props.viewOptions.catsView === 'list'"
             class="border-t border-item-3 pt-2"
           >
             <UiElement
@@ -63,7 +93,6 @@ const { t } = useI18n()
           </div>
 
           <div
-            v-if="props.viewOptions.catsView === 'list'"
             class="border-t border-item-3 pt-2"
           >
             <UiCheckbox

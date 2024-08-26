@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import type { CategoryId } from '~/components/categories/types'
+import type { TrnId } from '~/components/trns/types'
 
 export type MoneyTypeSlug = 'expense' | 'income'
 export type MoneyTypeSlugSum = 'income' | 'expense' | 'sum' | 'summary'
@@ -15,6 +17,8 @@ export const defaultViewOptions: ViewOptions = {
   },
   catsRound: {
     isGrouped: false,
+    isShowFavorites: false,
+    isShowRecent: false,
   },
   catsView: 'list',
 }
@@ -29,6 +33,8 @@ export const ViewOptionsSchema = z.object({
   }),
   catsRound: z.object({
     isGrouped: z.boolean(),
+    isShowFavorites: z.boolean(),
+    isShowRecent: z.boolean(),
   }),
   catsView: z.enum(['list', 'round']),
 })
@@ -51,3 +57,14 @@ export const moneyTypes: {
     type: 1,
   },
 ]
+
+export type TotalCategories = {
+  expense: TotalCategory[]
+  income: TotalCategory[]
+}
+
+export type TotalCategory = {
+  id: CategoryId
+  trnsIds: TrnId[]
+  value: number
+}

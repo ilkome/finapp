@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { TotalCategory } from '~/components/stat/useNewStat'
+import type { TotalCategory, ViewOptions } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import type { ViewOptions } from '~/components/stat/types'
 
 const props = defineProps<{
   biggestCatNumber: number

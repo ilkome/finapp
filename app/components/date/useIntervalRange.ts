@@ -21,8 +21,6 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
   const subtracted = ref(0)
 
   const range = computed(() => {
-    console.log('range')
-
     if (viewConfig.value.isShowAll) {
       return { ...maxRange.value }
     }
@@ -139,11 +137,11 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
     minusRange,
     plusRange,
     range,
-    subtracted,
     setGrouped,
     setRange,
     setRangeByCalendar,
     setRangeByPeriod,
+    subtracted,
     viewConfig,
   }
 }

@@ -14,7 +14,7 @@ export function getPreparedFormData(values?: DeepPartial<WalletForm>): WalletFor
     isCredit: values?.isCredit ?? false,
     isDebt: values?.isDebt ?? false,
     isDeposit: values?.isDeposit ?? false,
-    isIncludeTotal: values?.isIncludeTotal ?? false,
+    isExcludeTotal: values?.isExcludeTotal ?? false,
     name: values?.name ?? '',
     order: values?.order ?? 1,
     withdrawal: values?.withdrawal ?? false,
