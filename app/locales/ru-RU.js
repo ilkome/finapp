@@ -185,7 +185,7 @@ export default {
       withdrawal: 'Доступные',
     },
     transfer: 'Перевод',
-
+    type: 'Тип кошельки',
     wallets: 'Кошельки',
   },
 

@@ -192,16 +192,14 @@ div
                   @click="emit('updateValue', 'color', color)"
                 )
                   template(v-if="findCategoryIconByColor(color)")
-                    Icon3(
-                      :icon="color === categoryForm.color ? categoryForm.icon : findCategoryIconByColor(color)"
-                      :background="color"
-                      round2
+                    UiIconBase(
+                      :name="color === categoryForm.color ? categoryForm.icon : findCategoryIconByColor(color)"
+                      :color="color"
                     )
                   template(v-else-if="color === categoryForm.color")
-                    Icon3(
-                      :icon="categoryForm.icon"
-                      background="transparent"
-                      big
+                    UiIconBase(
+                      :name="categoryForm.icon"
+                      color="transparent"
                     )
                   template(v-else-if="color")
                     .colorPreview(:style="{ background: color }")
@@ -220,16 +218,14 @@ div
               @click="emit('updateValue', 'color', color)"
             )
               template(v-if="findCategoryIconByColor(color)")
-                Icon3(
-                  :icon="color === categoryForm.color ? categoryForm.icon : findCategoryIconByColor(color)"
-                  :background="color"
-                  round
+                UiIconBase(
+                  :name="color === categoryForm.color ? categoryForm.icon : findCategoryIconByColor(color)"
+                  :color="color"
                 )
               template(v-else-if="color === categoryForm.color")
-                Icon3(
-                  :icon="categoryForm.icon"
-                  background="transparent"
-                  big
+                UiIconBase(
+                  :name="categoryForm.icon"
+                  color="transparent"
                 )
               template(v-else-if="color")
                 .colorPreview(:style="{ background: color }")

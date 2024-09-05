@@ -188,7 +188,7 @@ const xAxisLabels = computed(() => groupedPeriods.value.map(r => +r.start) ?? []
 
 const groupedTrnsIds = computed(() => getPeriodsWithTrns(filteredTrnsIds.value, groupedPeriods.value))
 const groupedTrnsIds2 = computed(() => getPeriodsWithTrns(props.trnsIds, groupedPeriods.value))
-const groupedTrnsTotals2 = computed(() => groupedTrnsIds.value.map(g => getTotalOfTrnsIds(g)))
+const groupedTrnsTotals = computed(() => groupedTrnsIds.value.map(g => getTotalOfTrnsIds(g)))
 
 function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
   const list = [...ranges.map(() => [])]
@@ -202,34 +202,28 @@ function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
   return list
 }
 
-const selectedPeriod = ref<number>(-1)
-
-watch(intervalRange.range, () => {
-  selectedPeriod.value = -1
-})
-
 function onClickChart(idx: number) {
   const newPeriod = idx
 
-  if (selectedPeriod.value === newPeriod) {
-    selectedPeriod.value = -1
+  if (intervalRange.interval.value.selected === newPeriod) {
+    intervalRange.interval.value.selected = -1
     return
   }
 
-  selectedPeriod.value = newPeriod
+  intervalRange.interval.value.selected = newPeriod
 }
 
 const series = computed(() => {
-  const series = getSeries(groupedTrnsTotals2.value, props.type, groupedPeriods.value)
+  const series = getSeries(groupedTrnsTotals.value, props.type, groupedPeriods.value)
 
-  if (selectedPeriod.value >= 0) {
+  if (intervalRange.interval.value.selected >= 0) {
     if (chartType.value !== 'bar') {
       const markAreaSeriesIdx = series.findIndex(s => s.markedArea === 'markedArea')
 
       if (markAreaSeriesIdx === -1) {
         series.push({
           data: [],
-          markArea: markArea(groupedPeriods.value?.[selectedPeriod.value]?.start),
+          markArea: markArea(groupedPeriods.value?.[intervalRange.interval.value.selected]?.start),
           markedArea: 'markedArea',
           type: 'bar',
         })
@@ -237,14 +231,14 @@ const series = computed(() => {
       else {
         series[markAreaSeriesIdx] = {
           data: [],
-          markArea: markArea(groupedPeriods.value?.[selectedPeriod.value]?.start),
+          markArea: markArea(groupedPeriods.value?.[intervalRange.interval.value.selected]?.start),
           markedArea: 'markedArea',
           type: 'bar',
         }
       }
     }
     else {
-      series[0].markArea = markArea(groupedPeriods.value?.[selectedPeriod.value]?.start)
+      series[0].markArea = markArea(groupedPeriods.value?.[intervalRange.interval.value.selected]?.start)
     }
   }
 
@@ -252,9 +246,9 @@ const series = computed(() => {
 })
 
 const selectedTrnsIdsForTrnsList = computed(() => {
-  if (selectedPeriod.value >= 0) {
+  if (intervalRange.interval.value.selected >= 0) {
     return trnsStore.getStoreTrnsIds({
-      trnsIds: groupedTrnsIds.value[selectedPeriod.value],
+      trnsIds: groupedTrnsIds.value[intervalRange.interval.value.selected],
     }, { includesChildCategories: false })
   }
 
@@ -268,9 +262,9 @@ const selectedTrnsIdsForTrnsList = computed(() => {
 })
 
 const trnsIdsForTotals = computed(() => {
-  if (selectedPeriod.value >= 0) {
+  if (intervalRange.interval.value.selected >= 0) {
     return trnsStore.getStoreTrnsIds({
-      trnsIds: groupedTrnsIds2.value[selectedPeriod.value],
+      trnsIds: groupedTrnsIds2.value[intervalRange.interval.value.selected],
     }, { includesChildCategories: false })
   }
 
@@ -333,6 +327,7 @@ function set7Days(close?: () => void) {
   viewOptions.value.catsView = 'list'
   viewOptions.value.catsList.isGrouped = false
   viewOptions.value.catsList.isOpened = false
+  intervalRange.viewConfig.value.isShowAll = false
 
   intervalRange.setRangeByPeriod({
     grouped: { duration: 1, period: 'day' },
@@ -347,6 +342,7 @@ function set7Days(close?: () => void) {
 function set30DaysMini(close?: () => void) {
   viewOptions.value.catsView = 'round'
   viewOptions.value.catsRound.isGrouped = false
+  intervalRange.viewConfig.value.isShowAll = false
 
   intervalRange.setRangeByPeriod({
     grouped: { duration: 1, period: 'week' },
@@ -361,6 +357,7 @@ function set30DaysMini(close?: () => void) {
 function set7DaysMini(close?: () => void) {
   viewOptions.value.catsView = 'round'
   viewOptions.value.catsRound.isGrouped = false
+  intervalRange.viewConfig.value.isShowAll = false
 
   intervalRange.setRangeByPeriod({
     grouped: { duration: 1, period: 'day' },
@@ -375,6 +372,7 @@ function set12Months(close?: () => void) {
   viewOptions.value.catsView = 'list'
   viewOptions.value.catsList.isGrouped = true
   viewOptions.value.catsList.isOpened = false
+  intervalRange.viewConfig.value.isShowAll = false
 
   if (close) {
     close()
@@ -423,14 +421,14 @@ const quickModalTrnsIds = computed(() => {
           <div class="flex items-end justify-between gap-2">
             <UiTitle10 @click="isShowDateSelector = !isShowDateSelector">
               <DateViewRange
-                :range="selectedPeriod !== -1 ? (groupedPeriods[selectedPeriod] ? groupedPeriods[selectedPeriod] : intervalRange.range.value) : intervalRange.range.value"
+                :range="intervalRange.interval.value.selected !== -1 ? (groupedPeriods[intervalRange.interval.value.selected] ? groupedPeriods[intervalRange.interval.value.selected] : intervalRange.range.value) : intervalRange.range.value"
                 :interval="intervalRange.interval.value"
               />
             </UiTitle10>
 
             <div class="flex gap-1">
               <DateNavHome
-                v-if="selectedPeriod !== -1 || (intervalRange.range.value.start !== dayjs().subtract(intervalRange.interval.value.duration - 1, intervalRange.interval.value.period).startOf(intervalRange.interval.value.period).valueOf() && intervalRange.range.value.end !== dayjs().endOf(intervalRange.interval.value.period).valueOf() && !intervalRange.viewConfig.value.isShowAll)"
+                v-if="intervalRange.interval.value.selected !== -1 || (intervalRange.range.value.start !== dayjs().subtract(intervalRange.interval.value.duration - 1, intervalRange.interval.value.period).startOf(intervalRange.interval.value.period).valueOf() && intervalRange.range.value.end !== dayjs().endOf(intervalRange.interval.value.period).valueOf() && !intervalRange.viewConfig.value.isShowAll)"
                 :intervalRange
               />
 
@@ -461,7 +459,7 @@ const quickModalTrnsIds = computed(() => {
             <StatSum
               :amount="-totals.expense"
               :isActive="selectedType === 'expense'"
-              :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+              :class="[getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
               class="grow"
               type="expense"
               @click="onSelectType('expense')"
@@ -469,14 +467,14 @@ const quickModalTrnsIds = computed(() => {
             <StatSum
               :amount="totals.income"
               :isActive="selectedType === 'income'"
-              :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+              :class="[getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
               class="grow"
               type="income"
               @click="onSelectType('income')"
             />
             <StatSum
               :amount="totals.sum"
-              :class="[...getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+              :class="[getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
               class="grow"
               type="sum"
               @click="isShowTrns = true"
@@ -486,7 +484,7 @@ const quickModalTrnsIds = computed(() => {
           <StatSum
             v-else
             :amount="props.type === 'income' ? totals[props.type] : -totals[props.type]"
-            :class="[...getStyles('item', ['-link', '-bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+            :class="[getStyles('item', ['-link', '-bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
             :type="props.type"
           />
         </div>
@@ -495,11 +493,6 @@ const quickModalTrnsIds = computed(() => {
         <div class="grid @3xl/stat:grid-cols-[2fr,1fr] gap-2 pt-3">
           <!-- Categories first level -->
           <UiToggle
-            v-if="(
-              isQuickModal
-                ? (cats.length > 1 || (props.quickModalCategoryId && categoriesStore.hasChildren(props.quickModalCategoryId)))
-                : selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0
-            )"
             :storageKey="`${newBaseStorageKey}-cats-root`"
             :initStatus="true"
             openPadding="!pb-3"
@@ -507,10 +500,13 @@ const quickModalTrnsIds = computed(() => {
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between md:max-w-md">
                 <UiTitle8 :isShown @click="toggle">
+                  <!-- TODO: fix length -->
                   {{ $t('categories.title') }} {{ !isShown ? viewOptions.catsView === 'list' ? cats.length : catsRounded.length : '' }}
                 </UiTitle8>
 
-                <div class="flex gap-1">
+                <div
+                  class="flex gap-1"
+                >
                   <StatCategoriesButtons
                     v-if="isShown && viewOptions.catsView !== 'round'"
                     :viewOptions
@@ -637,6 +633,8 @@ const quickModalTrnsIds = computed(() => {
                     v-for="itemInside in getCats(item.trnsIds)"
                     :key="itemInside.id"
                     :item="itemInside"
+                    :selectedRange="groupedPeriods[intervalRange.interval.value.selected]"
+                    :intervalRange
                     @click="onClickCategory"
                   />
                 </div>
@@ -645,7 +643,7 @@ const quickModalTrnsIds = computed(() => {
 
             <!-- Rounded view -->
             <div
-              v-if="cats.length > 0 && viewOptions.catsView === 'round'"
+              v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
               class="flex flex-wrap gap-1 @3xl/stat:gap-2 pt-2 pl-1"
             >
               <StatLinesItemRound
@@ -653,6 +651,8 @@ const quickModalTrnsIds = computed(() => {
                 :key="item.id"
                 :item
                 :biggestCatNumber
+                :selectedRange="groupedPeriods[intervalRange.interval.value.selected]"
+                :intervalRange
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 @click="onClickCategory"
               />
@@ -688,6 +688,7 @@ const quickModalTrnsIds = computed(() => {
       </div>
     </div>
 
+    <!-- Modals -->
     <Teleport to="#teleports">
       <StatDateSelectorModal
         v-if="isShowDateSelector"

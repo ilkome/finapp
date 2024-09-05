@@ -15,16 +15,14 @@ const trnFormStore = useTrnFormStore()
 
 <template>
   <!-- Favorite categories -->
-  <div
-    v-if="categoriesStore.favoriteCategoriesIds.length > 0"
-  >
-    <UiTitle
+  <div v-if="categoriesStore.favoriteCategoriesIds.length > 0">
+    <UiTitle3
       class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1"
       @click="trnFormStore.ui.catsRootModal = true"
     >
       {{ $t("categories.favoriteTitle") }}
       {{ $t("categories.title") }}
-    </UiTitle>
+    </UiTitle3>
 
     <CategoriesSelector2
       :activeItemId="trnFormStore.values.categoryId"
@@ -40,13 +38,13 @@ const trnFormStore = useTrnFormStore()
     v-if="categoriesStore.recentCategoriesIds.length > 0"
     class="pt-6"
   >
-    <UiTitle
+    <UiTitle3
       class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1"
       @click="trnFormStore.ui.catsRootModal = true"
     >
       {{ $t("categories.lastUsedTitle") }}
       {{ $t("categories.title") }}
-    </UiTitle>
+    </UiTitle3>
 
     <CategoriesSelector2
       :activeItemId="trnFormStore.values.categoryId"

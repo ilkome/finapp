@@ -12,7 +12,7 @@ const emit = defineEmits<{
 <template>
   <div
     :class="[
-      ...getStyles('item', ['link', 'bg', 'padding3', 'center2', 'minh2', 'minw1', 'rounded2']),
+      getStyles('item', ['link', 'bg', 'padding3', 'center2', 'minh2', 'minw1', 'rounded2']),
       {
         '!bg-item-5': props.isActive,
       },

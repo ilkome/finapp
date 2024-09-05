@@ -185,6 +185,7 @@ export default {
       withdrawal: 'Withdrawal',
     },
     transfer: 'Transfer',
+    type: 'Wallet type',
     wallets: 'Wallets',
   },
 

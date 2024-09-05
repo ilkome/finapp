@@ -17,10 +17,12 @@ const opened = ref<CategoryId[]>([])
 
 function select(categoryId: CategoryId, isForce: boolean) {
   if (!isForce && categoriesStore.hasChildren(categoryId)) {
-    opened.value.includes(categoryId)
-      ? (opened.value = opened.value.filter(id => id !== categoryId))
-      : opened.value.push(categoryId)
-
+    if (opened.value.includes(categoryId)) {
+      opened.value = opened.value.filter(id => id !== categoryId)
+    }
+    else {
+      opened.value.push(categoryId)
+    }
     return
   }
 
@@ -44,11 +46,12 @@ function onFilter(id: CategoryId) {
       :key="categoryId"
       class="group"
       :class="{
-        'overflow-hidden rounded-md bg-item-4': opened.includes(categoryId),
+        'overflow-hidden rounded-md bg-item-4 mb-2': opened.includes(categoryId),
       }"
     >
       <CategoriesItem
         :categoryId
+        :lineWidth="1"
         :category="categoriesStore.items[categoryId]"
         @click="select(categoryId, false)"
         @filter.stop="onFilter(categoryId)"
@@ -61,8 +64,6 @@ function onFilter(id: CategoryId) {
         <CategoriesItem
           v-for="childCategoryId in categoriesStore.getChildsIds(categoryId)"
           :key="childCategoryId"
-          v-close-popper.all
-          :hide
           :category="categoriesStore.items[childCategoryId]"
           :categoryId="childCategoryId"
           @click.stop="select(childCategoryId, true)"

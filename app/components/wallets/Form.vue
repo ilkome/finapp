@@ -140,7 +140,7 @@ async function onSave() {
     </UiTabs>
 
     <!-- Content -->
-    <div class="overflow-hidden max-w-md">
+    <div class="overflow-hidden overflow-y-auto md:max-w-md">
       <!-- Data -->
       <template v-if="activeTab === 'data'">
         <div class="mb-8">
@@ -169,63 +169,88 @@ async function onSave() {
           >
         </div>
 
-        <UiTitle class="pb-2">
-          {{ $t('wallets.properties') }}
-        </UiTitle>
-        <UiCheckbox
-          :checkboxValue="walletForm.isCredit"
-          :title="$t('money.totals.isCredit')"
-          @onClick="walletForm.isCredit = !walletForm.isCredit"
-        />
-        <input
-          v-if="walletForm.isCredit"
-          v-model="walletForm.creditLimit"
-          :placeholder="$t('wallets.form.credit.limit')"
-          class="mt-2 mb-4 w-full m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder:text-item-2 transition ease-in-out focus:text-item-1 focus:bg-item-5 focus:border-accent-4 focus:outline-none"
-          type="number"
-          @input="event => emit('updateValue', 'creditLimit', event.target.value)"
-        >
-        <UiCheckbox
-          :checkboxValue="walletForm.withdrawal"
-          :title="$t('money.totals.withdrawal')"
-          @onClick="walletForm.withdrawal = !walletForm.withdrawal"
-        />
-        <UiCheckbox
-          :checkboxValue="walletForm.isDeposit"
-          :title="$t('money.totals.isDeposit')"
-          @onClick="walletForm.isDeposit = !walletForm.isDeposit"
-        />
-        <UiCheckbox
-          :checkboxValue="walletForm.isCash"
-          :title="$t('money.totals.isCash')"
-          @onClick="walletForm.isCash = !walletForm.isCash"
-        />
-        <UiCheckbox
-          :checkboxValue="walletForm.isCashless"
-          :title="$t('money.totals.isCashless')"
-          @onClick="walletForm.isCashless = !walletForm.isCashless"
-        />
-        <UiCheckbox
-          :checkboxValue="walletForm.isDebt"
-          :title="$t('money.totals.isDebt')"
-          @onClick="walletForm.isDebt = !walletForm.isDebt"
-        />
-        <UiCheckbox
-          :checkboxValue="walletForm.isExcludeTotal"
-          :title="$t('money.totals.isExcludeTotal')"
-          @onClick="walletForm.isExcludeTotal = !walletForm.isExcludeTotal"
-        />
-        <UiCheckbox
-          :checkboxValue="walletForm.archived"
-          :title="$t('money.totals.archived')"
-          @onClick="walletForm.archived = !walletForm.archived"
-        />
+        <div class="grid gap-6">
+          <div>
+            <UiTitle class="pb-2">
+              {{ $t('money.type') }}
+            </UiTitle>
+
+            <div>
+              <UiCheckbox
+                :checkboxValue="walletForm.isCash"
+                :title="$t('money.totals.isCash')"
+                @onClick="walletForm.isCash = !walletForm.isCash"
+              />
+
+              <UiCheckbox
+                :checkboxValue="walletForm.isCredit"
+                :title="t('isCredit')"
+                @onClick="walletForm.isCredit = !walletForm.isCredit"
+              />
+
+              <div
+                v-if="walletForm.isCredit"
+                class="pt-4 text-item-2 text-sm leading-none"
+              >
+                {{ $t('wallets.form.credit.limit') }}
+              </div>
+              <input
+                v-if="walletForm.isCredit"
+                v-model="walletForm.creditLimit"
+                :placeholder="$t('wallets.form.credit.limit')"
+                class="mt-2 mb-4 w-full m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder:text-item-2 transition ease-in-out focus:text-item-1 focus:bg-item-5 focus:border-accent-4 focus:outline-none"
+                type="number"
+                @input="event => emit('updateValue', 'creditLimit', event.target.value)"
+              >
+            </div>
+
+            <UiCheckbox
+              :checkboxValue="walletForm.isDeposit"
+              :title="$t('money.totals.isDeposit')"
+              @onClick="walletForm.isDeposit = !walletForm.isDeposit"
+            />
+
+            <UiCheckbox
+              :checkboxValue="walletForm.isCashless"
+              :title="$t('money.totals.isCashless')"
+              @onClick="walletForm.isCashless = !walletForm.isCashless"
+            />
+            <UiCheckbox
+              :checkboxValue="walletForm.isDebt"
+              :title="$t('money.totals.isDebt')"
+              @onClick="walletForm.isDebt = !walletForm.isDebt"
+            />
+          </div>
+
+          <div>
+            <UiTitle class="pb-2">
+              {{ $t('settings.options') }}
+            </UiTitle>
+
+            <UiCheckbox
+              :checkboxValue="walletForm.withdrawal"
+              :title="$t('money.totals.withdrawal')"
+              @onClick="walletForm.withdrawal = !walletForm.withdrawal"
+            />
+            <UiCheckbox
+              :checkboxValue="walletForm.isExcludeTotal"
+              :title="$t('money.totals.isExcludeTotal')"
+              @onClick="walletForm.isExcludeTotal = !walletForm.isExcludeTotal"
+            />
+            <UiCheckbox
+              :checkboxValue="walletForm.archived"
+              :title="$t('money.totals.archived')"
+              @onClick="walletForm.archived = !walletForm.archived"
+            />
+          </div>
+        </div>
       </template>
 
       <!-- Currencies -->
       <CurrenciesList
         v-if="activeTab === 'currencies'"
         :active="walletForm.currency"
+        class="max-h-[100vh] max-w-full"
         @onSelect="(value: CurrencyCode) => emit('updateValue', 'currency', value)"
       />
 

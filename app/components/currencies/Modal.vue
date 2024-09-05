@@ -10,6 +10,7 @@ const emit = defineEmits<{
   onClose: []
   onSelect: [code: CurrencyCode]
 }>()
+
 const { t } = useI18n()
 
 function onSelect(code: CurrencyCode, close: () => void) {

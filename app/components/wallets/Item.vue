@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
+import { onLongPress, useStorage } from '@vueuse/core'
 import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
 
 const props = defineProps<{
@@ -35,37 +35,43 @@ const creditAmount = computed(() => {
 function changeCreditView() {
   activeCreditView.value = creditViews[creditViews.findIndex(i => i === activeCreditView.value) + 1]
 }
+
+const longPressRef = ref(null)
+onLongPress(
+  longPressRef,
+  changeCreditView,
+  { delay: 600, modifiers: { prevent: true, stop: true } },
+)
 </script>
 
 <template>
   <UiElement
+    ref="longPressRef"
     :isActive="activeItemId === props.walletId"
     :isShowIcons="props.isShowIcons"
-    :insideClasses="`${props.insideClasses} min-h-[48px]`"
+    :insideClasses="`${props.insideClasses ? props.insideClasses : ''} min-h-[44px] lg:min-h-[42px]`"
     :lineWidth="props.lineWidth"
     class="relative"
     @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
     <template v-if="isShowIcons" #leftIcon>
-      <div @click.stop="changeCreditView">
-        <UiIconWalletDeposit
-          v-if="wallet.isDeposit"
-          :style="{ color: wallet.color }"
-          class="h-4 w-4 text-item-2"
+      <UiIconWalletDeposit
+        v-if="wallet.isDeposit"
+        :style="{ color: wallet.color }"
+        class="h-4 w-4 text-item-2"
+      />
+      <UiIconWalletSavings
+        v-else-if="!wallet.isCredit"
+        :style="{ color: wallet.color }"
+        class="h-4 w-4 text-item-2"
+      />
+      <div v-else class="flex-center w-4">
+        <div
+          class="size-3 rounded-full border"
+          :style="{ borderColor: wallet.color }"
+          @click.stop="emit('click', walletId)"
         />
-        <UiIconWalletSavings
-          v-else-if="!wallet.isCredit"
-          :style="{ color: wallet.color }"
-          class="h-4 w-4 text-item-2"
-        />
-        <div v-else class="flex-center w-4">
-          <WalletsIcon2
-            :color="wallet.color"
-            :name="wallet.name"
-            :walletId="props.walletId"
-          />
-        </div>
       </div>
     </template>
 
@@ -102,15 +108,28 @@ function changeCreditView() {
     <!-- Alternative -->
     <template v-if="props.alt">
       <div class="grid gap-0.5 grow">
-        <Amount
+        <div
           v-if="!isSort"
-          :amount="wallet.amount"
-          :currencyCode="wallet.currency"
-          :isShowBaseRate="false"
-          :isShowMinus="false"
-          align="left"
-          variant="2xs"
-        />
+        >
+          <Amount
+            v-if="wallet.creditLimit"
+            :amount="creditAmount"
+            :currencyCode="wallet.currency"
+            :isShowBaseRate="false"
+            :isShowMinus="false"
+            align="left"
+            variant="2xs"
+          />
+          <Amount
+            v-else
+            :amount="wallet.amount"
+            :currencyCode="wallet.currency"
+            :isShowBaseRate="props.isShowBaseRate"
+            :isShowMinus="false"
+            align="left"
+            variant="2xs"
+          />
+        </div>
 
         <div class="text-sm leading-none text-3 whitespace-nowrap">
           {{ wallet.name }}

@@ -2,7 +2,7 @@
 import dayjs from 'dayjs'
 import type { Range } from '~/components/date/types'
 import { getStyles } from '~/components/ui/getStyles'
-import type { IntervalRange } from "~/components/date/useIntervalRange"
+import type { IntervalRange } from '~/components/date/useIntervalRange'
 
 const props = defineProps<{
   intervalRange: IntervalRange
@@ -27,12 +27,24 @@ const isStart = computed(() => {
   return false
 })
 
+// TODO: make walk through interval
 function movePeriod(way: 'next' | 'prev' | 'today') {
   if (way === 'next' && !isEnd.value) {
+    // if (props.intervalRange.interval.value.selected !== -1) {
+    //   props.intervalRange.interval.value.selected = props.intervalRange.interval.value.selected + 1
+    //   return
+    // }
+
     props.intervalRange.subtracted.value = props.intervalRange.subtracted.value - 1
+    return
   }
 
   if (way === 'prev' && !isStart.value) {
+    // if (props.intervalRange.interval.value.selected !== -1) {
+    //   props.intervalRange.interval.value.selected = props.intervalRange.interval.value.selected - 1
+    //   return
+    // }
+
     props.intervalRange.subtracted.value = props.intervalRange.subtracted.value + 1
   }
 }
@@ -42,7 +54,7 @@ function movePeriod(way: 'next' | 'prev' | 'today') {
   <div class="flex gap-1">
     <div
       :class="[
-        ...getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
+        getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
         { '!hocus:transparent opacity-30': isStart },
       ]"
       class="flex-center bg-item-4"
@@ -53,7 +65,7 @@ function movePeriod(way: 'next' | 'prev' | 'today') {
 
     <div
       :class="[
-        ...getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
+        getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
         { '!hocus:transparent opacity-30': isEnd },
       ]"
       class="flex-center bg-item-4"

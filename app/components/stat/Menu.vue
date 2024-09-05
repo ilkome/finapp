@@ -31,21 +31,21 @@ const menu = computed(() => {
     name: $i18n.t('stat.summary'),
   })
 
-  // if (props.isShowExpense) {
-  //   all.push({
-  //     id: 'expense',
-  //     idx: 1,
-  //     name: $i18n.t('money.expense'),
-  //   })
-  // }
+  if (props.isShowExpense) {
+    all.push({
+      id: 'expense',
+      idx: 1,
+      name: $i18n.t('money.expense'),
+    })
+  }
 
-  // if (props.isShowIncome) {
-  //   all.push({
-  //     id: 'income',
-  //     idx: 2,
-  //     name: $i18n.t('money.income'),
-  //   })
-  // }
+  if (props.isShowIncome) {
+    all.push({
+      id: 'income',
+      idx: 2,
+      name: $i18n.t('money.income'),
+    })
+  }
 
   return all
 })

@@ -27,7 +27,6 @@ const contentInside = ref<HTMLElement | null>(null)
 
 // State
 const initialHeight = ref(0)
-const isHeightTrna = ref(false)
 
 const initialY = ref(0)
 const clientY = ref(0)
@@ -167,8 +166,6 @@ function contentHasScroll(event: Event) {
  * Drag start
  */
 function onDragStart(event: Event): void {
-  // event.preventDefault()
-
   if (event.target instanceof Element && event?.target?.closest('.sortHandle'))
     return
 
@@ -203,14 +200,9 @@ const debug = ref({
  * Dragging
  */
 function onDragging(event: Event): void {
-  // console.log('onDraggin3')
-
-  // event.preventDefault()
-
   if (disabled.value || !isDragging.value)
     return
 
-  // console.log('onDraggin2')
   const isHasScroll = contentHasScroll(event)
 
   const bodyHeight = document.querySelector('body')?.clientHeight ?? 0
@@ -249,19 +241,16 @@ function onDragging(event: Event): void {
     clientY.value = getClientY(event)
 
   if (settings.debug) {
-    nextCurrentY.value >= settings.pixelsNeedToDrugForClose
-    && direction.value === 'down'
-      ? (debug.value.status = 'will close')
-      : (debug.value.status = 'will open')
+    debug.value.status = nextCurrentY.value >= settings.pixelsNeedToDrugForClose && direction.value === 'down'
+      ? 'will close'
+      : 'will open'
   }
 }
 
 /**
  * Drag end
  */
-async function onDragEnd(event: Event) {
-  // event.preventDefault()
-
+async function onDragEnd() {
   if (disabled.value || !isDragging.value)
     return
 
@@ -270,7 +259,6 @@ async function onDragEnd(event: Event) {
   const drugHeight = drug.value?.clientHeight ?? 0
 
   if (direction.value === 'up' && nextCurrentY.value < 0) {
-    isHeightTrna.value = true
     await nextTick()
     if (
       isDragging.value
@@ -280,15 +268,18 @@ async function onDragEnd(event: Event) {
     ) {
       drug.value.style.height = `${bodyHeight - 10}px`
     }
-    else {
-      isHeightTrna.value = false
-    }
   }
 
   const isNeedClose
     = nextCurrentY.value >= settings.pixelsNeedToDrugForClose
     && direction.value === 'down'
-  isNeedClose ? close() : open()
+
+  if (isNeedClose) {
+    close()
+  }
+  else {
+    open()
+  }
 }
 
 /**
@@ -400,18 +391,18 @@ async function init() {
   }, 10)
 }
 
-function removeEvents () {
+function removeEvents() {
   isEventsAdded.value = false
-      if (containerRef.value) {
-        containerRef.value.removeEventListener('touchstart', onDragStart)
-        containerRef.value.removeEventListener('touchmove', onDragging)
-        containerRef.value.removeEventListener('touchend', onDragEnd)
-        containerRef.value.removeEventListener('mousedown', onDragStart)
-        containerRef.value.removeEventListener('mouseup', onDragEnd)
+  if (containerRef.value) {
+    containerRef.value.removeEventListener('touchstart', onDragStart)
+    containerRef.value.removeEventListener('touchmove', onDragging)
+    containerRef.value.removeEventListener('touchend', onDragEnd)
+    containerRef.value.removeEventListener('mousedown', onDragStart)
+    containerRef.value.removeEventListener('mouseup', onDragEnd)
 
-        document.removeEventListener('mousemove', onDragging)
-        document.removeEventListener('mouseleave', onDragEnd)
-      }
+    document.removeEventListener('mousemove', onDragging)
+    document.removeEventListener('mouseleave', onDragEnd)
+  }
 }
 /**
  * Run init when mounted or isShow changed
@@ -444,7 +435,6 @@ const drugClasses = computed(() => [
     'rounded-tl-xl rounded-tr-xl': drugHeight.value < windowHeight.value,
     'transition-opacity transition-transform duration-100':
       !isDragging.value && opened.value,
-    // 'transition-[height]': isHeightTrna.value,
   },
   props.drugClassesCustom,
 ])

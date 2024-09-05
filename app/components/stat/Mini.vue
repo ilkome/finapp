@@ -50,35 +50,37 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
 <template>
   <!-- Sum -->
-  <div class="overflow-hidden">
-    <div class="flex gap-1 overflow-y-auto p-2 pb-0">
-      <Filter v-if="props.isShowFilter" />
+  <div class="">
+    <div class="bg-foreground-3 z-10 lg:sticky lg:top-0 -max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:px-16 xl:py-2 pb-2">
+      <div class="flex gap-1 overflow-x-auto p-2 pb-0 ">
+        <Filter v-if="props.isShowFilter" />
 
-      <StatMenu
-        :active="activeTab"
-        :isShowIncome="totals.income !== 0"
-        :isShowExpense="totals.expense !== 0"
-        @click="id => activeTab = id"
-      />
-    </div>
-
-    <div class="">
-      <WalletsList
-        v-slot="{ walletsItemsLimited }"
-        :limit="5"
-        class="flex gap-1 overflow-y-auto p-2 pb-0"
-      >
-        <WalletsItem
-          v-for="(wallet, walletId) in walletsItemsLimited"
-          :key="walletId"
-          :activeItemId="filteredWallets.includes(`${walletId}`) ? walletId : null"
-          :walletId
-          :wallet
-          alt
-          insideClasses="bg-item-4 min-w-16"
-          @click="filteredWallets.includes(`${walletId}`) ? filteredWallets = filteredWallets.filter(id => id !== `${walletId}`) : filteredWallets.push(`${walletId}`)"
+        <StatMenu
+          :active="activeTab"
+          :isShowIncome="totals.income !== 0"
+          :isShowExpense="totals.expense !== 0"
+          @click="id => activeTab = id"
         />
-      </WalletsList>
+      </div>
+
+      <div class="">
+        <WalletsList
+          v-slot="{ walletsItemsLimited }"
+          :limit="4"
+          class="flex gap-1 overflow-hidden overflow-x-auto p-2 pb-0"
+        >
+          <WalletsItem
+            v-for="(wallet, walletId) in walletsItemsLimited"
+            :key="walletId"
+            :activeItemId="filteredWallets.includes(`${walletId}`) ? walletId : null"
+            :walletId
+            :wallet
+            alt
+            insideClasses="bg-item-4 min-w-16"
+            @onClick="filteredWallets.includes(`${walletId}`) ? filteredWallets = filteredWallets.filter(id => id !== `${walletId}`) : filteredWallets.push(`${walletId}`)"
+          />
+        </WalletsList>
+      </div>
     </div>
 
     <!-- NetIncome -->

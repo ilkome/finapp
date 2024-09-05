@@ -25,6 +25,7 @@ const trnFormStore = useTrnFormStore()
         :walletId
         :wallet
         :lineWidth="1"
+        isShowIcons
         @click="trnFormStore.values.walletId = walletId"
       />
     </WalletsList>

@@ -135,7 +135,7 @@ const items2 = computed(() => ({
               v-for="(item, slug) in items2"
               :key="slug"
               class="grow"
-              insideClasses="!min-h-[48px] bg-item-4"
+              insideClasses="!min-h-[44px] bg-item-4"
               @click="item.click"
             >
               <template #leftIcon>

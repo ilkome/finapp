@@ -19,24 +19,19 @@ const trnFormStore = useTrnFormStore()
 </script>
 
 <template>
-  <div
-    :style="{ height: props.maxHeight }"
-    class="swiper-slide"
-  >
-    <div class="h-full overflow-y-auto scrollerBlock pb-3">
-      <div>
-        <UiTitle class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1">
-          {{ $t("categories.title") }}
-        </UiTitle>
+  <div class="h-full overflow-y-auto scrollerBlock pb-3">
+    <div>
+      <UiTitle3 class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1">
+        {{ $t("categories.title") }}
+      </UiTitle3>
 
-        <CategoriesSelector2
-          :activeItemId="parentCategoryId || trnFormStore.values.categoryId"
-          :hide="emit('close')"
-          :ids="categoriesStore.categoriesRootIds"
-          @onClickParent="id => emit('onSelectParentCategory', id)"
-          @onSelected="id => emit('onSelectCategory', id)"
-        />
-      </div>
+      <CategoriesSelector2
+        :activeItemId="parentCategoryId || trnFormStore.values.categoryId"
+        :hide="emit('close')"
+        :ids="categoriesStore.categoriesRootIds"
+        @onClickParent="id => emit('onSelectParentCategory', id)"
+        @onSelected="id => emit('onSelectCategory', id)"
+      />
     </div>
   </div>
 </template>

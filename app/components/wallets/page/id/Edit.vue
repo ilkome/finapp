@@ -24,7 +24,10 @@ useHead({
 </script>
 
 <template>
-  <UiPage v-if="wallet">
+  <UiPage
+    v-if="wallet"
+    class="!pb-0 grid-rows-[auto,1fr]"
+  >
     <UiHeader>
       <RouterLink
         v-slot="{ href, navigate }"

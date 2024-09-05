@@ -19,7 +19,7 @@ const emit = defineEmits<{
     :isActive="props.activeType === item.id"
     isShowLine
     class="group"
-    insideClasses="!min-h-[48px]"
+    insideClasses="!min-h-[44px]"
     @click="emit('click', item.id)"
   >
     <div

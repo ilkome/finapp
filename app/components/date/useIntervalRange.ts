@@ -8,9 +8,10 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
     period: 'month',
   })
 
-  const interval = useStorage<Interval>(`${key}-interval`, {
+  const interval = useStorage<Interval & { selected: number }>(`${key}-interval`, {
     duration: 12,
     period: 'month',
+    selected: -1,
   })
 
   const viewConfig = useStorage(`${key}-viewConfig`, {
@@ -29,6 +30,10 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
       end: dayjs().subtract(subtracted.value * interval.value.duration, interval.value.period).endOf(interval.value.period).valueOf(),
       start: dayjs().subtract(subtracted.value * interval.value.duration, interval.value.period).subtract(interval.value.duration - 1, interval.value.period).startOf(interval.value.period).valueOf(),
     }
+  })
+
+  watch(range, () => {
+    interval.value.selected = -1
   })
 
   function setRange(r: Range) {

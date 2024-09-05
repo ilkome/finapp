@@ -22,6 +22,7 @@ const categoriesStore = useCategoriesStore()
       <CategoriesItem
         :category
         :categoryId
+        alt
         insideClasses="bg-item-4 min-h-[46px] py-2"
         @click="emit('onOpen', 2)"
       />

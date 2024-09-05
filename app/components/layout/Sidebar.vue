@@ -11,17 +11,16 @@ const colorMode = useColorMode()
       hidden lg:grid gap-6 content-start
       h-full min-w-72
       overflow-hidden overflow-y-auto
-      bg-foreground-3 -border-r border-item-3
+      bg-foreground-3
     "
   >
-    <div class="flex items-center justify-between pb-0 pt-5 pl-4 pr-2">
+    <div class="flex items-center justify-between pt-5 pl-4 pr-2">
       <NuxtLink to="/dashboard">
         <UiLogo class="w-16" />
       </NuxtLink>
 
       <div
         :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
-        class="text-1"
         @click="() => colorMode.preference = colorMode.preference === 'dark' ? 'light' : 'dark'"
       >
         <Icon
@@ -37,26 +36,10 @@ const colorMode = useColorMode()
       </div>
     </div>
 
-    <!-- <div class="px-2 flex">
-      <LayoutMenuSidebarItem
-        :item="{ component: 'UiIconAdd', name: $t('trnForm.createTrn') }"
-        class="is-trnForm flex-center is-bigger grow"
-        menuId="trnForm"
-      />
-    </div> -->
-
-    <!-- <div class="grid gap-2">
-      <UiTitle3 class="pl-3">
-        {{ $t('wallets.title') }}
-      </UiTitle3>
-    </div> -->
     <LayoutMenuSidebar class="px-2" />
 
     <div class="pb-6 px-2">
-      <UiTitle3
-        class="pl-3"
-        :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
-      >
+      <UiTitle3 class="pl-3 pb-2">
         {{ $t('wallets.title') }}
       </UiTitle3>
 
@@ -72,6 +55,7 @@ const colorMode = useColorMode()
             :walletId
             :lineWidth="1"
             :wallet="walletItem"
+            :activeItemId="$route.params.id"
             isShowIcons
             @click="$router.push(`/wallets/${walletId}`)"
           />

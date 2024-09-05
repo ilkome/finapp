@@ -12,7 +12,7 @@ const props = defineProps<{
   <UiElement
     v-if="props.trnItem"
     class="group2"
-    insideClasses="py-3"
+    insideClasses="py-3 !min-h-[44px]"
     isShowLine2
   >
     <template v-if="!alt" #leftIcon>
@@ -86,12 +86,6 @@ const props = defineProps<{
             v-if="trnItem.wallet"
             class="flex gap-2 items-center"
           >
-            <!-- <WalletsIcon2
-              :color="trnItem.wallet.color"
-              :name="trnItem.wallet.name"
-              :walletId="trnItem.walletId"
-            /> -->
-
             <div class="text-xs text-4 leading-none">
               {{ trnItem.wallet.name }}
             </div>

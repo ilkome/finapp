@@ -111,20 +111,25 @@ async function onSelectParentCategory(id: CategoryId) {
             </div>
 
             <!-- Categories -->
-            <TrnFormSelectionCategoriesAll
-              :maxHeight="maxHeight"
-              :parentCategoryId
-              @onSelectCategory="id => onSelectCategory(id, close)"
-              @onSelectParentCategory="id => onSelectParentCategory(id)"
-            />
+            <div
+              :style="{ height: props.maxHeight }"
+              class="swiper-slide grid grid-cols-2 gap-0"
+            >
+              <TrnFormSelectionCategoriesAll
+                :maxHeight="maxHeight"
+                :parentCategoryId
+                @onSelectCategory="id => onSelectCategory(id, close)"
+                @onSelectParentCategory="id => onSelectParentCategory(id)"
+              />
 
-            <!-- Child Categories Slide -->
-            <TrnFormSelectionCategoriesChild
-              :maxHeight="maxHeight"
-              :parentCategoryId
-              @onSelectCategory="id => onSelectCategory(id, close)"
-              @onSelectParentCategory="id => onSelectParentCategory(id)"
-            />
+              <!-- Child Categories Slide -->
+              <TrnFormSelectionCategoriesChild
+                :maxHeight="maxHeight"
+                :parentCategoryId
+                @onSelectCategory="id => onSelectCategory(id, close)"
+                @onSelectParentCategory="id => onSelectParentCategory(id)"
+              />
+            </div>
           </div>
         </div>
         <div class="trnFormSelectionPagination" />

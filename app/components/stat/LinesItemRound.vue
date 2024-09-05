@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import { onLongPress } from '@vueuse/core'
+import dayjs from 'dayjs'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory } from '~/components/stat/types'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import type { IntervalRange } from '~/components/date/useIntervalRange'
+import type { Range } from '~/components/date/types'
 
 const props = defineProps<{
+  intervalRange?: IntervalRange
   isActive?: boolean
   item: TotalCategory
+  selectedRange?: Range
 }>()
 
 const emit = defineEmits<{
@@ -20,6 +25,7 @@ const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 const trnFormStore = useTrnFormStore()
+const { trnFormCreate } = useTrnForm()
 
 const category = computed(() => {
   const isOneCategory = props.item.trnsIds.length <= 1
@@ -40,11 +46,19 @@ const longPressRef = ref(null)
 onLongPress(
   longPressRef,
   () => {
+    trnFormCreate()
     trnFormStore.$patch((state) => {
       state.values.amount = [0, 0, 0]
       state.values.amountRaw = ['', '', '']
       state.values.categoryId = props.item.id
       state.ui.isShow = true
+
+      if (props.selectedRange?.start && props.intervalRange?.interval.value.period === 'day' && props.intervalRange?.interval.value.selected !== -1) {
+        state.values.date = props.selectedRange?.start
+      }
+      else {
+        state.values.date = dayjs().startOf('day').valueOf()
+      }
     })
   },
   { delay: 300, modifiers: { prevent: true } },
@@ -64,17 +78,18 @@ onLongPress(
     />
 
     <div
-      class="size-5"
+      class="size-5 -lg:size-7"
     >
       <UiIconBase
         :name="category?.icon"
         :color="category?.color"
-        class="!text-xs"
+        class="!text-xs -xl:!text-lg"
         invert
       />
     </div>
 
-    <div class="text-xs text-3">
+    <!-- TODO: text-xs xl:text-sm -->
+    <div class="text-xs text-3 xl:text-sm">
       {{ category.name }}
     </div>
 

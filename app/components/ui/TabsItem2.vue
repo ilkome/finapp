@@ -11,7 +11,7 @@ const emit = defineEmits(['click'])
 <template>
   <div
     :class="[
-      ...getStyles('item', ['link', 'rounded', 'minh2', '_minw2']),
+      getStyles('item', ['link', 'rounded', 'minh2', '_minw2']),
       { '!bg-item-3 !text-1': isActive },
     ]"
     class="

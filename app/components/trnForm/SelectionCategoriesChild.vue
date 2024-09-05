@@ -21,23 +21,20 @@ const trnFormStore = useTrnFormStore()
 <template>
   <div
     v-if="parentCategoryId && categoriesStore.hasChildren(parentCategoryId)"
-    :style="{ height: props.maxHeight }"
-    class="swiper-slide"
+    class="h-full overflow-y-auto scrollerBlock pb-3"
   >
-    <div class="h-full overflow-y-auto scrollerBlock pb-3">
-      <div>
-        <UiTitle class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1">
-          {{ categoriesStore.items[parentCategoryId]?.name }}
-        </UiTitle>
+    <div>
+      <UiTitle3 class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1">
+        {{ categoriesStore.items[parentCategoryId]?.name }}
+      </UiTitle3>
 
-        <CategoriesSelector2
-          :activeItemId="trnFormStore.values.categoryId"
-          :hide="emit('close')"
-          :ids="categoriesStore.getChildsIds(parentCategoryId)"
-          @onClickParent="(id: CategoryId) => emit('onSelectParentCategory', id)"
-          @onSelected="(id: CategoryId) => emit('onSelectCategory', id)"
-        />
-      </div>
+      <CategoriesSelector2
+        :activeItemId="trnFormStore.values.categoryId"
+        :hide="emit('close')"
+        :ids="categoriesStore.getChildsIds(parentCategoryId)"
+        @onClickParent="(id: CategoryId) => emit('onSelectParentCategory', id)"
+        @onSelected="(id: CategoryId) => emit('onSelectCategory', id)"
+      />
     </div>
   </div>
 </template>

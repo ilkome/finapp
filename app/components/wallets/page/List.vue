@@ -238,10 +238,11 @@ const counts = computed(() => ({
     isShow: true,
     value: totalInWallets.value.all - totalInWallets.value.credits - totalInWallets.value.isDebt,
   },
-  isDebt: {
-    id: 'isDebt',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.isDebt !== 0,
-    value: totalInWallets.value.isDebt,
+  withdrawal: {
+    icon: 'UiIconWalletWithdrawal',
+    id: 'withdrawal',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.withdrawal !== 0,
+    value: totalInWallets.value.withdrawal,
   },
   // eslint-disable-next-line perfectionist/sort-objects
   isCredit: {
@@ -250,11 +251,6 @@ const counts = computed(() => ({
     value: totalInWallets.value.credits,
   },
   // eslint-disable-next-line perfectionist/sort-objects
-  creditPossible: {
-    id: 'creditPossible',
-    isShow: totalInWallets.value.creditPossible !== 0,
-    value: totalInWallets.value.creditPossible + totalInWallets.value.credits,
-  },
   isCash: {
     id: 'isCash',
     isShow: gropedBy.value === 'list' && totalInWallets.value.isCash !== 0,
@@ -271,11 +267,17 @@ const counts = computed(() => ({
     isShow: gropedBy.value === 'list' && totalInWallets.value.isDeposit !== 0,
     value: totalInWallets.value.isDeposit,
   },
-  withdrawal: {
-    icon: 'UiIconWalletWithdrawal',
-    id: 'withdrawal',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.withdrawal !== 0,
-    value: totalInWallets.value.withdrawal,
+  // eslint-disable-next-line perfectionist/sort-objects
+  isDebt: {
+    id: 'isDebt',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.isDebt !== 0,
+    value: totalInWallets.value.isDebt,
+  },
+  // eslint-disable-next-line perfectionist/sort-objects
+  creditPossible: {
+    id: 'creditPossible',
+    isShow: totalInWallets.value.creditPossible !== 0,
+    value: totalInWallets.value.creditPossible + totalInWallets.value.credits,
   },
 }))
 

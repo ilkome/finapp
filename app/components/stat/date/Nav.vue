@@ -26,7 +26,7 @@ const emit = defineEmits<{
 
     <div
       :class="[
-        ...getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
+        getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
         { '!hocus:transparent opacity-30': props.isLastPeriod },
       ]"
       class="flex-center bg-item-4"
@@ -37,7 +37,7 @@ const emit = defineEmits<{
 
     <div
       :class="[
-        ...getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
+        getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
         { '!hocus:transparent opacity-30': props.isToday },
       ]"
       class="flex-center bg-item-4"

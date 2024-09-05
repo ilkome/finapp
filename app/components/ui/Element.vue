@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
+import { cn } from '~~/lib/cn'
 
 const props = defineProps<{
   hideDivider?: boolean
@@ -19,25 +20,12 @@ const emit = defineEmits<{
 
 const slots = useSlots()
 
-const classes = computed(() => {
-  let cls: (string | object)[] = [
-    'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px]',
-    {
-      '!bg-item-3': props.isActive,
-    },
-    getStyles('item', ['rounded', 'padding1', 'minh2']),
-  ]
-
-  // if (props.isLink) {
-  cls = [...cls, getStyles('item', ['link'])]
-  // }
-
-  if (props.insideClasses) {
-    cls.push(props.insideClasses)
-  }
-
-  return cls
-})
+const classes = computed(() => cn(
+  getStyles('item', ['rounded', 'padding1', 'minh2', 'link']),
+  'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px]',
+  props.insideClasses,
+  { 'bg-item-3': props.isActive },
+))
 </script>
 
 <template>

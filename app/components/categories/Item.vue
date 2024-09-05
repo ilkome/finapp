@@ -4,9 +4,11 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 
 const props = defineProps<{
   activeItemId?: string | 0 | false | null
+  alt?: boolean
   category: CategoryItem
   categoryId: CategoryId
   isHideDots?: boolean
+  isHideParent?: boolean
   lineWidth?: number
   slider?: any
 }>()
@@ -26,7 +28,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category.paren
   <UiElement
     :isActive="activeItemId === categoryId"
     :lineWidth="props.lineWidth"
-    insideClasses="!min-h-[48px]"
+    insideClasses="!min-h-[44px] lg:!min-h-[42px]"
     @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>
@@ -39,9 +41,11 @@ const parentCategory = computed(() => categoriesStore.items[props.category.paren
 
     <div class="grow grid gap-0.5 text-3">
       <CategoriesName
+        :alt="props.alt"
         :category
         :parentCategory
         :hasChildren="childCategoriesIds.length > 0"
+        :isHideParent="props.isHideParent"
       />
     </div>
   </UiElement>

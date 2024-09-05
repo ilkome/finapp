@@ -49,7 +49,7 @@ function getBarStyle() {
       :isActive2="props.isActive"
       class="relative"
       isShowToggle2
-      insideClasses="!min-h-[48px]"
+      insideClasses="!min-h-[44px]"
       :lineWidth="!props.viewOptions?.catsList.isItemsBg ? props.lineWidth : 0"
       @click="emit('click', props.item.id)"
     >

@@ -2,11 +2,10 @@ export const classes = {
   item: {
     alt: 'bg-item-4',
     base: '',
-    bg: `
-      bg-item-9
-    `,
+    bg: 'bg-item-9',
     center: 'flex items-center',
     center2: 'flex items-center justify-center',
+    center3: 'flex-center',
     gap1: 'gap-3',
     link: `
       select-none
@@ -29,9 +28,7 @@ export const classes = {
     padding2: 'px-2',
     padding3: 'px-3',
     padding4: 'px-1',
-    paddings: {
-      base: '',
-    },
+    padding5: 'px-2 py-2',
     rounded: 'rounded-md',
     rounded2: 'rounded-lg',
     shadow: `
@@ -48,5 +45,5 @@ export const classes = {
 } as const
 
 export function getStyles(group: string, elements: string[]) {
-  return elements.map(name => classes[group][name])
+  return elements.map(name => classes[group][name]).join(' ')
 }

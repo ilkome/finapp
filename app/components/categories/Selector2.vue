@@ -44,6 +44,7 @@ function onFilter(id: CategoryId) {
       :category="categoriesStore.items[categoryId]"
       :lineWidth="1"
       class="group"
+      isHideParent
       @click="select(categoryId)"
       @filter.stop="onFilter(categoryId)"
     />

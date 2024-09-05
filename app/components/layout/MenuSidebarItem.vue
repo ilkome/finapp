@@ -17,7 +17,7 @@ const { checkIsActive, onClick } = useMenuData()
 <template>
   <div
     :class="[
-      ...getStyles('item', ['link', 'rounded', 'padding1', 'menu']),
+      getStyles('item', ['link', 'rounded', 'padding1', 'menu']),
       {
         '!text-1': checkIsActive(props.menuId),
       },
