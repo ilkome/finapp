@@ -35,7 +35,7 @@ useHead({
         custom
       >
         <a class="hocus:bg-item-5 grow" :href="href" @click="navigate">
-          <UiHeaderTitle2>
+          <UiHeaderTitle>
             <div class="pb-1 text-xs font-medium text-item-2">
               {{ $t("wallets.editTitle") }}
             </div>
@@ -50,7 +50,7 @@ useHead({
                 {{ walletForm.currency }}
               </div>
             </div>
-          </UiHeaderTitle2>
+          </UiHeaderTitle>
         </a>
       </RouterLink>
 

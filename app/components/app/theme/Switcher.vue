@@ -1,7 +1,10 @@
 <script setup lang="ts">
-const props = defineProps<{
+const props = withDefaults(defineProps<{
+  component?: 'UiTabs3' | 'UiTabs2'
   isShowSystem?: boolean
-}>()
+}>(), {
+  component: 'UiTabs3',
+})
 
 const colorMode = useColorMode()
 
@@ -35,7 +38,7 @@ function isItActive(theme: Theme) {
 </script>
 
 <template>
-  <UiTabs3>
+  <Component :is="props.component">
     <UiTabsItem2
       v-for="locale in locales"
       :key="locale.slug"
@@ -44,5 +47,5 @@ function isItActive(theme: Theme) {
     >
       {{ $t(locale.localeKey) }}
     </UiTabsItem2>
-  </UiTabs3>
+  </Component>
 </template>

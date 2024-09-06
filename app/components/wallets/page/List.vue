@@ -225,7 +225,7 @@ const totalInWallets = computed(() => {
     if (wallet.withdrawal)
       total.withdrawal += itemValue
 
-    else if (wallet.isCredit)
+    if (wallet.isCredit)
       total.credits += itemValue
   }
 
@@ -286,19 +286,19 @@ function groupByWalletType(id: WalletId) {
   if (!wallet)
     return
 
-  if (wallet?.isCash)
+  if (wallet.isCash)
     return 'isCash'
-  if (wallet?.isDeposit)
+  if (wallet.isDeposit)
     return 'isDeposit'
-  if (wallet?.isCredit)
+  if (wallet.isCredit)
     return 'isCredit'
-  if (wallet?.isCredit)
+  if (wallet.isCredit)
     return 'isCredit'
-  if (wallet?.isCashless)
+  if (wallet.isCashless)
     return 'isCashless'
-  if (wallet?.isDebt)
+  if (wallet.isDebt)
     return 'isDebt'
-  if (checkIsAvailable(wallet) && !wallet?.archived)
+  if (checkIsAvailable(wallet) && !wallet.archived)
     return 'available'
 
   return 'other'
@@ -333,7 +333,7 @@ function checkIsAvailable(wallet: WalletItem) {
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle2>{{ $t("wallets.name") }}</UiHeaderTitle2>
+      <UiHeaderTitle>{{ $t("wallets.name") }}</UiHeaderTitle>
       <template #actions>
         <UiHeaderLink @click="openModal('walletsSort')">
           <UiIconOrder class="size-5" />

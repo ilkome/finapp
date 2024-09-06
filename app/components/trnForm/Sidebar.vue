@@ -5,7 +5,6 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import 'swiper/css'
-import 'swiper/css/pagination'
 
 const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
@@ -71,35 +70,11 @@ function onSelectCategory(id: CategoryId) {
             <div class="grid grid-rows-[auto,1fr] gap-4 scroll scrollerBlock">
               <TrnFormMain maxHeight="100vh" class="!pb-0" />
 
-              <div class="grid gap-3">
-                <!-- Favorite categories -->
-                <div
-                  v-if="categoriesStore.favoriteCategoriesIds.length > 0"
-                >
-                  <UiTitle
-                    class="px-3 pb-2 pt-1.5"
-                    @click="trnFormStore.ui.catsRootModal = true"
-                  >
-                    {{ $t("categories.favoriteTitle") }}
-                    {{ $t("categories.title") }}
-                  </UiTitle>
-
-                  <CategoriesSelector2
-                    :activeItemId="trnFormStore.values.categoryId"
-                    :ids="categoriesStore.favoriteCategoriesIds"
-                    class="!px-3"
-                    @onSelected="onSelectCategory"
-                  />
-                </div>
-
-                <TrnFormSelectionWalletsFast />
-
-                <!-- History -->
-                <TrnFormTrnsSlide
-                  :slider="sliderObj"
-                  class="px-2 pb-6"
-                />
-              </div>
+              <!-- History -->
+              <TrnFormTrnsSlide
+                :slider="sliderObj"
+                class="px-2 pb-6"
+              />
             </div>
           </div>
 
@@ -128,35 +103,6 @@ function onSelectCategory(id: CategoryId) {
   <!-- Modals -->
   <LazyTrnFormModalDescription v-if="trnFormStore.modal.description" />
 </template>
-
-<style lang="stylus">
-.trnForm
-  .swiper-pagination-horizontal
-    z-index 2
-    position absolute
-    left 50%
-    bottom 1px
-    display flex
-    align-items center
-    justify-content center
-    width auto
-    padding 6px
-    background alpha(#171717, .9)
-    border-radius 6px
-
-    .swiper-pagination-bullet
-      opacity 1
-      width 6px
-      height 6px
-      margin 0 4px
-      background var(--c-bg-9)
-      border-radius 50%
-      anim()
-
-      &-active
-        width 10px
-        border-radius 4px
-</style>
 
 <style lang="stylus" scoped>
 @import "../app/assets/stylus/variables/*"

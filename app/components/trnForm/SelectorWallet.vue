@@ -22,7 +22,7 @@ const walletsStore = useWalletsStore()
       :walletId
       :wallet="walletsStore.sortedItems[walletId]"
       alt
-      insideClasses="bg-item-4 min-h-[46px] py-2"
+      insideClasses="bg-item-4 min-h-[42px] py-2"
       isShowIcons
       @click="emit('onOpen', 0)"
     />
@@ -38,7 +38,7 @@ const walletsStore = useWalletsStore()
         :wallet="walletsStore.sortedItems[walletId]"
         alt
         isShowIcons
-        insideClasses="bg-item-4 min-h-[46px] py-2"
+        insideClasses="bg-item-4 min-h-[42px] py-2"
       />
 
       <template #popper="{ hide }">

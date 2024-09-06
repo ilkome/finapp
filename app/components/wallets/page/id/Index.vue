@@ -35,7 +35,7 @@ useHead({
     <UiHeader>
       <RouterLink v-slot="{ href, navigate }" to="/wallets" custom>
         <a class="grow hocus:bg-item-5" :href="href" @click="navigate">
-          <UiHeaderTitle2>
+          <UiHeaderTitle>
             <div class="pt-3 text-xs font-medium text-item-2">
               {{ $t("wallets.title") }}
             </div>
@@ -50,7 +50,7 @@ useHead({
                 {{ wallet.currency }}
               </div>
             </div>
-          </UiHeaderTitle2>
+          </UiHeaderTitle>
         </a>
       </RouterLink>
 
@@ -66,7 +66,7 @@ useHead({
     </UiHeader>
 
     <div class="px-2">
-      <div class="flex flex-wrap justify-stretch gap-1 px-2 pt-2 lg:px-4 xl:px-16">
+      <div class="flex flex-wrap justify-stretch gap-1 px-2 pt-2 lg:px-4">
         <template v-if="!wallet.isCredit">
           <Amount
             :amount="total"
@@ -99,7 +99,7 @@ useHead({
       </div>
     </div>
 
-    <div class="px-2 pt-2 lg:px-4 xl:px-16">
+    <div class="px-2 pt-2 lg:px-4">
       <StatMiniItem
         type="sum"
         :trnsIds="trnsStore.getStoreTrnsIds({

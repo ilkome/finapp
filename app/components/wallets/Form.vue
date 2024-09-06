@@ -116,7 +116,7 @@ async function onSave() {
 <template>
   <div
     v-if="walletForm"
-    class="overflow-hidden h-full grid gap-3 grid-rows-[auto,1fr,auto] px-3"
+    class="overflow-hidden h-full grid gap-3 grid-rows-[auto,1fr,auto] px-3 pb-2"
   >
     <UiTabs>
       <UiTabsItem

@@ -6,7 +6,7 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { getParentCategoryId } from '~/components/categories/getCategories'
 import 'swiper/css'
-import 'swiper/css/pagination'
+// import 'swiper/css/pagination'
 
 const props = withDefaults(
   defineProps<{

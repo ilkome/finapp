@@ -18,7 +18,6 @@ const categoriesStore = useCategoriesStore()
 
 <template>
   <div class="">
-    <!-- <div class="grid grid-cols-3 gap-2 -items-center -justify-center -place-items-center"> -->
     <CategoriesItem
       v-for="categoryId in ids"
       :key="categoryId"

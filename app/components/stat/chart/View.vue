@@ -15,7 +15,7 @@ import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 import { config, lineConfig } from '~/components/stat/chart/config'
 import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
-import type { PeriodNameWithAll } from '~/components/filter/useFilter'
+import type { PeriodNameWithAll } from '~/components/filter/types'
 import { getFormatForChart } from '~/components/date/format'
 import type { ChartType } from '~/components/stat/chart/types'
 

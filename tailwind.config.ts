@@ -59,7 +59,6 @@ export default <Partial<Config>>{
           4: 'var(--c-item-4)',
           5: 'var(--c-item-5)',
           6: 'rgba(var(--item-6))',
-          7: 'rgba(var(--item-7))',
           8: 'rgba(var(--item-8))',
           9: 'rgba(var(--item-9))',
           10: 'rgba(var(--item-10))',

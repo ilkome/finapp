@@ -53,7 +53,7 @@ function onInput(event: Event) {
         text-3xl font-unica
         bg-transparent rounded-md
         -placeholder:text-3xl -placeholder:font-mono
-        focus:bg-item-7
+        focus:bg-item-5
         transition
       "
       type="text"

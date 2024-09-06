@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { PeriodNameWithAll } from '~/components/filter/useFilter'
+import type { PeriodNameWithAll } from '~/components/filter/types'
 
 export function getFormatForChart(periodName: PeriodNameWithAll) {
   switch (periodName) {

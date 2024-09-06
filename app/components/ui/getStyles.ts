@@ -21,7 +21,7 @@ export const classes = {
     minh: 'min-h-[42px]',
     minh2: 'min-h-[38px]',
     minh3: 'min-h-[30px]',
-    minh4: 'min-h-[46px]',
+    minh4: 'min-h-[42px]',
     minw1: 'min-w-[42px]',
     minw2: 'min-w-[60px]',
     padding1: 'px-2 py-1.5',

@@ -4,7 +4,6 @@ import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import 'swiper/css'
-import 'swiper/css/pagination'
 
 const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
@@ -118,39 +117,6 @@ onMounted(init)
   <!-- Modals -->
   <LazyTrnFormModalDescription v-if="trnFormStore.modal.description" />
 </template>
-
-<style>
-.trnForm__pagination.swiper-pagination-horizontal
-  .swiper-pagination-bullet-active {
-  @apply !bg-neutral-600 dark:!bg-white/80;
-}
-</style>
-
-<style lang="stylus">
-.trnForm
-  .swiper-pagination-horizontal
-    z-index 2
-    position absolute
-    left 50%
-    bottom 1px
-    display flex
-    align-items center
-    justify-content center
-    width auto
-    padding 6px
-    background alpha(#171717, .9)
-    border-radius 6px
-    transform translateX(-50%)
-
-    .swiper-pagination-bullet
-      opacity 1
-      width 6px
-      height 6px
-      margin 0 4px
-      background var(--c-bg-9)
-      border-radius 50%
-      anim()
-</style>
 
 <style lang="stylus" scoped>
 @import "../app/assets/stylus/variables/*"

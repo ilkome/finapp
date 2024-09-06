@@ -100,16 +100,14 @@ const items2 = computed(() => ({
       :initialSlide
     />
 
-    <UiTitle
-      :class="getStyles('item', ['center', 'minh2', 'minw1', 'rounded'])"
-      class="!text-3 !text-sm !font-semibold !font-nunito"
-      @click="trnFormStore.values.trnId = null"
-    >
-      {{ trnFormStore.values.trnId
-        ? $t("trnForm.titleEditTrn")
-        : $t("trnForm.createTrn")
-      }}
-    </UiTitle>
+    <div class="py-2">
+      <UiTitle3 @click="trnFormStore.values.trnId = null">
+        {{ trnFormStore.values.trnId
+          ? $t("trnForm.titleEditTrn")
+          : $t("trnForm.createTrn")
+        }}
+      </UiTitle3>
+    </div>
 
     <div
       v-if="trnFormStore.values.trnId"

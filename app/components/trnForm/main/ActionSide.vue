@@ -40,8 +40,8 @@ async function onClickSubmit() {
       py-4
       size-full
       text-1 text-center
-      bg-item-main border border-item-5 rounded-xl
-      hocus:bg-item-7 hocus:border[red] hocus:scale-[1.02]
+      border border-item-5 rounded-xl
+      hocus:bg-item-5 hocus:border[red] hocus:scale-[1.02]
       transition
     "
     @click="onClickSubmit"

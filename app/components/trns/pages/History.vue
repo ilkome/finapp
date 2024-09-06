@@ -102,7 +102,7 @@ function select(row) {
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle2>{{ $t("trns.history") }}</UiHeaderTitle2>
+      <UiHeaderTitle>{{ $t("trns.history") }}</UiHeaderTitle>
     </UiHeader>
 
     <div class="grid gap-3 px-2">

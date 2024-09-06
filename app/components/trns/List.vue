@@ -181,7 +181,7 @@ const groupedTrns = computed(() => {
       <!-- Group Sum -->
       <div
         v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
-        class="pr-3 border-b border-item-7 pb-2"
+        class="pr-3 border-b border-item-5 pb-2"
       >
         <Amount
           v-if="getTotalOfTrnsIds(paginatedTrnsIds).income !== 0"
@@ -226,7 +226,7 @@ const groupedTrns = computed(() => {
         class="bg-item-9 rounded-lg overflow-hidden"
       >
         <div
-          :class="{ '-border-b border-item-7': isShowGroupSum && groupTrnsIds.length > 1 }"
+          :class="{ '-border-b border-item-5': isShowGroupSum && groupTrnsIds.length > 1 }"
           class="flex gap-2 items-end py-2 pb-1 px-3"
         >
           <DateTrns

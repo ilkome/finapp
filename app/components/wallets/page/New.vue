@@ -24,7 +24,7 @@ export default defineComponent({
       <UiHeader>
         <RouterLink v-slot="{ href, navigate }" to="/wallets" custom>
           <a class="grow hocus:bg-item-5" :href="href" @click="navigate">
-            <UiHeaderTitle2>
+            <UiHeaderTitle>
               <div class="pb-1 text-xs font-medium text-item-2">
                 {{ $t("wallets.createNewTitle") }}
               </div>
@@ -36,7 +36,7 @@ export default defineComponent({
                   {{ walletForm.currency }}
                 </div>
               </div>
-            </UiHeaderTitle2>
+            </UiHeaderTitle>
           </a>
         </RouterLink>
       </UiHeader>

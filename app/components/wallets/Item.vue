@@ -138,7 +138,7 @@ onLongPress(
 
       <div
         v-if="isSort"
-        class="sortHandle insert-0 flex-center absolute right-0 top-0 h-full rounded-md px-3 group-hocus:bg-item-7"
+        class="sortHandle insert-0 flex-center absolute right-0 top-0 h-full rounded-md px-3 group-hocus:bg-item-5"
       >
         <UiIconSort class="size-6" />
       </div>

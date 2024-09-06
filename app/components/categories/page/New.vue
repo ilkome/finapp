@@ -37,7 +37,7 @@ export default defineComponent({
           :href="href"
           @click="navigate"
         >
-          <UiHeaderTitle2>
+          <UiHeaderTitle>
             <div class="pt-1 text-xs font-medium text-item-2">
               {{ $t('categories.createNewTitle') }}
               <template v-if="parentCategory">
@@ -53,7 +53,7 @@ export default defineComponent({
                 <div :class="categoryForm.icon" />
               </div>
             </div>
-          </UiHeaderTitle2>
+          </UiHeaderTitle>
         </a>
       </RouterLink>
     </UiHeader>

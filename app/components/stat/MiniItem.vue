@@ -1,23 +1,24 @@
 <script setup lang="ts">
+import _sortby from 'lodash.sortby'
 import dayjs from 'dayjs'
 import defu from 'defu'
-import _sortby from 'lodash.sortby'
 import { useStorage } from '@vueuse/core'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import { seriesOptions } from '~/components/stat/chart/config2'
 import type { ChartType } from '~/components/stat/chart/types'
-import type { FilterProvider } from '~/components/filter/useFilter'
+import type { DeepPartial } from '~~/utils/types'
+import type { FilterProvider } from '~/components/filter/types'
+import type { MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
+import { ViewOptionsSchema, defaultViewOptions } from '~/components/stat/config'
 import type { Range } from '~/components/date/types'
-import { type MoneyTypeSlugSum, type TotalCategory, type ViewOptions, ViewOptionsSchema, defaultViewOptions } from '~/components/stat/types'
+import type { TotalReturns } from '~/components/amount/getTotal'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import { getStyles } from '~/components/ui/getStyles'
 import { markArea } from '~/components/stat/chart/utils'
+import { seriesOptions } from '~/components/stat/chart/config2'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useIntervalRange } from '~/components/date/useIntervalRange'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { TotalReturns } from '~/components/amount/getTotal'
-import type { DeepPartial } from '~~/utils/types'
 
 const props = defineProps<{
   isQuickModal?: boolean
@@ -33,7 +34,7 @@ const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
 
-const maxRange = computed(() => useTrnsStore().getRange(props.trnsIds))
+const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
 
 const intervalRange = useIntervalRange({
   key: `finapp-${props.quickModalCategoryId}-${props.type}${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`,

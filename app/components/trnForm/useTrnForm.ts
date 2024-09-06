@@ -13,7 +13,6 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { validate } from '~/components/trnForm/utils/validate'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useFilterStore } from '~/components/filter/useFilterStore'
 
 export const useTrnFormStore = defineStore('trnForm', () => {
   const values = reactive<TrnFormValues>({
@@ -264,7 +263,6 @@ export function useTrnForm() {
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
-  const filterStore = useFilterStore()
 
   function trnFormEdit(trnId: TrnId) {
     const trn = trnsStore.items[trnId]
@@ -288,9 +286,6 @@ export function useTrnForm() {
       walletsIds: walletsStore.sortedIds,
     })
     trnFormStore.ui.isShow = true
-
-    if (filterStore.periodNameWithoutAll === 'day')
-      trnFormStore.values.date = filterStore.date
 
     if (props) {
       if (props.categoryId)

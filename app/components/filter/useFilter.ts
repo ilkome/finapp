@@ -6,29 +6,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-
-type PeriodSchema = {
-  date: number
-  showedPeriods: number
-  type: 'line' | 'bar'
-}
-
-export type Periods = {
-  day: PeriodSchema
-  month: PeriodSchema
-  week: PeriodSchema
-  year: PeriodSchema
-}
-
-// export type PeriodNameWithoutAll = keyof Periods | dayjs.OpUnitType
-export type PeriodNameWithoutAll = keyof Periods | dayjs.ManipulateType
-export type PeriodNameWithAll = PeriodNameWithoutAll | 'all'
-
-export type PeriodsNames = {
-  icon: string
-  name: string
-  slug: PeriodNameWithoutAll
-}[]
+import type { PeriodNameWithAll, Periods, PeriodsNames } from '~/components/filter/types'
 
 export function useFilter() {
   const { $i18n } = useNuxtApp()
@@ -52,10 +30,6 @@ export function useFilter() {
     const newDate = dayjs(value).valueOf()
     date.value = newDate
     periods.value[periodNameWithoutAll.value].date = newDate
-  }
-
-  function setDateNow() {
-    date.value = dayjs().valueOf()
   }
 
   /**
@@ -319,7 +293,6 @@ export function useFilter() {
     setCategoryId,
     setDate,
 
-    setDateNow,
     setDayDate,
     setNextPeriodDate,
     setPeriod,
@@ -337,5 +310,3 @@ export function useFilter() {
     walletsIds,
   }
 }
-
-export type FilterProvider = ReturnType<typeof useFilter>

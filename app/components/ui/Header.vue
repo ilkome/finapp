@@ -1,5 +1,5 @@
 <template>
-  <div class="sticky top-0 z-20 backdrop-blur px-2 md:px-6">
+  <div class="sticky top-0 z-20 backdrop-blur px-2">
     <div class="flex min-h-[44px] items-center justify-between gap-4 md:max-w-xl">
       <slot />
 

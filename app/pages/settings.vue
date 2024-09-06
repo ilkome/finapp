@@ -30,56 +30,60 @@ function removeUserData() {
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle2>{{ $t("settings.title") }}</UiHeaderTitle2>
+      <UiHeaderTitle>{{ $t("settings.title") }}</UiHeaderTitle>
     </UiHeader>
 
-    <div
-      class="grow grid gap-x-6 gap-y-1 px-3"
-    >
+    <div class="grow grid gap-x-6 gap-y-1 px-4 pt-2">
       <div>
         <!-- Locale -->
         <div class="pb-12">
           <div class="grid gap-3">
-            <UiTitle class="pb-2">
+            <UiTitle3 class="pb-2">
               {{ $t("settings.lang") }}
-            </UiTitle>
+            </UiTitle3>
             <AppLocaleSwitcher />
           </div>
         </div>
 
         <!-- Theme -->
         <div class="pb-12">
-          <UiTitle class="pb-2">
+          <UiTitle3 class="pb-2">
             {{ $t("theme.title") }}
-          </UiTitle>
-          <AppThemeSwitcher isShowSystem />
+          </UiTitle3>
+          <AppThemeSwitcher
+            isShowSystem
+            component="UiTabs3"
+          />
         </div>
 
         <!-- User -->
         <div class="pb-12">
-          <UiTitle class="pb-2">
+          <UiTitle3 class="pb-2">
             {{ t("user") }}
-          </UiTitle>
+          </UiTitle3>
           <div class="pb-4 text-item-2">
             {{ userStore.user?.email }}
           </div>
           <UiBox1
-            :title="$t('userLogout')"
-            icon="mdi mdi-logout"
+            class="!flex gap-2"
             @click="userStore.signOut()"
-          />
+          >
+            <div class="mdi mdi-logout" />
+            <div>{{ $t('userLogout') }}</div>
+          </UiBox1>
         </div>
 
         <!-- Delete -->
         <div class="pb-12">
-          <UiTitle class="pb-2">
+          <UiTitle3 class="pb-2">
             {{ $t("settings.caution") }}
-          </UiTitle>
+          </UiTitle3>
           <div class="leading-1 pb-4 text-xs text-item-2">
             {{ $t("alerts.willDeleteEverything") }}
           </div>
           <div class="pb-4">
             <UiBox1
+              class="!flex gap-2"
               @click="confirmRemoveUserData = true"
             >
               <div class="mdi mdi-delete-empty-outline" />

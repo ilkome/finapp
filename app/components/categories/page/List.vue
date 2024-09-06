@@ -13,7 +13,7 @@ const categoriesStore = useCategoriesStore()
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle2>{{ $t("categories.name") }}</UiHeaderTitle2>
+      <UiHeaderTitle>{{ $t("categories.name") }}</UiHeaderTitle>
       <template #actions>
         <UiHeaderLink @click="$router.push('/categories/new')">
           <UiIconAdd class="size-5" />

@@ -40,3 +40,32 @@ body {
 .layoutBase {
   @apply overflow-hidden relative h-full;
 }
+
+.trnForm .trnForm__pagination {
+  z-index: 2;
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: 6px;
+  border-radius: 6px;
+  transform: translateX(-50%);
+  @apply bg-foreground-1;
+}
+
+.trnForm .swiper-pagination-bullet {
+  display: block;
+  opacity: 1;
+  width: 6px;
+  height: 6px;
+  margin: 0 4px;
+  border-radius: 50%;
+  @apply bg-item-3;
+}
+
+.trnForm .swiper-pagination-bullet-active {
+  @apply bg-accent-1;
+}

@@ -23,7 +23,7 @@ const categoriesStore = useCategoriesStore()
         :category
         :categoryId
         alt
-        insideClasses="bg-item-4 min-h-[46px] py-2"
+        insideClasses="bg-item-4 min-h-[42px] py-2"
         @click="emit('onOpen', 2)"
       />
     </div>
@@ -37,8 +37,9 @@ const categoriesStore = useCategoriesStore()
       <CategoriesItem
         :category
         :categoryId
+        alt
         :hasChildren="categoriesStore.getChildsIds(categoryId).length > 0"
-        insideClasses="bg-item-4 min-h-[46px] py-2"
+        insideClasses="bg-item-4 min-h-[42px] py-2"
       />
 
       <template #popper="{ hide }">

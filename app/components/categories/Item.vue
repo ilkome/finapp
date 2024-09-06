@@ -35,6 +35,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category.paren
       <UiIconBase
         :color="category.color"
         :name="category.icon"
+        invert
         @click="(e: Event) => emit('filter', e)"
       />
     </template>

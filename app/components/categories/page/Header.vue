@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <UiHeaderTitle2>
+  <UiHeaderTitle>
     <div class="pt-1 text-xs font-medium text-item-2">
       {{ $t("categories.title") }}
       <template v-if="props.parentCategory">
@@ -23,5 +23,5 @@ const props = defineProps<{
       />
       {{ props.category.name }}
     </div>
-  </UiHeaderTitle2>
+  </UiHeaderTitle>
 </template>
