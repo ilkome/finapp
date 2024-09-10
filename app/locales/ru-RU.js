@@ -166,10 +166,10 @@ export default {
       sum: 'Обычно',
     },
     averageTotal: 'Обычно',
+    balance: 'Баланс',
     expense: 'Расход',
     income: 'Доход',
-    sum: 'Баланс',
-    total: 'Баланс',
+    netIncome: 'Баланс',
     totals: {
       all: 'Всего',
       archived: 'Скрытые',

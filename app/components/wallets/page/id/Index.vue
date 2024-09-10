@@ -66,16 +66,15 @@ useHead({
     </UiHeader>
 
     <div class="px-2">
-      <div class="flex flex-wrap justify-stretch gap-1 px-2 pt-2 lg:px-4">
-        <template v-if="!wallet.isCredit">
-          <Amount
+      <div class="px-2 pt-2 lg:px-4">
+        <div v-if="!wallet.isCredit" class="md:max-w-md">
+          <StatSum2
             :amount="total"
-            :currencyCode="wallet.currency"
-            variant="xl"
+            :title="$t('money.balance')"
           />
-        </template>
+        </div>
 
-        <template v-if="wallet.creditLimit">
+        <div v-if="wallet.creditLimit" class="grid grid-cols-3 gap-1 md:max-w-md">
           <StatSum2
             :amount="total"
             :title="$t('wallets.form.credit.debt')"
@@ -88,7 +87,7 @@ useHead({
             :amount="wallet.creditLimit"
             :title="$t('wallets.form.credit.limit')"
           />
-        </template>
+        </div>
       </div>
 
       <div

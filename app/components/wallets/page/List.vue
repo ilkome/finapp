@@ -175,7 +175,6 @@ const groupedWalletsByType = computed(() => {
 const totalInWallets = computed(() => {
   const total = {
     all: 0,
-    counted: 0,
     creditPossible: 0,
     credits: 0,
     isCash: 0,

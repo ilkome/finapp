@@ -14,7 +14,7 @@ export const seriesOptions = {
   },
   sum: {
     color: 'grey',
-    localeKey: 'money.sum',
+    localeKey: 'money.netIncome',
     type: 'line',
   },
 } as const

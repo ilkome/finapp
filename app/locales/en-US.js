@@ -166,10 +166,10 @@ export default {
       sum: 'Average',
     },
     averageTotal: 'Average',
+    balance: 'Balance',
     expense: 'Expense',
     income: 'Income',
-    sum: 'Net income',
-    total: 'Net income',
+    netIncome: 'Net income',
     totals: {
       all: 'Total',
       archived: 'Archived',

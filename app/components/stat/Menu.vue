@@ -23,7 +23,7 @@ const menu = computed(() => {
   all.push({
     id: 'netIncome',
     idx: 0,
-    name: $i18n.t('money.sum'),
+    name: $i18n.t('money.netIncome'),
   })
   all.push({
     id: 'sum',
