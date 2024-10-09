@@ -2,6 +2,17 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { DeepPartial } from '~~/utils/types'
 
+export const types = [
+  'available',
+  'withdrawal',
+  'isCash',
+  'isCashless',
+  'isDeposit',
+  'isCredit',
+  'isDebt',
+  'archived',
+] as const
+
 export type WalletId = string
 
 export type WalletItem = {
@@ -44,3 +55,10 @@ export type Item = {
 export type WalletItemWithAmount = {
   amount: number
 } & WalletItem
+
+export type WalletTypes = Exclude<typeof types[number], 'available'>
+export type WalletTypesView = Pick<WalletItem, WalletTypes> & {
+  creditPossible: boolean
+  withCredit: boolean
+}
+export type WalletTypeViewAll = keyof WalletTypesView | 'all'

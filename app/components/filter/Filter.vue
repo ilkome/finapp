@@ -4,6 +4,12 @@ import { getStyles } from '~/components/ui/getStyles'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
+const props = withDefaults(defineProps<{
+  isHideWallets?: boolean
+}>(), {
+  isHideWallets: false,
+})
+
 const filter = inject('filter') as FilterProvider
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
@@ -50,7 +56,10 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
     </div>
 
     <!-- Wallets -->
-    <div class="flex bg-item-4 rounded-lg">
+    <div
+      v-if="!props.isHideWallets"
+      class="flex bg-item-4 rounded-lg"
+    >
       <VDropdown
         :overflowPadding="12"
         autoBoundaryMaxSize

@@ -28,6 +28,13 @@ function onEditClick() {
 useHead({
   title: `${$i18n.t('wallets.title')}: ${wallet.value?.name}`,
 })
+
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  categoriesIds: filter?.catsIds?.value ?? [],
+  walletsIds: [walletId.value, ...filter?.walletsIds?.value],
+}, {
+  includesChildCategories: true,
+}))
 </script>
 
 <template>
@@ -67,6 +74,8 @@ useHead({
 
     <div class="px-2">
       <div class="px-2 pt-2 lg:px-4">
+        <Filter isHideWallets class="pb-2" />
+
         <div v-if="!wallet.isCredit" class="md:max-w-md">
           <StatSum2
             :amount="total"
@@ -101,9 +110,7 @@ useHead({
     <div class="px-2 pt-2 lg:px-4">
       <StatMiniItem
         type="sum"
-        :trnsIds="trnsStore.getStoreTrnsIds({
-          walletsIds: [walletId, ...filter?.walletsIds?.value],
-        })"
+        :trnsIds
         :storageKey="walletId"
         isShowTotals
       />

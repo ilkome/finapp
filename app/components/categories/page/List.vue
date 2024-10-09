@@ -8,24 +8,27 @@ useHead({
 })
 
 const categoriesStore = useCategoriesStore()
+const router = useRouter()
 </script>
 
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle>{{ $t("categories.name") }}</UiHeaderTitle>
+      <UiHeaderTitle>{{ $t('categories.name') }}</UiHeaderTitle>
       <template #actions>
-        <UiHeaderLink @click="$router.push('/categories/new')">
+        <UiHeaderLink @click="router.push('/categories/new')">
           <UiIconAdd class="size-5" />
         </UiHeaderLink>
       </template>
     </UiHeader>
 
-    <div class="px-2 md:px-6 grow">
+    <div class="grow px-2 md:px-6">
       <CategoriesList
         :ids="categoriesStore.categoriesRootIds"
         class=""
-        @click="(categoryId: CategoryId) => $router.push(`/categories/${categoryId}`)"
+        @click="
+          (categoryId: CategoryId) => router.push(`/categories/${categoryId}`)
+        "
       />
     </div>
   </UiPage>

@@ -1,19 +1,12 @@
 <script setup lang="ts">
 import Swiper, { Pagination } from 'swiper'
 import type { CategoryId } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import 'swiper/css'
 
 const trnFormStore = useTrnFormStore()
-const categoriesStore = useCategoriesStore()
-const walletsStore = useWalletsStore()
-const isShow = computed(() =>
-  walletsStore.hasItems
-  && categoriesStore.hasCategories
-  && trnFormStore.ui.isShow,
-)
+const isShow = computed(() => trnFormStore.ui.isShow)
+
 /**
  * Slider
  */
@@ -57,7 +50,7 @@ function onSelectCategory(id: CategoryId) {
   <Transition name="fadeIn" appear>
     <div
       v-if="isShow"
-      class="absolute left-0 top-0 h-full trnForm w-80 overflow-hidden bg-foreground-1 border-r-2 border-item-5"
+      class="absolute left-0 top-0 h-full trnForm w-96 overflow-hidden bg-foreground-1 border-r-2 border-item-5"
     >
       <div class="absolute right-2 top-2">
         <BaseBottomSheetClose @onClick="trnFormStore.onClose()" />

@@ -19,6 +19,7 @@ import { seriesOptions } from '~/components/stat/chart/config2'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useIntervalRange } from '~/components/date/useIntervalRange'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { getTrnsIds } from '~/components/trns/getTrns'
 
 const props = defineProps<{
   isQuickModal?: boolean
@@ -37,11 +38,11 @@ const categoriesStore = useCategoriesStore()
 const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
 
 const intervalRange = useIntervalRange({
-  key: `finapp-${props.quickModalCategoryId}-${props.type}${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`,
+  key: `finapp-${props.quickModalCategoryId}-${props.type}${props.storageKey}-${JSON.stringify(filter?.catsIds?.value)}`,
   maxRange,
 })
 
-const newBaseStorageKey = computed(() => `finapp-${intervalRange.grouped.value.period}-${props.storageKey}-${JSON.stringify(filter.catsIds.value)}`)
+const newBaseStorageKey = computed(() => `finapp-${intervalRange.grouped.value.period}-${props.storageKey}-${JSON.stringify(filter?.catsIds?.value)}`)
 
 const groupedPeriods = computed(() => intervalRange.getPeriodsWithEmptyTrnsIds({
   duration: intervalRange.grouped.value.duration || 1,
@@ -55,15 +56,19 @@ const onSelectType = (type: MoneyTypeSlugSum) => selectedType.value = type === s
 // TODO: create function for this
 const filteredTrnsIds = computed(() => {
   if (selectedType.value === 'income') {
-    return props.trnsIds
-      .filter(trnId => trnsStore.items[trnId].type === 1 || trnsStore.items[trnId].type === 2)
-      .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date)
+    return getTrnsIds({
+      trnTypes: [1, 2],
+      trnsIds: props.trnsIds,
+      trnsItems: trnsStore.items,
+    })
   }
 
   if (selectedType.value === 'expense') {
-    return props.trnsIds
-      .filter(trnId => trnsStore.items[trnId].type === 0 || trnsStore.items[trnId].type === 2)
-      .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date)
+    return getTrnsIds({
+      trnTypes: [0, 2],
+      trnsIds: props.trnsIds,
+      trnsItems: trnsStore.items,
+    })
   }
 
   return props.trnsIds
@@ -278,9 +283,7 @@ const trnsIdsForTotals = computed(() => {
   }, { includesChildCategories: false })
 })
 
-const totals = computed(() =>
-  getTotalOfTrnsIds(trnsIdsForTotals.value),
-)
+const totals = computed(() => getTotalOfTrnsIds(trnsIdsForTotals.value))
 
 /**
  * Cats
@@ -369,6 +372,7 @@ function set7DaysMini(close?: () => void) {
     close()
   }
 }
+
 function set12Months(close?: () => void) {
   viewOptions.value.catsView = 'list'
   viewOptions.value.catsList.isGrouped = true
@@ -625,6 +629,7 @@ const quickModalTrnsIds = computed(() => {
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 :class="{ 'bg-item-9 rounded-lg -border border-item-5 overflow-hidden': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
                 @click="onClickCategory"
+                @onClickIcon="filter.toggleCategoryId(item.id)"
               >
                 <div
                   v-if="viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened"

@@ -5,7 +5,6 @@ import type { WalletId } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { StatTabs } from '~/components/app/types'
-import { useTrnForm } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
@@ -17,7 +16,6 @@ const props = defineProps<{
 
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
-const { trnFormCreate } = useTrnForm()
 
 const activeTab = useStorage<StatTabs>(`${props.storageKey}-mini-tab`, 'netIncome')
 const filteredWallets = ref<WalletId[]>([])

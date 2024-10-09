@@ -93,14 +93,12 @@ onLongPress(
           :amount="creditAmount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
-          class="!text-secondary"
         />
         <Amount
           v-else
           :amount="wallet.amount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
-          class="!text-secondary"
         />
       </div>
     </template>

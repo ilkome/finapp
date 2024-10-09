@@ -9,12 +9,6 @@ const trnsStore = useTrnsStore()
 useHead({
   title: t('stat.title'),
 })
-
-watch(() => trnsStore.hasTrns, (has) => {
-  if (!has) {
-    useRouter().push('/welcome')
-  }
-}, { immediate: true })
 </script>
 
 <template>

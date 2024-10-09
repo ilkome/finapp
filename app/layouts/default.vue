@@ -47,21 +47,19 @@ const keepalive = ['Categories', 'Wallets', 'Dashboard']
 
   <div v-if="useUserStore()?.uid" class="layoutBase">
     <div class="grid h-full sm:grid-cols-[auto_1fr_auto]">
-      <LayoutSidebar />
+      <LayoutSidebar :isShow />
 
       <LayoutMenuSidebar
         :isShowTitle="false"
-        class="hidden lg:hidden sm:flex sm:flex-col gap-1 justify-center sm:align-center bg-item-4"
+        class="sm:align-center hidden justify-center gap-1 bg-item-4 sm:flex sm:flex-col lg:hidden"
       />
 
-      <div class="@container/main grid h-full pb-12 sm:pb-0 overflow-hidden">
+      <div class="@container/main grid h-full overflow-hidden pb-12 sm:pb-0">
         <NuxtPage :keepalive="{ include: keepalive }" />
       </div>
     </div>
 
-    <LayoutMenuBottom
-      class="absolute bottom-0 sm:bottom-inherit sm:hidden left-0 z-20 w-full bg-foreground-3 backdrop-blur lg:hidden"
-    />
+    <LayoutMenuBottom />
     <LayoutMenuBottomModal v-if="isModalOpen('menu')" />
     <TrnFormFloatOpener />
   </div>

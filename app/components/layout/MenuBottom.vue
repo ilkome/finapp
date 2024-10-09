@@ -5,7 +5,9 @@ const { itemsBottom } = useMenuData()
 </script>
 
 <template>
-  <div class="mx-auto flex items-stretch">
+  <div
+    class="sm:bottom-inherit absolute bottom-0 left-0 z-20 mx-auto flex w-full items-stretch bg-foreground-3 backdrop-blur sm:hidden lg:hidden"
+  >
     <LayoutMenuSidebarItem
       v-for="(item, menuId) in itemsBottom"
       :key="menuId"

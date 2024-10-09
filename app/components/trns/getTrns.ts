@@ -13,6 +13,12 @@ export function getTrnsIds(props: TrnsGetterProps2) {
     )
   }
 
+  if (Array.isArray(props?.trnTypes)) {
+    trnsIds = trnsIds.filter(
+      trnId => props.trnTypes?.includes(props.trnsItems[trnId]?.type),
+    )
+  }
+
   // Date
   if (props?.dates) {
     if (props.dates.from) {

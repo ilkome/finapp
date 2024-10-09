@@ -3,8 +3,8 @@ import pkg from '~~/package.json'
 import { useUserStore } from '~/components/user/useUser'
 
 const { $i18n } = useNuxtApp()
-const route = useRoute()
-const router = useRouter()
+// const route = useRoute()
+// const router = useRouter()
 const { t } = useI18n()
 const userStore = useUserStore()
 
@@ -22,8 +22,8 @@ function removeUserData() {
   confirmRemoveUserData.value = false
   userStore.removeUserData()
 
-  if (route.name !== 'welcome')
-    router.push('/welcome')
+  // if (route.name !== 'welcome')
+  //   router.push('/welcome')
 }
 </script>
 

@@ -40,6 +40,7 @@ export default {
     sort: 'Сортировка',
     sure: 'Ты уверен?',
     yes: 'Да',
+    loading: 'Загрузка...',
   },
 
   buttons: {

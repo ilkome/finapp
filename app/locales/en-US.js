@@ -40,6 +40,7 @@ export default {
     sort: 'Sort',
     sure: 'Are you sure?',
     yes: 'Yes',
+    loading: 'Loading...',
   },
 
   buttons: {

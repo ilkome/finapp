@@ -43,10 +43,10 @@ export default function useMenuData() {
   }))
 
   const itemsBottom = computed(() => ({
-    wallets: items.value.wallets,
-    categories: items.value.categories,
-    trnForm: items.value.trnForm,
-    dashboard: items.value.dashboard,
+    wallets: items.value.wallets!,
+    categories: items.value.categories!,
+    trnForm: items.value.trnForm!,
+    dashboard: items.value.dashboard!,
     menu: { component: 'UiIconMenu', name: '' },
   }))
 
