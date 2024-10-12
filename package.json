@@ -58,6 +58,7 @@
     "lodash.sortby": "^4.7.0",
     "nuxt": "^3.13.1",
     "nuxt-icon": "^0.6.10",
+    "nuxt-vuefire": "^1.0.4",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
     "stylus": "^0.63.0",

@@ -1,4 +1,5 @@
 import process from 'node:process'
+import { config } from './services/firebase/config'
 
 const sw = process.env.SW === 'true'
 
@@ -20,7 +21,6 @@ export default defineNuxtConfig({
       ],
 
       noscript: [{ innerHTML: 'This website requires JavaScript.' }],
-
       titleTemplate: '%s - Finapp',
     },
   },
@@ -42,6 +42,10 @@ export default defineNuxtConfig({
     timeline: {
       enabled: true,
     },
+  },
+
+  experimental: {
+    viewTransition: true,
   },
 
   future: {
@@ -76,10 +80,10 @@ export default defineNuxtConfig({
     'nuxt-icon',
     '@nuxt/ui',
     '@nuxt/fonts',
+    'nuxt-vuefire',
   ],
 
   plugins: [
-    { src: '~/plugins/initApp' },
     { src: '~/plugins/dayjs' },
     { src: '~/plugins/toast' },
   ],
@@ -158,5 +162,12 @@ export default defineNuxtConfig({
   ui: {
     gray: 'zinc',
     primary: 'blue',
+  },
+
+  vuefire: {
+    auth: {
+      enabled: true,
+    },
+    config,
   },
 })

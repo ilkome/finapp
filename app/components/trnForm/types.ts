@@ -9,7 +9,7 @@ export enum AmountsType {
   TransferIncome = 1,
 }
 
-export interface TrnFormValues {
+export type TrnFormValues = {
   // ['Transaction', 'expenseTransfer', 'incomeTransfer']
   amount: [number, number, number]
   // TODO: is better way to show array meaning?
@@ -28,29 +28,7 @@ export interface TrnFormValues {
   walletId: WalletId | null
 }
 
-// export type TrnFormValues = {
-//   // TODO: is better way to show array meaning?
-//   // ['Transaction', 'expenseTransfer', 'incomeTransfer']
-
-//   amount: [number, number, number]
-//   amountRaw: [string, string, string]
-//   date: number
-//   desc: string | null
-//   trnId: null | TrnId
-//   trnType: TrnType
-// } & ({
-//   categoryId: CategoryId | null
-//   trnType: TrnType.Expense | TrnType.Income
-//   walletId: WalletId | null
-// } | {
-//   categoryId: 'transfer' | null
-//   expenseWalletId: WalletId | null
-//   incomeWalletId: WalletId | null
-//   transferType: TransferType
-//   trnType: TrnType.Transfer
-// })
-
-export interface TrnFormUi {
+export type TrnFormUi = {
   catsRootModal: boolean
   isShow: boolean
   tab: 'main' | 'date' | 'desc'

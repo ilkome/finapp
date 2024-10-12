@@ -2,7 +2,7 @@
 import { saveData } from '~~/services/firebase/api'
 import { useUserStore } from '~/components/user/useUser'
 
-const { locale, setLocale } = useI18n()
+const { locale, setLocale, t } = useI18n()
 const userStore = useUserStore()
 
 const locales = [{
@@ -31,7 +31,7 @@ function changeLocale(locale: string) {
       :isActive="item.slug === locale"
       @click="changeLocale(item.slug)"
     >
-      {{ $t(item.localeKey) }}
+      {{ t(item.localeKey) }}
     </UiTabsItem2>
   </UiTabs3>
 </template>

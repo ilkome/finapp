@@ -5,7 +5,7 @@ import { useAppNav } from '~/components/app/useAppNav'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { auth, saveData } from '~~/services/firebase/api'
+import { saveData } from '~~/services/firebase/api'
 
 export type User = {
   displayName?: string | null
@@ -14,17 +14,17 @@ export type User = {
 }
 
 export const useUserStore = defineStore('user', () => {
+  const auth = useFirebaseAuth()!
   const { $config } = useNuxtApp()
-  const router = useRouter()
-  const userStore = useUserStore()
+  const currentUser = useCurrentUser()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
   const { closeAllModals } = useAppNav()
 
-  const user = ref<User | null>(null)
+  const user = ref<User | null>(currentUser.value || null)
   const isDevUser = computed(() => !!$config.public.ratesApiKey.includes(user.value?.email ?? ''))
-  const uid = computed<string | null>(() => user.value?.uid || null)
+  const uid = computed<string | null>(() => currentUser.value?.uid || user.value?.uid || null)
 
   function setUser(values: User | null) {
     if (!values || values === null) {
@@ -47,12 +47,9 @@ export const useUserStore = defineStore('user', () => {
       trnsStore.unsubscribeTrns(null)
       categoriesStore.unsubscribeCategories(null)
       walletsStore.unsubscribeWallets()
-      userStore.setUser(null)
+      setUser(null)
 
       await signOutFirebase(auth)
-
-      if (router.currentRoute.name !== 'login')
-        router.replace('/login')
     }
 
     catch (error) {
@@ -76,7 +73,6 @@ export const useUserStore = defineStore('user', () => {
     isDevUser,
     removeUserData,
     setUser,
-
     signOut,
     uid,
     user,

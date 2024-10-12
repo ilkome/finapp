@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import { useWindowSize } from '@vueuse/core'
-import { useAppNav } from '~/components/app/useAppNav'
-import { usePointerClass } from '~/components/layout/usePointerClass'
-import { useUserStore } from '~/components/user/useUser'
-
 import '~/assets/css/fullpage.css'
 import '~/assets/css/reset.css'
 import '~/assets/stylus/index.styl'
+import { useWindowSize } from '@vueuse/core'
+import { useAppNav } from '~/components/app/useAppNav'
+import { useInitApp } from '~/components/app/useInitApp'
+import { usePointerClass } from '~/components/layout/usePointerClass'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useGuard } from '~/components/user/useGuard'
 
-const { width } = useWindowSize()
-const { pointerClasses } = usePointerClass()
+const trnFormStore = useTrnFormStore()
+const user = useCurrentUser()
 const { isModalOpen } = useAppNav()
+const { loadAppFromCache, loadAppFromDB } = useInitApp()
+const { pointerClasses } = usePointerClass()
+const { t } = useI18n()
+const { width } = useWindowSize()
+
+const isShow = computed(() => trnFormStore.ui.isShow)
 
 useHead({
   bodyAttrs: {
@@ -19,33 +26,24 @@ useHead({
   htmlAttrs: {
     lang: useI18n().locale.value,
   },
+  titleTemplate: (chunk?: string) => (chunk ? `${chunk} - Finapp` : 'Finapp'),
 })
-
-useHead({
-  titleTemplate: chunk => (chunk ? `${chunk} - Finapp` : 'Finapp'),
-})
-
-watch(
-  () => useUserStore().uid,
-  (value) => {
-    if (value && useRoute().name === 'login') {
-      useRouter().replace('/dashboard')
-    }
-    else {
-      useRouter().replace('/login')
-    }
-  },
-)
 
 const keepalive = ['Categories', 'Wallets', 'Dashboard']
+
+await useGuard()
+await loadAppFromCache()
+await loadAppFromDB()
 </script>
 
 <template>
-  <div v-if="!useUserStore()?.uid">
-    Loading...
+  <NuxtPwaManifest />
+
+  <div v-if="!user?.uid">
+    {{ t('base.loading') }}
   </div>
 
-  <div v-if="useUserStore()?.uid" class="layoutBase">
+  <div v-if="user?.uid" class="layoutBase">
     <div class="grid h-full sm:grid-cols-[auto_1fr_auto]">
       <LayoutSidebar :isShow />
 

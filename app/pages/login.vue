@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import type { ToastOptions } from 'vue3-toastify'
-import { auth } from '~~/services/firebase/api'
 import UiToastContent from '~/components/ui/ToastContent.vue'
-import { useUserStore } from '~/components/user/useUser'
+
+const auth = useFirebaseAuth()!
 
 definePageMeta({
   layout: 'center',
@@ -18,9 +18,9 @@ useSeoMeta({
 const { $toast } = useNuxtApp() as unknown as { $toast: (c: any, o: any) => void }
 const route = useRoute()
 const router = useRouter()
-const userStore = useUserStore()
 
 const isLoading = ref(false)
+const user = useCurrentUser()
 
 if (route.query?.loading)
   isLoading.value = true
@@ -29,10 +29,7 @@ function signInWithGoogle() {
   router.push({ query: { loading: 'true' } })
   isLoading.value = true
 
-  const provider = new GoogleAuthProvider()
-  signInWithPopup(auth, provider).catch((e) => {
-    console.log(e.message)
-
+  signInWithPopup(auth, new GoogleAuthProvider()).catch((e) => {
     $toast(UiToastContent, {
       autoClose: 6000,
       data: {
@@ -76,16 +73,6 @@ onMounted(() => {
     setTimeout(() => (isLoading.value = false), 10000)
   }
 })
-
-watch(
-  () => userStore.uid,
-  (uid) => {
-    if (uid) {
-      router.replace('/dashboard')
-    }
-  },
-  { immediate: true },
-)
 </script>
 
 <template>
@@ -97,6 +84,8 @@ watch(
       <AppThemeSwitcher class="justify-end" />
     </div>
 
+    <pre>{{ user?.uid }}</pre>
+
     <div
       class="grid h-full items-center gap-8 overflow-hidden overflow-y-auto px-3 py-4"
     >
@@ -105,7 +94,7 @@ watch(
 
         <div class="grid min-w-[280px] gap-5 items-center px-3 py-8">
           <UiButtonBlue :disabled="isLoading" @click="signInWithGoogle">
-            {{ $t("loginWithGoogle") }}
+            {{ t("loginWithGoogle") }}
             <Transition name="fadeIn">
               <div
                 v-if="isLoading"
@@ -117,7 +106,7 @@ watch(
           </UiButtonBlue>
 
           <UiButtonBlue :disabled="isLoading" @click="signInWithGithub">
-            {{ $t("loginWithGithub") }}
+            {{ t("loginWithGithub") }}
             <Transition name="fadeIn">
               <div
                 v-if="isLoading"

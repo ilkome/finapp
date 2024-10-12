@@ -1,6 +1,4 @@
 import localforage from 'localforage'
-import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '~~/services/firebase/api'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -14,14 +12,7 @@ export function useInitApp() {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
 
-  function clearLocalData() {
-    categoriesStore.setCategories(null)
-    trnsStore.setTrns(null)
-    walletsStore.setWallets(null)
-    userStore.setUser(null)
-  }
-
-  async function loadFromCache() {
+  async function loadAppFromCache() {
     const [user, currencies, categories, wallets, trns] = await Promise.all([
       localforage.getItem('finapp.user'),
       localforage.getItem('finapp.currencies'),
@@ -30,48 +21,37 @@ export function useInitApp() {
       localforage.getItem('finapp.trns'),
     ])
 
-    userStore?.setUser(user)
-    currenciesStore?.setBase(currencies?.base)
-    currenciesStore?.setRates(currencies?.rates)
-    walletsStore?.setWallets(wallets)
-    categoriesStore?.setCategories(categories)
-    trnsStore?.setTrns(trns)
+    userStore.setUser(user)
+    currenciesStore.setBase(currencies?.base)
+    currenciesStore.setRates(currencies?.rates)
+    walletsStore.setWallets(wallets)
+    categoriesStore.setCategories(categories)
+    trnsStore.setTrns(trns)
+  }
 
-    if (categories && user && trns && wallets) {
-      if (useRoute().name === 'login')
-        navigateTo('/')
+  function clearLocalData() {
+    categoriesStore.setCategories(null)
+    trnsStore.setTrns(null)
+    walletsStore.setWallets(null)
+    userStore.setUser(null)
+  }
+
+  function loadAppFromDB() {
+    try {
+      currenciesStore.initCurrencies()
+      categoriesStore.initCategories()
+      walletsStore.initWallets()
+      trnsStore.initTrns()
+      trnsStore.uploadOfflineTrns()
+    }
+    catch (e) {
+      console.error(e)
     }
   }
 
-  function loadFromDB() {
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        clearLocalData()
-        return
-      }
-
-      try {
-        if (userStore.uid !== user.uid)
-          clearLocalData()
-
-        userStore.setUser(user)
-        currenciesStore.initCurrencies()
-        categoriesStore.initCategories()
-        walletsStore.initWallets()
-        trnsStore.initTrns()
-        trnsStore.uploadOfflineTrns()
-
-        if (useRoute().name === 'login')
-          navigateTo('/')
-      }
-      catch (e) {
-        console.error(e)
-      }
-    })
-  }
-
   return {
-    loadFromCache,
-    loadFromDB,
+    clearLocalData,
+    loadAppFromCache,
+    loadAppFromDB,
   }
 }

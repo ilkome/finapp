@@ -7,6 +7,7 @@ const props = withDefaults(defineProps<{
 })
 
 const colorMode = useColorMode()
+const { t } = useI18n()
 
 type Theme = 'system' | 'light' | 'dark'
 
@@ -45,7 +46,7 @@ function isItActive(theme: Theme) {
       :isActive="isItActive(locale.slug)"
       @click="setTheme(locale.slug)"
     >
-      {{ $t(locale.localeKey) }}
+      {{ t(locale.localeKey) }}
     </UiTabsItem2>
   </Component>
 </template>

@@ -70,7 +70,6 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     initCurrencies,
     rates,
     setBase,
-
     setRates,
     updateBase,
   }
