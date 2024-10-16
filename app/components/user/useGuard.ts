@@ -1,19 +1,22 @@
 import { useInitApp } from '~/components/app/useInitApp'
 
 export function useGuard() {
-  const router = useRouter()
   const route = useRoute()
+  const router = useRouter()
   const user = useCurrentUser()
   const localAuthUid = useCookie('finapp.localAuthUid')
   const { clearLocalData } = useInitApp()
 
   onMounted(() => {
     watch(user, (user, prevUser) => {
-      if (!localAuthUid.value || user?.uid !== localAuthUid.value) {
+      if (user?.uid && user?.uid !== localAuthUid.value) {
         clearLocalData()
       }
 
       if (user && route.path === '/login') {
+        router.push('/dashboard')
+      }
+      else if (user && route.path === '/login') {
         router.push('/dashboard')
       }
       else if (prevUser && !user) {

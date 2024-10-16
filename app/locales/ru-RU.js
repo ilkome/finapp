@@ -31,6 +31,7 @@ export default {
     duplicate: 'Дублировать',
     edit: 'Редактировать',
     filter: 'Фильтр',
+    loading: 'Загрузка...',
     no: 'Нет',
     off: 'Нет',
     ok: 'Хорошо',
@@ -40,7 +41,6 @@ export default {
     sort: 'Сортировка',
     sure: 'Ты уверен?',
     yes: 'Да',
-    loading: 'Загрузка...',
   },
 
   buttons: {
@@ -146,6 +146,10 @@ export default {
     },
   },
 
+  demo: {
+    mode: 'Режим демо',
+  },
+
   filter: {
     clear: 'Убрать',
   },
@@ -153,8 +157,8 @@ export default {
   locale: {
     toggle: 'Сменить язык',
   },
-
   loginWithGithub: 'Войти через Github',
+
   loginWithGoogle: 'Войти через Google',
 
   money: {
@@ -182,6 +186,7 @@ export default {
       isDebt: 'Долги',
       isDeposit: 'Вклады',
       isExcludeTotal: 'Не считать в общем балансе',
+      other: 'Другое',
       withCredit: 'Без учета кредита',
       withdrawal: 'Доступные',
     },

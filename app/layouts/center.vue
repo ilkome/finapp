@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { usePointerClass } from '~/components/layout/usePointerClass'
+import { useGuard } from '~/components/user/useGuard'
 
 import '~/assets/css/fullpage.css'
 import '~/assets/css/reset.css'
 import '~/assets/stylus/index.styl'
-import useGuard from '~/components/user/useGuard'
 
 const { pointerClasses } = usePointerClass()
 
@@ -22,6 +22,7 @@ useGuard()
 
 <template>
   <NuxtPwaManifest />
+
   <div class="layoutBase">
     <NuxtPage />
   </div>

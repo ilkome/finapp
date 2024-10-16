@@ -12,7 +12,7 @@ export function useInitApp() {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
 
-  async function loadAppFromCache() {
+  async function loadDataFromCache() {
     const [user, currencies, categories, wallets, trns] = await Promise.all([
       localforage.getItem('finapp.user'),
       localforage.getItem('finapp.currencies'),
@@ -36,7 +36,7 @@ export function useInitApp() {
     userStore.setUser(null)
   }
 
-  function loadAppFromDB() {
+  function loadDataFromDB() {
     try {
       currenciesStore.initCurrencies()
       categoriesStore.initCategories()
@@ -51,7 +51,7 @@ export function useInitApp() {
 
   return {
     clearLocalData,
-    loadAppFromCache,
-    loadAppFromDB,
+    loadDataFromCache,
+    loadDataFromDB,
   }
 }

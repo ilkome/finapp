@@ -31,6 +31,7 @@ export default {
     duplicate: 'Duplicate',
     edit: 'Edit',
     filter: 'Filter',
+    loading: 'Loading...',
     no: 'No',
     off: 'Off',
     ok: 'Ok',
@@ -40,7 +41,6 @@ export default {
     sort: 'Sort',
     sure: 'Are you sure?',
     yes: 'Yes',
-    loading: 'Loading...',
   },
 
   buttons: {
@@ -146,6 +146,10 @@ export default {
     },
   },
 
+  demo: {
+    mode: 'Demo mode',
+  },
+
   filter: {
     clear: 'Clear',
   },
@@ -153,10 +157,9 @@ export default {
   locale: {
     toggle: 'Toggle locale',
   },
-
   loginWithGithub: 'Login with Github',
-  loginWithGoogle: 'Login with Google',
 
+  loginWithGoogle: 'Login with Google',
   money: {
     all: 'Total',
     also: 'Also',
@@ -182,6 +185,7 @@ export default {
       isDebt: 'Debts',
       isDeposit: 'Deposit',
       isExcludeTotal: 'Do not include in total',
+      other: 'Other',
       withCredit: 'Total without credit',
       withdrawal: 'Withdrawal',
     },

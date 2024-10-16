@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import type { ToastOptions } from 'vue3-toastify'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 
@@ -18,39 +18,18 @@ useSeoMeta({
 const { $toast } = useNuxtApp() as unknown as { $toast: (c: any, o: any) => void }
 const route = useRoute()
 const router = useRouter()
-
+const isDemo = useCookie('finapp.isDemo')
 const isLoading = ref(false)
-const user = useCurrentUser()
 
 if (route.query?.loading)
   isLoading.value = true
 
 function signInWithGoogle() {
+  isDemo.value = 'false'
   router.push({ query: { loading: 'true' } })
   isLoading.value = true
 
   signInWithPopup(auth, new GoogleAuthProvider()).catch((e) => {
-    $toast(UiToastContent, {
-      autoClose: 6000,
-      data: {
-        description: e.message,
-        title: 'Error',
-      },
-      type: 'error',
-    } as ToastOptions)
-
-    isLoading.value = false
-  })
-}
-
-function signInWithGithub() {
-  router.push({ query: { loading: 'true' } })
-  isLoading.value = true
-
-  const provider = new GithubAuthProvider()
-  signInWithPopup(auth, provider).catch((e) => {
-    console.log(e.message)
-
     $toast(UiToastContent, {
       autoClose: 6000,
       data: {
@@ -73,18 +52,19 @@ onMounted(() => {
     setTimeout(() => (isLoading.value = false), 10000)
   }
 })
+
+function openDemo() {
+  isDemo.value = 'true'
+  router.push(typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard')
+}
 </script>
 
 <template>
-  <div
-    class="md_p-6 mx-auto grid h-full w-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4"
-  >
+  <div class="md_p-6 mx-auto grid h-full w-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4">
     <div class="flex flex-wrap items-start justify-between gap-2">
       <AppLocaleSwitcher />
       <AppThemeSwitcher class="justify-end" />
     </div>
-
-    <pre>{{ user?.uid }}</pre>
 
     <div
       class="grid h-full items-center gap-8 overflow-hidden overflow-y-auto px-3 py-4"
@@ -105,16 +85,8 @@ onMounted(() => {
             </Transition>
           </UiButtonBlue>
 
-          <UiButtonBlue :disabled="isLoading" @click="signInWithGithub">
-            {{ t("loginWithGithub") }}
-            <Transition name="fadeIn">
-              <div
-                v-if="isLoading"
-                class="flex-center absolute inset-0 h-full w-full bg-stone-800"
-              >
-                <UiSpinier />
-              </div>
-            </Transition>
+          <UiButtonBlue :disabled="isLoading" @click="openDemo">
+            {{ t("openDemo") }}
           </UiButtonBlue>
         </div>
       </div>
@@ -129,7 +101,9 @@ onMounted(() => {
 <i18n lang="yaml">
 en:
   title: "Login"
+  openDemo: "Open Demo"
 
 ru:
   title: "Вход"
+  openDemo: "Открыть демо"
 </i18n>

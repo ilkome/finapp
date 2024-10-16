@@ -12,7 +12,7 @@ export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
   const userStore = useUserStore()
 
-  const items = shallowRef<Wallets | null>(null)
+  const items = ref<Wallets>({})
 
   function initWallets() {
     getDataAndWatch(`users/${userStore.uid}/accounts`, (wallets: Wallets) => {

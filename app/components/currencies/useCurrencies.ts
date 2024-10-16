@@ -26,6 +26,10 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     }
   }
 
+  async function getCurrencies() {
+
+  }
+
   async function initCurrencies() {
     // User base currency in DB
     const userBaseCurrency = await getDataOnce(`users/${userStore.uid}/settings/baseCurrency`) || 'USD'
@@ -33,6 +37,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     // Rates for today
     const today = dayjs().startOf('day').valueOf()
     let ratesBasedOnUsd = await getDataOnce(`ratesUsd/history/${today}`)
+    console.log('ratesBasedOnUsd', ratesBasedOnUsd)
 
     if (!ratesBasedOnUsd) {
       ratesBasedOnUsd = await getRatesOfUSD($config.public.ratesApiKey)
@@ -67,6 +72,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
 
   return {
     base,
+    getCurrencies,
     initCurrencies,
     rates,
     setBase,

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getPreparedFormData } from '~/components/wallets/getForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import type { WalletId } from '~/components/wallets/types'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -11,8 +12,13 @@ const walletId = computed(() => route.params.id)
 const wallet = computed(() => walletsStore.items[walletId.value])
 const walletForm = ref(getPreparedFormData(wallet.value))
 
-const updateValue = (id, value) => (walletForm.value[id] = value)
-const afterSave = () => router.push(`/wallets/${walletId.value}`)
+function updateValue(id: WalletId, value: string) {
+  return (walletForm.value[id] = value)
+}
+
+function afterSave() {
+  return router.push(`/wallets/${walletId.value}`)
+}
 
 useHead({
   title: `${t('base.edit')}: ${

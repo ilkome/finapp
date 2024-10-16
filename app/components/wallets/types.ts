@@ -21,6 +21,7 @@ export type WalletItem = {
   creditLimit?: number
   currency: CurrencyCode
   description?: string
+  edited?: number // TODO: rename to editedAt
   id: WalletId
   isCash?: boolean
   isCashless?: boolean

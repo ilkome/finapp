@@ -8,16 +8,39 @@ import { useInitApp } from '~/components/app/useInitApp'
 import { usePointerClass } from '~/components/layout/usePointerClass'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useGuard } from '~/components/user/useGuard'
+import { useDemo } from '~/components/demo/useDemo'
 
+const keepalive = ['Categories', 'Wallets', 'Dashboard']
+
+const isDemo = useCookie('finapp.isDemo')
 const trnFormStore = useTrnFormStore()
-const user = useCurrentUser()
 const { isModalOpen } = useAppNav()
-const { loadAppFromCache, loadAppFromDB } = useInitApp()
+const { loadDataFromCache, loadDataFromDB } = useInitApp()
+const { loadDemoData } = useDemo()
 const { pointerClasses } = usePointerClass()
 const { t } = useI18n()
 const { width } = useWindowSize()
-
+const user = useCurrentUser()
 const isShow = computed(() => trnFormStore.ui.isShow)
+
+useGuard()
+
+const { error, status } = await useAsyncData(
+  'app',
+  async () => {
+    if (isDemo.value) {
+      await loadDemoData()
+    }
+    else if (user.value) {
+      await loadDataFromCache()
+      await loadDataFromDB()
+    }
+  },
+  {
+    lazy: true,
+    server: false,
+  },
+)
 
 useHead({
   bodyAttrs: {
@@ -28,22 +51,20 @@ useHead({
   },
   titleTemplate: (chunk?: string) => (chunk ? `${chunk} - Finapp` : 'Finapp'),
 })
-
-const keepalive = ['Categories', 'Wallets', 'Dashboard']
-
-await useGuard()
-await loadAppFromCache()
-await loadAppFromDB()
 </script>
 
 <template>
   <NuxtPwaManifest />
 
-  <div v-if="!user?.uid">
+  <div v-if="status === 'error'">
+    <pre>{{ error }}</pre>
+  </div>
+
+  <div v-else-if="status === 'pending'">
     {{ t('base.loading') }}
   </div>
 
-  <div v-if="user?.uid" class="layoutBase">
+  <div v-else-if="status === 'success'" class="layoutBase">
     <div class="grid h-full sm:grid-cols-[auto_1fr_auto]">
       <LayoutSidebar :isShow />
 

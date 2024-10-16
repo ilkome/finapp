@@ -3,7 +3,7 @@ import type { ToastOptions } from 'vue3-toastify'
 import { saveData } from '~~/services/firebase/api'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { WalletForm, WalletId } from '~/components/wallets/types'
+import type { WalletForm, WalletId, WalletItem } from '~/components/wallets/types'
 import { allColors } from '~/assets/js/colors'
 import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { generateId } from '~~/utils/generateId'
@@ -18,6 +18,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['updateValue', 'afterSave'])
+const isDemo = useCookie('finapp.isDemo')
 
 const { $toast } = useNuxtApp()
 const { t } = useI18n()
@@ -102,7 +103,13 @@ async function onSave() {
 
   const uid = userStore.uid
   // Prepare data and remove empty values
-  const values = Object.fromEntries(Object.entries(getPreparedFormData(walletForm.value)).filter(([,v]) => v))
+  const values: WalletItem = Object.fromEntries(Object.entries(getPreparedFormData(walletForm.value)).filter(([,v]) => v))
+
+  if (isDemo.value) {
+    walletsStore.items[generateId()] = values
+    emit('afterSave')
+    return
+  }
 
   // Set default currency based on first created wallet
   if (!walletsStore.hasItems)

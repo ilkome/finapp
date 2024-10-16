@@ -122,158 +122,205 @@ async function onSave() {
 }
 </script>
 
-<template lang="pug">
-div
-  .sticky.z-20.backdrop-blur(
-    class="top-[60px] bg-foreground-1"
-  )
-    .px-2
-      UiTabs
-        UiTabsItem.md_text-lg(
-          v-for="tab in tabs"
-          :key="tab.id"
-          :isActive="activeTab === tab.id"
-          @click="activeTab = tab.id"
-        ) {{ tab.name }}
+<template>
+  <div>
+    <div class="sticky z-20 backdrop-blur top-[60px] bg-foreground-1">
+      <div class="px-2">
+        <UiTabs>
+          <UiTabsItem
+            v-for="tab in tabs"
+            :key="tab.id"
+            :isActive="activeTab === tab.id"
+            class="md_text-lg"
+            @click="activeTab = tab.id"
+          >
+            {{ tab.name }}
+          </UiTabsItem>
+        </UiTabs>
+      </div>
+    </div>
 
-  //- Content
-  //-----------------------------------
-  .pt-8.px-2.max-w-md
-    //- Data
-    //-----------------------------------
-    template(v-if="activeTab === 'data'")
-      .mb-4
-        .pb-2.text-item-2.text-sm.leading-none {{ $t('wallets.form.name.label') }}
-        input.w-full.m-0.py-3.px-4.rounded-lg.text-base.font-normal.text-item-base.bg-item-4.border.border-solid.border-item-5.placeholder_text-item-2.transition.ease-in-out.focus_text-item-1.focus_bg-item-5.focus_border-accent-4.focus_outline-none(
-          :placeholder="$t('categories.form.name.placeholder')"
-          :value="categoryForm.name"
-          type="text"
-          @input="event => emit('updateValue', 'name', event.target.value)"
-        )
+    <!-- Content -->
+    <!-- ----------------------------------- -->
+    <div class="pt-8 px-2 max-w-md">
+      <!-- Data -->
+      <!-- ----------------------------------- -->
+      <template v-if="activeTab === 'data'">
+        <div class="mb-4">
+          <div class="pb-2 text-item-2 text-sm leading-none">
+            {{ $t('wallets.form.name.label') }}
+          </div>
+          <input
+            class="w-full m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder_text-item-2 transition ease-in-out focus_text-item-1 focus_bg-item-5 focus_border-accent-4 focus_outline-none"
+            :placeholder="$t('categories.form.name.placeholder')"
+            :value="categoryForm.name"
+            type="text"
+            @input="event => emit('updateValue', 'name', event.target.value)"
+          >
+        </div>
 
-      LazyUiCheckbox(
-        v-if="categoriesStore.getChildsIds(categoryId).length > 0 "
-        :checkboxValue="isUpdateChildCategoriesColor"
-        :title="$t('categories.form.childColor')"
-        @onClick="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
-      )
-      LazyUiCheckbox(
-        v-if="categoriesStore.getChildsIds(categoryId).length === 0"
-        :checkboxValue="categoryForm.showInLastUsed"
-        :title="$t('categories.form.lastUsed')"
-        @onClick="categoryForm.showInLastUsed = !categoryForm.showInLastUsed"
-      )
-      UiCheckbox(
-        v-if="categoriesStore.getChildsIds(categoryId).length === 0"
-        :checkboxValue="categoryForm.showInQuickSelector"
-        :title="$t('categories.form.quickSelector')"
-        @onClick="categoryForm.showInQuickSelector = !categoryForm.showInQuickSelector"
-      )
+        <LazyUiCheckbox
+          v-if="categoriesStore.getChildsIds(categoryId).length > 0"
+          :checkboxValue="isUpdateChildCategoriesColor"
+          :title="$t('categories.form.childColor')"
+          @onClick="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
+        />
+        <LazyUiCheckbox
+          v-if="categoriesStore.getChildsIds(categoryId).length === 0"
+          :checkboxValue="categoryForm.showInLastUsed"
+          :title="$t('categories.form.lastUsed')"
+          @onClick="categoryForm.showInLastUsed = !categoryForm.showInLastUsed"
+        />
+        <UiCheckbox
+          v-if="categoriesStore.getChildsIds(categoryId).length === 0"
+          :checkboxValue="categoryForm.showInQuickSelector"
+          :title="$t('categories.form.quickSelector')"
+          @onClick="categoryForm.showInQuickSelector = !categoryForm.showInQuickSelector"
+        />
+      </template>
 
-    //- Colors
-    //---------------------------------
-    template(v-if="activeTab === 'colors'")
-      .pb-4
-        //- Tailwind
-        .pb-12
-          .pb-1(
-            v-for="(colorsGroup, groupIdx) in colorsTailwind"
-            :key="groupIdx"
-          )
-            .colors(
-              class="!grid-cols-11"
-            )
-              template(v-for="(color, idx) in colorsGroup")
-                .iconItem(
-                  v-if="+idx !== 50 && +idx !== 100 && +idx !== 200 && +idx !== 300 && +idx !== 950"
-                  :class="{ _active: color === categoryForm.color, 'pointer-events-none': !color }"
+      <!-- Colors -->
+      <!-- --------------------------------- -->
+      <template v-if="activeTab === 'colors'">
+        <div class="pb-4">
+          <!-- Tailwind -->
+          <div class="pb-12">
+            <div
+              v-for="(colorsGroup, groupIdx) in colorsTailwind"
+              :key="groupIdx"
+              class="pb-1"
+            >
+              <div class="colors !grid-cols-11">
+                <template v-for="(color, idx) in colorsGroup">
+                  <div
+                    v-if="+idx !== 50 && +idx !== 100 && +idx !== 200 && +idx !== 300 && +idx !== 950"
+                    class="iconItem !size-9" :class="[{ '_active': color === categoryForm.color, 'pointer-events-none': !color }]"
+                    :style="{ background: color === categoryForm.color ? color : 'transparent' }"
+                    @click="emit('updateValue', 'color', color)"
+                  >
+                    <template v-if="findCategoryIconByColor(color)">
+                      <UiIconBase
+                        :name="color === categoryForm.color ? categoryForm.icon : findCategoryIconByColor(color)"
+                        :color="color"
+                      />
+                    </template>
+                    <template v-else-if="color === categoryForm.color">
+                      <UiIconBase
+                        :name="categoryForm.icon"
+                        color="transparent"
+                      />
+                    </template>
+                    <template v-else-if="color">
+                      <div class="colorPreview" :style="{ background: color }" />
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Hidden Colors -->
+            <div
+              v-for="(colorsGroup, groupIdx) in allColors"
+              :key="groupIdx"
+              class="pb-1 hidden"
+            >
+              <div class="colors">
+                <div
+                  v-for="(color, idx) in colorsGroup"
+                  :key="idx"
+                  class="iconItem" :class="[{ '_active': color === categoryForm.color, 'pointer-events-none': !color }]"
                   :style="{ background: color === categoryForm.color ? color : 'transparent' }"
-                  class="!size-9"
                   @click="emit('updateValue', 'color', color)"
-                )
-                  template(v-if="findCategoryIconByColor(color)")
-                    UiIconBase(
+                >
+                  <template v-if="findCategoryIconByColor(color)">
+                    <UiIconBase
                       :name="color === categoryForm.color ? categoryForm.icon : findCategoryIconByColor(color)"
                       :color="color"
-                    )
-                  template(v-else-if="color === categoryForm.color")
-                    UiIconBase(
+                    />
+                  </template>
+                  <template v-else-if="color === categoryForm.color">
+                    <UiIconBase
                       :name="categoryForm.icon"
                       color="transparent"
-                    )
-                  template(v-else-if="color")
-                    .colorPreview(:style="{ background: color }")
+                    />
+                  </template>
+                  <template v-else-if="color">
+                    <div class="colorPreview" :style="{ background: color }" />
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        .pb-1(
-          v-for="(colorsGroup, groupIdx) in allColors"
-          :key="groupIdx"
-          class="hidden"
-        )
-          .colors
-            .iconItem(
-              v-for="(color, idx) in colorsGroup"
-              :key="idx"
-              :class="{ _active: color === categoryForm.color, 'pointer-events-none': !color }"
-              :style="{ background: color === categoryForm.color ? color : 'transparent' }"
-              @click="emit('updateValue', 'color', color)"
-            )
-              template(v-if="findCategoryIconByColor(color)")
-                UiIconBase(
-                  :name="color === categoryForm.color ? categoryForm.icon : findCategoryIconByColor(color)"
-                  :color="color"
-                )
-              template(v-else-if="color === categoryForm.color")
-                UiIconBase(
-                  :name="categoryForm.icon"
-                  color="transparent"
-                )
-              template(v-else-if="color")
-                .colorPreview(:style="{ background: color }")
+          <div class="pb-2 text-sm text-item-2">
+            {{ $t('wallets.form.colors.custom') }}
+          </div>
+          <input
+            v-model="categoryForm.color"
+            class="cursor-pointer w-full h-12 p-0 border-0"
+            type="color"
+          >
+        </div>
+      </template>
 
-      .pb-2.text-sm.text-item-2 {{ $t('wallets.form.colors.custom') }}
-      input.cursor-pointer.w-full.h-12.p-0.border-0(v-model="categoryForm.color" type="color")
+      <!-- Parent -->
+      <!-- --------------------------------- -->
+      <template v-if="activeTab === 'parent'">
+        <template v-if="!isAllowChangeParent">
+          <!-- TODO: translate -->
+          <div class="p-4">
+            You can not change parent category because edited category has child categories.
+          </div>
+        </template>
+        <template v-else>
+          <div
+            class="cursor-pointer mb-4 py-3 px-2 gap-x-3 flex-center rounded-md text-center bg-item-4 hocus_bg-item-5"
+            :class="{ '!bg-item-3': categoryForm.parentId === 0 }"
+            @click="emit('updateValue', 'parentId', 0)"
+          >
+            {{ $t('categories.form.parent.no') }}
+          </div>
+          <CategoriesList
+            :activeItemId="categoryForm.parentId"
+            :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
+            :slider="() => ({})"
+            class="!gap-x-1"
+            @click="onParentSelect"
+          />
+        </template>
+      </template>
 
-    //- Parent
-    //---------------------------------
-    template(v-if="activeTab === 'parent'")
-      template(v-if="!isAllowChangeParent")
-        //- TODO: translate
-        .p-4 You can not change parent category because edited category has childs categories.
+      <!-- Icon -->
+      <!-- --------------------------------- -->
+      <template v-if="activeTab === 'icon'">
+        <div
+          v-for="iconGroup in icons"
+          class="flex flex-wrap pb-8 gap-3"
+        >
+          <div
+            v-for="icon in iconGroup"
+            :key="icon"
+            class="cursor-pointer w-10 h-10 rounded-full flex-center border-2 border-transparent" :class="[{ 'border-accent-2': icon === categoryForm.icon }]"
+            :style="{ background: categoryForm.color }"
+            @click="emit('updateValue', 'icon', icon)"
+          >
+            <div class="text-2xl text-icon-primary" :class="[icon]" />
+          </div>
+        </div>
+      </template>
 
-      template(v-if="isAllowChangeParent")
-        .cursor-pointer.mb-4.py-3.px-2.gap-x-3.flex-center.rounded-md.text-center.bg-item-4.hocus_bg-item-5(
-          :class="{ '!bg-item-3': categoryForm.parentId === 0 }"
-          @click="emit('updateValue', 'parentId', 0)"
-        ) {{ $t('categories.form.parent.no') }}
-
-        CategoriesList(
-          :activeItemId="categoryForm.parentId"
-          :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
-          :slider="() => ({})"
-          class="!gap-x-1"
-          @click="onParentSelect"
-        )
-
-    //- Icon
-    //---------------------------------
-    template(v-if="activeTab === 'icon'")
-      .flex.flex-wrap.pb-8.gap-3(v-for="iconGroup in icons")
-        .cursor-pointer.w-10.h-10.rounded-full.flex-center.border-2.border-transparent(
-          v-for="icon in iconGroup"
-          :key="icon"
-          :class="{ 'border-accent-2': icon === categoryForm.icon }"
-          :style="{ background: categoryForm.color }"
-          @click="emit('updateValue', 'icon', icon)"
-        )
-          .text-2xl.text-icon-primary(:class="icon")
-
-    //- Save
-    //---------------------------------
-    .pt-4.pb-6.flex-center
-      UiButtonBlue(
-        maxWidth
-        @click="onSave"
-      ) {{ $t('base.save') }}
+      <!-- Save -->
+      <!-- --------------------------------- -->
+      <div class="pt-4 pb-6 flex-center">
+        <UiButtonBlue
+          maxWidth
+          @click="onSave"
+        >
+          {{ $t('base.save') }}
+        </UiButtonBlue>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="stylus" scoped>
