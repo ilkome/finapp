@@ -32,11 +32,11 @@ const isShowBaseCurrencyModal = ref(false)
 const currencyFiltered = useStorage('finapp-wallets-active-currency', 'all')
 const activeType = useStorage<WalletTypeViewAll>(
   'finapp-wallets-active-type',
-  'all'
+  'all',
 )
 const gropedBy = useStorage<'list' | 'currencies' | 'type'>(
   'finapp-wallets-groupedBy',
-  'list'
+  'list',
 )
 
 function setActiveType(v: WalletTypeViewAll) {
@@ -49,12 +49,14 @@ const selectedWallets = computed(() => {
 
   return Object.fromEntries(
     Object.entries(walletsStore.sortedItems).filter(([_key, wallet]) => {
-      const isCurrencyMatch =
-        currencyFiltered.value === 'all' ||
-        currencyFiltered.value === wallet.currency
-      if (!isCurrencyMatch) return false
+      const isCurrencyMatch
+        = currencyFiltered.value === 'all'
+        || currencyFiltered.value === wallet.currency
+      if (!isCurrencyMatch)
+        return false
 
-      if (activeType.value === 'all') return true
+      if (activeType.value === 'all')
+        return true
 
       const typeChecks: WalletTypesView = {
         creditPossible: !!wallet.creditLimit,
@@ -68,14 +70,15 @@ const selectedWallets = computed(() => {
       }
 
       return typeChecks[activeType.value]
-    })
+    }),
   )
 })
 
 const isShowCurrencyFilter = ref(false)
 
 function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
-  if (currencyFiltered.value === code && toggle) toggle()
+  if (currencyFiltered.value === code && toggle)
+    toggle()
 
   activeType.value = 'all'
   currencyFiltered.value = code
@@ -87,15 +90,16 @@ const groupedWalletsByCurrency = computed(() =>
     (acc, currency) => {
       acc[currency] = walletsStore.sortedIds.filter((id) => {
         const wallet = walletsStore.items?.[id]
-        if (!wallet) return false
+        if (!wallet)
+          return false
 
         const isArchived = currency !== 'archived' && wallet.archived
         return wallet?.currency === currency && !isArchived
       })
       return acc
     },
-    {} as Record<CurrencyCode, WalletId[]>
-  )
+    {} as Record<CurrencyCode, WalletId[]>,
+  ),
 )
 
 const groupedWalletsByType = computed(() =>
@@ -104,10 +108,11 @@ const groupedWalletsByType = computed(() =>
       acc[type] = walletsStore.sortedIds.filter((id) => {
         const wallet = walletsStore.items?.[id]
 
-        if (!wallet) return false
+        if (!wallet)
+          return false
 
-        const isCurrencyFiltered =
-          currencyFiltered.value === 'all'
+        const isCurrencyFiltered
+          = currencyFiltered.value === 'all'
             ? true
             : wallet?.currency === currencyFiltered.value
 
@@ -122,8 +127,8 @@ const groupedWalletsByType = computed(() =>
 
       return acc
     },
-    {} as Record<CurrencyCode, WalletId[]>
-  )
+    {} as Record<CurrencyCode, WalletId[]>,
+  ),
 )
 
 const totalInWallets = computed(() => {
@@ -140,10 +145,11 @@ const totalInWallets = computed(() => {
 
   for (const walletId in walletsStore.sortedItems) {
     const wallet = walletsStore.sortedItems[walletId]
-    if (!wallet) continue
+    if (!wallet)
+      continue
 
-    const itemValue =
-      wallet.currency === currenciesStore.base
+    const itemValue
+      = wallet.currency === currenciesStore.base
         ? (walletsStore.totals[walletId] ?? 0)
         : +getAmountInBaseRate({
             amount: walletsStore.totals[walletId] ?? 0,
@@ -155,27 +161,33 @@ const totalInWallets = computed(() => {
       sum.total += itemValue
     }
 
-    if (wallet.isCash) sum.isCash += itemValue
+    if (wallet.isCash)
+      sum.isCash += itemValue
 
-    if (wallet.isCashless) sum.isCashless += itemValue
+    if (wallet.isCashless)
+      sum.isCashless += itemValue
 
     if (wallet.creditLimit) {
-      sum.creditPossible =
-        sum.creditPossible +
-        +getAmountInBaseRate({
+      sum.creditPossible
+        = sum.creditPossible
+        + +getAmountInBaseRate({
           amount: wallet.creditLimit ?? 0,
           currencyCode: wallet.currency ?? 'USD',
           noFormat: true,
         })
     }
 
-    if (wallet.isDeposit) sum.isDeposit += itemValue
+    if (wallet.isDeposit)
+      sum.isDeposit += itemValue
 
-    if (wallet.isDebt) sum.isDebt += itemValue
+    if (wallet.isDebt)
+      sum.isDebt += itemValue
 
-    if (wallet.withdrawal) sum.withdrawal += itemValue
+    if (wallet.withdrawal)
+      sum.withdrawal += itemValue
 
-    if (wallet.isCredit) sum.credits += itemValue
+    if (wallet.isCredit)
+      sum.credits += itemValue
   }
 
   return sum
@@ -183,14 +195,22 @@ const totalInWallets = computed(() => {
 
 function groupByWalletType(id: WalletId) {
   const wallet = walletsStore.items?.[id]
-  if (!wallet) return
-  if (wallet.isCash) return 'isCash'
-  if (wallet.isDeposit) return 'isDeposit'
-  if (wallet.isCredit) return 'isCredit'
-  if (wallet.isCredit) return 'isCredit'
-  if (wallet.isCashless) return 'isCashless'
-  if (wallet.isDebt) return 'isDebt'
-  if (checkIsAvailable(wallet) && !wallet.archived) return 'available'
+  if (!wallet)
+    return
+  if (wallet.isCash)
+    return 'isCash'
+  if (wallet.isDeposit)
+    return 'isDeposit'
+  if (wallet.isCredit)
+    return 'isCredit'
+  if (wallet.isCredit)
+    return 'isCredit'
+  if (wallet.isCashless)
+    return 'isCashless'
+  if (wallet.isDebt)
+    return 'isDebt'
+  if (checkIsAvailable(wallet) && !wallet.archived)
+    return 'available'
 
   return 'other'
 }
@@ -203,16 +223,17 @@ function groupByWalletCurrency(id: WalletId) {
 function countWalletsSum(
   walletsIds: WalletId[],
   isConvert = true,
-  isExcludeTotal = false
+  isExcludeTotal = false,
 ) {
   return walletsIds.reduce((acc, id) => {
     const wallet = walletsStore.sortedItems[id]
-    if (!wallet) return acc
+    if (!wallet)
+      return acc
 
     if (isConvert) {
       return (
-        acc +
-        +getAmountInBaseRate({
+        acc
+        + +getAmountInBaseRate({
           amount: wallet.amount,
           currencyCode: wallet.currency,
           noFormat: true,
@@ -220,7 +241,8 @@ function countWalletsSum(
       )
     }
 
-    if (isExcludeTotal && wallet.isExcludeTotal) return acc
+    if (isExcludeTotal && wallet.isExcludeTotal)
+      return acc
     return acc + wallet.amount
   }, 0)
 }
@@ -234,9 +256,9 @@ const counts = computed(() => ({
     id: 'all',
     isShow: true,
     value:
-      totalInWallets.value.total -
-      totalInWallets.value.credits -
-      totalInWallets.value.isDebt,
+      totalInWallets.value.total
+      - totalInWallets.value.credits
+      - totalInWallets.value.isDebt,
   },
   withdrawal: {
     icon: 'UiIconWalletWithdrawal',
@@ -433,7 +455,7 @@ const counts = computed(() => ({
             <UiToggle2
               v-for="(groupedWalletsIds, grouped) in groupBy(
                 walletsIds,
-                groupByWalletType
+                groupByWalletType,
               )"
               :key="grouped"
               class="ml-3 border-l border-item-5 pl-2"
@@ -502,7 +524,7 @@ const counts = computed(() => ({
             <UiToggle2
               v-for="(groupedWalletsIds, currency) in groupBy(
                 walletsIds,
-                groupByWalletCurrency
+                groupByWalletCurrency,
               )"
               :key="currency"
               class="ml-3 border-l border-item-5 pl-2"
@@ -549,7 +571,10 @@ const counts = computed(() => ({
         </template>
 
         <!-- List -->
-        <div v-if="gropedBy === 'list'" class="md:max-w-md">
+        <div
+          v-if="gropedBy === 'list'"
+          class="md:max-w-md"
+        >
           <WalletsItem
             v-for="(walletItem, walletId) in selectedWallets"
             :key="walletId"

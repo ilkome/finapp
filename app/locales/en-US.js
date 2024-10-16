@@ -147,7 +147,9 @@ export default {
   },
 
   demo: {
-    mode: 'Demo mode',
+    mode: {
+      exit: 'Exit demo mode',
+    },
   },
 
   filter: {
@@ -174,6 +176,7 @@ export default {
     expense: 'Expense',
     income: 'Income',
     netIncome: 'Net income',
+    sum: 'Total',
     totals: {
       all: 'Total',
       archived: 'Archived',

@@ -21,6 +21,7 @@ export const useUserStore = defineStore('user', () => {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
   const { closeAllModals } = useAppNav()
+  const isDemo = useCookie('finapp.isDemo')
 
   const user = ref<User | null>(currentUser.value || null)
   const isDevUser = computed(() => !!$config.public.ratesApiKey.includes(user.value?.email ?? ''))
@@ -42,8 +43,16 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function signOut() {
+    closeAllModals()
+
+    if (isDemo.value) {
+      isDemo.value = 'false'
+      localStorage.clear()
+      window.location.href = '/login'
+      return
+    }
+
     try {
-      closeAllModals()
       trnsStore.unsubscribeTrns(null)
       categoriesStore.unsubscribeCategories(null)
       walletsStore.unsubscribeWallets()

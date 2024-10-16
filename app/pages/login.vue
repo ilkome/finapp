@@ -73,7 +73,7 @@ function openDemo() {
         <UiLogo class="!text-5xl !font-extrabold pb-6" />
 
         <div class="grid min-w-[280px] gap-5 items-center px-3 py-8">
-          <UiButtonBlue :disabled="isLoading" @click="signInWithGoogle">
+          <!-- <UiButtonBlue :disabled="isLoading" @click="signInWithGoogle">
             {{ t("loginWithGoogle") }}
             <Transition name="fadeIn">
               <div
@@ -83,11 +83,31 @@ function openDemo() {
                 <UiSpinier />
               </div>
             </Transition>
-          </UiButtonBlue>
+          </UiButtonBlue> -->
 
-          <UiButtonBlue :disabled="isLoading" @click="openDemo">
+          <UButton
+            :ui="{ rounded: 'rounded-full' }"
+            :loading="isLoading"
+            color="blue"
+            class="transition-all duration-150 ease-in-out"
+            block
+            size="lg"
+            @click="signInWithGoogle"
+          >
+            {{ t("loginWithGoogle") }}
+          </UButton>
+
+          <UButton
+            :ui="{ rounded: 'rounded-full' }"
+            variant="soft"
+            color="blue"
+            class="transition-all duration-150 ease-in-out"
+            block
+            size="lg"
+            @click="openDemo"
+          >
             {{ t("openDemo") }}
-          </UiButtonBlue>
+          </UButton>
         </div>
       </div>
     </div>

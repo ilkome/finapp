@@ -5,8 +5,6 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategories'
 import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import useTrn from '~/components/trns/useTrn'
-import { getStyles } from '~/components/ui/getStyles'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = withDefaults(defineProps<{
@@ -20,7 +18,6 @@ const trnFormStore = useTrnFormStore()
 const walletsStore = useWalletsStore()
 const { width } = useWindowSize()
 const { pointerType } = usePointer()
-const { formatTrnItem } = useTrn()
 
 const isLaptop = computed(() => width.value >= 1024 && pointerType.value === 'mouse')
 
@@ -37,10 +34,6 @@ function show(slide: number) {
   initialSlide.value = slide
 }
 
-/**
- *
- *
- */
 const trnsStore = useTrnsStore()
 const { trnFormDuplicate } = useTrnForm()
 const showModalConfirm = ref(false)
@@ -114,7 +107,7 @@ const items2 = computed(() => ({
       class="pb-2"
     >
       <TrnsItem
-        :trnItem="formatTrnItem(trnFormStore.values.trnId)"
+        :trnItem="trnsStore.computeTrnItem(trnFormStore.values.trnId)"
         class="group bg-item-4 rounded-lg !py-1"
         @click="trnFormStore.values.trnId = null"
       />

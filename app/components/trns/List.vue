@@ -3,9 +3,7 @@ import dayjs from 'dayjs'
 import type { MoneyTypeNumber } from '~/components/stat/types'
 import type { TrnId, TrnType } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
-import useTrn from '~/components/trns/useTrn'
 import { formatDate } from '~/components/date/format'
-import { getStyles } from '~/components/ui/getStyles'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -31,22 +29,12 @@ const props = withDefaults(
 
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
-const { formatTrnItem } = useTrn()
 const { getTotalOfTrnsIds } = useAmount()
 const { t } = useI18n()
 
 const isShowWithDesc = ref(false)
 const filterBy = ref(props.initTrnType)
 const pageNumber = ref(1)
-
-watch(
-  () => props.trnsIds,
-  () => {
-    // pageNumber.value = 1
-    // isShowWithDesc.value = false
-    // filterBy.value = props.initTrnType
-  },
-)
 
 const typeFilters = computed(() => ({
   sum: {
@@ -208,9 +196,9 @@ const groupedTrns = computed(() => {
         v-for="trnId in paginatedTrnsIds"
         :key="trnId"
         :alt="props.alt"
-        :date="formatDate(formatTrnItem(trnId)?.date, 'trnItem')"
+        :date="formatDate(trnsStore.computeTrnItem(trnId)?.date, 'trnItem')"
         :trnId="trnId"
-        :trnItem="formatTrnItem(trnId)"
+        :trnItem="trnsStore.computeTrnItem(trnId)"
         class="group"
       />
     </div>
@@ -267,8 +255,8 @@ const groupedTrns = computed(() => {
             :key="trnId"
             :alt="props.alt"
             :trnId="trnId"
-            :trnItem="formatTrnItem(trnId)"
-            :date="formatDate(formatTrnItem(trnId)?.date, 'trnItem')"
+            :trnItem="trnsStore.computeTrnItem(trnId)"
+            :date="formatDate(trnsStore.computeTrnItem(trnId)?.date, 'trnItem')"
             class="group"
           />
         </div>

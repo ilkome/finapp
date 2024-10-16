@@ -75,7 +75,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
             :wallet
             alt
             insideClasses="bg-item-4 min-w-16"
-            @onClick="filteredWallets.includes(`${walletId}`) ? filteredWallets = filteredWallets.filter(id => id !== `${walletId}`) : filteredWallets.push(`${walletId}`)"
+            @click="filteredWallets.includes(`${walletId}`) ? filteredWallets = filteredWallets.filter(id => id !== `${walletId}`) : filteredWallets.push(`${walletId}`)"
           />
         </WalletsList>
       </div>

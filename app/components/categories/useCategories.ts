@@ -64,7 +64,7 @@ export const useCategoriesStore = defineStore('categories', () => {
       return []
 
     return categoriesRootIds.value.filter((id: CategoryId) => {
-      const hasTrnsInCategory = Object.values(trnsStore.items).some(
+      const hasTrnsInCategory = Object.values(trnsStore.items ?? {}).some(
         trn => trn.categoryId === id,
       )
 
@@ -155,58 +155,62 @@ export const useCategoriesStore = defineStore('categories', () => {
   /**
    * Methods
    */
+  function formatCategories(items: Categories) {
+    const formattedItems = { ...items }
+
+    // Add child categories to root categories
+    for (const categoryId in formattedItems) {
+      const parentCategoryId = formattedItems[categoryId]?.parentId
+      if (parentCategoryId !== 0 && parentCategoryId && formattedItems[parentCategoryId]) {
+        if (formattedItems[parentCategoryId]?.childIds && !formattedItems[parentCategoryId]?.childIds?.includes(categoryId)) {
+          formattedItems[parentCategoryId]?.childIds?.push(categoryId)
+        }
+        else if (parentCategoryId && formattedItems[parentCategoryId]) {
+          formattedItems[parentCategoryId].childIds = [categoryId]
+        }
+      }
+    }
+
+    // Add missing props
+    for (const categoryId in formattedItems) {
+      const cat = formattedItems[categoryId]!
+
+      if (cat.showInLastUsed === undefined) {
+        formattedItems[categoryId] = {
+          ...cat,
+          showInLastUsed: false,
+        }
+      }
+
+      if (cat.showInQuickSelector === undefined) {
+        formattedItems[categoryId] = {
+          ...cat,
+          showInQuickSelector: false,
+        }
+      }
+
+      if (cat && cat.childIds) {
+        formattedItems[categoryId] = cat
+
+        for (const childCatId of cat.childIds) {
+          if (!formattedItems[childCatId]) {
+            formattedItems[categoryId].childIds = formattedItems[categoryId].childIds?.filter(
+              id => id !== childCatId,
+            )
+          }
+        }
+      }
+    }
+
+    return formattedItems
+  }
+
   function initCategories() {
     const userStore = useUserStore()
 
     getDataAndWatch(
       `users/${userStore.uid}/categories`,
-      (items: Categories) => {
-        // Add child categories to root categories
-        for (const categoryId in items) {
-          const parentCategoryId = items[categoryId]?.parentId
-          if (parentCategoryId !== 0 && parentCategoryId && items[parentCategoryId]) {
-            if (items[parentCategoryId]?.childIds && !items[parentCategoryId]?.childIds?.includes(categoryId)) {
-              items[parentCategoryId]?.childIds?.push(categoryId)
-            }
-            else if (parentCategoryId && items[parentCategoryId]) {
-              items[parentCategoryId].childIds = [categoryId]
-            }
-          }
-        }
-
-        // Add missing props
-        for (const categoryId in items) {
-          const cat = items[categoryId]!
-
-          if (cat.showInLastUsed === undefined) {
-            items[categoryId] = {
-              ...cat,
-              showInLastUsed: false,
-            }
-          }
-
-          if (cat.showInQuickSelector === undefined) {
-            items[categoryId] = {
-              ...cat,
-              showInQuickSelector: false,
-            }
-          }
-
-          if (cat && cat.childIds) {
-            items[categoryId] = cat
-
-            for (const childCatId of cat.childIds) {
-              if (!items[childCatId]) {
-                items[categoryId].childIds = items[categoryId].childIds?.filter(
-                  id => id !== childCatId,
-                )
-              }
-            }
-          }
-        }
-
-        setCategories(items)
-      },
+      (items: Categories) => formatCategories(items),
     )
   }
 
@@ -216,7 +220,7 @@ export const useCategoriesStore = defineStore('categories', () => {
       localforage.setItem('finapp.categories', null)
     }
 
-    const valuesWithTransfer = { ...values, transfer }
+    const valuesWithTransfer = { ...values }
     items.value = valuesWithTransfer
     localforage.setItem('finapp.categories', deepUnref(valuesWithTransfer))
   }
@@ -266,25 +270,35 @@ export const useCategoriesStore = defineStore('categories', () => {
     return getTransactibleCategoriesIds(ids, items.value)
   }
 
+  function getTransactibleIds2() {
+    return Object.entries(items.value ?? {}).reduce((acc, [id, category]) => {
+      if (category.childIds)
+        acc.push(...category.childIds)
+      else if (!acc.find(i => i !== id))
+        acc.push(id)
+      return acc
+    }, [] as CategoryId[])
+  }
+
   return {
     categoriesForBeParent,
     categoriesIds,
     categoriesIdsForTrnValues,
     categoriesRootIds,
     favoriteCategoriesIds,
+    formatCategories,
     getChildsIds,
     getChildsIdsOrParent,
     getTransactibleIds,
+    getTransactibleIds2,
     hasCategories,
     hasChildren,
-
     initCategories,
     items,
     recentCategoriesIds,
     saveCategoriesOrder,
     setCategories,
     transferCategoriesIds,
-
     unsubscribeCategories,
   }
 })

@@ -147,7 +147,9 @@ export default {
   },
 
   demo: {
-    mode: 'Режим демо',
+    mode: {
+      exit: 'Выйти из демо режима',
+    },
   },
 
   filter: {
@@ -175,6 +177,7 @@ export default {
     expense: 'Расход',
     income: 'Доход',
     netIncome: 'Баланс',
+    sum: 'Сумма',
     totals: {
       all: 'Всего',
       archived: 'Скрытые',

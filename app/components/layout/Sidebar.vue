@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
 import type { WalletId } from '~/components/wallets/types'
-
-const colorMode = useColorMode()
+import { useUserStore } from '~/components/user/useUser'
 
 const props = defineProps<{
   isShow?: boolean
 }>()
 
+const userStore = useUserStore()
+const colorMode = useColorMode()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
+const isDemo = useCookie('finapp.isDemo')
 </script>
 
 <template>
@@ -19,7 +21,7 @@ const { t } = useI18n()
     class="hidden h-full min-w-72 content-start gap-6 overflow-hidden overflow-y-auto bg-foreground-3 lg:grid"
   >
     <div class="flex items-center justify-between pl-4 pr-2 pt-5">
-      <NuxtLink to="/dashboard">
+      <NuxtLink to="/dashboard" class="cursor-default">
         <UiLogo class="w-16" />
       </NuxtLink>
 
@@ -27,8 +29,8 @@ const { t } = useI18n()
         :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
         @click="
           () =>
-            (colorMode.preference =
-              colorMode.preference === 'dark' ? 'light' : 'dark')
+            (colorMode.preference
+              = colorMode.preference === 'dark' ? 'light' : 'dark')
         "
       >
         <Icon
@@ -42,6 +44,17 @@ const { t } = useI18n()
           size="18"
         />
       </div>
+    </div>
+
+    <div
+      v-if="isDemo"
+      class="px-4"
+    >
+      <UiButtonBlue
+        @click="userStore.signOut"
+      >
+        {{ t('demo.mode.exit') }}
+      </UiButtonBlue>
     </div>
 
     <LayoutMenuSidebar class="px-2" />

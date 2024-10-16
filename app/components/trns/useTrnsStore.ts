@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import type { Range } from '~/components/date/types'
-import type { TrnId, TrnItem, Trns, TrnsGetterProps } from '~/components/trns/types'
+import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps } from '~/components/trns/types'
 import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { removeTrnToAddLaterLocal, removeTrnToDeleteLaterLocal, saveTrnIDforDeleteWhenClientOnline, saveTrnToAddLaterLocal } from '~/components/trns/helpers'
@@ -17,7 +17,8 @@ type TrnsGetterParams = {
 export const useTrnsStore = defineStore('trns', () => {
   const userStore = useUserStore()
   const categoriesStore = useCategoriesStore()
-
+  const trnsStore = useTrnsStore()
+  const walletsStore = useWalletsStore()
   const items = shallowRef<Trns | null>(null)
 
   function getStoreTrnsIds(props: TrnsGetterProps, params?: TrnsGetterParams) {
@@ -195,8 +196,71 @@ export const useTrnsStore = defineStore('trns', () => {
     isShownModal.value = false
   }
 
+  function computeTrnItem(id: TrnId): TrnItemFull | string {
+    if (!trnsStore?.items || !walletsStore?.items || !categoriesStore?.items)
+      return 'Something missing'
+
+    // Trn
+    const trn = trnsStore.items[id]
+    if (!trn)
+      return 'Trn not found'
+
+    // Category
+    const category = categoriesStore.items[trn.categoryId]
+    if (!category)
+      return 'Category not found'
+
+    // Parent category
+    let categoryParent
+    if (category.parentId) {
+      categoryParent = categoriesStore.items[category.parentId]
+      if (!categoryParent)
+        return 'Parent Category not found'
+    }
+
+    // Transaction
+    if (trn.type !== 2) {
+      // Wallet
+      const wallet = walletsStore.items[trn.walletId]
+      if (!wallet)
+        return 'Wallet not found'
+
+      return {
+        id,
+        ...trn,
+        category,
+        categoryParent,
+        wallet,
+      }
+    }
+
+    if (trn.type === 2) {
+      const expenseWalletId = trn.expenseWalletId || trn.walletFromId
+      const expenseWallet = walletsStore.items[expenseWalletId]
+      if (!expenseWallet)
+        return 'Transfer expense Wallet not found'
+
+      const incomeWalletId = trn.incomeWalletId || trn.walletToId
+      const incomeWallet = walletsStore.items[incomeWalletId]
+      if (!incomeWallet)
+        return 'Transfer income Wallet not found'
+
+      return {
+        id,
+        ...trn,
+        category,
+        categoryParent,
+        expenseWallet,
+        incomeWallet,
+      }
+    }
+
+    return 'Trn type not found'
+  }
+
   return {
     addTrn,
+    computeTrnItem,
     deleteTrn,
     deleteTrnsByIds,
     getRange,
