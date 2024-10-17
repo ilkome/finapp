@@ -10,18 +10,18 @@ import type { Trns } from '~/components/trns/types'
 
 const config = {
   amount: 100000,
-  subtractYears: 3,
-  trnsCount: 10000,
+  subtractYears: 2,
+  trnsCount: 1000,
 }
 
 export function useDemo() {
-  const { clearLocalData } = useInitApp()
-  const currenciesStore = useCurrenciesStore()
-  const walletsStore = useWalletsStore()
-  const categoriesStore = useCategoriesStore()
-  const trnsStore = useTrnsStore()
-
   async function loadDemoData() {
+    const { clearLocalData } = useInitApp()
+    const currenciesStore = useCurrenciesStore()
+    const walletsStore = useWalletsStore()
+    const categoriesStore = useCategoriesStore()
+    const trnsStore = useTrnsStore()
+
     await clearLocalData()
 
     currenciesStore.setBase('USD')

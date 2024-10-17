@@ -18,7 +18,6 @@
     transform: translate(-50%, -50%);
   }
 
-  /* overflowScrollY() */
   .overflow-scroll-y {
     @apply overflow-hidden overflow-y-auto;
     -webkit-overflow-scrolling: touch;
@@ -28,13 +27,12 @@
 html,
 body {
   overscroll-behavior-y: none;
-  /* background: #171717; */
   user-select: none;
 
   @apply
     font-primary text-1 leading-none antialiased;
 
-  @apply bg-foreground-1;
+  /* @apply bg-foreground-1; */
 }
 
 .layoutBase {

@@ -70,28 +70,16 @@ function openDemo() {
       class="grid h-full items-center gap-8 overflow-hidden overflow-y-auto px-3 py-4"
     >
       <div class="flex flex-col items-center justify-center pb-10">
-        <UiLogo class="!text-5xl !font-extrabold pb-6" />
+        <UiLogo class="!text-5xl !font-extrabold pb-0" />
 
         <div class="grid min-w-[280px] gap-5 items-center px-3 py-8">
-          <!-- <UiButtonBlue :disabled="isLoading" @click="signInWithGoogle">
-            {{ t("loginWithGoogle") }}
-            <Transition name="fadeIn">
-              <div
-                v-if="isLoading"
-                class="flex-center absolute inset-0 h-full w-full bg-stone-800"
-              >
-                <UiSpinier />
-              </div>
-            </Transition>
-          </UiButtonBlue> -->
-
           <UButton
             :ui="{ rounded: 'rounded-full' }"
             :loading="isLoading"
             color="blue"
             class="transition-all duration-150 ease-in-out"
             block
-            size="lg"
+            size="xl"
             @click="signInWithGoogle"
           >
             {{ t("loginWithGoogle") }}
@@ -99,11 +87,11 @@ function openDemo() {
 
           <UButton
             :ui="{ rounded: 'rounded-full' }"
-            variant="soft"
+            variant="outline"
             color="blue"
             class="transition-all duration-150 ease-in-out"
             block
-            size="lg"
+            size="xl"
             @click="openDemo"
           >
             {{ t("openDemo") }}

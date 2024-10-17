@@ -6,18 +6,25 @@ const sw = process.env.SW === 'true'
 export default defineNuxtConfig({
   app: {
     head: {
-      link: [{
-        href: '/css/materialdesignicons.min.css',
-        rel: 'stylesheet',
-      }, {
-        href: '/favicon.png',
-        rel: 'icon',
-        type: 'image/png',
-      }],
+      link: [
+        {
+          href: '/css/materialdesignicons.min.css',
+          rel: 'stylesheet',
+        },
+        {
+          href: '/favicon.png',
+          rel: 'icon',
+          type: 'image/png',
+        },
+      ],
       meta: [
         { charset: 'utf-8' },
         { content: 'width=device-width, initial-scale=1', name: 'viewport' },
-        { content: process.env.npm_package_description || '', hid: 'description', name: 'description' },
+        {
+          content: process.env.npm_package_description || '',
+          hid: 'description',
+          name: 'description',
+        },
       ],
 
       noscript: [{ innerHTML: 'This website requires JavaScript.' }],
@@ -32,11 +39,13 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2024-07-07',
 
-  components: [{
-    extensions: ['vue'],
-    global: true,
-    path: '~/components/',
-  }],
+  components: [
+    {
+      extensions: ['vue'],
+      global: true,
+      path: '~/components/',
+    },
+  ],
 
   devtools: {
     timeline: {
@@ -60,15 +69,18 @@ export default defineNuxtConfig({
     },
     langDir: 'locales/',
     lazy: true,
-    locales: [{
-      code: 'en',
-      file: 'en-US.js',
-      language: 'en-US',
-    }, {
-      code: 'ru',
-      file: 'ru-RU.js',
-      language: 'ru-RU',
-    }],
+    locales: [
+      {
+        code: 'en',
+        file: 'en-US.js',
+        language: 'en-US',
+      },
+      {
+        code: 'ru',
+        file: 'ru-RU.js',
+        language: 'ru-RU',
+      },
+    ],
     strategy: 'no_prefix',
   },
 
@@ -83,10 +95,7 @@ export default defineNuxtConfig({
     'nuxt-vuefire',
   ],
 
-  plugins: [
-    { src: '~/plugins/dayjs' },
-    { src: '~/plugins/toast' },
-  ],
+  plugins: [{ src: '~/plugins/dayjs' }, { src: '~/plugins/toast' }],
 
   pwa: {
     client: {
@@ -105,20 +114,24 @@ export default defineNuxtConfig({
     },
     manifest: {
       background_color: '#171717',
-      icons: [{
-        sizes: '192x192',
-        src: 'pwa-192x192.png',
-        type: 'image/png',
-      }, {
-        sizes: '512x512',
-        src: 'pwa-512x512.png',
-        type: 'image/png',
-      }, {
-        purpose: 'any maskable',
-        sizes: '512x512',
-        src: 'pwa-512x512.png',
-        type: 'image/png',
-      }],
+      icons: [
+        {
+          sizes: '192x192',
+          src: 'pwa-192x192.png',
+          type: 'image/png',
+        },
+        {
+          sizes: '512x512',
+          src: 'pwa-512x512.png',
+          type: 'image/png',
+        },
+        {
+          purpose: 'any maskable',
+          sizes: '512x512',
+          src: 'pwa-512x512.png',
+          type: 'image/png',
+        },
+      ],
       name: 'Finapp',
       short_name: 'Finapp',
       theme_color: '#171717',
@@ -129,19 +142,24 @@ export default defineNuxtConfig({
 
     workbox: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
-      runtimeCaching: [{
-        handler: 'CacheFirst',
-        urlPattern: 'https://fonts.googleapis.com/',
-      }, {
-        handler: 'CacheFirst',
-        urlPattern: 'https://fonts.gstatic.com/',
-      }, {
-        handler: 'CacheFirst',
-        urlPattern: 'https://cdn.materialdesignicons.com/',
-      }, {
-        handler: 'CacheFirst',
-        urlPattern: 'https://api.iconify.design',
-      }],
+      runtimeCaching: [
+        {
+          handler: 'CacheFirst',
+          urlPattern: 'https://fonts.googleapis.com/',
+        },
+        {
+          handler: 'CacheFirst',
+          urlPattern: 'https://fonts.gstatic.com/',
+        },
+        {
+          handler: 'CacheFirst',
+          urlPattern: 'https://cdn.materialdesignicons.com/',
+        },
+        {
+          handler: 'CacheFirst',
+          urlPattern: 'https://api.iconify.design',
+        },
+      ],
     },
   },
 
@@ -160,7 +178,7 @@ export default defineNuxtConfig({
   telemetry: false,
 
   ui: {
-    gray: 'zinc',
+    gray: 'neutral',
     primary: 'blue',
   },
 

@@ -50,11 +50,16 @@ const isDemo = useCookie('finapp.isDemo')
       v-if="isDemo"
       class="px-4"
     >
-      <UiButtonBlue
+      <UButton
+        :ui="{ rounded: 'rounded-lg' }"
+        class="transition-all duration-150 ease-in-out"
+        block
+        size="lg"
+        color="blue"
         @click="userStore.signOut"
       >
-        {{ t('demo.mode.exit') }}
-      </UiButtonBlue>
+        {{ t("demo.mode.exit") }}
+      </UButton>
     </div>
 
     <LayoutMenuSidebar class="px-2" />

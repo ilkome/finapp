@@ -23,7 +23,7 @@ const { width } = useWindowSize()
 const user = useCurrentUser()
 const isShow = computed(() => trnFormStore.ui.isShow)
 
-useGuard()
+// useGuard()
 
 const { error, status } = await useAsyncData(
   'app',
