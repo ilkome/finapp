@@ -17,7 +17,7 @@ function handleClick() {
 
 <template>
   <div
-    class="flex grow gap-3 items-center rounded-lg px-2 py-2 text-sm hocus:bg-item-5"
+    class="flex grow gap-3 items-center rounded-lg px-2 py-2 text-sm hover:bg-item-5"
     @click="handleClick"
   >
     <SharedInputsCheckbox

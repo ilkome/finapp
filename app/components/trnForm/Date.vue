@@ -39,7 +39,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       placement="bottom-start"
     >
       <div
-        class="grid gap-1 rounded-md px-2 py-2 text-sm font-medium text-3 leading-none hocus:bg-item-5"
+        class="grid gap-1 rounded-md px-2 py-2 text-sm font-medium text-3 leading-none hover:bg-item-5"
         v-html="formattedDate"
       />
 

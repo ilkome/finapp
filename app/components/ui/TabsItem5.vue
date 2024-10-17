@@ -12,7 +12,7 @@ const emit = defineEmits(['click'])
   <div
     :class="[
       getStyles('item', ['link', 'rounded', 'minh2', 'minw2']),
-      { '!bg-item-3 !text-1': isActive },
+      { 'bg-item-3 !text-1': isActive },
     ]"
     class="
       flex flex-shrink-0 gap-1 items-center justify-center

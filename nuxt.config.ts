@@ -88,10 +88,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
-    'floating-vue/nuxt',
-    'nuxt-icon',
     '@nuxt/ui',
-    '@nuxt/fonts',
     'nuxt-vuefire',
   ],
 
@@ -171,16 +168,7 @@ export default defineNuxtConfig({
 
   ssr: false,
 
-  tailwindcss: {
-    viewer: false,
-  },
-
   telemetry: false,
-
-  ui: {
-    gray: 'neutral',
-    primary: 'blue',
-  },
 
   vuefire: {
     auth: {

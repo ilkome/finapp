@@ -36,7 +36,7 @@ const category = computed(() => {
 
 <template>
   <div
-    class="relative flex gap-2 items-center text-2 hocus:bg-item-5 p-1 px-1 rounded-full bg-item-4 hover:bg-item-5 overflow-hidden"
+    class="relative flex gap-2 items-center text-2 hover:bg-item-5 p-1 px-1 rounded-full bg-item-4 hover:bg-item-5 overflow-hidden"
     @click="emit('click', props.item.id)"
   >
     <div

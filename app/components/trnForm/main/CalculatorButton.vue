@@ -6,7 +6,7 @@
       rounded-full border border-item-6
       font-unica  font-normal text-2xl text-5
       bg-item-4
-      hocus:bg-item-5 hocus:border-item-6 hocus:scale-[1.02]
+      hover:bg-item-5 hover:border-item-6 hover:scale-[1.02]
       transition
     "
     tabindex="0"

@@ -11,8 +11,8 @@ export default <Partial<Config>>{
 
   plugins: [
     plugin(({ addVariant }) => {
-      addVariant('hocus', ['.mouse &:not(._active):hover', '&:not(._active):active'])
-      addVariant('group-hocus', ['.mouse .group:not(._active):hover &', '.group:not(._active):active &'])
+      addVariant('hover', ['.mouse &:not(._active):hover', '&:not(._active):active'])
+      addVariant('group-hover', ['.mouse .group:not(._active):hover &', '.group:not(._active):active &'])
     }),
   ],
 

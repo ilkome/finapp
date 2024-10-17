@@ -32,7 +32,7 @@ useHead({
   <UiPage v-if="category">
     <UiHeader>
       <RouterLink v-slot="{ href, navigate }" :to="backLink" custom>
-        <a :href="href" class="grow hocus:bg-item-5" @click="navigate">
+        <a :href="href" class="grow hover:bg-item-5" @click="navigate">
           <CategoriesPageHeader
             :category="category"
             :parentCategory="categoriesStore.items[category.parentId]"

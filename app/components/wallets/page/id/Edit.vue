@@ -40,7 +40,7 @@ useHead({
         :to="`/wallets/${walletId}`"
         custom
       >
-        <a class="hocus:bg-item-5 grow" :href="href" @click="navigate">
+        <a class="hover:bg-item-5 grow" :href="href" @click="navigate">
           <UiHeaderTitle>
             <div class="pb-1 text-xs font-medium text-item-2">
               {{ $t("wallets.editTitle") }}

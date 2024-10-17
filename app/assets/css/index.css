@@ -1,0 +1,14 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+@import './tailwind.css';
+
+@theme {
+  --font-family-primary: 'Roboto', 'sans-serif';
+  --font-family-logo: 'Nunito', 'Roboto', 'sans-serif';
+
+  --color-item-3: #232323;
+  --color-1: rgb(var(--text-1));
+  --color-foreground-1: rgb(var(--foreground-1));
+  --color-accent-1: rgb(var(--accent-1));
+  --color-item-5: rgb(var(--item-5));
+}

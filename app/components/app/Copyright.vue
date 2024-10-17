@@ -7,7 +7,7 @@ const { t } = useI18n()
 <template>
   <a
     :class="getStyles('item', ['link', 'rounded'])"
-    class="flex-center px-5 py-2"
+    class="flex-center px-5 py-2 hover:bg-item-5"
     href="https://ilko.me"
   >
     {{ t("madeBy.text") }}

@@ -2,6 +2,7 @@
 import '~/assets/css/fullpage.css'
 import '~/assets/css/reset.css'
 import '~/assets/stylus/index.styl'
+
 import { useWindowSize } from '@vueuse/core'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useInitApp } from '~/components/app/useInitApp'
@@ -57,10 +58,6 @@ useHead({
   <UApp>
     <NuxtPwaManifest />
 
-    <div class="bg-item-3 p-10">
-      1111
-    </div>
-
     <div v-if="status === 'error'">
       <pre>{{ error }}</pre>
     </div>
@@ -98,10 +95,5 @@ useHead({
 </template>
 
 <style>
-@import 'tailwindcss';
-@import '@nuxt/ui';
-
-@theme {
-  --color-item-3: red;
-}
+@import '../assets/css/index.css';
 </style>

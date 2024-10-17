@@ -60,7 +60,7 @@ function openDemo() {
 </script>
 
 <template>
-  <div class="md_p-6 mx-auto grid h-full w-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4">
+  <div class="md_p-6 mx-auto grid h-full w-full max-w-xl grid-rows-[auto_1fr_auto] p-2 py-4">
     <div class="flex flex-wrap items-start justify-between gap-2">
       <AppLocaleSwitcher />
       <AppThemeSwitcher class="justify-end" />
@@ -74,11 +74,9 @@ function openDemo() {
 
         <div class="grid min-w-[280px] gap-5 items-center px-3 py-8">
           <UButton
-            :ui="{ rounded: 'rounded-full' }"
             :loading="isLoading"
-            color="blue"
-            class="transition-all duration-150 ease-in-out"
             block
+            class="rounded-full"
             size="xl"
             @click="signInWithGoogle"
           >
@@ -86,12 +84,10 @@ function openDemo() {
           </UButton>
 
           <UButton
-            :ui="{ rounded: 'rounded-full' }"
-            variant="outline"
-            color="blue"
-            class="transition-all duration-150 ease-in-out"
             block
+            class="rounded-full"
             size="xl"
+            variant="outline"
             @click="openDemo"
           >
             {{ t("openDemo") }}

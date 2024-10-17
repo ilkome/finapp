@@ -10,7 +10,7 @@ export const classes = {
     link: `
       select-none
       text-secondary2
-      hocus:bg-item-5
+      hover:bg-item-5
     `,
     menu: `
       flex items-center
@@ -32,7 +32,7 @@ export const classes = {
     rounded: 'rounded-md',
     rounded2: 'rounded-lg',
     shadow: `
-      shadow hocus:shadow-lg
+      shadow hover:shadow-lg
     `,
     simple: '',
   },

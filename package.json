@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@formkit/drag-and-drop": "^0.1.6",
+    "@nuxt/ui": "3.0.0-alpha.6",
     "@pinia/nuxt": "^0.5.4",
     "@popperjs/core": "^2.11.8",
     "currency.js": "^2.0.4",
@@ -42,8 +43,6 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "2.22.2",
-    "@nuxt/fonts": "^0.7.2",
-    "@nuxt/ui": "^2.18.7",
     "@nuxtjs/i18n": "^8.5.2",
     "@vite-pwa/nuxt": "^0.8.1",
     "@vueuse/core": "^10.11.1",
@@ -56,13 +55,11 @@
     "eslint-plugin-perfectionist": "^2.11.0",
     "lodash.sortby": "^4.7.0",
     "nuxt": "^3.13.1",
-    "nuxt-icon": "^0.6.10",
     "nuxt-vuefire": "^1.0.4",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
     "stylus": "^0.63.0",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3",
     "vitest": "^1.6.0",
     "zod": "^3.23.8"

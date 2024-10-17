@@ -33,7 +33,7 @@ export default defineComponent({
         custom
       >
         <a
-          class="grow hocus:bg-item-5"
+          class="grow hover:bg-item-5"
           :href="href"
           @click="navigate"
         >

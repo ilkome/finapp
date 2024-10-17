@@ -21,9 +21,15 @@ useGuard()
 </script>
 
 <template>
-  <NuxtPwaManifest />
+  <UApp>
+    <NuxtPwaManifest />
 
-  <div class="layoutBase">
-    <NuxtPage />
-  </div>
+    <div class="layoutBase">
+      <NuxtPage />
+    </div>
+  </UApp>
 </template>
+
+<style>
+@import '../assets/css/index.css';
+</style>

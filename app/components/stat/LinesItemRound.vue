@@ -68,7 +68,7 @@ onLongPress(
 <template>
   <div
     ref="longPressRef"
-    class="relative flex gap-2 items-center text-secondary2 hocus:bg-item-5 p-1 rounded-full bg-item-9 overflow-hidden"
+    class="relative flex gap-2 items-center text-secondary2 hover:bg-item-5 p-1 rounded-full bg-item-9 overflow-hidden"
     :class="{ 'opacity-60': props.item.value === 0 }"
     @click="emit('click', props.item.id)"
   >

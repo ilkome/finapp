@@ -35,7 +35,7 @@ useHead({
   <UiPage v-if="category">
     <UiHeader>
       <RouterLink v-slot="{ href, navigate }" to="/categories" custom>
-        <a class="hocus:bg-item-5 grow" :href="href" @click="navigate">
+        <a class="hover:bg-item-5 grow" :href="href" @click="navigate">
           <UiHeaderTitle>
             <div class="pt-1 text-xs font-medium text-item-2">
               {{ $t("categories.title") }}

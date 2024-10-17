@@ -1,11 +1,9 @@
 <script setup lang="ts">
-const { locale } = useI18n()
-const logoSrc = computed(() => `/logo-${locale.value}.svg`)
+const { t } = useI18n()
 </script>
 
 <template>
-  <div class="font-nunito font-bold text-2xl first-letter:text-accent-1">
-    {{ $t('appName') }}
+  <div class="font-logo font-bold text-2xl first-letter:text-accent-1">
+    {{ t('appName') }}
   </div>
-  <!-- <img :src="logoSrc" :alt="$t('appName')" :title="$t('appName')"> -->
 </template>

@@ -141,7 +141,7 @@ async function onSelectParentCategory(id: CategoryId) {
 <style>
 .trnFormSelectionPagination.swiper-pagination-horizontal
   .swiper-pagination-bullet-active {
-  @apply !bg-neutral-600 dark:!bg-white/80;
+  /* @apply !bg-neutral-600 dark:!bg-white/80; */
 }
 </style>
 

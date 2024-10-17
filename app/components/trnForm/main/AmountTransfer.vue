@@ -63,7 +63,7 @@ watch(
         v-for="(item, slug) in items"
         :key="slug"
         :class="[
-          { '!bg-item-3': trnFormStore.values.transferType === item.transferType },
+          { 'bg-item-3': trnFormStore.values.transferType === item.transferType },
         ]"
         class="cursor-pointer overflow-hidden rounded-md"
         @click="trnFormStore.onChangeTransferType(item.transferType)"

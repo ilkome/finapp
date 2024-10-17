@@ -9,7 +9,7 @@
       items-center gap-3
       text-1
       bg-item-4 rounded-md
-      hocus:bg-item-5 hocus:shadow-2xl hocus:scale-[1.02] hocus:z-10
+      hover:bg-item-5 hover:shadow-2xl hover:scale-[1.02] hover:z-10
       duration-200
     "
   >

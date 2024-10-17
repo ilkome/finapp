@@ -27,7 +27,7 @@ const childCategoriesIds = computed(() =>
   <UiElement
     :isActive="activeItemId === categoryId"
     :lineWidth="props.lineWidth"
-    insideClasses="flex-col items-center !bg-item-9 hocus:!bg-item-5"
+    insideClasses="flex-col items-center !bg-item-9 hover:!bg-item-5"
     @click="(e: Event) => emit('click', e)"
   >
     <!-- <template #leftIcon>

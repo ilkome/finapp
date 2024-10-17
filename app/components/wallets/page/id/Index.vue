@@ -41,7 +41,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   <UiPage v-if="wallet">
     <UiHeader>
       <RouterLink v-slot="{ href, navigate }" to="/wallets" custom>
-        <a class="grow hocus:bg-item-5" :href="href" @click="navigate">
+        <a class="grow hover:bg-item-5" :href="href" @click="navigate">
           <UiHeaderTitle>
             <div class="pt-3 text-xs font-medium text-item-2">
               {{ $t("wallets.title") }}
