@@ -11,12 +11,13 @@ const trnsStore = useTrnsStore()
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = computed(() => categoriesStore.items[categoryId.value])
 
-if (!category.value) router.replace('/categories')
+if (!category.value)
+  router.replace('/categories')
 
 const backLink = computed(() =>
   category.value?.parentId
     ? `/categories/${category.value.parentId}`
-    : '/categories'
+    : '/categories',
 )
 
 const onClickEdit = () => router.push(`/categories/${categoryId.value}/edit`)
