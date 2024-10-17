@@ -4,9 +4,9 @@ const { t } = useI18n()
 
 <template>
   <div>
-    <div class="title pb-4">
+    <UiTitle class="pb-4">
       {{ t("title") }}
-    </div>
+    </UiTitle>
 
     <div class="flex gap-8 pb-3">
       <div>
@@ -31,11 +31,6 @@ const { t } = useI18n()
 </template>
 
 <style lang="stylus" scoped>
-// TODO: use Ui components
-.title
-  font-h1()
-  font-size 18px
-
 .subTitle
   padding-bottom 4px
   color var(--c-font-4)
@@ -45,7 +40,7 @@ const { t } = useI18n()
   color var(--c-font-2)
   font-size 14px
   line-height 18px
-  font-secondary()
+  font-family var(--font-secondary)
 </style>
 
 <i18n lang="yaml">

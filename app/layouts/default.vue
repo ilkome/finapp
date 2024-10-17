@@ -23,7 +23,7 @@ const { width } = useWindowSize()
 const user = useCurrentUser()
 const isShow = computed(() => trnFormStore.ui.isShow)
 
-useGuard()
+// useGuard()
 
 const { error, status } = await useAsyncData(
   'app',
@@ -54,54 +54,39 @@ useHead({
 </script>
 
 <template>
-  <UApp>
-    <NuxtPwaManifest />
+  <NuxtPwaManifest />
 
-    <div class="bg-item-3 p-10">
-      1111
-    </div>
+  <div v-if="status === 'error'">
+    <pre>{{ error }}</pre>
+  </div>
 
-    <div v-if="status === 'error'">
-      <pre>{{ error }}</pre>
-    </div>
+  <div v-else-if="status === 'pending'">
+    {{ t('base.loading') }}
+  </div>
 
-    <div v-else-if="status === 'pending'">
-      {{ t('base.loading') }}
-    </div>
+  <div v-else-if="status === 'success'" class="layoutBase">
+    <div class="grid h-full sm:grid-cols-[auto_1fr_auto]">
+      <LayoutSidebar :isShow />
 
-    <div v-else-if="status === 'success'" class="layoutBase">
-      <div class="grid h-full sm:grid-cols-[auto_1fr_auto]">
-        <LayoutSidebar :isShow />
+      <LayoutMenuSidebar
+        :isShowTitle="false"
+        class="sm:align-center hidden justify-center gap-1 bg-item-4 sm:flex sm:flex-col lg:hidden"
+      />
 
-        <LayoutMenuSidebar
-          :isShowTitle="false"
-          class="sm:align-center hidden justify-center gap-1 bg-item-4 sm:flex sm:flex-col lg:hidden"
-        />
-
-        <div class="@container/main grid h-full overflow-hidden pb-12 sm:pb-0">
-          <NuxtPage :keepalive="{ include: keepalive }" />
-        </div>
+      <div class="@container/main grid h-full overflow-hidden pb-12 sm:pb-0">
+        <NuxtPage :keepalive="{ include: keepalive }" />
       </div>
-
-      <LayoutMenuBottom />
-      <LayoutMenuBottomModal v-if="isModalOpen('menu')" />
-      <TrnFormFloatOpener />
     </div>
 
-    <Teleport to="body">
-      <DevModalOpener />
-      <TrnFormBottom v-if="width < 767" />
-    </Teleport>
+    <LayoutMenuBottom />
+    <LayoutMenuBottomModal v-if="isModalOpen('menu')" />
+    <TrnFormFloatOpener />
+  </div>
 
-    <TrnFormSidebar v-if="width >= 767" />
-  </UApp>
+  <Teleport to="body">
+    <DevModalOpener />
+    <TrnFormBottom v-if="width < 767" />
+  </Teleport>
+
+  <TrnFormSidebar v-if="width >= 767" />
 </template>
-
-<style>
-@import 'tailwindcss';
-@import '@nuxt/ui';
-
-@theme {
-  --color-item-3: red;
-}
-</style>

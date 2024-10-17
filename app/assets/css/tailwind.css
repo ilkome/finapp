@@ -31,8 +31,6 @@ body {
 
   @apply
     font-primary text-1 leading-none antialiased;
-
-  /* @apply bg-foreground-1; */
 }
 
 .layoutBase {

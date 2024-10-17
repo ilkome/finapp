@@ -74,7 +74,7 @@ const category = computed(() => {
         <!-- Has childs -->
         <div
           v-if="category?.parentId === 0"
-          class="text-md font-unica"
+          class="text-md font-secondary"
         >
           ...
         </div>

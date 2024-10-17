@@ -61,7 +61,7 @@ const childCategoriesIds = computed(() =>
         <!-- Has childs -->
         <div
           v-if="!props.isHideDots && childCategoriesIds.length > 0"
-          class="text-md font-unica leading-none"
+          class="text-md font-secondary leading-none"
         >
           ...
         </div>

@@ -42,14 +42,19 @@ const isDemo = useCookie('finapp.isDemo')
 
         <div
           v-if="isDemo"
-          class="px-4 pt-2 pb-2"
+          class="px-3 pt-2 pb-2"
           @click="userStore.signOut"
         >
-          <UiButtonBlue
+          <UButton
+            :ui="{ rounded: 'rounded-lg' }"
+            class="transition-all duration-150 ease-in-out"
+            block
+            size="lg"
+            color="blue"
             @click="userStore.signOut"
           >
-            {{ t('demo.mode.exit') }}
-          </UiButtonBlue>
+            {{ t("demo.mode.exit") }}
+          </UButton>
         </div>
       </div>
     </LazyBaseBottomSheet2>

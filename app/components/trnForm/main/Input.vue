@@ -50,9 +50,9 @@ function onInput(event: Event) {
       class="
         swiper-no-swiping
         block size-full h-auto pt-6 pb-2 px-3
-        text-3xl font-unica
+        text-3xl font-secondary
         bg-transparent rounded-md
-        -placeholder:text-3xl -placeholder:font-mono
+        -placeholder:text-3xl
         focus:bg-item-5
         transition
       "
