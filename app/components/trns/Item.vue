@@ -95,7 +95,7 @@ const props = defineProps<{
         <Amount
           v-if="trnItem.type !== 2"
           :amount="trnItem.amount"
-          :currencyCode="trnItem.wallet.currency"
+          :currencyCode="trnItem.wallet?.currency"
           :isShowMinus="trnItem.type === 0"
           :isShowPlus="trnItem.type === 1"
           :type="trnItem.type"

@@ -18,12 +18,12 @@ const { isModalOpen } = useAppNav()
 const { loadDataFromCache, loadDataFromDB } = useInitApp()
 const { loadDemoData } = useDemo()
 const { pointerClasses } = usePointerClass()
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const { width } = useWindowSize()
 const user = useCurrentUser()
 const isShow = computed(() => trnFormStore.ui.isShow)
 
-// useGuard()
+useGuard()
 
 const { error, status } = await useAsyncData(
   'app',
@@ -47,9 +47,9 @@ useHead({
     class: pointerClasses,
   },
   htmlAttrs: {
-    lang: useI18n().locale.value,
+    lang: locale.value,
   },
-  titleTemplate: (chunk?: string) => (chunk ? `${chunk} - Finapp` : 'Finapp'),
+  titleTemplate: (chunk?: string) => chunk ? `${chunk} - ${t('appName')}` : t('appName'),
 })
 </script>
 
@@ -70,10 +70,13 @@ useHead({
 
       <LayoutMenuSidebar
         :isShowTitle="false"
-        class="sm:align-center hidden justify-center gap-1 bg-item-4 sm:flex sm:flex-col lg:hidden"
+        class="sm:align-center bg-item-4 hidden justify-center gap-1 sm:flex sm:flex-col lg:hidden"
       />
 
-      <div class="@container/main grid h-full overflow-hidden pb-12 sm:pb-0">
+      <div
+        :class="{ 'lg:translate-x-20': isShow }"
+        class="@container/main grid h-full overflow-hidden pb-12 transition-all duration-300 ease-in-out sm:pb-0"
+      >
         <NuxtPage :keepalive="{ include: keepalive }" />
       </div>
     </div>
@@ -84,9 +87,7 @@ useHead({
   </div>
 
   <Teleport to="body">
-    <DevModalOpener />
     <TrnFormBottom v-if="width < 767" />
+    <TrnFormSidebar v-if="width >= 767" />
   </Teleport>
-
-  <TrnFormSidebar v-if="width >= 767" />
 </template>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 defineOptions({ name: 'Dashboard' })
 
@@ -12,6 +14,6 @@ useHead({
 </script>
 
 <template>
-  <LazyStat v-if="trnsStore.hasTrns" />
-  <LazyWelcomeActions v-else />
+  <LazyStat v-if="trnsStore.hasItems" />
+  <LazyAppWelcome v-else />
 </template>

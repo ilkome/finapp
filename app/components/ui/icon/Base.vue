@@ -18,7 +18,7 @@ const emit = defineEmits<{
     }"
     :class="[
       props.name, {
-        'flex-center rounded-full aspect-square overflow-hidden p-1.5 text-white dark:text-white/90 leading-none': props.invert,
+        'flex-center aspect-square overflow-hidden rounded-full p-1.5 leading-none text-white dark:text-white/90': props.invert,
       }]"
     class="text-base leading-none"
     @click="(e: Event) => emit('click', e)"

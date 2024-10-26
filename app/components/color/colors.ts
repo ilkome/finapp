@@ -287,3 +287,14 @@ export const colors = {
     950: '#4c0519',
   },
 }
+
+const excludedShades = [50, 100, 200, 300, 950]
+
+export const colorsWithoutShades = Object.values(colors)
+  .map(group =>
+    Object.entries(group)
+      .filter(([shade]) => !excludedShades.includes(+shade))
+      .map(([_, color]) => color),
+  )
+
+export const colorsArray = colorsWithoutShades.flat()

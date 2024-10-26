@@ -1,51 +1,58 @@
 <script setup lang="ts">
-import { getPreparedFormData } from '~/components/wallets/getForm'
+import type { WalletId, WalletItem } from '~/components/wallets/types'
+import { normalizeWalletItem } from '~/components/wallets/utils'
 
+const { t } = useI18n()
 const router = useRouter()
-const walletForm = ref(getPreparedFormData())
+const walletForm = ref(normalizeWalletItem())
 
-const updateValue = (id, value) => walletForm.value[id] = value
-const afterSave = () => router.replace('/wallets')
-</script>
+function updateValue(id: WalletId, value: WalletItem[keyof WalletItem]) {
+  walletForm.value[id] = value
+}
 
-<script lang="ts">
-export default defineComponent({
-  head() {
-    return {
-      title: `${this.$t('base.add')}: ${this.walletForm.name ? this.walletForm.name : this.$t('wallets.form.name.label')}`,
-    }
-  },
+function afterSave() {
+  return router.replace('/wallets')
+}
+
+useHead({
+  title: `${t('base.add')}: ${walletForm.value.name ? walletForm.value.name : t('wallets.form.name.label')}`,
 })
 </script>
 
 <template>
-  <UiPage>
-    <div class="h-full grid grid-rows-[auto,1fr]">
-      <UiHeader>
-        <RouterLink v-slot="{ href, navigate }" to="/wallets" custom>
-          <a class="grow hocus:bg-item-5" :href="href" @click="navigate">
-            <UiHeaderTitle>
-              <div class="pb-1 text-xs font-medium text-item-2">
-                {{ $t("wallets.createNewTitle") }}
+  <UiPage class="flex h-full flex-col">
+    <UiHeader>
+      <RouterLink
+        v-slot="{ href, navigate }"
+        to="/wallets"
+        custom
+      >
+        <a
+          class="hocus:bg-item-5 -mx-2 grow px-2"
+          :href="href"
+          @click="navigate"
+        >
+          <UiHeaderTitle>
+            <div class="text-item-2 pb-1 text-xs font-medium">
+              {{ t("wallets.createNewTitle") }}
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="text-item-1 text-2xl font-semibold">
+                {{ walletForm.name ? walletForm.name : t("wallets.form.name.label") }}
               </div>
-              <div class="flex items-center gap-3">
-                <div class="text-item-1 text-2xl font-semibold">
-                  {{ walletForm.name ? walletForm.name : $t("wallets.form.name.label") }}
-                </div>
-                <div class="p-1 flex-center rounded-lg text-icon-primary text-2xs" :style="{ background: walletForm.color }">
-                  {{ walletForm.currency }}
-                </div>
+              <div class="flex-center text-icon-primary text-2xs rounded-lg p-1" :style="{ background: walletForm.color }">
+                {{ walletForm.currency }}
               </div>
-            </UiHeaderTitle>
-          </a>
-        </RouterLink>
-      </UiHeader>
+            </div>
+          </UiHeaderTitle>
+        </a>
+      </RouterLink>
+    </UiHeader>
 
-      <WalletsForm
-        :walletForm="walletForm"
-        @afterSave="afterSave"
-        @updateValue="updateValue"
-      />
-    </div>
+    <WalletsForm
+      :walletForm="walletForm"
+      @afterSave="afterSave"
+      @updateValue="updateValue"
+    />
   </UiPage>
 </template>

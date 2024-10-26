@@ -13,10 +13,12 @@ import type {
 } from '~/components/categories/types'
 import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
 
-import { useUserStore } from '~/components/user/useUser'
+import { useUserStore } from '~/components/user/useUserStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 export const useCategoriesStore = defineStore('categories', () => {
+  const userStore = useUserStore()
+
   const transfer: CategoryItem = {
     childIds: [],
     color: 'var(--c-blue-1)',
@@ -33,7 +35,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 
   const items = shallowRef<Categories | null>({ transfer })
 
-  const hasCategories = computed(() => {
+  const hasItems = computed(() => {
     if (!items.value)
       return false
 
@@ -51,7 +53,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   const transferCategoriesIds = computed(() => getTransferCategoriesIds(items.value))
 
   const categoriesRootIds = computed(() => {
-    if (!hasCategories.value || !items.value)
+    if (!hasItems.value || !items.value)
       return []
 
     return Object.keys(items.value)
@@ -60,7 +62,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   })
 
   const categoriesForBeParent = computed(() => {
-    if (!hasCategories.value || !items.value)
+    if (!hasItems.value || !items.value)
       return []
 
     return categoriesRootIds.value.filter((id: CategoryId) => {
@@ -76,7 +78,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   })
 
   const favoriteCategoriesIds = computed(() => {
-    if (!hasCategories.value)
+    if (!hasItems.value)
       return []
 
     const filteredCategories = Object.keys(items.value)
@@ -90,7 +92,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   })
 
   const recentCategoriesIds = computed(() => {
-    if (!hasCategories.value || !trnsStore.hasTrns)
+    if (!hasItems.value || !trnsStore.hasItems)
       return []
 
     const trnsItems = trnsStore.items ?? {}
@@ -147,15 +149,14 @@ export const useCategoriesStore = defineStore('categories', () => {
   const categoriesIdsForTrnValues = computed(() =>
     categoriesIds.value.filter(
       id =>
-        !transferCategoriesIds.value.includes(id)
-        && items.value[id]?.childIds?.length === 0,
+        !transferCategoriesIds.value.includes(id) && (!items.value[id]?.childIds || items.value[id]?.childIds?.length === 0),
     ),
   )
 
   /**
    * Methods
    */
-  function formatCategories(items: Categories) {
+  function formatCategories(items: Categories): Categories {
     const formattedItems = { ...items }
 
     // Add child categories to root categories
@@ -206,23 +207,22 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   function initCategories() {
-    const userStore = useUserStore()
-
     getDataAndWatch(
       `users/${userStore.uid}/categories`,
-      (items: Categories) => formatCategories(items),
+      (categories: Categories) => setCategories(categories),
     )
   }
 
   function setCategories(values: Categories | null) {
-    if (values == null) {
-      items.value = null
-      localforage.setItem('finapp.categories', null)
+    if (values) {
+      const valuesWithTransfer = formatCategories({ ...values, transfer })
+      items.value = valuesWithTransfer
+      localforage.setItem('finapp.categories', deepUnref(valuesWithTransfer))
+      return
     }
 
-    const valuesWithTransfer = { ...values }
-    items.value = valuesWithTransfer
-    localforage.setItem('finapp.categories', deepUnref(valuesWithTransfer))
+    items.value = null
+    localforage.setItem('finapp.categories', null)
   }
 
   function unsubscribeCategories() {
@@ -232,14 +232,14 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   function hasChildren(categoryId: CategoryId) {
-    if (!hasCategories.value)
+    if (!hasItems.value)
       return false
 
     return items.value[categoryId]?.childIds && items.value[categoryId]?.childIds?.length > 0
   }
 
   function getChildsIds(categoryId: CategoryId) {
-    if (!hasCategories.value)
+    if (!hasItems.value)
       return []
 
     return hasChildren(categoryId)
@@ -250,7 +250,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   function getChildsIdsOrParent(categoryId: CategoryId) {
-    if (!hasCategories.value)
+    if (!hasItems.value)
       return []
 
     return hasChildren(categoryId)
@@ -286,13 +286,12 @@ export const useCategoriesStore = defineStore('categories', () => {
     categoriesIdsForTrnValues,
     categoriesRootIds,
     favoriteCategoriesIds,
-    formatCategories,
     getChildsIds,
     getChildsIdsOrParent,
     getTransactibleIds,
     getTransactibleIds2,
-    hasCategories,
     hasChildren,
+    hasItems,
     initCategories,
     items,
     recentCategoriesIds,

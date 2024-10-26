@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
 import type { ViewOptions } from '~/components/stat/types'
+import type { DeepPartial } from '~~/utils/types'
 
 const props = defineProps<{
   viewOptions: ViewOptions
@@ -15,12 +16,7 @@ const { t } = useI18n()
 
 <template>
   <div class="flex gap-1">
-    <VDropdown
-      :overflowPadding="12"
-      autoBoundaryMaxSize
-      placement="bottom-start"
-      class="group"
-    >
+    <UPopover class="group">
       <div
         :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
         class="justify-center text-xl"
@@ -31,7 +27,7 @@ const { t } = useI18n()
         />
       </div>
 
-      <template #popper>
+      <template #panel>
         <!-- Round -->
         <div
           v-if="props.viewOptions.catsView === 'round'"
@@ -133,7 +129,7 @@ const { t } = useI18n()
           </div>
         </div>
       </template>
-    </VDropdown>
+    </UPopover>
   </div>
 </template>
 

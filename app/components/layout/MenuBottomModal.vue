@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAppNav } from '~/components/app/useAppNav'
-import { useUserStore } from '~/components/user/useUser'
+import { useUserStore } from '~/components/user/useUserStore'
 
 const { closeAllModals, isModalOpen } = useAppNav()
 const { t } = useI18n()
@@ -45,16 +45,9 @@ const isDemo = useCookie('finapp.isDemo')
           class="px-3 pt-2 pb-2"
           @click="userStore.signOut"
         >
-          <UButton
-            :ui="{ rounded: 'rounded-lg' }"
-            class="transition-all duration-150 ease-in-out"
-            block
-            size="lg"
-            color="blue"
-            @click="userStore.signOut"
-          >
+          <UiButtonBlue @click="userStore.signOut">
             {{ t("demo.mode.exit") }}
-          </UButton>
+          </UiButtonBlue>
         </div>
       </div>
     </LazyBaseBottomSheet2>

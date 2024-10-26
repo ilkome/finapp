@@ -73,29 +73,23 @@ function openDemo() {
         <UiLogo class="!text-5xl !font-extrabold pb-0" />
 
         <div class="grid min-w-[280px] gap-5 items-center px-3 py-8">
-          <UButton
-            :ui="{ rounded: 'rounded-full' }"
+          <UiButtonBlue
             :loading="isLoading"
-            color="blue"
-            class="transition-all duration-150 ease-in-out"
-            block
             size="xl"
+            rounded
             @click="signInWithGoogle"
           >
             {{ t("loginWithGoogle") }}
-          </UButton>
+          </UiButtonBlue>
 
-          <UButton
-            :ui="{ rounded: 'rounded-full' }"
-            variant="outline"
-            color="blue"
-            class="transition-all duration-150 ease-in-out"
-            block
+          <UiButtonBlue
             size="xl"
+            variant="outline"
+            rounded
             @click="openDemo"
           >
             {{ t("openDemo") }}
-          </UButton>
+          </UiButtonBlue>
         </div>
       </div>
     </div>

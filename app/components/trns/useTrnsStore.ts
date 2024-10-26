@@ -6,8 +6,8 @@ import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps } from '~/compo
 import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { removeTrnToAddLaterLocal, removeTrnToDeleteLaterLocal, saveTrnIDforDeleteWhenClientOnline, saveTrnToAddLaterLocal } from '~/components/trns/helpers'
-import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useUserStore } from '~/components/user/useUser'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 type TrnsGetterParams = {
@@ -43,10 +43,10 @@ export const useTrnsStore = defineStore('trns', () => {
     }
   }
 
-  const hasTrns = computed(() => Object.keys(items.value ?? {}).length > 0)
+  const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
 
   const lastCreatedTrnId = computed(() => {
-    if (!hasTrns.value)
+    if (!hasItems.value)
       return false
 
     return (
@@ -265,7 +265,7 @@ export const useTrnsStore = defineStore('trns', () => {
     deleteTrnsByIds,
     getRange,
     getStoreTrnsIds,
-    hasTrns,
+    hasItems,
     hideTrnModal,
     initTrns,
     isShownModal,

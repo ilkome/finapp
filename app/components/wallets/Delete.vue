@@ -1,16 +1,18 @@
 <script setup lang="ts">
+import type { ToastOptions } from 'vue3-toastify'
+import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { WalletId } from '~/components/wallets/types'
 import { random, successEmo } from '~/assets/js/emo'
 import { removeData } from '~~/services/firebase/api'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useUserStore } from '~/components/user/useUser'
+import { useUserStore } from '~/components/user/useUserStore'
 
 const props = defineProps<{
   walletId: WalletId
 }>()
-const { walletId } = toRefs(props)
 
-const { $notify } = useNuxtApp()
+const { walletId } = toRefs(props)
+const { $toast } = useNuxtApp()
 const router = useRouter()
 const userStore = useUserStore()
 const trnsStore = useTrnsStore()
@@ -46,11 +48,14 @@ async function onDeleteConfirm() {
     await trnsStore.deleteTrnsByIds(trnsIdsS)
     removeData(`users/${uid}/accounts/${walletIdS}`)
       .then(() => {
-        $notify({
-          text: trnsIdsS?.length > 0 ? `Success delete wallet with ${trnsIdsS.length} transactions!` : 'Success delete wallet!',
-          title: random(successEmo),
+        $toast(UiToastContent, {
+          data: {
+            description: trnsIdsS?.length > 0 ? `Success delete wallet with ${trnsIdsS.length} transactions!` : 'Success delete wallet!',
+            title: random(successEmo),
+          },
+          toastId: 'validate',
           type: 'success',
-        })
+        } as ToastOptions)
       })
   }, 100)
 }

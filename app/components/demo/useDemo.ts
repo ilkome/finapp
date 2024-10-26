@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import data from '~/components/demo/data.json'
 import currencies from '~/components/demo/currencies.json'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -26,7 +26,7 @@ export function useDemo() {
 
     currenciesStore.setBase('USD')
     currenciesStore.setRates(currencies)
-    categoriesStore.setCategories(categoriesStore.formatCategories(data.categories))
+    categoriesStore.setCategories(data.categories)
     walletsStore.setWallets(data.wallets)
 
     const startDate = dayjs().startOf('year').subtract(config.subtractYears, 'year').valueOf()

@@ -177,6 +177,10 @@ export default {
     expense: 'Расход',
     income: 'Доход',
     netIncome: 'Баланс',
+    options: {
+      isExcludeInTotal: 'Не считать в общем балансе',
+      withdrawal: 'Доступные',
+    },
     sum: 'Сумма',
     totals: {
       all: 'Всего',
@@ -195,6 +199,13 @@ export default {
     },
     transfer: 'Перевод',
     type: 'Тип кошельки',
+    types: {
+      cash: 'Наличные',
+      cashless: 'Безнал',
+      credit: 'Кредит',
+      debt: 'Долги',
+      deposit: 'Вклады',
+    },
     wallets: 'Кошельки',
   },
 
@@ -337,17 +348,6 @@ export default {
   },
 
   welcome: {
-    create: {
-      btn: 'Погнали',
-      text: 'Начнем с добавления кошелька и категории',
-    },
-    createFirstCategory: {
-      btn: 'Создать',
-      text: 'Отлично! Теперь создадим категорию',
-    },
-    firstRun: {
-      btn: 'Начать',
-      text: 'Пройти первоначальную настройку приложения',
-    },
+    intro: 'Добро пожаловать в Финапку!',
   },
 }

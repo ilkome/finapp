@@ -31,8 +31,7 @@ export function formatDate(value: number, type: 'trnItem' | 'full') {
   if (!value)
     return false
 
-  const { $i18n } = useNuxtApp()
-  const currentLocale = $i18n.locale.value
+  const { locale, t } = useI18n()
 
   switch (type) {
     case 'full':
@@ -41,11 +40,11 @@ export function formatDate(value: number, type: 'trnItem' | 'full') {
         month: dayjs(+value).format('MMM'),
         week: dayjs(+value).format('DD.MM'),
         weekday: dayjs(+value).calendar(null, {
-          lastDay: `[${currentLocale === 'ru' ? 'Вчера' : 'Yesterday'}], dddd`,
+          lastDay: `[${locale.value === 'ru' ? 'Вчера' : 'Yesterday'}], dddd`,
           lastWeek: 'dddd',
-          nextDay: `[${currentLocale === 'ru' ? 'Завтра' : 'Tomorrow'}], dddd`,
+          nextDay: `[${locale.value === 'ru' ? 'Завтра' : 'Tomorrow'}], dddd`,
           nextWeek: 'dddd',
-          sameDay: `[${currentLocale === 'ru' ? 'Сегодня' : 'Today'}], dddd`,
+          sameDay: `[${locale.value === 'ru' ? 'Сегодня' : 'Today'}], dddd`,
           sameElse: 'dddd',
         }),
         year: dayjs(+value).format('YYYY'),
@@ -53,10 +52,10 @@ export function formatDate(value: number, type: 'trnItem' | 'full') {
 
     case 'trnItem':
       if (dayjs().isSame(+value, 'day'))
-        return $i18n.t('dates.day.today')
+        return t('dates.day.today')
 
       if (dayjs().isSame(dayjs(+value).add(1, 'day'), 'day'))
-        return $i18n.t('dates.day.yesterday')
+        return t('dates.day.yesterday')
 
       if (dayjs().isSame(+value, 'year'))
         return dayjs(+value).format('DD.MM')

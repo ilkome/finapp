@@ -9,7 +9,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'closed'): void
+  closed: []
 }>()
 
 // Settings
@@ -452,13 +452,13 @@ const wrapClasses = computed(() => ({
   <div
     ref="containerRef"
     :class="wrapClasses"
-    class="absolute inset-0 z-50 h-full w-full select-none overflow-hidden"
+    class="absolute inset-0 z-50 size-full select-none overflow-hidden"
   >
     <!-- Overlay -->
     <div
       :class="overflowClasses"
       :style="overlayStyles"
-      class="absolute inset-0 z-10 h-full w-full bg-[var(--c-bg-14)]"
+      class="absolute inset-0 z-10 size-full bg-[var(--c-bg-14)]"
       @click="close()"
     />
 
@@ -490,7 +490,7 @@ const wrapClasses = computed(() => ({
             <div>drugStyles: {{ drugStyles }}</div>
             <div>overlayStyles: {{ overlayStyles }}</div>
 
-            <div class="border-b border-t text-sm">
+            <div class="border-y text-sm">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis
               alias similique delectus sequi iusto aspernatur harum natus
               quaerat tempora aut commodi maxime, praesentium itaque soluta

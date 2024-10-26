@@ -3,7 +3,7 @@ import localforage from 'localforage'
 import { getDataOnce, saveData } from '~~/services/firebase/api'
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import { currencies as all } from '~/components/currencies/currencies'
-import { useUserStore } from '~/components/user/useUser'
+import { useUserStore } from '~/components/user/useUserStore'
 
 const serviceUrlBase = `https://openexchangerates.org/api/latest.json?app_id=`
 export const currencies = all
@@ -26,10 +26,6 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     }
   }
 
-  async function getCurrencies() {
-
-  }
-
   async function initCurrencies() {
     // User base currency in DB
     const userBaseCurrency = await getDataOnce(`users/${userStore.uid}/settings/baseCurrency`) || 'USD'
@@ -37,7 +33,6 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     // Rates for today
     const today = dayjs().startOf('day').valueOf()
     let ratesBasedOnUsd = await getDataOnce(`ratesUsd/history/${today}`)
-    console.log('ratesBasedOnUsd', ratesBasedOnUsd)
 
     if (!ratesBasedOnUsd) {
       ratesBasedOnUsd = await getRatesOfUSD($config.public.ratesApiKey)
@@ -72,7 +67,6 @@ export const useCurrenciesStore = defineStore('currencies', () => {
 
   return {
     base,
-    getCurrencies,
     initCurrencies,
     rates,
     setBase,

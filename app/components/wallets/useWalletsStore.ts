@@ -6,13 +6,14 @@ import type { WalletId, WalletItemWithAmount, Wallets } from '~/components/walle
 import { getTotal } from '~/components/amount/getTotal'
 import { uniqueElementsBy } from '~~/utils/simple'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useUserStore } from '~/components/user/useUser'
+import { useUserStore } from '~/components/user/useUserStore'
+import { normalizeWallets } from '~/components/wallets/utils'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
   const userStore = useUserStore()
 
-  const items = ref<Wallets>({})
+  const items = ref<Wallets | null>(null)
 
   function initWallets() {
     getDataAndWatch(`users/${userStore.uid}/accounts`, (wallets: Wallets) => {
@@ -21,14 +22,17 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   function setWallets(values: Wallets | null) {
-    if (!values) {
-      items.value = {}
-      localforage.setItem('finapp.wallets', {})
+    if (values) {
+      const formattedWallets = normalizeWallets(values)
+      console.log('formattedWallets', formattedWallets)
+
+      items.value = formattedWallets
+      localforage.setItem('finapp.wallets', deepUnref(formattedWallets))
       return
     }
 
-    items.value = values
-    localforage.setItem('finapp.wallets', deepUnref(values))
+    items.value = null
+    localforage.setItem('finapp.wallets', null)
   }
 
   async function saveWalletsOrder(ids: WalletId[]) {
@@ -55,7 +59,7 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   function unsubscribeWallets() {
     unsubscribeData(`users/${userStore.uid}/accounts`)
-    setWallets({})
+    setWallets(null)
   }
 
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
@@ -68,10 +72,6 @@ export const useWalletsStore = defineStore('wallets', () => {
       (a, b) => items.value[a].order - items.value[b].order,
     )
   })
-
-  /**
-   * Get total in every wallet
-   */
 
   function getWalletTotal(walletId: WalletId) {
     const trnsIds = trnsStore.getStoreTrnsIds({
@@ -89,16 +89,17 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   const totals = computed(() => {
-    if (!hasItems.value)
-      return {}
+    if (items.value) {
+      return Object.keys(items.value).reduce(
+        (acc, walletId) => {
+          acc[walletId] = getWalletTotal(walletId)
+          return acc
+        },
+        {} as Record<WalletId, WalletItemWithAmount['amount']>,
+      )
+    }
 
-    return Object.keys(items.value).reduce(
-      (acc, walletId) => {
-        acc[walletId] = getWalletTotal(walletId)
-        return acc
-      },
-      {} as Record<WalletId, WalletItemWithAmount['amount']>,
-    )
+    return null
   })
 
   const sortedItems = computed(() =>
@@ -114,9 +115,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     ),
   )
 
-  const currenciesUsed = computed<CurrencyCode[]>(() =>
-    uniqueElementsBy(items.value, 'currency'),
-  )
+  const currenciesUsed = computed<CurrencyCode[]>(() => uniqueElementsBy(items.value, 'currency'))
 
   return {
     currenciesUsed,
@@ -125,7 +124,6 @@ export const useWalletsStore = defineStore('wallets', () => {
     initWallets,
     items,
     saveWalletsOrder,
-
     setWallets,
     sortedIds,
     sortedItems,

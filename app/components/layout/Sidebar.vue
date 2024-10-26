@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
 import type { WalletId } from '~/components/wallets/types'
-import { useUserStore } from '~/components/user/useUser'
+import { useUserStore } from '~/components/user/useUserStore'
 
 const props = defineProps<{
   isShow?: boolean
@@ -17,8 +17,8 @@ const isDemo = useCookie('finapp.isDemo')
 
 <template>
   <div
-    :class="{ 'w-96': props.isShow }"
-    class="hidden h-full min-w-72 content-start gap-6 overflow-hidden overflow-y-auto bg-foreground-3 lg:grid"
+    :class="{ 'translate-x-20': props.isShow }"
+    class="bg-foreground-3 hidden h-full min-w-72 content-start gap-6 overflow-hidden overflow-y-auto transition-all duration-300 ease-in-out lg:grid"
   >
     <div class="flex items-center justify-between pl-4 pr-2 pt-5">
       <NuxtLink to="/dashboard" class="cursor-default">
@@ -50,16 +50,9 @@ const isDemo = useCookie('finapp.isDemo')
       v-if="isDemo"
       class="px-4"
     >
-      <UButton
-        :ui="{ rounded: 'rounded-lg' }"
-        class="transition-all duration-150 ease-in-out"
-        block
-        size="lg"
-        color="blue"
-        @click="userStore.signOut"
-      >
+      <UiButtonBlue @click="userStore.signOut">
         {{ t("demo.mode.exit") }}
-      </UButton>
+      </UiButtonBlue>
     </div>
 
     <LayoutMenuSidebar class="px-2" />
@@ -74,7 +67,7 @@ const isDemo = useCookie('finapp.isDemo')
         isShowToggle
         @onClick="(id: WalletId) => router.push(`/wallets/${id}`)"
       >
-        <template #default="{ walletsItemsLimited }">
+        <template #default="{ walletsIdsSorted, walletsItemsLimited }">
           <WalletsItem
             v-for="(walletItem, walletId) in walletsItemsLimited"
             :key="walletId"
@@ -85,6 +78,17 @@ const isDemo = useCookie('finapp.isDemo')
             isShowIcons
             @click="router.push(`/wallets/${walletId}`)"
           />
+
+          <div
+            v-if="walletsIdsSorted.length === 0"
+            class="px-2"
+          >
+            <UiButtonBlue
+              @click="router.push('/wallets/new')"
+            >
+              {{ t("wallets.new") }}
+            </UiButtonBlue>
+          </div>
         </template>
       </WalletsList>
     </div>

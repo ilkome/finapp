@@ -2,7 +2,7 @@
 import { usePointer, useWindowSize } from '@vueuse/core'
 import type { WalletId } from '~/components/wallets/types'
 import type { CategoryId } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -19,7 +19,7 @@ const walletsStore = useWalletsStore()
 const { width } = useWindowSize()
 const { pointerType } = usePointer()
 
-const isLaptop = computed(() => width.value >= 1024 && pointerType.value === 'mouse')
+const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
 
 const walletId = computed(() => {
   const walletsIds = Object.keys(walletsStore.items ?? {})

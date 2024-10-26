@@ -2,7 +2,7 @@
 import Swiper, { Pagination } from 'swiper'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { getParentCategoryId } from '~/components/categories/getCategories'
 import 'swiper/css'
@@ -113,22 +113,19 @@ async function onSelectParentCategory(id: CategoryId) {
             <!-- Categories -->
             <div
               :style="{ height: props.maxHeight }"
-              class="swiper-slide grid grid-cols-2 gap-0"
+              class="swiper-slide"
             >
-              <TrnFormSelectionCategoriesAll
-                :maxHeight="maxHeight"
-                :parentCategoryId
-                @onSelectCategory="id => onSelectCategory(id, close)"
-                @onSelectParentCategory="id => onSelectParentCategory(id)"
-              />
-
-              <!-- Child Categories Slide -->
-              <TrnFormSelectionCategoriesChild
-                :maxHeight="maxHeight"
-                :parentCategoryId
-                @onSelectCategory="id => onSelectCategory(id, close)"
-                @onSelectParentCategory="id => onSelectParentCategory(id)"
-              />
+              <div class="h-full overflow-y-auto scrollerBlock pb-3">
+                <UiTitle3
+                  class="z-10 sticky pt-4 pb-3 top-0 px-3 bg-foreground-1"
+                  @click="trnFormStore.ui.catsRootModal = true"
+                >
+                  {{ $t("categories.title") }}
+                </UiTitle3>
+                <CategoriesSelector
+                  @onSelected="id => onSelectCategory(id, close)"
+                />
+              </div>
             </div>
           </div>
         </div>

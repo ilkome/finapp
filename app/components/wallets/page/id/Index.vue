@@ -7,7 +7,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 const filter = useFilter()
 provide('filter', filter)
 
-const { $i18n } = useNuxtApp()
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const walletsStore = useWalletsStore()
@@ -26,7 +26,7 @@ function onEditClick() {
 }
 
 useHead({
-  title: `${$i18n.t('wallets.title')}: ${wallet.value?.name}`,
+  title: `${t('wallets.title')}: ${wallet.value?.name}`,
 })
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -41,18 +41,22 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   <UiPage v-if="wallet">
     <UiHeader>
       <RouterLink v-slot="{ href, navigate }" to="/wallets" custom>
-        <a class="grow hocus:bg-item-5" :href="href" @click="navigate">
+        <a
+          class="hocus:bg-item-5 -mx-2 grow px-2"
+          :href="href"
+          @click="navigate"
+        >
           <UiHeaderTitle>
-            <div class="pt-3 text-xs font-medium text-item-2">
+            <div class="text-item-2 pt-3 text-xs font-medium">
               {{ $t("wallets.title") }}
             </div>
             <div class="flex items-center gap-3 pb-1">
-              <div class="text-2xl font-semibold text-item-1">
+              <div class="text-item-1 text-2xl font-semibold">
                 {{ wallet.name }}
               </div>
               <div
                 :style="{ background: wallet.color }"
-                class="flex-center rounded-lg p-1 text-2xs text-icon-primary"
+                class="flex-center text-2xs text-icon-primary rounded-lg p-1"
               >
                 {{ wallet.currency }}
               </div>
@@ -72,8 +76,8 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
       </template>
     </UiHeader>
 
-    <div class="px-2">
-      <div class="px-2 pt-2 lg:px-4">
+    <div class="px-2 md:px-6">
+      <div class="pt-2 lg:px-4">
         <Filter isHideWallets class="pb-2" />
 
         <div v-if="!wallet.isCredit" class="md:max-w-md">
@@ -101,13 +105,13 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
       <div
         v-if="wallet.description"
-        class="mb-6 text-sm text-item-2"
+        class="text-item-2 mb-6 text-sm"
       >
         {{ wallet.description }}
       </div>
     </div>
 
-    <div class="px-2 pt-2 lg:px-4">
+    <div class="px-2 pt-2 md:px-6">
       <StatMiniItem
         type="sum"
         :trnsIds

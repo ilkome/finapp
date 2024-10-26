@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
 defineProps<{
@@ -13,6 +13,7 @@ const emit = defineEmits<{
   onSelected: [id: CategoryId]
 }>()
 
+const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 </script>
 
@@ -28,12 +29,7 @@ const categoriesStore = useCategoriesStore()
       />
     </div>
 
-    <VDropdown
-      v-else
-      :overflowPadding="12"
-      autoBoundaryMaxSize
-      placement="top-start"
-    >
+    <UPopover v-else>
       <CategoriesItem
         :category
         :categoryId
@@ -42,21 +38,18 @@ const categoriesStore = useCategoriesStore()
         insideClasses="bg-item-4 min-h-[42px] py-2"
       />
 
-      <template #popper="{ hide }">
-        <div class="z-10 sticky py-3 px-3 top-0 flex items-center bg-foreground-1">
-          <UiTitle>
-            {{ $t("categories.title") }}
-          </UiTitle>
-
-          <BaseBottomSheetClose @onClick="hide" />
-        </div>
-
-        <CategoriesSelector
-          :hide
-          class="min-w-72 max-w-xs"
-          @onSelected="id => emit('onSelected', id)"
-        />
+      <template #panel="{ close }">
+        <UiPopoverWrap
+          :title="t('categories.title')"
+          @close="close"
+        >
+          <CategoriesSelector
+            :hide="close"
+            class="min-w-72 max-w-xs"
+            @onSelected="id => { emit('onSelected', id); close() }"
+          />
+        </UiPopoverWrap>
       </template>
-    </VDropdown>
+    </UPopover>
   </div>
 </template>

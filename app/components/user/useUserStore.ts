@@ -2,7 +2,7 @@ import { signOut as signOutFirebase } from 'firebase/auth'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import { useAppNav } from '~/components/app/useAppNav'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { saveData } from '~~/services/firebase/api'
@@ -69,13 +69,14 @@ export const useUserStore = defineStore('user', () => {
   function removeUserData() {
     closeAllModals()
 
-    const uid = user.value?.uid
-    if (!uid)
+    console.log(uid.value)
+
+    if (!uid.value)
       return
 
-    saveData(`users/${uid}/accounts/`, null)
-    saveData(`users/${uid}/categories/`, null)
-    saveData(`users/${uid}/trns/`, null)
+    saveData(`users/${uid.value}/accounts/`, null)
+    saveData(`users/${uid.value}/categories/`, null)
+    saveData(`users/${uid.value}/trns/`, null)
   }
 
   return {

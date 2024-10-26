@@ -65,7 +65,7 @@ const selectedWallets = computed(() => {
         isCredit: wallet.isCredit,
         isDebt: wallet.isDebt,
         isDeposit: wallet.isDeposit,
-        withCredit: !wallet.isCredit,
+        showWithCredit: !wallet.isCredit,
         withdrawal: wallet.withdrawal,
       }
 
@@ -130,6 +130,10 @@ const groupedWalletsByType = computed(() =>
     {} as Record<CurrencyCode, WalletId[]>,
   ),
 )
+
+const groupedWalletsByTypeOnly = computed(() => {
+  return Object.fromEntries(Object.entries(groupedWalletsByType.value).filter(([_, walletsIds]) => walletsIds.length > 0))
+})
 
 const totalInWallets = computed(() => {
   const sum = {
@@ -307,7 +311,7 @@ const counts = computed(() => ({
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle>{{ $t('wallets.name') }}</UiHeaderTitle>
+      <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
       <template #actions>
         <UiHeaderLink @click="openModal('walletsSort')">
           <UiIconOrder class="size-5" />
@@ -384,19 +388,21 @@ const counts = computed(() => ({
             :isActive="gropedBy === 'list'"
             @click="gropedBy = 'list'"
           >
-            list
+            {{ t('list') }}
           </UiTabsItem>
           <UiTabsItem
             :isActive="gropedBy === 'type'"
             @click="gropedBy = 'type'"
           >
-            type
+            {{ t('type') }}
           </UiTabsItem>
+
           <UiTabsItem
+            v-if="walletsStore.currenciesUsed.length > 1"
             :isActive="gropedBy === 'currencies'"
             @click="gropedBy = 'currencies'"
           >
-            currencies
+            {{ t('currencies') }}
           </UiTabsItem>
         </UiTabs>
 
@@ -425,7 +431,7 @@ const counts = computed(() => ({
         </UiToggle2>
 
         <!-- By currencies -->
-        <template v-if="gropedBy === 'currencies'">
+        <template v-if="gropedBy === 'currencies' && walletsStore.currenciesUsed.length > 1">
           <UiToggle2
             v-for="(walletsIds, currency) in groupedWalletsByCurrency"
             :key="currency"
@@ -458,7 +464,7 @@ const counts = computed(() => ({
                 groupByWalletType,
               )"
               :key="grouped"
-              class="ml-3 border-l border-item-5 pl-2"
+              class="border-item-5 ml-3 border-l pl-2"
               :storageKey="`finapp-wallets-show-${currency}-${grouped}`"
               :initStatus="false"
               :lineWidth="1"
@@ -469,7 +475,7 @@ const counts = computed(() => ({
                   class="flex grow items-center justify-between pr-3"
                   @click="toggle"
                 >
-                  <UiTitle8>{{ $t(`money.totals.${grouped}`) }}</UiTitle8>
+                  <UiTitle8>{{ t(`money.totals.${grouped}`) }}</UiTitle8>
                   <div class="py-2">
                     <Amount
                       :amount="countWalletsSum(groupedWalletsIds, false)"
@@ -494,9 +500,9 @@ const counts = computed(() => ({
         </template>
 
         <!-- By Type -->
-        <template v-if="gropedBy === 'type'">
+        <template v-if="gropedBy === 'type' && Object.keys(groupedWalletsByTypeOnly).length > 0">
           <UiToggle2
-            v-for="(walletsIds, type) in groupedWalletsByType"
+            v-for="(walletsIds, type) in groupedWalletsByTypeOnly"
             :key="type"
             :storageKey="`finapp-wallets-show-${type}`"
             :initStatus="true"
@@ -509,7 +515,7 @@ const counts = computed(() => ({
                 @click="toggle"
               >
                 <UiTitle88 :isShown>
-                  {{ $t(`money.totals.${type}`) }} {{ walletsIds.length }}
+                  {{ t(`money.totals.${type}`) }} {{ walletsIds.length }}
                 </UiTitle88>
 
                 <div class="py-2">
@@ -521,13 +527,17 @@ const counts = computed(() => ({
               </div>
             </template>
 
+            <pre>
+              {{ Object.keys(groupBy(walletsIds, groupByWalletCurrency)).length === 1 ? '1' : 'many' }}
+            </pre>
+
             <UiToggle2
               v-for="(groupedWalletsIds, currency) in groupBy(
                 walletsIds,
                 groupByWalletCurrency,
               )"
               :key="currency"
-              class="ml-3 border-l border-item-5 pl-2"
+              class="border-item-5 ml-3 border-l pl-2"
               :storageKey="`finapp-wallets-show-${type}-${currency}`"
               :initStatus="false"
               :lineWidth="1"
@@ -615,9 +625,15 @@ const counts = computed(() => ({
 <i18n lang="yaml">
 en:
   filterByCurrency: Filter by
+  list: List
+  type: Type
+  currencies: Currencies
   currenciesBase: Base currency
 
 ru:
+  list: Список
+  type: Тип
+  currencies: Валюты
   filterByCurrency: Валюты кошельков
   currenciesBase: Основная валюта
 </i18n>

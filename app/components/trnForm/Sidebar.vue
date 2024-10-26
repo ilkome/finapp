@@ -50,7 +50,7 @@ function onSelectCategory(id: CategoryId) {
   <Transition name="fadeIn" appear>
     <div
       v-if="isShow"
-      class="absolute left-0 top-0 h-full trnForm w-96 overflow-hidden bg-foreground-1 border-r-2 border-item-5"
+      class="trnForm bg-foreground-1 border-item-5 absolute left-0 top-0 z-50 h-full w-96 overflow-hidden border-r-2 shadow-2xl"
     >
       <div class="absolute right-2 top-2">
         <BaseBottomSheetClose @onClick="trnFormStore.onClose()" />
@@ -59,8 +59,8 @@ function onSelectCategory(id: CategoryId) {
       <div ref="sliderRef2" class="swiper-container h-full">
         <div class="swiper-wrapper">
           <!-- Main -->
-          <div class="swiper-slide getHeight bg-foreground-1">
-            <div class="grid grid-rows-[auto,1fr] gap-4 scroll scrollerBlock">
+          <div class="swiper-slide bg-foreground-1 h-full">
+            <div class="scroll scrollerBlock grid grid-rows-[auto,1fr] gap-4">
               <TrnFormMain maxHeight="100vh" class="!pb-0" />
 
               <!-- History -->
@@ -77,11 +77,11 @@ function onSelectCategory(id: CategoryId) {
             :style="{ height: '100%' }"
           >
             <div class="scroll scrollerBlock">
-              <div class="pb-4 pt-4">
+              <div class="py-4">
                 <TrnFormSelectionWalletsFast class="pb-6" />
 
                 <TrnFormSelectionCategoriesFast
-                  @onSelectCategory="id => onSelectCategory(id)"
+                  @onSelectCategory="onSelectCategory"
                 />
               </div>
             </div>
@@ -96,6 +96,20 @@ function onSelectCategory(id: CategoryId) {
   <!-- Modals -->
   <LazyTrnFormModalDescription v-if="trnFormStore.modal.description" />
 </template>
+
+<style scoped>
+.fadeIn {
+  &-enter-active,
+  &-leave-active {
+    @apply opacity-100 translate-x-0 transition-all duration-300 ease-in-out;
+  }
+
+  &-enter-from,
+  &-leave-to {
+    @apply opacity-0 -translate-x-12;
+  }
+}
+</style>
 
 <style lang="stylus" scoped>
 @import "../app/assets/stylus/variables/*"

@@ -11,7 +11,7 @@ const emit = defineEmits<{
   click: [id: StatTabs]
 }>()
 
-const { $i18n } = useNuxtApp()
+const { t } = useI18n()
 
 const menu = computed(() => {
   const all: {
@@ -23,19 +23,19 @@ const menu = computed(() => {
   all.push({
     id: 'netIncome',
     idx: 0,
-    name: $i18n.t('money.netIncome'),
+    name: t('money.netIncome'),
   })
   all.push({
     id: 'sum',
     idx: 0,
-    name: $i18n.t('stat.summary'),
+    name: t('stat.summary'),
   })
 
   if (props.isShowExpense) {
     all.push({
       id: 'expense',
       idx: 1,
-      name: $i18n.t('money.expense'),
+      name: t('money.expense'),
     })
   }
 
@@ -43,7 +43,7 @@ const menu = computed(() => {
     all.push({
       id: 'income',
       idx: 2,
-      name: $i18n.t('money.income'),
+      name: t('money.income'),
     })
   }
 

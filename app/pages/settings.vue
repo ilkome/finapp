@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import pkg from '~~/package.json'
-import { useUserStore } from '~/components/user/useUser'
+import { useUserStore } from '~/components/user/useUserStore'
 
-const { $i18n } = useNuxtApp()
 const { t } = useI18n()
 const userStore = useUserStore()
 
 useSeoMeta({
-  title: $i18n.t('settings.title'),
+  title: t('settings.title'),
 })
 
 const version = pkg.version
@@ -25,7 +24,7 @@ function removeUserData() {
       <UiHeaderTitle>{{ t("settings.title") }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="grow grid gap-x-6 gap-y-1 px-4 pt-2">
+    <div class="grid grow gap-x-6 gap-y-1 px-4 pt-2">
       <div>
         <!-- Locale -->
         <div class="pb-12">
@@ -53,7 +52,7 @@ function removeUserData() {
           <UiTitle3 class="pb-2">
             {{ t("user") }}
           </UiTitle3>
-          <div class="pb-4 text-item-2">
+          <div class="text-item-2 pb-4">
             {{ userStore.user?.email }}
           </div>
           <UiBox1
@@ -70,7 +69,7 @@ function removeUserData() {
           <UiTitle3 class="pb-2">
             {{ t("settings.caution") }}
           </UiTitle3>
-          <div class="leading-1 pb-4 text-xs text-item-2">
+          <div class="leading-1 text-item-2 pb-4 text-xs">
             {{ t("alerts.willDeleteEverything") }}
           </div>
           <div class="pb-4">
@@ -88,7 +87,7 @@ function removeUserData() {
       <!-- About -->
       <div class="pb-12">
         {{ t("app.about") }}
-        <div class="pt-4 text-xs text-item-2">
+        <div class="text-item-2 pt-4 text-xs">
           {{ t("app.version") }} {{ version }}
         </div>
       </div>

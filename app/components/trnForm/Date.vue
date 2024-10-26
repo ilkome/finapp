@@ -32,21 +32,16 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 
 <template>
   <div class="flex gap-1 -ml-1">
-    <VDropdown
-      :overflowPadding="12"
-      autoBoundaryMaxSize
-      class="grow"
-      placement="bottom-start"
-    >
+    <UPopover class="grow">
       <div
         class="grid gap-1 rounded-md px-2 py-2 text-sm font-medium text-3 leading-none hocus:bg-item-5"
         v-html="formattedDate"
       />
 
-      <template #popper="{ hide }">
-        <TrnFormCalendar :hide="hide" />
+      <template #panel="{ close }">
+        <TrnFormCalendar :hide="close" />
       </template>
-    </VDropdown>
+    </UPopover>
 
     <StatDateNav
       :isLastPeriod="false"

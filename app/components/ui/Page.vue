@@ -1,6 +1,6 @@
 <template>
   <div
-    class="-max-w-5xl relative grid w-full content-start overflow-y-auto overflow-x-hidden pb-[52px] sm:pb-2"
+    class="-pb-[52px] relative w-full overflow-y-auto overflow-x-hidden pb-3"
   >
     <slot />
   </div>

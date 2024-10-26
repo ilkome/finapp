@@ -1,29 +1,25 @@
 <script setup lang="ts">
 const props = defineProps<{
-  maxWidth?: boolean
+  loading?: boolean
+  rounded?: boolean
+  size?: 'lg' | 'xl'
+  variant?: 'outline'
 }>()
 
 const emit = defineEmits(['click'])
 </script>
 
 <template>
-  <button
-    :class="{
-      'max-w-[320px]': props.maxWidth,
-    }"
-
-    class="
-      overflow-hidden relative
-      enabled:cursor-default
-      py-3 px-3 w-full
-      text-accent-3 text-center
-      bg-blue-600 rounded-full
-      hocus:bg-blue-700
-      transition
-      min-h-11
-    "
+  <UButton
+    :loading="props.loading"
+    :size="props.size || 'lg'"
+    :ui="{ rounded: props.rounded ? 'rounded-full' : 'rounded-lg' }"
+    :variant="props.variant"
+    block
+    class="transition-all duration-150 ease-in-out"
+    color="blue"
     @click="emit('click')"
   >
     <slot />
-  </button>
+  </UButton>
 </template>

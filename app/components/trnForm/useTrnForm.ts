@@ -1,20 +1,23 @@
 import dayjs from 'dayjs'
+import type { ToastOptions } from 'vue3-toastify'
 import { defineStore } from 'pinia'
+import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CategoryId } from '~/components/categories/types'
-import type { WalletId } from '~/components/wallets/types'
-import type { TrnFormUi, TrnFormValues } from '~/components/trnForm/types'
 import type { TransferType, TrnId, TrnItem } from '~/components/trns/types'
+import type { TrnFormUi, TrnFormValues } from '~/components/trnForm/types'
+import type { WalletId } from '~/components/wallets/types'
 import { TrnType } from '~/components/trns/types'
+import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { formatInput, getSum } from '~/components/trnForm/utils/calculate'
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
 import { generateId } from '~~/utils/generateId'
-import { random, successEmo } from '~/assets/js/emo'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { validate } from '~/components/trnForm/utils/validate'
-import { useCategoriesStore } from '~/components/categories/useCategories'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 export const useTrnFormStore = defineStore('trnForm', () => {
+  const { $toast } = useNuxtApp()
   const values = reactive<TrnFormValues>({
     amount: [0, 0, 0],
     amountRaw: ['', '', ''],
@@ -144,6 +147,8 @@ export const useTrnFormStore = defineStore('trnForm', () => {
   })
 
   function setValues(props: Values) {
+    console.log('props', props)
+
     values.trnId = null
 
     if (props.action === 'create') {
@@ -186,24 +191,24 @@ export const useTrnFormStore = defineStore('trnForm', () => {
       : formatTransfer(values)
 
     try {
+      console.log('data', data)
+
       const validateStatus = validate(data)
 
+      console.log('validateStatus', validateStatus)
+
       if (validateStatus.error) {
-        // vue.notify({
-        //   type: 'error',
-        //   title: validateStatus.error.title,
-        //   text: validateStatus.error.text,
-        // })
-        console.log('error', validateStatus)
+        $toast(UiToastContent, {
+          data: {
+            description: validateStatus.error,
+            title: random(errorEmo),
+          },
+          toastId: 'trn-form-error',
+          type: 'error',
+        } as ToastOptions)
+
         return
       }
-
-      // TODO: translate
-      // vue.notify({
-      //   type: 'success',
-      //   text: 'Excellent transaction!',
-      //   title: random(successEmo),
-      // })
 
       return {
         id: values.trnId ?? generateId(),
@@ -211,6 +216,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
       }
     }
     catch (e) {
+      console.error(e)
       return false
     }
   }
@@ -282,7 +288,7 @@ export function useTrnForm() {
       action: 'create',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn: trnsStore.lastCreatedTrnItem,
-      walletId: props?.walletId,
+      walletId: props?.walletId ?? walletsStore.sortedIds[0],
       walletsIds: walletsStore.sortedIds,
     })
     trnFormStore.ui.isShow = true

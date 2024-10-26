@@ -2,7 +2,7 @@
 import Swiper from 'swiper'
 import 'swiper/css'
 import type { CategoryId } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const emit = defineEmits<{

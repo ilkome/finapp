@@ -53,6 +53,12 @@ export default defineNuxtConfig({
     },
   },
 
+  eslint: {
+    config: {
+      standalone: false,
+    },
+  },
+
   experimental: {
     viewTransition: true,
   },
@@ -88,11 +94,11 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
-    'floating-vue/nuxt',
     'nuxt-icon',
     '@nuxt/ui',
     '@nuxt/fonts',
     'nuxt-vuefire',
+    '@nuxt/eslint',
   ],
 
   plugins: [{ src: '~/plugins/dayjs' }, { src: '~/plugins/toast' }],

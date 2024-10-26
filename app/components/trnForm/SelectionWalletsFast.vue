@@ -6,12 +6,12 @@ const trnFormStore = useTrnFormStore()
 
 <template>
   <div>
-    <UiTitle
-      class="px-3 pb-2 pt-1.5"
+    <UiTitle3
+      class="z-10 sticky pb-3 top-0 px-3 bg-foreground-1"
       @click="trnFormStore.openTrnFormModal('wallets')"
     >
       {{ $t("wallets.title") }}
-    </UiTitle>
+    </UiTitle3>
 
     <WalletsList
       v-slot="{ walletsItemsLimited }"

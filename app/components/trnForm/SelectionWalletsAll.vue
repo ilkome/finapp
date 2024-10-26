@@ -16,12 +16,12 @@ const trnFormStore = useTrnFormStore()
 
 <template>
   <div>
-    <UiTitle
-      class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1"
+    <UiTitle3
+      class="z-10 sticky pt-4 pb-3 top-0 px-3 bg-foreground-1"
       @click="trnFormStore.ui.walletsModal = true"
     >
       {{ $t("wallets.title") }}
-    </UiTitle>
+    </UiTitle3>
 
     <WalletsSelector
       :hide="emit('close')"

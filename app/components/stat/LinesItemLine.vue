@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory, ViewOptions } from '~/components/stat/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 
 const props = defineProps<{
@@ -24,7 +24,7 @@ const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
 const category = computed(() => categoriesStore.items[props.item.id])
-const parentCategory = computed(() => categoriesStore.items[category.value.parentId])
+const parentCategory = computed(() => categoriesStore.items[category.value?.parentId])
 
 function getBarStyle() {
   return {

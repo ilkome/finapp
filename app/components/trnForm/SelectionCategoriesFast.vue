@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const emit = defineEmits<{
@@ -17,7 +17,7 @@ const trnFormStore = useTrnFormStore()
   <!-- Favorite categories -->
   <div v-if="categoriesStore.favoriteCategoriesIds.length > 0">
     <UiTitle3
-      class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1"
+      class="z-10 sticky pt-4 pb-3 top-0 px-3 bg-foreground-1"
       @click="trnFormStore.ui.catsRootModal = true"
     >
       {{ $t("categories.favoriteTitle") }}
@@ -39,7 +39,7 @@ const trnFormStore = useTrnFormStore()
     class="pt-6"
   >
     <UiTitle3
-      class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1"
+      class="z-10 sticky pt-4 pb-3 top-0 px-3 bg-foreground-1"
       @click="trnFormStore.ui.catsRootModal = true"
     >
       {{ $t("categories.lastUsedTitle") }}

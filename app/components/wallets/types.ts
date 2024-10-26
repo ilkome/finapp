@@ -3,19 +3,51 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { DeepPartial } from '~~/utils/types'
 
 export const types = [
+  'cash',
+  'cashless',
+  'deposit',
+  'credit',
+  'debt',
+] as const
+
+export const viewTypes = [
+  ...types,
   'available',
+  'creditPossible',
+  'showWithCredit',
   'withdrawal',
-  'isCash',
-  'isCashless',
-  'isDeposit',
-  'isCredit',
-  'isDebt',
   'archived',
 ] as const
 
 export type WalletId = string
+export type WalletTypes = typeof types[number]
 
-export type WalletItem = {
+type WalletItemBase = {
+  color: string
+  creditLimit?: number
+  currency: CurrencyCode
+  description?: string
+  editedAt: number
+  id: WalletId
+  isArchived?: boolean
+  isExcludeInTotal?: boolean
+  isWithdrawal?: boolean
+  name: string
+  order: number
+}
+
+type WalletItemSimple = WalletItemBase & {
+  type: Exclude<WalletTypes, 'credit'>
+}
+
+type WalletItemCredit = WalletItemBase & {
+  creditLimit: number
+  type: 'credit'
+}
+
+export type WalletItem = WalletItemSimple | WalletItemCredit
+
+export type WalletItemRaw = {
   archived?: boolean
   color: string
   creditLimit?: number
@@ -32,7 +64,7 @@ export type WalletItem = {
   name: string
   order: number
   withdrawal?: boolean
-}
+} & WalletItem
 
 export type WalletForm = DeepPartial<WalletItem> & {
   creditLimit?: number | null
@@ -40,6 +72,7 @@ export type WalletForm = DeepPartial<WalletItem> & {
 }
 
 export type Wallets = Record<WalletId, WalletItem>
+export type WalletsRaw = Record<WalletId, WalletItemRaw>
 export type WalletsWithAmount = Record<WalletId, WalletItemWithAmount>
 
 export type WalletWithTotal = {
@@ -57,9 +90,11 @@ export type WalletItemWithAmount = {
   amount: number
 } & WalletItem
 
-export type WalletTypes = Exclude<typeof types[number], 'available'>
-export type WalletTypesView = Pick<WalletItem, WalletTypes> & {
+export type WalletTypesView = {
+  [K in WalletTypes]: boolean
+} & {
   creditPossible: boolean
-  withCredit: boolean
+  showWithCredit: boolean
 }
+
 export type WalletTypeViewAll = keyof WalletTypesView | 'all'

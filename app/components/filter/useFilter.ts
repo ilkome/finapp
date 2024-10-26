@@ -3,13 +3,13 @@ import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { PeriodNameWithAll, Periods, PeriodsNames } from '~/components/filter/types'
 
 export function useFilter() {
-  const { $i18n } = useNuxtApp()
+  const { t } = useI18n()
   const router = useRouter()
   const route = useRoute()
   const trnsStore = useTrnsStore()
@@ -62,12 +62,12 @@ export function useFilter() {
   const periodsNames = computed<PeriodsNames>(() => [
     {
       icon: 'mdi:calendar',
-      name: $i18n.t('dates.month.simple'),
+      name: t('dates.month.simple'),
       slug: 'month',
     },
     {
       icon: 'mdi:calendar-star',
-      name: $i18n.t('dates.year.simple'),
+      name: t('dates.year.simple'),
       slug: 'year',
     },
   ])
@@ -126,7 +126,7 @@ export function useFilter() {
   }
 
   function setPrevPeriodDate() {
-    if (trnsStore.hasTrns) {
+    if (trnsStore.hasItems) {
       if (periodNameWithAll.value === 'all')
         return
 

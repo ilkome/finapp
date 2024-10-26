@@ -4,137 +4,137 @@ import type { Transaction, Transfer } from '~/components/trns/types'
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
 
 const valuesBase: TrnFormValues = {
-  trnId: 'id',
   amount: [10, 20, 30],
   amountRaw: ['10', '20', '30'],
-  date: 99999,
-  transferType: 1,
-  trnType: 2,
-  walletId: 'WalletId',
   categoryId: 'CategoryId',
+  date: 99999,
   expenseWalletId: 'expenseWalletId',
   incomeWalletId: 'incomeWalletId',
+  transferType: 1,
+  trnId: 'id',
+  trnType: 2,
+  walletId: 'WalletId',
 }
 
 const transaction: {
-  raw: TrnFormValues
   generated: Transaction
+  raw: TrnFormValues
 } = {
+  generated: {
+    amount: 10,
+    categoryId: 'CategoryId',
+    date: 99999,
+    edited: 1690711427451,
+    type: 0,
+    walletId: 'WalletId',
+  },
   raw: {
     ...valuesBase,
     transferType: 1,
     trnType: 0,
   },
-  generated: {
-    categoryId: 'CategoryId',
-    date: 99999,
-    edited: 1690711427451,
-    type: 0,
-    amount: 10,
-    walletId: 'WalletId',
-  },
 }
 
 const transfer: {
-  raw: TrnFormValues
   generated: Transfer
+  raw: TrnFormValues
 } = {
+  generated: {
+    categoryId: 'transfer',
+    date: 99999,
+    edited: 1690711427451,
+    expenseAmount: 20,
+    expenseWalletId: 'expenseWalletId',
+    incomeAmount: 30,
+    incomeWalletId: 'incomeWalletId',
+    type: 2,
+  },
   raw: {
     ...valuesBase,
     transferType: 1,
     trnType: 2,
   },
-  generated: {
-    categoryId: 'transfer',
-    date: 99999,
-    edited: 1690711427451,
-    type: 2,
-    expenseAmount: 20,
-    incomeAmount: 30,
-    incomeWalletId: 'incomeWalletId',
-    expenseWalletId: 'expenseWalletId',
-  },
 }
 
 const transactions = [{
-  name: 'Format empty',
   data: {
-    expect: {},
     become: false,
+    expect: {},
   },
+  name: 'Format empty',
 }, {
-  name: 'Format income',
   data: {
-    expect: {
-      ...transaction.raw,
-    } as TrnFormValues,
     become: {
       ...transaction.generated,
     } as Transaction | false,
+    expect: {
+      ...transaction.raw,
+    } as TrnFormValues,
   },
+  name: 'Format income',
 }, {
-  name: 'Format with wrong type',
   data: {
+    become: false,
     expect: {
       ...transaction.raw,
       trnType: 2,
     } as TrnFormValues,
-    become: false,
   },
+  name: 'Format with wrong type',
 }, {
-  name: 'Format with missing CategoryId',
   data: {
+    become: false,
     expect: {
       ...transaction.raw,
       categoryId: null,
     } as TrnFormValues,
-    become: false,
   },
+  name: 'Format with missing CategoryId',
 }]
 
 const transfers = [{
-  name: 'Format empty',
   data: {
-    expect: {},
     become: false,
+    expect: {},
   },
+  name: 'Format empty',
 }, {
-  name: 'Format values',
   data: {
-    expect: {
-      ...transfer.raw,
-    } as TrnFormValues,
     become: {
       ...transfer.generated,
     } as Transfer,
+    expect: {
+      ...transfer.raw,
+    } as TrnFormValues,
   },
+  name: 'Format values',
 }, {
-  name: 'Format with wrong type',
   data: {
+    become: false,
     expect: {
       ...transfer.raw,
       trnType: 1,
     } as TrnFormValues,
-    become: false,
   },
+  name: 'Format with wrong type',
 }, {
-  name: 'Format with missing expenseWalletId',
   data: {
+    become: false,
     expect: {
       ...transfer.raw,
       expenseWalletId: null,
     } as TrnFormValues,
-    become: false,
   },
+  name: 'Format with missing expenseWalletId',
 }, {
-  name: 'Format with wrong type',
   data: {
+    become: false,
     expect: {
       ...transfer.raw,
       trnType: 1,
     } as TrnFormValues,
-    become: false,
   },
+  name: 'Format with wrong type',
 }]
 
 /**

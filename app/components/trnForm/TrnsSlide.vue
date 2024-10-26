@@ -3,7 +3,7 @@ import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 import { getDates } from '~/components/date/format'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -13,7 +13,7 @@ const props = defineProps<{
   }
 }>()
 
-const { $i18n } = useNuxtApp()
+const { t } = useI18n()
 const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
@@ -55,21 +55,21 @@ function onClickEdit() {
 const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
   {
     id: 'all',
-    name: $i18n.t('trnForm.filterAll'),
+    name: t('trnForm.filterAll'),
   },
   {
     id: 'wallet',
-    name: $i18n.t('trnForm.filterWallet'),
+    name: t('trnForm.filterWallet'),
   },
   {
     id: 'walletAndCategory',
-    name: $i18n.t('trnForm.filterWalletAndCategory'),
+    name: t('trnForm.filterWalletAndCategory'),
   },
 ])
 </script>
 
 <template>
-  <div class="grid gap-2 sm:max-w-sm h-full grid-rows-[1fr,auto] overflow-hidden">
+  <div class="grid h-full grid-rows-[1fr,auto] gap-2 sm:max-w-sm">
     <TrnsList
       :defaultFilterTrnsPeriod="periodGrouped"
       :trnsIds="trnsIds"
@@ -79,11 +79,15 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
       @onClickEdit="onClickEdit"
     >
       <template #contentBefore>
-        <TrnFormDate />
+        <div class="pb-2">
+          <TrnFormDate />
+        </div>
+
         <UiTabs>
           <UiTabsItem
             v-for="tab in tabs"
             :key="tab.id"
+            class="whitespace-nowrap"
             :isActive="tab.id === filterBy"
             @click="changeFilter(tab.id)"
           >

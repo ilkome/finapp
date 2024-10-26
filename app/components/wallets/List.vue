@@ -50,7 +50,7 @@ onMounted(() => stateLimit.value = props.limit)
     >
       <div
         :class="getStyles('item', ['rounded', 'minh', 'link', 'padding5', 'center3'])"
-        class="-mt-[1px] text-xs"
+        class="-mt-px text-xs"
         @click="toggle"
       >
         <template v-if="stateLimit > 0">

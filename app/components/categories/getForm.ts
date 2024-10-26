@@ -1,11 +1,11 @@
 import icons from '~/assets/js/icons'
 import type { CategoryForm } from '~/components/categories/types'
-import { allColors } from '~/assets/js/colors'
 import { random } from '~/assets/js/emo'
+import { colorsArray } from '~/components/color/colors'
 
 export function getPreparedFormData(values?: any): CategoryForm {
   return {
-    color: values?.color ?? random(allColors),
+    color: values?.color ?? random(colorsArray),
     icon: values?.icon ?? random(random(icons)),
     name: values?.name ?? '',
     order: values?.order ?? 1,

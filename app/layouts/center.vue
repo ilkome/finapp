@@ -17,6 +17,8 @@ useHead({
   },
 })
 
+console.log(999)
+
 useGuard()
 </script>
 

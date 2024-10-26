@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import type { CategoryId } from '~/components/categories/types'
 
 const { t } = useI18n()
 useHead({
   title: t('categories.title'),
 })
-
-const categoriesStore = useCategoriesStore()
 const router = useRouter()
+const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle>{{ $t('categories.name') }}</UiHeaderTitle>
+      <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
         <UiHeaderLink @click="router.push('/categories/new')">
           <UiIconAdd class="size-5" />
@@ -22,14 +21,21 @@ const router = useRouter()
       </template>
     </UiHeader>
 
-    <div class="grow px-2 md:px-6">
+    <div class="max-w-xl grow px-2 md:px-6">
       <CategoriesList
         :ids="categoriesStore.categoriesRootIds"
-        class=""
-        @click="
-          (categoryId: CategoryId) => router.push(`/categories/${categoryId}`)
-        "
+        @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"
       />
+
+      <div
+        v-if="categoriesStore.categoriesRootIds.length === 0"
+      >
+        <UiButtonBlue
+          @click="router.push('/categories/new')"
+        >
+          {{ t("categories.new") }}
+        </UiButtonBlue>
+      </div>
     </div>
   </UiPage>
 </template>

@@ -12,6 +12,7 @@ const emit = defineEmits<{
   onSelected: [id: WalletId]
 }>()
 
+const { t } = useI18n()
 const walletsStore = useWalletsStore()
 </script>
 
@@ -27,12 +28,7 @@ const walletsStore = useWalletsStore()
       @click="emit('onOpen', 0)"
     />
 
-    <VDropdown
-      v-else
-      :overflowPadding="12"
-      autoBoundaryMaxSize
-      placement="top-start"
-    >
+    <UPopover v-else>
       <WalletsItem
         :walletId
         :wallet="walletsStore.sortedItems[walletId]"
@@ -41,23 +37,19 @@ const walletsStore = useWalletsStore()
         insideClasses="bg-item-4 min-h-[42px] py-2"
       />
 
-      <template #popper="{ hide }">
-        <div>
-          <div class="z-10 sticky pt-4 pb-2 top-0 px-3 bg-foreground-1">
-            <UiTitle class="px-3 pb-2 pt-1.5">
-              {{ $t("wallets.title") }}
-            </UiTitle>
-            <BaseBottomSheetClose @onClick="hide" />
-          </div>
-
+      <template #panel="{ close }">
+        <UiPopoverWrap
+          :title="t('wallets.title')"
+          @close="close"
+        >
           <WalletsSelector
-            :hide
+            :hide="close"
             :activeItemId="props.walletId"
-            class="min-w-72 max-w-xs"
+            class="min-w-72 max-w-xs "
             @onSelected="id => emit('onSelected', id)"
           />
-        </div>
+        </UiPopoverWrap>
       </template>
-    </VDropdown>
+    </UPopover>
   </div>
 </template>

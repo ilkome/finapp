@@ -4,9 +4,9 @@ import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CategoryId } from '~/components/categories/types'
 import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { removeData } from '~~/services/firebase/api'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useUserStore } from '~/components/user/useUser'
+import { useUserStore } from '~/components/user/useUserStore'
 
 const props = defineProps<{
   categoryId: CategoryId
@@ -44,7 +44,7 @@ function onClickDelete() {
             'You can not delete category with child categories. Remove child categories first.',
           title: random(errorEmo),
         },
-        toastId: 'delete-category-with-child',
+        toastId: 'delete-category-with-child-error',
         type: 'error',
       } as ToastOptions)
 
@@ -68,12 +68,14 @@ async function onDeleteConfirm() {
   setTimeout(async () => {
     await trnsStore.deleteTrnsByIds(trnsIdsS)
     removeData(`users/${uid}/categories/${categoryIdS}`).then(() => {
-      console.log('TODO')
-      // $notify({
-      //   type: 'success',
-      //   text: trnsIdsS?.length > 0 ? `Success delete category with ${trnsIdsS.length} transactions!` : 'Success delete category!',
-      //   title: random(successEmo),
-      // })
+      $toast(UiToastContent, {
+        data: {
+          description: trnsIdsS?.length > 0 ? `Success delete category with ${trnsIdsS.length} transactions!` : 'Success delete category!',
+          title: random(successEmo),
+        },
+        toastId: 'delete-category-with-child-success',
+        type: 'success',
+      } as ToastOptions)
     })
   }, 100)
 }

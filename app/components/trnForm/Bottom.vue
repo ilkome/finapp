@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Swiper, { Pagination } from 'swiper'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import 'swiper/css'
@@ -10,7 +10,7 @@ const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 const isShow = computed(() =>
   walletsStore.hasItems
-  && categoriesStore.hasCategories
+  && categoriesStore.hasItems
   && trnFormStore.ui.isShow,
 )
 
@@ -65,9 +65,8 @@ onMounted(init)
     drugClassesCustom="max-h-[100dvh] md:bottom-1/2 md:-translate-x-1/2 md:translate-y-1/2"
     @closed="trnFormStore.onClose()"
   >
-    <template #handler="{ close }">
+    <template #handler>
       <BaseBottomSheetHandler />
-      <!-- <BaseBottomSheetClose @onClick="close" /> -->
     </template>
 
     <div class="trnForm lg:ml-12 bg-foreground-1">
@@ -80,7 +79,7 @@ onMounted(init)
           >
             <TrnFormTrnsSlide
               :slider="sliderObj"
-              class="px-2 pt-4 pb-6"
+              class="overflow-hidden px-2 pt-4 pb-6"
             />
           </div>
 

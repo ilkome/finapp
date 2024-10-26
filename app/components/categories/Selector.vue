@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
   hide?: () => null
@@ -38,9 +38,7 @@ function onFilter(id: CategoryId) {
 </script>
 
 <template>
-  <div
-    class="p-2 pt-1 pb-2"
-  >
+  <div class="p-2 pt-1 pb-2">
     <div
       v-for="categoryId in categoriesStore.categoriesRootIds"
       :key="categoryId"

@@ -47,87 +47,84 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 </script>
 
 <template>
-  <!-- Sum -->
-  <div class="">
-    <div class="bg-foreground-3 z-10 lg:sticky lg:top-0 -max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-2">
-      <div class="flex gap-1 overflow-x-auto p-2 pb-0 ">
-        <Filter v-if="props.isShowFilter" />
+  <div class="bg-foreground-3 z-10 lg:sticky lg:top-0 lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-2">
+    <div class="flex gap-1 overflow-x-auto p-2 pb-0 ">
+      <Filter v-if="props.isShowFilter" />
 
-        <StatMenu
-          :active="activeTab"
-          :isShowIncome="totals.income !== 0"
-          :isShowExpense="totals.expense !== 0"
-          @click="id => activeTab = id"
-        />
-      </div>
-
-      <div class="">
-        <WalletsList
-          v-slot="{ walletsItemsLimited }"
-          :limit="4"
-          class="flex gap-1 overflow-hidden overflow-x-auto p-2 pb-0"
-        >
-          <WalletsItem
-            v-for="(wallet, walletId) in walletsItemsLimited"
-            :key="walletId"
-            :activeItemId="filteredWallets.includes(`${walletId}`) ? walletId : null"
-            :walletId
-            :wallet
-            alt
-            insideClasses="bg-item-4 min-w-16"
-            @click="filteredWallets.includes(`${walletId}`) ? filteredWallets = filteredWallets.filter(id => id !== `${walletId}`) : filteredWallets.push(`${walletId}`)"
-          />
-        </WalletsList>
-      </div>
+      <StatMenu
+        :active="activeTab"
+        :isShowIncome="totals.income !== 0"
+        :isShowExpense="totals.expense !== 0"
+        @click="id => activeTab = id"
+      />
     </div>
 
-    <!-- NetIncome -->
-    <StatMiniItem
-      v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
-      :storageKey="props.storageKey + activeTab"
-      :trnsIds="trnsIds"
-      class="-max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
-      type="sum"
-    />
+    <div class="">
+      <WalletsList
+        v-slot="{ walletsItemsLimited }"
+        :limit="4"
+        class="flex gap-1 overflow-hidden overflow-x-auto p-2 pb-0"
+      >
+        <WalletsItem
+          v-for="(wallet, walletId) in walletsItemsLimited"
+          :key="walletId"
+          :activeItemId="filteredWallets.includes(`${walletId}`) ? walletId : null"
+          :walletId
+          :wallet
+          alt
+          insideClasses="bg-item-4 min-w-16"
+          @click="filteredWallets.includes(`${walletId}`) ? filteredWallets = filteredWallets.filter(id => id !== `${walletId}`) : filteredWallets.push(`${walletId}`)"
+        />
+      </WalletsList>
+    </div>
+  </div>
 
+  <!-- NetIncome -->
+  <StatMiniItem
+    v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
+    :storageKey="props.storageKey + activeTab"
+    :trnsIds="trnsIds"
+    class="-max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
+    type="sum"
+  />
+
+  <!-- Expense -->
+  <StatMiniItem
+    v-if="(activeTab === 'expense') && expenseTrnsIds.length > 0"
+    :trnsIds="expenseTrnsIds"
+    :storageKey="props.storageKey + activeTab"
+    class="-max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
+    type="expense"
+  />
+
+  <!-- Income -->
+  <StatMiniItem
+    v-if="(activeTab === 'income') && incomeTrnsIds.length > 0"
+    :trnsIds="incomeTrnsIds"
+    :storageKey="props.storageKey + activeTab"
+    class="-max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
+    type="income"
+  />
+
+  <!-- Summary -->
+  <div
+    v-if="activeTab === 'sum'"
+    class="grid md:grid-cols-2 gap-4 lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
+  >
     <!-- Expense -->
     <StatMiniItem
-      v-if="(activeTab === 'expense') && expenseTrnsIds.length > 0"
+      v-if="(activeTab === 'sum') && expenseTrnsIds.length > 0"
       :trnsIds="expenseTrnsIds"
       :storageKey="props.storageKey + activeTab"
-      class="-max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
       type="expense"
     />
 
     <!-- Income -->
     <StatMiniItem
-      v-if="(activeTab === 'income') && incomeTrnsIds.length > 0"
+      v-if="(activeTab === 'sum') && incomeTrnsIds.length > 0"
       :trnsIds="incomeTrnsIds"
       :storageKey="props.storageKey + activeTab"
-      class="-max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
       type="income"
     />
-
-    <!-- Summary -->
-    <div
-      v-if="activeTab === 'sum'"
-      class="grid md:grid-cols-2 gap-4 lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
-    >
-      <!-- Expense -->
-      <StatMiniItem
-        v-if="(activeTab === 'sum') && expenseTrnsIds.length > 0"
-        :trnsIds="expenseTrnsIds"
-        :storageKey="props.storageKey + activeTab"
-        type="expense"
-      />
-
-      <!-- Income -->
-      <StatMiniItem
-        v-if="(activeTab === 'sum') && incomeTrnsIds.length > 0"
-        :trnsIds="incomeTrnsIds"
-        :storageKey="props.storageKey + activeTab"
-        type="income"
-      />
-    </div>
   </div>
 </template>

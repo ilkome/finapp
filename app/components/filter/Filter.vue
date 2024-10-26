@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FilterProvider } from '~/components/filter/types'
 import { getStyles } from '~/components/ui/getStyles'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = withDefaults(defineProps<{
@@ -11,6 +11,7 @@ const props = withDefaults(defineProps<{
 })
 
 const filter = inject('filter') as FilterProvider
+const { t } = useI18n()
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 
@@ -21,29 +22,24 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
   <div class="flex gap-1">
     <!-- Categories -->
     <div class="flex bg-item-4 rounded-lg">
-      <VDropdown
-        :overflowPadding="12"
-        autoBoundaryMaxSize
-        placement="top-start"
-      >
+      <UPopover>
         <div :class="itemAddClasses" class="justify-center">
           <UiIconCategory class="size-5" />
         </div>
 
-        <template #popper="{ hide }">
-          <!-- TODO: combine -->
-          <div class="flex items-center px-3 h-12">
-            <UiTitle>{{ $t('categories.title') }}</UiTitle>
-            <BaseBottomSheetClose @onClick="hide" />
-          </div>
-
-          <CategoriesSelector
-            class="min-w-72 max-w-xs"
-            @onSelected="filter.toggleCategoryId"
-            @filter="filter.toggleCategoryId"
-          />
+        <template #panel="{ close }">
+          <UiPopoverWrap
+            :title="t('categories.title')"
+            @close="close"
+          >
+            <CategoriesSelector
+              class="min-w-72 max-w-xs"
+              @onSelected="filter.toggleCategoryId"
+              @filter="filter.toggleCategoryId"
+            />
+          </UiPopoverWrap>
         </template>
-      </VDropdown>
+      </UPopover>
 
       <CategoriesItem
         v-for="categoryId in filter?.catsIds?.value"
@@ -60,30 +56,24 @@ const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 
       v-if="!props.isHideWallets"
       class="flex bg-item-4 rounded-lg"
     >
-      <VDropdown
-        :overflowPadding="12"
-        autoBoundaryMaxSize
-        placement="top-start"
-      >
+      <UPopover>
         <div :class="itemAddClasses" class="justify-center">
           <UiIconWallet class="size-5" />
         </div>
 
-        <template #popper="{ hide }">
-          <!-- TODO: combine -->
-          <div class="flex items-center px-3 h-12">
-            <UiTitle>{{ $t('wallets.title') }}</UiTitle>
-            <BaseBottomSheetClose @onClick="hide" />
-          </div>
-
-          <!-- TODO: fix for Arrays -->
-          <WalletsSelector
-            class="min-w-72 max-w-xs"
-            :activeItemId="filter?.walletsIds.value[0]"
-            @onSelected="filter.toggleWalletId"
-          />
+        <template #panel="{ close }">
+          <UiPopoverWrap
+            :title="t('wallets.title')"
+            @close="close"
+          >
+            <WalletsSelector
+              class="min-w-72 max-w-xs"
+              :activeItemId="filter?.walletsIds.value[0]"
+              @onSelected="filter.toggleWalletId"
+            />
+          </UiPopoverWrap>
         </template>
-      </VDropdown>
+      </UPopover>
 
       <WalletsItem
         v-for="walletId in filter?.walletsIds?.value"

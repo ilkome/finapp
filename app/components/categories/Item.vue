@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
   activeItemId?: string | 0 | false | null
@@ -21,7 +21,7 @@ const emit = defineEmits<{
 const categoriesStore = useCategoriesStore()
 
 const childCategoriesIds = computed(() => categoriesStore.getChildsIds(props.categoryId))
-const parentCategory = computed(() => categoriesStore.items[props.category.parentId])
+const parentCategory = computed(() => categoriesStore.items[props.category?.parentId])
 </script>
 
 <template>

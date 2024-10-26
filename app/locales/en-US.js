@@ -176,6 +176,10 @@ export default {
     expense: 'Expense',
     income: 'Income',
     netIncome: 'Net income',
+    options: {
+      isExcludeInTotal: 'Do not include in total',
+      withdrawal: 'Withdrawal',
+    },
     sum: 'Total',
     totals: {
       all: 'Total',
@@ -194,6 +198,13 @@ export default {
     },
     transfer: 'Transfer',
     type: 'Wallet type',
+    types: {
+      cash: 'Cash',
+      cashless: 'Cashless',
+      credit: 'Credit',
+      debt: 'Debt',
+      deposit: 'Deposit',
+    },
     wallets: 'Wallets',
   },
 
@@ -335,17 +346,6 @@ export default {
   },
 
   welcome: {
-    create: {
-      btn: 'Let\'s go',
-      text: 'Start creating your first wallet and category',
-    },
-    createFirstCategory: {
-      btn: 'Create category',
-      text: 'Great! Now let\'s create a category',
-    },
-    firstRun: {
-      btn: 'Start',
-      text: 'Start with create base configuration of application',
-    },
+    intro: 'Welcome to Finapp!',
   },
 }
