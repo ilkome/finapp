@@ -110,7 +110,7 @@ async function onSave() {
   const values: WalletItem = Object.fromEntries(Object.entries(normalizeWalletItem(props.walletForm)).filter(([,v]) => v))
 
   if (isDemo.value) {
-    walletsStore.items[generateId()] = values
+    walletsStore.items[editWalletId] = values
     emit('afterSave')
     return
   }
