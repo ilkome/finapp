@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import type { ToastOptions } from 'vue3-toastify'
-import { saveData } from '~~/services/firebase/api'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { WalletForm, WalletId, WalletItem } from '~/components/wallets/types'
 import { types } from '~/components/wallets/types'
 import { errorEmo, random } from '~/assets/js/emo'
 import { generateId } from '~~/utils/generateId'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
-import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { normalizeWalletItem } from '~/components/wallets/utils'
 
@@ -23,8 +20,6 @@ const emit = defineEmits<{
 
 const { $toast } = useNuxtApp()
 const { t } = useI18n()
-const currenciesStore = useCurrenciesStore()
-const userStore = useUserStore()
 const walletsStore = useWalletsStore()
 const isDemo = useCookie('finapp.isDemo')
 
@@ -68,35 +63,20 @@ function validate(values: WalletForm) {
     return false
   }
 
-  // TODO: refactor
-  for (const id in walletsStore.items) {
-    if (walletsStore.items[id].name === values.name) {
-      if (editWalletId) {
-        if (editWalletId !== id) {
-          $toast(UiToastContent, {
-            autoClose: 6000,
-            data: {
-              description: t('wallets.form.name.exist'),
-              title: random(errorEmo),
-            },
-            type: 'error',
-          } as ToastOptions)
+  // Check for duplicate wallet names
+  const existingWallet = Object.entries(walletsStore.items ?? {})
+    .find(([id, wallet]) => wallet.name === values.name && id !== editWalletId)
 
-          return false
-        }
-      }
-      else {
-        $toast(UiToastContent, {
-          autoClose: 6000,
-          data: {
-            description: t('wallets.form.name.exist'),
-            title: random(errorEmo),
-          },
-          type: 'error',
-        } as ToastOptions)
-        return false
-      }
-    }
+  if (existingWallet) {
+    $toast(UiToastContent, {
+      autoClose: 6000,
+      data: {
+        description: t('wallets.form.name.exist'),
+        title: random(errorEmo),
+      },
+      type: 'error',
+    } as ToastOptions)
+    return false
   }
 
   return true
@@ -106,8 +86,7 @@ async function onSave() {
   if (!validate(props.walletForm))
     return
 
-  // Prepare data and remove empty values
-  const values: WalletItem = Object.fromEntries(Object.entries(normalizeWalletItem(props.walletForm)).filter(([,v]) => v))
+  const values: WalletItem = normalizeWalletItem(props.walletForm)
 
   if (isDemo.value) {
     walletsStore.items[editWalletId] = values
@@ -115,11 +94,7 @@ async function onSave() {
     return
   }
 
-  // Set default currency based on first created wallet
-  if (!walletsStore.hasItems)
-    currenciesStore.updateBase(values.currency)
-
-  await saveData(`users/${userStore.uid}/accounts/${editWalletId}`, values)
+  await walletsStore.addWallet({ id: editWalletId, values })
   emit('afterSave')
 }
 </script>
@@ -266,7 +241,13 @@ async function onSave() {
         <div class="text-item-2 pb-2 text-sm">
           {{ t('wallets.form.colors.custom') }}
         </div>
-        <input v-model="props.walletForm.color" type="color" class="h-12 w-full cursor-pointer border-0 p-0">
+
+        <pre>{{ props.walletForm.color }}</pre>
+        <input
+          v-model="props.walletForm.color"
+          class="h-12 w-full cursor-pointer border-0 p-0"
+          type="color"
+        >
       </div>
     </div>
 
@@ -277,11 +258,3 @@ async function onSave() {
     </div>
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  isCredit: Credit account
-
-ru:
-  isCredit: Кредитный счёт
-</i18n>

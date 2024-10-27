@@ -30,18 +30,18 @@ async function onClickSubmit() {
 <template>
   <div
     :class="{
-      '!bg-accent-1/50 !border-transparent hocus:!bg-accent-1/70': !isMath && isSubmittable,
+      '!bg-accent-1/50 hocus:!bg-accent-1/70 !border-transparent': !isMath && isSubmittable,
       '!text-secondary !border-item-4': !isSubmittable,
       '!text-secondary': isMath,
     }"
     class="
-      flex items-center justify-center
-      max-w-[56px] p-1 text-4xl
-      py-4
+      text-1 border-item-5 hocus:bg-item-5
+      hocus:border[red] hocus:scale-[1.02] flex
       size-full
-      text-1 text-center
-      border border-item-5 rounded-xl
-      hocus:bg-item-5 hocus:border[red] hocus:scale-[1.02]
+      max-w-[56px]
+      items-center justify-center
+      rounded-xl border p-1
+      py-4 text-center text-4xl
       transition
     "
     @click="onClickSubmit"

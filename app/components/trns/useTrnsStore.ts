@@ -75,7 +75,7 @@ export const useTrnsStore = defineStore('trns', () => {
     localforage.setItem('finapp.trns', deepUnref(values))
   }
 
-  function addTrn({ id, values }) {
+  function addTrn({ id, values }: { id: TrnId, values: TrnItem }) {
     let isTrnSavedOnline = false
     const valuesWithEditDate = {
       ...values,
@@ -103,8 +103,6 @@ export const useTrnsStore = defineStore('trns', () => {
       if (!isTrnSavedOnline)
         saveTrnToAddLaterLocal({ id, values })
     }, 1000)
-
-    return true
   }
 
   function deleteTrn(id: TrnId) {

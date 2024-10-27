@@ -28,7 +28,6 @@ type WalletItemBase = {
   currency: CurrencyCode
   description?: string
   editedAt: number
-  id: WalletId
   isArchived?: boolean
   isExcludeInTotal?: boolean
   isWithdrawal?: boolean
@@ -54,7 +53,6 @@ export type WalletItemRaw = {
   currency: CurrencyCode
   description?: string
   edited?: number // TODO: rename to editedAt
-  id: WalletId
   isCash?: boolean
   isCashless?: boolean
   isCredit?: boolean

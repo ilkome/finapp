@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import data from '~/components/demo/data.json'
+import data from '~/components/demo/data'
 import currencies from '~/components/demo/currencies.json'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
