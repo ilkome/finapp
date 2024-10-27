@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onLongPress, useStorage } from '@vueuse/core'
 import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
+import { icons } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
@@ -56,28 +57,16 @@ onLongPress(
   >
     <!-- Icon -->
     <template v-if="isShowIcons" #leftIcon>
-      <UiIconWalletDeposit
-        v-if="wallet.isDeposit"
+      <Icon
+        :name="icons[wallet.type]"
         :style="{ color: wallet.color }"
-        class="h-4 w-4 text-item-2"
+        class="size-5"
       />
-      <UiIconWalletSavings
-        v-else-if="!wallet.isCredit"
-        :style="{ color: wallet.color }"
-        class="h-4 w-4 text-item-2"
-      />
-      <div v-else class="flex-center w-4">
-        <div
-          class="size-3 rounded-full border"
-          :style="{ borderColor: wallet.color }"
-          @click.stop="emit('click', walletId)"
-        />
-      </div>
     </template>
 
     <!-- Main -->
     <template v-if="!props.alt">
-      <div class="grow text-sm leading-none text-3">
+      <div class="text-3 grow text-sm leading-none">
         {{ wallet.name }}
       </div>
 
@@ -105,7 +94,7 @@ onLongPress(
 
     <!-- Alternative -->
     <template v-if="props.alt">
-      <div class="grid gap-0.5 grow">
+      <div class="grid grow gap-0.5">
         <div
           v-if="!isSort"
         >
@@ -129,14 +118,14 @@ onLongPress(
           />
         </div>
 
-        <div class="text-sm leading-none text-3 whitespace-nowrap">
+        <div class="text-3 whitespace-nowrap text-sm leading-none">
           {{ wallet.name }}
         </div>
       </div>
 
       <div
         v-if="isSort"
-        class="sortHandle insert-0 flex-center absolute right-0 top-0 h-full rounded-md px-3 group-hocus:bg-item-5"
+        class="sortHandle insert-0 flex-center group-hocus:bg-item-5 absolute right-0 top-0 h-full rounded-md px-3"
       >
         <UiIconSort class="size-6" />
       </div>

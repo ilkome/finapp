@@ -5,9 +5,9 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import type {
   WalletId,
   WalletItem,
-  WalletTypeViewAll,
   WalletTypes,
-  WalletTypesView,
+  WalletViewTypes,
+  WalletViewTypesObj,
 } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
 import { types } from '~/components/wallets/types'
@@ -30,7 +30,7 @@ const { getAmountInBaseRate } = useAmount()
 const isShowBaseCurrencyModal = ref(false)
 
 const currencyFiltered = useStorage('finapp-wallets-active-currency', 'all')
-const activeType = useStorage<WalletTypeViewAll>(
+const activeType = useStorage<WalletViewTypes | 'all'>(
   'finapp-wallets-active-type',
   'all',
 )
@@ -39,7 +39,7 @@ const gropedBy = useStorage<'list' | 'currencies' | 'type'>(
   'list',
 )
 
-function setActiveType(v: WalletTypeViewAll) {
+function setActiveType(v: WalletViewTypes | 'all') {
   activeType.value = v
 }
 
@@ -58,15 +58,18 @@ const selectedWallets = computed(() => {
       if (activeType.value === 'all')
         return true
 
-      const typeChecks: WalletTypesView = {
+      const typeChecks: WalletViewTypesObj = {
+        available: checkIsAvailable(wallet) && !wallet.isArchived,
+        cash: wallet.type === 'cash',
+        cashless: wallet.type === 'cashless',
+        credit: wallet.type === 'credit',
         creditPossible: !!wallet.creditLimit,
-        isCash: wallet.isCash,
-        isCashless: wallet.isCashless,
-        isCredit: wallet.isCredit,
-        isDebt: wallet.isDebt,
-        isDeposit: wallet.isDeposit,
-        showWithCredit: !wallet.isCredit,
-        withdrawal: wallet.withdrawal,
+        crypto: wallet.type === 'crypto',
+        debt: wallet.type === 'debt',
+        deposit: wallet.type === 'deposit',
+        isArchived: wallet.isArchived ?? false,
+        isWithCredit: wallet.type !== 'credit',
+        isWithdrawal: wallet.isWithdrawal ?? false,
       }
 
       return typeChecks[activeType.value]
@@ -85,22 +88,18 @@ function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
   isShowCurrencyFilter.value = false
 }
 
-const groupedWalletsByCurrency = computed(() =>
-  walletsStore.currenciesUsed.reduce(
-    (acc, currency) => {
-      acc[currency] = walletsStore.sortedIds.filter((id) => {
-        const wallet = walletsStore.items?.[id]
-        if (!wallet)
-          return false
+const groupedWalletsByCurrency = computed(() => {
+  const grouped: Record<string, WalletId[]> = Object.fromEntries(
+    walletsStore.currenciesUsed.map(currency => [currency, []]),
+  )
 
-        const isArchived = currency !== 'archived' && wallet.archived
-        return wallet?.currency === currency && !isArchived
-      })
-      return acc
-    },
-    {} as Record<CurrencyCode, WalletId[]>,
-  ),
-)
+  return walletsStore.sortedIds.reduce((grouped, id) => {
+    const wallet = walletsStore.items?.[id]
+    if (wallet?.currency && !wallet.isArchived)
+      grouped[wallet.currency]?.push(id)
+    return grouped
+  }, grouped)
+})
 
 const groupedWalletsByType = computed(() =>
   types.reduce(
@@ -201,22 +200,24 @@ function groupByWalletType(id: WalletId) {
   const wallet = walletsStore.items?.[id]
   if (!wallet)
     return
-  if (wallet.isCash)
-    return 'isCash'
-  if (wallet.isDeposit)
-    return 'isDeposit'
-  if (wallet.isCredit)
-    return 'isCredit'
-  if (wallet.isCredit)
-    return 'isCredit'
-  if (wallet.isCashless)
-    return 'isCashless'
-  if (wallet.isDebt)
-    return 'isDebt'
-  if (checkIsAvailable(wallet) && !wallet.archived)
-    return 'available'
 
-  return 'other'
+  return wallet.type
+
+  // if (wallet.isCash)
+  //   return 'isCash'
+  // if (wallet.isDeposit)
+  //   return 'isDeposit'
+  // if (wallet.isCredit)
+  //   return 'isCredit'
+  // if (wallet.isCredit)
+  //   return 'isCredit'
+  // if (wallet.isCashless)
+  //   return 'isCashless'
+  // if (wallet.isDebt)
+  //   return 'isDebt'
+  // if (checkIsAvailable(wallet) && !wallet.isArchived)
+  //   return 'available'
+  // return 'other'
 }
 
 function groupByWalletCurrency(id: WalletId) {

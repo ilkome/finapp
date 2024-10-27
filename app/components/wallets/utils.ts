@@ -1,8 +1,7 @@
 import dayjs from 'dayjs'
-import type { WalletId, WalletItem, WalletItemRaw, WalletItemWithAmount, Wallets, WalletsRaw } from '~/components/wallets/types'
+import type { WalletItem, WalletItemRaw, Wallets, WalletsRaw } from '~/components/wallets/types'
 import { colorsArray } from '~/components/color/colors'
 import { random } from '~/assets/js/emo'
-import { generateId } from '~~/utils/generateId'
 
 export function normalizeWalletItem(wallet?: WalletItemRaw) {
   const walletBase = {
@@ -17,8 +16,8 @@ export function normalizeWalletItem(wallet?: WalletItemRaw) {
   }
 
   const walletItem: WalletItem = (wallet?.isCredit || wallet?.type === 'credit')
-    ? { ...walletBase, creditLimit: wallet?.creditLimit ?? 0, type: 'credit' }
-    : { ...walletBase, type: 'cash' }
+    ? { ...walletBase, creditLimit: +(wallet?.creditLimit ?? 0), type: 'credit' }
+    : { ...walletBase, type: wallet?.type ?? 'cash' }
 
   if (wallet?.isCash)
     walletItem.type = 'cash'

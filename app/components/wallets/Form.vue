@@ -127,9 +127,6 @@ async function onSave() {
 
     <!-- Content -->
     <div class="overflow-y-auto py-4">
-      <pre>{{ props.walletForm }}</pre>
-      <pre>{{ props.walletId }}</pre>
-
       <!-- Data -->
       <template v-if="activeTab === 'data'">
         <div class="mb-8">

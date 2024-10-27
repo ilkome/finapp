@@ -5,22 +5,37 @@ import type { DeepPartial } from '~~/utils/types'
 export const types = [
   'cash',
   'cashless',
-  'deposit',
   'credit',
+  'crypto',
   'debt',
+  'deposit',
 ] as const
 
 export const viewTypes = [
   ...types,
   'available',
   'creditPossible',
-  'showWithCredit',
-  'withdrawal',
-  'archived',
+  'isWithCredit',
+  'isWithdrawal',
+  'isArchived',
 ] as const
 
 export type WalletId = string
 export type WalletTypes = typeof types[number]
+
+export type WalletViewTypes = typeof viewTypes[number]
+export type WalletViewTypesObj = {
+  [K in WalletViewTypes]: boolean
+}
+
+export const icons: Record<WalletTypes, string> = {
+  cash: 'lucide:banknote',
+  cashless: 'lucide:landmark',
+  credit: 'lucide:piggy-bank',
+  crypto: 'lucide:coins',
+  debt: 'lucide:hand-coins',
+  deposit: 'lucide:diamond-percent',
+} as const
 
 type WalletItemBase = {
   color: string
@@ -87,12 +102,3 @@ export type Item = {
 export type WalletItemWithAmount = {
   amount: number
 } & WalletItem
-
-export type WalletTypesView = {
-  [K in WalletTypes]: boolean
-} & {
-  creditPossible: boolean
-  showWithCredit: boolean
-}
-
-export type WalletTypeViewAll = keyof WalletTypesView | 'all'
