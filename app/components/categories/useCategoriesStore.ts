@@ -11,8 +11,7 @@ import type {
   CategoryId,
   CategoryItem,
 } from '~/components/categories/types'
-import { getTransferCategoriesIds } from '~/components/categories/getCategories'
-import { getTransactibleCategoriesIds } from '~/components/categories/utils'
+import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
 
 import { useUserStore } from '~/components/user/useUserStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -33,14 +32,14 @@ export const useCategoriesStore = defineStore('categories', () => {
   const userStore = useUserStore()
   const trnsStore = useTrnsStore()
 
-  const items = shallowRef<Categories | null>({ transfer })
+  const items = shallowRef<Categories>({ transfer })
   const hasItems = computed(() => {
-    if (Object.keys(items.value ?? {}).filter(id => id !== 'transfer').length > 0)
+    if (Object.keys(items.value).filter(id => id !== 'transfer').length > 0)
       return true
 
     return false
   })
-  const transferCategoriesIds = computed(() => getTransferCategoriesIds(items.value ?? {}))
+  const transferCategoriesIds = computed(() => getTransferCategoriesIds(items.value))
 
   const categoriesIds = computed(() => {
     if (!items.value)
@@ -63,7 +62,7 @@ export const useCategoriesStore = defineStore('categories', () => {
       return []
 
     return categoriesRootIds.value.filter((id: CategoryId) => {
-      const hasTrnsInCategory = Object.values(trnsStore.items ?? {}).some(
+      const hasTrnsInCategory = Object.values(trnsStore.items).some(
         trn => trn.categoryId === id,
       )
 
@@ -92,7 +91,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     if (!hasItems.value || !trnsStore.hasItems)
       return []
 
-    const trnsItems = trnsStore.items ?? {}
+    const trnsItems = trnsStore.items
 
     const trnsIds = Object.keys(trnsStore.items)
       .filter(id => trnsItems[id]?.type !== 2)

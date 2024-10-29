@@ -4,9 +4,7 @@ export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId
   if (ids) {
     return ids.filter((id) => {
       const category = items?.[id]
-      if (category?.parentId !== 0 && (!category?.childIds || category?.childIds?.length === 0))
-        return true
-      return false
+      return category?.parentId !== 0 && !category?.childIds?.length
     })
   }
 
@@ -19,4 +17,12 @@ export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId
     }
     return acc
   }, [] as CategoryId[])
+}
+
+export function getTransferCategoriesIds(items: Categories): CategoryId[] {
+  const names = ['перевод', 'transfer']
+  return [
+    ...Object.keys(items ?? {})
+      .filter(id => names.includes(`${items[id]?.name}`.toLowerCase())),
+  ]
 }

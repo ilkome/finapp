@@ -5,7 +5,7 @@ export const trnsItems: Record<TrnId, TrnItem> = {
   transactionExpenseWalletCashUSD400: {
     amount: 400,
     categoryId: 'expense',
-    date: 123456, // TODO: add real dates
+    date: 123456,
     edited: 12,
     type: TrnType.Expense,
     walletId: 'walletCashUSD',
@@ -14,7 +14,7 @@ export const trnsItems: Record<TrnId, TrnItem> = {
   transactionExpenseWalletOneRUB900: {
     amount: 900,
     categoryId: 'category1',
-    date: 123456, // TODO: add real dates
+    date: 123456,
     edited: 12,
     type: TrnType.Expense,
     walletId: 'walletOneRUB',
@@ -23,7 +23,7 @@ export const trnsItems: Record<TrnId, TrnItem> = {
   transactionIncomeWalletCashUSD1000: {
     amount: 1000,
     categoryId: 'income',
-    date: 123456, // TODO: add real dates
+    date: 123456,
     edited: 12,
     type: TrnType.Income,
     walletId: 'walletCashUSD',
@@ -32,7 +32,7 @@ export const trnsItems: Record<TrnId, TrnItem> = {
   transactionIncomeWalletOneRUB700: {
     amount: 700,
     categoryId: 'category1',
-    date: 123456, // TODO: add real dates
+    date: 123456,
     edited: 12,
     type: TrnType.Income,
     walletId: 'walletOneRUB',
@@ -41,7 +41,7 @@ export const trnsItems: Record<TrnId, TrnItem> = {
   transferCategoryIdExpenseWalletCashUSD30: {
     amount: 30,
     categoryId: 'transfer',
-    date: 123456, // TODO: add real dates
+    date: 123456,
     edited: 12,
     type: TrnType.Expense,
     walletId: 'walletCashUSD',
@@ -49,8 +49,8 @@ export const trnsItems: Record<TrnId, TrnItem> = {
 
   transferCategoryNameIncomeWalletCashUSD30: {
     amount: 30,
-    categoryId: 'categoryTransferOld',
-    date: 123456, // TODO: add real dates
+    categoryId: 'transfer3',
+    date: 123456,
     edited: 12,
     type: TrnType.Income,
     walletId: 'walletCashUSD',
@@ -58,7 +58,7 @@ export const trnsItems: Record<TrnId, TrnItem> = {
 
   transferExpenseWalletCashUSD10IncomeWalletRUB700: {
     categoryId: 'transfer',
-    date: 123456, // TODO: add real dates
+    date: 123456,
     edited: 12,
     expenseAmount: 10,
     expenseWalletId: 'walletCashUSD',
@@ -69,7 +69,7 @@ export const trnsItems: Record<TrnId, TrnItem> = {
 
   transferExpenseWalletCreditUSD40IncomeWalletCashUSD40: {
     categoryId: 'transfer',
-    date: 123456, // TODO: add real dates
+    date: 123456,
     edited: 12,
     expenseAmount: 40,
     expenseWalletId: 'walletCreditUSD',
@@ -80,7 +80,7 @@ export const trnsItems: Record<TrnId, TrnItem> = {
 
   transferExpenseWalletRUB300IncomeWalletCreditUSD10: {
     categoryId: 'transfer',
-    date: 123456, // TODO: add real dates
+    date: 123456,
     edited: 12,
     expenseAmount: 300,
     expenseWalletId: 'walletRUB',
@@ -94,7 +94,7 @@ export const trnsItems: Record<TrnId, TrnItem> = {
     amountFrom: 2500,
     amountTo: 3500,
     categoryId: 'transfer',
-    date: 123456, // TODO: add real dates
+    date: 123456,
     edited: 12,
     type: TrnType.Transfer,
     walletFromId: 'walletDeprecatedTransferExpense',
