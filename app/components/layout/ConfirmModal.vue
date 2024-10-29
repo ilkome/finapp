@@ -16,7 +16,7 @@ const items = computed(() => ({
     icon: 'mdi:close',
     localeKey: 'base.no',
   },
-  // eslint-disable-next-line perfectionist/sort-objects
+
   yes: {
     click: (close: () => void) => {
       emit('onConfirm')
@@ -41,7 +41,7 @@ const items = computed(() => ({
       </template>
 
       <template #default="{ close }">
-        <div class="grid gap-3 pt-6 px-1 py-1">
+        <div class="grid gap-3 p-1 pt-6">
           <div class="pl-2">
             {{ $t('base.sure') }}
           </div>
@@ -53,7 +53,7 @@ const items = computed(() => ({
             {{ description }}
           </div>
 
-          <div class="flex p-4 gap-4">
+          <div class="flex gap-4 p-4">
             <UiElement
               v-for="(item, slug) in items"
               :key="slug"

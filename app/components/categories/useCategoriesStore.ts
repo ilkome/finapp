@@ -88,114 +88,94 @@ export const useCategoriesStore = defineStore('categories', () => {
   })
 
   const recentCategoriesIds = computed(() => {
+    // Early return if no data
     if (!hasItems.value || !trnsStore.hasItems)
       return []
 
     const trnsItems = trnsStore.items
+    const maxCategories = Math.min(categoriesIds.value.length, 16)
 
-    const trnsIds = Object.keys(trnsStore.items)
+    // Get sorted transaction IDs, excluding type 2
+    const trnsIds = Object.keys(trnsItems)
       .filter(id => trnsItems[id]?.type !== 2)
       .sort((a, b) => trnsItems[b]?.date - trnsItems[a]?.date)
 
-    const lastCategories: Record<
-      CategoryId,
-      CategoryItem & Record<'id', CategoryId>
-    >[] = []
+    // Get unique categories from transactions
+    return trnsIds.reduce((acc: CategoryItem[], trnId: string) => {
+      if (acc.length >= maxCategories)
+        return acc
 
-    for (const trnId of trnsIds) {
-      if (lastCategories.length > 16)
-        break
+      const categoryId = trnsItems[trnId]?.categoryId
+      const category = categoryId ? items.value[categoryId] : undefined
 
-      const categoryId = trnsItems[trnId].categoryId
-      const category = items.value[categoryId]
+      // Skip if category is invalid or shouldn't be shown
+      if (!category || ('showInLastUsed' in category && !category.showInLastUsed))
+        return acc
 
+      // Skip if category is already in list or is special type
       if (
-        !category
-        || ('showInLastUsed' in category && !category.showInLastUsed)
+        acc.some(c => c.id === categoryId)
+        || transferCategoriesIds.value.includes(categoryId)
+        || favoriteCategoriesIds.value.includes(categoryId)
       ) {
-        continue
+        return acc
       }
 
-      const isCategoryAlreadyAdded = lastCategories.some(
-        c => c.id === categoryId,
-      )
-      const isTransferCategory
-        = transferCategoriesIds.value.includes(categoryId)
-      const isCategoryInQuickSelector
-        = favoriteCategoriesIds.value.includes(categoryId)
-
-      if (
-        !isCategoryAlreadyAdded
-        && !isTransferCategory
-        && !isCategoryInQuickSelector
-      ) {
-        lastCategories.push({
-          id: categoryId,
-          ...category,
-        })
-      }
-    }
-
-    return _sortby(lastCategories, category => [
-      items.value[category.parentId]?.name || false,
-      category.name,
-    ]).map(c => c.id)
+      acc.push({ id: categoryId, ...category })
+      return acc
+    }, [])
+      .sort((a, b) => {
+        const parentNameA = items.value[a.parentId]?.name || ''
+        const parentNameB = items.value[b.parentId]?.name || ''
+        return parentNameA.localeCompare(parentNameB) || a.name.localeCompare(b.name)
+      })
+      .map(c => c.id)
   })
 
-  const categoriesIdsForTrnValues = computed(() =>
-    categoriesIds.value.filter(
-      id =>
-        !transferCategoriesIds.value.includes(id) && (!items.value[id]?.childIds || items.value[id]?.childIds?.length === 0),
-    ),
-  )
+  const categoriesIdsForTrnValues = computed<CategoryId[]>(() => {
+    return categoriesIds.value.filter((id) => {
+      const isTransferCategory = transferCategoriesIds.value.includes(id)
+      const category = items.value[id]
+      const hasNoChildren = !category?.childIds?.length
 
-  /**
-   * Methods
-   */
+      return !isTransferCategory && hasNoChildren
+    })
+  })
+
   function formatCategories(items: Categories): Categories {
     const formattedItems = { ...items }
 
-    // Add child categories to root categories
+    // Step 1: Build parent-child relationships
     for (const categoryId in formattedItems) {
-      const parentCategoryId = formattedItems[categoryId]?.parentId
-      if (parentCategoryId !== 0 && parentCategoryId && formattedItems[parentCategoryId]) {
-        if (formattedItems[parentCategoryId]?.childIds && !formattedItems[parentCategoryId]?.childIds?.includes(categoryId)) {
-          formattedItems[parentCategoryId]?.childIds?.push(categoryId)
-        }
-        else if (parentCategoryId && formattedItems[parentCategoryId]) {
-          formattedItems[parentCategoryId].childIds = [categoryId]
-        }
-      }
+      const category = formattedItems[categoryId]
+      const parentId = category?.parentId
+
+      if (!parentId || !formattedItems[parentId])
+        continue
+
+      const parent = formattedItems[parentId]
+      parent.childIds = parent.childIds || []
+
+      if (!parent.childIds.includes(categoryId))
+        parent.childIds.push(categoryId)
     }
 
-    // Add missing props
+    // Step 2: Set default values and clean up invalid child references
     for (const categoryId in formattedItems) {
-      const cat = formattedItems[categoryId]!
+      const category = formattedItems[categoryId]!
 
-      if (cat.showInLastUsed === undefined) {
-        formattedItems[categoryId] = {
-          ...cat,
-          showInLastUsed: false,
-        }
+      // Set default values for optional properties
+      formattedItems[categoryId] = {
+        ...category,
+        showInLastUsed: category.showInLastUsed ?? false,
+        showInQuickSelector: category.showInQuickSelector ?? false,
       }
 
-      if (cat.showInQuickSelector === undefined) {
-        formattedItems[categoryId] = {
-          ...cat,
-          showInQuickSelector: false,
-        }
-      }
-
-      if (cat && cat.childIds) {
-        formattedItems[categoryId] = cat
-
-        for (const childCatId of cat.childIds) {
-          if (!formattedItems[childCatId]) {
-            formattedItems[categoryId].childIds = formattedItems[categoryId].childIds?.filter(
-              id => id !== childCatId,
-            )
-          }
-        }
+      // Remove references to non-existent child categories
+      if (category.childIds?.length) {
+        formattedItems[categoryId].childIds = category.childIds.filter(
+          childId => formattedItems[childId],
+        )
       }
     }
 
@@ -217,7 +197,7 @@ export const useCategoriesStore = defineStore('categories', () => {
       return
     }
 
-    items.value = null
+    items.value = { transfer }
     localforage.setItem('finapp.categories', null)
   }
 

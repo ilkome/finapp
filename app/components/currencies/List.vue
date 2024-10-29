@@ -3,7 +3,7 @@ import { currencies } from '~/components/currencies/currencies'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
-  active: string
+  active?: string
   isShowAll?: boolean
 }>()
 const emit = defineEmits(['onSelect'])
@@ -27,12 +27,12 @@ const list = computed(() => {
 </script>
 
 <template>
-  <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden max-h-[60vh]">
+  <div class="grid h-full max-h-[60vh] grid-rows-[auto,1fr] overflow-hidden">
     <div>
       <input
         v-model="searchInput"
-        class="text-item-base focus:text-item-1 focus:bg-item-5 focus:border-accent-4 focus:outline-none m-0 w-full rounded-lg border border-solid border-item-5 bg-item-4 px-3 py-2 text-base font-normal transition ease-in-out placeholder:text-item-2"
-        placeholder="Search..."
+        :placeholder="`${t('search')}...`"
+        class="text-item-base focus:text-item-1 focus:bg-item-5 focus:border-accent-4 border-item-5 bg-item-4 placeholder:text-item-2 m-0 w-full rounded-lg border border-solid px-3 py-2 text-base font-normal transition ease-in-out focus:outline-none"
         type="text"
       >
     </div>
@@ -42,7 +42,7 @@ const list = computed(() => {
     >
       <template v-if="list.length === 0">
         <div class="py-3 text-center">
-          {{ $t("notFound") }}
+          {{ t("notFound") }}
         </div>
       </template>
 
@@ -116,11 +116,13 @@ const list = computed(() => {
 <i18n lang="yaml">
 en:
   all: All
-  showAll: Show all wallets
   notFound: Currency not found...
+  search: Search
+  showAll: Show all wallets
 
 ru:
   all: Все
-  showAll: Показать все кошельки
   notFound: Валюта не найдена...
+  search: Поиск
+  showAll: Показать все кошельки
 </i18n>

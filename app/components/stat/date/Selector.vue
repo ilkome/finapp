@@ -63,7 +63,7 @@ function close() {
         </UiTitle88>
       </template>
 
-      <UiTabs2 class="px-2 !gap-2">
+      <UiTabs2 class="!gap-2 px-2">
         <DateLinkItem @click="emit('set7Days', close)">
           7 days
         </DateLinkItem>
@@ -101,12 +101,10 @@ function close() {
             :interval="intervalRange.interval.value"
             :maxRange
             @setRange="intervalRange.setRange"
-            @setRangeByPeriod="
-              (d: FullDuration) => {
-                intervalRange.setRangeByPeriod(d);
-                close();
-              }
-            "
+            @setRangeByPeriod="(d: FullDuration) => {
+              intervalRange.setRangeByPeriod(d)
+              close()
+            }"
           />
         </div>
 
@@ -114,12 +112,10 @@ function close() {
           <DateRanges2
             :interval="intervalRange.interval.value"
             :maxRange
-            @setRangeByPeriod="
-              (d: FullDuration) => {
-                intervalRange.setRangeByPeriod(d);
-                close();
-              }
-            "
+            @setRangeByPeriod=" (d: FullDuration) => {
+              intervalRange.setRangeByPeriod(d)
+              close()
+            }"
           />
         </div>
 

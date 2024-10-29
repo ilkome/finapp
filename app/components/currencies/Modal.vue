@@ -23,7 +23,7 @@ function onSelect(code: CurrencyCode, close: () => void) {
   <Teleport to="#teleports">
     <BaseBottomSheet2
       isShow
-      drugClassesCustom="sm:max-w-md mx-auto bg-foreground-1"
+      drugClassesCustom="max-w-md bg-foreground-1 md:bottom-1/2 md:-translate-x-1/2 md:translate-y-1/2 rounded-xl"
       @closed="emit('onClose')"
     >
       <template #handler="{ close }">
@@ -32,7 +32,7 @@ function onSelect(code: CurrencyCode, close: () => void) {
       </template>
 
       <template #default="{ close }">
-        <div class="grid gap-4 py-4 px-3">
+        <div class="grid gap-4 px-3 py-4">
           <UiTitle3>{{ t('select') }}</UiTitle3>
 
           <CurrenciesList

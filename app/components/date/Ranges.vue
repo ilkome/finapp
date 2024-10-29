@@ -12,31 +12,33 @@ const emit = defineEmits<{
   setRangeByPeriod: [d: FullDuration]
 }>()
 
+const { t } = useI18n()
+
 const ranges = computed<FullDuration[]>(() => [
   {
     grouped: { duration: 1, period: 'day' },
     interval: { duration: 1, period: 'day' },
-    label: 'Day',
+    label: t('dates.day.simple'),
   },
   {
     grouped: { duration: 1, period: 'day' },
     interval: { duration: 1, period: 'week' },
-    label: 'Week',
+    label: t('dates.week.simple'),
   },
   {
     grouped: { duration: 1, period: 'day' },
     interval: { duration: 1, period: 'month' },
-    label: 'Month',
+    label: t('dates.month.simple'),
   },
   {
     grouped: { duration: 1, period: 'month' },
     interval: { duration: 1, period: 'year' },
-    label: 'Year',
+    label: t('dates.year.simple'),
   },
   {
     grouped: { duration: 1, period: 'year' },
     interval: { duration: dayjs(dayjs().endOf('day')).diff(props.maxRange.start, 'day') + 1, period: 'day' },
-    label: 'All',
+    label: t('common.all'),
   },
 ])
 
@@ -56,6 +58,13 @@ function isRangeSelected(rd: FullDuration) {
   </DateLinkItem>
 
   <DateLinkItem @click="emit('setRange', props.maxRange)">
-    All 2
+    {{ t('max') }}
   </DateLinkItem>
 </template>
+
+<i18n lang="yaml">
+en:
+  max: "Max"
+ru:
+  max: "Максимально"
+</i18n>

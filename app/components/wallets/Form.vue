@@ -29,6 +29,9 @@ const walletTypes = types.map(value => ({
 }))
 
 const activeTab = ref('data')
+const modals = ref({
+  currencies: false,
+})
 
 /**
  * Validate
@@ -119,6 +122,12 @@ async function onSave() {
 
     <!-- Content -->
     <div class="overflow-y-auto py-4">
+      <UiButtonBlue
+        @click="modals.currencies = true"
+      >
+        {{ props.walletForm.currency }}
+      </UiButtonBlue>
+
       <!-- Data -->
       <template v-if="activeTab === 'data'">
         <div class="mb-8">
@@ -245,5 +254,12 @@ async function onSave() {
         {{ t('base.save') }}
       </UiButtonBlue>
     </div>
+
+    <CurrenciesModal
+      v-if="modals.currencies"
+      :activeCode="props.walletForm.currency"
+      @onSelect="c => emit('updateValue', 'currency', c)"
+      @onClose="modals.currencies = false"
+    />
   </div>
 </template>

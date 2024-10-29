@@ -467,7 +467,7 @@ const wrapClasses = computed(() => ({
       ref="drug"
       :class="drugClasses"
       :style="drugStyles"
-      class="drug h-50vh pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full -translate-x-1/2 translate-y-0 overflow-hidden"
+      class="drug pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full -translate-x-1/2 translate-y-0 overflow-hidden"
       @click.stop=""
     >
       <div ref="handlerRef">

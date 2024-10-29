@@ -64,7 +64,7 @@ async function onDeleteConfirm() {
 <template>
   <div>
     <UiHeaderLink @click="onClickDelete">
-      <i class="mdi mdi-delete-empty-outline group-hover:text-white text-xl" />
+      <i class="mdi mdi-delete-empty-outline text-xl group-hover:text-white" />
     </UiHeaderLink>
 
     <LayoutConfirmModal
