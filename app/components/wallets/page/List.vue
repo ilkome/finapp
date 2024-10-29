@@ -5,12 +5,11 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import type {
   WalletId,
   WalletItem,
-  WalletTypes,
   WalletViewTypes,
   WalletViewTypesObj,
 } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
-import { types } from '~/components/wallets/types'
+import { viewTypes } from '~/components/wallets/types'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -49,9 +48,7 @@ const selectedWallets = computed(() => {
 
   return Object.fromEntries(
     Object.entries(walletsStore.sortedItems).filter(([_key, wallet]) => {
-      const isCurrencyMatch
-        = currencyFiltered.value === 'all'
-        || currencyFiltered.value === wallet.currency
+      const isCurrencyMatch = currencyFiltered.value === 'all' || currencyFiltered.value === wallet.currency
       if (!isCurrencyMatch)
         return false
 
@@ -59,7 +56,8 @@ const selectedWallets = computed(() => {
         return true
 
       const typeChecks: WalletViewTypesObj = {
-        available: checkIsAvailable(wallet) && !wallet.isArchived,
+        archived: wallet.isArchived ?? false,
+        available: (checkIsAvailable(wallet) && !wallet.isArchived) ?? false,
         cash: wallet.type === 'cash',
         cashless: wallet.type === 'cashless',
         credit: wallet.type === 'credit',
@@ -67,10 +65,11 @@ const selectedWallets = computed(() => {
         crypto: wallet.type === 'crypto',
         debt: wallet.type === 'debt',
         deposit: wallet.type === 'deposit',
-        isArchived: wallet.isArchived ?? false,
-        isWithCredit: wallet.type !== 'credit',
-        isWithdrawal: wallet.isWithdrawal ?? false,
+        withdrawal: wallet.isWithdrawal ?? false,
       }
+
+      if (activeType.value === 'available')
+        return checkIsAvailable(wallet) && !wallet.isArchived
 
       return typeChecks[activeType.value]
     }),
@@ -102,7 +101,7 @@ const groupedWalletsByCurrency = computed(() => {
 })
 
 const groupedWalletsByType = computed(() =>
-  types.reduce(
+  viewTypes.reduce(
     (acc, type) => {
       acc[type] = walletsStore.sortedIds.filter((id) => {
         const wallet = walletsStore.items?.[id]
@@ -115,13 +114,15 @@ const groupedWalletsByType = computed(() =>
             ? true
             : wallet?.currency === currencyFiltered.value
 
-        const isArchived = type !== 'archived' && wallet?.archived
-
         if (type === 'available') {
-          return checkIsAvailable(wallet) && isCurrencyFiltered && !isArchived
+          return checkIsAvailable(wallet) && isCurrencyFiltered && !wallet?.isArchived
         }
 
-        return wallet[type as WalletTypes] && isCurrencyFiltered && !isArchived
+        if (type === 'archived') {
+          return isCurrencyFiltered && wallet?.isArchived
+        }
+
+        return wallet.type === type && isCurrencyFiltered && !wallet?.isArchived
       })
 
       return acc
@@ -136,12 +137,13 @@ const groupedWalletsByTypeOnly = computed(() => {
 
 const totalInWallets = computed(() => {
   const sum = {
+    archived: 0,
+    cash: 0,
+    cashless: 0,
+    credit: 0,
     creditPossible: 0,
-    credits: 0,
-    isCash: 0,
-    isCashless: 0,
-    isDebt: 0,
-    isDeposit: 0,
+    debt: 0,
+    deposit: 0,
     total: 0,
     withdrawal: 0,
   }
@@ -160,15 +162,28 @@ const totalInWallets = computed(() => {
             noFormat: true,
           })
 
-    if (!wallet.isExcludeTotal) {
+    if (currencyFiltered.value !== 'all' && wallet.currency !== currencyFiltered.value) {
+      continue
+    }
+
+    if (!wallet.isExcludeInTotal) {
       sum.total += itemValue
     }
 
-    if (wallet.isCash)
-      sum.isCash += itemValue
+    if (wallet.type === 'cash')
+      sum.cash += itemValue
 
-    if (wallet.isCashless)
-      sum.isCashless += itemValue
+    if (wallet.type === 'cashless')
+      sum.cashless += itemValue
+
+    if (wallet.type === 'deposit')
+      sum.deposit += itemValue
+
+    if (wallet.type === 'debt')
+      sum.debt += itemValue
+
+    if (wallet.type === 'credit')
+      sum.credit += itemValue
 
     if (wallet.creditLimit) {
       sum.creditPossible
@@ -180,44 +195,18 @@ const totalInWallets = computed(() => {
         })
     }
 
-    if (wallet.isDeposit)
-      sum.isDeposit += itemValue
-
-    if (wallet.isDebt)
-      sum.isDebt += itemValue
-
-    if (wallet.withdrawal)
+    if (wallet.isWithdrawal)
       sum.withdrawal += itemValue
 
-    if (wallet.isCredit)
-      sum.credits += itemValue
+    if (wallet.isArchived)
+      sum.archived += itemValue
   }
 
   return sum
 })
 
 function groupByWalletType(id: WalletId) {
-  const wallet = walletsStore.items?.[id]
-  if (!wallet)
-    return
-
-  return wallet.type
-
-  // if (wallet.isCash)
-  //   return 'isCash'
-  // if (wallet.isDeposit)
-  //   return 'isDeposit'
-  // if (wallet.isCredit)
-  //   return 'isCredit'
-  // if (wallet.isCredit)
-  //   return 'isCredit'
-  // if (wallet.isCashless)
-  //   return 'isCashless'
-  // if (wallet.isDebt)
-  //   return 'isDebt'
-  // if (checkIsAvailable(wallet) && !wallet.isArchived)
-  //   return 'available'
-  // return 'other'
+  return walletsStore.items?.[id]?.type
 }
 
 function groupByWalletCurrency(id: WalletId) {
@@ -228,7 +217,7 @@ function groupByWalletCurrency(id: WalletId) {
 function countWalletsSum(
   walletsIds: WalletId[],
   isConvert = true,
-  isExcludeTotal = false,
+  isExcludeInTotal = false,
 ) {
   return walletsIds.reduce((acc, id) => {
     const wallet = walletsStore.sortedItems[id]
@@ -246,24 +235,52 @@ function countWalletsSum(
       )
     }
 
-    if (isExcludeTotal && wallet.isExcludeTotal)
+    if (isExcludeInTotal && wallet.isExcludeInTotal)
       return acc
     return acc + wallet.amount
   }, 0)
 }
 
 function checkIsAvailable(wallet: WalletItem) {
-  return wallet?.isCredit || wallet?.withdrawal
+  return wallet.type === 'credit' || wallet.isWithdrawal
 }
 
 const counts = computed(() => ({
   all: {
     id: 'all',
     isShow: true,
-    value:
-      totalInWallets.value.total
-      - totalInWallets.value.credits
-      - totalInWallets.value.isDebt,
+    value: totalInWallets.value.total - totalInWallets.value.credit - totalInWallets.value.debt,
+  },
+  cash: {
+    id: 'cash',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.cash !== 0,
+    value: totalInWallets.value.cash,
+  },
+  cashless: {
+    id: 'cashless',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.cashless !== 0,
+    value: totalInWallets.value.cashless,
+  },
+  credit: {
+    id: 'credit',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.credit !== 0,
+    value: totalInWallets.value.credit,
+  },
+  creditPossible: {
+    id: 'creditPossible',
+    isShow: totalInWallets.value.creditPossible !== 0,
+    value: totalInWallets.value.creditPossible + totalInWallets.value.credit,
+  },
+  debt: {
+    id: 'debt',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.debt !== 0,
+    value: totalInWallets.value.debt,
+  },
+  deposit: {
+    icon: 'deposit',
+    id: 'deposit',
+    isShow: gropedBy.value === 'list' && totalInWallets.value.deposit !== 0,
+    value: totalInWallets.value.deposit,
   },
   withdrawal: {
     icon: 'UiIconWalletWithdrawal',
@@ -272,39 +289,10 @@ const counts = computed(() => ({
     value: totalInWallets.value.withdrawal,
   },
   // eslint-disable-next-line perfectionist/sort-objects
-  isCredit: {
-    id: 'isCredit',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.credits !== 0,
-    value: totalInWallets.value.credits,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  isCash: {
-    id: 'isCash',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.isCash !== 0,
-    value: totalInWallets.value.isCash,
-  },
-  isCashless: {
-    id: 'isCashless',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.isCashless !== 0,
-    value: totalInWallets.value.isCashless,
-  },
-  isDeposit: {
-    icon: 'isDeposit',
-    id: 'isDeposit',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.isDeposit !== 0,
-    value: totalInWallets.value.isDeposit,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  isDebt: {
-    id: 'isDebt',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.isDebt !== 0,
-    value: totalInWallets.value.isDebt,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  creditPossible: {
-    id: 'creditPossible',
-    isShow: totalInWallets.value.creditPossible !== 0,
-    value: totalInWallets.value.creditPossible + totalInWallets.value.credits,
+  archived: {
+    id: 'archived',
+    isShow: totalInWallets.value.archived !== 0,
+    value: totalInWallets.value.archived + totalInWallets.value.archived,
   },
 }))
 </script>
@@ -342,7 +330,7 @@ const counts = computed(() => ({
 
         <!-- Wallets Currencies -->
         <UiToggle2
-          v-if="walletsStore.currenciesUsed.length > 1"
+          v-if="walletsStore.currenciesUsed.length > 1 && gropedBy !== 'currencies'"
           :initStatus="true"
           :lineWidth="1"
           class="hidden md:grid md:max-w-xl"
@@ -350,19 +338,22 @@ const counts = computed(() => ({
           storageKey="finapp-wallets-currencies"
         >
           <template #header="{ toggle, isShown }">
-            <UiTitle88 :isShown @click="toggle">
+            <UiTitle88
+              :isShown
+              @click="toggle"
+            >
               {{ t('filterByCurrency') }}
               {{ currencyFiltered === 'all' ? '' : currencyFiltered }}
             </UiTitle88>
           </template>
 
           <template #default="{ toggle }">
-            <UiTabs2 class="flex gap-1 px-2">
+            <UiTabs2 class="flex gap-1 px-2 md:px-0">
               <DateLinkItem
                 :isActive="currencyFiltered === 'all'"
                 @click="onSelectFilterCurrency('all', toggle)"
               >
-                {{ t('all') }}
+                {{ t('common.all') }}
               </DateLinkItem>
 
               <DateLinkItem
@@ -460,14 +451,11 @@ const counts = computed(() => ({
             </template>
 
             <UiToggle2
-              v-for="(groupedWalletsIds, grouped) in groupBy(
-                walletsIds,
-                groupByWalletType,
-              )"
+              v-for="(groupedWalletsIds, grouped) in groupBy(walletsIds, groupByWalletType)"
               :key="grouped"
               class="border-item-5 ml-3 border-l pl-2"
               :storageKey="`finapp-wallets-show-${currency}-${grouped}`"
-              :initStatus="false"
+              :initStatus="true"
               :lineWidth="1"
               openPadding="!pb-3"
             >
@@ -476,7 +464,7 @@ const counts = computed(() => ({
                   class="flex grow items-center justify-between pr-3"
                   @click="toggle"
                 >
-                  <UiTitle8>{{ t(`money.totals.${grouped}`) }}</UiTitle8>
+                  <UiTitle8>{{ t(`money.types.${grouped}`) }}</UiTitle8>
                   <div class="py-2">
                     <Amount
                       :amount="countWalletsSum(groupedWalletsIds, false)"
@@ -516,7 +504,7 @@ const counts = computed(() => ({
                 @click="toggle"
               >
                 <UiTitle88 :isShown>
-                  {{ t(`money.totals.${type}`) }} {{ walletsIds.length }}
+                  {{ t(`money.types.${type}`) }} {{ walletsIds.length }}
                 </UiTitle88>
 
                 <div class="py-2">
@@ -528,56 +516,69 @@ const counts = computed(() => ({
               </div>
             </template>
 
-            <pre>
-              {{ Object.keys(groupBy(walletsIds, groupByWalletCurrency)).length === 1 ? '1' : 'many' }}
-            </pre>
-
-            <UiToggle2
-              v-for="(groupedWalletsIds, currency) in groupBy(
-                walletsIds,
-                groupByWalletCurrency,
-              )"
-              :key="currency"
-              class="border-item-5 ml-3 border-l pl-2"
-              :storageKey="`finapp-wallets-show-${type}-${currency}`"
-              :initStatus="false"
-              :lineWidth="1"
-              openPadding="!pb-6"
-            >
-              <template #header="{ toggle }">
-                <div
-                  class="flex grow items-center justify-between pr-3"
-                  @click="toggle"
-                >
-                  <UiTitle8>{{ currency }}</UiTitle8>
-                  <div class="py-2">
-                    <Amount
-                      :amount="countWalletsSum(groupedWalletsIds)"
-                      :currencyCode="currenciesStore.base"
-                      :isShowBaseRate="false"
-                    />
-                    <Amount
-                      v-if="currenciesStore.base !== currency"
-                      :amount="countWalletsSum(groupedWalletsIds, false)"
-                      :currencyCode="currency"
-                      :isShowBaseRate="false"
-                      variant="2xs"
-                    />
+            <template v-if="Object.keys(groupBy(walletsIds, groupByWalletCurrency)).length > 1">
+              <UiToggle2
+                v-for="(groupedWalletsIds, currency) in groupBy(walletsIds, groupByWalletCurrency)"
+                :key="currency"
+                class="border-item-5 ml-3 border-l pl-2"
+                :storageKey="`finapp-wallets-show-${type}-${currency}`"
+                :initStatus="true"
+                :lineWidth="1"
+                openPadding="!pb-6"
+              >
+                <template #header="{ toggle }">
+                  <div
+                    class="flex grow items-center justify-between pr-3"
+                    @click="toggle"
+                  >
+                    <UiTitle8>{{ currency }}</UiTitle8>
+                    <div class="py-2">
+                      <Amount
+                        :amount="countWalletsSum(groupedWalletsIds)"
+                        :currencyCode="currenciesStore.base"
+                        :isShowBaseRate="false"
+                      />
+                      <Amount
+                        v-if="currenciesStore.base !== currency"
+                        :amount="countWalletsSum(groupedWalletsIds, false)"
+                        :currencyCode="currency"
+                        :isShowBaseRate="false"
+                        variant="2xs"
+                      />
+                    </div>
                   </div>
-                </div>
-              </template>
+                </template>
 
-              <WalletsItem
-                v-for="walletId in groupedWalletsIds"
-                :key="walletId"
-                :wallet="walletsStore.sortedItems[walletId]"
-                :walletId
-                :lineWidth="2"
-                isShowBaseRate
-                isShowIcons
-                @click="router.push(`/wallets/${walletId}`)"
-              />
-            </UiToggle2>
+                <WalletsItem
+                  v-for="walletId in groupedWalletsIds"
+                  :key="walletId"
+                  :wallet="walletsStore.sortedItems[walletId]"
+                  :walletId
+                  :lineWidth="2"
+                  isShowBaseRate
+                  isShowIcons
+                  @click="router.push(`/wallets/${walletId}`)"
+                />
+              </UiToggle2>
+            </template>
+
+            <template v-else>
+              <div
+                v-for="(groupedWalletsIds, currency) in groupBy(walletsIds, groupByWalletCurrency)"
+                :key="currency"
+              >
+                <WalletsItem
+                  v-for="walletId in groupedWalletsIds"
+                  :key="walletId"
+                  :wallet="walletsStore.sortedItems[walletId]"
+                  :walletId
+                  :lineWidth="2"
+                  isShowBaseRate
+                  isShowIcons
+                  @click="router.push(`/wallets/${walletId}`)"
+                />
+              </div>
+            </template>
           </UiToggle2>
         </template>
 

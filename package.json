@@ -15,7 +15,7 @@
     "node": ">=v20.0.0"
   },
   "scripts": {
-    "dev": "nuxt dev",
+    "dev": "nuxt dev -p 3050 --host",
     "build": "nuxt generate",
     "preview": "nuxt generate && nuxt preview",
     "test": "vitest",
@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "2.22.2",
+    "@iconify-json/lucide": "^1.2.10",
     "@nuxt/eslint": "^0.6.0",
     "@nuxt/fonts": "^0.7.2",
     "@nuxt/ui": "^2.18.7",

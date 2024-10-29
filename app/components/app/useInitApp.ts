@@ -29,7 +29,9 @@ export function useInitApp() {
     trnsStore.setTrns(trns)
   }
 
-  function clearLocalData() {
+  async function clearLocalData() {
+    console.log('clearLocalData')
+
     categoriesStore.setCategories(null)
     trnsStore.setTrns(null)
     walletsStore.setWallets(null)

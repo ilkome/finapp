@@ -1,2 +1,161 @@
-@import './theme'
-@import 'base/*'
+.scrollbar
+  scrollbar()
+
+html
+  /* HSL Syntax */
+  /* https://tailwindcss.com/docs/customizing-colors */
+
+  --hue: 220deg;
+
+  --c-blue-1: hsl(220, 100%, 61%);
+  --c-income-opacity: rgba(44, 173, 34, .5);
+
+  --text-alert-primary: #b81414;
+
+  --text-expense-1: #f92134;
+  --text-expense-2: #ED6660;
+
+  // --text-income-1: #2cad22;
+  --text-income-1: #22A2D3;
+
+  --font-primary: 'Roboto', sans-serif;
+  --font-secondary: 'Unica One', 'Roboto', sans-serif;
+
+/*
+  * Light Theme
+*/
+html
+  --text-income-1: #149cd0;
+
+  --text-1: 64 64 64;
+  --text-secondary: 0 0 0;
+  --text-secondary2: 0 0 0;
+  --text-3: 64 64 64;
+  --text-4: 0 0 0;
+  --text-icon-primary: theme('colors.neutral.50');
+
+  --foreground-1: 255 255 255;
+  --foreground-2: 245 245 245;
+  --foreground-3: 245 245 245;
+  --foreground-4: theme('colors.white');
+  --foreground-5: 27 27 28;
+
+  --accent-1: 0 122 255;
+  --accent-2: 58 125 255;
+  --accent-3: 255 255 255;
+  --accent-4: var(--hue) 100% 61%;
+
+
+  // Item
+  //-----------------------------------
+  --c-item-1 theme('colors.neutral.700')
+  --c-item-2 theme('colors.neutral.500')
+  --c-item-3 #edeef0
+  --c-item-4 theme('colors.neutral.100')
+  --c-item-5 theme('colors.gray.200')
+  --c-item-base theme('colors.neutral.600')
+  --item-10: 28 28 28;
+  --item-6: 237 239 240;
+  --item-8: 25 25 25;
+  --item-9: 245 245 245;
+  --item-active: 216 216 220;
+
+
+  // colors
+  //-----------------------------------
+  --c-red-1         #b81414
+  --c-blue-3        #2c74ff
+  --c-income-1     rgba(44, 173, 34, 1)
+  --c-expense-1    rgba(249, 33, 52, 1)
+
+  // backgrounds
+  // --------------------------------------------
+  --c-bg-9 rgba(190, 190, 190, 1)
+  --c-bg-10 rgba(230, 230, 230, 1)
+  --c-bg-11 rgba(0, 0, 0, .04)
+  --c-bg-12 rgba(100, 100, 100, 1)
+  --c-bg-13 rgba(120, 120, 120, 1)
+  --c-bg-14 rgba(0, 0, 0, .6)
+
+  --c-font-1  #fafafa
+  --c-font-2  #505050
+  --c-font-3  #323232
+  --c-font-4  #6e6e6e
+  --c-font-5  #969696
+
+    // Chart
+  --chart-bg var(--c-item-4)
+  --chart-label var(--c-font-5)
+  --chart-line var(--c-item-5)
+  --chart-selected var(--c-item-3)
+  --chart-splitLine var(--item-3)
+  --chart-tooltip theme('colors.neutral.800')
+
+/*
+  * Dark Theme
+*/
+html.dark
+  --text-income-1: #22A2D3;
+
+  /* Text */
+  --text-secondary: 160 160 160;
+  --text-secondary2: 160 160 160;
+  --text-1: 220 220 220;
+  --text-3: 200 200 200;
+  --text-4: 130 130 130;
+  --text-5: 156 163 175;
+
+  --text-icon-primary: theme('colors.neutral.50');
+
+  --foreground-1: 19 19 19;
+  --foreground-2: 23 23 23;
+  --foreground-3: 22 22 22;
+  --foreground-4: theme('colors.neutral.900');
+  --foreground-5: 27 27 28;
+
+  --accent-1: 56 148 2451;
+  --accent-2: 58 125 255;
+  --accent-3: 255 255 255;
+  --accent-4: var(--hue) 100% 61%;
+
+  // Item
+  //-----------------------------------
+  --c-item-1 theme('colors.neutral.100')
+  --c-item-2 theme('colors.neutral.400')
+  --c-item-3 #232323
+  --c-item-4 #1c1c1c
+  --c-item-5 theme('colors.neutral.800')
+  --c-item-base theme('colors.neutral.200')
+  --item-10: 28 28 28;
+  --item-6: 44 44 44;
+  --item-8: 25 25 25;
+  --item-9: 23 23 23;
+
+  // Colors
+  //-----------------------------------
+  --c-red-1         #b81414
+  --c-blue-3        #2c74ff
+  --c-income-1     #2cad22
+  --c-expense-1    #b81414
+
+  // backgrounds
+  // --------------------------------------------
+  --c-bg-9  #878787
+  --c-bg-10 #dcdcdc
+  --c-bg-14 #000000cc
+
+  --c-font-1  #fafafa
+  --c-font-2  #dcdcdc
+  --c-font-3  #bebebe
+  --c-font-4  #969696
+  --c-font-5  #646464
+
+
+  // Chart
+  --chart-bg var(--c-item-5)
+  --chart-label var(--c-font-5)
+  --chart-line var(--c-item-5)
+  // --chart-selected theme('colors.neutral.800')
+  --chart-selected var(--c-item-5)
+  --chart-splitLine theme('colors.neutral.700')
+  --chart-tooltip theme('colors.neutral.400')

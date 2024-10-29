@@ -73,6 +73,7 @@ export const useTrnsStore = defineStore('trns', () => {
   function setTrns(values: Trns | null) {
     items.value = values
     localforage.setItem('finapp.trns', deepUnref(values))
+    console.log('setTrns', values)
   }
 
   function addTrn({ id, values }: { id: TrnId, values: TrnItem }) {

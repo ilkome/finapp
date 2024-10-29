@@ -108,7 +108,9 @@ const groupedTrns = computed(() => {
   return paginatedTrnsIds.value.reduce(
     (acc, trnId) => {
       const date = dayjs(trnsStore.items[trnId]?.date).startOf('day').valueOf()
-      !acc[date] ? acc[date] = [trnId] : acc[date].push(trnId)
+      !acc[date]
+        ? acc[date] = [trnId]
+        : acc[date].push(trnId)
       return acc
     },
     {} as Record<string, TrnId[]>,
@@ -151,7 +153,7 @@ const groupedTrns = computed(() => {
     <!-- With Desc -->
     <div
       v-if="isShowFilterByDesc && isTrnsWithDesc && selectedIds.length > 0"
-      class="z-10 relative pb-2"
+      class="relative z-10 pb-2"
     >
       <UiCheckbox
         :checkboxValue="isShowWithDesc"
@@ -169,7 +171,7 @@ const groupedTrns = computed(() => {
       <!-- Group Sum -->
       <div
         v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
-        class="pr-3 border-b border-item-5 pb-2"
+        class="border-item-5 border-b pb-2 pr-3"
       >
         <Amount
           v-if="getTotalOfTrnsIds(paginatedTrnsIds).income !== 0"
@@ -211,11 +213,11 @@ const groupedTrns = computed(() => {
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="bg-item-9 rounded-lg overflow-hidden"
+        class="bg-item-9 overflow-hidden rounded-lg"
       >
         <div
           :class="{ '-border-b border-item-5': isShowGroupSum && groupTrnsIds.length > 1 }"
-          class="flex gap-2 items-end py-2 pb-1 px-3"
+          class="flex items-end gap-2 px-3 py-2 pb-1"
         >
           <DateTrns
             :date="+date"
@@ -266,7 +268,7 @@ const groupedTrns = computed(() => {
     <!-- Show all -->
     <div v-if="!isShowedAllTrns">
       <div
-        class="flex-center grow rounded-full bg-item-5 px-5 py-2.5 text-sm text-secondary hocus:bg-item-6"
+        class="flex-center bg-item-5 text-secondary hocus:bg-item-6 grow rounded-full px-5 py-2.5 text-sm"
         @click="pageNumber = ++pageNumber"
       >
         {{ $t("trns.more") }} {{ paginatedTrnsIds.length }} /

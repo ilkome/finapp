@@ -1,9 +1,0 @@
-/* Min properties to use fullscreen page and scroll inside div */
-:root {
-  --fullHeight: 100dvh;
-}
-
-#__nuxt,
-#__layout {
-  height: var(--fullHeight);
-}

@@ -19,15 +19,13 @@ const emit = defineEmits(['updateValue', 'afterSave'])
 
 const { $toast } = useNuxtApp()
 const { t } = useI18n()
-const { categoryForm, categoryId } = toRefs(props)
 const userStore = useUserStore()
 const categoriesStore = useCategoriesStore()
 
-const editCategoryId = categoryId.value ?? generateId()
-
+const editCategoryId = props.categoryId ?? generateId()
 const activeTab = ref('data')
 const isUpdateChildCategoriesColor = ref(true)
-const isAllowChangeParent = computed(() => categoriesStore.getChildsIds(categoryId.value).length === 0)
+const isAllowChangeParent = computed(() => categoriesStore.getChildsIds(props.categoryId).length === 0)
 
 const tabs = computed(() => [{
   id: 'data',
@@ -51,7 +49,7 @@ function onParentSelect(parentId: CategoryId) {
   emit('updateValue', 'parentId', parentId)
 
   // Change category color when patent category changed
-  const parentCategoryColor = categoriesStore.items[parentId]?.color
+  const parentCategoryColor = categoriesStore.items?.[parentId]?.color
   if (parentCategoryColor)
     emit('updateValue', 'color', parentCategoryColor)
 }
@@ -59,7 +57,7 @@ function onParentSelect(parentId: CategoryId) {
 /**
  * Validate
  */
-function validate({ categoriesItems, values }) {
+function validate(values: CategoryForm) {
   if (!values.name) {
     $toast(UiToastContent, {
       data: {
@@ -74,8 +72,8 @@ function validate({ categoriesItems, values }) {
   }
 
   // TODO: refactor
-  for (const id in categoriesItems) {
-    if (categoriesItems[id].name === values.name && categoriesItems[id].parentId === values.parentId) {
+  for (const id in categoriesStore.items) {
+    if (categoriesStore.items[id].name === values.name && categoriesStore.items[id].parentId === values.parentId) {
       if (editCategoryId) {
         if (editCategoryId !== id) {
           $toast(UiToastContent, {
@@ -107,15 +105,16 @@ function validate({ categoriesItems, values }) {
 }
 
 async function onSave() {
-  const categoriesItems = categoriesStore.items
-
-  const isFormValid = validate({ categoriesItems, values: categoryForm.value })
-  if (!isFormValid)
+  if (!validate(props.categoryForm))
     return
+
+  // const values: WalletItem = normalizeWalletItem(props.walletForm)
+  // await walletsStore.addWallet({ id: editWalletId, values })
+  // emit('afterSave')
 
   const uid = userStore.uid
   const categoryChildIds = categoriesStore.getChildsIds(editCategoryId)
-  const categoryValues = getPreparedFormData(categoryForm.value)
+  const categoryValues = getPreparedFormData(props.categoryForm)
 
   // Update category
   await saveData(`users/${uid}/categories/${editCategoryId}`, categoryValues)
@@ -132,7 +131,7 @@ async function onSave() {
 
 <template>
   <div
-    v-if="categoryForm"
+    v-if="props.categoryForm"
     class="grid h-full max-w-lg grid-rows-[auto,1fr,auto] overflow-hidden px-2 pt-2 md:px-6"
   >
     <UiTabs>
@@ -158,7 +157,7 @@ async function onSave() {
           <input
             class="text-item-base bg-item-4 border-item-5 placeholder_text-item-2 focus_text-item-1 focus_bg-item-5 focus_border-accent-4 focus_outline-none m-0 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out"
             :placeholder="t('categories.form.name.placeholder')"
-            :value="categoryForm.name"
+            :value="props.categoryForm.name"
             type="text"
             @input="event => emit('updateValue', 'name', event.target.value)"
           >
@@ -172,15 +171,15 @@ async function onSave() {
         />
         <LazyUiCheckbox
           v-if="categoriesStore.getChildsIds(categoryId).length === 0"
-          :checkboxValue="categoryForm.showInLastUsed"
+          :checkboxValue="props.categoryForm.showInLastUsed"
           :title="t('categories.form.lastUsed')"
-          @onClick="categoryForm.showInLastUsed = !categoryForm.showInLastUsed"
+          @onClick="props.categoryForm.showInLastUsed = !props.categoryForm.showInLastUsed"
         />
         <UiCheckbox
           v-if="categoriesStore.getChildsIds(categoryId).length === 0"
-          :checkboxValue="categoryForm.showInQuickSelector"
+          :checkboxValue="props.categoryForm.showInQuickSelector"
           :title="t('categories.form.quickSelector')"
-          @onClick="categoryForm.showInQuickSelector = !categoryForm.showInQuickSelector"
+          @onClick="props.categoryForm.showInQuickSelector = !props.categoryForm.showInQuickSelector"
         />
       </template>
 
@@ -189,8 +188,8 @@ async function onSave() {
         <div class="pb-4">
           <div class="pb-5">
             <LazyColorPalette
-              :activeColor="categoryForm.color"
-              :icon="categoryForm.icon"
+              :activeColor="props.categoryForm.color"
+              :icon="props.categoryForm.icon"
               isCategory
               @click="color => emit('updateValue', 'color', color)"
             />
@@ -201,7 +200,7 @@ async function onSave() {
           </div>
 
           <input
-            v-model="categoryForm.color"
+            v-model="props.categoryForm.color"
             class="h-12 w-full cursor-pointer border-0 p-0"
             type="color"
           >
@@ -220,13 +219,13 @@ async function onSave() {
         <template v-else>
           <div
             class="flex-center bg-item-4 hocus_bg-item-5 mb-4 cursor-pointer gap-x-3 rounded-md px-2 py-3 text-center"
-            :class="{ '!bg-item-3': categoryForm.parentId === 0 }"
+            :class="{ '!bg-item-3': props.categoryForm.parentId === 0 }"
             @click="emit('updateValue', 'parentId', 0)"
           >
             {{ t('categories.form.parent.no') }}
           </div>
           <CategoriesList
-            :activeItemId="categoryForm.parentId"
+            :activeItemId="props.categoryForm.parentId"
             :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
             :slider="() => ({})"
             class="!gap-x-1"
@@ -247,7 +246,7 @@ async function onSave() {
             v-for="icon in iconGroup"
             :key="icon"
             class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent" :class="[{ 'border-accent-2': icon === categoryForm.icon }]"
-            :style="{ background: categoryForm.color }"
+            :style="{ background: props.categoryForm.color }"
             @click="emit('updateValue', 'icon', icon)"
           >
             <div class="text-icon-primary text-2xl" :class="[icon]" />

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import type { ToastOptions } from 'vue3-toastify'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import UiToastContent from '~/components/ui/ToastContent.vue'
+import { useDemo } from '~/components/demo/useDemo'
 
 const auth = useFirebaseAuth()!
 
@@ -16,6 +17,7 @@ useSeoMeta({
 })
 
 const { $toast } = useNuxtApp() as unknown as { $toast: (c: any, o: any) => void }
+const { loadDemoData } = useDemo()
 const route = useRoute()
 const router = useRouter()
 const isDemo = useCookie('finapp.isDemo')
@@ -53,14 +55,15 @@ onMounted(() => {
   }
 })
 
-function openDemo() {
+async function openDemo() {
   isDemo.value = 'true'
+  await loadDemoData()
   router.push(typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard')
 }
 </script>
 
 <template>
-  <div class="md_p-6 mx-auto grid h-full w-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4">
+  <div class="md_p-6 mx-auto grid size-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4">
     <div class="flex flex-wrap items-start justify-between gap-2">
       <AppLocaleSwitcher />
       <AppThemeSwitcher class="justify-end" />
@@ -70,9 +73,9 @@ function openDemo() {
       class="grid h-full items-center gap-8 overflow-hidden overflow-y-auto px-3 py-4"
     >
       <div class="flex flex-col items-center justify-center pb-10">
-        <UiLogo class="!text-5xl !font-extrabold pb-0" />
+        <UiLogo class="pb-0 !text-5xl !font-extrabold" />
 
-        <div class="grid min-w-[280px] gap-5 items-center px-3 py-8">
+        <div class="grid min-w-[280px] items-center gap-5 px-3 py-8">
           <UiButtonBlue
             :loading="isLoading"
             size="xl"

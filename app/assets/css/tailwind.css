@@ -28,13 +28,14 @@ html,
 body {
   overscroll-behavior-y: none;
   user-select: none;
+  height: 100dvh;
 
   @apply
     font-primary text-1 leading-none antialiased;
 }
 
 .layoutBase {
-  @apply overflow-hidden relative h-full;
+  @apply overflow-hidden relative h-dvh;
 }
 
 .trnForm .trnForm__pagination {

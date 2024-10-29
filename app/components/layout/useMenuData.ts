@@ -1,6 +1,8 @@
 /* eslint-disable perfectionist/sort-objects */
 import { useAppNav } from '~/components/app/useAppNav'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnForm } from '~/components/trnForm/useTrnForm'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type MenuItem = {
   component?: string
@@ -11,6 +13,8 @@ export type MenuItem = {
 export default function useMenuData() {
   const { t } = useI18n()
   const { trnFormCreate } = useTrnForm()
+  const walletsStore = useWalletsStore()
+  const categoriesStore = useCategoriesStore()
   const route = useRoute()
   const { closeAllModals, openModal } = useAppNav()
 
@@ -54,7 +58,9 @@ export default function useMenuData() {
     closeAllModals()
 
     if (menuId === 'trnForm') {
-      trnFormCreate()
+      if (walletsStore.hasItems && categoriesStore.hasItems) {
+        trnFormCreate()
+      }
       return
     }
 

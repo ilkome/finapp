@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import '~/assets/css/fullpage.css'
-import '~/assets/css/reset.css'
 import '~/assets/stylus/index.styl'
 import { useWindowSize } from '@vueuse/core'
 import { useAppNav } from '~/components/app/useAppNav'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useGuard } from '~/components/user/useGuard'
 import { useInitApp } from '~/components/app/useInitApp'
 import { usePointerClass } from '~/components/layout/usePointerClass'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import { useGuard } from '~/components/user/useGuard'
-import { useDemo } from '~/components/demo/useDemo'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const keepalive = ['Categories', 'Wallets', 'Dashboard']
 
 const isDemo = useCookie('finapp.isDemo')
 const trnFormStore = useTrnFormStore()
+const categoriesStore = useCategoriesStore()
+const walletsStore = useWalletsStore()
 const { isModalOpen } = useAppNav()
 const { loadDataFromCache, loadDataFromDB } = useInitApp()
-const { loadDemoData } = useDemo()
 const { pointerClasses } = usePointerClass()
 const { locale, t } = useI18n()
 const { width } = useWindowSize()
@@ -29,11 +29,11 @@ const { error, status } = await useAsyncData(
   'app',
   async () => {
     if (isDemo.value) {
-      await loadDemoData()
+      loadDataFromCache()
     }
     else if (user.value) {
-      await loadDataFromCache()
-      await loadDataFromDB()
+      loadDataFromCache()
+      loadDataFromDB()
     }
   },
   {
@@ -86,7 +86,10 @@ useHead({
     <TrnFormFloatOpener />
   </div>
 
-  <Teleport to="body">
+  <Teleport
+    v-if="categoriesStore.hasItems && walletsStore.hasItems"
+    to="body"
+  >
     <TrnFormBottom v-if="width < 767" />
     <TrnFormSidebar v-if="width >= 767" />
   </Teleport>

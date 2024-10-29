@@ -10,7 +10,7 @@ export function useGuard() {
   onMounted(() => {
     watch(user, (user, prevUser) => {
       if (user?.uid && user?.uid !== localAuthUid.value) {
-        clearLocalData()
+        // clearLocalData()
       }
 
       if (user && route.path === '/login') {

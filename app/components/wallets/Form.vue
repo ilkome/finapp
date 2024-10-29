@@ -21,7 +21,6 @@ const emit = defineEmits<{
 const { $toast } = useNuxtApp()
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
-const isDemo = useCookie('finapp.isDemo')
 
 const editWalletId = props.walletId ?? generateId()
 const walletTypes = types.map(value => ({
@@ -87,13 +86,6 @@ async function onSave() {
     return
 
   const values: WalletItem = normalizeWalletItem(props.walletForm)
-
-  if (isDemo.value) {
-    walletsStore.items[editWalletId] = values
-    emit('afterSave')
-    return
-  }
-
   await walletsStore.addWallet({ id: editWalletId, values })
   emit('afterSave')
 }
@@ -101,7 +93,7 @@ async function onSave() {
 
 <template>
   <div
-    v-if="walletForm"
+    v-if="props.walletForm"
     class="grid h-full max-w-lg grid-rows-[auto,1fr,auto] overflow-hidden px-2 pt-2 md:px-6"
   >
     <UiTabs>
@@ -164,7 +156,7 @@ async function onSave() {
             <div>
               <div class="px-1">
                 <USelect
-                  v-model="walletForm.type"
+                  v-model="props.walletForm.type"
                   color="blue"
                   :options="walletTypes"
                   optionAttribute="label"

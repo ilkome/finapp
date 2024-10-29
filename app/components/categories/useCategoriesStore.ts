@@ -11,37 +11,36 @@ import type {
   CategoryId,
   CategoryItem,
 } from '~/components/categories/types'
-import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/getCategories'
+import { getTransferCategoriesIds } from '~/components/categories/getCategories'
+import { getTransactibleCategoriesIds } from '~/components/categories/utils'
 
 import { useUserStore } from '~/components/user/useUserStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
+const transfer: CategoryItem = {
+  childIds: [],
+  color: 'var(--c-blue-1)',
+  icon: 'mdi mdi-repeat',
+  name: 'Transfer',
+  order: 9999,
+  parentId: 0,
+  showInLastUsed: false,
+  showInQuickSelector: false,
+  showStat: false,
+}
+
 export const useCategoriesStore = defineStore('categories', () => {
   const userStore = useUserStore()
-
-  const transfer: CategoryItem = {
-    childIds: [],
-    color: 'var(--c-blue-1)',
-    icon: 'mdi mdi-repeat',
-    name: 'Transfer',
-    order: 9999,
-    parentId: 0,
-    showInLastUsed: false,
-    showInQuickSelector: false,
-    showStat: false,
-  }
-
   const trnsStore = useTrnsStore()
 
   const items = shallowRef<Categories | null>({ transfer })
-
   const hasItems = computed(() => {
-    if (!items.value)
-      return false
-
-    if (Object.keys(items.value).filter(id => id !== 'transfer').length > 0)
+    if (Object.keys(items.value ?? {}).filter(id => id !== 'transfer').length > 0)
       return true
+
+    return false
   })
+  const transferCategoriesIds = computed(() => getTransferCategoriesIds(items.value ?? {}))
 
   const categoriesIds = computed(() => {
     if (!items.value)
@@ -50,15 +49,13 @@ export const useCategoriesStore = defineStore('categories', () => {
     return Object.keys(items.value)
   })
 
-  const transferCategoriesIds = computed(() => getTransferCategoriesIds(items.value))
-
   const categoriesRootIds = computed(() => {
     if (!hasItems.value || !items.value)
       return []
 
     return Object.keys(items.value)
-      .filter(id => items.value[id].parentId === 0)
-      .sort((a, b) => items.value[a].name.localeCompare(items.value[b].name))
+      .filter(id => items.value?.[id]?.parentId === 0)
+      .sort((a, b) => items.value?.[a]?.name.localeCompare(items.value?.[b]?.name) ?? '')
   })
 
   const categoriesForBeParent = computed(() => {
@@ -265,19 +262,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   function getTransactibleIds(ids?: CategoryId[]) {
-    if (!ids)
-      return []
-    return getTransactibleCategoriesIds(ids, items.value)
-  }
-
-  function getTransactibleIds2() {
-    return Object.entries(items.value ?? {}).reduce((acc, [id, category]) => {
-      if (category.childIds)
-        acc.push(...category.childIds)
-      else if (!acc.find(i => i !== id))
-        acc.push(id)
-      return acc
-    }, [] as CategoryId[])
+    return getTransactibleCategoriesIds(items.value ?? {}, ids)
   }
 
   return {
@@ -289,7 +274,6 @@ export const useCategoriesStore = defineStore('categories', () => {
     getChildsIds,
     getChildsIdsOrParent,
     getTransactibleIds,
-    getTransactibleIds2,
     hasChildren,
     hasItems,
     initCategories,

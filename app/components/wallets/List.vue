@@ -27,7 +27,9 @@ const walletsItemsLimited = computed<WalletsWithAmount>(() => {
 })
 
 function toggle() {
-  return stateLimit.value = stateLimit.value > 0 ? 0 : props.limit
+  stateLimit.value = stateLimit.value > 0
+    ? 0
+    : props.limit
 }
 
 onMounted(() => stateLimit.value = props.limit)
@@ -58,7 +60,7 @@ onMounted(() => stateLimit.value = props.limit)
         </template>
 
         <template v-else-if="stateLimit !== limit">
-          {{ $t("wallets.showOnly") }} {{ limit }}
+          {{ t("wallets.showOnly") }} {{ limit }}
         </template>
       </div>
     </slot>

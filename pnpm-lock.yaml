@@ -57,6 +57,9 @@ importers:
       '@antfu/eslint-config':
         specifier: 2.22.2
         version: 2.22.2(@vue/compiler-sfc@3.5.8)(eslint-plugin-format@0.1.2(eslint@9.12.0(jiti@2.3.3)))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)(vitest@1.6.0(@types/node@22.7.5)(lightningcss@1.27.0)(stylus@0.63.0)(terser@5.33.0))
+      '@iconify-json/lucide':
+        specifier: ^1.2.10
+        version: 1.2.10
       '@nuxt/eslint':
         specifier: ^0.6.0
         version: 0.6.0(eslint@9.12.0(jiti@2.3.3))(magicast@0.3.5)(rollup@4.22.4)(typescript@5.6.3)(vite@5.4.9(@types/node@22.7.5)(lightningcss@1.27.0)(stylus@0.63.0)(terser@5.33.0))
@@ -1744,6 +1747,9 @@ packages:
 
   '@iconify-json/heroicons@1.2.1':
     resolution: {integrity: sha512-TkKfS5U27kE5MXmSGLzPoz95BP5VA9xEJXwJFwmPMVLX+xyWq0OkoiWTUXB0uAoQODpb8BaRpzSydItrq9fIRA==}
+
+  '@iconify-json/lucide@1.2.10':
+    resolution: {integrity: sha512-cR1xpRJ4dnoXlC0ShDjzbrZyu+ICH4OUaYl7S51MhZUO1H040s7asVqv0LsDbofSLDuzWkHCLsBabTTRL0mCUg==}
 
   '@iconify/collections@1.0.463':
     resolution: {integrity: sha512-evy1hjBhc2M74M37RYorywTl+a96NrUHbY79kzcht1syCpXylWeg+6imtmDyj3An7JvxjDfdO4mLbiDsCDGxDQ==}
@@ -6949,7 +6955,7 @@ snapshots:
       '@antfu/install-pkg': 0.3.5
       '@clack/prompts': 0.7.0
       '@stylistic/eslint-plugin': 2.8.0(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
-      '@typescript-eslint/eslint-plugin': 8.0.0-alpha.40(@typescript-eslint/parser@8.0.0-alpha.40(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
+      '@typescript-eslint/eslint-plugin': 8.0.0-alpha.40(@typescript-eslint/parser@8.11.0(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
       '@typescript-eslint/parser': 8.0.0-alpha.40(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
       eslint: 9.12.0(jiti@2.3.3)
       eslint-config-flat-gitignore: 0.1.8
@@ -8628,6 +8634,10 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/lucide@1.2.10':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify/collections@1.0.463':
     dependencies:
       '@iconify/types': 2.0.0
@@ -9690,10 +9700,10 @@ snapshots:
 
   '@types/web-bluetooth@0.0.20': {}
 
-  '@typescript-eslint/eslint-plugin@8.0.0-alpha.40(@typescript-eslint/parser@8.0.0-alpha.40(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)':
+  '@typescript-eslint/eslint-plugin@8.0.0-alpha.40(@typescript-eslint/parser@8.11.0(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)':
     dependencies:
       '@eslint-community/regexpp': 4.11.1
-      '@typescript-eslint/parser': 8.0.0-alpha.40(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
+      '@typescript-eslint/parser': 8.11.0(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
       '@typescript-eslint/scope-manager': 8.0.0-alpha.40
       '@typescript-eslint/type-utils': 8.0.0-alpha.40(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
       '@typescript-eslint/utils': 8.0.0-alpha.40(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
@@ -11471,14 +11481,14 @@ snapshots:
     dependencies:
       eslint: 9.12.0(jiti@2.3.3)
     optionalDependencies:
-      '@typescript-eslint/eslint-plugin': 8.0.0-alpha.40(@typescript-eslint/parser@8.0.0-alpha.40(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
+      '@typescript-eslint/eslint-plugin': 8.0.0-alpha.40(@typescript-eslint/parser@8.11.0(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
 
   eslint-plugin-vitest@0.5.4(@typescript-eslint/eslint-plugin@8.0.0-alpha.40(@typescript-eslint/parser@8.0.0-alpha.40(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)(vitest@1.6.0(@types/node@22.7.5)(lightningcss@1.27.0)(stylus@0.63.0)(terser@5.33.0)):
     dependencies:
       '@typescript-eslint/utils': 7.18.0(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
       eslint: 9.12.0(jiti@2.3.3)
     optionalDependencies:
-      '@typescript-eslint/eslint-plugin': 8.0.0-alpha.40(@typescript-eslint/parser@8.0.0-alpha.40(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
+      '@typescript-eslint/eslint-plugin': 8.0.0-alpha.40(@typescript-eslint/parser@8.11.0(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3))(eslint@9.12.0(jiti@2.3.3))(typescript@5.6.3)
       vitest: 1.6.0(@types/node@22.7.5)(lightningcss@1.27.0)(stylus@0.63.0)(terser@5.33.0)
     transitivePeerDependencies:
       - supports-color

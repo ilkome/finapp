@@ -46,8 +46,8 @@ export const useUserStore = defineStore('user', () => {
     closeAllModals()
 
     if (isDemo.value) {
+      await localforage.clear()
       isDemo.value = 'false'
-      localStorage.clear()
       window.location.href = '/login'
       return
     }
@@ -69,10 +69,15 @@ export const useUserStore = defineStore('user', () => {
   function removeUserData() {
     closeAllModals()
 
-    console.log(uid.value)
-
-    if (!uid.value)
+    if (isDemo.value) {
+      trnsStore.setTrns(null)
+      categoriesStore.setCategories(null)
+      walletsStore.setWallets(null)
       return
+    }
+    else if (!uid.value) {
+      return
+    }
 
     saveData(`users/${uid.value}/accounts/`, null)
     saveData(`users/${uid.value}/categories/`, null)

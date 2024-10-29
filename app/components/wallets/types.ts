@@ -4,20 +4,19 @@ import type { DeepPartial } from '~~/utils/types'
 
 export const types = [
   'cash',
-  'cashless',
   'credit',
+  'cashless',
+  'deposit',
   'crypto',
   'debt',
-  'deposit',
 ] as const
 
 export const viewTypes = [
-  ...types,
   'available',
+  ...types,
   'creditPossible',
-  'isWithCredit',
-  'isWithdrawal',
-  'isArchived',
+  'withdrawal',
+  'archived',
 ] as const
 
 export type WalletId = string

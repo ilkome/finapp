@@ -15,6 +15,7 @@ export const useWalletsStore = defineStore('wallets', () => {
   const userStore = useUserStore()
   const currenciesStore = useCurrenciesStore()
 
+  const isDemo = useCookie('finapp.isDemo')
   const items = ref<Wallets | null>(null)
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
 
@@ -40,6 +41,15 @@ export const useWalletsStore = defineStore('wallets', () => {
     // Set default currency based on first created wallet
     if (!hasItems.value)
       currenciesStore.updateBase(values.currency)
+
+    if (isDemo.value) {
+      items.value = {
+        ...items.value,
+        [id]: values,
+      }
+      localforage.setItem('finapp.wallets', deepUnref(items.value))
+      return
+    }
 
     await saveData(`users/${userStore.uid}/accounts/${id}`, values)
   }

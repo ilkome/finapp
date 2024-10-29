@@ -16,13 +16,16 @@ const config = {
 
 export function useDemo() {
   async function loadDemoData() {
+    console.log(11)
+
     const { clearLocalData } = useInitApp()
     const currenciesStore = useCurrenciesStore()
     const walletsStore = useWalletsStore()
     const categoriesStore = useCategoriesStore()
     const trnsStore = useTrnsStore()
 
-    await clearLocalData()
+    // await clearLocalData()
+    console.log(2)
 
     currenciesStore.setBase('USD')
     currenciesStore.setRates(currencies)
@@ -37,7 +40,7 @@ export function useDemo() {
         ...acc,
         [i]: {
           amount: Math.floor(Math.random() * config.amount) + 1,
-          categoryId: categoriesStore.getTransactibleIds2()[Math.floor(Math.random() * categoriesStore.getTransactibleIds2().length)],
+          categoryId: categoriesStore.getTransactibleIds()[Math.floor(Math.random() * categoriesStore.getTransactibleIds().length)],
           date: startDate.valueOf() + Math.random() * (endDate.valueOf() - startDate.valueOf()),
           id: i,
           type: Math.random() < 0.5 ? 0 : 1,
@@ -45,6 +48,8 @@ export function useDemo() {
         },
       }
     }, {})
+
+    console.log(3)
 
     trnsStore.setTrns(trns)
   }

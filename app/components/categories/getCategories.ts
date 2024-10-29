@@ -1,12 +1,5 @@
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
-export function getTransactibleCategoriesIds(
-  catsIds: CategoryId[],
-  categoriesItems: Record<CategoryId, CategoryItem>,
-): CategoryId[] {
-  return catsIds.map(id => categoriesItems[id]?.childIds ?? id).flat()
-}
-
 export function getTransferCategoriesIds(items: Record<CategoryId, CategoryItem>): CategoryId[] {
   const names = ['перевод', 'transfer']
 
