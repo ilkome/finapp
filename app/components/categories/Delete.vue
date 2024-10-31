@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ToastOptions } from 'vue3-toastify'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CategoryId } from '~/components/categories/types'
 import { errorEmo, random, successEmo } from '~/assets/js/emo'
@@ -46,7 +45,7 @@ function onClickDelete() {
         },
         toastId: 'delete-category-with-child-error',
         type: 'error',
-      } as ToastOptions)
+      })
 
       return false
     }
@@ -75,7 +74,7 @@ async function onDeleteConfirm() {
         },
         toastId: 'delete-category-with-child-success',
         type: 'success',
-      } as ToastOptions)
+      })
     })
   }, 100)
 }

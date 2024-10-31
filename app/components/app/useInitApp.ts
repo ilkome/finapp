@@ -30,8 +30,6 @@ export function useInitApp() {
   }
 
   async function clearLocalData() {
-    console.log('clearLocalData')
-
     categoriesStore.setCategories(null)
     trnsStore.setTrns(null)
     walletsStore.setWallets(null)

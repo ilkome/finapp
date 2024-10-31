@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ToastOptions } from 'vue3-toastify'
+import type { TrnId } from '~/components/trns/types'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { WalletId } from '~/components/wallets/types'
 import { random, successEmo } from '~/assets/js/emo'
@@ -17,7 +18,7 @@ const router = useRouter()
 const userStore = useUserStore()
 const trnsStore = useTrnsStore()
 
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
+const trnsIds = computed<TrnId[]>(() => trnsStore.getStoreTrnsIds({
   walletsIds: [walletId.value],
 }))
 
@@ -38,7 +39,7 @@ function onClickDelete() {
 async function onDeleteConfirm() {
   // Disable reactive to have data when user have already redirected to wallets page
   const uid = JSON.parse(JSON.stringify(userStore.uid))
-  const trnsIdsS = JSON.parse(JSON.stringify(trnsIds.value))
+  const trnsIdsS = [...trnsIds.value]
   const walletIdS = JSON.parse(JSON.stringify(walletId.value))
 
   router.push('/wallets')
@@ -46,6 +47,7 @@ async function onDeleteConfirm() {
   // Give some time to complete redirect
   setTimeout(async () => {
     await trnsStore.deleteTrnsByIds(trnsIdsS)
+
     removeData(`users/${uid}/accounts/${walletIdS}`)
       .then(() => {
         $toast(UiToastContent, {

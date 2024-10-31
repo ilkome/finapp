@@ -25,7 +25,7 @@ const activeCreditView = useStorage<typeof creditViews[number]>(props.walletId, 
 const creditAmount = computed(() => {
   switch (activeCreditView.value) {
     case 'dept':
-      return props.wallet.amount
+      return props.wallet?.amount
     case 'sum':
       return Math.abs(props.wallet.creditLimit ?? 0) - Math.abs(props.wallet.amount)
     default:

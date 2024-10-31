@@ -16,8 +16,6 @@ const config = {
 
 export function useDemo() {
   async function loadDemoData() {
-    console.log(11)
-
     const { clearLocalData } = useInitApp()
     const currenciesStore = useCurrenciesStore()
     const walletsStore = useWalletsStore()
@@ -25,7 +23,6 @@ export function useDemo() {
     const trnsStore = useTrnsStore()
 
     // await clearLocalData()
-    console.log(2)
 
     currenciesStore.setBase('USD')
     currenciesStore.setRates(currencies)
@@ -48,8 +45,6 @@ export function useDemo() {
         },
       }
     }, {})
-
-    console.log(3)
 
     trnsStore.setTrns(trns)
   }

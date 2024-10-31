@@ -47,7 +47,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 </script>
 
 <template>
-  <div class="bg-foreground-3 z-10 lg:sticky lg:top-0 lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-2">
+  <div class="bg-foreground-3 z-10 max-w-6xl pb-2 lg:sticky lg:top-0 lg:gap-8 lg:px-4 xl:py-2">
     <div class="flex gap-1 overflow-x-auto p-2 pb-0 ">
       <Filter v-if="props.isShowFilter" />
 
@@ -84,7 +84,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
     v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
     :storageKey="props.storageKey + activeTab"
     :trnsIds="trnsIds"
-    class="-max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
+    class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
     type="sum"
   />
 
@@ -93,7 +93,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
     v-if="(activeTab === 'expense') && expenseTrnsIds.length > 0"
     :trnsIds="expenseTrnsIds"
     :storageKey="props.storageKey + activeTab"
-    class="-max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
+    class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
     type="expense"
   />
 
@@ -102,14 +102,14 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
     v-if="(activeTab === 'income') && incomeTrnsIds.length > 0"
     :trnsIds="incomeTrnsIds"
     :storageKey="props.storageKey + activeTab"
-    class="-max-w-2xl lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
+    class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
     type="income"
   />
 
   <!-- Summary -->
   <div
     v-if="activeTab === 'sum'"
-    class="grid md:grid-cols-2 gap-4 lg:gap-8 max-w-6xl lg:px-4 xl:py-2 pb-24"
+    class="grid max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
   >
     <!-- Expense -->
     <StatMiniItem

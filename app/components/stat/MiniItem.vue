@@ -398,9 +398,9 @@ const quickModalTrnsIds = computed(() => {
 <template>
   <div>
     <!-- Stat -->
-    <div class="@container/stat px-2 pt-2 -max-w-4xl">
+    <div class="@container/stat -max-w-4xl px-2 pt-2">
       <div class="">
-        <div class="@2xl/stat:-max-w-md md:max-w-md -xl:p-2 -xl:bg-item-9 xl:rounded-xl">
+        <div class="@2xl/stat:-max-w-md -xl:p-2 -xl:bg-item-9 md:max-w-md xl:rounded-xl">
           <!-- Chart -->
           <div
             v-if="isShowChart && (intervalRange.interval.value.duration !== 1 || intervalRange.interval.value.period !== 'day')"
@@ -459,7 +459,7 @@ const quickModalTrnsIds = computed(() => {
         <div class="pt-3">
           <div
             v-if="props.type === 'sum'"
-            class="flex gap-1 flex-wrap justify-stretch md:max-w-md"
+            class="flex flex-wrap justify-stretch gap-1 md:max-w-md"
           >
             <StatSum
               :amount="-totals.expense"
@@ -495,7 +495,7 @@ const quickModalTrnsIds = computed(() => {
         </div>
 
         <!-- Content -->
-        <div class="grid @3xl/stat:grid-cols-[2fr,1fr] gap-2 pt-3">
+        <div class="@3xl/stat:grid-cols-[2fr,1fr] grid gap-2 pt-3">
           <!-- Categories first level -->
           <UiToggle
             :storageKey="`${newBaseStorageKey}-cats-root`"
@@ -627,13 +627,13 @@ const quickModalTrnsIds = computed(() => {
                 :isHideDots="viewOptions.catsList.isOpened"
                 :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-                :class="{ 'bg-item-9 rounded-lg -border border-item-5 overflow-hidden': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
+                :class="{ 'bg-item-9 -border border-item-5 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
                 @click="onClickCategory"
                 @onClickIcon="filter.toggleCategoryId(item.id)"
               >
                 <div
                   v-if="viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened"
-                  class="pl-2 pt-1 -grid flex flex-wrap gap-1 -border-b border-item-5 pb-3"
+                  class="-border-b border-item-5 flex -grid flex-wrap gap-1 pb-3 pl-2 pt-1"
                 >
                   <StatLinesItemRound
                     v-for="itemInside in getCats(item.trnsIds)"
@@ -650,7 +650,7 @@ const quickModalTrnsIds = computed(() => {
             <!-- Rounded view -->
             <div
               v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
-              class="flex flex-wrap gap-1 @3xl/stat:gap-2 pt-2 pl-1"
+              class="@3xl/stat:gap-2 flex flex-wrap gap-1 pl-1 pt-2"
             >
               <StatLinesItemRound
                 v-for="item in catsRounded"
@@ -722,11 +722,11 @@ const quickModalTrnsIds = computed(() => {
         </template>
 
         <template #default="">
-          <div class="grid h-[98dvh] content-start overflow-hidden overflow-y-auto scrollerBlock">
+          <div class="scrollerBlock grid h-[98dvh] content-start overflow-hidden overflow-y-auto">
             <CategoriesPageHeader
               :category="categoriesStore.items[quickModalCategoryId]"
               :parentCategory="categoriesStore.items?.[categoriesStore.items[quickModalCategoryId]?.parentId]"
-              class="sticky top-0 bg-foreground-5 z-10"
+              class="bg-foreground-5 sticky top-0 z-10"
             />
 
             <StatMiniItem
@@ -755,10 +755,10 @@ const quickModalTrnsIds = computed(() => {
           </div>
         </template>
 
-        <div class="grid h-[98dvh] content-start overflow-hidden overflow-y-auto scrollerBlock">
+        <div class="scrollerBlock grid h-[98dvh] content-start overflow-hidden overflow-y-auto">
           <TrnsList
             :trnsIds="selectedTrnsIdsForTrnsList"
-            class="px-2 py-2"
+            class="p-2"
             isShowFilterByDesc
             isShowFilterByType
             isShowGroupSum

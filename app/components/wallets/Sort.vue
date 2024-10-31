@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { ToastOptions } from 'vue3-toastify'
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 import UiToastContent from '~/components/ui/ToastContent.vue'
-import { errorEmo, random, successEmo } from '~/assets/js/emo'
+import { errorEmo, random } from '~/assets/js/emo'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const emit = defineEmits(['closeModal'])
 const { $toast } = useNuxtApp()
+const { t } = useI18n()
 const walletsStore = useWalletsStore()
 
 const [parent, sortedWalletsIds] = useDragAndDrop([...walletsStore.sortedIds], {
@@ -24,7 +24,7 @@ async function saveWalletsOrder() {
         title: random(errorEmo),
       },
       type: 'error',
-    } as ToastOptions)
+    })
     return
   }
 
@@ -33,17 +33,17 @@ async function saveWalletsOrder() {
 </script>
 
 <template>
-  <div class="grid grid-rows-[auto,1fr,auto] overflow-hidden h-full max-h-[90vh] bg-foreground-1 px-2">
+  <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-2">
     <div class="px-2 py-4">
-      <UiTitle>{{ $t("wallets.sortTitle") }}</UiTitle>
+      <UiTitle>{{ t("wallets.sortTitle") }}</UiTitle>
     </div>
 
-    <div ref="parent" class="scrollerBlock overflow-hidden overflow-y-auto h-full">
+    <div ref="parent" class="scrollerBlock h-full overflow-hidden overflow-y-auto">
       <WalletsItem
         v-for="walletId in sortedWalletsIds"
         :key="walletId"
         :walletId
-        :wallet="walletsStore.sortedItems[walletId]"
+        :wallet="walletsStore.sortedItems[walletId]!"
         isShowIcons
         alt
         isSort
@@ -55,7 +55,7 @@ async function saveWalletsOrder() {
         maxWidth
         @click="saveWalletsOrder"
       >
-        {{ $t("base.save") }}
+        {{ t("base.save") }}
       </UiButtonBlue>
     </div>
   </div>
