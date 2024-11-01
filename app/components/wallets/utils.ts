@@ -1,9 +1,9 @@
 import dayjs from 'dayjs'
-import type { WalletItem, WalletItemRaw, Wallets, WalletsRaw } from '~/components/wallets/types'
+import type { WalletForm, WalletItem, WalletItemRaw, Wallets, WalletsRaw } from '~/components/wallets/types'
 import { colorsArray } from '~/components/color/colors'
 import { random } from '~/assets/js/emo'
 
-export function normalizeWalletItem(wallet?: WalletItemRaw) {
+export function normalizeWalletItem(wallet?: WalletItemRaw | WalletForm) {
   const walletBase = {
     color: wallet?.color ?? random(colorsArray),
     currency: wallet?.currency ?? 'USD',

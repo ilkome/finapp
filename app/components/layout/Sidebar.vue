@@ -51,7 +51,7 @@ const isDemo = useCookie('finapp.isDemo')
       class="px-4"
     >
       <UiButtonBlue @click="userStore.signOut">
-        {{ t("demo.mode.exit") }}
+        {{ t("demo.exit") }}
       </UiButtonBlue>
     </div>
 

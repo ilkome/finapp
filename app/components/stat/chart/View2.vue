@@ -15,7 +15,7 @@ import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 import { config, lineConfig } from '~/components/stat/chart/config2'
 import { setChartXAxis } from '~/components/stat/chart/utils'
-import { getFormatForChart } from '~/components/date/format'
+import { useDateFormats } from '~/components/date/useDateFormats'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { Period } from '~/components/date/types'
 
@@ -56,6 +56,7 @@ use([
   TooltipComponent,
 ])
 
+const { getFormatForChart } = useDateFormats()
 const chartRef = ref()
 
 const option = computed(() => {

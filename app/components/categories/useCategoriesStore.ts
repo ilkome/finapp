@@ -1,6 +1,7 @@
 import _sortby from 'lodash.sortby'
 import { deepUnref } from 'vue-deepunref'
 import localforage from 'localforage'
+import { type ComputedRef, type ShallowRef, computed, shallowRef } from 'vue'
 import {
   getDataAndWatch,
   unsubscribeData,
@@ -12,7 +13,6 @@ import type {
   CategoryItem,
 } from '~/components/categories/types'
 import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
-
 import { useUserStore } from '~/components/user/useUserStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -28,7 +28,27 @@ const transfer: CategoryItem = {
   showStat: false,
 }
 
-export const useCategoriesStore = defineStore('categories', () => {
+type CategoriesStore = {
+  categoriesForBeParent: ComputedRef<CategoryId[]>
+  categoriesIds: ComputedRef<CategoryId[]>
+  categoriesIdsForTrnValues: ComputedRef<CategoryId[]>
+  categoriesRootIds: ComputedRef<CategoryId[]>
+  favoriteCategoriesIds: ComputedRef<CategoryId[]>
+  getChildsIds: (categoryId: CategoryId) => CategoryId[]
+  getChildsIdsOrParent: (categoryId: CategoryId) => CategoryId[]
+  getTransactibleIds: (ids?: CategoryId[]) => CategoryId[]
+  hasChildren: (categoryId: CategoryId) => boolean
+  hasItems: ComputedRef<boolean>
+  initCategories: () => void
+  items: ShallowRef<Categories>
+  recentCategoriesIds: ComputedRef<CategoryId[]>
+  saveCategoriesOrder: (ids: CategoryId[]) => void
+  setCategories: (values: Categories | null) => void
+  transferCategoriesIds: ComputedRef<CategoryId[]>
+  unsubscribeCategories: () => void
+}
+
+export const useCategoriesStore = defineStore('categories', (): CategoriesStore => {
   const userStore = useUserStore()
   const trnsStore = useTrnsStore()
 
@@ -211,7 +231,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     if (!hasItems.value)
       return false
 
-    return items.value[categoryId]?.childIds && items.value[categoryId]?.childIds?.length > 0
+    return (items.value[categoryId]?.childIds && items.value[categoryId]?.childIds?.length > 0) ?? false
   }
 
   function getChildsIds(categoryId: CategoryId) {

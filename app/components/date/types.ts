@@ -1,4 +1,4 @@
-import type { periods } from '~/components/date/utils'
+export const periods = ['day', 'week', 'month', 'year'] as const
 
 export type DateUTC = number
 

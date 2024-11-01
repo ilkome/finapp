@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { formatDate } from '~/components/date/format'
+import { useDateFormats } from '~/components/date/useDateFormats'
 
 const props = defineProps<{
   date: number
 }>()
 
+const { formatDate } = useDateFormats()
 const formattedDate = computed(() => formatDate(props.date, 'full'))
 </script>
 
@@ -15,7 +16,7 @@ const formattedDate = computed(() => formatDate(props.date, 'full'))
     </div>
 
     <div class="text-secondary">
-      <div class="pb-[2px] text-2xs leading-none">
+      <div class="text-2xs pb-[2px] leading-none">
         {{ formattedDate.weekday }}
       </div>
 

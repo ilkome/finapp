@@ -21,7 +21,7 @@ const categoriesStore = useCategoriesStore()
       </template>
     </UiHeader>
 
-    <div class="max-w-xl grow px-2 md:px-6">
+    <div class="pageWrapper">
       <CategoriesList
         :ids="categoriesStore.categoriesRootIds"
         @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"
@@ -29,6 +29,7 @@ const categoriesStore = useCategoriesStore()
 
       <div
         v-if="categoriesStore.categoriesRootIds.length === 0"
+        class="max-w-xs"
       >
         <UiButtonBlue
           @click="router.push('/categories/new')"

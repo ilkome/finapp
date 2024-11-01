@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const props = defineProps<{

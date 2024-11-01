@@ -68,9 +68,9 @@ export default <Partial<Config>>{
         'secondary2': 'rgb(var(--text-secondary2))',
       },
       fontFamily: {
-        nunito: ['Nunito', 'Roboto', 'sans-serif'],
-        primary: ['"Roboto"', 'sans-serif'],
-        secondary: ['"Unica One"', '"Roboto"', 'sans-serif'],
+        primary: 'var(--font-primary)',
+        secondary: 'var(--font-secondary)',
+        tertiary: 'var(--font-tertiary)',
       },
       fontSize: {
         '2xs': '10px',

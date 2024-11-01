@@ -2,7 +2,7 @@
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory, ViewOptions } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 
 const props = defineProps<{
   biggestCatNumber: number

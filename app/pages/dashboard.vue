@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useFilter } from '~/components/filter/useFilter'
 
 defineOptions({ name: 'Dashboard' })
 
+const filter = useFilter()
 const { t } = useI18n()
 const trnsStore = useTrnsStore()
+provide('filter', filter)
 
 useHead({
   title: t('stat.title'),
@@ -14,6 +15,18 @@ useHead({
 </script>
 
 <template>
-  <LazyStat v-if="trnsStore.hasItems" />
+  <div
+    v-if="trnsStore.hasItems"
+    class="h-full overflow-hidden overflow-y-auto"
+  >
+    <StatMini
+      :categoriesIds="filter?.catsIds?.value"
+      :isShowTotals="filter?.catsIds?.value?.length > 0 || filter?.walletsIds?.value?.length > 0"
+      :walletsIds="filter?.walletsIds?.value"
+      isShowFilter
+      storageKey="stat"
+    />
+  </div>
+
   <LazyAppWelcome v-else />
 </template>

@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import pkg from '~~/package.json'
 import { useUserStore } from '~/components/user/useUserStore'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { useDemo } from '~/components/demo/useDemo'
 
+const { $toast } = useNuxtApp()
 const { t } = useI18n()
 const userStore = useUserStore()
+const currenciesStore = useCurrenciesStore()
+const { loadDemoData } = useDemo()
+const isDemo = useCookie('finapp.isDemo')
+const isShowBaseCurrencyModal = ref(false)
 
 useSeoMeta({
   title: t('settings.title'),
@@ -15,6 +22,12 @@ const confirmRemoveUserData = ref(false)
 function removeUserData() {
   confirmRemoveUserData.value = false
   userStore.removeUserData()
+  $toast.success(t('alerts.removedUserData'))
+}
+
+function onLoadDemoData() {
+  loadDemoData()
+  $toast.success(t('demo.updated'))
 }
 </script>
 
@@ -24,7 +37,7 @@ function removeUserData() {
       <UiHeaderTitle>{{ t("settings.title") }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="grid grow gap-x-6 gap-y-1 px-4 pt-2">
+    <div class="pageWrapper">
       <div>
         <!-- Locale -->
         <div class="pb-12">
@@ -47,19 +60,35 @@ function removeUserData() {
           />
         </div>
 
+        <!-- Currency -->
+        <div class="pb-12">
+          <UiItem2 @click="isShowBaseCurrencyModal = true">
+            <template #label>
+              {{ t('currencies.base') }}
+            </template>
+
+            <template #value>
+              {{ currenciesStore.base }}
+            </template>
+          </UiItem2>
+        </div>
+
         <!-- User -->
         <div class="pb-12">
           <UiTitle3 class="pb-2">
             {{ t("user") }}
           </UiTitle3>
-          <div class="text-item-2 pb-4">
+          <div
+            v-if="userStore.user"
+            class="text-item-2 pb-4"
+          >
             {{ userStore.user?.email }}
           </div>
           <UiBox1
             class="!flex gap-2"
             @click="userStore.signOut"
           >
-            <div class="mdi mdi-logout" />
+            <Icon name="lucide:log-out" />
             <div>{{ t('userLogout') }}</div>
           </UiBox1>
         </div>
@@ -72,12 +101,21 @@ function removeUserData() {
           <div class="leading-1 text-item-2 pb-4 text-xs">
             {{ t("alerts.willDeleteEverything") }}
           </div>
-          <div class="pb-4">
+          <div class="grid gap-3 pb-4">
+            <UiBox1
+              v-if="isDemo"
+              class="!flex gap-2"
+              @click="onLoadDemoData"
+            >
+              <Icon name="lucide:database-backup" />
+              <div>{{ t('demo.update') }}</div>
+            </UiBox1>
+
             <UiBox1
               class="!flex gap-2"
               @click="confirmRemoveUserData = true"
             >
-              <div class="mdi mdi-delete-empty-outline" />
+              <Icon name="lucide:trash" />
               <div>{{ t('settings.deleteButton') }}</div>
             </UiBox1>
           </div>
@@ -99,6 +137,13 @@ function removeUserData() {
       @closed="confirmRemoveUserData = false"
       @onConfirm="removeUserData"
     />
+
+    <CurrenciesModal
+      v-if="isShowBaseCurrencyModal"
+      :activeCode="currenciesStore.base"
+      @onSelect="currenciesStore.setBase"
+      @onClose="isShowBaseCurrencyModal = false"
+    />
   </UiPage>
 </template>
 
@@ -107,17 +152,13 @@ en:
   app:
     about: About
     version: 'Version'
-
   user: User
-  currency:
-    descBase: Transactions in different currencies will be converted to this currency.
+  currencyDesc: Transactions in different currencies will be converted to this currency.
 
 ru:
   app:
     about: О приложении
     version: 'Версия'
-
   user: Пользователь
-  currency:
-    descBase: "Основная валюта, в которую будут конвертироваться транзакции в других валютах."
+  currencyDesc: "Основная валюта, в которую будут конвертироваться транзакции в других валютах."
 </i18n>

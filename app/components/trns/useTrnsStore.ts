@@ -17,7 +17,6 @@ type TrnsGetterParams = {
 export const useTrnsStore = defineStore('trns', () => {
   const userStore = useUserStore()
   const categoriesStore = useCategoriesStore()
-  const trnsStore = useTrnsStore()
   const walletsStore = useWalletsStore()
   const items = shallowRef<Trns | null>(null)
 
@@ -26,6 +25,9 @@ export const useTrnsStore = defineStore('trns', () => {
       const categoriesIds = categoriesStore.getTransactibleIds(
         props.categoriesIds,
       )
+
+      console.log('categoriesIds', categoriesIds, props.categoriesIds)
+
       return getTrnsIds({ ...props, categoriesIds, trnsItems: items.value! })
     }
 
@@ -36,6 +38,13 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   function getRange(trnsIds: TrnId[]): Range {
+    if (!items.value) {
+      return {
+        end: dayjs().endOf('day').valueOf(),
+        start: dayjs().startOf('day').valueOf(),
+      }
+    }
+
     return {
       end: items.value[trnsIds.at(0)!]?.date ?? dayjs().endOf('day').valueOf(),
       start:
@@ -195,11 +204,11 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   function computeTrnItem(id: TrnId): TrnItemFull | string {
-    if (!trnsStore?.items || !walletsStore?.items || !categoriesStore?.items)
+    if (!items.value || !walletsStore?.items || !categoriesStore?.items)
       return 'Something missing'
 
     // Trn
-    const trn = trnsStore.items[id]
+    const trn = items.value[id]
     if (!trn)
       return 'Trn not found'
 

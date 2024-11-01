@@ -2,8 +2,8 @@
 import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
-import { getDates } from '~/components/date/format'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useDateFormats } from '~/components/date/useDateFormats'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -14,6 +14,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { getDates } = useDateFormats()
 const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()

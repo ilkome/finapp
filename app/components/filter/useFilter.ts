@@ -6,7 +6,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import type { PeriodNameWithAll, Periods, PeriodsNames } from '~/components/filter/types'
+import type { PeriodNameWithAll, PeriodSchema, Periods, PeriodsNames } from '~/components/filter/types'
 
 export function useFilter() {
   const { t } = useI18n()
@@ -145,7 +145,7 @@ export function useFilter() {
    * Wallets
    */
   const walletsIds = computed<CategoryId[]>(() => Array.isArray(route.query.filterWallets)
-    ? (route.query.filterWallets as CategoryId[]).filter(id => walletsStore.items[id])
+    ? (route.query.filterWallets as CategoryId[]).filter(id => walletsStore.items?.[id])
     : route.query.filterWallets
       ? [route.query.filterWallets]
       : [],

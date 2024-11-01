@@ -3,8 +3,6 @@ import type { StatTabs } from '~/components/app/types'
 
 const props = defineProps<{
   active: StatTabs
-  isShowExpense: boolean
-  isShowIncome: boolean
 }>()
 
 const emit = defineEmits<{
@@ -30,22 +28,6 @@ const menu = computed(() => {
     idx: 0,
     name: t('stat.summary'),
   })
-
-  if (props.isShowExpense) {
-    all.push({
-      id: 'expense',
-      idx: 1,
-      name: t('money.expense'),
-    })
-  }
-
-  if (props.isShowIncome) {
-    all.push({
-      id: 'income',
-      idx: 2,
-      name: t('money.income'),
-    })
-  }
 
   return all
 })

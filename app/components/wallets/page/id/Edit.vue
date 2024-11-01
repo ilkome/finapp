@@ -9,7 +9,7 @@ const router = useRouter()
 const walletsStore = useWalletsStore()
 
 const walletId = computed(() => route.params.id)
-const wallet = computed(() => walletsStore.items[walletId.value])
+const wallet = computed(() => walletsStore.items?.[walletId.value])
 const walletForm = ref(normalizeWalletItem(wallet.value))
 
 function updateValue(id: keyof WalletItem, value: WalletItem[keyof WalletItem]) {
@@ -43,11 +43,11 @@ useHead({
         <a class="hocus:bg-item-5 grow" :href="href" @click="navigate">
           <UiHeaderTitle>
             <div class="text-item-2 pb-1 text-xs font-medium">
-              {{ $t("wallets.editTitle") }}
+              {{ t("wallets.editTitle") }}
             </div>
             <div class="flex items-center gap-3">
               <div class="text-item-1 text-2xl font-semibold">
-                {{ walletForm.name ? walletForm.name : $t("wallets.title") }}
+                {{ walletForm.name ? walletForm.name : t("wallets.form.name.label") }}
               </div>
               <div
                 class="flex-center text-2xs text-icon-primary rounded-lg p-1"

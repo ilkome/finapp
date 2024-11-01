@@ -3,8 +3,8 @@ import dayjs from 'dayjs'
 import type { MoneyTypeNumber } from '~/components/stat/types'
 import type { TrnId, TrnType } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
-import { formatDate } from '~/components/date/format'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useDateFormats } from '~/components/date/useDateFormats'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = withDefaults(
@@ -31,7 +31,7 @@ const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const { t } = useI18n()
-
+const { formatDate } = useDateFormats()
 const isShowWithDesc = ref(false)
 const filterBy = ref(props.initTrnType)
 const pageNumber = ref(1)

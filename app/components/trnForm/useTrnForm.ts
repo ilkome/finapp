@@ -147,8 +147,6 @@ export const useTrnFormStore = defineStore('trnForm', () => {
   })
 
   function setValues(props: Values) {
-    console.log('props', props)
-
     values.trnId = null
 
     if (props.action === 'create') {
@@ -191,11 +189,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
       : formatTransfer(values)
 
     try {
-      console.log('data', data)
-
       const validateStatus = validate(data)
-
-      console.log('validateStatus', validateStatus)
 
       if (validateStatus.error) {
         $toast(UiToastContent, {
@@ -205,8 +199,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
           },
           toastId: 'trn-form-error',
           type: 'error',
-        } as ToastOptions)
-
+        })
         return
       }
 
@@ -246,12 +239,9 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     activeAmountIdx,
     closeTrnFormModal,
     getIsShowSum,
-    // dates,
-
     modal,
     onChangeAmount,
     onChangeCountSum,
-
     onChangeTransferType,
     onChangeTrnType,
     onClear,

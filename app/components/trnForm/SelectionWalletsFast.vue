@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
+const { t } = useI18n()
 const trnFormStore = useTrnFormStore()
 </script>
 
 <template>
   <div>
     <UiTitle3
-      class="z-10 sticky pb-3 top-0 px-3 bg-foreground-1"
+      class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3"
       @click="trnFormStore.openTrnFormModal('wallets')"
     >
-      {{ $t("wallets.title") }}
+      {{ t("wallets.title") }}
     </UiTitle3>
 
     <WalletsList

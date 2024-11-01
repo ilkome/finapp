@@ -1,6 +1,7 @@
 export default {
   alerts: {
-    willDeleteEverything: 'Все кошельки, категории и транзакции будут удалены.',
+    removedUserData: 'Все данные пользователя удалены.',
+    willDeleteEverything: 'Все кошельки, категории и транзакции будут удалены',
   },
 
   analytics: {
@@ -100,6 +101,7 @@ export default {
   close: 'Закрыть',
 
   colors: 'Цвета',
+
   common: {
     all: 'Все',
     date: 'Дата',
@@ -109,6 +111,9 @@ export default {
 
   create: {
     title: 'Создать',
+  },
+  currencies: {
+    base: 'Основная валюта',
   },
 
   currency: {
@@ -147,9 +152,10 @@ export default {
   },
 
   demo: {
-    mode: {
-      exit: 'Выйти из демо режима',
-    },
+    exit: 'Выйти из демо режима',
+    loaded: 'Данные загружены',
+    update: 'Обновить демо данные',
+    updated: 'Данные обновлены',
   },
 
   filter: {
@@ -227,6 +233,13 @@ export default {
 
   stat: {
     balanceTitle: 'Баланс',
+    config: {
+      chartView: {
+        full: 'Полный',
+        half: 'Компактный',
+        label: 'Вид графика',
+      },
+    },
     customize: {
       showCategoriesChart: 'Показывать вертикальный график категорий',
       showCategoriesList: 'Показывать список категорий',

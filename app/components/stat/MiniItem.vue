@@ -7,7 +7,7 @@ import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { DeepPartial } from '~~/utils/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
+import type { MiniItemConfig, MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
 import { ViewOptionsSchema, defaultViewOptions } from '~/components/stat/config'
 import type { Range } from '~/components/date/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
@@ -22,6 +22,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { getTrnsIds } from '~/components/trns/getTrns'
 
 const props = defineProps<{
+  config?: MiniItemConfig
   isQuickModal?: boolean
   preCategoriesIds?: CategoryId[]
   quickModalCategoryId?: CategoryId
@@ -30,6 +31,7 @@ const props = defineProps<{
   type: MoneyTypeSlugSum
 }>()
 
+const { t } = useI18n()
 const filter = inject('filter') as FilterProvider
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
@@ -400,8 +402,14 @@ const quickModalTrnsIds = computed(() => {
     <!-- Stat -->
     <div class="@container/stat -max-w-4xl px-2 pt-2">
       <div class="">
-        <div class="@2xl/stat:-max-w-md -xl:p-2 -xl:bg-item-9 md:max-w-md xl:rounded-xl">
-          <!-- Chart -->
+        <!-- Chart -->
+        <div
+          class="xl:rounded-xl"
+          :class="{
+            '': props.config?.chartView === 'full',
+            'md:max-w-md': props.config?.chartView === 'half',
+          }"
+        >
           <div
             v-if="isShowChart && (intervalRange.interval.value.duration !== 1 || intervalRange.interval.value.period !== 'day')"
             class="pb-2"
@@ -506,7 +514,7 @@ const quickModalTrnsIds = computed(() => {
               <div class="flex items-center justify-between md:max-w-md">
                 <UiTitle8 :isShown @click="toggle">
                   <!-- TODO: fix length -->
-                  {{ $t('categories.title') }} {{ !isShown ? viewOptions.catsView === 'list' ? cats.length : catsRounded.length : '' }}
+                  {{ t('categories.title') }} {{ !isShown ? viewOptions.catsView === 'list' ? cats.length : catsRounded.length : '' }}
                 </UiTitle8>
 
                 <div
@@ -674,7 +682,7 @@ const quickModalTrnsIds = computed(() => {
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between">
                 <UiTitle8 :isShown @click="toggle">
-                  {{ $t('trns.title') }} {{ (!isShown && selectedTrnsIdsForTrnsList.length > 0) ? selectedTrnsIdsForTrnsList.length : '' }}
+                  {{ t('trns.title') }} {{ (!isShown && selectedTrnsIdsForTrnsList.length > 0) ? selectedTrnsIdsForTrnsList.length : '' }}
                 </UiTitle8>
               </div>
             </template>

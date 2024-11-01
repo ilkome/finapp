@@ -45,7 +45,7 @@ onLongPress(
 </script>
 
 <template>
-  <div class="grid gap-0 grid-cols-[.26fr,1fr,.26fr] justify-between">
+  <div class="grid grid-cols-[.26fr,1fr,.26fr] justify-between gap-0">
     <div class="flex flex-col gap-1">
       <TrnFormMainCalculatorButton @click="onClick('*')">
         <i class="mdi mdi-plus rotate-45" />
@@ -90,7 +90,7 @@ onLongPress(
       </div>
     </div>
 
-    <div class="grid gap-3 grid-rows-[auto,1fr]">
+    <div class="grid grid-rows-[auto,1fr] gap-3">
       <!-- Description -->
       <TrnFormMainCalculatorButton
         class="relative"
@@ -99,7 +99,7 @@ onLongPress(
         <i class="mdi mdi-comment-text-outline" />
         <div
           v-if="!!trnFormStore.values.desc"
-          class="absolute right-1 top-1 aspect-square w-2 bg-accent-1 rounded-full"
+          class="bg-accent-1 absolute right-1 top-1 aspect-square w-2 rounded-full"
         />
       </TrnFormMainCalculatorButton>
 

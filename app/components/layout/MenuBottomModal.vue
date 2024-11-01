@@ -20,13 +20,13 @@ const isDemo = useCookie('finapp.isDemo')
         <BaseBottomSheetClose @onClick="close" />
       </template>
 
-      <div class="grid gap-3 bg-foreground-1 px-1 py-3">
+      <div class="bg-foreground-1 grid gap-3 px-1 py-3">
         <!-- User -->
         <div
           v-if="userStore.user"
           class="px-4 pb-2"
         >
-          <div class="text-xl font-primary font-semibold">
+          <div class="font-primary text-xl font-semibold">
             {{ userStore.user?.displayName }}
           </div>
           <div class="text-sm">
@@ -42,11 +42,11 @@ const isDemo = useCookie('finapp.isDemo')
 
         <div
           v-if="isDemo"
-          class="px-3 pt-2 pb-2"
+          class="px-3 py-2"
           @click="userStore.signOut"
         >
           <UiButtonBlue @click="userStore.signOut">
-            {{ t("demo.mode.exit") }}
+            {{ t("demo.exit") }}
           </UiButtonBlue>
         </div>
       </div>

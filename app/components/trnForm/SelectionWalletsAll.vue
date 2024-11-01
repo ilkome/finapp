@@ -17,7 +17,7 @@ const trnFormStore = useTrnFormStore()
 <template>
   <div>
     <UiTitle3
-      class="z-10 sticky pt-4 pb-3 top-0 px-3 bg-foreground-1"
+      class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
       @click="trnFormStore.ui.walletsModal = true"
     >
       {{ $t("wallets.title") }}
@@ -26,7 +26,7 @@ const trnFormStore = useTrnFormStore()
     <WalletsSelector
       :hide="emit('close')"
       :activeItemId="trnFormStore.values.walletId"
-      class="min-w-72 _max-w-xs"
+      class="_max-w-xs min-w-72"
       @onSelected="id => emit('onSelectWallet', id)"
     />
   </div>

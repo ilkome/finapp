@@ -4,6 +4,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
   hide?: () => null
+  selectedIds?: CategoryId[]
 }>()
 
 const emit = defineEmits<{
@@ -38,30 +39,32 @@ function onFilter(id: CategoryId) {
 </script>
 
 <template>
-  <div class="p-2 pt-1 pb-2">
+  <div class="p-2 pt-1">
     <div
       v-for="categoryId in categoriesStore.categoriesRootIds"
       :key="categoryId"
       class="group"
       :class="{
-        'overflow-hidden rounded-md bg-item-4 mb-2': opened.includes(categoryId),
+        'bg-item-4 mb-2 overflow-hidden rounded-md': opened.includes(categoryId),
       }"
     >
       <CategoriesItem
         :categoryId
         :lineWidth="1"
         :category="categoriesStore.items[categoryId]"
+        :activeItemId="props.selectedIds?.includes(categoryId) ? categoryId : null"
         @click="select(categoryId, false)"
         @filter.stop="onFilter(categoryId)"
       />
 
       <div
         v-if="opened.includes(categoryId) && categoriesStore.hasChildren(categoryId)"
-        class="pl-4"
+        class="pb-2 pl-4 pr-2"
       >
         <CategoriesItem
           v-for="childCategoryId in categoriesStore.getChildsIds(categoryId)"
           :key="childCategoryId"
+          :activeItemId="props.selectedIds?.includes(childCategoryId) ? childCategoryId : null"
           :category="categoriesStore.items[childCategoryId]"
           :categoryId="childCategoryId"
           @click.stop="select(childCategoryId, true)"

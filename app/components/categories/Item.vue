@@ -40,7 +40,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
       />
     </template>
 
-    <div class="grow grid gap-0.5 text-3">
+    <div class="text-3 grid grow gap-0.5">
       <CategoriesName
         :alt="props.alt"
         :category

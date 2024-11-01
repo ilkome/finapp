@@ -1,6 +1,7 @@
 export default {
   alerts: {
-    willDeleteEverything: 'This will delete all your wallets, categories and trns.',
+    removedUserData: 'All user data removed.',
+    willDeleteEverything: 'This will delete all your wallets, categories and trns',
   },
 
   analytics: {
@@ -100,15 +101,19 @@ export default {
   close: 'Close',
 
   colors: 'Colors',
+
   common: {
     all: 'All',
     date: 'Date',
     in: 'in',
     open: 'Open',
   },
-
   create: {
     title: 'Create',
+  },
+
+  currencies: {
+    base: 'Base currency',
   },
 
   currency: {
@@ -147,21 +152,22 @@ export default {
   },
 
   demo: {
-    mode: {
-      exit: 'Exit demo mode',
-    },
+    exit: 'Exit demo mode',
+    loaded: 'Data loaded',
+    update: 'Update demo data',
+    updated: 'Data updated',
   },
 
   filter: {
     clear: 'Clear',
   },
-
   locale: {
     toggle: 'Toggle locale',
   },
-  loginWithGithub: 'Login with Github',
 
+  loginWithGithub: 'Login with Github',
   loginWithGoogle: 'Login with Google',
+
   money: {
     all: 'Total',
     also: 'Also',
@@ -226,6 +232,13 @@ export default {
 
   stat: {
     balanceTitle: 'Balance',
+    config: {
+      chartView: {
+        full: 'Full',
+        half: 'Compact',
+        label: 'Chart view',
+      },
+    },
     customize: {
       showCategoriesChart: 'Show categories chart',
       showCategoriesList: 'Show categories list',
@@ -301,7 +314,6 @@ export default {
     shortTitle: 'Trns',
     title: 'Transactions',
   },
-
   userLogout: 'Logout',
 
   users: {

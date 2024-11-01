@@ -29,17 +29,14 @@ const list = computed(() => {
 <template>
   <div class="grid h-full max-h-[60vh] grid-rows-[auto,1fr] overflow-hidden">
     <div>
-      <input
-        v-model="searchInput"
+      <UiFormInput
+        :value="searchInput"
         :placeholder="`${t('search')}...`"
-        class="text-item-base focus:text-item-1 focus:bg-item-5 focus:border-accent-4 border-item-5 bg-item-4 placeholder:text-item-2 m-0 w-full rounded-lg border border-solid px-3 py-2 text-base font-normal transition ease-in-out focus:outline-none"
-        type="text"
-      >
+        @updateValue="(value: string) => searchInput = value"
+      />
     </div>
 
-    <div
-      class="scrollerBlock mt-3 flex flex-col gap-6 overflow-y-auto pb-3"
-    >
+    <div class="scrollerBlock mt-3 flex flex-col gap-6 overflow-y-auto pb-3">
       <template v-if="list.length === 0">
         <div class="py-3 text-center">
           {{ t("notFound") }}

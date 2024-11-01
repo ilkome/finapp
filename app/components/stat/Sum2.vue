@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{

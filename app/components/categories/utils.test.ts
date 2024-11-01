@@ -52,7 +52,7 @@ describe('getTransactibleCategoriesIds', () => {
   it('ids are provided', () => {
     const ids = ['child1', 'root', 'withChilds']
     const result = getTransactibleCategoriesIds(mockCategories, ids)
-    expect(result).toEqual(['child1'])
+    expect(result).toEqual(['child1', 'root'])
   })
 
   it('no ids are provided', () => {

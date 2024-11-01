@@ -1,6 +1,6 @@
 import localforage from 'localforage'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -22,7 +22,7 @@ export function useInitApp() {
     ])
 
     userStore.setUser(user)
-    currenciesStore.setBase(currencies?.base)
+    currenciesStore.setBase(currencies?.base ?? 'USD')
     currenciesStore.setRates(currencies?.rates)
     walletsStore.setWallets(wallets)
     categoriesStore.setCategories(categories)

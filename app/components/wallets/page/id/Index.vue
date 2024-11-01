@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
 import { useFilter } from '~/components/filter/useFilter'
+import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -10,6 +11,7 @@ provide('filter', filter)
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const { trnFormCreate } = useTrnForm()
 const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
 
@@ -48,7 +50,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
         >
           <UiHeaderTitle>
             <div class="text-item-2 pt-3 text-xs font-medium">
-              {{ $t("wallets.title") }}
+              {{ t("wallets.title") }}
             </div>
             <div class="flex items-center gap-3 pb-1">
               <div class="text-item-1 text-2xl font-semibold">
@@ -76,48 +78,58 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
       </template>
     </UiHeader>
 
-    <div class="px-2 md:px-6">
-      <div class="pt-2 lg:px-4">
-        <Filter isHideWallets class="pb-2" />
+    <div v-if="trnsIds.length > 0">
+      <div class="px-2 md:px-6">
+        <div class="pt-2 lg:px-4">
+          <FilterSelector isHideWallets class="pb-2" />
+          <FilterSelected v-if="filter.isShow?.value" />
 
-        <div v-if="!wallet.isCredit" class="md:max-w-md">
-          <StatSum2
-            :amount="total"
-            :title="$t('money.balance')"
-          />
+          <div
+            v-if="wallet.type !== 'credit'"
+            class="md:max-w-md"
+          >
+            <StatSum2
+              :amount="total"
+              :title="t('money.balance')"
+            />
+          </div>
+
+          <div v-if="wallet.creditLimit" class="grid grid-cols-3 gap-1 md:max-w-md">
+            <StatSum2
+              :amount="total"
+              :title="t('wallets.form.credit.debt')"
+            />
+            <StatSum2
+              :amount="wallet.creditLimit - (-total)"
+              :title="t('wallets.form.credit.available')"
+            />
+            <StatSum2
+              :amount="wallet.creditLimit"
+              :title="t('wallets.form.credit.limit')"
+            />
+          </div>
         </div>
 
-        <div v-if="wallet.creditLimit" class="grid grid-cols-3 gap-1 md:max-w-md">
-          <StatSum2
-            :amount="total"
-            :title="$t('wallets.form.credit.debt')"
-          />
-          <StatSum2
-            :amount="wallet.creditLimit - (-total)"
-            :title="$t('wallets.form.credit.available')"
-          />
-          <StatSum2
-            :amount="wallet.creditLimit"
-            :title="$t('wallets.form.credit.limit')"
-          />
+        <div
+          v-if="wallet.description"
+          class="text-item-2 mb-6 text-sm"
+        >
+          {{ wallet.description }}
         </div>
       </div>
 
-      <div
-        v-if="wallet.description"
-        class="text-item-2 mb-6 text-sm"
-      >
-        {{ wallet.description }}
+      <div class="px-2 pt-2 md:px-6">
+        <StatMiniItem
+          type="sum"
+          :trnsIds
+          :storageKey="walletId"
+          isShowTotals
+        />
       </div>
     </div>
 
-    <div class="px-2 pt-2 md:px-6">
-      <StatMiniItem
-        type="sum"
-        :trnsIds
-        :storageKey="walletId"
-        isShowTotals
-      />
+    <div v-else class="pageWrapper">
+      <TrnsNoTrns />
     </div>
   </UiPage>
 </template>

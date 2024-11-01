@@ -38,6 +38,14 @@ body {
   @apply overflow-hidden relative h-dvh;
 }
 
+.pageWrapper {
+  @apply max-w-xl grow px-2 md:px-6;
+}
+
+.pageWrapperNoMaxWidth {
+  @apply max-w-xl grow px-2 md:px-6;
+}
+
 .trnForm .trnForm__pagination {
   z-index: 2;
   position: absolute;

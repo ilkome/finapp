@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
+import type { FilterProvider } from '~/components/filter/types'
+import type { MiniItemConfig } from '~/components/stat/types'
+import type { StatTabs } from '~/components/app/types'
 import type { WalletId } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
+import { chartViewOptions } from '~/components/stat/types'
+import { getStyles } from '~/components/ui/getStyles'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { StatTabs } from '~/components/app/types'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
@@ -14,15 +18,16 @@ const props = defineProps<{
   walletsIds?: WalletId[]
 }>()
 
+const filter = inject('filter') as FilterProvider
+const { t } = useI18n()
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 
 const activeTab = useStorage<StatTabs>(`${props.storageKey}-mini-tab`, 'netIncome')
-const filteredWallets = ref<WalletId[]>([])
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: props.categoriesIds,
-  walletsIds: filteredWallets.value.length > 0 ? filteredWallets.value : props.walletsIds,
+  categoriesIds: filter.catsIds.value.length > 0 ? filter.catsIds.value : props.categoriesIds,
+  walletsIds: filter.walletsIds.value.length > 0 ? filter.walletsIds.value : props.walletsIds,
 }, {
   includesChildCategories: true,
 }))
@@ -44,39 +49,71 @@ const incomeTrnsIds = computed(() =>
 )
 
 const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
+
+const config = ref<MiniItemConfig>({
+  chartView: 'full',
+  update: (key, value) => {
+    config.value[key] = value
+  },
+})
 </script>
 
 <template>
   <div class="bg-foreground-3 z-10 max-w-6xl pb-2 lg:sticky lg:top-0 lg:gap-8 lg:px-4 xl:py-2">
-    <div class="flex gap-1 overflow-x-auto p-2 pb-0 ">
-      <Filter v-if="props.isShowFilter" />
-
-      <StatMenu
-        :active="activeTab"
-        :isShowIncome="totals.income !== 0"
-        :isShowExpense="totals.expense !== 0"
-        @click="id => activeTab = id"
-      />
-    </div>
-
-    <div class="">
-      <WalletsList
-        v-slot="{ walletsItemsLimited }"
-        :limit="4"
-        class="flex gap-1 overflow-hidden overflow-x-auto p-2 pb-0"
-      >
-        <WalletsItem
-          v-for="(wallet, walletId) in walletsItemsLimited"
-          :key="walletId"
-          :activeItemId="filteredWallets.includes(`${walletId}`) ? walletId : null"
-          :walletId
-          :wallet
-          alt
-          insideClasses="bg-item-4 min-w-16"
-          @click="filteredWallets.includes(`${walletId}`) ? filteredWallets = filteredWallets.filter(id => id !== `${walletId}`) : filteredWallets.push(`${walletId}`)"
+    <div class="grid gap-2 px-2 pt-2">
+      <div class="flex items-center gap-1 overflow-x-auto ">
+        <FilterSelector v-if="props.isShowFilter" />
+        <StatMenu
+          :active="activeTab"
+          @click="id => activeTab = id"
         />
-      </WalletsList>
+        <UPopover
+          class="ml-auto hidden md:block"
+          :popper="{ placement: 'bottom-end' }"
+        >
+          <UiItem3>
+            <Icon name="lucide:settings-2" class="size-5" />
+          </UiItem3>
+
+          <template #panel>
+            <div class="p-3">
+              <UiTitle3 class="pb-2">
+                {{ t("stat.config.chartView.label") }}
+              </UiTitle3>
+              <UiTabs>
+                <UiTabsItem
+                  v-for="view in chartViewOptions"
+                  :key="view"
+                  :isActive="config.chartView === view"
+                  @click="config.update('chartView', view)"
+                >
+                  {{ t(`stat.config.chartView.${view}`) }}
+                </UiTabsItem>
+              </UiTabs>
+            </div>
+          </template>
+        </UPopover>
+      </div>
+      <FilterSelected v-if="filter.isShow?.value" />
     </div>
+
+    <WalletsList
+      v-if="!filter?.isShow?.value"
+      v-slot="{ walletsItemsLimited }"
+      :limit="4"
+      class="flex gap-1 overflow-hidden overflow-x-auto p-2 pb-0"
+    >
+      <WalletsItem
+        v-for="(wallet, walletId) in walletsItemsLimited"
+        :key="walletId"
+        :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
+        :walletId
+        :wallet
+        alt
+        :class="getStyles('item', ['alt', 'rounded'])"
+        @click="filter.toggleWalletId(walletId)"
+      />
+    </WalletsList>
   </div>
 
   <!-- NetIncome -->
@@ -84,26 +121,9 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
     v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
     :storageKey="props.storageKey + activeTab"
     :trnsIds="trnsIds"
+    :config
     class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
     type="sum"
-  />
-
-  <!-- Expense -->
-  <StatMiniItem
-    v-if="(activeTab === 'expense') && expenseTrnsIds.length > 0"
-    :trnsIds="expenseTrnsIds"
-    :storageKey="props.storageKey + activeTab"
-    class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
-    type="expense"
-  />
-
-  <!-- Income -->
-  <StatMiniItem
-    v-if="(activeTab === 'income') && incomeTrnsIds.length > 0"
-    :trnsIds="incomeTrnsIds"
-    :storageKey="props.storageKey + activeTab"
-    class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
-    type="income"
   />
 
   <!-- Summary -->
@@ -114,16 +134,18 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
     <!-- Expense -->
     <StatMiniItem
       v-if="(activeTab === 'sum') && expenseTrnsIds.length > 0"
-      :trnsIds="expenseTrnsIds"
+      :config
       :storageKey="props.storageKey + activeTab"
+      :trnsIds="expenseTrnsIds"
       type="expense"
     />
 
     <!-- Income -->
     <StatMiniItem
       v-if="(activeTab === 'sum') && incomeTrnsIds.length > 0"
-      :trnsIds="incomeTrnsIds"
+      :config
       :storageKey="props.storageKey + activeTab"
+      :trnsIds="incomeTrnsIds"
       type="income"
     />
   </div>

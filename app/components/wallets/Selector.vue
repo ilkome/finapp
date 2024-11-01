@@ -5,6 +5,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 const props = defineProps<{
   activeItemId?: WalletId
   hide?: () => null
+  selectedIds?: WalletId[]
 }>()
 
 const emit = defineEmits<{
@@ -22,11 +23,11 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <div class="p-2 pt-1 pb-2">
+  <div class="p-2 pt-1">
     <WalletsItem
       v-for="(wallet, walletId) in walletsStore.sortedItems"
       :key="walletId"
-      :activeItemId="props.activeItemId"
+      :activeItemId="props.activeItemId || (props.selectedIds?.includes(walletId) ? walletId : null)"
       :walletId
       :wallet
       :lineWidth="2"

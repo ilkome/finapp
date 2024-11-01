@@ -43,10 +43,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
       'text-xl': props.variant === 'xl',
       'text-base': props.variant === 'base',
     }"
-    class="
-      grid gap-1
-      font-secondary text-1 leading-none
-    "
+    class="font-secondary text-1 grid gap-1 leading-none"
     @click="(e: Event) => emit('click', e)"
   >
     <AmountItem

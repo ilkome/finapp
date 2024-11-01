@@ -63,6 +63,16 @@ export default defineNuxtConfig({
     viewTransition: true,
   },
 
+  fonts: {
+    defaults: {
+      styles: ['normal'],
+      subsets: [
+        'cyrillic',
+      ],
+      weights: [400],
+    },
+  },
+
   future: {
     compatibilityVersion: 4,
   },

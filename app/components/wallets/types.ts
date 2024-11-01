@@ -20,14 +20,14 @@ export const viewTypes = [
 ] as const
 
 export type WalletId = string
-export type WalletTypes = typeof types[number]
+export type WalletType = typeof types[number]
 
 export type WalletViewTypes = typeof viewTypes[number]
 export type WalletViewTypesObj = {
   [K in WalletViewTypes]: boolean
 }
 
-export const icons: Record<WalletTypes, string> = {
+export const icons: Record<WalletType, string> = {
   cash: 'lucide:banknote',
   cashless: 'lucide:landmark',
   credit: 'lucide:piggy-bank',
@@ -50,7 +50,7 @@ type WalletItemBase = {
 }
 
 type WalletItemSimple = WalletItemBase & {
-  type: Exclude<WalletTypes, 'credit'>
+  type: Exclude<WalletType, 'credit'>
 }
 
 type WalletItemCredit = WalletItemBase & {

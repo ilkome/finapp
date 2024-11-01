@@ -20,3 +20,14 @@ export type TotalCategory = {
   trnsIds: TrnId[]
   value: number
 }
+
+export const chartViewOptions = ['half', 'full'] as const
+export type ChartView = (typeof chartViewOptions)[number]
+
+export type MiniItemConfig = {
+  chartView: ChartView
+  update: <K extends keyof Omit<MiniItemConfig, 'update'>>(
+    key: K,
+    value: MiniItemConfig[K]
+  ) => void
+}

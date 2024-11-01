@@ -75,7 +75,8 @@ export const useUserStore = defineStore('user', () => {
       walletsStore.setWallets(null)
       return
     }
-    else if (!uid.value) {
+
+    if (!uid.value) {
       return
     }
 

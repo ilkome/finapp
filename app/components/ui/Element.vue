@@ -22,9 +22,9 @@ const slots = useSlots()
 
 const classes = computed(() => cn(
   getStyles('item', ['rounded', 'padding1', 'minh2', 'link']),
-  'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px]',
+  'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px] border border-transparent',
   props.insideClasses,
-  { 'bg-item-3': props.isActive },
+  { 'border-accent-1/60': props.isActive },
 ))
 </script>
 
@@ -56,12 +56,12 @@ const classes = computed(() => cn(
 
     <div
       v-if="isShowLine"
-      class="mx-2 h-[1px] bg-item-5 group-last:hidden"
+      class="bg-item-5 mx-2 h-px group-last:hidden"
       :class="{ 'ml-9': isShowIcons, 'ml-11': isShowIcon }"
     />
     <div
       v-if="lineWidth"
-      class="mx-2 h-[1px] bg-item-5 group-last:hidden"
+      class="bg-item-5 mx-2 h-px group-last:hidden"
       :class="{ 'ml-12': lineWidth === 1, 'ml-11': lineWidth === 2 }"
     />
   </div>

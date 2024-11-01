@@ -1,6 +1,6 @@
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
-import { useCurrenciesStore } from '../currencies/useCurrencies'
+import { useCurrenciesStore } from '../currencies/useCurrenciesStore'
 import { getDataAndWatch, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItem, WalletItemWithAmount, Wallets } from '~/components/wallets/types'

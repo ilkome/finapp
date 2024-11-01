@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useCurrenciesStore } from '~/components/currencies/useCurrencies'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory } from '~/components/stat/types'

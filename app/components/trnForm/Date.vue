@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { formatDate } from '~/components/date/format'
+import { useDateFormats } from '~/components/date/useDateFormats'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+
+const { formatDate } = useDateFormats()
 
 const trnFormStore = useTrnFormStore()
 
@@ -31,10 +33,10 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 </script>
 
 <template>
-  <div class="flex gap-1 -ml-1">
+  <div class="-ml-1 flex gap-1">
     <UPopover class="grow">
       <div
-        class="grid gap-1 rounded-md px-2 py-2 text-sm font-medium text-3 leading-none hocus:bg-item-5"
+        class="text-3 hocus:bg-item-5 grid gap-1 rounded-md p-2 text-sm font-medium leading-none"
         v-html="formattedDate"
       />
 

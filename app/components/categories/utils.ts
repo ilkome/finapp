@@ -4,7 +4,9 @@ export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId
   if (ids) {
     return ids.filter((id) => {
       const category = items?.[id]
-      return category?.parentId !== 0 && !category?.childIds?.length
+      const hasNoChildren = !category?.childIds?.length
+
+      return (category?.parentId === 0 && hasNoChildren) || category?.parentId !== 0
     })
   }
 

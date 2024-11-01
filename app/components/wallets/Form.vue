@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { ToastOptions } from 'vue3-toastify'
 import UiToastContent from '~/components/ui/ToastContent.vue'
-import type { WalletForm, WalletId, WalletItem } from '~/components/wallets/types'
-import { types } from '~/components/wallets/types'
+import type { WalletForm, WalletId, WalletItem, WalletType } from '~/components/wallets/types'
+import { icons, types } from '~/components/wallets/types'
 import { errorEmo, random } from '~/assets/js/emo'
 import { generateId } from '~~/utils/generateId'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -23,7 +22,7 @@ const { t } = useI18n()
 const walletsStore = useWalletsStore()
 
 const editWalletId = props.walletId ?? generateId()
-const walletTypes = types.map(value => ({
+const walletType = types.map(value => ({
   label: t(`money.types.${value}`),
   value,
 }))
@@ -47,7 +46,7 @@ function validate(values: WalletForm) {
         title: random(errorEmo),
       },
       type: 'error',
-    } as ToastOptions)
+    })
 
     return false
   }
@@ -61,7 +60,7 @@ function validate(values: WalletForm) {
         title: random(errorEmo),
       },
       type: 'error',
-    } as ToastOptions)
+    })
 
     return false
   }
@@ -78,7 +77,7 @@ function validate(values: WalletForm) {
         title: random(errorEmo),
       },
       type: 'error',
-    } as ToastOptions)
+    })
     return false
   }
 
@@ -100,44 +99,22 @@ async function onSave() {
     v-if="props.walletForm"
     class="grid h-full max-w-lg grid-rows-[auto,1fr,auto] overflow-hidden px-2 pt-2 md:px-6"
   >
-    <UiTabs>
-      <UiTabsItem
-        :isActive="activeTab === 'data'"
-        @click="activeTab = 'data'"
-      >
-        {{ t('categories.form.data.label') }}
-      </UiTabsItem>
-      <UiTabsItem
-        :isActive="activeTab === 'currencies'"
-        @click="activeTab = 'currencies'"
-      >
-        {{ t('wallets.form.currencies.label') }}
-      </UiTabsItem>
-      <UiTabsItem
-        :isActive="activeTab === 'colors'"
-        @click="activeTab = 'colors'"
-      >
-        {{ t('wallets.form.colors.label') }}
-      </UiTabsItem>
-    </UiTabs>
-
-    <!-- Content -->
     <div class="overflow-y-auto py-4">
       <div class="grid gap-6">
+        <!-- Name -->
         <UiFormElement>
           <template #label>
             {{ t('wallets.form.name.label') }}
           </template>
-          <input
-            v-model="props.walletForm.name"
-            class="text-item-base bg-item-4 border-item-5 placeholder:text-item-2 focus:text-item-1 focus:bg-item-5 focus:border-accent-4 m-0 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out focus:outline-none"
+
+          <UiFormInput
             :placeholder="t('wallets.form.name.placeholder')"
-            type="text"
-            @input="event => emit('updateValue', 'name', event.target.value)"
-          >
+            :value="props.walletForm.name ?? ''"
+            @updateValue="(value: string) => emit('updateValue', 'name', value)"
+          />
         </UiFormElement>
 
-        <pre>{{ modals }}</pre>
+        <!-- Currencies -->
         <UiItem2 @click="modals.currencies = true">
           <template #label>
             {{ t('wallets.form.currencies.label') }}
@@ -148,29 +125,34 @@ async function onSave() {
           </template>
         </UiItem2>
 
+        <!-- Color -->
         <UiItem2 @click="modals.colors = true">
           <template #label>
             {{ t('wallets.form.colors.label') }}
           </template>
 
           <template #value>
-            {{ props.walletForm.currency }}
+            <Icon
+              :name="icons[props.walletForm.type ?? 'cash']"
+              :style="{ color: props.walletForm.color }"
+              class="size-6"
+            />
           </template>
         </UiItem2>
 
+        <!-- Description -->
         <UiFormElement>
           <template #label>
             {{ t('wallets.form.description.label') }}
           </template>
-          <input
-            v-model="props.walletForm.description"
+          <UiFormInput
             :placeholder="t('wallets.form.description.placeholder')"
-            class="text-item-base bg-item-4 border-item-5 placeholder:text-item-2 focus:text-item-1 focus:bg-item-5 focus:border-accent-4 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out focus:outline-none"
-            type="text"
-            @input="event => emit('updateValue', 'description', event.target.value)"
-          >
+            :value="props.walletForm.description ?? ''"
+            @updateValue="(value: string) => emit('updateValue', 'description', value)"
+          />
         </UiFormElement>
 
+        <!-- Type -->
         <div>
           <UiTitle class="pb-2">
             {{ t('money.type') }}
@@ -178,48 +160,49 @@ async function onSave() {
 
           <div class="px-1">
             <USelect
-              v-model="props.walletForm.type"
+              :options="walletType"
+              :value="props.walletForm.type"
               color="blue"
-              :options="walletTypes"
               optionAttribute="label"
-              variant="outline"
               size="lg"
+              variant="outline"
+              @change="(value: WalletType) => emit('updateValue', 'type', value)"
             />
           </div>
         </div>
 
+        <!-- Credit Limit -->
         <div v-if="props.walletForm.type === 'credit'">
           <UiFormElement>
             <template #label>
               {{ t('wallets.form.credit.limit') }}
             </template>
-            <input
-              v-model="props.walletForm.creditLimit"
+            <UiFormInput
               :placeholder="t('wallets.form.credit.limit')"
-              class="text-item-base bg-item-4 border-item-5 placeholder:text-item-2 focus:text-item-1 focus:bg-item-5 focus:border-accent-4 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out focus:outline-none"
-              type="number"
-              @input="event => emit('updateValue', 'creditLimit', event.target.value)"
-            >
+              :value="props.walletForm.creditLimit ?? 0"
+              @updateValue="(value: string) => emit('updateValue', 'creditLimit', value)"
+            />
           </UiFormElement>
         </div>
 
+        <!-- Options -->
         <div>
           <UiTitle class="pb-2">
             {{ t('settings.options') }}
           </UiTitle>
 
           <UiCheckbox
-            :checkboxValue="props.walletForm.isWithdrawal"
+            :checkboxValue="props.walletForm.isWithdrawal ?? false"
             :title="t('money.options.withdrawal')"
             @onClick="emit('updateValue', 'isWithdrawal', !props.walletForm.isWithdrawal)"
           />
           <UiCheckbox
-            :checkboxValue="props.walletForm.isExcludeInTotal"
+            :checkboxValue="props.walletForm.isExcludeInTotal ?? false"
             :title="t('money.options.isExcludeInTotal')"
             @onClick="emit('updateValue', 'isExcludeInTotal', !props.walletForm.isExcludeInTotal)"
           />
           <UiCheckbox
-            :checkboxValue="props.walletForm.isArchived"
+            :checkboxValue="props.walletForm.isArchived ?? false"
             :title="t('money.totals.archived')"
             @onClick="emit('updateValue', 'isArchived', !props.walletForm.isArchived)"
           />
@@ -255,8 +238,13 @@ async function onSave() {
 
       <template #default="{ close }">
         <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
-          <div class="px-2 py-4">
+          <div class="grid gap-3 py-4">
             <UiTitle>{{ t("select") }}</UiTitle>
+            <WalletsItem
+              :walletId="props.walletId"
+              :wallet="props.walletForm"
+              isShowIcons
+            />
           </div>
 
           <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
@@ -271,11 +259,11 @@ async function onSave() {
                   {{ t('wallets.form.colors.custom') }}
                 </template>
                 <input
-                  v-model="props.walletForm.color"
                   :placeholder="t('wallets.form.credit.limit')"
+                  :value="props.walletForm.color"
                   class="text-item-base bg-item-4 border-item-5 placeholder:text-item-2 focus:text-item-1 focus:bg-item-5 focus:border-accent-4 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out focus:outline-none"
                   type="number"
-                  @input="event => emit('updateValue', 'color', event.target.value)"
+                  @input="(event: HTMLInputEvent) => emit('updateValue', 'color', event.target.value)"
                 >
               </UiFormElement>
             </div>

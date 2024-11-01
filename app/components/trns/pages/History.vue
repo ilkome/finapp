@@ -102,19 +102,22 @@ function select(row) {
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle>{{ $t("trns.history") }}</UiHeaderTitle>
+      <UiHeaderTitle>{{ t("trns.history") }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="grid gap-3 px-2">
-      <Filter class="flex gap-1" />
+    <div class="pageWrapper">
+      <div class="grid gap-3">
+        <FilterSelector class="flex gap-1" />
+        <FilterSelected />
 
-      <TrnsList
-        :trnsIds
-        isShowHeader
-        isShowGroupSum
-        isShowFilterByType
-        isShowFilterByDesc
-      />
+        <TrnsList
+          :trnsIds
+          isShowHeader
+          isShowGroupSum
+          isShowFilterByType
+          isShowFilterByDesc
+        />
+      </div>
     </div>
   </UiPage>
 </template>
