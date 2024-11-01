@@ -127,7 +127,7 @@ const groupedTrns = computed(() => {
       :paginatedTrnsIds
       :selectedIds
     >
-      <UiTitle9>{{ $t("trns.title") }} {{ selectedIds.length > 0 ? selectedIds.length : '' }}</UiTitle9>
+      <UiTitle9>{{ t("trns.title") }} {{ selectedIds.length > 0 ? selectedIds.length : '' }}</UiTitle9>
     </slot>
 
     <slot name="contentBefore" />
@@ -153,11 +153,11 @@ const groupedTrns = computed(() => {
     <!-- With Desc -->
     <div
       v-if="isShowFilterByDesc && isTrnsWithDesc && selectedIds.length > 0"
-      class="relative z-10 pb-2"
+      class="relative pb-2"
     >
       <UiCheckbox
         :checkboxValue="isShowWithDesc"
-        :title="$t('trns.filter.showTrnsWithDesc')"
+        :title="t('trns.filter.showTrnsWithDesc')"
         showCheckbox
         @onClick="isShowWithDesc = !isShowWithDesc"
       />
@@ -271,7 +271,7 @@ const groupedTrns = computed(() => {
         class="flex-center bg-item-5 text-secondary hocus:bg-item-6 grow rounded-full px-5 py-2.5 text-sm"
         @click="pageNumber = ++pageNumber"
       >
-        {{ $t("trns.more") }} {{ paginatedTrnsIds.length }} /
+        {{ t("trns.more") }} {{ paginatedTrnsIds.length }} /
         {{ selectedIds.length }}
       </div>
     </div>
