@@ -59,7 +59,7 @@ const config = ref<MiniItemConfig>({
 </script>
 
 <template>
-  <div class="bg-foreground-3 z-10 max-w-6xl pb-2 lg:sticky lg:top-0 lg:gap-8 lg:px-4 xl:py-2">
+  <div class="bg-foreground-3 sticky top-0 z-10 max-w-6xl pb-2 lg:gap-8 lg:px-4 xl:py-2">
     <div class="grid gap-2 px-2 pt-2">
       <div class="flex items-center gap-1 overflow-x-auto ">
         <FilterSelector v-if="props.isShowFilter" />
