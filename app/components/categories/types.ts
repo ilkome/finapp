@@ -10,7 +10,6 @@ export type CategoryItem = {
   parentId: CategoryId | 0
   showInLastUsed?: boolean
   showInQuickSelector?: boolean
-  showStat?: boolean
 }
 
 export type Categories = Record<CategoryId, CategoryItem> & Record<'transfer', CategoryItem>
@@ -23,5 +22,4 @@ export type CategoryForm = {
   parentId: string | 0
   showInLastUsed: boolean
   showInQuickSelector: boolean
-  showStat: boolean
 }

@@ -58,13 +58,6 @@ export default {
     favoriteTitle: 'Любимые',
     form: {
       childColor: 'Применить цвет ко всем дочерним категориям',
-      colors: {
-        custom: 'Кастомный цвет',
-        label: 'Цвета',
-      },
-      data: {
-        label: 'Данные',
-      },
       icon: {
         label: 'Иконка',
       },
@@ -75,11 +68,12 @@ export default {
         label: 'Название категории',
         placeholder: 'Напишите название категории...',
       },
+      noChangeParent: 'Вы не можете изменить родительскую категорию, так как редактируемая категория имеет дочерние категории.',
       parent: {
-        label: 'Категория',
-        no: 'Корневая категория',
+        label: 'Родительская категория',
+        no: 'Корневая',
       },
-      quickSelector: 'Любимая категория',
+      quickSelector: 'Показывать в быстром выборе',
       save: 'Сохранить',
     },
     lastUsedTitle: 'Недавние',
@@ -100,6 +94,13 @@ export default {
 
   close: 'Закрыть',
 
+  color: {
+    custom: 'Произвольный цвет',
+    error: 'Выберите цвет',
+    label: 'Цвет',
+    placeholder: 'Выберите цвет',
+  },
+
   colors: 'Цвета',
 
   common: {
@@ -108,10 +109,10 @@ export default {
     in: 'в',
     open: 'Открыть',
   },
-
   create: {
     title: 'Создать',
   },
+
   currencies: {
     base: 'Основная валюта',
   },
@@ -161,10 +162,10 @@ export default {
   filter: {
     clear: 'Убрать',
   },
-
   locale: {
     toggle: 'Сменить язык',
   },
+
   loginWithGithub: 'Войти через Github',
 
   loginWithGoogle: 'Войти через Google',
@@ -327,12 +328,6 @@ export default {
     createNewTitle: 'Добавить кошелек',
     editTitle: 'Редактирование кошелька',
     form: {
-      colors: {
-        custom: 'Кастомный цвет',
-        error: 'Выберите цвет',
-        label: 'Цвет',
-        placeholder: 'Выберите цвет',
-      },
       credit: {
         available: 'Доступно',
         debt: 'Долг',

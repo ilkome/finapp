@@ -731,7 +731,7 @@ const quickModalTrnsIds = computed(() => {
 
         <template #default="">
           <div class="scrollerBlock grid h-[98dvh] content-start overflow-hidden overflow-y-auto">
-            <CategoriesPageHeader
+            <CategoriesHeader
               :category="categoriesStore.items[quickModalCategoryId]"
               :parentCategory="categoriesStore.items?.[categoriesStore.items[quickModalCategoryId]?.parentId]"
               class="bg-foreground-5 sticky top-0 z-10"

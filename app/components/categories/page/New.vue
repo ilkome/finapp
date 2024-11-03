@@ -46,15 +46,14 @@ useHead({
             </div>
 
             <div class="flex items-center gap-4 pb-1">
-              <div class="text-item-1 text-2xl font-semibold">
-                {{ categoryForm.name ? categoryForm.name : t("categories.form.name.label") }}
-              </div>
-
               <div
                 class="flex-center text-icon-primary size-8 rounded-full text-xl"
                 :style="{ background: categoryForm.color }"
               >
                 <div :class="categoryForm.icon" />
+              </div>
+              <div class="text-item-1 text-2xl font-semibold">
+                {{ categoryForm.name ? categoryForm.name : t("categories.form.name.label") }}
               </div>
             </div>
           </UiHeaderTitle>

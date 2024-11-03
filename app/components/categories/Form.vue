@@ -2,12 +2,9 @@
 import type { ToastOptions } from 'vue3-toastify'
 import { errorEmo, random } from '~/assets/js/emo'
 import icons from '~/assets/js/icons'
-import { getPreparedFormData } from '~/components/categories/getForm'
 import type { CategoryForm, CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import UiToastContent from '~/components/ui/ToastContent.vue'
-import { useUserStore } from '~/components/user/useUserStore'
-import { saveData } from '~~/services/firebase/api'
 import { generateId } from '~~/utils/generateId'
 
 const props = defineProps<{
@@ -19,39 +16,50 @@ const emit = defineEmits(['updateValue', 'afterSave'])
 
 const { $toast } = useNuxtApp()
 const { t } = useI18n()
-const userStore = useUserStore()
 const categoriesStore = useCategoriesStore()
 
 const editCategoryId = props.categoryId ?? generateId()
-const activeTab = ref('data')
 const isUpdateChildCategoriesColor = ref(true)
 const isAllowChangeParent = computed(() => categoriesStore.getChildsIds(props.categoryId).length === 0)
 
-const tabs = computed(() => [{
-  id: 'data',
-  name: t('categories.form.data.label'),
-}, {
-  id: 'parent',
-  isHidden: !categoriesStore.hasItems,
-  name: t('categories.form.parent.label'),
-}, {
-  id: 'colors',
-  name: t('categories.form.colors.label'),
-}, {
-  id: 'icon',
-  name: t('categories.form.icon.label'),
-}])
+const modals = ref({
+  colors: false,
+  icon: false,
+  parent: false,
+})
+
+// const tabs = computed(() => [{
+//   id: 'data',
+//   name: t('categories.form.data.label'),
+// }, {
+//   id: 'parent',
+//   isHidden: !categoriesStore.hasItems,
+//   name: t('categories.form.parent.label'),
+// }, {
+//   id: 'colors',
+//   name: t('categories.form.colors.label'),
+// }, {
+//   id: 'icon',
+//   name: t('categories.form.icon.label'),
+// }])
 
 /**
  * Select parent
  */
-function onParentSelect(parentId: CategoryId) {
-  emit('updateValue', 'parentId', parentId)
+function onParentSelect(parentId: CategoryId | false, close: () => void) {
+  if (!parentId) {
+    emit('updateValue', 'parentId', 0)
+    close()
+    return
+  }
 
+  emit('updateValue', 'parentId', parentId)
   // Change category color when patent category changed
   const parentCategoryColor = categoriesStore.items?.[parentId]?.color
   if (parentCategoryColor)
     emit('updateValue', 'color', parentCategoryColor)
+
+  close()
 }
 
 /**
@@ -66,7 +74,7 @@ function validate(values: CategoryForm) {
       },
       toastId: 'validate',
       type: 'error',
-    } as ToastOptions)
+    })
 
     return
   }
@@ -83,7 +91,7 @@ function validate(values: CategoryForm) {
             },
             toastId: 'validate',
             type: 'error',
-          } as ToastOptions)
+          })
           return
         }
       }
@@ -95,7 +103,7 @@ function validate(values: CategoryForm) {
           },
           toastId: 'validate',
           type: 'error',
-        } as ToastOptions)
+        })
         return
       }
     }
@@ -108,23 +116,10 @@ async function onSave() {
   if (!validate(props.categoryForm))
     return
 
-  // const values: WalletItem = normalizeWalletItem(props.walletForm)
-  // await walletsStore.addWallet({ id: editWalletId, values })
-  // emit('afterSave')
-
-  const uid = userStore.uid
-  const categoryChildIds = categoriesStore.getChildsIds(editCategoryId)
-  const categoryValues = getPreparedFormData(props.categoryForm)
-
-  // Update category
-  await saveData(`users/${uid}/categories/${editCategoryId}`, categoryValues)
-
-  // Update child categories colors
-  if (isUpdateChildCategoriesColor.value && categoryChildIds) {
-    for (const childId of categoryChildIds)
-      await saveData(`users/${uid}/categories/${childId}/color`, categoryValues.color)
-  }
-
+  await categoriesStore.addCategory(
+    { id: editCategoryId, values: { ...props.categoryForm } },
+    { isUpdateChildCategoriesColor: isUpdateChildCategoriesColor.value },
+  )
   emit('afterSave')
 }
 </script>
@@ -132,127 +127,91 @@ async function onSave() {
 <template>
   <div
     v-if="props.categoryForm"
-    class="grid h-full max-w-lg grid-rows-[auto,1fr,auto] overflow-hidden px-2 pt-2 md:px-6"
+    class="grid h-full max-w-lg grid-rows-[1fr,auto] overflow-hidden px-2 pt-2 md:px-6"
   >
-    <UiTabs>
-      <UiTabsItem
-        v-for="tab in tabs"
-        :key="tab.id"
-        :isActive="activeTab === tab.id"
-        class="md_text-lg"
-        @click="activeTab = tab.id"
-      >
-        {{ tab.name }}
-      </UiTabsItem>
-    </UiTabs>
-
     <!-- Content -->
-    <div class="overflow-y-auto py-4">
-      <!-- Data -->
-      <template v-if="activeTab === 'data'">
-        <div class="mb-4">
-          <div class="text-item-2 pb-2 text-sm leading-none">
-            {{ t('wallets.form.name.label') }}
-          </div>
-          <input
-            class="text-item-base bg-item-4 border-item-5 placeholder_text-item-2 focus_text-item-1 focus_bg-item-5 focus_border-accent-4 focus_outline-none m-0 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out"
-            :placeholder="t('categories.form.name.placeholder')"
-            :value="props.categoryForm.name"
-            type="text"
-            @input="event => emit('updateValue', 'name', event.target.value)"
-          >
-        </div>
+    <div class="grid content-start gap-6 overflow-y-auto py-4">
+      <!-- Name -->
+      <UiFormElement>
+        <template #label>
+          {{ t('categories.form.name.label') }}
+        </template>
 
-        <LazyUiCheckbox
-          v-if="categoriesStore.getChildsIds(categoryId).length > 0"
+        <UiFormInput
+          :placeholder="t('categories.form.name.placeholder')"
+          :value="props.categoryForm.name ?? ''"
+          @updateValue="(value: string) => emit('updateValue', 'name', value)"
+        />
+      </UiFormElement>
+
+      <!-- Color -->
+      <UiItem2 @click="modals.colors = true">
+        <template #label>
+          {{ t('color.label') }}
+        </template>
+
+        <template #value>
+          <UiIconBase
+            :color="props.categoryForm.color"
+            :name="props.categoryForm.icon"
+            invert
+            class="ml-0 !w-7 !text-base leading-none"
+          />
+        </template>
+      </UiItem2>
+
+      <!-- Icon -->
+      <UiItem2 @click="modals.icon = true">
+        <template #label>
+          {{ t('categories.form.icon.label') }}
+        </template>
+
+        <template #value>
+          <UiIconBase
+            :color="props.categoryForm.color"
+            :name="props.categoryForm.icon"
+            class="!w-7 !text-xl leading-none"
+          />
+        </template>
+      </UiItem2>
+
+      <!-- Parent -->
+      <UiItem2 @click="modals.parent = true">
+        <template #label>
+          {{ t('categories.form.parent.label') }}
+        </template>
+
+        <template #value>
+          {{ props.categoryForm.parentId === 0 ? t('categories.form.parent.no') : categoriesStore.items[props.categoryForm.parentId]?.name }}
+        </template>
+      </UiItem2>
+
+      <!-- Options -->
+      <div>
+        <UiTitle class="pb-2">
+          {{ t('settings.options') }}
+        </UiTitle>
+
+        <UiCheckbox
+          v-if="categoriesStore.getChildsIds(props.categoryId).length > 0"
           :checkboxValue="isUpdateChildCategoriesColor"
           :title="t('categories.form.childColor')"
           @onClick="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
         />
-        <LazyUiCheckbox
-          v-if="categoriesStore.getChildsIds(categoryId).length === 0"
+
+        <UiCheckbox
+          v-if="categoriesStore.getChildsIds(props.categoryId).length === 0"
           :checkboxValue="props.categoryForm.showInLastUsed"
           :title="t('categories.form.lastUsed')"
-          @onClick="props.categoryForm.showInLastUsed = !props.categoryForm.showInLastUsed"
+          @onClick="emit('updateValue', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
         />
         <UiCheckbox
-          v-if="categoriesStore.getChildsIds(categoryId).length === 0"
+          v-if="categoriesStore.getChildsIds(props.categoryId).length === 0"
           :checkboxValue="props.categoryForm.showInQuickSelector"
           :title="t('categories.form.quickSelector')"
-          @onClick="props.categoryForm.showInQuickSelector = !props.categoryForm.showInQuickSelector"
+          @onClick="emit('updateValue', 'showInQuickSelector', !props.categoryForm.showInQuickSelector)"
         />
-      </template>
-
-      <!-- Colors -->
-      <template v-if="activeTab === 'colors'">
-        <div class="pb-4">
-          <div class="pb-5">
-            <LazyColorPalette
-              :activeColor="props.categoryForm.color"
-              :icon="props.categoryForm.icon"
-              isCategory
-              @click="color => emit('updateValue', 'color', color)"
-            />
-          </div>
-
-          <div class="text-item-2 pb-2 text-sm">
-            {{ t('wallets.form.colors.custom') }}
-          </div>
-
-          <input
-            v-model="props.categoryForm.color"
-            class="h-12 w-full cursor-pointer border-0 p-0"
-            type="color"
-          >
-        </div>
-      </template>
-
-      <!-- Parent -->
-      <!-- --------------------------------- -->
-      <template v-if="activeTab === 'parent'">
-        <template v-if="!isAllowChangeParent">
-          <!-- TODO: translate -->
-          <div class="p-4 text-base">
-            {{ t('noChangeParent') }}
-          </div>
-        </template>
-        <template v-else>
-          <div
-            class="flex-center bg-item-4 hocus_bg-item-5 mb-4 cursor-pointer gap-x-3 rounded-md px-2 py-3 text-center"
-            :class="{ '!bg-item-3': props.categoryForm.parentId === 0 }"
-            @click="emit('updateValue', 'parentId', 0)"
-          >
-            {{ t('categories.form.parent.no') }}
-          </div>
-          <CategoriesList
-            :activeItemId="props.categoryForm.parentId"
-            :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
-            :slider="() => ({})"
-            class="!gap-x-1"
-            @click="onParentSelect"
-          />
-        </template>
-      </template>
-
-      <!-- Icon -->
-      <!-- --------------------------------- -->
-      <template v-if="activeTab === 'icon'">
-        <div
-          v-for="iconGroup in icons"
-          :key="JSON.stringify(iconGroup)"
-          class="flex flex-wrap gap-3 pb-8"
-        >
-          <div
-            v-for="icon in iconGroup"
-            :key="icon"
-            class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent" :class="[{ 'border-accent-2': icon === categoryForm.icon }]"
-            :style="{ background: props.categoryForm.color }"
-            @click="emit('updateValue', 'icon', icon)"
-          >
-            <div class="text-icon-primary text-2xl" :class="[icon]" />
-          </div>
-        </div>
-      </template>
+      </div>
     </div>
 
     <div class="flex-center">
@@ -263,11 +222,173 @@ async function onSave() {
       </UiButtonBlue>
     </div>
   </div>
-</template>
 
-<i18n lang="yaml">
-en:
-  noChangeParent: You can not change parent category because edited category has child categories.
-ru:
-  noChangeParent: Вы не можете изменить родительскую категорию, так как редактируемая категория имеет дочерние категории.
-</i18n>
+  <Teleport to="#teleports">
+    <!-- Colors -->
+    <BaseBottomSheet2
+      v-if="modals.colors"
+      isShow
+      drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+      @closed="modals.colors = false"
+    >
+      <template #handler="{ close }">
+        <BaseBottomSheetHandler />
+        <BaseBottomSheetClose @onClick="close" />
+      </template>
+
+      <template #default="{ close }">
+        <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
+          <div class="grid gap-3 py-4">
+            <UiTitle>{{ t("color.label") }}</UiTitle>
+            <CategoriesItem
+              :categoryId="props.categoryId"
+              :category="props.categoryForm"
+            />
+          </div>
+
+          <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
+            <div class="grid gap-6">
+              <ColorPalette
+                :activeColor="props.categoryForm.color"
+                :isCategory="true"
+                @click="color => emit('updateValue', 'color', color)"
+              />
+
+              <UiFormElement>
+                <template #label>
+                  {{ t('color.custom') }}
+                </template>
+                <input
+                  :placeholder="t('color.placeholder')"
+                  :value="props.categoryForm.color"
+                  class="text-item-base bg-item-4 border-item-5 placeholder:text-item-2 focus:text-item-1 focus:bg-item-5 focus:border-accent-4 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out focus:outline-none"
+                  type="color"
+                  @input="(event: HTMLInputEvent) => emit('updateValue', 'color', event.target.value)"
+                >
+              </UiFormElement>
+            </div>
+          </div>
+
+          <div class="flex-center py-2">
+            <UiButtonBlue
+              maxWidth
+              @click="close"
+            >
+              {{ t("base.save") }}
+            </UiButtonBlue>
+          </div>
+        </div>
+      </template>
+    </BaseBottomSheet2>
+
+    <!-- Parent -->
+    <BaseBottomSheet2
+      v-if="modals.parent"
+      isShow
+      drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+      @closed="modals.parent = false"
+    >
+      <template #handler="{ close }">
+        <BaseBottomSheetHandler />
+        <BaseBottomSheetClose @onClick="close" />
+      </template>
+
+      <template #default="{ close }">
+        <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
+          <div class="grid gap-3 py-4">
+            <UiTitle>{{ t('categories.form.parent.label') }}</UiTitle>
+            <CategoryItem
+              :categoryId="props.categoryId"
+              :category="props.categoryForm"
+            />
+          </div>
+
+          <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
+            <template v-if="!isAllowChangeParent">
+              <div class="p-4 text-base">
+                {{ t('categories.form.noChangeParent') }}
+              </div>
+            </template>
+            <template v-else>
+              <div
+                :class="{ '!bg-item-3': props.categoryForm.parentId === 0 }"
+                class="flex-center bg-item-4 hocus_bg-item-5 mb-4 cursor-pointer gap-x-3 rounded-md px-2 py-3 text-center"
+                @click="onParentSelect(false, close)"
+              >
+                {{ t('categories.form.parent.no') }}
+              </div>
+              <CategoriesList
+                :activeItemId="props.categoryForm.parentId"
+                :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
+                :slider="() => ({})"
+                class="!gap-x-1"
+                @click="id => onParentSelect(id, close)"
+              />
+            </template>
+          </div>
+
+          <div class="flex-center py-2">
+            <UiButtonBlue
+              maxWidth
+              @click="close"
+            >
+              {{ t("base.save") }}
+            </UiButtonBlue>
+          </div>
+        </div>
+      </template>
+    </BaseBottomSheet2>
+
+    <!-- Icon -->
+    <BaseBottomSheet2
+      v-if="modals.icon"
+      isShow
+      drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+      @closed="modals.icon = false"
+    >
+      <template #handler="{ close }">
+        <BaseBottomSheetHandler />
+        <BaseBottomSheetClose @onClick="close" />
+      </template>
+
+      <template #default="{ close }">
+        <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
+          <div class="grid gap-3 py-4">
+            <UiTitle>{{ t("select") }}</UiTitle>
+            <CategoriesItem
+              :categoryId="props.categoryId"
+              :category="props.categoryForm"
+            />
+          </div>
+
+          <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
+            <div
+              v-for="iconGroup in icons"
+              :key="JSON.stringify(iconGroup)"
+              class="flex flex-wrap gap-3 pb-8"
+            >
+              <div
+                v-for="icon in iconGroup"
+                :key="icon"
+                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent" :class="[{ 'border-accent-2': icon === categoryForm.icon }]"
+                :style="{ background: props.categoryForm.color }"
+                @click="emit('updateValue', 'icon', icon)"
+              >
+                <div class="text-icon-primary text-2xl" :class="[icon]" />
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-center py-2">
+            <UiButtonBlue
+              maxWidth
+              @click="close"
+            >
+              {{ t("base.save") }}
+            </UiButtonBlue>
+          </div>
+        </div>
+      </template>
+    </BaseBottomSheet2>
+  </Teleport>
+</template>

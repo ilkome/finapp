@@ -3,9 +3,8 @@ import dayjs from 'dayjs'
 import { useDateFormats } from '~/components/date/useDateFormats'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
-const { formatDate } = useDateFormats()
-
 const trnFormStore = useTrnFormStore()
+const { formatDate } = useDateFormats()
 
 const formattedDate = computed(() => {
   const date = formatDate(trnFormStore.values.date, 'full')

@@ -98,7 +98,6 @@ const config = ref<MiniItemConfig>({
     </div>
 
     <WalletsList
-      v-if="!filter?.isShow?.value"
       v-slot="{ walletsItemsLimited }"
       :limit="4"
       class="flex gap-1 overflow-hidden overflow-x-auto p-2 pb-0"

@@ -12,6 +12,5 @@ export function getPreparedFormData(values?: any): CategoryForm {
     parentId: values?.parentId ?? 0,
     showInLastUsed: values?.showInLastUsed ?? true,
     showInQuickSelector: values?.showInQuickSelector ?? false,
-    showStat: values?.showStat ?? true,
   }
 }

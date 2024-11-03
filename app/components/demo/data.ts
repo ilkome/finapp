@@ -15,7 +15,6 @@ const data: {
       parentId: 0,
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     '4b6473ee7324': {
       color: '#d84315',
@@ -26,7 +25,6 @@ const data: {
       parentId: 0,
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnR1EDBl9tAZTaWUP': {
       color: '#90a4ae',
@@ -37,7 +35,6 @@ const data: {
       parentId: 0,
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnRB3MqKvAqwo5IEf': {
       color: '#d4e157',
@@ -48,7 +45,6 @@ const data: {
       parentId: 'KxKMi55aCVkJXsiDE_i',
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnREUqdH4nTGEjEhl': {
       color: '#ba68c8',
@@ -59,7 +55,6 @@ const data: {
       parentId: 0,
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnRHjakWM4imFmCpI': {
       color: '#d4e157',
@@ -69,7 +64,6 @@ const data: {
       order: 2,
       parentId: 'KxKMi55aCVkJXsiDE_i',
       showInLastUsed: true,
-      showStat: true,
     },
     'KsNnS6QgcjgSVeA3KaM': {
       color: '#90a4ae',
@@ -79,7 +73,6 @@ const data: {
       parentId: 'KsNnR1EDBl9tAZTaWUP',
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnSMR4DtZXFr75V2Y': {
       color: '#8d6e63',
@@ -89,7 +82,6 @@ const data: {
       parentId: 'KsNnTR_IP7TZ5UQ39MV',
       showInLastUsed: false,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnSzI9bi2L6YtJpFl': {
       color: '#90a4ae',
@@ -99,7 +91,6 @@ const data: {
       parentId: 'KsNnR1EDBl9tAZTaWUP',
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnT85ujLHZFMRjqau': {
       color: '#8d6e63',
@@ -109,7 +100,6 @@ const data: {
       parentId: 'KsNnTR_IP7TZ5UQ39MV',
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnTR_IP7TZ5UQ39MV': {
       color: '#8d6e63',
@@ -120,7 +110,6 @@ const data: {
       parentId: 0,
       showInLastUsed: false,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnUCHgx-3TJVpEOo5': {
       color: '#8d6e63',
@@ -130,7 +119,6 @@ const data: {
       parentId: 'KsNnTR_IP7TZ5UQ39MV',
       showInLastUsed: false,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnUVvhaCBzUOIce-c': {
       color: '#ff8a65',
@@ -141,7 +129,6 @@ const data: {
       parentId: 0,
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnVKle-reg5skNcxE': {
       color: '#26a69a',
@@ -152,7 +139,6 @@ const data: {
       parentId: 0,
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KsNnVRQvYywN2OZFrEq': {
       color: '#1b5e20',
@@ -162,7 +148,6 @@ const data: {
       order: 6,
       parentId: 0,
       showInLastUsed: true,
-      showStat: true,
     },
     'KsNnVUo-gQZCYr_Tqjx': {
       color: '#f48fb1',
@@ -173,7 +158,6 @@ const data: {
       parentId: 0,
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'KxKMi55aCVkJXsiDE': {
       color: '#d4e157',
@@ -184,7 +168,6 @@ const data: {
       parentId: 0,
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
     'd564ed02cf7f': {
       color: '#8bc34a',
@@ -195,7 +178,6 @@ const data: {
       parentId: 0,
       showInLastUsed: true,
       showInQuickSelector: false,
-      showStat: true,
     },
   },
 

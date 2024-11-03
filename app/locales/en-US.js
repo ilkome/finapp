@@ -58,13 +58,6 @@ export default {
     favoriteTitle: 'Favorite',
     form: {
       childColor: 'Apply color to all child categories',
-      colors: {
-        custom: 'Custom color',
-        label: 'Colors',
-      },
-      data: {
-        label: 'Data',
-      },
       icon: {
         label: 'Icon',
       },
@@ -75,11 +68,12 @@ export default {
         label: 'Category name',
         placeholder: 'Write category name...',
       },
+      noChangeParent: 'You can not change parent category because edited category has child categories.',
       parent: {
         label: 'Parent category',
-        no: 'Root category',
+        no: 'Root',
       },
-      quickSelector: 'Favorite category',
+      quickSelector: 'Show in quick selector',
       save: 'Save',
     },
     lastUsedTitle: 'Recent',
@@ -100,14 +94,21 @@ export default {
 
   close: 'Close',
 
-  colors: 'Colors',
+  color: {
+    custom: 'Custom color',
+    error: 'Select color',
+    label: 'Color',
+    placeholder: 'Select color',
+  },
 
+  colors: 'Colors',
   common: {
     all: 'All',
     date: 'Date',
     in: 'in',
     open: 'Open',
   },
+
   create: {
     title: 'Create',
   },
@@ -157,15 +158,15 @@ export default {
     update: 'Update demo data',
     updated: 'Data updated',
   },
-
   filter: {
     clear: 'Clear',
   },
+
   locale: {
     toggle: 'Toggle locale',
   },
-
   loginWithGithub: 'Login with Github',
+
   loginWithGoogle: 'Login with Google',
 
   money: {
@@ -303,7 +304,6 @@ export default {
     },
     transferTitle: 'Transfer',
   },
-
   trns: {
     filter: {
       showTrnsWithDesc: 'Only with description',
@@ -314,6 +314,7 @@ export default {
     shortTitle: 'Trns',
     title: 'Transactions',
   },
+
   userLogout: 'Logout',
 
   users: {
@@ -324,12 +325,6 @@ export default {
     createNewTitle: 'Add wallet',
     editTitle: 'Edit Wallet',
     form: {
-      colors: {
-        custom: 'Custom color',
-        error: 'Select color',
-        label: 'Color',
-        placeholder: 'Select color',
-      },
       credit: {
         available: 'Available',
         debt: 'Debt',

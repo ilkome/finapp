@@ -24,7 +24,7 @@ const classes = computed(() => cn(
   getStyles('item', ['rounded', 'padding1', 'minh2', 'link']),
   'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px] border border-transparent',
   props.insideClasses,
-  { 'border-accent-1/60': props.isActive },
+  { 'relative border-accent-1/60': props.isActive },
 ))
 </script>
 

@@ -56,9 +56,9 @@ function getBarStyle() {
       <template #line>
         <div
           v-if="props.viewOptions?.catsList.isLines"
-          class="absolute left-0 bottom-2 w-full pl-[52px] pr-3 rounded-lg overflow-hidden"
+          class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pl-[52px] pr-3"
         >
-          <div class="bg-item-3 rounded-lg overflow-hidden">
+          <div class="bg-item-3 overflow-hidden rounded-lg">
             <div
               class="h-1 opacity-60"
               :style="getBarStyle()"
@@ -73,14 +73,14 @@ function getBarStyle() {
           :color="category?.color"
           :name="category?.icon"
           invert
-          class="!text-base leading-none !w-7 ml-0"
+          class="ml-0 !w-7 !text-base leading-none"
           @click.stop="emit('onClickIcon', props.item.id)"
         />
         <UiIconBase
           v-else
           :color="category?.color"
           :name="category?.icon"
-          class="!text-xl leading-none !w-6 ml-1"
+          class="ml-1 !w-6 !text-xl leading-none"
           @click.stop="emit('onClickIcon', props.item.id)"
         />
       </template>

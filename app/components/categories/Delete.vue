@@ -12,6 +12,7 @@ const props = defineProps<{
 }>()
 
 const { $toast } = useNuxtApp()
+const isDemo = useCookie('finapp.isDemo')
 const router = useRouter()
 const userStore = useUserStore()
 const categoriesStore = useCategoriesStore()
@@ -59,22 +60,29 @@ async function onDeleteConfirm() {
   // Disable reactive when user has already redirected to categories page
   const uid = JSON.parse(JSON.stringify(userStore.uid))
   const trnsIdsS = JSON.parse(JSON.stringify(trnsIds.value))
-  const categoryIdS = JSON.parse(JSON.stringify(categoryId.value))
+  const categoryDeleteId = JSON.parse(JSON.stringify(categoryId.value))
 
   router.push('/categories')
 
   // Give some time to complete redirect
   setTimeout(async () => {
     await trnsStore.deleteTrnsByIds(trnsIdsS)
-    removeData(`users/${uid}/categories/${categoryIdS}`).then(() => {
-      $toast(UiToastContent, {
-        data: {
-          description: trnsIdsS?.length > 0 ? `Success delete category with ${trnsIdsS.length} transactions!` : 'Success delete category!',
-          title: random(successEmo),
-        },
-        toastId: 'delete-category-with-child-success',
-        type: 'success',
-      })
+
+    if (isDemo.value) {
+      delete categoriesStore.items[categoryDeleteId]
+      // TODO: delete category from demo
+    }
+    else {
+      await removeData(`users/${uid}/categories/${categoryDeleteId}`)
+    }
+
+    $toast(UiToastContent, {
+      data: {
+        description: trnsIdsS?.length > 0 ? `Success delete category with ${trnsIdsS.length} transactions!` : 'Success delete category!',
+        title: random(successEmo),
+      },
+      toastId: 'delete-category-with-child-success',
+      type: 'success',
     })
   }, 100)
 }
@@ -83,15 +91,13 @@ async function onDeleteConfirm() {
 <template>
   <div>
     <UiHeaderLink @click="onClickDelete">
-      <div
-        class="mdi mdi-delete-empty-outline text-xl group-hover:text-white"
-      />
+      <div class="mdi mdi-delete-empty-outline text-xl group-hover:text-white" />
     </UiHeaderLink>
 
     <LayoutConfirmModal
       v-if="isShowDeleteConfirm"
-      show
       :description="deleteDescText"
+      show
       @closed="isShowDeleteConfirm = false"
       @onConfirm="onDeleteConfirm"
     />

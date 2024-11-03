@@ -28,8 +28,8 @@ useHead({
         custom
       >
         <a
-          class="hocus:bg-item-5 -mx-2 grow px-2"
           :href="href"
+          class="hocusz:bg-item-5 -mx-2 grow px-2"
           @click="navigate"
         >
           <UiHeaderTitle>

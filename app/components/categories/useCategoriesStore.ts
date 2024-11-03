@@ -1,20 +1,13 @@
 import _sortby from 'lodash.sortby'
-import { deepUnref } from 'vue-deepunref'
 import localforage from 'localforage'
+import { deepUnref } from 'vue-deepunref'
 import { type ComputedRef, type ShallowRef, computed, shallowRef } from 'vue'
-import {
-  getDataAndWatch,
-  unsubscribeData,
-  updateData,
-} from '~~/services/firebase/api'
-import type {
-  Categories,
-  CategoryId,
-  CategoryItem,
-} from '~/components/categories/types'
+import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
+import { getDataAndWatch, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
+import { getPreparedFormData } from '~/components/categories/getForm'
 import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
-import { useUserStore } from '~/components/user/useUserStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useUserStore } from '~/components/user/useUserStore'
 
 const transfer: CategoryItem = {
   childIds: [],
@@ -25,10 +18,10 @@ const transfer: CategoryItem = {
   parentId: 0,
   showInLastUsed: false,
   showInQuickSelector: false,
-  showStat: false,
 }
 
 type CategoriesStore = {
+  addCategory: (params: { id: CategoryId, values: CategoryItem }, options: { isUpdateChildCategoriesColor: boolean }) => Promise<void>
   categoriesForBeParent: ComputedRef<CategoryId[]>
   categoriesIds: ComputedRef<CategoryId[]>
   categoriesIdsForTrnValues: ComputedRef<CategoryId[]>
@@ -52,6 +45,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   const userStore = useUserStore()
   const trnsStore = useTrnsStore()
 
+  const isDemo = useCookie('finapp.isDemo')
   const items = shallowRef<Categories>({ transfer })
   const hasItems = computed(() => {
     if (Object.keys(items.value).filter(id => id !== 'transfer').length > 0)
@@ -264,7 +258,43 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return getTransactibleCategoriesIds(items.value ?? {}, ids)
   }
 
+  async function addCategory({ id, values }: { id: CategoryId, values: CategoryItem }, { isUpdateChildCategoriesColor }: { isUpdateChildCategoriesColor: boolean }) {
+    const uid = userStore.uid
+    const categoryChildIds = getChildsIds(id)
+    const categoryValues = getPreparedFormData(values)
+
+    if (isDemo.value) {
+      items.value = {
+        ...items.value,
+        [id]: values,
+      }
+
+      if (isUpdateChildCategoriesColor && categoryChildIds) {
+        for (const childId of categoryChildIds) {
+          if (items.value[childId]) {
+            items.value[childId].color = values.color
+          }
+        }
+      }
+
+      const formattedItems = formatCategories(items.value)
+      items.value = formattedItems
+      localforage.setItem('finapp.categories', deepUnref(formattedItems))
+      return
+    }
+
+    // Update category
+    await saveData(`users/${uid}/categories/${id}`, categoryValues)
+
+    // Update child categories colors
+    if (isUpdateChildCategoriesColor && categoryChildIds) {
+      for (const childId of categoryChildIds)
+        await saveData(`users/${uid}/categories/${childId}/color`, categoryValues.color)
+    }
+  }
+
   return {
+    addCategory,
     categoriesForBeParent,
     categoriesIds,
     categoriesIdsForTrnValues,

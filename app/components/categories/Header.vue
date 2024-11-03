@@ -5,12 +5,14 @@ const props = defineProps<{
   category: CategoryItem
   parentCategory?: CategoryItem
 }>()
+
+const { t } = useI18n()
 </script>
 
 <template>
-  <UiHeaderTitle>
-    <div class="pt-1 text-xs font-medium text-item-2">
-      {{ $t("categories.title") }}
+  <UiHeaderTitle class="px-3">
+    <div class="text-item-2 pt-1 text-xs font-medium">
+      {{ t('categories.title') }}
       <template v-if="props.parentCategory">
         / {{ props.parentCategory.name }}
       </template>

@@ -68,7 +68,7 @@ onLongPress(
 <template>
   <div
     ref="longPressRef"
-    class="relative flex gap-2 items-center text-secondary2 hocus:bg-item-5 p-1 rounded-full bg-item-9 overflow-hidden"
+    class="text-secondary2 hocus:bg-item-5 bg-item-9 relative flex items-center gap-2 overflow-hidden rounded-full p-1"
     :class="{ 'opacity-60': props.item.value === 0 }"
     @click="emit('click', props.item.id)"
   >
@@ -78,22 +78,22 @@ onLongPress(
     />
 
     <div
-      class="size-5 -lg:size-7"
+      class="-lg:size-7 size-5"
     >
       <UiIconBase
         :name="category?.icon"
         :color="category?.color"
-        class="!text-xs -xl:!text-lg"
+        class="-xl:!text-lg !text-xs"
         invert
       />
     </div>
 
     <!-- TODO: text-xs xl:text-sm -->
-    <div class="text-xs text-3 xl:text-sm">
+    <div class="text-3 text-xs xl:text-sm">
       {{ category.name }}
     </div>
 
-    <div class="opacity-90 pr-1">
+    <div class="pr-1 opacity-90">
       <Amount
         :amount="props.item.value"
         :currencyCode="currenciesStore.base"

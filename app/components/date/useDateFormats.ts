@@ -2,6 +2,8 @@ import dayjs from 'dayjs'
 import type { PeriodNameWithAll } from '~/components/filter/types'
 
 export function useDateFormats() {
+  const { locale, t } = useI18n()
+
   function getFormatForChart(periodName: PeriodNameWithAll) {
     switch (periodName) {
       case 'day':
@@ -31,8 +33,6 @@ export function useDateFormats() {
   function formatDate(value: number, type: 'trnItem' | 'full') {
     if (!value)
       return false
-
-    const { locale, t } = useI18n()
 
     switch (type) {
       case 'full':

@@ -30,8 +30,7 @@ body {
   user-select: none;
   height: 100dvh;
 
-  @apply
-    font-primary text-1 leading-none antialiased;
+  @apply bg-foreground-1 font-primary text-1 leading-none antialiased;
 }
 
 .layoutBase {
@@ -43,7 +42,7 @@ body {
 }
 
 .pageWrapperNoMaxWidth {
-  @apply max-w-xl grow px-2 md:px-6;
+  @apply max-w-4xl grow px-2 md:px-6;
 }
 
 .trnForm .trnForm__pagination {

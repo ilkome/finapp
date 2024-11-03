@@ -18,7 +18,7 @@ const emit = defineEmits<{
     <div
       v-if="!props.isToday"
       :class="[getStyles('item', ['link', 'rounded', 'minh2'])]"
-      class="flex items-center px-3 py-2 text-base font-medium leading-none font-primary text-nowrap"
+      class="font-primary flex items-center text-nowrap px-3 py-2 text-base font-medium leading-none"
       @click="emit('setPeriodAndDate')"
     >
       <UiIconReturn class="size-5" />

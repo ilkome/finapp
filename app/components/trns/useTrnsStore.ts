@@ -145,10 +145,8 @@ export const useTrnsStore = defineStore('trns', () => {
       const walletsStore = useWalletsStore()
 
       if (isConnected) {
-        const trnsArrayForDelete
-          = (await localforage.getItem('finapp.trns.offline.delete')) || []
-        const trnsItemsForUpdate
-          = (await localforage.getItem('finapp.trns.offline.update')) || {}
+        const trnsArrayForDelete = (await localforage.getItem('finapp.trns.offline.delete')) || []
+        const trnsItemsForUpdate = (await localforage.getItem('finapp.trns.offline.update')) || {}
 
         // delete trns
         for (const trnId of trnsArrayForDelete) {
@@ -177,10 +175,7 @@ export const useTrnsStore = defineStore('trns', () => {
           }
 
           // add
-          else if (
-            trnsItemsForUpdate[trnId]
-            && trnsItemsForUpdate[trnId].amount
-          ) {
+          else if (trnsItemsForUpdate[trnId] && trnsItemsForUpdate[trnId].amount) {
             addTrn({
               id: trnId,
               values: trnsItemsForUpdate[trnId],

@@ -392,7 +392,7 @@ const counts = computed(() => ({
             class="hidden md:grid"
             @click="isShowBaseCurrencyModal = true"
           >
-            <UiTitle6>{{ t('currenciesBase') }}</UiTitle6>
+            <UiTitle6>{{ t('currencies.base') }}</UiTitle6>
             {{ currenciesStore.base }}
           </UiBox1>
         </div>

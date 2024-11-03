@@ -6,7 +6,7 @@ const props = defineProps<{
   activeItemId?: string | 0 | false | null
   alt?: boolean
   category: CategoryItem
-  categoryId: CategoryId
+  categoryId?: CategoryId
   isHideDots?: boolean
   isHideParent?: boolean
   lineWidth?: number

@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
 import { useFilter } from '~/components/filter/useFilter'
-import { useTrnForm } from '~/components/trnForm/useTrnForm'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-
-const filter = useFilter()
-provide('filter', filter)
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const { trnFormCreate } = useTrnForm()
 const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
+const filter = useFilter()
+provide('filter', filter)
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])

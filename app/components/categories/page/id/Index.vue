@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import type { CategoryId } from '~/components/categories/types'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const route = useRoute()
 const router = useRouter()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
+const filter = useFilter()
+provide('filter', filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = computed(() => categoriesStore.items[categoryId.value])
@@ -37,7 +40,7 @@ useHead({
           class="hocus:bg-item-5 -mx-2 grow px-2"
           @click="navigate"
         >
-          <CategoriesPageHeader
+          <CategoriesHeader
             :category="category"
             :parentCategory="categoriesStore.items[category.parentId]"
           />
@@ -53,6 +56,11 @@ useHead({
         </UiHeaderLink>
       </template>
     </UiHeader>
+
+    <pre>{{ categoryId }}</pre>
+    <pre>{{ category }}</pre>
+
+    <pre>{{ categoriesStore.getChildsIdsOrParent(categoryId) }}</pre>
 
     <div class="grid gap-2 px-2 pb-24 md:px-6">
       <StatMiniItem
