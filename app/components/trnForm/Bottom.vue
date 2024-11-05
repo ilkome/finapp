@@ -69,7 +69,7 @@ onMounted(init)
       <BaseBottomSheetHandler />
     </template>
 
-    <div class="trnForm lg:ml-12 bg-foreground-1">
+    <div class="trnForm bg-foreground-1 lg:ml-12">
       <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
           <!-- History -->
@@ -79,12 +79,12 @@ onMounted(init)
           >
             <TrnFormTrnsSlide
               :slider="sliderObj"
-              class="overflow-hidden px-2 pt-4 pb-6"
+              class="overflow-hidden px-2 pb-6 pt-4"
             />
           </div>
 
           <!-- Main -->
-          <div class="swiper-slide getHeight sm:px-3 bg-foreground-1 sm:max-w-sm _sm:rounded-xl sm:border-r sm:border-l border-item-5">
+          <div class="swiper-slide getHeight bg-foreground-1 _sm:rounded-xl border-item-5 sm:max-w-sm sm:border-x sm:px-3">
             <div class="scroll scrollerBlock">
               <TrnFormMain :maxHeight />
             </div>
@@ -96,7 +96,7 @@ onMounted(init)
             :style="{ height: maxHeight }"
           >
             <div class="scroll scrollerBlock">
-              <div class="pb-4 pt-4">
+              <div class="py-4">
                 <TrnFormSelectionWalletsFast class="pb-6" />
                 <TrnFormSelectionCategoriesFast
                   @onSelectCategory="id => trnFormStore.values.categoryId = id"

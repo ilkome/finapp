@@ -53,14 +53,17 @@ export default {
     allTitle: 'All',
     childs: 'Child categories',
     createNewTitle: 'Add category',
-    delete: {
-      okWithTrns: `Success delete category with {length} transactions!`,
-      okWithoutTrns: 'Success delete category!',
-    },
     editTitle: 'Edit category',
-    favoriteTitle: 'Favorite',
+    favoriteTitle: 'Favorite categories',
+
     form: {
       childColor: 'Apply color to all child categories',
+      delete: {
+        alertWithTrns: `This will delete {trns} transactions`,
+        errorChilds: 'You can not delete category with child categories. Delete child categories first.',
+        okWithoutTrns: 'Category deleted',
+        okWithTrns: `Category deleted and {trns}`,
+      },
       icon: {
         label: 'Icon',
       },
@@ -79,7 +82,7 @@ export default {
       quickSelector: 'Show in quick selector',
       save: 'Save',
     },
-    lastUsedTitle: 'Recent',
+    lastUsedTitle: 'Recent categories',
     name: 'Categories',
     new: 'New category',
     shortTitle: 'Cats',
@@ -105,6 +108,7 @@ export default {
   },
 
   colors: 'Colors',
+
   common: {
     all: 'All',
     date: 'Date',
@@ -237,10 +241,17 @@ export default {
   stat: {
     balanceTitle: 'Balance',
     config: {
+      chartShow: {
+        label: 'Show chart',
+      },
       chartView: {
         full: 'Full',
         half: 'Compact',
         label: 'Chart view',
+      },
+      showedWallets: {
+        label: 'Show wallets',
+        placeholder: 'Number',
       },
     },
     customize: {
@@ -307,6 +318,7 @@ export default {
     },
     transferTitle: 'Transfer',
   },
+
   trns: {
     filter: {
       showTrnsWithDesc: 'Only with description',
@@ -314,6 +326,7 @@ export default {
     history: 'History',
     more: 'Show more',
     noTrns: 'No transactions',
+    plural: '0 transactions | {n} transaction | {n} transactions | {n} transactions',
     shortTitle: 'Trns',
     title: 'Transactions',
   },

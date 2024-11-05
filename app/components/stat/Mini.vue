@@ -9,6 +9,7 @@ import useAmount from '~/components/amount/useAmount'
 import { chartViewOptions } from '~/components/stat/types'
 import { getStyles } from '~/components/ui/getStyles'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
@@ -21,6 +22,7 @@ const props = defineProps<{
 const filter = inject('filter') as FilterProvider
 const { t } = useI18n()
 const trnsStore = useTrnsStore()
+const walletsStore = useWalletsStore()
 const { getTotalOfTrnsIds } = useAmount()
 
 const activeTab = useStorage<StatTabs>(`${props.storageKey}-mini-tab`, 'netIncome')
@@ -50,12 +52,15 @@ const incomeTrnsIds = computed(() =>
 
 const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
-const config = ref<MiniItemConfig>({
+const config = useStorage<MiniItemConfig>('miniItemConfig', {
+  chartShow: true,
   chartView: 'full',
-  update: (key, value) => {
-    config.value[key] = value
-  },
+  showedWallets: 5,
 })
+
+function updateConfig<K extends keyof MiniItemConfig>(key: K, value: MiniItemConfig[K]) {
+  config.value[key] = value
+}
 </script>
 
 <template>
@@ -68,28 +73,58 @@ const config = ref<MiniItemConfig>({
           @click="id => activeTab = id"
         />
         <UPopover
-          class="ml-auto hidden md:block"
           :popper="{ placement: 'bottom-end' }"
+          class="ml-auto"
         >
           <UiItem3>
             <Icon name="lucide:settings-2" class="size-5" />
           </UiItem3>
 
-          <template #panel>
-            <div class="p-3">
-              <UiTitle3 class="pb-2">
-                {{ t("stat.config.chartView.label") }}
-              </UiTitle3>
-              <UiTabs>
-                <UiTabsItem
-                  v-for="view in chartViewOptions"
-                  :key="view"
-                  :isActive="config.chartView === view"
-                  @click="config.update('chartView', view)"
-                >
-                  {{ t(`stat.config.chartView.${view}`) }}
-                </UiTabsItem>
-              </UiTabs>
+          <template #panel="{ close }">
+            <div class="grid gap-6 p-5">
+              <BaseBottomSheetClose @click="close" />
+
+              <div class="popover-el">
+                <UiTitle3 class="pb-2">
+                  {{ t("stat.config.chartShow.label") }}
+                </UiTitle3>
+                <UiCheckbox
+                  :checkboxValue="config.chartShow"
+                  :title="t('stat.config.chartShow.label')"
+                  @onClick="updateConfig('chartShow', !config.chartShow)"
+                />
+              </div>
+
+              <div class="popover-el">
+                <UiTitle3 class="pb-2">
+                  {{ t("stat.config.showedWallets.label") }}
+                </UiTitle3>
+
+                <UiFormInput
+                  :placeholder="t('stat.config.showedWallets.placeholder')"
+                  :value="config.showedWallets"
+                  type="number"
+                  min="0"
+                  :max="walletsStore.sortedIds.length"
+                  @updateValue="value => updateConfig('showedWallets', +value)"
+                />
+              </div>
+
+              <div class="popover-el hidden md:block">
+                <UiTitle3 class="pb-2">
+                  {{ t("stat.config.chartView.label") }}
+                </UiTitle3>
+                <UiTabs>
+                  <UiTabsItem
+                    v-for="view in chartViewOptions"
+                    :key="view"
+                    :isActive="config.chartView === view"
+                    @click="updateConfig('chartView', view)"
+                  >
+                    {{ t(`stat.config.chartView.${view}`) }}
+                  </UiTabsItem>
+                </UiTabs>
+              </div>
             </div>
           </template>
         </UPopover>
@@ -97,22 +132,21 @@ const config = ref<MiniItemConfig>({
       <FilterSelected v-if="filter.isShow?.value" />
     </div>
 
-    <WalletsList
-      v-slot="{ walletsItemsLimited }"
-      :limit="4"
+    <div
+      v-if="config.showedWallets > 0"
       class="flex gap-1 overflow-hidden overflow-x-auto p-2 pb-0"
     >
       <WalletsItem
-        v-for="(wallet, walletId) in walletsItemsLimited"
+        v-for="walletId in walletsStore.sortedIds.slice(0, config.showedWallets)"
         :key="walletId"
         :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
         :walletId
-        :wallet
+        :wallet="walletsStore.itemsWithAmount?.[walletId]"
         alt
         :class="getStyles('item', ['alt', 'rounded'])"
         @click="filter.toggleWalletId(walletId)"
       />
-    </WalletsList>
+    </div>
   </div>
 
   <!-- NetIncome -->
@@ -123,6 +157,7 @@ const config = ref<MiniItemConfig>({
     :config
     class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
     type="sum"
+    @updateConfig="updateConfig"
   />
 
   <!-- Summary -->
@@ -137,6 +172,7 @@ const config = ref<MiniItemConfig>({
       :storageKey="props.storageKey + activeTab"
       :trnsIds="expenseTrnsIds"
       type="expense"
+      @updateConfig="updateConfig"
     />
 
     <!-- Income -->
@@ -146,6 +182,13 @@ const config = ref<MiniItemConfig>({
       :storageKey="props.storageKey + activeTab"
       :trnsIds="incomeTrnsIds"
       type="income"
+      @updateConfig="updateConfig"
     />
   </div>
 </template>
+
+<style>
+.popover-el {
+  @apply border-item-5 border-b pb-4 last:border-b-0 last:pb-0;
+}
+</style>

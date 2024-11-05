@@ -28,21 +28,6 @@ const modals = ref({
   parent: false,
 })
 
-// const tabs = computed(() => [{
-//   id: 'data',
-//   name: t('categories.form.data.label'),
-// }, {
-//   id: 'parent',
-//   isHidden: !categoriesStore.hasItems,
-//   name: t('categories.form.parent.label'),
-// }, {
-//   id: 'colors',
-//   name: t('categories.form.colors.label'),
-// }, {
-//   id: 'icon',
-//   name: t('categories.form.icon.label'),
-// }])
-
 /**
  * Select parent
  */

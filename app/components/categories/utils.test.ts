@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { getTransactibleCategoriesIds, getTransferCategoriesIds } from './utils'
-import type { Categories } from './types'
+import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
+import type { Categories } from '~/components/categories/types'
 
 export const mockCategories: Categories = {
   child1: {

@@ -8,18 +8,19 @@ import type { ChartType } from '~/components/stat/chart/types'
 import type { DeepPartial } from '~~/utils/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { MiniItemConfig, MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
-import { ViewOptionsSchema, defaultViewOptions } from '~/components/stat/config'
 import type { Range } from '~/components/date/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
+import { ViewOptionsSchema, defaultViewOptions } from '~/components/stat/config'
 import { getStyles } from '~/components/ui/getStyles'
+import { getTrnsIds } from '~/components/trns/getTrns'
 import { markArea } from '~/components/stat/chart/utils'
 import { seriesOptions } from '~/components/stat/chart/config2'
+import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useIntervalRange } from '~/components/date/useIntervalRange'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { getTrnsIds } from '~/components/trns/getTrns'
 
 const props = defineProps<{
   config?: MiniItemConfig
@@ -29,6 +30,10 @@ const props = defineProps<{
   storageKey?: string
   trnsIds: TrnId[]
   type: MoneyTypeSlugSum
+}>()
+
+const emit = defineEmits<{
+  updateConfig: [key: keyof MiniItemConfig, value: MiniItemConfig[keyof MiniItemConfig]]
 }>()
 
 const { t } = useI18n()
@@ -59,24 +64,23 @@ const onSelectType = (type: MoneyTypeSlugSum) => selectedType.value = type === s
 const filteredTrnsIds = computed(() => {
   if (selectedType.value === 'income') {
     return getTrnsIds({
-      trnTypes: [1, 2],
       trnsIds: props.trnsIds,
       trnsItems: trnsStore.items,
+      trnTypes: [1, 2],
     })
   }
 
   if (selectedType.value === 'expense') {
     return getTrnsIds({
-      trnTypes: [0, 2],
       trnsIds: props.trnsIds,
       trnsItems: trnsStore.items,
+      trnTypes: [0, 2],
     })
   }
 
   return props.trnsIds
 })
 
-const isShowChart = useStorage<boolean>(`${newBaseStorageKey.value}-isShowChart`, true)
 const isDayToday = computed(() => intervalRange.interval.value.period === 'day' && intervalRange.interval.value.duration === 1 && intervalRange.range.value.end < dayjs().endOf('day').valueOf())
 
 /**
@@ -92,28 +96,6 @@ onBeforeMount(() => {
     viewOptions.value = { ...defaultViewOptions }
   }
 })
-
-function sortCategoriesByAmount(a: TotalCategory, b: TotalCategory) {
-  if (!a || !b)
-    return 0
-
-  // Sort positive values from biggest to smallest
-  if (a.value >= 0 && b.value >= 0) {
-    return b.value - a.value
-  }
-  // Sort negative values from smallest to biggest
-  else if (a.value < 0 && b.value < 0) {
-    return a.value - b.value
-  }
-  // Keep positive values before negative values
-  else if (a.value >= 0 && b.value < 0) {
-    return -1
-  }
-  // Keep negative values after positive values
-  else {
-    return 1
-  }
-}
 
 function getCats(trnsIds: TrnId[], isGroupedByParent?: boolean, preCategoriesIds?: CategoryId[]) {
   const categoriesWithTrns = trnsIds?.reduce(
@@ -411,7 +393,7 @@ const quickModalTrnsIds = computed(() => {
           }"
         >
           <div
-            v-if="isShowChart && (intervalRange.interval.value.duration !== 1 || intervalRange.interval.value.period !== 'day')"
+            v-if="props.config?.chartShow && (intervalRange.interval.value.duration !== 1 || intervalRange.interval.value.period !== 'day')"
             class="pb-2"
           >
             <div class="flex justify-between">
@@ -450,15 +432,6 @@ const quickModalTrnsIds = computed(() => {
                 :maxRange
                 :intervalRange
               />
-
-              <div
-                v-if="intervalRange.interval.value.duration !== 1 || intervalRange.interval.value.period !== 'day'"
-                :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
-                class="justify-center text-xl"
-                @click="isShowChart = !isShowChart"
-              >
-                <Icon name="lucide:bar-chart-3" />
-              </div>
             </div>
           </div>
         </div>

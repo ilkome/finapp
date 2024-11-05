@@ -42,9 +42,9 @@ const data: {
       icon: 'mdi mdi-food',
       name: 'Cafe',
       order: 1,
-      parentId: 'KxKMi55aCVkJXsiDE_i',
+      parentId: 'KxKMi55aCVkJXsiDE',
       showInLastUsed: true,
-      showInQuickSelector: false,
+      showInQuickSelector: true,
     },
     'KsNnREUqdH4nTGEjEhl': {
       color: '#ba68c8',
@@ -62,7 +62,7 @@ const data: {
       icon: 'mdi mdi-food-apple',
       name: 'Groceries',
       order: 2,
-      parentId: 'KxKMi55aCVkJXsiDE_i',
+      parentId: 'KxKMi55aCVkJXsiDE',
       showInLastUsed: true,
     },
     'KsNnS6QgcjgSVeA3KaM': {
@@ -72,7 +72,7 @@ const data: {
       name: 'Gas',
       parentId: 'KsNnR1EDBl9tAZTaWUP',
       showInLastUsed: true,
-      showInQuickSelector: false,
+      showInQuickSelector: true,
     },
     'KsNnSMR4DtZXFr75V2Y': {
       color: '#8d6e63',

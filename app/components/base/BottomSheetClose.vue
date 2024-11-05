@@ -1,6 +1,6 @@
 <template>
   <div
-    class="handlerClose bg-item-6 size-8 rounded-full"
+    class="handlerClose hover:bg-item-6 size-8 rounded-full"
     @click="$emit('onClick')"
   >
     <svg
@@ -30,9 +30,6 @@
   align-items center
   justify-content center
   anim()
-
-  +media-hover()
-    background var(--c-blue-1)
 
   svg
     anim()

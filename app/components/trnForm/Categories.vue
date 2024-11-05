@@ -44,9 +44,9 @@ onMounted(() => {
           <!-- Recent -->
           <div class="swiper-slide">
             <div
-              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base rounded-t-2xl bg-foreground-1 px-3 py-4 text-center font-primary text-xl font-semibold"
+              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
             >
-              {{ $t("categories.lastUsedTitle") }} {{ $t("categories.title") }}
+              {{ $t("categories.lastUsedTitle") }}
             </div>
             <div class="px-3 pb-1">
               <CategoriesList
@@ -61,7 +61,7 @@ onMounted(() => {
           <!-- Main -->
           <div class="swiper-slide">
             <div
-              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base rounded-t-2xl bg-foreground-1 px-3 py-4 text-center font-primary text-xl font-semibold"
+              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
             >
               {{ $t("categories.title") }}
             </div>
@@ -78,9 +78,9 @@ onMounted(() => {
           <!-- Favorite -->
           <div class="swiper-slide">
             <div
-              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base rounded-t-2xl bg-foreground-1 px-3 py-4 text-center font-primary text-xl font-semibold"
+              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
             >
-              {{ $t("categories.favoriteTitle") }} {{ $t("categories.title") }}
+              {{ $t("categories.favoriteTitle") }}
             </div>
             <div class="px-3 pb-1">
               <CategoriesList

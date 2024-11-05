@@ -47,11 +47,11 @@ useHead({
         </a>
       </RouterLink>
 
-      <template v-if="categoryId !== 'transfer'">
+      <template v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)">
         <UiHeaderLink @click="onClickEdit">
           <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
         </UiHeaderLink>
-        <UiHeaderLink @click="router.push('/categories/new')">
+        <UiHeaderLink @click="router.push(`/categories/new`)">
           <UiIconAdd class="size-6 group-hover:text-white" />
         </UiHeaderLink>
       </template>

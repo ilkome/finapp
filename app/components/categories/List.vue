@@ -17,7 +17,7 @@ const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
-  <div class="">
+  <div class="pt-1">
     <CategoriesItem
       v-for="categoryId in ids"
       :key="categoryId"

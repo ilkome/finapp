@@ -25,9 +25,7 @@ export const chartViewOptions = ['half', 'full'] as const
 export type ChartView = (typeof chartViewOptions)[number]
 
 export type MiniItemConfig = {
+  chartShow: boolean
   chartView: ChartView
-  update: <K extends keyof Omit<MiniItemConfig, 'update'>>(
-    key: K,
-    value: MiniItemConfig[K]
-  ) => void
+  showedWallets: number
 }

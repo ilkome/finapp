@@ -54,15 +54,15 @@ export default {
     childs: 'Дочерние категории',
     createNewTitle: 'Добавить категорию',
     editTitle: 'Редактирование категории',
-    favoriteTitle: 'Любимые',
+    favoriteTitle: 'Избранные категории',
 
     form: {
       childColor: 'Применить цвет ко всем дочерним категориям',
       delete: {
         alertWithTrns: `Так же будут удалены {trns}`,
         errorChilds: 'Вы не можете удалить категорию с дочерними категориями. Сначала удалите дочерние категории.',
-        okWithTrns: `Категория удалена и {trns}`,
         okWithoutTrns: 'Категория удалена',
+        okWithTrns: `Категория удалена и {trns}`,
       },
       icon: {
         label: 'Иконка',
@@ -83,7 +83,7 @@ export default {
       save: 'Сохранить',
     },
 
-    lastUsedTitle: 'Недавние',
+    lastUsedTitle: 'Недавние категории',
     name: 'Категории',
     new: 'Новая категория',
     shortTitle: 'Категории',
@@ -242,10 +242,17 @@ export default {
   stat: {
     balanceTitle: 'Баланс',
     config: {
+      chartShow: {
+        label: 'Показывать график',
+      },
       chartView: {
         full: 'Полный',
         half: 'Компактный',
         label: 'Вид графика',
+      },
+      showedWallets: {
+        label: 'Показывать кошельки',
+        placeholder: 'Количество',
       },
     },
     customize: {
