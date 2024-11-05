@@ -5,7 +5,7 @@ import { useUserStore } from '~/components/user/useUserStore'
 const { closeAllModals, isModalOpen } = useAppNav()
 const { t } = useI18n()
 const userStore = useUserStore()
-const isDemo = useCookie('finapp.isDemo')
+  const { isDemo } = useDemo()
 </script>
 
 <template>

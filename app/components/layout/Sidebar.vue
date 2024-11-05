@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
 import type { WalletId } from '~/components/wallets/types'
+import { getStyles } from '~/components/ui/getStyles'
+import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
 
 const props = defineProps<{
   isShow?: boolean
 }>()
 
-const userStore = useUserStore()
 const colorMode = useColorMode()
 const route = useRoute()
 const router = useRouter()
+const userStore = useUserStore()
+const { isDemo } = useDemo()
 const { t } = useI18n()
-const isDemo = useCookie('finapp.isDemo')
 </script>
 
 <template>
@@ -27,11 +28,7 @@ const isDemo = useCookie('finapp.isDemo')
 
       <div
         :class="getStyles('item', ['link', 'rounded', 'padding1', 'menu'])"
-        @click="
-          () =>
-            (colorMode.preference
-              = colorMode.preference === 'dark' ? 'light' : 'dark')
-        "
+        @click="() => colorMode.preference = colorMode.preference === 'dark' ? 'light' : 'dark'"
       >
         <Icon
           v-if="colorMode.preference !== 'dark'"
@@ -74,7 +71,7 @@ const isDemo = useCookie('finapp.isDemo')
             :walletId
             :lineWidth="1"
             :wallet="walletItem"
-            :activeItemId="route.params.id"
+            :activeItemId="route.params.id as string"
             isShowIcons
             @click="router.push(`/wallets/${walletId}`)"
           />
@@ -83,9 +80,7 @@ const isDemo = useCookie('finapp.isDemo')
             v-if="walletsIdsSorted.length === 0"
             class="px-2"
           >
-            <UiButtonBlue
-              @click="router.push('/wallets/new')"
-            >
+            <UiButtonBlue @click="router.push('/wallets/new')">
               {{ t("wallets.new") }}
             </UiButtonBlue>
           </div>

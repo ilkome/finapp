@@ -23,3 +23,11 @@ export type CategoryForm = {
   showInLastUsed: boolean
   showInQuickSelector: boolean
 }
+
+export type AddCategoryParams = {
+  id: CategoryId
+  values: CategoryItem
+} & {
+  childIds?: CategoryId[]
+  isUpdateChildCategoriesColor: boolean
+}

@@ -2,12 +2,13 @@ import _sortby from 'lodash.sortby'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import { type ComputedRef, type ShallowRef, computed, shallowRef } from 'vue'
-import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
+import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 import { getDataAndWatch, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import { getPreparedFormData } from '~/components/categories/getForm'
 import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
+import { useDemo } from '~/components/demo/useDemo'
 
 const transfer: CategoryItem = {
   childIds: [],
@@ -21,7 +22,7 @@ const transfer: CategoryItem = {
 }
 
 type CategoriesStore = {
-  addCategory: (params: { id: CategoryId, values: CategoryItem }, options: { isUpdateChildCategoriesColor: boolean }) => Promise<void>
+  addCategory: (params: AddCategoryParams) => Promise<void>
   categoriesForBeParent: ComputedRef<CategoryId[]>
   categoriesIds: ComputedRef<CategoryId[]>
   categoriesIdsForTrnValues: ComputedRef<CategoryId[]>
@@ -44,8 +45,8 @@ type CategoriesStore = {
 export const useCategoriesStore = defineStore('categories', (): CategoriesStore => {
   const userStore = useUserStore()
   const trnsStore = useTrnsStore()
+  const { addDemoCategory, isDemo } = useDemo()
 
-  const isDemo = useCookie('finapp.isDemo')
   const items = shallowRef<Categories>({ transfer })
   const hasItems = computed(() => {
     if (Object.keys(items.value).filter(id => id !== 'transfer').length > 0)
@@ -258,29 +259,18 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return getTransactibleCategoriesIds(items.value ?? {}, ids)
   }
 
-  async function addCategory({ id, values }: { id: CategoryId, values: CategoryItem }, { isUpdateChildCategoriesColor }: { isUpdateChildCategoriesColor: boolean }) {
+  async function addCategory({ id, isUpdateChildCategoriesColor, values }: AddCategoryParams) {
     const uid = userStore.uid
     const categoryChildIds = getChildsIds(id)
     const categoryValues = getPreparedFormData(values)
 
     if (isDemo.value) {
-      items.value = {
-        ...items.value,
-        [id]: values,
-      }
-
-      if (isUpdateChildCategoriesColor && categoryChildIds) {
-        for (const childId of categoryChildIds) {
-          if (items.value[childId]) {
-            items.value[childId].color = values.color
-          }
-        }
-      }
-
-      const formattedItems = formatCategories(items.value)
-      items.value = formattedItems
-      localforage.setItem('finapp.categories', deepUnref(formattedItems))
-      return
+      return addDemoCategory({
+        childIds: categoryChildIds,
+        id,
+        isUpdateChildCategoriesColor,
+        values,
+      })
     }
 
     // Update category
@@ -300,6 +290,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     categoriesIdsForTrnValues,
     categoriesRootIds,
     favoriteCategoriesIds,
+    formatCategories,
     getChildsIds,
     getChildsIdsOrParent,
     getTransactibleIds,

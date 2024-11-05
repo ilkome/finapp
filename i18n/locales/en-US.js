@@ -1,6 +1,6 @@
 export default {
   alerts: {
-    removedUserData: 'All user data removed.',
+    removedUserData: 'All data removed.',
     willDeleteEverything: 'This will delete all your wallets, categories and trns',
   },
 
@@ -27,7 +27,6 @@ export default {
 
   base: {
     add: 'Create',
-    cancel: 'Cancel',
     delete: 'Delete',
     duplicate: 'Duplicate',
     edit: 'Edit',
@@ -54,6 +53,10 @@ export default {
     allTitle: 'All',
     childs: 'Child categories',
     createNewTitle: 'Add category',
+    delete: {
+      okWithTrns: `Success delete category with {length} transactions!`,
+      okWithoutTrns: 'Success delete category!',
+    },
     editTitle: 'Edit category',
     favoriteTitle: 'Favorite',
     form: {

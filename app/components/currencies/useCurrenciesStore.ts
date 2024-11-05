@@ -62,7 +62,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
 
   function updateBase(code: CurrencyCode) {
     saveData(`users/${userStore.uid}/settings/baseCurrency`, code)
-    initCurrencies()
+    // initCurrencies()
   }
 
   return {

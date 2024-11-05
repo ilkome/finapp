@@ -1,6 +1,6 @@
 export default {
   alerts: {
-    removedUserData: 'Все данные пользователя удалены.',
+    removedUserData: 'Все данные удалены.',
     willDeleteEverything: 'Все кошельки, категории и транзакции будут удалены',
   },
 
@@ -27,7 +27,6 @@ export default {
 
   base: {
     add: 'Создать',
-    cancel: 'Отмена',
     delete: 'Удалить',
     duplicate: 'Дублировать',
     edit: 'Редактировать',
@@ -56,8 +55,14 @@ export default {
     createNewTitle: 'Добавить категорию',
     editTitle: 'Редактирование категории',
     favoriteTitle: 'Любимые',
+
     form: {
       childColor: 'Применить цвет ко всем дочерним категориям',
+      delete: {
+        errorChilds: 'Вы не можете удалить категорию с дочерними категориями. Сначала удалите дочерние категории.',
+        okWithTrns: `Категория успешно удалена с {length} транзакций!`,
+        okWithoutTrns: 'Категория успешно удалена',
+      },
       icon: {
         label: 'Иконка',
       },
@@ -76,6 +81,7 @@ export default {
       quickSelector: 'Показывать в быстром выборе',
       save: 'Сохранить',
     },
+
     lastUsedTitle: 'Недавние',
     name: 'Категории',
     new: 'Новая категория',

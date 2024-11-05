@@ -9,13 +9,14 @@ import { uniqueElementsBy } from '~~/utils/simple'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { normalizeWallets } from '~/components/wallets/utils'
+import { useDemo } from '~/components/demo/useDemo'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
   const userStore = useUserStore()
   const currenciesStore = useCurrenciesStore()
+  const { isDemo } = useDemo()
 
-  const isDemo = useCookie('finapp.isDemo')
   const items = ref<Wallets | null>(null)
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
 

@@ -8,7 +8,7 @@ const trnFormStore = useTrnFormStore()
 <template>
   <div>
     <UiTitle3
-      class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3"
+      class="z-10 sticky pt-0 pb-3 top-0 px-3 bg-foreground-1"
       @click="trnFormStore.openTrnFormModal('wallets')"
     >
       {{ t("wallets.title") }}
@@ -17,7 +17,7 @@ const trnFormStore = useTrnFormStore()
     <WalletsList
       v-slot="{ walletsItemsLimited }"
       :limit="5"
-      class="px-3"
+      class="px-3 pt-1"
     >
       <WalletsItem
         v-for="(wallet, walletId) in walletsItemsLimited"

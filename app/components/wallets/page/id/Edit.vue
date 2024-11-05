@@ -17,7 +17,7 @@ function updateValue(id: keyof WalletItem, value: WalletItem[keyof WalletItem]) 
 }
 
 function afterSave() {
-  return router.push(`/wallets/${walletId.value}`)
+  return router.replace(`/wallets/${walletId.value}`)
 }
 
 useHead({

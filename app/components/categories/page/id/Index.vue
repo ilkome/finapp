@@ -57,11 +57,6 @@ useHead({
       </template>
     </UiHeader>
 
-    <pre>{{ categoryId }}</pre>
-    <pre>{{ category }}</pre>
-
-    <pre>{{ categoriesStore.getChildsIdsOrParent(categoryId) }}</pre>
-
     <div class="grid gap-2 px-2 pb-24 md:px-6">
       <StatMiniItem
         type="sum"

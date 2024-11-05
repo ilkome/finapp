@@ -6,25 +6,22 @@ import { removeData } from '~~/services/firebase/api'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
+import { useDemo } from '~/components/demo/useDemo'
 
 const props = defineProps<{
   categoryId: CategoryId
 }>()
 
+const { t } = useI18n()
 const { $toast } = useNuxtApp()
-const isDemo = useCookie('finapp.isDemo')
+const { isDemo } = useDemo()
 const router = useRouter()
 const userStore = useUserStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
-const { categoryId } = toRefs(props)
-
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value),
-}))
-
 const isShowDeleteConfirm = ref(false)
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(props.categoryId.value) }))
 
 // TODO: translate
 const deleteDescText = computed(() => {
@@ -34,14 +31,12 @@ const deleteDescText = computed(() => {
   return undefined
 })
 
-// TODO: translate
 function onClickDelete() {
   for (const id in categoriesStore.items) {
-    if (categoriesStore.items[id]?.parentId === categoryId.value) {
+    if (categoriesStore.items[id]?.parentId === props.categoryId) {
       $toast(UiToastContent, {
         data: {
-          description:
-            'You can not delete category with child categories. Remove child categories first.',
+          description: t('categories.form.delete.errorChilds'),
           title: random(errorEmo),
         },
         toastId: 'delete-category-with-child-error',
@@ -55,12 +50,11 @@ function onClickDelete() {
   isShowDeleteConfirm.value = true
 }
 
-// TODO: translate
 async function onDeleteConfirm() {
   // Disable reactive when user has already redirected to categories page
   const uid = JSON.parse(JSON.stringify(userStore.uid))
   const trnsIdsS = JSON.parse(JSON.stringify(trnsIds.value))
-  const categoryDeleteId = JSON.parse(JSON.stringify(categoryId.value))
+  const categoryDeleteId = JSON.parse(JSON.stringify(props.categoryId))
 
   router.push('/categories')
 

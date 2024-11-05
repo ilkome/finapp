@@ -1,12 +1,15 @@
 import dayjs from 'dayjs'
-import data from '~/components/demo/data'
+import localforage from 'localforage'
+import { deepUnref } from 'vue-deepunref'
 import currencies from '~/components/demo/currencies.json'
+import data from '~/components/demo/data'
+import type { AddCategoryParams } from '~/components/categories/types'
+import type { Trns } from '~/components/trns/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { useInitApp } from '~/components/app/useInitApp'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { useInitApp } from '~/components/app/useInitApp'
-import type { Trns } from '~/components/trns/types'
 
 const config = {
   amount: 100000,
@@ -15,13 +18,16 @@ const config = {
 }
 
 export function useDemo() {
-  async function loadDemoData() {
-    const { clearLocalData } = useInitApp()
-    const currenciesStore = useCurrenciesStore()
-    const walletsStore = useWalletsStore()
-    const categoriesStore = useCategoriesStore()
-    const trnsStore = useTrnsStore()
+  const isDemo = useCookie('finapp.isDemo')
+  const categoriesStore = useCategoriesStore()
+  const currenciesStore = useCurrenciesStore()
+  const walletsStore = useWalletsStore()
+  const trnsStore = useTrnsStore()
 
+  async function generateDemoData() {
+    const { clearLocalData } = useInitApp()
+
+    localforage.clear()
     // await clearLocalData()
 
     currenciesStore.setBase('USD')
@@ -49,7 +55,25 @@ export function useDemo() {
     trnsStore.setTrns(trns)
   }
 
+  function addDemoCategory({ childIds, id, isUpdateChildCategoriesColor, values }: AddCategoryParams) {
+    const items = {
+      ...categoriesStore.items,
+      [id]: values,
+    }
+
+    if (isUpdateChildCategoriesColor && childIds) {
+      for (const childId of childIds) {
+        if (items[childId]) {
+          items[childId].color = values.color
+        }
+      }
+    }
+    categoriesStore.setCategories(items)
+  }
+
   return {
-    loadDemoData,
+    addDemoCategory,
+    generateDemoData,
+    isDemo,
   }
 }

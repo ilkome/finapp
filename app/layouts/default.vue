@@ -3,6 +3,7 @@ import '~/assets/stylus/index.styl'
 import { useWindowSize } from '@vueuse/core'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useDemo } from '~/components/demo/useDemo'
 import { useGuard } from '~/components/user/useGuard'
 import { useInitApp } from '~/components/app/useInitApp'
 import { usePointerClass } from '~/components/layout/usePointerClass'
@@ -11,16 +12,17 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const keepalive = ['Categories', 'Wallets', 'Dashboard']
 
-const isDemo = useCookie('finapp.isDemo')
-const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
+const trnFormStore = useTrnFormStore()
+const user = useCurrentUser()
 const walletsStore = useWalletsStore()
+const { isDemo } = useDemo()
 const { isModalOpen } = useAppNav()
 const { loadDataFromCache, loadDataFromDB } = useInitApp()
-const { pointerClasses } = usePointerClass()
 const { locale, t } = useI18n()
+const { pointerClasses } = usePointerClass()
 const { width } = useWindowSize()
-const user = useCurrentUser()
+
 const isShow = computed(() => trnFormStore.ui.isShow)
 
 useGuard()

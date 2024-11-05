@@ -2,10 +2,27 @@ import dayjs from 'dayjs'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import type { Range } from '~/components/date/types'
-import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps } from '~/components/trns/types'
-import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
+import type {
+  TrnId,
+  TrnItem,
+  TrnItemFull,
+  Trns,
+  TrnsGetterProps,
+} from '~/components/trns/types'
+import {
+  getDataAndWatch,
+  removeData,
+  saveData,
+  unsubscribeData,
+  updateData,
+} from '~~/services/firebase/api'
 import { getTrnsIds } from '~/components/trns/getTrns'
-import { removeTrnToAddLaterLocal, removeTrnToDeleteLaterLocal, saveTrnIDforDeleteWhenClientOnline, saveTrnToAddLaterLocal } from '~/components/trns/helpers'
+import {
+  removeTrnToAddLaterLocal,
+  removeTrnToDeleteLaterLocal,
+  saveTrnIDforDeleteWhenClientOnline,
+  saveTrnToAddLaterLocal,
+} from '~/components/trns/helpers'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -25,9 +42,6 @@ export const useTrnsStore = defineStore('trns', () => {
       const categoriesIds = categoriesStore.getTransactibleIds(
         props.categoriesIds,
       )
-
-      console.log('categoriesIds', categoriesIds, props.categoriesIds)
-
       return getTrnsIds({ ...props, categoriesIds, trnsItems: items.value! })
     }
 
@@ -91,22 +105,13 @@ export const useTrnsStore = defineStore('trns', () => {
       edited: dayjs().valueOf(),
     }
 
-    localforage.setItem(
-      'finapp.trns',
-      deepUnref({
-        ...items.value,
-        [id]: valuesWithEditDate,
-      }),
-    )
-
+    localforage.setItem('finapp.trns', deepUnref({ ...items.value, [id]: valuesWithEditDate }))
     setTrns({ ...items.value, [id]: valuesWithEditDate })
 
-    saveData(`users/${userStore.uid}/trns/${id}`, valuesWithEditDate).then(
-      () => {
-        isTrnSavedOnline = true
-        removeTrnToAddLaterLocal(id)
-      },
-    )
+    saveData(`users/${userStore.uid}/trns/${id}`, valuesWithEditDate).then(() => {
+      isTrnSavedOnline = true
+      removeTrnToAddLaterLocal(id)
+    })
 
     setTimeout(() => {
       if (!isTrnSavedOnline)
@@ -145,8 +150,10 @@ export const useTrnsStore = defineStore('trns', () => {
       const walletsStore = useWalletsStore()
 
       if (isConnected) {
-        const trnsArrayForDelete = (await localforage.getItem('finapp.trns.offline.delete')) || []
-        const trnsItemsForUpdate = (await localforage.getItem('finapp.trns.offline.update')) || {}
+        const trnsArrayForDelete
+          = (await localforage.getItem('finapp.trns.offline.delete')) || []
+        const trnsItemsForUpdate
+          = (await localforage.getItem('finapp.trns.offline.update')) || {}
 
         // delete trns
         for (const trnId of trnsArrayForDelete) {
@@ -175,7 +182,10 @@ export const useTrnsStore = defineStore('trns', () => {
           }
 
           // add
-          else if (trnsItemsForUpdate[trnId] && trnsItemsForUpdate[trnId].amount) {
+          else if (
+            trnsItemsForUpdate[trnId]
+            && trnsItemsForUpdate[trnId].amount
+          ) {
             addTrn({
               id: trnId,
               values: trnsItemsForUpdate[trnId],

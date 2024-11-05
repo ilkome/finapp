@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<{
   maxHeight: '60vh',
 })
 
+const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnFormStore = useTrnFormStore()
 const walletsStore = useWalletsStore()
@@ -95,10 +96,7 @@ const items2 = computed(() => ({
 
     <div class="py-2">
       <UiTitle3 @click="trnFormStore.values.trnId = null">
-        {{ trnFormStore.values.trnId
-          ? $t("trnForm.titleEditTrn")
-          : $t("trnForm.createTrn")
-        }}
+        {{ trnFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
       </UiTitle3>
     </div>
 
@@ -118,7 +116,7 @@ const items2 = computed(() => ({
       >
         <div class="grid gap-4 px-4 bg-foreground-1 h-full content-center text-1 rounded-xl z-10">
           <div>
-            {{ $t('base.sure') }}
+            {{ t('base.sure') }}
           </div>
 
           <div class="flex flex-col gap-2">
@@ -137,7 +135,7 @@ const items2 = computed(() => ({
               </template>
 
               <div class="text-secondary leading-none">
-                {{ $t(item.localeKey) }}
+                {{ t(item.localeKey) }}
               </div>
             </UiElement>
           </div>
@@ -158,7 +156,7 @@ const items2 = computed(() => ({
           </template>
 
           <div class="text-secondary leading-none">
-            {{ $t(item.localeKey) }}
+            {{ t(item.localeKey) }}
           </div>
         </DateLinkItem>
       </div>

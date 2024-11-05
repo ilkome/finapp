@@ -1,11 +1,12 @@
-import { signOut as signOutFirebase } from 'firebase/auth'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
+import { signOut as signOutFirebase } from 'firebase/auth'
+import { saveData } from '~~/services/firebase/api'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useDemo } from '~/components/demo/useDemo'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { saveData } from '~~/services/firebase/api'
 
 export type User = {
   displayName?: string | null
@@ -21,7 +22,7 @@ export const useUserStore = defineStore('user', () => {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
   const { closeAllModals } = useAppNav()
-  const isDemo = useCookie('finapp.isDemo')
+  const { isDemo } = useDemo()
 
   const user = ref<User | null>(currentUser.value || null)
   const isDevUser = computed(() => !!$config.public.ratesApiKey.includes(user.value?.email ?? ''))

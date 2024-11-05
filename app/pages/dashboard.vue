@@ -4,14 +4,13 @@ import { useFilter } from '~/components/filter/useFilter'
 
 defineOptions({ name: 'Dashboard' })
 
-const filter = useFilter()
 const { t } = useI18n()
 const trnsStore = useTrnsStore()
+
+const filter = useFilter()
 provide('filter', filter)
 
-useHead({
-  title: t('stat.title'),
-})
+useHead({ title: t('stat.title') })
 </script>
 
 <template>

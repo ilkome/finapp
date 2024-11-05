@@ -97,9 +97,7 @@ onMounted(init)
           >
             <div class="scroll scrollerBlock">
               <div class="pb-4 pt-4">
-                <TrnFormSelectionWalletsFast
-                  class="pb-6"
-                />
+                <TrnFormSelectionWalletsFast class="pb-6" />
                 <TrnFormSelectionCategoriesFast
                   @onSelectCategory="id => trnFormStore.values.categoryId = id"
                 />

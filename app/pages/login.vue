@@ -17,10 +17,10 @@ useSeoMeta({
 })
 
 const { $toast } = useNuxtApp() as unknown as { $toast: (c: any, o: any) => void }
-const { loadDemoData } = useDemo()
+const { generateDemoData } = useDemo()
 const route = useRoute()
 const router = useRouter()
-const isDemo = useCookie('finapp.isDemo')
+  const { isDemo } = useDemo()
 const isLoading = ref(false)
 
 if (route.query?.loading)
@@ -57,7 +57,7 @@ onMounted(() => {
 
 async function openDemo() {
   isDemo.value = 'true'
-  await loadDemoData()
+  await generateDemoData()
   router.push(typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard')
 }
 </script>

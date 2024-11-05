@@ -116,10 +116,11 @@ async function onSave() {
   if (!validate(props.categoryForm))
     return
 
-  await categoriesStore.addCategory(
-    { id: editCategoryId, values: { ...props.categoryForm } },
-    { isUpdateChildCategoriesColor: isUpdateChildCategoriesColor.value },
-  )
+  await categoriesStore.addCategory({
+    id: editCategoryId,
+    isUpdateChildCategoriesColor: isUpdateChildCategoriesColor.value,
+    values: { ...props.categoryForm },
+  })
   emit('afterSave')
 }
 </script>
@@ -370,8 +371,9 @@ async function onSave() {
               <div
                 v-for="icon in iconGroup"
                 :key="icon"
-                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent" :class="[{ 'border-accent-2': icon === categoryForm.icon }]"
+                :class="[{ '!border-accent-1': icon === props.categoryForm.icon }]"
                 :style="{ background: props.categoryForm.color }"
+                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent"
                 @click="emit('updateValue', 'icon', icon)"
               >
                 <div class="text-icon-primary text-2xl" :class="[icon]" />

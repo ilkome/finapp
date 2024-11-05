@@ -1,7 +1,9 @@
+import { useDemo } from '~/components/demo/useDemo'
+
 export default defineNuxtRouteMiddleware(async (to) => {
   const user = await getCurrentUser()
   const localAuthUid = useCookie('finapp.localAuthUid')
-  const isDemo = useCookie('finapp.isDemo')
+  const { isDemo } = useDemo()
   localAuthUid.value = user?.uid || null
 
   if (isDemo.value && to.path === '/login' && typeof to.query.redirect === 'string') {

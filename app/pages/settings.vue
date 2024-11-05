@@ -8,8 +8,8 @@ const { $toast } = useNuxtApp()
 const { t } = useI18n()
 const userStore = useUserStore()
 const currenciesStore = useCurrenciesStore()
-const { loadDemoData } = useDemo()
-const isDemo = useCookie('finapp.isDemo')
+const { generateDemoData } = useDemo()
+  const { isDemo } = useDemo()
 const isShowBaseCurrencyModal = ref(false)
 
 useSeoMeta({
@@ -25,8 +25,8 @@ function removeUserData() {
   $toast.success(t('alerts.removedUserData'))
 }
 
-function onLoadDemoData() {
-  loadDemoData()
+function ongenerateDemoData() {
+  generateDemoData()
   $toast.success(t('demo.updated'))
 }
 </script>
@@ -105,7 +105,7 @@ function onLoadDemoData() {
             <UiBox1
               v-if="isDemo"
               class="!flex gap-2"
-              @click="onLoadDemoData"
+              @click="ongenerateDemoData"
             >
               <Icon name="lucide:database-backup" />
               <div>{{ t('demo.update') }}</div>
