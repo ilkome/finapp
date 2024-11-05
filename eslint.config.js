@@ -24,7 +24,6 @@ export default [
         'perfectionist/sort-exports': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-interfaces': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-named-exports': ['error', { order: 'asc', type: 'natural' }],
-        'perfectionist/sort-named-imports': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-object-types': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-objects': ['error', { order: 'asc', type: 'natural' }],
         'tailwindcss/no-custom-classname': 'off',

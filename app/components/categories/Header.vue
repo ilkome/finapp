@@ -10,20 +10,27 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <UiHeaderTitle class="px-3">
-    <div class="text-item-2 pt-1 text-xs font-medium">
+  <UiHeaderTitle class="grid gap-2 px-3">
+    <div class="text-item-2 flex items-center gap-2 pt-1 text-xs font-medium leading-none">
       {{ t('categories.title') }}
+
       <template v-if="props.parentCategory">
-        / {{ props.parentCategory.name }}
+        <div class="text-2xs text-4">
+          •
+        </div>
+        {{ props.parentCategory.name }}
       </template>
     </div>
 
     <div class="flex items-center gap-2 pb-1">
       <UiIconBase
         :name="props.category.icon"
+        invert
         :color="props.category.color"
       />
-      {{ props.category.name }}
+      <div class="text-xl">
+        {{ props.category.name }}
+      </div>
     </div>
   </UiHeaderTitle>
 </template>

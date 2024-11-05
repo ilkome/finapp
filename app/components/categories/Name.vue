@@ -18,18 +18,18 @@ const props = defineProps<{
   >
     <!-- Parent category name -->
     <template v-if="alt && !isHideParent && !props.hasChildren && props.category?.parentId">
-      <div class="leading-none text-2xs text-4">
+      <div class="text-2xs text-4 leading-none">
         {{ props.parentCategory?.name }}
       </div>
     </template>
 
     <!-- Base name -->
-    <div class="flex items-center gap-2 text-3 text-sm leading-none">
+    <div class="text-3 flex items-center gap-2 text-sm leading-none">
       {{ props.category?.name }}
       <!-- Has childs -->
       <div
         v-if="!props.isHideDots && props.hasChildren"
-        class="leading-none text-sm text-4"
+        class="text-4 text-sm leading-none"
       >
         ...
       </div>
@@ -37,11 +37,11 @@ const props = defineProps<{
 
     <!-- Parent category name -->
     <template v-if="!alt && !isHideParent && !props.hasChildren && props.category?.parentId">
-      <div class="leading-none text-2xs text-4">
+      <div class="text-2xs text-4 leading-none">
         •
       </div>
 
-      <div class="leading-none text-2xs text-4">
+      <div class="text-2xs text-4 leading-none">
         {{ props.parentCategory?.name }}
       </div>
     </template>

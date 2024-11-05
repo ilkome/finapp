@@ -2,27 +2,26 @@
 import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { MiniItemConfig } from '~/components/stat/types'
 import type { StatTabs } from '~/components/app/types'
 import type { WalletId } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
-import { chartViewOptions } from '~/components/stat/types'
 import { getStyles } from '~/components/ui/getStyles'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useStatConfig } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
   isShowFilter?: boolean
   isShowTotals?: boolean
-  storageKey?: string
+  storageKey: string
   walletsIds?: WalletId[]
 }>()
 
 const filter = inject('filter') as FilterProvider
-const { t } = useI18n()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
+const { config, updateConfig } = useStatConfig({ storageKey: props.storageKey })
 const { getTotalOfTrnsIds } = useAmount()
 
 const activeTab = useStorage<StatTabs>(`${props.storageKey}-mini-tab`, 'netIncome')
@@ -51,16 +50,6 @@ const incomeTrnsIds = computed(() =>
 )
 
 const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
-
-const config = useStorage<MiniItemConfig>('miniItemConfig', {
-  chartShow: true,
-  chartView: 'full',
-  showedWallets: 5,
-})
-
-function updateConfig<K extends keyof MiniItemConfig>(key: K, value: MiniItemConfig[K]) {
-  config.value[key] = value
-}
 </script>
 
 <template>
@@ -72,62 +61,11 @@ function updateConfig<K extends keyof MiniItemConfig>(key: K, value: MiniItemCon
           :active="activeTab"
           @click="id => activeTab = id"
         />
-        <UPopover
-          :popper="{ placement: 'bottom-end' }"
-          class="ml-auto"
-        >
-          <UiItem3>
-            <Icon name="lucide:settings-2" class="size-5" />
-          </UiItem3>
-
-          <template #panel="{ close }">
-            <div class="grid gap-6 p-5">
-              <BaseBottomSheetClose @click="close" />
-
-              <div class="popover-el">
-                <UiTitle3 class="pb-2">
-                  {{ t("stat.config.chartShow.label") }}
-                </UiTitle3>
-                <UiCheckbox
-                  :checkboxValue="config.chartShow"
-                  :title="t('stat.config.chartShow.label')"
-                  @onClick="updateConfig('chartShow', !config.chartShow)"
-                />
-              </div>
-
-              <div class="popover-el">
-                <UiTitle3 class="pb-2">
-                  {{ t("stat.config.showedWallets.label") }}
-                </UiTitle3>
-
-                <UiFormInput
-                  :placeholder="t('stat.config.showedWallets.placeholder')"
-                  :value="config.showedWallets"
-                  type="number"
-                  min="0"
-                  :max="walletsStore.sortedIds.length"
-                  @updateValue="value => updateConfig('showedWallets', +value)"
-                />
-              </div>
-
-              <div class="popover-el hidden md:block">
-                <UiTitle3 class="pb-2">
-                  {{ t("stat.config.chartView.label") }}
-                </UiTitle3>
-                <UiTabs>
-                  <UiTabsItem
-                    v-for="view in chartViewOptions"
-                    :key="view"
-                    :isActive="config.chartView === view"
-                    @click="updateConfig('chartView', view)"
-                  >
-                    {{ t(`stat.config.chartView.${view}`) }}
-                  </UiTabsItem>
-                </UiTabs>
-              </div>
-            </div>
-          </template>
-        </UPopover>
+        <StatConfigPopover
+          :config="config"
+          isShowWallets
+          @updateConfig="updateConfig"
+        />
       </div>
       <FilterSelected v-if="filter.isShow?.value" />
     </div>

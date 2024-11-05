@@ -3,17 +3,20 @@ import type { WalletId } from '~/components/wallets/types'
 import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useStatConfig } from '~/components/stat/useStatConfig'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
+
 const filter = useFilter()
 provide('filter', filter)
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
+const { config, updateConfig } = useStatConfig({ storageKey: walletId.value })
 
 if (!wallet.value)
   router.replace('/wallets')
@@ -38,14 +41,14 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 <template>
   <UiPage v-if="wallet">
-    <UiHeader>
+    <UiHeader class="bg-foreground-3">
       <RouterLink v-slot="{ href, navigate }" to="/wallets" custom>
         <a
-          class="hocus:bg-item-5 -mx-2 grow px-2"
+          class="hocus:bg-item-5 -mx-2 grow cursor-default overflow-hidden rounded-lg px-2"
           :href="href"
           @click="navigate"
         >
-          <UiHeaderTitle>
+          <UiHeaderTitle class="px-3">
             <div class="text-item-2 pt-3 text-xs font-medium">
               {{ t("wallets.title") }}
             </div>
@@ -72,6 +75,11 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
             class="group-hover:text-white"
           />
         </UiHeaderLink>
+
+        <StatConfigPopover
+          :config="config"
+          @updateConfig="updateConfig"
+        />
       </template>
     </UiHeader>
 
@@ -121,6 +129,8 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
           :trnsIds
           :storageKey="walletId"
           isShowTotals
+          :config
+          @updateConfig="updateConfig"
         />
       </div>
     </div>

@@ -29,3 +29,5 @@ export type MiniItemConfig = {
   chartView: ChartView
   showedWallets: number
 }
+
+export type UpdateConfigFn = <K extends keyof MiniItemConfig>(key: K, value: MiniItemConfig[K]) => void

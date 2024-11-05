@@ -3,6 +3,7 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useStatConfig } from '~/components/stat/useStatConfig'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,6 +13,7 @@ const filter = useFilter()
 provide('filter', filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
+const { config, updateConfig } = useStatConfig({ storageKey: categoryId.value })
 const category = computed(() => categoriesStore.items[categoryId.value])
 
 if (!category.value)
@@ -33,11 +35,11 @@ useHead({
 
 <template>
   <UiPage v-if="category">
-    <UiHeader>
+    <UiHeader class="bg-foreground-3">
       <RouterLink v-slot="{ href, navigate }" :to="backLink" custom>
         <a
           :href="href"
-          class="hocus:bg-item-5 -mx-2 grow px-2"
+          class="hocus:bg-item-5 -mx-2 grow cursor-default overflow-hidden rounded-lg px-2"
           @click="navigate"
         >
           <CategoriesHeader
@@ -54,6 +56,11 @@ useHead({
         <UiHeaderLink @click="router.push(`/categories/new`)">
           <UiIconAdd class="size-6 group-hover:text-white" />
         </UiHeaderLink>
+
+        <StatConfigPopover
+          :config="config"
+          @updateConfig="updateConfig"
+        />
       </template>
     </UiHeader>
 
@@ -69,6 +76,8 @@ useHead({
         :preCategoriesIds="childsIds"
         :storageKey="categoryId"
         isShowTotals
+        :config
+        @updateConfig="updateConfig"
       />
     </div>
   </UiPage>

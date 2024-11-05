@@ -19,6 +19,7 @@ const parentCategory = computed(() =>
 function updateValue(id: CategoryId, value: any) {
   return (categoryForm.value[id] = value)
 }
+
 function afterSave() {
   return router.replace(`/categories/${categoryId.value}`)
 }
@@ -33,34 +34,12 @@ useHead({
     v-if="category"
     class="flex h-full flex-col"
   >
-    <UiHeader>
-      <RouterLink v-slot="{ href, navigate }" to="/categories" custom>
-        <a class="hocus:bg-item-5 grow" :href="href" @click="navigate">
-          <UiHeaderTitle>
-            <div class="text-item-2 pt-1 text-xs font-medium">
-              {{ t("categories.title") }}
-              <template v-if="parentCategory">
-                |
-                {{ t("common.in") }} {{ parentCategory.name }}
-              </template>
-            </div>
-            <div class="flex items-center gap-4 pb-1">
-              {{ categoryForm.name }}
-              <div
-                class="flex-center text-icon-primary size-8 rounded-full text-xl"
-                :style="{ background: categoryForm.color }"
-              >
-                <div :class="categoryForm.icon" />
-              </div>
-            </div>
-          </UiHeaderTitle>
-        </a>
-      </RouterLink>
-
-      <template #actions>
-        <CategoriesDelete :categoryId="categoryId" />
-      </template>
-    </UiHeader>
+    <CategoriesHeaderEdit
+      :categoryId="categoryId"
+      :category="categoryForm"
+      :parentCategory="parentCategory"
+      isEdit
+    />
 
     <CategoriesForm
       :categoryId="categoryId"

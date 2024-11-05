@@ -21,6 +21,7 @@ import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useIntervalRange } from '~/components/date/useIntervalRange'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
   config?: MiniItemConfig
@@ -32,13 +33,10 @@ const props = defineProps<{
   type: MoneyTypeSlugSum
 }>()
 
-const emit = defineEmits<{
-  updateConfig: [key: keyof MiniItemConfig, value: MiniItemConfig[keyof MiniItemConfig]]
-}>()
-
 const { t } = useI18n()
 const filter = inject('filter') as FilterProvider
 const trnsStore = useTrnsStore()
+const trnsFormStore = useTrnFormStore()
 const { getTotalOfTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
 
@@ -197,10 +195,17 @@ function onClickChart(idx: number) {
 
   if (intervalRange.interval.value.selected === newPeriod) {
     intervalRange.interval.value.selected = -1
-    return
+    trnsFormStore.values.date = dayjs().valueOf()
   }
+  else {
+    intervalRange.interval.value.selected = newPeriod
 
-  intervalRange.interval.value.selected = newPeriod
+    // Set date for trnForm
+    const day = groupedPeriods.value?.[intervalRange.interval.value.selected]?.start
+    if (intervalRange.interval.value.period === 'day' && day) {
+      trnsFormStore.values.date = day
+    }
+  }
 }
 
 const series = computed(() => {

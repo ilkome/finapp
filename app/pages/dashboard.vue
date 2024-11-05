@@ -18,12 +18,12 @@ useHead({ title: t('stat.title') })
     v-if="trnsStore.hasItems"
     class="h-full overflow-hidden overflow-y-auto"
   >
-    <StatMini
+    <StatDashboard
       :categoriesIds="filter?.catsIds?.value"
       :isShowTotals="filter?.catsIds?.value?.length > 0 || filter?.walletsIds?.value?.length > 0"
       :walletsIds="filter?.walletsIds?.value"
       isShowFilter
-      storageKey="stat"
+      storageKey="dashboard"
     />
   </div>
 
