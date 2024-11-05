@@ -3,8 +3,8 @@ import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import currencies from '~/components/demo/currencies.json'
 import data from '~/components/demo/data'
-import type { AddCategoryParams } from '~/components/categories/types'
-import type { Trns } from '~/components/trns/types'
+import type { AddCategoryParams, CategoryId } from '~/components/categories/types'
+import type { TrnId, Trns } from '~/components/trns/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useInitApp } from '~/components/app/useInitApp'
@@ -71,8 +71,28 @@ export function useDemo() {
     categoriesStore.setCategories(items)
   }
 
+  async function deleteDemoCategory(id: CategoryId, trnsIds?: TrnId[]) {
+    if (trnsIds)
+      await deleteDemoTrns(trnsIds)
+
+    const items = { ...categoriesStore.items }
+    delete items[id]
+
+    categoriesStore.setCategories(items)
+  }
+
+  async function deleteDemoTrns(ids: TrnId[]) {
+    const trns = { ...trnsStore.items }
+    for (const id of ids)
+      delete trns[id]
+
+    await trnsStore.setTrns(trns)
+  }
+
   return {
     addDemoCategory,
+    deleteDemoCategory,
+    deleteDemoTrns,
     generateDemoData,
     isDemo,
   }

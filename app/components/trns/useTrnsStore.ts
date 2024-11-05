@@ -26,6 +26,7 @@ import {
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useDemo } from '~/components/demo/useDemo'
 
 type TrnsGetterParams = {
   includesChildCategories?: boolean
@@ -35,6 +36,8 @@ export const useTrnsStore = defineStore('trns', () => {
   const userStore = useUserStore()
   const categoriesStore = useCategoriesStore()
   const walletsStore = useWalletsStore()
+  const { deleteDemoTrns, isDemo } = useDemo()
+
   const items = shallowRef<Trns | null>(null)
 
   function getStoreTrnsIds(props: TrnsGetterProps, params?: TrnsGetterParams) {
@@ -135,6 +138,11 @@ export const useTrnsStore = defineStore('trns', () => {
 
   function deleteTrnsByIds(trnsIds: TrnId[]) {
     const trnsForDelete: Trns = {}
+    if (isDemo.value) {
+      deleteDemoTrns(trnsIds)
+      return
+    }
+
     for (const trnId of trnsIds) trnsForDelete[trnId] = null
 
     updateData(`users/${userStore.uid}/trns`, trnsForDelete)
@@ -150,10 +158,8 @@ export const useTrnsStore = defineStore('trns', () => {
       const walletsStore = useWalletsStore()
 
       if (isConnected) {
-        const trnsArrayForDelete
-          = (await localforage.getItem('finapp.trns.offline.delete')) || []
-        const trnsItemsForUpdate
-          = (await localforage.getItem('finapp.trns.offline.update')) || {}
+        const trnsArrayForDelete = (await localforage.getItem('finapp.trns.offline.delete')) || []
+        const trnsItemsForUpdate = (await localforage.getItem('finapp.trns.offline.update')) || {}
 
         // delete trns
         for (const trnId of trnsArrayForDelete) {
@@ -161,31 +167,21 @@ export const useTrnsStore = defineStore('trns', () => {
           delete trnsItemsForUpdate[trnId]
         }
 
-        await localforage.setItem(
-          'finapp.trns.offline.update',
-          deepUnref(trnsItemsForUpdate),
-        )
+        await localforage.setItem('finapp.trns.offline.update', deepUnref(trnsItemsForUpdate))
 
         // add trns
         for (const trnId in trnsItemsForUpdate) {
           const wallet = walletsStore.items[trnsItemsForUpdate[trnId].walletId]
-          const category
-            = categoriesStore.items[trnsItemsForUpdate[trnId].categoryId]
+          const category = categoriesStore.items[trnsItemsForUpdate[trnId].categoryId]
 
           // delete trn from local storage if no wallet or category
           if (!wallet || !category) {
             delete trnsItemsForUpdate[trnId]
-            await localforage.setItem(
-              'finapp.trns.offline.update',
-              deepUnref(trnsItemsForUpdate),
-            )
+            await localforage.setItem('finapp.trns.offline.update', deepUnref(trnsItemsForUpdate))
           }
 
           // add
-          else if (
-            trnsItemsForUpdate[trnId]
-            && trnsItemsForUpdate[trnId].amount
-          ) {
+          else if (trnsItemsForUpdate[trnId] && trnsItemsForUpdate[trnId].amount) {
             addTrn({
               id: trnId,
               values: trnsItemsForUpdate[trnId],

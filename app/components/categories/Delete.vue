@@ -2,11 +2,8 @@
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CategoryId } from '~/components/categories/types'
 import { errorEmo, random, successEmo } from '~/assets/js/emo'
-import { removeData } from '~~/services/firebase/api'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useUserStore } from '~/components/user/useUserStore'
-import { useDemo } from '~/components/demo/useDemo'
 
 const props = defineProps<{
   categoryId: CategoryId
@@ -14,20 +11,17 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const { $toast } = useNuxtApp()
-const { isDemo } = useDemo()
 const router = useRouter()
-const userStore = useUserStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
 const isShowDeleteConfirm = ref(false)
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(props.categoryId.value) }))
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(props.categoryId) }))
 
 // TODO: translate
 const deleteDescText = computed(() => {
   if (trnsIds.value && trnsIds.value.length > 0)
-    return `This action will delete ${trnsIds.value.length} trns in this category.`
-
+    return t('categories.form.delete.alertWithTrns', { trns: t('trns.plural', trnsIds.value.length) })
   return undefined
 })
 
@@ -51,34 +45,23 @@ function onClickDelete() {
 }
 
 async function onDeleteConfirm() {
-  // Disable reactive when user has already redirected to categories page
-  const uid = JSON.parse(JSON.stringify(userStore.uid))
   const trnsIdsS = JSON.parse(JSON.stringify(trnsIds.value))
-  const categoryDeleteId = JSON.parse(JSON.stringify(props.categoryId))
-
   router.push('/categories')
+  await categoriesStore.deleteCategory(JSON.parse(JSON.stringify(props.categoryId), trnsIdsS))
 
   // Give some time to complete redirect
   setTimeout(async () => {
-    await trnsStore.deleteTrnsByIds(trnsIdsS)
-
-    if (isDemo.value) {
-      delete categoriesStore.items[categoryDeleteId]
-      // TODO: delete category from demo
-    }
-    else {
-      await removeData(`users/${uid}/categories/${categoryDeleteId}`)
-    }
-
     $toast(UiToastContent, {
       data: {
-        description: trnsIdsS?.length > 0 ? `Success delete category with ${trnsIdsS.length} transactions!` : 'Success delete category!',
+        description: trnsIdsS?.length > 0
+          ? t('categories.form.delete.okWithTrns', { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) })
+          : t('categories.form.delete.okWithoutTrns'),
         title: random(successEmo),
       },
       toastId: 'delete-category-with-child-success',
       type: 'success',
     })
-  }, 100)
+  }, 300)
 }
 </script>
 

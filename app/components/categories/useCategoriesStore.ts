@@ -3,12 +3,13 @@ import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import { type ComputedRef, type ShallowRef, computed, shallowRef } from 'vue'
 import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/components/categories/types'
-import { getDataAndWatch, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
+import type { TrnId } from '~/components/trns/types'
+import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import { getPreparedFormData } from '~/components/categories/getForm'
 import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
+import { useDemo } from '~/components/demo/useDemo'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
-import { useDemo } from '~/components/demo/useDemo'
 
 const transfer: CategoryItem = {
   childIds: [],
@@ -27,7 +28,9 @@ type CategoriesStore = {
   categoriesIds: ComputedRef<CategoryId[]>
   categoriesIdsForTrnValues: ComputedRef<CategoryId[]>
   categoriesRootIds: ComputedRef<CategoryId[]>
+  deleteCategory: (id: CategoryId, trnsIds?: TrnId[]) => Promise<void>
   favoriteCategoriesIds: ComputedRef<CategoryId[]>
+  formatCategories: (items: Categories) => Categories
   getChildsIds: (categoryId: CategoryId) => CategoryId[]
   getChildsIdsOrParent: (categoryId: CategoryId) => CategoryId[]
   getTransactibleIds: (ids?: CategoryId[]) => CategoryId[]
@@ -45,7 +48,7 @@ type CategoriesStore = {
 export const useCategoriesStore = defineStore('categories', (): CategoriesStore => {
   const userStore = useUserStore()
   const trnsStore = useTrnsStore()
-  const { addDemoCategory, isDemo } = useDemo()
+  const { addDemoCategory, deleteDemoCategory, isDemo } = useDemo()
 
   const items = shallowRef<Categories>({ transfer })
   const hasItems = computed(() => {
@@ -283,12 +286,25 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     }
   }
 
+  async function deleteCategory(id: CategoryId, trnsIds?: TrnId[]) {
+    if (isDemo.value) {
+      deleteDemoCategory(id, trnsIds)
+    }
+    else {
+      if (trnsIds)
+        await trnsStore.deleteTrnsByIds(trnsIds)
+
+      await removeData(`users/${userStore.uid}/categories/${id}`)
+    }
+  }
+
   return {
     addCategory,
     categoriesForBeParent,
     categoriesIds,
     categoriesIdsForTrnValues,
     categoriesRootIds,
+    deleteCategory,
     favoriteCategoriesIds,
     formatCategories,
     getChildsIds,
