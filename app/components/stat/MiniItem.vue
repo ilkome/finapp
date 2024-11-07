@@ -715,7 +715,7 @@ const quickModalTrnsIds = computed(() => {
               class="bg-foreground-5 sticky top-0 z-10"
             />
 
-            <StatMiniItem
+            <StatItem
               :quickModalCategoryId
               :storageKey="`${props.storageKey}sum-in-${quickModalCategoryId}`"
               :trnsIds="quickModalTrnsIds"

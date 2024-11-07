@@ -88,7 +88,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
   </div>
 
   <!-- NetIncome -->
-  <StatMiniItem
+  <StatItem
     v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
     :storageKey="props.storageKey + activeTab"
     :trnsIds="trnsIds"
@@ -104,7 +104,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
     class="grid max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
   >
     <!-- Expense -->
-    <StatMiniItem
+    <StatItem
       v-if="(activeTab === 'sum') && expenseTrnsIds.length > 0"
       :config
       :storageKey="props.storageKey + activeTab"
@@ -114,7 +114,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
     />
 
     <!-- Income -->
-    <StatMiniItem
+    <StatItem
       v-if="(activeTab === 'sum') && incomeTrnsIds.length > 0"
       :config
       :storageKey="props.storageKey + activeTab"

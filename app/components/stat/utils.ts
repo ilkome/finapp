@@ -4,20 +4,12 @@ export function sortCategoriesByAmount(a: TotalCategory, b: TotalCategory) {
   if (!a || !b)
     return 0
 
-  // Sort positive values from biggest to smallest
-  if (a.value >= 0 && b.value >= 0) {
+  const isP = a.value >= 0 && b.value >= 0
+  const isN = a.value < 0 && b.value < 0
+
+  if (isP)
     return b.value - a.value
-  }
-  // Sort negative values from smallest to biggest
-  else if (a.value < 0 && b.value < 0) {
+  if (isN)
     return a.value - b.value
-  }
-  // Keep positive values before negative values
-  else if (a.value >= 0 && b.value < 0) {
-    return -1
-  }
-  // Keep negative values after positive values
-  else {
-    return 1
-  }
+  return a.value >= 0 ? -1 : 1
 }

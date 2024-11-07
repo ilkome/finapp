@@ -65,7 +65,7 @@ useHead({
     </UiHeader>
 
     <div class="grid gap-2 px-2 pb-24 md:px-6">
-      <StatMiniItem
+      <StatItem
         type="sum"
         :isQuickModal="!categoriesStore.hasChildren(categoryId)"
         :trnsIds="

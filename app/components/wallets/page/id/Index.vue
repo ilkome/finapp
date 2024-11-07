@@ -124,7 +124,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
       </div>
 
       <div class="px-2 pt-2 md:px-6">
-        <StatMiniItem
+        <StatItem
           type="sum"
           :trnsIds
           :storageKey="walletId"
