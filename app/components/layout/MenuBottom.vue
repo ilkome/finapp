@@ -6,7 +6,7 @@ const { itemsBottom } = useMenuData()
 
 <template>
   <div
-    class="sm:bottom-inherit absolute bottom-0 left-0 z-20 mx-auto flex w-full items-stretch bg-foreground-3 backdrop-blur sm:hidden lg:hidden"
+    class="sm:bottom-inherit bg-foreground-3 absolute bottom-0 left-0 z-20 mx-auto flex w-full items-stretch backdrop-blur sm:hidden lg:hidden"
   >
     <LayoutMenuSidebarItem
       v-for="(item, menuId) in itemsBottom"

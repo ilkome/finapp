@@ -73,7 +73,10 @@ function onClickWallet(walletId: WalletId) {
           @updateConfig="updateConfig"
         />
       </div>
-      <FilterSelected isShowCategories />
+      <FilterSelected
+        v-if="filter.isShow?.value"
+        isShowCategories
+      />
     </div>
 
     <div

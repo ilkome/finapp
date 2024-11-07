@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useAppNav } from '~/components/app/useAppNav'
+import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
 
 const { closeAllModals, isModalOpen } = useAppNav()
 const { t } = useI18n()
 const userStore = useUserStore()
-  const { isDemo } = useDemo()
+const { isDemo } = useDemo()
 </script>
 
 <template>
