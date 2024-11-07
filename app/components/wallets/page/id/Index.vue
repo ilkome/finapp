@@ -87,7 +87,11 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
       <div class="px-2 md:px-6">
         <div class="pt-2 lg:px-4">
           <FilterSelector isHideWallets class="pb-2" />
-          <FilterSelected v-if="filter.isShow?.value" />
+          <FilterSelected
+            v-if="filter.isShow?.value"
+            isShowCategories
+            isShowWallets
+          />
 
           <div
             v-if="wallet.type !== 'credit'"

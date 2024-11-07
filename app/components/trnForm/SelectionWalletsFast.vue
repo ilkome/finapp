@@ -8,7 +8,7 @@ const trnFormStore = useTrnFormStore()
 <template>
   <div>
     <UiTitle3
-      class="z-10 sticky pt-0 pb-3 top-0 px-3 bg-foreground-1"
+      class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
       @click="trnFormStore.openTrnFormModal('wallets')"
     >
       {{ t("wallets.title") }}
@@ -26,7 +26,6 @@ const trnFormStore = useTrnFormStore()
         :walletId
         :wallet
         :lineWidth="1"
-        isShowIcons
         @click="trnFormStore.values.walletId = walletId"
       />
     </WalletsList>

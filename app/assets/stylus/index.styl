@@ -1,10 +1,4 @@
-.scrollbar
-  scrollbar()
-
 html
-  /* HSL Syntax */
-  /* https://tailwindcss.com/docs/customizing-colors */
-
   --hue: 220deg;
   --c-blue-1: hsl(220, 100%, 61%);
   --c-income-opacity: rgba(44, 173, 34, .5);
@@ -149,7 +143,29 @@ html.dark
   --chart-bg var(--c-item-5)
   --chart-label var(--c-font-5)
   --chart-line var(--c-item-5)
-  // --chart-selected theme('colors.neutral.800')
   --chart-selected var(--c-item-5)
   --chart-splitLine theme('colors.neutral.700')
   --chart-tooltip theme('colors.neutral.400')
+
+.scroll
+.scrollbar
+  scrollbar()
+  height 100%
+  overflow hidden
+  overflow-y auto
+
+scrollbar()
+  &::-webkit-scrollbar
+    width 6px
+    height 6px
+
+  &::-webkit-scrollbar-track
+    background transparent
+    border-radius 10px
+
+  &::-webkit-scrollbar-thumb
+    background grey
+    border-radius 10px
+
+    &:hover
+      background darkgrey

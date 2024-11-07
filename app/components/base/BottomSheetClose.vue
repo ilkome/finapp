@@ -1,6 +1,6 @@
 <template>
   <div
-    class="handlerClose hover:bg-item-6 size-8 rounded-full"
+    class="handlerClose hover:bg-item-6 size-8 rounded-full transition ease-in-out"
     @click="$emit('onClick')"
   >
     <svg
@@ -10,6 +10,7 @@
       stroke-linecap="round"
       stroke-linejoin="round"
       stroke-width="3"
+      class="transition ease-in-out"
     >
       <path d="M0.75 23.249l22.5-22.5" />
       <path d="M23.25 23.249L0.75 0.749" />
@@ -18,8 +19,6 @@
 </template>
 
 <style lang="stylus" scoped>
-@import "../app/assets/stylus/variables/*"
-
 .handlerClose
   z-index 3
   cursor pointer
@@ -29,15 +28,13 @@
   display flex
   align-items center
   justify-content center
-  anim()
 
   svg
-    anim()
     width 12px
     height 12px
     stroke var(--c-font-4)
 
-  +media-hover()
+  &:hover
     svg
       width 12px
       height 12px

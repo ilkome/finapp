@@ -6,7 +6,6 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { getParentCategoryId } from '~/components/categories/getCategories'
 import 'swiper/css'
-// import 'swiper/css/pagination'
 
 const props = withDefaults(
   defineProps<{
@@ -46,10 +45,7 @@ onMounted(() => {
   }
 })
 
-const parentCategoryId = ref<CategoryId | false>(
-  getParentCategoryId(categoriesStore.items, trnFormStore.values.categoryId)
-  || trnFormStore.values.categoryId,
-)
+const parentCategoryId = ref<CategoryId | null>(getParentCategoryId(categoriesStore.items, trnFormStore.values.categoryId) || trnFormStore.values.categoryId)
 
 function onSelectWallet(id: WalletId, close: () => void) {
   trnFormStore.values.walletId = id
@@ -89,7 +85,7 @@ async function onSelectParentCategory(id: CategoryId) {
               :style="{ height: props.maxHeight }"
               class="swiper-slide"
             >
-              <div class="h-full overflow-y-auto scrollerBlock pb-3">
+              <div class="scrollerBlock h-full overflow-y-auto pb-3">
                 <TrnFormSelectionWalletsAll
                   :maxHeight="maxHeight"
                   @onSelectWallet="id => onSelectWallet(id, close)"
@@ -102,7 +98,7 @@ async function onSelectParentCategory(id: CategoryId) {
               :style="{ height: props.maxHeight }"
               class="swiper-slide"
             >
-              <div class="h-full overflow-y-auto scrollerBlock pb-3">
+              <div class="scrollerBlock h-full overflow-y-auto pb-3">
                 <TrnFormSelectionCategoriesFast
                   @onSelectCategory="id => onSelectCategory(id, close)"
                   @onSelectParentCategory="id => onSelectParentCategory(id)"
@@ -115,9 +111,9 @@ async function onSelectParentCategory(id: CategoryId) {
               :style="{ height: props.maxHeight }"
               class="swiper-slide"
             >
-              <div class="h-full overflow-y-auto scrollerBlock pb-3">
+              <div class="scrollerBlock h-full overflow-y-auto pb-3">
                 <UiTitle3
-                  class="z-10 sticky pt-4 pb-3 top-0 px-3 bg-foreground-1"
+                  class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
                   @click="trnFormStore.ui.catsRootModal = true"
                 >
                   {{ $t("categories.title") }}
@@ -136,15 +132,12 @@ async function onSelectParentCategory(id: CategoryId) {
 </template>
 
 <style>
-.trnFormSelectionPagination.swiper-pagination-horizontal
-  .swiper-pagination-bullet-active {
+.trnFormSelectionPagination.swiper-pagination-horizontal .swiper-pagination-bullet-active {
   @apply !bg-neutral-600 dark:!bg-white/80;
 }
 </style>
 
 <style lang="stylus">
-@import "../app/assets/stylus/variables/*"
-
 .trnFormSelectionPagination
   &.swiper-pagination-horizontal
     z-index 2
@@ -167,5 +160,4 @@ async function onSelectParentCategory(id: CategoryId) {
       margin 0 4px
       background var(--c-bg-9)
       border-radius 50%
-      anim()
 </style>

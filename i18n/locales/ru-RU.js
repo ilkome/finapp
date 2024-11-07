@@ -244,6 +244,7 @@ export default {
     config: {
       chartShow: {
         label: 'Показывать график',
+        title: 'График',
       },
       chartView: {
         full: 'Полный',

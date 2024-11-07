@@ -15,6 +15,8 @@ provide('filter', filter)
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const { config, updateConfig } = useStatConfig({ storageKey: categoryId.value })
 const category = computed(() => categoriesStore.items[categoryId.value])
+const childsIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
+const trnsIds = trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value) })
 
 if (!category.value)
   router.replace('/categories')
@@ -25,18 +27,21 @@ const backLink = computed(() =>
     : '/categories',
 )
 
-const onClickEdit = () => router.push(`/categories/${categoryId.value}/edit`)
+function onClickEdit() {
+  router.push(`/categories/${categoryId.value}/edit`)
+}
 
-const childsIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
-useHead({
-  title: category.value?.name,
-})
+useHead({ title: category.value?.name })
 </script>
 
 <template>
   <UiPage v-if="category">
     <UiHeader class="bg-foreground-3">
-      <RouterLink v-slot="{ href, navigate }" :to="backLink" custom>
+      <RouterLink
+        v-slot="{ href, navigate }"
+        :to="backLink"
+        custom
+      >
         <a
           :href="href"
           class="hocus:bg-item-5 -mx-2 grow cursor-default overflow-hidden rounded-lg px-2"
@@ -68,11 +73,7 @@ useHead({
       <StatItem
         type="sum"
         :isQuickModal="!categoriesStore.hasChildren(categoryId)"
-        :trnsIds="
-          trnsStore.getStoreTrnsIds({
-            categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId),
-          })
-        "
+        :trnsIds
         :preCategoriesIds="childsIds"
         :storageKey="categoryId"
         isShowTotals

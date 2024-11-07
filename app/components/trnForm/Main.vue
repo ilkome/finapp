@@ -86,7 +86,7 @@ const items2 = computed(() => ({
 </script>
 
 <template>
-  <div class="grid px-3 pt-1 pb-6">
+  <div class="grid pb-6">
     <TrnFormSelection
       v-if="isShow"
       v-model:isShow="isShow"
@@ -94,27 +94,28 @@ const items2 = computed(() => ({
       :initialSlide
     />
 
-    <div class="py-2">
-      <UiTitle3 @click="trnFormStore.values.trnId = null">
-        {{ trnFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
-      </UiTitle3>
-    </div>
+    <UiTitle3
+      class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
+      @click="trnFormStore.values.trnId = null"
+    >
+      {{ trnFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
+    </UiTitle3>
 
     <div
       v-if="trnFormStore.values.trnId"
-      class="pb-2"
+      class="px-3 pb-2"
     >
       <TrnsItem
         :trnItem="trnsStore.computeTrnItem(trnFormStore.values.trnId)"
-        class="group bg-item-4 rounded-lg !py-1"
+        class="bg-item-4 group rounded-lg !py-1"
         @click="trnFormStore.values.trnId = null"
       />
 
       <div
         v-if="showModalConfirm"
-        class="fixed inset-0 p-[1px] size-full z-10"
+        class="fixed inset-0 z-10 size-full p-px"
       >
-        <div class="grid gap-4 px-4 bg-foreground-1 h-full content-center text-1 rounded-xl z-10">
+        <div class="bg-foreground-1 text-1 z-10 grid h-full content-center gap-4 rounded-xl px-4">
           <div>
             {{ t('base.sure') }}
           </div>
@@ -162,7 +163,7 @@ const items2 = computed(() => ({
       </div>
     </div>
 
-    <TrnFormDate class="pb-0" />
+    <TrnFormDate class="px-3 pb-0 " />
 
     <TrnFormMainInput
       v-if="trnFormStore.values.trnType !== 2"
@@ -170,11 +171,11 @@ const items2 = computed(() => ({
       :amountRaw="trnFormStore.values.amountRaw[trnFormStore.activeAmountIdx]"
       :highlight="trnFormStore.values.trnType === 0 ? 'income' : 'expense'"
       :isShowSum="trnFormStore.getIsShowSum()"
-      class="pb-2"
+      class="px-3 pb-2 "
       @onChange="trnFormStore.onChangeAmount"
     />
 
-    <div class="grid gap-3 pb-6">
+    <div class="grid gap-3 px-3 pb-6 ">
       <!-- Selected -->
       <div
         v-if="trnFormStore.values.trnType !== 2"

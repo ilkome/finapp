@@ -16,7 +16,7 @@ function isItActive(amountType: TrnType) {
 </script>
 
 <template>
-  <UiTabs class="!gap-0">
+  <UiTabs1 class="!gap-0">
     <UiTabsItem3 :isActive="isItActive(0)" @click="setAmountType(0)">
       {{ $t('money.expense') }}
     </UiTabsItem3>
@@ -32,5 +32,5 @@ function isItActive(amountType: TrnType) {
     >
       {{ $t('trnForm.transferTitle') }}
     </UiTabsItem3>
-  </UiTabs>
+  </UiTabs1>
 </template>

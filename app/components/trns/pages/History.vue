@@ -108,7 +108,10 @@ function select(row) {
     <div class="pageWrapper">
       <div class="grid gap-3">
         <FilterSelector class="flex gap-1" />
-        <FilterSelected />
+        <FilterSelected
+          isShowCategories
+          isShowWallets
+        />
 
         <TrnsList
           :trnsIds

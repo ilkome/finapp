@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { WalletId } from '~/components/wallets/types'
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   isLaptop: boolean
@@ -23,8 +24,6 @@ const walletsStore = useWalletsStore()
       :walletId
       :wallet="walletsStore.sortedItems[walletId]"
       alt
-      insideClasses="bg-item-4 min-h-[42px] py-2"
-      isShowIcons
       @click="emit('onOpen', 0)"
     />
 
@@ -33,8 +32,6 @@ const walletsStore = useWalletsStore()
         :walletId
         :wallet="walletsStore.sortedItems[walletId]"
         alt
-        isShowIcons
-        insideClasses="bg-item-4 min-h-[42px] py-2"
       />
 
       <template #panel="{ close }">

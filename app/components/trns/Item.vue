@@ -11,9 +11,7 @@ const props = defineProps<{
 <template>
   <UiElement
     v-if="props.trnItem"
-    class="group2"
     insideClasses="py-3 !min-h-[44px]"
-    isShowLine2
   >
     <template v-if="!alt" #leftIcon>
       <UiIconBase
@@ -23,19 +21,19 @@ const props = defineProps<{
       />
     </template>
 
-    <div class="grid gap-1 grow pr-1">
-      <div class="flex items-center grow gap-3">
+    <div class="grid grow gap-1 pr-1">
+      <div class="flex grow items-center gap-3">
         <template v-if="alt">
           <div
             v-if="date"
-            class="truncate text-2xs leading-none"
+            class="text-2xs truncate leading-none"
           >
             {{ date }}
           </div>
 
           <div
             v-if="trnItem.type === 2"
-            class="flex gap-2 items-center"
+            class="flex items-center gap-2"
           >
             <Icon
               :name="props.trnItem.category?.icon?.replace('mdi mdi-', 'mdi:')"
@@ -43,50 +41,30 @@ const props = defineProps<{
               size="16"
             />
             <div
-              class="flex items-center gap-2 text-secondary text-xs leading-none"
+              class="text-secondary flex items-center gap-2 text-xs leading-none"
             >
               {{ trnItem.category.name }}
             </div>
           </div>
         </template>
 
-        <div class="grow grid gap-1">
+        <div class="grid grow gap-1">
           <div
             v-if="!alt"
-            class="flex gap-2 items-center"
+            class="text-3 grid grow gap-0.5"
           >
-            <!-- Category name -->
-            <div class="flex items-center gap-2 text-3 text-sm leading-none">
-              {{ trnItem.category?.name }}
-            </div>
-
-            <!-- Parent category name -->
-            <!-- <div
-              v-if="trnItem.categoryParent"
-              class="text-2xs text-4"
-            >
-              {{ trnItem.categoryParent.name }}
-            </div> -->
-            <div
-              v-if="trnItem.categoryParent"
-              class="leading-none text-2xs text-4"
-            >
-              •
-            </div>
-
-            <div
-              v-if="trnItem.categoryParent"
-              class="leading-none text-2xs text-4"
-            >
-              {{ trnItem.categoryParent.name }}
-            </div>
+            <CategoriesName
+              :category="trnItem.category"
+              :parentCategory="trnItem.categoryParent"
+              isHideDots
+            />
           </div>
 
           <div
             v-if="trnItem.wallet"
-            class="flex gap-2 items-center"
+            class="flex items-center gap-2"
           >
-            <div class="text-xs text-4 leading-none">
+            <div class="text-4 text-xs leading-none">
               {{ trnItem.wallet.name }}
             </div>
           </div>

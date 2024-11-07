@@ -46,7 +46,7 @@ const list = computed(() => {
       <div v-if="props.isShowAll">
         <UiElement
           :isActive="active === 'all'"
-          isShowLine
+          :lineWidth="1"
           insideClasses="!min-h-[44px]"
           @click="emit('onSelect', 'all')"
         >
@@ -67,7 +67,7 @@ const list = computed(() => {
           v-for="currencyCode in walletsStore.currenciesUsed"
           :key="currencyCode"
           :isActive="currencyCode === active"
-          isShowLine
+          :lineWidth="1"
           class="group"
           insideClasses="!min-h-[44px]"
           @click="emit('onSelect', currencyCode)"
@@ -92,8 +92,8 @@ const list = computed(() => {
           v-for="currency in list"
           :key="currency.code"
           :isActive="currency.code === active"
+          :lineWidth="1"
           class="group"
-          isShowLine
           @click="emit('onSelect', currency.code)"
         >
           <div class="flex items-center">

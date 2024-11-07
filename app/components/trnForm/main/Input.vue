@@ -29,9 +29,9 @@ function onInput(event: Event) {
         'left-1/2 -translate-x-1/2': !isTransfer,
       }]"
       class="
-        pointer-events-none
-        absolute top-2
-        text-center text-sm text-1/60
+        text-1/60
+        pointer-events-none absolute
+        top-2 text-center text-sm
       "
       tabindex="0"
     >
@@ -49,11 +49,11 @@ function onInput(event: Event) {
       :value="amountRaw"
       class="
         swiper-no-swiping
-        block size-full h-auto pt-6 pb-2 px-3
-        text-3xl font-secondary
-        bg-transparent rounded-md
-        -placeholder:text-3xl
-        focus:bg-item-5
+        font-secondary -placeholder:text-3xl focus:bg-item-5 block size-full h-auto
+        rounded-md bg-transparent
+        px-3 pb-2
+        pt-6
+        text-3xl
         transition
       "
       type="text"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onLongPress, useStorage } from '@vueuse/core'
 import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
+import { getStyles } from '~/components/ui/getStyles'
 import { icons } from '~/components/wallets/types'
 
 const props = defineProps<{
@@ -8,7 +9,6 @@ const props = defineProps<{
   alt?: boolean
   insideClasses?: string
   isShowBaseRate?: boolean
-  isShowIcons?: boolean
   isSort?: boolean
   lineWidth?: number
   wallet: WalletItemWithAmount
@@ -18,6 +18,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: [walletId: WalletId]
 }>()
+
+const classes = computed(() => ([
+  'relative',
+  {
+    [getStyles('item', ['alt', 'rounded'])]: props.alt,
+  },
+]))
 
 const creditViews = ['dept', 'sum'] as const
 const activeCreditView = useStorage<typeof creditViews[number]>(props.walletId, 'dept')
@@ -38,25 +45,27 @@ function changeCreditView() {
 }
 
 const longPressRef = ref(null)
-onLongPress(
-  longPressRef,
-  changeCreditView,
-  { delay: 600, modifiers: { prevent: true, stop: true } },
-)
+
+if (!props.isSort) {
+  onLongPress(
+    longPressRef,
+    changeCreditView,
+    { delay: 600, modifiers: { prevent: true, stop: true } },
+  )
+}
 </script>
 
 <template>
   <UiElement
     ref="longPressRef"
     :isActive="activeItemId === props.walletId"
-    :isShowIcons="props.isShowIcons"
     :insideClasses="`${props.insideClasses ? props.insideClasses : ''} min-h-[44px] lg:min-h-[42px]`"
     :lineWidth="props.lineWidth"
-    class="relative"
+    :class="classes"
     @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
-    <template v-if="isShowIcons" #leftIcon>
+    <template #leftIcon>
       <Icon
         :name="icons[wallet.type]"
         :style="{ color: wallet.color }"

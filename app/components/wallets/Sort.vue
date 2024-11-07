@@ -38,13 +38,12 @@ async function saveWalletsOrder() {
       <UiTitle>{{ t("wallets.sortTitle") }}</UiTitle>
     </div>
 
-    <div ref="parent" class="scrollerBlock h-full overflow-hidden overflow-y-auto">
+    <div ref="parent" class="scrollerBlock grid h-full gap-1 overflow-hidden overflow-y-auto">
       <WalletsItem
         v-for="walletId in sortedWalletsIds"
         :key="walletId"
         :walletId
         :wallet="walletsStore.sortedItems[walletId]!"
-        isShowIcons
         alt
         isSort
       />

@@ -21,8 +21,6 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-@import "../app/assets/stylus/variables/*"
-
 .empty
   padding 40px
   text-align center

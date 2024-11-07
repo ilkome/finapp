@@ -17,15 +17,15 @@ const emit = defineEmits(['click'])
       getStyles('item', ['minh2']),
     ]"
     class="
+      text-3
+      hocus:bg-item-5 @4xl/tabs_text-lg @4xl/tabs_p-3 @xl/wallets:grow-0 @xl/wallets:rounded-md @xl/wallets:px-3 flex
+      flex-1 grow
       select-none
-      grow flex-1 px-2 flex gap-1 items-center justify-center
-      text-3 text-sm
+      items-center
+      justify-center gap-1
       rounded-lg
-      hocus:bg-item-5
-      @4xl/tabs_text-lg @4xl/tabs_p-3
-      @xl/wallets:grow-0
-      @xl/wallets:rounded-md
-      @xl/wallets:px-3
+      px-2
+      text-sm
     "
     @click="emit('click')"
   >

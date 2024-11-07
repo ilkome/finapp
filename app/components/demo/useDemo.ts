@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
+import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
 import currencies from '~/components/demo/currencies.json'
 import data from '~/components/demo/data'
 import type { AddCategoryParams, CategoryId } from '~/components/categories/types'
@@ -89,11 +90,24 @@ export function useDemo() {
     await trnsStore.setTrns(trns)
   }
 
+  async function sortDemoWallets(ids: WalletId[], wallets: Wallets) {
+    const sortedWallets = ids.reduce((acc, walletId, index) => {
+      const wallet = wallets[walletId]
+      acc[walletId] = wallet
+      acc[walletId].order = index
+      return acc
+    }, {} as Record<WalletId, WalletItem>)
+
+    walletsStore.setWallets(sortedWallets)
+    return 'ok'
+  }
+
   return {
     addDemoCategory,
     deleteDemoCategory,
     deleteDemoTrns,
     generateDemoData,
     isDemo,
+    sortDemoWallets,
   }
 }

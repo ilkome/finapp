@@ -62,7 +62,7 @@ onMounted(init)
 <template>
   <BaseBottomSheet2
     :isShow="isShow"
-    drugClassesCustom="max-h-[100dvh] md:bottom-1/2 md:-translate-x-1/2 md:translate-y-1/2"
+    drugClassesCustom="max-h-[100dvh] -md:bottom-1/2 -md:-translate-x-1/2 -md:translate-y-1/2"
     @closed="trnFormStore.onClose()"
   >
     <template #handler>
@@ -96,8 +96,8 @@ onMounted(init)
             :style="{ height: maxHeight }"
           >
             <div class="scroll scrollerBlock">
-              <div class="py-4">
-                <TrnFormSelectionWalletsFast class="pb-6" />
+              <div class="pb-4">
+                <TrnFormSelectionWalletsFast />
                 <TrnFormSelectionCategoriesFast
                   @onSelectCategory="id => trnFormStore.values.categoryId = id"
                 />
@@ -114,13 +114,3 @@ onMounted(init)
   <!-- Modals -->
   <LazyTrnFormModalDescription v-if="trnFormStore.modal.description" />
 </template>
-
-<style lang="stylus" scoped>
-@import "../app/assets/stylus/variables/*"
-
-.scroll
-  overflow hidden
-  overflow-y auto
-  height 100%
-  scrollbar()
-</style>

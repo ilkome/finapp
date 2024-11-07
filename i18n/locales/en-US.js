@@ -243,6 +243,7 @@ export default {
     config: {
       chartShow: {
         label: 'Show chart',
+        title: 'Chart',
       },
       chartView: {
         full: 'Full',

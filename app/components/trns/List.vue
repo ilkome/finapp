@@ -133,11 +133,11 @@ const groupedTrns = computed(() => {
     <slot name="contentBefore" />
 
     <!-- Filter by type -->
-    <UiTabs
+    <UiTabs1
       v-if="isShowFilterByType"
       class="mb-2"
     >
-      <UiTabsItem
+      <UiTabsItem1
         v-for="(filterItem, slug) in typeFilters"
         :key="filterItem.slug"
         :isActive="filterBy === slug"
@@ -147,8 +147,8 @@ const groupedTrns = computed(() => {
         @click="setFilterBy(slug)"
       >
         {{ filterItem.name }}
-      </UiTabsItem>
-    </UiTabs>
+      </UiTabsItem1>
+    </UiTabs1>
 
     <!-- With Desc -->
     <div

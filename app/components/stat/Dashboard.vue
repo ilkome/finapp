@@ -5,10 +5,10 @@ import type { FilterProvider } from '~/components/filter/types'
 import type { StatTabs } from '~/components/app/types'
 import type { WalletId } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
-import { getStyles } from '~/components/ui/getStyles'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useStatConfig } from '~/components/stat/useStatConfig'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
   categoriesIds?: CategoryId[]
@@ -20,6 +20,7 @@ const props = defineProps<{
 
 const filter = inject('filter') as FilterProvider
 const trnsStore = useTrnsStore()
+const trnsFormStore = useTrnFormStore()
 const walletsStore = useWalletsStore()
 const { config, updateConfig } = useStatConfig({ storageKey: props.storageKey })
 const { getTotalOfTrnsIds } = useAmount()
@@ -33,27 +34,32 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   includesChildCategories: true,
 }))
 
-const expenseTrnsIds = computed(() =>
-  trnsIds.value.filter(
-    trnId => trnsStore.items[trnId].type === 0 || trnsStore.items[trnId].type === 2,
-  ).sort(
-    (a, b) => trnsStore.items[b].date - trnsStore.items[a].date,
-  ),
+const expenseTrnsIds = computed(() => trnsIds.value
+  .filter(trnId => trnsStore.items[trnId].type === 0 || trnsStore.items[trnId].type === 2)
+  .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date),
 )
 
-const incomeTrnsIds = computed(() =>
-  trnsIds.value.filter(
-    trnId => trnsStore.items[trnId].type === 1 || trnsStore.items[trnId].type === 2,
-  ).sort(
-    (a, b) => trnsStore.items[b].date - trnsStore.items[a].date,
-  ),
+const incomeTrnsIds = computed(() => trnsIds.value
+  .filter(trnId => trnsStore.items[trnId].type === 1 || trnsStore.items[trnId].type === 2)
+  .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date),
 )
 
 const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
+
+const sortedFilterWalletsIds = computed(() => {
+  const filteredIds = filter.walletsIds.value
+  const showedIds = walletsStore.sortedIds.slice(0, config.value.showedWallets)
+  return [...new Set([...showedIds, ...filteredIds])]
+})
+
+function onClickWallet(walletId: WalletId) {
+  filter.toggleWalletId(walletId)
+  trnsFormStore.values.walletId = walletId
+}
 </script>
 
 <template>
-  <div class="bg-foreground-3 sticky top-0 z-10 max-w-6xl pb-2 lg:gap-8 lg:px-4 xl:py-2">
+  <div class="bg-foreground-3 sticky top-0 z-10 grid max-w-6xl gap-2 pb-2 lg:px-4 xl:py-2">
     <div class="grid gap-2 px-2 pt-2">
       <div class="flex items-center gap-1 overflow-x-auto ">
         <FilterSelector v-if="props.isShowFilter" />
@@ -67,22 +73,21 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
           @updateConfig="updateConfig"
         />
       </div>
-      <FilterSelected v-if="filter.isShow?.value" />
+      <FilterSelected isShowCategories />
     </div>
 
     <div
       v-if="config.showedWallets > 0"
-      class="flex gap-1 overflow-hidden overflow-x-auto p-2 pb-0"
+      class="flex gap-1 overflow-x-auto px-2 py-px"
     >
       <WalletsItem
-        v-for="walletId in walletsStore.sortedIds.slice(0, config.showedWallets)"
+        v-for="walletId in sortedFilterWalletsIds"
         :key="walletId"
         :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
         :walletId
         :wallet="walletsStore.itemsWithAmount?.[walletId]"
         alt
-        :class="getStyles('item', ['alt', 'rounded'])"
-        @click="filter.toggleWalletId(walletId)"
+        @click="onClickWallet(walletId)"
       />
     </div>
   </div>

@@ -398,7 +398,7 @@ const counts = computed(() => ({
         </div>
 
         <div>
-          <UiTabs class="mb-2">
+          <UiTabs1 class="mb-2">
             <UiTabsItem
               :isActive="gropedBy === 'list'"
               @click="gropedBy = 'list'"
@@ -419,7 +419,7 @@ const counts = computed(() => ({
             >
               {{ t('currencies') }}
             </UiTabsItem>
-          </UiTabs>
+          </UiTabs1>
 
           <!-- Statistics -->
           <UiToggle2
@@ -504,7 +504,6 @@ const counts = computed(() => ({
                   :walletId
                   :lineWidth="2"
                   isShowBaseRate
-                  isShowIcons
                   @click="router.push(`/wallets/${walletId}`)"
                 />
               </UiToggle2>
@@ -579,7 +578,6 @@ const counts = computed(() => ({
                     :walletId
                     :lineWidth="2"
                     isShowBaseRate
-                    isShowIcons
                     @click="router.push(`/wallets/${walletId}`)"
                   />
                 </UiToggle2>
@@ -597,7 +595,6 @@ const counts = computed(() => ({
                     :walletId
                     :lineWidth="2"
                     isShowBaseRate
-                    isShowIcons
                     @click="router.push(`/wallets/${walletId}`)"
                   />
                 </div>
@@ -617,7 +614,6 @@ const counts = computed(() => ({
               :walletId
               :lineWidth="2"
               isShowBaseRate
-              isShowIcons
               class="group"
               @click="router.push(`/wallets/${walletId}`)"
             />

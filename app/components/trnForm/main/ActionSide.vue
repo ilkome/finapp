@@ -36,9 +36,9 @@ async function onClickSubmit() {
     }"
     class="
       text-1 border-item-5 hocus:bg-item-5
-      hocus:border[red] hocus:scale-[1.02] flex
+      hocus:border[red] hocus:scale-[1.02] _max-w-[56px]
+      flex
       size-full
-      max-w-[56px]
       items-center justify-center
       rounded-xl border p-1
       py-4 text-center text-4xl

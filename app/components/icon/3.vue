@@ -50,8 +50,6 @@ const classes = computed(() => ({
 </template>
 
 <style lang="stylus" scoped>
-@import "../app/assets/stylus/variables/*"
-
 .icon
   display flex
   align-items center

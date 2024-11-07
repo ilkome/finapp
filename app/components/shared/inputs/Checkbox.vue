@@ -15,15 +15,13 @@ const emit = defineEmits<{
       {{ title }}
     </div>
 
-    <div :class="{ _active: value }" class="checkbox rounded-xl">
-      <div class="checkbox__in rounded-xl" />
+    <div :class="{ _active: value }" class="checkbox rounded-xl transition ease-in-out">
+      <div class="checkbox__in rounded-xl transition ease-in-out" />
     </div>
   </div>
 </template>
 
 <style lang="stylus" scoped>
-@import "../app/assets/stylus/variables/*"
-
 .checkboxBlock
   display flex
   align-items center
@@ -33,7 +31,6 @@ const emit = defineEmits<{
   width 44px
   height 24px
   background var(--c-bg-9)
-  anim()
 
   &._active
     background var(--c-blue-3)
@@ -46,7 +43,6 @@ const emit = defineEmits<{
     height 20px
     background var(--c-font-2)
     box-shadow 0 0 4px rgba(0, 0, 0, .25)
-    anim()
 
     ^[0]._active &
       transform translateX(18px)

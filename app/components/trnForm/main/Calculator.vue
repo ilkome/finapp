@@ -104,7 +104,7 @@ onLongPress(
       </TrnFormMainCalculatorButton>
 
       <!-- Action -->
-      <TrnFormMainActionSide class="max-w-[58px]" />
+      <TrnFormMainActionSide />
     </div>
   </div>
 </template>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Swiper, { Pagination } from 'swiper'
-import type { CategoryId } from '~/components/categories/types'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import 'swiper/css'
 
@@ -40,10 +39,6 @@ watch(isShow, (v) => {
     sliderObj.value = null
   }
 })
-
-function onSelectCategory(id: CategoryId) {
-  trnFormStore.values.categoryId = id
-}
 </script>
 
 <template>
@@ -79,9 +74,8 @@ function onSelectCategory(id: CategoryId) {
             <div class="scroll scrollerBlock">
               <div class="py-4">
                 <TrnFormSelectionWalletsFast class="pb-6" />
-
                 <TrnFormSelectionCategoriesFast
-                  @onSelectCategory="onSelectCategory"
+                  @onSelectCategory="id => trnFormStore.values.categoryId = id"
                 />
               </div>
             </div>
@@ -109,14 +103,4 @@ function onSelectCategory(id: CategoryId) {
     @apply opacity-0 -translate-x-12;
   }
 }
-</style>
-
-<style lang="stylus" scoped>
-@import "../app/assets/stylus/variables/*"
-
-.scroll
-  overflow hidden
-  overflow-y auto
-  height 100%
-  scrollbar()
 </style>

@@ -96,35 +96,33 @@ onMounted(() => {
     </div>
 
     <div v-if="sliderObj" class="px-3 py-2">
-      <UiTabs>
-        <UiTabsItem
+      <UiTabs1>
+        <UiTabsItem1
           :isActive="sliderObj.activeIndex === 0"
           @click="sliderObj.slideTo(0)"
         >
           {{ $t("categories.lastUsedTitle") }}
-        </UiTabsItem>
+        </UiTabsItem1>
 
-        <UiTabsItem
+        <UiTabsItem1
           :isActive="sliderObj.activeIndex === 1"
           @click="sliderObj.slideTo(1)"
         >
           {{ $t("categories.allTitle") }}
-        </UiTabsItem>
+        </UiTabsItem1>
 
-        <UiTabsItem
+        <UiTabsItem1
           :isActive="sliderObj.activeIndex === 2"
           @click="sliderObj.slideTo(2)"
         >
           {{ $t("categories.favoriteTitle") }}
-        </UiTabsItem>
-      </UiTabs>
+        </UiTabsItem1>
+      </UiTabs1>
     </div>
   </div>
 </template>
 
 <style lang="stylus" scoped>
-@import "../app/assets/stylus/variables/*"
-
 .contentWrap
   overflow hidden
   position relative
@@ -143,7 +141,4 @@ onMounted(() => {
   align-items flex-end
   width 100%
   height 100%
-
-  +media-laptop()
-    align-items center
 </style>

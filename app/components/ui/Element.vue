@@ -7,9 +7,6 @@ const props = defineProps<{
   insideClasses?: string
   isActive?: boolean
   isLink?: boolean
-  isShowIcon?: boolean
-  isShowIcons?: boolean
-  isShowLine?: boolean
   isShowToggle?: boolean
   lineWidth?: number
 }>()
@@ -50,19 +47,13 @@ const classes = computed(() => cn(
       </div>
 
       <slot name="default" />
-
       <slot name="line" />
     </div>
 
     <div
-      v-if="isShowLine"
-      class="bg-item-5 mx-2 h-px group-last:hidden"
-      :class="{ 'ml-9': isShowIcons, 'ml-11': isShowIcon }"
-    />
-    <div
       v-if="lineWidth"
-      class="bg-item-5 mx-2 h-px group-last:hidden"
       :class="{ 'ml-12': lineWidth === 1, 'ml-11': lineWidth === 2 }"
+      class="bg-item-5 mx-2 h-px group-last:hidden"
     />
   </div>
 </template>

@@ -202,7 +202,7 @@ function onClickChart(idx: number) {
 
     // Set date for trnForm
     const day = groupedPeriods.value?.[intervalRange.interval.value.selected]?.start
-    if (intervalRange.interval.value.period === 'day' && day) {
+    if (intervalRange.grouped.value.period === 'day' && intervalRange.grouped.value.duration === 1 && day) {
       trnsFormStore.values.date = day
     }
   }

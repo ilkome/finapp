@@ -15,7 +15,7 @@ export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
   const userStore = useUserStore()
   const currenciesStore = useCurrenciesStore()
-  const { isDemo } = useDemo()
+  const { isDemo, sortDemoWallets } = useDemo()
 
   const items = ref<Wallets | null>(null)
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
@@ -56,6 +56,10 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   async function saveWalletsOrder(ids: WalletId[]) {
+    if (isDemo.value) {
+      return await sortDemoWallets(ids, items.value)
+    }
+
     const updates = ids.reduce(
       (acc, walletId, index) => {
         acc[`${walletId}/order`] = index

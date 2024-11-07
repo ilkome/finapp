@@ -17,7 +17,7 @@ const emit = defineEmits<{
     v-for="item in items"
     :key="item.id"
     :isActive="props.activeType === item.id"
-    isShowLine
+    :lineWidth="1"
     class="group"
     insideClasses="!min-h-[44px]"
     @click="emit('click', item.id)"
