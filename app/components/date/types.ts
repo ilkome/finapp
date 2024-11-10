@@ -1,3 +1,5 @@
+import type { useIntervalRange } from '~/components/date/useIntervalRange'
+
 export const periods = ['day', 'week', 'month', 'year'] as const
 
 export type DateUTC = number
@@ -29,3 +31,5 @@ export type FullDuration = {
   interval: Interval
   label?: string
 }
+
+export type IntervalRangeProvider = ReturnType<typeof useIntervalRange>

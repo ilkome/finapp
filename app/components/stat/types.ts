@@ -1,5 +1,6 @@
 import type { z } from 'zod'
 import type { CategoryId } from '~/components/categories/types'
+import type { ChartType } from '~/components/stat/chart/types'
 import type { TrnId } from '~/components/trns/types'
 import type { ViewOptionsSchema } from '~/components/stat/config'
 
@@ -26,6 +27,7 @@ export type ChartView = (typeof chartViewOptions)[number]
 
 export type MiniItemConfig = {
   chartShow: boolean
+  chartType: ChartType
   chartView: ChartView
   showedWallets: number
 }

@@ -36,7 +36,7 @@ const list = computed(() => {
       />
     </div>
 
-    <div class="scrollerBlock mt-3 flex flex-col gap-6 overflow-y-auto pb-3">
+    <div class="scrollerBlock mt-3 flex flex-col gap-6 overflow-y-auto py-px pb-3">
       <template v-if="list.length === 0">
         <div class="py-3 text-center">
           {{ t("notFound") }}

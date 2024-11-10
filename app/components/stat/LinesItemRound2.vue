@@ -36,7 +36,7 @@ const category = computed(() => {
 
 <template>
   <div
-    class="relative flex gap-2 items-center text-2 hocus:bg-item-5 p-1 px-1 rounded-full bg-item-4 hover:bg-item-5 overflow-hidden"
+    class="text-2 hocus:bg-item-5 bg-item-4 hover:bg-item-5 relative flex items-center gap-2 overflow-hidden rounded-full p-1"
     @click="emit('click', props.item.id)"
   >
     <div
@@ -61,7 +61,7 @@ const category = computed(() => {
 
     <div
       v-if="!props.isHideAmount"
-      class="opacity-90 pr-1"
+      class="pr-1 opacity-90"
     >
       <Amount
         :amount="props.item.value"

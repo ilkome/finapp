@@ -337,15 +337,15 @@ const counts = computed(() => ({
             v-if="walletsStore.currenciesUsed.length > 1"
             class="grid grid-cols-2 gap-2 pb-2 md:hidden"
           >
-            <UiBox1 @click="isShowCurrencyFilter = true">
+            <UiBox3 @click="isShowCurrencyFilter = true">
               <UiTitle6>{{ t('filterByCurrency') }}</UiTitle6>
               {{ currencyFiltered === 'all' ? t('all') : currencyFiltered }}
-            </UiBox1>
+            </UiBox3>
 
-            <UiBox1 @click="isShowBaseCurrencyModal = true">
+            <UiBox3 @click="isShowBaseCurrencyModal = true">
               <UiTitle6>{{ t('currencies.base') }}</UiTitle6>
               {{ currenciesStore.base }}
-            </UiBox1>
+            </UiBox3>
           </div>
 
           <!-- Wallets Currencies -->
@@ -388,37 +388,37 @@ const counts = computed(() => ({
             </template>
           </UiToggle2>
 
-          <UiBox1
+          <UiBox3
             class="hidden md:grid"
             @click="isShowBaseCurrencyModal = true"
           >
             <UiTitle6>{{ t('currencies.base') }}</UiTitle6>
             {{ currenciesStore.base }}
-          </UiBox1>
+          </UiBox3>
         </div>
 
         <div>
           <UiTabs1 class="mb-2">
-            <UiTabsItem
+            <UiTabsItem1
               :isActive="gropedBy === 'list'"
               @click="gropedBy = 'list'"
             >
               {{ t('list') }}
-            </UiTabsItem>
-            <UiTabsItem
+            </UiTabsItem1>
+            <UiTabsItem1
               :isActive="gropedBy === 'type'"
               @click="gropedBy = 'type'"
             >
               {{ t('type') }}
-            </UiTabsItem>
+            </UiTabsItem1>
 
-            <UiTabsItem
+            <UiTabsItem1
               v-if="walletsStore.currenciesUsed.length > 1"
               :isActive="gropedBy === 'currencies'"
               @click="gropedBy = 'currencies'"
             >
               {{ t('currencies') }}
-            </UiTabsItem>
+            </UiTabsItem1>
           </UiTabs1>
 
           <!-- Statistics -->

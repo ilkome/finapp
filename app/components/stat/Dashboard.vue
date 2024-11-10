@@ -74,7 +74,7 @@ function onClickWallet(walletId: WalletId) {
         />
       </div>
       <FilterSelected
-        v-if="filter.isShow?.value"
+        v-if="filter.isShow?.value && filter.catsIds.value.length > 0"
         isShowCategories
       />
     </div>

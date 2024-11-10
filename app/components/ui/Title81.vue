@@ -15,12 +15,11 @@ const emit = defineEmits<{
     class="!text-3 !font-tertiary flex grow items-center gap-2 pb-0 !text-base !font-semibold leading-none"
     @click="emit('click')"
   >
-    <div><slot /></div>
     <Icon
-      v-if="!props.isShown"
-      name="mdi:chevron-down"
+      :name="props.isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
       size="22"
       class="-ml-1"
     />
+    <div><slot /></div>
   </UiTitle>
 </template>

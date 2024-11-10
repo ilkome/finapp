@@ -9,7 +9,7 @@ const { t } = useI18n()
 const userStore = useUserStore()
 const currenciesStore = useCurrenciesStore()
 const { generateDemoData } = useDemo()
-  const { isDemo } = useDemo()
+const { isDemo } = useDemo()
 const isShowBaseCurrencyModal = ref(false)
 
 useSeoMeta({
@@ -25,7 +25,7 @@ function removeUserData() {
   $toast.success(t('alerts.removedUserData'))
 }
 
-function ongenerateDemoData() {
+function onGenerateDemoData() {
   generateDemoData()
   $toast.success(t('demo.updated'))
 }
@@ -105,7 +105,7 @@ function ongenerateDemoData() {
             <UiBox1
               v-if="isDemo"
               class="!flex gap-2"
-              @click="ongenerateDemoData"
+              @click="onGenerateDemoData"
             >
               <Icon name="lucide:database-backup" />
               <div>{{ t('demo.update') }}</div>

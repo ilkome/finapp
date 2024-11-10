@@ -38,9 +38,7 @@ const { t } = useI18n()
             :title="t('isShowFavorites')"
             showCheckbox
             @onClick="emit('changeViewOptions', {
-              catsRound: {
-                isShowFavorites: !props.viewOptions.catsRound.isShowFavorites,
-              },
+              catsRound: { isShowFavorites: !props.viewOptions.catsRound.isShowFavorites },
             })"
           />
           <UiCheckbox
@@ -48,9 +46,7 @@ const { t } = useI18n()
             :title="t('isShowRecent')"
             showCheckbox
             @onClick="emit('changeViewOptions', {
-              catsRound: {
-                isShowRecent: !props.viewOptions.catsRound.isShowRecent,
-              },
+              catsRound: { isShowRecent: !props.viewOptions.catsRound.isShowRecent },
             })"
           />
         </div>
@@ -61,7 +57,7 @@ const { t } = useI18n()
           class="grid gap-2 px-2 pb-2"
         >
           <div
-            class="border-t border-item-3 pt-2"
+            class="border-item-3 border-t pt-2"
           >
             <UiElement
               @click="emit('changeViewOptions', {
@@ -89,7 +85,7 @@ const { t } = useI18n()
           </div>
 
           <div
-            class="border-t border-item-3 pt-2"
+            class="border-item-3 border-t pt-2"
           >
             <UiCheckbox
               v-if="props.viewOptions.catsView === 'list' && !props.viewOptions.catsList.isOpened"
@@ -97,9 +93,7 @@ const { t } = useI18n()
               :title="t('isItemsBg')"
               showCheckbox
               @onClick="emit('changeViewOptions', {
-                catsList: {
-                  isItemsBg: !props.viewOptions.catsList.isItemsBg,
-                },
+                catsList: { isItemsBg: !props.viewOptions.catsList.isItemsBg },
               })"
             />
 
@@ -109,9 +103,7 @@ const { t } = useI18n()
               :title="t('isLines')"
               showCheckbox
               @onClick="emit('changeViewOptions', {
-                catsList: {
-                  isLines: !props.viewOptions.catsList.isLines,
-                },
+                catsList: { isLines: !props.viewOptions.catsList.isLines },
               })"
             />
 
@@ -121,15 +113,87 @@ const { t } = useI18n()
               :title="t('isRoundIcon')"
               showCheckbox
               @onClick="emit('changeViewOptions', {
-                catsList: {
-                  isRoundIcon: !props.viewOptions.catsList.isRoundIcon,
-                },
+                catsList: { isRoundIcon: !props.viewOptions.catsList.isRoundIcon },
               })"
             />
           </div>
         </div>
       </template>
     </UPopover>
+
+    <!-- Round -->
+    <template v-if="(props.viewOptions.catsView === 'round' && !props.viewOptions.catsRound.isGrouped) || (props.viewOptions.catsView === 'list' && !props.viewOptions.catsList.isGrouped)">
+      <!-- Favorite -->
+      <UiItem1
+        @click="emit('changeViewOptions', {
+          catsRound: { isShowFavorites: !props.viewOptions.catsRound.isShowFavorites },
+        })"
+      >
+        <Icon
+          :class="{ 'opacity-50': !props.viewOptions.catsRound.isShowFavorites }"
+          name="material-symbols:favorite-outline-rounded"
+        />
+      </UiItem1>
+
+      <!-- Recent -->
+      <UiItem1
+        @click="emit('changeViewOptions', {
+          catsRound: { isShowRecent: !props.viewOptions.catsRound.isShowRecent },
+        })"
+      >
+        <Icon
+          :class="{ 'opacity-50': !props.viewOptions.catsRound.isShowRecent }"
+          name="material-symbols:history-rounded"
+        />
+      </UiItem1>
+    </template>
+
+    <!-- Folder -->
+    <UiItem1
+      v-if="props.viewOptions.catsView === 'list' && props.viewOptions.catsList.isGrouped"
+      @click="emit('changeViewOptions', {
+        catsList: { isOpened: !props.viewOptions.catsList.isOpened },
+      })"
+    >
+      <Icon
+        :name="props.viewOptions.catsList.isOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
+        size="24"
+      />
+    </UiItem1>
+
+    <!-- List -->
+    <UiItem1
+      v-if="props.viewOptions.catsView === 'list'"
+      @click="emit('changeViewOptions', {
+        catsList: { isGrouped: !props.viewOptions.catsList.isGrouped },
+      })"
+    >
+      <Icon
+        :name="props.viewOptions.catsList.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
+        size="24"
+      />
+    </UiItem1>
+
+    <!-- Round -->
+    <UiItem1
+      v-if="props.viewOptions.catsView === 'round'"
+      @click="emit('changeViewOptions', {
+        catsRound: { isGrouped: !props.viewOptions.catsRound.isGrouped },
+      })"
+    >
+      <Icon
+        :name="props.viewOptions.catsRound.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
+        size="24"
+      />
+    </UiItem1>
+
+    <UiItem1
+      @click="emit('changeViewOptions', {
+        catsView: viewOptions.catsView === 'list' ? 'round' : 'list',
+      })"
+    >
+      <Icon :name="props.viewOptions.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'" />
+    </UiItem1>
   </div>
 </template>
 

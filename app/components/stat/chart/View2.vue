@@ -29,7 +29,7 @@ const props = withDefaults(
     isShowSummary?: boolean
     period: Period
     series: unknown[]
-    xAxisLabels: string[]
+    xAxisLabels: number[]
   }>(),
   {
     chartType: 'line',

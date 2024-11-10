@@ -1,11 +1,13 @@
 <script setup lang="ts">
-const chartType = defineModel('chartType', {
+import type { ChartType } from '~/components/stat/chart/types'
+
+const chartType = defineModel<ChartType>('chartType', {
   default: 'bar',
 })
 
 const { t } = useI18n()
 
-const items = computed(() => [{
+const items = computed<{ label: string, value: ChartType }[]>(() => [{
   label: t('chart.types.bar'),
   value: 'bar',
 }, {

@@ -42,16 +42,11 @@ export const useTrnsStore = defineStore('trns', () => {
 
   function getStoreTrnsIds(props: TrnsGetterProps, params?: TrnsGetterParams) {
     if (params?.includesChildCategories) {
-      const categoriesIds = categoriesStore.getTransactibleIds(
-        props.categoriesIds,
-      )
+      const categoriesIds = categoriesStore.getTransactibleIds(props.categoriesIds)
       return getTrnsIds({ ...props, categoriesIds, trnsItems: items.value! })
     }
 
-    return getTrnsIds({
-      ...props,
-      trnsItems: items.value!,
-    })
+    return getTrnsIds({ ...props, trnsItems: items.value! })
   }
 
   function getRange(trnsIds: TrnId[]): Range {

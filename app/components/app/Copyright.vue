@@ -12,7 +12,7 @@ const { t } = useI18n()
   >
     {{ t("madeBy.text") }}
     <div
-      class="mdi mdi-heart animate-[heartbeat_3s_ease-in-out_infinite] mx-2 text-2xl text-[rgb(210,0,20)]"
+      class="mdi mdi-heart mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl text-[rgb(210,0,20)]"
     />
     {{ t("madeBy.name") }}
   </a>

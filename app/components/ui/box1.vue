@@ -8,8 +8,8 @@ const emit = defineEmits<{
 
 <template>
   <div
-    :class="[getStyles('item', ['bg', 'link', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
-    class="text-1 grid grow gap-1 px-3 py-2"
+    :class="getStyles('item', ['link', 'alt', 'center', 'minh46', 'minw1', 'rounded'])"
+    class="border-item-5 flex items-center border px-4 py-2.5"
     @click="(e: Event) => emit('click', e)"
   >
     <slot />

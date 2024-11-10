@@ -6,6 +6,7 @@ export function useStatConfig({ storageKey }: { storageKey: string }) {
 
   const config = useStorage<MiniItemConfig>(newBaseStorageKey.value, {
     chartShow: true,
+    chartType: 'bar',
     chartView: 'half',
     showedWallets: 5,
   })
