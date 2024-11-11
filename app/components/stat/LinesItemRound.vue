@@ -60,11 +60,6 @@ onLongPress(
       }
     })
   },
-  {
-    delay: 300,
-    distanceThreshold: 24,
-    modifiers: { prevent: true },
-  },
 )
 </script>
 
