@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onLongPress, useStorage } from '@vueuse/core'
+import { useStorage } from '@vueuse/core'
 import _sortby from 'lodash.sortby'
 import dayjs from 'dayjs'
 import defu from 'defu'
@@ -411,38 +411,6 @@ const quickModalTrnsIds = computed(() => {
 
   return []
 })
-
-const longPressRef1 = ref(null)
-const longPressRef2 = ref(null)
-const longPressRef3 = ref(null)
-
-onLongPress(
-  longPressRef1,
-  () => {
-    alert('longPress 1')
-  },
-)
-
-onLongPress(
-  longPressRef2,
-  () => {
-    alert('longPress 2')
-  },
-)
-
-onLongPress(
-  longPressRef3,
-  () => {
-    alert('longPress 3')
-  },
-  {
-    onMouseUp: (duration: number, _distance, isLongPress: boolean) => {
-      if (!isLongPress) {
-        alert('mouseUp')
-      }
-    },
-  },
-)
 </script>
 
 <template>
