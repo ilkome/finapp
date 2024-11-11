@@ -61,9 +61,9 @@ onLongPress(
     })
   },
   {
-    delay: 300,
+    delay: 2000,
     distanceThreshold: 24,
-    modifiers: { prevent: true },
+    modifiers: { prevent: true, stop: true },
     onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
       if (!isLongPress) {
         emit('click', props.item.id)
