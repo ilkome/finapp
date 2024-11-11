@@ -51,9 +51,14 @@ if (!props.isSort) {
     longPressRef,
     changeCreditView,
     {
-      delay: 1000,
-      // distanceThreshold: 24,
+      delay: 300,
+      distanceThreshold: 24,
       modifiers: { prevent: true },
+      onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
+        if (!isLongPress) {
+          emit('click', props.walletId)
+        }
+      },
     },
   )
 }
@@ -66,7 +71,6 @@ if (!props.isSort) {
     :insideClasses="`${props.insideClasses ? props.insideClasses : ''} min-h-[44px] lg:min-h-[42px]`"
     :lineWidth="props.lineWidth"
     :class="classes"
-    @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
     <template #leftIcon>

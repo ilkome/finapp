@@ -61,9 +61,14 @@ onLongPress(
     })
   },
   {
-    delay: 1000,
-    // distanceThreshold: 24,
+    delay: 300,
+    distanceThreshold: 24,
     modifiers: { prevent: true },
+    onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
+      if (!isLongPress) {
+        emit('click', props.item.id)
+      }
+    },
   },
 )
 </script>
@@ -86,7 +91,6 @@ onLongPress(
       isShowToggle2
       insideClasses="!min-h-[44px]"
       :lineWidth="!props.viewOptions?.catsList.isItemsBg ? props.lineWidth : 0"
-      @click="emit('click', props.item.id)"
     >
       <template #line>
         <div

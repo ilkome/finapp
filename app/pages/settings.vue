@@ -55,7 +55,7 @@ onLongPress(
     alert('longPress 3')
   },
   {
-    onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
+    onMouseUp: (duration: number, _distance, isLongPress: boolean) => {
       if (!isLongPress) {
         alert('mouseUp')
       }

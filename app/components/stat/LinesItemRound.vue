@@ -61,9 +61,14 @@ onLongPress(
     })
   },
   {
-    // delay: 1000,
-    // distanceThreshold: 24,
+    delay: 300,
+    distanceThreshold: 24,
     modifiers: { prevent: true },
+    onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
+      if (!isLongPress) {
+        emit('click', props.item.id)
+      }
+    },
   },
 )
 </script>
@@ -71,9 +76,8 @@ onLongPress(
 <template>
   <div
     ref="longPressRef"
-    class="text-secondary2 hocus:bg-item-5 bg-item-9 relative flex items-center gap-2 overflow-hidden rounded-full p-1"
     :class="{ 'opacity-60': props.item.value === 0 }"
-    @click="emit('click', props.item.id)"
+    class="text-secondary2 hocus:bg-item-5 bg-item-9 relative flex items-center gap-2 overflow-hidden rounded-full p-1"
   >
     <div
       :style="{ backgroundColor: category?.color }"
