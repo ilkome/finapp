@@ -314,11 +314,12 @@ const counts = computed(() => ({
       </template>
     </UiHeader>
 
+    <!-- Empty -->
     <div
       v-if="!walletsStore.hasItems"
       class="pageWrapper"
     >
-      <div class="max-w-xs">
+      <div class="md:max-w-xs">
         <UiButtonBlue
           @click="router.push('/wallets/new')"
         >
@@ -327,6 +328,7 @@ const counts = computed(() => ({
       </div>
     </div>
 
+    <!-- List -->
     <div
       v-else
       class="pageWrapperNoMaxWidth"

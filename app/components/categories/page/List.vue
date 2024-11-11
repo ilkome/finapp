@@ -21,22 +21,29 @@ const categoriesStore = useCategoriesStore()
       </template>
     </UiHeader>
 
-    <div class="pageWrapper">
-      <CategoriesList
-        :ids="categoriesStore.categoriesRootIds"
-        @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"
-      />
-
-      <div
-        v-if="categoriesStore.categoriesRootIds.length === 0"
-        class="max-w-xs"
-      >
+    <!-- Empty -->
+    <div
+      v-if="categoriesStore.categoriesRootIds.length === 0"
+      class="pageWrapper"
+    >
+      <div class="md:max-w-xs">
         <UiButtonBlue
           @click="router.push('/categories/new')"
         >
           {{ t("categories.new") }}
         </UiButtonBlue>
       </div>
+    </div>
+
+    <!-- List -->
+    <div
+      v-else
+      class="pageWrapper"
+    >
+      <CategoriesList
+        :ids="categoriesStore.categoriesRootIds"
+        @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"
+      />
     </div>
   </UiPage>
 </template>
