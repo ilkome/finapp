@@ -22,7 +22,7 @@ const { t } = useI18n()
         class="justify-center text-xl"
       >
         <Icon
-          name="fluent:settings-20-regular"
+          name="lucide:circle-ellipsis"
           size="18"
         />
       </div>
