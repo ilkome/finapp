@@ -19,18 +19,12 @@ const walletsStore = useWalletsStore()
 
 <template>
   <div>
-    <WalletsItem
-      v-if="!isLaptop"
-      :walletId
-      :wallet="walletsStore.sortedItems[walletId]"
-      alt
-      @click="emit('onOpen', 0)"
-    />
-
-    <UPopover v-else>
+    <!-- Laptop -->
+    <UPopover v-if="isLaptop">
       <WalletsItem
         :walletId
         :wallet="walletsStore.sortedItems[walletId]"
+        insideClasses="!min-h-[46px]"
         alt
       />
 
@@ -48,5 +42,14 @@ const walletsStore = useWalletsStore()
         </UiPopoverWrap>
       </template>
     </UPopover>
+
+    <!-- Mobile -->
+    <WalletsItem
+      v-else
+      :walletId
+      :wallet="walletsStore.sortedItems[walletId]"
+      alt
+      @click="emit('onOpen', 0)"
+    />
   </div>
 </template>

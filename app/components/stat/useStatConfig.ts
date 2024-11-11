@@ -8,7 +8,7 @@ export function useStatConfig({ storageKey }: { storageKey: string }) {
     chartShow: true,
     chartType: 'bar',
     chartView: 'half',
-    showedWallets: 5,
+    showedWallets: 0,
   })
 
   const updateConfig: UpdateConfigFn = (key, value) => {

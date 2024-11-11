@@ -440,20 +440,6 @@ const quickModalTrnsIds = computed(() => {
           @updateConfig="(key, value) => emit('updateConfig', key, value)"
         />
 
-        <div class="grid gap-3 py-4">
-          <div
-            ref="longPressRef1" class="bg-item-4 p-4"
-          >
-            Long press here 1
-          </div>
-          <div ref="longPressRef2" class="bg-item-4 p-4">
-            Long press here 2
-          </div>
-          <div ref="longPressRef3" class="bg-item-4 p-4">
-            Long press here 3
-          </div>
-        </div>
-
         <!-- Content -->
         <div class="@3xl/stat:grid-cols-[2fr,1fr] grid gap-2 pt-3">
           <!-- Categories first level -->

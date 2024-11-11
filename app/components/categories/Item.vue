@@ -28,7 +28,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
   <UiElement
     :isActive="activeItemId === categoryId"
     :lineWidth="props.lineWidth"
-    insideClasses="!min-h-[44px] lg:!min-h-[42px]"
+    insideClasses="min-h-[46px]"
     @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>
