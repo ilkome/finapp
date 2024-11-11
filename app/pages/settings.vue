@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onLongPress } from '@vueuse/core'
 import pkg from '~~/package.json'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -30,38 +29,6 @@ function onGenerateDemoData() {
   generateDemoData()
   $toast.success(t('demo.updated'))
 }
-
-const longPressRef1 = ref(null)
-const longPressRef2 = ref(null)
-const longPressRef3 = ref(null)
-
-onLongPress(
-  longPressRef1,
-  () => {
-    alert('longPress 1')
-  },
-)
-
-onLongPress(
-  longPressRef2,
-  () => {
-    alert('longPress 2')
-  },
-)
-
-onLongPress(
-  longPressRef3,
-  () => {
-    alert('longPress 3')
-  },
-  {
-    onMouseUp: (duration: number, _distance, isLongPress: boolean) => {
-      if (!isLongPress) {
-        alert('mouseUp')
-      }
-    },
-  },
-)
 </script>
 
 <template>
@@ -91,20 +58,6 @@ onLongPress(
             isShowSystem
             component="UiTabs3"
           />
-        </div>
-
-        <div class="grid gap-3 py-4">
-          <div
-            ref="longPressRef1" class="bg-item-4 p-4"
-          >
-            Long press here 1
-          </div>
-          <div ref="longPressRef2" class="bg-item-4 p-4">
-            Long press here 2
-          </div>
-          <div ref="longPressRef3" class="bg-item-4 p-4">
-            Long press here 3
-          </div>
         </div>
 
         <!-- Currency -->

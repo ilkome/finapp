@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { onLongPress, useStorage } from '@vueuse/core'
 import _sortby from 'lodash.sortby'
 import dayjs from 'dayjs'
 import defu from 'defu'
-import { useStorage } from '@vueuse/core'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { DeepPartial } from '~~/utils/types'
 import type { FilterProvider } from '~/components/filter/types'
@@ -412,6 +412,38 @@ const quickModalTrnsIds = computed(() => {
 
   return []
 })
+
+const longPressRef1 = ref(null)
+const longPressRef2 = ref(null)
+const longPressRef3 = ref(null)
+
+onLongPress(
+  longPressRef1,
+  () => {
+    alert('longPress 1')
+  },
+)
+
+onLongPress(
+  longPressRef2,
+  () => {
+    alert('longPress 2')
+  },
+)
+
+onLongPress(
+  longPressRef3,
+  () => {
+    alert('longPress 3')
+  },
+  {
+    onMouseUp: (duration: number, _distance, isLongPress: boolean) => {
+      if (!isLongPress) {
+        alert('mouseUp')
+      }
+    },
+  },
+)
 </script>
 
 <template>
@@ -440,6 +472,20 @@ const quickModalTrnsIds = computed(() => {
           @onClickSum="onSelectType"
           @updateConfig="(key, value) => emit('updateConfig', key, value)"
         />
+
+        <div class="grid gap-3 py-4">
+          <div
+            ref="longPressRef1" class="bg-item-4 p-4"
+          >
+            Long press here 1
+          </div>
+          <div ref="longPressRef2" class="bg-item-4 p-4">
+            Long press here 2
+          </div>
+          <div ref="longPressRef3" class="bg-item-4 p-4">
+            Long press here 3
+          </div>
+        </div>
 
         <!-- Content -->
         <div class="@3xl/stat:grid-cols-[2fr,1fr] grid gap-2 pt-3">
