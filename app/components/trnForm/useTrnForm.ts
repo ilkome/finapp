@@ -18,6 +18,11 @@ import { validate } from '~/components/trnForm/utils/validate'
 
 export const useTrnFormStore = defineStore('trnForm', () => {
   const { $toast } = useNuxtApp()
+  const trnFormStore = useTrnFormStore()
+  const walletsStore = useWalletsStore()
+  const categoriesStore = useCategoriesStore()
+  const trnsStore = useTrnsStore()
+
   const values = reactive<TrnFormValues>({
     amount: [0, 0, 0],
     amountRaw: ['', '', ''],
@@ -35,12 +40,11 @@ export const useTrnFormStore = defineStore('trnForm', () => {
   const ui = ref<TrnFormUi>({
     catsRootModal: false,
     isShow: false,
-    tab: 'main',
-    walletTransferModal: false,
-    walletTransferType: 'expense',
     walletsModal: false,
     walletsTab: 'all',
     walletsViewAs: 'big',
+    walletTransferModal: false,
+    walletTransferType: 'expense',
   })
 
   const modal = ref({
@@ -150,6 +154,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     values.trnId = null
 
     if (props.action === 'create') {
+      values.trnType = 0
       values.walletId = props.walletId ?? props.trn?.walletId ?? props.walletsIds[0]
       values.categoryId = props.trn?.categoryId ?? props.categoriesIds[0]
       values.incomeWalletId = props.walletsIds[0]
@@ -235,35 +240,10 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     values.amountRaw[0] = '888'
   }
 
-  return {
-    activeAmountIdx,
-    closeTrnFormModal,
-    getIsShowSum,
-    modal,
-    onChangeAmount,
-    onChangeCountSum,
-    onChangeTransferType,
-    onChangeTrnType,
-    onClear,
-    onClose,
-    onSubmit,
-    openTrnFormModal,
-    setValues,
-    ui,
-    values,
-  }
-})
-
-export function useTrnForm() {
-  const trnFormStore = useTrnFormStore()
-  const walletsStore = useWalletsStore()
-  const categoriesStore = useCategoriesStore()
-  const trnsStore = useTrnsStore()
-
   function trnFormEdit(trnId: TrnId) {
     const trn = trnsStore.items[trnId]
 
-    trnFormStore.setValues({
+    setValues({
       action: 'edit',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn,
@@ -274,7 +254,8 @@ export function useTrnForm() {
   }
 
   function trnFormCreate(props?: { categoryId?: CategoryId, walletId?: WalletId }) {
-    trnFormStore.setValues({
+    setValues({
+
       action: 'create',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn: trnsStore.lastCreatedTrnItem,
@@ -290,23 +271,43 @@ export function useTrnForm() {
   }
 
   function trnFormDuplicate(trnId: TrnId) {
-    const trn = trnsStore.items[trnId]
+    const trn = trnsStore.items?.[trnId]
 
-    trnFormStore.setValues({
-      action: 'duplicate',
-      amount: trn.amount,
-      categoriesIds: categoriesStore.categoriesIdsForTrnValues,
-      trn,
-      trnId,
-      walletsIds: walletsStore.sortedIds,
-    })
+    if (!trn)
+      return
+
+    if (trn.type !== TrnType.Transfer) {
+      setValues({
+        action: 'duplicate',
+        amount: trn.amount,
+        categoriesIds: categoriesStore.categoriesIdsForTrnValues,
+        trn,
+        trnId,
+        walletsIds: walletsStore.sortedIds,
+      })
+    }
 
     trnFormStore.ui.isShow = true
   }
 
   return {
+    activeAmountIdx,
+    closeTrnFormModal,
+    getIsShowSum,
+    modal,
+    onChangeAmount,
+    onChangeCountSum,
+    onChangeTransferType,
+    onChangeTrnType,
+    onClear,
+    onClose,
+    onSubmit,
+    openTrnFormModal,
+    setValues,
     trnFormCreate,
     trnFormDuplicate,
     trnFormEdit,
+    ui,
+    values,
   }
-}
+})

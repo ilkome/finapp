@@ -27,7 +27,6 @@ const walletType = types.map(value => ({
   value,
 }))
 
-const activeTab = ref('data')
 const modals = ref({
   colors: false,
   currencies: false,

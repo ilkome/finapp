@@ -50,7 +50,11 @@ if (!props.isSort) {
   onLongPress(
     longPressRef,
     changeCreditView,
-    { delay: 600, modifiers: { prevent: true, stop: true } },
+    {
+      delay: 300,
+      distanceThreshold: 24,
+      modifiers: { prevent: true },
+    },
   )
 }
 </script>
@@ -104,9 +108,7 @@ if (!props.isSort) {
     <!-- Alternative -->
     <template v-if="props.alt">
       <div class="grid grow gap-0.5">
-        <div
-          v-if="!isSort"
-        >
+        <div v-if="!isSort">
           <Amount
             v-if="wallet.creditLimit"
             :amount="creditAmount"

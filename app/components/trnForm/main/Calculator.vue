@@ -40,7 +40,11 @@ onLongPress(
       state.values.amountRaw = ['', '', '']
     })
   },
-  { delay: 300, modifiers: { prevent: false } },
+  {
+    delay: 300,
+    distanceThreshold: 24,
+    modifiers: { prevent: true },
+  },
 )
 </script>
 

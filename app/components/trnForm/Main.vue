@@ -3,7 +3,7 @@ import { usePointer, useWindowSize } from '@vueuse/core'
 import type { WalletId } from '~/components/wallets/types'
 import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -36,7 +36,6 @@ function show(slide: number) {
 }
 
 const trnsStore = useTrnsStore()
-const { trnFormDuplicate } = useTrnForm()
 const showModalConfirm = ref(false)
 
 function handleDeleteConfirm() {
@@ -48,7 +47,7 @@ const items = computed(() => ({
   duplicate: {
     click: () => {
       if (trnFormStore.values.trnId) {
-        trnFormDuplicate(trnFormStore.values.trnId)
+        trnFormStore.trnFormDuplicate(trnFormStore.values.trnId)
         trnFormStore.values.trnId = null
       }
     },
@@ -107,7 +106,7 @@ const items2 = computed(() => ({
     >
       <TrnsItem
         :trnItem="trnsStore.computeTrnItem(trnFormStore.values.trnId)"
-        class="bg-item-4 group rounded-lg !py-1"
+        class="bg-item-4 group rounded-lg"
         @click="trnFormStore.values.trnId = null"
       />
 

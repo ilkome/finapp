@@ -31,11 +31,10 @@ export type TrnFormValues = {
 export type TrnFormUi = {
   catsRootModal: boolean
   isShow: boolean
-  tab: 'main' | 'date' | 'desc'
-  walletTransferModal: boolean
-  walletTransferType: MoneyTypeSlug
   walletsModal: boolean
-
   walletsTab: string // TODO: add typing
   walletsViewAs: 'big' | 'small' // TODO: add typing
+
+  walletTransferModal: boolean
+  walletTransferType: MoneyTypeSlug
 }

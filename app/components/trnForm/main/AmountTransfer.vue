@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { MoneyTypeSlug } from '~/components/stat/types'
-import type { WalletId } from '~~/components/wallets/types'
+import type { WalletId } from '~/components/wallets/types'
 import { type TransferType, TrnType } from '~/components/trns/types'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { getStyles } from '~/components/ui/getStyles'
 
 defineProps<{
   isLaptop: boolean
@@ -62,17 +63,17 @@ watch(
       <div
         v-for="(item, slug) in items"
         :key="slug"
-        :class="[
-          { '!bg-item-3': trnFormStore.values.transferType === item.transferType },
-        ]"
-        class="cursor-pointer overflow-hidden rounded-md"
+        :class="[{
+          'border-accent-1': trnFormStore.values.transferType === item.transferType,
+        }, getStyles('item', ['rounded'])]"
+        class="overflow-hidden border border-transparent"
         @click="trnFormStore.onChangeTransferType(item.transferType)"
       >
-        <!-- Wallet name -->
-        <div
-          class="grid grid-cols-[.4fr,1fr] items-center whitespace-nowrap px-3 pt-2"
-        >
-          <div class="w-1/2 grow text-sm text-1/70">
+        <div class="flex items-center gap-2 whitespace-nowrap">
+          <div
+            :class="getStyles('item', ['link', 'rounded'])"
+            class=" text-1/70 flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm lg:min-h-[42px]"
+          >
             {{ t(slug) }}
           </div>
 
@@ -94,15 +95,17 @@ watch(
         </div>
 
         <!-- Input -->
-        <TrnFormMainInput
-          :key="item.amountsIdx"
-          :amount="trnFormStore.values.amount[item.amountsIdx]"
-          :amountRaw="trnFormStore.values.amountRaw[item.amountsIdx]"
-          :highlight="item.transferType === 1 ? 'expense' : 'income'"
-          :isShowSum="trnFormStore.getIsShowSum()"
-          isTransfer
-          @onChange="trnFormStore.onChangeAmount"
-        />
+        <div class="p-2 pt-1">
+          <TrnFormMainInput
+            :key="item.amountsIdx"
+            :amount="trnFormStore.values.amount[item.amountsIdx]"
+            :amountRaw="trnFormStore.values.amountRaw[item.amountsIdx]"
+            :highlight="item.transferType === 1 ? 'expense' : 'income'"
+            :isShowSum="trnFormStore.getIsShowSum()"
+            isTransfer
+            @onChange="trnFormStore.onChangeAmount"
+          />
+        </div>
       </div>
     </div>
   </div>

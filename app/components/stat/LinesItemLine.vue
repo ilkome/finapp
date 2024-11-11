@@ -1,17 +1,24 @@
 <script setup lang="ts">
+import { onLongPress } from '@vueuse/core'
+import dayjs from 'dayjs'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory, ViewOptions } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import type { IntervalRange } from '~/components/date/useIntervalRange'
+import type { Range } from '~/components/date/types'
 
 const props = defineProps<{
   biggestCatNumber: number
   insideClass?: string
   insideStyle?: string
+  intervalRange?: IntervalRange
   isActive?: boolean
   isHideDots?: boolean
   item: TotalCategory
   lineWidth?: number
+  selectedRange?: Range
   viewOptions?: ViewOptions
 }>()
 
@@ -20,6 +27,7 @@ const emit = defineEmits<{
   onClickIcon: [id: CategoryId]
 }>()
 
+const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
@@ -32,10 +40,37 @@ function getBarStyle() {
     width: `${(Math.abs(props.item.value) / Math.abs(props.biggestCatNumber ?? 0)) * 100}%`,
   }
 }
+
+const longPressRef = ref(null)
+onLongPress(
+  longPressRef,
+  () => {
+    trnFormStore.trnFormCreate()
+    trnFormStore.$patch((state) => {
+      state.values.amount = [0, 0, 0]
+      state.values.amountRaw = ['', '', '']
+      state.values.categoryId = props.item.id
+      state.ui.isShow = true
+
+      if (props.selectedRange?.start && props.intervalRange?.interval.value.period === 'day' && props.intervalRange?.interval.value.selected !== -1) {
+        state.values.date = props.selectedRange?.start
+      }
+      else {
+        state.values.date = dayjs().startOf('day').valueOf()
+      }
+    })
+  },
+  {
+    delay: 300,
+    distanceThreshold: 24,
+    modifiers: { prevent: true },
+  },
+)
 </script>
 
 <template>
   <div
+    ref="longPressRef"
     :class="[props.insideClass, {
       '-bg-item-4 ': props.isActive,
       'bg-item-9 rounded-lg': props.viewOptions?.catsList.isItemsBg,

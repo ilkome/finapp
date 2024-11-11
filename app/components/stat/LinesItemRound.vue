@@ -6,7 +6,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory } from '~/components/stat/types'
-import { useTrnForm, useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import type { IntervalRange } from '~/components/date/useIntervalRange'
 import type { Range } from '~/components/date/types'
 
@@ -25,7 +25,6 @@ const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 const trnFormStore = useTrnFormStore()
-const { trnFormCreate } = useTrnForm()
 
 const category = computed(() => {
   const isOneCategory = props.item.trnsIds.length <= 1
@@ -46,7 +45,7 @@ const longPressRef = ref(null)
 onLongPress(
   longPressRef,
   () => {
-    trnFormCreate()
+    trnFormStore.trnFormCreate()
     trnFormStore.$patch((state) => {
       state.values.amount = [0, 0, 0]
       state.values.amountRaw = ['', '', '']
@@ -61,7 +60,11 @@ onLongPress(
       }
     })
   },
-  { delay: 300, modifiers: { prevent: true } },
+  {
+    delay: 300,
+    distanceThreshold: 24,
+    modifiers: { prevent: true },
+  },
 )
 </script>
 

@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { useTrnForm } from '~/components/trnForm/useTrnForm'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
-const { trnFormCreate } = useTrnForm()
+const { trnFormCreate } = useTrnFormStore()
 </script>
 
 <template>
   <div
-    class="group absolute bottom-6 right-6 z-10 hidden justify-center lg:flex flex-end "
+    class="flex-end group absolute bottom-6 right-6 z-10 hidden justify-center lg:flex "
     @click="trnFormCreate"
   >
     <div
       class="
-        group-hover:scale-125
-        size-12
-        flex items-center justify-center
-        rounded-full bg-accent-2
-        text-3xl text-icon-primary
-        transition"
+        bg-accent-2
+        text-icon-primary
+        flex size-12 items-center
+        justify-center rounded-full
+        text-3xl transition
+        group-hover:scale-125"
     >
       <i class="mdi mdi-plus" />
     </div>

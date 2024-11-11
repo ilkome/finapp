@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useTrnForm } from '~/components/trnForm/useTrnForm'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
@@ -7,7 +7,7 @@ const { t } = useI18n()
 const router = useRouter()
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
-const trnForm = useTrnForm()
+const trnForm = useTrnFormStore()
 </script>
 
 <template>

@@ -12,11 +12,6 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-
-function onInput(event: Event) {
-  const value = (event.target as HTMLInputElement).value
-  emit('onChange', value || '')
-}
 </script>
 
 <template>
@@ -38,28 +33,18 @@ function onInput(event: Event) {
       {{ amount }}
     </div>
 
-    <!-- Input -->
-    <input
+    <UiFormInput
       :class="{
-        'text-[#f92134] placeholder:text-red-700/80': highlight === 'income',
-        'text-[#2cad22] placeholder:text-green-700/80': highlight === 'expense',
+        '!text-[#f92134] placeholder:!text-red-700/80': highlight === 'income',
+        '!text-[#2cad22] placeholder:!text-green-700/80': highlight === 'expense',
         'text-center': !isTransfer,
       }"
       :placeholder="t('enterAmount')"
       :value="amountRaw"
-      class="
-        swiper-no-swiping
-        font-secondary -placeholder:text-3xl focus:bg-item-5 block size-full h-auto
-        rounded-md bg-transparent
-        px-3 pb-2
-        pt-6
-        text-3xl
-        transition
-      "
-      type="text"
+      class="font-secondary swiper-no-swiping border-transparent bg-transparent pb-2 pt-6 text-center !text-3xl placeholder:text-3xl"
       inputmode="tel"
-      @input="onInput"
-    >
+      @updateValue="(value: string) => emit('onChange', value || '')"
+    />
   </div>
 </template>
 

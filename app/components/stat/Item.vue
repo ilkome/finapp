@@ -483,13 +483,15 @@ const quickModalTrnsIds = computed(() => {
               <StatLinesItemLine
                 v-for="item in cats"
                 :key="item.id"
-                :item
-                :viewOptions
                 :biggestCatNumber
-                :isHideDots="viewOptions.catsList.isOpened"
-                :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-                :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 :class="{ 'bg-item-9 -border border-item-5 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
+                :intervalRange
+                :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+                :isHideDots="viewOptions.catsList.isOpened"
+                :item
+                :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
+                :selectedRange="groupedPeriods[intervalRange.interval.value.selected]"
+                :viewOptions
                 @click="filter.toggleCategoryId(item.id)"
                 @onClickIcon="onClickCategory"
               >
@@ -512,7 +514,7 @@ const quickModalTrnsIds = computed(() => {
             <!-- Rounded view -->
             <div
               v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
-              class="@3xl/stat:gap-2 flex flex-wrap gap-1 pl-1 pt-2"
+              class="@3xl/stat:gap-2 flex flex-wrap gap-1 pl-1 pt-2 md:max-w-md"
             >
               <StatLinesItemRound
                 v-for="item in catsRounded"
