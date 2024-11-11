@@ -84,10 +84,10 @@ onLongPress(
     <slot name="before" />
     <UiElement
       :isActive2="props.isActive"
-      class="relative"
-      isShowToggle2
-      insideClasses="!min-h-[44px]"
       :lineWidth="!props.viewOptions?.catsList.isItemsBg ? props.lineWidth : 0"
+      class="relative"
+      insideClasses="!min-h-[44px]"
+      isShowToggle2
     >
       <template #line>
         <div
@@ -96,8 +96,8 @@ onLongPress(
         >
           <div class="bg-item-3 overflow-hidden rounded-lg">
             <div
-              class="h-1 opacity-60"
               :style="getBarStyle()"
+              class="h-1 opacity-60"
             />
           </div>
         </div>
@@ -108,8 +108,8 @@ onLongPress(
           v-if="props.viewOptions?.catsList.isRoundIcon"
           :color="category?.color"
           :name="category?.icon"
-          invert
           class="ml-0 !w-7 !text-base leading-none"
+          invert
           @click.stop="emit('onClickIcon', props.item.id)"
         />
         <UiIconBase
