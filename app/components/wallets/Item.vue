@@ -52,7 +52,7 @@ if (!props.isSort) {
     changeCreditView,
     {
       delay: 1000,
-      distanceThreshold: 24,
+      // distanceThreshold: 24,
       modifiers: { prevent: true },
     },
   )

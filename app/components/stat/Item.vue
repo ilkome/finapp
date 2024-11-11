@@ -484,7 +484,7 @@ const quickModalTrnsIds = computed(() => {
                 v-for="item in cats"
                 :key="item.id"
                 :biggestCatNumber
-                :class="{ 'bg-item-9 -border border-item-5 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
+                :class="{ 'bg-item-9 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
                 :intervalRange
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 :isHideDots="viewOptions.catsList.isOpened"
@@ -507,6 +507,22 @@ const quickModalTrnsIds = computed(() => {
                     :intervalRange
                     @click="onClickCategory"
                   />
+
+                  <StatLinesItemLine
+                    v-for="itemInside in getCats(item.trnsIds)"
+                    :key="itemInside.id"
+                    :biggestCatNumber
+                    :class="{ 'bg-item-9 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
+                    :intervalRange
+                    :isActive="openedCats.includes(itemInside.id) || openedTrns.includes(itemInside.id)"
+                    :isHideDots="viewOptions.catsList.isOpened"
+                    :item="itemInside"
+                    :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
+                    :selectedRange="groupedPeriods[intervalRange.interval.value.selected]"
+                    :viewOptions
+                    @click="filter.toggleCategoryId(itemInside.id)"
+                    @onClickIcon="onClickCategory"
+                  />
                 </div>
               </StatLinesItemLine>
             </div>
@@ -516,7 +532,7 @@ const quickModalTrnsIds = computed(() => {
               v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
               class="@3xl/stat:gap-2 flex flex-wrap gap-1 pl-1 pt-2 md:max-w-md"
             >
-              <StatLinesItemRound
+              <StatLinesItemRound2
                 v-for="item in catsRounded"
                 :key="item.id"
                 :item

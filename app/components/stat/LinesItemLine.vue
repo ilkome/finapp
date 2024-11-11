@@ -62,7 +62,7 @@ onLongPress(
   },
   {
     delay: 1000,
-    distanceThreshold: 24,
+    // distanceThreshold: 24,
     modifiers: { prevent: true },
   },
 )
