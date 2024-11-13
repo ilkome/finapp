@@ -16,6 +16,7 @@ const emit = defineEmits<{
   set30Days: [close: () => void]
   set30DaysMini: [close: () => void]
   setAllData: [close: () => void]
+  setAllSkipEmpty: [close: () => void]
 }>()
 
 function close() {
@@ -51,8 +52,18 @@ function close() {
           12 months
         </DateLinkItem>
 
-        <DateLinkItem @click="emit('setAllData', close)">
-          all
+        <DateLinkItem
+          :isActive="intervalRange.viewConfig.value.isShowAll && !intervalRange.viewConfig.value.isSkipEmpty"
+          @click="emit('setAllData', close)"
+        >
+          All
+        </DateLinkItem>
+
+        <DateLinkItem
+          :isActive="intervalRange.viewConfig.value.isShowAll && intervalRange.viewConfig.value.isSkipEmpty"
+          @click="emit('setAllSkipEmpty', close)"
+        >
+          All skip empty
         </DateLinkItem>
       </UiTabs2>
     </UiToggle2>

@@ -13,6 +13,8 @@ const emit = defineEmits<{
   set7DaysMini: [close: () => void]
   set12Months: [close: () => void]
   set30DaysMini: [close: () => void]
+  setAllData: [close: () => void]
+  setAllSkipEmpty: [close: () => void]
 }>()
 
 const { t } = useI18n()
@@ -44,6 +46,8 @@ onMounted(() => {
           @set7Days="emit('set7Days', close)"
           @set7DaysMini="emit('set7DaysMini', close)"
           @set30DaysMini="emit('set30DaysMini', close)"
+          @setAllData="emit('setAllData', close)"
+          @setAllSkipEmpty="emit('setAllSkipEmpty', close)"
           @onClose="close"
         />
       </div>

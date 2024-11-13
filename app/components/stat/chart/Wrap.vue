@@ -58,6 +58,7 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
     <div class="flex items-end justify-between gap-2">
       <UiTitle10 @click="isShowDateSelector = !isShowDateSelector">
         <DateViewRange
+          :isShowAll="intervalRange.viewConfig.value.isShowAll"
           :range="intervalRange.interval.value.selected !== -1
             ? (intervalRange.groupedPeriods.value[intervalRange.interval.value.selected]
               ? intervalRange.groupedPeriods.value[intervalRange.interval.value.selected]
@@ -67,7 +68,10 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
         />
       </UiTitle10>
 
-      <div class="flex gap-1">
+      <div
+        v-if="!intervalRange.params.value.customDate"
+        class="flex gap-1"
+      >
         <DateNavHome
           v-if="intervalRange.interval.value.selected !== -1 || (intervalRange.range.value.start !== dayjs().subtract(intervalRange.interval.value.duration - 1, intervalRange.interval.value.period).startOf(intervalRange.interval.value.period).valueOf() && intervalRange.range.value.end !== dayjs().endOf(intervalRange.interval.value.period).valueOf() && !intervalRange.viewConfig.value.isShowAll)"
           :intervalRange

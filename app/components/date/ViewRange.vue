@@ -4,6 +4,7 @@ import type { Interval, Range } from '~/components/date/types'
 
 const props = defineProps<{
   interval: Interval
+  isShowAll: boolean
   range: Range
 }>()
 
@@ -31,7 +32,7 @@ const date = computed(() => {
   }
 
   // Last periods
-  if (dayjs(props.range.end).isSame(today, props.interval.period)) {
+  if (!props.isShowAll && dayjs(props.range.end).isSame(today, props.interval.period)) {
     return `${t('dates.last')} ${props.interval.duration} ${props.interval.period}`
   }
 

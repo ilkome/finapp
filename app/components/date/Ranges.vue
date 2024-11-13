@@ -35,11 +35,6 @@ const ranges = computed<FullDuration[]>(() => [
     interval: { duration: 1, period: 'year' },
     label: t('dates.year.simple'),
   },
-  {
-    grouped: { duration: 1, period: 'year' },
-    interval: { duration: dayjs(dayjs().endOf('day')).diff(props.maxRange.start, 'day') + 1, period: 'day' },
-    label: t('common.all'),
-  },
 ])
 
 function isRangeSelected(rd: FullDuration) {
@@ -55,10 +50,6 @@ function isRangeSelected(rd: FullDuration) {
     @click="emit('setRangeByPeriod', rangeItem)"
   >
     {{ rangeItem.label }}
-  </DateLinkItem>
-
-  <DateLinkItem @click="emit('setMaxRange', props.maxRange)">
-    {{ t('max') }}
   </DateLinkItem>
 </template>
 

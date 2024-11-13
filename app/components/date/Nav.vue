@@ -67,6 +67,4 @@ function movePeriod(way: 'next' | 'prev' | 'today') {
       <UiIconChevron class="size-8 rotate-180" />
     </div>
   </div>
-
-  <pre>{{ isEnd }}</pre>
 </template>

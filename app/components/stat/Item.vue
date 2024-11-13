@@ -404,8 +404,9 @@ function set12Months(close?: () => void) {
   }
 }
 
-function setAllData() {
+function setAllData(close?: () => void) {
   intervalRange.viewConfig.value.isShowAll = true
+  intervalRange.viewConfig.value.isSkipEmpty = false
 
   // TODO: intervalDuration
   const intervalDuration = dayjs(maxRange.value.end).diff(
@@ -417,6 +418,30 @@ function setAllData() {
     grouped: { duration: 1, period: 'year' },
     interval: { duration: intervalDuration, period: 'day' },
   })
+
+  if (close) {
+    close()
+  }
+}
+
+function setAllSkipEmpty(close?: () => void) {
+  intervalRange.viewConfig.value.isShowAll = true
+  intervalRange.viewConfig.value.isSkipEmpty = true
+
+  // TODO: intervalDuration
+  const intervalDuration = dayjs(maxRange.value.end).diff(
+    maxRange.value.start,
+    'day',
+  )
+
+  intervalRange.setRangeByPeriod({
+    grouped: { duration: 1, period: 'year' },
+    interval: { duration: intervalDuration, period: 'day' },
+  })
+
+  if (close) {
+    close()
+  }
 }
 
 const quickModalTrnsIds = computed(() => {
@@ -432,18 +457,6 @@ const quickModalTrnsIds = computed(() => {
 
 <template>
   <div>
-    <!-- <pre>{{ intervalRange.grouped.value }}</pre>
-
-    <StatDateSelector
-      :intervalRange
-      :maxRange
-      @set7Days="set7Days"
-      @set7DaysMini="set7DaysMini"
-      @set30DaysMini="set30DaysMini"
-      @set12Months="set12Months"
-      @setAllData="setAllData"
-    /> -->
-
     <!-- Stat -->
     <div class="@container/stat -max-w-4xl px-2 pt-2">
       <div class="">
@@ -611,6 +624,7 @@ const quickModalTrnsIds = computed(() => {
         @set30DaysMini="set30DaysMini"
         @set12Months="set12Months"
         @setAllData="setAllData"
+        @setAllSkipEmpty="setAllSkipEmpty"
         @onClose="isShowDateSelector = false"
       />
 

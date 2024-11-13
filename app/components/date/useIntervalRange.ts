@@ -3,7 +3,31 @@ import { useStorage } from '@vueuse/core'
 import type { FullDuration, Interval, Period, Range, RangePeriodDuration } from '~/components/date/types'
 import { getPeriodsInRange } from '~/components/date/utils'
 
+type IntervalRangeParams = {
+  customDate: false | Range
+  groupedBy: Period
+  groupedDuration: number
+  intervalDuration: number
+  intervalPeriod: Period
+  isShowAll: boolean
+  isSkipEmpty: boolean
+  selectedInterval: number
+  subtracted: number
+}
+
 export function useIntervalRange({ key, maxRange }: { key: string, maxRange: ComputedRef<Range> }) {
+  const params = useStorage<IntervalRangeParams>(`${key}-params`, {
+    customDate: false,
+    groupedBy: 'month',
+    groupedDuration: 1,
+    intervalDuration: 12,
+    intervalPeriod: 'month',
+    isShowAll: false,
+    isSkipEmpty: false,
+    selectedInterval: -1,
+    subtracted: 0,
+  })
+
   const grouped = useStorage<Interval>(`${key}-grouped`, {
     duration: 1,
     period: 'month',
@@ -16,7 +40,6 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
   })
 
   const subtracted = ref(0)
-  const customDate = ref<Range | false>(false)
 
   const viewConfig = useStorage(`${key}-viewConfig`, {
     isShowAll: false,
@@ -37,29 +60,34 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
   }
 
   const range = computed<Range>(() => {
-    if (customDate.value) {
-      return customDate.value
+    if (params.value.customDate) {
+      return params.value.customDate
     }
 
-    return viewConfig.value.isShowAll
-      ? { ...maxRange.value }
-      : calculateRange({
-        duration: interval.value.duration - 1,
-        period: interval.value.period,
-        subtracted: subtracted.value,
-      })
+    else if (viewConfig.value.isShowAll && viewConfig.value.isSkipEmpty) {
+      return { ...maxRange.value }
+    }
+
+    else if (viewConfig.value.isShowAll && !viewConfig.value.isSkipEmpty) {
+      return {
+        end: dayjs().endOf(interval.value.period).valueOf(),
+        start: maxRange.value.start,
+      }
+    }
+
+    return calculateRange({
+      duration: interval.value.duration - 1,
+      period: interval.value.period,
+      subtracted: subtracted.value,
+    })
   })
 
   watch(range, () => {
     interval.value.selected = -1
   })
 
-  watch(grouped, (value) => {
-    console.log('grouped', grouped.value, value)
-  })
-
   function setRangeByPeriod(rd: FullDuration) {
-    customDate.value = false
+    params.value.customDate = false
     grouped.value.duration = 1
     grouped.value.period = rd.grouped.period
     grouped.value.duration = rd.grouped.duration
@@ -69,7 +97,7 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
 
   function setMaxRange(r: Range) {
     subtracted.value = 0
-    customDate.value = r
+    params.value.customDate = r
     grouped.value = {
       duration: 1,
       period: 'day',
@@ -77,7 +105,7 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
   }
 
   function setRangeByCalendar(r: Range) {
-    customDate.value = r
+    params.value.customDate = r
     subtracted.value = 0
 
     grouped.value = {
@@ -87,18 +115,18 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
   }
 
   function addInterval() {
-    customDate.value = false
+    params.value.customDate = false
     ++grouped.value.duration
   }
 
   function delInterval() {
-    customDate.value = false
+    params.value.customDate = false
     --grouped.value.duration
   }
 
   // Simplified range modification functions
   function modifyRange(modification: number) {
-    customDate.value = false
+    params.value.customDate = false
     interval.value.duration += modification
     subtracted.value = 0
   }
@@ -107,7 +135,7 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
   const minusRange = () => modifyRange(-1)
 
   function setGrouped(values: Interval) {
-    customDate.value = false
+    params.value.customDate = false
     grouped.value = values
   }
 
@@ -119,13 +147,13 @@ export function useIntervalRange({ key, maxRange }: { key: string, maxRange: Com
 
   return {
     addInterval,
-    customDate,
     delInterval,
     getPeriodsInRange,
     grouped,
     groupedPeriods,
     interval,
     minusRange,
+    params,
     plusRange,
     range,
     setGrouped,
