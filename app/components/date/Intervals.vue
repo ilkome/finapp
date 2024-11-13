@@ -1,39 +1,42 @@
 <script setup lang="ts">
-import type { Interval } from '~/components/date/types'
-
-const props = defineProps<{
-  grouped: Interval
-}>()
+import type { Grouped, IntervalRangeProvider } from '~/components/date/types'
 
 const emit = defineEmits<{
-  onSelect: [e: Interval]
+  close: []
 }>()
 
-const intervalGroups = computed<Interval[]>(() => [{
-  duration: 1,
-  period: 'day',
+const intervalRange = inject('intervalRange') as IntervalRangeProvider
+
+const groups = computed<Grouped[]>(() => [{
+  groupedBy: 'day',
+  groupedDuration: 1,
 }, {
-  duration: 1,
-  period: 'week',
+  groupedBy: 'week',
+  groupedDuration: 1,
 }, {
-  duration: 1,
-  period: 'month',
+  groupedBy: 'month',
+  groupedDuration: 1,
 }, {
-  duration: 6,
-  period: 'month',
+  groupedBy: 'month',
+  groupedDuration: 1,
 }, {
-  duration: 1,
-  period: 'year',
+  groupedBy: 'year',
+  groupedDuration: 1,
 }])
+
+function selectInterval(grouped: Grouped) {
+  intervalRange.setGrouped(grouped)
+  emit('close')
+}
 </script>
 
 <template>
   <DateLinkItem
-    v-for="rangeItem in intervalGroups"
-    :key="rangeItem.period"
-    :isActive="rangeItem.period === props.grouped.period && rangeItem.duration === props.grouped.duration"
-    @click="emit('onSelect', rangeItem)"
+    v-for="group in groups"
+    :key="group.groupedBy"
+    :isActive="group.groupedBy === intervalRange.params.value.groupedBy && group.groupedDuration === intervalRange.params.value.groupedDuration"
+    @click="selectInterval(group)"
   >
-    {{ rangeItem.duration }} {{ rangeItem.period }}
+    {{ group.groupedDuration }} {{ group.groupedBy }}
   </DateLinkItem>
 </template>

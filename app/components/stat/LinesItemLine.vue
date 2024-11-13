@@ -6,14 +6,12 @@ import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory, ViewOptions } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import type { IntervalRange } from '~/components/date/useIntervalRange'
-import type { Range } from '~/components/date/types'
+import type { IntervalRangeProvider, Range } from '~/components/date/types'
 
 const props = defineProps<{
   biggestCatNumber: number
   insideClass?: string
   insideStyle?: string
-  intervalRange?: IntervalRange
   isActive?: boolean
   isHideDots?: boolean
   item: TotalCategory
@@ -27,6 +25,7 @@ const emit = defineEmits<{
   onClickIcon: [id: CategoryId]
 }>()
 
+const intervalRange = inject('intervalRange') as IntervalRangeProvider
 const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
@@ -52,7 +51,7 @@ onLongPress(
       state.values.categoryId = props.item.id
       state.ui.isShow = true
 
-      if (props.selectedRange?.start && props.intervalRange?.interval.value.period === 'day' && props.intervalRange?.interval.value.selected !== -1) {
+      if (props.selectedRange?.start && intervalRange.params.value.intervalPeriod === 'day' && intervalRange.params.value.intervalSelected !== -1) {
         state.values.date = props.selectedRange?.start
       }
       else {

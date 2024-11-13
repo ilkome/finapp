@@ -1,6 +1,7 @@
 import type { useIntervalRange } from '~/components/date/useIntervalRange'
 
 export const periods = ['day', 'week', 'month', 'year'] as const
+export type Period = typeof periods[number]
 
 export type DateUTC = number
 
@@ -9,9 +10,19 @@ export type Range = {
   start: DateUTC
 }
 
-export type GroupBy = 'period' | 'all' | 'daySelector'
+export type IntervalRangeParams = {
+  customDate: false | Range
+  groupedBy: Period
+  groupedDuration: number
+  intervalDuration: number
+  intervalPeriod: Period
+  intervalSelected: number
+  isShowAll: boolean
+  isSkipEmpty: boolean
+  subtracted: number
+}
 
-export type Period = typeof periods[number]
+export type GroupBy = 'period' | 'all' | 'daySelector'
 
 export type RangeDuration = {
   duration: number
@@ -27,14 +38,10 @@ export type RangePeriodDuration = {
   range: Range
 }
 
-export type Interval = {
-  duration: number
-  period: Period
-}
+export type Interval = Pick<IntervalRangeParams, 'intervalDuration' | 'intervalPeriod'>
+export type Grouped = Pick<IntervalRangeParams, 'groupedBy' | 'groupedDuration'>
 
-export type FullDuration = {
-  grouped: Interval
-  interval: Interval
+export type IntervalGroupedLabel = Grouped & Interval & {
   label?: string
 }
 

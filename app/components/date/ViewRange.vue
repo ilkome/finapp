@@ -1,42 +1,46 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { Interval, Range } from '~/components/date/types'
-
-const props = defineProps<{
-  interval: Interval
-  isShowAll: boolean
-  range: Range
-}>()
+import type { IntervalRangeProvider, Range } from '~/components/date/types'
 
 const { t } = useI18n()
+
+const intervalRange = inject('intervalRange') as IntervalRangeProvider
+
+const range = computed<Range>(() => {
+  return intervalRange.params.value.intervalSelected !== -1
+    ? intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]
+      ? intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]!
+      : intervalRange.range.value
+    : intervalRange.range.value
+})
 
 const date = computed(() => {
   const today = dayjs()
 
   // One day
-  const isOneDay = dayjs(props.range.start).isSame(props.range.end, 'day')
+  const isOneDay = dayjs(range.value.start).isSame(range.value.end, 'day')
   if (isOneDay) {
-    if (dayjs(props.range.start).isToday()) {
+    if (dayjs(range.value.start).isToday()) {
       return t('dates.day.current')
     }
-    if (dayjs(props.range.start).isYesterday()) {
+    if (dayjs(range.value.start).isYesterday()) {
       return t('dates.day.yesterday')
     }
 
     // Same year
-    if (dayjs(props.range.start).isSame(today, 'year')) {
-      return dayjs(props.range.start).format('D MMMM')
+    if (dayjs(range.value.start).isSame(today, 'year')) {
+      return dayjs(range.value.start).format('D MMMM')
     }
 
-    return dayjs(props.range.start).format('D MMMM YYYY')
+    return dayjs(range.value.start).format('D MMMM YYYY')
   }
 
   // Last periods
-  if (!props.isShowAll && dayjs(props.range.end).isSame(today, props.interval.period)) {
-    return `${t('dates.last')} ${props.interval.duration} ${props.interval.period}`
+  if (!intervalRange.params.value.isShowAll && dayjs(range.value.end).isSame(today, intervalRange.params.value.groupedBy)) {
+    return `${t('dates.last')} ${intervalRange.params.value.intervalDuration} ${intervalRange.params.value.groupedBy}`
   }
 
-  return `${dayjs(props.range.start).format('DD MMM YYYY')} - ${dayjs(props.range.end).format('DD MMM YYYY')}`
+  return `${dayjs(range.value.start).format('DD MMM YYYY')} - ${dayjs(range.value.end).format('DD MMM YYYY')}`
 })
 </script>
 

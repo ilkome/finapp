@@ -328,11 +328,14 @@ const openedTrns = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedTr
 const quickModalCategoryId = ref<CategoryId | false>(false)
 
 function onClickCategory(categoryId: CategoryId) {
-  const queryParams = new URLSearchParams(
-    Object.entries(intervalRange.params.value).map(([key, value]) => [key, String(value)]),
-  ).toString()
+  if (props.preCategoriesIds) {
+    useRouter().push(`/categories/${categoryId}`)
+    return
+  }
 
-  useRouter().push(`/stat/category/${categoryId}?${queryParams}`)
+  quickModalCategoryId.value = quickModalCategoryId.value === categoryId
+    ? false
+    : categoryId
 }
 
 function set7Days(close?: () => void) {
@@ -524,7 +527,8 @@ const quickModalTrnsIds = computed(() => {
                 :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
                 :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
                 :viewOptions
-                @click="onClickCategory"
+                @click="filter.toggleCategoryId(item.id)"
+                @onClickIcon="onClickCategory"
               >
                 <div
                   v-if="viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened"
@@ -550,7 +554,8 @@ const quickModalTrnsIds = computed(() => {
                     :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
                     :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
                     :viewOptions
-                    @click="onClickCategory"
+                    @click="filter.toggleCategoryId(itemInside.id)"
+                    @onClickIcon="onClickCategory"
                   />
                 </div>
               </StatLinesItemLine>

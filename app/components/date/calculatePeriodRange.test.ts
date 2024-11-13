@@ -94,9 +94,6 @@ describe('calculatePeriodRange', () => {
 
     const result = calculatePeriodRange(params)
 
-    console.log(dayjs(result.end).format())
-    console.log(dayjs(result.start).format())
-
     expect(result).toEqual({
       end: dayjs('2024-11-17').endOf('day').valueOf(),
       start: dayjs('2024-11-04').valueOf(),

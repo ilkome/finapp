@@ -1,66 +1,81 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-import type { FullDuration, Interval, Range } from '~/components/date/types'
-
-const props = defineProps<{
-  interval: Interval
-  maxRange: Range
-}>()
+import type { IntervalGroupedLabel, IntervalRangeProvider } from '~/components/date/types'
 
 const emit = defineEmits<{
-  setRangeByPeriod: [d: FullDuration]
+  close: []
 }>()
 
-const ranges = computed<FullDuration[]>(() => [
+const intervalRange = inject('intervalRange') as IntervalRangeProvider
+
+const intervalGroups = computed<IntervalGroupedLabel[]>(() => [
   {
-    grouped: { duration: 1, period: 'day' },
-    interval: { duration: 7, period: 'day' },
+    groupedBy: 'day',
+    groupedDuration: 1,
+    intervalDuration: 7,
+    intervalPeriod: 'day',
     label: '7d',
   },
   {
-    grouped: { duration: 1, period: 'day' },
-    interval: { duration: 14, period: 'day' },
+    groupedBy: 'day',
+    groupedDuration: 1,
+    intervalDuration: 14,
+    intervalPeriod: 'day',
     label: '14d',
   },
   {
-    grouped: { duration: 1, period: 'day' },
-    interval: { duration: 30, period: 'day' },
+    groupedBy: 'day',
+    groupedDuration: 1,
+    intervalDuration: 30,
+    intervalPeriod: 'day',
     label: '30d',
   },
   {
-    grouped: { duration: 1, period: 'month' },
-    interval: { duration: 6, period: 'month' },
+    groupedBy: 'month',
+    groupedDuration: 1,
+    intervalDuration: 6,
+    intervalPeriod: 'month',
     label: '6m',
   },
   {
-    grouped: { duration: 1, period: 'month' },
-    interval: { duration: 12, period: 'month' },
+    groupedBy: 'month',
+    groupedDuration: 1,
+    intervalDuration: 12,
+    intervalPeriod: 'month',
     label: '12m',
   },
   {
-    grouped: { duration: 1, period: 'year' },
-    interval: { duration: 6, period: 'year' },
+    groupedBy: 'year',
+    groupedDuration: 1,
+    intervalDuration: 6,
+    intervalPeriod: 'year',
     label: '6y',
   },
   {
-    grouped: { duration: 1, period: 'year' },
-    interval: { duration: 10, period: 'year' },
+    groupedBy: 'year',
+    groupedDuration: 1,
+    intervalDuration: 10,
+    intervalPeriod: 'year',
     label: '10y',
   },
 ])
 
-function isRangeSelected(rd: FullDuration) {
-  return rd.interval.duration === props.interval.duration && rd.interval.period === props.interval.period
+function isRangeSelected(rd: IntervalGroupedLabel) {
+  return rd.intervalDuration === intervalRange.params.value.intervalDuration && rd.intervalPeriod === intervalRange.params.value.intervalPeriod
+}
+
+function selectRange(igl: IntervalGroupedLabel) {
+  intervalRange.setRangeByPeriod(igl)
+  emit('close')
 }
 </script>
 
 <template>
   <DateLinkItem
-    v-for="rangeItem in ranges"
-    :key="rangeItem.label"
-    :isActive="isRangeSelected(rangeItem)"
-    @click="emit('setRangeByPeriod', rangeItem)"
+    v-for="igl in intervalGroups"
+    :key="igl.label"
+    :isActive="isRangeSelected(igl)"
+    @click="selectRange(igl)"
   >
-    {{ rangeItem.label }}
+    {{ igl.label }}
   </DateLinkItem>
 </template>

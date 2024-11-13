@@ -7,7 +7,7 @@ import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { DeepPartial } from '~~/utils/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { MiniItemConfig, MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
-import type { Range } from '~/components/date/types'
+import type { IntervalRangeProvider, Range } from '~/components/date/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
@@ -47,12 +47,7 @@ const isShowTrns = ref(false)
 
 const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
 
-const intervalRange = useIntervalRange({
-  key: `finapp-${props.quickModalCategoryId}-${props.type}${props.storageKey}-${JSON.stringify(filter?.catsIds?.value)}`,
-  maxRange,
-})
-
-provide('intervalRange', intervalRange)
+const intervalRange = inject('intervalRange') as IntervalRangeProvider
 
 const newBaseStorageKey = computed(() => `finapp-${intervalRange.params.value.groupedBy}-${props.storageKey}-${JSON.stringify(filter?.catsIds?.value)}`)
 
@@ -92,7 +87,13 @@ const isDayToday = computed(() => intervalRange.params.value.groupedBy === 'day'
 /**
  * View Options
  */
-const viewOptions = useStorage<ViewOptions>(`${newBaseStorageKey.value}-viewOptions`, { ...defaultViewOptions })
+const viewOptions = useStorage<ViewOptions>(`${newBaseStorageKey.value}-viewOptions`, {
+  ...defaultViewOptions,
+  catsList: {
+    ...defaultViewOptions.catsList,
+    isGrouped: false,
+  },
+})
 function changeViewOptions(newViewOptions: DeepPartial<ViewOptions>) {
   viewOptions.value = defu(newViewOptions, viewOptions.value)
 }

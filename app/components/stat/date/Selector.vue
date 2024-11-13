@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-import type { IntervalRange } from '~/components/date/useIntervalRange'
-import type { FullDuration, Interval, Range } from '~/components/date/types'
-
-const props = defineProps<{
-  intervalRange: IntervalRange
-  maxRange: Range
-}>()
+import type { IntervalGroupedLabel, IntervalRangeProvider, Range } from '~/components/date/types'
 
 const emit = defineEmits<{
   onClose: []
@@ -22,6 +15,8 @@ const emit = defineEmits<{
 function close() {
   emit('onClose')
 }
+
+const intervalRange = inject('intervalRange') as IntervalRangeProvider
 </script>
 
 <template>
@@ -53,14 +48,14 @@ function close() {
         </DateLinkItem>
 
         <DateLinkItem
-          :isActive="intervalRange.viewConfig.value.isShowAll && !intervalRange.viewConfig.value.isSkipEmpty"
+          :isActive="intervalRange.params.value.isShowAll && !intervalRange.params.value.isSkipEmpty"
           @click="emit('setAllData', close)"
         >
           All
         </DateLinkItem>
 
         <DateLinkItem
-          :isActive="intervalRange.viewConfig.value.isShowAll && intervalRange.viewConfig.value.isSkipEmpty"
+          :isActive="intervalRange.params.value.isShowAll && intervalRange.params.value.isSkipEmpty"
           @click="emit('setAllSkipEmpty', close)"
         >
           All skip empty
@@ -82,26 +77,11 @@ function close() {
 
       <div class="grid gap-2 px-2">
         <div class="flex flex-wrap gap-1">
-          <DateRanges
-            :interval="intervalRange.interval.value"
-            :maxRange
-            @setMaxRange="intervalRange.setMaxRange"
-            @setRangeByPeriod="(d: FullDuration) => {
-              intervalRange.setRangeByPeriod(d)
-              close()
-            }"
-          />
+          <DateRanges @close="close" />
         </div>
 
         <div class="flex flex-wrap gap-1">
-          <DateRanges2
-            :interval="intervalRange.interval.value"
-            :maxRange
-            @setRangeByPeriod=" (d: FullDuration) => {
-              intervalRange.setRangeByPeriod(d)
-              close()
-            }"
-          />
+          <DateRanges2 @close="close" />
         </div>
 
         <div class="flex gap-1">
@@ -111,7 +91,7 @@ function close() {
 
           <DateLinkItemNoBg>
             {{
-              `Last ${intervalRange.interval.value.duration} ${intervalRange.interval.value.period}`
+              `Last ${intervalRange.params.value.intervalDuration} ${intervalRange.params.value.intervalPeriod}`
             }}
           </DateLinkItemNoBg>
 
@@ -136,15 +116,7 @@ function close() {
 
       <div class="grid gap-2 px-2">
         <div class="flex flex-wrap gap-1">
-          <DateIntervals
-            :grouped="intervalRange.grouped.value"
-            @onSelect="
-              (pd: Interval) => {
-                intervalRange.setGrouped(pd);
-                close();
-              }
-            "
-          />
+          <DateIntervals @close="close" />
         </div>
 
         <div class="flex gap-1">
@@ -157,7 +129,7 @@ function close() {
           </DateLinkItem>
           <DateLinkItemNoBg>
             {{
-              `${intervalRange.grouped.value.duration} ${intervalRange.grouped.value.period}`
+              `${intervalRange.params.value.groupedDuration} ${intervalRange.params.value.groupedBy}`
             }}
           </DateLinkItemNoBg>
         </div>

@@ -4,21 +4,28 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useStatConfig } from '~/components/stat/useStatConfig'
+import { useIntervalRange } from '~/components/date/useIntervalRange'
 
 const route = useRoute()
-const router = useRouter()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const filter = useFilter()
 provide('filter', filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value) }))
+const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
+
+const intervalRange = useIntervalRange({
+  key: `finapp-${categoryId.value}-`,
+  maxRange,
+  queryParams: route.query,
+})
+
+provide('intervalRange', intervalRange)
+
 const { config, updateConfig } = useStatConfig({ storageKey: categoryId.value })
 const category = computed(() => categoriesStore.items[categoryId.value])
-const childsIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
-const trnsIds = trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value) })
-
-// const backLink = computed(() => `/dashboard/${route.params}`)
 const backLink = computed(() => `/dashboard`)
 
 useHead({ title: category.value?.name })
@@ -50,10 +57,24 @@ useHead({ title: category.value?.name })
       />
     </UiHeader>
 
-    <div class="grid gap-2 px-2 pb-24 md:px-6">
+    <!-- <div class="grid gap-2 px-2 pb-24 md:px-6">
       <h1>hello</h1>
 
+      <h2>route.query</h2>
       <pre>{{ route.query }}</pre>
-    </div>
+
+      <hr>
+      <h2>intervalRange.params</h2>
+      <pre>{{ intervalRange.params }}</pre>
+    </div> -->
+
+    <StatItem2
+      :config="config"
+      :storageKey="categoryId"
+      :trnsIds="trnsIds"
+      class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
+      type="sum"
+      @updateConfig="updateConfig"
+    />
   </UiPage>
 </template>

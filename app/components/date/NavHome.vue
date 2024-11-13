@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
-import type { IntervalRange } from '~/components/date/useIntervalRange'
+import type { IntervalRangeProvider } from '~/components/date/types'
 
-const props = defineProps<{
-  intervalRange: IntervalRange
-}>()
+const intervalRange = inject('intervalRange') as IntervalRangeProvider
 
 function clear() {
-  props.intervalRange.subtracted.value = 0
-  props.intervalRange.interval.value.selected = -1
+  intervalRange.params.value.subtracted = 0
+  intervalRange.params.value.intervalSelected = -1
 }
 </script>
 

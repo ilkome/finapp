@@ -32,40 +32,32 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
     }"
   >
     <div
-      v-if="props.config?.chartShow && (intervalRange.interval.value.duration !== 1 || intervalRange.interval.value.period !== 'day')"
+      v-if="props.config?.chartShow && (intervalRange.params.value.intervalDuration !== 1 || intervalRange.params.value.intervalPeriod !== 'day')"
       class="pb-2"
     >
       <div class="flex justify-between">
         <LazyStatChartTypeSelector
-          :chartType="props.config.chartType"
+          :chartType="props.config?.chartType"
           @update:chartType="(value: ChartType) => emit('updateConfig', 'chartType', value)"
         />
         <LazyStatChartIntervals
-          v-model:period="intervalRange.grouped.value.period"
+          v-model:period="intervalRange.params.value.groupedBy"
           :range="intervalRange.range.value"
         />
       </div>
 
       <StatChartView2
         :xAxisLabels
-        :chartType="props.config.chartType"
-        :period="intervalRange.grouped.value.period"
+        :chartType="props.config?.chartType"
+        :period="intervalRange.params.value.groupedBy"
         :series="props.series"
-        @click=" v => emit('onClickChart', v)"
+        @click="v => emit('onClickChart', v)"
       />
     </div>
 
     <div class="flex items-end justify-between gap-2">
       <UiTitle10 @click="isShowDateSelector = !isShowDateSelector">
-        <DateViewRange
-          :isShowAll="intervalRange.viewConfig.value.isShowAll"
-          :range="intervalRange.interval.value.selected !== -1
-            ? (intervalRange.groupedPeriods.value[intervalRange.interval.value.selected]
-              ? intervalRange.groupedPeriods.value[intervalRange.interval.value.selected]
-              : intervalRange.range.value)
-            : intervalRange.range.value"
-          :interval="intervalRange.interval.value"
-        />
+        <DateViewRange />
       </UiTitle10>
 
       <div
@@ -73,14 +65,12 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
         class="flex gap-1"
       >
         <DateNavHome
-          v-if="intervalRange.interval.value.selected !== -1 || (intervalRange.range.value.start !== dayjs().subtract(intervalRange.interval.value.duration - 1, intervalRange.interval.value.period).startOf(intervalRange.interval.value.period).valueOf() && intervalRange.range.value.end !== dayjs().endOf(intervalRange.interval.value.period).valueOf() && !intervalRange.viewConfig.value.isShowAll)"
-          :intervalRange
+          v-if="intervalRange.params.value.intervalSelected !== -1 || (intervalRange.range.value.start !== dayjs().subtract(intervalRange.params.value.intervalDuration - 1, intervalRange.params.value.intervalPeriod).startOf(intervalRange.params.value.intervalPeriod).valueOf() && intervalRange.range.value.end !== dayjs().endOf(intervalRange.params.value.intervalPeriod).valueOf() && !intervalRange.params.value.isShowAll)"
         />
 
         <DateNav
-          v-if="!intervalRange.viewConfig.value.isShowAll && (intervalRange.range.value.start < dayjs().valueOf() || (intervalRange.range.value.start !== maxRange.start && intervalRange.range.value.end !== maxRange.end))"
+          v-if="!intervalRange.params.value.isShowAll && (intervalRange.range.value.start < dayjs().valueOf() || (intervalRange.range.value.start !== maxRange.start && intervalRange.range.value.end !== maxRange.end))"
           :maxRange
-          :intervalRange
         />
       </div>
     </div>

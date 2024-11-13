@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { Range } from '~/components/date/types'
+import type { IntervalRangeProvider, Range } from '~/components/date/types'
 import { getStyles } from '~/components/ui/getStyles'
-import type { IntervalRange } from '~/components/date/useIntervalRange'
 
 const props = defineProps<{
-  intervalRange: IntervalRange
   maxRange: Range
 }>()
 
-const isDayToday = computed(() => props.intervalRange.interval.value.period === 'day' && props.intervalRange.interval.value.duration === 1 && props.intervalRange.range.value.end < dayjs().endOf('day').valueOf())
+const intervalRange = inject('intervalRange') as IntervalRangeProvider
+
+const isDayToday = computed(() => intervalRange.params.value.intervalPeriod === 'day' && intervalRange.params.value.intervalDuration === 1 && intervalRange.range.value.end < dayjs().endOf('day').valueOf())
 
 const isEnd = computed(() => {
-  // if (props.intervalRange.range.value.end >= props.maxRange.end && !isDayToday.value) {
+  // if (intervalRange.range.value.end >= props.maxRange.end && !isDayToday.value) {
   //   return true
   // }
-  if (props.intervalRange.range.value.end >= dayjs().endOf(props.intervalRange.interval.value.period).valueOf() && !isDayToday.value) {
+  if (intervalRange.range.value.end >= dayjs().endOf(intervalRange.params.value.intervalPeriod).valueOf() && !isDayToday.value) {
     return true
   }
 
@@ -23,22 +23,21 @@ const isEnd = computed(() => {
 })
 
 const isStart = computed(() => {
-  if (props.intervalRange.range.value.start <= props.maxRange.start) {
+  if (intervalRange.range.value.start <= props.maxRange.start) {
     return true
   }
 
   return false
 })
 
-// TODO: make walk through interval
 function movePeriod(way: 'next' | 'prev' | 'today') {
   if (way === 'next' && !isEnd.value) {
-    props.intervalRange.subtracted.value = props.intervalRange.subtracted.value - 1
+    intervalRange.params.value.subtracted = intervalRange.params.value.subtracted - 1
     return
   }
 
   if (way === 'prev' && !isStart.value) {
-    props.intervalRange.subtracted.value = props.intervalRange.subtracted.value + 1
+    intervalRange.params.value.subtracted = intervalRange.params.value.subtracted + 1
   }
 }
 </script>
