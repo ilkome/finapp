@@ -21,6 +21,12 @@ export type RangeDuration = {
   range?: Range
 }
 
+export type RangePeriodDuration = {
+  duration: number
+  period: Period
+  range: Range
+}
+
 export type Interval = {
   duration: number
   period: Period

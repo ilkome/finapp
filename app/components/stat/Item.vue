@@ -7,7 +7,7 @@ import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { DeepPartial } from '~~/utils/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { MiniItemConfig, MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
-import type { Range } from '~/components/date/types'
+import type { Period, Range } from '~/components/date/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
@@ -55,12 +55,6 @@ const intervalRange = useIntervalRange({
 provide('intervalRange', intervalRange)
 
 const newBaseStorageKey = computed(() => `finapp-${intervalRange.grouped.value.period}-${props.storageKey}-${JSON.stringify(filter?.catsIds?.value)}`)
-
-const groupedPeriods = computed<Range[]>(() => intervalRange.getPeriodsWithEmptyTrnsIds({
-  duration: intervalRange.grouped.value.duration || 1,
-  period: intervalRange.grouped.value.period,
-  range: intervalRange.range.value,
-}))
 
 const selectedType = ref<MoneyTypeSlugSum>('sum')
 function onSelectType(type: MoneyTypeSlugSum) {
@@ -184,10 +178,10 @@ function getSeries(
 /**
  * Chart
  */
-const xAxisLabels = computed(() => groupedPeriods.value.map(r => +r.start) ?? [])
+const xAxisLabels = computed(() => intervalRange.groupedPeriods.value.map(r => +r.start) ?? [])
 
-const groupedTrnsIds = computed(() => getPeriodsWithTrns(filteredTrnsIds.value, groupedPeriods.value))
-const groupedTrnsIds2 = computed(() => getPeriodsWithTrns(props.trnsIds, groupedPeriods.value))
+const groupedTrnsIds = computed(() => getPeriodsWithTrns(filteredTrnsIds.value, intervalRange.groupedPeriods.value))
+const groupedTrnsIds2 = computed(() => getPeriodsWithTrns(props.trnsIds, intervalRange.groupedPeriods.value))
 const groupedTrnsTotals = computed(() => groupedTrnsIds.value.map(g => getTotalOfTrnsIds(g)))
 
 function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
@@ -213,7 +207,7 @@ function onClickChart(idx: number) {
     intervalRange.interval.value.selected = newPeriod
 
     // Set date for trnForm
-    const day = groupedPeriods.value?.[intervalRange.interval.value.selected]?.start
+    const day = intervalRange.groupedPeriods.value?.[intervalRange.interval.value.selected]?.start
     if (intervalRange.grouped.value.period === 'day' && intervalRange.grouped.value.duration === 1 && day) {
       trnsFormStore.values.date = day
     }
@@ -221,7 +215,7 @@ function onClickChart(idx: number) {
 }
 
 const series = computed(() => {
-  const series = getSeries(groupedTrnsTotals.value, props.type, groupedPeriods.value)
+  const series = getSeries(groupedTrnsTotals.value, props.type, intervalRange.groupedPeriods.value)
 
   if (intervalRange.interval.value.selected >= 0) {
     if (props.config?.chartType !== 'bar') {
@@ -230,7 +224,7 @@ const series = computed(() => {
       if (markAreaSeriesIdx === -1) {
         series.push({
           data: [],
-          markArea: markArea(groupedPeriods.value?.[intervalRange.interval.value.selected]?.start),
+          markArea: markArea(intervalRange.groupedPeriods.value?.[intervalRange.interval.value.selected]?.start),
           markedArea: 'markedArea',
           type: 'bar',
         })
@@ -238,14 +232,14 @@ const series = computed(() => {
       else {
         series[markAreaSeriesIdx] = {
           data: [],
-          markArea: markArea(groupedPeriods.value?.[intervalRange.interval.value.selected]?.start),
+          markArea: markArea(intervalRange.groupedPeriods.value?.[intervalRange.interval.value.selected]?.start),
           markedArea: 'markedArea',
           type: 'bar',
         }
       }
     }
     else {
-      series[0].markArea = markArea(groupedPeriods.value?.[intervalRange.interval.value.selected]?.start)
+      series[0].markArea = markArea(intervalRange.groupedPeriods.value?.[intervalRange.interval.value.selected]?.start)
     }
   }
 
@@ -397,9 +391,32 @@ function set12Months(close?: () => void) {
   viewOptions.value.catsList.isOpened = false
   intervalRange.viewConfig.value.isShowAll = false
 
+  intervalRange.viewConfig.value.isShowAll = false
+  intervalRange.subtracted.value = 0
+
+  intervalRange.setRangeByPeriod({
+    grouped: { duration: 1, period: 'month' },
+    interval: { duration: 12, period: 'month' },
+  })
+
   if (close) {
     close()
   }
+}
+
+function setAllData() {
+  intervalRange.viewConfig.value.isShowAll = true
+
+  // TODO: intervalDuration
+  const intervalDuration = dayjs(maxRange.value.end).diff(
+    maxRange.value.start,
+    'day',
+  )
+
+  intervalRange.setRangeByPeriod({
+    grouped: { duration: 1, period: 'year' },
+    interval: { duration: intervalDuration, period: 'day' },
+  })
 }
 
 const quickModalTrnsIds = computed(() => {
@@ -415,13 +432,24 @@ const quickModalTrnsIds = computed(() => {
 
 <template>
   <div>
+    <!-- <pre>{{ intervalRange.grouped.value }}</pre>
+
+    <StatDateSelector
+      :intervalRange
+      :maxRange
+      @set7Days="set7Days"
+      @set7DaysMini="set7DaysMini"
+      @set30DaysMini="set30DaysMini"
+      @set12Months="set12Months"
+      @setAllData="setAllData"
+    /> -->
+
     <!-- Stat -->
     <div class="@container/stat -max-w-4xl px-2 pt-2">
       <div class="">
         <!-- Chart -->
         <StatChartWrap
           :config="props.config"
-          :groupedPeriods
           :isShowDateSelector
           :maxRange
           :series
@@ -451,9 +479,8 @@ const quickModalTrnsIds = computed(() => {
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between md:max-w-md">
                 <UiTitle81 :isShown @click="toggle">
-                  <!-- {{ t('categories.title') }} {{ !isShown ? viewOptions.catsView === 'list' ? cats.length : catsRounded.length : '' }} -->
-                  {{ t('categories.title') }}
-                  <span class="pl-1 text-sm">{{ viewOptions.catsView === 'list' ? cats.length : catsRounded.length }}</span>
+                  <!-- {{ t('categories.title') }} -->
+                  {{ t('categories.title') }} {{ !isShown ? viewOptions.catsView === 'list' ? cats.length : catsRounded.length : '' }}
                 </UiTitle81>
 
                 <div
@@ -489,7 +516,7 @@ const quickModalTrnsIds = computed(() => {
                 :isHideDots="viewOptions.catsList.isOpened"
                 :item
                 :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-                :selectedRange="groupedPeriods[intervalRange.interval.value.selected]"
+                :selectedRange="intervalRange.groupedPeriods.value[intervalRange.interval.value.selected]"
                 :viewOptions
                 @click="filter.toggleCategoryId(item.id)"
                 @onClickIcon="onClickCategory"
@@ -502,7 +529,7 @@ const quickModalTrnsIds = computed(() => {
                     v-for="itemInside in getCats(item.trnsIds)"
                     :key="itemInside.id"
                     :item="itemInside"
-                    :selectedRange="groupedPeriods[intervalRange.interval.value.selected]"
+                    :selectedRange="intervalRange.groupedPeriods.value[intervalRange.interval.value.selected]"
                     :intervalRange
                     @click="onClickCategory"
                   />
@@ -517,7 +544,7 @@ const quickModalTrnsIds = computed(() => {
                     :isHideDots="viewOptions.catsList.isOpened"
                     :item="itemInside"
                     :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-                    :selectedRange="groupedPeriods[intervalRange.interval.value.selected]"
+                    :selectedRange="intervalRange.groupedPeriods.value[intervalRange.interval.value.selected]"
                     :viewOptions
                     @click="filter.toggleCategoryId(itemInside.id)"
                     @onClickIcon="onClickCategory"
@@ -536,7 +563,7 @@ const quickModalTrnsIds = computed(() => {
                 :key="item.id"
                 :item
                 :biggestCatNumber
-                :selectedRange="groupedPeriods[intervalRange.interval.value.selected]"
+                :selectedRange="intervalRange.groupedPeriods.value[intervalRange.interval.value.selected]"
                 :intervalRange
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 @click="onClickCategory"
@@ -577,12 +604,13 @@ const quickModalTrnsIds = computed(() => {
     <Teleport to="#teleports">
       <StatDateSelectorModal
         v-if="isShowDateSelector"
-        :intervalRange="intervalRange"
-        :maxRange="maxRange"
+        :intervalRange
+        :maxRange
         @set7Days="set7Days"
         @set7DaysMini="set7DaysMini"
         @set30DaysMini="set30DaysMini"
         @set12Months="set12Months"
+        @setAllData="setAllData"
         @onClose="isShowDateSelector = false"
       />
 

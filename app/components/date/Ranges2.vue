@@ -57,7 +57,7 @@ function isRangeSelected(rd: FullDuration) {
 <template>
   <DateLinkItem
     v-for="rangeItem in ranges"
-    :key="rangeItem"
+    :key="rangeItem.label"
     :isActive="isRangeSelected(rangeItem)"
     @click="emit('setRangeByPeriod', rangeItem)"
   >

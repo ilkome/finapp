@@ -18,18 +18,8 @@ const category = computed(() => categoriesStore.items[categoryId.value])
 const childsIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
 const trnsIds = trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value) })
 
-if (!category.value)
-  router.replace('/categories')
-
-const backLink = computed(() =>
-  category.value?.parentId
-    ? `/categories/${category.value.parentId}`
-    : '/categories',
-)
-
-function onClickEdit() {
-  router.push(`/categories/${categoryId.value}/edit`)
-}
+// const backLink = computed(() => `/dashboard/${route.params}`)
+const backLink = computed(() => `/dashboard`)
 
 useHead({ title: category.value?.name })
 </script>
@@ -54,29 +44,16 @@ useHead({ title: category.value?.name })
         </a>
       </RouterLink>
 
-      <template v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)">
-        <UiHeaderLink @click="onClickEdit">
-          <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
-        </UiHeaderLink>
-
-        <StatConfigPopover
-          :config="config"
-          @updateConfig="updateConfig"
-        />
-      </template>
+      <StatConfigPopover
+        :config="config"
+        @updateConfig="updateConfig"
+      />
     </UiHeader>
 
     <div class="grid gap-2 px-2 pb-24 md:px-6">
-      <StatItem
-        :config
-        :isQuickModal="!categoriesStore.hasChildren(categoryId)"
-        :preCategoriesIds="childsIds"
-        :storageKey="categoryId"
-        :trnsIds
-        isShowTotals
-        type="sum"
-        @updateConfig="updateConfig"
-      />
+      <h1>hello</h1>
+
+      <pre>{{ route.query }}</pre>
     </div>
   </UiPage>
 </template>

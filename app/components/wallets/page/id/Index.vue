@@ -16,7 +16,9 @@ provide('filter', filter)
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
-const { config, updateConfig } = useStatConfig({ storageKey: walletId.value })
+const { config, updateConfig } = useStatConfig({
+  storageKey: walletId.value,
+})
 
 if (!wallet.value)
   router.replace('/wallets')
@@ -49,9 +51,6 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
           @click="navigate"
         >
           <UiHeaderTitle class="px-3">
-            <div class="text-item-2 pt-3 text-xs font-medium">
-              {{ t("wallets.title") }}
-            </div>
             <div class="flex items-center gap-3 pb-1">
               <div class="text-item-1 text-2xl font-semibold">
                 {{ wallet.name }}
@@ -129,11 +128,11 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
       <div class="px-2 pt-2 md:px-6">
         <StatItem
-          type="sum"
-          :trnsIds
-          :storageKey="walletId"
-          isShowTotals
           :config
+          :storageKey="walletId"
+          :trnsIds
+          isShowTotals
+          type="sum"
           @updateConfig="updateConfig"
         />
       </div>

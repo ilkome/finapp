@@ -6,7 +6,6 @@ import type { ChartType } from '~/components/stat/chart/types'
 
 const props = defineProps<{
   config: MiniItemConfig
-  groupedPeriods: Range[]
   maxRange: Range
   series: unknown[]
   xAxisLabels: number[]
@@ -60,8 +59,8 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
       <UiTitle10 @click="isShowDateSelector = !isShowDateSelector">
         <DateViewRange
           :range="intervalRange.interval.value.selected !== -1
-            ? (groupedPeriods[intervalRange.interval.value.selected]
-              ? groupedPeriods[intervalRange.interval.value.selected]
+            ? (intervalRange.groupedPeriods.value[intervalRange.interval.value.selected]
+              ? intervalRange.groupedPeriods.value[intervalRange.interval.value.selected]
               : intervalRange.range.value)
             : intervalRange.range.value"
           :interval="intervalRange.interval.value"
@@ -75,7 +74,7 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
         />
 
         <DateNav
-          v-if="intervalRange.range.value.start !== maxRange.start && intervalRange.range.value.end !== maxRange.end"
+          v-if="!intervalRange.viewConfig.value.isShowAll && (intervalRange.range.value.start < dayjs().valueOf() || (intervalRange.range.value.start !== maxRange.start && intervalRange.range.value.end !== maxRange.end))"
           :maxRange
           :intervalRange
         />

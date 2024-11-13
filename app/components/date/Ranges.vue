@@ -8,7 +8,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  setRange: [d: Range]
+  setMaxRange: [d: Range]
   setRangeByPeriod: [d: FullDuration]
 }>()
 
@@ -57,7 +57,7 @@ function isRangeSelected(rd: FullDuration) {
     {{ rangeItem.label }}
   </DateLinkItem>
 
-  <DateLinkItem @click="emit('setRange', props.maxRange)">
+  <DateLinkItem @click="emit('setMaxRange', props.maxRange)">
     {{ t('max') }}
   </DateLinkItem>
 </template>

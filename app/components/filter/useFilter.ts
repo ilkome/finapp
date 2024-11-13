@@ -192,9 +192,7 @@ export function useFilter() {
       : [],
   )
 
-  const transactibleCatsIds = computed(() =>
-    categoriesStore.getTransactibleIds(catsIds.value),
-  )
+  const transactibleCatsIds = computed(() => categoriesStore.getTransactibleIds(catsIds.value))
 
   function setCategoryId(categoryId: CategoryId) {
     if (catsIds.value.includes(categoryId))
@@ -239,31 +237,6 @@ export function useFilter() {
     () => catsIds.value.length > 0 || walletsIds.value.length > 0,
   )
 
-  function addPeriod() {
-    periods.value[periodNameWithoutAll.value].showedPeriods
-      = periods.value[periodNameWithoutAll.value].showedPeriods + 1
-  }
-
-  function removePeriod() {
-    periods.value[periodNameWithoutAll.value].showedPeriods
-      = periods.value[periodNameWithoutAll.value].showedPeriods - 1
-  }
-
-  function setPeriod(number: PeriodSchema['showedPeriods']) {
-    periods.value[periodNameWithoutAll.value].showedPeriods = number
-  }
-
-  function toggleChartType() {
-    periods.value[periodNameWithoutAll.value].type
-      = periods.value[periodNameWithoutAll.value].type === 'line'
-        ? 'bar'
-        : 'line'
-  }
-
-  watch(date, value => localforage.setItem('finapp.chart.date', value))
-  watch(periods, value => localforage.setItem('finapp.chart.periods', deepUnref(value)), { deep: true })
-  watch(periodNameWithAll, value => localforage.setItem('finapp.chart.periodName', value))
-
   function getTrnsIdsWithFilter() {
     return trnsStore.getStoreTrnsIds({
       categoriesIds: catsIds.value,
@@ -272,38 +245,25 @@ export function useFilter() {
   }
 
   return {
-    addPeriod,
     catsIds,
     clearFilter,
-    // Date
     date,
     getTrnsIdsWithFilter,
-
-    // Computed
     isShow,
     periodNameWithAll,
     periodNameWithoutAll,
     periods,
     periodsNames,
-
     removeCategoryId,
-
-    removePeriod,
     removeWalletId,
     setCategoryId,
     setDate,
-
     setDayDate,
     setNextPeriodDate,
-    setPeriod,
     setPeriodAndDate,
-
     setPrevPeriodDate,
-
     setWalletId,
     toggleCategoryId,
-
-    toggleChartType,
     toggleWalletId,
     transactibleCatsIds,
     ui,

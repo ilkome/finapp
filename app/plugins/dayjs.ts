@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
 
-import updateLocale from 'dayjs/plugin/updateLocale'
 import isBetween from 'dayjs/plugin/isBetween'
 import en from 'dayjs/locale/en.js'
 import ru from 'dayjs/locale/ru.js'
@@ -8,7 +7,6 @@ import calendar from 'dayjs/plugin/calendar'
 import isToday from 'dayjs/plugin/isToday'
 import isYesterday from 'dayjs/plugin/isYesterday'
 
-dayjs.extend(updateLocale)
 dayjs.extend(isBetween)
 dayjs.extend(calendar)
 dayjs.extend(isToday)

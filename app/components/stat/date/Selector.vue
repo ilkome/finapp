@@ -15,34 +15,8 @@ const emit = defineEmits<{
   set12Months: [close: () => void]
   set30Days: [close: () => void]
   set30DaysMini: [close: () => void]
+  setAllData: [close: () => void]
 }>()
-
-function setAllData() {
-  props.intervalRange.viewConfig.value.isShowAll = true
-
-  // TODO: intervalDuration
-  const intervalDuration = dayjs(props.maxRange.end).diff(
-    props.maxRange.start,
-    'day',
-  )
-
-  props.intervalRange.setRangeByPeriod({
-    grouped: { duration: 1, period: 'year' },
-    interval: { duration: intervalDuration, period: 'day' },
-  })
-}
-
-function set12Months(close: () => void) {
-  emit('set12Months', close)
-
-  props.intervalRange.viewConfig.value.isShowAll = false
-  props.intervalRange.subtracted.value = 0
-
-  props.intervalRange.setRangeByPeriod({
-    grouped: { duration: 1, period: 'month' },
-    interval: { duration: 12, period: 'month' },
-  })
-}
 
 function close() {
   emit('onClose')
@@ -73,11 +47,11 @@ function close() {
         <DateLinkItem @click="emit('set30DaysMini', close)">
           30 days mini
         </DateLinkItem>
-        <DateLinkItem @click="set12Months(close)">
+        <DateLinkItem @click="emit('set12Months', close)">
           12 months
         </DateLinkItem>
 
-        <DateLinkItem @click="setAllData">
+        <DateLinkItem @click="emit('setAllData', close)">
           all
         </DateLinkItem>
       </UiTabs2>
@@ -100,7 +74,7 @@ function close() {
           <DateRanges
             :interval="intervalRange.interval.value"
             :maxRange
-            @setRange="intervalRange.setRange"
+            @setMaxRange="intervalRange.setMaxRange"
             @setRangeByPeriod="(d: FullDuration) => {
               intervalRange.setRangeByPeriod(d)
               close()
@@ -191,20 +165,17 @@ function close() {
         </UiTitle88>
       </template>
 
-      <template #default="{ close: closeToggle }">
-        <DatePicker
-          expanded
-          color="blue"
-          :value="intervalRange.range.value"
-          @update:modelValue="
-            (v: Range) => {
-              intervalRange.setRange(v);
-              closeToggle();
-              close();
-            }
-          "
-        />
-      </template>
+      <DatePicker
+        expanded
+        color="blue"
+        :value="intervalRange.range.value"
+        @update:modelValue="
+          (v: Range) => {
+            intervalRange.setRangeByCalendar(v);
+            close();
+          }
+        "
+      />
     </UiToggle2>
   </div>
 </template>

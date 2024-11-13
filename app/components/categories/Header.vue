@@ -5,28 +5,25 @@ const props = defineProps<{
   category: CategoryItem
   parentCategory?: CategoryItem
 }>()
-
-const { t } = useI18n()
 </script>
 
 <template>
-  <UiHeaderTitle class="grid gap-2 px-3">
-    <div class="text-item-2 flex items-center gap-2 pt-1 text-xs font-medium leading-none">
-      {{ t('categories.title') }}
-
-      <template v-if="props.parentCategory">
-        <div class="text-2xs text-4">
-          •
-        </div>
-        {{ props.parentCategory.name }}
-      </template>
+  <UiHeaderTitle class="grid gap-2 px-2">
+    <div
+      v-if="props.parentCategory"
+      class="text-item-2 flex items-center gap-2 pt-1 text-xs font-medium leading-none"
+    >
+      <div class="text-2xs text-4">
+        •
+      </div>
+      {{ props.parentCategory.name }}
     </div>
 
-    <div class="flex items-center gap-2 pb-1">
+    <div class="flex items-center gap-2">
       <UiIconBase
         :name="props.category.icon"
-        invert
         :color="props.category.color"
+        invert
       />
       <div class="text-xl">
         {{ props.category.name }}

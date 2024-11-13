@@ -12,7 +12,10 @@ const props = defineProps<{
 const isDayToday = computed(() => props.intervalRange.interval.value.period === 'day' && props.intervalRange.interval.value.duration === 1 && props.intervalRange.range.value.end < dayjs().endOf('day').valueOf())
 
 const isEnd = computed(() => {
-  if (props.intervalRange.range.value.end >= props.maxRange.end && !isDayToday.value) {
+  // if (props.intervalRange.range.value.end >= props.maxRange.end && !isDayToday.value) {
+  //   return true
+  // }
+  if (props.intervalRange.range.value.end >= dayjs().endOf(props.intervalRange.interval.value.period).valueOf() && !isDayToday.value) {
     return true
   }
 
@@ -30,21 +33,11 @@ const isStart = computed(() => {
 // TODO: make walk through interval
 function movePeriod(way: 'next' | 'prev' | 'today') {
   if (way === 'next' && !isEnd.value) {
-    // if (props.intervalRange.interval.value.selected !== -1) {
-    //   props.intervalRange.interval.value.selected = props.intervalRange.interval.value.selected + 1
-    //   return
-    // }
-
     props.intervalRange.subtracted.value = props.intervalRange.subtracted.value - 1
     return
   }
 
   if (way === 'prev' && !isStart.value) {
-    // if (props.intervalRange.interval.value.selected !== -1) {
-    //   props.intervalRange.interval.value.selected = props.intervalRange.interval.value.selected - 1
-    //   return
-    // }
-
     props.intervalRange.subtracted.value = props.intervalRange.subtracted.value + 1
   }
 }
@@ -74,4 +67,6 @@ function movePeriod(way: 'next' | 'prev' | 'today') {
       <UiIconChevron class="size-8 rotate-180" />
     </div>
   </div>
+
+  <pre>{{ isEnd }}</pre>
 </template>
