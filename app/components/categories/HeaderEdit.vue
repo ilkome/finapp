@@ -46,8 +46,8 @@ const { t } = useI18n()
       </a>
     </RouterLink>
 
-    <template v-if="categoryId" #actions>
-      <CategoriesDelete :categoryId="categoryId" />
+    <template v-if="props.categoryId" #actions>
+      <CategoriesDelete :categoryId="props.categoryId" />
     </template>
   </UiHeader>
 </template>

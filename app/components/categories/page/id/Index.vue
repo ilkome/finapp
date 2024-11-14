@@ -22,6 +22,10 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: catego
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const intervalRange = useIntervalRange({
+  initParams: {
+    isShowAll: true,
+    isSkipEmpty: true,
+  },
   key: `finapp-${categoryId.value}-`,
   maxRange,
   queryParams: route.query,
@@ -45,10 +49,6 @@ const backLink = computed(() =>
     ? `/categories/${category.value.parentId}`
     : '/categories',
 )
-
-function onClickEdit() {
-  router.push(`/categories/${categoryId.value}/edit`)
-}
 
 useHead({ title: category.value?.name })
 </script>
@@ -74,12 +74,12 @@ useHead({ title: category.value?.name })
       </RouterLink>
 
       <template v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)">
-        <UiHeaderLink @click="onClickEdit">
+        <UiHeaderLink @click="router.push(`/categories/${categoryId}/edit`)">
           <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
         </UiHeaderLink>
-
-        <StatConfigPopover />
       </template>
+
+      <StatConfigPopover />
     </UiHeader>
 
     <StatItemForCategory

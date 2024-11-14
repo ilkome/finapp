@@ -4,7 +4,17 @@ import { useStorage } from '@vueuse/core'
 import type { Grouped, IntervalGroupedLabel, IntervalRangeParams, IntervalRangeParamsQuery, Range } from '~/components/date/types'
 import { calculateRange, getPeriodsInRange } from '~/components/date/utils'
 
-export function useIntervalRange({ key, maxRange, queryParams }: { key: string, maxRange: ComputedRef<Range>, queryParams?: Partial<IntervalRangeParamsQuery> }) {
+export function useIntervalRange({
+  initParams,
+  key,
+  maxRange,
+  queryParams,
+}: {
+  initParams?: Partial<IntervalRangeParams>
+  key: string
+  maxRange: ComputedRef<Range>
+  queryParams?: Partial<IntervalRangeParamsQuery>
+}) {
   const params = useStorage<IntervalRangeParams>(`${key}-params`, {
     customDate: false,
     groupedBy: 'month',
@@ -16,6 +26,10 @@ export function useIntervalRange({ key, maxRange, queryParams }: { key: string, 
     isSkipEmpty: false,
     subtracted: 0,
   })
+
+  if (initParams) {
+    params.value = { ...params.value, ...initParams }
+  }
 
   if (queryParams) {
     // TODO: check queryParams with zod

@@ -22,7 +22,7 @@ const statConfig = inject('statConfig') as StatConfigProvider
     </UiItem3>
 
     <template #panel="{ close }">
-      <div class="grid gap-6 p-5">
+      <div class="grid gap-6 p-3">
         <BaseBottomSheetClose @click="close" />
 
         <!-- Chart show -->
@@ -43,7 +43,7 @@ const statConfig = inject('statConfig') as StatConfigProvider
           class="popover-el hidden md:block"
         >
           <UiTitle66 class="pb-2">
-            {{ t("stat.statConfig.config.value.chartView.label") }}
+            {{ t("stat.config.chartView.label") }}
           </UiTitle66>
 
           <UiTabs1>
@@ -53,7 +53,7 @@ const statConfig = inject('statConfig') as StatConfigProvider
               :isActive="statConfig.config.value.chartView === view"
               @click="statConfig.updateConfig('chartView', view)"
             >
-              {{ t(`stat.statConfig.config.value.chartView.${view}`) }}
+              {{ t(`stat.config.chartView.${view}`) }}
             </UiTabsItem1>
           </UiTabs1>
         </div>
@@ -61,11 +61,11 @@ const statConfig = inject('statConfig') as StatConfigProvider
         <!-- Showed wallets -->
         <div v-if="props.isShowWallets" class="popover-el">
           <UiTitle3 class="pb-2">
-            {{ t("stat.statConfig.config.value.showedWallets.label") }}
+            {{ t("stat.config.showedWallets.label") }}
           </UiTitle3>
 
           <UiFormInput
-            :placeholder="t('stat.statConfig.config.value.showedWallets.placeholder')"
+            :placeholder="t('stat.config.showedWallets.placeholder')"
             :value="statConfig.config.value.showedWallets"
             :max="walletsStore.sortedIds.length"
             class="max-w-20"

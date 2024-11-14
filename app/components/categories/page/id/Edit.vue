@@ -12,12 +12,10 @@ const categoriesStore = useCategoriesStore()
 const categoryId = computed<CategoryId>(() => route.params.id)
 const category = computed<CategoryItem>(() => categoriesStore.items[categoryId.value])
 const categoryForm = ref(getPreparedFormData(category.value))
-const parentCategory = computed(() =>
-  getParentCategory(categoriesStore.items, categoryForm.value.parentId),
-)
+const parentCategory = computed(() => getParentCategory(categoriesStore.items, categoryForm.value.parentId))
 
 function updateValue(id: CategoryId, value: any) {
-  return (categoryForm.value[id] = value)
+  categoryForm.value[id] = value
 }
 
 function afterSave() {

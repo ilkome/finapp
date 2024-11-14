@@ -7,6 +7,7 @@ import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useIntervalRange } from '~/components/date/useIntervalRange'
 
 const route = useRoute()
+const router = useRouter()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const filter = useFilter()
@@ -60,6 +61,12 @@ useHead({ title: category.value?.name })
           />
         </a>
       </RouterLink>
+
+      <template v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)">
+        <UiHeaderLink @click="router.push(`/categories/${categoryId}/edit`)">
+          <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
+        </UiHeaderLink>
+      </template>
 
       <StatConfigPopover />
     </UiHeader>
