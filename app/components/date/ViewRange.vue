@@ -36,8 +36,8 @@ const date = computed(() => {
   }
 
   // Last periods
-  if (!intervalRange.params.value.isShowAll && dayjs(range.value.end).isSame(today, intervalRange.params.value.groupedBy)) {
-    return `${t('dates.last')} ${intervalRange.params.value.intervalDuration} ${intervalRange.params.value.groupedBy}`
+  if (!intervalRange.params.value.isShowAll && dayjs(range.value.end).isSame(today, intervalRange.params.value.intervalPeriod)) {
+    return `${t('dates.last')} ${intervalRange.params.value.intervalDuration} ${intervalRange.params.value.intervalPeriod}`
   }
 
   return `${dayjs(range.value.start).format('DD MMM YYYY')} - ${dayjs(range.value.end).format('DD MMM YYYY')}`

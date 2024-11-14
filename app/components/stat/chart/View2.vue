@@ -1,28 +1,21 @@
 <script setup lang="ts">
+import VChart from 'vue-echarts'
 import dayjs from 'dayjs'
 import defu from 'defu'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
-import {
-  DataZoomComponent,
-  GridComponent,
-  MarkAreaComponent,
-  MarkLineComponent,
-  MarkPointComponent,
-  TooltipComponent,
-} from 'echarts/components'
-import { use } from 'echarts/core'
+import { DataZoomComponent, GridComponent, MarkAreaComponent, MarkLineComponent, MarkPointComponent, TooltipComponent } from 'echarts/components'
 import { SVGRenderer } from 'echarts/renderers'
-import VChart from 'vue-echarts'
+import { use } from 'echarts/core'
+import type { ChartType } from '~/components/stat/chart/types'
+import type { Period } from '~/components/date/types'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import { config, lineConfig } from '~/components/stat/chart/config2'
 import { setChartXAxis } from '~/components/stat/chart/utils'
 import { useDateFormats } from '~/components/date/useDateFormats'
-import type { ChartType } from '~/components/stat/chart/types'
-import type { Period } from '~/components/date/types'
 
 const props = withDefaults(
   defineProps<{
     chartType: ChartType
-    config?: object
     isShowDataLabels?: boolean
     isShowExpense?: boolean
     isShowIncome?: boolean
@@ -56,6 +49,7 @@ use([
   TooltipComponent,
 ])
 
+const statConfig = inject('statConfig') as StatConfigProvider
 const { getFormatForChart } = useDateFormats()
 const chartRef = ref()
 
@@ -63,7 +57,7 @@ const option = computed(() => {
   const data = defu(config, {
     series: setChartSeries(props.series),
     xAxis: setChartXAxis(props.xAxisLabels),
-    ...props.config,
+    ...statConfig.config.value,
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {

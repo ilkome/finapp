@@ -1,19 +1,15 @@
 <script setup lang="ts">
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import type { MiniItemConfig } from '~/components/stat/types'
 import { chartViewOptions } from '~/components/stat/types'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
-  config: MiniItemConfig
   isShowWallets?: boolean
-}>()
-
-const emit = defineEmits<{
-  updateConfig: [key: keyof MiniItemConfig, value: MiniItemConfig[keyof MiniItemConfig]]
 }>()
 
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
+const statConfig = inject('statConfig') as StatConfigProvider
 </script>
 
 <template>
@@ -35,29 +31,29 @@ const walletsStore = useWalletsStore()
             {{ t("stat.config.chartShow.title") }}
           </UiTitle3>
           <UiCheckbox
-            :checkboxValue="props.config.chartShow"
+            :checkboxValue="statConfig.config.value.chartShow"
             :title="t('stat.config.chartShow.label')"
-            @onClick="emit('updateConfig', 'chartShow', !props.config.chartShow)"
+            @onClick="statConfig.updateConfig('chartShow', !statConfig.config.value.chartShow)"
           />
         </div>
 
         <!-- Chart view -->
         <div
-          v-if="props.config.chartShow"
+          v-if="statConfig.config.value.chartShow"
           class="popover-el hidden md:block"
         >
           <UiTitle66 class="pb-2">
-            {{ t("stat.config.chartView.label") }}
+            {{ t("stat.statConfig.config.value.chartView.label") }}
           </UiTitle66>
 
           <UiTabs1>
             <UiTabsItem1
               v-for="view in chartViewOptions"
               :key="view"
-              :isActive="config.chartView === view"
-              @click="emit('updateConfig', 'chartView', view)"
+              :isActive="statConfig.config.value.chartView === view"
+              @click="statConfig.updateConfig('chartView', view)"
             >
-              {{ t(`stat.config.chartView.${view}`) }}
+              {{ t(`stat.statConfig.config.value.chartView.${view}`) }}
             </UiTabsItem1>
           </UiTabs1>
         </div>
@@ -65,17 +61,17 @@ const walletsStore = useWalletsStore()
         <!-- Showed wallets -->
         <div v-if="props.isShowWallets" class="popover-el">
           <UiTitle3 class="pb-2">
-            {{ t("stat.config.showedWallets.label") }}
+            {{ t("stat.statConfig.config.value.showedWallets.label") }}
           </UiTitle3>
 
           <UiFormInput
-            :placeholder="t('stat.config.showedWallets.placeholder')"
-            :value="config.showedWallets"
+            :placeholder="t('stat.statConfig.config.value.showedWallets.placeholder')"
+            :value="statConfig.config.value.showedWallets"
             :max="walletsStore.sortedIds.length"
             class="max-w-20"
             type="number"
             min="0"
-            @updateValue="value => emit('updateConfig', 'showedWallets', +value)"
+            @updateValue="value => statConfig.updateConfig('showedWallets', +value)"
           />
         </div>
       </div>

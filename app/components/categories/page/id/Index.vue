@@ -4,6 +4,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useStatConfig } from '~/components/stat/useStatConfig'
+import { useIntervalRange } from '~/components/date/useIntervalRange'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,10 +14,28 @@ const filter = useFilter()
 provide('filter', filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
-const { config, updateConfig } = useStatConfig({ storageKey: categoryId.value })
-const category = computed(() => categoriesStore.items[categoryId.value])
-const childsIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
-const trnsIds = trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value) })
+const category = ref(categoriesStore.items[categoryId.value])
+const categoryHasChildren = computed(() => categoriesStore.hasChildren(categoryId.value))
+const childIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
+const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: categoriesIdsOrParent.value }))
+const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
+
+const intervalRange = useIntervalRange({
+  key: `finapp-${categoryId.value}-`,
+  maxRange,
+  queryParams: route.query,
+})
+
+provide('intervalRange', intervalRange)
+
+const statConfig = useStatConfig({
+  props: {
+    isShowEmptyCategories: true,
+  },
+  storageKey: categoryId.value,
+})
+provide('statConfig', statConfig)
 
 if (!category.value)
   router.replace('/categories')
@@ -59,24 +78,17 @@ useHead({ title: category.value?.name })
           <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
         </UiHeaderLink>
 
-        <StatConfigPopover
-          :config="config"
-          @updateConfig="updateConfig"
-        />
+        <StatConfigPopover />
       </template>
     </UiHeader>
 
-    <div class="grid gap-2 px-2 pb-24 md:px-6">
-      <StatItem
-        :config
-        :isQuickModal="!categoriesStore.hasChildren(categoryId)"
-        :preCategoriesIds="childsIds"
-        :storageKey="categoryId"
-        :trnsIds
-        isShowTotals
-        type="sum"
-        @updateConfig="updateConfig"
-      />
-    </div>
+    <StatItemForCategory
+      :hasChildren="categoryHasChildren"
+      :storageKey="categoryId"
+      :preCategoriesIds="statConfig.config.value.isShowEmptyCategories ? childIds : []"
+      :trnsIds="trnsIds"
+      class="max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
+      type="sum"
+    />
   </UiPage>
 </template>

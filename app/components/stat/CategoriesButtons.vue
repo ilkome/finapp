@@ -2,6 +2,7 @@
 import { getStyles } from '~/components/ui/getStyles'
 import type { ViewOptions } from '~/components/stat/types'
 import type { DeepPartial } from '~~/utils/types'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   isShowFavorites?: boolean
@@ -14,15 +15,14 @@ const emit = defineEmits<{
   changeViewOptions: [o: DeepPartial<ViewOptions>]
 }>()
 
+const statConfig = inject('statConfig') as StatConfigProvider
+
 const { t } = useI18n()
 </script>
 
 <template>
   <div class="flex gap-1">
-    <UPopover
-      v-if="(props.isShowFavorites && props.isShowRecent) || props.viewOptions.catsView === 'list'"
-      class="group"
-    >
+    <UPopover class="group">
       <div
         :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
         class="justify-center text-xl"
@@ -34,29 +34,39 @@ const { t } = useI18n()
       </div>
 
       <template #panel>
+        <div class="p-1">
+          <UiElement
+            @click="statConfig.updateConfig('isShowEmptyCategories', !statConfig.config.value.isShowEmptyCategories)"
+          >
+            <SharedInputsCheckbox :value="statConfig.config.value.isShowEmptyCategories" />
+            {{ t('isShowEmptyCategories') }}
+          </UiElement>
+        </div>
+
         <!-- Round -->
         <div
           v-if="props.viewOptions.catsView === 'round'"
           class="grid gap-2 px-2 pb-2"
         >
-          <UiCheckbox
+          <UiElement
             v-if="props.isShowFavorites"
-            :checkboxValue="props.viewOptions.catsRound.isShowFavorites"
-            :title="t('isShowFavorites')"
-            showCheckbox
-            @onClick="emit('changeViewOptions', {
+            @click="emit('changeViewOptions', {
               catsRound: { isShowFavorites: !props.viewOptions.catsRound.isShowFavorites },
             })"
-          />
-          <UiCheckbox
+          >
+            <SharedInputsCheckbox :value="props.viewOptions.catsRound.isShowFavorites" />
+            {{ t('isShowFavorites') }}
+          </UiElement>
+
+          <UiElement
             v-if="props.isShowRecent"
-            :checkboxValue="props.viewOptions.catsRound.isShowRecent"
-            :title="t('isShowRecent')"
-            showCheckbox
-            @onClick="emit('changeViewOptions', {
+            @click="emit('changeViewOptions', {
               catsRound: { isShowRecent: !props.viewOptions.catsRound.isShowRecent },
             })"
-          />
+          >
+            <SharedInputsCheckbox :value="props.viewOptions.catsRound.isShowRecent" />
+            {{ t('isShowRecent') }}
+          </UiElement>
         </div>
 
         <!-- List -->
@@ -214,6 +224,7 @@ en:
   isRoundIcon: Rounded categories
   minimal: Minimal
   standard: Standard
+  isShowEmptyCategories: Show all categories
 
 ru:
   isItemsBg: Фон категорий
@@ -221,4 +232,5 @@ ru:
   isRoundIcon: Скуруглённые категории
   minimal: Легкий
   standard: Стандартный
+  isShowEmptyCategories: Показывать все категории
 </i18n>

@@ -54,3 +54,5 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     updateConfig,
   }
 }
+
+export type StatConfigProvider = ReturnType<typeof useStatConfig>

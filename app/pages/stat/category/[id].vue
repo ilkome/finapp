@@ -20,19 +20,20 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: catego
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const intervalRange = useIntervalRange({
-  key: `finapp-${categoryId.value}-`,
+  key: `finapp-${categoryId.value}-stat`,
   maxRange,
   queryParams: route.query,
 })
 
 provide('intervalRange', intervalRange)
 
-const { config, updateConfig } = useStatConfig({
+const statConfig = useStatConfig({
   props: {
-    isShowEmptyCategories: true,
+    isShowEmptyCategories: false,
   },
   storageKey: categoryId.value,
 })
+provide('statConfig', statConfig)
 
 const category = computed(() => categoriesStore.items[categoryId.value])
 const backLink = computed(() => `/dashboard`)
@@ -60,21 +61,16 @@ useHead({ title: category.value?.name })
         </a>
       </RouterLink>
 
-      <StatConfigPopover
-        :config="config"
-        @updateConfig="updateConfig"
-      />
+      <StatConfigPopover />
     </UiHeader>
 
     <StatItemForCategory
       :hasChildren="categoryHasChildren"
-      :config="config"
       :storageKey="categoryId"
-      :preCategoriesIds="config.isShowEmptyCategories ? childIds : []"
+      :preCategoriesIds="statConfig.config.value.isShowEmptyCategories ? childIds : []"
       :trnsIds="trnsIds"
       class="max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
       type="sum"
-      @updateConfig="updateConfig"
     />
   </UiPage>
 </template>

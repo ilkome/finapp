@@ -153,7 +153,7 @@ const groupedTrns = computed(() => {
     <!-- Filter by type -->
     <UiTabs1
       v-if="isShowFilterByType && typeFilters.length > 2"
-      class="mb-2"
+      class="mb-4"
     >
       <UiTabsItem1
         v-for="filterItem in typeFilters"
@@ -226,7 +226,7 @@ const groupedTrns = computed(() => {
     <!-- With dates -->
     <div
       v-if="!isHideDates"
-      class="grid gap-2"
+      class="grid gap-4"
     >
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
@@ -235,11 +235,11 @@ const groupedTrns = computed(() => {
       >
         <div
           :class="{ '-border-b border-item-5': isShowGroupSum && groupTrnsIds.length > 1 }"
-          class="flex items-end gap-2 px-3 py-2 pb-1"
+          class="bg-item-4 flex items-end gap-2 px-3 py-2 pb-1"
         >
           <DateTrns
             :date="+date"
-            class="grow"
+            class="grow "
           />
 
           <!-- Group Sum -->

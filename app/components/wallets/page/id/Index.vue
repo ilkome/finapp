@@ -17,9 +17,8 @@ provide('filter', filter)
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
-const { config, updateConfig } = useStatConfig({
-  storageKey: walletId.value,
-})
+const statConfig = useStatConfig({ storageKey: walletId.value })
+provide('statConfig', statConfig)
 
 if (!wallet.value)
   router.replace('/wallets')
@@ -73,10 +72,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
           />
         </UiHeaderLink>
 
-        <StatConfigPopover
-          :config="config"
-          @updateConfig="updateConfig"
-        />
+        <StatConfigPopover />
       </template>
     </UiHeader>
 
@@ -126,12 +122,10 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
       <div class="px-2 pt-2 md:px-6">
         <StatItem
-          :config
           :storageKey="walletId"
           :trnsIds
           isShowTotals
           type="sum"
-          @updateConfig="updateConfig"
         />
       </div>
     </div>

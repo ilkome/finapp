@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
 import _sortby from 'lodash.sortby'
 import dayjs from 'dayjs'
 import defu from 'defu'
+import { useStorage } from '@vueuse/core'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { DeepPartial } from '~~/utils/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
-import type { MiniItemConfig } from '~/components/stat/useStatConfig'
 import type { IntervalRangeProvider, Range } from '~/components/date/types'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
+import type { MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
@@ -18,11 +18,10 @@ import { markArea } from '~/components/stat/chart/utils'
 import { seriesOptions } from '~/components/stat/chart/config2'
 import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
-  config: MiniItemConfig
   hasChildren: boolean
   isQuickModal?: boolean
   preCategoriesIds?: CategoryId[]
@@ -32,13 +31,10 @@ const props = defineProps<{
   type: MoneyTypeSlugSum
 }>()
 
-const emit = defineEmits<{
-  updateConfig: [key: keyof MiniItemConfig, value: MiniItemConfig[keyof MiniItemConfig]]
-}>()
-
 const { t } = useI18n()
 const filter = inject('filter') as FilterProvider
 const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statConfig = inject('statConfig') as StatConfigProvider
 
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnFormStore()
@@ -49,7 +45,6 @@ const isShowDateSelector = ref(false)
 const isShowTrns = ref(false)
 
 const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
-
 const newBaseStorageKey = computed(() => `finapp-${intervalRange.params.value.groupedBy}-${props.storageKey}-${JSON.stringify(filter?.catsIds?.value)}`)
 
 const selectedType = ref<MoneyTypeSlugSum>('sum')
@@ -230,7 +225,7 @@ const series = computed(() => {
   const series = getSeries(groupedTrnsTotals.value, props.type, intervalRange.groupedPeriods.value)
 
   if (intervalRange.params.value.intervalSelected >= 0) {
-    if (props.config?.chartType !== 'bar') {
+    if (statConfig.config.value?.chartType !== 'bar') {
       const markAreaSeriesIdx = series.findIndex(s => s.markedArea === 'markedArea')
 
       if (markAreaSeriesIdx === -1) {
@@ -304,7 +299,7 @@ const totals = computed<TotalReturns>(() => getTotalOfTrnsIds(trnsIdsForTotals.v
  */
 const cats = computed(() => {
   let cats: CategoryId[] = []
-  if (props.config?.isShowEmptyCategories && props.preCategoriesIds) {
+  if (statConfig.config.value?.isShowEmptyCategories && props.preCategoriesIds) {
     cats.push(...props.preCategoriesIds)
   }
   else if (props.preCategoriesIds) {
@@ -467,160 +462,119 @@ const quickModalTrnsIds = computed(() => {
 
 <template>
   <div>
-    <!-- Stat -->
-    <div class="@container/stat -max-w-4xl px-2 pt-2">
-      <div class="">
-        <!-- Chart -->
-        <StatChartWrap
-          :config="props.config"
-          :isShowDateSelector
-          :maxRange
-          :series
-          :xAxisLabels
-          @onClickChart="onClickChart"
-          @update:isShowDateSelector="(value: boolean) => isShowDateSelector = value"
-          @updateConfig="(key, value) => emit('updateConfig', key, value)"
-        />
+    <div class="@container/stat px-2 pt-2">
+      <!-- Chart -->
+      <StatChartWrap
+        :isShowDateSelector
+        :maxRange
+        :series
+        :xAxisLabels
+        @onClickChart="onClickChart"
+        @update:isShowDateSelector="(value: boolean) => isShowDateSelector = value"
+      />
 
-        <!-- Stat sum -->
-        <StatSumWrap
-          :isShowExpense="typesInTrnsIds.expense"
-          :isShowIncome="typesInTrnsIds.income"
-          :selectedType
-          :totals
-          :type="props.type"
-          :typesInTrnsIds
-          @onClickSum="onSelectType"
-          @updateConfig="(key, value) => emit('updateConfig', key, value)"
-        />
+      <!-- Stat sum -->
+      <StatSumWrap
+        :isShowExpense="typesInTrnsIds.expense"
+        :isShowIncome="typesInTrnsIds.income"
+        :selectedType
+        :totals
+        :type="props.type"
+        :typesInTrnsIds
+        @onClickSum="onSelectType"
+      />
 
-        <!-- Content -->
-        <div class="@3xl/stat:grid-cols-[2fr,1fr] grid gap-2 pt-3">
-          <!-- Categories first level -->
-          <UiToggle
-            v-if="props.hasChildren"
-            :storageKey="`${newBaseStorageKey}-cats-root`"
-            :initStatus="true"
-            openPadding="!pb-3"
-          >
-            <template #header="{ toggle, isShown }">
-              <div class="flex items-center justify-between md:max-w-md">
-                <UiTitle81 :isShown @click="toggle">
-                  {{ t('categories.title') }} {{ !isShown ? viewOptions.catsView === 'list' ? cats.length : catsRounded.length : '' }}
-                </UiTitle81>
+      <!-- Content -->
+      <div class="@3xl/stat:grid-cols-[2fr,1fr] grid gap-6 pt-3">
+        <!-- Categories first level -->
+        <div v-if="props.hasChildren">
+          <div class="flex items-center justify-between md:max-w-md">
+            <UiTitle82>
+              {{ t('categories.title') }}
+            </UiTitle82>
 
-                <div
-                  v-if="isShown"
-                  class="flex gap-1"
-                >
-                  <StatCategoriesButtons
-                    :viewOptions
-                    @changeViewOptions="changeViewOptions"
-                  />
-                </div>
-              </div>
-            </template>
-
-            <!-- List -->
-            <div
-              v-if="cats.length > 0 && viewOptions.catsView === 'list'"
-              :class="{
-                'grid gap-2 px-0': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened,
-                'md:max-w-md': !viewOptions.catsList.isGrouped || !viewOptions.catsList.isOpened,
-                'grid gap-1': viewOptions.catsList.isItemsBg,
-              }"
-              class="pt-2"
-            >
-              <StatLinesItemLine
-                v-for="item in cats"
-                :key="item.id"
-                :biggestCatNumber
-                :class="{ 'bg-item-9 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
-                :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-                :isHideDots="viewOptions.catsList.isOpened"
-                :item
-                :isHideParent="props.hasChildren"
-                :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-                :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
-                :viewOptions
-                @click="onClickCategory"
-              >
-                <div
-                  v-if="viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened"
-                  class="flex flex-wrap gap-1 pb-3 pl-2 pt-1"
-                >
-                  <StatLinesItemRound
-                    v-for="itemInside in getCats(item.trnsIds)"
-                    :key="itemInside.id"
-                    :item="itemInside"
-                    :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
-                    @click="onClickCategory"
-                  />
-
-                  <StatLinesItemLine
-                    v-for="itemInside in getCats(item.trnsIds)"
-                    :key="itemInside.id"
-                    :biggestCatNumber
-                    :class="{ 'bg-item-9 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
-                    :intervalRange
-                    :isActive="openedCats.includes(itemInside.id) || openedTrns.includes(itemInside.id)"
-                    :isHideDots="viewOptions.catsList.isOpened"
-                    :item="itemInside"
-                    :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-                    :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
-                    :viewOptions
-                    @click="onClickCategory"
-                  />
-                </div>
-              </StatLinesItemLine>
-            </div>
-
-            <!-- Rounded view -->
-            <div
-              v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
-              class="@3xl/stat:gap-2 flex flex-wrap gap-1 gap-y-2 pl-1 pt-2 md:max-w-md"
-            >
-              <StatLinesItemRound2
-                v-for="item in catsRounded"
-                :key="item.id"
-                :item
-                :biggestCatNumber
-                :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
-                :intervalRange
-                :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-                @click="onClickCategory"
-              />
-            </div>
-          </UiToggle>
-
-          <UiToggle
-            v-if="selectedTrnsIdsForTrnsList.length > 0"
-            :storageKey="`${newBaseStorageKey}-${props.type}trns-all`"
-            :initStatus="true"
-            class="min-w-80 md:max-w-md"
-          >
-            <template #header="{ toggle, isShown }">
-              <div class="flex items-center justify-between">
-                <UiTitle81 :isShown @click="toggle">
-                  {{ t('trns.title') }} {{ (!isShown && selectedTrnsIdsForTrnsList.length > 0) ? selectedTrnsIdsForTrnsList.length : '' }}
-                </UiTitle81>
-              </div>
-            </template>
-
-            <TrnsList
-              :isHideDates="isDayToday"
-              :isShowExpense="typesInTrnsIds.expense"
-              :isShowGroupSum="!isDayToday"
-              :isShowIncome="typesInTrnsIds.income"
-              :trnsIds="selectedTrnsIdsForTrnsList"
-              class="py-1"
-              isShowFilterByDesc
-              isShowFilterByType
+            <StatCategoriesButtons
+              :viewOptions
+              @changeViewOptions="changeViewOptions"
             />
-          </UiToggle>
+          </div>
 
-          <TrnsNoTrns v-if="selectedTrnsIdsForTrnsList.length === 0" />
+          <!-- Lines -->
+          <div
+            v-if="cats.length > 0 && viewOptions.catsView === 'list'"
+            :class="{
+              'grid gap-2 px-0': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened,
+              'md:max-w-md': !viewOptions.catsList.isGrouped || !viewOptions.catsList.isOpened,
+              'grid gap-1': viewOptions.catsList.isItemsBg,
+            }"
+            class="pt-2"
+          >
+            <StatLinesItemLine
+              v-for="item in cats"
+              :key="item.id"
+              :biggestCatNumber
+              :class="{ 'bg-item-9 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
+              :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+              :isHideDots="viewOptions.catsList.isOpened"
+              :item
+              :isHideParent="props.hasChildren"
+              :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
+              :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
+              :viewOptions
+              @click="onClickCategory"
+            >
+              <div
+                v-if="viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened"
+                class="flex flex-wrap gap-1 pb-3 pl-2 pt-1"
+              >
+                <StatLinesItemRound
+                  v-for="itemInside in getCats(item.trnsIds)"
+                  :key="itemInside.id"
+                  :item="itemInside"
+                  :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
+                  @click="onClickCategory"
+                />
+              </div>
+            </StatLinesItemLine>
+          </div>
+
+          <!-- Rounds -->
+          <div
+            v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
+            class="@3xl/stat:gap-2 flex flex-wrap gap-1 gap-y-2 pl-1 pt-2 md:max-w-md"
+          >
+            <StatLinesItemRound2
+              v-for="item in catsRounded"
+              :key="item.id"
+              :item
+              :biggestCatNumber
+              :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
+              :intervalRange
+              :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+              @click="onClickCategory"
+            />
+          </div>
         </div>
+
+        <!-- Trns -->
+        <div>
+          <UiTitle82>
+            {{ t('trns.title') }}
+          </UiTitle82>
+
+          <TrnsList
+            :isHideDates="isDayToday"
+            :isShowExpense="typesInTrnsIds.expense"
+            :isShowGroupSum="!isDayToday"
+            :isShowIncome="typesInTrnsIds.income"
+            :trnsIds="selectedTrnsIdsForTrnsList"
+            class="py-1"
+            isShowFilterByDesc
+            isShowFilterByType
+          />
+        </div>
+
+        <TrnsNoTrns v-if="selectedTrnsIdsForTrnsList.length === 0" />
       </div>
     </div>
 

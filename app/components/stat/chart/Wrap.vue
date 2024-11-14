@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import type { IntervalRangeProvider, Range } from '~/components/date/types'
-import type { MiniItemConfig } from '~/components/stat/types'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { ChartType } from '~/components/stat/chart/types'
 
 const props = defineProps<{
-  config: MiniItemConfig
   maxRange: Range
   series: unknown[]
   xAxisLabels: number[]
@@ -13,32 +12,31 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   onClickChart: [idx: number]
-  updateConfig: [key: keyof MiniItemConfig, value: MiniItemConfig[keyof MiniItemConfig]]
 }>()
+
+const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statConfig = inject('statConfig') as StatConfigProvider
 
 const isShowDateSelector = defineModel('isShowDateSelector', {
   default: false,
 })
-
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
 </script>
 
 <template>
   <div
-    class="xl:rounded-xl"
     :class="{
-      '': props.config?.chartView === 'full',
-      'md:max-w-md': props.config?.chartView === 'half',
+      '': statConfig.config.value?.chartView === 'full',
+      'md:max-w-md': statConfig.config.value?.chartView === 'half',
     }"
   >
     <div
-      v-if="props.config?.chartShow && (intervalRange.params.value.intervalDuration !== 1 || intervalRange.params.value.intervalPeriod !== 'day')"
+      v-if="statConfig.config.value?.chartShow && (intervalRange.params.value.intervalDuration !== 1 || intervalRange.params.value.intervalPeriod !== 'day')"
       class="pb-2"
     >
       <div class="flex justify-between">
         <LazyStatChartTypeSelector
-          :chartType="props.config?.chartType"
-          @update:chartType="(value: ChartType) => emit('updateConfig', 'chartType', value)"
+          :chartType="statConfig.config.value?.chartType"
+          @update:chartType="(value: ChartType) => statConfig.updateConfig('chartType', value)"
         />
         <LazyStatChartIntervals
           v-model:period="intervalRange.params.value.groupedBy"
@@ -48,7 +46,7 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
 
       <StatChartView2
         :xAxisLabels
-        :chartType="props.config?.chartType"
+        :chartType="statConfig.config.value?.chartType"
         :period="intervalRange.params.value.groupedBy"
         :series="props.series"
         @click="v => emit('onClickChart', v)"

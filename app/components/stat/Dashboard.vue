@@ -19,12 +19,14 @@ const props = defineProps<{
 }>()
 
 const filter = inject('filter') as FilterProvider
+
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnFormStore()
 const walletsStore = useWalletsStore()
-const { config, updateConfig } = useStatConfig({ storageKey: props.storageKey })
-const { getTotalOfTrnsIds } = useAmount()
+const statConfig = useStatConfig({ storageKey: props.storageKey })
+provide('statConfig', statConfig)
 
+const { getTotalOfTrnsIds } = useAmount()
 const activeTab = useStorage<StatTabs>(`${props.storageKey}-mini-tab`, 'netIncome')
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -48,7 +50,7 @@ const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
 
 const sortedFilterWalletsIds = computed(() => {
   const filteredIds = filter.walletsIds.value
-  const showedIds = walletsStore.sortedIds.slice(0, config.value.showedWallets)
+  const showedIds = walletsStore.sortedIds.slice(0, statConfig.config.value.showedWallets)
   return [...new Set([...showedIds, ...filteredIds])]
 })
 
@@ -67,11 +69,7 @@ function onClickWallet(walletId: WalletId) {
           :active="activeTab"
           @click="id => activeTab = id"
         />
-        <StatConfigPopover
-          :config="config"
-          isShowWallets
-          @updateConfig="updateConfig"
-        />
+        <StatConfigPopover isShowWallets />
       </div>
       <FilterSelected
         v-if="filter.isShow?.value && filter.catsIds.value.length > 0"
@@ -80,7 +78,7 @@ function onClickWallet(walletId: WalletId) {
     </div>
 
     <div
-      v-if="config.showedWallets > 0"
+      v-if="statConfig.config.value.showedWallets > 0"
       class="flex gap-1 overflow-x-auto px-2 py-px"
     >
       <WalletsItem
@@ -100,10 +98,8 @@ function onClickWallet(walletId: WalletId) {
     v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
     :storageKey="props.storageKey + activeTab"
     :trnsIds="trnsIds"
-    :config
     class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
     type="sum"
-    @updateConfig="updateConfig"
   />
 
   <!-- Summary -->
@@ -114,21 +110,17 @@ function onClickWallet(walletId: WalletId) {
     <!-- Expense -->
     <StatItem
       v-if="(activeTab === 'sum') && expenseTrnsIds.length > 0"
-      :config
       :storageKey="props.storageKey + activeTab"
       :trnsIds="expenseTrnsIds"
       type="expense"
-      @updateConfig="updateConfig"
     />
 
     <!-- Income -->
     <StatItem
       v-if="(activeTab === 'sum') && incomeTrnsIds.length > 0"
-      :config
       :storageKey="props.storageKey + activeTab"
       :trnsIds="incomeTrnsIds"
       type="income"
-      @updateConfig="updateConfig"
     />
   </div>
 </template>

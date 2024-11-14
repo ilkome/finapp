@@ -64,7 +64,7 @@ const baseConfig = computed(() => {
   const data = defu(config, {
     series: setChartSeries(props.series),
     xAxis: setChartXAxis(props.categories),
-    ...props.config,
+    ...statConfig.config.value,
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
