@@ -18,7 +18,7 @@ const { height } = useWindowSize()
       </template>
 
       <template #default="{ close }">
-        <div class="rounded-t-2xl bg-foreground-1 px-3 pb-3 pt-3">
+        <div class="bg-foreground-1 rounded-t-2xl p-3">
           <UiTitle>
             <slot name="header" />
           </UiTitle>

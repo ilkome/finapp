@@ -18,10 +18,6 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-
-onMounted(() => {
-  console.log('mounted')
-})
 </script>
 
 <template>
@@ -36,8 +32,10 @@ onMounted(() => {
     </template>
 
     <template #default="{ close }">
-      <div class="scrollerBlock grid max-h-[98dvh] overflow-hidden overflow-y-auto p-3 pb-4">
-        <UiTitle9>{{ t("dates.select") }}</UiTitle9>
+      <div class="scrollerBlock grid max-h-[98dvh] overflow-hidden overflow-y-auto p-2 pb-4">
+        <UiTitle9 class="pb-3 pt-1">
+          {{ t("dates.select") }}
+        </UiTitle9>
 
         <StatDateSelector
           :intervalRange

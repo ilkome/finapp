@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IntervalGroupedLabel, IntervalRangeProvider, Range } from '~/components/date/types'
+import type { IntervalRangeProvider, Range } from '~/components/date/types'
 
 const emit = defineEmits<{
   onClose: []
@@ -28,39 +28,45 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
       openPadding="!pb-6"
     >
       <template #header="{ toggle, isShown }">
-        <UiTitle88 :isShown @click="toggle">
+        <UiTitle81 :isShown @click="toggle">
           Presets
-        </UiTitle88>
+        </UiTitle81>
       </template>
 
-      <UiTabs2 class="!gap-2 px-2">
-        <DateLinkItem @click="emit('set7Days', close)">
-          7 days
-        </DateLinkItem>
-        <DateLinkItem @click="emit('set7DaysMini', close)">
-          7 days mini
-        </DateLinkItem>
-        <DateLinkItem @click="emit('set30DaysMini', close)">
-          30 days mini
-        </DateLinkItem>
-        <DateLinkItem @click="emit('set12Months', close)">
-          12 months
-        </DateLinkItem>
+      <div class="grid gap-4 px-2">
+        <div class="flex flex-wrap gap-1">
+          <DateRanges @close="close" />
+        </div>
 
-        <DateLinkItem
-          :isActive="intervalRange.params.value.isShowAll && !intervalRange.params.value.isSkipEmpty"
-          @click="emit('setAllData', close)"
-        >
-          All
-        </DateLinkItem>
+        <div class="flex flex-wrap gap-1">
+          <DateLinkItem @click="emit('set7Days', close)">
+            7 days
+          </DateLinkItem>
+          <DateLinkItem @click="emit('set7DaysMini', close)">
+            7 days mini
+          </DateLinkItem>
+          <DateLinkItem @click="emit('set30DaysMini', close)">
+            30 days mini
+          </DateLinkItem>
+          <DateLinkItem @click="emit('set12Months', close)">
+            12 months
+          </DateLinkItem>
 
-        <DateLinkItem
-          :isActive="intervalRange.params.value.isShowAll && intervalRange.params.value.isSkipEmpty"
-          @click="emit('setAllSkipEmpty', close)"
-        >
-          All skip empty
-        </DateLinkItem>
-      </UiTabs2>
+          <DateLinkItem
+            :isActive="intervalRange.params.value.isShowAll && !intervalRange.params.value.isSkipEmpty"
+            @click="emit('setAllData', close)"
+          >
+            All
+          </DateLinkItem>
+
+          <DateLinkItem
+            :isActive="intervalRange.params.value.isShowAll && intervalRange.params.value.isSkipEmpty"
+            @click="emit('setAllSkipEmpty', close)"
+          >
+            All skip empty
+          </DateLinkItem>
+        </div>
+      </div>
     </UiToggle2>
 
     <UiToggle2
@@ -70,21 +76,17 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
       openPadding="!pb-6"
     >
       <template #header="{ toggle, isShown }">
-        <UiTitle88 :isShown @click="toggle">
+        <UiTitle81 :isShown @click="toggle">
           Intervals
-        </UiTitle88>
+        </UiTitle81>
       </template>
 
       <div class="grid gap-2 px-2">
         <div class="flex flex-wrap gap-1">
-          <DateRanges @close="close" />
-        </div>
-
-        <div class="flex flex-wrap gap-1">
           <DateRanges2 @close="close" />
         </div>
 
-        <div class="flex gap-1">
+        <div class="flex flex-wrap gap-1">
           <DateLinkItem @click="intervalRange.minusRange">
             -
           </DateLinkItem>
@@ -109,9 +111,9 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
       openPadding="!pb-6"
     >
       <template #header="{ toggle, isShown }">
-        <UiTitle88 :isShown @click="toggle">
+        <UiTitle81 :isShown @click="toggle">
           Grouped by
-        </UiTitle88>
+        </UiTitle81>
       </template>
 
       <div class="grid gap-2 px-2">
@@ -143,9 +145,9 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
       openPadding="!pb-6"
     >
       <template #header="{ toggle, isShown }">
-        <UiTitle88 :isShown @click="toggle">
+        <UiTitle81 :isShown @click="toggle">
           Calendar
-        </UiTitle88>
+        </UiTitle81>
       </template>
 
       <DatePicker

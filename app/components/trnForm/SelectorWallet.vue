@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { WalletId } from '~/components/wallets/types'
-import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   isLaptop: boolean

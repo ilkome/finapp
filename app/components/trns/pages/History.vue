@@ -117,8 +117,11 @@ function select(row) {
           :trnsIds
           isShowHeader
           isShowGroupSum
+          isShowIncome
+          isShowExpense
           isShowFilterByType
           isShowFilterByDesc
+          isShowTransfers
         />
       </div>
     </div>

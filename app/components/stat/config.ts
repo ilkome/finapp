@@ -3,11 +3,11 @@ import type { MoneyTypeNumber, MoneyTypeSlug, ViewOptions } from '~/components/s
 
 export const defaultViewOptions: ViewOptions = {
   catsList: {
-    isGrouped: false,
+    isGrouped: true,
     isItemsBg: false,
     isLines: true,
     isOpened: false,
-    isRoundIcon: false,
+    isRoundIcon: true,
   },
   catsRound: {
     isGrouped: false,

@@ -66,11 +66,11 @@ if (!props.isSort) {
 
 <template>
   <UiElement
-    ref="longPressRef"
     :isActive="activeItemId === props.walletId"
     :insideClasses="`${props.insideClasses ? props.insideClasses : ''} min-h-[46px]`"
     :lineWidth="props.lineWidth"
     :class="classes"
+    @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
     <template #leftIcon>

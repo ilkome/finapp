@@ -1,4 +1,10 @@
 export default defineAppConfig({
+  icon: {
+    customize: (content: string) => {
+      return content
+        .replace(/stroke-width="[^"]*"/g, `stroke-width="1.5"`)
+    },
+  },
   ui: {
     popover: {
       background: 'bg-foreground-4',

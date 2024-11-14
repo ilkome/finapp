@@ -13,10 +13,13 @@ const props = withDefaults(
     initTrnType?: TrnType | MoneyTypeNumber | undefined
     isHideDates?: boolean
     isHideNoTrns?: boolean
+    isShowExpense?: boolean
     isShowFilterByDesc?: boolean
     isShowFilterByType?: boolean
     isShowGroupSum?: boolean
     isShowHeader?: boolean
+    isShowIncome?: boolean
+    isShowTransfers?: boolean
     size?: number
     trnsIds: TrnId[]
   }>(),
@@ -36,37 +39,47 @@ const isShowWithDesc = ref(false)
 const filterBy = ref(props.initTrnType)
 const pageNumber = ref(1)
 
-const typeFilters = computed(() => ({
-  sum: {
+const typeFilters = computed(() => {
+  const sum = {
     count: props.trnsIds.length,
+    isShow: true,
     name: t('common.all'),
-    slug: undefined,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  expense: {
-    count: props.trnsIds.filter(id => trnsStore.items[id].type === 0).length,
-    name: t('money.expense'),
-    slug: 0,
-  },
-  income: {
-    count: props.trnsIds.filter(id => trnsStore.items[id].type === 1).length,
-    name: t('money.income'),
-    slug: 1,
-  },
-  transfer: {
+    slug: 'sum',
+    type: undefined,
+  }
+
+  const transfers = {
     count: props.trnsIds.filter(id => trnsStore.items[id].type === 2).length,
+    isShow: props.isShowTransfers,
     name: t('transfer.titleMoney'),
-    slug: 2,
-  },
-}))
+    slug: 'transfer',
+    type: 2,
+  }
+
+  const expense = {
+    count: props.trnsIds.filter(id => trnsStore.items[id].type === 0).length,
+    isShow: props.isShowExpense,
+    name: t('money.expense'),
+    slug: 'expense',
+    type: 0,
+  }
+
+  const income = {
+    count: props.trnsIds.filter(id => trnsStore.items[id].type === 1).length,
+    isShow: props.isShowIncome,
+    name: t('money.income'),
+    slug: 'income',
+    type: 1,
+  }
+
+  return [sum, expense, income, transfers].filter(item => item.isShow)
+})
 
 const selectedIds = computed(() => {
   let ids = props.trnsIds ?? []
 
   if (filterBy.value !== 'sum') {
-    ids = props.trnsIds.filter(
-      id => trnsStore.items[id].type === typeFilters.value[filterBy.value]?.slug,
-    )
+    ids = props.trnsIds.filter(id => trnsStore.items[id].type === typeFilters.value.find(item => item.slug === filterBy.value)?.type)
   }
 
   if (isShowWithDesc.value && isTrnsWithDesc.value) {
@@ -91,7 +104,7 @@ const isTrnsWithDesc = computed(() => {
 
   if (filterBy.value !== 'sum') {
     ids = props.trnsIds.filter(
-      id => trnsStore.items[id].type === typeFilters.value[filterBy.value]?.slug,
+      id => trnsStore.items[id].type === typeFilters.value[filterBy.value]?.type,
     )
   }
 
@@ -101,7 +114,12 @@ const isTrnsWithDesc = computed(() => {
 })
 
 function setFilterBy(type: TrnType | undefined) {
-  filterBy.value = type
+  if (filterBy.value === type) {
+    filterBy.value = 'sum'
+    return
+  }
+
+  filterBy.value = type ?? 'sum'
 }
 
 const groupedTrns = computed(() => {
@@ -134,17 +152,17 @@ const groupedTrns = computed(() => {
 
     <!-- Filter by type -->
     <UiTabs1
-      v-if="isShowFilterByType"
+      v-if="isShowFilterByType && typeFilters.length > 2"
       class="mb-2"
     >
       <UiTabsItem1
-        v-for="(filterItem, slug) in typeFilters"
+        v-for="filterItem in typeFilters"
         :key="filterItem.slug"
-        :isActive="filterBy === slug"
+        :isActive="filterBy === filterItem.slug"
         :class="{
           'opacity-50': filterItem.count === 0,
         }"
-        @click="setFilterBy(slug)"
+        @click="setFilterBy(filterItem.slug)"
       >
         {{ filterItem.name }}
       </UiTabsItem1>

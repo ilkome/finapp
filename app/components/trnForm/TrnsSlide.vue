@@ -77,6 +77,9 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
       isShowGroupSum
       isHideDates
       isShowFilterByDesc
+      isShowTransfers
+      isShowIncome
+      isShowExpense
       @onClickEdit="onClickEdit"
     >
       <template #contentBefore>

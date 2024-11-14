@@ -6,7 +6,8 @@ import defu from 'defu'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { DeepPartial } from '~~/utils/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { MiniItemConfig, MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
+import type { MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
+import type { MiniItemConfig } from '~/components/stat/useStatConfig'
 import type { IntervalRangeProvider, Range } from '~/components/date/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { TrnId } from '~/components/trns/types'
@@ -17,12 +18,12 @@ import { markArea } from '~/components/stat/chart/utils'
 import { seriesOptions } from '~/components/stat/chart/config2'
 import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useIntervalRange } from '~/components/date/useIntervalRange'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
   config: MiniItemConfig
+  hasChildren: boolean
   isQuickModal?: boolean
   preCategoriesIds?: CategoryId[]
   quickModalCategoryId?: CategoryId
@@ -37,6 +38,8 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const filter = inject('filter') as FilterProvider
+const intervalRange = inject('intervalRange') as IntervalRangeProvider
+
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnFormStore()
 const { getTotalOfTrnsIds } = useAmount()
@@ -46,8 +49,6 @@ const isShowDateSelector = ref(false)
 const isShowTrns = ref(false)
 
 const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
-
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
 
 const newBaseStorageKey = computed(() => `finapp-${intervalRange.params.value.groupedBy}-${props.storageKey}-${JSON.stringify(filter?.catsIds?.value)}`)
 
@@ -60,6 +61,11 @@ function onSelectType(type: MoneyTypeSlugSum) {
 
   selectedType.value = type === selectedType.value ? 'sum' : type
 }
+
+const typesInTrnsIds = computed(() => ({
+  expense: props.trnsIds.some(id => trnsStore.items[id].type === 0),
+  income: props.trnsIds.some(id => trnsStore.items[id].type === 1),
+}))
 
 // TODO: create function for this
 const filteredTrnsIds = computed(() => {
@@ -94,6 +100,7 @@ const viewOptions = useStorage<ViewOptions>(`${newBaseStorageKey.value}-viewOpti
     isGrouped: false,
   },
 })
+
 function changeViewOptions(newViewOptions: DeepPartial<ViewOptions>) {
   viewOptions.value = defu(newViewOptions, viewOptions.value)
 }
@@ -101,6 +108,11 @@ function changeViewOptions(newViewOptions: DeepPartial<ViewOptions>) {
 onBeforeMount(() => {
   if (!ViewOptionsSchema.safeParse(viewOptions.value).success) {
     viewOptions.value = { ...defaultViewOptions }
+  }
+
+  if (props.hasChildren) {
+    viewOptions.value.catsList.isGrouped = false
+    viewOptions.value.catsRound.isGrouped = false
   }
 })
 
@@ -246,6 +258,17 @@ const series = computed(() => {
   return series
 })
 
+const trnsIdsWithRange = computed(() => trnsStore.getStoreTrnsIds({
+  categoriesIds: filter?.catsIds?.value,
+  dates: {
+    from: intervalRange.range.value.start,
+    until: intervalRange.range.value.end,
+  },
+  trnsIds: filteredTrnsIds.value,
+  walletsIds: filter?.walletsIds?.value,
+}, { includesChildCategories: false }),
+)
+
 const selectedTrnsIdsForTrnsList = computed(() => {
   if (intervalRange.params.value.intervalSelected >= 0) {
     return trnsStore.getStoreTrnsIds({
@@ -255,15 +278,7 @@ const selectedTrnsIdsForTrnsList = computed(() => {
     }, { includesChildCategories: false })
   }
 
-  return trnsStore.getStoreTrnsIds({
-    categoriesIds: filter?.catsIds?.value,
-    dates: {
-      from: intervalRange.range.value.start,
-      until: intervalRange.range.value.end,
-    },
-    trnsIds: filteredTrnsIds.value,
-    walletsIds: filter?.walletsIds?.value,
-  }, { includesChildCategories: false })
+  return trnsIdsWithRange.value
 })
 
 const trnsIdsForTotals = computed(() => {
@@ -288,12 +303,12 @@ const totals = computed<TotalReturns>(() => getTotalOfTrnsIds(trnsIdsForTotals.v
  * Cats
  */
 const cats = computed(() => {
-  let cats: CategoryId[] = [...(props.preCategoriesIds ?? [])]
-  if (!viewOptions.value.catsList.isGrouped && viewOptions.value.catsRound.isShowFavorites) {
-    cats.push(...categoriesStore.favoriteCategoriesIds)
+  let cats: CategoryId[] = []
+  if (props.config?.isShowEmptyCategories && props.preCategoriesIds) {
+    cats.push(...props.preCategoriesIds)
   }
-  if (!viewOptions.value.catsList.isGrouped && viewOptions.value.catsRound.isShowRecent) {
-    cats.push(...categoriesStore.recentCategoriesIds)
+  else if (props.preCategoriesIds) {
+    cats = [...props.preCategoriesIds]
   }
 
   cats = _sortby(cats, (id: CategoryId) => [
@@ -469,9 +484,12 @@ const quickModalTrnsIds = computed(() => {
 
         <!-- Stat sum -->
         <StatSumWrap
-          :type="props.type"
+          :isShowExpense="typesInTrnsIds.expense"
+          :isShowIncome="typesInTrnsIds.income"
           :selectedType
           :totals
+          :type="props.type"
+          :typesInTrnsIds
           @onClickSum="onSelectType"
           @updateConfig="(key, value) => emit('updateConfig', key, value)"
         />
@@ -480,6 +498,7 @@ const quickModalTrnsIds = computed(() => {
         <div class="@3xl/stat:grid-cols-[2fr,1fr] grid gap-2 pt-3">
           <!-- Categories first level -->
           <UiToggle
+            v-if="props.hasChildren"
             :storageKey="`${newBaseStorageKey}-cats-root`"
             :initStatus="true"
             openPadding="!pb-3"
@@ -487,7 +506,6 @@ const quickModalTrnsIds = computed(() => {
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between md:max-w-md">
                 <UiTitle81 :isShown @click="toggle">
-                  <!-- {{ t('categories.title') }} -->
                   {{ t('categories.title') }} {{ !isShown ? viewOptions.catsView === 'list' ? cats.length : catsRounded.length : '' }}
                 </UiTitle81>
 
@@ -497,7 +515,6 @@ const quickModalTrnsIds = computed(() => {
                 >
                   <StatCategoriesButtons
                     :viewOptions
-                    class="-pr-1"
                     @changeViewOptions="changeViewOptions"
                   />
                 </div>
@@ -522,6 +539,7 @@ const quickModalTrnsIds = computed(() => {
                 :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 :isHideDots="viewOptions.catsList.isOpened"
                 :item
+                :isHideParent="props.hasChildren"
                 :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
                 :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
                 :viewOptions
@@ -560,7 +578,7 @@ const quickModalTrnsIds = computed(() => {
             <!-- Rounded view -->
             <div
               v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
-              class="@3xl/stat:gap-2 flex flex-wrap gap-1 pl-1 pt-2 md:max-w-md"
+              class="@3xl/stat:gap-2 flex flex-wrap gap-1 gap-y-2 pl-1 pt-2 md:max-w-md"
             >
               <StatLinesItemRound2
                 v-for="item in catsRounded"
@@ -583,15 +601,17 @@ const quickModalTrnsIds = computed(() => {
           >
             <template #header="{ toggle, isShown }">
               <div class="flex items-center justify-between">
-                <UiTitle8 :isShown @click="toggle">
+                <UiTitle81 :isShown @click="toggle">
                   {{ t('trns.title') }} {{ (!isShown && selectedTrnsIdsForTrnsList.length > 0) ? selectedTrnsIdsForTrnsList.length : '' }}
-                </UiTitle8>
+                </UiTitle81>
               </div>
             </template>
 
             <TrnsList
               :isHideDates="isDayToday"
+              :isShowExpense="typesInTrnsIds.expense"
               :isShowGroupSum="!isDayToday"
+              :isShowIncome="typesInTrnsIds.income"
               :trnsIds="selectedTrnsIdsForTrnsList"
               class="py-1"
               isShowFilterByDesc
@@ -605,7 +625,7 @@ const quickModalTrnsIds = computed(() => {
     </div>
 
     <!-- Modals -->
-    <Teleport to="#teleports">
+    <Teleport to="body">
       <StatDateSelectorModal
         v-if="isShowDateSelector"
         :intervalRange
@@ -675,6 +695,8 @@ const quickModalTrnsIds = computed(() => {
             isShowFilterByType
             isShowGroupSum
             isShowHeader
+            isShowIncome
+            isShowExpense
           />
         </div>
       </BaseBottomSheet2>

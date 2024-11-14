@@ -4,6 +4,7 @@ import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useStatConfig } from '~/components/stat/useStatConfig'
+import { icons } from '~/components/wallets/types'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -50,17 +51,14 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
           :href="href"
           @click="navigate"
         >
-          <UiHeaderTitle class="px-3">
-            <div class="flex items-center gap-3 pb-1">
-              <div class="text-item-1 text-2xl font-semibold">
-                {{ wallet.name }}
-              </div>
-              <div
-                :style="{ background: wallet.color }"
-                class="flex-center text-2xs text-icon-primary rounded-lg p-1"
-              >
-                {{ wallet.currency }}
-              </div>
+          <UiHeaderTitle class="flex items-center gap-2 px-2">
+            <Icon
+              :name="icons[wallet.type]"
+              :style="{ color: wallet.color }"
+              class="size-6"
+            />
+            <div class="text-item-1 text-xl font-semibold">
+              {{ wallet.name }}
             </div>
           </UiHeaderTitle>
         </a>

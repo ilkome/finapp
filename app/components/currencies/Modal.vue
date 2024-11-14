@@ -20,7 +20,7 @@ function onSelect(code: CurrencyCode, close: () => void) {
 </script>
 
 <template>
-  <Teleport to="#teleports">
+  <Teleport to="body">
     <BaseBottomSheet2
       isShow
       drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"

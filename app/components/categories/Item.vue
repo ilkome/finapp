@@ -26,6 +26,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
 
 <template>
   <UiElement
+    v-if="category"
     :isActive="activeItemId === categoryId"
     :lineWidth="props.lineWidth"
     insideClasses="min-h-[46px]"

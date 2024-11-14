@@ -2,11 +2,11 @@ import _sortby from 'lodash.sortby'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import { type ComputedRef, type ShallowRef, computed, shallowRef } from 'vue'
-import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/components/categories/types'
+import type { AddCategoryParams, Categories, CategoryId, CategoryItem, CategoryItemWithId } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
 import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import { getPreparedFormData } from '~/components/categories/getForm'
-import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
+import { compareCategoriesByParentAndName, getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -72,7 +72,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     return Object.keys(items.value)
       .filter(id => items.value?.[id]?.parentId === 0)
-      .sort((a, b) => items.value?.[a]?.name.localeCompare(items.value?.[b]?.name) ?? '')
+      .sort((a, b) => (items.value?.[a]?.name.localeCompare(items.value?.[b]?.name) ?? '') || 0)
   })
 
   const categoriesForBeParent = computed(() => {
@@ -80,9 +80,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return []
 
     return categoriesRootIds.value.filter((id: CategoryId) => {
-      const hasTrnsInCategory = Object.values(trnsStore.items).some(
-        trn => trn.categoryId === id,
-      )
+      const hasTrnsInCategory = Object.values(trnsStore.items).some(trn => trn.categoryId === id)
 
       if (hasTrnsInCategory || transferCategoriesIds.value.includes(id))
         return false
@@ -106,47 +104,40 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   })
 
   const recentCategoriesIds = computed(() => {
-    // Early return if no data
     if (!hasItems.value || !trnsStore.hasItems)
       return []
 
     const trnsItems = trnsStore.items
     const maxCategories = Math.min(categoriesIds.value.length, 16)
 
-    // Get sorted transaction IDs, excluding type 2
-    const trnsIds = Object.keys(trnsItems)
+    // Get sorted transaction IDs, excluding type 2 (transfers)
+    const recentTrnIds = Object.keys(trnsItems)
       .filter(id => trnsItems[id]?.type !== 2)
       .sort((a, b) => trnsItems[b]?.date - trnsItems[a]?.date)
 
-    // Get unique categories from transactions
-    return trnsIds.reduce((acc: CategoryItem[], trnId: string) => {
+    // Collect unique valid categories
+    const categories = recentTrnIds.reduce<CategoryItemWithId[]>((acc, trnId) => {
       if (acc.length >= maxCategories)
         return acc
 
       const categoryId = trnsItems[trnId]?.categoryId
       const category = categoryId ? items.value[categoryId] : undefined
 
-      // Skip if category is invalid or shouldn't be shown
-      if (!category || ('showInLastUsed' in category && !category.showInLastUsed))
-        return acc
-
-      // Skip if category is already in list or is special type
-      if (
-        acc.some(c => c.id === categoryId)
+      const shouldSkip = !category
+        || ('showInLastUsed' in category && !category.showInLastUsed)
+        || acc.some(c => c.id === categoryId)
         || transferCategoriesIds.value.includes(categoryId)
         || favoriteCategoriesIds.value.includes(categoryId)
-      ) {
+
+      if (shouldSkip)
         return acc
-      }
 
       acc.push({ id: categoryId, ...category })
       return acc
     }, [])
-      .sort((a, b) => {
-        const parentNameA = items.value[a.parentId]?.name || ''
-        const parentNameB = items.value[b.parentId]?.name || ''
-        return parentNameA.localeCompare(parentNameB) || a.name.localeCompare(b.name)
-      })
+
+    return categories
+      .sort((a, b) => compareCategoriesByParentAndName(a, b, items.value))
       .map(c => c.id)
   })
 
@@ -229,7 +220,11 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (!hasItems.value)
       return false
 
-    return (items.value[categoryId]?.childIds && items.value[categoryId]?.childIds?.length > 0) ?? false
+    const category = items.value[categoryId]
+    if (!category || category.parentId !== 0)
+      return false
+
+    return !!category.childIds?.length
   }
 
   function getChildsIds(categoryId: CategoryId) {
@@ -248,8 +243,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return []
 
     return hasChildren(categoryId)
-      ? Object.keys(items.value)
-        .filter(id => items.value[id]?.parentId === categoryId)
+      ? Object.keys(items.value).filter(id => items.value[id]?.parentId === categoryId)
       : [categoryId]
   }
 

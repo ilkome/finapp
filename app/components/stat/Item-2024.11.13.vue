@@ -471,9 +471,11 @@ const quickModalTrnsIds = computed(() => {
 
         <!-- Stat sum -->
         <StatSumWrap
-          :type="props.type"
           :selectedType
           :totals
+          :type="props.type"
+          isShowExpense
+          isShowIncome
           @onClickSum="onSelectType"
           @updateConfig="(key, value) => emit('updateConfig', key, value)"
         />
@@ -600,6 +602,9 @@ const quickModalTrnsIds = computed(() => {
               class="py-1"
               isShowFilterByDesc
               isShowFilterByType
+              isShowTransfers
+              isShowIncome
+              isShowExpense
             />
           </UiToggle>
 
@@ -609,7 +614,7 @@ const quickModalTrnsIds = computed(() => {
     </div>
 
     <!-- Modals -->
-    <Teleport to="#teleports">
+    <Teleport to="body">
       <StatDateSelectorModal
         v-if="isShowDateSelector"
         :intervalRange
@@ -679,6 +684,9 @@ const quickModalTrnsIds = computed(() => {
             isShowFilterByType
             isShowGroupSum
             isShowHeader
+            isShowIncome
+            isShowExpense
+            isShowTransfers
           />
         </div>
       </BaseBottomSheet2>

@@ -209,7 +209,7 @@ async function onSave() {
     </div>
   </div>
 
-  <Teleport to="#teleports">
+  <Teleport to="body">
     <!-- Colors -->
     <BaseBottomSheet2
       v-if="modals.colors"

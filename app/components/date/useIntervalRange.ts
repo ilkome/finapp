@@ -1,9 +1,10 @@
 import dayjs from 'dayjs'
+import zod from 'zod'
 import { useStorage } from '@vueuse/core'
-import type { Grouped, Interval, IntervalGroupedLabel, IntervalRangeParams, Range } from '~/components/date/types'
+import type { Grouped, IntervalGroupedLabel, IntervalRangeParams, IntervalRangeParamsQuery, Range } from '~/components/date/types'
 import { calculateRange, getPeriodsInRange } from '~/components/date/utils'
 
-export function useIntervalRange({ key, maxRange, queryParams }: { key: string, maxRange: ComputedRef<Range>, queryParams?: Partial<IntervalRangeParams> }) {
+export function useIntervalRange({ key, maxRange, queryParams }: { key: string, maxRange: ComputedRef<Range>, queryParams?: Partial<IntervalRangeParamsQuery> }) {
   const params = useStorage<IntervalRangeParams>(`${key}-params`, {
     customDate: false,
     groupedBy: 'month',

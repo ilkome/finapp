@@ -4,6 +4,8 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
+  isShowExpense: boolean
+  isShowIncome: boolean
   selectedType: MoneyTypeSlugNew
   totals: TotalReturns
   type: MoneyTypeSlugNew
@@ -12,6 +14,22 @@ const props = defineProps<{
 const emit = defineEmits<{
   onClickSum: [type: MoneyTypeSlugNew]
 }>()
+
+const classes = computed(() => {
+  const params = ['padding3', 'center', 'minh', 'minw1', 'rounded']
+
+  if (props.isShowIncome && props.isShowExpense) {
+    params.push('bg', 'link')
+  }
+
+  return getStyles('item', params)
+})
+
+function onClick(type: MoneyTypeSlugNew) {
+  if (props.isShowIncome && props.isShowExpense) {
+    emit('onClickSum', type)
+  }
+}
 </script>
 
 <template>
@@ -21,34 +39,37 @@ const emit = defineEmits<{
       class="flex flex-wrap justify-stretch gap-1 md:max-w-md"
     >
       <StatSum
+        v-if="props.isShowExpense"
         :amount="-totals.expense"
         :isActive="selectedType === 'expense'"
-        :class="[getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+        :class="classes"
         class="grow"
         type="expense"
-        @click="emit('onClickSum', 'expense')"
+        @click="onClick('expense')"
       />
       <StatSum
+        v-if="props.isShowIncome"
         :amount="totals.income"
         :isActive="selectedType === 'income'"
-        :class="[getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+        :class="classes"
         class="grow"
         type="income"
-        @click="emit('onClickSum', 'income')"
+        @click="onClick('income')"
       />
       <StatSum
+        v-if="props.isShowIncome && props.isShowExpense"
         :amount="totals.sum"
-        :class="[getStyles('item', ['link', 'bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+        :class="classes"
         class="grow"
         type="sum"
-        @click="emit('onClickSum', 'sum')"
+        @click="onClick('sum')"
       />
     </div>
 
     <StatSum
       v-else
       :amount="props.type === 'income' ? totals[props.type] : -totals[props.type]"
-      :class="[getStyles('item', ['-link', '-bg', 'padding3', 'center', 'minh', 'minw1', 'rounded'])]"
+      :class="classes"
       :type="props.type"
     />
   </div>

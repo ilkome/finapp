@@ -1,4 +1,4 @@
-import type { Categories, CategoryId } from '~/components/categories/types'
+import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 
 export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId[]) {
   if (ids) {
@@ -27,4 +27,10 @@ export function getTransferCategoriesIds(items: Categories): CategoryId[] {
     ...Object.keys(items ?? {})
       .filter(id => names.includes(`${items[id]?.name}`.toLowerCase())),
   ]
+}
+
+export function compareCategoriesByParentAndName(a: CategoryItem, b: CategoryItem, items: Categories): number {
+  const parentNameA = items[a.parentId]?.name || ''
+  const parentNameB = items[b.parentId]?.name || ''
+  return parentNameA.localeCompare(parentNameB) || a.name.localeCompare(b.name)
 }

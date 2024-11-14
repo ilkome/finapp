@@ -14,6 +14,7 @@ const props = defineProps<{
   insideStyle?: string
   isActive?: boolean
   isHideDots?: boolean
+  isHideParent?: boolean
   item: TotalCategory
   lineWidth?: number
   selectedRange?: Range
@@ -34,6 +35,9 @@ const category = computed(() => categoriesStore.items[props.item.id])
 const parentCategory = computed(() => categoriesStore.items[category.value?.parentId])
 
 function getBarStyle() {
+  if (props.item.value === 0)
+    return
+
   return {
     backgroundColor: category.value?.color,
     width: `${(Math.abs(props.item.value) / Math.abs(props.biggestCatNumber ?? 0)) * 100}%`,
@@ -71,7 +75,6 @@ onLongPress(
 
 <template>
   <div
-    ref="longPressRef"
     :class="[props.insideClass, {
       '-bg-item-4 ': props.isActive,
       'bg-item-9 rounded-lg': props.viewOptions?.catsList.isItemsBg,
@@ -79,6 +82,7 @@ onLongPress(
     }]"
     :style="props.insideStyle"
     class="relative"
+    @click="emit('click', props.item.id)"
   >
     <slot name="before" />
     <UiElement
@@ -124,6 +128,7 @@ onLongPress(
         :class="{ '!pb-2': props.viewOptions?.catsList.isLines }"
         :category
         :parentCategory
+        :isHideParent="props.isHideParent"
         :hasChildren="categoriesStore.getChildsIds(props.item.id).length > 0"
       />
 
@@ -139,7 +144,7 @@ onLongPress(
           :type="props.item.value > 0 ? 1 : 0"
           :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
-          :isShowSymbol="props.item.value !== 0"
+          :isShowSymbol="false"
           colorize="income"
         />
       </div>

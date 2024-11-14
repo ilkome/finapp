@@ -22,6 +22,18 @@ export type IntervalRangeParams = {
   subtracted: number
 }
 
+export type IntervalRangeParamsQuery = {
+  customDate: string
+  groupedBy: Period
+  groupedDuration: string
+  intervalDuration: string
+  intervalPeriod: Period
+  intervalSelected: string
+  isShowAll: string
+  isSkipEmpty: string
+  subtracted: string
+}
+
 export type GroupBy = 'period' | 'all' | 'daySelector'
 
 export type RangeDuration = {

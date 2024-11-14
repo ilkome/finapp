@@ -1,1 +1,1 @@
-export type ChartType = 'bar' | 'line' | 'pie'
+export const chartTypes = ['bar', 'line', 'pie'] as const

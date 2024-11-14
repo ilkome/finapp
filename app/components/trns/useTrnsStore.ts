@@ -59,8 +59,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
     return {
       end: items.value[trnsIds.at(0)!]?.date ?? dayjs().endOf('day').valueOf(),
-      start:
-        items.value[trnsIds.at(-1)!]?.date ?? dayjs().startOf('day').valueOf(),
+      start: items.value[trnsIds.at(-1)!]?.date ?? dayjs().startOf('day').valueOf(),
     }
   }
 
@@ -187,18 +186,6 @@ export const useTrnsStore = defineStore('trns', () => {
     })
   }
 
-  /**
-   * Modal
-   */
-  const isShownModal = ref<boolean>(false)
-  function showTrnModal() {
-    isShownModal.value = true
-  }
-
-  function hideTrnModal() {
-    isShownModal.value = false
-  }
-
   function computeTrnItem(id: TrnId): TrnItemFull | string {
     if (!items.value || !walletsStore?.items || !categoriesStore?.items)
       return 'Something missing'
@@ -269,14 +256,11 @@ export const useTrnsStore = defineStore('trns', () => {
     getRange,
     getStoreTrnsIds,
     hasItems,
-    hideTrnModal,
     initTrns,
-    isShownModal,
     items,
     lastCreatedTrnId,
     lastCreatedTrnItem,
     setTrns,
-    showTrnModal,
     unsubscribeTrns,
     uploadOfflineTrns,
   }

@@ -12,6 +12,10 @@ export type CategoryItem = {
   showInQuickSelector?: boolean
 }
 
+export type CategoryItemWithId = CategoryItem & {
+  id: CategoryId
+}
+
 export type Categories = Record<CategoryId, CategoryItem> & Record<'transfer', CategoryItem>
 
 export type CategoryForm = {

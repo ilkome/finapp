@@ -68,6 +68,7 @@ const category = computed(() => {
         :type="props.item.value >= 0 ? 1 : 0"
         :currencyCode="currenciesStore.base"
         :isShowBaseRate="false"
+        :isShowSymbol="false"
         align="left"
         variant="sm"
         colorize="income"

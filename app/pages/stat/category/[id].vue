@@ -13,7 +13,10 @@ const filter = useFilter()
 provide('filter', filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value) }))
+const categoryHasChildren = computed(() => categoriesStore.hasChildren(categoryId.value))
+const childIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
+const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: categoriesIdsOrParent.value }))
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const intervalRange = useIntervalRange({
@@ -24,7 +27,13 @@ const intervalRange = useIntervalRange({
 
 provide('intervalRange', intervalRange)
 
-const { config, updateConfig } = useStatConfig({ storageKey: categoryId.value })
+const { config, updateConfig } = useStatConfig({
+  props: {
+    isShowEmptyCategories: true,
+  },
+  storageKey: categoryId.value,
+})
+
 const category = computed(() => categoriesStore.items[categoryId.value])
 const backLink = computed(() => `/dashboard`)
 
@@ -57,22 +66,13 @@ useHead({ title: category.value?.name })
       />
     </UiHeader>
 
-    <!-- <div class="grid gap-2 px-2 pb-24 md:px-6">
-      <h1>hello</h1>
-
-      <h2>route.query</h2>
-      <pre>{{ route.query }}</pre>
-
-      <hr>
-      <h2>intervalRange.params</h2>
-      <pre>{{ intervalRange.params }}</pre>
-    </div> -->
-
-    <StatItem2
+    <StatItemForCategory
+      :hasChildren="categoryHasChildren"
       :config="config"
       :storageKey="categoryId"
+      :preCategoriesIds="config.isShowEmptyCategories ? childIds : []"
       :trnsIds="trnsIds"
-      class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
+      class="max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
       type="sum"
       @updateConfig="updateConfig"
     />

@@ -471,6 +471,8 @@ const quickModalTrnsIds = computed(() => {
           :type="props.type"
           :selectedType
           :totals
+          isShowExpense
+          isShowIncome
           @onClickSum="onSelectType"
           @updateConfig="(key, value) => emit('updateConfig', key, value)"
         />
@@ -496,7 +498,9 @@ const quickModalTrnsIds = computed(() => {
                 >
                   <StatCategoriesButtons
                     :viewOptions
-                    class="-pr-1"
+                    isShowFavorites
+                    isShowRecent
+                    isShowGrouping
                     @changeViewOptions="changeViewOptions"
                   />
                 </div>
@@ -538,7 +542,7 @@ const quickModalTrnsIds = computed(() => {
                     @click="onClickCategory"
                   />
 
-                  <StatLinesItemLine
+                  <!-- <StatLinesItemLine
                     v-for="itemInside in getCats(item.trnsIds)"
                     :key="itemInside.id"
                     :biggestCatNumber
@@ -551,7 +555,7 @@ const quickModalTrnsIds = computed(() => {
                     :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
                     :viewOptions
                     @click="onClickCategory"
-                  />
+                  /> -->
                 </div>
               </StatLinesItemLine>
             </div>
@@ -595,6 +599,9 @@ const quickModalTrnsIds = computed(() => {
               class="py-1"
               isShowFilterByDesc
               isShowFilterByType
+              isShowTransfers
+              isShowIncome
+              isShowExpense
             />
           </UiToggle>
 
@@ -604,7 +611,7 @@ const quickModalTrnsIds = computed(() => {
     </div>
 
     <!-- Modals -->
-    <Teleport to="#teleports">
+    <Teleport to="body">
       <StatDateSelectorModal
         v-if="isShowDateSelector"
         :intervalRange
@@ -674,6 +681,8 @@ const quickModalTrnsIds = computed(() => {
             isShowFilterByType
             isShowGroupSum
             isShowHeader
+            isShowIncome
+            isShowExpense
           />
         </div>
       </BaseBottomSheet2>
