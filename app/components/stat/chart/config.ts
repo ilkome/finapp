@@ -11,47 +11,39 @@ export const config = {
   },
 
   // Tooltip
-  tooltip: {
-    axisPointer: {
-      animation: false,
-      type: 'cross',
-    },
+  tooltip: false,
+  // tooltip: {
+  //   axisPointer: {
+  //     animation: true,
+  //     type: 'cross',
+  //   },
 
-    backgroundColor: 'var(--chart-bg)',
-    borderWidth: 0,
-    label: {
-      backgroundColor: 'var(--chart-bg)',
-      color: 'red',
-    },
-    // },
-    padding: 8,
-    // formatter(props: any[]) {
-    //   return `
-    //     <div class="grid gap-2 px-2 text-secondary">
-    //       ${props.filter(i => i.value !== 0).map((i, idx) => `
-    //         ${idx === 0 ? `<div class="text-1">${i.axisValueLabel}</div>` : ''}
+  //   backgroundColor: 'var(--chart-bg)',
+  //   borderWidth: 0,
+  //   label: {
+  //     backgroundColor: 'var(--chart-bg)',
+  //     color: 'red',
+  //   },
+  //   padding: 8,
+  //   // formatter(props: any[]) {
+  //   //   return `
+  //   //     <div class="grid gap-2 px-2 text-secondary">
+  //   //       ${props.filter(i => i.value !== 0).map((i, idx) => `
+  //   //         ${idx === 0 ? `<div class="text-1">${i.axisValueLabel}</div>` : ''}
 
-    //         <div class="flex gap-2">
-    //           <div>${i.marker}</div>
-    //           <div class="text-right">${getLocalAmount(i.value)}</div>
-    //         </div>
-    //       `)}
-    //       </div>
-    //       `
-    textStyle: {
-      color: 'var(--chart-tooltip)',
-    },
-    // position() {
-    //   return {
-    //     right: '10',
-    //     top: '0',
-    //   }
-    // show: false,
-    // },
-    trigger: 'axis',
-
-    valueFormatter: getLocalAmount,
-  },
+  //   //         <div class="flex gap-2">
+  //   //           <div>${i.marker}</div>
+  //   //           <div class="text-right">${getLocalAmount(i.value)}</div>
+  //   //         </div>
+  //   //       `)}
+  //   //       </div>
+  //   //       `
+  //   textStyle: {
+  //     color: 'var(--chart-tooltip)',
+  //   },
+  //   trigger: 'axis',
+  //   valueFormatter: getLocalAmount,
+  // },
 
   // xAxis
   xAxis: {
@@ -96,7 +88,6 @@ export const config = {
       snap: true,
     },
     minInterval: 1,
-    // position: 'left',
     position: 'right',
     splitLine: {
       lineStyle: {

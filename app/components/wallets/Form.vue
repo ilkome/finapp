@@ -239,6 +239,7 @@ async function onSave() {
             <WalletsItem
               :walletId="props.walletId"
               :wallet="props.walletForm"
+              isShowIcon
             />
           </div>
 

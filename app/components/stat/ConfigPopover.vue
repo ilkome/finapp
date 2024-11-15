@@ -64,15 +64,32 @@ const statConfig = inject('statConfig') as StatConfigProvider
             {{ t("stat.config.showedWallets.label") }}
           </UiTitle3>
 
-          <UiFormInput
-            :placeholder="t('stat.config.showedWallets.placeholder')"
-            :value="statConfig.config.value.showedWallets"
-            :max="walletsStore.sortedIds.length"
-            class="max-w-20"
-            type="number"
-            min="0"
-            @updateValue="value => statConfig.updateConfig('showedWallets', +value)"
-          />
+          <div class="flex gap-4">
+            <UiFormInput
+              :placeholder="t('stat.config.showedWallets.placeholder')"
+              :value="statConfig.config.value.showedWallets"
+              :max="walletsStore.sortedIds.length"
+              class="max-w-20"
+              type="number"
+              min="0"
+              @updateValue="value => statConfig.updateConfig('showedWallets', +value)"
+            />
+
+            <div class="flex gap-1">
+              <UiBox1
+                class="!flex gap-2"
+                @click="statConfig.updateConfig('showedWallets', statConfig.config.value.showedWallets - 1)"
+              >
+                <div>-</div>
+              </UiBox1>
+              <UiBox1
+                class="!flex gap-2"
+                @click="statConfig.updateConfig('showedWallets', statConfig.config.value.showedWallets + 1)"
+              >
+                <div>+</div>
+              </UiBox1>
+            </div>
+          </div>
         </div>
       </div>
     </template>

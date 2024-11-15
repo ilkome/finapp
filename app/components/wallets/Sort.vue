@@ -46,6 +46,7 @@ async function saveWalletsOrder() {
         :wallet="walletsStore.itemsWithAmount[walletId]!"
         alt
         isSort
+        isShowIcon
       />
     </div>
 

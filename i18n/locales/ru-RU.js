@@ -139,7 +139,7 @@ export default {
       today: 'Сегодня',
       yesterday: 'Вчера',
     },
-    last: 'Последний',
+    last: 'Последние',
     month: {
       current: 'Текущий месяц',
       last: 'Прошлый месяц',
@@ -155,6 +155,7 @@ export default {
     },
     year: {
       current: 'Текущий год',
+      last: 'Прошлый год',
       simple: 'Год',
     },
   },

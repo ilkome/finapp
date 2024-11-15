@@ -73,6 +73,7 @@ const { t } = useI18n()
             :wallet="walletItem"
             :activeItemId="route.params.id as string"
             class="group"
+            isShowIcon
             @click="router.push(`/wallets/${walletId}`)"
           />
 

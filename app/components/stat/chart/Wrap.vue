@@ -60,7 +60,7 @@ function onClickChart(idx: number) {
         />
       </div>
 
-      <StatChartView2
+      <StatChartView
         :xAxisLabels
         :chartType="statConfig.config.value?.chartType"
         :period="statDate.params.value.intervalsBy"

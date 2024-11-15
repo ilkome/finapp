@@ -506,6 +506,7 @@ const counts = computed(() => ({
                   :walletId
                   :lineWidth="2"
                   isShowBaseRate
+                  isShowIcon
                   @click="router.push(`/wallets/${walletId}`)"
                 />
               </UiToggle2>
@@ -580,6 +581,7 @@ const counts = computed(() => ({
                     :walletId
                     :lineWidth="2"
                     isShowBaseRate
+                    isShowIcon
                     @click="router.push(`/wallets/${walletId}`)"
                   />
                 </UiToggle2>
@@ -597,6 +599,7 @@ const counts = computed(() => ({
                     :walletId
                     :lineWidth="2"
                     isShowBaseRate
+                    isShowIcon
                     @click="router.push(`/wallets/${walletId}`)"
                   />
                 </div>
@@ -615,8 +618,9 @@ const counts = computed(() => ({
               :wallet="walletItem"
               :walletId
               :lineWidth="2"
-              isShowBaseRate
               class="group"
+              isShowBaseRate
+              isShowIcon
               @click="router.push(`/wallets/${walletId}`)"
             />
           </div>

@@ -1,36 +1,28 @@
 <script setup lang="ts">
+import VChart from 'vue-echarts'
 import dayjs from 'dayjs'
 import defu from 'defu'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
-import {
-  DataZoomComponent,
-  GridComponent,
-  MarkAreaComponent,
-  MarkLineComponent,
-  MarkPointComponent,
-  TooltipComponent,
-} from 'echarts/components'
-import { use } from 'echarts/core'
+import { DataZoomComponent, GridComponent, MarkAreaComponent, MarkLineComponent, MarkPointComponent, TooltipComponent } from 'echarts/components'
 import { SVGRenderer } from 'echarts/renderers'
-import VChart from 'vue-echarts'
-import { config, lineConfig } from '~/components/stat/chart/config'
-import { markArea, setChartXAxis } from '~/components/stat/chart/utils'
-import type { PeriodNameWithAll } from '~/components/filter/types'
-import { useDateFormats } from '~/components/date/useDateFormats'
+import { use } from 'echarts/core'
 import type { ChartType } from '~/components/stat/chart/types'
+import type { Period } from '~/components/date/types'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
+import { config, lineConfig } from '~/components/stat/chart/config2'
+import { setChartXAxis } from '~/components/stat/chart/utils'
+import { useDateFormats } from '~/components/date/useDateFormats'
 
 const props = withDefaults(
   defineProps<{
-    categories: unknown
-    chartType?: ChartType
-    config?: object
+    chartType: ChartType
     isShowDataLabels?: boolean
     isShowExpense?: boolean
     isShowIncome?: boolean
     isShowSummary?: boolean
-    markedArea?: unknown
-    periodName: PeriodNameWithAll
+    period: Period
     series: unknown[]
+    xAxisLabels: number[]
   }>(),
   {
     chartType: 'line',
@@ -57,54 +49,22 @@ use([
   TooltipComponent,
 ])
 
+const statConfig = inject('statConfig') as StatConfigProvider
 const { getFormatForChart } = useDateFormats()
 const chartRef = ref()
 
-const baseConfig = computed(() => {
+const option = computed(() => {
   const data = defu(config, {
     series: setChartSeries(props.series),
-    xAxis: setChartXAxis(props.categories),
+    xAxis: setChartXAxis(props.xAxisLabels),
     ...statConfig.config.value,
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
-    return dayjs(+date).format(getFormatForChart(props.periodName))
+    return dayjs(+date).format(getFormatForChart(props.period))
   }
   data.xAxis.axisPointer.label.formatter = ({ value } = { value: string }) => {
-    return dayjs(+value).format(getFormatForChart(props.periodName))
-  }
-
-  return data
-})
-
-const chartOption = computed(() => {
-  const data = { ...baseConfig.value }
-
-  // INFO: Marked area works only with bar chart
-  if (props.markedArea) {
-    if (props.chartType !== 'bar') {
-      const markAreaSeriesIdx = data.series.findIndex(s => s.markedArea === 'markedArea')
-
-      if (markAreaSeriesIdx === -1) {
-        data.series.push({
-          data: [],
-          markArea: markArea(props.markedArea),
-          markedArea: 'markedArea',
-          type: 'bar',
-        })
-      }
-      else {
-        data.series[markAreaSeriesIdx] = {
-          data: [],
-          markArea: markArea(props.markedArea),
-          markedArea: 'markedArea',
-          type: 'bar',
-        }
-      }
-    }
-    else {
-      data.series[0].markArea = markArea(props.markedArea)
-    }
+    return dayjs(+value).format(getFormatForChart(props.period))
   }
 
   return data
@@ -127,18 +87,21 @@ function setChartSeries(series: unknown[]) {
         ...lineConfig.label,
         show: props.isShowDataLabels,
       },
-      type: props.chartType || item.type,
+      stack: (props.chartType || item.type) === 'bar' ? 'b' : false,
+      type: item.markedArea ? 'bar' : (props.chartType || item.type),
     }))
 }
 </script>
 
 <template>
-  <div class="bg-surface-4 h-48">
+  <div
+    class="h-40 px-2"
+    @click="onClickChart"
+  >
     <VChart
       ref="chartRef"
-      :option="chartOption"
+      :option
       autoresize
-      @zr:click="onClickChart"
     />
   </div>
 </template>

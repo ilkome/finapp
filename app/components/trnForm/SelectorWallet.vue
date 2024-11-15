@@ -24,6 +24,7 @@ const walletsStore = useWalletsStore()
         :walletId
         :wallet="walletsStore.itemsWithAmount[walletId]"
         insideClasses="!min-h-[46px]"
+        isShowIcon
         alt
       />
 
@@ -47,6 +48,7 @@ const walletsStore = useWalletsStore()
       v-else
       :walletId
       :wallet="walletsStore.itemsWithAmount[walletId]"
+      isShowIcon
       alt
       @click="emit('onOpen', 0)"
     />

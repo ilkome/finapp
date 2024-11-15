@@ -9,6 +9,7 @@ const props = defineProps<{
   alt?: boolean
   insideClasses?: string
   isShowBaseRate?: boolean
+  isShowIcon?: boolean
   isSort?: boolean
   lineWidth?: number
   wallet: WalletItemWithAmount
@@ -73,7 +74,7 @@ if (!props.isSort) {
     @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
-    <template #leftIcon>
+    <template v-if="props.isShowIcon" #leftIcon>
       <Icon
         :name="icons[wallet.type]"
         :style="{ color: wallet.color }"

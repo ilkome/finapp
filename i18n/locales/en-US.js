@@ -155,6 +155,7 @@ export default {
     },
     year: {
       current: 'This year',
+      last: 'Last year',
       simple: 'Year',
     },
   },

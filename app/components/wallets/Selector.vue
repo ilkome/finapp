@@ -32,6 +32,7 @@ function onClickWallet(walletId: WalletId) {
       :wallet
       :lineWidth="2"
       class="group"
+      isShowIcon
       @click="onClickWallet(walletId)"
     />
   </div>
