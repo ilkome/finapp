@@ -610,7 +610,7 @@ const counts = computed(() => ({
           <!-- List -->
           <div
             v-if="gropedBy === 'list'"
-            class="md:max-w-md"
+            class="md:max-w-lg"
           >
             <WalletsItem
               v-for="(walletItem, walletId) in selectedWallets"

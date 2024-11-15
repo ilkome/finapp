@@ -96,7 +96,7 @@ function set30DaysMini() {
   statDate.params.value.isShowMaxRange = false
 
   statDate.setRangeByPeriod({
-    intervalsBy: 'week',
+    intervalsBy: 'day',
     intervalsDuration: 1,
     rangeBy: 'day',
     rangeDuration: 30,

@@ -32,14 +32,14 @@ function onSave(close: () => void) {
             {{ $t('trnForm.description.title') }}
           </UiTitle>
 
-          <div class="pb-6 px-3">
+          <div class="px-3 pb-6">
             <textarea
               v-model="description"
-              class="w-full h-28 m-0 py-3 px-4 rounded-lg text-base font-normal text-item-base bg-item-4 border border-solid border-item-5 placeholder:text-item-2 transition ease-in-out focus:text-item-1 focus:bg-item-5 focus:border-accent-4 focus:outline-none"
+              class="text-item-base bg-item-4 border-item-5 placeholder:text-item-2 focus:text-item-1 focus:bg-item-5 focus:border-accent-4 m-0 h-28 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out focus:outline-none"
               :placeholder="$t('trnForm.description.placeholder')"
             />
           </div>
-          <div class="pb-4 px-3">
+          <div class="px-3 pb-4">
             <UiButtonBlue @click="onSave(close)">
               {{ $t('base.save') }}
             </UiButtonBlue>

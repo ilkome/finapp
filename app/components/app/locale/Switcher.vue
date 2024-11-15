@@ -20,9 +20,6 @@ function changeLocale(locale: string) {
     return
 
   saveData(`users/${userStore.uid}/settings/lang`, locale)
-  setTimeout(() => {
-    window.location.reload()
-  }, 1000)
 }
 </script>
 

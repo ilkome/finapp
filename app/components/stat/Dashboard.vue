@@ -74,11 +74,14 @@ function onClickWallet(walletId: WalletId) {
       <FilterSelected
         v-if="filter.isShow?.value && filter.catsIds.value.length > 0"
         isShowCategories
+        isShowWallets
       />
     </div>
+  </div>
 
+  <div class="max-w-6xl gap-2 pb-2 lg:px-4 xl:py-2">
     <div
-      v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
+      v-if="statConfig.config.value.showedWallets > 0"
       class="flex gap-1 overflow-x-auto px-2 py-px"
     >
       <WalletsItem
@@ -94,13 +97,15 @@ function onClickWallet(walletId: WalletId) {
   </div>
 
   <!-- NetIncome -->
-  <StatItem
-    v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
-    :storageKey="props.storageKey + activeTab"
-    :trnsIds="trnsIds"
-    class="-max-w-2xl max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
-    type="sum"
-  />
+  <div class="max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2">
+    <StatItem
+      v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
+      :storageKey="props.storageKey + activeTab"
+      :trnsIds="trnsIds"
+      class=""
+      type="sum"
+    />
+  </div>
 
   <!-- Summary -->
   <div

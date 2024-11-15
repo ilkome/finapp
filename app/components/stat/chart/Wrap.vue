@@ -42,7 +42,7 @@ function onClickChart(idx: number) {
   <div
     :class="{
       '': statConfig.config.value?.chartView === 'full',
-      'md:max-w-md': statConfig.config.value?.chartView === 'half',
+      'md:max-w-lg': statConfig.config.value?.chartView === 'half',
     }"
   >
     <div

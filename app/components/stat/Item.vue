@@ -346,10 +346,10 @@ const quickModalTrnsIds = computed(() => {
       />
 
       <!-- Content -->
-      <div class="@3xl/stat:grid-cols-[2fr,1fr] grid gap-6 pt-3">
+      <div class="grid gap-6 pt-4">
         <!-- Categories first level -->
         <div>
-          <div class="flex items-center justify-between md:max-w-md">
+          <div class="flex items-center justify-between md:max-w-lg">
             <UiTitle82>
               {{ t('categories.title') }}
             </UiTitle82>
@@ -368,7 +368,7 @@ const quickModalTrnsIds = computed(() => {
             v-if="cats.length > 0 && viewOptions.catsView === 'list'"
             :class="{
               'grid gap-2 px-0': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened,
-              'md:max-w-md': !viewOptions.catsList.isGrouped || !viewOptions.catsList.isOpened,
+              'md:max-w-lg': !viewOptions.catsList.isGrouped || !viewOptions.catsList.isOpened,
               'grid gap-1': viewOptions.catsList.isItemsBg,
             }"
             class="pt-2"
@@ -404,7 +404,7 @@ const quickModalTrnsIds = computed(() => {
           <!-- Rounds -->
           <div
             v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
-            class="@3xl/stat:gap-2 flex flex-wrap gap-1 pl-1 pt-2 md:max-w-md"
+            class="@3xl/stat:gap-2 flex flex-wrap gap-1 pl-1 pt-2 md:max-w-lg"
           >
             <StatLinesItemRound2
               v-for="item in catsRounded"
@@ -424,7 +424,7 @@ const quickModalTrnsIds = computed(() => {
           v-if="selectedTrnsIdsForTrnsList.length > 0"
           :storageKey="`${newBaseStorageKey}-${props.type}trns-all`"
           :initStatus="true"
-          class="min-w-80 md:max-w-md"
+          class="min-w-80 md:max-w-lg"
         >
           <template #header="{ toggle, isShown }">
             <div class="flex items-center justify-between">

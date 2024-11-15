@@ -38,6 +38,7 @@ const itemClasses = getStyles('item', ['alt', 'rounded'])
         :category="categoriesStore.items[categoryId]"
         :categoryId="categoryId"
         :class="itemClasses"
+        alt
         isHideDots
         @click="filter.removeCategoryId(categoryId)"
       />

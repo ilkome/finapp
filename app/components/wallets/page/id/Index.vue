@@ -88,7 +88,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
           <div
             v-if="wallet.type !== 'credit'"
-            class="md:max-w-md"
+            class="md:max-w-lg"
           >
             <StatSum2
               :amount="total"
@@ -96,7 +96,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
             />
           </div>
 
-          <div v-if="wallet.creditLimit" class="grid grid-cols-3 gap-1 md:max-w-md">
+          <div v-if="wallet.creditLimit" class="grid grid-cols-3 gap-1 md:max-w-lg">
             <StatSum2
               :amount="total"
               :title="t('wallets.form.credit.debt')"

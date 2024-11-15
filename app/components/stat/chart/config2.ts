@@ -191,7 +191,7 @@ export const lineConfig = {
   areaStyle: {
     opacity: 0.1,
   },
-  barMaxWidth: '26',
+  barMaxWidth: '12',
   barMinWidth: '1',
   borderColor: 'blue',
   cursor: 'default',
