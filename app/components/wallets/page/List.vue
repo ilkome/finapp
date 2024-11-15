@@ -155,7 +155,7 @@ const totalInWallets = computed(() => {
 
     const itemValue
       = wallet.currency === currenciesStore.base
-        ? (walletsStore.itemsWithAmount[walletId] ?? 0)
+        ? (walletsStore.itemsWithAmount[walletId]?.amount ?? 0)
         : +getAmountInBaseRate({
             amount: walletsStore.itemsWithAmount[walletId]?.amount ?? 0,
             currencyCode: wallet.currency ?? 'USD',
