@@ -48,6 +48,8 @@ const longPressRef = ref(null)
 onLongPress(
   longPressRef,
   () => {
+    console.log('44')
+
     trnFormStore.trnFormCreate()
     trnFormStore.$patch((state) => {
       state.values.amount = [0, 0, 0]
@@ -63,6 +65,16 @@ onLongPress(
       }
     })
   },
+  {
+    onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
+      console.log(1)
+
+      if (!isLongPress && distance < 100) {
+        emit('click', props.item.id)
+        console.log(2)
+      }
+    },
+  },
 )
 </script>
 
@@ -76,7 +88,6 @@ onLongPress(
     }]"
     :style="props.insideStyle"
     class="relative"
-    @click="emit('click', props.item.id)"
   >
     <slot name="before" />
     <UiElement
