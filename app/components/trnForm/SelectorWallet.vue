@@ -22,7 +22,7 @@ const walletsStore = useWalletsStore()
     <UPopover v-if="isLaptop">
       <WalletsItem
         :walletId
-        :wallet="walletsStore.sortedItems[walletId]"
+        :wallet="walletsStore.itemsWithAmount[walletId]"
         insideClasses="!min-h-[46px]"
         alt
       />
@@ -46,7 +46,7 @@ const walletsStore = useWalletsStore()
     <WalletsItem
       v-else
       :walletId
-      :wallet="walletsStore.sortedItems[walletId]"
+      :wallet="walletsStore.itemsWithAmount[walletId]"
       alt
       @click="emit('onOpen', 0)"
     />

@@ -44,10 +44,10 @@ function setActiveType(v: WalletViewTypes | 'all') {
 
 const selectedWallets = computed(() => {
   if (currencyFiltered.value === 'all' && activeType.value === 'all')
-    return walletsStore.sortedItems
+    return walletsStore.itemsWithAmount
 
   return Object.fromEntries(
-    Object.entries(walletsStore.sortedItems).filter(([_key, wallet]) => {
+    Object.entries(walletsStore.itemsWithAmount).filter(([_key, wallet]) => {
       const isCurrencyMatch = currencyFiltered.value === 'all' || currencyFiltered.value === wallet.currency
       if (!isCurrencyMatch)
         return false
@@ -148,16 +148,16 @@ const totalInWallets = computed(() => {
     withdrawal: 0,
   }
 
-  for (const walletId in walletsStore.sortedItems) {
-    const wallet = walletsStore.sortedItems[walletId]
+  for (const walletId in walletsStore.itemsWithAmount) {
+    const wallet = walletsStore.itemsWithAmount[walletId]
     if (!wallet)
       continue
 
     const itemValue
       = wallet.currency === currenciesStore.base
-        ? (walletsStore.totals[walletId] ?? 0)
+        ? (walletsStore.itemsWithAmount[walletId] ?? 0)
         : +getAmountInBaseRate({
-            amount: walletsStore.totals[walletId] ?? 0,
+            amount: walletsStore.itemsWithAmount[walletId]?.amount ?? 0,
             currencyCode: wallet.currency ?? 'USD',
             noFormat: true,
           })
@@ -220,7 +220,7 @@ function countWalletsSum(
   isExcludeInTotal = false,
 ) {
   return walletsIds.reduce((acc, id) => {
-    const wallet = walletsStore.sortedItems[id]
+    const wallet = walletsStore.itemsWithAmount[id]
     if (!wallet)
       return acc
 
@@ -502,7 +502,7 @@ const counts = computed(() => ({
                 <WalletsItem
                   v-for="walletId in groupedWalletsIds"
                   :key="walletId"
-                  :wallet="walletsStore.sortedItems[walletId]"
+                  :wallet="walletsStore.itemsWithAmount[walletId]"
                   :walletId
                   :lineWidth="2"
                   isShowBaseRate
@@ -576,7 +576,7 @@ const counts = computed(() => ({
                   <WalletsItem
                     v-for="walletId in groupedWalletsIds"
                     :key="walletId"
-                    :wallet="walletsStore.sortedItems[walletId]"
+                    :wallet="walletsStore.itemsWithAmount[walletId]"
                     :walletId
                     :lineWidth="2"
                     isShowBaseRate
@@ -593,7 +593,7 @@ const counts = computed(() => ({
                   <WalletsItem
                     v-for="walletId in groupedWalletsIds"
                     :key="walletId"
-                    :wallet="walletsStore.sortedItems[walletId]"
+                    :wallet="walletsStore.itemsWithAmount[walletId]"
                     :walletId
                     :lineWidth="2"
                     isShowBaseRate

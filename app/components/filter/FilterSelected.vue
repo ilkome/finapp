@@ -24,7 +24,7 @@ const itemClasses = getStyles('item', ['alt', 'rounded'])
         :key="walletId"
         :class="itemClasses"
         :walletId="walletId"
-        :wallet="walletsStore.sortedItems[walletId]"
+        :wallet="walletsStore.itemsWithAmount[walletId]"
         alt
         @click="filter.removeWalletId(walletId)"
       />

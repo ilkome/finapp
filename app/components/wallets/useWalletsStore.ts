@@ -106,46 +106,14 @@ export const useWalletsStore = defineStore('wallets', () => {
     )
   })
 
-  const totals = computed(() => {
-    if (items.value) {
-      return Object.keys(items.value).reduce(
-        (acc, walletId) => {
-          acc[walletId] = getWalletTotal(walletId)
-          return acc
-        },
-        {} as Record<WalletId, WalletItemWithAmount['amount']>,
-      )
-    }
-
-    return null
-  })
-
-  const itemsWithAmount = computed(() => {
-    const itemsWithAmount = { ...items.value }
-
-    if (itemsWithAmount && totals.value) {
-      Object.keys(itemsWithAmount).forEach((id) => {
-        const wallet = itemsWithAmount[id] as WalletItemWithAmount
-        wallet.amount = totals.value?.[id] ?? 0
-      })
-
-      return itemsWithAmount as Record<WalletId, WalletItemWithAmount>
-    }
-
-    return null
-  })
-
-  const sortedItems = computed(() =>
-    sortedIds.value.reduce(
-      (acc, id) => {
-        acc[id] ??= {
-          ...items.value[id],
-          amount: totals.value[id],
-        }
-        return acc
-      },
-      {} as Record<WalletId, WalletItemWithAmount>,
-    ),
+  const itemsWithAmount = computed(() =>
+    sortedIds.value.reduce((acc, id) => {
+      acc[id] = {
+        ...items.value[id],
+        amount: getWalletTotal(id),
+      }
+      return acc
+    }, {} as Record<WalletId, WalletItemWithAmount>),
   )
 
   const currenciesUsed = computed<CurrencyCode[]>(() => uniqueElementsBy(items.value, 'currency'))
@@ -161,8 +129,6 @@ export const useWalletsStore = defineStore('wallets', () => {
     saveWalletsOrder,
     setWallets,
     sortedIds,
-    sortedItems,
-    totals,
     unsubscribeWallets,
   }
 })

@@ -16,12 +16,12 @@ const stateLimit = ref(0)
 
 const walletsItemsLimited = computed<WalletsWithAmount>(() => {
   if (stateLimit.value === 0)
-    return walletsStore.sortedItems
+    return walletsStore.itemsWithAmount
 
   return walletsStore.sortedIds
     .slice(0, stateLimit.value)
     .reduce((acc, id) => {
-      acc[id] = walletsStore.sortedItems[id]!
+      acc[id] = walletsStore.itemsWithAmount[id]!
       return acc
     }, {} as WalletsWithAmount)
 })
@@ -40,7 +40,6 @@ onMounted(() => stateLimit.value = props.limit)
     <slot
       :walletsIdsSorted="walletsStore.sortedIds"
       :walletsItemsLimited="walletsItemsLimited"
-      :walletsItemsSorted="walletsStore.sortedItems"
     />
 
     <slot

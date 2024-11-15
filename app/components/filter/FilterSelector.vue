@@ -108,8 +108,8 @@ const modals = ref({
             @close="close"
           >
             <WalletsSelector
-              class="min-w-72 max-w-xs"
               :selectedIds="filter?.walletsIds.value"
+              class="min-w-72 max-w-xs"
               @onSelected="filter.toggleWalletId"
             />
           </UiPopoverWrap>

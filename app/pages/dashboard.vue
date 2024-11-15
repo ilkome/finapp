@@ -23,7 +23,7 @@ useHead({ title: t('stat.title') })
       :isShowTotals="filter?.catsIds?.value?.length > 0 || filter?.walletsIds?.value?.length > 0"
       :walletsIds="filter?.walletsIds?.value"
       isShowFilter
-      storageKey="dashboard"
+      storageKey="dashboard2"
     />
   </div>
 

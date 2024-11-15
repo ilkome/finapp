@@ -23,7 +23,7 @@ provide('statConfig', statConfig)
 if (!wallet.value)
   router.replace('/wallets')
 
-const total = computed(() => walletsStore.totals[walletId.value])
+const total = computed(() => walletsStore.itemsWithAmount[walletId.value]?.amount ?? 0)
 
 function onEditClick() {
   router.push(`/wallets/${walletId.value}/edit`)
