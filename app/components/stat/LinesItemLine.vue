@@ -63,18 +63,12 @@ onLongPress(
       }
     })
   },
-  {
-    onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
-      if (!isLongPress) {
-        emit('click', props.item.id)
-      }
-    },
-  },
 )
 </script>
 
 <template>
   <div
+    ref="longPressRef"
     :class="[props.insideClass, {
       '-bg-item-4 ': props.isActive,
       'bg-item-9 rounded-lg': props.viewOptions?.catsList.isItemsBg,
