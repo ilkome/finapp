@@ -7,11 +7,9 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory } from '~/components/stat/types'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-import type { IntervalRange } from '~/components/date/useIntervalRange'
-import type { Range } from '~/components/date/types'
+import type { Range, StatDateProvider } from '~/components/date/types'
 
 const props = defineProps<{
-  intervalRange?: IntervalRange
   isActive?: boolean
   item: TotalCategory
   selectedRange?: Range
@@ -20,6 +18,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: [categoryId: CategoryId]
 }>()
+
+const statDate = inject('statDate') as StatDateProvider
 
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
@@ -52,7 +52,7 @@ onLongPress(
       state.values.categoryId = props.item.id
       state.ui.isShow = true
 
-      if (props.selectedRange?.start && props.intervalRange?.interval.value.period === 'day' && props.intervalRange?.interval.value.selected !== -1) {
+      if (props.selectedRange?.start && statDate.params.value.rangeBy === 'day' && statDate.params.value.intervalSelected !== -1) {
         state.values.date = props.selectedRange?.start
       }
       else {
@@ -60,15 +60,22 @@ onLongPress(
       }
     })
   },
+  {
+    onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
+      if (!isLongPress && distance < 100) {
+        emit('click', props.item.id)
+      }
+    },
+  },
 )
 </script>
 
 <template>
   <div
+    v-if="category"
     ref="longPressRef"
-    class="text-secondary2 hocus:bg-item-5 bg-item-9 relative flex items-center gap-2 overflow-hidden rounded-full p-1"
     :class="{ 'opacity-60': props.item.value === 0 }"
-    @click="emit('click', props.item.id)"
+    class="text-secondary2 hocus:bg-item-5 bg-item-9 relative flex items-center gap-2 overflow-hidden rounded-full p-1"
   >
     <div
       :style="{ backgroundColor: category?.color }"
@@ -86,7 +93,6 @@ onLongPress(
       />
     </div>
 
-    <!-- TODO: text-xs xl:text-sm -->
     <div class="text-3 text-xs xl:text-sm">
       {{ category.name }}
     </div>

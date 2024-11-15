@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { IntervalRangeProvider, Range } from '~/components/date/types'
+import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { ChartType } from '~/components/stat/chart/types'
+import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 
 const props = defineProps<{
   maxRange: Range
@@ -10,16 +11,31 @@ const props = defineProps<{
   xAxisLabels: number[]
 }>()
 
-const emit = defineEmits<{
-  onClickChart: [idx: number]
-}>()
-
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
+const trnsFormStore = useTrnFormStore()
 
 const isShowDateSelector = defineModel('isShowDateSelector', {
   default: false,
 })
+
+function onClickChart(idx: number) {
+  const newPeriod = idx
+
+  if (statDate.params.value.intervalSelected === newPeriod) {
+    statDate.params.value.intervalSelected = -1
+  }
+  else {
+    statDate.params.value.intervalSelected = newPeriod
+
+    if (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalsDuration === 1) {
+      const day = statDate.groupedPeriods.value[statDate.params.value.intervalSelected]?.start
+      if (day) {
+        trnsFormStore.values.date = day
+      }
+    }
+  }
+}
 </script>
 
 <template>
@@ -30,7 +46,7 @@ const isShowDateSelector = defineModel('isShowDateSelector', {
     }"
   >
     <div
-      v-if="statConfig.config.value?.chartShow && (intervalRange.params.value.intervalDuration !== 1 || intervalRange.params.value.intervalPeriod !== 'day')"
+      v-if="statConfig.config.value?.chartShow && (statDate.params.value.rangeDuration !== 1 || statDate.params.value.rangeBy !== 'day')"
       class="pb-2"
     >
       <div class="flex justify-between">
@@ -39,17 +55,17 @@ const isShowDateSelector = defineModel('isShowDateSelector', {
           @update:chartType="(value: ChartType) => statConfig.updateConfig('chartType', value)"
         />
         <LazyStatChartIntervals
-          v-model:period="intervalRange.params.value.groupedBy"
-          :range="intervalRange.range.value"
+          v-model:period="statDate.params.value.intervalsBy"
+          :range="statDate.range.value"
         />
       </div>
 
       <StatChartView2
         :xAxisLabels
         :chartType="statConfig.config.value?.chartType"
-        :period="intervalRange.params.value.groupedBy"
+        :period="statDate.params.value.intervalsBy"
         :series="props.series"
-        @click="v => emit('onClickChart', v)"
+        @click="onClickChart"
       />
     </div>
 
@@ -59,15 +75,15 @@ const isShowDateSelector = defineModel('isShowDateSelector', {
       </UiTitle10>
 
       <div
-        v-if="!intervalRange.params.value.customDate"
+        v-if="!statDate.params.value.customDate"
         class="flex gap-1"
       >
         <DateNavHome
-          v-if="intervalRange.params.value.intervalSelected !== -1 || (intervalRange.range.value.start !== dayjs().subtract(intervalRange.params.value.intervalDuration - 1, intervalRange.params.value.intervalPeriod).startOf(intervalRange.params.value.intervalPeriod).valueOf() && intervalRange.range.value.end !== dayjs().endOf(intervalRange.params.value.intervalPeriod).valueOf() && !intervalRange.params.value.isShowAll)"
+          v-if="statDate.params.value.intervalSelected !== -1 || (statDate.range.value.start !== dayjs().subtract(statDate.params.value.rangeDuration - 1, statDate.params.value.rangeBy).startOf(statDate.params.value.rangeBy).valueOf() && statDate.range.value.end !== dayjs().endOf(statDate.params.value.rangeBy).valueOf() && !statDate.params.value.isShowMaxRange)"
         />
 
         <DateNav
-          v-if="!intervalRange.params.value.isShowAll && (intervalRange.range.value.start < dayjs().valueOf() || (intervalRange.range.value.start !== maxRange.start && intervalRange.range.value.end !== maxRange.end))"
+          v-if="!statDate.params.value.isShowMaxRange && (statDate.range.value.start < dayjs().valueOf() || (statDate.range.value.start !== maxRange.start && statDate.range.value.end !== maxRange.end))"
           :maxRange
         />
       </div>

@@ -13,8 +13,8 @@ export function calculatePeriodRange(params: RangePeriodDuration): Range {
   }
 }
 
-export function calculateRange(props: { duration: number, period: Period, subtracted: number }): Range {
-  const baseDate = dayjs().subtract(props.subtracted * (props.duration === 0 ? 1 : props.duration), props.period)
+export function calculateRange(props: { duration: number, period: Period, rangeOffset: number }): Range {
+  const baseDate = dayjs().subtract(props.rangeOffset * (props.duration === 0 ? 1 : props.duration), props.period)
 
   return {
     end: baseDate.endOf(props.period).valueOf(),

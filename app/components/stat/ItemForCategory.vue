@@ -6,7 +6,7 @@ import { useStorage } from '@vueuse/core'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { DeepPartial } from '~~/utils/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { IntervalRangeProvider, Range } from '~/components/date/types'
+import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
@@ -33,7 +33,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const filter = inject('filter') as FilterProvider
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
 
 const trnsStore = useTrnsStore()
@@ -45,7 +45,7 @@ const isShowDateSelector = ref(false)
 const isShowTrns = ref(false)
 
 const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
-const newBaseStorageKey = computed(() => `finapp-${intervalRange.params.value.groupedBy}-${props.storageKey}-${JSON.stringify(filter?.catsIds?.value)}`)
+const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.catsIds?.value)}`)
 
 const selectedType = ref<MoneyTypeSlugSum>('sum')
 function onSelectType(type: MoneyTypeSlugSum) {
@@ -83,7 +83,7 @@ const filteredTrnsIds = computed(() => {
   return props.trnsIds
 })
 
-const isDayToday = computed(() => intervalRange.params.value.groupedBy === 'day' && intervalRange.params.value.groupedDuration === 1 && intervalRange.range.value.end < dayjs().endOf('day').valueOf())
+const isDayToday = computed(() => statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalsDuration === 1 && statDate.range.value.end < dayjs().endOf('day').valueOf())
 
 /**
  * View Options
@@ -111,7 +111,7 @@ onBeforeMount(() => {
   }
 })
 
-function getCats(trnsIds: TrnId[], isGroupedByParent?: boolean, preCategoriesIds?: CategoryId[]) {
+function getCats(trnsIds: TrnId[], isintervalsByParent?: boolean, preCategoriesIds?: CategoryId[]) {
   const categoriesWithTrns = trnsIds?.reduce(
     (acc, trnId) => {
       let newCategoryId = trnsStore.items[trnId]?.categoryId
@@ -121,7 +121,7 @@ function getCats(trnsIds: TrnId[], isGroupedByParent?: boolean, preCategoriesIds
       if (categoriesStore.transferCategoriesIds.includes(newCategoryId))
         return acc
 
-      if (isGroupedByParent) {
+      if (isintervalsByParent) {
         const trnBaseCategory: CategoryItem = categoriesStore.items[newCategoryId]
 
         newCategoryId = trnBaseCategory?.parentId === 0
@@ -185,10 +185,10 @@ function getSeries(
 /**
  * Chart
  */
-const xAxisLabels = computed(() => intervalRange.groupedPeriods.value.map(r => +r.start) ?? [])
+const xAxisLabels = computed(() => statDate.groupedPeriods.value.map(r => +r.start) ?? [])
 
-const groupedTrnsIds = computed(() => getPeriodsWithTrns(filteredTrnsIds.value, intervalRange.groupedPeriods.value))
-const groupedTrnsIds2 = computed(() => getPeriodsWithTrns(props.trnsIds, intervalRange.groupedPeriods.value))
+const groupedTrnsIds = computed(() => getPeriodsWithTrns(filteredTrnsIds.value, statDate.groupedPeriods.value))
+const groupedTrnsIds2 = computed(() => getPeriodsWithTrns(props.trnsIds, statDate.groupedPeriods.value))
 const groupedTrnsTotals = computed(() => groupedTrnsIds.value.map(g => getTotalOfTrnsIds(g)))
 
 function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
@@ -203,35 +203,17 @@ function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
   return list
 }
 
-function onClickChart(idx: number) {
-  const newPeriod = idx
-
-  if (intervalRange.params.value.intervalSelected === newPeriod) {
-    intervalRange.params.value.intervalSelected = -1
-    trnsFormStore.values.date = dayjs().valueOf()
-  }
-  else {
-    intervalRange.params.value.intervalSelected = newPeriod
-
-    // Set date for trnForm
-    const day = intervalRange.groupedPeriods.value?.[intervalRange.params.value.intervalSelected]?.start
-    if (intervalRange.params.value.groupedBy === 'day' && intervalRange.params.value.groupedDuration === 1 && day) {
-      trnsFormStore.values.date = day
-    }
-  }
-}
-
 const series = computed(() => {
-  const series = getSeries(groupedTrnsTotals.value, props.type, intervalRange.groupedPeriods.value)
+  const series = getSeries(groupedTrnsTotals.value, props.type, statDate.groupedPeriods.value)
 
-  if (intervalRange.params.value.intervalSelected >= 0) {
+  if (statDate.params.value.intervalSelected >= 0) {
     if (statConfig.config.value?.chartType !== 'bar') {
       const markAreaSeriesIdx = series.findIndex(s => s.markedArea === 'markedArea')
 
       if (markAreaSeriesIdx === -1) {
         series.push({
           data: [],
-          markArea: markArea(intervalRange.groupedPeriods.value?.[intervalRange.params.value.intervalSelected]?.start),
+          markArea: markArea(statDate.groupedPeriods.value?.[statDate.params.value.intervalSelected]?.start),
           markedArea: 'markedArea',
           type: 'bar',
         })
@@ -239,14 +221,14 @@ const series = computed(() => {
       else {
         series[markAreaSeriesIdx] = {
           data: [],
-          markArea: markArea(intervalRange.groupedPeriods.value?.[intervalRange.params.value.intervalSelected]?.start),
+          markArea: markArea(statDate.groupedPeriods.value?.[statDate.params.value.intervalSelected]?.start),
           markedArea: 'markedArea',
           type: 'bar',
         }
       }
     }
     else {
-      series[0].markArea = markArea(intervalRange.groupedPeriods.value?.[intervalRange.params.value.intervalSelected]?.start)
+      series[0].markArea = markArea(statDate.groupedPeriods.value?.[statDate.params.value.intervalSelected]?.start)
     }
   }
 
@@ -256,8 +238,8 @@ const series = computed(() => {
 const trnsIdsWithRange = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter?.catsIds?.value,
   dates: {
-    from: intervalRange.range.value.start,
-    until: intervalRange.range.value.end,
+    from: statDate.range.value.start,
+    until: statDate.range.value.end,
   },
   trnsIds: filteredTrnsIds.value,
   walletsIds: filter?.walletsIds?.value,
@@ -265,10 +247,10 @@ const trnsIdsWithRange = computed(() => trnsStore.getStoreTrnsIds({
 )
 
 const selectedTrnsIdsForTrnsList = computed(() => {
-  if (intervalRange.params.value.intervalSelected >= 0) {
+  if (statDate.params.value.intervalSelected >= 0) {
     return trnsStore.getStoreTrnsIds({
       categoriesIds: filter?.catsIds?.value,
-      trnsIds: groupedTrnsIds.value[intervalRange.params.value.intervalSelected],
+      trnsIds: groupedTrnsIds.value[statDate.params.value.intervalSelected],
       walletsIds: filter?.walletsIds?.value,
     }, { includesChildCategories: false })
   }
@@ -277,16 +259,16 @@ const selectedTrnsIdsForTrnsList = computed(() => {
 })
 
 const trnsIdsForTotals = computed(() => {
-  if (intervalRange.params.value.intervalSelected >= 0) {
+  if (statDate.params.value.intervalSelected >= 0) {
     return trnsStore.getStoreTrnsIds({
-      trnsIds: groupedTrnsIds2.value[intervalRange.params.value.intervalSelected],
+      trnsIds: groupedTrnsIds2.value[statDate.params.value.intervalSelected],
     }, { includesChildCategories: false })
   }
 
   return trnsStore.getStoreTrnsIds({
     dates: {
-      from: intervalRange.range.value.start,
-      until: intervalRange.range.value.end,
+      from: statDate.range.value.start,
+      until: statDate.range.value.end,
     },
     trnsIds: props.trnsIds,
   }, { includesChildCategories: false })
@@ -340,110 +322,20 @@ const quickModalCategoryId = ref<CategoryId | false>(false)
 
 function onClickCategory(categoryId: CategoryId) {
   const queryParams = new URLSearchParams(
-    Object.entries(intervalRange.params.value).map(([key, value]) => [key, String(value)]),
+    Object.entries(statDate.params.value).map(([key, value]) => [key, String(value)]),
   ).toString()
 
   useRouter().push(`/stat/category/${categoryId}?${queryParams}`)
 }
 
-function set7Days(close?: () => void) {
-  viewOptions.value.catsView = 'list'
-  viewOptions.value.catsList.isGrouped = false
-  viewOptions.value.catsList.isOpened = false
-  intervalRange.params.value.isShowAll = false
-
-  intervalRange.setRangeByPeriod({
-    groupedBy: 'day',
-    groupedDuration: 1,
-    intervalDuration: 7,
-    intervalPeriod: 'day',
-  })
-
-  if (close) {
-    close()
-  }
-}
-
-function set30DaysMini(close?: () => void) {
-  viewOptions.value.catsView = 'round'
-  viewOptions.value.catsRound.isGrouped = false
-  intervalRange.params.value.isShowAll = false
-
-  intervalRange.setRangeByPeriod({
-    groupedBy: 'week',
-    groupedDuration: 1,
-    intervalDuration: 30,
-    intervalPeriod: 'day',
-  })
-
-  if (close) {
-    close()
-  }
-}
-
-function set7DaysMini(close?: () => void) {
-  viewOptions.value.catsView = 'round'
-  viewOptions.value.catsRound.isGrouped = false
-  intervalRange.params.value.isShowAll = false
-
-  intervalRange.setRangeByPeriod({
-    groupedBy: 'day',
-    groupedDuration: 1,
-    intervalDuration: 7,
-    intervalPeriod: 'day',
-  })
-
-  if (close) {
-    close()
-  }
-}
-
-function set12Months(close?: () => void) {
-  viewOptions.value.catsView = 'list'
-  viewOptions.value.catsList.isGrouped = true
-  viewOptions.value.catsList.isOpened = false
-  intervalRange.params.value.isShowAll = false
-
-  intervalRange.params.value.isShowAll = false
-  intervalRange.params.value.subtracted = 0
-
-  intervalRange.setRangeByPeriod({
-    groupedBy: 'month',
-    groupedDuration: 1,
-    intervalDuration: 12,
-    intervalPeriod: 'month',
-  })
-
-  if (close) {
-    close()
-  }
-}
-
-function setAllData(close?: () => void) {
-  intervalRange.params.value.isShowAll = true
-  intervalRange.params.value.isSkipEmpty = false
-
-  intervalRange.setRangeByPeriod({
-    groupedBy: 'year',
-    groupedDuration: 1,
-    intervalDuration: dayjs(maxRange.value.end).diff(maxRange.value.start, 'day'),
-    intervalPeriod: 'day',
-  })
-
-  if (close) {
-    close()
-  }
-}
-
-function setAllSkipEmpty(close?: () => void) {
-  intervalRange.params.value.isShowAll = true
-  intervalRange.params.value.isSkipEmpty = true
-
-  intervalRange.setRangeByPeriod({
-    groupedBy: 'year',
-    groupedDuration: 1,
-    intervalDuration: dayjs(maxRange.value.end).diff(maxRange.value.start, 'day'),
-    intervalPeriod: 'day',
+function setMaxRangeHideLast(close?: () => void) {
+  statDate.setRangeByPeriod({
+    intervalsBy: 'year',
+    intervalsDuration: 1,
+    isShowMaxRange: true,
+    isSkipEmpty: true,
+    rangeBy: 'day',
+    rangeDuration: dayjs(maxRange.value.end).diff(maxRange.value.start, 'day'),
   })
 
   if (close) {
@@ -469,7 +361,6 @@ const quickModalTrnsIds = computed(() => {
         :maxRange
         :series
         :xAxisLabels
-        @onClickChart="onClickChart"
         @update:isShowDateSelector="(value: boolean) => isShowDateSelector = value"
       />
 
@@ -519,7 +410,7 @@ const quickModalTrnsIds = computed(() => {
               :item
               :isHideParent="props.hasChildren"
               :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-              :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
+              :selectedRange="statDate.groupedPeriods.value[statDate.params.value.intervalSelected]"
               :viewOptions
               @click="onClickCategory"
             >
@@ -531,7 +422,7 @@ const quickModalTrnsIds = computed(() => {
                   v-for="itemInside in getCats(item.trnsIds)"
                   :key="itemInside.id"
                   :item="itemInside"
-                  :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
+                  :selectedRange="statDate.groupedPeriods.value[statDate.params.value.intervalSelected]"
                   @click="onClickCategory"
                 />
               </div>
@@ -548,8 +439,8 @@ const quickModalTrnsIds = computed(() => {
               :key="item.id"
               :item
               :biggestCatNumber
-              :selectedRange="intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]"
-              :intervalRange
+              :selectedRange="statDate.groupedPeriods.value[statDate.params.value.intervalSelected]"
+              :statDate
               :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
               @click="onClickCategory"
             />
@@ -557,22 +448,32 @@ const quickModalTrnsIds = computed(() => {
         </div>
 
         <!-- Trns -->
-        <div>
-          <UiTitle82>
-            {{ t('trns.title') }}
-          </UiTitle82>
+        <UiToggle
+          v-if="selectedTrnsIdsForTrnsList.length > 0"
+          :storageKey="`${newBaseStorageKey}-${props.type}trns-all`"
+          :initStatus="true"
+          class="min-w-80 md:max-w-md"
+        >
+          <template #header="{ toggle, isShown }">
+            <div class="flex items-center justify-between">
+              <UiTitle8 :isShown @click="toggle">
+                {{ t('trns.title') }} {{ (!isShown && selectedTrnsIdsForTrnsList.length > 0) ? selectedTrnsIdsForTrnsList.length : '' }}
+              </UiTitle8>
+            </div>
+          </template>
 
           <TrnsList
             :isHideDates="isDayToday"
-            :isShowExpense="typesInTrnsIds.expense"
             :isShowGroupSum="!isDayToday"
-            :isShowIncome="typesInTrnsIds.income"
             :trnsIds="selectedTrnsIdsForTrnsList"
             class="py-1"
+            isShowExpense
             isShowFilterByDesc
             isShowFilterByType
+            isShowIncome
+            isShowTransfers
           />
-        </div>
+        </UiToggle>
 
         <TrnsNoTrns v-if="selectedTrnsIdsForTrnsList.length === 0" />
       </div>
@@ -582,14 +483,8 @@ const quickModalTrnsIds = computed(() => {
     <Teleport to="body">
       <StatDateSelectorModal
         v-if="isShowDateSelector"
-        :intervalRange
         :maxRange
-        @set7Days="set7Days"
-        @set7DaysMini="set7DaysMini"
-        @set30DaysMini="set30DaysMini"
-        @set12Months="set12Months"
-        @setAllData="setAllData"
-        @setAllSkipEmpty="setAllSkipEmpty"
+        @changeViewOptions="changeViewOptions"
         @onClose="isShowDateSelector = false"
       />
 

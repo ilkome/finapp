@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import type { Grouped, IntervalRangeProvider } from '~/components/date/types'
+import type { Grouped, StatDateProvider } from '~/components/date/types'
 
 const emit = defineEmits<{
   close: []
 }>()
 
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statDate = inject('statDate') as StatDateProvider
 
 const groups = computed<Grouped[]>(() => [{
-  groupedBy: 'day',
-  groupedDuration: 1,
+  intervalsBy: 'day',
+  intervalsDuration: 1,
 }, {
-  groupedBy: 'week',
-  groupedDuration: 1,
+  intervalsBy: 'week',
+  intervalsDuration: 1,
 }, {
-  groupedBy: 'month',
-  groupedDuration: 1,
+  intervalsBy: 'month',
+  intervalsDuration: 1,
 }, {
-  groupedBy: 'month',
-  groupedDuration: 1,
+  intervalsBy: 'month',
+  intervalsDuration: 1,
 }, {
-  groupedBy: 'year',
-  groupedDuration: 1,
+  intervalsBy: 'year',
+  intervalsDuration: 1,
 }])
 
 function selectInterval(grouped: Grouped) {
-  intervalRange.setGrouped(grouped)
+  statDate.setGrouped(grouped)
   emit('close')
 }
 </script>
@@ -33,10 +33,10 @@ function selectInterval(grouped: Grouped) {
 <template>
   <DateLinkItem
     v-for="group in groups"
-    :key="group.groupedBy"
-    :isActive="group.groupedBy === intervalRange.params.value.groupedBy && group.groupedDuration === intervalRange.params.value.groupedDuration"
+    :key="group.intervalsBy"
+    :isActive="group.intervalsBy === statDate.params.value.intervalsBy && group.intervalsDuration === statDate.params.value.intervalsDuration"
     @click="selectInterval(group)"
   >
-    {{ group.groupedDuration }} {{ group.groupedBy }}
+    {{ group.intervalsDuration }} {{ group.intervalsBy }}
   </DateLinkItem>
 </template>

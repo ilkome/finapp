@@ -4,7 +4,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useStatConfig } from '~/components/stat/useStatConfig'
-import { useIntervalRange } from '~/components/date/useIntervalRange'
+import { useStatDate } from '~/components/date/useStatDate'
 
 const route = useRoute()
 const router = useRouter()
@@ -20,13 +20,13 @@ const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParen
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: categoriesIdsOrParent.value }))
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const intervalRange = useIntervalRange({
+const statDate = useStatDate({
   key: `finapp-${categoryId.value}-stat`,
   maxRange,
   queryParams: route.query,
 })
 
-provide('intervalRange', intervalRange)
+provide('statDate', statDate)
 
 const statConfig = useStatConfig({
   props: {

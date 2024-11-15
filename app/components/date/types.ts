@@ -1,4 +1,4 @@
-import type { useIntervalRange } from '~/components/date/useIntervalRange'
+import type { useStatDate } from '~/components/date/useStatDate'
 
 export const periods = ['day', 'week', 'month', 'year'] as const
 export type Period = typeof periods[number]
@@ -10,28 +10,28 @@ export type Range = {
   start: DateUTC
 }
 
-export type IntervalRangeParams = {
+export type statDateParams = {
   customDate: false | Range
-  groupedBy: Period
-  groupedDuration: number
-  intervalDuration: number
-  intervalPeriod: Period
+  intervalsBy: Period
+  intervalsDuration: number
   intervalSelected: number
-  isShowAll: boolean
+  isShowMaxRange: boolean
   isSkipEmpty: boolean
-  subtracted: number
+  rangeBy: Period
+  rangeDuration: number
+  rangeOffset: number
 }
 
-export type IntervalRangeParamsQuery = {
+export type statDateParamsQuery = {
   customDate: string
-  groupedBy: Period
-  groupedDuration: string
-  intervalDuration: string
-  intervalPeriod: Period
+  intervalsBy: Period
+  intervalsDuration: string
   intervalSelected: string
-  isShowAll: string
+  isShowMaxRange: string
   isSkipEmpty: string
-  subtracted: string
+  rangeBy: Period
+  rangeDuration: string
+  rangeOffset: string
 }
 
 export type GroupBy = 'period' | 'all' | 'daySelector'
@@ -50,11 +50,13 @@ export type RangePeriodDuration = {
   range: Range
 }
 
-export type Interval = Pick<IntervalRangeParams, 'intervalDuration' | 'intervalPeriod'>
-export type Grouped = Pick<IntervalRangeParams, 'groupedBy' | 'groupedDuration'>
+export type Interval = Pick<statDateParams, 'rangeDuration' | 'rangeBy'>
+export type Grouped = Pick<statDateParams, 'intervalsBy' | 'intervalsDuration'>
 
 export type IntervalGroupedLabel = Grouped & Interval & {
+  isShowMaxRange?: boolean
+  isSkipEmpty?: boolean
   label?: string
 }
 
-export type IntervalRangeProvider = ReturnType<typeof useIntervalRange>
+export type StatDateProvider = ReturnType<typeof useStatDate>

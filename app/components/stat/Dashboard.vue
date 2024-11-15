@@ -78,7 +78,7 @@ function onClickWallet(walletId: WalletId) {
     </div>
 
     <div
-      v-if="statConfig.config.value.showedWallets > 0"
+      v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
       class="flex gap-1 overflow-x-auto px-2 py-px"
     >
       <WalletsItem

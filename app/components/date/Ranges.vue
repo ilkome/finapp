@@ -1,51 +1,51 @@
 <script setup lang="ts">
-import type { IntervalGroupedLabel, IntervalRangeProvider, Range } from '~/components/date/types'
+import type { IntervalGroupedLabel, Range, StatDateProvider } from '~/components/date/types'
 
 const emit = defineEmits<{
   close: []
 }>()
 
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statDate = inject('statDate') as StatDateProvider
 
 const { t } = useI18n()
 
 const intervalGroups = computed<IntervalGroupedLabel[]>(() => [
   {
-    groupedBy: 'day',
-    groupedDuration: 1,
-    intervalDuration: 1,
-    intervalPeriod: 'day',
+    intervalsBy: 'day',
+    intervalsDuration: 1,
     label: t('dates.day.simple'),
+    rangeBy: 'day',
+    rangeDuration: 1,
   },
   {
-    groupedBy: 'day',
-    groupedDuration: 1,
-    intervalDuration: 1,
-    intervalPeriod: 'week',
+    intervalsBy: 'day',
+    intervalsDuration: 1,
     label: t('dates.week.simple'),
+    rangeBy: 'week',
+    rangeDuration: 1,
   },
   {
-    groupedBy: 'day',
-    groupedDuration: 1,
-    intervalDuration: 1,
-    intervalPeriod: 'month',
+    intervalsBy: 'day',
+    intervalsDuration: 1,
     label: t('dates.month.simple'),
+    rangeBy: 'month',
+    rangeDuration: 1,
   },
   {
-    groupedBy: 'month',
-    groupedDuration: 1,
-    intervalDuration: 1,
-    intervalPeriod: 'year',
+    intervalsBy: 'month',
+    intervalsDuration: 1,
     label: t('dates.year.simple'),
+    rangeBy: 'year',
+    rangeDuration: 1,
   },
 ])
 
 function isRangeSelected(rd: IntervalGroupedLabel) {
-  return rd.intervalDuration === intervalRange.params.value.intervalDuration && rd.intervalPeriod === intervalRange.params.value.intervalPeriod
+  return rd.rangeDuration === statDate.params.value.rangeDuration && rd.rangeBy === statDate.params.value.rangeBy
 }
 
 function selectRange(igl: IntervalGroupedLabel) {
-  intervalRange.setRangeByPeriod(igl)
+  statDate.setRangeByPeriod(igl)
   emit('close')
 }
 </script>

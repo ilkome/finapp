@@ -1,22 +1,173 @@
 <script setup lang="ts">
-import type { IntervalRangeProvider, Range } from '~/components/date/types'
+import dayjs from 'dayjs'
+import type { Range, StatDateProvider } from '~/components/date/types'
+import type { ViewOptions } from '~/components/stat/types'
+import type { DeepPartial } from '~~/utils/types'
+
+const props = defineProps<{
+  maxRange: Range
+}>()
 
 const emit = defineEmits<{
+  changeViewOptions: [o: DeepPartial<ViewOptions>]
   onClose: []
-  set7Days: [close: () => void]
-  set7DaysMini: [close: () => void]
-  set12Months: [close: () => void]
-  set30Days: [close: () => void]
-  set30DaysMini: [close: () => void]
-  setAllData: [close: () => void]
-  setAllSkipEmpty: [close: () => void]
+
 }>()
 
 function close() {
   emit('onClose')
 }
 
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statDate = inject('statDate') as StatDateProvider
+
+const mini = {
+  catsList: {
+    isGrouped: false,
+    isItemsBg: false,
+    isLines: false,
+    isRoundIcon: false,
+  },
+  catsRound: {
+    isGrouped: false,
+  },
+}
+
+const standard = {
+  catsList: {
+    isGrouped: true,
+    isItemsBg: false,
+    isLines: true,
+    isOpened: false,
+    isRoundIcon: true,
+  },
+  catsRound: {
+    isGrouped: true,
+  },
+}
+
+function set7Days() {
+  emit('onClose')
+  emit('changeViewOptions', {
+    ...standard,
+    catsView: 'list',
+  })
+  statDate.params.value.isShowMaxRange = false
+
+  statDate.setRangeByPeriod({
+    intervalsBy: 'day',
+    intervalsDuration: 1,
+    rangeBy: 'day',
+    rangeDuration: 7,
+  })
+
+  if (close) {
+    close()
+  }
+}
+
+function set7DaysMini() {
+  emit('onClose')
+  emit('changeViewOptions', {
+    ...mini,
+    catsView: 'round',
+  })
+
+  statDate.params.value.isShowMaxRange = false
+
+  statDate.setRangeByPeriod({
+    intervalsBy: 'day',
+    intervalsDuration: 1,
+    rangeBy: 'day',
+    rangeDuration: 7,
+  })
+
+  if (close) {
+    close()
+  }
+}
+
+function set30DaysMini() {
+  emit('onClose')
+  emit('changeViewOptions', {
+    ...mini,
+    catsView: 'round',
+  })
+
+  statDate.params.value.isShowMaxRange = false
+
+  statDate.setRangeByPeriod({
+    intervalsBy: 'week',
+    intervalsDuration: 1,
+    rangeBy: 'day',
+    rangeDuration: 30,
+  })
+
+  if (close) {
+    close()
+  }
+}
+
+function set12Months() {
+  emit('onClose')
+  emit('changeViewOptions', {
+    ...standard,
+    catsView: 'list',
+  })
+
+  statDate.params.value.isShowMaxRange = false
+  statDate.params.value.rangeOffset = 0
+
+  statDate.setRangeByPeriod({
+    intervalsBy: 'month',
+    intervalsDuration: 1,
+    rangeBy: 'month',
+    rangeDuration: 12,
+  })
+
+  if (close) {
+    close()
+  }
+}
+
+function setMaxRange() {
+  emit('onClose')
+  emit('changeViewOptions', {
+    ...standard,
+    catsView: 'list',
+  })
+  statDate.setRangeByPeriod({
+    intervalsBy: 'year',
+    intervalsDuration: 1,
+    isShowMaxRange: true,
+    isSkipEmpty: false,
+    rangeBy: 'day',
+    rangeDuration: dayjs(props.maxRange.end).diff(props.maxRange.start, 'day'),
+  })
+
+  if (close) {
+    close()
+  }
+}
+
+function setMaxRangeHideLast() {
+  emit('onClose')
+  emit('changeViewOptions', {
+    ...standard,
+    catsView: 'list',
+  })
+  statDate.setRangeByPeriod({
+    intervalsBy: 'year',
+    intervalsDuration: 1,
+    isShowMaxRange: true,
+    isSkipEmpty: true,
+    rangeBy: 'day',
+    rangeDuration: dayjs(props.maxRange.end).diff(props.maxRange.start, 'day'),
+  })
+
+  if (close) {
+    close()
+  }
+}
 </script>
 
 <template>
@@ -36,32 +187,42 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
       <div class="grid gap-4 px-2">
         <div class="flex flex-wrap gap-1">
           <DateRanges @close="close" />
+
+          <div class="flex gap-1">
+            <DateLinkItem @click="statDate.minusRange">
+              -
+            </DateLinkItem>
+
+            <DateLinkItem @click="statDate.plusRange">
+              +
+            </DateLinkItem>
+          </div>
         </div>
 
         <div class="flex flex-wrap gap-1">
-          <DateLinkItem @click="emit('set7Days', close)">
+          <DateLinkItem @click="set7Days">
             7 days
           </DateLinkItem>
-          <DateLinkItem @click="emit('set7DaysMini', close)">
+          <DateLinkItem @click="set7DaysMini">
             7 days mini
           </DateLinkItem>
-          <DateLinkItem @click="emit('set30DaysMini', close)">
+          <DateLinkItem @click="set30DaysMini">
             30 days mini
           </DateLinkItem>
-          <DateLinkItem @click="emit('set12Months', close)">
+          <DateLinkItem @click="set12Months">
             12 months
           </DateLinkItem>
 
           <DateLinkItem
-            :isActive="intervalRange.params.value.isShowAll && !intervalRange.params.value.isSkipEmpty"
-            @click="emit('setAllData', close)"
+            :isActive="statDate.params.value.isShowMaxRange && !statDate.params.value.isSkipEmpty"
+            @click="setMaxRange"
           >
             All
           </DateLinkItem>
 
           <DateLinkItem
-            :isActive="intervalRange.params.value.isShowAll && intervalRange.params.value.isSkipEmpty"
-            @click="emit('setAllSkipEmpty', close)"
+            :isActive="statDate.params.value.isShowMaxRange && statDate.params.value.isSkipEmpty"
+            @click="setMaxRangeHideLast"
           >
             All skip empty
           </DateLinkItem>
@@ -87,17 +248,17 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
         </div>
 
         <div class="flex flex-wrap gap-1">
-          <DateLinkItem @click="intervalRange.minusRange">
+          <DateLinkItem @click="statDate.minusRange">
             -
           </DateLinkItem>
 
           <DateLinkItemNoBg>
             {{
-              `Last ${intervalRange.params.value.intervalDuration} ${intervalRange.params.value.intervalPeriod}`
+              `Last ${statDate.params.value.rangeDuration} ${statDate.params.value.rangeBy}`
             }}
           </DateLinkItemNoBg>
 
-          <DateLinkItem @click="intervalRange.plusRange">
+          <DateLinkItem @click="statDate.plusRange">
             +
           </DateLinkItem>
         </div>
@@ -122,16 +283,16 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
         </div>
 
         <div class="flex gap-1">
-          <DateLinkItem @click="intervalRange.delInterval">
+          <DateLinkItem @click="statDate.delInterval">
             -
           </DateLinkItem>
 
-          <DateLinkItem @click="intervalRange.addInterval">
+          <DateLinkItem @click="statDate.addInterval">
             +
           </DateLinkItem>
           <DateLinkItemNoBg>
             {{
-              `${intervalRange.params.value.groupedDuration} ${intervalRange.params.value.groupedBy}`
+              `${statDate.params.value.intervalsDuration} ${statDate.params.value.intervalsBy}`
             }}
           </DateLinkItemNoBg>
         </div>
@@ -153,10 +314,10 @@ const intervalRange = inject('intervalRange') as IntervalRangeProvider
       <DatePicker
         expanded
         color="blue"
-        :value="intervalRange.range.value"
+        :value="statDate.range.value"
         @update:modelValue="
           (v: Range) => {
-            intervalRange.setRangeByCalendar(v);
+            statDate.setRangeByCalendar(v);
             close();
           }
         "

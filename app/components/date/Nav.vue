@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { IntervalRangeProvider, Range } from '~/components/date/types'
+import type { StatDateProvider, Range } from '~/components/date/types'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   maxRange: Range
 }>()
 
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statDate = inject('statDate') as StatDateProvider
 
-const isDayToday = computed(() => intervalRange.params.value.intervalPeriod === 'day' && intervalRange.params.value.intervalDuration === 1 && intervalRange.range.value.end < dayjs().endOf('day').valueOf())
+const isDayToday = computed(() => statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1 && statDate.range.value.end < dayjs().endOf('day').valueOf())
 
 const isEnd = computed(() => {
-  // if (intervalRange.range.value.end >= props.maxRange.end && !isDayToday.value) {
+  // if (statDate.range.value.end >= props.maxRange.end && !isDayToday.value) {
   //   return true
   // }
-  if (intervalRange.range.value.end >= dayjs().endOf(intervalRange.params.value.intervalPeriod).valueOf() && !isDayToday.value) {
+  if (statDate.range.value.end >= dayjs().endOf(statDate.params.value.rangeBy).valueOf() && !isDayToday.value) {
     return true
   }
 
@@ -23,7 +23,7 @@ const isEnd = computed(() => {
 })
 
 const isStart = computed(() => {
-  if (intervalRange.range.value.start <= props.maxRange.start) {
+  if (statDate.range.value.start <= props.maxRange.start) {
     return true
   }
 
@@ -32,12 +32,12 @@ const isStart = computed(() => {
 
 function movePeriod(way: 'next' | 'prev' | 'today') {
   if (way === 'next' && !isEnd.value) {
-    intervalRange.params.value.subtracted = intervalRange.params.value.subtracted - 1
+    statDate.params.value.rangeOffset = statDate.params.value.rangeOffset - 1
     return
   }
 
   if (way === 'prev' && !isStart.value) {
-    intervalRange.params.value.subtracted = intervalRange.params.value.subtracted + 1
+    statDate.params.value.rangeOffset = statDate.params.value.rangeOffset + 1
   }
 }
 </script>

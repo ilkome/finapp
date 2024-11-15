@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { IntervalRangeProvider, Range } from '~/components/date/types'
+import type { Range, StatDateProvider } from '~/components/date/types'
 
 const { t } = useI18n()
 
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statDate = inject('statDate') as StatDateProvider
 
 const range = computed<Range>(() => {
-  return intervalRange.params.value.intervalSelected !== -1
-    ? intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]
-      ? intervalRange.groupedPeriods.value[intervalRange.params.value.intervalSelected]!
-      : intervalRange.range.value
-    : intervalRange.range.value
+  return statDate.params.value.intervalSelected !== -1
+    ? statDate.groupedPeriods.value[statDate.params.value.intervalSelected]
+      ? statDate.groupedPeriods.value[statDate.params.value.intervalSelected]!
+      : statDate.range.value
+    : statDate.range.value
 })
 
 const date = computed(() => {
@@ -36,8 +36,8 @@ const date = computed(() => {
   }
 
   // Last periods
-  if (!intervalRange.params.value.isShowAll && dayjs(range.value.end).isSame(today, intervalRange.params.value.intervalPeriod)) {
-    return `${t('dates.last')} ${intervalRange.params.value.intervalDuration} ${intervalRange.params.value.intervalPeriod}`
+  if (!statDate.params.value.isShowMaxRange && dayjs(range.value.end).isSame(today, statDate.params.value.rangeBy)) {
+    return `${t('dates.last')} ${statDate.params.value.rangeDuration} ${statDate.params.value.rangeBy}`
   }
 
   return `${dayjs(range.value.start).format('DD MMM YYYY')} - ${dayjs(range.value.end).format('DD MMM YYYY')}`

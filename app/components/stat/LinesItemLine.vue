@@ -6,7 +6,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory, ViewOptions } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import type { IntervalRangeProvider, Range } from '~/components/date/types'
+import type { Range, StatDateProvider } from '~/components/date/types'
 
 const props = defineProps<{
   biggestCatNumber: number
@@ -26,7 +26,7 @@ const emit = defineEmits<{
   onClickIcon: [id: CategoryId]
 }>()
 
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statDate = inject('statDate') as StatDateProvider
 const trnFormStore = useTrnFormStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
@@ -48,8 +48,6 @@ const longPressRef = ref(null)
 onLongPress(
   longPressRef,
   () => {
-    console.log('44')
-
     trnFormStore.trnFormCreate()
     trnFormStore.$patch((state) => {
       state.values.amount = [0, 0, 0]
@@ -57,7 +55,7 @@ onLongPress(
       state.values.categoryId = props.item.id
       state.ui.isShow = true
 
-      if (props.selectedRange?.start && intervalRange.params.value.intervalPeriod === 'day' && intervalRange.params.value.intervalSelected !== -1) {
+      if (props.selectedRange?.start && statDate.params.value.rangeBy === 'day' && statDate.params.value.intervalSelected !== -1) {
         state.values.date = props.selectedRange?.start
       }
       else {
@@ -67,11 +65,8 @@ onLongPress(
   },
   {
     onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
-      console.log(1)
-
       if (!isLongPress && distance < 100) {
         emit('click', props.item.id)
-        console.log(2)
       }
     },
   },
@@ -80,6 +75,7 @@ onLongPress(
 
 <template>
   <div
+    v-if="category"
     ref="longPressRef"
     :class="[props.insideClass, {
       '-bg-item-4 ': props.isActive,

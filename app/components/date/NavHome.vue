@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
-import type { IntervalRangeProvider } from '~/components/date/types'
+import type { StatDateProvider } from '~/components/date/types'
 
-const intervalRange = inject('intervalRange') as IntervalRangeProvider
+const statDate = inject('statDate') as StatDateProvider
 
 function clear() {
-  intervalRange.params.value.subtracted = 0
-  intervalRange.params.value.intervalSelected = -1
+  statDate.params.value.rangeOffset = 0
+  statDate.params.value.intervalSelected = -1
 }
 </script>
 
