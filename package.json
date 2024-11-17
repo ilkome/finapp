@@ -65,7 +65,7 @@
     "eslint-plugin-vue-pug": "^0.6.0",
     "fancy-log": "2.0.0",
     "node-notifier": "10.0.1",
-    "pug": "^3.0.2",
+    "pug": "^3.0.3",
     "pug-plain-loader": "^1.1.0",
     "style-loader": "2.0.0",
     "stylelint": "^14.15.0",
