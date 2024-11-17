@@ -1,6 +1,6 @@
 {
   "name": "finapp",
-  "version": "4.1.1",
+  "version": "4.2.0",
   "scripts": {
     "dev": "nuxt2 dev",
     "build": "nuxt2 generate",
