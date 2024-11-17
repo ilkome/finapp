@@ -15,8 +15,6 @@ dayjs.extend(isYesterday)
 export default defineNuxtPlugin((nuxtApp) => {
   const locale = nuxtApp.$i18n.locale.value === 'en' ? en : ru
 
-  console.log(locale)
-
   dayjs.locale({
     ...locale,
     weekStart: 1,
