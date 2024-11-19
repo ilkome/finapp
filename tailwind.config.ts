@@ -45,7 +45,7 @@ export default <Partial<Config>>{
           1: 'rgb(var(--foreground-1))',
           2: 'rgb(var(--foreground-2))',
           3: 'rgb(var(--foreground-3))',
-          4: 'var(--foreground-4)',
+          4: 'rgb(var(--foreground-4))',
           5: 'rgb(var(--foreground-5))',
         },
         'icon-primary': 'var(--text-icon-primary)',

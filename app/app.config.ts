@@ -11,7 +11,7 @@ export default defineAppConfig({
       popper: {
         placement: 'bottom-start',
       },
-      ring: '!ring-2 !ring-foreground-1',
+      ring: '!ring-2 !ring-item-3',
       trigger: 'w-full',
     },
     strategy: 'override',

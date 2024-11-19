@@ -166,10 +166,12 @@ const isShowMorePresets = ref(false)
       />
     </UiItem1>
 
-    <UPopover class="group">
+    <UPopover
+      class="group"
+    >
       <div
         :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
-        class="justify-center text-xl"
+        class="group-data-[headlessui-state='open']:!border-accent-1 justify-center border border-transparent text-xl"
       >
         <Icon
           name="lucide:circle-ellipsis"
@@ -201,15 +203,17 @@ const isShowMorePresets = ref(false)
           </div>
 
           <!-- Show empty categories -->
-          <UiElement
-            class="text-sm"
-            @click="statConfig.updateConfig('isShowEmptyCategories', !statConfig.config.value.isShowEmptyCategories)"
-          >
-            <div class="grow">
-              {{ t('isShowEmptyCategories') }}
-            </div>
-            <SharedInputsCheckbox :value="statConfig.config.value.isShowEmptyCategories" />
-          </UiElement>
+          <div class="border-item-3 grid gap-3 border-b pb-2 last:border-0 last:pb-0">
+            <UiElement
+              class="text-sm"
+              @click="statConfig.updateConfig('isShowEmptyCategories', !statConfig.config.value.isShowEmptyCategories)"
+            >
+              <div class="grow">
+                {{ t('isShowEmptyCategories') }}
+              </div>
+              <SharedInputsCheckbox :value="statConfig.config.value.isShowEmptyCategories" />
+            </UiElement>
+          </div>
 
           <!-- Grouping -->
           <div v-if="!grouping.isGrouped.value">
