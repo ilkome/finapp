@@ -81,7 +81,7 @@ function onClickWallet(walletId: WalletId) {
 
   <div class="max-w-6xl gap-2 pb-2 lg:px-4 xl:py-2">
     <div
-      v-if="statConfig.config.value.showedWallets > 0"
+      v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
       class="flex gap-1 overflow-x-auto px-2 py-px"
     >
       <WalletsItem
@@ -99,7 +99,7 @@ function onClickWallet(walletId: WalletId) {
   <!-- NetIncome -->
   <div class="max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2">
     <StatItem
-      v-if="activeTab === 'netIncome' && totals.sum && (totals.expense !== 0 || totals.income !== 0)"
+      v-if="activeTab === 'netIncome'"
       :storageKey="props.storageKey + activeTab"
       :trnsIds="trnsIds"
       class=""
@@ -114,7 +114,6 @@ function onClickWallet(walletId: WalletId) {
   >
     <!-- Expense -->
     <StatItem
-      v-if="(activeTab === 'sum') && expenseTrnsIds.length > 0"
       :storageKey="props.storageKey + activeTab"
       :trnsIds="expenseTrnsIds"
       type="expense"
@@ -122,7 +121,6 @@ function onClickWallet(walletId: WalletId) {
 
     <!-- Income -->
     <StatItem
-      v-if="(activeTab === 'sum') && incomeTrnsIds.length > 0"
       :storageKey="props.storageKey + activeTab"
       :trnsIds="incomeTrnsIds"
       type="income"

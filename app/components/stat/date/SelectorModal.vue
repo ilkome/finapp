@@ -27,10 +27,10 @@ const { t } = useI18n()
     </template>
 
     <template #default="{ close }">
-      <div class="scrollerBlock grid max-h-[98dvh] overflow-hidden overflow-y-auto p-2 pb-4">
-        <UiTitle9 class="pb-3 pt-1">
+      <div class="scrollerBlock grid max-h-[98dvh] overflow-hidden overflow-y-auto p-2 px-3 pb-4">
+        <UiTitle class="px-1 pb-3 pt-2">
           {{ t("dates.select") }}
-        </UiTitle9>
+        </UiTitle>
 
         <StatDateSelector
           :maxRange

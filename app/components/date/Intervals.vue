@@ -7,14 +7,11 @@ const emit = defineEmits<{
 
 const statDate = inject('statDate') as StatDateProvider
 
-const groups = computed<Grouped[]>(() => [{
+const intervals = computed<Grouped[]>(() => [{
   intervalsBy: 'day',
   intervalsDuration: 1,
 }, {
   intervalsBy: 'week',
-  intervalsDuration: 1,
-}, {
-  intervalsBy: 'month',
   intervalsDuration: 1,
 }, {
   intervalsBy: 'month',
@@ -25,18 +22,18 @@ const groups = computed<Grouped[]>(() => [{
 }])
 
 function selectInterval(grouped: Grouped) {
-  statDate.setGrouped(grouped)
+  statDate.setInterval(grouped)
   emit('close')
 }
 </script>
 
 <template>
   <DateLinkItem
-    v-for="group in groups"
-    :key="group.intervalsBy"
-    :isActive="group.intervalsBy === statDate.params.value.intervalsBy && group.intervalsDuration === statDate.params.value.intervalsDuration"
-    @click="selectInterval(group)"
+    v-for="item in intervals"
+    :key="item.intervalsBy"
+    :isActive="item.intervalsBy === statDate.params.value.intervalsBy && item.intervalsDuration === statDate.params.value.intervalsDuration"
+    @click="selectInterval(item)"
   >
-    {{ group.intervalsDuration }} {{ group.intervalsBy }}
+    {{ item.intervalsDuration }} {{ item.intervalsBy }}
   </DateLinkItem>
 </template>

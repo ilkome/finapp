@@ -182,9 +182,9 @@ async function onSave() {
 
       <!-- Options -->
       <div>
-        <UiTitle class="pb-2">
+        <UiTitle3 class="pb-2">
           {{ t('settings.options') }}
-        </UiTitle>
+        </UiTitle3>
 
         <UiCheckbox
           v-if="categoriesStore.getChildsIds(props.categoryId).length > 0"
@@ -233,8 +233,8 @@ async function onSave() {
 
       <template #default="{ close }">
         <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
-          <div class="grid gap-3 py-4">
-            <UiTitle>{{ t("color.label") }}</UiTitle>
+          <div class="grid gap-3 pb-1 pt-3">
+            <UiTitle3>{{ t("selectColor") }}</UiTitle3>
             <CategoriesItem
               :categoryId="props.categoryId"
               :category="categoryPlaceholder"
@@ -245,7 +245,8 @@ async function onSave() {
             <div class="grid gap-6">
               <ColorPalette
                 :activeColor="props.categoryForm.color"
-                :isCategory="true"
+                :icon="props.categoryForm.icon"
+                isCategory
                 @click="color => emit('updateValue', 'color', color)"
               />
 
@@ -290,12 +291,8 @@ async function onSave() {
 
       <template #default="{ close }">
         <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
-          <div class="grid gap-3 py-4">
-            <UiTitle>{{ t('categories.form.parent.label') }}</UiTitle>
-            <CategoryItem
-              :categoryId="props.categoryId"
-              :category="categoryPlaceholder"
-            />
+          <div class="grid gap-3 py-3">
+            <UiTitle3>{{ t('selectParent') }}</UiTitle3>
           </div>
 
           <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
@@ -341,8 +338,8 @@ async function onSave() {
 
       <template #default="{ close }">
         <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
-          <div class="grid gap-3 py-4">
-            <UiTitle>{{ t("select") }}</UiTitle>
+          <div class="grid gap-3 pb-1 pt-3">
+            <UiTitle3>{{ t("selectIcon") }}</UiTitle3>
             <CategoriesItem
               :categoryId="props.categoryId"
               :category="props.categoryForm"
@@ -381,3 +378,15 @@ async function onSave() {
     </BaseBottomSheet2>
   </Teleport>
 </template>
+
+<i18n lang="yaml">
+en:
+  selectIcon: Select icon
+  selectColor: Select color
+  selectParent: Select parent category
+
+ru:
+  selectIcon: Выберите иконку
+  selectColor: Выберите цвет
+  selectParent: Выберите родительскую категорию
+</i18n>

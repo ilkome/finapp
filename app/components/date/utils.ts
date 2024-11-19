@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { Range, RangePeriodDuration } from '~/components/date/types'
+import type { Period, Range, RangePeriodDuration } from '~/components/date/types'
 
 export function calculatePeriodRange(params: RangePeriodDuration): Range {
   return {
