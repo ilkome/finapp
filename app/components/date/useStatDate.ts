@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
-import type { Grouped, IntervalGroupedLabel, Range, statDateParams, statDateParamsQuery } from '~/components/date/types'
-import { calculateRange, getPeriodsInRange } from '~/components/date/utils'
+import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
+import { calculateRangeByToday, getIntervalsInRange } from '~/components/date/utils'
 
 export function useStatDate({
   initParams,
@@ -9,12 +9,12 @@ export function useStatDate({
   maxRange,
   queryParams,
 }: {
-  initParams?: Partial<statDateParams>
+  initParams?: Partial<StatDateParams>
   key: string
   maxRange: ComputedRef<Range>
-  queryParams?: Partial<statDateParamsQuery>
+  queryParams?: Partial<StatDateParamsQuery>
 }) {
-  const params = useStorage<statDateParams>(`${key}-params`, {
+  const params = useStorage<StatDateParams>(`${key}-params`, {
     customDate: false,
     intervalsBy: 'month',
     intervalsDuration: 1,
@@ -58,16 +58,20 @@ export function useStatDate({
       }
     }
 
-    return calculateRange({
-      duration: params.value.rangeDuration - 1,
-      period: params.value.rangeBy,
+    const range = calculateRangeByToday({
+      rangeBy: params.value.rangeBy,
+      rangeDuration: params.value.rangeDuration,
       rangeOffset: params.value.rangeOffset,
     })
+
+    console.log('range', dayjs(range.start).format('YYYY-MM-DD'), dayjs(range.end).format('YYYY-MM-DD'))
+
+    return range
   })
 
-  const groupedPeriods = computed(() => getPeriodsInRange({
-    duration: params.value.intervalsDuration,
-    period: params.value.intervalsBy,
+  const groupedPeriods = computed(() => getIntervalsInRange({
+    intervalsBy: params.value.intervalsBy,
+    intervalsDuration: params.value.intervalsDuration,
     range: range.value,
   }))
 
@@ -131,7 +135,7 @@ export function useStatDate({
   return {
     addInterval,
     delInterval,
-    getPeriodsInRange,
+    getIntervalsInRange,
     groupedPeriods,
     minusRange,
     params,

@@ -1,44 +1,62 @@
 import dayjs from 'dayjs'
-import type { Period, Range, RangePeriodDuration } from '~/components/date/types'
+import type { CalculateRangeParams, IntervalsInRangeProps, Range } from '~/components/date/types'
 
-export function calculatePeriodRange(params: RangePeriodDuration): Range {
+export function calculateIntervalInRange(params: IntervalsInRangeProps): Range {
   return {
     end: dayjs(params.range.end)
-      .endOf(params.period)
+      .endOf(params.intervalsBy)
       .valueOf(),
     start: dayjs(params.range.end)
-      .subtract(params.duration - 1, params.period)
-      .startOf(params.period)
+      .subtract(params.intervalsDuration - 1, params.intervalsBy)
+      .startOf(params.intervalsBy)
       .valueOf(),
   }
 }
 
-export function calculateRange(props: { duration: number, period: Period, rangeOffset: number }): Range {
-  const baseDate = dayjs().subtract(props.rangeOffset * (props.duration === 0 ? 1 : props.duration), props.period)
+export function calculateRangeByToday(params: CalculateRangeParams): Range {
+  const baseDate = dayjs().subtract(params.rangeOffset * params.rangeDuration, params.rangeBy)
 
   return {
-    end: baseDate.endOf(props.period).valueOf(),
+    end: baseDate.endOf(params.rangeBy).valueOf(),
     start: baseDate
-      .subtract(props.duration, props.period)
-      .startOf(props.period)
+      .subtract(params.rangeDuration - 1, params.rangeBy)
+      .startOf(params.rangeBy)
       .valueOf(),
   }
 }
 
-export function getPeriodsInRange(params: RangePeriodDuration) {
+export function getIntervalsInRange(params: IntervalsInRangeProps) {
   const list: Range[] = []
-  let current = calculatePeriodRange({
-    duration: params.duration,
-    period: params.period,
-    range: params.range,
+  const { intervalsBy, intervalsDuration, range } = params
+
+  let current = calculateIntervalInRange({
+    intervalsBy,
+    intervalsDuration,
+    range,
   })
 
-  while (current.end > params.range.start) {
+  while (current.end > range.start) {
     list.unshift(current)
 
     current = {
-      end: dayjs(current.end).subtract(params.duration, params.period).endOf(params.period).valueOf(),
-      start: dayjs(current.start).subtract(params.duration, params.period).startOf(params.period).valueOf(),
+      end: dayjs(current.end)
+        .subtract(intervalsDuration, intervalsBy)
+        .endOf(intervalsBy)
+        .valueOf(),
+      start: dayjs(current.start)
+        .subtract(intervalsDuration, intervalsBy)
+        .startOf(intervalsBy)
+        .valueOf(),
+    }
+  }
+
+  if (list.length > 0) {
+    if (list.at(-1)!.end > range.end) {
+      list.at(-1)!.end = dayjs(range.end).endOf('day').valueOf()
+    }
+
+    if (list.at(0)!.start < range.start) {
+      list.at(0)!.start = dayjs(range.start).startOf('day').valueOf()
     }
   }
 

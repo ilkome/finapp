@@ -4,7 +4,6 @@ import type { TrnFormValues } from '~/components/trnForm/types'
 
 function formatTransaction(props: TrnFormValues): Transaction | false {
   if (props.trnType === 2 || !props.categoryId || !props.walletId) {
-    console.error('missing props', props.trnType, props.categoryId, props.walletId)
     return false
   }
 
@@ -27,7 +26,6 @@ function formatTransaction(props: TrnFormValues): Transaction | false {
 
 function formatTransfer(props: TrnFormValues): Transfer | false {
   if (props.trnType !== 2 || !props.expenseWalletId || !props.incomeWalletId) {
-    console.error('missing props', props.trnType, props.expenseWalletId, props.incomeWalletId)
     return false
   }
 

@@ -4,6 +4,11 @@ import isBetween from 'dayjs/plugin/isBetween'
 
 dayjs.extend(isBetween)
 
+dayjs.locale({
+  name: 'en',
+  weekStart: 1,
+})
+
 describe('get date ranges', () => {
   it('get date to end', () => {
     const start = dayjs('2020-04-13 19:18')

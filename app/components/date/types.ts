@@ -10,7 +10,7 @@ export type Range = {
   start: DateUTC
 }
 
-export type statDateParams = {
+export type StatDateParams = {
   customDate: false | Range
   intervalsBy: Period
   intervalsDuration: number
@@ -22,7 +22,7 @@ export type statDateParams = {
   rangeOffset: number
 }
 
-export type statDateParamsQuery = {
+export type StatDateParamsQuery = {
   customDate: string
   intervalsBy: Period
   intervalsDuration: string
@@ -36,22 +36,14 @@ export type statDateParamsQuery = {
 
 export type GroupBy = 'period' | 'all' | 'daySelector'
 
-export type RangeDuration = {
-  duration: number
-  groupBy: 'period' | 'all' | 'daySelector'
-  label?: string
-  period: Period
-  range?: Range
-}
-
-export type RangePeriodDuration = {
-  duration: number
-  period: Period
+export type IntervalsInRangeProps = Pick<StatDateParams, 'intervalsBy' | 'intervalsDuration'> & {
   range: Range
 }
 
-export type Interval = Pick<statDateParams, 'rangeDuration' | 'rangeBy'>
-export type Grouped = Pick<statDateParams, 'intervalsBy' | 'intervalsDuration'>
+export type CalculateRangeParams = Pick<StatDateParams, 'rangeDuration' | 'rangeBy' | 'rangeOffset'>
+
+export type Interval = Pick<StatDateParams, 'rangeDuration' | 'rangeBy'>
+export type Grouped = Pick<StatDateParams, 'intervalsBy' | 'intervalsDuration'>
 
 export type IntervalGroupedLabel = Grouped & Interval & {
   isShowMaxRange?: boolean
