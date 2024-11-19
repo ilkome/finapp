@@ -22,7 +22,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@formkit/drag-and-drop": "^0.2.5",
+    "@formkit/drag-and-drop": "^0.1.5",
     "@pinia/nuxt": "^0.5.5",
     "currency.js": "^2.0.4",
     "dayjs": "^1.11.13",

@@ -38,7 +38,6 @@ git clone https://github.com/ilkome/finapp.git finapp
 cd finapp
 
 # install dependencies
-yarn
 pnpm i
 ```
 
@@ -111,7 +110,6 @@ If you use netlify or similar services you need to add OPEN_EXCHANGE_RATES env.
 
 ``` bash
 pnpm dev
-yarn dev
 ```
 
 ## Production
@@ -120,7 +118,6 @@ yarn dev
 
 ``` bash
 pnpm generate
-yarn generate
 ```
 
 Upload `.output/public` folder to any shared hosting.

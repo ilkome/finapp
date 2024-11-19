@@ -96,7 +96,7 @@ async function onSave() {
 <template>
   <div
     v-if="props.walletForm"
-    class="grid h-full max-w-lg grid-rows-[1fr,auto] overflow-hidden px-2 pt-2 md:px-6"
+    class="grid h-full max-w-lg grid-rows-[1fr,auto] overflow-hidden px-2 pt-2 md:h-auto md:px-6"
   >
     <div class="grid content-start gap-6 overflow-y-auto py-4">
       <!-- Name -->
