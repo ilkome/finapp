@@ -1,26 +1,16 @@
 import dayjs from 'dayjs'
-import type { CalculateRangeParams, IntervalsInRangeProps, Range } from '~/components/date/types'
+import type { IntervalsInRangeProps, Range } from '~/components/date/types'
 
 export function calculateIntervalInRange(params: IntervalsInRangeProps): Range {
+  const baseDate = dayjs(params.range.end).subtract(params.rangeOffset ?? 0 * params.intervalsDuration, params.intervalsBy)
+
   return {
-    end: dayjs(params.range.end)
+    end: baseDate
       .endOf(params.intervalsBy)
       .valueOf(),
-    start: dayjs(params.range.end)
+    start: baseDate
       .subtract(params.intervalsDuration - 1, params.intervalsBy)
       .startOf(params.intervalsBy)
-      .valueOf(),
-  }
-}
-
-export function calculateRangeByToday(params: CalculateRangeParams): Range {
-  const baseDate = dayjs().subtract(params.rangeOffset * params.rangeDuration, params.rangeBy)
-
-  return {
-    end: baseDate.endOf(params.rangeBy).valueOf(),
-    start: baseDate
-      .subtract(params.rangeDuration - 1, params.rangeBy)
-      .startOf(params.rangeBy)
       .valueOf(),
   }
 }
@@ -33,6 +23,7 @@ export function getIntervalsInRange(params: IntervalsInRangeProps) {
     intervalsBy,
     intervalsDuration,
     range,
+    rangeOffset: 0,
   })
 
   while (current.end > range.start) {

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
 import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
-import { calculateRangeByToday, getIntervalsInRange } from '~/components/date/utils'
+import { calculateIntervalInRange, getIntervalsInRange } from '~/components/date/utils'
 
 export function useStatDate({
   initParams,
@@ -58,13 +58,15 @@ export function useStatDate({
       }
     }
 
-    const range = calculateRangeByToday({
-      rangeBy: params.value.rangeBy,
-      rangeDuration: params.value.rangeDuration,
+    const range = calculateIntervalInRange({
+      intervalsBy: params.value.rangeBy,
+      intervalsDuration: params.value.rangeDuration,
+      range: {
+        end: dayjs().valueOf(),
+        start: dayjs().valueOf(),
+      },
       rangeOffset: params.value.rangeOffset,
     })
-
-    console.log('range', dayjs(range.start).format('YYYY-MM-DD'), dayjs(range.end).format('YYYY-MM-DD'))
 
     return range
   })
@@ -73,6 +75,7 @@ export function useStatDate({
     intervalsBy: params.value.intervalsBy,
     intervalsDuration: params.value.intervalsDuration,
     range: range.value,
+    rangeOffset: params.value.rangeOffset,
   }))
 
   const selectedInterval = computed(() => groupedPeriods.value[params.value.intervalSelected])

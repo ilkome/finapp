@@ -38,7 +38,7 @@ export type GroupBy = 'period' | 'all' | 'daySelector'
 
 export type IntervalsInRangeProps = Pick<StatDateParams, 'intervalsBy' | 'intervalsDuration'> & {
   range: Range
-}
+} & Pick<StatDateParams, 'rangeOffset'>
 
 export type CalculateRangeParams = Pick<StatDateParams, 'rangeDuration' | 'rangeBy' | 'rangeOffset'>
 

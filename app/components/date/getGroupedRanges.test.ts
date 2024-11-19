@@ -18,6 +18,7 @@ describe('date utils', () => {
           end: dayjs('2024-03-01').endOf('month').valueOf(),
           start: dayjs('2024-01-01').valueOf(),
         },
+        rangeOffset: 0,
       }
 
       const result = getIntervalsInRange(params)
@@ -45,6 +46,7 @@ describe('date utils', () => {
           end: dayjs('2024-03-15').endOf('month').valueOf(),
           start: dayjs('2024-01-15').startOf('month').valueOf(),
         },
+        rangeOffset: 0,
       }
 
       const result = getIntervalsInRange(params)
@@ -72,6 +74,7 @@ describe('date utils', () => {
           end: dayjs('2024-04-30').valueOf(),
           start: dayjs('2024-02-01').valueOf(),
         },
+        rangeOffset: 0,
       }
 
       const result = getIntervalsInRange(params)
