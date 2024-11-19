@@ -28,6 +28,11 @@ const modals = ref({
   parent: false,
 })
 
+const categoryPlaceholder = computed(() => ({
+  ...props.categoryForm,
+  name: props.categoryForm.name ? props.categoryForm.name : t('categories.form.name.label'),
+}))
+
 /**
  * Select parent
  */
@@ -125,7 +130,7 @@ async function onSave() {
 
         <UiFormInput
           :placeholder="t('categories.form.name.placeholder')"
-          :value="props.categoryForm.name ?? ''"
+          :value="categoryPlaceholder.name"
           @updateValue="(value: string) => emit('updateValue', 'name', value)"
         />
       </UiFormElement>
@@ -162,7 +167,10 @@ async function onSave() {
       </UiItem2>
 
       <!-- Parent -->
-      <UiItem2 @click="modals.parent = true">
+      <UiItem2
+        v-if="isAllowChangeParent"
+        @click="modals.parent = true"
+      >
         <template #label>
           {{ t('categories.form.parent.label') }}
         </template>
@@ -202,6 +210,7 @@ async function onSave() {
 
     <div class="flex-center">
       <UiButtonBlue
+        rounded
         @click="onSave"
       >
         {{ t('base.save') }}
@@ -228,7 +237,7 @@ async function onSave() {
             <UiTitle>{{ t("color.label") }}</UiTitle>
             <CategoriesItem
               :categoryId="props.categoryId"
-              :category="props.categoryForm"
+              :category="categoryPlaceholder"
             />
           </div>
 
@@ -257,7 +266,7 @@ async function onSave() {
 
           <div class="flex-center py-2">
             <UiButtonBlue
-              maxWidth
+              rounded
               @click="close"
             >
               {{ t("base.save") }}
@@ -285,37 +294,30 @@ async function onSave() {
             <UiTitle>{{ t('categories.form.parent.label') }}</UiTitle>
             <CategoryItem
               :categoryId="props.categoryId"
-              :category="props.categoryForm"
+              :category="categoryPlaceholder"
             />
           </div>
 
           <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
-            <template v-if="!isAllowChangeParent">
-              <div class="p-4 text-base">
-                {{ t('categories.form.noChangeParent') }}
-              </div>
-            </template>
-            <template v-else>
-              <div
-                :class="{ '!bg-item-3': props.categoryForm.parentId === 0 }"
-                class="flex-center bg-item-4 hocus_bg-item-5 mb-4 cursor-pointer gap-x-3 rounded-md px-2 py-3 text-center"
-                @click="onParentSelect(false, close)"
-              >
-                {{ t('categories.form.parent.no') }}
-              </div>
-              <CategoriesList
-                :activeItemId="props.categoryForm.parentId"
-                :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
-                :slider="() => ({})"
-                class="!gap-x-1"
-                @click="id => onParentSelect(id, close)"
-              />
-            </template>
+            <div
+              :class="{ '!bg-item-3': props.categoryForm.parentId === 0 }"
+              class="flex-center bg-item-4 hocus_bg-item-5 mb-4 cursor-pointer gap-x-3 rounded-md px-2 py-3 text-center"
+              @click="onParentSelect(false, close)"
+            >
+              {{ t('categories.form.parent.no') }}
+            </div>
+            <CategoriesList
+              :activeItemId="props.categoryForm.parentId"
+              :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
+              :slider="() => ({})"
+              class="!gap-x-1"
+              @click="id => onParentSelect(id, close)"
+            />
           </div>
 
           <div class="flex-center py-2">
             <UiButtonBlue
-              maxWidth
+              rounded
               @click="close"
             >
               {{ t("base.save") }}
@@ -368,7 +370,7 @@ async function onSave() {
 
           <div class="flex-center py-2">
             <UiButtonBlue
-              maxWidth
+              rounded
               @click="close"
             >
               {{ t("base.save") }}

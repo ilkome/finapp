@@ -74,7 +74,6 @@ export default {
         label: 'Category name',
         placeholder: 'Write category name...',
       },
-      noChangeParent: 'You can not change parent category because edited category has child categories.',
       parent: {
         label: 'Parent category',
         no: 'Root',

@@ -38,7 +38,7 @@ function onClick(type: MoneyTypeSlugNew) {
       v-if="props.type === 'sum'"
       class="flex flex-wrap justify-stretch gap-1"
     >
-      <StatSum
+      <StatSumItem
         v-if="props.isShowExpense"
         :amount="-totals.expense"
         :isActive="selectedType === 'expense'"
@@ -47,7 +47,7 @@ function onClick(type: MoneyTypeSlugNew) {
         type="expense"
         @click="onClick('expense')"
       />
-      <StatSum
+      <StatSumItem
         v-if="props.isShowIncome"
         :amount="totals.income"
         :isActive="selectedType === 'income'"
@@ -56,7 +56,7 @@ function onClick(type: MoneyTypeSlugNew) {
         type="income"
         @click="onClick('income')"
       />
-      <StatSum
+      <StatSumItem
         v-if="props.isShowIncome && props.isShowExpense"
         :amount="totals.sum"
         :class="classes"
@@ -66,7 +66,7 @@ function onClick(type: MoneyTypeSlugNew) {
       />
     </div>
 
-    <StatSum
+    <StatSumItem
       v-else
       :amount="props.type === 'income' ? totals[props.type] : -totals[props.type]"
       :class="classes"
