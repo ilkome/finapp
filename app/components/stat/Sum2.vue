@@ -4,6 +4,7 @@ import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   amount: number
+  currencyCode?: string
   isActive?: boolean
   title?: string
 }>()
@@ -21,7 +22,7 @@ const currenciesStore = useCurrenciesStore()
 
     <Amount
       :amount="props.amount"
-      :currencyCode="currenciesStore.base"
+      :currencyCode="props.currencyCode || currenciesStore.base"
       align="left"
       variant="-3xl"
     />

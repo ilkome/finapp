@@ -4,6 +4,7 @@ import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const props = defineProps<{
   amount: number
+  currencyCode?: string
   isActive?: boolean
   isTotal?: boolean
   type: MoneyTypeSlugNew
@@ -31,7 +32,7 @@ const currenciesStore = useCurrenciesStore()
 
     <Amount
       :amount="props.amount"
-      :currencyCode="currenciesStore.base"
+      :currencyCode="props.currencyCode || currenciesStore.base"
       align="left"
       variant="xl"
       :class="{
