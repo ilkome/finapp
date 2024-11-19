@@ -87,7 +87,7 @@ onLongPress(
   >
     <slot name="before" />
     <UiElement
-      :isActive2="props.isActive"
+      :isActive="props.isActive"
       :lineWidth="!props.viewOptions?.catsList.isItemsBg ? props.lineWidth : 0"
       class="relative"
       insideClasses="!min-h-[44px]"

@@ -8,6 +8,8 @@ export const defaultViewOptions: ViewOptions = {
     isLines: true,
     isOpened: false,
     isRoundIcon: true,
+    isShowFavorites: false,
+    isShowRecent: false,
   },
   catsRound: {
     isGrouped: false,
@@ -24,6 +26,8 @@ export const ViewOptionsSchema = z.object({
     isLines: z.boolean(),
     isOpened: z.boolean(),
     isRoundIcon: z.boolean(),
+    isShowFavorites: z.boolean(),
+    isShowRecent: z.boolean(),
   }),
   catsRound: z.object({
     isGrouped: z.boolean(),

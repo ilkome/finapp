@@ -18,10 +18,154 @@ const emit = defineEmits<{
 const statConfig = inject('statConfig') as StatConfigProvider
 
 const { t } = useI18n()
+
+const grouping = {
+  isGrouped: computed(() => {
+    if (props.viewOptions.catsView === 'list')
+      return props.viewOptions.catsList.isGrouped
+
+    if (props.viewOptions.catsView === 'round')
+      return props.viewOptions.catsRound.isGrouped
+
+    return false
+  }),
+  toggle: () => {
+    if (props.viewOptions.catsView === 'list') {
+      emit('changeViewOptions', {
+        catsList: { isGrouped: !props.viewOptions.catsList.isGrouped },
+      })
+      return
+    }
+
+    if (props.viewOptions.catsView === 'round') {
+      emit('changeViewOptions', {
+        catsRound: { isGrouped: !props.viewOptions.catsRound.isGrouped },
+      })
+    }
+  },
+}
+
+const favorites = {
+  isShow: computed(() => {
+    if (!props.isShowFavorites)
+      return false
+
+    if (props.viewOptions.catsView === 'list')
+      return props.viewOptions.catsList.isShowFavorites
+
+    if (props.viewOptions.catsView === 'round')
+      return props.viewOptions.catsRound.isShowFavorites
+
+    return false
+  }),
+  toggle: () => {
+    if (props.viewOptions.catsView === 'list') {
+      emit('changeViewOptions', {
+        catsList: { isShowFavorites: !props.viewOptions.catsList.isShowFavorites },
+      })
+    }
+
+    if (props.viewOptions.catsView === 'round') {
+      emit('changeViewOptions', {
+        catsRound: { isShowFavorites: !props.viewOptions.catsRound.isShowFavorites },
+      })
+    }
+  },
+}
+
+const recent = {
+  isShow: computed(() => {
+    if (!props.isShowRecent)
+      return false
+
+    if (props.viewOptions.catsView === 'list')
+      return props.viewOptions.catsList.isShowRecent
+
+    if (props.viewOptions.catsView === 'round')
+      return props.viewOptions.catsRound.isShowRecent
+
+    return false
+  }),
+  toggle: () => {
+    if (props.viewOptions.catsView === 'list') {
+      emit('changeViewOptions', {
+        catsList: { isShowRecent: !props.viewOptions.catsList.isShowRecent },
+      })
+    }
+
+    if (props.viewOptions.catsView === 'round') {
+      emit('changeViewOptions', {
+        catsRound: { isShowRecent: !props.viewOptions.catsRound.isShowRecent },
+      })
+    }
+  },
+}
+
+const viewPresets = computed(() => ({
+  standard: {
+    props: {
+      catsList: {
+        isItemsBg: false,
+        isLines: true,
+        isRoundIcon: true,
+      },
+    },
+    title: t('standard'),
+  },
+  // eslint-disable-next-line perfectionist/sort-objects
+  minimal: {
+    props: {
+      catsList: {
+        isItemsBg: false,
+        isLines: false,
+        isRoundIcon: false,
+      },
+    },
+    title: t('minimal'),
+  },
+}))
+
+const isShowMorePresets = ref(false)
 </script>
 
 <template>
-  <div class="flex gap-1">
+  <div class="bg-foreground-2 relative flex rounded-md">
+    <!-- Folder -->
+    <UiItem1
+      v-if="props.isShowGrouping && props.viewOptions.catsView === 'list' && props.viewOptions.catsList.isGrouped"
+      @click="emit('changeViewOptions', {
+        catsList: { isOpened: !props.viewOptions.catsList.isOpened },
+      })"
+    >
+      <Icon
+        :name="props.viewOptions.catsList.isOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
+        size="18"
+      />
+    </UiItem1>
+
+    <!-- Grouping -->
+    <UiItem1
+      v-if="props.isShowGrouping"
+      @click="grouping.toggle"
+    >
+      <Icon
+        :name="grouping.isGrouped.value ? 'lucide:folder-tree' : 'lucide:network'"
+        size="18"
+      />
+    </UiItem1>
+
+    <!-- View -->
+    <UiItem1
+      @click="emit('changeViewOptions', {
+        catsView: viewOptions.catsView === 'list' ? 'round' : 'list',
+      })"
+    >
+      <Icon
+        :name="props.viewOptions.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'"
+        size="18"
+      />
+    </UiItem1>
+
     <UPopover class="group">
       <div
         :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
@@ -34,186 +178,145 @@ const { t } = useI18n()
       </div>
 
       <template #panel>
-        <div class="p-1">
+        <div class="relative z-10 grid min-w-64 gap-3 p-3">
+          <div class="-m-1">
+            <div class="border-item-3 flex justify-end gap-3 border-b pb-2">
+              <UiItem1
+                v-if="props.isShowGrouping"
+                @click="grouping.toggle"
+              >
+                <Icon
+                  :name="grouping.isGrouped.value ? 'lucide:folder-tree' : 'lucide:network'"
+                  size="18"
+                />
+              </UiItem1>
+              <UiItem1
+                @click="emit('changeViewOptions', {
+                  catsView: viewOptions.catsView === 'list' ? 'round' : 'list',
+                })"
+              >
+                <Icon :name="props.viewOptions.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'" />
+              </UiItem1>
+            </div>
+          </div>
+
+          <!-- Show empty categories -->
           <UiElement
+            class="text-sm"
             @click="statConfig.updateConfig('isShowEmptyCategories', !statConfig.config.value.isShowEmptyCategories)"
           >
+            <div class="grow">
+              {{ t('isShowEmptyCategories') }}
+            </div>
             <SharedInputsCheckbox :value="statConfig.config.value.isShowEmptyCategories" />
-            {{ t('isShowEmptyCategories') }}
-          </UiElement>
-        </div>
-
-        <!-- Round -->
-        <div
-          v-if="props.viewOptions.catsView === 'round'"
-          class="grid gap-2 px-2 pb-2"
-        >
-          <UiElement
-            v-if="props.isShowFavorites"
-            @click="emit('changeViewOptions', {
-              catsRound: { isShowFavorites: !props.viewOptions.catsRound.isShowFavorites },
-            })"
-          >
-            <SharedInputsCheckbox :value="props.viewOptions.catsRound.isShowFavorites" />
-            {{ t('isShowFavorites') }}
           </UiElement>
 
-          <UiElement
-            v-if="props.isShowRecent"
-            @click="emit('changeViewOptions', {
-              catsRound: { isShowRecent: !props.viewOptions.catsRound.isShowRecent },
-            })"
-          >
-            <SharedInputsCheckbox :value="props.viewOptions.catsRound.isShowRecent" />
-            {{ t('isShowRecent') }}
-          </UiElement>
-        </div>
-
-        <!-- List -->
-        <div
-          v-if="props.viewOptions.catsView === 'list'"
-          class="grid gap-2 px-2 pb-2"
-        >
-          <div
-            class="border-item-3 border-t pt-2"
-          >
+          <!-- Grouping -->
+          <div v-if="!grouping.isGrouped.value">
+            <!-- Favorite -->
             <UiElement
-              @click="emit('changeViewOptions', {
-                catsList: {
-                  isItemsBg: false,
-                  isRoundIcon: true,
-                  isLines: true,
-                },
-              })"
+              class="text-sm"
+              @click="favorites.toggle"
             >
-              {{ t('standard') }}
+              <template #leftIcon>
+                <Icon
+                  name="lucide:heart"
+                  size="18"
+                />
+              </template>
+              <div class="grow">
+                {{ t('isShowRecent') }}
+              </div>
+              <SharedInputsCheckbox :value="favorites.isShow.value" />
             </UiElement>
 
+            <!-- Recent -->
             <UiElement
-              @click="emit('changeViewOptions', {
-                catsList: {
-                  isItemsBg: false,
-                  isRoundIcon: false,
-                  isLines: false,
-                },
-              })"
+              class="text-sm"
+              @click="recent.toggle"
             >
-              {{ t('minimal') }}
+              <template #leftIcon>
+                <Icon
+                  name="lucide:history"
+                  size="18"
+                />
+              </template>
+              <div class="grow">
+                {{ t('isShowRecent') }}
+              </div>
+              <SharedInputsCheckbox :value="recent.isShow.value" />
             </UiElement>
           </div>
 
+          <!-- List -->
           <div
-            class="border-item-3 border-t pt-2"
+            v-if="props.viewOptions.catsView === 'list'"
+            class="border-item-3 grid gap-3 border-t pt-4"
           >
-            <UiCheckbox
-              v-if="props.viewOptions.catsView === 'list' && !props.viewOptions.catsList.isOpened"
-              :checkboxValue="props.viewOptions.catsList.isItemsBg"
-              :title="t('isItemsBg')"
-              showCheckbox
-              @onClick="emit('changeViewOptions', {
-                catsList: { isItemsBg: !props.viewOptions.catsList.isItemsBg },
-              })"
-            />
+            <UiTitleOption>{{ t('listItemsOptions') }}</UiTitleOption>
+            <div class="flex gap-1">
+              <UiItem4
+                v-for="view in viewPresets"
+                :key="view.title"
+                @click="emit('changeViewOptions', view.props)"
+              >
+                {{ view.title }}
+              </UiItem4>
+              <UiItem4
+                class="!grow-0"
+                @click="isShowMorePresets = !isShowMorePresets"
+              >
+                <Icon
+                  :name="isShowMorePresets ? 'lucide:chevron-up' : 'lucide:chevron-down'"
+                  size="18"
+                />
+              </UiItem4>
+            </div>
 
-            <!-- Lines -->
-            <UiCheckbox
-              :checkboxValue="props.viewOptions.catsList.isLines"
-              :title="t('isLines')"
-              showCheckbox
-              @onClick="emit('changeViewOptions', {
-                catsList: { isLines: !props.viewOptions.catsList.isLines },
-              })"
-            />
+            <div v-if="isShowMorePresets">
+              <UiElement
+                v-if="props.viewOptions.catsView === 'list' && !props.viewOptions.catsList.isOpened"
+                class="text-sm"
+                @click="emit('changeViewOptions', {
+                  catsList: { isItemsBg: !props.viewOptions.catsList.isItemsBg },
+                })"
+              >
+                <div class="grow">
+                  {{ t('isItemsBg') }}
+                </div>
+                <SharedInputsCheckbox :value="props.viewOptions.catsList.isItemsBg" />
+              </UiElement>
 
-            <!-- Round icons -->
-            <UiCheckbox
-              :checkboxValue="props.viewOptions.catsList.isRoundIcon"
-              :title="t('isRoundIcon')"
-              showCheckbox
-              @onClick="emit('changeViewOptions', {
-                catsList: { isRoundIcon: !props.viewOptions.catsList.isRoundIcon },
-              })"
-            />
+              <!-- Lines -->
+              <UiElement
+                class="text-sm"
+                @click="emit('changeViewOptions', {
+                  catsList: { isLines: !props.viewOptions.catsList.isLines },
+                })"
+              >
+                <div class="grow">
+                  {{ t('isLines') }}
+                </div>
+                <SharedInputsCheckbox :value="props.viewOptions.catsList.isLines" />
+              </UiElement>
+
+              <!-- Round icons -->
+              <UiElement
+                class="text-sm"
+                @click="emit('changeViewOptions', {
+                  catsList: { isRoundIcon: !props.viewOptions.catsList.isRoundIcon },
+                })"
+              >
+                <div class="grow">
+                  {{ t('isRoundIcon') }}
+                </div>
+                <SharedInputsCheckbox :value="props.viewOptions.catsList.isRoundIcon" />
+              </UiElement>
+            </div>
           </div>
         </div>
       </template>
     </UPopover>
-
-    <!-- Round -->
-    <template v-if="(props.viewOptions.catsView === 'round' && !props.viewOptions.catsRound.isGrouped) || (props.viewOptions.catsView === 'list' && !props.viewOptions.catsList.isGrouped)">
-      <!-- Favorite -->
-      <UiItem1
-        v-if="props.isShowFavorites"
-        @click="emit('changeViewOptions', {
-          catsRound: { isShowFavorites: !props.viewOptions.catsRound.isShowFavorites },
-        })"
-      >
-        <Icon
-          :class="{ 'opacity-50': !props.viewOptions.catsRound.isShowFavorites }"
-          name="material-symbols:favorite-outline-rounded"
-        />
-      </UiItem1>
-
-      <!-- Recent -->
-      <UiItem1
-        v-if="props.isShowRecent"
-        @click="emit('changeViewOptions', {
-          catsRound: { isShowRecent: !props.viewOptions.catsRound.isShowRecent },
-        })"
-      >
-        <Icon
-          :class="{ 'opacity-50': !props.viewOptions.catsRound.isShowRecent }"
-          name="material-symbols:history-rounded"
-        />
-      </UiItem1>
-    </template>
-
-    <!-- Folder -->
-    <UiItem1
-      v-if="props.isShowGrouping && props.viewOptions.catsView === 'list' && props.viewOptions.catsList.isGrouped"
-      @click="emit('changeViewOptions', {
-        catsList: { isOpened: !props.viewOptions.catsList.isOpened },
-      })"
-    >
-      <Icon
-        :name="props.viewOptions.catsList.isOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
-        size="24"
-      />
-    </UiItem1>
-
-    <!-- Grouping -->
-    <UiItem1
-      v-if="props.isShowGrouping && props.viewOptions.catsView === 'list'"
-      @click="emit('changeViewOptions', {
-        catsList: { isGrouped: !props.viewOptions.catsList.isGrouped },
-      })"
-    >
-      <Icon
-        :name="props.viewOptions.catsList.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
-        size="24"
-      />
-    </UiItem1>
-
-    <!-- Round -->
-    <UiItem1
-      v-if="props.isShowGrouping && props.viewOptions.catsView === 'round'"
-      @click="emit('changeViewOptions', {
-        catsRound: { isGrouped: !props.viewOptions.catsRound.isGrouped },
-      })"
-    >
-      <Icon
-        :name="props.viewOptions.catsRound.isGrouped ? 'material-symbols-light:background-dot-large-outline-sharp' : 'material-symbols-light:background-dot-small-outline-sharp'"
-        size="24"
-      />
-    </UiItem1>
-
-    <UiItem1
-      @click="emit('changeViewOptions', {
-        catsView: viewOptions.catsView === 'list' ? 'round' : 'list',
-      })"
-    >
-      <Icon :name="props.viewOptions.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'" />
-    </UiItem1>
   </div>
 </template>
 
@@ -225,6 +328,9 @@ en:
   minimal: Minimal
   standard: Standard
   isShowEmptyCategories: Show all categories
+  listItemsOptions: List items options
+  isShowFavorites: Show favorites
+  isShowRecent: Show recent
 
 ru:
   isItemsBg: Фон категорий
@@ -233,4 +339,7 @@ ru:
   minimal: Легкий
   standard: Стандартный
   isShowEmptyCategories: Показывать все категории
+  listItemsOptions: Настройки списка категорий
+  isShowFavorites: Показывать избранные
+  isShowRecent: Показывать последние
 </i18n>
