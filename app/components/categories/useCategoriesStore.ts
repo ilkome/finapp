@@ -37,10 +37,12 @@ type CategoriesStore = {
   hasChildren: (categoryId: CategoryId) => boolean
   hasItems: ComputedRef<boolean>
   initCategories: () => void
+  isItTransactible: (categoryId: CategoryId) => boolean
   items: ShallowRef<Categories>
   recentCategoriesIds: ComputedRef<CategoryId[]>
   saveCategoriesOrder: (ids: CategoryId[]) => void
   setCategories: (values: Categories | null) => void
+  transactibleIds: ComputedRef<CategoryId[]>
   transferCategoriesIds: ComputedRef<CategoryId[]>
   unsubscribeCategories: () => void
 }
@@ -88,6 +90,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return id
     })
   })
+
+  const transactibleIds = computed(() => getTransactibleCategoriesIds(items.value))
 
   const favoriteCategoriesIds = computed(() => {
     if (!hasItems.value)
@@ -256,6 +260,10 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return getTransactibleCategoriesIds(items.value ?? {}, ids)
   }
 
+  function isItTransactible(categoryId: CategoryId) {
+    return transactibleIds.value.includes(categoryId)
+  }
+
   async function addCategory({ id, isUpdateChildCategoriesColor, values }: AddCategoryParams) {
     const uid = userStore.uid
     const categoryChildIds = getChildsIds(id)
@@ -307,10 +315,12 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     hasChildren,
     hasItems,
     initCategories,
+    isItTransactible,
     items,
     recentCategoriesIds,
     saveCategoriesOrder,
     setCategories,
+    transactibleIds,
     transferCategoriesIds,
     unsubscribeCategories,
   }

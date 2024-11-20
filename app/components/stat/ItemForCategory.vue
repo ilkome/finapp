@@ -410,7 +410,6 @@ const quickModalTrnsIds = computed(() => {
               :item
               :isHideParent="props.hasChildren"
               :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-              :selectedRange="statDate.groupedPeriods.value[statDate.params.value.intervalSelected]"
               :viewOptions
               @click="onClickCategory"
             >
@@ -422,7 +421,6 @@ const quickModalTrnsIds = computed(() => {
                   v-for="itemInside in getCats(item.trnsIds)"
                   :key="itemInside.id"
                   :item="itemInside"
-                  :selectedRange="statDate.groupedPeriods.value[statDate.params.value.intervalSelected]"
                   @click="onClickCategory"
                 />
               </div>
@@ -439,8 +437,6 @@ const quickModalTrnsIds = computed(() => {
               :key="item.id"
               :item
               :biggestCatNumber
-              :selectedRange="statDate.groupedPeriods.value[statDate.params.value.intervalSelected]"
-              :statDate
               :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
               @click="onClickCategory"
             />

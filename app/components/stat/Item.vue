@@ -36,7 +36,6 @@ const statConfig = inject('statConfig') as StatConfigProvider
 
 const { t } = useI18n()
 const trnsStore = useTrnsStore()
-const trnsFormStore = useTrnFormStore()
 const { getTotalOfTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
 
@@ -267,10 +266,10 @@ const totals = computed<TotalReturns>(() => getTotalOfTrnsIds(trnsIdsForTotals.v
  */
 const cats = computed(() => {
   let cats: CategoryId[] = [...(props.preCategoriesIds ?? [])]
-  if (!viewOptions.value.catsList.isGrouped && viewOptions.value.catsRound.isShowFavorites) {
+  if (!viewOptions.value.catsList.isGrouped && viewOptions.value.catsList.isShowFavorites) {
     cats.push(...categoriesStore.favoriteCategoriesIds)
   }
-  if (!viewOptions.value.catsList.isGrouped && viewOptions.value.catsRound.isShowRecent) {
+  if (!viewOptions.value.catsList.isGrouped && viewOptions.value.catsList.isShowRecent) {
     cats.push(...categoriesStore.recentCategoriesIds)
   }
 
@@ -348,7 +347,7 @@ const quickModalTrnsIds = computed(() => {
       <!-- Content -->
       <div class="grid gap-6 pt-4">
         <!-- Categories first level -->
-        <div>
+        <div v-if="cats.length > 0 || catsRounded.length > 0">
           <div class="flex items-center justify-between md:max-w-lg">
             <UiTitle82>
               {{ t('categories.title') }}
@@ -382,7 +381,6 @@ const quickModalTrnsIds = computed(() => {
               :isHideDots="viewOptions.catsList.isOpened"
               :item
               :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-              :selectedRange="statDate.groupedPeriods.value[statDate.params.value.intervalSelected]"
               :viewOptions
               @click="onClickCategory"
             >
@@ -394,7 +392,6 @@ const quickModalTrnsIds = computed(() => {
                   v-for="itemInside in getCats(item.trnsIds)"
                   :key="itemInside.id"
                   :item="itemInside"
-                  :selectedRange="statDate.groupedPeriods.value[statDate.params.value.intervalSelected]"
                   @click="onClickCategory"
                 />
               </div>
@@ -411,8 +408,6 @@ const quickModalTrnsIds = computed(() => {
               :key="item.id"
               :item
               :biggestCatNumber
-              :selectedRange="statDate.groupedPeriods.value[statDate.params.value.intervalSelected]"
-              :statDate
               :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
               @click="onClickCategory"
             />
@@ -447,7 +442,26 @@ const quickModalTrnsIds = computed(() => {
           />
         </UiToggle>
 
-        <TrnsNoTrns v-if="selectedTrnsIdsForTrnsList.length === 0" />
+        <template v-if="selectedTrnsIdsForTrnsList.length === 0">
+          <TrnsNoTrns />
+
+          <!-- Rounds -->
+          <div v-if="categoriesStore.favoriteCategoriesIds.length > 0">
+            <UiTitle82>
+              {{ t('categories.favoriteTitle') }}
+            </UiTitle82>
+
+            <div class="@3xl/stat:gap-2 flex flex-wrap gap-1 pl-1 md:max-w-lg">
+              <StatLinesItemRound2
+                v-for="id in categoriesStore.favoriteCategoriesIds"
+                :key="id"
+                :item="{ id, trnsIds: [], value: 0 }"
+                :biggestCatNumber="0"
+                @click="onClickCategory"
+              />
+            </div>
+          </div>
+        </template>
       </div>
     </div>
 

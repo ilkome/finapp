@@ -59,6 +59,8 @@ const favorites = {
     return false
   }),
   toggle: () => {
+    console.log(1)
+
     if (props.viewOptions.catsView === 'list') {
       emit('changeViewOptions', {
         catsList: { isShowFavorites: !props.viewOptions.catsList.isShowFavorites },
@@ -216,7 +218,10 @@ const isShowMorePresets = ref(false)
           </div>
 
           <!-- Grouping -->
-          <div v-if="!grouping.isGrouped.value">
+          <div
+            v-if="!grouping.isGrouped.value"
+            class="border-item-3 border-b pb-2 last:border-0 last:pb-0"
+          >
             <!-- Favorite -->
             <UiElement
               class="text-sm"
@@ -229,7 +234,7 @@ const isShowMorePresets = ref(false)
                 />
               </template>
               <div class="grow">
-                {{ t('isShowRecent') }}
+                {{ t('isShowFavorites') }}
               </div>
               <SharedInputsCheckbox :value="favorites.isShow.value" />
             </UiElement>
@@ -255,7 +260,7 @@ const isShowMorePresets = ref(false)
           <!-- List -->
           <div
             v-if="props.viewOptions.catsView === 'list'"
-            class="border-item-3 grid gap-3 border-t pt-4"
+            class="grid gap-3"
           >
             <UiTitleOption>{{ t('listItemsOptions') }}</UiTitleOption>
             <div class="flex gap-1">

@@ -429,7 +429,8 @@ const counts = computed(() => ({
             :initStatus="true"
             :lineWidth="0"
             :storageKey="`finapp-wallets-total-${gropedBy}`"
-            class="!pb-6"
+            class="pb-3"
+            openPadding="!pb-4"
           >
             <template #header="{ toggle, isShown }">
               <div class="flex grow items-center justify-between">

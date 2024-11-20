@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { calculateIntervalInRange } from '~/components/date/utils'
 import type { IntervalsInRangeProps, Range } from '~/components/date/types'
 
+// @ts-expect-error works for tests
 dayjs.locale({
   name: 'en',
   weekStart: 1,

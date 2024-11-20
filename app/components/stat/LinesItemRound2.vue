@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onLongPress } from '@vueuse/core'
-import dayjs from 'dayjs'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -39,24 +38,23 @@ const category = computed(() => {
   return categoriesStore.items[props.item.id]
 })
 
+// TODO: addTrnFromSelectedInterval
 const longPressRef = ref(null)
 onLongPress(
   longPressRef,
   () => {
-    trnFormStore.trnFormCreate()
-    trnFormStore.$patch((state) => {
-      state.values.amount = [0, 0, 0]
-      state.values.amountRaw = ['', '', '']
-      state.values.categoryId = props.item.id
-      state.ui.isShow = true
+    const isTransactible = categoriesStore.isItTransactible(props.item.id)
 
-      if (props.selectedRange?.start && statDate.params.value.rangeBy === 'day' && statDate.params.value.intervalSelected !== -1) {
-        state.values.date = props.selectedRange?.start
-      }
-      else {
-        state.values.date = dayjs().startOf('day').valueOf()
-      }
-    })
+    if (statDate.selectedInterval.value?.start && statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day' && isTransactible && statDate.selectedInterval.value) {
+      trnFormStore.trnFormCreate()
+      trnFormStore.$patch((state) => {
+        state.values.amount = [0, 0, 0]
+        state.values.amountRaw = ['', '', '']
+        state.values.categoryId = props.item.id
+        state.ui.isShow = true
+        state.values.date = statDate.selectedInterval.value!.start
+      })
+    }
   },
   {
     onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
