@@ -3,9 +3,6 @@
 # Open source finance application
 Finapp helps you to control personal finances easily and efficiently.
 
-# TODO
-- fix: currencies modal height and scroll
-
 # 🕹 Demo
 [finapp.ilko.me](https://finapp.ilko.me/)
 
