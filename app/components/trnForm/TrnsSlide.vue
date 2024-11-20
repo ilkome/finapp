@@ -87,7 +87,7 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
           <TrnFormDate />
         </div>
 
-        <UiTabs1>
+        <UiTabs1 class="mb-4">
           <UiTabsItem1
             v-for="tab in tabs"
             :key="tab.id"

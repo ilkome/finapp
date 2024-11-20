@@ -1,12 +1,10 @@
 import dayjs from 'dayjs'
-import localforage from 'localforage'
-import { deepUnref } from 'vue-deepunref'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import type { PeriodNameWithAll, PeriodSchema, Periods, PeriodsNames } from '~/components/filter/types'
+import type { PeriodNameWithAll, Periods, PeriodsNames } from '~/components/filter/types'
 
 export function useFilter() {
   const { t } = useI18n()
@@ -192,8 +190,6 @@ export function useFilter() {
       : [],
   )
 
-  const transactibleCatsIds = computed(() => categoriesStore.getTransactibleIds(catsIds.value))
-
   function setCategoryId(categoryId: CategoryId) {
     if (catsIds.value.includes(categoryId))
       return
@@ -202,6 +198,24 @@ export function useFilter() {
       query: {
         ...route.query,
         filterCategories: [...catsIds.value, categoryId],
+      },
+    })
+  }
+
+  function setCategories(newCategoriesIds: CategoryId[]) {
+    let uniqueCategoriesIds = []
+
+    if (newCategoriesIds.every(id => catsIds.value.includes(id))) {
+      uniqueCategoriesIds = catsIds.value.filter(id => !newCategoriesIds.includes(id))
+    }
+    else {
+      uniqueCategoriesIds = [...new Set([...catsIds.value, ...newCategoriesIds])]
+    }
+
+    router.push({
+      query: {
+        ...route.query,
+        filterCategories: uniqueCategoriesIds,
       },
     })
   }
@@ -241,6 +255,8 @@ export function useFilter() {
     return trnsStore.getStoreTrnsIds({
       categoriesIds: catsIds.value,
       walletsIds: walletsIds.value,
+    }, {
+      includesChildCategories: true,
     })
   }
 
@@ -256,6 +272,7 @@ export function useFilter() {
     periodsNames,
     removeCategoryId,
     removeWalletId,
+    setCategories,
     setCategoryId,
     setDate,
     setDayDate,
@@ -265,7 +282,6 @@ export function useFilter() {
     setWalletId,
     toggleCategoryId,
     toggleWalletId,
-    transactibleCatsIds,
     ui,
     walletsIds,
   }

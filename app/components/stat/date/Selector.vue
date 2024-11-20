@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import type { IntervalGroupedLabel, Range, StatDateProvider } from '~/components/date/types'
+import { calculateBestIntervalsBy } from '~/components/date/utils'
 import type { ViewOptions } from '~/components/stat/types'
 import type { DeepPartial } from '~~/utils/types'
 
@@ -112,20 +113,23 @@ function set12Months() {
   statDate.params.value.rangeOffset = 0
 }
 
-function setMaxRange(skipEmpty = false) {
+function setMaxRange(isSkipEmpty = false) {
   emit('onClose')
   emit('changeViewOptions', {
     ...viewPresets.standard,
     catsView: 'list',
   })
 
+  const rangeDuration = dayjs(props.maxRange.end).diff(props.maxRange.start, 'day')
+  const intervalsBy = calculateBestIntervalsBy(props.maxRange)
+
   statDate.setRangeByPeriod({
-    intervalsBy: 'year',
+    intervalsBy,
     intervalsDuration: 1,
     isShowMaxRange: true,
-    isSkipEmpty: skipEmpty,
+    isSkipEmpty,
     rangeBy: 'day',
-    rangeDuration: dayjs(props.maxRange.end).diff(props.maxRange.start, 'day'),
+    rangeDuration,
   })
 }
 </script>
@@ -183,14 +187,14 @@ function setMaxRange(skipEmpty = false) {
 
             <DateLinkItem
               :isActive="statDate.params.value.isShowMaxRange && !statDate.params.value.isSkipEmpty"
-              @click="setMaxRange"
+              @click="() => setMaxRange(false)"
             >
               {{ t('all') }}
             </DateLinkItem>
 
             <DateLinkItem
               :isActive="statDate.params.value.isShowMaxRange && statDate.params.value.isSkipEmpty"
-              @click="setMaxRange(true)"
+              @click="() => setMaxRange(true)"
             >
               {{ t('allSkipEmpty') }}
             </DateLinkItem>

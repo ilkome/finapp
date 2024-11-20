@@ -82,7 +82,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return []
 
     return categoriesRootIds.value.filter((id: CategoryId) => {
-      const hasTrnsInCategory = Object.values(trnsStore.items).some(trn => trn.categoryId === id)
+      const hasTrnsInCategory = Object.values(trnsStore.items ?? {})?.some(trn => trn.categoryId === id)
 
       if (hasTrnsInCategory || transferCategoriesIds.value.includes(id))
         return false

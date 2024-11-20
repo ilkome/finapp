@@ -7,7 +7,7 @@ export default defineAppConfig({
   },
   ui: {
     popover: {
-      background: 'bg-foreground-4',
+      background: 'bg-foreground-4 min-w-64',
       popper: {
         placement: 'bottom-start',
       },

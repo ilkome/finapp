@@ -66,7 +66,7 @@ export type WalletItemRaw = {
   creditLimit?: number
   currency: CurrencyCode
   description?: string
-  edited?: number // TODO: rename to editedAt
+  edited?: number
   isCash?: boolean
   isCashless?: boolean
   isCredit?: boolean

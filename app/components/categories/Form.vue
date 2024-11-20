@@ -130,7 +130,7 @@ async function onSave() {
 
         <UiFormInput
           :placeholder="t('categories.form.name.placeholder')"
-          :value="categoryPlaceholder.name"
+          :value="categoryForm.name"
           @updateValue="(value: string) => emit('updateValue', 'name', value)"
         />
       </UiFormElement>
@@ -277,6 +277,59 @@ async function onSave() {
       </template>
     </BaseBottomSheet2>
 
+    <!-- Icon -->
+    <BaseBottomSheet2
+      v-if="modals.icon"
+      isShow
+      drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+      @closed="modals.icon = false"
+    >
+      <template #handler="{ close }">
+        <BaseBottomSheetHandler />
+        <BaseBottomSheetClose @onClick="close" />
+      </template>
+
+      <template #default="{ close }">
+        <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
+          <div class="grid gap-3 pb-1 pt-3">
+            <UiTitle3>{{ t("selectIcon") }}</UiTitle3>
+            <CategoriesItem
+              :categoryId="props.categoryId"
+              :category="categoryPlaceholder"
+            />
+          </div>
+
+          <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
+            <div
+              v-for="iconGroup in icons"
+              :key="JSON.stringify(iconGroup)"
+              class="flex flex-wrap gap-3 pb-8"
+            >
+              <div
+                v-for="icon in iconGroup"
+                :key="icon"
+                :class="[{ '!border-accent-1': icon === props.categoryForm.icon }]"
+                :style="{ background: props.categoryForm.color }"
+                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent"
+                @click="emit('updateValue', 'icon', icon)"
+              >
+                <div class="text-icon-primary text-2xl" :class="[icon]" />
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-center py-2">
+            <UiButtonBlue
+              rounded
+              @click="close"
+            >
+              {{ t("base.save") }}
+            </UiButtonBlue>
+          </div>
+        </div>
+      </template>
+    </BaseBottomSheet2>
+
     <!-- Parent -->
     <BaseBottomSheet2
       v-if="modals.parent"
@@ -310,59 +363,6 @@ async function onSave() {
               class="!gap-x-1"
               @click="id => onParentSelect(id, close)"
             />
-          </div>
-
-          <div class="flex-center py-2">
-            <UiButtonBlue
-              rounded
-              @click="close"
-            >
-              {{ t("base.save") }}
-            </UiButtonBlue>
-          </div>
-        </div>
-      </template>
-    </BaseBottomSheet2>
-
-    <!-- Icon -->
-    <BaseBottomSheet2
-      v-if="modals.icon"
-      isShow
-      drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
-      @closed="modals.icon = false"
-    >
-      <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
-      </template>
-
-      <template #default="{ close }">
-        <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
-          <div class="grid gap-3 pb-1 pt-3">
-            <UiTitle3>{{ t("selectIcon") }}</UiTitle3>
-            <CategoriesItem
-              :categoryId="props.categoryId"
-              :category="props.categoryForm"
-            />
-          </div>
-
-          <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
-            <div
-              v-for="iconGroup in icons"
-              :key="JSON.stringify(iconGroup)"
-              class="flex flex-wrap gap-3 pb-8"
-            >
-              <div
-                v-for="icon in iconGroup"
-                :key="icon"
-                :class="[{ '!border-accent-1': icon === props.categoryForm.icon }]"
-                :style="{ background: props.categoryForm.color }"
-                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent"
-                @click="emit('updateValue', 'icon', icon)"
-              >
-                <div class="text-icon-primary text-2xl" :class="[icon]" />
-              </div>
-            </div>
           </div>
 
           <div class="flex-center py-2">

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="handlerClose hover:bg-item-6 size-8 rounded-full transition ease-in-out"
+    class="handlerClose bg-item-5 hover:bg-item-6 size-8 rounded-full transition ease-in-out"
     @click="$emit('onClick')"
   >
     <svg

@@ -26,6 +26,10 @@ const items = computed(() => {
     isShow: dayjs(props.range.end).diff(props.range.start, 'day') >= 30,
     label: t('dates.month.simple'),
     value: 'month',
+  }, {
+    isShow: dayjs(props.range.end).diff(props.range.start, 'day') >= 400,
+    label: t('dates.year.simple'),
+    value: 'year',
   }]
 
   return items.filter(i => i.isShow)

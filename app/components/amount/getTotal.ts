@@ -2,6 +2,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId, WalletItem } from '~/components/wallets/types'
 import { TrnType } from '~/components/trns/types'
+import type { CurrencyCode, Rates } from '~/components/currencies/types'
 
 export function getAmountInRate({
   amount,
@@ -10,9 +11,9 @@ export function getAmountInRate({
   rates,
 }: {
   amount: number
-  baseCurrencyCode?: string // TODO: add typings
+  baseCurrencyCode?: CurrencyCode
   currencyCode: string
-  rates?: Record<string, number> // TODO: add typings
+  rates?: Rates
 }): number {
   if (!baseCurrencyCode || !rates)
     return amount

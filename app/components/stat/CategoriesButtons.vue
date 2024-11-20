@@ -169,6 +169,7 @@ const isShowMorePresets = ref(false)
     </UiItem1>
 
     <UPopover
+      :popper="{ placement: 'bottom-end' }"
       class="group"
     >
       <div

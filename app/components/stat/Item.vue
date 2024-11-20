@@ -403,12 +403,13 @@ const quickModalTrnsIds = computed(() => {
             v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
             class="@3xl/stat:gap-2 flex flex-wrap gap-1 pl-1 pt-2 md:max-w-lg"
           >
-            <StatLinesItemRound2
+            <StatLinesItemRound
               v-for="item in catsRounded"
               :key="item.id"
               :item
               :biggestCatNumber
               :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+              isShowAmount
               @click="onClickCategory"
             />
           </div>
@@ -452,7 +453,7 @@ const quickModalTrnsIds = computed(() => {
             </UiTitle82>
 
             <div class="@3xl/stat:gap-2 flex flex-wrap gap-1 pl-1 md:max-w-lg">
-              <StatLinesItemRound2
+              <StatLinesItemRound
                 v-for="id in categoriesStore.favoriteCategoriesIds"
                 :key="id"
                 :item="{ id, trnsIds: [], value: 0 }"

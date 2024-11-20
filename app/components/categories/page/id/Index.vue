@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
+import { calculateBestIntervalsBy } from '~/components/date/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useFilter } from '~/components/filter/useFilter'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useStatDate } from '~/components/date/useStatDate'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
+const categoriesStore = useCategoriesStore()
+const filter = useFilter()
 const route = useRoute()
 const router = useRouter()
-const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
-const filter = useFilter()
 provide('filter', filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
@@ -18,11 +19,15 @@ const category = ref(categoriesStore.items[categoryId.value])
 const categoryHasChildren = computed(() => categoriesStore.hasChildren(categoryId.value))
 const childIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: categoriesIdsOrParent.value }))
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  categoriesIds: categoriesIdsOrParent.value,
+  walletsIds: filter?.walletsIds?.value ?? [],
+}))
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const statDate = useStatDate({
   initParams: {
+    intervalsBy: calculateBestIntervalsBy(maxRange.value),
     isShowMaxRange: true,
     isSkipEmpty: true,
   },
@@ -30,7 +35,6 @@ const statDate = useStatDate({
   maxRange,
   queryParams: route.query,
 })
-
 provide('statDate', statDate)
 
 const statConfig = useStatConfig({
@@ -82,13 +86,36 @@ useHead({ title: category.value?.name })
       <StatConfigPopover />
     </UiHeader>
 
-    <StatItemForCategory
-      :hasChildren="categoryHasChildren"
-      :storageKey="categoryId"
-      :preCategoriesIds="statConfig.config.value.isShowEmptyCategories ? childIds : []"
-      :trnsIds="trnsIds"
-      class="max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
-      type="sum"
-    />
+    <div
+      v-if="trnsIds.length > 0 || filter.isShow?.value"
+      class="px-2 pt-2 md:px-6"
+    >
+      <FilterSelector
+        isShowWallets
+        class="pb-2"
+      />
+      <FilterSelected
+        v-if="filter.isShow?.value"
+        isShowCategories
+        isShowWallets
+      />
+    </div>
+
+    <div v-if="trnsIds.length > 0">
+      <div class="px-2 pt-2 md:px-6">
+        <StatItemForCategory
+          :hasChildren="categoryHasChildren"
+          :storageKey="categoryId"
+          :preCategoriesIds="statConfig.config.value.isShowEmptyCategories ? childIds : []"
+          :trnsIds="trnsIds"
+          class="max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
+          type="sum"
+        />
+      </div>
+    </div>
+
+    <div v-else class="pageWrapper">
+      <TrnsNoTrns />
+    </div>
   </UiPage>
 </template>

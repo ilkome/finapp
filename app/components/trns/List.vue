@@ -226,7 +226,7 @@ const groupedTrns = computed(() => {
     <!-- With dates -->
     <div
       v-if="!isHideDates"
-      class="grid gap-4"
+      class="grid gap-3"
     >
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"

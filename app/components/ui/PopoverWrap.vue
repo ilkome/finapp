@@ -10,8 +10,11 @@ const emit = defineEmits<{
 
 <template>
   <div class="grid max-h-[60dvh] grid-rows-[auto,1fr]">
-    <div class="flex h-12 items-center px-3">
-      <UiTitle v-if="props.title">
+    <div class="flex items-center px-3">
+      <UiTitle
+        v-if="props.title"
+        class="px-1 pb-2 pt-4"
+      >
         {{ props.title }}
       </UiTitle>
       <BaseBottomSheetClose @onClick="emit('close')" />

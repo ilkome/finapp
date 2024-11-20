@@ -15,6 +15,15 @@ export function calculateIntervalInRange(params: IntervalsInRangeProps): Range {
   }
 }
 
+export function calculateBestIntervalsBy(range: Range) {
+  const rangeDuration = dayjs(range.end).diff(range.start, 'day')
+  return rangeDuration > 400
+    ? 'year'
+    : rangeDuration > 80
+      ? 'month'
+      : 'day'
+}
+
 export function getIntervalsInRange(params: IntervalsInRangeProps) {
   const list: Range[] = []
   const { intervalsBy, intervalsDuration, range } = params

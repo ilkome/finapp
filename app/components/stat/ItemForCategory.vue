@@ -37,7 +37,6 @@ const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
 
 const trnsStore = useTrnsStore()
-const trnsFormStore = useTrnFormStore()
 const { getTotalOfTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
 
@@ -432,12 +431,13 @@ const quickModalTrnsIds = computed(() => {
             v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
             class="@3xl/stat:gap-2 flex flex-wrap gap-1 gap-y-2 pl-1 pt-2 md:max-w-lg"
           >
-            <StatLinesItemRound2
+            <StatLinesItemRound
               v-for="item in catsRounded"
               :key="item.id"
               :item
               :biggestCatNumber
               :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+              isShowAmount
               @click="onClickCategory"
             />
           </div>

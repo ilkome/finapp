@@ -1,24 +1,45 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
+import { calculateBestIntervalsBy } from '~/components/date/utils'
+import { icons } from '~/components/wallets/types'
 import { useFilter } from '~/components/filter/useFilter'
+import { useStatConfig } from '~/components/stat/useStatConfig'
+import { useStatDate } from '~/components/date/useStatDate'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { useStatConfig } from '~/components/stat/useStatConfig'
-import { icons } from '~/components/wallets/types'
-
-const { t } = useI18n()
-const route = useRoute()
-const router = useRouter()
-const walletsStore = useWalletsStore()
-const trnsStore = useTrnsStore()
 
 const filter = useFilter()
+const route = useRoute()
+const router = useRouter()
+const trnsStore = useTrnsStore()
+const walletsStore = useWalletsStore()
+const { t } = useI18n()
 provide('filter', filter)
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  categoriesIds: filter?.catsIds?.value ?? [],
+  walletsIds: [walletId.value],
+}, {
+  includesChildCategories: true,
+}))
+const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
+
 const statConfig = useStatConfig({ storageKey: walletId.value })
 provide('statConfig', statConfig)
+
+const statDate = useStatDate({
+  initParams: {
+    intervalsBy: calculateBestIntervalsBy(maxRange.value),
+    isShowMaxRange: true,
+    isSkipEmpty: true,
+  },
+  key: `finapp-${walletId.value}-`,
+  maxRange,
+  queryParams: route.query,
+})
+provide('statDate', statDate)
 
 if (!wallet.value)
   router.replace('/wallets')
@@ -32,13 +53,6 @@ function onEditClick() {
 useHead({
   title: `${t('wallets.title')}: ${wallet.value?.name}`,
 })
-
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: filter?.catsIds?.value ?? [],
-  walletsIds: [walletId.value, ...filter?.walletsIds?.value],
-}, {
-  includesChildCategories: true,
-}))
 </script>
 
 <template>
@@ -76,46 +90,52 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
       </template>
     </UiHeader>
 
+    <div
+      v-if="trnsIds.length > 0 || filter.isShow?.value"
+      class="px-2 pt-2 md:px-6"
+    >
+      <FilterSelector
+        isShowCategories
+        class="pb-2"
+      />
+      <FilterSelected
+        v-if="filter.isShow?.value"
+        isShowCategories
+        isShowWallets
+      />
+
+      <div
+        v-if="wallet.type !== 'credit'"
+        class="md:max-w-lg"
+      >
+        <StatSumWallet
+          :amount="total"
+          :currencyCode="wallet.currency"
+          :title="t('money.balance')"
+        />
+      </div>
+
+      <div v-if="wallet.creditLimit" class="grid grid-cols-3 gap-1 md:max-w-lg">
+        <StatSumWallet
+          :amount="total"
+          :currencyCode="wallet.currency"
+          :title="t('wallets.form.credit.debt')"
+        />
+        <StatSumWallet
+          :amount="wallet.creditLimit - (-total)"
+          :currencyCode="wallet.currency"
+          :title="t('wallets.form.credit.available')"
+        />
+        <StatSumWallet
+          :amount="wallet.creditLimit"
+          :currencyCode="wallet.currency"
+          :title="t('wallets.form.credit.limit')"
+        />
+      </div>
+    </div>
+
     <div v-if="trnsIds.length > 0">
       <div class="px-2 md:px-6">
-        <div class="pt-2 lg:px-4">
-          <FilterSelector isHideWallets class="pb-2" />
-          <FilterSelected
-            v-if="filter.isShow?.value"
-            isShowCategories
-            isShowWallets
-          />
-
-          <div
-            v-if="wallet.type !== 'credit'"
-            class="md:max-w-lg"
-          >
-            <StatSumWallet
-              :amount="total"
-              :currencyCode="wallet.currency"
-              :title="t('money.balance')"
-            />
-          </div>
-
-          <div v-if="wallet.creditLimit" class="grid grid-cols-3 gap-1 md:max-w-lg">
-            <StatSumWallet
-              :amount="total"
-              :currencyCode="wallet.currency"
-              :title="t('wallets.form.credit.debt')"
-            />
-            <StatSumWallet
-              :amount="wallet.creditLimit - (-total)"
-              :currencyCode="wallet.currency"
-              :title="t('wallets.form.credit.available')"
-            />
-            <StatSumWallet
-              :amount="wallet.creditLimit"
-              :currencyCode="wallet.currency"
-              :title="t('wallets.form.credit.limit')"
-            />
-          </div>
-        </div>
-
         <div
           v-if="wallet.description"
           class="text-item-2 mb-6 text-sm"
@@ -125,11 +145,12 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
       </div>
 
       <div class="px-2 pt-2 md:px-6">
-        <StatItem
+        <StatItemForCategory
           :storageKey="walletId"
           :trnsIds
           isShowTotals
           type="sum"
+          hasChildren
         />
       </div>
     </div>

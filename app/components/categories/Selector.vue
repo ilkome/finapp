@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { getParentCategory } from '~/components/categories/getCategories'
 
 const props = defineProps<{
   hide?: () => null
@@ -11,6 +12,7 @@ const emit = defineEmits<{
   filter: [id: CategoryId]
   onClose: []
   onSelected: [id: CategoryId]
+  setCategories: [ids: CategoryId[]]
 }>()
 
 const categoriesStore = useCategoriesStore()
@@ -34,8 +36,27 @@ function select(categoryId: CategoryId, isForce: boolean) {
 }
 
 function onFilter(id: CategoryId) {
-  emit('filter', id)
+  const childs = categoriesStore.getChildsIds(id)
+  emit('setCategories', childs)
 }
+
+function isChildsSelected(categoryId: CategoryId) {
+  return categoriesStore.getChildsIds(categoryId).some(id => props.selectedIds?.includes(id))
+}
+
+function isEveryChildsSelected(categoryId: CategoryId) {
+  if (!categoriesStore.getChildsIds(categoryId).length)
+    return false
+
+  return categoriesStore.getChildsIds(categoryId).every(id => props.selectedIds?.includes(id))
+}
+
+onMounted(() => {
+  props.selectedIds?.forEach((id) => {
+    if (categoriesStore.items[id]?.parentId)
+      opened.value.push(categoriesStore.items[id]?.parentId)
+  })
+})
 </script>
 
 <template>
@@ -43,9 +64,11 @@ function onFilter(id: CategoryId) {
     <div
       v-for="categoryId in categoriesStore.categoriesRootIds"
       :key="categoryId"
-      class="group"
+      class="group border border-transparent"
       :class="{
-        'bg-item-4 mb-2 overflow-hidden rounded-md': opened.includes(categoryId),
+        'bg-item-4 relative mb-2 rounded-md': opened.includes(categoryId),
+        'bg-item-4 rounded-md': isChildsSelected(categoryId),
+        '!border-accent-1/60': isEveryChildsSelected(categoryId),
       }"
     >
       <CategoriesItem
@@ -61,6 +84,7 @@ function onFilter(id: CategoryId) {
         v-if="opened.includes(categoryId) && categoriesStore.hasChildren(categoryId)"
         class="pb-2 pl-4 pr-2"
       >
+        <!-- :activeItemId="isEveryChildsSelected(categoryId) ? null : props.selectedIds?.includes(childCategoryId) ? childCategoryId : null" -->
         <CategoriesItem
           v-for="childCategoryId in categoriesStore.getChildsIds(categoryId)"
           :key="childCategoryId"

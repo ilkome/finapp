@@ -1,7 +1,7 @@
 <template>
-  <div class="flex-col gap-2 flex-center py-3 text-center text-secondary">
-    <Icon name="mdi:palm-tree" size="64" />
-    <div class="text-md">
+  <div class="flex-center text-secondary flex gap-2 py-3 text-center">
+    <Icon name="lucide:tree-palm" size="22" />
+    <div class="text-base leading-none">
       {{ $t("trns.noTrns") }}
     </div>
   </div>

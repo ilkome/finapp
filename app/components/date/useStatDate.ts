@@ -31,15 +31,29 @@ export function useStatDate({
   }
 
   if (queryParams) {
-    params.value = {
-      ...params.value,
-      intervalsBy: queryParams.intervalsBy || params.value.intervalsBy,
-      intervalsDuration: queryParams.intervalsDuration ? +queryParams.intervalsDuration : params.value.intervalsDuration,
-      intervalSelected: queryParams.intervalSelected ? +queryParams.intervalSelected : params.value.intervalSelected,
-      rangeBy: queryParams.rangeBy || params.value.rangeBy,
-      rangeDuration: queryParams.rangeDuration ? +queryParams.rangeDuration : params.value.rangeDuration,
-      rangeOffset: queryParams.rangeOffset ? +queryParams.rangeOffset : params.value.rangeOffset,
-    }
+    if (queryParams.intervalsBy)
+      params.value.intervalsBy = queryParams.intervalsBy
+
+    if (Number.isInteger(queryParams.intervalsDuration))
+      params.value.intervalsDuration = +queryParams.intervalsDuration
+
+    if (Number.isInteger(queryParams.intervalSelected))
+      params.value.intervalSelected = +queryParams.intervalSelected
+
+    if (queryParams.rangeBy)
+      params.value.rangeBy = queryParams.rangeBy
+
+    if (Number.isInteger(queryParams.rangeDuration))
+      params.value.rangeDuration = +queryParams.rangeDuration
+
+    if (Number.isInteger(queryParams.rangeOffset))
+      params.value.rangeOffset = +queryParams.rangeOffset
+
+    if (queryParams.isShowMaxRange)
+      params.value.isShowMaxRange = queryParams.isShowMaxRange === 'true'
+
+    if (queryParams.isSkipEmpty)
+      params.value.isSkipEmpty = queryParams.isSkipEmpty === 'true'
   }
 
   const range = computed<Range>(() => {
@@ -97,8 +111,8 @@ export function useStatDate({
     params.value.rangeDuration = igl.rangeDuration
     params.value.rangeBy = igl.rangeBy
 
-    params.value.isSkipEmpty = igl.isSkipEmpty ?? false
-    params.value.isShowMaxRange = igl.isShowMaxRange ?? false
+    params.value.isSkipEmpty = igl.isSkipEmpty || false
+    params.value.isShowMaxRange = igl.isShowMaxRange || false
   }
 
   function setRangeByCalendar(r: Range) {

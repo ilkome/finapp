@@ -46,7 +46,7 @@ function onClickChart(idx: number) {
     }"
   >
     <div
-      v-if="statConfig.config.value?.chartShow && (statDate.params.value.rangeDuration !== 1 || statDate.params.value.rangeBy !== 'day')"
+      v-if="statConfig.config.value?.chartShow && (statDate.params.value.rangeDuration !== 1 || statDate.params.value.rangeBy !== 'day') && statDate.groupedPeriods.value.length > 1"
       class="pb-2"
     >
       <div class="flex justify-between">
