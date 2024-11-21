@@ -4,53 +4,49 @@ export function getTrnsIds(props: TrnsGetterProps2) {
   if (!props.trnsIds && !props.trnsItems)
     return []
 
-  let trnsIds: TrnId[] = props.trnsIds || Object.keys(props.trnsItems)
+  const trnsIds: TrnId[] = props.trnsIds || Object.keys(props.trnsItems ?? {})
 
-  // Type
-  if (props?.trnType !== undefined && props?.trnType !== null) {
-    trnsIds = trnsIds.filter(
-      trnId => props.trnsItems[trnId]?.type === props.trnType,
-    )
-  }
+  const filters: Array<(ids: TrnId[]) => TrnId[]> = [
+    // Type filter
+    ids => props.trnType != null
+      ? ids.filter(id => props.trnsItems?.[id]?.type === props.trnType)
+      : ids,
 
-  if (Array.isArray(props?.trnTypes)) {
-    trnsIds = trnsIds.filter(
-      trnId => props.trnTypes?.includes(props.trnsItems[trnId]?.type),
-    )
-  }
+    // Types filter
+    ids => Array.isArray(props.trnsTypes)
+      ? ids.filter(id => props.trnsTypes?.includes(props.trnsItems?.[id]?.type))
+      : ids,
 
-  // Date
-  if (props?.dates) {
-    if (props.dates.from) {
-      trnsIds = trnsIds.filter(
-        trnId => props.trnsItems[trnId]?.date >= props.dates?.from,
-      )
-    }
-    if (props?.dates?.until)
-      trnsIds = trnsIds.filter(trnId => props.trnsItems[trnId].date <= props.dates.until)
-  }
+    // Date filters
+    ids => props.dates?.from
+      ? ids.filter(id => props.trnsItems?.[id]?.date >= props.dates.from)
+      : ids,
+    ids => props.dates?.until
+      ? ids.filter(id => props.trnsItems?.[id]?.date <= props.dates.until)
+      : ids,
 
-  // Wallet
-  if (props.walletsIds && props.walletsIds?.length > 0) {
-    trnsIds = trnsIds.filter((trnId: TrnId) => {
-      const trn = props.trnsItems[trnId]
-      return (
-        props.walletsIds?.includes(trn?.walletId)
-        || props.walletsIds?.includes(trn?.expenseWalletId)
-        || props.walletsIds?.includes(trn?.incomeWalletId)
-        || props.walletsIds?.includes(trn?.walletToId)
-        || props.walletsIds?.includes(trn?.walletFromId)
-      )
-    })
-  }
+    // Wallet filter
+    ids => props.walletsIds?.length
+      ? ids.filter((id) => {
+        const trn = props.trnsItems?.[id]
+        const walletIds = [
+          trn?.walletId,
+          trn?.expenseWalletId,
+          trn?.incomeWalletId,
+          trn?.walletToId,
+          trn?.walletFromId,
+        ]
+        return walletIds.some(walletId => props.walletsIds?.includes(walletId))
+      })
+      : ids,
 
-  // Category
-  if (props.categoriesIds && props.categoriesIds?.length > 0) {
-    trnsIds = trnsIds.filter((trnId: TrnId) =>
-      props.categoriesIds?.includes(props.trnsItems[trnId].categoryId),
-    )
-  }
+    // Category filter
+    ids => props.categoriesIds?.length
+      ? ids.filter(id => props.categoriesIds?.includes(props.trnsItems?.[id]?.categoryId))
+      : ids,
+  ]
 
-  // Sort
-  return trnsIds.sort((a, b) => props.trnsItems[b].date - props.trnsItems[a].date)
+  return filters
+    .reduce((ids, filter) => filter(ids), trnsIds)
+    .sort((a, b) => props.trnsItems?.[b]?.date - props.trnsItems?.[a]?.date)
 }

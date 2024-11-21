@@ -7,13 +7,13 @@ import { useDemo } from '~/components/demo/useDemo'
 import { useGuard } from '~/components/user/useGuard'
 import { useInitApp } from '~/components/app/useInitApp'
 import { usePointerClass } from '~/components/layout/usePointerClass'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const keepalive = ['Categories', 'Wallets', 'Dashboard']
 
 const categoriesStore = useCategoriesStore()
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 const user = useCurrentUser()
 const walletsStore = useWalletsStore()
 const { isDemo } = useDemo()
@@ -23,7 +23,7 @@ const { locale, t } = useI18n()
 const { pointerClasses } = usePointerClass()
 const { width } = useWindowSize()
 
-const isShow = computed(() => trnFormStore.ui.isShow)
+const isShow = computed(() => trnsFormStore.ui.isShow)
 
 useGuard()
 

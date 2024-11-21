@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const emit = defineEmits<{
   close: []
@@ -11,7 +11,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 </script>
 
 <template>
@@ -22,13 +22,13 @@ const trnFormStore = useTrnFormStore()
   >
     <UiTitle3
       class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
-      @click="trnFormStore.ui.catsRootModal = true"
+      @click="trnsFormStore.ui.catsRootModal = true"
     >
       {{ t("categories.favoriteTitle") }}
     </UiTitle3>
 
     <CategoriesSelector2
-      :activeItemId="trnFormStore.values.categoryId"
+      :activeItemId="trnsFormStore.values.categoryId"
       :hide="emit('close')"
       :ids="categoriesStore.favoriteCategoriesIds"
       @onClickParent="id => emit('onSelectParentCategory', id)"
@@ -40,13 +40,13 @@ const trnFormStore = useTrnFormStore()
   <div v-if="categoriesStore.recentCategoriesIds.length > 0">
     <UiTitle3
       class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
-      @click="trnFormStore.ui.catsRootModal = true"
+      @click="trnsFormStore.ui.catsRootModal = true"
     >
       {{ t("categories.lastUsedTitle") }}
     </UiTitle3>
 
     <CategoriesSelector2
-      :activeItemId="trnFormStore.values.categoryId"
+      :activeItemId="trnsFormStore.values.categoryId"
       :hide="emit('close')"
       :ids="categoriesStore.recentCategoriesIds"
       @onClickParent="id => emit('onSelectParentCategory', id)"

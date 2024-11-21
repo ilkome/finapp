@@ -3,13 +3,13 @@ import Swiper from 'swiper'
 import 'swiper/css'
 import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const emit = defineEmits<{
   (e: 'click', id: CategoryId): void
 }>()
 
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
 
 const sliderObj = ref()
@@ -50,7 +50,7 @@ onMounted(() => {
             </div>
             <div class="px-3 pb-1">
               <CategoriesList
-                :activeItemId="trnFormStore?.values?.categoryId"
+                :activeItemId="trnsFormStore?.values?.categoryId"
                 :ids="categoriesStore.recentCategoriesIds"
                 class="!gap-x-1"
                 @click="onClick"
@@ -67,7 +67,7 @@ onMounted(() => {
             </div>
             <div class="px-3 pb-1">
               <CategoriesList
-                :activeItemId="trnFormStore?.values?.categoryId"
+                :activeItemId="trnsFormStore?.values?.categoryId"
                 :ids="categoriesStore.categoriesRootIds"
                 class="!gap-x-1"
                 @click="onClick"
@@ -84,7 +84,7 @@ onMounted(() => {
             </div>
             <div class="px-3 pb-1">
               <CategoriesList
-                :activeItemId="trnFormStore?.values?.categoryId"
+                :activeItemId="trnsFormStore?.values?.categoryId"
                 :ids="categoriesStore.favoriteCategoriesIds"
                 class="!gap-x-1"
                 @click="onClick"

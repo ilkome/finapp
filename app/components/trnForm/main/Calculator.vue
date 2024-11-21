@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onLongPress } from '@vueuse/core'
 import type { CalculatorKey } from '~/components/trnForm/utils/calculate'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 
 const buttons = [
   ['7', '8', '9'],
@@ -12,7 +12,7 @@ const buttons = [
 ]
 
 function onClick(key: CalculatorKey) {
-  trnFormStore.onClickCalculator(key)
+  trnsFormStore.onClickCalculator(key)
 }
 
 const deleteBtnRef = ref<HTMLElement | null>(null)
@@ -20,7 +20,7 @@ const deleteBtnRef = ref<HTMLElement | null>(null)
 onLongPress(
   deleteBtnRef,
   () => {
-    trnFormStore.$patch((state) => {
+    trnsFormStore.$patch((state) => {
       state.values.amount = [0, 0, 0]
       state.values.amountRaw = ['', '', '']
     })
@@ -81,11 +81,11 @@ onLongPress(
       <!-- Description -->
       <TrnFormMainCalculatorButton
         class="relative"
-        @click="trnFormStore.openTrnFormModal('description')"
+        @click="trnsFormStore.openTrnFormModal('description')"
       >
         <i class="mdi mdi-comment-text-outline" />
         <div
-          v-if="!!trnFormStore.values.desc"
+          v-if="!!trnsFormStore.values.desc"
           class="bg-accent-1 absolute right-1 top-1 aspect-square w-2 rounded-full"
         />
       </TrnFormMainCalculatorButton>

@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { ChartType } from '~/components/stat/chart/types'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
   maxRange: Range
@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
-const trnsFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 
 const isShowDateSelector = defineModel('isShowDateSelector', {
   default: false,
@@ -71,7 +71,7 @@ function onClickChart(idx: number) {
 
     <div class="flex items-end justify-between gap-2">
       <UiTitle10 @click="isShowDateSelector = !isShowDateSelector">
-        <DateViewRange />
+        <StatDateViewRange />
       </UiTitle10>
 
       <div

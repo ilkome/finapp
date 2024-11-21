@@ -16,13 +16,13 @@ export function useStatDate({
 }) {
   const params = useStorage<StatDateParams>(`${key}-params`, {
     customDate: false,
-    intervalsBy: 'month',
+    intervalsBy: 'week',
     intervalsDuration: 1,
     intervalSelected: -1,
     isShowMaxRange: false,
     isSkipEmpty: false,
     rangeBy: 'month',
-    rangeDuration: 12,
+    rangeDuration: 3,
     rangeOffset: 0,
   })
 
@@ -34,19 +34,19 @@ export function useStatDate({
     if (queryParams.intervalsBy)
       params.value.intervalsBy = queryParams.intervalsBy
 
-    if (Number.isInteger(queryParams.intervalsDuration))
+    if (Number.isInteger(+queryParams.intervalsDuration))
       params.value.intervalsDuration = +queryParams.intervalsDuration
 
-    if (Number.isInteger(queryParams.intervalSelected))
+    if (Number.isInteger(+queryParams.intervalSelected))
       params.value.intervalSelected = +queryParams.intervalSelected
 
     if (queryParams.rangeBy)
       params.value.rangeBy = queryParams.rangeBy
 
-    if (Number.isInteger(queryParams.rangeDuration))
+    if (Number.isInteger(+queryParams.rangeDuration))
       params.value.rangeDuration = +queryParams.rangeDuration
 
-    if (Number.isInteger(queryParams.rangeOffset))
+    if (Number.isInteger(+queryParams.rangeOffset))
       params.value.rangeOffset = +queryParams.rangeOffset
 
     if (queryParams.isShowMaxRange)

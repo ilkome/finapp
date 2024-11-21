@@ -6,7 +6,7 @@ import type { StatDateProvider } from '~/components/date/types'
 import type { TotalCategory } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
@@ -21,7 +21,7 @@ const emit = defineEmits<{
 const statDate = inject('statDate') as StatDateProvider
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 
 const category = computed(() => {
@@ -48,8 +48,8 @@ onLongPress(
     if (!isTransactible)
       return
 
-    trnFormStore.trnFormCreate()
-    trnFormStore.$patch((state) => {
+    trnsFormStore.trnFormCreate()
+    trnsFormStore.$patch((state) => {
       state.values.amount = [0, 0, 0]
       state.values.amountRaw = ['', '', '']
       state.values.categoryId = props.item.id

@@ -134,9 +134,10 @@ export default {
     count: 'Count',
     day: {
       current: 'Today',
+      last: 'Yesterday',
+      next: 'Tomorrow',
       simple: 'Day',
       today: 'Today',
-      yesterday: 'Yesterday',
     },
     last: 'Last',
     month: {

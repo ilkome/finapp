@@ -2,7 +2,7 @@
 import type { MoneyTypeSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 import { type TransferType, TrnType } from '~/components/trns/types'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { getStyles } from '~/components/ui/getStyles'
 
@@ -14,7 +14,7 @@ const emit = defineEmits<{
   onOpen: [slide: number]
 }>()
 
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 const walletsStore = useWalletsStore()
 const { t } = useI18n()
 
@@ -38,19 +38,19 @@ const items = ref<
 })
 
 const incomeWalletId = computed<WalletId | undefined>(
-  () => trnFormStore.values.incomeWalletId ?? walletsStore.sortedIds[0],
+  () => trnsFormStore.values.incomeWalletId ?? walletsStore.sortedIds[0],
 )
 
 const expenseWalletId = computed<WalletId | undefined>(
-  () => trnFormStore.values.expenseWalletId ?? walletsStore.sortedIds[1],
+  () => trnsFormStore.values.expenseWalletId ?? walletsStore.sortedIds[1],
 )
 
 watch(
-  () => trnFormStore.values.trnType,
+  () => trnsFormStore.values.trnType,
   (trnType) => {
     if (trnType === TrnType.Transfer) {
-      incomeWalletId.value && (trnFormStore.values.incomeWalletId = incomeWalletId.value)
-      expenseWalletId.value && (trnFormStore.values.expenseWalletId = expenseWalletId.value)
+      incomeWalletId.value && (trnsFormStore.values.incomeWalletId = incomeWalletId.value)
+      expenseWalletId.value && (trnsFormStore.values.expenseWalletId = expenseWalletId.value)
     }
   },
   { immediate: true },
@@ -64,10 +64,10 @@ watch(
         v-for="(item, slug) in items"
         :key="slug"
         :class="[{
-          'border-accent-1': trnFormStore.values.transferType === item.transferType,
+          'border-accent-1': trnsFormStore.values.transferType === item.transferType,
         }, getStyles('item', ['rounded'])]"
         class="overflow-hidden border border-transparent"
-        @click="trnFormStore.onChangeTransferType(item.transferType)"
+        @click="trnsFormStore.onChangeTransferType(item.transferType)"
       >
         <div class="flex items-center gap-2 whitespace-nowrap">
           <div
@@ -82,7 +82,7 @@ watch(
             :walletId="incomeWalletId"
             :isLaptop
             @onOpen="n => emit('onOpen', n)"
-            @onSelected="id => trnFormStore.values.incomeWalletId = id"
+            @onSelected="id => trnsFormStore.values.incomeWalletId = id"
           />
 
           <TrnFormSelectorWallet
@@ -90,7 +90,7 @@ watch(
             :walletId="expenseWalletId"
             :isLaptop
             @onOpen="n => emit('onOpen', n)"
-            @onSelected="id => trnFormStore.values.expenseWalletId = id"
+            @onSelected="id => trnsFormStore.values.expenseWalletId = id"
           />
         </div>
 
@@ -98,12 +98,12 @@ watch(
         <div class="p-2 pt-1">
           <TrnFormMainInput
             :key="item.amountsIdx"
-            :amount="trnFormStore.values.amount[item.amountsIdx]"
-            :amountRaw="trnFormStore.values.amountRaw[item.amountsIdx]"
+            :amount="trnsFormStore.values.amount[item.amountsIdx]"
+            :amountRaw="trnsFormStore.values.amountRaw[item.amountsIdx]"
             :highlight="item.transferType === 1 ? 'expense' : 'income'"
-            :isShowSum="trnFormStore.getIsShowSum()"
+            :isShowSum="trnsFormStore.getIsShowSum()"
             isTransfer
-            @onChange="trnFormStore.onChangeAmount"
+            @onChange="trnsFormStore.onChangeAmount"
           />
         </div>
       </div>

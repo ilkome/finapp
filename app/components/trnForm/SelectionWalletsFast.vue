@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const { t } = useI18n()
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 </script>
 
 <template>
   <div>
     <UiTitle3
       class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
-      @click="trnFormStore.openTrnFormModal('wallets')"
+      @click="trnsFormStore.openTrnFormModal('wallets')"
     >
       {{ t("wallets.title") }}
     </UiTitle3>
@@ -22,12 +22,12 @@ const trnFormStore = useTrnFormStore()
       <WalletsItem
         v-for="(wallet, walletId) in walletsItemsLimited"
         :key="walletId"
-        :activeItemId="trnFormStore.values.walletId"
+        :activeItemId="trnsFormStore.values.walletId"
         :walletId
         :wallet
         :lineWidth="1"
         isShowIcon
-        @click="trnFormStore.values.walletId = walletId"
+        @click="trnsFormStore.values.walletId = walletId"
       />
     </WalletsList>
   </div>

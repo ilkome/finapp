@@ -19,7 +19,6 @@ import { seriesOptions } from '~/components/stat/chart/config2'
 import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatDate } from '~/components/date/useStatDate'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{

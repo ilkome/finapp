@@ -41,11 +41,11 @@ export function useDateFormats() {
           month: dayjs(+value).format('MMM'),
           week: dayjs(+value).format('DD.MM'),
           weekday: dayjs(+value).calendar(null, {
-            lastDay: `[${locale.value === 'ru' ? 'Вчера' : 'Yesterday'}], dddd`,
+            lastDay: `[${t('dates.day.last')}], dddd`,
             lastWeek: 'dddd',
-            nextDay: `[${locale.value === 'ru' ? 'Завтра' : 'Tomorrow'}], dddd`,
+            nextDay: `[${t('dates.day.next')}], dddd`,
             nextWeek: 'dddd',
-            sameDay: `[${locale.value === 'ru' ? 'Сегодня' : 'Today'}], dddd`,
+            sameDay: `[${t('dates.day.today')}], dddd`,
             sameElse: 'dddd',
           }),
           year: dayjs(+value).format('YYYY'),
@@ -56,7 +56,7 @@ export function useDateFormats() {
           return t('dates.day.today')
 
         if (dayjs().isSame(dayjs(+value).add(1, 'day'), 'day'))
-          return t('dates.day.yesterday')
+          return t('dates.day.last')
 
         if (dayjs().isSame(+value, 'year'))
           return dayjs(+value).format('DD.MM')

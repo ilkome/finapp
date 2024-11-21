@@ -1,7 +1,7 @@
 /* eslint-disable perfectionist/sort-objects */
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type MenuItem = {
@@ -12,7 +12,7 @@ export type MenuItem = {
 
 export default function useMenuData() {
   const { t } = useI18n()
-  const { trnFormCreate } = useTrnFormStore()
+  const { trnFormCreate } = useTrnsFormStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const route = useRoute()

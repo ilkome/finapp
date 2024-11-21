@@ -3,7 +3,7 @@ import Swiper, { Pagination } from 'swiper'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { getParentCategoryId } from '~/components/categories/getCategories'
 import 'swiper/css'
 
@@ -23,7 +23,7 @@ const isShow = defineModel('isShow', {
 })
 
 const categoriesStore = useCategoriesStore()
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 
 const sliderRef = ref<any>(null)
 const sliderObj = ref<any>(null)
@@ -45,15 +45,15 @@ onMounted(() => {
   }
 })
 
-const parentCategoryId = ref<CategoryId | null>(getParentCategoryId(categoriesStore.items, trnFormStore.values.categoryId) || trnFormStore.values.categoryId)
+const parentCategoryId = ref<CategoryId | null>(getParentCategoryId(categoriesStore.items, trnsFormStore.values.categoryId) || trnsFormStore.values.categoryId)
 
 function onSelectWallet(id: WalletId, close: () => void) {
-  trnFormStore.values.walletId = id
+  trnsFormStore.values.walletId = id
   close()
 }
 
 function onSelectCategory(id: CategoryId, close: () => void) {
-  trnFormStore.values.categoryId = id
+  trnsFormStore.values.categoryId = id
   close()
 }
 
@@ -114,7 +114,7 @@ async function onSelectParentCategory(id: CategoryId) {
               <div class="scrollerBlock h-full overflow-y-auto pb-3">
                 <UiTitle3
                   class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
-                  @click="trnFormStore.ui.catsRootModal = true"
+                  @click="trnsFormStore.ui.catsRootModal = true"
                 >
                   {{ $t("categories.title") }}
                 </UiTitle3>

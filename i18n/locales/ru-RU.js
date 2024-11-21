@@ -134,9 +134,10 @@ export default {
     count: 'Количество',
     day: {
       current: 'Сегодня',
+      last: 'Вчера',
+      next: 'Завтра',
       simple: 'День',
       today: 'Сегодня',
-      yesterday: 'Вчера',
     },
     last: 'Последние',
     month: {

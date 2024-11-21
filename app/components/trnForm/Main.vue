@@ -3,7 +3,7 @@ import { usePointer, useWindowSize } from '@vueuse/core'
 import type { WalletId } from '~/components/wallets/types'
 import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<{
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 const walletsStore = useWalletsStore()
 const { width } = useWindowSize()
 const { pointerType } = usePointer()
@@ -25,7 +25,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
 const walletId = computed(() => {
   const walletsIds = Object.keys(walletsStore.items ?? {})
   const walletId = walletsIds[0]
-  return trnFormStore.values.walletId ?? walletId
+  return trnsFormStore.values.walletId ?? walletId
 })
 
 const isShow = ref(false)
@@ -39,16 +39,16 @@ const trnsStore = useTrnsStore()
 const showModalConfirm = ref(false)
 
 function handleDeleteConfirm() {
-  trnsStore.deleteTrn(JSON.parse(JSON.stringify(trnFormStore.values.trnId)))
+  trnsStore.deleteTrn(JSON.parse(JSON.stringify(trnsFormStore.values.trnId)))
   showModalConfirm.value = false
 }
 
 const items = computed(() => ({
   duplicate: {
     click: () => {
-      if (trnFormStore.values.trnId) {
-        trnFormStore.trnFormDuplicate(trnFormStore.values.trnId)
-        trnFormStore.values.trnId = null
+      if (trnsFormStore.values.trnId) {
+        trnsFormStore.trnFormDuplicate(trnsFormStore.values.trnId)
+        trnsFormStore.values.trnId = null
       }
     },
     icon: 'mdi:content-copy',
@@ -76,7 +76,7 @@ const items2 = computed(() => ({
   yes: {
     click: () => {
       handleDeleteConfirm()
-      trnFormStore.onClose()
+      trnsFormStore.onClose()
     },
     icon: 'mdi:check',
     localeKey: 'base.yes',
@@ -95,19 +95,19 @@ const items2 = computed(() => ({
 
     <UiTitle3
       class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
-      @click="trnFormStore.values.trnId = null"
+      @click="trnsFormStore.values.trnId = null"
     >
-      {{ trnFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
+      {{ trnsFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
     </UiTitle3>
 
     <div
-      v-if="trnFormStore.values.trnId"
+      v-if="trnsFormStore.values.trnId"
       class="px-3 pb-2"
     >
       <TrnsItem
-        :trnItem="trnsStore.computeTrnItem(trnFormStore.values.trnId)"
+        :trnItem="trnsStore.computeTrnItem(trnsFormStore.values.trnId)"
         class="bg-item-4 group rounded-lg"
-        @click="trnFormStore.values.trnId = null"
+        @click="trnsFormStore.values.trnId = null"
       />
 
       <div
@@ -165,19 +165,19 @@ const items2 = computed(() => ({
     <TrnFormDate class="px-3 pb-0 " />
 
     <TrnFormMainInput
-      v-if="trnFormStore.values.trnType !== 2"
-      :amount="trnFormStore.values.amount[trnFormStore.activeAmountIdx]"
-      :amountRaw="trnFormStore.values.amountRaw[trnFormStore.activeAmountIdx]"
-      :highlight="trnFormStore.values.trnType === 0 ? 'income' : 'expense'"
-      :isShowSum="trnFormStore.getIsShowSum()"
+      v-if="trnsFormStore.values.trnType !== 2"
+      :amount="trnsFormStore.values.amount[trnsFormStore.activeAmountIdx]"
+      :amountRaw="trnsFormStore.values.amountRaw[trnsFormStore.activeAmountIdx]"
+      :highlight="trnsFormStore.values.trnType === 0 ? 'income' : 'expense'"
+      :isShowSum="trnsFormStore.getIsShowSum()"
       class="px-3 pb-2 "
-      @onChange="trnFormStore.onChangeAmount"
+      @onChange="trnsFormStore.onChangeAmount"
     />
 
     <div class="grid gap-3 px-3 pb-6 ">
       <!-- Selected -->
       <div
-        v-if="trnFormStore.values.trnType !== 2"
+        v-if="trnsFormStore.values.trnType !== 2"
         class="grid grid-cols-2 gap-2"
       >
         <TrnFormSelectorWallet
@@ -185,21 +185,21 @@ const items2 = computed(() => ({
           :walletId
           :isLaptop
           @onOpen="show(0)"
-          @onSelected="(id: WalletId) => trnFormStore.values.walletId = id"
+          @onSelected="(id: WalletId) => trnsFormStore.values.walletId = id"
         />
 
         <TrnFormSelectorCategory
-          v-if="trnFormStore.values.categoryId"
-          :categoryId="trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
-          :category="categoriesStore.items[trnFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
+          v-if="trnsFormStore.values.categoryId"
+          :categoryId="trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
+          :category="categoriesStore.items[trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
           :isLaptop
           @onOpen="show(2)"
-          @onSelected="(id: CategoryId) => trnFormStore.values.categoryId = id"
+          @onSelected="(id: CategoryId) => trnsFormStore.values.categoryId = id"
         />
       </div>
 
       <TrnFormMainAmountTransfer
-        v-if="trnFormStore.values.trnType === 2"
+        v-if="trnsFormStore.values.trnType === 2"
         isLaptop
         @onOpen="show(0)"
       />

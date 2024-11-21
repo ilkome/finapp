@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import Swiper, { Pagination } from 'swiper'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import 'swiper/css'
 
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 const isShow = computed(() =>
   walletsStore.hasItems
   && categoriesStore.hasItems
-  && trnFormStore.ui.isShow,
+  && trnsFormStore.ui.isShow,
 )
 
 /**
@@ -63,7 +63,7 @@ onMounted(init)
   <BaseBottomSheet2
     :isShow="isShow"
     drugClassesCustom="max-h-[100dvh] -md:bottom-1/2 -md:-translate-x-1/2 -md:translate-y-1/2"
-    @closed="trnFormStore.onClose()"
+    @closed="trnsFormStore.onClose()"
   >
     <template #handler>
       <BaseBottomSheetHandler />
@@ -99,7 +99,7 @@ onMounted(init)
               <div class="pb-4">
                 <TrnFormSelectionWalletsFast />
                 <TrnFormSelectionCategoriesFast
-                  @onSelectCategory="id => trnFormStore.values.categoryId = id"
+                  @onSelectCategory="id => trnsFormStore.values.categoryId = id"
                 />
               </div>
             </div>
@@ -112,5 +112,5 @@ onMounted(init)
   </BaseBottomSheet2>
 
   <!-- Modals -->
-  <LazyTrnFormModalDescription v-if="trnFormStore.modal.description" />
+  <LazyTrnFormModalDescription v-if="trnsFormStore.modal.description" />
 </template>

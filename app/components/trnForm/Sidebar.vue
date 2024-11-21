@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import Swiper, { Pagination } from 'swiper'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import 'swiper/css'
 
-const trnFormStore = useTrnFormStore()
-const isShow = computed(() => trnFormStore.ui.isShow)
+const trnsFormStore = useTrnsFormStore()
+const isShow = computed(() => trnsFormStore.ui.isShow)
 
 /**
  * Slider
@@ -48,7 +48,7 @@ watch(isShow, (v) => {
       class="trnForm bg-foreground-1 border-item-5 absolute left-0 top-0 z-50 h-full w-96 overflow-hidden border-r-2 shadow-2xl"
     >
       <div class="absolute right-2 top-2">
-        <BaseBottomSheetClose @onClick="trnFormStore.onClose()" />
+        <BaseBottomSheetClose @onClick="trnsFormStore.onClose()" />
       </div>
 
       <div ref="sliderRef2" class="swiper-container h-full">
@@ -75,7 +75,7 @@ watch(isShow, (v) => {
               <div class="py-4">
                 <TrnFormSelectionWalletsFast class="pb-6" />
                 <TrnFormSelectionCategoriesFast
-                  @onSelectCategory="id => trnFormStore.values.categoryId = id"
+                  @onSelectCategory="id => trnsFormStore.values.categoryId = id"
                 />
               </div>
             </div>
@@ -88,7 +88,7 @@ watch(isShow, (v) => {
   </Transition>
 
   <!-- Modals -->
-  <LazyTrnFormModalDescription v-if="trnFormStore.modal.description" />
+  <LazyTrnFormModalDescription v-if="trnsFormStore.modal.description" />
 </template>
 
 <style scoped>

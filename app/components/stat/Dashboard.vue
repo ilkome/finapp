@@ -1,52 +1,57 @@
 <script setup lang="ts">
+import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
-import type { CategoryId } from '~/components/categories/types'
-import type { FilterProvider } from '~/components/filter/types'
 import type { StatTabs } from '~/components/app/types'
 import type { WalletId } from '~/components/wallets/types'
-import useAmount from '~/components/amount/useAmount'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useStatConfig } from '~/components/stat/useStatConfig'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useFilter } from '~/components/filter/useFilter'
+import { useStatDate } from '~/components/date/useStatDate'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
-const props = defineProps<{
-  categoriesIds?: CategoryId[]
-  isShowFilter?: boolean
-  isShowTotals?: boolean
-  storageKey: string
-  walletsIds?: WalletId[]
-}>()
-
-const filter = inject('filter') as FilterProvider
-
+const filter = useFilter()
+const route = useRoute()
 const trnsStore = useTrnsStore()
-const trnsFormStore = useTrnFormStore()
 const walletsStore = useWalletsStore()
-const statConfig = useStatConfig({ storageKey: props.storageKey })
-provide('statConfig', statConfig)
+const trnsFormStore = useTrnsFormStore()
+provide('filter', filter)
 
-const { getTotalOfTrnsIds } = useAmount()
-const activeTab = useStorage<StatTabs>(`${props.storageKey}-mini-tab`, 'netIncome')
+const activeTab = useStorage<StatTabs>(`dashboard-mini-tab`, 'netIncome')
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: filter.catsIds.value.length > 0 ? filter.catsIds.value : props.categoriesIds,
-  walletsIds: filter.walletsIds.value.length > 0 ? filter.walletsIds.value : props.walletsIds,
+  categoriesIds: filter?.catsIds?.value,
+  walletsIds: filter?.walletsIds?.value,
+}, {
+  includesChildCategories: true,
+}))
+const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
+
+const statConfig = useStatConfig({ storageKey: 'dashboard' })
+provide('statConfig', statConfig)
+
+const statDate = useStatDate({
+  key: `finapp-dashboard-`,
+  maxRange,
+  queryParams: route.query,
+})
+provide('statDate', statDate)
+
+const storageKey = computed(() => `dashboard${activeTab.value}`)
+
+const expenseTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  trnsIds: trnsIds.value,
+  trnsTypes: [0, 2],
 }, {
   includesChildCategories: true,
 }))
 
-const expenseTrnsIds = computed(() => trnsIds.value
-  .filter(trnId => trnsStore.items[trnId].type === 0 || trnsStore.items[trnId].type === 2)
-  .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date),
-)
-
-const incomeTrnsIds = computed(() => trnsIds.value
-  .filter(trnId => trnsStore.items[trnId].type === 1 || trnsStore.items[trnId].type === 2)
-  .sort((a, b) => trnsStore.items[b].date - trnsStore.items[a].date),
-)
-
-const totals = computed(() => getTotalOfTrnsIds(trnsIds.value))
+const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  trnsIds: trnsIds.value,
+  trnsTypes: [1, 2],
+}, {
+  includesChildCategories: true,
+}))
 
 const sortedFilterWalletsIds = computed(() => {
   const filteredIds = filter.walletsIds.value
@@ -61,11 +66,11 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
+  <pre>{{ dayjs('2024-11-03').format() }}</pre>
   <div class="bg-foreground-3 sticky top-0 z-10 grid max-w-6xl gap-2 pb-2 lg:px-4 xl:py-2">
     <div class="grid gap-2 px-2 pt-2">
       <div class="flex items-center gap-1 overflow-x-auto ">
         <FilterSelector
-          v-if="props.isShowFilter"
           isShowCategories
           isShowWallets
         />
@@ -101,14 +106,25 @@ function onClickWallet(walletId: WalletId) {
   </div>
 
   <!-- NetIncome -->
-  <div class="max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2">
-    <StatItem
+  <div
+    v-if="activeTab === 'netIncome'"
+    class="max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
+  >
+    <StatItemForCategory
+
+      :storageKey="storageKey + activeTab"
+      :trnsIds="trnsIds"
+      hasChildren
+      type="sum"
+    />
+
+    <!-- <StatItem
       v-if="activeTab === 'netIncome'"
-      :storageKey="props.storageKey + activeTab"
+      :storageKey="storageKey + activeTab"
       :trnsIds="trnsIds"
       class=""
       type="sum"
-    />
+    /> -->
   </div>
 
   <!-- Summary -->
@@ -117,16 +133,28 @@ function onClickWallet(walletId: WalletId) {
     class="grid max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
   >
     <!-- Expense -->
-    <StatItem
-      :storageKey="props.storageKey + activeTab"
+    <!-- <StatItem
+      :storageKey="storageKey + activeTab"
       :trnsIds="expenseTrnsIds"
+      type="expense"
+    /> -->
+    <StatItemForCategory
+      :storageKey="storageKey + activeTab"
+      :trnsIds="expenseTrnsIds"
+      hasChildren
       type="expense"
     />
 
     <!-- Income -->
-    <StatItem
-      :storageKey="props.storageKey + activeTab"
+    <!-- <StatItem
+      :storageKey="storageKey + activeTab"
       :trnsIds="incomeTrnsIds"
+      type="income"
+    /> -->
+    <StatItemForCategory
+      :storageKey="storageKey + activeTab"
+      :trnsIds="incomeTrnsIds"
+      hasChildren
       type="income"
     />
   </div>

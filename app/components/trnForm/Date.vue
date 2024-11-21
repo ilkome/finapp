@@ -1,33 +1,33 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { useDateFormats } from '~/components/date/useDateFormats'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 const { formatDate } = useDateFormats()
 
 const formattedDate = computed(() => {
-  const date = formatDate(trnFormStore.values.date, 'full')
+  const date = formatDate(trnsFormStore.values.date, 'full')
   return `${date.day} ${date.month} <div class="text-2xs font-regular leading-none">${date.weekday}</div>`
 })
 
 const isToday = computed(() => {
-  return dayjs().isSame(trnFormStore.values.date, 'day')
+  return dayjs().isSame(trnsFormStore.values.date, 'day')
 })
 
 function changeDate(way: 'prev' | 'next' | 'today') {
   let newDate: number = dayjs().valueOf()
 
   if (way === 'prev')
-    newDate = dayjs(trnFormStore.values.date).subtract(1, 'day').valueOf()
+    newDate = dayjs(trnsFormStore.values.date).subtract(1, 'day').valueOf()
 
   if (way === 'next' && !isToday.value)
-    newDate = dayjs(trnFormStore.values.date).add(1, 'day').valueOf()
+    newDate = dayjs(trnsFormStore.values.date).add(1, 'day').valueOf()
 
   if (way === 'today')
     newDate = dayjs().valueOf()
 
-  trnFormStore.values.date = newDate
+  trnsFormStore.values.date = newDate
 }
 </script>
 

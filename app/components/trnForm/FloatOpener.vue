@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
-const { trnFormCreate } = useTrnFormStore()
+const { trnFormCreate } = useTrnsFormStore()
 </script>
 
 <template>

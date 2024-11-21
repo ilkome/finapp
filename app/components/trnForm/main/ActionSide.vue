@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const trnsStore = useTrnsStore()
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 
 // TODO: check for 0
-const isMath = computed(() => trnFormStore.getIsShowSum())
-const isSubmittable = computed(() => trnFormStore.values.amount[trnFormStore.activeAmountIdx] > 0)
+const isMath = computed(() => trnsFormStore.getIsShowSum())
+const isSubmittable = computed(() => trnsFormStore.values.amount[trnsFormStore.activeAmountIdx] > 0)
 
 async function onClickSubmit() {
   if (isMath.value) {
-    trnFormStore.onChangeCountSum()
+    trnsFormStore.onChangeCountSum()
     return
   }
 
-  const trnFormData = await trnFormStore.onSubmit()
+  const trnFormData = await trnsFormStore.onSubmit()
   if (!trnFormData)
     return
 
@@ -23,7 +23,7 @@ async function onClickSubmit() {
     id: trnFormData.id,
     values: trnFormData.values,
   })
-  trnFormStore.onClear()
+  trnsFormStore.onClear()
 }
 </script>
 

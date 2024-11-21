@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import type { IntervalsInRangeProps, Range } from '~/components/date/types'
 
 export function calculateIntervalInRange(params: IntervalsInRangeProps): Range {
-  const baseDate = dayjs(params.range.end).subtract(params.rangeOffset ?? 0 * params.intervalsDuration, params.intervalsBy)
+  const baseDate = dayjs(params.range.end).subtract((params.rangeOffset ?? 0) * params.intervalsDuration, params.intervalsBy)
 
   return {
     end: baseDate

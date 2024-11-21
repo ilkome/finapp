@@ -27,9 +27,9 @@ type Values = {
   trnId: TrnId
 })
 
-export const useTrnFormStore = defineStore('trnForm', () => {
+export const useTrnsFormStore = defineStore('trnForm', () => {
   const { $toast } = useNuxtApp()
-  const trnFormStore = useTrnFormStore()
+  const trnsFormStore = useTrnsFormStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
@@ -220,7 +220,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
       trnId,
       walletsIds: walletsStore.sortedIds,
     })
-    trnFormStore.ui.isShow = true
+    trnsFormStore.ui.isShow = true
   }
 
   function trnFormCreate(props?: { categoryId?: CategoryId, walletId?: WalletId }) {
@@ -232,11 +232,11 @@ export const useTrnFormStore = defineStore('trnForm', () => {
       walletId: props?.walletId ?? walletsStore.sortedIds[0],
       walletsIds: walletsStore.sortedIds,
     })
-    trnFormStore.ui.isShow = true
+    trnsFormStore.ui.isShow = true
 
     if (props) {
       if (props.categoryId)
-        trnFormStore.values.categoryId = props.categoryId
+        trnsFormStore.values.categoryId = props.categoryId
     }
   }
 
@@ -257,7 +257,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
       })
     }
 
-    trnFormStore.ui.isShow = true
+    trnsFormStore.ui.isShow = true
   }
 
   return {

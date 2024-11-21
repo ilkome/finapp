@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import type { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 const walletsStore = useWalletsStore()
 
 function setAmountType(amountType: TrnType) {
-  trnFormStore.onChangeTrnType(amountType)
+  trnsFormStore.onChangeTrnType(amountType)
 }
 
 function isItActive(amountType: TrnType) {
-  return trnFormStore.values.trnType === amountType
+  return trnsFormStore.values.trnType === amountType
 }
 </script>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onLongPress } from '@vueuse/core'
 import dayjs from 'dayjs'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory, ViewOptions } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
@@ -9,7 +9,10 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import type { Range, StatDateProvider } from '~/components/date/types'
 
 const props = defineProps<{
-  biggestCatNumber: number
+  biggestCatNumber: {
+    expense: number
+    income: number
+  }
   insideClass?: string
   insideStyle?: string
   isActive?: boolean
@@ -26,7 +29,7 @@ const emit = defineEmits<{
 }>()
 
 const statDate = inject('statDate') as StatDateProvider
-const trnFormStore = useTrnFormStore()
+const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
@@ -34,12 +37,15 @@ const category = computed(() => categoriesStore.items[props.item.id])
 const parentCategory = computed(() => categoriesStore.items[category.value?.parentId])
 
 function getBarStyle() {
-  if (props.item.value === 0)
+  if (!props.item.value || props.item.value === 0)
     return
+
+  const isIncome = props.item.value > 0
+  const reference = isIncome ? props.biggestCatNumber.income : props.biggestCatNumber.expense
 
   return {
     backgroundColor: category.value?.color,
-    width: `${(Math.abs(props.item.value) / Math.abs(props.biggestCatNumber ?? 0)) * 100}%`,
+    width: `${(Math.abs(props.item.value) / Math.abs(reference)) * 100}%`,
   }
 }
 
@@ -52,8 +58,8 @@ onLongPress(
     if (!isTransactible)
       return
 
-    trnFormStore.trnFormCreate()
-    trnFormStore.$patch((state) => {
+    trnsFormStore.trnFormCreate()
+    trnsFormStore.$patch((state) => {
       state.values.amount = [0, 0, 0]
       state.values.amountRaw = ['', '', '']
       state.values.categoryId = props.item.id

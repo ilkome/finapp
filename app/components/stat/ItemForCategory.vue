@@ -18,7 +18,6 @@ import { markArea } from '~/components/stat/chart/utils'
 import { seriesOptions } from '~/components/stat/chart/config2'
 import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
@@ -312,7 +311,15 @@ const catsRounded = computed(() => {
   return getCats(selectedTrnsIdsForTrnsList.value ?? [], viewOptions.value.catsRound.isGrouped, cats)
 })
 
-const biggestCatNumber = computed(() => cats.value.at(0)?.value ?? 0)
+const biggestCatNumber = computed(() => {
+  const income = cats.value.filter(c => c.value > 0).at(0)?.value ?? 0
+  const expense = cats.value.filter(c => c.value < 0).at(0)?.value ?? 0
+
+  return {
+    expense,
+    income,
+  }
+})
 
 const openedCats = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedCats`, [])
 const openedTrns = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedTrns`, [])
@@ -324,22 +331,8 @@ function onClickCategory(categoryId: CategoryId) {
     Object.entries(statDate.params.value).map(([key, value]) => [key, String(value)]),
   ).toString()
 
-  useRouter().push(`/stat/category/${categoryId}?${queryParams}`)
-}
-
-function setMaxRangeHideLast(close?: () => void) {
-  statDate.setRangeByPeriod({
-    intervalsBy: 'year',
-    intervalsDuration: 1,
-    isShowMaxRange: true,
-    isSkipEmpty: true,
-    rangeBy: 'day',
-    rangeDuration: dayjs(maxRange.value.end).diff(maxRange.value.start, 'day'),
-  })
-
-  if (close) {
-    close()
-  }
+  // useRouter().push(`/stat/category/${categoryId}?${queryParams}`)
+  useRouter().push(`/dashboard?${queryParams}`)
 }
 
 const quickModalTrnsIds = computed(() => {

@@ -79,8 +79,8 @@ export type TrnsGetterProps = {
     from: number
     until: number
   }
-  trnType?: TrnType
   trnsIds?: TrnId[]
+  trnType?: TrnType
   untilDate?: number
   walletsIds?: WalletId[]
 }
@@ -91,9 +91,10 @@ export type TrnsGetterProps2 = {
     from: number
     until: number
   }
-  trnType?: TrnType
   trnsIds?: TrnId[]
   trnsItems?: Trns
+  trnsTypes?: TrnType[]
+  trnType?: TrnType
   untilDate?: number
   walletsIds?: WalletId[]
 }
