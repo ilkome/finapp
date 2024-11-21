@@ -53,19 +53,38 @@ export function useGetDateRange(t: (key: string) => string) {
         return ''
 
       case 'month':
+        if (start.isSame(today, 'year')) {
+          if (start.isSame(today, 'month') || duration === 1)
+            return type === 'start' ? start.format('MMMM') : ''
+
+          return type === 'start' ? start.format('MMMM') : ` - ${end.format('MMMM')}`
+        }
+
         if (start.isSame(end, 'year')) {
           if (start.isSame(end, 'month'))
             return type === 'start' ? start.format('MMMM YYYY') : ''
           return type === 'start' ? start.format('MMMM') : ` - ${end.format('MMMM YYYY')}`
         }
+
         return type === 'start' ? start.format('MMMM YYYY') : ` - ${end.format('MMMM YYYY')}`
 
       case 'week':
+        if (start.isSame(today, 'year')) {
+          if (start.isSame(today, 'month'))
+            return type === 'start' ? start.format('D') : ` - ${end.format('D MMMM')}`
+
+          if (start.isSame(end, 'month'))
+            return type === 'start' ? start.format('D') : ` - ${end.format('D MMMM')}`
+
+          return type === 'start' ? start.format('D MMMM') : ` - ${end.format('D MMMM')}`
+        }
+
         if (start.isSame(end, 'year')) {
           if (start.isSame(end, 'month'))
             return type === 'start' ? start.format('D') : ` - ${end.format('D MMMM YYYY')}`
           return type === 'start' ? start.format('D MMMM') : ` - ${end.format('D MMMM YYYY')}`
         }
+
         return type === 'start' ? start.format('D MMMM YYYY') : ` - ${end.format('D MMMM YYYY')}`
 
       case 'day':
@@ -74,11 +93,16 @@ export function useGetDateRange(t: (key: string) => string) {
             return type === 'start' ? start.format('D') : `-${end.format('D MMMM')}`
           return type === 'start' ? start.format('D MMMM') : ` - ${end.format('D MMMM')}`
         }
+
         if (start.isSame(end, 'year')) {
+          if (duration === 1)
+            return type === 'start' ? start.format('D MMMM') : ''
+
           if (start.isSame(end, 'month'))
             return type === 'start' ? start.format('D') : `-${end.format('D MMMM YYYY')}`
           return type === 'start' ? start.format('D MMMM') : ` - ${end.format('D MMMM YYYY')}`
         }
+
         return type === 'start' ? start.format('D MMMM YYYY') : ` - ${end.format('D MMMM YYYY')}`
     }
   }

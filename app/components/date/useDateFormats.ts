@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import type { PeriodNameWithAll } from '~/components/filter/types'
 
 export function useDateFormats() {
-  const { locale, t } = useI18n()
+  const { t } = useI18n()
 
   function getFormatForChart(periodName: PeriodNameWithAll) {
     switch (periodName) {
