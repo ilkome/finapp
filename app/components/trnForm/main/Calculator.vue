@@ -15,12 +15,6 @@ function onClick(key: CalculatorKey) {
   trnFormStore.onClickCalculator(key)
 }
 
-function getClassName(btnIdx: number, rowIdx: number, row: string[]) {
-  return {
-    'bg-opacity-60': btnIdx === 0 || (rowIdx === row.length - 1 && (btnIdx === 1 || btnIdx === 3)),
-  }
-}
-
 const deleteBtnRef = ref<HTMLElement | null>(null)
 
 onLongPress(
@@ -62,9 +56,8 @@ onLongPress(
         class="flex justify-center gap-1"
       >
         <TrnFormMainCalculatorButton
-          v-for="(btn, btnIdx) in row"
+          v-for="btn in row"
           :key="btn"
-          :class="getClassName(btnIdx, rowIdx, row)"
           @click="() => onClick(btn as CalculatorKey)"
         >
           {{ btn }}

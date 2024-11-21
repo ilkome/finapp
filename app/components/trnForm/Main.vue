@@ -204,10 +204,7 @@ const items2 = computed(() => ({
         @onOpen="show(0)"
       />
 
-      <TrnFormMainCalculator
-        :amountRaw="trnFormStore.values.amountRaw[trnFormStore.activeAmountIdx] ?? ''"
-      />
-
+      <TrnFormMainCalculator />
       <TrnFormMainTypes />
     </div>
   </div>
