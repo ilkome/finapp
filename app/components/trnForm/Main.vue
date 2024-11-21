@@ -205,8 +205,7 @@ const items2 = computed(() => ({
       />
 
       <TrnFormMainCalculator
-        :amountRaw="trnFormStore.values.amountRaw[trnFormStore.activeAmountIdx]"
-        @onChange="trnFormStore.onChangeAmount"
+        :amountRaw="trnFormStore.values.amountRaw[trnFormStore.activeAmountIdx] ?? ''"
       />
 
       <TrnFormMainTypes />

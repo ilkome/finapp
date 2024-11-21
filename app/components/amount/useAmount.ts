@@ -1,6 +1,6 @@
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { TrnId } from '~/components/trns/types'
-import { formatAmount } from '~/components/amount/formatAmount'
+import { formatAmount } from '~/components/amount/utils'
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'

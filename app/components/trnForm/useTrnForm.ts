@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import type { ToastOptions } from 'vue3-toastify'
 import { defineStore } from 'pinia'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CategoryId } from '~/components/categories/types'
@@ -7,14 +6,26 @@ import type { TransferType, TrnId, TrnItem } from '~/components/trns/types'
 import type { TrnFormUi, TrnFormValues } from '~/components/trnForm/types'
 import type { WalletId } from '~/components/wallets/types'
 import { TrnType } from '~/components/trns/types'
-import { errorEmo, random, successEmo } from '~/assets/js/emo'
-import { formatInput, getSum } from '~/components/trnForm/utils/calculate'
+import { errorEmo, random } from '~/assets/js/emo'
+import { type CalculatorKey, createExpressionString, evaluateExpression, formatInput } from '~/components/trnForm/utils/calculate'
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
 import { generateId } from '~~/utils/generateId'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { validate } from '~/components/trnForm/utils/validate'
+
+type Values = {
+  categoriesIds: CategoryId[]
+  trn: TrnItem
+  walletId?: WalletId
+  walletsIds: WalletId[]
+} & ({
+  action: 'create'
+} | {
+  action: 'edit' | 'duplicate'
+  trnId: TrnId
+})
 
 export const useTrnFormStore = defineStore('trnForm', () => {
   const { $toast } = useNuxtApp()
@@ -64,27 +75,22 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     modal.value[name] = true
   }
 
-  /**
-   * Active amount idx
-   */
   const activeAmountIdx = computed(() =>
     values.trnType !== TrnType.Transfer
       ? 0
       : 1 + values.transferType,
   )
 
-  /**
-   * Change amount
-   */
   function onChangeAmount(amountRaw: string) {
-    values.amount[activeAmountIdx.value] = getSum(amountRaw)
+    values.amount[activeAmountIdx.value] = evaluateExpression(amountRaw)
     values.amountRaw[activeAmountIdx.value] = formatInput(amountRaw)
   }
 
-  /**
-   * Get is show sum
-   */
-  // TODO: refactor isTransferAuto
+  function onClickCalculator(key: CalculatorKey) {
+    const value = createExpressionString(key, values.amountRaw[activeAmountIdx.value] ?? '')
+    onChangeAmount(value)
+  }
+
   function getIsShowSum() {
     if (values.trnType === 2) {
       const expense = values.amount[1] !== 0
@@ -97,30 +103,15 @@ export const useTrnFormStore = defineStore('trnForm', () => {
 
     return (values.amount[0] !== 0 || values.amountRaw[0] !== '')
       && formatInput(values.amount[0]) !== values.amountRaw[0]
-
-    // return values.amount[values.trnType] !== 0
-    //   && formatInput(values.amount[values.trnType]) !== values.amountRaw[values.trnType]
   }
-
-  /**
-   * Change trn type
-   */
   function onChangeTrnType(trnType: TrnType) {
     values.trnType = trnType
   }
 
-  /**
-   * Change transfer type
-   */
-
-  // TODO: not working when use tab keyboard
   function onChangeTransferType(transferType: TransferType) {
     values.transferType = transferType
   }
 
-  /**
-   * Clear form
-   */
   function onClear() {
     values.amount = [0, 0, 0]
     values.amountRaw = ['', '', '']
@@ -134,21 +125,6 @@ export const useTrnFormStore = defineStore('trnForm', () => {
 
     ui.value.isShow = false
   }
-
-  /**
-   * Set Values
-   */
-  type Values = {
-    categoriesIds: CategoryId[]
-    trn: TrnItem
-    walletId?: WalletId
-    walletsIds: WalletId[]
-  } & ({
-    action: 'create'
-  } | {
-    action: 'edit' | 'duplicate'
-    trnId: TrnId
-  })
 
   function setValues(props: Values) {
     values.trnId = null
@@ -185,9 +161,6 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     }
   }
 
-  /**
-   * Submit
-   */
   async function onSubmit() {
     const data = values.trnType !== 2
       ? formatTransaction(values)
@@ -219,9 +192,6 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     }
   }
 
-  /**
-   * onChangeCountSum
-   */
   function onChangeCountSum() {
     // Transfer
     if (values.trnType === 2) {
@@ -300,6 +270,7 @@ export const useTrnFormStore = defineStore('trnForm', () => {
     onChangeTransferType,
     onChangeTrnType,
     onClear,
+    onClickCalculator,
     onClose,
     onSubmit,
     openTrnFormModal,

@@ -1,177 +1,125 @@
-import { formatByCurrency } from '~/components/currencies/utils'
+import { formatByCurrency } from '~/components/amount/utils'
 
-// TODO: params
-const fixed = 2
-const separator = ' '
-const maxIntegerLengthAllowed = 999
+const config = {
+  decimalPlaces: 2,
+  maxIntegerLength: 999,
+  separator: ' ',
+} as const
 
-/**
- * Create array from expression
- *
- * @param {string} value
- * @return {string[]}
- */
-function _separateExpression(value: string): string[] {
-  return value
-    .split(/([/*\-+])/)
-    .filter(i => i)
+type CalculatorOperator = '+' | '-' | '*' | '/'
+type CalculatorAction = '=' | 'c' | '.' | CalculatorOperator
+type CalculatorInput = string | number
+
+export type CalculatorKey =
+  | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+  | '+' | '-' | '*' | '/'
+  | '.' | 'c'
+
+function splitExpression(value: string): string[] {
+  return value.split(/([/*\-+])/).filter(Boolean)
 }
 
-/**
- * Remove spaces in string
- *
- * @param {string} value
- * @return {string}
- */
-function _removeSpaces(value: string): string {
+function sanitizeInput(value: string): string {
   return String(value).replace(/[ ,]/g, '')
 }
 
-function _checkIsLastSymbolAction(lastSymbol: string): boolean {
-  return Number.isNaN(Number.parseInt(lastSymbol))
+function isOperator(value: string): boolean {
+  return /[/*\-+]/.test(value)
 }
 
-/**
- * Make calculation
- *
- * @param {string} value
- * @return {(string | undefined)}
- */
-export function getSum(value: string): number {
+function isValidAction(value: string): value is CalculatorAction {
+  return ['*', '+', '.', '/', '=', '-', 'c'].includes(value)
+}
+
+function getLastNumber(expression: string): string {
+  return expression.split(/[/*\-+]/).at(-1) || ''
+}
+
+export function evaluateExpression(value: string): number {
   try {
-    const clearedExpression = _removeSpaces(String(value || ''))
-    const lastSymbol = clearedExpression.slice(-1)
-    const isLastSymbolAction = _checkIsLastSymbolAction(lastSymbol)
-    const formattedExpression = (
-      isLastSymbolAction
-        ? clearedExpression.slice(0, -1)
-        : clearedExpression
-    ) || '0'
+    const sanitized = sanitizeInput(value)
+    const lastChar = sanitized.at(-1) || ''
+    const expression = isOperator(lastChar)
+      ? sanitized.slice(0, -1)
+      : sanitized || '0'
 
+    // Using Function constructor is necessary for dynamic evaluation
+    // but we ensure input is sanitized
     // eslint-disable-next-line no-new-func
-    const math = Function(`"";return (${formattedExpression})`)()
+    const result = Function(`"use strict";return (${expression})`)()
 
-    if (math <= Number.MAX_SAFE_INTEGER)
-      return Math.abs(math)
-
-    return 0
+    return result <= Number.MAX_SAFE_INTEGER ? Math.abs(result) : 0
   }
-  catch (error) {
-    console.log(error)
-    return Number(value)
+  catch {
+    return Number.isInteger(value) ? Number(value) : 0
   }
 }
 
-/**
- * Create expression string
- *
- * @param {string} expression
- * @param {string} value
- * @return {string} expression
- */
-export function createExpressionString(value: string, expression: string): string {
-  const inputIsAction = Number.isNaN(Number.parseInt(value))
+function handleDecimalPoint(expression: string, lastChar: string): string {
+  const currentNumber = getLastNumber(expression)
 
-  // Last symbol of expression
-  const clearedExpression = _removeSpaces(expression)
-  const lastSymbol = clearedExpression.slice(-1)
-  const isLastSymbolAction = _checkIsLastSymbolAction(lastSymbol)
-  const isSumAction = value === '='
-  const isDeleteAction = value.toLocaleLowerCase() === 'c'
-  const isDotAction = value === '.'
+  if (currentNumber.includes('.') || lastChar === '.')
+    return expression
 
-  // Delete
-  if (clearedExpression !== '0' && isDeleteAction) {
-    const deleteString = clearedExpression.slice(0, -1)
-    if (deleteString)
-      return deleteString
-    return '0'
-  }
+  if (isOperator(lastChar))
+    return `${expression}0.`
 
-  // Starts from 0
-  if (clearedExpression === '0') {
-    if (value === '0')
-      return expression
-    if (!inputIsAction)
-      return value
-  }
-
-  // Change math symbol
-  if (inputIsAction && isLastSymbolAction && !isDotAction && !isSumAction && !isDeleteAction)
-    return clearedExpression.slice(0, -1) + value
-
-  // Calculate
-  if (inputIsAction && isSumAction) {
-    const result = getSum(clearedExpression)
-    return formatInput(result)
-  }
-
-  // Handle dot value
-  if (inputIsAction && isDotAction) {
-    if (Array.isArray(clearedExpression.split(/[/*\-+]/)) && (clearedExpression.split(/[/*\-+]/).slice(-1)[0].includes('.') || isLastSymbolAction)) {
-      if (isLastSymbolAction && lastSymbol !== '.')
-        return `${clearedExpression}0.`
-
-      return expression
-    }
-    else {
-      return clearedExpression + value
-    }
-  }
-
-  // Add math symbol
-  if (inputIsAction)
-    return clearedExpression + value
-
-  // Handle number
-  const separatedExpression = _separateExpression(clearedExpression)
-
-  if (separatedExpression) {
-    const lastNumber = separatedExpression.slice(-1)[0] || '0'
-    const lastNumberSplit = lastNumber.split(/\./)
-    const isInteger = lastNumberSplit.length === 1
-
-    // Check if math will success
-    if (lastSymbol !== '.') {
-      const result = getSum(clearedExpression + value)
-      if (result === 0)
-        return clearedExpression
-    }
-
-    // Limit integer
-    if (isInteger && lastNumber.length < maxIntegerLengthAllowed)
-      return clearedExpression + value
-
-    // Limit float
-    if (!isInteger && lastNumberSplit[1].length < fixed)
-      return clearedExpression + value
-  }
-
-  return expression
+  return `${expression}.`
 }
 
-/**
- * Format input
- *
- * @param {string} value
- * @return {string} expression string
- */
-export function formatInput(value: string | number): string {
-  return _separateExpression(String(value))
-    .map((item) => {
-      const isAction = item.match(/[/*\-+]/g)
+export function createExpressionString(input: string, expression: string): string {
+  const sanitizedExpression = sanitizeInput(expression)
+  const lastChar = sanitizedExpression.at(-1) || ''
+  const isActionInput = isValidAction(input)
 
-      if (isAction)
-        return ` ${item} `
+  // Special actions handler
+  if (input === 'c')
+    return sanitizedExpression === '0' ? '0' : sanitizedExpression.slice(0, -1) || '0'
+  if (input === '=')
+    return formatInput(evaluateExpression(sanitizedExpression))
+  if (input === '.')
+    return handleDecimalPoint(sanitizedExpression, lastChar)
 
-      const clearedValue = _removeSpaces(String(item))
-      const splitFloatValue = String(clearedValue).split(/\./)
-      const isInteger = splitFloatValue.length === 1
+  // Zero handling
+  if (sanitizedExpression === '0') {
+    return input === '0' ? expression : (isActionInput ? `0${input}` : input)
+  }
 
-      if (isInteger)
-        return formatByCurrency(item, separator)
-      else
-        return `${formatByCurrency(splitFloatValue[0], separator)}.${splitFloatValue[1]}`
+  // Operator replacement
+  if (isActionInput && isOperator(lastChar)) {
+    return sanitizedExpression.slice(0, -1) + input
+  }
+
+  // Number input validation
+  if (!isActionInput) {
+    const currentNumber = getLastNumber(sanitizedExpression)
+    const [integerPart, decimalPart] = currentNumber.split('.')
+
+    const isExceedingLength = (!decimalPart && integerPart && integerPart?.length >= config.maxIntegerLength)
+      || (decimalPart && decimalPart?.length >= config.decimalPlaces)
+
+    if (isExceedingLength)
+      return expression
+
+    if (lastChar !== '.' && evaluateExpression(sanitizedExpression + input) === 0)
+      return sanitizedExpression
+  }
+
+  return sanitizedExpression + input
+}
+
+export function formatInput(value: CalculatorInput): string {
+  return splitExpression(String(value))
+    .map((part) => {
+      if (isOperator(part))
+        return ` ${part} `
+
+      const [integerPart, decimalPart] = sanitizeInput(part).split('.')
+      const formattedInteger = formatByCurrency(integerPart || '', config.separator)
+
+      return decimalPart
+        ? `${formattedInteger}.${decimalPart}`
+        : formattedInteger
     })
     .join('')
 }

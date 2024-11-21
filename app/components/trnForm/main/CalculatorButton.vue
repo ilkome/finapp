@@ -1,3 +1,9 @@
+<script setup lang="ts">
+const emit = defineEmits<{
+  click: [void]
+}>()
+</script>
+
 <template>
   <div
     class="
@@ -10,7 +16,7 @@
       md:max-w-[44px]
     "
     tabindex="0"
-    @click="$emit('click')"
+    @click="() => emit('click')"
   >
     <slot />
   </div>

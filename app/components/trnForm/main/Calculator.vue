@@ -1,15 +1,7 @@
 <script setup lang="ts">
 import { onLongPress } from '@vueuse/core'
-import { createExpressionString } from '~/components/trnForm/utils/calculate'
+import type { CalculatorKey } from '~/components/trnForm/utils/calculate'
 import { useTrnFormStore } from '~/components/trnForm/useTrnForm'
-
-const props = defineProps<{
-  amountRaw: string
-}>()
-
-const emit = defineEmits<{
-  (e: 'onChange', value: string): string
-}>()
 
 const trnFormStore = useTrnFormStore()
 
@@ -19,9 +11,8 @@ const buttons = [
   ['1', '2', '3'],
 ]
 
-function onClick(key: string) {
-  const value = createExpressionString(key, props.amountRaw)
-  emit('onChange', value)
+function onClick(key: CalculatorKey) {
+  trnFormStore.onClickCalculator(key)
 }
 
 function getClassName(btnIdx: number, rowIdx: number, row: string[]) {
@@ -74,7 +65,7 @@ onLongPress(
           v-for="(btn, btnIdx) in row"
           :key="btn"
           :class="getClassName(btnIdx, rowIdx, row)"
-          @click="onClick(btn)"
+          @click="() => onClick(btn as CalculatorKey)"
         >
           {{ btn }}
         </TrnFormMainCalculatorButton>
