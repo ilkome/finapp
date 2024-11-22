@@ -96,7 +96,7 @@ export function useGetDateRange(t: (key: string) => string) {
 
         if (start.isSame(end, 'year')) {
           if (duration === 1)
-            return type === 'start' ? start.format('D MMMM') : ''
+            return type === 'start' ? start.format('D MMMM YYYY') : ''
 
           if (start.isSame(end, 'month'))
             return type === 'start' ? start.format('D') : `-${end.format('D MMMM YYYY')}`
