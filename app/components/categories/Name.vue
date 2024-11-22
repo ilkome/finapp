@@ -24,7 +24,7 @@ const props = defineProps<{
     </template>
 
     <!-- Base name -->
-    <div class="text-3 flex items-center gap-2 text-sm leading-none">
+    <div class="text-3 flex items-center gap-2 text-nowrap text-sm leading-none">
       {{ props.category?.name }}
       <!-- Has childs -->
       <div
@@ -37,7 +37,7 @@ const props = defineProps<{
 
     <!-- Parent category name -->
     <template v-if="!alt && !isHideParent && !props.hasChildren && props.category?.parentId">
-      <div class="text-2xs text-4 leading-none">
+      <div class="text-2xs text-4 text-nowrap leading-none">
         •
       </div>
 

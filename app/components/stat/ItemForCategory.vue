@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import _sortby from 'lodash.sortby'
-import dayjs from 'dayjs'
 import defu from 'defu'
 import { useStorage } from '@vueuse/core'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
@@ -65,23 +64,23 @@ const filteredTrnsIds = computed(() => {
   if (selectedType.value === 'income') {
     return getTrnsIds({
       trnsIds: props.trnsIds,
-      trnsItems: trnsStore.items,
-      trnTypes: [1, 2],
+      trnsItems: trnsStore.items ?? {},
+      trnsTypes: [1, 2],
     })
   }
 
   if (selectedType.value === 'expense') {
     return getTrnsIds({
       trnsIds: props.trnsIds,
-      trnsItems: trnsStore.items,
-      trnTypes: [0, 2],
+      trnsItems: trnsStore.items ?? {},
+      trnsTypes: [0, 2],
     })
   }
 
   return props.trnsIds
 })
 
-const isDayToday = computed(() => statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalsDuration === 1 && statDate.range.value.end < dayjs().endOf('day').valueOf())
+const isDayToday = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day'))
 
 /**
  * View Options
@@ -331,13 +330,16 @@ function onClickCategory(categoryId: CategoryId) {
     Object.entries(statDate.params.value).map(([key, value]) => [key, String(value)]),
   ).toString()
 
-  // useRouter().push(`/stat/category/${categoryId}?${queryParams}`)
-  useRouter().push(`/dashboard?${queryParams}`)
+  useRouter().push(`/stat/category/${categoryId}?${queryParams}`)
+  // useRouter().push(`/dashboard?${queryParams}`)
 }
 
 const quickModalTrnsIds = computed(() => {
   if (quickModalCategoryId.value) {
-    return trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(quickModalCategoryId.value) })
+    return trnsStore.getStoreTrnsIds({
+      categoriesIds: [...categoriesStore.getChildsIdsOrParent(quickModalCategoryId.value), ...filter?.catsIds?.value],
+      walletsIds: filter?.walletsIds?.value,
+    })
   }
 
   return []
@@ -370,17 +372,25 @@ const quickModalTrnsIds = computed(() => {
       <!-- Content -->
       <div class="grid gap-6 pt-4">
         <!-- Categories first level -->
-        <div v-if="props.hasChildren">
-          <div class="flex items-center justify-between md:max-w-lg">
-            <UiTitle82>
-              {{ t('categories.title') }}
-            </UiTitle82>
+        <UiToggle
+          v-if="props.hasChildren"
+          :storageKey="`${newBaseStorageKey}-${props.type}-cats`"
+          :initStatus="true"
+          class="min-w-80 md:max-w-lg"
+        >
+          <template #header="{ toggle, isShown }">
+            <div class="flex items-center justify-between md:max-w-lg">
+              <UiTitle8 :isShown @click="toggle">
+                {{ t('categories.title') }} {{ (!isShown && cats.length > 0) ? cats.length : '' }}
+              </UiTitle8>
 
-            <StatCategoriesButtons
-              :viewOptions
-              @changeViewOptions="changeViewOptions"
-            />
-          </div>
+              <StatCategoriesButtons
+                v-if="isShown"
+                :viewOptions
+                @changeViewOptions="changeViewOptions"
+              />
+            </div>
+          </template>
 
           <!-- Lines -->
           <div
@@ -434,7 +444,20 @@ const quickModalTrnsIds = computed(() => {
               @click="onClickCategory"
             />
           </div>
-        </div>
+        </UiToggle>
+
+        <!-- <div v-if="props.hasChildren">
+          <div class="flex items-center justify-between md:max-w-lg">
+            <UiTitle82>
+              {{ t('categories.title') }}
+            </UiTitle82>
+
+            <StatCategoriesButtons
+              :viewOptions
+              @changeViewOptions="changeViewOptions"
+            />
+          </div>
+        </div> -->
 
         <!-- Trns -->
         <UiToggle

@@ -16,7 +16,7 @@ const itemClasses = getStyles('item', ['alt', 'rounded'])
 </script>
 
 <template>
-  <div class="flex gap-2">
+  <div class="flex gap-2 overflow-x-auto ">
     <!-- Wallets -->
     <template v-if="props.isShowWallets">
       <WalletsItem

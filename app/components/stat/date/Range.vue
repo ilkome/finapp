@@ -25,16 +25,6 @@ const date = computed(() => {
 </script>
 
 <template>
-  <!-- Formatted date -->
-  <pre>{{ statDate.params.value.intervalSelected !== -1 }}</pre>
-  <pre>{{ statDate.params.value.intervalsBy }}</pre>
-  <pre>{{ statDate.params.value.intervalsDuration }}</pre>
-
-  <div>
-    <pre>{{ dayjs(range.start).format('DD.MM.YYYY') }}</pre>
-    <pre>{{ dayjs(range.end).format('DD.MM.YYYY') }}</pre>
-  </div>
-
   <div class="!first-letter:text-accent-1 flex gap-1 leading-none">
     {{ date }}
   </div>

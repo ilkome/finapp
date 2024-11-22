@@ -71,7 +71,7 @@ function onClickChart(idx: number) {
 
     <div class="flex items-end justify-between gap-2">
       <UiTitle10 @click="isShowDateSelector = !isShowDateSelector">
-        <StatDateViewRange />
+        <StatDateRange />
       </UiTitle10>
 
       <div

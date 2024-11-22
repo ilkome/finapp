@@ -66,16 +66,16 @@ const filteredTrnsIds = computed(() => {
   if (selectedType.value === 'income') {
     return getTrnsIds({
       trnsIds: props.trnsIds,
-      trnsItems: trnsStore.items,
-      trnTypes: [1, 2],
+      trnsItems: trnsStore.items ?? {},
+      trnsTypes: [1, 2],
     })
   }
 
   if (selectedType.value === 'expense') {
     return getTrnsIds({
       trnsIds: props.trnsIds,
-      trnsItems: trnsStore.items,
-      trnTypes: [0, 2],
+      trnsItems: trnsStore.items ?? {},
+      trnsTypes: [0, 2],
     })
   }
 
