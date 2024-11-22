@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import dayjs from 'dayjs'
+import { endOfDay, endOfMonth, endOfWeek, endOfYear, startOfDay, startOfMonth, startOfWeek, startOfYear, subDays, subMonths, subWeeks, subYears } from 'date-fns'
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
-
-// @ts-expect-error works for tests
-dayjs.locale({
-  name: 'en',
-  weekStart: 1,
-})
 
 // Mock translation function
 function t(key: string) {
@@ -28,119 +22,114 @@ function t(key: string) {
 }
 
 describe('useGetDateRange', () => {
-  const { getDate } = useGetDateRange(t)
-  const today = dayjs()
+  const { getStringDateRange } = useGetDateRange(t)
+  const today = new Date()
 
   describe('year ranges', () => {
     it('should format current year', () => {
       const range = {
-        end: today.endOf('year').valueOf(),
-        start: today.startOf('year').valueOf(),
+        end: endOfYear(today).getTime(),
+        start: startOfYear(today).getTime(),
       }
-      expect(getDate(range, 'year', 1)).toBe('This Year')
+      expect(getStringDateRange(range, 'year', 1)).toBe('This Year')
     })
 
     it('should format last year', () => {
+      const lastYear = subYears(today, 1)
       const range = {
-        end: today.subtract(1, 'year').endOf('year').valueOf(),
-        start: today.subtract(1, 'year').startOf('year').valueOf(),
+        end: endOfYear(lastYear).getTime(),
+        start: startOfYear(lastYear).getTime(),
       }
-      expect(getDate(range, 'year', 1)).toBe('Last Year')
+      expect(getStringDateRange(range, 'year', 1)).toBe('Last Year')
     })
 
     it('should format last N years', () => {
       const range = {
-        end: today.endOf('year').valueOf(),
-        start: today.subtract(2, 'year').startOf('year').valueOf(),
+        end: endOfYear(today).getTime(),
+        start: startOfYear(subYears(today, 2)).getTime(),
       }
-      expect(getDate(range, 'year', 3)).toBe('Last 3 Years')
+      expect(getStringDateRange(range, 'year', 3)).toBe('Last 3 Years')
     })
   })
 
   describe('month ranges', () => {
     it('should format current month', () => {
       const range = {
-        end: today.endOf('month').valueOf(),
-        start: today.startOf('month').valueOf(),
+        end: endOfMonth(today).getTime(),
+        start: startOfMonth(today).getTime(),
       }
-      expect(getDate(range, 'month', 1)).toBe('This Month')
+      expect(getStringDateRange(range, 'month', 1)).toBe('This Month')
     })
 
     it('should format last month', () => {
+      const lastMonth = subMonths(today, 1)
       const range = {
-        end: today.subtract(1, 'month').endOf('month').valueOf(),
-        start: today.subtract(1, 'month').startOf('month').valueOf(),
+        end: endOfMonth(lastMonth).getTime(),
+        start: startOfMonth(lastMonth).getTime(),
       }
-      expect(getDate(range, 'month', 1)).toBe('Last Month')
+      expect(getStringDateRange(range, 'month', 1)).toBe('Last Month')
     })
-
-    // it('should format specific month in current year', () => {
-    //   const range = {
-    //     end: today.subtract(2, 'month').endOf('month').valueOf(),
-    //     start: today.subtract(2, 'month').startOf('month').valueOf(),
-    //   }
-    //   expect(getDate(range, 'month', 1)).toBe(today.subtract(2, 'month').format('MMMM'))
-    // })
   })
 
   describe('week ranges', () => {
     it('should format current week', () => {
       const range = {
-        end: today.endOf('week').valueOf(),
-        start: today.startOf('week').valueOf(),
+        end: endOfWeek(today, { weekStartsOn: 1 }).getTime(),
+        start: startOfWeek(today, { weekStartsOn: 1 }).getTime(),
       }
-      expect(getDate(range, 'week', 1)).toBe('This Week')
+      expect(getStringDateRange(range, 'week', 1)).toBe('This Week')
     })
 
     it('should format last week', () => {
+      const lastWeek = subWeeks(today, 1)
       const range = {
-        end: today.subtract(1, 'week').endOf('week').valueOf(),
-        start: today.subtract(1, 'week').startOf('week').valueOf(),
+        end: endOfWeek(lastWeek, { weekStartsOn: 1 }).getTime(),
+        start: startOfWeek(lastWeek, { weekStartsOn: 1 }).getTime(),
       }
-      expect(getDate(range, 'week', 1)).toBe('Last Week')
+      expect(getStringDateRange(range, 'week', 1)).toBe('Last Week')
     })
 
     it('should format last N weeks', () => {
       const range = {
-        end: today.endOf('week').valueOf(),
-        start: today.subtract(2, 'week').startOf('week').valueOf(),
+        end: endOfWeek(today, { weekStartsOn: 1 }).getTime(),
+        start: startOfWeek(subWeeks(today, 2), { weekStartsOn: 1 }).getTime(),
       }
-      expect(getDate(range, 'week', 3)).toBe('Last 3 Weeks')
+      expect(getStringDateRange(range, 'week', 3)).toBe('Last 3 Weeks')
     })
 
     it('should format week range in same month and year', () => {
-      // TODO: fix this test
-      // const range = {
-      //   end: dayjs('2024-11-03').valueOf(),
-      //   start: dayjs('2024-10-28').valueOf(),
-      // }
-      // expect(getDate(range, 'week', 1)).toBe('28 Oct - 3 Nov')
+      const range = {
+        end: endOfWeek(new Date('2024-11-03'), { weekStartsOn: 1 }).getTime(),
+        start: startOfWeek(new Date('2024-10-14'), { weekStartsOn: 1 }).getTime(),
+      }
+      expect(getStringDateRange(range, 'week', 1)).toBe('14 October - 3 November')
     })
   })
 
   describe('day ranges', () => {
     it('should format today', () => {
       const range = {
-        end: today.endOf('day').valueOf(),
-        start: today.startOf('day').valueOf(),
+        end: endOfDay(today).getTime(),
+        start: startOfDay(today).getTime(),
       }
-      expect(getDate(range, 'day', 1)).toBe('Today')
+      expect(getStringDateRange(range, 'day', 1)).toBe('Today')
     })
 
     it('should format yesterday', () => {
+      const lastDay = subDays(today, 1)
       const range = {
-        end: today.subtract(1, 'day').endOf('day').valueOf(),
-        start: today.subtract(1, 'day').startOf('day').valueOf(),
+        end: endOfDay(lastDay).getTime(),
+        start: startOfDay(lastDay).getTime(),
       }
-      expect(getDate(range, 'day', 1)).toBe('Yesterday')
+      expect(getStringDateRange(range, 'day', 1)).toBe('Yesterday')
     })
 
     it('should format last N days', () => {
       const range = {
-        end: today.endOf('day').valueOf(),
-        start: today.subtract(6, 'day').startOf('day').valueOf(),
+        end: endOfDay(today).getTime(),
+        start: startOfDay(subDays(today, 6)).getTime(),
       }
-      expect(getDate(range, 'day', 7)).toBe('Last 7 Days')
+      expect(getStringDateRange(range, 'day', 7)).toBe('Last 7 Days')
     })
   })
 })

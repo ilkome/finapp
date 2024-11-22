@@ -113,7 +113,7 @@ export function useGetDateRange(t: (key: string) => string) {
     }
   }
 
-  function getDate(range: Range, by: StatDateParams['rangeBy'], duration: StatDateParams['rangeDuration']) {
+  function getStringDateRange(range: Range, by: StatDateParams['rangeBy'], duration: StatDateParams['rangeDuration']) {
     const yearStart = calculateDate({
       by,
       duration,
@@ -133,5 +133,5 @@ export function useGetDateRange(t: (key: string) => string) {
     return `${yearStart}${yearEnd}`
   }
 
-  return { getDate }
+  return { getStringDateRange }
 }
