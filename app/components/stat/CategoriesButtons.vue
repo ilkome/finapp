@@ -59,8 +59,6 @@ const favorites = {
     return false
   }),
   toggle: () => {
-    console.log(1)
-
     if (props.viewOptions.catsView === 'list') {
       emit('changeViewOptions', {
         catsList: { isShowFavorites: !props.viewOptions.catsList.isShowFavorites },

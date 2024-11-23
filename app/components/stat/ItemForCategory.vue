@@ -392,6 +392,7 @@ const quickModalTrnsIds = computed(() => {
               <StatCategoriesButtons
                 v-if="isShown"
                 :viewOptions
+                isShowGrouping
                 @changeViewOptions="changeViewOptions"
               />
             </div>
