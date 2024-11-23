@@ -1,4 +1,4 @@
-export function ruPluralization(choice, choicesLength, orgRule) {
+export function ruPluralization(choice: number, choicesLength: number) {
   if (choice === 0) {
     return 0
   }

@@ -22,6 +22,13 @@ const isShowDateSelector = defineModel('isShowDateSelector', {
 function onClickChart(idx: number) {
   const newPeriod = idx
 
+  // Handle when click outside of chart
+  if (newPeriod === statDate.groupedPeriods.value.length) {
+    statDate.params.value.intervalSelected = -1
+    return
+  }
+
+  // Handle when click on the same period
   if (statDate.params.value.intervalSelected === newPeriod) {
     statDate.params.value.intervalSelected = -1
   }

@@ -8,7 +8,7 @@ function t(key: string) {
     'dates.day.current': 'Today',
     'dates.day.last': 'Yesterday',
     'dates.day.simple': 'Days',
-    'dates.last': 'Last',
+    'dates.last.simple': 'Last',
     'dates.month.current': 'This Month',
     'dates.month.last': 'Last Month',
     'dates.month.simple': 'Months',
@@ -49,7 +49,7 @@ describe('useGetDateRange', () => {
         end: endOfYear(today).getTime(),
         start: startOfYear(subYears(today, 2)).getTime(),
       }
-      expect(getStringDateRange(range, 'year', 3)).toBe('Last 3 Years')
+      expect(getStringDateRange(range, 'year', 3)).toBe('dates.last.year 3 dates.year.plural')
     })
 
     it('should format year range', () => {
@@ -84,7 +84,7 @@ describe('useGetDateRange', () => {
         end: endOfMonth(today).getTime(),
         start: startOfMonth(subMonths(today, 2)).getTime(),
       }
-      expect(getStringDateRange(range, 'month', 3)).toBe('Last 3 Months')
+      expect(getStringDateRange(range, 'month', 3)).toBe('dates.last.month 3 dates.month.plural')
     })
 
     it('should format month range in this year', () => {
@@ -127,7 +127,7 @@ describe('useGetDateRange', () => {
         end: endOfWeek(today, { weekStartsOn: 1 }).getTime(),
         start: startOfWeek(subWeeks(today, 2), { weekStartsOn: 1 }).getTime(),
       }
-      expect(getStringDateRange(range, 'week', 3)).toBe('Last 3 Weeks')
+      expect(getStringDateRange(range, 'week', 3)).toBe('dates.last.week 3 dates.week.plural')
     })
 
     it('should format week range in same month and year', () => {
@@ -162,7 +162,7 @@ describe('useGetDateRange', () => {
         end: endOfDay(today).getTime(),
         start: startOfDay(subDays(today, 6)).getTime(),
       }
-      expect(getStringDateRange(range, 'day', 7)).toBe('Last 7 Days')
+      expect(getStringDateRange(range, 'day', 7)).toBe('dates.last.day 7 dates.day.plural')
     })
 
     it('should format day range in same month', () => {

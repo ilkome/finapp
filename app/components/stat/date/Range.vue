@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 
 const statDate = inject('statDate') as StatDateProvider
-const { t } = useI18n()
-const { getStringDateRange } = useGetDateRange(t)
+const { locale, t } = useI18n()
+
+const { getStringDateRange } = useGetDateRange(t, locale.value)
 
 const range = computed<Range>(() => {
   return statDate.params.value.intervalSelected !== -1

@@ -136,26 +136,35 @@ export default {
       current: 'Today',
       last: 'Yesterday',
       next: 'Tomorrow',
+      plural: 'days | day | days | days',
       simple: 'Day',
       today: 'Today',
     },
-    last: 'Last',
+    last: {
+      day: 'Last',
+      month: 'Last',
+      week: 'Last',
+      year: 'Last',
+    },
     month: {
       current: 'This month',
       last: 'Last month',
+      plural: 'months | month | months',
       simple: 'Month',
+
     },
     period: 'Period',
-    select: 'Select',
-    twoDaysAgo: '2 days ago',
+    select: 'Select period',
     week: {
       current: 'This week',
       last: 'Last week',
+      plural: 'weeks | week | weeks',
       simple: 'Week',
     },
     year: {
       current: 'This year',
       last: 'Last year',
+      plural: 'years | year | years',
       simple: 'Year',
     },
   },
@@ -166,15 +175,11 @@ export default {
     update: 'Update demo data',
     updated: 'Data updated',
   },
-  filter: {
-    clear: 'Clear',
-  },
 
   locale: {
     toggle: 'Toggle locale',
   },
   loginWithGithub: 'Login with Github',
-
   loginWithGoogle: 'Login with Google',
 
   money: {

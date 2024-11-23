@@ -1,6 +1,5 @@
 import process from 'node:process'
 import { config } from './services/firebase/config'
-import { ruPluralization } from './i18n/ruPluralization'
 
 const sw = process.env.SW === 'true'
 
@@ -84,7 +83,6 @@ export default defineNuxtConfig({
       cookieKey: 'i18n_redirected',
       useCookie: true,
     },
-    // langDir: 'locales/',
     lazy: true,
     locales: [
       {
@@ -98,10 +96,8 @@ export default defineNuxtConfig({
         language: 'ru-RU',
       },
     ],
-    pluralizationRules: {
-      ru: ruPluralization,
-    },
     strategy: 'no_prefix',
+    vueI18n: './i18n/i18n.config.ts',
   },
 
   modules: [

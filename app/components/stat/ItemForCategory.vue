@@ -7,7 +7,7 @@ import type { DeepPartial } from '~~/utils/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import type { MoneyTypeSlugSum, TotalCategory, ViewOptions } from '~/components/stat/types'
+import type { MoneyTypeSlugNew, TotalCategory, ViewOptions } from '~/components/stat/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
@@ -26,7 +26,7 @@ const props = defineProps<{
   quickModalCategoryId?: CategoryId
   storageKey?: string
   trnsIds: TrnId[]
-  type: MoneyTypeSlugSum
+  type: MoneyTypeSlugNew
 }>()
 
 const { t } = useI18n()
@@ -44,8 +44,8 @@ const isShowTrns = ref(false)
 const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.catsIds?.value)}`)
 
-const selectedType = ref<MoneyTypeSlugSum>('sum')
-function onSelectType(type: MoneyTypeSlugSum) {
+const selectedType = ref<MoneyTypeSlugNew>('sum')
+function onSelectType(type: MoneyTypeSlugNew) {
   if (type === 'sum') {
     isShowTrns.value = !isShowTrns.value
     return
@@ -166,7 +166,7 @@ function getCats(trnsIds: TrnId[], isintervalsByParent?: boolean, preCategoriesI
 
 function getSeries(
   total: TotalReturns[],
-  type: MoneyTypeSlugSum,
+  type: MoneyTypeSlugNew,
   ranges: Range[],
 ) {
   const types = type === 'sum' ? ['expense', 'income'] : [type]

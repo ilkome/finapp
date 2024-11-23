@@ -313,8 +313,8 @@ ru:
   presets: Пресеты
   last: Последние
   7Days: 7 дней
-  7DaysMini: 7 дней mini
-  14DaysMini: 14 дней mini
-  30DaysMini: 30 дней mini
+  7DaysMini: 7 дней мини
+  14DaysMini: 14 дней мини
+  30DaysMini: 30 дней мини
   12Months: 12 месяцев
 </i18n>
