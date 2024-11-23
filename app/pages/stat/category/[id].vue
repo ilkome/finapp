@@ -19,7 +19,7 @@ const walletsStore = useWalletsStore()
 
 provide('filter', filter)
 
-onMounted(() => {
+onBeforeMount(() => {
   if (route.query.walletsIds) {
     const walletsIds: WalletId[] = Array.isArray(route.query.walletsIds)
       ? route.query.walletsIds
