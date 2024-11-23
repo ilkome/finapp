@@ -17,10 +17,4 @@ export type Periods = {
 export type PeriodNameWithoutAll = keyof Periods | dayjs.ManipulateType
 export type PeriodNameWithAll = PeriodNameWithoutAll | 'all'
 
-export type PeriodsNames = {
-  icon: string
-  name: string
-  slug: PeriodNameWithoutAll
-}[]
-
 export type FilterProvider = ReturnType<typeof useFilter>

@@ -7,9 +7,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  setNextPeriodDate: []
-  setPeriodAndDate: []
-  setPrevPeriodDate: []
+  changeDate: [action: 'prev' | 'next' | 'today']
 }>()
 </script>
 
@@ -19,7 +17,7 @@ const emit = defineEmits<{
       v-if="!props.isToday"
       :class="[getStyles('item', ['link', 'rounded', 'minh2'])]"
       class="font-primary flex items-center text-nowrap px-3 py-2 text-base font-medium leading-none"
-      @click="emit('setPeriodAndDate')"
+      @click="emit('changeDate', 'today')"
     >
       <UiIconReturn class="size-5" />
     </div>
@@ -30,7 +28,7 @@ const emit = defineEmits<{
         { '!hocus:transparent opacity-30': props.isLastPeriod },
       ]"
       class="flex-center bg-item-4"
-      @click="emit('setNextPeriodDate')"
+      @click="emit('changeDate', 'next')"
     >
       <UiIconChevron class="size-8" />
     </div>
@@ -41,7 +39,7 @@ const emit = defineEmits<{
         { '!hocus:transparent opacity-30': props.isToday },
       ]"
       class="flex-center bg-item-4"
-      @click="emit('setPrevPeriodDate')"
+      @click="emit('changeDate', 'prev')"
     >
       <UiIconChevron class="size-8 rotate-180" />
     </div>

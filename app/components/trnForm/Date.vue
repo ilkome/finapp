@@ -47,9 +47,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
     <StatDateNav
       :isLastPeriod="false"
       :isToday="isToday"
-      @setNextPeriodDate="changeDate('prev')"
-      @setPeriodAndDate="changeDate('today')"
-      @setPrevPeriodDate="changeDate('next')"
+      @changeDate="changeDate"
     />
   </div>
 </template>

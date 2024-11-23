@@ -30,6 +30,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const route = useRoute()
 const filter = inject('filter') as FilterProvider
 const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
@@ -325,13 +326,17 @@ const openedTrns = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedTr
 
 const quickModalCategoryId = ref<CategoryId | false>(false)
 
-function onClickCategory(categoryId: CategoryId) {
-  const queryParams = new URLSearchParams(
-    Object.entries(statDate.params.value).map(([key, value]) => [key, String(value)]),
+async function onClickCategory(categoryId: CategoryId) {
+  await filter.setCategoryId(categoryId)
+  await nextTick()
+
+  const queryParams = new URLSearchParams([
+    ...Object.entries(statDate.params.value).map(([key, value]) => [key, String(value)]),
+    ...filter?.walletsIds?.value.map(id => ['walletsIds', id]),
+  ],
   ).toString()
 
   useRouter().push(`/stat/category/${categoryId}?${queryParams}`)
-  // useRouter().push(`/dashboard?${queryParams}`)
 }
 
 const quickModalTrnsIds = computed(() => {
@@ -428,6 +433,22 @@ const quickModalTrnsIds = computed(() => {
               </div>
             </StatLinesItemLine>
           </div>
+
+          <!-- <div class="flex gap-3 overflow-y-auto">
+            <StatLinesCategoryVertical
+              v-for="item in cats"
+              :key="item.id"
+              :biggestCatNumber
+              :class="{ 'bg-item-9 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
+              :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+              :isHideDots="viewOptions.catsList.isOpened"
+              :item
+              :isHideParent="props.hasChildren"
+              :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
+              :viewOptions
+              @click="onClickCategory"
+            />
+          </div> -->
 
           <!-- Rounds -->
           <div

@@ -1,143 +1,15 @@
-import dayjs from 'dayjs'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import type { PeriodNameWithAll, Periods, PeriodsNames } from '~/components/filter/types'
 
 export function useFilter() {
-  const { t } = useI18n()
   const router = useRouter()
   const route = useRoute()
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
   const walletsStore = useWalletsStore()
-
-  /**
-   * Date
-   */
-  const date = ref<number>(dayjs().startOf('month').valueOf())
-  const periodNameWithAll = ref<PeriodNameWithAll>('month')
-
-  const periodNameWithoutAll = computed(() =>
-    periodNameWithAll.value === 'all' ? 'year' : periodNameWithAll.value,
-  )
-
-  function setDate(value: number) {
-    const newDate = dayjs(value).valueOf()
-    date.value = newDate
-    periods.value[periodNameWithoutAll.value].date = newDate
-  }
-
-  /**
-   * Period
-   */
-  const periods = ref<Periods>({
-    day: {
-      date: dayjs().valueOf(),
-      showedPeriods: 14,
-      type: 'line',
-    },
-    month: {
-      date: dayjs().valueOf(),
-      showedPeriods: 12,
-      type: 'line',
-    },
-    week: {
-      date: dayjs().valueOf(),
-      showedPeriods: 12,
-      type: 'line',
-    },
-    year: {
-      date: dayjs().valueOf(),
-      showedPeriods: 6,
-      type: 'line',
-    },
-  })
-
-  // TODO: Move from here
-  const periodsNames = computed<PeriodsNames>(() => [
-    {
-      icon: 'mdi:calendar',
-      name: t('dates.month.simple'),
-      slug: 'month',
-    },
-    {
-      icon: 'mdi:calendar-star',
-      name: t('dates.year.simple'),
-      slug: 'year',
-    },
-  ])
-
-  const ui = ref({
-    expense: true,
-    income: true,
-    isShowDataLabels: false,
-    setUi: (key, value) => (ui.value[key] = value),
-    sum: false,
-    toggleUi: key => (ui.value[key] = !ui.value[key]),
-  })
-
-  // TODO: Move from here
-  function setPeriodAndDate(periodName: PeriodNameWithAll) {
-    if (periodName !== 'all') {
-      if (periodNameWithAll.value === periodName) {
-        const newDate = dayjs().startOf(periodName).valueOf()
-        date.value = newDate
-        periods.value[periodName].date = newDate
-      }
-      else {
-        const savedDate = periods.value[periodName].date
-        const newDate = savedDate
-          ? dayjs(savedDate).startOf(periodName).valueOf()
-          : dayjs().startOf(periodName).valueOf()
-
-        date.value = newDate
-        periods.value[periodName].date = newDate
-      }
-    }
-
-    periodNameWithAll.value = periodName
-  }
-
-  function setDayDate(value: number) {
-    periodNameWithAll.value = 'day'
-    date.value = +value
-  }
-
-  function setNextPeriodDate(firstCreatedTrnDate: number) {
-    if (periodNameWithAll.value === 'all')
-      return
-
-    const newDate = dayjs(date.value)
-      .subtract(1, periodNameWithAll.value)
-      .startOf(periodNameWithAll.value)
-      .valueOf()
-    if (
-      newDate
-      >= dayjs(firstCreatedTrnDate).startOf(periodNameWithAll.value).valueOf()
-    ) {
-      date.value = newDate
-      periods.value[periodNameWithoutAll.value].date = newDate
-    }
-  }
-
-  function setPrevPeriodDate() {
-    if (trnsStore.hasItems) {
-      if (periodNameWithAll.value === 'all')
-        return
-
-      const newDate = dayjs(date.value)
-        .add(1, periodNameWithAll.value)
-        .startOf(periodNameWithAll.value)
-        .valueOf()
-      if (newDate <= dayjs().valueOf()) {
-        date.value = newDate
-        periods.value[periodNameWithoutAll.value].date = newDate
-      }
-    }
-  }
 
   /**
    * Wallets
@@ -170,6 +42,24 @@ export function useFilter() {
     setWalletId(walletId)
   }
 
+  function setWallets(newWalletsIds: WalletId[]) {
+    let uniqueWalletsIds: WalletId[] = []
+
+    if (newWalletsIds.every(id => walletsIds.value.includes(id))) {
+      uniqueWalletsIds = walletsIds.value.filter(id => !newWalletsIds.includes(id))
+    }
+    else {
+      uniqueWalletsIds = [...new Set([...walletsIds.value, ...newWalletsIds])]
+    }
+
+    router.push({
+      query: {
+        ...route.query,
+        filterWallets: uniqueWalletsIds,
+      },
+    })
+  }
+
   function removeWalletId(walletId: WalletId) {
     router.push({
       query: {
@@ -182,7 +72,6 @@ export function useFilter() {
   /**
    * Categories
    */
-
   const catsIds = computed<CategoryId[]>(() => Array.isArray(route.query.filterCategories)
     ? (route.query.filterCategories as CategoryId[]).filter(id => categoriesStore.items[id])
     : route.query.filterCategories
@@ -203,7 +92,7 @@ export function useFilter() {
   }
 
   function setCategories(newCategoriesIds: CategoryId[]) {
-    let uniqueCategoriesIds = []
+    let uniqueCategoriesIds: CategoryId[] = []
 
     if (newCategoriesIds.every(id => catsIds.value.includes(id))) {
       uniqueCategoriesIds = catsIds.value.filter(id => !newCategoriesIds.includes(id))
@@ -247,9 +136,7 @@ export function useFilter() {
     router.push({ query: undefined })
   }
 
-  const isShow = computed(
-    () => catsIds.value.length > 0 || walletsIds.value.length > 0,
-  )
+  const isShow = computed(() => catsIds.value.length > 0 || walletsIds.value.length > 0)
 
   function getTrnsIdsWithFilter() {
     return trnsStore.getStoreTrnsIds({
@@ -263,26 +150,16 @@ export function useFilter() {
   return {
     catsIds,
     clearFilter,
-    date,
     getTrnsIdsWithFilter,
     isShow,
-    periodNameWithAll,
-    periodNameWithoutAll,
-    periods,
-    periodsNames,
     removeCategoryId,
     removeWalletId,
     setCategories,
     setCategoryId,
-    setDate,
-    setDayDate,
-    setNextPeriodDate,
-    setPeriodAndDate,
-    setPrevPeriodDate,
     setWalletId,
+    setWallets,
     toggleCategoryId,
     toggleWalletId,
-    ui,
     walletsIds,
   }
 }
