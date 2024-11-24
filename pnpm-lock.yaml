@@ -17,9 +17,6 @@ importers:
       currency.js:
         specifier: ^2.0.4
         version: 2.0.4
-      dayjs:
-        specifier: ^1.11.13
-        version: 1.11.13
       echarts:
         specifier: ^5.5.1
         version: 5.5.1
@@ -2926,9 +2923,6 @@ packages:
 
   date-fns@4.1.0:
     resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
-
-  dayjs@1.11.13:
-    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
   db0@0.2.1:
     resolution: {integrity: sha512-BWSFmLaCkfyqbSEZBQINMVNjCVfrogi7GQ2RSy1tmtfK9OXlsup6lUMwLsqSD7FbAjD04eWFdXowSHHUp6SE/Q==}
@@ -9830,8 +9824,6 @@ snapshots:
       '@babel/runtime': 7.26.0
 
   date-fns@4.1.0: {}
-
-  dayjs@1.11.13: {}
 
   db0@0.2.1: {}
 
