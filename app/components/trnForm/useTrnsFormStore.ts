@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import { defineStore } from 'pinia'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CategoryId } from '~/components/categories/types'
@@ -38,7 +37,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     amount: [0, 0, 0],
     amountRaw: ['', '', ''],
     categoryId: null,
-    date: dayjs().valueOf(),
+    date: new Date().getTime(),
     desc: undefined,
     expenseWalletId: null,
     incomeWalletId: null,

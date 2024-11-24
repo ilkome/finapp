@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import _sortby from 'lodash.sortby'
-import dayjs from 'dayjs'
 import defu from 'defu'
 import { useStorage } from '@vueuse/core'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
@@ -20,6 +19,7 @@ import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatDate } from '~/components/date/useStatDate'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { getEndOf } from '~/components/date/utils'
 
 const props = defineProps<{
   isQuickModal?: boolean
@@ -82,7 +82,7 @@ const filteredTrnsIds = computed(() => {
   return props.trnsIds
 })
 
-const isDayToday = computed(() => statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalsDuration === 1 && statDate.range.value.end < dayjs().endOf('day').valueOf())
+const isDayToday = computed(() => statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalsDuration === 1 && statDate.range.value.end < getEndOf(new Date(), 'day').getTime())
 
 /**
  * View Options

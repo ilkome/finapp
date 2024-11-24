@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
 import type { StatTabs } from '~/components/app/types'
 import type { WalletId } from '~/components/wallets/types'

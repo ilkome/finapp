@@ -1,7 +1,6 @@
-import dayjs from 'dayjs'
 import { useStorage } from '@vueuse/core'
 import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
-import { calculateIntervalInRange, getIntervalsInRange } from '~/components/date/utils'
+import { calculateIntervalInRange, getEndOf, getIntervalsInRange } from '~/components/date/utils'
 
 export function useStatDate({
   initParams,
@@ -67,7 +66,7 @@ export function useStatDate({
 
     else if (params.value.isShowMaxRange && !params.value.isSkipEmpty) {
       return {
-        end: dayjs().endOf(params.value.rangeBy).valueOf(),
+        end: getEndOf(new Date(), params.value.rangeBy).getTime(),
         start: maxRange.value.start,
       }
     }
@@ -76,8 +75,8 @@ export function useStatDate({
       intervalsBy: params.value.rangeBy,
       intervalsDuration: params.value.rangeDuration,
       range: {
-        end: dayjs().valueOf(),
-        start: dayjs().valueOf(),
+        end: new Date().getTime(),
+        start: new Date().getTime(),
       },
       rangeOffset: params.value.rangeOffset,
     })

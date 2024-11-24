@@ -1,5 +1,5 @@
-import dayjs from 'dayjs'
 import localforage from 'localforage'
+import { startOfDay } from 'date-fns'
 import { getDataOnce, saveData } from '~~/services/firebase/api'
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import { currencies as all } from '~/components/currencies/currencies'
@@ -31,7 +31,8 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     const userBaseCurrency = await getDataOnce(`users/${userStore.uid}/settings/baseCurrency`) || 'USD'
 
     // Rates for today
-    const today = dayjs().startOf('day').valueOf()
+    const today = startOfDay(new Date()).getTime()
+
     let ratesBasedOnUsd = await getDataOnce(`ratesUsd/history/${today}`)
 
     if (!ratesBasedOnUsd) {

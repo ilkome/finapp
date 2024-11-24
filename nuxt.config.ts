@@ -111,7 +111,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
   ],
 
-  plugins: [{ src: '~/plugins/dayjs' }, { src: '~/plugins/toast' }],
+  plugins: [{ src: '~/plugins/toast' }],
 
   pwa: {
     client: {

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
 import type { MoneyTypeNumber } from '~/components/stat/types'
 import type { TrnId, TrnType } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import { useDateFormats } from '~/components/date/useDateFormats'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { getStartOf } from '~/components/date/utils'
 
 const props = withDefaults(
   defineProps<{
@@ -125,10 +125,16 @@ function setFilterBy(type: TrnType | undefined) {
 const groupedTrns = computed(() => {
   return paginatedTrnsIds.value.reduce(
     (acc, trnId) => {
-      const date = dayjs(trnsStore.items[trnId]?.date).startOf('day').valueOf()
-      !acc[date]
-        ? acc[date] = [trnId]
-        : acc[date].push(trnId)
+      if (!trnsStore.items?.[trnId]) {
+        return acc
+      }
+      const date = getStartOf(new Date(trnsStore.items[trnId].date), 'day').getTime()
+      if (!acc[date]) {
+        acc[date] = [trnId]
+      }
+      else {
+        acc[date].push(trnId)
+      }
       return acc
     },
     {} as Record<string, TrnId[]>,

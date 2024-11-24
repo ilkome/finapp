@@ -1,4 +1,3 @@
-import type dayjs from 'dayjs'
 import type { useFilter } from '~/components/filter/useFilter'
 
 export type PeriodSchema = {
@@ -14,7 +13,6 @@ export type Periods = {
   year: PeriodSchema
 }
 
-export type PeriodNameWithoutAll = keyof Periods | dayjs.ManipulateType
-export type PeriodNameWithAll = PeriodNameWithoutAll | 'all'
+export type PeriodNameWithAll = keyof Periods | 'all'
 
 export type FilterProvider = ReturnType<typeof useFilter>

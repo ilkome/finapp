@@ -28,7 +28,7 @@ const emit = defineEmits<{
         { '!hocus:transparent opacity-30': props.isLastPeriod },
       ]"
       class="flex-center bg-item-4"
-      @click="emit('changeDate', 'next')"
+      @click="emit('changeDate', 'prev')"
     >
       <UiIconChevron class="size-8" />
     </div>
@@ -39,7 +39,7 @@ const emit = defineEmits<{
         { '!hocus:transparent opacity-30': props.isToday },
       ]"
       class="flex-center bg-item-4"
-      @click="emit('changeDate', 'prev')"
+      @click="emit('changeDate', 'next')"
     >
       <UiIconChevron class="size-8 rotate-180" />
     </div>

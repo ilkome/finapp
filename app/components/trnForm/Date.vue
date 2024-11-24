@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
+import { addDays, isSameDay, subDays } from 'date-fns'
 import { useDateFormats } from '~/components/date/useDateFormats'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
@@ -12,20 +12,17 @@ const formattedDate = computed(() => {
 })
 
 const isToday = computed(() => {
-  return dayjs().isSame(trnsFormStore.values.date, 'day')
+  return isSameDay(new Date(trnsFormStore.values.date), new Date())
 })
 
 function changeDate(way: 'prev' | 'next' | 'today') {
-  let newDate: number = dayjs().valueOf()
+  let newDate: number = new Date().getTime()
 
   if (way === 'prev')
-    newDate = dayjs(trnsFormStore.values.date).subtract(1, 'day').valueOf()
+    newDate = subDays(trnsFormStore.values.date, 1).getTime()
 
   if (way === 'next' && !isToday.value)
-    newDate = dayjs(trnsFormStore.values.date).add(1, 'day').valueOf()
-
-  if (way === 'today')
-    newDate = dayjs().valueOf()
+    newDate = addDays(trnsFormStore.values.date, 1).getTime()
 
   trnsFormStore.values.date = newDate
 }

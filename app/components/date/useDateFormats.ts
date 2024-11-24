@@ -1,31 +1,18 @@
-import dayjs from 'dayjs'
+import { formatByLocale, getEndOf, getStartOf } from '~/components/date/utils'
 import type { PeriodNameWithAll } from '~/components/filter/types'
+import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 
 export function useDateFormats() {
-  const { t } = useI18n()
-
-  function getFormatForChart(periodName: PeriodNameWithAll) {
-    switch (periodName) {
-      case 'day':
-        return 'D MMM'
-      case 'week':
-        return 'D MMM'
-      case 'month':
-        return 'MMM'
-      case 'year':
-        return 'YYYY'
-      default:
-        return 'MM'
-    }
-  }
+  const { locale, t } = useI18n()
+  const { calculateDate } = useGetDateRange(t, locale.value)
 
   function getDates(periodName: PeriodNameWithAll, date: number) {
     if (periodName === 'all')
       return
 
-    const filterDate = dayjs(date)
-    const from = filterDate.startOf(periodName).valueOf()
-    const until = filterDate.endOf(periodName).valueOf()
+    const filterDate = new Date(date)
+    const from = getStartOf(filterDate, periodName).getTime()
+    const until = getEndOf(filterDate, periodName).getTime()
 
     return { from, until }
   }
@@ -34,43 +21,26 @@ export function useDateFormats() {
     if (!value)
       return false
 
+    const date = new Date(value)
     switch (type) {
       case 'full':
         return {
-          day: dayjs(+value).format('D'),
-          month: dayjs(+value).format('MMM'),
-          week: dayjs(+value).format('DD.MM'),
-          weekday: dayjs(+value).calendar(null, {
-            lastDay: `[${t('dates.day.last')}], dddd`,
-            lastWeek: 'dddd',
-            nextDay: `[${t('dates.day.next')}], dddd`,
-            nextWeek: 'dddd',
-            sameDay: `[${t('dates.day.today')}], dddd`,
-            sameElse: 'dddd',
-          }),
-          year: dayjs(+value).format('YYYY'),
+          day: formatByLocale(date, 'd', locale.value),
+          month: formatByLocale(date, 'MMM', locale.value),
+          week: formatByLocale(date, 'dd.MM', locale.value),
+          weekday: `${calculateDate({ by: 'day', duration: 1, end: date, start: date, type: 'start' })}, ${formatByLocale(date, 'EEEE', locale.value)}`,
         }
 
       case 'trnItem':
-        if (dayjs().isSame(+value, 'day'))
-          return t('dates.day.today')
-
-        if (dayjs().isSame(dayjs(+value).add(1, 'day'), 'day'))
-          return t('dates.day.last')
-
-        if (dayjs().isSame(+value, 'year'))
-          return dayjs(+value).format('DD.MM')
-
-        return dayjs(+value).format('DD.MM.YY')
+        return calculateDate({ by: 'day', duration: 1, end: date, start: date, type: 'start' })
 
       default:
-        return dayjs(+value).format('D MMMM YY')
+        return calculateDate({ by: 'day', duration: 1, end: date, start: date, type: 'start' })
     }
   }
 
   return {
     formatDate,
     getDates,
-    getFormatForChart,
   }
 }

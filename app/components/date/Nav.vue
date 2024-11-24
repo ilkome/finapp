@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-import type { StatDateProvider } from '~/components/date/types'
+import type { Range, StatDateProvider } from '~/components/date/types'
+import { getEndOf } from '~/components/date/utils'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
@@ -9,10 +9,10 @@ const props = defineProps<{
 
 const statDate = inject('statDate') as StatDateProvider
 
-const isDayToday = computed(() => statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1 && statDate.range.value.end < dayjs().endOf('day').valueOf())
+const isDayToday = computed(() => statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1 && statDate.range.value.end < getEndOf(new Date(), 'day').getTime())
 
 const isEnd = computed(() => {
-  if (statDate.range.value.end >= dayjs().endOf(statDate.params.value.rangeBy).valueOf() && !isDayToday.value) {
+  if (statDate.range.value.end >= getEndOf(new Date(), statDate.params.value.rangeBy).getTime() && !isDayToday.value) {
     return true
   }
 

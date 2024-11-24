@@ -1,6 +1,6 @@
 import { format, isSameDay, isSameMonth, isSameWeek, isSameYear, sub } from 'date-fns'
-import { ru } from 'date-fns/locale'
 import type { Range, StatDateParams } from '~/components/date/types'
+import { formatByLocale } from '~/components/date/utils'
 
 type DateFormatParams = {
   by: StatDateParams['rangeBy']
@@ -12,11 +12,6 @@ type DateFormatParams = {
 
 export function useGetDateRange(t: (key: string, choice?: number) => string, locale?: 'en' | 'ru') {
   const today = new Date()
-  const formatOptions = (locale && locale === 'ru') ? { locale: ru } : {}
-
-  function formatByLocale(date: Date, formatter: string) {
-    return format(date, formatter, formatOptions)
-  }
 
   // Helper functions for period handling
   function handleCurrentPeriod(by: StatDateParams['rangeBy'], type: 'start' | 'end') {
@@ -33,58 +28,58 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
 
   function formatYearRange({ duration, end, start, type }: DateFormatParams): string {
     if (type === 'start')
-      return duration === 1 ? formatByLocale(start, 'yyyy') : `${formatByLocale(start, 'yyyy')} - ${formatByLocale(end, 'yyyy')}`
+      return duration === 1 ? formatByLocale(start, 'yyyy', locale) : `${formatByLocale(start, 'yyyy', locale)} - ${formatByLocale(end, 'yyyy', locale)}`
     return ''
   }
 
   function formatMonthRange({ duration, end, start, type }: DateFormatParams): string {
     if (isSameYear(start, today)) {
       if (isSameMonth(start, today) || duration === 1)
-        return type === 'start' ? formatByLocale(start, 'MMM') : ''
-      return type === 'start' ? formatByLocale(start, 'MMM') : ` - ${formatByLocale(end, 'MMM')}`
+        return type === 'start' ? formatByLocale(start, 'MMM', locale) : ''
+      return type === 'start' ? formatByLocale(start, 'MMM', locale) : ` - ${formatByLocale(end, 'MMM', locale)}`
     }
 
     if (isSameYear(start, end)) {
       if (isSameMonth(start, end))
-        return type === 'start' ? formatByLocale(start, 'MMM yyyy') : ''
-      return type === 'start' ? formatByLocale(start, 'MMM') : ` - ${formatByLocale(end, 'MMM yyyy')}`
+        return type === 'start' ? formatByLocale(start, 'MMM yyyy', locale) : ''
+      return type === 'start' ? formatByLocale(start, 'MMM', locale) : ` - ${formatByLocale(end, 'MMM yyyy', locale)}`
     }
 
-    return type === 'start' ? formatByLocale(start, 'MMM yyyy') : ` - ${formatByLocale(end, 'MMM yyyy')}`
+    return type === 'start' ? formatByLocale(start, 'MMM yyyy', locale) : ` - ${formatByLocale(end, 'MMM yyyy', locale)}`
   }
 
   function formatWeekRange({ end, start, type }: DateFormatParams): string {
     if (isSameYear(start, today)) {
       if (isSameMonth(start, today) || isSameMonth(start, end))
-        return type === 'start' ? formatByLocale(start, 'd') : `-${formatByLocale(end, 'd MMM')}`
-      return type === 'start' ? formatByLocale(start, 'd MMM') : ` - ${formatByLocale(end, 'd MMM')}`
+        return type === 'start' ? formatByLocale(start, 'd', locale) : `-${formatByLocale(end, 'd MMM', locale)}`
+      return type === 'start' ? formatByLocale(start, 'd MMM', locale) : ` - ${formatByLocale(end, 'd MMM', locale)}`
     }
 
     if (isSameYear(start, end)) {
       if (isSameMonth(start, end))
-        return type === 'start' ? formatByLocale(start, 'd') : `-${formatByLocale(end, 'd MMM yyyy')}`
-      return type === 'start' ? formatByLocale(start, 'd MMM') : ` - ${formatByLocale(end, 'd MMM yyyy')}`
+        return type === 'start' ? formatByLocale(start, 'd', locale) : `-${formatByLocale(end, 'd MMM yyyy', locale)}`
+      return type === 'start' ? formatByLocale(start, 'd MMM', locale) : ` - ${formatByLocale(end, 'd MMM yyyy', locale)}`
     }
 
-    return type === 'start' ? formatByLocale(start, 'd MMM yyyy') : ` - ${formatByLocale(end, 'd MMM yyyy')}`
+    return type === 'start' ? formatByLocale(start, 'd MMM yyyy', locale) : ` - ${formatByLocale(end, 'd MMM yyyy', locale)}`
   }
 
   function formatDayRange({ duration, end, start, type }: DateFormatParams): string {
     if (isSameYear(start, today)) {
       if (isSameMonth(start, end))
-        return type === 'start' ? formatByLocale(start, 'd') : `-${formatByLocale(end, 'd MMM')}`
-      return type === 'start' ? formatByLocale(start, 'd MMM') : ` - ${formatByLocale(end, 'd MMM')}`
+        return type === 'start' ? formatByLocale(start, 'd', locale) : `-${formatByLocale(end, 'd MMM', locale)}`
+      return type === 'start' ? formatByLocale(start, 'd MMM', locale) : ` - ${formatByLocale(end, 'd MMM', locale)}`
     }
 
     if (isSameYear(start, end)) {
       if (duration === 1)
-        return type === 'start' ? formatByLocale(start, 'd MMM yyyy') : ''
+        return type === 'start' ? formatByLocale(start, 'd MMM yyyy', locale) : ''
       if (isSameMonth(start, end))
-        return type === 'start' ? formatByLocale(start, 'd') : `-${formatByLocale(end, 'd MMM yyyy')}`
-      return type === 'start' ? formatByLocale(start, 'd MMM') : ` - ${formatByLocale(end, 'd MMM yyyy')}`
+        return type === 'start' ? formatByLocale(start, 'd', locale) : `-${formatByLocale(end, 'd MMM yyyy', locale)}`
+      return type === 'start' ? formatByLocale(start, 'd MMM', locale) : ` - ${formatByLocale(end, 'd MMM yyyy', locale)}`
     }
 
-    return type === 'start' ? formatByLocale(start, 'd MMM yyyy') : ` - ${formatByLocale(end, 'd MMM yyyy')}`
+    return type === 'start' ? formatByLocale(start, 'd MMM yyyy', locale) : ` - ${formatByLocale(end, 'd MMM yyyy', locale)}`
   }
 
   function calculateDate(params: DateFormatParams): string {
@@ -169,5 +164,5 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
     return `${yearStart}${yearEnd}`
   }
 
-  return { getStringDateRange }
+  return { calculateDate, getStringDateRange }
 }

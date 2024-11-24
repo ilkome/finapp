@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { onLongPress } from '@vueuse/core'
-import dayjs from 'dayjs'
-import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import type { CategoryId } from '~/components/categories/types'
+import type { Range, StatDateProvider } from '~/components/date/types'
 import type { TotalCategory, ViewOptions } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import type { Range, StatDateProvider } from '~/components/date/types'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
   biggestCatNumber: {
@@ -70,7 +69,7 @@ onLongPress(
         state.values.date = statDate.selectedInterval.value!.start
       }
       else {
-        state.values.date = dayjs().valueOf()
+        state.values.date = new Date().getTime()
       }
     })
   },

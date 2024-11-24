@@ -1,13 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import dayjs from 'dayjs'
+import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns'
 import { getIntervalsInRange } from './utils'
 import type { IntervalsInRangeProps } from './types'
-
-// @ts-expect-error works for tests
-dayjs.locale({
-  name: 'en',
-  weekStart: 1,
-})
 
 describe('getIntervalsInRange', () => {
   it('should return correct grouped ranges for months', () => {
@@ -15,8 +9,8 @@ describe('getIntervalsInRange', () => {
       intervalsBy: 'month',
       intervalsDuration: 1,
       range: {
-        end: dayjs('2024-03-01').endOf('month').valueOf(),
-        start: dayjs('2024-01-01').valueOf(),
+        end: endOfMonth(new Date('2024-03-01')).getTime(),
+        start: new Date('2024-01-01').getTime(),
       },
       rangeOffset: 0,
     }
@@ -25,16 +19,16 @@ describe('getIntervalsInRange', () => {
 
     expect(result).toHaveLength(3)
     expect(result.at(0)).toEqual({
-      end: dayjs('2024-01-31').endOf('month').valueOf(),
-      start: dayjs('2024-01-01').startOf('month').valueOf(),
+      end: endOfMonth(new Date('2024-01-31')).getTime(),
+      start: startOfMonth(new Date('2024-01-01')).getTime(),
     })
     expect(result[1]).toEqual({
-      end: dayjs('2024-02-29').endOf('month').valueOf(),
-      start: dayjs('2024-02-01').startOf('month').valueOf(),
+      end: endOfMonth(new Date('2024-02-29')).getTime(),
+      start: startOfMonth(new Date('2024-02-01')).getTime(),
     })
     expect(result[2]).toEqual({
-      end: dayjs('2024-03-31').endOf('month').valueOf(),
-      start: dayjs('2024-03-01').startOf('month').valueOf(),
+      end: endOfMonth(new Date('2024-03-31')).getTime(),
+      start: startOfMonth(new Date('2024-03-01')).getTime(),
     })
   })
 
@@ -43,8 +37,8 @@ describe('getIntervalsInRange', () => {
       intervalsBy: 'month',
       intervalsDuration: 1,
       range: {
-        end: dayjs('2024-03-15').endOf('month').valueOf(),
-        start: dayjs('2024-01-15').startOf('month').valueOf(),
+        end: endOfMonth(new Date('2024-03-15')).getTime(),
+        start: startOfMonth(new Date('2024-01-15')).getTime(),
       },
       rangeOffset: 0,
     }
@@ -53,16 +47,16 @@ describe('getIntervalsInRange', () => {
 
     expect(result).toHaveLength(3)
     expect(result.at(0)).toEqual({
-      end: dayjs('2024-01-31').endOf('month').valueOf(),
-      start: dayjs('2024-01-01').valueOf(),
+      end: endOfMonth(new Date('2024-01-31')).getTime(),
+      start: startOfMonth(new Date('2024-01-01')).getTime(),
     })
     expect(result[1]).toEqual({
-      end: dayjs('2024-02-29').endOf('month').valueOf(),
-      start: dayjs('2024-02-01').valueOf(),
+      end: endOfMonth(new Date('2024-02-29')).getTime(),
+      start: startOfMonth(new Date('2024-02-01')).getTime(),
     })
     expect(result[2]).toEqual({
-      end: dayjs('2024-03-31').endOf('month').valueOf(),
-      start: dayjs('2024-03-01').valueOf(),
+      end: endOfMonth(new Date('2024-03-31')).getTime(),
+      start: startOfMonth(new Date('2024-03-01')).getTime(),
     })
   })
 
@@ -71,8 +65,8 @@ describe('getIntervalsInRange', () => {
       intervalsBy: 'week',
       intervalsDuration: 1,
       range: {
-        end: dayjs('2024-04-30').valueOf(),
-        start: dayjs('2024-02-01').valueOf(),
+        end: new Date('2024-04-30').getTime(),
+        start: new Date('2024-02-01').getTime(),
       },
       rangeOffset: 0,
     }
@@ -81,13 +75,13 @@ describe('getIntervalsInRange', () => {
 
     expect(result).toHaveLength(14)
     expect(result.at(0)).toEqual({
-      end: dayjs('2024-02-04').endOf('day').valueOf(),
-      start: dayjs('2024-02-01').valueOf(),
+      end: endOfDay(new Date('2024-02-04')).getTime(),
+      start: startOfDay(new Date('2024-02-01')).getTime(),
     })
 
     expect(result.at(-1)).toEqual({
-      end: dayjs('2024-04-30').endOf('day').valueOf(),
-      start: dayjs('2024-04-29').valueOf(),
+      end: endOfDay(new Date('2024-04-30')).getTime(),
+      start: startOfDay(new Date('2024-04-29')).getTime(),
     })
   })
 })

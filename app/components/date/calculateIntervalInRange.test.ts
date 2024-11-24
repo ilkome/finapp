@@ -1,13 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import dayjs from 'dayjs'
+import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subWeeks } from 'date-fns'
 import { calculateIntervalInRange } from '~/components/date/utils'
 import type { IntervalsInRangeProps, Range } from '~/components/date/types'
-
-// @ts-expect-error works for tests
-dayjs.locale({
-  name: 'en',
-  weekStart: 1,
-})
 
 describe('calculateIntervalInRange', () => {
   describe('fixed dates', () => {
@@ -16,8 +10,8 @@ describe('calculateIntervalInRange', () => {
         intervalsBy: 'month',
         intervalsDuration: 1,
         range: {
-          end: dayjs('2024-03-15').valueOf(),
-          start: dayjs('2024-03-01').valueOf(),
+          end: new Date('2024-03-15').getTime(),
+          start: new Date('2024-03-01').getTime(),
         },
         rangeOffset: 0,
       }
@@ -25,8 +19,8 @@ describe('calculateIntervalInRange', () => {
       const result = calculateIntervalInRange(params)
 
       expect(result).toEqual({
-        end: dayjs('2024-03-31').endOf('day').valueOf(),
-        start: dayjs('2024-03-01').startOf('day').valueOf(),
+        end: endOfDay(new Date('2024-03-31')).getTime(),
+        start: startOfDay(new Date('2024-03-01')).getTime(),
       })
     })
 
@@ -35,8 +29,8 @@ describe('calculateIntervalInRange', () => {
         intervalsBy: 'month',
         intervalsDuration: 3,
         range: {
-          end: dayjs('2024-03-15').valueOf(),
-          start: dayjs('2024-01-01').valueOf(),
+          end: new Date('2024-03-15').getTime(),
+          start: new Date('2024-01-01').getTime(),
         },
         rangeOffset: 0,
       }
@@ -44,8 +38,8 @@ describe('calculateIntervalInRange', () => {
       const result = calculateIntervalInRange(params)
 
       expect(result).toEqual({
-        end: dayjs('2024-03-31').endOf('day').valueOf(),
-        start: dayjs('2024-01-01').startOf('day').valueOf(),
+        end: endOfDay(new Date('2024-03-31')).getTime(),
+        start: startOfDay(new Date('2024-01-01')).getTime(),
       })
     })
 
@@ -54,8 +48,8 @@ describe('calculateIntervalInRange', () => {
         intervalsBy: 'day',
         intervalsDuration: 7,
         range: {
-          end: dayjs('2024-03-15').valueOf(),
-          start: dayjs('2024-03-09').valueOf(),
+          end: new Date('2024-03-15').getTime(),
+          start: new Date('2024-03-09').getTime(),
         },
         rangeOffset: 0,
       }
@@ -63,8 +57,8 @@ describe('calculateIntervalInRange', () => {
       const result = calculateIntervalInRange(params)
 
       expect(result).toEqual({
-        end: dayjs('2024-03-15').endOf('day').valueOf(),
-        start: dayjs('2024-03-09').startOf('day').valueOf(),
+        end: endOfDay(new Date('2024-03-15')).getTime(),
+        start: startOfDay(new Date('2024-03-09')).getTime(),
       })
     })
 
@@ -73,8 +67,8 @@ describe('calculateIntervalInRange', () => {
         intervalsBy: 'year',
         intervalsDuration: 1,
         range: {
-          end: dayjs('2024-03-15').valueOf(),
-          start: dayjs('2024-02-01').valueOf(),
+          end: new Date('2024-03-15').getTime(),
+          start: new Date('2024-02-01').getTime(),
         },
         rangeOffset: 0,
       }
@@ -82,19 +76,18 @@ describe('calculateIntervalInRange', () => {
       const result = calculateIntervalInRange(params)
 
       expect(result).toEqual({
-        end: dayjs('2024-12-31').endOf('day').valueOf(),
-        start: dayjs('2024-01-01').valueOf(),
+        end: endOfDay(new Date('2024-12-31')).getTime(),
+        start: startOfDay(new Date('2024-01-01')).getTime(),
       })
     })
 
-    // for 2 weeks
     it('should calculate range for 2 weeks period', () => {
       const params: IntervalsInRangeProps = {
         intervalsBy: 'week',
         intervalsDuration: 2,
         range: {
-          end: dayjs('2024-11-15').valueOf(),
-          start: dayjs('2024-11-15').valueOf(),
+          end: new Date('2024-11-15').getTime(),
+          start: new Date('2024-11-08').getTime(),
         },
         rangeOffset: 0,
       }
@@ -102,16 +95,16 @@ describe('calculateIntervalInRange', () => {
       const result = calculateIntervalInRange(params)
 
       expect(result).toEqual({
-        end: dayjs('2024-11-17').endOf('day').valueOf(),
-        start: dayjs('2024-11-04').valueOf(),
+        end: endOfDay(new Date('2024-11-17')).getTime(),
+        start: startOfDay(new Date('2024-11-04')).getTime(),
       })
     })
   })
 
   describe('from today dates', () => {
     const range: Range = {
-      end: dayjs().valueOf(),
-      start: dayjs().valueOf(),
+      end: new Date().getTime(),
+      start: new Date().getTime(),
     }
 
     it('should calculate range for this month', () => {
@@ -125,8 +118,8 @@ describe('calculateIntervalInRange', () => {
       const result = calculateIntervalInRange(params)
 
       expect(result).toEqual({
-        end: dayjs().endOf('month').valueOf(),
-        start: dayjs().startOf('month').valueOf(),
+        end: endOfMonth(new Date()).getTime(),
+        start: startOfMonth(new Date()).getTime(),
       })
     })
 
@@ -141,8 +134,8 @@ describe('calculateIntervalInRange', () => {
       const result = calculateIntervalInRange(params)
 
       expect(result).toEqual({
-        end: dayjs().endOf('week').valueOf(),
-        start: dayjs().startOf('week').valueOf(),
+        end: endOfWeek(new Date(), { weekStartsOn: 1 }).getTime(),
+        start: startOfWeek(new Date(), { weekStartsOn: 1 }).getTime(),
       })
     })
 
@@ -157,8 +150,8 @@ describe('calculateIntervalInRange', () => {
       const result = calculateIntervalInRange(params)
 
       expect(result).toEqual({
-        end: dayjs().endOf('week').valueOf(),
-        start: dayjs().subtract(1, 'week').startOf('week').valueOf(),
+        end: endOfWeek(new Date(), { weekStartsOn: 1 }).getTime(),
+        start: startOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 1 }).getTime(),
       })
     })
 
@@ -173,8 +166,8 @@ describe('calculateIntervalInRange', () => {
       const result = calculateIntervalInRange(params)
 
       expect(result).toEqual({
-        end: dayjs().subtract(1, 'week').endOf('week').valueOf(),
-        start: dayjs().subtract(1, 'week').startOf('week').valueOf(),
+        end: endOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 1 }).getTime(),
+        start: startOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 1 }).getTime(),
       })
     })
   })

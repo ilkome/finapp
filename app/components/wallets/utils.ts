@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import type { WalletForm, WalletItem, WalletItemRaw, Wallets, WalletsRaw } from '~/components/wallets/types'
 import { colorsArray } from '~/components/color/colors'
 import { random } from '~/assets/js/emo'
@@ -7,7 +6,7 @@ export function normalizeWalletItem(wallet?: WalletItemRaw | WalletForm) {
   const walletBase = {
     color: wallet?.color ?? random(colorsArray),
     currency: wallet?.currency ?? 'USD',
-    editedAt: wallet?.editedAt ?? wallet?.edited ?? dayjs().valueOf(),
+    editedAt: wallet?.editedAt ?? wallet?.edited ?? new Date().getTime(),
     isArchived: wallet?.isArchived ?? wallet?.archived ?? false,
     isExcludeInTotal: wallet?.isExcludeInTotal ?? false,
     isWithdrawal: wallet?.isWithdrawal ?? wallet?.withdrawal ?? false,

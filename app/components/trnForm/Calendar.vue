@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import 'v-calendar/style.css'
-import dayjs from 'dayjs'
 import { DatePicker } from 'v-calendar'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
@@ -12,12 +11,12 @@ const colorMode = useColorMode()
 const trnsFormStore = useTrnsFormStore()
 
 const isDark = computed(() => colorMode.preference === 'dark' || colorMode.preference === 'system')
-const date = ref(dayjs(trnsFormStore.values.date).toString())
+const date = ref(new Date(trnsFormStore.values.date).toISOString())
 const maxDate = new Date()
 
 watch(date, (value) => {
   if (value) {
-    trnsFormStore.values.date = dayjs(value).valueOf()
+    trnsFormStore.values.date = new Date(+value).getTime()
     props.hide()
   }
 })

@@ -1,14 +1,13 @@
-import dayjs from 'dayjs'
+// import { useInitApp } from '~/components/app/useInitApp'
 import localforage from 'localforage'
-import { deepUnref } from 'vue-deepunref'
-import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
+import { startOfYear, subYears } from 'date-fns'
 import currencies from '~/components/demo/currencies.json'
 import data from '~/components/demo/data'
 import type { AddCategoryParams, CategoryId } from '~/components/categories/types'
 import type { TrnId, Trns } from '~/components/trns/types'
+import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { useInitApp } from '~/components/app/useInitApp'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -26,7 +25,7 @@ export function useDemo() {
   const trnsStore = useTrnsStore()
 
   async function generateDemoData() {
-    const { clearLocalData } = useInitApp()
+    // const { clearLocalData } = useInitApp()
 
     localforage.clear()
     // await clearLocalData()
@@ -36,8 +35,8 @@ export function useDemo() {
     categoriesStore.setCategories(data.categories)
     walletsStore.setWallets(data.wallets)
 
-    const startDate = dayjs().startOf('year').subtract(config.subtractYears, 'year').valueOf()
-    const endDate = dayjs()
+    const startDate = subYears(startOfYear(new Date()), config.subtractYears).getTime()
+    const endDate = new Date().getTime()
 
     const trns: Trns = [...Array(config.trnsCount)].reduce((acc, _, i) => {
       return {
@@ -45,7 +44,7 @@ export function useDemo() {
         [i]: {
           amount: Math.floor(Math.random() * config.amount) + 1,
           categoryId: categoriesStore.getTransactibleIds()[Math.floor(Math.random() * categoriesStore.getTransactibleIds().length)],
-          date: startDate.valueOf() + Math.random() * (endDate.valueOf() - startDate.valueOf()),
+          date: startDate + Math.random() * (endDate - startDate),
           id: i,
           type: Math.random() < 0.5 ? 0 : 1,
           walletId: walletsStore.sortedIds[Math.floor(Math.random() * walletsStore.sortedIds.length)],

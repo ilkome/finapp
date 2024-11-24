@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import type { Range } from '~/components/date/types'
@@ -27,6 +26,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useDemo } from '~/components/demo/useDemo'
+import { getEndOf, getStartOf } from '~/components/date/utils'
 
 type TrnsGetterParams = {
   includesChildCategories?: boolean
@@ -52,14 +52,14 @@ export const useTrnsStore = defineStore('trns', () => {
   function getRange(trnsIds: TrnId[]): Range {
     if (!items.value) {
       return {
-        end: dayjs().endOf('day').valueOf(),
-        start: dayjs().startOf('day').valueOf(),
+        end: getEndOf(new Date(), 'day').getTime(),
+        start: getStartOf(new Date(), 'day').getTime(),
       }
     }
 
     return {
-      end: items.value[trnsIds.at(0)!]?.date ?? dayjs().endOf('day').valueOf(),
-      start: items.value[trnsIds.at(-1)!]?.date ?? dayjs().startOf('day').valueOf(),
+      end: items.value[trnsIds.at(0)!]?.date ?? getEndOf(new Date(), 'day').getTime(),
+      start: items.value[trnsIds.at(-1)!]?.date ?? getStartOf(new Date(), 'day').getTime(),
     }
   }
 
@@ -99,7 +99,7 @@ export const useTrnsStore = defineStore('trns', () => {
     let isTrnSavedOnline = false
     const valuesWithEditDate = {
       ...values,
-      edited: dayjs().valueOf(),
+      edited: new Date().getTime(),
     }
 
     localforage.setItem('finapp.trns', deepUnref({ ...items.value, [id]: valuesWithEditDate }))

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onLongPress } from '@vueuse/core'
-import dayjs from 'dayjs'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import type { CategoryId } from '~/components/categories/types'
 import type { TotalCategory, ViewOptions } from '~/components/stat/types'
@@ -70,7 +69,7 @@ onLongPress(
         state.values.date = statDate.selectedInterval.value!.start
       }
       else {
-        state.values.date = dayjs().valueOf()
+        state.values.date = new Date().getTime()
       }
     })
   },

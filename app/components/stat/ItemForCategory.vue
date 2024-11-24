@@ -21,6 +21,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   hasChildren: boolean
+  isOneCategory?: boolean
   isQuickModal?: boolean
   preCategoriesIds?: CategoryId[]
   quickModalCategoryId?: CategoryId
@@ -30,7 +31,6 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const route = useRoute()
 const filter = inject('filter') as FilterProvider
 const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
@@ -104,6 +104,11 @@ onBeforeMount(() => {
   }
 
   if (props.hasChildren) {
+    viewOptions.value.catsList.isGrouped = false
+    viewOptions.value.catsRound.isGrouped = false
+  }
+
+  if (props.isOneCategory) {
     viewOptions.value.catsList.isGrouped = false
     viewOptions.value.catsRound.isGrouped = false
   }
@@ -392,7 +397,7 @@ const quickModalTrnsIds = computed(() => {
               <StatCategoriesButtons
                 v-if="isShown"
                 :viewOptions
-                isShowGrouping
+                :isShowGrouping="!isOneCategory"
                 @changeViewOptions="changeViewOptions"
               />
             </div>

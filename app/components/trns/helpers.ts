@@ -1,12 +1,9 @@
-import dayjs from 'dayjs'
 import localforage from 'localforage'
+import { getStartOf } from '~/components/date/utils'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
-/**
- * Get the oldest Transaction date
- */
 export function getOldestTrnDate(trnsItems: Record<TrnId, TrnItem>): number {
-  const startOfToday = dayjs().startOf('day').valueOf()
+  const startOfToday = getStartOf(new Date(), 'day').getTime()
   const minDate = Math.min(...Object.values(trnsItems).map(trn => trn.date))
   return minDate || startOfToday
 }

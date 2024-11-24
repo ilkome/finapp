@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
 import { onLongPress } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 import type { StatDateProvider } from '~/components/date/types'
@@ -60,7 +59,7 @@ onLongPress(
         state.values.date = statDate.selectedInterval.value!.start
       }
       else {
-        state.values.date = dayjs().valueOf()
+        state.values.date = new Date().getTime()
       }
     })
   },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
+import { differenceInDays } from 'date-fns'
 import type { Range } from '~/components/date/types'
 
 const props = defineProps<{
@@ -13,21 +13,22 @@ const period = defineModel('period', {
 const { t } = useI18n()
 
 const items = computed(() => {
+  const dayDiff = differenceInDays(props.range.end, props.range.start)
+
   const items = [{
-    isShow: period.value !== 'day' || dayjs(props.range.end).diff(props.range.start, 'day') > 7,
-    // isShow: true,
+    isShow: period.value !== 'day' || dayDiff > 7,
     label: t('dates.day.simple'),
     value: 'day',
   }, {
-    isShow: dayjs(props.range.end).diff(props.range.start, 'day') >= 7,
+    isShow: dayDiff >= 7,
     label: t('dates.week.simple'),
     value: 'week',
   }, {
-    isShow: dayjs(props.range.end).diff(props.range.start, 'day') >= 30,
+    isShow: dayDiff >= 30,
     label: t('dates.month.simple'),
     value: 'month',
   }, {
-    isShow: dayjs(props.range.end).diff(props.range.start, 'day') >= 400,
+    isShow: dayDiff >= 400,
     label: t('dates.year.simple'),
     value: 'year',
   }]

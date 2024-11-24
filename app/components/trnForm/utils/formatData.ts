@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import type { Transaction, Transfer } from '~/components/trns/types'
 import type { TrnFormValues } from '~/components/trnForm/types'
 
@@ -11,8 +10,8 @@ function formatTransaction(props: TrnFormValues): Transaction | false {
     amount: props.amount[0],
     categoryId: props.categoryId,
 
-    date: props.date || dayjs().valueOf(),
-    edited: dayjs().valueOf(),
+    date: props.date || new Date().getTime(),
+    edited: new Date().getTime(),
 
     type: props.trnType,
     walletId: props.walletId,
@@ -33,7 +32,7 @@ function formatTransfer(props: TrnFormValues): Transfer | false {
     categoryId: 'transfer' as const,
     date: props.date,
 
-    edited: dayjs().valueOf(),
+    edited: new Date().getTime(),
     expenseAmount: props.amount[1],
 
     expenseWalletId: props.expenseWalletId,

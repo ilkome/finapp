@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-import type { IntervalGroupedLabel, Range, StatDateProvider } from '~/components/date/types'
-import { calculateBestIntervalsBy } from '~/components/date/utils'
-import type { ViewOptions } from '~/components/stat/types'
+import { differenceInDays } from 'date-fns'
 import type { DeepPartial } from '~~/utils/types'
+import type { IntervalGroupedLabel, Range, StatDateProvider } from '~/components/date/types'
+import type { ViewOptions } from '~/components/stat/types'
+import { calculateBestIntervalsBy } from '~/components/date/utils'
 
 const props = defineProps<{
   maxRange: Range
@@ -120,7 +120,7 @@ function setMaxRange(isSkipEmpty = false) {
     catsView: 'list',
   })
 
-  const rangeDuration = dayjs(props.maxRange.end).diff(props.maxRange.start, 'day')
+  const rangeDuration = differenceInDays(props.maxRange.end, props.maxRange.start)
   const intervalsBy = calculateBestIntervalsBy(props.maxRange)
 
   statDate.setRangeByPeriod({

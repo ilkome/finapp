@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import VChart from 'vue-echarts'
-import dayjs from 'dayjs'
 import defu from 'defu'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { DataZoomComponent, GridComponent, MarkAreaComponent, MarkLineComponent, MarkPointComponent, TooltipComponent } from 'echarts/components'
@@ -11,7 +10,7 @@ import type { Period } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import { config, lineConfig } from '~/components/stat/chart/config2'
 import { setChartXAxis } from '~/components/stat/chart/utils'
-import { useDateFormats } from '~/components/date/useDateFormats'
+import { formatByLocale, getFormatForChart } from '~/components/date/utils'
 
 const props = withDefaults(
   defineProps<{
@@ -49,8 +48,8 @@ use([
   TooltipComponent,
 ])
 
+const { locale } = useI18n()
 const statConfig = inject('statConfig') as StatConfigProvider
-const { getFormatForChart } = useDateFormats()
 const chartRef = ref()
 
 const option = computed(() => {
@@ -61,10 +60,10 @@ const option = computed(() => {
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
-    return dayjs(+date).format(getFormatForChart(props.period))
+    return formatByLocale(new Date(+date), getFormatForChart(props.period), locale.value)
   }
-  data.xAxis.axisPointer.label.formatter = ({ value } = { value: string }) => {
-    return dayjs(+value).format(getFormatForChart(props.period))
+  data.xAxis.axisPointer.label.formatter = ({ value }: { value: string }) => {
+    return formatByLocale(new Date(+value), getFormatForChart(props.period), locale.value)
   }
 
   return data

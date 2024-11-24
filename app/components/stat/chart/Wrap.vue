@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
+import { sub } from 'date-fns'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { ChartType } from '~/components/stat/chart/types'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { getEndOf, getStartOf } from '~/components/date/utils'
 
 const props = defineProps<{
   maxRange: Range
@@ -43,6 +44,21 @@ function onClickChart(idx: number) {
     }
   }
 }
+
+const isShowNavHome = computed(() => {
+  const start = getStartOf(sub(new Date(), { [`${statDate.params.value.rangeBy}s`]: statDate.params.value.rangeDuration - 1 }), statDate.params.value.rangeBy).getTime()
+  const end = getEndOf(new Date(), statDate.params.value.rangeBy).getTime()
+
+  return !statDate.params.value.isShowMaxRange && (statDate.params.value.intervalSelected !== -1 || (statDate.range.value.start !== start && statDate.range.value.end !== end))
+})
+
+const isShowNavPrev = computed(() => {
+  return statConfig.config.value?.chartShow && (statDate.params.value.rangeDuration !== 1 || statDate.params.value.rangeBy !== 'day') && statDate.groupedPeriods.value.length > 1
+})
+
+const isShowNavNext = computed(() => {
+  return !statDate.params.value.isShowMaxRange && (statDate.range.value.start < new Date().getTime() || (statDate.range.value.start !== props.maxRange.start && statDate.range.value.end !== props.maxRange.end))
+})
 </script>
 
 <template>
@@ -53,7 +69,7 @@ function onClickChart(idx: number) {
     }"
   >
     <div
-      v-if="statConfig.config.value?.chartShow && (statDate.params.value.rangeDuration !== 1 || statDate.params.value.rangeBy !== 'day') && statDate.groupedPeriods.value.length > 1"
+      v-if="isShowNavPrev"
       class="pb-2"
     >
       <div class="flex justify-between">
@@ -86,11 +102,11 @@ function onClickChart(idx: number) {
         class="flex gap-1"
       >
         <DateNavHome
-          v-if="statDate.params.value.intervalSelected !== -1 || (statDate.range.value.start !== dayjs().subtract(statDate.params.value.rangeDuration - 1, statDate.params.value.rangeBy).startOf(statDate.params.value.rangeBy).valueOf() && statDate.range.value.end !== dayjs().endOf(statDate.params.value.rangeBy).valueOf() && !statDate.params.value.isShowMaxRange)"
+          v-if="isShowNavHome"
         />
 
         <DateNav
-          v-if="!statDate.params.value.isShowMaxRange && (statDate.range.value.start < dayjs().valueOf() || (statDate.range.value.start !== maxRange.start && statDate.range.value.end !== maxRange.end))"
+          v-if="isShowNavNext"
           :maxRange
         />
       </div>

@@ -108,6 +108,7 @@ useHead({ title: category.value?.name })
           :storageKey="categoryId"
           :preCategoriesIds="statConfig.config.value.isShowEmptyCategories ? childIds : []"
           :trnsIds="trnsIds"
+          isOneCategory
           class="max-w-6xl pb-24 lg:gap-8 lg:px-4 xl:py-2"
           type="sum"
         />
