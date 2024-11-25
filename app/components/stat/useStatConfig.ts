@@ -7,6 +7,7 @@ const ConfigSchema = z.object({
   chartShow: z.boolean(),
   chartType: z.enum(chartTypes),
   chartView: z.enum(chartViewOptions),
+  isShowCategoriesVertical: z.boolean(),
   isShowEmptyCategories: z.boolean(),
   showedWallets: z.number(),
 })
@@ -26,6 +27,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     chartShow: true,
     chartType: 'bar',
     chartView: 'half',
+    isShowCategoriesVertical: true,
     isShowEmptyCategories: false,
     showedWallets: 0,
   })

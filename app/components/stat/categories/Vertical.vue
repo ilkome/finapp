@@ -44,9 +44,23 @@ function getBarStyle() {
 
   return {
     backgroundColor: category.value?.color,
-    width: `${(Math.abs(props.item.value) / Math.abs(reference)) * 100}%`,
+    height: `${(Math.abs(props.item.value) / Math.abs(reference)) * 100}%`,
   }
 }
+
+const amount = computed(() => {
+  const abs = Math.abs(props.item.value)
+  const sign = props.item.value > 0 ? '' : '-'
+
+  if (abs >= 1000000)
+    return `${sign}${(props.item.value / 1000000).toFixed(2)}m`
+  else if (abs >= 10000)
+    return `${sign}${(abs / 1000).toFixed()}k`
+  else if (abs > 999)
+    return `${sign}${(abs / 1000).toFixed(1)}k`
+
+  return `${sign}${props.item.value.toFixed()}`
+})
 
 // TODO: addTrnFromSelectedInterval
 const longPressRef = ref(null)
@@ -87,80 +101,43 @@ onLongPress(
   <div
     v-if="category"
     ref="longPressRef"
-    :class="[props.insideClass, {
-      '-bg-item-4 ': props.isActive,
-      'bg-item-9 rounded-lg': props.viewOptions?.catsList.isItemsBg,
-      'group': !props.viewOptions?.catsList.isItemsBg,
-    }]"
-    :style="props.insideStyle"
-    class="relative"
+    class="hocus:bg-item-5 rounded p-1"
   >
-    <slot name="before" />
-    <UiElement
-      :isActive="props.isActive"
-      :lineWidth="!props.viewOptions?.catsList.isItemsBg ? props.lineWidth : 0"
-      class="relative"
-      insideClasses="!min-h-[44px]"
-      isShowToggle2
-    >
-      <template #line>
-        <div
-          v-if="props.viewOptions?.catsList.isLines"
-          class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pl-[52px] pr-3"
-        >
-          <div class="bg-item-3 overflow-hidden rounded-lg">
-            <div
-              :style="getBarStyle()"
-              class="h-1 opacity-60"
-            />
-          </div>
-        </div>
-      </template>
-
-      <template #leftIcon>
-        <UiIconBase
-          v-if="props.viewOptions?.catsList.isRoundIcon"
-          :color="category?.color"
-          :name="category?.icon"
-          class="ml-0 !w-7 !text-base leading-none"
-          invert
-          @click.stop="emit('onClickIcon', props.item.id)"
-        />
-        <UiIconBase
-          v-else
-          :color="category?.color"
-          :name="category?.icon"
-          class="ml-1 !w-6 !text-xl leading-none"
-          @click.stop="emit('onClickIcon', props.item.id)"
-        />
-      </template>
-
-      <CategoriesName
-        :class="{ '!pb-2': props.viewOptions?.catsList.isLines }"
-        :category
-        :parentCategory
-        :isHideParent="props.isHideParent"
-        :hasChildren="categoriesStore.getChildsIds(props.item.id).length > 0"
-      />
-
+    <div class="bg-item-4 flex h-28 items-end rounded">
       <div
-        v-if="props.item.value !== 0"
-        :class="{
-          '!pb-2': props.viewOptions?.catsList.isLines,
-        }"
-        class="grow pr-1"
+        class="relative w-7 rounded-t"
+        :style="getBarStyle()"
       >
-        <Amount
-          :amount="props.item.value"
-          :type="props.item.value > 0 ? 1 : 0"
-          :currencyCode="currenciesStore.base"
-          :isShowBaseRate="false"
-          :isShowSymbol="false"
-          colorize="income"
-        />
+        <div
+          :class="{
+            'text-income-1': props.item.value > 0,
+          }"
+          class="font-secondary absolute top-[-14px] w-full text-center text-xs leading-none"
+        >
+          {{ amount }}
+        </div>
       </div>
-    </UiElement>
+    </div>
+    <div
+      :class="[category?.icon]"
+      :style="{ backgroundColor: category.color }"
+      class="rounded-b text-center text-lg"
+    />
 
-    <slot />
+    <!-- <UiIconBase
+      v-if="props.viewOptions?.catsList.isRoundIcon"
+      :color="category?.color"
+      :name="category?.icon"
+      class="ml-0 !w-7 !text-base leading-none"
+      invert
+      @click.stop="emit('onClickIcon', props.item.id)"
+    />
+    <UiIconBase
+      v-else
+      :color="category?.color"
+      :name="category?.icon"
+      class="ml-1 !w-6 !text-xl leading-none"
+      @click.stop="emit('onClickIcon', props.item.id)"
+    /> -->
   </div>
 </template>

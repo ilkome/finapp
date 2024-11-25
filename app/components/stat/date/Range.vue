@@ -25,7 +25,11 @@ const date = computed(() => {
 </script>
 
 <template>
-  <div class="!first-letter:text-accent-1 flex gap-1 leading-none">
+  <div class="!first-letter:text-accent-1 flex items-center gap-1 leading-none">
     {{ date }}
+    <data
+      v-if="statDate.params.value.isShowMaxRange"
+      class="bg-item-3 text-2xs text-4 flex items-center rounded px-1 py-px leading-none"
+    >max</data>
   </div>
 </template>

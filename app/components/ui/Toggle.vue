@@ -13,9 +13,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 
 <template>
   <div>
-    <div
-      class="-md:max-w-lg"
-    >
+    <div>
       <slot
         name="header"
         :isShown

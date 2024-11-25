@@ -10,12 +10,6 @@ useHead({ title: t('stat.title') })
 </script>
 
 <template>
-  <div
-    v-if="trnsStore.hasItems"
-    class="h-full overflow-hidden overflow-y-auto"
-  >
-    <StatDashboard />
-  </div>
-
+  <StatDashboard v-if="trnsStore.hasItems" />
   <LazyAppWelcome v-else />
 </template>

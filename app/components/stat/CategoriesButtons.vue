@@ -216,6 +216,24 @@ const isShowMorePresets = ref(false)
             </UiElement>
           </div>
 
+          <div class="border-item-3 grid gap-3 border-b pb-2 last:border-0 last:pb-0">
+            <UiElement
+              class="text-sm"
+              @click="statConfig.updateConfig('isShowCategoriesVertical', !statConfig.config.value.isShowCategoriesVertical)"
+            >
+              <template #leftIcon>
+                <Icon
+                  name="lucide:chart-no-axes-column-decreasing"
+                  size="18"
+                />
+              </template>
+              <div class="grow">
+                {{ t('isShowCategoriesVertical') }}
+              </div>
+              <SharedInputsCheckbox :value="statConfig.config.value.isShowCategoriesVertical" />
+            </UiElement>
+          </div>
+
           <!-- Grouping -->
           <div
             v-if="!grouping.isGrouped.value"
@@ -333,21 +351,23 @@ en:
   isItemsBg: Items background
   isLines: Amount lines
   isRoundIcon: Rounded categories
-  minimal: Minimal
-  standard: Standard
+  isShowCategoriesVertical: Vertical categories
   isShowEmptyCategories: Show all categories
-  listItemsOptions: List items options
   isShowFavorites: Show favorites
   isShowRecent: Show recent
+  listItemsOptions: List items options
+  minimal: Minimal
+  standard: Standard
 
 ru:
   isItemsBg: Фон категорий
   isLines: Линии сумм
   isRoundIcon: Скуруглённые категории
-  minimal: Легкий
-  standard: Стандартный
+  isShowCategoriesVertical: Вертикальные категории
   isShowEmptyCategories: Показывать все категории
-  listItemsOptions: Настройки списка категорий
   isShowFavorites: Показывать избранные
   isShowRecent: Показывать последние
+  listItemsOptions: Настройки списка категорий
+  minimal: Легкий
+  standard: Стандартный
 </i18n>

@@ -403,6 +403,25 @@ const quickModalTrnsIds = computed(() => {
             </div>
           </template>
 
+          <div
+            v-if="statConfig.config.value.isShowCategoriesVertical && (cats.length > 1 || catsRounded.length > 1)"
+            class="flex overflow-y-auto pb-2 pl-1 pt-4"
+          >
+            <StatCategoriesVertical
+              v-for="item in cats"
+              :key="item.id"
+              :biggestCatNumber
+              :class="{ 'bg-item-9 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
+              :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+              :isHideDots="viewOptions.catsList.isOpened"
+              :item
+              :isHideParent="props.hasChildren"
+              :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
+              :viewOptions
+              @click="onClickCategory"
+            />
+          </div>
+
           <!-- Lines -->
           <div
             v-if="cats.length > 0 && viewOptions.catsView === 'list'"
@@ -439,22 +458,6 @@ const quickModalTrnsIds = computed(() => {
               </div>
             </StatLinesItemLine>
           </div>
-
-          <!-- <div class="flex gap-3 overflow-y-auto">
-            <StatLinesCategoryVertical
-              v-for="item in cats"
-              :key="item.id"
-              :biggestCatNumber
-              :class="{ 'bg-item-9 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
-              :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-              :isHideDots="viewOptions.catsList.isOpened"
-              :item
-              :isHideParent="props.hasChildren"
-              :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-              :viewOptions
-              @click="onClickCategory"
-            />
-          </div> -->
 
           <!-- Rounds -->
           <div

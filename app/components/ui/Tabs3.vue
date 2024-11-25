@@ -2,13 +2,13 @@
   <div
     class="
       @container/tabs
-      overflow-hidden
-      overflow-x-auto
+      flex
       grow
-      gap-x-2
-      gap-y-0.5
-      flex items-center
       flex-wrap
+      items-center
+      gap-x-2
+      gap-y-0.5 overflow-hidden
+      overflow-x-auto
     "
   >
     <slot />
