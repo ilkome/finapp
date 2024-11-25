@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { onLongPress } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
-import type { Range, StatDateProvider } from '~/components/date/types'
-import type { TotalCategory, ViewOptions } from '~/components/stat/types'
+import type { StatDateProvider } from '~/components/date/types'
+import type { TotalCategory } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   biggestCatNumber: {
@@ -19,7 +20,6 @@ const props = defineProps<{
   isHideParent?: boolean
   item: TotalCategory
   lineWidth?: number
-  viewOptions?: ViewOptions
 }>()
 
 const emit = defineEmits<{
@@ -28,6 +28,7 @@ const emit = defineEmits<{
 }>()
 
 const statDate = inject('statDate') as StatDateProvider
+const statConfig = inject('statConfig') as StatConfigProvider
 const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
@@ -89,8 +90,8 @@ onLongPress(
     ref="longPressRef"
     :class="[props.insideClass, {
       '-bg-item-4 ': props.isActive,
-      'bg-item-9 rounded-lg': props.viewOptions?.catsList.isItemsBg,
-      'group': !props.viewOptions?.catsList.isItemsBg,
+      'bg-item-9 rounded-lg': statConfig.config.value.catsList.isItemsBg,
+      'group': !statConfig.config.value.catsList.isItemsBg,
     }]"
     :style="props.insideStyle"
     class="relative"
@@ -98,14 +99,14 @@ onLongPress(
     <slot name="before" />
     <UiElement
       :isActive="props.isActive"
-      :lineWidth="!props.viewOptions?.catsList.isItemsBg ? props.lineWidth : 0"
+      :lineWidth="!statConfig.config.value.catsList.isItemsBg ? props.lineWidth : 0"
       class="relative"
       insideClasses="!min-h-[44px]"
       isShowToggle2
     >
       <template #line>
         <div
-          v-if="props.viewOptions?.catsList.isLines"
+          v-if="statConfig.config.value.catsList.isLines"
           class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pl-[52px] pr-3"
         >
           <div class="bg-item-3 overflow-hidden rounded-lg">
@@ -119,7 +120,7 @@ onLongPress(
 
       <template #leftIcon>
         <UiIconBase
-          v-if="props.viewOptions?.catsList.isRoundIcon"
+          v-if="statConfig.config.value.catsList.isRoundIcon"
           :color="category?.color"
           :name="category?.icon"
           class="ml-0 !w-7 !text-base leading-none"
@@ -136,7 +137,7 @@ onLongPress(
       </template>
 
       <CategoriesName
-        :class="{ '!pb-2': props.viewOptions?.catsList.isLines }"
+        :class="{ '!pb-2': statConfig.config.value.catsList.isLines }"
         :category
         :parentCategory
         :isHideParent="props.isHideParent"
@@ -146,7 +147,7 @@ onLongPress(
       <div
         v-if="props.item.value !== 0"
         :class="{
-          '!pb-2': props.viewOptions?.catsList.isLines,
+          '!pb-2': statConfig.config.value.catsList.isLines,
         }"
         class="grow pr-1"
       >

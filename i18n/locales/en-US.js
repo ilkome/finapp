@@ -154,7 +154,7 @@ export default {
 
     },
     period: 'Period',
-    select: 'Select period',
+    select: 'Select',
     week: {
       current: 'This week',
       last: 'Last week',

@@ -82,7 +82,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
     return type === 'start' ? formatByLocale(start, 'd MMM yyyy', locale) : ` - ${formatByLocale(end, 'd MMM yyyy', locale)}`
   }
 
-  function calculateDate(params: DateFormatParams): string {
+  function calculateDate(params: DateFormatParams, isShowMaxRange: boolean): string {
     const { by, duration, end, start, type } = params
 
     // Single duration cases
@@ -132,7 +132,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
       }
     })()
 
-    if (isCurrentPeriod)
+    if (!isShowMaxRange && isCurrentPeriod)
       return handleLastNPeriods(by, duration, type)
 
     // Format by date unit
@@ -144,14 +144,14 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
     }
   }
 
-  function getStringDateRange(range: Range, by: StatDateParams['rangeBy'], duration: StatDateParams['rangeDuration']) {
+  function getStringDateRange(range: Range, by: StatDateParams['rangeBy'], duration: StatDateParams['rangeDuration'], isShowMaxRange: boolean = false) {
     const yearStart = calculateDate({
       by,
       duration,
       end: new Date(range.end),
       start: new Date(range.start),
       type: 'start',
-    })
+    }, isShowMaxRange)
 
     const yearEnd = calculateDate({
       by,
@@ -159,7 +159,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
       end: new Date(range.end),
       start: new Date(range.start),
       type: 'end',
-    })
+    }, isShowMaxRange)
 
     return `${yearStart}${yearEnd}`
   }

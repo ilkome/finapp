@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import type { DeepPartial } from '~~/utils/types'
 import type { Range } from '~/components/date/types'
-import type { ViewOptions } from '~/components/stat/types'
 
 defineProps<{
   maxRange: Range
 }>()
 
 const emit = defineEmits<{
-  changeViewOptions: [o: DeepPartial<ViewOptions>]
   onClose: []
 }>()
 
@@ -34,7 +31,6 @@ const { t } = useI18n()
 
         <StatDateSelector
           :maxRange
-          @changeViewOptions="emit('changeViewOptions', $event)"
           @onClose="() => { emit('onClose'); close() }"
         />
       </div>

@@ -16,7 +16,7 @@ const itemClasses = getStyles('item', ['alt', 'rounded'])
 </script>
 
 <template>
-  <div class="flex gap-2 overflow-x-auto ">
+  <div class="flex gap-2">
     <!-- Wallets -->
     <template v-if="props.isShowWallets">
       <WalletsItem
@@ -25,6 +25,7 @@ const itemClasses = getStyles('item', ['alt', 'rounded'])
         :class="itemClasses"
         :walletId="walletId"
         :wallet="walletsStore.itemsWithAmount[walletId]"
+        insideClasses="!min-h-[38px]"
         alt
         @click="filter.removeWalletId(walletId)"
       />
@@ -40,6 +41,7 @@ const itemClasses = getStyles('item', ['alt', 'rounded'])
         :class="itemClasses"
         alt
         isHideDots
+        insideClasses="!min-h-[38px]"
         @click="filter.removeCategoryId(categoryId)"
       />
     </template>

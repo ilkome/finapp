@@ -2,15 +2,14 @@
 import { differenceInDays } from 'date-fns'
 import type { DeepPartial } from '~~/utils/types'
 import type { IntervalGroupedLabel, Range, StatDateProvider } from '~/components/date/types'
-import type { ViewOptions } from '~/components/stat/types'
 import { calculateBestIntervalsBy } from '~/components/date/utils'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   maxRange: Range
 }>()
 
 const emit = defineEmits<{
-  changeViewOptions: [o: DeepPartial<ViewOptions>]
   onClose: []
 
 }>()
@@ -21,13 +20,14 @@ function close() {
 
 const { t } = useI18n()
 const statDate = inject('statDate') as StatDateProvider
+const statConfig = inject('statConfig') as StatConfigProvider
 
 const tabs = {
   items: ref(['presets', 'calendar']),
   selected: ref('presets'),
 }
 
-const viewPresets: Record<'mini' | 'standard', DeepPartial<ViewOptions>> = {
+const viewPresets: Record<'mini' | 'standard', Record<'catsList', DeepPartial<StatConfigProvider['config']['value']['catsList']>> & Record<'catsRound', DeepPartial<StatConfigProvider['config']['value']['catsRound']>>> = {
   mini: {
     catsList: {
       isGrouped: false,
@@ -56,16 +56,22 @@ const viewPresets: Record<'mini' | 'standard', DeepPartial<ViewOptions>> = {
 function setRangeWithOptions({
   catsView,
   intervalOptions,
-  viewConfig,
+  viewPreset,
 }: {
-  catsView: ViewOptions['catsView']
+  catsView: StatConfigProvider['config']['value']['catsView']
   intervalOptions: IntervalGroupedLabel
-  viewConfig: typeof viewPresets.mini | typeof viewPresets.standard
+  viewPreset: typeof viewPresets.mini | typeof viewPresets.standard
 }) {
   emit('onClose')
-  emit('changeViewOptions', {
-    ...viewConfig,
-    catsView,
+
+  statConfig.updateConfig('catsView', catsView)
+  statConfig.updateConfig('catsList', {
+    ...statConfig.config.value.catsList,
+    ...viewPreset.catsList,
+  })
+  statConfig.updateConfig('catsRound', {
+    ...statConfig.config.value.catsRound,
+    ...viewPreset.catsRound,
   })
 
   statDate.params.value.isShowMaxRange = false
@@ -82,7 +88,7 @@ function setDaysMini(days: number) {
       rangeBy: 'day',
       rangeDuration: days,
     },
-    viewConfig: viewPresets.mini,
+    viewPreset: viewPresets.mini,
   })
 }
 
@@ -95,7 +101,7 @@ function set7Days() {
       rangeBy: 'day',
       rangeDuration: 7,
     },
-    viewConfig: viewPresets.standard,
+    viewPreset: viewPresets.standard,
   })
 }
 
@@ -108,18 +114,22 @@ function set12Months() {
       rangeBy: 'month',
       rangeDuration: 12,
     },
-    viewConfig: viewPresets.standard,
+    viewPreset: viewPresets.standard,
   })
   statDate.params.value.rangeOffset = 0
 }
 
 function setMaxRange(isSkipEmpty = false) {
   emit('onClose')
-  emit('changeViewOptions', {
-    ...viewPresets.standard,
-    catsView: 'list',
-  })
 
+  statConfig.updateConfig('catsList', {
+    ...statConfig.config.value.catsList,
+    ...viewPresets.standard.catsList,
+  })
+  statConfig.updateConfig('catsRound', {
+    ...statConfig.config.value.catsRound,
+    ...viewPresets.standard.catsRound,
+  })
   const rangeDuration = differenceInDays(props.maxRange.end, props.maxRange.start)
   const intervalsBy = calculateBestIntervalsBy(props.maxRange)
 

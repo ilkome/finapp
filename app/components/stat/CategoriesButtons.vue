@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import defu from 'defu'
 import { getStyles } from '~/components/ui/getStyles'
-import type { ViewOptions } from '~/components/stat/types'
 import type { DeepPartial } from '~~/utils/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
@@ -8,38 +8,34 @@ const props = defineProps<{
   isShowFavorites?: boolean
   isShowGrouping?: boolean
   isShowRecent?: boolean
-  viewOptions: ViewOptions
 }>()
-
-const emit = defineEmits<{
-  changeViewOptions: [o: DeepPartial<ViewOptions>]
-}>()
-
-const statConfig = inject('statConfig') as StatConfigProvider
 
 const { t } = useI18n()
+const statConfig = inject('statConfig') as StatConfigProvider
 
 const grouping = {
   isGrouped: computed(() => {
-    if (props.viewOptions.catsView === 'list')
-      return props.viewOptions.catsList.isGrouped
+    if (statConfig.config.value.catsView === 'list')
+      return statConfig.config.value.catsList.isGrouped
 
-    if (props.viewOptions.catsView === 'round')
-      return props.viewOptions.catsRound.isGrouped
+    if (statConfig.config.value.catsView === 'round')
+      return statConfig.config.value.catsRound.isGrouped
 
     return false
   }),
   toggle: () => {
-    if (props.viewOptions.catsView === 'list') {
-      emit('changeViewOptions', {
-        catsList: { isGrouped: !props.viewOptions.catsList.isGrouped },
+    if (statConfig.config.value.catsView === 'list') {
+      statConfig.updateConfig('catsList', {
+        ...statConfig.config.value.catsList,
+        isGrouped: !statConfig.config.value.catsList.isGrouped,
       })
       return
     }
 
-    if (props.viewOptions.catsView === 'round') {
-      emit('changeViewOptions', {
-        catsRound: { isGrouped: !props.viewOptions.catsRound.isGrouped },
+    if (statConfig.config.value.catsView === 'round') {
+      statConfig.updateConfig('catsRound', {
+        ...statConfig.config.value.catsRound,
+        isGrouped: !statConfig.config.value.catsRound.isGrouped,
       })
     }
   },
@@ -50,24 +46,26 @@ const favorites = {
     if (!props.isShowFavorites)
       return false
 
-    if (props.viewOptions.catsView === 'list')
-      return props.viewOptions.catsList.isShowFavorites
+    if (statConfig.config.value.catsView === 'list')
+      return statConfig.config.value.catsList.isShowFavorites
 
-    if (props.viewOptions.catsView === 'round')
-      return props.viewOptions.catsRound.isShowFavorites
+    if (statConfig.config.value.catsView === 'round')
+      return statConfig.config.value.catsRound.isShowFavorites
 
     return false
   }),
   toggle: () => {
-    if (props.viewOptions.catsView === 'list') {
-      emit('changeViewOptions', {
-        catsList: { isShowFavorites: !props.viewOptions.catsList.isShowFavorites },
+    if (statConfig.config.value.catsView === 'list') {
+      statConfig.updateConfig('catsList', {
+        ...statConfig.config.value.catsList,
+        isShowFavorites: !statConfig.config.value.catsList.isShowFavorites,
       })
     }
 
-    if (props.viewOptions.catsView === 'round') {
-      emit('changeViewOptions', {
-        catsRound: { isShowFavorites: !props.viewOptions.catsRound.isShowFavorites },
+    if (statConfig.config.value.catsView === 'round') {
+      statConfig.updateConfig('catsRound', {
+        ...statConfig.config.value.catsRound,
+        isShowFavorites: !statConfig.config.value.catsRound.isShowFavorites,
       })
     }
   },
@@ -78,24 +76,26 @@ const recent = {
     if (!props.isShowRecent)
       return false
 
-    if (props.viewOptions.catsView === 'list')
-      return props.viewOptions.catsList.isShowRecent
+    if (statConfig.config.value.catsView === 'list')
+      return statConfig.config.value.catsList.isShowRecent
 
-    if (props.viewOptions.catsView === 'round')
-      return props.viewOptions.catsRound.isShowRecent
+    if (statConfig.config.value.catsView === 'round')
+      return statConfig.config.value.catsRound.isShowRecent
 
     return false
   }),
   toggle: () => {
-    if (props.viewOptions.catsView === 'list') {
-      emit('changeViewOptions', {
-        catsList: { isShowRecent: !props.viewOptions.catsList.isShowRecent },
+    if (statConfig.config.value.catsView === 'list') {
+      statConfig.updateConfig('catsList', {
+        ...statConfig.config.value.catsList,
+        isShowRecent: !statConfig.config.value.catsList.isShowRecent,
       })
     }
 
-    if (props.viewOptions.catsView === 'round') {
-      emit('changeViewOptions', {
-        catsRound: { isShowRecent: !props.viewOptions.catsRound.isShowRecent },
+    if (statConfig.config.value.catsView === 'round') {
+      statConfig.updateConfig('catsRound', {
+        ...statConfig.config.value.catsRound,
+        isShowRecent: !statConfig.config.value.catsRound.isShowRecent,
       })
     }
   },
@@ -126,26 +126,31 @@ const viewPresets = computed(() => ({
 }))
 
 const isShowMorePresets = ref(false)
+
+function onChangeViewOptions(newViewOptions: any) {
+  statConfig.updateConfig('catsList', defu(newViewOptions, statConfig.config.value.catsList))
+}
 </script>
 
 <template>
   <div class="bg-foreground-2 relative flex rounded-md">
     <!-- Folder -->
     <UiItem1
-      v-if="props.isShowGrouping && props.viewOptions.catsView === 'list' && props.viewOptions.catsList.isGrouped"
-      @click="emit('changeViewOptions', {
-        catsList: { isOpened: !props.viewOptions.catsList.isOpened },
+      v-if="props.isShowGrouping && statConfig.config.value.catsView === 'list' && statConfig.config.value.catsList.isGrouped"
+      @click="statConfig.updateConfig('catsList', {
+        ...statConfig.config.value.catsList,
+        isOpened: !statConfig.config.value.catsList.isOpened,
       })"
     >
       <Icon
-        :name="props.viewOptions.catsList.isOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
+        :name="statConfig.config.value.catsList.isOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
         size="18"
       />
     </UiItem1>
 
     <!-- Grouping -->
     <UiItem1
-      v-if="props.isShowGrouping"
+      v-if="props.isShowGrouping && !statConfig.config.value.isCategoryPage"
       @click="grouping.toggle"
     >
       <Icon
@@ -156,12 +161,10 @@ const isShowMorePresets = ref(false)
 
     <!-- View -->
     <UiItem1
-      @click="emit('changeViewOptions', {
-        catsView: viewOptions.catsView === 'list' ? 'round' : 'list',
-      })"
+      @click="statConfig.updateConfig('catsView', statConfig.config.value.catsView === 'list' ? 'round' : 'list')"
     >
       <Icon
-        :name="props.viewOptions.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'"
+        :name="statConfig.config.value.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'"
         size="18"
       />
     </UiItem1>
@@ -194,17 +197,18 @@ const isShowMorePresets = ref(false)
                 />
               </UiItem1>
               <UiItem1
-                @click="emit('changeViewOptions', {
-                  catsView: viewOptions.catsView === 'list' ? 'round' : 'list',
-                })"
+                @click="statConfig.updateConfig('catsView', statConfig.config.value.catsView === 'list' ? 'round' : 'list')"
               >
-                <Icon :name="props.viewOptions.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'" />
+                <Icon :name="statConfig.config.value.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'" />
               </UiItem1>
             </div>
           </div>
 
           <!-- Show empty categories -->
-          <div class="border-item-3 grid gap-3 border-b pb-2 last:border-0 last:pb-0">
+          <div
+            v-if="!statConfig.config.value.isCategoryPage"
+            class="border-item-3 grid gap-3 border-b pb-2 last:border-0 last:pb-0"
+          >
             <UiElement
               class="text-sm"
               @click="statConfig.updateConfig('isShowEmptyCategories', !statConfig.config.value.isShowEmptyCategories)"
@@ -240,6 +244,7 @@ const isShowMorePresets = ref(false)
             class="border-item-3 border-b pb-2 last:border-0 last:pb-0"
           >
             <!-- Favorite -->
+            <pre>{{ favorites }}</pre>
             <UiElement
               class="text-sm"
               @click="favorites.toggle"
@@ -276,7 +281,7 @@ const isShowMorePresets = ref(false)
 
           <!-- List -->
           <div
-            v-if="props.viewOptions.catsView === 'list'"
+            v-if="statConfig.config.value.catsView === 'list'"
             class="grid gap-3"
           >
             <UiTitleOption>{{ t('listItemsOptions') }}</UiTitleOption>
@@ -284,7 +289,7 @@ const isShowMorePresets = ref(false)
               <UiItem4
                 v-for="view in viewPresets"
                 :key="view.title"
-                @click="emit('changeViewOptions', view.props)"
+                @click="onChangeViewOptions(view.props)"
               >
                 {{ view.title }}
               </UiItem4>
@@ -301,42 +306,45 @@ const isShowMorePresets = ref(false)
 
             <div v-if="isShowMorePresets">
               <UiElement
-                v-if="props.viewOptions.catsView === 'list' && !props.viewOptions.catsList.isOpened"
+                v-if="statConfig.config.value.catsView === 'list' && !statConfig.config.value.catsList.isOpened"
                 class="text-sm"
-                @click="emit('changeViewOptions', {
-                  catsList: { isItemsBg: !props.viewOptions.catsList.isItemsBg },
+                @click="statConfig.updateConfig('catsList', {
+                  ...statConfig.config.value.catsList,
+                  isItemsBg: !statConfig.config.value.catsList.isItemsBg,
                 })"
               >
                 <div class="grow">
                   {{ t('isItemsBg') }}
                 </div>
-                <SharedInputsCheckbox :value="props.viewOptions.catsList.isItemsBg" />
+                <SharedInputsCheckbox :value="statConfig.config.value.catsList.isItemsBg" />
               </UiElement>
 
               <!-- Lines -->
               <UiElement
                 class="text-sm"
-                @click="emit('changeViewOptions', {
-                  catsList: { isLines: !props.viewOptions.catsList.isLines },
+                @click="statConfig.updateConfig('catsList', {
+                  ...statConfig.config.value.catsList,
+                  isLines: !statConfig.config.value.catsList.isLines,
                 })"
               >
                 <div class="grow">
                   {{ t('isLines') }}
                 </div>
-                <SharedInputsCheckbox :value="props.viewOptions.catsList.isLines" />
+                <SharedInputsCheckbox :value="statConfig.config.value.catsList.isLines" />
               </UiElement>
 
               <!-- Round icons -->
               <UiElement
                 class="text-sm"
-                @click="emit('changeViewOptions', {
-                  catsList: { isRoundIcon: !props.viewOptions.catsList.isRoundIcon },
+                @click="statConfig.updateConfig('catsList', {
+                  ...statConfig.config.value.catsList,
+                  isRoundIcon: !statConfig.config.value.catsList.isRoundIcon,
                 })"
               >
                 <div class="grow">
                   {{ t('isRoundIcon') }}
                 </div>
-                <SharedInputsCheckbox :value="props.viewOptions.catsList.isRoundIcon" />
+                <SharedInputsCheckbox :value="statConfig.config.value.catsList.isRoundIcon" />
               </UiElement>
             </div>
           </div>

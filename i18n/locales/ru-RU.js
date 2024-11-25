@@ -153,7 +153,7 @@ export default {
       simple: 'Месяц',
     },
     period: 'Период',
-    select: 'Выберите период',
+    select: 'Выберите',
     week: {
       current: 'Текущая неделя',
       last: 'Прошлая неделя',

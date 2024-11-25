@@ -2,24 +2,16 @@
 import { onLongPress } from '@vueuse/core'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import type { CategoryId } from '~/components/categories/types'
-import type { TotalCategory, ViewOptions } from '~/components/stat/types'
+import type { TotalCategory } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import type { Range, StatDateProvider } from '~/components/date/types'
+import type { StatDateProvider } from '~/components/date/types'
 
 const props = defineProps<{
   biggestCatNumber: {
     expense: number
     income: number
   }
-  insideClass?: string
-  insideStyle?: string
-  isActive?: boolean
-  isHideDots?: boolean
-  isHideParent?: boolean
   item: TotalCategory
-  lineWidth?: number
-  viewOptions?: ViewOptions
 }>()
 
 const emit = defineEmits<{
@@ -30,10 +22,8 @@ const emit = defineEmits<{
 const statDate = inject('statDate') as StatDateProvider
 const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
-const currenciesStore = useCurrenciesStore()
 
 const category = computed(() => categoriesStore.items[props.item.id])
-const parentCategory = computed(() => categoriesStore.items[category.value?.parentId])
 
 function getBarStyle() {
   if (!props.item.value || props.item.value === 0)
@@ -53,13 +43,13 @@ const amount = computed(() => {
   const sign = props.item.value > 0 ? '' : '-'
 
   if (abs >= 1000000)
-    return `${sign}${(props.item.value / 1000000).toFixed(2)}m`
+    return `${(props.item.value / 1000000).toFixed(2)}M`
   else if (abs >= 10000)
-    return `${sign}${(abs / 1000).toFixed()}k`
+    return `${sign}${(abs / 1000).toFixed()}K`
   else if (abs > 999)
-    return `${sign}${(abs / 1000).toFixed(1)}k`
+    return `${sign}${(abs / 1000).toFixed(1)}K`
 
-  return `${sign}${props.item.value.toFixed()}`
+  return `${props.item.value.toFixed()}`
 })
 
 // TODO: addTrnFromSelectedInterval
@@ -123,21 +113,5 @@ onLongPress(
       :style="{ backgroundColor: category.color }"
       class="rounded-b text-center text-lg"
     />
-
-    <!-- <UiIconBase
-      v-if="props.viewOptions?.catsList.isRoundIcon"
-      :color="category?.color"
-      :name="category?.icon"
-      class="ml-0 !w-7 !text-base leading-none"
-      invert
-      @click.stop="emit('onClickIcon', props.item.id)"
-    />
-    <UiIconBase
-      v-else
-      :color="category?.color"
-      :name="category?.icon"
-      class="ml-1 !w-6 !text-xl leading-none"
-      @click.stop="emit('onClickIcon', props.item.id)"
-    /> -->
   </div>
 </template>

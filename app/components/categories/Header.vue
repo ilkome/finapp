@@ -15,7 +15,7 @@ const props = defineProps<{
         :color="props.category.color"
         invert
       />
-      <div class="text-xl">
+      <div class="text-xl font-semibold">
         {{ props.category.name }}
       </div>
 

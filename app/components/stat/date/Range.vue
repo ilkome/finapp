@@ -20,7 +20,7 @@ const date = computed(() => {
   const intervalsBy = isIntervalSelected ? statDate.params.value.intervalsBy : statDate.params.value.rangeBy
   const rangeDuration = isIntervalSelected ? statDate.params.value.intervalsDuration : statDate.params.value.rangeDuration
 
-  return `${getStringDateRange(range.value, intervalsBy, rangeDuration)}`
+  return `${getStringDateRange(range.value, intervalsBy, rangeDuration, statDate.params.value.isShowMaxRange)}`
 })
 </script>
 

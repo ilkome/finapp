@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { chartViewOptions } from '~/components/stat/types'
+import { chartViewOptions } from '~/components/stat/useStatConfig'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{

@@ -28,6 +28,15 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 const statConfig = useStatConfig({ storageKey: 'dashboard' })
 provide('statConfig', statConfig)
 
+watch(filter.catsIds, () => {
+  if (filter.catsIds.value.length > 0) {
+    statConfig.config.value.isShowEmptyCategories = true
+  }
+  else {
+    statConfig.config.value.isShowEmptyCategories = false
+  }
+})
+
 const statDate = useStatDate({
   key: `finapp-dashboard-`,
   maxRange,
@@ -62,6 +71,8 @@ function onClickWallet(walletId: WalletId) {
   filter.toggleWalletId(walletId)
   trnsFormStore.values.walletId = walletId
 }
+
+const preCategoriesIds = computed(() => [...filter.catsIds.value])
 </script>
 
 <template>
@@ -79,6 +90,7 @@ function onClickWallet(walletId: WalletId) {
           />
           <StatConfigPopover isShowWallets />
         </div>
+
         <FilterSelected
           v-if="filter.isShow?.value && filter.catsIds.value.length > 0"
           isShowCategories
@@ -111,6 +123,7 @@ function onClickWallet(walletId: WalletId) {
       <StatItemForCategory
         :storageKey="storageKey + activeTab"
         :trnsIds="trnsIds"
+        :preCategoriesIds
         hasChildren
         type="sum"
       />
@@ -124,6 +137,7 @@ function onClickWallet(walletId: WalletId) {
       <StatItemForCategory
         :storageKey="storageKey + activeTab"
         :trnsIds="expenseTrnsIds"
+        :preCategoriesIds
         hasChildren
         type="expense"
       />
@@ -131,6 +145,7 @@ function onClickWallet(walletId: WalletId) {
       <StatItemForCategory
         :storageKey="storageKey + activeTab"
         :trnsIds="incomeTrnsIds"
+        :preCategoriesIds
         hasChildren
         type="income"
       />

@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import _sortby from 'lodash.sortby'
-import defu from 'defu'
 import { useStorage } from '@vueuse/core'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import type { DeepPartial } from '~~/utils/types'
 import type { FilterProvider } from '~/components/filter/types'
+import type { MoneyTypeSlugNew, TotalCategory } from '~/components/stat/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import type { MoneyTypeSlugNew, TotalCategory, ViewOptions } from '~/components/stat/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
-import { ViewOptionsSchema, defaultViewOptions } from '~/components/stat/config'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { markArea } from '~/components/stat/chart/utils'
 import { seriesOptions } from '~/components/stat/chart/config2'
@@ -83,38 +80,14 @@ const filteredTrnsIds = computed(() => {
 
 const isDayToday = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day'))
 
-/**
- * View Options
- */
-const viewOptions = useStorage<ViewOptions>(`${newBaseStorageKey.value}-viewOptions`, {
-  ...defaultViewOptions,
-  catsList: {
-    ...defaultViewOptions.catsList,
-    isGrouped: false,
-  },
-})
-
-function changeViewOptions(newViewOptions: DeepPartial<ViewOptions>) {
-  viewOptions.value = defu(newViewOptions, viewOptions.value)
-}
-
 onBeforeMount(() => {
-  if (!ViewOptionsSchema.safeParse(viewOptions.value).success) {
-    viewOptions.value = { ...defaultViewOptions }
-  }
-
-  if (props.hasChildren) {
-    viewOptions.value.catsList.isGrouped = false
-    viewOptions.value.catsRound.isGrouped = false
-  }
-
   if (props.isOneCategory) {
-    viewOptions.value.catsList.isGrouped = false
-    viewOptions.value.catsRound.isGrouped = false
+    statConfig.updateConfig('catsList', { ...statConfig.config.value.catsList, isGrouped: false })
+    statConfig.updateConfig('catsRound', { ...statConfig.config.value.catsRound, isGrouped: false })
   }
 })
 
-function getCats(trnsIds: TrnId[], isintervalsByParent?: boolean, preCategoriesIds?: CategoryId[]) {
+function getCats(trnsIds: TrnId[], isIntervalsByParent?: boolean, preCategoriesIds?: CategoryId[]) {
   const categoriesWithTrns = trnsIds?.reduce(
     (acc, trnId) => {
       let newCategoryId = trnsStore.items[trnId]?.categoryId
@@ -124,7 +97,7 @@ function getCats(trnsIds: TrnId[], isintervalsByParent?: boolean, preCategoriesI
       if (categoriesStore.transferCategoriesIds.includes(newCategoryId))
         return acc
 
-      if (isintervalsByParent) {
+      if (isIntervalsByParent) {
         const trnBaseCategory: CategoryItem = categoriesStore.items[newCategoryId]
 
         newCategoryId = trnBaseCategory?.parentId === 0
@@ -296,24 +269,8 @@ const cats = computed(() => {
     categoriesStore.items[id]?.name,
   ])
 
-  return getCats(selectedTrnsIdsForTrnsList.value ?? [], viewOptions.value.catsList.isGrouped, cats)
-})
-
-const catsRounded = computed(() => {
-  let cats: CategoryId[] = [...(props.preCategoriesIds ?? [])]
-  if (!viewOptions.value.catsRound.isGrouped && viewOptions.value.catsRound.isShowFavorites) {
-    cats.push(...categoriesStore.favoriteCategoriesIds)
-  }
-  if (!viewOptions.value.catsRound.isGrouped && viewOptions.value.catsRound.isShowRecent) {
-    cats.push(...categoriesStore.recentCategoriesIds)
-  }
-
-  cats = _sortby(cats, (id: CategoryId) => [
-    categoriesStore.items[categoriesStore.items[id]?.parentId]?.name || false,
-    categoriesStore.items[id]?.name,
-  ])
-
-  return getCats(selectedTrnsIdsForTrnsList.value ?? [], viewOptions.value.catsRound.isGrouped, cats)
+  const isGrouped = statConfig.config.value.catsView === 'list' ? statConfig.config.value.catsList.isGrouped : statConfig.config.value.catsRound.isGrouped
+  return getCats(selectedTrnsIdsForTrnsList.value ?? [], isGrouped, cats)
 })
 
 const biggestCatNumber = computed(() => {
@@ -337,23 +294,24 @@ async function onClickCategory(categoryId: CategoryId) {
 
   const queryParams = new URLSearchParams([
     ...Object.entries(statDate.params.value).map(([key, value]) => [key, String(value)]),
-    ...filter?.walletsIds?.value.map(id => ['walletsIds', id]),
+    ['filterWallets', filter?.walletsIds?.value.join(',')],
   ],
   ).toString()
 
-  useRouter().push(`/stat/category/${categoryId}?${queryParams}`)
-}
+  const queryFilterParams = new URLSearchParams([
+    ['filterWallets', filter?.walletsIds?.value.join(',')],
+    ['storageKey', props.storageKey ?? ''],
+  ],
+  ).toString()
 
-const quickModalTrnsIds = computed(() => {
-  if (quickModalCategoryId.value) {
-    return trnsStore.getStoreTrnsIds({
-      categoriesIds: [...categoriesStore.getChildsIdsOrParent(quickModalCategoryId.value), ...filter?.catsIds?.value],
-      walletsIds: filter?.walletsIds?.value,
-    })
+  if (statConfig.config.value.isCategoryPage) {
+    useRouter().push(`/categories/${categoryId}?${queryFilterParams}`)
   }
 
-  return []
-})
+  else {
+    useRouter().push(`/categories/${categoryId}?${queryParams}`)
+  }
+}
 </script>
 
 <template>
@@ -396,98 +354,78 @@ const quickModalTrnsIds = computed(() => {
 
               <StatCategoriesButtons
                 v-if="isShown"
-                :viewOptions
                 :isShowGrouping="!isOneCategory"
-                @changeViewOptions="changeViewOptions"
               />
             </div>
           </template>
 
-          <div
-            v-if="statConfig.config.value.isShowCategoriesVertical && (cats.length > 1 || catsRounded.length > 1)"
-            class="flex overflow-y-auto pb-2 pl-1 pt-4"
-          >
-            <StatCategoriesVertical
-              v-for="item in cats"
-              :key="item.id"
-              :biggestCatNumber
-              :class="{ 'bg-item-9 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
-              :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-              :isHideDots="viewOptions.catsList.isOpened"
-              :item
-              :isHideParent="props.hasChildren"
-              :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-              :viewOptions
-              @click="onClickCategory"
-            />
-          </div>
-
-          <!-- Lines -->
-          <div
-            v-if="cats.length > 0 && viewOptions.catsView === 'list'"
-            :class="{
-              'grid gap-2 px-0': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened,
-              'md:max-w-lg': !viewOptions.catsList.isGrouped || !viewOptions.catsList.isOpened,
-              'grid gap-1': viewOptions.catsList.isItemsBg,
-            }"
-            class="pt-2"
-          >
-            <StatLinesItemLine
-              v-for="item in cats"
-              :key="item.id"
-              :biggestCatNumber
-              :class="{ 'bg-item-9 overflow-hidden rounded-lg': viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened }"
-              :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-              :isHideDots="viewOptions.catsList.isOpened"
-              :item
-              :isHideParent="props.hasChildren"
-              :lineWidth="((viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened) || viewOptions.catsList.isLines) ? 0 : 1"
-              :viewOptions
-              @click="onClickCategory"
+          <template v-if="cats.length > 0">
+            <div
+              v-if="statConfig.config.value.isShowCategoriesVertical"
+              class="flex overflow-y-auto pb-2 pl-1 pt-4"
             >
-              <div
-                v-if="viewOptions.catsList.isGrouped && viewOptions.catsList.isOpened"
-                class="flex flex-wrap gap-1 pb-3 pl-2 pt-1"
+              <StatCategoriesVertical
+                v-for="item in cats"
+                :key="item.id"
+                :biggestCatNumber
+                :item
+                @click="onClickCategory"
+              />
+            </div>
+
+            <!-- Lines -->
+            <div
+              v-if="statConfig.config.value.catsView === 'list'"
+              :class="{
+                'grid gap-2 px-0': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
+                'md:max-w-lg': !statConfig.config.value.catsList.isGrouped || !statConfig.config.value.catsList.isOpened,
+                'grid gap-1': statConfig.config.value.catsList.isItemsBg,
+              }"
+              class="pt-2"
+            >
+              <StatLinesItemLine
+                v-for="item in cats"
+                :key="item.id"
+                :biggestCatNumber
+                :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
+                :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+                :isHideDots="statConfig.config.value.catsList.isOpened"
+                :item
+                :isHideParent="props.hasChildren"
+                :lineWidth="((statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened) || statConfig.config.value.catsList.isLines) ? 0 : 1"
+                @click="onClickCategory"
               >
-                <StatLinesItemRound
-                  v-for="itemInside in getCats(item.trnsIds)"
-                  :key="itemInside.id"
-                  :item="itemInside"
-                  @click="onClickCategory"
-                />
-              </div>
-            </StatLinesItemLine>
-          </div>
+                <div
+                  v-if="statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened"
+                  class="flex flex-wrap gap-1 pb-3 pl-2 pt-1"
+                >
+                  <StatLinesItemRound
+                    v-for="itemInside in getCats(item.trnsIds)"
+                    :key="itemInside.id"
+                    :item="itemInside"
+                    @click="onClickCategory"
+                  />
+                </div>
+              </StatLinesItemLine>
+            </div>
 
-          <!-- Rounds -->
-          <div
-            v-if="catsRounded.length > 0 && viewOptions.catsView === 'round'"
-            class="@3xl/stat:gap-2 flex flex-wrap gap-1 gap-y-2 pl-1 pt-2 md:max-w-lg"
-          >
-            <StatLinesItemRound
-              v-for="item in catsRounded"
-              :key="item.id"
-              :item
-              :biggestCatNumber
-              :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
-              isShowAmount
-              @click="onClickCategory"
-            />
-          </div>
+            <!-- Rounds -->
+            <div
+              v-if="statConfig.config.value.catsView === 'round'"
+              class="@3xl/stat:gap-2 flex flex-wrap gap-1 gap-y-2 pl-1 pt-2 md:max-w-lg"
+            >
+              <StatLinesItemRound
+                v-for="item in cats"
+                :key="item.id"
+                :item
+                :biggestCatNumber
+                :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
+                isShowAmount
+                @click="onClickCategory"
+              />
+            </div>
+          </template>
         </UiToggle>
-
-        <!-- <div v-if="props.hasChildren">
-          <div class="flex items-center justify-between md:max-w-lg">
-            <UiTitle82>
-              {{ t('categories.title') }}
-            </UiTitle82>
-
-            <StatCategoriesButtons
-              :viewOptions
-              @changeViewOptions="changeViewOptions"
-            />
-          </div>
-        </div> -->
 
         <!-- Trns -->
         <UiToggle
@@ -526,7 +464,6 @@ const quickModalTrnsIds = computed(() => {
       <StatDateSelectorModal
         v-if="isShowDateSelector"
         :maxRange
-        @changeViewOptions="changeViewOptions"
         @onClose="isShowDateSelector = false"
       />
 
@@ -552,14 +489,9 @@ const quickModalTrnsIds = computed(() => {
               class="bg-foreground-5 sticky top-0 z-10"
             />
 
-            <StatItem
-              :quickModalCategoryId
-              :storageKey="`${props.storageKey}sum-in-${quickModalCategoryId}`"
-              :trnsIds="quickModalTrnsIds"
-              class="-max-w-2xl"
-              isQuickModal
-              type="sum"
-            />
+            <h1 class="bg-red-200 p-10">
+              StatItem
+            </h1>
           </div>
         </template>
       </BaseBottomSheet2>
