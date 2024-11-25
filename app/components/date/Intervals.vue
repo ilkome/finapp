@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import type { Grouped, StatDateProvider } from '~/components/date/types'
 
-const emit = defineEmits<{
-  close: []
-}>()
-
 const statDate = inject('statDate') as StatDateProvider
 
 const intervals = computed<Grouped[]>(() => [{
@@ -23,7 +19,6 @@ const intervals = computed<Grouped[]>(() => [{
 
 function selectInterval(grouped: Grouped) {
   statDate.setInterval(grouped)
-  emit('close')
 }
 </script>
 

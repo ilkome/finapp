@@ -13,7 +13,7 @@ export function useStatDate({
   maxRange: ComputedRef<Range>
   queryParams?: Partial<StatDateParamsQuery>
 }) {
-  const params = useStorage<StatDateParams>(`${key}-params`, {
+  const params = useStorage<StatDateParams>(`${key}-params2`, {
     customDate: false,
     intervalsBy: 'week',
     intervalsDuration: 1,
@@ -130,7 +130,8 @@ export function useStatDate({
 
   function delInterval() {
     resetCustomAndMaxRangeParams()
-    --params.value.intervalsDuration
+    if (params.value.intervalsDuration > 1)
+      --params.value.intervalsDuration
   }
 
   function modifyRange(modification: number) {

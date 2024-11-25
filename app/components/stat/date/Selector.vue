@@ -161,9 +161,9 @@ function setMaxRange(isSkipEmpty = false) {
     <div v-if="tabs.selected.value === 'presets'">
       <div class="pb-6 pt-2">
         <!-- Presets -->
-        <div class="grid gap-2">
+        <div class="grid gap-3">
           <div class="flex flex-wrap gap-1">
-            <DateRanges @close="close" />
+            <DateRanges />
 
             <div class="flex">
               <DateLinkItem @click="statDate.minusRange">
@@ -225,26 +225,8 @@ function setMaxRange(isSkipEmpty = false) {
           </UiTitle81>
         </template>
 
-        <div class="grid gap-2 px-2">
-          <div class="flex flex-wrap gap-1">
-            <DateRanges2 @close="close" />
-          </div>
-
-          <div class="flex flex-wrap gap-1">
-            <DateLinkItem @click="statDate.minusRange">
-              -
-            </DateLinkItem>
-
-            <DateLinkItemNoBg>
-              {{
-                `${t('last')} ${statDate.params.value.rangeDuration} ${statDate.params.value.rangeBy}`
-              }}
-            </DateLinkItemNoBg>
-
-            <DateLinkItem @click="statDate.plusRange">
-              +
-            </DateLinkItem>
-          </div>
+        <div class="flex flex-wrap gap-1 px-2">
+          <DateRanges2 @close="close" />
         </div>
       </UiToggle2>
 
@@ -263,22 +245,21 @@ function setMaxRange(isSkipEmpty = false) {
 
         <div class="grid gap-2 px-2">
           <div class="flex flex-wrap gap-1">
-            <DateIntervals @close="close" />
+            <DateIntervals />
           </div>
 
           <div class="flex gap-1">
             <DateLinkItem @click="statDate.delInterval">
               -
             </DateLinkItem>
-
+            <DateLinkItemNoBg>
+              {{
+                `${statDate.params.value.intervalsDuration} ${t(`dates.${statDate.params.value.intervalsBy}.simple`)}`
+              }}
+            </DateLinkItemNoBg>
             <DateLinkItem @click="statDate.addInterval">
               +
             </DateLinkItem>
-            <DateLinkItemNoBg>
-              {{
-                `${statDate.params.value.intervalsDuration} ${statDate.params.value.intervalsBy}`
-              }}
-            </DateLinkItemNoBg>
           </div>
         </div>
       </UiToggle2>

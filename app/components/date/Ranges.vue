@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import type { IntervalGroupedLabel, Range, StatDateProvider } from '~/components/date/types'
 
-const emit = defineEmits<{
-  close: []
-}>()
-
 const statDate = inject('statDate') as StatDateProvider
 
 const { t } = useI18n()
@@ -46,7 +42,6 @@ function isRangeSelected(rd: IntervalGroupedLabel) {
 
 function selectRange(igl: IntervalGroupedLabel) {
   statDate.setRangeByPeriod(igl)
-  emit('close')
 }
 </script>
 
