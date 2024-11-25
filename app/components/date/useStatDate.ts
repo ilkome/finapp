@@ -23,6 +23,8 @@ export function useStatDate({
     rangeBy: 'month',
     rangeDuration: 3,
     rangeOffset: 0,
+  }, localStorage, {
+    mergeDefaults: true,
   })
 
   if (initParams) {

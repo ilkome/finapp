@@ -192,7 +192,6 @@ function onChangeViewOptions(newViewOptions: any) {
           <div class="-m-1">
             <div class="border-item-3 flex justify-end gap-3 border-b pb-2">
               <UiItem1
-                v-if="props.isShowGrouping && !statConfig.config.value.isCategoryPage"
                 @click="grouping.toggle"
               >
                 <Icon
