@@ -108,25 +108,25 @@ useHead({
         v-if="wallet.type !== 'credit'"
         class="md:max-w-lg"
       >
-        <StatSumWallet
+        <StatSumItemWallet
           :amount="total"
           :currencyCode="wallet.currency"
           :title="t('money.balance')"
         />
       </div>
 
-      <div v-if="wallet.creditLimit" class="grid grid-cols-3 gap-1 md:max-w-lg">
-        <StatSumWallet
+      <div v-if="wallet.creditLimit" class="grid grid-cols-3 gap-1 px-2 md:max-w-lg">
+        <StatSumItemWallet
           :amount="total"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.debt')"
         />
-        <StatSumWallet
+        <StatSumItemWallet
           :amount="wallet.creditLimit - (-total)"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.available')"
         />
-        <StatSumWallet
+        <StatSumItemWallet
           :amount="wallet.creditLimit"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.limit')"
@@ -145,7 +145,7 @@ useHead({
       </div>
 
       <div class="px-2 pt-2 md:px-6">
-        <StatItemForCategory
+        <StatItem
           :storageKey="walletId"
           :trnsIds
           isShowTotals

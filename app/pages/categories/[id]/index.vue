@@ -6,12 +6,14 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useStatDate } from '~/components/date/useStatDate'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const categoriesStore = useCategoriesStore()
 const filter = useFilter()
 const route = useRoute()
 const router = useRouter()
+const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 
 provide('filter', filter)
@@ -31,11 +33,6 @@ if (!category.value)
   router.replace('/categories')
 
 const statDate = useStatDate({
-  // initParams: {
-  // intervalsBy: calculateBestIntervalsBy(maxRange.value),
-  // isShowMaxRange: true,
-  // isSkipEmpty: true,
-  // },
   key: `finapp-${categoryId.value}-${route.query.storageKey}`,
   maxRange,
   queryParams: route.query,
@@ -44,6 +41,12 @@ provide('statDate', statDate)
 
 const statConfig = useStatConfig({
   props: {
+    catsList: {
+      isGrouped: false,
+    },
+    catsRound: {
+      isGrouped: false,
+    },
     isCategoryPage: true,
     isShowEmptyCategories: true,
   },
@@ -61,6 +64,11 @@ watch(filter.catsIds, () => {
   else {
     statConfig.config.value.isShowEmptyCategories = false
   }
+})
+
+onMounted(() => {
+  if (categoriesStore.isItTransactible(categoryId.value))
+    trnsFormStore.values.categoryId = categoryId.value
 })
 
 const activeTab = useStorage<StatTabs>(`${categoryId.value}-tab`, 'netIncome')
@@ -128,7 +136,7 @@ useHead({ title: category.value?.name })
       v-if="activeTab === 'netIncome'"
       class="max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
     >
-      <StatItemForCategory
+      <StatItem
         :storageKey="storageKey + activeTab"
         :trnsIds="trnsIds"
         :preCategoriesIds="childIds"
@@ -143,7 +151,7 @@ useHead({ title: category.value?.name })
       v-if="activeTab === 'sum'"
       class="grid max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
     >
-      <StatItemForCategory
+      <StatItem
         :storageKey="storageKey + activeTab"
         :trnsIds="expenseTrnsIds"
         :preCategoriesIds="childIds"
@@ -152,7 +160,7 @@ useHead({ title: category.value?.name })
         type="expense"
       />
 
-      <StatItemForCategory
+      <StatItem
         :storageKey="storageKey + activeTab"
         :trnsIds="incomeTrnsIds"
         :preCategoriesIds="childIds"

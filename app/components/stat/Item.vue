@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import _sortby from 'lodash.sortby'
-import { useStorage } from '@vueuse/core'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { MoneyTypeSlugNew, TotalCategory } from '~/components/stat/types'
@@ -21,7 +19,6 @@ const props = defineProps<{
   isOneCategory?: boolean
   isQuickModal?: boolean
   preCategoriesIds?: CategoryId[]
-  quickModalCategoryId?: CategoryId
   storageKey?: string
   trnsIds: TrnId[]
   type: MoneyTypeSlugNew
@@ -53,8 +50,8 @@ function onSelectType(type: MoneyTypeSlugNew) {
 }
 
 const typesInTrnsIds = computed(() => ({
-  expense: props.trnsIds.some(id => trnsStore.items[id].type === 0),
-  income: props.trnsIds.some(id => trnsStore.items[id].type === 1),
+  expense: props.trnsIds.some(id => trnsStore.items?.[id]?.type === 0),
+  income: props.trnsIds.some(id => trnsStore.items?.[id]?.type === 1),
 }))
 
 // TODO: create function for this
@@ -90,7 +87,7 @@ onBeforeMount(() => {
 function getCats(trnsIds: TrnId[], isIntervalsByParent?: boolean, preCategoriesIds?: CategoryId[]) {
   const categoriesWithTrns = trnsIds?.reduce(
     (acc, trnId) => {
-      let newCategoryId = trnsStore.items[trnId]?.categoryId
+      let newCategoryId = trnsStore.items?.[trnId]?.categoryId
       if (!newCategoryId)
         return acc
 
@@ -98,10 +95,10 @@ function getCats(trnsIds: TrnId[], isIntervalsByParent?: boolean, preCategoriesI
         return acc
 
       if (isIntervalsByParent) {
-        const trnBaseCategory: CategoryItem = categoriesStore.items[newCategoryId]
+        const trnBaseCategory: CategoryItem | undefined = categoriesStore.items[newCategoryId]
 
         newCategoryId = trnBaseCategory?.parentId === 0
-          ? trnsStore.items[trnId]?.categoryId
+          ? trnsStore.items?.[trnId]?.categoryId
           : trnBaseCategory?.parentId
       }
 
@@ -264,11 +261,6 @@ const cats = computed(() => {
     cats = [...props.preCategoriesIds]
   }
 
-  cats = _sortby(cats, (id: CategoryId) => [
-    categoriesStore.items[categoriesStore.items[id]?.parentId]?.name || false,
-    categoriesStore.items[id]?.name,
-  ])
-
   const isGrouped = statConfig.config.value.catsView === 'list' ? statConfig.config.value.catsList.isGrouped : statConfig.config.value.catsRound.isGrouped
   return getCats(selectedTrnsIdsForTrnsList.value ?? [], isGrouped, cats)
 })
@@ -282,11 +274,6 @@ const biggestCatNumber = computed(() => {
     income,
   }
 })
-
-const openedCats = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedCats`, [])
-const openedTrns = useStorage<CategoryId[]>(`${newBaseStorageKey.value}-openedTrns`, [])
-
-const quickModalCategoryId = ref<CategoryId | false>(false)
 
 async function onClickCategory(categoryId: CategoryId) {
   await filter.setCategoryId(categoryId)
@@ -388,7 +375,6 @@ async function onClickCategory(categoryId: CategoryId) {
                 :key="item.id"
                 :biggestCatNumber
                 :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
-                :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 :isHideDots="statConfig.config.value.catsList.isOpened"
                 :item
                 :isHideParent="props.hasChildren"
@@ -419,7 +405,6 @@ async function onClickCategory(categoryId: CategoryId) {
                 :key="item.id"
                 :item
                 :biggestCatNumber
-                :isActive="openedCats.includes(item.id) || openedTrns.includes(item.id)"
                 isShowAmount
                 @click="onClickCategory"
               />
@@ -466,35 +451,6 @@ async function onClickCategory(categoryId: CategoryId) {
         :maxRange
         @onClose="isShowDateSelector = false"
       />
-
-      <!-- Categories stat -->
-      <BaseBottomSheet2
-        v-if="quickModalCategoryId"
-        isShow
-        drugClassesCustom="bg-foreground-1 lg:w-[calc(100%-120px)] max-w-md"
-        @closed="quickModalCategoryId = false"
-      >
-        <template #handler="{ close }">
-          <div class="relative z-20">
-            <BaseBottomSheetHandler />
-            <BaseBottomSheetClose @onClick="close" />
-          </div>
-        </template>
-
-        <template #default="">
-          <div class="scrollerBlock grid h-[98dvh] content-start overflow-hidden overflow-y-auto">
-            <CategoriesHeader
-              :category="categoriesStore.items[quickModalCategoryId]"
-              :parentCategory="categoriesStore.items?.[categoriesStore.items[quickModalCategoryId]?.parentId]"
-              class="bg-foreground-5 sticky top-0 z-10"
-            />
-
-            <h1 class="bg-red-200 p-10">
-              StatItem
-            </h1>
-          </div>
-        </template>
-      </BaseBottomSheet2>
 
       <!-- Trns -->
       <BaseBottomSheet2

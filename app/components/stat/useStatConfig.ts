@@ -1,6 +1,7 @@
 import { useStorage } from '@vueuse/core'
 import { z } from 'zod'
 import { chartTypes } from '~/components/stat/chart/types'
+import type { DeepPartial } from '~~/utils/types'
 
 export const chartViewOptions = ['half', 'full'] as const
 
@@ -34,7 +35,7 @@ export type MiniItemConfig = z.infer<typeof ConfigSchema>
 export type UpdateConfigFn = <K extends keyof MiniItemConfig>(key: K, value: MiniItemConfig[K]) => void
 
 type StatConfigParams = {
-  props?: Partial<MiniItemConfig>
+  props?: DeepPartial<MiniItemConfig>
   storageKey: string
 }
 

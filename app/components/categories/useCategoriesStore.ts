@@ -1,4 +1,3 @@
-import _sortby from 'lodash.sortby'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import { type ComputedRef, type ShallowRef, computed, shallowRef } from 'vue'
@@ -74,7 +73,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     return Object.keys(items.value)
       .filter(id => items.value?.[id]?.parentId === 0)
-      .sort((a, b) => (items.value?.[a]?.name.localeCompare(items.value?.[b]?.name) ?? '') || 0)
+      .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
   })
 
   const categoriesForBeParent = computed(() => {
@@ -101,10 +100,19 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       .filter(id => items.value[id].showInQuickSelector)
       .map(id => ({ id, ...items.value[id] }))
 
-    return _sortby(filteredCategories, category => [
-      items.value[category.parentId]?.name || false,
-      category.name,
-    ]).map(c => c.id)
+    return filteredCategories
+      .sort((a, b) => {
+        const parentNameA = items.value[a.parentId]?.name || ''
+        const parentNameB = items.value[b.parentId]?.name || ''
+
+        // First compare by parent name
+        if (parentNameA !== parentNameB)
+          return parentNameA.localeCompare(parentNameB)
+
+        // If parent names are equal, compare by category name
+        return a.name.localeCompare(b.name)
+      })
+      .map(c => c.id)
   })
 
   const recentCategoriesIds = computed(() => {
@@ -238,7 +246,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return hasChildren(categoryId)
       ? Object.keys(items.value)
         .filter(id => items.value[id]?.parentId === categoryId)
-        .sort((a, b) => items.value[a]!.name.localeCompare(items.value[b]!.name))
+        .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
       : []
   }
 

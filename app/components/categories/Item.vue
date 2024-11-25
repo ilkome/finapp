@@ -15,7 +15,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [e: Event]
-  filter: [e: Event]
+  filter: [categoryId: CategoryId]
 }>()
 
 const categoriesStore = useCategoriesStore()
@@ -37,7 +37,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
         :color="category.color"
         :name="category.icon"
         invert
-        @click="(e: Event) => emit('filter', e)"
+        @click="emit('filter', categoryId)"
       />
     </template>
 

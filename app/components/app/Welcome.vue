@@ -7,7 +7,7 @@ const { t } = useI18n()
 const router = useRouter()
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
-const trnForm = useTrnsFormStore()
+const trnsFormStore = useTrnsFormStore()
 </script>
 
 <template>
@@ -38,7 +38,7 @@ const trnForm = useTrnsFormStore()
       <UiButtonBlue
         v-else
         rounded
-        @click="trnForm.trnFormCreate()"
+        @click="trnsFormStore.trnFormCreate()"
       >
         {{ t("createTrn") }}
       </UiButtonBlue>

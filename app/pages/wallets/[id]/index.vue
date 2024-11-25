@@ -9,6 +9,7 @@ import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useStatDate } from '~/components/date/useStatDate'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
@@ -16,13 +17,14 @@ const trnsStore = useTrnsStore()
 const router = useRouter()
 const route = useRoute()
 const filter = useFilter()
+const trnsFormStore = useTrnsFormStore()
 
 provide('filter', filter)
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  walletsIds: filter?.walletsIds?.value ?? [],
+  walletsIds: [walletId.value, ...filter?.walletsIds?.value],
 }))
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
@@ -55,6 +57,10 @@ watch(filter.catsIds, () => {
   else {
     statConfig.config.value.isShowEmptyCategories = false
   }
+})
+
+onMounted(() => {
+  trnsFormStore.values.walletId = walletId.value
 })
 
 const activeTab = useStorage<StatTabs>(`${walletId.value}-tab`, 'netIncome')
@@ -131,27 +137,27 @@ useHead({ title: wallet.value?.name })
 
     <div
       v-if="wallet.type !== 'credit'"
-      class="md:max-w-lg"
+      class="px-3 pt-2 md:max-w-lg"
     >
-      <StatSumWallet
+      <StatSumItemWallet
         :amount="total"
         :currencyCode="wallet.currency"
         :title="t('money.balance')"
       />
     </div>
 
-    <div v-if="wallet.creditLimit" class="grid grid-cols-3 gap-1 md:max-w-lg">
-      <StatSumWallet
+    <div v-if="wallet.creditLimit" class="flex flex-wrap gap-x-8 gap-y-2 px-3 pt-2 md:max-w-lg">
+      <StatSumItemWallet
         :amount="total"
         :currencyCode="wallet.currency"
         :title="t('wallets.form.credit.debt')"
       />
-      <StatSumWallet
+      <StatSumItemWallet
         :amount="wallet.creditLimit - (-total)"
         :currencyCode="wallet.currency"
         :title="t('wallets.form.credit.available')"
       />
-      <StatSumWallet
+      <StatSumItemWallet
         :amount="wallet.creditLimit"
         :currencyCode="wallet.currency"
         :title="t('wallets.form.credit.limit')"
@@ -163,7 +169,7 @@ useHead({ title: wallet.value?.name })
       v-if="activeTab === 'netIncome'"
       class="max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
     >
-      <StatItemForCategory
+      <StatItem
         :storageKey="storageKey"
         :trnsIds="trnsIds"
         hasChildren
@@ -176,14 +182,14 @@ useHead({ title: wallet.value?.name })
       v-if="activeTab === 'sum'"
       class="grid max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
     >
-      <StatItemForCategory
+      <StatItem
         :storageKey="storageKey"
         :trnsIds="expenseTrnsIds"
         hasChildren
         type="expense"
       />
 
-      <StatItemForCategory
+      <StatItem
         :storageKey="storageKey"
         :trnsIds="incomeTrnsIds"
         hasChildren

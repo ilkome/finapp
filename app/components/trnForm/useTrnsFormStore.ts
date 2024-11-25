@@ -130,8 +130,11 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
 
     if (props.action === 'create') {
       values.trnType = 0
-      values.walletId = props.walletId ?? props.trn?.walletId ?? props.walletsIds[0]
-      values.categoryId = props.trn?.categoryId ?? props.categoriesIds[0]
+      if (!values.walletId)
+        values.walletId = props.walletId ?? props.trn?.walletId ?? props.walletsIds[0]
+      if (!values.categoryId)
+        values.categoryId = props.trn?.categoryId ?? props.categoriesIds[0]
+
       values.incomeWalletId = props.walletsIds[0]
       values.expenseWalletId = props.walletsIds[1]
     }

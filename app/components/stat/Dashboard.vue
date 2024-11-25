@@ -120,7 +120,7 @@ const preCategoriesIds = computed(() => [...filter.catsIds.value])
       v-if="activeTab === 'netIncome'"
       class="max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
     >
-      <StatItemForCategory
+      <StatItem
         :storageKey="storageKey + activeTab"
         :trnsIds="trnsIds"
         :preCategoriesIds
@@ -134,7 +134,7 @@ const preCategoriesIds = computed(() => [...filter.catsIds.value])
       v-if="activeTab === 'sum'"
       class="grid max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
     >
-      <StatItemForCategory
+      <StatItem
         :storageKey="storageKey + activeTab"
         :trnsIds="expenseTrnsIds"
         :preCategoriesIds
@@ -142,7 +142,7 @@ const preCategoriesIds = computed(() => [...filter.catsIds.value])
         type="expense"
       />
 
-      <StatItemForCategory
+      <StatItem
         :storageKey="storageKey + activeTab"
         :trnsIds="incomeTrnsIds"
         :preCategoriesIds

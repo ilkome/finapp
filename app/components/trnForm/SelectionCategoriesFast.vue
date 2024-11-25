@@ -21,7 +21,7 @@ const trnsFormStore = useTrnsFormStore()
     class="pb-6"
   >
     <UiTitle3
-      class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
+      class="bg-foreground-1 sticky top-0 z-20 px-3 pb-3 pt-4"
       @click="trnsFormStore.ui.catsRootModal = true"
     >
       {{ t("categories.favoriteTitle") }}
@@ -39,7 +39,7 @@ const trnsFormStore = useTrnsFormStore()
   <!-- Recent categories -->
   <div v-if="categoriesStore.recentCategoriesIds.length > 0">
     <UiTitle3
-      class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
+      class="bg-foreground-1 sticky top-0 z-20 px-3 pb-3 pt-4"
       @click="trnsFormStore.ui.catsRootModal = true"
     >
       {{ t("categories.lastUsedTitle") }}

@@ -41,11 +41,8 @@ const grouping = {
   },
 }
 
-const favorites = {
+const favorites = computed(() => ({
   isShow: computed(() => {
-    if (!props.isShowFavorites)
-      return false
-
     if (statConfig.config.value.catsView === 'list')
       return statConfig.config.value.catsList.isShowFavorites
 
@@ -69,13 +66,10 @@ const favorites = {
       })
     }
   },
-}
+}))
 
 const recent = {
   isShow: computed(() => {
-    if (!props.isShowRecent)
-      return false
-
     if (statConfig.config.value.catsView === 'list')
       return statConfig.config.value.catsList.isShowRecent
 
@@ -148,6 +142,16 @@ function onChangeViewOptions(newViewOptions: any) {
       />
     </UiItem1>
 
+    <!-- Vertical -->
+    <UiItem1
+      @click="statConfig.updateConfig('isShowCategoriesVertical', !statConfig.config.value.isShowCategoriesVertical)"
+    >
+      <Icon
+        name="lucide:chart-no-axes-column-decreasing"
+        size="18"
+      />
+    </UiItem1>
+
     <!-- Grouping -->
     <UiItem1
       v-if="props.isShowGrouping && !statConfig.config.value.isCategoryPage"
@@ -188,7 +192,7 @@ function onChangeViewOptions(newViewOptions: any) {
           <div class="-m-1">
             <div class="border-item-3 flex justify-end gap-3 border-b pb-2">
               <UiItem1
-                v-if="props.isShowGrouping"
+                v-if="props.isShowGrouping && !statConfig.config.value.isCategoryPage"
                 @click="grouping.toggle"
               >
                 <Icon
@@ -220,6 +224,7 @@ function onChangeViewOptions(newViewOptions: any) {
             </UiElement>
           </div>
 
+          <!-- Vertical -->
           <div class="border-item-3 grid gap-3 border-b pb-2 last:border-0 last:pb-0">
             <UiElement
               class="text-sm"
@@ -238,13 +243,12 @@ function onChangeViewOptions(newViewOptions: any) {
             </UiElement>
           </div>
 
-          <!-- Grouping -->
+          <!-- TODO: use StatConfig -->
           <div
-            v-if="!grouping.isGrouped.value"
+            v-if="false"
             class="border-item-3 border-b pb-2 last:border-0 last:pb-0"
           >
             <!-- Favorite -->
-            <pre>{{ favorites }}</pre>
             <UiElement
               class="text-sm"
               @click="favorites.toggle"
