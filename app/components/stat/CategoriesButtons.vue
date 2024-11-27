@@ -15,11 +15,11 @@ const statConfig = inject('statConfig') as StatConfigProvider
 
 const grouping = {
   isGrouped: computed(() => {
-    // if (statConfig.config.value.catsView === 'list')
-    //   return statConfig.config.value.catsList.isGrouped
+    if (statConfig.config.value.catsView === 'list')
+      return statConfig.config.value.catsList.isGrouped
 
-    // if (statConfig.config.value.catsView === 'round')
-    //   return statConfig.config.value.catsRound.isGrouped
+    if (statConfig.config.value.catsView === 'round')
+      return statConfig.config.value.catsRound.isGrouped
 
     return false
   }),
@@ -27,7 +27,7 @@ const grouping = {
     if (statConfig.config.value.catsView === 'list') {
       statConfig.updateConfig('catsList', {
         ...statConfig.config.value.catsList,
-        // isGrouped: !statConfig.config.value.catsList.isGrouped,
+        isGrouped: !statConfig.config.value.catsList.isGrouped,
       })
       return
     }
@@ -35,7 +35,7 @@ const grouping = {
     if (statConfig.config.value.catsView === 'round') {
       statConfig.updateConfig('catsRound', {
         ...statConfig.config.value.catsRound,
-        // isGrouped: !statConfig.config.value.catsRound.isGrouped,
+        isGrouped: !statConfig.config.value.catsRound.isGrouped,
       })
     }
   },

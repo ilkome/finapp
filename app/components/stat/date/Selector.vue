@@ -30,25 +30,25 @@ const tabs = {
 const viewPresets: Record<'mini' | 'standard', Record<'catsList', DeepPartial<StatConfigProvider['config']['value']['catsList']>> & Record<'catsRound', DeepPartial<StatConfigProvider['config']['value']['catsRound']>>> = {
   mini: {
     catsList: {
-      // isGrouped: !statConfig.config.value.isCategoryPage,
+      isGrouped: !statConfig.config.value.isCategoryPage,
       isItemsBg: false,
       isLines: false,
       isRoundIcon: false,
     },
     catsRound: {
-      // isGrouped: !statConfig.config.value.isCategoryPage,
+      isGrouped: !statConfig.config.value.isCategoryPage,
     },
   },
   standard: {
     catsList: {
-      // isGrouped: !statConfig.config.value.isCategoryPage,
+      isGrouped: !statConfig.config.value.isCategoryPage,
       isItemsBg: false,
       isLines: true,
       isOpened: false,
       isRoundIcon: true,
     },
     catsRound: {
-      // isGrouped: !statConfig.config.value.isCategoryPage,
+      isGrouped: !statConfig.config.value.isCategoryPage,
     },
   },
 }
