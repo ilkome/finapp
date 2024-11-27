@@ -3,7 +3,6 @@ import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDatePara
 import { calculateIntervalInRange, getEndOf, getIntervalsInRange } from '~/components/date/utils'
 
 export function useStatDate({
-  initParams,
   key,
   maxRange,
   queryParams,
@@ -26,10 +25,6 @@ export function useStatDate({
   }, localStorage, {
     mergeDefaults: true,
   })
-
-  if (initParams) {
-    params.value = { ...params.value, ...initParams }
-  }
 
   if (queryParams) {
     if (queryParams.intervalsBy)

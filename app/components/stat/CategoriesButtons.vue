@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import defu from 'defu'
 import { getStyles } from '~/components/ui/getStyles'
-import type { DeepPartial } from '~~/utils/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
+  catsLength: number
   isShowFavorites?: boolean
   isShowGrouping?: boolean
   isShowRecent?: boolean
@@ -144,6 +144,7 @@ function onChangeViewOptions(newViewOptions: any) {
 
     <!-- Vertical -->
     <UiItem1
+      v-if="props.catsLength > 1"
       @click="statConfig.updateConfig('isShowCategoriesVertical', !statConfig.config.value.isShowCategoriesVertical)"
     >
       <Icon
@@ -224,7 +225,10 @@ function onChangeViewOptions(newViewOptions: any) {
           </div>
 
           <!-- Vertical -->
-          <div class="border-item-3 grid gap-3 border-b pb-2 last:border-0 last:pb-0">
+          <div
+            v-if="props.catsLength > 1"
+            class="border-item-3 grid gap-3 border-b pb-2 last:border-0 last:pb-0"
+          >
             <UiElement
               class="text-sm"
               @click="statConfig.updateConfig('isShowCategoriesVertical', !statConfig.config.value.isShowCategoriesVertical)"

@@ -72,7 +72,7 @@ export function useFilter() {
   /**
    * Categories
    */
-  const catsIds = computed<CategoryId[]>(() => Array.isArray(route.query.filterCategories)
+  const categoriesIds = computed<CategoryId[]>(() => Array.isArray(route.query.filterCategories)
     ? (route.query.filterCategories as CategoryId[]).filter(id => categoriesStore.items[id])
     : route.query.filterCategories
       ? [route.query.filterCategories]
@@ -80,13 +80,13 @@ export function useFilter() {
   )
 
   function setCategoryId(categoryId: CategoryId) {
-    if (catsIds.value.includes(categoryId))
+    if (categoriesIds.value.includes(categoryId))
       return
 
     router.push({
       query: {
         ...route.query,
-        filterCategories: [...catsIds.value, categoryId],
+        filterCategories: [...categoriesIds.value, categoryId],
       },
     })
   }
@@ -94,11 +94,11 @@ export function useFilter() {
   function setCategories(newCategoriesIds: CategoryId[]) {
     let uniqueCategoriesIds: CategoryId[] = []
 
-    if (newCategoriesIds.every(id => catsIds.value.includes(id))) {
-      uniqueCategoriesIds = catsIds.value.filter(id => !newCategoriesIds.includes(id))
+    if (newCategoriesIds.every(id => categoriesIds.value.includes(id))) {
+      uniqueCategoriesIds = categoriesIds.value.filter(id => !newCategoriesIds.includes(id))
     }
     else {
-      uniqueCategoriesIds = [...new Set([...catsIds.value, ...newCategoriesIds])]
+      uniqueCategoriesIds = [...new Set([...categoriesIds.value, ...newCategoriesIds])]
     }
 
     router.push({
@@ -113,13 +113,13 @@ export function useFilter() {
     router.push({
       query: {
         ...route.query,
-        filterCategories: [...catsIds.value.filter(id => id !== categoryId)],
+        filterCategories: [...categoriesIds.value.filter(id => id !== categoryId)],
       },
     })
   }
 
   function toggleCategoryId(categoryId: CategoryId) {
-    if (catsIds.value.includes(categoryId)) {
+    if (categoriesIds.value.includes(categoryId)) {
       removeCategoryId(categoryId)
       return
     }
@@ -131,16 +131,16 @@ export function useFilter() {
    * Clear
    */
   function clearFilter() {
-    // catsIds.value = []
+    // categoriesIds.value = []
     // walletsIds.value = []
     router.push({ query: undefined })
   }
 
-  const isShow = computed(() => catsIds.value.length > 0 || walletsIds.value.length > 0)
+  const isShow = computed(() => categoriesIds.value.length > 0 || walletsIds.value.length > 0)
 
   function getTrnsIdsWithFilter() {
     return trnsStore.getStoreTrnsIds({
-      categoriesIds: catsIds.value,
+      categoriesIds: categoriesIds.value,
       walletsIds: walletsIds.value,
     }, {
       includesChildCategories: true,
@@ -148,7 +148,7 @@ export function useFilter() {
   }
 
   return {
-    catsIds,
+    categoriesIds,
     clearFilter,
     getTrnsIdsWithFilter,
     isShow,

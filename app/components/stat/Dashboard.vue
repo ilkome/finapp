@@ -18,7 +18,7 @@ const walletsStore = useWalletsStore()
 provide('filter', filter)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: filter?.catsIds?.value,
+  categoriesIds: filter?.categoriesIds?.value,
   walletsIds: filter?.walletsIds?.value,
 }, {
   includesChildCategories: true,
@@ -28,8 +28,8 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 const statConfig = useStatConfig({ storageKey: 'dashboard' })
 provide('statConfig', statConfig)
 
-watch(filter.catsIds, () => {
-  if (filter.catsIds.value.length > 0) {
+watch(filter.categoriesIds, () => {
+  if (filter.categoriesIds.value.length > 0) {
     statConfig.config.value.isShowEmptyCategories = true
   }
   else {
@@ -72,56 +72,56 @@ function onClickWallet(walletId: WalletId) {
   trnsFormStore.values.walletId = walletId
 }
 
-const preCategoriesIds = computed(() => [...filter.catsIds.value])
+const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
 </script>
 
 <template>
   <UiPage>
-    <div class="bg-foreground-3 sticky top-0 z-20 grid max-w-6xl gap-2 pb-2 lg:px-4 xl:py-2">
-      <div class="grid gap-2 px-2 pt-2">
-        <div class="flex items-center gap-1 overflow-x-auto ">
-          <FilterSelector
-            isShowCategories
-            isShowWallets
-          />
-          <StatMenu
-            :active="activeTab"
-            @click="id => activeTab = id"
-          />
-          <StatConfigPopover isShowWallets />
-        </div>
+    <StatHeader>
+      <template #title>
+        <FilterSelector
+          isShowCategories
+          isShowWallets
+        />
+        <StatMenu
+          :active="activeTab"
+          @click="id => activeTab = id"
+        />
+      </template>
 
+      <template #actions>
+        <StatConfigPopover isShowWallets />
+      </template>
+
+      <template v-if="filter.isShow?.value && filter.categoriesIds.value.length > 0" #filterSelected>
         <FilterSelected
-          v-if="filter.isShow?.value && filter.catsIds.value.length > 0"
           isShowCategories
         />
-      </div>
-    </div>
+      </template>
+    </StatHeader>
 
-    <div class="max-w-6xl gap-2 pb-2 lg:px-4 xl:py-2">
-      <div
-        v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
-        class="flex gap-1 overflow-x-auto px-2 py-px"
-      >
-        <WalletsItem
-          v-for="walletId in sortedFilterWalletsIds"
-          :key="walletId"
-          :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
-          :walletId
-          :wallet="walletsStore.itemsWithAmount?.[walletId]"
-          alt
-          @click="onClickWallet(walletId)"
-        />
-      </div>
+    <div
+      v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
+      class="flex max-w-6xl gap-1 overflow-x-auto px-2 py-px"
+    >
+      <WalletsItem
+        v-for="walletId in sortedFilterWalletsIds"
+        :key="walletId"
+        :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
+        :walletId
+        :wallet="walletsStore.itemsWithAmount?.[walletId]"
+        alt
+        @click="onClickWallet(walletId)"
+      />
     </div>
 
     <!-- NetIncome -->
     <div
       v-if="activeTab === 'netIncome'"
-      class="max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
+      class="statWrapNetIncome"
     >
       <StatItem
-        :storageKey="storageKey + activeTab"
+        :storageKey="storageKey"
         :trnsIds="trnsIds"
         :preCategoriesIds
         hasChildren
@@ -132,10 +132,10 @@ const preCategoriesIds = computed(() => [...filter.catsIds.value])
     <!-- Summary -->
     <div
       v-if="activeTab === 'sum'"
-      class="grid max-w-6xl gap-4 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2"
+      class="statWrapSummary"
     >
       <StatItem
-        :storageKey="storageKey + activeTab"
+        :storageKey="storageKey"
         :trnsIds="expenseTrnsIds"
         :preCategoriesIds
         hasChildren
@@ -143,7 +143,7 @@ const preCategoriesIds = computed(() => [...filter.catsIds.value])
       />
 
       <StatItem
-        :storageKey="storageKey + activeTab"
+        :storageKey="storageKey"
         :trnsIds="incomeTrnsIds"
         :preCategoriesIds
         hasChildren

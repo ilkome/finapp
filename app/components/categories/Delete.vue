@@ -16,7 +16,9 @@ const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
 const isShowDeleteConfirm = ref(false)
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ categoriesIds: categoriesStore.getChildsIdsOrParent(props.categoryId) }))
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  categoriesIds: categoriesStore.getChildsIdsOrParent(props.categoryId),
+}))
 
 // TODO: translate
 const deleteDescText = computed(() => {

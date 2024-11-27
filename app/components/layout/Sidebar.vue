@@ -74,7 +74,7 @@ const { t } = useI18n()
             :activeItemId="route.params.id as string"
             class="group"
             isShowIcon
-            @click="router.push(`/wallets/${walletId}`)"
+            @click="() => walletId === route.params.id ? router.push('/dashboard') : router.push(`/wallets/${walletId}`)"
           />
 
           <div

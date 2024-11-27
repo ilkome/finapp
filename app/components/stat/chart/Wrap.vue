@@ -73,11 +73,11 @@ const isShowNavNext = computed(() => {
       class="pb-2"
     >
       <div class="flex justify-between">
-        <LazyStatChartTypeSelector
+        <StatChartTypeSelector
           :chartType="statConfig.config.value?.chartType"
           @update:chartType="(value: ChartType) => statConfig.updateConfig('chartType', value)"
         />
-        <LazyStatChartIntervals
+        <StatChartIntervals
           v-model:period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"
         />
@@ -101,9 +101,7 @@ const isShowNavNext = computed(() => {
         v-if="!statDate.params.value.customDate"
         class="flex gap-1"
       >
-        <DateNavHome
-          v-if="isShowNavHome"
-        />
+        <DateNavHome v-if="isShowNavHome" />
 
         <DateNav
           v-if="isShowNavNext"

@@ -6,7 +6,6 @@ import type { TotalCategory } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   isShowAmount?: boolean
@@ -21,22 +20,8 @@ const statDate = inject('statDate') as StatDateProvider
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const trnsFormStore = useTrnsFormStore()
-const trnsStore = useTrnsStore()
 
-const category = computed(() => {
-  const isOneCategory = props.item.trnsIds.length <= 1
-  const isParentCategory = categoriesStore.items[props.item.id]?.parentId === 0
-
-  const isDifferentCategories = props.item.trnsIds.some(id =>
-    trnsStore.items[id]?.categoryId !== trnsStore.items[props.item.trnsIds[0]]?.categoryId)
-
-  if (isParentCategory && (!isDifferentCategories || isOneCategory)) {
-    const parentId = trnsStore.items[props.item.trnsIds[0]].categoryId
-    return categoriesStore.items[parentId]
-  }
-
-  return categoriesStore.items[props.item.id]
-})
+const category = computed(() => categoriesStore.items[props.item.id])
 
 // TODO: addTrnFromSelectedInterval
 const longPressRef = ref(null)

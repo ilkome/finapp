@@ -18,13 +18,13 @@ const items = computed<{ label: string, value: ChartType }[]>(() => [{
 
 <template>
   <div class="flex gap-0">
-    <DateLinkItem2
+    <StatChartButton
       v-for="item in items"
       :key="item.value"
       :isActive="chartType === item.value"
       @click="chartType = item.value"
     >
       {{ item.label }}
-    </DateLinkItem2>
+    </StatChartButton>
   </div>
 </template>

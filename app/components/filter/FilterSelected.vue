@@ -34,7 +34,7 @@ const itemClasses = getStyles('item', ['alt', 'rounded'])
     <!-- Categories -->
     <template v-if="props.isShowCategories">
       <CategoriesItem
-        v-for="categoryId in filter?.catsIds?.value"
+        v-for="categoryId in filter?.categoriesIds?.value"
         :key="categoryId"
         :category="categoriesStore.items[categoryId]"
         :categoryId="categoryId"

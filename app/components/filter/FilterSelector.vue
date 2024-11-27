@@ -38,7 +38,7 @@ const modals = ref({
           >
             <CategoriesSelector
               class="min-w-72 max-w-xs"
-              :selectedIds="filter?.catsIds.value"
+              :selectedIds="filter?.categoriesIds.value"
               @onSelected="filter.toggleCategoryId"
               @setCategories="filter.setCategories"
               @filter="filter.toggleCategoryId"
@@ -77,7 +77,7 @@ const modals = ref({
 
                 <div class="scrollerBlock grid h-full grid-rows-[auto,1fr] gap-1 overflow-hidden overflow-y-auto px-1">
                   <CategoriesSelector
-                    :selectedIds="filter?.catsIds.value"
+                    :selectedIds="filter?.categoriesIds.value"
                     @onSelected="filter.toggleCategoryId"
                     @filter="filter.toggleCategoryId"
                   />
