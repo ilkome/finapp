@@ -98,7 +98,7 @@ useHead({ title: wallet.value?.name })
             :style="{ color: wallet.color }"
             class="size-6"
           />
-          <div class="text-item-1 text-xl font-semibold">
+          <div class="text-xl font-semibold">
             {{ wallet.name }}
           </div>
         </UiHeaderTitle>

@@ -102,7 +102,7 @@ const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
 
     <div
       v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
-      class="flex max-w-6xl gap-1 overflow-x-auto px-2 py-px"
+      class="statWalletsWrapper"
     >
       <WalletsItem
         v-for="walletId in sortedFilterWalletsIds"

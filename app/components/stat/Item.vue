@@ -354,7 +354,7 @@ async function onClickCategory(categoryId: CategoryId) {
           </div>
 
           <!-- Lines -->
-          <div
+          <!-- <div
             v-if="statConfig.config.value.catsView === 'list'"
             :class="{
               'grid gap-2 px-0': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
@@ -389,7 +389,7 @@ async function onClickCategory(categoryId: CategoryId) {
                 />
               </div>
             </StatLinesItemLine>
-          </div>
+          </div> -->
 
           <div
             v-if="statConfig.config.value.catsView === 'list'"
@@ -422,42 +422,43 @@ async function onClickCategory(categoryId: CategoryId) {
 
                   <StatLinesItemLine
                     :biggestCatNumber
-                    :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
                     :isHideDots="statConfig.config.value.catsList.isOpened"
                     :isHideParent="props.hasChildren"
                     :item
-                    :lineWidth="((statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened) || statConfig.config.value.catsList.isLines) ? 0 : 1"
+                    :lineWidth="statConfig.config.value.catsList.isLines ? 0 : 1"
                     class="grow"
                     @click="onClickCategory"
-                  >
-                    <div
-                      v-if="statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened"
-                      class="flex flex-wrap gap-1 pb-3 pl-2 pt-1"
-                    >
-                      <StatLinesItemRound
-                        v-for="itemInside in getCats(item.trnsIds)"
-                        :key="itemInside.id"
-                        :item="itemInside"
-                        @click="onClickCategory"
-                      />
-                    </div>
-                  </StatLinesItemLine>
+                  />
                 </div>
               </template>
 
-              <div class="pl-8">
-                <StatLinesItemLine
-                  v-for="itemInside in getCats(item.trnsIds)"
-                  :key="itemInside.id"
-                  :biggestCatNumber
-                  :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
-                  :isHideDots="statConfig.config.value.catsList.isOpened"
-                  :isHideParent="props.hasChildren"
-                  :item="itemInside"
-                  :lineWidth="((statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened) || statConfig.config.value.catsList.isLines) ? 0 : 1"
-                  class="grow"
-                  @click="onClickCategory"
-                />
+              <div class="pl-12">
+                <div v-if="!statConfig.config.value.catsList.isOpened">
+                  <StatLinesItemLine
+                    v-for="itemInside in getCats(item.trnsIds)"
+                    :key="itemInside.id"
+                    :biggestCatNumber
+                    :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
+                    :isHideDots="statConfig.config.value.catsList.isOpened"
+                    :isHideParent="props.hasChildren"
+                    :item="itemInside"
+                    :lineWidth="((statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened) || statConfig.config.value.catsList.isLines) ? 0 : 1"
+                    class="group"
+                    @click="onClickCategory"
+                  />
+                </div>
+
+                <div
+                  v-if="statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened"
+                  class="flex flex-wrap gap-1 pb-3 pl-2 pt-2"
+                >
+                  <StatLinesItemRound
+                    v-for="itemInside in getCats(item.trnsIds)"
+                    :key="itemInside.id"
+                    :item="itemInside"
+                    @click="onClickCategory"
+                  />
+                </div>
               </div>
             </UiToggle>
           </div>

@@ -52,8 +52,7 @@ const statConfig = useStatConfig({
       isGrouped: false,
     },
     isCategoryPage: true,
-    isShowEmptyCategories: true,
-    showedWallets: 99,
+    isShowEmptyCategories: false,
   },
   storageKey: `finapp-stat2-${categoryId.value}-${route.query.storageKey}`,
 })
@@ -63,6 +62,15 @@ if (!category.value)
   router.replace('/dashboard')
 
 onMounted(() => {
+  statConfig.updateConfig('catsList', {
+    ...statConfig.config.value.catsList,
+    isGrouped: false,
+  })
+  statConfig.updateConfig('catsRound', {
+    ...statConfig.config.value.catsRound,
+    isGrouped: false,
+  })
+
   if (categoriesStore.isItTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value
 })
@@ -88,7 +96,6 @@ useHead({ title: category.value?.name })
 </script>
 
 <template>
-  <pre>{{ statConfig }}</pre>
   <UiPage v-if="category">
     <StatHeader>
       <template #title>
@@ -105,7 +112,7 @@ useHead({ title: category.value?.name })
         >
           <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
         </UiHeaderLink>
-        <StatConfigPopover />
+        <!-- <StatConfigPopover /> -->
       </template>
 
       <template #filterSelector>

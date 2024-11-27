@@ -123,14 +123,14 @@ onLongPress(
           :name="category?.icon"
           class="ml-0 !w-7 !text-base leading-none"
           invert
-          @click.stop="emit('onClickIcon', props.item.id)"
+          @click="emit('onClickIcon', props.item.id)"
         />
         <UiIconBase
           v-else
           :color="category?.color"
           :name="category?.icon"
           class="ml-1 !w-6 !text-xl leading-none"
-          @click.stop="emit('onClickIcon', props.item.id)"
+          @click="emit('onClickIcon', props.item.id)"
         />
       </template>
 

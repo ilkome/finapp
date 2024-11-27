@@ -61,17 +61,16 @@ provide('statConfig', statConfig)
 if (!category.value)
   router.replace('/categories')
 
-watch(filter.categoriesIds, () => {
-  if (filter.categoriesIds.value.length > 0) {
-    if (route.query.fromPage !== 'dashboard')
-      statConfig.config.value.isShowEmptyCategories = true
-  }
-  else {
-    statConfig.config.value.isShowEmptyCategories = false
-  }
-})
-
 onMounted(() => {
+  statConfig.updateConfig('catsList', {
+    ...statConfig.config.value.catsList,
+    isGrouped: false,
+  })
+  statConfig.updateConfig('catsRound', {
+    ...statConfig.config.value.catsRound,
+    isGrouped: false,
+  })
+
   if (categoriesStore.isItTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value
 })
