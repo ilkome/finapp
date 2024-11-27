@@ -17,7 +17,6 @@ import type { WalletId } from '~/components/wallets/types'
 
 const props = defineProps<{
   hasChildren: boolean
-  isOneCategory?: boolean
   isQuickModal?: boolean
   preCategoriesIds?: CategoryId[]
   storageKey: string
@@ -27,8 +26,8 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const filter = inject('filter') as FilterProvider
 const route = useRoute()
+const filter = inject('filter') as FilterProvider
 const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
 
@@ -79,13 +78,6 @@ const filteredTrnsIds = computed(() => {
 })
 
 const isDayToday = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day'))
-
-onBeforeMount(() => {
-  if (props.isOneCategory) {
-    statConfig.updateConfig('catsList', { ...statConfig.config.value.catsList, isGrouped: false })
-    statConfig.updateConfig('catsRound', { ...statConfig.config.value.catsRound, isGrouped: false })
-  }
-})
 
 function getCats(trnsIds: TrnId[], isIntervalsByParent?: boolean, preCategoriesIds?: CategoryId[]) {
   const categoriesWithTrns = trnsIds?.reduce(
@@ -285,7 +277,6 @@ async function onClickCategory(categoryId: CategoryId) {
   const baseParams = {
     filterCategories: filter?.categoriesIds?.value.join(','),
     filterWallets: props.walletId ? props.walletId : filter?.walletsIds?.value.join(','),
-    fromPage: route.name,
     storageKey: props.storageKey ?? '',
   }
 
@@ -295,7 +286,12 @@ async function onClickCategory(categoryId: CategoryId) {
       : baseParams,
   ).toString()
 
-  useRouter().push(`/categories/${categoryId}?${queryParams}`)
+  if (route.name === 'categories-id') {
+    useRouter().push(`/categories/${categoryId}?${queryParams}`)
+  }
+  else {
+    useRouter().push(`/stat/categories/${categoryId}?${queryParams}`)
+  }
 }
 </script>
 
@@ -337,8 +333,8 @@ async function onClickCategory(categoryId: CategoryId) {
 
             <StatCategoriesButtons
               v-if="isShown"
-              :isShowGrouping="!isOneCategory"
               :catsLength="cats.length"
+              isShowGrouping
             />
           </div>
         </template>
@@ -371,7 +367,10 @@ async function onClickCategory(categoryId: CategoryId) {
               v-for="item in cats"
               :key="item.id"
               :biggestCatNumber
-              :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
+              :class="{
+                'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
+                'group': !statConfig.config.value.catsList.isItemsBg,
+              }"
               :isHideDots="statConfig.config.value.catsList.isOpened"
               :item
               :isHideParent="props.hasChildren"
@@ -390,6 +389,77 @@ async function onClickCategory(categoryId: CategoryId) {
                 />
               </div>
             </StatLinesItemLine>
+          </div>
+
+          <div
+            v-if="statConfig.config.value.catsView === 'list'"
+            :class="{
+              'grid gap-2 px-0': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
+              'md:max-w-lg': !statConfig.config.value.catsList.isGrouped || !statConfig.config.value.catsList.isOpened,
+              'grid gap-1': statConfig.config.value.catsList.isItemsBg,
+            }"
+            class="pt-2"
+          >
+            <UiToggle
+              v-for="item in cats"
+              :key="item.id"
+              :class="{
+                group: !statConfig.config.value.catsList.isItemsBg,
+              }"
+              :storageKey="`finapp-stat-cats-${item.id}`"
+              :initStatus="false"
+              :lineWidth="1"
+              openPadding="!pb-2"
+            >
+              <template #header="{ toggle, isShown }">
+                <div class="flex items-stretch justify-between">
+                  <UiToggleAction
+                    v-if="statConfig.config.value.catsList.isGrouped"
+                    :isShown="isShown"
+                    class="-mr-2.5"
+                    @click="toggle"
+                  />
+
+                  <StatLinesItemLine
+                    :biggestCatNumber
+                    :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
+                    :isHideDots="statConfig.config.value.catsList.isOpened"
+                    :isHideParent="props.hasChildren"
+                    :item
+                    :lineWidth="((statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened) || statConfig.config.value.catsList.isLines) ? 0 : 1"
+                    class="grow"
+                    @click="onClickCategory"
+                  >
+                    <div
+                      v-if="statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened"
+                      class="flex flex-wrap gap-1 pb-3 pl-2 pt-1"
+                    >
+                      <StatLinesItemRound
+                        v-for="itemInside in getCats(item.trnsIds)"
+                        :key="itemInside.id"
+                        :item="itemInside"
+                        @click="onClickCategory"
+                      />
+                    </div>
+                  </StatLinesItemLine>
+                </div>
+              </template>
+
+              <div class="pl-8">
+                <StatLinesItemLine
+                  v-for="itemInside in getCats(item.trnsIds)"
+                  :key="itemInside.id"
+                  :biggestCatNumber
+                  :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
+                  :isHideDots="statConfig.config.value.catsList.isOpened"
+                  :isHideParent="props.hasChildren"
+                  :item="itemInside"
+                  :lineWidth="((statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened) || statConfig.config.value.catsList.isLines) ? 0 : 1"
+                  class="grow"
+                  @click="onClickCategory"
+                />
+              </div>
+            </UiToggle>
           </div>
 
           <!-- Rounds -->

@@ -37,7 +37,7 @@ if (!category.value)
   router.replace('/categories')
 
 const statDate = useStatDate({
-  key: `finapp-${categoryId.value}-${route.query.storageKey}`,
+  key: `finapp-stat-${categoryId.value}-${route.query.storageKey}`,
   maxRange,
   queryParams: route.query,
 })
@@ -53,23 +53,14 @@ const statConfig = useStatConfig({
     },
     isCategoryPage: true,
     isShowEmptyCategories: true,
+    showedWallets: 99,
   },
-  storageKey: categoryId.value,
+  storageKey: `finapp-stat2-${categoryId.value}-${route.query.storageKey}`,
 })
 provide('statConfig', statConfig)
 
 if (!category.value)
-  router.replace('/categories')
-
-watch(filter.categoriesIds, () => {
-  if (filter.categoriesIds.value.length > 0) {
-    if (route.query.fromPage !== 'dashboard')
-      statConfig.config.value.isShowEmptyCategories = true
-  }
-  else {
-    statConfig.config.value.isShowEmptyCategories = false
-  }
-})
+  router.replace('/dashboard')
 
 onMounted(() => {
   if (categoriesStore.isItTransactible(categoryId.value))
@@ -97,6 +88,7 @@ useHead({ title: category.value?.name })
 </script>
 
 <template>
+  <pre>{{ statConfig }}</pre>
   <UiPage v-if="category">
     <StatHeader>
       <template #title>
@@ -147,7 +139,6 @@ useHead({ title: category.value?.name })
         :trnsIds="trnsIds"
         :preCategoriesIds
         :hasChildren="categoryHasChildren"
-        isCategoryPage
         type="sum"
       />
     </div>
@@ -162,7 +153,6 @@ useHead({ title: category.value?.name })
         :trnsIds="expenseTrnsIds"
         :preCategoriesIds
         :hasChildren="categoryHasChildren"
-        isCategoryPage
         type="expense"
       />
 
@@ -171,7 +161,6 @@ useHead({ title: category.value?.name })
         :trnsIds="incomeTrnsIds"
         :preCategoriesIds
         :hasChildren="categoryHasChildren"
-        isCategoryPage
         type="income"
       />
     </div>

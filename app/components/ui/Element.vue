@@ -3,11 +3,8 @@ import { getStyles } from '~/components/ui/getStyles'
 import { cn } from '~~/lib/cn'
 
 const props = defineProps<{
-  hideDivider?: boolean
   insideClasses?: string
   isActive?: boolean
-  isLink?: boolean
-  isShowToggle?: boolean
   lineWidth?: number
 }>()
 
@@ -28,17 +25,6 @@ const classes = computed(() => cn(
 <template>
   <div @click="(e: Event) => emit('click', e)">
     <div :class="classes">
-      <div
-        v-if="isShowToggle"
-        class="flex-center"
-      >
-        <Icon
-          :name="isActive ? 'mdi:chevron-down' : 'mdi:chevron-right'"
-          size="22"
-          class="-mr-2"
-        />
-      </div>
-
       <div
         v-if="slots.leftIcon"
         class="flex-center min-w-8"

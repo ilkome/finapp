@@ -91,7 +91,6 @@ onLongPress(
     :class="[props.insideClass, {
       '-bg-item-4 ': props.isActive,
       'bg-item-9 rounded-lg': statConfig.config.value.catsList.isItemsBg,
-      'group': !statConfig.config.value.catsList.isItemsBg,
     }]"
     :style="props.insideStyle"
     class="relative"
@@ -102,7 +101,6 @@ onLongPress(
       :lineWidth="!statConfig.config.value.catsList.isItemsBg ? props.lineWidth : 0"
       class="relative"
       insideClasses="!min-h-[44px]"
-      isShowToggle2
     >
       <template #line>
         <div
