@@ -6,54 +6,55 @@ const emit = defineEmits<{
 }>()
 
 const statDate = inject('statDate') as StatDateProvider
+const { t } = useI18n()
 
 const intervalGroups = computed<IntervalGroupedLabel[]>(() => [
   {
     intervalsBy: 'day',
     intervalsDuration: 1,
-    label: '7d',
+    label: `7${t('dates.day.short')}`,
     rangeBy: 'day',
     rangeDuration: 7,
   },
   {
     intervalsBy: 'day',
     intervalsDuration: 1,
-    label: '14d',
+    label: `14${t('dates.day.short')}`,
     rangeBy: 'day',
     rangeDuration: 14,
   },
   {
     intervalsBy: 'day',
     intervalsDuration: 1,
-    label: '30d',
+    label: `30${t('dates.day.short')}`,
     rangeBy: 'day',
     rangeDuration: 30,
   },
   {
     intervalsBy: 'month',
     intervalsDuration: 1,
-    label: '6m',
+    label: `6${t('dates.month.short')}`,
     rangeBy: 'month',
     rangeDuration: 6,
   },
   {
     intervalsBy: 'month',
     intervalsDuration: 1,
-    label: '12m',
+    label: `12${t('dates.month.short')}`,
     rangeBy: 'month',
     rangeDuration: 12,
   },
   {
     intervalsBy: 'year',
     intervalsDuration: 1,
-    label: '6y',
+    label: `6${t('dates.year.short')}`,
     rangeBy: 'year',
     rangeDuration: 6,
   },
   {
     intervalsBy: 'year',
     intervalsDuration: 1,
-    label: '10y',
+    label: `10${t('dates.year.short')}`,
     rangeBy: 'year',
     rangeDuration: 10,
   },

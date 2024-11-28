@@ -38,7 +38,7 @@ const classes = computed(() => cn(
 
     <div
       v-if="lineWidth"
-      :class="{ 'ml-12': lineWidth === 1, 'ml-11': lineWidth === 2 }"
+      :class="{ 'ml-12': lineWidth === 1, 'ml-[48px]': lineWidth === 2 }"
       class="bg-item-5 mx-2 h-px group-last:hidden"
     />
   </div>

@@ -122,7 +122,8 @@ const viewPresets = computed(() => ({
 const isShowMorePresets = ref(false)
 
 function onChangeViewOptions(newViewOptions: any) {
-  statConfig.updateConfig('catsList', defu(newViewOptions, statConfig.config.value.catsList))
+  const c = defu(newViewOptions.catsList, statConfig.config.value.catsList)
+  statConfig.updateConfig('catsList', c)
 }
 </script>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { differenceInDays } from 'date-fns'
 import type { DeepPartial } from '~~/utils/types'
-import type { IntervalGroupedLabel, Range, StatDateProvider } from '~/components/date/types'
+import type { Grouped, IntervalGroupedLabel, Range, StatDateProvider } from '~/components/date/types'
 import { calculateBestIntervalsBy } from '~/components/date/utils'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
@@ -142,6 +142,24 @@ function setMaxRange(isSkipEmpty = false) {
     rangeDuration,
   })
 }
+
+const intervals = computed<Grouped[]>(() => [{
+  intervalsBy: 'day',
+  intervalsDuration: 1,
+}, {
+  intervalsBy: 'week',
+  intervalsDuration: 1,
+}, {
+  intervalsBy: 'month',
+  intervalsDuration: 1,
+}, {
+  intervalsBy: 'year',
+  intervalsDuration: 1,
+}])
+
+function selectInterval(grouped: Grouped) {
+  statDate.setInterval(grouped)
+}
 </script>
 
 <template>
@@ -159,9 +177,9 @@ function setMaxRange(isSkipEmpty = false) {
     </UiTabs1>
 
     <div v-if="tabs.selected.value === 'presets'">
-      <div class="pb-6 pt-2">
+      <div class="pb-4 pt-2">
         <!-- Presets -->
-        <div class="grid gap-3">
+        <div class="grid gap-2">
           <div class="flex flex-wrap gap-1">
             <DateRanges />
 
@@ -180,28 +198,29 @@ function setMaxRange(isSkipEmpty = false) {
 
           <div class="flex flex-wrap gap-1">
             <DateLinkItem @click="set7Days">
-              {{ t('7Days') }}
+              {{ `7${t('dates.day.short')}` }}
             </DateLinkItem>
             <DateLinkItem @click="setDaysMini(7)">
-              {{ t('7DaysMini') }}
+              {{ `7${t('dates.day.short')} ${t('mini')}` }}
             </DateLinkItem>
             <DateLinkItem @click="setDaysMini(14)">
-              {{ t('14DaysMini') }}
+              {{ `14${t('dates.day.short')} ${t('mini')}` }}
             </DateLinkItem>
             <DateLinkItem @click="setDaysMini(30)">
-              {{ t('30DaysMini') }}
+              {{ `30${t('dates.day.short')} ${t('mini')}` }}
             </DateLinkItem>
             <DateLinkItem @click="set12Months">
-              {{ t('12Months') }}
+              {{ `12${t('dates.month.short')}` }}
             </DateLinkItem>
+          </div>
 
+          <div class="flex flex-wrap gap-1">
             <DateLinkItem
               :isActive="statDate.params.value.isShowMaxRange && !statDate.params.value.isSkipEmpty"
               @click="() => setMaxRange(false)"
             >
               {{ t('all') }}
             </DateLinkItem>
-
             <DateLinkItem
               :isActive="statDate.params.value.isShowMaxRange && statDate.params.value.isSkipEmpty"
               @click="() => setMaxRange(true)"
@@ -245,21 +264,25 @@ function setMaxRange(isSkipEmpty = false) {
 
         <div class="grid gap-2 px-2">
           <div class="flex flex-wrap gap-1">
-            <DateIntervals />
-          </div>
-
-          <div class="flex gap-1">
-            <DateLinkItem @click="statDate.delInterval">
-              -
+            <DateLinkItem
+              v-for="item in intervals"
+              :key="item.intervalsBy"
+              :isActive="item.intervalsBy === statDate.params.value.intervalsBy"
+              @click="selectInterval(item)"
+            >
+              {{ t(`dates.${item.intervalsBy}.simple`) }}
             </DateLinkItem>
-            <DateLinkItemNoBg>
-              {{
-                `${statDate.params.value.intervalsDuration} ${t(`dates.${statDate.params.value.intervalsBy}.simple`)}`
-              }}
-            </DateLinkItemNoBg>
-            <DateLinkItem @click="statDate.addInterval">
-              +
-            </DateLinkItem>
+            <div class="flex">
+              <DateLinkItem @click="statDate.delInterval">
+                -
+              </DateLinkItem>
+              <DateLinkItemNoBg>
+                {{ statDate.params.value.intervalsDuration }}
+              </DateLinkItemNoBg>
+              <DateLinkItem @click="statDate.addInterval">
+                +
+              </DateLinkItem>
+            </div>
           </div>
         </div>
       </UiToggle2>
@@ -289,11 +312,12 @@ en:
   ranges: Ranges
   presets: Presets
   last: Last
-  7Days: 7 days
-  7DaysMini: 7 days mini
-  14DaysMini: 14 days mini
-  30DaysMini: 30 days mini
-  12Months: 12 months
+  7Days: 7d
+  7DaysMini: 7d mini
+  14DaysMini: 14d mini
+  30DaysMini: 30d mini
+  12Months: 12m
+  mini: mini
 
 ru:
   all: Все
@@ -303,9 +327,10 @@ ru:
   ranges: Диапазоны
   presets: Пресеты
   last: Последние
-  7Days: 7 дней
-  7DaysMini: 7 дней мини
-  14DaysMini: 14 дней мини
-  30DaysMini: 30 дней мини
-  12Months: 12 месяцев
+  7Days: 7д
+  7DaysMini: 7д мини
+  14DaysMini: 14д мини
+  30DaysMini: 30д мини
+  12Months: 12м
+  mini: мини
 </i18n>

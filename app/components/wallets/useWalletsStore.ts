@@ -116,7 +116,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     }, {} as Record<WalletId, WalletItemWithAmount>),
   )
 
-  const currenciesUsed = computed<CurrencyCode[]>(() => uniqueElementsBy(items.value, 'currency'))
+  const currenciesUsed = computed<CurrencyCode[]>(() => uniqueElementsBy(itemsWithAmount.value, 'currency'))
 
   return {
     addWallet,

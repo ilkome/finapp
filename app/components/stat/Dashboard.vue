@@ -9,6 +9,7 @@ import { useFilter } from '~/components/filter/useFilter'
 import { useStatDate } from '~/components/date/useStatDate'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
+const { t } = useI18n()
 const filter = useFilter()
 const route = useRoute()
 const trnsFormStore = useTrnsFormStore()
@@ -118,15 +119,37 @@ const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
     <!-- NetIncome -->
     <div
       v-if="activeTab === 'netIncome'"
-      class="statWrapNetIncome"
+      class="statWrapSummary"
     >
       <StatItem
-        :storageKey="storageKey"
+        :storageKey
         :trnsIds="trnsIds"
         :preCategoriesIds
         hasChildren
         type="sum"
       />
+
+      <div class="invisible max-w-sm md:visible">
+        <UiToggle2
+          :initStatus="true"
+          class="hidden md:grid md:max-w-xl"
+          openPadding="!pb-6"
+          storageKey="finapp-wallets-currencies"
+        >
+          <template #header="{ toggle, isShown }">
+            <UiTitle8
+              :isShown
+              @click="toggle"
+            >
+              {{ t('dates.selector.title') }}
+            </UiTitle8>
+          </template>
+
+          <StatDateSelector
+            :maxRange
+          />
+        </UiToggle2>
+      </div>
     </div>
 
     <!-- Summary -->
@@ -135,7 +158,7 @@ const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
       class="statWrapSummary"
     >
       <StatItem
-        :storageKey="storageKey"
+        :storageKey
         :trnsIds="expenseTrnsIds"
         :preCategoriesIds
         hasChildren
@@ -143,7 +166,7 @@ const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
       />
 
       <StatItem
-        :storageKey="storageKey"
+        :storageKey
         :trnsIds="incomeTrnsIds"
         :preCategoriesIds
         hasChildren

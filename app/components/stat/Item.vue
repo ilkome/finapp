@@ -9,7 +9,7 @@ import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { markArea } from '~/components/stat/chart/utils'
-import { seriesOptions } from '~/components/stat/chart/config2'
+import { seriesOptions } from '~/components/stat/chart/config'
 import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -138,16 +138,15 @@ function getCats(trnsIds: TrnId[], isIntervalsByParent?: boolean, preCategoriesI
 function getSeries(
   total: TotalReturns[],
   type: MoneyTypeSlugNew,
-  ranges: Range[],
 ) {
-  const types = type === 'sum' ? ['expense', 'income'] : [type]
+  const types = type === 'sum' ? ['expense', 'income'] : [type] as const
 
-  return types.map((t, idx) => ({
-    color: seriesOptions[t].color,
+  return types.map(type => ({
+    color: seriesOptions[type].color,
     cursor: 'default',
-    data: total.map(i => t !== 'sum' ? Math.abs(i[t]) : i[t]),
-    name: ranges[idx]?.start,
-    type: seriesOptions[t].type,
+    data: total.map(i => type !== 'sum' ? Math.abs(i[type]) : i[type]),
+    name: t(`money.${type}`),
+    type: seriesOptions[type].type,
   }))
 }
 /**
@@ -163,7 +162,7 @@ function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
   const list = [...ranges.map(() => [])]
 
   trnsIds.forEach((trnId) => {
-    const trnDate = trnsStore.items[trnId]?.date
+    const trnDate = trnsStore.items?.[trnId]?.date
     const idx = ranges.findIndex(r => trnDate! >= r.start && trnDate! <= r.end)
     list[idx]?.push(trnId)
   })
@@ -354,43 +353,6 @@ async function onClickCategory(categoryId: CategoryId) {
           </div>
 
           <!-- Lines -->
-          <!-- <div
-            v-if="statConfig.config.value.catsView === 'list'"
-            :class="{
-              'grid gap-2 px-0': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
-              'md:max-w-lg': !statConfig.config.value.catsList.isGrouped || !statConfig.config.value.catsList.isOpened,
-              'grid gap-1': statConfig.config.value.catsList.isItemsBg,
-            }"
-            class="pt-2"
-          >
-            <StatLinesItemLine
-              v-for="item in cats"
-              :key="item.id"
-              :biggestCatNumber
-              :class="{
-                'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
-                'group': !statConfig.config.value.catsList.isItemsBg,
-              }"
-              :isHideDots="statConfig.config.value.catsList.isOpened"
-              :item
-              :isHideParent="props.hasChildren"
-              :lineWidth="((statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened) || statConfig.config.value.catsList.isLines) ? 0 : 1"
-              @click="onClickCategory"
-            >
-              <div
-                v-if="statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened"
-                class="flex flex-wrap gap-1 pb-3 pl-2 pt-1"
-              >
-                <StatLinesItemRound
-                  v-for="itemInside in getCats(item.trnsIds)"
-                  :key="itemInside.id"
-                  :item="itemInside"
-                  @click="onClickCategory"
-                />
-              </div>
-            </StatLinesItemLine>
-          </div> -->
-
           <div
             v-if="statConfig.config.value.catsView === 'list'"
             :class="{
@@ -432,7 +394,8 @@ async function onClickCategory(categoryId: CategoryId) {
                 </div>
               </template>
 
-              <div class="pl-12">
+              <!-- Inside -->
+              <div class="border-item-5 ml-5 border-l pl-3">
                 <div v-if="!statConfig.config.value.catsList.isOpened">
                   <StatLinesItemLine
                     v-for="itemInside in getCats(item.trnsIds)"

@@ -27,9 +27,9 @@ const statConfig = inject('statConfig') as StatConfigProvider
 
         <!-- Chart show -->
         <div class="popover-el">
-          <UiTitle3 class="pb-2">
+          <UiTitleOption class="pb-2">
             {{ t("stat.config.chartShow.title") }}
-          </UiTitle3>
+          </UiTitleOption>
           <UiCheckbox
             :checkboxValue="statConfig.config.value.chartShow"
             :title="t('stat.config.chartShow.label')"
@@ -42,9 +42,9 @@ const statConfig = inject('statConfig') as StatConfigProvider
           v-if="statConfig.config.value.chartShow"
           class="popover-el hidden md:block"
         >
-          <UiTitle66 class="pb-2">
+          <UiTitleOption class="pb-2">
             {{ t("stat.config.chartView.label") }}
-          </UiTitle66>
+          </UiTitleOption>
 
           <UiTabs1>
             <UiTabsItem1
@@ -60,9 +60,9 @@ const statConfig = inject('statConfig') as StatConfigProvider
 
         <!-- Showed wallets -->
         <div v-if="props.isShowWallets" class="popover-el">
-          <UiTitle3 class="pb-2">
+          <UiTitleOption class="pb-2">
             {{ t("stat.config.showedWallets.label") }}
-          </UiTitle3>
+          </UiTitleOption>
 
           <div class="flex gap-4">
             <UiFormInput

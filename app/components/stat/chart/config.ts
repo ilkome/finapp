@@ -1,72 +1,79 @@
 import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
+export const seriesOptions = {
+  expense: {
+    color: '#ED6660',
+    localeKey: 'money.expense',
+    type: 'bar',
+  },
+  income: {
+    // color: '#22A2D3',
+    color: 'var(--text-income-1)',
+    localeKey: 'money.expense',
+    type: 'bar',
+  },
+  sum: {
+    color: 'grey',
+    localeKey: 'money.netIncome',
+    type: 'line',
+  },
+} as const
+
 export const config = {
   // Grid
   grid: {
-    bottom: '12',
+    bottom: '0',
     containLabel: true,
-    left: '12',
-    right: '12',
-    top: '14',
+    left: '5',
+    right: '5',
+    top: '5',
   },
 
   // Tooltip
-  tooltip: false,
-  // tooltip: {
-  //   axisPointer: {
-  //     animation: true,
-  //     type: 'cross',
-  //   },
+  tooltip: {
+    axisPointer: {
+      animation: false,
+      type: 'cross',
+    },
 
-  //   backgroundColor: 'var(--chart-bg)',
-  //   borderWidth: 0,
-  //   label: {
-  //     backgroundColor: 'var(--chart-bg)',
-  //     color: 'red',
-  //   },
-  //   padding: 8,
-  //   // formatter(props: any[]) {
-  //   //   return `
-  //   //     <div class="grid gap-2 px-2 text-secondary">
-  //   //       ${props.filter(i => i.value !== 0).map((i, idx) => `
-  //   //         ${idx === 0 ? `<div class="text-1">${i.axisValueLabel}</div>` : ''}
-
-  //   //         <div class="flex gap-2">
-  //   //           <div>${i.marker}</div>
-  //   //           <div class="text-right">${getLocalAmount(i.value)}</div>
-  //   //         </div>
-  //   //       `)}
-  //   //       </div>
-  //   //       `
-  //   textStyle: {
-  //     color: 'var(--chart-tooltip)',
-  //   },
-  //   trigger: 'axis',
-  //   valueFormatter: getLocalAmount,
-  // },
+    backgroundColor: 'var(--chart-bg)',
+    borderWidth: 0,
+    // formatter: '{b0}: {c0}<br />{b1}: {c1}',
+    label: {
+      backgroundColor: 'var(--chart-bg)',
+      color: 'red',
+    },
+    padding: 8,
+    textStyle: {
+      color: 'var(--chart-tooltip)',
+    },
+    trigger: 'axis',
+    valueFormatter: getLocalAmount,
+  },
 
   // xAxis
   xAxis: {
     axisLabel: {
       color: 'var(--chart-label)',
+      fontSize: 8,
     },
     axisLine: {
       lineStyle: {
         color: 'var(--chart-splitLine)',
+        // color: 'transparent',
       },
     },
+
     axisPointer: {
       label: {},
     },
     axisTick: {
       interval: 0,
-    },
-    splitLine: {
       lineStyle: {
-        color: 'var(--chart-line)',
+        // color: 'transparent',
       },
-      show: false,
     },
+    // boundaryGap: false,
     type: 'category',
   },
 
@@ -75,11 +82,7 @@ export const config = {
     axisLabel: {
       color: 'var(--chart-label)',
       formatter: n => getCompactAmount(n),
-    },
-    axisLine: {
-      lineStyle: {
-        color: 'var(--chart-splitLine)',
-      },
+      // show: false,
     },
     axisPointer: {
       label: {
@@ -88,6 +91,8 @@ export const config = {
       snap: true,
     },
     minInterval: 1,
+
+    // position: 'left',
     position: 'right',
     splitLine: {
       lineStyle: {
@@ -95,11 +100,15 @@ export const config = {
       },
     },
     type: 'value',
+
   },
 }
 
 export const lineConfig = {
-  barMaxWidth: '26',
+  areaStyle: {
+    opacity: 0.1,
+  },
+  barMaxWidth: '12',
   barMinWidth: '1',
   borderColor: 'blue',
   cursor: 'default',

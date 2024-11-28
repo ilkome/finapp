@@ -128,15 +128,12 @@ export default {
   },
 
   dates: {
-    all: {
-      simple: 'All time',
-    },
-    count: 'Count',
     day: {
       current: 'Today',
       last: 'Yesterday',
       next: 'Tomorrow',
       plural: 'days | day | days | days',
+      short: 'd',
       simple: 'Day',
       today: 'Today',
     },
@@ -150,21 +147,26 @@ export default {
       current: 'This month',
       last: 'Last month',
       plural: 'months | month | months',
+      short: 'm',
       simple: 'Month',
-
     },
     period: 'Period',
     select: 'Select',
+    selector: {
+      title: 'Select period',
+    },
     week: {
       current: 'This week',
       last: 'Last week',
       plural: 'weeks | week | weeks',
+      short: 'w',
       simple: 'Week',
     },
     year: {
       current: 'This year',
       last: 'Last year',
       plural: 'years | year | years',
+      short: 'y',
       simple: 'Year',
     },
   },

@@ -67,6 +67,7 @@ const isShowNavNext = computed(() => {
       '': statConfig.config.value?.chartView === 'full',
       'md:max-w-lg': statConfig.config.value?.chartView === 'half',
     }"
+    class="pt-1 md:pt-2"
   >
     <div
       v-if="isShowNavPrev"
@@ -93,9 +94,9 @@ const isShowNavNext = computed(() => {
     </div>
 
     <div class="flex items-end justify-between gap-2">
-      <UiTitle10 @click="isShowDateSelector = !isShowDateSelector">
+      <UiBox1 @click="isShowDateSelector = !isShowDateSelector">
         <StatDateRange />
-      </UiTitle10>
+      </UiBox1>
 
       <div
         v-if="!statDate.params.value.customDate"

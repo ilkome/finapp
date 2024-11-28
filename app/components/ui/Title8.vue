@@ -2,6 +2,7 @@
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
+  isOpen?: boolean
   isShown?: boolean
 }>()
 const emit = defineEmits<{
@@ -18,7 +19,7 @@ const emit = defineEmits<{
     <div><slot /></div>
     <Icon
       v-if="!props.isShown"
-      name="mdi:chevron-down"
+      name="mdi:chevron-left"
       size="22"
       class="-ml-1"
     />

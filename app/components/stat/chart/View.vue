@@ -8,7 +8,7 @@ import { use } from 'echarts/core'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { Period } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import { config, lineConfig } from '~/components/stat/chart/config2'
+import { config, lineConfig } from '~/components/stat/chart/config'
 import { setChartXAxis } from '~/components/stat/chart/utils'
 import { formatByLocale, getFormatForChart } from '~/components/date/utils'
 

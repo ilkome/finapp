@@ -128,15 +128,12 @@ export default {
   },
 
   dates: {
-    all: {
-      simple: 'Все транзакции',
-    },
-    count: 'Количество',
     day: {
       current: 'Сегодня',
       last: 'Вчера',
       next: 'Завтра',
       plural: 'дней | день | дня | дней',
+      short: 'д',
       simple: 'День',
       today: 'Сегодня',
     },
@@ -150,20 +147,26 @@ export default {
       current: 'Текущий месяц',
       last: 'Прошлый месяц',
       plural: 'месяцев | месяц | месяца | месяцев',
+      short: 'м',
       simple: 'Месяц',
     },
     period: 'Период',
     select: 'Выберите',
+    selector: {
+      title: 'Выбрать период',
+    },
     week: {
       current: 'Текущая неделя',
       last: 'Прошлая неделя',
       plural: 'недель | неделя | недели | недель',
+      short: 'н',
       simple: 'Неделя',
     },
     year: {
       current: 'Текущий год',
       last: 'Прошлый год',
       plural: 'лет | год | лет | лет',
+      short: 'г',
       simple: 'Год',
     },
   },
@@ -252,7 +255,7 @@ export default {
         title: 'График',
       },
       chartView: {
-        full: 'Полный',
+        full: 'Широкий',
         half: 'Компактный',
         label: 'Вид графика',
       },

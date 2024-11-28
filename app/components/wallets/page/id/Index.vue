@@ -2,7 +2,6 @@
 import { useStorage } from '@vueuse/core'
 import type { StatTabs } from '~/components/app/types'
 import type { WalletId } from '~/components/wallets/types'
-import { calculateBestIntervalsBy } from '~/components/date/utils'
 import { icons } from '~/components/wallets/types'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
@@ -166,15 +165,37 @@ useHead({ title: wallet.value?.name })
     <!-- NetIncome -->
     <div
       v-if="activeTab === 'netIncome'"
-      class="statWrapNetIncome"
+      class="statWrapSummary"
     >
       <StatItem
-        :storageKey="storageKey"
+        :storageKey
         :trnsIds="trnsIds"
         :walletId
         hasChildren
         type="sum"
       />
+
+      <div class="invisible max-w-sm md:visible">
+        <UiToggle2
+          :initStatus="true"
+          class="hidden md:grid md:max-w-xl"
+          openPadding="!pb-6"
+          storageKey="finapp-wallets-currencies"
+        >
+          <template #header="{ toggle, isShown }">
+            <UiTitle8
+              :isShown
+              @click="toggle"
+            >
+              {{ t('dates.selector.title') }}
+            </UiTitle8>
+          </template>
+
+          <StatDateSelector
+            :maxRange
+          />
+        </UiToggle2>
+      </div>
     </div>
 
     <!-- Summary -->
@@ -183,7 +204,7 @@ useHead({ title: wallet.value?.name })
       class="statWrapSummary"
     >
       <StatItem
-        :storageKey="storageKey"
+        :storageKey
         :trnsIds="expenseTrnsIds"
         :walletId
         hasChildren
@@ -191,7 +212,7 @@ useHead({ title: wallet.value?.name })
       />
 
       <StatItem
-        :storageKey="storageKey"
+        :storageKey
         :trnsIds="incomeTrnsIds"
         :walletId
         hasChildren

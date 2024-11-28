@@ -14,8 +14,8 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 </script>
 
 <template>
-  <div class="relative group" :class="{ [props.openPadding]: props.openPadding && isShown }">
-    <div class="-my-[1px] overflow-hidden">
+  <div class="group relative" :class="{ [props.openPadding]: props.openPadding && isShown }">
+    <div class="-my-px overflow-hidden">
       <div
         :class="getStyles('item', ['link', 'center', 'rounded'])"
       >
@@ -36,7 +36,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 
     <div
       v-if="lineWidth && !isShown"
-      class="mx-2 h-[1px] bg-item-5 group-last:hidden"
+      class="bg-item-5 mx-2 h-px group-last:hidden"
       :class="{ 'ml-12': lineWidth === 3, 'ml-11': lineWidth === 2 }"
     />
   </div>
