@@ -82,7 +82,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
     return type === 'start' ? formatByLocale(start, 'd MMM yyyy', locale) : ` - ${formatByLocale(end, 'd MMM yyyy', locale)}`
   }
 
-  function calculateDate(params: DateFormatParams, isShowMaxRange: boolean): string {
+  function calculateDate(params: DateFormatParams, isShowMaxRange?: boolean): string {
     const { by, duration, end, start, type } = params
 
     // Single duration cases
