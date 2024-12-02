@@ -41,21 +41,7 @@ const isShowTrns = ref(false)
 const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
 
-function getParentCategoryId(categoryId: CategoryId): CategoryId | undefined {
-  const category = categoriesStore.items[categoryId]
-  return category?.parentId === 0 ? categoryId : category?.parentId
-}
-
 const selectedType = ref<MoneyTypeSlugNew>('sum')
-
-function onClickSumItem(type: MoneyTypeSlugNew) {
-  if (type === 'sum') {
-    isShowTrns.value = !isShowTrns.value
-    return
-  }
-
-  selectedType.value = type === selectedType.value ? 'sum' : type
-}
 
 const statTypeShow = computed(() => ({
   expense: props.trnsIds.some(id => trnsStore.items?.[id]?.type === 0),
@@ -63,24 +49,6 @@ const statTypeShow = computed(() => ({
 }))
 
 const isPeriodOneDay = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalSelected !== -1))
-
-function getCategoriesWithData(categories: CategoriesWithTrns) {
-  return Object.keys(categories)
-    .reduce(
-      (acc, categoryId) => {
-        const totalInCategory = getTotalOfTrnsIds(categories[categoryId]!)
-        const trnsIdsInCategory = categories[categoryId]!
-
-        acc.push({
-          id: categoryId,
-          trnsIds: trnsIdsInCategory,
-          value: totalInCategory.sum,
-        })
-        return acc
-      },
-      [] as CategoryWithData[],
-    )
-}
 
 const rangeTrnsIds = computed(() => {
   const params = {
@@ -93,27 +61,6 @@ const rangeTrnsIds = computed(() => {
 
   return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
 })
-
-function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
-  return intervalsInRange.reduce((acc, range) => {
-    const trnsIdsInRange = trnsIds.filter((id) => {
-      const trnDate = trnsStore.items?.[id]?.date
-      return trnDate! >= range.start && trnDate! <= range.end
-    })
-
-    acc.push({
-      range,
-      total: getTotalOfTrnsIds(trnsIdsInRange),
-      trnsIds: trnsIdsInRange,
-    })
-
-    return acc
-  }, [] as {
-    range: Range
-    total: TotalReturns
-    trnsIds: TrnId[]
-  }[])
-}
 
 const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
 
@@ -148,7 +95,130 @@ const rangeTotal = computed(() => {
 
 const isCategoriesGrouped = computed(() => statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped)
 
-function getCategoriesWithDataFinal(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]) {
+const categoriesWithData = computed(() => {
+  const cats: CategoryId[] = []
+  if (statConfig.config.value?.isShowEmptyCategories && props.preCategoriesIds) {
+    cats.push(...props.preCategoriesIds)
+  }
+
+  return getCategoriesWithData(selectedTrnsIds.value ?? [], isCategoriesGrouped.value, cats)
+})
+
+const xAxisLabels = computed(() => intervalsData.value.map(i => +i.range.start) ?? [])
+
+const series = computed(() => {
+  const types = props.type === 'sum' ? ['expense', 'income'] as const : [props.type]
+  const intervalsTotal = intervalsData.value.map(g => g.total)
+  const baseSeries = types.map(type => createSeriesItem(type, intervalsTotal))
+
+  return statDate.params.value.intervalSelected >= 0
+    ? addMarkArea(baseSeries)
+    : baseSeries
+})
+
+const biggestCatNumber = computed(() => {
+  const income = categoriesWithData.value.filter(c => c.value > 0).at(0)?.value ?? 0
+  const expense = categoriesWithData.value.filter(c => c.value < 0).at(0)?.value ?? 0
+
+  return {
+    expense,
+    income,
+  }
+})
+
+function onClickCategory(categoryId: CategoryId) {
+  filter.setCategoryId(categoryId)
+
+  const baseParams = {
+    filterCategories: filter?.categoriesIds?.value.join(','),
+    filterWallets: props.walletId ? props.walletId : filter?.walletsIds?.value.join(','),
+    storageKey: props.storageKey ?? '',
+  }
+
+  const queryParams = new URLSearchParams(
+    !statConfig.config.value.isCategoryPage
+      ? { ...baseParams, ...Object.fromEntries(Object.entries(statDate.params.value)) }
+      : baseParams,
+  ).toString()
+
+  if (route.name === 'categories-id') {
+    useRouter().push(`/categories/${categoryId}?${queryParams}`)
+  }
+  else {
+    useRouter().push(`/stat/categories/${categoryId}?${queryParams}`)
+  }
+}
+
+function onClickSumItem(type: MoneyTypeSlugNew) {
+  if (type === 'sum') {
+    isShowTrns.value = !isShowTrns.value
+    return
+  }
+
+  selectedType.value = type === selectedType.value ? 'sum' : type
+}
+
+function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
+  return intervalsInRange.reduce((acc, range) => {
+    const trnsIdsInRange = trnsIds.filter((id) => {
+      const trnDate = trnsStore.items?.[id]?.date
+      return trnDate! >= range.start && trnDate! <= range.end
+    })
+
+    acc.push({
+      range,
+      total: getTotalOfTrnsIds(trnsIdsInRange),
+      trnsIds: trnsIdsInRange,
+    })
+
+    return acc
+  }, [] as {
+    range: Range
+    total: TotalReturns
+    trnsIds: TrnId[]
+  }[])
+}
+
+function getParentCategoryId(categoryId: CategoryId): CategoryId | undefined {
+  const category = categoriesStore.items[categoryId]
+  return category?.parentId === 0 ? categoryId : category?.parentId
+}
+
+function createSeriesItem(typeItem: 'expense' | 'income' | 'sum', data: TotalReturns[]) {
+  return {
+    color: seriesOptions[typeItem].color,
+    cursor: 'default',
+    data: data.map(i => typeItem !== 'sum' ? Math.abs(i[typeItem]) : i[typeItem]),
+    name: t(`money.${typeItem}`),
+    type: seriesOptions[typeItem].type,
+  }
+}
+
+function addMarkArea(series: any[]) {
+  const selectedStartDate = intervalsData.value?.[statDate.params.value.intervalSelected]?.range.start
+
+  if (!selectedStartDate)
+    return series
+
+  if (statConfig.config.value?.chartType === 'bar') {
+    series[0].markArea = markArea(selectedStartDate)
+    return series
+  }
+
+  const markAreaIdx = series.findIndex(s => s.markedArea === 'markedArea')
+  const markAreaSeries = {
+    data: [],
+    markArea: markArea(selectedStartDate),
+    markedArea: 'markedArea',
+    type: 'bar',
+  }
+
+  return markAreaIdx === -1
+    ? [...series, markAreaSeries]
+    : series.map((s, i) => i === markAreaIdx ? markAreaSeries : s)
+}
+
+function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]) {
   if (!trnsIds?.length)
     return []
 
@@ -175,7 +245,21 @@ function getCategoriesWithDataFinal(trnsIds: TrnId[], isGrouped?: boolean, preCa
     return acc
   }, {} as CategoriesWithTrns)
 
-  const categoriesWithData = getCategoriesWithData(categoriesWithTrns)
+  const categoriesWithData = Object.keys(categoriesWithTrns)
+    .reduce(
+      (acc, categoryId) => {
+        const totalInCategory = getTotalOfTrnsIds(categoriesWithTrns[categoryId]!)
+        const trnsIdsInCategory = categoriesWithTrns[categoryId]!
+
+        acc.push({
+          id: categoryId,
+          trnsIds: trnsIdsInCategory,
+          value: totalInCategory.sum,
+        })
+        return acc
+      },
+      [] as CategoryWithData[],
+    )
 
   // Add empty categories
   if (preCategoriesIds && preCategoriesIds.length > 0) {
@@ -192,101 +276,12 @@ function getCategoriesWithDataFinal(trnsIds: TrnId[], isGrouped?: boolean, preCa
 
   return categoriesWithData.sort((a, b) => sortCategoriesByAmount(a, b))
 }
-
-const categoriesWithData = computed(() => {
-  const cats: CategoryId[] = []
-  if (statConfig.config.value?.isShowEmptyCategories && props.preCategoriesIds) {
-    cats.push(...props.preCategoriesIds)
-  }
-
-  return getCategoriesWithDataFinal(selectedTrnsIds.value ?? [], isCategoriesGrouped.value, cats)
-})
-
-const xAxisLabels = computed(() => statDate.intervalsInRange.value.map(r => +r.start) ?? [])
-
-function createSeriesItem(typeItem: 'expense' | 'income' | 'sum', data: TotalReturns[]) {
-  return {
-    color: seriesOptions[typeItem].color,
-    cursor: 'default',
-    data: data.map(i => typeItem !== 'sum' ? Math.abs(i[typeItem]) : i[typeItem]),
-    name: t(`money.${typeItem}`),
-    type: seriesOptions[typeItem].type,
-  }
-}
-
-function addMarkArea(series: any[]) {
-  const selectedStartDate = statDate.intervalsInRange.value?.[statDate.params.value.intervalSelected]?.start
-
-  if (!selectedStartDate)
-    return series
-
-  if (statConfig.config.value?.chartType === 'bar') {
-    series[0].markArea = markArea(selectedStartDate)
-    return series
-  }
-
-  const markAreaIdx = series.findIndex(s => s.markedArea === 'markedArea')
-  const markAreaSeries = {
-    data: [],
-    markArea: markArea(selectedStartDate),
-    markedArea: 'markedArea',
-    type: 'bar',
-  }
-
-  return markAreaIdx === -1
-    ? [...series, markAreaSeries]
-    : series.map((s, i) => i === markAreaIdx ? markAreaSeries : s)
-}
-
-const series = computed(() => {
-  const types = props.type === 'sum' ? ['expense', 'income'] as const : [props.type]
-  const intervalsTotal = intervalsData.value.map(g => g.total)
-  const baseSeries = types.map(type => createSeriesItem(type, intervalsTotal))
-
-  return statDate.params.value.intervalSelected >= 0
-    ? addMarkArea(baseSeries)
-    : baseSeries
-})
-
-const biggestCatNumber = computed(() => {
-  const income = categoriesWithData.value.filter(c => c.value > 0).at(0)?.value ?? 0
-  const expense = categoriesWithData.value.filter(c => c.value < 0).at(0)?.value ?? 0
-
-  return {
-    expense,
-    income,
-  }
-})
-
-async function onClickCategory(categoryId: CategoryId) {
-  await filter.setCategoryId(categoryId)
-  await nextTick()
-
-  const baseParams = {
-    filterCategories: filter?.categoriesIds?.value.join(','),
-    filterWallets: props.walletId ? props.walletId : filter?.walletsIds?.value.join(','),
-    storageKey: props.storageKey ?? '',
-  }
-
-  const queryParams = new URLSearchParams(
-    !statConfig.config.value.isCategoryPage
-      ? { ...baseParams, ...Object.fromEntries(Object.entries(statDate.params.value)) }
-      : baseParams,
-  ).toString()
-
-  if (route.name === 'categories-id') {
-    useRouter().push(`/categories/${categoryId}?${queryParams}`)
-  }
-  else {
-    useRouter().push(`/stat/categories/${categoryId}?${queryParams}`)
-  }
-}
 </script>
 
 <template>
   <div class="@container/stat">
     <div class="flex">
-      <!-- <pre class="text-2xs">{{ intervalsData }}</pre> -->
+      <pre class="text-2xs">{{ categoriesWithData }}</pre>
     </div>
 
     <!-- Chart -->
@@ -395,7 +390,7 @@ async function onClickCategory(categoryId: CategoryId) {
               <div class="border-item-5 ml-5 border-l pl-3">
                 <div v-if="!statConfig.config.value.catsList.isOpened">
                   <StatLinesItemLine
-                    v-for="itemInside in getCategoriesWithDataFinal(item.trnsIds)"
+                    v-for="itemInside in getCategoriesWithData(item.trnsIds)"
                     :key="itemInside.id"
                     :biggestCatNumber
                     :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
@@ -413,7 +408,7 @@ async function onClickCategory(categoryId: CategoryId) {
                   class="flex flex-wrap gap-1 pb-3 pl-2 pt-2"
                 >
                   <StatLinesItemRound
-                    v-for="itemInside in getCategoriesWithDataFinal(item.trnsIds)"
+                    v-for="itemInside in getCategoriesWithData(item.trnsIds)"
                     :key="itemInside.id"
                     :item="itemInside"
                     @click="onClickCategory"
