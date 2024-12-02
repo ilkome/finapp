@@ -283,67 +283,67 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
   if (!trnsIds?.length)
     return []
 
-  // Helper functions to improve readability
-  const createCategoryEntry = (id: string, name: string, trnId: TrnId) => ({
-    id,
-    name,
-    trnsIds: [trnId],
-    value: 0,
-  })
-
-  return trnsIds.reduce((acc, trnId) => {
-    // Early returns for invalid cases
+  // Group transactions by category
+  const categoriesByTrns = trnsIds.reduce((groups, trnId) => {
     const categoryId = trnsStore.items?.[trnId]?.categoryId
-    const currentCategory = categoryId && categoriesStore.items[categoryId]
-    if (!categoryId || !currentCategory || categoriesStore.transferCategoriesIds.includes(categoryId))
+    const category = categoryId && categoriesStore.items[categoryId]
+
+    if (!categoryId || !category || categoriesStore.transferCategoriesIds.includes(categoryId))
+      return groups
+
+    if (!groups[categoryId]) {
+      groups[categoryId] = {
+        id: categoryId,
+        name: category.name,
+        trnsIds: [],
+      }
+    }
+
+    groups[categoryId].trnsIds.push(trnId)
+    return groups
+  }, {} as Record<string, { id: string, name: string, trnsIds: TrnId[] }>)
+
+  // If not grouping, return flat structure
+  if (!isGrouped) {
+    return Object.values(categoriesByTrns).map(cat => ({
+      id: cat.id,
+      name: cat.name,
+      trnsIds: cat.trnsIds,
+      value: 0, // Value will be calculated later
+    }))
+  }
+
+  // Group by parent categories
+  const groupedCategories = Object.values(categoriesByTrns).reduce((acc, cat) => {
+    const parentId = getParentCategoryId(cat.id)
+    const parentCategory = parentId && categoriesStore.items[parentId]
+
+    if (!parentId || !parentCategory)
       return acc
 
-    // Get parent category info
-    const parentCategoryId = getParentCategoryId(categoryId)
-    const parentCategory = parentCategoryId ? categoriesStore.items[parentCategoryId] : null
-    const shouldGroup = isGrouped && parentCategory && parentCategoryId
-
-    if (shouldGroup) {
-      const existingParent = acc.find(c => c.id === parentCategoryId)
-      const newChildCategory = createCategoryEntry(categoryId, currentCategory.name, trnId)
-
-      if (existingParent) {
-        // Update existing parent
-        existingParent.trnsIds.push(trnId)
-        const existingChild = existingParent.categories?.find(c => c.id === categoryId)
-
-        if (existingChild) {
-          existingChild.trnsIds.push(trnId)
-        }
-        else {
-          existingParent.categories ??= []
-          existingParent.categories.push(newChildCategory)
-        }
-      }
-      else {
-        // Create new parent with child
-        acc.push({
-          categories: [newChildCategory],
-          id: parentCategoryId,
-          name: parentCategory.name,
-          trnsIds: [trnId],
-          value: 0,
-        })
+    if (!acc[parentId]) {
+      acc[parentId] = {
+        categories: [],
+        id: parentId,
+        name: parentCategory.name,
+        trnsIds: [],
+        value: 0,
       }
     }
-    else {
-      // Handle categories without parent or when grouping is disabled
-      const existingCategory = acc.find(c => c.id === categoryId)
-      if (existingCategory) {
-        existingCategory.trnsIds.push(trnId)
-      }
-      else {
-        acc.push(createCategoryEntry(categoryId, currentCategory.name, trnId))
-      }
-    }
+
+    acc[parentId].categories ??= []
+    acc[parentId].categories.push({
+      id: cat.id,
+      name: cat.name,
+      trnsIds: cat.trnsIds,
+      value: 0,
+    })
+    acc[parentId].trnsIds.push(...cat.trnsIds)
 
     return acc
-  }, [] as CategoryWithData[])
+  }, {} as Record<string, CategoryWithData>)
+
+  return Object.values(groupedCategories)
 }
 </script>
 
@@ -351,7 +351,7 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
   <div class="@container/stat">
     <div class="grid gap-4">
       <pre
-        v-for="item in getCategoriesWithData2(selectedTrnsIds, false)"
+        v-for="item in getCategoriesWithData2(selectedTrnsIds, true)"
         :key="item.id"
         class="text-2xs"
       >
