@@ -84,34 +84,6 @@ const trnsIdsBySelectedType = computed(() => {
 
 const isPeriodOneDay = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalSelected !== -1))
 
-function getCategoriesWithTrnsIdsFromTrnsIds(trnsIds: TrnId[], isGrouped?: boolean) {
-  if (!trnsIds?.length)
-    return {}
-
-  return trnsIds.reduce((acc, trnId) => {
-    // Get category ID from transaction
-    const categoryId = trnsStore.items?.[trnId]?.categoryId
-    if (!categoryId)
-      return acc
-
-    // Skip transfer categories
-    if (categoriesStore.transferCategoriesIds.includes(categoryId))
-      return acc
-
-    const finalCategoryId = isGrouped
-      ? getParentCategoryId(categoryId)
-      : categoryId
-
-    if (!finalCategoryId)
-      return acc
-
-    // Add transaction to category group
-    acc[finalCategoryId] ??= []
-    acc[finalCategoryId].push(trnId)
-    return acc
-  }, {} as CategoriesWithTrns)
-}
-
 function getCategoriesWithData(categories: CategoriesWithTrns) {
   return Object.keys(categories)
     .reduce(
@@ -167,11 +139,50 @@ const selectedTrnsIds = computed(() => {
   return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
 })
 
+const rangeTrnsIds = computed(() => {
+  const params = {
+    categoriesIds: filter?.categoriesIds?.value,
+    dates: {
+      from: statDate.range.value.start,
+      until: statDate.range.value.end,
+    },
+    trnsIds: trnsIdsBySelectedType.value,
+    walletsIds: filter?.walletsIds?.value,
+  }
+
+  return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
+})
+const rangeTotal = computed(() => getTotalOfTrnsIds(rangeTrnsIds.value))
+
 const isCategoriesGrouped = computed(() => statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped)
 
-const categoriesWithTrnsIdsFromTrnsIds = computed(() => {
-  return getCategoriesWithTrnsIdsFromTrnsIds(selectedTrnsIds.value, isCategoriesGrouped.value)
-})
+function getCategoriesWithTrnsIdsFromTrnsIds(trnsIds: TrnId[], isGrouped?: boolean) {
+  if (!trnsIds?.length)
+    return {}
+
+  return trnsIds.reduce((acc, trnId) => {
+    // Get category ID from transaction
+    const categoryId = trnsStore.items?.[trnId]?.categoryId
+    if (!categoryId)
+      return acc
+
+    // Skip transfer categories
+    if (categoriesStore.transferCategoriesIds.includes(categoryId))
+      return acc
+
+    const finalCategoryId = isGrouped
+      ? getParentCategoryId(categoryId)
+      : categoryId
+
+    if (!finalCategoryId)
+      return acc
+
+    // Add transaction to category group
+    acc[finalCategoryId] ??= []
+    acc[finalCategoryId].push(trnId)
+    return acc
+  }, {} as CategoriesWithTrns)
+}
 
 function getCategoriesWithDataFinal(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]) {
   const categoriesWithTrns = getCategoriesWithTrnsIdsFromTrnsIds(trnsIds, isGrouped)
@@ -202,9 +213,6 @@ const categoriesWithData = computed(() => {
   return getCategoriesWithDataFinal(selectedTrnsIds.value ?? [], isCategoriesGrouped.value, cats)
 })
 
-/**
- * Chart
- */
 const xAxisLabels = computed(() => statDate.intervalsInRange.value.map(r => +r.start) ?? [])
 
 function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
@@ -317,15 +325,6 @@ async function onClickCategory(categoryId: CategoryId) {
 
 <template>
   <div class="@container/stat">
-    <pre class="text-2xs">categoriesWithTrnsIdsFromTrnsIds {{ categoriesWithTrnsIdsFromTrnsIds }}</pre>
-    <pre class="text-2xs">groupedTrnsIds {{ groupedTrnsIds }}</pre>
-
-    <pre class="text-2xs">statDate.intervalsInRange {{ statDate.intervalsInRange }}</pre>
-
-    <pre class="text-2xs">intervalsData {{ intervalsData }}</pre>
-
-    <pre>groupedTrnsIds {{ groupedTrnsIds }}</pre>
-
     <!-- Chart -->
     <StatChartWrap
       :isShowDateSelector
@@ -337,7 +336,7 @@ async function onClickCategory(categoryId: CategoryId) {
 
     <!-- Stat sum -->
     <StatSumWrap
-      :totals="totals"
+      :total="rangeTotal"
       :isShowExpense="statTypeShow.expense"
       :isShowIncome="statTypeShow.income"
       :selectedType
@@ -406,10 +405,14 @@ async function onClickCategory(categoryId: CategoryId) {
               <template #header="{ toggle, isShown }">
                 <div class="flex items-stretch justify-between">
                   <UiToggleAction
-                    v-if="statConfig.config.value.catsList.isGrouped"
+                    v-if="statConfig.config.value.catsList.isGrouped && categoriesStore.hasChildren(item.id)"
                     :isShown="isShown"
                     class="-mr-2.5"
                     @click="toggle"
+                  />
+                  <div
+                    v-else-if="statConfig.config.value.catsList.isGrouped"
+                    class="w-8"
                   />
 
                   <StatLinesItemLine

@@ -3,6 +3,8 @@ import { onLongPress, useStorage } from '@vueuse/core'
 import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
 import { getStyles } from '~/components/ui/getStyles'
 import { icons } from '~/components/wallets/types'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { getAmountInRate } from '~/components/amount/getTotal'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
@@ -10,6 +12,7 @@ const props = defineProps<{
   insideClasses?: string
   isShowBaseRate?: boolean
   isShowIcon?: boolean
+  isShowRate?: boolean
   isSort?: boolean
   lineWidth?: number
   wallet: WalletItemWithAmount
@@ -19,6 +22,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: [walletId: WalletId]
 }>()
+
+const currenciesStore = useCurrenciesStore()
 
 const classes = computed(() => ([
   'relative',
@@ -84,8 +89,23 @@ if (!props.isSort) {
 
     <!-- Main -->
     <template v-if="!props.alt">
-      <div class="text-3 grow text-sm leading-none">
-        {{ wallet.name }}
+      <div class="grid grow gap-1">
+        <div class="text-3 text-sm leading-none">
+          {{ wallet.name }}
+        </div>
+        <div
+          v-if="props.isShowRate && wallet.currency !== currenciesStore.base"
+          class="opacity-90"
+        >
+          <Amount
+            :amount="wallet.rate"
+            :currencyCode="currenciesStore.base"
+            :isShowBaseRate="false"
+            align="left"
+            variant="2xs"
+            class="text-xs opacity-70"
+          />
+        </div>
       </div>
 
       <div

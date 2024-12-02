@@ -9,6 +9,7 @@ const props = defineProps<{
   isHideDots?: boolean
   isHideParent?: boolean
   parentCategory?: CategoryItem
+  showChildrenCount?: number
 }>()
 </script>
 
@@ -32,6 +33,13 @@ const props = defineProps<{
         class="text-4 text-sm leading-none"
       >
         ...
+      </div>
+
+      <div
+        v-if="showChildrenCount && showChildrenCount > 0"
+        class="text-4"
+      >
+        {{ showChildrenCount }}
       </div>
     </div>
 

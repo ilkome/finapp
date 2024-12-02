@@ -35,30 +35,22 @@ useHead({
     class="flex h-full flex-col"
   >
     <UiHeader>
-      <RouterLink
-        v-slot="{ href, navigate }"
-        :to="`/wallets/${walletId}`"
-        custom
-      >
-        <a class="hocus:bg-item-5 grow" :href="href" @click="navigate">
-          <UiHeaderTitle>
-            <div class="text-item-2 pb-1 text-xs font-medium">
-              {{ t("wallets.editTitle") }}
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="text-item-1 text-2xl font-semibold">
-                {{ walletForm.name ? walletForm.name : t("wallets.form.name.label") }}
-              </div>
-              <div
-                class="flex-center text-2xs text-icon-primary rounded-lg p-1"
-                :style="{ background: walletForm.color }"
-              >
-                {{ walletForm.currency }}
-              </div>
-            </div>
-          </UiHeaderTitle>
-        </a>
-      </RouterLink>
+      <UiHeaderTitle>
+        <div class="text-item-2 pb-1 text-xs font-medium">
+          {{ t("wallets.editTitle") }}
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="text-item-1 text-2xl font-semibold">
+            {{ walletForm.name ? walletForm.name : t("wallets.form.name.label") }}
+          </div>
+          <div
+            class="flex-center text-2xs text-icon-primary rounded-lg p-1"
+            :style="{ background: walletForm.color }"
+          >
+            {{ walletForm.currency }}
+          </div>
+        </div>
+      </UiHeaderTitle>
 
       <template #actions>
         <WalletsDelete :walletId="walletId" />

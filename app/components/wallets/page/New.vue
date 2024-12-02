@@ -22,31 +22,19 @@ useHead({
 <template>
   <UiPage class="flex h-full flex-col">
     <UiHeader>
-      <RouterLink
-        v-slot="{ href, navigate }"
-        to="/wallets"
-        custom
-      >
-        <a
-          :href="href"
-          class="hocusz:bg-item-5 -mx-2 grow px-2"
-          @click="navigate"
-        >
-          <UiHeaderTitle>
-            <div class="text-item-2 pb-1 text-xs font-medium">
-              {{ t("wallets.createNewTitle") }}
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="text-item-1 text-2xl font-semibold">
-                {{ walletForm.name ? walletForm.name : t("wallets.form.name.label") }}
-              </div>
-              <div class="flex-center text-icon-primary text-2xs rounded-lg p-1" :style="{ background: walletForm.color }">
-                {{ walletForm.currency }}
-              </div>
-            </div>
-          </UiHeaderTitle>
-        </a>
-      </RouterLink>
+      <UiHeaderTitle>
+        <div class="text-item-2 pb-1 text-xs font-medium">
+          {{ t("wallets.createNewTitle") }}
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="text-item-1 text-2xl font-semibold">
+            {{ walletForm.name ? walletForm.name : t("wallets.form.name.label") }}
+          </div>
+          <div class="flex-center text-icon-primary text-2xs rounded-lg p-1" :style="{ background: walletForm.color }">
+            {{ walletForm.currency }}
+          </div>
+        </div>
+      </UiHeaderTitle>
     </UiHeader>
 
     <WalletsForm

@@ -1,15 +1,15 @@
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 import { useCurrenciesStore } from '../currencies/useCurrenciesStore'
-import { getDataAndWatch, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItem, WalletItemWithAmount, Wallets } from '~/components/wallets/types'
-import { getTotal } from '~/components/amount/getTotal'
+import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
+import { getDataAndWatch, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
+import { normalizeWallets } from '~/components/wallets/utils'
 import { uniqueElementsBy } from '~~/utils/simple'
+import { useDemo } from '~/components/demo/useDemo'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
-import { normalizeWallets } from '~/components/wallets/utils'
-import { useDemo } from '~/components/demo/useDemo'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
@@ -57,7 +57,7 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   async function saveWalletsOrder(ids: WalletId[]) {
     if (isDemo.value) {
-      return await sortDemoWallets(ids, items.value)
+      return await sortDemoWallets(ids, items.value ?? {})
     }
 
     const updates = ids.reduce(
@@ -84,9 +84,9 @@ export const useWalletsStore = defineStore('wallets', () => {
 
     const { sum, sumTransfers } = getTotal({
       trnsIds,
-      trnsItems: trnsStore.items,
+      trnsItems: trnsStore.items ?? {},
       walletsIds: [walletId],
-      walletsItems: items.value,
+      walletsItems: items.value ?? {},
     })
 
     return sum + sumTransfers
@@ -111,6 +111,12 @@ export const useWalletsStore = defineStore('wallets', () => {
       acc[id] = {
         ...items.value[id],
         amount: getWalletTotal(id),
+        rate: getAmountInRate({
+          amount: 1,
+          baseCurrencyCode: currenciesStore.base,
+          currencyCode: items.value?.[id]?.currency,
+          rates: currenciesStore.rates,
+        }),
       }
       return acc
     }, {} as Record<WalletId, WalletItemWithAmount>),

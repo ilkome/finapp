@@ -397,7 +397,7 @@ const counts = computed(() => ({
             :initStatus="true"
             :lineWidth="0"
             :storageKey="`finapp-wallets-total-${gropedBy}`"
-            class="pb-3"
+            class="hidden pb-3 md:grid"
             openPadding="!pb-4"
           >
             <template #header="{ toggle, isShown }">
@@ -473,6 +473,25 @@ const counts = computed(() => ({
               @click="setActiveType"
             />
           </UiToggle2>
+
+          <!-- List -->
+          <div
+            v-if="gropedBy === 'list'"
+            class="md:max-w-lg"
+          >
+            <WalletsItem
+              v-for="(walletItem, walletId) in selectedWallets"
+              :key="walletId"
+              :wallet="walletItem"
+              :walletId
+              :lineWidth="2"
+              class="group"
+              isShowBaseRate
+              isShowIcon
+              isShowRate
+              @click="router.push(`/wallets/${walletId}`)"
+            />
+          </div>
 
           <!-- By currencies -->
           <template v-if="gropedBy === 'currencies' && walletsStore.currenciesUsed.length > 1">
@@ -637,24 +656,6 @@ const counts = computed(() => ({
               </template>
             </UiToggle2>
           </template>
-
-          <!-- List -->
-          <div
-            v-if="gropedBy === 'list'"
-            class="md:max-w-lg"
-          >
-            <WalletsItem
-              v-for="(walletItem, walletId) in selectedWallets"
-              :key="walletId"
-              :wallet="walletItem"
-              :walletId
-              :lineWidth="2"
-              class="group"
-              isShowBaseRate
-              isShowIcon
-              @click="router.push(`/wallets/${walletId}`)"
-            />
-          </div>
         </div>
       </div>
     </div>

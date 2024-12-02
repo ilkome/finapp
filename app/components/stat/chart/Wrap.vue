@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { sub } from 'date-fns'
+import type { ChartType } from '~/components/stat/chart/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import type { ChartType } from '~/components/stat/chart/types'
-import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { getEndOf, getStartOf } from '~/components/date/utils'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
   maxRange: Range
@@ -91,14 +91,6 @@ const isShowNavNext = computed(() => {
         :series="props.series"
         @click="onClickChart"
       />
-
-      <!-- <StatChartView2
-        :xAxisLabels
-        :chartType="statConfig.config.value?.chartType"
-        :period="statDate.params.value.intervalsBy"
-        :series="props.series"
-        @click="onClickChart"
-      /> -->
     </div>
 
     <div class="flex items-end justify-between gap-2">

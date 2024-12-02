@@ -7,7 +7,7 @@ const props = defineProps<{
   isShowExpense: boolean
   isShowIncome: boolean
   selectedType: MoneyTypeSlugNew
-  totals: TotalReturns
+  total: TotalReturns
   type: MoneyTypeSlugNew
 }>()
 
@@ -40,7 +40,7 @@ function onClick(type: MoneyTypeSlugNew) {
     >
       <StatSumItem
         v-if="props.isShowExpense"
-        :amount="-totals.expense"
+        :amount="-total.expense"
         :isActive="selectedType === 'expense'"
         :class="classes"
         class="grow"
@@ -49,7 +49,7 @@ function onClick(type: MoneyTypeSlugNew) {
       />
       <StatSumItem
         v-if="props.isShowIncome"
-        :amount="totals.income"
+        :amount="total.income"
         :isActive="selectedType === 'income'"
         :class="classes"
         class="grow"
@@ -58,7 +58,7 @@ function onClick(type: MoneyTypeSlugNew) {
       />
       <StatSumItem
         v-if="props.isShowIncome && props.isShowExpense"
-        :amount="totals.sum"
+        :amount="total.sum"
         :class="classes"
         class="grow"
         type="sum"
@@ -68,7 +68,7 @@ function onClick(type: MoneyTypeSlugNew) {
 
     <StatSumItem
       v-else
-      :amount="props.type === 'income' ? totals[props.type] : -totals[props.type]"
+      :amount="props.type === 'income' ? total[props.type] : -total[props.type]"
       :class="classes"
       :type="props.type"
     />

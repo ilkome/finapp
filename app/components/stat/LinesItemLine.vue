@@ -135,11 +135,13 @@ onLongPress(
       </template>
 
       <CategoriesName
-        :class="{ '!pb-2': statConfig.config.value.catsList.isLines }"
         :category
-        :parentCategory
-        :isHideParent="props.isHideParent"
+        :class="{ '!pb-2': statConfig.config.value.catsList.isLines }"
         :hasChildren="categoriesStore.getChildsIds(props.item.id).length > 0"
+        :isHideParent="props.isHideParent"
+        :parentCategory
+        :showChildrenCount="categoriesStore.getChildsIds(props.item.id).length"
+        isHideDots
       />
 
       <div

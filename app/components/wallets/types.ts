@@ -47,6 +47,7 @@ type WalletItemBase = {
   isWithdrawal?: boolean
   name: string
   order: number
+  rate: number
 }
 
 type WalletItemSimple = WalletItemBase & {
