@@ -9,8 +9,8 @@ import type { ChartType } from '~/components/stat/chart/types'
 import type { Period } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import { config, lineConfig } from '~/components/stat/chart/config'
-import { setChartXAxis } from '~/components/stat/chart/utils'
 import { formatByLocale, getFormatForChart } from '~/components/date/utils'
+import { getCompactAmount, getLocalAmount, setChartXAxis } from '~/components/stat/chart/utils'
 
 const props = withDefaults(
   defineProps<{
@@ -57,6 +57,25 @@ const option = computed(() => {
     series: setChartSeries(props.series),
     xAxis: setChartXAxis(props.xAxisLabels),
     ...statConfig.config.value,
+    tooltip: {
+      ...config.tooltip,
+      formatter(params) {
+        console.log(params)
+
+        let content = '<div class="px-1">'
+        content = `${content}
+          <div class="text-md pb-2 text-2 text-right">${formatByLocale(new Date(+params[0].name), getFormatForChart(props.period), locale.value)}</div>
+          <div class="grid gap-1">
+        `
+
+        for (const param of params) {
+          const value = `<div class="text-md text-right font-secondary text-1">${getLocalAmount(param.value)}</div>`
+          content = content + value
+        }
+
+        return `${content}</div></div>`
+      },
+    },
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
