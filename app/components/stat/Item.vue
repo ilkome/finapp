@@ -181,7 +181,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
 
 function getParentCategoryId(categoryId: CategoryId): CategoryId | undefined {
   const category = categoriesStore.items[categoryId]
-  return category?.parentId === 0 ? categoryId : category?.parentId
+  return category?.parentId === 0 ? undefined : category?.parentId
 }
 
 function createSeriesItem(typeItem: 'expense' | 'income' | 'sum', data: TotalReturns[]) {
@@ -251,11 +251,13 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
         const totalInCategory = getTotalOfTrnsIds(categoriesWithTrns[categoryId]!)
         const trnsIdsInCategory = categoriesWithTrns[categoryId]!
 
-        acc.push({
+        const content = {
           id: categoryId,
           trnsIds: trnsIdsInCategory,
           value: totalInCategory.sum,
-        })
+        }
+
+        acc.push(content)
         return acc
       },
       [] as CategoryWithData[],
@@ -276,12 +278,93 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
 
   return categoriesWithData.sort((a, b) => sortCategoriesByAmount(a, b))
 }
+
+function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]) {
+  if (!trnsIds?.length)
+    return []
+
+  return trnsIds.reduce((acc, trnId) => {
+    const categoryId = trnsStore.items?.[trnId]?.categoryId
+    if (!categoryId || categoriesStore.transferCategoriesIds.includes(categoryId))
+      return acc
+
+    const currentCategory = categoriesStore.items[categoryId]
+    if (!currentCategory)
+      return acc
+
+    const parentCategoryId = getParentCategoryId(categoryId)
+    const parentCategory = parentCategoryId ? categoriesStore.items[parentCategoryId] : null
+
+    // Handle categories with parent
+    if (parentCategory && parentCategoryId) {
+      const existingParent = acc.find(c => c.id === parentCategoryId)
+
+      if (existingParent) {
+        // Update existing parent
+        existingParent.trnsIds.push(trnId)
+
+        const existingCategory = existingParent.categories?.find(c => c.id === categoryId)
+        if (existingCategory) {
+          existingCategory.trnsIds.push(trnId)
+        }
+        else {
+          existingParent.categories ??= []
+          existingParent.categories.push({
+            id: categoryId,
+            name: currentCategory.name,
+            trnsIds: [trnId],
+            value: 0,
+          })
+        }
+      }
+      else {
+        // Create new parent category entry
+        acc.push({
+          categories: [{
+            id: categoryId,
+            name: currentCategory.name,
+            trnsIds: [trnId],
+            value: 0,
+          }],
+          id: parentCategoryId,
+          name: parentCategory.name,
+          trnsIds: [trnId],
+          value: 0,
+        })
+      }
+    }
+    // Handle categories without parent
+    else {
+      const existingCategory = acc.find(c => c.id === categoryId)
+
+      if (existingCategory) {
+        existingCategory.trnsIds.push(trnId)
+      }
+      else {
+        acc.push({
+          id: categoryId,
+          name: currentCategory.name,
+          trnsIds: [trnId],
+          value: 0,
+        })
+      }
+    }
+
+    return acc
+  }, [] as CategoryWithData[])
+}
 </script>
 
 <template>
   <div class="@container/stat">
-    <div class="flex">
-      <pre class="text-2xs">{{ categoriesWithData }}</pre>
+    <div class="grid gap-4">
+      <pre
+        v-for="item in getCategoriesWithData2(selectedTrnsIds)"
+        :key="item.id"
+        class="text-2xs"
+      >
+        {{ item }}
+      </pre>
     </div>
 
     <!-- Chart -->

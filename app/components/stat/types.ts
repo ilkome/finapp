@@ -1,4 +1,4 @@
-import type { CategoryId } from '~/components/categories/types'
+import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
 
 export type MoneyTypeSlug = 'expense' | 'income'
@@ -11,10 +11,15 @@ export type TotalCategories = {
   income: CategoryWithData[]
 }
 
-export type CategoryWithData = {
+export type CategoryWithDataBase = {
   id: CategoryId
+  name: CategoryItem['name']
   trnsIds: TrnId[]
   value: number
+}
+
+export type CategoryWithData = CategoryWithDataBase & {
+  categories?: CategoryWithDataBase[]
 }
 
 export type CategoriesWithTrns = Record<CategoryId, TrnId[]>
