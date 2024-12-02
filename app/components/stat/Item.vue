@@ -296,7 +296,7 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
     const parentCategory = parentCategoryId ? categoriesStore.items[parentCategoryId] : null
 
     // Handle categories with parent
-    if (parentCategory && parentCategoryId) {
+    if (parentCategory && parentCategoryId && isGrouped) {
       const existingParent = acc.find(c => c.id === parentCategoryId)
 
       if (existingParent) {
@@ -359,7 +359,7 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
   <div class="@container/stat">
     <div class="grid gap-4">
       <pre
-        v-for="item in getCategoriesWithData2(selectedTrnsIds)"
+        v-for="item in getCategoriesWithData2(selectedTrnsIds, true)"
         :key="item.id"
         class="text-2xs"
       >
