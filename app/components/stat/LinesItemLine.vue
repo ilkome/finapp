@@ -140,7 +140,7 @@ onLongPress(
         :hasChildren="categoriesStore.getChildsIds(props.item.id).length > 0"
         :isHideParent="props.isHideParent"
         :parentCategory
-        :showChildrenCount="categoriesStore.getChildsIds(props.item.id).length"
+        :showChildrenCount="props.item.categories?.length"
         isHideDots
       />
 

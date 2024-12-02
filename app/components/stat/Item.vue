@@ -95,7 +95,7 @@ const rangeTotal = computed(() => {
 
 const isCategoriesGrouped = computed(() => statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped)
 
-const categoriesWithData = computed(() => {
+const categoriesWithData = computed<CategoryWithData[]>(() => {
   const cats: CategoryId[] = []
   if (statConfig.config.value?.isShowEmptyCategories && props.preCategoriesIds) {
     cats.push(...props.preCategoriesIds)
@@ -218,68 +218,7 @@ function addMarkArea(series: any[]) {
     : series.map((s, i) => i === markAreaIdx ? markAreaSeries : s)
 }
 
-function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]) {
-  if (!trnsIds?.length)
-    return []
-
-  const categoriesWithTrns = trnsIds.reduce((acc, trnId) => {
-    // Get category ID from transaction
-    const categoryId = trnsStore.items?.[trnId]?.categoryId
-    if (!categoryId)
-      return acc
-
-    // Skip transfer categories
-    if (categoriesStore.transferCategoriesIds.includes(categoryId))
-      return acc
-
-    const finalCategoryId = isGrouped
-      ? getParentCategoryId(categoryId)
-      : categoryId
-
-    if (!finalCategoryId)
-      return acc
-
-    // Add transaction to category group
-    acc[finalCategoryId] ??= []
-    acc[finalCategoryId].push(trnId)
-    return acc
-  }, {} as CategoriesWithTrns)
-
-  const categoriesWithData = Object.keys(categoriesWithTrns)
-    .reduce(
-      (acc, categoryId) => {
-        const totalInCategory = getTotalOfTrnsIds(categoriesWithTrns[categoryId]!)
-        const trnsIdsInCategory = categoriesWithTrns[categoryId]!
-
-        const content = {
-          id: categoryId,
-          trnsIds: trnsIdsInCategory,
-          value: totalInCategory.sum,
-        }
-
-        acc.push(content)
-        return acc
-      },
-      [] as CategoryWithData[],
-    )
-
-  // Add empty categories
-  if (preCategoriesIds && preCategoriesIds.length > 0) {
-    for (const id of preCategoriesIds) {
-      if (!categoriesWithTrns[id]) {
-        categoriesWithData.push({
-          id,
-          trnsIds: [],
-          value: 0,
-        })
-      }
-    }
-  }
-
-  return categoriesWithData.sort((a, b) => sortCategoriesByAmount(a, b))
-}
-
-function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]) {
+function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]): CategoryWithData[] {
   if (!trnsIds?.length)
     return []
 
@@ -312,8 +251,16 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
     const parentId = getParentCategoryId(cat.id)
     const parentCategory = parentId && categoriesStore.items[parentId]
 
-    if (!parentId || !parentCategory)
+    if (!parentId || !parentCategory) {
+      acc[cat.id] ??= {
+        categories: [],
+        id: cat.id,
+        name: cat.name,
+        trnsIds: cat.trnsIds,
+        value: getTotalOfTrnsIds(cat.trnsIds).sum,
+      }
       return acc
+    }
 
     acc[parentId] ??= {
       categories: [],
@@ -322,6 +269,7 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
       trnsIds: [],
       value: 0,
     }
+
     acc[parentId].categories ??= []
     acc[parentId].categories.push({ ...cat, value: getTotalOfTrnsIds(cat.trnsIds).sum })
     acc[parentId].trnsIds.push(...cat.trnsIds)
@@ -355,28 +303,6 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
       :type="props.type"
       @click="onClickSumItem"
     />
-
-    <div class="flex gap-3">
-      <div class="grid gap-4">
-        <pre
-          v-for="item in getCategoriesWithData2(selectedTrnsIds, true)"
-          :key="item.id"
-          class="text-2xs"
-        >
-        {{ item }}
-      </pre>
-      </div>
-
-      <div class="grid gap-4">
-        <pre
-          v-for="item in getCategoriesWithData2(selectedTrnsIds, false)"
-          :key="item.id"
-          class="text-2xs"
-        >
-        {{ item }}
-      </pre>
-      </div>
-    </div>
 
     <!-- Content -->
     <div class="grid gap-6 pt-4">
@@ -439,7 +365,7 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
               <template #header="{ toggle, isShown }">
                 <div class="flex items-stretch justify-between">
                   <UiToggleAction
-                    v-if="statConfig.config.value.catsList.isGrouped && categoriesStore.hasChildren(item.id)"
+                    v-if="statConfig.config.value.catsList.isGrouped && item.categories && item.categories.length > 0"
                     :isShown="isShown"
                     class="-mr-2.5"
                     @click="toggle"
@@ -465,7 +391,7 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
               <div class="border-item-5 ml-5 border-l pl-3">
                 <div v-if="!statConfig.config.value.catsList.isOpened">
                   <StatLinesItemLine
-                    v-for="itemInside in getCategoriesWithData(item.trnsIds)"
+                    v-for="itemInside in item.categories"
                     :key="itemInside.id"
                     :biggestCatNumber
                     :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
@@ -483,7 +409,7 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
                   class="flex flex-wrap gap-1 pb-3 pl-2 pt-2"
                 >
                   <StatLinesItemRound
-                    v-for="itemInside in getCategoriesWithData(item.trnsIds)"
+                    v-for="itemInside in item.categories"
                     :key="itemInside.id"
                     :item="itemInside"
                     @click="onClickCategory"

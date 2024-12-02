@@ -1,6 +1,8 @@
 import type { CategoryWithData } from '~/components/stat/types'
 
 export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData) {
+  console.log('sort')
+
   if (!a || !b)
     return 0
 
