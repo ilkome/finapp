@@ -60,8 +60,6 @@ const option = computed(() => {
     tooltip: {
       ...config.tooltip,
       formatter(params) {
-        console.log(params)
-
         let content = '<div class="px-1">'
         content = `${content}
           <div class="text-md pb-2 text-2 text-right">${formatByLocale(new Date(+params[0].name), getFormatForChart(props.period), locale.value)}</div>
