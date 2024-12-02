@@ -94,11 +94,34 @@ const rangeTrnsIds = computed(() => {
   return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
 })
 
-const trnsIdsBySelectedType = computed(() => {
+function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
+  return intervalsInRange.reduce((acc, range) => {
+    const trnsIdsInRange = trnsIds.filter((id) => {
+      const trnDate = trnsStore.items?.[id]?.date
+      return trnDate! >= range.start && trnDate! <= range.end
+    })
+
+    acc.push({
+      range,
+      total: getTotalOfTrnsIds(trnsIdsInRange),
+      trnsIds: trnsIdsInRange,
+    })
+
+    return acc
+  }, [] as {
+    range: Range
+    total: TotalReturns
+    trnsIds: TrnId[]
+  }[])
+}
+
+const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
+
+const selectedTrnsIds = computed(() => {
   const typeMapping = {
     expense: [0, 2],
     income: [1, 2],
-    sum: null,
+    sum: [0, 1, 2],
   }
 
   const trnsTypes = typeMapping[selectedType.value]
@@ -108,63 +131,20 @@ const trnsIdsBySelectedType = computed(() => {
   }
 
   return trnsStore.getStoreTrnsIds({
-    trnsIds: rangeTrnsIds.value,
+    trnsIds: statDate.params.value.intervalSelected !== -1
+      ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
+      : rangeTrnsIds.value,
     trnsTypes,
-  })
+  }, { includesChildCategories: false })
 })
 
-function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
-  function filterTrnsInRange(trnId: TrnId) {
-    const trnDate = trnsStore.items?.[trnId]?.date
-    return intervalsInRange.some(r => trnDate! >= r.start && trnDate! <= r.end)
-  }
+const rangeTotal = computed(() => {
+  const trnsIds = statDate.params.value.intervalSelected !== -1
+    ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
+    : rangeTrnsIds.value
 
-  return intervalsInRange.reduce((acc, range) => {
-    const trnsIdsInRange = trnsIds.filter(filterTrnsInRange)
-
-    acc[range.start] = {
-      range,
-      total: getTotalOfTrnsIds(trnsIdsInRange),
-      trnsIds: trnsIdsInRange,
-    }
-
-    return acc
-  }, {} as Record<string, {
-    range: Range
-    total: TotalReturns
-    trnsIds: TrnId[]
-  }>)
-}
-
-const intervalsData = computed(() => getIntervalsData(trnsIdsBySelectedType.value, statDate.intervalsInRange.value))
-
-const intervalsTrnsIds = computed(() => getTrnsIdsInRanges(trnsIdsBySelectedType.value, statDate.intervalsInRange.value))
-
-const selectedTrnsIds = computed(() => {
-  const params = statDate.params.value.intervalSelected >= 0
-    ? {
-        trnsIds: intervalsTrnsIds.value[statDate.params.value.intervalSelected],
-      }
-    : {
-        trnsIds: trnsIdsBySelectedType.value,
-      }
-
-  return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
+  return getTotalOfTrnsIds(trnsIds)
 })
-
-function getTrnsIdsInRanges(trnsIds: TrnId[], ranges: Range[]) {
-  const list = [...ranges.map(() => [])]
-
-  trnsIds.forEach((trnId) => {
-    const trnDate = trnsStore.items?.[trnId]?.date
-    const idx = ranges.findIndex(r => trnDate! >= r.start && trnDate! <= r.end)
-    list[idx]?.push(trnId)
-  })
-
-  return list
-}
-
-const rangeTotal = computed(() => getTotalOfTrnsIds(rangeTrnsIds.value))
 
 const isCategoriesGrouped = computed(() => statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped)
 
@@ -260,7 +240,7 @@ function addMarkArea(series: any[]) {
 
 const series = computed(() => {
   const types = props.type === 'sum' ? ['expense', 'income'] as const : [props.type]
-  const intervalsTotal = intervalsTrnsIds.value.map(g => getTotalOfTrnsIds(g))
+  const intervalsTotal = intervalsData.value.map(g => g.total)
   const baseSeries = types.map(type => createSeriesItem(type, intervalsTotal))
 
   return statDate.params.value.intervalSelected >= 0
@@ -306,9 +286,6 @@ async function onClickCategory(categoryId: CategoryId) {
 <template>
   <div class="@container/stat">
     <div class="flex">
-      <!-- <pre class="text-2xs">{{ series }}</pre> -->
-      <!-- <pre class="text-2xs">{{ intervalsData }}</pre> -->
-      <!-- <pre class="text-2xs">{{ intervalsTrnsIds }}</pre> -->
       <!-- <pre class="text-2xs">{{ intervalsData }}</pre> -->
     </div>
 

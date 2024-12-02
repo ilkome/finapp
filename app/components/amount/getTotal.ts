@@ -28,7 +28,7 @@ type TotalProps = {
   baseCurrencyCode?: string
   rates?: Rates
   transferCategoriesIds?: CategoryId[]
-  trnsIds: TrnId[]
+  trnsIds?: TrnId[]
   trnsItems: Record<TrnId, TrnItem>
   walletsIds?: WalletId[]
   walletsItems: Record<WalletId, WalletItem>
