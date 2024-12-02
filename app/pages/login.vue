@@ -16,11 +16,11 @@ useSeoMeta({
   title: t('title'),
 })
 
-const { $toast } = useNuxtApp() as unknown as { $toast: (c: any, o: any) => void }
+const { $toast } = useNuxtApp()
 const { generateDemoData } = useDemo()
 const route = useRoute()
 const router = useRouter()
-  const { isDemo } = useDemo()
+const { isDemo } = useDemo()
 const isLoading = ref(false)
 
 if (route.query?.loading)

@@ -2,8 +2,9 @@ import { differenceInDays, endOfDay, endOfMonth, endOfWeek, endOfYear, format, s
 import { ru } from 'date-fns/locale'
 import type { IntervalsInRangeProps, Range } from '~/components/date/types'
 import type { PeriodNameWithAll } from '~/components/filter/types'
+import type { LocaleSlug } from '~/components/app/locale/types'
 
-export function formatByLocale(date: Date, formatter: string, locale?: 'en' | 'ru') {
+export function formatByLocale(date: Date, formatter: string, locale?: LocaleSlug) {
   const formatOptions = locale === 'ru' ? { locale: ru } : {}
   return format(date, formatter, formatOptions)
 }

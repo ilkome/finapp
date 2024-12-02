@@ -1,6 +1,7 @@
 import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
+import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
-export const seriesOptions = {
+export const seriesOptions: Record<MoneyTypeSlugNew, { color: string, localeKey: string, type: string }> = {
   expense: {
     color: '#ED6660',
     localeKey: 'money.expense',

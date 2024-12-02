@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { saveData } from '~~/services/firebase/api'
 import { useUserStore } from '~/components/user/useUserStore'
+import type { LocaleSlug } from '~/components/app/locale/types'
 
 const { locale, setLocale, t } = useI18n()
 const userStore = useUserStore()
 
-const locales = [{
+const locales: { localeKey: string, slug: LocaleSlug }[] = [{
   localeKey: 'app.locale.ru',
   slug: 'ru',
 }, {
@@ -13,7 +14,7 @@ const locales = [{
   slug: 'en',
 }]
 
-function changeLocale(locale: string) {
+function changeLocale(locale: LocaleSlug) {
   setLocale(locale)
 
   if (!userStore.uid)

@@ -81,14 +81,14 @@ export function useStatDate({
     return range
   })
 
-  const groupedPeriods = computed(() => getIntervalsInRange({
+  const intervalsInRange = computed(() => getIntervalsInRange({
     intervalsBy: params.value.intervalsBy,
     intervalsDuration: params.value.intervalsDuration,
     range: range.value,
     rangeOffset: params.value.rangeOffset,
   }))
 
-  const selectedInterval = computed(() => groupedPeriods.value[params.value.intervalSelected])
+  const selectedInterval = computed(() => intervalsInRange.value[params.value.intervalSelected])
 
   watch(range, () => params.value.intervalSelected = -1)
 
@@ -150,7 +150,7 @@ export function useStatDate({
     addInterval,
     delInterval,
     getIntervalsInRange,
-    groupedPeriods,
+    intervalsInRange,
     minusRange,
     params,
     plusRange,

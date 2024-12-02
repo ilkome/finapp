@@ -2,7 +2,7 @@
 import { onLongPress } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 import type { StatDateProvider } from '~/components/date/types'
-import type { TotalCategory } from '~/components/stat/types'
+import type { CategoryWithData } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
@@ -18,7 +18,7 @@ const props = defineProps<{
   isActive?: boolean
   isHideDots?: boolean
   isHideParent?: boolean
-  item: TotalCategory
+  item: CategoryWithData
   lineWidth?: number
 }>()
 

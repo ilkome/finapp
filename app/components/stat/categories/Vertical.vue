@@ -2,7 +2,7 @@
 import { onLongPress } from '@vueuse/core'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import type { CategoryId } from '~/components/categories/types'
-import type { TotalCategory } from '~/components/stat/types'
+import type { CategoryWithData } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import type { StatDateProvider } from '~/components/date/types'
 
@@ -11,7 +11,7 @@ const props = defineProps<{
     expense: number
     income: number
   }
-  item: TotalCategory
+  item: CategoryWithData
 }>()
 
 const emit = defineEmits<{

@@ -4,26 +4,33 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const user = await getCurrentUser()
   const localAuthUid = useCookie('finapp.localAuthUid')
   const { isDemo } = useDemo()
+
+  // Update local auth UID
   localAuthUid.value = user?.uid || null
 
-  if (isDemo.value && to.path === '/login' && typeof to.query.redirect === 'string') {
-    return navigateTo(to.query.redirect)
+  // Handle demo mode routing
+  if (isDemo.value) {
+    if (to.path === '/login') {
+      const redirectPath = typeof to.query.redirect === 'string'
+        ? to.query.redirect
+        : '/dashboard'
+      return navigateTo(redirectPath)
+    }
+    return // Allow access to all routes in demo mode
   }
-  else if (isDemo.value && to.path === '/login') {
-    return navigateTo('/dashboard')
-  }
-  else if (isDemo.value && to.path !== '/login') {
-    // TODO: keep this to prevent infinite redirect
-  }
-  else if (!user && to.path !== '/login') {
+
+  // Handle regular auth routing
+  const isLoginPage = to.path === '/login'
+  const isAuthenticated = !!user
+
+  if (!isAuthenticated && !isLoginPage) {
     return navigateTo({
       path: '/login',
-      query: {
-        redirect: to.fullPath,
-      },
+      query: { redirect: to.fullPath },
     })
   }
-  else if (user && to.path === '/login') {
+
+  if (isAuthenticated && isLoginPage) {
     return navigateTo('/dashboard')
   }
 })

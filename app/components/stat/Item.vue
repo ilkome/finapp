@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { CategoryId, CategoryItem } from '~/components/categories/types'
+import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { MoneyTypeSlugNew, TotalCategory } from '~/components/stat/types'
+import type { CategoriesWithTrns, CategoryWithData, MoneyTypeSlugNew } from '~/components/stat/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TotalReturns } from '~/components/amount/getTotal'
@@ -41,8 +41,14 @@ const isShowTrns = ref(false)
 const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
 
+function getParentCategoryId(categoryId: CategoryId): CategoryId | undefined {
+  const category = categoriesStore.items[categoryId]
+  return category?.parentId === 0 ? categoryId : category?.parentId
+}
+
 const selectedType = ref<MoneyTypeSlugNew>('sum')
-function onSelectType(type: MoneyTypeSlugNew) {
+
+function onClickSumItem(type: MoneyTypeSlugNew) {
   if (type === 'sum') {
     isShowTrns.value = !isShowTrns.value
     return
@@ -51,64 +57,67 @@ function onSelectType(type: MoneyTypeSlugNew) {
   selectedType.value = type === selectedType.value ? 'sum' : type
 }
 
-const typesInTrnsIds = computed(() => ({
+const statTypeShow = computed(() => ({
   expense: props.trnsIds.some(id => trnsStore.items?.[id]?.type === 0),
   income: props.trnsIds.some(id => trnsStore.items?.[id]?.type === 1),
 }))
 
-// TODO: create function for this
-const filteredTrnsIds = computed(() => {
-  if (selectedType.value === 'income') {
-    return getTrnsIds({
-      trnsIds: props.trnsIds,
-      trnsItems: trnsStore.items ?? {},
-      trnsTypes: [1, 2],
-    })
+const trnsIdsBySelectedType = computed(() => {
+  const typeMapping = {
+    expense: [0, 2],
+    income: [1, 2],
+    sum: null,
   }
 
-  if (selectedType.value === 'expense') {
-    return getTrnsIds({
-      trnsIds: props.trnsIds,
-      trnsItems: trnsStore.items ?? {},
-      trnsTypes: [0, 2],
-    })
+  const trnsTypes = typeMapping[selectedType.value]
+
+  if (!trnsTypes) {
+    return props.trnsIds
   }
 
-  return props.trnsIds
+  return getTrnsIds({
+    trnsIds: props.trnsIds,
+    trnsItems: trnsStore.items ?? {},
+    trnsTypes,
+  })
 })
 
-const isDayToday = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day'))
+const isPeriodOneDay = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalSelected !== -1))
 
-function getCats(trnsIds: TrnId[], isIntervalsByParent?: boolean, preCategoriesIds?: CategoryId[]) {
-  const categoriesWithTrns = trnsIds?.reduce(
-    (acc, trnId) => {
-      let newCategoryId = trnsStore.items?.[trnId]?.categoryId
-      if (!newCategoryId)
-        return acc
+function getCategoriesWithTrnsIdsFromTrnsIds(trnsIds: TrnId[], isGrouped?: boolean) {
+  if (!trnsIds?.length)
+    return {}
 
-      if (categoriesStore.transferCategoriesIds.includes(newCategoryId))
-        return acc
-
-      if (isIntervalsByParent) {
-        const trnBaseCategory: CategoryItem | undefined = categoriesStore.items[newCategoryId]
-
-        newCategoryId = trnBaseCategory?.parentId === 0
-          ? trnsStore.items?.[trnId]?.categoryId
-          : trnBaseCategory?.parentId
-      }
-
-      acc[newCategoryId] ??= []
-      acc[newCategoryId].push(trnId)
+  return trnsIds.reduce((acc, trnId) => {
+    // Get category ID from transaction
+    const categoryId = trnsStore.items?.[trnId]?.categoryId
+    if (!categoryId)
       return acc
-    },
-    {} as Record<CategoryId, TrnId[]>,
-  )
 
-  const categories = Object.keys(categoriesWithTrns)
+    // Skip transfer categories
+    if (categoriesStore.transferCategoriesIds.includes(categoryId))
+      return acc
+
+    const finalCategoryId = isGrouped
+      ? getParentCategoryId(categoryId)
+      : categoryId
+
+    if (!finalCategoryId)
+      return acc
+
+    // Add transaction to category group
+    acc[finalCategoryId] ??= []
+    acc[finalCategoryId].push(trnId)
+    return acc
+  }, {} as CategoriesWithTrns)
+}
+
+function getCategoriesWithData(categories: CategoriesWithTrns) {
+  return Object.keys(categories)
     .reduce(
       (acc, categoryId) => {
-        const totalInCategory = getTotalOfTrnsIds(categoriesWithTrns[categoryId]!)
-        const trnsIdsInCategory = categoriesWithTrns[categoryId]!
+        const totalInCategory = getTotalOfTrnsIds(categories[categoryId]!)
+        const trnsIdsInCategory = categories[categoryId]!
 
         acc.push({
           id: categoryId,
@@ -117,48 +126,11 @@ function getCats(trnsIds: TrnId[], isIntervalsByParent?: boolean, preCategoriesI
         })
         return acc
       },
-      [] as TotalCategory[],
+      [] as CategoryWithData[],
     )
-    .sort((a, b) => sortCategoriesByAmount(a, b))
-
-  if (statConfig.config.value?.isShowEmptyCategories && preCategoriesIds && preCategoriesIds.length > 0) {
-    preCategoriesIds.forEach((id) => {
-      if (!categoriesWithTrns[id]) {
-        categories.push({
-          id,
-          trnsIds: [],
-          value: 0,
-        })
-      }
-    })
-  }
-  return categories
 }
 
-function getSeries(
-  total: TotalReturns[],
-  type: MoneyTypeSlugNew,
-) {
-  const types = type === 'sum' ? ['expense', 'income'] : [type] as const
-
-  return types.map(type => ({
-    color: seriesOptions[type].color,
-    cursor: 'default',
-    data: total.map(i => type !== 'sum' ? Math.abs(i[type]) : i[type]),
-    name: t(`money.${type}`),
-    type: seriesOptions[type].type,
-  }))
-}
-/**
- * Chart
- */
-const xAxisLabels = computed(() => statDate.groupedPeriods.value.map(r => +r.start) ?? [])
-
-const groupedTrnsIds = computed(() => getPeriodsWithTrns(filteredTrnsIds.value, statDate.groupedPeriods.value))
-const groupedTrnsIds2 = computed(() => getPeriodsWithTrns(props.trnsIds, statDate.groupedPeriods.value))
-const groupedTrnsTotals = computed(() => groupedTrnsIds.value.map(g => getTotalOfTrnsIds(g)))
-
-function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
+function getTrnsIdsInRanges(trnsIds: TrnId[], ranges: Range[]) {
   const list = [...ranges.map(() => [])]
 
   trnsIds.forEach((trnId) => {
@@ -170,98 +142,147 @@ function getPeriodsWithTrns(trnsIds: TrnId[], ranges: Range[]) {
   return list
 }
 
-const series = computed(() => {
-  const series = getSeries(groupedTrnsTotals.value, props.type, statDate.groupedPeriods.value)
+const groupedTrnsIds = computed(() => getTrnsIdsInRanges(trnsIdsBySelectedType.value, statDate.intervalsInRange.value))
 
-  if (statDate.params.value.intervalSelected >= 0) {
-    if (statConfig.config.value?.chartType !== 'bar') {
-      const markAreaSeriesIdx = series.findIndex(s => s.markedArea === 'markedArea')
+const selectedTrnsIds = computed(() => {
+  const baseParams = {
+    categoriesIds: filter?.categoriesIds?.value,
+    walletsIds: filter?.walletsIds?.value,
+  }
 
-      if (markAreaSeriesIdx === -1) {
-        series.push({
-          data: [],
-          markArea: markArea(statDate.groupedPeriods.value?.[statDate.params.value.intervalSelected]?.start),
-          markedArea: 'markedArea',
-          type: 'bar',
+  const params = statDate.params.value.intervalSelected >= 0
+    ? {
+        ...baseParams,
+        trnsIds: groupedTrnsIds.value[statDate.params.value.intervalSelected],
+      }
+    : {
+        ...baseParams,
+        dates: {
+          from: statDate.range.value.start,
+          until: statDate.range.value.end,
+        },
+        trnsIds: trnsIdsBySelectedType.value,
+      }
+
+  return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
+})
+
+const isCategoriesGrouped = computed(() => statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped)
+
+const categoriesWithTrnsIdsFromTrnsIds = computed(() => {
+  return getCategoriesWithTrnsIdsFromTrnsIds(selectedTrnsIds.value, isCategoriesGrouped.value)
+})
+
+function getCategoriesWithDataFinal(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]) {
+  const categoriesWithTrns = getCategoriesWithTrnsIdsFromTrnsIds(trnsIds, isGrouped)
+  const categoriesWithData = getCategoriesWithData(categoriesWithTrns)
+
+  // Add empty categories
+  if (preCategoriesIds && preCategoriesIds.length > 0) {
+    for (const id of preCategoriesIds) {
+      if (!categoriesWithTrns[id]) {
+        categoriesWithData.push({
+          id,
+          trnsIds: [],
+          value: 0,
         })
       }
-      else {
-        series[markAreaSeriesIdx] = {
-          data: [],
-          markArea: markArea(statDate.groupedPeriods.value?.[statDate.params.value.intervalSelected]?.start),
-          markedArea: 'markedArea',
-          type: 'bar',
-        }
-      }
-    }
-    else {
-      series[0].markArea = markArea(statDate.groupedPeriods.value?.[statDate.params.value.intervalSelected]?.start)
     }
   }
 
-  return series
-})
+  return categoriesWithData.sort((a, b) => sortCategoriesByAmount(a, b))
+}
 
-const trnsIdsWithRange = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: filter?.categoriesIds?.value,
-  dates: {
-    from: statDate.range.value.start,
-    until: statDate.range.value.end,
-  },
-  trnsIds: filteredTrnsIds.value,
-  walletsIds: filter?.walletsIds?.value,
-}, { includesChildCategories: false }),
-)
-
-const selectedTrnsIdsForTrnsList = computed(() => {
-  if (statDate.params.value.intervalSelected >= 0) {
-    return trnsStore.getStoreTrnsIds({
-      categoriesIds: filter?.categoriesIds?.value,
-      trnsIds: groupedTrnsIds.value[statDate.params.value.intervalSelected],
-      walletsIds: filter?.walletsIds?.value,
-    }, { includesChildCategories: false })
-  }
-
-  return trnsIdsWithRange.value
-})
-
-const trnsIdsForTotals = computed(() => {
-  if (statDate.params.value.intervalSelected >= 0) {
-    return trnsStore.getStoreTrnsIds({
-      trnsIds: groupedTrnsIds2.value[statDate.params.value.intervalSelected],
-    }, { includesChildCategories: false })
-  }
-
-  return trnsStore.getStoreTrnsIds({
-    dates: {
-      from: statDate.range.value.start,
-      until: statDate.range.value.end,
-    },
-    trnsIds: props.trnsIds,
-  }, { includesChildCategories: false })
-})
-
-const totals = computed<TotalReturns>(() => getTotalOfTrnsIds(trnsIdsForTotals.value))
-
-/**
- * Cats
- */
-const cats = computed(() => {
-  let cats: CategoryId[] = []
+const categoriesWithData = computed(() => {
+  const cats: CategoryId[] = []
   if (statConfig.config.value?.isShowEmptyCategories && props.preCategoriesIds) {
     cats.push(...props.preCategoriesIds)
   }
-  else if (props.preCategoriesIds) {
-    cats = [...props.preCategoriesIds]
+
+  return getCategoriesWithDataFinal(selectedTrnsIds.value ?? [], isCategoriesGrouped.value, cats)
+})
+
+/**
+ * Chart
+ */
+const xAxisLabels = computed(() => statDate.intervalsInRange.value.map(r => +r.start) ?? [])
+
+function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
+  function filterTrnsInRange(trnId: TrnId) {
+    const trnDate = trnsStore.items?.[trnId]?.date
+    return intervalsInRange.some(r => trnDate! >= r.start && trnDate! <= r.end)
   }
 
-  const isGrouped = statConfig.config.value.catsView === 'list' ? statConfig.config.value.catsList.isGrouped : statConfig.config.value.catsRound.isGrouped
-  return getCats(selectedTrnsIdsForTrnsList.value ?? [], isGrouped, cats)
+  return intervalsInRange.reduce((acc, range) => {
+    const trnsIdsInRange = trnsIds.filter(filterTrnsInRange)
+
+    acc[range.start] = {
+      range,
+      total: getTotalOfTrnsIds(trnsIdsInRange),
+      trnsIds: trnsIdsInRange,
+    }
+
+    return acc
+  }, {} as Record<string, {
+    range: Range
+    total: TotalReturns
+    trnsIds: TrnId[]
+  }>)
+}
+
+const intervalsData = computed(() => getIntervalsData(trnsIdsBySelectedType.value, statDate.intervalsInRange.value))
+
+function createSeriesItem(typeItem: 'expense' | 'income' | 'sum', data: TotalReturns[]) {
+  return {
+    color: seriesOptions[typeItem].color,
+    cursor: 'default',
+    data: data.map(i => typeItem !== 'sum' ? Math.abs(i[typeItem]) : i[typeItem]),
+    name: t(`money.${typeItem}`),
+    type: seriesOptions[typeItem].type,
+  }
+}
+
+function getSeriesTypes(type: MoneyTypeSlugNew) {
+  return type === 'sum' ? ['expense', 'income'] as const : [type] as const
+}
+
+function addMarkArea(series: any[]) {
+  const selectedStartDate = statDate.intervalsInRange.value?.[statDate.params.value.intervalSelected]?.start
+
+  if (!selectedStartDate)
+    return series
+
+  if (statConfig.config.value?.chartType === 'bar') {
+    series[0].markArea = markArea(selectedStartDate)
+    return series
+  }
+
+  const markAreaIdx = series.findIndex(s => s.markedArea === 'markedArea')
+  const markAreaSeries = {
+    data: [],
+    markArea: markArea(selectedStartDate),
+    markedArea: 'markedArea',
+    type: 'bar',
+  }
+
+  return markAreaIdx === -1
+    ? [...series, markAreaSeries]
+    : series.map((s, i) => i === markAreaIdx ? markAreaSeries : s)
+}
+
+const series = computed(() => {
+  const types = getSeriesTypes(props.type)
+  const intervalsTotal = groupedTrnsIds.value.map(g => getTotalOfTrnsIds(g))
+  const baseSeries = types.map(type => createSeriesItem(type, intervalsTotal))
+
+  return statDate.params.value.intervalSelected >= 0
+    ? addMarkArea(baseSeries)
+    : baseSeries
 })
 
 const biggestCatNumber = computed(() => {
-  const income = cats.value.filter(c => c.value > 0).at(0)?.value ?? 0
-  const expense = cats.value.filter(c => c.value < 0).at(0)?.value ?? 0
+  const income = categoriesWithData.value.filter(c => c.value > 0).at(0)?.value ?? 0
+  const expense = categoriesWithData.value.filter(c => c.value < 0).at(0)?.value ?? 0
 
   return {
     expense,
@@ -296,6 +317,15 @@ async function onClickCategory(categoryId: CategoryId) {
 
 <template>
   <div class="@container/stat">
+    <pre class="text-2xs">categoriesWithTrnsIdsFromTrnsIds {{ categoriesWithTrnsIdsFromTrnsIds }}</pre>
+    <pre class="text-2xs">groupedTrnsIds {{ groupedTrnsIds }}</pre>
+
+    <pre class="text-2xs">statDate.intervalsInRange {{ statDate.intervalsInRange }}</pre>
+
+    <pre class="text-2xs">intervalsData {{ intervalsData }}</pre>
+
+    <pre>groupedTrnsIds {{ groupedTrnsIds }}</pre>
+
     <!-- Chart -->
     <StatChartWrap
       :isShowDateSelector
@@ -307,12 +337,12 @@ async function onClickCategory(categoryId: CategoryId) {
 
     <!-- Stat sum -->
     <StatSumWrap
-      :isShowExpense="typesInTrnsIds.expense"
-      :isShowIncome="typesInTrnsIds.income"
+      :totals="totals"
+      :isShowExpense="statTypeShow.expense"
+      :isShowIncome="statTypeShow.income"
       :selectedType
-      :totals
       :type="props.type"
-      @onClickSum="onSelectType"
+      @click="onClickSumItem"
     />
 
     <!-- Content -->
@@ -327,24 +357,24 @@ async function onClickCategory(categoryId: CategoryId) {
         <template #header="{ toggle, isShown }">
           <div class="flex items-center justify-between md:max-w-lg">
             <UiTitle8 :isShown @click="toggle">
-              {{ t('categories.title') }} {{ (!isShown && cats.length > 0) ? cats.length : '' }}
+              {{ t('categories.title') }} {{ (!isShown && categoriesWithData.length > 0) ? categoriesWithData.length : '' }}
             </UiTitle8>
 
             <StatCategoriesButtons
               v-if="isShown"
-              :catsLength="cats.length"
+              :catsLength="categoriesWithData.length"
               isShowGrouping
             />
           </div>
         </template>
 
-        <template v-if="cats.length > 0">
+        <template v-if="categoriesWithData.length > 0">
           <div
-            v-if="statConfig.config.value.isShowCategoriesVertical && cats.length > 1"
+            v-if="statConfig.config.value.isShowCategoriesVertical && categoriesWithData.length > 1"
             class="flex overflow-y-auto pb-2 pl-1 pt-4"
           >
             <StatCategoriesVertical
-              v-for="item in cats"
+              v-for="item in categoriesWithData"
               :key="item.id"
               :biggestCatNumber
               :item
@@ -363,7 +393,7 @@ async function onClickCategory(categoryId: CategoryId) {
             class="pt-2"
           >
             <UiToggle
-              v-for="item in cats"
+              v-for="item in categoriesWithData"
               :key="item.id"
               :class="{
                 group: !statConfig.config.value.catsList.isItemsBg,
@@ -398,7 +428,7 @@ async function onClickCategory(categoryId: CategoryId) {
               <div class="border-item-5 ml-5 border-l pl-3">
                 <div v-if="!statConfig.config.value.catsList.isOpened">
                   <StatLinesItemLine
-                    v-for="itemInside in getCats(item.trnsIds)"
+                    v-for="itemInside in getCategoriesWithDataFinal(item.trnsIds)"
                     :key="itemInside.id"
                     :biggestCatNumber
                     :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
@@ -416,7 +446,7 @@ async function onClickCategory(categoryId: CategoryId) {
                   class="flex flex-wrap gap-1 pb-3 pl-2 pt-2"
                 >
                   <StatLinesItemRound
-                    v-for="itemInside in getCats(item.trnsIds)"
+                    v-for="itemInside in getCategoriesWithDataFinal(item.trnsIds)"
                     :key="itemInside.id"
                     :item="itemInside"
                     @click="onClickCategory"
@@ -432,7 +462,7 @@ async function onClickCategory(categoryId: CategoryId) {
             class="@3xl/stat:gap-2 flex flex-wrap gap-1 gap-y-2 pl-1 pt-2 md:max-w-lg"
           >
             <StatLinesItemRound
-              v-for="item in cats"
+              v-for="item in categoriesWithData"
               :key="item.id"
               :item
               :biggestCatNumber
@@ -445,7 +475,7 @@ async function onClickCategory(categoryId: CategoryId) {
 
       <!-- Trns -->
       <UiToggle
-        v-if="selectedTrnsIdsForTrnsList.length > 0"
+        v-if="selectedTrnsIds.length > 0"
         :storageKey="`${newBaseStorageKey}-${props.type}trns-all`"
         :initStatus="true"
         class="min-w-80 md:max-w-lg"
@@ -453,15 +483,15 @@ async function onClickCategory(categoryId: CategoryId) {
         <template #header="{ toggle, isShown }">
           <div class="flex items-center justify-between">
             <UiTitle8 :isShown @click="toggle">
-              {{ t('trns.title') }} {{ (!isShown && selectedTrnsIdsForTrnsList.length > 0) ? selectedTrnsIdsForTrnsList.length : '' }}
+              {{ t('trns.title') }} {{ (!isShown && selectedTrnsIds.length > 0) ? selectedTrnsIds.length : '' }}
             </UiTitle8>
           </div>
         </template>
 
         <TrnsList
-          :isHideDates="isDayToday"
-          :isShowGroupSum="!isDayToday"
-          :trnsIds="selectedTrnsIdsForTrnsList"
+          :isHideDates="isPeriodOneDay"
+          :isShowGroupSum="!isPeriodOneDay"
+          :trnsIds="selectedTrnsIds"
           class="py-1"
           isShowExpense
           isShowFilterByDesc
@@ -471,7 +501,7 @@ async function onClickCategory(categoryId: CategoryId) {
         />
       </UiToggle>
 
-      <TrnsNoTrns v-if="selectedTrnsIdsForTrnsList.length === 0" />
+      <TrnsNoTrns v-if="selectedTrnsIds.length === 0" />
     </div>
 
     <!-- Modals -->
@@ -484,7 +514,7 @@ async function onClickCategory(categoryId: CategoryId) {
 
       <!-- Trns -->
       <BaseBottomSheet2
-        v-if="selectedTrnsIdsForTrnsList && selectedTrnsIdsForTrnsList?.length > 0 && isShowTrns"
+        v-if="selectedTrnsIds && selectedTrnsIds?.length > 0 && isShowTrns"
         isShow
         drugClassesCustom="bg-foreground-1 lg:w-[calc(100%-120px)] max-w-md"
         @closed="isShowTrns = false"
@@ -498,7 +528,7 @@ async function onClickCategory(categoryId: CategoryId) {
 
         <div class="scrollerBlock grid h-[98dvh] content-start overflow-hidden overflow-y-auto">
           <TrnsList
-            :trnsIds="selectedTrnsIdsForTrnsList"
+            :trnsIds="selectedTrnsIds"
             class="p-2"
             isShowFilterByDesc
             isShowFilterByType

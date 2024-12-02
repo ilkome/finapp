@@ -7,12 +7,14 @@ export type MoneyTypeSlugNew = 'income' | 'expense' | 'sum'
 export type MoneyTypeNumber = 0 | 1 | 3
 
 export type TotalCategories = {
-  expense: TotalCategory[]
-  income: TotalCategory[]
+  expense: CategoryWithData[]
+  income: CategoryWithData[]
 }
 
-export type TotalCategory = {
+export type CategoryWithData = {
   id: CategoryId
   trnsIds: TrnId[]
   value: number
 }
+
+export type CategoriesWithTrns = Record<CategoryId, TrnId[]>

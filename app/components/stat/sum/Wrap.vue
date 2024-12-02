@@ -12,7 +12,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  onClickSum: [type: MoneyTypeSlugNew]
+  click: [type: MoneyTypeSlugNew]
 }>()
 
 const classes = computed(() => {
@@ -27,7 +27,7 @@ const classes = computed(() => {
 
 function onClick(type: MoneyTypeSlugNew) {
   if (props.isShowIncome && props.isShowExpense) {
-    emit('onClickSum', type)
+    emit('click', type)
   }
 }
 </script>

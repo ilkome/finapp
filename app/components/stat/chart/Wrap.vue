@@ -24,7 +24,7 @@ function onClickChart(idx: number) {
   const newPeriod = idx
 
   // Handle when click outside of chart
-  if (newPeriod === statDate.groupedPeriods.value.length) {
+  if (newPeriod === statDate.intervalsInRange.value.length) {
     statDate.params.value.intervalSelected = -1
     return
   }
@@ -37,7 +37,7 @@ function onClickChart(idx: number) {
     statDate.params.value.intervalSelected = newPeriod
 
     if (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalsDuration === 1) {
-      const day = statDate.groupedPeriods.value[statDate.params.value.intervalSelected]?.start
+      const day = statDate.intervalsInRange.value[statDate.params.value.intervalSelected]?.start
       if (day) {
         trnsFormStore.values.date = day
       }
@@ -53,7 +53,7 @@ const isShowNavHome = computed(() => {
 })
 
 const isShowNavPrev = computed(() => {
-  return statConfig.config.value?.chartShow && (statDate.params.value.rangeDuration !== 1 || statDate.params.value.rangeBy !== 'day') && statDate.groupedPeriods.value.length > 1
+  return statConfig.config.value?.chartShow && (statDate.params.value.rangeDuration !== 1 || statDate.params.value.rangeBy !== 'day') && statDate.intervalsInRange.value.length > 1
 })
 
 const isShowNavNext = computed(() => {
@@ -91,6 +91,14 @@ const isShowNavNext = computed(() => {
         :series="props.series"
         @click="onClickChart"
       />
+
+      <!-- <StatChartView2
+        :xAxisLabels
+        :chartType="statConfig.config.value?.chartType"
+        :period="statDate.params.value.intervalsBy"
+        :series="props.series"
+        @click="onClickChart"
+      /> -->
     </div>
 
     <div class="flex items-end justify-between gap-2">

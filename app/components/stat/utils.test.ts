@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { sortCategoriesByAmount } from '~/components/stat/utils'
-import type { TotalCategory } from '~/components/stat/types'
+import type { CategoryWithData } from '~/components/stat/types'
 
 describe('sortCategoriesByAmount', () => {
   it('sort multiple values in correct order', () => {
-    const categories: TotalCategory[] = [
+    const categories: CategoryWithData[] = [
       { id: 'a', trnsIds: [], value: 100 },
       { id: 'b', trnsIds: [], value: 300 },
       { id: 'c', trnsIds: [], value: 200 },

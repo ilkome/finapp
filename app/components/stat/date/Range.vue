@@ -9,8 +9,8 @@ const { getStringDateRange } = useGetDateRange(t, locale.value)
 
 const range = computed<Range>(() => {
   return statDate.params.value.intervalSelected !== -1
-    ? statDate.groupedPeriods.value[statDate.params.value.intervalSelected]
-      ? statDate.groupedPeriods.value[statDate.params.value.intervalSelected]!
+    ? statDate.intervalsInRange.value[statDate.params.value.intervalSelected]
+      ? statDate.intervalsInRange.value[statDate.params.value.intervalSelected]!
       : statDate.range.value
     : statDate.range.value
 })

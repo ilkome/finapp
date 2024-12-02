@@ -1,4 +1,5 @@
-import { format, isSameDay, isSameMonth, isSameWeek, isSameYear, sub } from 'date-fns'
+import { isSameDay, isSameMonth, isSameWeek, isSameYear, sub } from 'date-fns'
+import type { LocaleSlug } from '~/components/app/locale/types'
 import type { Range, StatDateParams } from '~/components/date/types'
 import { formatByLocale } from '~/components/date/utils'
 
@@ -10,7 +11,7 @@ type DateFormatParams = {
   type: 'start' | 'end'
 }
 
-export function useGetDateRange(t: (key: string, choice?: number) => string, locale?: 'en' | 'ru') {
+export function useGetDateRange(t: (key: string, choice?: number) => string, locale?: LocaleSlug) {
   const today = new Date()
 
   // Helper functions for period handling

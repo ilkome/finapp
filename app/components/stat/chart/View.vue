@@ -10,7 +10,7 @@ import type { Period } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import { config, lineConfig } from '~/components/stat/chart/config'
 import { formatByLocale, getFormatForChart } from '~/components/date/utils'
-import { getCompactAmount, getLocalAmount, setChartXAxis } from '~/components/stat/chart/utils'
+import { getLocalAmount, setChartXAxis } from '~/components/stat/chart/utils'
 
 const props = withDefaults(
   defineProps<{

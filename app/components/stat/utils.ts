@@ -1,6 +1,6 @@
-import type { TotalCategory } from '~/components/stat/types'
+import type { CategoryWithData } from '~/components/stat/types'
 
-export function sortCategoriesByAmount(a: TotalCategory, b: TotalCategory) {
+export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData) {
   if (!a || !b)
     return 0
 
