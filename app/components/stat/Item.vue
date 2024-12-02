@@ -283,49 +283,47 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
   if (!trnsIds?.length)
     return []
 
+  // Helper functions to improve readability
+  const createCategoryEntry = (id: string, name: string, trnId: TrnId) => ({
+    id,
+    name,
+    trnsIds: [trnId],
+    value: 0,
+  })
+
   return trnsIds.reduce((acc, trnId) => {
+    // Early returns for invalid cases
     const categoryId = trnsStore.items?.[trnId]?.categoryId
-    if (!categoryId || categoriesStore.transferCategoriesIds.includes(categoryId))
+    const currentCategory = categoryId && categoriesStore.items[categoryId]
+    if (!categoryId || !currentCategory || categoriesStore.transferCategoriesIds.includes(categoryId))
       return acc
 
-    const currentCategory = categoriesStore.items[categoryId]
-    if (!currentCategory)
-      return acc
-
+    // Get parent category info
     const parentCategoryId = getParentCategoryId(categoryId)
     const parentCategory = parentCategoryId ? categoriesStore.items[parentCategoryId] : null
+    const shouldGroup = isGrouped && parentCategory && parentCategoryId
 
-    // Handle categories with parent
-    if (parentCategory && parentCategoryId && isGrouped) {
+    if (shouldGroup) {
       const existingParent = acc.find(c => c.id === parentCategoryId)
+      const newChildCategory = createCategoryEntry(categoryId, currentCategory.name, trnId)
 
       if (existingParent) {
         // Update existing parent
         existingParent.trnsIds.push(trnId)
+        const existingChild = existingParent.categories?.find(c => c.id === categoryId)
 
-        const existingCategory = existingParent.categories?.find(c => c.id === categoryId)
-        if (existingCategory) {
-          existingCategory.trnsIds.push(trnId)
+        if (existingChild) {
+          existingChild.trnsIds.push(trnId)
         }
         else {
           existingParent.categories ??= []
-          existingParent.categories.push({
-            id: categoryId,
-            name: currentCategory.name,
-            trnsIds: [trnId],
-            value: 0,
-          })
+          existingParent.categories.push(newChildCategory)
         }
       }
       else {
-        // Create new parent category entry
+        // Create new parent with child
         acc.push({
-          categories: [{
-            id: categoryId,
-            name: currentCategory.name,
-            trnsIds: [trnId],
-            value: 0,
-          }],
+          categories: [newChildCategory],
           id: parentCategoryId,
           name: parentCategory.name,
           trnsIds: [trnId],
@@ -333,20 +331,14 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
         })
       }
     }
-    // Handle categories without parent
     else {
+      // Handle categories without parent or when grouping is disabled
       const existingCategory = acc.find(c => c.id === categoryId)
-
       if (existingCategory) {
         existingCategory.trnsIds.push(trnId)
       }
       else {
-        acc.push({
-          id: categoryId,
-          name: currentCategory.name,
-          trnsIds: [trnId],
-          value: 0,
-        })
+        acc.push(createCategoryEntry(categoryId, currentCategory.name, trnId))
       }
     }
 
@@ -359,7 +351,7 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
   <div class="@container/stat">
     <div class="grid gap-4">
       <pre
-        v-for="item in getCategoriesWithData2(selectedTrnsIds, true)"
+        v-for="item in getCategoriesWithData2(selectedTrnsIds, false)"
         :key="item.id"
         class="text-2xs"
       >
