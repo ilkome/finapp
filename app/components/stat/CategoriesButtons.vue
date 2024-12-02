@@ -107,6 +107,17 @@ const viewPresets = computed(() => ({
     title: t('standard'),
   },
   // eslint-disable-next-line perfectionist/sort-objects
+  alt: {
+    props: {
+      catsList: {
+        isItemsBg: true,
+        isLines: false,
+        isRoundIcon: false,
+      },
+    },
+    title: t('alt'),
+  },
+
   minimal: {
     props: {
       catsList: {
@@ -374,6 +385,7 @@ en:
   listItemsOptions: List items options
   minimal: Minimal
   standard: Standard
+  alt: Alternative
 
 ru:
   isItemsBg: Фон категорий
@@ -386,4 +398,5 @@ ru:
   listItemsOptions: Настройки списка категорий
   minimal: Легкий
   standard: Стандартный
+  alt: Альтернативный
 </i18n>

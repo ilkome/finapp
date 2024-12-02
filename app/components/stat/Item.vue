@@ -357,10 +357,10 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
               :class="{
                 group: !statConfig.config.value.catsList.isItemsBg,
               }"
-              :storageKey="`finapp-stat-cats-${item.id}`"
+              :storageKey="`finapp-stat-cats-${item.id}-${props.type}`"
               :initStatus="false"
               :lineWidth="1"
-              openPadding="!pb-2"
+              openPadding="!pb-3"
             >
               <template #header="{ toggle, isShown }">
                 <div class="flex items-stretch justify-between">
@@ -388,13 +388,16 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
               </template>
 
               <!-- Inside -->
-              <div class="border-item-5 ml-5 border-l pl-3">
+              <div class="border-item-5 ml-5 mt-[-2px] -translate-x-px border-l pl-3">
                 <div v-if="!statConfig.config.value.catsList.isOpened">
                   <StatLinesItemLine
                     v-for="itemInside in item.categories"
                     :key="itemInside.id"
                     :biggestCatNumber
-                    :class="{ 'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened }"
+                    :class="{
+                      'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
+                      'mt-1': statConfig.config.value.catsView === 'list' && statConfig.config.value.catsList.isItemsBg,
+                    }"
                     :isHideDots="statConfig.config.value.catsList.isOpened"
                     :isHideParent="props.hasChildren"
                     :item="itemInside"
