@@ -283,37 +283,31 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
   if (!trnsIds?.length)
     return []
 
-  // Group transactions by category
-  const categoriesByTrns = trnsIds.reduce((groups, trnId) => {
+  const categoriesByTrns = trnsIds.reduce((acc, trnId) => {
     const categoryId = trnsStore.items?.[trnId]?.categoryId
     const category = categoryId && categoriesStore.items[categoryId]
 
     if (!categoryId || !category || categoriesStore.transferCategoriesIds.includes(categoryId))
-      return groups
+      return acc
 
-    if (!groups[categoryId]) {
-      groups[categoryId] = {
-        id: categoryId,
-        name: category.name,
-        trnsIds: [],
-      }
+    acc[categoryId] ??= {
+      id: categoryId,
+      name: category.name,
+      trnsIds: [],
     }
-
-    groups[categoryId].trnsIds.push(trnId)
-    return groups
+    acc[categoryId].trnsIds.push(trnId)
+    return acc
   }, {} as Record<string, { id: string, name: string, trnsIds: TrnId[] }>)
 
-  // If not grouping, return flat structure
+  // Flatten categories
   if (!isGrouped) {
     return Object.values(categoriesByTrns).map(cat => ({
-      id: cat.id,
-      name: cat.name,
-      trnsIds: cat.trnsIds,
-      value: 0, // Value will be calculated later
-    }))
+      ...cat,
+      value: getTotalOfTrnsIds(cat.trnsIds).sum,
+    })).sort(sortCategoriesByAmount)
   }
 
-  // Group by parent categories
+  // Group categories
   const groupedCategories = Object.values(categoriesByTrns).reduce((acc, cat) => {
     const parentId = getParentCategoryId(cat.id)
     const parentCategory = parentId && categoriesStore.items[parentId]
@@ -321,44 +315,28 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
     if (!parentId || !parentCategory)
       return acc
 
-    if (!acc[parentId]) {
-      acc[parentId] = {
-        categories: [],
-        id: parentId,
-        name: parentCategory.name,
-        trnsIds: [],
-        value: 0,
-      }
-    }
-
-    acc[parentId].categories ??= []
-    acc[parentId].categories.push({
-      id: cat.id,
-      name: cat.name,
-      trnsIds: cat.trnsIds,
+    acc[parentId] ??= {
+      categories: [],
+      id: parentId,
+      name: parentCategory.name,
+      trnsIds: [],
       value: 0,
-    })
+    }
+    acc[parentId].categories ??= []
+    acc[parentId].categories.push({ ...cat, value: getTotalOfTrnsIds(cat.trnsIds).sum })
     acc[parentId].trnsIds.push(...cat.trnsIds)
+    acc[parentId].value += getTotalOfTrnsIds(cat.trnsIds).sum
+    acc[parentId].categories.sort(sortCategoriesByAmount)
 
     return acc
   }, {} as Record<string, CategoryWithData>)
 
-  return Object.values(groupedCategories)
+  return Object.values(groupedCategories).sort(sortCategoriesByAmount)
 }
 </script>
 
 <template>
   <div class="@container/stat">
-    <div class="grid gap-4">
-      <pre
-        v-for="item in getCategoriesWithData2(selectedTrnsIds, true)"
-        :key="item.id"
-        class="text-2xs"
-      >
-        {{ item }}
-      </pre>
-    </div>
-
     <!-- Chart -->
     <StatChartWrap
       :isShowDateSelector
@@ -377,6 +355,28 @@ function getCategoriesWithData2(trnsIds: TrnId[], isGrouped?: boolean, preCatego
       :type="props.type"
       @click="onClickSumItem"
     />
+
+    <div class="flex gap-3">
+      <div class="grid gap-4">
+        <pre
+          v-for="item in getCategoriesWithData2(selectedTrnsIds, true)"
+          :key="item.id"
+          class="text-2xs"
+        >
+        {{ item }}
+      </pre>
+      </div>
+
+      <div class="grid gap-4">
+        <pre
+          v-for="item in getCategoriesWithData2(selectedTrnsIds, false)"
+          :key="item.id"
+          class="text-2xs"
+        >
+        {{ item }}
+      </pre>
+      </div>
+    </div>
 
     <!-- Content -->
     <div class="grid gap-6 pt-4">
