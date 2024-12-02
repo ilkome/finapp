@@ -15,7 +15,6 @@ const route = useRoute()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
-
 provide('filter', filter)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({

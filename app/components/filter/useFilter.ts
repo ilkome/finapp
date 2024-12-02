@@ -131,26 +131,14 @@ export function useFilter() {
    * Clear
    */
   function clearFilter() {
-    // categoriesIds.value = []
-    // walletsIds.value = []
     router.push({ query: undefined })
   }
 
   const isShow = computed(() => categoriesIds.value.length > 0 || walletsIds.value.length > 0)
 
-  function getTrnsIdsWithFilter() {
-    return trnsStore.getStoreTrnsIds({
-      categoriesIds: categoriesIds.value,
-      walletsIds: walletsIds.value,
-    }, {
-      includesChildCategories: true,
-    })
-  }
-
   return {
     categoriesIds,
     clearFilter,
-    getTrnsIdsWithFilter,
     isShow,
     removeCategoryId,
     removeWalletId,

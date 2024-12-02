@@ -41,12 +41,15 @@ export const useTrnsStore = defineStore('trns', () => {
   const items = shallowRef<Trns | null>(null)
 
   function getStoreTrnsIds(props: TrnsGetterProps2, params?: TrnsGetterParams) {
-    if (params?.includesChildCategories) {
-      const categoriesIds = categoriesStore.getTransactibleIds(props.categoriesIds)
-      return getTrnsIds({ ...props, categoriesIds, trnsItems: items.value! })
-    }
+    const categoriesIds = params?.includesChildCategories
+      ? categoriesStore.getTransactibleIds(props.categoriesIds)
+      : props.categoriesIds
 
-    return getTrnsIds({ ...props, trnsItems: items.value! })
+    return getTrnsIds({
+      ...props,
+      categoriesIds,
+      trnsItems: items.value!,
+    })
   }
 
   function getRange(trnsIds: TrnId[]): Range {

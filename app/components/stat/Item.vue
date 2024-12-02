@@ -62,26 +62,6 @@ const statTypeShow = computed(() => ({
   income: props.trnsIds.some(id => trnsStore.items?.[id]?.type === 1),
 }))
 
-const trnsIdsBySelectedType = computed(() => {
-  const typeMapping = {
-    expense: [0, 2],
-    income: [1, 2],
-    sum: null,
-  }
-
-  const trnsTypes = typeMapping[selectedType.value]
-
-  if (!trnsTypes) {
-    return props.trnsIds
-  }
-
-  return getTrnsIds({
-    trnsIds: props.trnsIds,
-    trnsItems: trnsStore.items ?? {},
-    trnsTypes,
-  })
-})
-
 const isPeriodOneDay = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalSelected !== -1))
 
 function getCategoriesWithData(categories: CategoriesWithTrns) {
@@ -102,6 +82,76 @@ function getCategoriesWithData(categories: CategoriesWithTrns) {
     )
 }
 
+const rangeTrnsIds = computed(() => {
+  const params = {
+    dates: {
+      from: statDate.range.value.start,
+      until: statDate.range.value.end,
+    },
+    trnsIds: props.trnsIds,
+  }
+
+  return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
+})
+
+const trnsIdsBySelectedType = computed(() => {
+  const typeMapping = {
+    expense: [0, 2],
+    income: [1, 2],
+    sum: null,
+  }
+
+  const trnsTypes = typeMapping[selectedType.value]
+
+  if (!trnsTypes) {
+    return rangeTrnsIds.value
+  }
+
+  return trnsStore.getStoreTrnsIds({
+    trnsIds: rangeTrnsIds.value,
+    trnsTypes,
+  })
+})
+
+function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
+  function filterTrnsInRange(trnId: TrnId) {
+    const trnDate = trnsStore.items?.[trnId]?.date
+    return intervalsInRange.some(r => trnDate! >= r.start && trnDate! <= r.end)
+  }
+
+  return intervalsInRange.reduce((acc, range) => {
+    const trnsIdsInRange = trnsIds.filter(filterTrnsInRange)
+
+    acc[range.start] = {
+      range,
+      total: getTotalOfTrnsIds(trnsIdsInRange),
+      trnsIds: trnsIdsInRange,
+    }
+
+    return acc
+  }, {} as Record<string, {
+    range: Range
+    total: TotalReturns
+    trnsIds: TrnId[]
+  }>)
+}
+
+const intervalsData = computed(() => getIntervalsData(trnsIdsBySelectedType.value, statDate.intervalsInRange.value))
+
+const intervalsTrnsIds = computed(() => getTrnsIdsInRanges(trnsIdsBySelectedType.value, statDate.intervalsInRange.value))
+
+const selectedTrnsIds = computed(() => {
+  const params = statDate.params.value.intervalSelected >= 0
+    ? {
+        trnsIds: intervalsTrnsIds.value[statDate.params.value.intervalSelected],
+      }
+    : {
+        trnsIds: trnsIdsBySelectedType.value,
+      }
+
+  return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
+})
+
 function getTrnsIdsInRanges(trnsIds: TrnId[], ranges: Range[]) {
   const list = [...ranges.map(() => [])]
 
@@ -114,53 +164,15 @@ function getTrnsIdsInRanges(trnsIds: TrnId[], ranges: Range[]) {
   return list
 }
 
-const groupedTrnsIds = computed(() => getTrnsIdsInRanges(trnsIdsBySelectedType.value, statDate.intervalsInRange.value))
-
-const selectedTrnsIds = computed(() => {
-  const baseParams = {
-    categoriesIds: filter?.categoriesIds?.value,
-    walletsIds: filter?.walletsIds?.value,
-  }
-
-  const params = statDate.params.value.intervalSelected >= 0
-    ? {
-        ...baseParams,
-        trnsIds: groupedTrnsIds.value[statDate.params.value.intervalSelected],
-      }
-    : {
-        ...baseParams,
-        dates: {
-          from: statDate.range.value.start,
-          until: statDate.range.value.end,
-        },
-        trnsIds: trnsIdsBySelectedType.value,
-      }
-
-  return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
-})
-
-const rangeTrnsIds = computed(() => {
-  const params = {
-    categoriesIds: filter?.categoriesIds?.value,
-    dates: {
-      from: statDate.range.value.start,
-      until: statDate.range.value.end,
-    },
-    trnsIds: trnsIdsBySelectedType.value,
-    walletsIds: filter?.walletsIds?.value,
-  }
-
-  return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
-})
 const rangeTotal = computed(() => getTotalOfTrnsIds(rangeTrnsIds.value))
 
 const isCategoriesGrouped = computed(() => statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped)
 
-function getCategoriesWithTrnsIdsFromTrnsIds(trnsIds: TrnId[], isGrouped?: boolean) {
+function getCategoriesWithDataFinal(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]) {
   if (!trnsIds?.length)
-    return {}
+    return []
 
-  return trnsIds.reduce((acc, trnId) => {
+  const categoriesWithTrns = trnsIds.reduce((acc, trnId) => {
     // Get category ID from transaction
     const categoryId = trnsStore.items?.[trnId]?.categoryId
     if (!categoryId)
@@ -182,10 +194,7 @@ function getCategoriesWithTrnsIdsFromTrnsIds(trnsIds: TrnId[], isGrouped?: boole
     acc[finalCategoryId].push(trnId)
     return acc
   }, {} as CategoriesWithTrns)
-}
 
-function getCategoriesWithDataFinal(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]) {
-  const categoriesWithTrns = getCategoriesWithTrnsIdsFromTrnsIds(trnsIds, isGrouped)
   const categoriesWithData = getCategoriesWithData(categoriesWithTrns)
 
   // Add empty categories
@@ -215,31 +224,6 @@ const categoriesWithData = computed(() => {
 
 const xAxisLabels = computed(() => statDate.intervalsInRange.value.map(r => +r.start) ?? [])
 
-function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
-  function filterTrnsInRange(trnId: TrnId) {
-    const trnDate = trnsStore.items?.[trnId]?.date
-    return intervalsInRange.some(r => trnDate! >= r.start && trnDate! <= r.end)
-  }
-
-  return intervalsInRange.reduce((acc, range) => {
-    const trnsIdsInRange = trnsIds.filter(filterTrnsInRange)
-
-    acc[range.start] = {
-      range,
-      total: getTotalOfTrnsIds(trnsIdsInRange),
-      trnsIds: trnsIdsInRange,
-    }
-
-    return acc
-  }, {} as Record<string, {
-    range: Range
-    total: TotalReturns
-    trnsIds: TrnId[]
-  }>)
-}
-
-const intervalsData = computed(() => getIntervalsData(trnsIdsBySelectedType.value, statDate.intervalsInRange.value))
-
 function createSeriesItem(typeItem: 'expense' | 'income' | 'sum', data: TotalReturns[]) {
   return {
     color: seriesOptions[typeItem].color,
@@ -248,10 +232,6 @@ function createSeriesItem(typeItem: 'expense' | 'income' | 'sum', data: TotalRet
     name: t(`money.${typeItem}`),
     type: seriesOptions[typeItem].type,
   }
-}
-
-function getSeriesTypes(type: MoneyTypeSlugNew) {
-  return type === 'sum' ? ['expense', 'income'] as const : [type] as const
 }
 
 function addMarkArea(series: any[]) {
@@ -279,8 +259,8 @@ function addMarkArea(series: any[]) {
 }
 
 const series = computed(() => {
-  const types = getSeriesTypes(props.type)
-  const intervalsTotal = groupedTrnsIds.value.map(g => getTotalOfTrnsIds(g))
+  const types = props.type === 'sum' ? ['expense', 'income'] as const : [props.type]
+  const intervalsTotal = intervalsTrnsIds.value.map(g => getTotalOfTrnsIds(g))
   const baseSeries = types.map(type => createSeriesItem(type, intervalsTotal))
 
   return statDate.params.value.intervalSelected >= 0
@@ -325,6 +305,13 @@ async function onClickCategory(categoryId: CategoryId) {
 
 <template>
   <div class="@container/stat">
+    <div class="flex">
+      <!-- <pre class="text-2xs">{{ series }}</pre> -->
+      <!-- <pre class="text-2xs">{{ intervalsData }}</pre> -->
+      <!-- <pre class="text-2xs">{{ intervalsTrnsIds }}</pre> -->
+      <!-- <pre class="text-2xs">{{ intervalsData }}</pre> -->
+    </div>
+
     <!-- Chart -->
     <StatChartWrap
       :isShowDateSelector

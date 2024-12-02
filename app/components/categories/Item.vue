@@ -37,7 +37,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
         :color="category.color"
         :name="category.icon"
         invert
-        @click="emit('filter', categoryId)"
+        @click="emit('filter', categoryId ?? '')"
       />
     </template>
 

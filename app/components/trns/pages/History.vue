@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import { useFilter } from '~/components/filter/useFilter'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { t } = useI18n()
 const filter = useFilter()
+const trnsStore = useTrnsStore()
+provide('filter', filter)
 
 useHead({
   title: t('trns.history'),
 })
 
-const trnsIds = computed(() => filter.getTrnsIdsWithFilter())
-
-provide('filter', filter)
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  categoriesIds: filter.categoriesIds.value,
+  walletsIds: filter.walletsIds.value,
+}, {
+  includesChildCategories: true,
+}))
 </script>
 
 <template>

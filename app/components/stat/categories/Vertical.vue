@@ -111,7 +111,7 @@ onLongPress(
     <div
       :class="[category?.icon]"
       :style="{ backgroundColor: category.color }"
-      class="rounded-b text-center text-lg"
+      class="text-icon-primary rounded-b text-center text-lg"
     />
   </div>
 </template>
