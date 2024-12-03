@@ -6,7 +6,7 @@ const props = defineProps<{
   activeItemId?: string | 0 | false | null
   category: CategoryItem
   categoryId: CategoryId
-  isHideDots?: boolean
+  isShowDots?: boolean
   lineWidth?: number
   slider?: any
 }>()
@@ -38,7 +38,7 @@ const childCategoriesIds = computed(() =>
       />
     </template> -->
 
-    <div class="grid gap-0.5 text-3 justify-center">
+    <div class="text-3 grid justify-center gap-0.5">
       <UiIconBase
         :color="category.color"
         :name="category.icon"
@@ -49,7 +49,7 @@ const childCategoriesIds = computed(() =>
       <!-- Parent category name -->
       <div
         v-if="categoriesStore.items[categoryId].parentId"
-        class="text-2xs opacity-90 leading-none"
+        class="text-2xs leading-none opacity-90"
       >
         {{ categoriesStore.items[categoriesStore.items[categoryId].parentId].name }}
       </div>
@@ -60,7 +60,7 @@ const childCategoriesIds = computed(() =>
 
         <!-- Has childs -->
         <div
-          v-if="!props.isHideDots && childCategoriesIds.length > 0"
+          v-if="props.isShowDots && childCategoriesIds.length > 0"
           class="text-md font-secondary leading-none"
         >
           ...

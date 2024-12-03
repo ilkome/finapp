@@ -76,9 +76,8 @@ export default <Partial<Config>>{
         '2xs': '10px',
       },
       screens: {
-        '2sm': '400px',
+        '2sm': '320px',
         '3sm': '360px',
-        '4sm': '320px',
       },
     },
   },

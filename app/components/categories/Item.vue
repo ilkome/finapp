@@ -7,8 +7,8 @@ const props = defineProps<{
   alt?: boolean
   category: CategoryItem
   categoryId?: CategoryId
-  isHideDots?: boolean
-  isHideParent?: boolean
+  isShowDots?: boolean
+  isShowParent?: boolean
   lineWidth?: number
   slider?: any
 }>()
@@ -47,7 +47,8 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
         :category
         :parentCategory
         :hasChildren="childCategoriesIds.length > 0"
-        :isHideParent="props.isHideParent"
+        :showChildrenCount="childCategoriesIds.length"
+        :isShowParent="props.isShowParent"
       />
     </div>
   </UiElement>

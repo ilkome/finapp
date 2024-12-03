@@ -35,7 +35,7 @@ function onFilter(id: CategoryId) {
 </script>
 
 <template>
-  <div class="p-2 pt-1">
+  <div class="3sm:grid-cols-2 grid p-2 pt-1">
     <CategoriesItem
       v-for="categoryId in props.ids"
       :key="categoryId"
@@ -43,7 +43,8 @@ function onFilter(id: CategoryId) {
       :categoryId="categoryId"
       :category="categoriesStore.items[categoryId]"
       :lineWidth="1"
-      class="group"
+      isShowParent
+      alt
       @click="select(categoryId)"
       @filter.stop="onFilter(categoryId)"
     />

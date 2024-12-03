@@ -11,7 +11,7 @@ const props = defineProps<{
 <template>
   <UiElement
     v-if="props.trnItem"
-    insideClasses="py-3 !min-h-[44px]"
+    :insideClasses="`!min-h-[38px] ${props.alt ? 'py-2' : 'py-3'}`"
   >
     <template v-if="!alt" #leftIcon>
       <UiIconBase
@@ -56,7 +56,7 @@ const props = defineProps<{
             <CategoriesName
               :category="trnItem.category"
               :parentCategory="trnItem.categoryParent"
-              isHideDots
+              isShowDots
             />
           </div>
 
@@ -77,6 +77,7 @@ const props = defineProps<{
           :isShowMinus="trnItem.type === 0"
           :isShowPlus="trnItem.type === 1"
           :type="trnItem.type"
+          :variant="props.alt ? 'sm' : 'base'"
           align="right"
           class="grow"
           colorize="income"

@@ -31,9 +31,9 @@ const viewPresets: Record<'mini' | 'standard', Record<'catsList', DeepPartial<St
   mini: {
     catsList: {
       isGrouped: !statConfig.config.value.isCategoryPage,
-      isItemsBg: false,
-      isLines: false,
-      isRoundIcon: false,
+      // isItemsBg: false,
+      // isLines: false,
+      // isRoundIcon: false,
     },
     catsRound: {
       isGrouped: !statConfig.config.value.isCategoryPage,
@@ -42,10 +42,10 @@ const viewPresets: Record<'mini' | 'standard', Record<'catsList', DeepPartial<St
   standard: {
     catsList: {
       isGrouped: !statConfig.config.value.isCategoryPage,
-      isItemsBg: false,
-      isLines: true,
-      isOpened: false,
-      isRoundIcon: true,
+      // isItemsBg: false,
+      // isLines: true,
+      // isOpened: false,
+      // isRoundIcon: true,
     },
     catsRound: {
       isGrouped: !statConfig.config.value.isCategoryPage,
@@ -89,19 +89,6 @@ function setDaysMini(days: number) {
       rangeDuration: days,
     },
     viewPreset: viewPresets.mini,
-  })
-}
-
-function set7Days() {
-  setRangeWithOptions({
-    catsView: 'list',
-    intervalOptions: {
-      intervalsBy: 'day',
-      intervalsDuration: 1,
-      rangeBy: 'day',
-      rangeDuration: 7,
-    },
-    viewPreset: viewPresets.standard,
   })
 }
 
@@ -197,21 +184,7 @@ function selectInterval(grouped: Grouped) {
           </div>
 
           <div class="flex flex-wrap gap-1">
-            <DateLinkItem @click="set7Days">
-              {{ `7${t('dates.day.short')}` }}
-            </DateLinkItem>
-            <DateLinkItem @click="setDaysMini(7)">
-              {{ `7${t('dates.day.short')} ${t('mini')}` }}
-            </DateLinkItem>
-            <DateLinkItem @click="setDaysMini(14)">
-              {{ `14${t('dates.day.short')} ${t('mini')}` }}
-            </DateLinkItem>
-            <DateLinkItem @click="setDaysMini(30)">
-              {{ `30${t('dates.day.short')} ${t('mini')}` }}
-            </DateLinkItem>
-            <DateLinkItem @click="set12Months">
-              {{ `12${t('dates.month.short')}` }}
-            </DateLinkItem>
+            <DateRanges2 />
           </div>
 
           <div class="flex flex-wrap gap-1">
@@ -230,24 +203,6 @@ function selectInterval(grouped: Grouped) {
           </div>
         </div>
       </div>
-
-      <!-- Ranges -->
-      <UiToggle2
-        storageKey="finapp-date-modal-intervals"
-        :initStatus="true"
-        :lineWidth="1"
-        openPadding="!pb-6"
-      >
-        <template #header="{ toggle, isShown }">
-          <UiTitle81 :isShown @click="toggle">
-            {{ t('ranges') }}
-          </UiTitle81>
-        </template>
-
-        <div class="flex flex-wrap gap-1 px-2">
-          <DateRanges2 @close="close" />
-        </div>
-      </UiToggle2>
 
       <!-- Grouped by -->
       <UiToggle2
@@ -313,9 +268,8 @@ en:
   presets: Presets
   last: Last
   7Days: 7d
-  7DaysMini: 7d mini
-  14DaysMini: 14d mini
-  30DaysMini: 30d mini
+  14Days: 14d
+  30Days: 30d
   12Months: 12m
   mini: mini
 
@@ -328,9 +282,8 @@ ru:
   presets: Пресеты
   last: Последние
   7Days: 7д
-  7DaysMini: 7д мини
-  14DaysMini: 14д мини
-  30DaysMini: 30д мини
+  14Days: 14д
+  30Days: 30д
   12Months: 12м
   mini: мини
 </i18n>

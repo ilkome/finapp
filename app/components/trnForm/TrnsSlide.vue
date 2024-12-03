@@ -74,12 +74,13 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
     <TrnsList
       :defaultFilterTrnsPeriod="periodGrouped"
       :trnsIds="trnsIds"
-      isShowGroupSum
       isHideDates
-      isShowFilterByDesc
-      isShowTransfers
-      isShowIncome
+      isShowDates
       isShowExpense
+      isShowFilterByDesc
+      isShowGroupSum
+      isShowIncome
+      isShowTransfers
       @onClickEdit="onClickEdit"
     >
       <template #contentBefore>

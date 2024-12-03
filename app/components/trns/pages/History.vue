@@ -39,12 +39,13 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
         <TrnsList
           :trnsIds
-          isShowHeader
-          isShowGroupSum
-          isShowIncome
+          isShowDates
           isShowExpense
-          isShowFilterByType
           isShowFilterByDesc
+          isShowFilterByType
+          isShowGroupSum
+          isShowHeader
+          isShowIncome
           isShowTransfers
         />
       </div>

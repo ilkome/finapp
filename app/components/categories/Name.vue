@@ -6,8 +6,8 @@ const props = defineProps<{
   alt?: boolean
   category: CategoryItem
   hasChildren?: boolean
-  isHideDots?: boolean
-  isHideParent?: boolean
+  isShowDots?: boolean
+  isShowParent?: boolean
   parentCategory?: CategoryItem
   showChildrenCount?: number
 }>()
@@ -18,7 +18,7 @@ const props = defineProps<{
     :class="cn('flex gap-3 items-baseline pt-0', { 'flex-col !gap-0.5': props.alt })"
   >
     <!-- Parent category name -->
-    <template v-if="alt && !isHideParent && !props.hasChildren && props.category?.parentId">
+    <template v-if="alt && isShowParent && !props.hasChildren && props.category?.parentId">
       <div class="text-2xs text-4 leading-none">
         {{ props.parentCategory?.name }}
       </div>
@@ -29,7 +29,7 @@ const props = defineProps<{
       {{ props.category?.name }}
       <!-- Has childs -->
       <div
-        v-if="!props.isHideDots && props.hasChildren"
+        v-if="props.isShowDots && props.hasChildren"
         class="text-4 text-sm leading-none"
       >
         ...
@@ -44,7 +44,7 @@ const props = defineProps<{
     </div>
 
     <!-- Parent category name -->
-    <template v-if="!alt && !isHideParent && !props.hasChildren && props.category?.parentId">
+    <template v-if="!alt && isShowParent && !props.hasChildren && props.category?.parentId">
       <div class="text-2xs text-4 text-nowrap leading-none">
         •
       </div>

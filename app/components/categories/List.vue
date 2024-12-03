@@ -26,6 +26,7 @@ const categoriesStore = useCategoriesStore()
       :categoryId="categoryId"
       :slider="slider"
       :lineWidth="1"
+      isShowDots
       @click="emit('click', categoryId)"
       @onClickIcon="emit('onClickIcon', categoryId)"
     />

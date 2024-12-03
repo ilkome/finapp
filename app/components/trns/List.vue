@@ -12,7 +12,7 @@ const props = withDefaults(
     alt?: boolean
     initTrnType?: TrnType | MoneyTypeNumber | undefined
     isHideDates?: boolean
-    isHideNoTrns?: boolean
+    isShowDates?: boolean
     isShowExpense?: boolean
     isShowFilterByDesc?: boolean
     isShowFilterByType?: boolean
@@ -188,10 +188,10 @@ const groupedTrns = computed(() => {
     </div>
 
     <!-- No Trns -->
-    <TrnsNoTrns v-if="!props.isHideNoTrns && selectedIds.length === 0" />
+    <TrnsNoTrns v-if="props.isShowDates && selectedIds.length === 0" />
 
     <!-- Hide dates -->
-    <div v-if="isHideDates">
+    <div v-if="!isShowDates">
       <!-- Group Sum -->
       <div
         v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
@@ -231,7 +231,7 @@ const groupedTrns = computed(() => {
 
     <!-- With dates -->
     <div
-      v-if="!isHideDates"
+      v-if="isShowDates"
       class="grid gap-3"
     >
       <div
@@ -290,9 +290,12 @@ const groupedTrns = computed(() => {
     </div>
 
     <!-- Show all -->
-    <div v-if="!isShowedAllTrns">
+    <div
+      v-if="!isShowedAllTrns"
+      class="flex-center"
+    >
       <div
-        class="flex-center bg-item-5 text-secondary hocus:bg-item-6 grow rounded-full px-5 py-2.5 text-sm"
+        class="flex-center bg-item-5 text-secondary hocus:bg-item-6 rounded-full px-5 py-2 text-sm"
         @click="pageNumber = ++pageNumber"
       >
         {{ t("trns.more") }} {{ paginatedTrnsIds.length }} /

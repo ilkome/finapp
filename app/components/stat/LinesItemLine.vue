@@ -16,8 +16,8 @@ const props = defineProps<{
   insideClass?: string
   insideStyle?: string
   isActive?: boolean
-  isHideDots?: boolean
-  isHideParent?: boolean
+  isShowDots?: boolean
+  isShowParent?: boolean
   item: CategoryWithData
   lineWidth?: number
 }>()
@@ -138,10 +138,9 @@ onLongPress(
         :category
         :class="{ '!pb-2': statConfig.config.value.catsList.isLines }"
         :hasChildren="categoriesStore.getChildsIds(props.item.id).length > 0"
-        :isHideParent="props.isHideParent"
+        :isShowParent="props.isShowParent"
         :parentCategory
         :showChildrenCount="props.item.categories?.length"
-        isHideDots
       />
 
       <div

@@ -345,7 +345,7 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
           <div
             v-if="statConfig.config.value.catsView === 'list'"
             :class="{
-              'grid gap-2 px-0': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
+              'grid gap-1 px-0': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
               'md:max-w-lg': !statConfig.config.value.catsList.isGrouped || !statConfig.config.value.catsList.isOpened,
               'grid gap-1': statConfig.config.value.catsList.isItemsBg,
             }"
@@ -357,28 +357,24 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
               :class="{
                 group: !statConfig.config.value.catsList.isItemsBg,
               }"
-              :storageKey="`finapp-stat-cats-${item.id}-${props.type}`"
+              :storageKey="`finapp-stat-cats-${item.id}-${statConfig.config.value.catsView}-${props.type}`"
               :initStatus="false"
               :lineWidth="1"
-              openPadding="!pb-3"
+              :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
             >
               <template #header="{ toggle, isShown }">
                 <div class="flex items-stretch justify-between">
                   <UiToggleAction
-                    v-if="statConfig.config.value.catsList.isGrouped && item.categories && item.categories.length > 0"
                     :isShown="isShown"
-                    class="-mr-2.5"
+                    :class="{
+                      '-mr-2.5': !statConfig.config.value.catsList.isItemsBg,
+                    }"
                     @click="toggle"
-                  />
-                  <div
-                    v-else-if="statConfig.config.value.catsList.isGrouped"
-                    class="w-8"
                   />
 
                   <StatLinesItemLine
                     :biggestCatNumber
-                    :isHideDots="statConfig.config.value.catsList.isOpened"
-                    :isHideParent="props.hasChildren"
+                    :isShowParent="!statConfig.config.value.catsList.isGrouped"
                     :item
                     :lineWidth="statConfig.config.value.catsList.isLines ? 0 : 1"
                     class="grow"
@@ -387,29 +383,25 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
                 </div>
               </template>
 
-              <!-- Inside -->
-              <div class="border-item-5 ml-5 mt-[-2px] -translate-x-px border-l pl-3">
-                <div v-if="!statConfig.config.value.catsList.isOpened">
-                  <StatLinesItemLine
-                    v-for="itemInside in item.categories"
-                    :key="itemInside.id"
-                    :biggestCatNumber
-                    :class="{
-                      'bg-item-9 overflow-hidden rounded-lg': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
-                      'mt-1': statConfig.config.value.catsView === 'list' && statConfig.config.value.catsList.isItemsBg,
-                    }"
-                    :isHideDots="statConfig.config.value.catsList.isOpened"
-                    :isHideParent="props.hasChildren"
-                    :item="itemInside"
-                    :lineWidth="((statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened) || statConfig.config.value.catsList.isLines) ? 0 : 1"
-                    class="group"
-                    @click="onClickCategory"
-                  />
-                </div>
+              <div
+                v-if="!statConfig.config.value.catsList.isGrouped"
+                class="border-item-5 ml-5 border-l pl-5"
+              >
+                <TrnsList
+                  :trnsIds="item.trnsIds"
+                  :size="5"
+                  alt
+                  isShowExpense
+                  isShowIncome
+                  isShowTransfers
+                />
+              </div>
 
+              <!-- Inside -->
+              <div class="border-item-5 ml-5 mt-1 -translate-x-px border-l pl-3">
                 <div
                   v-if="statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened"
-                  class="flex flex-wrap gap-1 pb-3 pl-2 pt-2"
+                  class="flex flex-wrap gap-1 pl-3"
                 >
                   <StatLinesItemRound
                     v-for="itemInside in item.categories"
@@ -417,6 +409,57 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
                     :item="itemInside"
                     @click="onClickCategory"
                   />
+                </div>
+
+                <div
+                  v-if="!statConfig.config.value.catsList.isOpened"
+                  class="grid gap-1"
+                >
+                  <UiToggle
+                    v-for="itemInside in item.categories"
+                    :key="itemInside.id"
+                    :class="{
+                      group: !statConfig.config.value.catsList.isItemsBg,
+                    }"
+                    :storageKey="`finapp-stat-cats-${itemInside.id}-${props.type}`"
+                    :initStatus="false"
+                    :lineWidth="1"
+                    :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
+                  >
+                    <template #header="{ toggle: toggleInside, isShown: isShownInside }">
+                      <div class="flex items-stretch justify-between">
+                        <UiToggleAction
+                          v-if="statConfig.config.value.catsList.isGrouped"
+                          :isShown="isShownInside"
+                          :class="{
+                            '-mr-2.5': !statConfig.config.value.catsList.isItemsBg,
+                          }"
+                          @click="toggleInside"
+                        />
+
+                        <StatLinesItemLine
+                          :biggestCatNumber
+                          :isShowParent="!statConfig.config.value.catsList.isGrouped"
+                          :item="itemInside"
+                          :lineWidth="statConfig.config.value.catsList.isLines ? 0 : 1"
+                          class="grow"
+                          @click="onClickCategory"
+                        />
+                      </div>
+                    </template>
+
+                    <!-- Inside -->
+                    <div class="border-item-5 ml-5 mt-[-2px] -translate-x-px border-l pl-5">
+                      <TrnsList
+                        :trnsIds="itemInside.trnsIds"
+                        :size="5"
+                        alt
+                        isShowExpense
+                        isShowIncome
+                        isShowTransfers
+                      />
+                    </div>
+                  </UiToggle>
                 </div>
               </div>
             </UiToggle>
@@ -455,7 +498,7 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
         </template>
 
         <TrnsList
-          :isHideDates="isPeriodOneDay"
+          :isShowDates="!isPeriodOneDay"
           :isShowGroupSum="!isPeriodOneDay"
           :trnsIds="selectedTrnsIds"
           class="py-1"
@@ -496,12 +539,13 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
           <TrnsList
             :trnsIds="selectedTrnsIds"
             class="p-2"
+            isShowDates
+            isShowExpense
             isShowFilterByDesc
             isShowFilterByType
             isShowGroupSum
             isShowHeader
             isShowIncome
-            isShowExpense
           />
         </div>
       </BaseBottomSheet2>
