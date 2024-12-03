@@ -46,22 +46,16 @@ const creditAmount = computed(() => {
   }
 })
 
-function changeCreditView() {
-  activeCreditView.value = creditViews[creditViews.findIndex(i => i === activeCreditView.value) + 1]
-}
-
 const longPressRef = ref(null)
-
 if (!props.isSort) {
   onLongPress(
     longPressRef,
-    changeCreditView,
+    () => {
+      activeCreditView.value = creditViews[creditViews.findIndex(i => i === activeCreditView.value) + 1]
+    },
     {
-      delay: 300,
-      distanceThreshold: 24,
-      modifiers: { prevent: true },
       onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
-        if (!isLongPress) {
+        if (!isLongPress && distance < 100) {
           emit('click', props.walletId)
         }
       },
