@@ -26,6 +26,10 @@ export function useStatDate({
     mergeDefaults: true,
   })
 
+  const modals = ref({
+    dateSelector: false,
+  })
+
   if (queryParams) {
     if (queryParams.intervalsBy)
       params.value.intervalsBy = queryParams.intervalsBy
@@ -152,6 +156,7 @@ export function useStatDate({
     getIntervalsInRange,
     intervalsInRange,
     minusRange,
+    modals,
     params,
     plusRange,
     range,

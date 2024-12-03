@@ -3,7 +3,7 @@
 
 <template>
   <div class="statHeaderWrapper">
-    <div class="flex gap-2">
+    <div class="flex items-start gap-2">
       <slot name="title" />
 
       <div class="ml-auto flex items-center gap-2">

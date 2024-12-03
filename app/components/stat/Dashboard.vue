@@ -79,14 +79,20 @@ const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
   <UiPage>
     <StatHeader>
       <template #title>
-        <FilterSelector
-          isShowCategories
-          isShowWallets
-        />
-        <StatMenu
-          :active="activeTab"
-          @click="id => activeTab = id"
-        />
+        <div class="grid grow gap-2">
+          <div class="flex grow gap-2">
+            <FilterSelector
+              isShowCategories
+              isShowWallets
+            />
+            <StatMenu
+              :active="activeTab"
+              @click="id => activeTab = id"
+            />
+          </div>
+
+          <StatDateNavigation :maxRange="maxRange" />
+        </div>
       </template>
 
       <template #actions>

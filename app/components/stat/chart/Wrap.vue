@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { sub } from 'date-fns'
 import type { ChartType } from '~/components/stat/chart/types'
-import type { Range, StatDateProvider } from '~/components/date/types'
+import type { StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import { getEndOf, getStartOf } from '~/components/date/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
-  maxRange: Range
   series: unknown[]
   xAxisLabels: number[]
 }>()
@@ -15,10 +12,6 @@ const props = defineProps<{
 const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
 const trnsFormStore = useTrnsFormStore()
-
-const isShowDateSelector = defineModel('isShowDateSelector', {
-  default: false,
-})
 
 function onClickChart(idx: number) {
   const newPeriod = idx
@@ -45,19 +38,8 @@ function onClickChart(idx: number) {
   }
 }
 
-const isShowNavHome = computed(() => {
-  const start = getStartOf(sub(new Date(), { [`${statDate.params.value.rangeBy}s`]: statDate.params.value.rangeDuration - 1 }), statDate.params.value.rangeBy).getTime()
-  const end = getEndOf(new Date(), statDate.params.value.rangeBy).getTime()
-
-  return !statDate.params.value.isShowMaxRange && (statDate.params.value.intervalSelected !== -1 || (statDate.range.value.start !== start && statDate.range.value.end !== end))
-})
-
-const isShowNavPrev = computed(() => {
+const isShowChart = computed(() => {
   return statConfig.config.value?.chartShow && (statDate.params.value.rangeDuration !== 1 || statDate.params.value.rangeBy !== 'day') && statDate.intervalsInRange.value.length > 1
-})
-
-const isShowNavNext = computed(() => {
-  return !statDate.params.value.isShowMaxRange && (statDate.range.value.start < new Date().getTime() || (statDate.range.value.start !== props.maxRange.start && statDate.range.value.end !== props.maxRange.end))
 })
 </script>
 
@@ -70,7 +52,7 @@ const isShowNavNext = computed(() => {
     class="pt-1 md:pt-2"
   >
     <div
-      v-if="isShowNavPrev"
+      v-if="isShowChart"
       class="pb-2"
     >
       <div class="flex justify-between">
@@ -91,24 +73,6 @@ const isShowNavNext = computed(() => {
         :series="props.series"
         @click="onClickChart"
       />
-    </div>
-
-    <div class="flex items-end justify-between gap-2">
-      <UiBox1 @click="isShowDateSelector = !isShowDateSelector">
-        <StatDateRange />
-      </UiBox1>
-
-      <div
-        v-if="!statDate.params.value.customDate"
-        class="flex gap-1"
-      >
-        <DateNavHome v-if="isShowNavHome" />
-
-        <DateNav
-          v-if="isShowNavNext"
-          :maxRange
-        />
-      </div>
     </div>
   </div>
 </template>

@@ -43,10 +43,9 @@ function movePeriod(way: 'next' | 'prev' | 'today') {
   <div class="flex gap-1">
     <div
       :class="[
-        getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
+        getStyles('item', ['alt', 'link', 'rounded', 'minh2', 'center2', 'minw1']),
         { '!hocus:transparent opacity-30': isStart },
       ]"
-      class="flex-center bg-item-4"
       @click="movePeriod('prev')"
     >
       <UiIconChevron class="size-8" />
@@ -54,10 +53,9 @@ function movePeriod(way: 'next' | 'prev' | 'today') {
 
     <div
       :class="[
-        getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
+        getStyles('item', ['alt', 'link', 'rounded', 'minh2', 'center2', 'minw1']),
         { '!hocus:transparent opacity-30': isEnd },
       ]"
-      class="flex-center bg-item-4"
       @click="movePeriod('next')"
     >
       <UiIconChevron class="size-8 rotate-180" />

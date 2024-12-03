@@ -35,7 +35,6 @@ const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
 
-const isShowDateSelector = ref(false)
 const isShowTrns = ref(false)
 
 const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
@@ -238,6 +237,22 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
     return acc
   }, {} as Record<string, { id: string, name: string, trnsIds: TrnId[] }>)
 
+  // Add preCategoriesIds to categoriesByTrns
+  if (preCategoriesIds) {
+    preCategoriesIds.forEach((catId) => {
+      const category = categoriesStore.items[catId]
+      if (!category)
+        return
+
+      categoriesByTrns[catId] = categoriesByTrns[catId] ?? {
+        id: catId,
+        name: category.name,
+        trnsIds: [],
+        value: 0,
+      }
+    })
+  }
+
   // Flatten categories
   if (!isGrouped) {
     return Object.values(categoriesByTrns).map(cat => ({
@@ -279,7 +294,7 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
     return acc
   }, {} as Record<string, CategoryWithData>)
 
-  return Object.values(groupedCategories).sort(sortCategoriesByAmount)
+  return Object.values(groupedCategories)
 }
 </script>
 
@@ -287,11 +302,8 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
   <div class="@container/stat">
     <!-- Chart -->
     <StatChartWrap
-      :isShowDateSelector
-      :maxRange
       :series
       :xAxisLabels
-      @update:isShowDateSelector="(value: boolean) => isShowDateSelector = value"
     />
 
     <!-- Stat sum -->
@@ -365,11 +377,16 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
               <template #header="{ toggle, isShown }">
                 <div class="flex items-stretch justify-between">
                   <UiToggleAction
+                    v-if="item.trnsIds.length > 0"
                     :isShown="isShown"
                     :class="{
                       '-mr-2.5': !statConfig.config.value.catsList.isItemsBg,
                     }"
                     @click="toggle"
+                  />
+                  <div
+                    v-else
+                    class="w-8"
                   />
 
                   <StatLinesItemLine
@@ -516,9 +533,9 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
     <!-- Modals -->
     <Teleport to="body">
       <StatDateSelectorModal
-        v-if="isShowDateSelector"
+        v-if="statDate.modals.value.dateSelector"
         :maxRange
-        @onClose="isShowDateSelector = false"
+        @onClose="statDate.modals.value.dateSelector = !statDate.modals.value.dateSelector"
       />
 
       <!-- Trns -->
