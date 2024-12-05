@@ -294,7 +294,7 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
     return acc
   }, {} as Record<string, CategoryWithData>)
 
-  return Object.values(groupedCategories)
+  return Object.values(groupedCategories).sort(sortCategoriesByAmount)
 }
 </script>
 
