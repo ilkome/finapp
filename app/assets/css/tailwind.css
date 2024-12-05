@@ -57,13 +57,6 @@ body {
   @apply max-w-7xl px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8;
 }
 
-.statHeaderWrapper {
-  @apply bg-foreground-3 sticky top-0 z-20 p-2 lg:px-4 xl:py-2 2xl:px-8;
-}
-.statWalletsWrapper {
-  @apply flex max-w-6xl gap-1 overflow-x-auto px-2 py-px lg:px-4 xl:py-2 2xl:px-8 pt-2 md:pt-3 md:pb-2;
-}
-
 .trnForm .trnForm__pagination {
   z-index: 2;
   position: absolute;

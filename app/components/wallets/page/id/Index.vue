@@ -96,13 +96,13 @@ useHead({ title: wallet.value?.name })
       :config="{ isShowCategories: true }"
     >
       <template #title>
-        <UiHeaderTitle class="flex items-center gap-2 !px-0 !pl-2">
+        <UiHeaderTitle class="flex min-h-[30px] items-center gap-2 !px-0 !pl-2">
           <Icon
             :name="icons[wallet.type]"
             :style="{ color: wallet.color }"
-            class="size-6"
+            class="size-5"
           />
-          <div class="text-xl font-semibold leading-none">
+          <div class="text-lg font-semibold leading-none">
             {{ wallet.name }}
           </div>
         </UiHeaderTitle>

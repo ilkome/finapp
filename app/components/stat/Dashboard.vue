@@ -79,9 +79,9 @@ const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
       }"
     >
       <template #title>
-        <UiHeaderTitle class="flex items-center gap-3 !px-0 !pl-2">
-          <UiIconStat class="size-6" />
-          <div class="text-xl font-semibold leading-none">
+        <UiHeaderTitle class="flex min-h-[30px] items-center gap-3 !px-0 py-0 !pl-1">
+          <UiIconStat class="size-5" />
+          <div class="text-lg font-semibold leading-none">
             {{ t('stat.title') }}
           </div>
         </UiHeaderTitle>

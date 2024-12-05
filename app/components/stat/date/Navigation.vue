@@ -14,19 +14,12 @@ const isShowNavNext = computed(() => {
 </script>
 
 <template>
-  <div class="items-top flex gap-2">
-    <UiTitle8
-      isShown
+  <div class="items-top flex gap-2 pt-2">
+    <UiTitle10
       @click="statDate.modals.value.dateSelector = !statDate.modals.value.dateSelector"
     >
       <StatDateRange />
-    </UiTitle8>
-    <!-- <div
-      :class="getStyles('item', ['padding1', 'link', 'rounded', 'minh2', 'center', 'minw1'])"
-      class="!text-1 font-tertiary text-md -mb-2 grow !px-4 font-bold"
-    >
-      <StatDateRange />
-    </div> -->
+    </UiTitle10>
 
     <div
       v-if="!statDate.params.value.customDate"
