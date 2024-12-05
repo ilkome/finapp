@@ -8,6 +8,7 @@ import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useStatDate } from '~/components/date/useStatDate'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { getStyles } from '~/components/ui/getStyles'
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
@@ -98,7 +99,22 @@ useHead({ title: category.value?.name })
 
 <template>
   <UiPage v-if="category">
-    <StatHeader>
+    <StatHeader
+      :filter="{
+        isShowCategories: true,
+        isShowWallets: true,
+        isShow: true,
+        isShowSelected: filter.isShow?.value && filter.categoriesIds.value.length > 0,
+      }"
+      :maxRange
+      :config="{
+        isShowWallets: true,
+      }"
+      :menu="{
+        active: activeTab,
+        click: id => activeTab = id,
+      }"
+    >
       <template #title>
         <CategoriesHeader
           :category="category"
@@ -107,33 +123,18 @@ useHead({ title: category.value?.name })
       </template>
 
       <template #actions>
-        <UiHeaderLink
+        <UiElement
           v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
           @click="router.push(`/categories/${categoryId}/edit`)"
         >
-          <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
-        </UiHeaderLink>
-        <!-- <StatConfigPopover /> -->
-      </template>
+          <template #leftIcon>
+            <UiIconBase
+              name="mdi mdi-pencil-outline group-hover/link:text-1 text-lg leading-none"
+            />
+          </template>
 
-      <template #filterSelector>
-        <FilterSelector
-          isShowWallets
-        />
-        <StatMenu
-          :active="activeTab"
-          isShowNet=""
-          isShowIncome=""
-          isShowSummary=""
-          @click="id => activeTab = id"
-        />
-      </template>
-
-      <template #filterSelected>
-        <FilterSelected
-          v-if="filter.isShow?.value"
-          isShowWallets
-        />
+          {{ t('categories.editTitle') }}
+        </UiElement>
       </template>
     </StatHeader>
 

@@ -134,16 +134,17 @@ function onClickCategory(categoryId: CategoryId) {
     storageKey: props.storageKey ?? '',
   }
 
-  const queryParams = new URLSearchParams(
-    !statConfig.config.value.isCategoryPage
-      ? { ...baseParams, ...Object.fromEntries(Object.entries(statDate.params.value)) }
-      : baseParams,
-  ).toString()
-
   if (route.name === 'categories-id') {
+    const queryParams = new URLSearchParams({
+      ...baseParams,
+    }).toString()
     useRouter().push(`/categories/${categoryId}?${queryParams}`)
   }
   else {
+    const queryParams = new URLSearchParams({
+      ...baseParams,
+      ...Object.fromEntries(Object.entries(statDate.params.value)),
+    }).toString()
     useRouter().push(`/stat/categories/${categoryId}?${queryParams}`)
   }
 }

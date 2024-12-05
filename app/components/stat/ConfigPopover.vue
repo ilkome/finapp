@@ -91,6 +91,8 @@ const statConfig = inject('statConfig') as StatConfigProvider
             </div>
           </div>
         </div>
+
+        <slot />
       </div>
     </template>
   </UPopover>

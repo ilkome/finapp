@@ -23,14 +23,17 @@ export const classes = {
     minh3: 'min-h-[32px]',
     minh4: 'min-h-[44px]',
     minh5: 'min-h-[46px]',
+
     minw1: 'min-w-[42px]',
     minw2: 'min-w-[60px]',
     minw3: 'min-w-[32px]',
+
     padding1: 'px-2 py-1.5',
     padding2: 'px-2',
     padding3: 'px-3',
+
     padding4: 'px-1',
-    padding5: 'px-2 py-2',
+
     rounded: 'rounded-md',
     rounded2: 'rounded-lg',
     shadow: `

@@ -12,9 +12,7 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 const { t } = useI18n()
 const filter = useFilter()
 const route = useRoute()
-const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
-const walletsStore = useWalletsStore()
 provide('filter', filter)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -61,65 +59,34 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   includesChildCategories: true,
 }))
 
-const sortedFilterWalletsIds = computed(() => {
-  const filteredIds = filter.walletsIds.value
-  const showedIds = walletsStore.sortedIds.slice(0, statConfig.config.value.showedWallets)
-  return [...new Set([...showedIds, ...filteredIds])]
-})
-
-function onClickWallet(walletId: WalletId) {
-  filter.toggleWalletId(walletId)
-  trnsFormStore.values.walletId = walletId
-}
-
 const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
 </script>
 
 <template>
   <UiPage>
-    <StatHeader>
+    <StatHeader
+      :menu="{
+        active: activeTab,
+        click: id => activeTab = id,
+      }"
+      :maxRange
+      :filter="{
+        isShowCategories: true,
+        isShowWallets: true,
+      }"
+      :config="{
+        isShowWallets: true,
+      }"
+    >
       <template #title>
-        <div class="grid grow gap-2">
-          <div class="flex grow gap-2">
-            <FilterSelector
-              isShowCategories
-              isShowWallets
-            />
-            <StatMenu
-              :active="activeTab"
-              @click="id => activeTab = id"
-            />
+        <UiHeaderTitle class="flex items-center gap-3 !px-0 !pl-2">
+          <UiIconStat class="size-6" />
+          <div class="text-xl font-semibold leading-none">
+            {{ t('stat.title') }}
           </div>
-
-          <StatDateNavigation :maxRange="maxRange" />
-        </div>
-      </template>
-
-      <template #actions>
-        <StatConfigPopover isShowWallets />
-      </template>
-
-      <template v-if="filter.isShow?.value && filter.categoriesIds.value.length > 0" #filterSelected>
-        <FilterSelected
-          isShowCategories
-        />
+        </UiHeaderTitle>
       </template>
     </StatHeader>
-
-    <div
-      v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
-      class="statWalletsWrapper"
-    >
-      <WalletsItem
-        v-for="walletId in sortedFilterWalletsIds"
-        :key="walletId"
-        :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
-        :walletId
-        :wallet="walletsStore.itemsWithAmount?.[walletId]"
-        alt
-        @click="onClickWallet(walletId)"
-      />
-    </div>
 
     <!-- NetIncome -->
     <div

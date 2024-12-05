@@ -29,8 +29,8 @@ const { checkIsActive, onClick } = useMenuData()
       :is="props.item?.component"
       v-if="props.item?.component"
       class="
-        size-5
-        group-[.is-bigger]:!size-6 my-1
+        my-1
+        size-5 group-[.is-bigger]:!size-6
       "
     />
 

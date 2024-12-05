@@ -14,8 +14,6 @@ const { width } = useWindowSize()
 const { pointerType } = usePointer()
 const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
 
-const itemAddClasses = getStyles('item', ['link', 'minw1', 'center', 'rounded', 'padding2', 'minh2'])
-
 const modals = ref({
   categories: false,
   wallets: false,
@@ -23,8 +21,8 @@ const modals = ref({
 </script>
 
 <template>
-  <div class="flex gap-1">
-    <template v-if=" props.isShowCategories">
+  <div class="bg-item-4 flex gap-1 rounded-xl">
+    <template v-if="props.isShowCategories">
       <!-- Categories -->
       <UPopover v-if="isLaptop">
         <UiItem3>
@@ -170,8 +168,6 @@ const modals = ref({
 
     <UiItem3
       v-if="filter?.isShow?.value"
-      class="bg-item-4 justify-center"
-      :class="itemAddClasses"
       @click="filter.clearFilter"
     >
       <Icon name="lucide:delete" size="20" />

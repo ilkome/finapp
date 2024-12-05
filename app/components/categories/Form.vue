@@ -135,19 +135,17 @@ async function onSave() {
         />
       </UiFormElement>
 
-      <!-- Color -->
-      <UiItem2 @click="modals.colors = true">
+      <!-- Parent -->
+      <UiItem2
+        v-if="isAllowChangeParent"
+        @click="modals.parent = true"
+      >
         <template #label>
-          {{ t('color.label') }}
+          {{ t('categories.form.parent.label') }}
         </template>
 
         <template #value>
-          <UiIconBase
-            :color="props.categoryForm.color"
-            :name="props.categoryForm.icon"
-            invert
-            class="ml-0 !w-7 !text-base leading-none"
-          />
+          {{ props.categoryForm.parentId === 0 ? t('categories.form.parent.no') : categoriesStore.items[props.categoryForm.parentId]?.name }}
         </template>
       </UiItem2>
 
@@ -166,17 +164,19 @@ async function onSave() {
         </template>
       </UiItem2>
 
-      <!-- Parent -->
-      <UiItem2
-        v-if="isAllowChangeParent"
-        @click="modals.parent = true"
-      >
+      <!-- Color -->
+      <UiItem2 @click="modals.colors = true">
         <template #label>
-          {{ t('categories.form.parent.label') }}
+          {{ t('color.label') }}
         </template>
 
         <template #value>
-          {{ props.categoryForm.parentId === 0 ? t('categories.form.parent.no') : categoriesStore.items[props.categoryForm.parentId]?.name }}
+          <UiIconBase
+            :color="props.categoryForm.color"
+            :name="props.categoryForm.icon"
+            invert
+            class="ml-0 !w-7 !text-base leading-none"
+          />
         </template>
       </UiItem2>
 

@@ -89,7 +89,12 @@ useHead({ title: wallet.value?.name })
 
 <template>
   <UiPage v-if="wallet">
-    <StatHeader>
+    <StatHeader
+      :menu="{ active: activeTab, click: id => activeTab = id }"
+      :maxRange="maxRange"
+      :filter="{ isShowCategories: true }"
+      :config="{ isShowCategories: true }"
+    >
       <template #title>
         <UiHeaderTitle class="flex items-center gap-2 !px-0 !pl-2">
           <Icon
@@ -97,7 +102,7 @@ useHead({ title: wallet.value?.name })
             :style="{ color: wallet.color }"
             class="size-6"
           />
-          <div class="text-xl font-semibold">
+          <div class="text-xl font-semibold leading-none">
             {{ wallet.name }}
           </div>
         </UiHeaderTitle>
@@ -107,27 +112,6 @@ useHead({ title: wallet.value?.name })
         <UiHeaderLink @click="onEditClick">
           <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
         </UiHeaderLink>
-        <StatConfigPopover />
-      </template>
-
-      <template #filterSelector>
-        <FilterSelector
-          isShowCategories
-        />
-        <StatMenu
-          :active="activeTab"
-          isShowNet=""
-          isShowIncome=""
-          isShowSummary=""
-          @click="id => activeTab = id"
-        />
-      </template>
-
-      <template #filterSelected>
-        <FilterSelected
-          v-if="filter.isShow?.value"
-          isShowCategories
-        />
       </template>
     </StatHeader>
 

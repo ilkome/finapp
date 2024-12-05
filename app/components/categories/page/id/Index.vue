@@ -98,7 +98,12 @@ useHead({ title: category.value?.name })
 
 <template>
   <UiPage v-if="category">
-    <StatHeader>
+    <StatHeader
+      :maxRange="maxRange"
+      :filter="{ isShow: true, isShowCategories: true }"
+      :config="{ isShowCategories: true }"
+      :menu="{ active: activeTab, click: id => activeTab = id }"
+    >
       <template #title>
         <CategoriesHeader
           :category="category"
@@ -113,27 +118,6 @@ useHead({ title: category.value?.name })
         >
           <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
         </UiHeaderLink>
-        <StatConfigPopover />
-      </template>
-
-      <template #filterSelector>
-        <FilterSelector
-          isShowWallets
-        />
-        <StatMenu
-          :active="activeTab"
-          isShowNet=""
-          isShowIncome=""
-          isShowSummary=""
-          @click="id => activeTab = id"
-        />
-      </template>
-
-      <template #filterSelected>
-        <FilterSelected
-          v-if="filter.isShow?.value"
-          isShowWallets
-        />
       </template>
     </StatHeader>
 
@@ -147,7 +131,6 @@ useHead({ title: category.value?.name })
         :trnsIds="trnsIds"
         :preCategoriesIds
         :hasChildren="categoryHasChildren"
-        isCategoryPage
         type="sum"
       />
 
@@ -184,7 +167,6 @@ useHead({ title: category.value?.name })
         :trnsIds="expenseTrnsIds"
         :preCategoriesIds
         :hasChildren="categoryHasChildren"
-        isCategoryPage
         type="expense"
       />
 
@@ -193,7 +175,6 @@ useHead({ title: category.value?.name })
         :trnsIds="incomeTrnsIds"
         :preCategoriesIds
         :hasChildren="categoryHasChildren"
-        isCategoryPage
         type="income"
       />
     </div>
