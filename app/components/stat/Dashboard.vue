@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import type { StatTabs } from '~/components/app/types'
-import type { WalletId } from '~/components/wallets/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatDate } from '~/components/date/useStatDate'
-import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const { t } = useI18n()
 const filter = useFilter()
@@ -15,8 +12,24 @@ const route = useRoute()
 const trnsStore = useTrnsStore()
 provide('filter', filter)
 
+const activeTab = useStorage<MoneyTypeSlugNew>(`dashboard-mini-tab`, 'netIncome')
+
+const selectedTypesMapping = computed(() => {
+  const typeMapping = {
+    expense: [0, 2],
+    income: [1, 2],
+    netIncome: [0, 1, 2],
+    sum: [0, 1, 2],
+    summary: [0, 1, 2],
+  }
+  const trnsTypes = typeMapping[activeTab.value]
+
+  return trnsTypes ?? []
+})
+
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter?.categoriesIds?.value,
+  trnsTypes: selectedTypesMapping.value,
   walletsIds: filter?.walletsIds?.value,
 }, {
   includesChildCategories: true,
@@ -42,7 +55,6 @@ const statDate = useStatDate({
 })
 provide('statDate', statDate)
 
-const activeTab = useStorage<StatTabs>(`dashboard-mini-tab`, 'netIncome')
 const storageKey = computed(() => `dashboard${activeTab.value}`)
 
 const expenseTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -87,42 +99,6 @@ const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
       </template>
     </StatHeader>
 
-    <!-- NetIncome -->
-    <div
-      v-if="activeTab === 'netIncome'"
-      class="statWrapSummary"
-    >
-      <StatItem
-        :storageKey
-        :trnsIds="trnsIds"
-        :preCategoriesIds
-        hasChildren
-        type="sum"
-      />
-
-      <div class="invisible max-w-sm md:visible">
-        <UiToggle2
-          :initStatus="true"
-          class="hidden md:grid md:max-w-xl"
-          openPadding="!pb-6"
-          storageKey="finapp-wallets-currencies"
-        >
-          <template #header="{ toggle, isShown }">
-            <UiTitle8
-              :isShown
-              @click="toggle"
-            >
-              {{ t('dates.selector.title') }}
-            </UiTitle8>
-          </template>
-
-          <StatDateSelector
-            :maxRange
-          />
-        </UiToggle2>
-      </div>
-    </div>
-
     <!-- Summary -->
     <div
       v-if="activeTab === 'sum'"
@@ -142,6 +118,19 @@ const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
         :preCategoriesIds
         hasChildren
         type="income"
+      />
+    </div>
+
+    <div
+      v-else
+      class="max-w-7xl px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8"
+    >
+      <StatItem
+        :storageKey
+        :type="activeTab"
+        :trnsIds="trnsIds"
+        :preCategoriesIds
+        hasChildren
       />
     </div>
   </UiPage>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import type { StatTabs } from '~/components/app/types'
 import type { WalletId } from '~/components/wallets/types'
 import { icons } from '~/components/wallets/types'
 import { useFilter } from '~/components/filter/useFilter'
@@ -9,6 +8,7 @@ import { useStatDate } from '~/components/date/useStatDate'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
@@ -25,6 +25,7 @@ const wallet = computed(() => walletsStore.items?.[walletId.value])
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   walletsIds: [walletId.value, ...filter?.walletsIds?.value],
 }))
+
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const statDate = useStatDate({
@@ -57,7 +58,7 @@ onMounted(() => {
   trnsFormStore.values.walletId = walletId.value
 })
 
-const activeTab = useStorage<StatTabs>(`${walletId.value}-tab`, 'netIncome')
+const activeTab = useStorage<MoneyTypeSlugNew>(`${walletId.value}-tab`, 'netIncome')
 const storageKey = computed(() => `${walletId.value}-${activeTab.value}`)
 
 const expenseTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -146,42 +147,6 @@ useHead({ title: wallet.value?.name })
       </div>
     </div>
 
-    <!-- NetIncome -->
-    <div
-      v-if="activeTab === 'netIncome'"
-      class="statWrapSummary"
-    >
-      <StatItem
-        :storageKey
-        :trnsIds="trnsIds"
-        :walletId
-        hasChildren
-        type="sum"
-      />
-
-      <div class="invisible max-w-sm md:visible">
-        <UiToggle2
-          :initStatus="true"
-          class="hidden md:grid md:max-w-xl"
-          openPadding="!pb-6"
-          storageKey="finapp-wallets-currencies"
-        >
-          <template #header="{ toggle, isShown }">
-            <UiTitle8
-              :isShown
-              @click="toggle"
-            >
-              {{ t('dates.selector.title') }}
-            </UiTitle8>
-          </template>
-
-          <StatDateSelector
-            :maxRange
-          />
-        </UiToggle2>
-      </div>
-    </div>
-
     <!-- Summary -->
     <div
       v-if="activeTab === 'sum'"
@@ -201,6 +166,19 @@ useHead({ title: wallet.value?.name })
         :walletId
         hasChildren
         type="income"
+      />
+    </div>
+
+    <div
+      v-else
+      class="max-w-7xl px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8"
+    >
+      <StatItem
+        :storageKey
+        :trnsIds="trnsIds"
+        :walletId
+        hasChildren
+        type="sum"
       />
     </div>
   </UiPage>

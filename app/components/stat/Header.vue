@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { StatTabs } from '~/components/app/types'
 import type { Range } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { FilterProvider } from '~/components/filter/types'
 import type { WalletId } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const props = defineProps<{
   config: {
@@ -20,8 +20,8 @@ const props = defineProps<{
   }
   maxRange: Range
   menu: {
-    active: StatTabs
-    click: (id: StatTabs) => void
+    active: MoneyTypeSlugNew
+    click: (id: MoneyTypeSlugNew) => void
   }
 }>()
 

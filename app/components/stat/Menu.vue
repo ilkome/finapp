@@ -1,38 +1,42 @@
 <script setup lang="ts">
-import type { StatTabs } from '~/components/app/types'
+import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const props = defineProps<{
-  active: StatTabs
+  active: MoneyTypeSlugNew
 }>()
 
 const emit = defineEmits<{
-  click: [id: StatTabs]
+  click: [id: MoneyTypeSlugNew]
 }>()
 
 const { t } = useI18n()
 
 const menu = computed(() => {
   const all: {
-    id: StatTabs
-    idx: number
+    id: MoneyTypeSlugNew
     name: string | unknown
-  }[] = []
+  }[] = [{
+    id: 'netIncome',
+    name: t('money.netIncome'),
+  }]
 
   all.push({
-    id: 'netIncome',
-    idx: 0,
-    name: t('money.netIncome'),
+    id: 'expense',
+    name: t('money.expense'),
+  })
+  all.push({
+    id: 'income',
+    name: t('money.income'),
   })
   all.push({
     id: 'sum',
-    idx: 0,
     name: t('stat.summary'),
   })
 
   return all
 })
 
-function onClickStatMenu(tabName: StatTabs) {
+function onClickStatMenu(tabName: MoneyTypeSlugNew) {
   emit('click', tabName)
 }
 

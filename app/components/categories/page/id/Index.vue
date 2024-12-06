@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
-import type { StatTabs } from '~/components/app/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useStatDate } from '~/components/date/useStatDate'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
@@ -76,7 +76,7 @@ onMounted(() => {
     trnsFormStore.values.categoryId = categoryId.value
 })
 
-const activeTab = useStorage<StatTabs>(`${categoryId.value}-tab`, 'netIncome')
+const activeTab = useStorage<MoneyTypeSlugNew>(`${categoryId.value}-tab`, 'netIncome')
 const storageKey = computed(() => `${categoryId.value}-${activeTab.value}`)
 
 const expenseTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -131,30 +131,8 @@ useHead({ title: category.value?.name })
         :trnsIds="trnsIds"
         :preCategoriesIds
         :hasChildren="categoryHasChildren"
-        type="sum"
+        type="netIncome"
       />
-
-      <div class="invisible max-w-sm md:visible">
-        <UiToggle2
-          :initStatus="true"
-          class="hidden md:grid md:max-w-xl"
-          openPadding="!pb-6"
-          storageKey="finapp-wallets-currencies"
-        >
-          <template #header="{ toggle, isShown }">
-            <UiTitle8
-              :isShown
-              @click="toggle"
-            >
-              {{ t('dates.selector.title') }}
-            </UiTitle8>
-          </template>
-
-          <StatDateSelector
-            :maxRange
-          />
-        </UiToggle2>
-      </div>
     </div>
 
     <!-- Summary -->

@@ -11,7 +11,6 @@ import type { WalletId } from '~/components/wallets/types'
 import { useStatCategories } from '~/composables/useStatCategories'
 import { useStatChart } from '~/composables/useStatChart'
 import StatTrnsSection from '~/components/stat/trns/Section.vue'
-import StatSumSection from '~/components/stat/sum/Section.vue'
 import StatCategoriesSection from '~/components/stat/categories/Section.vue'
 
 const props = defineProps<{
@@ -126,7 +125,7 @@ const chart = {
       hasIncome: chartTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1),
     }
 
-    const typesToShow = props.type === 'sum'
+    const typesToShow = props.type === 'netIncome'
       ? [
           ...(transactionTypes.hasIncome ? ['income'] : []),
           ...(transactionTypes.hasExpense ? ['expense'] : []),
@@ -208,10 +207,11 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       :xAxisLabels="chart.xAxisLabels.value"
     />
 
-    <StatSumSection
-      :total="rangeTotal"
-      :statTypeShow="statTypeShow"
+    <StatSumWrap
+      :isShowExpense="statTypeShow.expense"
+      :isShowIncome="statTypeShow.income"
       :selectedType="selectedType"
+      :total="rangeTotal"
       :type="props.type"
       @click="onClickSumItem"
     />

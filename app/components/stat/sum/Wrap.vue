@@ -35,7 +35,7 @@ function onClick(type: MoneyTypeSlugNew) {
 <template>
   <div class="pt-3 md:max-w-lg">
     <div
-      v-if="props.type === 'sum'"
+      v-if="props.type === 'netIncome'"
       class="flex flex-wrap justify-stretch gap-1"
     >
       <StatSumItem
