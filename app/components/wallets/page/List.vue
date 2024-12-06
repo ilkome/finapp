@@ -43,8 +43,8 @@ function setActiveType(v: WalletViewTypes | 'all') {
 }
 
 const selectedWallets = computed(() => {
-  if (currencyFiltered.value === 'all' && activeType.value === 'all')
-    return walletsStore.itemsWithAmount
+  // if (currencyFiltered.value === 'all' && activeType.value === 'all')
+  //   return walletsStore.itemsWithAmount
 
   return Object.fromEntries(
     Object.entries(walletsStore.itemsWithAmount).filter(([_key, wallet]) => {
@@ -53,7 +53,7 @@ const selectedWallets = computed(() => {
         return false
 
       if (activeType.value === 'all')
-        return true
+        return !wallet.isArchived
 
       const typeChecks: WalletViewTypesObj = {
         archived: wallet.isArchived ?? false,
@@ -70,6 +70,9 @@ const selectedWallets = computed(() => {
 
       if (activeType.value === 'available')
         return checkIsAvailable(wallet) && !wallet.isArchived
+
+      if (activeType.value === 'archived' && wallet.isArchived)
+        return true
 
       return typeChecks[activeType.value]
     }),
@@ -291,7 +294,7 @@ const counts = computed(() => ({
   // eslint-disable-next-line perfectionist/sort-objects
   archived: {
     id: 'archived',
-    isShow: totalInWallets.value.archived !== 0,
+    isShow: true,
     value: totalInWallets.value.archived + totalInWallets.value.archived,
   },
 }))
@@ -328,7 +331,7 @@ const counts = computed(() => ({
       </div>
     </div>
 
-    <!-- List -->
+    <!-- Content -->
     <div
       v-else
       class="pageWrapperNoMaxWidth"
@@ -392,6 +395,7 @@ const counts = computed(() => ({
             </template>
           </UiToggle2>
 
+          <!-- Total -->
           <UiToggle2
             v-if="gropedBy === 'list'"
             :initStatus="true"
@@ -508,9 +512,9 @@ const counts = computed(() => ({
                   class="flex grow items-center justify-between pr-3"
                   @click="toggle"
                 >
-                  <UiTitle8 :isShown>
+                  <UiTitle81 :isShown>
                     {{ currency }} {{ !isShown ? walletsIds.length : '' }}
-                  </UiTitle8>
+                  </UiTitle81>
 
                   <div class="py-2">
                     <Amount
@@ -530,12 +534,14 @@ const counts = computed(() => ({
                 class="border-item-5 ml-3 border-l pl-2"
                 openPadding="!pb-3"
               >
-                <template #header="{ toggle }">
+                <template #header="{ isShown, toggle }">
                   <div
                     class="flex grow items-center justify-between pr-3"
                     @click="toggle"
                   >
-                    <UiTitle8>{{ t(`money.types.${grouped}`) }}</UiTitle8>
+                    <UiTitle81 :isShown>
+                      {{ t(`money.types.${grouped}`) }}
+                    </UiTitle81>
                     <div class="py-2">
                       <Amount
                         :amount="countWalletsSum(groupedWalletsIds, false)"
