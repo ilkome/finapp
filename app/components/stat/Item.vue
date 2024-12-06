@@ -37,13 +37,14 @@ const isShowTrns = ref(false)
 
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
 
-const selectedType = ref<MoneyTypeSlugNew>('sum')
+const selectedType = ref<MoneyTypeSlugNew>('summary')
 const selectedTypesMapping = computed(() => {
   const typeMapping = {
     expense: [0, 2],
     income: [1, 2],
-    sum: [0, 1, 2],
-  }
+    summary: [0, 1, 2],
+  } as const
+
   const trnsTypes = typeMapping[selectedType.value]
 
   if (trnsTypes) {
@@ -174,12 +175,12 @@ function onClickCategory(categoryId: CategoryId) {
 }
 
 function onClickSumItem(type: MoneyTypeSlugNew) {
-  if (type === 'sum') {
+  if (type === 'summary') {
     isShowTrns.value = !isShowTrns.value
     return
   }
 
-  selectedType.value = type === selectedType.value ? 'sum' : type
+  selectedType.value = type === selectedType.value ? 'summary' : type
 }
 
 function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {

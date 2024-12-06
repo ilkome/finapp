@@ -24,7 +24,6 @@ export function getTypesMapping(slug: MoneyTypeSlugNew) {
     expense: [0, 2],
     income: [1, 2],
     netIncome: [0, 1, 2],
-    sum: [0, 1, 2],
     summary: [0, 1, 2],
   }
   const trnsTypes = typeMapping[slug]

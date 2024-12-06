@@ -202,7 +202,7 @@ export default {
       isExcludeInTotal: 'Do not include in total',
       withdrawal: 'Withdrawal',
     },
-    sum: 'Total',
+    summary: 'Total',
     totals: {
       all: 'Total',
       archived: 'Archived',

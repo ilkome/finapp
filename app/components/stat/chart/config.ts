@@ -18,7 +18,7 @@ export const seriesOptions: Record<MoneyTypeSlugNew, { color: string, localeKey:
     localeKey: 'money.netIncome',
     type: 'line',
   },
-  sum: {
+  summary: {
     color: 'grey',
     localeKey: 'money.netIncome',
     type: 'line',

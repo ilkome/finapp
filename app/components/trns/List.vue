@@ -24,7 +24,7 @@ const props = withDefaults(
     trnsIds: TrnId[]
   }>(),
   {
-    initTrnType: 'sum',
+    initTrnType: 'summary',
     size: 30,
     trnsIds: () => [],
   },
@@ -44,7 +44,7 @@ const typeFilters = computed(() => {
     count: props.trnsIds.length,
     isShow: true,
     name: t('common.all'),
-    slug: 'sum',
+    slug: 'summary',
     type: undefined,
   }
 
@@ -78,7 +78,7 @@ const typeFilters = computed(() => {
 const selectedIds = computed(() => {
   let ids = props.trnsIds ?? []
 
-  if (filterBy.value !== 'sum') {
+  if (filterBy.value !== 'summary') {
     ids = props.trnsIds.filter(id => trnsStore.items[id].type === typeFilters.value.find(item => item.slug === filterBy.value)?.type)
   }
 
@@ -102,7 +102,7 @@ const isShowedAllTrns = computed(
 const isTrnsWithDesc = computed(() => {
   let ids = props.trnsIds ?? []
 
-  if (filterBy.value !== 'sum') {
+  if (filterBy.value !== 'summary') {
     ids = props.trnsIds.filter(
       id => trnsStore.items[id].type === typeFilters.value[filterBy.value]?.type,
     )
@@ -115,11 +115,11 @@ const isTrnsWithDesc = computed(() => {
 
 function setFilterBy(type: TrnType | undefined) {
   if (filterBy.value === type) {
-    filterBy.value = 'sum'
+    filterBy.value = 'summary'
     return
   }
 
-  filterBy.value = type ?? 'sum'
+  filterBy.value = type ?? 'summary'
 }
 
 const groupedTrns = computed(() => {

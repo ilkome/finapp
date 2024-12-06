@@ -32,14 +32,14 @@ const classes = computed(() => ([
   },
 ]))
 
-const creditViews = ['dept', 'sum'] as const
+const creditViews = ['dept', 'summary'] as const
 const activeCreditView = useStorage<typeof creditViews[number]>(props.walletId, 'dept')
 
 const creditAmount = computed(() => {
   switch (activeCreditView.value) {
     case 'dept':
       return props.wallet?.amount
-    case 'sum':
+    case 'summary':
       return Math.abs(props.wallet.creditLimit ?? 0) - Math.abs(props.wallet.amount)
     default:
       return 0

@@ -203,7 +203,7 @@ export default {
       isExcludeInTotal: 'Не считать в общем балансе',
       withdrawal: 'Доступные',
     },
-    sum: 'Сумма',
+    summary: 'Сумма',
     totals: {
       all: 'Всего',
       archived: 'Скрытые',

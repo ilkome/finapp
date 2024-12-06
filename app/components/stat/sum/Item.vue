@@ -36,8 +36,8 @@ const currenciesStore = useCurrenciesStore()
       align="left"
       variant="xl"
       :class="{
-        '!text-income-1': props.amount > 0 && type !== 'sum',
-        '!text-expense-1': props.amount < 0 && type !== 'sum',
+        '!text-income-1': props.amount > 0 && type !== 'summary',
+        '!text-expense-1': props.amount < 0 && type !== 'summary',
       }"
     />
   </div>

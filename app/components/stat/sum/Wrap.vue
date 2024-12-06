@@ -61,8 +61,8 @@ function onClick(type: MoneyTypeSlugNew) {
         :amount="total.sum"
         :class="classes"
         class="grow"
-        type="sum"
-        @click="onClick('sum')"
+        type="summary"
+        @click="onClick('summary')"
       />
     </div>
 
