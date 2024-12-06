@@ -121,31 +121,29 @@ const categoriesWithData = computed<CategoryWithData[]>(() => {
 const chart = {
   series: computed<ChartSeries[]>(() => {
     const intervalsChartData = getIntervalsData(chartTrnsIds.value, statDate.intervalsInRange.value)
-    const isIncomes = chartTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1)
-    const isExpenses = chartTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 0)
-
-    const sum: MoneyTypeSlugNew[] = []
-    if (isIncomes) {
-      sum.push('income')
-    }
-    if (isExpenses) {
-      sum.push('expense')
+    const transactionTypes = {
+      hasExpense: chartTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 0),
+      hasIncome: chartTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1),
     }
 
-    const types = props.type === 'sum'
-      ? sum
+    const typesToShow = props.type === 'sum'
+      ? [
+          ...(transactionTypes.hasIncome ? ['income'] : []),
+          ...(transactionTypes.hasExpense ? ['expense'] : []),
+        ] as MoneyTypeSlugNew[]
       : [props.type]
 
-    const intervalsTotal = intervalsChartData.map(g => g.total)
-    const baseSeries = types.map(type => createSeriesItem(type, intervalsTotal))
+    const intervalTotals = intervalsChartData.map(g => g.total)
+    const baseSeries = typesToShow.map(type => createSeriesItem(type, intervalTotals))
 
-    const selectedDate = intervalsChartData?.[statDate.params.value.intervalSelected]?.range.start
-    if (!selectedDate || statDate.params.value.intervalSelected < 0)
+    const selectedInterval = intervalsChartData?.[statDate.params.value.intervalSelected]
+    if (!selectedInterval?.range.start || statDate.params.value.intervalSelected < 0) {
       return baseSeries
+    }
 
     return addMarkArea(
       baseSeries,
-      selectedDate,
+      selectedInterval.range.start,
       statConfig.config.value?.chartType,
     )
   }),
