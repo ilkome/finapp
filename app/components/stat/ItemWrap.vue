@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { MoneyTypeSlugNew } from '~/components/stat/types'
 import type { CategoryId } from '~/components/categories/types'

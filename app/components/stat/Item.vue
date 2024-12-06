@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { CategoryWithData, ChartSeries, IntervalData, MoneyTypeSlugNew } from '~/components/stat/types'
@@ -37,7 +38,8 @@ const isShowTrns = ref(false)
 
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
 
-const selectedType = ref<MoneyTypeSlugNew>('summary')
+const selectedType = useStorage<MoneyTypeSlugNew>(`selectedType-${newBaseStorageKey.value}`, 'summary')
+
 const selectedTypesMapping = computed(() => {
   const typeMapping = {
     expense: [0, 2],
