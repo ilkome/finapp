@@ -471,7 +471,12 @@ const wrapClasses = computed(() => ({
       @click.stop=""
     >
       <div ref="handlerRef">
-        <slot name="handler" :close="close" />
+        <slot name="handler" :close="close">
+          <div class="relative z-20">
+            <BottomSheetHandler />
+            <BottomSheetClose @onClick="close" />
+          </div>
+        </slot>
       </div>
 
       <slot :close="close">

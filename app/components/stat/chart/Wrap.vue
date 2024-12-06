@@ -3,9 +3,10 @@ import type { ChartType } from '~/components/stat/chart/types'
 import type { StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import type { ChartSeries } from '~/components/stat/types'
 
 const props = defineProps<{
-  series: unknown[]
+  series: ChartSeries[]
   xAxisLabels: number[]
 }>()
 
