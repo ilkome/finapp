@@ -29,7 +29,7 @@ const menu = computed(() => {
     name: t('money.income'),
   })
   all.push({
-    id: 'sum',
+    id: 'summary',
     name: t('stat.summary'),
   })
 

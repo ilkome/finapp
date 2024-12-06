@@ -29,7 +29,7 @@ const isShowNavNext = computed(() => {
 
       <template #content="{ close }">
         <StatDateSelector
-          class="min-w-[350px]"
+          class="min-w-[350px] px-3"
           :maxRange
           @onClose="close"
         />

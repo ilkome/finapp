@@ -1,83 +1,62 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+import type { MoneyTypeSlugNew } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
+import { getTypesMapping } from '~/components/stat/utils'
 import { icons } from '~/components/wallets/types'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useStatDate } from '~/components/date/useStatDate'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const { t } = useI18n()
-const walletsStore = useWalletsStore()
-const trnsStore = useTrnsStore()
-const router = useRouter()
 const route = useRoute()
-const filter = useFilter()
+const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
+const trnsStore = useTrnsStore()
+const walletsStore = useWalletsStore()
 
+const filter = useFilter()
 provide('filter', filter)
+
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 
+const activeTab = useStorage<MoneyTypeSlugNew>(`${walletId.value}-tab`, 'netIncome')
+const storageKey = computed(() => `${walletId.value}-${activeTab.value}`)
+
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  trnsTypes: getTypesMapping(activeTab.value),
   walletsIds: [walletId.value, ...filter?.walletsIds?.value],
 }))
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
-
-const statDate = useStatDate({
-  key: `finapp-${walletId.value}-${route.query.storageKey}`,
-  maxRange,
-  queryParams: route.query,
-})
-
-provide('statDate', statDate)
 
 const statConfig = useStatConfig({
   props: {
     isCategoryPage: false,
     isShowEmptyCategories: true,
   },
-  storageKey: walletId.value,
+  storageKey: storageKey.value,
 })
 provide('statConfig', statConfig)
 
+const statDate = useStatDate({
+  key: storageKey.value,
+  maxRange,
+  queryParams: route.query,
+})
+provide('statDate', statDate)
+
 watch(filter.categoriesIds, () => {
-  if (filter.categoriesIds.value.length > 0) {
-    statConfig.config.value.isShowEmptyCategories = true
-  }
-  else {
-    statConfig.config.value.isShowEmptyCategories = false
-  }
+  statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
 })
 
 onMounted(() => {
   trnsFormStore.values.walletId = walletId.value
 })
-
-const activeTab = useStorage<MoneyTypeSlugNew>(`${walletId.value}-tab`, 'netIncome')
-const storageKey = computed(() => `${walletId.value}-${activeTab.value}`)
-
-const expenseTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  trnsIds: trnsIds.value,
-  trnsTypes: [0, 2],
-}, {
-  includesChildCategories: true,
-}))
-
-const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  trnsIds: trnsIds.value,
-  trnsTypes: [1, 2],
-}, {
-  includesChildCategories: true,
-}))
-
-// if (!wallet.value) {
-//   router.replace('/wallets')
-// }
 
 const total = computed(() => walletsStore.itemsWithAmount[walletId.value]?.amount ?? 0)
 
@@ -114,72 +93,45 @@ useHead({ title: wallet.value?.name })
           <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
         </UiHeaderLink>
       </template>
+
+      <template #summary>
+        <div class="px-3 py-2 lg:gap-8 lg:px-2">
+          <div
+            v-if="wallet.type !== 'credit'"
+            class="pt-2 md:max-w-lg"
+          >
+            <StatSumItemWallet
+              :amount="total"
+              :currencyCode="wallet.currency"
+              :title="t('money.balance')"
+            />
+          </div>
+
+          <div v-if="wallet.creditLimit" class="flex flex-wrap gap-x-8 gap-y-2 pt-2 md:max-w-lg">
+            <StatSumItemWallet
+              :amount="total"
+              :currencyCode="wallet.currency"
+              :title="t('wallets.form.credit.debt')"
+            />
+            <StatSumItemWallet
+              :amount="wallet.creditLimit - (-total)"
+              :currencyCode="wallet.currency"
+              :title="t('wallets.form.credit.available')"
+            />
+            <StatSumItemWallet
+              :amount="wallet.creditLimit"
+              :currencyCode="wallet.currency"
+              :title="t('wallets.form.credit.limit')"
+            />
+          </div>
+        </div>
+      </template>
     </StatHeader>
 
-    <div class="statWrapTotals">
-      <div
-        v-if="wallet.type !== 'credit'"
-        class="pt-2 md:max-w-lg"
-      >
-        <StatSumItemWallet
-          :amount="total"
-          :currencyCode="wallet.currency"
-          :title="t('money.balance')"
-        />
-      </div>
-
-      <div v-if="wallet.creditLimit" class="flex flex-wrap gap-x-8 gap-y-2 pt-2 md:max-w-lg">
-        <StatSumItemWallet
-          :amount="total"
-          :currencyCode="wallet.currency"
-          :title="t('wallets.form.credit.debt')"
-        />
-        <StatSumItemWallet
-          :amount="wallet.creditLimit - (-total)"
-          :currencyCode="wallet.currency"
-          :title="t('wallets.form.credit.available')"
-        />
-        <StatSumItemWallet
-          :amount="wallet.creditLimit"
-          :currencyCode="wallet.currency"
-          :title="t('wallets.form.credit.limit')"
-        />
-      </div>
-    </div>
-
-    <!-- Summary -->
-    <div
-      v-if="activeTab === 'sum'"
-      class="statWrapSummary"
-    >
-      <StatItem
-        :storageKey
-        :trnsIds="expenseTrnsIds"
-        :walletId
-        hasChildren
-        type="expense"
-      />
-
-      <StatItem
-        :storageKey
-        :trnsIds="incomeTrnsIds"
-        :walletId
-        hasChildren
-        type="income"
-      />
-    </div>
-
-    <div
-      v-else
-      class="max-w-7xl px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8"
-    >
-      <StatItem
-        :storageKey
-        :trnsIds="trnsIds"
-        :walletId
-        hasChildren
-        type="sum"
-      />
-    </div>
+    <StatItemWrap
+      :activeTab
+      :trnsIds
+      :storageKey
+    />
   </UiPage>
 </template>

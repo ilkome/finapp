@@ -48,11 +48,6 @@ function onClickWallet(walletId: WalletId) {
       <div class="flex items-start gap-2">
         <div class="grid grow gap-2">
           <slot name="title" />
-          <StatMenu
-            v-if="props.menu"
-            :active="props.menu.active"
-            @click="props.menu.click"
-          />
         </div>
 
         <div class="ml-auto flex items-center gap-2">
@@ -69,10 +64,16 @@ function onClickWallet(walletId: WalletId) {
           </StatConfigPopover>
         </div>
       </div>
+
+      <StatMenu
+        v-if="props.menu"
+        :active="props.menu.active"
+        @click="props.menu.click"
+      />
     </div>
   </div>
 
-  <div class="pb-0 lg:px-4 2xl:px-8">
+  <div class="px-2 pb-0 lg:px-4 2xl:px-8">
     <div
       v-if="filter.isShow?.value && filter.categoriesIds.value.length > 0"
       class="pt-2"
@@ -85,18 +86,20 @@ function onClickWallet(walletId: WalletId) {
 
     <div
       v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
-      class="flex max-w-6xl gap-1 overflow-x-auto px-2 py-px pt-2 xl:pt-2"
+      class="flex max-w-6xl gap-1 overflow-x-auto py-px pt-2 xl:pt-2"
     >
       <WalletsItem
         v-for="walletId in sortedFilterWalletsIds"
         :key="walletId"
         :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
         :walletId
-        :wallet="walletsStore.itemsWithAmount?.[walletId]"
+        :wallet="walletsStore.itemsWithAmount?.[walletId]!"
         alt
         @click="onClickWallet(walletId)"
       />
     </div>
+
+    <slot name="summary" />
 
     <StatDateNavigation :maxRange="props.maxRange" />
   </div>

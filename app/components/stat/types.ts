@@ -6,7 +6,7 @@ import type { TrnId } from '~/components/trns/types'
 
 export type MoneyTypeSlug = 'expense' | 'income'
 export type MoneyTypeSlugSum = 'income' | 'expense' | 'sum' | 'summary'
-export type MoneyTypeSlugNew = 'income' | 'expense' | 'sum' | 'netIncome'
+export type MoneyTypeSlugNew = 'income' | 'expense' | 'sum' | 'netIncome' | 'summary'
 export type MoneyTypeNumber = 0 | 1 | 3
 
 export type TotalCategories = {

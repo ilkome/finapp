@@ -20,7 +20,7 @@ const emit = defineEmits<{
       <BottomSheetClose @onClick="emit('close')" />
     </div>
 
-    <div class="scroller overflow-y-auto px-3">
+    <div class="scroller overflow-y-auto">
       <slot />
     </div>
   </div>

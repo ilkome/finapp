@@ -1,77 +1,39 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useStatConfig } from '~/components/stat/useStatConfig'
-import { useFilter } from '~/components/filter/useFilter'
-import { useStatDate } from '~/components/date/useStatDate'
 import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import { getTypesMapping } from '~/components/stat/utils'
+import { useFilter } from '~/components/filter/useFilter'
+import { useStatConfig } from '~/components/stat/useStatConfig'
+import { useStatDate } from '~/components/date/useStatDate'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { t } = useI18n()
-const filter = useFilter()
 const route = useRoute()
 const trnsStore = useTrnsStore()
+
+const filter = useFilter()
 provide('filter', filter)
 
-const activeTab = useStorage<MoneyTypeSlugNew>(`dashboard-mini-tab`, 'netIncome')
-
-const selectedTypesMapping = computed(() => {
-  const typeMapping = {
-    expense: [0, 2],
-    income: [1, 2],
-    netIncome: [0, 1, 2],
-    sum: [0, 1, 2],
-    summary: [0, 1, 2],
-  }
-  const trnsTypes = typeMapping[activeTab.value]
-
-  return trnsTypes ?? []
-})
+const activeTab = useStorage<MoneyTypeSlugNew>(`dashboard-tab`, 'netIncome')
+const storageKey = computed(() => `dashboard-${activeTab.value}`)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter?.categoriesIds?.value,
-  trnsTypes: selectedTypesMapping.value,
+  trnsTypes: getTypesMapping(activeTab.value),
   walletsIds: filter?.walletsIds?.value,
-}, {
-  includesChildCategories: true,
-}))
+}, { includesChildCategories: true }))
+
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const statConfig = useStatConfig({ storageKey: 'dashboard' })
+const statConfig = useStatConfig({ storageKey: storageKey.value })
 provide('statConfig', statConfig)
 
-watch(filter.categoriesIds, () => {
-  if (filter.categoriesIds.value.length > 0) {
-    statConfig.config.value.isShowEmptyCategories = true
-  }
-  else {
-    statConfig.config.value.isShowEmptyCategories = false
-  }
-})
-
-const statDate = useStatDate({
-  key: `finapp-dashboard-`,
-  maxRange,
-  queryParams: route.query,
-})
+const statDate = useStatDate({ key: storageKey.value, maxRange, queryParams: route.query })
 provide('statDate', statDate)
 
-const storageKey = computed(() => `dashboard${activeTab.value}`)
-
-const expenseTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  trnsIds: trnsIds.value,
-  trnsTypes: [0, 2],
-}, {
-  includesChildCategories: true,
-}))
-
-const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  trnsIds: trnsIds.value,
-  trnsTypes: [1, 2],
-}, {
-  includesChildCategories: true,
-}))
-
-const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
+watch(filter.categoriesIds, () => {
+  statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
+})
 </script>
 
 <template>
@@ -99,39 +61,10 @@ const preCategoriesIds = computed(() => [...filter.categoriesIds.value])
       </template>
     </StatHeader>
 
-    <!-- Summary -->
-    <div
-      v-if="activeTab === 'sum'"
-      class="statWrapSummary"
-    >
-      <StatItem
-        :storageKey
-        :trnsIds="expenseTrnsIds"
-        :preCategoriesIds
-        hasChildren
-        type="expense"
-      />
-
-      <StatItem
-        :storageKey
-        :trnsIds="incomeTrnsIds"
-        :preCategoriesIds
-        hasChildren
-        type="income"
-      />
-    </div>
-
-    <div
-      v-else
-      class="max-w-7xl px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8"
-    >
-      <StatItem
-        :storageKey
-        :type="activeTab"
-        :trnsIds="trnsIds"
-        :preCategoriesIds
-        hasChildren
-      />
-    </div>
+    <StatItemWrap
+      :activeTab
+      :trnsIds
+      :storageKey
+    />
   </UiPage>
 </template>
