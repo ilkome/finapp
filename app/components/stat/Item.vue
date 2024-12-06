@@ -10,7 +10,6 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
 import { useStatCategories } from '~/composables/useStatCategories'
 import { useStatChart } from '~/composables/useStatChart'
-import StatChartSection from '~/components/stat/chart/Section.vue'
 import StatTrnsSection from '~/components/stat/trns/Section.vue'
 import StatSumSection from '~/components/stat/sum/Section.vue'
 import StatCategoriesSection from '~/components/stat/categories/Section.vue'
@@ -122,7 +121,21 @@ const categoriesWithData = computed<CategoryWithData[]>(() => {
 const chart = {
   series: computed<ChartSeries[]>(() => {
     const intervalsChartData = getIntervalsData(chartTrnsIds.value, statDate.intervalsInRange.value)
-    const types = props.type === 'sum' ? ['expense', 'income'] as const : [props.type]
+    const isIncomes = chartTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1)
+    const isExpenses = chartTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 0)
+
+    const sum: MoneyTypeSlugNew[] = []
+    if (isIncomes) {
+      sum.push('income')
+    }
+    if (isExpenses) {
+      sum.push('expense')
+    }
+
+    const types = props.type === 'sum'
+      ? sum
+      : [props.type]
+
     const intervalsTotal = intervalsChartData.map(g => g.total)
     const baseSeries = types.map(type => createSeriesItem(type, intervalsTotal))
 
