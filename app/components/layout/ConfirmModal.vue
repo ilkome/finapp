@@ -30,14 +30,14 @@ const items = computed(() => ({
 
 <template>
   <Teleport to="body">
-    <BaseBottomSheet2
+    <BottomSheet
       isShow
       :isScrollerBlock="false"
       drugClassesCustom="max-w-sm bg-foreground-1 md:bottom-1/2 md:-translate-x-1/2 md:translate-y-1/2 rounded-xl"
       @closed="emit('closed')"
     >
       <template #handler="{ close }">
-        <BaseBottomSheetClose @onClick="close" />
+        <BottomSheetClose @onClick="close" />
       </template>
 
       <template #default="{ close }">
@@ -75,6 +75,6 @@ const items = computed(() => ({
           </div>
         </div>
       </template>
-    </BaseBottomSheet2>
+    </BottomSheet>
   </Teleport>
 </template>

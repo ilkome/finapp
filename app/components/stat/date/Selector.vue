@@ -164,7 +164,7 @@ function selectInterval(grouped: Grouped) {
     </UiTabs1>
 
     <div v-if="tabs.selected.value === 'presets'">
-      <div class="pb-4 pt-2">
+      <div class="py-2 pb-4">
         <!-- Presets -->
         <div class="grid gap-2">
           <div class="flex flex-wrap gap-1">
@@ -209,7 +209,6 @@ function selectInterval(grouped: Grouped) {
         storageKey="finapp-date-modal-grouped"
         :initStatus="false"
         :lineWidth="1"
-        openPadding="!pb-6"
       >
         <template #header="{ toggle, isShown }">
           <UiTitle81 :isShown @click="toggle">

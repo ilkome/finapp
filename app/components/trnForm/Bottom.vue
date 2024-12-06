@@ -60,13 +60,13 @@ onMounted(init)
 </script>
 
 <template>
-  <BaseBottomSheet2
+  <BottomSheet
     :isShow="isShow"
     drugClassesCustom="max-h-[100dvh] -md:bottom-1/2 -md:-translate-x-1/2 -md:translate-y-1/2"
     @closed="trnsFormStore.onClose()"
   >
     <template #handler>
-      <BaseBottomSheetHandler />
+      <BottomSheetHandler />
     </template>
 
     <div class="trnForm bg-foreground-1 lg:ml-12">
@@ -111,7 +111,7 @@ onMounted(init)
 
       <div class="trnForm__pagination" />
     </div>
-  </BaseBottomSheet2>
+  </BottomSheet>
 
   <!-- Modals -->
   <LazyTrnFormModalDescription v-if="trnsFormStore.modal.description" />

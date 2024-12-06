@@ -220,15 +220,15 @@ async function onSave() {
 
   <Teleport to="body">
     <!-- Colors -->
-    <BaseBottomSheet2
+    <BottomSheet
       v-if="modals.colors"
       isShow
       drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
       @closed="modals.colors = false"
     >
       <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
+        <BottomSheetHandler />
+        <BottomSheetClose @onClick="close" />
       </template>
 
       <template #default="{ close }">
@@ -275,18 +275,18 @@ async function onSave() {
           </div>
         </div>
       </template>
-    </BaseBottomSheet2>
+    </BottomSheet>
 
     <!-- Icon -->
-    <BaseBottomSheet2
+    <BottomSheet
       v-if="modals.icon"
       isShow
       drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
       @closed="modals.icon = false"
     >
       <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
+        <BottomSheetHandler />
+        <BottomSheetClose @onClick="close" />
       </template>
 
       <template #default="{ close }">
@@ -328,18 +328,18 @@ async function onSave() {
           </div>
         </div>
       </template>
-    </BaseBottomSheet2>
+    </BottomSheet>
 
     <!-- Parent -->
-    <BaseBottomSheet2
+    <BottomSheet
       v-if="modals.parent"
       isShow
       drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
       @closed="modals.parent = false"
     >
       <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
+        <BottomSheetHandler />
+        <BottomSheetClose @onClick="close" />
       </template>
 
       <template #default="{ close }">
@@ -375,7 +375,7 @@ async function onSave() {
           </div>
         </div>
       </template>
-    </BaseBottomSheet2>
+    </BottomSheet>
   </Teleport>
 </template>
 

@@ -85,7 +85,7 @@ function onClickWallet(walletId: WalletId) {
 
     <div
       v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
-      class="flex max-w-6xl gap-1 overflow-x-auto py-px pt-2 xl:pt-2"
+      class="flex max-w-6xl gap-1 overflow-x-auto px-2 py-px pt-2 xl:pt-2"
     >
       <WalletsItem
         v-for="walletId in sortedFilterWalletsIds"

@@ -11,14 +11,14 @@ const { isDemo } = useDemo()
 
 <template>
   <Teleport to="body">
-    <LazyBaseBottomSheet2
+    <LazyBottomSheet
       v-if="isModalOpen('menu')"
       isShow
       @closed="closeAllModals"
     >
       <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
+        <BottomSheetHandler />
+        <BottomSheetClose @onClick="close" />
       </template>
 
       <div class="bg-foreground-1 grid gap-3 px-1 py-3">
@@ -51,6 +51,6 @@ const { isDemo } = useDemo()
           </UiButtonBlue>
         </div>
       </div>
-    </LazyBaseBottomSheet2>
+    </LazyBottomSheet>
   </Teleport>
 </template>

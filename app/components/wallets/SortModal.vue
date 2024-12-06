@@ -6,18 +6,18 @@ const { closeAllModals, isModalOpen } = useAppNav()
 
 <template>
   <Teleport to="body">
-    <BaseBottomSheet2
+    <BottomSheet
       v-if="isModalOpen('walletsSort')"
       isShow
       drugClassesCustom="bg-foreground-1 max-w-md rounded-xl"
       @closed="closeAllModals"
     >
       <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
+        <BottomSheetHandler />
+        <BottomSheetClose @onClick="close" />
       </template>
 
       <WalletsSort @closeModal="closeAllModals" />
-    </BaseBottomSheet2>
+    </BottomSheet>
   </Teleport>
 </template>

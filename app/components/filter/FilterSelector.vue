@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { usePointer, useWindowSize } from '@vueuse/core'
 import type { FilterProvider } from '~/components/filter/types'
-import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   isShowCategories?: boolean
@@ -54,7 +53,7 @@ const modals = ref({
         </UiItem3>
 
         <Teleport to="body">
-          <BaseBottomSheet2
+          <BottomSheet
             v-if="modals.categories"
             isShow
             drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
@@ -62,8 +61,8 @@ const modals = ref({
           >
             <template #handler="{ close }">
               <div class="relative z-20">
-                <BaseBottomSheetHandler />
-                <BaseBottomSheetClose @onClick="close" />
+                <BottomSheetHandler />
+                <BottomSheetClose @onClick="close" />
               </div>
             </template>
 
@@ -90,7 +89,7 @@ const modals = ref({
                 </div>
               </div>
             </template>
-          </BaseBottomSheet2>
+          </BottomSheet>
         </Teleport>
       </template>
     </template>
@@ -125,7 +124,7 @@ const modals = ref({
         </UiItem3>
 
         <Teleport to="body">
-          <BaseBottomSheet2
+          <BottomSheet
             v-if="modals.wallets"
             isShow
             drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
@@ -133,8 +132,8 @@ const modals = ref({
           >
             <template #handler="{ close }">
               <div class="relative z-20">
-                <BaseBottomSheetHandler />
-                <BaseBottomSheetClose @onClick="close" />
+                <BottomSheetHandler />
+                <BottomSheetClose @onClick="close" />
               </div>
             </template>
 
@@ -161,7 +160,7 @@ const modals = ref({
                 </div>
               </div>
             </template>
-          </BaseBottomSheet2>
+          </BottomSheet>
         </Teleport>
       </template>
     </template>

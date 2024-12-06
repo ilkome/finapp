@@ -23,7 +23,7 @@ const statConfig = inject('statConfig') as StatConfigProvider
 
     <template #panel="{ close }">
       <div class="grid gap-6 p-3">
-        <BaseBottomSheetClose @click="close" />
+        <BottomSheetClose @click="close" />
 
         <!-- Chart show -->
         <div class="popover-el">

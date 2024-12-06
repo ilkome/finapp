@@ -14,14 +14,14 @@ function onSave(close: () => void) {
 
 <template>
   <Teleport to="body">
-    <BaseBottomSheet2
+    <BottomSheet
       isShow
       drugClassesCustom="max-w-sm mx-auto bg-foreground-1"
       @closed="trnsFormStore.closeTrnFormModal('description')"
     >
       <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
+        <BottomSheetHandler />
+        <BottomSheetClose @onClick="close" />
       </template>
 
       <template #default="{ close }">
@@ -46,6 +46,6 @@ function onSave(close: () => void) {
           </div>
         </div>
       </template>
-    </BaseBottomSheet2>
+    </BottomSheet>
   </Teleport>
 </template>

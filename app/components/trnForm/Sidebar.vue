@@ -48,7 +48,7 @@ watch(isShow, (v) => {
       class="trnForm bg-foreground-1 border-item-5 absolute left-0 top-0 z-50 h-full w-96 overflow-hidden border-r-2 shadow-2xl"
     >
       <div class="absolute right-2 top-2">
-        <BaseBottomSheetClose @onClick="trnsFormStore.onClose()" />
+        <BottomSheetClose @onClick="trnsFormStore.onClose()" />
       </div>
 
       <div ref="sliderRef2" class="swiper-container h-full">

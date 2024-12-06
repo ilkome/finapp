@@ -149,7 +149,7 @@ function onChangeViewOptions(newViewOptions: any) {
       })"
     >
       <Icon
-        :name="statConfig.config.value.catsList.isOpened ? 'fluent:folder-open-20-regular' : 'fluent:folder-20-regular'"
+        :name="statConfig.config.value.catsList.isOpened ? 'lucide:circle-equal' : 'lucide:circle-dot'"
         size="18"
       />
     </UiItem1>
@@ -232,7 +232,7 @@ function onChangeViewOptions(newViewOptions: any) {
               <div class="grow">
                 {{ t('isShowEmptyCategories') }}
               </div>
-              <SharedInputsCheckbox :value="statConfig.config.value.isShowEmptyCategories" />
+              <FormCheckbox :value="statConfig.config.value.isShowEmptyCategories" />
             </UiElement>
           </div>
 
@@ -254,7 +254,7 @@ function onChangeViewOptions(newViewOptions: any) {
               <div class="grow">
                 {{ t('isShowCategoriesVertical') }}
               </div>
-              <SharedInputsCheckbox :value="statConfig.config.value.isShowCategoriesVertical" />
+              <FormCheckbox :value="statConfig.config.value.isShowCategoriesVertical" />
             </UiElement>
           </div>
 
@@ -277,7 +277,7 @@ function onChangeViewOptions(newViewOptions: any) {
               <div class="grow">
                 {{ t('isShowFavorites') }}
               </div>
-              <SharedInputsCheckbox :value="favorites.isShow.value" />
+              <FormCheckbox :value="favorites.isShow.value" />
             </UiElement>
 
             <!-- Recent -->
@@ -294,7 +294,7 @@ function onChangeViewOptions(newViewOptions: any) {
               <div class="grow">
                 {{ t('isShowRecent') }}
               </div>
-              <SharedInputsCheckbox :value="recent.isShow.value" />
+              <FormCheckbox :value="recent.isShow.value" />
             </UiElement>
           </div>
 
@@ -335,7 +335,7 @@ function onChangeViewOptions(newViewOptions: any) {
                 <div class="grow">
                   {{ t('isItemsBg') }}
                 </div>
-                <SharedInputsCheckbox :value="statConfig.config.value.catsList.isItemsBg" />
+                <FormCheckbox :value="statConfig.config.value.catsList.isItemsBg" />
               </UiElement>
 
               <!-- Lines -->
@@ -349,7 +349,7 @@ function onChangeViewOptions(newViewOptions: any) {
                 <div class="grow">
                   {{ t('isLines') }}
                 </div>
-                <SharedInputsCheckbox :value="statConfig.config.value.catsList.isLines" />
+                <FormCheckbox :value="statConfig.config.value.catsList.isLines" />
               </UiElement>
 
               <!-- Round icons -->
@@ -363,7 +363,7 @@ function onChangeViewOptions(newViewOptions: any) {
                 <div class="grow">
                   {{ t('isRoundIcon') }}
                 </div>
-                <SharedInputsCheckbox :value="statConfig.config.value.catsList.isRoundIcon" />
+                <FormCheckbox :value="statConfig.config.value.catsList.isRoundIcon" />
               </UiElement>
             </div>
           </div>

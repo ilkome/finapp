@@ -22,4 +22,6 @@ export type CategoryWithData = CategoryWithDataBase & {
   categories?: CategoryWithDataBase[]
 }
 
+export type CategoriesWithData = Record<CategoryId, CategoryWithData>
+
 export type CategoriesWithTrns = Record<CategoryId, TrnId[]>

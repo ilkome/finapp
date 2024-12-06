@@ -56,43 +56,45 @@ useHead({
 </script>
 
 <template>
-  <NuxtPwaManifest />
+  <div>
+    <NuxtPwaManifest />
 
-  <div v-if="status === 'error'">
-    <pre>{{ error }}</pre>
-  </div>
-
-  <div v-else-if="status === 'pending'">
-    {{ t('base.loading') }}
-  </div>
-
-  <div v-else-if="status === 'success'" class="layoutBase">
-    <div class="grid h-full sm:grid-cols-[auto_1fr_auto]">
-      <LayoutSidebar :isShow />
-
-      <LayoutMenuSidebar
-        :isShowTitle="false"
-        class="sm:align-center bg-item-4 hidden justify-center gap-1 sm:flex sm:flex-col lg:hidden"
-      />
-
-      <div
-        :class="{ 'lg:translate-x-20': isShow }"
-        class="@container/main grid h-full overflow-hidden pb-12 transition-all duration-300 ease-in-out sm:pb-0"
-      >
-        <NuxtPage :keepalive="{ include: keepalive }" />
-      </div>
+    <div v-if="status === 'error'">
+      <pre>{{ error }}</pre>
     </div>
 
-    <LayoutMenuBottom />
-    <LayoutMenuBottomModal v-if="isModalOpen('menu')" />
-    <TrnFormFloatOpener />
-  </div>
+    <div v-else-if="status === 'pending'">
+      {{ t('base.loading') }}
+    </div>
 
-  <Teleport
-    v-if="categoriesStore.hasItems && walletsStore.hasItems"
-    to="body"
-  >
-    <TrnFormBottom v-if="width < 767" />
-    <TrnFormSidebar v-if="width >= 767" />
-  </Teleport>
+    <div v-else-if="status === 'success'" class="layoutBase">
+      <div class="grid h-full sm:grid-cols-[auto_1fr_auto]">
+        <LayoutSidebar :isShow />
+
+        <LayoutMenuSidebar
+          :isShowTitle="false"
+          class="sm:align-center bg-item-4 hidden justify-center gap-1 sm:flex sm:flex-col lg:hidden"
+        />
+
+        <div
+          :class="{ 'lg:translate-x-20': isShow }"
+          class="@container/main grid h-full overflow-hidden pb-12 transition-all duration-300 ease-in-out sm:pb-0"
+        >
+          <NuxtPage :keepalive="{ include: keepalive }" />
+        </div>
+      </div>
+
+      <LayoutMenuBottom />
+      <LayoutMenuBottomModal v-if="isModalOpen('menu')" />
+      <TrnFormFloatOpener />
+    </div>
+
+    <Teleport
+      v-if="categoriesStore.hasItems && walletsStore.hasItems"
+      to="body"
+    >
+      <TrnFormBottom v-if="width < 767" />
+      <TrnFormSidebar v-if="width >= 767" />
+    </Teleport>
+  </div>
 </template>

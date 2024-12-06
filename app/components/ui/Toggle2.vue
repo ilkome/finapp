@@ -4,7 +4,6 @@ import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   initStatus?: boolean
-  isPadding?: boolean
   lineWidth?: number
   openPadding?: string
   storageKey?: string
@@ -14,7 +13,11 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 </script>
 
 <template>
-  <div class="group relative" :class="{ [props.openPadding]: props.openPadding && isShown }">
+  <div
+    class="group relative" :class="{
+      [props.openPadding]: props.openPadding && isShown,
+    }"
+  >
     <div class="-my-px overflow-hidden">
       <div
         :class="getStyles('item', ['link', 'center', 'rounded'])"

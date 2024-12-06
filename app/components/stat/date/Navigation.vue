@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { Range, StatDateProvider } from '~/components/date/types'
-import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   maxRange: Range
 }>()
 
+const { t } = useI18n()
 const statDate = inject('statDate') as StatDateProvider
 
 const isShowNavNext = computed(() => {
@@ -14,12 +14,27 @@ const isShowNavNext = computed(() => {
 </script>
 
 <template>
-  <div class="items-top flex gap-2 pt-2">
-    <UiTitle10
-      @click="statDate.modals.value.dateSelector = !statDate.modals.value.dateSelector"
+  <div class="items-top grid max-w-sm grid-cols-[1fr,auto] gap-2 pt-2">
+    <BottomSheetOrDropdown
+      :title="t('dates.select')"
+      :isOpen="statDate.modals.value.dateSelector"
+      @onOpenModal="statDate.modals.value.dateSelector = true"
+      @onCloseModal="statDate.modals.value.dateSelector = false"
     >
-      <StatDateRange />
-    </UiTitle10>
+      <template #trigger>
+        <UiTitle10>
+          <StatDateRange />
+        </UiTitle10>
+      </template>
+
+      <template #content="{ close }">
+        <StatDateSelector
+          class="min-w-[350px]"
+          :maxRange
+          @onClose="close"
+        />
+      </template>
+    </BottomSheetOrDropdown>
 
     <div
       v-if="!statDate.params.value.customDate"

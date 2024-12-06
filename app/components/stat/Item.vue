@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { CategoriesWithTrns, CategoryWithData, MoneyTypeSlugNew } from '~/components/stat/types'
+import type { CategoriesWithData, CategoriesWithTrns, CategoryWithData, MoneyTypeSlugNew } from '~/components/stat/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TotalReturns } from '~/components/amount/getTotal'
@@ -37,7 +37,6 @@ const categoriesStore = useCategoriesStore()
 
 const isShowTrns = ref(false)
 
-const maxRange = computed(() => trnsStore.getRange(props.trnsIds))
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
 
 const selectedType = ref<MoneyTypeSlugNew>('sum')
@@ -63,14 +62,34 @@ const rangeTrnsIds = computed(() => {
 
 const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
 
-const selectedTrnsIds = computed(() => {
+function getTrnsIdsByType(selectedType: MoneyTypeSlugNew) {
   const typeMapping = {
     expense: [0, 2],
     income: [1, 2],
     sum: [0, 1, 2],
   }
+  const trnsTypes = typeMapping[selectedType]
 
-  const trnsTypes = typeMapping[selectedType.value]
+  if (trnsTypes) {
+    return trnsTypes
+  }
+}
+
+const chartTrnsIds = computed(() => {
+  const trnsTypes = getTrnsIdsByType(selectedType.value)
+
+  if (!trnsTypes) {
+    return rangeTrnsIds.value
+  }
+
+  return trnsStore.getStoreTrnsIds({
+    trnsIds: rangeTrnsIds.value,
+    trnsTypes,
+  }, { includesChildCategories: false })
+})
+
+const selectedTrnsIds = computed(() => {
+  const trnsTypes = getTrnsIdsByType(selectedType.value)
 
   if (!trnsTypes) {
     return rangeTrnsIds.value
@@ -83,6 +102,8 @@ const selectedTrnsIds = computed(() => {
     trnsTypes,
   }, { includesChildCategories: false })
 })
+
+const intervalsChartData = computed(() => getIntervalsData(chartTrnsIds.value, statDate.intervalsInRange.value))
 
 const rangeTotal = computed(() => {
   const trnsIds = statDate.params.value.intervalSelected !== -1
@@ -107,7 +128,7 @@ const xAxisLabels = computed(() => intervalsData.value.map(i => +i.range.start) 
 
 const series = computed(() => {
   const types = props.type === 'sum' ? ['expense', 'income'] as const : [props.type]
-  const intervalsTotal = intervalsData.value.map(g => g.total)
+  const intervalsTotal = intervalsChartData.value.map(g => g.total)
   const baseSeries = types.map(type => createSeriesItem(type, intervalsTotal))
 
   return statDate.params.value.intervalSelected >= 0
@@ -195,7 +216,7 @@ function createSeriesItem(typeItem: 'expense' | 'income' | 'sum', data: TotalRet
 }
 
 function addMarkArea(series: any[]) {
-  const selectedStartDate = intervalsData.value?.[statDate.params.value.intervalSelected]?.range.start
+  const selectedStartDate = intervalsChartData.value?.[statDate.params.value.intervalSelected]?.range.start
 
   if (!selectedStartDate)
     return series
@@ -233,10 +254,11 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
       id: categoryId,
       name: category.name,
       trnsIds: [],
+      value: 0,
     }
     acc[categoryId].trnsIds.push(trnId)
     return acc
-  }, {} as Record<string, { id: string, name: string, trnsIds: TrnId[] }>)
+  }, {} as CategoriesWithData)
 
   // Add preCategoriesIds to categoriesByTrns
   if (preCategoriesIds) {
@@ -293,7 +315,7 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
     acc[parentId].categories.sort(sortCategoriesByAmount)
 
     return acc
-  }, {} as Record<string, CategoryWithData>)
+  }, {} as CategoriesWithData)
 
   return Object.values(groupedCategories).sort(sortCategoriesByAmount)
 }
@@ -358,7 +380,6 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
           <div
             v-if="statConfig.config.value.catsView === 'list'"
             :class="{
-              'grid gap-1 px-0': statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened,
               'md:max-w-lg': !statConfig.config.value.catsList.isGrouped || !statConfig.config.value.catsList.isOpened,
               'grid gap-1': statConfig.config.value.catsList.isItemsBg,
             }"
@@ -372,7 +393,6 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
               }"
               :storageKey="`finapp-stat-cats-${item.id}-${statConfig.config.value.catsView}-${props.type}`"
               :initStatus="false"
-              :lineWidth="1"
               :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
             >
               <template #header="{ toggle, isShown }">
@@ -425,6 +445,7 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
                     v-for="itemInside in item.categories"
                     :key="itemInside.id"
                     :item="itemInside"
+                    isShowAmount
                     @click="onClickCategory"
                   />
                 </div>
@@ -533,14 +554,8 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
 
     <!-- Modals -->
     <Teleport to="body">
-      <StatDateSelectorModal
-        v-if="statDate.modals.value.dateSelector"
-        :maxRange
-        @onClose="statDate.modals.value.dateSelector = !statDate.modals.value.dateSelector"
-      />
-
       <!-- Trns -->
-      <BaseBottomSheet2
+      <BottomSheet
         v-if="selectedTrnsIds && selectedTrnsIds?.length > 0 && isShowTrns"
         isShow
         drugClassesCustom="bg-foreground-1 lg:w-[calc(100%-120px)] max-w-md"
@@ -548,8 +563,8 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
       >
         <template #handler="{ close }">
           <div class="relative z-20">
-            <BaseBottomSheetHandler />
-            <BaseBottomSheetClose @onClick="close" />
+            <BottomSheetHandler />
+            <BottomSheetClose @onClick="close" />
           </div>
         </template>
 
@@ -566,7 +581,7 @@ function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategor
             isShowIncome
           />
         </div>
-      </BaseBottomSheet2>
+      </BottomSheet>
     </Teleport>
   </div>
 </template>

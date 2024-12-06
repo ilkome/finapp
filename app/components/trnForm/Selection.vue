@@ -67,14 +67,14 @@ async function onSelectParentCategory(id: CategoryId) {
 
 <template>
   <Teleport to="body">
-    <BaseBottomSheet2
+    <BottomSheet
       :isShow="isShow"
       drugClassesCustom="bg-foreground-1"
       @closed="isShow = false"
     >
       <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
+        <BottomSheetHandler />
+        <BottomSheetClose @onClick="close" />
       </template>
 
       <template #default="{ close }">
@@ -127,7 +127,7 @@ async function onSelectParentCategory(id: CategoryId) {
         </div>
         <div class="trnFormSelectionPagination" />
       </template>
-    </BaseBottomSheet2>
+    </BottomSheet>
   </Teleport>
 </template>
 

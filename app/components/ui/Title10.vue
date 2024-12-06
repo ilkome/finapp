@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
 
-const props = defineProps<{
+defineProps<{
   isOpen?: boolean
   isShown?: boolean
 }>()

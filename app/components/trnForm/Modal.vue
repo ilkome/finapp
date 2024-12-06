@@ -6,15 +6,15 @@ const { height } = useWindowSize()
 
 <template>
   <Teleport to="body">
-    <BaseBottomSheet2
+    <BottomSheet
       drugClassesCustom="bg-foreground-1 sm:rounded-b-2xl"
       isShow
       :maxHeight="height"
       @closed="$emit('closed')"
     >
       <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
+        <BottomSheetHandler />
+        <BottomSheetClose @onClick="close" />
       </template>
 
       <template #default="{ close }">
@@ -25,6 +25,6 @@ const { height } = useWindowSize()
         </div>
         <slot name="default" :close="close" />
       </template>
-    </BaseBottomSheet2>
+    </BottomSheet>
   </Teleport>
 </template>

@@ -20,7 +20,7 @@ function handleClick() {
     class="hocus:bg-item-5 flex grow items-center gap-3 rounded-lg p-2 text-sm"
     @click="handleClick"
   >
-    <SharedInputsCheckbox
+    <FormCheckbox
       v-if="checkboxValue !== undefined"
       :value="checkboxValue"
     />

@@ -21,14 +21,14 @@ function onSelect(code: CurrencyCode, close: () => void) {
 
 <template>
   <Teleport to="body">
-    <BaseBottomSheet2
+    <BottomSheet
       isShow
       drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
       @closed="emit('onClose')"
     >
       <template #handler="{ close }">
-        <BaseBottomSheetHandler />
-        <BaseBottomSheetClose @onClick="close" />
+        <BottomSheetHandler />
+        <BottomSheetClose @onClick="close" />
       </template>
 
       <template #default="{ close }">
@@ -42,7 +42,7 @@ function onSelect(code: CurrencyCode, close: () => void) {
           />
         </div>
       </template>
-    </BaseBottomSheet2>
+    </BottomSheet>
   </Teleport>
 </template>
 
