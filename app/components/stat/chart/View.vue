@@ -12,6 +12,13 @@ import { config, lineConfig } from '~/components/stat/chart/config'
 import { formatByLocale, getFormatForChart } from '~/components/date/utils'
 import { getLocalAmount, setChartXAxis } from '~/components/stat/chart/utils'
 
+type ChartParams = {
+  color?: string
+  name: string
+  seriesName: string
+  value: number
+}
+
 const props = withDefaults(
   defineProps<{
     chartType: ChartType
@@ -59,7 +66,7 @@ const option = computed(() => {
     ...statConfig.config.value,
     tooltip: {
       ...config.tooltip,
-      formatter(params) {
+      formatter(params: ChartParams[]) {
         let content = '<div class="px-1">'
         content = `${content}
           <div class="text-md pb-2 text-2 text-right">${formatByLocale(new Date(+params[0].name), getFormatForChart(props.period), locale.value)}</div>
@@ -67,7 +74,19 @@ const option = computed(() => {
         `
 
         for (const param of params) {
-          const value = `<div class="text-md text-right font-secondary text-1">${getLocalAmount(param.value)}</div>`
+          const value = `
+
+          <div class="flex justify-between items-center gap-4 border-b border-item-6 pb-1 last:border-b-0">
+            <div class="flex items-center gap-2">
+              <div class="size-3 rounded-full" style="background: ${param.color}"></div>
+              <div>${param.seriesName}</div>
+            </div>
+
+            <div class="text-lg text-right font-secondary text-1">
+              ${getLocalAmount(param.value)}
+            </div>
+          </div>
+          `
           content = content + value
         }
 

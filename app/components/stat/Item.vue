@@ -4,7 +4,6 @@ import type { FilterProvider } from '~/components/filter/types'
 import type { CategoryWithData, ChartSeries, IntervalData, MoneyTypeSlugNew } from '~/components/stat/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import type { TotalReturns } from '~/components/amount/getTotal'
 import type { TrnId } from '~/components/trns/types'
 import useAmount from '~/components/amount/useAmount'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -41,6 +40,20 @@ const isShowTrns = ref(false)
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
 
 const selectedType = ref<MoneyTypeSlugNew>('sum')
+const selectedTypesMapping = computed(() => {
+  const typeMapping = {
+    expense: [0, 2],
+    income: [1, 2],
+    sum: [0, 1, 2],
+  }
+  const trnsTypes = typeMapping[selectedType.value]
+
+  if (trnsTypes) {
+    return trnsTypes
+  }
+
+  return undefined
+})
 
 const statTypeShow = computed(() => ({
   expense: props.trnsIds.some(id => trnsStore.items?.[id]?.type === 0),
@@ -63,36 +76,19 @@ const rangeTrnsIds = computed(() => {
 
 const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
 
-function getTrnsIdsByType(selectedType: MoneyTypeSlugNew) {
-  const typeMapping = {
-    expense: [0, 2],
-    income: [1, 2],
-    sum: [0, 1, 2],
-  }
-  const trnsTypes = typeMapping[selectedType]
-
-  if (trnsTypes) {
-    return trnsTypes
-  }
-}
-
 const chartTrnsIds = computed(() => {
-  const trnsTypes = getTrnsIdsByType(selectedType.value)
-
-  if (!trnsTypes) {
+  if (!selectedTypesMapping.value) {
     return rangeTrnsIds.value
   }
 
   return trnsStore.getStoreTrnsIds({
     trnsIds: rangeTrnsIds.value,
-    trnsTypes,
+    trnsTypes: selectedTypesMapping.value,
   }, { includesChildCategories: false })
 })
 
 const selectedTrnsIds = computed(() => {
-  const trnsTypes = getTrnsIdsByType(selectedType.value)
-
-  if (!trnsTypes) {
+  if (!selectedTypesMapping.value) {
     return rangeTrnsIds.value
   }
 
@@ -100,11 +96,9 @@ const selectedTrnsIds = computed(() => {
     trnsIds: statDate.params.value.intervalSelected !== -1
       ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIds.value,
-    trnsTypes,
+    trnsTypes: selectedTypesMapping.value,
   }, { includesChildCategories: false })
 })
-
-const intervalsChartData = computed(() => getIntervalsData(chartTrnsIds.value, statDate.intervalsInRange.value))
 
 const rangeTotal = computed(() => {
   const trnsIds = statDate.params.value.intervalSelected !== -1
@@ -127,11 +121,12 @@ const categoriesWithData = computed<CategoryWithData[]>(() => {
 
 const chart = {
   series: computed<ChartSeries[]>(() => {
+    const intervalsChartData = getIntervalsData(chartTrnsIds.value, statDate.intervalsInRange.value)
     const types = props.type === 'sum' ? ['expense', 'income'] as const : [props.type]
-    const intervalsTotal = intervalsChartData.value.map(g => g.total)
+    const intervalsTotal = intervalsChartData.map(g => g.total)
     const baseSeries = types.map(type => createSeriesItem(type, intervalsTotal))
 
-    const selectedDate = intervalsChartData.value?.[statDate.params.value.intervalSelected]?.range.start
+    const selectedDate = intervalsChartData?.[statDate.params.value.intervalSelected]?.range.start
     if (!selectedDate || statDate.params.value.intervalSelected < 0)
       return baseSeries
 

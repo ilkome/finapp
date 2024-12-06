@@ -30,7 +30,7 @@ export type CategoriesWithData = Record<CategoryId, CategoryWithData>
 export type CategoriesWithTrns = Record<CategoryId, TrnId[]>
 
 export type ChartSeries = {
-  color: string
+  color?: string
   data: number[]
   markArea?: any
   markedArea?: 'markedArea'

@@ -21,20 +21,21 @@ export function useStatChart() {
     if (!selectedDate)
       return series
 
-    const markAreaSeries = {
-      data: [],
-      markArea: markArea(selectedDate),
-      markedArea: 'markedArea',
-      type: 'bar',
-    }
-
     if (chartType === 'bar') {
       if (series[0])
-        series[0].markArea = markAreaSeries.markArea
+        series[0].markArea = markArea(selectedDate)
       return series
     }
 
     const markAreaIdx = series.findIndex(s => s.markedArea === 'markedArea')
+    const markAreaSeries: ChartSeries = {
+      data: [],
+      markArea: markArea(selectedDate),
+      markedArea: 'markedArea',
+      name: 'markArea',
+      type: 'bar',
+    }
+
     return markAreaIdx === -1
       ? [...series, markAreaSeries]
       : series.map((s, i) => i === markAreaIdx ? markAreaSeries : s)
