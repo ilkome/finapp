@@ -1,7 +1,8 @@
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import type { TrnId } from '~/components/trns/types'
-import type { TotalReturns } from '~/components/amount/getTotal'
+import type { ChartType } from '~/components/stat/chart/types'
 import type { Range } from '~/components/date/types'
+import type { TotalReturns } from '~/components/amount/getTotal'
+import type { TrnId } from '~/components/trns/types'
 
 export type MoneyTypeSlug = 'expense' | 'income'
 export type MoneyTypeSlugSum = 'income' | 'expense' | 'sum' | 'summary'
@@ -34,7 +35,7 @@ export type ChartSeries = {
   markArea?: any
   markedArea?: 'markedArea'
   name: string
-  type: MoneyTypeSlugNew
+  type: ChartType
 }
 
 export type IntervalData = {
