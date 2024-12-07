@@ -1,23 +1,21 @@
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export function useFilter() {
   const router = useRouter()
   const route = useRoute()
-  const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
   const walletsStore = useWalletsStore()
 
   /**
    * Wallets
    */
-  const walletsIds = computed<CategoryId[]>(() => Array.isArray(route.query.filterWallets)
-    ? (route.query.filterWallets as CategoryId[]).filter(id => walletsStore.items?.[id])
+  const walletsIds = computed<WalletId[]>(() => Array.isArray(route.query.filterWallets)
+    ? (route.query.filterWallets as WalletId[]).filter(id => walletsStore.items?.[id])
     : route.query.filterWallets
-      ? [route.query.filterWallets]
+      ? [...route.query.filterWallets.split(',')]
       : [],
   )
 
@@ -75,7 +73,7 @@ export function useFilter() {
   const categoriesIds = computed<CategoryId[]>(() => Array.isArray(route.query.filterCategories)
     ? (route.query.filterCategories as CategoryId[]).filter(id => categoriesStore.items[id])
     : route.query.filterCategories
-      ? [route.query.filterCategories]
+      ? [...route.query.filterCategories.split(',')]
       : [],
   )
 

@@ -130,8 +130,9 @@ useHead({ title: wallet.value?.name })
 
     <StatItemWrap
       :activeTab
-      :trnsIds
       :storageKey
+      :trnsIds
+      :walletId
     />
   </UiPage>
 </template>

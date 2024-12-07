@@ -7,6 +7,7 @@ const { t } = useI18n()
 const trnsStore = useTrnsStore()
 
 useHead({ title: t('stat.title') })
+definePageMeta({ scrollToTop: false })
 </script>
 
 <template>
