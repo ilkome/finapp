@@ -14,7 +14,7 @@ const isShowNavNext = computed(() => {
 </script>
 
 <template>
-  <div class="items-top grid max-w-sm grid-cols-[1fr,auto] gap-2 pt-2">
+  <div class="items-top grid grid-cols-[1fr,auto] gap-2 md:max-w-sm">
     <BottomSheetOrDropdown
       :title="t('dates.select')"
       :isOpen="statDate.modals.value.dateSelector"
@@ -22,7 +22,7 @@ const isShowNavNext = computed(() => {
       @onCloseModal="statDate.modals.value.dateSelector = false"
     >
       <template #trigger>
-        <UiTitle10>
+        <UiTitle10 class="mt-1">
           <StatDateRange />
         </UiTitle10>
       </template>

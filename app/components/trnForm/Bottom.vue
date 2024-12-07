@@ -56,6 +56,11 @@ function init() {
   }
 }
 
+watch(isShow, () => {
+  if (isShow.value && sliderObj.value)
+    sliderObj.value.slideTo(1, 0)
+})
+
 onMounted(init)
 </script>
 

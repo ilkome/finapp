@@ -15,7 +15,7 @@ import StatTrnsSection from '~/components/stat/trns/Section.vue'
 import StatCategoriesSection from '~/components/stat/categories/Section.vue'
 
 const props = defineProps<{
-  hasChildren: boolean
+  hasChildren?: boolean
   isQuickModal?: boolean
   preCategoriesIds?: CategoryId[]
   storageKey: string

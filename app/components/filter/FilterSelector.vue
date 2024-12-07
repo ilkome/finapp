@@ -20,12 +20,12 @@ const modals = ref({
 </script>
 
 <template>
-  <div class="bg-item-4 flex gap-1 rounded-xl">
+  <div class="bg-item-4 flex gap-1 rounded-md p-px">
     <template v-if="props.isShowCategories">
       <!-- Categories -->
       <UPopover v-if="isLaptop">
         <UiItem3>
-          <UiIconCategory class="size-5" />
+          <Icon name="lucide:folders" size="20" />
         </UiItem3>
 
         <template #panel="{ close }">
@@ -49,7 +49,7 @@ const modals = ref({
         <UiItem3
           @click="modals.categories = true"
         >
-          <UiIconCategory class="size-5" />
+          <Icon name="lucide:folders" size="20" />
         </UiItem3>
 
         <Teleport to="body">

@@ -43,9 +43,9 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <div class="bg-foreground-3 sticky top-0 z-20 p-2 !pb-1 lg:px-4 xl:py-2 2xl:px-8">
+  <div class="bg-foreground-3 border-b-foreground-4 sticky top-0 z-20 border-b-2 p-2 lg:px-4 xl:py-2 2xl:px-8">
     <div class="grid max-w-5xl gap-2">
-      <div class="flex items-start gap-2">
+      <div class="flex items-center gap-2">
         <div class="grid grow gap-2">
           <slot name="title" />
         </div>
@@ -64,13 +64,15 @@ function onClickWallet(walletId: WalletId) {
           </StatConfigPopover>
         </div>
       </div>
-
-      <StatMenu
-        v-if="props.menu"
-        :active="props.menu.active"
-        @click="props.menu.click"
-      />
     </div>
+  </div>
+
+  <div class="bg-foreground-3 px-2 lg:px-4 2xl:px-8">
+    <StatMenu
+      v-if="props.menu"
+      :active="props.menu.active"
+      @click="props.menu.click"
+    />
   </div>
 
   <div class="px-2 pb-0 lg:px-4 2xl:px-8">
@@ -100,7 +102,9 @@ function onClickWallet(walletId: WalletId) {
     </div>
 
     <slot name="summary" />
+  </div>
 
+  <div class="-bg-foreground-3 px-2 py-1 lg:px-4 2xl:px-8">
     <StatDateNavigation :maxRange="props.maxRange" />
   </div>
 </template>

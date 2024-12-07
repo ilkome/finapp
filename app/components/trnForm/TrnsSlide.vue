@@ -49,7 +49,7 @@ function changeFilter(value: FilterBy) {
   filterBy.value = value
 }
 
-function onClickEdit() {
+function onClickTransaction() {
   props.slider?.slideTo(1)
 }
 
@@ -81,7 +81,7 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
       isShowGroupSum
       isShowIncome
       isShowTransfers
-      @onClickEdit="onClickEdit"
+      @click="onClickTransaction"
     >
       <template #contentBefore>
         <div class="pb-2">

@@ -133,6 +133,7 @@ useHead({ title: wallet.value?.name })
       :storageKey
       :trnsIds
       :walletId
+      hasChildren
     />
   </UiPage>
 </template>

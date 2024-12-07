@@ -6,12 +6,17 @@ const props = defineProps<{
   date?: string
   trnItem: TrnItemFull
 }>()
+
+const emit = defineEmits<{
+  click: []
+}>()
 </script>
 
 <template>
   <UiElement
     v-if="props.trnItem"
     :insideClasses="`!min-h-[38px] ${props.alt ? 'py-2' : 'py-3'}`"
+    @click="emit('click')"
   >
     <template v-if="!alt" #leftIcon>
       <UiIconBase

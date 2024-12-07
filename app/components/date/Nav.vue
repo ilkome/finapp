@@ -56,19 +56,20 @@ function clear() {
   <div class="flex gap-1">
     <div
       v-if="isShowNavHome"
-      :class="[getStyles('item', ['link', 'rounded', 'minh1'])]"
-      class="font-primary flex items-center text-nowrap px-3 text-base font-medium leading-none"
+      :class="[getStyles('item', ['link', 'rounded', 'minh'])]"
+      class="font-primary flex items-center text-nowrap !rounded-full px-3 text-base font-medium leading-none"
 
       @click="clear"
     >
-      <UiIconReturn class="size-5" />
+      <Icon name="lucide:undo-2" size="24" />
     </div>
 
     <div
       :class="[
-        getStyles('item', ['alt', 'link', 'rounded', 'minh1', 'center2', 'minw1']),
+        getStyles('item', ['alt', 'link', 'rounded', 'minh', 'center2', 'minw1']),
         { '!hocus:transparent opacity-30': isStart },
       ]"
+      class="!rounded-full "
       @click="movePeriod('prev')"
     >
       <UiIconChevron class="size-8" />
@@ -76,9 +77,10 @@ function clear() {
 
     <div
       :class="[
-        getStyles('item', ['alt', 'link', 'rounded', 'minh1', 'center2', 'minw1']),
+        getStyles('item', ['alt', 'link', 'rounded', 'minh', 'center2', 'minw1']),
         { '!hocus:transparent opacity-30': isEnd },
       ]"
+      class="!rounded-full"
       @click="movePeriod('next')"
     >
       <UiIconChevron class="size-8 rotate-180" />

@@ -75,7 +75,7 @@ const biggestCatNumber = computed(() => {
           :class="{
             group: !statConfig.config.value.catsList.isItemsBg,
           }"
-          :storageKey="`finapp-stat-cats-${item.id}-${statConfig.config.value.catsView}-${type}`"
+          :storageKey="`finapp-stat-cats-${statConfig.config.value.catsList.isGrouped ? 'grouped' : 'not-grouped'}-${item.id}-${statConfig.config.value.catsView}-${type}`"
           :initStatus="false"
           :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
         >

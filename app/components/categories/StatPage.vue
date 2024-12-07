@@ -125,6 +125,7 @@ useHead({ title: category.value?.name })
       :activeTab
       :trnsIds
       :storageKey
+      :hasChildren="categoriesIdsOrParent.length > 1"
     />
   </UiPage>
 </template>

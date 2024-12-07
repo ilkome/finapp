@@ -65,6 +65,7 @@ watch(filter.categoriesIds, () => {
       :activeTab
       :trnsIds
       :storageKey
+      hasChildren
     />
   </UiPage>
 </template>

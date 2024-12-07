@@ -10,7 +10,7 @@ import { usePointerClass } from '~/components/layout/usePointerClass'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const keepalive = ['Categories', 'Wallets', 'Dashboard']
+const keepalive = ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard']
 
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()

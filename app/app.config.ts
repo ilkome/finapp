@@ -2,7 +2,7 @@ export default defineAppConfig({
   icon: {
     customize: (content: string) => {
       return content
-        .replace(/stroke-width="[^"]*"/g, `stroke-width="1.5"`)
+        .replace(/stroke-width="[^"]*"/g, `stroke-width="1.75"`)
     },
   },
   ui: {

@@ -7,6 +7,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeTab: MoneyTypeSlugNew
+  hasChildren?: boolean
   preCategoriesIds?: CategoryId[]
   storageKey: string
   trnsIds: TrnId[]
@@ -41,7 +42,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
       :storageKey="props.storageKey"
       :trnsIds="expenseTrnsIds"
       :walletId="props.walletId"
-      hasChildren
+      :hasChildren="props.hasChildren"
       type="expense"
     />
 
@@ -50,7 +51,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
       :storageKey="props.storageKey"
       :trnsIds="incomeTrnsIds"
       :walletId="props.walletId"
-      hasChildren
+      :hasChildren="props.hasChildren"
       type="income"
     />
   </div>
@@ -65,7 +66,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
       :trnsIds="props.trnsIds"
       :type="props.activeTab"
       :walletId="props.walletId"
-      hasChildren
+      :hasChildren="props.hasChildren"
     />
   </div>
 </template>

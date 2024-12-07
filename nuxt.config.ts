@@ -42,7 +42,7 @@ export default defineNuxtConfig({
   components: [
     {
       extensions: ['vue'],
-      global: true,
+      // global: true,
       path: '~/components/',
     },
   ],

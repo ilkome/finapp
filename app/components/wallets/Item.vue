@@ -158,7 +158,7 @@ if (!props.isSort) {
         v-if="isSort"
         class="sortHandle insert-0 flex-center group-hocus:bg-item-5 absolute right-0 top-0 h-full rounded-md px-3"
       >
-        <UiIconSort class="size-6" />
+        <Icon name="lucide:grip-vertical" size="20" />
       </div>
     </template>
   </UiElement>

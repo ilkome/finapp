@@ -8,21 +8,20 @@ const props = defineProps<{
 </script>
 
 <template>
-  <UiHeaderTitle class="grid min-h-[30px] gap-2 !py-0 px-2">
+  <UiHeaderTitle class="grid min-h-[30px] gap-2 !py-0 pl-1 pr-2">
     <div class="flex items-center gap-2">
-      <UiIconBase
+      <!-- <UiIconBase
         :name="props.category.icon"
         :color="props.category.color"
-        class="size-7"
-        invert
-      />
+        class="text-xl"
+      /> -->
       <div class="text-lg font-semibold">
         {{ props.category.name }}
       </div>
 
       <div
         v-if="props.parentCategory"
-        class="text-item-2 flex items-center gap-2 pt-1 text-xs font-medium leading-none"
+        class="text-item-2 flex items-center gap-2 pt-[2px] text-xs font-medium leading-none"
       >
         <div class="text-2xs text-4">
           •

@@ -19,7 +19,7 @@ const emit = defineEmits<{
       class="font-primary flex items-center text-nowrap px-3 py-2 text-base font-medium leading-none"
       @click="emit('changeDate', 'today')"
     >
-      <UiIconReturn class="size-5" />
+      <Icon name="lucide:undo-2" size="20" />
     </div>
 
     <div

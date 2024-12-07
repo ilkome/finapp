@@ -309,10 +309,10 @@ const counts = computed(() => ({
           v-if="walletsStore.sortedIds.length > 1"
           @click="openModal('walletsSort')"
         >
-          <UiIconOrder class="size-5" />
+          <Icon name="lucide:arrow-down-up" size="20" />
         </UiHeaderLink>
         <UiHeaderLink @click="router.push('/wallets/new')">
-          <UiIconAdd class="size-5" />
+          <Icon name="lucide:plus" size="24" />
         </UiHeaderLink>
       </template>
     </UiHeader>

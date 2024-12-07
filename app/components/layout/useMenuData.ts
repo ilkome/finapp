@@ -20,7 +20,6 @@ export default function useMenuData() {
 
   const items = computed<Record<string, MenuItem>>(() => ({
     trnForm: {
-      // component: 'UiIconAdd',
       icon: 'hugeicons:plus-sign-square',
       name: t('trnForm.createTrn'),
     },
@@ -33,7 +32,7 @@ export default function useMenuData() {
       name: t('wallets.name'),
     },
     categories: {
-      component: 'UiIconCategory',
+      icon: 'lucide:folders',
       name: t('categories.name'),
     },
     history: {
@@ -41,7 +40,7 @@ export default function useMenuData() {
       name: t('trns.history'),
     },
     settings: {
-      component: 'UiIconSettings',
+      icon: 'UiIconSettings',
       name: t('settings.title'),
     },
   }))

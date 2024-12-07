@@ -30,6 +30,10 @@ const props = withDefaults(
   },
 )
 
+const emit = defineEmits<{
+  click: []
+}>()
+
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
@@ -226,6 +230,7 @@ const groupedTrns = computed(() => {
         :trnId="trnId"
         :trnItem="trnsStore.computeTrnItem(trnId)"
         class="group"
+        @click="emit('click')"
       />
     </div>
 
@@ -284,6 +289,7 @@ const groupedTrns = computed(() => {
             :trnItem="trnsStore.computeTrnItem(trnId)"
             :date="formatDate(trnsStore.computeTrnItem(trnId)?.date, 'trnItem')"
             class="group"
+            @click="emit('click')"
           />
         </div>
       </div>

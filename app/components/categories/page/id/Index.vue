@@ -111,6 +111,7 @@ useHead({ title: category.value?.name })
       :trnsIds
       :storageKey
       :preCategoriesIds
+      :hasChildren="categoriesIdsOrParent.length > 1"
     />
   </UiPage>
 </template>

@@ -9,7 +9,16 @@ const props = defineProps<{
   trnItem: TrnItemFull
 }>()
 
+const emit = defineEmits<{
+  click: []
+}>()
+
 const { trnFormEdit } = useTrnsFormStore()
+
+function click() {
+  emit('click')
+  trnFormEdit(props.trnId)
+}
 </script>
 
 <template>
@@ -17,6 +26,6 @@ const { trnFormEdit } = useTrnsFormStore()
     :alt="props.alt"
     :trnItem
     :date
-    @click="trnFormEdit(trnId)"
+    @click="click"
   />
 </template>
