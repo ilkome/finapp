@@ -33,7 +33,7 @@ function onClick(type: MoneyTypeSlugNew) {
 </script>
 
 <template>
-  <div class="pt-3 md:max-w-lg">
+  <div>
     <div
       v-if="props.type === 'netIncome'"
       class="flex flex-wrap justify-stretch gap-1"

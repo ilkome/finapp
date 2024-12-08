@@ -18,7 +18,7 @@ const statConfig = inject('statConfig') as StatConfigProvider
     class="ml-auto"
   >
     <UiItem3>
-      <Icon name="lucide:settings-2" class="size-5" />
+      <Icon name="lucide:settings-2" size="20" />
     </UiItem3>
 
     <template #panel="{ close }">

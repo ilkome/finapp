@@ -155,6 +155,7 @@ export function useStatDate({
     delInterval,
     getIntervalsInRange,
     intervalsInRange,
+    maxRange,
     minusRange,
     modals,
     params,

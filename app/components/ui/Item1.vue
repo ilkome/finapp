@@ -8,7 +8,7 @@ const emit = defineEmits<{
 
 <template>
   <div
-    :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
+    :class="getStyles('item', ['link', '_bg', 'center', 'minh2', 'minw1', 'rounded'])"
     class="justify-center text-xl"
     @click="(e: Event) => emit('click', e)"
   >

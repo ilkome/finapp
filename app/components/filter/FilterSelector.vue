@@ -20,7 +20,7 @@ const modals = ref({
 </script>
 
 <template>
-  <div class="bg-item-4 flex gap-1 rounded-md p-px">
+  <div class="_bg-item-4 flex gap-2 rounded-md p-px">
     <template v-if="props.isShowCategories">
       <!-- Categories -->
       <UPopover v-if="isLaptop">

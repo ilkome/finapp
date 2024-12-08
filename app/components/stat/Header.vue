@@ -43,14 +43,14 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <div class="bg-foreground-3 border-b-foreground-4 sticky top-0 z-20 border-b-2 p-2 lg:px-4 xl:py-2 2xl:px-8">
+  <div class="bg-foreground-3 border-b-foreground-1 sticky top-0 z-20 border-b-2 px-2 py-1 lg:px-4 xl:py-2 2xl:px-8">
     <div class="grid max-w-5xl gap-2">
       <div class="flex items-center gap-2">
         <div class="grid grow gap-2">
           <slot name="title" />
         </div>
 
-        <div class="ml-auto flex items-center gap-2">
+        <div class="ml-auto flex items-center gap-1">
           <FilterSelector
             :isShowCategories="props.filter.isShowCategories"
             :isShowWallets="props.filter.isShowWallets"
@@ -67,7 +67,7 @@ function onClickWallet(walletId: WalletId) {
     </div>
   </div>
 
-  <div class="bg-foreground-3 px-2 lg:px-4 2xl:px-8">
+  <div class="p-2 lg:px-4 2xl:px-8">
     <StatMenu
       v-if="props.menu"
       :active="props.menu.active"
@@ -75,7 +75,10 @@ function onClickWallet(walletId: WalletId) {
     />
   </div>
 
-  <div class="px-2 pb-0 lg:px-4 2xl:px-8">
+  <div
+    v-if="filter.isShow?.value || statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
+    class="px-2 pb-0 lg:px-4 2xl:px-8"
+  >
     <div
       v-if="filter.isShow?.value && filter.categoriesIds.value.length > 0"
       class="pt-2"
@@ -102,9 +105,5 @@ function onClickWallet(walletId: WalletId) {
     </div>
 
     <slot name="summary" />
-  </div>
-
-  <div class="-bg-foreground-3 px-2 py-1 lg:px-4 2xl:px-8">
-    <StatDateNavigation :maxRange="props.maxRange" />
   </div>
 </template>

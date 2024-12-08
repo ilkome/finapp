@@ -139,7 +139,7 @@ function onChangeViewOptions(newViewOptions: any) {
 </script>
 
 <template>
-  <div class="bg-foreground-2 relative flex rounded-md">
+  <div class="_bg-item-9 relative flex rounded-md">
     <!-- Folder -->
     <UiItem1
       v-if="props.isShowGrouping && statConfig.config.value.catsView === 'list' && statConfig.config.value.catsList.isGrouped"
@@ -190,15 +190,14 @@ function onChangeViewOptions(newViewOptions: any) {
       :popper="{ placement: 'bottom-end' }"
       class="group"
     >
-      <div
-        :class="getStyles('item', ['link', 'bg', 'center', 'minh2', 'minw1', 'rounded'])"
-        class="group-data-[headlessui-state='open']:!border-accent-1 justify-center border border-transparent text-xl"
+      <UiItem1
+        class="group-data-[headlessui-state='open']:!border-accent-1 border border-transparent"
       >
         <Icon
           name="lucide:circle-ellipsis"
           size="18"
         />
-      </div>
+      </UiItem1>
 
       <template #panel>
         <div class="relative z-10 grid min-w-64 gap-3 p-3">

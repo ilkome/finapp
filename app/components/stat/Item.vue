@@ -210,7 +210,10 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       :xAxisLabels="chart.xAxisLabels.value"
     />
 
+    <StatDateNavigation :maxRange="statDate.maxRange.value" />
+
     <StatSumWrap
+      class="pt-2 md:max-w-lg"
       :isShowExpense="statTypeShow.expense"
       :isShowIncome="statTypeShow.income"
       :selectedType="selectedType"
@@ -219,7 +222,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       @click="onClickSumItem"
     />
 
-    <div class="grid gap-6 pt-4">
+    <div class="grid gap-6 pt-3">
       <StatCategoriesSection
         v-if="props.hasChildren"
         :categoriesWithData="categoriesWithData"

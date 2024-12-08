@@ -50,7 +50,6 @@ const isShowChart = computed(() => {
       '': statConfig.config.value?.chartView === 'full',
       'md:max-w-lg': statConfig.config.value?.chartView === 'half',
     }"
-    class="pt-1 md:pt-2"
   >
     <div
       v-if="isShowChart"
