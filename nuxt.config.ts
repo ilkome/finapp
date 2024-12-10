@@ -156,6 +156,20 @@ export default defineNuxtConfig({
       ],
       id: '/',
       name: 'Finapp',
+      screenshots: [
+        {
+          form_factor: 'wide',
+          sizes: '1920x1080',
+          src: 'screenshot-desktop.png',
+          type: 'image/png',
+        },
+        {
+          form_factor: 'narrow',
+          sizes: '750x1334',
+          src: 'screenshot-mobile.png',
+          type: 'image/png',
+        },
+      ],
       short_name: 'Finapp',
       start_url: '/dashboard',
       theme_color: '#171717',
