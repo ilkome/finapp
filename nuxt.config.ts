@@ -181,7 +181,7 @@ export default defineNuxtConfig({
     strategies: sw ? 'injectManifest' : 'generateSW',
 
     workbox: {
-      globIgnores: ['**/200*'],
+      globIgnores: ['**/200*', '**/404*'],
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
       runtimeCaching: [
         {
