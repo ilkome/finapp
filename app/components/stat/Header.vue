@@ -43,7 +43,7 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <div class="bg-foreground-3 border-b-foreground-1 sticky top-0 z-20 border-b-2 px-2 py-1 lg:px-4 xl:py-2 2xl:px-8">
+  <div class="bg-foreground-3 border-b-foreground-1 sticky top-0 z-20 border-b-2 px-2 py-1 lg:px-4 2xl:px-8">
     <div class="grid max-w-5xl gap-2">
       <div class="flex items-center gap-2">
         <div class="grid grow gap-2">
@@ -67,7 +67,7 @@ function onClickWallet(walletId: WalletId) {
     </div>
   </div>
 
-  <div class="p-2 lg:px-4 2xl:px-8">
+  <div class="px-2 pb-2 pt-1 lg:px-4 lg:pt-2 2xl:px-8">
     <StatMenu
       v-if="props.menu"
       :active="props.menu.active"
@@ -81,7 +81,6 @@ function onClickWallet(walletId: WalletId) {
   >
     <div
       v-if="filter.isShow?.value && filter.categoriesIds.value.length > 0"
-      class="pt-2"
     >
       <FilterSelected
         :isShowCategories="props.filter.isShowCategories"
@@ -91,7 +90,7 @@ function onClickWallet(walletId: WalletId) {
 
     <div
       v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
-      class="flex max-w-6xl gap-1 overflow-x-auto py-px pt-2 xl:pt-2"
+      class="flex max-w-6xl gap-1 overflow-x-auto py-px"
     >
       <WalletsItem
         v-for="walletId in sortedFilterWalletsIds"
