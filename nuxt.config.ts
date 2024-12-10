@@ -100,6 +100,12 @@ export default defineNuxtConfig({
     vueI18n: './i18n/i18n.config.ts',
   },
 
+  icon: {
+    clientBundle: {
+      scan: true,
+    },
+  },
+
   modules: [
     '@nuxtjs/i18n',
     '@pinia/nuxt',
@@ -142,7 +148,7 @@ export default defineNuxtConfig({
           type: 'image/png',
         },
         {
-          purpose: 'any maskable',
+          purpose: 'any',
           sizes: '512x512',
           src: 'pwa-512x512.png',
           type: 'image/png',
