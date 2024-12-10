@@ -137,7 +137,7 @@ export default defineNuxtConfig({
     manifest: {
       background_color: '#171717',
       display: 'fullscreen',
-      display_override: ['fullscreen', 'minimal-ui'],
+      display_override: ['standalone', 'minimal-ui'],
       icons: [
         {
           sizes: '192x192',
