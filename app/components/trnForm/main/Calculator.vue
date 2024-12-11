@@ -37,7 +37,8 @@ onLongPress(
     <div class="flex flex-col gap-1">
       <TrnFormMainCalculatorButton @click="onClick('*')">
         <Icon
-          name="mdi:plus rotate-45"
+          name="mdi:plus"
+          class="rotate-45"
         />
       </TrnFormMainCalculatorButton>
       <TrnFormMainCalculatorButton @click="onClick('-')">

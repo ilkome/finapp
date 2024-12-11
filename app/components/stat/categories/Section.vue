@@ -109,7 +109,7 @@ const biggestCatNumber = computed(() => {
           <div class="border-item-5 ml-5 mt-1 -translate-x-px border-l pl-3">
             <div
               v-if="!item.categories || item.categories.length === 0"
-              class="ml-2"
+              class="mb-3 ml-2"
             >
               <TrnsList
                 :trnsIds="item.trnsIds"
