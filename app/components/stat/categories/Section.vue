@@ -105,20 +105,6 @@ const biggestCatNumber = computed(() => {
             </div>
           </template>
 
-          <div
-            v-if="!statConfig.config.value.catsList.isGrouped"
-            class="border-item-5 ml-5 border-l pl-5"
-          >
-            <TrnsList
-              :trnsIds="item.trnsIds"
-              :size="5"
-              alt
-              isShowExpense
-              isShowIncome
-              isShowTransfers
-            />
-          </div>
-
           <!-- Inside -->
           <div class="border-item-5 ml-5 mt-1 -translate-x-px border-l pl-3">
             <div
