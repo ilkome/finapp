@@ -42,8 +42,9 @@ function changeDate(way: 'prev' | 'next' | 'today') {
     </UPopover>
 
     <StatDateNav
-      :isLastPeriod="false"
-      :isToday="isToday"
+      :isShowNavHome="!isToday"
+      :isEnd="isToday"
+      :isStart="false"
       @changeDate="changeDate"
     />
   </div>

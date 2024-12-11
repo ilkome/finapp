@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
-
 const props = defineProps<{
-  isLastPeriod: boolean
-  isToday: boolean
+  isEnd: boolean
+  isShowNavHome: boolean
+  isStart: boolean
 }>()
 
 const emit = defineEmits<{
@@ -12,36 +11,28 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex gap-1">
-    <div
-      v-if="!props.isToday"
-      :class="[getStyles('item', ['link', 'rounded', 'minh2'])]"
-      class="font-primary flex items-center text-nowrap px-3 py-2 text-base font-medium leading-none"
+  <div class="flex items-center gap-1">
+    <UiItem3
+      v-if="props.isShowNavHome"
       @click="emit('changeDate', 'today')"
     >
       <Icon name="lucide:undo-2" size="20" />
-    </div>
+    </UiItem3>
 
-    <div
-      :class="[
-        getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
-        { '!hocus:transparent opacity-30': props.isLastPeriod },
-      ]"
-      class="flex-center bg-item-4"
+    <UiItem3
+      :class="{ '!hocus:transparent opacity-30': isStart }"
+      class="bg-item-4"
       @click="emit('changeDate', 'prev')"
     >
       <UiIconChevron class="size-8" />
-    </div>
+    </UiItem3>
 
-    <div
-      :class="[
-        getStyles('item', ['link', 'rounded', 'minh2', 'center', 'minw1']),
-        { '!hocus:transparent opacity-30': props.isToday },
-      ]"
-      class="flex-center bg-item-4"
+    <UiItem3
+      :class="{ '!hocus:transparent opacity-30': isEnd }"
+      class="bg-item-4 "
       @click="emit('changeDate', 'next')"
     >
       <UiIconChevron class="size-8 rotate-180" />
-    </div>
+    </UiItem3>
   </div>
 </template>

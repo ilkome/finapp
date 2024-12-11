@@ -1,3 +1,4 @@
+import { differenceInDays } from 'date-fns'
 import { formatByLocale, getEndOf, getStartOf } from '~/components/date/utils'
 import type { PeriodNameWithAll } from '~/components/filter/types'
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
@@ -22,13 +23,15 @@ export function useDateFormats() {
       return false
 
     const date = new Date(value)
+    const diff = differenceInDays(new Date(), date)
+
     switch (type) {
       case 'full':
         return {
           day: formatByLocale(date, 'd', locale.value),
           month: formatByLocale(date, 'MMM', locale.value),
           week: formatByLocale(date, 'dd.MM', locale.value),
-          weekday: `${calculateDate({ by: 'day', duration: 1, end: date, start: date, type: 'start' })}, ${formatByLocale(date, 'EEEE', locale.value)}`,
+          weekday: `${diff < 2 ? `${calculateDate({ by: 'day', duration: 1, end: date, start: date, type: 'start' })}, ` : ''} ${formatByLocale(date, 'EEEE', locale.value)}`,
         }
 
       case 'trnItem':
