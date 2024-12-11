@@ -121,7 +121,6 @@ onLongPress(
           v-if="statConfig.config.value.catsList.isRoundIcon"
           :color="category?.color"
           :name="category?.icon"
-          class="ml-0 !w-7 !text-base leading-none"
           invert
           @click="emit('onClickIcon', props.item.id)"
         />
@@ -129,7 +128,7 @@ onLongPress(
           v-else
           :color="category?.color"
           :name="category?.icon"
-          class="ml-1 !w-6 !text-xl leading-none"
+          class="ml-1 !w-6"
           @click="emit('onClickIcon', props.item.id)"
         />
       </template>

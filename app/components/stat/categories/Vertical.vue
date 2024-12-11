@@ -114,7 +114,7 @@ onLongPress(
       :color="category?.color"
       :size="20"
       invert
-      class="w-7 rounded-none rounded-b p-0"
+      class="rounded-none rounded-b p-0"
     />
   </div>
 </template>

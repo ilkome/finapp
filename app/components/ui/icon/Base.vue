@@ -21,7 +21,7 @@ const emit = defineEmits<{
       backgroundColor: props.invert ? props.color : 'transparent',
     }"
     :class="{
-      [cn('rounded-full p-1.5', props.class)]: props.invert,
+      [cn('rounded-full w-7 p-1.5', props.class)]: props.invert,
     }"
     class="flex-center text-icon-primary aspect-square overflow-hidden"
     @click="(e: Event) => emit('click', e)"

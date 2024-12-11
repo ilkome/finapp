@@ -74,7 +74,7 @@ onLongPress(
       <UiIconBase
         :name="category?.icon"
         :color="category?.color"
-        class="!text-xs"
+        class="!w-5 p-1"
         invert
       />
     </div>

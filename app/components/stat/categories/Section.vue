@@ -94,7 +94,7 @@ const biggestCatNumber = computed(() => {
                 class="w-8"
               />
 
-              <StatLinesItemLine
+              <StatCategoriesLine
                 :isShowParent="!statConfig.config.value.catsList.isGrouped"
                 :item="item"
                 :biggestCatNumber="biggestCatNumber"
@@ -122,10 +122,24 @@ const biggestCatNumber = computed(() => {
           <!-- Inside -->
           <div class="border-item-5 ml-5 mt-1 -translate-x-px border-l pl-3">
             <div
-              v-if="statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened"
+              v-if="!item.categories || item.categories.length === 0"
+              class="ml-2"
+            >
+              <TrnsList
+                :trnsIds="item.trnsIds"
+                :size="5"
+                alt
+                isShowExpense
+                isShowIncome
+                isShowTransfers
+              />
+            </div>
+
+            <div
+              v-if="item.categories && statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened"
               class="flex flex-wrap gap-1 pl-3"
             >
-              <StatLinesItemRound
+              <StatCategoriesRound
                 v-for="itemInside in item.categories"
                 :key="itemInside.id"
                 :item="itemInside"
@@ -160,7 +174,7 @@ const biggestCatNumber = computed(() => {
                       @click="toggleInside"
                     />
 
-                    <StatLinesItemLine
+                    <StatCategoriesLine
                       :isShowParent="!statConfig.config.value.catsList.isGrouped"
                       :item="itemInside"
                       :biggestCatNumber="biggestCatNumber"
@@ -193,7 +207,7 @@ const biggestCatNumber = computed(() => {
         v-if="statConfig.config.value.catsView === 'round'"
         class="@3xl/stat:gap-2 flex flex-wrap gap-1 gap-y-2 pl-1 pt-2 md:max-w-lg"
       >
-        <StatLinesItemRound
+        <StatCategoriesRound
           v-for="item in categoriesWithData"
           :key="item.id"
           :item="item"

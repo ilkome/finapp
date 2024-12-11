@@ -64,7 +64,7 @@ const items = computed(() => ({
   },
 }))
 
-const items2 = computed(() => ({
+const actions = computed(() => ({
   no: {
     click: () => {
       showModalConfirm.value = false
@@ -102,7 +102,7 @@ const items2 = computed(() => ({
 
     <div
       v-if="trnsFormStore.values.trnId"
-      class="px-3 pb-2"
+      class="relative mb-2 px-3"
     >
       <TrnsItem
         :trnItem="trnsStore.computeTrnItem(trnsFormStore.values.trnId)"
@@ -112,16 +112,16 @@ const items2 = computed(() => ({
 
       <div
         v-if="showModalConfirm"
-        class="fixed inset-0 z-10 size-full p-px"
+        class="bg-foreground-4 absolute bottom-0 left-0 z-10 w-full p-px"
       >
-        <div class="bg-foreground-1 text-1 z-10 grid h-full content-center gap-4 rounded-xl px-4">
+        <div class="text-1 z-10 grid h-full content-center gap-4 rounded-xl px-4">
           <div>
             {{ t('base.sure') }}
           </div>
 
-          <div class="flex flex-col gap-2">
+          <div class="flex gap-2">
             <UiElement
-              v-for="(item, slug) in items2"
+              v-for="(item, slug) in actions"
               :key="slug"
               class="grow"
               insideClasses="!min-h-[44px] bg-item-4"

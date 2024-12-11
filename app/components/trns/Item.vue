@@ -15,7 +15,8 @@ const emit = defineEmits<{
 <template>
   <UiElement
     v-if="props.trnItem"
-    :insideClasses="`!min-h-[38px] ${props.alt ? 'py-2' : 'py-3'}`"
+    :lineWidth="props.alt ? 3 : 0"
+    :insideClasses="`${props.alt ? 'py-2 min-h-[32px]' : 'py-3 !min-h-[38px]'}`"
     @click="emit('click')"
   >
     <template v-if="!alt" #leftIcon>
@@ -28,10 +29,11 @@ const emit = defineEmits<{
 
     <div class="grid grow gap-1 pr-1">
       <div class="flex grow items-center gap-3">
+        <!-- Alt -->
         <template v-if="alt">
           <div
             v-if="date"
-            class="text-2xs truncate leading-none"
+            class="text-2xs w-10 truncate leading-none"
           >
             {{ date }}
           </div>

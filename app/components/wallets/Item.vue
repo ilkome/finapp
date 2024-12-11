@@ -66,6 +66,7 @@ if (!props.isSort) {
 
 <template>
   <UiElement
+    v-if="wallet"
     ref="longPressRef"
     :isActive="activeItemId === props.walletId"
     :insideClasses="`${props.insideClasses ? props.insideClasses : ''} min-h-[46px]`"

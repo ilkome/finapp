@@ -229,7 +229,7 @@ const groupedTrns = computed(() => {
         :date="formatDate(trnsStore.computeTrnItem(trnId)?.date, 'trnItem')"
         :trnId="trnId"
         :trnItem="trnsStore.computeTrnItem(trnId)"
-        class="group"
+        class="group/trn group"
         @click="emit('click')"
       />
     </div>
@@ -298,7 +298,7 @@ const groupedTrns = computed(() => {
     <!-- Show all -->
     <div
       v-if="!isShowedAllTrns"
-      class="flex-center"
+      class="flex-center pt-1"
     >
       <div
         class="flex-center bg-item-5 text-secondary hocus:bg-item-6 rounded-full px-5 py-2 text-sm"

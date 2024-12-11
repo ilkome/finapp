@@ -159,7 +159,6 @@ async function onSave() {
           <Icon
             :color="props.categoryForm.color"
             :name="props.categoryForm.icon"
-            class="!w-7 !text-xl leading-none"
           />
         </template>
       </UiItem2>
@@ -175,7 +174,6 @@ async function onSave() {
             :color="props.categoryForm.color"
             :name="props.categoryForm.icon"
             invert
-            class="ml-0 !w-7 !text-base leading-none"
           />
         </template>
       </UiItem2>
