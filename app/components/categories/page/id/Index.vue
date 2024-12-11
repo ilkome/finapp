@@ -101,7 +101,7 @@ useHead({ title: category.value?.name })
           v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
           @click="onEditClick"
         >
-          <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
+          <div class="mdi:pencil-outline text-xl group-hover:text-white" />
         </UiHeaderLink>
       </template>
     </StatHeader>

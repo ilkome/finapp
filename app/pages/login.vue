@@ -13,6 +13,9 @@ definePageMeta({
 const { t } = useI18n()
 
 useSeoMeta({
+  description: t('app.desc'),
+  ogDescription: t('app.desc'),
+  ogTitle: t('title'),
   title: t('title'),
 })
 

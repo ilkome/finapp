@@ -41,7 +41,7 @@ const emit = defineEmits<{
             class="flex items-center gap-2"
           >
             <Icon
-              :name="props.trnItem.category?.icon?.replace('mdi mdi-', 'mdi:')"
+              :name="props.trnItem.category?.icon?.replace('mdi:', 'mdi:')"
               :color="props.trnItem.category?.color"
               size="16"
             />

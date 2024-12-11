@@ -46,8 +46,8 @@ async function onClickSubmit() {
     "
     @click="onClickSubmit"
   >
-    <span v-if="!isMath && isSubmittable" class="mdi mdi-check" />
-    <span v-else-if="isMath" class="mdi mdi-equal" />
-    <span v-else class="mdi mdi-palm-tree" />
+    <span v-if="!isMath && isSubmittable" class="mdi:check" />
+    <span v-else-if="isMath" class="mdi:equal" />
+    <span v-else class="mdi:palm-tree" />
   </div>
 </template>

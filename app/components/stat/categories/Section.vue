@@ -52,7 +52,7 @@ const biggestCatNumber = computed(() => {
         class="flex overflow-y-auto pb-2 pl-1 pt-4"
       >
         <StatCategoriesVertical
-          v-for="item in categoriesWithData"
+          v-for="item in categoriesWithData.filter(c => c.value !== 0)"
           :key="item.id"
           :item="item"
           :biggestCatNumber="biggestCatNumber"

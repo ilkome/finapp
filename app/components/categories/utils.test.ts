@@ -23,19 +23,19 @@ export const mockCategories: Categories = {
   },
   transfer: {
     color: 'var(--c-blue-1)',
-    icon: 'mdi mdi-repeat',
+    icon: 'mdi:repeat',
     name: 'Transfer',
     parentId: 0,
   },
   transfer2: {
     color: 'var(--c-blue-1)',
-    icon: 'mdi mdi-repeat',
+    icon: 'mdi:repeat',
     name: 'перевод',
     parentId: 0,
   },
   transfer3: {
     color: 'var(--c-blue-1)',
-    icon: 'mdi mdi-repeat',
+    icon: 'mdi:repeat',
     name: 'transfer',
     parentId: 0,
   },
@@ -51,7 +51,7 @@ export const mockCategories: Categories = {
 const mockCategories2: Categories = {
   '241120_7fxrno': {
     color: '#701a75',
-    icon: 'mdi mdi-paper-roll-outline',
+    icon: 'mdi:paper-roll-outline',
     name: 'Gas',
     order: 1,
     parentId: '241120_k27ehb',
@@ -60,7 +60,7 @@ const mockCategories2: Categories = {
   },
   '241120_7wshaj': {
     color: '#52525b',
-    icon: 'mdi mdi-mushroom',
+    icon: 'mdi:mushroom',
     name: 'Просто категория',
     order: 1,
     parentId: 0,
@@ -72,7 +72,7 @@ const mockCategories2: Categories = {
       '241120_7fxrno',
     ],
     color: '#701a75',
-    icon: 'mdi mdi-truck-delivery',
+    icon: 'mdi:truck-delivery',
     name: 'Auto',
     order: 1,
     parentId: 0,
@@ -82,7 +82,7 @@ const mockCategories2: Categories = {
   'transfer': {
     childIds: [],
     color: 'var(--c-blue-1)',
-    icon: 'mdi mdi-repeat',
+    icon: 'mdi:repeat',
     name: 'Transfer',
     order: 9999,
     parentId: 0,

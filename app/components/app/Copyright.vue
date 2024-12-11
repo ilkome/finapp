@@ -11,8 +11,9 @@ const { t } = useI18n()
     href="https://ilko.me"
   >
     {{ t("madeBy.text") }}
-    <div
-      class="mdi mdi-heart mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl text-[rgb(210,0,20)]"
+    <Icon
+      class="mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl text-[rgb(210,0,20)]"
+      name="mdi:heart"
     />
     {{ t("madeBy.name") }}
   </a>

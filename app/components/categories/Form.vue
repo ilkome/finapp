@@ -156,7 +156,7 @@ async function onSave() {
         </template>
 
         <template #value>
-          <UiIconBase
+          <Icon
             :color="props.categoryForm.color"
             :name="props.categoryForm.icon"
             class="!w-7 !text-xl leading-none"
@@ -310,10 +310,10 @@ async function onSave() {
                 :key="icon"
                 :class="[{ '!border-accent-1': icon === props.categoryForm.icon }]"
                 :style="{ background: props.categoryForm.color }"
-                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent"
+                class="text-icon-primary flex-center size-10 cursor-pointer rounded-full border-2 border-transparent"
                 @click="emit('updateValue', 'icon', icon)"
               >
-                <div class="text-icon-primary text-2xl" :class="[icon]" />
+                <Icon :name="icon" size="20" />
               </div>
             </div>
           </div>

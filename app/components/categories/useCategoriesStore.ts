@@ -13,7 +13,7 @@ import { useUserStore } from '~/components/user/useUserStore'
 const transfer: CategoryItem = {
   childIds: [],
   color: 'var(--c-blue-1)',
-  icon: 'mdi mdi-repeat',
+  icon: 'mdi:repeat',
   name: 'Transfer',
   order: 9999,
   parentId: 0,
@@ -188,6 +188,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       // Set default values for optional properties
       formattedItems[categoryId] = {
         ...category,
+        icon: category.icon.replace('mdi mdi-', 'mdi:'),
         showInLastUsed: category.showInLastUsed ?? false,
         showInQuickSelector: category.showInQuickSelector ?? false,
       }

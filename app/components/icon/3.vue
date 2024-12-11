@@ -42,7 +42,7 @@ const classes = computed(() => ({
           <div :class="icon" />
         </template>
         <template v-else>
-          <div class="mdi mdi-folder-star" />
+          <div class="mdi:folder-star" />
         </template>
       </div>
     </template>

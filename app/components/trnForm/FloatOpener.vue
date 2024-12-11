@@ -18,7 +18,7 @@ const { trnFormCreate } = useTrnsFormStore()
         text-3xl transition
         group-hover:scale-125"
     >
-      <i class="mdi mdi-plus" />
+      <i class="mdi:plus" />
     </div>
   </div>
 </template>

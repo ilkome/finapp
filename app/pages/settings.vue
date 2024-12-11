@@ -13,6 +13,7 @@ const { isDemo } = useDemo()
 const isShowBaseCurrencyModal = ref(false)
 
 useSeoMeta({
+  ogTitle: t('settings.title'),
   title: t('settings.title'),
 })
 

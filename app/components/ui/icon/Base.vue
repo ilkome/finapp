@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { cn } from '~~/lib/cn'
+
 const props = defineProps<{
+  class?: string
   color?: string
   invert?: boolean
   name: string
+  size?: number
 }>()
 
 const emit = defineEmits<{
@@ -16,11 +20,15 @@ const emit = defineEmits<{
       color: props.invert ? '' : props.color,
       backgroundColor: props.invert ? props.color : 'transparent',
     }"
-    :class="[
-      props.name, {
-        'flex-center text-icon-primary aspect-square overflow-hidden rounded-full p-1.5 leading-none': props.invert,
-      }]"
-    class="text-icon-primary leading-none"
+    :class="{
+      [cn('rounded-full p-1.5', props.class)]: props.invert,
+    }"
+    class="flex-center text-icon-primary aspect-square overflow-hidden"
     @click="(e: Event) => emit('click', e)"
-  />
+  >
+    <Icon
+      :name="props.name"
+      :size="props.size ?? 20"
+    />
+  </div>
 </template>

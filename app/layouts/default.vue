@@ -51,6 +51,12 @@ useHead({
   htmlAttrs: {
     lang: locale.value,
   },
+})
+
+useSeoMeta({
+  description: t('app.desc'),
+  ogDescription: t('app.desc'),
+  ogTitle: (chunk?: string) => chunk ? `${chunk} - ${t('appName')}` : t('appName'),
   titleTemplate: (chunk?: string) => chunk ? `${chunk} - ${t('appName')}` : t('appName'),
 })
 </script>

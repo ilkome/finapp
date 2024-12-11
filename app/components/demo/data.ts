@@ -9,7 +9,7 @@ const data: {
     '06ca25500ef2': {
       color: '#4fc3f7',
       editedAt: 1585408861256,
-      icon: 'mdi mdi-airplane',
+      icon: 'mdi:airplane',
       name: 'Travel',
       order: 11,
       parentId: 0,
@@ -19,7 +19,7 @@ const data: {
     '4b6473ee7324': {
       color: '#d84315',
       editedAt: 1585408887791,
-      icon: 'mdi mdi-pill',
+      icon: 'mdi:pill',
       name: 'Health',
       order: 8,
       parentId: 0,
@@ -29,7 +29,7 @@ const data: {
     'KsNnR1EDBl9tAZTaWUP': {
       color: '#90a4ae',
       editedAt: 1585408861252,
-      icon: 'mdi mdi-car-sports',
+      icon: 'mdi:car-sports',
       name: 'Auto',
       order: 0,
       parentId: 0,
@@ -39,7 +39,7 @@ const data: {
     'KsNnRB3MqKvAqwo5IEf': {
       color: '#d4e157',
       editedAt: 1585073319837,
-      icon: 'mdi mdi-food',
+      icon: 'mdi:food',
       name: 'Cafe',
       order: 1,
       parentId: 'KxKMi55aCVkJXsiDE',
@@ -49,7 +49,7 @@ const data: {
     'KsNnREUqdH4nTGEjEhl': {
       color: '#ba68c8',
       editedAt: 1585408861253,
-      icon: 'mdi mdi-account-heart',
+      icon: 'mdi:account-heart',
       name: 'Family',
       order: 1,
       parentId: 0,
@@ -59,7 +59,7 @@ const data: {
     'KsNnRHjakWM4imFmCpI': {
       color: '#d4e157',
       editedAt: 1584359067144,
-      icon: 'mdi mdi-food-apple',
+      icon: 'mdi:food-apple',
       name: 'Groceries',
       order: 2,
       parentId: 'KxKMi55aCVkJXsiDE',
@@ -68,7 +68,7 @@ const data: {
     'KsNnS6QgcjgSVeA3KaM': {
       color: '#90a4ae',
       editedAt: 1584359067348,
-      icon: 'mdi mdi-gas-station',
+      icon: 'mdi:gas-station',
       name: 'Gas',
       parentId: 'KsNnR1EDBl9tAZTaWUP',
       showInLastUsed: true,
@@ -77,7 +77,7 @@ const data: {
     'KsNnSMR4DtZXFr75V2Y': {
       color: '#8d6e63',
       editedAt: 1585078567615,
-      icon: 'mdi mdi-fire',
+      icon: 'mdi:fire',
       name: 'Gas',
       parentId: 'KsNnTR_IP7TZ5UQ39MV',
       showInLastUsed: false,
@@ -86,7 +86,7 @@ const data: {
     'KsNnSzI9bi2L6YtJpFl': {
       color: '#90a4ae',
       editedAt: 1585078593530,
-      icon: 'mdi mdi-cogs',
+      icon: 'mdi:cogs',
       name: 'Spare parts',
       parentId: 'KsNnR1EDBl9tAZTaWUP',
       showInLastUsed: true,
@@ -95,7 +95,7 @@ const data: {
     'KsNnT85ujLHZFMRjqau': {
       color: '#8d6e63',
       editedAt: 1585078530426,
-      icon: 'mdi mdi-microsoft-internet-explorer',
+      icon: 'mdi:microsoft-internet-explorer',
       name: 'Internet',
       parentId: 'KsNnTR_IP7TZ5UQ39MV',
       showInLastUsed: true,
@@ -104,7 +104,7 @@ const data: {
     'KsNnTR_IP7TZ5UQ39MV': {
       color: '#8d6e63',
       editedAt: 1585408861254,
-      icon: 'mdi mdi-home-currency-usd',
+      icon: 'mdi:home-currency-usd',
       name: 'Home pay',
       order: 2,
       parentId: 0,
@@ -114,7 +114,7 @@ const data: {
     'KsNnUCHgx-3TJVpEOo5': {
       color: '#8d6e63',
       editedAt: 1585078546884,
-      icon: 'mdi mdi-toilet',
+      icon: 'mdi:toilet',
       name: 'Water',
       parentId: 'KsNnTR_IP7TZ5UQ39MV',
       showInLastUsed: false,
@@ -123,7 +123,7 @@ const data: {
     'KsNnUVvhaCBzUOIce-c': {
       color: '#ff8a65',
       editedAt: 1585408861256,
-      icon: 'mdi mdi-account-tie',
+      icon: 'mdi:account-tie',
       name: 'Office',
       order: 10,
       parentId: 0,
@@ -133,7 +133,7 @@ const data: {
     'KsNnVKle-reg5skNcxE': {
       color: '#26a69a',
       editedAt: 1585408861254,
-      icon: 'mdi mdi-cellphone-android',
+      icon: 'mdi:cellphone-android',
       name: 'Phone',
       order: 5,
       parentId: 0,
@@ -143,7 +143,7 @@ const data: {
     'KsNnVRQvYywN2OZFrEq': {
       color: '#1b5e20',
       editedAt: 1585408861255,
-      icon: 'mdi mdi-vuejs',
+      icon: 'mdi:vuejs',
       name: 'Vuejs',
       order: 6,
       parentId: 0,
@@ -152,7 +152,7 @@ const data: {
     'KsNnVUo-gQZCYr_Tqjx': {
       color: '#f48fb1',
       editedAt: 1585408875803,
-      icon: 'mdi mdi-badminton',
+      icon: 'mdi:badminton',
       name: 'Sport',
       order: 7,
       parentId: 0,
@@ -162,7 +162,7 @@ const data: {
     'KxKMi55aCVkJXsiDE': {
       color: '#d4e157',
       editedAt: 1585408895295,
-      icon: 'mdi mdi-cupcake',
+      icon: 'mdi:cupcake',
       name: 'Food',
       order: 4,
       parentId: 0,
@@ -172,7 +172,7 @@ const data: {
     'd564ed02cf7f': {
       color: '#8bc34a',
       editedAt: 1585408861256,
-      icon: 'mdi mdi-human-male',
+      icon: 'mdi:human-male',
       name: 'Freelance',
       order: 9,
       parentId: 0,

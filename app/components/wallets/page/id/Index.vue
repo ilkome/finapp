@@ -90,7 +90,7 @@ useHead({ title: wallet.value?.name })
 
       <template #actions>
         <UiHeaderLink @click="onEditClick">
-          <div class="mdi mdi-pencil-outline text-xl group-hover:text-white" />
+          <div class="mdi:pencil-outline text-xl group-hover:text-white" />
         </UiHeaderLink>
       </template>
 

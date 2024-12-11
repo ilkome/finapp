@@ -36,16 +36,16 @@ onLongPress(
   <div class="grid grid-cols-[.26fr,1fr,.26fr] justify-between gap-0">
     <div class="flex flex-col gap-1">
       <TrnFormMainCalculatorButton @click="onClick('*')">
-        <i class="mdi mdi-plus rotate-45" />
+        <i class="mdi:plus rotate-45" />
       </TrnFormMainCalculatorButton>
       <TrnFormMainCalculatorButton @click="onClick('-')">
-        <i class="mdi mdi-minus" />
+        <i class="mdi:minus" />
       </TrnFormMainCalculatorButton>
       <TrnFormMainCalculatorButton @click="onClick('+')">
-        <i class="mdi mdi-plus" />
+        <i class="mdi:plus" />
       </TrnFormMainCalculatorButton>
       <TrnFormMainCalculatorButton @click="onClick('/')">
-        <i class="mdi mdi-slash-forward" />
+        <i class="mdi:slash-forward" />
       </TrnFormMainCalculatorButton>
     </div>
 
@@ -83,7 +83,7 @@ onLongPress(
         class="relative"
         @click="trnsFormStore.openTrnFormModal('description')"
       >
-        <i class="mdi mdi-comment-text-outline" />
+        <i class="mdi:comment-text-outline" />
         <div
           v-if="!!trnsFormStore.values.desc"
           class="bg-accent-1 absolute right-1 top-1 aspect-square w-2 rounded-full"

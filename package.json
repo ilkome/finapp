@@ -3,7 +3,7 @@
   "type": "module",
   "version": "6.0.0",
   "packageManager": "pnpm@9.4.0",
-  "description": "Simple financial app",
+  "description": "Finapp helps you to control personal finances easily and efficiently.",
   "author": "Ilya Komichev @ilkome",
   "license": "MIT",
   "homepage": "https://ilko.me",

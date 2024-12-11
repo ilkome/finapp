@@ -6,17 +6,11 @@ const sw = process.env.SW === 'true'
 export default defineNuxtConfig({
   app: {
     head: {
-      link: [
-        {
-          href: '/css/materialdesignicons.min.css',
-          rel: 'stylesheet',
-        },
-        {
-          href: '/favicon.png',
-          rel: 'icon',
-          type: 'image/png',
-        },
-      ],
+      link: [{
+        href: '/favicon.png',
+        rel: 'icon',
+        type: 'image/png',
+      }],
       meta: [
         { charset: 'utf-8' },
         { content: 'width=device-width, initial-scale=1', name: 'viewport' },
@@ -104,6 +98,9 @@ export default defineNuxtConfig({
     clientBundle: {
       scan: true,
     },
+    serverBundle: {
+      collections: ['lucide', 'mdi'],
+    },
   },
 
   modules: [
@@ -182,25 +179,17 @@ export default defineNuxtConfig({
 
     workbox: {
       globIgnores: ['**/200*', '**/404*'],
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
-      runtimeCaching: [
-        {
-          handler: 'CacheFirst',
-          urlPattern: 'https://fonts.googleapis.com/',
-        },
-        {
-          handler: 'CacheFirst',
-          urlPattern: 'https://fonts.gstatic.com/',
-        },
-        {
-          handler: 'CacheFirst',
-          urlPattern: 'https://cdn.materialdesignicons.com/',
-        },
-        {
-          handler: 'CacheFirst',
-          urlPattern: 'https://api.iconify.design',
-        },
-      ],
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+      runtimeCaching: [{
+        handler: 'CacheFirst',
+        urlPattern: 'https://api.iconify.design/',
+      }, {
+        handler: 'CacheFirst',
+        urlPattern: 'https://fonts.googleapis.com/',
+      }, {
+        handler: 'CacheFirst',
+        urlPattern: 'https://fonts.gstatic.com/',
+      }],
     },
   },
 

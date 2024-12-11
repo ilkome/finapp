@@ -108,10 +108,13 @@ onLongPress(
         </div>
       </div>
     </div>
-    <div
-      :class="[category?.icon]"
-      :style="{ backgroundColor: category.color }"
-      class="text-icon-primary rounded-b text-center text-lg"
+
+    <UiIconBase
+      :name="category?.icon"
+      :color="category?.color"
+      :size="20"
+      invert
+      class="w-7 rounded-none rounded-b p-0"
     />
   </div>
 </template>

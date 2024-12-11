@@ -22,12 +22,11 @@ const { t } = useI18n()
       </div>
 
       <div class="flex items-center gap-4 pb-1">
-        <div
-          class="flex-center text-icon-primary size-8 rounded-full text-xl"
-          :style="{ background: props.category.color }"
-        >
-          <div :class="props.category.icon" />
-        </div>
+        <UiIconBase
+          :color="props.category.color"
+          :name="category.icon"
+          invert
+        />
         <div class="text-item-1 text-2xl font-semibold">
           {{ props.category.name ? props.category.name : t("categories.form.name.label") }}
         </div>

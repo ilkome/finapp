@@ -18,6 +18,7 @@ const { t } = useI18n()
 const router = useRouter()
 
 useSeoMeta({
+  ogTitle: t('wallets.name'),
   title: t('wallets.name'),
 })
 

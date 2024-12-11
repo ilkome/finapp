@@ -10,11 +10,6 @@ const props = defineProps<{
 <template>
   <UiHeaderTitle class="grid min-h-[30px] gap-2 !py-0 pl-1 pr-2">
     <div class="flex items-center gap-2">
-      <!-- <UiIconBase
-        :name="props.category.icon"
-        :color="props.category.color"
-        class="text-xl"
-      /> -->
       <div class="text-lg font-semibold">
         {{ props.category.name }}
       </div>

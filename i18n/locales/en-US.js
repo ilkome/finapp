@@ -9,7 +9,7 @@ export default {
   },
 
   app: {
-    desc: 'Powerful personal finance application',
+    desc: 'Finapp helps you to control personal finances easily and efficiently.',
     locale: {
       en: 'English',
       ru: 'Русский',

@@ -112,7 +112,7 @@ useHead({ title: category.value?.name })
         >
           <template #leftIcon>
             <UiIconBase
-              name="mdi mdi-pencil-outline group-hover/link:text-1 text-lg leading-none"
+              name="mdi:pencil-outline group-hover/link:text-1 text-lg leading-none"
             />
           </template>
 
