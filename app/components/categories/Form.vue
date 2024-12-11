@@ -300,6 +300,23 @@ async function onSave() {
           </div>
 
           <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
+            <UiFormElement class="mb-4 mt-2">
+              <template #label>
+                {{ t('categories.form.icon.desc') }}
+                <a
+                  href="https://icones.js.org/collection/mdi"
+                  target="_blank"
+                  class="text-accent-1"
+                >Material Design Icons</a>
+              </template>
+
+              <UiFormInput
+                :placeholder="t('categories.form.icon.placeholder')"
+                :value="categoryForm.icon"
+                @updateValue="(value: string) => emit('updateValue', 'icon', value)"
+              />
+            </UiFormElement>
+
             <div
               v-for="iconGroup in icons"
               :key="JSON.stringify(iconGroup)"

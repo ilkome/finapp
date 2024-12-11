@@ -65,7 +65,9 @@ export default {
         okWithTrns: `Category deleted and {trns}`,
       },
       icon: {
+        desc: 'Use any icon from',
         label: 'Icon',
+        link: 'Link',
       },
       lastUsed: 'Show in last used categories',
       name: {
