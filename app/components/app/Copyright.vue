@@ -10,12 +10,12 @@ const { t } = useI18n()
     class="flex-center px-5 py-2"
     href="https://ilko.me"
   >
-    {{ t("madeBy.text") }}
+    {{ t('madeBy.text') }}
     <Icon
       class="mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl text-[rgb(210,0,20)]"
       name="mdi:heart"
     />
-    {{ t("madeBy.name") }}
+    {{ t('madeBy.name') }}
   </a>
 </template>
 

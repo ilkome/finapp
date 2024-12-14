@@ -53,11 +53,7 @@ watch(filter.categoriesIds, () => {
       }"
     >
       <template #title>
-        <UiHeaderTitle class="flex min-h-[30px] items-center gap-3 !px-0 py-0 !pl-1">
-          <div class="text-lg font-semibold leading-none">
-            {{ t('stat.title') }}
-          </div>
-        </UiHeaderTitle>
+        <UiHeaderTitle>{{ t('stat.title') }}</UiHeaderTitle>
       </template>
     </StatHeader>
 

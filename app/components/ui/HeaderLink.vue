@@ -1,16 +1,29 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
 
+const props = defineProps<{
+  icon?: string
+}>()
+
 const emit = defineEmits<{
   click: [e: Event]
 }>()
 </script>
 
 <template>
-  <div
-    :class="[getStyles('item', ['bg', 'minw1', 'link', 'center2', 'rounded', 'padding1', 'minh2'])]"
-    @click="(e: Event) => emit('click', e)"
+  <UiElement
+    :lineWidth="2"
+    @click="e => emit('click', e)"
   >
+    <template #leftIcon>
+      <Icon
+        v-if="props.icon"
+        :name="props.icon"
+        size="20"
+        class="text-2"
+      />
+    </template>
+
     <slot />
-  </div>
+  </UiElement>
 </template>

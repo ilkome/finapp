@@ -65,9 +65,9 @@ async function onDeleteConfirm() {
 
 <template>
   <div>
-    <UiHeaderLink @click="onClickDelete">
-      <i class="mdi:delete-empty-outline text-xl group-hover:text-white" />
-    </UiHeaderLink>
+    <UiItem3 @click="onClickDelete">
+      <Icon name="mdi:delete-empty-outline" size="20" />
+    </UiItem3>
 
     <LayoutConfirmModal
       v-if="isShowDeleteConfirm"

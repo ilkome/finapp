@@ -32,6 +32,11 @@ const modals = ref({
   currencies: false,
 })
 
+const walletPlaceholder = computed(() => ({
+  ...props.walletForm,
+  name: props.walletForm.name ? props.walletForm.name : t('wallets.form.name.label'),
+}))
+
 /**
  * Validate
  */
@@ -237,8 +242,8 @@ async function onSave() {
           <div class="grid gap-3 py-4">
             <UiTitle>{{ t("color.label") }}</UiTitle>
             <WalletsItem
-              :walletId="props.walletId"
-              :wallet="props.walletForm"
+              :walletId="props.walletId ?? 'editWalletId'"
+              :wallet="walletPlaceholder"
               isShowIcon
             />
           </div>

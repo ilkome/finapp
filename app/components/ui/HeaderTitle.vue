@@ -1,5 +1,7 @@
 <template>
-  <div class="font-tertiary text-3 grow py-1 text-base font-bold leading-none">
+  <div
+    class="font-tertiary text-3 flex min-h-[30px] grow items-center gap-2 px-0.5 text-lg font-semibold leading-none"
+  >
     <slot />
   </div>
 </template>

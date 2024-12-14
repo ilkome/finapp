@@ -105,7 +105,7 @@ useHead({ title: category.value?.name })
         />
       </template>
 
-      <template #actions>
+      <template #popover>
         <UiElement
           v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
           @click="router.push(`/categories/${categoryId}/edit`)"

@@ -303,18 +303,18 @@ const counts = computed(() => ({
 
 <template>
   <UiPage>
-    <UiHeader>
+    <UiHeader class="mb-2">
       <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
       <template #actions>
-        <UiHeaderLink
+        <UiItem3
           v-if="walletsStore.sortedIds.length > 1"
           @click="openModal('walletsSort')"
         >
           <Icon name="lucide:arrow-down-up" size="20" />
-        </UiHeaderLink>
-        <UiHeaderLink @click="router.push('/wallets/new')">
+        </UiItem3>
+        <UiItem3 @click="router.push('/wallets/new')">
           <Icon name="lucide:plus" size="24" />
-        </UiHeaderLink>
+        </UiItem3>
       </template>
     </UiHeader>
 

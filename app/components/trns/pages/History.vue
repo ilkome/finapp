@@ -21,22 +21,27 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 <template>
   <UiPage>
-    <UiHeader>
+    <UiHeader class="!mb-4">
       <UiHeaderTitle>{{ t("trns.history") }}</UiHeaderTitle>
-    </UiHeader>
-
-    <div class="pageWrapper">
-      <div class="grid gap-3">
+      <template #actions>
         <FilterSelector
           class="flex gap-1"
           isShowCategories
           isShowWallets
         />
+      </template>
+
+      <template v-if="filter.isShow.value" #selected>
         <FilterSelected
+          class="bg-foreground-3 sticky top-[40px] z-20"
           isShowCategories
           isShowWallets
         />
+      </template>
+    </UiHeader>
 
+    <div class="pageWrapper">
+      <div class="grid gap-3">
         <TrnsList
           :trnsIds
           isShowDates

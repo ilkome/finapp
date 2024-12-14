@@ -15,9 +15,9 @@ const categoriesStore = useCategoriesStore()
     <UiHeader>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
-        <UiHeaderLink @click="router.push('/categories/new')">
+        <UiItem3 @click="router.push('/categories/new')">
           <Icon name="lucide:plus" size="24" />
-        </UiHeaderLink>
+        </UiItem3>
       </template>
     </UiHeader>
 

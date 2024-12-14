@@ -14,27 +14,7 @@ const { t } = useI18n()
 <template>
   <UiHeader>
     <UiHeaderTitle>
-      <div class="text-item-2 pb-1 text-xs font-medium">
-        {{ props.isEdit ? t('base.edit') : t('categories.createNewTitle') }}
-        <template v-if="props.parentCategory">
-          {{ t('common.in') }} {{ props.parentCategory.name }}
-        </template>
-      </div>
-
-      <div class="flex items-center gap-4 pb-1">
-        <UiIconBase
-          :color="props.category.color"
-          :name="category.icon"
-          invert
-        />
-        <div class="text-item-1 text-2xl font-semibold">
-          {{ props.category.name ? props.category.name : t("categories.form.name.label") }}
-        </div>
-      </div>
+      {{ props.isEdit ? `${t('base.edit')}: ${props.category.name}` : t('categories.createNewTitle') }}
     </UiHeaderTitle>
-
-    <template v-if="props.categoryId" #actions>
-      <CategoriesDelete :categoryId="props.categoryId" />
-    </template>
   </UiHeader>
 </template>

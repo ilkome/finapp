@@ -22,19 +22,7 @@ useHead({
 <template>
   <UiPage class="flex h-full flex-col">
     <UiHeader>
-      <UiHeaderTitle>
-        <div class="text-item-2 pb-1 text-xs font-medium">
-          {{ t("wallets.createNewTitle") }}
-        </div>
-        <div class="flex items-center gap-3">
-          <div class="text-item-1 text-2xl font-semibold">
-            {{ walletForm.name ? walletForm.name : t("wallets.form.name.label") }}
-          </div>
-          <div class="flex-center text-icon-primary text-2xs rounded-lg p-1" :style="{ background: walletForm.color }">
-            {{ walletForm.currency }}
-          </div>
-        </div>
-      </UiHeaderTitle>
+      <UiHeaderTitle>{{ t("wallets.createNewTitle") }}</UiHeaderTitle>
     </UiHeader>
 
     <WalletsForm

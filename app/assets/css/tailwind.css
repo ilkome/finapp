@@ -38,11 +38,11 @@ body {
 }
 
 .pageWrapper {
-  @apply max-w-xl grow px-2 md:px-6;
+  @apply max-w-xl grow px-2 lg:px-4 2xl:px-8;
 }
 
 .pageWrapperNoMaxWidth {
-  @apply max-w-4xl grow px-2 md:px-6;
+  @apply max-w-4xl grow px-2 lg:px-4 2xl:px-8;
 }
 
 .trnForm .trnForm__pagination {

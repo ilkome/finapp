@@ -8,18 +8,18 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const props = defineProps<{
-  config: {
+  config?: {
     isShowCategories?: boolean
     isShowWallets?: boolean
   }
-  filter: {
+  filter?: {
     isShow?: boolean
     isShowCategories?: boolean
     isShowSelected?: boolean
     isShowWallets?: boolean
   }
-  maxRange: Range
-  menu: {
+  maxRange?: Range
+  menu?: {
     active: MoneyTypeSlugNew
     click: (id: MoneyTypeSlugNew) => void
   }
@@ -44,32 +44,34 @@ function onClickWallet(walletId: WalletId) {
 
 <template>
   <div class="bg-foreground-3 border-b-foreground-1 sticky top-0 z-20 border-b-2 px-2 py-1 lg:px-4 2xl:px-8">
-    <div class="grid max-w-5xl gap-2">
-      <div class="flex items-center gap-2">
-        <div class="grid grow gap-2">
-          <slot name="title" />
-        </div>
+    <div class="flex max-w-5xl items-center gap-2">
+      <slot name="title" />
 
-        <div class="ml-auto flex items-center gap-1">
-          <FilterSelector
-            :isShowCategories="props.filter.isShowCategories"
-            :isShowWallets="props.filter.isShowWallets"
-          />
-          <StatConfigPopover
-            v-if="props.config"
-            :isShowWallets="props.config.isShowWallets"
-            :isShowCategories="props.config.isShowCategories"
-          >
-            <slot name="actions" />
-          </StatConfigPopover>
-        </div>
+      <div
+        v-if="props.filter || props.config"
+        class="ml-auto flex items-center gap-1"
+      >
+        <FilterSelector
+          v-if="props.filter"
+          :isShowCategories="props.filter.isShowCategories"
+          :isShowWallets="props.filter.isShowWallets"
+        />
+        <StatConfigPopover
+          v-if="props.config"
+          :isShowWallets="props.config.isShowWallets"
+          :isShowCategories="props.config.isShowCategories"
+        >
+          <slot name="popover" />
+        </StatConfigPopover>
       </div>
     </div>
   </div>
 
-  <div class="px-2 pb-2 pt-1 lg:px-4 lg:pt-2 2xl:px-8">
+  <div
+    v-if="props.menu"
+    class="px-2 pb-2 pt-1 lg:px-4 lg:pt-2 2xl:px-8"
+  >
     <StatMenu
-      v-if="props.menu"
       :active="props.menu.active"
       @click="props.menu.click"
     />
@@ -80,7 +82,7 @@ function onClickWallet(walletId: WalletId) {
     class="px-2 pb-0 lg:px-4 2xl:px-8"
   >
     <div
-      v-if="filter.isShow?.value && filter.categoriesIds.value.length > 0"
+      v-if="props.filter && filter.isShow?.value && filter.categoriesIds.value.length > 0"
     >
       <FilterSelected
         :isShowCategories="props.filter.isShowCategories"

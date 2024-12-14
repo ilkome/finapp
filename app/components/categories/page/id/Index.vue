@@ -10,6 +10,7 @@ import { useStatDate } from '~/components/date/useStatDate'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
+const { t } = useI18n()
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnsFormStore()
 const router = useRouter()
@@ -96,13 +97,16 @@ useHead({ title: category.value?.name })
         />
       </template>
 
-      <template #actions>
+      <template #popover>
         <UiHeaderLink
           v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
+          icon="mdi:pencil-outline"
           @click="onEditClick"
         >
-          <div class="mdi:pencil-outline text-xl group-hover:text-white" />
+          {{ t('base.edit') }}
         </UiHeaderLink>
+
+        <CategoriesDelete :categoryId />
       </template>
     </StatHeader>
 

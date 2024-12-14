@@ -156,9 +156,10 @@ async function onSave() {
         </template>
 
         <template #value>
-          <Icon
+          <UiIconBase
             :color="props.categoryForm.color"
             :name="props.categoryForm.icon"
+            invert
           />
         </template>
       </UiItem2>

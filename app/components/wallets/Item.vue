@@ -4,7 +4,6 @@ import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
 import { getStyles } from '~/components/ui/getStyles'
 import { icons } from '~/components/wallets/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { getAmountInRate } from '~/components/amount/getTotal'
 
 const props = defineProps<{
   activeItemId?: WalletId | null

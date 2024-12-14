@@ -34,7 +34,7 @@ function onGenerateDemoData() {
 
 <template>
   <UiPage>
-    <UiHeader>
+    <UiHeader class="mb-4">
       <UiHeaderTitle>{{ t("settings.title") }}</UiHeaderTitle>
     </UiHeader>
 

@@ -12,7 +12,6 @@ const categoriesStore = useCategoriesStore()
 const categoryId = computed<CategoryId>(() => route.params.id)
 const category = computed<CategoryItem>(() => categoriesStore.items[categoryId.value])
 const categoryForm = ref(getPreparedFormData(category.value))
-const parentCategory = computed(() => getParentCategory(categoriesStore.items, categoryForm.value.parentId))
 
 function updateValue(id: CategoryId, value: any) {
   categoryForm.value[id] = value
@@ -32,12 +31,11 @@ useHead({
     v-if="category"
     class="flex h-full flex-col"
   >
-    <CategoriesHeaderEdit
-      :categoryId="categoryId"
-      :category="categoryForm"
-      :parentCategory="parentCategory"
-      isEdit
-    />
+    <UiHeader>
+      <UiHeaderTitle>
+        {{ t('base.edit') }} : {{ category.name }}
+      </UiHeaderTitle>
+    </UiHeader>
 
     <CategoriesForm
       :categoryId="categoryId"

@@ -16,7 +16,7 @@ const trnsFormStore = useTrnsFormStore()
       class="flex-center h-full flex-col pt-10"
     >
       <UiTitle class="pb-4">
-        {{ t("intro") }}
+        {{ t('intro') }}
       </UiTitle>
 
       <UiButtonBlue

@@ -26,26 +26,26 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
 
 <template>
   <UiElement
-    v-if="category"
-    :isActive="activeItemId === categoryId"
+    v-if="props.category"
+    :isActive="props.activeItemId === props.categoryId"
     :lineWidth="props.lineWidth"
     insideClasses="min-h-[46px]"
     @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>
       <UiIconBase
-        :color="category.color"
-        :name="category.icon"
+        :color="props.category.color"
+        :name="props.category.icon"
         invert
-        @click="emit('filter', categoryId ?? '')"
+        @click="emit('filter', props.categoryId ?? '')"
       />
     </template>
 
     <div class="text-3 grid grow gap-0.5">
       <CategoriesName
         :alt="props.alt"
-        :category
-        :parentCategory
+        :category="props.category"
+        :parentCategory="parentCategory"
         :hasChildren="childCategoriesIds.length > 0"
         :showChildrenCount="childCategoriesIds.length"
         :isShowParent="props.isShowParent"

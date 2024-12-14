@@ -5,13 +5,13 @@ const { t } = useI18n()
 <template>
   <div>
     <UiTitle class="pb-4">
-      {{ t("title") }}
+      {{ t('title') }}
     </UiTitle>
 
     <div class="flex gap-8 pb-3">
       <div>
         <div class="subTitle pb-4">
-          {{ t("author") }}
+          {{ t('author') }}
         </div>
         <div class="name">
           ilkome
@@ -20,7 +20,7 @@ const { t } = useI18n()
 
       <div>
         <div class="subTitle pb-4">
-          {{ t("thanks") }}
+          {{ t('thanks') }}
         </div>
         <div class="name">
           TheCarolissy, TihomirovPro
