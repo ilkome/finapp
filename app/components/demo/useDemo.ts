@@ -101,10 +101,21 @@ export function useDemo() {
     return 'ok'
   }
 
+  async function deleteDemoWallet(id: WalletId, trnsIds?: TrnId[]) {
+    if (trnsIds)
+      await deleteDemoTrns(trnsIds)
+
+    const items = { ...walletsStore.items }
+    delete items[id]
+
+    walletsStore.setWallets(items)
+  }
+
   return {
     addDemoCategory,
     deleteDemoCategory,
     deleteDemoTrns,
+    deleteDemoWallet,
     generateDemoData,
     isDemo,
     sortDemoWallets,

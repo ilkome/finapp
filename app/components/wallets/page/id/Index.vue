@@ -93,6 +93,8 @@ useHead({ title: wallet.value?.name })
         >
           {{ t('base.edit') }}
         </UiHeaderLink>
+
+        <WalletsDelete :walletId />
       </template>
 
       <template #summary>

@@ -37,6 +37,7 @@ const items = computed(() => ({
       @closed="emit('closed')"
     >
       <template #handler="{ close }">
+        <BottomSheetHandler />
         <BottomSheetClose @onClick="close" />
       </template>
 

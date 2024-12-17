@@ -302,10 +302,9 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       deleteDemoCategory(id, trnsIds)
     }
     else {
+      await removeData(`users/${userStore.uid}/categories/${id}`)
       if (trnsIds)
         await trnsStore.deleteTrnsByIds(trnsIds)
-
-      await removeData(`users/${userStore.uid}/categories/${id}`)
     }
   }
 

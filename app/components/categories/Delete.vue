@@ -9,13 +9,12 @@ const props = defineProps<{
   categoryId: CategoryId
 }>()
 
-const { t } = useI18n()
-const { $toast } = useNuxtApp()
-const router = useRouter()
 const categoriesStore = useCategoriesStore()
+const router = useRouter()
 const trnsStore = useTrnsStore()
+const { $toast } = useNuxtApp()
+const { t } = useI18n()
 
-const isShowDeleteConfirm = ref(false)
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: categoriesStore.getChildsIdsOrParent(props.categoryId),
 }))
@@ -27,6 +26,7 @@ const deleteDescText = computed(() => {
   return undefined
 })
 
+const isShowDeleteConfirm = ref(false)
 function onClickDelete() {
   for (const id in categoriesStore.items) {
     if (categoriesStore.items[id]?.parentId === props.categoryId) {
@@ -78,7 +78,6 @@ async function onDeleteConfirm() {
   <LayoutConfirmModal
     v-if="isShowDeleteConfirm"
     :description="deleteDescText"
-    show
     @closed="isShowDeleteConfirm = false"
     @onConfirm="onDeleteConfirm"
   />

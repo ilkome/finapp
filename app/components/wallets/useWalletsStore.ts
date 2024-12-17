@@ -4,18 +4,19 @@ import { useCurrenciesStore } from '../currencies/useCurrenciesStore'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItem, WalletItemWithAmount, Wallets } from '~/components/wallets/types'
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
-import { getDataAndWatch, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
+import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import { normalizeWallets } from '~/components/wallets/utils'
 import { uniqueElementsBy } from '~~/utils/simple'
 import { useDemo } from '~/components/demo/useDemo'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
+import type { TrnId } from '~/components/trns/types'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
   const userStore = useUserStore()
   const currenciesStore = useCurrenciesStore()
-  const { isDemo, sortDemoWallets } = useDemo()
+  const { deleteDemoWallet, isDemo, sortDemoWallets } = useDemo()
 
   const items = ref<Wallets | null>(null)
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
@@ -124,9 +125,21 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   const currenciesUsed = computed<CurrencyCode[]>(() => uniqueElementsBy(itemsWithAmount.value, 'currency'))
 
+  async function deleteWallet(id: WalletId, trnsIds?: TrnId[]) {
+    if (isDemo.value) {
+      deleteDemoWallet(id, trnsIds)
+    }
+    else {
+      await removeData(`users/${userStore.uid}/categories/${id}`)
+      if (trnsIds)
+        await trnsStore.deleteTrnsByIds(trnsIds)
+    }
+  }
+
   return {
     addWallet,
     currenciesUsed,
+    deleteWallet,
     getWalletTotal,
     hasItems,
     initWallets,

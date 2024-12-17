@@ -362,6 +362,12 @@ export default {
         label: 'Currency',
         placeholder: 'Select currency',
       },
+      delete: {
+        alertWithTrns: `This will delete {trns} transactions`,
+        errorChilds: 'You can not delete wallet with child categories. Delete child categories first.',
+        okWithoutTrns: 'Wallet deleted',
+        okWithTrns: `Wallet deleted and {trns}`,
+      },
       description: {
         label: 'Wallet description (optional)',
         placeholder: 'Write...',

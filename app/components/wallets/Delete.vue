@@ -1,28 +1,24 @@
 <script setup lang="ts">
-import type { ToastOptions } from 'vue3-toastify'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { random, successEmo } from '~/assets/js/emo'
+import type { WalletId } from '~/components/wallets/types'
 import type { TrnId } from '~/components/trns/types'
 import UiToastContent from '~/components/ui/ToastContent.vue'
-import type { WalletId } from '~/components/wallets/types'
-import { random, successEmo } from '~/assets/js/emo'
-import { removeData } from '~~/services/firebase/api'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useUserStore } from '~/components/user/useUserStore'
 
 const props = defineProps<{
   walletId: WalletId
 }>()
 
-const { walletId } = toRefs(props)
-const { $toast } = useNuxtApp()
 const router = useRouter()
-const userStore = useUserStore()
 const trnsStore = useTrnsStore()
+const walletStore = useWalletsStore()
+const { $toast } = useNuxtApp()
+const { t } = useI18n()
 
 const trnsIds = computed<TrnId[]>(() => trnsStore.getStoreTrnsIds({
-  walletsIds: [walletId.value],
+  walletsIds: [props.walletId],
 }))
-
-const isShowDeleteConfirm = ref(false)
 
 // TODO: translate
 const deleteDescText = computed(() => {
@@ -31,47 +27,43 @@ const deleteDescText = computed(() => {
   return undefined
 })
 
+const isShowDeleteConfirm = ref(false)
 function onClickDelete() {
   isShowDeleteConfirm.value = true
 }
 
-// TODO: translate
 async function onDeleteConfirm() {
-  // Disable reactive to have data when user have already redirected to wallets page
-  const uid = JSON.parse(JSON.stringify(userStore.uid))
-  const trnsIdsS = [...trnsIds.value]
-  const walletIdS = JSON.parse(JSON.stringify(walletId.value))
-
+  const trnsIdsS: TrnId[] = JSON.parse(JSON.stringify(trnsIds.value))
   router.push('/wallets')
+  await walletStore.deleteWallet(JSON.parse(JSON.stringify(props.walletId)), trnsIdsS)
 
   // Give some time to complete redirect
   setTimeout(async () => {
-    await trnsStore.deleteTrnsByIds(trnsIdsS)
-
-    removeData(`users/${uid}/accounts/${walletIdS}`)
-      .then(() => {
-        $toast(UiToastContent, {
-          data: {
-            description: trnsIdsS?.length > 0 ? `Success delete wallet with ${trnsIdsS.length} transactions!` : 'Success delete wallet!',
-            title: random(successEmo),
-          },
-          toastId: 'validate',
-          type: 'success',
-        } as ToastOptions)
-      })
-  }, 100)
+    $toast(UiToastContent, {
+      data: {
+        description: trnsIdsS?.length > 0
+          ? t('wallets.form.delete.okWithTrns', { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) })
+          : t('wallets.form.delete.okWithoutTrns'),
+        title: random(successEmo),
+      },
+      toastId: 'delete-wallet',
+      type: 'success',
+    })
+  }, 300)
 }
 </script>
 
 <template>
   <div>
-    <UiItem3 @click="onClickDelete">
-      <Icon name="mdi:delete-empty-outline" size="20" />
-    </UiItem3>
+    <UiHeaderLink
+      icon="mdi:delete-empty-outline"
+      @click="onClickDelete"
+    >
+      {{ t('base.delete') }}
+    </UiHeaderLink>
 
     <LayoutConfirmModal
       v-if="isShowDeleteConfirm"
-      :show="isShowDeleteConfirm"
       :description="deleteDescText"
       @closed="isShowDeleteConfirm = false"
       @onConfirm="onDeleteConfirm"

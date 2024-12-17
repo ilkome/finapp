@@ -364,6 +364,12 @@ export default {
         label: 'Валюта',
         placeholder: 'Выберите валюту',
       },
+      delete: {
+        alertWithTrns: `Так же будут удалены {trns}`,
+        errorChilds: 'Вы не можете удалить кошелек с транзакциями. Сначала удалите транзакции.',
+        okWithoutTrns: 'Кошелек удален',
+        okWithTrns: `Кошелек удален и {trns}`,
+      },
       description: {
         label: 'Описание кошелька (не обязательно)',
         placeholder: 'Напишите...',

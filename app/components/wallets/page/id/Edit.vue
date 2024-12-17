@@ -39,10 +39,6 @@ useHead({
         {{ t("base.edit") }}:
         {{ walletForm.name ? walletForm.name : t("wallets.form.name.label") }}
       </UiHeaderTitle>
-
-      <template #actions>
-        <WalletsDelete :walletId="walletId" />
-      </template>
     </UiHeader>
 
     <WalletsForm
