@@ -10,6 +10,10 @@ export default defineNuxtConfig({
         href: '/favicon.png',
         rel: 'icon',
         type: 'image/png',
+      }, {
+        href: '/favicon.svg',
+        rel: 'icon',
+        type: 'image/svg+xml',
       }],
       meta: [
         { charset: 'utf-8' },
@@ -132,7 +136,7 @@ export default defineNuxtConfig({
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
     manifest: {
-      background_color: '#171717',
+      background_color: '#131313',
       display: 'fullscreen',
       display_override: ['standalone', 'minimal-ui'],
       icons: [{
