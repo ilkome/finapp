@@ -173,7 +173,7 @@ export default defineNuxtConfig({
       }],
       short_name: 'Finapp',
       start_url: '/dashboard',
-      theme_color: '#171717',
+      theme_color: '#131313',
     },
     registerType: 'autoUpdate',
     srcDir: sw ? 'service-worker' : undefined,
