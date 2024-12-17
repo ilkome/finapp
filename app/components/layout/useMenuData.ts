@@ -5,8 +5,7 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type MenuItem = {
-  component?: string
-  icon?: string
+  icon: string
   name: string
 }
 
@@ -24,33 +23,33 @@ export default function useMenuData() {
       name: t('trnForm.createTrn'),
     },
     dashboard: {
-      component: 'UiIconStat',
+      icon: 'lucide:chart-no-axes-combined',
       name: t('stat.title'),
     },
     wallets: {
-      component: 'UiIconWallet',
+      icon: 'hugeicons:wallet-01',
       name: t('wallets.name'),
     },
     categories: {
-      icon: 'lucide:folders',
+      icon: 'hugeicons:folder-library',
       name: t('categories.name'),
     },
     history: {
-      component: 'UiIconHistory',
+      icon: 'hugeicons:archive-01',
       name: t('trns.history'),
     },
     settings: {
-      icon: 'UiIconSettings',
+      icon: 'hugeicons:settings-01',
       name: t('settings.title'),
     },
   }))
 
-  const itemsBottom = computed(() => ({
+  const itemsBottom = computed<Record<string, MenuItem>>(() => ({
     wallets: items.value.wallets!,
     categories: items.value.categories!,
     trnForm: items.value.trnForm!,
     dashboard: items.value.dashboard!,
-    menu: { component: 'UiIconMenu', name: '' },
+    menu: { icon: 'lucide:menu', name: '' },
   }))
 
   function onClick(menuId: string) {
@@ -72,7 +71,7 @@ export default function useMenuData() {
   }
 
   function checkIsActive(menuId: string) {
-    return route.name?.includes(menuId)
+    return (route.name as string).includes(menuId)
   }
 
   return {

@@ -16,7 +16,7 @@ const emit = defineEmits<{
 }>()
 
 const classes = computed(() => {
-  const params = ['padding3', 'center', 'minh', 'minw1', 'rounded']
+  const params = ['padding3', 'center', 'minh1', 'minw1', 'rounded']
 
   if (props.isShowIncome && props.isShowExpense) {
     params.push('bg', 'link')

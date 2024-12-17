@@ -19,7 +19,7 @@ const emit = defineEmits<{
     <div><slot /></div>
     <Icon
       v-if="!props.isShown"
-      name="mdi:chevron-left"
+      name="lucide:chevron-left"
       size="22"
       class="-ml-1"
     />

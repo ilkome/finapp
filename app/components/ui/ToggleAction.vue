@@ -17,7 +17,7 @@ const emit = defineEmits<{
     @click="(e: Event) => emit('click', e)"
   >
     <Icon
-      :name="props.isShown ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+      :name="props.isShown ? 'lucide:chevron-down' : 'lucide:chevron-right'"
       size="22"
     />
   </div>

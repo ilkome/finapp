@@ -12,13 +12,7 @@ export const classes = {
       text-secondary2
       hocus:bg-item-5
     `,
-    menu: `
-      flex items-center
-      py-2
-      gap-2
-      px-3
-    `,
-    minh: 'min-h-[42px]',
+    minh1: 'min-h-[42px]',
     minh2: 'min-h-[38px]',
     minh3: 'min-h-[32px]',
     minh4: 'min-h-[44px]',

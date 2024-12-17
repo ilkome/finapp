@@ -24,7 +24,7 @@ const emit = defineEmits<{
       class="bg-item-4"
       @click="emit('changeDate', 'prev')"
     >
-      <UiIconChevron class="size-8" />
+      <Icon name="lucide:chevron-left" size="24" />
     </UiItem3>
 
     <UiItem3
@@ -32,7 +32,7 @@ const emit = defineEmits<{
       class="bg-item-4 "
       @click="emit('changeDate', 'next')"
     >
-      <UiIconChevron class="size-8 rotate-180" />
+      <Icon name="lucide:chevron-left" size="24" class="rotate-180" />
     </UiItem3>
   </div>
 </template>

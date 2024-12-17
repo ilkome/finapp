@@ -50,7 +50,7 @@ onMounted(() => stateLimit.value = props.limit)
       name="toggle"
     >
       <div
-        :class="getStyles('item', ['rounded', 'minh', 'link', 'padding1', 'center3'])"
+        :class="getStyles('item', ['rounded', 'minh1', 'link', 'padding1', 'center3'])"
         class="text-xs"
         @click="toggle"
       >

@@ -25,7 +25,7 @@ const modals = ref({
       <!-- Categories -->
       <UPopover v-if="isLaptop">
         <UiItem3>
-          <Icon name="lucide:folders" size="20" />
+          <Icon name="hugeicons:folder-library" size="20" />
         </UiItem3>
 
         <template #panel="{ close }">
@@ -49,7 +49,7 @@ const modals = ref({
         <UiItem3
           @click="modals.categories = true"
         >
-          <Icon name="lucide:folders" size="20" />
+          <Icon name="hugeicons:folder-library" size="20" />
         </UiItem3>
 
         <Teleport to="body">
@@ -98,7 +98,7 @@ const modals = ref({
     <template v-if=" props.isShowWallets">
       <UPopover v-if="isLaptop">
         <UiItem3>
-          <UiIconWallet class="size-5" />
+          <Icon name="hugeicons:wallet-01" />
         </UiItem3>
 
         <template #panel="{ close }">
@@ -120,7 +120,7 @@ const modals = ref({
         <UiItem3
           @click="modals.wallets = true"
         >
-          <UiIconWallet class="size-5" />
+          <Icon name="hugeicons:wallet-01" />
         </UiItem3>
 
         <Teleport to="body">

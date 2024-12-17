@@ -6,19 +6,23 @@ const { trnFormCreate } = useTrnsFormStore()
 
 <template>
   <div
-    class="flex-end group absolute bottom-6 right-6 z-10 hidden justify-center lg:flex "
+    class="
+      flex-end hover:bg-item-5 group absolute bottom-0 right-0 z-20 hidden h-dvh items-end justify-center
+      transition 2xl:flex
+    "
     @click="trnFormCreate"
   >
     <div
       class="
-        bg-accent-2
         text-icon-primary
-        flex size-12 items-center
+        _group-hover:bg-accent-1 flex items-center
         justify-center rounded-full
-        text-3xl transition
-        group-hover:scale-125"
+        px-3 py-4 text-2xl
+        transition
+        group-hover:scale-125
+      "
     >
-      <i class="mdi:plus" />
+      <Icon name="hugeicons:plus-sign-square" />
     </div>
   </div>
 </template>

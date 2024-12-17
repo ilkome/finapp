@@ -17,29 +17,22 @@ const { checkIsActive, onClick } = useMenuData()
 <template>
   <div
     :class="[
-      getStyles('item', ['link', 'rounded', 'padding1', 'menu']),
+      getStyles('item', ['center', 'link', 'minh2', 'rounded', 'padding1']),
       {
         '!text-1': checkIsActive(props.menuId),
+        'gap-3': props.isShowTitle,
       },
     ]"
     class="group"
     @click="onClick(props.menuId)"
   >
-    <Component
-      :is="props.item?.component"
-      v-if="props.item?.component"
-      class="
-        my-1
-        size-5 group-[.is-bigger]:!size-6
-      "
-    />
-
-    <Icon
-      v-else
-      :name="props.item?.icon"
-      :size="position === 'bottom' ? '26' : '22'"
-      class="text-lg leading-none"
-    />
+    <div class="flex min-w-8 items-center justify-center">
+      <Icon
+        :name="props.item.icon"
+        :size="position === 'bottom' ? '26' : '22'"
+        class="text-lg leading-none"
+      />
+    </div>
 
     <div
       v-if="props.isShowTitle"

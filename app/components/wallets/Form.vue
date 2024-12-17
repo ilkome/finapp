@@ -34,6 +34,7 @@ const modals = ref({
 
 const walletPlaceholder = computed(() => ({
   ...props.walletForm,
+  amount: 0,
   name: props.walletForm.name ? props.walletForm.name : t('wallets.form.name.label'),
 }))
 
