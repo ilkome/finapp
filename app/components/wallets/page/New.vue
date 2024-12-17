@@ -22,7 +22,7 @@ useHead({
 <template>
   <UiPage class="flex h-full flex-col">
     <UiHeader>
-      <UiHeaderTitle>{{ t("wallets.createNewTitle") }}</UiHeaderTitle>
+      <UiHeaderTitle>{{ t('wallets.createNewTitle') }}</UiHeaderTitle>
     </UiHeader>
 
     <WalletsForm

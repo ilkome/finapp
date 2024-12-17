@@ -43,10 +43,10 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <div class="bg-foreground-3 border-b-foreground-1 sticky top-0 z-20 border-b-2 px-2 py-1 lg:px-4 2xl:px-8">
-    <div class="flex max-w-5xl items-center gap-2">
-      <slot name="title" />
+  <UiHeader>
+    <slot name="title" />
 
+    <template #actions>
       <div
         v-if="props.filter || props.config"
         class="ml-auto flex items-center gap-1"
@@ -61,50 +61,54 @@ function onClickWallet(walletId: WalletId) {
           :isShowWallets="props.config.isShowWallets"
           :isShowCategories="props.config.isShowCategories"
         >
-          <slot name="popover" />
+          <div v-if="$slots.popover">
+            <slot name="popover" />
+          </div>
         </StatConfigPopover>
       </div>
-    </div>
-  </div>
+    </template>
 
-  <div
-    v-if="props.menu"
-    class="px-2 pb-2 pt-1 lg:px-4 lg:pt-2 2xl:px-8"
-  >
-    <StatMenu
-      :active="props.menu.active"
-      @click="props.menu.click"
-    />
-  </div>
+    <template #after>
+      <div
+        v-if="props.menu"
+        class="px-2 pt-1 lg:px-4 lg:pt-2 2xl:px-8"
+      >
+        <StatMenu
+          :active="props.menu.active"
+          @click="props.menu.click"
+        />
+      </div>
 
-  <div
-    v-if="filter.isShow?.value || statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
-    class="px-2 pb-0 lg:px-4 2xl:px-8"
-  >
-    <div
-      v-if="props.filter && filter.isShow?.value && filter.categoriesIds.value.length > 0"
-    >
-      <FilterSelected
-        :isShowCategories="props.filter.isShowCategories"
-        :isShowWallets="props.filter.isShowWallets"
-      />
-    </div>
+      <div
+        v-if="filter.isShow?.value"
+        class="grid gap-2 px-2 pb-0 lg:px-4 2xl:px-8"
+      >
+        <div
+          v-if="props.filter && filter.isShow?.value && filter.categoriesIds.value.length > 0"
+        >
+          <FilterSelected
+            :isShowCategories="props.filter.isShowCategories"
+            :isShowWallets="props.filter.isShowWallets && statConfig.config.value.showedWallets === 0"
+          />
+        </div>
 
-    <div
-      v-if="statConfig.config.value.showedWallets > 0 || filter.walletsIds.value.length > 0"
-      class="flex max-w-6xl gap-1 overflow-x-auto py-px"
-    >
-      <WalletsItem
-        v-for="walletId in sortedFilterWalletsIds"
-        :key="walletId"
-        :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
-        :walletId
-        :wallet="walletsStore.itemsWithAmount?.[walletId]!"
-        alt
-        @click="onClickWallet(walletId)"
-      />
-    </div>
+        <div
+          v-if="statConfig.config.value.showedWallets > 0"
+          class="flex max-w-6xl gap-1 overflow-x-auto py-px"
+        >
+          <WalletsItem
+            v-for="walletId in sortedFilterWalletsIds"
+            :key="walletId"
+            :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
+            :walletId
+            :wallet="walletsStore.itemsWithAmount?.[walletId]!"
+            alt
+            @click="onClickWallet(walletId)"
+          />
+        </div>
 
-    <slot name="summary" />
-  </div>
+        <slot name="summary" />
+      </div>
+    </template>
+  </UiHeader>
 </template>

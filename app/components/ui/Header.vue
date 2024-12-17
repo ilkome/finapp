@@ -15,4 +15,11 @@
       <slot name="selected" />
     </div>
   </div>
+
+  <div
+    v-if="$slots.after"
+    class="grid gap-2 pb-2"
+  >
+    <slot name="after" />
+  </div>
 </template>

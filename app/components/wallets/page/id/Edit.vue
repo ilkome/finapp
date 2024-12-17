@@ -36,8 +36,8 @@ useHead({
   >
     <UiHeader>
       <UiHeaderTitle>
-        {{ t("base.edit") }}:
-        {{ walletForm.name ? walletForm.name : t("wallets.form.name.label") }}
+        {{ t('base.edit') }}:
+        {{ walletForm.name ? walletForm.name : t('wallets.form.name.label') }}
       </UiHeaderTitle>
     </UiHeader>
 

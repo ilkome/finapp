@@ -140,6 +140,17 @@ function onChangeViewOptions(newViewOptions: any) {
 
 <template>
   <div class="_bg-item-9 relative flex rounded-md">
+    <!-- Vertical -->
+    <UiItem1
+      v-if="props.catsLength > 1"
+      @click="statConfig.updateConfig('isShowCategoriesVertical', !statConfig.config.value.isShowCategoriesVertical)"
+    >
+      <Icon
+        name="lucide:chart-no-axes-column-decreasing"
+        size="18"
+      />
+    </UiItem1>
+
     <!-- Folder -->
     <UiItem1
       v-if="props.isShowGrouping && statConfig.config.value.catsView === 'list' && statConfig.config.value.catsList.isGrouped"
@@ -150,17 +161,6 @@ function onChangeViewOptions(newViewOptions: any) {
     >
       <Icon
         :name="statConfig.config.value.catsList.isOpened ? 'lucide:circle-equal' : 'lucide:circle-dot'"
-        size="18"
-      />
-    </UiItem1>
-
-    <!-- Vertical -->
-    <UiItem1
-      v-if="props.catsLength > 1"
-      @click="statConfig.updateConfig('isShowCategoriesVertical', !statConfig.config.value.isShowCategoriesVertical)"
-    >
-      <Icon
-        name="lucide:chart-no-axes-column-decreasing"
         size="18"
       />
     </UiItem1>
