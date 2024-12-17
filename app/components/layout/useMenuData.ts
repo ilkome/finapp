@@ -49,7 +49,7 @@ export default function useMenuData() {
     categories: items.value.categories!,
     trnForm: items.value.trnForm!,
     dashboard: items.value.dashboard!,
-    menu: { icon: 'lucide:menu', name: '' },
+    menu: { icon: 'hugeicons:menu-01', name: '' },
   }))
 
   function onClick(menuId: string) {

@@ -59,14 +59,14 @@ const selectedWallets = computed(() => {
       const typeChecks: WalletViewTypesObj = {
         archived: wallet.isArchived ?? false,
         available: (checkIsAvailable(wallet) && !wallet.isArchived) ?? false,
-        cash: wallet.type === 'cash',
-        cashless: wallet.type === 'cashless',
-        credit: wallet.type === 'credit',
-        creditPossible: !!wallet.creditLimit,
-        crypto: wallet.type === 'crypto',
-        debt: wallet.type === 'debt',
-        deposit: wallet.type === 'deposit',
-        withdrawal: wallet.isWithdrawal ?? false,
+        cash: wallet.type === 'cash' && !wallet.isArchived,
+        cashless: wallet.type === 'cashless' && !wallet.isArchived,
+        credit: wallet.type === 'credit' && !wallet.isArchived,
+        creditPossible: !!wallet.creditLimit && !wallet.isArchived,
+        crypto: wallet.type === 'crypto' && !wallet.isArchived,
+        debt: wallet.type === 'debt' && !wallet.isArchived,
+        deposit: wallet.type === 'deposit' && !wallet.isArchived,
+        withdrawal: (wallet.isWithdrawal ?? false) && !wallet.isArchived,
       }
 
       if (activeType.value === 'available')
