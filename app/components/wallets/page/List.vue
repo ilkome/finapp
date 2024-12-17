@@ -34,7 +34,7 @@ const activeType = useStorage<WalletViewTypes | 'all'>(
   'finapp-wallets-active-type',
   'all',
 )
-const gropedBy = useStorage<'list' | 'currencies' | 'type'>(
+const groupedBy = useStorage<'list' | 'currencies' | 'type'>(
   'finapp-wallets-groupedBy',
   'list',
 )
@@ -259,17 +259,17 @@ const counts = computed(() => ({
   },
   cash: {
     id: 'cash',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.cash !== 0,
+    isShow: groupedBy.value === 'list' && totalInWallets.value.cash !== 0,
     value: totalInWallets.value.cash,
   },
   cashless: {
     id: 'cashless',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.cashless !== 0,
+    isShow: groupedBy.value === 'list' && totalInWallets.value.cashless !== 0,
     value: totalInWallets.value.cashless,
   },
   credit: {
     id: 'credit',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.credit !== 0,
+    isShow: groupedBy.value === 'list' && totalInWallets.value.credit !== 0,
     value: totalInWallets.value.credit,
   },
   creditPossible: {
@@ -279,19 +279,19 @@ const counts = computed(() => ({
   },
   debt: {
     id: 'debt',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.debt !== 0,
+    isShow: groupedBy.value === 'list' && totalInWallets.value.debt !== 0,
     value: totalInWallets.value.debt,
   },
   deposit: {
     icon: 'deposit',
     id: 'deposit',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.deposit !== 0,
+    isShow: groupedBy.value === 'list' && totalInWallets.value.deposit !== 0,
     value: totalInWallets.value.deposit,
   },
   withdrawal: {
     icon: 'UiIconWalletWithdrawal',
     id: 'withdrawal',
-    isShow: gropedBy.value === 'list' && totalInWallets.value.withdrawal !== 0,
+    isShow: groupedBy.value === 'list' && totalInWallets.value.withdrawal !== 0,
     value: totalInWallets.value.withdrawal,
   },
   // eslint-disable-next-line perfectionist/sort-objects
@@ -360,7 +360,7 @@ const counts = computed(() => ({
 
           <!-- Wallets Currencies -->
           <UiToggle2
-            v-if="walletsStore.currenciesUsed.length > 1 && gropedBy !== 'currencies'"
+            v-if="walletsStore.currenciesUsed.length > 1 && groupedBy !== 'currencies'"
             :initStatus="true"
             :lineWidth="0"
             class="hidden md:grid md:max-w-xl"
@@ -400,10 +400,10 @@ const counts = computed(() => ({
 
           <!-- Total -->
           <UiToggle2
-            v-if="gropedBy === 'list'"
+            v-if="groupedBy === 'list'"
             :initStatus="true"
             :lineWidth="0"
-            :storageKey="`finapp-wallets-total-${gropedBy}`"
+            :storageKey="`finapp-wallets-total-${groupedBy}`"
             class="hidden pb-3 md:grid"
             openPadding="!pb-4"
           >
@@ -416,7 +416,7 @@ const counts = computed(() => ({
             </template>
 
             <WalletsTotal
-              :activeType="gropedBy === 'list' ? activeType : false"
+              :activeType="groupedBy === 'list' ? activeType : false"
               :currencyCode="currenciesStore.base"
               :items="Object.values(counts).filter((item) => item.isShow)"
               @click="setActiveType"
@@ -436,33 +436,33 @@ const counts = computed(() => ({
           <div class="mb-2 flex items-center gap-2">
             <UiTabs1>
               <UiTabsItem1
-                :isActive="gropedBy === 'list'"
-                @click="gropedBy = 'list'"
+                :isActive="groupedBy === 'list'"
+                @click="groupedBy = 'list'"
               >
                 {{ t('list') }}
               </UiTabsItem1>
               <UiTabsItem1
-                :isActive="gropedBy === 'type'"
-                @click="gropedBy = 'type'"
+                :isActive="groupedBy === 'type'"
+                @click="groupedBy = 'type'"
               >
                 {{ t('type') }}
               </UiTabsItem1>
 
               <UiTabsItem1
                 v-if="walletsStore.currenciesUsed.length > 1"
-                :isActive="gropedBy === 'currencies'"
-                @click="gropedBy = 'currencies'"
+                :isActive="groupedBy === 'currencies'"
+                @click="groupedBy = 'currencies'"
               >
                 {{ t('currencies') }}
               </UiTabsItem1>
             </UiTabs1>
             <UiItem1
-              v-if="gropedBy !== 'list'"
+              v-if="groupedBy !== 'list'"
               class="grow-0 px-5"
-              @click="groupedOptions[gropedBy] = groupedOptions[gropedBy] === 0 ? 1 : 0"
+              @click="groupedOptions[groupedBy] = groupedOptions[groupedBy] === 0 ? 1 : 0"
             >
               <Icon
-                :name="groupedOptions[gropedBy] === 0 ? 'lucide:folder-tree' : 'lucide:network'"
+                :name="groupedOptions[groupedBy] === 0 ? 'lucide:folder-tree' : 'lucide:network'"
                 size="18"
               />
             </UiItem1>
@@ -470,10 +470,10 @@ const counts = computed(() => ({
 
           <!-- Statistics -->
           <UiToggle2
-            v-if="gropedBy === 'list'"
+            v-if="groupedBy === 'list'"
             :initStatus="true"
             :lineWidth="0"
-            :storageKey="`finapp-wallets-total-${gropedBy}`"
+            :storageKey="`finapp-wallets-total-${groupedBy}`"
             class="pb-3 md:hidden"
             openPadding="!pb-4"
           >
@@ -486,7 +486,7 @@ const counts = computed(() => ({
             </template>
 
             <WalletsTotal
-              :activeType="gropedBy === 'list' ? activeType : false"
+              :activeType="groupedBy === 'list' ? activeType : false"
               :currencyCode="currenciesStore.base"
               :items="Object.values(counts).filter((item) => item.isShow)"
               @click="setActiveType"
@@ -495,7 +495,7 @@ const counts = computed(() => ({
 
           <!-- List -->
           <div
-            v-if="gropedBy === 'list'"
+            v-if="groupedBy === 'list'"
             class="md:max-w-lg"
           >
             <WalletsItem
@@ -513,7 +513,7 @@ const counts = computed(() => ({
           </div>
 
           <!-- By currencies -->
-          <template v-if="gropedBy === 'currencies' && walletsStore.currenciesUsed.length > 1">
+          <template v-if="groupedBy === 'currencies' && walletsStore.currenciesUsed.length > 1">
             <UiToggle2
               v-for="(walletsIds, currency) in groupedWalletsByCurrency"
               :key="currency"
@@ -596,7 +596,7 @@ const counts = computed(() => ({
           </template>
 
           <!-- By Type -->
-          <template v-if="gropedBy === 'type' && Object.keys(groupedWalletsByTypeOnly).length > 0">
+          <template v-if="groupedBy === 'type' && Object.keys(groupedWalletsByTypeOnly).length > 0">
             <UiToggle2
               v-for="(walletsIds, type) in groupedWalletsByTypeOnly"
               :key="type"
