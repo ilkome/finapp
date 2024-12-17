@@ -43,10 +43,12 @@ function setActiveType(v: WalletViewTypes | 'all') {
   activeType.value = v
 }
 
-const selectedWallets = computed(() => {
-  // if (currencyFiltered.value === 'all' && activeType.value === 'all')
-  //   return walletsStore.itemsWithAmount
+const groupedOptions = useStorage('finapp-wallets-groupedOptions', {
+  currencies: 0,
+  type: 0,
+})
 
+const selectedWallets = computed(() => {
   return Object.fromEntries(
     Object.entries(walletsStore.itemsWithAmount).filter(([_key, wallet]) => {
       const isCurrencyMatch = currencyFiltered.value === 'all' || currencyFiltered.value === wallet.currency
@@ -431,28 +433,40 @@ const counts = computed(() => ({
         </div>
 
         <div>
-          <UiTabs1 class="mb-2">
-            <UiTabsItem1
-              :isActive="gropedBy === 'list'"
-              @click="gropedBy = 'list'"
-            >
-              {{ t('list') }}
-            </UiTabsItem1>
-            <UiTabsItem1
-              :isActive="gropedBy === 'type'"
-              @click="gropedBy = 'type'"
-            >
-              {{ t('type') }}
-            </UiTabsItem1>
+          <div class="mb-2 flex items-center gap-2">
+            <UiTabs1>
+              <UiTabsItem1
+                :isActive="gropedBy === 'list'"
+                @click="gropedBy = 'list'"
+              >
+                {{ t('list') }}
+              </UiTabsItem1>
+              <UiTabsItem1
+                :isActive="gropedBy === 'type'"
+                @click="gropedBy = 'type'"
+              >
+                {{ t('type') }}
+              </UiTabsItem1>
 
-            <UiTabsItem1
-              v-if="walletsStore.currenciesUsed.length > 1"
-              :isActive="gropedBy === 'currencies'"
-              @click="gropedBy = 'currencies'"
+              <UiTabsItem1
+                v-if="walletsStore.currenciesUsed.length > 1"
+                :isActive="gropedBy === 'currencies'"
+                @click="gropedBy = 'currencies'"
+              >
+                {{ t('currencies') }}
+              </UiTabsItem1>
+            </UiTabs1>
+            <UiItem1
+              v-if="gropedBy !== 'list'"
+              class="grow-0 px-5"
+              @click="groupedOptions[gropedBy] = groupedOptions[gropedBy] === 0 ? 1 : 0"
             >
-              {{ t('currencies') }}
-            </UiTabsItem1>
-          </UiTabs1>
+              <Icon
+                :name="groupedOptions[gropedBy] === 0 ? 'lucide:folder-tree' : 'lucide:network'"
+                size="18"
+              />
+            </UiItem1>
+          </div>
 
           <!-- Statistics -->
           <UiToggle2
@@ -526,34 +540,9 @@ const counts = computed(() => ({
                 </div>
               </template>
 
-              <UiToggle2
-                v-for="(groupedWalletsIds, grouped) in groupBy(walletsIds, groupByWalletType)"
-                :key="grouped"
-                :initStatus="true"
-                :lineWidth="1"
-                :storageKey="`finapp-wallets-show-${currency}-${grouped}`"
-                class="border-item-5 ml-3 border-l pl-2"
-                openPadding="!pb-3"
-              >
-                <template #header="{ isShown, toggle }">
-                  <div
-                    class="flex grow items-center justify-between pr-3"
-                    @click="toggle"
-                  >
-                    <UiTitle81 :isShown>
-                      {{ t(`money.types.${grouped}`) }}
-                    </UiTitle81>
-                    <div class="py-2">
-                      <Amount
-                        :amount="countWalletsSum(groupedWalletsIds, false)"
-                        :currencyCode="currency"
-                      />
-                    </div>
-                  </div>
-                </template>
-
+              <template v-if="groupedOptions.currencies === 0">
                 <WalletsItem
-                  v-for="walletId in groupedWalletsIds"
+                  v-for="walletId in walletsIds"
                   :key="walletId"
                   :wallet="walletsStore.itemsWithAmount[walletId]"
                   :walletId
@@ -562,7 +551,47 @@ const counts = computed(() => ({
                   isShowIcon
                   @click="router.push(`/wallets/${walletId}`)"
                 />
-              </UiToggle2>
+              </template>
+
+              <template v-if="groupedOptions.currencies === 1">
+                <UiToggle2
+                  v-for="(groupedWalletsIds, grouped) in groupBy(walletsIds, groupByWalletType)"
+                  :key="grouped"
+                  :initStatus="true"
+                  :lineWidth="1"
+                  :storageKey="`finapp-wallets-show-${currency}-${grouped}`"
+                  class="border-item-5 ml-3 border-l pl-2"
+                  openPadding="!pb-3"
+                >
+                  <template #header="{ isShown, toggle }">
+                    <div
+                      class="flex grow items-center justify-between pr-3"
+                      @click="toggle"
+                    >
+                      <UiTitle81 :isShown>
+                        {{ t(`money.types.${grouped}`) }}
+                      </UiTitle81>
+                      <div class="py-2">
+                        <Amount
+                          :amount="countWalletsSum(groupedWalletsIds, false)"
+                          :currencyCode="currency"
+                        />
+                      </div>
+                    </div>
+                  </template>
+
+                  <WalletsItem
+                    v-for="walletId in groupedWalletsIds"
+                    :key="walletId"
+                    :wallet="walletsStore.itemsWithAmount[walletId]"
+                    :walletId
+                    :lineWidth="2"
+                    isShowBaseRate
+                    isShowIcon
+                    @click="router.push(`/wallets/${walletId}`)"
+                  />
+                </UiToggle2>
+              </template>
             </UiToggle2>
           </template>
 
@@ -594,72 +623,87 @@ const counts = computed(() => ({
                 </div>
               </template>
 
-              <template v-if="Object.keys(groupBy(walletsIds, groupByWalletCurrency)).length > 1">
-                <UiToggle2
-                  v-for="(groupedWalletsIds, currency) in groupBy(walletsIds, groupByWalletCurrency)"
-                  :key="currency"
-                  class="border-item-5 ml-3 border-l pl-2"
-                  :storageKey="`finapp-wallets-show-${type}-${currency}`"
-                  :initStatus="true"
-                  :lineWidth="1"
-                  openPadding="pb-2 last:pb-0"
-                >
-                  <template #header="{ toggle, isShown }">
-                    <div
-                      class="flex grow items-center justify-between pr-3"
-                      @click="toggle"
-                    >
-                      <UiTitle81 :isShown>
-                        {{ currency }}
-                      </UiTitle81>
-
-                      <div class="py-2">
-                        <Amount
-                          :amount="countWalletsSum(groupedWalletsIds)"
-                          :currencyCode="currenciesStore.base"
-                          :isShowBaseRate="false"
-                        />
-                        <Amount
-                          v-if="currenciesStore.base !== currency"
-                          :amount="countWalletsSum(groupedWalletsIds, false)"
-                          :currencyCode="currency"
-                          :isShowBaseRate="false"
-                          variant="2xs"
-                        />
-                      </div>
-                    </div>
-                  </template>
-
-                  <WalletsItem
-                    v-for="walletId in groupedWalletsIds"
-                    :key="walletId"
-                    :wallet="walletsStore.itemsWithAmount[walletId]"
-                    :walletId
-                    :lineWidth="2"
-                    isShowBaseRate
-                    isShowIcon
-                    class="group"
-                    @click="router.push(`/wallets/${walletId}`)"
-                  />
-                </UiToggle2>
+              <template v-if="groupedOptions.type === 0">
+                <WalletsItem
+                  v-for="walletId in walletsIds"
+                  :key="walletId"
+                  :wallet="walletsStore.itemsWithAmount[walletId]"
+                  :walletId
+                  :lineWidth="2"
+                  isShowBaseRate
+                  isShowIcon
+                  @click="router.push(`/wallets/${walletId}`)"
+                />
               </template>
 
-              <template v-else>
-                <div
-                  v-for="(groupedWalletsIds, currency) in groupBy(walletsIds, groupByWalletCurrency)"
-                  :key="currency"
-                >
-                  <WalletsItem
-                    v-for="walletId in groupedWalletsIds"
-                    :key="walletId"
-                    :wallet="walletsStore.itemsWithAmount[walletId]"
-                    :walletId
-                    :lineWidth="2"
-                    isShowBaseRate
-                    isShowIcon
-                    @click="router.push(`/wallets/${walletId}`)"
-                  />
-                </div>
+              <template v-if="groupedOptions.type === 1">
+                <template v-if="Object.keys(groupBy(walletsIds, groupByWalletCurrency)).length > 1">
+                  <UiToggle2
+                    v-for="(groupedWalletsIds, currency) in groupBy(walletsIds, groupByWalletCurrency)"
+                    :key="currency"
+                    class="border-item-5 ml-3 border-l pl-2"
+                    :storageKey="`finapp-wallets-show-${type}-${currency}`"
+                    :initStatus="true"
+                    :lineWidth="1"
+                    openPadding="pb-2 last:pb-0"
+                  >
+                    <template #header="{ toggle, isShown }">
+                      <div
+                        class="flex grow items-center justify-between pr-3"
+                        @click="toggle"
+                      >
+                        <UiTitle81 :isShown>
+                          {{ currency }}
+                        </UiTitle81>
+
+                        <div class="py-2">
+                          <Amount
+                            :amount="countWalletsSum(groupedWalletsIds)"
+                            :currencyCode="currenciesStore.base"
+                            :isShowBaseRate="false"
+                          />
+                          <Amount
+                            v-if="currenciesStore.base !== currency"
+                            :amount="countWalletsSum(groupedWalletsIds, false)"
+                            :currencyCode="currency"
+                            :isShowBaseRate="false"
+                            variant="2xs"
+                          />
+                        </div>
+                      </div>
+                    </template>
+
+                    <WalletsItem
+                      v-for="walletId in groupedWalletsIds"
+                      :key="walletId"
+                      :wallet="walletsStore.itemsWithAmount[walletId]"
+                      :walletId
+                      :lineWidth="2"
+                      isShowBaseRate
+                      isShowIcon
+                      class="group"
+                      @click="router.push(`/wallets/${walletId}`)"
+                    />
+                  </UiToggle2>
+                </template>
+
+                <template v-else>
+                  <div
+                    v-for="(groupedWalletsIds, currency) in groupBy(walletsIds, groupByWalletCurrency)"
+                    :key="currency"
+                  >
+                    <WalletsItem
+                      v-for="walletId in groupedWalletsIds"
+                      :key="walletId"
+                      :wallet="walletsStore.itemsWithAmount[walletId]"
+                      :walletId
+                      :lineWidth="2"
+                      isShowBaseRate
+                      isShowIcon
+                      @click="router.push(`/wallets/${walletId}`)"
+                    />
+                  </div>
+                </template>
               </template>
             </UiToggle2>
           </template>
