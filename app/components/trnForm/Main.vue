@@ -112,12 +112,10 @@ const actions = computed(() => ({
 
       <div
         v-if="showModalConfirm"
-        class="bg-foreground-4 absolute bottom-0 left-0 z-10 w-full p-px"
+        class="absolute -bottom-4 left-0 z-10 w-full px-4"
       >
-        <div class="text-1 z-10 grid h-full content-center gap-4 rounded-xl px-4">
-          <div>
-            {{ t('base.sure') }}
-          </div>
+        <div class="text-1 bg-foreground-4 border-accent-1 z-10 grid h-full content-center gap-4 rounded-lg border p-3">
+          {{ t('base.sure') }}
 
           <div class="flex gap-2">
             <UiElement

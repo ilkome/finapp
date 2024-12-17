@@ -135,40 +135,38 @@ export default defineNuxtConfig({
       background_color: '#171717',
       display: 'fullscreen',
       display_override: ['standalone', 'minimal-ui'],
-      icons: [
-        {
-          sizes: '192x192',
-          src: 'pwa-192x192.png',
-          type: 'image/png',
-        },
-        {
-          sizes: '512x512',
-          src: 'pwa-512x512.png',
-          type: 'image/png',
-        },
-        {
-          purpose: 'any',
-          sizes: '512x512',
-          src: 'pwa-512x512.png',
-          type: 'image/png',
-        },
-      ],
+      icons: [{
+        sizes: '192x192',
+        src: 'pwa-192x192.png',
+        type: 'image/png',
+      }, {
+        sizes: '512x512',
+        src: 'pwa-512x512.png',
+        type: 'image/png',
+      }, {
+        purpose: 'any',
+        sizes: '512x512',
+        src: 'pwa-512x512.png',
+        type: 'image/png',
+      }, {
+        purpose: 'maskable',
+        sizes: '192x192',
+        src: 'pwa-192x192.png',
+        type: 'image/png',
+      }],
       id: '/',
       name: 'Finapp',
-      screenshots: [
-        {
-          form_factor: 'wide',
-          sizes: '1920x1080',
-          src: 'screenshot-desktop.png',
-          type: 'image/png',
-        },
-        {
-          form_factor: 'narrow',
-          sizes: '750x1334',
-          src: 'screenshot-mobile.png',
-          type: 'image/png',
-        },
-      ],
+      screenshots: [{
+        form_factor: 'wide',
+        sizes: '1920x1080',
+        src: 'screenshot-desktop.png',
+        type: 'image/png',
+      }, {
+        form_factor: 'narrow',
+        sizes: '750x1334',
+        src: 'screenshot-mobile.png',
+        type: 'image/png',
+      }],
       short_name: 'Finapp',
       start_url: '/dashboard',
       theme_color: '#171717',

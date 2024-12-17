@@ -12,7 +12,9 @@ const emit = defineEmits<{
 
 <template>
   <UiElement
-    :lineWidth="2"
+    class="group/item"
+    :lineWidth="4"
+    insideClasses="min-h-[44px]"
     @click="e => emit('click', e)"
   >
     <template #leftIcon>

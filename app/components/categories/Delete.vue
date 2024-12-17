@@ -68,20 +68,18 @@ async function onDeleteConfirm() {
 </script>
 
 <template>
-  <div>
-    <UiHeaderLink
-      icon="mdi:delete-empty-outline"
-      @click="onClickDelete"
-    >
-      {{ t('base.delete') }}
-    </UiHeaderLink>
+  <UiHeaderLink
+    icon="mdi:delete-empty-outline"
+    @click="onClickDelete"
+  >
+    {{ t('base.delete') }}
+  </UiHeaderLink>
 
-    <LayoutConfirmModal
-      v-if="isShowDeleteConfirm"
-      :description="deleteDescText"
-      show
-      @closed="isShowDeleteConfirm = false"
-      @onConfirm="onDeleteConfirm"
-    />
-  </div>
+  <LayoutConfirmModal
+    v-if="isShowDeleteConfirm"
+    :description="deleteDescText"
+    show
+    @closed="isShowDeleteConfirm = false"
+    @onConfirm="onDeleteConfirm"
+  />
 </template>
