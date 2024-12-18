@@ -1,3 +1,4 @@
+import defu from 'defu'
 import { useStorage } from '@vueuse/core'
 import { z } from 'zod'
 import { chartTypes } from '~/components/stat/chart/types'
@@ -5,7 +6,7 @@ import type { DeepPartial } from '~~/utils/types'
 
 export const chartViewOptions = ['half', 'full'] as const
 
-const ConfigSchema = z.object({
+export const ConfigSchema = z.object({
   catsList: z.object({
     isGrouped: z.boolean(),
     isItemsBg: z.boolean(),
@@ -72,7 +73,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
   if (props) {
     for (const key in props) {
       if (props[key] !== undefined) {
-        updateConfig(key, props[key])
+        updateConfig(key, typeof props[key] === 'object' ? defu(props[key], config.value[key]) : props[key])
       }
     }
   }
@@ -81,7 +82,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     const update = { ...config.value, [key]: value }
 
     if (!ConfigSchema.safeParse(update).success) {
-      console.log('error')
+      console.log('error', key, value)
       return
     }
 

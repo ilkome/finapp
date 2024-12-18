@@ -21,8 +21,8 @@ const filter = useFilter()
 provide('filter', filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
-const category = ref(categoriesStore.items[categoryId.value])
-const preCategoriesIds = computed(() => [...categoriesStore.getChildsIds(categoryId.value)])
+const category = computed(() => categoriesStore.items[categoryId.value])
+const preCategoriesIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
 
 const activeTab = useStorage<MoneyTypeSlugNew>(`${categoryId.value}-tab`, 'netIncome')

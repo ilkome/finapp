@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import defu from 'defu'
-import { getStyles } from '~/components/ui/getStyles'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
