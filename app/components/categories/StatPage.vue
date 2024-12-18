@@ -65,11 +65,9 @@ if (!category.value)
 
 onMounted(() => {
   statConfig.updateConfig('catsList', {
-    ...statConfig.config.value.catsList,
     isGrouped: false,
   })
   statConfig.updateConfig('catsRound', {
-    ...statConfig.config.value.catsRound,
     isGrouped: false,
   })
 

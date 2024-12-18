@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+import StatCategoriesSection from '~/components/stat/categories/Section.vue'
+import StatTrnsSection from '~/components/stat/trns/Section.vue'
 import type { CategoryId } from '~/components/categories/types'
-import type { FilterProvider } from '~/components/filter/types'
 import type { CategoryWithData, ChartSeries, IntervalData, MoneyTypeSlugNew } from '~/components/stat/types'
+import type { FilterProvider } from '~/components/filter/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
-import useAmount from '~/components/amount/useAmount'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import type { WalletId } from '~/components/wallets/types'
+import useAmount from '~/components/amount/useAmount'
 import { useStatCategories } from '~/components/stat/useStatCategories'
 import { useStatChart } from '~/components/stat/useStatChart'
-import StatTrnsSection from '~/components/stat/trns/Section.vue'
-import StatCategoriesSection from '~/components/stat/categories/Section.vue'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   hasChildren?: boolean
@@ -224,7 +224,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
 
     <div class="grid gap-6 pt-3">
       <StatCategoriesSection
-        v-if="props.hasChildren"
+        v-if="props.hasChildren || (props.preCategoriesIds ?? []).length > 0"
         :categoriesWithData="categoriesWithData"
         :storageKey="newBaseStorageKey"
         :type="props.type"

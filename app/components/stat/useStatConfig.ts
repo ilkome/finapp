@@ -78,7 +78,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     }
   }
 
-  function updateConfig(key: keyof MiniItemConfig, value: MiniItemConfig[keyof MiniItemConfig]) {
+  function updateConfig(key: keyof MiniItemConfig, value: Partial<MiniItemConfig[keyof MiniItemConfig]>) {
     const update = { ...config.value, [key]: value }
 
     if (!ConfigSchema.safeParse(update).success) {

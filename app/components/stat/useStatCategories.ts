@@ -102,9 +102,6 @@ export function useStatCategories() {
   }
 
   function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]): CategoryWithData[] {
-    if (!trnsIds?.length)
-      return []
-
     const categoriesByTrns = collectCategoriesByTrns(trnsIds, preCategoriesIds)
 
     return isGrouped
