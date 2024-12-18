@@ -34,11 +34,11 @@ function onGenerateDemoData() {
 
 <template>
   <UiPage>
-    <UiHeader class="mb-4">
+    <UiHeader>
       <UiHeaderTitle>{{ t("settings.title") }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="pageWrapper">
+    <div class="pageWrapper pt-4">
       <div>
         <!-- Locale -->
         <div class="pb-12">

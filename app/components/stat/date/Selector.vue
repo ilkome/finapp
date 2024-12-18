@@ -78,7 +78,7 @@ function selectInterval(grouped: Grouped) {
         <!-- Presets -->
         <div class="grid gap-2">
           <div class="flex flex-wrap gap-1">
-            <DateRanges />
+            <DateRanges @onClose="emit('onClose')" />
 
             <div class="flex">
               <DateLinkItem @click="statDate.minusRange">
@@ -94,7 +94,7 @@ function selectInterval(grouped: Grouped) {
           </div>
 
           <div class="flex flex-wrap gap-1">
-            <DateRanges2 />
+            <DateRanges2 @onClose="emit('onClose')" />
           </div>
 
           <div class="flex flex-wrap gap-1">

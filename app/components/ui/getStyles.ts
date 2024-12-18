@@ -3,6 +3,7 @@ export const classes = {
     alt: 'bg-item-4',
     base: '',
     bg: 'bg-item-9',
+    bg2: 'bg-item-4',
     center: 'flex items-center',
     center2: 'flex items-center justify-center',
     center3: 'flex-center',

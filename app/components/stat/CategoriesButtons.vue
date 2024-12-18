@@ -139,17 +139,6 @@ function onChangeViewOptions(newViewOptions: any) {
       />
     </UiItem1>
 
-    <!-- Folder -->
-    <UiItem1
-      v-if="statConfig.config.value.catsView === 'list' && statConfig.config.value.catsList.isGrouped"
-      @click="statConfig.updateConfig('catsList', { isOpened: !statConfig.config.value.catsList.isOpened })"
-    >
-      <Icon
-        :name="statConfig.config.value.catsList.isOpened ? 'lucide:circle-equal' : 'lucide:circle-dot'"
-        size="18"
-      />
-    </UiItem1>
-
     <!-- Grouping -->
     <UiItem1 @click="grouping.toggle">
       <Icon
@@ -200,22 +189,6 @@ function onChangeViewOptions(newViewOptions: any) {
               </UiItem1>
             </div>
           </div>
-
-          <!-- Show empty categories -->
-          <!-- <div
-            v-if="!statConfig.config.value.isCategoryPage"
-            class="border-item-3 grid gap-3 border-b pb-2 last:border-0 last:pb-0"
-          >
-            <UiElement
-              class="text-sm"
-              @click="statConfig.updateConfig('isShowEmptyCategories', !statConfig.config.value.isShowEmptyCategories)"
-            >
-              <div class="grow">
-                {{ t('isShowEmptyCategories') }}
-              </div>
-              <FormCheckbox :value="statConfig.config.value.isShowEmptyCategories" />
-            </UiElement>
-          </div> -->
 
           <!-- Vertical -->
           <div
@@ -365,6 +338,17 @@ function onChangeViewOptions(newViewOptions: any) {
                 <FormCheckbox :value="statConfig.config.value.catsList.isRoundIcon" />
               </UiElement>
             </div>
+
+            <UiElement
+              v-if="statConfig.config.value.catsList.isGrouped"
+              class="text-sm"
+              @click="statConfig.updateConfig('catsList', { isOpened: !statConfig.config.value.catsList.isOpened })"
+            >
+              <div class="grow">
+                {{ t('categories.list.showAsRounded') }}
+              </div>
+              <FormCheckbox :value="statConfig.config.value.catsList.isOpened" />
+            </UiElement>
           </div>
         </div>
       </template>
@@ -387,6 +371,9 @@ en:
   minimal: Minimal
   standard: Standard
   alt: Alternative
+  categories:
+    list:
+      showAsRounded: Show as rounded
 
 ru:
   isItemsBg: Фон категорий
@@ -402,4 +389,7 @@ ru:
   minimal: Легкий
   standard: Стандартный
   alt: Альтернативный
+  categories:
+    list:
+      showAsRounded: Показать как скруглённые
 </i18n>

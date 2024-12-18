@@ -4,7 +4,10 @@ import type { CurrencyCode } from '~/components/currencies/types'
 const props = defineProps<{
   activeType?: string
   currencyCode: CurrencyCode
-  items: unknown[]
+  items: {
+    id: string
+    value: number
+  }[]
 }>()
 
 const emit = defineEmits<{
@@ -18,7 +21,7 @@ const emit = defineEmits<{
       v-for="item in items"
       :key="item.id"
       :isActive="props.activeType === item.id"
-      :lineWidth="3"
+      :lineWidth="5"
       class="group"
       insideClasses="!min-h-[44px]"
       @click="emit('click', item.id)"

@@ -53,7 +53,6 @@ export default {
     allTitle: 'All',
     childs: 'Child categories',
     createNewTitle: 'Add category',
-    editTitle: 'Edit category',
     favoriteTitle: 'Favorite categories',
 
     form: {
@@ -260,9 +259,9 @@ export default {
         half: 'Compact',
         label: 'Chart view',
       },
-      showedWallets: {
+      wallets: {
         label: 'Show wallets',
-        placeholder: 'Number',
+        title: 'Wallets',
       },
     },
     customize: {
@@ -350,7 +349,6 @@ export default {
 
   wallets: {
     createNewTitle: 'Add wallet',
-    editTitle: 'Edit Wallet',
     form: {
       credit: {
         available: 'Available',

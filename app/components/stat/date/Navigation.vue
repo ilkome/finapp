@@ -65,7 +65,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       @onCloseModal="statDate.modals.value.dateSelector = false"
     >
       <template #trigger>
-        <UiTitle10 class="_mt-1">
+        <UiTitle10>
           <StatDateRange />
         </UiTitle10>
       </template>

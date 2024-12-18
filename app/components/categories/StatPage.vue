@@ -99,18 +99,13 @@ useHead({ title: category.value?.name })
       </template>
 
       <template #popover>
-        <UiElement
+        <UiHeaderLink
           v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
+          icon="mdi:pencil-outline"
           @click="router.push(`/categories/${categoryId}/edit`)"
         >
-          <template #leftIcon>
-            <UiIconBase
-              name="mdi:pencil-outline group-hover/link:text-1 text-lg leading-none"
-            />
-          </template>
-
-          {{ t('categories.editTitle') }}
-        </UiElement>
+          {{ t('base.edit') }}
+        </UiHeaderLink>
       </template>
     </StatHeader>
 

@@ -20,7 +20,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
   >
     <div class="-my-px overflow-hidden">
       <div
-        :class="getStyles('item', ['link', 'center', 'rounded'])"
+        :class="getStyles('item', ['link', 'center', 'rounded', 'minh1'])"
       >
         <slot
           name="header"

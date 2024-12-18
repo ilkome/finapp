@@ -33,7 +33,7 @@ const emit = defineEmits<{
         <template v-if="alt">
           <div
             v-if="date"
-            class="text-2xs w-10 truncate leading-none"
+            class="text-2xs min-w-10 truncate leading-none"
           >
             {{ date }}
           </div>
@@ -47,9 +47,7 @@ const emit = defineEmits<{
               :color="props.trnItem.category?.color"
               size="16"
             />
-            <div
-              class="text-secondary flex items-center gap-2 text-xs leading-none"
-            >
+            <div class="text-secondary flex items-center gap-2 text-xs leading-none">
               {{ trnItem.category.name }}
             </div>
           </div>

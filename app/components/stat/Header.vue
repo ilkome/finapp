@@ -32,7 +32,9 @@ const trnsFormStore = useTrnsFormStore()
 
 const sortedFilterWalletsIds = computed(() => {
   const filteredIds = filter.walletsIds.value
-  const showedIds = walletsStore.sortedIds.slice(0, statConfig.config.value.showedWallets)
+  const showedIds = statConfig.config.value.wallets.isShow
+    ? walletsStore.sortedIds.slice(0, statConfig.config.value.wallets.count)
+    : filteredIds
   return [...new Set([...showedIds, ...filteredIds])]
 })
 
@@ -80,20 +82,21 @@ function onClickWallet(walletId: WalletId) {
       </div>
 
       <div
-        v-if="filter.isShow?.value"
+        v-if="filter.isShow?.value || statConfig.config.value.wallets.isShow"
         class="grid gap-2 px-2 pb-0 lg:px-4 2xl:px-8"
       >
+        <h1>11</h1>
         <div
           v-if="props.filter && filter.isShow?.value && filter.categoriesIds.value.length > 0"
         >
           <FilterSelected
             :isShowCategories="props.filter.isShowCategories"
-            :isShowWallets="props.filter.isShowWallets && statConfig.config.value.showedWallets === 0"
+            :isShowWallets="props.filter.isShowWallets && !statConfig.config.value.wallets.isShow"
           />
         </div>
 
         <div
-          v-if="statConfig.config.value.showedWallets > 0"
+          v-if="filter.walletsIds.value.length > 0 || statConfig.config.value.wallets.isShow"
           class="flex max-w-6xl gap-1 overflow-x-auto py-px"
         >
           <WalletsItem

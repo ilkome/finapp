@@ -164,12 +164,5 @@ const modals = ref({
         </Teleport>
       </template>
     </template>
-
-    <!-- <UiItem3
-      v-if="filter?.isShow?.value"
-      @click="filter.clearFilter"
-    >
-      <Icon name="lucide:delete" size="20" />
-    </UiItem3> -->
   </div>
 </template>

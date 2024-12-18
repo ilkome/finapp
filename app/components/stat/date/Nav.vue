@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getStyles } from '~/components/ui/getStyles'
+
 const props = defineProps<{
   isEnd: boolean
   isShowNavHome: boolean
@@ -20,16 +22,14 @@ const emit = defineEmits<{
     </UiItem3>
 
     <UiItem3
-      :class="{ '!hocus:transparent opacity-30': isStart }"
-      class="bg-item-4"
+      :class="[getStyles('item', ['bg2']), { '!hocus:transparent opacity-30': isStart }]"
       @click="emit('changeDate', 'prev')"
     >
       <Icon name="lucide:chevron-left" size="24" />
     </UiItem3>
 
     <UiItem3
-      :class="{ '!hocus:transparent opacity-30': isEnd }"
-      class="bg-item-4 "
+      :class="[getStyles('item', ['bg2']), { '!hocus:transparent opacity-30': isEnd }]"
       @click="emit('changeDate', 'next')"
     >
       <Icon name="lucide:chevron-left" size="24" class="rotate-180" />

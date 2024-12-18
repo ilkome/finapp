@@ -21,7 +21,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 <template>
   <UiPage>
-    <UiHeader class="!mb-4">
+    <UiHeader>
       <UiHeaderTitle>{{ t("trns.history") }}</UiHeaderTitle>
       <template #actions>
         <FilterSelector

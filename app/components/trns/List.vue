@@ -24,7 +24,7 @@ const props = withDefaults(
     trnsIds: TrnId[]
   }>(),
   {
-    initTrnType: 'summary',
+    initTrnType: 'all',
     size: 30,
     trnsIds: () => [],
   },
@@ -44,11 +44,11 @@ const filterBy = ref(props.initTrnType)
 const pageNumber = ref(1)
 
 const typeFilters = computed(() => {
-  const sum = {
+  const all = {
     count: props.trnsIds.length,
     isShow: true,
     name: t('common.all'),
-    slug: 'summary',
+    slug: 'all',
     type: undefined,
   }
 
@@ -76,13 +76,13 @@ const typeFilters = computed(() => {
     type: 1,
   }
 
-  return [sum, expense, income, transfers].filter(item => item.isShow)
+  return [all, expense, income, transfers].filter(item => item.isShow)
 })
 
 const selectedIds = computed(() => {
   let ids = props.trnsIds ?? []
 
-  if (filterBy.value !== 'summary') {
+  if (filterBy.value !== 'all') {
     ids = props.trnsIds.filter(id => trnsStore.items[id].type === typeFilters.value.find(item => item.slug === filterBy.value)?.type)
   }
 
@@ -106,10 +106,10 @@ const isShowedAllTrns = computed(
 const isTrnsWithDesc = computed(() => {
   let ids = props.trnsIds ?? []
 
-  if (filterBy.value !== 'summary') {
-    ids = props.trnsIds.filter(
-      id => trnsStore.items[id].type === typeFilters.value[filterBy.value]?.type,
-    )
+  if (filterBy.value !== 'all') {
+    const typeFilter = typeFilters.value.find(item => item.slug === filterBy.value)
+
+    ids = props.trnsIds.filter(id => trnsStore.items[id].type === typeFilter.type)
   }
 
   return (ids).some(
@@ -119,11 +119,11 @@ const isTrnsWithDesc = computed(() => {
 
 function setFilterBy(type: TrnType | undefined) {
   if (filterBy.value === type) {
-    filterBy.value = 'summary'
+    filterBy.value = 'all'
     return
   }
 
-  filterBy.value = type ?? 'summary'
+  filterBy.value = type ?? 'all'
 }
 
 const groupedTrns = computed(() => {
@@ -179,6 +179,7 @@ const groupedTrns = computed(() => {
     </UiTabs1>
 
     <!-- With Desc -->
+
     <div
       v-if="isShowFilterByDesc && isTrnsWithDesc && selectedIds.length > 0"
       class="relative pb-2"

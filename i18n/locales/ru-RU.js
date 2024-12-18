@@ -53,7 +53,6 @@ export default {
     allTitle: 'Все',
     childs: 'Дочерние категории',
     createNewTitle: 'Добавить категорию',
-    editTitle: 'Редактирование категории',
     favoriteTitle: 'Избранные категории',
 
     form: {
@@ -208,7 +207,7 @@ export default {
     summary: 'Сумма',
     totals: {
       all: 'Всего',
-      archived: 'Скрытые',
+      archived: 'Архивные',
       available: 'Доступные',
       creditPossible: 'Доступный кредитный лимит',
       isCash: 'Наличные',
@@ -225,7 +224,7 @@ export default {
     type: 'Тип кошельки',
     types: {
       all: 'Все',
-      archived: 'Скрытые',
+      archived: 'Архивные',
       available: 'Доступные',
       cash: 'Наличные',
       cashless: 'Безнал',
@@ -261,9 +260,9 @@ export default {
         half: 'Компактный',
         label: 'Вид графика',
       },
-      showedWallets: {
+      wallets: {
         label: 'Показывать кошельки',
-        placeholder: 'Количество',
+        title: 'Кошельки',
       },
     },
     customize: {
@@ -352,7 +351,6 @@ export default {
 
   wallets: {
     createNewTitle: 'Добавить кошелек',
-    editTitle: 'Редактирование кошелька',
     form: {
       credit: {
         available: 'Доступно',

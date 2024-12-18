@@ -4,7 +4,8 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   active?: string
-  isShowAll?: boolean
+  isHideUnused?: boolean
+  isShowAllButton?: boolean
 }>()
 const emit = defineEmits(['onSelect'])
 
@@ -18,7 +19,9 @@ const list = computed(() => {
     return currencies
 
   const search = searchInput.value.toLowerCase()
-  return currencies.filter(
+  const searchableCurrencies = props.isHideUnused ? currencies.filter(currency => walletsStore.currenciesUsed.includes(currency.code)) : currencies
+
+  return searchableCurrencies.filter(
     currency =>
       currency.name.toLowerCase().includes(search)
       || currency.code.toLowerCase().includes(search),
@@ -43,10 +46,11 @@ const list = computed(() => {
         </div>
       </template>
 
-      <div v-if="props.isShowAll">
+      <div v-if="props.isShowAllButton">
         <UiElement
           :isActive="active === 'all'"
           :lineWidth="1"
+          class="group"
           insideClasses="!min-h-[44px]"
           @click="emit('onSelect', 'all')"
         >
@@ -87,7 +91,7 @@ const list = computed(() => {
         </UiElement>
       </div>
 
-      <div v-if="list.length > 0">
+      <div v-if="!props.isHideUnused && list.length > 0">
         <UiElement
           v-for="currency in list"
           :key="currency.code"

@@ -2,6 +2,7 @@
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { chartViewOptions } from '~/components/stat/useStatConfig'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   isShowWallets?: boolean
@@ -10,6 +11,11 @@ const props = defineProps<{
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
 const statConfig = inject('statConfig') as StatConfigProvider
+
+function updateWalletsLimit(value: number) {
+  if (value <= walletsStore.sortedIds.length && value > 0)
+    statConfig.updateConfig('wallets', { count: value })
+}
 </script>
 
 <template>
@@ -50,33 +56,41 @@ const statConfig = inject('statConfig') as StatConfigProvider
     <!-- Showed wallets -->
     <div v-if="props.isShowWallets" class="popover-el">
       <UiTitleOption class="pb-2">
-        {{ t("stat.config.showedWallets.label") }}
+        {{ t("stat.config.wallets.title") }}
       </UiTitleOption>
+      <UiCheckbox
+        :checkboxValue="statConfig.config.value.wallets.isShow"
+        :title="t('stat.config.wallets.label')"
+        @onClick="statConfig.updateConfig('wallets', { isShow: !statConfig.config.value.wallets.isShow })"
+      />
 
-      <div class="flex gap-4">
-        <UiFormInput
-          :placeholder="t('stat.config.showedWallets.placeholder')"
-          :value="statConfig.config.value.showedWallets"
-          :max="walletsStore.sortedIds.length"
-          class="max-w-20"
-          type="number"
-          min="0"
-          @updateValue="value => statConfig.updateConfig('showedWallets', +value)"
-        />
-
+      <div
+        v-if="statConfig.config.value.wallets.isShow"
+        class="flex gap-4 pt-2"
+      >
         <div class="flex gap-1">
-          <UiBox1
-            class="!flex gap-2"
-            @click="statConfig.updateConfig('showedWallets', statConfig.config.value.showedWallets - 1)"
+          <UiItem3
+            :class="[getStyles('item', ['bg2', 'minw2']), { '!hocus:transparent opacity-30': statConfig.config.value.wallets.count === 1 }]"
+            @click="updateWalletsLimit(statConfig.config.value.wallets.count - 1)"
           >
-            <div>-</div>
-          </UiBox1>
-          <UiBox1
-            class="!flex gap-2"
-            @click="statConfig.updateConfig('showedWallets', statConfig.config.value.showedWallets + 1)"
+            <Icon name="lucide:minus" />
+          </UiItem3>
+          <UiFormInput
+            :placeholder="t('stat.config.showedWallets.placeholder')"
+            :value="statConfig.config.value.wallets.count"
+            :max="walletsStore.sortedIds.length"
+            min="1"
+            class="max-w-20 text-center"
+            type="number"
+            @updateValue="value => statConfig.updateConfig('wallets', { count: +value })"
+          />
+
+          <UiItem3
+            :class="[getStyles('item', ['bg2', 'minw2']), { '!hocus:transparent opacity-30': statConfig.config.value.wallets.count >= walletsStore.sortedIds.length }]"
+            @click="updateWalletsLimit(statConfig.config.value.wallets.count + 1)"
           >
-            <div>+</div>
-          </UiBox1>
+            <Icon name="lucide:plus" />
+          </UiItem3>
         </div>
       </div>
     </div>

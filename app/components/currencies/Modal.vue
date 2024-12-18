@@ -3,7 +3,8 @@ import type { CurrencyCode } from '~/components/currencies/types'
 
 const props = defineProps<{
   activeCode?: CurrencyCode
-  isShowAll?: boolean
+  isHideUnused?: boolean
+  isShowAllButton?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -37,7 +38,8 @@ function onSelect(code: CurrencyCode, close: () => void) {
 
           <CurrenciesList
             :active="props.activeCode"
-            :isShowAll="props.isShowAll"
+            :isShowAllButton="props.isShowAllButton"
+            :isHideUnused="props.isHideUnused"
             @onSelect="(c: CurrencyCode) => onSelect(c, close)"
           />
         </div>
