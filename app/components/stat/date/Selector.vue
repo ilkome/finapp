@@ -53,59 +53,6 @@ const viewPresets: Record<'mini' | 'standard', Record<'catsList', DeepPartial<St
   },
 }
 
-function setRangeWithOptions({
-  catsView,
-  intervalOptions,
-  viewPreset,
-}: {
-  catsView: StatConfigProvider['config']['value']['catsView']
-  intervalOptions: IntervalGroupedLabel
-  viewPreset: typeof viewPresets.mini | typeof viewPresets.standard
-}) {
-  emit('onClose')
-
-  statConfig.updateConfig('catsView', catsView)
-  statConfig.updateConfig('catsList', {
-    ...statConfig.config.value.catsList,
-    ...viewPreset.catsList,
-  })
-  statConfig.updateConfig('catsRound', {
-    ...statConfig.config.value.catsRound,
-    ...viewPreset.catsRound,
-  })
-
-  statDate.params.value.isShowMaxRange = false
-  statDate.setRangeByPeriod(intervalOptions)
-}
-
-// Preset functions
-function setDaysMini(days: number) {
-  setRangeWithOptions({
-    catsView: 'round',
-    intervalOptions: {
-      intervalsBy: 'day',
-      intervalsDuration: 1,
-      rangeBy: 'day',
-      rangeDuration: days,
-    },
-    viewPreset: viewPresets.mini,
-  })
-}
-
-function set12Months() {
-  setRangeWithOptions({
-    catsView: 'list',
-    intervalOptions: {
-      intervalsBy: 'month',
-      intervalsDuration: 1,
-      rangeBy: 'month',
-      rangeDuration: 12,
-    },
-    viewPreset: viewPresets.standard,
-  })
-  statDate.params.value.rangeOffset = 0
-}
-
 function setMaxRange(isSkipEmpty = false) {
   emit('onClose')
 

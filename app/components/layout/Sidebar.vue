@@ -52,7 +52,7 @@ const { t } = useI18n()
       </UiButtonBlue>
     </div>
 
-    <LayoutMenuSidebar class="px-2" />
+    <LayoutMenuSidebar class="px-2 pb-2" />
 
     <div class="px-2 pb-6">
       <UiTitle3 class="pb-2 pl-3">
