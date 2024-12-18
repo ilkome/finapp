@@ -2,9 +2,12 @@
 import type { CategoryId } from '~/components/categories/types'
 import type { CategoryWithData, MoneyTypeSlugNew } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
+import type { TrnId } from '~/components/trns/types'
+import { useStatCategories } from '~/components/stat/useStatCategories'
 
 const props = defineProps<{
-  categoriesWithData: CategoryWithData[]
+  preCategoriesIds?: CategoryId[]
+  selectedTrnsIds?: TrnId[]
   storageKey: string
   type: MoneyTypeSlugNew
 }>()
@@ -13,17 +16,33 @@ defineEmits<{
   clickCategory: [categoryId: CategoryId]
 }>()
 
+const { getCategoriesWithData } = useStatCategories()
 const statConfig = inject('statConfig') as StatConfigProvider
 
-const biggestCatNumber = computed(() => {
-  const income = props.categoriesWithData.filter(c => c.value > 0).at(0)?.value ?? 0
-  const expense = props.categoriesWithData.filter(c => c.value < 0).at(0)?.value ?? 0
+const categoriesWithData = computed<CategoryWithData[]>(() => {
+  const isGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
+
+  const cats: CategoryId[] = []
+  if (statConfig.config.value?.isShowEmptyCategories && props.preCategoriesIds) {
+    cats.push(...props.preCategoriesIds)
+  }
+
+  return getCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, cats)
+})
+
+const verticalCategories = computed<CategoryWithData[]>(() => getCategoriesWithData(props.selectedTrnsIds ?? [], statConfig.config.value.vertical.isGrouped))
+const verticalBiggestCatNumber = computed(() => getBiggestCatNumber(verticalCategories.value))
+const biggestCatNumber = computed(() => getBiggestCatNumber(categoriesWithData.value))
+
+function getBiggestCatNumber(categories: CategoryWithData[]) {
+  const income = categories.filter(c => c.value > 0).at(0)?.value ?? 0
+  const expense = categories.filter(c => c.value < 0).at(0)?.value ?? 0
 
   return {
     expense: Math.abs(expense),
     income,
   }
-})
+}
 </script>
 
 <template>
@@ -41,21 +60,20 @@ const biggestCatNumber = computed(() => {
         <StatCategoriesButtons
           v-if="isShown"
           :catsLength="categoriesWithData.length"
-          isShowGrouping
         />
       </div>
     </template>
 
     <template v-if="categoriesWithData.length > 0">
       <div
-        v-if="statConfig.config.value.isShowCategoriesVertical && categoriesWithData.length > 1"
+        v-if="statConfig.config.value.vertical.isShow && verticalCategories.length > 1"
         class="flex overflow-y-auto pb-2 pl-1 pt-4"
       >
         <StatCategoriesVertical
-          v-for="item in categoriesWithData.filter(c => c.value !== 0)"
+          v-for="item in verticalCategories.filter(c => c.value !== 0)"
           :key="item.id"
           :item="item"
-          :biggestCatNumber="biggestCatNumber"
+          :biggestCatNumber="verticalBiggestCatNumber"
           @click="$emit('clickCategory', item.id)"
         />
       </div>

@@ -3,14 +3,13 @@ import { useStorage } from '@vueuse/core'
 import StatCategoriesSection from '~/components/stat/categories/Section.vue'
 import StatTrnsSection from '~/components/stat/trns/Section.vue'
 import type { CategoryId } from '~/components/categories/types'
-import type { CategoryWithData, ChartSeries, IntervalData, MoneyTypeSlugNew } from '~/components/stat/types'
+import type { ChartSeries, IntervalData, MoneyTypeSlugNew } from '~/components/stat/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 import useAmount from '~/components/amount/useAmount'
-import { useStatCategories } from '~/components/stat/useStatCategories'
 import { useStatChart } from '~/components/stat/useStatChart'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -31,7 +30,6 @@ const statConfig = inject('statConfig') as StatConfigProvider
 
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
-const { getCategoriesWithData } = useStatCategories()
 const { addMarkArea, createSeriesItem } = useStatChart()
 
 const isShowTrns = ref(false)
@@ -107,17 +105,6 @@ const rangeTotal = computed(() => {
     : rangeTrnsIds.value
 
   return getTotalOfTrnsIds(trnsIds)
-})
-
-const categoriesWithData = computed<CategoryWithData[]>(() => {
-  const isGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
-
-  const cats: CategoryId[] = []
-  if (statConfig.config.value?.isShowEmptyCategories && props.preCategoriesIds) {
-    cats.push(...props.preCategoriesIds)
-  }
-
-  return getCategoriesWithData(selectedTrnsIds.value ?? [], isGrouped, cats)
 })
 
 const chart = {
@@ -225,14 +212,15 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
     <div class="grid gap-6 pt-3">
       <StatCategoriesSection
         v-if="props.hasChildren || (props.preCategoriesIds ?? []).length > 0"
-        :categoriesWithData="categoriesWithData"
         :storageKey="newBaseStorageKey"
+        :preCategoriesIds="props.preCategoriesIds"
+        :selectedTrnsIds
         :type="props.type"
         @clickCategory="onClickCategory"
       />
 
       <StatTrnsSection
-        :selectedTrnsIds="selectedTrnsIds"
+        :selectedTrnsIds
         :storageKey="newBaseStorageKey"
         :type="props.type"
         :isPeriodOneDay="isPeriodOneDay"

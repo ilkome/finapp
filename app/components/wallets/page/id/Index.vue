@@ -36,7 +36,6 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const statConfig = useStatConfig({
   props: {
-    isCategoryPage: false,
     isShowEmptyCategories: true,
   },
   storageKey: storageKey.value,

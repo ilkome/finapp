@@ -25,7 +25,9 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const statConfig = useStatConfig({ storageKey: storageKey.value })
+const statConfig = useStatConfig({
+  storageKey: storageKey.value,
+})
 provide('statConfig', statConfig)
 
 const statDate = useStatDate({ key: storageKey.value, maxRange, queryParams: route.query })

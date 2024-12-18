@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { differenceInDays } from 'date-fns'
-import type { DeepPartial } from '~~/utils/types'
-import type { Grouped, IntervalGroupedLabel, Range, StatDateProvider } from '~/components/date/types'
+import type { Grouped, Range, StatDateProvider } from '~/components/date/types'
 import { calculateBestIntervalsBy } from '~/components/date/utils'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   maxRange: Range
@@ -20,50 +18,15 @@ function close() {
 
 const { t } = useI18n()
 const statDate = inject('statDate') as StatDateProvider
-const statConfig = inject('statConfig') as StatConfigProvider
 
 const tabs = {
   items: ref(['presets', 'calendar']),
   selected: ref('presets'),
 }
 
-const viewPresets: Record<'mini' | 'standard', Record<'catsList', DeepPartial<StatConfigProvider['config']['value']['catsList']>> & Record<'catsRound', DeepPartial<StatConfigProvider['config']['value']['catsRound']>>> = {
-  mini: {
-    catsList: {
-      isGrouped: !statConfig.config.value.isCategoryPage,
-      // isItemsBg: false,
-      // isLines: false,
-      // isRoundIcon: false,
-    },
-    catsRound: {
-      isGrouped: !statConfig.config.value.isCategoryPage,
-    },
-  },
-  standard: {
-    catsList: {
-      isGrouped: !statConfig.config.value.isCategoryPage,
-      // isItemsBg: false,
-      // isLines: true,
-      // isOpened: false,
-      // isRoundIcon: true,
-    },
-    catsRound: {
-      isGrouped: !statConfig.config.value.isCategoryPage,
-    },
-  },
-}
-
 function setMaxRange(isSkipEmpty = false) {
   emit('onClose')
 
-  statConfig.updateConfig('catsList', {
-    ...statConfig.config.value.catsList,
-    ...viewPresets.standard.catsList,
-  })
-  statConfig.updateConfig('catsRound', {
-    ...statConfig.config.value.catsRound,
-    ...viewPresets.standard.catsRound,
-  })
   const rangeDuration = differenceInDays(props.maxRange.end, props.maxRange.start)
   const intervalsBy = calculateBestIntervalsBy(props.maxRange)
 

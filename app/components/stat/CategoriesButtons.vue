@@ -5,7 +5,6 @@ import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 const props = defineProps<{
   catsLength: number
   isShowFavorites?: boolean
-  isShowGrouping?: boolean
   isShowRecent?: boolean
 }>()
 
@@ -24,18 +23,14 @@ const grouping = {
   }),
   toggle: () => {
     if (statConfig.config.value.catsView === 'list') {
-      statConfig.updateConfig('catsList', {
-        ...statConfig.config.value.catsList,
-        isGrouped: !statConfig.config.value.catsList.isGrouped,
-      })
+      statConfig.updateConfig('vertical', { isGrouped: !statConfig.config.value.catsList.isGrouped })
+      statConfig.updateConfig('catsList', { isGrouped: !statConfig.config.value.catsList.isGrouped })
       return
     }
 
     if (statConfig.config.value.catsView === 'round') {
-      statConfig.updateConfig('catsRound', {
-        ...statConfig.config.value.catsRound,
-        isGrouped: !statConfig.config.value.catsRound.isGrouped,
-      })
+      statConfig.updateConfig('vertical', { isGrouped: !statConfig.config.value.catsRound.isGrouped })
+      statConfig.updateConfig('catsRound', { isGrouped: !statConfig.config.value.catsRound.isGrouped })
     }
   },
 }
@@ -52,17 +47,12 @@ const favorites = computed(() => ({
   }),
   toggle: () => {
     if (statConfig.config.value.catsView === 'list') {
-      statConfig.updateConfig('catsList', {
-        ...statConfig.config.value.catsList,
-        isShowFavorites: !statConfig.config.value.catsList.isShowFavorites,
+      statConfig.updateConfig('catsList', { isShowFavorites: !statConfig.config.value.catsList.isShowFavorites,
       })
     }
 
     if (statConfig.config.value.catsView === 'round') {
-      statConfig.updateConfig('catsRound', {
-        ...statConfig.config.value.catsRound,
-        isShowFavorites: !statConfig.config.value.catsRound.isShowFavorites,
-      })
+      statConfig.updateConfig('catsRound', { isShowFavorites: !statConfig.config.value.catsRound.isShowFavorites })
     }
   },
 }))
@@ -80,7 +70,6 @@ const recent = {
   toggle: () => {
     if (statConfig.config.value.catsView === 'list') {
       statConfig.updateConfig('catsList', {
-        ...statConfig.config.value.catsList,
         isShowRecent: !statConfig.config.value.catsList.isShowRecent,
       })
     }
@@ -142,7 +131,7 @@ function onChangeViewOptions(newViewOptions: any) {
     <!-- Vertical -->
     <UiItem1
       v-if="props.catsLength > 1"
-      @click="statConfig.updateConfig('isShowCategoriesVertical', !statConfig.config.value.isShowCategoriesVertical)"
+      @click="statConfig.updateConfig('vertical', { isShow: !statConfig.config.value.vertical.isShow })"
     >
       <Icon
         name="lucide:chart-no-axes-column-decreasing"
@@ -152,11 +141,8 @@ function onChangeViewOptions(newViewOptions: any) {
 
     <!-- Folder -->
     <UiItem1
-      v-if="props.isShowGrouping && statConfig.config.value.catsView === 'list' && statConfig.config.value.catsList.isGrouped"
-      @click="statConfig.updateConfig('catsList', {
-        ...statConfig.config.value.catsList,
-        isOpened: !statConfig.config.value.catsList.isOpened,
-      })"
+      v-if="statConfig.config.value.catsView === 'list' && statConfig.config.value.catsList.isGrouped"
+      @click="statConfig.updateConfig('catsList', { isOpened: !statConfig.config.value.catsList.isOpened })"
     >
       <Icon
         :name="statConfig.config.value.catsList.isOpened ? 'lucide:circle-equal' : 'lucide:circle-dot'"
@@ -165,10 +151,7 @@ function onChangeViewOptions(newViewOptions: any) {
     </UiItem1>
 
     <!-- Grouping -->
-    <UiItem1
-      v-if="props.isShowGrouping && !statConfig.config.value.isCategoryPage"
-      @click="grouping.toggle"
-    >
+    <UiItem1 @click="grouping.toggle">
       <Icon
         :name="grouping.isGrouped.value ? 'lucide:folder-tree' : 'lucide:network'"
         size="18"
@@ -219,7 +202,7 @@ function onChangeViewOptions(newViewOptions: any) {
           </div>
 
           <!-- Show empty categories -->
-          <div
+          <!-- <div
             v-if="!statConfig.config.value.isCategoryPage"
             class="border-item-3 grid gap-3 border-b pb-2 last:border-0 last:pb-0"
           >
@@ -232,16 +215,16 @@ function onChangeViewOptions(newViewOptions: any) {
               </div>
               <FormCheckbox :value="statConfig.config.value.isShowEmptyCategories" />
             </UiElement>
-          </div>
+          </div> -->
 
           <!-- Vertical -->
           <div
             v-if="props.catsLength > 1"
-            class="border-item-3 grid gap-3 border-b pb-2 last:border-0 last:pb-0"
+            class="border-item-3 grid border-b pb-2 last:border-0 last:pb-0"
           >
             <UiElement
               class="text-sm"
-              @click="statConfig.updateConfig('isShowCategoriesVertical', !statConfig.config.value.isShowCategoriesVertical)"
+              @click="statConfig.updateConfig('vertical', { isShow: !statConfig.config.value.vertical.isShow })"
             >
               <template #leftIcon>
                 <Icon
@@ -250,9 +233,27 @@ function onChangeViewOptions(newViewOptions: any) {
                 />
               </template>
               <div class="grow">
-                {{ t('isShowCategoriesVertical') }}
+                {{ t('vertical.show') }}
               </div>
-              <FormCheckbox :value="statConfig.config.value.isShowCategoriesVertical" />
+              <FormCheckbox :value="statConfig.config.value.vertical.isShow" />
+            </UiElement>
+
+            <!-- Grouping -->
+            <UiElement
+              v-if="statConfig.config.value.vertical.isShow"
+              class="text-sm"
+              @click="statConfig.updateConfig('vertical', { isGrouped: !statConfig.config.value.vertical.isGrouped })"
+            >
+              <template #leftIcon>
+                <Icon
+                  :name="statConfig.config.value.vertical.isGrouped ? 'lucide:folder-tree' : 'lucide:network'"
+                  size="18"
+                />
+              </template>
+              <div class="grow">
+                {{ t('vertical.grouping') }}
+              </div>
+              <FormCheckbox :value="statConfig.config.value.vertical.isGrouped" />
             </UiElement>
           </div>
 
@@ -323,7 +324,7 @@ function onChangeViewOptions(newViewOptions: any) {
 
             <div v-if="isShowMorePresets">
               <UiElement
-                v-if="statConfig.config.value.catsView === 'list' && !statConfig.config.value.catsList.isOpened"
+                v-if="statConfig.config.value.catsView === 'list'"
                 class="text-sm"
                 @click="statConfig.updateConfig('catsList', {
                   ...statConfig.config.value.catsList,
@@ -376,8 +377,10 @@ en:
   isItemsBg: Items background
   isLines: Amount lines
   isRoundIcon: Rounded categories
-  isShowCategoriesVertical: Vertical categories
-  isShowEmptyCategories: Show all categories
+  vertical:
+    show: Vertical categories
+    grouping: Grouping
+  isShowEmptyCategories: Show empty categories
   isShowFavorites: Show favorites
   isShowRecent: Show recent
   listItemsOptions: List items options
@@ -388,9 +391,11 @@ en:
 ru:
   isItemsBg: Фон категорий
   isLines: Линии сумм
-  isRoundIcon: Скуруглённые категории
-  isShowCategoriesVertical: Вертикальные категории
-  isShowEmptyCategories: Показывать все категории
+  isRoundIcon: Скруглённые категории
+  vertical:
+    show: Вертикальные категории
+    grouping: Группировать
+  isShowEmptyCategories: Показывать пустые категории
   isShowFavorites: Показывать избранные
   isShowRecent: Показывать последние
   listItemsOptions: Настройки списка категорий

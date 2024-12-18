@@ -72,7 +72,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 
       <template #content="{ close }">
         <StatDateSelector
-          class="min-w-[350px] px-3"
+          class="min-w-[350px] md:px-3"
           :maxRange
           @onClose="close"
         />

@@ -46,7 +46,6 @@ const statConfig = useStatConfig({
     catsRound: {
       isGrouped: false,
     },
-    isCategoryPage: true,
     isShowEmptyCategories: false,
   },
   storageKey: storageKey.value,
@@ -64,12 +63,8 @@ if (!category.value)
   router.replace('/dashboard')
 
 onMounted(() => {
-  statConfig.updateConfig('catsList', {
-    isGrouped: false,
-  })
-  statConfig.updateConfig('catsRound', {
-    isGrouped: false,
-  })
+  statConfig.updateConfig('catsList', { isGrouped: false })
+  statConfig.updateConfig('catsRound', { isGrouped: false })
 
   if (categoriesStore.isItTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value

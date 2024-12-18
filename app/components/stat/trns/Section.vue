@@ -38,5 +38,8 @@ defineProps<{
     />
   </UiToggle>
 
-  <TrnsNoTrns v-else />
+  <TrnsNoTrns
+    v-else
+    class="min-w-80 md:max-w-lg"
+  />
 </template>

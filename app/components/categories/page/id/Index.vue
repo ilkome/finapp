@@ -47,7 +47,6 @@ const statConfig = useStatConfig({
     catsRound: {
       isGrouped: false,
     },
-    isCategoryPage: true,
     isShowEmptyCategories: true,
   },
   storageKey: storageKey.value,
@@ -62,14 +61,8 @@ const statDate = useStatDate({
 provide('statDate', statDate)
 
 onMounted(() => {
-  statConfig.updateConfig('catsList', {
-    ...statConfig.config.value.catsList,
-    isGrouped: false,
-  })
-  statConfig.updateConfig('catsRound', {
-    ...statConfig.config.value.catsRound,
-    isGrouped: false,
-  })
+  statConfig.updateConfig('catsList', { isGrouped: false })
+  statConfig.updateConfig('catsRound', { isGrouped: false })
 
   if (categoriesStore.isItTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value

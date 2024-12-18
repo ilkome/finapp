@@ -23,13 +23,16 @@ export const ConfigSchema = z.object({
   }),
 
   catsView: z.enum(['list', 'round']),
+
   chartShow: z.boolean(),
   chartType: z.enum(chartTypes),
   chartView: z.enum(chartViewOptions),
-  isCategoryPage: z.boolean(),
-  isShowCategoriesVertical: z.boolean(),
   isShowEmptyCategories: z.boolean(),
   showedWallets: z.number(),
+  vertical: z.object({
+    isGrouped: z.boolean(),
+    isShow: z.boolean(),
+  }),
 })
 
 export type MiniItemConfig = z.infer<typeof ConfigSchema>
@@ -62,24 +65,26 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     chartShow: true,
     chartType: 'bar',
     chartView: 'half',
-    isCategoryPage: false,
-    isShowCategoriesVertical: true,
     isShowEmptyCategories: false,
     showedWallets: 0,
+    vertical: {
+      isGrouped: false,
+      isShow: false,
+    },
   }, localStorage, {
     mergeDefaults: true,
   })
 
   if (props) {
-    for (const key in props) {
-      if (props[key] !== undefined) {
-        updateConfig(key, typeof props[key] === 'object' ? defu(props[key], config.value[key]) : props[key])
+    Object.entries(props).forEach(([key, value]) => {
+      if (value !== undefined) {
+        updateConfig(key as keyof MiniItemConfig, value)
       }
-    }
+    })
   }
 
   function updateConfig(key: keyof MiniItemConfig, value: Partial<MiniItemConfig[keyof MiniItemConfig]>) {
-    const update = { ...config.value, [key]: value }
+    const update = { ...config.value, [key]: typeof value === 'object' ? defu(value, config.value[key]) : value }
 
     if (!ConfigSchema.safeParse(update).success) {
       console.log('error', key, value)
