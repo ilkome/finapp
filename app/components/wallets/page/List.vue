@@ -259,7 +259,7 @@ const counts = computed(() => ({
   },
   cash: {
     id: 'cash',
-    isShow: groupedBy.value === 'list' && totalInWallets.value.cash !== 0,
+    isShow: Object.keys(walletsStore.items ?? {}).length > 1 && groupedBy.value === 'list' && totalInWallets.value.cash !== 0,
     value: totalInWallets.value.cash,
   },
   cashless: {
@@ -297,7 +297,7 @@ const counts = computed(() => ({
   // eslint-disable-next-line perfectionist/sort-objects
   archived: {
     id: 'archived',
-    isShow: true,
+    isShow: Object.values(walletsStore.items ?? {}).some(wallet => wallet.isArchived),
     value: totalInWallets.value.archived + totalInWallets.value.archived,
   },
 }))
