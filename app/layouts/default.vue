@@ -33,7 +33,7 @@ const { error, status } = await useAsyncData(
     const localAuthUid = await useCookie('finapp.localAuthUid')
 
     if (isDemo.value) {
-      loadDataFromCache()
+      await loadDataFromCache()
     }
     else if (user.value || localAuthUid.value) {
       await loadDataFromCache()
@@ -41,7 +41,7 @@ const { error, status } = await useAsyncData(
     }
   },
   {
-    lazy: true,
+    lazy: false,
     server: false,
   },
 )
