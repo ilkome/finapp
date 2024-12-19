@@ -188,6 +188,14 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
     return acc
   }, [] as IntervalData[])
 }
+
+// Remove last interval
+const averageTotal = computed(() => {
+  if (intervalsData.value.length < 2)
+    return
+
+  return intervalsData.value.reduce((acc, i) => acc + i.total.sum, 0) / (intervalsData.value.length)
+})
 </script>
 
 <template>
@@ -200,11 +208,11 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
     <StatDateNavigation :maxRange="statDate.maxRange.value" />
 
     <StatSumWrap
-      class="pt-2 md:max-w-lg"
       :isShowExpense="statTypeShow.expense"
       :isShowIncome="statTypeShow.income"
       :selectedType="selectedType"
       :total="rangeTotal"
+      :averageTotal
       :type="props.type"
       @click="onClickSumItem"
     />

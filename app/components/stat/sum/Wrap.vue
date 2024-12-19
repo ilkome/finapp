@@ -4,6 +4,7 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
+  averageTotal?: number
   isShowExpense: boolean
   isShowIncome: boolean
   selectedType: MoneyTypeSlugNew
@@ -19,7 +20,7 @@ const classes = computed(() => {
   const params = ['padding3', 'center', 'minh1', 'minw1', 'rounded']
 
   if (props.isShowIncome && props.isShowExpense) {
-    params.push('bg', 'link')
+    params.push('_bg', 'link')
   }
 
   return getStyles('item', params)
@@ -33,10 +34,12 @@ function onClick(type: MoneyTypeSlugNew) {
 </script>
 
 <template>
-  <div>
+  <div
+    class="bg-foreground-3 mt-2 rounded-md md:max-w-lg"
+  >
     <div
       v-if="props.type === 'netIncome'"
-      class="flex flex-wrap justify-stretch gap-1"
+      class="flex flex-wrap justify-stretch"
     >
       <StatSumItem
         v-if="props.isShowExpense"
@@ -47,6 +50,7 @@ function onClick(type: MoneyTypeSlugNew) {
         type="expense"
         @click="onClick('expense')"
       />
+
       <StatSumItem
         v-if="props.isShowIncome"
         :amount="total.income"
@@ -56,6 +60,7 @@ function onClick(type: MoneyTypeSlugNew) {
         type="income"
         @click="onClick('income')"
       />
+
       <StatSumItem
         v-if="props.isShowIncome && props.isShowExpense"
         :amount="total.sum"
@@ -66,11 +71,19 @@ function onClick(type: MoneyTypeSlugNew) {
       />
     </div>
 
-    <StatSumItem
+    <div
       v-else
-      :amount="props.type === 'income' ? total[props.type] : -total[props.type]"
-      :class="classes"
-      :type="props.type"
-    />
+      class="flex items-center"
+    >
+      <StatSumItem
+        :amount="props.type === 'income' ? total[props.type] : -total[props.type]"
+        :class="classes"
+        :type="props.type"
+        :averageTotal="props.averageTotal"
+        :amountProps="{
+          variant: '3xl',
+        }"
+      />
+    </div>
   </div>
 </template>

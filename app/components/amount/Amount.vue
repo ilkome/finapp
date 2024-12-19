@@ -4,19 +4,21 @@ import useAmount from '~/components/amount/useAmount'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import type { CurrencyCode } from '~/components/currencies/types'
 
+export type AmountProps = {
+  align?: 'left' | 'center' | 'right'
+  amount: number
+  colorize?: MoneyTypeSlug
+  currencyCode: CurrencyCode
+  isShowBaseRate?: boolean
+  isShowMinus?: boolean
+  isShowPlus?: boolean
+  isShowSymbol?: boolean
+  type?: MoneyTypeNumber
+  variant?: '2xs' | '3xl' | 'base' | 'sm' | 'xl'
+}
+
 const props = withDefaults(
-  defineProps<{
-    align?: 'left' | 'center' | 'right'
-    amount: number
-    colorize?: MoneyTypeSlug
-    currencyCode: CurrencyCode
-    isShowBaseRate?: boolean
-    isShowMinus?: boolean
-    isShowPlus?: boolean
-    isShowSymbol?: boolean
-    type?: MoneyTypeNumber
-    variant?: '2xs' | '3xl' | 'base' | 'sm' | 'xl'
-  }>(),
+  defineProps<AmountProps>(),
   {
     align: 'right',
     isShowBaseRate: true,

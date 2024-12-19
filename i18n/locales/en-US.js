@@ -85,7 +85,6 @@ export default {
     lastUsedTitle: 'Recent categories',
     name: 'Categories',
     new: 'New category',
-    shortTitle: 'Cats',
     title: 'Categories',
   },
 
@@ -188,13 +187,7 @@ export default {
   money: {
     all: 'Total',
     also: 'Also',
-    average: {
-      base: 'Average',
-      expense: 'Average',
-      income: 'Average',
-      sum: 'Average',
-    },
-    averageTotal: 'Average',
+    average: 'Average',
     balance: 'Balance',
     expense: 'Expense',
     income: 'Income',
@@ -203,6 +196,7 @@ export default {
       isExcludeInTotal: 'Do not include in total',
       withdrawal: 'Withdrawal',
     },
+    split: 'Split',
     summary: 'Total',
     totals: {
       all: 'Total',
@@ -264,32 +258,7 @@ export default {
         title: 'Wallets',
       },
     },
-    customize: {
-      showCategoriesChart: 'Show categories chart',
-      showCategoriesList: 'Show categories list',
-      showCatsChartPie: 'Show categories pie chart',
-      showHistory: 'Show history',
-      showPeriodsChart: 'Show periods chart',
-      showRoundCats: 'Show round categories list',
-    },
-    emptyDesc: 'Change filter, period or add new transactions.',
     periods: 'Periods',
-    selectedPeriod: 'Selected period',
-    shortTitle: 'Stat',
-    statNew: 'v2',
-    summary: 'Summary',
-    tabs: {
-      chart: 'Chart',
-      empty: 'Hide',
-      gLines: 'G-Lines',
-      lines: 'Lines',
-      linesChart: 'Chart & Lines',
-      linesTrns: 'Lines & Trns',
-      periods: 'Periods',
-      round: 'Rounds',
-      trns: 'Trns',
-    },
-
     title: 'Dashboard',
   },
 
@@ -337,7 +306,6 @@ export default {
     more: 'Show more',
     noTrns: 'No transactions',
     plural: '0 transactions | {n} transaction | {n} transactions | {n} transactions',
-    shortTitle: 'Trns',
     title: 'Transactions',
   },
 

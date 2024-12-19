@@ -82,33 +82,34 @@ function onClickWallet(walletId: WalletId) {
       </div>
 
       <div
-        v-if="filter.isShow?.value || statConfig.config.value.wallets.isShow"
         class="grid gap-2 px-2 pb-0 lg:px-4 2xl:px-8"
       >
-        <div
-          v-if="props.filter && filter.isShow?.value && filter.categoriesIds.value.length > 0 || (filter.walletsIds.value.length > 0 && !statConfig.config.value.wallets.isShow)"
-        >
-          <FilterSelected
-            :isShowCategories="props.filter?.isShowCategories"
-            :isShowWallets="props.filter?.isShowWallets && !statConfig.config.value.wallets.isShow"
-          />
-        </div>
+        <template v-if="filter.isShow?.value || statConfig.config.value.wallets.isShow">
+          <div
+            v-if="props.filter && filter.isShow?.value && filter.categoriesIds.value.length > 0 || (filter.walletsIds.value.length > 0 && !statConfig.config.value.wallets.isShow)"
+          >
+            <FilterSelected
+              :isShowCategories="props.filter?.isShowCategories"
+              :isShowWallets="props.filter?.isShowWallets && !statConfig.config.value.wallets.isShow"
+            />
+          </div>
 
-        <div
-          v-if="statConfig.config.value.wallets.isShow"
-          class="flex max-w-6xl gap-1 overflow-x-auto py-px"
-        >
-          <WalletsItem
-            v-for="walletId in sortedFilterWalletsIds"
-            :key="walletId"
-            :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
-            :walletId
-            :wallet="walletsStore.itemsWithAmount?.[walletId]!"
-            insideClasses="!min-h-[38px]"
-            alt
-            @click="onClickWallet(walletId)"
-          />
-        </div>
+          <div
+            v-if="statConfig.config.value.wallets.isShow"
+            class="flex max-w-6xl gap-1 overflow-x-auto py-px"
+          >
+            <WalletsItem
+              v-for="walletId in sortedFilterWalletsIds"
+              :key="walletId"
+              :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
+              :walletId
+              :wallet="walletsStore.itemsWithAmount?.[walletId]!"
+              insideClasses="!min-h-[38px]"
+              alt
+              @click="onClickWallet(walletId)"
+            />
+          </div>
+        </template>
 
         <slot name="summary" />
       </div>

@@ -30,7 +30,7 @@ const menu = computed(() => {
   })
   all.push({
     id: 'summary',
-    name: t('stat.summary'),
+    name: t('money.split'),
   })
 
   return all

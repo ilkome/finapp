@@ -97,7 +97,7 @@ useHead({ title: wallet.value?.name })
       </template>
 
       <template #summary>
-        <div class="px-3 py-2 lg:gap-8 lg:px-2">
+        <div class="px-3 pb-2 lg:gap-8 lg:px-2">
           <div
             v-if="wallet.type !== 'credit'"
             class="pt-2 md:max-w-lg"
