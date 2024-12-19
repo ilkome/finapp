@@ -73,7 +73,7 @@ useSeoMeta({
       <pre>{{ error }}</pre>
     </div>
 
-    <div v-else-if="status === 'pending' || trnsStore.items === false">
+    <div v-else-if="status === 'pending' || trnsStore.items === false || walletsStore.items === false">
       {{ t('base.loading') }}
     </div>
 

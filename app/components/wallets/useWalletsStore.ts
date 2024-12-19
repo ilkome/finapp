@@ -18,13 +18,11 @@ export const useWalletsStore = defineStore('wallets', () => {
   const currenciesStore = useCurrenciesStore()
   const { deleteDemoWallet, isDemo, sortDemoWallets } = useDemo()
 
-  const items = ref<Wallets | null>(null)
+  const items = ref<Wallets | null | false>(false)
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
 
   function initWallets() {
-    getDataAndWatch(`users/${userStore.uid}/accounts`, (wallets: Wallets) => {
-      setWallets(wallets || null)
-    })
+    getDataAndWatch(`users/${userStore.uid}/accounts`, (wallets: Wallets) => setWallets(wallets || null))
   }
 
   function setWallets(values: Wallets | null) {
