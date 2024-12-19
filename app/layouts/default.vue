@@ -30,7 +30,7 @@ useGuard()
 const { error, status } = await useAsyncData(
   'app',
   async () => {
-    const localAuthUid = useCookie('finapp.localAuthUid')
+    const localAuthUid = await useCookie('finapp.localAuthUid')
 
     if (isDemo.value) {
       loadDataFromCache()
