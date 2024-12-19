@@ -36,7 +36,7 @@ const { error, status } = await useAsyncData(
       loadDataFromCache()
     }
     else if (user.value || localAuthUid.value) {
-      loadDataFromCache()
+      await loadDataFromCache()
       loadDataFromDB()
     }
   },
