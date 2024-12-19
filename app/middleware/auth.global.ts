@@ -6,7 +6,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { isDemo } = useDemo()
 
   // Update local auth UID
-  localAuthUid.value = user?.uid || null
+  if (!localAuthUid.value || localAuthUid.value !== user?.uid) {
+    localAuthUid.value = user?.uid || null
+  }
 
   // Handle demo mode routing
   if (isDemo.value) {
