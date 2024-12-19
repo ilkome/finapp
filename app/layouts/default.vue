@@ -8,6 +8,7 @@ import { useGuard } from '~/components/user/useGuard'
 import { useInitApp } from '~/components/app/useInitApp'
 import { usePointerClass } from '~/components/layout/usePointerClass'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const keepalive = ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard']
@@ -16,6 +17,7 @@ const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
 const user = useCurrentUser()
 const walletsStore = useWalletsStore()
+const trnsStore = useTrnsStore()
 const { isDemo } = useDemo()
 const { isModalOpen } = useAppNav()
 const { loadDataFromCache, loadDataFromDB } = useInitApp()
@@ -71,7 +73,7 @@ useSeoMeta({
       <pre>{{ error }}</pre>
     </div>
 
-    <div v-else-if="status === 'pending'">
+    <div v-else-if="status === 'pending' || trnsStore.items === false">
       {{ t('base.loading') }}
     </div>
 

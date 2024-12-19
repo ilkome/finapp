@@ -38,7 +38,7 @@ export const useTrnsStore = defineStore('trns', () => {
   const walletsStore = useWalletsStore()
   const { deleteDemoTrns, isDemo } = useDemo()
 
-  const items = shallowRef<Trns | null>(null)
+  const items = shallowRef<Trns | null | false>(false)
 
   function getStoreTrnsIds(props: TrnsGetterProps2, params?: TrnsGetterParams) {
     const categoriesIds = params?.includesChildCategories
@@ -48,7 +48,7 @@ export const useTrnsStore = defineStore('trns', () => {
     return getTrnsIds({
       ...props,
       categoriesIds,
-      trnsItems: items.value!,
+      trnsItems: items.value,
     })
   }
 
@@ -90,7 +90,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
   function initTrns() {
     const path = `users/${userStore.uid}/trns`
-    getDataAndWatch(path, (values: Trns) => setTrns(values || {}))
+    getDataAndWatch(path, (values: Trns | null) => setTrns(values))
   }
 
   function setTrns(values: Trns | null) {
