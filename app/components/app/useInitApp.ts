@@ -29,7 +29,7 @@ export function useInitApp() {
     trnsStore.setTrns(trns)
   }
 
-  async function clearLocalData() {
+  function clearLocalData() {
     categoriesStore.setCategories(null)
     trnsStore.setTrns(null)
     walletsStore.setWallets(null)

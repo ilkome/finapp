@@ -1,4 +1,3 @@
-// import { useInitApp } from '~/components/app/useInitApp'
 import localforage from 'localforage'
 import { startOfYear, subYears } from 'date-fns'
 import currencies from '~/components/demo/currencies.json'
@@ -25,10 +24,7 @@ export function useDemo() {
   const trnsStore = useTrnsStore()
 
   async function generateDemoData() {
-    // const { clearLocalData } = useInitApp()
-
     localforage.clear()
-    // await clearLocalData()
 
     currenciesStore.setBase('USD')
     currenciesStore.setRates(currencies)

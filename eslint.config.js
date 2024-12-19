@@ -1,7 +1,7 @@
 import antfu from '@antfu/eslint-config'
-import { extend } from 'eslint-flat-config-utils'
 import perfectionist from 'eslint-plugin-perfectionist'
 import tailwind from 'eslint-plugin-tailwindcss'
+import { extend } from 'eslint-flat-config-utils'
 import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default [
