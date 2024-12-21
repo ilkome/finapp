@@ -1,15 +1,18 @@
 import type { ChartType } from '~/components/stat/chart/types'
 import type { MoneyTypeSlugNew } from '~/components/stat/types'
+
 import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
-export const seriesOptions: Record<MoneyTypeSlugNew, { color: string, localeKey: string, type: ChartType }> = {
+export const seriesOptions: Record<MoneyTypeSlugNew, { color: string, colorLine?: string, localeKey: string, type: ChartType }> = {
   expense: {
     color: 'var(--text-expense-1)',
+    colorLine: 'var(--text-expense-line)',
     localeKey: 'money.expense',
     type: 'bar',
   },
   income: {
     color: 'var(--text-income-1)',
+    colorLine: 'var(--text-income-line)',
     localeKey: 'money.expense',
     type: 'bar',
   },

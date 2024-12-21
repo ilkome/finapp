@@ -1,9 +1,10 @@
-import type { DateUTC } from '~/components/date/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
+import type { DateUTC } from '~/components/date/types'
+import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries, MoneyTypeSlugNew } from '~/components/stat/types'
+
 import { seriesOptions } from '~/components/stat/chart/config'
 import { markArea } from '~/components/stat/chart/utils'
-import type { ChartType } from '~/components/stat/chart/types'
 
 export function useStatChart() {
   const { t } = useI18n()
@@ -12,6 +13,20 @@ export function useStatChart() {
     return {
       color: seriesOptions[typeItem].color,
       data: data.map(i => typeItem !== 'summary' ? Math.abs(i[typeItem]) : i[typeItem]),
+      markLine: {
+        data: [{
+          type: 'average',
+        }],
+        label: {
+          show: false,
+        },
+        lineStyle: {
+          color: seriesOptions[typeItem].colorLine ?? seriesOptions[typeItem].color,
+          type: 'solid',
+        },
+        silent: true,
+        symbol: false,
+      },
       name: t(`money.${typeItem}`),
       type: seriesOptions[typeItem].type,
     }

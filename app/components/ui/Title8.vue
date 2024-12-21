@@ -11,7 +11,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <UiTitle1
+  <UiTitle2
     :class="getStyles('item', ['link', 'center', 'padding3', 'minh2', 'minw1', 'rounded'])"
     class="!text-3 !font-tertiary !text-md flex grow items-center gap-2 pb-0 !font-bold leading-none"
     @click="emit('click')"
@@ -23,5 +23,5 @@ const emit = defineEmits<{
       size="22"
       class="-ml-1"
     />
-  </UiTitle1>
+  </UiTitle2>
 </template>

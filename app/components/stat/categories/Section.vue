@@ -3,6 +3,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { CategoryWithData, MoneyTypeSlugNew } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
+
 import { useStatCategories } from '~/components/stat/useStatCategories'
 
 const props = defineProps<{

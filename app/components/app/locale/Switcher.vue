@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { saveData } from '~~/services/firebase/api'
-import { useUserStore } from '~/components/user/useUserStore'
+
 import type { LocaleSlug } from '~/components/app/locale/types'
+
+import { useUserStore } from '~/components/user/useUserStore'
 
 const { locale, setLocale, t } = useI18n()
 const userStore = useUserStore()
