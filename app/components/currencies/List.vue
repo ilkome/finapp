@@ -30,7 +30,7 @@ const list = computed(() => {
 </script>
 
 <template>
-  <div class="grid h-full max-h-[60vh] grid-rows-[auto,1fr] overflow-hidden">
+  <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden px-2">
     <div>
       <UiFormInput
         :value="searchInput"
@@ -49,7 +49,7 @@ const list = computed(() => {
       <div v-if="props.isShowAllButton">
         <UiElement
           :isActive="active === 'all'"
-          :lineWidth="1"
+          :lineWidth="6"
           class="group"
           insideClasses="!min-h-[44px]"
           @click="emit('onSelect', 'all')"
@@ -71,7 +71,7 @@ const list = computed(() => {
           v-for="currencyCode in walletsStore.currenciesUsed"
           :key="currencyCode"
           :isActive="currencyCode === active"
-          :lineWidth="1"
+          :lineWidth="6"
           class="group"
           insideClasses="!min-h-[44px]"
           @click="emit('onSelect', currencyCode)"
@@ -96,7 +96,7 @@ const list = computed(() => {
           v-for="currency in list"
           :key="currency.code"
           :isActive="currency.code === active"
-          :lineWidth="1"
+          :lineWidth="6"
           class="group"
           @click="emit('onSelect', currency.code)"
         >

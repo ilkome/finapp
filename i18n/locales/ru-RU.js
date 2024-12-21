@@ -77,7 +77,7 @@ export default {
       },
       parent: {
         label: 'Родительская категория',
-        no: 'Корневая',
+        no: 'Без родителя',
       },
       quickSelector: 'Показывать в быстром выборе',
       save: 'Сохранить',
@@ -195,13 +195,13 @@ export default {
     netIncome: 'Суммарно',
     options: {
       isExcludeInTotal: 'Не считать в общем балансе',
-      withdrawal: 'Доступные',
+      withdrawal: 'Доступные для снятия',
     },
     split: 'Раздельно',
     summary: 'Сумма',
     totals: {
       all: 'Всего',
-      archived: 'Архивные',
+      archived: 'Архивный',
       available: 'Доступные',
       creditPossible: 'Доступный кредитный лимит',
       isCash: 'Наличные',
@@ -219,7 +219,7 @@ export default {
     types: {
       all: 'Все',
       archived: 'Архивные',
-      available: 'Доступные',
+      available: 'Доступные для снятия',
       cash: 'Наличные',
       cashless: 'Безнал',
       credit: 'Кредит',

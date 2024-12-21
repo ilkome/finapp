@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import Swiper, { Pagination } from 'swiper'
+
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+
 import 'swiper/css'
 
 const trnsFormStore = useTrnsFormStore()

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
+
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 defineProps<{
   category: CategoryItem
@@ -45,7 +46,7 @@ const categoriesStore = useCategoriesStore()
         >
           <CategoriesSelector
             :hide="close"
-            class="min-w-72 max-w-xs"
+            class="min-w-72 max-w-xs p-2"
             @onSelected="id => { emit('onSelected', id); close() }"
           />
         </UiPopoverWrap>

@@ -28,9 +28,8 @@ html,
 body {
   overscroll-behavior-y: none;
   user-select: none;
-  height: 100dvh;
 
-  @apply bg-foreground-1 font-primary text-1 leading-none antialiased;
+  @apply bg-foreground-1 font-primary text-1 leading-none antialiased h-dvh;
 }
 
 .layoutBase {
@@ -41,8 +40,20 @@ body {
   @apply max-w-xl grow px-2 lg:px-4 2xl:px-8;
 }
 
-.pageWrapperNoMaxWidth {
-  @apply max-w-4xl grow px-2 lg:px-4 2xl:px-8;
+.bottomSheetDrugClassesCustom {
+  @apply bg-foreground-1 max-w-md rounded-xl;
+}
+
+.bottomSheetContent {
+  @apply grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden;
+}
+
+.bottomSheetContentInside {
+  @apply grid h-full gap-1 overflow-hidden overflow-y-auto px-2;
+}
+
+.bottomSheetContentBottom {
+  @apply flex items-center justify-center p-2;
 }
 
 .trnForm .trnForm__pagination {

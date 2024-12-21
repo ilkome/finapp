@@ -7,12 +7,9 @@ const trnsFormStore = useTrnsFormStore()
 
 <template>
   <div>
-    <UiTitle3
-      class="bg-foreground-1 sticky top-0 z-20 px-3 pb-3 pt-4"
-      @click="trnsFormStore.openTrnFormModal('wallets')"
-    >
+    <UiTitleModal @click="trnsFormStore.openTrnFormModal('wallets')">
       {{ t("wallets.title") }}
-    </UiTitle3>
+    </UiTitleModal>
 
     <WalletsList
       v-slot="{ walletsItemsLimited }"

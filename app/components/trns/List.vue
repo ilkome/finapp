@@ -161,11 +161,11 @@ const groupedTrns = computed(() => {
     <slot name="contentBefore" />
 
     <!-- Filter by type -->
-    <UiTabs1
+    <UiTabs2
       v-if="isShowFilterByType && typeFilters.length > 2"
-      class="mb-4"
+      class="mb-2 ml-2"
     >
-      <UiTabsItem1
+      <UiTabsItem5
         v-for="filterItem in typeFilters"
         :key="filterItem.slug"
         :isActive="filterBy === filterItem.slug"
@@ -175,8 +175,8 @@ const groupedTrns = computed(() => {
         @click="setFilterBy(filterItem.slug)"
       >
         {{ filterItem.name }}
-      </UiTabsItem1>
-    </UiTabs1>
+      </UiTabsItem5>
+    </UiTabs2>
 
     <!-- With Desc -->
 
@@ -247,7 +247,7 @@ const groupedTrns = computed(() => {
       >
         <div
           :class="{ '-border-b border-item-5': isShowGroupSum && groupTrnsIds.length > 1 }"
-          class="bg-item-4 flex items-end gap-2 px-3 py-2 pb-1"
+          class="_bg-item-4 flex items-end gap-2 px-3 py-2 pb-1"
         >
           <DateTrns
             :date="+date"

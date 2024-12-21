@@ -1,7 +1,7 @@
 import antfu from '@antfu/eslint-config'
-import perfectionist from 'eslint-plugin-perfectionist'
-import tailwind from 'eslint-plugin-tailwindcss'
 import { extend } from 'eslint-flat-config-utils'
+import tailwind from 'eslint-plugin-tailwindcss'
+
 import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default [
@@ -12,16 +12,15 @@ export default [
         css: true,
         html: true,
       },
-      plugins: {
-        perfectionist,
-      },
       rules: {
         '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+        'import/order': 'off',
         'no-console': 'warn',
         'no-extra-semi': 'error',
         'perfectionist/sort-array-includes': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-enums': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-exports': ['error', { order: 'asc', type: 'natural' }],
+        'perfectionist/sort-imports': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-interfaces': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-named-exports': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-object-types': ['error', { order: 'asc', type: 'natural' }],

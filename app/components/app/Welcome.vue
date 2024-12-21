@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -15,9 +15,9 @@ const trnsFormStore = useTrnsFormStore()
     <div
       class="flex-center h-full flex-col pt-10"
     >
-      <UiTitle class="pb-4">
+      <UiTitle1 class="pb-4">
         {{ t('intro') }}
-      </UiTitle>
+      </UiTitle1>
 
       <UiButtonBlue
         v-if="!walletsStore.hasItems"

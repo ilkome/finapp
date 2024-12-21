@@ -16,7 +16,7 @@ function onSave(close: () => void) {
   <Teleport to="body">
     <BottomSheet
       isShow
-      drugClassesCustom="max-w-sm mx-auto bg-foreground-1"
+      drugClassesCustom="bottomSheetDrugClassesCustom"
       @closed="trnsFormStore.closeTrnFormModal('description')"
     >
       <template #handler="{ close }">
@@ -25,21 +25,18 @@ function onSave(close: () => void) {
       </template>
 
       <template #default="{ close }">
-        <div class="pt-3">
-          <UiTitle
-            class="px-3 pb-2 pt-1.5"
-          >
-            {{ $t('trnForm.description.title') }}
-          </UiTitle>
+        <div class="bottomSheetContent">
+          <UiTitleModal>{{ $t('trnForm.description.title') }}</UiTitleModal>
 
-          <div class="px-3 pb-6">
+          <div class="px-2">
             <textarea
               v-model="description"
               class="text-item-base bg-item-4 border-item-5 placeholder:text-item-2 focus:text-item-1 focus:bg-item-5 focus:border-accent-4 m-0 h-28 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out focus:outline-none"
               :placeholder="$t('trnForm.description.placeholder')"
             />
           </div>
-          <div class="px-3 pb-4">
+
+          <div class="flex-center p-2">
             <UiButtonBlue @click="onSave(close)">
               {{ $t('base.save') }}
             </UiButtonBlue>

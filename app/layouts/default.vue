@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import '~/assets/stylus/index.styl'
+
 import { useWindowSize } from '@vueuse/core'
+
 import { useAppNav } from '~/components/app/useAppNav'
+import { useInitApp } from '~/components/app/useInitApp'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useDemo } from '~/components/demo/useDemo'
-import { useGuard } from '~/components/user/useGuard'
-import { useInitApp } from '~/components/app/useInitApp'
 import { usePointerClass } from '~/components/layout/usePointerClass'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useGuard } from '~/components/user/useGuard'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const keepalive = ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard']
@@ -83,11 +85,11 @@ useSeoMeta({
 
         <LayoutMenuSidebar
           :isShowTitle="false"
-          class="sm:align-center bg-item-4 hidden justify-center gap-1 sm:flex sm:flex-col lg:hidden"
+          class="sm:align-center bg-item-4 hidden justify-center gap-1 sm:flex sm:flex-col md:hidden"
         />
 
         <div
-          :class="{ 'lg:translate-x-20': isShow }"
+          :class="{ 'md:translate-x-20': isShow }"
           class="@container/main grid h-full overflow-hidden pb-12 transition-all duration-300 ease-in-out sm:pb-0"
         >
           <NuxtPage :keepalive="{ include: keepalive }" />

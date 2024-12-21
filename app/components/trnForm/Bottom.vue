@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Swiper, { Pagination } from 'swiper'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+
 import 'swiper/css'
 
 const trnsFormStore = useTrnsFormStore()
@@ -67,7 +69,7 @@ onMounted(init)
 <template>
   <BottomSheet
     :isShow="isShow"
-    drugClassesCustom="max-h-[100dvh] -md:bottom-1/2 -md:-translate-x-1/2 -md:translate-y-1/2"
+    drugClassesCustom="max-h-[100dvh] max-w-md sm:max-w-3xl -md:bottom-1/2 -md:-translate-x-1/2 -md:translate-y-1/2"
     @closed="trnsFormStore.onClose()"
   >
     <template #handler>

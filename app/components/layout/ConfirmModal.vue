@@ -8,6 +8,8 @@ const emit = defineEmits<{
   (e: 'onConfirm'): void
 }>()
 
+const { t } = useI18n()
+
 const items = computed(() => ({
   no: {
     click: (close: () => void) => {
@@ -33,7 +35,7 @@ const items = computed(() => ({
     <BottomSheet
       isShow
       :isScrollerBlock="false"
-      drugClassesCustom="max-w-sm bg-foreground-1 md:bottom-1/2 md:-translate-x-1/2 md:translate-y-1/2 rounded-xl"
+      drugClassesCustom="bottomSheetDrugClassesCustom"
       @closed="emit('closed')"
     >
       <template #handler="{ close }">
@@ -42,37 +44,37 @@ const items = computed(() => ({
       </template>
 
       <template #default="{ close }">
-        <div class="grid gap-3 p-1 pt-6">
-          <div class="pl-2">
-            {{ $t('base.sure') }}
-          </div>
+        <div class="bottomSheetContent">
+          <UiTitleModal>
+            {{ t('base.sure') }}
+          </UiTitleModal>
 
-          <div
-            v-if="description"
-            class="text-alert-primary px-2"
-          >
-            {{ description }}
-          </div>
-
-          <div class="flex gap-4 p-4">
-            <UiElement
-              v-for="(item, slug) in items"
-              :key="slug"
-              class="grow"
-              insideClasses="!min-h-[44px] bg-item-4"
-              @click="item.click(close)"
+          <div class="bottomSheetContentInside !px-3">
+            <div
+              v-if="description"
+              class="text-alert-primary"
             >
-              <template #leftIcon>
-                <Icon
-                  :name="item.icon"
-                  size="22"
-                />
-              </template>
+              {{ description }}
+            </div>
 
-              <div class="text-secondary leading-none">
+            <div class="flex gap-3 py-4">
+              <UiElement
+                v-for="(item, slug) in items"
+                :key="slug"
+                class="grow"
+                insideClasses="!min-h-[44px] bg-item-4"
+                @click="item.click(close)"
+              >
+                <template #leftIcon>
+                  <Icon
+                    :name="item.icon"
+                    size="22"
+                  />
+                </template>
+
                 {{ $t(item.localeKey) }}
-              </div>
-            </UiElement>
+              </UiElement>
+            </div>
           </div>
         </div>
       </template>

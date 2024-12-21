@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { groupBy } from 'es-toolkit'
 import { useStorage } from '@vueuse/core'
+import { groupBy } from 'es-toolkit'
+
 import type { CurrencyCode } from '~/components/currencies/types'
 import type {
   WalletId,
@@ -8,10 +9,11 @@ import type {
   WalletViewTypes,
   WalletViewTypesObj,
 } from '~/components/wallets/types'
+
 import useAmount from '~/components/amount/useAmount'
-import { viewTypes } from '~/components/wallets/types'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { viewTypes } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
@@ -304,7 +306,7 @@ const counts = computed(() => ({
 </script>
 
 <template>
-  <UiPage>
+  <UiPage class="@container/page">
     <UiHeader>
       <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
       <template #actions>
@@ -325,7 +327,7 @@ const counts = computed(() => ({
       v-if="!walletsStore.hasItems"
       class="pageWrapper"
     >
-      <div class="md:max-w-xs">
+      <div class="@xl/page:max-w-xs">
         <UiButtonBlue
           @click="router.push('/wallets/new')"
         >
@@ -337,13 +339,13 @@ const counts = computed(() => ({
     <!-- Content -->
     <div
       v-else
-      class="pageWrapperNoMaxWidth"
+      class="max-w-4xl grow px-2 lg:px-4 2xl:px-8"
     >
-      <div class="grid max-w-3xl md:grid-cols-2 md:gap-12">
-        <div class="grid content-start pt-2 md:order-1 md:gap-4 md:pt-1">
+      <div class="@xl/page:grid-cols-2 @xl/page:gap-12 grid max-w-3xl">
+        <div class="@xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 grid content-start pt-2">
           <div
             v-if="walletsStore.currenciesUsed.length > 1"
-            class="grid grid-cols-2 gap-2 pb-2 md:hidden"
+            class="@xl/page:hidden grid grid-cols-2 gap-2 pb-2"
           >
             <!-- Currencies -->
             <UiBox3 @click="isShowCurrencyFilter = true">
@@ -363,8 +365,8 @@ const counts = computed(() => ({
             v-if="walletsStore.currenciesUsed.length > 1 && groupedBy !== 'currencies'"
             :initStatus="true"
             :lineWidth="0"
-            class="hidden md:grid md:max-w-xl"
-            openPadding="!pb-2"
+            class="@xl/page:grid @xl/page:max-w-xl hidden"
+            openPadding="!pb-0"
             storageKey="finapp-wallets-currencies"
           >
             <template #header="{ toggle, isShown }">
@@ -378,7 +380,7 @@ const counts = computed(() => ({
             </template>
 
             <template #default="{ toggle }">
-              <UiTabs2 class="flex gap-1 px-2 md:px-0">
+              <UiTabs2 class="@xl/page:px-0 flex gap-1 px-2">
                 <DateLinkItem
                   :isActive="currencyFiltered === 'all'"
                   @click="onSelectFilterCurrency('all', toggle)"
@@ -404,7 +406,7 @@ const counts = computed(() => ({
             :initStatus="true"
             :lineWidth="0"
             :storageKey="`finapp-wallets-total-${groupedBy}`"
-            class="hidden pb-3 md:grid"
+            class="@xl/page:grid hidden pb-3"
             openPadding="!pb-4"
           >
             <template #header="{ toggle, isShown }">
@@ -424,7 +426,7 @@ const counts = computed(() => ({
           </UiToggle2>
 
           <UiBox3
-            class="hidden md:grid"
+            class="@xl/page:grid hidden"
             @click="isShowBaseCurrencyModal = true"
           >
             <UiTitle6>{{ t('currencies.base') }}</UiTitle6>
@@ -433,7 +435,7 @@ const counts = computed(() => ({
         </div>
 
         <div>
-          <div class="mb-2 flex items-center gap-2 md:pt-2">
+          <div class="@xl/page:pt-2 mb-2 flex items-center gap-2">
             <UiTabs1>
               <UiTabsItem1
                 :isActive="groupedBy === 'list'"
@@ -474,7 +476,7 @@ const counts = computed(() => ({
             :initStatus="true"
             :lineWidth="0"
             :storageKey="`finapp-wallets-total-${groupedBy}`"
-            class="pb-3 md:hidden"
+            class="@xl/page:hidden pb-3"
             openPadding="!pb-4"
           >
             <template #header="{ toggle, isShown }">
@@ -496,7 +498,7 @@ const counts = computed(() => ({
           <!-- List -->
           <div
             v-if="groupedBy === 'list'"
-            class="md:max-w-lg"
+            class="@xl/page:max-w-lg"
           >
             <WalletsItem
               v-for="(walletItem, walletId) in selectedWallets"

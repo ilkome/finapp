@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import UiToastContent from '~/components/ui/ToastContent.vue'
-import type { WalletForm, WalletId, WalletItem, WalletType } from '~/components/wallets/types'
-import { icons, types } from '~/components/wallets/types'
-import { errorEmo, random } from '~/assets/js/emo'
 import { generateId } from '~~/utils/generateId'
+
+import type { WalletForm, WalletId, WalletItem, WalletType } from '~/components/wallets/types'
+
+import { errorEmo, random } from '~/assets/js/emo'
+import UiToastContent from '~/components/ui/ToastContent.vue'
+import { icons, types } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { normalizeWalletItem } from '~/components/wallets/utils'
 
@@ -102,7 +104,7 @@ async function onSave() {
 <template>
   <div
     v-if="props.walletForm"
-    class="grid h-full max-w-lg grid-rows-[1fr,auto] overflow-hidden px-2 pt-2 md:h-auto md:px-6"
+    class="grid h-full max-w-lg grid-rows-[1fr,auto] overflow-hidden px-3 md:h-auto lg:px-4"
   >
     <div class="grid content-start gap-6 overflow-y-auto py-4">
       <!-- Name -->
@@ -158,9 +160,9 @@ async function onSave() {
 
       <!-- Type -->
       <div>
-        <UiTitle class="pb-2">
+        <UiTitle1 class="pb-2">
           {{ t('money.type') }}
-        </UiTitle>
+        </UiTitle1>
 
         <div class="px-1">
           <USelect
@@ -188,31 +190,35 @@ async function onSave() {
       </UiFormElement>
 
       <!-- Options -->
-      <div>
-        <UiTitle class="pb-2">
+      <div class="grid gap-1">
+        <UiTitle1>
           {{ t('settings.options') }}
-        </UiTitle>
-
-        <UiCheckbox
-          :checkboxValue="props.walletForm.isWithdrawal ?? false"
-          :title="t('money.options.withdrawal')"
-          @onClick="emit('updateValue', 'isWithdrawal', !props.walletForm.isWithdrawal)"
-        />
-        <UiCheckbox
-          :checkboxValue="props.walletForm.isExcludeInTotal ?? false"
-          :title="t('money.options.isExcludeInTotal')"
-          @onClick="emit('updateValue', 'isExcludeInTotal', !props.walletForm.isExcludeInTotal)"
-        />
-        <UiCheckbox
-          :checkboxValue="props.walletForm.isArchived ?? false"
-          :title="t('money.totals.archived')"
-          @onClick="emit('updateValue', 'isArchived', !props.walletForm.isArchived)"
-        />
+        </UiTitle1>
+        <div>
+          <UiCheckbox
+            :checkboxValue="props.walletForm.isWithdrawal ?? false"
+            :title="t('money.options.withdrawal')"
+            @onClick="emit('updateValue', 'isWithdrawal', !props.walletForm.isWithdrawal)"
+          />
+          <UiCheckbox
+            :checkboxValue="props.walletForm.isExcludeInTotal ?? false"
+            :title="t('money.options.isExcludeInTotal')"
+            @onClick="emit('updateValue', 'isExcludeInTotal', !props.walletForm.isExcludeInTotal)"
+          />
+          <UiCheckbox
+            :checkboxValue="props.walletForm.isArchived ?? false"
+            :title="t('money.totals.archived')"
+            @onClick="emit('updateValue', 'isArchived', !props.walletForm.isArchived)"
+          />
+        </div>
       </div>
     </div>
 
     <div class="flex-center">
-      <UiButtonBlue @click="onSave">
+      <UiButtonBlue
+        rounded
+        @click="onSave"
+      >
         {{ t('base.save') }}
       </UiButtonBlue>
     </div>
@@ -230,7 +236,7 @@ async function onSave() {
     <BottomSheet
       v-if="modals.colors"
       isShow
-      drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+      drugClassesCustom="bottomSheetDrugClassesCustom"
       @closed="modals.colors = false"
     >
       <template #handler="{ close }">
@@ -239,9 +245,9 @@ async function onSave() {
       </template>
 
       <template #default="{ close }">
-        <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
-          <div class="grid gap-3 py-4">
-            <UiTitle>{{ t("color.label") }}</UiTitle>
+        <div class="bottomSheetContent">
+          <div>
+            <UiTitleModal>{{ t("color.label") }}</UiTitleModal>
             <WalletsItem
               :walletId="props.walletId ?? 'editWalletId'"
               :wallet="walletPlaceholder"
@@ -249,34 +255,20 @@ async function onSave() {
             />
           </div>
 
-          <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
-            <div class="grid gap-6">
-              <ColorPalette
-                :activeColor="props.walletForm.color"
-                @click="color => emit('updateValue', 'color', color)"
-              />
-
-              <UiFormElement>
-                <template #label>
-                  {{ t('color.custom') }}
-                </template>
-                <input
-                  :placeholder="t('wallets.form.credit.limit')"
-                  :value="props.walletForm.color"
-                  class="text-item-base bg-item-4 border-item-5 placeholder:text-item-2 focus:text-item-1 focus:bg-item-5 focus:border-accent-4 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out focus:outline-none"
-                  type="color"
-                  @input="(event: HTMLInputEvent) => emit('updateValue', 'color', event.target.value)"
-                >
-              </UiFormElement>
-            </div>
+          <div class="bottomSheetContentInside">
+            <ColorPalette
+              :activeColor="props.walletForm.color"
+              isWallet
+              @click="color => emit('updateValue', 'color', color)"
+            />
           </div>
 
           <div class="flex-center py-2">
             <UiButtonBlue
-              maxWidth
+              rounded
               @click="close"
             >
-              {{ t("base.save") }}
+              {{ t('base.save') }}
             </UiButtonBlue>
           </div>
         </div>

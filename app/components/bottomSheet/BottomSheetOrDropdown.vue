@@ -40,7 +40,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
       <BottomSheet
         v-if="props.isOpen"
         isShow
-        drugClassesCustom="bg-foreground-1 max-w-xl grid md:mb-12 max-h-[98dvh]"
+        drugClassesCustom="bottomSheetDrugClassesCustom"
         @closed="emit('onCloseModal')"
       >
         <template #handler="{ close }">
@@ -49,10 +49,10 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
         </template>
 
         <template #default="{ close }">
-          <div class="scrollerBlock grid max-h-[98dvh] overflow-hidden overflow-y-auto p-2 px-3 pb-4">
-            <UiTitle class="px-1 pb-3 pt-2">
+          <div class="bottomSheetContent">
+            <UiTitleModal>
               {{ props.title }}
-            </UiTitle>
+            </UiTitleModal>
 
             <slot name="content" :close />
           </div>

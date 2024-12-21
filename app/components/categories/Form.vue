@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import type { ToastOptions } from 'vue3-toastify'
+
+import { generateId } from '~~/utils/generateId'
+
+import type { CategoryForm, CategoryId } from '~/components/categories/types'
+
 import { errorEmo, random } from '~/assets/js/emo'
 import icons from '~/assets/js/icons'
-import type { CategoryForm, CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import UiToastContent from '~/components/ui/ToastContent.vue'
-import { generateId } from '~~/utils/generateId'
 
 const props = defineProps<{
   categoryForm: CategoryForm
@@ -118,9 +121,8 @@ async function onSave() {
 <template>
   <div
     v-if="props.categoryForm"
-    class="grid h-full max-w-lg grid-rows-[1fr,auto] overflow-hidden px-2 pt-2 md:h-auto md:px-6"
+    class="grid h-full max-w-lg grid-rows-[1fr,auto] overflow-hidden px-3 md:h-auto lg:px-4"
   >
-    <!-- Content -->
     <div class="grid content-start gap-6 overflow-y-auto py-4">
       <!-- Name -->
       <UiFormElement>
@@ -222,7 +224,7 @@ async function onSave() {
     <BottomSheet
       v-if="modals.colors"
       isShow
-      drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+      drugClassesCustom="bottomSheetDrugClassesCustom"
       @closed="modals.colors = false"
     >
       <template #handler="{ close }">
@@ -231,45 +233,30 @@ async function onSave() {
       </template>
 
       <template #default="{ close }">
-        <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
-          <div class="grid gap-3 pb-1 pt-3">
-            <UiTitle3>{{ t("selectColor") }}</UiTitle3>
+        <div class="bottomSheetContent">
+          <div>
+            <UiTitleModal>{{ t('selectColor') }}</UiTitleModal>
             <CategoriesItem
               :categoryId="props.categoryId"
               :category="categoryPlaceholder"
             />
           </div>
 
-          <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
-            <div class="grid gap-6">
-              <ColorPalette
-                :activeColor="props.categoryForm.color"
-                :icon="props.categoryForm.icon"
-                isCategory
-                @click="color => emit('updateValue', 'color', color)"
-              />
-
-              <UiFormElement>
-                <template #label>
-                  {{ t('color.custom') }}
-                </template>
-                <input
-                  :placeholder="t('color.placeholder')"
-                  :value="props.categoryForm.color"
-                  class="text-item-base bg-item-4 border-item-5 placeholder:text-item-2 focus:text-item-1 focus:bg-item-5 focus:border-accent-4 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out focus:outline-none"
-                  type="color"
-                  @input="(event: HTMLInputEvent) => emit('updateValue', 'color', event.target.value)"
-                >
-              </UiFormElement>
-            </div>
+          <div class="scrollerBlock bottomSheetContentInside">
+            <ColorPalette
+              :activeColor="props.categoryForm.color"
+              :icon="props.categoryForm.icon"
+              isCategory
+              @click="color => emit('updateValue', 'color', color)"
+            />
           </div>
 
-          <div class="flex-center py-2">
+          <div class="flex-center p-2">
             <UiButtonBlue
               rounded
               @click="close"
             >
-              {{ t("base.save") }}
+              {{ t('base.save') }}
             </UiButtonBlue>
           </div>
         </div>
@@ -280,7 +267,7 @@ async function onSave() {
     <BottomSheet
       v-if="modals.icon"
       isShow
-      drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+      drugClassesCustom="bottomSheetDrugClassesCustom"
       @closed="modals.icon = false"
     >
       <template #handler="{ close }">
@@ -289,23 +276,23 @@ async function onSave() {
       </template>
 
       <template #default="{ close }">
-        <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
+        <div class="bottomSheetContent">
           <div class="grid gap-3 pb-1 pt-3">
-            <UiTitle3>{{ t("selectIcon") }}</UiTitle3>
+            <UiTitleModal>{{ t("selectIcon") }}</UiTitleModal>
             <CategoriesItem
               :categoryId="props.categoryId"
               :category="categoryPlaceholder"
             />
           </div>
 
-          <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
-            <UiFormElement class="mb-4 mt-2">
+          <div class="scrollerBlock bottomSheetContentInside">
+            <UiFormElement class="pb-4 pt-2">
               <template #label>
                 {{ t('categories.form.icon.desc') }}
                 <a
                   href="https://icones.js.org/collection/mdi"
                   target="_blank"
-                  class="text-accent-1"
+                  class="text-accent-1 hover:underline"
                 >Material Design Icons</a>
               </template>
 
@@ -319,7 +306,7 @@ async function onSave() {
             <div
               v-for="iconGroup in icons"
               :key="JSON.stringify(iconGroup)"
-              class="flex flex-wrap gap-3 pb-8"
+              class="flex flex-wrap gap-3 pb-8 last:placeholder:text-blue-400"
             >
               <div
                 v-for="icon in iconGroup"
@@ -334,12 +321,12 @@ async function onSave() {
             </div>
           </div>
 
-          <div class="flex-center py-2">
+          <div class="bottomSheetContentBottom">
             <UiButtonBlue
               rounded
               @click="close"
             >
-              {{ t("base.save") }}
+              {{ t('base.save') }}
             </UiButtonBlue>
           </div>
         </div>
@@ -350,7 +337,7 @@ async function onSave() {
     <BottomSheet
       v-if="modals.parent"
       isShow
-      drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+      drugClassesCustom="bottomSheetDrugClassesCustom"
       @closed="modals.parent = false"
     >
       <template #handler="{ close }">
@@ -359,34 +346,35 @@ async function onSave() {
       </template>
 
       <template #default="{ close }">
-        <div class="bg-foreground-1 grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden px-3">
-          <div class="grid gap-3 py-3">
-            <UiTitle3>{{ t('selectParent') }}</UiTitle3>
-          </div>
+        <div class="bottomSheetContent">
+          <UiTitleModal>{{ t('selectParent') }}</UiTitleModal>
 
-          <div class="scrollerBlock h-full overflow-hidden overflow-y-auto">
-            <div
-              :class="{ '!bg-item-3': props.categoryForm.parentId === 0 }"
-              class="flex-center bg-item-4 hocus_bg-item-5 mb-4 cursor-pointer gap-x-3 rounded-md px-2 py-3 text-center"
+          <div class="scrollerBlock bottomSheetContentInside">
+            <UiBox3
+              :isActive="props.categoryForm.parentId === 0"
               @click="onParentSelect(false, close)"
             >
               {{ t('categories.form.parent.no') }}
-            </div>
+            </UiBox3>
+
             <CategoriesList
               :activeItemId="props.categoryForm.parentId"
               :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
               :slider="() => ({})"
               class="!gap-x-1"
+              :categoriesItemProps="{
+                class: 'group',
+              }"
               @click="id => onParentSelect(id, close)"
             />
           </div>
 
-          <div class="flex-center py-2">
+          <div class="bottomSheetContentBottom">
             <UiButtonBlue
               rounded
               @click="close"
             >
-              {{ t("base.save") }}
+              {{ t('base.save') }}
             </UiButtonBlue>
           </div>
         </div>
@@ -397,12 +385,12 @@ async function onSave() {
 
 <i18n lang="yaml">
 en:
-  selectIcon: Select icon
-  selectColor: Select color
-  selectParent: Select parent category
+  selectIcon: Category icon
+  selectColor: Category color
+  selectParent: Parent category
 
 ru:
-  selectIcon: Выберите иконку
-  selectColor: Выберите цвет
-  selectParent: Выберите родительскую категорию
+  selectIcon: Иконка категории
+  selectColor: Цвет категории
+  selectParent: Родительская категория
 </i18n>

@@ -12,13 +12,13 @@ const emit = defineEmits(['click'])
   <div
     :class="[
       {
-        '!bg-item-3 @xl/wallets:!bg-transparent': isActive,
+        '!bg-item-3': isActive,
       },
       getStyles('item', ['minh2']),
     ]"
     class="
       text-3
-      hocus:bg-item-5 @4xl/tabs_text-lg @4xl/tabs_p-3 @xl/wallets:grow-0 @xl/wallets:rounded-md @xl/wallets:px-3 flex
+      hocus:bg-item-5 @4xl/tabs_text-lg @4xl/tabs_p-3 flex
       flex-1 grow
       select-none
       items-center

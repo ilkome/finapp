@@ -24,7 +24,7 @@ function onSelect(code: CurrencyCode, close: () => void) {
   <Teleport to="body">
     <BottomSheet
       isShow
-      drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+      drugClassesCustom="bottomSheetDrugClassesCustom"
       @closed="emit('onClose')"
     >
       <template #handler="{ close }">
@@ -33,8 +33,8 @@ function onSelect(code: CurrencyCode, close: () => void) {
       </template>
 
       <template #default="{ close }">
-        <div class="grid gap-4 px-3 py-4">
-          <UiTitle3>{{ t('select') }}</UiTitle3>
+        <div class="bottomSheetContent">
+          <UiTitleModal>{{ t('select') }}</UiTitleModal>
 
           <CurrenciesList
             :active="props.activeCode"

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-item-5 hover:bg-item-6 absolute right-1 top-1 z-[3] flex size-8 items-center justify-center rounded-full transition ease-in-out"
+    class="bg-item-5 hover:bg-item-6 absolute right-1 top-1 z-30 flex size-8 items-center justify-center rounded-full transition ease-in-out"
     @click="$emit('onClick')"
   >
     <Icon

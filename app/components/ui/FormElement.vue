@@ -4,9 +4,9 @@
 
 <template>
   <div>
-    <div class="text-item-2 pb-2 text-sm leading-none">
+    <UiTitle1>
       <slot name="label" />
-    </div>
+    </UiTitle1>
 
     <slot />
   </div>

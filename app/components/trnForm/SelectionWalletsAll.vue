@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
+
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
@@ -16,17 +17,14 @@ const trnsFormStore = useTrnsFormStore()
 
 <template>
   <div>
-    <UiTitle3
-      class="bg-foreground-1 sticky top-0 z-0 z-20 px-3 pb-3 pt-4"
-      @click="trnsFormStore.ui.walletsModal = true"
-    >
+    <UiTitleModal @click="trnsFormStore.ui.walletsModal = true">
       {{ $t("wallets.title") }}
-    </UiTitle3>
+    </UiTitleModal>
 
     <WalletsSelector
       :hide="emit('close')"
       :activeItemId="trnsFormStore.values.walletId"
-      class="_max-w-xs min-w-72"
+      class="min-w-72 px-2 py-px"
       @onSelected="id => emit('onSelectWallet', id)"
     />
   </div>

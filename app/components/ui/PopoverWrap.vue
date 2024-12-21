@@ -9,18 +9,14 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="grid max-h-[60dvh] grid-rows-[auto,1fr] gap-2">
-    <div class="flex items-center px-3">
-      <UiTitle
-        v-if="props.title"
-        class="px-1 pb-2 pt-4"
-      >
-        {{ props.title }}
-      </UiTitle>
-      <BottomSheetClose @onClick="emit('close')" />
-    </div>
+  <div class="grid max-h-[60dvh] grid-rows-[auto,1fr] gap-0">
+    <UiTitleModal v-if="props.title">
+      {{ props.title }}
+    </UiTitleModal>
 
-    <div class="scroller overflow-y-auto">
+    <BottomSheetClose @onClick="emit('close')" />
+
+    <div class="scroller overflow-y-auto pb-2 pt-px">
       <slot />
     </div>
   </div>

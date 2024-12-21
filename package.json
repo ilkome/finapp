@@ -22,7 +22,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@formkit/drag-and-drop": "^0.1.5",
+    "@formkit/drag-and-drop": "0.1.5",
     "@pinia/nuxt": "^0.9.0",
     "currency.js": "^2.0.4",
     "echarts": "^5.5.1",
@@ -44,9 +44,9 @@
     "@nuxt/ui": "^2.20.0",
     "@nuxtjs/i18n": "^9.1.1",
     "@vite-pwa/nuxt": "^0.10.6",
-    "@vitest/coverage-v8": "2.1.8",
+    "@vitest/coverage-v8": "^2.1.8",
     "@vueuse/core": "^12.0.0",
-    "@vueuse/nuxt": "^11.3.0",
+    "@vueuse/nuxt": "^12.0.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",

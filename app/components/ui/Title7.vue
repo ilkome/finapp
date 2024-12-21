@@ -7,11 +7,11 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <UiTitle
+  <UiTitle1
     :class="getStyles('item', ['link', 'center', 'padding3', 'minh2', 'minw1', 'rounded'])"
-    class="grow flex items-center gap-2 pb-0 !text-3 !text-sm !font-semibold !font-tertiary"
+    class="!text-3 !font-tertiary flex grow items-center gap-2 pb-0 !text-sm !font-semibold"
     @click="emit('click')"
   >
     <slot />
-  </UiTitle>
+  </UiTitle1>
 </template>

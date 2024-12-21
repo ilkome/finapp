@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import type { WalletId } from '~/components/wallets/types'
+
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   isLaptop: boolean
@@ -36,7 +37,7 @@ const walletsStore = useWalletsStore()
           <WalletsSelector
             :hide="close"
             :activeItemId="props.walletId"
-            class="min-w-72 max-w-xs "
+            class="min-w-72 max-w-xs px-2"
             @onSelected="id => emit('onSelected', id)"
           />
         </UiPopoverWrap>

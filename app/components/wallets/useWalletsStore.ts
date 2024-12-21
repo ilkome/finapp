@@ -1,16 +1,18 @@
+import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
+import { uniqueElementsBy } from '~~/utils/simple'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
-import { useCurrenciesStore } from '../currencies/useCurrenciesStore'
+
 import type { CurrencyCode } from '~/components/currencies/types'
+import type { TrnId } from '~/components/trns/types'
 import type { WalletId, WalletItem, WalletItemWithAmount, Wallets } from '~/components/wallets/types'
+
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
-import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
-import { normalizeWallets } from '~/components/wallets/utils'
-import { uniqueElementsBy } from '~~/utils/simple'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
-import type { TrnId } from '~/components/trns/types'
+import { normalizeWallets } from '~/components/wallets/utils'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
@@ -128,7 +130,7 @@ export const useWalletsStore = defineStore('wallets', () => {
       deleteDemoWallet(id, trnsIds)
     }
     else {
-      await removeData(`users/${userStore.uid}/categories/${id}`)
+      await removeData(`users/${userStore.uid}/accounts/${id}`)
       if (trnsIds)
         await trnsStore.deleteTrnsByIds(trnsIds)
     }

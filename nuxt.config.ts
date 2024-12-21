@@ -1,4 +1,5 @@
 import process from 'node:process'
+
 import { config } from './services/firebase/config'
 
 const sw = process.env.SW === 'true'

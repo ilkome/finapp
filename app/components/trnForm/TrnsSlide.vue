@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useDateFormats } from '~/components/date/useDateFormats'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
@@ -21,7 +23,6 @@ const trnsStore = useTrnsStore()
 
 type FilterBy = 'wallet' | 'all' | 'walletAndCategory'
 const filterBy = useStorage<FilterBy>('filterBy', 'wallet')
-const periodGrouped = useStorage('trnForm', 'all')
 
 const trnsIds = computed(() => {
   const walletsIds: WalletId[] = []
@@ -72,7 +73,6 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
 <template>
   <div class="grid h-full grid-rows-[1fr,auto] gap-2 sm:max-w-sm">
     <TrnsList
-      :defaultFilterTrnsPeriod="periodGrouped"
       :trnsIds="trnsIds"
       isHideDates
       isShowDates

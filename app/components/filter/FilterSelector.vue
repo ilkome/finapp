@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { usePointer, useWindowSize } from '@vueuse/core'
+
 import type { FilterProvider } from '~/components/filter/types'
 
 const props = defineProps<{
@@ -34,7 +35,7 @@ const modals = ref({
             @close="close"
           >
             <CategoriesSelector
-              class="min-w-72 max-w-xs"
+              class="min-w-72 max-w-xs px-2"
               :selectedIds="filter?.categoriesIds.value"
               @onSelected="filter.toggleCategoryId"
               @setCategories="filter.setCategories"
@@ -56,35 +57,34 @@ const modals = ref({
           <BottomSheet
             v-if="modals.categories"
             isShow
-            drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+            drugClassesCustom="bottomSheetDrugClassesCustom"
             @closed="modals.categories = false"
           >
             <template #handler="{ close }">
-              <div class="relative z-20">
-                <BottomSheetHandler />
-                <BottomSheetClose @onClick="close" />
-              </div>
+              <BottomSheetHandler />
+              <BottomSheetClose @onClick="close" />
             </template>
 
             <template #default="{ close }">
-              <div class="bg-foreground-1 grid h-full max-h-[70vh] grid-rows-[auto,1fr,auto] overflow-hidden pt-1">
-                <UiTitle9 class="!px-4 !py-2">
-                  {{ t("dates.select") }}
-                </UiTitle9>
+              <div class="bottomSheetContent">
+                <UiTitleModal>
+                  {{ t('categories.select') }}
+                </UiTitleModal>
 
-                <div class="scrollerBlock grid h-full grid-rows-[auto,1fr] gap-1 overflow-hidden overflow-y-auto px-1">
+                <div class="bottomSheetContentInside">
                   <CategoriesSelector
                     :selectedIds="filter?.categoriesIds.value"
                     @onSelected="filter.toggleCategoryId"
                     @filter="filter.toggleCategoryId"
                   />
                 </div>
-                <div class="flex-center px-3 py-2">
+
+                <div class="bottomSheetContentBottom">
                   <UiButtonBlue
                     rounded
                     @click="close"
                   >
-                    {{ t("base.save") }}
+                    {{ t('base.save') }}
                   </UiButtonBlue>
                 </div>
               </div>
@@ -108,7 +108,7 @@ const modals = ref({
           >
             <WalletsSelector
               :selectedIds="filter?.walletsIds.value"
-              class="min-w-72 max-w-xs"
+              class="min-w-72 max-w-xs px-2"
               @onSelected="filter.toggleWalletId"
             />
           </UiPopoverWrap>
@@ -127,35 +127,34 @@ const modals = ref({
           <BottomSheet
             v-if="modals.wallets"
             isShow
-            drugClassesCustom="max-w-md bg-foreground-1 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 rounded-xl"
+            drugClassesCustom="bottomSheetDrugClassesCustom"
             @closed="modals.wallets = false"
           >
             <template #handler="{ close }">
-              <div class="relative z-20">
-                <BottomSheetHandler />
-                <BottomSheetClose @onClick="close" />
-              </div>
+              <BottomSheetHandler />
+              <BottomSheetClose @onClick="close" />
             </template>
 
             <template #default="{ close }">
-              <div class="bg-foreground-1 grid h-full max-h-[70vh] grid-rows-[auto,1fr,auto] overflow-hidden pt-1">
-                <UiTitle9 class="!px-4 !py-2">
-                  {{ t("dates.select") }}
-                </UiTitle9>
+              <div class="bottomSheetContent">
+                <UiTitleModal>
+                  {{ t('wallets.select') }}
+                </UiTitleModal>
 
-                <div class="scrollerBlock grid h-full grid-rows-[auto,1fr] gap-1 overflow-hidden overflow-y-auto px-1">
+                <div class="bottomSheetContentInside">
                   <WalletsSelector
                     class="min-w-72"
                     :selectedIds="filter?.walletsIds.value"
                     @onSelected="filter.toggleWalletId"
                   />
                 </div>
-                <div class="flex-center px-3 py-2">
+
+                <div class="bottomSheetContentBottom">
                   <UiButtonBlue
                     rounded
                     @click="close"
                   >
-                    {{ t("base.save") }}
+                    {{ t('base.save') }}
                   </UiButtonBlue>
                 </div>
               </div>
@@ -166,3 +165,19 @@ const modals = ref({
     </template>
   </div>
 </template>
+
+<i18n lang="yaml">
+en:
+  categories:
+    select: Select categories
+
+  wallets:
+    select: Select wallets
+
+ru:
+  categories:
+    select: Выбрать категории
+
+  wallets:
+    select: Выбрать кошельки
+</i18n>

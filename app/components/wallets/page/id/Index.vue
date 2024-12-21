@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+
 import type { MoneyTypeSlugNew } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
-import { getTypesMapping } from '~/components/stat/utils'
-import { icons } from '~/components/wallets/types'
+
+import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
-import { useStatDate } from '~/components/date/useStatDate'
+import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { icons } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
@@ -28,6 +30,7 @@ const activeTab = useStorage<MoneyTypeSlugNew>(`${walletId.value}-tab`, 'netInco
 const storageKey = computed(() => `${walletId.value}-${activeTab.value}`)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  categoriesIds: filter.categoriesIds.value,
   trnsTypes: getTypesMapping(activeTab.value),
   walletsIds: [walletId.value, ...filter?.walletsIds?.value],
 }))

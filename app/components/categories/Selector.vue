@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+
 import { getParentCategory } from '~/components/categories/getCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
   hide?: () => null
@@ -60,15 +61,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="p-2 pt-1">
+  <div class="">
     <div
       v-for="categoryId in categoriesStore.categoriesRootIds"
       :key="categoryId"
-      class="group border border-transparent"
+      class="group"
       :class="{
         'bg-item-4 relative mb-2 rounded-md': opened.includes(categoryId),
         'bg-item-4 rounded-md': isChildsSelected(categoryId),
-        '!border-accent-1/60': isEveryChildsSelected(categoryId),
+        '!border-accent-1/60 border': isEveryChildsSelected(categoryId),
       }"
     >
       <CategoriesItem

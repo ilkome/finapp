@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { random, successEmo } from '~/assets/js/emo'
-import type { WalletId } from '~/components/wallets/types'
 import type { TrnId } from '~/components/trns/types'
+import type { WalletId } from '~/components/wallets/types'
+
+import { random, successEmo } from '~/assets/js/emo'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import UiToastContent from '~/components/ui/ToastContent.vue'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   walletId: WalletId

@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import type { CategoryItemProps } from '~/components/categories/Item.vue'
 import type { CategoryId } from '~/components/categories/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 defineProps<{
   activeItemId?: string | 0 | false | null
+  categoriesItemProps?: Partial<CategoryItemProps>
   ids: CategoryId[]
   slider?: object
 }>()
@@ -27,6 +30,7 @@ const categoriesStore = useCategoriesStore()
       :slider="slider"
       :lineWidth="1"
       isShowDots
+      v-bind="categoriesItemProps"
       @click="emit('click', categoryId)"
       @onClickIcon="emit('onClickIcon', categoryId)"
     />

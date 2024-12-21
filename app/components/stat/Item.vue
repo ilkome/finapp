@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import StatCategoriesSection from '~/components/stat/categories/Section.vue'
-import StatTrnsSection from '~/components/stat/trns/Section.vue'
+
 import type { CategoryId } from '~/components/categories/types'
-import type { ChartSeries, IntervalData, MoneyTypeSlugNew } from '~/components/stat/types'
-import type { FilterProvider } from '~/components/filter/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
+import type { FilterProvider } from '~/components/filter/types'
+import type { ChartSeries, IntervalData, MoneyTypeSlugNew } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
+
 import useAmount from '~/components/amount/useAmount'
+import StatCategoriesSection from '~/components/stat/categories/Section.vue'
+import StatTrnsSection from '~/components/stat/trns/Section.vue'
 import { useStatChart } from '~/components/stat/useStatChart'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -240,21 +242,23 @@ const averageTotal = computed(() => {
       <BottomSheet
         v-if="selectedTrnsIds && selectedTrnsIds?.length > 0 && isShowTrns"
         isShow
-        drugClassesCustom="bg-foreground-1 max-w-md"
+        drugClassesCustom="bottomSheetDrugClassesCustom"
         @closed="isShowTrns = false"
       >
-        <div class="scrollerBlock grid h-[98dvh] content-start overflow-hidden overflow-y-auto">
-          <TrnsList
-            :trnsIds="selectedTrnsIds"
-            class="p-2"
-            isShowDates
-            isShowExpense
-            isShowFilterByDesc
-            isShowFilterByType
-            isShowGroupSum
-            isShowHeader
-            isShowIncome
-          />
+        <div class="bottomSheetContent">
+          <div class="bottomSheetContentInside">
+            <TrnsList
+              :trnsIds="selectedTrnsIds"
+              class="py-2"
+              isShowDates
+              isShowExpense
+              isShowFilterByDesc
+              isShowFilterByType
+              isShowGroupSum
+              isShowHeader
+              isShowIncome
+            />
+          </div>
         </div>
       </BottomSheet>
     </Teleport>

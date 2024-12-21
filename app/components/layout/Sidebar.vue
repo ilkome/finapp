@@ -19,7 +19,7 @@ const { t } = useI18n()
 <template>
   <div
     :class="{ 'translate-x-20': props.isShow }"
-    class="bg-foreground-3 hidden h-full min-w-72 content-start gap-6 overflow-hidden overflow-y-auto transition-all duration-300 ease-in-out lg:grid"
+    class="bg-foreground-3 hidden h-full min-w-72 content-start gap-6 overflow-hidden overflow-y-auto transition-all duration-300 ease-in-out md:grid"
   >
     <div class="flex items-center justify-between pl-4 pr-2 pt-5">
       <NuxtLink to="/dashboard" class="cursor-default">

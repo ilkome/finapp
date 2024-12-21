@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
+
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -23,7 +24,7 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <div class="p-2 pt-1">
+  <div>
     <WalletsItem
       v-for="(wallet, walletId) in walletsStore.itemsWithAmount"
       :key="walletId"

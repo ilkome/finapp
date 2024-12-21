@@ -77,7 +77,7 @@ export default {
       },
       parent: {
         label: 'Parent category',
-        no: 'Root',
+        no: 'Without parent',
       },
       quickSelector: 'Show in quick selector',
       save: 'Save',

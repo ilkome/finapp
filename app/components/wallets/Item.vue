@@ -27,7 +27,7 @@ const currenciesStore = useCurrenciesStore()
 const classes = computed(() => ([
   'relative',
   {
-    [getStyles('item', ['alt', 'rounded'])]: props.alt,
+    [getStyles('item', ['bg', 'rounded'])]: props.alt,
   },
 ]))
 

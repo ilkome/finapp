@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import UiToastContent from '~/components/ui/ToastContent.vue'
 import type { CategoryId } from '~/components/categories/types'
+
 import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import UiToastContent from '~/components/ui/ToastContent.vue'
 
 const props = defineProps<{
   categoryId: CategoryId

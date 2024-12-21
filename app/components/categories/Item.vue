@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
-const props = defineProps<{
+export type CategoryItemProps = {
   activeItemId?: string | 0 | false | null
   alt?: boolean
   category: CategoryItem
-  categoryId?: CategoryId
+  categoryId: CategoryId
   isShowDots?: boolean
   isShowParent?: boolean
   lineWidth?: number
   slider?: any
-}>()
+}
+
+const props = defineProps<CategoryItemProps>()
 
 const emit = defineEmits<{
   click: [e: Event]
