@@ -35,9 +35,7 @@ const { getTotalOfTrnsIds } = useAmount()
 const { addMarkArea, createSeriesItem } = useStatChart()
 
 const isShowTrns = ref(false)
-
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
-
 const selectedType = useStorage<MoneyTypeSlugNew>(`selectedType-${newBaseStorageKey.value}`, 'summary')
 
 const selectedTypesMapping = computed(() => {
@@ -219,7 +217,7 @@ const averageTotal = computed(() => {
       @click="onClickSumItem"
     />
 
-    <div class="grid gap-6 pt-3">
+    <div class="grid gap-6 pt-5">
       <StatCategoriesSection
         v-if="props.hasChildren || (props.preCategoriesIds ?? []).length > 0"
         :storageKey="newBaseStorageKey"

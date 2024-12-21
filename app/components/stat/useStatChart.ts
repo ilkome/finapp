@@ -17,6 +17,7 @@ export function useStatChart() {
         data: [{
           type: 'average',
         }],
+        index: 0,
         label: {
           show: false,
         },

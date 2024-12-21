@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { AmountProps } from '~/components/amount/Amount.vue'
-import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import type { MoneyTypeSlugNew } from '~/components/stat/types'
+
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 
 const props = defineProps<{
   amount: number
@@ -29,10 +30,10 @@ const currenciesStore = useCurrenciesStore()
     }"
     @click="(e: Event) => emit('click', e)"
   >
-    <UiTitle1>
+    <UiTitle2>
       {{ props.isTotal ? $t('money.all') : '' }}
       {{ $t(`money.${props.type}`) }}
-    </UiTitle1>
+    </UiTitle2>
 
     <div class="flex items-end gap-5">
       <Amount
