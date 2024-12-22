@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest'
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subWeeks } from 'date-fns'
-import { calculateIntervalInRange } from '~/components/date/utils'
+import { describe, expect, it } from 'vitest'
+
 import type { IntervalsInRangeProps, Range } from '~/components/date/types'
+
+import { calculateIntervalInRange } from '~/components/date/utils'
 
 describe('calculateIntervalInRange', () => {
   describe('fixed dates', () => {

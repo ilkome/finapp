@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { sub } from 'date-fns'
+
 import type { Range, StatDateProvider } from '~/components/date/types'
+
 import { getEndOf, getStartOf } from '~/components/date/utils'
-import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   maxRange: Range
@@ -72,7 +73,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 
       <template #content="{ close }">
         <StatDateSelector
-          class="min-w-[350px] md:px-3"
+          class="min-w-[350px] px-3"
           :maxRange
           @onClose="close"
         />

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ToastOptions } from 'vue3-toastify'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import UiToastContent from '~/components/ui/ToastContent.vue'
+
 import { useDemo } from '~/components/demo/useDemo'
+import UiToastContent from '~/components/ui/ToastContent.vue'
 
 const auth = useFirebaseAuth()!
 
@@ -42,7 +42,7 @@ function signInWithGoogle() {
         title: 'Error',
       },
       type: 'error',
-    } as ToastOptions)
+    })
 
     isLoading.value = false
   })

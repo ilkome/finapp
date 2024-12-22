@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest'
 import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns'
-import { getIntervalsInRange } from './utils'
-import type { IntervalsInRangeProps } from './types'
+import { describe, expect, it } from 'vitest'
+
+import type { IntervalsInRangeProps } from '~/components/date/types'
+
+import { getIntervalsInRange } from '~/components/date/utils'
 
 describe('getIntervalsInRange', () => {
   it('should return correct grouped ranges for months', () => {

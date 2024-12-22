@@ -25,6 +25,7 @@ const props = defineProps<{
   walletId?: WalletId
 }>()
 
+const { t } = useI18n()
 const route = useRoute()
 const filter = inject('filter') as FilterProvider
 const statDate = inject('statDate') as StatDateProvider
@@ -36,7 +37,7 @@ const { addMarkArea, createSeriesItem } = useStatChart()
 
 const isShowTrns = ref(false)
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
-const selectedType = useStorage<MoneyTypeSlugNew>(`selectedType-${newBaseStorageKey.value}`, 'summary')
+const selectedType = useStorage<MoneyTypeSlugNew>(`selectedType-${props.type}-${newBaseStorageKey.value}`, 'summary')
 
 const selectedTypesMapping = computed(() => {
   const typeMapping = {
@@ -45,7 +46,7 @@ const selectedTypesMapping = computed(() => {
     summary: [0, 1, 2],
   } as const
 
-  const trnsTypes = typeMapping[selectedType.value]
+  const trnsTypes = typeMapping[props.type !== 'netIncome' ? props.type : selectedType.value]
 
   if (trnsTypes) {
     return trnsTypes
@@ -63,10 +64,6 @@ const isPeriodOneDay = computed(() => (statDate.params.value.rangeBy === 'day' &
 
 const rangeTrnsIds = computed(() => {
   const params = {
-    dates: {
-      from: statDate.range.value.start,
-      until: statDate.range.value.end,
-    },
     trnsIds: props.trnsIds,
   }
 
@@ -76,14 +73,13 @@ const rangeTrnsIds = computed(() => {
 const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
 
 const chartTrnsIds = computed(() => {
-  if (!selectedTypesMapping.value) {
-    return rangeTrnsIds.value
-  }
+  return rangeTrnsIds.value
+  // if (!selectedTypesMapping.value) {
+  // }
 
-  return trnsStore.getStoreTrnsIds({
-    trnsIds: rangeTrnsIds.value,
-    trnsTypes: selectedTypesMapping.value,
-  }, { includesChildCategories: false })
+  // return trnsStore.getStoreTrnsIds({
+  //   trnsIds: rangeTrnsIds.value,
+  // }, { includesChildCategories: false })
 })
 
 const selectedTrnsIds = computed(() => {
@@ -244,6 +240,8 @@ const averageTotal = computed(() => {
         @closed="isShowTrns = false"
       >
         <div class="bottomSheetContent">
+          <UiTitleModal>{{ t('trns.title') }} {{ selectedTrnsIds.length }}</UiTitleModal>
+
           <div class="scrollerBlock bottomSheetContentInside">
             <TrnsList
               :trnsIds="selectedTrnsIds"
@@ -253,7 +251,6 @@ const averageTotal = computed(() => {
               isShowFilterByDesc
               isShowFilterByType
               isShowGroupSum
-              isShowHeader
               isShowIncome
             />
           </div>

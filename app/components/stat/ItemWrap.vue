@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
 import type { CategoryId } from '~/components/categories/types'
+import type { StatDateProvider } from '~/components/date/types'
+import type { MoneyTypeSlugNew } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
+
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   activeTab: MoneyTypeSlugNew
@@ -15,16 +17,25 @@ const props = defineProps<{
 }>()
 
 const trnsStore = useTrnsStore()
+const statDate = inject('statDate') as StatDateProvider
+
+const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  dates: {
+    from: statDate.range.value.start,
+    until: statDate.range.value.end,
+  },
+  trnsIds: props.trnsIds,
+}))
 
 const expenseTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  trnsIds: props.trnsIds,
+  trnsIds: datedTrnsIds.value,
   trnsTypes: [0, 2],
 }, {
   includesChildCategories: true,
 }))
 
 const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  trnsIds: props.trnsIds,
+  trnsIds: datedTrnsIds.value,
   trnsTypes: [1, 2],
 }, {
   includesChildCategories: true,
@@ -63,7 +74,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     <StatItem
       :preCategoriesIds="props.preCategoriesIds"
       :storageKey="props.storageKey"
-      :trnsIds="props.trnsIds"
+      :trnsIds="datedTrnsIds"
       :type="props.activeTab"
       :walletId="props.walletId"
       :hasChildren="props.hasChildren"

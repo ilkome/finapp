@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { MoneyTypeNumber } from '~/components/stat/types'
 import type { TrnId, TrnType } from '~/components/trns/types'
+
 import useAmount from '~/components/amount/useAmount'
-import { useDateFormats } from '~/components/date/useDateFormats'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useDateFormats } from '~/components/date/useDateFormats'
 import { getStartOf } from '~/components/date/utils'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = withDefaults(
   defineProps<{
@@ -155,7 +156,7 @@ const groupedTrns = computed(() => {
       :paginatedTrnsIds
       :selectedIds
     >
-      <UiTitle9>{{ t("trns.title") }} {{ selectedIds.length > 0 ? selectedIds.length : '' }}</UiTitle9>
+      <UiTitle9>{{ t('trns.title') }} {{ selectedIds.length > 0 ? selectedIds.length : '' }}</UiTitle9>
     </slot>
 
     <slot name="contentBefore" />

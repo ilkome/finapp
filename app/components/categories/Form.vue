@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { ToastOptions } from 'vue3-toastify'
-
 import { generateId } from '~~/utils/generateId'
 
 import type { CategoryForm, CategoryId } from '~/components/categories/types'
