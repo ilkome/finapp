@@ -49,7 +49,7 @@ body {
 }
 
 .bottomSheetContentInside {
-  @apply grid h-full gap-1 overflow-hidden overflow-y-auto px-2;
+  @apply grid h-full gap-1 overflow-hidden overflow-y-auto px-2 py-px;
 }
 
 .bottomSheetContentBottom {

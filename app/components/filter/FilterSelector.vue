@@ -71,7 +71,7 @@ const modals = ref({
                   {{ t('categories.select') }}
                 </UiTitleModal>
 
-                <div class="bottomSheetContentInside">
+                <div class="scrollerBlock bottomSheetContentInside">
                   <CategoriesSelector
                     :selectedIds="filter?.categoriesIds.value"
                     @onSelected="filter.toggleCategoryId"
@@ -141,7 +141,7 @@ const modals = ref({
                   {{ t('wallets.select') }}
                 </UiTitleModal>
 
-                <div class="bottomSheetContentInside">
+                <div class="scrollerBlock bottomSheetContentInside">
                   <WalletsSelector
                     class="min-w-72"
                     :selectedIds="filter?.walletsIds.value"

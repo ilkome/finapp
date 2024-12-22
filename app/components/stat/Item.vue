@@ -244,7 +244,7 @@ const averageTotal = computed(() => {
         @closed="isShowTrns = false"
       >
         <div class="bottomSheetContent">
-          <div class="bottomSheetContentInside">
+          <div class="scrollerBlock bottomSheetContentInside">
             <TrnsList
               :trnsIds="selectedTrnsIds"
               class="py-2"

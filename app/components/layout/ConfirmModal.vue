@@ -49,7 +49,7 @@ const items = computed(() => ({
             {{ t('base.sure') }}
           </UiTitleModal>
 
-          <div class="bottomSheetContentInside !px-3">
+          <div class="scrollerBlock bottomSheetContentInside !px-3">
             <div
               v-if="description"
               class="text-alert-primary"
