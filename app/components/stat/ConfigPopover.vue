@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { chartViewOptions } from '~/components/stat/useStatConfig'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
+
+import { chartViewOptions } from '~/components/stat/useStatConfig'
 import { getStyles } from '~/components/ui/getStyles'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   isShowWallets?: boolean
@@ -21,40 +22,50 @@ function updateWalletsLimit(value: number) {
 <template>
   <UiHeaderConfigPopover>
     <!-- Chart show -->
-    <div class="popover-el">
-      <UiTitleOption class="pb-2">
-        {{ t("stat.config.chartShow.title") }}
-      </UiTitleOption>
-      <UiCheckbox
-        :checkboxValue="statConfig.config.value.chartShow"
-        :title="t('stat.config.chartShow.label')"
-        @onClick="statConfig.updateConfig('chartShow', !statConfig.config.value.chartShow)"
-      />
-    </div>
+    <div class="grid gap-2">
+      <div>
+        <UiTitleOption class="pb-2">
+          {{ t("stat.config.chartShow.title") }}
+        </UiTitleOption>
+        <UiCheckbox
+          :checkboxValue="statConfig.config.value.chartShow"
+          :title="t('stat.config.chartShow.label')"
+          @onClick="statConfig.updateConfig('chartShow', !statConfig.config.value.chartShow)"
+        />
+      </div>
 
-    <!-- Chart view -->
-    <div
-      v-if="statConfig.config.value.chartShow"
-      class="popover-el hidden md:block"
-    >
-      <UiTitleOption class="pb-2">
-        {{ t("stat.config.chartView.label") }}
-      </UiTitleOption>
+      <template v-if="statConfig.config.value.chartShow">
+        <div>
+          <UiCheckbox
+            :checkboxValue="statConfig.config.value.chart.isShowAverage ?? false"
+            :title="t('stat.config.chart.average.label')"
+            @onClick="statConfig.updateConfig('chart', { isShowAverage: !statConfig.config.value.chart.isShowAverage })"
+          />
+        </div>
 
-      <UiTabs1>
-        <UiTabsItem1
-          v-for="view in chartViewOptions"
-          :key="view"
-          :isActive="statConfig.config.value.chartView === view"
-          @click="statConfig.updateConfig('chartView', view)"
+        <div
+          class="hidden md:block"
         >
-          {{ t(`stat.config.chartView.${view}`) }}
-        </UiTabsItem1>
-      </UiTabs1>
+          <UiTitleOption class="pb-2">
+            {{ t("stat.config.chartView.label") }}
+          </UiTitleOption>
+
+          <UiTabs1>
+            <UiTabsItem1
+              v-for="view in chartViewOptions"
+              :key="view"
+              :isActive="statConfig.config.value.chartView === view"
+              @click="statConfig.updateConfig('chartView', view)"
+            >
+              {{ t(`stat.config.chartView.${view}`) }}
+            </UiTabsItem1>
+          </UiTabs1>
+        </div>
+      </template>
     </div>
 
     <!-- Showed wallets -->
-    <div v-if="props.isShowWallets" class="popover-el">
+    <div v-if="props.isShowWallets">
       <UiTitleOption class="pb-2">
         {{ t("stat.config.wallets.title") }}
       </UiTitleOption>

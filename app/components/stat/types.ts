@@ -33,7 +33,7 @@ export type ChartSeries = {
   data: number[]
   markArea?: any
   markedArea?: 'markedArea'
-  markLine?: unknown
+  markLine?: Record<string, unknown>
   name: string
   type: ChartType
 }

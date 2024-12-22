@@ -103,6 +103,13 @@ const rangeTotal = computed(() => {
   return getTotalOfTrnsIds(trnsIds)
 })
 
+const averageTotal = computed(() => {
+  if (intervalsData.value.length < 2)
+    return
+
+  return intervalsData.value.reduce((acc, i) => acc + i.total.sum, 0) / (intervalsData.value.length)
+})
+
 const chart = {
   series: computed<ChartSeries[]>(() => {
     const intervalsChartData = getIntervalsData(chartTrnsIds.value, statDate.intervalsInRange.value)
@@ -119,7 +126,7 @@ const chart = {
       : [props.type]
 
     const intervalTotals = intervalsChartData.map(g => g.total)
-    const baseSeries = typesToShow.map(type => createSeriesItem(type, intervalTotals))
+    const baseSeries = typesToShow.map(type => createSeriesItem(type, intervalTotals, statConfig.config.value.chart.isShowAverage ? averageTotal.value : false))
 
     const selectedInterval = intervalsChartData?.[statDate.params.value.intervalSelected]
     if (!selectedInterval?.range.start || statDate.params.value.intervalSelected < 0) {
@@ -184,14 +191,6 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
     return acc
   }, [] as IntervalData[])
 }
-
-// Remove last interval
-const averageTotal = computed(() => {
-  if (intervalsData.value.length < 2)
-    return
-
-  return intervalsData.value.reduce((acc, i) => acc + i.total.sum, 0) / (intervalsData.value.length)
-})
 </script>
 
 <template>

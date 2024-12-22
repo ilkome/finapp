@@ -244,6 +244,11 @@ export default {
   stat: {
     balanceTitle: 'Balance',
     config: {
+      chart: {
+        average: {
+          label: 'Show average values',
+        },
+      },
       chartShow: {
         label: 'Show chart',
         title: 'Chart',

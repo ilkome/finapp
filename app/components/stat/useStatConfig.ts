@@ -1,8 +1,10 @@
-import defu from 'defu'
-import { useStorage } from '@vueuse/core'
-import { z } from 'zod'
-import { chartTypes } from '~/components/stat/chart/types'
 import type { DeepPartial } from '~~/utils/types'
+
+import { useStorage } from '@vueuse/core'
+import defu from 'defu'
+import { z } from 'zod'
+
+import { chartTypes } from '~/components/stat/chart/types'
 
 export const chartViewOptions = ['half', 'full'] as const
 
@@ -16,13 +18,17 @@ export const ConfigSchema = z.object({
     isShowFavorites: z.boolean(),
     isShowRecent: z.boolean(),
   }),
+
   catsRound: z.object({
     isGrouped: z.boolean(),
     isShowFavorites: z.boolean(),
     isShowRecent: z.boolean(),
   }),
-
   catsView: z.enum(['list', 'round']),
+
+  chart: z.object({
+    isShowAverage: z.boolean(),
+  }),
 
   chartShow: z.boolean(),
   chartType: z.enum(chartTypes),
@@ -66,9 +72,13 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       isShowRecent: false,
     },
     catsView: 'list',
+    chart: {
+      isShowAverage: true,
+    },
     chartShow: true,
     chartType: 'bar',
     chartView: 'half',
+
     isShowEmptyCategories: false,
 
     vertical: {

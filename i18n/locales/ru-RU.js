@@ -245,6 +245,11 @@ export default {
   stat: {
     balanceTitle: 'Баланс',
     config: {
+      chart: {
+        average: {
+          label: 'Показывать средние значения',
+        },
+      },
       chartShow: {
         label: 'Показывать график',
         title: 'График',

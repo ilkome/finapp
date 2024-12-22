@@ -9,13 +9,13 @@ import { markArea } from '~/components/stat/chart/utils'
 export function useStatChart() {
   const { t } = useI18n()
 
-  function createSeriesItem(typeItem: MoneyTypeSlugNew, data: TotalReturns[]): ChartSeries {
-    return {
-      color: seriesOptions[typeItem].color,
-      data: data.map(i => typeItem !== 'summary' ? Math.abs(i[typeItem]) : i[typeItem]),
-      markLine: {
+  function createSeriesItem(typeItem: MoneyTypeSlugNew, data: TotalReturns[], average?: number | false): ChartSeries {
+    let markLine = {}
+    if (average) {
+      markLine = {
         data: [{
-          type: 'average',
+          name: 'average',
+          yAxis: Math.abs(average),
         }],
         index: 0,
         label: {
@@ -25,9 +25,15 @@ export function useStatChart() {
           color: seriesOptions[typeItem].colorLine ?? seriesOptions[typeItem].color,
           type: 'solid',
         },
-        silent: true,
+        silent: false,
         symbol: false,
-      },
+      }
+    }
+
+    return {
+      color: seriesOptions[typeItem].color,
+      data: data.map(i => typeItem !== 'summary' ? Math.abs(i[typeItem]) : i[typeItem]),
+      markLine,
       name: t(`money.${typeItem}`),
       type: seriesOptions[typeItem].type,
     }
