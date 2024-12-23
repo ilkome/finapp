@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { onLongPress } from '@vueuse/core'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { StatDateProvider } from '~/components/date/types'
 import type { CategoryWithData } from '~/components/stat/types'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   biggestCatNumber: {

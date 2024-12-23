@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import VChart from 'vue-echarts'
 import defu from 'defu'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { DataZoomComponent, GridComponent, MarkAreaComponent, MarkLineComponent, MarkPointComponent, TooltipComponent } from 'echarts/components'
-import { SVGRenderer } from 'echarts/renderers'
 import { use } from 'echarts/core'
-import type { ChartType } from '~/components/stat/chart/types'
+import { SVGRenderer } from 'echarts/renderers'
+import VChart from 'vue-echarts'
+
 import type { Period } from '~/components/date/types'
+import type { ChartType } from '~/components/stat/chart/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import { config, lineConfig } from '~/components/stat/chart/config'
+
 import { formatByLocale, getFormatForChart } from '~/components/date/utils'
+import { config, lineConfig } from '~/components/stat/chart/config'
 import { getLocalAmount, setChartXAxis } from '~/components/stat/chart/utils'
 
 type ChartParams = {

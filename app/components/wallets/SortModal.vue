@@ -6,8 +6,6 @@ import { useAppNav } from '~/components/app/useAppNav'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const emit = defineEmits(['closeModal'])
-
 const { closeAllModals, isModalOpen } = useAppNav()
 
 const walletsStore = useWalletsStore()
@@ -18,7 +16,7 @@ const [parent, sortedWalletsIds] = useDragAndDrop([...walletsStore.sortedIds], {
   dragHandle: '.sortHandle',
 })
 
-async function saveWalletsOrder() {
+async function saveWalletsOrder(close: () => void) {
   const result = await walletsStore.saveWalletsOrder(sortedWalletsIds.value)
 
   if (result !== 'ok') {
@@ -33,7 +31,7 @@ async function saveWalletsOrder() {
     return
   }
 
-  emit('closeModal')
+  close()
 }
 </script>
 
@@ -50,30 +48,32 @@ async function saveWalletsOrder() {
         <BottomSheetClose @onClick="close" />
       </template>
 
-      <div class="bottomSheetContent">
-        <UiTitleModal>{{ t('wallets.sortTitle') }}</UiTitleModal>
+      <template #default="{ close }">
+        <div class="bottomSheetContent">
+          <UiTitleModal>{{ t('wallets.sortTitle') }}</UiTitleModal>
 
-        <div ref="parent" class="scrollerBlock bottomSheetContentInside">
-          <WalletsItem
-            v-for="walletId in sortedWalletsIds"
-            :key="walletId"
-            :walletId
-            :wallet="walletsStore.itemsWithAmount[walletId]!"
-            alt
-            isSort
-            isShowIcon
-          />
-        </div>
+          <div ref="parent" class="scrollerBlock bottomSheetContentInside">
+            <WalletsItem
+              v-for="walletId in sortedWalletsIds"
+              :key="walletId"
+              :walletId
+              :wallet="walletsStore.itemsWithAmount[walletId]!"
+              alt
+              isSort
+              isShowIcon
+            />
+          </div>
 
-        <div class="bottomSheetContentBottom">
-          <UiButtonBlue
-            rounded
-            @click="saveWalletsOrder"
-          >
-            {{ t('base.save') }}
-          </UiButtonBlue>
+          <div class="bottomSheetContentBottom">
+            <UiButtonBlue
+              rounded
+              @click="() => saveWalletsOrder(close)"
+            >
+              {{ t('base.save') }}
+            </UiButtonBlue>
+          </div>
         </div>
-      </div>
+      </template>
     </BottomSheet>
   </Teleport>
 </template>

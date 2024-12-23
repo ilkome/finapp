@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { ChartType } from '~/components/stat/chart/types'
 import type { StatDateProvider } from '~/components/date/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
+
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
   series: ChartSeries[]

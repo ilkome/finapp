@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onLongPress, useStorage } from '@vueuse/core'
+
 import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
+
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { getStyles } from '~/components/ui/getStyles'
 import { icons } from '~/components/wallets/types'
-import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
@@ -54,9 +56,9 @@ if (!props.isSort) {
     },
     {
       onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
-        if (!isLongPress && distance < 100) {
-          emit('click', props.walletId)
-        }
+        // if (!isLongPress && distance < 100) {
+        //   emit('click', props.walletId)
+        // }
       },
     },
   )
