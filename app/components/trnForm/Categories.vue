@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import Swiper from 'swiper'
 import 'swiper/css'
+
 import type { CategoryId } from '~/components/categories/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 

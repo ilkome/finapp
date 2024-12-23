@@ -33,6 +33,13 @@ const intervalGroups = computed<IntervalGroupedLabel[]>(() => [
   {
     intervalsBy: 'month',
     intervalsDuration: 1,
+    label: `3${t('dates.month.short')}`,
+    rangeBy: 'month',
+    rangeDuration: 3,
+  },
+  {
+    intervalsBy: 'month',
+    intervalsDuration: 1,
     label: `6${t('dates.month.short')}`,
     rangeBy: 'month',
     rangeDuration: 6,
@@ -50,13 +57,6 @@ const intervalGroups = computed<IntervalGroupedLabel[]>(() => [
     label: `6${t('dates.year.short')}`,
     rangeBy: 'year',
     rangeDuration: 6,
-  },
-  {
-    intervalsBy: 'year',
-    intervalsDuration: 1,
-    label: `10${t('dates.year.short')}`,
-    rangeBy: 'year',
-    rangeDuration: 10,
   },
 ])
 

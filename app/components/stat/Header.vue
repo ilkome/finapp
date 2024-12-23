@@ -59,7 +59,7 @@ function onClickWallet(walletId: WalletId) {
           :isShowCategories="props.filter.isShowCategories"
           :isShowWallets="props.filter.isShowWallets"
         />
-        <StatConfigPopover
+        <StatConfigModal
           v-if="props.config"
           :isShowWallets="props.config.isShowWallets"
           :isShowCategories="props.config.isShowCategories"
@@ -67,7 +67,7 @@ function onClickWallet(walletId: WalletId) {
           <div v-if="$slots.popover">
             <slot name="popover" />
           </div>
-        </StatConfigPopover>
+        </StatConfigModal>
       </div>
     </template>
 

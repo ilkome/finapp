@@ -31,8 +31,12 @@ export const ConfigSchema = z.object({
   }),
 
   chartShow: z.boolean(),
+
   chartType: z.enum(chartTypes),
   chartView: z.enum(chartViewOptions),
+  date: z.object({
+    isShowQuick: z.boolean(),
+  }),
   isShowEmptyCategories: z.boolean(),
   vertical: z.object({
     isGrouped: z.boolean(),
@@ -78,6 +82,10 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     chartShow: true,
     chartType: 'bar',
     chartView: 'half',
+
+    date: {
+      isShowQuick: false,
+    },
 
     isShowEmptyCategories: false,
 

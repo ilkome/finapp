@@ -258,6 +258,14 @@ export default {
         half: 'Compact',
         label: 'Chart view',
       },
+      date: {
+        quick: {
+          label: 'Quick select date',
+        },
+      },
+      menu: {
+        label: 'Page Settings',
+      },
       wallets: {
         label: 'Show wallets',
         title: 'Wallets',
