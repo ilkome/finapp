@@ -80,7 +80,7 @@ if (!props.isSort) {
       <Icon
         :name="icons[wallet.type]"
         :style="{ color: wallet.color }"
-        class="size-5"
+        size="20"
       />
     </template>
 

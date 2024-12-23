@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
 import { cn } from '~~/lib/cn'
+
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   insideClasses?: string
@@ -15,7 +16,7 @@ const emit = defineEmits<{
 const slots = useSlots()
 
 const classes = computed(() => cn(
-  getStyles('item', ['rounded', 'padding1', 'minh2', 'link']),
+  getStyles('item', ['rounded', 'padding1', 'minh1', 'link']),
   'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px] border border-transparent',
   props.insideClasses,
   { 'relative border-accent-1/60 z-10': props.isActive },

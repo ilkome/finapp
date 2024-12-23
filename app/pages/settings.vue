@@ -86,13 +86,15 @@ function onGenerateDemoData() {
           >
             {{ userStore.user?.email }}
           </div>
-          <UiBox1
-            class="!flex gap-2"
+          <UiElement
+            insideClasses="bg-item-3 min-h-[44px]"
             @click="userStore.signOut"
           >
-            <Icon name="lucide:log-out" />
+            <template #leftIcon>
+              <Icon name="lucide:log-out" size="20" />
+            </template>
             <div>{{ t('userLogout') }}</div>
-          </UiBox1>
+          </UiElement>
         </div>
 
         <!-- Delete -->
@@ -103,23 +105,32 @@ function onGenerateDemoData() {
           <div class="leading-1 text-item-2 pb-4 text-xs">
             {{ t("alerts.willDeleteEverything") }}
           </div>
-          <div class="grid gap-3 pb-4">
-            <UiBox1
+
+          <div class="grid gap-2 pb-4">
+            <UiElement
               v-if="isDemo"
-              class="!flex gap-2"
+              :lineWidth="1"
+              class="group"
+              insideClasses="min-h-[44px] bg-item-3"
               @click="onGenerateDemoData"
             >
-              <Icon name="lucide:database-backup" />
+              <template #leftIcon>
+                <Icon name="lucide:database-backup" size="20" />
+              </template>
               <div>{{ t('demo.update') }}</div>
-            </UiBox1>
+            </UiElement>
 
-            <UiBox1
-              class="!flex gap-2"
+            <UiElement
+              :lineWidth="1"
+              class="group"
+              insideClasses="min-h-[44px] bg-item-3"
               @click="confirmRemoveUserData = true"
             >
-              <Icon name="lucide:trash" />
+              <template #leftIcon>
+                <Icon name="lucide:trash" size="20" />
+              </template>
               <div>{{ t('settings.deleteButton') }}</div>
-            </UiBox1>
+            </UiElement>
           </div>
         </div>
       </div>
