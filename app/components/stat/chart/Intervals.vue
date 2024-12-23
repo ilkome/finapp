@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { differenceInDays } from 'date-fns'
-import type { Range } from '~/components/date/types'
+
+import type { Period, Range } from '~/components/date/types'
 
 const props = defineProps<{
+  period: Period
   range: Range
 }>()
 
-const period = defineModel('period', {
-  default: 'day',
-})
+const emit = defineEmits<{
+  onChangePeriod: [value: Period]
+}>()
 
 const { t } = useI18n()
 
@@ -16,7 +18,7 @@ const items = computed(() => {
   const dayDiff = differenceInDays(props.range.end, props.range.start)
 
   const items = [{
-    isShow: period.value !== 'day' || dayDiff > 7,
+    isShow: props.period !== 'day' || dayDiff > 7,
     label: t('dates.day.simple'),
     value: 'day',
   }, {
@@ -42,8 +44,8 @@ const items = computed(() => {
     <StatChartButton
       v-for="item in items"
       :key="item.value"
-      :isActive="period === item.value"
-      @click="period = item.value"
+      :isActive="props.period === item.value"
+      @click="emit('onChangePeriod', item.value)"
     >
       {{ item.label }}
     </StatChartButton>

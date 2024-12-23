@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StatDateProvider } from '~/components/date/types'
+import type { Period, StatDateProvider } from '~/components/date/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
@@ -43,6 +43,11 @@ function onClickChart(idx: number) {
 const isShowChart = computed(() => {
   return statConfig.config.value?.chartShow && (statDate.params.value.rangeDuration !== 1 || statDate.params.value.rangeBy !== 'day') && statDate.intervalsInRange.value.length > 1
 })
+
+function onChangePeriod(period: Period) {
+  statDate.params.value.intervalSelected = -1
+  statDate.params.value.intervalsBy = period
+}
 </script>
 
 <template>
@@ -62,8 +67,9 @@ const isShowChart = computed(() => {
           @update:chartType="(value: ChartType) => statConfig.updateConfig('chartType', value)"
         />
         <StatChartIntervals
-          v-model:period="statDate.params.value.intervalsBy"
+          :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"
+          @onChangePeriod="onChangePeriod"
         />
       </div>
 

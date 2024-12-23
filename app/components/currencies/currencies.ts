@@ -77,6 +77,8 @@ export const currencies: {
 }, {
   code: 'BTC',
   name: 'Bitcoin',
+  precision: 8,
+  symbol: '₿',
 }, {
   code: 'BTN',
   name: 'Ngultrum',

@@ -17,6 +17,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   hasChildren?: boolean
+  isOneCategory?: boolean
   isQuickModal?: boolean
   preCategoriesIds?: CategoryId[]
   storageKey: string
@@ -215,9 +216,10 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
     <div class="grid gap-2 pt-5">
       <StatCategoriesSection
         v-if="props.hasChildren || (props.preCategoriesIds ?? []).length > 0"
-        :storageKey="newBaseStorageKey"
+        :isOneCategory="props.isOneCategory"
         :preCategoriesIds="props.preCategoriesIds"
         :selectedTrnsIds
+        :storageKey="newBaseStorageKey"
         :type="props.type"
         @clickCategory="onClickCategory"
       />

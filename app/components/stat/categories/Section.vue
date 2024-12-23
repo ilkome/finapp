@@ -7,6 +7,7 @@ import type { TrnId } from '~/components/trns/types'
 import { useStatCategories } from '~/components/stat/useStatCategories'
 
 const props = defineProps<{
+  isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
   storageKey: string
@@ -62,6 +63,7 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
         <StatCategoriesButtons
           v-if="isShown"
           :catsLength="categoriesWithData.length"
+          :isShowGrouped="!props.isOneCategory"
         />
       </div>
     </template>
@@ -111,11 +113,11 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
               />
               <div
                 v-else
-                class="w-8"
+                class="ml-1.5 w-9"
               />
 
               <StatCategoriesLine
-                :isShowParent="!statConfig.config.value.catsList.isGrouped"
+                :isShowParent="props.isOneCategory ? false : !statConfig.config.value.catsList.isGrouped"
                 :item="item"
                 :biggestCatNumber="biggestCatNumber"
                 :lineWidth="statConfig.config.value.catsList.isLines ? 0 : 1"

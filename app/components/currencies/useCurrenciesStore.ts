@@ -1,7 +1,9 @@
-import localforage from 'localforage'
-import { startOfDay } from 'date-fns'
 import { getDataOnce, saveData } from '~~/services/firebase/api'
+import { startOfDay } from 'date-fns'
+import localforage from 'localforage'
+
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
+
 import { currencies as all } from '~/components/currencies/currencies'
 import { useUserStore } from '~/components/user/useUserStore'
 

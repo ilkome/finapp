@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import defu from 'defu'
+
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   catsLength: number
   isShowFavorites?: boolean
+  isShowGrouped?: boolean
   isShowRecent?: boolean
 }>()
 
@@ -140,7 +142,10 @@ function onChangeViewOptions(newViewOptions: any) {
     </UiItem1>
 
     <!-- Grouping -->
-    <UiItem1 @click="grouping.toggle">
+    <UiItem1
+      v-if="props.isShowGrouped"
+      @click="grouping.toggle"
+    >
       <Icon
         :name="grouping.isGrouped.value ? 'lucide:folder-tree' : 'lucide:network'"
         size="18"
@@ -175,6 +180,7 @@ function onChangeViewOptions(newViewOptions: any) {
           <div class="-m-1">
             <div class="border-item-3 flex justify-end gap-3 border-b pb-2">
               <UiItem1
+                v-if="props.isShowGrouped"
                 @click="grouping.toggle"
               >
                 <Icon

@@ -10,6 +10,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 const props = defineProps<{
   activeTab: MoneyTypeSlugNew
   hasChildren?: boolean
+  isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
   storageKey: string
   trnsIds: TrnId[]
@@ -49,20 +50,22 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     class="grid max-w-7xl gap-8 px-2 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2 2xl:px-8"
   >
     <StatItem
+      :hasChildren="props.hasChildren"
+      :isOneCategory="props.isOneCategory"
       :preCategoriesIds="props.preCategoriesIds"
       :storageKey="props.storageKey"
       :trnsIds="expenseTrnsIds"
       :walletId="props.walletId"
-      :hasChildren="props.hasChildren"
       type="expense"
     />
 
     <StatItem
+      :hasChildren="props.hasChildren"
+      :isOneCategory="props.isOneCategory"
       :preCategoriesIds="props.preCategoriesIds"
       :storageKey="props.storageKey"
       :trnsIds="incomeTrnsIds"
       :walletId="props.walletId"
-      :hasChildren="props.hasChildren"
       type="income"
     />
   </div>
@@ -72,12 +75,13 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     class="max-w-7xl px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8"
   >
     <StatItem
+      :hasChildren="props.hasChildren"
+      :isOneCategory="props.isOneCategory"
       :preCategoriesIds="props.preCategoriesIds"
       :storageKey="props.storageKey"
       :trnsIds="datedTrnsIds"
       :type="props.activeTab"
       :walletId="props.walletId"
-      :hasChildren="props.hasChildren"
     />
   </div>
 </template>
