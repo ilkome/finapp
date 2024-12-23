@@ -15,9 +15,9 @@ const trnsFormStore = useTrnsFormStore()
     <div
       class="flex-center h-full flex-col pt-10"
     >
-      <UiTitle1 class="pb-4">
+      <UiTitle3 class="pb-4">
         {{ t('intro') }}
-      </UiTitle1>
+      </UiTitle3>
 
       <UiButtonBlue
         v-if="!walletsStore.hasItems"

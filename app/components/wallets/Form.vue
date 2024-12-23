@@ -160,9 +160,9 @@ async function onSave() {
 
       <!-- Type -->
       <div>
-        <UiTitle1 class="pb-2">
+        <UiTitle3 class="pb-2">
           {{ t('money.type') }}
-        </UiTitle1>
+        </UiTitle3>
 
         <div class="px-1">
           <USelect
@@ -191,9 +191,9 @@ async function onSave() {
 
       <!-- Options -->
       <div class="grid gap-1">
-        <UiTitle1>
+        <UiTitle3>
           {{ t('settings.options') }}
-        </UiTitle1>
+        </UiTitle3>
         <div>
           <UiCheckbox
             :checkboxValue="props.walletForm.isWithdrawal ?? false"

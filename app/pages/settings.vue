@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import pkg from '~~/package.json'
-import { useUserStore } from '~/components/user/useUserStore'
+
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
+import { useUserStore } from '~/components/user/useUserStore'
 
 const { $toast } = useNuxtApp()
 const { t } = useI18n()
