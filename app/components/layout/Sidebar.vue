@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
-import { getStyles } from '~/components/ui/getStyles'
+
 import { useDemo } from '~/components/demo/useDemo'
+import { getStyles } from '~/components/ui/getStyles'
 import { useUserStore } from '~/components/user/useUserStore'
 
 const props = defineProps<{

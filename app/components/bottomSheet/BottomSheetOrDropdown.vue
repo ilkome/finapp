@@ -23,7 +23,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
     <template #panel="{ close }">
       <UiPopoverWrap
         :title="props.title"
-        class="pb-3"
+        class="pb-1"
         @close="close"
       >
         <slot name="content" :close />

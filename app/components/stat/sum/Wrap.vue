@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
+import type { MoneyTypeSlugNew } from '~/components/stat/types'
+
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
@@ -20,7 +21,7 @@ const classes = computed(() => {
   const params = ['padding3', 'center', 'minh1', 'minw1', 'rounded']
 
   if (props.isShowIncome && props.isShowExpense) {
-    params.push('_bg', 'link')
+    params.push('link')
   }
 
   return getStyles('item', params)

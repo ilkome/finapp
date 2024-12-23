@@ -66,14 +66,14 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       @onCloseModal="statDate.modals.value.dateSelector = false"
     >
       <template #trigger>
-        <UiTitle10>
+        <UiTitle8 isShown>
           <StatDateRange />
-        </UiTitle10>
+        </UiTitle8>
       </template>
 
       <template #content="{ close }">
         <StatDateSelector
-          class="min-w-[350px] px-3"
+          class="min-w-[362px] px-3"
           :maxRange
           @onClose="close"
         />

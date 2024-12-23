@@ -156,7 +156,9 @@ const groupedTrns = computed(() => {
       :paginatedTrnsIds
       :selectedIds
     >
-      <UiTitle9>{{ t('trns.title') }} {{ selectedIds.length > 0 ? selectedIds.length : '' }}</UiTitle9>
+      <UiTitle3 class="pb-2 pl-1">
+        {{ t('trns.title') }} {{ selectedIds.length > 0 ? selectedIds.length : '' }}
+      </UiTitle3>
     </slot>
 
     <slot name="contentBefore" />

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { MoneyTypeSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
-import { type TransferType, TrnType } from '~/components/trns/types'
+
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { type TransferType, TrnType } from '~/components/trns/types'
 import { getStyles } from '~/components/ui/getStyles'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 defineProps<{
   isLaptop: boolean

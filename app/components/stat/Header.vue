@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { Range } from '~/components/date/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { FilterProvider } from '~/components/filter/types'
-import type { WalletId } from '~/components/wallets/types'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { StatConfigProvider } from '~/components/stat/useStatConfig'
+import type { WalletId } from '~/components/wallets/types'
+
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   config?: {

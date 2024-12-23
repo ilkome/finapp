@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{

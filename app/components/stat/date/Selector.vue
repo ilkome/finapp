@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { differenceInDays } from 'date-fns'
+
 import type { Grouped, Range, StatDateProvider } from '~/components/date/types'
+
 import { calculateBestIntervalsBy } from '~/components/date/utils'
 
 const props = defineProps<{
@@ -74,7 +76,7 @@ function selectInterval(grouped: Grouped) {
     </UiTabs1>
 
     <div v-if="tabs.selected.value === 'presets'">
-      <div class="py-2 pb-4">
+      <div class="pb-4 pt-1">
         <!-- Presets -->
         <div class="grid gap-2">
           <div class="flex flex-wrap gap-1">
@@ -121,9 +123,9 @@ function selectInterval(grouped: Grouped) {
         :lineWidth="1"
       >
         <template #header="{ toggle, isShown }">
-          <UiTitle81 :isShown @click="toggle">
+          <UiTitleDropRight :isShown @click="toggle">
             {{ t('intervalsGrouped') }}
-          </UiTitle81>
+          </UiTitleDropRight>
         </template>
 
         <div class="grid gap-2 px-2">

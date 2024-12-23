@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Range, StatDateProvider } from '~/components/date/types'
+
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 
 const statDate = inject('statDate') as StatDateProvider

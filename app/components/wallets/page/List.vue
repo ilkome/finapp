@@ -529,9 +529,9 @@ const counts = computed(() => ({
                   class="flex grow items-center justify-between pr-3"
                   @click="toggle"
                 >
-                  <UiTitle81 :isShown>
+                  <UiTitleDropRight :isShown>
                     {{ currency }} {{ !isShown ? walletsIds.length : '' }}
-                  </UiTitle81>
+                  </UiTitleDropRight>
 
                   <div class="py-2">
                     <Amount
@@ -571,9 +571,9 @@ const counts = computed(() => ({
                         class="flex grow items-center justify-between pr-3"
                         @click="toggle"
                       >
-                        <UiTitle81 :isShown>
+                        <UiTitleDropRight :isShown>
                           {{ t(`money.types.${grouped}`) }}
-                        </UiTitle81>
+                        </UiTitleDropRight>
                         <div class="py-2">
                           <Amount
                             :amount="countWalletsSum(groupedWalletsIds, false)"
@@ -617,9 +617,9 @@ const counts = computed(() => ({
                   class="flex grow items-center justify-between pr-3"
                   @click="toggle"
                 >
-                  <UiTitle81 :isShown>
+                  <UiTitleDropRight :isShown>
                     {{ t(`money.types.${type}`) }} {{ walletsIds.length }}
-                  </UiTitle81>
+                  </UiTitleDropRight>
 
                   <div class="py-2">
                     <Amount
@@ -659,9 +659,9 @@ const counts = computed(() => ({
                         class="flex grow items-center justify-between pr-3"
                         @click="toggle"
                       >
-                        <UiTitle81 :isShown>
+                        <UiTitleDropRight :isShown>
                           {{ currency }}
-                        </UiTitle81>
+                        </UiTitleDropRight>
 
                         <div class="py-2">
                           <Amount
