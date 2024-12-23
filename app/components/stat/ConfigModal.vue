@@ -38,6 +38,7 @@ const isShow = ref(false)
       <div class="grid gap-6 p-3">
         <BottomSheetClose @click="close" />
         <slot />
+
         <!-- Chart show -->
         <div class="grid gap-2">
           <div>
