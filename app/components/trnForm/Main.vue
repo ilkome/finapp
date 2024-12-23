@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { usePointer, useWindowSize } from '@vueuse/core'
-import type { WalletId } from '~/components/wallets/types'
+
 import type { CategoryId } from '~/components/categories/types'
+import type { WalletId } from '~/components/wallets/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = withDefaults(defineProps<{
   maxHeight: string
@@ -85,7 +87,7 @@ const actions = computed(() => ({
 </script>
 
 <template>
-  <div class="grid pb-6">
+  <div class="grid pb-0">
     <TrnFormSelection
       v-if="isShow"
       v-model:isShow="isShow"
@@ -180,17 +182,21 @@ const actions = computed(() => ({
       >
         <TrnFormSelectorWallet
           v-if="walletId"
-          :walletId
+          :bottomSheetStyle="{ maxHeight: props.maxHeight }"
           :isLaptop
+          :title="t('trnForm.wallet.select')"
+          :walletId="walletId"
           @onOpen="show(0)"
           @onSelected="(id: WalletId) => trnsFormStore.values.walletId = id"
         />
 
         <TrnFormSelectorCategory
           v-if="trnsFormStore.values.categoryId"
-          :categoryId="trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
+          :bottomSheetStyle="{ maxHeight: props.maxHeight }"
           :category="categoriesStore.items[trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
+          :categoryId="trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
           :isLaptop
+          :title="t('trnForm.category.select')"
           @onOpen="show(2)"
           @onSelected="(id: CategoryId) => trnsFormStore.values.categoryId = id"
         />
@@ -207,3 +213,19 @@ const actions = computed(() => ({
     </div>
   </div>
 </template>
+
+<i18n lang="yaml">
+  en:
+    trnForm:
+      wallet:
+        select: Select wallet
+      category:
+        select: Select category
+
+  ru:
+    trnForm:
+      wallet:
+        select: Выбрать кошелек
+      category:
+        select: Выбрать категорию
+</i18n>

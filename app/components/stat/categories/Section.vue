@@ -50,6 +50,7 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
   <UiToggle
     :storageKey="`${storageKey}-${type}-cats`"
     :initStatus="true"
+    openPadding="pb-3"
     class="min-w-80 md:max-w-lg"
   >
     <template #header="{ toggle, isShown }">

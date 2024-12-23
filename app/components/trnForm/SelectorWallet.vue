@@ -4,7 +4,9 @@ import type { WalletId } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
+  bottomSheetStyle?: Record<string, string>
   isLaptop: boolean
+  title?: string
   walletId: WalletId
 }>()
 
@@ -13,14 +15,20 @@ const emit = defineEmits<{
   onSelected: [id: WalletId]
 }>()
 
-const { t } = useI18n()
 const walletsStore = useWalletsStore()
+
+const isShow = ref(false)
 </script>
 
 <template>
-  <div>
-    <!-- Laptop -->
-    <UPopover v-if="isLaptop">
+  <BottomSheetOrDropdown
+    :title="props.title"
+    :isOpen="isShow"
+    :bottomSheetStyle="props.bottomSheetStyle"
+    @onOpenModal="isShow = true"
+    @onCloseModal="isShow = false"
+  >
+    <template #trigger>
       <WalletsItem
         :walletId
         :wallet="walletsStore.itemsWithAmount[walletId]"
@@ -28,30 +36,15 @@ const walletsStore = useWalletsStore()
         isShowIcon
         alt
       />
+    </template>
 
-      <template #panel="{ close }">
-        <UiPopoverWrap
-          :title="t('wallets.title')"
-          @close="close"
-        >
-          <WalletsSelector
-            :hide="close"
-            :activeItemId="props.walletId"
-            class="min-w-72 max-w-xs px-2"
-            @onSelected="id => emit('onSelected', id)"
-          />
-        </UiPopoverWrap>
-      </template>
-    </UPopover>
-
-    <!-- Mobile -->
-    <WalletsItem
-      v-else
-      :walletId
-      :wallet="walletsStore.itemsWithAmount[walletId]"
-      isShowIcon
-      alt
-      @click="emit('onOpen', 0)"
-    />
-  </div>
+    <template #content="{ close }">
+      <WalletsSelector
+        :hide="close"
+        :activeItemId="props.walletId"
+        class="min-w-72 md:px-2"
+        @onSelected="id => emit('onSelected', id)"
+      />
+    </template>
+  </BottomSheetOrDropdown>
 </template>

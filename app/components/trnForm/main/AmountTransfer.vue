@@ -80,6 +80,7 @@ watch(
 
           <TrnFormSelectorWallet
             v-if="slug === 'income' && incomeWalletId"
+            :title="t(slug)"
             :walletId="incomeWalletId"
             :isLaptop
             @onOpen="n => emit('onOpen', n)"
@@ -88,6 +89,7 @@ watch(
 
           <TrnFormSelectorWallet
             v-if="slug === 'expense' && expenseWalletId"
+            :title="t(slug)"
             :walletId="expenseWalletId"
             :isLaptop
             @onOpen="n => emit('onOpen', n)"

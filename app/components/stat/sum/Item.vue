@@ -30,10 +30,10 @@ const currenciesStore = useCurrenciesStore()
     }"
     @click="(e: Event) => emit('click', e)"
   >
-    <UiTitle2>
+    <UiTextSm1>
       {{ props.isTotal ? $t('money.all') : '' }}
       {{ $t(`money.${props.type}`) }}
-    </UiTitle2>
+    </UiTextSm1>
 
     <div class="flex items-end gap-5">
       <Amount

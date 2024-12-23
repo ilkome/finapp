@@ -15,7 +15,8 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 
 <template>
   <div
-    class="group relative" :class="{
+    class="group relative"
+    :class="{
       [props.openPadding]: props.openPadding && isShown,
     }"
   >

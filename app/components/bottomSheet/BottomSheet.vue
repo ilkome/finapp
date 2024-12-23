@@ -5,6 +5,7 @@ type Event = TouchEvent | MouseEvent
 
 const props = defineProps<{
   drugClassesCustom?: string
+  drugStyle?: Record<string, string>
   isShow?: boolean
 }>()
 
@@ -115,6 +116,7 @@ const overlayStyles = computed(() => {
 const drugStyles = computed(() => {
   if (!opened.value) {
     return {
+      ...props.drugStyle,
       opacity: 0,
       transform: 'translateX(-50%) translateY(30px)',
     }
@@ -122,12 +124,14 @@ const drugStyles = computed(() => {
 
   if (nextCurrentY.value <= debounce.value) {
     return {
+      ...props.drugStyle,
       opacity: 1,
       transform: '',
     }
   }
 
   return {
+    ...props.drugStyle,
     transform: `translateX(-50%) translateY(${nextCurrentY.value - debounce.value}px)`,
   }
 })
@@ -345,18 +349,6 @@ function addEvents() {
     document.addEventListener('mousemove', onDragging)
     document.addEventListener('mouseleave', onDragEnd)
   }
-
-  // addEventListener(containerRef.value, 'touchstart', onDragStart)
-  // addEventListener(containerRef.value, 'touchmove', onDragging)
-  // addEventListener(containerRef.value, 'touchend', onDragEnd)
-
-  // Mouse
-  // addEventListener(containerRef.value, 'mousedown', onDragStart)
-  // addEventListener(document, 'mousemove', onDragging)
-
-  // Mouse: Finish drag event only when mouse released
-  // addEventListener(containerRef.value, 'mouseup', onDragEnd)
-  // addEventListener(document, 'mouseleave', onDragEnd)
 }
 
 /**
@@ -410,8 +402,6 @@ function removeEvents() {
 watch(
   () => props.isShow,
   async (value) => {
-    // console.log('isShow', value)
-
     if (value)
       await init()
 

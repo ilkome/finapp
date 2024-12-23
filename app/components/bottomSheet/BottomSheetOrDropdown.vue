@@ -2,6 +2,7 @@
 import { usePointer, useWindowSize } from '@vueuse/core'
 
 const props = defineProps<{
+  bottomSheetStyle?: Record<string, string>
   isOpen?: boolean
   title: string
 }>()
@@ -41,6 +42,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
         v-if="props.isOpen"
         isShow
         drugClassesCustom="bottomSheetDrugClassesCustom"
+        :drugStyle="props.bottomSheetStyle"
         @closed="emit('onCloseModal')"
       >
         <template #handler="{ close }">
@@ -54,7 +56,9 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
               {{ props.title }}
             </UiTitleModal>
 
-            <slot name="content" :close />
+            <div class="scrollerBlock bottomSheetContentInside">
+              <slot name="content" :close />
+            </div>
           </div>
         </template>
       </BottomSheet>

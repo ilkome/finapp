@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TrnId, TrnItemFull } from '~/components/trns/types'
+
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{

@@ -96,13 +96,9 @@ const selectedIds = computed(() => {
   return ids
 })
 
-const paginatedTrnsIds = computed(() =>
-  selectedIds.value.slice(0, pageNumber.value * props.size),
-)
+const paginatedTrnsIds = computed(() => selectedIds.value.slice(0, pageNumber.value * props.size))
 
-const isShowedAllTrns = computed(
-  () => paginatedTrnsIds.value.length === selectedIds.value.length,
-)
+const isShowedAllTrns = computed(() => paginatedTrnsIds.value.length === selectedIds.value.length)
 
 const isTrnsWithDesc = computed(() => {
   let ids = props.trnsIds ?? []

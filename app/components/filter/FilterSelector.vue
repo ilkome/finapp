@@ -35,7 +35,7 @@ const modals = ref({
             @close="close"
           >
             <CategoriesSelector
-              class="min-w-72 max-w-xs px-2"
+              class="min-w-72"
               :selectedIds="filter?.categoriesIds.value"
               @onSelected="filter.toggleCategoryId"
               @setCategories="filter.setCategories"
@@ -108,7 +108,7 @@ const modals = ref({
           >
             <WalletsSelector
               :selectedIds="filter?.walletsIds.value"
-              class="min-w-72 max-w-xs px-2"
+              class="min-w-72 px-2"
               @onSelected="filter.toggleWalletId"
             />
           </UiPopoverWrap>

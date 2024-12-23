@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import Swiper, { Pagination } from 'swiper'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
+
+import { getParentCategoryId } from '~/components/categories/getCategories'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { getParentCategoryId } from '~/components/categories/getCategories'
+
 import 'swiper/css'
 
 const props = withDefaults(
@@ -69,7 +72,7 @@ async function onSelectParentCategory(id: CategoryId) {
   <Teleport to="body">
     <BottomSheet
       :isShow="isShow"
-      drugClassesCustom="bg-foreground-1"
+      drugClassesCustom="bg-foreground-1 max-w-md"
       @closed="isShow = false"
     >
       <template #handler="{ close }">

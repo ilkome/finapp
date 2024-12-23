@@ -8,6 +8,7 @@ export type CategoryItemProps = {
   alt?: boolean
   category: CategoryItem
   categoryId: CategoryId
+  class?: string
   isShowDots?: boolean
   isShowParent?: boolean
   lineWidth?: number
@@ -31,6 +32,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
   <UiElement
     v-if="props.category"
     :isActive="props.activeItemId === props.categoryId"
+    :class="props.class"
     :lineWidth="props.lineWidth"
     insideClasses="min-h-[46px]"
     @click="(e: Event) => emit('click', e)"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import type { CategoryId } from '~/components/categories/types'
+
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const { t } = useI18n()
 useHead({
@@ -42,6 +43,9 @@ const categoriesStore = useCategoriesStore()
     >
       <CategoriesList
         :ids="categoriesStore.categoriesRootIds"
+        :categoriesItemProps="{
+          class: 'group',
+        }"
         @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"
       />
     </div>

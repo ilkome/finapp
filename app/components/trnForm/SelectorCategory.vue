@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-
-defineProps<{
+const props = defineProps<{
+  bottomSheetStyle?: Record<string, string>
   category: CategoryItem
   categoryId: CategoryId
   isLaptop: boolean
+  title?: string
 }>()
 
 const emit = defineEmits<{
@@ -14,43 +14,32 @@ const emit = defineEmits<{
   onSelected: [id: CategoryId]
 }>()
 
-const { t } = useI18n()
-const categoriesStore = useCategoriesStore()
+const isShow = ref(false)
 </script>
 
 <template>
-  <div>
-    <div v-if="!isLaptop">
+  <BottomSheetOrDropdown
+    :title="props.title"
+    :isOpen="isShow"
+    :bottomSheetStyle="props.bottomSheetStyle"
+    @onOpenModal="isShow = true"
+    @onCloseModal="isShow = false"
+  >
+    <template #trigger>
       <CategoriesItem
-        :category
-        :categoryId
+        :category="props.category"
+        :categoryId="props.categoryId"
         alt
         insideClasses="bg-item-4 min-h-[42px] py-2"
-        @click="emit('onOpen', 2)"
       />
-    </div>
+    </template>
 
-    <UPopover v-else>
-      <CategoriesItem
-        :category
-        :categoryId
-        alt
-        :hasChildren="categoriesStore.getChildsIds(categoryId).length > 0"
-        insideClasses="bg-item-4 min-h-[42px] py-2"
+    <template #content="{ close }">
+      <CategoriesSelector
+        :hide="close"
+        class="min-w-72 md:px-2"
+        @onSelected="id => { emit('onSelected', id); close() }"
       />
-
-      <template #panel="{ close }">
-        <UiPopoverWrap
-          :title="t('categories.title')"
-          @close="close"
-        >
-          <CategoriesSelector
-            :hide="close"
-            class="min-w-72 max-w-xs p-2"
-            @onSelected="id => { emit('onSelected', id); close() }"
-          />
-        </UiPopoverWrap>
-      </template>
-    </UPopover>
-  </div>
+    </template>
+  </BottomSheetOrDropdown>
 </template>

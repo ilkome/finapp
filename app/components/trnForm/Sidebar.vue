@@ -63,6 +63,7 @@ watch(isShow, (v) => {
               <!-- History -->
               <TrnFormTrnsSlide
                 :slider="sliderObj"
+                :mainSlideIdx="0"
                 class="px-2 pb-6"
               />
             </div>

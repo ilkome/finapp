@@ -10,6 +10,7 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
+  mainSlideIdx: number
   slider?: {
     slideTo: object | null
   }
@@ -51,7 +52,7 @@ function changeFilter(value: FilterBy) {
 }
 
 function onClickTransaction() {
-  props.slider?.slideTo(1)
+  props.slider?.slideTo(props.mainSlideIdx)
 }
 
 const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
@@ -71,7 +72,7 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
 </script>
 
 <template>
-  <div class="grid h-full grid-rows-[1fr,auto] gap-2 sm:max-w-sm">
+  <div class="grid h-full grid-rows-[1fr,auto] gap-2">
     <TrnsList
       :trnsIds="trnsIds"
       isHideDates
