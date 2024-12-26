@@ -31,6 +31,7 @@ export const classes = {
 
     rounded: 'rounded-md',
     rounded2: 'rounded-lg',
+    rounded3: 'rounded-xl',
     shadow: `
       shadow hocus:shadow-lg
     `,

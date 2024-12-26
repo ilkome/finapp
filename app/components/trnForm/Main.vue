@@ -142,6 +142,7 @@ const actions = computed(() => ({
         </div>
       </div>
 
+      <!-- Trn actions -->
       <div class="flex gap-2 pt-2">
         <DateLinkItem
           v-for="(item, slug) in items"

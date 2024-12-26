@@ -12,11 +12,11 @@ const emit = defineEmits<{
 <template>
   <div
     :class="[
-      getStyles('item', ['link', 'minh3']), {
+      getStyles('item', ['link', 'center2', 'minh3', 'rounded3']), {
         '!text-accent-1 !bg-transparent': props.isActive,
       },
     ]"
-    class="text-2xs font-primary flex items-center text-nowrap rounded-lg px-2 py-1.5 leading-none"
+    class="text-2xs px-2.5"
     @click="(e: Event) => emit('click', e)"
   >
     <slot />
